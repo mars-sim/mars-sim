@@ -121,7 +121,10 @@ public class RatingScore implements Serializable {
         
         StringBuilder output = new StringBuilder();
         output.append("Score:").append(SCORE_FORMAT.format(score)).append(" (");
-        output.append("base:").append(SCORE_FORMAT.format(base)).append(',');
+        output.append("base:").append(SCORE_FORMAT.format(base));
+        if (!modifiers.isEmpty()) {
+            output.append(',');
+        }
         output.append(modifiers.entrySet().stream()
                                 .map(entry -> entry.getKey() + ":" + SCORE_FORMAT.format(entry.getValue()))
                                 .collect(Collectors.joining(",")));

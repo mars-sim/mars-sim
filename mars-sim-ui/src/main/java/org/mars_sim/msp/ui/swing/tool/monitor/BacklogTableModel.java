@@ -211,6 +211,29 @@ public class BacklogTableModel extends AbstractTableModel
 		};
 	}
 
+    /**
+     * Default implementation return null as no tooltips are supported by default
+     * @param rowIndex Row index of cell
+     * @param columnIndex Column index of cell
+     * @return Return null by default
+     */
+    @Override
+    public String getToolTipAt(int rowIndex, int columnIndex) {
+		String result = null;
+		if ((columnIndex == SCORE_COL) && (rowIndex < tasks.size())) {
+			SettlementTask selectedTask = tasks.get(rowIndex);
+
+			result = selectedTask.getScore().getOutput();
+		}
+        return result;
+    }
+
+	/**
+	 * Get the value of a cell of a SettlementTask
+     * @param rowIndex Row index of cell
+     * @param columnIndex Column index of cell
+     * @return Object value of the cell
+	 */
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if (tasks.size() <= rowIndex) {

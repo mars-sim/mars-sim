@@ -132,11 +132,7 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 		}
 
 		// Update all table listeners.
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				fireTableDataChanged();
-			}
-		});
+		SwingUtilities.invokeLater(this::fireTableDataChanged);
 
 	}
 
@@ -161,6 +157,7 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 	 * @param columnIndex Index of column.
 	 * @return Class of specified column.
 	 */
+	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		if ((columnIndex >= 0) && (columnIndex < columnTypes.length)) {
 			return columnTypes[columnIndex];
@@ -174,6 +171,7 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 	 * @param columnIndex Index of column.
 	 * @return name of specified column.
 	 */
+	@Override
 	public String getColumnName(int columnIndex) {
 		if ((columnIndex >= 0) && (columnIndex < columnNames.length)) {
 			return columnNames[columnIndex];
@@ -225,6 +223,17 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 	public boolean getOrdered() {
 		return true;
 	}
+
+    /**
+     * Default implementation return null as no tooltips are supported by default
+     * @param rowIndex Row index of cell
+     * @param columnIndex Column index of cell
+     * @return Return null by default
+     */
+    @Override
+    public String getToolTipAt(int rowIndex, int columnIndex) {
+        return null;
+    }
 
 	/**
 	 * Return the value of a Cell

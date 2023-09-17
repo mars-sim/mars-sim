@@ -18,6 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -56,12 +57,25 @@ abstract class TableTab extends MonitorTab {
 	 * @param singleSelection Does this table only allow single selection?
 	 * @param iconname        Name of the icon; @see {@link ImageLoader#getIconByName(String)}
 	 */
-	public TableTab(final MonitorWindow window, final MonitorModel model, boolean mandatory, boolean singleSelection,
+	protected TableTab(final MonitorWindow window, final MonitorModel model, boolean mandatory, boolean singleSelection,
 			String iconname) {
 		super(model, mandatory, true, ImageLoader.getIconByName(iconname));
 
 		// Simple WebTable
-		this.table = new JTable(model);
+		this.table = new JTable(model) {
+            @Override
+            public String getToolTipText(MouseEvent e) {
+                java.awt.Point p = e.getPoint();
+                int rowIndex = rowAtPoint(p);
+                int colIndex = columnAtPoint(p);
+				var sorter = getRowSorter();
+				if (sorter != null) {
+					rowIndex = sorter.convertRowIndexToModel(rowIndex);
+				}
+				MonitorModel model = (MonitorModel) getModel();
+				return model.getToolTipAt(rowIndex, colIndex);
+            }
+		};
 
 		// Set default renderers
 		this.table.setDefaultRenderer(Double.class, DIGIT2_RENDERER);
@@ -91,7 +105,8 @@ abstract class TableTab extends MonitorTab {
 			table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		// Add a scrolled window and center it with the table
-		JScrollPane scroller = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane scroller = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+								ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
@@ -149,8 +164,8 @@ abstract class TableTab extends MonitorTab {
 				add(propsWindow, 0);
 				try {
 					propsWindow.setClosed(false);
-				} catch (Exception e) {
-					// logger.log(Level.SEVERE,e.toString()); }
+				} catch (PropertyVetoException e) {
+					// Ignore veto problems
 				}
 			}
 			propsWindow.show();
@@ -178,7 +193,7 @@ abstract class TableTab extends MonitorTab {
 	public final List<Object> getSelection() {
 		MonitorModel target = getModel();
 
-		int indexes[] = table.getSelectedRows();
+		int [] indexes = table.getSelectedRows();
 		RowSorter<? extends TableModel> sorter = table.getRowSorter();
 		List<Object> selectedRows = new ArrayList<>();
 		for (int index : indexes) {
@@ -196,12 +211,9 @@ abstract class TableTab extends MonitorTab {
 	/**
 	 * Removes this tab.
 	 */
+	@Override
 	public void removeTab() {
 		super.removeTab();
 		table = null;
-	}
-
-	public void destroy() {
-		propsWindow = null;
 	}
 }
