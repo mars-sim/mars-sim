@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
@@ -113,9 +112,8 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
                 return factor;
             }
 	          
-			factor = new RatingScore(t.getScore());
-			factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
-            if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
+			factor = super.assessPersonSuitability(t, p);
+            if ((factor.getScore() > 0) && building.hasFunction(FunctionType.LIFE_SUPPORT)) {
                 // Factor in building crowding and relationship factors.
                 factor.addModifier(BUILDING_MODIFIER, getBuildingModifier(building, p));
             }

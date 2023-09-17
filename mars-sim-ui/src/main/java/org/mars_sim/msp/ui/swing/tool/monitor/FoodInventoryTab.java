@@ -16,7 +16,6 @@ import org.mars_sim.msp.ui.swing.tool.NumberRenderer;
  * This class represents an inventory of food at settlements displayed within
  * the Monitor Window.
  */
-@SuppressWarnings("serial")
 public class FoodInventoryTab extends TableTab {
 	private static final String FOOD_ICON = "food";
 
@@ -50,6 +49,6 @@ public class FoodInventoryTab extends TableTab {
 			m.getColumn(i).setCellRenderer(r);
 		}
 		
-		super.adjustColumnWidth(table);
+		adjustColumnWidth(table);
 	}
 }

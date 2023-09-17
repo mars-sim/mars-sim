@@ -32,6 +32,6 @@ public class BacklogTab extends TableTab {
 		TableColumnModel m = table.getColumnModel();
 		m.getColumn(BacklogTableModel.SCORE_COL).setCellRenderer(DIGIT2_RENDERER);
 			  
-		super.adjustColumnWidth(table);
+		adjustColumnWidth(table);
 	}
 }

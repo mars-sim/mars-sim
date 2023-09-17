@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.TaskProbabilityUtil;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Shift;
@@ -31,7 +32,7 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
 	
 	private EquipmentType containerType;
 
-    public DigLocalMeta(String name, EquipmentType containerType) {
+    protected DigLocalMeta(String name, EquipmentType containerType) {
 		super(name, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.OPERATION);
 		setTrait(TaskTrait.STRENGTH);
@@ -42,6 +43,7 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
     /**
      * Computes the probability of doing this task.
      * 
+     * @param resourceId The id of the resource being dug
      * @param settlement
      * @param person
      * @param collectionProbability
@@ -82,9 +84,7 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
         
         if (result > MAX)
         	result = MAX;
-      
-//        logger.info(settlement, 10_000, "1. DigLocalMeta - " + ResourceUtil.findAmountResourceName(resourceId) + ": " + (int)result);
-        
+              
         // Checks if the person's settlement is at meal time and is hungry
         if (EVAOperation.isHungryAtMealTime(person))
         	result *= .5;
@@ -98,13 +98,11 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
         double exerciseMillisols = person.getCircadianClock().getTodayExerciseTime();
         
         result = result - stress * 2 - fatigue/2 - hunger/2 - exerciseMillisols;
-
-//        logger.info(settlement, 10_000, "2. DigLocalMeta - " + ResourceUtil.findAmountResourceName(resourceId) + ": " + (int)result);
         
         if (result <= 0)
         	return 0;
         
-        result *= getRadiationModifier(settlement);
+        result *= TaskProbabilityUtil.getRadiationModifier(settlement);
 
 	    int indoor = settlement.getIndoorPeopleCount(); 
 	    int citizen = settlement.getNumCitizens();
@@ -138,7 +136,6 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
         if (result > CAP)
         	result = CAP;
 
-//        logger.info(settlement, 10_000, "3. DigLocalMeta - " + ResourceUtil.findAmountResourceName(resourceId) + ": " + (int)result);
         return result;
     }
 

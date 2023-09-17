@@ -193,7 +193,7 @@ public class BotTaskManager extends TaskManager {
 		for (FactoryMetaTask mt : potentials) {
 			List<TaskJob> job = mt.getTaskJobs(robot);
 	
-			if (job != null) {
+			if (!job.isEmpty()) {
 				newCache.add(job);
 			}
 		}

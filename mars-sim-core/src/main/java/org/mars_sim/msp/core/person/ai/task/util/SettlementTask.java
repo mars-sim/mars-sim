@@ -22,6 +22,7 @@ public abstract class SettlementTask extends AbstractTaskJob {
     private SettlementMetaTask metaTask;
     private Entity focus;
     private String shortName;
+    private boolean needsEVA = false;
 
     /**
      * Old approach where a single double is used for scoring
@@ -59,6 +60,17 @@ public abstract class SettlementTask extends AbstractTaskJob {
         return shortName;
     }
 
+    /**
+     * Does this task need a an EVA activity
+     */
+    public boolean isEVA() {
+        return needsEVA;
+    }
+
+    protected void setEVA(boolean eva) {
+        needsEVA = eva;
+    }
+    
     /**
      * Sets a specific level of demand for this job.
      * 
@@ -128,6 +140,8 @@ public abstract class SettlementTask extends AbstractTaskJob {
             if (other.metaTask != null)
                 return false;
         } else if (!metaTask.equals(other.metaTask))
+            return false;
+        if (needsEVA != other.needsEVA)
             return false;
         if (focus == null) {
             if (other.focus != null)

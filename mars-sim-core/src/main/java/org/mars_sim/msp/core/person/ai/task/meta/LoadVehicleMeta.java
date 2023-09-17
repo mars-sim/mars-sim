@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
+import org.mars_sim.msp.core.person.ai.task.util.TaskProbabilityUtil;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -42,11 +43,9 @@ public class LoadVehicleMeta extends MetaTask
 
 		private static final long serialVersionUID = 1L;
 
-        private boolean eva;
-
         private LoadJob(SettlementMetaTask owner, VehicleMission target, boolean eva, double score) {
             super(owner, "Load " + (eva ? "via EVA " : ""), target, score);
-            this.eva = eva;
+            setEVA(eva);
         }
 
         private VehicleMission getMission() {
@@ -57,7 +56,7 @@ public class LoadVehicleMeta extends MetaTask
         public Task createTask(Person person) {
             if (!person.isInSettlement())
             	return null;
-            if (eva) {
+            if (isEVA()) {
                 return new LoadVehicleEVA(person, getMission());
             }
             return new LoadVehicleGarage(person, getMission());
@@ -65,7 +64,7 @@ public class LoadVehicleMeta extends MetaTask
 
         @Override
         public Task createTask(Robot robot) {
-            if (eva) {
+            if (isEVA()) {
 				// Should not happen
 				throw new IllegalStateException("Robots can not do EVA load vehicle");
 			}
@@ -91,28 +90,6 @@ public class LoadVehicleMeta extends MetaTask
 		setPreferredJob(JobType.LOADERS);
         addPreferredRobot(RobotType.DELIVERYBOT);
 	}
-    
-    /**
-     * Gets the score for a Settlement task for a person. If EVA is needed, considers radiation.
-     * 
-	 * @param t Task being scored
-	 * @param p Person requesting work.
-	 * @return The factor to adjust task score; 0 means task is not applicable
-     */
-    @Override
-	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScore factor = RatingScore.ZERO_RATING;
-        if (p.isInSettlement()) {
-			LoadJob mtj = (LoadJob) t;
-
-			factor = new RatingScore(t.getScore());
-			factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
-			if (mtj.eva) {
-				factor = applyEVASuitability(factor, p);
-			}
-		}
-		return factor;
-	}
 
     /**
      * Gets the score for a Settlement task for a robot. Note that robots can not do EVA.
@@ -123,15 +100,7 @@ public class LoadVehicleMeta extends MetaTask
      */
 	@Override
 	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
-        LoadJob mtj = (LoadJob) t;
-        if (mtj.eva) {
-            return RatingScore.ZERO_RATING;
-        }
-
-        var factor = new RatingScore(t.getScore());
-        factor.addModifier(ROBOT_PERF_MODIFIER, r.getPerformanceRating());
-
-        return factor;
+        return TaskProbabilityUtil.assessRobot(t, r);
     }
 
 	/**

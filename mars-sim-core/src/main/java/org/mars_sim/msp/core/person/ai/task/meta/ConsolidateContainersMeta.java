@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
+import org.mars_sim.msp.core.person.ai.task.util.TaskProbabilityUtil;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -93,7 +94,7 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
 	 */
     @Override
     public List<TaskJob> getTaskJobs(Robot robot) {
-		return null;
+		return Collections.emptyList();
 	}
 	
     /**
@@ -112,21 +113,12 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
         return result;
     }
 
-    @Override
-    public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        var factor = new RatingScore(t.getScore());
-        factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
-        return factor;
-    }
-
     /**
      * Score modifier for a Robot is based on it's performance rating
      */
     @Override
     public RatingScore assessRobotSuitability(SettlementTask t, Robot r) {
-        var factor = new RatingScore(t.getScore());
-        factor.addModifier(ROBOT_PERF_MODIFIER, r.getPerformanceRating());
-        return factor;
+        return TaskProbabilityUtil.assessRobot(t, r);
     }
 
     /**

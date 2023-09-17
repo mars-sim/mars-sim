@@ -107,7 +107,7 @@ abstract class TableTab extends MonitorTab {
 		return table;
 	}
 
-	public static void adjustColumnWidth(JTable table) {
+	protected static void adjustColumnWidth(JTable table) {
 		// Gets max width for cells in column as the preferred width
 		TableColumnModel columnModel = table.getColumnModel();
 		for (int col = 0; col < table.getColumnCount(); col++) {

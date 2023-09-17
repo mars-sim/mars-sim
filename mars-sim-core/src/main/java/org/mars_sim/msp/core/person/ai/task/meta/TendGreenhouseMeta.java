@@ -87,8 +87,10 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
             LifeSupport ls = b.getLifeSupport();
 
             if (farm.getFarmerNum() <= 2 * ls.getOccupantCapacity()) {
-    			factor = new RatingScore(t.getScore());
-			    factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
+    			factor = super.assessPersonSuitability(t, p);
+                if (factor.getScore() == 0) {
+                    return factor;
+                }
 
                 // Crowding modifier.
                 factor.addModifier(BUILDING_MODIFIER, getBuildingModifier(b, p));                                    
@@ -104,9 +106,7 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
      */
 	@Override
 	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
-        var factor = new RatingScore(t.getScore());
-        factor.addModifier(ROBOT_PERF_MODIFIER, r.getPerformanceRating());
-        return factor;
+        return TaskProbabilityUtil.assessRobot(t, r);
     }
     
     /**

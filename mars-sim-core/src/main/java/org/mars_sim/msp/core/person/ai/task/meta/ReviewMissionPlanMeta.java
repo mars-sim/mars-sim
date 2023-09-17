@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -84,8 +83,10 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 
 			// Is this Person allowed to review this Mission
 			if (!p.equals(m.getStartingPerson()) && mp.isReviewerValid(p.getName(), pop)) {
-				factor = new RatingScore(t.getScore());
-				factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
+				factor = super.assessPersonSuitability(t, p);
+				if (factor.getScore() == 0) {
+					return factor;
+				}
 
 				// This reviewer is valid
 				RoleType roleType = p.getRole().getType();  

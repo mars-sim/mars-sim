@@ -34,8 +34,9 @@ public class BacklogTableModel extends AbstractTableModel
 	
 	private static final int DESC_COL = 0;
 	private static final int ENTITY_COL = 1;
-	private static final int DEMAND_COL = 2;
-	static final int SCORE_COL = 3;
+	private static final int EVA_COL = 2;
+	private static final int DEMAND_COL = 3;
+	static final int SCORE_COL = 4;
 
 	private String name = null;
 	private Settlement selectedSettlement;
@@ -192,6 +193,7 @@ public class BacklogTableModel extends AbstractTableModel
 			case ENTITY_COL -> "Entity";
 			case DESC_COL -> "Description";
 			case DEMAND_COL -> "Demand";
+			case EVA_COL -> "EVA";
 			case SCORE_COL -> "Score";
 			default -> throw new IllegalArgumentException("Unexpected value: " + index);
 		};
@@ -203,6 +205,7 @@ public class BacklogTableModel extends AbstractTableModel
 			case ENTITY_COL ->  String.class;
 			case DESC_COL ->  String.class;
 			case DEMAND_COL ->  Integer.class;
+			case EVA_COL -> String.class;
 			case SCORE_COL ->  Double.class;
 			default -> throw new IllegalArgumentException("Unexpected value: " + index);
 		};
@@ -224,6 +227,8 @@ public class BacklogTableModel extends AbstractTableModel
 				return null;
 			case DESC_COL:
 				return selectedTask.getShortName();
+			case EVA_COL:
+				return selectedTask.isEVA();
 			case DEMAND_COL:
 				return selectedTask.getDemand();
 			case SCORE_COL:

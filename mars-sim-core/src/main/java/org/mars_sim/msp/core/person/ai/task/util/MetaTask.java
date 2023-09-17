@@ -18,12 +18,9 @@ import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
 import org.mars_sim.msp.core.reportingAuthority.PreferenceCategory;
+import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
 import org.mars_sim.msp.core.robot.RobotType;
-import org.mars_sim.msp.core.structure.RadiationStatus;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -48,8 +45,7 @@ public abstract class MetaTask {
 		ANY_HOUR, WORK_HOUR, NONWORK_HOUR
 	}
 	
-	protected static final String PERSON_MODIFIER = "person";
-	protected static final String ROBOT_PERF_MODIFIER = "robot-perf";
+	private static final String PERSON_MODIFIER = "person";
 	protected static final String BUILDING_MODIFIER = "building";
 	private static final String EVA_MODIFIER = "eva";
 	private static final String RADIATION_MODIFIER = "radiation";
@@ -245,6 +241,28 @@ public abstract class MetaTask {
         Collections.addAll(this.preferredRobots, rt);
 	}
 	
+	
+	/**
+     * Gets the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
+     * 
+	 * @param t Task being scored
+	 * @parma p Person requesting work.
+	 * @return The score for this person
+     */
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore factor = RatingScore.ZERO_RATING;
+        if (p.isInSettlement()) {
+			factor = new RatingScore(t.getScore());
+			factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
+			if (t.isEVA()) {
+				// EVA factor is the radiation and the EVA modifiers applied extra
+				factor.addModifier(RADIATION_MODIFIER, TaskProbabilityUtil.getRadiationModifier(p.getSettlement()));
+				factor.addModifier(EVA_MODIFIER, TaskProbabilityUtil.getEVAModifier(p));
+			}
+		}
+		return factor;
+	}
+
 	/**
 	 * This will apply a number of modifier to the current score based on the Person to produce a modifier.
 	 * 1. If the task has a Trait that is performance related the Person's performance rating is applied as a modifier
@@ -295,75 +313,6 @@ public abstract class MetaTask {
         }
         
         return score;
-	}
-
-	/**
-	 * Gets the modifier value for a Task score based on the Radiation events occurring
-	 * at a Settlement. Events will scale down the modifier towards zero.
-	 * 
-	 * @param settlement
-	 * @return
-	 */
-    protected static double getRadiationModifier(Settlement settlement) {
-        RadiationStatus exposed = settlement.getExposed();
-        double result = 1D;
-
-        if (exposed.isSEPEvent()) {
-            // SEP event stops all activities so zero factor
-            result = 0D;
-        }
-
-    	if (exposed.isBaselineEvent()) {
-    		// Baseline can give a fair amount dose of radiation
-			result /= 50D;
-		}
-
-    	if (exposed.isGCREvent()) {
-    		// GCR can give nearly lethal dose of radiation
-			result /= 100D;
-		}
-
-        return result;
-    }
-
-	/**
-	 * Gets the modifier for a Person doing an EVA Operation.
-	 * 
-	 * @param person 
-	 */
-	protected static double getEVAModifier(Person person) {
-		// Check if an airlock is available
-		if (EVAOperation.getWalkableAvailableAirlock(person, false) == null)
-			return 0;
-
-		// Check if it is night time.
-		if (EVAOperation.isGettingDark(person))
-			return 0;
-
-		// Checks if the person's settlement is at meal time and is hungry
-		if (EVAOperation.isHungryAtMealTime(person))
-			return 0;
-		
-		// Checks if the person is physically fit for heavy EVA tasks
-		if (!EVAOperation.isEVAFit(person))
-			return 0;
-		
-		return 1D;
-	}
-
-	/**
-	 * Apply the suitability of a Person to do an EVA.
-	 * @param factor Current rating
-	 * @param p Person to assess
-	 * @return Update rating
-	 */
-	protected static RatingScore applyEVASuitability(RatingScore factor, Person p) {
-
-		// EVA factor is the radiation and the EVA modifiers applied extra
-		factor.addModifier(RADIATION_MODIFIER, getRadiationModifier(p.getSettlement()));
-		factor.addModifier(EVA_MODIFIER, getEVAModifier(p));
-
-		return factor;
 	}
 
 	/**

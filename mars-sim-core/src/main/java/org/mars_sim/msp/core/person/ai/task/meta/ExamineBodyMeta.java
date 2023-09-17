@@ -81,8 +81,10 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 				p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
 
 			// Effort-driven task modifier.
-			factor = new RatingScore(t.getScore());
-			factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
+			factor = super.assessPersonSuitability(t, p);
+			if (factor.getScore() == 0) {
+				return factor;
+			}
 
 			double skill = p.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 			if (skill == 0)

@@ -8,9 +8,13 @@ package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.util.Iterator;
 
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.RadiationStatus;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -95,31 +99,101 @@ public class TaskProbabilityUtil {
     public static double getRelationshipModifier(Person person, Building building) {
         double result = 1D;
 
-         if ((person == null) || (building == null)) {
+        if ((person == null) || (building == null)) {
             throw new IllegalArgumentException("Task.getRelationshipModifier(): null parameter.");
         }
-        else {
-            if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-                LifeSupport lifeSupport = building.getLifeSupport();
-                double totalOpinion = 0D;
-                Iterator<Person> i = lifeSupport.getOccupants().iterator();
-                while (i.hasNext()) {
-                    Person occupant = i.next();
-                    if (person != occupant) {
-                        totalOpinion+= ((RelationshipUtil.getOpinionOfPerson(person, occupant) - 50D) / 50D);
-                    }
+        
+        if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
+            LifeSupport lifeSupport = building.getLifeSupport();
+            double totalOpinion = 0D;
+            Iterator<Person> i = lifeSupport.getOccupants().iterator();
+            while (i.hasNext()) {
+                Person occupant = i.next();
+                if (person != occupant) {
+                    totalOpinion+= ((RelationshipUtil.getOpinionOfPerson(person, occupant) - 50D) / 50D);
                 }
+            }
 
-                if (totalOpinion >= 0D) {
-                    result*= (1D + totalOpinion);
-                }
-                else {
-                    result/= (1D - totalOpinion);
-                }
+            if (totalOpinion >= 0D) {
+                result*= (1D + totalOpinion);
+            }
+            else {
+                result/= (1D - totalOpinion);
             }
         }
 
         return result;
     }
 
+    /**
+     * Assess the suitability of the Robot for a task. This only assesses the basic Robot 
+     * characteristics against the stanard SettlementTask. 
+     * @param t Task to assess
+     * @param r Robot being assessed
+     * @return A rating
+     */
+    public static RatingScore assessRobot(SettlementTask t, Robot r) {
+        if (t.isEVA()) {
+            return RatingScore.ZERO_RATING;
+        }
+
+        var factor = new RatingScore(t.getScore());
+        factor.addModifier("robot.perf", r.getPerformanceRating());
+
+        return factor;
+    }
+
+    /**
+	 * Gets the modifier value for a Task score based on the Radiation events occurring
+	 * at a Settlement. Events will scale down the modifier towards zero.
+	 * 
+	 * @param settlement
+	 * @return
+	 */
+    public static double getRadiationModifier(Settlement settlement) {
+        RadiationStatus exposed = settlement.getExposed();
+        double result = 1D;
+
+        if (exposed.isSEPEvent()) {
+            // SEP event stops all activities so zero factor
+            result = 0D;
+        }
+
+    	if (exposed.isBaselineEvent()) {
+    		// Baseline can give a fair amount dose of radiation
+			result /= 50D;
+		}
+
+    	if (exposed.isGCREvent()) {
+    		// GCR can give nearly lethal dose of radiation
+			result /= 100D;
+		}
+
+        return result;
+    }
+
+	/**
+	 * Gets the modifier for a Person doing an EVA Operation.
+	 * 
+	 * @param person 
+	 */
+	public static double getEVAModifier(Person person) {
+		// Check if an airlock is available
+		if (EVAOperation.getWalkableAvailableAirlock(person, false) == null)
+			return 0;
+
+		// Check if it is night time.
+		if (EVAOperation.isGettingDark(person))
+			return 0;
+
+		// Checks if the person's settlement is at meal time and is hungry
+		if (EVAOperation.isHungryAtMealTime(person))
+			return 0;
+		
+		// Checks if the person is physically fit for heavy EVA tasks
+		if (!EVAOperation.isEVAFit(person))
+			return 0;
+		
+		return 1D;
+	}
 }

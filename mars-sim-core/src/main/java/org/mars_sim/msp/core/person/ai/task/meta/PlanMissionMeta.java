@@ -93,8 +93,10 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
         if (fatigue > 1000 || stress > 75 || hunger > 750)
             return RatingScore.ZERO_RATING;
             
-        var factor = new RatingScore(t.getScore());
-        factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
+        var factor = super.assessPersonSuitability(t, p);
+        if (factor.getScore() == 0) {
+            return factor;
+        }
 
         double roleFactor = switch (p.getRole().getType()) {
             case CHIEF_OF_MISSION_PLANNING  -> 2.0;

@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
+import org.mars_sim.msp.core.person.ai.task.util.TaskProbabilityUtil;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -47,15 +48,14 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 		private static final long serialVersionUID = 1L;
 
 		private Malfunction mal;
-		private boolean eva;
 
 		public RepairTaskJob(SettlementMetaTask owner, Malfunctionable entity, Malfunction mal,
 							 int demand, boolean eva, RatingScore score) {
 			super(owner, "Repair " + (eva ? "EVA " : "") + mal.getMalfunctionMeta().getName(), entity,
 						score);
 			setDemand(demand);
+			setEVA(eva);
 			this.mal = mal;
-			this.eva = eva;
 		}
 		
 		/**
@@ -68,7 +68,7 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 
 		@Override
 		public Task createTask(Person person) {
-			if (eva) {
+			if (isEVA()) {
 				return new RepairEVAMalfunction(person, getProblem(), mal);
 			}
 			return new RepairInsideMalfunction(person, getProblem(), mal);
@@ -76,7 +76,7 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 
 		@Override
 		public Task createTask(Robot robot) {
-			if (eva) {
+			if (isEVA()) {
 				throw new IllegalStateException("Robots cannot perform eva repairs");
 			}
 			return new RepairInsideMalfunction(robot, getProblem(), mal);
@@ -96,8 +96,6 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 					if (other.mal != null)
 						return false;
 				} else if (!mal.equals(other.mal))
-					return false;
-				if (eva != other.eva)
 					return false;
 				return true;
 			}
@@ -138,7 +136,7 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 				RatingScore score = new RatingScore(rtj.getScore());
 				score.addModifier("inside", 3D); //Repairs in Vehicles are important
 				tasks.add(new RepairTaskJob(this, rtj.getProblem(), rtj.mal, rtj.getDemand(),
-											rtj.eva, score));
+											rtj.isEVA(), score));
 			}
 		}
 
@@ -153,28 +151,6 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
     public List<TaskJob> getTaskJobs(Robot robot) {
 		return Collections.emptyList();
 	}
-	
-	/**
-     * Gets the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
-     * 
-	 * @param t Task being scored
-	 * @param p Person requesting work.
-	 * @return Assessment of suitability 0 means task is not applicable
-     */
-    @Override
-	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScore factor = RatingScore.ZERO_RATING;
-        if (p.isInSettlement()) {
-			RepairTaskJob mtj = (RepairTaskJob) t;
-
-			factor = new RatingScore(t.getScore());
-			factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
-			if (mtj.eva) {
-				factor = applyEVASuitability(factor, p);
-			}
-		}
-		return factor;
-	}
 
     /**
      * For a robot can not do EVA tasks so will return a zero factor in this case.
@@ -185,14 +161,7 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
      */
 	@Override
 	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
-        RepairTaskJob mtj = (RepairTaskJob) t;
-        if (mtj.eva) {
-            return RatingScore.ZERO_RATING;
-        }
-
-        var factor = new RatingScore(t.getScore());
-        factor.addModifier(ROBOT_PERF_MODIFIER, r.getPerformanceRating());
-        return factor;
+        return TaskProbabilityUtil.assessRobot(t, r);
     }
 	
 	/**
