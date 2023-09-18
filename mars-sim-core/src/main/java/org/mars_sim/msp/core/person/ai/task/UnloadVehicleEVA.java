@@ -85,12 +85,6 @@ public class UnloadVehicleEVA extends EVAOperation {
         	return;
 		}
 		
-		// Add the vehicle to a garage if possible
-		Building garage = settlement.getBuildingManager().addToGarageBuilding(vehicle);
-		if (garage != null) {
-			endTask();
-		}
-		
 		// Determine location for unloading.
 		setOutsideLocation(vehicle);
 		
@@ -101,7 +95,13 @@ public class UnloadVehicleEVA extends EVAOperation {
 		if (settlement == null) {
 			endTask();
 		}
-				
+
+		// Add the vehicle to a garage if possible
+		Building garage = settlement.getBuildingManager().addToGarageBuilding(vehicle);
+		if (garage != null) {
+			endTask();
+		}
+		
 		// Initialize phase
 		addPhase(UNLOADING);
 
@@ -148,7 +148,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 		
 		// Check if the vehicle is in a garage
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {
-			checkLocation("Vehicle is in garage.");
+			checkLocation("Vehicle in garage.");
 			return time;
 		}
 		
@@ -170,7 +170,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 					doUnload = (numSuit > numCrew);
 				}
 
-				// Add the equipemnt to the surplus
+				// Add the equipment to the surplus
 				if (doUnload) {
 					surplus.add(equipment);
 					amountUnloading -= equipment.getMass();
