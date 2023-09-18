@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -590,7 +591,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		
 //		Person p = (Person)member; 	
 		Rover rover = (Rover) v;
-		Set<Person> crew = rover.getCrew();
+		Set<Person> crew = new HashSet<>(rover.getCrew());
 		
 		if (!crew.isEmpty()) {
 			
@@ -610,79 +611,58 @@ public abstract class RoverMission extends AbstractVehicleMission {
             		}
             	}
             }
-
-            // Check the crew again since it's possible that in the same frame, 
-            // some other crew members have just been vacated, causing the result to be diff.
-            crew = rover.getCrew();
-            
-            if (!crew.isEmpty()) {
-            	
-            	for (Person p : crew) {
-					if (p.isDeclaredDead()) {
-						logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
+        	
+        	for (Person p : crew) {
+				if (p.isDeclaredDead()) {
+					logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
+				}
+	
+				// Initiate an rescue operation
+				// Future : Gets a lead person to perform it and give him a rescue badge
+				else if (!p.getPhysicalCondition().isFitByLevel(1500, 90, 1500)) {
+					rescueOperation(rover, p, disembarkSettlement);
+				}
+	
+				else if (isRoverInAGarage) {
+										
+					// Transfer the person from vehicle to settlement
+					p.transfer(disembarkSettlement);
+					
+					// Remove this person from the rover
+					rover.removePerson(p);
+					
+					// Add this person to the building
+					BuildingManager.addPersonOrRobotToBuilding(p, rover.getGarage());
+					
+					String roverName = "None";
+					
+					if (p.getVehicle() != null)
+						roverName = p.getVehicle().getName();
+					
+					if (p.isInSettlement()) {
+						logger.info(p, "[Status Report] " + roverName
+								+ " in " + rover.getBuildingLocation().getName()
+								+ ".  Person's Location: " + p.getLocationStateType().getName()
+								);
 					}
-		
-					// Initiate an rescue operation
-					// Future : Gets a lead person to perform it and give him a rescue badge
-					else if (!p.getPhysicalCondition().isFitByLevel(1500, 90, 1500)) {
-						rescueOperation(rover, p, disembarkSettlement);
+					
+					else {						
+						// Not in settlement yet
+						logger.info(p, "[Status Report] " + roverName
+								+ " in " + rover.getLocationStateType().getName()
+								+ ".  Person's Location: " + p.getLocationStateType().getName()
+								);
 					}
-		
-					else if (isRoverInAGarage) {
-											
-						// Remove this person from the rover
-						rover.removePerson(p);
-						
-						// Add this person to the building
-						BuildingManager.addPersonOrRobotToBuilding(p, rover.getGarage());
-						
-						String roverName = "None";
-						
-						if (p.getVehicle() != null)
-							roverName = p.getVehicle().getName();
-						
-						if (p.isInSettlement()) {
-							String settlementName = p.getSettlement().getName();
-							String buildingName = "None";
-							
-							if (p.getBuildingLocation() != null)
-								buildingName = p.getBuildingLocation().getName();
-							
-							// This person is already in the settlement. 
-							// Since the rover is in the garage and the person is in the rover,
-							// need to check if the person can walk out of the rover without having to go through EVA
-
-							
-							logger.info(rover, 30_000L, p.getName() 
-	    							+ " exited '" + roverName + "' onto "
-	    							+ settlementName
-	    							+ "'s " + buildingName + "."	    							
-	    							);
-						}
-						
-						else {						
-							// Not in settlement yet
-							// Welcome this person home
-							
-							// Is the manual transfer below needed ?
-							
-	   					logger.info(p, "Status report - "
-									+ " Rover: " + roverName
-									+ ". Rover's Location: " + rover.getBuildingLocation().getName()
-									+ ". person's Location: " + p.getLocationStateType().getName()
-									);
-						
-	//						p.transfer(disembarkSettlement);
-	//						BuildingManager.addPersonOrRobotToBuilding(p, rover.getBuildingLocation());
-						}
-					}
-					else {
-						// Not in a garage
-						
-						// See if this person needs an EVA suit
-						EVASuitUtil.metBaselineNumEVASuits(p, disembarkSettlement, this);
-					}
-	            }
+				}
+				
+				else {
+					// Not in a garage
+					
+					// See if this person needs an EVA suit
+					// This is considered cheating since missing EVA suits are automatically
+					// transfered to the vehicle
+					EVASuitUtil.transferEVASuitsToVehicle(p, disembarkSettlement, this);
+				}
             }
 		}
 		
