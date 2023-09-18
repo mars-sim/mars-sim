@@ -373,30 +373,6 @@ public abstract class EVAOperation extends Task {
 
 		return time * .9;
 	}
-
-	/**
-	 * Is the person qualified for digging local ice or regolith ?
-	 * 
-	 * @return
-	 */
-	public static boolean canDigLocal(Person person) {
-		// Check if person can exit the rover.
-		if (getWalkableAvailableEgressAirlock(person) == null)
-			return false;
-
-		// Check if sunlight is insufficient
-		if (EVAOperation.isGettingDark(person))
-			return false;
-
-		// Check if person's medical condition will not allow task.
-		if (person.getPerformanceRating() < .2D)
-			return false;
-
-		if (person.isSuperUnFit())
-			return false;
-		
-		return true;
-	}
 	
 	/**
 	 * Checks if situation requires the EVA operation to end prematurely and the

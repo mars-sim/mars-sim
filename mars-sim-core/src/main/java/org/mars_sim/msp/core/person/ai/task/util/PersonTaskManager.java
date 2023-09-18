@@ -11,6 +11,7 @@ import java.util.List;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
+import org.mars_sim.msp.core.person.ai.task.DigLocal;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
@@ -286,7 +287,7 @@ public class PersonTaskManager extends TaskManager {
 					
 					if (newTask.getName().equals(DigLocalRegolith.NAME)) {
 						// Check if the person is qualified for digging local
-						if (!EVAOperation.canDigLocal(person)) {
+						if (!DigLocal.canDigLocal(person)) {
 					    	// Skip doing anything for now
 							// Next, go to super.startNewTask() to find a new task
 						}

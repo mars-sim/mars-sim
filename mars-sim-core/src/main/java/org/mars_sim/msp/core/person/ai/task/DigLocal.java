@@ -537,6 +537,30 @@ public abstract class DigLocal extends EVAOperation {
     }
     
 	/**
+	 * Is the person qualified for digging local ice or regolith ?
+	 * 
+	 * @return
+	 */
+	public static boolean canDigLocal(Person person) {
+		// Check if person can exit the rover.
+		if (getWalkableAvailableEgressAirlock(person) == null)
+			return false;
+
+		// Check if sunlight is insufficient
+		if (EVAOperation.isGettingDark(person))
+			return false;
+
+		// Check if person's medical condition will not allow task.
+		if (person.getPerformanceRating() < .2D)
+			return false;
+
+		if (person.isSuperUnFit())
+			return false;
+		
+		return true;
+	}
+	
+	/**
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
