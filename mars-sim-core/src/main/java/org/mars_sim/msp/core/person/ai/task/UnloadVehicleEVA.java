@@ -94,12 +94,14 @@ public class UnloadVehicleEVA extends EVAOperation {
 		settlement = unitManager.findSettlement(person.getCoordinates());
 		if (settlement == null) {
 			endTask();
+			return;
 		}
 
 		// Add the vehicle to a garage if possible
 		Building garage = settlement.getBuildingManager().addToGarageBuilding(vehicle);
 		if (garage != null) {
 			endTask();
+			return;
 		}
 		
 		// Initialize phase
