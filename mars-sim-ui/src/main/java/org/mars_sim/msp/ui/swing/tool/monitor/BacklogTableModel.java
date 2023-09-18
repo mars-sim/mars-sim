@@ -223,7 +223,7 @@ public class BacklogTableModel extends AbstractTableModel
 		if ((columnIndex == SCORE_COL) && (rowIndex < tasks.size())) {
 			SettlementTask selectedTask = tasks.get(rowIndex);
 
-			result = selectedTask.getScore().getOutput();
+			result = selectedTask.getScore().getHTMLOutput();
 		}
         return result;
     }

@@ -100,7 +100,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
         var factor = TaskProbabilityUtil.assessRobot(t, r);
 		if (factor.getScore() > 0)
-			factor.addModifier("robot.maintain", ROBOT_FACTOR);
+			factor.addModifier("robot.expert", ROBOT_FACTOR);
         return factor;
     }
 	

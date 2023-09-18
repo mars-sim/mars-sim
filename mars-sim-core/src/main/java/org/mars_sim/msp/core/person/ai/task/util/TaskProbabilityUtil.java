@@ -138,7 +138,7 @@ public class TaskProbabilityUtil {
         }
 
         var factor = new RatingScore(t.getScore());
-        factor.addModifier("robot.perf", r.getPerformanceRating());
+        factor.addModifier("performance", r.getPerformanceRating());
 
         return factor;
     }

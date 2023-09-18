@@ -128,6 +128,10 @@ public class StyleManager {
         styles.put(LAF_STYLE, lafProps);
     }
 
+    private StyleManager() {
+        // Stop instatiation
+    }
+    
     /**
      * Gets available LAF.
      */

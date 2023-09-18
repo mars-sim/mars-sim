@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
@@ -25,6 +26,7 @@ import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
@@ -70,6 +72,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 	private JLabel taskTextArea;
 	private JLabel taskPhaseArea;
+	private JLabel scoreTextArea;
 
 	private JLabel subTaskTextArea;
 	private JLabel subTaskPhaseArea;
@@ -139,13 +142,14 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		missionButtonPanel.add(monitorButton);
 		
 		// Prepare activity panel
-		AttributePanel activityPanel = new AttributePanel(8);
+		AttributePanel activityPanel = new AttributePanel(9);
 		addBorder(activityPanel, "Task");
 		topPanel.add(activityPanel, BorderLayout.SOUTH);
 
 		// Prepare task labels. Create empty and then update
 		taskTextArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.task"), "", null); //$NON-NLS-1$
 		taskPhaseArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.taskPhase"), "", null); //$NON-NLS-1$
+		scoreTextArea = activityPanel.addTextField("Score", "", null);
 		subTaskTextArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTask"), "", null); //$NON-NLS-1$
 		subTaskPhaseArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTaskPhase"), "", null); //$NON-NLS-1$
 		subTask1TextArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTask1"), "", null); //$NON-NLS-1$
@@ -202,6 +206,18 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		if (!taskTextCache.equals(newTaskText)) {
 			taskTextCache = newTaskText;
 			updateLabel(taskTextArea, newTaskText);
+
+			// Task has changed so update the score
+			var scoreLabel = "";
+			String scoreTooltip = null; 
+			RatingScore score = taskManager.getScore();
+			if (score != null) {
+				scoreLabel = StyleManager.DECIMAL_PLACES2.format(score.getScore());
+				scoreTooltip = score.getHTMLOutput();
+			}
+
+			updateLabel(scoreTextArea, scoreLabel);
+			scoreTextArea.setToolTipText(scoreTooltip);
 		}
 
 		if (taskTextCache.equals(""))
@@ -279,7 +295,6 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	}
 
 	private static void updateLabel(JLabel label, String text) {
-		label.setToolTipText(text);
 		if (text.length() > MAX_LABEL) {
 			text = text.substring(0, MAX_LABEL - EXTRA.length()) + EXTRA;
 		}

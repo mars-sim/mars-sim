@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.data.History;
 import org.mars_sim.msp.core.data.RatingLog;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.Walk;
@@ -145,6 +146,8 @@ public abstract class TaskManager implements Serializable {
 	protected transient Unit worker;
 	/** The current task the worker is doing. */
 	protected Task currentTask;
+	private RatingScore currentScore;
+
 	/** The last task the person was doing. */
 	private Task lastTask;
 
@@ -211,6 +214,14 @@ public abstract class TaskManager implements Serializable {
 			return "";
 		}
 	}
+
+	/**
+	 * Get the score of the current Task if it was choosen at random. 
+	 * @return Will be null if task has been preselected.
+	 */
+    public RatingScore getScore() {
+        return currentScore;
+    }
 
 	/**
 	 * Gets the bottom-most real-time task. 
@@ -633,6 +644,7 @@ public abstract class TaskManager implements Serializable {
 
 			// Start this newly selected task
 			replaceTask(selectedTask);
+			currentScore = selectedJob.getScore();
 		}
 	}
 
@@ -704,6 +716,7 @@ public abstract class TaskManager implements Serializable {
 			
 			// Make the new task as the current task
 			currentTask = newTask;
+			currentScore = null;
 			
 			// Send out the task event
 			worker.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
