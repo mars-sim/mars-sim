@@ -661,7 +661,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					// See if this person needs an EVA suit
 					// This is considered cheating since missing EVA suits are automatically
 					// transfered to the vehicle
-					EVASuitUtil.transferEVASuitsToVehicle(p, disembarkSettlement, this);
+					EVASuitUtil.transferSuitsToVehicle(p, disembarkSettlement, this);
 				}
             }
 		}
