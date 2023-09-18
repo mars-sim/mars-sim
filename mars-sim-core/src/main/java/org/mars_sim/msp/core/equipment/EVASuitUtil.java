@@ -305,12 +305,12 @@ public class EVASuitUtil {
 	}
 
 	/**
-	 * Checks if a person possesses an EVA suit and fetch one from vehicle or settlement.
+	 * Checks if each person possesses an EVA suit and fetch them from settlement to vehicle.
 	 *
 	 * @param p
 	 * @param disembarkSettlement
 	 */
-	public static void metBaselineNumEVASuits(Person p, Settlement disembarkSettlement, Mission mission) {
+	public static void transferEVASuitsToVehicle(Person p, Settlement disembarkSettlement, Mission mission) {
 		if (p.getSuit() == null && p.isInVehicle()) {
 
 			Vehicle v = p.getVehicle();

@@ -112,8 +112,7 @@ public class ExploreSite extends EVAOperation {
 	 */
 	public static boolean canExploreSite(Worker member, Rover rover) {
 
-		if (member instanceof Person) {
-			Person person = (Person) member;
+		if (member instanceof Person person) {
 
 			// Check if person can exit the rover.
 			if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
