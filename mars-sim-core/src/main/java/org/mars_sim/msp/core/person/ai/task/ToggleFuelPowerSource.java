@@ -291,19 +291,19 @@ public class ToggleFuelPowerSource extends EVAOperation {
     private double togglePowerSourcePhase(double time) {
   
 		if (person.isUnFit()) {
-			checkLocation();
+			checkLocation("Person unfit.");
 			return time;
 		}
 		
         // If person is incapacitated, end task.
         if (person.getPerformanceRating() == 0D) {
-        	checkLocation();
+        	checkLocation("Zero performance.");
         	return time;
         }
 
         // Check if toggle has already been completed.
         if (powerSource.isToggleON() == toggleOn) {
-            checkLocation();
+            checkLocation(building.getName() + "'s power source already toggled on.");
             return time;
         }
 
@@ -359,4 +359,14 @@ public class ToggleFuelPowerSource extends EVAOperation {
         int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
         checkForAccident(building, time, .005D, skill, powerSource.toString());
     }
+    
+    /**
+     * Gets the building.
+     * 
+     * @return
+     */
+    public Building getBuilding() {
+    	return building;
+    }
+    
 }

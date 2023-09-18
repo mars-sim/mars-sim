@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -314,7 +315,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			// Find who has not boarded
 			List<Person> ejectedMembers = new ArrayList<>();
 			Rover r = getRover();
-			for(Worker m : getMembers()) {
+			for (Worker m : getMembers()) {
 				Person p = (Person) m;
 				if (!r.isCrewmember(p)) {
 					ejectedMembers.add(p);
@@ -363,7 +364,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				endMissionProblem(v, "Could not exit Settlement.");
 			}
 
-			// Marks everyone departed
+			// Record and mark everyone departing
 			for (Worker m : getMembers()) {
 				((Person) m).getTaskManager().recordActivity(getName(), "Departed", getName(), this);
 			}
@@ -463,19 +464,36 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			// Execute this only once upon arrival
 			justArrived = true;
 			
-			// FUTURE: should make this an actual task to be taken by a settler in Command & Control
-			registerVehicle(v0, disembarkSettlement);
+			// TODO: should make this an actual task to be taken by a settler in Command & Control
+			// to coordinate with disengaging the towing and towed vehicle
 			
-			if (v1 != null) {
-				registerVehicle(v1, disembarkSettlement);
+			if (v1 == null && v2 == null) {
+				registerVehicle(v0, disembarkSettlement);
 				
-				untetherVehicle(v0, v1, disembarkSettlement);
+	        	// Add vehicle to a garage if available.
+				Building garage = disembarkSettlement.getBuildingManager().addToGarageBuilding(v0);
+				
+				if (garage != null) {
+					logger.info(v0, "Done transferring to " + disembarkSettlement.getName() + " in " + garage + ".");
+				}
+			}
+			else {
+				if (v1 != null) {
+					registerVehicle(v1, disembarkSettlement);
+					
+					untetherVehicle(v0, v1, disembarkSettlement);
+				}
+				
+				if (v2 != null) {
+					registerVehicle(v1, disembarkSettlement);
+					
+					untetherVehicle(v2, v0, disembarkSettlement);
+				}
 			}
 			
-			if (v2 != null) {
-				registerVehicle(v1, disembarkSettlement);
-				
-				untetherVehicle(v2, v0, disembarkSettlement);
+			// Record and mark everyone arriving
+			for (Worker m : getMembers()) {
+				((Person) m).getTaskManager().recordActivity(getName(), "Arrived", getName(), this);
 			}
 		}
 
@@ -493,7 +511,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 	
 	/**
-	 * Enters officially into the settlement vicinity and register its presence.
+	 * Register the vehicle's presence and transfer the vehicle into the settlement vicinity.
 	 * 
 	 * @param v
 	 * @param disembarkSettlement
@@ -505,7 +523,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
 			// If rover has not been parked at settlement, park it.
 			if (v.transfer(disembarkSettlement)) {
-				logger.info(v, "Done transferring to " + disembarkSettlement.getName() + ".");
+				logger.info(v, "Done transferring to " + disembarkSettlement.getName() + ".");	
 			}
 			else {
 				logger.info(v, "Unable to transfer to " + disembarkSettlement.getName() + ".");
@@ -514,7 +532,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	}
 	
 	/**
-	 * Untethers the towing and towed vehicle from each other. 
+	 * Untethers the towing and towed vehicle from each other and enter a garage if space is available.
 	 * 
 	 * @param v
 	 * @param disembarkSettlement
@@ -536,14 +554,24 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 		// First add towed vehicle (usually more damaged) to a garage if available.
         if (!towedRover.isBeingTowed()) {
-        	disembarkSettlement.getBuildingManager().addToGarage(towedRover);
+        	// Add vehicle to a garage if available.
+			Building garage = disembarkSettlement.getBuildingManager().addToGarageBuilding(towingRover);
+			
+			if (garage != null) {
+				logger.info(towedRover, "Done transferring to " + disembarkSettlement.getName() + " in " + garage + ".");
+			}
         }
         
         towedRover.setReservedForMission(false);
 		
 		// Then add towing vehicle to a garage if available.
         if (!towingRover.isTowingAVehicle()) {
-        	disembarkSettlement.getBuildingManager().addToGarage(towingRover);
+           	// Add vehicle to a garage if available.
+			Building garage = disembarkSettlement.getBuildingManager().addToGarageBuilding(towingRover);
+			
+			if (garage != null) {
+				logger.info(towingRover, "Done transferring to " + disembarkSettlement.getName() + " in " + garage + ".");
+			}
         }
         
         towingRover.setReservedForMission(false);
@@ -561,11 +589,9 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		logger.info(v, 10_000, "Disembarked at " + disembarkSettlement.getName()
 					+ " triggered by " + member.getName() +  ".");
 		
-		Person p = (Person)member; 
-		
+//		Person p = (Person)member; 	
 		Rover rover = (Rover) v;
-
-		Set<Person> crew = rover.getCrew();
+		Set<Person> crew = new HashSet<>(rover.getCrew());
 		
 		if (!crew.isEmpty()) {
 			
@@ -585,72 +611,58 @@ public abstract class RoverMission extends AbstractVehicleMission {
             		}
             	}
             }
-
-            // Check the crew again since it's possible that in the same frame, all the crew
-            // have been vacated
-            crew = rover.getCrew();
-            
-            if (!crew.isEmpty()) {
-//            	for (Person p : new HashSet<>(crew)) {	
-    				if (p.isDeclaredDead()) {
-    					logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
-    				}
-    	
-    				// Initiate an rescue operation
-    				// Future : Gets a lead person to perform it and give him a rescue badge
-    				else if (!p.getPhysicalCondition().isFitByLevel(1500, 90, 1500)) {
-    					rescueOperation(rover, p, disembarkSettlement);
-    				}
-    	
-    				else if (isRoverInAGarage) {
-    					String roverName = "None";
-    					
-    					if (p.getVehicle() != null)
-    						roverName = p.getVehicle().getName();
-    					
-    					if (p.isInSettlement()) {
-    						String settlementName = p.getSettlement().getName();
-    						String buildingName = "None";
-    						
-    						if (p.getBuildingLocation() != null)
-    							buildingName = p.getBuildingLocation().getName();
-    						
-    						// This person is already in the settlement. 
-    						// Since the rover is in the garage and the person is in the rover,
-    						// need to check if the person can walk out of the rover without having to go through EVA
-    						    						
-    						rover.removePerson(p);
-    						
-    						logger.info(rover, 30_000L, p.getName() 
-	    							+ " exited '" + roverName + "' onto "
-	    							+ settlementName
-	    							+ "'s " + buildingName + "."	    							
-	    							);
-    					}
-    					
-    					else { 
-    						
-    						// Not in settlement yet
-    						// Welcome this person home
-    						
-    						// Is the manual transfer below needed ?
-    						
-//   							logger.info(rover, "Status report on " + p.getName() 
-//								+ ".  Rover: " + roverName
-//								+ ".  Rover's Location: " + rover.getBuildingLocation().getName()
-//								);
-    						
-//    				        p.transfer(disembarkSettlement);
-//    						BuildingManager.addPersonOrRobotToBuilding(p, rover.getBuildingLocation());
-    					}
-    				}
-    				else {
-    					// Not in a garage
-    					
-    					// See if this person needs an EVA suit
-    					EVASuitUtil.metBaselineNumEVASuits(p, disembarkSettlement, this);
-    				}
-//    			}
+        	
+        	for (Person p : crew) {
+				if (p.isDeclaredDead()) {
+					logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
+				}
+	
+				// Initiate an rescue operation
+				// Future : Gets a lead person to perform it and give him a rescue badge
+				else if (!p.getPhysicalCondition().isFitByLevel(1500, 90, 1500)) {
+					rescueOperation(rover, p, disembarkSettlement);
+				}
+	
+				else if (isRoverInAGarage) {
+										
+					// Transfer the person from vehicle to settlement
+					p.transfer(disembarkSettlement);
+					
+					// Remove this person from the rover
+					rover.removePerson(p);
+					
+					// Add this person to the building
+					BuildingManager.addPersonOrRobotToBuilding(p, rover.getGarage());
+					
+					String roverName = "None";
+					
+					if (p.getVehicle() != null)
+						roverName = p.getVehicle().getName();
+					
+					if (p.isInSettlement()) {
+						logger.info(p, "[Status Report] " + roverName
+								+ " in " + rover.getBuildingLocation().getName()
+								+ ".  Person's Location: " + p.getLocationStateType().getName()
+								);
+					}
+					
+					else {						
+						// Not in settlement yet
+						logger.info(p, "[Status Report] " + roverName
+								+ " in " + rover.getLocationStateType().getName()
+								+ ".  Person's Location: " + p.getLocationStateType().getName()
+								);
+					}
+				}
+				
+				else {
+					// Not in a garage
+					
+					// See if this person needs an EVA suit
+					// This is considered cheating since missing EVA suits are automatically
+					// transfered to the vehicle
+					EVASuitUtil.transferSuitsToVehicle(p, disembarkSettlement, this);
+				}
             }
 		}
 		
@@ -659,19 +671,22 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (!roverUnloaded) {
 			// Note : Set random chance of having person unloading resources,
 			// thus allowing person to do other urgent things
-//			for (Worker mm : getMembers()) {
-				if (RandomUtil.lessThanRandPercent(50)) {
-					unloadCargo(member, rover);
-				}
-//			}
+			if (RandomUtil.lessThanRandPercent(50)) {
+				unloadCargo(member, rover);
+			}
 		}
-		else if (!crew.isEmpty()) {
+		
+        // Check the crew again since it's possible that in the same frame, 
+        // some other crew members have just been vacated, causing the result to be diff.
+        crew = rover.getCrew();
+        
+		if (!crew.isEmpty()) {
 			// Check to see if no one is in the rover, unload the resources and end phase.
-//			for (Worker mm  : getMembers()) {
-				// Walk back to the airlock
-				if (p.isInVehicle() || p.isOutside())
+			// Walk back to the airlock
+        	for (Person p : crew) {
+				if (!p.isInSettlement())
 					walkToAirlock(rover, p, disembarkSettlement);
-//			}
+        	}
 		}
 		else {
 			// Complete disembarking once everyone is out of the Vehicle
@@ -713,9 +728,9 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		}
         return assigned;
 	}
-
+	
 	/**
-	 * Checks on a person's status to see if he can walk toward the airlock or else be rescued
+	 * Checks on a person's status to see if he can walk toward the airlock or else be rescued.
 	 *
 	 * @param rover
 	 * @param person
@@ -723,8 +738,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 */
 	private void walkToAirlock(Rover rover, Person person, Settlement disembarkSettlement) {
 
-		if (person.isInVehicle() || person.isOutside()) {
-			// Get random inhabitable building at emergency settlement.
+//		if (person.isOutside()) {
+			// Get random airlock building at settlement.
 			Building destinationBuilding = disembarkSettlement.getBuildingManager().getRandomAirlockBuilding();
 
 			if (destinationBuilding != null) {
@@ -759,8 +774,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 					// Note: how to force the person to receive some form of medical treatment ?
 			
-        			Task currenTask = person.getMind().getTaskManager().getTask();
-        			if (currenTask != null && !currenTask.getName().equalsIgnoreCase(RequestMedicalTreatment.SIMPLE_NAME)) {
+        			Task currentTask = person.getMind().getTaskManager().getTask();
+        			if (currentTask != null && !currentTask.getName().equalsIgnoreCase(RequestMedicalTreatment.NAME)) {
         				person.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.SIMPLE_NAME);
         			}
 				}
@@ -773,7 +788,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			else {
 				logger.severe(person, 20_000L, "No airlock found at " + disembarkSettlement);
 			}
-		}
+//		}
 	}
 
 	/**

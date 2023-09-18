@@ -24,7 +24,7 @@ Copyright (C) 2023 Scott Davis
 
 ------------------------------------------|---------------------
 
-## 3.6.2 (Sat 16 Sep 2023)
+## 3.6.2 (Mon, 18 Sep 2023)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
@@ -44,11 +44,13 @@ Copyright (C) 2023 Scott Davis
 ### C. FIXES :
 <OL>
   <LI>Computing: rework work time related to consuming computing resources when analyzing map data.</LI>
-  <LI>Digging Local: correct not being able to start digging ice and regolith on its own.</LI>  
+  <LI>Digging Local: correct not being able to start digging ice and regolith on its own.</LI>
+  <LI>Disembarking: optimize and correct how a crew member disembarks vehicle from garage.</LI> 
   <LI>Equipment: correct transferring container back to settlement after digging regolith/ice.</LI> 
+  <LI>Exploration: end EVA if site is not determined.</LI>  
   <LI>Food Production: correct potato typo.</LI>
   <LI>Map: correct magnification and zooming issues.</LI>
-  <LI>Settlement: select correctly whether settlers and vehicles are in settlement or its vicinity in Settlement Map.</LI>
+  <LI>Settlement: select correctly whether settlers and vehicles are in settlement or its vicinity in Settlement Map.</LI>  
   <LI>Weather: Correct weather param concurrency during reload.</LI>
 <OL>
 

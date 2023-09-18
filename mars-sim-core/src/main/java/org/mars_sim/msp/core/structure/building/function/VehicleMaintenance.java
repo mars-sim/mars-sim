@@ -212,6 +212,31 @@ public abstract class VehicleMaintenance extends Function {
 		
 				logger.fine(vehicle, "Added to " + building.getNickName() + " in " + building.getSettlement() + ".");
 				
+//				Settlement settlement = building.getSettlement();
+//
+//				Rover rover = ((Rover) vehicle);
+//				Set<Person> crew = new HashSet<>(rover.getCrew());
+//				
+//				if (crew != null && !crew.isEmpty()) {
+//					for (Person p: crew) {
+//						if (p.transfer(settlement)) {
+//							// Manually remove the person from the rover
+//							rover.removePerson(p);
+//							// Add this person to the building
+//							BuildingManager.addPersonOrRobotToBuilding(p, getBuilding());
+//							
+//							logger.info(p, "Done transferring to " + settlement.getName() + " in " + this + ".");
+//						}
+//						else {
+//							logger.info(p, "Unable to transfer to " + settlement.getName() + " in " + this + ".");
+//							// Rescue the person
+//							p.rescueOperation(rover, settlement);						
+//							// Manually remove the person from the rover
+//							rover.removePerson(p);
+//						}
+//					}
+//				}
+				
 				return true;
 			}
 		}

@@ -40,11 +40,13 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.mission.meta.AbstractMetaMission;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
+import org.mars_sim.msp.core.robot.ai.task.Charge;
 import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -369,7 +371,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * A Member leaves the Mission
+	 * A Member leaves the Mission.
 	 */
 	protected final void memberLeave(Worker member) {
 		// Added codes in reassigning a work shift
@@ -801,12 +803,14 @@ public abstract class AbstractMission implements Mission, Temporal {
 		Task currentTask = person.getMind().getTaskManager().getTask();
 		
 		if (currentTask != null) {
-			logger.info(person, 10_000L, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
-		
-			if (currentTask.getName().equals(task.getName()))
+
+			if (currentTask.getName().equals(task.getName())
+					|| currentTask.getName().equals(Sleep.NAME))
 				// If the person has been doing this task, 
 				// then there is no need of adding it.
 				return false;
+			
+       		logger.info(person, 10_000L, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
 		}
 		
         if (canPerformTask) {
@@ -837,14 +841,16 @@ public abstract class AbstractMission implements Mission, Temporal {
 		Task currentTask = robot.getBotMind().getBotTaskManager().getTask();
 		
 		if (currentTask != null) {
-			logger.info(robot, 10_000L, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
-		
-			if (currentTask.getName().equals(task.getName()))
+
+			if (currentTask.getName().equals(task.getName())
+					|| currentTask.getName().equals(Charge.NAME))
 				// If the person has been doing this task, 
 				// then there is no need of adding it.
 				return false;
+			
+			logger.info(robot, 10_000L, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");		
 		}
-		
+
 		return robot.getBotMind().getBotTaskManager().checkReplaceTask(task);
 	}
 

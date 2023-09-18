@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnloadVehicleGarage.java
- * @date 2022-09-24
+ * @date 2023-09-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -73,7 +73,7 @@ public class UnloadVehicleGarage extends Task {
 	private Settlement settlement;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @param robot the robot to perform the task
 	 * @param vehicle the vehicle to be unloaded

@@ -57,12 +57,17 @@ public abstract class MetaTask {
 	/** Probability penalty for starting a non-job-related task. */
 	private static final double NON_JOB_PENALTY = .25D;
 	
+	private static final String META = "Meta";
+	
 	protected static SurfaceFeatures surfaceFeatures;
 	private static MasterClock masterClock;
 	protected static MissionManager missionManager;
 	
 	private boolean effortDriven = true;
+	
+	/* The string name for this meta task. */	
 	private String name;
+	/* The simple name for this task (Note: it's not the same as its task name found in Msg). */
 	private String id;
 	
 	private WorkerType workerType;
@@ -75,12 +80,19 @@ public abstract class MetaTask {
 	private Set<RoleType> preferredRoles = new HashSet<>();
 	
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param name
+	 * @param workerType
+	 * @param scope
+	 */
 	protected MetaTask(String name, WorkerType workerType, TaskScope scope) {
 		super();
 		this.name = name;
 		this.workerType = workerType;
 		this.scope = scope;
-		this.id = this.getClass().getSimpleName().replace("Meta", "").toUpperCase();
+		this.id = this.getClass().getSimpleName().replace(META, "").toUpperCase();
 	}
 
 	/**

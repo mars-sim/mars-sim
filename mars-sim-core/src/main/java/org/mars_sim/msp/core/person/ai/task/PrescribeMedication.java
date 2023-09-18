@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrescribeMedication.java
- * @date 2023-09-02
+ * @date 2023-09-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -75,14 +75,14 @@ public class PrescribeMedication extends Task {
             	endTask();
             // If in settlement, move doctor to building patient is in.
             else if (person.isInSettlement() && patient.getBuildingLocation() != null
-				&& person.isNominallyFit() && !person.getMind().getTaskManager().hasSameTask(RequestMedicalTreatment.SIMPLE_NAME)) {
+				&& person.isNominallyFit() && !person.getMind().getTaskManager().hasSameTask(RequestMedicalTreatment.NAME)) {
 
                 // Walk to patient's building.
             	walkToActivitySpotInBuilding(person.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
             	walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
             	
-    			Task currenTask = patient.getMind().getTaskManager().getTask();
-    			if (currenTask != null && !currenTask.getName().equalsIgnoreCase(RequestMedicalTreatment.SIMPLE_NAME)) {
+    			Task currentTask = patient.getMind().getTaskManager().getTask();
+    			if (currentTask != null && !currentTask.getName().equalsIgnoreCase(RequestMedicalTreatment.NAME)) {
                 	patient.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.SIMPLE_NAME);
     			}
             }
@@ -114,8 +114,8 @@ public class PrescribeMedication extends Task {
             	walkToActivitySpotInBuilding(robot.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
             	walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
             	
-    			Task currenTask = patient.getMind().getTaskManager().getTask();
-    			if (currenTask != null && !currenTask.getName().equalsIgnoreCase(RequestMedicalTreatment.SIMPLE_NAME)) {
+    			Task currentTask = patient.getMind().getTaskManager().getTask();
+    			if (currentTask != null && !currentTask.getName().equalsIgnoreCase(RequestMedicalTreatment.NAME)) {
                 	patient.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.SIMPLE_NAME);
     			}
 

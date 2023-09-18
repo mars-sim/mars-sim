@@ -137,7 +137,7 @@ implements ConstructionListener {
         scrollPane.getVerticalScrollBar().setUnitIncrement(5);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setViewportView(materialsTable);
-        scrollPane.setPreferredSize(new Dimension(-1, 40));      
+        scrollPane.setPreferredSize(new Dimension(-1, -1));      
     }
 
     @Override

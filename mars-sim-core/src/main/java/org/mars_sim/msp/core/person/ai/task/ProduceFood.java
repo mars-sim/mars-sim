@@ -221,11 +221,23 @@ public class ProduceFood extends Task {
 
 		if (person.isInSettlement()) {
 			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-			Set<Building> foodProductionBuildings = buildingManager.getBuildingSet(FunctionType.FOOD_PRODUCTION)
-					.stream()
-					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
-							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());
+			
+			Set<Building> foodProductionBuildings = buildingManager.getBuildingSet(FunctionType.FOOD_PRODUCTION);
+
+			if (person.getBuildingLocation() != null) {
+				foodProductionBuildings = foodProductionBuildings
+						.stream()
+						.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
+								&& !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
+			}
+			else {
+				foodProductionBuildings = foodProductionBuildings
+						.stream()
+						.filter(b -> b.getZone() == 0
+								&& !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());		
+			}
 		
 			foodProductionBuildings = getFoodProductionBuildingsNeedingWork(foodProductionBuildings, skill);
 			foodProductionBuildings = getBuildingsWithProcessesRequiringWork(foodProductionBuildings, skill);

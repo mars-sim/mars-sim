@@ -84,7 +84,7 @@ public class CollectResources extends EVAOperation {
 		addAdditionSkill(SkillType.PROSPECTING);
 		
 		if (person.isSuperUnFit()) {
-			checkLocation();
+			checkLocation("Person is unfit.");
 	      	return;
 		}
 
@@ -191,7 +191,7 @@ public class CollectResources extends EVAOperation {
 		// Collect resources.
 		Container container = person.findContainer(containerType, false, resourceType);
 		if (container == null) {
-			checkLocation();
+			checkLocation("No container available.");
 			return time;
 		}
 
@@ -244,7 +244,7 @@ public class CollectResources extends EVAOperation {
 				return result;
 			}
 			
-			checkLocation();
+			checkLocation("Samples collected exceeded set limits.");
 		}
 		
 		return 0;

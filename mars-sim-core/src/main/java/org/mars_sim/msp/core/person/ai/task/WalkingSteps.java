@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * WalkingSteps.java
- * @date 2022-09-12
+ * @date 2023-09-17
  * @author Scott Davis
  */
 
@@ -174,12 +174,12 @@ implements Serializable {
 
             Vehicle vehicle = person.getVehicle();
 
-            if (vehicle instanceof Rover) {
+            if (vehicle instanceof Rover r) {
                 result = new WalkState(WalkState.ROVER_LOC);
-                result.rover = (Rover) vehicle;
+                result.rover = r;
 
                 logger.log(person, Level.FINER, 4000,
-                		"Inside " + vehicle + ".");
+                		"Inside " + r + ".");
             }
 
             else {
@@ -258,8 +258,7 @@ implements Serializable {
 
         WalkState result = null;
 
-        if (interiorObject instanceof Building) {
-            Building building = (Building) interiorObject;
+        if (interiorObject instanceof Building building) {
             result = new WalkState(WalkState.BUILDING_LOC);
             result.building = building;
 
@@ -274,10 +273,9 @@ implements Serializable {
                             pos + ") and not within " + building + ".");
             }
         }
-        else if (interiorObject instanceof Rover) {
+        else if (interiorObject instanceof Rover rover) {
 
         	if (person != null) {
-	            Rover rover = (Rover) interiorObject;
 	            result = new WalkState(WalkState.ROVER_LOC);
 	            result.rover = rover;
 
@@ -298,6 +296,7 @@ implements Serializable {
         if (result != null) {
         	result.loc = pos;
         }
+        
         return result;
     }
 
@@ -313,8 +312,7 @@ implements Serializable {
 
     	RobotWalkState result = null;
 
-        if (interiorObject instanceof Building) {
-            Building building = (Building) interiorObject;
+        if (interiorObject instanceof Building building) {
             result = new RobotWalkState(RobotWalkState.BUILDING_LOC);
             result.building = building;
 

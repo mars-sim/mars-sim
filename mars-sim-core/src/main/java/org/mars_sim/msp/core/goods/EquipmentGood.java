@@ -37,12 +37,12 @@ public class EquipmentGood extends Good {
 	private static final int PROJECTED_THERMAL_BOTTLE = 1;
 	private static final double PROJECTED_WHEELBARROW = 1;
 	
-	private static final double GAS_CANISTER_DEMAND = 1;
+	private static final double GAS_CANISTER_DEMAND = 1.5;
 	private static final double SPECIMEN_BOX_DEMAND = 1.2;
-	private static final double LARGE_BAG_DEMAND = .5;
-	private static final double BAG_DEMAND = .1;
-	private static final double BARREL_DEMAND = .2;
-	private static final double THERMAL_BOTTLE_DEMAND = 0.25;
+	private static final double LARGE_BAG_DEMAND = 1.5;
+	private static final double BAG_DEMAND = 1;
+	private static final double BARREL_DEMAND = 1;
+	private static final double THERMAL_BOTTLE_DEMAND = 0.5;
 	private static final double WHEELBARROW_DEMAND = .5;
 	
 	private static final double INITIAL_EQUIPMENT_DEMAND = 0;
@@ -189,6 +189,8 @@ public class EquipmentGood extends Good {
 	private double determineEquipmentDemand(GoodsManager owner, Settlement settlement) {
 		double baseDemand = 1;
 
+		int pop = settlement.getNumCitizens();
+		
 		double areologistFactor = (1 + JobUtil.numJobs(JobType.AREOLOGIST, settlement)) / 3.0;
 
 		// Determine number of EVA suits that are needed
@@ -235,13 +237,13 @@ public class EquipmentGood extends Good {
 				return Math.max(baseDemand * ratio * Exploration.REQUIRED_SPECIMEN_CONTAINERS, 1000) * areologistFactor * SPECIMEN_BOX_DEMAND;
 
 			case GAS_CANISTER:
-				return Math.max(baseDemand * ratio * PROJECTED_GAS_CANISTERS, 1000) * areologistFactor * GAS_CANISTER_DEMAND;
+				return Math.max(baseDemand * ratio * PROJECTED_GAS_CANISTERS, 1000) * pop * GAS_CANISTER_DEMAND;
 
 			case THERMAL_BOTTLE:
-				return Math.max(baseDemand * ratio * PROJECTED_THERMAL_BOTTLE, 1000) * areologistFactor * THERMAL_BOTTLE_DEMAND;
+				return Math.max(baseDemand * ratio * PROJECTED_THERMAL_BOTTLE, 1000) * pop * THERMAL_BOTTLE_DEMAND;
 
 			case WHEELBARROW:
-				return Math.max(baseDemand * ratio * PROJECTED_WHEELBARROW, 1000) * areologistFactor *WHEELBARROW_DEMAND;
+				return Math.max(baseDemand * ratio * PROJECTED_WHEELBARROW, 1000) * pop * WHEELBARROW_DEMAND;
 							
 			default:
 				throw new IllegalArgumentException("Do not know how to calculate demand for " + equipmentType + ".");

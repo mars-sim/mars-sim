@@ -74,7 +74,7 @@ public class SalvageBuilding extends EVAOperation {
         super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.CONSTRUCTION);
 
 		if (person.isSuperUnFit()) {
-			checkLocation();
+			checkLocation("Person unfit.");
 			return;
 		}
 
@@ -275,17 +275,24 @@ public class SalvageBuilding extends EVAOperation {
     	
 		// Check for radiation exposure during the EVA operation.
 		if (isRadiationDetected(time)) {
-			checkLocation();
+			checkLocation("Radiation detected.");
 			return time;
 		}
 
-		if (shouldEndEVAOperation(true) || addTimeOnSite(time)) {
-			checkLocation();
+		// Check if EVA operation needs to end
+		if (shouldEndEVAOperation(true)) {
+			checkLocation("EVA ended.");
 			return time;
 		}
 
+        // Check time on site
+		if (addTimeOnSite(time)) {
+			checkLocation("Time on site expired.");
+			return time;
+		}		
+		
 		if (person.isSuperUnFit()) {
-			checkLocation();
+			checkLocation("Person unfit.");
 			return time;
 		}
 
@@ -302,7 +309,7 @@ public class SalvageBuilding extends EVAOperation {
 				}
 			}
 
-			checkLocation();
+			checkLocation("Stage completed.");
 			return remainingTime;
         }
 

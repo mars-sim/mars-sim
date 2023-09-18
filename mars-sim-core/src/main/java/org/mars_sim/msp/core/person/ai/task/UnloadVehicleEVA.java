@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnloadVehicleEVA.java
- * @date 2022-08-06
+ * @date 2023-09-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Towing;
@@ -80,7 +81,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 		this.vehicle = vehicle;
 
 		if (person.isSuperUnFit()) {
-			checkLocation();
+			checkLocation("Person is unfit.");
         	return;
 		}
 		
@@ -93,8 +94,16 @@ public class UnloadVehicleEVA extends EVAOperation {
 		settlement = unitManager.findSettlement(person.getCoordinates());
 		if (settlement == null) {
 			endTask();
+			return;
 		}
-				
+
+		// Add the vehicle to a garage if possible
+		Building garage = settlement.getBuildingManager().addToGarageBuilding(vehicle);
+		if (garage != null) {
+			endTask();
+			return;
+		}
+		
 		// Initialize phase
 		addPhase(UNLOADING);
 
@@ -128,14 +137,20 @@ public class UnloadVehicleEVA extends EVAOperation {
 		
 		if (checkReadiness(time, true) > 0)
 			return time;
-		
-		if (settlement == null || vehicle == null) {
-			checkLocation();
+
+		if (settlement == null) {
+			checkLocation("Settlement is null.");
 			return time;
 		}
 
+		if (vehicle == null) {
+			checkLocation("Vehicle is null.");
+			return time;
+		}
+		
+		// Check if the vehicle is in a garage
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {
-			checkLocation();
+			checkLocation("Vehicle in garage.");
 			return time;
 		}
 		
@@ -157,7 +172,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 					doUnload = (numSuit > numCrew);
 				}
 
-				// Add the equipemnt to the surplus
+				// Add the equipment to the surplus
 				if (doUnload) {
 					surplus.add(equipment);
 					amountUnloading -= equipment.getMass();
@@ -249,8 +264,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 		}
 
 		// Unload towed vehicles.
-		if (vehicle instanceof Towing) {
-			Towing towingVehicle = (Towing) vehicle;
+		if (vehicle instanceof Towing towingVehicle) {
 			Vehicle towedVehicle = towingVehicle.getTowedVehicle();
 			if (towedVehicle != null) {
 				towingVehicle.setTowedVehicle(null);
@@ -265,8 +279,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 		}
 
 		// Retrieve, examine and bury any dead bodies
-		if (this instanceof Crewable) {
-			Crewable crewable = (Crewable) this;
+		if (this instanceof Crewable crewable) {
 			for (Person p : crewable.getCrew()) {
 				if (p.isDeclaredDead()) {
 						
@@ -292,7 +305,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 						+ " kg of resources from " + vehicle.getName() + ".");
 			}
 			
-			checkLocation();
+			checkLocation("Vehicle already fully unloaded.");
 	        return remainingTime;
 		}
 		

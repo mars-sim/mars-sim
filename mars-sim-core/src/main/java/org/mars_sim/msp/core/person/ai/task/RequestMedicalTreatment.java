@@ -45,7 +45,7 @@ public class RequestMedicalTreatment extends Task {
 	public static final String SIMPLE_NAME = RequestMedicalTreatment.class.getSimpleName();
 	
     /** Task name */
-    private static final String NAME = Msg.getString(
+    public static final String NAME = Msg.getString(
             "Task.description.requestMedicalTreatment"); //$NON-NLS-1$
 
     /** Task phases. */

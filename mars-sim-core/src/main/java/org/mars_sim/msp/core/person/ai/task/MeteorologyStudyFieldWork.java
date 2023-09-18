@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * MeteorologyStudyFieldWork.java.java
- * @date 2021-10-12
+ * MeteorologyStudyFieldWork.java
+ * @date 2023-09-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -78,7 +78,7 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 		if (totalCollected < AVERAGE_ROCKS_COLLECTED_SITE)
 			collectRocks(time);
 		else {
-			checkLocation();
+			checkLocation("Rocks colelcted exceeded set average.");
 			completed = true;
 		}
 		

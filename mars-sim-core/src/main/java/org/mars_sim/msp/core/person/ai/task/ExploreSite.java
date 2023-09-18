@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExploreSite.java
- * @date 2023-06-30
+ * @date 2023-09-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -112,8 +112,7 @@ public class ExploreSite extends EVAOperation {
 	 */
 	public static boolean canExploreSite(Worker member, Rover rover) {
 
-		if (member instanceof Person) {
-			Person person = (Person) member;
+		if (member instanceof Person person) {
 
 			// Check if person can exit the rover.
 			if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
@@ -180,7 +179,7 @@ public class ExploreSite extends EVAOperation {
 			return time;
 
 		if (totalCollected >= AVERAGE_ROCK_SAMPLES_COLLECTED_SITE) {
-			checkLocation();
+			checkLocation("Rock samples collected exceeded set average.");
 			return time;
 		}
 
@@ -215,7 +214,7 @@ public class ExploreSite extends EVAOperation {
 		// Check if site duration has ended or there is reason to cut the exploring
 		// phase short and return to the rover.
 		if (addTimeOnSite(time)) {
-			checkLocation();
+			checkLocation("Time on site expired.");
 			return remainingTime;
 		}
 

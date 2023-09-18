@@ -2253,12 +2253,14 @@ public abstract class Vehicle extends Unit
 	 */
 	public boolean transfer(Unit destination) {
 		boolean leaving = false;
+		boolean arriving = false;
 		boolean transferred = false;
 		// Set the old container unit
 		Unit cu = getContainerUnit();
 
 		if (cu.getUnitType() == UnitType.MARS) {
 			transferred = ((MarsSurface)cu).removeVehicle(this);
+			arriving = true;
 		}
 		else if (cu.getUnitType() == UnitType.SETTLEMENT) {
 			Settlement currentBase = (Settlement)cu;

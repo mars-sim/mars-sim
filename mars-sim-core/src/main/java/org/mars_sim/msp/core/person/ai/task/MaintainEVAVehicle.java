@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MaintainEVAVehicle.java
- * @date 2022-09-20
+ * @date 2023-09-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -53,7 +53,7 @@ public class MaintainEVAVehicle extends EVAOperation {
         super(NAME, person, true, 25, SkillType.MECHANICS);
 
 		if (!person.isNominallyFit()) {
-			checkLocation();
+			checkLocation("Person not fit.");
         	return;
 		}
 		
@@ -64,16 +64,16 @@ public class MaintainEVAVehicle extends EVAOperation {
      	
         // Choose an available needy ground vehicle.
         vehicle = target;
-        if (vehicle.isReservedForMaintenance()) {
-            clearTask(vehicle.getName() + " already reserved for EVA maintenance.");
-            checkLocation();
-            return;
-        }
+//        if (vehicle.isReservedForMaintenance()) {
+//            clearTask(vehicle.getName() + " already reserved for EVA maintenance.");
+//            checkLocation("Vehicle reserved for maintenance.");
+//            return;
+//        }
 
         // Add the rover to a garage if possible.
         if (settlement.getBuildingManager().addToGarage(vehicle)) {
             // no need of doing EVA
-            checkLocation();
+            checkLocation("Vehicle in garage.");
             return;
         }
         
@@ -123,26 +123,46 @@ public class MaintainEVAVehicle extends EVAOperation {
 		if (checkReadiness(time, true) > 0)
 			return remainingTime;
 				
-		// NOTE: if a person is not at a settlement or near its vicinity,  
-		if (settlement == null || vehicle == null) {
-			checkLocation();
+		if (settlement == null) {
+			checkLocation("Settlement is null.");
+			return time;
+		}
+
+		if (vehicle == null) {
+			checkLocation("Vehicle is null.");
 			return time;
 		}
 		
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {
-			checkLocation();
+			checkLocation("Vehicle in garage.");
+			return time;
+		}
+		
+        // Check if there is a reason to cut short and return.
+		if (shouldEndEVAOperation(true)) {
+			checkLocation("No sunlight.");
+			return time;
+		}
+		
+        // Check time on site
+		if (addTimeOnSite(time)) {
+			checkLocation("Time on site expired.");
 			return time;
 		}
 		
         MalfunctionManager manager = vehicle.getMalfunctionManager();
         boolean malfunction = manager.hasMalfunction();
         boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() == 0D);
-        
-        if (finishedMaintenance || malfunction || shouldEndEVAOperation(true) ||
-                addTimeOnSite(time)) {
-        	checkLocation();
-			return remainingTime;
-        }
+
+		if (malfunction) {
+			checkLocation("Vehicle had malfunction. Quit maintenance.");
+			return time;
+		}
+		
+		if (finishedMaintenance) {
+			checkLocation("Maintenance finished.");
+			return time;
+		}
 
         // Determine effective work time based on "Mechanic" and "EVA Operations" skills.
         double workTime = time;
@@ -152,7 +172,7 @@ public class MaintainEVAVehicle extends EVAOperation {
 
 		int shortfall = manager.transferMaintenanceParts(settlement);
 		if (shortfall == -1) {
-        	checkLocation();
+        	checkLocation("Part(s) not available.");
 			return remainingTime;
         }
 

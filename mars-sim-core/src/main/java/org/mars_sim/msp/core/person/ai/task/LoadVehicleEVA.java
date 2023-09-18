@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LoadVehicleEVA.java
- * @date 2022-08-06
+ * @date 2023-09-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -66,7 +66,7 @@ public class LoadVehicleEVA extends EVAOperation {
 		this.vehicleMission = mission;
 		
 		if (person.isSuperUnFit()) {
-			checkLocation();
+			checkLocation("Person is unfit.");
         	return;
 		}
 		
@@ -82,13 +82,8 @@ public class LoadVehicleEVA extends EVAOperation {
 		vehicle = vehicleMission.getVehicle();
 		if (vehicle == null) {
 			// Mission must be done
-			checkLocation();
+			checkLocation("Vehicle is null.");
 			return;
-		}
-		
-		if (settlement.getBuildingManager().isInGarage(vehicle)) {
-			checkLocation();
-        	return;
 		}
 
 		setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
@@ -96,7 +91,7 @@ public class LoadVehicleEVA extends EVAOperation {
 		// Add the rover to a garage if possible.
 		if (settlement.getBuildingManager().addToGarage(vehicle)) {
 			// no need of doing EVA
-			checkLocation();
+			checkLocation("Vehicle in garage.");
 			return;
 		}
 
@@ -130,36 +125,53 @@ public class LoadVehicleEVA extends EVAOperation {
 	 */
 	private double loadingPhase(double time) {
 	
-		// Check for radiation exposure during the EVA operation.
-		if (isDone() || isRadiationDetected(time)) {
-			checkLocation();
+		if (settlement == null) {
+			checkLocation("Settlement is null.");
+			return time;
+		}
+
+		if (vehicle == null) {
+			checkLocation("Vehicle is null.");
 			return time;
 		}
 		
-		if (shouldEndEVAOperation(true) || addTimeOnSite(time)) {
-			checkLocation();
-			return time;
-		}
-		
-		// Checks if a person is not at a settlement or near its vicinity,
-		if (settlement == null || vehicle == null) {
-			checkLocation();
-			return time;
-		}
-		
+		// Check if the vehicle is in a garage
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {
-			checkLocation();
+			checkLocation("Vehicle in garage.");
+			return time;
+		}
+		
+		// Task duration has expired
+		if (isDone()) {
+			checkLocation("Task duration ended.");
+			return time;
+		}
+		// Check for radiation exposure during the EVA operation.
+		if (isRadiationDetected(time)) {
+			checkLocation("Radiation detected.");
+			return time;
+		}
+		
+        // Check if there is a reason to cut short and return.
+		if (shouldEndEVAOperation(true)) {
+			checkLocation("No sunlight.");
+			return time;
+		}
+
+        // Check time on site
+		if (addTimeOnSite(time)) {
+			checkLocation("Time on site expired.");
 			return time;
 		}
 		
 		if (person.isSuperUnFit()) {
-			checkLocation();
+			checkLocation("Person is unfit.");
 			return time;
 		}
 		
 		// Load the resource
 		if (loadingPlan.load(worker, time)) {
-			checkLocation();
+			checkLocation("Loading plan fully executed.");
 			return time;
 		}
 			

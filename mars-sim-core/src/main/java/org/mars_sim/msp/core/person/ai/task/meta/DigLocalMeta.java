@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
+import org.mars_sim.msp.core.person.ai.task.DigLocal;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
@@ -62,6 +63,11 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
     		return 0;
         }
      
+    	// Check if a person is qualified for digging local
+        if (!DigLocal.canDigLocal(person)) {
+    		return 0;
+        }
+
         // Checks if the person is physically fit for heavy EVA tasks
 		if (!EVAOperation.isEVAFit(person))
 			return 0;

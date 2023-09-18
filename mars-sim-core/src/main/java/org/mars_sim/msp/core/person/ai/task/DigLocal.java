@@ -110,7 +110,7 @@ public abstract class DigLocal extends EVAOperation {
      	if (person.isInSettlement()) {
 	        airlock = getWalkableAvailableEgressAirlock(person);
 	        if (airlock == null) {
-	    		abortEVA("No walkable airlock for egress.");
+	    		abortEVA("No available walkable airlock for egress.");
 				return;
 	        }
      	}
@@ -295,13 +295,14 @@ public abstract class DigLocal extends EVAOperation {
     private double collectResource(double time) {
     	// Get a container
         Container container = person.findContainer(containerType, false, resourceID);
-        
+       
 		if (checkReadiness(time, false) > 0) {
 			if (!((Equipment)container).isEmpty(false)) {
+				// Has resources in container
 				setPhase(WALK_TO_BIN);
 			}
 			else
-				checkLocation();
+				checkLocation("Found no resources.");
 			return time;
 		}
 			
@@ -535,6 +536,30 @@ public abstract class DigLocal extends EVAOperation {
 		person.assignThermalBottle();
     }
     
+	/**
+	 * Is the person qualified for digging local ice or regolith ?
+	 * 
+	 * @return
+	 */
+	public static boolean canDigLocal(Person person) {
+		// Check if person can exit the rover.
+		if (getWalkableAvailableEgressAirlock(person) == null)
+			return false;
+
+		// Check if sunlight is insufficient
+		if (EVAOperation.isGettingDark(person))
+			return false;
+
+		// Check if person's medical condition will not allow task.
+		if (person.getPerformanceRating() < .2D)
+			return false;
+
+		if (person.isSuperUnFit())
+			return false;
+		
+		return true;
+	}
+	
 	/**
 	 * Prepares object for garbage collection.
 	 */

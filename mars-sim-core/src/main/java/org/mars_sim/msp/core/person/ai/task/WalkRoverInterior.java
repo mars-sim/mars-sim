@@ -32,6 +32,9 @@ public class WalkRoverInterior extends Task {
 	/** Simple Task name */
 	public static final String SIMPLE_NAME = WalkRoverInterior.class.getSimpleName();
 	
+	/** Task name */
+	public static final String NAME = Msg.getString("Task.description.walkRoverInterior"); //$NON-NLS-1$
+	
 	/** Task phases. */
     private static final TaskPhase WALKING = new TaskPhase(Msg.getString(
             "Task.phase.walking")); //$NON-NLS-1$
@@ -52,7 +55,7 @@ public class WalkRoverInterior extends Task {
 	 * Constructor 1.
 	 */
     public WalkRoverInterior(Person person, Rover rover, LocalPosition destLoc) {
-        super("Walking inside a rover", person, false, false, STRESS_MODIFIER, null, 100D);
+        super(NAME, person, false, false, STRESS_MODIFIER, null, 100D);
 
         // Check that the person is currently inside a rover.
         if (!person.isInVehicle()) {
@@ -74,7 +77,7 @@ public class WalkRoverInterior extends Task {
 	 * Constructor 2.
 	 */
     public WalkRoverInterior(Robot robot, Rover rover, LocalPosition destLoc) {
-        super("Walking Rover Interior", robot, false, false, STRESS_MODIFIER, null, 100D);
+        super(NAME, robot, false, false, STRESS_MODIFIER, null, 100D);
 
         // Check that the robot is currently inside a rover.
         if (!robot.isInVehicle()) {

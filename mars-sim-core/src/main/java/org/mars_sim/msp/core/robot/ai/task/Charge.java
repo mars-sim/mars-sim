@@ -34,9 +34,11 @@ public class Charge extends Task {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Charge.class.getName());
 
-
+	/** Simple Task name */
+	public static final String SIMPLE_NAME = Charge.class.getSimpleName();
+	
 	/** Task name for robot */
-	private static final String NAME = Msg.getString("Task.description.charge"); //$NON-NLS-1$
+	public static final String NAME = Msg.getString("Task.description.charge"); //$NON-NLS-1$
 
 	/** Task phases for robot. */
 	private static final TaskPhase CHARGING = new TaskPhase(Msg.getString("Task.phase.charging")); //$NON-NLS-1$

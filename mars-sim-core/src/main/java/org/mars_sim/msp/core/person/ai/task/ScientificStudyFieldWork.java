@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ScientificStudyFieldWork.java
- * @date 2021-11-19
+ * @date 2023-09-17
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -119,14 +119,34 @@ public abstract class ScientificStudyFieldWork extends EVAOperation {
 	private double fieldWorkPhase(double time) {
 		double remainingTime = 0;
 		
-		// Check all condition to carry on
-		// 1. radiation exposure/detection
-		// 2. Site duration has ended or there is reason to stop the field work
-		// 3. The study activities are completed
-		if (isDone() || isRadiationDetected(time)
-				|| shouldEndEVAOperation(true) || addTimeOnSite(time)
-				|| performStudy(time)) {
-			checkLocation();
+		// Check for radiation exposure during the EVA operation.
+		if (isDone()) {
+			checkLocation("Task duration ended.");
+			return time;
+		}
+		
+		// Check for radiation exposure during the EVA operation.
+		if (isRadiationDetected(time)) {
+			checkLocation("Radiation detected.");
+			return time;
+		}
+		
+		// Check if site duration has ended or there is reason to cut the collect
+		// minerals phase short and return to the rover.
+		if (shouldEndEVAOperation(false)) {
+			checkLocation("EVA ended.");
+			return time;
+		}
+
+        // Check time on site
+		if (addTimeOnSite(time)) {
+			checkLocation("Time on site expired.");
+			return time;
+		}	
+		
+		// Check if the study is completed
+		if (performStudy(time)) {
+			checkLocation("Study completed.");
 			return time;
 		}
 

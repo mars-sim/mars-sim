@@ -48,7 +48,7 @@ public class Sleep extends Task {
     private static final int MAX_SUPPRESSION = 100;
 
 	/** Task name */
-	private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
+	public static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
 
 	/** Task phases for person. */
 	private static final TaskPhase SLEEPING = new TaskPhase(Msg.getString("Task.phase.sleeping")); //$NON-NLS-1$
