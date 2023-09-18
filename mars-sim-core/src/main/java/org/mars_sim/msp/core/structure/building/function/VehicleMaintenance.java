@@ -10,8 +10,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars.sim.mapdata.location.LocalPosition;
@@ -21,6 +23,7 @@ import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -28,6 +31,7 @@ import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Flyer;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
@@ -211,6 +215,31 @@ public abstract class VehicleMaintenance extends Function {
 				vehicle.setParkedLocation(newLoc, newFacing);
 		
 				logger.fine(vehicle, "Added to " + building.getNickName() + " in " + building.getSettlement() + ".");
+				
+				Settlement settlement = building.getSettlement();
+
+				Rover rover = ((Rover) vehicle);
+				Set<Person> crew = new HashSet<>(rover.getCrew());
+				
+				if (crew != null && !crew.isEmpty()) {
+					for (Person p: crew) {
+						if (p.transfer(settlement)) {
+							// Manually remove the person from the rover
+							rover.removePerson(p);
+							// Add this person to the building
+							BuildingManager.addPersonOrRobotToBuilding(p, getBuilding());
+							
+							logger.info(p, "Done transferring to " + settlement.getName() + " in " + this + ".");
+						}
+						else {
+							logger.info(p, "Unable to transfer to " + settlement.getName() + " in " + this + ".");
+							// Rescue the person
+							p.rescueOperation(rover, settlement);						
+							// Manually remove the person from the rover
+							rover.removePerson(p);
+						}
+					}
+				}
 				
 				return true;
 			}

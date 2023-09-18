@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MineSite.java
- * @date 2021-10-21
+ * @date 2023-09-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -78,12 +78,12 @@ public class MineSite extends EVAOperation {
 		operatingLUV = false;
 
 		if (shouldEndEVAOperation(false)) {
-			checkLocation();
+			checkLocation("EVA ended.");
         	return;
         }
 
 		if (person.isSuperUnFit()) {
-			checkLocation();
+			checkLocation("Person unfit.");
         	return;
 		}
 
@@ -168,7 +168,7 @@ public class MineSite extends EVAOperation {
 				operatingLUV = false;
 			}
 
-			checkLocation();
+			checkLocation("Time on site expired.");
 		}
 
 		// Operate light utility vehicle if no one else is operating it.

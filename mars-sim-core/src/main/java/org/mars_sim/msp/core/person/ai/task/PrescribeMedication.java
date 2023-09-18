@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrescribeMedication.java
- * @date 2023-09-02
+ * @date 2023-09-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -83,7 +83,7 @@ public class PrescribeMedication extends Task {
             	
     			Task currentTask = patient.getMind().getTaskManager().getTask();
     			if (currentTask != null && !currentTask.getName().equalsIgnoreCase(RequestMedicalTreatment.NAME)) {
-                	patient.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.NAME);
+                	patient.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.SIMPLE_NAME);
     			}
             }
             else
@@ -116,7 +116,7 @@ public class PrescribeMedication extends Task {
             	
     			Task currentTask = patient.getMind().getTaskManager().getTask();
     			if (currentTask != null && !currentTask.getName().equalsIgnoreCase(RequestMedicalTreatment.NAME)) {
-                	patient.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.NAME);
+                	patient.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.SIMPLE_NAME);
     			}
 
             }

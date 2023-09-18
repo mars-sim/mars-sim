@@ -2305,21 +2305,21 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 * @param p the person
 	 * @param s the settlement
 	 */
-	public boolean rescueOperation(Rover r, Person p, Settlement s) {
+	public boolean rescueOperation(Rover r, Settlement s) {
 		boolean result = false;
 		
-		if (p.isDeclaredDead()) {
+		if (isDeclaredDead()) {
 			// WARNING: Transferring a person/robot/equipment from a vehicle into a settlement 
 			// can be problematic if no building is assigned.
 			// If exiting a vehicle in a garage, it's recommended using garageBuilding as a destination
-			result = p.transfer(s);
+			result = transfer(s);
 		}
-		else if (r != null || p.isOutside()) {
-			result = p.transfer(s);
+		else if (r != null || isOutside()) {
+			result = transfer(s);
 		}
 
 		// Add the person to a medical facility	
-		EVAOperation.send2Medical(p, s);
+		EVAOperation.send2Medical(this, s);
 		
 		return result;
 	}

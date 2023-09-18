@@ -371,7 +371,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * A Member leaves the Mission
+	 * A Member leaves the Mission.
 	 */
 	protected final void memberLeave(Worker member) {
 		// Added codes in reassigning a work shift

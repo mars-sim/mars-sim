@@ -62,6 +62,11 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
     		return 0;
         }
      
+    	// Check if a person is qualified for digging local
+        if (!EVAOperation.canDigLocal(person)) {
+    		return 0;
+        }
+
         // Checks if the person is physically fit for heavy EVA tasks
 		if (!EVAOperation.isEVAFit(person))
 			return 0;

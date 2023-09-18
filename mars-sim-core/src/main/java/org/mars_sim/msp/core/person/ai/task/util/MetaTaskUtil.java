@@ -93,7 +93,7 @@ public class MetaTaskUtil {
 	private static List<FactoryMetaTask> personMetaTasks;
 	private static List<FactoryMetaTask> robotMetaTasks = null;
 
-	private static Map<String,MetaTask> idToMetaTask;
+	private static Map<String, MetaTask> idToMetaTask;
 	private static List<SettlementMetaTask> settlementTasks;
 
 	/**

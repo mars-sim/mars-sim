@@ -11,6 +11,7 @@ import java.util.List;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
+import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
@@ -283,15 +284,36 @@ public class PersonTaskManager extends TaskManager {
 					&& !newTask.getDescription().equals(currentTask.getDescription())
 					&& !isFilteredTask(currentTask.getDescription())) {
 					
-					// Note: this is the only eligible condition for replacing the
-					// current task with the new task
-					replaceTask(newTask);
-					// Remove the new task from the pending task list
-					removePendingTask(pending);
+					if (newTask.getName().equals(DigLocalRegolith.NAME)) {
+						// Check if the person is qualified for digging local
+						if (!EVAOperation.canDigLocal(person)) {
+					    	// Skip doing anything for now
+							// Next, go to super.startNewTask() to find a new task
+						}
+						else {
+							
+							// Note: this is the only eligible condition for replacing the
+							// current task with the new task
+							replaceTask(newTask);
+							// Remove the new task from the pending task list
+							removePendingTask(pending);
+							
+							// At this point, do NOT need to call super.startNewTask()
+							// or else the newTask will be replaced
+						}
+					}
+					else {
 					
-					// At this point, do NOT need to call super.startNewTask()
-					// or else the newTask will be replaced
-					return;
+						// Note: this is the only eligible condition for replacing the
+						// current task with the new task
+						replaceTask(newTask);
+						// Remove the new task from the pending task list
+						removePendingTask(pending);
+						
+						// At this point, do NOT need to call super.startNewTask()
+						// or else the newTask will be replaced
+						return;
+					}
 				}
 			}
 		}

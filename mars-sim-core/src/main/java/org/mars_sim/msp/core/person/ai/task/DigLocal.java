@@ -110,7 +110,7 @@ public abstract class DigLocal extends EVAOperation {
      	if (person.isInSettlement()) {
 	        airlock = getWalkableAvailableEgressAirlock(person);
 	        if (airlock == null) {
-	    		abortEVA("No walkable airlock for egress.");
+	    		abortEVA("No available walkable airlock for egress.");
 				return;
 	        }
      	}
@@ -295,13 +295,14 @@ public abstract class DigLocal extends EVAOperation {
     private double collectResource(double time) {
     	// Get a container
         Container container = person.findContainer(containerType, false, resourceID);
-        
+       
 		if (checkReadiness(time, false) > 0) {
 			if (!((Equipment)container).isEmpty(false)) {
+				// Has resources in container
 				setPhase(WALK_TO_BIN);
 			}
 			else
-				checkLocation();
+				checkLocation("Found no resources.");
 			return time;
 		}
 			

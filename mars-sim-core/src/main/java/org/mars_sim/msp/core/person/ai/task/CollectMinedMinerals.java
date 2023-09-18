@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CollectMinedMinerals.java
- * @date 2023-06-30
+ * @date 2023-09-17
  * @author Scott Davis
  */
 
@@ -151,22 +151,34 @@ public class CollectMinedMinerals extends EVAOperation {
 	private double collectMineralsPhase(double time) {
 
 		// Check for radiation exposure during the EVA operation.
-		if (isDone() || isRadiationDetected(time)) {
-			checkLocation();
+		if (isDone()) {
+			checkLocation("Task duration ended.");
+			return time;
+		}
+		
+		// Check for radiation exposure during the EVA operation.
+		if (isRadiationDetected(time)) {
+			checkLocation("Radiation detected.");
 			return time;
 		}
 		
 		// Check if site duration has ended or there is reason to cut the collect
 		// minerals phase short and return to the rover.
-		if (shouldEndEVAOperation(false) || addTimeOnSite(time)) {
-			checkLocation();
+		if (shouldEndEVAOperation(false)) {
+			checkLocation("EVA ended.");
 			return time;
 		}
+
+        // Check time on site
+		if (addTimeOnSite(time)) {
+			checkLocation("Time on site expired.");
+			return time;
+		}		
 		
 		Mining mission = (Mining) worker.getMission();
 
 		if (mission.getMiningSite().isEmpty()) {
-			checkLocation();
+			checkLocation("No more minerals to mine.");
 			return time;
 		}
 		
@@ -219,7 +231,7 @@ public class CollectMinedMinerals extends EVAOperation {
 		mission.collectMineral(mineralType, mineralsCollected);
 		
 		if (((mineralsExcavated - mineralsCollected) <= 0D) || (mineralsCollected >= remainingPersonCapacity)) {
-			checkLocation();
+			checkLocation("Excavated minerals collected exceeded capacity.");
 		}
 
 		// Check for an accident during the EVA operation.

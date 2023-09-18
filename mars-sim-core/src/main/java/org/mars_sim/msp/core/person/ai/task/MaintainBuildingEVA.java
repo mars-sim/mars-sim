@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MaintainBuildingEVA.java
- * @date 2022-09-18
+ * @date 2023-09-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -56,7 +56,7 @@ extends EVAOperation {
 		super(NAME, person, true, RandomUtil.getRandomDouble(90, 100), SkillType.MECHANICS);
 
 		if (!person.isNominallyFit()) {
-			checkLocation();
+			checkLocation("Person is unfit.");
         	return;
 		}
 		
@@ -65,7 +65,7 @@ extends EVAOperation {
 		
       	settlement = unitManager.findSettlement(person.getCoordinates());
         if (settlement == null) {
-        	checkLocation();
+        	checkLocation("Person not in settlement.");
         	return;
         }
         
@@ -135,10 +135,16 @@ extends EVAOperation {
 		
 		MalfunctionManager manager = entity.getMalfunctionManager();
 		boolean malfunction = manager.hasMalfunction();
+
+		if (malfunction) {
+			checkLocation("Building had malfunction. Quit maintenance.");
+			return time;
+		}
+		
 		boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() < 1000D);
 
-		if (finishedMaintenance || malfunction) {
-			checkLocation();
+		if (finishedMaintenance) {
+			checkLocation("Maintenance finished.");
 			return time;
 		}
 
@@ -160,7 +166,7 @@ extends EVAOperation {
 		logger.info(worker, 4_000, des + ".");
 			
         if (shortfall == -1) {
-        	checkLocation();
+        	checkLocation("Part(s) not available.");
         	return 0;
 		}
         

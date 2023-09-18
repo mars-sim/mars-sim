@@ -2260,6 +2260,7 @@ public abstract class Vehicle extends Unit
 
 		if (cu.getUnitType() == UnitType.MARS) {
 			transferred = ((MarsSurface)cu).removeVehicle(this);
+			arriving = true;
 		}
 		else if (cu.getUnitType() == UnitType.SETTLEMENT) {
 			Settlement currentBase = (Settlement)cu;

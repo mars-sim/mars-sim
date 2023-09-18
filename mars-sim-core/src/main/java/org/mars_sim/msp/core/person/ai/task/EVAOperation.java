@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EVAOperation.java
- * @date 2023-06-30
+ * @date 2023-09-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.MissionHistoricalEvent;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -292,9 +293,9 @@ public abstract class EVAOperation extends Task {
 				Settlement s = unitManager.findSettlement(person.getCoordinates());
 				if (s != null) {
 					interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person, true)).getEntity();
-					if (interiorObject instanceof Building io)
+					if (interiorObject instanceof Building b)
 						logger.log(person, Level.INFO, 30_000,
-							"Found " + io.getName()
+							"Found " + b.getName()
 							+ " to enter.");
 				}
 				else {
@@ -332,11 +333,11 @@ public abstract class EVAOperation extends Task {
 			// If not inside, create walk inside subtask.
 			if (interiorObject != null && returnInsideLoc != null && !person.getPosition().isClose(returnInsideLoc)) {
 				String name = "";
-				if (interiorObject instanceof Building) {
-					name = ((Building)interiorObject).getNickName();
+				if (interiorObject instanceof Building b) {
+					name = b.getNickName();
 				}
-				else if (interiorObject instanceof Vehicle) {
-					name = ((Vehicle)interiorObject).getNickName();
+				else if (interiorObject instanceof Vehicle v) {
+					name = v.getNickName();
 				}
 
 				logger.log(person, Level.FINE, 4_000,
@@ -373,6 +374,30 @@ public abstract class EVAOperation extends Task {
 		return time * .9;
 	}
 
+	/**
+	 * Is the person qualified for digging local ice or regolith ?
+	 * 
+	 * @return
+	 */
+	public static boolean canDigLocal(Person person) {
+		// Check if person can exit the rover.
+		if (getWalkableAvailableEgressAirlock(person) == null)
+			return false;
+
+		// Check if sunlight is insufficient
+		if (EVAOperation.isGettingDark(person))
+			return false;
+
+		// Check if person's medical condition will not allow task.
+		if (person.getPerformanceRating() < .2D)
+			return false;
+
+		if (person.isSuperUnFit())
+			return false;
+		
+		return true;
+	}
+	
 	/**
 	 * Checks if situation requires the EVA operation to end prematurely and the
 	 * person should return to the airlock.
@@ -477,21 +502,26 @@ public abstract class EVAOperation extends Task {
 	 * @return
 	 */
 	public double checkReadiness(double time, boolean checkSunlight) {
-		// Check for radiation exposure during the EVA operation.
-		if (isDone() || isRadiationDetected(time)) {
-			checkLocation();
+		// Task duration has expired
+		if (isDone()) {
+			checkLocation("Task duration ended.");
 			return time;
 		}
-
+		// Check for radiation exposure during the EVA operation.
+		if (isRadiationDetected(time)) {
+			checkLocation("Radiation detected.");
+			return time;
+		}
+		
         // Check if there is a reason to cut short and return.
 		if (checkSunlight && shouldEndEVAOperation(checkSunlight)) {
-			checkLocation();
+			checkLocation("No sunlight.");
 			return time;
 		}
 
         // Check time on site
 		if (addTimeOnSite(time)) {
-			checkLocation();
+			checkLocation("Time on site expired.");
 			return time;
 		}		
 		
@@ -506,8 +536,8 @@ public abstract class EVAOperation extends Task {
 	 * Checks to see if the person is supposed to be outside. This is used to abort an EVA.
 	 * Any call to this method that relates to a problem should be replaced with {@link #abortEVA(String)}
 	 */
-	protected void checkLocation() {
-		abortEVA(null);
+	protected void checkLocation(String reason) {
+		abortEVA(reason);
 	}
 
 	/**
@@ -517,7 +547,7 @@ public abstract class EVAOperation extends Task {
 	 */
 	protected void abortEVA(String reason) {
 		if (reason != null) {
- 			logger.warning(worker, "EVA " + getName() + " aborted: " + reason);
+ 			logger.info(worker, "EVA " + getName() + " aborted: " + reason);
 		}
 		
 		if (person.isOutside()) {
@@ -761,9 +791,8 @@ public abstract class EVAOperation extends Task {
 		Airlock result = null;
 
 		if (worker.isInVehicle()) {
-			Vehicle vehicle = worker.getVehicle();
-			if (vehicle instanceof Airlockable) {
-				result = ((Airlockable) vehicle).getAirlock();
+			if (worker.getVehicle() instanceof Airlockable a) {
+				result = a.getAirlock();
 			}
 		}
 		
@@ -838,9 +867,23 @@ public abstract class EVAOperation extends Task {
 				break;
 			}
 		}
+		
+		HistoricalEvent rescueEvent = null;
+		
+		if (problem == null) {
+			rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON,
+				p.getMission(),
+				p.getPhysicalCondition().getHealthSituation(),
+				p.getTaskDescription(),
+				p.getName(),
+				p
+				);
+		}
+		else {
+			rescueEvent = new MedicalEvent(p, problem, EventType.MEDICAL_RESCUE);
+		}
 
 		// Register the historical event
-		HistoricalEvent rescueEvent = new MedicalEvent(p, problem, EventType.MEDICAL_RESCUE);
 		registerNewEvent(rescueEvent);
 	}
 
