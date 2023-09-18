@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -18,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskProbabilityUtil;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -77,16 +79,17 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public double getPersonSettlementModifier(SettlementTask t, Person p) {
-        double factor = 0D;
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore factor = RatingScore.ZERO_RATING;
         if (p.isInSettlement()) {
-            factor = 1D;
-            Building b = ((FishTaskJob)t).tank.getBuilding();
-
+			factor = super.assessPersonSuitability(t, p);
+            if (factor.getScore() == 0) {
+                return factor;
+            }
+            
             // Crowding modifier.
-            factor *= getBuildingModifier(b, p);
-
-            factor *= (1 + getPersonModifier(p));
+            Building b = ((FishTaskJob)t).tank.getBuilding();
+            factor.addModifier(BUILDING_MODIFIER, getBuildingModifier(b, p));
 		}
 		return factor;
 	}
@@ -96,11 +99,8 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
-	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
-        
-        // Crowding modifier.
-        return r.getPerformanceRating();
-
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
+        return TaskProbabilityUtil.assessRobot(t, r);
     }
 
     /**

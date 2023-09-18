@@ -34,8 +34,9 @@ public class BacklogTableModel extends AbstractTableModel
 	
 	private static final int DESC_COL = 0;
 	private static final int ENTITY_COL = 1;
-	private static final int DEMAND_COL = 2;
-	static final int SCORE_COL = 3;
+	private static final int EVA_COL = 2;
+	private static final int DEMAND_COL = 3;
+	static final int SCORE_COL = 4;
 
 	private String name = null;
 	private Settlement selectedSettlement;
@@ -192,6 +193,7 @@ public class BacklogTableModel extends AbstractTableModel
 			case ENTITY_COL -> "Entity";
 			case DESC_COL -> "Description";
 			case DEMAND_COL -> "Demand";
+			case EVA_COL -> "EVA";
 			case SCORE_COL -> "Score";
 			default -> throw new IllegalArgumentException("Unexpected value: " + index);
 		};
@@ -203,11 +205,35 @@ public class BacklogTableModel extends AbstractTableModel
 			case ENTITY_COL ->  String.class;
 			case DESC_COL ->  String.class;
 			case DEMAND_COL ->  Integer.class;
+			case EVA_COL -> String.class;
 			case SCORE_COL ->  Double.class;
 			default -> throw new IllegalArgumentException("Unexpected value: " + index);
 		};
 	}
 
+    /**
+     * Default implementation return null as no tooltips are supported by default
+     * @param rowIndex Row index of cell
+     * @param columnIndex Column index of cell
+     * @return Return null by default
+     */
+    @Override
+    public String getToolTipAt(int rowIndex, int columnIndex) {
+		String result = null;
+		if ((columnIndex == SCORE_COL) && (rowIndex < tasks.size())) {
+			SettlementTask selectedTask = tasks.get(rowIndex);
+
+			result = selectedTask.getScore().getHTMLOutput();
+		}
+        return result;
+    }
+
+	/**
+	 * Get the value of a cell of a SettlementTask
+     * @param rowIndex Row index of cell
+     * @param columnIndex Column index of cell
+     * @return Object value of the cell
+	 */
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if (tasks.size() <= rowIndex) {
@@ -223,7 +249,9 @@ public class BacklogTableModel extends AbstractTableModel
 					return des.getName();
 				return null;
 			case DESC_COL:
-				return selectedTask.getName();
+				return selectedTask.getShortName();
+			case EVA_COL:
+				return selectedTask.isEVA();
 			case DEMAND_COL:
 				return selectedTask.getDemand();
 			case SCORE_COL:

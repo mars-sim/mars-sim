@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
@@ -26,6 +27,7 @@ import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
+import org.mars_sim.msp.core.person.ai.task.util.TaskProbabilityUtil;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -40,11 +42,9 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
 
 		private static final long serialVersionUID = 1L;
 
-        private boolean eva;
-
         public UnloadJob(SettlementMetaTask owner, Vehicle target, boolean eva, double score) {
             super(owner, "Unload " + (eva ? "via EVA " : "") + "@ " + target.getName(), target, score);
-            this.eva = eva;
+            setEVA(eva);
         }
 
         /**
@@ -56,7 +56,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
 
         @Override
         public Task createTask(Person person) {
-            if (eva) {
+            if (isEVA()) {
                 return new UnloadVehicleEVA(person, getVehicle());
             }
             return new UnloadVehicleGarage(person, getVehicle());
@@ -64,7 +64,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
 
         @Override
         public Task createTask(Robot robot) {
-            if (eva) {
+            if (isEVA()) {
 				// Should not happen
 				throw new IllegalStateException("Robots can not do EVA unload vehicle");
 			}
@@ -87,30 +87,6 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
         addPreferredRobot(RobotType.DELIVERYBOT);
 	}
 
-       
-    /**
-     * Gets the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
-     * 
-	 * @param t Task being scored
-	 * @param p Person requesting work
-	 * @return The factor to adjust task score; 0 means task is not applicable
-     */
-    @Override
-	public double getPersonSettlementModifier(SettlementTask t, Person p) {
-        double factor = 0D;
-        if (p.isInSettlement()) {
-			UnloadJob mtj = (UnloadJob) t;
-
-			factor = getPersonModifier(p);
-			if (mtj.eva) {
-				// EVA factor is the radiation and the EVA modifiers applied extra
-				factor *= getRadiationModifier(p.getSettlement());
-				factor *= getEVAModifier(p);
-			}
-		}
-		return factor;
-	}
-
     /**
      * For a robot can not do EVA tasks so will return a zero factor in this case.
      * 
@@ -118,13 +94,9 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
 	 * @param r Robot requesting work.
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
-	@Override
-	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
-        UnloadJob mtj = (UnloadJob) t;
-        if (mtj.eva) {
-            return 0D;
-        }
-        return r.getPerformanceRating();
+    @Override
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
+        return TaskProbabilityUtil.assessRobot(t, r);
     }
 
 	/**

@@ -63,4 +63,12 @@ interface MonitorModel extends TableModel {
 	 * @param activate 
 	 */
     public void setMonitorEntites(boolean activate);
+
+	/**
+	 * Get a tooltip representation of a cell. Most cells with return null.
+	 * @param rowIndex
+	 * @param colIndex
+	 * @return
+	 */
+    public String getToolTipAt(int rowIndex, int colIndex);
 }

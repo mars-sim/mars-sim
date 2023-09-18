@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
@@ -22,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
+import org.mars_sim.msp.core.person.ai.task.util.TaskProbabilityUtil;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -92,7 +94,7 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
 	 */
     @Override
     public List<TaskJob> getTaskJobs(Robot robot) {
-		return null;
+		return Collections.emptyList();
 	}
 	
     /**
@@ -111,17 +113,12 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
         return result;
     }
 
-    @Override
-    public double getPersonSettlementModifier(SettlementTask t, Person p) {
-        return getPersonModifier(p);
-    }
-
     /**
      * Score modifier for a Robot is based on it's performance rating
      */
     @Override
-    public double getRobotSettlementModifier(SettlementTask t, Robot r) {
-        return r.getPerformanceRating();
+    public RatingScore assessRobotSuitability(SettlementTask t, Robot r) {
+        return TaskProbabilityUtil.assessRobot(t, r);
     }
 
     /**

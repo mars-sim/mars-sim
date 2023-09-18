@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
@@ -78,20 +79,21 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public double getPersonSettlementModifier(SettlementTask t, Person p) {
-        double factor = 0D;
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore factor = RatingScore.ZERO_RATING;
         if (p.isInSettlement()) {
             Building b = ((CropTaskJob)t).farm.getBuilding();
             Farming farm = b.getFarming();
             LifeSupport ls = b.getLifeSupport();
-            factor = 1;
 
             if (farm.getFarmerNum() <= 2 * ls.getOccupantCapacity()) {
-    
+    			factor = super.assessPersonSuitability(t, p);
+                if (factor.getScore() == 0) {
+                    return factor;
+                }
+
                 // Crowding modifier.
-                factor *= getBuildingModifier(b, p);
-                                    
-                factor *= 2 * (1 + getPersonModifier(p));
+                factor.addModifier(BUILDING_MODIFIER, getBuildingModifier(b, p));                                    
             }
 		}
 		return factor;
@@ -103,13 +105,10 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
-	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
-        Farming f = ((CropTaskJob)t).farm;
-        
-        // Crowding modifier.
-        return TaskProbabilityUtil.getCrowdingProbabilityModifier(r, f.getBuilding());
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
+        return TaskProbabilityUtil.assessRobot(t, r);
     }
-
+    
     /**
      * Scans the settlement Farms for any that need tending. CReate one task per applicable Farming function.
      * 

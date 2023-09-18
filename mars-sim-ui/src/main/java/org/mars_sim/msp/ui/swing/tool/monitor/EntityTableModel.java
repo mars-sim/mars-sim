@@ -244,6 +244,17 @@ public abstract class EntityTableModel<T> extends AbstractTableModel
 	}
 
     /**
+     * Default implementation return null as no tooltips are supported by default
+     * @param rowIndex Row index of cell
+     * @param columnIndex Column index of cell
+     * @return Return null by default
+     */
+    @Override
+    public String getToolTipAt(int rowIndex, int columnIndex) {
+        return null;
+    }
+
+    /**
      * Get a value for a particular cell. This may come from a cached value
      * if the column is one of the cached columns.
      * @param rowIndex

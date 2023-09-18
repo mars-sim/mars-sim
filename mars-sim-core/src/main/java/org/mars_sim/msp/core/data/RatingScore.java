@@ -13,11 +13,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.mars.sim.tools.Msg;
+
 /**
  * A class to represent a score Rating. Consists of a base value and a set
  * of modifiers that are applied to create a final score.
  */
 public class RatingScore implements Serializable {
+    /**
+     * Prefix to the key in the message bundle
+     */
+    private static final String RATING_KEY = "RatingScore.";
+
     private static final DecimalFormat SCORE_FORMAT = new DecimalFormat("0.###");
 
     /**
@@ -121,11 +128,35 @@ public class RatingScore implements Serializable {
         
         StringBuilder output = new StringBuilder();
         output.append("Score:").append(SCORE_FORMAT.format(score)).append(" (");
-        output.append("base:").append(SCORE_FORMAT.format(base)).append(',');
+        output.append("base:").append(SCORE_FORMAT.format(base));
+        if (!modifiers.isEmpty()) {
+            output.append(',');
+        }
         output.append(modifiers.entrySet().stream()
                                 .map(entry -> entry.getKey() + ":" + SCORE_FORMAT.format(entry.getValue()))
                                 .collect(Collectors.joining(",")));
         output.append(")");
+        return output.toString();
+    }
+
+    /**
+     * Produce a structure output of this rating. This s not ideal being in this class
+     * @return HTML formatted string localised.
+     */
+    public String getHTMLOutput() {
+        
+        StringBuilder output = new StringBuilder();
+        output.append("<html>");
+        output.append("<b>Score: ").append(SCORE_FORMAT.format(score)).append("</b><br>");
+        output.append("Base: ").append(SCORE_FORMAT.format(base));
+        if (!modifiers.isEmpty()) {
+            output.append("<br>");
+        }
+        output.append(modifiers.entrySet().stream()
+                                .map(entry -> Msg.getString(RATING_KEY + entry.getKey())
+                                                    + ": " + SCORE_FORMAT.format(entry.getValue()))
+                                .collect(Collectors.joining("<br>")));
+        output.append("</html>");
         return output.toString();
     }
 }

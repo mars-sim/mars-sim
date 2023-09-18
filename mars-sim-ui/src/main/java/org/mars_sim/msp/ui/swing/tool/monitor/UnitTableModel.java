@@ -131,10 +131,12 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 	 *
 	 * @return FALSE as the Units have no natural order.
 	 */
+	@Override
 	public boolean getOrdered() {
 		return false;
 	}
 
+	
 	/**
 	 * Prepares the model for deletion.
 	 */

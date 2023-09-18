@@ -380,6 +380,17 @@ public class MissionTableModel extends AbstractTableModel
 	}
 
 	/**
+     * Default implementation return null as no tooltips are supported by default
+     * @param rowIndex Row index of cell
+     * @param columnIndex Column index of cell
+     * @return Return null by default
+     */
+    @Override
+    public String getToolTipAt(int rowIndex, int columnIndex) {
+        return null;
+    }
+
+	/**
 	 * Returns the value of a Cell.
 	 *
 	 * @param rowIndex    Row index of the cell.

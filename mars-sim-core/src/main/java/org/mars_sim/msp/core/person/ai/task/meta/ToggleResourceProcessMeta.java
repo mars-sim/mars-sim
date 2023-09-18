@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
@@ -19,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskProbabilityUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -101,23 +103,9 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	 * @param r Robot making the request
 	 */
 	@Override
-	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
-		return 1D;
-	}
-
-	/**
-	 * Evaluates if a Person can do a Settlement task, based on in settlement.
-	 * 
-	 * @param t Task 
-	 * @param p Person making the request
-	 */
-	@Override
-	public double getPersonSettlementModifier(SettlementTask t, Person p) {
-		if (p.isInSettlement()) {
-			return getPersonModifier(p);
-		}
-		return 0D;
-	}
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
+        return TaskProbabilityUtil.assessRobot(t, r);
+    }
 
 	/**
 	 * Builds a list of TaskJob covering the most suitable Resource Processes to toggle.

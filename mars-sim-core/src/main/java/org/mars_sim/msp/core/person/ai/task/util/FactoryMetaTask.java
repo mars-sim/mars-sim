@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.mars_sim.msp.core.Simulation;
@@ -116,7 +117,7 @@ public abstract class FactoryMetaTask extends MetaTask {
 	private List<TaskJob> createTaskJob(double score, int duration) {
 		// This is to avoid a massive rework in the subclasses.
 		if (score <= 0) {
-			return null;
+			return Collections.emptyList();
 		}
 
 		List<TaskJob> result = new ArrayList<>(1);

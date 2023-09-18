@@ -26,7 +26,7 @@ public class MissionTab extends TableTab {
 		// Use TableTab constructor
 		super(window, new MissionTableModel(window.getDesktop().getSimulation()), true, true, MissionWindow.ICON);
 		
-		super.adjustColumnWidth(table);
+		adjustColumnWidth(table);
 
 		setEntityDriven(true);
 		setNavigatable(true);
@@ -37,6 +37,7 @@ public class MissionTab extends TableTab {
 	 * Get the Coordinates of the selected Mission
 	 * @return Cooridnates, maybe null
 	 */
+	@Override
     public Coordinates getSelectedCoordinates() {
 		List<?> rows = getSelection();
 		if (!rows.isEmpty() && (rows.get(0) instanceof Mission m)) {

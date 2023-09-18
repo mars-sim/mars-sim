@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.MaintainEVAVehicle;
@@ -19,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskProbabilityUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -35,11 +37,9 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 
 		private static final long serialVersionUID = 1L;
 
-		private boolean eva;
-
         public VehicleMaintenanceJob(SettlementMetaTask owner, Vehicle target, boolean eva, double score) {
             super(owner, "Vehicle Maintenance " + (eva ? "via EVA " : ""), target, score);
-			this.eva = eva;
+			setEVA(eva);
         }
 
 		/**
@@ -51,7 +51,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 
         @Override
         public Task createTask(Person person) {
-			if (eva) {
+			if (isEVA()) {
 				return new MaintainEVAVehicle(person, getVehicle());
 			}
             return new MaintainGarageVehicle(person, getVehicle());
@@ -59,7 +59,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 
         @Override
         public Task createTask(Robot robot) {
-			if (eva) {
+			if (isEVA()) {
 				throw new IllegalStateException("Robots can not do EVA Vehicel maintenance");
 			}
             return new MaintainGarageVehicle(robot, getVehicle());
@@ -77,31 +77,6 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 		addPreferredRobot(RobotType.REPAIRBOT);
 	}
 
-	/**
-     * Gets the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
-     * 
-	 * @param t Task being scored
-	 * @parma p Person requesting work.
-	 * @return The factor to adjust task score; 0 means task is not applicable
-     */
-    @Override
-	public double getPersonSettlementModifier(SettlementTask t, Person p) {
-        double factor = 0D;
-        if (p.isInSettlement()) {
-			VehicleMaintenanceJob mtj = (VehicleMaintenanceJob) t;
-
-			if (p.isInSettlement()) {
-				factor = getPersonModifier(p);
-				if (mtj.eva) {
-					// EVA factor is the radiation and the EVA modifiers applied extra
-					factor *= getRadiationModifier(p.getSettlement());
-					factor *= getEVAModifier(p);
-				}
-			}
-		}
-		return factor;
-	}
-
     /**
      * For a robot can not do EVA tasks so will return a zero factor in this case.
      * 
@@ -110,13 +85,9 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
-	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
-		VehicleMaintenanceJob mtj = (VehicleMaintenanceJob) t;
-		if (!mtj.eva && r.isInSettlement()) {
-			return r.getPerformanceRating();
-		}
-		return 0D;
-	}
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
+		return TaskProbabilityUtil.assessRobot(t, r);
+    }
 
 	/**
 	 * Gets a collection of Tasks for any Vehicle maintenance that is required.
