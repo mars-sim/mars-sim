@@ -67,57 +67,33 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	/** The number of Columns. */
 	private static final int COLUMNCOUNT = 20;
 	/** Names of Columns. */
-	private static String[] columnNames;
-
-	/** Names of Columns. */
-	private static Class<?>[] columnTypes;
+	private static final ColumnSpec[] COLUMNS;
 
 	/**
 	 * Class initialiser creates the static names and classes.
 	 */
 	static {
-		columnNames = new String[COLUMNCOUNT];
-		columnTypes = new Class[COLUMNCOUNT];
-		columnNames[NAME] = "Name";
-		columnTypes[NAME] = String.class;
-		columnNames[TYPE] = "Type";
-		columnTypes[TYPE] = String.class;
-		columnNames[LOCATION] = "Location";
-		columnTypes[LOCATION] = String.class;
-		columnNames[DESTINATION] = "Next Waypoint";
-		columnTypes[DESTINATION] = Coordinates.class;
-		columnNames[DESTDIST] = "Dist. to next [km]";
-		columnTypes[DESTDIST] = Double.class;
-		columnNames[MISSION] = "Mission";
-		columnTypes[MISSION] = String.class;
-		columnNames[CREW] = "Crew";
-		columnTypes[CREW] = Integer.class;
-		columnNames[DRIVER] = "Driver";
-		columnTypes[DRIVER] = String.class;
-		columnNames[STATUS] = "Status";
-		columnTypes[STATUS] = String.class;
-		columnNames[BEACON] = "Beacon";
-		columnTypes[BEACON] = String.class;
-		columnNames[RESERVED] = "Reserved";
-		columnTypes[RESERVED] = String.class;
-		columnNames[SPEED] = "Speed";
-		columnTypes[SPEED] = Double.class;
-		columnNames[MALFUNCTION] = "Malfunction";
-		columnTypes[MALFUNCTION] = String.class;
-		columnNames[OXYGEN] = "Oxygen";
-		columnTypes[OXYGEN] = Double.class;
-		columnNames[METHANOL] = "Methanol";
-		columnTypes[METHANOL] = Double.class;
-		columnNames[WATER] = "Water";
-		columnTypes[WATER] = Double.class;
-		columnNames[FOOD] = "Food";
-		columnTypes[FOOD] = Double.class;
-		columnNames[DESSERT] = "Dessert";
-		columnTypes[DESSERT] = Double.class;
-		columnNames[ROCK_SAMPLES] = "Rock Samples";
-		columnTypes[ROCK_SAMPLES] = Double.class;
-		columnNames[ICE] = "Ice";
-		columnTypes[ICE] = Double.class;
+		COLUMNS = new ColumnSpec[COLUMNCOUNT];
+		COLUMNS[NAME] = new ColumnSpec("Name", String.class);
+		COLUMNS[TYPE] = new ColumnSpec("Type", String.class);
+		COLUMNS[LOCATION] = new ColumnSpec("Location", String.class);
+		COLUMNS[DESTINATION] = new ColumnSpec("Next Waypoint", Coordinates.class);
+		COLUMNS[DESTDIST] = new ColumnSpec("Dist. to next [km]", Double.class);
+		COLUMNS[MISSION] = new ColumnSpec("Mission", String.class);
+		COLUMNS[CREW] = new ColumnSpec("Crew", Integer.class);
+		COLUMNS[DRIVER] = new ColumnSpec("Driver", String.class);
+		COLUMNS[STATUS] = new ColumnSpec("Status", String.class);
+		COLUMNS[BEACON] = new ColumnSpec("Beacon", String.class);
+		COLUMNS[RESERVED] = new ColumnSpec("Reserved", String.class);
+		COLUMNS[SPEED] = new ColumnSpec("Speed", Double.class);
+		COLUMNS[MALFUNCTION] = new ColumnSpec("Malfunction", String.class);
+		COLUMNS[OXYGEN] = new ColumnSpec("Oxygen", Double.class);
+		COLUMNS[METHANOL] = new ColumnSpec("Methanol", Double.class);
+		COLUMNS[WATER] = new ColumnSpec("Water", Double.class);
+		COLUMNS[FOOD] = new ColumnSpec("Food", Double.class);
+		COLUMNS[DESSERT] = new ColumnSpec("Dessert", Double.class);
+		COLUMNS[ROCK_SAMPLES] = new ColumnSpec("Rock Samples", Double.class);
+		COLUMNS[ICE] = new ColumnSpec("Ice", Double.class);
 	}
 
 	private static final int FOOD_ID = ResourceUtil.foodID;
@@ -137,8 +113,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		super(UnitType.VEHICLE,
 			Msg.getString("VehicleTableModel.tabName"),
 			"VehicleTableModel.countingVehicles", //$NON-NLS-1$
-			columnNames,
-			columnTypes
+			COLUMNS
 		);
 
 		setSettlementFilter(settlement);
@@ -292,7 +267,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				break;
 			
 			default:
-				result = null;
+				throw new IllegalArgumentException("Unknown column");
 		}
 
 		return result;
@@ -417,14 +392,6 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		}
 
 		private void updateVehicleMissionCell(Mission mission) {
-//			if (mission instanceof VehicleMission) {
-//				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-//				if (vehicle != null) {
-//					int unitIndex = getUnitIndex(vehicle);
-//					SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, MISSION));
-//				}
-//			}
-
 			// Update all table cells because construction/salvage mission may affect more than one vehicle.
 			fireTableDataChanged();
 		}

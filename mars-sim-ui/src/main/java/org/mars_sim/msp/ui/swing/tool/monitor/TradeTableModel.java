@@ -35,9 +35,7 @@ implements UnitListener {
 	private static final int COLUMNCOUNT = NUM_INITIAL_COLUMNS + NUM_DATA_COL;
 
 	/** Names of Columns. */
-	private static final String[] columnNames;
-	/** Types of columns. */
-	private static final Class<?>[] columnTypes;
+	private static final ColumnSpec[] COLUMNS;
 
 
 	private static final int DEMAND_COL = 3;
@@ -50,31 +48,19 @@ implements UnitListener {
 	static final int PRICE_COL = 10;
 
 	static {
-		columnNames = new String[NUM_INITIAL_COLUMNS + NUM_DATA_COL];
-		columnTypes = new Class[COLUMNCOUNT];
-		columnNames[0] = "Good";
-		columnTypes[0] = String.class;
-		columnNames[1] =  "Category";
-		columnTypes[1] = String.class;
-		columnNames[2] =  "Type";
-		columnTypes[2] = String.class;
+		COLUMNS = new ColumnSpec[NUM_INITIAL_COLUMNS + NUM_DATA_COL];
+		COLUMNS[0] = new ColumnSpec ("Good", String.class);
+		COLUMNS[1] = new ColumnSpec ("Category", String.class);
+		COLUMNS[2] = new ColumnSpec ("Type", String.class);
 
-		columnNames[DEMAND_COL] =  "Demand";
-		columnTypes[DEMAND_COL] = Double.class;
-		columnNames[SUPPLY_COL] =  "Supply";
-		columnTypes[SUPPLY_COL] = Double.class;
-		columnNames[QUANTITY_COL] =  "Quantity";
-		columnTypes[QUANTITY_COL] = Double.class;
-		columnNames[MASS_COL] =  "Tot Mass [kg]";
-		columnTypes[MASS_COL] = Double.class;
-		columnNames[MARKET_COL] =  "National VP";
-		columnTypes[MARKET_COL] = Double.class;
-		columnNames[VALUE_COL] =  "Local VP";
-		columnTypes[VALUE_COL] = Double.class;
-		columnNames[COST_COL] =  "Cost [$]";
-		columnTypes[COST_COL] = Double.class;
-		columnNames[PRICE_COL] =  "Price [$]";
-		columnTypes[PRICE_COL] = Double.class;
+		COLUMNS[DEMAND_COL] = new ColumnSpec ("Demand", Double.class);
+		COLUMNS[SUPPLY_COL] = new ColumnSpec ("Supply", Double.class);
+		COLUMNS[QUANTITY_COL] = new ColumnSpec ("Quantity", Double.class);
+		COLUMNS[MASS_COL] = new ColumnSpec ("Tot Mass [kg]", Double.class);
+		COLUMNS[MARKET_COL] = new ColumnSpec ("National VP", Double.class);
+		COLUMNS[VALUE_COL] = new ColumnSpec ("Local VP", Double.class);
+		COLUMNS[COST_COL] = new ColumnSpec ("Cost [$]", Double.class);
+		COLUMNS[PRICE_COL] = new ColumnSpec ("Price [$]", Double.class);
 	};
 
 	// Data members
@@ -88,7 +74,7 @@ implements UnitListener {
 	 * @param window
 	 */
 	public TradeTableModel(Settlement selectedSettlement) {
-		super(Msg.getString("TradeTableModel.tabName"), "TradeTableModel.counting", columnNames, columnTypes);
+		super(Msg.getString("TradeTableModel.tabName"), "TradeTableModel.counting",COLUMNS);
 
 		// Cache the data columns
 		setCachedColumns(NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);

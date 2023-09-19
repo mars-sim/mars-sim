@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
@@ -29,8 +28,6 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 @SuppressWarnings("serial")
 public class SettlementTableModel extends UnitTableModel<Settlement> {
-
-//	private static final Logger logger = Logger.getLogger(SettlementTableModel.class.getName());
 
 	// Column indexes
 	private static final int NAME = 0;
@@ -65,69 +62,32 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	/** The number of Columns. */
 	private static final int COLUMNCOUNT = 22;
 	/** Names of Columns. */
-	private static final String[] columnNames;
-	/** Types of columns. */
-	private static final Class<?>[] columnTypes;
+	private static final ColumnSpec[] COLUMNS;
 
 	static {
-		columnNames = new String[COLUMNCOUNT];
-		columnTypes = new Class[COLUMNCOUNT];
-		columnNames[NAME] = "Name";
-		columnTypes[NAME] = String.class;
-		columnNames[POPULATION] = "Pop";
-		columnTypes[POPULATION] = Integer.class;
-	
-		columnNames[PARKED] = "Parked Veh";
-		columnTypes[PARKED] = Integer.class;
-		columnNames[MISSION] = "Mission Veh";
-		columnTypes[MISSION] = Integer.class;
-		
-		columnNames[COMPUTING_UNIT] = "CU(s)";
-		columnTypes[COMPUTING_UNIT] = String.class;
-
-		columnNames[POWER_GEN] = "kW Gen";
-		columnTypes[POWER_GEN] = Double.class;
-		columnNames[POWER_LOAD] = "kW Load";
-		columnTypes[POWER_LOAD] = Double.class;
-		columnNames[ENERGY_STORED] = "kWh Stored";
-		columnTypes[ENERGY_STORED] = String.class;
-		
-		
-		columnNames[MALFUNCTION] = "Malfunction";
-		columnTypes[MALFUNCTION] = String.class;
-		
-		columnNames[OXYGEN_COL] = "Oxygen";
-		columnTypes[OXYGEN_COL] = Double.class;
-		columnNames[HYDROGEN_COL] = "Hydrogen";
-		columnTypes[HYDROGEN_COL] = Double.class;	
-		columnNames[METHANE_COL] = "Methane";
-		columnTypes[METHANE_COL] = Double.class;	
-		columnNames[METHANOL_COL] = "Methanol";
-		columnTypes[METHANOL_COL] = Double.class;
-		
-		columnNames[WATER_COL] = "Water";
-		columnTypes[WATER_COL] = Double.class;
-		columnNames[ICE_COL] = "Ice";
-		columnTypes[ICE_COL] = Double.class;
-		
-		columnNames[REGOLITHS_COL] = "Regoliths";
-		columnTypes[REGOLITHS_COL] = Double.class;
-
-		columnNames[SAND_COL] = "Sand";
-		columnTypes[SAND_COL] = Double.class;
-		
-		columnNames[ROCKS_COL] = "Rocks";
-		columnTypes[ROCKS_COL] = Double.class;	
-		columnNames[ORES_COL] = "Ores";
-		columnTypes[ORES_COL] = Double.class;	
-		columnNames[MINERALS_COL] = "Minerals";
-		columnTypes[MINERALS_COL] = Double.class;
-		
-		columnNames[CONCRETE_COL] = "Concrete";
-		columnTypes[CONCRETE_COL] = Double.class;
-		columnNames[CEMENT_COL] = "Cement";
-		columnTypes[CEMENT_COL] = Double.class;
-		
+		COLUMNS = new ColumnSpec[COLUMNCOUNT];
+		COLUMNS[NAME] = new ColumnSpec("Name", String.class);
+		COLUMNS[POPULATION] = new ColumnSpec("Pop", Integer.class);
+		COLUMNS[PARKED] = new ColumnSpec("Parked Veh", Integer.class);
+		COLUMNS[MISSION] = new ColumnSpec("Mission Veh", Integer.class);
+		COLUMNS[COMPUTING_UNIT] = new ColumnSpec("CU(s)", String.class);
+		COLUMNS[POWER_GEN] = new ColumnSpec("kW Gen", Double.class);
+		COLUMNS[POWER_LOAD] = new ColumnSpec("kW Load", Double.class);
+		COLUMNS[ENERGY_STORED] = new ColumnSpec("kWh Stored", String.class);
+		COLUMNS[MALFUNCTION] = new ColumnSpec("Malfunction", String.class);		
+		COLUMNS[OXYGEN_COL] = new ColumnSpec("Oxygen", Double.class);
+		COLUMNS[HYDROGEN_COL] = new ColumnSpec("Hydrogen", Double.class);	
+		COLUMNS[METHANE_COL] = new ColumnSpec("Methane", Double.class);	
+		COLUMNS[METHANOL_COL] = new ColumnSpec("Methanol", Double.class);		
+		COLUMNS[WATER_COL] = new ColumnSpec("Water", Double.class);
+		COLUMNS[ICE_COL] = new ColumnSpec("Ice", Double.class);		
+		COLUMNS[REGOLITHS_COL] = new ColumnSpec("Regoliths", Double.class);
+		COLUMNS[SAND_COL] = new ColumnSpec("Sand", Double.class);	
+		COLUMNS[ROCKS_COL] = new ColumnSpec("Rocks", Double.class);	
+		COLUMNS[ORES_COL] = new ColumnSpec("Ores", Double.class);	
+		COLUMNS[MINERALS_COL] = new ColumnSpec("Minerals", Double.class);	
+		COLUMNS[CONCRETE_COL] = new ColumnSpec("Concrete", Double.class);
+		COLUMNS[CEMENT_COL] = new ColumnSpec("Cement", Double.class);	
 	};
 
 	private static final int WATER_ID = ResourceUtil.waterID;
@@ -156,7 +116,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	 */
 	public SettlementTableModel() {
 		super(UnitType.SETTLEMENT, "Mars", "SettlementTableModel.countingSettlements",
-				columnNames, columnTypes);
+				COLUMNS);
 		singleSettlement = false;
 
 		setupCaches();
@@ -178,7 +138,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	public SettlementTableModel(Settlement settlement) {
 		super(UnitType.SETTLEMENT, Msg.getString("SettlementTableModel.tabName"), //$NON-NLS-2$
 				"SettlementTableModel.countingSettlements", 
-				columnNames, columnTypes);
+				COLUMNS);
 		singleSettlement = true;
 		setupCaches();
 
@@ -252,9 +212,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 			case MALFUNCTION: {
 				int severity = 0;
 				Malfunction malfunction = null;
-				Iterator<Building> i = settle.getBuildingManager().getBuildingSet().iterator();
-				while (i.hasNext()) {
-					Building building = i.next();
+				for(Building building : settle.getBuildingManager().getBuildingSet()) {
 					Malfunction tempMalfunction = building.getMalfunctionManager().getMostSeriousMalfunction();
 					if ((tempMalfunction != null) && (tempMalfunction.getSeverity() > severity)) {
 						malfunction = tempMalfunction;

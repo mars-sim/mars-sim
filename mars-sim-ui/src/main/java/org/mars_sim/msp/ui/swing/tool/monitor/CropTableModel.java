@@ -27,9 +27,6 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 @SuppressWarnings("serial")
 public class CropTableModel extends UnitTableModel<Building> {
 
-	/** default logger. */
-//	private static final Logger logger = Logger.getLogger(CropTableModel.class.getName());
-
 	// Column indexes
 	private static final int GREENHOUSE_NAME = 0;
 	private static final int INITIAL_COLS = 1;
@@ -40,25 +37,19 @@ public class CropTableModel extends UnitTableModel<Building> {
 	private static int numCropCat = CropCategory.values().length;
 	
 	/** The number of Columns. */
-	private static int column_count = numCropCat + FIRST_CROP_CAT;
+	private static int columnCount = numCropCat + FIRST_CROP_CAT;
 
 	/** Names of Columns. */
-	private static String[] columnNames;
-	/** Types of columns. */
-	private static Class<?>[] columnTypes;
+	private static final ColumnSpec[] COLUMNS;
 
 	static {
-		columnNames = new String[column_count];
-		columnTypes = new Class[column_count];
-		columnNames[GREENHOUSE_NAME] = "Name of Greenhouse";
-		columnTypes[GREENHOUSE_NAME] = String.class;
-		columnNames[INITIAL_COLS] = "# Crops";
-		columnTypes[INITIAL_COLS] = Integer.class;
+		COLUMNS = new ColumnSpec[columnCount];
+		COLUMNS[GREENHOUSE_NAME] = new ColumnSpec("Name of Greenhouse", String.class);
+		COLUMNS[INITIAL_COLS] = new ColumnSpec("# Crops", Integer.class);
 
 		for (CropCategory cat : CropCategory.values()) {
 			int idx = FIRST_CROP_CAT + cat.ordinal();
-			columnNames[idx] = cat.getName();
-			columnTypes[idx] = Integer.class;
+			COLUMNS[idx] = new ColumnSpec(cat.getName(), Integer.class);
 		}
 	};
 
@@ -70,8 +61,7 @@ public class CropTableModel extends UnitTableModel<Building> {
 
 	public CropTableModel(Settlement settlement) {
 		super (UnitType.BUILDING, Msg.getString("CropTableModel.tabName"), //$NON-NLS-1$
-				"CropTableModel.countingCrops", //$NON-NLS-1$
-				columnNames, columnTypes);
+				"CropTableModel.countingCrops", COLUMNS);
 		cropCategoryList = new ArrayList<>(List.of(CropCategory.values()));
 
 		// Cache all crop categories

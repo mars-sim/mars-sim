@@ -35,33 +35,21 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	private static final int COLUMNCOUNT = 8;
 
 	/** Names of Columns. */
-	private static String[] columnNames;
-	/** Types of Columns. */
-	private static Class<?>[] columnTypes;
+	private static ColumnSpec[] COLUMNS;
 
 	/**
 	 * The static initializer creates the name & type arrays.
 	 */
 	static {
-		
-		columnNames = new String[COLUMNCOUNT];
-		columnTypes = new Class[COLUMNCOUNT];
-		columnNames[NAME] = Msg.getString("BuildingTableModel.column.name"); //$NON-NLS-1$
-		columnTypes[NAME] = String.class;
-		columnNames[TYPE] = Msg.getString("BuildingTableModel.column.type"); //$NON-NLS-1$
-		columnTypes[TYPE] = String.class;
-		columnNames[CATEGORY] = Msg.getString("BuildingTableModel.column.category"); //$NON-NLS-1$
-		columnTypes[CATEGORY] = String.class;	
-		columnNames[POWER_MODE] = Msg.getString("BuildingTableModel.column.powerMode"); //$NON-NLS-1$
-		columnTypes[POWER_MODE] = String.class;		
-		columnNames[HEAT_MODE] = Msg.getString("BuildingTableModel.column.heatMode"); //$NON-NLS-1$
-		columnTypes[HEAT_MODE] = Double.class;
-		columnNames[TEMPERATURE] = Msg.getString("BuildingTableModel.column.temperature"); //$NON-NLS-1$
-		columnTypes[TEMPERATURE] = Double.class;
-		columnNames[POWER_REQUIRED]  = Msg.getString("BuildingTableModel.column.powerRequired"); //$NON-NLS-1$
-		columnTypes[POWER_REQUIRED] = Double.class;
-		columnNames[POWER_GEN]  = Msg.getString("BuildingTableModel.column.powerGenerated"); //$NON-NLS-1$
-		columnTypes[POWER_GEN] = Double.class;
+		COLUMNS = new ColumnSpec[COLUMNCOUNT];
+		COLUMNS[NAME] = new ColumnSpec(Msg.getString("BuildingTableModel.column.name"), String.class);
+		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("BuildingTableModel.column.type"), String.class);
+		COLUMNS[CATEGORY] = new ColumnSpec(Msg.getString("BuildingTableModel.column.category"), String.class);	
+		COLUMNS[POWER_MODE] = new ColumnSpec(Msg.getString("BuildingTableModel.column.powerMode"), String.class);		
+		COLUMNS[HEAT_MODE] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heatMode"), Double.class);
+		COLUMNS[TEMPERATURE] = new ColumnSpec(Msg.getString("BuildingTableModel.column.temperature"),Double.class);
+		COLUMNS[POWER_REQUIRED]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.powerRequired"), Double.class);
+		COLUMNS[POWER_GEN]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.powerGenerated"), Double.class);
 	}
 
 
@@ -77,7 +65,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 		super(UnitType.BUILDING, Msg.getString("BuildingTableModel.nameBuildings", //$NON-NLS-1$
 				settlement.getName()),
 				"BuildingTableModel.countingBuilding", //$NON-NLS-1$
-				columnNames, columnTypes);
+				COLUMNS);
 		
 		listenForUnits();
 

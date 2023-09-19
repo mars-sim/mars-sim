@@ -64,11 +64,10 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 	 *                       text that counts the number of units. should be a valid
 	 *                       key to an existing value in
 	 *                       <code>messages.properties</code>.
-	 * @param names          Names of the columns displayed.
-	 * @param types          The Classes of the individual columns.
+	 * @param names          Details of the columns displayed.
 	 */
-	protected UnitTableModel(UnitType unitType, String name, String countingMsgKey, String[] names, Class<?>[] types) {
-		super(name, countingMsgKey, names, types);
+	protected UnitTableModel(UnitType unitType, String name, String countingMsgKey, ColumnSpec[] columns) {
+		super(name, countingMsgKey, columns);
 
 		// Initialize data members
 		this.unitType = unitType;
