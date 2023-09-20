@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.vehicle.Crewable;
  * source of the list is the Unit Manager. It maps key attributes of the Person
  * into Columns.
  */
-@SuppressWarnings("serial")
 public class PersonTableModel extends UnitTableModel<Person> {
 
 	// Column indexes
@@ -113,13 +112,13 @@ public class PersonTableModel extends UnitTableModel<Person> {
 
 	private ValidSourceType sourceType;
 
-	private Crewable vehicle;
+	private transient Crewable vehicle;
 	private Settlement settlement;
 	private Mission mission;
 
-	private UnitListener crewListener;
-	private UnitListener settlementListener;
-	private MissionListener missionListener;
+	private transient UnitListener crewListener;
+	private transient UnitListener settlementListener;
+	private transient MissionListener missionListener;
 
 	/**
 	 * Constructs a PersonTableModel object that displays all people from the
@@ -267,118 +266,88 @@ public class PersonTableModel extends UnitTableModel<Person> {
 			break;
 
 			case MISSION_COL: {
-				mission = person.getMind().getMission();
-				if (mission != null) {
-					result = mission.getFullMissionDesignation();
+				var m = person.getMind().getMission();
+				if (m != null) {
+					result = m.getFullMissionDesignation();
 				}
 			}
 			break;
 
-			case NAME: {
+			case NAME:
 				result = person.getName();
-			}
 			break;
 
 			case ENERGY: {
 				PhysicalCondition pc = person.getPhysicalCondition();
-				if (pc.isDead())
-					result = "";
-				else if (pc.isStarving())
-					result = STARVING;
-				else {
-					result = PhysicalCondition.getHungerStatus(pc.getHunger(), pc.getEnergy());
+				if (!pc.isDead()) {
+					if (pc.isStarving())
+						result = STARVING;
+					else
+						result = PhysicalCondition.getHungerStatus(pc.getHunger(), pc.getEnergy());
 				}
 			}
 			break;
 
 			case WATER: {
 				PhysicalCondition pc = person.getPhysicalCondition();
-				if (pc.isDead())
-					result = "";
-				else if (pc.isDehydrated())
-					result = DEYDRATED;
-				else {
-					result = PhysicalCondition.getThirstyStatus(pc.getThirst());
+				if (!pc.isDead()) {
+					if (pc.isDehydrated())
+						result = DEYDRATED;
+					else
+						result = PhysicalCondition.getThirstyStatus(pc.getThirst());
 				}
 			}
 			break;
 
-			case FATIGUE: {
-				if (person.getPhysicalCondition().isDead())
-					result = "";
-				else
+			case FATIGUE:
+				if (!person.getPhysicalCondition().isDead())
 					result = PhysicalCondition.getFatigueStatus(person.getPhysicalCondition().getFatigue());
-			}
-			break;
+				break;
 
-			case STRESS: {
-				if (person.getPhysicalCondition().isDead())
-					result = "";
-				else
+			case STRESS:
+				if (!person.getPhysicalCondition().isDead())
 					result = PhysicalCondition.getStressStatus(person.getPhysicalCondition().getStress());
-			}
-			break;
+				break;
 
-			case PERFORMANCE: {
-				if (person.getPhysicalCondition().isDead())
-					result = "";
-				else
+			case PERFORMANCE:
+				if (!person.getPhysicalCondition().isDead())
 					result = PhysicalCondition.getPerformanceStatus(person.getPhysicalCondition().getPerformanceFactor() * 100D);
-			}
-			break;
+				break;
 
-			case EMOTION: {
-				if (person.getPhysicalCondition().isDead())
-					result = "";
-				else
+			case EMOTION: 
+				if (!person.getPhysicalCondition().isDead())
 					result = person.getMind().getEmotion().getDescription();
-			}
-			break;
+				break;
 
-			case HEALTH: {
+			case HEALTH: 
 				result = person.getPhysicalCondition().getHealthSituation();
-			}
 				break;
 
-			case LOCATION: {
+			case LOCATION:
 				result = person.getLocationTag().getQuickLocation();
-			}
 				break;
 
-			case ROLE: {
-				if (person.getPhysicalCondition().isDead())
-					result = "";
-				else {
+			case ROLE:
+				if (!person.getPhysicalCondition().isDead()) {
 					Role role = person.getRole();
 					if (role != null) {
 						result = role.getType().getName();
-					} else {
-						result = null;
 					}
 				}
-			}
 				break;
 
-			case JOB: {
+			case JOB:
 				// If person is dead, get job from death info.
 				if (person.getPhysicalCondition().isDead())
 					result = person.getPhysicalCondition().getDeathDetails().getJob().getName();
-				else {
-					if (person.getMind().getJob() != null)
-						result = person.getMind().getJob().getName();
-					else
-						result = null;
-				}
-			}
+				else if (person.getMind().getJob() != null)
+					result = person.getMind().getJob().getName();
 				break;
 
-			case SHIFT: {
+			case SHIFT:
 				// If person is dead, disable it.
-				if (person.getPhysicalCondition().isDead())
-					result = "";
-				else {
-					ShiftSlot shift = person.getShiftSlot();
-		
+				if (!person.getPhysicalCondition().isDead()) {
+					ShiftSlot shift = person.getShiftSlot();		
 					if (shift.getStatus() == WorkStatus.ON_CALL) {
 						result = "On Call";
 					}
@@ -386,12 +355,13 @@ public class PersonTableModel extends UnitTableModel<Person> {
 						result = shift.getShift().getName();
 					}
 				}
-			}
+				break;
+			
+			default:
+				throw new IllegalArgumentException("Unknown column " + columnIndex);
 		}
 		return result;
 	}
-
-
 	
 	/**
 	 * Prepares the model for deletion.
