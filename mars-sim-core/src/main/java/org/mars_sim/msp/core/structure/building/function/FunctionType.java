@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * FunctionType.java
- * @date 2022-06-21
+ * @date 2023-09-19
  * @author stpa				
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -12,7 +12,8 @@ import org.mars_sim.msp.core.robot.RobotType;
 public enum FunctionType {
 
     ADMINISTRATION              (Msg.getString("FunctionType.administration")), //$NON-NLS=1$
-	ASTRONOMICAL_OBSERVATION	(Msg.getString("FunctionType.astronomicalObservations")), //$NON-NLS-1$
+	ALGAE_FARMING				(Msg.getString("FunctionType.algaeFarming")), //$NON-NLS-1$
+    ASTRONOMICAL_OBSERVATION	(Msg.getString("FunctionType.astronomicalObservations")), //$NON-NLS-1$
 	BUILDING_CONNECTION			(Msg.getString("FunctionType.buildingConnection")), //$NON-NLS-1$
 	COMMUNICATION				(Msg.getString("FunctionType.communication")), //$NON-NLS-1$
 	COMPUTATION					(Msg.getString("FunctionType.computation")), //$NON-NLS-1$

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ResourceUtil.java
- * @date 2022-07-18
+ * @date 2023-09-19
  * @author Manny Kung
  */
 
@@ -99,10 +99,11 @@ public class ResourceUtil implements Serializable {
 	public static final String FISH_OIL = "fish oil";
 	public static final String OLIVE_OIL = "olive oil";
 	
-	public static final String TOILET_TISSUE = "toilet tissue";
-	public static final String SOYMILK = "soymilk";
-	public static final String LEAVES = "leaves";
-	public static final String FISH_MEAT = "fish meat";
+	public static final String TOILET_TISSUE = "Toilet tissue";
+	public static final String SOYMILK = "Soymilk";
+	public static final String LEAVES = "Leaves";
+	public static final String FISH_MEAT = "Fish meat";
+	public static final String SPIRULINA = "Spirulina";
 
 	protected static Set<Integer> essentialResources;
 	
@@ -222,7 +223,8 @@ public class ResourceUtil implements Serializable {
 	public static int[] REGOLITH_TYPES = new int[4];
 
 	public static int fishMeatID;
-
+	public static int spirulinaID;
+	
 	public static AmountResource foodAR;
 	public static AmountResource oxygenAR;
 	public static AmountResource waterAR;
@@ -491,7 +493,8 @@ public class ResourceUtil implements Serializable {
 				regolithDID};
 
 		fishMeatID = findIDbyAmountResourceName(FISH_MEAT);
-
+		spirulinaID = findIDbyAmountResourceName(SPIRULINA);
+				
 		// AmountResource instances as objects
 		foodAR = findAmountResource(FOOD);
 		waterAR = findAmountResource(WATER);

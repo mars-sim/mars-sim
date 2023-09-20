@@ -81,7 +81,8 @@ class AmountResourceGood extends Good {
 	private static final double DERIVED_COST = .07;
 	private static final double SOY_COST = .05;
 	private static final double CROP_COST = 5;
-	private static final double ANIMAL_COST = .1;
+	private static final double ANIMAL_COST = 10;
+	private static final double ORGANISM_COST = 10;
 	private static final double CHEMICAL_COST = 0.01;
 	private static final double MEDICAL_COST = 0.01;
 	private static final double WASTE_COST = 0.0001;
@@ -250,7 +251,9 @@ class AmountResourceGood extends Good {
             else if (type == GoodType.SOY_BASED)
                 result += SOY_COST;
             else if (type == GoodType.ANIMAL)
-                result += ANIMAL_COST;
+                result += ANIMAL_COST;        
+            else if (type == GoodType.ORGANISM)
+                result += ORGANISM_COST;
             else
                 result += FOOD_COST;
         }
