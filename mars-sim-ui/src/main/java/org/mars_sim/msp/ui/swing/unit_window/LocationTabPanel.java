@@ -125,6 +125,10 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		// Initialize location cache
 		locationCache = unit.getCoordinates();
 
+		if (locationCache == null) {
+			locationCache = unit.getContainerUnit().getCoordinates();
+		}
+		
 		String dir_N_S = null;
 		String dir_E_W = null;
 		if (locationCache.getLatitudeDouble() >= 0)
@@ -472,6 +476,11 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		// TODO: if a person goes outside the settlement for servicing an equipment
 		// does the coordinate (down to how many decimal) change?
 		Coordinates location = unit.getCoordinates();
+		
+		if (location == null) {
+			location = unit.getContainerUnit().getCoordinates();
+		}
+		
 		if (!locationCache.equals(location)) {
 			locationCache = location;
 
