@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.vehicle.Crewable;
  * source of the list is the Unit Manager. It maps key attributes of the Person
  * into Columns.
  */
-@SuppressWarnings("serial")
 public class PersonTableModel extends UnitTableModel<Person> {
 
 	// Column indexes
@@ -58,9 +57,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	/** The number of Columns. */
 	private static final int COLUMNCOUNT = 14;
 	/** Names of Columns. */
-	private static String[] columnNames;
-	/** Types of Columns. */
-	private static Class<?>[] columnTypes;
+	private static final ColumnSpec[] COLUMNS;
+
 	private static Map<UnitEventType, Integer> eventColumnMapping;
 
 	private static final String DEYDRATED = "Deydrated";
@@ -70,36 +68,21 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	 * The static initializer creates the name & type arrays.
 	 */
 	static {
-		columnNames = new String[COLUMNCOUNT];
-		columnTypes = new Class[COLUMNCOUNT];
-		columnNames[NAME] = Msg.getString("PersonTableModel.column.name"); //$NON-NLS-1$
-		columnTypes[NAME] = String.class;
-		columnNames[HEALTH] = Msg.getString("PersonTableModel.column.health"); //$NON-NLS-1$
-		columnTypes[HEALTH] = String.class;
-		columnNames[ENERGY] = Msg.getString("PersonTableModel.column.energy"); //$NON-NLS-1$
-		columnTypes[ENERGY] = String.class;
-		columnNames[WATER] = Msg.getString("PersonTableModel.column.water"); //$NON-NLS-1$
-		columnTypes[WATER] = String.class;
-		columnNames[FATIGUE] = Msg.getString("PersonTableModel.column.fatigue"); //$NON-NLS-1$
-		columnTypes[FATIGUE] = String.class;
-		columnNames[STRESS] = Msg.getString("PersonTableModel.column.stress"); //$NON-NLS-1$
-		columnTypes[STRESS] = String.class;
-		columnNames[PERFORMANCE] = Msg.getString("PersonTableModel.column.performance"); //$NON-NLS-1$
-		columnTypes[PERFORMANCE] = String.class;
-		columnNames[EMOTION] = Msg.getString("PersonTableModel.column.emotion"); //$NON-NLS-1$
-		columnTypes[EMOTION] = String.class;
-		columnNames[LOCATION] = Msg.getString("PersonTableModel.column.location"); //$NON-NLS-1$
-		columnTypes[LOCATION] = String.class;
-		columnNames[ROLE] = Msg.getString("PersonTableModel.column.role"); //$NON-NLS-1$
-		columnTypes[ROLE] = String.class;
-		columnNames[JOB] = Msg.getString("PersonTableModel.column.job"); //$NON-NLS-1$
-		columnTypes[JOB] = String.class;
-		columnNames[SHIFT] = Msg.getString("PersonTableModel.column.shift"); //$NON-NLS-1$
-		columnTypes[SHIFT] = String.class;
-		columnNames[MISSION_COL] = Msg.getString("PersonTableModel.column.mission"); //$NON-NLS-1$
-		columnTypes[MISSION_COL] = String.class;
-		columnNames[TASK] = Msg.getString("PersonTableModel.column.task"); //$NON-NLS-1$
-		columnTypes[TASK] = String.class;
+		COLUMNS = new ColumnSpec[COLUMNCOUNT];
+		COLUMNS[NAME] = new ColumnSpec(Msg.getString("PersonTableModel.column.name"), String.class);
+		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("PersonTableModel.column.health"), String.class);
+		COLUMNS[ENERGY] = new ColumnSpec(Msg.getString("PersonTableModel.column.energy"), String.class);
+		COLUMNS[WATER] = new ColumnSpec(Msg.getString("PersonTableModel.column.water"), String.class);
+		COLUMNS[FATIGUE] = new ColumnSpec(Msg.getString("PersonTableModel.column.fatigue"), String.class);
+		COLUMNS[STRESS] = new ColumnSpec(Msg.getString("PersonTableModel.column.stress"), String.class);
+		COLUMNS[PERFORMANCE] = new ColumnSpec(Msg.getString("PersonTableModel.column.performance"), String.class);
+		COLUMNS[EMOTION] = new ColumnSpec(Msg.getString("PersonTableModel.column.emotion"), String.class);
+		COLUMNS[LOCATION] = new ColumnSpec(Msg.getString("PersonTableModel.column.location"), String.class);
+		COLUMNS[ROLE] = new ColumnSpec(Msg.getString("PersonTableModel.column.role"), String.class);
+		COLUMNS[JOB] = new ColumnSpec(Msg.getString("PersonTableModel.column.job"), String.class);
+		COLUMNS[SHIFT] = new ColumnSpec(Msg.getString("PersonTableModel.column.shift"), String.class);
+		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("PersonTableModel.column.mission"), String.class);
+		COLUMNS[TASK] = new ColumnSpec(Msg.getString("PersonTableModel.column.task"), String.class);
 
 		eventColumnMapping = new EnumMap<>(UnitEventType.class);
 		eventColumnMapping.put(UnitEventType.NAME_EVENT, NAME);
@@ -129,13 +112,13 @@ public class PersonTableModel extends UnitTableModel<Person> {
 
 	private ValidSourceType sourceType;
 
-	private Crewable vehicle;
+	private transient Crewable vehicle;
 	private Settlement settlement;
 	private Mission mission;
 
-	private UnitListener crewListener;
-	private UnitListener settlementListener;
-	private MissionListener missionListener;
+	private transient UnitListener crewListener;
+	private transient UnitListener settlementListener;
+	private transient MissionListener missionListener;
 
 	/**
 	 * Constructs a PersonTableModel object that displays all people from the
@@ -148,8 +131,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		super(UnitType.PERSON, Msg.getString("PersonTableModel.nameVehicle", //$NON-NLS-1$
 				((Unit)vehicle).getName()), 
 				"PersonTableModel.countingPeople", //$NON-NLS-1$
-				columnNames, 
-				columnTypes);
+				COLUMNS);
 
 		setupCache();
 
@@ -176,7 +158,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				),
 				(allAssociated ? "PersonTableModel.countingCitizens" : //$NON-NLS-1$
 								 "PersonTableModel.countingIndoor" //$NON-NLS-1$
-				), columnNames, columnTypes);
+				), COLUMNS);
 		setupCache();
 		sourceType = (allAssociated ? ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE
 							: ValidSourceType.SETTLEMENT_INHABITANTS);
@@ -193,7 +175,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	public PersonTableModel(Mission mission)  {
 		super(UnitType.PERSON, Msg.getString("PersonTableModel.nameMission", //$NON-NLS-1$
 				mission.getName()), "PersonTableModel.countingMissionMembers", //$NON-NLS-1$
-				columnNames, columnTypes);
+				COLUMNS);
 		
 		setupCache();
 
@@ -284,124 +266,88 @@ public class PersonTableModel extends UnitTableModel<Person> {
 			break;
 
 			case MISSION_COL: {
-				mission = person.getMind().getMission();
-				if (mission != null) {
-					result = mission.getFullMissionDesignation();
+				var m = person.getMind().getMission();
+				if (m != null) {
+					result = m.getFullMissionDesignation();
 				}
 			}
 			break;
 
-			case NAME: {
+			case NAME:
 				result = person.getName();
-			}
 			break;
 
 			case ENERGY: {
 				PhysicalCondition pc = person.getPhysicalCondition();
-				if (pc.isDead())
-					result = "";
-				else if (pc.isStarving())
-					result = STARVING;
-				else {
-					result = PhysicalCondition.getHungerStatus(pc.getHunger(), pc.getEnergy());
+				if (!pc.isDead()) {
+					if (pc.isStarving())
+						result = STARVING;
+					else
+						result = PhysicalCondition.getHungerStatus(pc.getHunger(), pc.getEnergy());
 				}
 			}
 			break;
 
 			case WATER: {
 				PhysicalCondition pc = person.getPhysicalCondition();
-				if (pc.isDead())
-					result = "";
-				else if (pc.isDehydrated())
-					result = DEYDRATED;
-				else {
-					result = PhysicalCondition.getThirstyStatus(pc.getThirst());
+				if (!pc.isDead()) {
+					if (pc.isDehydrated())
+						result = DEYDRATED;
+					else
+						result = PhysicalCondition.getThirstyStatus(pc.getThirst());
 				}
 			}
 			break;
 
-			case FATIGUE: {
-				// double fatigue = person.getPhysicalCondition().getFatigue();
-				// result = new Float(fatigue).intValue();
-				if (person.getPhysicalCondition().isDead())
-					result = "";
-				else
+			case FATIGUE:
+				if (!person.getPhysicalCondition().isDead())
 					result = PhysicalCondition.getFatigueStatus(person.getPhysicalCondition().getFatigue());
-			}
-			break;
+				break;
 
-			case STRESS: {
-				// double stress = person.getPhysicalCondition().getStress();
-				// result = new Double(stress).intValue();
-				if (person.getPhysicalCondition().isDead())
-					result = "";
-				else
+			case STRESS:
+				if (!person.getPhysicalCondition().isDead())
 					result = PhysicalCondition.getStressStatus(person.getPhysicalCondition().getStress());
-			}
-			break;
+				break;
 
-			case PERFORMANCE: {
-				// double performance = person.getPhysicalCondition().getPerformanceFactor();
-				// result = new Float(performance * 100D).intValue();
-				if (person.getPhysicalCondition().isDead())
-					result = "";
-				else
+			case PERFORMANCE:
+				if (!person.getPhysicalCondition().isDead())
 					result = PhysicalCondition.getPerformanceStatus(person.getPhysicalCondition().getPerformanceFactor() * 100D);
-			}
-			break;
+				break;
 
-			case EMOTION: {
-				if (person.getPhysicalCondition().isDead())
-					result = "";
-				else
+			case EMOTION: 
+				if (!person.getPhysicalCondition().isDead())
 					result = person.getMind().getEmotion().getDescription();
-			}
-			break;
+				break;
 
-			case HEALTH: {
+			case HEALTH: 
 				result = person.getPhysicalCondition().getHealthSituation();
-			}
 				break;
 
-			case LOCATION: {
+			case LOCATION:
 				result = person.getLocationTag().getQuickLocation();
-			}
 				break;
 
-			case ROLE: {
-				if (person.getPhysicalCondition().isDead())
-					result = "";
-				else {
+			case ROLE:
+				if (!person.getPhysicalCondition().isDead()) {
 					Role role = person.getRole();
 					if (role != null) {
 						result = role.getType().getName();
-					} else {
-						result = null;
 					}
 				}
-			}
 				break;
 
-			case JOB: {
+			case JOB:
 				// If person is dead, get job from death info.
 				if (person.getPhysicalCondition().isDead())
 					result = person.getPhysicalCondition().getDeathDetails().getJob().getName();
-				else {
-					if (person.getMind().getJob() != null)
-						result = person.getMind().getJob().getName();
-					else
-						result = null;
-				}
-			}
+				else if (person.getMind().getJob() != null)
+					result = person.getMind().getJob().getName();
 				break;
 
-			case SHIFT: {
+			case SHIFT:
 				// If person is dead, disable it.
-				if (person.getPhysicalCondition().isDead())
-					result = "";
-				else {
-					ShiftSlot shift = person.getShiftSlot();
-		
+				if (!person.getPhysicalCondition().isDead()) {
+					ShiftSlot shift = person.getShiftSlot();		
 					if (shift.getStatus() == WorkStatus.ON_CALL) {
 						result = "On Call";
 					}
@@ -409,12 +355,13 @@ public class PersonTableModel extends UnitTableModel<Person> {
 						result = shift.getShift().getName();
 					}
 				}
-			}
+				break;
+			
+			default:
+				throw new IllegalArgumentException("Unknown column " + columnIndex);
 		}
 		return result;
 	}
-
-
 	
 	/**
 	 * Prepares the model for deletion.
