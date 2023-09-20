@@ -54,6 +54,7 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_KM = new DecimalFormat("#,##0.00 km");
     public static final DecimalFormat DECIMAL_KMH = new DecimalFormat("##0.00 km/h");
     public static final DecimalFormat DECIMAL_KG = new DecimalFormat("#,##0.0 kg");
+    public static final DecimalFormat DECIMAL_KG2 = new DecimalFormat("#,##0.00 kg");
     public static final DecimalFormat DECIMAL_KW = new DecimalFormat("#,##0.0 kW");
     public static final DecimalFormat DECIMAL_KWH = new DecimalFormat("#,##0.0 kWh");
     public static final DecimalFormat DECIMAL_PERC = new DecimalFormat("0 '%'");

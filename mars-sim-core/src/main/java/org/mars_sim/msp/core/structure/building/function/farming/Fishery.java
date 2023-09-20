@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Fishery.java
- * @date 2023-09-03
+ * @date 2023-09-19
  * @author Barry Evans
  */
 
@@ -14,7 +14,7 @@ import java.util.logging.Level;
 
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -399,8 +399,14 @@ public class Fishery extends Function {
 		return surplus;
 	}
 
-
-	public double catchFish(Person fisher, double workTime) {
+	/**
+	 * Catches some fish.
+	 * 
+	 * @param fisher
+	 * @param workTime
+	 * @return
+	 */
+	public double catchFish(Worker fisher, double workTime) {
 		if (fish.size() <= idealFish) {
 			return workTime;
 		}
@@ -409,7 +415,7 @@ public class Fishery extends Function {
 		int rand = RandomUtil.getRandomInt(fish.size());
 		if (rand > idealFish) {
 			// Catch one
-			logger.log(building, fisher, Level.FINE, 0, "Fish caught, stock=" + fish.size(), null);
+			logger.log(building, fisher, Level.FINE, 0, "One fish caught. Stock:" + fish.size(), null);
 			Herbivore removed = fish.remove(1);
 			
 			// Fish stored as KG, 90% is useful
@@ -423,7 +429,8 @@ public class Fishery extends Function {
 
 
 	/**
-	 * What is the demand for the weeds to be tendered
+	 * Gets the demand for the weeds to be tendered.
+	 * 
 	 * @return
 	 */
 	public int getWeedDemand() {

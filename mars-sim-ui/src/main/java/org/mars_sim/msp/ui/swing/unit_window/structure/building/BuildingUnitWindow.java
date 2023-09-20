@@ -42,6 +42,9 @@ public class BuildingUnitWindow extends UnitWindow {
         for (Function f : building.getFunctions()) {
         	switch (f.getFunctionType()) {
 
+			case ALGAE_FARMING:
+				addTabPanel( new BuildingPanelAlgae(building.getAlgae(), desktop));
+				break;
 			case ASTRONOMICAL_OBSERVATION:
 				addTabPanel( new BuildingPanelAstronomicalObservation(building.getAstronomicalObservation(), desktop));
 				break;

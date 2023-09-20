@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Building.java
- * @date 2021-08-28
+ * @date 2023-09-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -84,6 +84,7 @@ import org.mars_sim.msp.core.structure.building.function.WasteProcessing;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.Dining;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
+import org.mars_sim.msp.core.structure.building.function.farming.AlgaeFarming;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -157,6 +158,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	protected MalfunctionManager malfunctionManager;
 
 	private Administration admin;
+	private AlgaeFarming algae;
 	private AstronomicalObservation astro;
 	private Communication comm;
 	private Computation computation;
@@ -368,6 +370,12 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return admin;
 	}
 
+	public AlgaeFarming getAlgae() {
+		if (algae == null)
+			algae = (AlgaeFarming) getFunction(FunctionType.ALGAE_FARMING);
+		return algae;
+	}
+	
 	public AstronomicalObservation getAstronomicalObservation() {
 		if (astro == null)
 			astro = (AstronomicalObservation) getFunction(FunctionType.ASTRONOMICAL_OBSERVATION);
@@ -643,6 +651,10 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				buildingFunctions.add(new Administration(this, fSpec));
 				break;
 
+			case ALGAE_FARMING:
+				buildingFunctions.add(new AlgaeFarming(this, fSpec));
+				break;
+				
 			case ASTRONOMICAL_OBSERVATION:
 				buildingFunctions.add(new AstronomicalObservation(this, fSpec));
 				break;

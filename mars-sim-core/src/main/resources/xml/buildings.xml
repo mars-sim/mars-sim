@@ -17,7 +17,7 @@
 	<!ATTLIST power-required base-power CDATA #REQUIRED>
 	<!ATTLIST power-required base-power-down-power CDATA #REQUIRED>
 
-	<!ELEMENT functions (administration?, astronomical-observation?, building-connection?,
+	<!ELEMENT functions (administration?, algae-farming?, astronomical-observation?, building-connection?,
 	communication?, computation?, cooking?, dining?, earth-return?, EVA?, exercise?, food-production?, farming?, fishery?,
 	vehicle-maintenance?, life-support?, living-accommodations?, management?, manufacture?,
 	medical-care?, power-generation?, power-storage?, preparing-dessert?, recreation?, research?,
@@ -26,6 +26,8 @@
 	<!ELEMENT administration (activity?)>
 	<!ATTLIST administration capacity CDATA #REQUIRED>
 	<!ATTLIST administration population-support CDATA #REQUIRED>
+	<!ELEMENT algae-farming (activity?)>
+	<!ATTLIST algae-farming capacity CDATA #REQUIRED>
 	<!ELEMENT astronomical-observation (activity?)>
 	<!ATTLIST astronomical-observation tech-level CDATA #REQUIRED>
 	<!ATTLIST astronomical-observation capacity CDATA #REQUIRED>
@@ -1024,10 +1026,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</resource-processing>
 
-			<robotic-station capacity="3">
+			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="1.6" yloc="0.0" />
-					<activity-spot xloc="-1.6" yloc="0.0" />
 					<activity-spot xloc="1.6" yloc="-2.45" />
 					<activity-spot xloc="-1.6" yloc="2.45" />
 				</activity>
@@ -1042,6 +1042,53 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 <!-- end for fish farm -->
+
+	<building type="Algae Pond" width="6.0" length="9.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="3000">
+		<description>
+			The Algae Pond is a building that grows spirulina in pond. 
+			It is also furnished with a biology research lab with instruments.
+		</description>
+		<power-required base-power="4.0" base-power-down-power="0.4" />
+
+		<functions>
+			<algae-farming capacity="10000">
+				<activity>
+					<activity-spot xloc="0" yloc="2" />
+					<activity-spot xloc="0" yloc="1" />
+					<activity-spot xloc="0" yloc="-1" />
+					<activity-spot xloc="0" yloc="-2" />
+				</activity>
+			</algae-farming>
+
+			<life-support capacity="4" power-required=".8" />
+
+			<power-storage capacity="80"  discharge-rate="1.25"/>
+
+			<research tech-level="2" capacity="4">
+				<research-specialty name="BIOLOGY" />
+				<activity>
+					<activity-spot xloc=".9" yloc="2" />
+					<activity-spot xloc="2.3" yloc="-2" />
+				</activity>
+			</research>
+
+			<robotic-station capacity="2">
+				<activity>
+					<activity-spot xloc="1.6" yloc="-2.45" />
+					<activity-spot xloc="-1.6" yloc="2.45" />
+				</activity>
+			</robotic-station>
+
+			<thermal-generation>
+				<heat-source type="Solar Heating" capacity="10.0" />
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	consumption-rate="47.9385" capacity="30.0" />
+				<heat-source type="Electric Heating" capacity="50.0" />
+			</thermal-generation>
+		</functions>
+	</building>
+<!-- end for algae pond -->
 
 	<building type="ERV-A" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="100" room-temperature="0" base-mass="3000">

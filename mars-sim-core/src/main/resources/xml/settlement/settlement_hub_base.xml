@@ -183,7 +183,7 @@
         </connection-list>
     </building>
     
-    <building id="22" type="Inflatable Greenhouse" xloc="-68.5" yloc="100" facing="270.0">
+    <building id="22" type="Algae Pond" xloc="-68.5" yloc="100" facing="270.0">
         <connection-list>
             <connection id="23" hatch-facing="west" />
             <connection id="21" hatch-facing="east" />
