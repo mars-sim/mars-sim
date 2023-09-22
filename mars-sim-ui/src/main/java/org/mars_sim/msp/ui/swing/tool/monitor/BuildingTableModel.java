@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
  * The BuildingTableModel maintains a list of Building objects. By defaults the source
  * of the list is the Unit Manager. 
  */
-@SuppressWarnings("serial")
 public class BuildingTableModel extends UnitTableModel<Building> {
 
 	// Column indexes
@@ -35,7 +34,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	private static final int COLUMNCOUNT = 8;
 
 	/** Names of Columns. */
-	private static ColumnSpec[] COLUMNS;
+	private static final ColumnSpec[] COLUMNS;
 
 	/**
 	 * The static initializer creates the name & type arrays.

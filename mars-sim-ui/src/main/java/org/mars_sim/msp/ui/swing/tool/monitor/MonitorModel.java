@@ -35,13 +35,6 @@ interface MonitorModel extends TableModel {
 	public Object getObject(int row);
 
 	/**
-	 * Has this model got a natural order that the model conforms to. If this
-	 * value is true, then it implies that the user should not be allowed to
-	 * order.
-	 */
-	public boolean getOrdered();
-
-	/**
 	 * Prepares the model for deletion.
 	 */
 	public void destroy();

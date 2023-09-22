@@ -33,7 +33,6 @@ import org.mars_sim.msp.core.vehicle.Crewable;
  * of the list is the Unit Manager. It maps key attributes of the Robot into
  * Columns.
  */
-@SuppressWarnings("serial")
 public class RobotTableModel extends UnitTableModel<Robot> {
 
 	/**
@@ -281,9 +280,9 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 				break;
 
 			case MISSION_COL: 
-				Mission mission = robot.getBotMind().getMission();
-				if (mission != null) {
-					result = mission.getName();
+				Mission m = robot.getBotMind().getMission();
+				if (m != null) {
+					result = m.getName();
 				}
 				break;
 		

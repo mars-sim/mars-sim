@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.structure.Settlement;
  * This class model how food data is organized and displayed
  * within the Monitor Window for a settlement.
  */
-@SuppressWarnings("serial")
 public class FoodInventoryTableModel extends EntityTableModel<Food>
 implements UnitListener {
 	
@@ -54,7 +53,7 @@ implements UnitListener {
 		COLUMNS[NATIONAL_VP_COL] = new ColumnSpec("National VP", Double.class);
 		COLUMNS[COST_COL] = new ColumnSpec("Cost [$]", Double.class);
 		COLUMNS[PRICE_COL] = new ColumnSpec("Price [$]", Double.class);
-	};
+	}
 
 	private Settlement selectedSettlement;
 	private boolean monitorSettlement = false;
@@ -87,14 +86,7 @@ implements UnitListener {
 		}
 	}
 
-	/**
-	 * Has this model got a natural order that the model conforms to. If this value
-	 * is true, then it implies that the user should not be allowed to order.
-	 */
-	public boolean getOrdered() {
-		return false;
-	}
-
+	@Override
 	protected Object getEntityValue(Food selectedFood, int columnIndex) {
 		switch(columnIndex) {
 			case 0:

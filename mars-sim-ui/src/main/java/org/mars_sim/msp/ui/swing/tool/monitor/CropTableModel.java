@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 /**
  * The CropTableModel keeps track of the quantity of the growing crops in each greenhouse by categories.
  */
-@SuppressWarnings("serial")
 public class CropTableModel extends UnitTableModel<Building> {
 
 	// Column indexes

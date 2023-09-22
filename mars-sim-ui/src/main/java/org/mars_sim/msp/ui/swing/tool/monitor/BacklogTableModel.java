@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.structure.Settlement;
  * This class models how SettlementTasks are organized and displayed
  * within the Monitor Window for a settlement.
  */
-@SuppressWarnings("serial")
 public class BacklogTableModel extends AbstractMonitorModel
 					implements UnitListener {
 
@@ -41,10 +40,10 @@ public class BacklogTableModel extends AbstractMonitorModel
 		COLUMNS = new ColumnSpec[SCORE_COL+1];
 		COLUMNS[ENTITY_COL] = new ColumnSpec("Entity", String.class);
 		COLUMNS[DESC_COL] = new ColumnSpec("Description", String.class);
-		COLUMNS[DEMAND_COL]  = new ColumnSpec("Demand", String.class);
+		COLUMNS[DEMAND_COL]  = new ColumnSpec("Demand", Integer.class);
 		COLUMNS[EVA_COL]  = new ColumnSpec("EVA", String.class);
 		COLUMNS[SCORE_COL] = new ColumnSpec("Score", Double.class);
-	};
+	}
 
 	private Settlement selectedSettlement;
 	private boolean monitorSettlement = false;
@@ -76,14 +75,6 @@ public class BacklogTableModel extends AbstractMonitorModel
 		}
 	}
 
-	/**
-	 * Has this model got a natural order that the model conforms to ?
-	 * If true, then it implies that the user should not be allowed to order.
-	 */
-	public boolean getOrdered() {
-		return false;
-	}
-    
 	/**
 	 * The Object 
 	 */
@@ -232,7 +223,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 			case DESC_COL:
 				return selectedTask.getShortName();
 			case EVA_COL:
-				return selectedTask.isEVA();
+				return (selectedTask.isEVA() ? "Yes" : "No");
 			case DEMAND_COL:
 				return selectedTask.getDemand();
 			case SCORE_COL:
