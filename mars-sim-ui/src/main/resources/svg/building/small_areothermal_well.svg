@@ -2,20 +2,20 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="500"
    height="1000"
    id="svg2"
    version="1.1"
-   inkscape:version="0.47 r22583"
-   sodipodi:docname="small_areothermal_well.svg">
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   sodipodi:docname="small_areothermal_well.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs4">
     <linearGradient
@@ -432,37 +432,47 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.557"
-     inkscape:cx="250"
-     inkscape:cy="500"
+     inkscape:zoom="0.78771695"
+     inkscape:cx="350.37966"
+     inkscape:cy="427.1839"
      inkscape:document-units="px"
-     inkscape:current-layer="layer5"
+     inkscape:current-layer="layer2"
      showgrid="true"
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-global="true"
-     inkscape:window-width="1440"
-     inkscape:window-height="825"
-     inkscape:window-x="0"
-     inkscape:window-y="24"
+     inkscape:window-width="1920"
+     inkscape:window-height="1057"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:snap-grids="true"
-     inkscape:snap-to-guides="false">
+     inkscape:snap-to-guides="false"
+     inkscape:showpageshadow="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1">
     <sodipodi:guide
        orientation="0,1"
        position="157.98923,499.10233"
-       id="guide3588" />
+       id="guide3588"
+       inkscape:locked="false" />
     <sodipodi:guide
        orientation="1,0"
        position="249.55117,96.947935"
-       id="guide3590" />
+       id="guide3590"
+       inkscape:locked="false" />
     <inkscape:grid
        type="xygrid"
        id="grid3592"
        empspacing="5"
        visible="true"
        enabled="true"
-       snapvisiblegridlinesonly="true" />
+       snapvisiblegridlinesonly="true"
+       originx="0"
+       originy="0"
+       spacingy="1"
+       spacingx="1"
+       units="px" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -655,34 +665,38 @@
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="water pump">
-    <path
-       sodipodi:type="arc"
-       style="fill:#00007b;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       id="path3650"
-       sodipodi:cx="249.55116"
-       sodipodi:cy="900"
-       sodipodi:rx="40"
-       sodipodi:ry="40"
-       d="m 289.55116,900 a 40,40 0 1 1 -80,0 40,40 0 1 1 80,0 z" />
-    <path
-       sodipodi:type="arc"
-       style="fill:#1a18b3;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       id="path3654"
-       sodipodi:cx="249.55116"
-       sodipodi:cy="900"
-       sodipodi:rx="30.44883"
-       sodipodi:ry="30.44883"
-       d="m 279.99999,900 a 30.44883,30.44883 0 1 1 -60.89766,0 30.44883,30.44883 0 1 1 60.89766,0 z" />
-    <path
-       sodipodi:type="arc"
-       style="fill:url(#radialGradient3682);fill-opacity:1;fill-rule:nonzero;stroke:none"
-       id="path3658"
-       sodipodi:cx="249.55116"
-       sodipodi:cy="899.46143"
-       sodipodi:rx="21.543985"
-       sodipodi:ry="21.543985"
-       d="m 271.09515,899.46143 a 21.543985,21.543985 0 1 1 -43.08797,0 21.543985,21.543985 0 1 1 43.08797,0 z"
-       transform="translate(-3.8339802e-8,1.3464991)" />
+    <g
+       id="g1"
+       inkscape:label="circular pump">
+      <path
+         sodipodi:type="arc"
+         style="fill:#00007b;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         id="path3650"
+         sodipodi:cx="249.55116"
+         sodipodi:cy="900"
+         sodipodi:rx="40"
+         sodipodi:ry="40"
+         d="m 289.55116,900 a 40,40 0 1 1 -80,0 40,40 0 1 1 80,0 z" />
+      <path
+         sodipodi:type="arc"
+         style="fill:#1a18b3;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         id="path3654"
+         sodipodi:cx="249.55116"
+         sodipodi:cy="900"
+         sodipodi:rx="30.44883"
+         sodipodi:ry="30.44883"
+         d="m 279.99999,900 a 30.44883,30.44883 0 1 1 -60.89766,0 30.44883,30.44883 0 1 1 60.89766,0 z" />
+      <path
+         sodipodi:type="arc"
+         style="fill:url(#radialGradient3682);fill-opacity:1;fill-rule:nonzero;stroke:none"
+         id="path3658"
+         sodipodi:cx="249.55116"
+         sodipodi:cy="899.46143"
+         sodipodi:rx="21.543985"
+         sodipodi:ry="21.543985"
+         d="m 271.09515,899.46143 a 21.543985,21.543985 0 1 1 -43.08797,0 21.543985,21.543985 0 1 1 43.08797,0 z"
+         transform="translate(-3.8339802e-8,1.3464991)" />
+    </g>
     <rect
        style="fill:url(#linearGradient3694);fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="rect3686"
@@ -690,7 +704,8 @@
        height="20"
        x="260"
        y="890"
-       ry="10" />
+       ry="10"
+       inkscape:label="horizontal pipe" />
     <rect
        style="fill:url(#linearGradient3706);fill-opacity:1.0;fill-rule:nonzero;stroke:none"
        id="rect3698"
@@ -698,7 +713,8 @@
        height="69.999954"
        x="345"
        y="840"
-       ry="10" />
+       ry="10"
+       inkscape:label="vertical pipe" />
     <rect
        style="fill:#1a1863;fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="rect3708"
@@ -706,7 +722,8 @@
        height="20"
        x="345"
        y="890"
-       ry="0" />
+       ry="0"
+       inkscape:label="joint" />
     <rect
        style="fill:url(#linearGradient3718);fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="rect3710"
@@ -714,7 +731,8 @@
        height="5"
        x="-413.91647"
        y="890.94366"
-       transform="matrix(0.69658509,-0.71747419,0.71747419,0.69658509,0,0)" />
+       transform="matrix(0.69658509,-0.71747419,0.71747419,0.69658509,0,0)"
+       inkscape:label="angular plate" />
   </g>
   <g
      inkscape:groupmode="layer"
