@@ -1015,21 +1015,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<research tech-level="2" capacity="4">
 				<research-specialty name="BIOLOGY" />
 				<activity>
-					<activity-spot xloc=".9" yloc="2" />
-					<activity-spot xloc="2.3" yloc="-2" />
+					<activity-spot xloc="-1.7" yloc="3.6" />
+					<activity-spot xloc="1.7" yloc="3.6" />
 				</activity>
 			</research>
-			<resource-processing power-down-level="0.0">
-				<process-engine name="Carbon Dioxide Pump" number-modules="3"/>
-				<activity>
-					<activity-spot xloc="-2.5" yloc="4" />
-				</activity>
-			</resource-processing>
 
 			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="1.6" yloc="-2.45" />
-					<activity-spot xloc="-1.6" yloc="2.45" />
+					<activity-spot xloc="2.6" yloc="-1.0" />
+					<activity-spot xloc="-2.6" yloc="1.0" />
 				</activity>
 			</robotic-station>
 
@@ -1054,10 +1048,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<algae-farming capacity="10000">
 				<activity>
-					<activity-spot xloc="0" yloc="2" />
-					<activity-spot xloc="0" yloc="1" />
-					<activity-spot xloc="0" yloc="-1" />
-					<activity-spot xloc="0" yloc="-2" />
+					<activity-spot xloc="2.7" yloc="4.0" />
+					<activity-spot xloc="2.7" yloc="-4.0" />
+					<activity-spot xloc="-2.7" yloc="-4.0" />
+					<activity-spot xloc="-2.7" yloc="4.0" />
 				</activity>
 			</algae-farming>
 
@@ -1068,15 +1062,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<research tech-level="2" capacity="4">
 				<research-specialty name="BIOLOGY" />
 				<activity>
-					<activity-spot xloc=".9" yloc="2" />
-					<activity-spot xloc="2.3" yloc="-2" />
+					<activity-spot xloc="1.5" yloc="3.5" />
+					<activity-spot xloc="-1.5" yloc="3.5" />
 				</activity>
 			</research>
 
 			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="1.6" yloc="-2.45" />
-					<activity-spot xloc="-1.6" yloc="2.45" />
+					<activity-spot xloc="1.5" yloc="-0.5" />
+					<activity-spot xloc="-1.5" yloc="-0.5" />
 				</activity>
 			</robotic-station>
 
