@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * The SettlementTableModel that maintains a list of Settlement objects. It maps
  * key attributes of the Settlement into Columns.
  */
-@SuppressWarnings("serial")
 public class SettlementTableModel extends UnitTableModel<Settlement> {
 
 	// Column indexes

@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -40,16 +41,14 @@ import org.jfree.data.general.AbstractSeriesDataset;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-@SuppressWarnings("serial")
-class BarChartTab
-extends MonitorTab {
+class BarChartTab extends MonitorTab {
 
 	/** Maximum label length. */
-	private final static int MAXLABEL = 20; //12;
-	private final static int COLUMNWIDTH = 25;//4;
-	private final static int LABELWIDTH = 15;//8;
+	private static final int MAXLABEL = 20; 
+	private static final int COLUMNWIDTH = 25;
+	private static final int LABELWIDTH = 15;
 	/** Large non-scroll chart. */
-	private final static int SCROLLTHRESHOLD = 800; // 400
+	private static final int SCROLLTHRESHOLD = 800;
 
 	public static final String ICON = "bar";
 
@@ -73,12 +72,12 @@ extends MonitorTab {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		private TableModel model;
+		private transient TableModel model;
 		private int[] columns;
 		private List<String> categories;
 		private long lastUpdateTime;
 
-		public TableBarDataset(TableModel model, int columns[]) {
+		public TableBarDataset(TableModel model, int []columns) {
 			setModel(model);
 			setColumns(columns);
 		}
@@ -100,7 +99,7 @@ extends MonitorTab {
 		 * @return Name of the Series.
 		 */
 		public String getSeriesName(int series) {
-			return model.getColumnName(columns[series]);// + "(" + getRowCount() + ")" ; ?
+			return model.getColumnName(columns[series]);
 		}
 
 		/**
@@ -132,9 +131,7 @@ extends MonitorTab {
 			// Iterate the rows and add the value from the first cell.
 			for (int i = 0; i < model.getRowCount(); i++) {
 				String value = (String) model.getValueAt(i, 0);
-//				int num = model.getColumnCount();
 				if ((value != null) && (value.length() > MAXLABEL)) {
-					// "(" + num + ") " +
 					value = value.substring(0, MAXLABEL-2) + ".."; //$NON-NLS-1$
 				}
 				categories.add(value);
@@ -158,7 +155,7 @@ extends MonitorTab {
 		 * onto a different Series in the model.
 		 * @param newcolumns Indexes in the source model.
 		 */
-		public void setColumns(int newcolumns[]) {
+		public void setColumns(int [] newcolumns) {
 			columns = new int[newcolumns.length];
 			System.arraycopy(newcolumns, 0, columns, 0, newcolumns.length);
 			fireDatasetChanged();
@@ -186,7 +183,7 @@ extends MonitorTab {
 		}
 
 		public List<String> getRowKeys() {
-			List<String> result = new ArrayList<String>();
+			List<String> result = new ArrayList<>();
 			for (int column : columns) {
 				result.add(model.getColumnName(column));
 			}
@@ -198,7 +195,7 @@ extends MonitorTab {
 		}
 
 		public List getColumnKeys() {
-			return categories;
+			return getCategories();
 		}
 
 		public int getColumnIndex(Comparable key) {
@@ -216,10 +213,13 @@ extends MonitorTab {
 
 		public Number getValue(int row, int column) {
 			Object obj = model.getValueAt(column, columns[row]);
-			if (obj instanceof Number) {
-				return (Number)obj;
+			if (obj instanceof Number n) {
+				return n;
 			}
-			return (Number) Double.valueOf((String)obj);
+			else if (obj instanceof String s) {
+				return Double.valueOf(s);
+			}
+			return 0;
 		}
 
 		public Number getValue(Comparable rowKey, Comparable columnKey) {
@@ -274,15 +274,12 @@ extends MonitorTab {
 
 		@Override
 		public Comparable getSeriesKey(int arg0) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 	}
 
 	private TableBarDataset barModel = null;
 	private JFreeChart chart = null;
-
-	//private JComponent chartpanel;
 
 	/**
 	 * Create a PieChart view that displays the data in a particular column.
@@ -299,16 +296,14 @@ extends MonitorTab {
 		chart = ChartFactory.createBarChart(null, null, null, barModel, PlotOrientation.VERTICAL, true, true, false);
 
 		// Limits the size of the bar to 35% if there are only very few category
-		//BarRenderer3D renderer = (BarRenderer3D) chart.getCategoryPlot().getRenderer();
 		BarRenderer renderer = (BarRenderer) chart.getCategoryPlot().getRenderer();
 		renderer.setMaximumBarWidth(.1); // set maximum width to 10% of chart
-		//renderer.setItemMargin(-1);
 
 		Plot plot = chart.getPlot();
 
 		// Adds set the range axis
-		final ValueAxis rangeAxis = ((CategoryPlot) plot).getRangeAxis();//.getRangeAxis();
-		rangeAxis.setAutoTickUnitSelection(true);//setStandardTickUnits//(CategoryAxis.DEFAULT_CATEGORY_MARGIN);//createIntegerTickUnits());
+		final ValueAxis rangeAxis = ((CategoryPlot) plot).getRangeAxis();
+		rangeAxis.setAutoTickUnitSelection(true);
 		rangeAxis.setTickLabelFont(new Font("Arial",Font.BOLD, 12));
 		rangeAxis.setUpperMargin(0.1); // in percentage
 		rangeAxis.setLowerMargin(0.05); // in percentage
@@ -316,18 +311,14 @@ extends MonitorTab {
 		CategoryAxis domainAxis = ((CategoryPlot) plot).getDomainAxis();
 
 		// Set the label position to go sideway at 45 deg downward
-		domainAxis.setCategoryLabelPositions(CategoryLabelPositions.DOWN_45); // DOWN_90);
+		domainAxis.setCategoryLabelPositions(CategoryLabelPositions.DOWN_45); 
 		domainAxis.setTickLabelFont(new Font("Calibri", Font.BOLD, 12));
 		domainAxis.setMaximumCategoryLabelWidthRatio(1);
-		//domainAxis.setMaximumCategoryLabelLines(2);
 		domainAxis.setLowerMargin(0.01);
 	    domainAxis.setUpperMargin(0.01);
 	    domainAxis.setCategoryMargin(.5);
-	    //domainAxis.setItemMargin(0.2);
 
 		// Adds label on each bar
-		//renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator()); // only work for 2D bar chart
-		//renderer.setBaseItemLabelsVisible(true); // only work for 2D bar chart
 		CategoryItemLabelGenerator generator = new StandardCategoryItemLabelGenerator();
 		renderer.setSeriesItemLabelGenerator(0, generator);
 		renderer.setSeriesItemLabelsVisible(0, true);
@@ -372,8 +363,8 @@ extends MonitorTab {
 			// fix so that label are not too compressed.
 			Dimension preferredSize = new Dimension(chartwidth, 0);
 			chartpanel.setPreferredSize(preferredSize);
-			comp = new JScrollPane(chartpanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			comp = new JScrollPane(chartpanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
+					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		}
 
 
@@ -401,9 +392,8 @@ extends MonitorTab {
 	 * @param desktop main window of simulation.
 	 */
 	public void displayProps(MainDesktopPane desktop) {
-        //System.out.println("BarChartTab.java : start calling displayProp()");
 		// Show modal column selector
-		int columns[] = ColumnSelector.createBarSelector(desktop, getModel());
+		int []columns = ColumnSelector.createBarSelector(desktop, getModel());
 		if (columns.length > 0) {
 			barModel.setColumns(columns);
 		}

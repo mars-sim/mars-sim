@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
 
-@SuppressWarnings("serial")
 public class TradeTableModel extends EntityTableModel<Good>
 implements UnitListener {
 
@@ -140,19 +139,11 @@ implements UnitListener {
 	}
 
 	/**
-	 * Has this model got a natural order that the model conforms to ?
-	 *
-	 * @return If true, it implies that the user should not be allowed to order.
-	 */
-	public boolean getOrdered() {
-		return false;
-	}
-
-	/**
 	 * get the value for a Good property
 	 * @param selectedGood Good selected
 	 * @param columnIndex COlumn to get
 	 */
+	@Override
 	protected  Object getEntityValue(Good selectedGood, int columnIndex) {
 		switch(columnIndex) {
 			case 0:

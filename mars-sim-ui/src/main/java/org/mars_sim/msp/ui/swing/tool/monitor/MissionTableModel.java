@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
-import javax.swing.table.AbstractTableModel;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.GameManager;
@@ -35,9 +34,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * This class model how mission data is organized and displayed
  * within the Monitor Window for all settlements.
  */
-@SuppressWarnings("serial")
-public class MissionTableModel extends AbstractTableModel
-		implements MonitorModel, MissionManagerListener, MissionListener {
+public class MissionTableModel extends AbstractMonitorModel
+		implements MissionManagerListener, MissionListener {
 
 	// Column indexes
 	/** Date filed column. */
@@ -73,9 +71,8 @@ public class MissionTableModel extends AbstractTableModel
 	/** The number of Columns. */
 	private static final int COLUMNCOUNT = 15;
 	/** Names of Columns. */
-	private static String[] columnNames;
-	/** Types of Columns. */
-	private static Class<?>[] columnTypes;
+	private static final ColumnSpec[] COLUMNS;
+
 
 	private GameMode mode = GameManager.getGameMode();
 	
@@ -88,44 +85,29 @@ public class MissionTableModel extends AbstractTableModel
 	private MissionManager missionManager;
 
 	static {
-		columnNames = new String[COLUMNCOUNT];
-		columnTypes = new Class[COLUMNCOUNT];
-		columnNames[DATE_FILED] = Msg.getString("MissionTableModel.column.filed"); //$NON-NLS-1$
-		columnTypes[DATE_FILED] = MarsTime.class;
-		columnNames[DATE_EMBARKED] = Msg.getString("MissionTableModel.column.embarked"); //$NON-NLS-1$
-		columnTypes[DATE_EMBARKED] = MarsTime.class;
-		columnNames[DATE_RETURNED] = Msg.getString("MissionTableModel.column.returned"); //$NON-NLS-1$
-		columnTypes[DATE_RETURNED] = MarsTime.class;
-		columnNames[STARTING_MEMBER] = Msg.getString("MissionTableModel.column.name"); //$NON-NLS-1$
-		columnTypes[STARTING_MEMBER] = String.class;
-		columnNames[TYPE_ID] = Msg.getString("MissionTableModel.column.typeID"); //$NON-NLS-1$
-		columnTypes[TYPE_ID] = String.class;
-		columnNames[DESIGNATION] = Msg.getString("MissionTableModel.column.designation"); //$NON-NLS-1$
-		columnTypes[DESIGNATION] = String.class;
-		columnNames[PHASE] = Msg.getString("MissionTableModel.column.phase"); //$NON-NLS-1$
-		columnTypes[PHASE] = String.class;
-		columnNames[STARTING_SETTLEMENT] = Msg.getString("MissionTableModel.column.startingSettlement"); //$NON-NLS-1$
-		columnTypes[STARTING_SETTLEMENT] = String.class;
-		columnNames[VEHICLE] = Msg.getString("MissionTableModel.column.vehicle"); //$NON-NLS-1$
-		columnTypes[VEHICLE] = String.class;
-		columnNames[MEMBER_NUM] = Msg.getString("MissionTableModel.column.members"); //$NON-NLS-1$
-		columnTypes[MEMBER_NUM] = Integer.class;
-		columnNames[NAVPOINT_NUM] = Msg.getString("MissionTableModel.column.navpoints"); //$NON-NLS-1$
-		columnTypes[NAVPOINT_NUM] = Integer.class;
-		columnNames[TRAVELLED_DISTANCE] = Msg.getString("MissionTableModel.column.distanceTravelled"); //$NON-NLS-1$
-		columnTypes[TRAVELLED_DISTANCE] = Integer.class;
-		columnNames[TOTAL_REMAINING_DISTANCE] = Msg.getString("MissionTableModel.column.totalRemaining"); //$NON-NLS-1$
-		columnTypes[TOTAL_REMAINING_DISTANCE] = Integer.class;
-		columnNames[REMAINING_DISTANCE_TO_NEXT_NAVPOINT] = Msg.getString("MissionTableModel.column.legRemaining"); //$NON-NLS-1$
-		columnTypes[REMAINING_DISTANCE_TO_NEXT_NAVPOINT] = Integer.class;		
-		columnNames[PROPOSED_ROUTE_DISTANCE] = Msg.getString("MissionTableModel.column.proposedDistance"); //$NON-NLS-1$
-		columnTypes[PROPOSED_ROUTE_DISTANCE] = Integer.class;
+		COLUMNS = new ColumnSpec[COLUMNCOUNT];
+		COLUMNS[DATE_FILED] = new ColumnSpec(Msg.getString("MissionTableModel.column.filed"), MarsTime.class);
+		COLUMNS[DATE_EMBARKED] = new ColumnSpec(Msg.getString("MissionTableModel.column.embarked"), MarsTime.class);
+		COLUMNS[DATE_RETURNED] = new ColumnSpec(Msg.getString("MissionTableModel.column.returned"), MarsTime.class);
+		COLUMNS[STARTING_MEMBER] = new ColumnSpec(Msg.getString("MissionTableModel.column.name"), String.class);
+		COLUMNS[TYPE_ID] = new ColumnSpec(Msg.getString("MissionTableModel.column.typeID"), String.class);
+		COLUMNS[DESIGNATION] = new ColumnSpec(Msg.getString("MissionTableModel.column.designation"), String.class);
+		COLUMNS[PHASE] = new ColumnSpec(Msg.getString("MissionTableModel.column.phase"), String.class);
+		COLUMNS[STARTING_SETTLEMENT] = new ColumnSpec(Msg.getString("MissionTableModel.column.startingSettlement"), String.class);
+		COLUMNS[VEHICLE] = new ColumnSpec(Msg.getString("MissionTableModel.column.vehicle"), String.class);
+		COLUMNS[MEMBER_NUM] = new ColumnSpec(Msg.getString("MissionTableModel.column.members"), Integer.class);
+		COLUMNS[NAVPOINT_NUM] = new ColumnSpec(Msg.getString("MissionTableModel.column.navpoints"), Integer.class);
+		COLUMNS[TRAVELLED_DISTANCE] = new ColumnSpec(Msg.getString("MissionTableModel.column.distanceTravelled"), Integer.class);
+		COLUMNS[TOTAL_REMAINING_DISTANCE] = new ColumnSpec(Msg.getString("MissionTableModel.column.totalRemaining"), Integer.class);
+		COLUMNS[REMAINING_DISTANCE_TO_NEXT_NAVPOINT] = new ColumnSpec(Msg.getString("MissionTableModel.column.legRemaining"), Integer.class);		
+		COLUMNS[PROPOSED_ROUTE_DISTANCE] = new ColumnSpec(Msg.getString("MissionTableModel.column.proposedDistance"), Integer.class);
 	}
 
 	/**
 	 * Constructor.
 	 */
 	public MissionTableModel(Simulation sim) {
+		super(Msg.getString("MissionTableModel.tabName"), "MissionTableModel.numberOfMissions", COLUMNS);
 
 		missionManager = sim.getMissionManager();
 		if (mode == GameMode.COMMAND) {
@@ -173,17 +155,6 @@ public class MissionTableModel extends AbstractTableModel
 	public boolean setSettlementFilter(Settlement filter) {
 		// Mission doesn't support filtering ???
 		return false;
-	}
-
-	/**
-	 * Gets the name of this model. The name will be a description helping the user
-	 * understand the contents.
-	 *
-	 * @return Descriptive name.
-	 */
-	@Override
-	public String getName() {
-		return Msg.getString("MissionTableModel.tabName"); //$NON-NLS-1$
 	}
 
 	/**
@@ -235,34 +206,6 @@ public class MissionTableModel extends AbstractTableModel
 	}
 
 	/**
-	 * Returns the type of the column requested.
-	 *
-	 * @param columnIndex Index of column.
-	 * @return Class of specified column.
-	 */
-	@Override
-	public Class<?> getColumnClass(int columnIndex) {
-		if ((columnIndex >= 0) && (columnIndex < columnTypes.length)) {
-			return columnTypes[columnIndex];
-		}
-		return Object.class;
-	}
-
-	/**
-	 * Returns the name of the column requested.
-	 *
-	 * @param columnIndex Index of column.
-	 * @return name of specified column.
-	 */
-	@Override
-	public String getColumnName(int columnIndex) {
-		if ((columnIndex >= 0) && (columnIndex < columnNames.length)) {
-			return columnNames[columnIndex];
-		}
-		return Msg.getString("unknown"); //$NON-NLS-1$
-	}
-
-	/**
 	 * Returns the object at the specified row indexes.
 	 *
 	 * @param row Index of the row object.
@@ -271,23 +214,6 @@ public class MissionTableModel extends AbstractTableModel
 	@Override
 	public Object getObject(int row) {
 		return missionCache.get(row);
-	}
-
-	/**
-	 * Has this model got a natural order that the model conforms to. If this value
-	 * is true, then it implies that the user should not be allowed to order.
-	 */
-	public boolean getOrdered() {
-		return false;
-	}
-
-	/**
-	 * Gets the model count string.
-	 */
-	@Override
-	public String getCountString() {
-		return "  " + Msg.getString("MissionTableModel.numberOfMissions", //$NON-NLS-2$
-				missionCache.size());
 	}
 
 	/**
@@ -301,66 +227,46 @@ public class MissionTableModel extends AbstractTableModel
 		int index = missionCache.indexOf(event.getSource());
 
 		if (index > -1) {
+			List<Integer> columnsToUpdate = new ArrayList<>();
 			MissionEventType eventType = event.getType();
-
-			int column0 = -1;
-
-			if (eventType == MissionEventType.VEHICLE_EVENT)
-				column0 = VEHICLE;
-			else if (eventType == MissionEventType.STARTING_SETTLEMENT_EVENT)
-				column0 = STARTING_SETTLEMENT;
-			else if (eventType == MissionEventType.TYPE_ID_EVENT)
-				column0 = TYPE_ID;
-			else if (eventType == MissionEventType.DESIGNATION_EVENT)
-				column0 = DESIGNATION;
-			else if (eventType == MissionEventType.ADD_MEMBER_EVENT
-					|| eventType == MissionEventType.REMOVE_MEMBER_EVENT)
-				column0 = MEMBER_NUM;
-			else if (eventType == MissionEventType.DATE_EVENT)
-				column0 = DATE_FILED;
-			else if (eventType == MissionEventType.NAME_EVENT)
-				column0 = STARTING_MEMBER;
+			int column0 = switch (eventType) {
+				case VEHICLE_EVENT -> VEHICLE;
+				case STARTING_SETTLEMENT_EVENT -> STARTING_SETTLEMENT;
+				case TYPE_ID_EVENT -> TYPE_ID;
+				case DESIGNATION_EVENT ->DESIGNATION;
+				case ADD_MEMBER_EVENT, REMOVE_MEMBER_EVENT -> MEMBER_NUM;
+				case DATE_EVENT -> DATE_FILED;
+				case NAME_EVENT ->STARTING_MEMBER;
+				default -> -1;
+			};
 
 			if (column0 > -1)
-				SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column0));
+				columnsToUpdate.add(column0);
 
-			if (event.getSource() instanceof VehicleMission) {
+			if (event.getSource() instanceof VehicleMission) {	
+				switch(eventType) {
 
-				int column1 = -1;
-				int column2 = -1;
-				int column3 = -1;
-				int column4 = -1;
-				int column5 = -1;
-				int column6 = -1;
-				
-				if (eventType == MissionEventType.DISTANCE_EVENT) {
-					column1 = TRAVELLED_DISTANCE;
-					column2 = TOTAL_REMAINING_DISTANCE;
-					column3 = REMAINING_DISTANCE_TO_NEXT_NAVPOINT;
-					column4 = PROPOSED_ROUTE_DISTANCE;
+					case DISTANCE_EVENT: {
+						columnsToUpdate.add(TRAVELLED_DISTANCE);
+						columnsToUpdate.add(TOTAL_REMAINING_DISTANCE);
+						columnsToUpdate.add(REMAINING_DISTANCE_TO_NEXT_NAVPOINT);
+						columnsToUpdate.add(PROPOSED_ROUTE_DISTANCE);
+					} break;
+
+					case NAVPOINTS_EVENT:
+						columnsToUpdate.add(NAVPOINT_NUM);
+						break;
+
+					case PHASE_EVENT, PHASE_DESCRIPTION_EVENT:
+						columnsToUpdate.add(PHASE);
+						break;
+					default:
+						break;
 				}
-
-				if (eventType == MissionEventType.NAVPOINTS_EVENT)
-					column5 = NAVPOINT_NUM;
-
-				if (eventType == MissionEventType.PHASE_EVENT
-						|| eventType == MissionEventType.PHASE_DESCRIPTION_EVENT)
-					column6 = PHASE;
-
-				// TODO THis is pretty bad. Shoudl rework to only fire a single invokeLater uisng a columns range
-				if (column0 > -1)
-					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column1));
-				if (column1 > -1)
-					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column2));
-				if (column2 > -1)
-					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column3));
-				if (column3 > -1)
-					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column4));
-				if (column4 > -1)
-					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column5));
-				if (column5 > -1)
-					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column6));
 			}
+
+			if (!columnsToUpdate.isEmpty())
+				SwingUtilities.invokeLater(new MissionTableCellUpdater(index, columnsToUpdate));
 		}
 	}
 
@@ -368,27 +274,6 @@ public class MissionTableModel extends AbstractTableModel
 	public int getRowCount() {
 		return missionCache.size();
 	}
-
-	/**
-	 * Return the number of columns
-	 *
-	 * @return column count.
-	 */
-	@Override
-	public int getColumnCount() {
-		return COLUMNCOUNT;
-	}
-
-	/**
-     * Default implementation return null as no tooltips are supported by default
-     * @param rowIndex Row index of cell
-     * @param columnIndex Column index of cell
-     * @return Return null by default
-     */
-    @Override
-    public String getToolTipAt(int rowIndex, int columnIndex) {
-        return null;
-    }
 
 	/**
 	 * Returns the value of a Cell.
@@ -544,6 +429,7 @@ public class MissionTableModel extends AbstractTableModel
 		}
 
 		missionManager.removeListener(this);
+		super.destroy();
 	}
 
 	/**
@@ -552,16 +438,20 @@ public class MissionTableModel extends AbstractTableModel
 	private class MissionTableCellUpdater implements Runnable {
 
 		private int row;
-		private int column;
+		private List<Integer> columns;
 
-		private MissionTableCellUpdater(int row, int column) {
+		private MissionTableCellUpdater(int row, List<Integer>columns) {
 			this.row = row;
-			this.column = column;
+			this.columns = columns;
 		}
 
 		public void run() {
-			if ((row < getRowCount()) && (column < getColumnCount()))
-				fireTableCellUpdated(row, column);
+			if (row < getRowCount()) {
+				for(int column : columns) {
+					if (column < getColumnCount())
+						fireTableCellUpdated(row, column);
+				}
+			}
 		}
 	}
 
