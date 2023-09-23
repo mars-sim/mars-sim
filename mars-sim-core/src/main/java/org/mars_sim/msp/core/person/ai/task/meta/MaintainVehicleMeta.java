@@ -37,7 +37,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 
 		private static final long serialVersionUID = 1L;
 
-        public VehicleMaintenanceJob(SettlementMetaTask owner, Vehicle target, boolean eva, double score) {
+        public VehicleMaintenanceJob(SettlementMetaTask owner, Vehicle target, boolean eva, RatingScore score) {
             super(owner, "Vehicle Maintenance " + (eva ? "via EVA " : ""), target, score);
 			setEVA(eva);
         }
@@ -101,10 +101,10 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 		boolean insideTasks = getGarageSpaces(settlement) > 0;
 
 		for (Vehicle vehicle : getAllVehicleCandidates(settlement, false)) {
-			double score = MaintainBuildingMeta.scoreMaintenance(vehicle);
+			RatingScore score = MaintainBuildingMeta.scoreMaintenance(vehicle);
 
 			// Vehicle in need of maintenance
-			if (score > 0) {
+			if (score.getScore() > 0) {
 				tasks.add(new VehicleMaintenanceJob(this, vehicle, !insideTasks, score));
 			}
 		}

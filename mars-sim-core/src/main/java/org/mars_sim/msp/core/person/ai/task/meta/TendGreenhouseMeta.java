@@ -40,7 +40,7 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
 
         private Farming farm;
 
-        public CropTaskJob(SettlementMetaTask owner, Farming farm, int demand, double score) {
+        public CropTaskJob(SettlementMetaTask owner, Farming farm, int demand, RatingScore score) {
             super(owner, "Tend crop", farm.getBuilding(), score);
             this.farm = farm;
 
@@ -88,7 +88,7 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
 
             if (farm.getFarmerNum() <= 2 * ls.getOccupantCapacity()) {
     			factor = super.assessPersonSuitability(t, p);
-                if (factor.getScore() == 0) {
+                if (factor.getScore() <= 0) {
                     return factor;
                 }
 
@@ -125,12 +125,12 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
         for (Building b : settlement.getBuildingManager().getFarmsNeedingWork()) {
             Farming farm = b.getFarming();
 
-            double score = farm.getTendingScore();
+            RatingScore score = new RatingScore(farm.getTendingScore());
 
             // Settlement factors
-            score *= goodsFactor ;
+            score.addModifier(GOODS_MODIFIER, goodsFactor);
 
-            if (score > 0) {
+            if (score.getScore() > 0) {
                 int workTask = farm.getNumNeedTending() / 2; // Each farmer can do 2 crop per visit
                 workTask = Math.min(workTask, b.getLifeSupport().getAvailableOccupancy());
                 workTask = Math.max(1, workTask);

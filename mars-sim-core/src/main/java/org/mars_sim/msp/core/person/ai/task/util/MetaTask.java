@@ -45,10 +45,12 @@ public abstract class MetaTask {
 		ANY_HOUR, WORK_HOUR, NONWORK_HOUR
 	}
 	
-	private static final String PERSON_MODIFIER = "person";
+	protected static final String PERSON_MODIFIER = "person";
 	protected static final String BUILDING_MODIFIER = "building";
 	private static final String EVA_MODIFIER = "eva";
 	private static final String RADIATION_MODIFIER = "radiation";
+	protected static final String GOODS_MODIFIER = "goods";
+
 
 
 	// Traits used to identify non-effort tasks
@@ -258,14 +260,15 @@ public abstract class MetaTask {
      * Gets the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
      * 
 	 * @param t Task being scored
-	 * @parma p Person requesting work.
+	 * @param p Person requesting work.
 	 * @return The score for this person
+	 * @see #assessPersonSuitability(RatingScore, Person)
      */
 	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
         RatingScore factor = RatingScore.ZERO_RATING;
         if (p.isInSettlement()) {
 			factor = new RatingScore(t.getScore());
-			factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
+			factor = assessPersonSuitability(factor, p);
 			if (t.isEVA()) {
 				// EVA factor is the radiation and the EVA modifiers applied extra
 				factor.addModifier(RADIATION_MODIFIER, TaskProbabilityUtil.getRadiationModifier(p.getSettlement()));
@@ -276,32 +279,48 @@ public abstract class MetaTask {
 	}
 
 	/**
+	 * Assess the suitability ot this person to do Tasks of this MetaType. It does notcnsider
+	 * any of the specific details of the actual Task.
+	 * 1. If the task has a Trait that is performance related the Person's performance rating is applied as a modifier
+	 * 2. Apply the Job start modifier for this task
+	 * 3. Apply the Persons individual preference to this Task
+	 * @param person Person being assessed
+	 * @param score The base rtign score that is adjusted to this persons
+	 * @return
+	 */
+	protected RatingScore assessPersonSuitability(RatingScore score, Person person) {
+
+        // Effort-driven task modifier.
+		if (effortDriven) {
+			score.addModifier("effort", person.getPerformanceRating());
+		}
+		
+		score.addModifier("job", getJobModifier(person));
+
+        score.addModifier("favourite", (1 + (person.getPreference().getPreferenceScore(this)/5D)));
+
+		// Apply the home base modifier
+		score.addModifier("settlement", person.getAssociatedSettlement().getPreferenceModifier(
+							new PreferenceKey(PreferenceCategory.TASK_WEIGHT, getID())));
+		
+		return score;
+	}
+
+		
+	/**
 	 * This will apply a number of modifier to the current score based on the Person to produce a modifier.
 	 * 1. If the task has a Trait that is performance related the Person's performance rating is applied as a modifier
 	 * 2. Apply the Job start modifier for this task
 	 * 3. Apply the Persons individual preference to this Task
 	 * 
+	 * This method should eventually be replaced. @see #assessPersonSuitability(RatingScore, Person)
 	 * @param person Person scoring Task
 	 * @return Modified score.
 	 */
 	protected double getPersonModifier(Person person) {
-        double score = 1D;
-
-        // Effort-driven task modifier.
-		if (effortDriven) {
-			score *= person.getPerformanceRating();
-		}
-		
-		score *= getJobModifier(person);
-
-        score = score * (1 + (person.getPreference().getPreferenceScore(this)/5D));
-
-		// Apply the home base modifier
-		score = score * person.getAssociatedSettlement().getPreferenceModifier(
-							new PreferenceKey(PreferenceCategory.TASK_WEIGHT, getID()));
-
-        if (score < 0) score = 0;
-        return score;
+        RatingScore temp = new RatingScore(1D);
+		assessPersonSuitability(temp, person);
+		return temp.getScore();
 	}
 
 	/**
