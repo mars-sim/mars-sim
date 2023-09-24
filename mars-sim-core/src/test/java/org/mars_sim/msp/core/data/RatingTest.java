@@ -17,7 +17,10 @@ public class RatingTest extends TestCase {
     public void testAddModifier() {
         RatingScore r = new RatingScore(BASE);
         assertEquals("Only base", BASE, r.getScore());
-        assertEquals("Base", BASE, r.getBase());
+        var b = r.getBases();
+        assertEquals("Bases present", 1, b.size());
+        assertEquals("1st Base", BASE, b.get(RatingScore.BASE));
+
 
         r.addModifier(MOD1, MOD1_VALUE);
         assertEquals("Apply " + MOD1, BASE * MOD1_VALUE, r.getScore());
@@ -32,10 +35,19 @@ public class RatingTest extends TestCase {
     }
 
     public void testSetBase() {
-        RatingScore r = new RatingScore(BASE);
+        RatingScore r = new RatingScore("test", BASE);
         r.addModifier(MOD1, MOD1_VALUE);
 
-        r.setBase(BASE2);
+        r.addBase("test", BASE2);
         assertEquals("Set base " + MOD1, BASE2 * MOD1_VALUE, r.getScore());
+    }
+
+    
+    public void testAddBase() {
+        RatingScore r = new RatingScore("test", BASE);
+        r.addModifier(MOD1, MOD1_VALUE);
+
+        r.addBase("tests", BASE2);
+        assertEquals("Set base " + MOD1, (BASE + BASE2) * MOD1_VALUE, r.getScore());
     }
 }

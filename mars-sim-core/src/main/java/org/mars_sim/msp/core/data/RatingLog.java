@@ -140,8 +140,13 @@ public class RatingLog {
     private static String ratingToJsonLines(RatingScore r) {
         StringBuilder output = new StringBuilder();
 
-        output.append("{\"score\":").append(SCORE_FORMAT.format(r.getScore()))
-                .append(",\"base\":").append(SCORE_FORMAT.format(r.getBase()));
+        output.append("{\"score\":").append(SCORE_FORMAT.format(r.getScore()));
+        output.append(",\"bases\":{");
+        output.append(r.getBases().entrySet().stream()
+                        .map(entry -> "\"" + entry.getKey() + "\":"
+                                    + SCORE_FORMAT.format(entry.getValue()))
+                        .collect(Collectors.joining(",")));
+        output.append('}');
 
         var modifiers = r.getModifiers();     
         if (!modifiers.isEmpty()) {

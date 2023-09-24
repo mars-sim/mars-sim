@@ -44,7 +44,8 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 		private ResourceProcess process;
 
-        public ToggleProcessJob(SettlementMetaTask mt, Building processBuilding, ResourceProcess process, double score) {
+        public ToggleProcessJob(SettlementMetaTask mt, Building processBuilding, ResourceProcess process,
+						RatingScore score) {
 			super(mt, "Toggle " + process.getProcessName(), processBuilding, score);
 			this.process = process;
         }
@@ -274,7 +275,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		}
 
 		if (bestProcess != null) {
-			return new ToggleProcessJob(this, building, bestProcess, bestScore);
+			return new ToggleProcessJob(this, building, bestProcess, new RatingScore(bestScore));
 		}
 
 		return null;

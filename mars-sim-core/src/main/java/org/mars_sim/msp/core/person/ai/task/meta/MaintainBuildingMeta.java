@@ -152,7 +152,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 			// the standard inspection/maintenance due
 			|| hasPartsInStore) {
 			// Score is based on condition plus %age overdue
-			score = new RatingScore(100 - condition);
+			score = new RatingScore("condition", 100 - condition);
 			score.addModifier("due", 1D +
 								((effectiveTime - minMaintenance) / minMaintenance));
 			if (hasPartsInStore) {

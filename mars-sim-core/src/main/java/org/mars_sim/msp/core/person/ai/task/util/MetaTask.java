@@ -45,13 +45,12 @@ public abstract class MetaTask {
 		ANY_HOUR, WORK_HOUR, NONWORK_HOUR
 	}
 	
-	protected static final String PERSON_MODIFIER = "person";
 	protected static final String BUILDING_MODIFIER = "building";
 	private static final String EVA_MODIFIER = "eva";
-	private static final String RADIATION_MODIFIER = "radiation";
+	protected static final String GARAGED_MODIFIER = "garaged";
 	protected static final String GOODS_MODIFIER = "goods";
-
-
+	protected static final String PERSON_MODIFIER = "person";
+	private static final String RADIATION_MODIFIER = "radiation";
 
 	// Traits used to identify non-effort tasks
 	private static final Set<TaskTrait> PASSIVE_TRAITS
