@@ -39,7 +39,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 
         private DeathInfo patient;
 
-        public ExamineBodyJob(SettlementMetaTask owner, DeathInfo patient, double score) {
+        public ExamineBodyJob(SettlementMetaTask owner, DeathInfo patient, RatingScore score) {
 			super(owner, "Examine Body", patient.getPerson(), score);
             this.patient = patient;
         }
@@ -107,8 +107,9 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 		if (!deaths.isEmpty() && hasNeedyMedicalAidsAtSettlement(settlement)) {
 			for(DeathInfo pm : deaths) {
 				if (!pm.getExamDone()) {
-					double score = DEFAULT_SCORE +
-							((getMarsTime().getMissionSol() - pm.getTimeOfDeath().getMissionSol()) * SOL_SCORE);
+					RatingScore score = new RatingScore(DEFAULT_SCORE);
+					score.addBase("due",
+							(getMarsTime().getMissionSol() - pm.getTimeOfDeath().getMissionSol()) * SOL_SCORE);
 					tasks.add(new ExamineBodyJob(this, pm, score));
 				}
 			}

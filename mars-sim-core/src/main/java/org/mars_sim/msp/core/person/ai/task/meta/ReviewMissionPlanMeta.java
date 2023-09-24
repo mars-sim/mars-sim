@@ -38,7 +38,7 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 
         private MissionPlanning plan;
 
-        public ReviewMissionPlanJob(SettlementMetaTask owner, MissionPlanning plan, double score) {
+        public ReviewMissionPlanJob(SettlementMetaTask owner, MissionPlanning plan, RatingScore score) {
 			super(owner, "Review Mission", plan.getMission(), score);
             this.plan = plan;
         }
@@ -53,11 +53,11 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.reviewMissionPlan"); //$NON-NLS-1$
-    
-    private static final int PENALTY_FACTOR = 2;
-    
+        
     private static final double BASE_SCORE = 400.0;
-	private static final double SOL_SCORE = 50.0;
+	private static final double MAX_SCORE = 750.0;
+	private static final int MAX_AGE = 7;
+	private static final double SOL_SCORE = (MAX_SCORE - BASE_SCORE) / MAX_AGE;
 
 	private static MissionManager missionManager;
     
@@ -115,7 +115,7 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
         for(Mission m : missionManager.getPendingMissions(settlement)) {
         	MissionPlanning mp = m.getPlan();
 			if ((mp.getStatus() == PlanType.PENDING) && (mp.getActiveReviewer() == null)) {
-				double score = BASE_SCORE;               	
+				RatingScore score = new RatingScore(BASE_SCORE);               	
 
 				// Add adjustment based on how many sol the request has since been submitted
 				// if the job assignment submitted date is > 1 sol
@@ -123,16 +123,10 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 				int solRequest = mp.getMissionSol();
 				int diff = sol - solRequest;
 
-				// Check if this reviewer has already exceeded the max # of reviews allowed
-				if (diff == 0) {
-					score /= PENALTY_FACTOR;
-				}
-				else {
-					// If no one else is able to offer the review after x days, 
-					// do allow the review to go through even if the reviewer is not valid
-					diff = Math.min(diff, 7); // CLip at 7 days
-					score += diff * SOL_SCORE;
-				}
+				// If no one else is able to offer the review after x days, 
+				// do allow the review to go through even if the reviewer is not valid
+				diff = Math.min(diff, MAX_AGE); // Limit the age of a review
+				score.addModifier("review.age", 1 + (diff * SOL_SCORE));
 
 				tasks.add(new ReviewMissionPlanJob(this, mp, score));
 			}

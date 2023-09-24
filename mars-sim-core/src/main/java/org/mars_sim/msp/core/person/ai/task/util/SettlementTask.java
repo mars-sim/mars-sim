@@ -25,18 +25,6 @@ public abstract class SettlementTask extends AbstractTaskJob {
     private boolean needsEVA = false;
 
     /**
-     * Old approach where a single double is used for scoring
-     * @param parent
-     * @param description
-     * @param focus
-     * @param score
-     * deprecated Use {@link #SettlementTask(SettlementMetaTask, String, Entity, RatingScore)}
-     */
-    protected SettlementTask(SettlementMetaTask parent, String description, Entity focus, double score) {
-        this(parent, description, focus, new RatingScore(score));
-    }
-
-    /**
      * Create an abstract Settlement task for the backlog that relates to an Entity within a Settlement
      * that can be executed by any Citizen.
      * @param parent The metatask that defines the eventual Task.

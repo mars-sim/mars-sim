@@ -44,7 +44,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 		private static final long serialVersionUID = 1L;
 
 
-        public MaintainTaskJob(SettlementMetaTask owner, Building target, boolean eva, double score) {
+        public MaintainTaskJob(SettlementMetaTask owner, Building target, boolean eva, RatingScore score) {
 			super(owner, "Building Maintenance " + (eva ? "via EVA " : ""), target, score);
 			setEVA(eva);
         }
@@ -114,9 +114,9 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 		List<SettlementTask> tasks = new ArrayList<>();
 	
 		for (Building building: settlement.getBuildingManager().getBuildingSet()) {
-			double score = scoreMaintenance(building);
+			RatingScore score = scoreMaintenance(building);
 
-			if (score > 0) {
+			if (score.getScore() > 0) {
 				boolean habitableBuilding = building.hasFunction(FunctionType.LIFE_SUPPORT);
 				tasks.add(new MaintainTaskJob(this, building, !habitableBuilding, score));
 			}
@@ -132,12 +132,12 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 	 * @param entity
 	 * @return A score on the need for maintenance
 	 */
-	public static double scoreMaintenance(Malfunctionable entity) {
+	public static RatingScore scoreMaintenance(Malfunctionable entity) {
 		MalfunctionManager manager = entity.getMalfunctionManager();
 		boolean hasNoMalfunction = !manager.hasMalfunction();
 		boolean hasPartsInStore = manager.hasMaintenancePartsInStorage(entity.getAssociatedSettlement());
 
-		double score = 0D;
+		RatingScore score = RatingScore.ZERO_RATING;
 		double condition = manager.getAdjustedCondition();
 		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 		double minMaintenance = manager.getMaintenancePeriod();
@@ -152,13 +152,15 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 			// the standard inspection/maintenance due
 			|| hasPartsInStore) {
 			// Score is based on condition plus %age overdue
-			score = (100 - condition) + (effectiveTime - minMaintenance) * 100D / minMaintenance;
+			score = new RatingScore("condition", 100 - condition);
+			score.addModifier("due", 1D +
+								((effectiveTime - minMaintenance) / minMaintenance));
 			if (hasPartsInStore) {
 				// If needed parts are available, double up the speed of the maintenance
-				score = score * 2;
+				score.addModifier("parts", 2);
 			}
 		}
-
+ 
 		return score;
 	}
 }

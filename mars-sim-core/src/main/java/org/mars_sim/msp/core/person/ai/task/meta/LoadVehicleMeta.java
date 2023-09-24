@@ -43,7 +43,7 @@ public class LoadVehicleMeta extends MetaTask
 
 		private static final long serialVersionUID = 1L;
 
-        private LoadJob(SettlementMetaTask owner, VehicleMission target, boolean eva, double score) {
+        private LoadJob(SettlementMetaTask owner, VehicleMission target, boolean eva, RatingScore score) {
             super(owner, "Load " + (eva ? "via EVA " : ""), target, score);
             setEVA(eva);
         }
@@ -78,8 +78,6 @@ public class LoadVehicleMeta extends MetaTask
 
     private static final double GARAGE_DEFAULT_SCORE = 500D;
 
-    private static final double EVA_DEFAULT_SCORE = 300D;
-
     /** The static instance of the MissionManager */
 	private static MissionManager missionManager;
 
@@ -113,7 +111,6 @@ public class LoadVehicleMeta extends MetaTask
 		List<SettlementTask> tasks = new ArrayList<>();
 
 		boolean insideTasks = MaintainVehicleMeta.getGarageSpaces(settlement) > 0;
-        double factor = settlement.getGoodsManager().getTransportationFactor();
 
         // Find all Vehicle missions with an active loading plan
 		for (Mission mission : missionManager.getMissions()) {
@@ -122,7 +119,7 @@ public class LoadVehicleMeta extends MetaTask
 
 				// Must have a local Loading Plan that is not complete
 				if ((plan != null) && plan.getSettlement().equals(settlement) && !plan.isCompleted()) {
-                    SettlementTask job = createLoadJob(vehicleMission, settlement, insideTasks, factor, this);
+                    SettlementTask job = createLoadJob(vehicleMission, settlement, insideTasks, this);
                     if (job != null) {
                         tasks.add(job);
                     }
@@ -139,27 +136,28 @@ public class LoadVehicleMeta extends MetaTask
      * @param vehicleMission Mission needing a load
      * @param settlement Location the load is occurring
      * @param insideOnlyTasks Only inside tasks
-     * @param modifier Score modifier for task
      * @param owner 
      */
     private static SettlementTask createLoadJob(VehicleMission vehicleMission, Settlement settlement,
                                         boolean insideOnlyTasks,
-                                        double modifier, SettlementMetaTask owner) {
+                                        SettlementMetaTask owner) {
 
         Vehicle vehicle = vehicleMission.getVehicle();
         if (vehicle == null)
             return null; // Should not happen
 
+        RatingScore score = new RatingScore(GARAGE_DEFAULT_SCORE);
+        score.addModifier(GOODS_MODIFIER, settlement.getGoodsManager().getTransportationFactor());
+        
         boolean inGarageAlready = settlement.getBuildingManager().isInGarage(vehicle);
         if (insideOnlyTasks || inGarageAlready) {
-            double score = GARAGE_DEFAULT_SCORE * modifier;
             if (inGarageAlready) {
                 // If in Garage already then boost score
-                score *= 2;
+                score.addModifier(GARAGED_MODIFIER, 2);
             }
             return new LoadJob(owner, vehicleMission, false, score);
         }
-        return new LoadJob(owner, vehicleMission, true, EVA_DEFAULT_SCORE * modifier);
+        return new LoadJob(owner, vehicleMission, true, score);
     }
 
     /**
@@ -170,7 +168,7 @@ public class LoadVehicleMeta extends MetaTask
      * @param settlement Location the load is occurring
      */
     public static TaskJob createLoadJob(VehicleMission vehicleMission, Settlement settlement) {
-        return createLoadJob(vehicleMission, settlement, false, 1D, null);
+        return createLoadJob(vehicleMission, settlement, false, null);
     } 
 
     /**
