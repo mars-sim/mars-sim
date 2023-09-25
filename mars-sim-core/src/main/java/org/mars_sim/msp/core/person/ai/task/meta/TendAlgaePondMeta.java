@@ -42,7 +42,7 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
 
         private AlgaeFarming pond;
 
-        public AlgaeTaskJob(SettlementMetaTask owner, AlgaeFarming pond, double score) {
+        public AlgaeTaskJob(SettlementMetaTask owner, AlgaeFarming pond, RatingScore score) {
             super(owner, "Tend Algae Pond", pond.getBuilding(), score);
             this.pond = pond;
         }
@@ -118,26 +118,27 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
 
         for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.ALGAE_FARMING)) {
             AlgaeFarming pond = building.getAlgae();
-            double result = (pond.getUncleaned().size() + pond.getUninspected().size()) * 3D;
+            RatingScore result = new RatingScore("maintenance",
+                        (pond.getUncleaned().size() + pond.getUninspected().size()) * 3D);
 
             double ratio = pond.getSurplusRatio();
             		
-            result += ((1 - ratio) * 10D);
+            result.addBase("surplus", (1 - ratio) * 10D);
             
             double foodDemand = pond.getFoodDemand();
          
-            result += foodDemand * 10;
+            result.addBase("goods", foodDemand * 10);
             
             double foodMass = pond.getFoodMass();
             double algaeMass = pond.getCurrentAlgae();
             
             if (foodMass < 0)
             	// Need to 
-            	result += Math.exp(2 * (1 - foodMass));
+            	result.addBase("ratio", Math.exp(2 * (1 - foodMass)));
             else
-            	result += algaeMass / foodMass / 5;
+            	result.addBase("ratio", algaeMass / foodMass / 5);
             
-            if (result > 0) {
+            if (result.getScore() > 0) {
                 tasks.add(new AlgaeTaskJob(this, pond, result));
             }
         }

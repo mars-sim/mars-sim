@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.structure.Settlement;
  * This class model how food data is organized and displayed
  * within the Monitor Window for a settlement.
  */
-@SuppressWarnings("serial")
 public class FoodInventoryTableModel extends EntityTableModel<Food>
 implements UnitListener {
 	
@@ -30,9 +29,7 @@ implements UnitListener {
 	protected static final int NUM_DATA_COL = 7;
 
 	/** Names of Columns. */
-	private static final String[] columnNames;
-	/** Types of columns. */
-	private static final Class<?>[] columnTypes;
+	private static final ColumnSpec[] COLUMNS;
 
 	private static final int DEMAND_COL = 2;
 	private static final int SUPPLY_COL = 3;
@@ -44,29 +41,19 @@ implements UnitListener {
 
 	
 	static {
-		columnNames = new String[NUM_INITIAL_COLUMNS + NUM_DATA_COL];
-		columnTypes = new Class[NUM_INITIAL_COLUMNS + NUM_DATA_COL];
+		COLUMNS = new ColumnSpec[NUM_INITIAL_COLUMNS + NUM_DATA_COL];
 
-		columnNames[0] = "Food";
-		columnTypes[0] = String.class;
-		columnNames[1] =  "Type";
-		columnTypes[1] = String.class;
+		COLUMNS[0] = new ColumnSpec("Food", String.class);
+		COLUMNS[1] =  new ColumnSpec("Type", String.class);
 
-		columnNames[DEMAND_COL] = "Demand";
-		columnTypes[DEMAND_COL] = Double.class;
-		columnNames[SUPPLY_COL] = "Supply";
-		columnTypes[SUPPLY_COL] = Double.class;
-		columnNames[MASS_COL] = "kg";
-		columnTypes[MASS_COL] = Double.class;
-		columnNames[LOCAL_VP_COL] = "Local VP";
-		columnTypes[LOCAL_VP_COL] = Double.class;
-		columnNames[NATIONAL_VP_COL] = "National VP";
-		columnTypes[NATIONAL_VP_COL] = Double.class;
-		columnNames[COST_COL] = "Cost [$]";
-		columnTypes[COST_COL] = Double.class;
-		columnNames[PRICE_COL] = "Price [$]";
-		columnTypes[PRICE_COL] = Double.class;
-	};
+		COLUMNS[DEMAND_COL] = new ColumnSpec("Demand", Double.class);
+		COLUMNS[SUPPLY_COL] = new ColumnSpec("Supply", Double.class);
+		COLUMNS[MASS_COL] = new ColumnSpec("kg", Double.class);
+		COLUMNS[LOCAL_VP_COL] = new ColumnSpec("Local VP", Double.class);
+		COLUMNS[NATIONAL_VP_COL] = new ColumnSpec("National VP", Double.class);
+		COLUMNS[COST_COL] = new ColumnSpec("Cost [$]", Double.class);
+		COLUMNS[PRICE_COL] = new ColumnSpec("Price [$]", Double.class);
+	}
 
 	private Settlement selectedSettlement;
 	private boolean monitorSettlement = false;
@@ -75,7 +62,8 @@ implements UnitListener {
 	 * Constructor.
 	 */
 	public FoodInventoryTableModel(Settlement selectedSettlement) {
-		super(Msg.getString("FoodInventoryTableModel.tabName"), "FoodInventoryTabModel.foodCounting", columnNames, columnTypes);
+		super(Msg.getString("FoodInventoryTableModel.tabName"), "FoodInventoryTabModel.foodCounting",
+					COLUMNS);
 		
 		setCachedColumns(DEMAND_COL, PRICE_COL);
 
@@ -91,24 +79,14 @@ implements UnitListener {
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
 		UnitEventType eventType = event.getType();
-		if (eventType == UnitEventType.FOOD_EVENT) {
-			if (event.getTarget() instanceof Good) {
-				if (unit.equals(selectedSettlement)) {
-					// Update the whole row
-					entityValueUpdated((Food)event.getTarget(), DEMAND_COL, PRICE_COL);
-				}
-			}
+		if ((eventType == UnitEventType.FOOD_EVENT)
+					&& (event.getTarget() instanceof Food f) && unit.equals(selectedSettlement)) {
+			// Update the whole row
+			entityValueUpdated(f, DEMAND_COL, PRICE_COL);
 		}
 	}
 
-	/**
-	 * Has this model got a natural order that the model conforms to. If this value
-	 * is true, then it implies that the user should not be allowed to order.
-	 */
-	public boolean getOrdered() {
-		return false;
-	}
-
+	@Override
 	protected Object getEntityValue(Food selectedFood, int columnIndex) {
 		switch(columnIndex) {
 			case 0:

@@ -184,7 +184,7 @@ class PieChartTab extends MonitorTab {
                 int count = 0;
                 Iterator<String> i = keys.iterator();
                 while (i.hasNext()) {
-                    if (key == i.next()) result = count;
+                    if (key.equals(i.next())) result = count;
                     else count++;
                 }
             }

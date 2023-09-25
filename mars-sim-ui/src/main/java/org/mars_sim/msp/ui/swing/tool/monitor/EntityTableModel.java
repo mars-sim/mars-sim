@@ -15,9 +15,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.SwingUtilities;
-import javax.swing.table.AbstractTableModel;
-
-import org.mars.sim.tools.Msg;
 
 /**
  * This provides a table modle implementation that allows each row to be mapped to
@@ -28,32 +25,24 @@ import org.mars.sim.tools.Msg;
  * 
  */
 @SuppressWarnings("serial")
-public abstract class EntityTableModel<T> extends AbstractTableModel
-            implements MonitorModel {
+public abstract class EntityTableModel<T> extends AbstractMonitorModel {
 
-	private String name;
-    private String[] columnNames;
-    private Class<?>[] columnTypes;
+
     private List<T> entities;
     private Map<T,Map<Integer,Object>> rowCache;
     private Set<Integer> cachedColumns;
     private boolean fireEnabled;
-    private String countingMsgKey;
 
     /**
 	 * Constructor.
 	 *
-	 * @param tabMsgKey      Key in the Msg bundle used to find name & row count
-	 * @param names          Names of the columns displayed.
-	 * @param types          The Classes of the individual columns.
+     * @param name Name of the table
+	 * @param countingMsgKey      Key in the Msg bundle used to display row count
+	 * @param columns        Details of the columns displayed.
 	 */
-	protected EntityTableModel(String name, String countingMsgKey, String[] names, Class<?>[] types) {
-		// Initialize data members
-		this.name = name;
-        this.countingMsgKey = countingMsgKey;
+	protected EntityTableModel(String name, String countingMsgKey, ColumnSpec[] names) {
+        super(name, countingMsgKey, names);
 
-		this.columnNames = names;
-		this.columnTypes = types;
         this.entities = new ArrayList<>();
         this.cachedColumns = new HashSet<>();
     }
@@ -177,53 +166,6 @@ public abstract class EntityTableModel<T> extends AbstractTableModel
 		return getEntity(row);
 	}
 
-    /**
-	 * Return the number of columns
-	 *
-	 * @return column count.
-	 */
-	@Override
-	public int getColumnCount() {
-		return columnNames.length;
-	}
-
-	/**
-	 * Return the type of the column requested.
-	 *
-	 * @param columnIndex Index of column.
-	 * @return Class of specified column.
-	 */
-	@Override
-	public Class<?> getColumnClass(int columnIndex) {
-		if ((columnIndex >= 0) && (columnIndex < columnTypes.length)) {
-			return columnTypes[columnIndex];
-		}
-		return Object.class;
-	}
-
-	/**
-	 * Return the name of the column requested.
-	 *
-	 * @param columnIndex Index of column.
-	 * @return name of specified column.
-	 */
-	@Override
-	public String getColumnName(int columnIndex) {
-		if ((columnIndex >= 0) && (columnIndex < columnNames.length)) {
-			return columnNames[columnIndex];
-		}
-		return "Unknown";
-	}
-
-	/**
-	 * Get the name of the model.
-	 *
-	 * @return model name.
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
 
 	/**
 	 * Get the number of rows in the model.
@@ -234,25 +176,6 @@ public abstract class EntityTableModel<T> extends AbstractTableModel
 	public int getRowCount() {
 		return entities.size();
 	}
-
-    /**
-	 * Gets the model count string.
-	 */
-	@Override
-	public String getCountString() {
-		return "  " + Msg.getString(countingMsgKey, getRowCount());
-	}
-
-    /**
-     * Default implementation return null as no tooltips are supported by default
-     * @param rowIndex Row index of cell
-     * @param columnIndex Column index of cell
-     * @return Return null by default
-     */
-    @Override
-    public String getToolTipAt(int rowIndex, int columnIndex) {
-        return null;
-    }
 
     /**
      * Get a value for a particular cell. This may come from a cached value
@@ -328,14 +251,6 @@ public abstract class EntityTableModel<T> extends AbstractTableModel
             // Fire the cell update in the bacground thread
             SwingUtilities.invokeLater(new TableCellUpdater(rowIndex, i));
         }
-    }
-
-    /**
-     * Tidy up any listenres or external dependencies
-     */
-    @Override
-	public void destroy() {
-        // Nothing to do for this base class
     }
 
     /**

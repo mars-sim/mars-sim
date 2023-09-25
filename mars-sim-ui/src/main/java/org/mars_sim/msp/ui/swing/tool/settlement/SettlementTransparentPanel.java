@@ -488,7 +488,7 @@ public class SettlementTransparentPanel extends JComponent {
 		// Set the population label in the status bar
 		mapPanel.getSettlementWindow().setPop(s.getNumCitizens());
 		// Set the box opaque
-		settlementListBox.setOpaque(false);
+//		settlementListBox.setOpaque(false);
 	}
 
 	/**
@@ -731,13 +731,13 @@ public class SettlementTransparentPanel extends JComponent {
 					return this;
 				}
 
-				if (isSelected) {
-		        	  c.setForeground(Color.black);
-		        	  c.setBackground(new Color(255,229,204,50)); // pale orange
-		          } else {
-						c.setForeground(Color.black);
-				        c.setBackground(new Color(184,134,11,50)); // mud orange
-		          }
+//				if (isSelected) {
+//		        	  c.setForeground(Color.black);
+//		        	  c.setBackground(new Color(255,229,204,50)); // pale orange
+//		          } else {
+//						c.setForeground(Color.black);
+//				        c.setBackground(new Color(184,134,11,50)); // mud orange
+//		          }
 
 		        return c;
 		    }
@@ -1163,7 +1163,7 @@ public class SettlementTransparentPanel extends JComponent {
 				// Set the population label in the status bar
 				mapPanel.getSettlementWindow().setPop(s.getNumCitizens());
 				// Set the box opaque
-				settlementListBox.setOpaque(false);
+//				settlementListBox.setOpaque(false);
 			}
 		}
 

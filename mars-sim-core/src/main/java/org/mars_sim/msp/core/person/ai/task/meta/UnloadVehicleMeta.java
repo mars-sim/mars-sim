@@ -38,11 +38,12 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * Meta task for the UnloadVehicleGarage or UnloadVehicleEVA task.
  */
 public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
+
     private static class UnloadJob extends SettlementTask {
 
 		private static final long serialVersionUID = 1L;
 
-        public UnloadJob(SettlementMetaTask owner, Vehicle target, boolean eva, double score) {
+        public UnloadJob(SettlementMetaTask owner, Vehicle target, boolean eva, RatingScore score) {
             super(owner, "Unload " + (eva ? "via EVA " : "") + "@ " + target.getName(), target, score);
             setEVA(eva);
         }
@@ -108,7 +109,6 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
 		List<SettlementTask> tasks = new ArrayList<>();
 
 		boolean insideTasks = MaintainVehicleMeta.getGarageSpaces(settlement) > 0;
-        double modifier = settlement.getGoodsManager().getTransportationFactor();
 
         Set<Vehicle> assessed = new UnitSet<>();
         
@@ -122,7 +122,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
                         // being released before the mission is completed?
                         assessed.add(v);
 
-                        SettlementTask job = scoreVehicle(settlement, v, insideTasks, modifier, this);
+                        SettlementTask job = scoreVehicle(settlement, v, insideTasks, this);
                         if (job != null) {
                             tasks.add(job);
                         }
@@ -134,7 +134,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
         // Check non-mission vehicles
         for (Vehicle vehicle : settlement.getParkedVehicles()) {
 			if (!vehicle.isReserved() && !assessed.contains(vehicle)) {
-                SettlementTask job = scoreVehicle(settlement, vehicle, insideTasks, modifier, this);
+                SettlementTask job = scoreVehicle(settlement, vehicle, insideTasks, this);
                 if (job != null) {
                     tasks.add(job);
                 }
@@ -151,25 +151,27 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
      * @param settlement Location of Vehicle
      * @param vehicle Vehicle to unload
      * @param insideOnlyTasks Only do Garage inside Tasks
-     * @param modifier Modifier for inside task score
+     * @param owner The owning metaTask
      * @return
      */
-    private static SettlementTask scoreVehicle(Settlement settlement, Vehicle vehicle, boolean insideOnlyTasks,
-                                double modifier, SettlementMetaTask owner) {
+    private static SettlementTask scoreVehicle(Settlement settlement, Vehicle vehicle,
+                                                boolean insideOnlyTasks,
+                                                SettlementMetaTask owner) {
         double remaining = vehicle.getStoredMass();
         if (remaining > 0D) {
-            double score = BASE_SCORE + (100D * remaining)/vehicle.getCargoCapacity();
-        
+            RatingScore score = new RatingScore(BASE_SCORE);
+            score.addBase("vehicle", (100D * remaining)/vehicle.getCargoCapacity());
+            score.addModifier(GOODS_MODIFIER, settlement.getGoodsManager().getTransportationFactor());
+
             boolean inGarageAlready = settlement.getBuildingManager().isInGarage(vehicle);
             if (insideOnlyTasks || inGarageAlready) {
-                score *= modifier;
                 if (inGarageAlready) {
                     // If in Garage already then boost score
-                    score *= 2;
+                    score.addModifier(GARAGED_MODIFIER, 2);
                 }
                 return new UnloadJob(owner, vehicle, false, score);
             }
-            return new UnloadJob(owner, vehicle, true, score * modifier);    
+            return new UnloadJob(owner, vehicle, true, score);    
         }
 
         return null;
@@ -179,7 +181,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
      * Creates an appropriate Unload job for a vehicle.
      */
     public static TaskJob createUnloadJob(Settlement settlement, Vehicle vehicle) {
-        return scoreVehicle(settlement, vehicle, false, 1D, null);
+        return scoreVehicle(settlement, vehicle, false, null);
     }
 
     /**

@@ -33,8 +33,13 @@ import org.mars_sim.msp.core.vehicle.Crewable;
  * of the list is the Unit Manager. It maps key attributes of the Robot into
  * Columns.
  */
-@SuppressWarnings("serial")
 public class RobotTableModel extends UnitTableModel<Robot> {
+
+	/**
+	 *
+	 */
+	private static final String COUNTING_ROBOTS_KEY = "RobotTableModel.countingRobots";
+	private static final String NAME_ROBOTS_KEY = "RobotTableModel.nameRobots";
 
 	// Column indexes
 	/** Robot name column. */
@@ -60,35 +65,24 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	/** The number of Columns. */
 	private static final int COLUMNCOUNT = 9;
 	/** Names of Columns. */
-	private static String[] columnNames;
-	/** Types of Columns. */
-	private static Class<?>[] columnTypes;
+	private static final ColumnSpec[] COLUMNS;
+
 	private static final Map<UnitEventType, Integer> eventColumnMapping;
 
 	/**
 	 * The static initializer creates the name & type arrays.
 	 */
 	static {
-		columnNames = new String[COLUMNCOUNT];
-		columnTypes = new Class[COLUMNCOUNT];
-		columnNames[NAME] = Msg.getString("RobotTableModel.column.name"); //$NON-NLS-1$
-		columnTypes[NAME] = String.class;
-		columnNames[TYPE] = Msg.getString("RobotTableModel.column.type"); //$NON-NLS-1$
-		columnTypes[TYPE] = String.class;
-		columnNames[HEALTH] = Msg.getString("RobotTableModel.column.health"); //$NON-NLS-1$
-		columnTypes[HEALTH] = String.class;
-		columnNames[BATTERY] = Msg.getString("RobotTableModel.column.battery"); //$NON-NLS-1$
-		columnTypes[BATTERY] = String.class;
-		columnNames[PERFORMANCE] = Msg.getString("RobotTableModel.column.performance"); //$NON-NLS-1$
-		columnTypes[PERFORMANCE] = String.class;
-		columnNames[LOCATION] = Msg.getString("RobotTableModel.column.location"); //$NON-NLS-1$
-		columnTypes[LOCATION] = String.class;
-		columnNames[JOB] = Msg.getString("RobotTableModel.column.job"); //$NON-NLS-1$
-		columnTypes[JOB] = String.class;
-		columnNames[MISSION_COL] = Msg.getString("RobotTableModel.column.mission"); //$NON-NLS-1$
-		columnTypes[MISSION_COL] = String.class;
-		columnNames[TASK] = Msg.getString("RobotTableModel.column.task"); //$NON-NLS-1$
-		columnTypes[TASK] = String.class;
+		COLUMNS = new ColumnSpec[COLUMNCOUNT];
+		COLUMNS[NAME] = new ColumnSpec(Msg.getString("RobotTableModel.column.name"), String.class);
+		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("RobotTableModel.column.type"), String.class);
+		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("RobotTableModel.column.health"), String.class);
+		COLUMNS[BATTERY] = new ColumnSpec(Msg.getString("RobotTableModel.column.battery"), String.class);
+		COLUMNS[PERFORMANCE] = new ColumnSpec(Msg.getString("RobotTableModel.column.performance"), String.class);
+		COLUMNS[LOCATION] = new ColumnSpec(Msg.getString("RobotTableModel.column.location"), String.class);
+		COLUMNS[JOB] = new ColumnSpec(Msg.getString("RobotTableModel.column.job"), String.class);
+		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("RobotTableModel.column.mission"), String.class);
+		COLUMNS[TASK] = new ColumnSpec(Msg.getString("RobotTableModel.column.task"), String.class);
 
 		eventColumnMapping = new EnumMap<>(UnitEventType.class);
 		eventColumnMapping.put(UnitEventType.NAME_EVENT, NAME);
@@ -129,10 +123,9 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 * @param vehicle Monitored vehicle Robot objects.
 	 */
 	public RobotTableModel(Crewable vehicle)  {
-		super(UnitType.ROBOT, Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
-				((Unit) vehicle).getName()), "RobotTableModel.countingRobots", //$NON-NLS-1$
-				columnNames, 
-				columnTypes);
+		super(UnitType.ROBOT, Msg.getString(NAME_ROBOTS_KEY, //$NON-NLS-1$
+				((Unit) vehicle).getName()), COUNTING_ROBOTS_KEY, //$NON-NLS-1$
+				COLUMNS);
 
 		sourceType = ValidSourceType.VEHICLE_ROBOTS;
 		this.vehicle = vehicle;
@@ -152,12 +145,12 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 */
 	public RobotTableModel(Settlement settlement, boolean allAssociated) {
 		super (UnitType.ROBOT, (allAssociated ? Msg.getString("RobotTableModel.nameAssociatedRobots") //$NON-NLS-1$
-			 	: Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
+			 	: Msg.getString(NAME_ROBOTS_KEY, //$NON-NLS-1$
 					settlement.getName())
 				),
-				(allAssociated ? "RobotTableModel.countingRobots" : //$NON-NLS-1$
+				(allAssociated ? COUNTING_ROBOTS_KEY : //$NON-NLS-1$
 						"RobotTableModel.countingResidents" //$NON-NLS-1$
-				), columnNames, columnTypes);
+				), COLUMNS);
 
 		this.allAssociated = allAssociated;
 		setSettlementFilter(settlement);
@@ -170,9 +163,9 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 * @param mission Monitored mission Robot objects.
 	 */
 	public RobotTableModel(Mission mission)  {
-		super(UnitType.ROBOT, Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
+		super(UnitType.ROBOT, Msg.getString(NAME_ROBOTS_KEY, //$NON-NLS-1$
 				mission.getName()), "RobotTableModel.countingWorkers", //$NON-NLS-1$
-				columnNames, columnTypes);
+				COLUMNS);
 
 		sourceType = ValidSourceType.MISSION_ROBOTS;
 		this.mission = mission;
@@ -287,9 +280,9 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 				break;
 
 			case MISSION_COL: 
-				Mission mission = robot.getBotMind().getMission();
-				if (mission != null) {
-					result = mission.getName();
+				Mission m = robot.getBotMind().getMission();
+				if (m != null) {
+					result = m.getName();
 				}
 				break;
 		
@@ -307,7 +300,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 * @return status
 	 */
 	private static String getBatteryStatus(double level) {
-		String status = "N/A";
+		String status;
 		if (level < 10)
 			status = Msg.getString("RobotTableModel.column.battery.level1");
 		else if (level < 30)

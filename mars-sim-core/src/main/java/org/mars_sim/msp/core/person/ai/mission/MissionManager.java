@@ -9,31 +9,28 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.data.Rating;
 import org.mars_sim.msp.core.data.RatingLog;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
 import org.mars_sim.msp.core.reportingAuthority.PreferenceCategory;
+import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
- * This class keeps track of ongoing missions in the simulation.<br>
- * <br>
+ * This class keeps track of ongoing missions in the simulation.
  * The simulation has only one mission manager.
  */
 public class MissionManager implements Serializable {

@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.swing.table.AbstractTableModel;
-
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.Unit;
@@ -27,18 +25,26 @@ import org.mars_sim.msp.core.structure.Settlement;
  * This class models how SettlementTasks are organized and displayed
  * within the Monitor Window for a settlement.
  */
-@SuppressWarnings("serial")
-public class BacklogTableModel extends AbstractTableModel
-					implements MonitorModel, UnitListener {
+public class BacklogTableModel extends AbstractMonitorModel
+					implements UnitListener {
 
-	
+	private static final ColumnSpec[] COLUMNS;
+
 	private static final int DESC_COL = 0;
 	private static final int ENTITY_COL = 1;
 	private static final int EVA_COL = 2;
 	private static final int DEMAND_COL = 3;
 	static final int SCORE_COL = 4;
 
-	private String name = null;
+	static {
+		COLUMNS = new ColumnSpec[SCORE_COL+1];
+		COLUMNS[ENTITY_COL] = new ColumnSpec("Entity", String.class);
+		COLUMNS[DESC_COL] = new ColumnSpec("Description", String.class);
+		COLUMNS[DEMAND_COL]  = new ColumnSpec("Demand", Integer.class);
+		COLUMNS[EVA_COL]  = new ColumnSpec("EVA", String.class);
+		COLUMNS[SCORE_COL] = new ColumnSpec("Score", Double.class);
+	}
+
 	private Settlement selectedSettlement;
 	private boolean monitorSettlement = false;
 	private List<SettlementTask> tasks;
@@ -47,7 +53,9 @@ public class BacklogTableModel extends AbstractTableModel
 	 * Constructor.
 	 */
 	public BacklogTableModel(Settlement selectedSettlement) {
-		name = Msg.getString("BacklogTableModel.tabName");
+		super(Msg.getString("BacklogTableModel.tabName"),
+							"BacklogTableModel.counting",
+							COLUMNS);
 		
 		setSettlementFilter(selectedSettlement);
 	}
@@ -67,14 +75,6 @@ public class BacklogTableModel extends AbstractTableModel
 		}
 	}
 
-	/**
-	 * Has this model got a natural order that the model conforms to ?
-	 * If true, then it implies that the user should not be allowed to order.
-	 */
-	public boolean getOrdered() {
-		return false;
-	}
-    
 	/**
 	 * The Object 
 	 */
@@ -107,9 +107,10 @@ public class BacklogTableModel extends AbstractTableModel
 	 */
 	@Override
 	public void destroy() {
-
 		// Remove as listener for all settlements.
 		selectedSettlement.removeUnitListener(this);
+
+		super.destroy();
 	}
 
 	/**
@@ -182,35 +183,6 @@ public class BacklogTableModel extends AbstractTableModel
 		return tasks.size();
 	}
 
-	@Override
-	public int getColumnCount() {
-		return SCORE_COL+1;
-	}
-
-	@Override
-	public String getColumnName(int index) {
-		return switch(index) {
-			case ENTITY_COL -> "Entity";
-			case DESC_COL -> "Description";
-			case DEMAND_COL -> "Demand";
-			case EVA_COL -> "EVA";
-			case SCORE_COL -> "Score";
-			default -> throw new IllegalArgumentException("Unexpected value: " + index);
-		};
-	}
-
-	@Override
-	public Class<?> getColumnClass(int index) {
-		return switch(index) {
-			case ENTITY_COL ->  String.class;
-			case DESC_COL ->  String.class;
-			case DEMAND_COL ->  Integer.class;
-			case EVA_COL -> String.class;
-			case SCORE_COL ->  Double.class;
-			default -> throw new IllegalArgumentException("Unexpected value: " + index);
-		};
-	}
-
     /**
      * Default implementation return null as no tooltips are supported by default
      * @param rowIndex Row index of cell
@@ -251,7 +223,7 @@ public class BacklogTableModel extends AbstractTableModel
 			case DESC_COL:
 				return selectedTask.getShortName();
 			case EVA_COL:
-				return selectedTask.isEVA();
+				return (selectedTask.isEVA() ? "Yes" : "No");
 			case DEMAND_COL:
 				return selectedTask.getDemand();
 			case SCORE_COL:
@@ -260,18 +232,4 @@ public class BacklogTableModel extends AbstractTableModel
 				return null;
 		}
 	}
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-    /**
-	 * Gets the model count string.
-	 */
-	@Override
-	public String getCountString() {
-		return Msg.getString("BacklogTableModel.counting", tasks.size());
-	}
-
 }

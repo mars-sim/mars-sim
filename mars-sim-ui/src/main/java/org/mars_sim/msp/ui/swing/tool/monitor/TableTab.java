@@ -93,12 +93,10 @@ abstract class TableTab extends MonitorTab {
 			}
 		});
 
-		// If the model is not fixed ordered then allow user to select order
-		if (!model.getOrdered()) {
-			TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
-			table.setRowSorter(sorter);
-			sorter.setSortsOnUpdates(true);
-		}
+		// Allow orderring
+		TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
+		table.setRowSorter(sorter);
+		sorter.setSortsOnUpdates(true);
 
 		// Set single selection mode if necessary.
 		if (singleSelection)

@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.UnitType;
  * The UnitTableModel that maintains a table model of Units objects. It is only
  * a partial implementation of the TableModel interface.
  */
-@SuppressWarnings("serial")
 public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 		implements UnitListener {
 
@@ -64,11 +63,10 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 	 *                       text that counts the number of units. should be a valid
 	 *                       key to an existing value in
 	 *                       <code>messages.properties</code>.
-	 * @param names          Names of the columns displayed.
-	 * @param types          The Classes of the individual columns.
+	 * @param names          Details of the columns displayed.
 	 */
-	protected UnitTableModel(UnitType unitType, String name, String countingMsgKey, String[] names, Class<?>[] types) {
-		super(name, countingMsgKey, names, types);
+	protected UnitTableModel(UnitType unitType, String name, String countingMsgKey, ColumnSpec[] columns) {
+		super(name, countingMsgKey, columns);
 
 		// Initialize data members
 		this.unitType = unitType;
@@ -126,17 +124,6 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 		oldUnit.removeUnitListener(this);
 	}
 
-	/**
-	 * Is this model already ordered according to some external criteria.
-	 *
-	 * @return FALSE as the Units have no natural order.
-	 */
-	@Override
-	public boolean getOrdered() {
-		return false;
-	}
-
-	
 	/**
 	 * Prepares the model for deletion.
 	 */

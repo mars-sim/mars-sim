@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.SwingUtilities;
-import javax.swing.table.AbstractTableModel;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Entity;
@@ -22,6 +21,7 @@ import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 /**
@@ -29,8 +29,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
  * provides a mean to display the Historical Event. This is actually an Adapter
  * onto the existing Event Manager.
  */
-@SuppressWarnings("serial")
-public class EventTableModel extends AbstractTableModel implements MonitorModel, HistoricalEventListener{
+public class EventTableModel extends AbstractMonitorModel implements HistoricalEventListener{
 
 	// Column names
 	private static final int TIMESTAMP = 0;
@@ -59,31 +58,19 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 																EventType.MISSION_SALVAGE_VEHICLE);
 
 	/** Names of the displayed columns. */
-	static private String columnNames[];
-	/** Types of the individual columns. */
-	static private Class<?> columnTypes[];
+	private static final ColumnSpec[] COLUMNS;
 
 	static {
-		columnNames = new String[COLUMNCOUNT];
-		columnTypes = new Class[COLUMNCOUNT];
-		columnNames[TIMESTAMP] = Msg.getString("EventTableModel.column.time"); //$NON-NLS-1$
-		columnTypes[TIMESTAMP] = String.class;
-		columnNames[CATEGORY] = Msg.getString("EventTableModel.column.category"); //$NON-NLS-1$
-		columnTypes[CATEGORY] = String.class;
-		columnNames[TYPE] = Msg.getString("EventTableModel.column.eventType"); //$NON-NLS-1$
-		columnTypes[TYPE] = String.class;	
-		columnNames[CAUSE] = Msg.getString("EventTableModel.column.cause"); //$NON-NLS-1$
-		columnTypes[CAUSE] = String.class;
-		columnNames[WHILE] = Msg.getString("EventTableModel.column.while"); //$NON-NLS-1$
-		columnTypes[WHILE] = String.class;
-		columnNames[WHO] = Msg.getString("EventTableModel.column.who"); //$NON-NLS-1$
-		columnTypes[WHO] = Object.class;
-		columnNames[CONTAINER] = Msg.getString("EventTableModel.column.container"); //$NON-NLS-1$
-		columnTypes[CONTAINER] = String.class;
-		columnNames[HOMETOWN] = Msg.getString("EventTableModel.column.hometown"); //$NON-NLS-1$
-		columnTypes[HOMETOWN] = String.class;
-		columnNames[COORDINATES] = Msg.getString("EventTableModel.column.coordinates"); //$NON-NLS-1$
-		columnTypes[COORDINATES] = String.class;
+		COLUMNS = new ColumnSpec[COLUMNCOUNT];
+		COLUMNS[TIMESTAMP] = new ColumnSpec(Msg.getString("EventTableModel.column.time"), MarsTime.class);
+		COLUMNS[CATEGORY] = new ColumnSpec(Msg.getString("EventTableModel.column.category"),String.class);
+		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("EventTableModel.column.eventType"), String.class);	
+		COLUMNS[CAUSE] = new ColumnSpec(Msg.getString("EventTableModel.column.cause"), String.class);
+		COLUMNS[WHILE] = new ColumnSpec(Msg.getString("EventTableModel.column.while"),String.class);
+		COLUMNS[WHO] = new ColumnSpec(Msg.getString("EventTableModel.column.who"), Object.class);
+		COLUMNS[CONTAINER] = new ColumnSpec(Msg.getString("EventTableModel.column.container"), String.class);
+		COLUMNS[HOMETOWN] = new ColumnSpec(Msg.getString("EventTableModel.column.hometown"), String.class);
+		COLUMNS[COORDINATES] = new ColumnSpec(Msg.getString("EventTableModel.column.coordinates"), String.class);
 	}
 
 	private transient List<HistoricalEvent> cachedEvents = new ArrayList<>();
@@ -97,12 +84,13 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 	 * @param notifyBox to present notification message to user.
 	 */
 	public EventTableModel(MainDesktopPane desktop) {
+		super(Msg.getString("EventTableModel.tabName"), "EventTableModel.numberOfEvents", COLUMNS);
 
 		// Add this model as an event listener.
 		this.eventManager = desktop.getSimulation().getEventManager();
 		
-		 blockedTypes.add(HistoricalEventCategory.TASK);
-		 blockedTypes.add(HistoricalEventCategory.TRANSPORT);
+		blockedTypes.add(HistoricalEventCategory.TASK);
+		blockedTypes.add(HistoricalEventCategory.TRANSPORT);
 
 		// Update the cached events.
 		updateCachedEvents();
@@ -142,57 +130,13 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 		return !blockedTypes.contains(category) && !BLOCKED_EVENTS.contains(eventType);
 	}
 
-	/**
-	 * Return the number of columns
-	 *
-	 * @return column count.
-	 */
-	public int getColumnCount() {
-		return columnNames.length;
-	}
-
-	/**
-	 * Return the type of the column requested.
-	 *
-	 * @param columnIndex Index of column.
-	 * @return Class of specified column.
-	 */
-	@Override
-	public Class<?> getColumnClass(int columnIndex) {
-		if ((columnIndex >= 0) && (columnIndex < columnTypes.length)) {
-			return columnTypes[columnIndex];
-		}
-		return Object.class;
-	}
-
-	/**
-	 * Return the name of the column requested.
-	 *
-	 * @param columnIndex Index of column.
-	 * @return name of specified column.
-	 */
-	@Override
-	public String getColumnName(int columnIndex) {
-		if ((columnIndex >= 0) && (columnIndex < columnNames.length)) {
-			return columnNames[columnIndex];
-		}
-		return Msg.getString("unknown"); //$NON-NLS-1$
-	}
-
-	/**
-	 * Get the name of the model.
-	 *
-	 * @return model name.
-	 */
-	public String getName() {
-		return Msg.getString("EventTableModel.tabName"); //$NON-NLS-1$
-	}
 
 	/**
 	 * Get the number of rows in the model.
 	 *
 	 * @return the number of Events.
 	 */
+	@Override
 	public int getRowCount() {
 		if (cachedEvents != null)
 			return cachedEvents.size();
@@ -206,6 +150,7 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 	 * @param row Indexes of Unit to retrieve.
 	 * @return Unit associated with the Event as the specified position.
 	 */
+	@Override
 	public Object getObject(int row) {
 		HistoricalEvent event = cachedEvents.get(row);
 		Object result = event.getSource();
@@ -216,31 +161,12 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 	}
 
 	/**
-	 * Is this model already ordered according to some external criteria.
-	 *
-	 * @return TRUE as the events are time ordered.
-	 */
-	public boolean getOrdered() {
-		return true;
-	}
-
-    /**
-     * Default implementation return null as no tooltips are supported by default
-     * @param rowIndex Row index of cell
-     * @param columnIndex Column index of cell
-     * @return Return null by default
-     */
-    @Override
-    public String getToolTipAt(int rowIndex, int columnIndex) {
-        return null;
-    }
-
-	/**
 	 * Return the value of a Cell
 	 *
 	 * @param rowIndex    Row index of the cell.
 	 * @param columnIndex Column index of the cell.
 	 */
+	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = null;
 
@@ -280,7 +206,8 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 					break;
 
 				case CONTAINER: {
-					result = event.getContainer();
+					var con = event.getContainer();
+					result = (con != null ? con.getName() : null);
 				}
 					break;
 
@@ -305,14 +232,6 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 		}
 
 		return result;
-	}
-
-	/**
-	 * Gets the model count string.
-	 */
-	public String getCountString() {
-		return "  " + Msg.getString("EventTableModel.numberOfEvents", //$NON-NLS-2$
-				cachedEvents.size());
 	}
 
 	/**
@@ -362,17 +281,22 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 	/**
 	 * Prepares the model for deletion.
 	 */
+	@Override
 	public void destroy() {
 		eventManager.removeListener(this);
 		eventManager = null;
 		cachedEvents.clear();
 		cachedEvents = null;
+
+		super.destroy();
 	}
 
+	/**
+	 * No impelmentation is needed.
+	 * @param activate Not used
+	 */
 	@Override
 	public void setMonitorEntites(boolean activate) {
-		// TODO Auto-generated method stub
-		
+		// Do nothing in this method
 	}
-
 }

@@ -32,7 +32,7 @@ public class RatingScore implements Serializable {
      */
     public static final RatingScore ZERO_RATING = new RatingScore(0) {
         @Override
-        public void setBase(double base) {
+        public void addBase(String name, double base) {
             throw new UnsupportedOperationException("Cannot change base of zero rating");
         };
 
@@ -42,14 +42,26 @@ public class RatingScore implements Serializable {
         };
     };
 
+    public static final String BASE = "base";
+
+    private Map<String,Double> bases;
     private Map<String,Double> modifiers;
     private double score = -1;
-    private double base;
 
     public RatingScore(double base) {
-        this.base = base;
+        this(BASE, base);
+    }
+    
+    /**
+     * Create a Rating Score that has a single base value
+     * @param name Name associated with the base
+     * @param base Score of the first base
+     */
+    public RatingScore(String name, double base) {
         this.score = base;
         this.modifiers = new HashMap<>();
+        this.bases = new HashMap<>();
+        this.bases.put(name, base);
     }
  
     /**
@@ -57,9 +69,9 @@ public class RatingScore implements Serializable {
      * @param source Source of the copy
      */
     public RatingScore(RatingScore source) {
-        this.base = source.base;
         this.score = source.score;
         this.modifiers = new HashMap<>(source.modifiers);
+        this.bases = new HashMap<>(source.bases);
     }
 
     /**
@@ -79,11 +91,11 @@ public class RatingScore implements Serializable {
     }
 
     /**
-     * Get the base score
+     * Get the bases score in this Rating
      * @return
      */
-    public double getBase() {
-        return base;
+    public Map<String,Double> getBases() {
+        return Collections.unmodifiableMap(bases);
     }
 
     /**
@@ -92,16 +104,29 @@ public class RatingScore implements Serializable {
      * @param value
      */
     public void addModifier(String name, double value) {
+        if (modifiers.containsKey(name)) {
+            calculateScore();
+        }
+        else {
+            score *= value;
+        }
         modifiers.put(name, value);
-        score *= value;
     }
     
     /**
      * Recalculate the score by multiplying the base with the known modifiers.
+     * This will replace any existing base
+     * @param name Name of the base score.
      * @param base New base score.
      */
-    public void setBase(double base) {
-        this.base = base;
+    public void addBase(String name, double base) {
+        this.bases.put(name, base);
+
+        calculateScore();
+    }
+
+    private void calculateScore() {
+        double base = bases.values().stream().reduce(0D, (a, b) -> a + b);
         score = modifiers.values().stream().reduce(base, (a, b) -> a * b);
     }
 
@@ -128,7 +153,9 @@ public class RatingScore implements Serializable {
         
         StringBuilder output = new StringBuilder();
         output.append("Score:").append(SCORE_FORMAT.format(score)).append(" (");
-        output.append("base:").append(SCORE_FORMAT.format(base));
+        output.append(bases.entrySet().stream()
+                                .map(entry -> entry.getKey() + ":" + SCORE_FORMAT.format(entry.getValue()))
+                                .collect(Collectors.joining(",")));
         if (!modifiers.isEmpty()) {
             output.append(',');
         }
@@ -148,13 +175,18 @@ public class RatingScore implements Serializable {
         StringBuilder output = new StringBuilder();
         output.append("<html>");
         output.append("<b>Score: ").append(SCORE_FORMAT.format(score)).append("</b><br>");
-        output.append("Base: ").append(SCORE_FORMAT.format(base));
+
+        output.append(bases.entrySet().stream()
+                                .map(entry -> "  " + Msg.getString(RATING_KEY + entry.getKey())
+                                                    + ": " + SCORE_FORMAT.format(entry.getValue()))
+                                .collect(Collectors.joining("<br>")));
+
         if (!modifiers.isEmpty()) {
             output.append("<br>");
         }
         output.append(modifiers.entrySet().stream()
-                                .map(entry -> Msg.getString(RATING_KEY + entry.getKey())
-                                                    + ": " + SCORE_FORMAT.format(entry.getValue()))
+                                .map(entry -> "  " + Msg.getString(RATING_KEY + entry.getKey())
+                                                    + ": x" + SCORE_FORMAT.format(entry.getValue()))
                                 .collect(Collectors.joining("<br>")));
         output.append("</html>");
         return output.toString();

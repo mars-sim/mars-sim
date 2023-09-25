@@ -1,7 +1,7 @@
 [![Release version](https://img.shields.io/github/v/release/mars-sim/mars-sim?sort=semver&color=blue&label=release&style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
 [![Repo Size](https://img.shields.io/github/repo-size/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
-[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v.3.6.1?sort=semver)](https://github.com/mars-sim/mars-sim/commits/v.3.6.1)
-[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v3.6.0?sort=semver)](https://github.com/mars-sim/mars-sim/commits/v3.6.0)
+[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v3.6.2?sort=semver)](https://github.com/mars-sim/mars-sim/commits/v3.6.2)
+[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v.3.6.1?sort=semver)](https://github.com/mars-sim/mars-sim/commits/v.3.6.0)
 [![Last Commit](https://img.shields.io/github/last-commit/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/commits)
 [![GitHub Downloads](https://img.shields.io/github/downloads/mars-sim/mars-sim/total?label=gitHub%20downloads&style=flat-square&color=blue)](https://github.com/mars-sim/mars-sim/releases)
 
@@ -57,23 +57,25 @@
 # Introduction
 *The Mars Simulation Project* is a Java-based [open source](https://opensource.dev/) project that
 simulates mission operations and activities of initial settlers on Mars with a higher fidelity of 
-modeling and simulation details than a classic PC game of its genre.
+modeling and simulation details than most classic simulation games.
 
 ## Simulation
-mars-sim is designed to be a **general purpose** simulator depicting the early development of human settlements on Mars.
+mars-sim is designed to be a **general purpose** simulator depicting early development of 
+human settlements on Mars.
 
 According to *Encyclopædia Britannica*, a computer simulation is the use of a computer to represent
 the dynamic responses of one system by the behavior of another system modeled after it. In essence,
-a simulation is a mathematical description, or model, of a real system in the form of a computer program.
+a simulation is a mathematical description, or model, of a real world system in the form of a 
+computer program.
 
-mars-sim aims to integrate and incorporate as many research disciplines (such as physics, chemistry,
-biology, economics, psychology, and social science) as possible to simulate the dynamics and behaviors
-of people, social structure, physical and mechanical systems, and environment in the context of
-developing human settlements on Mars.
+mars-sim aims to integrate and incorporate as many subject disciplines (such as engineering, physics, 
+chemistry, biology, economics, psychology, and social science) as possible to simulate the dynamics 
+and behaviors of people, social structure, physical and mechanical systems, and environment in the 
+context of developing human settlements on Mars.
 
-mars-sim models each settler as an intelligent agent which possess varying degrees of autonomy and mobility.
-It is a symbolic model of reality, given a capacity to learn from experiences and an ability to
-cooperate with other agents and systems. A settler has prescribed attributes and skills and makes
+mars-sim models each settler as an intelligent agent possessing varying degrees of autonomy and mobility.
+It models how an independent agent, given a capacity to learn from experiences and an ability to
+cooperate with others under a set of rules. A settler has prescribed attributes and skills and makes
 weighted decisions and interacts with one another to produce unexpected results in a sandbox world.
 
 For instance, each settler is assigned with a job, a role, having technical
@@ -85,26 +87,26 @@ as they interact and work with one another. They are there to live, dream, explo
 ## Exploration
 
 History is shaped by pioneers. The exploration of Mars started in the 1960s with sending robotic 
-spacecraft to orbit the planet. The apex of this spirit of exploration will be culminated by the first human landing 
-in near future. Early explorers of Mars will come face-to-face with insurmountable challenges. 
+spacecraft to orbit the planet. The apex of this spirit of exploration will be culminated by the 
+first human landing in near future. Early explorers of Mars will come face-to-face with 
+insurmountable challenges. 
+
 The first generations human explorers will not explore long distances from their habitat but within 
 a region being called an "Exploration Zone", say, within 100 km of their landing. Many mission planning
 activities would have been taken place prior to their arrival to first identify all the Science and Resource 
-Region of Interests (ROI). mars-sim is modeled to simulate the exploration of Mars within a decade after 
-the first landing. Humanity has shifted into high gears with the effort of making Mars the second home.
+Region of Interests (ROIs). mars-sim is modeled to simulate the exploration of Mars within a decade after 
+the first landing when humanity may shift into high gears with the effort of making Mars the second home.
 
 ## Mars Direct Mission Plan 
 
-mars-sim loosely follows the *Mars Direct Mission Plan by Robert Zubrin* and has crafted 5 basic
-settlement types, namely, Phase 1 Base, Phase 2 Base, Phase 3 Base, Alpha Base and special outposts. 
+mars-sim loosely follows the *Mars Direct Mission Plan by Robert Zubrin* and has crafted 7 basic
+settlement templates. In general, a 4-settler initial base is called a *Mars Direct Plan (MDP) Phase 1* base.
+An 8-settler base follows a *MDP Phase 2* template. A 12-settler base is *MDP Phase 3*. A 24-settler base
+is designated as *Alpha Base*, whereas a 36-settler base is called a *Hub Base. Besides, players may 
+build a *Trading Outpost* or a *Mining Depot* near sites with high mineral concentrations. 
 
-In general, a 4-settler initial base is called a *Mars Direct Plan (MDP) Phase 1* template. An 8-settler base
-is constructed under *MDP Phase 2* template. A 12-settler base is *MDP Phase 3*. A 24-settler base
-is designated as *Alpha Base*. Besides, players may build a *Trading Outpost* or a *Mining Depot*
-near sites with high mineral concentrations. 
-
-Depending on its country or origin and/or sponsor, each template may vary in the numbers and types of building it contains.
-Altogether, there is a total of 24 [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) 
+Each country of origin and sponsor has unique template that house various types of buildings. 
+Altogether, there is a total of 29 unique [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) 
 to choose from.
 
 ## Settlement
@@ -157,7 +159,7 @@ While at the Earth's sea level, the atmospheric pressure is **101.35 kPa** (14.7
 in mars-sim, a low pressure atmosphere of **34 kPa** (4.93 psi) is chosen for the settlement living with
 the composition of oxygen at 58.8%. 
 
-However, [EVA suit](https://github.com/mars-sim/mars-sim/wiki/EVA-Suit) or rovers (inside a vehicle) 
+However, [EVA suit](https://github.com/mars-sim/mars-sim/wiki/EVA-Suit) or inside rovers could
 adopt an even lower pressurized environment of 17 kPa (2.47 psi) for more optimal use of resources 
 and design specifications. In comparison, Apollo Lunar Module (LM) atmosphere of 100% oxygen at 33 kPa
 (4.8 psi). The National Aeronautics and Space Administration (NASA)'s Shuttle airlock has an oxygen 
@@ -301,7 +303,7 @@ For the open source community, the OpenJDK is also being decoupled from the Open
 
 Currently, mars-sim does not require JavaFX.
 
-> Note 1 : Specifically, the official release of mars-sim (v3.1.0 to v3.5.0) do not
+> Note 1 : Specifically, the official release of mars-sim (from v3.1.0 up to now) do not
 utilize JavaFX / OpenJFX. 
 
 Therefore, it's NOT a requirement to install it for running mars-sim.
@@ -466,7 +468,7 @@ e.g. Include the followings :
 **Specifications (please complete)**
  - OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04]
  - Java version : [e.g. Oracle JDK 17.0.8, AdoptOpenJDK 17.0.8, openjfx 17]
- - Major version and build : [e.g. 3.6.0 build 8558]
+ - Major version and build : [e.g. 3.6.2 build 8718]
 
 **Additional context**
  - Add any other context about the problem here. By providing more info above when filing it, 
@@ -475,7 +477,7 @@ e.g. Include the followings :
 > Note 1 : if you double-click the jar file to start mars-sim and nothing shows up, 
 it's possible that an instance of JVM is already being created in the background 
 that has failed to load Main Window. To see if it's indeed the case, in Windows OS, 
-you may hit Ctrl+ESC to bring up the Task Manager and scroll down to see any 
+you may hit `Ctrl+Esc` to bring up the Task Manager and scroll down to see any 
 *orphaned* instances of `Java(TM) Platform SE binary` running in the background. 
 Be sure you first clear them off the memory by right-clicking on it and choosing `End Task`.
 
@@ -508,7 +510,7 @@ For a more detail description of this project, see our [project website](https:/
 * Check out the most recent release or pre-release build in GitHub [Release](https://github.com/mars-sim/mars-sim/releases) page.
 
 * Or see the previous and current official release versions at
-[SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.6.0/).
+[SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.6.2/).
 
 Note: if you prefer, click SF's button below to automatically sense the correct OS platform to download.
 

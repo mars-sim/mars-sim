@@ -42,7 +42,7 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
 
         private Fishery tank;
 
-        public FishTaskJob(SettlementMetaTask owner, Fishery tank, double score) {
+        public FishTaskJob(SettlementMetaTask owner, Fishery tank, RatingScore score) {
             super(owner, "Tend Fish Tank", tank.getBuilding(), score);
             this.tank = tank;
         }
@@ -118,12 +118,13 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
 
         for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.FISHERY)) {
             Fishery fishTank = building.getFishery();
-            double result = (fishTank.getUncleaned().size() + fishTank.getUninspected().size()) *3D;
+            RatingScore result = new RatingScore("maintenance", 
+                    (fishTank.getUncleaned().size() + fishTank.getUninspected().size()) *3D);
 
-            result += (fishTank.getSurplusStock() * 10D);
-            result += fishTank.getWeedDemand();
+            result.addBase("surplus", (fishTank.getSurplusStock() * 10D));
+            result.addBase("fish.weeds", fishTank.getWeedDemand());
             
-            if (result > 0) {
+            if (result.getScore() > 0) {
                 tasks.add(new FishTaskJob(this, fishTank, result));
             }
         }
