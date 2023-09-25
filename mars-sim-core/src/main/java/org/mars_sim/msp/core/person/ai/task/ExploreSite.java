@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExploreSite.java
- * @date 2023-09-17
+ * @date 2023-09-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -88,12 +88,14 @@ public class ExploreSite extends EVAOperation {
 
 		// Take specimen containers for rock samples.
 		if (!hasSpecimenContainer()) {
-			takeSpecimenContainer();
-		}
-		// If specimen containers are not available, end task.
-		else {
-			logger.warning(person, "No more specimen box for collecting rock samples.");
-			endTask();
+			boolean hasBox = takeSpecimenContainer();
+
+			if (!hasBox) {
+				// If specimen containers are not available, end task.
+				logger.log(person, Level.WARNING, 5_000,
+						"No more specimen box for collecting rock samples.");
+				endTask();
+			}
 		}
 		
 		skill = (getEffectiveSkillLevel() + person.getSkillManager().getSkillLevel(SkillType.PROSPECTING)) / 2D;

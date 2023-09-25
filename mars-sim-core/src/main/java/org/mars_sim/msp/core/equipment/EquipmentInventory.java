@@ -48,6 +48,12 @@ public class EquipmentInventory
 	/** The MicroInventory instance. */
 	private MicroInventory microInventory;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param owner
+	 * @param cargoCapacity
+	 */
 	public EquipmentInventory(Unit owner, double cargoCapacity) {
 
 		this.owner = owner;
@@ -200,8 +206,10 @@ public class EquipmentInventory
 			for (Equipment e: suitSet) {
 				suitMass += e.getMass();
 			}
+			
 			double containerMass = 0;
 			String containerName = "";
+			
 			for (Equipment e: containerSet) {
 				Container c = (Container)e;
 				Set<Integer> ids = c.getAmountResourceIDs();
