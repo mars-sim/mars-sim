@@ -84,8 +84,8 @@ public class CollectMinedMinerals extends EVAOperation {
 
 			// If bags are not available, end task.
 			if (!hasBag) {
-				logger.log(person, Level.INFO, 5_000,
-						"Unable to find more bags to collect mined minerals.", null);
+				logger.log(person, Level.WARNING, 5_000,
+						"Unable to find more bags to collect mined minerals.");
 				endTask();
 			}
 		}

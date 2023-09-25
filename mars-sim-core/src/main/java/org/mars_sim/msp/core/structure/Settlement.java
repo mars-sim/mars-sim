@@ -1150,7 +1150,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Apply a clock pulse to a list of Temporal objects. This traps exceptions
+	 * Applies a clock pulse to a list of Temporal objects. This traps exceptions
 	 * to avoid the impact spreading to other units.
 	 * 
 	 * @param pulse
@@ -1192,7 +1192,7 @@ public class Settlement extends Structure implements Temporal,
 
 
 	/**
-	 * Samples all the critical resources for stats
+	 * Samples all the critical resources for stats.
 	 *
 	 * @param resourceType
 	 */
@@ -1243,7 +1243,7 @@ public class Settlement extends Structure implements Temporal,
 
 
 	/**
-	 * Gathers yestersol's statistics for the critical resources
+	 * Gathers yestersol's statistics for the critical resources.
 	 *
 	 * @return
 	 */
@@ -1260,7 +1260,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the average amount of a critical resource on a sol
+	 * Gets the average amount of a critical resource on a sol.
 	 *
 	 * @param sol
 	 * @param resourceType
@@ -1287,7 +1287,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Provides the daily reports for the settlement
+	 * Provides the daily reports for the settlement.
 	 */
 	private void performEndOfDayTasks(MarsTime marsTime) {
 		int solElapsed = marsTime.getMissionSol();
@@ -1330,8 +1330,8 @@ public class Settlement extends Structure implements Temporal,
 			resourceStat.remove(0);
 	}
 
-	/***
-	 * Refreshes the sleep map for each person in the settlement
+	/**
+	 * Refreshes the sleep map for each person in the settlement.
 	 *
 	 * @param solElapsed
 	 */
@@ -1383,7 +1383,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * is an airlock available ? 
+	 * Is there an airlock available ? 
 	 * Note: currently not being used.
 	 * 
 	 * @param person
@@ -1686,7 +1686,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 	
 	/**
-	 * Gets the closest available airlock at the settlement to the given location.
+	 * Is there a closest available airlock at the settlement to the given location ?
 	 * The airlock must have a valid walkable interior path from the given
 	 * building's current location.
 	 *
