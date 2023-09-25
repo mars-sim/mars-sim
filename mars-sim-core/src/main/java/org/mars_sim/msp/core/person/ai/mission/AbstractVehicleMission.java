@@ -177,6 +177,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	
 	/**
 	 * Sets up starting NavPoints.
+	 * 
+	 * @param startingMember
 	 */
 	private void init(Worker startingMember) {
 
@@ -359,7 +361,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 
 	/**
-	 * Claim the mission's vehicle and reserve it.
+	 * Claims the mission's vehicle and reserve it.
+	 * 
 	 * @param v Vehicle to be claimed
 	 */
 	protected final void claimVehicle(Vehicle v) {
@@ -479,7 +482,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 	
 	/**
-	 * Get help for the mission. The reason becomes a Mission Status.
+	 * Gets help for the mission. The reason becomes a Mission Status.
+	 * 
 	 * @param reason The reason why help is needed.
 	 */
 	public void getHelp(MissionStatus reason) {
@@ -524,7 +528,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 
 	/**
-	 * Determine if a vehicle is sufficiently loaded with fuel and supplies.
+	 * Determines if a vehicle is sufficiently loaded with fuel and supplies.
 	 *
 	 * @return true if rover is loaded.
 	 * @throws MissionException if error checking vehicle.
@@ -723,7 +727,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			reachedDestination = current.equals(target)
 					|| distance < SMALL_DISTANCE;
 
-			logger.info(vehicle, "Travelling from (" + current + ") to (" + target + "). Distance: " + Math.round(distance * 100.0)/100.0 + " km.");
+//			logger.info(vehicle, "Travelling from (" + current + ") to (" + target + "). Distance: " + Math.round(distance * 100.0)/100.0 + " km.");
 			malfunction = vehicle.getMalfunctionManager().hasMalfunction();
 		}
 
@@ -740,8 +744,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		// Choose a driver
 		if (!reachedDestination && !malfunction) {
 			
-			if (member.getUnitType() == UnitType.ROBOT) {
-				Robot robot = (Robot)member;
+			if (member instanceof Robot robot) {
 				lowPower = robot.getSystemCondition().isLowPower();
 			}
 			
@@ -767,11 +770,11 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				}
 
 				if (operateVehicleTask != null) {
-					if (member.getUnitType() == UnitType.PERSON) {
-						assignTask((Person)member, operateVehicleTask);
+					if (member instanceof Person person) {
+						assignTask(person, operateVehicleTask);
 					}
-					else {
-						assignTask((Robot)member, operateVehicleTask);
+					else if (member instanceof Robot robot) {
+						assignTask(robot, operateVehicleTask);
 					}
 					
 					lastOperator = member;
@@ -844,12 +847,11 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	
 		// Set the members' work shift to on-call to get ready
 		for (Worker m : getMembers()) {
-			if (m.getUnitType() == UnitType.PERSON) {
-				Person pp = (Person) m;
+			if (m instanceof Person person) {
 				// If first time this person has been called and there is a limit interrupt them
-				if (!pp.getShiftSlot().setOnCall(true) && (deadline > 0)) {
+				if (!person.getShiftSlot().setOnCall(true) && (deadline > 0)) {
 					// First call so 
-					Task active = pp.getTaskManager().getTask();
+					Task active = person.getTaskManager().getTask();
 					if (active instanceof Sleep sp) {
 						// Not create but the only way
 						sp.setAlarm(deadline);
