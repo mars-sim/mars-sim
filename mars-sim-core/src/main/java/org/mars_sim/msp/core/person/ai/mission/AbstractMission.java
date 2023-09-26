@@ -100,7 +100,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 	protected static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
 	private static final MissionStatus MISSION_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
 	private static final MissionStatus MISSION_ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
-//	private static final MissionStatus MISSION_ABORTED = new MissionStatus("Mission.status.aborted");
 	public static final MissionStatus MISSION_ABORTED_BY_PLAYER = new MissionStatus("Mission.status.abortedByPlayer");
 	
 	private static final String INTERNAL_PROBLEM = "Mission.status.internalProblem";
@@ -322,12 +321,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			members.add(member);
 
 			signUp.add(member);
-			if (UnitType.ROBOT == member.getUnitType()) {
-				registerHistoricalEvent((Robot) member, EventType.MISSION_JOINING,
-						"Adding a member");
-			}
-			else
-				registerHistoricalEvent((Person) member, EventType.MISSION_JOINING,
+			registerHistoricalEvent(member, EventType.MISSION_JOINING,
 									"Adding a member");
 	
 			fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
@@ -487,9 +481,11 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	@Override
 	public Stage getStage() {
-		return (done ? Stage.DONE :
-				// If no phase that Mission is building built so stage is PREP
-				(phase != null ? phase.getStage() : Stage.PREPARATION));
+		if (done)
+			return Stage.DONE;
+		else
+			// If no phase that Mission is building built so stage is PREP
+			return phase != null ? phase.getStage() : Stage.PREPARATION;
 	}
 
 	/**
@@ -864,10 +860,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private final boolean hasDangerousMedicalProblems() {
 		Person patient = null;
 		for (Worker member : members) {
-			if (member.getUnitType() == UnitType.PERSON) {
-				if (((Person) member).getPhysicalCondition().hasSeriousMedicalProblems()) {
-					patient = (Person) member;
-				}
+			if ((member.getUnitType() == UnitType.PERSON) 
+					&& ((Person) member).getPhysicalCondition().hasSeriousMedicalProblems()) {
+				patient = (Person) member;
 			}
 		}
 
@@ -887,10 +882,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected final boolean hasAnyPotentialMedicalProblems() {
 		for (Worker member : members) {
-			if (member.getUnitType() == UnitType.PERSON) {
-				if (((Person) member).getPhysicalCondition().computeFitnessLevel() < 2) {
-					return true;
-				}
+			if ((member.getUnitType() == UnitType.PERSON) 
+				&& ((Person) member).getPhysicalCondition().computeFitnessLevel() < 2) {
+				return true;
 			}
 		}
 
@@ -907,10 +901,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 	public final boolean hasDangerousMedicalProblemsAllCrew() {
 		boolean result = true;
 		for (Worker member : members) {
-			if (member.getUnitType() == UnitType.PERSON) {
-				if (!((Person) member).getPhysicalCondition().hasSeriousMedicalProblems()) {
-					result = false;
-				}
+			if ((member.getUnitType() == UnitType.PERSON) 
+				&& !((Person) member).getPhysicalCondition().hasSeriousMedicalProblems()) {
+				result = false;
 			}
 		}
 		return result;
@@ -971,30 +964,28 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 
 		int pop = startingMember.getAssociatedSettlement().getNumCitizens();
-		int max = 0;
-
+		int max;
 		if (pop < 4)
 			max = 1;
-		else if (pop >= 4 && pop < 7)
+		else if (pop < 7)
 			max = 2;
-		else if (pop >= 7 && pop < 10)
+		else if (pop < 10)
 			max = 3;
-		else if (pop >= 10 && pop < 14)
+		else if (pop < 14)
 			max = 4;
-		else if (pop >= 14 && pop < 18)
+		else if (pop < 18)
 			max = 5;
-		else if (pop >= 18 && pop < 23)
+		else if (pop < 23)
 			max = 6;
-		else if (pop >= 23 && pop < 29)
+		else if (pop < 29)
 			max = 7;
-		else if (pop >= 29)
+		else
 			max = 8;
 
 		// 50% tendency to have 1 less person
 		int rand = RandomUtil.getRandomInt(1);
-		if (rand == 1) {
-			if (max >= 5)
-				max--;
+		if ((rand == 1) && (max >= 5)) {
+			max--;
 		}
 
 		// Max can not bigger than mission capacity

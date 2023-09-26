@@ -21,12 +21,13 @@ public class MetaMissionUtil {
 	 * Private constructor for utility class.
 	 */
 	private MetaMissionUtil() {
-	};
+		// Stop creating instance of helper
+	}
 
 	/**
 	 * Lazy initialization of metaMissions list.
 	 */
-	private synchronized static void initializeMetaMissions() {
+	private static synchronized void initializeMetaMissions() {
 
 		// Check for concurrrent creation
 		if (metaMissions != null) {
