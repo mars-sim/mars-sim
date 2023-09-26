@@ -83,7 +83,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 
 		// Crowding modifier
 		int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
-		if (crowding > 0) missionProbability.addModifier(OVER_CROWDING, crowding + 1);
+		if (crowding > 0) missionProbability.addModifier(OVER_CROWDING, crowding + 1D);
 
 		// Job modifier.
 		missionProbability.addModifier(LEADER, getLeaderSuitability(person));
@@ -94,7 +94,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 		// if extrovert, score 50 to 100 -->  0 to 2
 		// Reduce probability if introvert
 		int extrovert = person.getExtrovertmodifier();
-		missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
+		missionProbability.addModifier(PERSON_EXTROVERT, (1D + extrovert/2.0));
 
 		missionProbability.applyRange(0, LIMIT);
 

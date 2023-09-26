@@ -126,7 +126,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 			// if extrovert, score 50 to 100 -->  0 to 2
 			// Reduce probability if introvert
 			int extrovert = person.getExtrovertmodifier();
-			missionProbability.addModifier(PERSON_EXTROVERT, -2 + (extrovert/25));
+			missionProbability.addModifier(PERSON_EXTROVERT, -2D + (extrovert/25D));
 			missionProbability.applyRange(0, LIMIT);
 		}
 	

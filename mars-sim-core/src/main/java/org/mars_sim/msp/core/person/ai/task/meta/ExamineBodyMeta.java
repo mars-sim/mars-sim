@@ -57,7 +57,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 	private static final double DEFAULT_SCORE = 500D;
 
 	// Extra score for every day body not examined
-	private static final int SOL_SCORE = 50;
+	private static final double SOL_SCORE = 50;
 
 	private static MedicalManager medicalManager;
 

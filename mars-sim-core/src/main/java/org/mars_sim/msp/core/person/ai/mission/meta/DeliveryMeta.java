@@ -77,7 +77,7 @@ public class DeliveryMeta extends AbstractMetaMission {
 		// if extrovert, score 50 to 100 -->  0 to 2
 		// Reduce probability if introvert
 		int extrovert = person.getExtrovertmodifier();
-		missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
+		missionProbability.addModifier(PERSON_EXTROVERT, (1D + extrovert/2D));
 		
 		missionProbability.applyRange(0, LIMIT);
 
@@ -93,10 +93,8 @@ public class DeliveryMeta extends AbstractMetaMission {
 	 */
 	private RatingScore getSettlementProbability(Settlement settlement) {
 
-		RatingScore missionProbability = RatingScore.ZERO_RATING;
-
 		// Check for the best delivery settlement within range.
-		Drone drone = (Drone) DroneMission.getDroneWithGreatestRange(settlement, false);
+		Drone drone = DroneMission.getDroneWithGreatestRange(settlement, false);
 		if (drone == null) {
 			return RatingScore.ZERO_RATING;
 		}
@@ -122,7 +120,7 @@ public class DeliveryMeta extends AbstractMetaMission {
 		double deliveryProfit = deal.getProfit() * VALUE;
 
 		// Delivery value modifier.
-		missionProbability = new RatingScore(deliveryProfit / DIVISOR * gManager.getTradeFactor());
+		RatingScore missionProbability = new RatingScore(deliveryProfit / DIVISOR * gManager.getTradeFactor());
 		missionProbability.applyRange(0, Delivery.MAX_STARTING_PROBABILITY);
 		
 		int f2 = 2 * numThisMission + 1;
@@ -132,7 +130,7 @@ public class DeliveryMeta extends AbstractMetaMission {
 		// Crowding modifier.
 		int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
 		if (crowding > 0) {
-			missionProbability.addModifier(OVER_CROWDING, crowding + 1);
+			missionProbability.addModifier(OVER_CROWDING, crowding + 1D);
 		}
 
 		return missionProbability;
