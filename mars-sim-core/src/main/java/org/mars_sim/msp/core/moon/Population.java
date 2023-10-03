@@ -21,7 +21,7 @@ public class Population implements Serializable, Temporal {
 	public static final SimLogger logger = SimLogger.getLogger(Population.class.getName());
 
 	private static final int MAX = 60;
-	
+
 	private int numTourists;
 	
 	private int numResidents;
@@ -30,14 +30,26 @@ public class Population implements Serializable, Temporal {
 	
 	private int numBeds;
 	
+	
+	private double growthRateTourists;
+	
+	private double growthRateResidents;
+	
+	private double growthRateResearchers;
+	
+	private double growthRateBeds;
+	
+	
 	public Population() {
+			
+		growthRateTourists = RandomUtil.getRandomDouble(-.4, .4);
+		growthRateResidents = RandomUtil.getRandomDouble(-.4, .4);
+		growthRateResearchers = RandomUtil.getRandomDouble(-.4, .4);
+		growthRateBeds = RandomUtil.getRandomDouble(-.4, .4);
 		
 		numTourists = RandomUtil.getRandomInt(0, 3);
-		
 		numResidents = RandomUtil.getRandomInt(10, 20);
-		
 		numResearchers = RandomUtil.getRandomInt(3, 6);
-		
 		numBeds = MAX;
 	}
 	
@@ -45,6 +57,12 @@ public class Population implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 		
 		if (pulse.isNewSol()) {
+			
+			growthRateTourists += RandomUtil.getRandomDouble(-.2, .2);
+			growthRateResidents += RandomUtil.getRandomDouble(-.2, .2);
+			growthRateResearchers += RandomUtil.getRandomDouble(-.2, .2);
+			growthRateBeds += RandomUtil.getRandomDouble(-.2, .2);
+			
 			// Increase beds
 			int rand = RandomUtil.getRandomInt(0, 10);
 			if (rand == 0) {
@@ -92,6 +110,10 @@ public class Population implements Serializable, Temporal {
 		}
 		
 		return false;
+	}
+	
+	public int getNumBed() {
+		return numBeds;
 	}
 	
 	public int getNumTourists() {

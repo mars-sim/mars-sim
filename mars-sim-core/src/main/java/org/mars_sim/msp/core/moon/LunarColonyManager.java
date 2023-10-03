@@ -39,4 +39,8 @@ public class LunarColonyManager implements Serializable, Temporal {
 		return true;
 	}
 
+	public Set<Colony> getColonySet() {
+		return colonies;
+	}
+	
 }

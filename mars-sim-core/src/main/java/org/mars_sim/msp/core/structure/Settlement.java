@@ -3788,7 +3788,8 @@ public class Settlement extends Structure implements Temporal,
 	}
 	
 	/**
-	 * Get the modifier to apply of a certain preference
+	 * Gets the modifier to apply of a certain preference.
+	 * 
 	 * @param key The preference
 	 * @return The appropriate modifier; return 1 by default
 	 */
@@ -3801,15 +3802,17 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Get the preference that this Settlement influences.
-	 * @return A read onycopy of preferences
+	 * Gets the preference that this Settlement influences.
+	 * 
+	 * @return A read only copy of preferences
 	 */
 	public Map<PreferenceKey,Object> getPreferences() {
 		return Collections.unmodifiableMap(preferences);
 	}
 
 	/**
-	 * Update a saved preference value. Check it is the correct type for the category
+	 * Updates a saved preference value. Check it is the correct type for the category.
+	 * 
 	 * @param key Key of the preference
 	 * @param value New value.
 	 */
@@ -3831,7 +3834,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Reinitialize references after loading from a saved sim.
+	 * Reinitializes references after loading from a saved sim.
 	 */
 	public void reinit() {
 		if (surfaceFeatures == null) 

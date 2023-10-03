@@ -43,17 +43,20 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.moon.Colony;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.util.BasicTaskJob;
@@ -74,6 +77,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SmartScroller;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 
 /**
@@ -88,7 +92,7 @@ public class CommanderWindow extends ToolWindow {
 	public static final String NAME = "Commander Dashboard";
 	public static final String ICON = "dashboard";
 
-	private static final String LEADERSHIP_TAB = "Leadership";
+	private static final String DIPLOMATIC_TAB = "Diplomatic Channel";
 
 	private static final String AGRICULTURE_TAB = "Agriculture";
 	private static final String COMPUTING_TAB = "Computing";
@@ -105,6 +109,12 @@ public class CommanderWindow extends ToolWindow {
 	private static final String ACCEPT_NO = "Accept NO Trading initiated by other settlements";
 	private static final String SEE_RIGHT = ".    -->";
 
+	private int popCache;
+	private int bedCache;
+	private int touristCache;
+	private int residentCache;
+	private int researcherCache;
+	
 	private JTabbedPane tabPane;
 	/** Person Combo box */	
 	private JComboBoxMW<Person> personBox;
@@ -135,18 +145,27 @@ public class CommanderWindow extends ToolWindow {
 	private JRadioButton r3;
 	private JRadioButton r4;
 	
+	private JLabel popLabel;
+	private JLabel bedLabel;
+	private JLabel touristLabel;
+	private JLabel residentLabel;
+	private JLabel researcherLabel;
+	
 	private Person cc;
 
 	private Settlement settlement;
-
-	//private List<String> taskCache;
+	
+	private Colony colony;
 
 	/** The MarsClock instance. */
 	private MasterClock masterClock;
 	private UnitManager unitManager;
 
 	private JPanel tradingPartnersPanel;
+	
 	private Map<String, Settlement> tradingPartners;
+	private List<Colony> colonyList;
+	
 
 	/**
 	 * Constructor.
@@ -165,6 +184,10 @@ public class CommanderWindow extends ToolWindow {
 		settlement = settlementList.get(0);
 		cc = settlement.getCommander();
 		
+		colonyList = new ArrayList<>(Simulation.instance().getLunarColonyManager().getColonySet());
+		Collections.sort(colonyList);
+		colony = colonyList.get(0);
+				
 		// Create content panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
@@ -300,11 +323,89 @@ public class CommanderWindow extends ToolWindow {
 
 	
 	private void createLeadershipPanel() {
-		JPanel panel = new JPanel(new BorderLayout());
-		tabPane.add(LEADERSHIP_TAB, panel);
+		JPanel panel = new JPanel(new BorderLayout(20, 20));
+		tabPane.add(DIPLOMATIC_TAB, panel);
 
 		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
+		topPanel.setBorder(BorderFactory.createTitledBorder(" Lunar Development Region "));
 		panel.add(topPanel, BorderLayout.NORTH);
+		panel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		
+		topPanel.add(tabbedPane, BorderLayout.NORTH);
+
+		if (colonyList != null && !colonyList.isEmpty()) {
+			for (Colony c: colonyList) {
+				
+				AttributePanel labelGrid = new AttributePanel(7, 1);
+				labelGrid.setBorder(new EmptyBorder(10, 10, 10, 10));
+				
+				
+				String name = c.getName();
+				tabbedPane.addTab(name, labelGrid);
+				
+				labelGrid.addRow("Name", name);
+			
+				bedCache = c.getPopulation().getNumBed();
+				bedLabel = labelGrid.addRow("# of Quarters", bedCache + "");
+							
+				popCache = c.getPopulation().getTotalPopulation();
+				popLabel = labelGrid.addRow("Total Population", popCache + "");
+				
+				touristCache = c.getPopulation().getNumTourists();
+				touristLabel = labelGrid.addRow("# of Tourists", touristCache + "");
+				
+				residentCache = c.getPopulation().getNumResidents();
+				residentLabel = labelGrid.addRow("# of Residents", residentCache + "");
+				
+				researcherCache = c.getPopulation().getNumResearchers();
+				researcherLabel = labelGrid.addRow("# of Researchers", researcherCache + "");
+				
+				
+				labelGrid.addRow("Coordinates", c.getCoordinates().getFormattedString());
+			}
+		}
+		else
+			System.out.println("colonyList is null");
+	}
+	
+	private void updateLunar() {
+		if (colonyList != null && !colonyList.isEmpty()) {
+			for (Colony c: colonyList) {
+				
+				
+				int newBed = c.getPopulation().getNumBed();
+				if (bedCache != newBed) {
+					bedCache = newBed;
+					bedLabel.setText(newBed + "");
+				}
+				
+				int newPop = c.getPopulation().getTotalPopulation();
+				if (popCache != newPop) {
+					popCache = newPop;
+					popLabel.setText(newPop + "");
+				}
+	
+				int newTourist = c.getPopulation().getNumTourists();
+				if (touristCache != newTourist) {
+					touristCache = newTourist;
+					touristLabel.setText(newTourist + "");
+				}
+				
+				int newResident = c.getPopulation().getNumResidents();
+				if (residentCache != newResident) {
+					residentCache = newResident;
+					residentLabel.setText(newResident + "");
+				}
+				
+				int newResearcher = c.getPopulation().getNumResearchers();
+				if (researcherCache != newResearcher) {
+					researcherCache = newResearcher;
+					researcherLabel.setText(newResearcher + "");
+				}
+			}
+		}
 	}
 
 	/**
@@ -874,7 +975,8 @@ public class CommanderWindow extends ToolWindow {
 	}
 
 	/**
-	 * Update the window as time has changed
+	 * Updates the window as time has changed.
+	 * 
 	 * @param pulse The Clock advance
 	 */
 	@Override
@@ -882,6 +984,9 @@ public class CommanderWindow extends ToolWindow {
 
 		// Update list
 		listUpdate();
+		
+		// Update lunar colonies
+		updateLunar();
 	}
 
 	private void disableAllCheckedSettlement() {
