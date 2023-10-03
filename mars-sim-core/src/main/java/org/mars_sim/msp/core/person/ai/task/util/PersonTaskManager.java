@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.util.List;
 
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -189,7 +190,8 @@ public class PersonTaskManager extends TaskManager {
 			defaultInsideTasks = new TaskCache("Default Inside", null);
 			
 			// Create a fallback Task job that can always be done
-			TaskJob sleepJob = new AbstractTaskJob(SLEEP, 1D) {
+			RatingScore base = new RatingScore(1D);
+			TaskJob sleepJob = new AbstractTaskJob(SLEEP, base) {
 				
 				private static final long serialVersionUID = 1L;
 
@@ -200,7 +202,7 @@ public class PersonTaskManager extends TaskManager {
 			};
 			defaultInsideTasks.put(sleepJob);
 
-			TaskJob eatJob = new AbstractTaskJob(EAT, 1D) {
+			TaskJob eatJob = new AbstractTaskJob(EAT, base) {
 				
 				private static final long serialVersionUID = 1L;
 
@@ -222,7 +224,7 @@ public class PersonTaskManager extends TaskManager {
 			defaultOutsideTasks = new TaskCache("Default Outside", null);
 
 			// Create a MetaTask to return inside
-			TaskJob walkBack = new AbstractTaskJob("Return Inside", 1D) {
+			TaskJob walkBack = new AbstractTaskJob("Return Inside", new RatingScore(1D)) {
 				
 				private static final long serialVersionUID = 1L;
 
@@ -339,12 +341,11 @@ public class PersonTaskManager extends TaskManager {
 	/**
 	 * Prepares object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
 		mind = null;
 		person = null;
-		defaultInsideTasks.destroy();
-		defaultInsideTasks = null;
-		defaultOutsideTasks.destroy();
-		defaultOutsideTasks = null;
+
+		super.destroy();
 	}
 }

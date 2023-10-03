@@ -8,9 +8,7 @@
 package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Simulation;
@@ -23,7 +21,6 @@ import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.Walk;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -158,11 +155,6 @@ public abstract class TaskManager implements Serializable {
 	private History<OneActivity> allActivities;
 	/** The list of pending of tasks. */
 	private List<TaskJob> pendingTasks;
-
-	// THese are for metric capture
-	private static int totalRebuild = 0;
-	private static int reuseRebuild = 0;
-	private static Map<Settlement,MarsTime> metrics;
 	
 	/**
 	 * Constructor.
@@ -459,37 +451,6 @@ public abstract class TaskManager implements Serializable {
 	 */
 	protected abstract TaskCache rebuildTaskCache();
 
-	
-	/**
-	 * Simple method to capture some stats/metrics on cache rebuilds.
-	 */
-	private void captureStats() {
-		Settlement scope = worker.getAssociatedSettlement();
-		if (metrics == null) {
-			metrics = new HashMap<>();
-		}
-		synchronized(metrics) {
-			MarsTime now = getMarsTime();
-			MarsTime lastRebuild = metrics.get(scope);
-			totalRebuild++;
-
-			// If time has not changed since last rebuild; count as a reuse
-			if ((lastRebuild != null) && lastRebuild.equals(now)) {
-				reuseRebuild++;
-			}
-			else {
-				metrics.put(scope, now);
-			}
-
-			// Limit output
-			if ((totalRebuild % 1000) == 0) {
-				String message = String.format("---- Cache Reuse stats %d/%d (%d%%)",
-									reuseRebuild, totalRebuild, (100*reuseRebuild/totalRebuild));
-				logger.info(message);
-			}
-		}
-	}
-
 	/**
 	 * Constructs a new Task of the specified type.
 	 * 
@@ -779,7 +740,7 @@ public abstract class TaskManager implements Serializable {
 			return false;
 		}
 
-		BasicTaskJob task = new BasicTaskJob(mt, 0, duration);
+		BasicTaskJob task = new BasicTaskJob(mt, RatingScore.ZERO_RATING);
 		return addPendingTask(task, allowDuplicate);
 	}
 	
@@ -881,7 +842,5 @@ public abstract class TaskManager implements Serializable {
 		allActivities = null;
 		pendingTasks.clear();
 		pendingTasks = null;
-		metrics.clear();
-		metrics = null;
 	}
 }

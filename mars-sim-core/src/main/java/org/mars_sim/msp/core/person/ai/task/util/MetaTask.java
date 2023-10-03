@@ -51,6 +51,8 @@ public abstract class MetaTask {
 	protected static final String GOODS_MODIFIER = "goods";
 	protected static final String PERSON_MODIFIER = "person";
 	private static final String RADIATION_MODIFIER = "radiation";
+    protected static final String STRESS_MODIFIER = "stress";
+    protected static final String PREF_MODIFIER = "prefered";
 
 	// Traits used to identify non-effort tasks
 	private static final Set<TaskTrait> PASSIVE_TRAITS

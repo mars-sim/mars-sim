@@ -12,6 +12,8 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.data.Rating;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 
@@ -71,9 +73,24 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * 
 	 * @param person the person to perform the task.
 	 * @return weighted probability value (0 -> positive value).
+	 * @deprecated Replace {@link #getRating(Person)}
 	 */
 	public double getProbability(Person person) {
 		throw new UnsupportedOperationException("Can not calculated the probability of " + getName()  + " for Person.");
+	}
+
+	/**
+	 * Gets the rating score of a person performing this task.
+	 * A score of zero means that the task has no chance of being
+	 * performed by the person.
+	 * 
+	 * @param person the person to perform the task.
+	 * @return Rating score
+	 */
+	protected RatingScore getRating(Person person) {
+		// TODO This method is a temporary implementation until all classes converted
+		double score = getProbability(person);
+		return new RatingScore(score);
 	}
 
 	/**
@@ -83,9 +100,24 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * 
 	 * @param robot the robot to perform the task.
 	 * @return weighted probability value (0 -> positive value).
+	 * @deprecated Replace with {@link #getProbability(Robot)}
 	 */
 	public double getProbability(Robot robot) {
 		throw new UnsupportedOperationException("Can not calculated the probability of " + getName()  + " for Robot.");
+	}
+
+	/**
+	 * Gets the RatingScore if this Robot performed this task.
+	 * A rating of zero means that the task has no chance of being
+	 * performed by the robot.
+	 * 
+	 * @param robot the robot to perform the task.
+	 * @return Rating score
+	 */
+	protected RatingScore getRating(Robot robot) {
+		// TODO This is the default implementation and will be eventually replaced
+		double score = getProbability(robot);
+		return new RatingScore(score);
 	}
 
     /**
@@ -95,7 +127,7 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * @return List of TasksJob specifications.
 	 */
 	public List<TaskJob> getTaskJobs(Person person) {
-		return createTaskJob(getProbability(person), -1);
+		return createTaskJob(getRating(person));
 	}
 
 	/**
@@ -105,7 +137,7 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * @return List of TasksJob specifications.
 	 */
 	public List<TaskJob> getTaskJobs(Robot robot) {
-		return createTaskJob(getProbability(robot), -1);
+		return createTaskJob(getRating(robot));
 	}
 
 	
@@ -114,14 +146,14 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * 
 	 * @param score Score to the job to create.
 	 */
-	private List<TaskJob> createTaskJob(double score, int duration) {
+	private List<TaskJob> createTaskJob(RatingScore score) {
 		// This is to avoid a massive rework in the subclasses.
-		if (score <= 0) {
+		if (score.getScore() <= 0) {
 			return Collections.emptyList();
 		}
 
 		List<TaskJob> result = new ArrayList<>(1);
-		result.add(new BasicTaskJob(this, score, duration));
+		result.add(new BasicTaskJob(this, score));
 		return result;
 	}
 

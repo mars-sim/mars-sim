@@ -15,7 +15,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,14 +40,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.SwingConstants;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
@@ -139,8 +139,6 @@ public class CommanderWindow extends ToolWindow {
 
 	private Settlement settlement;
 
-	//private List<String> taskCache;
-
 	/** The MarsClock instance. */
 	private MasterClock masterClock;
 	private UnitManager unitManager;
@@ -219,7 +217,7 @@ public class CommanderWindow extends ToolWindow {
 		settlementBox = new JComboBox<>(settlementCBModel);
 		settlementBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
-		listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER); // center-aligned items
+		listRenderer.setHorizontalAlignment(SwingConstants.CENTER); // center-aligned items
 		settlementBox.setRenderer(listRenderer);
 		
 		settlementBox.addItemListener(event -> {
@@ -243,7 +241,7 @@ public class CommanderWindow extends ToolWindow {
 		buildingBox = new JComboBox<>(model);
 		buildingBox.setToolTipText("Select a Building");
 		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
-		listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER); // center-aligned items
+		listRenderer.setHorizontalAlignment(SwingConstants.CENTER); // center-aligned items
 		buildingBox.setRenderer(listRenderer);
 	
 		buildingBox.setSelectedIndex(0);
@@ -355,17 +353,14 @@ public class CommanderWindow extends ToolWindow {
 		spinnerPanel.add(areaSpinner, BorderLayout.CENTER);
 		spinnerPanel.setToolTipText("Change the growing area for each crop in a selected farm");
 		
-		areaSpinner.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-//				SpinnerModel model = (SpinnerModel) (((JSpinner)e.getSource()).getModel());
-				int newArea = (int)spinnerModel.getValue();
-				logger.info(settlement, "Setting Growing Area per Crop (in SM) to " + newArea + ".");
-				
-				if (!bldgList.isEmpty()) {
-					for (Building b: bldgList) {
-						b.getFarming().setDesignatedCropArea(newArea);
-						logger.info(settlement, b, newArea + " SM.");
-					}
+		areaSpinner.addChangeListener(e -> {
+			int newArea = (int)spinnerModel.getValue();
+			logger.info(settlement, "Setting Growing Area per Crop (in SM) to " + newArea + ".");
+			
+			if (!bldgList.isEmpty()) {
+				for (Building b: bldgList) {
+					b.getFarming().setDesignatedCropArea(newArea);
+					logger.info(settlement, b, newArea + " SM.");
 				}
 			}
 		});
@@ -436,7 +431,7 @@ public class CommanderWindow extends ToolWindow {
 
 	private void createEVAOVerride(JPanel panel) {
 		// Create override panel.
-		JPanel overridePanel = new JPanel(new GridLayout(1, 2));//FlowLayout(FlowLayout.CENTER));
+		JPanel overridePanel = new JPanel(new GridLayout(1, 2));
 		overridePanel.setAlignmentX(CENTER_ALIGNMENT);		
 		panel.add(overridePanel, BorderLayout.NORTH);
 
@@ -444,11 +439,7 @@ public class CommanderWindow extends ToolWindow {
 		overrideDigLocalRegolithCB = new JCheckBox("Override Digging Regolith");
 		overrideDigLocalRegolithCB.setAlignmentX(CENTER_ALIGNMENT);
 		overrideDigLocalRegolithCB.setToolTipText("Can only execute this task as a planned EVA"); 
-		overrideDigLocalRegolithCB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				settlement.setProcessOverride(OverrideType.DIG_LOCAL_REGOLITH, overrideDigLocalRegolithCB.isSelected());
-			}
-		});
+		overrideDigLocalRegolithCB.addActionListener(arg0 -> settlement.setProcessOverride(OverrideType.DIG_LOCAL_REGOLITH, overrideDigLocalRegolithCB.isSelected()));
 		overrideDigLocalRegolithCB.setSelected(settlement.getProcessOverride(OverrideType.DIG_LOCAL_REGOLITH));
 		overridePanel.add(overrideDigLocalRegolithCB);
 		
@@ -456,11 +447,7 @@ public class CommanderWindow extends ToolWindow {
 		overrideDigLocalIceCB = new JCheckBox("Override Digging Ice");
 		overrideDigLocalIceCB.setAlignmentX(CENTER_ALIGNMENT);
 		overrideDigLocalIceCB.setToolTipText("Can only execute this task as a planned EVA"); 
-		overrideDigLocalIceCB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				settlement.setProcessOverride(OverrideType.DIG_LOCAL_ICE, overrideDigLocalIceCB.isSelected());
-			}
-		});
+		overrideDigLocalIceCB.addActionListener(arg0 -> settlement.setProcessOverride(OverrideType.DIG_LOCAL_ICE, overrideDigLocalIceCB.isSelected()));
 		overrideDigLocalIceCB.setSelected(settlement.getProcessOverride(OverrideType.DIG_LOCAL_ICE));
 		overridePanel.add(overrideDigLocalIceCB);
 	}
@@ -522,7 +509,8 @@ public class CommanderWindow extends ToolWindow {
 		addButton.addActionListener(e -> {
 				Person selected = (Person) personBox.getSelectedItem();
 				FactoryMetaTask task = (FactoryMetaTask) taskComboBox.getSelectedItem();
-				selected.getMind().getTaskManager().addPendingTask(new BasicTaskJob(task, 1D, -1), true);
+				selected.getMind().getTaskManager().addPendingTask(new BasicTaskJob(task,
+													new RatingScore(1D)), true);
 
 				logBookTA.append(masterClock.getMarsTime().getTruncatedDateTimeStamp()
 						+ " - Assigning '" + task.getName() + "' to " + selected + "\n");
@@ -534,13 +522,11 @@ public class CommanderWindow extends ToolWindow {
 		// Create the delete button
 		JButton delButton = new JButton(Msg.getString("BuildingPanelFarming.delButton")); //$NON-NLS-1$
 		delButton.setPreferredSize(new Dimension(80, 25));
-		delButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
-					deleteATask();
-					listUpdate();
-	            	repaint();
-				}
+		delButton.addActionListener(evt -> {
+			if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
+				deleteATask();
+				listUpdate();
+		    	repaint();
 			}
 		});
 		buttonPanel.add(delButton);
@@ -555,20 +541,18 @@ public class CommanderWindow extends ToolWindow {
 	 */
 	private void createTaskQueueList(JPanel panel) {
 
-	    JLabel label = new JLabel("Task Queue", JLabel.CENTER);
-//		label.setUI(new VerticalLabelUI(false));
+	    JLabel label = new JLabel("Task Queue", SwingConstants.CENTER);
 		StyleManager.applySubHeading(label);
 		label.setBorder(new MarsPanelBorder());
 
 	    JPanel taskQueuePanel = new JPanel(new BorderLayout());
 	    taskQueuePanel.add(label, BorderLayout.NORTH);
 
-	    JPanel queueListPanel = new JPanel(new BorderLayout());//FlowLayout(FlowLayout.CENTER));
+	    JPanel queueListPanel = new JPanel(new BorderLayout());
 		queueListPanel.add(taskQueuePanel, BorderLayout.NORTH);
 
 		// Create scroll panel for population list.
 		listScrollPanel = new JScrollPane();
-//		listScrollPanel.setPreferredSize(new Dimension(LIST_WIDTH, 120));
 		listScrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
 		// Create list model
@@ -596,8 +580,7 @@ public class CommanderWindow extends ToolWindow {
 	 */
 	private void createLogBookPanel(JPanel panel) {
 
-		JLabel logLabel = new JLabel("Log Book", JLabel.CENTER);
-//		logLabel.setUI(new VerticalLabelUI(false));
+		JLabel logLabel = new JLabel("Log Book", SwingConstants.CENTER);
 		StyleManager.applySubHeading(logLabel);
 		logLabel.setBorder(new MarsPanelBorder());
 
@@ -605,16 +588,15 @@ public class CommanderWindow extends ToolWindow {
 	    logPanel.add(logLabel, BorderLayout.NORTH);
 
 		// Create an text area
-		JPanel textPanel = new JPanel(new BorderLayout()); //FlowLayout(FlowLayout.CENTER));
+		JPanel textPanel = new JPanel(new BorderLayout()); 
 	    textPanel.add(logPanel, BorderLayout.NORTH);
 
 		logBookTA = new JTextArea(8, 25);
 		logBookTA.setOpaque(false);
-//		logBookTA.setBackground(new Color(0, 0, 0, 128));
 		logBookTA.setEditable(false);
 		JScrollPane scrollTextArea = new JScrollPane (logBookTA,
-				   JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				   JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+				   ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+				   ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 		// Monitor the vertical scroll of jta
 		new SmartScroller(scrollTextArea, SmartScroller.VERTICAL, SmartScroller.END);
@@ -677,11 +659,9 @@ public class CommanderWindow extends ToolWindow {
 		tradingPartnersPanel.setLayout(new BoxLayout(tradingPartnersPanel, BoxLayout.Y_AXIS));
 		setupTradingSettlements();
 
-		//settlementMissionList.setVisibleRowCount(3);
 		innerPanel.add(tradingPartnersPanel, BorderLayout.CENTER);
 
 		JScrollPane innerScroll = new JScrollPane(innerPanel);
-		//ScrollPane.setMaximumWidth(250);
 
 		r2.setSelected(false);
 		r3.setSelected(true);
@@ -713,14 +693,10 @@ public class CommanderWindow extends ToolWindow {
 		tradingPartners = new HashMap<>();
 		for(Settlement s : getOtherSettlements()) {
 			JCheckBox cb = new JCheckBox(s.getName(), settlement.isAllowedTradeMission(s));
-			cb.addItemListener(new ItemListener() {
-
-				@Override
-				public void itemStateChanged(ItemEvent e) {
-					boolean selected = e.getStateChange() == ItemEvent.SELECTED;
-					Settlement s = tradingPartners.get(((JCheckBox) e.getSource()).getText());
-					settlement.setAllowTradeMissionFromASettlement(s, selected);
-				}
+			cb.addItemListener(e -> {
+				boolean selected = e.getStateChange() == ItemEvent.SELECTED;
+				Settlement s1 = tradingPartners.get(((JCheckBox) e.getSource()).getText());
+				settlement.setAllowTradeMissionFromASettlement(s1, selected);
 			});
 
 
@@ -934,43 +910,14 @@ public class CommanderWindow extends ToolWindow {
         public void update() {
 
         	List<TaskJob> newTasks = ((Person) personBox.getSelectedItem()).getMind().getTaskManager().getPendingTasks();
-
-        	if (newTasks != null) {
-	    		// if the list contains duplicate items, it somehow pass this test
-	    		if (list.size() != newTasks.size() || !list.containsAll(newTasks) || !newTasks.containsAll(list)) {	
-	                list = new ArrayList<>(newTasks);
-	                fireContentsChanged(this, 0, getSize());
-	    		}
+	    	
+			// if the list contains duplicate items, it somehow pass this test
+        	if ((newTasks != null) &&
+	    		(list.size() != newTasks.size() || !list.containsAll(newTasks) || !newTasks.containsAll(list))) {	
+				list = new ArrayList<>(newTasks);
+				fireContentsChanged(this, 0, getSize());
         	}
         }
-	}
-
-	class PromptComboBoxRenderer extends DefaultListCellRenderer {
-
-		private static final long serialVersionUID = 1L;
-		private String prompt;
-
-		/**
-		 *  Set the text to display when no item has been selected.
-		 */
-		public PromptComboBoxRenderer(String prompt) {
-			this.prompt = prompt;
-		}
-
-		/**
-		 *  Custom rendering to display the prompt text when no item is selected.
-		 */
-		public Component getListCellRendererComponent(
-				JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-			Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-			if (value == null) {
-				setText(prompt);
-				return this;
-			}
-
-	        return c;
-		}
 	}
 	
 	/**
