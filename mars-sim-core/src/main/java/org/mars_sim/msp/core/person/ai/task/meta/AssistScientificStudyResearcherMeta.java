@@ -10,6 +10,7 @@ import java.util.Collection;
 
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -20,7 +21,6 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the AssistScientificStudyResearcher task.
@@ -45,48 +45,37 @@ public class AssistScientificStudyResearcherMeta extends FactoryMetaTask {
         return new AssistScientificStudyResearcher(person);
     }
 
+	/**
+	 * Assess if a Person can assist a scietific study.The assessment is based on who
+	 * is doing research already.
+	 * @param person Being assessed
+	 * @return Assessment
+	 */
     @Override
-    public double getProbability(Person person) {
-
-        double result = 0D;
+    protected RatingScore getRating(Person person) {
         
         // Probability affected by the person's stress and fatigue.
-        if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
-        	return 0;
+        if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
+			|| !person.isInside()) {
+        	return RatingScore.ZERO_RATING;
         }
         
-        if (person.isInside()) {
-	        // Find potential researchers.
-	        Collection<Person> potentialResearchers = AssistScientificStudyResearcher.getBestResearchers(person);
-	        int size = potentialResearchers.size();
-	        if (size == 0)
-	        	return 0;
+		// Find potential researchers.
+		Collection<Person> potentialResearchers = AssistScientificStudyResearcher.getBestResearchers(person);
+		int size = potentialResearchers.size();
+		if (size == 0)
+        	return RatingScore.ZERO_RATING;
 	        
-	        else {
-	            result += size * RandomUtil.getRandomInt(1, 10);
+	    RatingScore result = new RatingScore((double)size * RandomUtil.getRandomInt(1, 10));
+        Person researcher = (Person) potentialResearchers.toArray()[0];
 
-	            if (person.isInVehicle()) {	
-	    	        // Check if person is in a moving rover.
-	    	        if (Vehicle.inMovingRover(person)) {
-	    		        // the bonus for proposing scientific study inside a vehicle, 
-	    	        	// rather than having nothing to do if a person is not driving
-	    	        	result += 20;
-	    	        }
-	            }
-	            
-                Person researcher = (Person) potentialResearchers.toArray()[0];
-
-	            // If assistant is in a settlement, use crowding modifier.
-                Building building = BuildingManager.getBuilding(researcher);
-                result *= getBuildingModifier(building, person);
-                result *= person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
-                
-	            result *= getPersonModifier(person);
-	        }
-        }
-
-        if (result <= 0) result = 0;
-        
+		// If assistant is in a settlement, use crowding modifier.
+		Building building = BuildingManager.getBuilding(researcher);
+		assessBuildingSuitability(result, building, person);
+		assessPersonSuitability(result, person);
+		result.addModifier(GOODS_MODIFIER,
+					person.getAssociatedSettlement().getGoodsManager().getResearchFactor());
+		
         return result;
     }
 }

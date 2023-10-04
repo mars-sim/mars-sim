@@ -90,7 +90,7 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
             
             // Crowding modifier.
             Building b = ((FishTaskJob)t).tank.getBuilding();
-            factor.addModifier(BUILDING_MODIFIER, getBuildingModifier(b, p));
+            assessBuildingSuitability(factor, b, p);
 		}
 		return factor;
 	}

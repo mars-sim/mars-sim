@@ -52,7 +52,8 @@ public abstract class MetaTask {
 	protected static final String PERSON_MODIFIER = "person";
 	private static final String RADIATION_MODIFIER = "radiation";
     protected static final String STRESS_MODIFIER = "stress";
-    protected static final String PREF_MODIFIER = "prefered";
+	protected static final String FAV_MODIFIER = "favourite";
+
 
 	// Traits used to identify non-effort tasks
 	private static final Set<TaskTrait> PASSIVE_TRAITS
@@ -286,7 +287,7 @@ public abstract class MetaTask {
 	 * 2. Apply the Job start modifier for this task
 	 * 3. Apply the Persons individual preference to this Task
 	 * @param person Person being assessed
-	 * @param score The base rtign score that is adjusted to this persons
+	 * @param score The base rating score that is adjusted to this person
 	 * @return
 	 */
 	protected RatingScore assessPersonSuitability(RatingScore score, Person person) {
@@ -298,7 +299,7 @@ public abstract class MetaTask {
 		
 		score.addModifier("job", getJobModifier(person));
 
-        score.addModifier("favourite", (1 + (person.getPreference().getPreferenceScore(this)/5D)));
+        score.addModifier(FAV_MODIFIER, (1 + (person.getPreference().getPreferenceScore(this)/5D)));
 
 		// Apply the home base modifier
 		score.addModifier("settlement", person.getAssociatedSettlement().getPreferenceModifier(
@@ -314,7 +315,7 @@ public abstract class MetaTask {
 	 * 2. Apply the Job start modifier for this task
 	 * 3. Apply the Persons individual preference to this Task
 	 * 
-	 * This method should eventually be replaced. @see #assessPersonSuitability(RatingScore, Person)
+	 * @deprecated #assessPersonSuitability(RatingScore, Person)
 	 * @param person Person scoring Task
 	 * @return Modified score.
 	 */
@@ -352,6 +353,7 @@ public abstract class MetaTask {
 	 * 
 	 * @param building Building the Person is entering
 	 * @param person Person working
+	 * @deprecated Replace with {@link #assessBuildingSuitability(RatingScore, Building, Person)}
 	 */
 	protected static double getBuildingModifier(Building building, Person person) {
 		double result = 1D;
@@ -360,6 +362,26 @@ public abstract class MetaTask {
 			result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
 		}
 		return result;
+	}
+
+	/**
+	 * Assess the suitability of a Building to do a Task.
+	 * 
+	 * @param score Base rating
+	 * @param building Building the Person is entering
+	 * @param person Person working
+	 * @return Modified Rating score
+	 */
+	protected static RatingScore assessBuildingSuitability(RatingScore score, Building building,
+															Person person) {
+		double result = 1D;
+		if (building != null) {
+			result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+			result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+		}
+
+		score.addModifier(BUILDING_MODIFIER, result);
+		return score;
 	}
 
 	/**

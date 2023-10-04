@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -20,7 +21,6 @@ import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the RespondToStudyInvitation task.
@@ -44,48 +44,38 @@ public class RespondToStudyInvitationMeta extends FactoryMetaTask {
         return new RespondToStudyInvitation(person);
     }
 
+    /**
+     * Assess a Person responding to a research invitation. Assessment is based on if an
+     * invite is pending.
+     * 
+     * @param person Being assessed
+     * @return Assessment
+     */
     @Override
-    public double getProbability(Person person) {
-
-        double result = 0D;
+    protected RatingScore getRating(Person person) {
         
         // Probability affected by the person's stress and fatigue.
-        if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
-        	return 0;
-        
-        if (person.isInside()) {
-
-            // Check if person has been invited to collaborate on any scientific studies.
-        	ScientificStudyManager sm = Simulation.instance().getScientificStudyManager();
-	        List<ScientificStudy> invitedStudies = sm.getOpenInvitationStudies(person);
-	        if (invitedStudies.size() > 0) {
-	            result += invitedStudies.size() * 200D;
-	            
-	            if (person.isInVehicle()) {	
-	    	        // Check if person is in a moving rover.
-	    	        if (Vehicle.inMovingRover(person)) {
-	    		        // the bonus inside a vehicle 
-	    	        	result += 30;
-	    	        } 	       
-	    	        else
-	    		        // the bonus inside a vehicle
-	    	        	result += 10;
-	            }
-	        }
-	        
-	        if (result <= 0) return 0;
-
-	        // Crowding modifier
-            Building adminBuilding = RespondToStudyInvitation.getAvailableAdministrationBuilding(person);
-            result *= getBuildingModifier(adminBuilding, person);
-
-            result *= person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
-
-            result *= getPersonModifier(person);
+        if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
+            || !person.isInside()) {
+        	return RatingScore.ZERO_RATING;
         }
 
-        if (result <= 0) result = 0;
-        
+        // Check if person has been invited to collaborate on any scientific studies.
+        ScientificStudyManager sm = Simulation.instance().getScientificStudyManager();
+        List<ScientificStudy> invitedStudies = sm.getOpenInvitationStudies(person);
+        if (invitedStudies.isEmpty()) {
+            return RatingScore.ZERO_RATING;
+        }
+	    
+        var result = new RatingScore(invitedStudies.size() * 200D);
+
+        Building adminBuilding = RespondToStudyInvitation.getAvailableAdministrationBuilding(person);
+        assessBuildingSuitability(result, adminBuilding, person);
+        assessPersonSuitability(result, person);        
+
+        result.addModifier(GOODS_MODIFIER,
+                    person.getAssociatedSettlement().getGoodsManager().getResearchFactor());
+
         return result;
     }
 }

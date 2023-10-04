@@ -115,7 +115,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
 			factor = super.assessPersonSuitability(t, p);
             if ((factor.getScore() > 0) && building.hasFunction(FunctionType.LIFE_SUPPORT)) {
                 // Factor in building crowding and relationship factors.
-                factor.addModifier(BUILDING_MODIFIER, getBuildingModifier(building, p));
+                assessBuildingSuitability(factor, building, p);
             }
 		}
 		return factor;

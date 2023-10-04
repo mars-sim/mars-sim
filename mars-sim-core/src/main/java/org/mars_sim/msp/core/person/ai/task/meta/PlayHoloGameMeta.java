@@ -61,7 +61,7 @@ public class PlayHoloGameMeta extends FactoryMetaTask {
             
         double pref = person.getPreference().getPreferenceScore(this);
         var result = new RatingScore(1.2D);
-        result.addModifier(PREF_MODIFIER, pref);
+        result.addModifier(FAV_MODIFIER, pref);
         
         if (pref > 0) {
             result.addModifier(STRESS_MODIFIER, 1 + stress/30.0);
@@ -71,7 +71,7 @@ public class PlayHoloGameMeta extends FactoryMetaTask {
           	Building recBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
 	           		
             if (recBuilding != null) {
-                result.addModifier(BUILDING_MODIFIER, getBuildingModifier(recBuilding, person));
+                assessBuildingSuitability(result, recBuilding, person);
             }
             else {
                 // Check if a person has a designated bed

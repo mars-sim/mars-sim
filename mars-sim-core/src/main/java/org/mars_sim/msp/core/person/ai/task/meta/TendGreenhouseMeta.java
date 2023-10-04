@@ -93,7 +93,7 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
                 }
 
                 // Crowding modifier.
-                factor.addModifier(BUILDING_MODIFIER, getBuildingModifier(b, p));                                    
+                assessBuildingSuitability(factor, b, p);          
             }
 		}
 		return factor;

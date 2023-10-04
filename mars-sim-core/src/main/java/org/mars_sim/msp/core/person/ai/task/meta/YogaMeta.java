@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Yoga;
@@ -36,31 +37,27 @@ public class YogaMeta extends FactoryMetaTask {
         return new Yoga(person);
     }
 
+    /**
+     * Assess this Person for Yoga based on their physical condition
+     */
     @Override
-    public double getProbability(Person person) {
+    protected RatingScore getRating(Person person) {
 
-        double result = 0D;
-
-        if (person.isInVehicle()) {	
-        	return result;
+        if (person.isInVehicle()
+            || !person.getPreference().isTaskDue(this)
+            || !person.isInSettlement()) {
+            return RatingScore.ZERO_RATING;
         }
+
+        // Probability affected by the person's stress and fatigue.
+        PhysicalCondition condition = person.getPhysicalCondition();
+        double stress = condition.getStress();
+        double fatigue = condition.getFatigue();
+        double kJ = condition.getEnergy();
+        double hunger = condition.getHunger();
+        double[] muscle = condition.getMusculoskeletal();
         
-        else if (!person.getPreference().isTaskDue(this) && person.isInSettlement()) {
-
-        	 // Probability affected by the person's stress and fatigue.
-            PhysicalCondition condition = person.getPhysicalCondition();
-            double stress = condition.getStress();
-            double fatigue = condition.getFatigue();
-            double kJ = condition.getEnergy();
-            double hunger = condition.getHunger();
-            double[] muscle = condition.getMusculoskeletal();
-
-            double exerciseMillisols = person.getCircadianClock().getTodayExerciseTime();
-            
-            if (kJ < 500 || fatigue > 750 || hunger > 750)
-            	return 0;
- 
-            result = kJ/2000 
+        double base = kJ/2000 
             		// Note: The desire to exercise increases linearly right after waking up
             		// from bed up to the first 333 msols
             		// After the first 333 msols, it decreases linearly for the rest of the day
@@ -68,22 +65,18 @@ public class YogaMeta extends FactoryMetaTask {
             		// Note: muscle condition affects the desire to exercise
             		+ muscle[0]/2.5 - muscle[2]/2.5
             		+ stress / 10
-            		- exerciseMillisols * 5;
-            
-            if (result < 0) 
-            	return 0;
-            
-            double pref = person.getPreference().getPreferenceScore(this);
-         	result += result * pref / 2D;
+            		- person.getCircadianClock().getTodayExerciseTime() * 5;
 
-            if (result < 0) 
-            	return 0;
-            
-            // Get an available gym.
-            Building building =  BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.EXERCISE);
-            result *= getBuildingModifier(building, person);
-        }
-        
+        if (kJ < 500 || fatigue > 750 || hunger > 750 || base <= 0)
+            return RatingScore.ZERO_RATING;
+
+        RatingScore result = new RatingScore(base);  
+        result.addModifier(FAV_MODIFIER, person.getPreference().getPreferenceScore(this)/ 2D);
+
+        // Get an available gym.
+        Building building =  BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.EXERCISE);
+        assessBuildingSuitability(result, building, person);
+    
         return result;
     }
 }
