@@ -8,6 +8,8 @@
 package org.mars_sim.msp.core.moon;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.Simulation;
@@ -31,21 +33,50 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	
 	private Simulation sim;
 	
+	Set<Zone> zones = new HashSet<>();
+	
 	public Colony(String name, Coordinates location) {
 		this.name = name;
 		this.location = location;
 		
 		population = new Population();
+		
+		for (ZoneType type: ZoneType.values()) {
+			addZone(new Zone(type));
+		}
+		
 	}
 
+	public void addZone(Zone zone) {
+		zones.add(zone);
+	}
+	
+	public Set<Zone> getZones() {
+		return zones;
+	}
+	
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-
+		
+		population.timePassing(pulse);
+		
+		for (Zone z: zones) {
+			z.timePassing(pulse);
+		}
+		
 		return true;
 	}
 	
 	public Population getPopulation() {
 		return population;
+	}
+	
+	public double getTotalArea() {
+		double sum = 0;
+		for (Zone z: zones) {
+			sum += z.getArea();
+		}
+		return sum;
 	}
 
 	/**

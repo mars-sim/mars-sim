@@ -115,6 +115,10 @@ public class CommanderWindow extends ToolWindow {
 	private int residentCache;
 	private int researcherCache;
 	
+	private double totalAreaCache;
+	private double AreaPerPersonCache;
+	
+	
 	private JTabbedPane tabPane;
 	/** Person Combo box */	
 	private JComboBoxMW<Person> personBox;
@@ -150,6 +154,8 @@ public class CommanderWindow extends ToolWindow {
 	private JLabel touristLabel;
 	private JLabel residentLabel;
 	private JLabel researcherLabel;
+	private JLabel totalAreaLabel;
+	private JLabel AreaPerPersonLabel;
 	
 	private Person cc;
 
@@ -327,7 +333,7 @@ public class CommanderWindow extends ToolWindow {
 		tabPane.add(DIPLOMATIC_TAB, panel);
 
 		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
-		topPanel.setBorder(BorderFactory.createTitledBorder(" Lunar Development Region "));
+		topPanel.setBorder(BorderFactory.createTitledBorder(" Lunar Colonies "));
 		panel.add(topPanel, BorderLayout.NORTH);
 		panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		
@@ -338,14 +344,16 @@ public class CommanderWindow extends ToolWindow {
 		if (colonyList != null && !colonyList.isEmpty()) {
 			for (Colony c: colonyList) {
 				
-				AttributePanel labelGrid = new AttributePanel(7, 1);
+				AttributePanel labelGrid = new AttributePanel(9, 1);
 				labelGrid.setBorder(new EmptyBorder(10, 10, 10, 10));
-				
-				
+						
 				String name = c.getName();
 				tabbedPane.addTab(name, labelGrid);
 				
 				labelGrid.addRow("Name", name);
+					
+				totalAreaCache = c.getTotalArea();
+				totalAreaLabel = labelGrid.addRow("Total Area (SM)", Math.round(totalAreaCache * 10.0)/10.0 + "");
 			
 				bedCache = c.getPopulation().getNumBed();
 				bedLabel = labelGrid.addRow("# of Quarters", bedCache + "");
@@ -353,6 +361,9 @@ public class CommanderWindow extends ToolWindow {
 				popCache = c.getPopulation().getTotalPopulation();
 				popLabel = labelGrid.addRow("Total Population", popCache + "");
 				
+				AreaPerPersonCache = totalAreaCache / popCache;
+				AreaPerPersonLabel = labelGrid.addRow("Area (SM) Per Person", Math.round(AreaPerPersonCache * 10.0)/10.0 + "");
+	
 				touristCache = c.getPopulation().getNumTourists();
 				touristLabel = labelGrid.addRow("# of Tourists", touristCache + "");
 				
@@ -361,8 +372,7 @@ public class CommanderWindow extends ToolWindow {
 				
 				researcherCache = c.getPopulation().getNumResearchers();
 				researcherLabel = labelGrid.addRow("# of Researchers", researcherCache + "");
-				
-				
+			
 				labelGrid.addRow("Coordinates", c.getCoordinates().getFormattedString());
 			}
 		}
@@ -371,10 +381,11 @@ public class CommanderWindow extends ToolWindow {
 	}
 	
 	private void updateLunar() {
+		
 		if (colonyList != null && !colonyList.isEmpty()) {
+			
 			for (Colony c: colonyList) {
-				
-				
+
 				int newBed = c.getPopulation().getNumBed();
 				if (bedCache != newBed) {
 					bedCache = newBed;
@@ -404,6 +415,19 @@ public class CommanderWindow extends ToolWindow {
 					researcherCache = newResearcher;
 					researcherLabel.setText(newResearcher + "");
 				}
+				
+				double NewTotalArea = Math.round(c.getTotalArea() * 10.0)/10.0;
+				if (totalAreaCache != NewTotalArea) {
+					totalAreaCache = NewTotalArea;
+					totalAreaLabel.setText(NewTotalArea + "");
+				}
+				
+				double NewAreaPerPerson = Math.round(totalAreaCache / popCache * 10.0)/10.0;
+				if (AreaPerPersonCache != NewAreaPerPerson) {
+					AreaPerPersonCache = NewAreaPerPerson;
+					AreaPerPersonLabel.setText(NewAreaPerPerson + "");
+				}
+				
 			}
 		}
 	}

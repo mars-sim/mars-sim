@@ -20,15 +20,15 @@ public class Population implements Serializable, Temporal {
 
 	public static final SimLogger logger = SimLogger.getLogger(Population.class.getName());
 
-	private static final int MAX = 60;
+	private static final int INITIAL = 60;
 
-	private int numTourists;
+	private double numTourists;
 	
-	private int numResidents;
+	private double numResidents;
 	
-	private int numResearchers;
+	private double numResearchers;
 	
-	private int numBeds;
+	private double numBeds;
 	
 	
 	private double growthRateTourists;
@@ -42,15 +42,15 @@ public class Population implements Serializable, Temporal {
 	
 	public Population() {
 			
-		growthRateTourists = RandomUtil.getRandomDouble(-.4, .4);
-		growthRateResidents = RandomUtil.getRandomDouble(-.4, .4);
-		growthRateResearchers = RandomUtil.getRandomDouble(-.4, .4);
-		growthRateBeds = RandomUtil.getRandomDouble(-.4, .4);
+		growthRateTourists = RandomUtil.getRandomDouble(-.3, .4);
+		growthRateResidents = RandomUtil.getRandomDouble(-.3, .4);
+		growthRateResearchers = RandomUtil.getRandomDouble(-.3, .4);
+		growthRateBeds = RandomUtil.getRandomDouble(-.3, .4);
 		
 		numTourists = RandomUtil.getRandomInt(0, 3);
 		numResidents = RandomUtil.getRandomInt(10, 20);
 		numResearchers = RandomUtil.getRandomInt(3, 6);
-		numBeds = MAX;
+		numBeds = RandomUtil.getRandomInt((int)(numTourists + numResidents + numResearchers), INITIAL);
 	}
 	
 	@Override
@@ -58,53 +58,62 @@ public class Population implements Serializable, Temporal {
 		
 		if (pulse.isNewSol()) {
 			
-			growthRateTourists += RandomUtil.getRandomDouble(-.2, .2);
-			growthRateResidents += RandomUtil.getRandomDouble(-.2, .2);
-			growthRateResearchers += RandomUtil.getRandomDouble(-.2, .2);
-			growthRateBeds += RandomUtil.getRandomDouble(-.2, .2);
+			// Recalculate tourists
+			growthRateTourists += RandomUtil.getRandomDouble(-.15, .2);
 			
-			// Increase beds
-			int rand = RandomUtil.getRandomInt(0, 10);
-			if (rand == 0) {
-				numBeds++;
-			}
+			if (growthRateTourists > 1)
+				growthRateTourists = 1;
+			else if (growthRateTourists < -.5)
+				growthRateTourists = -.5;
 			
-			if (numTourists + numResidents + numResearchers > numBeds) {
-				rand = RandomUtil.getRandomInt(0, 10);
-				if (rand == 0) {
-					numResidents++;
-				}
-				else if (rand == 1 || rand == 2) {
-					numResearchers++;
-				}
-				else {
-					numTourists++;
-				}
-			}
+			numTourists += growthRateTourists;
 			
-//			numTourists = numTourists + RandomUtil.getRandomInt(-1, 1);
-//			if (numTourists < 0)
-//				numTourists = 0;
-//			
-//			numResidents = numResidents + RandomUtil.getRandomInt(-1, 1);
-//			if (numResidents < 0)
-//				numResidents = 0;
-//			
-//			numResearchers = numResearchers + RandomUtil.getRandomInt(-1, 1);
-//			if (numResearchers < 0)
-//				numResearchers = 0;
+			// Recalculate residents
+			growthRateResidents += RandomUtil.getRandomDouble(-.15, .2);
 			
-			while (numTourists + numResidents + numResearchers > numBeds) {
+			if (growthRateResidents > 1)
+				growthRateResidents = 1;
+			else if (growthRateResidents < -.5)
+				growthRateResidents = -.5;
+			
+			numResidents += growthRateResidents;
+
+			// Recalculate researchers
+			growthRateResearchers += RandomUtil.getRandomDouble(-.15, .2);
+			
+			if (growthRateResearchers > 1)
+				growthRateResearchers = 1;
+			else if (growthRateResearchers < -.5)
+				growthRateResearchers = -.5;			
+					
+			numResearchers += growthRateResearchers;
+
+			// Recalculate beds
+			growthRateBeds += RandomUtil.getRandomDouble(-.15, .2);
+			
+			if (growthRateBeds > 1)
+				growthRateBeds = 1;
+			else if (growthRateBeds < -0.5)
+				growthRateBeds = -0.5;
+			
+			numBeds += growthRateBeds;
+			
+			int totPop = getTotalPopulation();
+			
+			if ((int)numBeds < totPop)
+				numBeds = totPop;
+
+			while (numTourists + numResidents + numResearchers < numBeds + 1) {
 				
-				rand = RandomUtil.getRandomInt(0, 10);
+				int rand = RandomUtil.getRandomInt(0, 10);
 				if (rand == 0) {
-					numResidents--;
+					growthRateResidents -= 0.2;
 				}
-				else if (rand == 1 || rand == 2) {
-					numResearchers--;
+				else if ((rand == 1 || rand == 2)) {
+					growthRateResearchers -= 0.2;
 				}
 				else {
-					numTourists--;
+					growthRateTourists -= 0.2;
 				}
 			}
 		}
@@ -113,22 +122,22 @@ public class Population implements Serializable, Temporal {
 	}
 	
 	public int getNumBed() {
-		return numBeds;
+		return (int)numBeds;
 	}
 	
 	public int getNumTourists() {
-		return numTourists;
+		return (int)numTourists;
 	}
 	
 	public int getNumResidents() {
-		return numResidents;
+		return (int)numResidents;
 	}
 	
 	public int getNumResearchers() {
-		return numResearchers;
+		return (int)numResearchers;
 	}
 	
 	public int getTotalPopulation() {
-		return numTourists + numResidents + numResearchers;
+		return (int)numTourists + (int)numResidents + (int)numResearchers;
 	}
 }
