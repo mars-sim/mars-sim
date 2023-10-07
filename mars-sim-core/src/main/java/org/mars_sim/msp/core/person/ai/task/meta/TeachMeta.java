@@ -63,13 +63,6 @@ public class TeachMeta extends FactoryMetaTask {
             return EMPTY_TASKLIST;
 
         RatingScore result = new RatingScore(potentialStudents.size() * 30.0);
-        double total = 0D;
-        for (Person student : potentialStudents) {
-            Building building = BuildingManager.getBuilding(student);
-
-            total += getBuildingModifier(building, student);
-        }
-        result.addModifier(BUILDING_MODIFIER, total/potentialStudents.size());
         
         // Add Preference modifier
         result = assessPersonSuitability(result, person);

@@ -45,7 +45,7 @@ public abstract class MetaTask {
 		ANY_HOUR, WORK_HOUR, NONWORK_HOUR
 	}
 	
-	protected static final String BUILDING_MODIFIER = "building";
+	private static final String BUILDING_MODIFIER = "building";
 	private static final String EVA_MODIFIER = "eva";
 	protected static final String GARAGED_MODIFIER = "garaged";
 	protected static final String GOODS_MODIFIER = "goods";
@@ -374,13 +374,13 @@ public abstract class MetaTask {
 	 */
 	protected static RatingScore assessBuildingSuitability(RatingScore score, Building building,
 															Person person) {
-		double result = 1D;
 		if (building != null) {
-			result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-			result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+			score.addModifier("crowding",
+					TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building));
+			score.addModifier("occupants",
+					TaskProbabilityUtil.getRelationshipModifier(person, building));
 		}
 
-		score.addModifier(BUILDING_MODIFIER, result);
 		return score;
 	}
 

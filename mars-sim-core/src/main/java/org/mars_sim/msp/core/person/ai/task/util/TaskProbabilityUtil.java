@@ -32,7 +32,8 @@ public class TaskProbabilityUtil {
     private TaskProbabilityUtil() {};
 
     /**
-     * Gets the probability modifier for a task if person needs to go to a new building.
+     * Assess if change of Building for a person based on teh overcrowding of the current
+     * compared to the new building.
      * @param person the person to perform the task.
      * @param newBuilding the building the person is to go to.
      * @return probability modifier
@@ -41,24 +42,27 @@ public class TaskProbabilityUtil {
         double modifier = 1D;
 
         Building currentBuilding = BuildingManager.getBuilding(person);
-        if ((currentBuilding != null) && (newBuilding != null) && (currentBuilding != newBuilding)) {
+        if ((currentBuilding != null) && (newBuilding != null) && !currentBuilding.equals(newBuilding)) {
+            double currentRatio = getBuildingCapacityRatio(currentBuilding);
+            double newRatio = getBuildingCapacityRatio(newBuilding);
 
-            // Increase probability if current building is overcrowded.
-            LifeSupport currentLS = currentBuilding.getLifeSupport();
-            int currentOverCrowding = currentLS.getOccupantNumber() - currentLS.getOccupantCapacity();
-            if (currentOverCrowding > 0) {
-                modifier *= ((double) currentOverCrowding + 2);
-            }
-
-            // Decrease probability if new building is overcrowded.
-            LifeSupport newLS = newBuilding.getLifeSupport();
-            int newOverCrowding = newLS.getOccupantNumber() - newLS.getOccupantCapacity();
-            if (newOverCrowding > 0) {
-                modifier /= ((double) newOverCrowding + 2);
-            }
+            // Adjust the modifier as the difference between the two.
+            // If the new ratio is better then it adds a position weighting
+            modifier += newRatio - currentRatio;
         }
 
         return modifier;
+    }
+
+    /**
+     * Get a ratio of the capacity of this building as a percentage of the capacity.
+     * Negative means building is over capacity.
+     * @param b Building being assessed.
+     */
+    private static double getBuildingCapacityRatio(Building b) {
+        LifeSupport currentLS = b.getLifeSupport();
+        int capacity = currentLS.getOccupantCapacity();
+        return (double)(capacity - currentLS.getOccupantNumber())/capacity;
     }
 
 
