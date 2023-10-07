@@ -178,7 +178,7 @@ implements UserConfigurable, Serializable {
     }
 
 	/** 
-	 * Get the predefined Preferences for this authority based on the Agenda/Objectives assigned
+	 * Gets the predefined Preferences for this authority based on the Agenda/Objectives assigned
 	*/
     public Map<PreferenceKey, Double> getPreferences() {
         Map<PreferenceKey, Double> result = new HashMap<>();

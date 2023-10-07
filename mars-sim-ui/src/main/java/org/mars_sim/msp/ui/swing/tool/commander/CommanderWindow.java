@@ -89,10 +89,10 @@ public class CommanderWindow extends ToolWindow {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(CommanderWindow.class.getName());
 
-	public static final String NAME = "Commander Dashboard";
+	public static final String NAME = "Command Dashboard";
 	public static final String ICON = "dashboard";
 
-	private static final String DIPLOMATIC_TAB = "Diplomatic Channel";
+	private static final String DIPLOMATIC_TAB = "Diplomatic";
 
 	private static final String AGRICULTURE_TAB = "Agriculture";
 	private static final String COMPUTING_TAB = "Computing";
@@ -217,7 +217,7 @@ public class CommanderWindow extends ToolWindow {
 		createAgriculturePanel();
 		createComputingPanel();
 		createEngineeringPanel();
-		createLeadershipPanel();
+		createDiplomaticPanel();
 		createLogisticPanel();
 		createMissionPanel();
 		createResourcePanel();
@@ -328,7 +328,10 @@ public class CommanderWindow extends ToolWindow {
 	}
 
 	
-	private void createLeadershipPanel() {
+	/**
+	 * Creates the diplomatic panel.
+	 */
+	private void createDiplomaticPanel() {
 		JPanel panel = new JPanel(new BorderLayout(20, 20));
 		tabPane.add(DIPLOMATIC_TAB, panel);
 
@@ -344,13 +347,24 @@ public class CommanderWindow extends ToolWindow {
 		if (colonyList != null && !colonyList.isEmpty()) {
 			for (Colony c: colonyList) {
 				
-				AttributePanel labelGrid = new AttributePanel(9, 1);
+				AttributePanel labelGrid = new AttributePanel(11, 1);
 				labelGrid.setBorder(new EmptyBorder(10, 10, 10, 10));
 						
 				String name = c.getName();
+				// Name the tab
 				tabbedPane.addTab(name, labelGrid);
 				
-				labelGrid.addRow("Name", name);
+				labelGrid.addRow("Base Name", name);
+				
+				String sponsorName = c.getReportingAuthority().getName();
+				labelGrid.addRow("Sponsoring Agency", sponsorName);
+				
+				List<String> list = c.getReportingAuthority().getCountries();
+				String countryName = "[International]";
+				if (list.size() == 1)
+					countryName = c.getReportingAuthority().getCountries().get(0);
+				
+				labelGrid.addRow("Country", countryName);
 					
 				totalAreaCache = c.getTotalArea();
 				totalAreaLabel = labelGrid.addRow("Total Area (SM)", Math.round(totalAreaCache * 10.0)/10.0 + "");
