@@ -40,6 +40,8 @@ public class PersonTaskManager extends TaskManager {
 	
 	private static final String SLEEP = "Sleep";
 	private static final String EAT = "Eat";
+
+	private static final String DIAGS_MODULE = "taskperson";
 	
 	// Data members
 	/** The mind of the person the task manager is responsible for. */
@@ -59,6 +61,15 @@ public class PersonTaskManager extends TaskManager {
 		this.mind = mind;
 
 		this.person = mind.getPerson();
+	}
+
+	/**
+	 * The diagnostics modulename to used in any output
+	 * @return
+	 */
+	@Override
+	protected String getDiagnosticsModule() {
+		return DIAGS_MODULE;
 	}
 
 	/**
@@ -267,7 +278,6 @@ public class PersonTaskManager extends TaskManager {
 						// Note :the person should 
 						// come in and rest and is no longer eligible for performing
 						// another EVA task
-//						logger.info(person, "Outside already doing a EVA task. Not eligible for performing " + newTask.getName() + ".");
 						
 						// Skip doing anything for now
 					}
@@ -276,7 +286,6 @@ public class PersonTaskManager extends TaskManager {
 				}
 				
 				else if (person.getMission() != null) {
-//					logger.info(person, "On a mission. Not eligible for performing " + newTask.getName() + ".");
 					
 					// Skip doing anything for now
 					// Next, go to super.startNewTask() to find a new task

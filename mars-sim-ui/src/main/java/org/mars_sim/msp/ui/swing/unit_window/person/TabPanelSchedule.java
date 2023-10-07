@@ -14,6 +14,7 @@ import java.awt.Font;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -108,7 +109,7 @@ public class TabPanelSchedule extends TabPanel {
 			timeLabel = attrPanel.addRow(Msg.getString("TabPanelSchedule.shift.period.label"), //$NON-NLS-1$
 					timeCache);
 
-			statusCache = Conversion.capitalize(shiftSlot.getStatus().toString());
+			statusCache = shiftSlot.getStatus().getName();
 			
 			statusLabel = attrPanel.addRow(Msg.getString("TabPanelSchedule.shift.status.label"), //$NON-NLS-1$
 					statusCache);
@@ -121,7 +122,7 @@ public class TabPanelSchedule extends TabPanel {
 			
 			shiftNoteTF.setEditable(false);
 			shiftNoteTF.setColumns(20);
-			shiftNoteTF.setHorizontalAlignment(JTextField.CENTER);
+			shiftNoteTF.setHorizontalAlignment(SwingConstants.CENTER);
 			
 			shiftPane.add(shiftNoteTF);
 		}
@@ -151,9 +152,9 @@ public class TabPanelSchedule extends TabPanel {
 			case ON_CALL:
 				return "None";
 			case ON_DUTY:
-				return "Off Duty starts @ " + end + " millisols";
+				return "On Duty ends @ " + end;
 			case OFF_DUTY:
-				return "Off Duty ends @ " + start + " millisols";
+				return "Off Duty ends @ " + start;
 			case ON_LEAVE:
 				return "On Leave";
 		}

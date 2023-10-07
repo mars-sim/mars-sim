@@ -599,15 +599,23 @@ public abstract class TaskManager implements Serializable {
 
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			selectedTask = createTask(selectedJob);
-
-			RatingLog.logSelectedRating("task", worker.getName(), selectedJob,
+			if (taskProbCache.getCreatedOn() != null) {
+				// If it is a cache made dynamically then log it
+				RatingLog.logSelectedRating(getDiagnosticsModule(), worker.getName(), selectedJob,
 									taskProbCache.getTasks());
+			}
 
 			// Start this newly selected task
 			replaceTask(selectedTask);
 			currentScore = selectedJob.getScore();
 		}
 	}
+
+	/**
+	 * The diagnostics modulename to used in any output
+	 * @return
+	 */
+	protected abstract String getDiagnosticsModule();
 
 	/**
 	 * Checks to see if it's okay to replace a task.

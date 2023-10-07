@@ -37,6 +37,9 @@ public class BotTaskManager extends TaskManager {
 	private static final long serialVersionUID = 1L;
 
 
+	private static final String DIAGS_MODULE = "taskrobot";
+
+
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(BotTaskManager.class.getName());
 
@@ -67,6 +70,15 @@ public class BotTaskManager extends TaskManager {
 		this.botMind = botMind;
 
 		this.robot = botMind.getRobot();
+	}
+
+	/**
+	 * The diagnostics modulename to used in any output
+	 * @return
+	 */
+	@Override
+	protected String getDiagnosticsModule() {
+		return DIAGS_MODULE;
 	}
 
 	@Override
