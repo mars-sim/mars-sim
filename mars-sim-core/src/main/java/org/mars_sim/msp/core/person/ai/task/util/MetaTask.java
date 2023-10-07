@@ -52,7 +52,7 @@ public abstract class MetaTask {
 	protected static final String PERSON_MODIFIER = "person";
 	private static final String RADIATION_MODIFIER = "radiation";
     protected static final String STRESS_MODIFIER = "stress";
-	protected static final String FAV_MODIFIER = "favourite";
+	private static final String FAV_MODIFIER = "favourite";
 
 
 	// Traits used to identify non-effort tasks
@@ -384,6 +384,10 @@ public abstract class MetaTask {
 		return score;
 	}
 
+	public String toString() {
+		return getName();
+	}
+	
 	/**
 	 * Get the currnt martian time
 	 * @return MarsTime from master clock

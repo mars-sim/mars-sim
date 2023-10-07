@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.util.List;
+
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
@@ -13,6 +15,7 @@ import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.ReportMissionControl;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Management;
@@ -44,10 +47,10 @@ public class ReportMissionControlMeta extends FactoryMetaTask {
 	 * @return Rating 
 	 */
     @Override
-    protected RatingScore getRating(Person person) {
+    public List<TaskJob> getTaskJobs(Person person) {
         if (!person.isInside()
 	        || !person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
-            return RatingScore.ZERO_RATING;
+            return EMPTY_TASKLIST;
 		}
             
         RoleType roleType = person.getRole().getType();
@@ -64,7 +67,7 @@ public class ReportMissionControlMeta extends FactoryMetaTask {
 		
 		// Not suitable then no
 		if (base == 0D) {
-			return RatingScore.ZERO_RATING;
+			return EMPTY_TASKLIST;
 		}
 		var result = new RatingScore(base);
 	            
@@ -73,6 +76,6 @@ public class ReportMissionControlMeta extends FactoryMetaTask {
 		assessBuildingSuitability(result, building, person);
 		assessPersonSuitability(result, person);
 
-        return result;
+        return createTaskJobs(result);
     }
 }

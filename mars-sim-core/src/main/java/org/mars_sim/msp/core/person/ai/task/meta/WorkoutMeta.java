@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.util.List;
+
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
@@ -14,6 +16,7 @@ import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.task.Workout;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -42,11 +45,17 @@ public class WorkoutMeta extends FactoryMetaTask {
         return new Workout(person);
     }
 
+    /**
+	 * Assess if this Person can perform any Workout tasks.
+	 * 
+	 * @param person the Person to perform the task.
+	 * @return List of TasksJob specifications.
+	 */
     @Override
-    protected RatingScore getRating(Person person) {
+	public List<TaskJob> getTaskJobs(Person person) {
                
         if (!person.isInSettlement()) {
-            return RatingScore.ZERO_RATING;
+            return EMPTY_TASKLIST;
         }
 
         // Probability affected by the person's stress and fatigue.
@@ -60,7 +69,7 @@ public class WorkoutMeta extends FactoryMetaTask {
         double exerciseMillisols = person.getCircadianClock().getTodayExerciseTime();
             
         if (kJ < 1000 || fatigue > 750 || hunger > 750)
-            return RatingScore.ZERO_RATING;
+            return EMPTY_TASKLIST;
  
         var result = new RatingScore((kJ/3000 
             		// Note: The desire to exercise increases linearly right after waking up
@@ -73,13 +82,12 @@ public class WorkoutMeta extends FactoryMetaTask {
             		- exerciseMillisols * 20)/FACTOR); // Why does this use a FACTOR ?
 
         
-        double pref = person.getPreference().getPreferenceScore(this);
-        result.addModifier(FAV_MODIFIER, pref / 2D);
+        result = assessPersonSuitability(result, person);
 
         // Get an available gym.
         Building building = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.EXERCISE);
-        assessBuildingSuitability(result, building, person);
+        result = assessBuildingSuitability(result, building, person);
 
-        return result;
+        return createTaskJobs(result);
     }
 }

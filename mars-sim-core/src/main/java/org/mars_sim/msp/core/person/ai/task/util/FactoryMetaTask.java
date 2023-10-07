@@ -12,7 +12,6 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.data.Rating;
 import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
@@ -27,21 +26,11 @@ import org.mars_sim.msp.core.robot.Robot;
 public abstract class FactoryMetaTask extends MetaTask {
     
 	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
+
+	protected static final List<TaskJob> EMPTY_TASKLIST = Collections.emptyList();
 	
 	protected FactoryMetaTask(String name, WorkerType workerType, TaskScope scope) {
 		super(name, workerType, scope);
-	}
-	
-    /**
-	 * Constructs an instance of the associated task. Is a Factory method and should
-	 * be implemented by the subclass.
-	 * 
-	 * @param person the person to perform the task.
-	 * @param duration
-	 * @return task instance.
-	 */
-	protected Task constructInstance(Person person, int duration) {
-		throw new UnsupportedOperationException("Can not create '" + getName() + "' for Person.");
 	}
 
     /**
@@ -80,20 +69,6 @@ public abstract class FactoryMetaTask extends MetaTask {
 	}
 
 	/**
-	 * Gets the rating score of a person performing this task.
-	 * A score of zero means that the task has no chance of being
-	 * performed by the person.
-	 * 
-	 * @param person the person to perform the task.
-	 * @return Rating score
-	 */
-	protected RatingScore getRating(Person person) {
-		// TODO This method is a temporary implementation until all classes converted
-		double score = getProbability(person);
-		return new RatingScore(score);
-	}
-
-	/**
 	 * Gets the weighted probability value that the person might perform this task.
 	 * A probability weight of zero means that the task has no chance of being
 	 * performed by the robot.
@@ -106,20 +81,6 @@ public abstract class FactoryMetaTask extends MetaTask {
 		throw new UnsupportedOperationException("Can not calculated the probability of " + getName()  + " for Robot.");
 	}
 
-	/**
-	 * Gets the RatingScore if this Robot performed this task.
-	 * A rating of zero means that the task has no chance of being
-	 * performed by the robot.
-	 * 
-	 * @param robot the robot to perform the task.
-	 * @return Rating score
-	 */
-	protected RatingScore getRating(Robot robot) {
-		// TODO This is the default implementation and will be eventually replaced
-		double score = getProbability(robot);
-		return new RatingScore(score);
-	}
-
     /**
 	 * Gets the list of Task that this Person can perform all individually scored.
 	 * 
@@ -127,7 +88,8 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * @return List of TasksJob specifications.
 	 */
 	public List<TaskJob> getTaskJobs(Person person) {
-		return createTaskJob(getRating(person));
+		double score = getProbability(person);
+		return createTaskJobs(new RatingScore(score));
 	}
 
 	/**
@@ -137,27 +99,28 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * @return List of TasksJob specifications.
 	 */
 	public List<TaskJob> getTaskJobs(Robot robot) {
-		return createTaskJob(getRating(robot));
+		double score = getProbability(robot);
+		return createTaskJobs(new RatingScore(score));
 	}
 
 	
 	/**
-	 * Creates a TaskJob instance delegate where this instance handles Task creation.
+	 * Create a list of Task Jobs for this Factory containing a single item.
+	 * The item is added if the score is more than zero.
 	 * 
 	 * @param score Score to the job to create.
+	 * @return List contain the task jobs
 	 */
-	private List<TaskJob> createTaskJob(RatingScore score) {
+	protected List<TaskJob> createTaskJobs(RatingScore score) {
 		// This is to avoid a massive rework in the subclasses.
 		if (score.getScore() <= 0) {
-			return Collections.emptyList();
+			return EMPTY_TASKLIST;
 		}
 
+		// Put a maximum limit
+		score.applyRange(0, 1000D);
 		List<TaskJob> result = new ArrayList<>(1);
 		result.add(new BasicTaskJob(this, score));
 		return result;
-	}
-
-	public String toString() {
-		return getName();
 	}
 }

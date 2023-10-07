@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.util.List;
+
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
@@ -14,6 +16,7 @@ import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskProbabilityUtil;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
@@ -51,16 +54,16 @@ public class CookMealMeta extends FactoryMetaTask {
     /**
      * Assess if a Person could cook a meal. Based on fitness and on the need for more meals
      * @param person
-     * @return
+     * @return Potential Task jobs
      */
     @Override
-    protected RatingScore getRating(Person person) {
+    public List<TaskJob> getTaskJobs(Person person) {
     	
     	if (person.isOutside()
                 || !person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
                 || !person.isInSettlement()
                 || !CookMeal.isMealTime(person, CookMeal.PREP_TIME)) {
-    		return RatingScore.ZERO_RATING;
+    		return EMPTY_TASKLIST;
         }
 
         RatingScore result = RatingScore.ZERO_RATING;
@@ -84,7 +87,7 @@ public class CookMealMeta extends FactoryMetaTask {
             }
         }
 
-        return result;
+        return createTaskJobs(result);
     }
 
 	@Override

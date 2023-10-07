@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.data.RatingScore;
@@ -14,6 +15,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Teach;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskProbabilityUtil;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
@@ -46,19 +48,19 @@ public class TeachMeta extends FactoryMetaTask {
      * Assess whether a Person can help teach a task to another. This depends on whether
      * there are students and this person's suitability to teaching.
      * @param person Being assessed
-     * @return Assessment
+     * @return Potential tasks
      */
     @Override
-    protected RatingScore getRating(Person person) {
+    public List<TaskJob> getTaskJobs(Person person) {
 
         if (!person.isInside() || !person.getPhysicalCondition().isFitByLevel(1000, 75, 750)) {
-                return RatingScore.ZERO_RATING;         
+                return EMPTY_TASKLIST;         
         }
         
         // Find potential students.
         Collection<Person> potentialStudents = Teach.getBestStudents(person);
         if (potentialStudents.isEmpty())
-            return RatingScore.ZERO_RATING;
+            return EMPTY_TASKLIST;
 
         RatingScore result = new RatingScore(potentialStudents.size() * 30.0);
         double total = 0D;
@@ -70,9 +72,9 @@ public class TeachMeta extends FactoryMetaTask {
         result.addModifier(BUILDING_MODIFIER, total/potentialStudents.size());
         
         // Add Preference modifier
-        result.addModifier(FAV_MODIFIER, person.getPreference().getPreferenceScore(this)/5D);
+        result = assessPersonSuitability(result, person);
         
-        return result;
+        return createTaskJobs(result);
     }
     
     @Override

@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
@@ -18,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -49,22 +51,22 @@ public class AssistScientificStudyResearcherMeta extends FactoryMetaTask {
 	 * Assess if a Person can assist a scietific study.The assessment is based on who
 	 * is doing research already.
 	 * @param person Being assessed
-	 * @return Assessment
+	 * @return Potential Task jobs for this Person
 	 */
     @Override
-    protected RatingScore getRating(Person person) {
+    public List<TaskJob> getTaskJobs(Person person) {
         
         // Probability affected by the person's stress and fatigue.
         if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
 			|| !person.isInside()) {
-        	return RatingScore.ZERO_RATING;
+        	return EMPTY_TASKLIST;
         }
         
 		// Find potential researchers.
 		Collection<Person> potentialResearchers = AssistScientificStudyResearcher.getBestResearchers(person);
 		int size = potentialResearchers.size();
 		if (size == 0)
-        	return RatingScore.ZERO_RATING;
+        	return EMPTY_TASKLIST;
 	        
 	    RatingScore result = new RatingScore((double)size * RandomUtil.getRandomInt(1, 10));
         Person researcher = (Person) potentialResearchers.toArray()[0];
@@ -76,6 +78,6 @@ public class AssistScientificStudyResearcherMeta extends FactoryMetaTask {
 		result.addModifier(GOODS_MODIFIER,
 					person.getAssociatedSettlement().getGoodsManager().getResearchFactor());
 		
-        return result;
+        return createTaskJobs(result);
     }
 }

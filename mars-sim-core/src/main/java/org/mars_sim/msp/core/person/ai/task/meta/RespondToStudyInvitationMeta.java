@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
@@ -49,22 +50,22 @@ public class RespondToStudyInvitationMeta extends FactoryMetaTask {
      * invite is pending.
      * 
      * @param person Being assessed
-     * @return Assessment
+     * @return Potential task jobs
      */
     @Override
-    protected RatingScore getRating(Person person) {
+    public List<TaskJob> getTaskJobs(Person person) {
         
         // Probability affected by the person's stress and fatigue.
         if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
             || !person.isInside()) {
-        	return RatingScore.ZERO_RATING;
+        	return EMPTY_TASKLIST;
         }
 
         // Check if person has been invited to collaborate on any scientific studies.
         ScientificStudyManager sm = Simulation.instance().getScientificStudyManager();
         List<ScientificStudy> invitedStudies = sm.getOpenInvitationStudies(person);
         if (invitedStudies.isEmpty()) {
-            return RatingScore.ZERO_RATING;
+            return EMPTY_TASKLIST;
         }
 	    
         var result = new RatingScore(invitedStudies.size() * 200D);
@@ -76,6 +77,6 @@ public class RespondToStudyInvitationMeta extends FactoryMetaTask {
         result.addModifier(GOODS_MODIFIER,
                     person.getAssociatedSettlement().getGoodsManager().getResearchFactor());
 
-        return result;
+        return createTaskJobs(result);
     }
 }

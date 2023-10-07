@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.util.List;
+
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.data.RatingScore;
@@ -15,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.task.PlayHoloGame;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -43,35 +46,34 @@ public class PlayHoloGameMeta extends FactoryMetaTask {
         return new PlayHoloGame(person);
     }
 
+    /**
+     * Assess this person playing a Holo game
+     * @param person Being assessed
+     * @return Potential suitable tasks
+     */
     @Override
-    public RatingScore getRating(Person person) {
+    public List<TaskJob> getTaskJobs(Person person) {
 
         if (!person.isInside() || person.isOnDuty()) {
-            return RatingScore.ZERO_RATING;
+            return EMPTY_TASKLIST;
         }
         	
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
         double fatigue = condition.getFatigue();
         double hunger = condition.getHunger();
-        double stress = condition.getStress();
             
         if ((fatigue > 500) || (hunger > 500))
-            return RatingScore.ZERO_RATING;
+            return EMPTY_TASKLIST;
             
-        double pref = person.getPreference().getPreferenceScore(this);
         var result = new RatingScore(1.2D);
-        result.addModifier(FAV_MODIFIER, pref);
-        
-        if (pref > 0) {
-            result.addModifier(STRESS_MODIFIER, 1 + stress/30.0);
-        }
+        result = assessPersonSuitability(result, person);
   
         if (person.isInSettlement()) {
           	Building recBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
 	           		
             if (recBuilding != null) {
-                assessBuildingSuitability(result, recBuilding, person);
+                result = assessBuildingSuitability(result, recBuilding, person);
             }
             else {
                 // Check if a person has a designated bed
@@ -92,6 +94,6 @@ public class PlayHoloGameMeta extends FactoryMetaTask {
         result.addModifier(GOODS_MODIFIER,
                         person.getAssociatedSettlement().getGoodsManager().getTourismFactor());
 
-        return result;
+        return createTaskJobs(result);
     }
 }

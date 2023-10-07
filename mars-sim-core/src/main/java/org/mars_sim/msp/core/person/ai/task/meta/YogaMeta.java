@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.util.List;
+
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
@@ -13,6 +15,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Yoga;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -38,15 +41,17 @@ public class YogaMeta extends FactoryMetaTask {
     }
 
     /**
-     * Assess this Person for Yoga based on their physical condition
+     * Assess this Person for Yoga based on their physical condition/
+     * @param person Beign assessed
+     * @return Yoak tasks that can be performed
      */
     @Override
-    protected RatingScore getRating(Person person) {
+    public List<TaskJob> getTaskJobs(Person person) {
 
         if (person.isInVehicle()
             || !person.getPreference().isTaskDue(this)
             || !person.isInSettlement()) {
-            return RatingScore.ZERO_RATING;
+            return EMPTY_TASKLIST;
         }
 
         // Probability affected by the person's stress and fatigue.
@@ -68,15 +73,15 @@ public class YogaMeta extends FactoryMetaTask {
             		- person.getCircadianClock().getTodayExerciseTime() * 5;
 
         if (kJ < 500 || fatigue > 750 || hunger > 750 || base <= 0)
-            return RatingScore.ZERO_RATING;
+            return EMPTY_TASKLIST;
 
         RatingScore result = new RatingScore(base);  
-        result.addModifier(FAV_MODIFIER, person.getPreference().getPreferenceScore(this)/ 2D);
+        result = assessPersonSuitability(result, person);
 
         // Get an available gym.
         Building building =  BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.EXERCISE);
-        assessBuildingSuitability(result, building, person);
+        result = assessBuildingSuitability(result, building, person);
     
-        return result;
+        return createTaskJobs(result);
     }
 }
