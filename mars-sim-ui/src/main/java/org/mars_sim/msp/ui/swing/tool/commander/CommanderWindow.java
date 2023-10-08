@@ -314,7 +314,7 @@ public class CommanderWindow extends ToolWindow {
 	 * @param s
 	 */
 	private void changeSettlement(Settlement s) {
-		// Change the person list in person combobox
+
 		if (settlement != s) {
 			setUpPersonComboBox(s);
 											
@@ -365,7 +365,7 @@ public class CommanderWindow extends ToolWindow {
 					countryName = c.getReportingAuthority().getCountries().get(0);
 				
 				labelGrid.addRow("Country", countryName);
-					
+			
 				totalAreaCache = c.getTotalArea();
 				totalAreaLabel = labelGrid.addRow("Total Area (SM)", Math.round(totalAreaCache * 10.0)/10.0 + "");
 			
@@ -441,7 +441,6 @@ public class CommanderWindow extends ToolWindow {
 					AreaPerPersonCache = NewAreaPerPerson;
 					AreaPerPersonLabel.setText(NewAreaPerPerson + "");
 				}
-				
 			}
 		}
 	}

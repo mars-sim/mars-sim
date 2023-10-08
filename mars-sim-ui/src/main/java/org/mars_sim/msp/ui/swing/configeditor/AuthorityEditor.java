@@ -42,12 +42,11 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
 /**
- * UI Editor that allows ReportingAuthorities to be edited
+ * UI Editor that allows ReportingAuthorities to be edited.
  */
 public class AuthorityEditor  {
 
 	private static final String OBJECTIVE = "Objective: ";
-
 
 	class TextList {
 		private JPanel content;
@@ -137,17 +136,15 @@ public class AuthorityEditor  {
 
 	private JSlider genderRatio;
 
-	
 	/**
 	 * Constructor.
 	 * 
-	 * @param config
-	 *            SimulationConfig
 	 * @param simulationConfigEditor
-	 *            SimulationConfigEditor
+	 * @param raFactory
 	 */
 	public AuthorityEditor(SimulationConfigEditor simulationConfigEditor,
 					  ReportingAuthorityFactory raFactory) {
+		
 		this.raFactory = raFactory;
 		
 		f = new JDialog(simulationConfigEditor.getFrame(), TITLE, true);
@@ -279,7 +276,11 @@ public class AuthorityEditor  {
 
 
 	/**
-	 * Commits the changes to the crew profiles
+	 * Commits the changes to the crew profiles.
+	 *
+	 * @param name
+	 * @param description
+	 * @return
 	 */
 	private ReportingAuthority commitChanges(String name, String description) {
 		String agendaName = (String) agendaCB.getSelectedItem();

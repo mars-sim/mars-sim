@@ -65,8 +65,8 @@ public class Crew implements UserConfigurable {
 	}
 
 	/**
-//	 * Is this crew bundled with the code base 
- * 
+	 * Is this crew bundled with the code base ?
+	 * 
 	 * @return
 	 */
 	@Override
