@@ -82,9 +82,6 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String PART_PACKAGE = "part-package";
 
 	private static final String EVA_AIRLOCK = "EVA Airlock";
-	
-	// Random value indicator.
-	public static final String RANDOM = "random";
 
 	private static final String SHIFT_PATTERN = "shift-pattern";
 	private static final String SHIFT_PATTERNS = "shifts";
@@ -104,12 +101,12 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String FREQUENCY = "frequency-sols";
 	private static final String MANIFEST_NAME = "manifest-name";
 
-	private double[] rover_values = new double[] { 0, 0 };
-	private double[][] life_support_values = new double[2][7];
+	private double[] roverValues = new double[] { 0, 0 };
+	private double[][] lifeSupportValues = new double[2][7];
 
 	// Data members
 	private PartPackageConfig partPackageConfig;
-	private Map<String,ShiftPattern> shiftDefinitions = new HashMap<>();
+	private Map<String, ShiftPattern> shiftDefinitions = new HashMap<>();
 	private String defaultShift;
 
 	private ResupplyConfig resupplyConfig;
@@ -140,11 +137,12 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	}
 
 	public double[] getRoverValues() {
-		return rover_values;
+		return roverValues;
 	}
 
 	/**
-	 * Load the shift patterns details
+	 * Loads the shift patterns details.
+	 * 
 	 * @throws Exception if error reading XML document.
 	 */
 	private void loadShiftPatterns(Element shiftPatterns) {
@@ -183,49 +181,49 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	}
 
 	/**
-	 * Load the rover range margin error from the mission control parameters of a
+	 * Loads the rover range margin error from the mission control parameters of a
 	 * settlement from the XML document.
 	 *
 	 * @return range margin.
 	 * @throws Exception if error reading XML document.
 	 */
 	private void loadMissionControl(Element missionControlElement) {
-		if (rover_values[0] != 0 || rover_values[1] != 0) {
+		if (roverValues[0] != 0 || roverValues[1] != 0) {
 			return;
 		}
 
 		Element lifeSupportRange = missionControlElement.getChild(ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN);
 		Element fuelRange = missionControlElement.getChild(ROVER_FUEL_RANGE_ERROR_MARGIN);
 
-		rover_values[0] = Double.parseDouble(lifeSupportRange.getAttributeValue(VALUE));
-		if (rover_values[0] < 1.0 || rover_values[0] > 3.0)
+		roverValues[0] = Double.parseDouble(lifeSupportRange.getAttributeValue(VALUE));
+		if (roverValues[0] < 1.0 || roverValues[0] > 3.0)
 			throw new IllegalStateException(
 					"Error in SettlementConfig.xml: rover life support range error margin is beyond acceptable range.");
 
-		rover_values[1] = Double.parseDouble(fuelRange.getAttributeValue(VALUE));
-		if (rover_values[1] < 1.0 || rover_values[1] > 3.0)
+		roverValues[1] = Double.parseDouble(fuelRange.getAttributeValue(VALUE));
+		if (roverValues[1] < 1.0 || roverValues[1] > 3.0)
 			throw new IllegalStateException(
 					"Error in SettlementConfig.xml: rover fuel range error margin is beyond acceptable range.");
 	}
 
 	/**
-	 * Load the life support requirements from the XML document.
+	 * Loads the life support requirements from the XML document.
 	 *
 	 * @return an array of double.
 	 * @throws Exception if error reading XML document.
 	 */
 	public double[][] getLifeSupportRequirements() {
-		return life_support_values;
+		return lifeSupportValues;
 	}
 
 	/**
-	 * Load the life support requirements from the XML document.
+	 * Loads the life support requirements from the XML document.
 	 *
 	 * @return an array of double.
 	 * @throws Exception if error reading XML document.
 	 */
 	private void loadLifeSupportRequirements(Element req) {
-		if (life_support_values[0][0] != 0) {
+		if (lifeSupportValues[0][0] != 0) {
 			// testing only the value at [0][0]
 			return;
 		}
@@ -242,7 +240,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		for (int j = 0; j < 2; j++) {
 			for (int i = 0; i < types.length; i++) {
 				double [] t = getLowHighValues(req, types[i]);
-				life_support_values[j][i] = t[j];
+				lifeSupportValues[j][i] = t[j];
 			}
 		}
 	}
@@ -257,7 +255,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	}
 
 	/**
-	 * Load the settlement templates from the XML document.
+	 * Loads the settlement templates from the XML document.
 	 *
 	 * @param settlementDoc     DOM document with settlement configuration.
 	 * @param partPackageConfig the part package configuration.

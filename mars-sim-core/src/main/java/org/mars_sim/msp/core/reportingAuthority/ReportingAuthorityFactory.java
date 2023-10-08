@@ -46,7 +46,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	private final String PERFERENCE_EL = "preference";
 	private final String TYPE_ATTR = "type";
 	
-	private Map<String,MissionAgenda> agendas;
+	private Map<String, MissionAgenda> agendas;
 
 	public ReportingAuthorityFactory(Document governanceDoc) {
 		super("authority");
@@ -68,7 +68,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 		}
 			
 		// Build the global list in a temp to avoid access before it is built
-		Map<String,MissionAgenda> newAgendas = new HashMap<>();
+		Map<String, MissionAgenda> newAgendas = new HashMap<>();
 		
 		// Load the Agendas into a temp Map
 		Element agendasNode = doc.getRootElement().getChild(AGENDAS_EL);

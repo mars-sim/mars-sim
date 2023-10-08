@@ -50,6 +50,8 @@ import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.mission.MissionStep;
+import org.mars_sim.msp.core.moon.LunarColonyManager;
+import org.mars_sim.msp.core.moon.LunarWorld;
 import org.mars_sim.msp.core.moon.Moon;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -177,8 +179,10 @@ public class Simulation implements ClockListener, Serializable {
 	private transient ClockListener autoSaveHandler;
 
 	// Intransient data members (stored in save file)
-	/** Planet Mars. */
-//	private Environment environment;
+	/** The lunar world (both surface and underground). */
+	private LunarWorld lunarWorld; 
+	/** The lunar colony manager. */
+	private LunarColonyManager lunarColonyManager;
 	/** Orbital info. */
 	private OrbitInfo orbitInfo;
 	/** The weather info. */
@@ -301,6 +305,11 @@ public class Simulation implements ClockListener, Serializable {
 		// Create marsClock instance
 		masterClock = new MasterClock(256);
 		
+		// Create lunar world instance
+		lunarWorld = new LunarWorld(); 
+		// Create lunar colony manager instance
+		lunarColonyManager = new LunarColonyManager();
+		
 		// Create orbit info
 		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
 		// Create weather
@@ -329,6 +338,11 @@ public class Simulation implements ClockListener, Serializable {
 		// Set instances for logging
 		SimuLoggingFormatter.initializeInstances(masterClock);
 		History.initializeInstances(masterClock);
+		
+		// Create lunar world instance
+		lunarWorld = new LunarWorld(); 
+		// Create lunar colony manager instance
+		lunarColonyManager = new LunarColonyManager();
 		
 		// Create orbit info
 		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
@@ -423,7 +437,12 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Initialize serializable objects
 		malfunctionFactory = new MalfunctionFactory();
-
+	
+		// Create lunar world instance
+		lunarWorld = new LunarWorld(); 
+		// Create lunar colony manager instance
+		lunarColonyManager = new LunarColonyManager();
+	
 		// Create orbit info
 		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
 		// Create weather
@@ -462,6 +481,8 @@ public class Simulation implements ClockListener, Serializable {
 		// Add it to unitManager
 		unitManager.addUnit(marsSurface);
 		
+		// Add colonies to lunarColonyManager
+		lunarColonyManager.addColonies();
 		
 		// Initialize Unit
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
@@ -763,6 +784,8 @@ public class Simulation implements ClockListener, Serializable {
 			// Load remaining serialized objects
 			lastSaveTimeStamp = (Date) ois.readObject();
 			malfunctionFactory = (MalfunctionFactory) ois.readObject();
+			lunarWorld = (LunarWorld) ois.readObject();
+			lunarColonyManager = (LunarColonyManager) ois.readObject();
 			orbitInfo = (OrbitInfo) ois.readObject();
 			weather = (Weather) ois.readObject();
 			surfaceFeatures = (SurfaceFeatures) ois.readObject();
@@ -1049,6 +1072,8 @@ public class Simulation implements ClockListener, Serializable {
 			// Store the in-transient objects.
 			oos.writeObject(lastSaveTimeStamp);
 			oos.writeObject(malfunctionFactory);
+			oos.writeObject(lunarWorld);
+			oos.writeObject(lunarColonyManager);
 			oos.writeObject(orbitInfo);
 			oos.writeObject(weather);
 			oos.writeObject(surfaceFeatures);		
@@ -1265,6 +1290,24 @@ public class Simulation implements ClockListener, Serializable {
 	public UnitManager getUnitManager() {
 		return unitManager;
 	}
+	
+	/**
+	 * Gets the lunar world instance.
+	 * 
+	 * @return
+	 */
+	public LunarWorld getLunarWorld() {
+		return lunarWorld;
+	}
+	
+	/**
+	 * Gets the lunar colony manager instance.
+	 * 
+	 * @return
+	 */
+	public LunarColonyManager getLunarColonyManager() {
+		return lunarColonyManager;
+	}
 
 	public OrbitInfo getOrbitInfo() {
 		return orbitInfo;
@@ -1390,7 +1433,7 @@ public class Simulation implements ClockListener, Serializable {
 	}
 	
 	/**
-	 * Clock pulse from master clock.
+	 * Sends out the clock pulse instance.
 	 *
 	 * @param pulse the amount of clock pulse passing (in millisols)
 	 */
@@ -1400,8 +1443,12 @@ public class Simulation implements ClockListener, Serializable {
 			// Refresh all Data loggers; this can be refactored later to a Manager class
 			DataLogger.changeTime(pulse.getMasterClock().getMarsTime());
 			
+			lunarWorld.timePassing(pulse);
+			
+			lunarColonyManager.timePassing(pulse);
+			
 			orbitInfo.timePassing(pulse);
-
+			
 			weather.timePassing(pulse);
 
 			surfaceFeatures.timePassing(pulse);
@@ -1440,6 +1487,14 @@ public class Simulation implements ClockListener, Serializable {
 		}
 		malfunctionFactory = null;
 
+		if (lunarWorld != null) {
+			lunarWorld = null;
+		}
+		
+		if (lunarColonyManager != null) {
+			lunarColonyManager = null;
+		}
+		
 		if (orbitInfo != null) {
 			orbitInfo = null;
 		}

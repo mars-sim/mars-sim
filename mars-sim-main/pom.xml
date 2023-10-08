@@ -88,7 +88,6 @@
   </profiles>
   
 	<build>
-		<defaultGoal>clean package install</defaultGoal>
 		<plugins>
 			<!-- Build the executable JAR file -->
 			<plugin>
@@ -129,7 +128,7 @@
                         <id>copy-file</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>rename</goal>
+                            <goal>copy</goal>
                         </goals>
                         <configuration>
                             <sourceFile>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</sourceFile>

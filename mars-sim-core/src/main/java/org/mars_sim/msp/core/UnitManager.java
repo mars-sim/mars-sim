@@ -499,8 +499,8 @@ public class UnitManager implements Serializable, Temporal {
 	public static void validateActiveSettlement(String operation, Unit owner) {
 		Settlement currentSettlement = activeSettlement.get();
 		Settlement owningSettlement;
-		if (owner instanceof Settlement) {
-			owningSettlement = (Settlement) owner;
+		if (owner instanceof Settlement s) {
+			owningSettlement = s;
 		}
 		else {
 			owningSettlement = owner.getAssociatedSettlement();

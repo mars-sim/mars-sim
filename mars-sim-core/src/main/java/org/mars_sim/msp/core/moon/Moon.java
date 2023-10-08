@@ -13,7 +13,7 @@ import org.mars_sim.msp.core.environment.PlanetaryEntity;
 import org.mars_sim.msp.core.location.LocationStateType;
 
 /**
- * Moon is the object unit that represents Earth's Moon
+ * Moon is the object unit that represents Earth's Moon.
  */
 public class Moon extends PlanetaryEntity {
 

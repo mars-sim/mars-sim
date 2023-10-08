@@ -39,7 +39,6 @@
 		</dependency>	
 	</dependencies>	
 	<build>
-		<defaultGoal>clean package install</defaultGoal>
 		<plugins>
 			<!-- Package into an executable JAR file -->
 			<plugin>
@@ -79,7 +78,7 @@
                         <id>copy-file</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>rename</goal>
+                            <goal>copy</goal>
                         </goals>
                         <configuration>
                             <sourceFile>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</sourceFile>
