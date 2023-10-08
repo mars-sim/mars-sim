@@ -275,7 +275,7 @@ public abstract class UnitWindow extends ModalInternalFrame
      * 
      * @return
      */
-    public JLabel agencyLabel() {
+    public JLabel getAgencyLabel() {
 		// Add space agency img
 		String agencyStr = null;
 		

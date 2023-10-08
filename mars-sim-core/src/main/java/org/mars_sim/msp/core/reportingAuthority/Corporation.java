@@ -17,8 +17,12 @@ public class Corporation extends Organization {
 	public static final SimLogger logger = SimLogger.getLogger(Corporation.class.getName());
 
 	
-	Corporation(String name) {
-		super(name);
+	Corporation(String acronym, String fullName) {
+		super(acronym, fullName);
+	}
+	
+	public boolean isCorporation() {
+		return true;
 	}
 	
 	@Override

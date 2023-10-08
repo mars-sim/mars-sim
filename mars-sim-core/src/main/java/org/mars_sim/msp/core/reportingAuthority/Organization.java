@@ -21,19 +21,27 @@ public abstract class Organization implements Serializable, Temporal {
 
 	public static final SimLogger logger = SimLogger.getLogger(Organization.class.getName());
 
-	private String name;
+	private String acronym;
+	
+	private String fullName;
 	
 	private Set<Nation> memberNations = new HashSet<>();
 	
 	private Nation leadNation;
 	
-	Organization(String name) {
-		this.name = name;
+	Organization(String acronym, String fullName) {
+		this.acronym = acronym;
+		this.fullName = fullName;
 	}
 	
-	public String getName() {
-		return name;
+	public String getAcronym() {
+		return acronym;
 	}
+	
+	public String getFullName() {
+		return fullName;
+	}
+	
 	
 	public Set<Nation> getMemberNations() {
 		return memberNations;
@@ -47,7 +55,7 @@ public abstract class Organization implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 

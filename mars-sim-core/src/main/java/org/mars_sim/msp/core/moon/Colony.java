@@ -31,9 +31,7 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	
 	/** The settlement's ReportingAuthority instance. */
 	private ReportingAuthority sponsor;
-	
-	private Organization organization;
-	
+
 	private Coordinates location;
 	
 	private Population population;
@@ -64,13 +62,13 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	}
 	
 	public Organization getOrganization() {
-		return organization;
+		return sponsor.getOrganization();
 	}
 	
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		
-		organization.timePassing(pulse);
+		getOrganization().timePassing(pulse);
 		
 		population.timePassing(pulse);
 		

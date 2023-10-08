@@ -17,8 +17,12 @@ public class Agency extends Organization {
 	public static final SimLogger logger = SimLogger.getLogger(Agency.class.getName());
 
 	
-	Agency(String name) {
-		super(name);
+	Agency(String acronym, String fullName) {
+		super(acronym, fullName);
+	}
+	
+	public boolean isCorporation() {
+		return false;
 	}
 	
 	@Override

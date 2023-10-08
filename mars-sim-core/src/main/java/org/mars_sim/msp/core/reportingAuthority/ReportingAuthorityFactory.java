@@ -30,6 +30,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	private final String AUTHORITY_EL = "authority";
 	private final String AUTHORITIES_EL = "authorities";
 	private final String CODE_ATTR = "code";
+	private final String CORPORATION_ATTR = "corporation";
 	private final String MODIFIER_ATTR = "modifier";
 	private final String DESCRIPTION_ATTR = "description";
 	private final String CAPABILITY_EL = "capability";
@@ -132,6 +133,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	private ReportingAuthority parseXMLAuthority(Map<String, MissionAgenda> agendas, Element authorityNode, boolean predefined) {
 		String acronym = authorityNode.getAttributeValue(CODE_ATTR);
 		String fullName = authorityNode.getAttributeValue(NAME_ATTR);
+		String isCorporationString = authorityNode.getAttributeValue(CORPORATION_ATTR);
 		String agendaName = authorityNode.getAttributeValue(AGENDA_EL);			
 		MissionAgenda agenda = agendas.get(agendaName);
 		if (agenda == null) {
@@ -155,7 +157,13 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 				.map(a -> a.getAttributeValue(NAME_ATTR))
 				.collect(Collectors.toList());
 		
-		return new ReportingAuthority(acronym, fullName, predefined, maleRatio, agenda,
+		// Check if it's a corporation (or a space agency)
+		boolean isCorporation = false;
+		
+		if (isCorporationString.equalsIgnoreCase("true"))
+			isCorporation = true;
+		
+		return new ReportingAuthority(acronym, fullName, isCorporation, predefined, maleRatio, agenda,
 									  countries, settlementNames,
 									  roverNames);
 	}

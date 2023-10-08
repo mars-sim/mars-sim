@@ -25,7 +25,9 @@ implements UserConfigurable, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private MissionAgenda missionAgenda;
-
+	
+	private Organization organization;
+	
 	private String fullName;
 
 	private String acronym;
@@ -37,23 +39,42 @@ implements UserConfigurable, Serializable {
 	private List<String> vehicleNames;
 
 	private boolean predefined;
+	
+	private boolean isCorporation;
 
 	private double genderRatio;
  
-	public ReportingAuthority(String acronym, String fullName, boolean predefined, double genderRatio,
-							  MissionAgenda agenda, List<String> countries,
-							  List<String> names, List<String> vehicleNames) {
+	public ReportingAuthority(String acronym, String fullName, 
+			boolean isCorporation, boolean predefined, 
+			double genderRatio,
+			MissionAgenda agenda, List<String> countries,
+			List<String> names, List<String> vehicleNames) {
 		
 		this.fullName  = fullName;
 		this.acronym = acronym;
+		this.isCorporation = isCorporation;
 		this.predefined = predefined;
 		this.genderRatio = genderRatio;
 		this.missionAgenda = agenda;
 		this.countries = countries;
 		this.settlementNames = names;
 		this.vehicleNames = vehicleNames;
+
+		if (isCorporation)
+			organization = new Corporation(acronym, fullName);
+		else
+			organization = new Agency(acronym, fullName);
+		
 	}
 
+	public Organization getOrganization() {
+		return organization;
+	}
+	
+	public boolean isCorporation() {
+		return isCorporation;
+	}
+	
 	/**
 	 * Works on the mission objectives conducted.
 	 * 

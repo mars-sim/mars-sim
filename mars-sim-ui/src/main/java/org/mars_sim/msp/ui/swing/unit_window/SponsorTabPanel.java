@@ -18,6 +18,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.reportingAuthority.MissionCapability;
@@ -64,47 +65,67 @@ public class SponsorTabPanel extends TabPanel {
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 		content.add(mainPanel, BorderLayout.NORTH);
 		
+		//////////////////////////////////////////////////
+		
+		JPanel namePanel = new JPanel(new BorderLayout());
+		
+		namePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		
+		mainPanel.add(namePanel, BorderLayout.NORTH);
+		
+		addBorder(namePanel, Msg.getString("SponsorTabPanel.sponsor"));
+		
+		//////////////////////////////////////////////////
+		
+		JLabel longNameLabel = new JLabel(ra.getDescription(), JLabel.CENTER);
+		longNameLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		namePanel.add(longNameLabel, BorderLayout.NORTH);
+		
 		JPanel iconPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		iconPanel.setPreferredSize(new Dimension(90, 90));		
-		mainPanel.add(iconPanel, BorderLayout.NORTH);
+//		iconPanel.setPreferredSize(new Dimension(90, 90));	
+		iconPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		namePanel.add(iconPanel, BorderLayout.CENTER);
 		
 		String agencyStr = ra.getName();
 		Image img = (ImageLoader.getImage(AGENCY_FOLDER + agencyStr))
-				.getScaledInstance(80, 80,
+				.getScaledInstance(90, 90,
 		        Image.SCALE_SMOOTH);
 		
 		JLabel agencyLabel = new JLabel(new ImageIcon(img));
-		agencyLabel.setPreferredSize(new Dimension(90, 90));
+//		agencyLabel.setPreferredSize(new Dimension(90, 90));
 		iconPanel.add(agencyLabel);
 		
-		// Prepare info panel.
-		AttributePanel infoPanel = new AttributePanel(2);
-		mainPanel.add(infoPanel, BorderLayout.CENTER);
+		// Prepare info name panel.
+		AttributePanel infoNamePanel = new AttributePanel(3);
+		namePanel.add(infoNamePanel, BorderLayout.SOUTH);
 
-		// Prepare sponsor name label
-		infoPanel.addTextField(Msg.getString("SponsorTabPanel.sponsorShort"), ra.getName(), null);
+		// Prepare sponsor long name label
+//		infoNamePanel.addRow(Msg.getString("SponsorTabPanel.sponsorLong"), ra.getDescription());
+		// Prepare sponsor short name label
+		infoNamePanel.addRow(Msg.getString("SponsorTabPanel.sponsorShort"), ra.getName());
+		
+		boolean isCorp = ra.isCorporation();
+		String corpLabel = "No";
+		if (isCorp)
+			corpLabel = "Yes";
+		// Prepare corporation label
+		infoNamePanel.addRow(Msg.getString("SponsorTabPanel.corporation"), corpLabel);
 		// Prepare agenda name label
-		infoPanel.addTextField(Msg.getString("SponsorTabPanel.agenda"), ra.getMissionAgenda().getName(), null);
+		infoNamePanel.addRow(Msg.getString("SponsorTabPanel.agenda"), ra.getMissionAgenda().getName());
+		
+		//////////////////////////////////////////////////
 		
 		JPanel subPanel = new JPanel(new BorderLayout());
 		mainPanel.add(subPanel, BorderLayout.SOUTH);
 	
-		JPanel panelNorth = new JPanel(new GridLayout(4, 1));
+		JPanel panelNorth = new JPanel(new GridLayout(3, 1));
 		subPanel.add(panelNorth, BorderLayout.NORTH);
 		
 		//////////////////////////////////////////////////
 		
-		JPanel panel00 = new JPanel(new FlowLayout());// BorderLayout());
-		panelNorth.add(panel00);// BorderLayout.NORTH);
 		
-		addBorder(panel00, Msg.getString("SponsorTabPanel.sponsor"));
-		
-		// Add the long name to the text area.
-		createTA(panel00).append(ra.getDescription());
-		
-		
-		JPanel panel0 = new JPanel(new FlowLayout());// BorderLayout());
-		panelNorth.add(panel0);// BorderLayout.NORTH);
+		JPanel panel0 = new JPanel(new FlowLayout());
+		panelNorth.add(panel0);
 		
 		addBorder(panel0, Msg.getString("SponsorTabPanel.objective"));
 		
@@ -112,8 +133,8 @@ public class SponsorTabPanel extends TabPanel {
 		createTA(panel0).append(ra.getMissionAgenda().getObjectiveName());
 		
 		
-		JPanel panel1 = new JPanel(new FlowLayout());// BorderLayout());
-		panelNorth.add(panel1);// BorderLayout.CENTER);
+		JPanel panel1 = new JPanel(new FlowLayout());
+		panelNorth.add(panel1);
 		
 		addBorder(panel1, Msg.getString("SponsorTabPanel.report"));
 		
@@ -121,8 +142,8 @@ public class SponsorTabPanel extends TabPanel {
 		createTA(panel1).append(ra.getMissionAgenda().getReports());
 		
 		
-		JPanel panel2 = new JPanel(new FlowLayout());// BorderLayout());
-		panelNorth.add(panel2);// BorderLayout.SOUTH);
+		JPanel panel2 = new JPanel(new FlowLayout());
+		panelNorth.add(panel2);
 		
 		addBorder(panel2, Msg.getString("SponsorTabPanel.data"));
 		
@@ -134,8 +155,8 @@ public class SponsorTabPanel extends TabPanel {
 		JPanel panelCenter = new JPanel(new BorderLayout());
 		subPanel.add(panelCenter, BorderLayout.CENTER);
 		
-		JPanel panelCap = new JPanel(new FlowLayout());//
-		panelCenter.add(panelCap);// BorderLayout.SOUTH);
+		JPanel panelCap = new JPanel(new FlowLayout());
+		panelCenter.add(panelCap);
 		
 		addBorder(panelCap, Msg.getString("SponsorTabPanel.capability"));
 		
@@ -150,7 +171,6 @@ public class SponsorTabPanel extends TabPanel {
 		ta.setEditable(false);
 		ta.setColumns (30);
 		ta.setLineWrap (true);
-//		ta.setBorder(new MarsPanelBorder());
 		panel.add(ta);
 		return ta;
 	}

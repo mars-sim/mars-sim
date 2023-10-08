@@ -497,7 +497,11 @@ public class CrewEditor implements ActionListener {
 	}
 
 	/**
-	 * Commits the changes to the crew profiles
+	 * Commits the changes to the crew profiles.
+	 * 
+	 * @param name
+	 * @param description
+	 * @return
 	 */
 	private Crew commitChanges(String name, String description) {
 		if (crewPanels.isEmpty()) {
@@ -519,7 +523,7 @@ public class CrewEditor implements ActionListener {
 	}
 	
 	/**
-	 * Checks if a string is purely numeric
+	 * Checks if a string is purely numeric.
 	 * 
 	 * @param str
 	 * @return
@@ -534,7 +538,7 @@ public class CrewEditor implements ActionListener {
 	}
 
 	/**
-	 * Retrieves the crew's specific MBTI
+	 * Retrieves the crew's specific MBTI.
 	 * 
 	 * @param row
 	 * @param col

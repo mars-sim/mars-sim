@@ -58,6 +58,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.moon.Colony;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.util.BasicTaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
@@ -357,10 +358,10 @@ public class CommanderWindow extends ToolWindow {
 				labelGrid.addRow("Base Name", name);
 				
 				String sponsorName = c.getReportingAuthority().getName();
-				labelGrid.addRow("Sponsoring Agency", sponsorName);
+				labelGrid.addRow("Corporation/Agency", sponsorName);
 				
 				List<String> list = c.getReportingAuthority().getCountries();
-				String countryName = "[International]";
+				String countryName = "[Multi-National]";
 				if (list.size() == 1)
 					countryName = c.getReportingAuthority().getCountries().get(0);
 				
@@ -1075,14 +1076,18 @@ public class CommanderWindow extends ToolWindow {
          */
         public void update() {
 
-        	List<TaskJob> newTasks = ((Person) personBox.getSelectedItem()).getMind().getTaskManager().getPendingTasks();
-
-        	if (newTasks != null) {
-	    		// if the list contains duplicate items, it somehow pass this test
-	    		if (list.size() != newTasks.size() || !list.containsAll(newTasks) || !newTasks.containsAll(list)) {	
-	                list = new ArrayList<>(newTasks);
-	                fireContentsChanged(this, 0, getSize());
-	    		}
+        	Person selected = (Person) personBox.getSelectedItem();
+        	
+        	if (selected != null) {
+	        	List<TaskJob> newTasks = selected.getMind().getTaskManager().getPendingTasks();
+	
+	        	if (newTasks != null) {
+		    		// if the list contains duplicate items, it somehow pass this test
+		    		if (list.size() != newTasks.size() || !list.containsAll(newTasks) || !newTasks.containsAll(list)) {	
+		                list = new ArrayList<>(newTasks);
+		                fireContentsChanged(this, 0, getSize());
+		    		}
+	        	}
         	}
         }
 	}
