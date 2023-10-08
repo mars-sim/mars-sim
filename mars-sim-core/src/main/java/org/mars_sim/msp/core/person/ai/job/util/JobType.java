@@ -124,51 +124,5 @@ public enum JobType {
 	    	}
 		}
 		return null;
-//		throw new IllegalArgumentException("Cannot find a Job with the name " + name);
-	}
-
-	/**
-	 * Is this job one of 11 academic type ?
-	 *
-	 * @param type
-	 * @return
-	 */
-	public static boolean isAcademicType(JobType type) {
-		for (JobType ra : ACADEMICS) {
-    		if (ra == type) {
-    			return true;
-    		}
-    	}
-		return false;
-	}
-
-	/**
-	 * Is this job of one of the 7 science types ?
-	 *
-	 * @param type
-	 * @return
-	 */
-	public static boolean isScienceType(JobType type) {
-		for (JobType ra : SCIENTISTS) {
-    		if (ra == type) {
-    			return true;
-    		}
-    	}
-		return false;
-	}
-
-	/**
-	 * Is this job of one of the 2 medical types ?
-	 *
-	 * @param type
-	 * @return
-	 */
-	public static boolean isMedical(JobType type) {
-		for (JobType ra : MEDICS) {
-    		if (ra == type) {
-    			return true;
-    		}
-    	}
-		return false;
 	}
 }

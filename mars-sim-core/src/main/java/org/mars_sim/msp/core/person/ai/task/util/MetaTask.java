@@ -150,15 +150,6 @@ public abstract class MetaTask {
 	}
 	
 	/**
-	 * Sets the preferred roles for this Task. This overwrites any previous values.
-	 * 
-	 * @param jobs
-	 */
-    protected void setPreferredRole(Set<RoleType> roles) {
-    	this.preferredRoles = roles;
-	}
-
-	/**
 	 * Sets the preferred roles for this Task.
 	 * 
 	 * @param jobs
@@ -240,15 +231,6 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Adds a type of robot as preferred.
-	 * 
-	 * @param rt New robotType
-	 */
-	protected void addPreferredRobot(RobotType rt) {
-		preferredRobots.add(rt);
-	}
-
-	/**
 	 * Sets the preferred jobs for this Task.
 	 * 
 	 * @param jobs
@@ -256,7 +238,6 @@ public abstract class MetaTask {
     protected void addPreferredRobot(RobotType... rt) {
         Collections.addAll(this.preferredRobots, rt);
 	}
-	
 	
 	/**
      * Gets the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
@@ -297,7 +278,16 @@ public abstract class MetaTask {
 			score.addModifier("effort", person.getPerformanceRating());
 		}
 		
-		score.addModifier("job", getJobModifier(person));
+        // Job modifier. If not my job suitable then a penalty.
+	 	// Rules are:
+	 	// 1. Person must have a Job
+	 	// 2. Task must have Preferred Jobs
+	 	// 3. If the Person's job is not in the Preferred list then a penalty is applied. 
+		JobType job = person.getMind().getJob();
+        if ((job != null) && !preferredJobs.isEmpty()
+        		&& !preferredJobs.contains(job)) {
+			score.addModifier("job", NON_JOB_PENALTY);
+        }
 
         score.addModifier(FAV_MODIFIER, (1 + (person.getPreference().getPreferenceScore(this)/5D)));
 
@@ -323,29 +313,6 @@ public abstract class MetaTask {
         RatingScore temp = new RatingScore(1D);
 		assessPersonSuitability(temp, person);
 		return temp.getScore();
-	}
-
-	/**
-	 * Applies a modified based on the Job. Rules are:
-	 * 1. Person must have a Job
-	 * 2. Task must have Preferred Jobs
-	 * 3. If the Person's job is not in the Preferred list then a penalty is applied.
-	 * 
-	 * @param person
-	 * @return
-	 */
-	protected double getJobModifier(Person person) {
-		double score = 1D;
-
-        // Job modifier. If not my job then a penalty.
-		// But only if the Task has preferred jobs defined
-        JobType job = person.getMind().getJob();
-        if ((job != null) && !preferredJobs.isEmpty()
-        		&& !preferredJobs.contains(job)) {
-            score *= NON_JOB_PENALTY;
-        }
-        
-        return score;
 	}
 
 	/**
@@ -385,7 +352,7 @@ public abstract class MetaTask {
 	}
 
 	public String toString() {
-		return getName();
+		return name;
 	}
 	
 	/**
