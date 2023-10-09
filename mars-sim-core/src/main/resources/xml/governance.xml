@@ -748,7 +748,6 @@
 		<authority code="SPACEX" name="Space Exploration Technologies Corporation" corporation="true"
 					agenda="Planet Life" gender-ratio="0.5">
 			<country name="USA"/>
-			<country name="Canada"/>
 			<settlement-name name="MuskVille" />
 			<settlement-name name="Falcon Station" />
 			<settlement-name name="Nicolas Town" />

@@ -48,9 +48,10 @@ public class PersonUnitWindow extends UnitWindow {
 	/** Is person dead? */
 	private boolean deadCache = false;
 	
-	private String oldRoleString = "";
-	private String oldJobString = "";
-	private String oldTownString = "";
+	private String oldRole = "";
+	private String oldJob = "";
+	private String oldTown = "";
+	private String oldShift = "";
 	
 	private JLabel townLabel;
 	private JLabel jobLabel;
@@ -161,7 +162,7 @@ public class PersonUnitWindow extends UnitWindow {
 		shiftPanel.add(shiftLabel);
 		shiftPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		JPanel gridPanel = new JPanel(new GridLayout(2, 2, 0, 0));		
+		JPanel gridPanel = new JPanel(new GridLayout(2, 2, 5, 1));		
 		gridPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		gridPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
 		
@@ -263,29 +264,33 @@ public class PersonUnitWindow extends UnitWindow {
 		else if (person.getAssociatedSettlement() != null)
 			townString = person.getAssociatedSettlement().getName();
 
-		if (townString != null && !oldTownString.equals(townString)) {
-			oldJobString = townString;
+		if (townString != null && !oldTown.equals(townString)) {
+			oldJob = townString;
 			if (townString.length() > 40)
 				townString = townString.substring(0, 40);
 			townLabel.setText(TWO_SPACES + townString);
 		}
 
 		String jobString = person.getMind().getJob().getName();
-		if (!oldJobString.equals(jobString)) {
-			oldJobString = jobString;
+		if (!oldJob.equals(jobString)) {
+			oldJob = jobString;
 			jobLabel.setText(TWO_SPACES + jobString);
 		}
 
 		String roleString = person.getRole().getType().getName();
-		if (!oldRoleString.equals(roleString)) {
-			oldRoleString = roleString;
+		if (!oldRole.equals(roleString)) {
+			oldRole = roleString;
 			roleLabel.setText(TWO_SPACES + roleString);
 		}
 
-		ShiftSlot newShiftType = person.getShiftSlot();
-		String shiftDesc = TabPanelSchedule.getShiftNote(newShiftType);
-		shiftLabel.setText(TWO_SPACES + newShiftType.getShift().getName());
-		shiftLabel.setToolTipText(shiftDesc);
+		ShiftSlot shiftSlot = person.getShiftSlot();
+		String shiftDesc = TabPanelSchedule.getShiftNote(person.getShiftSlot());
+		String newShift = shiftSlot.getShift().getName();
+		if (!oldShift.equals(newShift)) {
+			oldShift = newShift;
+			shiftLabel.setText(TWO_SPACES + newShift);
+			shiftLabel.setToolTipText(shiftDesc);
+		}
 	}
 	
 	/**

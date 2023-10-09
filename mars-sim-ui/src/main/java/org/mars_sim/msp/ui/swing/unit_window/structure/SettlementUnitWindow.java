@@ -12,6 +12,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -50,7 +51,7 @@ public class SettlementUnitWindow extends UnitWindow {
 	
 	private JLabel popLabel;
 	private JLabel vehLabel;
-	private JLabel sponsorLabel;
+	private JLabel countryLabel;
 	private JLabel templateLabel;
 
 	private JPanel statusPanel;
@@ -71,7 +72,7 @@ public class SettlementUnitWindow extends UnitWindow {
 		this.settlement = settlement;
 
 		// Create status panel
-		statusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));//BorderLayout(5, 5));
+		statusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		statusPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
 		statusPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		statusPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
@@ -98,6 +99,8 @@ public class SettlementUnitWindow extends UnitWindow {
 		
 		JPanel namePane = new JPanel(new BorderLayout(0, 0));
 		namePane.add(nameLabel, BorderLayout.CENTER);
+		namePane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		namePane.setAlignmentY(Component.CENTER_ALIGNMENT);
 		nameLabel.setToolTipText("Name of Settlement");
 		setImage(BASE, nameLabel);
 		
@@ -109,65 +112,75 @@ public class SettlementUnitWindow extends UnitWindow {
 		nameLabel.setHorizontalTextPosition(JLabel.CENTER);
 
 		statusPanel.add(namePane, BorderLayout.WEST);
-
+		
+		JLabel countryIconLabel = new JLabel();
+		countryIconLabel.setToolTipText("Country of Origin");
+		setImage(SPONSOR, countryIconLabel);
+	
 		JLabel popIconLabel = new JLabel();
 		popIconLabel.setToolTipText("# of population : (indoor / total)");
 		setImage(POP, popIconLabel);
-		
-		JLabel sponsorIconLabel = new JLabel();
-		sponsorIconLabel.setToolTipText("Name of sponsor");
-		setImage(SPONSOR, sponsorIconLabel);
 
-		JLabel vehIconLabel = new JLabel();
-		vehIconLabel.setToolTipText("# of vehicles : (in settlement / total)");
-		setImage(VEHICLE, vehIconLabel);
-		
 		JLabel templateIconLabel = new JLabel();
 		templateIconLabel.setToolTipText("Settlement template being used");
 		setImage(TEMPLATE, templateIconLabel);
+		
+		JLabel vehIconLabel = new JLabel();
+		vehIconLabel.setToolTipText("# of vehicles : (in settlement / total)");
+		setImage(VEHICLE, vehIconLabel);
 
+		JPanel countryPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		JPanel popPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		JPanel vehPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		JPanel sponsorPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		JPanel templatePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		JPanel vehPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
+		countryLabel = new JLabel();
+		countryLabel.setFont(font);
+		
 		popLabel = new JLabel();
 		popLabel.setFont(font);
 
+		templateLabel = new JLabel();
+		templateLabel.setFont(font);
+		
 		vehLabel = new JLabel();
 		vehLabel.setFont(font);
 
-		sponsorLabel = new JLabel();
-		sponsorLabel.setFont(font);
-
-		templateLabel = new JLabel();
-		templateLabel.setFont(font);
-
+		countryPanel.add(countryIconLabel);
+		countryPanel.add(countryLabel);
+		countryPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
 		popPanel.add(popIconLabel);
 		popPanel.add(popLabel);
-		popPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		popPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		vehPanel.add(vehIconLabel);
 		vehPanel.add(vehLabel);
-		vehPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-		sponsorPanel.add(sponsorIconLabel);
-		sponsorPanel.add(sponsorLabel);
-		sponsorPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		vehPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		templatePanel.add(templateIconLabel);
 		templatePanel.add(templateLabel);
-		templatePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		templatePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		JPanel rowPanel = new JPanel(new GridLayout(2, 2, 0, 0));
-		rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);	
+		JPanel gridPanel = new JPanel(new GridLayout(2, 2, 5, 1));
+		gridPanel.setAlignmentX(Component.CENTER_ALIGNMENT);	
+		gridPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
 		
-		rowPanel.add(popPanel);
-		rowPanel.add(vehPanel);
-		rowPanel.add(sponsorPanel);
-		rowPanel.add(templatePanel);
+		gridPanel.add(countryPanel);
+		gridPanel.add(popPanel);
+		gridPanel.add(templatePanel);
+		gridPanel.add(vehPanel);
 
-		statusPanel.add(rowPanel, BorderLayout.CENTER);
+		statusPanel.add(gridPanel, BorderLayout.CENTER);
+		
+		// Show country
+		List<String> list = settlement.getReportingAuthority().getCountries();
+		String countryName = "Multi-National";
+		if (list.size() == 1)
+			countryName = settlement.getReportingAuthority().getCountries().get(0);
+		
+		countryLabel.setText(TWO_SPACES + countryName + SIX_SPACES);
+		templateLabel.setText(TWO_SPACES + settlement.getTemplate() + SIX_SPACES);
 		
 		// Add space agency label and logo
 		JLabel agencyLabel = getAgencyLabel();
@@ -180,9 +193,6 @@ public class SettlementUnitWindow extends UnitWindow {
 
 		statusPanel.add(agencyPanel, BorderLayout.EAST);
 		
-		
-		sponsorLabel.setText(TWO_SPACES + settlement.getReportingAuthority().getName());
-		templateLabel.setText(TWO_SPACES + settlement.getTemplate());
 	}
 	
 		
@@ -275,7 +285,7 @@ public class SettlementUnitWindow extends UnitWindow {
 	public void destroy() {		
 		popLabel = null;
 		vehLabel = null;
-		sponsorLabel = null;
+		countryLabel = null;
 		templateLabel = null;
 		
 		statusPanel = null;

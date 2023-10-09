@@ -361,7 +361,7 @@ public class CommanderWindow extends ToolWindow {
 				labelGrid.addRow("Corporation/Agency", sponsorName);
 				
 				List<String> list = c.getReportingAuthority().getCountries();
-				String countryName = "[Multi-National]";
+				String countryName = "Multi-Nationals";
 				if (list.size() == 1)
 					countryName = c.getReportingAuthority().getCountries().get(0);
 				
