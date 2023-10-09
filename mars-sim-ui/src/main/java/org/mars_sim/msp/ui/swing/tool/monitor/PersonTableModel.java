@@ -352,7 +352,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 						result = "On Call";
 					}
 					else {
-						result = shift.getShift().getName();
+						result = shift.getShift().getName() + " " + shift.getStatus().getName();
 					}
 				}
 				break;
@@ -363,6 +363,27 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		return result;
 	}
 	
+	/**
+     * Return the score breakdown if TASK column is selected
+     * @param rowIndex Row index of cell
+     * @param columnIndex Column index of cell
+     * @return Return null by default
+     */
+    @Override
+    public String getToolTipAt(int rowIndex, int columnIndex) {
+		String result = null;
+		if (columnIndex == TASK) {
+			Person p = getEntity(rowIndex);
+			if (p != null) {
+				// If the Person is dead, there is no Task Manager
+				var score = p.getMind().getTaskManager().getScore();
+				result = (score != null ? score.getHTMLOutput() : null);
+			}
+		}
+        return result;
+    }
+
+
 	/**
 	 * Prepares the model for deletion.
 	 */

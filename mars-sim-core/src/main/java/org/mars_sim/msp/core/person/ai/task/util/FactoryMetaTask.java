@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 
@@ -25,21 +26,11 @@ import org.mars_sim.msp.core.robot.Robot;
 public abstract class FactoryMetaTask extends MetaTask {
     
 	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
+
+	protected static final List<TaskJob> EMPTY_TASKLIST = Collections.emptyList();
 	
 	protected FactoryMetaTask(String name, WorkerType workerType, TaskScope scope) {
 		super(name, workerType, scope);
-	}
-	
-    /**
-	 * Constructs an instance of the associated task. Is a Factory method and should
-	 * be implemented by the subclass.
-	 * 
-	 * @param person the person to perform the task.
-	 * @param duration
-	 * @return task instance.
-	 */
-	protected Task constructInstance(Person person, int duration) {
-		throw new UnsupportedOperationException("Can not create '" + getName() + "' for Person.");
 	}
 
     /**
@@ -71,6 +62,7 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * 
 	 * @param person the person to perform the task.
 	 * @return weighted probability value (0 -> positive value).
+	 * @deprecated Replace {@link #getRating(Person)}
 	 */
 	public double getProbability(Person person) {
 		throw new UnsupportedOperationException("Can not calculated the probability of " + getName()  + " for Person.");
@@ -83,6 +75,7 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * 
 	 * @param robot the robot to perform the task.
 	 * @return weighted probability value (0 -> positive value).
+	 * @deprecated Replace with {@link #getProbability(Robot)}
 	 */
 	public double getProbability(Robot robot) {
 		throw new UnsupportedOperationException("Can not calculated the probability of " + getName()  + " for Robot.");
@@ -95,7 +88,8 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * @return List of TasksJob specifications.
 	 */
 	public List<TaskJob> getTaskJobs(Person person) {
-		return createTaskJob(getProbability(person), -1);
+		double score = getProbability(person);
+		return createTaskJobs(new RatingScore(score));
 	}
 
 	/**
@@ -105,27 +99,28 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * @return List of TasksJob specifications.
 	 */
 	public List<TaskJob> getTaskJobs(Robot robot) {
-		return createTaskJob(getProbability(robot), -1);
+		double score = getProbability(robot);
+		return createTaskJobs(new RatingScore(score));
 	}
 
 	
 	/**
-	 * Creates a TaskJob instance delegate where this instance handles Task creation.
+	 * Create a list of Task Jobs for this Factory containing a single item.
+	 * The item is added if the score is more than zero.
 	 * 
 	 * @param score Score to the job to create.
+	 * @return List contain the task jobs
 	 */
-	private List<TaskJob> createTaskJob(double score, int duration) {
+	protected List<TaskJob> createTaskJobs(RatingScore score) {
 		// This is to avoid a massive rework in the subclasses.
-		if (score <= 0) {
-			return Collections.emptyList();
+		if (score.getScore() <= 0) {
+			return EMPTY_TASKLIST;
 		}
 
+		// Put a maximum limit
+		score.applyRange(0, 1000D);
 		List<TaskJob> result = new ArrayList<>(1);
-		result.add(new BasicTaskJob(this, score, duration));
+		result.add(new BasicTaskJob(this, score));
 		return result;
-	}
-
-	public String toString() {
-		return getName();
 	}
 }

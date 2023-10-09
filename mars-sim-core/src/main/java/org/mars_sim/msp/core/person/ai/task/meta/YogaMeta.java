@@ -6,12 +6,16 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.util.List;
+
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Yoga;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -36,31 +40,29 @@ public class YogaMeta extends FactoryMetaTask {
         return new Yoga(person);
     }
 
+    /**
+     * Assess this Person for Yoga based on their physical condition/
+     * @param person Beign assessed
+     * @return Yoak tasks that can be performed
+     */
     @Override
-    public double getProbability(Person person) {
+    public List<TaskJob> getTaskJobs(Person person) {
 
-        double result = 0D;
-
-        if (person.isInVehicle()) {	
-        	return result;
+        if (person.isInVehicle()
+            || !person.getPreference().isTaskDue(this)
+            || !person.isInSettlement()) {
+            return EMPTY_TASKLIST;
         }
+
+        // Probability affected by the person's stress and fatigue.
+        PhysicalCondition condition = person.getPhysicalCondition();
+        double stress = condition.getStress();
+        double fatigue = condition.getFatigue();
+        double kJ = condition.getEnergy();
+        double hunger = condition.getHunger();
+        double[] muscle = condition.getMusculoskeletal();
         
-        else if (!person.getPreference().isTaskDue(this) && person.isInSettlement()) {
-
-        	 // Probability affected by the person's stress and fatigue.
-            PhysicalCondition condition = person.getPhysicalCondition();
-            double stress = condition.getStress();
-            double fatigue = condition.getFatigue();
-            double kJ = condition.getEnergy();
-            double hunger = condition.getHunger();
-            double[] muscle = condition.getMusculoskeletal();
-
-            double exerciseMillisols = person.getCircadianClock().getTodayExerciseTime();
-            
-            if (kJ < 500 || fatigue > 750 || hunger > 750)
-            	return 0;
- 
-            result = kJ/2000 
+        double base = kJ/2000 
             		// Note: The desire to exercise increases linearly right after waking up
             		// from bed up to the first 333 msols
             		// After the first 333 msols, it decreases linearly for the rest of the day
@@ -68,22 +70,18 @@ public class YogaMeta extends FactoryMetaTask {
             		// Note: muscle condition affects the desire to exercise
             		+ muscle[0]/2.5 - muscle[2]/2.5
             		+ stress / 10
-            		- exerciseMillisols * 5;
-            
-            if (result < 0) 
-            	return 0;
-            
-            double pref = person.getPreference().getPreferenceScore(this);
-         	result += result * pref / 2D;
+            		- person.getCircadianClock().getTodayExerciseTime() * 5;
 
-            if (result < 0) 
-            	return 0;
-            
-            // Get an available gym.
-            Building building =  BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.EXERCISE);
-            result *= getBuildingModifier(building, person);
-        }
-        
-        return result;
+        if (kJ < 500 || fatigue > 750 || hunger > 750 || base <= 0)
+            return EMPTY_TASKLIST;
+
+        RatingScore result = new RatingScore(base);  
+        result = assessPersonSuitability(result, person);
+
+        // Get an available gym.
+        Building building =  BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.EXERCISE);
+        result = assessBuildingSuitability(result, building, person);
+    
+        return createTaskJobs(result);
     }
 }

@@ -46,10 +46,16 @@ public class TaskCache {
 		totalProb += job.getScore().getScore();
 	}
 
+    /**
+     * Add a list of Jobs to the cache. Only select those that have a +vr score.
+     * @param jobs
+     */
     public void add(List<TaskJob> jobs) {
         for(TaskJob j : jobs) {
-            tasks.add(j);
-            totalProb += j.getScore().getScore(); 
+            if (j.getScore().getScore() > 0) {
+                tasks.add(j);
+                totalProb += j.getScore().getScore();
+            }
         }
     }
 

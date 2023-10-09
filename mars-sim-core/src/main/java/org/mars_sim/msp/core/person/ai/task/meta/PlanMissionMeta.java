@@ -109,7 +109,7 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
 
         // Get an available office space.
         Building building = BuildingManager.getAvailableFunctionTypeBuilding(p, FunctionType.ADMINISTRATION);
-        factor.addModifier(BUILDING_MODIFIER, getBuildingModifier(building, p));
+        assessBuildingSuitability(factor, building, p);
 
         return factor;
     }

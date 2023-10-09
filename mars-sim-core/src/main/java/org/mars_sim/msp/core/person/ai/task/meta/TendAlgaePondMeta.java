@@ -90,7 +90,7 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
             
             // Crowding modifier.
             Building b = ((AlgaeTaskJob)t).pond.getBuilding();
-            factor.addModifier(BUILDING_MODIFIER, getBuildingModifier(b, p));
+            assessBuildingSuitability(factor, b, p);
 		}
 		return factor;
 	}

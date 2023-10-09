@@ -7,18 +7,20 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Teach;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskProbabilityUtil;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the Teach task.
@@ -42,59 +44,30 @@ public class TeachMeta extends FactoryMetaTask {
         return new Teach(person);
     }
 
+    /**
+     * Assess whether a Person can help teach a task to another. This depends on whether
+     * there are students and this person's suitability to teaching.
+     * @param person Being assessed
+     * @return Potential tasks
+     */
     @Override
-    public double getProbability(Person person) {
+    public List<TaskJob> getTaskJobs(Person person) {
 
-        double result = 0D;
-
-        if (person.isInside()) {
-
-            // Probability affected by the person's stress and fatigue.
-            if (!person.getPhysicalCondition().isFitByLevel(1000, 75, 750))
-            	return 0;          
-
-            // Find potential students.
-            Collection<Person> potentialStudents = Teach.getBestStudents(person);
-            if (potentialStudents.isEmpty())
-            	return 0;
-
-            else {
-
-	            result = potentialStudents.size() * 30.0;
-
-	            if (person.isInVehicle()) {	
-	    	        // Check if person is in a moving rover.
-	    	        if (Vehicle.inMovingRover(person)) {
-	    		        // the bonus for proposing scientific study inside a vehicle, 
-	    	        	// rather than having nothing to do if a person is not driving
-	    	        	result += 30;
-	    	        } 	       
-	    	        else
-	    		        // the bonus for proposing scientific study inside a vehicle, 
-	    	        	// rather than having nothing to do if a person is not driving
-	    	        	result += 10;
-	            }
-	            
-	            for (Person student : potentialStudents) {
-	                Building building = BuildingManager.getBuilding(student);
-	
-					result *= getBuildingModifier(building, student);
-
-	            }
-	           
-    	        // Add Preference modifier
-    	        if (result > 0)
-    	         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-    	    	
-    	        if (result < 0) result = 0;
-
-            }
+        if (!person.isInside() || !person.getPhysicalCondition().isFitByLevel(1000, 75, 750)) {
+                return EMPTY_TASKLIST;         
         }
-
-        if (result > CAP)
-        	result = CAP;
         
-        return result;
+        // Find potential students.
+        Collection<Person> potentialStudents = Teach.getBestStudents(person);
+        if (potentialStudents.isEmpty())
+            return EMPTY_TASKLIST;
+
+        RatingScore result = new RatingScore(potentialStudents.size() * 30.0);
+        
+        // Add Preference modifier
+        result = assessPersonSuitability(result, person);
+        
+        return createTaskJobs(result);
     }
     
     @Override

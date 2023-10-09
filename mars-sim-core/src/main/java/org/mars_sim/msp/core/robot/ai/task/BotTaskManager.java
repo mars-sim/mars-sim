@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
@@ -34,6 +35,9 @@ public class BotTaskManager extends TaskManager {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+
+	private static final String DIAGS_MODULE = "taskrobot";
 
 
 	/** default logger. */
@@ -66,6 +70,15 @@ public class BotTaskManager extends TaskManager {
 		this.botMind = botMind;
 
 		this.robot = botMind.getRobot();
+	}
+
+	/**
+	 * The diagnostics modulename to used in any output
+	 * @return
+	 */
+	@Override
+	protected String getDiagnosticsModule() {
+		return DIAGS_MODULE;
 	}
 
 	@Override
@@ -211,7 +224,7 @@ public class BotTaskManager extends TaskManager {
 	private static synchronized TaskCache getChargeTaskMap() {
 		if (chargeMap == null) {
 			chargeMap = new TaskCache("Robot Charge", null);
-			TaskJob chargeJob = new AbstractTaskJob("Charge", 1D) {
+			TaskJob chargeJob = new AbstractTaskJob("Charge", new RatingScore(1D)) {
 				
 				private static final long serialVersionUID = 1L;
 
@@ -243,7 +256,7 @@ public class BotTaskManager extends TaskManager {
 					// Next, go to super.startNewTask() to find a new task
 				}
 				
-				else if (newTask != null && currentTask != null 
+				else if (currentTask != null 
 					&& !newTask.getName().equals(getTaskName())
 					&& !newTask.getDescription().equals(currentTask.getDescription())
 					&& !isFilteredTask(currentTask.getDescription())) {
@@ -275,12 +288,11 @@ public class BotTaskManager extends TaskManager {
 	/**
 	 * Prepares object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
 		botMind = null;
 		robot = null;
-		chargeMap = null;
-		robotTasks.clear();
-		robotTasks = null;
+		super.destroy();
 	}
 
 }

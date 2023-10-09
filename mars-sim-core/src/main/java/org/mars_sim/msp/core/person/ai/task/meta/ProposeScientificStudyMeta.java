@@ -56,18 +56,18 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 		JobType job = person.getMind().getJob();
 
         if (pop <= 6) {
-	        if (!JobType.isAcademicType(job)) {
+	        if (!JobType.ACADEMICS.contains(job)) {
 	        	return 0;
 	        }
         }
         else if (pop <= 12) {
-        	if (!JobType.isMedical(job)
-        			&& !JobType.isScienceType(job)) {
+        	if (!JobType.MEDICS.contains(job)
+        			&& !JobType.SCIENTISTS.contains(job)) {
 	        	return 0;
 	        }
         }
         else {
-        	if (!JobType.isScienceType(job)) {
+        	if (!JobType.SCIENTISTS.contains(job)) {
 	        	return 0;
 	        }
         }

@@ -22,16 +22,10 @@ public abstract class AbstractTaskJob implements TaskJob {
     private String name;
 
     /**
-     * Create an abstract task job using the old simple scoring approach. 
-     * THis should be replace with the RatingScore approach.
+     * Create an abstract task job.
      * @param description
      * @param score
-     * deprecated Use {@link #AbstractTaskJob(String, RatingScore)}
      */
-    protected AbstractTaskJob(String description, double score) {
-        this(description, new RatingScore(score));
-    }
-
     protected AbstractTaskJob(String name, RatingScore score) {
     	this.name = name;
   

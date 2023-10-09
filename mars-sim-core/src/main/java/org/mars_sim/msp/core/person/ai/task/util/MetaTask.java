@@ -45,12 +45,15 @@ public abstract class MetaTask {
 		ANY_HOUR, WORK_HOUR, NONWORK_HOUR
 	}
 	
-	protected static final String BUILDING_MODIFIER = "building";
+	private static final String BUILDING_MODIFIER = "building";
 	private static final String EVA_MODIFIER = "eva";
 	protected static final String GARAGED_MODIFIER = "garaged";
 	protected static final String GOODS_MODIFIER = "goods";
 	protected static final String PERSON_MODIFIER = "person";
 	private static final String RADIATION_MODIFIER = "radiation";
+    protected static final String STRESS_MODIFIER = "stress";
+	private static final String FAV_MODIFIER = "favourite";
+
 
 	// Traits used to identify non-effort tasks
 	private static final Set<TaskTrait> PASSIVE_TRAITS
@@ -147,15 +150,6 @@ public abstract class MetaTask {
 	}
 	
 	/**
-	 * Sets the preferred roles for this Task. This overwrites any previous values.
-	 * 
-	 * @param jobs
-	 */
-    protected void setPreferredRole(Set<RoleType> roles) {
-    	this.preferredRoles = roles;
-	}
-
-	/**
 	 * Sets the preferred roles for this Task.
 	 * 
 	 * @param jobs
@@ -237,15 +231,6 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Adds a type of robot as preferred.
-	 * 
-	 * @param rt New robotType
-	 */
-	protected void addPreferredRobot(RobotType rt) {
-		preferredRobots.add(rt);
-	}
-
-	/**
 	 * Sets the preferred jobs for this Task.
 	 * 
 	 * @param jobs
@@ -253,7 +238,6 @@ public abstract class MetaTask {
     protected void addPreferredRobot(RobotType... rt) {
         Collections.addAll(this.preferredRobots, rt);
 	}
-	
 	
 	/**
      * Gets the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
@@ -284,7 +268,7 @@ public abstract class MetaTask {
 	 * 2. Apply the Job start modifier for this task
 	 * 3. Apply the Persons individual preference to this Task
 	 * @param person Person being assessed
-	 * @param score The base rtign score that is adjusted to this persons
+	 * @param score The base rating score that is adjusted to this person
 	 * @return
 	 */
 	protected RatingScore assessPersonSuitability(RatingScore score, Person person) {
@@ -294,9 +278,18 @@ public abstract class MetaTask {
 			score.addModifier("effort", person.getPerformanceRating());
 		}
 		
-		score.addModifier("job", getJobModifier(person));
+        // Job modifier. If not my job suitable then a penalty.
+	 	// Rules are:
+	 	// 1. Person must have a Job
+	 	// 2. Task must have Preferred Jobs
+	 	// 3. If the Person's job is not in the Preferred list then a penalty is applied. 
+		JobType job = person.getMind().getJob();
+        if ((job != null) && !preferredJobs.isEmpty()
+        		&& !preferredJobs.contains(job)) {
+			score.addModifier("job", NON_JOB_PENALTY);
+        }
 
-        score.addModifier("favourite", (1 + (person.getPreference().getPreferenceScore(this)/5D)));
+        score.addModifier(FAV_MODIFIER, (1 + (person.getPreference().getPreferenceScore(this)/5D)));
 
 		// Apply the home base modifier
 		score.addModifier("settlement", person.getAssociatedSettlement().getPreferenceModifier(
@@ -312,7 +305,7 @@ public abstract class MetaTask {
 	 * 2. Apply the Job start modifier for this task
 	 * 3. Apply the Persons individual preference to this Task
 	 * 
-	 * This method should eventually be replaced. @see #assessPersonSuitability(RatingScore, Person)
+	 * @deprecated #assessPersonSuitability(RatingScore, Person)
 	 * @param person Person scoring Task
 	 * @return Modified score.
 	 */
@@ -323,33 +316,11 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Applies a modified based on the Job. Rules are:
-	 * 1. Person must have a Job
-	 * 2. Task must have Preferred Jobs
-	 * 3. If the Person's job is not in the Preferred list then a penalty is applied.
-	 * 
-	 * @param person
-	 * @return
-	 */
-	protected double getJobModifier(Person person) {
-		double score = 1D;
-
-        // Job modifier. If not my job then a penalty.
-		// But only if the Task has preferred jobs defined
-        JobType job = person.getMind().getJob();
-        if ((job != null) && !preferredJobs.isEmpty()
-        		&& !preferredJobs.contains(job)) {
-            score *= NON_JOB_PENALTY;
-        }
-        
-        return score;
-	}
-
-	/**
 	 * Gets the modifier for a Person using a building.
 	 * 
 	 * @param building Building the Person is entering
 	 * @param person Person working
+	 * @deprecated Replace with {@link #assessBuildingSuitability(RatingScore, Building, Person)}
 	 */
 	protected static double getBuildingModifier(Building building, Person person) {
 		double result = 1D;
@@ -360,6 +331,30 @@ public abstract class MetaTask {
 		return result;
 	}
 
+	/**
+	 * Assess the suitability of a Building to do a Task.
+	 * 
+	 * @param score Base rating
+	 * @param building Building the Person is entering
+	 * @param person Person working
+	 * @return Modified Rating score
+	 */
+	protected static RatingScore assessBuildingSuitability(RatingScore score, Building building,
+															Person person) {
+		if (building != null) {
+			score.addModifier("crowding",
+					TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building));
+			score.addModifier("occupants",
+					TaskProbabilityUtil.getRelationshipModifier(person, building));
+		}
+
+		return score;
+	}
+
+	public String toString() {
+		return name;
+	}
+	
 	/**
 	 * Get the currnt martian time
 	 * @return MarsTime from master clock

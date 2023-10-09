@@ -7,8 +7,10 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -16,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.TreatMedicalPatient;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalAid;
@@ -53,27 +56,23 @@ public class TreatMedicalPatientMeta extends FactoryMetaTask {
         return new TreatMedicalPatient(person);
     }
 
+    /**
+     * Assess this person helping someone with treatment
+     * @param person Being assessed
+     * @return Potential suitable tasks
+     */
     @Override
-    public double getProbability(Person person) {
-
-        double result = 0D;
+    public List<TaskJob> getTaskJobs(Person person) {
          
-        if (person.isInside()) {
-	        // Get the local medical aids to use.
-	        if (hasNeedyMedicalAids(person)) {
-	            result += VALUE;	
-	            
-	            if (person.isInVehicle()	
-	    	        // Check if person is in a moving rover.
-	    	        && Vehicle.inMovingRover(person)) {
-	    	        	result -= 100;
-	            }
-	        }
-	
-	        result *= getPersonModifier(person);
+        if (!person.isInside() || !hasNeedyMedicalAids(person)) {
+            return EMPTY_TASKLIST;
         }
+
+        // Get the local medical aids to use.
+        var result = new RatingScore(VALUE);	
+        result = assessPersonSuitability(result, person);
         
-        return result;
+        return createTaskJobs(result);
     }
 
     /**
@@ -137,8 +136,8 @@ public class TreatMedicalPatientMeta extends FactoryMetaTask {
 
         boolean result = false;
 
-        if (VehicleType.isRover(person.getVehicle().getVehicleType())) {
-            Rover rover = (Rover) person.getVehicle();
+        if (VehicleType.isRover(vehicle.getVehicleType())) {
+            Rover rover = (Rover) vehicle;
             if (rover.hasSickBay()) {
                 SickBay sickBay = rover.getSickBay();
                 if (hasTreatableHealthProblems(person, sickBay)) {

@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.task.util;
 
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 
@@ -13,7 +14,6 @@ import org.mars_sim.msp.core.robot.Robot;
  * This is an implementation of a TaskJob that delegates the Task creation to a
  * MetaTask instance. Tasks have no extra entities defined in the creation.
  */
-@SuppressWarnings("serial")
 public class BasicTaskJob extends AbstractTaskJob {
 
     // MetaTask cannot be serialised
@@ -25,9 +25,8 @@ public class BasicTaskJob extends AbstractTaskJob {
      * of the actual Task.
      * @param metaTask Creator of the Task
      * @param score The score of the activity
-     * @param duration Not used
      */
-    public BasicTaskJob(FactoryMetaTask metaTask, double score, int duration) {
+    public BasicTaskJob(FactoryMetaTask metaTask, RatingScore score) {
         super(metaTask.getName(), score);
         
         this.mtID = metaTask.getID();

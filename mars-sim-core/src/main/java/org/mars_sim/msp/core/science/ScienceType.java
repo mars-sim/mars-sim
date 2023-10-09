@@ -194,11 +194,6 @@ public enum ScienceType {
 		return result;
 	}
 
-	/** <code>true</code> if a scientist is needed for the job. */
-	public static boolean isScienceJob(JobType job) {
-		return JobType.isScienceType(job);
-	}
-
 	/**
 	 * Checks if a science is collaborative to a primary science.
 	 *

@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.util.List;
 
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -39,6 +40,8 @@ public class PersonTaskManager extends TaskManager {
 	
 	private static final String SLEEP = "Sleep";
 	private static final String EAT = "Eat";
+
+	private static final String DIAGS_MODULE = "taskperson";
 	
 	// Data members
 	/** The mind of the person the task manager is responsible for. */
@@ -58,6 +61,15 @@ public class PersonTaskManager extends TaskManager {
 		this.mind = mind;
 
 		this.person = mind.getPerson();
+	}
+
+	/**
+	 * The diagnostics modulename to used in any output
+	 * @return
+	 */
+	@Override
+	protected String getDiagnosticsModule() {
+		return DIAGS_MODULE;
 	}
 
 	/**
@@ -189,7 +201,8 @@ public class PersonTaskManager extends TaskManager {
 			defaultInsideTasks = new TaskCache("Default Inside", null);
 			
 			// Create a fallback Task job that can always be done
-			TaskJob sleepJob = new AbstractTaskJob(SLEEP, 1D) {
+			RatingScore base = new RatingScore(1D);
+			TaskJob sleepJob = new AbstractTaskJob(SLEEP, base) {
 				
 				private static final long serialVersionUID = 1L;
 
@@ -200,7 +213,7 @@ public class PersonTaskManager extends TaskManager {
 			};
 			defaultInsideTasks.put(sleepJob);
 
-			TaskJob eatJob = new AbstractTaskJob(EAT, 1D) {
+			TaskJob eatJob = new AbstractTaskJob(EAT, base) {
 				
 				private static final long serialVersionUID = 1L;
 
@@ -222,7 +235,7 @@ public class PersonTaskManager extends TaskManager {
 			defaultOutsideTasks = new TaskCache("Default Outside", null);
 
 			// Create a MetaTask to return inside
-			TaskJob walkBack = new AbstractTaskJob("Return Inside", 1D) {
+			TaskJob walkBack = new AbstractTaskJob("Return Inside", new RatingScore(1D)) {
 				
 				private static final long serialVersionUID = 1L;
 
@@ -265,7 +278,6 @@ public class PersonTaskManager extends TaskManager {
 						// Note :the person should 
 						// come in and rest and is no longer eligible for performing
 						// another EVA task
-//						logger.info(person, "Outside already doing a EVA task. Not eligible for performing " + newTask.getName() + ".");
 						
 						// Skip doing anything for now
 					}
@@ -274,7 +286,6 @@ public class PersonTaskManager extends TaskManager {
 				}
 				
 				else if (person.getMission() != null) {
-//					logger.info(person, "On a mission. Not eligible for performing " + newTask.getName() + ".");
 					
 					// Skip doing anything for now
 					// Next, go to super.startNewTask() to find a new task
@@ -339,12 +350,11 @@ public class PersonTaskManager extends TaskManager {
 	/**
 	 * Prepares object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
 		mind = null;
 		person = null;
-		defaultInsideTasks.destroy();
-		defaultInsideTasks = null;
-		defaultOutsideTasks.destroy();
-		defaultOutsideTasks = null;
+
+		super.destroy();
 	}
 }
