@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.moon.Moon;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -81,6 +82,8 @@ public class UnitManager implements Serializable, Temporal {
 
 	private transient ExecutorService executor;
 
+	private transient Set<ReportingAuthority> sponsorSet = new HashSet<>();
+	
 	private transient Set<SettlementTask> settlementTasks = new HashSet<>();
 	/** Map of equipment types and their numbers. */
 	private Map<String, Integer> unitCounts = new HashMap<>();
@@ -561,6 +564,27 @@ public class UnitManager implements Serializable, Temporal {
 		return lookupSettlement.size();
 	}
 
+	/**
+	 * Gets a collection of sponsors.
+	 *
+	 * @return Collection of sponsors
+	 */
+	public Collection<ReportingAuthority> getSponsorSet() {
+		if (sponsorSet.isEmpty()) {
+			Set<ReportingAuthority> sponsors = new HashSet<>();
+			
+			for (Settlement s: getSettlements()) {
+				ReportingAuthority ra = s.getReportingAuthority();
+				if (!sponsors.contains(ra))
+					sponsors.add(ra);
+			}
+			
+			sponsorSet = sponsors;
+		}
+		return sponsorSet;
+	}
+	
+	
 	/**
 	 * Gets a collection of settlements.
 	 *

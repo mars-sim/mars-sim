@@ -30,6 +30,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	private final String AUTHORITY_EL = "authority";
 	private final String AUTHORITIES_EL = "authorities";
 	private final String CODE_ATTR = "code";
+	private final String CORPORATION_ATTR = "corporation";
 	private final String MODIFIER_ATTR = "modifier";
 	private final String DESCRIPTION_ATTR = "description";
 	private final String CAPABILITY_EL = "capability";
@@ -124,17 +125,19 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	/**
 	 * Parses an Authority XML Element and create a Reporting Authority object.
 	 * 
+	 * @param agendas
 	 * @param authorityNode
 	 * @param predefined Is this a repdefined RA
 	 * @return
 	 */
 	private ReportingAuthority parseXMLAuthority(Map<String, MissionAgenda> agendas, Element authorityNode, boolean predefined) {
-		String code = authorityNode.getAttributeValue(CODE_ATTR);
-		String name = authorityNode.getAttributeValue(NAME_ATTR);
+		String acronym = authorityNode.getAttributeValue(CODE_ATTR);
+		String fullName = authorityNode.getAttributeValue(NAME_ATTR);
+		String isCorporationString = authorityNode.getAttributeValue(CORPORATION_ATTR);
 		String agendaName = authorityNode.getAttributeValue(AGENDA_EL);			
 		MissionAgenda agenda = agendas.get(agendaName);
 		if (agenda == null) {
-			 throw new IllegalArgumentException("Agenda called '" + agendaName + "' does not exist for RA " + code);
+			 throw new IllegalArgumentException("Agenda called '" + agendaName + "' does not exist for RA " + acronym);
 		}
 		double maleRatio = ConfigHelper.getOptionalAttributeDouble(authorityNode, GENDER_ATTR, 0.5D);
 
@@ -154,7 +157,13 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 				.map(a -> a.getAttributeValue(NAME_ATTR))
 				.collect(Collectors.toList());
 		
-		return new ReportingAuthority(code, name, predefined, maleRatio, agenda,
+		// Check if it's a corporation (or a space agency)
+		boolean isCorporation = false;
+		
+		if (isCorporationString.equalsIgnoreCase("true"))
+			isCorporation = true;
+		
+		return new ReportingAuthority(acronym, fullName, isCorporation, predefined, maleRatio, agenda,
 									  countries, settlementNames,
 									  roverNames);
 	}

@@ -42,12 +42,11 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
 /**
- * UI Editor that allows ReportingAuthorities to be edited
+ * UI Editor that allows a reporting authority to be edited.
  */
 public class AuthorityEditor  {
 
 	private static final String OBJECTIVE = "Objective: ";
-
 
 	class TextList {
 		private JPanel content;
@@ -121,6 +120,8 @@ public class AuthorityEditor  {
 
 	private static final String TITLE = "Authority Editor";
 
+	private boolean isCorporation = false;
+
 	private ReportingAuthorityFactory raFactory;
 	
 	private JDialog f;
@@ -141,13 +142,12 @@ public class AuthorityEditor  {
 	/**
 	 * Constructor.
 	 * 
-	 * @param config
-	 *            SimulationConfig
 	 * @param simulationConfigEditor
-	 *            SimulationConfigEditor
+	 * @param raFactory
 	 */
 	public AuthorityEditor(SimulationConfigEditor simulationConfigEditor,
 					  ReportingAuthorityFactory raFactory) {
+		
 		this.raFactory = raFactory;
 		
 		f = new JDialog(simulationConfigEditor.getFrame(), TITLE, true);
@@ -275,20 +275,29 @@ public class AuthorityEditor  {
 		countries.loadItems(newDisplay.getCountries());
 		settlementNames.loadItems(newDisplay.getSettlementNames());
 		vehicleNames.loadItems(newDisplay.getVehicleNames());
+		
+		// Load the corporation value
+		// Note: this comes as the default and cannot be changed
+		isCorporation = newDisplay.isCorporation();
 	}
 
 
 	/**
-	 * Commits the changes to the crew profiles
+	 * Commits the changes to the crew profiles.
+	 *
+	 * @param name
+	 * @param description
+	 * @return
 	 */
 	private ReportingAuthority commitChanges(String name, String description) {
 		String agendaName = (String) agendaCB.getSelectedItem();
-		ReportingAuthority newRA = new ReportingAuthority(name, description, false,
-														  genderRatio.getValue()/100D,
-														  raFactory.getAgenda(agendaName),
-														  countries.getItems(),
-														  settlementNames.getItems(),
-														  vehicleNames.getItems());		
-		return newRA;
+		
+		return new ReportingAuthority(name, description, isCorporation, false,
+				// Note: the following entries may be subject to change
+				genderRatio.getValue()/100D,
+				raFactory.getAgenda(agendaName),
+				countries.getItems(),
+				settlementNames.getItems(),
+				vehicleNames.getItems());
 	}
 }

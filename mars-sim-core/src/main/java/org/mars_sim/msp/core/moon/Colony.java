@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.reportingAuthority.Organization;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
@@ -30,7 +31,7 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	
 	/** The settlement's ReportingAuthority instance. */
 	private ReportingAuthority sponsor;
-	
+
 	private Coordinates location;
 	
 	private Population population;
@@ -60,8 +61,14 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 		return zones;
 	}
 	
+	public Organization getOrganization() {
+		return sponsor.getOrganization();
+	}
+	
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
+		
+		getOrganization().timePassing(pulse);
 		
 		population.timePassing(pulse);
 		
@@ -85,7 +92,7 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	}
 
 	/**
-	 * Gets the space agency.
+	 * Gets the authority.
 	 */
 	public ReportingAuthority getReportingAuthority() {
 		return sponsor;

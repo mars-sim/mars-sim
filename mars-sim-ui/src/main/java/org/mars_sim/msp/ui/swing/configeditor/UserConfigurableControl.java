@@ -113,7 +113,8 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 	}
 
 	/**
-	 * Change the selected to a new item.
+	 * Changes the selected to a new item.
+	 * 
 	 * @param newSelection
 	 */
 	private void selectItem(String newName) {
@@ -131,7 +132,8 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 	}
 
 	/**
-	 * What was the last selected item
+	 * What was the last selected item ?
+	 * 
 	 * @return
 	 */
 	public T getSeletedItem() {
@@ -139,20 +141,22 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 	}
 
 	/**
-	 * Displayed this new item which is now selected
+	 * Displays this new item which is now selected.
+	 * 
 	 * @param newDisplay
 	 */
 	protected abstract void displayItem(T newDisplay);
 
 	/**
-	 * Create a new item on the values from teh associaetd editor panel.
+	 * Creates a new item on the values from the associated editor panel.
+	 * 
 	 * @param newName
 	 * @return
 	 */
 	protected abstract T createItem(String newName, String newDescription);
 
 	/**
-	 * Takes the actions from the button being clicked on
+	 * Takes the actions from the button being clicked on.
 	 */
 	public void actionPerformed(ActionEvent evt) {
 
@@ -251,15 +255,18 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 	}
 
 	/**
-	 * Get the select item name.
+	 * Gets the select item name.
+	 * 
 	 * @return
+	 * 
 	 */
 	public String getSelectItemName() {
 		return (String) itemCB.getSelectedItem();
 	}
 
 	/**
-	 * Entered description
+	 * Gets the description.
+	 * 
 	 * @return
 	 */
 	public String getDescription() {
@@ -271,7 +278,8 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 	}
 
 	/**
-	 * Set the select item that is displayed
+	 * Sets the select item that is displayed.
+	 * 
 	 * @param newSelection
 	 */
 	public void setSelectedItem(String newSelection) {
@@ -283,7 +291,8 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 	}
 
 	/**
-	 * Control whether the current config can be saved
+	 * Controls whether the current config can be saved.
+	 * 
 	 * @param b
 	 */
 	public void allowSaving(boolean saveAllowed) {
@@ -292,7 +301,7 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 	}
 	
 	/**
-	 * Reload any items from the config repository
+	 * Reloads any items from the config repository.
 	 */
 	public void reload() {
 		List<String> items = new ArrayList<>(config.getItemNames());

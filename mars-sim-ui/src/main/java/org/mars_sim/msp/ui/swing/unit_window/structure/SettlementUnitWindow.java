@@ -170,7 +170,7 @@ public class SettlementUnitWindow extends UnitWindow {
 		statusPanel.add(rowPanel, BorderLayout.CENTER);
 		
 		// Add space agency label and logo
-		JLabel agencyLabel = agencyLabel();
+		JLabel agencyLabel = getAgencyLabel();
 		
 		JPanel agencyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		agencyPanel.setSize(new Dimension(-1, UnitWindow.STATUS_HEIGHT - 5));

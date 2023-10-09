@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.configuration.UserConfigurable;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 
 /**
- * Represents a Reporting Authority that "owns" units.
+ * Represents a sponsor that owns units such as people, settlement, lunar colonies, etc..
  */
 public class ReportingAuthority
 implements UserConfigurable, Serializable {
@@ -25,10 +25,12 @@ implements UserConfigurable, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private MissionAgenda missionAgenda;
+	
+	private Organization organization;
+	
+	private String fullName;
 
-	private String description;
-
-	private String name;
+	private String acronym;
 
 	private List<String> countries;
 
@@ -37,22 +39,42 @@ implements UserConfigurable, Serializable {
 	private List<String> vehicleNames;
 
 	private boolean predefined;
+	
+	private boolean isCorporation;
 
 	private double genderRatio;
  
-	public ReportingAuthority(String name, String description, boolean predefined, double genderRatio,
-							  MissionAgenda agenda, List<String> countries,
-							  List<String> names, List<String> vehicleNames) {
-		this.description  = description;
-		this.name = name;
+	public ReportingAuthority(String acronym, String fullName, 
+			boolean isCorporation, boolean predefined, 
+			double genderRatio,
+			MissionAgenda agenda, List<String> countries,
+			List<String> names, List<String> vehicleNames) {
+		
+		this.fullName  = fullName;
+		this.acronym = acronym;
+		this.isCorporation = isCorporation;
 		this.predefined = predefined;
 		this.genderRatio = genderRatio;
 		this.missionAgenda = agenda;
 		this.countries = countries;
 		this.settlementNames = names;
 		this.vehicleNames = vehicleNames;
+
+		if (isCorporation)
+			organization = new Corporation(acronym, fullName);
+		else
+			organization = new Agency(acronym, fullName);
+		
 	}
 
+	public Organization getOrganization() {
+		return organization;
+	}
+	
+	public boolean isCorporation() {
+		return isCorporation;
+	}
+	
 	/**
 	 * Works on the mission objectives conducted.
 	 * 
@@ -73,13 +95,13 @@ implements UserConfigurable, Serializable {
 	}
 
 	/**
-	 * Gets the unique name of this authority which is the short code.
+	 * Gets the code name or acronym of this authority.
 	 * 
 	 * @return
 	 */
 	@Override
 	public String getName() {
-		return name;
+		return acronym;
 	}
 
 	/**
@@ -88,7 +110,7 @@ implements UserConfigurable, Serializable {
 	 * @return
 	 */
 	public String getDescription() {
-		return description;
+		return fullName;
 	}
 
 	@Override
@@ -106,7 +128,7 @@ implements UserConfigurable, Serializable {
 	}
 
 	/**
-	 * Selects a country at random from those that this Authority represents
+	 * Selects a country at random from those that this Authority represents.
 	 * 
 	 * @return
 	 */
@@ -139,14 +161,14 @@ implements UserConfigurable, Serializable {
 	
 	@Override
 	public String toString() {
-		return "ReportingAuthority [code=" + name + "]";
+		return "ReportingAuthority [code=" + acronym + "]";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((acronym == null) ? 0 : acronym.hashCode());
 		return result;
 	}
 
@@ -159,10 +181,10 @@ implements UserConfigurable, Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		ReportingAuthority other = (ReportingAuthority) obj;
-		if (name == null) {
-			if (other.name != null)
+		if (acronym == null) {
+			if (other.acronym != null)
 				return false;
-		} else if (!name.equals(other.name))
+		} else if (!acronym.equals(other.acronym))
 			return false;
 		return true;
 	}
@@ -171,14 +193,14 @@ implements UserConfigurable, Serializable {
 	/**
 	 * Gets the male /female ratio for this Authority.
 	 * 
-	 * @return percetnage of Males to Females.
+	 * @return percentage of Males to Females.
 	 */
     public double getGenderRatio() {
         return genderRatio;
     }
 
 	/** 
-	 * Gets the predefined Preferences for this authority based on the Agenda/Objectives assigned
+	 * Gets the predefined Preferences for this authority based on the Agenda/Objectives assigned.
 	*/
     public Map<PreferenceKey, Double> getPreferences() {
         Map<PreferenceKey, Double> result = new HashMap<>();
