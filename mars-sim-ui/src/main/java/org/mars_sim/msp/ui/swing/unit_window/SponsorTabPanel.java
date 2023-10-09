@@ -130,7 +130,7 @@ public class SponsorTabPanel extends TabPanel {
 		addBorder(panel0, Msg.getString("SponsorTabPanel.objective"));
 		
 		// For each phase, add to the text area.
-		createTA(panel0).append(ra.getMissionAgenda().getObjectiveName());
+		createTA(panel0).append("- " + ra.getMissionAgenda().getObjectiveName());
 		
 		
 		JPanel panel1 = new JPanel(new FlowLayout());
@@ -139,7 +139,7 @@ public class SponsorTabPanel extends TabPanel {
 		addBorder(panel1, Msg.getString("SponsorTabPanel.report"));
 		
 		// For each phase, add to the text area.
-		createTA(panel1).append(ra.getMissionAgenda().getReports());
+		createTA(panel1).append("- " + ra.getMissionAgenda().getReports());
 		
 		
 		JPanel panel2 = new JPanel(new FlowLayout());
@@ -148,7 +148,7 @@ public class SponsorTabPanel extends TabPanel {
 		addBorder(panel2, Msg.getString("SponsorTabPanel.data"));
 		
 		// For each phase, add to the text area.
-		createTA(panel2).append(ra.getMissionAgenda().getData());
+		createTA(panel2).append("- " + ra.getMissionAgenda().getData());
 		
 		/////////////////////////////////////////////////////////
 		
@@ -161,16 +161,18 @@ public class SponsorTabPanel extends TabPanel {
 		addBorder(panelCap, Msg.getString("SponsorTabPanel.capability"));
 		
 		// For each phase, add to the text area.
-		createTA(panelCap).append(ra.getMissionAgenda().getCapabilities().stream()
-				.map(MissionCapability::getDescription)
+		createTA(panelCap).append(ra.getMissionAgenda().getCapabilities()
+				.stream()
+				.map(MissionCapability::getHyphenatedDescription)
 				.collect(Collectors.joining("\n")));
 	}
 	
 	private JTextArea createTA(JPanel panel) {
 		JTextArea ta = new JTextArea();
 		ta.setEditable(false);
-		ta.setColumns (30);
-		ta.setLineWrap (true);
+		ta.setColumns(35);
+		ta.setLineWrap(true);
+		ta.setWrapStyleWord(true);
 		panel.add(ta);
 		return ta;
 	}

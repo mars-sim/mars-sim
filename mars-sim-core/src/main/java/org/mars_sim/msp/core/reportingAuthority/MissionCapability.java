@@ -29,12 +29,17 @@ public class MissionCapability implements Serializable {
 		return description;
 	}
 	
+	public String getHyphenatedDescription() {
+		return "- " + description;
+	}
+	
 	public String toString() {
 		return description;
 	}
 
 	/**
-	 * What preferenes are defined for this capabilty
+	 * Gets the preferences that are defined for this capability.
+	 * 
 	 * @return
 	 */
     public Map<PreferenceKey, Double> getPreferences() {
