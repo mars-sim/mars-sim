@@ -766,8 +766,13 @@ public class MasterClock implements Serializable {
 		// Identify if it's a new Sol
 		int currentSol = marsTime.getMissionSol();
 		boolean isNewSol = ((lastSol >= 0) && (lastSol != currentSol));
-		lastSol = currentSol;
 
+		// Identify if it's half a sol
+		boolean isNewHalfSol = isNewSol || (lastSol <= 500 && currentSol > 500);		
+		
+		// Update the lastSol
+		lastSol = currentSol;
+		
 		// Print the current sol banner
 		if (isNewSol)
 			printNewSol(currentSol);
@@ -777,7 +782,7 @@ public class MasterClock implements Serializable {
 		int logIndex = (int)(newPulseId % MAX_PULSE_LOG);
 		pulseLog[logIndex] = System.currentTimeMillis();
 
-		currentPulse = new ClockPulse(newPulseId, time, marsTime, this, isNewSol, isNewIntMillisol);
+		currentPulse = new ClockPulse(newPulseId, time, marsTime, this, isNewSol, isNewHalfSol, isNewIntMillisol);
 		// Note: for-loop may handle checked exceptions better than forEach()
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
 

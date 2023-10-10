@@ -13,7 +13,7 @@
 [![SF Monthly Download](https://img.shields.io/sourceforge/dm/mars-sim.svg?label=sf%20download&style=flat-square)](https://sourceforge.net/projects/mars-sim/files/mars-sim/)
 
 
-# $$\color{#D29922}\textsf{\kern{0.2cm}\normalsize mars-sim}$$ 
+# mars-sim 
 
 ## Table of Contents
 * [Introduction](#introduction)  
@@ -150,7 +150,8 @@ The difficulties arises when each sol on Mars has slightly more than 24 earth ho
 on one Martian orbit (or year). Therefore, it is not a straight-foward exercise in converting the time and day 
 between Mars and Earth by merely a simple equation.
 
-See [timekeeping wiki](https://github.com/mars-sim/mars-sim/wiki/Timekeeping) for further discussions on 
+> [!NOTE]
+> See [timekeeping wiki](https://github.com/mars-sim/mars-sim/wiki/Timekeeping) for further discussions on 
 this topic.
 
 ## Indoor Atmosphere
@@ -167,7 +168,8 @@ concentration of 30% at 70.3 kPa (10.2 psi). NASA's Extravehicular Mobility Unit
 operating pressure of 29.6 kPa (4.3 psi). The upcoming Artemis program's lunar lander will have an atmosphere 
 of 342% oxygen at a pressure of 56.5 kPa (8.2 psi).
 
-See [Atmosphere](https://github.com/mars-sim/mars-sim/wiki/Atmosphere) wiki for more design details.
+> [!NOTE]
+> See [Atmosphere](https://github.com/mars-sim/mars-sim/wiki/Atmosphere) wiki for more design details.
 
 In mars-sim, each habitable building has a life-support system with various 
 [functions](https://github.com/mars-sim/mars-sim/wiki/Building-Function) built-in
@@ -205,7 +207,8 @@ so that the atmospheric pressure and temperature are equalized.
 outside air pressure. 
 (6) At last, he/she would unlock and open the outer door and the whole team will exit to the outside surface of Mars.
 
-See [Airlock wiki](https://github.com/mars-sim/mars-sim/wiki/Airlock) for details on this topic.
+> [!NOTE]
+> See [Airlock wiki](https://github.com/mars-sim/mars-sim/wiki/Airlock) for details on this topic.
 
 ## Radiation
 
@@ -292,7 +295,7 @@ Below is a summary of how player may set up one's machine to evaluate and develo
 Currently, mars-sim supports Java 17 which is the latest long-term support (LTS) release.
 
 * Requires only JRE 17 for running mars-sim
-* Requires only JDK 17 (or openjdk 17) for compiling binary
+* Requires only JDK 17 (or OpenJDK 17) for compiling binary
 
 ## JDK and JavaFX
 
@@ -303,7 +306,8 @@ For the open source community, the OpenJDK is also being decoupled from the Open
 
 Currently, mars-sim does not require JavaFX.
 
-> Note 1 : Specifically, the official release of mars-sim (from v3.1.0 up to now) do not
+> [[!IMPORTANT]
+> Specifically, the official release of mars-sim (from v3.1.0 up to now) do not
 utilize JavaFX / OpenJFX. 
 
 Therefore, it's NOT a requirement to install it for running mars-sim.
@@ -311,10 +315,8 @@ Therefore, it's NOT a requirement to install it for running mars-sim.
 Some unofficial releases of mars-sim in the past may have required JavaFX.
 
 However, if you want to run any other JavaFX apps, make sure you download and
-configure the OpenJFX or JavaFX package on top of the JDK.
-
-See ticket #156 to read the discussions on how to set up JavaFX to run it
-under Java 11.
+configure the OpenJFX or JavaFX package on top of the JDK. See ticket #156 on how 
+to set up JavaFX to run it under Java 11.
 
 Obtain the latest JRE/JDK for your platform. Here are some of the popular OpenJDK packages out there :
 
@@ -338,7 +340,7 @@ Assuming that OpenJDK 17 is being used.
 
 ### Linux
 
-1. The debian edition of mars-sim comes with debian installer for quick installation. However,
+1. The Debian edition of mars-sim comes with Debian installer for quick installation. However,
 you will have to install, configure and properly update the JDK or openJDK binary in your linux
  machine in order to run mars-sim. Please google to find out the most updated instructions for your distro.
 
@@ -380,21 +382,25 @@ or
 
 > set PATH="%JAVA_HOME%\bin";%PATH%
 
-> Note 2 : The order of precedence inside `PATH` variable is crucial. The first available folder having Java
+> [!NOTE 2]
+> The order of precedence inside `PATH` variable is crucial. The first available folder having Java
 executable inside will be the one to be loaded by Windows OS.
 
-> Note 2a : The `\bin` may be crucial. When running `java -jar xxxx.jar`, mars-sim will look for the
+> [!NOTE 3]
+> The `\bin` may be crucial. When running `java -jar xxxx.jar`, mars-sim will look for the
 presence of the `java.exe` in Windows OS. If `\bin` is missing in the `JAVA_HOME` variable,
 the Windows OS may not be able to locate the `java.exe` and may continue to go down the `PATH`
 variable to look for a valid JDK folder. If it's not found, java cannot start mars-sim.
 
-> Note 3 : The BEST approach is to enable only one Java build (such as Java 17.0.8)
+> [!NOTE 4]
+> The BEST approach is to enable only one Java build (such as Java 17.0.8)
 inside `PATH` variable and remove all other folders referencing other java versions/builds.
 
 4. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can
 interfere with the correct version of Java that you would like to use.
 
-> Note 4 : Depending on the order of precedence in `Path` variable,
+> [!NOTE 5]
+> Depending on the order of precedence in `Path` variable,
 `C:\ProgramData\Oracle\Java\javapath` can load the undesired version of jre/jdk,
 instead of the java version you prefer.
 
@@ -413,7 +419,8 @@ from the Control Panel as follows :
 * Click on `View` button to open up another panel window.
 * Click on the checkbox on the `Enable` column to enable or disable any installed versions of Java.
 
-> Note 5 : In JCP, each row represents a version of Java. Unfortunately, this panel
+> [!NOTE 6]
+> In JCP, each row represents a version of Java. Unfortunately, this panel
 only tracks the official Oracle versions. If you install any openJDK's on
 your machine, JCP won't be able to recognize them.
 

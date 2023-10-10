@@ -197,13 +197,13 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
      * @param newSol Is the new Sol flag set
      * @return
      */
-    protected ClockPulse createPulse(int missionSol, int mSol, boolean newSol) {
+    protected ClockPulse createPulse(int missionSol, int mSol, boolean newSol, boolean newHalfSol) {
         MarsTime marsTime = new MarsTime(1, 1, missionSol, mSol, missionSol);
-		return createPulse(marsTime, newSol);
+		return createPulse(marsTime, newSol, newHalfSol);
 	}
 
-	protected ClockPulse createPulse(MarsTime marsTime, boolean newSol) {
+	protected ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol) {
 		sim.getMasterClock().setMarsTime(marsTime);
-        return new ClockPulse(pulseID++, 1D, marsTime, null, newSol, true);
+        return new ClockPulse(pulseID++, 1D, marsTime, null, newSol, newHalfSol, true);
     }
 }

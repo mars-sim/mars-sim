@@ -45,14 +45,14 @@ public class Zone implements Serializable, Temporal {
 //	}
 	
 	
-	Zone(ZoneType type, double area) {
-		this.type = type;
-		this.area = area;
-		
-		growthRate = RandomUtil.getRandomDouble(0, 2);
-	}
+//	Zone(ZoneType type, double area) {
+//		this.type = type;
+//		this.area = area;
+//		
+//		growthRate = RandomUtil.getRandomDouble(0, 2);
+//	}
 	
-	Zone(ZoneType type) {
+	public Zone(ZoneType type) {
 		this.type = type;
 
 		if (ZoneType.BUSINESS == type)
@@ -67,6 +67,8 @@ public class Zone implements Serializable, Temporal {
 			area = RandomUtil.getRandomDouble(10, 30);
 		else if (ZoneType.ENGINEERING == type)	
 			area = RandomUtil.getRandomDouble(50, 150);
+		else if (ZoneType.INDUSTRIAL == type)	
+			area = RandomUtil.getRandomDouble(150, 200);
 		else if (ZoneType.LIFE_SUPPORT == type)	
 			area = RandomUtil.getRandomDouble(100, 150);
 		else if (ZoneType.OPERATION == type)	
@@ -75,7 +77,7 @@ public class Zone implements Serializable, Temporal {
 			area = RandomUtil.getRandomDouble(50, 100);
 		else if (ZoneType.RESEARCH == type)	
 			area = RandomUtil.getRandomDouble(50, 100);
-		else if (ZoneType.RESOURCE_EXTRACTION == type)	
+		else if (ZoneType.RESOURCE == type)	
 			area = RandomUtil.getRandomDouble(150, 200);
 		else if (ZoneType.TRANSPORTATION == type)	
 			area = RandomUtil.getRandomDouble(50, 100);
@@ -86,7 +88,7 @@ public class Zone implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		
-		if (pulse.isNewSol()) {
+		if (pulse.isNewHalfSol()) {
 			growthRate += RandomUtil.getRandomDouble(-0.35, 0.5);
 			
 			if (growthRate > 10)

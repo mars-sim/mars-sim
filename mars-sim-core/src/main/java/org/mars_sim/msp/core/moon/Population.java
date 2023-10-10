@@ -56,7 +56,7 @@ public class Population implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		
-		if (pulse.isNewSol()) {
+		if (pulse.isNewHalfSol()) {
 			
 			// Recalculate tourists
 			growthRateTourists += RandomUtil.getRandomDouble(-.15, .2);

@@ -2,7 +2,7 @@
  * Mars Simulation Project
  * ZoneType.java
  * @date 2023-10-05
- * @author stpa
+ * @author Manny Kung
  */
 
 package org.mars_sim.msp.core.moon;
@@ -15,11 +15,12 @@ public enum ZoneType {
 	CONSTRUCTION		("Construction"),
 	EDUCATION			("Education"),
 	ENGINEERING			("Engineering"),
+	INDUSTRIAL			("Industrial"),
 	LIFE_SUPPORT		("Life Support"),
 	OPERATION			("Operation"),
 	RECREATION			("Recreation"),
 	RESEARCH			("Research"),
-	RESOURCE_EXTRACTION	("Resource Extraction"),	
+	RESOURCE	("Resource Extraction"),	
 	TRANSPORTATION		("Transportation"),
 	;
 

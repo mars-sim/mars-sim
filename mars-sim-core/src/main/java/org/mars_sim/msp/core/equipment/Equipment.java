@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Equipment class is an abstract class that represents a useful piece of
- * equipment, such as a container, an EVA suit or a medpack.
+ * equipment, such as a kit, a container, an EVA suit or a medpack.
  */
 public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
@@ -231,10 +231,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	@Override
 	public Vehicle getVehicle() {
 		Unit container = getContainerUnit();
-		if (container.getUnitType() == UnitType.VEHICLE)
-			return (Vehicle) container;
-		if (container.getContainerUnit().getUnitType() == UnitType.VEHICLE)
-			return (Vehicle) (container.getContainerUnit());
+		if (container instanceof Vehicle v)
+			return v;
+		if (container.getContainerUnit() instanceof Vehicle v)
+			return v;
 
 		return null;
 	}

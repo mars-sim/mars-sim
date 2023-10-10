@@ -561,8 +561,10 @@ public abstract class Unit implements Loggable, UnitIdentifer, Comparable<Unit> 
 		return tag;
 	}
 
-	public abstract Settlement getSettlement();
-
+	public Settlement getSettlement() {
+		return null;
+	}
+	
 	/**
 	 * Gets the building this unit is at.
 	 *

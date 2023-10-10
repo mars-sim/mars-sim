@@ -55,7 +55,7 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
         MarsTime now = sim.getMasterClock().getMarsTime();
         for(int t = 0; t < 100; t++) {
             now = now.addTime(quantum);
-            futures.timePassing(createPulse(now, false));
+            futures.timePassing(createPulse(now, false, false));
 
             if (endTimes[currentShift] == now.getMillisolInt()) {
                 currentShift++;
@@ -124,7 +124,7 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
 
         // Check shifts don;t change
         MarsTime now = sim.getMasterClock().getMarsTime().addTime((sm.getRotationSols() * 1000) - 1);
-        futures.timePassing(createPulse(now, false));
+        futures.timePassing(createPulse(now, false, false));
         long leaveCount = origAllocation.keySet().stream()
                             .filter(s -> s.getStatus() == WorkStatus.ON_LEAVE)
                             .count();
@@ -132,7 +132,7 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
 
         // Rotate shifts. mission sol new sol flag set
         now = now.addTime(2);
-        futures.timePassing(createPulse(now, false));
+        futures.timePassing(createPulse(now, false, false));
 
         List<ShiftSlot> onLeave = new ArrayList<>();
 
@@ -159,7 +159,7 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
 
         // Check day after rotation. mission sol new sol flag set
         now = now.addTime(ShiftManager.ROTATION_LEAVE);
-        futures.timePassing(createPulse(now, false));
+        futures.timePassing(createPulse(now, false, false));
         leaveCount = origAllocation.keySet().stream()
                             .filter(s -> s.getStatus() == WorkStatus.ON_LEAVE)
                             .count();
@@ -212,11 +212,11 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
     private void testWorkStatus(ScheduledEventManager sm, ShiftSlot slot, int shiftEnd, String scenario,
                                 WorkStatus preEnd, WorkStatus postEnd) {
         // Shift on duty but on call
-        sm.timePassing(createPulse(1, shiftEnd - 10, false));
+        sm.timePassing(createPulse(1, shiftEnd - 10, false, false));
         assertEquals(scenario + " during shift", preEnd, slot.getStatus());
 
         // Shift of duty bu on call
-        sm.timePassing(createPulse(1, shiftEnd, false));
+        sm.timePassing(createPulse(1, shiftEnd, false, false));
         assertEquals(scenario + " after shift", postEnd, slot.getStatus());
     }
 }

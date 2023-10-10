@@ -78,7 +78,7 @@ public class TestDriveMissionTest extends AbstractMarsSimUnitTest {
         mp.performMission(leader);
 
         int count = 0;
-        ClockPulse pulse = createPulse(1, 1, false);
+        ClockPulse pulse = createPulse(1, 1, false, false);
         while(starting.equals(mp.getPhaseDescription()) && (count < maxSteps)) {
             pulse = pulse.addElapsed(0.1D); // Must use a big pulse
             

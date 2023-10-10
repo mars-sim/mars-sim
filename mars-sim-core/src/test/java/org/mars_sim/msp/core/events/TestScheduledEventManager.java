@@ -88,7 +88,7 @@ public class TestScheduledEventManager extends AbstractMarsSimUnitTest  {
 			eventCounter++;
 		}
 
-		mgr.timePassing(createPulse(eventWhen, false));
+		mgr.timePassing(createPulse(eventWhen, false, false));
 		assertEquals("Execution count of concurrent events", 2, handler.counter);
 		assertEquals("All events executed", 0, events.size());
     }
@@ -99,7 +99,7 @@ public class TestScheduledEventManager extends AbstractMarsSimUnitTest  {
 
 		// No events
 		MarsTime now = sim.getMasterClock().getMarsTime();
-		mgr.timePassing(createPulse(now, false));
+		mgr.timePassing(createPulse(now, false, false));
 
 		// Add handler in different not time order
 		TestHandler handler = new TestHandler("Handler 0", 0);
@@ -107,13 +107,13 @@ public class TestScheduledEventManager extends AbstractMarsSimUnitTest  {
 
 		// Move clock forard but not past event
 		now = now.addTime(duration/2);
-		mgr.timePassing(createPulse(now, false));
+		mgr.timePassing(createPulse(now, false, false));
 		Collection<ScheduledEvent> events = mgr.getEvents();
 		assertEquals("Events still queued", 1, events.size());
     	
 		// Move clock forard but  past event
 		now = now.addTime(duration);
-		mgr.timePassing(createPulse(now, false));
+		mgr.timePassing(createPulse(now, false, false));
 		events = mgr.getEvents();
 		assertTrue("All event queue empty", events.isEmpty());
 		assertEquals("Handler executuon count", 1, handler.counter);
@@ -128,14 +128,14 @@ public class TestScheduledEventManager extends AbstractMarsSimUnitTest  {
 
 		// Move clock forard but not past event
 		MarsTime eventTime = clock.getMarsTime().addTime(duration/2);
-		mgr.timePassing(createPulse(eventTime, false));
+		mgr.timePassing(createPulse(eventTime, false, false));
 		Collection<ScheduledEvent> events = mgr.getEvents();
 		assertEquals("Events still queued", 1, events.size());
     	
 		// Move clock forward but past event
 		for(int count = 1; count < 4; count++) {
 			eventTime = eventTime.addTime(duration);
-			mgr.timePassing(createPulse(eventTime, false));
+			mgr.timePassing(createPulse(eventTime, false, false));
 			events = mgr.getEvents();
 			assertEquals("Repeat event queued", 1, events.size());
 			assertEquals("Handler executuon count", count, handler.counter);

@@ -58,7 +58,6 @@ import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.moon.Colony;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.util.BasicTaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;

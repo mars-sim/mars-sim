@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -48,10 +47,6 @@ public abstract class PlanetaryEntity extends Unit {
 	@Override
 	public UnitType getUnitType() {
 		return objectType;
-	}
-
-	public Settlement getSettlement() {
-		return null;
 	}
 
 	/**
