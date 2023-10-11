@@ -30,7 +30,6 @@ public class Population implements Serializable, Temporal {
 	
 	private double numBeds;
 	
-	
 	private double growthRateTourists;
 	
 	private double growthRateResidents;
@@ -140,4 +139,27 @@ public class Population implements Serializable, Temporal {
 	public int getTotalPopulation() {
 		return (int)numTourists + (int)numResidents + (int)numResearchers;
 	}
+	
+	public double getGrowthNumBed() {
+		return growthRateBeds;
+	}
+	
+	public double getGrowthTourists() {
+		return growthRateTourists;
+	}
+	
+	public double getGrowthResidents() {
+		return growthRateResidents;
+	}
+	
+	public double getGrowthResearchers() {
+		return growthRateResearchers;
+	}
+	
+	public double getGrowthTotalPopulation() {
+		return growthRateTourists + growthRateResidents + growthRateResearchers;
+	}
+	
+	
+	
 }
