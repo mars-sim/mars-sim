@@ -55,7 +55,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
 
-	private static final String MAP_ICON = NavigatorWindow.ICON;
+	private static final String MAP_ICON = NavigatorWindow.PIN_ICON;
 
 	private static final String N = "N";
 	private static final String S = "S";

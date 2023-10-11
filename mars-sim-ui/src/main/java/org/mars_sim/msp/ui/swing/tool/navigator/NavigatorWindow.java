@@ -143,6 +143,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	/** Tool name. */
 	public static final String NAME = Msg.getString("NavigatorWindow.title"); //$NON-NLS-1$
 	public static final String ICON = "mars";
+	public static final String PIN_ICON = "pin";
 
 	public static final int MAP_BOX_WIDTH = Map.MAP_BOX_WIDTH; // Refers to Map's MAP_BOX_WIDTH in mars-sim-mapdata maven submodule
 	public static final int MAP_BOX_HEIGHT = Map.MAP_BOX_HEIGHT;
