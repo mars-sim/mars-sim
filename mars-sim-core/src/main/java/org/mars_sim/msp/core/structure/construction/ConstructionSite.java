@@ -527,6 +527,7 @@ implements  LocalBoundedObject {
 	 *
 	 * @return the settlement
 	 */
+	@Override
     public Settlement getSettlement() {
     	return settlement;
     }

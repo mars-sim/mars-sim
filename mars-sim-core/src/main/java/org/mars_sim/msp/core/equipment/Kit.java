@@ -26,10 +26,6 @@ public class Kit extends Equipment
 
 	// Static members
 	public static final String TYPE = "Kit";
-	/** Unloaded mass of the kit [kg]. */
-//	public static final double EMPTY_MASS = 0;
-	/** Capacity [kg]. */
-//	public static final double CAPACITY = 0;
 	/** 334 Sols (1/2 orbit). */
 	private static final double WEAR_LIFETIME = 334_000;
 	/** 100 millisols. */
@@ -56,8 +52,10 @@ public class Kit extends Equipment
      * 
      * @return total capacity [kg]
      */
+	@Override
     public double getCargoCapacity() {
-        return 0; // CAPACITY;
+		// To be modified
+        return 0; 
     }
 
 
@@ -130,6 +128,22 @@ public class Kit extends Equipment
 		return malfunctionManager.timePassing(pulse);
 	}
 
+	/**
+	 * Compares if an object is the same as this unit.
+	 *
+	 * @param obj
+	 */
+	public boolean equals(Kit obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (this.getClass() != obj.getClass())
+			return false;
+		return this.kitName.equalsIgnoreCase(obj.getKitName())
+			&& this.getIdentifier() == obj.getIdentifier();
+	}
+	
 	@Override
 	public String getNickName() {
 		return getName();

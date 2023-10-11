@@ -280,19 +280,14 @@ planetary surface.
 
 ---
 
-# Set up
+# Set Up
 
 Below is a summary of how player may set up one's machine to evaluate and develop mars-sim
 
 ## Prerequisites
 
-<a href="https://foojay.io/today/works-with-openjdk">
-   <img align="right"
-        src="https://github.com/foojayio/badges/raw/main/works_with_openjdk/Works-with-OpenJDK.png"
-        width="100">
-</a>
-
-Currently, mars-sim supports Java 17 which is the latest long-term support (LTS) release.
+Currently, mars-sim supports Java 17 and is evaluating the feasibility of supporting Java 21 
+(the latest long-term support (LTS) release) in near future.
 
 * Requires only JRE 17 for running mars-sim
 * Requires only JDK 17 (or OpenJDK 17) for compiling binary
@@ -306,7 +301,7 @@ For the open source community, the OpenJDK is also being decoupled from the Open
 
 Currently, mars-sim does not require JavaFX.
 
-> [[!IMPORTANT]
+> [!IMPORTANT]
 > Specifically, the official release of mars-sim (from v3.1.0 up to now) do not
 utilize JavaFX / OpenJFX. 
 
@@ -382,27 +377,29 @@ or
 
 > set PATH="%JAVA_HOME%\bin";%PATH%
 
-> [!NOTE 2]
+> [!IMPORTANT]
 > The order of precedence inside `PATH` variable is crucial. The first available folder having Java
 executable inside will be the one to be loaded by Windows OS.
 
-> [!NOTE 3]
+> [!NOTE]
 > The `\bin` may be crucial. When running `java -jar xxxx.jar`, mars-sim will look for the
 presence of the `java.exe` in Windows OS. If `\bin` is missing in the `JAVA_HOME` variable,
-the Windows OS may not be able to locate the `java.exe` and may continue to go down the `PATH`
-variable to look for a valid JDK folder. If it's not found, java cannot start mars-sim.
+the Windows OS may not be able to locate the `java.exe` executable and may continue to go 
+down the `PATH` variable to look for a valid JDK folder. If java executable is not found, 
+mars-sim cannot be started.
 
-> [!NOTE 4]
+> [!NOTE]
 > The BEST approach is to enable only one Java build (such as Java 17.0.8)
 inside `PATH` variable and remove all other folders referencing other java versions/builds.
 
-4. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can
+4. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;` in `PATH` variable. It can
 interfere with the correct version of Java that you would like to use.
 
-> [!NOTE 5]
-> Depending on the order of precedence in `Path` variable,
-`C:\ProgramData\Oracle\Java\javapath` can load the undesired version of jre/jdk,
-instead of the java version you prefer.
+> [!WARNING]
+> If `C:\ProgramData\Oracle\Java\javapath` is encountered in `Path` variable, then Windows 
+will look for a particular version of jre/jdk in the designated folder and load the Java 
+executable there. Make sure the shortcut in the designated folder points to a valid 
+Java executable. 
 
 5. To test the version of Java that your machine is using, type "java -version"
 in a command prompt window.
@@ -419,12 +416,12 @@ from the Control Panel as follows :
 * Click on `View` button to open up another panel window.
 * Click on the checkbox on the `Enable` column to enable or disable any installed versions of Java.
 
-> [!NOTE 6]
+> [!NOTE]
 > In JCP, each row represents a version of Java. Unfortunately, this panel
 only tracks the official Oracle versions. If you install any openJDK's on
 your machine, JCP won't be able to recognize them.
 
-7. To track what versions of openjdk have been installed on your machine, you may try using 
+7. To track what versions of OpenJDK have been installed on your machine, you may try using 
 [JDKMon](https://harmoniccode.blogspot.com/2021/04/friday-fun-lxiii-jdkmon.html).
 
 ## Remote Console Connection
@@ -474,7 +471,7 @@ e.g. Include the followings :
 
 **Specifications (please complete)**
  - OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04]
- - Java version : [e.g. Oracle JDK 17.0.8, AdoptOpenJDK 17.0.8, openjfx 17]
+ - Java version : [e.g. Oracle JDK 17.0.8, AdoptOpenJDK 17.0.8, OpenJFX 17]
  - Major version and build : [e.g. 3.6.2 build 8718]
 
 **Additional context**
@@ -484,7 +481,7 @@ e.g. Include the followings :
 > Note 1 : if you double-click the jar file to start mars-sim and nothing shows up, 
 it's possible that an instance of JVM is already being created in the background 
 that has failed to load Main Window. To see if it's indeed the case, in Windows OS, 
-you may hit `Ctrl+Esc` to bring up the Task Manager and scroll down to see any 
+you may hit <kbd>CTRL</kbd>+<kbd>ESC</kbd> to bring up the Task Manager and scroll down to see any 
 *orphaned* instances of `Java(TM) Platform SE binary` running in the background. 
 Be sure you first clear them off the memory by right-clicking on it and choosing `End Task`.
 

@@ -8,9 +8,9 @@ package org.mars_sim.msp.core.time;
 
 public class ClockPulse {
 	
-	private boolean isNewSol;
-	private boolean isNewHalfSol;
-	private boolean isNewIntMillisol;
+	private boolean newSol;
+	private boolean newHalfSol;
+	private boolean newIntMillisol;
 
 	private int lastIntMillisol;
 	private int lastSol;
@@ -48,9 +48,9 @@ public class ClockPulse {
 		this.elapsed = elapsed;
 		this.marsTime = marsTime;
 		this.master = master;
-		this.isNewSol = newSol;
-		this.isNewHalfSol = newHalfSol;
-		this.isNewIntMillisol = newMSol;
+		this.newSol = newSol;
+		this.newHalfSol = newHalfSol;
+		this.newIntMillisol = newMSol;
 	}
 
 	public long getId() {
@@ -90,7 +90,7 @@ public class ClockPulse {
 	 * @return
 	 */
 	public boolean isNewSol() {
-		return isNewSol;
+		return newSol;
 	}
 	
 	/**
@@ -99,7 +99,7 @@ public class ClockPulse {
 	 * @return
 	 */
 	public boolean isNewHalfSol() {
-		return isNewHalfSol;
+		return newHalfSol;
 	}
 	
 	/**
@@ -108,7 +108,7 @@ public class ClockPulse {
 	 * @return
 	 */
 	public boolean isNewMSol() {
-		return isNewIntMillisol;
+		return newIntMillisol;
 	}
 
 	/**
@@ -120,12 +120,12 @@ public class ClockPulse {
 	 */
 	public ClockPulse addElapsed(double msolsSkipped) {
 		double actualElapsed = msolsSkipped + elapsed;
-		// This pulse cross a day or the total elapsed since the last pulse cross the sol boundary
-		boolean actualNewSol = isNewSol || (actualElapsed > marsTime.getMillisol());
 
 		// Identify if it's a new Sol
 		int currentSol = marsTime.getMissionSol();
-		boolean isNewSol = ((lastSol >= 0) && (lastSol != currentSol));
+		// This pulse cross a day or the total elapsed since the last pulse cross the sol boundary
+		boolean isNewSol = newSol || (actualElapsed > marsTime.getMillisol())
+				|| (lastSol >= 0 && (lastSol != currentSol));
 
 		// Identify if it's half a sol
 		boolean isNewHalfSol = isNewSol || (lastSol <= 500 && currentSol > 500);	
@@ -142,6 +142,6 @@ public class ClockPulse {
 		}
 		MarsTime newMars = marsTime.addTime(msolsSkipped);
 
-		return new ClockPulse(id, actualElapsed, newMars, master, actualNewSol, isNewHalfSol, isNewIntMillisol);
+		return new ClockPulse(id, actualElapsed, newMars, master, isNewSol, isNewHalfSol, isNewIntMillisol);
 	}
 }

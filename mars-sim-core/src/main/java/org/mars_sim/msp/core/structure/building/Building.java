@@ -1342,6 +1342,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 *
 	 * @return settlement or null if none.
 	 */
+	@Override
 	public Settlement getSettlement() {
 		return settlement;
 	}

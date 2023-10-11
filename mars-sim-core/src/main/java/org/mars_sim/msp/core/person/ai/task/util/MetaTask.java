@@ -169,7 +169,7 @@ public abstract class MetaTask {
 
 	/**
 	 * Gets a unique non-internalised key for this task.
-	 * Note getName is an internationalised value.
+	 * @Note getName is an internationalised value.
 	 * 
 	 * @return the MetaTask class name with "meta" removed
 	 */
@@ -262,11 +262,12 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Assess the suitability ot this person to do Tasks of this MetaType. It does notcnsider
+	 * Assesses the suitability of this person to do Tasks of this MetaType. It does not consider
 	 * any of the specific details of the actual Task.
 	 * 1. If the task has a Trait that is performance related the Person's performance rating is applied as a modifier
 	 * 2. Apply the Job start modifier for this task
 	 * 3. Apply the Persons individual preference to this Task
+	 * 
 	 * @param person Person being assessed
 	 * @param score The base rating score that is adjusted to this person
 	 * @return
@@ -332,7 +333,7 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Assess the suitability of a Building to do a Task.
+	 * Assesses the suitability of a Building to do a Task.
 	 * 
 	 * @param score Base rating
 	 * @param building Building the Person is entering
@@ -356,7 +357,8 @@ public abstract class MetaTask {
 	}
 	
 	/**
-	 * Get the currnt martian time
+	 * Gets the current Martian time.
+	 * 
 	 * @return MarsTime from master clock
 	 */
 	protected static MarsTime getMarsTime() {
@@ -364,7 +366,8 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Get a reference to the master clock
+	 * Gets a reference to the master clock.
+	 * 
 	 * @return
 	 */
 	protected static MasterClock getMasterClock() {
