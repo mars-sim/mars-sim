@@ -75,6 +75,7 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.StyleManager;
+import org.mars_sim.msp.ui.swing.tool.FlagString;
 import org.mars_sim.msp.ui.swing.tool.SmartScroller;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
@@ -372,11 +373,22 @@ public class CommanderWindow extends ToolWindow {
 				labelGrid.addRow("Coordinates", c.getCoordinates().getFormattedString());
 				
 				List<String> list = c.getReportingAuthority().getCountries();
-				String countryName = "Multi-Nationals";
-				if (list.size() == 1)
-					countryName = c.getReportingAuthority().getCountries().get(0);
 				
-				labelGrid.addRow("Country", countryName);
+				String countryCode = "";
+				String countryName = "Multi-Nationals";
+//				String unicode = "";
+				if (list.size() == 1) {
+					countryName = c.getReportingAuthority().getCountries().get(0);
+					countryCode = FlagString.getEmoji(countryName);
+//					System.out.println(countryName + " " + countryCode);
+//					countryCode = FlagString.getCountryCode(countryName);
+//					Emoji emoji = EmojiManager.getForAlias(countryCode);
+//					unicode = emoji.getUnicode();
+//					System.out.println(unicode);
+//					Optional<Emoji> emoji = EmojiManager.getByAlias(countryEmojiFlag);
+				}
+				
+				labelGrid.addLabels("Country", countryName, countryCode);
 							
 				totalAreaCache = c.getTotalArea();			
 				totalAreaLabel = labelGrid.addRow("Total Area (SM)", Math.round(totalAreaCache * 10.0)/10.0 + "");

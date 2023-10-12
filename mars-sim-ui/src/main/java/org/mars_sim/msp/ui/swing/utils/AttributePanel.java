@@ -32,6 +32,22 @@ public class AttributePanel extends JPanel {
     }
 
 	/**
+	 * Adds a field with labels to a panel. The layout should be a spring layout.
+	 * 
+	 * @param titleLabel 	The fixed label
+	 * @param content 		The first content of the field
+	 * @param content1 		The second content of the field
+	 * @return The JLabel that can be updated
+	 */
+	public JLabel addLabels(String titleLabel, String content, String unicode) {
+		JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 5));
+		JLabel contentLabel = new JLabel("<html>" + content + " (" + String.valueOf(unicode) + ") </html>");
+		wrapper.add(contentLabel);
+		addLabelledItem(titleLabel, contentLabel);
+		return contentLabel;
+	}
+	
+	/**
 	 * Adds a text field and label to a Panel. The layout should be Spring layout.
 	 * 
 	 * @param titleLabel The fixed label
@@ -49,6 +65,8 @@ public class AttributePanel extends JPanel {
 		addLabelledItem(titleLabel, contentLabel);
 		return contentLabel;
 	}
+	
+	
 	
 	/**
 	 * Adds a field and label to a Panel. The layout should be Spring layout.
