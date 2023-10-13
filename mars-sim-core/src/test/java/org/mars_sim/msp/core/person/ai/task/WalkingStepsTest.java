@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * WalkingStepsTest.java
+ * @date 2023-07-05
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.Iterator;

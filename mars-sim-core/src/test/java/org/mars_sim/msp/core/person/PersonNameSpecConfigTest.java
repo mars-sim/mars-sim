@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * PersonNameSpecConfigTest.java
+ * @date 2023-07-23
+ * @author Barry Evans
+ */
+
 package org.mars_sim.msp.core.person;
 
 import java.util.HashSet;

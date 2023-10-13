@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * PersonConfigTest.java
+ * @date 2023-07-23
+ * @author Barry Evans
+ */
+
 package org.mars_sim.msp.core.person;
 
 import org.mars_sim.msp.core.SimulationConfig;
@@ -8,7 +15,7 @@ import junit.framework.TestCase;
 
 public class PersonConfigTest extends TestCase {
     /**
-     * Not ethis test is based on the values defiend in person.xml
+     * This test is based on the values defined in PersonConfig or people.xml.
      */
     public void testGetTrainingModifier() {
         SimulationConfig config = SimulationConfig.instance();

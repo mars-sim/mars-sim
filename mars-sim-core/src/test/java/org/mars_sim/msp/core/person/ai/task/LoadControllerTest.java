@@ -30,12 +30,12 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import junit.framework.TestCase;
 
 /**
- * Tests the loading controller operation for a vehicle
+ * Tests the loading controller operation for vehicles.
  */
 public class LoadControllerTest
 extends TestCase {
 
-	// Extra amount to add to resouRce to handle double arithmetic mismatch
+	// Extra amount to add to resource to handle double arithmetic mismatch
 	private static final double EXTRA_RESOURCE = 0.01D;
 	private static final String SMALL_HAMMER = "small hammer";
 	private static final String FIRE_EXTINGUSHER = "fire extinguisher";

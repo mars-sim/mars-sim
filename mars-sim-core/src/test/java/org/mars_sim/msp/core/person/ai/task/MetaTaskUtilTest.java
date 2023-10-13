@@ -22,9 +22,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-
 /**
- * Tests the ability of a person to load resources into an EVA suit.
+ * Tests the ability of a person to initiate various meta tasks.
  */
 public class MetaTaskUtilTest
 extends AbstractMarsSimUnitTest {

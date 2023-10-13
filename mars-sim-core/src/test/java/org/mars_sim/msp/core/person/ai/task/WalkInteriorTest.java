@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * WalkInteriorTest.java
+ * @date 2023-07-05
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars.sim.mapdata.location.LocalPosition;
