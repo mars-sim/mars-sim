@@ -34,7 +34,7 @@ public class PersonNameSpecConfig extends UserConfigurableConfig<PersonNameSpec>
     private final String VALUE = "value";
 
     // Note: each of the predefined country below has a xml file
-    private String[] COUNTRIES = {
+    public final String[] COUNTRIES = {
     					"Austria",  "Belgium", "Brazil", 
     					"Canada", "China", "Czech Republic",
                         "Denmark", "Estonia", "Finland", "France", 
@@ -107,8 +107,12 @@ public class PersonNameSpecConfig extends UserConfigurableConfig<PersonNameSpec>
      * 
      * @return
      */
-    public static List<Nation> getNations() {
+    public final List<Nation> getNations() {
     	return nations;
+    }
+    
+    public final String[] getCountries() {
+    	return COUNTRIES;
     }
     
     /**
