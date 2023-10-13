@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
-    name="UK">
+    name="United Kingdom">
     <first-name-list>
 		<!-- https://momlovesbest.com/british-boy-names -->
 		

@@ -1,0 +1,191 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+    name="United Arab Emirates">
+    <first-name-list>
+		<!-- https://firstnam.es/united-arab-emirates/boy -->
+		
+        <first-name value="Abdullah" gender="male" />
+        <first-name value="Saeed" gender="male" />
+        <first-name value="Salem" gender="male" />
+        <first-name value="Sheikh" gender="male" />
+        <first-name value="Mohamed" gender="male" />
+        
+        <first-name value="Abdel" gender="male" />
+        <first-name value="Yousef" gender="male" />
+        <first-name value="Hamad" gender="male" />
+        <first-name value="Syed" gender="male" />
+        <first-name value="Ahmed" gender="male" />
+        
+        <first-name value="Hussein" gender="male" />
+        <first-name value="Ali" gender="male" />
+        <first-name value="Khalifa" gender="male" />
+        <first-name value="Nasser" gender="male" />
+        <first-name value="Suleiman" gender="male" />
+        
+        <first-name value="Suhail" gender="male" />
+        <first-name value="Rashid" gender="male" />
+        <first-name value="Hamid" gender="male" />
+        <first-name value="Younis" gender="male" />
+        <first-name value="Badr" gender="male" />
+        
+        <first-name value="Khaled" gender="male" />
+        <first-name value="Fahd" gender="male" />
+        <first-name value="Majed" gender="male" />
+        <first-name value="Mubarak" gender="male" />
+        <first-name value="Yasser" gender="male" />
+        
+        <first-name value="Saif" gender="male" />
+        <first-name value="Sultan" gender="male" />
+        <first-name value="Fahim" gender="male" />
+        <first-name value="Matar" gender="male" />
+        <first-name value="Arun" gender="male" />
+        
+        <first-name value="Yacoub" gender="male" />
+        <first-name value="Ghulam" gender="male" />
+        <first-name value="Zaid" gender="male" />
+        <first-name value="Bashir" gender="male" />
+        <first-name value="Salim" gender="male" />
+             
+        <first-name value="Amjad" gender="male" />
+        <first-name value="Ayman" gender="male" />
+        <first-name value="Mansour" gender="male" />
+        <first-name value="Marwan" gender="male" />
+        <first-name value="Ravi" gender="male" />
+        
+        <first-name value="Ibrahim" gender="male" />
+        <first-name value="Kamal" gender="male" />
+        <first-name value="Talal" gender="male" />
+        <first-name value="Sayed" gender="male" />
+        <first-name value="Pradeep" gender="male" />
+     
+        <first-name value="Hassan" gender="male" />
+        <first-name value="Omarn" gender="male" />
+        <first-name value="Saad" gender="male" />
+        <first-name value="Sherif" gender="male" />
+        <first-name value="Ashraf" gender="male" />
+        
+        <first-name value="Raed" gender="male" />
+        <first-name value="Habib" gender="male" />
+        <first-name value="Mousa" gender="male" />
+        <first-name value="Taleb" gender="male" />
+        <first-name value="Zuhair" gender="male" />
+             
+        <first-name value="Osama" gender="male" />
+        <first-name value="Raju" gender="male" />
+        <first-name value="Salah" gender="male" />
+        <first-name value="Marwan" gender="male" />
+        <first-name value="Wahid" gender="male" />
+        
+        <first-name value="Essam" gender="male" />
+        <first-name value="Paul" gender="male" />
+        <first-name value="Emad" gender="male" />
+        <first-name value="Nader" gender="male" />
+        <first-name value="Nadeem" gender="male" />
+        
+        
+		<!-- https://firstnam.es/united-arab-emirates/girl -->
+
+        <first-name value="Ayesha" gender="female" />
+        <first-name value="Alia" gender="female" />
+        <first-name value="Fatima" gender="female" />
+        <first-name value="Halima" gender="female" />
+        <first-name value="Mariam" gender="female" />
+     
+        <first-name value="Khadija" gender="female" />
+        <first-name value="Mona" gender="female" />
+        <first-name value="Jamila" gender="female" />
+        <first-name value="Salama" gender="female" />
+        <first-name value="Amal" gender="female" />
+     
+        <first-name value="Samia" gender="female" />
+        <first-name value="Shaheen" gender="female" />
+        <first-name value="Asmaa" gender="female" />
+        <first-name value="Salma" gender="female" />
+        <first-name value="Laila" gender="female" />
+
+        <first-name value="Nour" gender="female" />
+        <first-name value="Afra" gender="female" />
+        <first-name value="Hoda" gender="female" />
+        <first-name value="Iman" gender="female" />
+        <first-name value="Sana" gender="female" />
+   
+        <first-name value="Noor" gender="female" />
+        <first-name value="Kiran" gender="female" />
+        <first-name value="Latifa" gender="female" />
+        <first-name value="Hanan" gender="female" />
+        <first-name value="Amna" gender="female" />
+  
+        <first-name value="Sarah" gender="female" />
+        <first-name value="Hind" gender="female" />
+        <first-name value="Kholoud" gender="female" />
+        <first-name value="Priya" gender="female" />
+        <first-name value="Safia" gender="female" />
+   
+        <first-name value="Nadia" gender="female" />
+        <first-name value="Wafa" gender="female" />
+        <first-name value="Nawal" gender="female" />
+        <first-name value="Ibtisam" gender="female" />
+        <first-name value="Mirza" gender="female" />
+  
+    </first-name-list>
+    
+    <last-name-list>
+        <!-- https://surnam.es/united-arab-emirates -->
+
+        <last-name value="Ali" />
+        <last-name value="Khan" />
+        <last-name value="Kumar" />
+        <last-name value="Saeed" />
+        <last-name value="Ahmed" />
+        
+        <last-name value="Al-Shehhi" />
+        <last-name value="Al-Zaabi" />
+        <last-name value="Mohamed" />
+        <last-name value="Al-Shamsi" />
+        <last-name value="Rashid" />
+        
+   
+        <last-name value="Hussain" />
+        <last-name value="Allah" />
+        <last-name value="Nair" />
+        <last-name value="Singh" />
+        <last-name value="Salim" />
+        
+        <last-name value="Al-Balushi" />
+        <last-name value="Ibrahim" />
+        <last-name value="Malik" />
+        <last-name value="Mathew" />
+        <last-name value="Shah" />
+        
+        <last-name value="Al-Mazroui" />
+        <last-name value="Al-Zaheri" />
+        <last-name value="Abbas" />
+        <last-name value="El-Sewedy" />
+        <last-name value="Shaikh" />
+             
+		<last-name value="Ahmad" />
+        <last-name value="El-Amery" />
+        <last-name value="Al-Habsi" />
+        <last-name value="Al-Muhairi" />
+        <last-name value="El-Kutby" />
+        
+        <last-name value="Al-Mazrouei" />
+        <last-name value="Varghese" />
+        <last-name value="El-Kaaby" />
+        <last-name value="Hassan" />
+        <last-name value="Hanafi" />
+        
+        <last-name value="Dsouza" />
+        <last-name value="Al-Taniji" />
+        <last-name value="Babu" />
+        <last-name value="Al-Khatiri" />
+        <last-name value="Raj" />
+             
+        <last-name value="Sharma" />
+        <last-name value="Aloam" />
+        <last-name value="Sultan" />
+        <last-name value="Alam" />
+        <last-name value="Menon" />
+             
+    </last-name-list>
+</country>

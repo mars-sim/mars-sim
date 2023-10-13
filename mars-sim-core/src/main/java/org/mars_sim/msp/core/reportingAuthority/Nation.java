@@ -19,11 +19,10 @@ public class Nation implements Serializable, Temporal {
 
 	public static final SimLogger logger = SimLogger.getLogger(Nation.class.getName());
 
-
 	private String name;
 	
-	Nation(String name) {
-		
+	public Nation(String name) {
+		this.name = name;
 	}
 	
 	public String getName() {
@@ -32,7 +31,7 @@ public class Nation implements Serializable, Temporal {
 	
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		// TODO Auto-generated method stub
+
 		return false;
 	}
 

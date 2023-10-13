@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
-    name="The Netherlands">
+    name="Netherlands">
     <first-name-list>
         <first-name value="Liam" gender="male" />
         <first-name value="Sem" gender="male" />

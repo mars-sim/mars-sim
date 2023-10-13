@@ -376,16 +376,9 @@ public class CommanderWindow extends ToolWindow {
 				
 				String countryCode = "";
 				String countryName = "Multi-Nationals";
-//				String unicode = "";
 				if (list.size() == 1) {
 					countryName = c.getReportingAuthority().getCountries().get(0);
 					countryCode = FlagString.getEmoji(countryName);
-//					System.out.println(countryName + " " + countryCode);
-//					countryCode = FlagString.getCountryCode(countryName);
-//					Emoji emoji = EmojiManager.getForAlias(countryCode);
-//					unicode = emoji.getUnicode();
-//					System.out.println(unicode);
-//					Optional<Emoji> emoji = EmojiManager.getByAlias(countryEmojiFlag);
 				}
 				
 				labelGrid.addLabels("Country", countryName, countryCode);

@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
-        name="USA">
+        name="United States">
     <first-name-list>
         <!-- U.S.A., 1-60 male first name http://www2.census.gov/topics/genealogy/1990surnames/dist.male.first -->
         <first-name value="James" gender="male" />

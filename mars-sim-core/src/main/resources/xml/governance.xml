@@ -442,7 +442,7 @@
 			<country name="Ireland"/>
 			<country name="Italy"/>
 			<country name="Luxembourg"/>
-			<country name="The Netherlands"/>
+			<country name="Netherlands"/>
 			<country name="Norway"/>
 			<country name="Poland"/>
 			<country name="Portugal"/>
@@ -450,7 +450,7 @@
 			<country name="Spain"/>
 			<country name="Sweden"/>
 			<country name="Switzerland"/>
-			<country name="UK"/>
+			<country name="United Kingdom"/>
 			<settlement-name name="Base Visage" />
 			<settlement-name name="Base Gaia" />
 			<settlement-name name="Station Mere" />
@@ -612,7 +612,7 @@
 			<country name="Italy"/>
 			<country name="Japan"/>
 			<country name="Luxembourg"/>
-			<country name="The Netherlands"/>
+			<country name="Netherlands"/>
 			<country name="Norway"/>
 			<country name="Poland"/>
 			<country name="Portugal"/>
@@ -621,8 +621,8 @@
 			<country name="Spain"/>
 			<country name="Sweden"/>
 			<country name="Switzerland"/>
-			<country name="UK"/>
-			<country name="USA"/>
+			<country name="United Kingdom"/>
+			<country name="United States"/>
 			<settlement-name name="New Cairo" />
 			<settlement-name name="New Boulder" />
 			<settlement-name name="Burroughsburg" />
@@ -666,7 +666,7 @@
 
 		<authority code="NASA" name="National Aeronautics and Space Administration" corporation="false"
 					agenda="Finding Life" gender-ratio="0.6">
-			<country name="USA"/>
+			<country name="United States"/>
 			<settlement-name name="Jamestown" />
 			<settlement-name name="Port Braun" />
 			<settlement-name name="Sagan Station" />
@@ -747,7 +747,7 @@
 
 		<authority code="SPACEX" name="Space Exploration Technologies Corporation" corporation="true"
 					agenda="Planet Life" gender-ratio="0.5">
-			<country name="USA"/>
+			<country name="United States"/>
 			<settlement-name name="MuskVille" />
 			<settlement-name name="Falcon Station" />
 			<settlement-name name="Nicolas Town" />
@@ -780,7 +780,7 @@
 		
 		<authority code="BO" name="Blue Origin" corporation="true"
 					agenda="Building Colonies" gender-ratio="0.5">
-			<country name="USA"/>
+			<country name="United States"/>
 			<settlement-name name="Aurora Terminus" />
 			<settlement-name name="Falcon Station" />
 			<settlement-name name="Amazone" />

@@ -6,39 +6,62 @@
  */
 package org.mars_sim.msp.core.person;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
+import org.mars_sim.msp.core.reportingAuthority.Nation;
 
 /**
- * Configuration class to load person naming schemes. Usually based on country
+ * Configuration class to load person naming schemes unique to each country.
  */
 public class PersonNameSpecConfig extends UserConfigurableConfig<PersonNameSpec> {
 
-	private static final String LAST_NAME_LIST = "last-name-list";
-	private static final String FIRST_NAME_LIST = "first-name-list";
-	private static final String LAST_NAME = "last-name";
-	private static final String FIRST_NAME = "first-name";
-	private static final String GENDER = "gender";
-    private static final String NAME = "name";
-    private static final String VALUE = "value";
+	private final String COUNTRY_XSD = "country.xsd";
+	
+	private static final String COUNTRY = "country";
 
-    // These are the countries predefined
-    private String[] COUNTRIES = {"Austria",  "Belgium", "Brazil", "Canada", "China", "Czech Republic",
-                        "Denmark", "Estonia", "Finland", "France", "Germany", "Greece",
-                        "Hungary", "India", "Ireland", "Italy", "Japan", "Luxembourg",
-                        "Norway", "Poland", "Portugal", "Romania", "Russia",
-                        "South Korea", "Spain", "Sweden", "Switzerland", "The Netherlands",
-                        "UK", "USA"};
+	private final String MALE = "male";
+	private final String FEMALE = "female";
+	private final String LAST_NAME_LIST = "last-name-list";
+	private final String FIRST_NAME_LIST = "first-name-list";
+	private final String LAST_NAME = "last-name";
+	private final String FIRST_NAME = "first-name";
+	private final String GENDER = "gender";
+    private final String NAME = "name";
+    private final String VALUE = "value";
 
+    // Note: each of the predefined country below has a xml file
+    private String[] COUNTRIES = {
+    					"Austria",  "Belgium", "Brazil", 
+    					"Canada", "China", "Czech Republic",
+                        "Denmark", "Estonia", "Finland", "France", 
+                        "Germany", "Greece",
+                        "Hungary", "India", "Ireland", "Italy", 
+                        "Japan", "Luxembourg",
+                        "Norway", "Poland", "Portugal", 
+                        "Romania", "Russia",
+                        "Saudi Arabia",
+                        "South Korea", "Spain", "Sweden", "Switzerland", 
+                        "Netherlands",
+                        "United Arab Emirates",
+                        "United Kingdom", "United States"};
+
+	private static List<Nation> nations = new ArrayList<>();
+	
     public PersonNameSpecConfig() {
-        super("country");
+        super(COUNTRY);
 
-        setXSDName("country.xsd");
+        setXSDName(COUNTRY_XSD);
 
-        loadDefaults(COUNTRIES);
+        for (String name: COUNTRIES) {
+        	Nation nation = new Nation(name);
+        	nations.add(nation);
+        }
+        
+        loadDefaults(COUNTRIES);  
     }
 
     @Override
@@ -62,9 +85,9 @@ public class PersonNameSpecConfig extends UserConfigurableConfig<PersonNameSpec>
             String gender = nameElement.getAttributeValue(GENDER);
             String name = nameElement.getAttributeValue(VALUE);
 
-            if (gender.equals("male")) {
+            if (gender.equalsIgnoreCase(MALE)) {
                 result.addMaleName(name);
-            } else if (gender.equals("female")) {
+            } else if (gender.equalsIgnoreCase(FEMALE)) {
                 result.addFemaleName(name);
             }
         }
@@ -78,4 +101,29 @@ public class PersonNameSpecConfig extends UserConfigurableConfig<PersonNameSpec>
 
         return result;
     }
+    
+    /**
+     * Gets a list of nations.
+     * 
+     * @return
+     */
+    public static List<Nation> getNations() {
+    	return nations;
+    }
+    
+    /**
+     * Gets the nation with a particular name.
+     * 
+     * @param name
+     * @return
+     */
+    public static Nation getNation(String name) {
+    	for (Nation n: nations) {
+    		if (n.getName().equalsIgnoreCase(name)) {
+    			return n;
+    		}
+    	}
+    	return null;
+    }
+    
 }

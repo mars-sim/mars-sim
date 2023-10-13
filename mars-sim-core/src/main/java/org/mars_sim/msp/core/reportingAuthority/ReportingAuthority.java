@@ -7,12 +7,14 @@
 package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.configuration.UserConfigurable;
+import org.mars_sim.msp.core.person.PersonNameSpecConfig;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 
 /**
@@ -24,25 +26,28 @@ implements UserConfigurable, Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private MissionAgenda missionAgenda;
-	
-	private Organization organization;
-	
-	private String fullName;
-
-	private String acronym;
-
-	private List<String> countries;
-
-	private List<String> settlementNames;
-
-	private List<String> vehicleNames;
-
 	private boolean predefined;
 	
 	private boolean isCorporation;
 
 	private double genderRatio;
+	
+	private String fullName;
+
+	private String acronym;
+	
+	private MissionAgenda missionAgenda;
+	
+	private Organization organization;
+
+	private List<String> countries;
+	
+	private List<Nation> nations = new ArrayList<>();
+
+	private List<String> settlementNames;
+
+	private List<String> vehicleNames;
+
  
 	public ReportingAuthority(String acronym, String fullName, 
 			boolean isCorporation, boolean predefined, 
@@ -56,10 +61,14 @@ implements UserConfigurable, Serializable {
 		this.predefined = predefined;
 		this.genderRatio = genderRatio;
 		this.missionAgenda = agenda;
-		this.countries = countries;
+		this.countries = countries;	
 		this.settlementNames = names;
 		this.vehicleNames = vehicleNames;
 
+		for (String c: countries) {
+			nations.add(PersonNameSpecConfig.getNation(c));
+    	}
+		
 		if (isCorporation)
 			organization = new Corporation(acronym, fullName);
 		else
@@ -128,7 +137,28 @@ implements UserConfigurable, Serializable {
 	}
 
 	/**
-	 * Selects a country at random from those that this Authority represents.
+	 * Does it belong to only one country ?
+	 * 
+	 * @return
+	 */
+	public boolean isOneCountry() {
+		if (countries.size() == 1)
+			return true;
+		else
+			return false;
+	}
+	
+	/**
+	 * Gets the only country to which this agency/organization belongs.
+	 * 
+	 * @return
+	 */
+	public String getOneCountry() {
+		return countries.get(0);
+	}
+	
+	/**
+	 * Selects a country at random from those that this authority represents.
 	 * 
 	 * @return
 	 */
@@ -139,6 +169,24 @@ implements UserConfigurable, Serializable {
 		else {
 			return countries.get(RandomUtil.getRandomInt(0, countries.size() - 1));	
 		}
+	}
+	
+	/**
+	 * Gets the list of nations.
+	 * 
+	 * @return
+	 */
+	public List<Nation> getNations() {
+		return nations;
+	}
+	
+	/**
+	 * Gets the only nation to which this agency/organization belongs.
+	 * 
+	 * @return
+	 */
+	public Nation getOneNation() {
+		return nations.get(0);
 	}
 	
 	/**
@@ -188,7 +236,6 @@ implements UserConfigurable, Serializable {
 			return false;
 		return true;
 	}
-
 
 	/**
 	 * Gets the male /female ratio for this Authority.

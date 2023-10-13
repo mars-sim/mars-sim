@@ -1031,7 +1031,7 @@ public class Settlement extends Structure implements Temporal,
 				Appointment ap = new Appointment(p, sol, startTimeEVA, DURATION, null, DigLocalRegolith.SIMPLE_NAME, null);
 				p.getScheduleManager().setAppointment(ap);
 				logger.info(this, p, 
-						"On Sol " + sol + ":" + startTimeEVAString 
+						"At Sol " + sol + ":" + startTimeEVAString 
 						+ ", the daily EVA task '" + DigLocalRegolith.SIMPLE_NAME 
 						+ "' was authorized for " + DURATION + " millisols ("
 						+ "deltaTime: " + deltaTime + ")."
