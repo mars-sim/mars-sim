@@ -37,18 +37,20 @@ public final class FlagString {
 		map.put("Italy", "IT");
 		map.put("Japan", "JP");
 		map.put("Luxembourg", "LU");
-		map.put("Norway", "NO");
+		map.put("Netherlands", "NL");
+		map.put("Norway", "NO");	
 		map.put("Poland", "PL");
 		map.put("Portugal", "PT");
 		map.put("Romania", "RO");
 		map.put("Russia", "RU");
+		map.put("Saudi Arabia", "SA");
 		map.put("South Korea", "KR");
 		map.put("Spain", "ES");
 		map.put("Sweden", "SE");
 		map.put("Switzerland", "CH");
-		map.put("The Netherlands", "NL");
-		map.put("UK", "GB");
-		map.put("USA", "US");
+		map.put("United Arab Emirates", "AE");
+		map.put("United Kingdom", "GB");
+		map.put("United States", "US");
 	}
 	
 	public static String getCountryCode(String countryName) {

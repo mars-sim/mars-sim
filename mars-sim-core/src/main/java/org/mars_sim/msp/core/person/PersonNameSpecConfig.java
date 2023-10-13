@@ -41,11 +41,11 @@ public class PersonNameSpecConfig extends UserConfigurableConfig<PersonNameSpec>
                         "Germany", "Greece",
                         "Hungary", "India", "Ireland", "Italy", 
                         "Japan", "Luxembourg",
-                        "Norway", "Poland", "Portugal", 
+                        "Netherlands", "Norway", 
+                        "Poland", "Portugal", 
                         "Romania", "Russia",
                         "Saudi Arabia",
                         "South Korea", "Spain", "Sweden", "Switzerland", 
-                        "Netherlands",
                         "United Arab Emirates",
                         "United Kingdom", "United States"};
 

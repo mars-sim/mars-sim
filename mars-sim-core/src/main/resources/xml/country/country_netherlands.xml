@@ -7,34 +7,115 @@
         <first-name value="Lucas" gender="male" />
         <first-name value="Luuk" gender="male" />
         <first-name value="Noah" gender="male" />
+        
         <first-name value="Milan" gender="male" />
         <first-name value="Daan" gender="male" />
         <first-name value="Levi" gender="male" />
         <first-name value="Finn" gender="male" />
         <first-name value="Jesse" gender="male" />
+        
+        <!-- https://www.momjunction.com/articles/dutch-baby-names-for-boys-and-girls_00397951/ -->
+
+        <first-name value="Aart" gender="male" />
+        <first-name value="Aya" gender="male" />
+        <first-name value="Adrianus" gender="male" />
+        <first-name value="Abbe" gender="male" />
+        <first-name value="Dirk" gender="male" />
+        
+        <first-name value="Aldert" gender="male" />
+        <first-name value="Ambroos" gender="male" />
+        <first-name value="Pim" gender="male" />
+        <first-name value="Cas" gender="male" />
+        <first-name value="Isaak" gender="male" />
+        
+     
+        <first-name value="Berend" gender="male" />
+        <first-name value="Lars" gender="male" />
+        <first-name value="Elmo" gender="male" />
+        <first-name value="Danique" gender="male" />
+        <first-name value="Markus" gender="male" />
+        
+        <first-name value="Van" gender="male" />
+        <first-name value="Joost" gender="male" />
+        <first-name value="Coen" gender="male" />
+        <first-name value="Espen" gender="male" />
+        <first-name value="Diederik" gender="male" />
+              
+        <!-- https://www.momjunction.com/articles/dutch-baby-names-for-boys-and-girls_00397951/#dutch-names-for-girls -->
+      
         <first-name value="Emma" gender="female" />
         <first-name value="Julia" gender="female" />
         <first-name value="Sophie" gender="female" />
         <first-name value="Anna" gender="female" />
         <first-name value="Mila" gender="female" />
+        
         <first-name value="Eva" gender="female" />
         <first-name value="Tess" gender="female" />
         <first-name value="Lotte" gender="female" />
         <first-name value="Sara" gender="female" />
         <first-name value="Zoë" gender="female" />
+               
+        <first-name value="Aleid" gender="female" />
+        <first-name value="Bente" gender="female" />
+        <first-name value="Brechtje" gender="female" />
+        <first-name value="Jade" gender="female" />
+        <first-name value="Arabella" gender="female" />
+        
+        <first-name value="Aleta" gender="female" />
+        <first-name value="Lara" gender="female" />
+        <first-name value="Haven" gender="female" />
+        <first-name value="Fay" gender="female" />
+        <first-name value="Doutzen" gender="female" />
+        
+        
     </first-name-list>
     <last-name-list>
-        <!-- 10 most common Dutch surnames -->
+        <!-- 10 most common Dutch surnames https://www.dutchgenealogy.nl/popular-dutch-surnames/ -->
 
         <last-name value="Bakker" />
         <last-name value="De Boer" />
         <last-name value="De Jong" />
         <last-name value="De Vries" />
         <last-name value="Janssen" />
+        
+        <last-name value="Jansen" />
         <last-name value="Meijer" />
+        <last-name value="Meyer" />        
         <last-name value="Smit" />
         <last-name value="Van den Berg" />
+        
+        <!-- https://forebears.io/netherlands/surnames -->
+        
         <last-name value="Van Dijk" />
         <last-name value="Visser" />
+		<last-name value="De Groot" />
+        <last-name value="Mulder" />
+        <last-name value="Bos" />
+        
+        <last-name value="Vos" />
+        <last-name value="Peters" />
+        <last-name value="Hendriks" />
+        <last-name value="Dekker" />
+        <last-name value="Brouwer" />   
+             
+        <last-name value="Dijkstra" />
+        <last-name value="de Wit" />
+        <last-name value="Kok" />
+        <last-name value="Vermeulen" />
+        <last-name value="de Graaf" />   
+
+        <last-name value="Jacobs" />
+        <last-name value="de Haan" />
+        <last-name value="Schouten" />
+        <last-name value="de Bruin" />
+        <last-name value="van Vliet" />   
+             
+        <last-name value="Willems" />
+        <last-name value="Hoekstra" />
+        <last-name value="van Beek" />
+        <last-name value="Koster" />
+        <last-name value="Maas" />   
+
+          
     </last-name-list>
 </country>
