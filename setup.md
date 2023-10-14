@@ -1,4 +1,4 @@
-# Mars Simulation Project v3.6.0
+# Mars Simulation Project v3.7.0
 
 Copyright (C) 2023 Scott Davis
 https://mars-sim.github.io
@@ -8,9 +8,9 @@ https://github.com/mars-sim/mars-sim
 
 ## Minimum Requirements 
 
-- Dual Core Pentium/Celeron 1.5GHz or higher
+- Dual Core Pentium/Celeron 1.5 GHz or higher
 
-- 1.5 GB free RAM
+- 2 GB free RAM
 
 - 220 MB free disk space
 
@@ -20,7 +20,7 @@ https://github.com/mars-sim/mars-sim
 
 ## Installation
 
-- Install the latest Java JRE or JDK on your machine. 
+- Install the Java JRE or JDK 17 on your machine. 
   See `Prerequisites` at [README.md](https://github.com/mars-sim/mars-sim/blob/master/README.md) 
 
 - Download a binary edition of your choice.
@@ -33,32 +33,34 @@ mars-sim may come in under a few flavors as follows :
 
 A. Swing Edition
 
-- Double-click on `[$VERSION]_swing_java17.jar` to begin
+- Double-click on `{$VERSION}_swing_java17.jar` to begin
 a new simulation in GUI mode. The jar file is executable
 in most operating systems.
 
-- Choose 'New Sim' to start a new simulation in the console menu.
+- Choose the option 'New Sim' to start a new simulation in the console menu.
 
 Alternatively, players may start mars-sim from a terminal / command line.
 
 - Go to the directory containing the jar file and type :
 
-> java -jar [$VERSION]_swing_java17.jar
+> java -jar mars-sim_{$VERSION}_swing_java17.jar
 
 	OR
 
-> java -jar [$VERSION]_swing_java17.jar new
+> java -jar mars-sim_{$VERSION}_swing_java17.jar new
 
 This gives users the advantage of seeing mars-sim's internal logging
 statements while running mars-sim.
 
-Note a: replace [$VERSION] with the current version or build.
+Note a: replace {$VERSION} with the current version or build.
 
-Note b: the argument 'new' is optional. If the argument 'load'
+Note b: replace {$EDITION} with the edition of mars-sim you download.
+
+Note c: the argument 'new' is optional. If the argument 'load'
 is not provided for, it will assume that the user is interested in
 starting a new simulation and 'new' will be appended automatically.
 
-Note c: by default, the simulation will be saved automatically
+Note d: by default, the simulation will be saved automatically
 with a new filename with a date/time stamp, the # of sol and
 the build # once every 15 minutes. It's located in the
 `\[$HOME]\.mars-sim\autosave\` directory, as dictated by the
@@ -73,11 +75,11 @@ of running the entire simulation on its own. Therefore, one may
 prefer to run it in a terminal for hours/days without GUI and in the 
 least intrusive manner utilizing minimal CPU resources. Type :
 
-> java -jar [$VERSION]_headless_java17.jar
+> java -jar mars-sim_{$VERSION}_headless_java17.jar
 
 	OR
 
-> java -jar [$VERSION]_headless_java17.jar new
+> java -jar mars-sim_{$VERSION}_headless_java17.jar new
 
 Note a: the 'new' argument is optional.
 
@@ -92,11 +94,11 @@ simulation.xml :
   by adding `512x` or `1024x` as follows when starting a new
   sim or loading from a saved sim :
 
-> java -jar [$VERSION]_headless_java17.jar -timeratio 512
+> java -jar mars-sim_{$VERSION}_headless_java17.jar -timeratio 512
 
 	OR
 
-> java -jar [$VERSION]_headless_java17.jar -timeratio 1024
+> java -jar mars-sim_{$VERSION}_headless_java17.jar -timeratio 1024
 
 Note d: the time ratio argument is optional and is by default
         `256` as defined in Simulations.xml.
@@ -120,7 +122,7 @@ of the jarfile.
 ---------------------------------------------------------------------
 ## Command-Line Arguments Summary
 
-> java -jar [$VERSION]_{$EDITION]_java17.jar   
+> java -jar mars-sim_{$VERSION}_{$EDITION}_java17.jar   
 > (Note : start a new sim)
 or
 > java -jar jarfile [args...]   
@@ -161,7 +163,7 @@ start of the simulation.
 customize mars-sim to run at one of the configuration by adding a
 numeral argument after the jar file as shown below :
 
-> java -jar mars-sim-main-[$VERSION].jar 4
+> java -jar mars-sim_{$VERSION}_{$EDITION}_java17.jar 4
 
 Below are options :
 ```
@@ -189,7 +191,7 @@ If you want to load a previously saved simulation in graphic mode,
 
 Alternatively, you may type in a command line :
 
-> java -jar mars-sim-[$VERSION].jar -load
+> java -jar mars-sim_{$VERSION}_{$EDITION}_java17.jar -load
 
 This will load the FileChooser and open up 
 `[$HOME]\.mars-sim\saved\` in a window panel.
@@ -203,7 +205,7 @@ at `[$HOME]\.mars-sim\saved\`.
 
   OR
 
-> java -jar mars-sim-[$VERSION].jar -load 123.sim
+> java -jar mars-sim_{$VERSION}_{$EDITION}_java17.jar -load 123.sim
 
 This will load `123.sim`, instead of the default saved sim.
 
@@ -218,7 +220,7 @@ B. Headless Mode
 To load the default saved sim without the graphic interface, 
 type in :
 
-> java -jar mars-sim-[$VERSION].jar -nogui -load
+> java -jar mars-sim_{$VERSION}_{$EDITION}_java17.jar -nogui -load
 
 Note 1: the order of the arguments is not important.
 
@@ -229,7 +231,7 @@ at `[$HOME]\.mars-sim\saved\`.
 
   OR
 
-> java -jar mars-sim-[$VERSION].jar -nogui -load 123.sim
+> java -jar mars-sim_{$VERSION}_{$EDITION}_java17.jar -nogui -load 123.sim
 
 This will load `123.sim`, instead of the default saved sim.
 
