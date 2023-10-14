@@ -33,10 +33,10 @@
 <governance>
 	<!-- Mission agendas that can be used by authorities -->
 	<agendas>
-		<agenda name="Advanced Technology"
-				objective="Prototyping Advanced Technologies"
+		<agenda name="Advanced Technological Development"
+				objective="Prototype Advanced Technologies"
 				findings="Identify uniqueness of how advanced technologies may be tested in this environmental space"
-				data="Mapping the morphology of this local region as test bed for developing advanced technologies of interest">
+				data="Map the morphology of this local region as test bed for developing advanced technologies of interest">
 			<capability description="Improve rover and flyer range and performance">
 				<preference type="MISSION" name="EXPLORATION" modifier="0.8"/>
 				<preference type="MISSION" name="RESCUE_SALVAGE_VEHICLE" modifier="1.6"/>
@@ -59,10 +59,10 @@
 			</capability>
 		</agenda>
 		
-		<agenda name="Building Colonies"
-				objective="Building Self-Sustaining Colonies"
-				findings="Updating the report of the best practices in resource utilization"
-				data="Locating Understanding implications of Marsquakes in erecting structures">
+		<agenda name="Colony Construction"
+				objective="Build Self-Sustaining Colonies"
+				findings="Understand implications and best practices in mass resource utilization and distribution"
+				data="Study Marsquakes on erected structures and environment">
 			<capability description="Study meteorological environmental factors">
 				<preference type="MISSION" name="AREOLOGY" modifier="1.4"/>
 				<preference type="MISSION" name="METEOROLOGY" modifier="1.6"/>
@@ -85,9 +85,9 @@
 		</agenda>
 		
 		<agenda name="Finding Life"
-				objective="Finding Life Past and Present on Mars"
-				findings="Looking for signature of life in soil data"
-				data="Analyzing and Cataloging data from various sites">
+				objective="Answer the Question of Life Past and Present on Mars"
+				findings="Look for signature of life in soil data"
+				data="Analyze and Cataloging data from various sites">
 			<capability description="Follow the water">
 				<preference type="MISSION" name="BIOLOGY" modifier="1.9"/>
 				<preference type="SCIENCE" name="BOTANY" modifier="3"/>				
@@ -110,9 +110,9 @@
 		</agenda>
 		
 		<agenda name="Health Hazards"
-				objective="Researching short and long term medical impact on human health"
-				findings="Reporting on the various health hazards for human beings living on Mars"
-				data="Classifying environmental hazards for surface operation">
+				objective="Research short and long term medical impact on human health"
+				findings="Identify on the various health hazards for human beings living on Mars"
+				data="Classify environmental hazards for surface operation">
 			<capability description="Investigate biological hazards">
 				<preference type="MISSION" name="BIOLOGY" modifier="1.6"/>
 				<preference type="MISSION" name="COLLECT_ICE" modifier="1.2"/>
@@ -139,9 +139,9 @@
 		</agenda>
 		
 		<agenda name="Human Habitation"
-				objective="Characterizing and Determining Factors contributed to Human Habitability"
-				findings="Identifying engineering challenge in constructing surface, underground and cliff-side dwelling"
-				data="Analyzing atmospheric conditions and geographical factors of human habitability in a local region">
+				objective="Characterize and Determining Factors contributed to Human Habitability"
+				findings="Identify engineering challenge in constructing surface, underground and cliff-side dwelling"
+				data="Analyze atmospheric conditions and geographical factors of human habitability in a local region">
 			<capability description="Predict meteorological changes">
 				<preference type="MISSION" name="AREOLOGY" modifier="1.5"/>
 				<preference type="MISSION" name="METEOROLOGY" modifier="2"/>
@@ -160,8 +160,8 @@
 		</agenda>
 		
 		<agenda name="Planet Life"
-				objective="Making Life Multiplanetary"
-				findings="Surveying sociological and ideological implications in populating a region"
+				objective="Make Life Multiplanetary"
+				findings="Survey sociological and ideological implications in populating a region"
 				data="Unlock factors for transforming Mars into hospitable biomes to usher in human colonization">
 			<capability description="Conceptualize interplanetary transportation network">
 				<preference type="MISSION" name="DELIVERY" modifier="1.9"/>
@@ -184,10 +184,10 @@
 			</capability>
 		</agenda>
 		
-		<agenda name="Prospect Minerals"
-				objective="Prospecting Mineral Compositions and Evaluating Mineral Resources"
-				findings="Documenting the process and history of climate on Mars"
-				data="Analyzing the wealth of mineral contents from the colleted soil data">
+		<agenda name="Mineral Prospecting"
+				objective="Prospect Mineral Compositions and Evaluating Mineral Resources"
+				findings="Document the process and history of climate on Mars"
+				data="Analyze the wealth of mineral contents from the colleted soil data">
 			<capability description="Analyze various signatures of minerals">
 				<preference type="MISSION" name="AREOLOGY" modifier="1.3"/>
 				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.3"/>
@@ -209,9 +209,9 @@
 		</agenda>
 		
 		<agenda name="Science and Technology"
-				objective="Leapfrogging Scientific Knowledge and Technological Pursuit"
-				findings="Exploring what science disciplines are most benefit in a given region"
-				data="Analyzing gravity and atmospheric variability for deploying laser communication array">
+				objective="Leapfrog Scientific Knowledge and Technological Pursuit"
+				findings="Explore what science disciplines are most benefit in a given region"
+				data="Analyze gravity and atmospheric variability for deploying laser communication array">
 			<capability description="Analyze meteorite fragments">
 				<preference type="MISSION" name="EXPLORATION" modifier="1.4"/>			
 				<preference type="SCIENCE" name="PHYSICS" modifier="3"/>				
@@ -232,9 +232,9 @@
 		</agenda>
 		
 		<agenda name="Settling Mars"
-				objective="Making Mars the Second Home for Humanity"
-				findings="Investigating local in-situ resources that one can collect and process for immediate uses"
-				data="Analyzing structural integrity of geological features for building settlements in this region">
+				objective="Make Mars the Second Home for Humanity"
+				findings="Investigate local in-situ resources that one can collect and process for immediate uses"
+				data="Analyze structural integrity of geological features for building settlements in this region">
 			<capability description="Engineer soil capable of hosting and sustaining organic microbial life">
 				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.3"/>
 				<preference type="SCIENCE" name="BIOLOGY" modifier="6"/>		
@@ -257,9 +257,9 @@
 		</agenda>
 		
 		<agenda name="Space Research Applications"
-				objective="Advancing Space Research and Developing Applications"
-				findings="Developing framework for applied space research in this frontier"
-				data="Analyzing various region impact how space research is conducted">
+				objective="Advance Space Research and Developing Applications"
+				findings="Develop framework for applied space research in this frontier"
+				data="Analyze various region impact how space research is conducted">
 			<capability description="Test space-ground links">
 				<preference type="MISSION" name="METEOROLOGY" modifier="1.3"/>
 				<preference type="SCIENCE" name="PHYSICS" modifier="8"/>	
@@ -278,9 +278,9 @@
 		</agenda>
 		
 		<agenda name="Space Tracking"
-				objective="Developing Space Observation and Tracking Platforms"
-				findings="Developing space object tracking stations"
-				data="Measuring and identifying galactic origins of cosmic ray radiation">
+				objective="Develop Space Observation and Tracking Platforms"
+				findings="Develop space object tracking stations"
+				data="Measure and identify galactic origins of cosmic ray radiation">
 			<capability description="Test ground observatory designs">
 				<preference type="MISSION" name="METEOROLOGY" modifier="1.3"/>
 				<preference type="SCIENCE" name="ASTRONOMY" modifier="9"/>
@@ -300,11 +300,11 @@
 				<preference type="SCIENCE" name="COMPUTING" modifier="8"/>									
 			</capability>
 		</agenda>
-				
+
 		<agenda name="Surface Operations"
-				objective="Pushing Boundaries of Surface Logistic Operations"
-				findings="Identifying the human factors and logistics concerns in surface operations"
-				data="Analyzing soil's strength for the suitability of spaceport construction">
+				objective="Push Boundaries of Surface Logistic Operations"
+				findings="Identify the human factors and logistics concerns in surface operations"
+				data="Analyze soil's strength for the suitability of spaceport construction">
 			<capability description="Stress test on human endurance">
 				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
 				<preference type="MISSION" name="EXPLORATION" modifier="1.3"/>
@@ -328,6 +328,68 @@
 				<preference type="MISSION" name="MINING" modifier="1.4"/>
 			</capability>
 		</agenda>
+						
+		<agenda name="Space Commerce"
+				objective="Build Up Capabilities and Infrastructures Supporting Commerce"
+				findings="Spearhead the development of economic framework and policies to address concerns" 
+				data="Analyze system deficits that hinder the growth of commerce">
+			<capability description="Characterize manufacturing and resource production in relation to local economy">
+				<preference type="MISSION" name="TRADE" modifier="2"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.4"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="8"/>
+				<preference type="SCIENCE" name="ENGINEERING" modifier="4"/>
+			</capability>
+			<capability description="Test space-ground links">
+				<preference type="MISSION" name="METEOROLOGY" modifier="1.3"/>
+				<preference type="SCIENCE" name="PHYSICS" modifier="8"/>	
+				<preference type="SCIENCE" name="COMPUTING" modifier="4"/>								
+			</capability>
+			<capability description="Identify social factors in developing commerce">
+				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
+				<preference type="MISSION" name="EXPLORATION" modifier="1.3"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="2"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="2"/>
+			</capability>
+			<capability description="Conceptualize interplanetary transportation network">
+				<preference type="MISSION" name="DELIVERY" modifier="1.9"/>
+				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
+				<preference type="MISSION" name="TRADE" modifier="2"/>
+				<preference type="MISSION" name="RESCUE_SALVAGE_VEHICLE" modifier="4"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.2"/>
+			</capability>
+		</agenda>
+								
+		<agenda name="Wealth Accumulation"
+				objective="Incentivize Individual and Corporate Ownership"
+				findings="Study the development of private ownership of land" 
+				data="Analyze mass resource utilization and settlement economic data">
+			<capability description="Characterize manufacturing and resource production in relation to local economy">
+				<preference type="MISSION" name="TRADE" modifier="2"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.4"/>
+				<preference type="MISSION" name="MINING" modifier="1.4"/>
+				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.2"/>				
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="8"/>
+				<preference type="SCIENCE" name="ENGINEERING" modifier="4"/>
+			</capability>
+			<capability description="Enable monetary exchange">
+				<preference type="MISSION" name="TRADE" modifier="1.3"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="3"/>	
+				<preference type="SCIENCE" name="COMPUTING" modifier="6"/>								
+			</capability>
+			<capability description="Identify social factors in developing commerce">
+				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
+				<preference type="MISSION" name="EXPLORATION" modifier="1.3"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="2"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="2"/>
+			</capability>
+			<capability description="Conceptualize trading network">
+				<preference type="MISSION" name="DELIVERY" modifier="1.9"/>
+				<preference type="MISSION" name="TRADE" modifier="2"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.2"/>
+				<preference type="SCIENCE" name="COMPUTING" modifier="6"/>	
+			</capability>
+		</agenda>
+		
 	</agendas>
 
 	<!--  Reporting authorities. The code attribute must match
@@ -364,7 +426,7 @@
 		</authority>
 
 		<authority code="CNSA" name="China National Space Administration" corporation="false"
-					agenda="Prospect Minerals" gender-ratio="0.75">
+					agenda="Mineral Prospecting" gender-ratio="0.75">
 			<country name="China"/>
 			<settlement-name name="Tian Cheng" />
 			<settlement-name name="Xin Cheng" />
@@ -489,7 +551,7 @@
 		</authority>
 
 		<authority code="ISRO" name="The Indian Space Research Organisation" corporation="false"
-					agenda="Advanced Technology" gender-ratio="0.9">
+					agenda="Advanced Technological Development" gender-ratio="0.9">
 			<country name="India"/>
 			<settlement-name name="New Bengal" />
 			<settlement-name name="New Chennai" />
@@ -779,7 +841,7 @@
 		</authority>
 		
 		<authority code="BO" name="Blue Origin" corporation="true"
-					agenda="Building Colonies" gender-ratio="0.5">
+					agenda="Colony Construction" gender-ratio="0.5">
 			<country name="United States"/>
 			<settlement-name name="Aurora Terminus" />
 			<settlement-name name="Falcon Station" />
