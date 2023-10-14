@@ -311,7 +311,7 @@ public class MonitorWindow extends ToolWindow
 			settlements = unitManager.getCommanderSettlements();
 		}
 
-		else if (GameManager.getGameMode() == GameMode.SANDBOX) {
+		else { //if (GameManager.getGameMode() == GameMode.SANDBOX) {
 			settlements.addAll(unitManager.getSettlements());
 		}
 

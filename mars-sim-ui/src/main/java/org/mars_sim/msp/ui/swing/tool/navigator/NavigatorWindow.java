@@ -591,7 +591,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			settlements = unitManager.getCommanderSettlements();
 		}
 
-		else if (GameManager.getGameMode() == GameMode.SANDBOX) {
+		else { //if (GameManager.getGameMode() == GameMode.SANDBOX) {
 			settlements.addAll(unitManager.getSettlements());
 		}
 

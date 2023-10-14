@@ -338,11 +338,23 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 			} else {
 				setPaneTitle(Simulation.TITLE + "  -  Command Mode");
 			}
-		} else {
+		} else if (GameManager.getGameMode() == GameMode.SANDBOX) {
 			if (isPaused) {
 				setPaneTitle(Simulation.TITLE + "  -  Sandbox Mode" + "  -  [ P A U S E ]");
 			} else {
 				setPaneTitle(Simulation.TITLE + "  -  Sandbox Mode");
+			}
+		} else if (GameManager.getGameMode() == GameMode.SPONSOR) {
+			if (isPaused) {
+				setPaneTitle(Simulation.TITLE + "  -  Sponsor Mode" + "  -  [ P A U S E ]");
+			} else {
+				setPaneTitle(Simulation.TITLE + "  -  Sponsor Mode");
+			}
+		} else if (GameManager.getGameMode() == GameMode.SOCIETY) {
+			if (isPaused) {
+				setPaneTitle(Simulation.TITLE + "  -  Society Mode" + "  -  [ P A U S E ]");
+			} else {
+				setPaneTitle(Simulation.TITLE + "  -  Society Mode");
 			}
 		}
 	}

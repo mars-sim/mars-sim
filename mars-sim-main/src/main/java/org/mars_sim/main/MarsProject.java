@@ -134,7 +134,7 @@ public class MarsProject {
 					SwingUtilities.invokeLater(MainWindow::startSplash);
 				}
 				
-				// Use opengl. 
+				// Use opengl...
 				
 				// This is very fragile logic
 				String os = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
@@ -161,7 +161,7 @@ public class MarsProject {
 			// Go to console main menu if there is no template well-defined in the startup string
 			else if (!builder.isFullyDefined() && useNew) {
 		
-				// Ask if running in standard Sandbox mode or Go to Console Menu
+				// Ask if running in standard sandbox mode or go to Console Menu
 				if (!isSandbox && !bypassConsoleMenuDialog()) {
 					logger.config("Please go to the Console Main Menu to choose an option.");
 					int type = interactiveTerm.startConsoleMainMenu();

@@ -227,17 +227,17 @@ public class SimulationConfigEditor {
 		JPanel topPanel = null;
 
 		if (GameManager.getGameMode() == GameMode.COMMAND) {
-			mode = GameMode.COMMAND;
 			topPanel = new JPanel(new GridLayout(2, 1));
 			f.add(topPanel, BorderLayout.NORTH);
 		}
 
 		else {
-			mode = GameMode.SANDBOX;
 			topPanel = new JPanel(new GridLayout(1, 1));
 			f.add(topPanel, BorderLayout.NORTH);
 		}
 
+		mode = GameManager.getGameMode();
+		
 		// Create the title label.
 		if (mode == GameMode.COMMAND) {
 

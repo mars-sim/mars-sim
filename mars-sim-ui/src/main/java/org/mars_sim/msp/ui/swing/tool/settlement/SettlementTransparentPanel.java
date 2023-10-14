@@ -193,12 +193,8 @@ public class SettlementTransparentPanel extends JComponent {
         this.surfaceFeatures = sim.getSurfaceFeatures();
         this.orbitInfo = sim.getOrbitInfo();
 
-		if (GameManager.getGameMode() == GameMode.COMMAND) {
-			mode = GameMode.COMMAND;
-		}
-		else
-			mode = GameMode.SANDBOX;
-
+        mode = GameManager.getGameMode();
+		
 		setDoubleBuffered(true);
     }
 
@@ -1122,7 +1118,7 @@ public class SettlementTransparentPanel extends JComponent {
 				settlements = unitManager.getCommanderSettlements();
 			}
 
-			else if (mode == GameMode.SANDBOX) {
+			else { //if (mode == GameMode.SANDBOX) {
 				settlements.addAll(unitManager.getSettlements());
 			}
 

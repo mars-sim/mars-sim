@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * GameManager.java
- * @date 2022-11-02
+ * @date 2023-10-13
  * @author Manny Kung
  */
 
@@ -21,7 +21,7 @@ public class GameManager {
 
     /** The GameMode enums. */
     public enum GameMode {
-        COMMAND, SANDBOX, SOCIETY;
+        COMMAND, SANDBOX, SOCIETY, SPONSOR;
     }
 
     /** An instance of GameMode. */
@@ -53,7 +53,8 @@ public class GameManager {
     }
 
     /**
-     * Change of the global commander.
+     * Sets the commander.
+     * 
      * @param cc
      */
     public static void setCommander(Person cc) {
@@ -63,19 +64,18 @@ public class GameManager {
     public static void initializeInstances(UnitManager u) {
 
 		if (u.getCommanderID() > 0) {
+			// Force it to be in Command Mode
 			gameMode = GameMode.COMMAND;
 	    	int id = u.getCommanderID();
 	    	commanderPerson = u.getPersonByID(id);
 		}
-		else {
-			gameMode = GameMode.SANDBOX;
-		}
-
     }
 
 	/**
-	 * Find the settlement match for the user proposed commander's sponsor
-	 */
+	 * Finds the settlement match for the user proposed commander's sponsor.
+     * 
+     * @param unitMgr
+     */
 	public static void placeInitialCommander(UnitManager unitMgr) {
 
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
@@ -105,7 +105,7 @@ public class GameManager {
 	}
 
 	/**
-	 * Gets the game mode
+	 * Gets the game mode.
 	 *
 	 * @return GameMode
 	 */
@@ -114,7 +114,7 @@ public class GameManager {
     }
 
 	/**
-	 * Gets the game mode
+	 * Sets the game mode.
 	 *
 	 * @return GameMode
 	 */

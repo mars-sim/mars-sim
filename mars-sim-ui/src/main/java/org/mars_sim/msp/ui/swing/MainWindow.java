@@ -120,8 +120,12 @@ public class MainWindow
 
 		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			logger.log(Level.CONFIG, "Running mars-sim in Command Mode.");
-		} else {
+		} else if (GameManager.getGameMode() == GameMode.SANDBOX) {
 			logger.log(Level.CONFIG, "Running mars-sim in Sandbox Mode.");
+		} else if (GameManager.getGameMode() == GameMode.SPONSOR) {
+			logger.log(Level.CONFIG, "Running mars-sim in Sponsor Mode.");
+		} else if (GameManager.getGameMode() == GameMode.SOCIETY) {
+			logger.log(Level.CONFIG, "Running mars-sim in Society Mode.");
 		}
 
 		// Set Apache Batik library system property so that it doesn't output:
@@ -645,7 +649,7 @@ public class MainWindow
 	}
 
 	/**
-	 * Disposes the splash window frame
+	 * Disposes the splash window frame.
 	 */
 	private static void disposeSplash() {
 		if (splashWindow != null) {
@@ -654,6 +658,11 @@ public class MainWindow
 		splashWindow = null;
 	}
 
+	/**
+	 * Changes the title.
+	 * 
+	 * @param isPaused
+	 */
 	private void changeTitle(boolean isPaused) {
 		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			if (isPaused) {
@@ -661,28 +670,45 @@ public class MainWindow
 			} else {
 				frame.setTitle(Simulation.TITLE + "  -  Command Mode");
 			}
-		} else {
+		} else if (GameManager.getGameMode() == GameMode.SANDBOX) {
 			if (isPaused) {
 				frame.setTitle(Simulation.TITLE + "  -  Sandbox Mode" + "  -  [ P A U S E ]");
 			} else {
 				frame.setTitle(Simulation.TITLE + "  -  Sandbox Mode");
 			}
+		} else if (GameManager.getGameMode() == GameMode.SPONSOR) {
+			if (isPaused) {
+				frame.setTitle(Simulation.TITLE + "  -  Sponsor Mode" + "  -  [ P A U S E ]");
+			} else {
+				frame.setTitle(Simulation.TITLE + "  -  Sponsor Mode");
+			}
+		} else if (GameManager.getGameMode() == GameMode.SOCIETY) {
+			if (isPaused) {
+				frame.setTitle(Simulation.TITLE + "  -  Society Mode" + "  -  [ P A U S E ]");
+			} else {
+				frame.setTitle(Simulation.TITLE + "  -  Society Mode");
+			}
 		}
 	}
 
+	/**
+	 * Is it iconified ?
+	 * 
+	 * @return
+	 */
 	public boolean isIconified() {
 		return isIconified;
 	}
 
 	/**
-	 * Get the UIConfig for this UI.
+	 * Gets the UIConfig for this UI.
 	 */
 	public UIConfig getConfig() {
 		return configs;
 	}
 
 	/**
-	 * Get the UI properties of the application
+	 * Gets the UI properties of the application.
 	 */
 	public Map<String, Properties> getUIProps() {
 		Map<String, Properties> result = new HashMap<>();

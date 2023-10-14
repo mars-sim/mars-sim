@@ -85,7 +85,7 @@ public class InteractiveTerm {
 	}
 
 	/**
-	 * Asks players what to choose in beryx console main menu.
+	 * Asks the player to choose in beryx console main menu.
 	 */
 	public int startConsoleMainMenu() {
 		logger.config("Staring startConsoleMainMenu()");
@@ -96,7 +96,7 @@ public class InteractiveTerm {
 	}
 
 	/**
-	 * Prints the main menu
+	 * Prints the main menu.
 	 */
 	private void printMainMenu() {
 		marsTerminal.print(System.lineSeparator()
@@ -220,7 +220,7 @@ public class InteractiveTerm {
 	}
 
 	/**
-	 * Prints the command mode menu
+	 * Prints the command mode menu.
 	 */
 	private void printModeSelectionMenu() {
 		marsTerminal.print(System.lineSeparator()
@@ -235,7 +235,9 @@ public class InteractiveTerm {
 				+ System.lineSeparator()
 				+ "2. Sandbox Mode"
 				+ System.lineSeparator()
-				+ "3. Society Mode (Experimental only)"
+				+ "3. Society Mode (Not Available)"
+				+ System.lineSeparator()
+				+ "4. Sponsor Mode (Experimental only)"
 				+ System.lineSeparator()
 				+ System.lineSeparator()
 				);
@@ -251,7 +253,8 @@ public class InteractiveTerm {
 
 		printModeSelectionMenu();
 		
-        handler.addStringTask("input", "Select the Game Mode:", false).addChoices("0", "1", "2", "3").constrainInputToChoices();
+        handler.addStringTask("input", "Select the Game Mode:", false)
+        	.addChoices("0", "1", "2", "3", "4").constrainInputToChoices();
         handler.executeOneTask();
 
         if (GameManager.input.equals("0")) {
@@ -282,6 +285,14 @@ public class InteractiveTerm {
         	marsTerminal.print(System.lineSeparator());
 
         	modeChoice = configureSocietyMode();
+        }
+        
+        else if (GameManager.input.equals("4")) {
+        	marsTerminal.print(System.lineSeparator());
+			marsTerminal.print("Go to Sponsor Mode.");
+        	marsTerminal.print(System.lineSeparator());
+
+        	modeChoice = configureSponsorMode();
         }
         
 		marsTerminal.print(System.lineSeparator());
@@ -321,13 +332,13 @@ public class InteractiveTerm {
 	}
 	
 	/**
-	 * Configures the command mode
+	 * Configures the command mode.
 	 *
 	 * @param isLoaded
 	 * @return
 	 */
 	private int configureCommandMode(boolean isLoaded) {
-		int commandCfg = 0;
+		int cfg = 0;
 		boolean loaded = isLoaded;
 
 		// Set the Game Mode to Command Mode in GameManager
@@ -351,13 +362,13 @@ public class InteractiveTerm {
 				marsTerminal.print("Sorry. The Console Edition of mars-sim does not come with the Site Editor.");
 				marsTerminal.println(System.lineSeparator());
 
-				commandCfg = configureCommandMode(loaded);
+				cfg = configureCommandMode(loaded);
         	}
         	else {
 				marsTerminal.print(System.lineSeparator());
 				marsTerminal.print("Loading the Scenario Editor in Swing-based UI...");
 
-				commandCfg = 1;
+				cfg = 1;
         	}
         }
 
@@ -374,7 +385,7 @@ public class InteractiveTerm {
 	        	marsTerminal.print(System.lineSeparator());
 			}
 
-			commandCfg = configureCommandMode(loaded);
+			cfg = configureCommandMode(loaded);
     	}
 
         else if ((GameManager.commandCfg).equals("3")) {
@@ -388,7 +399,7 @@ public class InteractiveTerm {
 				marsTerminal.print("Cannot start the simulation since no commander profile has been loaded up. Try it again.");
 				marsTerminal.print(System.lineSeparator());
 
-				commandCfg = configureCommandMode(loaded);
+				cfg = configureCommandMode(loaded);
         	}
     	}
 
@@ -409,7 +420,7 @@ public class InteractiveTerm {
 			marsTerminal.print("Note: if profiled created successfully, choose 6 to load up this profile.");
         	marsTerminal.print(System.lineSeparator());
 
-			commandCfg = configureCommandMode(loaded);
+			cfg = configureCommandMode(loaded);
     	}
 
     	else if ((GameManager.commandCfg).equals("6")) {
@@ -420,20 +431,20 @@ public class InteractiveTerm {
 			marsTerminal.print("Note: if loaded successfully, will automatically proceed to start the simulation.");
 
         	if (!loaded)
-        		commandCfg = configureCommandMode(loaded);
+        		cfg = configureCommandMode(loaded);
     	}
 
         else {
-        	commandCfg = configureCommandMode(loaded);
+        	cfg = configureCommandMode(loaded);
         }
 
 		marsTerminal.print(System.lineSeparator());
 
-        return commandCfg;
+        return cfg;
 	}
 
 	/**
-	 * Prints the sandbox mode menu
+	 * Prints the sandbox mode menu.
 	 */
 	private void printSandoxMenu() {
 		 marsTerminal.println(System.lineSeparator()
@@ -461,12 +472,12 @@ public class InteractiveTerm {
 	
 
 	/**
-	 * Configures the sandbox mode
+	 * Configures the sandbox mode.
 	 *
 	 * @return
 	 */
 	private int configureSandoxMode() {
-		int sandboxCfg = 0;
+		int cfg = 0;
 
 		GameManager.setGameMode(GameMode.SANDBOX);
 
@@ -489,13 +500,13 @@ public class InteractiveTerm {
 				marsTerminal.print("Sorry. The Console Edition of mars-sim does not come with the Site Editor.");
 				marsTerminal.println(System.lineSeparator());
 
-				sandboxCfg = configureSandoxMode();
+				cfg = configureSandoxMode();
         	}
         	else {
 				marsTerminal.print(System.lineSeparator());
 				marsTerminal.print("Loading the Scenario Editor in Swing-based UI...");
 
-				sandboxCfg = 1;
+				cfg = 1;
         	}
         }
 
@@ -512,7 +523,7 @@ public class InteractiveTerm {
 	        	marsTerminal.print(System.lineSeparator());
 			}
 
-	    	sandboxCfg = configureSandoxMode();
+	    	cfg = configureSandoxMode();
     	}
 
         else if ((GameManager.sandboxCfg).equals("3")) {
@@ -529,19 +540,36 @@ public class InteractiveTerm {
         }
 
         else {
-        	sandboxCfg = configureSandoxMode();
+        	cfg = configureSandoxMode();
         }
 
-    	return sandboxCfg;
+    	return cfg;
 	}
 
 	/**
-	 * Configures the society mode
+	 * Configures the sponsor mode.
+	 *
+	 * @return
+	 */
+	private int configureSponsorMode() {
+		int cfg = 4;
+
+		GameManager.setGameMode(GameMode.SPONSOR);
+
+		marsTerminal.print(System.lineSeparator());
+		marsTerminal.print("Starting the Simulation in Sponsor Mode.");
+    	marsTerminal.print(System.lineSeparator());
+
+		return cfg;
+	}
+	
+	/**
+	 * Configures the society mode.
 	 *
 	 * @return
 	 */
 	private int configureSocietyMode() {
-		int societyCfg = 3;
+		int cfg = 3;
 
 		GameManager.setGameMode(GameMode.SOCIETY);
 
@@ -549,11 +577,11 @@ public class InteractiveTerm {
 		marsTerminal.print("Starting the Society Simulation.");
     	marsTerminal.print(System.lineSeparator());
 
-		return societyCfg;
+		return cfg;
 	}
 		
 	/**
-	 * Loads the previously saved commander profile
+	 * Loads the previously saved commander profile.
 	 */
 	private boolean loadPreviousProfile() {
 		boolean loaded = false;
