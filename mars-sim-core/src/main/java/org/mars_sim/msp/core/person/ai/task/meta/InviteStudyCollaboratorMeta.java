@@ -6,7 +6,10 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.util.List;
+
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
@@ -15,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -22,7 +26,6 @@ import org.mars_sim.msp.core.science.ScientificStudyUtil;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the InviteStudyCollaborator task.
@@ -48,69 +51,58 @@ public class InviteStudyCollaboratorMeta extends FactoryMetaTask {
         return new InviteStudyCollaborator(person);
     }
 
+    /**
+     * Assess suitability of a Person to raise invites to a study. This is based on whether
+     * the person is leading a study and it's phase.
+     * @param person Being assessed
+     * @return List of potential tasks
+     */
     @Override
-    public double getProbability(Person person) {
-
-        double result = 0D;
+    public List<TaskJob> getTaskJobs(Person person) {
         
-        if (person.isInside()) {
-
-            if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
-            	return 0;
-
-            // Check if study is in invitation phase.
-            ScientificStudy study = person.getStudy();
-            if (study == null)
-            	return 0;
-            		
-            else if (study.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
-
-                // Check that there isn't a full set of open invitations already sent out.
-                int collabNum = study.getCollaborativeResearchers().size();
-                int openInvites = study.getNumOpenResearchInvitations();
-                if ((openInvites + collabNum) < study.getMaxCollaborators()) {
-
-                    // Check that there's scientists available for invitation.
-                    if (ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).isEmpty()) {
-                    	logger.warning(person, 30_000L, "Can not find anyone to invite for " + study.getName());
-                    }
-                    else {
-
-                    	// Once a proposal is finished get the invites out quickly
-                        result += 100D;
-
-                        if (person.isInVehicle()) {	
-                	        // Check if person is in a moving rover.
-                	        if (Vehicle.inMovingRover(person)) {
-                		        // the bonus for proposing scientific study inside a vehicle, 
-                	        	// rather than having nothing to do if a person is not driving
-                	        	result += 20;
-                	        } 	       
-                	        else
-                		        // the bonus for proposing scientific study inside a vehicle, 
-                	        	// rather than having nothing to do if a person is not driving
-                	        	result += 5;
-                        }
-                        
-                        // Crowding modifier
-                        Building adminBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
-                        result *= getBuildingModifier(adminBuilding, person);
-
-
-                        // Increase probability if person's current job is related to study's science.
-                        JobType job = person.getMind().getJob();
-                        ScienceType science = study.getScience();
-                        if (science == ScienceType.getJobScience(job)) {
-                            result *= 2D;
-                        }
-                        result *= person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
-
-                        result *= getPersonModifier(person);
-	                }
-	            }
-	        }
+        if (!person.isInside()
+            || !person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
+            return EMPTY_TASKLIST;
         }
 
-        return result;
+        // Check if study is in invitation phase.
+        ScientificStudy study = person.getStudy();
+        if ((study == null)
+                || !study.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
+            return EMPTY_TASKLIST;
+        }
+
+        // Check that there isn't a full set of open invitations already sent out.
+        int collabNum = study.getCollaborativeResearchers().size();
+        int openInvites = study.getNumOpenResearchInvitations();
+        if ((openInvites + collabNum) >= study.getMaxCollaborators()) {
+            return EMPTY_TASKLIST;
+        }
+        if (ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).isEmpty()) {
+            logger.warning(person, 30_000L, "Can not find anyone to invite for " + study.getName());
+            return EMPTY_TASKLIST;
+        }
+
+        // Once a proposal is finished get the invites out quickly
+        var result = new RatingScore(100D);
+		
+        // In a moving vehicle?
+		result = assessMoving(result, person);
+        
+        // Crowding modifier
+        Building adminBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
+        result = assessBuildingSuitability(result, adminBuilding, person);
+
+        // Increase probability if person's current job is related to study's science.
+        JobType job = person.getMind().getJob();
+        ScienceType science = study.getScience();
+        if (science == ScienceType.getJobScience(job)) {
+            result.addModifier("science", 2D);
+        }
+        result.addModifier(GOODS_MODIFIER, person.getAssociatedSettlement().getGoodsManager().getResearchFactor());
+
+        result = assessPersonSuitability(result, person);
+
+        return createTaskJobs(result);
     }
 }

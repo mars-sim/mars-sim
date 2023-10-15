@@ -7,7 +7,9 @@
 package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Simulation;
@@ -24,13 +26,14 @@ import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Class for a meta task, responsible for determining task probability and
  * constructing task instances.
  */
 public abstract class MetaTask {
-	
+
 	/**
 	 *  Defines the type of Worker support by this Task.
 	 */
@@ -45,15 +48,16 @@ public abstract class MetaTask {
 		ANY_HOUR, WORK_HOUR, NONWORK_HOUR
 	}
 	
-	private static final String BUILDING_MODIFIER = "building";
 	private static final String EVA_MODIFIER = "eva";
 	protected static final String GARAGED_MODIFIER = "garaged";
 	protected static final String GOODS_MODIFIER = "goods";
+	private static final String FAV_MODIFIER = "favourite";
+	private static final String JOB_MODIFIER = "job";
 	protected static final String PERSON_MODIFIER = "person";
 	private static final String RADIATION_MODIFIER = "radiation";
+	private static final String ROLE_MODIFIER = "role";
     protected static final String STRESS_MODIFIER = "stress";
-	private static final String FAV_MODIFIER = "favourite";
-
+	private static final String VEHICLE_MODIFIER = "vehicle";
 
 	// Traits used to identify non-effort tasks
 	private static final Set<TaskTrait> PASSIVE_TRAITS
@@ -63,8 +67,11 @@ public abstract class MetaTask {
 				TaskTrait.MEDICAL);
 	
 	/** Probability penalty for starting a non-job-related task. */
-	private static final double NON_JOB_PENALTY = .25D;
-	
+	private static final double ROLE_BONUS = 1.25D;  // Default preferred role bonus
+	private static final double NON_ROLE_PENALTY = .25D;  // Weight if not preferred role
+	protected static final double JOB_BONUS = 1D;  // Default preferred job bonus
+	private static final double NON_JOB_PENALTY = .25D;  // Weight if not preferred job
+
 	private static final String META = "Meta";
 	
 	protected static SurfaceFeatures surfaceFeatures;
@@ -83,9 +90,9 @@ public abstract class MetaTask {
 	
 	private Set<TaskTrait> traits = Collections.emptySet();
 	private Set<FavoriteType> favourites = Collections.emptySet();
-	private Set<JobType> preferredJobs = new HashSet<>();
+	private Map<JobType,Double> preferredJobs = new EnumMap<>(JobType.class);
 	private Set<RobotType> preferredRobots = new HashSet<>();
-	private Set<RoleType> preferredRoles = new HashSet<>();
+	private Map<RoleType,Double> preferredRoles = new EnumMap<>(RoleType.class);
 	
 	
 	/**
@@ -137,7 +144,9 @@ public abstract class MetaTask {
 	 * @param jobs
 	 */
     protected void setPreferredJob(Set<JobType> jobs) {
-    	this.preferredJobs = jobs;
+		for(JobType j : jobs) {
+    		this.preferredJobs.put(j, JOB_BONUS);
+		}
 	}
 
 	/**
@@ -146,16 +155,38 @@ public abstract class MetaTask {
 	 * @param jobs
 	 */
     protected void setPreferredJob(JobType... jobs) {
-        Collections.addAll(this.preferredJobs, jobs);
+		for(JobType j : jobs) {
+    		this.preferredJobs.put(j, JOB_BONUS);
+		}
 	}
 	
+	/**
+	 * Add a preferred job with a specific weight. The weight is appleid to the Rating Score.
+	 * @param job
+	 * @param w weight.
+	 */
+    protected void addPreferredJob(JobType job, double w) {
+		this.preferredJobs.put(job, w);
+	}
+
+	/**
+	 * Add a preferred role with a specific weight. The weight is appleid to the Rating Score.
+	 * @param role
+	 * @param w weight.
+	 */
+	protected void addPreferredRole(RoleType role, double w) {
+		preferredRoles.put(role, w);
+	}
+
 	/**
 	 * Sets the preferred roles for this Task.
 	 * 
 	 * @param jobs
 	 */
     protected void setPreferredRole(RoleType... roles) {
-        Collections.addAll(this.preferredRoles, roles);
+		for(RoleType r : roles) {
+			preferredRoles.put(r, ROLE_BONUS);
+		}
 	}
     
 	/**
@@ -183,7 +214,7 @@ public abstract class MetaTask {
 	 * @return
 	 */
 	public Set<JobType> getPreferredJob() {
-		return preferredJobs;
+		return preferredJobs.keySet();
 	}
 	
 	/**
@@ -285,9 +316,17 @@ public abstract class MetaTask {
 	 	// 2. Task must have Preferred Jobs
 	 	// 3. If the Person's job is not in the Preferred list then a penalty is applied. 
 		JobType job = person.getMind().getJob();
-        if ((job != null) && !preferredJobs.isEmpty()
-        		&& !preferredJobs.contains(job)) {
-			score.addModifier("job", NON_JOB_PENALTY);
+        if (job != null) {
+			score.addModifier(JOB_MODIFIER, preferredJobs.getOrDefault(job, NON_JOB_PENALTY));
+        }
+		
+		// Role modifier. If suitable role then add a bonus
+	 	// Rules are:
+	 	// 1. Person must have a Role
+	 	// 2. Role is preferred then add bonus
+		var role = person.getRole();
+        if (role != null) {
+			score.addModifier(ROLE_MODIFIER, preferredRoles.getOrDefault(role.getType(), NON_ROLE_PENALTY));
         }
 
         score.addModifier(FAV_MODIFIER, (1 + (person.getPreference().getPreferenceScore(this)/5D)));
@@ -299,6 +338,20 @@ public abstract class MetaTask {
 		return score;
 	}
 
+	/**
+	 * Assess if this Person is in a moving vehicle. If the Person is in a Vehicle and it is moving
+	 * then apply the moving vehicle bonus as a modifier.
+	 * @param result Current score
+	 * @param person Being assessed
+	 * @return
+	 */
+	protected static RatingScore assessMoving(RatingScore result, Person person) {
+		if (person.isInVehicle() && Vehicle.inMovingRover(person)) {
+			result.addModifier(VEHICLE_MODIFIER,2);
+		}
+
+		return result;
+	}	
 		
 	/**
 	 * This will apply a number of modifier to the current score based on the Person to produce a modifier.
