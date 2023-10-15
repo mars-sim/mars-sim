@@ -57,12 +57,16 @@
 			<location longitude="0.0 W" latitude="0.0 N" />
 		</settlement>
 
+		<settlement name="New Dubai" template="Phase 0-UAE" crew="Founders" persons="2" robots="4" sponsor="UAESA">
+			<location longitude="314.0 E" latitude="11.9 N" />
+		</settlement>
+		
 		<settlement name="Heritage" template="Hub Base" crew="Founders" persons="36" robots="18" sponsor="MS">
 			<!-- 
 			
 				Four landing proposed sites for ESA ExoMars: 
-				(1). Hypanis Vallis at 11.9N and 314.0E    
-			    (2). Mawrth Vallis at 22.4N 342.0E
+				(1). Hypanis Vallis at 11.9 N and 314.0 E    
+			    (2). Mawrth Vallis at 22.4 N 342.0 E
 			    
 			-->
 			<location longitude="342.0 E" latitude="22.4 N" />

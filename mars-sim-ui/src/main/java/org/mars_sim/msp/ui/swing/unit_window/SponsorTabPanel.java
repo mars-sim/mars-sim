@@ -7,12 +7,14 @@
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.util.stream.Collectors;
 
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -24,6 +26,7 @@ import org.mars_sim.msp.core.reportingAuthority.MissionCapability;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.svg.SVGIcon;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
@@ -86,12 +89,20 @@ public class SponsorTabPanel extends TabPanel {
 		namePanel.add(iconPanel, BorderLayout.CENTER);
 		
 		String agencyStr = ra.getName();
-		Image img = (ImageLoader.getImage(AGENCY_FOLDER + agencyStr))
-				.getScaledInstance(90, 90,
-		        Image.SCALE_SMOOTH);
+	
+		Icon icon = ImageLoader.getIconByName(AGENCY_FOLDER + agencyStr);
+		JLabel agencyLabel = null;
 		
-		JLabel agencyLabel = new JLabel(new ImageIcon(img));
-//		agencyLabel.setPreferredSize(new Dimension(90, 90));
+		if (icon instanceof SVGIcon) {
+			agencyLabel = new JLabel(icon);
+		}
+		else {
+			Image img = (ImageLoader.getImage(AGENCY_FOLDER + agencyStr))
+					.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+			agencyLabel = new JLabel(new ImageIcon(img));
+		}
+
+		agencyLabel.setSize(new Dimension(256, 256));
 		iconPanel.add(agencyLabel);
 		
 		// Prepare info name panel.
@@ -101,7 +112,7 @@ public class SponsorTabPanel extends TabPanel {
 		// Prepare sponsor long name label
 //		infoNamePanel.addRow(Msg.getString("SponsorTabPanel.sponsorLong"), ra.getDescription());
 		// Prepare sponsor short name label
-		infoNamePanel.addRow(Msg.getString("SponsorTabPanel.sponsorShort"), ra.getName());
+		infoNamePanel.addRow(Msg.getString("SponsorTabPanel.sponsorShort"), agencyStr);
 		
 		boolean isCorp = ra.isCorporation();
 		String corpLabel = "No";
