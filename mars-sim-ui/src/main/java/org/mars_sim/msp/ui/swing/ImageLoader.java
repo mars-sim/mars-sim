@@ -34,6 +34,11 @@ public class ImageLoader {
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(ImageLoader.class.getName());
 
+	private static final String COMMA = ",";
+	private static final String FORWARD_SLASH = "/";
+	private static final String BACK_SLASH = "\\";
+	private static final String PNG24 = "_24.png";
+	
 	private static Map<String, Icon> iconByName = new HashMap<>();
 	private static Properties iconPaths;
 
@@ -81,7 +86,7 @@ public class ImageLoader {
 			String imagePath = iconPaths.getProperty(iconName);
 			if (imagePath == null) {
 				// No path, assume this is PNG
-				imagePath = ICON_DIR + iconName + "_24.png";
+				imagePath = ICON_DIR + iconName + PNG24;
 			}
 			
 			if (imagePath.endsWith(SVG)) {
@@ -101,6 +106,12 @@ public class ImageLoader {
 		return found;
 	}
 
+	/**
+	 * Returns the image icon of the filename.
+	 * 
+	 * @param fileName
+	 * @return
+	 */
 	private static ImageIcon loadImageIcon(String fileName) {
 		URL imageSource = ImageLoader.class.getResource(fileName);
 		if (imageSource == null) {
@@ -110,9 +121,11 @@ public class ImageLoader {
 	}
 
 	/**
-	 * Loads an SVG icon from a spec.
+	 * Returns the SVG icon from a spec.
 	 * 
 	 * @param spec The spec defines the icon size & filepath
+	 * @param xx
+	 * @param yy
 	 * @return
 	 */
 	private static Icon loadSVGIcon(String spec, int xx, int yy) {
@@ -122,10 +135,10 @@ public class ImageLoader {
         int y = yy;
         
         try {
-			// SVG Spec is defined as "<size>,<filepath .svg>"
-			if (spec.contains(",")) {
+			// SVG Spec is defined as "{x},{y},{filepath.svg} in icons.properties"
+			if (spec.contains(COMMA)) {
 				
-	        	String []items = spec.split(",");
+	        	String []items = spec.split(COMMA);
 	        	
 	        	if (items.length == 2) {
 					filename = items[1];
@@ -147,6 +160,11 @@ public class ImageLoader {
 				filename = spec;
 			}
 			
+			if (filename.startsWith(FORWARD_SLASH) || filename.startsWith(BACK_SLASH))
+				filename = filename.substring(1, filename.length());
+			
+			// Note: using ImageLoader.class.getClassLoader() below requires removing
+			// the forward slash first at the start of the filename
             URL resource = ImageLoader.class.getClassLoader().getResource(filename);
             newIcon = new SVGIcon(resource.toString(), x, y);
             
