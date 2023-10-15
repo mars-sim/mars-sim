@@ -32,6 +32,7 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
+import org.mars_sim.msp.ui.swing.tool.svg.SVGIcon;
 
 
 /**
@@ -285,12 +286,28 @@ public abstract class UnitWindow extends ModalInternalFrame
 		else
 			agencyStr = unit.getAssociatedSettlement().getReportingAuthority().getName();
 
-		Image img = (ImageLoader.getImage(AGENCY_FOLDER + agencyStr))
-				.getScaledInstance(UnitWindow.STATUS_HEIGHT - 5, UnitWindow.STATUS_HEIGHT - 5,
-		        Image.SCALE_SMOOTH);
+//		Image img = ((Image) ImageLoader.getIconByName(AGENCY_FOLDER + agencyStr));
+////				.getScaledInstance(UnitWindow.STATUS_HEIGHT - 5, 
+////						UnitWindow.STATUS_HEIGHT - 5, Image.SCALE_SMOOTH);	
+//		JLabel agencyLabel = new JLabel(new ImageIcon(img));
+//
+////		Icon icon = ImageLoader.getIconByName(AGENCY_FOLDER + agencyStr);
+////		JLabel agencyLabel = new JLabel(icon);
 		
-		JLabel agencyLabel = new JLabel(new ImageIcon(img));
-		agencyLabel.setSize(new Dimension(-1, UnitWindow.STATUS_HEIGHT - 5));
+		Icon icon = ImageLoader.getIconByName(AGENCY_FOLDER + agencyStr);
+		JLabel agencyLabel = null;
+		
+		if (icon instanceof SVGIcon) {
+			agencyLabel = new JLabel(icon);
+		}
+		else {
+			Image img = (ImageLoader.getImage(AGENCY_FOLDER + agencyStr))
+					.getScaledInstance(UnitWindow.STATUS_HEIGHT - 5, 
+						UnitWindow.STATUS_HEIGHT - 5, Image.SCALE_SMOOTH);
+			agencyLabel = new JLabel(new ImageIcon(img));
+		}
+		
+		agencyLabel.setPreferredSize(new Dimension(-1, UnitWindow.STATUS_HEIGHT - 5));
 	
 		return agencyLabel;
     }

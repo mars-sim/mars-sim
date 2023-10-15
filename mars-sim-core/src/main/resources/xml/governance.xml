@@ -358,7 +358,40 @@
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.2"/>
 			</capability>
 		</agenda>
-								
+				
+		<!-- https://en.wikipedia.org/wiki/United_Arab_Emirates_Space_Agency
+			 https://www.iafastro.org/membership/all-members/uae-space-agency.html -->				
+		<agenda name="Space Economy"
+				objective="Develop Space Economic Zones"
+				findings="Address regulatory concerns in developing space business and infrastructures" 
+				data="Gather metrices on commercial space activities">
+			<capability description="Spearhead accelerator group">
+				<preference type="MISSION" name="TRADE" modifier="2"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.4"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="8"/>
+			</capability>
+			<capability description="Develop space labs and facilitate knowledge transfer">
+				<preference type="SCIENCE" name="ASTRONOMY" modifier="4"/>
+				<preference type="SCIENCE" name="CHEMISTRY" modifier="4"/>
+				<preference type="SCIENCE" name="COMPUTING" modifier="4"/>
+				<preference type="SCIENCE" name="ENGINEERING" modifier="4"/>
+				<preference type="SCIENCE" name="MEDICINE" modifier="4"/>
+				<preference type="SCIENCE" name="PHYSICS" modifier="4"/>							
+			</capability>
+			<capability description="Supervise and support space government services">
+				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
+				<preference type="MISSION" name="TRADE" modifier="1.6"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="2"/>
+			</capability>
+			<capability description="Establish international partnership in the space sector">
+				<preference type="MISSION" name="DELIVERY" modifier="1.5"/>
+				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
+				<preference type="MISSION" name="TRADE" modifier="2"/>
+				<preference type="MISSION" name="RESCUE_SALVAGE_VEHICLE" modifier="4"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.2"/>
+			</capability>
+		</agenda>
+										
 		<agenda name="Wealth Accumulation"
 				objective="Incentivize Individual and Corporate Ownership"
 				findings="Study the development of private ownership of land" 
@@ -807,6 +840,42 @@
 			<rover-name name="Maleev" />
 		</authority>
 
+		<authority code="UAESA" name="United Arab Emirates Space Agency" corporation="false"
+					agenda="Space Economy" gender-ratio="0.9">
+			<country name="United Arab Emirates"/>
+			<settlement-name name="Salem" />
+			<settlement-name name="New Dubai" />
+			<settlement-name name="Rashid" />
+			<settlement-name name="Sultan" />
+			<settlement-name name="Khalifa" />
+			<settlement-name name="Qubaisi" />
+			<settlement-name name="Amiri" />
+			<settlement-name name="Maktoum" />
+			<settlement-name name="Nahyan" />
+			<settlement-name name="Bateen" />
+			<settlement-name name="Ajman" />
+												
+			<rover-name name="Tunb" />
+			<rover-name name="Ruwais" />
+			<rover-name name="Masfut" />
+			<rover-name name="Manama" />
+			<rover-name name="Qidfa" />
+			<rover-name name="Kalba" />
+			<rover-name name="Baynunah" />
+			<rover-name name="Abu Musa" />
+			<rover-name name="Muzayrah" />
+			<rover-name name="Mleiha" />
+			<rover-name name="Hatta" />
+			<rover-name name="Dibba" />
+			<rover-name name="Siji" />
+			<rover-name name="Sharjah" />
+			<rover-name name="Sharm" />
+			<rover-name name="Bu Hasa" />
+			<rover-name name="Hili" />		
+			<rover-name name="Hamim" />
+			<rover-name name="Dhaid" />
+		</authority>
+		
 		<authority code="SPACEX" name="Space Exploration Technologies Corporation" corporation="true"
 					agenda="Planet Life" gender-ratio="0.5">
 			<country name="United States"/>

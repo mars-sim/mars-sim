@@ -182,16 +182,16 @@ public class SettlementUnitWindow extends UnitWindow {
 		countryLabel.setText(TWO_SPACES + countryName + SIX_SPACES);
 		templateLabel.setText(TWO_SPACES + settlement.getTemplate() + SIX_SPACES);
 		
-		// Add space agency label and logo
-		JLabel agencyLabel = getAgencyLabel();
-		
-		JPanel agencyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		agencyPanel.setSize(new Dimension(-1, UnitWindow.STATUS_HEIGHT - 5));
-		agencyPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		agencyPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
-		agencyPanel.add(agencyLabel);
-
-		statusPanel.add(agencyPanel, BorderLayout.EAST);
+//		// Add space agency label and logo
+//		JLabel agencyLabel = getAgencyLabel();
+//		
+//		JPanel agencyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+//		agencyPanel.setSize(new Dimension(-1, UnitWindow.STATUS_HEIGHT - 5));
+//		agencyPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+//		agencyPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+//		agencyPanel.add(agencyLabel);
+//
+//		statusPanel.add(agencyPanel, BorderLayout.EAST);
 		
 	}
 	
