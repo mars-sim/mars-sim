@@ -24,7 +24,7 @@ public class MapMetaData {
 	private String mapString;
     private String mapType;
     
-    private List<String> maps;
+    private List<String> listOfMaps;
     
     private Map<String, Boolean> locallyAvailableMap = new HashMap<>();
     
@@ -33,7 +33,7 @@ public class MapMetaData {
         this.mapString = mapString;
         this.mapType = mapType;
         this.colourful = colourful;
-        this.maps = array;
+        this.listOfMaps = array;
   
         numLevel = array.size();
       
@@ -48,7 +48,7 @@ public class MapMetaData {
 		boolean[] loaded = new boolean[numLevel];
 		
 		for (int i = 0; i < numLevel; i++) {
-			String map = maps.get(i);
+			String map = listOfMaps.get(i);
 			loaded[i] = FileLocator.isLocallyAvailable(map);
 			locallyAvailableMap.put(map, loaded[i]);
 		}
@@ -131,8 +131,9 @@ public class MapMetaData {
      * @return
      */
     public String getFile(int res) {
-//    	System.out.println("MapMetaData:: res is " + res + "  name: " + maps.get(res));
-    	return maps.get(res);
+    	if (listOfMaps.size() > res)
+    		return listOfMaps.get(res);
+    	return "";
     }
     
     /**
