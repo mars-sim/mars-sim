@@ -9,7 +9,8 @@
 		</settlement>
 
 		<settlement name="Arcadia" template="Phase 2-EU" persons="16" robots="6" sponsor="ESA">
-			<location longitude="20.9156 E" latitude="0.7777 N" />	
+			<!-- previously, longitude="20.9156 E" latitude="0.7777 N" -->
+			<location longitude="24.57 E" latitude="9.68 N" />	
 		</settlement>
 		
 		<settlement name="Catarina" template="Phase 1-BR" persons="4" robots="4" sponsor="AEB">
@@ -58,7 +59,7 @@
 		</settlement>
 
 		<settlement name="New Dubai" template="Phase 0-UAE" crew="Founders" persons="2" robots="4" sponsor="UAESA">
-			<location longitude="314.0 E" latitude="11.9 N" />
+			<location longitude="108 E" latitude="26 N" />
 		</settlement>
 		
 		<settlement name="Heritage" template="Hub Base" crew="Founders" persons="36" robots="18" sponsor="MS">

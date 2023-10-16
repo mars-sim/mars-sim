@@ -769,19 +769,22 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				if (((JCheckBoxMenuItem) source).isSelected()) {
 					String newMapType = command.substring(MAPTYPE_RELOAD_ACTION.length());
 					int reply = selectUnloadedMap(newMapType);
+
+					// Warning: do not allow reply to be -1
+					if (reply == -1)
+						reply = 0;
 					
-//					int oldRes =  mapDataUtil.loadMapData(newMapType).getMetaData().getResolution();
+					// Note: may explore the use of mapDataUtil.loadMapData(newMapType).getMetaData().getResolution()
 					int oldRes = mapLayerPanel.getMapMetaData().getResolution(); 
 					if (oldRes < 0)
 						oldRes = 0;
 					
 					// Note: Level 0 is the lowest res
-					
 					if (reply < mapLayerPanel.getMapMetaData().getNumLevel()) {
-						
-//						System.out.println("Nav:: reply: " + reply + "  oldRes: " + oldRes + "   res: " + res);
-						
-						if (reply != oldRes || reply != res || !newMapType.equalsIgnoreCase(mapTypeCache)) {
+												
+						if (reply != oldRes 
+								|| reply != res 
+								|| !newMapType.equalsIgnoreCase(mapTypeCache)) {
 							// Set to the new map resolution
 							res = reply;
 							changeMapType(newMapType, reply);
@@ -820,22 +823,26 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		int numLevel = mapLayerPanel.getMapMetaData().getNumLevel();
 		
-		for (int i=0; i<numLevel; i++) {
+		for (int i = 0; i < numLevel; i++) {
 			list.add(LEVEL + i);
 		}
 		
 		String[] options = list.toArray(String[]::new);
 		
-//		System.out.println("oldRes: " + oldRes + " options: " + list.toString());
-
+		String intialValue = options[0];
+		// Set the initial value to the previous resolution choice
+		if (oldRes != 0)
+			intialValue = LEVEL + oldRes;
+		
 		return JOptionPane.showOptionDialog(null,
-								"Choose res level for '" + newMapType + "' map type ? (Need to download the map if not available locally)", 
-								"Surface Map Level",
-								JOptionPane.YES_NO_CANCEL_OPTION,
-								JOptionPane.QUESTION_MESSAGE,
-								null,
-								options,
-								options[0]);
+			"Choose res level for '" + newMapType 
+			+ "' map type ? (Will download if not available locally)", 
+			"Surface Map Level",
+			JOptionPane.YES_NO_CANCEL_OPTION,
+			JOptionPane.QUESTION_MESSAGE,
+			null,
+			options,
+			intialValue);
 	}
 
 	/**

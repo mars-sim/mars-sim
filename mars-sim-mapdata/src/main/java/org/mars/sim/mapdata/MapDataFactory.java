@@ -178,7 +178,8 @@ import org.mars.sim.tools.util.RandomUtil;
 			// Patch the metadata to be locally available
 			metaData.setLocallyAvailable(true);
 			
-			System.out.println("Map type '" + mapType + "' (res: " + metaData.getResolution() 
+			System.out.println("Map type '" + mapType 
+					+ "' (res: " + metaData.getResolution() 
 					+ ") has been selected.  Map name: '" + metaData.getMapType()
 					+ "'.  Filename: '" + metaData.getFile()
 					+ "'.  Locally AV: " + metaData.isLocallyAvailable() + ".");
