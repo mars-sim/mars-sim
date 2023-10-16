@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.events.ScheduledEventHandler;
 import org.mars_sim.msp.core.events.ScheduledEventManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.ShiftSlot.WorkStatus;
 import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * This class manages a set of Shifts. This involves the initial allocation and the changing

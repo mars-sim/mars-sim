@@ -54,9 +54,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.tools.Msg;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.authority.AuthorityFactory;
@@ -76,6 +74,8 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.UIConfig;
+import org.mars_sim.tools.Msg;
+import org.mars_sim.tools.util.RandomUtil;
 
 
 /**

@@ -13,7 +13,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.apache.batik.gvt.GraphicsNode;
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -23,6 +22,7 @@ import org.mars_sim.msp.ui.swing.tool.svg.SVGGraphicNodeIcon;
 import org.mars_sim.msp.ui.swing.tool.svg.SVGMapUtil;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
+import org.mars_sim.tools.Msg;
 
 /**
  * This tab shows the general details of the Vehicle type.

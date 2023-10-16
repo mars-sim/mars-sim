@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import org.mars.sim.tools.Msg;
-import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -16,6 +14,8 @@ import org.mars_sim.msp.core.person.ai.task.RecordActivity;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
+import org.mars_sim.tools.Msg;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * Meta task for the RecordActivity task.

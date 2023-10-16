@@ -19,9 +19,7 @@ import java.util.function.IntFunction;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.tools.Msg;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
@@ -58,6 +56,8 @@ import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleController;
 import org.mars_sim.msp.core.vehicle.VehicleType;
+import org.mars_sim.tools.Msg;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * A mission that involves driving a vehicle along a series of navpoints.

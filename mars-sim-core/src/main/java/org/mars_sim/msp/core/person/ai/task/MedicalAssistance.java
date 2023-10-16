@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.mars.sim.tools.Msg;
-import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.UnitSet;
@@ -41,6 +39,8 @@ import org.mars_sim.msp.core.vehicle.Medical;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.SickBay;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.tools.Msg;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * This class represents a task that requires a person to provide medical help

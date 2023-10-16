@@ -25,9 +25,9 @@ import javax.swing.JSeparator;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MainWindowMenu;
+import org.mars_sim.tools.Msg;
 
 
 public class NotificationMenu implements ActionListener, MenuListener {

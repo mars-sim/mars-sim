@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.Iterator;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.RestingMedicalRecovery;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
@@ -20,6 +19,7 @@ import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.SickBay;
 import org.mars_sim.msp.core.vehicle.VehicleType;
+import org.mars_sim.tools.Msg;
 
 /**
  * Meta task for the RestingMedicalRecoveryMeta task.

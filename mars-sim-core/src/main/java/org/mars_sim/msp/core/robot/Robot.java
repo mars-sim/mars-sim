@@ -16,8 +16,7 @@ import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.mars.sim.mapdata.location.LocalPosition;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
@@ -55,6 +54,7 @@ import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * The robot class represents operating a robot on Mars.

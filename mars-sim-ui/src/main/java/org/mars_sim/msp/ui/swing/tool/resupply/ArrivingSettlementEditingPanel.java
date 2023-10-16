@@ -38,8 +38,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.tools.Msg;
+import org.mars_sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -54,6 +53,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
+import org.mars_sim.tools.Msg;
 
 /**
  * A panel for creating or editing an arriving settlement.

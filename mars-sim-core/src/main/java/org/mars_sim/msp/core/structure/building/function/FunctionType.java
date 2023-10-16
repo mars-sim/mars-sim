@@ -6,8 +6,8 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.robot.RobotType;
+import org.mars_sim.tools.Msg;
 
 public enum FunctionType {
 

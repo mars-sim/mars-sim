@@ -11,10 +11,10 @@ import java.awt.Dimension;
 
 import javax.swing.JPanel;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.structure.building.function.WasteProcessing;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.tools.Msg;
 
 /**
  * The BuildingPanelWasteProcessing class is a building function panel representing

@@ -12,9 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.mars.sim.mapdata.location.LocalPosition;
-import org.mars.sim.tools.Msg;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
@@ -31,6 +29,8 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.tools.Msg;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * Task for salvaging a building construction site stage.

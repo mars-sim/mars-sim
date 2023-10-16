@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.authority.PreferenceCategory;
 import org.mars_sim.msp.core.authority.PreferenceKey;
@@ -28,6 +27,7 @@ import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * This class keeps track of ongoing missions in the simulation.

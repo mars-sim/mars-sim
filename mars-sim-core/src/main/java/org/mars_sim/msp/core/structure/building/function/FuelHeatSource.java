@@ -8,10 +8,10 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import java.util.logging.Logger;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.tools.Msg;
 
 public class FuelHeatSource extends HeatSource {
 

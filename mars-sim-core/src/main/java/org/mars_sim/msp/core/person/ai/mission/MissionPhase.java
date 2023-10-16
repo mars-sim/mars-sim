@@ -8,8 +8,8 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.project.Stage;
+import org.mars_sim.tools.Msg;
 
 /**
  * A phase of a mission.

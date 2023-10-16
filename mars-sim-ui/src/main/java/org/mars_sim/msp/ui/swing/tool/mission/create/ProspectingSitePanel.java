@@ -7,9 +7,9 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.mapdata.location.IntPoint;
-import org.mars.sim.mapdata.map.*;
+import org.mars_sim.mapdata.location.Coordinates;
+import org.mars_sim.mapdata.location.IntPoint;
+import org.mars_sim.mapdata.map.*;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.map.EllipseLayer;

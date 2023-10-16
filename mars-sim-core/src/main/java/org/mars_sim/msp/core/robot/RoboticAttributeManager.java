@@ -8,9 +8,9 @@
 package org.mars_sim.msp.core.robot;
 
 
-import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * The RoboticAttributeManager class manages a person's natural attributes.

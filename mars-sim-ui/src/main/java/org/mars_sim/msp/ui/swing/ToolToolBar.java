@@ -29,7 +29,6 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MarsTimeFormat;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -46,6 +45,7 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.MarsCalendarDisplay;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 import org.mars_sim.msp.ui.swing.utils.SwingHelper;
+import org.mars_sim.tools.Msg;
 
 /**
  * The ToolToolBar class is a UI toolbar for holding tool buttons. There should

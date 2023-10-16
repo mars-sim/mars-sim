@@ -16,9 +16,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.mars.sim.mapdata.location.BoundedObject;
-import org.mars.sim.mapdata.location.LocalPosition;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.location.BoundedObject;
+import org.mars_sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -54,6 +53,7 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * Mission for construction a stage for a settlement building. TODO externalize

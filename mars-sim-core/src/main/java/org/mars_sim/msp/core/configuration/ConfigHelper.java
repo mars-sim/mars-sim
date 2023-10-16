@@ -7,8 +7,8 @@
 package org.mars_sim.msp.core.configuration;
 
 import org.jdom2.Element;
-import org.mars.sim.mapdata.location.BoundedObject;
-import org.mars.sim.mapdata.location.LocalPosition;
+import org.mars_sim.mapdata.location.BoundedObject;
+import org.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * Provides methods applicable to all Config classes.

@@ -27,8 +27,6 @@ import java.util.Properties;
 
 import javax.swing.JPanel;
 
-import org.mars.sim.tools.Msg;
-import org.mars.sim.tools.util.MoreMath;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
@@ -40,6 +38,8 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
+import org.mars_sim.tools.Msg;
+import org.mars_sim.tools.util.MoreMath;
 
 /**
  * A panel for displaying the settlement map.

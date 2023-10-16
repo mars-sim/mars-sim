@@ -12,9 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.mapdata.location.Direction;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.location.Coordinates;
+import org.mars_sim.mapdata.location.Direction;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -25,6 +24,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.tools.util.RandomUtil;
 
 
 /**

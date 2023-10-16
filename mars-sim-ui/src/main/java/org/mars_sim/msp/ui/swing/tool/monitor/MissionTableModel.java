@@ -11,7 +11,6 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Simulation;
@@ -29,6 +28,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.tools.Msg;
 
 /**
  * This class model how mission data is organized and displayed

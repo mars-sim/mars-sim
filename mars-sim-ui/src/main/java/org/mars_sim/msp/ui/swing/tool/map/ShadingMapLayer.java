@@ -12,9 +12,9 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.mapdata.map.Map;
-import org.mars.sim.mapdata.map.MapLayer;
+import org.mars_sim.mapdata.location.Coordinates;
+import org.mars_sim.mapdata.map.Map;
+import org.mars_sim.mapdata.map.MapLayer;
 import org.mars_sim.msp.core.tool.SimulationConstants;
 
 /**

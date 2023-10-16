@@ -17,13 +17,12 @@ import java.io.InputStreamReader;
  */
 public class StreamConsumer extends Thread {
 
-//	private final static String PREFIX = "> ";
 	// Data members
 	private InputStream in;
 	private String type;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param in   the input stream to consume.
 	 * @param type the stream type.

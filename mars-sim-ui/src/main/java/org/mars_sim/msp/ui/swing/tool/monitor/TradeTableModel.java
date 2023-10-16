@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
@@ -24,6 +23,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.VehicleType;
+import org.mars_sim.tools.Msg;
 
 
 public class TradeTableModel extends EntityTableModel<Good>

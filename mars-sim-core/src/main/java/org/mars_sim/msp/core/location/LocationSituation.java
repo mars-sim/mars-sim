@@ -6,7 +6,7 @@
  */
 package org.mars_sim.msp.core.location;
 
-import org.mars.sim.tools.Msg;
+import org.mars_sim.tools.Msg;
 
 /**
  * The location status of a person, bot, vehicle and equipment.

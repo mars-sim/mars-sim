@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.robot.ai;
 import java.io.Serializable;
 import java.util.logging.Level;
 
-import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -19,6 +18,7 @@ import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * The BotMind class represents a robot's mind. It keeps track of missions and

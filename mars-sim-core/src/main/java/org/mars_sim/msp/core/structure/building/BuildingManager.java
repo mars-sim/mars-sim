@@ -19,9 +19,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import org.mars.sim.mapdata.location.BoundedObject;
-import org.mars.sim.mapdata.location.LocalPosition;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.location.BoundedObject;
+import org.mars_sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -100,6 +99,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * The BuildingManager manages the settlement's buildings.

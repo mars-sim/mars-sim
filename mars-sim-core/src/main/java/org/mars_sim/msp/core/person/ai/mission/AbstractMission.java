@@ -21,8 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
@@ -55,6 +54,7 @@ import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.Conversion;
+import org.mars_sim.tools.util.RandomUtil;
 
 
 /**

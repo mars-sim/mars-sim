@@ -10,8 +10,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.tools.Msg;
+import org.mars_sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
@@ -22,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.tools.Msg;
 
 /**
  * Meta task for the AnalyzeMapData task.

@@ -16,7 +16,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -32,6 +31,7 @@ import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
+import org.mars_sim.tools.Msg;
 
 /**
  * The TabPanelActivity is a tab panel for a person's current tasks and

@@ -20,10 +20,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.mapdata.location.LocalPosition;
-import org.mars.sim.tools.Msg;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.location.Coordinates;
+import org.mars_sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -94,6 +92,8 @@ import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
+import org.mars_sim.tools.Msg;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * The Settlement class represents a settlement unit on virtual Mars. It

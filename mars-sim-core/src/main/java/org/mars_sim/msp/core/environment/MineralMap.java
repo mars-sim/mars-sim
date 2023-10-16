@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
-import org.mars.sim.mapdata.location.Coordinates;
+import org.mars_sim.mapdata.location.Coordinates;
 
 /**
  * Interface for mineral maps of Mars.

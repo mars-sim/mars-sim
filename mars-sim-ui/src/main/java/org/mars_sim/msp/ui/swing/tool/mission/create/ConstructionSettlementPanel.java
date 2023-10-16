@@ -25,11 +25,11 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.tools.Msg;
 
 /**
  * A wizard panel for selecting the mission's construction settlement.

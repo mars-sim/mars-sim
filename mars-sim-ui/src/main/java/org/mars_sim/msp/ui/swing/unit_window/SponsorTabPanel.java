@@ -21,13 +21,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.authority.MissionCapability;
 import org.mars_sim.msp.core.authority.Authority;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.svg.SVGIcon;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
+import org.mars_sim.tools.Msg;
 
 /**
  * The SponsorTabPanel is a tab panel for showing the settlement's 

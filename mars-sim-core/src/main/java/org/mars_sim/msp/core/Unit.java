@@ -11,7 +11,7 @@ import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.mars.sim.mapdata.location.Coordinates;
+import org.mars_sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.environment.Weather;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;

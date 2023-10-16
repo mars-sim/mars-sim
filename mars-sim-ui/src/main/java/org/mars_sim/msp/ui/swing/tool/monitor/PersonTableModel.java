@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
@@ -30,6 +29,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.ShiftSlot;
 import org.mars_sim.msp.core.structure.ShiftSlot.WorkStatus;
 import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.tools.Msg;
 
 /**
  * The PersonTableModel that maintains a list of Person objects. By defaults the

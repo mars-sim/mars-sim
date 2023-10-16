@@ -7,7 +7,7 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import org.mars.sim.mapdata.location.LocalPosition;
+import org.mars_sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.AbstractMarsSimUnitTest;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;

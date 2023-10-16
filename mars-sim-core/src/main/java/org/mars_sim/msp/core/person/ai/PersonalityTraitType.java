@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.mars.sim.tools.Msg;
+import org.mars_sim.tools.Msg;
 
 public enum PersonalityTraitType {
 

@@ -16,7 +16,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.data.History;
 import org.mars_sim.msp.core.person.Person;
@@ -32,6 +31,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 import org.mars_sim.msp.ui.swing.utils.JHistoryPanel;
+import org.mars_sim.tools.Msg;
 
 /**
  * The TabPanelSchedule is a tab panel showing the daily schedule a person.

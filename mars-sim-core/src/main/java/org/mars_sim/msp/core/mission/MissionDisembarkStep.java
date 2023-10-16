@@ -6,8 +6,7 @@
  */
 package org.mars_sim.msp.core.mission;
 
-import org.mars.sim.mapdata.location.LocalPosition;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -23,6 +22,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * this class controls the Mission step of disembarking a Vehicle at a Settlement.

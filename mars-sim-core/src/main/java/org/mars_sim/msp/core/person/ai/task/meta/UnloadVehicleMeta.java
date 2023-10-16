@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.data.UnitSet;
@@ -33,6 +32,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.tools.Msg;
 
 /**
  * Meta task for the UnloadVehicleGarage or UnloadVehicleEVA task.

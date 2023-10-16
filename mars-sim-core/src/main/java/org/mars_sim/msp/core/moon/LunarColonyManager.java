@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.mars.sim.mapdata.location.Coordinates;
+import org.mars_sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.authority.AuthorityFactory;
 import org.mars_sim.msp.core.logging.SimLogger;

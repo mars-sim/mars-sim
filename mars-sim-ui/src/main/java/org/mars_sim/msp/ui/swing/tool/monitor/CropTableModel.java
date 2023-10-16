@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
@@ -20,6 +19,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.CropCategory;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
+import org.mars_sim.tools.Msg;
 
 /**
  * The CropTableModel keeps track of the quantity of the growing crops in each greenhouse by categories.

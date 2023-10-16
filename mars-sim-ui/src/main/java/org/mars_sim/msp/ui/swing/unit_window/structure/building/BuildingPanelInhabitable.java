@@ -13,13 +13,13 @@ import java.util.Collection;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
+import org.mars_sim.tools.Msg;
 
 /**
  * This class is a building function panel representing 

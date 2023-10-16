@@ -15,13 +15,13 @@ import java.net.URL;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.vehicle.TabPanelMission;
+import org.mars_sim.tools.Msg;
 
 /**
  * Tab panel displaying a list of settlement missions.<br>

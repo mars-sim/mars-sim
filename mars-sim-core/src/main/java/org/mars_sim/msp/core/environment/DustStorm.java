@@ -9,11 +9,11 @@ package org.mars_sim.msp.core.environment;
 
 import java.io.Serializable;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.tools.util.RandomUtil;
 
 public class DustStorm implements Serializable {
 

@@ -26,7 +26,7 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import org.mars.sim.mapdata.location.Coordinates;
+import org.mars_sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.authority.Authority;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.MarsSurface;

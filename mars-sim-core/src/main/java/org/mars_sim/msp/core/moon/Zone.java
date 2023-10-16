@@ -9,10 +9,10 @@ package org.mars_sim.msp.core.moon;
 
 import java.io.Serializable;
 
-import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
+import org.mars_sim.tools.util.RandomUtil;
 
 public class Zone implements Serializable, Temporal {
 

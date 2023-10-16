@@ -33,13 +33,13 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.authority.MissionAgenda;
 import org.mars_sim.msp.core.authority.MissionCapability;
 import org.mars_sim.msp.core.authority.Authority;
 import org.mars_sim.msp.core.authority.AuthorityFactory;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
+import org.mars_sim.tools.Msg;
 
 /**
  * UI Editor that allows a reporting authority to be edited.

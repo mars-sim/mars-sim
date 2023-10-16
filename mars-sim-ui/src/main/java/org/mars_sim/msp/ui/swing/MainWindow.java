@@ -40,8 +40,7 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-import org.mars.sim.console.InteractiveTerm;
-import org.mars.sim.tools.Msg;
+import org.mars_sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Simulation;
@@ -53,6 +52,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.utils.JMemoryMeter;
+import org.mars_sim.tools.Msg;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the

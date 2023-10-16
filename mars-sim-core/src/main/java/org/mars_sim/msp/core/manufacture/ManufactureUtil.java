@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.BinFactory;
@@ -44,6 +43,7 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleType;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * Utility class for getting manufacturing processes.

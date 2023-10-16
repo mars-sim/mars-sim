@@ -18,9 +18,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.mapdata.map.Map;
-import org.mars.sim.mapdata.map.MapLayer;
+import org.mars_sim.mapdata.location.Coordinates;
+import org.mars_sim.mapdata.map.Map;
+import org.mars_sim.mapdata.map.MapLayer;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.MineralMap;
 import org.mars_sim.msp.core.logging.SimLogger;

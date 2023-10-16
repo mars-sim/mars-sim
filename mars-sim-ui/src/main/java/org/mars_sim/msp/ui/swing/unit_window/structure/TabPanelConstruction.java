@@ -13,7 +13,6 @@ import java.awt.GridLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -21,6 +20,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.tools.Msg;
 
 @SuppressWarnings("serial")
 public class TabPanelConstruction

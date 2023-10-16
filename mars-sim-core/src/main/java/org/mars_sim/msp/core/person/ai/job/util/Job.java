@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
@@ -27,6 +26,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.tools.Msg;
 
 /**
  * The Job class represents a person's job.

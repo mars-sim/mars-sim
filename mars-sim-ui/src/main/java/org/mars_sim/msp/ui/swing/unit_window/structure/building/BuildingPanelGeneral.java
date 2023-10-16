@@ -14,7 +14,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.batik.gvt.GraphicsNode;
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -22,6 +21,7 @@ import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.svg.SVGGraphicNodeIcon;
 import org.mars_sim.msp.ui.swing.tool.svg.SVGMapUtil;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
+import org.mars_sim.tools.Msg;
 
 /**
  * The BuildingPanelGeneral class is a building function panel showing

@@ -9,8 +9,8 @@ package org.mars_sim.msp.core.person.ai.task.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * Class represents a set of TaskJob that can be used to select a new Task for a Work. 

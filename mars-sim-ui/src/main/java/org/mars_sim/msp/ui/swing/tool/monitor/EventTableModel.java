@@ -13,7 +13,6 @@ import java.util.Set;
 
 import javax.swing.SwingUtilities;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
@@ -23,6 +22,7 @@ import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.tools.Msg;
 
 /**
  * This class provides a table model for use with the MonitorWindow that

@@ -14,14 +14,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.mars.sim.mapdata.MapDataUtil;
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.mapdata.location.Direction;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.MapDataUtil;
+import org.mars_sim.mapdata.location.Coordinates;
+import org.mars_sim.mapdata.location.Direction;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.tools.util.RandomUtil;
 
 // Note: the newly surveyed ice deposit spans latitudes from 39 to 49 deg
 // within the Utopia Planitia plains, as estimated by SHARAD, an subsurface

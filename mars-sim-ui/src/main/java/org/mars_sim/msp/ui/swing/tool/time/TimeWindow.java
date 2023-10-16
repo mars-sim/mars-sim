@@ -18,7 +18,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.OrbitInfo;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -32,6 +31,7 @@ import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 import org.mars_sim.msp.ui.swing.utils.SwingHelper;
+import org.mars_sim.tools.Msg;
 
 /**
  * The TimeWindow is a tool window that displays the current Martian and Earth

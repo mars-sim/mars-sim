@@ -32,10 +32,10 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.mapdata.location.Direction;
-import org.mars.sim.mapdata.location.IntPoint;
-import org.mars.sim.mapdata.map.Map;
+import org.mars_sim.mapdata.location.Coordinates;
+import org.mars_sim.mapdata.location.Direction;
+import org.mars_sim.mapdata.location.IntPoint;
+import org.mars_sim.mapdata.map.Map;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;

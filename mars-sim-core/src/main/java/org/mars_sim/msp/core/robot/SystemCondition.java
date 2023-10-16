@@ -9,11 +9,11 @@ package org.mars_sim.msp.core.robot;
 
 import java.io.Serializable;
 
-import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * This class represents the System Condition of a robot.

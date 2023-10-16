@@ -15,8 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.MSolDataItem;
@@ -26,6 +25,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
+import org.mars_sim.tools.util.RandomUtil;
 
 /** This class represents the weather properties on Mars. */
 public class Weather implements Serializable, Temporal {

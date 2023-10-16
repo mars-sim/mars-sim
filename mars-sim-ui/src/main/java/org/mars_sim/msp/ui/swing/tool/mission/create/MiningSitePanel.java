@@ -31,9 +31,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.mapdata.location.IntPoint;
-import org.mars.sim.mapdata.map.Map;
+import org.mars_sim.mapdata.location.Coordinates;
+import org.mars_sim.mapdata.location.IntPoint;
+import org.mars_sim.mapdata.map.Map;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;

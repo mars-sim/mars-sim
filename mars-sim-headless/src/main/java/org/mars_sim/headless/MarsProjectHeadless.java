@@ -22,8 +22,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
-import org.mars.sim.console.chat.service.Credentials;
-import org.mars.sim.console.chat.service.RemoteChatService;
+import org.mars_sim.console.chat.service.Credentials;
+import org.mars_sim.console.chat.service.RemoteChatService;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationBuilder;
 import org.mars_sim.msp.core.SimulationFiles;
@@ -67,7 +67,7 @@ public class MarsProjectHeadless {
 
 
 	/**
-	 * Initialize the simulation.
+	 * Initializes the simulation.
 	 *
 	 * @param args the command arguments.
 	 * @return true if new simulation (not loaded)
@@ -179,7 +179,8 @@ public class MarsProjectHeadless {
 
 
 	/**
-	 * Start the simulation instance.
+	 * Starts the simulation instance.
+	 * 
 	 * @param serverPort
 	 * @param changePassword
 	 */
@@ -227,7 +228,7 @@ public class MarsProjectHeadless {
 
 
 	/**
-	 * The starting method for the application
+	 * The starting method for the application.
 	 *
 	 * @param args the command line arguments
 	 */

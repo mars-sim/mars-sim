@@ -14,7 +14,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
-import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.BinFactory;
@@ -48,6 +47,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleFactory;
 import org.mars_sim.msp.core.vehicle.VehicleType;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * A building function for manufacturing.

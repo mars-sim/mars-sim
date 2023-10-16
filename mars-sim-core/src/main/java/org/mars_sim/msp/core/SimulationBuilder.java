@@ -18,9 +18,8 @@ import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
-import org.mars.sim.mapdata.common.FileLocator;
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.common.FileLocator;
+import org.mars_sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.authority.Authority;
 import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.configuration.ScenarioConfig;
@@ -32,6 +31,7 @@ import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.SettlementBuilder;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
+import org.mars_sim.tools.util.RandomUtil;
 
 /*
  * This class is a Factory to bootstrap a new simulation according to

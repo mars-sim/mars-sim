@@ -6,11 +6,11 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.tools.Msg;
 
 /**
  * A task for the EVA operation of performing areology field work at a research

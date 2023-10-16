@@ -13,8 +13,8 @@ import java.util.List;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.tools.Msg;
+import org.mars_sim.mapdata.location.Coordinates;
+import org.mars_sim.tools.Msg;
 
 /**
  * Provides configuration information about landmarks. Uses a DOM document to

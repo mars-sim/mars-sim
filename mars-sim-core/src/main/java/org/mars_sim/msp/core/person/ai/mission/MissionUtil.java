@@ -8,7 +8,7 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.Iterator;
 
-import org.mars.sim.mapdata.location.Coordinates;
+import org.mars_sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.project.Stage;

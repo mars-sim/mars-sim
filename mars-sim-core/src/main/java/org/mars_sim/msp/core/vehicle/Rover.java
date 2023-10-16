@@ -13,9 +13,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.mapdata.location.LocalPosition;
-import org.mars.sim.tools.Msg;
+import org.mars_sim.mapdata.location.Coordinates;
+import org.mars_sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -39,6 +38,7 @@ import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.tools.Msg;
 
 /**
  * The Rover class represents the rover type of ground vehicle. It contains

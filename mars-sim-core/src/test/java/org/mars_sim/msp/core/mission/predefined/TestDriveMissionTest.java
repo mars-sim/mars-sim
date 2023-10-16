@@ -10,7 +10,7 @@ package org.mars_sim.msp.core.mission.predefined;
 import java.util.Collection;
 import java.util.Map;
 
-import org.mars.sim.mapdata.location.LocalPosition;
+import org.mars_sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.AbstractMarsSimUnitTest;
 import org.mars_sim.msp.core.mission.MissionProject;
 import org.mars_sim.msp.core.mission.MissionVehicleProject;

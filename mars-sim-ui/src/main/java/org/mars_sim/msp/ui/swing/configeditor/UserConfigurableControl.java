@@ -23,10 +23,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.configuration.UserConfigurable;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.ui.swing.ImageLoader;
+import org.mars_sim.tools.Msg;
 
 /**
  * This is a UI Control panel that manages the UserConfigurable items of an existing

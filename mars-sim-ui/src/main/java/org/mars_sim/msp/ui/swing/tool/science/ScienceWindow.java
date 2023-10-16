@@ -13,12 +13,12 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
+import org.mars_sim.tools.Msg;
 
 /**
  * Window for the science tool.

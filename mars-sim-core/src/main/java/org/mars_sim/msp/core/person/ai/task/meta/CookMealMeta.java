@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.List;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
@@ -25,6 +24,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
+import org.mars_sim.tools.Msg;
 
 /**
  * Meta task for the CookMeal task.

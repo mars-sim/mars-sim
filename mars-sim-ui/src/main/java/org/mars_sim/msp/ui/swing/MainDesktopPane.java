@@ -33,8 +33,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
@@ -68,6 +67,7 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowFactory;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * The MainDesktopPane class is the desktop part of the project's UI. It

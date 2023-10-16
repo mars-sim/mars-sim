@@ -10,7 +10,7 @@ package org.mars_sim.msp.core.person;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.tools.util.RandomUtil;
 
 import junit.framework.TestCase;
 

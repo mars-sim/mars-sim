@@ -7,8 +7,8 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.goods.GoodsUtil;
+import org.mars_sim.tools.Msg;
 
 import java.io.Serializable;
 

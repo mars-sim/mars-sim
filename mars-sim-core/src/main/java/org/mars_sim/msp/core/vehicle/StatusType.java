@@ -7,7 +7,7 @@
  */
 package org.mars_sim.msp.core.vehicle;
 
-import org.mars.sim.tools.Msg;
+import org.mars_sim.tools.Msg;
 
 /**
  * Vehicle status types. They can be either primary or secondary.

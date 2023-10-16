@@ -14,8 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.mars.sim.mapdata.location.LocalPosition;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
@@ -33,6 +32,7 @@ import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * A settlement building function.

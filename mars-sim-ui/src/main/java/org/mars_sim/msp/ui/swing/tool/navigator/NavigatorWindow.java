@@ -60,13 +60,12 @@ import javax.swing.UIDefaults;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.mars.sim.mapdata.MapDataFactory;
-import org.mars.sim.mapdata.MapDataUtil;
-import org.mars.sim.mapdata.MapMetaData;
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.mapdata.map.Map;
-import org.mars.sim.mapdata.map.MapLayer;
-import org.mars.sim.tools.Msg;
+import org.mars_sim.mapdata.MapDataFactory;
+import org.mars_sim.mapdata.MapDataUtil;
+import org.mars_sim.mapdata.MapMetaData;
+import org.mars_sim.mapdata.location.Coordinates;
+import org.mars_sim.mapdata.map.Map;
+import org.mars_sim.mapdata.map.MapLayer;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Simulation;
@@ -98,6 +97,7 @@ import org.mars_sim.msp.ui.swing.tool.map.VehicleTrailMapLayer;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
+import org.mars_sim.tools.Msg;
 
 import com.formdev.flatlaf.FlatLaf;
 

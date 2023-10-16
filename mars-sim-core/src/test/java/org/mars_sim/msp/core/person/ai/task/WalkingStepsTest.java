@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.Iterator;
 
-import org.mars.sim.mapdata.location.LocalPosition;
+import org.mars_sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.AbstractMarsSimUnitTest;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.WalkingSteps.WalkStep;

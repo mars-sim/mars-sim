@@ -7,7 +7,7 @@
 
 package org.mars_sim.msp.core.vehicle;
 
-import org.mars.sim.mapdata.location.Direction;
+import org.mars_sim.mapdata.location.Direction;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.structure.Settlement;
 

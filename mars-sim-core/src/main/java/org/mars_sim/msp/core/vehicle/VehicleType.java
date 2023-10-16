@@ -10,8 +10,8 @@ package org.mars_sim.msp.core.vehicle;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.tools.Msg;
 
 public enum VehicleType {
 		

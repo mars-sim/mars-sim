@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
-import org.mars.sim.mapdata.location.LocalBoundedObject;
-import org.mars.sim.mapdata.location.LocalPosition;
+import org.mars_sim.mapdata.location.LocalBoundedObject;
+import org.mars_sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;

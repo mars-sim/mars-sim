@@ -18,11 +18,11 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.data.History;
 import org.mars_sim.msp.core.data.History.HistoryItem;
 import org.mars_sim.msp.core.time.MarsDate;
 import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.tools.Msg;
 
 /**
  * This is a panel that can display the details of a History object as a table.

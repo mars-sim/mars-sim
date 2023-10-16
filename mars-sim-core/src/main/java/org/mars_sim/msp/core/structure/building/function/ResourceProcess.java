@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 import java.util.Set;
 
-import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -18,6 +17,7 @@ import org.mars_sim.msp.core.structure.building.ResourceProcessEngine;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * The ResourceProcess class represents a process of converting one set of

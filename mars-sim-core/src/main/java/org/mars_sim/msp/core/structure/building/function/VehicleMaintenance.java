@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.mars.sim.mapdata.location.LocalPosition;
+import org.mars_sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.location.LocationStateType;

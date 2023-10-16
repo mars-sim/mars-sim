@@ -30,7 +30,6 @@ import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.authority.AuthorityFactory;
 import org.mars_sim.msp.core.data.DataLogger;
@@ -86,6 +85,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.tool.CheckSerializedSize;
+import org.mars_sim.tools.Msg;
 
 /**
  * The Simulation class is the primary singleton class in the MSP simulation.

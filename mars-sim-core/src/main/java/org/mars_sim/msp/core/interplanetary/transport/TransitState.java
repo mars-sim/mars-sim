@@ -7,7 +7,7 @@
 
 package org.mars_sim.msp.core.interplanetary.transport;
 
-import org.mars.sim.tools.Msg;
+import org.mars_sim.tools.Msg;
 
 public enum TransitState {
 

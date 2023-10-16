@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.authority.PreferenceCategory;
 import org.mars_sim.msp.core.authority.PreferenceKey;
 import org.mars_sim.msp.core.person.Person;
@@ -23,6 +22,7 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.tools.Msg;
 
 /**
  * Meta task for proposing a scientific study.

@@ -6,11 +6,11 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.tools.Msg;
 
 /**
  * A fuel power source that gives a steady supply of power.

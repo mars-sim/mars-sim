@@ -27,8 +27,7 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.mars.sim.console.InteractiveTerm;
-import org.mars.sim.tools.Msg;
+import org.mars_sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationBuilder;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -40,6 +39,7 @@ import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
+import org.mars_sim.tools.Msg;
 
 /**
 * MarsProject is the main class for the application. It creates both the

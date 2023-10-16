@@ -6,11 +6,11 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.tools.Msg;
 
 /**
  * The DigLocalRegolith class is a task for digging and collecting

@@ -12,7 +12,6 @@ import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
@@ -27,6 +26,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.tools.Msg;
 
 /**
  * The RobotTableModel maintains a list of Robot objects. By defaults the source

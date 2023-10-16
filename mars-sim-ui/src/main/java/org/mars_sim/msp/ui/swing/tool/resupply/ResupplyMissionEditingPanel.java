@@ -55,8 +55,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
-import org.mars.sim.mapdata.location.BoundedObject;
-import org.mars.sim.tools.Msg;
+import org.mars_sim.mapdata.location.BoundedObject;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
@@ -73,6 +72,7 @@ import org.mars_sim.msp.core.time.MarsTimeFormat;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel.SupplyItem;
+import org.mars_sim.tools.Msg;
 
 
 /**

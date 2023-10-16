@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.mars.sim.tools.Msg;
+import org.mars_sim.tools.Msg;
 
 /**
  * A class to represent a score Rating. Consists of a base value and a set

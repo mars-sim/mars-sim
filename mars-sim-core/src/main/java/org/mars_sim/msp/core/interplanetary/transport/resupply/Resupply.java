@@ -17,8 +17,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-import org.mars.sim.mapdata.location.BoundedObject;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.location.BoundedObject;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -41,6 +40,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.BuildingSpec;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * Resupply mission from Earth for a settlement.

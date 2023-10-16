@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.mars.sim.tools.Msg;
+import org.mars_sim.tools.Msg;
 
 /**
  * Default implementation of the MonitorModel

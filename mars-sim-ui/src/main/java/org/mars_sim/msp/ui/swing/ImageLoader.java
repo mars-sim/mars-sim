@@ -20,7 +20,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import org.apache.batik.transcoder.TranscoderException;
-import org.mars.sim.console.MarsTerminal;
+import org.mars_sim.console.MarsTerminal;
 import org.mars_sim.msp.ui.swing.tool.svg.SVGIcon;
 
 /**

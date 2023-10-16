@@ -28,7 +28,6 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -45,6 +44,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.ConstructionSitesPanel;
 import org.mars_sim.msp.ui.swing.utils.SwingHelper;
+import org.mars_sim.tools.Msg;
 
 
 public class PopUpUnitMenu extends JPopupMenu {

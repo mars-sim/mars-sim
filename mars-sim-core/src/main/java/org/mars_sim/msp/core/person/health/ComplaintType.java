@@ -8,7 +8,7 @@
 
 package org.mars_sim.msp.core.person.health;
 
-import org.mars.sim.tools.Msg;
+import org.mars_sim.tools.Msg;
 
 public enum ComplaintType {
 

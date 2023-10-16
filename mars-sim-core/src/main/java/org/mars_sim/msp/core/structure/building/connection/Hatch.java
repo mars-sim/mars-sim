@@ -6,8 +6,8 @@
  */
 package org.mars_sim.msp.core.structure.building.connection;
 
-import org.mars.sim.mapdata.location.LocalBoundedObject;
-import org.mars.sim.mapdata.location.LocalPosition;
+import org.mars_sim.mapdata.location.LocalBoundedObject;
+import org.mars_sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**

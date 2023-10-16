@@ -21,15 +21,15 @@ import java.util.zip.ZipOutputStream;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.tools.Msg;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.authority.Authority;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.Member;
 import org.mars_sim.msp.core.structure.InitialSettlement;
+import org.mars_sim.tools.Msg;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * Loads and maintains a repository Scenario instances from XML files.

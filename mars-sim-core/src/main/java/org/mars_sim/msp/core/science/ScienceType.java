@@ -15,10 +15,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.util.Job;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
+import org.mars_sim.tools.Msg;
 
 /**
  * Science field names and researcher job descriptions.

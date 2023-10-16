@@ -9,10 +9,9 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.mapdata.location.Direction;
-import org.mars.sim.mapdata.location.LocalPosition;
-import org.mars.sim.tools.Msg;
+import org.mars_sim.mapdata.location.Coordinates;
+import org.mars_sim.mapdata.location.Direction;
+import org.mars_sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -37,6 +36,7 @@ import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
+import org.mars_sim.tools.Msg;
 
 /**
  * The OperateVehicle class is an abstract task for operating a vehicle and

@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Architect;
@@ -46,6 +45,7 @@ import org.mars_sim.msp.core.robot.ai.job.Medicbot;
 import org.mars_sim.msp.core.robot.ai.job.Repairbot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * The JobUtil class keeps track of the settler jobs in a simulation.

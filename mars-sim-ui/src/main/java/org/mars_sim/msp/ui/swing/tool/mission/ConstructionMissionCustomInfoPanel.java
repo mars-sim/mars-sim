@@ -27,7 +27,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodsUtil;
 import org.mars_sim.msp.core.person.ai.mission.ConstructionMission;
@@ -44,6 +43,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
+import org.mars_sim.tools.Msg;
 
 /**
  * A panel for displaying construction custom mission information.

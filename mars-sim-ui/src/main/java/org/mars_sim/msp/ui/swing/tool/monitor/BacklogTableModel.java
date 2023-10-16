@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
@@ -20,6 +19,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.tools.Msg;
 
 /**
  * This class models how SettlementTasks are organized and displayed

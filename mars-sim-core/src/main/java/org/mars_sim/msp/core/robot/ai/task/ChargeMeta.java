@@ -6,12 +6,12 @@
  */
 package org.mars_sim.msp.core.robot.ai.task;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
+import org.mars_sim.tools.Msg;
 
 /**
  * Meta task for the Charge task.

@@ -7,9 +7,9 @@
 
 package org.mars_sim.msp.ui.swing.tool.map;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.mapdata.location.IntPoint;
-import org.mars.sim.mapdata.map.Map;
+import org.mars_sim.mapdata.location.Coordinates;
+import org.mars_sim.mapdata.location.IntPoint;
+import org.mars_sim.mapdata.map.Map;
 
 /**
  * Static class for map utilities.

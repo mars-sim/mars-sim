@@ -11,10 +11,10 @@ import java.awt.Dimension;
 
 import javax.swing.JPanel;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.tools.Msg;
 
 /**
  * The BuildingPanelResourceProcessing class is a building function panel representing

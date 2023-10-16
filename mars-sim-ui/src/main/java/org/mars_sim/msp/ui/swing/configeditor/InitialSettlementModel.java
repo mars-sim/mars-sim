@@ -14,14 +14,14 @@ import java.util.Set;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.tools.Msg;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.authority.Authority;
 import org.mars_sim.msp.core.authority.AuthorityFactory;
 import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
+import org.mars_sim.tools.Msg;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * Represents a table model of the initial settlements. This has some intelligence

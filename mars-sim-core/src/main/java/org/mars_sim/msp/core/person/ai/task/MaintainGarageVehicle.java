@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.util.Iterator;
 import java.util.logging.Level;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -25,6 +24,7 @@ import org.mars_sim.msp.core.vehicle.Flyer;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
+import org.mars_sim.tools.Msg;
 
 /**
  * The MaintainGarageVehicle class is a task for performing preventive

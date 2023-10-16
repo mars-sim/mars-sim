@@ -6,7 +6,7 @@
  */
 package org.mars_sim.msp.core.goods;
 
-import org.mars.sim.tools.Msg;
+import org.mars_sim.tools.Msg;
 
 /**
  * The GoodType enum class is used for distinguishing between various type of goods

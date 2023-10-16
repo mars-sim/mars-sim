@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.configuration.UserConfigurable;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * This class defines the attribute of a country. It also store commonly 

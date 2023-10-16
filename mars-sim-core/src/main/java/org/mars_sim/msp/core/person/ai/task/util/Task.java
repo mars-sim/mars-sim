@@ -14,9 +14,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.mars.sim.mapdata.location.LocalBoundedObject;
-import org.mars.sim.mapdata.location.LocalPosition;
-import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.mapdata.location.LocalBoundedObject;
+import org.mars_sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -57,6 +56,7 @@ import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * The Task class is an abstract parent class for tasks that allow people to do

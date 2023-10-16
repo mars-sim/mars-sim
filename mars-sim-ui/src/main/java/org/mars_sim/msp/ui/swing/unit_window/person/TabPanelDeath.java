@@ -25,8 +25,7 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 
-import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.tools.Msg;
+import org.mars_sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
@@ -37,6 +36,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.tools.Msg;
 
 
 /**

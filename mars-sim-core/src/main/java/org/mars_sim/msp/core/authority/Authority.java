@@ -12,10 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.configuration.UserConfigurable;
 import org.mars_sim.msp.core.person.NationSpecConfig;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
+import org.mars_sim.tools.util.RandomUtil;
 
 /**
  * Represents a sponsor that owns units such as people, settlement, lunar colonies, etc..

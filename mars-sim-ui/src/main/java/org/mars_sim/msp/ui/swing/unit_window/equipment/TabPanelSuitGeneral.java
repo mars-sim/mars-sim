@@ -12,7 +12,6 @@ import java.awt.Dimension;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.data.History;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -22,6 +21,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 import org.mars_sim.msp.ui.swing.utils.JHistoryPanel;
+import org.mars_sim.tools.Msg;
 
 /**
  * This tab displays general information about an EVA Suit.
