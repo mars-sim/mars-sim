@@ -1,6 +1,12 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
      name="Denmark">
+     <economics-data>
+		 <GDP value="395,404"/>
+		 <PPP value="436,857"/>
+		 <population value="5.882261"/>
+		 <GDP-growth value="3.82"/>
+	</economics-data>
     <first-name-list>
         <first-name value="William" gender="male" />
         <first-name value="Lucas" gender="male" />

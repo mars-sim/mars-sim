@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
     name="United Kingdom">
+     <economics-data>
+		 <GDP value="3,070,670"/>
+		 <PPP value="3,656,809"/>
+		 <population value="67.508,936"/>
+		 <GDP-growth value="4.1"/>
+	</economics-data>
+	
     <first-name-list>
 		<!-- https://momlovesbest.com/british-boy-names -->
 		

@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
     name="Saudi Arabia">
+     <economics-data>
+		 <GDP value="1,108,150"/>
+		 <PPP value="2,150,487"/>
+		 <population value="36.408,820"/>
+		 <GDP-growth value="8.74"/>
+	</economics-data>
+	
     <first-name-list>
 		<!-- https://studentsoftheworld.info/penpals/stats.php?Pays=SAU -->
 		

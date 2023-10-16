@@ -1,6 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
+	<!-- 
+		Note: 
+		1. GDP, PPP, and population are in millions.
+		2. GDP-growth is in percentage.
+	-->
+	
+    <xs:element name="GDP">
+        <xs:complexType>
+            <xs:attribute name="value" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="PPP">
+        <xs:complexType>
+            <xs:attribute name="value" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GDP-growth">
+        <xs:complexType>
+            <xs:attribute name="value" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="population">
+        <xs:complexType>
+            <xs:attribute name="value" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+    
     <xs:element name="last-name">
         <xs:complexType>
             <xs:attribute name="value" type="xs:string"/>
@@ -17,6 +47,26 @@
     <xs:element name="country">
         <xs:complexType>
             <xs:sequence>
+				<!-- Note: 
+					1. Economics Data referenced from
+					 https://www.worldometers.info/gdp/gdp-by-country/ 
+					 https://www.investopedia.com/insights/worlds-top-economies/
+					 https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(nominal)
+					 https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(PPP)
+					2. When choosing GDP and PPP, do not use IMF or CIA data set, 
+					   use the 'World Bank' data set
+					   
+					 -->
+				 <xs:element name="economics-data">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="GDP" minOccurs="1" maxOccurs="1"/>
+                            <xs:element ref="PPP" minOccurs="1" maxOccurs="1"/>
+                            <xs:element ref="population" minOccurs="1" maxOccurs="1"/>
+                            <xs:element ref="GDP-growth" minOccurs="1" maxOccurs="1"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
                 <xs:element name="first-name-list">
                     <xs:complexType>
                         <xs:sequence>

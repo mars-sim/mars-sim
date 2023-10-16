@@ -44,7 +44,7 @@ import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Member;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.PersonNameSpecConfig;
+import org.mars_sim.msp.core.person.NationSpecConfig;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
@@ -656,7 +656,7 @@ public class CrewEditor implements ActionListener {
 
 		if ((sponsorCode == null) || SETTLEMENT_SPONSOR.equals(sponsorCode)) {
 			// Load all known countries
-			PersonNameSpecConfig nameConfig = new PersonNameSpecConfig();
+			NationSpecConfig nameConfig = new NationSpecConfig();
 			model.addAll(nameConfig.getItemNames());			
 		}
 		else {

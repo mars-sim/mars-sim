@@ -34,8 +34,8 @@ import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Member;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonNameSpec;
-import org.mars_sim.msp.core.person.PersonNameSpecConfig;
+import org.mars_sim.msp.core.person.NationSpec;
+import org.mars_sim.msp.core.person.NationSpecConfig;
 import org.mars_sim.msp.core.person.ai.fav.Favorite;
 import org.mars_sim.msp.core.person.ai.job.util.AssignmentType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -73,7 +73,7 @@ public final class SettlementBuilder {
 	private RobotConfig robotConfig;
 	private UserConfigurableConfig<Crew> crewConfig;
 	private ReportingAuthorityFactory raFactory;
-	private PersonNameSpecConfig namingSpecs;
+	private NationSpecConfig namingSpecs;
 
 	public SettlementBuilder(Simulation sim, SimulationConfig simConfig) {
 		super();
@@ -81,7 +81,7 @@ public final class SettlementBuilder {
 		this.settlementConfig = simConfig.getSettlementConfiguration();
 		this.robotConfig = simConfig.getRobotConfiguration();
 		this.raFactory = simConfig.getReportingAuthorityFactory();
-		this.namingSpecs = new PersonNameSpecConfig();
+		this.namingSpecs = new NationSpecConfig();
 	}
 
 	/**
@@ -399,7 +399,7 @@ public final class SettlementBuilder {
 
 			// This is random and may change on each call
 			String country = sponsor.getRandomCountry();
-			PersonNameSpec spec = namingSpecs.getItem(country);
+			NationSpec spec = namingSpecs.getItem(country);
 
 			// Make sure settlement name isn't already being used.
 			String fullname = spec.generateName(gender, existingfullnames);
@@ -482,7 +482,7 @@ public final class SettlementBuilder {
 
 					// This is random and may change on each call
 					String country = sponsor.getRandomCountry();
-					PersonNameSpec spec = namingSpecs.getItem(country);
+					NationSpec spec = namingSpecs.getItem(country);
 					name = spec.generateName(gender, existingfullnames);
 					
 				}

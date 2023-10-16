@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
     name="Canada">
+    <economics-data>
+		 <GDP value="2,139,840"/>
+		 <PPP value="2,273,489"/>
+		 <population value="38.454327"/>
+		 <GDP-growth value="3.4"/>
+	</economics-data>
+	
     <first-name-list>
         <!-- http://www.babynamewizard.com/name-list/canadian-boys-names-most-popular-names-for-boys-in-canada-quebec- -->
         <first-name value="William" gender="male" />

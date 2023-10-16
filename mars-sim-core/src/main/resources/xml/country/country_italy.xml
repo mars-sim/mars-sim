@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
         name="Italy">
+     <economics-data>
+		 <GDP value="2,010,430"/>
+		 <PPP value="3,052,609"/>
+		 <population value="59.037474"/>
+		 <GDP-growth value="3.67"/>
+	</economics-data>
+	 
     <first-name-list>
         <first-name value="Francesco" gender="male" />
         <first-name value="Alessandro" gender="male" />

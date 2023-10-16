@@ -1,6 +1,12 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
         name="Finland">
+    <economics-data>
+		 <GDP value="280,826"/>
+		 <PPP value="328,004"/>
+		 <population value="5.540,745"/>
+		 <GDP-growth value="2.08"/>
+	</economics-data>
     <first-name-list>
         <first-name value="Leo" gender="male" />
         <first-name value="Elias" gender="male" />

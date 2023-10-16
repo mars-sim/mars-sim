@@ -14,7 +14,7 @@ import java.util.Map;
 
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.configuration.UserConfigurable;
-import org.mars_sim.msp.core.person.PersonNameSpecConfig;
+import org.mars_sim.msp.core.person.NationSpecConfig;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 
 /**
@@ -66,7 +66,7 @@ implements UserConfigurable, Serializable {
 		this.vehicleNames = vehicleNames;
 
 		for (String c: countries) {
-			nations.add(PersonNameSpecConfig.getNation(c));
+			nations.add(NationSpecConfig.getNation(c));
     	}
 		
 		if (isCorporation)

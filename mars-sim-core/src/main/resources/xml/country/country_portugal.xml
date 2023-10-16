@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
         name="Portugal">
+     <economics-data>
+		 <GDP value="251,945"/>
+		 <PPP value="430,227"/>
+		 <population value="10.270865"/>
+		 <GDP-growth value="6.69"/>
+	</economics-data>
+	
     <first-name-list>
         <first-name value="João" gender="male" />
         <first-name value="Martim" gender="male" />

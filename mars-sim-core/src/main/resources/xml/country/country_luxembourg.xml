@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
         name="Luxembourg">
+     <economics-data>
+		 <GDP value="82,274.812251"/>
+		 <PPP value="86,117"/>
+		 <population value="0.647599"/>
+		 <GDP-growth value="1.55"/>
+	</economics-data>
+	
     <first-name-list>
         <first-name value="Gabriel" gender="male" />
         <first-name value="Leo" gender="male" />

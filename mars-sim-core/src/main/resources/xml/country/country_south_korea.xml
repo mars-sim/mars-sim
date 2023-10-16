@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
     name="South Korea">
+     <economics-data>
+		 <GDP value="1,665,250"/>
+		 <PPP value="2,585,011"/>
+		 <population value="51.815,810"/>
+		 <GDP-growth value="2.56"/>
+	</economics-data>
+	
     <first-name-list>
 
         <!-- https://en.wikipedia.org/wiki/List_of_the_most_popular_given_names_in_South_Korea -->

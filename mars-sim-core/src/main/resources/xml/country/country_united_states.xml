@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
         name="United States">
+     <economics-data>
+		 <GDP value="25,462,700"/>
+		 <PPP value="25,462,700"/>
+		 <population value="338.289857"/>
+		 <GDP-growth value="2.06"/>
+	</economics-data>
+	
     <first-name-list>
         <!-- U.S.A., 1-60 male first name http://www2.census.gov/topics/genealogy/1990surnames/dist.male.first -->
         <first-name value="James" gender="male" />

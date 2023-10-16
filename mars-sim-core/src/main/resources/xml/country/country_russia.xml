@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
     name="Russia">
+     <economics-data>
+		 <GDP value="2,240,420"/>
+		 <PPP value="5,326,855"/>
+		 <population value="144.713,314"/>
+		 <GDP-growth value="-2.07"/>
+	</economics-data>
+	
     <first-name-list>
         <!-- Derived from https://en.wiki2.org/wiki/List_of_space_travelers_by_nationality -->
 

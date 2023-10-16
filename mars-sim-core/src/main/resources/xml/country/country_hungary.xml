@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
          name="Hungary">
+     <economics-data>
+		 <GDP value="178,789"/>
+		 <PPP value="405,803"/>
+		 <population value="9.967308"/>
+		 <GDP-growth value="4.58"/>
+	</economics-data>
+	
     <first-name-list>
         <first-name value="Bence" gender="male" />
         <first-name value="Máté" gender="male" />

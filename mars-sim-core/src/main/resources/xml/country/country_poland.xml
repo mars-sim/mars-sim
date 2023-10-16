@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
         name="Poland">
+     <economics-data>
+		 <GDP value="688,177"/>
+		 <PPP value="1,625,236"/>
+		 <population value="39.857145"/>
+		 <GDP-growth value="4.87"/>
+	</economics-data>
+	
     <first-name-list>
         <first-name value="Jan" gender="male" />
         <first-name value="Antoni" gender="male" />

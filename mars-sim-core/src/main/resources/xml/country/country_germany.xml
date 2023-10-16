@@ -1,8 +1,14 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
  name="Germany">
+    <economics-data>
+		 <GDP value="4,072,190"/>
+		 <PPP value="5,309,606"/>
+		 <population value="83,369,843"/>
+		 <GDP-growth value="1.79"/>
+	</economics-data>
+	
     <first-name-list>
-
         <!-- Extracted from https://en.wikipedia.org/wiki/German_name -->
 
         <first-name value="Ben" gender="male" />

@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * PersonNameSpec.java
+ * NationSpec.java
  * @date 2023-07-23
  * @author Barry Evans
  */
@@ -14,14 +14,19 @@ import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.configuration.UserConfigurable;
 
 /**
- * Represents a naming scheme for persons. It contains a set of gender neutral surnames and 
- * gender specific forenames. Names carry a country/language bias.
+ * This class defines the attribute of a country. It also store commonly 
+ * used names for creating settlers.
  */
-public class PersonNameSpec implements UserConfigurable {
+public class NationSpec implements UserConfigurable {
 	
 	private final String PERSON_NO = "Person #";
 	
 	private boolean bundled;
+	
+	private double gdp;
+	private double ppp;
+	private double pop;
+	private double growth;
 	
 	private String scheme;
 	
@@ -29,11 +34,34 @@ public class PersonNameSpec implements UserConfigurable {
 	private List<String> firstFemale = new ArrayList<>();
 	private List<String> lastNames = new ArrayList<>();
 	
-	public PersonNameSpec(String scheme, boolean bundled) {
+	public NationSpec(String scheme, boolean bundled) {
 		this.scheme = scheme;
 		this.bundled = bundled;
 	}
 
+	double getGDP() {
+		return gdp;
+	}
+	
+	double getPPP() {
+		return ppp;
+	}
+	
+	double getPop() {
+		return pop;
+	}
+	
+	double getGrowth() {
+		return growth;
+	}
+	
+	void addData(double gdp, double ppp, double pop, double growth) {
+		this.gdp = gdp;
+		this.ppp = ppp;
+		this.pop = pop;
+		this.growth = growth;
+	}
+	
 	void addLastName(String name) {
 		lastNames.add(name);
 	}

@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
         name="Spain">
+     <economics-data>
+		 <GDP value="1,397,510"/>
+		 <PPP value="2,181,968"/>
+		 <population value="47.558,630"/>
+		 <GDP-growth value="5.45"/>
+	</economics-data>
+	
     <first-name-list>
         <first-name value="Hugo" gender="male" />
         <first-name value="Daneil" gender="male" />

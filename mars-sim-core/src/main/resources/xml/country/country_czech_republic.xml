@@ -1,8 +1,14 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
     name="Czech Republic">
+    <economics-data>
+		 <GDP value="290,924"/>
+		 <PPP value="525,730"/>
+		 <population value="10.493986"/>
+		 <GDP-growth value="2.46"/>
+	</economics-data>
+	
     <first-name-list>
-
         <first-name value="Jakub" gender="male" />
         <first-name value="Jan" gender="male" />
         <first-name value="Tomáš" gender="male" />

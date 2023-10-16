@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
     name="Ireland">
+     <economics-data>
+		 <GDP value="529,245"/>
+		 <PPP value="645,565"/>
+		 <population value="5.023109"/>
+		 <GDP-growth value="11.97"/>
+	</economics-data>
+	
     <first-name-list>
         <first-name value="Jack" gender="male" />
         <first-name value="James" gender="male" />

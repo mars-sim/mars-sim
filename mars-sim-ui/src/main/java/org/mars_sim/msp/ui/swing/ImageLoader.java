@@ -123,7 +123,7 @@ public class ImageLoader {
 	/**
 	 * Returns the SVG icon from a spec.
 	 * 
-	 * @param spec The spec defines the icon size & filepath
+	 * @param spec The spec that defines the icon size & filepath
 	 * @param xx
 	 * @param yy
 	 * @return

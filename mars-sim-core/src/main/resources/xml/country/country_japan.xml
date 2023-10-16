@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
     name="Japan">
+     <economics-data>
+		 <GDP value="4,231,140"/>
+		 <PPP value="5,702,287"/>
+		 <population value="123.951,692"/>
+		 <GDP-growth value="1.03"/>
+	</economics-data>
+	
     <first-name-list>
 
         <!-- http://www.babynamewizard.com/name-list/japanese-boys-names-most-popular-names-for-boys-in-japan -->

@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
     name="India">
+     <economics-data>
+		 <GDP value="3,385,090"/>
+		 <PPP value="11,874,583"/>
+		 <population value="1.417173173"/>
+		 <GDP-growth value="7.0"/>
+	</economics-data>
+	
     <first-name-list>
 
         <!-- http://babynamescountry.com/origins/popular_indian_baby_names1.html

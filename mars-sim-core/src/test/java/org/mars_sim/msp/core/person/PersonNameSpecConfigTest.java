@@ -16,11 +16,11 @@ import junit.framework.TestCase;
 
 public class PersonNameSpecConfigTest extends TestCase {
 	
-    private PersonNameSpecConfig config;
+    private NationSpecConfig config;
     
     @Override
     public void setUp() {
-        config = new PersonNameSpecConfig();
+        config = new NationSpecConfig();
     }
 
     public void testGenerateName() {
@@ -31,7 +31,7 @@ public class PersonNameSpecConfigTest extends TestCase {
 
     private void generateForCountry(String country, int names) {
         Set<String> existing = new HashSet<>();
-        PersonNameSpec ns = config.getItem(country);
+        NationSpec ns = config.getItem(country);
         assertNotNull("Name spec for " + country, ns);
         for (int i = 0; i < names; i++) {
             String newName = ns.generateName(GenderType.MALE, existing);

@@ -1,6 +1,12 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
          name="France">
+    <economics-data>
+		 <GDP value="2,782,910"/>
+		 <PPP value="3,769,924"/>
+		 <population value="64.626628"/>
+		 <GDP-growth value="2.56"/>
+	</economics-data> 
     <first-name-list>
         <first-name value="Adam" gender="male" />
         <first-name value="Gabriel" gender="male" />

@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * PersonNameSpecConfig.java
+ * NationSpecConfig.java
  * @date 2023-07-23
  * @author Barry Evans
  */
@@ -15,18 +15,25 @@ import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.core.reportingAuthority.Nation;
 
 /**
- * Configuration class to load person naming schemes unique to each country.
+ * Configuration class for loading the attributes of each country 
+ * as well as loading person naming schemes that's unique to each country.
  */
-public class PersonNameSpecConfig extends UserConfigurableConfig<PersonNameSpec> {
+public class NationSpecConfig extends UserConfigurableConfig<NationSpec> {
 
 	private final String COUNTRY_XSD = "country.xsd";
 	
 	private static final String COUNTRY = "country";
 
+	private final String ECONOMICS_DATA = "economics-data";
+//	private final String GDP = "GDP";
+//	private final String PPP = "PPP";
+//	private final String POPULATION = "population";
+//	private final String GDP_GROWTH = "GDP-growth";
+
+	private final String LAST_NAME_LIST = "last-name-list";
+	private final String FIRST_NAME_LIST = "first-name-list";	
 	private final String MALE = "male";
 	private final String FEMALE = "female";
-	private final String LAST_NAME_LIST = "last-name-list";
-	private final String FIRST_NAME_LIST = "first-name-list";
 	private final String LAST_NAME = "last-name";
 	private final String FIRST_NAME = "first-name";
 	private final String GENDER = "gender";
@@ -34,7 +41,7 @@ public class PersonNameSpecConfig extends UserConfigurableConfig<PersonNameSpec>
     private final String VALUE = "value";
 
     // Note: each of the predefined country below has a xml file
-    public final String[] COUNTRIES = {
+    private final String[] COUNTRIES = {
     					"Austria",  "Belgium", "Brazil", 
     					"Canada", "China", "Czech Republic",
                         "Denmark", "Estonia", "Finland", "France", 
@@ -51,7 +58,7 @@ public class PersonNameSpecConfig extends UserConfigurableConfig<PersonNameSpec>
 
 	private static List<Nation> nations = new ArrayList<>();
 	
-    public PersonNameSpecConfig() {
+    public NationSpecConfig() {
         super(COUNTRY);
 
         setXSDName(COUNTRY_XSD);
@@ -65,18 +72,33 @@ public class PersonNameSpecConfig extends UserConfigurableConfig<PersonNameSpec>
     }
 
     @Override
-    protected Document createItemDoc(PersonNameSpec item) {
+    protected Document createItemDoc(NationSpec item) {
         throw new UnsupportedOperationException("Unimplemented method 'createItemDoc'");
     }
 
     @Override
-    protected PersonNameSpec parseItemXML(Document doc, boolean predefined) {
+    protected NationSpec parseItemXML(Document doc, boolean predefined) {
 
 		Element countryElement = doc.getRootElement();
 
 		String country = countryElement.getAttributeValue(NAME);
-		PersonNameSpec result = new PersonNameSpec(country, predefined);
+		NationSpec result = new NationSpec(country, predefined);
 
+		// Scan the economic data
+		double []data = new double[4];
+		
+		Element econEl = countryElement.getChild(ECONOMICS_DATA);
+        List<Element> nodes = econEl.getChildren();
+		int size = nodes.size();
+	
+		for (int i = 0; i < size; i++) {
+			Element element = nodes.get(i);
+			String str = element.getAttributeValue(VALUE).trim().replace(",", "");
+			data[i] = Double.parseDouble(str);
+		}
+		
+		result.addData(data[0], data[1], data[2], data[3]);
+		
         // Scan first names
         Element firstNameEl = countryElement.getChild(FIRST_NAME_LIST);
         List<Element> firstNamesList = firstNameEl.getChildren(FIRST_NAME);

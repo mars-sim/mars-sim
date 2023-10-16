@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
             name="Romania">
+     <economics-data>
+		 <GDP value="301,262"/>
+		 <PPP value="794,055"/>
+		 <population value="19.659,267"/>
+		 <GDP-growth value="4.79"/>
+	</economics-data>
+	
     <first-name-list>
         <first-name value="Andrei" gender="male" />
         <first-name value="David" gender="male" />

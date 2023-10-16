@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
         name="Austria">
+    <economics-data>
+		 <GDP value="471,400"/>
+		 <PPP value="614,312"/>
+		 <population value="8.939617"/>
+		 <GDP-growth value="5"/>
+	</economics-data>
+	
     <first-name-list>
         <first-name value="Lukas" gender="male" />
         <first-name value="Maximilian" gender="male" />

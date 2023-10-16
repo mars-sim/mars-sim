@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
             name="Brazil">
+    <economics-data>
+		 <GDP value="1,920,096"/>
+		 <PPP value="3,837,261"/>
+		 <population value="215.313498"/>
+		 <GDP-growth value="2.9"/>
+	</economics-data>
+	
     <first-name-list>
         <!-- Brazil : will replace with Brazilian names -->
         <first-name value="Paulo" gender="male" />

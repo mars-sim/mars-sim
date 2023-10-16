@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
  name="Greece">
+     <economics-data>
+		 <GDP value="219,066"/>
+		 <PPP value="389,217"/>
+		 <population value="10.384,971"/>
+		 <GDP-growth value="5.91"/>
+	</economics-data>
+	
     <first-name-list>
         <first-name value="Georgios" gender="male" />
         <first-name value="Ioannis" gender="male" />

@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
         name="China">
+    <economics-data>
+		 <GDP value="17,963,200"/>
+		 <PPP value="30,327,320"/>
+		 <population value="1425.887337"/>
+		 <GDP-growth value="2.99"/>
+	</economics-data> 
+	
     <first-name-list>
         <!-- Derived from https://en.wiki2.org/wiki/List_of_Chinese_astronauts
             http://www.20000-names.com/male_chinese_names.htm -->

@@ -1,6 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
     name="Switzerland">
+     <economics-data>
+		 <GDP value="807,706"/>
+		 <PPP value="733,137"/>
+		 <population value=".008,740,472"/>
+		 <GDP-growth value="2.06"/>
+	</economics-data>
+	
     <first-name-list>
         <first-name value="Noah" gender="male" />
         <first-name value="Liam" gender="male" />
