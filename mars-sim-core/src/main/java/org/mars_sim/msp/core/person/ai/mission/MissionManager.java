@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.authority.PreferenceCategory;
+import org.mars_sim.msp.core.authority.PreferenceKey;
 import org.mars_sim.msp.core.data.Rating;
 import org.mars_sim.msp.core.data.RatingLog;
 import org.mars_sim.msp.core.data.RatingScore;
@@ -25,8 +27,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.reportingAuthority.PreferenceCategory;
-import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**

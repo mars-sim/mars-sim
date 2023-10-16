@@ -32,6 +32,7 @@ import java.util.zip.GZIPOutputStream;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.air.AirComposition;
+import org.mars_sim.msp.core.authority.AuthorityFactory;
 import org.mars_sim.msp.core.data.DataLogger;
 import org.mars_sim.msp.core.data.History;
 import org.mars_sim.msp.core.data.UnitSet;
@@ -66,7 +67,6 @@ import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalConfig;
 import org.mars_sim.msp.core.person.health.MedicalManager;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
@@ -690,7 +690,7 @@ public class Simulation implements ClockListener, Serializable {
 		///////////////////////////////////////////////////////////////
 		
 		// Rediscover the MissionControls
-		ReportingAuthorityFactory rf  = simulationConfig.getReportingAuthorityFactory();
+		AuthorityFactory rf  = simulationConfig.getReportingAuthorityFactory();
 		rf.discoverReportingAuthorities(unitManager);
 			
 		HealthProblem.initializeInstances(medicalManager, eventManager);

@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.reportingAuthority;
+package org.mars_sim.msp.core.authority;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.time.ClockPulse;

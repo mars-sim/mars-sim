@@ -21,13 +21,13 @@ import org.apache.commons.cli.Option;
 import org.mars.sim.mapdata.common.FileLocator;
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.msp.core.authority.Authority;
 import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.configuration.ScenarioConfig;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.core.logging.DiagnosticsManager;
 import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.CrewConfig;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.SettlementBuilder;
 import org.mars_sim.msp.core.structure.SettlementConfig;
@@ -403,7 +403,7 @@ public class SimulationBuilder {
 			
 		// Find the template
 		SettlementTemplate settlementTemplate = settlementConfig.getItem(template);	
-		ReportingAuthority authority;
+		Authority authority;
 		if (authorityName == null) {
 			// Use the default on the template
 			String sponsorCode = settlementTemplate.getSponsor();

@@ -13,7 +13,7 @@ import java.util.List;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.authority.Authority;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -37,7 +37,7 @@ public final class VehicleFactory {
      * @return
      */
     public static Vehicle createVehicle(UnitManager unitMgr, Settlement owner, String specName) {
-        ReportingAuthority sponsor = owner.getReportingAuthority();
+        Authority sponsor = owner.getReportingAuthority();
 
         Vehicle vehicle = null;
         VehicleSpec spec = vehicleConfig.getVehicleSpec(specName);
@@ -67,7 +67,7 @@ public final class VehicleFactory {
 	 * @param sponsor Sponsor.
 	 * @return
 	 */
-	private static String generateName(UnitManager unitMgr, VehicleType type, ReportingAuthority sponsor) {
+	private static String generateName(UnitManager unitMgr, VehicleType type, Authority sponsor) {
 		String result = null;
 		String baseName = null;
 

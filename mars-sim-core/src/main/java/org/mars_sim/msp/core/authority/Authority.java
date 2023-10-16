@@ -1,10 +1,10 @@
 /*
  * Mars Simulation Project
- * ReportingAuthority.java
+ * Authority.java
  * @date 2023-05-31
  * @author Manny Kung
  */
-package org.mars_sim.msp.core.reportingAuthority;
+package org.mars_sim.msp.core.authority;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 /**
  * Represents a sponsor that owns units such as people, settlement, lunar colonies, etc..
  */
-public class ReportingAuthority
+public class Authority
 implements UserConfigurable, Serializable {
 
 	/** default serial id. */
@@ -49,7 +49,7 @@ implements UserConfigurable, Serializable {
 	private List<String> vehicleNames;
 
  
-	public ReportingAuthority(String acronym, String fullName, 
+	public Authority(String acronym, String fullName, 
 			boolean isCorporation, boolean predefined, 
 			double genderRatio,
 			MissionAgenda agenda, List<String> countries,
@@ -228,7 +228,7 @@ implements UserConfigurable, Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ReportingAuthority other = (ReportingAuthority) obj;
+		Authority other = (Authority) obj;
 		if (acronym == null) {
 			if (other.acronym != null)
 				return false;

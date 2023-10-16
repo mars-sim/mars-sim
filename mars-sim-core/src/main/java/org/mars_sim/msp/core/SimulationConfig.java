@@ -35,6 +35,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.mars.sim.mapdata.common.FileLocator;
+import org.mars_sim.msp.core.authority.AuthorityFactory;
 import org.mars_sim.msp.core.environment.LandmarkConfig;
 import org.mars_sim.msp.core.environment.MineralMapConfig;
 import org.mars_sim.msp.core.food.FoodProductionConfig;
@@ -45,7 +46,6 @@ import org.mars_sim.msp.core.manufacture.ManufactureConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.health.MedicalConfig;
 import org.mars_sim.msp.core.quotation.QuotationConfig;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
@@ -175,7 +175,7 @@ public class SimulationConfig implements Serializable {
 
 	private transient List<String> excludedList;
 
-	private transient ReportingAuthorityFactory raFactory;
+	private transient AuthorityFactory raFactory;
 
 	private double minEVALight;
 
@@ -782,7 +782,7 @@ public class SimulationConfig implements Serializable {
 	 * 
 	 * @return
 	 */
-	public ReportingAuthorityFactory getReportingAuthorityFactory() {
+	public AuthorityFactory getReportingAuthorityFactory() {
 		return raFactory;
 	}
 
@@ -942,7 +942,7 @@ public class SimulationConfig implements Serializable {
 	private void loadDefaultConfiguration() {
 
 		// Load subset configuration classes.
-		raFactory = new ReportingAuthorityFactory(parseXMLFileAsJDOMDocument(GOVERNANCE_FILE, true));
+		raFactory = new AuthorityFactory(parseXMLFileAsJDOMDocument(GOVERNANCE_FILE, true));
 		resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE, true));
 		partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
 		partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true));

@@ -4,7 +4,7 @@
  * @date 2023-05-31
  * @author Barry Evans
  */
-package org.mars_sim.msp.core.reportingAuthority;
+package org.mars_sim.msp.core.authority;
 
 import java.io.Serializable;
 import java.util.Map;

@@ -39,6 +39,8 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.msp.core.authority.Authority;
+import org.mars_sim.msp.core.authority.AuthorityFactory;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.GenderType;
@@ -46,8 +48,6 @@ import org.mars_sim.msp.core.person.Member;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.NationSpecConfig;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
@@ -363,7 +363,7 @@ public class CrewEditor implements ActionListener {
 
 	private SimulationConfigEditor simulationConfigEditor;
 
-	private ReportingAuthorityFactory raFactory;
+	private AuthorityFactory raFactory;
 	
 	/**
 	 * Constructor.
@@ -375,7 +375,7 @@ public class CrewEditor implements ActionListener {
 	 */
 	public CrewEditor(SimulationConfigEditor simulationConfigEditor,
 					  UserConfigurableConfig<Crew> config,
-					  ReportingAuthorityFactory raFactory,
+					  AuthorityFactory raFactory,
 					  PersonConfig pc) {
 		
 		this.simulationConfigEditor = simulationConfigEditor;
@@ -661,7 +661,7 @@ public class CrewEditor implements ActionListener {
 		}
 		else {
 			// Load the countries from RA
-			ReportingAuthority ra = raFactory.getItem(sponsorCode);
+			Authority ra = raFactory.getItem(sponsorCode);
 			model.addAll(ra.getCountries());
 		}
 	}

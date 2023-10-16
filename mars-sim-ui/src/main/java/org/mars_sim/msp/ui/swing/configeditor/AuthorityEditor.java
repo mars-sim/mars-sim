@@ -34,10 +34,10 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.mars.sim.tools.Msg;
-import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
-import org.mars_sim.msp.core.reportingAuthority.MissionCapability;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
+import org.mars_sim.msp.core.authority.MissionAgenda;
+import org.mars_sim.msp.core.authority.MissionCapability;
+import org.mars_sim.msp.core.authority.Authority;
+import org.mars_sim.msp.core.authority.AuthorityFactory;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
@@ -122,7 +122,7 @@ public class AuthorityEditor  {
 
 	private boolean isCorporation = false;
 
-	private ReportingAuthorityFactory raFactory;
+	private AuthorityFactory raFactory;
 	
 	private JDialog f;
 
@@ -146,7 +146,7 @@ public class AuthorityEditor  {
 	 * @param raFactory
 	 */
 	public AuthorityEditor(SimulationConfigEditor simulationConfigEditor,
-					  ReportingAuthorityFactory raFactory) {
+					  AuthorityFactory raFactory) {
 		
 		this.raFactory = raFactory;
 		
@@ -240,15 +240,15 @@ public class AuthorityEditor  {
 		contentPane.add(tabs);
 		
 		// Create button panel.
-		UserConfigurableControl<ReportingAuthority> control = new UserConfigurableControl<>(f, "Authority",
+		UserConfigurableControl<Authority> control = new UserConfigurableControl<>(f, "Authority",
 																		raFactory) {
 			@Override
-			protected void displayItem(ReportingAuthority newDisplay) {
+			protected void displayItem(Authority newDisplay) {
 				loadAuthority(newDisplay);
 			}
 
 			@Override
-			protected ReportingAuthority createItem(String newName, String newDescription) {
+			protected Authority createItem(String newName, String newDescription) {
 				return commitChanges(newName, newDescription);
 			}
 		};
@@ -267,7 +267,7 @@ public class AuthorityEditor  {
 	}
 
 
-	private void loadAuthority(ReportingAuthority newDisplay) {
+	private void loadAuthority(Authority newDisplay) {
 		f.setTitle(TITLE + " - " + newDisplay.getName());
 
 		genderRatio.setValue((int)(newDisplay.getGenderRatio() * 100));
@@ -289,10 +289,10 @@ public class AuthorityEditor  {
 	 * @param description
 	 * @return
 	 */
-	private ReportingAuthority commitChanges(String name, String description) {
+	private Authority commitChanges(String name, String description) {
 		String agendaName = (String) agendaCB.getSelectedItem();
 		
-		return new ReportingAuthority(name, description, isCorporation, false,
+		return new Authority(name, description, isCorporation, false,
 				// Note: the following entries may be subject to change
 				genderRatio.getValue()/100D,
 				raFactory.getAgenda(agendaName),

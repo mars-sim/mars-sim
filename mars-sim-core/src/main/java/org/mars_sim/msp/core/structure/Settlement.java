@@ -31,6 +31,9 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.air.AirComposition;
+import org.mars_sim.msp.core.authority.PreferenceCategory;
+import org.mars_sim.msp.core.authority.PreferenceKey;
+import org.mars_sim.msp.core.authority.Authority;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.DustStorm;
@@ -72,9 +75,6 @@ import org.mars_sim.msp.core.person.ai.task.util.SettlementTaskManager;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.project.Stage;
-import org.mars_sim.msp.core.reportingAuthority.PreferenceCategory;
-import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -270,7 +270,7 @@ public class Settlement extends Structure implements Temporal,
 	private String template;
 
 	/** The settlement's ReportingAuthority instance. */
-	private ReportingAuthority sponsor;
+	private Authority sponsor;
 	/** The settlement's building manager. */
 	protected BuildingManager buildingManager;
 	/** The settlement's building connector manager. */
@@ -414,7 +414,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @param populationNumber
 	 * @param initialNumOfRobots
 	 */
-	private Settlement(String name, int id, String template, ReportingAuthority sponsor, Coordinates location, int populationNumber,
+	private Settlement(String name, int id, String template, Authority sponsor, Coordinates location, int populationNumber,
 			int initialNumOfRobots) {
 		// Use Structure constructor
 		super(name, location);
@@ -455,7 +455,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @param initialNumOfRobots
 	 * @return
 	 */
-	public static Settlement createNewSettlement(String name, int id, String template, ReportingAuthority sponsor,
+	public static Settlement createNewSettlement(String name, int id, String template, Authority sponsor,
 			Coordinates location, int populationNumber, int initialNumOfRobots) {
 		return new Settlement(name, id, template, sponsor, location, populationNumber, initialNumOfRobots);
 	}
@@ -586,7 +586,7 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Gets the space agency.
 	 */
-	public ReportingAuthority getReportingAuthority() {
+	public Authority getReportingAuthority() {
 		return sponsor;
 	}
 

@@ -1,10 +1,10 @@
 /*
  * Mars Simulation Project
- * ReportingAuthorityFactory.java
+ * AuthorityFactory.java
  * @date 2023-05-31
  * @author Barry Evans
  */
-package org.mars_sim.msp.core.reportingAuthority;
+package org.mars_sim.msp.core.authority;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,10 +22,10 @@ import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * Factory method for creating/managing Reporting Authorities.
- * This is loaded via the GovernanceConfig for new simulations
- * or derived from the Settlements in a loaded simulation. 
+ * This is loaded for new simulations or derived from settlements 
+ * in a loaded simulation. 
  */
-public final class ReportingAuthorityFactory extends UserConfigurableConfig<ReportingAuthority> {
+public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 	
 	private final String AUTHORITY_EL = "authority";
 	private final String AUTHORITIES_EL = "authorities";
@@ -49,7 +49,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	
 	private Map<String, MissionAgenda> agendas;
 
-	public ReportingAuthorityFactory(Document governanceDoc) {
+	public AuthorityFactory(Document governanceDoc) {
 		super("authority");
 		
 		// Load the defaults
@@ -91,7 +91,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 				for (Element preNode : subNode.getChildren(PERFERENCE_EL)) {
 					double value = Double.parseDouble(preNode.getAttributeValue(MODIFIER_ATTR));
 
-					// Backward compatiable with the old naming scheme
+					// Backward compatible with the old naming scheme
 					String pTypeValue = preNode.getAttributeValue(TYPE_ATTR);
 					if (pTypeValue.equals("MISSION") || pTypeValue.equals("TASK")) {
 						pTypeValue = pTypeValue + "_WEIGHT";
@@ -127,10 +127,10 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	 * 
 	 * @param agendas
 	 * @param authorityNode
-	 * @param predefined Is this a repdefined RA
+	 * @param predefined Is this a redefined RA
 	 * @return
 	 */
-	private ReportingAuthority parseXMLAuthority(Map<String, MissionAgenda> agendas, Element authorityNode, boolean predefined) {
+	private Authority parseXMLAuthority(Map<String, MissionAgenda> agendas, Element authorityNode, boolean predefined) {
 		String acronym = authorityNode.getAttributeValue(CODE_ATTR);
 		String fullName = authorityNode.getAttributeValue(NAME_ATTR);
 		String isCorporationString = authorityNode.getAttributeValue(CORPORATION_ATTR);
@@ -163,7 +163,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 		if (isCorporationString.equalsIgnoreCase("true"))
 			isCorporation = true;
 		
-		return new ReportingAuthority(acronym, fullName, isCorporation, predefined, maleRatio, agenda,
+		return new Authority(acronym, fullName, isCorporation, predefined, maleRatio, agenda,
 									  countries, settlementNames,
 									  roverNames);
 	}
@@ -178,8 +178,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	public void discoverReportingAuthorities(UnitManager mgr) {
 		// Then overwrite the loaded with those that are active in the simulation
 		for (Settlement s : mgr.getSettlements()) {
-			ReportingAuthority ra = s.getReportingAuthority();
-			addItem(ra);
+			addItem(s.getReportingAuthority());
 		}
 	}
 
@@ -187,7 +186,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	 * Converts a Reporting Authority to an XML representation.
 	 */
 	@Override
-	protected Document createItemDoc(ReportingAuthority item) {
+	protected Document createItemDoc(Authority item) {
 		Element authorityNode = new Element(AUTHORITY_EL);
 		authorityNode.setAttribute(CODE_ATTR, item.getName());
 		authorityNode.setAttribute(NAME_ATTR, item.getDescription());
@@ -203,6 +202,13 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 		return new Document(authorityNode);
 	}
 
+	/**
+	 * Adds a list of names (countries, settlements, vehicles) into an authority node.
+	 * 
+	 * @param authorityNode
+	 * @param elName
+	 * @param items
+	 */
 	private void addList(Element authorityNode, String elName, List<String> items) {
 		for (String s : items) {
 			Element el = new Element(elName);
@@ -215,7 +221,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	 * Parses a user created XML.
 	 */
 	@Override
-	protected ReportingAuthority parseItemXML(Document doc, boolean predefined) {
+	protected Authority parseItemXML(Document doc, boolean predefined) {
 		// User configured XML just contains the Authority node.
 		return parseXMLAuthority(agendas, doc.getRootElement(), false);
 	}

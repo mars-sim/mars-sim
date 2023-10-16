@@ -10,13 +10,13 @@ package org.mars_sim.msp.core.person;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.mars_sim.msp.core.authority.Authority;
 import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.PersonAttributeManager;
 import org.mars_sim.msp.core.person.ai.PersonalityTraitType;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.structure.Settlement;
 
 public class PersonBuilderImpl implements PersonBuilder<Person> {
@@ -56,7 +56,7 @@ public class PersonBuilderImpl implements PersonBuilder<Person> {
 		return this;
 	}
 
-	public PersonBuilder<Person> setSponsor(ReportingAuthority sponsor) {
+	public PersonBuilder<Person> setSponsor(Authority sponsor) {
 		person.setSponsor(sponsor);
 		return this;
 	}

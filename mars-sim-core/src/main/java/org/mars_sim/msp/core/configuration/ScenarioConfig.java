@@ -25,10 +25,10 @@ import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.SimulationFiles;
+import org.mars_sim.msp.core.authority.Authority;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.Member;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 
 /**
@@ -78,7 +78,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	 * @throws IOException 
 	 */
 	public List<String> createExport(Scenario item,
-							 UserConfigurableConfig<ReportingAuthority> raFactory,
+							 UserConfigurableConfig<Authority> raFactory,
 							 UserConfigurableConfig<Crew> crewFactory,
 							 OutputStream output) throws IOException {
 		
@@ -127,10 +127,10 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	 * @param raToExport
 	 * @param name
 	 */
-	private void queueReportingAuthority(UserConfigurableConfig<ReportingAuthority> raFactory,
+	private void queueReportingAuthority(UserConfigurableConfig<Authority> raFactory,
 			Set<UserConfigurable> raToExport, String name) {
 		if (name != null) {
-			ReportingAuthority found = raFactory.getItem(name);
+			Authority found = raFactory.getItem(name);
 			if (!found.isBundled()) {
 				raToExport.add(found);
 			}
@@ -166,7 +166,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	 * @throws IOException
 	 */
 	public List <String> importScenario(InputStream contents,
-			 				   UserConfigurableConfig<ReportingAuthority> raFactory,
+			 				   UserConfigurableConfig<Authority> raFactory,
 			 				   UserConfigurableConfig<Crew> crewFactory)
 			 	throws IOException {
 		List<String> manifest = new ArrayList<>();

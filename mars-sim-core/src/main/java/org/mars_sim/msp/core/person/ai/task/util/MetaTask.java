@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.authority.PreferenceCategory;
+import org.mars_sim.msp.core.authority.PreferenceKey;
 import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
@@ -18,8 +20,6 @@ import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.reportingAuthority.PreferenceCategory;
-import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsTime;

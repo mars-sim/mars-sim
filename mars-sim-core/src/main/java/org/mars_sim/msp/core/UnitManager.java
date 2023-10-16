@@ -27,6 +27,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.mars.sim.mapdata.location.Coordinates;
+import org.mars_sim.msp.core.authority.Authority;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.environment.OuterSpace;
@@ -35,7 +36,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.moon.Moon;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -82,7 +82,7 @@ public class UnitManager implements Serializable, Temporal {
 
 	private transient ExecutorService executor;
 
-	private transient Set<ReportingAuthority> sponsorSet = new HashSet<>();
+	private transient Set<Authority> sponsorSet = new HashSet<>();
 	
 	private transient Set<SettlementTask> settlementTasks = new HashSet<>();
 	/** Map of equipment types and their numbers. */
@@ -569,12 +569,12 @@ public class UnitManager implements Serializable, Temporal {
 	 *
 	 * @return Collection of sponsors
 	 */
-	public Collection<ReportingAuthority> getSponsorSet() {
+	public Collection<Authority> getSponsorSet() {
 		if (sponsorSet.isEmpty()) {
-			Set<ReportingAuthority> sponsors = new HashSet<>();
+			Set<Authority> sponsors = new HashSet<>();
 			
 			for (Settlement s: getSettlements()) {
-				ReportingAuthority ra = s.getReportingAuthority();
+				Authority ra = s.getReportingAuthority();
 				if (!sponsors.contains(ra))
 					sponsors.add(ra);
 			}

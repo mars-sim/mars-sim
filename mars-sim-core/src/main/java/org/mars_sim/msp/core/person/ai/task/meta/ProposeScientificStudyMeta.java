@@ -7,6 +7,8 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.authority.PreferenceCategory;
+import org.mars_sim.msp.core.authority.PreferenceKey;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -16,8 +18,6 @@ import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
-import org.mars_sim.msp.core.reportingAuthority.PreferenceCategory;
-import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;

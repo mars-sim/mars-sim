@@ -26,11 +26,11 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.authority.PreferenceCategory;
+import org.mars_sim.msp.core.authority.PreferenceKey;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTaskUtil;
-import org.mars_sim.msp.core.reportingAuthority.PreferenceCategory;
-import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;

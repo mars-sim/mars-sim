@@ -59,6 +59,7 @@ import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
+import org.mars_sim.msp.core.authority.AuthorityFactory;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.configuration.ScenarioConfig;
@@ -69,7 +70,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -170,7 +170,7 @@ public class SimulationConfigEditor {
 	private GameMode mode;
 	private SettlementConfig settlementConfig;
 	private PersonConfig personConfig;
-	private ReportingAuthorityFactory raFactory;
+	private AuthorityFactory raFactory;
 
 	private boolean completed = false;
 	private boolean useCrew = true;

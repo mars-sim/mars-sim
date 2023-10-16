@@ -1,4 +1,4 @@
-package org.mars_sim.msp.core.reportingAuthority;
+package org.mars_sim.msp.core.authority;
 
 /**
  * The type of the expected preference value

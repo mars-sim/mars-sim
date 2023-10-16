@@ -4,7 +4,7 @@
  * @date 2023-09-03
  * @author Barry Evans
  */
-package org.mars_sim.msp.core.reportingAuthority;
+package org.mars_sim.msp.core.authority;
 
 import org.mars.sim.tools.Msg;
 

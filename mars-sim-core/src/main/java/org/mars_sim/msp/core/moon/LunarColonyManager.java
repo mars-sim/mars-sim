@@ -13,8 +13,8 @@ import java.util.Set;
 
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.authority.AuthorityFactory;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
 
@@ -26,7 +26,7 @@ public class LunarColonyManager implements Serializable, Temporal {
 
 	private Set<Colony> colonies = new HashSet<>();
 
-	private static ReportingAuthorityFactory raFactory = SimulationConfig.instance().getReportingAuthorityFactory();
+	private static AuthorityFactory raFactory = SimulationConfig.instance().getReportingAuthorityFactory();
 	
 	public LunarColonyManager() {	
 	}

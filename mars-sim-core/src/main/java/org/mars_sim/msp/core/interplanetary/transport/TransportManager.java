@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.authority.AuthorityFactory;
 import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
@@ -20,7 +21,6 @@ import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.EventType;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
@@ -71,7 +71,7 @@ public class TransportManager implements Serializable, Temporal {
 	 * @param raFactory 
 	 */
 	public void loadArrivingSettments(Scenario scenario, SettlementConfig settlementConfig,
-									  ReportingAuthorityFactory raFactory) {
+									  AuthorityFactory raFactory) {
 		// Create initial arriving settlements.
 		for (ArrivingSettlement a : scenario.getArrivals()) {
 			// Check the defines values are correct; these throw exception

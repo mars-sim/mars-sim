@@ -16,10 +16,10 @@ import javax.swing.table.AbstractTableModel;
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.msp.core.authority.Authority;
+import org.mars_sim.msp.core.authority.AuthorityFactory;
 import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 
 /**
@@ -58,14 +58,14 @@ class ArrivingSettlementModel extends AbstractTableModel {
 	private String[] columns;
 	private List<ArrivalInfo> arrivalInfos;
 	private SettlementConfig settlementConfig;
-	private ReportingAuthorityFactory raFactory;
+	private AuthorityFactory raFactory;
 	private String errorMessage;
 	
 	/**
 	 * @param settlementConfig 
 	 * @param raFactory 
 	 */
-	ArrivingSettlementModel(SettlementConfig settlementConfig, ReportingAuthorityFactory raFactory) {
+	ArrivingSettlementModel(SettlementConfig settlementConfig, AuthorityFactory raFactory) {
 		super();
 
 		this.settlementConfig = settlementConfig;
@@ -333,7 +333,7 @@ class ArrivingSettlementModel extends AbstractTableModel {
 	 * @return
 	 */
 	private String tailorSettlementNameBySponsor(String sponsor, int index) {
-		ReportingAuthority ra = raFactory.getItem(sponsor);
+		Authority ra = raFactory.getItem(sponsor);
 
 		List<String> usedNames = new ArrayList<>();
 		

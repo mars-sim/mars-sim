@@ -22,8 +22,8 @@ import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
 import org.mars.sim.tools.Msg;
-import org.mars_sim.msp.core.reportingAuthority.MissionCapability;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.authority.MissionCapability;
+import org.mars_sim.msp.core.authority.Authority;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.svg.SVGIcon;
@@ -39,7 +39,7 @@ public class SponsorTabPanel extends TabPanel {
 	private static final String AGENCY_FOLDER = "agency/";
 	private static final String TAB_ICON = "sponsor";
 
-	private ReportingAuthority ra;
+	private Authority ra;
 	
 	
 	/**
@@ -48,7 +48,7 @@ public class SponsorTabPanel extends TabPanel {
 	 * @param settlement the settlement.
 	 * @param desktop the main desktop.
 	 */
-	public SponsorTabPanel(ReportingAuthority ra, MainDesktopPane desktop) {
+	public SponsorTabPanel(Authority ra, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("SponsorTabPanel.title"), //$NON-NLS-1$

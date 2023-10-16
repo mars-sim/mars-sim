@@ -14,10 +14,10 @@ import java.util.Set;
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.authority.Organization;
+import org.mars_sim.msp.core.authority.Authority;
 import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.reportingAuthority.Organization;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
 
@@ -30,7 +30,7 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	private String name;
 	
 	/** The settlement's ReportingAuthority instance. */
-	private ReportingAuthority sponsor;
+	private Authority sponsor;
 
 	private Coordinates location;
 	
@@ -40,7 +40,7 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	
 	Set<Zone> zones = new HashSet<>();
 	
-	public Colony(String name, ReportingAuthority sponsor, Coordinates location) {
+	public Colony(String name, Authority sponsor, Coordinates location) {
 		this.name = name;
 		this.sponsor = sponsor;
 		this.location = location;
@@ -94,7 +94,7 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	/**
 	 * Gets the authority.
 	 */
-	public ReportingAuthority getReportingAuthority() {
+	public Authority getReportingAuthority() {
 		return sponsor;
 	}
 

@@ -11,8 +11,8 @@ import java.util.List;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.authority.Nation;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
-import org.mars_sim.msp.core.reportingAuthority.Nation;
 
 /**
  * Configuration class for loading the attributes of each country 

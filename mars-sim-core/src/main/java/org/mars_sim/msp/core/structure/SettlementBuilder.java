@@ -22,6 +22,8 @@ import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
+import org.mars_sim.msp.core.authority.Authority;
+import org.mars_sim.msp.core.authority.AuthorityFactory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -44,8 +46,6 @@ import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipType;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
@@ -72,7 +72,7 @@ public final class SettlementBuilder {
 	private SettlementConfig settlementConfig;
 	private RobotConfig robotConfig;
 	private UserConfigurableConfig<Crew> crewConfig;
-	private ReportingAuthorityFactory raFactory;
+	private AuthorityFactory raFactory;
 	private NationSpecConfig namingSpecs;
 
 	public SettlementBuilder(Simulation sim, SimulationConfig simConfig) {
@@ -187,7 +187,7 @@ public final class SettlementBuilder {
 	 * 
 	 * @return
 	 */
-	private String generateName(ReportingAuthority sponsor) {
+	private String generateName(Authority sponsor) {
 		List<String> remainingNames = new ArrayList<>(sponsor.getSettlementNames());
 
 		List<String> usedNames = unitManager.getSettlements().stream()
@@ -212,7 +212,7 @@ public final class SettlementBuilder {
 		if (sponsor == null) {
 			sponsor = template.getSponsor();
 		}
-		ReportingAuthority ra = raFactory.getItem(sponsor);
+		Authority ra = raFactory.getItem(sponsor);
 
 		// Get settlement name
 		String name = spec.getName();
@@ -376,7 +376,7 @@ public final class SettlementBuilder {
 	 */
 	public void createPeople(Settlement settlement, int targetPopulation, boolean assignRoles) {
 
-		ReportingAuthority sponsor = settlement.getReportingAuthority();
+		Authority sponsor = settlement.getReportingAuthority();
 		long males = settlement.getAllAssociatedPeople().stream()
 												.filter(p -> p.getGender() == GenderType.MALE).count();
 		int targetMales = (int) (sponsor.getGenderRatio() * targetPopulation);
@@ -454,12 +454,12 @@ public final class SettlementBuilder {
 		Map<Person, Map<String, Integer>> addedCrew = new HashMap<>();
 
 		// Get person's settlement or same sponsor
-		ReportingAuthority defaultSponsor = settlement.getReportingAuthority();
+		Authority defaultSponsor = settlement.getReportingAuthority();
 
 		// Create all configured people.
 		for (Member m : crew.getTeam()) {
 			if (settlement.getInitialPopulation() > settlement.getNumCitizens()) {
-				ReportingAuthority sponsor = defaultSponsor;
+				Authority sponsor = defaultSponsor;
 				if (m.getSponsorCode() != null) {
 					sponsor = raFactory.getItem(m.getSponsorCode());
 				}

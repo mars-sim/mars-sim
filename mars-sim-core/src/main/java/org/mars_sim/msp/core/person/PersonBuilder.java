@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person;
 
 import java.util.Map;
 
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.authority.Authority;
 
 public interface PersonBuilder<T> {
 
@@ -23,7 +23,7 @@ public interface PersonBuilder<T> {
 
 	public PersonBuilder<Person> setAssociatedSettlement(int s);
 
-	public PersonBuilder<Person> setSponsor(ReportingAuthority sponsor);
+	public PersonBuilder<Person> setSponsor(Authority sponsor);
 	
 	/**
 	 * Sets the skills of a person

@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.authority.Authority;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Container;
@@ -64,7 +65,6 @@ import org.mars_sim.msp.core.person.ai.task.util.ScheduleManager;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.ai.training.TrainingType;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ResearcherInterface;
@@ -196,7 +196,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	/** Person's LifeSupportInterface instance. */
 	private LifeSupportInterface support;
 	/** Person's ReportingAuthority instance. */
-	private ReportingAuthority ra;
+	private Authority ra;
 	/** The bed location of the person */
 	private LocalPosition bed;
 	/** The person's current scientific study. */
@@ -586,14 +586,14 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	/*
 	 * Sets sponsoring agency for the person.
 	 */
-	public void setSponsor(ReportingAuthority sponsor) {
+	public void setSponsor(Authority sponsor) {
 		ra = sponsor;
 	}
 
 	/*
 	 * Gets sponsoring agency for the person.
 	 */
-	public ReportingAuthority getReportingAuthority() {
+	public Authority getReportingAuthority() {
 		return ra;
 	}
 
