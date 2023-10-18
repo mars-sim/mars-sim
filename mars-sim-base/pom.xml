@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.github.mars-sim</groupId>
+    <groupId>com.mars-sim</groupId>
     <artifactId>mars-sim</artifactId>
     <version>3.7.0</version>
   </parent>
@@ -12,7 +12,7 @@
   <url>https://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<domainNameMainClass>org.mars_sim.base.MarsProjectFXGLStarter</domainNameMainClass>	    
+	<domainNameMainClass>com.mars_sim.base.MarsProjectFXGLStarter</domainNameMainClass>	    
   </properties>
 	<dependencies>
 		<dependency>
@@ -22,13 +22,12 @@
 			<scope>test</scope>
  		</dependency>
 		<dependency>
-			<groupId>com.github.mars-sim</groupId>
+			<groupId>com.mars-sim</groupId>
 			<artifactId>mars-sim-headless</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		 <!-- -->	
 		<dependency>
-			<groupId>com.github.mars-sim</groupId>
+			<groupId>com.mars-sim</groupId>
 			<artifactId>mars-sim-fxgl</artifactId>
 			<version>${project.version}</version>
 		</dependency>

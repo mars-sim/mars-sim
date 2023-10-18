@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.github.mars-sim</groupId>
+    <groupId>com.mars-sim</groupId>
     <artifactId>mars-sim</artifactId>
     <version>3.7.0</version>
   </parent>
@@ -20,8 +20,13 @@
 			<version>${junit.version}</version>
 			<scope>test</scope>
  		</dependency>
+ 		<dependency>
+			<groupId>com.mars-sim</groupId>
+			<artifactId>mars-sim-tools</artifactId>
+			<version>${project.version}</version>
+		</dependency>		
 		<dependency>
-			<groupId>com.github.mars-sim</groupId>
+			<groupId>com.mars-sim</groupId>
 			<artifactId>mars-sim-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -46,6 +51,6 @@
             <groupId>com.github.almasb</groupId>
             <artifactId>fxgl-controllerinput</artifactId>
             <version>${fxgl.version}</version>
-        </dependency>			
+        </dependency>
 	</dependencies>
 </project>

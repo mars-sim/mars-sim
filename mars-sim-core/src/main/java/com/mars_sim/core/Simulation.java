@@ -155,7 +155,7 @@ public class Simulation implements ClockListener, Serializable {
 	/** Default save filename extension. */
 	public static final String SAVE_FILE_EXTENSION = Msg.getString("Simulation.saveFile.extension"); //$NON-NLS-1$
 	/** Default ch2 save filename. */
-	public final String CH2_SAVE_FILE = SAVE_FILE + ".ch2";
+	public static final String CH2_SAVE_FILE = SAVE_FILE + ".ch2";
 
 	public static final String TITLE = Msg.getString("Simulation.title", VERSION + " - Build " + BUILD
 			+ " - " + OS_ARCH + " " + JAVA_VERSION + " - " + NUM_THREADS

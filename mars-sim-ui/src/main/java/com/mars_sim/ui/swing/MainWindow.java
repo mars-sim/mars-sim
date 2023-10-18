@@ -650,8 +650,9 @@ public class MainWindow
 
 	/**
 	 * Disposes the splash window frame.
+	 * Note: needs to be public as it will also be called by MarsProjectFXGL
 	 */
-	private static void disposeSplash() {
+	public static void disposeSplash() {
 		if (splashWindow != null) {
 			splashWindow.remove();
 		}
