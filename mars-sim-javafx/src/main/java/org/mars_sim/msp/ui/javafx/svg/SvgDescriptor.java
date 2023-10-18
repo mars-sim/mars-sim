@@ -1,4 +1,4 @@
-package org.mars_sim.msp.ui.javafx.svg;
+package com.mars_sim.ui.javafx.svg;
 //
 //import com.sun.javafx.iio.common.ImageDescriptor;
 //

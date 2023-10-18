@@ -1,4 +1,4 @@
-package org.mars_sim.msp.ui.javafx.config;
+package com.mars_sim.ui.javafx.config;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;

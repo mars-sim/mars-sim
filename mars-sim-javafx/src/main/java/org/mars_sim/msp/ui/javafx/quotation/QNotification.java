@@ -22,7 +22,7 @@
  * limitations under the License.
  */
 
-package org.mars_sim.msp.ui.javafx.quotation;
+package com.mars_sim.ui.javafx.quotation;
 
 import org.mars_sim.javafx.MainScene;
 import org.mars_sim.javafx.tools.StartUpLocation;

@@ -7,7 +7,7 @@
 
 <StackPane prefHeight="431.0" prefWidth="661.0" stylesheets="@../../css/tabboard/tabpane.css"
 xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" 
-fx:controller="org.mars_sim.msp.ui.javafx.tabboard.TabController">
+fx:controller="com.mars_sim.ui.javafx.tabboard.TabController">
    <children>
       <JFXTabPane fx:id="tabContainer" prefHeight="128.0" prefWidth="308.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
          <tabs>

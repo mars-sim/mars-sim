@@ -1,5 +1,5 @@
 
-package org.mars_sim.msp.ui.javafx.dotMatrix;
+package com.mars_sim.ui.javafx.dotMatrix;
 
 /*
  * Copyright (c) 2017 by Gerrit Grunwald
@@ -17,7 +17,7 @@ package org.mars_sim.msp.ui.javafx.dotMatrix;
  * limitations under the License.
  */
 
-import org.mars_sim.msp.ui.javafx.dotMatrix.DotMatrix.DotShape;
+import com.mars_sim.ui.javafx.dotMatrix.DotMatrix.DotShape;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;

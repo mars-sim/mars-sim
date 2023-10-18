@@ -12,14 +12,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.terminal.ChatMenu;
-import org.mars_sim.msp.core.terminal.ChatUtils;
-import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
+import com.mars_sim.core.CollectionUtils;
+import com.mars_sim.core.Msg;
+import com.mars_sim.core.Simulation;
+import com.mars_sim.core.terminal.ChatMenu;
+import com.mars_sim.core.terminal.ChatUtils;
+import com.mars_sim.core.time.MasterClock;
+import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.ui.javafx.autofill.AutoFillTextBox;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPopup.PopupHPosition;

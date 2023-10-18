@@ -1,4 +1,4 @@
-package org.mars_sim.msp.ui.javafx.numberSpinner;
+package com.mars_sim.ui.javafx.numberSpinner;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;

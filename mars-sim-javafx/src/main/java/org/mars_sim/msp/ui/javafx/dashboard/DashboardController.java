@@ -4,7 +4,7 @@
  * @version 3.1.0 2017-10-18
  * @author Manny Kung
  */
-package org.mars_sim.msp.ui.javafx.dashboard;
+package com.mars_sim.ui.javafx.dashboard;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXToolbar;
@@ -19,9 +19,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.javafx.MainScene;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.structure.Settlement;
+import com.mars_sim.core.Simulation;
+import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.structure.Settlement;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;

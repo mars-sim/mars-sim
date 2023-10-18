@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.github.mars-sim</groupId>
+		<groupId>com.mars-sim</groupId>
 		<artifactId>mars-sim</artifactId>
 		<version>3.7.0</version>
 	</parent>
@@ -12,22 +12,22 @@
 	<name>mars-sim-ui</name>
 	<dependencies>
 		<dependency>
-			<groupId>com.github.mars-sim</groupId>
+			<groupId>com.mars-sim</groupId>
 			<artifactId>mars-sim-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.github.mars-sim</groupId>
+			<groupId>com.mars-sim</groupId>
 			<artifactId>mars-sim-tools</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.github.mars-sim</groupId>
+			<groupId>com.mars-sim</groupId>
 			<artifactId>mars-sim-console</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.github.mars-sim</groupId>
+			<groupId>com.mars-sim</groupId>
 			<artifactId>mars-sim-mapdata</artifactId>
 			<version>${project.version}</version>
 		</dependency>

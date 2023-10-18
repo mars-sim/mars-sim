@@ -4,12 +4,12 @@
  * @version 3.1.0 2017-09-14
  * @author Manny Kung
  */
-package org.mars_sim.msp.ui.javafx.config;
+package com.mars_sim.ui.javafx.config;
 
 import insidefx.undecorator.UndecoratorScene;
 
-import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
-import org.mars_sim.msp.ui.javafx.networking.MultiplayerClient;
+import com.mars_sim.ui.javafx.mainmenu.MainMenu;
+import com.mars_sim.ui.javafx.networking.MultiplayerClient;
 import org.mars_sim.network.SettlementRegistry;
 
 import com.jfoenix.controls.JFXButton;
@@ -59,13 +59,13 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 
 import org.mars_sim.javafx.MainScene;
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.structure.SettlementConfig;
-import org.mars_sim.msp.core.structure.SettlementTemplate;
-import org.mars_sim.msp.core.tool.RandomUtil;
+import com.mars_sim.core.Coordinates;
+import com.mars_sim.core.Msg;
+import com.mars_sim.core.Simulation;
+import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.structure.SettlementConfig;
+import com.mars_sim.core.structure.SettlementTemplate;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * ScenarioConfigEditorFX allows users to configure the types of settlements

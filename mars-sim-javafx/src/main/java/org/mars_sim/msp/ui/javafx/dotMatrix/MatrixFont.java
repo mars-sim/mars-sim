@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mars_sim.msp.ui.javafx.dotMatrix;
+package com.mars_sim.ui.javafx.dotMatrix;
 
 /**
  * Created by hansolo on 24.03.17.

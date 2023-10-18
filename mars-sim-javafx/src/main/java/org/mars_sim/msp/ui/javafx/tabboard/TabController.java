@@ -1,4 +1,4 @@
-package org.mars_sim.msp.ui.javafx.tabboard;
+package com.mars_sim.ui.javafx.tabboard;
 
 import com.jfoenix.controls.JFXTabPane;
 import javafx.application.Platform;

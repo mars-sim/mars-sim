@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.ui.javafx.mainmenu;
+package com.mars_sim.ui.javafx.mainmenu;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,17 +21,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.javafx.MainScene;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.person.Commander;
-import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.terminal.CommanderProfile;
-import org.mars_sim.msp.core.tool.Conversion;
-import org.mars_sim.msp.ui.javafx.config.ScenarioConfigEditorFX;
-import org.mars_sim.msp.ui.javafx.config.controller.MainMenuController;
-import org.mars_sim.msp.ui.javafx.networking.MultiplayerMode;
-import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
+import com.mars_sim.core.Simulation;
+import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.person.Commander;
+import com.mars_sim.core.person.ai.job.JobType;
+import com.mars_sim.core.terminal.CommanderProfile;
+import com.mars_sim.core.tool.Conversion;
+import com.mars_sim.ui.javafx.config.ScenarioConfigEditorFX;
+import com.mars_sim.ui.javafx.config.controller.MainMenuController;
+import com.mars_sim.ui.javafx.networking.MultiplayerMode;
+import com.mars_sim.ui.swing.tool.StartUpLocation;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.input.Input;

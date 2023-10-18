@@ -7,7 +7,7 @@
 
 package org.mars_sim.base;
 
-import org.mars_sim.msp.core.logging.SimLogger;
+import com.mars_sim.core.logging.SimLogger;
 
 /**
  * Hello world!

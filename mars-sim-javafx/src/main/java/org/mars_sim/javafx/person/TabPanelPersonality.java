@@ -5,7 +5,7 @@ package org.mars_sim.javafx.person;
 // * @version 3.1.0 2017-10-18
 // * @author Manny Kung
 // */
-//package org.mars_sim.msp.ui.swing.unit_window.person;
+//package com.mars_sim.ui.swing.unit_window.person;
 //
 //import java.awt.BorderLayout;
 //import java.awt.Dimension;
@@ -19,18 +19,18 @@ package org.mars_sim.javafx.person;
 //import javax.swing.JPanel;
 //import javax.swing.JTextField;
 //
-//import org.mars_sim.msp.core.Msg;
-//import org.mars_sim.msp.core.Unit;
-//import org.mars_sim.msp.core.person.Person;
-//import org.mars_sim.msp.core.person.PersonalityTraitType;
-//import org.mars_sim.msp.core.person.ai.PersonalityType;
-//import org.mars_sim.msp.ui.javafx.MainScene;
-//import org.mars_sim.msp.ui.javafx.QualityGauge;
-//import org.mars_sim.msp.ui.steelseries.gauges.Radial2Top;
-//import org.mars_sim.msp.ui.swing.MainDesktopPane;
-//import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-//import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-//import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
+//import com.mars_sim.core.Msg;
+//import com.mars_sim.core.Unit;
+//import com.mars_sim.core.person.Person;
+//import com.mars_sim.core.person.PersonalityTraitType;
+//import com.mars_sim.core.person.ai.PersonalityType;
+//import com.mars_sim.ui.javafx.MainScene;
+//import com.mars_sim.ui.javafx.QualityGauge;
+//import com.mars_sim.ui.steelseries.gauges.Radial2Top;
+//import com.mars_sim.ui.swing.MainDesktopPane;
+//import com.mars_sim.ui.swing.MarsPanelBorder;
+//import com.mars_sim.ui.swing.unit_window.TabPanel;
+//import com.mars_sim.ui.swing.unit_window.UnitWindow;
 //
 //import com.jfoenix.controls.JFXTextField;
 //

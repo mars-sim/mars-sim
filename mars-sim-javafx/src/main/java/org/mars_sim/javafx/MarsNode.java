@@ -18,13 +18,13 @@ import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 import org.controlsfx.control.PopOver;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.farming.Farming;
+import com.mars_sim.core.Simulation;
+import com.mars_sim.core.Unit;
+import com.mars_sim.core.person.Person;
+import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.structure.building.function.FunctionType;
+import com.mars_sim.core.structure.building.function.farming.Farming;
 
 import javafx.animation.FadeTransition;
 import javafx.event.EventHandler;

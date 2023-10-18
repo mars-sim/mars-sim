@@ -1,4 +1,4 @@
-package org.mars_sim.msp.ui.javafx.nsmenufx;
+package com.mars_sim.ui.javafx.nsmenufx;
 
 import de.codecentric.centerdevice.MenuToolkit;
 import de.codecentric.centerdevice.dialogs.about.AboutStageBuilder;

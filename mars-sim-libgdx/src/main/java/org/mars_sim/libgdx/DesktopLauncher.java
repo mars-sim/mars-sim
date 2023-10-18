@@ -6,7 +6,7 @@
  */
 package org.mars_sim.libgdx;
 
-import org.mars_sim.msp.core.Simulation;
+import com.mars_sim.core.Simulation;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;

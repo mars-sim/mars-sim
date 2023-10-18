@@ -1,5 +1,5 @@
 //
-//package org.mars_sim.msp.ui.javafx;
+//package com.mars_sim.ui.javafx;
 //
 //import org.junit.Test;
 //import org.testfx.framework.junit.ApplicationTest;

@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.ui.javafx.config.controller;
+package com.mars_sim.ui.javafx.config.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;

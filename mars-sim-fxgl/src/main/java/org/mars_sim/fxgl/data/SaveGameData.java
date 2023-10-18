@@ -11,7 +11,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 
 import org.mars_sim.fxgl.main.SoftknkioApp;
-import org.mars_sim.msp.core.logging.SimLogger;
+import com.mars_sim.core.logging.SimLogger;
 
 public class SaveGameData {
 	/** default logger. */

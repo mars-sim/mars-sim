@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.ui.javafx.mainmenu;
+package com.mars_sim.ui.javafx.mainmenu;
 
 /*
  * Copyright (c) 2011, 2013 Oracle and/or its affiliates.

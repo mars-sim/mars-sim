@@ -5,16 +5,16 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.ui.javafx.quotation;
+package com.mars_sim.ui.javafx.quotation;
 
 
 import java.util.Map;
 import java.util.Random;
 
 import org.mars_sim.javafx.MainScene;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.quotation.Quotation;
-import org.mars_sim.msp.core.quotation.QuotationConfig;
+import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.quotation.Quotation;
+import com.mars_sim.core.quotation.QuotationConfig;
 
 import javafx.stage.Stage;
 

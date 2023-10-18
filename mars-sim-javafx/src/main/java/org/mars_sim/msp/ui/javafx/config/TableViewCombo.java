@@ -5,19 +5,19 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.ui.javafx.config;
+package com.mars_sim.ui.javafx.config;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
-import org.mars_sim.msp.core.structure.SettlementConfig;
-import org.mars_sim.msp.core.structure.SettlementTemplate;
-import org.mars_sim.msp.ui.javafx.config.SettlementBase;
+import com.mars_sim.core.LogConsolidated;
+import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.reportingAuthority.ReportingAuthorityType;
+import com.mars_sim.core.structure.SettlementConfig;
+import com.mars_sim.core.structure.SettlementTemplate;
+import com.mars_sim.ui.javafx.config.SettlementBase;
 
 
 //import io.swagger.models.properties.IntegerProperty;

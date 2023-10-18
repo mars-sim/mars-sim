@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.ui.javafx.config;
+package com.mars_sim.ui.javafx.config;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

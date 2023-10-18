@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.mars_sim.msp.core.logging.SimLogger;
+import com.mars_sim.core.logging.SimLogger;
 
 public class ReadGameData {
 	/** default logger. */

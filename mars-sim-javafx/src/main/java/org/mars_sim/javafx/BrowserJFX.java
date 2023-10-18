@@ -53,8 +53,8 @@ import netscape.javascript.JSObject;
 import org.codefx.libfx.control.webview.WebViewHyperlinkListener;
 import org.codefx.libfx.control.webview.WebViews;
 
-import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
+import com.mars_sim.core.Msg;
+import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

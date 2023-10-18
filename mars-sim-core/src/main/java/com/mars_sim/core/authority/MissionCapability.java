@@ -1,0 +1,48 @@
+/*
+ * Mars Simulation Project
+ * MissionCapability.java
+ * @date 2023-05-31
+ * @author Barry Evans
+ */
+package com.mars_sim.core.authority;
+
+import java.io.Serializable;
+import java.util.Map;
+
+/**
+ * This class represents a demonstration capability to develop.
+ */
+public class MissionCapability implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
+	private String description;
+	private Map<PreferenceKey, Double> preferences;
+
+	public MissionCapability(String description, Map<PreferenceKey, Double> preferences) {
+		super();
+		this.description = description;
+		this.preferences = preferences;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+	
+	public String getHyphenatedDescription() {
+		return "- " + description;
+	}
+	
+	public String toString() {
+		return description;
+	}
+
+	/**
+	 * Gets the preferences that are defined for this capability.
+	 * 
+	 * @return
+	 */
+    public Map<PreferenceKey, Double> getPreferences() {
+        return preferences;
+    }
+}

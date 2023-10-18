@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.mind;
+package com.mars_sim.core.mind;
 
 import java.io.Serializable
 import com.beust.jcommander.JCommander
@@ -13,7 +13,7 @@ import com.beust.jcommander.Parameter
 import kotlin.random.Random
 import com.beust.nnk.NeuralNetwork
 import com.beust.nnk.NetworkData
-import org.mars_sim.msp.core.person.ai.SkillType
+import com.mars_sim.core.person.ai.SkillType
 
 public class CoreMind : Serializable {
 	

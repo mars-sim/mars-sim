@@ -9,7 +9,7 @@ package org.mars_sim.javafx.settlement;
 
 import javafx.stage.Stage;
 
-import org.mars_sim.msp.core.interplanetary.transport.Transportable;
+import com.mars_sim.core.interplanetary.transport.Transportable;
 
 /**
  * An abstract panel for editing a transport item.

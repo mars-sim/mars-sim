@@ -1,5 +1,5 @@
 package org.mars_sim.javafx.tools;
-//package org.mars_sim.msp.ui.javafx.tools;
+//package com.mars_sim.ui.javafx.tools;
 //
 //import javafx.application.Application;
 //import javafx.scene.Scene;

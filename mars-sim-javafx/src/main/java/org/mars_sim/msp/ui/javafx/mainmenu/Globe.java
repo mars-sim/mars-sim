@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.ui.javafx.mainmenu;
+package com.mars_sim.ui.javafx.mainmenu;
 
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -24,7 +24,7 @@ import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
-import org.mars_sim.msp.ui.javafx.mainmenu.Xform;
+import com.mars_sim.ui.javafx.mainmenu.Xform;
 
 public class Globe {
 

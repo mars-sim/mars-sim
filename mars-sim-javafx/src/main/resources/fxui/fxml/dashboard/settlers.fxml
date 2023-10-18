@@ -19,7 +19,7 @@
 <?import org.controlsfx.control.Rating?>
 
 <AnchorPane id="AnchorPane" fx:id="settlersPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/9.0"
-	fx:controller="org.mars_sim.msp.ui.javafx.dashboard.SettlersController" >
+	fx:controller="com.mars_sim.ui.javafx.dashboard.SettlersController" >
 	<children>
 		<Label text="label" layoutX="19.0" layoutY="17.0" prefHeight="25.0" prefWidth="200.0" 
 			style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #7387A8;" />

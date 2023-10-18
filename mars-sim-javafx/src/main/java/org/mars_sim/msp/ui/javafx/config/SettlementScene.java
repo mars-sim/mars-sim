@@ -5,7 +5,7 @@
  * @author Lars Næsbye Christensen
  */
 
-package org.mars_sim.msp.ui.javafx.config;
+package com.mars_sim.ui.javafx.config;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

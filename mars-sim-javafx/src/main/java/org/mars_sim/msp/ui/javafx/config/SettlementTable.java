@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.ui.javafx.config;
+package com.mars_sim.ui.javafx.config;
 
 import java.awt.Component;
 import java.awt.Font;
@@ -23,11 +23,11 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.structure.SettlementConfig;
-import org.mars_sim.msp.core.structure.SettlementTemplate;
-import org.mars_sim.msp.ui.swing.JComboBoxMW;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
+import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.structure.SettlementConfig;
+import com.mars_sim.core.structure.SettlementTemplate;
+import com.mars_sim.ui.swing.JComboBoxMW;
+import com.mars_sim.ui.swing.tool.ZebraJTable;
 
 public class SettlementTable extends JTable {
 

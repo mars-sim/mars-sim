@@ -34,8 +34,8 @@
 	<!-- Mission agendas that can be used by authorities -->
 	<agendas>
 		<agenda name="Advanced Technological Development"
-				objective="Prototype Advanced Technologies"
-				findings="Identify uniqueness of how advanced technologies may be tested in this environmental space"
+				objective="Prototype development environment for rigorous experimentation and testing"
+				findings="Identify components and computational tools critical for technological breakthrough"
 				data="Map the morphology of this local region as test bed for developing advanced technologies of interest">
 			<capability description="Improve rover and flyer range and performance">
 				<preference type="MISSION" name="EXPLORATION" modifier="0.8"/>
@@ -60,7 +60,7 @@
 		</agenda>
 		
 		<agenda name="Colony Construction"
-				objective="Build Self-Sustaining Colonies"
+				objective="Build self-sustaining colonies"
 				findings="Understand implications and best practices in mass resource utilization and distribution"
 				data="Study Marsquakes on erected structures and environment">
 			<capability description="Study meteorological environmental factors">
@@ -85,7 +85,7 @@
 		</agenda>
 		
 		<agenda name="Finding Life"
-				objective="Answer the Question of Life Past and Present on Mars"
+				objective="Answer the question of life past and present on Mars"
 				findings="Look for signature of life in soil data"
 				data="Analyze and Cataloging data from various sites">
 			<capability description="Follow the water">
@@ -139,7 +139,7 @@
 		</agenda>
 		
 		<agenda name="Human Habitation"
-				objective="Characterize and Determining Factors contributed to Human Habitability"
+				objective="Characterize and determining factors contributing to human habitability"
 				findings="Identify engineering challenge in constructing surface, underground and cliff-side dwelling"
 				data="Analyze atmospheric conditions and geographical factors of human habitability in a local region">
 			<capability description="Predict meteorological changes">
@@ -160,7 +160,7 @@
 		</agenda>
 		
 		<agenda name="Planet Life"
-				objective="Make Life Multiplanetary"
+				objective="Make life multiplanetary"
 				findings="Survey sociological and ideological implications in populating a region"
 				data="Unlock factors for transforming Mars into hospitable biomes to usher in human colonization">
 			<capability description="Conceptualize interplanetary transportation network">
@@ -185,7 +185,7 @@
 		</agenda>
 		
 		<agenda name="Mineral Prospecting"
-				objective="Prospect Mineral Compositions and Evaluating Mineral Resources"
+				objective="Prospect mineral deposits and evaluate mineral compositions"
 				findings="Document the process and history of climate on Mars"
 				data="Analyze the wealth of mineral contents from the colleted soil data">
 			<capability description="Analyze various signatures of minerals">
@@ -209,7 +209,7 @@
 		</agenda>
 		
 		<agenda name="Science and Technology"
-				objective="Leapfrog Scientific Knowledge and Technological Pursuit"
+				objective="Leapfrog scientific knowledge and technological pursuit"
 				findings="Explore what science disciplines are most benefit in a given region"
 				data="Analyze gravity and atmospheric variability for deploying laser communication array">
 			<capability description="Analyze meteorite fragments">
@@ -232,7 +232,7 @@
 		</agenda>
 		
 		<agenda name="Settling Mars"
-				objective="Make Mars the Second Home for Humanity"
+				objective="Make Mars the second home for humanity"
 				findings="Investigate local in-situ resources that one can collect and process for immediate uses"
 				data="Analyze structural integrity of geological features for building settlements in this region">
 			<capability description="Engineer soil capable of hosting and sustaining organic microbial life">
@@ -256,12 +256,13 @@
 			</capability>
 		</agenda>
 		
-		<agenda name="Space Research Applications"
-				objective="Advance Space Research and Developing Applications"
+		<agenda name="Space Research"
+				objective="Advance and develop methodologies in studying planetary and space environment"
 				findings="Develop framework for applied space research in this frontier"
 				data="Analyze various region impact how space research is conducted">
-			<capability description="Test space-ground links">
-				<preference type="MISSION" name="METEOROLOGY" modifier="1.3"/>
+			<capability description="Study planetary surface, meteorolgy, climate, atmosphere and space plasma">
+				<preference type="MISSION" name="METEOROLOGY" modifier="2"/>
+				<preference type="MISSION" name="EXPLORATION" modifier="1.5"/>
 				<preference type="SCIENCE" name="PHYSICS" modifier="8"/>	
 				<preference type="SCIENCE" name="COMPUTING" modifier="4"/>								
 			</capability>
@@ -278,10 +279,10 @@
 		</agenda>
 		
 		<agenda name="Space Tracking"
-				objective="Develop Space Observation and Tracking Platforms"
-				findings="Develop space object tracking stations"
-				data="Measure and identify galactic origins of cosmic ray radiation">
-			<capability description="Test ground observatory designs">
+				objective="Develop advanced sensors for space observation and tracking platforms"
+				findings="Identity how guidance system and sensors work well in tracking and observation"
+				data="Measure and identify spectral signatures of man-made and natural space objects">
+			<capability description="Test designs for fixed ground and mobile observatory ">
 				<preference type="MISSION" name="METEOROLOGY" modifier="1.3"/>
 				<preference type="SCIENCE" name="ASTRONOMY" modifier="9"/>
 				<preference type="SCIENCE" name="PHYSICS" modifier="4"/>	
@@ -294,7 +295,7 @@
 				<preference type="SCIENCE" name="PHYSICS" modifier="4"/>				
 				<preference type="SCIENCE" name="ENGINEERING" modifier="4"/>				
 			</capability>
-			<capability description="Improve tracking of space objects">
+			<capability description="Improve methodologies and algorithms for tracking space objects">
 				<preference type="SCIENCE" name="PHYSICS" modifier="8"/>
 				<preference type="SCIENCE" name="MATHEMATICS" modifier="6"/>
 				<preference type="SCIENCE" name="COMPUTING" modifier="8"/>									
@@ -302,7 +303,7 @@
 		</agenda>
 
 		<agenda name="Surface Operations"
-				objective="Push Boundaries of Surface Logistic Operations"
+				objective="Push boundaries of surface logistic operations"
 				findings="Identify the human factors and logistics concerns in surface operations"
 				data="Analyze soil's strength for the suitability of spaceport construction">
 			<capability description="Stress test on human endurance">
@@ -330,7 +331,7 @@
 		</agenda>
 						
 		<agenda name="Space Commerce"
-				objective="Build Up Capabilities and Infrastructures Supporting Commerce"
+				objective="Build up capabilities and infrastructures supporting commerce"
 				findings="Spearhead the development of economic framework and policies to address concerns" 
 				data="Analyze system deficits that hinder the growth of commerce">
 			<capability description="Characterize manufacturing and resource production in relation to local economy">
@@ -362,7 +363,7 @@
 		<!-- https://en.wikipedia.org/wiki/United_Arab_Emirates_Space_Agency
 			 https://www.iafastro.org/membership/all-members/uae-space-agency.html -->				
 		<agenda name="Space Economy"
-				objective="Develop Space Economic Zones"
+				objective="Develop space economic zones"
 				findings="Address regulatory concerns in developing space business and infrastructures" 
 				data="Gather metrices on commercial space activities">
 			<capability description="Spearhead accelerator group">
@@ -393,7 +394,7 @@
 		</agenda>
 										
 		<agenda name="Wealth Accumulation"
-				objective="Incentivize Individual and Corporate Ownership"
+				objective="Incentivize private and corporate ownership of properties and resources in space"
 				findings="Study the development of private ownership of land" 
 				data="Analyze mass resource utilization and settlement economic data">
 			<capability description="Characterize manufacturing and resource production in relation to local economy">
@@ -650,7 +651,7 @@
 		</authority>
 
 		<authority code="KASA" name="Korea Aerospace Administration" corporation="false"
-					agenda="Space Research Applications" gender-ratio="0.75">
+					agenda="Space Research" gender-ratio="0.75">
 			<country name="South Korea"/>
 			<settlement-name name="New Sacheon" />
 			<settlement-name name="New Gimhae" />

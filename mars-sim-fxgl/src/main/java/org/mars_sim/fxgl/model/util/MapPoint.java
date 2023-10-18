@@ -2,7 +2,7 @@ package org.mars_sim.fxgl.model.util;
 
 import org.mars_sim.fxgl.main.AppSettings;
 import org.mars_sim.fxgl.main.SoftknkioApp;
-import org.mars_sim.msp.core.tool.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 public interface MapPoint {
 

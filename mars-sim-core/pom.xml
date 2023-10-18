@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>mars-sim</artifactId>
-		<groupId>com.github.mars-sim</groupId>
+		<groupId>com.mars-sim</groupId>
 		<version>3.7.0</version>
 	</parent>
 	<artifactId>mars-sim-core</artifactId>
@@ -15,12 +15,12 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>com.github.mars-sim</groupId>
+			<groupId>com.mars-sim</groupId>
 			<artifactId>mars-sim-mapdata</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.github.mars-sim</groupId>
+			<groupId>com.mars-sim</groupId>
 			<artifactId>mars-sim-tools</artifactId>
 			<version>${project.version}</version>
 		</dependency>

@@ -4,7 +4,7 @@ package org.mars_sim.javafx.tools;
 // * To change this template file, choose Tools | Templates
 // * and open the template in the editor.
 // */
-//package org.mars_sim.msp.ui.javafx.tools;
+//package com.mars_sim.ui.javafx.tools;
 //
 //import javafx.application.Application;
 //import javafx.scene.Group;

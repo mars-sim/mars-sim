@@ -12,17 +12,17 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
-import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
-import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
-import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
-import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
-import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
-import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
-import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
-import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
+import com.mars_sim.core.Simulation;
+import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.tool.guide.GuideWindow;
+import com.mars_sim.ui.swing.tool.mission.MissionWindow;
+import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
+import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
+import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
+import com.mars_sim.ui.swing.tool.science.ScienceWindow;
+import com.mars_sim.ui.swing.tool.search.SearchWindow;
+import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
+import com.mars_sim.ui.swing.tool.time.TimeWindow;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.input.Input;

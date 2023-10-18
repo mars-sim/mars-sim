@@ -5,15 +5,15 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.ui.javafx.config.controller;
+package com.mars_sim.ui.javafx.config.controller;
  
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.mars_sim.msp.ui.javafx.mainmenu.ControlledScreen;
-import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
-import org.mars_sim.msp.ui.javafx.mainmenu.ScreensSwitcher;
+import com.mars_sim.ui.javafx.mainmenu.ControlledScreen;
+import com.mars_sim.ui.javafx.mainmenu.MainMenu;
+import com.mars_sim.ui.javafx.mainmenu.ScreensSwitcher;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

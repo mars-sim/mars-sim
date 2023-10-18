@@ -5,11 +5,11 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.ui.javafx.config;
+package com.mars_sim.ui.javafx.config;
 
 import java.util.Random;
 
-import org.mars_sim.msp.core.tool.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 import javafx.application.Application;
 import javafx.scene.Group;

@@ -5,7 +5,7 @@
  * @author Manny KUng
  */
 
-package org.mars_sim.msp.ui.javafx.mainmenu;
+package com.mars_sim.ui.javafx.mainmenu;
 
 import javafx.beans.binding.Bindings;
 import javafx.scene.effect.BoxBlur;

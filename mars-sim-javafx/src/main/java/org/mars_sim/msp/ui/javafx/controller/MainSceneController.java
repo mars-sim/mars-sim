@@ -1,4 +1,4 @@
-//package org.mars_sim.msp.ui.javafx.controller;
+//package com.mars_sim.ui.javafx.controller;
 //
 //import javafx.fxml.FXML;
 //import javafx.fxml.FXMLLoader;

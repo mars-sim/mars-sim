@@ -4,7 +4,7 @@
  * @version 3.1.0 2017-10-18
  * @author Manny Kung
  */
-package org.mars_sim.msp.ui.javafx.dashboard;
+package com.mars_sim.ui.javafx.dashboard;
 
 import com.jfoenix.controls.JFXButton;
 import java.net.URL;

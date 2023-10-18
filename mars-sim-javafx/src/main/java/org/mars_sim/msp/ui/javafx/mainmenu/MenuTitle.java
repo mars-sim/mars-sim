@@ -4,7 +4,7 @@
  * @version 3.1.0 2017-05-12
  * @author Manny KUng
  */
-package org.mars_sim.msp.ui.javafx.mainmenu;
+package com.mars_sim.ui.javafx.mainmenu;
 
 //import javafx.geometry.Pos;
 import javafx.scene.effect.DropShadow;

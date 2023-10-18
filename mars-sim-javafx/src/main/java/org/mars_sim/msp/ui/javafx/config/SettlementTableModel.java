@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.ui.javafx.config;
+package com.mars_sim.ui.javafx.config;
 
 import java.util.Iterator;
 import java.util.List;
@@ -14,9 +14,9 @@ import java.util.logging.Logger;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.structure.SettlementConfig;
+import com.mars_sim.core.Msg;
+import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.structure.SettlementConfig;
 import org.mars_sim.network.SettlementRegistry;
 
 import javafx.application.Platform;

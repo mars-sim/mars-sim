@@ -13,7 +13,7 @@
 
 
 .autofill-text{
-    -fx-skin:"org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBoxSkin";
+    -fx-skin:"com.mars_sim.ui.javafx.autofill.AutoFillTextBoxSkin";
 }
 /*
 root { 

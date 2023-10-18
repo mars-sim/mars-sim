@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.ui.javafx.notification;
+package com.mars_sim.ui.javafx.notification;
 
 
 import javafx.stage.Stage;

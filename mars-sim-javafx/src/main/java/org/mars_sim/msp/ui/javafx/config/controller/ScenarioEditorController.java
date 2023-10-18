@@ -4,7 +4,7 @@
  * @version 3.1.0 2017-05-08
  * @author Manny Kung
  */
-package org.mars_sim.msp.ui.javafx.config.controller;
+package com.mars_sim.ui.javafx.config.controller;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -19,7 +19,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import org.mars_sim.msp.ui.javafx.config.Scenario;
+import com.mars_sim.ui.javafx.config.Scenario;
 
 import javafx.application.Application;
 import javafx.application.Platform;

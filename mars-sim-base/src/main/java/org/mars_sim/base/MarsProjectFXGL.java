@@ -26,8 +26,8 @@ import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.fxgl.MarsWorld;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.ui.swing.MainWindow;
+import com.mars_sim.core.Simulation;
+import com.mars_sim.ui.swing.MainWindow;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;

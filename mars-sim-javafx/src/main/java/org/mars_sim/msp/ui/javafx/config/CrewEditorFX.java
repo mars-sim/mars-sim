@@ -4,7 +4,7 @@
  * @version 3.1.0 2017-10-18
  * @author Manny Kung
  */
-package org.mars_sim.msp.ui.javafx.config;
+package com.mars_sim.ui.javafx.config;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,13 +48,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.ScrollPane;
 
-import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
-import org.mars_sim.msp.core.tool.Conversion;
-import org.mars_sim.msp.core.person.GenderType;
+import com.mars_sim.core.Msg;
+import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.person.PersonConfig;
+import com.mars_sim.core.person.ai.job.JobType;
+import com.mars_sim.core.reportingAuthority.ReportingAuthorityType;
+import com.mars_sim.core.tool.Conversion;
+import com.mars_sim.core.person.GenderType;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;

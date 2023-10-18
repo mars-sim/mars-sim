@@ -5,7 +5,7 @@ import org.mars_sim.fxgl.model.util.EntityType;
 import org.mars_sim.fxgl.model.util.Moveable;
 import org.mars_sim.fxgl.model.util.MapPoint;
 import org.mars_sim.fxgl.model.util.PointColor;
-import org.mars_sim.msp.core.tool.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 import javafx.scene.shape.Circle;
 

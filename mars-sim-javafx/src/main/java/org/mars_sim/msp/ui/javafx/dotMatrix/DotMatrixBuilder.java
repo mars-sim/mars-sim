@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mars_sim.msp.ui.javafx.dotMatrix;
+package com.mars_sim.ui.javafx.dotMatrix;
 
 
 /*
@@ -34,7 +34,7 @@ package org.mars_sim.msp.ui.javafx.dotMatrix;
  */
 
 
-import org.mars_sim.msp.ui.javafx.dotMatrix.DotMatrix.DotShape;
+import com.mars_sim.ui.javafx.dotMatrix.DotMatrix.DotShape;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;

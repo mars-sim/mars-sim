@@ -7,7 +7,7 @@
 
 package org.mars_sim.javafx.settlement;
 
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.MainDesktopPane;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

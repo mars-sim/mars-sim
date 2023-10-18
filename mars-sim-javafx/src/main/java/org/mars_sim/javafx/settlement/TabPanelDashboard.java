@@ -5,18 +5,18 @@ package org.mars_sim.javafx.settlement;
 // * @version 3.1.0 2017-03-08
 // * @author Manny Kung
 // */
-//package org.mars_sim.msp.ui.swing.unit_window.structure;
+//package com.mars_sim.ui.swing.unit_window.structure;
 //
 //import java.awt.Dimension;
 //import java.util.ArrayList;
 //import java.util.List;
 //
-//import org.mars_sim.msp.core.Msg;
-//import org.mars_sim.msp.core.structure.ObjectiveType;
-//import org.mars_sim.msp.core.structure.Settlement;
-//import org.mars_sim.msp.ui.javafx.MainScene;
-//import org.mars_sim.msp.ui.swing.MainDesktopPane;
-//import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+//import com.mars_sim.core.Msg;
+//import com.mars_sim.core.structure.ObjectiveType;
+//import com.mars_sim.core.structure.Settlement;
+//import com.mars_sim.ui.javafx.MainScene;
+//import com.mars_sim.ui.swing.MainDesktopPane;
+//import com.mars_sim.ui.swing.unit_window.TabPanel;
 //
 //import com.jfoenix.controls.JFXButton;
 //

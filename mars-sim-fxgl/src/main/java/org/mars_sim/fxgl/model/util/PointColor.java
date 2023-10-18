@@ -1,6 +1,6 @@
 package org.mars_sim.fxgl.model.util;
 
-import org.mars_sim.msp.core.tool.RandomUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 import javafx.scene.paint.Color;
 

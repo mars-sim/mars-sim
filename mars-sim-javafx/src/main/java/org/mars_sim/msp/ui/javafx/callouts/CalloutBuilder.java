@@ -1,4 +1,4 @@
-package org.mars_sim.msp.ui.javafx.callouts;
+package com.mars_sim.ui.javafx.callouts;
 
 public class CalloutBuilder {
 

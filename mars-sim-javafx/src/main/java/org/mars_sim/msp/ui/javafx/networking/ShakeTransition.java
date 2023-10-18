@@ -4,7 +4,7 @@
  * @version 3.1.0 2017-06-22
  * @author Manny Kung
  */
-package org.mars_sim.msp.ui.javafx.networking;
+package com.mars_sim.ui.javafx.networking;
 
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;

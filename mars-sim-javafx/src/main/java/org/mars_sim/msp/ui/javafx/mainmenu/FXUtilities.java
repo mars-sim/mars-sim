@@ -1,4 +1,4 @@
-package org.mars_sim.msp.ui.javafx.mainmenu;
+package com.mars_sim.ui.javafx.mainmenu;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.Condition;

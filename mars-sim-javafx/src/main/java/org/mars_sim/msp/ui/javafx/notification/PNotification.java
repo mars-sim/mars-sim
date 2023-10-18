@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.mars_sim.msp.ui.javafx.notification;
+package com.mars_sim.ui.javafx.notification;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;

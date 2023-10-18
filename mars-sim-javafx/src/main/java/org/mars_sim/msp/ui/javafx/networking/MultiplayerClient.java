@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.ui.javafx.networking;
+package com.mars_sim.ui.javafx.networking;
 
 import java.awt.Toolkit;
 import java.io.BufferedReader;
@@ -28,20 +28,20 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitEvent;
-import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.UnitListener;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerEventType;
-import org.mars_sim.msp.core.UnitManagerListener;
-import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.events.HistoricalEventListener;
-import org.mars_sim.msp.core.events.SimpleEvent;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
+import com.mars_sim.core.Simulation;
+import com.mars_sim.core.UnitEvent;
+import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.UnitManagerEvent;
+import com.mars_sim.core.UnitManagerEventType;
+import com.mars_sim.core.UnitManagerListener;
+import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.events.HistoricalEventListener;
+import com.mars_sim.core.events.SimpleEvent;
+import com.mars_sim.core.person.Person;
+import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.network.ClientRegistry;
 import org.mars_sim.network.Receiver;
 import org.mars_sim.network.SettlementRegistry;

@@ -16,7 +16,7 @@
 
 package org.mars_sim.javafx.tools;
 /*
-import org.mars_sim.msp.ui.javafx.SubmitButton;
+import com.mars_sim.ui.javafx.SubmitButton;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;

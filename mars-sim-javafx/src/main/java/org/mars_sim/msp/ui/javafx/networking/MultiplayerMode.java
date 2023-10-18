@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.ui.javafx.networking;
+package com.mars_sim.ui.javafx.networking;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
+import com.mars_sim.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.network.MultiplayerServer;
 
 import javafx.application.Platform;

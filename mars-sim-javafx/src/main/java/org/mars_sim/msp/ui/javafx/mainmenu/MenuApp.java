@@ -5,7 +5,7 @@
  * @author Manny KUng
  */
 
-package org.mars_sim.msp.ui.javafx.mainmenu;
+package com.mars_sim.ui.javafx.mainmenu;
 
 import javafx.animation.*;
 import javafx.scene.layout.AnchorPane;
@@ -30,8 +30,8 @@ import javafx.util.Pair;
 import java.util.Arrays;
 import java.util.List;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.ui.javafx.config.StarfieldFX;
+import com.mars_sim.core.Simulation;
+import com.mars_sim.ui.javafx.config.StarfieldFX;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.input.Input;

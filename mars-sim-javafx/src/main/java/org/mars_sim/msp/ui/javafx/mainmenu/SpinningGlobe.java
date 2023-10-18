@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.ui.javafx.mainmenu;
+package com.mars_sim.ui.javafx.mainmenu;
 
 import java.util.logging.Logger;
 import javafx.animation.Animation;
@@ -26,8 +26,8 @@ import javafx.util.Duration;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 
-import org.mars_sim.msp.core.mars.OrbitInfo;
-import org.mars_sim.msp.ui.javafx.config.controller.MainMenuController;
+import com.mars_sim.core.mars.OrbitInfo;
+import com.mars_sim.ui.javafx.config.controller.MainMenuController;
 
 /*
  * The SpinningGlobe class creates a spinning Mars Globe for MainMenu
