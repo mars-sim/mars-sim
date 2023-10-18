@@ -51,15 +51,15 @@ public class VehicleChat extends ConnectedUnitCommand {
 	public String getIntroduction() {
 		Vehicle vehicle = getVehicle();
 		
-		StringBuffer buffer = new StringBuffer();
-		buffer.append("Connected to ");
-		buffer.append(vehicle.getVehicleType().getName());
-		buffer.append(" called ");
-		buffer.append(vehicle.getName());
-		buffer.append(" based at ");
-		buffer.append(vehicle.getAssociatedSettlement().getName());
+		StringBuilder sb = new StringBuilder();
+		sb.append("Connected to ");
+		sb.append(vehicle.getVehicleType().getName());
+		sb.append(" called ");
+		sb.append(vehicle.getName());
+		sb.append(" based at ");
+		sb.append(vehicle.getAssociatedSettlement().getName());
 		
-		return buffer.toString();
+		return sb.toString();
 	}
 
 	public Vehicle getVehicle() {

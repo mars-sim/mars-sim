@@ -53,14 +53,14 @@ public class RobotChat extends ConnectedUnitCommand {
 
 	@Override
 	public String getIntroduction() {
-		StringBuffer buffer = new StringBuffer();
-		buffer.append("Hi, I am a ");
-		buffer.append(robot.getRobotType());
-		buffer.append(" called ");
-		buffer.append(robot.getName());
-		buffer.append(" based in ");
-		buffer.append(robot.getSettlement().getName());
+		StringBuilder sb = new StringBuilder();
+		sb.append("Hi, I am a ");
+		sb.append(robot.getRobotType());
+		sb.append(" called ");
+		sb.append(robot.getName());
+		sb.append(" based in ");
+		sb.append(robot.getSettlement().getName());
 		
-		return buffer.toString();
+		return sb.toString();
 	}
 }
