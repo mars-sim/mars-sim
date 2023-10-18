@@ -1,10 +1,8 @@
 /**
  * Mars Simulation Project
  * SimuLoggingFilter.java
- * @version 3.2.0 2021-06-20
+ * @Date 2023-10-17
  * @author Sebastien Venot
- * $LastChangedDate$
- * $LastChangedRevision$
  */
 package com.mars_sim.core.logging;
 
@@ -14,7 +12,7 @@ import java.util.logging.LogRecord;
 
 public class SimuLoggingFilter implements Filter {
 
-    private final static String PREFIX = "org.mars_sim";
+    private final static String PREFIX = "com.mars_sim";
  
     public boolean isLoggable(LogRecord record) {
 

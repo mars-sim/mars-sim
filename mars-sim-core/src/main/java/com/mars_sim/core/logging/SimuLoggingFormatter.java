@@ -55,7 +55,7 @@ public class SimuLoggingFormatter extends Formatter {
     	
 		String msg = formatMessage(record);
 
-		// Build the messge output using a fixed format
+		// Build the message output using a fixed format
 	    StringBuffer sb = new StringBuffer();
 	    if (masterClock != null) {
 			if (timeStampType == 0) {
