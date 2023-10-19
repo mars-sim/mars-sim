@@ -33,27 +33,28 @@
 <governance>
 	<!-- Mission agendas that can be used by authorities -->
 	<agendas>
-		<agenda name="Advanced Technological Development"
-				objective="Prototype development environment for rigorous experimentation and testing"
-				findings="Identify components and computational tools critical for technological breakthrough"
-				data="Map the morphology of this local region as test bed for developing advanced technologies of interest">
-			<capability description="Improve rover and flyer range and performance">
-				<preference type="MISSION" name="EXPLORATION" modifier="0.8"/>
-				<preference type="MISSION" name="RESCUE_SALVAGE_VEHICLE" modifier="1.6"/>
-				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.3"/>
-				<preference type="SCIENCE" name="ENGINEERING" modifier="5"/>
+		<agenda name="Areological Science"
+				objective="Formalize methodologies and disciplines in studying Mars's environment"
+				findings="Collect evidence of proposed organic process for the origin and evolution of the planet"
+				data="Characterize the morphology and features of local landforms as a part of the global system">
+			<capability description="Catalogue mineral volatiles due to volcanic outpurings, impacts, and crustsal fracturing">
+				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.6"/>
+				<preference type="MISSION" name="AREOLOGY" modifier="1.4"/>
+				<preference type="MISSION" name="METEOROLOGY" modifier="1.3"/>
+				<preference type="SCIENCE" name="CHEMISTRY" modifier="5"/>
 				<preference type="SCIENCE" name="PHYSICS" modifier="2"/>
 			</capability>
-			<capability description="Prototype new building material">
+			<capability description="Investigate how terrain features relate to seismic activities">
 				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.4"/>
 				<preference type="MISSION" name="MINING" modifier="1.2"/>
-				<preference type="MISSION" name="TRADE" modifier="0.8"/>
-				<preference type="SCIENCE" name="ENGINEERING" modifier="9"/>
+				<preference type="SCIENCE" name="AREOLOGY" modifier="9"/>
+				<preference type="SCIENCE" name="CHEMISTRY" modifier="4"/>				
 			</capability>
-			<capability description="Test out new propulsion systems">
+			<capability description="Design a multi-sensor network for time-series observation and data analysis">
+				<preference type="MISSION" name="EXPLORATION" modifier="1.4"/>
 				<preference type="MISSION" name="DELIVERY" modifier="0.7"/>
 				<preference type="MISSION" name="TRADE" modifier="0.7"/>
-				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.3"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.1"/>
 				<preference type="SCIENCE" name="ENGINEERING" modifier="8"/>
 				<preference type="SCIENCE" name="PHYSICS" modifier="8"/>
 			</capability>
@@ -100,6 +101,13 @@
 				<preference type="SCIENCE" name="BIOLOGY" modifier="6"/>
 				<preference type="SCIENCE" name="BOTANY" modifier="6"/>				
 				<preference type="SCIENCE" name="CHEMISTRY" modifier="6"/>				
+			</capability>
+			<capability description="Analyze bio-signatures in rocks and mineral ice">
+				<preference type="MISSION" name="BIOLOGY" modifier="1.8"/>
+				<preference type="MISSION" name="COLLECT_ICE" modifier="1.4"/>
+				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.3"/>
+				<preference type="MISSION" name="MINING" modifier="2"/>
+				<preference type="SCIENCE" name="CHEMISTRY" modifier="7"/>				
 			</capability>
 			<capability description="Core drill rock data from selected locations">
 				<preference type="MISSION" name="EXPLORATION" modifier="1.8"/>
@@ -182,6 +190,13 @@
 				<preference type="MISSION" name="DELIVERY" modifier="1.2"/>
 				<preference type="SCIENCE" name="PHYSICS" modifier="6"/>				
 			</capability>
+			<capability description="Improve vehicle range and performance">
+				<preference type="MISSION" name="EXPLORATION" modifier="0.8"/>
+				<preference type="MISSION" name="RESCUE_SALVAGE_VEHICLE" modifier="1.6"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.3"/>
+				<preference type="SCIENCE" name="ENGINEERING" modifier="5"/>
+				<preference type="SCIENCE" name="PHYSICS" modifier="2"/>
+			</capability>			
 		</agenda>
 		
 		<agenda name="Mineral Prospecting"
@@ -200,6 +215,10 @@
 				<preference type="SCIENCE" name="AREOLOGY" modifier="7"/>	
 				<preference type="SCIENCE" name="ASTRONOMY" modifier="4"/>								
 			</capability>
+			<capability description="Analyze meteorite fragments">
+				<preference type="MISSION" name="EXPLORATION" modifier="1.4"/>			
+				<preference type="SCIENCE" name="PHYSICS" modifier="3"/>		
+			</capability>					
 			<capability description="Core drill rock data from selected locations">
 				<preference type="MISSION" name="EXPLORATION" modifier="1.9"/>
 				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.4"/>
@@ -207,27 +226,58 @@
 				<preference type="SCIENCE" name="CHEMISTRY" modifier="7"/>						
 			</capability>
 		</agenda>
-		
-		<agenda name="Science and Technology"
-				objective="Leapfrog scientific knowledge and technological pursuit"
-				findings="Explore what science disciplines are most benefit in a given region"
+
+		<agenda name="Communication Network"
+				objective="Develop proven construction methods for erecting terrestrial-based communication stations"
+				findings="Identify components and computational tools critical for technological breakthrough"
 				data="Analyze gravity and atmospheric variability for deploying laser communication array">
-			<capability description="Analyze meteorite fragments">
+			<capability description="Identify methods for safeguarding and securing surface communication equipments"> 
 				<preference type="MISSION" name="EXPLORATION" modifier="1.4"/>			
-				<preference type="SCIENCE" name="PHYSICS" modifier="3"/>				
+				<preference type="SCIENCE" name="PHYSICS" modifier="6"/>				
+				<preference type="SCIENCE" name="ENGINEERING" modifier="8"/>				
+				<preference type="SCIENCE" name="MATHEMATICS" modifier="3"/>				
 			</capability>
-			<capability description="Research environmental suitability for scientific projects">
+			<capability description="Assess environmental suitability for communication network">
 				<preference type="MISSION" name="AREOLOGY" modifier="1.3"/>
 				<preference type="MISSION" name="EXPLORATION" modifier="1.3"/>
-				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="5"/>
-				<preference type="SCIENCE" name="MEDICINE" modifier="3"/>				
+				<preference type="SCIENCE" name="METEOROLOGY" modifier="6"/>
+				<preference type="SCIENCE" name="ENGINEERING" modifier="3"/>				
 			</capability>
-			<capability description="Analyze bio-signature in rocks and water ice">
-				<preference type="MISSION" name="BIOLOGY" modifier="1.8"/>
+			<capability description="Analyze the weather impact">
+				<preference type="MISSION" name="METEOROLOGY" modifier="1.8"/>
 				<preference type="MISSION" name="COLLECT_ICE" modifier="1.4"/>
 				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.3"/>
 				<preference type="MISSION" name="MINING" modifier="2"/>
 				<preference type="SCIENCE" name="CHEMISTRY" modifier="7"/>				
+			</capability>
+		</agenda>
+				
+		<agenda name="Testing Facility"
+				objective="Characterize environmental protocols for rigorous experimentation and testing"
+				findings="Determine human factors and  for setting up restricted and quarantine zones"
+				data="Characterize the morphology of this local region as test bed for developing advanced technologies of interest">
+			<capability description="Develop techniques for automation for testing and experimentation">
+				<preference type="SCIENCE" name="ENGINEERING" modifier="3"/>
+				<preference type="SCIENCE" name="COMPUTING" modifier="3"/>				
+				<preference type="SCIENCE" name="PHYSICS" modifier="3"/>
+			</capability>
+			<capability description="Survey sites for environmental suitability for various projects">
+				<preference type="MISSION" name="AREOLOGY" modifier="1.3"/>
+				<preference type="MISSION" name="EXPLORATION" modifier="1.3"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="5"/>
+				<preference type="SCIENCE" name="MEDICINE" modifier="5"/>				
+			</capability>
+			<capability description="Identify methods of hazard wastes management">
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="4"/>
+				<preference type="SCIENCE" name="MEDICINE" modifier="5"/>	
+				<preference type="SCIENCE" name="BIOLOGY" modifier="5"/>						
+			</capability>
+			<capability description="Integrate hardware equipment and computational tools">
+				<preference type="MISSION" name="TRADING" modifier="1.1"/>
+				<preference type="SCIENCE" name="COMPUTING" modifier="7"/>				
+				<preference type="SCIENCE" name="PHYSICS" modifier="7"/>				
+				<preference type="SCIENCE" name="MATHEMATICS" modifier="7"/>
+				<preference type="SCIENCE" name="ENGINEERING" modifier="7"/>
 			</capability>
 		</agenda>
 		
@@ -257,7 +307,7 @@
 		</agenda>
 		
 		<agenda name="Space Research"
-				objective="Advance and develop methodologies in studying planetary and space environment"
+				objective="Leapfrog scientific knowledge and technological pursuit"
 				findings="Develop framework for applied space research in this frontier"
 				data="Analyze various region impact how space research is conducted">
 			<capability description="Study planetary surface, meteorolgy, climate, atmosphere and space plasma">
@@ -279,8 +329,8 @@
 		</agenda>
 		
 		<agenda name="Space Tracking"
-				objective="Develop advanced sensors for space observation and tracking platforms"
-				findings="Identity how guidance system and sensors work well in tracking and observation"
+				objective="Populate advanced sensors for space observation and tracking platforms"
+				findings="Assess locations for placement of terrestrial-based sensors for orbital tracking and observation"
 				data="Measure and identify spectral signatures of man-made and natural space objects">
 			<capability description="Test designs for fixed ground and mobile observatory ">
 				<preference type="MISSION" name="METEOROLOGY" modifier="1.3"/>
@@ -492,7 +542,7 @@
 		</authority>
 		
 		<authority code="CSA" name="Canadian Space Agency" corporation="false"
-					agenda="Science and Technology"  gender-ratio="0.5">
+					agenda="Communication Network"  gender-ratio="0.5">
 			<country name="Canada"/>
 			<settlement-name name="New Quebec" />
 			<settlement-name name="New Yukon" />
@@ -585,7 +635,7 @@
 		</authority>
 
 		<authority code="ISRO" name="The Indian Space Research Organisation" corporation="false"
-					agenda="Advanced Technological Development" gender-ratio="0.9">
+					agenda="Areological Science" gender-ratio="0.9">
 			<country name="India"/>
 			<settlement-name name="New Bengal" />
 			<settlement-name name="New Chennai" />
