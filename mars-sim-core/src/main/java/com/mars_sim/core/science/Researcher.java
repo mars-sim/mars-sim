@@ -11,7 +11,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Researcher implements ResearcherInterface {
+import com.mars_sim.core.moon.Colonist;
+import com.mars_sim.core.moon.Colony;
+
+public class Researcher extends Colonist implements ResearcherInterface {
 
 	/** The person's current scientific study. */
 	private ScientificStudy study;
@@ -21,12 +24,12 @@ public class Researcher implements ResearcherInterface {
 	/** The person's list of collaborative scientific studies. */
 	private Set<ScientificStudy> collabStudies;
 	
-	public Researcher() {
-		
+	public Researcher(String name, Colony colony) {
+		super(name, colony);
 	}
 	
 	/**
-	 * Set the study that this Person is the lead on.
+	 * Sets the study that this Person is the lead on.
 	 * 
 	 * @param scientificStudy
 	 */

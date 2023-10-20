@@ -12,7 +12,7 @@ import java.util.Set;
 public interface ResearcherInterface {
 
 	/**
-	 * Set the study that this Person is the lead on.
+	 * Sets the study that this Person is the lead on.
 	 * 
 	 * @param scientificStudy
 	 */

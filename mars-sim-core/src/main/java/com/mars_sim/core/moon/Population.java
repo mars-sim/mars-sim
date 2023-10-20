@@ -8,8 +8,13 @@
 package com.mars_sim.core.moon;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.science.Researcher;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.tools.util.RandomUtil;
@@ -38,9 +43,14 @@ public class Population implements Serializable, Temporal {
 	
 	private double growthRateBeds;
 	
+	private Colony colony;
 	
-	public Population() {
+	private Set<Colonist> colonists = new HashSet<>();
+	
+	public Population(Colony colony) {
 			
+		this.colony = colony;
+		
 		growthRateTourists = RandomUtil.getRandomDouble(-.3, .4);
 		growthRateResidents = RandomUtil.getRandomDouble(-.3, .4);
 		growthRateResearchers = RandomUtil.getRandomDouble(-.3, .4);
@@ -50,10 +60,21 @@ public class Population implements Serializable, Temporal {
 		numResidents = RandomUtil.getRandomInt(10, 20);
 		numResearchers = RandomUtil.getRandomInt(3, 6);
 		numBeds = RandomUtil.getRandomInt((int)(numTourists + numResidents + numResearchers), INITIAL);
+	
+		for (int i = 0; i < numResearchers; i++) {
+			colonists.add(new Researcher(colony.getName() + " " + i, colony));
+		}
+	
+	}
+	
+	public Colony getColony() {
+		return colony;
 	}
 	
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
+		
+		double researchersCache = numResearchers;
 		
 		if (pulse.isNewHalfSol()) {
 
@@ -115,9 +136,32 @@ public class Population implements Serializable, Temporal {
 					growthRateTourists -= 0.2;
 				}
 			}
+					
+			if ((int)researchersCache < (int)numResearchers) {
+				removeOneResearcher();
+			}
+			else if ((int)researchersCache > (int)numResearchers) {
+				colonists.add(new Researcher(colony.getName() + " " 
+					+ (int)numResearchers, colony));
+			}
+			
 		}
 		
 		return false;
+	}
+	
+	public void removeOneResearcher() {
+	
+		int rand = RandomUtil.getRandomInt(colonists.size() - 1);
+	
+		List<Colonist> list = new ArrayList<>(colonists);
+		
+		Colonist c = list.get(rand);
+		
+		colonists.remove(c);
+		
+		colony.getNation().addColonist(c);
+		
 	}
 	
 	public int getNumBed() {
@@ -159,7 +203,4 @@ public class Population implements Serializable, Temporal {
 	public double getGrowthTotalPopulation() {
 		return growthRateTourists + growthRateResidents + growthRateResearchers;
 	}
-	
-	
-	
 }

@@ -13,8 +13,9 @@ import java.util.Set;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.authority.Organization;
 import com.mars_sim.core.authority.Authority;
+import com.mars_sim.core.authority.Nation;
+import com.mars_sim.core.authority.Organization;
 import com.mars_sim.core.logging.Loggable;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.time.ClockPulse;
@@ -38,6 +39,8 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	
 	private Simulation sim;
 	
+	private Nation nation;
+	
 	Set<Zone> zones = new HashSet<>();
 	
 	public Colony(String name, Authority sponsor, Coordinates location) {
@@ -45,7 +48,9 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 		this.sponsor = sponsor;
 		this.location = location;
 		
-		population = new Population();
+		nation = sponsor.getOneNation();
+		
+		population = new Population(this);
 		
 		for (ZoneType type: ZoneType.values()) {
 			addZone(new Zone(type));
@@ -53,6 +58,10 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 		
 	}
 
+	public Nation getNation() {
+		return nation;
+	}
+	
 	public void addZone(Zone zone) {
 		zones.add(zone);
 	}
