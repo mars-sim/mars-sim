@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureConfig;
@@ -124,14 +123,6 @@ public class VehicleSpec implements Serializable {
 	/** Estimated Number of hours traveled each day. **/
 	static final int ESTIMATED_TRAVEL_HOURS_PER_SOL = 16;
 	
-	// Format for unit
-	private static final String KWH = " kWh   ";
-	private static final String KG = " kg   ";
-	private static final String KM = " km   ";
-	private static final String KM_KG = " km/kg   ";
-	private static final String KW = " kW   ";
-	private static final String WH_KM = " Wh/km   ";
-	
 	// Data members
 	private boolean hasLab = false;
 	private boolean hasPartAttachments = false;
@@ -147,7 +138,7 @@ public class VehicleSpec implements Serializable {
 	/** The # of battery modules of the vehicle.  */
 	private int numBatteryModule;
     /** The maximum energy capacity of a standard battery module in kWh. */
-    public double energyPerModule;
+    private double energyPerModule;
 	/** The # of fuel cell stacks of the vehicle.  */
 	private int numFuelCellStack;
 
@@ -222,8 +213,6 @@ public class VehicleSpec implements Serializable {
 	private double beginningMass;
 	/** The calculated empty mass of the vehicle, based on its parts [km/kg]. */
 	private double calculatedEmptyMass;
-	/** The estimated end mass of the vehicle (base mass + crew weight + remaining cargo weight) for a trip [km/kg]. */
-	private double endMass;
 	
 	/** Width of vehicle (meters). */
 	private double width;
@@ -354,8 +343,6 @@ public class VehicleSpec implements Serializable {
 						
 		// Calculate total mass as the summation of the multiplication of the quantity and mass of each part  
 		calculatedEmptyMass = buildDetails.calculateTotalInputMass();
-		
-		logger.config(DASHES);
 	}
 	
 	/**
@@ -455,7 +442,6 @@ public class VehicleSpec implements Serializable {
 
 		
 		// Gets the base range [in km] of the vehicle
-		double baseRange0 = baseSpeed * totalHours;
 		// kWh / (kW * h / km) -> km * h / h -> km
 		baseRange = estEnergyConsumed / averageForce;
 		
@@ -470,7 +456,7 @@ public class VehicleSpec implements Serializable {
 		// Accounts for the estimated additional beginning mass
 		beginningMass = calculatedEmptyMass + additionalBeginningMass;
 		// Accounts for the estimated additional end mass
-		endMass = calculatedEmptyMass + additionalEndMass;
+		double endMass = calculatedEmptyMass + additionalEndMass;
 		// Accounts for the additional payload mass (always less than one)
 		double massModifier = 1 + .2 * (additionalBeginningMass/calculatedEmptyMass 
 				+ additionalEndMass/calculatedEmptyMass);
@@ -482,66 +468,6 @@ public class VehicleSpec implements Serializable {
 		
 		// Gets the base acceleration [m/s2]
 		baseAccel = peakPower / (1 + .5 * (endMass + beginningMass)) / Math.max(1, baseSpeed) * 1000 * 3.6;
-
-		double totalTripOxygenPerPerson = .9 * totalHours / 24.66 ;
-		
-		logger.log(null, Level.CONFIG, 0, "                      Type: " + name);
-		logger.log(null, Level.CONFIG, 0, "      drivetrainEfficiency: " + Math.round(drivetrainEfficiency * 100.0)/100.0); 
-		logger.log(null, Level.CONFIG, 0, "          fuel2DriveEnergy: " + Math.round(fuel2DriveEnergy * 100.0)/100.0 + " Wh/kg   ");  
-		
-		logger.log(null, Level.CONFIG, 0, "                 baseSpeed: " + Math.round(baseSpeed * 100.0)/100.0 + " m/s   ");  
-		logger.log(null, Level.CONFIG, 0, "                 baseAccel: " + Math.round(baseAccel * 100.0)/100.0 + " m/s2  " ); 
-		logger.log(null, Level.CONFIG, 0, "              averagePower: " + Math.round(basePower * 100.0)/100.0 +  KW); 
-		logger.log(null, Level.CONFIG, 0, "                 peakPower: " + Math.round(peakPower * 100.0)/100.0 + KW); 		
-		logger.log(null, Level.CONFIG, 0, "                 roadPower: " + Math.round(roadLoadPower * 100.0)/100.0 + KW); 
-		
-		logger.log(null, Level.CONFIG, 0, "              averageForce: " + Math.round(averageForce * 100.0)/100.0 + " kW * h / km   "); 	    	
-				
-		
-		logger.log(null, Level.CONFIG, 0, "                totalHours: " + Math.round(totalHours * 100.0)/100.0 + " hr   "); 
-		
-		if (type != VehicleType.LUV
-				|| type != VehicleType.DELIVERY_DRONE) {
-			logger.log(null, Level.CONFIG, 0, "      Trip oxygen / person: " + Math.round(totalTripOxygenPerPerson * 100.0)/100.0 + KG);
-		}
-		
-		logger.log(null, Level.CONFIG, 0, "              Base Range 0: " + Math.round(baseRange0 * 100.0)/100.0 + KM); 
-		logger.log(null, Level.CONFIG, 0, "                Base Range: " + Math.round(baseRange * 100.0)/100.0 + KM); 
-		
-		double estRange0 = (.75 * baseFuelEconomy + .25 * initialFuelEconomy) * fuelCapacity;
-		
-		logger.log(null, Level.CONFIG, 0, "         Estimated Range 1: " + Math.round(estRange0 * 100.0)/100.0 + KM); 
-		
-		double estRange1 = 1000 * drivetrainEnergy / (.75 * baseFuelConsumption + .25 * initialFuelConsumption);
-		
-		logger.log(null, Level.CONFIG, 0, "         Estimated Range 2: " + Math.round(estRange1 * 100.0)/100.0 + KM); 
-		
-		logger.log(null, Level.CONFIG, 0, "                Fuel Type : " + ResourceUtil.METHANOL + " (" + getFuelType() + ")");
-		logger.log(null, Level.CONFIG, 0, "      Total Cargo Capacity: " + Math.round(getTotalCapacity() * 1070.0)/1070.0 + KG);
-		logger.log(null, Level.CONFIG, 0, "          cargoCapacityMap; " + cargoCapacityMap);
-		logger.log(null, Level.CONFIG, 0, "              fuelCapacity: " + Math.round(fuelCapacity * 1000.0)/1000.0 + KG) ; 
-		
-		logger.log(null, Level.CONFIG, 0, "    methanolEnergyCapacity: " + Math.round(methanolEnergyCapacity * 1000.0)/1000.0 + KWH) ; 
-		logger.log(null, Level.CONFIG, 0, "           batteryCapacity: " + Math.round(batteryCapacity * 1000.0)/1000.0 + KWH);  		
-		logger.log(null, Level.CONFIG, 0, "          drivetrainEnergy: " + Math.round(drivetrainEnergy * 1000.0)/1000.0 + KWH);  
-		logger.log(null, Level.CONFIG, 0, "         estEnergyConsumed: " + Math.round(estEnergyConsumed * 1000.0)/1000.0 + KWH); 
-		
-		
-    	logger.log(null, Level.CONFIG, 0, "           baseFuelEconomy: " + Math.round(baseFuelEconomy * 1000.0)/1000.0 + KM_KG); 
-    	logger.log(null, Level.CONFIG, 0, "        initialFuelEconomy: " + Math.round(initialFuelEconomy * 1000.0)/1000.0 + KM_KG); 
-    	
-		logger.log(null, Level.CONFIG, 0, "         coefficient FC2FE: " + Math.round(coefficientBaseFC2FE * 1000.0)/1000.0);
-		
-    	logger.log(null, Level.CONFIG, 0, "       baseFuelConsumption: " + Math.round(baseFuelConsumption * 1000.0)/1000.0 + WH_KM);
-    	logger.log(null, Level.CONFIG, 0, "    initialFuelConsumption: " + Math.round(initialFuelConsumption  * 1000.0)/1000.0 + WH_KM); 
-    		
-      	logger.log(null, Level.CONFIG, 0, "              massModifier: " + Math.round(massModifier * 100.0)/100.0); 
-      	logger.log(null, Level.CONFIG, 0, "       calculatedEmptyMass: " + Math.round(calculatedEmptyMass * 100.0)/100.0 + KG); 
-    	
-    	logger.log(null, Level.CONFIG, 0, "   additionalBeginningMass: " + Math.round(additionalBeginningMass * 100.0)/100.0 + KG); 
-    	logger.log(null, Level.CONFIG, 0, "             beginningMass: " + Math.round(beginningMass * 100.0)/100.0 + KG); 
-    	logger.log(null, Level.CONFIG, 0, "         additionalEndMass: " + Math.round(additionalEndMass * 100.0)/100.0 + KG);  
-    	logger.log(null, Level.CONFIG, 0, "                   endMass: " + Math.round(endMass * 100.0)/100.0 + KG);  	
 	}
 	
 	public final void setWidth(double width) {
@@ -560,7 +486,6 @@ public class VehicleSpec implements Serializable {
 	 */
 	public final double getCargoCapacity(int resourceId) {
 		if (cargoCapacityMap != null) {
-//			return cargoCapacityMap.get(resourceId);
 			return cargoCapacityMap.getOrDefault(resourceId, 0D);
 		}
 		
@@ -840,10 +765,6 @@ public class VehicleSpec implements Serializable {
 		this.terrainHandling = terrainHandling;
 	}
 	
-	public int getPartAttachmentSlotNumber() {
-		return attachmentSlots;
-	}
-
 	public double getTerrainHandling() {
 		return terrainHandling;
 	}

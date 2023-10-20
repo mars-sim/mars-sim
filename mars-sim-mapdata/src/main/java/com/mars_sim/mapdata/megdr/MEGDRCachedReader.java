@@ -6,7 +6,6 @@
  */
 package com.mars_sim.mapdata.megdr;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -24,7 +23,7 @@ public abstract class MEGDRCachedReader extends MEGDRMapReader {
 	private int requests = 0;
 	private int hits = 0;
 
-    public MEGDRCachedReader(int maximumEntries, int maxIdleMinutes) throws IOException {
+    protected MEGDRCachedReader(int maximumEntries, int maxIdleMinutes) {
 		
 		cache = CacheBuilder.newBuilder()
 								.maximumSize(maximumEntries)
@@ -50,8 +49,9 @@ public abstract class MEGDRCachedReader extends MEGDRMapReader {
 			cache.put(index, Integer.valueOf(result));
 		}
 
-		if (requests % 1000 == 0) {
-			logger.info("MEGDR Cache hit rate " + (hits/requests)  + ", size=" + cache.size());
+		if (requests % 10000 == 0) {
+			logger.fine("MEGDR Cache hit rate " + ((100 * hits)/requests)  + "%, requests="
+						+ requests + ", size=" + cache.size());
 		}
 		return result;
 	}

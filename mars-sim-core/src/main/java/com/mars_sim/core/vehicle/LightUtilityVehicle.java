@@ -14,7 +14,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.time.ClockPulse;
 
 /**
  * A light utility vehicle that can be used for construction, loading and
@@ -50,7 +49,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		
 		if (spec.hasPartAttachments()) {
 			attachments = spec.getAttachableParts();
-			slotNumber = spec.getPartAttachmentSlotNumber();
+			slotNumber = spec.getAttachmentSlots();
 		}
 
 		crewCapacity = spec.getCrewSize();
@@ -146,10 +145,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * @param true if the person can be added
 	 */
 	public boolean addPerson(Person person) {
-		if (!isCrewmember(person) && occupants.add(person)) {
-			return true;
-		}
-		return false;
+		return (!isCrewmember(person) && occupants.add(person));
 	}
 	
 	/**
@@ -208,21 +204,11 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	}
 
 	@Override
-	public boolean timePassing(ClockPulse pulse) {
-        return super.timePassing(pulse);
-		// Add active time if crewed.
-//		if (getCrewNum() > 0 || getRobotCrewNum() > 0)
-//		if (getSpeed() > 0) {	
-//			malfunctionManager.activeTimePassing(pulse.getElapsed());
-//		}
-    }
-
-	@Override
 	public String getNickName() {
 		return getName();
 	}
 
-
+	@Override
 	public Vehicle getVehicle() {
 		if (getContainerUnit() instanceof Vehicle)
 			return (Vehicle) getContainerUnit();
