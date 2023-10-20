@@ -4,10 +4,6 @@ import java.util.Iterator;
 
 import org.junit.Before;
 
-import com.mars_sim.core.LocalAreaUtil;
-import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.MockBuilding;

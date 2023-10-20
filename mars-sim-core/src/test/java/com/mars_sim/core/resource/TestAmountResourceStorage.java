@@ -6,10 +6,6 @@ import java.util.Set;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.resource.AmountResource;
-import com.mars_sim.core.resource.AmountResourceStorage;
-import com.mars_sim.core.resource.PhaseType;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 

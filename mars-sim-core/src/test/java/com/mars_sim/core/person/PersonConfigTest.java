@@ -8,7 +8,6 @@
 package com.mars_sim.core.person;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.training.TrainingType;
 

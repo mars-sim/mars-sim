@@ -11,8 +11,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Researcher implements ResearcherInterface {
+import com.mars_sim.core.moon.Colonist;
 
+public class Researcher extends Colonist implements ResearcherInterface {
+	/** default logger. */
+	// May add back private static final SimLogger logger = SimLogger.getLogger(Researcher.class.getName())
+	
 	/** The person's current scientific study. */
 	private ScientificStudy study;
 
@@ -21,12 +25,12 @@ public class Researcher implements ResearcherInterface {
 	/** The person's list of collaborative scientific studies. */
 	private Set<ScientificStudy> collabStudies;
 	
-	public Researcher() {
-		
+	public Researcher(String name, int colonyId) {
+		super(name, colonyId);
 	}
 	
 	/**
-	 * Set the study that this Person is the lead on.
+	 * Sets the study that this researcher is the lead on.
 	 * 
 	 * @param scientificStudy
 	 */
@@ -73,7 +77,7 @@ public class Researcher implements ResearcherInterface {
 	}
 
 	/**
-	 * Gets the person's achievement credit for a given scientific field.
+	 * Gets the researcher's achievement credit for a given scientific field.
 	 *
 	 * @param science the scientific field.
 	 * @return achievement credit.
@@ -90,7 +94,7 @@ public class Researcher implements ResearcherInterface {
 	}
 
 	/**
-	 * Gets the person's total scientific achievement credit.
+	 * Gets the researcher's total scientific achievement credit.
 	 *
 	 * @return achievement credit.
 	 */
@@ -104,7 +108,7 @@ public class Researcher implements ResearcherInterface {
 	}
 
 	/**
-	 * Adds achievement credit to the person in a scientific field.
+	 * Adds achievement credit to the researcher in a scientific field.
 	 *
 	 * @param achievementCredit the achievement credit.
 	 * @param science           the scientific field.

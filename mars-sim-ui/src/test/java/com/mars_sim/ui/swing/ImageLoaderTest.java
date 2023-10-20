@@ -3,8 +3,6 @@ package com.mars_sim.ui.swing;
 
 import javax.swing.Icon;
 
-import com.mars_sim.ui.swing.ImageLoader;
-
 import junit.framework.TestCase;
 
 public class ImageLoaderTest extends TestCase {

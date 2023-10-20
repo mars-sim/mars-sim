@@ -3,9 +3,6 @@ package com.mars_sim.core.project;
 import static org.junit.Assert.assertThrows;
 
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.project.Project;
-import com.mars_sim.core.project.ProjectStep;
-import com.mars_sim.core.project.Stage;
 
 import junit.framework.TestCase;
 

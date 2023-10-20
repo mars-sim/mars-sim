@@ -11,9 +11,6 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.construction.ConstructionManager;
-import com.mars_sim.core.structure.construction.ConstructionSite;
-import com.mars_sim.core.structure.construction.ConstructionValues;
 
 import junit.framework.TestCase;
 

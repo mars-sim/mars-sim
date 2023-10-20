@@ -2,8 +2,6 @@ package com.mars_sim.core.data;
 
 import java.util.Map;
 
-import com.mars_sim.core.data.RatingScore;
-
 import junit.framework.TestCase;
  
 public class RatingTest extends TestCase {

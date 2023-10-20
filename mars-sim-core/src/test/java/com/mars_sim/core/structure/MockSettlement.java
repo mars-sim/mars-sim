@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.structure.PowerGrid;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.connection.BuildingConnectorManager;
 import com.mars_sim.core.structure.construction.ConstructionManager;

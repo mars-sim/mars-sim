@@ -11,9 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
-import com.mars_sim.core.mission.MissionManifest;
-import com.mars_sim.core.mission.MissionProject;
-import com.mars_sim.core.mission.MissionStep;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.util.Worker;

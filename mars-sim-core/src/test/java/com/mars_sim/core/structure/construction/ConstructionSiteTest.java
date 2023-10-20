@@ -22,10 +22,6 @@ import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.construction.ConstructionSite;
-import com.mars_sim.core.structure.construction.ConstructionStage;
-import com.mars_sim.core.structure.construction.ConstructionStageInfo;
-import com.mars_sim.core.structure.construction.ConstructionVehicleType;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 
 import junit.framework.TestCase;

@@ -10,9 +10,6 @@ package com.mars_sim.core.person;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.mars_sim.core.person.GenderType;
-import com.mars_sim.core.person.NationSpec;
-import com.mars_sim.core.person.NationSpecConfig;
 import com.mars_sim.tools.util.RandomUtil;
 
 import junit.framework.TestCase;

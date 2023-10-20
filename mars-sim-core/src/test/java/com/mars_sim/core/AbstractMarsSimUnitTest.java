@@ -6,9 +6,6 @@ import java.util.List;
 
 import org.junit.Before;
 
-import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;

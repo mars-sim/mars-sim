@@ -11,7 +11,6 @@ import java.util.Iterator;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.task.WalkingSteps;
 import com.mars_sim.core.person.ai.task.WalkingSteps.WalkStep;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;

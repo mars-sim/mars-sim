@@ -5,10 +5,6 @@ import java.util.Map;
 
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.structure.BuildingTemplate;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingConfig;
-import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.FunctionSpec;
 import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.LifeSupport;
 import com.mars_sim.mapdata.location.LocalPosition;

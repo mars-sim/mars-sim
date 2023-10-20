@@ -30,9 +30,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
-import com.mars_sim.ui.swing.tool.treetable.JTreeTable;
-import com.mars_sim.ui.swing.tool.treetable.TreeTableModel;
-
 /**
  * A simple example application for the JTreeTable, showing how to
  * drag-and-drop the cell contents (as a string) to a label.

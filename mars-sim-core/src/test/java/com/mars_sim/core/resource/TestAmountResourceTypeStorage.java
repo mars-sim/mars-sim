@@ -3,9 +3,6 @@ package com.mars_sim.core.resource;
 import java.util.Set;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.resource.AmountResource;
-import com.mars_sim.core.resource.AmountResourceTypeStorage;
-import com.mars_sim.core.resource.ResourceUtil;
 
 import junit.framework.TestCase;
 

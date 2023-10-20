@@ -1,8 +1,6 @@
 package com.mars_sim.core.structure.building.connection;
 
 import com.mars_sim.core.structure.building.MockBuilding;
-import com.mars_sim.core.structure.building.connection.BuildingConnector;
-import com.mars_sim.core.structure.building.connection.Hatch;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 import junit.framework.TestCase;
