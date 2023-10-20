@@ -13,7 +13,6 @@ import java.util.Map;
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.mission.MissionProject;
 import com.mars_sim.core.mission.MissionVehicleProject;
-import com.mars_sim.core.mission.predefined.TestDriveMission;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.LoadingController;
 import com.mars_sim.core.person.ai.task.util.Worker;

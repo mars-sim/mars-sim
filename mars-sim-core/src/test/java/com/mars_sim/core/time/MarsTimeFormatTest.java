@@ -1,8 +1,5 @@
 package com.mars_sim.core.time;
 
-import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.core.time.MarsTimeFormat;
-
 import junit.framework.TestCase;
 
 public class MarsTimeFormatTest extends TestCase {

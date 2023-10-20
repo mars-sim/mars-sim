@@ -5,14 +5,10 @@ import static org.junit.Assert.assertThrows;
 import java.util.Arrays;
 import java.util.Collection;
 
-
-import junit.framework.TestCase;
-
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.goods.GoodType;
-import com.mars_sim.core.resource.ItemResource;
-import com.mars_sim.core.resource.ItemResourceUtil;
-import com.mars_sim.core.resource.ResourceUtil;
+
+import junit.framework.TestCase;
 
 public class TestItemResource extends TestCase {
 

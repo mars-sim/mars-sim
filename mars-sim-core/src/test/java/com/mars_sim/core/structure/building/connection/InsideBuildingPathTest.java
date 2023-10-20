@@ -3,9 +3,6 @@ package com.mars_sim.core.structure.building.connection;
 import java.util.List;
 
 import com.mars_sim.core.structure.building.MockBuilding;
-import com.mars_sim.core.structure.building.connection.BuildingLocation;
-import com.mars_sim.core.structure.building.connection.InsideBuildingPath;
-import com.mars_sim.core.structure.building.connection.InsidePathLocation;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 import junit.framework.TestCase;

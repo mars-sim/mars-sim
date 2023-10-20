@@ -7,9 +7,6 @@
 
 package com.mars_sim.core;
 
-import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.equipment.MicroInventory;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.MockSettlement;

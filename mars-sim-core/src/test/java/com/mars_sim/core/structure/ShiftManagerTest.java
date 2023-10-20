@@ -15,12 +15,6 @@ import java.util.Map.Entry;
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.Shift;
-import com.mars_sim.core.structure.ShiftManager;
-import com.mars_sim.core.structure.ShiftPattern;
-import com.mars_sim.core.structure.ShiftSlot;
-import com.mars_sim.core.structure.ShiftSpec;
 import com.mars_sim.core.structure.ShiftSlot.WorkStatus;
 import com.mars_sim.core.time.MarsTime;
 

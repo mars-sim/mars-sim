@@ -10,9 +10,6 @@ package com.mars_sim.core.manufacture;
 import java.util.List;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
-import com.mars_sim.core.manufacture.ManufactureConfig;
-import com.mars_sim.core.manufacture.ManufactureProcessInfo;
-import com.mars_sim.core.manufacture.ManufactureUtil;
 
 public class TestManufactureProcessInfo extends AbstractMarsSimUnitTest {
 

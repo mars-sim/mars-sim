@@ -2,8 +2,6 @@ package com.mars_sim.core.time;
 
 import static org.junit.Assert.assertNotEquals;
 
-import com.mars_sim.core.time.MarsTime;
-
 import junit.framework.TestCase;
 
 public class MarsTimeTest extends TestCase {

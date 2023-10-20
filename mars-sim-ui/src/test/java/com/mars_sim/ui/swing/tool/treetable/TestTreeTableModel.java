@@ -5,9 +5,6 @@
  */
 package com.mars_sim.ui.swing.tool.treetable;
 
-import com.mars_sim.ui.swing.tool.treetable.AbstractTreeTableModel;
-import com.mars_sim.ui.swing.tool.treetable.TreeTableModel;
-
 /**
  * Methods to create simple {@link TreeTableModel} instances
  */

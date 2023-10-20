@@ -3,8 +3,6 @@ package com.mars_sim.core.events;
 import java.util.Collection;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
-import com.mars_sim.core.events.ScheduledEventHandler;
-import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.events.ScheduledEventManager.ScheduledEvent;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;

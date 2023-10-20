@@ -1,28 +1,24 @@
 package com.mars_sim.core.moon;
 
-import com.mars_sim.core.logging.SimLogger;
-
 public class Colonist {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(Colonist.class.getName());
+	// May add back private static final SimLogger logger = SimLogger.getLogger(Colonist.class.getName())
 	
 	private String name;
 	
-	private Colony colony;
+	private int colonyId;
 	
-	public Colonist(String name, Colony colony) {
+	public Colonist(String name, int colonyId) {
 		this.name = name;
-		this.colony = colony;
+		this.colonyId = colonyId;
 	}
 	
 	public String getName() {
 		return name;
 	}
 	
-	public Colony getColony() {
-		return colony;
+	public int getColonyId() {
+		return colonyId;
 	}
 }

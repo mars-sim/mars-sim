@@ -9,9 +9,6 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
-import com.mars_sim.ui.swing.tool.treetable.JTreeTable;
-import com.mars_sim.ui.swing.tool.treetable.TreeTableModel;
-
 /**
  * A simple example application for the JTreeTable
  */

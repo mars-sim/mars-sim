@@ -7,7 +7,6 @@
 
 package com.mars_sim.core;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentFactory;

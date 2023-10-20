@@ -11,11 +11,6 @@ import java.util.Set;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.equipment.Container;
-import com.mars_sim.core.equipment.Equipment;
-import com.mars_sim.core.equipment.EquipmentFactory;
-import com.mars_sim.core.equipment.EquipmentInventory;
-import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;

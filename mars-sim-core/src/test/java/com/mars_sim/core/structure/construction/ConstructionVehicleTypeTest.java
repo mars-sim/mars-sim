@@ -13,7 +13,6 @@ import java.util.List;
 import com.mars_sim.core.goods.GoodType;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.structure.construction.ConstructionVehicleType;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 
 import junit.framework.TestCase;

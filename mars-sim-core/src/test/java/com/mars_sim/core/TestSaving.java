@@ -6,9 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.SimulationListener;
 import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.configuration.ScenarioConfig;
 import com.mars_sim.core.person.Person;

@@ -28,6 +28,8 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 
 	public static final SimLogger logger = SimLogger.getLogger(Colony.class.getName());
 
+	private int id;
+	
 	private String name;
 	
 	/** The settlement's ReportingAuthority instance. */
@@ -43,7 +45,8 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	
 	Set<Zone> zones = new HashSet<>();
 	
-	public Colony(String name, Authority sponsor, Coordinates location) {
+	public Colony(int id, String name, Authority sponsor, Coordinates location) {
+		this.id = id;
 		this.name = name;
 		this.sponsor = sponsor;
 		this.location = location;
@@ -58,6 +61,10 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 		
 	}
 
+	public int getId() {
+		return id;
+	}
+	
 	public Nation getNation() {
 		return nation;
 	}

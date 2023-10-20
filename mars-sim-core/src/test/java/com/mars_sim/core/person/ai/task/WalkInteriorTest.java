@@ -9,7 +9,6 @@ package com.mars_sim.core.person.ai.task;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.task.WalkSettlementInterior;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;

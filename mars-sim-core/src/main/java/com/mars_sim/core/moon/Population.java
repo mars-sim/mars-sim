@@ -45,7 +45,7 @@ public class Population implements Serializable, Temporal {
 	
 	private Colony colony;
 	
-	private Set<Colonist> colonists = new HashSet<>();
+	private transient Set<Colonist> colonists = new HashSet<>();
 	
 	public Population(Colony colony) {
 			
@@ -62,7 +62,7 @@ public class Population implements Serializable, Temporal {
 		numBeds = RandomUtil.getRandomInt((int)(numTourists + numResidents + numResearchers), INITIAL);
 	
 		for (int i = 0; i < numResearchers; i++) {
-			colonists.add(new Researcher(colony.getName() + " " + i, colony));
+			colonists.add(new Researcher(colony.getName() + " R" + i, colony.getId()));
 		}
 	
 	}
@@ -141,8 +141,8 @@ public class Population implements Serializable, Temporal {
 				removeOneResearcher();
 			}
 			else if ((int)researchersCache > (int)numResearchers) {
-				colonists.add(new Researcher(colony.getName() + " " 
-					+ (int)numResearchers, colony));
+				colonists.add(new Researcher(colony.getName() + " R" 
+					+ (int)numResearchers, colony.getId()));
 			}
 			
 		}

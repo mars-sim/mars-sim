@@ -1,6 +1,5 @@
 package com.mars_sim.mapdata;
 
-import com.mars_sim.mapdata.MapDataFactory;
 import com.mars_sim.mapdata.megdr.MEGDRMapReader;
 import com.mars_sim.tools.util.RandomUtil;
 

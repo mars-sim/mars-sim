@@ -1,10 +1,6 @@
 package com.mars_sim.core.resource;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.resource.AmountResource;
-import com.mars_sim.core.resource.AmountResourcePhaseStorage;
-import com.mars_sim.core.resource.PhaseType;
-import com.mars_sim.core.resource.ResourceUtil;
 
 import junit.framework.TestCase;
 
