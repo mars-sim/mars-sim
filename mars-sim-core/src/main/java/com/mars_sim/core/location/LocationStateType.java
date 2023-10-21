@@ -39,13 +39,11 @@ public enum LocationStateType {
 			INSIDE_SETTLEMENT,
 			INSIDE_VEHICLE,
 			ON_PERSON_OR_ROBOT,
-			MARS_SURFACE,
 			WITHIN_SETTLEMENT_VICINITY,
+			MARS_SURFACE,
 			OUTER_SPACE,
+			MOON,
 			UNKNOWN
-//			IN_AIRLOCK,
-//			INSIDE_EVASUIT,
-//  		INSIDE_BUILDING
 	};
 
 	public static int numSponsors = TYPES.length;

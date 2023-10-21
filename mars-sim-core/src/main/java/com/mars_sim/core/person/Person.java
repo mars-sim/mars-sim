@@ -1968,7 +1968,27 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 				setCoordinates(newContainer.getCoordinates());
 			}
 			// 2. Set new LocationStateType
-			updatePersonState(newContainer);
+			// 2a. If the previous cu is a settlement
+			//     and this person's new cu is mars surface,
+			//     then location state is within settlement vicinity
+			if (getContainerUnit() != null) { 
+				if (getContainerUnit().getUnitType() == UnitType.SETTLEMENT
+					&& newContainer.getUnitType() == UnitType.MARS) {
+						currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+				}	
+				// 2b. If the previous cu is a vehicle
+				//     and this vehicle is in within settlement vicinity
+				//     and this person's new cu is mars surface,
+				//     then location state is within settlement vicinity
+				else if (getContainerUnit().getUnitType() == UnitType.VEHICLE
+						&& getContainerUnit().isInSettlementVicinity()
+						&& newContainer.getUnitType() == UnitType.MARS) {
+							currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+				}
+			}
+			else {
+				updatePersonState(newContainer);
+			}
 			// 3. Set containerID
 			// TODO: what to set for a deceased person ?
 			setContainerID(newContainer.getIdentifier());

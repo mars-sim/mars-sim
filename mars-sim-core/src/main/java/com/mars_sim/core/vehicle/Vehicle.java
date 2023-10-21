@@ -2145,7 +2145,18 @@ public abstract class Vehicle extends Unit
 //				setCoordinates(newContainer.getCoordinates());
 //			}
 			// 2. Set new LocationStateType
-			updateVehicleState(newContainer);
+			// 2a. If the previous cu is a settlement
+			//     and this vehicle's new cu is mars surface,
+			//     then location state is within settlement vicinity
+			if (getContainerUnit() != null 
+				&& (getContainerUnit().getUnitType() == UnitType.SETTLEMENT
+				|| getContainerUnit().getUnitType() == UnitType.BUILDING)
+					&& newContainer.getUnitType() == UnitType.MARS) {
+						currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+			}	
+			else {
+				updateVehicleState(newContainer);
+			}
 			// 3. Set containerID
 			setContainerID(newContainer.getIdentifier());
 			// 4. Fire the container unit event

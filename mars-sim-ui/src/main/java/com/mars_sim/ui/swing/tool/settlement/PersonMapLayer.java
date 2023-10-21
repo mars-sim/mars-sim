@@ -38,7 +38,7 @@ public class PersonMapLayer implements SettlementMapLayer {
 	
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param mapPanel the settlement map panel.
 	 */
@@ -76,7 +76,8 @@ public class PersonMapLayer implements SettlementMapLayer {
 
 
 	/**
-	 * Draw people at a settlement.
+	 * Draws people at a settlement.
+	 * 
 	 * @param g2d the graphics context.
 	 * @param settlement the settlement to draw people at.
 	 */
@@ -105,7 +106,8 @@ public class PersonMapLayer implements SettlementMapLayer {
 	}
 
 	/**
-	 * Draw a person at a settlement.
+	 * Draws a person at a settlement.
+	 * 
 	 * @param g2d the graphics context.
 	 * @param person the person to draw.
 	 */
