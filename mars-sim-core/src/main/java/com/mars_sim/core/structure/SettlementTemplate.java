@@ -15,8 +15,11 @@ import java.util.Map;
 
 import com.mars_sim.core.configuration.UserConfigurable;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplySchedule;
+import com.mars_sim.core.person.ai.shift.ShiftPattern;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.Part;
+import com.mars_sim.core.robot.RobotTemplate;
+import com.mars_sim.core.structure.building.BuildingTemplate;
 
 /**
  * This class defines a template for modeling the initial conditions and building configurations of a settlement. 

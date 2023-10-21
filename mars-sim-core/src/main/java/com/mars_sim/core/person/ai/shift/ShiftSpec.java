@@ -4,7 +4,7 @@
  * @date 2022-11-18
  * @author Barry Evans
  */
-package com.mars_sim.core.structure;
+package com.mars_sim.core.person.ai.shift;
 
 /**
  * A specification of a single Shift that belongs to a ShiftPattern.

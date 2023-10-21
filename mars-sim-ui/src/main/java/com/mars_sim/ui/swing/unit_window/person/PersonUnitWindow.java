@@ -19,7 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.structure.ShiftSlot;
+import com.mars_sim.core.person.ai.shift.ShiftSlot;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;

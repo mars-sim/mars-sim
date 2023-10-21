@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.Part;
+import com.mars_sim.core.structure.building.BuildingTemplate;
 
 /**
  * Represents a set of Supplies provided to a Settlement.

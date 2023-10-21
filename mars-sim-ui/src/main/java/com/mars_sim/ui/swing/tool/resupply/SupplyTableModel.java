@@ -25,8 +25,8 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.BuildingTemplate;
 import com.mars_sim.core.structure.building.BuildingConfig;
+import com.mars_sim.core.structure.building.BuildingTemplate;
 import com.mars_sim.core.vehicle.VehicleConfig;
 
 /** TODO externalize strings */

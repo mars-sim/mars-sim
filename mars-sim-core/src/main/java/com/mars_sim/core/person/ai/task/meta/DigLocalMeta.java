@@ -10,6 +10,7 @@ import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
+import com.mars_sim.core.person.ai.shift.Shift;
 import com.mars_sim.core.person.ai.task.DigLocal;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Walk;
@@ -17,7 +18,6 @@ import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.TaskProbabilityUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.Shift;
 import com.mars_sim.tools.util.RandomUtil;
 
 /**

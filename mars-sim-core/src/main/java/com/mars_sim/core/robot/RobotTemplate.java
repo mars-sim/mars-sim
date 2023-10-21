@@ -4,11 +4,9 @@
  * @date 2022-12-22
  * @author Barry Evans
  */
-package com.mars_sim.core.structure;
+package com.mars_sim.core.robot;
 
 import java.io.Serializable;
-
-import com.mars_sim.core.robot.RobotType;
 
 /**
  * Represents are predefined Robot for a settlement template
@@ -21,7 +19,7 @@ public class RobotTemplate implements Serializable {
     private RobotType type;
     private String model;
 
-    RobotTemplate(String name, RobotType type, String model) {
+    public RobotTemplate(String name, RobotType type, String model) {
         this.name = name;
         this.type = type;
         this.model = model;

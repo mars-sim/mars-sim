@@ -23,13 +23,17 @@ import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplySchedule;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig.SupplyManifest;
+import com.mars_sim.core.person.ai.shift.ShiftPattern;
+import com.mars_sim.core.person.ai.shift.ShiftSpec;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.PartPackageConfig;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.robot.RobotTemplate;
 import com.mars_sim.core.robot.RobotType;
-import com.mars_sim.core.structure.BuildingTemplate.BuildingConnectionTemplate;
+import com.mars_sim.core.structure.building.BuildingTemplate;
+import com.mars_sim.core.structure.building.BuildingTemplate.BuildingConnectionTemplate;
 import com.mars_sim.mapdata.location.BoundedObject;
 import com.mars_sim.mapdata.location.LocalPosition;
 
@@ -42,75 +46,80 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final Logger logger = Logger.getLogger(SettlementConfig.class.getName());
 
 	// Element names
-	private static final String ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN = "rover-life-support-range-error-margin";
-	private static final String ROVER_FUEL_RANGE_ERROR_MARGIN = "rover-fuel-range-error-margin";
-	private static final String MISSION_CONTROL = "mission-control";
-	private static final String LIFE_SUPPORT_REQUIREMENTS = "life-support-requirements";
-	private static final String TOTAL_PRESSURE = "total-pressure";
-	private static final String PARTIAL_PRESSURE_OF_O2 = "partial-pressure-of-oxygen"; 
-	private static final String PARTIAL_PRESSURE_OF_N2 = "partial-pressure-of-nitrogen";
-	private static final String PARTIAL_PRESSURE_OF_CO2 = "partial-pressure-of-carbon-dioxide"; 
-	private static final String TEMPERATURE = "temperature";
-	private static final String RELATIVE_HUMIDITY = "relative-humidity"; 
-	private static final String VENTILATION = "ventilation";
-	private static final String LOW = "low";
-	private static final String HIGH = "high";
-	private static final String SETTLEMENT_TEMPLATE_LIST = "settlement-template-list";
-	private static final String TEMPLATE = "template";
-	private static final String NAME = "name";
-	private static final String DESCRIPTION = "description";
-	private static final String DEFAULT_POPULATION = "default-population";
-	private static final String DEFAULT_NUM_ROBOTS = "number-of-robots";
-	private static final String BUILDING = "building";
-	private static final String ID = "id";
-	private static final String HATCH_FACE = "hatch-facing";
-	private static final String ZONE = "zone";
-	private static final String TYPE = "type";
-	private static final String CONNECTION_LIST = "connection-list";
-	private static final String CONNECTION = "connection";
-	private static final String NUMBER = "number";
-	private static final String VEHICLE = "vehicle";
-	private static final String EQUIPMENT = "equipment";
-	private static final String BIN = "bin";	
-	private static final String VALUE = "value";
-	private static final String SPONSOR = "sponsor";
-	private static final String RESUPPLY = "resupply";
-	private static final String RESUPPLY_MISSION = "resupply-mission";
-	private static final String FIRST_ARRIVAL_TIME = "first-arrival-time";
-	private static final String RESOURCE = "resource";
-	private static final String AMOUNT = "amount";
-	private static final String PART = "part";
-	private static final String PART_PACKAGE = "part-package";
+	private final String BUILDING_PACKAGE = "building-package";
 
-	private static final String EVA_AIRLOCK = "EVA Airlock";
+	private final String ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN = "rover-life-support-range-error-margin";
+	private final String ROVER_FUEL_RANGE_ERROR_MARGIN = "rover-fuel-range-error-margin";
+	private final String MISSION_CONTROL = "mission-control";
+	private final String LIFE_SUPPORT_REQUIREMENTS = "life-support-requirements";
+	private final String TOTAL_PRESSURE = "total-pressure";
+	private final String PARTIAL_PRESSURE_OF_O2 = "partial-pressure-of-oxygen"; 
+	private final String PARTIAL_PRESSURE_OF_N2 = "partial-pressure-of-nitrogen";
+	private final String PARTIAL_PRESSURE_OF_CO2 = "partial-pressure-of-carbon-dioxide"; 
+	private final String TEMPERATURE = "temperature";
+	private final String RELATIVE_HUMIDITY = "relative-humidity"; 
+	private final String VENTILATION = "ventilation";
+	private final String LOW = "low";
+	private final String HIGH = "high";
+	private final String SETTLEMENT_TEMPLATE_LIST = "settlement-template-list";
+	private final String TEMPLATE = "template";
+	private final String NAME = "name";
+	private final String DESCRIPTION = "description";
+	private final String DEFAULT_POPULATION = "default-population";
+	private final String DEFAULT_NUM_ROBOTS = "number-of-robots";
+	private final String BUILDING = "building";
+	private final String ID = "id";
+	private final String HATCH_FACE = "hatch-facing";
+	private final String ZONE = "zone";
+	private final String TYPE = "type";
+	private final String CONNECTION_LIST = "connection-list";
+	private final String CONNECTION = "connection";
+	private final String NUMBER = "number";
+	private final String VEHICLE = "vehicle";
+	private final String EQUIPMENT = "equipment";
+	private final String BIN = "bin";	
+	private final String VALUE = "value";
+	private final String SPONSOR = "sponsor";
+	private final String RESUPPLY = "resupply";
+	private final String RESUPPLY_MISSION = "resupply-mission";
+	private final String FIRST_ARRIVAL_TIME = "first-arrival-time";
+	private final String RESOURCE = "resource";
+	private final String AMOUNT = "amount";
+	private final String PART = "part";
+	private final String PART_PACKAGE = "part-package";
+	
+	private final String EVA_AIRLOCK = "EVA Airlock";
 
-	private static final String SHIFT_PATTERN = "shift-pattern";
-	private static final String SHIFT_PATTERNS = "shifts";
-	private static final String SHIFT_SPEC = "shift";
-	private static final String SHIFT_START = "start";
-	private static final String SHIFT_END = "end";
-	private static final String SHIFT_PERC = "pop-percentage";
-	private static final String LEAVE_PERC = "leave-perc";
-	private static final String ROTATION_SOLS = "rotation-sols";
-	private static final String MODEL = "model";
-	private static final String ROBOT = "robot";
+	private final String SHIFT_PATTERN = "shift-pattern";
+	private final String SHIFT_PATTERNS = "shifts";
+	private final String SHIFT_SPEC = "shift";
+	private final String SHIFT_START = "start";
+	private final String SHIFT_END = "end";
+	private final String SHIFT_PERC = "pop-percentage";
+	private final String LEAVE_PERC = "leave-perc";
+	private final String ROTATION_SOLS = "rotation-sols";
+	private final String MODEL = "model";
+	private final String ROBOT = "robot";
 
 	/** These must be present in the settlements.xml */
 	public static final String DEFAULT_3SHIFT = "Standard 3 Shift";
 	public static final String DEFAULT_2SHIFT = "Standard 2 Shift";
 
-	private static final String FREQUENCY = "frequency-sols";
-	private static final String MANIFEST_NAME = "manifest-name";
+	private final String FREQUENCY = "frequency-sols";
+	private final String MANIFEST_NAME = "manifest-name";
 
 	private double[] roverValues = new double[] { 0, 0 };
 	private double[][] lifeSupportValues = new double[2][7];
 
 	// Data members
-	private PartPackageConfig partPackageConfig;
-	private Map<String, ShiftPattern> shiftDefinitions = new HashMap<>();
 	private String defaultShift;
 
+	private PartPackageConfig partPackageConfig;	
+	private BuildingPackageConfig buildingPackageConfig;
 	private ResupplyConfig resupplyConfig;
+	
+	private Map<String, ShiftPattern> shiftDefinitions = new HashMap<>();
+
 
 	/**
 	 * Constructor.
@@ -119,13 +128,17 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	 * @param partPackageConfig the part package configuration.
 	 * @throws Exception if error reading XML document.
 	 */
-	public SettlementConfig(Document settlementDoc, PartPackageConfig partPackageConfig,
+	public SettlementConfig(Document settlementDoc, 
+							PartPackageConfig partPackageConfig,
+							BuildingPackageConfig buildingPackageConfig,
 							ResupplyConfig resupplyConfig) {
 		super("settlement");
 		setXSDName("settlement.xsd");
 
 		this.partPackageConfig = partPackageConfig;
+		this.buildingPackageConfig = buildingPackageConfig;
 		this.resupplyConfig = resupplyConfig;
+		
 		Element root = settlementDoc.getRootElement();
 		loadMissionControl(root.getChild(MISSION_CONTROL));
 		loadLifeSupportRequirements(root.getChild(LIFE_SUPPORT_REQUIREMENTS));
@@ -313,7 +326,8 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				defaultNumOfRobots);
 
 		Set<Integer> existingIDs = new HashSet<>();
-		// Add buildingTypeIDMap
+		
+		// Create buildingTypeIDMap
 		Map<String, Integer> buildingTypeIDMap = new HashMap<>();
 
 		List<Element> buildingNodes = templateElement.getChildren(BUILDING);
@@ -356,6 +370,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 
 			int buildingTypeID = buildingTypeIDMap.get(buildingType);
 
+			// e.g. Lander Hab 1, Lander Hab 2
 			String buildingNickName = buildingType + " " + buildingTypeID;
 
 			BuildingTemplate buildingTemplate = new BuildingTemplate(bid, zone, 
@@ -390,7 +405,6 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 					else {
 						buildingTemplate.addBuildingConnection(connectionID, hatchFace);
 					}
-
 				}
 			}
 		}
@@ -486,6 +500,37 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			}
 		}
 
+		// Load building packages
+		List<Element> buildingPackageNodes = templateElement.getChildren(BUILDING_PACKAGE);
+		for (Element buildingPackageElement : buildingPackageNodes) {
+			String packageName = buildingPackageElement.getAttributeValue(NAME);
+			
+			List<BuildingTemplate> buildingPackages = buildingPackageConfig.getBuildingsInPackage(packageName);
+
+			for (BuildingTemplate buildingTemplate: buildingPackages) {
+
+				// Get the building type
+				String buildingType = buildingTemplate.getBuildingType();
+				
+				if (buildingTypeIDMap.containsKey(buildingType)) {
+					int last = buildingTypeIDMap.get(buildingType);
+					buildingTypeIDMap.put(buildingType, last + 1);
+				} else {
+					// If it's new
+					buildingTypeIDMap.put(buildingType, 1);
+				}
+	
+				int buildingTypeID = buildingTypeIDMap.get(buildingType);
+	
+				String buildingNickName = buildingType + " " + buildingTypeID;
+	
+				// Overwrite with a new building nick name
+				buildingTemplate.setBuildingName(buildingNickName);
+	
+				template.addBuildingTemplate(buildingTemplate);
+			}
+		}
+		
 		// Load resupplies
 		Element resupplyList = templateElement.getChild(RESUPPLY);
 		if (resupplyList != null) {

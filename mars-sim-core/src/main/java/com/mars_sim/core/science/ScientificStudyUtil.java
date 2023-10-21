@@ -23,8 +23,7 @@ import com.mars_sim.core.person.ai.social.RelationshipUtil;
  */
 public class ScientificStudyUtil {
 
-	private static Simulation sim = Simulation.instance();
-	private static UnitManager unitManager = sim.getUnitManager();
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/**
 	 * Private constructor for utility class.
@@ -33,6 +32,7 @@ public class ScientificStudyUtil {
 
 	/**
 	 * Gets a list of all available collaborators that can be invited to a study.
+	 * 
 	 * @param study the scientific study.
 	 * @return list of potential collaborators.
 	 */
@@ -66,7 +66,8 @@ public class ScientificStudyUtil {
     }
 
     /**
-     * Modify researchers relationships with other known scientists in the same field due to new achievement.
+     * Modifies researchers relationships with other known scientists in the same field due to new achievement.
+     * 
      * @param researcher the achieving researcher.
      * @param science the field of science.
      * @param achievement the new achievement credit.
@@ -84,7 +85,7 @@ public class ScientificStudyUtil {
     }
 
 	/**
-	 * initializes instances after loading from a saved sim
+	 * Initializes instances after loading from a saved sim.
 	 *
 	 * @param {{@link MarsClock}
 	 */

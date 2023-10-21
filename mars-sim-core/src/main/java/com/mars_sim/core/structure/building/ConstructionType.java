@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * ConstructionTypejava
+ * ConstructionType.java
  * @date 2022-07-10
  * @author Barry Evans
  */

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PartPackageConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-10-20
  * @author Scott Davis
  */
 package com.mars_sim.core.resource;
@@ -31,11 +31,11 @@ public class PartPackageConfig implements Serializable {
 	private static final Logger logger = Logger.getLogger(PartPackageConfig.class.getName());
 
 	// Element names
-	private static final String PART_PACKAGE = "part-package";
-	private static final String PART = "part";
-	private static final String NAME = "name";
-	private static final String TYPE = "type";
-	private static final String NUMBER = "number";
+	private final String PART_PACKAGE = "part-package";
+	private final String PART = "part";
+	private final String NAME = "name";
+	private final String TYPE = "type";
+	private final String NUMBER = "number";
 
 	// Data members
 	private Collection<PartPackage> partPackages;

@@ -24,7 +24,7 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.PartPackageConfig;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.BuildingTemplate;
+import com.mars_sim.core.structure.building.BuildingTemplate;
 import com.mars_sim.mapdata.location.BoundedObject;
 
 /**

@@ -128,9 +128,11 @@
 		<!-- number-of-robots: the default number of robots for the template. -->
 		<!-- sponsor: the name of the sponsoring organization for the template. -->
 		
-		<!-- 1 Phase 0 templates -->
+		<!-- 3 Phase 0 templates -->
+		<template name="Phase 0-BO"/>
 		<template name="Phase 0-MS"/>
-		
+		<template name="Phase 0-UAE"/>
+				
 		<!-- 7 Phase 1 templates -->
 		<template name="Phase 1-BR"/>
 		<template name="Phase 1-CN"/>
@@ -139,16 +141,20 @@
 		<template name="Phase 1-RU"/>
 		<template name="Phase 1-SX"/>
 		<template name="Phase 1-US"/>
+		
 		<!-- 9 Phase 2 templates -->		
 		<template name="Phase 2-CN"/>	
 		<template name="Phase 2-EU"/>
 		<template name="Phase 2-IN"/>	
+		
 		<template name="Phase 2-JP"/>
 		<template name="Phase 2-KR"/>
 		<template name="Phase 2-MS"/>
+		
 		<template name="Phase 2-RU"/>
 		<template name="Phase 2-SX"/>
 		<template name="Phase 2-US"/>
+		
 		<!-- 6 Phase 3 templates -->	
 		<template name="Phase 3-CN"/>
 		<template name="Phase 3-IN"/>
@@ -156,13 +162,19 @@
 		<template name="Phase 3-RU"/>
 		<template name="Phase 3-SX"/>
 		<template name="Phase 3-US"/>
-		<!-- One Phase 4 templates -->			
+		
+		<!-- 1 Phase 4 templates -->			
 		<template name="Alpha Base"/>
-		<!-- One non-standard template -->			
+		
+		<!-- 1 hub template -->			
 		<template name="Hub Base"/>
-		<!-- Two Phase outpost templates -->			
+		
+		<!-- 1 trading outpost template -->			
 		<template name="Trading Outpost"/>
-		<template name="Mining Outpost"/>																			
+	
+		<!-- 1 mining outpost template -->		
+		<template name="Mining Outpost"/>	
+																				
 	</settlement-template-list>
 	
 </settlement-configuration>

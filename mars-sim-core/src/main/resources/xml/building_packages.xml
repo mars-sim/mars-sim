@@ -1,0 +1,43 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE building-package-list [
+	<!ELEMENT building-package-list (building-package*)>
+	<!ELEMENT building-package (building*)>
+	<!ATTLIST building-package name CDATA #REQUIRED>
+	<!ELEMENT building EMPTY>
+	<!ATTLIST building type CDATA #REQUIRED>
+	<!ATTLIST building xloc CDATA #REQUIRED>
+	<!ATTLIST building yloc CDATA #REQUIRED>
+	<!ATTLIST building facing CDATA #REQUIRED>
+]>
+
+<!-- List of all building packages in the simulation. -->
+<!-- Building packages are used for settlement initial buildings -->
+<!-- Used by settlement_XXX.xml templates -->
+<building-package-list>
+
+	<!-- Building package -->
+	<!-- name: the unique name of the package. -->
+	<building-package name="Storage Bin Set 1" >
+
+		<!-- Buildings -->
+		<!-- type: the type of building (see buildings.xml) -->
+	    <building type="Regolith Storage Bin" xloc="50.0" yloc="55.0"
+	        facing="90.0" />
+	    <building type="Sand Storage Bin" xloc="50.0" yloc="40.0"
+	        facing="90.0" />
+	    <building type="Concrete Storage Bin" xloc="50.0" yloc="25.0" 
+	        facing="90.0" />
+	    <building type="Cement Storage Bin" xloc="50.0" yloc="10.0"
+	        facing="90.0" />
+	        
+	    <building type="Mortar Storage Bin" xloc="35.0" yloc="55.0"
+	        facing="90.0" />
+	    <building type="Lime Storage Bin" xloc="35.0" yloc="40.0"
+	        facing="90.0" />
+	    <building type="Carbon Storage Bin" xloc="35.0" yloc="25.0"
+	        facing="90.0" />
+	    <building type="Ice Storage Bin" xloc="35.0" yloc="10.0"
+	        facing="90.0" />
+	</building-package>
+
+</building-package-list>

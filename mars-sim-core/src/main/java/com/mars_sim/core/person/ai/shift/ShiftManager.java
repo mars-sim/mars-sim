@@ -4,7 +4,7 @@
  * @date 2023-09-01
  * @author Barry Evans
  */
-package com.mars_sim.core.structure;
+package com.mars_sim.core.person.ai.shift;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,7 +15,8 @@ import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.structure.ShiftSlot.WorkStatus;
+import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -57,7 +58,7 @@ public class ShiftManager implements Serializable {
     /**
      * Default leave duration after a shift rotation.
      */
-    static final int ROTATION_LEAVE = 1000;   
+    public static final int ROTATION_LEAVE = 1000;   
 
     private String name;
     private List<Shift> shifts = new ArrayList<>();

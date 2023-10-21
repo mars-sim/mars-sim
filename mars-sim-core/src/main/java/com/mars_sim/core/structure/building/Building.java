@@ -41,7 +41,6 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
-import com.mars_sim.core.structure.BuildingTemplate;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.Structure;
 import com.mars_sim.core.structure.building.connection.InsidePathLocation;
@@ -135,7 +134,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	protected double width;
 	protected double length;
 	protected double floorArea;
-	private ConstructionType construction;
+	private ConstructionType constructionType;
 	protected LocalPosition loc;
 	protected double zLoc;
 	protected double facing;
@@ -245,7 +244,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		
 		BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
 
-		construction = spec.getConstruction();
+		constructionType = spec.getConstruction();
 		powerModeCache = PowerMode.FULL_POWER;
 		heatModeCache = HeatMode.HALF_HEAT;
 		width = spec.getWidth();
@@ -1290,10 +1289,10 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Get the wall thickness based on the construction type.
+	 * Get the wall thickness based on the constructionType type.
 	 */
 	private double getWallThickness() {
-		switch(construction) {
+		switch(constructionType) {
 			case SOLID:
 				return 0.0000254;
 			case INFLATABLE:
@@ -1306,7 +1305,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	public ConstructionType getConstruction() {
-		return construction;
+		return constructionType;
 	}
 
 	/**

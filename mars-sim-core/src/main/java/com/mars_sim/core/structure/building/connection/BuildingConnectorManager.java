@@ -18,11 +18,11 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.structure.BuildingTemplate;
-import com.mars_sim.core.structure.BuildingTemplate.BuildingConnectionTemplate;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.BuildingTemplate;
+import com.mars_sim.core.structure.building.BuildingTemplate.BuildingConnectionTemplate;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.mapdata.location.LocalPosition;
 

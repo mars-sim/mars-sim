@@ -22,8 +22,8 @@ import javax.swing.table.DefaultTableModel;
 
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.structure.BuildingTemplate;
 import com.mars_sim.core.structure.SettlementSupplies;
+import com.mars_sim.core.structure.building.BuildingTemplate;
 import com.mars_sim.ui.swing.NumberCellRenderer;
 
 /**

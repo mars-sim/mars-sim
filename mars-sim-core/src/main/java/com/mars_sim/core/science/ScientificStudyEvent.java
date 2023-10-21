@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ScientificStudyEvent.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-10-19
  * @author Scott Davis
  */
 package com.mars_sim.core.science;
@@ -33,7 +33,8 @@ public class ScientificStudyEvent extends EventObject {
     private String type;
     
     /**
-     * Constructor
+     * Constructor 1.
+     * 
      * @param study the scientific study.
      * @param type the event type.
      */
@@ -42,7 +43,8 @@ public class ScientificStudyEvent extends EventObject {
     }
     
     /**
-     * Constructor
+     * Constructor 2.
+     * 
      * @param study the scientific study.
      * @param researcher the study researcher.
      * @param type the event type.
@@ -58,7 +60,8 @@ public class ScientificStudyEvent extends EventObject {
     }
     
     /**
-     * Get the scientific study.
+     * Gets the scientific study.
+     * 
      * @return study.
      */
     public ScientificStudy getStudy() {
@@ -66,7 +69,8 @@ public class ScientificStudyEvent extends EventObject {
     }
     
     /**
-     * Get the study researcher the event is about.
+     * Gets the study researcher the event is about.
+     * 
      * @return researcher or null if none.
      */
     public Person getResearcher() {
@@ -74,7 +78,8 @@ public class ScientificStudyEvent extends EventObject {
     }
     
     /**
-     * Get the event type.
+     * Gets the event type.
+     * 
      * @return event type string.
      */
     public String getType() {

@@ -4,7 +4,7 @@
  * @date 2023-09-01
  * @author Barry Evans
  */
-package com.mars_sim.core.structure;
+package com.mars_sim.core.person.ai.shift;
 
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.person.Person;

@@ -51,6 +51,7 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotConfig;
 import com.mars_sim.core.robot.RobotDemand;
 import com.mars_sim.core.robot.RobotSpec;
+import com.mars_sim.core.robot.RobotTemplate;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.robot.ai.job.RobotJob;
 import com.mars_sim.core.vehicle.VehicleFactory;

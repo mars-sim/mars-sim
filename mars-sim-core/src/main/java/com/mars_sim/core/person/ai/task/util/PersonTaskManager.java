@@ -12,13 +12,13 @@ import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.Mind;
+import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.task.DigLocal;
 import com.mars_sim.core.person.ai.task.DigLocalRegolith;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.EatDrink;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.Walk;
-import com.mars_sim.core.structure.ShiftSlot.WorkStatus;
 
 /**
  * The PersonTaskManager class keeps track of a person's current task and can randomly

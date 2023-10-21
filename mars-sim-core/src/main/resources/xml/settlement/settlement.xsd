@@ -82,6 +82,12 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="building-package">
+        <xs:complexType>
+            <xs:attribute name="name" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+    
     <xs:element name="resupply-mission">
         <xs:complexType>
             <xs:attribute name="name" type="xs:string"/>
@@ -110,6 +116,7 @@
                 <xs:element ref="resource"  minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="part"  minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="part-package" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="building-package" minOccurs="0" maxOccurs="unbounded"/>               
                 <xs:element ref="resupply" minOccurs="0" maxOccurs="1"/>
             </xs:sequence>
             <xs:attribute name="name" type="xs:string"/>

@@ -23,11 +23,11 @@ import com.mars_sim.core.person.ai.mission.MissionEvent;
 import com.mars_sim.core.person.ai.mission.MissionEventType;
 import com.mars_sim.core.person.ai.mission.MissionListener;
 import com.mars_sim.core.person.ai.role.Role;
+import com.mars_sim.core.person.ai.shift.ShiftSlot;
+import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.ShiftSlot;
-import com.mars_sim.core.structure.ShiftSlot.WorkStatus;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.tools.Msg;
 

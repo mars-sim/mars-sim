@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import com.mars_sim.core.malfunction.MalfunctionManager;
-import com.mars_sim.core.structure.BuildingTemplate;
 import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.LifeSupport;
 import com.mars_sim.mapdata.location.LocalPosition;

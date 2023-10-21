@@ -28,7 +28,6 @@ import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig.Supply
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.structure.BuildingTemplate;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementBuilder;
 import com.mars_sim.core.structure.SettlementSupplies;
@@ -37,6 +36,7 @@ import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.structure.building.BuildingConfig;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.BuildingSpec;
+import com.mars_sim.core.structure.building.BuildingTemplate;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.mapdata.location.BoundedObject;

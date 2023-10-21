@@ -45,7 +45,6 @@ import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
-import com.mars_sim.core.structure.BuildingTemplate;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementTemplate;
 import com.mars_sim.core.structure.building.connection.BuildingConnector;

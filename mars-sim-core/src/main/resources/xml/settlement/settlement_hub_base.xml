@@ -426,42 +426,6 @@
     <building type="Solar Thermal Collector" xloc="40.0"
         yloc="-110.0" facing="0.0" />
         
-       
-        
-    <building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
-        facing="90.0" />
-    <building type="Sand Storage Bin" xloc="35.0" yloc="5.0"
-        facing="90.0" />
-    <building type="Concrete Storage Bin" xloc="35.0"
-        yloc="10.0" facing="90.0" />
-    <building type="Cement Storage Bin" xloc="35.0" yloc="15.0"
-        facing="90.0" />
-    <building type="Mortar Storage Bin" xloc="35.0" yloc="20.0"
-        facing="90.0" />
-    <building type="Lime Storage Bin" xloc="35.0" yloc="25.0"
-        facing="90.0" />
-    <building type="Ice Storage Bin" xloc="35.0" yloc="-5.0"
-        facing="90.0" />
-    <building type="Carbon Storage Bin" xloc="35.0" yloc="-10.0"
-        facing="90.0" />
-
-    <building type="Regolith Storage Bin" xloc="55.0" yloc="0.0"
-        facing="90.0" />
-    <building type="Sand Storage Bin" xloc="55.0" yloc="5.0"
-        facing="90.0" />
-    <building type="Concrete Storage Bin" xloc="55.0"
-        yloc="10.0" facing="90.0" />
-    <building type="Cement Storage Bin" xloc="55.0" yloc="15.0"
-        facing="90.0" />
-    <building type="Mortar Storage Bin" xloc="55.0" yloc="20.0"
-        facing="90.0" />
-    <building type="Lime Storage Bin" xloc="55.0" yloc="25.0"
-        facing="90.0" />
-    <building type="Ice Storage Bin" xloc="55.0" yloc="-5.0"
-        facing="90.0" />
-    <building type="Carbon Storage Bin" xloc="55.0" yloc="-10.0"
-        facing="90.0" />
-
     <vehicle type="Long Range Explorer" number="3" />
     <vehicle type="Transport Rover" number="2" />
     <vehicle type="Cargo Rover" number="2" />
@@ -496,7 +460,9 @@
 
     <part-package name="package 2" number="1" />
     <part-package name="package 4" number="1" />
-    
+
+	<building-package name="Storage Bin Set 1"/>
+
     <resupply>
        	<resupply-mission name="Food Delivery" manifest-name="Food Resupply 1"
             first-arrival-time="30"

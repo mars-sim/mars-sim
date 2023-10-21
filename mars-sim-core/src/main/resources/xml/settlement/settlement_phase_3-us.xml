@@ -262,27 +262,9 @@
     <building type="Large Sabatier Processor" xloc="0.0"
         yloc="-90.0" facing="90.0" />
 
-
     <building type="Solar Photovoltaic Array" xloc="50.0"
         yloc="-50.0" facing="0.0" />
 
-
-    <building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
-        facing="90.0" />
-    <building type="Sand Storage Bin" xloc="35.0" yloc="5.0"
-        facing="90.0" />
-    <building type="Concrete Storage Bin" xloc="35.0"
-        yloc="10.0" facing="90.0" />
-    <building type="Cement Storage Bin" xloc="35.0" yloc="15.0"
-        facing="90.0" />
-    <building type="Mortar Storage Bin" xloc="35.0" yloc="20.0"
-        facing="90.0" />
-    <building type="Lime Storage Bin" xloc="35.0" yloc="25.0"
-        facing="90.0" />
-    <building type="Ice Storage Bin" xloc="35.0" yloc="-5.0"
-        facing="90.0" />
-    <building type="Carbon Storage Bin" xloc="35.0" yloc="-10.0"
-        facing="90.0" />
 
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Transport Rover" number="1" />
@@ -307,7 +289,9 @@
 	<resource type="oxygen" amount="4320" />
 	
     <part-package name="package 3" number="1" />
-    
+
+	<building-package name="Storage Bin Set 1"/>
+   
     <resupply>
        	<resupply-mission name="BiMonthly Delivery" manifest-name="Standard Resupply 1"
             first-arrival-time="1"

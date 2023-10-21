@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Science.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-10-19
  * @author Scott Davis
  */
 package com.mars_sim.core.science;
@@ -28,7 +28,8 @@ implements Serializable, Comparable<Object> {
 	private List<ScienceType> collaborativeSciences = new ArrayList<>();
 
 	/**
-	 * Constructor.
+	 * Constructor 1.
+	 * 
 	 * @param type {@link ScienceType} the name of the field of science.
 	 * @param job job associated with the field.
 	 */
@@ -38,7 +39,8 @@ implements Serializable, Comparable<Object> {
 	}
 
 	/**
-	 * Constructor.
+	 * Constructor 2.
+	 * 
 	 * @param type {@link ScienceType} the name of the field of science.
 	 * @param jobs jobs associated with the field.
 	 */
@@ -48,7 +50,8 @@ implements Serializable, Comparable<Object> {
 	}
 
 	/**
-	 * set the sciences that can collaborate on research with this field of science.
+	 * Sets the sciences that can collaborate on research with this field of science.
+	 * 
 	 * @param collaborativeScience sciences that can collaborate.
 	 */
 	void setCollaborativeSciences(Science[] collaborativeSciences) {
@@ -59,6 +62,7 @@ implements Serializable, Comparable<Object> {
 
 	/**
 	 * Gets the sciences that can collaborate on research with this field of science.
+	 * 
 	 * @return sciences.
 	 */
 	public List<ScienceType> getCollaborativeSciences() {
@@ -67,6 +71,7 @@ implements Serializable, Comparable<Object> {
 
 	/**
 	 * Gets the type of the field of science.
+	 * 
 	 * @return type.
 	 */
 	public ScienceType getType() {
@@ -75,6 +80,7 @@ implements Serializable, Comparable<Object> {
 
 	/**
 	 * Gets the jobs associated with this field of science.
+	 * 
 	 * @return jobs.
 	 */
 	public final List<JobType> getJobs() {
@@ -83,6 +89,7 @@ implements Serializable, Comparable<Object> {
 
 	/**
 	 * Compares this object with the specified object for order.
+	 * 
 	 * @param o the Object to be compared.
 	 * @return a negative integer, zero, or a positive integer as this object is less than, 
 	 * equal to, or greater than the specified object.
@@ -94,6 +101,7 @@ implements Serializable, Comparable<Object> {
 
 	/**
 	 * Checks if an object is equal to this object.
+	 * 
 	 * @return true if equal
 	 */
 	public boolean equals(Object object) {

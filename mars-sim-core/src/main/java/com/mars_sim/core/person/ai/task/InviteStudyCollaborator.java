@@ -74,7 +74,8 @@ public class InviteStudyCollaborator extends Task {
     private List<Person> invitees;
 
     /**
-     * Constructor
+     * Constructor.
+     * 
      * @param person the person performing the task.
      */
     public InviteStudyCollaborator(Person person) {
@@ -134,6 +135,7 @@ public class InviteStudyCollaborator extends Task {
 
     /**
      * Determines the best available researcher to invite for collaboration on a study.
+     * 
      * @return best collaborative invitee or null if none.
      */
     private List<Person> determineBestInvitee(int required) {
@@ -190,6 +192,7 @@ public class InviteStudyCollaborator extends Task {
 
     /**
      * Performs the writing invitation phase.
+     * 
      * @param time the time (millisols) to perform the phase.
      * @return the remaining time (millisols) after performing the phase.
      */

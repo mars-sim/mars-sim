@@ -10,9 +10,9 @@ package com.mars_sim.console.chat.simcommand.settlement;
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
+import com.mars_sim.core.person.ai.shift.Shift;
+import com.mars_sim.core.person.ai.shift.ShiftManager;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.Shift;
-import com.mars_sim.core.structure.ShiftManager;
 
 /**
  * Command to display the details of a Settlement's Shift

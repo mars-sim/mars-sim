@@ -9,10 +9,10 @@ import org.junit.Before;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.structure.BuildingTemplate;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.BuildingTemplate;
 import com.mars_sim.core.structure.building.MockBuilding;
 import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.mapdata.location.BoundedObject;
