@@ -34,18 +34,9 @@ public class AlgaeFarming extends Function {
 	private static SimLogger logger = SimLogger.getLogger(AlgaeFarming.class.getName());
 
 	
-	private static final String [] INSPECTION_LIST = {"Environmental Control System",
-													  "Any Traces of Contamination", 
-													  "Tank Integrity",
-													  "Foundation",	
-													  "Structural Element", 
-													  "Thermal Budget",
-													  "Water and Irrigation System"};
-	private static final String [] CLEANING_LIST = {"Equipment", 
-													"Tank Glass", 
-													"Water Heater",
-													"Pipings", 
-													"Valves"};
+	private static final String [] INSPECTION_LIST = Fishery.INSPECTION_LIST;
+	
+	private static final String [] CLEANING_LIST = Fishery.CLEANING_LIST;
 	
 	// A fish must eat FRACTION times its size during a frame, or it will die.
 //	public static final double FRACTION = 0.4;

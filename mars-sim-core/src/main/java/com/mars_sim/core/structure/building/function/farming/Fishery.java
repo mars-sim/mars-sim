@@ -36,14 +36,14 @@ public class Fishery extends Function {
 	private static SimLogger logger = SimLogger.getLogger(Fishery.class.getName());
 
 	
-	private static final String [] INSPECTION_LIST = {"Environmental Control System",
-													  "Any Traces of Contamination", 
+	static final String [] INSPECTION_LIST = {"Environmental Control",
+													  "Contamination Control", 
 													  "Tank Integrity",
 													  "Foundation",	
 													  "Structural Element", 
 													  "Thermal Budget",
-													  "Water and Irrigation System"};
-	private static final String [] CLEANING_LIST = {"Equipment", 
+													  "Irrigation"};
+	static final String [] CLEANING_LIST = {"Equipment", 
 													"Tank Glass", 
 													"Water Heater",
 													"Pipings", 

@@ -109,7 +109,7 @@
      
 		<!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/jorbis : 97 KB -->
 		<!-- https://www.jcraft.com/jorbis/  -->
-		<!-- May consider the following two other sound API :			 
+		<!-- May consider the following two other sound APIs :			 
 			 https://github.com/Trilarion/java-vorbis-support
 			 https://github.com/Gagravarr/VorbisJava -->
 		<dependency>
@@ -117,37 +117,38 @@
 		    <artifactId>jorbis</artifactId>
 		    <version>0.0.17.4</version>
 		</dependency>
-
-		<dependency>
-			<groupId>com.formdev</groupId>
-			<artifactId>flatlaf-jide-oss</artifactId>
-			<version>3.2.1</version>
-		</dependency>
-		
+	
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>flatlaf-swingx</artifactId>
-			<version>3.2.1</version>
+			<version>3.2.2</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>flatlaf-extras</artifactId>
-			<version>3.2.1</version>
+			<version>3.2.2</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>flatlaf</artifactId>
-			<version>3.2.1</version>
+			<version>3.2.2</version>
 		</dependency>
 
+		<!-- Note: flatlaf-jide-oss requires com.formdev's jide-oss 3.7.12 below -->
+		<dependency>
+			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf-jide-oss</artifactId>
+			<version>3.2.2</version>
+		</dependency>
+		
 		<!-- https://github.com/jidesoft/jide-oss/issues/48 for user's build info 
 		     https://search.maven.org/artifact/com.formdev/jide-oss -->
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>jide-oss</artifactId>
-			<version>3.7.12</version>
+			<version>3.7.14</version>
 		</dependency>
 
   </dependencies>

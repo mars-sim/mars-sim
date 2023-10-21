@@ -77,11 +77,11 @@ public class Farming extends Function {
 
 	public static final String TISSUE = " " + FoodType.TISSUE.getName();
 
-	private static final String [] INSPECTION_LIST = {"Environmental Control System",
-													  "HVAC System", "Waste Disposal System",
-													  "Containment System", "Any Traces of Contamination",
+	private static final String [] INSPECTION_LIST = {"Environmental Control",
+													  "HVAC", "Waste Disposal",
+													  "Containment System", "Contamination Control",
 													  "Foundation",	"Structural Element", "Thermal Budget",
-													  "Water and Irrigation System"};
+													  "Irrigation"};
 	private static final String [] CLEANING_LIST = {"Floor", "Curtains", "Canopy", "Equipment",
 													"Pipings", "Trays", "Valves"};
 

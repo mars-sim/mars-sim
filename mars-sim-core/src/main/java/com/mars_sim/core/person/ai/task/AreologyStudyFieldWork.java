@@ -27,7 +27,7 @@ public class AreologyStudyFieldWork extends ScientificStudyFieldWork {
 	private static final TaskPhase FIELD_WORK = new TaskPhase(Msg.getString("Task.phase.fieldWork.areology")); //$NON-NLS-1$
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param person         the person performing the task.
 	 * @param leadResearcher the researcher leading the field work.

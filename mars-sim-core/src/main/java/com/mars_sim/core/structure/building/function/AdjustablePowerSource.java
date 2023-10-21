@@ -7,7 +7,7 @@
 package com.mars_sim.core.structure.building.function;
 
 /**
- * Represents a Power Source that can be adjusted
+ * Represents a Power Source that can be adjusted.
  */
 public interface AdjustablePowerSource {
     /**
@@ -16,7 +16,7 @@ public interface AdjustablePowerSource {
 	public void increaseLoadCapacity();
 
     /**
-	 * Decreaase the power load capacity.
+	 * Decreases the power load capacity.
 	 */
 	public void decreaseLoadCapacity();
 }
