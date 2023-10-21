@@ -16,6 +16,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.structure.AirlockType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.vehicle.Crewable;
@@ -36,13 +37,13 @@ public class EVASuitUtil {
 	 * 
 	 * @param person
 	 * @param entity
+	 * @param inSettlement
+	 * @param entity
 	 */
-	public static void checkIn(Person person, Object entity, boolean disqualified) {
+	public static void checkIn(Person person, Object entity, boolean inSettlement, boolean disqualified) {
 		EquipmentOwner housing = null;
-
-		boolean inS = person.isInSettlement();
 		
-		if (inS)
+		if (inSettlement)
 			housing = ((Building)entity).getSettlement();
 		else
 			housing = (Vehicle)entity;
@@ -66,7 +67,7 @@ public class EVASuitUtil {
 		
 		if (disqualified) {
 			// Remove pressure suit and put on garment
-			if (inS) {
+			if (inSettlement) {
 				if (person.unwearPressureSuit(housing)) {
 					person.wearGarment(housing);
 				}
