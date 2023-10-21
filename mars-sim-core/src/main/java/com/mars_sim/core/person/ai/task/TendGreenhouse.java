@@ -44,7 +44,6 @@ public class TendGreenhouse extends Task {
 	private static final String NAME = Msg.getString("Task.description.tendGreenhouse"); //$NON-NLS-1$
 	private static final String DETAIL = Msg.getString("Task.description.tendGreenhouse.plant.detail"); //$NON-NLS-1$
 	private static final String TEND_DONE = Msg.getString("Task.description.tendGreenhouse.tend.done"); //$NON-NLS-1$
-	private static final String PLANT_DETAIL = "Task.description.tendGreenhouse.plant.detail"; //$NON-NLS-1$
 	private static final String TRANSFER = Msg.getString("Task.description.tendGreenhouse.transfer"); //$NON-NLS-1$
 	private static final String GROW = Msg.getString("Task.description.tendGreenhouse.grow"); //$NON-NLS-1$
 	private static final String GROW_DETAIL = Msg.getString("Task.description.tendGreenhouse.grow.detail"); //$NON-NLS-1$
@@ -52,7 +51,9 @@ public class TendGreenhouse extends Task {
 	private static final String CLEAN_DETAIL = Msg.getString("Task.description.tendGreenhouse.clean.detail");
 	private static final String SAMPLE = Msg.getString("Task.description.tendGreenhouse.sample");
 	private static final String SAMPLE_DETAIL = Msg.getString("Task.description.tendGreenhouse.sample.detail");
-			
+	private static final String DONE_SEEDING = Msg.getString("Task.description.tendGreenhouse.seeding.done.detail"); //$NON-NLS-1$
+	private static final String SEEDING = Msg.getString("Task.description.tendGreenhouse.seeding.detail"); //$NON-NLS-1$
+	
 	private static final String ADDED_TO_INCUBATOR = " and added to incubator for growing tissues.";
 	private static final String DONE_GROWING = "Done with growing ";
 	private static final String TISSUES_IN_LAB = " tissues in botany lab.";
@@ -363,7 +364,7 @@ public class TendGreenhouse extends Task {
 			cropSpec = greenhouse.selectSeedling();
 			
 			if (cropSpec != null) {
-				printDescription(Msg.getString(PLANT_DETAIL, cropSpec.getName()));
+				printDescription(DONE_SEEDING + " " + cropSpec.getName());
 			}
 			else {
 				// Find another task
@@ -380,7 +381,7 @@ public class TendGreenhouse extends Task {
 		
 		else if (greenhouse.getNumCrops2Plant() > 0 && getDuration() <= (getTimeCompleted() + time)) {
 			greenhouse.plantSeedling(cropSpec, getTimeCompleted() + time, worker);
-			printDescription("Planting " + cropSpec + ".");
+			printDescription(SEEDING + " " + cropSpec + ".");
 				
 			addExperience(workTime);
 		}
@@ -426,7 +427,7 @@ public class TendGreenhouse extends Task {
 			}
 		}
 			
-		printDescription(Msg.getString(GROW_DETAIL) + " " + goal.toLowerCase());
+		printDescription(GROW_DETAIL + " " + goal.toLowerCase());
 
 		createExperienceFromSkill(time);
 
