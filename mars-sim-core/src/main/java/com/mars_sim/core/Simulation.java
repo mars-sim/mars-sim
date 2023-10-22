@@ -1445,6 +1445,8 @@ public class Simulation implements ClockListener, Serializable {
 			// Refresh all Data loggers; this can be refactored later to a Manager class
 			DataLogger.changeTime(pulse.getMasterClock().getMarsTime());
 			
+			// Will call each nation's timePassing(pulse) once per pulse
+			
 			lunarWorld.timePassing(pulse);
 			
 			lunarColonyManager.timePassing(pulse);

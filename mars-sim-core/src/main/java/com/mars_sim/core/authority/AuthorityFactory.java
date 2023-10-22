@@ -49,6 +49,11 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 	
 	private Map<String, MissionAgenda> agendas;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param governanceDoc
+	 */
 	public AuthorityFactory(Document governanceDoc) {
 		super("authority");
 		

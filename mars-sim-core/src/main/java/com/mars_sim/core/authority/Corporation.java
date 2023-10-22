@@ -16,7 +16,12 @@ public class Corporation extends Organization {
 
 	public static final SimLogger logger = SimLogger.getLogger(Corporation.class.getName());
 
-	
+	/**
+	 * Constructor.
+	 * 
+	 * @param acronym
+	 * @param fullName
+	 */
 	Corporation(String acronym, String fullName) {
 		super(acronym, fullName);
 	}

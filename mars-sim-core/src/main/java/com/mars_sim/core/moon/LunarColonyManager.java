@@ -28,9 +28,15 @@ public class LunarColonyManager implements Serializable, Temporal {
 
 	private static AuthorityFactory raFactory = SimulationConfig.instance().getReportingAuthorityFactory();
 	
+	/**
+	 * Constructor.
+	 */
 	public LunarColonyManager() {	
 	}
 	
+	/**
+	 * Adds a set of colonies. (Temporary only).
+	 */
 	public void addColonies() {
 		
 		Colony colony0 = new Colony(colonies.size(), "Shackleton", raFactory.getItem("NASA"), new Coordinates("89.9 S", "0 E"));

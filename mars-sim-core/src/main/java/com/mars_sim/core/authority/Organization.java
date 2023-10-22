@@ -29,6 +29,12 @@ public abstract class Organization implements Serializable, Temporal {
 	
 	private Nation leadNation;
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param acronym
+	 * @param fullName
+	 */
 	Organization(String acronym, String fullName) {
 		this.acronym = acronym;
 		this.fullName = fullName;

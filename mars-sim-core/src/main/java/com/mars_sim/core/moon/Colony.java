@@ -110,7 +110,7 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	/**
 	 * Gets the authority.
 	 */
-	public Authority getReportingAuthority() {
+	public Authority getAuthority() {
 		return sponsor;
 	}
 

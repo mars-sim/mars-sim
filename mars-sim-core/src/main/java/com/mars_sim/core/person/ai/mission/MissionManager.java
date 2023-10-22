@@ -229,8 +229,8 @@ public class MissionManager implements Serializable {
 														metaMission.getType().name()));
 					baseProb.addModifier("settlementratio", settlementRatio);
 
-					logger.info(person, "Mission '" + metaMission.getType().getName() 
-							+ "' score: " + baseProb.getOutput());
+					logger.info(person, metaMission.getType().getName() 
+							+ "   " + baseProb.getOutput());
 					if (baseProb.getScore() > 0) {
 						missionProbCache.add(new MissionRating(metaMission, baseProb));
 						totalProbCache += baseProb.getScore();

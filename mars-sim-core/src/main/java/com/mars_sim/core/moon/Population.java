@@ -30,15 +30,11 @@ public class Population implements Serializable, Temporal {
 	private double numTourists;
 	
 	private double numResidents;
-	
 	private double numResearchers;
-	
 	private double numBeds;
 	
 	private double growthRateTourists;
-	
 	private double growthRateResidents;
-	
 	private double growthRateResearchers;
 	
 	private double growthRateBeds;
@@ -59,8 +55,14 @@ public class Population implements Serializable, Temporal {
 		numTourists = RandomUtil.getRandomInt(0, 3);
 		numResidents = RandomUtil.getRandomInt(10, 20);
 		numResearchers = RandomUtil.getRandomInt(3, 6);
-		numBeds = RandomUtil.getRandomInt((int)(numTourists + numResidents + numResearchers), INITIAL);
+			
+		int totPop = getTotalPopulation();
+		numBeds = RandomUtil.getRandomInt(totPop, INITIAL);
 	
+//		System.out.println("Colony: " + colony.getName() 
+//				+ "   Tot Pop: " + totPop 
+//				+ "   Quarters: " + numBeds);
+		
 		for (int i = 0; i < numResearchers; i++) {
 			colonists.add(new Researcher(colony.getName() + " R" + i, colony.getId()));
 		}
@@ -118,22 +120,27 @@ public class Population implements Serializable, Temporal {
 			
 			numBeds += growthRateBeds;
 			
-			int totPop = getTotalPopulation();
-			
-			if ((int)numBeds < totPop)
-				numBeds = totPop;
+//			int totPop = getTotalPopulation();
+//			
+//			if ((int)numBeds < totPop)
+//				numBeds = totPop;
 
-			while (numTourists + numResidents + numResearchers < numBeds + 1) {
+			// Checks if there is enough beds. 
+			// If not, slow the growth rate in one type of pop
+			if (numTourists + numResidents + numResearchers < numBeds + 1) {
 				
 				int rand = RandomUtil.getRandomInt(0, 10);
 				if (rand == 0) {
 					growthRateResidents -= 0.2;
+					numResidents += growthRateResidents;
 				}
 				else if ((rand == 1 || rand == 2)) {
 					growthRateResearchers -= 0.2;
+					numResearchers += growthRateResearchers;
 				}
 				else {
 					growthRateTourists -= 0.2;
+					numTourists += growthRateTourists;
 				}
 			}
 					
@@ -159,6 +166,10 @@ public class Population implements Serializable, Temporal {
 		Colonist c = list.get(rand);
 		
 		colonists.remove(c);
+		
+		String countryName = colony.getAuthority().getOneCountry();
+		System.out.println("Colony: " + colony.getName() 
+						+ "  Country: " + countryName);
 		
 		colony.getNation().addColonist(c);
 		

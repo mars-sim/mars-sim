@@ -16,7 +16,12 @@ public class Agency extends Organization {
 
 	public static final SimLogger logger = SimLogger.getLogger(Agency.class.getName());
 
-	
+	/**
+	 * Constructor.
+	 * 
+	 * @param acronym
+	 * @param fullName
+	 */
 	Agency(String acronym, String fullName) {
 		super(acronym, fullName);
 	}

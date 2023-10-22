@@ -367,17 +367,17 @@ public class CommanderWindow extends ToolWindow {
 	
 				labelGrid.addRow("Base Name", name);
 				
-				String sponsorName = c.getReportingAuthority().getName();
+				String sponsorName = c.getAuthority().getName();
 				labelGrid.addRow("Corporation/Agency", sponsorName);
 				
 				labelGrid.addRow("Coordinates", c.getCoordinates().getFormattedString());
 				
-				List<String> list = c.getReportingAuthority().getCountries();
+				List<String> list = c.getAuthority().getCountries();
 				
 				String countryCode = "";
 				String countryName = "Multi-Nationals";
 				if (list.size() == 1) {
-					countryName = c.getReportingAuthority().getCountries().get(0);
+					countryName = c.getAuthority().getCountries().get(0);
 					countryCode = FlagString.getEmoji(countryName);
 				}
 				
@@ -434,7 +434,10 @@ public class CommanderWindow extends ToolWindow {
 			System.out.println("colonyList is null.");
 	}
 	
-	private void updateLunar() {
+	/**
+	 * Updates the lunar colony panel.
+	 */
+	private void updateLunarPanel() {
 		
 		if (colonyList != null && !colonyList.isEmpty()) {
 			
@@ -443,7 +446,7 @@ public class CommanderWindow extends ToolWindow {
 				int newBed = c.getPopulation().getNumBed();
 				double newBedRate = c.getPopulation().getGrowthNumBed();
 				if (bedCache != newBed
-					&& bedRateCache != newBedRate) {
+					 || bedRateCache != newBedRate) {
 					bedCache = newBed;
 					bedRateCache = newBedRate;
 					String bedRateCacheString = newBed + " (" + Math.round(newBedRate * 10.0)/10.0 + ")";
@@ -453,7 +456,7 @@ public class CommanderWindow extends ToolWindow {
 				int newPop = c.getPopulation().getTotalPopulation();
 				double newPopRate = c.getPopulation().getGrowthTotalPopulation();
 				if (popCache != newPop
-					&& popRateCache != newPopRate) {
+					 || popRateCache != newPopRate) {
 					popCache = newPop;
 					popRateCache = newPopRate;
 					String popRateCacheString = newPop + " (" + Math.round(newPopRate * 10.0)/10.0 + ")";
@@ -463,7 +466,7 @@ public class CommanderWindow extends ToolWindow {
 				int newTourist = c.getPopulation().getNumTourists();
 				double newTouristRate = c.getPopulation().getGrowthTourists();
 				if (touristCache != newTourist
-					&& touristRateCache != newTouristRate) {
+					 || touristRateCache != newTouristRate) {
 					touristCache = newTourist;
 					touristRateCache = newTouristRate;
 					String touristRateCacheString = newTourist + " (" + Math.round(newTouristRate * 10.0)/10.0 + ")";
@@ -473,7 +476,7 @@ public class CommanderWindow extends ToolWindow {
 				int newResident = c.getPopulation().getNumResidents();
 				double newResidentRate = c.getPopulation().getGrowthResidents();
 				if (residentCache != newResident
-					&& residentRateCache != newResidentRate) {
+					 || residentRateCache != newResidentRate) {
 					residentCache = newResident;
 					residentRateCache = newResidentRate;
 					String residentRateCacheString = newResident + " (" + Math.round(newResidentRate * 10.0)/10.0 + ")";
@@ -483,7 +486,7 @@ public class CommanderWindow extends ToolWindow {
 				int newResearcher = c.getPopulation().getNumResearchers();
 				double newResearcherRate = c.getPopulation().getGrowthResearchers();
 				if (researcherCache != newResearcher
-					&& researcherRateCache != newResearcherRate) {
+					 || researcherRateCache != newResearcherRate) {
 					researcherCache = newResearcher;
 					researcherRateCache = newResearcherRate;
 					String researcherRateCacheString = newResearcher + " (" + Math.round(newResearcherRate * 10.0)/10.0 + ")";
@@ -1061,7 +1064,7 @@ public class CommanderWindow extends ToolWindow {
 		listUpdate();
 		
 		// Update lunar colonies
-		updateLunar();
+		updateLunarPanel();
 	}
 
 	private void disableAllCheckedSettlement() {

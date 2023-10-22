@@ -48,7 +48,19 @@ implements UserConfigurable, Serializable {
 
 	private List<String> vehicleNames;
 
- 
+	/**
+	 * Constructor.
+	 * 
+	 * @param acronym
+	 * @param fullName
+	 * @param isCorporation
+	 * @param predefined
+	 * @param genderRatio
+	 * @param agenda
+	 * @param countries
+	 * @param names
+	 * @param vehicleNames
+	 */
 	public Authority(String acronym, String fullName, 
 			boolean isCorporation, boolean predefined, 
 			double genderRatio,
