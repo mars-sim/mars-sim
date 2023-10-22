@@ -10,9 +10,11 @@ import java.util.Iterator;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.RadiationStatus;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -200,4 +202,17 @@ public class TaskProbabilityUtil {
 		
 		return 1D;
 	}
+
+    /**
+     * Get the Sciencetype associated with this Person's job
+     * @param person Person being assessed
+     * @return Science Type from the associated job; maybe null.
+     */
+    public static ScienceType getPersonJobScience(Person person) {
+    	JobType job = person.getMind().getJob();
+        if (job == null) {
+    		return null;
+    	}
+    	return ScienceType.getJobScience(job);
+    }
 }

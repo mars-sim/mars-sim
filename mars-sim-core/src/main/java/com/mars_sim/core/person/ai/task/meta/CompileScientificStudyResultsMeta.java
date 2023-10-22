@@ -6,9 +6,9 @@
  */
 package com.mars_sim.core.person.ai.task.meta;
 
-import java.util.Iterator;
+import java.util.List;
 
-import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -16,12 +16,13 @@ import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.CompileScientificStudyResults;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskJob;
+import com.mars_sim.core.person.ai.task.util.TaskProbabilityUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
 
 /**
@@ -33,8 +34,6 @@ public class CompileScientificStudyResultsMeta extends FactoryMetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.compileScientificStudyResults"); //$NON-NLS-1$
 
-    /** default logger. */
-    private static SimLogger logger = SimLogger.getLogger(CompileScientificStudyResultsMeta.class.getName());
 
     public CompileScientificStudyResultsMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -51,88 +50,61 @@ public class CompileScientificStudyResultsMeta extends FactoryMetaTask {
     }
 
     @Override
-    public double getProbability(Person person) {
-        double result = 0D;
+    public List<TaskJob> getTaskJobs(Person person) {
 
         // Probability affected by the person's stress and fatigue.
-        if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
-        	return 0;
+        if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
+            || !person.isInside()) {
+        	return EMPTY_TASKLIST;
         }
 
-        if (person.isInside()) {
 
-	        // Add probability for researcher's primary study (if any).
-            ScientificStudy primaryStudy = person.getStudy();
-	        if ((primaryStudy != null)
-        		&& ScientificStudy.PAPER_PHASE.equals(primaryStudy.getPhase())
-            	&& !primaryStudy.isPrimaryPaperCompleted()) {
-                try {
-                    double primaryResult = 50D;
+        // Does the researcher have a science associated to their job
+        ScienceType jobScience = TaskProbabilityUtil.getPersonJobScience(person);
 
-                    // If researcher's current job isn't related to study science, divide by two.
-                    JobType job = person.getMind().getJob();
-                    if (job != null) {
-                        //ScienceType jobScience = ScienceType.getJobScience(job);
-                        if (primaryStudy.getScience() != ScienceType.getJobScience(job))
-                        	primaryResult /= 2D;
-                    }
+        // Add probability for researcher's primary study (if any).
+        double base = 0D;
+        ScientificStudy primaryStudy = person.getStudy();
+        if ((primaryStudy != null)
+            && ScientificStudy.PAPER_PHASE.equals(primaryStudy.getPhase())
+            && !primaryStudy.isPrimaryPaperCompleted()) {
+            double primaryResult = 50D;
 
-                    result += primaryResult;
-                }
-                catch (Exception e) {
-                    logger.severe(person, "getProbability(): ", e);
-                }
-	        }
+            // If researcher's current job isn't related to study science, divide by two.
+            if ((jobScience != null) && (primaryStudy.getScience() != jobScience)) {
+                primaryResult /= 2D;
+            }
 
-	        // Add probability for each study researcher is collaborating on.
-	        Iterator<ScientificStudy> i = person.getCollabStudies().iterator();
-	        while (i.hasNext()) {
-	            ScientificStudy collabStudy = i.next();
-	            if (ScientificStudy.PAPER_PHASE.equals(collabStudy.getPhase())
-	            		&& !collabStudy.isCollaborativePaperCompleted(person)) {
-                    try {
-                        ScienceType collabScience = collabStudy.getContribution(person);
-
-                        double collabResult = 25D;
-
-                        // If researcher's current job isn't related to study science, divide by two.
-                        JobType job = person.getMind().getJob();
-                        if (job != null) {
-                            ScienceType jobScience = ScienceType.getJobScience(job);
-                            if (collabScience != jobScience)
-                            	collabResult /= 2D;
-                        }
-
-                        result += collabResult;
-                    }
-                    catch (Exception e) {
-                        logger.severe(person, "getProbability(): ", e);
-                    }
-                }
-	        }
-
-	        if (result > 0) {
-	            if (person.isInVehicle()) {
-	    	        // Check if person is in a moving rover.
-	    	        if (Vehicle.inMovingRover(person)) {
-	    	        	result += 20;
-	    	        }
-	    	        else
-	    	        	result += 10;
-	            }
-	        }
-	        else
-	        	return 0;
-
-	        // Crowding modifier
-            Building b = BuildingManager.getAvailableBuilding(primaryStudy, person);
-            result *= getBuildingModifier(b, person);
-
-            result *= person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
-
-            result *= getPersonModifier(person);
+            base += primaryResult;
         }
 
-        return result;
+	    // Add probability for each study researcher is collaborating on.
+	    for(ScientificStudy collabStudy : person.getCollabStudies()) {
+            if (ScientificStudy.PAPER_PHASE.equals(collabStudy.getPhase())
+                    && !collabStudy.isCollaborativePaperCompleted(person)) {
+                ScienceType collabScience = collabStudy.getContribution(person);
+
+                double collabResult = 25D;
+
+                // If researcher's current job isn't related to study science, divide by two.
+                if ((jobScience != null) && (collabScience != jobScience)) {
+                    collabResult /= 2D;
+                }
+
+                base += collabResult;
+            }
+        }
+
+        if (base <= 0) {
+            return EMPTY_TASKLIST;
+        }
+
+	    RatingScore result = new RatingScore(base);
+        Building b = BuildingManager.getAvailableBuilding(primaryStudy, person);
+        result = assessBuildingSuitability(result, b, person);
+        result.addModifier(GOODS_MODIFIER, person.getAssociatedSettlement().getGoodsManager().getResearchFactor());
+        result = assessPersonSuitability(result, person);
+
+        return createTaskJobs(result);
     }
 }
