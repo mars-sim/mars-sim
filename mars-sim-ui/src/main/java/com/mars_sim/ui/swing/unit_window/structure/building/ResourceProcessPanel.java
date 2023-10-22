@@ -346,8 +346,8 @@ public class ResourceProcessPanel extends JPanel {
         for(Integer resource: process.getInputResources()) {
             if (!firstItem) 
                 result.append(SPACES);
-            double rate = process.getMaxInputRate(resource) * 1000D;
-            String rateString = StyleManager.DECIMAL_PLACES2.format(rate);
+            double fullRate = process.getBaseFullInputRate(resource) * 1000D;
+            String rateString = StyleManager.DECIMAL_PLACES2.format(fullRate);
 
             result.append(ResourceUtil.findAmountResource(resource).getName());
             if (process.isAmbientInputResource(resource)) {
@@ -363,8 +363,8 @@ public class ResourceProcessPanel extends JPanel {
         for(Integer resource : process.getOutputResources()) {
             if (!firstItem)
                 result.append(SPACES);
-            double rate = process.getMaxOutputRate(resource) * 1000D;
-            String rateString = StyleManager.DECIMAL_PLACES2.format(rate);
+            double fullRate = process.getBaseFullOutputRate(resource) * 1000D;
+            String rateString = StyleManager.DECIMAL_PLACES2.format(fullRate);
             result.append(ResourceUtil.findAmountResource(resource).getName())
                 .append(" @ ").append(rateString).append(KG_SOL).append(BR);
             firstItem = false;    

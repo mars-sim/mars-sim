@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * The represents the key attributes fo a process that convers a set of input Resources
+ * This class represents the key attributes to a process that converts a set of input Resources
  * into a set of output Resources.
  */
 public abstract class ProcessSpec implements Serializable {
@@ -23,8 +23,8 @@ public abstract class ProcessSpec implements Serializable {
 	private String name;
 	private double powerRequired;
 
-	private Map<Integer, Double> maxInputRates;
-	private Map<Integer, Double> maxOutputRates;
+	private Map<Integer, Double> baseInputRates;
+	private Map<Integer, Double> baseOutputRates;
 
 	// Cache some aggregate values
 	private Set<Integer> ambientResources;
@@ -37,10 +37,18 @@ public abstract class ProcessSpec implements Serializable {
 	private int workTime = 10;
 
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param name
+	 * @param powerRequired
+	 * @param processTime
+	 * @param workTime
+	 */
 	protected ProcessSpec(String name, double powerRequired, int processTime, int workTime) {
 		this.name = name;
-		this.maxInputRates = new HashMap<>();
-		this.maxOutputRates = new HashMap<>();
+		this.baseInputRates = new HashMap<>();
+		this.baseOutputRates = new HashMap<>();
 		this.wasteResources = new HashSet<>();
 		this.ambientResources = new HashSet<>();
 		this.powerRequired = powerRequired;
@@ -50,33 +58,33 @@ public abstract class ProcessSpec implements Serializable {
 
 	
 	/**
-	 * Adds a maximum input resource rate if it doesn't already exist.
+	 * Adds a base input resource rate.
 	 *
 	 * @param resource the amount resource.
-	 * @param rate     max input resource rate (kg/millisol)
+	 * @param rate     base input resource rate (kg/millisol)
 	 * @param ambient  is resource from available from surroundings? (air)
 	 */
-	public void addMaxInputResourceRate(Integer resource, double rate, boolean ambient) {
+	public void addBaseInputResourceRate(Integer resource, double rate, boolean ambient) {
 		if (ambient) {
 			ambientResources.add(resource);
 		} 
 
-		maxInputRates.put(resource, rate);
+		baseInputRates.put(resource, rate);
 	}
 
 	/**
-	 * Adds a maximum output resource rate if it doesn't already exist.
+	 * Adds a base output resource rate.
 	 *
 	 * @param resource the amount resource.
-	 * @param rate     max output resource rate (kg/millisol)
+	 * @param rate     base output resource rate (kg/millisol)
 	 * @param waste    is resource waste material not to be stored?
 	 */
-	public void addMaxOutputResourceRate(Integer resource, double rate, boolean waste) {
+	public void addBaseOutputResourceRate(Integer resource, double rate, boolean waste) {
 		if (waste) {
 			wasteResources.add(resource);
 		}
 
-		maxOutputRates.put(resource, rate);
+		baseOutputRates.put(resource, rate);
 	}
 
 	public String getName() {
@@ -84,20 +92,21 @@ public abstract class ProcessSpec implements Serializable {
 	}
 
 	/**
-	 * Get all inputs needed for this process
+	 * Gets a set of input resources for this process.
+	 * 
 	 * @return
 	 */
 	public Set<Integer> getInputResources() {
-		return maxInputRates.keySet();
+		return baseInputRates.keySet();
 	}
 
 	/**
-	 * Gets the max input resource rate for a given resource.
+	 * Gets the base input resource rate for a given resource.
 	 *
 	 * @return rate in kg/millisol.
 	 */
-	public double getMaxInputRate(Integer resource) {
-		return maxInputRates.get(resource);
+	public double getBaseInputRate(Integer resource) {
+		return baseInputRates.get(resource);
 	}
 
 	/**
@@ -111,21 +120,21 @@ public abstract class ProcessSpec implements Serializable {
 	}
 
 	/**
-	 * Gets all output from this process.
+	 * Gets a set of output resources from this process.
 	 * 
 	 * @return
 	 */
 	public Set<Integer> getOutputResources() {
-		return maxOutputRates.keySet();
+		return baseOutputRates.keySet();
 	}
 	
 	/**
-	 * Gets the max output resource rate for a given resource.
+	 * Gets the base output resource rate for a given resource.
 	 *
 	 * @return rate in kg/millisol.
 	 */
-	public double getMaxOutputRate(Integer resource) {
-		return maxOutputRates.get(resource);
+	public double getBaseOutputRate(Integer resource) {
+		return baseOutputRates.get(resource);
 	}
 
 	/**
@@ -138,12 +147,18 @@ public abstract class ProcessSpec implements Serializable {
 		return wasteResources.contains(resource);
 	}
 
+	/**
+	 * Gets the power required for this process.
+	 * 
+	 * @return
+	 */
 	public double getPowerRequired() {
 		return powerRequired;
 	}
 
 	/**
-	 * TIme to complete one process
+	 * Gets the time to complete this process.
+	 * 
 	 * @return Number of msol
 	 */
 	public int getProcessTime() {
@@ -151,10 +166,25 @@ public abstract class ProcessSpec implements Serializable {
 	}
 
 	/**
-	 * Time needed to work on this process
+	 * Gets the work time needed on this process.
+	 * 
 	 * @return
 	 */
 	public int getWorkTime() {
 		return workTime;
+	}
+	
+	public void destroy() {
+		baseInputRates.clear();
+		baseOutputRates.clear();
+
+		baseInputRates = null;
+		baseOutputRates = null;
+		
+		ambientResources.clear();
+		wasteResources.clear();
+		
+		ambientResources = null;
+		wasteResources = null;
 	}
 }

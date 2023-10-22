@@ -171,14 +171,23 @@ public class ResourceProcess implements Serializable {
 	}
 	
 	/**
-	 * Gets the max input resource rate for a given resource.
+	 * Gets the base single input resource rate for a given resource.
 	 *
 	 * @return rate in kg/millisol.
 	 */
-	public double getMaxInputRate(Integer resource) {
-		return engine.getMaxInputRate(resource);
+	public double getBaseSingleInputRate(Integer resource) {
+		return engine.getBaseSingleInputRate(resource);
 	}
 
+	/**
+	 * Gets the base full input resource rate for a given resource.
+	 *
+	 * @return rate in kg/millisol.
+	 */
+	public double getBaseFullInputRate(Integer resource) {
+		return engine.getBaseFullInputRate(resource);
+	}
+	
 	/**
 	 * Checks if resource is an ambient input.
 	 *
@@ -203,14 +212,23 @@ public class ResourceProcess implements Serializable {
 	}
 
 	/**
-	 * Gets the max output resource rate for a given resource.
+	 * Gets the base single output resource rate for a given resource.
 	 *
 	 * @return rate in kg/millisol.
 	 */
-	public double getMaxOutputRate(Integer resource) {
-		return engine.getMaxOutputRate(resource);
+	public double getBaseSingleOutputRate(Integer resource) {
+		return engine.getBaseSingleOutputRate(resource);
 	}
 
+	/**
+	 * Gets the base full output resource rate for a given resource.
+	 *
+	 * @return rate in kg/millisol.
+	 */
+	public double getBaseFullOutputRate(Integer resource) {
+		return engine.getBaseFullOutputRate(resource);
+	}
+	
 	/**
 	 * Checks if resource is a waste output.
 	 *
@@ -254,13 +272,13 @@ public class ResourceProcess implements Serializable {
 				// Input resources from inventory.
 				for(Integer resource : engine.getInputResources()) {				
 					
-					double maxRate = engine.getMaxInputRate(resource);
-					double resourceRate = maxRate * level;
+					double fullRate = engine.getBaseFullInputRate(resource);
+					double resourceRate = fullRate * level;
 					double required = resourceRate * accumulatedTime;
 					double stored = settlement.getAmountResourceStored(resource);
 					
 					// Get resource bottleneck
-					double desiredResourceAmount = maxRate * time;
+					double desiredResourceAmount = fullRate * time;
 					double proportionAvailable = 1D;
 					if (desiredResourceAmount > 0D)
 						proportionAvailable = stored / desiredResourceAmount;
@@ -298,7 +316,7 @@ public class ResourceProcess implements Serializable {
 				
 				// Output resources to inventory.
 				for(Integer resource : engine.getOutputResources()) {
-					double maxRate = engine.getMaxOutputRate(resource);
+					double maxRate = engine.getBaseFullOutputRate(resource);
 					double resourceRate = maxRate * level;
 					double required = resourceRate * accumulatedTime;
 					double remainingCap = settlement.getAmountResourceRemainingCapacity(resource);
@@ -383,14 +401,6 @@ public class ResourceProcess implements Serializable {
 		return timeLimit;
 	}
 
-	/**
-	 * Reloads instances after loading from a saved sim.
-	 *
-	 * @param masterClock
-	 */
-	public static void initializeInstances(MasterClock masterClock) {
-		clock = masterClock;
-	}
 
 	/**
 	 * Resets the toggle time from the current baseline time.
@@ -497,7 +507,7 @@ public class ResourceProcess implements Serializable {
 
 			if (input) {
 
-				double rate = getMaxInputRate(resource) / getNumModules() * 1000;
+				double rate = getBaseSingleInputRate(resource) * 1000;
 				// Limit the vp so as to favor the production of output resources
 				double modVp = Math.max(.01, Math.min(20, vp / 10));
 				// The original value without being affected by vp and supply
@@ -522,7 +532,7 @@ public class ResourceProcess implements Serializable {
 				if (remain == 0.0)
 					return 0;
 
-				double rate = getMaxOutputRate(resource) / getNumModules() * 1000;
+				double rate = getBaseSingleOutputRate(resource) * 1000;
 
 				// For output value
 				if (rate > remain) {
@@ -543,5 +553,19 @@ public class ResourceProcess implements Serializable {
 		}
 
 		return (score - benchmarkValue);
+	}
+	
+
+	/**
+	 * Reloads instances after loading from a saved sim.
+	 *
+	 * @param masterClock
+	 */
+	public static void initializeInstances(MasterClock masterClock) {
+		clock = masterClock;
+	}
+	
+	public void destroy() {
+		engine = null;
 	}
 }

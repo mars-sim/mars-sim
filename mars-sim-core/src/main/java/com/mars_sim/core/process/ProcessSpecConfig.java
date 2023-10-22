@@ -82,7 +82,7 @@ public abstract class ProcessSpecConfig<T extends ProcessSpec> implements Serial
 			double rate = Double.parseDouble(inputElement.getAttributeValue(RATE)) / 1000.0;
 			boolean ambient = ConfigHelper.getOptionalAttributeBool(inputElement, AMBIENT, false);
 			
-			process.addMaxInputResourceRate(id, rate, ambient);
+			process.addBaseInputResourceRate(id, rate, ambient);
 		}
 
 		// Get output resources.
@@ -94,7 +94,7 @@ public abstract class ProcessSpecConfig<T extends ProcessSpec> implements Serial
 			double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000.0;
 			boolean waste = ConfigHelper.getOptionalAttributeBool(outputElement, WASTE, false);
 
-			process.addMaxOutputResourceRate(id, rate, waste);
+			process.addBaseOutputResourceRate(id, rate, waste);
 		}
 
 		return process;

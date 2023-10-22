@@ -213,7 +213,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 			List<ResourceProcess> processes = rp.getProcesses();
 			for (ResourceProcess p : processes) {
 				if (p.isProcessRunning())
-					output += p.getMaxOutputRate(id);
+					output += p.getBaseFullOutputRate(id);
 			}
 		}
 		// convert from 'per millisol' to 'per sol'
@@ -227,7 +227,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		for (Building b : settlement.getBuildingManager().getBuildings(FunctionType.WASTE_PROCESSING)) {
 			for (ResourceProcess p : b.getWasteProcessing().getProcesses()) {
 				if (p.isProcessRunning())
-					output2 += p.getMaxOutputRate(id);
+					output2 += p.getBaseFullOutputRate(id);
 			}
 		}
 		// convert from 'per millisol' to 'per sol'

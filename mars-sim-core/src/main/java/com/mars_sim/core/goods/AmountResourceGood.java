@@ -657,43 +657,34 @@ class AmountResourceGood extends Good {
 	 * @return demand (kg)
 	 */
 	private double getResourceProcessDemand(GoodsManager owner, Settlement settlement, ResourceProcess process) {
-//		double demand = 0D;
+
 		int resource = getID();
 
 		Set<Integer> inputResources = process.getInputResources();
 		Set<Integer> outputResources = process.getOutputResources();
 
-//		For instance,		
-//		<process name="Selective Partial Oxidation of Methane to Methanol" power-required="0.05" >
-//		<input resource="methane" rate="3.2"  />
-//		<input resource="oxygen" rate="3.2"  />
-//		
-//		<output resource="methanol" rate="5.888"  />
-//		<output resource="methane" rate="0.512"  />
+		/*
+		For instance,		
+		<process name="Selective Partial Oxidation of Methane to Methanol" power-required="0.05" >
+		<input resource="methane" rate="3.2"  />
+		<input resource="oxygen" rate="3.2"  />
+		
+		<output resource="methanol" rate="5.888"  />
+		<output resource="methane" rate="0.512"  />
+		*/
 		
 		if (inputResources.contains(resource) && !process.isAmbientInputResource(resource)) {
 			double outputValue = 0D;
 			for (Integer output : outputResources) {
-				double outputRate = process.getMaxOutputRate(output);
+				double singleOutputRate = process.getBaseSingleOutputRate(output);
 				if (!process.isWasteOutputResource(resource)) {
-					outputValue += (owner.getDemandValue(GoodsUtil.getGood(output)) * outputRate);
+					outputValue += (owner.getDemandValue(GoodsUtil.getGood(output)) * singleOutputRate);
 				}
 			}
 
-			double inputRate = process.getMaxInputRate(resource);
+			double singleInputRate = process.getBaseSingleInputRate(resource);
 
-			// Determine value of required process power.
-//			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsTime.HOURS_PER_MILLISOL;
-//			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
-
-			return outputValue / inputRate; // * RESOURCE_PROCESSING_INPUT_FACTOR;
-
-			
-//			if (net > 0D) {
-//				double demandMillisol = resourceInputRate;
-//				double demandSol = demandMillisol * 1000D;
-//				demand = demandSol;
-//			}
+			return outputValue / singleInputRate; 
 		}
 
 		return 0;

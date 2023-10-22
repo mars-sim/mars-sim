@@ -16,9 +16,17 @@ public class ResourceProcessSpec extends ProcessSpec {
 
 	private static final long serialVersionUID = 1L;
 
-
 	private boolean defaultOn;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param name
+	 * @param powerRequired
+	 * @param processTime
+	 * @param workTime
+	 * @param defaultOn
+	 */
 	public ResourceProcessSpec(String name, double powerRequired, int processTime, int workTime, boolean defaultOn) {
 		super(name, powerRequired, processTime, workTime);
 

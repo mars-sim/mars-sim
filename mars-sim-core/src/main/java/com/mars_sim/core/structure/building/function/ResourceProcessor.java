@@ -64,8 +64,8 @@ public abstract class ResourceProcessor extends Function {
 			double processValue = 0D;
 			for (Integer outResource : process.getOutputResources()) {
 				if (!process.isWasteOutputResource(outResource)) {
-					double rate = process.getMaxOutputRate(outResource);
-					processValue += settlement.getGoodsManager().getGoodValuePoint(outResource) * rate;
+					double fullRate = process.getBaseFullOutputRate(outResource);
+					processValue += settlement.getGoodsManager().getGoodValuePoint(outResource) * fullRate;
 				}
 			}
 
@@ -73,13 +73,13 @@ public abstract class ResourceProcessor extends Function {
 			// May try List.copyOf(process.getInputResources())
 			for (int inResource : process.getInputResources()) {
 				if (!process.isAmbientInputResource(inResource)) {
-					double rate = process.getMaxInputRate(inResource);
-					processValue -= settlement.getGoodsManager().getGoodValuePoint(inResource) * rate;
+					double fullRate = process.getBaseFullInputRate(inResource);
+					processValue -= settlement.getGoodsManager().getGoodValuePoint(inResource) * fullRate;
 
 					// Check inventory limit.
 					double inputSupply = settlement.getAmountResourceStored(inResource);
-					if (inputSupply < rate) {
-						double limit = inputSupply / rate;
+					if (inputSupply < fullRate) {
+						double limit = inputSupply / fullRate;
 						if (limit < inputInventoryLimit) {
 							inputInventoryLimit = limit;
 						}

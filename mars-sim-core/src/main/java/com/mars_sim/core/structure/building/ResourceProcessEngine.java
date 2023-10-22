@@ -39,8 +39,11 @@ public class ResourceProcessEngine implements Serializable {
         return processSpec.getInputResources();
     }
 
-    public double getMaxInputRate(Integer resource) {
-        return processSpec.getMaxInputRate(resource) * modules;
+    public double getBaseSingleInputRate(Integer resource) {
+        return processSpec.getBaseInputRate(resource);
+    }
+    public double getBaseFullInputRate(Integer resource) {
+        return processSpec.getBaseInputRate(resource) * modules;
     }
 
     public boolean isAmbientInputResource(Integer resource) {
@@ -51,10 +54,14 @@ public class ResourceProcessEngine implements Serializable {
         return processSpec.getOutputResources();
     }
 
-    public double getMaxOutputRate(Integer resource) {
-        return processSpec.getMaxOutputRate(resource) * modules;
+    public double getBaseSingleOutputRate(Integer resource) {
+        return processSpec.getBaseOutputRate(resource);
     }
 
+    public double getBaseFullOutputRate(Integer resource) {
+        return processSpec.getBaseOutputRate(resource) * modules;
+    }
+    
     public boolean isWasteOutputResource(Integer resource) {
         return processSpec.isWasteOutputResource(resource);
     }
