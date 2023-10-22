@@ -24,7 +24,6 @@ import com.mars_sim.mapdata.location.LocalPosition;
 
 public class TestContainment extends AbstractMarsSimUnitTest {
 
-	
 	private VehicleGarage garage;
 	private Settlement settlement;
 	private MarsSurface surface;
@@ -45,7 +44,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		assertEquals("Top container", topContainer, source.getTopContainerUnit());
 	}
 
-	private static void assertInsideSettllement(String msg, Unit source, Settlement base) {
+	private static void assertInsideSettlement(String msg, Unit source, Settlement base) {
 		assertEquals(msg + ": Location state type", LocationStateType.INSIDE_SETTLEMENT, source.getLocationStateType());
 		assertEquals(msg + ": Settlement", base, source.getSettlement());
 		
@@ -103,7 +102,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	}
 	
 	private static void assertInBuilding(String msg, Person source, Building base, Settlement home) {
-		assertInsideSettllement(msg, source, home);
+		assertInsideSettlement(msg, source, home);
 		assertEquals(msg + ": Building", base, source.getBuildingLocation());
 	}
 
@@ -142,8 +141,8 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		assertEquals(msg + ": Top container", vehicle.getSettlement(), source.getTopContainerUnit());
 	}
 	
-	private void assertOnSurface(String msg, Unit source) {
-		assertEquals(msg + ": Location state type", LocationStateType.MARS_SURFACE, source.getLocationStateType());
+	private void assertWithinSettlementVicinity(String msg, Unit source) {
+		assertEquals(msg + ": Location state type", LocationStateType.WITHIN_SETTLEMENT_VICINITY, source.getLocationStateType());
 		
 		assertFalse(msg + ": InSettlement", source.isInSettlement());
 		assertNull(msg + ": Settlement", source.getSettlement());
@@ -163,7 +162,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		Person person = new Person("Worker One", settlement);
 		unitManager.addUnit(person);
 
-		assertInsideSettllement("Initial person", person, settlement);
+		assertInsideSettlement("Initial person", person, settlement);
 		
 		person.setCurrentBuilding(garage.getBuilding());
 		
@@ -201,9 +200,9 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	public void testVehicleOnSurface() throws Exception {
 		Vehicle vehicle = buildRover(settlement, "Garage Rover", new LocalPosition(1,1));
 
-		vehicle.transfer(surface);
+		assertTrue("Transfer to Mars surface but still within settlement vicinity", vehicle.transfer(surface));
 
-		assertOnSurface("After transfer from Settlement", vehicle);
+		assertWithinSettlementVicinity("After transfer from Settlement", vehicle);
 	}
 
 	/*
@@ -213,13 +212,13 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 
 		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement);
 		
-		assertInsideSettllement("Initial equipment", bag, settlement);
+		assertInsideSettlement("Initial equipment", bag, settlement);
 		
-		assertTrue("Transfer to surface", bag.transfer(surface));
-		assertOnSurface("On surface", bag);
+		assertTrue("Transfer to Mars surface but still within settlement vicinity", bag.transfer(surface));
+		assertWithinSettlementVicinity("in a settlement vicinity", bag);
 		
 		assertTrue("Transfer to settlement", bag.transfer(settlement));
-		assertInsideSettllement("After return", bag, settlement);
+		assertInsideSettlement("After return", bag, settlement);
 
 	}
 	
@@ -230,7 +229,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 
 		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement);
 		
-		assertInsideSettllement("Initial equipment", bag, settlement);
+		assertInsideSettlement("Initial equipment", bag, settlement);
 		
 		Vehicle vehicle = buildRover(settlement, "Garage Rover", new LocalPosition(1,1));
 		
@@ -241,7 +240,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		assertInVehicle("In vehicle", bag, vehicle);
 		
 		assertTrue("Transfer bag from vehicle back to settlement", bag.transfer(settlement));
-		assertInsideSettllement("After return", bag, settlement);
+		assertInsideSettlement("After return", bag, settlement);
 
 	}
 
@@ -253,7 +252,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 
 		Person person = buildPerson("Test Person", settlement);
 		
-		assertInsideSettllement("Initial Person", person, settlement);
+		assertInsideSettlement("Initial Person", person, settlement);
 		
 		Rover vehicle = buildRover(settlement, getName(), new LocalPosition(1,1));
         
@@ -268,7 +267,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		// Vehicle going into a garage
 		settlement.getBuildingManager().addToGarageBuilding(vehicle);
 		assertTrue("Vehicle has entered a garage", vehicle.isInAGarage());
-		assertInsideSettllement("Vehicle still in a settlement", vehicle, settlement);
+		assertInsideSettlement("Vehicle still in a settlement", vehicle, settlement);
 
 		assertEquals("vehicle location state type is INSIDE_SETTLEMENT", LocationStateType.INSIDE_SETTLEMENT, vehicle.getLocationStateType());
 		assertEquals("Person's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, person.getLocationStateType());
@@ -286,7 +285,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		assertTrue("Person in crew", vehicle.getCrew().contains(person));
 		
 		assertTrue("Transfer person from vehicle back to settlement", person.transfer(settlement));
-		assertInsideSettllement("After return", person, settlement);
+		assertInsideSettlement("After return", person, settlement);
 
 	}
 

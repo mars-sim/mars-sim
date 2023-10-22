@@ -2131,9 +2131,12 @@ public abstract class Vehicle extends Unit
 	 */
 	public boolean setContainerUnit(Unit newContainer) {
 		if (newContainer != null) {
-			if (newContainer.equals(getContainerUnit())) {
+			Unit cu = getContainerUnit();
+			
+			if (newContainer.equals(cu)) {
 				return false;
 			}
+
 			// 1. Set Coordinates
 			if (newContainer.getUnitType() == UnitType.MARS) {
 				// Since it's on the surface of Mars,
@@ -2144,21 +2147,24 @@ public abstract class Vehicle extends Unit
 //			else {
 //				setCoordinates(newContainer.getCoordinates());
 //			}
+			
 			// 2. Set new LocationStateType
 			// 2a. If the previous cu is a settlement
 			//     and this vehicle's new cu is mars surface,
 			//     then location state is within settlement vicinity
-			if (getContainerUnit() != null 
-				&& (getContainerUnit().getUnitType() == UnitType.SETTLEMENT
-				|| getContainerUnit().getUnitType() == UnitType.BUILDING)
+			if (cu != null 
+				&& (cu.getUnitType() == UnitType.SETTLEMENT
+				|| cu.getUnitType() == UnitType.BUILDING)
 					&& newContainer.getUnitType() == UnitType.MARS) {
 						currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 			}	
 			else {
 				updateVehicleState(newContainer);
 			}
+			
 			// 3. Set containerID
 			setContainerID(newContainer.getIdentifier());
+			
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 		}

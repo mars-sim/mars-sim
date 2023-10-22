@@ -1954,25 +1954,29 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 */
 	public boolean setContainerUnit(Unit newContainer) {
 		if (newContainer != null) {
-			if (newContainer.equals(getContainerUnit())) {
+			Unit cu = getContainerUnit();
+			
+			if (newContainer.equals(cu)) {
 				return false;
 			}
+			
 			// 1. Set Coordinates
 			if (newContainer.getUnitType() == UnitType.MARS) {
 				// Since it's on the surface of Mars,
 				// First set its initial location to its old parent's location as it's leaving its parent.
 				// Later it may move around and updates its coordinates by itself
-				setCoordinates(getContainerUnit().getCoordinates());
+				setCoordinates(cu.getCoordinates());
 			}
 			else {
 				setCoordinates(newContainer.getCoordinates());
 			}
+			
 			// 2. Set new LocationStateType
-			// 2a. If the previous cu is a settlement
-			//     and this person's new cu is mars surface,
-			//     then location state is within settlement vicinity
-			if (getContainerUnit() != null) { 
-				if (getContainerUnit().getUnitType() == UnitType.SETTLEMENT
+			if (cu != null) { 
+				// 2a. If the previous cu is a settlement
+				//     and this person's new cu is mars surface,
+				//     then location state is within settlement vicinity
+				if (cu.getUnitType() == UnitType.SETTLEMENT
 					&& newContainer.getUnitType() == UnitType.MARS) {
 						currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 				}	
@@ -1980,18 +1984,23 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 				//     and this vehicle is in within settlement vicinity
 				//     and this person's new cu is mars surface,
 				//     then location state is within settlement vicinity
-				else if (getContainerUnit().getUnitType() == UnitType.VEHICLE
-						&& getContainerUnit().isInSettlementVicinity()
+				else if (cu.getUnitType() == UnitType.VEHICLE
+						&& cu.isInSettlementVicinity()
 						&& newContainer.getUnitType() == UnitType.MARS) {
 							currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+				}
+				else {
+					updatePersonState(newContainer);
 				}
 			}
 			else {
 				updatePersonState(newContainer);
 			}
+			
 			// 3. Set containerID
-			// TODO: what to set for a deceased person ?
+			// Note: need to decide what to set for a deceased person
 			setContainerID(newContainer.getIdentifier());
+			
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 		}

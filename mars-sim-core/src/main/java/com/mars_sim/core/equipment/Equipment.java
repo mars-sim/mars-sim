@@ -345,25 +345,54 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 */
 	boolean setContainerUnit(Unit newContainer) {
 		if (newContainer != null) {
-			if (newContainer.equals(getContainerUnit())) {
+			Unit cu = getContainerUnit();
+			
+			if (newContainer.equals(cu)) {
 				return false;
 			}
+
 			// 1. Set Coordinates
 			if (newContainer.getUnitType() == UnitType.MARS) {
 				// Since it's on the surface of Mars,
 				// First set its initial location to its old parent's location as it's leaving its parent.
 				// Later it may move around and updates its coordinates by itself
-				setCoordinates(getContainerUnit().getCoordinates());
+				setCoordinates(cu.getCoordinates());
 			}
 			else {
 				// Null its coordinates since it's now slaved after its parent
 				setCoordinates(newContainer.getCoordinates());
 			}
+			
 			// 2. Set LocationStateType
-			updateEquipmentState(newContainer);
+			if (cu != null) { 
+				// 2a. If the previous cu is a settlement
+				//     and this person's new cu is mars surface,
+				//     then location state is within settlement vicinity
+				if (cu.getUnitType() == UnitType.SETTLEMENT
+					&& newContainer.getUnitType() == UnitType.MARS) {
+						currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+				}	
+				// 2b. If the previous cu is a vehicle
+				//     and this vehicle is in within settlement vicinity
+				//     and this person's new cu is mars surface,
+				//     then location state is within settlement vicinity
+				else if ((cu.getUnitType() == UnitType.VEHICLE
+						|| cu.getUnitType() == UnitType.PERSON)
+						&& cu.isInSettlementVicinity()
+						&& newContainer.getUnitType() == UnitType.MARS) {
+							currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+				}
+				else {
+					updateEquipmentState(newContainer);
+				}
+			}
+			else {
+				updateEquipmentState(newContainer);
+			}
+
 			// 3. Set containerID
-			// Q: what to set for a deceased person ?
 			setContainerID(newContainer.getIdentifier());
+			
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 		}
