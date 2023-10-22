@@ -251,7 +251,7 @@ public class AssistScientificStudyResearcher extends Task {
 		Collection<Person> people = new ConcurrentLinkedQueue<>();
 		Collection<Person> potentials = null;
 		if (person.isInSettlement()) {
-			potentials = person.getSettlement().getIndoorPeople();
+			potentials = person.getAssociatedSettlement().getIndoorPeople();
 		}
 		else if (person.isInVehicle()) {
 			Crewable rover = (Crewable) person.getVehicle();
