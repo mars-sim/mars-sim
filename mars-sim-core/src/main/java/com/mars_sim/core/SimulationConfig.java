@@ -94,7 +94,7 @@ public class SimulationConfig implements Serializable {
 	private final String CROP_FILE = "crops";
 	private final String LANDMARK_FILE = "landmarks";
 	private final String MINERAL_MAP_FILE = "minerals";
-	private final String RESPROCESS_FILE = "resourceprocess";
+	private final String RESPROCESS_FILE = "resource_process";
 	private final String BUILDING_FILE = "buildings";
 	private final String PART_FILE = "parts";
 	private final String PART_PACKAGE_FILE = "part_packages";
@@ -102,7 +102,7 @@ public class SimulationConfig implements Serializable {
 	private final String RESOURCE_FILE = "resources";
 	private final String MANUFACTURE_FILE = "manufacturing";
 	private final String CONSTRUCTION_FILE = "construction";
-	private final String FOODPRODUCTION_FILE = "foodProduction";
+	private final String FOODPRODUCTION_FILE = "food_production";
 	private final String MEAL_FILE = "meals";
 	private final String ROBOT_FILE = "robots";
 	private final String QUOTATION_FILE = "quotations";

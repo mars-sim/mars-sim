@@ -131,6 +131,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 		<inputs>
 			<resource name="pulp" amount="5" />
 			<resource name="bleaching chemical" amount=".05" />
+			<resource name="calcium sulfate" amount=".05" />
 		</inputs>
 		<outputs>
 			<resource name="paper" amount="1" />
@@ -147,6 +148,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 		<inputs>
 			<resource name="pulp" amount="50" />
 			<resource name="bleaching chemical" amount=".5" />
+			<resource name="calcium sulfate" amount=".5" />
 		</inputs>
 		<outputs>
 			<resource name="paper" amount="10" />

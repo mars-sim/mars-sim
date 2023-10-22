@@ -585,9 +585,11 @@
 			
 	<process name="Extract minerals from bassanite deposits" power-required="0.1" >
 		<input resource="bassanite" rate="50.0"  />
-		
-		<output resource="calcium sulfate" rate="45.0"  />
-		<output resource="brine water" rate="3.0"  />
+		<input resource="water" rate="5.0"  />
+				
+		<output resource="gypsum" rate="45.0"  />
+		<output resource="calcium sulfate" rate="3.0"  />
+		<output resource="brine water" rate="5.0"  />
 	</process>
 		
 	<process name="Extract minerals from sand" power-required="0.2" >
@@ -600,7 +602,7 @@
 		<input resource="sand" rate="44.5"  />					
 		<input resource="sodium carbonate" rate="2.5"  />
 
-		<output resource="carbon dioxide" rate="2.0" waste="true" />
+		<output resource="carbon dioxide" rate="0.5" waste="true" />
 		<output resource="aluminum oxide" rate="2.0"  />
 		<output resource="sodium oxide" rate="2.5"  />
 		<output resource="aluminum" rate="8.0"  />
@@ -738,14 +740,10 @@
 	
 	<process name="Mix sulfur concrete" power-required="0.2" >
 		<description>
-		Makes sulfur concrete using sulfur as the cement, with sand and regolith as aggregates.
-		
+		Makes sulfur concrete using sulfur as the cement, with sand and regolith as aggregates.	
 		The sulfur concrete making process involves heating sulfur to 240 C, over twice its melting point. 
-		
 		This liquid sulfur is mixed with the abundant Martian soil, then left to cool. 
-		
-		The sulfur and soil bind together to create solid concrete. 
-		
+		The sulfur and soil bind together to create solid concrete. 	
 		Cement and water, important compounds in normal concrete, are not part of sulfur concrete. 
 		
 		A mixture of 50 percent sulfur and 50 percent Martian soil with a particle size of 1 mm resulted 

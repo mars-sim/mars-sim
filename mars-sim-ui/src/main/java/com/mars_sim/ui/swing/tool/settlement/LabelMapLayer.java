@@ -80,14 +80,14 @@ implements SettlementMapLayer {
 	static final Color MALE_COLOR = new Color(154, 204, 255);
 	static final Color MALE_OUTLINE_COLOR = MALE_COLOR.darker();// Color.CYAN.darker();
 	static final Color MALE_SELECTED_COLOR = Color.CYAN; // MALE_COLOR;//.darker();
-	static final Color MALE_SELECTED_OUTLINE_COLOR = MALE_SELECTED_COLOR.brighter();
+	static final Color MALE_SELECTED_OUTLINE_COLOR = MALE_SELECTED_COLOR.darker();
 
 	
 	// 186, 129, 145 manila pink
 	static final Color ROBOT_COLOR = new Color(156, 126, 9); 
 	static final Color ROBOT_OUTLINE_COLOR = new Color(186, 129, 145).darker();
 	static final Color ROBOT_SELECTED_COLOR = ROBOT_COLOR.brighter();//.darker(); 
-	static final Color ROBOT_SELECTED_OUTLINE_COLOR = ROBOT_SELECTED_COLOR.brighter();
+	static final Color ROBOT_SELECTED_OUTLINE_COLOR = ROBOT_SELECTED_COLOR.darker();
 
 	// Data members
 	private SettlementMapPanel mapPanel;

@@ -1174,11 +1174,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
 				<!-- 5 processes for breaking down regolith -->		
-				<process-engine name="convert regolith to ores with sand" number-modules="10"/>
+				<process-engine name="convert regolith to ores with sand" number-modules="20"/>
 				<process-engine name="extract nitrogen compounds from regolith" number-modules="10"/>
-				<process-engine name="process regolith-B rich in poly-hydrated sulfate" number-modules="3"/> 
-				<process-engine name="process regolith-C rich in phyllo-silicate" number-modules="3"/>
-				<process-engine name="process regolith-D rich in basaltic" number-modules="3"/>
+				<process-engine name="process regolith-B rich in poly-hydrated sulfate" number-modules="10"/> 
+				<process-engine name="process regolith-C rich in phyllo-silicate" number-modules="10"/>
+				<process-engine name="process regolith-D rich in basaltic" number-modules="10"/>
 				
 				<!-- 10 processes for breaking down minerals -->
 				<process-engine name="do chalcopyrite smelting" number-modules="3"/>

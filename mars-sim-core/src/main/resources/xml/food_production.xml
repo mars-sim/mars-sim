@@ -652,7 +652,7 @@
 		<inputs>
 			<resource name="White Rice" amount="1.0" />
 			<resource name="Water" amount="3.0" />
-			<resource name="calcium sulfate" amount="3.0" />
+			<resource name="calcium sulfate" amount="0.05" />
 		</inputs>
 		<outputs>
 			<resource name="Water" amount="2.9" />

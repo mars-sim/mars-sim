@@ -28,6 +28,7 @@ import com.mars_sim.tools.Msg;
  * The SettlementTableModel that maintains a list of Settlement objects. It maps
  * key attributes of the Settlement into Columns.
  */
+@SuppressWarnings("serial")
 public class SettlementTableModel extends UnitTableModel<Settlement> {
 
 	// Column indexes
@@ -58,8 +59,9 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	
 	private static final int CONCRETE_COL = 20;
 	private static final int CEMENT_COL = 21;
+	private static final int LIME_COL = 22;
 	
-	private static final int COLUMNCOUNT = 22;
+	private static final int COLUMNCOUNT = 23;
 	private static final ColumnSpec[] COLUMNS;
 	private static final Map<Integer,Integer> RESOURCE_TO_COL;
 	private static final int[] COL_TO_RESOURCE;
@@ -108,7 +110,10 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		COL_TO_RESOURCE[CONCRETE_COL] = ResourceUtil.concreteID;	
 		COLUMNS[CEMENT_COL] = new ColumnSpec("Cement", Double.class);
 		COL_TO_RESOURCE[CEMENT_COL] = ResourceUtil.cementID;	
-
+		COLUMNS[LIME_COL] = new ColumnSpec("Lime", Double.class);
+		COL_TO_RESOURCE[LIME_COL] = ResourceUtil.limeID;
+		
+		
 		// Mapping from resource to the column
 		RESOURCE_TO_COL = new HashMap<>();
 		RESOURCE_TO_COL.put(ResourceUtil.oxygenID, OXYGEN_COL);
@@ -121,6 +126,8 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		RESOURCE_TO_COL.put(ResourceUtil.sandID, SAND_COL);
 		RESOURCE_TO_COL.put(ResourceUtil.concreteID, CONCRETE_COL);
 		RESOURCE_TO_COL.put(ResourceUtil.cementID, CEMENT_COL);
+		RESOURCE_TO_COL.put(ResourceUtil.limeID, LIME_COL);
+		
 		for (int i : ResourceUtil.REGOLITH_TYPES) {
 			RESOURCE_TO_COL.put(i, REGOLITHS_COL);
 		}
@@ -173,7 +180,8 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	}
 
 	/**
-	 * Set the settlement filter for the Robot table
+	 * Sets the settlement filter for the Robot table.
+	 * 
 	 * @param filter
 	 */
 	@Override
@@ -188,7 +196,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	}
 
 	/**
-	 * Return the value of a Cell
+	 * Returns the value of a Cell.
 	 *
 	 * @param rowIndex    Row index of the cell.
 	 * @param columnIndex Column index of the cell.
