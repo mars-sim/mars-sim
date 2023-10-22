@@ -21,7 +21,7 @@ assignees: ''
  - A clear and concise description of what you have actually seen.
 
 **Reproduction (optional)**
- - Steps to reproduce the problem
+ - Steps to reproduce the problem.
 
 **Screenshots**
  - If applicable, add screenshots to help explain your problem.
@@ -33,10 +33,10 @@ e.g. Include the followings :
  e. Text dump from console
  f. stack trace log statements
 
-**Specifications  (please complete the following information):**
- - OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04, etc.]
- - Java version : [e.g. Oracle Java 8u171, openjdk 1.8.0.171-8.b10 and openjfx 8 etc.]
- - mars-sim build version : [e.g. pre-3.4.0 build 6877, etc.]
+**Specifications**
+- OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04]
+- Java version : [e.g. Oracle JDK 17.0.6, AdoptOpenJDK 17.0.6, openjfx 17]
+- Major version and build : [e.g. 3.7.0 build 8814]
 
 **Additional context**
  - Add any other context about the problem here.
