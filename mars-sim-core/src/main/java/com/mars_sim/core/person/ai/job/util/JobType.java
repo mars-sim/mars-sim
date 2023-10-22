@@ -39,16 +39,6 @@ public enum JobType {
 
 	
 	/**
-	 * Those having experiences with configuring software.
-	 */
-	public static final Set<JobType> SOFTWARE =
-				Set.of(JobType.ASTRONOMER,
-						JobType.COMPUTER_SCIENTIST,
-						JobType.ENGINEER,
-						JobType.MATHEMATICIAN,	
-						JobType.PHYSICIST);
-	
-	/**
 	 * Those having an academic background.
 	 */
 	public static final Set<JobType> ACADEMICS =
