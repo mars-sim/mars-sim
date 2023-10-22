@@ -700,7 +700,7 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Get all resource processes at settlement.
+	 * Gets all resource processes at settlement.
 	 *
 	 * @return list of resource processes.
 	 */

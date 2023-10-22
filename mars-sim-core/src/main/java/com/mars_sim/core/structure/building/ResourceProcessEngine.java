@@ -11,7 +11,7 @@ import java.util.Set;
 
 /**
  * This class represents an instance of a ResourceProcessing engine that hosts a Resource process and has
- * a number of modules. The oinput, output and power of the processSpec is multiplied by the number of modules.
+ * a number of modules. The input, output and power of the processSpec is multiplied by the number of modules.
  * It is a shared configuration entity.
  */
 public class ResourceProcessEngine implements Serializable {

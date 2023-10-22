@@ -98,10 +98,10 @@ the first landing when humanity may shift into high gears with the effort of mak
 
 ## Mars Direct Mission Plan 
 
-mars-sim loosely follows the *Mars Direct Mission Plan by Robert Zubrin* and has crafted 7 basic
+mars-sim loosely follows the *Mars Direct Mission Plan* (by Robert Zubrin) and has crafted 7 basic
 settlement templates. In general, a 4-settler initial base is called a *Mars Direct Plan (MDP) Phase 1* base.
 An 8-settler base follows a *MDP Phase 2* template. A 12-settler base is *MDP Phase 3*. A 24-settler base
-is designated as *Alpha Base*, whereas a 36-settler base is called a *Hub Base. Besides, players may 
+is designated as *Alpha Base*, whereas a 36-settler base is called *Hub Base*. Besides, players may 
 build a *Trading Outpost* or a *Mining Depot* near sites with high mineral concentrations. 
 
 Each country of origin and sponsor has unique template that house various types of buildings. 
@@ -123,12 +123,16 @@ In terms of [economics](https://github.com/mars-sim/mars-sim/wiki/Economics) mod
 As there is no standard currency established on Mars yet, settlers barter trades with neighboring settlements
 by keeping track of the credits and deficit based on the VPs of the resources in exchange in each trading session.
 
-## Countries 
+## Countries and Sponsors
 
-It is an incredible undertaking in that 30 [countries](https://github.com/mars-sim/mars-sim/wiki/Countries) 
-are participating in this dream of making Mars as the second home for humanity. Altogether, there's a total of 9 
-possible space agencies to choose from as a sponsor to start a settlement. Notably, European Space Agency (ESA) 
-is a bloc that consists of 22 member nations willing to fund this space development effort. 
+It is an incredible undertaking in that 32 [countries](https://github.com/mars-sim/mars-sim/wiki/Countries) 
+are participating in this dream of making Mars as the second home for humanity. Altogether, there's a total of 14 
+space agencies and corporations to choose from as the sponsoring organization for funding settlements. 
+
+Notably, Mars Society is the only organization that comprises all 32 member nations. 
+
+On the other hand, European Space Agency (ESA) is a bloc that consists of 22 member nations willing to 
+sponsor this space development effort. 
 
 ---
 
@@ -136,7 +140,7 @@ is a bloc that consists of 22 member nations willing to fund this space developm
 
 mars-sim depicts near-term human exploration and settlement on Mars. It speaks of a rich scientific
 language selected from research journal and paper in defining operation paradigms and programming models
-that are based on present-day technologies.
+conceived from known present-day technological progress.
 
 ## Timekeeping
 
@@ -178,7 +182,7 @@ These gases are produced via chemical systems such as **Sabatier Reverse Water G
 
 Structurally speaking, a low-pressure environment reduces the need for a rigid structure that supports
 various load requirements for a building. It also facilitates occupants' Extra-Vehicular Activity (EVA)
-with the outside world.
+with outside world.
 
 ## EVA
 
@@ -312,7 +316,12 @@ However, if you want to run any other JavaFX apps, make sure you download and
 configure the OpenJFX or JavaFX package on top of the JDK. See ticket #156 on how 
 to set up JavaFX to run it under Java 11.
 
-Obtain the latest JRE/JDK for your platform. Here are some of the popular OpenJDK packages out there :
+Obtain the latest JRE/JDK for your platform. 
+
+Check out [Java Version Almanac](https://javaalmanac.io/jdk/17/) for a quick view of the 
+new features of Java 17 as well as most (if not all) of the OpenJDK out there.
+
+See some of the popular OpenJDK packages out there in the following :
 
 * [Amazon Cornetto](https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html)
 
@@ -324,13 +333,14 @@ Obtain the latest JRE/JDK for your platform. Here are some of the popular OpenJD
 
 If you need JavaFX, we recommend downloading the `Full JDK` 64-bits package.
 
-In case of Liberica, the `Full JDK` includes LibericaFX, which is based on OpenJFX, for
+> [!NOTE]
+> In case of Liberica, the `Full JDK` includes LibericaFX, which is based on OpenJFX, for
 running other apps that requires JavaFX.
 
 
 ## OS Platforms
 
-Assuming that OpenJDK 17 is being used.
+Assume that OpenJDK 17 is being used.
 
 ### Linux
 
@@ -424,7 +434,6 @@ your machine, JCP won't be able to recognize them.
 [JDKMon](https://harmoniccode.blogspot.com/2021/04/friday-fun-lxiii-jdkmon.html).
 
 ## Remote Console Connection
-
 To set up true headless mode in your platform, follow the steps in this
 [wiki](https://github.com/mars-sim/mars-sim/wiki/Remote-Console-Connection).
 
@@ -477,26 +486,31 @@ e.g. Include the followings :
  - Add any other context about the problem here. By providing more info above when filing it, 
    you help expedite the handling of the issues you submit.
 
-> Note 1 : if you double-click the jar file to start mars-sim and nothing shows up, 
-it's possible that an instance of JVM is already being created in the background 
-that has failed to load Main Window. To see if it's indeed the case, in Windows OS, 
-you may hit <kbd>CTRL</kbd>+<kbd>ESC</kbd> to bring up the Task Manager and scroll down to see any 
-*orphaned* instances of `Java(TM) Platform SE binary` running in the background. 
-Be sure you first clear them off the memory by right-clicking on it and choosing `End Task`.
+> [!NOTE]
+> If you double-click the jar file in an attempt to start mars-sim but nothing shows up, 
+it's possible that an old instance of JVM has already been running in the background. 
+To see if it's indeed the case, in Windows OS, you may hit <kbd>CTRL</kbd>+<kbd>ESC</kbd> 
+to bring up the Task Manager and scroll down to find any *orphaned* instances of 
+`Java(TM) Platform SE binary` running in the background. Be sure you first clear them off 
+the memory by right-clicking on each of them and choosing `End Task`.
 
 
-### Contribution
-We welcome anyone to contribute to mars-sim in terms of ideas, concepts and coding. If you would like to contribute
-to coding, see this [wiki](https://github.com/mars-sim/mars-sim/wiki/Development-Environment) for developers.
-Also, we will answer your questions in our [Gitter chatroom](https://gitter.im/mokun/mars-sim).
+## Contribution
+We welcome anyone to contribute to mars-sim in terms of ideas, concepts and coding. 
+If you would like to contribute to coding, see this 
+[wiki](https://github.com/mars-sim/mars-sim/wiki/Development-Environment) 
+for developers. Also, we will answer your questions in our 
+[Gitter chatroom](https://gitter.im/mokun/mars-sim).
 
 
 ## Website
-For a more detail description of this project, see our [project website](https://mars-sim.github.io/).
+For a more detail description of this project, see our 
+[project website](https://mars-sim.github.io/) or 
+to to our [domain](https://www.mars-sim.com/) directly.
 
 
 ## Wiki
-* Check out our [wikis](https://github.com/mars-sim/mars-sim/wiki) at GitHub.
+Check out our [wikis](https://github.com/mars-sim/mars-sim/wiki) at GitHub.
 
 
 ## Supported Platforms
@@ -510,12 +524,14 @@ For a more detail description of this project, see our [project website](https:/
 
 
 ## Download
-* Check out the most recent release or pre-release build in GitHub [Release](https://github.com/mars-sim/mars-sim/releases) page.
+Check out the most recent release or pre-release build in GitHub 
+[Releases](https://github.com/mars-sim/mars-sim/releases) page.
 
-* Or see the previous and current official release versions at
-[SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.6.2/).
+Alternatively, see all our previous and current official release versions at SourceForge
+[Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.6.2/).
 
-Note: if you prefer, click SF's button below to automatically sense the correct OS platform to download.
+> [!NOTE]
+> If you prefer, click SF's button below to automatically sense the correct OS platform to download.
 
 [![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
 

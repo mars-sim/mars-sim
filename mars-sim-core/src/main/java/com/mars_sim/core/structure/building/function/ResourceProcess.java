@@ -368,7 +368,7 @@ public class ResourceProcess implements Serializable {
             return millisol > timeLimit[1];
 		}
 		else {
-			// Toggleing has rolled over the day
+			// Toggling has rolled over the day
             return sol > timeLimit[0];
 		}
 	}
@@ -393,7 +393,7 @@ public class ResourceProcess implements Serializable {
 	}
 
 	/**
-	 * Resets the toggle time from teh current baseline time.
+	 * Resets the toggle time from the current baseline time.
 	 * 
 	 * @param sol Baseline mission sol
 	 * @param millisols

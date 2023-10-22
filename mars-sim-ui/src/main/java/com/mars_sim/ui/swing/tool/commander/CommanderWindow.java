@@ -53,6 +53,7 @@ import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.moon.Colony;
@@ -168,10 +169,11 @@ public class CommanderWindow extends ToolWindow {
 
 	private Settlement settlement;
 	
-	private Colony colony;
+	private Authority sponsor;
 
-	/** The MarsClock instance. */
+	/** The MasterClock instance. */
 	private MasterClock masterClock;
+	
 	private UnitManager unitManager;
 
 	private JPanel tradingPartnersPanel;
@@ -195,11 +197,14 @@ public class CommanderWindow extends ToolWindow {
 		List<Settlement> settlementList = new ArrayList<>(unitManager.getSettlements());
 		Collections.sort(settlementList);
 		settlement = settlementList.get(0);
+		sponsor = settlement.getReportingAuthority();
+		
 		cc = settlement.getCommander();
 		
 		colonyList = new ArrayList<>(Simulation.instance().getLunarColonyManager().getColonySet());
 		Collections.sort(colonyList);
-		colony = colonyList.get(0);
+		
+
 				
 		// Create content panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
@@ -271,7 +276,10 @@ public class CommanderWindow extends ToolWindow {
 	
 	/**
      * Constructs the building combo box.
-     */
+     * 
+	 * @param settlement
+	 * @param bldgs
+	 */
 	private void constructBuildingBox(Settlement settlement, List<Building> bldgs) {
 
 		BuildingComboBoxModel model = new BuildingComboBoxModel(settlement, bldgs);
@@ -327,6 +335,10 @@ public class CommanderWindow extends ToolWindow {
 											
 			// Set the selected settlement
 			settlement = s;
+			
+			// Set the sponsor
+			sponsor = settlement.getReportingAuthority();
+			
 			// Set the box opaque
 			settlementBox.setOpaque(false);
 
@@ -1021,8 +1033,8 @@ public class CommanderWindow extends ToolWindow {
     protected List<Settlement> getOtherSettlements() {
     	List<Settlement> list0 = new ArrayList<>(unitManager.getSettlements());
     	list0.remove(settlement);
+    	
         return list0;
-
     }
 
 	/**

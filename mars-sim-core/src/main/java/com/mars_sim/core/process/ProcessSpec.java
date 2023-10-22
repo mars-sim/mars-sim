@@ -111,7 +111,8 @@ public abstract class ProcessSpec implements Serializable {
 	}
 
 	/**
-	 * Get all output from this process.
+	 * Gets all output from this process.
+	 * 
 	 * @return
 	 */
 	public Set<Integer> getOutputResources() {
