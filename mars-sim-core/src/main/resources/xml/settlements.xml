@@ -133,13 +133,15 @@
 		<template name="Phase 0-MS"/>
 		<template name="Phase 0-UAE"/>
 				
-		<!-- 7 Phase 1 templates -->
+		<!-- 8 Phase 1 templates -->
 		<template name="Phase 1-BR"/>
 		<template name="Phase 1-CN"/>
 		<template name="Phase 1-IN"/>
 		<template name="Phase 1-MS"/>
+		
 		<template name="Phase 1-RU"/>
-		<template name="Phase 1-SX"/>
+		<template name="Phase 1-SA"/>
+		<template name="Phase 1-SX"/>		
 		<template name="Phase 1-US"/>
 		
 		<!-- 9 Phase 2 templates -->		
@@ -158,7 +160,8 @@
 		<!-- 6 Phase 3 templates -->	
 		<template name="Phase 3-CN"/>
 		<template name="Phase 3-IN"/>
-		<template name="Phase 3-MS"/>	
+		<template name="Phase 3-MS"/>
+			
 		<template name="Phase 3-RU"/>
 		<template name="Phase 3-SX"/>
 		<template name="Phase 3-US"/>

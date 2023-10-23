@@ -443,11 +443,11 @@
 			</capability>
 		</agenda>
 										
-		<agenda name="Wealth Accumulation"
+		<agenda name="Space Sustainability"
 				objective="Incentivize private and corporate ownership of properties and resources in space"
-				findings="Study the development of private ownership of land" 
+				findings="Supports statutes to meet the growing demand for sustainable transporation and logistic needs" 
 				data="Analyze mass resource utilization and settlement economic data">
-			<capability description="Characterize manufacturing and resource production in relation to local economy">
+			<capability description="Characterize industry opportunities and innovations in the space sector">
 				<preference type="MISSION" name="TRADE" modifier="2"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.4"/>
 				<preference type="MISSION" name="MINING" modifier="1.4"/>
@@ -455,7 +455,7 @@
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="8"/>
 				<preference type="SCIENCE" name="ENGINEERING" modifier="4"/>
 			</capability>
-			<capability description="Enable monetary exchange">
+			<capability description="Enable monetary exchange and create new opportunties for innovations">
 				<preference type="MISSION" name="TRADE" modifier="1.3"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="3"/>	
 				<preference type="SCIENCE" name="COMPUTING" modifier="6"/>								
@@ -894,17 +894,17 @@
 		<authority code="UAESA" name="United Arab Emirates Space Agency" corporation="false"
 					agenda="Space Economy" gender-ratio="0.9">
 			<country name="United Arab Emirates"/>
-			<settlement-name name="Salem" />
+			<settlement-name name="New Salem" />
 			<settlement-name name="New Dubai" />
-			<settlement-name name="Rashid" />
-			<settlement-name name="Sultan" />
-			<settlement-name name="Khalifa" />
-			<settlement-name name="Qubaisi" />
-			<settlement-name name="Amiri" />
-			<settlement-name name="Maktoum" />
-			<settlement-name name="Nahyan" />
-			<settlement-name name="Bateen" />
-			<settlement-name name="Ajman" />
+			<settlement-name name="New Rashid" />
+			<settlement-name name="New Sultan" />
+			<settlement-name name="New Khalifa" />
+			<settlement-name name="New Qubaisi" />
+			<settlement-name name="New Amiri" />
+			<settlement-name name="New Maktoum" />
+			<settlement-name name="New Nahyan" />
+			<settlement-name name="New Bateen" />
+			<settlement-name name="New Ajman" />
 												
 			<rover-name name="Tunb" />
 			<rover-name name="Ruwais" />
@@ -925,8 +925,58 @@
 			<rover-name name="Hili" />		
 			<rover-name name="Hamim" />
 			<rover-name name="Dhaid" />
+			<rover-name name="Aldar" />
+			<rover-name name="Aramex" />
+			<rover-name name="Emaar" />
+			<rover-name name="Etihad" />		
+			<rover-name name="Etisalat" />
+			<rover-name name="Jumeirah" />
 		</authority>
-		
+
+		<authority code="SSA" name="Saudi Space Agency" corporation="false"
+					agenda="Space Sustainability" gender-ratio="0.9">
+			<country name="Saudi Arabia"/>
+			<settlement-name name="New Makkah" />
+			<settlement-name name="New Madinah" />
+			<settlement-name name="New Dammam" />
+			<settlement-name name="New Buraydah" />
+			<settlement-name name="New Tabuk" />
+			<settlement-name name="New Khobar" />
+			<settlement-name name="New Taif" />
+			<settlement-name name="New Yanbu" />
+			<settlement-name name="New Riyadh" />
+			<settlement-name name="New Jiddah" />
+			<settlement-name name="New Dhahran" />
+												
+			<rover-name name="Al-Jami" />
+			<rover-name name="Gazal" />
+			<rover-name name="Steyr" />
+			<rover-name name="Ghazal" />
+			<rover-name name="Tabuk" />
+			<rover-name name="Sabic" />
+			<rover-name name="Turki" />
+			<rover-name name="Alawwal" />
+			<rover-name name="Almarai" />
+			<rover-name name="Bahri" />
+			<rover-name name="Quraya" />
+			<rover-name name="Flyna" />
+			<rover-name name="Jadwa" />
+			<rover-name name="Alireza" />
+			<rover-name name="Jarir" />
+			<rover-name name="Maaden" />
+			<rover-name name="Nadec" />		
+			<rover-name name="Kudu" />
+			<rover-name name="Okaz" />
+			<rover-name name="Olayan" />
+			<rover-name name="Qaym" />
+			<rover-name name="Rezayat" />		
+			<rover-name name="Saco" />
+			<rover-name name="Dussur" />
+			<rover-name name="Xenel" />
+			<rover-name name="Zamil" />
+			<rover-name name="Tasali" />		
+		</authority>
+				
 		<authority code="SPACEX" name="Space Exploration Technologies Corporation" corporation="true"
 					agenda="Planet Life" gender-ratio="0.5">
 			<country name="United States"/>
