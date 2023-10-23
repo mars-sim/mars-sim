@@ -140,7 +140,7 @@
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>flatlaf-jide-oss</artifactId>
-			<version>3.2.4</version>
+			<version>3.2.5</version>
 		</dependency>
 		
 		<!-- https://github.com/jidesoft/jide-oss/issues/48 for user's build info 
