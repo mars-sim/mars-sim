@@ -60,22 +60,23 @@ public class YogaMeta extends FactoryMetaTask {
         double fatigue = condition.getFatigue();
         double kJ = condition.getEnergy();
         double hunger = condition.getHunger();
-        double[] muscle = condition.getMusculoskeletal();
-        
+        double musclePain = condition.getMusclePainTolerance();
+        double muscleSoreness = condition.getMuscleSoreness();
+
         double base = kJ/2000 
             		// Note: The desire to exercise increases linearly right after waking up
             		// from bed up to the first 333 msols
             		// After the first 333 msols, it decreases linearly for the rest of the day
             		+ Math.max(333 - fatigue, -666)
             		// Note: muscle condition affects the desire to exercise
-            		+ muscle[0]/2.5 - muscle[2]/2.5
+            		+ musclePain/2.5 - muscleSoreness/2.5
             		+ stress / 10
             		- person.getCircadianClock().getTodayExerciseTime() * 5;
 
         if (kJ < 500 || fatigue > 750 || hunger > 750 || base <= 0)
             return EMPTY_TASKLIST;
 
-        RatingScore result = new RatingScore(base);  
+        RatingScore result = new RatingScore(base/10D);  // Workout score is divied by 10 as well  
         result = assessPersonSuitability(result, person);
 
         // Get an available gym.
