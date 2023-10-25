@@ -83,7 +83,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 
 
 /**
- * Window for the Commanders Dashboard.
+ * Window for the Commander Dashboard.
  */
 @SuppressWarnings("serial")
 public class CommanderWindow extends ToolWindow {
@@ -228,8 +228,8 @@ public class CommanderWindow extends ToolWindow {
 		
 		createAgriculturePanel();
 		createComputingPanel();
-		createEngineeringPanel();
 		createDiplomaticPanel();
+		createEngineeringPanel();
 		createLogisticPanel();
 		createMissionPanel();
 		createResourcePanel();

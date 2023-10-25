@@ -22,7 +22,6 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.tools.util.RandomUtil;
  
 public class ScienceConfig implements Serializable {
@@ -33,22 +32,22 @@ public class ScienceConfig implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(ScienceConfig.class.getName());
 
-	private static final String SCIENTIFIC_STUDY = "scientific_study";
-	private static final String JSON = "json";
-	private static final String DIR = "/";
-	private static final String SUBJECT = "subject";
-	private static final String TOPIC = "topic";
-	private static final String TOPICS = TOPIC + "s";
-	private static final String DOT = ".";
-	private static final String UNDERSCORE = "_";
-	private static final String GENERAL = "General";
+	private final String SCIENTIFIC_STUDY = "scientific_study";
+	private final String JSON = "json";
+	private final String DIR = "/";
+	private final String SUBJECT = "subject";
+	private final String TOPIC = "topic";
+	private final String TOPICS = TOPIC + "s";
+	private final String DOT = ".";
+	private final String UNDERSCORE = "_";
+	private final String GENERAL = "General";
 	
-	private static final String JSON_DIR = DIR + JSON + DIR;
+	private final String JSON_DIR = DIR + JSON + DIR;
 
-	private static final String TOPICS_JSON_FILE_EXT = UNDERSCORE + TOPICS + DOT + JSON;
-	private static final String SCIENTIFIC_STUDY_JSON = SCIENTIFIC_STUDY + DOT + JSON;
+	private final String TOPICS_JSON_FILE_EXT = UNDERSCORE + TOPICS + DOT + JSON;
+	private final String SCIENTIFIC_STUDY_JSON = SCIENTIFIC_STUDY + DOT + JSON;
 	
-	private static String[] jsonFiles = new String[ScienceType.valuesList().size()]; 
+	private String[] jsonFiles = new String[ScienceType.valuesList().size()]; 
     
     private static List<Integer> averageTime = new ArrayList<>(); 
     
@@ -57,15 +56,10 @@ public class ScienceConfig implements Serializable {
 	private static int maxStudiesPerPerson = 2;
         
     private Map<ScienceType, List<Topic>> scienceTopics = new EnumMap<>(ScienceType.class);
-    
-    public void createJsonFiles() {
-    	int size = ScienceType.valuesList().size();
-    	for (int i=0; i<size; i++) {
-    		ScienceType type = ScienceType.valuesList().get(i);
-    		jsonFiles[i] = JSON_DIR + type.getName().toLowerCase() + TOPICS_JSON_FILE_EXT;
-    	}
-    }
-    
+
+    /**
+     * Constructor.
+     */
     public ScienceConfig() {
         InputStream fis = null;
         JsonReader jsonReader = null;
@@ -140,8 +134,7 @@ public class ScienceConfig implements Serializable {
 	        try {
 		        for (int i = 0; i< size; i++) {
 	                JsonObject child = jsonArray.getJsonObject(i);
-	                String t = Conversion.capitalize(child.getString(TOPIC));
-		        	s.createTopic(t);
+		        	s.createTopic(child.getString(TOPIC));
 		        }
 	        } catch (Exception e1) {
 	          	logger.log(Level.SEVERE, "Cannot get json object: "+ e1.getMessage());
@@ -151,6 +144,16 @@ public class ScienceConfig implements Serializable {
     	}
     }
  
+    
+    public void createJsonFiles() {
+    	int size = ScienceType.valuesList().size();
+    	for (int i=0; i<size; i++) {
+    		ScienceType type = ScienceType.valuesList().get(i);
+    		jsonFiles[i] = JSON_DIR + type.getName().toLowerCase() + TOPICS_JSON_FILE_EXT;
+    	}
+    }
+    
+    
     public String getATopic(ScienceType type) {
     	if (scienceTopics.containsKey(type)) {
     		List<Topic> topics = scienceTopics.get(type);
@@ -176,8 +179,7 @@ public class ScienceConfig implements Serializable {
 	}
 
     /**
-     * Class Subject is a scientific subject holding a list of topics
-     * @author mk
+     * The scientific subject holding a list of topics.
      */
 	class Subject {
 	    
@@ -216,10 +218,8 @@ public class ScienceConfig implements Serializable {
 	}
 	
     /**
-     * Class Topic of a Subject
-     * @author mk
+     * The Topic of a Subject.
      */
-
     class Topic {
     
     	String name;
@@ -236,7 +236,7 @@ public class ScienceConfig implements Serializable {
     }
     
     /**
-     * Prepare object for garbage collection.
+     * Prepares object for garbage collection.
      */
     public void destroy() {
         jsonFiles = null;

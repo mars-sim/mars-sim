@@ -8,12 +8,12 @@
 package com.mars_sim.core.science;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.Job;
@@ -76,7 +76,7 @@ public enum ScienceType {
 			SkillType.PSYCHOLOGY, JobType.PSYCHOLOGIST);
 
 
-	/** used to keep track of collaborative sciences. */
+	/** Maps for keeping track of collaborative sciences. */
 	private static Map<ScienceType, Science> collabSciences;
 
 	private static Set<ScienceType> experimentalSciences;
@@ -85,7 +85,9 @@ public enum ScienceType {
 	private JobType job;
 	private SkillType skill;
 
-	/** hidden constructor. */
+	/** 
+	 * Hidden constructor. 
+	 */
 	private ScienceType(String name, SkillType skill, JobType job) {
 		this.name = name;
 		this.job = job;
@@ -93,7 +95,9 @@ public enum ScienceType {
 	}
 
 	/**
-	 * @return the internationalized name of this field of science.
+	 * Gets the internationalized name of this field of science.
+	 * 
+	 * @return 
 	 */
 	public final String getName() {
 		return this.name;
@@ -107,10 +111,12 @@ public enum ScienceType {
 		return this.skill;
 	}
 
-	/** Initializes collaborative sciences. */
+	/** 
+	 * Initializes collaborative sciences.
+	 */
 	private static void initSciences() {
 		// Load available sciences in list.
-		collabSciences = new ConcurrentHashMap<>();
+		collabSciences = new HashMap<>();
 		for (ScienceType scienceType : ScienceType.values()) {
 			collabSciences.put(scienceType, new Science(scienceType));
 		}

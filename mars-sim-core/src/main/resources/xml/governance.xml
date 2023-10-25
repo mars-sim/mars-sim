@@ -377,6 +377,8 @@
 			<capability description="Extend EVA operations to climbing caves">
 				<preference type="MISSION" name="EXPLORATION" modifier="1.2"/>
 				<preference type="MISSION" name="MINING" modifier="1.4"/>
+				<preference type="SCIENCE" name="PHYSICS" modifier="5"/>	
+				<preference type="SCIENCE" name="ENGINEERING" modifier="7"/>	
 			</capability>
 		</agenda>
 						
@@ -407,6 +409,9 @@
 				<preference type="MISSION" name="TRADE" modifier="2"/>
 				<preference type="MISSION" name="RESCUE_SALVAGE_VEHICLE" modifier="4"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.2"/>
+				<preference type="SCIENCE" name="COMPUTING" modifier="4"/>	
+				<preference type="SCIENCE" name="MATHEMATICS" modifier="6"/>
+				<preference type="SCIENCE" name="PHYSICS" modifier="7"/>
 			</capability>
 		</agenda>
 				
@@ -446,7 +451,7 @@
 		<agenda name="Space Sustainability"
 				objective="Incentivize private and corporate ownership of properties and resources in space"
 				findings="Supports statutes to meet the growing demand for sustainable transporation and logistic needs" 
-				data="Analyze mass resource utilization and settlement economic data">
+				data="Analyze and rank policies for enhancing mass resource utilization">
 			<capability description="Characterize industry opportunities and innovations in the space sector">
 				<preference type="MISSION" name="TRADE" modifier="2"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.4"/>
@@ -455,10 +460,11 @@
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="8"/>
 				<preference type="SCIENCE" name="ENGINEERING" modifier="4"/>
 			</capability>
-			<capability description="Enable monetary exchange and create new opportunties for innovations">
+			<capability description="Create stable financial avenue based on settlement economic data">
 				<preference type="MISSION" name="TRADE" modifier="1.3"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="3"/>	
-				<preference type="SCIENCE" name="COMPUTING" modifier="6"/>								
+				<preference type="SCIENCE" name="MATHEMATICS" modifier="6"/>
+				<preference type="SCIENCE" name="COMPUTING" modifier="5"/>								
 			</capability>
 			<capability description="Identify social factors in developing commerce">
 				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
@@ -466,14 +472,44 @@
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="2"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="2"/>
 			</capability>
-			<capability description="Conceptualize trading network">
+			<capability description="Legislate responsible spaceflight framework and guidelines regarding space debris">
+				<preference type="SCIENCE" name="COMPUTING" modifier="4"/>	
+				<preference type="SCIENCE" name="MATHEMATICS" modifier="6"/>
+				<preference type="SCIENCE" name="PHYSICS" modifier="7"/>
+			</capability>
+		</agenda>
+
+		<!-- https://www.unoosa.org/oosa/en/ourwork/access2space4all/index.html 
+			 https://www.space.com/un-unoosa-space-access-partnership.html -->
+		<agenda name="Space Accessibility"
+				objective="Partner with public and private actors and fund cooperative projects to allow member states to launch space missions"
+				findings="Meet the functional criteria of the growing demand for space access and logistic" 
+				data="Collect and analyze member states' sustainable development goals">
+			<capability description="Contribute to initiaitive in enabling deveoping and emerging countries to grow their space sector">
+				<preference type="MISSION" name="TRADE" modifier="2"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.4"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="8"/>
+				<preference type="SCIENCE" name="ENGINEERING" modifier="4"/>
+			</capability>
+			<capability description="Level the playing level and create new sponsorship for emerging players">
+				<preference type="MISSION" name="TRADE" modifier="1.3"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="3"/>	
+				<preference type="SCIENCE" name="COMPUTING" modifier="6"/>								
+			</capability>
+			<capability description="Identify social factors in developing partnership">
+				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
+				<preference type="MISSION" name="EXPLORATION" modifier="1.3"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="2"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="2"/>
+			</capability>
+			<capability description="Develop infrastructure, faciltiy and service as a part 
+				of a high impact and high visibility initiative ">
 				<preference type="MISSION" name="DELIVERY" modifier="1.9"/>
 				<preference type="MISSION" name="TRADE" modifier="2"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.2"/>
 				<preference type="SCIENCE" name="COMPUTING" modifier="6"/>	
 			</capability>
-		</agenda>
-		
+		</agenda>		
 	</agendas>
 
 	<!--  Reporting authorities. The code attribute must match

@@ -51,8 +51,6 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 		this.sponsor = sponsor;
 		this.location = location;
 		
-		nation = sponsor.getOneNation();
-		
 		population = new Population(this);
 		
 		for (ZoneType type: ZoneType.values()) {
@@ -61,22 +59,50 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 		
 	}
 
+	/**
+	 * Gets the id.
+	 * 
+	 * @return
+	 */
 	public int getId() {
 		return id;
 	}
 	
+	/**
+	 * Gets the nation.
+	 * 
+	 * @return
+	 */
 	public Nation getNation() {
+		if (nation == null) {
+			nation = sponsor.getOneNation();
+		}
 		return nation;
 	}
 	
+	/**
+	 * Adds a zone.
+	 * 
+	 * @param zone
+	 */
 	public void addZone(Zone zone) {
 		zones.add(zone);
 	}
 	
+	/**
+	 * Gets a set of zones.
+	 * 
+	 * @return
+	 */
 	public Set<Zone> getZones() {
 		return zones;
 	}
 	
+	/**
+	 * Gets the organization.
+	 * 
+	 * @return
+	 */
 	public Organization getOrganization() {
 		return sponsor.getOrganization();
 	}
@@ -95,10 +121,20 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 		return true;
 	}
 	
+	/**
+	 * Gets the population.
+	 * 
+	 * @return
+	 */
 	public Population getPopulation() {
 		return population;
 	}
 	
+	/**
+	 * Gets the total occupied area.
+	 * 
+	 * @return
+	 */
 	public double getTotalArea() {
 		double sum = 0;
 		for (Zone z: zones) {

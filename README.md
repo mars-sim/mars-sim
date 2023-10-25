@@ -19,7 +19,7 @@
    * [Simulation](#simulation)
    * [Exploration](#exploration)
    * [Mars Direct Mission Plan](mars-direct-mission-plan) 
-   * [Settlement](#settlement)
+   * [Settlement Development](#settlement-development)
    * [Economics](#economics)   
    * [Countries](#countries)   
 * [Operation Modeling](#operation-modeling)
@@ -90,11 +90,22 @@ spacecraft to orbit the planet. The apex of this spirit of exploration will be c
 first human landing in near future. Early explorers of Mars will come face-to-face with 
 insurmountable challenges. 
 
-The first generations human explorers will not explore long distances from their habitat but within 
-a region being called an "Exploration Zone", say, within 100 km of their landing. Many mission planning
-activities would have been taken place prior to their arrival to first identify all the Science and Resource 
-Region of Interests (ROIs). mars-sim is modeled to simulate the exploration of Mars within a decade after 
-the first landing when humanity may shift into high gears with the effort of making Mars the second home.
+In the first decade immediately after the human landing, the major theme would be exploration 
+of Mars. Initially, human explorers would not explore great distances away from their habitats 
+until rover technologies that they would rely upon for long excursion has been proven to be
+reliable. They would travel within a region called an Exploration Zone (EZ), say, within 
+100 km of their landing. On top of that, mission planner would designate many interesting 
+Region of Interests (ROIs) for both scientific investigation and resource extraction. 
+
+In the second decade, as the human aspiration to become multi-planetary remain unwavering, 
+it would begins shifting into high gear with constructing long-term, sustainable settlements. 
+They would chart out clear pathways to address questions such as: (1) Given the reliability 
+and the technology readiness level of the existing hardware, what is the likelihood that the 
+effort in settling Mars will not end with a boom and would even pay off in the long run ? 
+(2) What efforts does it take to make humans more adaptable to Mars so that it would become 
+the second home for humanity? (3) What kind of partnership between governmental entities and 
+corporations should establish in further funding the settlement of Mars until it becomes 
+self-sustainable ? 
 
 ## Mars Direct Mission Plan 
 
@@ -105,23 +116,27 @@ is designated as *Alpha Base*, whereas a 36-settler base is called *Hub Base*. B
 build a *Trading Outpost* or a *Mining Depot* near sites with high mineral concentrations. 
 
 Each country of origin and sponsor has unique template that house various types of buildings. 
-Altogether, there is a total of 29 unique [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) 
+Altogether, there is a total of 30 unique [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) 
 to choose from.
 
-## Settlement
+## Settlement Development
 
 The selection of a landing site is determined by a variety of factors. 
-One of the goals of mars-sim is to populate Mars with human settlements.
-Each settlement has an initial sponsor to guide its development but will eventually develop
-its own *[command structure](https://github.com/mars-sim/mars-sim/wiki/Role)* and
-*[development objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective)*.
+The goals in mars-sim include populating Mars with human settlements, outposts, weather station, 
+communication towers, and, in future, road/train network.
+
+The key to achieve this is developing a network of viable and self-sustainable settlements. 
+Initially, the sponsor would guide the development of her settlements. Eventually, each settlement
+will evolve and develop her own laws and governance, *[command structure](https://github.com/mars-sim/mars-sim/wiki/Role)*, 
+and *[development objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective)*.
 
 ## Economics
 
 In terms of [economics](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim implements the
 **Value Point (VP)** system, which keeps track of the supply and demand on each good and resource.
 As there is no standard currency established on Mars yet, settlers barter trades with neighboring settlements
-by keeping track of the credits and deficit based on the VPs of the resources in exchange in each trading session.
+by keeping track of the credits and deficit based on the VPs of the exchange of resources in a 
+Trading mission or Delivery mission.
 
 ## Countries and Sponsors
 

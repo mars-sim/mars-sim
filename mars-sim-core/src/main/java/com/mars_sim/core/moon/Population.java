@@ -157,6 +157,9 @@ public class Population implements Serializable, Temporal {
 		return false;
 	}
 	
+	/**
+	 * Remove a researcher.
+	 */
 	public void removeOneResearcher() {
 	
 		int rand = RandomUtil.getRandomInt(colonists.size() - 1);
@@ -167,9 +170,9 @@ public class Population implements Serializable, Temporal {
 		
 		colonists.remove(c);
 		
-		String countryName = colony.getAuthority().getOneCountry();
-		System.out.println("Colony: " + colony.getName() 
-						+ "  Country: " + countryName);
+//		String countryName = colony.getAuthority().getOneCountry();
+//		System.out.println("Colony: " + colony.getName() 
+//						+ "  Country: " + countryName);
 		
 		colony.getNation().addColonist(c);
 		
