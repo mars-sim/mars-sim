@@ -61,19 +61,7 @@ public class TaskCommand extends AbstractSettlementCommand {
 			// Add the rows for each person
 			for (Person p : plist) {
 				ShiftSlot slot = p.getShiftSlot();
-				Shift s = slot.getShift();
-				WorkStatus status = slot.getStatus();
-				String shiftDesc = switch(status) {
-					case OFF_DUTY -> "Off Duty";
-					case ON_CALL -> "On Call";
-					case ON_DUTY -> "On";
-					case ON_LEAVE -> "On Leave";
-				};
-
-				StringBuilder shift = new StringBuilder();
-				shift.append(shiftDesc).append(" (").append(s.getName()).append(')');
-
-				response.appendTableRow(tableGroup, p.getName(), shift.toString());
+				response.appendTableRow(tableGroup, p.getName(), slot.getStatusDescription());
 				tableGroup = ""; // Reset table subgroup
 			}
 		}

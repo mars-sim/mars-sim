@@ -124,4 +124,12 @@ public class ShiftSlot implements ScheduledEventHandler {
         onLeave = false;
         return 0;
     }
+
+    /**
+     * Get the extended description of this shift slot.
+     * @return Return the shift name and it on/off status.
+     */
+    public String getStatusDescription() {
+        return shift.getName() + " " + getStatus().getName();
+    }
 }

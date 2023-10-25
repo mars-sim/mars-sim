@@ -285,7 +285,7 @@ public class PersonUnitWindow extends UnitWindow {
 
 		ShiftSlot shiftSlot = person.getShiftSlot();
 		String shiftDesc = TabPanelSchedule.getShiftNote(person.getShiftSlot());
-		String newShift = shiftSlot.getShift().getName();
+		String newShift = shiftSlot.getStatusDescription();
 		if (!oldShift.equals(newShift)) {
 			oldShift = newShift;
 			shiftLabel.setText(TWO_SPACES + newShift);

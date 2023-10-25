@@ -8,6 +8,7 @@
 package com.mars_sim.core.person.ai.task.util;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -190,21 +191,17 @@ public abstract class TaskManager implements Serializable {
 		}
 	}
 
-	public String getSubTaskName() {
-		if (currentTask != null && currentTask.getSubTask() != null) {
-			return currentTask.getSubTask().getName();
-		} else {
-			return "";
-		}
-	}
+	/**
+	 * Get the stack of Tasks that are active. The 1st entry in the is the toplevel task
+	 * whilst the last entry is the one actually active.
+	 */
+	public List<Task> getTaskStack() {
+		List<Task> stack = new ArrayList<>();
 
-	public String getSubTask2Name() {
-		Task task = getRealTask();
-		if (task != null) {
-			return task.getName();
-		} else {
-			return "";
+		if (currentTask != null) {
+			currentTask.buildStack(stack);
 		}
+		return stack;
 	}
 
 	/**
@@ -273,42 +270,6 @@ public abstract class TaskManager implements Serializable {
 		return "";
 	}
 
-	public String getSubTaskDescription() {
-		if (currentTask != null && currentTask.getSubTask() != null) {
-			String t = currentTask.getSubTask().getDescription();
-			if (t != null && !t.equals(""))
-				return t;
-			else
-				return "";
-		} else
-			return "";
-	}
-
-	public String getSubTask1Description() {
-		if (currentTask != null && currentTask.getSubTask() != null
-				&& currentTask.getSubTask().getSubTask() != null) {
-			String t = currentTask.getSubTask().getSubTask().getDescription();
-			if (t != null) // || !t.equals(""))
-				return t;
-			else
-				return "";
-		} else
-			return "";
-	}
-
-	public String getSubTask2Description() {
-		if (currentTask != null && currentTask.getSubTask() != null
-				&& currentTask.getSubTask().getSubTask() != null
-				&& currentTask.getSubTask().getSubTask().getSubTask() != null) {
-			String t = currentTask.getSubTask().getSubTask().getSubTask().getDescription();
-			if (t != null) // || !t.equals(""))
-				return t;
-			else
-				return "";
-		} else
-			return "";
-	}
-	
 	/**
 	 * Returns the current task phase if there is one. Returns null if current task
 	 * has no phase. Returns null if there is no current task.
@@ -318,33 +279,6 @@ public abstract class TaskManager implements Serializable {
 	public TaskPhase getPhase() {
 		if (currentTask != null) {
 			return currentTask.getPhase();
-		} else {
-			return null;
-		}
-	}
-
-	public TaskPhase getSubTaskPhase() {
-		if (currentTask != null && currentTask.getSubTask() != null) {
-			return currentTask.getSubTask().getPhase();
-		} else {
-			return null;
-		}
-	}
-
-	public TaskPhase getSubTask1Phase() {
-		if (currentTask != null && currentTask.getSubTask() != null
-				&& currentTask.getSubTask().getSubTask() != null) {
-			return currentTask.getSubTask().getSubTask().getPhase();
-		} else {
-			return null;
-		}
-	}
-
-	public TaskPhase getSubTask2Phase() {
-		if (currentTask != null && currentTask.getSubTask() != null
-				&& currentTask.getSubTask().getSubTask() != null
-				&& currentTask.getSubTask().getSubTask().getSubTask() != null) {
-			return currentTask.getSubTask().getSubTask().getSubTask().getPhase();
 		} else {
 			return null;
 		}

@@ -585,6 +585,16 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
+	 * Get the stack of Task from this point downwards.
+	 */
+    void buildStack(List<Task> stack) {
+		stack.add(this);
+		if ((subTask != null) && !subTask.isDone()) {
+			subTask.buildStack(stack);
+		}
+    }
+
+	/**
 	 * Gets the task's subtask. Returns null if none.
 	 * 
 	 * @return subtask
