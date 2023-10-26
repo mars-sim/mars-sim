@@ -127,16 +127,16 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
             
             double foodDemand = pond.getFoodDemand();
          
-            result.addBase("goods", foodDemand * 10);
+            result.addBase("food.demand", foodDemand * 10);
             
             double foodMass = pond.getFoodMass();
             double algaeMass = pond.getCurrentAlgae();
             
             if (foodMass < 0)
             	// Need to 
-            	result.addBase("ratio", Math.exp(2 * (1 - foodMass)));
+            	result.addBase("algae.ratio", Math.exp(2 * (1 - foodMass)));
             else
-            	result.addBase("ratio", algaeMass / foodMass / 5);
+            	result.addBase("algae.ratio", algaeMass / foodMass / 5);
             
             if (result.getScore() > 0) {
                 tasks.add(new AlgaeTaskJob(this, pond, result));
