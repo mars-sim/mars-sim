@@ -8,8 +8,6 @@
 package com.mars_sim.core.person.health;
 
 import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.malfunction.Malfunction;
@@ -17,7 +15,6 @@ import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.Mind;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
@@ -37,8 +34,6 @@ public class DeathInfo implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	private static final Logger logger = Logger.getLogger(DeathInfo.class.getName());
 
 	// Quotes from http://www.phrases.org.uk/quotes/last-words/suicide-notes.html
 	// https://www.goodreads.com/quotes/tag/suicide-note
@@ -70,22 +65,10 @@ public class DeathInfo implements Serializable {
 	private String placeOfDeath = "";
 	/** Name of the doctor who did the postmortem. */	
 	private String doctorName = "(Postmortem Exam not done yet)";
-	/** Name of mission at time of death. */
-	private String mission;
-	/** Phase of mission at time of death. */
-	private String missionPhase;
 	/** Name of task at time of death. */
 	private String task;
 	/** Phase of task at time of death. */
 	private String taskPhase;
-	/** Name of sub task at time of death. */
-	private String subTask;
-	/** Name of sub task 2 at time of death. */
-	private String subTask2;
-	/** Phase of sub task at time of death. */
-	private String subTaskPhase;
-	/** Phase of sub task 2 at time of death. */
-	private String subTask2Phase;
 	/** Name of the most serious local emergency malfunction. */
 	private String malfunction;
 	/** The person's last word before departing. */
@@ -151,7 +134,7 @@ public class DeathInfo implements Serializable {
 		}
 
 		else if (person.isOutside()) {
-			placeOfDeath = person.getCoordinates().toString();// "An known location on Mars";
+			placeOfDeath = person.getCoordinates().toString();
 		}
 
 		else if (person.isInSettlement()) {
@@ -170,8 +153,6 @@ public class DeathInfo implements Serializable {
 
 		locationOfDeath = person.getCoordinates();
 
-		logger.log(Level.WARNING, person + " passed away in " + placeOfDeath);
-
 		Mind mind = person.getMind();
 		
 		job = mind.getJob();
@@ -185,20 +166,6 @@ public class DeathInfo implements Serializable {
 		taskPhase = taskMgr.getTaskDescription(false);
 		if (taskPhase.equals(""))
 			taskPhase = taskMgr.getLastTaskDescription();
-
-		subTask = taskMgr.getSubTaskName();
-
-		subTaskPhase = taskMgr.getSubTaskDescription();
-		
-		subTask2 = taskMgr.getSubTask2Name();
-
-		subTask2Phase = taskMgr.getSubTask1Description();
-
-		Mission mm = mind.getMission();
-		if (mm != null) {
-			mission = mm.getName();
-			missionPhase = mm.getPhaseDescription();
-		}
 	}
 
 	public DeathInfo(Robot robot, MarsTime martianTime) {
@@ -277,7 +244,7 @@ public class DeathInfo implements Serializable {
 		if (illness != null)
 			return illness;
 		else
-			return null;// "";
+			return null;
 	}
 
 	/**
@@ -299,30 +266,6 @@ public class DeathInfo implements Serializable {
 	}
 
 	/**
-	 * Gets the mission the person was on at time of death.
-	 * 
-	 * @return mission name
-	 */
-	public String getMission() {
-		if (mission != null)
-			return mission;
-		else
-			return "   --";
-	}
-
-	/**
-	 * Gets the mission phase at time of death.
-	 * 
-	 * @return mission phase
-	 */
-	public String getMissionPhase() {
-		if (missionPhase != null)
-			return missionPhase;
-		else
-			return "   --";
-	}
-
-	/**
 	 * Gets the task the person was doing at time of death.
 	 * 
 	 * @return task name
@@ -331,68 +274,7 @@ public class DeathInfo implements Serializable {
 		if (task != null)
 			return task;
 		else
-			return "   --";
-	}
-
-	/**
-	 * Gets the sub task the person was doing at time of death.
-	 * 
-	 * @return sub task name
-	 */
-	public String getSubTask() {
-		if (subTask != null)
-			return subTask;
-		else
-			return "   --";
-	}
-	
-	/**
-	 * Gets the sub task 2 the person was doing at time of death.
-	 * 
-	 * @return sub task 2 name
-	 */
-	public String getSubTask2() {
-		if (subTask2 != null)
-			return subTask2;
-		else
-			return "   --";
-	}
-	
-	/**
-	 * Gets the task phase at time of death.
-	 * 
-	 * @return task phase
-	 */
-	public String getTaskPhase() {
-		if (taskPhase != null)
-			return taskPhase;
-		else
-			return "   --";
-	}
-
-	/**
-	 * Gets the sub task phase at time of death.
-	 * 
-	 * @return sub task phase
-	 */
-	public String getSubTaskPhase() {
-		if (subTaskPhase != null)
-			return subTaskPhase;
-		else
-			return "   --";
-	}
-	
-
-	/**
-	 * Gets the sub task 2 phase at time of death.
-	 * 
-	 * @return sub task 2 phase
-	 */
-	public String getSubTask2Phase() {
-		if (subTask2Phase != null)
-			return subTask2Phase;
-		else
-			return "   --";
+			return "?";
 	}
 	
 	/**

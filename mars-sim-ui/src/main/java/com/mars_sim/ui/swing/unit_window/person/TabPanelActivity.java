@@ -7,25 +7,37 @@
 package com.mars_sim.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.util.Collections;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskCache;
+import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
-import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
@@ -48,40 +60,13 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	private static final int MAX_LABEL = 30;
 	private static final String EXTRA = "...";
 
-	/** current task text cache */
-	private String taskTextCache = "";
-	/** current phase text cache */
-	private String taskPhaseCache = "";
-	/** sub task text cache */
-	private String subTaskTextCache = "";
-	/** sub phase text cache */
-	private String subTaskPhaseCache = "";
-	/** sub task 1 text cache */
-	private String subTask1TextCache = "";
-	/** sub phase 1 text cache */
-	private String subTask1PhaseCache = "";
-	/** sub task 2 text cache */
-	private String subTask2TextCache = "";
-	/** sub phase 2 text cache */
-	private String subTask2PhaseCache = "";
 	/** data cache */
 	private String missionTextCache = "";
 	/** data cache */
 	private String missionPhaseCache = "";
 
 
-	private JLabel taskTextArea;
-	private JLabel taskPhaseArea;
 	private JLabel scoreTextArea;
-
-	private JLabel subTaskTextArea;
-	private JLabel subTaskPhaseArea;
-
-	private JLabel subTask1TextArea;
-	private JLabel subTask1PhaseArea;
-	
-	private JLabel subTask2TextArea;
-	private JLabel subTask2PhaseArea;
 
 	private JLabel missionTextArea;
 	private JLabel missionPhaseTextArea;
@@ -90,6 +75,10 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	private JButton missionButton;
 
 	private Worker worker;
+
+	private JTextArea taskStack;
+
+	private TaskCacheModel cacheModel;
 
 	/**
 	 * Constructor.
@@ -141,22 +130,45 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		monitorButton.addActionListener(this);
 		missionButtonPanel.add(monitorButton);
 		
-		// Prepare activity panel
-		AttributePanel activityPanel = new AttributePanel(9);
-		addBorder(activityPanel, "Task");
-		topPanel.add(activityPanel, BorderLayout.SOUTH);
+		JPanel taskPanel = new JPanel(new BorderLayout(1, 3));
+		addBorder(taskPanel, "Task");
+		topPanel.add(taskPanel, BorderLayout.SOUTH);
+		taskStack = new JTextArea(3, 30);
+		taskPanel.add(taskStack, BorderLayout.CENTER);
 
-		// Prepare task labels. Create empty and then update
-		taskTextArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.task"), "", null); //$NON-NLS-1$
-		taskPhaseArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.taskPhase"), "", null); //$NON-NLS-1$
-		scoreTextArea = activityPanel.addTextField("Score", "", null);
-		subTaskTextArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTask"), "", null); //$NON-NLS-1$
-		subTaskPhaseArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTaskPhase"), "", null); //$NON-NLS-1$
-		subTask1TextArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTask1"), "", null); //$NON-NLS-1$
-		subTask1PhaseArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTask1Phase"), "", null); //$NON-NLS-1$
-		subTask2TextArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTask2"), "", null); //$NON-NLS-1$
-		subTask2PhaseArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTask2Phase"), "", null); //$NON-NLS-1$
+		AttributePanel scorePanel = new AttributePanel(1);
+		taskPanel.add(scorePanel, BorderLayout.NORTH);
+		scoreTextArea = scorePanel.addTextField("Score", "", null);
 
+		cacheModel = new TaskCacheModel();
+		JPanel cachePanel = new JPanel(new BorderLayout(1, 3));
+		addBorder(cachePanel, "Task Choices");
+		JTable cacheTable = new JTable(cacheModel) {
+		    @Override
+            public String getToolTipText(MouseEvent e) {
+                java.awt.Point p = e.getPoint();
+                int rowIndex = rowAtPoint(p);
+                int colIndex = columnAtPoint(p);
+				var sorter = getRowSorter();
+				if (sorter != null) {
+					rowIndex = sorter.convertRowIndexToModel(rowIndex);
+				}
+				TaskCacheModel model = (TaskCacheModel) getModel();
+				return model.getScoreText(rowIndex, colIndex);
+            }
+		};
+		cacheTable.setDefaultRenderer(Double.class,
+						new NumberCellRenderer(2, true));
+		cacheTable.setPreferredScrollableViewportSize(new Dimension(225, 150));
+		cacheTable.getColumnModel().getColumn(0).setPreferredWidth(30);
+		cacheTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+
+		// Add a scrolled window and center it with the table
+		JScrollPane scroller = new JScrollPane(cacheTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+								ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		cachePanel.add(scroller, BorderLayout.CENTER);
+		taskPanel.add(cachePanel, BorderLayout.SOUTH);
+		
 		update();
 	}
 
@@ -170,108 +182,43 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 		Mission mission = worker.getMission();
 
-		String newTaskPhase = "";
-		String newSubTaskPhase = "";
-		String newSubTask1Phase = "";
-		String newSubTask2Phase = "";
+		String prefix = "";
+		StringBuilder newTaskText = new StringBuilder();
+		for(Task t : taskManager.getTaskStack()) {
+			if (prefix.length() > 0) {
+				newTaskText.append("\n");
+			}
+			newTaskText.append(prefix);
+			var phase = t.getPhase();
+			if (phase != null) {
+				newTaskText.append(phase.getName()).append(" - ");
+			}
+			newTaskText.append(t.getDescription());
+			prefix = prefix + "-";
+		}
+		String newContent = newTaskText.toString();
+		if (!newContent.equals(taskStack.getText())) {
+			taskStack.setText(newContent);
+		
+			// Refresh task cache
+			TaskCache newCache = taskManager.getLatestTaskProbability();
+			cacheModel.setCache(newCache);
+		}
+
+		// Task has changed so update the score
+		var scoreLabel = "";
+		String scoreTooltip = null; 
+		RatingScore score = taskManager.getScore();
+		if (score != null) {
+			scoreLabel = StyleManager.DECIMAL_PLACES2.format(score.getScore());
+			scoreTooltip = score.getHTMLOutput();
+		}
+
+		updateLabel(scoreTextArea, scoreLabel);
+		scoreTextArea.setToolTipText(scoreTooltip);
 
 		String newMissionText = "";
 		String newMissionPhase = "";
-
-		String newTaskText = taskManager.getTaskDescription(false);
-		String newSubTaskText = taskManager.getSubTaskDescription();
-		String newSubTask1Text = taskManager.getSubTask1Description();
-		String newSubTask2Text = taskManager.getSubTask2Description();
-		
-		TaskPhase taskPhase = taskManager.getPhase();
-		TaskPhase subTaskPhase = taskManager.getSubTaskPhase();
-		TaskPhase subTask1Phase = taskManager.getSubTask1Phase();
-		TaskPhase subTask2Phase = taskManager.getSubTask2Phase();
-		
-		if (taskPhase != null) {
-			newTaskPhase = taskPhase.getName();
-		} 
-		if (subTaskPhase != null) {
-			newSubTaskPhase = subTaskPhase.getName();
-		} 
-		if (subTask1Phase != null) {
-			newSubTask1Phase = subTask1Phase.getName();
-		} 
-		if (subTask2Phase != null) {
-			newSubTask2Phase = subTask2Phase.getName();
-		} 
-		
-		///////
-		
-		if (!taskTextCache.equals(newTaskText)) {
-			taskTextCache = newTaskText;
-			updateLabel(taskTextArea, newTaskText);
-
-			// Task has changed so update the score
-			var scoreLabel = "";
-			String scoreTooltip = null; 
-			RatingScore score = taskManager.getScore();
-			if (score != null) {
-				scoreLabel = StyleManager.DECIMAL_PLACES2.format(score.getScore());
-				scoreTooltip = score.getHTMLOutput();
-			}
-
-			updateLabel(scoreTextArea, scoreLabel);
-			scoreTextArea.setToolTipText(scoreTooltip);
-		}
-
-		if (taskTextCache.equals(""))
-			updateLabel(taskPhaseArea, "");
-
-		else if (!taskPhaseCache.equals(newTaskPhase)) {
-			taskPhaseCache = newTaskPhase;
-			updateLabel(taskPhaseArea, newTaskPhase);
-		}
-
-		///////
-
-		if (!subTaskTextCache.equals(newSubTaskText)) {
-			subTaskTextCache = newSubTaskText;
-			updateLabel(subTaskTextArea, newSubTaskText);
-		}
-
-		if (subTaskTextCache.equals(""))
-			updateLabel(subTaskPhaseArea,"");
-
-		else if (!subTaskPhaseCache.equals(newSubTaskPhase)) {
-			subTaskPhaseCache = newSubTaskPhase;
-			updateLabel(subTaskPhaseArea, newSubTaskPhase);
-		}
-
-		///////
-		
-		if (!subTask1TextCache.equals(newSubTask1Text)) {
-			subTask1TextCache = newSubTask1Text;
-			updateLabel(subTask1TextArea, newSubTask1Text);
-		}
-
-		if (subTask1TextCache.equals(""))
-			updateLabel(subTask1PhaseArea, "");
-
-		else if (!subTask1PhaseCache.equals(newSubTask1Phase)) {
-			subTask1PhaseCache = newSubTask1Phase;
-			updateLabel(subTask1PhaseArea, newSubTask1Phase);
-		}
-		
-		///////
-		
-		if (!subTask2TextCache.equals(newSubTask2Text)) {
-			subTask2TextCache = newSubTask2Text;
-			updateLabel(subTask2TextArea, newSubTask2Text);
-		}
-
-		if (subTask2TextCache.equals(""))
-			updateLabel(subTask2PhaseArea, "");
-
-		else if (!subTask2PhaseCache.equals(newSubTask2Phase)) {
-			subTask2PhaseCache = newSubTask2Phase;
-			updateLabel(subTask2PhaseArea, newSubTask2Phase);
-		}
 
 		// Update mission text area if necessary.
 		if (mission != null)
@@ -320,6 +267,69 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 					logger.severe("PersonTableModel cannot be added.");
 				}
 			}
+		}
+	}
+
+	private static class TaskCacheModel extends AbstractTableModel {
+		private List<TaskJob> tasks = Collections.emptyList();
+
+		void setCache(TaskCache newCache) {
+			if (newCache != null) {
+				tasks = newCache.getTasks();
+			}
+			else {
+				tasks = Collections.emptyList();
+			}
+
+			fireTableDataChanged();
+		}
+
+		public String getScoreText(int rowIndex, int colIndex) {
+			if ((colIndex == 0) && (rowIndex < tasks.size())) {
+				var t = tasks.get(rowIndex);
+				return t.getScore().getHTMLOutput();
+			}
+			return null;
+		}
+
+		@Override
+		public int getRowCount() {
+			return tasks.size();
+		}
+
+		@Override
+		public int getColumnCount() {
+			return 2;
+		}
+
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			TaskJob job = tasks.get(rowIndex);
+
+			if (columnIndex == 0) {
+				return job.getScore().getScore();
+			}
+			else if (columnIndex == 1) {
+				return job.getName();
+			}
+
+			return null;
+		}
+
+		@Override
+		public Class<?> getColumnClass(int columnIndex) {
+			if (columnIndex == 0) {
+				return Double.class;
+			}
+			return String.class;
+		}
+
+		@Override
+		public String getColumnName(int column) {
+			if (column == 0) {
+				return "Score";
+			}
+			return "Description";
 		}
 	}
 }

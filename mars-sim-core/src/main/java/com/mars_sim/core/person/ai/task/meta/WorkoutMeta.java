@@ -64,7 +64,8 @@ public class WorkoutMeta extends FactoryMetaTask {
         double fatigue = condition.getFatigue();
         double kJ = condition.getEnergy();
         double hunger = condition.getHunger();
-        double[] muscle = condition.getMusculoskeletal();
+        double soreness = condition.getMuscleSoreness();
+        double painTolernce = condition.getMusclePainTolerance();
 
         double exerciseMillisols = person.getCircadianClock().getTodayExerciseTime();
             
@@ -77,7 +78,7 @@ public class WorkoutMeta extends FactoryMetaTask {
             		// After the first 333 msols, it decreases linearly for the rest of the day
             		+ Math.max(333 - fatigue, -666)/10
             		// Note: muscle condition affects the desire to exercise
-            		+ muscle[0]/2.5 - muscle[2]/2.5 
+            		+ painTolernce/2.5 - soreness/2.5 
             		+ stress / 10
             		- exerciseMillisols * 20)/FACTOR); // Why does this use a FACTOR ?
 

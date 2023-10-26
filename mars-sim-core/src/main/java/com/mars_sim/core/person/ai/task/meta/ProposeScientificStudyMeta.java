@@ -6,8 +6,12 @@
  */
 package com.mars_sim.core.person.ai.task.meta;
 
+import java.util.List;
+import java.util.Set;
+
 import com.mars_sim.core.authority.PreferenceCategory;
 import com.mars_sim.core.authority.PreferenceKey;
+import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -16,6 +20,8 @@ import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.ProposeScientificStudy;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskJob;
+import com.mars_sim.core.person.ai.task.util.TaskProbabilityUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
@@ -47,117 +53,93 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
     }
 
     @Override
-    public double getProbability(Person person) {
-
-        double result = 0D;
+    public List<TaskJob> getTaskJobs(Person person) {
 
 		Settlement settlement = person.getAssociatedSettlement();
         int pop = settlement.getInitialPopulation();
+		Set<JobType> targetJobs = JobType.SCIENTISTS;
 		JobType job = person.getMind().getJob();
 
         if (pop <= 6) {
-	        if (!JobType.ACADEMICS.contains(job)) {
-	        	return 0;
-	        }
+	        targetJobs = JobType.ACADEMICS;
         }
         else if (pop <= 12) {
-        	if (!JobType.MEDICS.contains(job)
-        			&& !JobType.SCIENTISTS.contains(job)) {
-	        	return 0;
-	        }
-        }
-        else {
-        	if (!JobType.SCIENTISTS.contains(job)) {
-	        	return 0;
-	        }
+        	targetJobs = JobType.INTELLECTUALS;
         }
 
-		ScienceType science = ScienceType.getJobScience(job);
-		
-        if (science == null)
-        	return 0;
-        
-        // Probability affected by the person's stress and fatigue.
-        if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
-        	return 0;
+		ScienceType science = TaskProbabilityUtil.getPersonJobScience(person);
+        if ((science == null)
+			|| !targetJobs.contains(job)
+			|| !person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
+			|| !person.isInside()) {
+        	return EMPTY_TASKLIST;
+		}
 
-        if (person.isInside()) {
-
-            Role role = person.getRole();
-            
-	        ScientificStudy study = person.getStudy();
-	        if (study != null) {
-	            // Check if study is in proposal phase.
-	            if (study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
-	                // Once a person starts a study in the proposal phase,
-	            	// there's a greater chance to continue on the proposal.
-	            	result += 100D;
+		double base = 0D;
+		RoleType roleType = RoleType.MAYOR; // Use Mayor as a useless default
+		Role role = person.getRole();
+		if (role != null) {
+			roleType = role.getType();
+		}
+		ScientificStudy study = person.getStudy();
+		if (study != null) {
+			// Check if study is in proposal phase.
+			if (study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
+				// Once a person starts a study in the proposal phase,
+				// there's a greater chance to continue on the proposal.
+				base = 100D;
 	            	
-	            	// Check person has a science role
-		            if (role != null) {
-						switch(role.getType()) {
-		            		case CHIEF_OF_SCIENCE:
-		            			result += 100D;
-								break;
-		            		case SCIENCE_SPECIALIST:
-		            			result += 200D;
-								break;
-							default:
-								break;
-	            		}
-		            }
-	            }
-	            else {
-		            // If the person already have a study and it's not in the proposal phase,
-	            	// do not start a new proposal
-	            	return 0;
-	            }
-	        }
-
-	        else {
-	            // Probability of starting a new scientific study.	        	
-	        	result += 500D;
-	        	
-	            // Check person has a science role
-	            if (role != null) {
-					switch(role.getType()) {
-	            		case CHIEF_OF_SCIENCE:
-	            		case SCIENCE_SPECIALIST:
-	            			result += 50D;
-							break;
-	            		case CHIEF_OF_COMPUTING:
-		            	case COMPUTING_SPECIALIST:
-            				result += 20D;
-							break;
-            			case CHIEF_OF_AGRICULTURE:
-		            	case AGRICULTURE_SPECIALIST:
-            				result += 10D;
-							break;
-						default:
-							break;
-            		}
-	            }
-	            else {
-					result += 5D;
+				// Check person has a science role
+				switch(roleType) {
+					case CHIEF_OF_SCIENCE:
+						base += 100D;
+						break;
+					case SCIENCE_SPECIALIST:
+						base += 200D;
+						break;
+					default:
+						break;
 				}
+			}
+		}
+		else {
+			// Probability of starting a new scientific study.	        	
+			base = 500D;
+	        	
+			// Check person has a science role
+			switch(roleType) {
+				case CHIEF_OF_SCIENCE:
+				case SCIENCE_SPECIALIST:
+					base += 50D;
+					break;
+				case CHIEF_OF_COMPUTING:
+				case COMPUTING_SPECIALIST:
+					base += 20D;
+					break;
+				case CHIEF_OF_AGRICULTURE:
+				case AGRICULTURE_SPECIALIST:
+					base += 10D;
+					break;
+				default:
+					break;
+			}
+		}
+		if (base <= 0) {
+			return EMPTY_TASKLIST;
+		}
 
-				// Check the favourite research of the Reporting Authority
-				result *= settlement.getPreferenceModifier(
-								new PreferenceKey(PreferenceCategory.SCIENCE, science.name()));
-	        }
+		RatingScore result = new RatingScore(base);
+		result.addModifier("science", settlement.getPreferenceModifier(
+								new PreferenceKey(PreferenceCategory.SCIENCE, science.name())));
+		// Crowding modifier
+		if (person.isInSettlement()) {
+			Building b = BuildingManager.getAvailableBuilding(study, person);
+			result = assessBuildingSuitability(result, b, person);
+		}
 
-	        // Crowding modifier
-	        if (person.isInSettlement()) {
-	            Building b = BuildingManager.getAvailableBuilding(study, person);
-				result *= getBuildingModifier(b, person);
-	        }
+	    result.addModifier(GOODS_MODIFIER, settlement.getGoodsManager().getResearchFactor());
+	    result = assessPersonSuitability(result, person);
 
-	        result *= settlement.getGoodsManager().getResearchFactor();
-	        result *= getPersonModifier(person);
-        }
-
-        if (result < 0) result = 0;
-
-        return result;
+        return createTaskJobs(result);
     }
 }

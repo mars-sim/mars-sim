@@ -97,7 +97,7 @@ public class SleepMeta extends FactoryMetaTask {
 			double ghrelin = person.getCircadianClock().getGhrelin();
 			double leptin = person.getCircadianClock().getLeptin();
 		    double sleepMillisols = person.getCircadianClock().getTodaySleepTime();
-            double[] muscle = person.getPhysicalCondition().getMusculoskeletal();
+            double soreness = person.getPhysicalCondition().getMuscleSoreness();
             
         	// the desire to go to bed increase linearly after 6 hours of wake time
             result += Math.max((fatigue - 250), 0) * 10 + stress * 10 
@@ -106,7 +106,7 @@ public class SleepMeta extends FactoryMetaTask {
             		// Therefore, limit the hunger contribution to a max of 300
             		+ Math.min(hunger, 300)
             		// Note: muscle condition affects the desire to exercise
-            		- muscle[2]/2.5 
+            		- soreness/2.5 
             		- sleepMillisols / 2;
                    
             double pref = person.getPreference().getPreferenceScore(this);

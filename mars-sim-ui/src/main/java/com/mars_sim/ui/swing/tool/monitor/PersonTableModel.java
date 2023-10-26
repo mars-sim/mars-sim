@@ -352,7 +352,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 						result = "On Call";
 					}
 					else {
-						result = shift.getShift().getName() + " " + shift.getStatus().getName();
+						result = shift.getStatusDescription();
 					}
 				}
 				break;

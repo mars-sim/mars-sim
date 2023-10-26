@@ -75,7 +75,6 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * 
 	 * @param robot the robot to perform the task.
 	 * @return weighted probability value (0 -> positive value).
-	 * @deprecated Replace with {@link #getProbability(Robot)}
 	 */
 	public double getProbability(Robot robot) {
 		throw new UnsupportedOperationException("Can not calculated the probability of " + getName()  + " for Robot.");
