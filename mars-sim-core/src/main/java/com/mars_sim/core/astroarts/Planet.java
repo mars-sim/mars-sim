@@ -1,16 +1,15 @@
-/**
+/*
  * Mars Simulation Project
  * Planet.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-06-20
  * @author Manny Kung
  */
+
+package com.mars_sim.core.astroarts;
 
 /**
  * Planet Class
  */
-package com.mars_sim.core.astroarts;
-
-
 public class Planet {
 	public static final int SUN     = 0;
 	public static final int MERCURY = 1;
@@ -27,7 +26,7 @@ public class Planet {
 	private static final double R_JD_END   = 2473459.5;	// 2060.0
 	
 	/**
-	 * Get Planet Position in Ecliptic Coordinates (Equinox Date)
+	 * Gets Planet Position in Ecliptic Coordinates (Equinox Date).
 	 */
 	public static Xyz getPos(int planetNo, ATime atime) {
 		if (R_JD_START < atime.getJd() && atime.getJd() < R_JD_END) {

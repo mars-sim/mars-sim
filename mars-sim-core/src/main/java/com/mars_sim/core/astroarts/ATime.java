@@ -1,12 +1,12 @@
-/**
+/*
  * Mars Simulation Project
  * ATime.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-06-20
  * @author Manny Kung
  */
 
 /**
- * Astronomical Time Class
+ * Astronomical Time Class.
  */
 package com.mars_sim.core.astroarts;
 
@@ -29,14 +29,14 @@ public class ATime {
 	static final public int F_DECTIME = -1;
 
 	/**
-	 * Get Abbreviated Month Name
+	 * Gets Abbreviated Month Name.
 	 */
 	static public String getMonthAbbr(int nMonth) {
 		return strMonthAbbr[nMonth - 1];
 	}
 
 	/**
-	 * YMD/HMS -> JD
+	 * YMD/HMS -> JD.
 	 */
 	private double makeJd() {
 		int    nYear  = this.nYear;
@@ -60,7 +60,7 @@ public class ATime {
 	}
 
 	/**
-	 * Time Parameter Origin of 1974/12/31  0h ET
+	 * Time Parameter Origin of 1974/12/31 0h ET.
 	 */
 	private double makeT() {
 		// 2442412.5 = 1974.12.31 0h ET
@@ -70,7 +70,7 @@ public class ATime {
 	}
 
 	/**
-	 * Time Parameter Origin of 2000/01/01 12h ET
+	 * Time Parameter Origin of 2000/01/01 12h ET.
 	 */
 	private double makeT2() {
 		double ft = (fJd - Astro.JD2000) / 36525.0;

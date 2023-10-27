@@ -1,8 +1,11 @@
-/**
+/*
  * Mars Simulation Project
  * Astro.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-06-20
  * @author Manny Kung
+ * @note Original work by Osamu Ajiki and Ron Baalke (NASA/JPL)
+ * http://www.astroarts.com/products/orbitviewer/
+ * http://neo.jpl.nasa.gov/
  */
 
 /**

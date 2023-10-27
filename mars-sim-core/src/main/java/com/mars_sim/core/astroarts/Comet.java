@@ -1,12 +1,12 @@
-/**
+/*
  * Mars Simulation Project
  * Comet.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-06-20
  * @author Manny Kung
  */
 
 /**
- * Comet Class
+ * Comet Class.
  */
 package com.mars_sim.core.astroarts;
 
@@ -22,7 +22,7 @@ public class Comet {
 	private static final int    MAXAPPROX = 80;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	public Comet(String strName, double fT, double fE, double fQ,
 				 double fPeri, double fNode, double fIncl,
@@ -46,7 +46,7 @@ public class Comet {
 	}
 
 	/**
-	 * Get Position on Orbital Plane for Elliptical Orbit
+	 * Gets Position on Orbital Plane for Elliptical Orbit.
 	 */
 	private Xyz CometStatusEllip(double fJd) {
 		if (this.fQ == 0.0) {
@@ -84,7 +84,7 @@ public class Comet {
 	}
 
 	/**
-	 * Get Position on Orbital Plane for Parabolic Orbit
+	 * Gets Position on Orbital Plane for Parabolic Orbit.
 	 */
 	private Xyz CometStatusPara(double fJd) {
 		if (this.fQ == 0.0) {
@@ -111,7 +111,7 @@ public class Comet {
 	}
 
 	/**
-	 * Get Position on Orbital Plane for Nearly Parabolic Orbit
+	 * Gets Position on Orbital Plane for Nearly Parabolic Orbit.
 	 */
 	private Xyz CometStatusNearPara(double fJd) {
 		if (this.fQ == 0.0) {
@@ -152,7 +152,7 @@ public class Comet {
 	}
 
 	/**
-	 * Get Position in Heliocentric Equatorial Coordinates 2000.0
+	 * Gets Position in Heliocentric Equatorial Coordinates 2000.0.
 	 */
 	public Xyz GetPos(double fJd) {
 		Xyz xyz;
@@ -170,12 +170,12 @@ public class Comet {
 		return xyz.Rotate(mtxPrec);
 	}
 
-	/**
-	 * Get Internal Variables
-	 */
+	// Gets Internal Variables.
+	
 	public String getName() {
 		return this.strName;
 	}
+	
 	public double getT() {
 		return this.fT;
 	}

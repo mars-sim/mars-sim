@@ -1,22 +1,23 @@
-/**
+/*
  * Mars Simulation Project
  * Matrix.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-06-20
  * @author Manny Kung
  */
+
+
+package com.mars_sim.core.astroarts;
 
 /**
  * Matrix (3x3)
  */
-package com.mars_sim.core.astroarts;
-
 public class Matrix {
 	public double fA11, fA12, fA13;
 	public double fA21, fA22, fA23;
 	public double fA31, fA32, fA33;
 
 	/**
-	 * Default Constructor
+	 * Default Constructor.
 	 */
 	public Matrix() {
 		this.fA11 = this.fA12 = this.fA13 =
@@ -25,7 +26,7 @@ public class Matrix {
 	}
 
 	/**
-	 * Constructor with Initializer
+	 * Constructor with Initializer.
 	 */
 	public Matrix(double fA11, double fA12, double fA13,
 				  double fA21, double fA22, double fA23,
@@ -36,7 +37,7 @@ public class Matrix {
 	}
 
 	/**
-	 * Multiplication of Matrix
+	 * Gets Multiplication of Matrix.
 	 */
 	public Matrix Mul(Matrix mtx) {
 		double fA11 = this.fA11 * mtx.fA11 + this.fA12 * mtx.fA21
@@ -66,7 +67,7 @@ public class Matrix {
 	}
 
 	/**
-	 * Multiplication of Matrix by double
+	 * Gets Multiplication of Matrix by double.
 	 */
 	public Matrix Mul(double fX) {
 		double fA11 = this.fA11 * fX;
@@ -87,7 +88,7 @@ public class Matrix {
 	}
 
 	/**
-	 * Create Rotation Matrix Around X-Axis
+	 * Creates Rotation Matrix Around X-Axis.
 	 */
 	public static Matrix RotateX(double fAngle) {
 		double fA11 =  1.0;
@@ -106,7 +107,7 @@ public class Matrix {
 	}
 
 	/**
-	 *  Create Rotation Matrix Around Y-Axis
+	 *  Creates Rotation Matrix Around Y-Axis.
 	 */
 	public static Matrix RotateY(double fAngle) {
 		double fA11 =  Math.cos(fAngle);
@@ -125,7 +126,7 @@ public class Matrix {
 	}
 
 	/**
-	 * Create Rotation Matrix Around Z-Axis
+	 * Creates Rotation Matrix Around Z-Axis.
 	 */
 	public static Matrix RotateZ(double fAngle) {
 		double fA11 =  Math.cos(fAngle);
@@ -144,7 +145,7 @@ public class Matrix {
 	}
 
 	/**
-	 * Invert Matrix
+	 * Inverts Matrix.
 	 */
 	public void Invert() {
 		double fA = 1.0 /
@@ -186,7 +187,7 @@ public class Matrix {
 	
 
 	/**
-	 * Create Precession Matrix
+	 * Creates Precession Matrix.
 	 */
 	static final double FGeneralPrec = 360.0/25920;
 	static final double FPrecLimit = 30.0;
@@ -266,7 +267,7 @@ public class Matrix {
 	}
 	
 	/**
-	 * Get Vector Constant from Angle Elements
+	 * Gets Vector Constant from Angle Elements.
 	 */
 	public static Matrix VectorConstant(double fPeri, double fNode,
 										double fIncl, ATime equinox) {

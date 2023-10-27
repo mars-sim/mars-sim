@@ -1,12 +1,12 @@
-/**
+/*
  * Mars Simulation Project
  * CometOrbit.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-06-20
  * @author Manny Kung
  */
 
 /**
- * CometOrbit Class
+ * CometOrbit Class.
  */
 package com.mars_sim.core.astroarts;
 
@@ -19,7 +19,29 @@ public class CometOrbit {
 	static private final double fTolerance = 1.0e-16;
 
 	/**
-	 *  Elliptical Orbit
+	 * Constructor.
+	 */
+	public CometOrbit(Comet comet, int nDivision) {
+		this.nDivision = nDivision;
+		orbit = new Xyz[nDivision+1];
+		if (comet.getE() < 1.0 - fTolerance) {
+			GetOrbitEllip(comet);
+		} else if (comet.getE() > 1.0 + fTolerance) {
+			GetOrbitHyper(comet);
+		} else {
+			GetOrbitPara(comet);
+		}
+
+		Matrix vec = comet.getVectorConstant();
+		Matrix prec = Matrix.PrecMatrix(comet.getEquinoxJd(), Astro.JD2000);
+		for (int i = 0; i <= nDivision; i++) {
+			orbit[i] = orbit[i].Rotate(vec).Rotate(prec);
+		}
+	}
+
+
+	/**
+	 * Gets the Elliptical Orbit.
 	 */
 	private void GetOrbitEllip(Comet comet) {
 		double fAxis = comet.getQ() / (1.0 - comet.getE());
@@ -56,7 +78,7 @@ public class CometOrbit {
 	}
 
 	/**
-	 * Hyperbolic Orbit
+	 * Gets the Hyperbolic Orbit.
 	 */
 	private void GetOrbitHyper(Comet comet) {
 		int nIdx1, nIdx2;
@@ -75,7 +97,7 @@ public class CometOrbit {
 	}
 
 	/**
-	 * Parabolic Orbit
+	 * Gets the Parabolic Orbit.
 	 */
 	private void GetOrbitPara(Comet comet) {
 		int nIdx1, nIdx2;
@@ -93,35 +115,14 @@ public class CometOrbit {
 	}
 
 	/**
-	 * Constructor
-	 */
-	public CometOrbit(Comet comet, int nDivision) {
-		this.nDivision = nDivision;
-		orbit = new Xyz[nDivision+1];
-		if (comet.getE() < 1.0 - fTolerance) {
-			GetOrbitEllip(comet);
-		} else if (comet.getE() > 1.0 + fTolerance) {
-			GetOrbitHyper(comet);
-		} else {
-			GetOrbitPara(comet);
-		}
-
-		Matrix vec = comet.getVectorConstant();
-		Matrix prec = Matrix.PrecMatrix(comet.getEquinoxJd(), Astro.JD2000);
-		for (int i = 0; i <= nDivision; i++) {
-			orbit[i] = orbit[i].Rotate(vec).Rotate(prec);
-		}
-	}
-
-	/**
-	 * Get Division Count
+	 * Gets Division Count.
 	 */
 	public int getDivision() {
 		return nDivision;
 	}
 
 	/**
-	 * Get Orbit Point
+	 * Gets Orbit Point.
 	 */
 	public Xyz getAt(int nIndex) {
 		return orbit[nIndex];

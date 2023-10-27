@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Xyz.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-06-20
  * @author Manny Kung
  */
 
@@ -15,14 +15,14 @@ public class Xyz {
 	public double fX, fY, fZ;
 
 	/**
-	 * Default Constructor
+	 * Default Constructor.
 	 */
 	public Xyz() {
 		this.fX = this.fY = this.fZ = 0.0;
 	}
 
 	/**
-	 * Constructor with Initializer
+	 * Constructor with Initializer.
 	 */
 	public Xyz(double fX, double fY, double fZ) {
 		this.fX = fX;
@@ -44,7 +44,7 @@ public class Xyz {
 	}
 
 	/**
-	 * V := V1 + V2
+	 * V := V1 + V2.
 	 */
 	public Xyz Add(Xyz xyz) {
 		double fX = this.fX + xyz.fX;
@@ -54,7 +54,7 @@ public class Xyz {
 	}
 
 	/**
-	 * V := V1 - V2
+	 * V := V1 - V2.
 	 */
 	public Xyz Sub(Xyz xyz) {
 		double fX = this.fX - xyz.fX;
@@ -64,7 +64,7 @@ public class Xyz {
 	}
 
 	/**
-	 * V := x * V;
+	 * V := x * V.
 	 */
 	public Xyz Mul(double fA) {
 		double fX = this.fX * fA;
@@ -74,7 +74,7 @@ public class Xyz {
 	}
 
 	/**
-	 * x := abs(V);
+	 * x := abs(V).
 	 */
 	public double Abs() {
 		return Math.sqrt(this.fX * this.fX

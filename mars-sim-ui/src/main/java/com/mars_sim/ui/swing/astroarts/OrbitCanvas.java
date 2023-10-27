@@ -3,7 +3,7 @@
  * OrbitCanvas.java
  * @date 2022-07-10
  * @author Manny Kung
- * Original work by Osamu Ajiki and Ron Baalke (NASA/JPL)
+ * @note Original work by Osamu Ajiki and Ron Baalke (NASA/JPL)
  * http://www.astroarts.com/products/orbitviewer/
  * http://neo.jpl.nasa.gov/
  */
@@ -132,7 +132,7 @@ class OrbitCanvas extends Canvas {
 		// Set Initial Date
 		this.atime = atime;
 		setDate(this.atime);
-		// no offscreen image
+		// no off screen image
 		offscreen = null;
 		// no name labels
 		bPlanetName = false;

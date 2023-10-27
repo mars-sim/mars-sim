@@ -1,15 +1,15 @@
-/**
+/*
  * Mars Simulation Project
  * UdMath.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-06-20
  * @author Manny Kung
  */
 
-/**
- * Common Mathematic Functions
- */
 package com.mars_sim.core.astroarts;
 
+/**
+ * The class for housing Common Mathematical Functions.
+ */
 public class UdMath {
 	/**
 	 * modulo for double value

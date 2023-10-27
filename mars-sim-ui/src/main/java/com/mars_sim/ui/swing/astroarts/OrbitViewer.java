@@ -13,6 +13,8 @@
 
 package com.mars_sim.ui.swing.astroarts;
 
+import java.awt.BorderLayout;
+
 /**
  * Orbit Projector
  *
@@ -52,7 +54,6 @@ package com.mars_sim.ui.swing.astroarts;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -63,6 +64,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseWheelEvent;
+
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -96,16 +98,17 @@ implements ActionListener {
 	public static final String NAME = "Orbit Viewer";
 	public static final String ICON = "astro";
 
-	/**
-	 * Components
-	 */
-	private JScrollBar		scrollZoom;
 
 	private int xvalue = 255;
 	private int yvalue = 130;
 	private int xCache;
 	private int yCache;
 
+	/**
+	 * Components
+	 */
+	private JScrollBar 		scrollHor;
+	private JScrollBar 		scrollVert;
 	private OrbitCanvas		orbitCanvas;
 	private JButton			buttonDate;
 	private DateDialog		dateDialog = null;
@@ -239,15 +242,18 @@ implements ActionListener {
 
 	private JPanel createGUI() {
 
-	 	setLayout(new FlowLayout());
+	 	setLayout(new BorderLayout());
 
-		JPanel mainPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5,5));
+		JPanel mainPanel = new JPanel(new BorderLayout());
+
 		GridBagLayout gblMainPanel = new GridBagLayout();
-		GridBagConstraints gbcMainPanel = new GridBagConstraints();
-		gbcMainPanel.fill = GridBagConstraints.BOTH; //HORIZONTAL;//
 		mainPanel.setLayout(gblMainPanel);
+		
+		GridBagConstraints constraints = new GridBagConstraints();
 
-		// Orbit Canvas
+		constraints.fill = GridBagConstraints.BOTH; //HORIZONTAL;//
+		
+		// Create a comet object
 		Comet object = getObject();
 		String strParam;
 		if ((strParam = getParameter("Date")) != null) {
@@ -255,29 +261,44 @@ implements ActionListener {
 		} else {
 			this.atime = new ATime(1900, 1, 1, 0.0);
 		}
+		
+		// Orbit Canvas
 		orbitCanvas = new OrbitCanvas(object, this.atime);
-		gbcMainPanel.weightx = 1.0;
-		gbcMainPanel.weighty = 1.0;
-		gbcMainPanel.gridwidth = GridBagConstraints.RELATIVE;
-		gblMainPanel.setConstraints(orbitCanvas, gbcMainPanel);
+		constraints.weightx = 1.0;
+		constraints.weighty = 1.0;
+		constraints.gridwidth = GridBagConstraints.RELATIVE;
+		gblMainPanel.setConstraints(orbitCanvas, constraints);
 		mainPanel.add(orbitCanvas);
 
+		scrollHor = new JScrollBar(JScrollBar.HORIZONTAL, 167, 5, 0, 300);
+		scrollVert = new JScrollBar(JScrollBar.VERTICAL, 167, 5, 0, 300);
+		
+		// Note: may add scrollHor and scrollVert to make the zoom bar visible
+		
+		orbitCanvas.setZoom(scrollHor.getValue());
+		orbitCanvas.setZoom(scrollVert.getValue());
+		
 		orbitCanvas.addMouseWheelListener(new MouseAdapter() {
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				int value = 0;
 
-		       int notches = e.getWheelRotation();
+				int notches = e.getWheelRotation();
 
-		       value = scrollZoom.getValue() + notches * 2;
-		       if (value < 0)
-		    	   value = 0;
-		       scrollZoom.setValue(value);
-		       orbitCanvas.setZoom(scrollZoom.getValue());
-		       orbitCanvas.repaint();
+				value = scrollHor.getValue() + notches;
+				if (value < 0)
+					value = 0;
+				scrollHor.setValue(value);
+				orbitCanvas.setZoom(scrollHor.getValue());
+				
+				value = scrollVert.getValue() + notches;
+				if (value < 0)
+					value = 0;
+				scrollVert.setValue(value);
+				orbitCanvas.setZoom(scrollVert.getValue());
+				
+				orbitCanvas.repaint();
 			}
 		});
-
-
 
 		orbitCanvas.addMouseListener(new MouseAdapter() {
 			@Override
@@ -370,13 +391,14 @@ implements ActionListener {
 
 		// Right-Bottom Corner Rectangle
 		JPanel cornerPanel = new JPanel();
-		gbcMainPanel.weightx = 0.0;
-		gbcMainPanel.weighty = 0.0;
-		gbcMainPanel.gridwidth = GridBagConstraints.REMAINDER;
-		gblMainPanel.setConstraints(cornerPanel, gbcMainPanel);
+		constraints.weightx = 0.0;
+		constraints.weighty = 0.0;
+		constraints.gridwidth = GridBagConstraints.REMAINDER;
+		gblMainPanel.setConstraints(cornerPanel, constraints);
 		mainPanel.add(cornerPanel);
 
 		Font labelFont = StyleManager.getLabelFont();
+		
 		//
 		// Control Panel
 		//
@@ -387,30 +409,33 @@ implements ActionListener {
 		ctrlPanel.setLayout(gblCtrlPanel);
 		ctrlPanel.setBorder(new MarsPanelBorder());
 
-		// Set Date Button
-		buttonDate = new JButton("Select Date");
-		buttonDate.setActionCommand(SELECT_DATE);
-		buttonDate.addActionListener(this);
+		gbcCtrlPanel.fill = GridBagConstraints.HORIZONTAL;
+		
+		// Set Control Label
+		JLabel controlLabel = new JLabel("Controls", JLabel.CENTER);
+		controlLabel.setAlignmentX(CENTER_ALIGNMENT);
 		gbcCtrlPanel.gridx = 0;
 		gbcCtrlPanel.gridy = 0;
 		gbcCtrlPanel.weightx = 0.0;
-		gbcCtrlPanel.weighty = 1.0;
-		gbcCtrlPanel.gridwidth = 1;
+		gbcCtrlPanel.weighty = 0.0;
+		gbcCtrlPanel.gridwidth = 5;
 		gbcCtrlPanel.gridheight = 1;
-		gblCtrlPanel.setConstraints(buttonDate, gbcCtrlPanel);
-		ctrlPanel.add(buttonDate);
+		gblCtrlPanel.setConstraints(controlLabel, gbcCtrlPanel);
+		ctrlPanel.add(controlLabel);
 
+		gbcCtrlPanel.fill = GridBagConstraints.HORIZONTAL;
+		
 		// Reverse-Play Button
 		JButton buttonRevPlay = new JButton("<<");
 		buttonRevPlay.setActionCommand(REV_PLAY);
 		buttonRevPlay.addActionListener(this);
-		gbcCtrlPanel.gridx = 1;
-		gbcCtrlPanel.gridy = 0;
+		gbcCtrlPanel.gridx = 0;
+		gbcCtrlPanel.gridy = 1;
 		gbcCtrlPanel.weightx = 0.0;
 		gbcCtrlPanel.weighty = 0.0;
 		gbcCtrlPanel.gridwidth = 1;
 		gbcCtrlPanel.gridheight = 1;
-		gbcCtrlPanel.insets = new Insets(0, 0, 3, 0);
+		gbcCtrlPanel.insets = new Insets(0, 0, 5, 0);
 		gblCtrlPanel.setConstraints(buttonRevPlay, gbcCtrlPanel);
 		ctrlPanel.add(buttonRevPlay);
 
@@ -418,13 +443,13 @@ implements ActionListener {
 		JButton buttonRevStep = new JButton("|<");
 		buttonRevStep.setActionCommand(REV_STEP);
 		buttonRevStep.addActionListener(this);
-		gbcCtrlPanel.gridx = 2;
-		gbcCtrlPanel.gridy = 0;
+		gbcCtrlPanel.gridx = 1;
+		gbcCtrlPanel.gridy = 1;
 		gbcCtrlPanel.weightx = 0.0;
 		gbcCtrlPanel.weighty = 0.0;
 		gbcCtrlPanel.gridwidth = 1;
 		gbcCtrlPanel.gridheight = 1;
-		gbcCtrlPanel.insets = new Insets(0, 0, 3, 0);
+		gbcCtrlPanel.insets = new Insets(0, 0, 5, 0);
 		gblCtrlPanel.setConstraints(buttonRevStep, gbcCtrlPanel);
 		ctrlPanel.add(buttonRevStep);
 
@@ -432,13 +457,13 @@ implements ActionListener {
 		JButton buttonStop = new JButton("||");
 		buttonStop.setActionCommand(STOP);
 		buttonStop.addActionListener(this);
-		gbcCtrlPanel.gridx = 3;
-		gbcCtrlPanel.gridy = 0;
+		gbcCtrlPanel.gridx = 2;
+		gbcCtrlPanel.gridy = 1;
 		gbcCtrlPanel.weightx = 0.0;
 		gbcCtrlPanel.weighty = 0.0;
 		gbcCtrlPanel.gridwidth = 1;
 		gbcCtrlPanel.gridheight = 1;
-		gbcCtrlPanel.insets = new Insets(0, 0, 3, 0);
+		gbcCtrlPanel.insets = new Insets(0, 0, 5, 0);
 		gblCtrlPanel.setConstraints(buttonStop, gbcCtrlPanel);
 		ctrlPanel.add(buttonStop);
 
@@ -446,13 +471,13 @@ implements ActionListener {
 		JButton buttonForStep = new JButton(">|");
 		buttonForStep.setActionCommand(STEP);
 		buttonForStep.addActionListener(this);
-		gbcCtrlPanel.gridx = 4;
-		gbcCtrlPanel.gridy = 0;
+		gbcCtrlPanel.gridx = 3;
+		gbcCtrlPanel.gridy = 1;
 		gbcCtrlPanel.weightx = 0.0;
 		gbcCtrlPanel.weighty = 0.0;
 		gbcCtrlPanel.gridwidth = 1;
 		gbcCtrlPanel.gridheight = 1;
-		gbcCtrlPanel.insets = new Insets(0, 0, 3, 0);
+		gbcCtrlPanel.insets = new Insets(0, 0, 5, 0);
 		gblCtrlPanel.setConstraints(buttonForStep, gbcCtrlPanel);
 		ctrlPanel.add(buttonForStep);
 
@@ -460,25 +485,41 @@ implements ActionListener {
 		JButton buttonForPlay = new JButton(">>");
 		buttonForPlay.setActionCommand(PLAY);
 		buttonForPlay.addActionListener(this);
-		gbcCtrlPanel.gridx = 5;
-		gbcCtrlPanel.gridy = 0;
+		gbcCtrlPanel.gridx = 4;
+		gbcCtrlPanel.gridy = 1;
 		gbcCtrlPanel.weightx = 0.0;
 		gbcCtrlPanel.weighty = 0.0;
 		gbcCtrlPanel.gridwidth = 1;
 		gbcCtrlPanel.gridheight = 1;
-		gbcCtrlPanel.insets = new Insets(0, 0, 3, 0);
+		gbcCtrlPanel.insets = new Insets(0, 0, 5, 0);
 		gblCtrlPanel.setConstraints(buttonForPlay, gbcCtrlPanel);
 		ctrlPanel.add(buttonForPlay);
-
+		
+		gbcCtrlPanel.fill = GridBagConstraints.HORIZONTAL;
+		
+		// Set Date Button
+		buttonDate = new JButton("Select A Date");
+		buttonDate.setActionCommand(SELECT_DATE);
+		buttonDate.addActionListener(this);
+		gbcCtrlPanel.gridx = 0;
+		gbcCtrlPanel.gridy = 2;
+		gbcCtrlPanel.weightx = 0.0;
+		gbcCtrlPanel.weighty = 0.0;
+		gbcCtrlPanel.gridwidth = 1;
+		gbcCtrlPanel.gridheight = 2;
+		gblCtrlPanel.setConstraints(buttonDate, gbcCtrlPanel);
+		ctrlPanel.add(buttonDate);
+		
+		
         // Step Label
-        JLabel stepLabel = new JLabel("Select Step :");
+        JLabel stepLabel = new JLabel("Step : ");
 		stepLabel.setFont(labelFont);
         stepLabel.setHorizontalAlignment(JLabel.RIGHT);
-        gbcCtrlPanel.gridx = 0;
-        gbcCtrlPanel.gridy = 1;
+        gbcCtrlPanel.gridx = 1;
+        gbcCtrlPanel.gridy = 2;
         gbcCtrlPanel.weightx = 0.0;
         gbcCtrlPanel.weighty = 0.0;
-        gbcCtrlPanel.gridwidth = 2;
+        gbcCtrlPanel.gridwidth = 1;
         gbcCtrlPanel.gridheight = 1;
         gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
         gblCtrlPanel.setConstraints(stepLabel, gbcCtrlPanel);
@@ -487,10 +528,10 @@ implements ActionListener {
 		// Step choice box
 		JComboBox<TimeSpan> choiceTimeStep = new JComboBox<>(timeStepSpan);
 		gbcCtrlPanel.gridx = 2;
-		gbcCtrlPanel.gridy = 1;
+		gbcCtrlPanel.gridy = 2;
 		gbcCtrlPanel.weightx = 0.0;
 		gbcCtrlPanel.weighty = 0.0;
-		gbcCtrlPanel.gridwidth = 4;
+		gbcCtrlPanel.gridwidth = 1;
 		gbcCtrlPanel.gridheight = 1;
 		gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
 		gblCtrlPanel.setConstraints(choiceTimeStep, gbcCtrlPanel);
@@ -500,14 +541,14 @@ implements ActionListener {
 		choiceTimeStep.addActionListener(this);
 		
        // Center Object JLabel
-        JLabel centerLabel = new JLabel("Select Center :");
+        JLabel centerLabel = new JLabel("Center : ");
 		centerLabel.setFont(labelFont);
         centerLabel.setHorizontalAlignment(JLabel.RIGHT);
-        gbcCtrlPanel.gridx = 0;
+        gbcCtrlPanel.gridx = 3;
         gbcCtrlPanel.gridy = 2;
         gbcCtrlPanel.weightx = 0.0;
         gbcCtrlPanel.weighty = 0.0;
-        gbcCtrlPanel.gridwidth = 2;
+        gbcCtrlPanel.gridwidth = 1;
         gbcCtrlPanel.gridheight = 1;
         gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
         gblCtrlPanel.setConstraints(centerLabel, gbcCtrlPanel);
@@ -515,11 +556,11 @@ implements ActionListener {
 
        // Center Object choice box
         JComboBox<String> choiceCenterObject = new JComboBox<>(centerObjectLabel);
-        gbcCtrlPanel.gridx = 2;
+        gbcCtrlPanel.gridx = 4;
         gbcCtrlPanel.gridy = 2;
         gbcCtrlPanel.weightx = 0.0;
         gbcCtrlPanel.weighty = 0.0;
-        gbcCtrlPanel.gridwidth = 4;
+        gbcCtrlPanel.gridwidth = 1;
         gbcCtrlPanel.gridheight = 1;
         gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
         gblCtrlPanel.setConstraints(choiceCenterObject, gbcCtrlPanel);
@@ -530,14 +571,14 @@ implements ActionListener {
         choiceCenterObject.addActionListener(this);
         
        // Display Orbits JLabel
-        JLabel orbitLabel = new JLabel("Select Orbits :");
+        JLabel orbitLabel = new JLabel("Orbit : ");
 		orbitLabel.setFont(labelFont);
         orbitLabel.setHorizontalAlignment(JLabel.RIGHT);
-        gbcCtrlPanel.gridx = 0;
+        gbcCtrlPanel.gridx = 3;
         gbcCtrlPanel.gridy = 3;
         gbcCtrlPanel.weightx = 0.0;
         gbcCtrlPanel.weighty = 0.0;
-        gbcCtrlPanel.gridwidth = 2;
+        gbcCtrlPanel.gridwidth = 1;
         gbcCtrlPanel.gridheight = 1;
         gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
         gblCtrlPanel.setConstraints(orbitLabel, gbcCtrlPanel);
@@ -547,11 +588,11 @@ implements ActionListener {
         JComboBox<String> choiceOrbitObject = new JComboBox<>(orbitDisplayLabel);
 		choiceOrbitObject.setActionCommand(ORBIT_CHOICE);
         choiceOrbitObject.addActionListener(this);
-        gbcCtrlPanel.gridx = 2;
+        gbcCtrlPanel.gridx = 4;
         gbcCtrlPanel.gridy = 3;
         gbcCtrlPanel.weightx = 0.0;
         gbcCtrlPanel.weighty = 0.0;
-        gbcCtrlPanel.gridwidth = 4;
+        gbcCtrlPanel.gridwidth = 1;
         gbcCtrlPanel.gridheight = 1;
         gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
         gblCtrlPanel.setConstraints(choiceOrbitObject, gbcCtrlPanel);
@@ -562,8 +603,7 @@ implements ActionListener {
         choiceOrbitObject.setSelectedIndex(1);
         orbitCanvas.selectOrbits(orbitDisplay);
 
-
-		// Date Label Checkbox
+		// Create Date Label Check Box
 		JCheckBox checkDateLabel = new JCheckBox("Date Label");
 		checkDateLabel.setSelected(true);
 		checkDateLabel.setActionCommand(DATE_LABEL);
@@ -574,7 +614,7 @@ implements ActionListener {
 		gbcCtrlPanel.weighty = 0.0;
 		gbcCtrlPanel.gridwidth = 1;
 		gbcCtrlPanel.gridheight = 1;
-		gbcCtrlPanel.insets = new Insets(0, 12, 0, 0);
+		gbcCtrlPanel.insets = new Insets(5, 12, 0, 0);
 		gblCtrlPanel.setConstraints(checkDateLabel, gbcCtrlPanel);
 		ctrlPanel.add(checkDateLabel);
 		orbitCanvas.switchPlanetName(checkDateLabel.isSelected());

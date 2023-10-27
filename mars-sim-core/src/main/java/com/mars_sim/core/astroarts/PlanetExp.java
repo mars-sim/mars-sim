@@ -1,17 +1,14 @@
-/**
+/*
  * Mars Simulation Project
  * PlanetExp.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-06-20
  * @author Manny Kung
  */
 
-/**
- * Planet Position by Expansion
- */
 package com.mars_sim.core.astroarts;
 
 /**
- * planet position by expansion
+ * Planet Position by Expansion.
  */
 public class PlanetExp {
 	//
@@ -52,6 +49,7 @@ public class PlanetExp {
 		new PlanetExpP0(0.000042,	747363.0,	334.0),
 		new PlanetExpP0(0.000006,	896835.0,	149.0),
 	};
+	
 	//
 	// Venus
 	//
@@ -77,6 +75,7 @@ public class PlanetExp {
 		 0.05922,		233.72,		585.183,
 		 -0.002947,		0.00000021,	178.954,	585.178,	-0.140658
 	);
+	
 	//
 	// Mars
 	//
@@ -117,6 +116,7 @@ public class PlanetExp {
 		0.03227,	200.00,			191.409,
 		-0.040421,	-0.00000039,	273.768,	191.399,	0.183844
 	);
+	
 	//
 	// Jupiter
 	//
@@ -174,6 +174,7 @@ public class PlanetExp {
 		0.022889,	272.975,	0.0128,		0.00010,		35.52,
 		5.190688,	0.048254
 	);
+	
 	//
 	// Saturn
 	//
@@ -233,6 +234,7 @@ public class PlanetExp {
 		0.043519,	337.763,	0.0286,		0.00023,		77.06,
 		9.508863,	0.056061
 	);
+	
 	//
 	// Uranus
 	//
@@ -262,6 +264,7 @@ public class PlanetExp {
 		new PlanetExpP0(0.000205,   3104.0,		 37.0),
 		new PlanetExpP0(0.000120,   5652.0,		100.0),
 	};
+	
 	//
 	// Neptune
 	//
@@ -287,6 +290,7 @@ public class PlanetExp {
 		new PlanetExpP0(0.002579,   1025.1,	104.0),
 		new PlanetExpP0(0.000120,   5845.0,	111.0),
 	};
+	
 	//
 	// Pluto
 	//
@@ -319,6 +323,7 @@ public class PlanetExp {
 		new PlanetExpP0(0.000390,	3188.0,			 15.0),
 		new PlanetExpP0(0.000116,	5860.0,			169.0),
 	};
+	
 	//
 	// Sun
 	//
@@ -348,8 +353,9 @@ public class PlanetExp {
 		new PlanetExpP0( 0.000007,   62.0,   450.4),
 		new PlanetExpP0( 0.000007,  105.0,	 329.6),
 	};
+	
 	/**
-	 * Get Position of the Earth
+	 * Gets Position of the Earth.
 	 */
 	private static Xyz getPosExp0(double fT) {
 		double fLambda = 279.0358 + 360.00769 * fT
@@ -377,7 +383,7 @@ public class PlanetExp {
 	}
 
 	/**
-	 * Get Position of Venus and Mars
+	 * Gets Position of Venus and Mars.
 	 */
 	private static Xyz getPosExp1(int planetNo, double fT) {
 		PlanetExpP0 ParamL0[], ParamL1[], ParamQ[];
@@ -426,7 +432,7 @@ public class PlanetExp {
 	}
 
 	/**
-	 * Get Position of Jupiter and Saturn
+	 * Gets Position of Jupiter and Saturn.
 	 */
 	private static Xyz getPosExp2(int planetNo, double fT) {
 		PlanetExpP0 ParamN[], ParamB[], ParamQ[];
@@ -502,7 +508,7 @@ public class PlanetExp {
 	}
 
 	/**
-	 * Get Position of Mercury, Uranus, Nneptune, Pluto
+	 * Gets Position of Mercury, Uranus, Neptune, Pluto.
 	 */
 	private static Xyz getPosExp3(int planetNo, double fT2) {
 		PlanetExpP0 ParamL[], ParamB[], ParamR[];

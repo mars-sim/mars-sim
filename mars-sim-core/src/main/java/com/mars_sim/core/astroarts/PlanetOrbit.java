@@ -1,19 +1,43 @@
-/**
+/*
  * Mars Simulation Project
  * PlanetOrbit.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-06-20
  * @author Manny Kung
  */
+
+package com.mars_sim.core.astroarts;
 
 /**
  * PlanetOrbit Class
  */
-package com.mars_sim.core.astroarts;
-
 public class PlanetOrbit {
 	private double	jd;
 	private int		nDivision;
 	private  Xyz	orbit[];
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param planetNo
+	 * @param atime
+	 * @param nDivision
+	 */
+	public PlanetOrbit(int planetNo, ATime atime, int nDivision) {
+		this.jd = atime.getJd();
+		this.nDivision = nDivision;
+		PlanetElm planetElm = new PlanetElm(planetNo, atime);
+		orbit = new Xyz[nDivision + 1];
+		doGetPlanetOrbit(planetElm);
+		Matrix vec = Matrix.VectorConstant(planetElm.peri * Math.PI/180.0,
+										   planetElm.node * Math.PI/180.0,
+										   planetElm.incl * Math.PI/180.0,
+										   atime);
+		Matrix prec = Matrix.PrecMatrix(atime.getJd(), 2451512.5);
+		for (int i = 0; i <= nDivision; i++) {
+			orbit[i] = orbit[i].Rotate(vec).Rotate(prec);
+		}
+	}
+	
 	
 	private void doGetPlanetOrbit(PlanetElm planetElm) {
 		double ae2 = -2.0 * planetElm.axis * planetElm.e;
@@ -33,38 +57,22 @@ public class PlanetOrbit {
 		}
 	}
 	
-	public PlanetOrbit(int planetNo, ATime atime, int nDivision) {
-		this.jd = atime.getJd();
-		this.nDivision = nDivision;
-		PlanetElm planetElm = new PlanetElm(planetNo, atime);
-		orbit = new Xyz[nDivision + 1];
-		doGetPlanetOrbit(planetElm);
-		Matrix vec = Matrix.VectorConstant(planetElm.peri * Math.PI/180.0,
-										   planetElm.node * Math.PI/180.0,
-										   planetElm.incl * Math.PI/180.0,
-										   atime);
-		Matrix prec = Matrix.PrecMatrix(atime.getJd(), 2451512.5);
-		for (int i = 0; i <= nDivision; i++) {
-			orbit[i] = orbit[i].Rotate(vec).Rotate(prec);
-		}
-	}
-	
 	/**
-	 * Get Epoch
+	 * Gets Epoch.
 	 */
 	public double getEpoch() {
 		return jd;
 	}
 	
 	/**
-	 * Get Division Count
+	 * Gets Division Count.
 	 */
 	public int getDivision() {
 		return nDivision;
 	}
 	
 	/**
-	 * Get Orbit Point
+	 * Gets Orbit Point.
 	 */
 	public Xyz getAt(int nIndex) {
 		return orbit[nIndex];

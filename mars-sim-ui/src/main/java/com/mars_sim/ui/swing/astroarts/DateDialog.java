@@ -66,14 +66,17 @@ public class DateDialog extends ModalInternalFrame {
 			monthCB.addItem(ATime.getMonthAbbr(i + 1));
 		}
 		monthCB.setSelectedIndex(atime.getMonth()-1);
+		monthCB.setAlignmentX(CENTER_ALIGNMENT);
 		add(monthCB);
 		
 		Integer iDate = Integer.valueOf(atime.getDay());
 		tfDate = new JTextField(iDate.toString(), 2);
+		tfDate.setAlignmentX(CENTER_ALIGNMENT);
 		add(tfDate);
 		
 		Integer iYear = Integer.valueOf(atime.getYear());
 		tfYear = new JTextField(iYear.toString(), 4);
+		tfYear.setAlignmentX(CENTER_ALIGNMENT);
 		add(tfYear);
 	
 		///////////////////////////////////////
@@ -168,8 +171,8 @@ public class DateDialog extends ModalInternalFrame {
 		
 		buttonCancel.addActionListener(listener2);
 			
-		setSize(new Dimension(350, 110));
-		setPreferredSize(new Dimension(350, 110));		
+		setSize(new Dimension(400, 110));
+		setPreferredSize(new Dimension(400, 110));		
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);	
 					
 		viewer.getDesktop().add(this);
