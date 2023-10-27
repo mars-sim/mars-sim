@@ -16,9 +16,7 @@ import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.shift.Shift;
 import com.mars_sim.core.person.ai.shift.ShiftSlot;
-import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 

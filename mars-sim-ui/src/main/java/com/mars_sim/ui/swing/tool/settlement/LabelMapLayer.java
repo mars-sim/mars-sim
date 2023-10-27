@@ -68,26 +68,26 @@ implements SettlementMapLayer {
 	private final Color VEHICLE_LABEL_COLOR = Color.YELLOW.darker(); // new Color(249, 134, 134); // light-red //127, 0, 127); // magenta-purple
 	private final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);//(255, 255, 255, 190);
 
-	// (159, 7, 118) pinkish red purle
+	// (159,   7, 118) pinkish red purle
 	// (255, 153, 225) light pink
-	static final Color FEMALE_COLOR = Color.MAGENTA.brighter();
-	static final Color FEMALE_OUTLINE_COLOR = FEMALE_COLOR.darker();// new Color(255, 153, 225).darker();
-	static final Color FEMALE_SELECTED_COLOR = new Color(231, 84, 128); //FEMALE_COLOR;//.darker();
-	static final Color FEMALE_SELECTED_OUTLINE_COLOR = FEMALE_SELECTED_COLOR.brighter();
+	static final Color FEMALE_COLOR = new Color(231, 84, 128);
+	static final Color FEMALE_OUTLINE_COLOR = FEMALE_COLOR.brighter();
+	static final Color FEMALE_SELECTED_COLOR = Color.MAGENTA.brighter();
+	static final Color FEMALE_SELECTED_OUTLINE_COLOR = FEMALE_SELECTED_COLOR.darker();
 	
 	// (154, 204, 255) pale light blue
-	// ((210, 210, 210) light grey
+	// (210, 210, 210) light grey
 	static final Color MALE_COLOR = new Color(154, 204, 255);
-	static final Color MALE_OUTLINE_COLOR = MALE_COLOR.darker();// Color.CYAN.darker();
-	static final Color MALE_SELECTED_COLOR = Color.CYAN; // MALE_COLOR;//.darker();
+	static final Color MALE_OUTLINE_COLOR = MALE_COLOR.darker();
+	static final Color MALE_SELECTED_COLOR = Color.CYAN;
 	static final Color MALE_SELECTED_OUTLINE_COLOR = MALE_SELECTED_COLOR.darker();
 
-	
-	// 186, 129, 145 manila pink
+	// (156, 126,   9)  pale brown
+	// (186, 129, 145) manila pink
 	static final Color ROBOT_COLOR = new Color(156, 126, 9); 
-	static final Color ROBOT_OUTLINE_COLOR = new Color(186, 129, 145).darker();
-	static final Color ROBOT_SELECTED_COLOR = ROBOT_COLOR.brighter();//.darker(); 
-	static final Color ROBOT_SELECTED_OUTLINE_COLOR = ROBOT_SELECTED_COLOR.darker();
+	static final Color ROBOT_OUTLINE_COLOR = ROBOT_COLOR.brighter();
+	static final Color ROBOT_SELECTED_COLOR = Color.ORANGE.darker();
+	static final Color ROBOT_SELECTED_OUTLINE_COLOR = ROBOT_SELECTED_COLOR.darker().darker();
 
 	// Data members
 	private SettlementMapPanel mapPanel;
@@ -96,6 +96,7 @@ implements SettlementMapLayer {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param mapPanel the settlement map panel.
 	 */
 	public LabelMapLayer(SettlementMapPanel mapPanel) {

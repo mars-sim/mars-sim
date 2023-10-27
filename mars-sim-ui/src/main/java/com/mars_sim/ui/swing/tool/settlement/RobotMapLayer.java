@@ -24,10 +24,10 @@ import com.mars_sim.mapdata.location.Coordinates;
 public class RobotMapLayer implements SettlementMapLayer {
 
 	// Static members
-	private static final Color ROBOT_COLOR = LabelMapLayer.ROBOT_COLOR;//Color.green; 
-	private static final Color ROBOT_OUTLINE_COLOR = LabelMapLayer.ROBOT_OUTLINE_COLOR;//new Color(0, 0, 0, 190);
-	private static final Color SELECTED_COLOR = LabelMapLayer.ROBOT_SELECTED_COLOR;//Color.red; 
-	private static final Color SELECTED_OUTLINE_COLOR = LabelMapLayer.ROBOT_SELECTED_OUTLINE_COLOR;//.new Color(0, 0, 0, 190);
+	private final Color ROBOT_COLOR = LabelMapLayer.ROBOT_COLOR;//Color.green; 
+	private final Color ROBOT_OUTLINE_COLOR = LabelMapLayer.ROBOT_OUTLINE_COLOR;//new Color(0, 0, 0, 190);
+	private final Color SELECTED_COLOR = LabelMapLayer.ROBOT_SELECTED_COLOR;//Color.red; 
+	private final Color SELECTED_OUTLINE_COLOR = LabelMapLayer.ROBOT_SELECTED_OUTLINE_COLOR;//.new Color(0, 0, 0, 190);
 
 	// Data members
 	private SettlementMapPanel mapPanel;

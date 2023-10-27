@@ -23,15 +23,15 @@ import com.mars_sim.core.structure.building.Building;
 public class PersonMapLayer implements SettlementMapLayer {
 
 	// Static members
-	private static final Color MALE_COLOR = LabelMapLayer.MALE_COLOR;
-	private static final Color MALE_OUTLINE_COLOR = LabelMapLayer.MALE_OUTLINE_COLOR;
-	private static final Color MALE_SELECTED_COLOR = LabelMapLayer.MALE_SELECTED_COLOR;
-	private static final Color MALE_SELECTED_OUTLINE_COLOR = LabelMapLayer.MALE_SELECTED_OUTLINE_COLOR;
+	private final Color MALE_COLOR = LabelMapLayer.MALE_COLOR;
+	private final Color MALE_OUTLINE_COLOR = LabelMapLayer.MALE_OUTLINE_COLOR;
+	private final Color MALE_SELECTED_COLOR = LabelMapLayer.MALE_SELECTED_COLOR;
+	private final Color MALE_SELECTED_OUTLINE_COLOR = LabelMapLayer.MALE_SELECTED_OUTLINE_COLOR;
 
-	private static final Color FEMALE_COLOR = LabelMapLayer.FEMALE_COLOR;
-	private static final Color FEMALE_OUTLINE_COLOR = LabelMapLayer.FEMALE_OUTLINE_COLOR;
-	private static final Color FEMALE_SELECTED_COLOR = LabelMapLayer.FEMALE_SELECTED_COLOR;
-	private static final Color FEMALE_SELECTED_OUTLINE_COLOR = LabelMapLayer.FEMALE_SELECTED_OUTLINE_COLOR;
+	private final Color FEMALE_COLOR = LabelMapLayer.FEMALE_COLOR;
+	private final Color FEMALE_OUTLINE_COLOR = LabelMapLayer.FEMALE_OUTLINE_COLOR;
+	private final Color FEMALE_SELECTED_COLOR = LabelMapLayer.FEMALE_SELECTED_COLOR;
+	private final Color FEMALE_SELECTED_OUTLINE_COLOR = LabelMapLayer.FEMALE_SELECTED_OUTLINE_COLOR;
 	
 	// Data members
 	private SettlementMapPanel mapPanel;
