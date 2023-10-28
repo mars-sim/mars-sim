@@ -6,14 +6,17 @@
  */
 package com.mars_sim.core.person.ai.task.meta;
 
+import java.util.List;
+
+import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.task.Read;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
 
 /**
@@ -39,9 +42,7 @@ public class ReadMeta extends FactoryMetaTask {
     }
 
     @Override
-    public double getProbability(Person person) {
-
-        double result = 0D;
+    public List<TaskJob> getTaskJobs(Person person) {
 
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
@@ -49,58 +50,43 @@ public class ReadMeta extends FactoryMetaTask {
         double stress = condition.getStress();
         double hunger = condition.getHunger();
         
-        if (fatigue > 1000 || hunger > 750)
-        	return 0;
-        
-        if (person.isInside()) {
-        	result += VALUE;
-
-            if (person.isInVehicle()) {	
-    	        // Check if person is in a moving rover.
-    	        if (Vehicle.inMovingRover(person)) {
-    		        // the penalty inside a vehicle
-    	        	result += -20;
-    	        } 	       
-    	        else
-    		        // the bonus inside a vehicle, 
-    	        	// rather than having nothing to do if a person is not driving
-    	        	result += 20;
-            }
-            
-        	FavoriteType fav = person.getFavorite().getFavoriteActivity();
-            // The 3 favorite activities drive the person to want to read
-            if (fav == FavoriteType.RESEARCH) {
-                result *= 2D;
-            }
-            else if (fav == FavoriteType.TINKERING) {
-                result *= 0.8;
-            }
-            else if (fav == FavoriteType.LAB_EXPERIMENTATION) {
-                result *= 1.2;
-            }
-          
-            result -= fatigue/5;           
-            
-            double pref = person.getPreference().getPreferenceScore(this);
-            
-        	result += pref * 2.5;
-        	
-	        if (result < 0) result = 0;
-	        
-            if (pref > 0) {
-            	
-             	if (stress > 25D)
-             		result *= 1.5;
-             	else if (stress > 50D)
-             		result *= 2D;
-             	else if (stress > 75D)
-             		result *= 3D;
-            }
-            
-	        if (result < 0) result = 0;
-
+        if (fatigue > 1000 || hunger > 750 || !person.isInside()) {
+        	return EMPTY_TASKLIST;
         }
 
-        return result;
+        RatingScore result = new RatingScore(VALUE);
+        
+        result = assessMoving(result, person);
+        result = assessPersonSuitability(result, person);
+
+        // The 3 favorite activities drive the person to want to read
+        FavoriteType fav = person.getFavorite().getFavoriteActivity();
+        double favRating = switch(fav)
+                {
+                    case RESEARCH -> 2D;
+                    case TINKERING -> 0.8D;
+                    case LAB_EXPERIMENTATION -> 1.2D;
+                    default -> 0D;
+                } ;
+        if (favRating > 0) {
+            result.addModifier(FAV_MODIFIER, favRating);
+        }
+          
+        // If Read is liked; then helps with stress
+        double pref = person.getPreference().getPreferenceScore(this);
+        if (pref > 0) {
+            double stressModifer = 0D;
+            if (stress > 25D)
+                stressModifer = 1.5;
+            else if (stress > 50D)
+                stressModifer = 2D;
+            else if (stress > 75D)
+                stressModifer = 3D;
+            if (stressModifer > 0D) {
+                result.addModifier(STRESS_MODIFIER, stressModifer);
+            }
+        }
+            
+        return createTaskJobs(result);
     }
 }

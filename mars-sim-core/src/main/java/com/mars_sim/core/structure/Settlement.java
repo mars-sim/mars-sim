@@ -1011,24 +1011,14 @@ public class Settlement extends Structure implements Temporal,
 			
 			int startTimeEVA = (int)deltaTime +  WAIT_FOR_SUNLIGHT_DELAY + (int)(surfaceFeatures.getOrbitInfo().getSunriseSunsetTime(location))[0];
 			
-			boolean isOnDuty = p.isOnDuty(startTimeEVA);
+			// On Duty if less than 75% of the shift completed
+			boolean isOnDuty = (p.getShiftSlot().getShift().getShiftCompleted(startTimeEVA) < 0.75D);
 			
 			// Select only personnel on duty and without a mission
 			if (isOnDuty && p.getMission() == null) {
 
 				// Gets the number of digits in millisol time 
-				int numDigits = ("" + startTimeEVA).length();
-				String startTimeEVAString = ""; 
-				
-				if (numDigits == 1) {
-					startTimeEVAString = "00" + startTimeEVA;
-				}
-				else if (numDigits == 2) {
-					startTimeEVAString = "0" + startTimeEVA;
-				}
-				else if (numDigits == 3) {
-					startTimeEVAString = "" + startTimeEVA;
-				}		
+				String startTimeEVAString = String.format("%03d", startTimeEVA);	
 				
 				Appointment ap = new Appointment(p, sol, startTimeEVA, DURATION, null, DigLocalRegolith.SIMPLE_NAME, null);
 				p.getScheduleManager().setAppointment(ap);
