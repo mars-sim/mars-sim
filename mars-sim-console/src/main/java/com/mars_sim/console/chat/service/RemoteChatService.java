@@ -24,7 +24,7 @@ import org.apache.sshd.server.session.ServerSession;
 
 /**
  * This provides a remote chat service using a SSH protocol. 
- * Connected SSH channel uses Conversation class to interact with the Simulation.
+ * Connected SSH channel uses Converse class to interact with the Simulation.
  *
  */
 public class RemoteChatService {

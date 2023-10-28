@@ -21,7 +21,7 @@ import com.mars_sim.core.person.ai.task.meta.CompileScientificStudyResultsMeta;
 import com.mars_sim.core.person.ai.task.meta.ConnectOnlineMeta;
 import com.mars_sim.core.person.ai.task.meta.ConsolidateContainersMeta;
 import com.mars_sim.core.person.ai.task.meta.ConstructBuildingMeta;
-import com.mars_sim.core.person.ai.task.meta.ConversationMeta;
+import com.mars_sim.core.person.ai.task.meta.ConverseMeta;
 import com.mars_sim.core.person.ai.task.meta.CookMealMeta;
 import com.mars_sim.core.person.ai.task.meta.DelegateWorkMeta;
 import com.mars_sim.core.person.ai.task.meta.DigLocalIceMeta;
@@ -130,7 +130,7 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new DigLocalRegolithMeta());
 		allMetaTasks.add(new EatDrinkMeta());
 		allMetaTasks.add(new ExamineBodyMeta());
-		allMetaTasks.add(new ConversationMeta());
+		allMetaTasks.add(new ConverseMeta());
 		allMetaTasks.add(new InviteStudyCollaboratorMeta());
 		
 		allMetaTasks.add(new ListenToMusicMeta());

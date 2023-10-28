@@ -111,6 +111,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected Integer id;
 	/** The id of the teacher. */
 	protected Integer teacherID;
+	/** The id of the target person. */
+	protected Integer targetID;
 	
 	/** The name of the task. */
 	private String name = "";
@@ -122,6 +124,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private transient Person teacher;
 	/** The person performing the task. */
 	protected transient Person person;
+	/** The target person performing the task. */
+	protected transient Person target;
 	/** The robot performing the task. */
 	protected transient Robot robot;
 
@@ -553,30 +557,40 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Adds a new sub-task.
+	 * Adds a new subtask.
 	 * 
 	 * @param newSubTask the new sub-task to be added
+	 * @return true if the subtask can be added
 	 */
-	public void addSubTask(Task newSubTask) {
+	public boolean addSubTask(Task newSubTask) {
 		if (subTask != null) {
+			// Already has a subtask
 			if (subTask.done) {
+				// The existing subtask is done
 				createSubTask(newSubTask);
+				return true;
 			}
-
-			else if (!subTask.getDescription().equalsIgnoreCase(newSubTask.getDescription())) {
-				subTask.addSubTask(newSubTask);
+			
+			// if the existing subtask is not done
+			else if (!subTask.getName().equalsIgnoreCase(newSubTask.getName())
+				|| !subTask.getDescription().equalsIgnoreCase(newSubTask.getDescription())) {
+				return subTask.addSubTask(newSubTask);
 			}
 		}
 
 		else {
+			// doesn't have a subtask yet
 			createSubTask(newSubTask);
+			return true;
 		}
+		
+		return false;
 	}
 
 	/**
-	 * Creates a new sub-task.
+	 * Creates a new subtask.
 	 * 
-	 * @param newSubTask the new sub-task to be added
+	 * @param newSubTask the new subtask to be added
 	 */
 	private void createSubTask(Task newSubTask) {
 		subTask = newSubTask;
@@ -585,7 +599,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Get the stack of Task from this point downwards.
+	 * Builds the stack of Task from this point downwards.
+	 * 
+	 * @param stack
 	 */
     void buildStack(List<Task> stack) {
 		stack.add(this);
@@ -1030,7 +1046,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @return
 	 */
-	protected double getTimeLeft() {
+	public double getTimeLeft() {
 		return duration - timeCompleted;
 	}
 	

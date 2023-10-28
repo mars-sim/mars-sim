@@ -41,7 +41,7 @@ public class ConnectCommand extends ChatCommand {
 
 	/**
 	 * Connects to another entity. 
-	 * This will change the Conversation current command to one specific to the entity.
+	 * This will change the Converse current command to one specific to the entity.
 	 * 
 	 * @return 
 	 */
@@ -133,7 +133,7 @@ public class ConnectCommand extends ChatCommand {
 	@Override
 	/**
 	 * Get the possible Unit names for auto complete.
-	 * @param context Conversation taking place
+	 * @param context Converse taking place
 	 * @param input Partial input
 	 * @return List of Unit names that match
 	 */

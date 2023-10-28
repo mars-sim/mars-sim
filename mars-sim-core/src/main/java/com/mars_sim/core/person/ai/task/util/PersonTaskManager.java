@@ -64,7 +64,8 @@ public class PersonTaskManager extends TaskManager {
 	}
 
 	/**
-	 * The diagnostics modulename to used in any output
+	 * Gets the diagnostics module name to used in any output.
+	 * 
 	 * @return
 	 */
 	@Override
@@ -73,7 +74,7 @@ public class PersonTaskManager extends TaskManager {
 	}
 
 	/**
-	 * Reduce the person's caloric energy over time.
+	 * Reduces the person's caloric energy over time.
 	 *
 	 * @param time the passing time (
 	 */

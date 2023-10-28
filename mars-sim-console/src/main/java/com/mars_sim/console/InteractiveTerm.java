@@ -659,7 +659,7 @@ public class InteractiveTerm {
         Conversation conversation = new Conversation(channel, new TopLevel(), roles, sim);
 
         conversation.interact();
-		logger.info("Conversation ended");
+		logger.info("Converse ended");
 
 	}
 

@@ -9,8 +9,10 @@ package com.mars_sim.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 
@@ -185,6 +187,22 @@ public class CollectionUtils {
 		return result;
 	}
 
+	/**
+	 * Gets a set of other people that are NOT on this settlement.
+	 * Note: a person can be either inside the settlement or within its vicinity
+	 *
+	 * @param settlement the settlement
+	 * @return
+	 */
+	public static Set<Person> getOtherPeople(Settlement settlement) {
+
+		Set<Person> group0 = new HashSet<>(unitManager.getPeople());
+		Set<Person> group1 = new HashSet<>(settlement.getAllAssociatedPeople());
+		
+		group0.removeAll(group1);
+		return group0;
+	}
+	
 	/**
 	 * Gets the total number of parts from all settlements
 	 *

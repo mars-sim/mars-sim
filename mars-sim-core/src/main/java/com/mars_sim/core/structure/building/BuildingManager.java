@@ -37,7 +37,7 @@ import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
-import com.mars_sim.core.person.ai.task.Conversation;
+import com.mars_sim.core.person.ai.task.Converse;
 import com.mars_sim.core.person.ai.task.PrepareDessert;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
@@ -1470,7 +1470,7 @@ public class BuildingManager implements Serializable {
 		for (Building building : buildingList) {
 			int numPeople = 0;
 			for (Person occupant : building.getLifeSupport().getOccupants()) {
-				if (occupant.getMind().getTaskManager().getTask() instanceof Conversation) {
+				if (occupant.getMind().getTaskManager().getTask() instanceof Converse) {
 					numPeople++;
 				}
 			}

@@ -192,7 +192,7 @@ public abstract class TaskManager implements Serializable {
 	}
 
 	/**
-	 * Get the stack of Tasks that are active. The 1st entry in the is the toplevel task
+	 * Gets the stack of Tasks that are active. The 1st entry in the is the top level task
 	 * whilst the last entry is the one actually active.
 	 */
 	public List<Task> getTaskStack() {
@@ -205,7 +205,8 @@ public abstract class TaskManager implements Serializable {
 	}
 
 	/**
-	 * Get the score of the current Task if it was choosen at random. 
+	 * Gets the score of the current Task if it was chosen at random. 
+	 * 
 	 * @return Will be null if task has been preselected.
 	 */
     public RatingScore getScore() {

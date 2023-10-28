@@ -12,7 +12,7 @@ import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.TopLevel;
 
 /**
- * A stateless command that exit and leaves the corrent Conversation
+ * A stateless command that exit and leaves the corrent Converse
  */
 public class ExitCommand extends ChatCommand {
 

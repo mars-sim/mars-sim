@@ -184,7 +184,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 		String prefix = "";
 		StringBuilder newTaskText = new StringBuilder();
-		for(Task t : taskManager.getTaskStack()) {
+		for (Task t : taskManager.getTaskStack()) {
 			if (prefix.length() > 0) {
 				newTaskText.append("\n");
 			}

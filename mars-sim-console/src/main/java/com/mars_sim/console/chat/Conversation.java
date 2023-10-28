@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * Conversation.java
+ * Converse.java
  * @date 2023-06-14
  * @author Barry Evans
  */
@@ -21,7 +21,7 @@ import com.mars_sim.console.chat.command.InteractiveChatCommand;
 import com.mars_sim.core.Simulation;
 
 /**
- * Establishes a Conversation with a user.
+ * Establishes a Converse with a user.
  */
 public class Conversation implements UserOutbound {
 	

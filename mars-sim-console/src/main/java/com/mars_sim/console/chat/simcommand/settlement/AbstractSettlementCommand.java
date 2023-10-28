@@ -23,7 +23,7 @@ public abstract class AbstractSettlementCommand extends ChatCommand {
 
 	/**
 	 * Executes this command. This will identify the target Settlement for the current ChatCommand in
-	 * the Conversation.
+	 * the Converse.
 	 */
 	@Override
 	public boolean execute(Conversation context, String input) {

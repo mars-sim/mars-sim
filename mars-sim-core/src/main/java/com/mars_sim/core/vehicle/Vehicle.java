@@ -41,7 +41,7 @@ import com.mars_sim.core.manufacture.SalvageInfo;
 import com.mars_sim.core.manufacture.SalvageProcessInfo;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.task.Conversation;
+import com.mars_sim.core.person.ai.task.Converse;
 import com.mars_sim.core.person.ai.task.MaintainBuilding;
 import com.mars_sim.core.person.ai.task.Repair;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -1454,7 +1454,7 @@ public abstract class Vehicle extends Unit
 			Task task = person.getMind().getTaskManager().getTask();
 
 			// Add all people having conversation from all places as the task
-			if (task instanceof Conversation)
+			if (task instanceof Converse)
 				people.add(person);
 		}
 
