@@ -6,10 +6,13 @@
  */
 package com.mars_sim.core.person.ai.task.meta;
 
+import java.util.List;
+
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.DigLocalRegolith;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
@@ -37,38 +40,25 @@ public class DigLocalRegolithMeta extends DigLocalMeta {
         return new DigLocalRegolith(person);
     }
 
+    /**
+     * Assess a Persons suitability to dig Regolith locally. Depends on many conditions.
+     * @param person Being assessed
+     * @return TaskJobs that could be done
+     */
     @Override
-    public double getProbability(Person person) {
+    public List<TaskJob> getTaskJobs(Person person) {
     	
     	Settlement settlement = person.getSettlement();
-    	double rate = 0;
-    	
-    	if (settlement != null) {
-    		
-    		rate = settlement.getRegolithCollectionRate();
-	    	if (rate <= 0) {
-	    		return 0;
-	    	}
-    	}
-    	else
-    		return 0;
     	
         // Check if settlement has DIG_LOCAL_REGOLITH override flag set.
-        if (settlement.getProcessOverride(OverrideType.DIG_LOCAL_REGOLITH)) {
-        	return 0;
+        if ((settlement == null) 
+            || !person.isInSettlement()
+            || settlement.getProcessOverride(OverrideType.DIG_LOCAL_REGOLITH)
+            || (settlement.getAmountResourceRemainingCapacity(ResourceUtil.regolithID) < THRESHOLD_AMOUNT)) {
+        	return EMPTY_TASKLIST;
         }
     	
-        double settlementCap = settlement.getAmountResourceRemainingCapacity(ResourceUtil.regolithID);
-        if (settlementCap < THRESHOLD_AMOUNT) {
-        	return 0;
-        }
-        
-    	double result = getProbability(ResourceUtil.regolithID, settlement, 
-    			person, rate * settlement.getRegolithProbabilityValue());
-    	
-//    	logger.info(settlement, 20_000, "DigLocalMeta - rate: " + Math.round(settlement.getRegolithCollectionRate() * 100.0)/100.0 
-//    			+ "  Final regolith: " + Math.round(result* 100.0)/100.0);
-        
-        return result;
+    	return getTaskJobs(ResourceUtil.regolithID, settlement, 
+    			person, settlement.getRegolithCollectionRate() * settlement.getRegolithProbabilityValue());
     }
 }

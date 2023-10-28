@@ -6,16 +6,18 @@
  */
 package com.mars_sim.core.person.ai.task.meta;
 
+import java.util.List;
+
+import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
-import com.mars_sim.core.person.ai.shift.Shift;
 import com.mars_sim.core.person.ai.task.DigLocal;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
-import com.mars_sim.core.person.ai.task.util.TaskProbabilityUtil;
+import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.tools.util.RandomUtil;
@@ -25,11 +27,9 @@ import com.mars_sim.tools.util.RandomUtil;
  */
 public abstract class DigLocalMeta extends FactoryMetaTask {
 
-	// May add back private static final SimLogger logger = SimLogger.getLogger(DigLocalMeta.class.getName())
 
 	private static final double VALUE = 50;
 	private static final int MAX = 2_000;
-	private static final int CAP = 3_000;
 	
 	private EquipmentType containerType;
 
@@ -50,50 +50,29 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
      * @param collectionProbability
      * @return
      */
-    protected double getProbability(int resourceId, Settlement settlement, Person person, double collectionProbability) {	
+    protected List<TaskJob> getTaskJobs(int resourceId, Settlement settlement,
+                            Person person, double collectionProbability) {
 
-    	if (collectionProbability == 0.0)
-    		return 0;
-    	
-    	// Will not perform this task if he has a mission
-    	if ((person.getMission() != null) || !person.isInSettlement()) {
-    		return 0;
-    	}
-
-    	// Check if an airlock is available for egress
-        if (!Walk.anyAirlocksForIngressEgress(person, false)) {
-    		return 0;
-        }
-     
-    	// Check if a person is qualified for digging local
-        if (!DigLocal.canDigLocal(person)) {
-    		return 0;
+        // Check preconditions
+        // - an airlock is available for egress
+        // - person is qualified for digging local
+        // - person is physically fit for heavy EVA tasks
+        // - at least one EVA suit at settlement.
+        // - at least one empty bag at settlement.
+    	if ((collectionProbability == 0.0)
+            || !Walk.anyAirlocksForIngressEgress(person, false)
+            || !DigLocal.canDigLocal(person)
+            || !EVAOperation.isEVAFit(person)
+            || (settlement.getNumEVASuit() == 0)
+            || (settlement.findNumContainersOfType(containerType) == 0)) {                
+    		return EMPTY_TASKLIST;
         }
 
-        // Checks if the person is physically fit for heavy EVA tasks
-		if (!EVAOperation.isEVAFit(person))
-			return 0;
-
-        // Check at least one EVA suit at settlement.
-        int numSuits = settlement.getNumEVASuit();
-        if (numSuits == 0) {
-            return 0;
-        }
-    
-        // Check if at least one empty bag at settlement.
-        int numEmptyBags = settlement.findNumContainersOfType(containerType);
-        if (numEmptyBags == 0) {
-            return 0;
-        }
-
-        double result = RandomUtil.getRandomDouble(collectionProbability / 10, collectionProbability) * VALUE;
+        double base = RandomUtil.getRandomDouble(collectionProbability / 10, collectionProbability) * VALUE;
         
-        if (result > MAX)
-        	result = MAX;
-              
-        // Checks if the person's settlement is at meal time and is hungry
-        if (EVAOperation.isHungryAtMealTime(person))
-        	result *= .5;
+        if (base > MAX)
+        	base = MAX;
+        RatingScore result = new RatingScore(base);
  
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
@@ -103,64 +82,37 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
         double hunger = condition.getHunger();
         double exerciseMillisols = person.getCircadianClock().getTodayExerciseTime();
         
-        result = result - stress * 2 - fatigue/2 - hunger/2 - exerciseMillisols;
+        // Add a negative base to model Person fitness
+        result.addBase("fitness", -(stress * 2 + fatigue/2 + hunger/2 + exerciseMillisols));
         
-        if (result <= 0)
-        	return 0;
-        
-        result *= TaskProbabilityUtil.getRadiationModifier(settlement);
-
-	    int indoor = settlement.getIndoorPeopleCount(); 
-	    int citizen = settlement.getNumCitizens();
-	    int cap = settlement.getPopulationCapacity();
-
-	    // Effect of a crowded settlement. Only if indoor has more than its capacity
-        if (indoor > cap)
-            result *= indoor - cap;
-
-        // Effect of population. The smaller the population, the more they are motivated to dig.
-        if (citizen <= 32)
-            // Adds effect of the # of citizen 
-        	result *= Math.max(1, 1.5 * (33 - citizen));
-     
+        if (result.getScore() <= 0)
+        	return EMPTY_TASKLIST;
+    
         // Effect of the ratio of # indoor people vs. those outside already doing EVA 
-        result *= 1.0 / (1 + settlement.getNumOutsideEVA());
+        result.addModifier("eva",
+                1.2 - ((double)settlement.getNumOutsideEVA() / settlement.getNumCitizens()));
 
         // Encourage to get this task done early in a work shift
-        result *= getShiftModifier(person);
+        result.addModifier("shift", getShiftModifier(person));
 
         // Effect of the amount of sunlight that influences the probability of starting this task
         double sunlight = surfaceFeatures.getSunlightRatio(settlement.getCoordinates());
         // The higher the sunlight (0 to 1, 1 being the highest) 
-        result *= Math.max(.001, sunlight);
-     
-        if (result <= 0)
-            return 0;
+        result.addModifier("sunlight", Math.max(.001, sunlight));
 
-        result *= getPersonModifier(person);
+        result = assessPersonSuitability(result, person);
 
-        if (result > CAP)
-        	result = CAP;
-
-        return result;
+        return createTaskJobs(result);
     }
 
     /**
-     * Get a modifier based on the Shift start time
+     * Get a modifier based on the Shift start time. This is based on how far throuhg the shift a person is;
+     * it is weighted towards the 1st 50% of the shift.
      */
     private static double getShiftModifier(Person person) {
-        double result = 1D;
-        if (person.isOnDuty()) {
-            Shift shift = person.getShiftSlot().getShift();
-            int shiftPast = getMarsTime().getMillisolInt() - shift.getStart();
-            if (shiftPast < 0) {
-                shiftPast += 1000;
-            }
-            if (shiftPast < 200) {
-                result += 0.1D;
-            }
-        }
+        double completed = person.getShiftSlot().getShift().getShiftCompleted(getMarsTime().getMillisolInt());
 
-        return result;
+        // Less than 50% compelted receives a bonus
+        return 1D + (completed - 0.5D);
     }
 }

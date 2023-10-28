@@ -145,14 +145,30 @@ public class Shift implements ScheduledEventHandler {
         return duration;
     }
     
-    public boolean isOnDuty(int time) {
-    	int start0 = start;
-    	int end0 = end;
-    	if (start0 > end0)
-    		end0 = end0 + 1000;
-    	if (time > start0 && time < end0)
-    		return true;
-    	
-    	return false;
+    /**
+     * At a given mSol how far through the Shift is it?
+     * @param mSol
+     * @return Percentage of Shift done; 0 means not on Duty.
+     */
+    public double getShiftCompleted(int mSol) {
+        int duration;
+        if (start < end) {
+            // Start and end on same Sol
+            duration = end - start;
+        }
+        else {
+            // Ends on the following Sol so 2 separate segments
+            duration = 1000 - (start - end);
+        }
+
+        int adjustedMSol = mSol - start;
+        if (adjustedMSol < 0) {
+            adjustedMSol += 1000;
+        }
+
+        if (adjustedMSol > duration) {
+            return 0D;
+        }
+        return (double)adjustedMSol/duration;
     }
 }

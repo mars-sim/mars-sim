@@ -665,13 +665,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	}
 
 	/**
-	 * Is this Person OnDuty. This does not include On Call.
-	 */
-	public boolean isOnDuty(int time) {
-		return shiftSlot.getShift().isOnDuty(time);
-	}
-			
-	/**
 	 * Creates a string representing the birth time of the person.
 	 * @param clock
 	 *
