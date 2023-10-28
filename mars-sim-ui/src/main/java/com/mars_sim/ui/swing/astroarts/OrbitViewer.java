@@ -91,19 +91,24 @@ import com.mars_sim.ui.swing.toolwindow.ToolWindow;
 public class OrbitViewer extends ToolWindow
 implements ActionListener {
 
-	private static final int FRAME_WIDTH = 600;
-	private static final int FRAME_HEIGHT = 600;
-	private static final String THREAD_NAME = "OrbitViewer";
-
 	public static final String NAME = "Orbit Viewer";
 	public static final String ICON = "astro";
-
-
+	
+	private final int FRAME_WIDTH = 600;
+	private final int FRAME_HEIGHT = 600;
+	private final int INITIAL_ZOOM_LEVEL = 175;
+	private final int ONE_STEP = 5;
+	
+	private final String THREAD_NAME = "OrbitViewer";
+	
 	private int xvalue = 255;
 	private int yvalue = 130;
+	
 	private int xCache;
-	private int yCache;
-
+	private int yCache;	
+	
+	private int selectedDate;
+	
 	/**
 	 * Components
 	 */
@@ -171,8 +176,6 @@ implements ActionListener {
 	private ATime minATime = new ATime( 1600,1,1,0,0,0.0,0.0);
 	private ATime maxATime = new ATime( 2200,1,1,0,0,0.0,0.0);
 
-
-
 	private static final String SELECT_DATE = "SelectDate";
 	private static final String PLAY = "Play";
 	private static final String REV_PLAY = "RevPay";
@@ -228,7 +231,7 @@ implements ActionListener {
 	 */
 	public OrbitViewer(MainDesktopPane desktop) { 
 		// Call ModalInternalFrame constructor
-        super("Orbit Viewer", desktop);
+        super(NAME, desktop);
 
 		String array[][] = getParameterInfo();
 		rowOfMatrix = array.length;
@@ -251,7 +254,8 @@ implements ActionListener {
 		
 		GridBagConstraints constraints = new GridBagConstraints();
 
-		constraints.fill = GridBagConstraints.BOTH; //HORIZONTAL;//
+		scrollHor = new JScrollBar(JScrollBar.HORIZONTAL, INITIAL_ZOOM_LEVEL, ONE_STEP, 0, 300);
+		scrollVert = new JScrollBar(JScrollBar.VERTICAL, INITIAL_ZOOM_LEVEL, ONE_STEP, 0, 300);
 		
 		// Create a comet object
 		Comet object = getObject();
@@ -262,6 +266,8 @@ implements ActionListener {
 			this.atime = new ATime(1900, 1, 1, 0.0);
 		}
 		
+		constraints.fill = GridBagConstraints.BOTH;
+
 		// Orbit Canvas
 		orbitCanvas = new OrbitCanvas(object, this.atime);
 		constraints.weightx = 1.0;
@@ -270,11 +276,6 @@ implements ActionListener {
 		gblMainPanel.setConstraints(orbitCanvas, constraints);
 		mainPanel.add(orbitCanvas);
 
-		scrollHor = new JScrollBar(JScrollBar.HORIZONTAL, 167, 5, 0, 300);
-		scrollVert = new JScrollBar(JScrollBar.VERTICAL, 167, 5, 0, 300);
-		
-		// Note: may add scrollHor and scrollVert to make the zoom bar visible
-		
 		orbitCanvas.setZoom(scrollHor.getValue());
 		orbitCanvas.setZoom(scrollVert.getValue());
 		
@@ -389,14 +390,22 @@ implements ActionListener {
 		orbitCanvas.setRotateVert(180 - yvalue);
 		orbitCanvas.setRotateHorz(270 - xvalue);
 
-		// Right-Bottom Corner Rectangle
-		JPanel cornerPanel = new JPanel();
+//		// Right-Bottom Corner Rectangle
+//		JPanel cornerPanel = new JPanel();
+//		constraints.weightx = 0.0;
+//		constraints.weighty = 0.0;
+//		constraints.gridwidth = GridBagConstraints.REMAINDER;
+//		gblMainPanel.setConstraints(cornerPanel, constraints);
+//		mainPanel.add(cornerPanel);
+	
+		constraints.fill = GridBagConstraints.VERTICAL;
+		
+		// Note: may add scrollHor and scrollVert to make the zoom bar visible
 		constraints.weightx = 0.0;
 		constraints.weighty = 0.0;
-		constraints.gridwidth = GridBagConstraints.REMAINDER;
-		gblMainPanel.setConstraints(cornerPanel, constraints);
-		mainPanel.add(cornerPanel);
-
+		constraints.gridwidth = GridBagConstraints.RELATIVE;
+		gblMainPanel.setConstraints(scrollHor, constraints);
+		
 		Font labelFont = StyleManager.getLabelFont();
 		
 		//
@@ -405,11 +414,11 @@ implements ActionListener {
 		JPanel ctrlPanel = new JPanel();
 		GridBagLayout gblCtrlPanel = new GridBagLayout();
 		GridBagConstraints gbcCtrlPanel = new GridBagConstraints();
+		
 		gbcCtrlPanel.fill = GridBagConstraints.BOTH;
+		
 		ctrlPanel.setLayout(gblCtrlPanel);
 		ctrlPanel.setBorder(new MarsPanelBorder());
-
-		gbcCtrlPanel.fill = GridBagConstraints.HORIZONTAL;
 		
 		// Set Control Label
 		JLabel controlLabel = new JLabel("Controls", JLabel.CENTER);
@@ -986,6 +995,14 @@ implements ActionListener {
 			orbitCanvas.setDate(atime);
 			orbitCanvas.repaint();
 		}
+	}
+	
+	public int getSelectedDate() {
+		return selectedDate;
+	}
+	
+	public void setSelectedDate(int button) {
+		selectedDate = button;
 	}
 }
 
