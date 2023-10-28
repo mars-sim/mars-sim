@@ -10,11 +10,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.RequestMedicalTreatment;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalAid;
@@ -54,29 +56,26 @@ public class RequestMedicalTreatmentMeta extends FactoryMetaTask {
     }
 
     @Override
-    public double getProbability(Person person) {
+    public List<TaskJob> getTaskJobs(Person person) {
 
-        double result = 0D;
+        if (person.isOutside()
+            || person.getPhysicalCondition().getProblems().isEmpty()) {
+        	return EMPTY_TASKLIST;
+        }
+        
 
-        if (person.isOutside())
-        	return 0;
-        
-        if (person.getPhysicalCondition().getProblems().isEmpty())
-        	return 0;
-        
         // Get person's medical skill level.
         int personMedicalSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 
         // Get the best medical skill level of local people.
         int bestMedicalSkill = getBestLocalMedicalSkill(person);
 
+        double result = 0D;
+
         // Determine all the person's health problems that need treatment.
         List<HealthProblem> problemsNeedingTreatment = new ArrayList<>();
-        Iterator<HealthProblem> i = person.getPhysicalCondition().getProblems().iterator();
-        while (i.hasNext()) {
-            HealthProblem problem = i.next();
+        for( HealthProblem problem : person.getPhysicalCondition().getProblems()) {
             if (problem.isDegrading()) {
-
                 Treatment treatment = problem.getIllness().getRecoveryTreatment();
                 if (treatment != null) {
 
@@ -102,43 +101,38 @@ public class RequestMedicalTreatmentMeta extends FactoryMetaTask {
             }
         }
 
-        if (problemsNeedingTreatment.size() > 0) {
-
-            // Determine if any available medical aids can be used to treat person's health problems.
-            boolean usefulMedicalAids = false;
-            Iterator<MedicalAid> j = getAvailableMedicalAids(person).iterator();
-            while (j.hasNext() && !usefulMedicalAids) {
-                MedicalAid aid = j.next();
-
-                // Check if medical aid can treat any problems.
-                boolean canTreatProblems = false;
-                Iterator<HealthProblem> k = problemsNeedingTreatment.iterator();
-                while (k.hasNext() && !canTreatProblems) {
-                    HealthProblem problem = k.next();
-                    if (aid.canTreatProblem(problem)) {
-                        canTreatProblems = true;
-                        result += VALUE;
-                    }
-                }
-
-                if (canTreatProblems) {
-                    usefulMedicalAids = true;
-                }
-            }
-
-            // If any useful medical aids for treating person's health problems, return probability.
-            if (usefulMedicalAids) {
-                result += VALUE;
-            }
-
-            if (result > 0)
-            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-
-	        if (result < 0) result = 0;
-
+        if (problemsNeedingTreatment.isEmpty()) {
+            return EMPTY_TASKLIST;
         }
 
-        return result;
+        // Determine if any available medical aids can be used to treat person's health problems.
+        boolean usefulMedicalAids = false;
+        Iterator<MedicalAid> j = getAvailableMedicalAids(person).iterator();
+        while (j.hasNext() && !usefulMedicalAids) {
+            MedicalAid aid = j.next();
+
+            // Check if medical aid can treat any problems.
+            boolean canTreatProblems = false;
+            Iterator<HealthProblem> k = problemsNeedingTreatment.iterator();
+            while (k.hasNext() && !canTreatProblems) {
+                HealthProblem problem = k.next();
+                if (aid.canTreatProblem(problem)) {
+                    canTreatProblems = true;
+                    result += VALUE;
+                }
+            }
+
+            if (canTreatProblems) {
+                usefulMedicalAids = true;
+            }
+        }
+
+        // If any useful medical aids for treating person's health problems, return probability.
+        if (usefulMedicalAids) {
+            result += VALUE;
+        }
+
+        return createTaskJobs(new RatingScore(result));
     }
 
     /**

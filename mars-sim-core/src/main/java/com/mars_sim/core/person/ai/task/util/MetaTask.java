@@ -51,7 +51,7 @@ public abstract class MetaTask {
 	private static final String EVA_MODIFIER = "eva";
 	protected static final String GARAGED_MODIFIER = "garaged";
 	protected static final String GOODS_MODIFIER = "goods";
-	private static final String FAV_MODIFIER = "favourite";
+	protected static final String FAV_MODIFIER = "favourite";
 	private static final String JOB_MODIFIER = "job";
 	protected static final String PERSON_MODIFIER = "person";
 	private static final String RADIATION_MODIFIER = "radiation";
@@ -316,7 +316,7 @@ public abstract class MetaTask {
 	 	// 2. Task must have Preferred Jobs
 	 	// 3. If the Person's job is not in the Preferred list then a penalty is applied. 
 		JobType job = person.getMind().getJob();
-        if (job != null) {
+        if ((job != null) && !preferredJobs.isEmpty()) {
 			score.addModifier(JOB_MODIFIER, preferredJobs.getOrDefault(job, NON_JOB_PENALTY));
         }
 		
@@ -325,7 +325,7 @@ public abstract class MetaTask {
 	 	// 1. Person must have a Role
 	 	// 2. Role is preferred then add bonus
 		var role = person.getRole();
-        if (role != null) {
+        if ((role != null) && !preferredRoles.isEmpty()) {
 			score.addModifier(ROLE_MODIFIER, preferredRoles.getOrDefault(role.getType(), NON_ROLE_PENALTY));
         }
 

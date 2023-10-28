@@ -6,10 +6,14 @@
  */
 package com.mars_sim.core.person.ai.task.meta;
 
+import java.util.List;
+
+import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.Relax;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.tools.Msg;
@@ -36,32 +40,29 @@ public class RelaxMeta extends FactoryMetaTask{
     	return new Relax(person);
     }
 
+    /**
+     * Assess whether a person can relax. Many depends upon whether they are on Duty or not.
+     * @param person Being assessed.
+     * @return Potential TaskJobs.
+     */
     @Override
-    public double getProbability(Person person) {
-        double result = 0D;
-
-        // Crowding modifier
-        if (person.isInside()) {
-
-        	result = 0.5D;
-        	         
-            double pref = person.getPreference().getPreferenceScore(this);
-            
-          	result = result + result * pref/6D;
-            if (result < 0) result = 0;
-            
-            Building recBuilding = Relax.getAvailableRecreationBuilding(person);
-            result *= getBuildingModifier(recBuilding, person);
-
-            // Modify probability if during person's work shift.
-            boolean isShiftHour = person.isOnDuty();
-            if (isShiftHour) {
-                result*= WORK_SHIFT_MODIFIER;
-            }
-            
-            if (result < 0) result = 0;
+    public List<TaskJob> getTaskJobs(Person person) {
+        if (!person.isInside()) {
+            return EMPTY_TASKLIST;
         }
 
-        return result;
+        RatingScore result = new RatingScore(1D);
+            
+        Building recBuilding = Relax.getAvailableRecreationBuilding(person);
+        result = assessBuildingSuitability(result, recBuilding, person);
+        result = assessPersonSuitability(result, person);
+
+        // Modify probability if during person's work shift.
+        boolean isShiftHour = person.isOnDuty();
+        if (isShiftHour) {
+            result.addModifier("shift", WORK_SHIFT_MODIFIER);
+        }
+            
+        return createTaskJobs(result);
     }
 }

@@ -7,11 +7,14 @@
 package com.mars_sim.core.person.ai.task.meta;
 
 import java.util.Iterator;
+import java.util.List;
 
+import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.RestingMedicalRecovery;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
@@ -40,43 +43,35 @@ public class RestingMedicalRecoveryMeta extends FactoryMetaTask {
     }
 
     @Override
-    public double getProbability(Person person) {
+    public List<TaskJob> getTaskJobs(Person person) {
 
-        double result = 0D;
-
-        if (person.isOutside())
-        	return 0;
+        if (person.isOutside()) {
+        	return EMPTY_TASKLIST;
+        }
 
         // Check if person has a health problem that requires bed rest for recovery.
         boolean bedRestNeeded = false;
-        Iterator<HealthProblem> i = person.getPhysicalCondition().getProblems().iterator();
-        while (i.hasNext()) {
-            HealthProblem problem = i.next();
+        for( HealthProblem problem : person.getPhysicalCondition().getProblems()) {
             if (problem.getRecovering() && problem.requiresBedRest()) {
                 bedRestNeeded = true;
             }
         }
 
-        if (bedRestNeeded) {
-            result = 500D;
-
-            int hunger = (int) person.getPhysicalCondition().getHunger();
-            result = result - (hunger - 333) / 3.0;
-
-            // Determine if any available medical aids can be used for bed rest.
-            if (hasUsefulMedicalAids(person)) {
-                result+= 100D;
-            }
-
-	        double pref = person.getPreference().getPreferenceScore(this);
-
-	        if (pref > 0)
-	        	result = result + pref * 10;
-
-            if (result < 0) result = 0;
+        if (!bedRestNeeded) {
+            return EMPTY_TASKLIST;
         }
 
-        return result;
+        double result = 500D;
+
+        int hunger = (int) person.getPhysicalCondition().getHunger();
+        result = result - (hunger - 333) / 3.0;
+
+        // Determine if any available medical aids can be used for bed rest.
+        if (hasUsefulMedicalAids(person)) {
+            result+= 100D;
+        }
+
+        return createTaskJobs(new RatingScore(result));
     }
 
     /**

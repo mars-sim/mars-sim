@@ -28,7 +28,7 @@ import com.mars_sim.tools.util.RandomUtil;
 public abstract class DigLocalMeta extends FactoryMetaTask {
 
 
-	private static final double VALUE = 50;
+	private static final double VALUE = 25;
 	private static final int MAX = 2_000;
 	
 	private EquipmentType containerType;
