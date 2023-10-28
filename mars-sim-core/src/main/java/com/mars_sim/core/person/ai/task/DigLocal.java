@@ -86,7 +86,7 @@ public abstract class DigLocal extends EVAOperation {
 	 * 
 	 * @param person the person performing the task.
 	 */
-	public DigLocal(String name, TaskPhase collectionPhase, int resourceID,
+	protected DigLocal(String name, TaskPhase collectionPhase, int resourceID,
 					EquipmentType containerType, Person person, int duration) {
         // Use EVAOperation constructor.
         super(name, person, false, duration, SkillType.AREOLOGY);
@@ -275,7 +275,11 @@ public abstract class DigLocal extends EVAOperation {
 	    		}
             }
         }
-        else {
+        else if (!person.isOnDuty()) {
+			// Duty has ended so abort digging
+			abortEVA("Shift ended");
+		}
+		else {
         	// Reset this holder
         	collectionLimit = 0;
         	// Go back to the digging site
@@ -353,7 +357,6 @@ public abstract class DigLocal extends EVAOperation {
 		}
 
         PhysicalCondition condition = person.getPhysicalCondition();
-//        double fatigue = condition.getFatigue();
         double strengthMod = condition.getStrengthMod();
         double skillMod = 1.0 + person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);		
         		
@@ -554,15 +557,13 @@ public abstract class DigLocal extends EVAOperation {
 		if (person.getPerformanceRating() < .2D)
 			return false;
 
-		if (person.isSuperUnFit())
-			return false;
-		
-		return true;
+		return !person.isSuperUnFit();
 	}
 	
 	/**
 	 * Prepares object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
 		worker = null;
 		airlock = null;
@@ -571,5 +572,7 @@ public abstract class DigLocal extends EVAOperation {
 		diggingLoc = null;
 		dropOffLoc = null;
 		containerType = null;
+
+		super.destroy();
 	}
 }

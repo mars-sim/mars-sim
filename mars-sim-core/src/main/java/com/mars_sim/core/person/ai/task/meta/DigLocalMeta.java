@@ -28,8 +28,7 @@ import com.mars_sim.tools.util.RandomUtil;
 public abstract class DigLocalMeta extends FactoryMetaTask {
 
 
-	private static final double VALUE = 25;
-	private static final int MAX = 2_000;
+	private static final int MAX_BASE = 1000;
 	
 	private EquipmentType containerType;
 
@@ -68,10 +67,10 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
     		return EMPTY_TASKLIST;
         }
 
-        double base = RandomUtil.getRandomDouble(collectionProbability / 10, collectionProbability) * VALUE;
+        double base = RandomUtil.getRandomDouble(collectionProbability / 10, collectionProbability);
         
-        if (base > MAX)
-        	base = MAX;
+        if (base > MAX_BASE)
+        	base = MAX_BASE;
         RatingScore result = new RatingScore(base);
  
         // Probability affected by the person's stress and fatigue.
@@ -90,7 +89,7 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
     
         // Effect of the ratio of # indoor people vs. those outside already doing EVA 
         result.addModifier("eva",
-                1.2 - ((double)settlement.getNumOutsideEVA() / settlement.getNumCitizens()));
+                1.0D - ((double)settlement.getNumOutsideEVA() / settlement.getNumCitizens()));
 
         // Encourage to get this task done early in a work shift
         result.addModifier("shift", getShiftModifier(person));
@@ -106,13 +105,16 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
     }
 
     /**
-     * Get a modifier based on the Shift start time. This is based on how far throuhg the shift a person is;
+     * Get a modifier based on the Shift start time. This is based on how far through the shift a person is;
      * it is weighted towards the 1st 50% of the shift.
      */
     private static double getShiftModifier(Person person) {
         double completed = person.getShiftSlot().getShift().getShiftCompleted(getMarsTime().getMillisolInt());
 
-        // Less than 50% compelted receives a bonus
-        return 1D + (completed - 0.5D);
+        // Do not start in the last 30% of a shift
+        if (completed > 0.66D) {
+            return 0D;
+        }
+        return 1D - completed;
     }
 }
