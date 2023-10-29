@@ -443,8 +443,12 @@ public class Converse extends Task {
 		Task task = target.getMind().getTaskManager().getTask();
 		boolean canAdd = false;
 		if (!hasConservation(target)) {
-	    	// Add conversation as a subtask to the invitee
-			canAdd = task.addSubTask(new Converse(target, person));
+			if (task == null)
+				canAdd = target.getMind().getTaskManager()
+					.checkReplaceTask(new Converse(target, person));
+			else
+				// Add conversation as a subtask to the invitee
+				canAdd = task.addSubTask(new Converse(target, person));
 		}
 		else {
 			canAdd = true;
