@@ -46,12 +46,12 @@ public class MasterClock implements Serializable {
 	/** The mid speed setting. */
 	public static final int MID_SPEED = 8;
 
-	// 256x
+	// 1x, 2x, 4x, 8x, 16x, 32x, 64x, 128x, 256x 
 	public static final double MID_TIME_RATIO = (int)Math.pow(2, MID_SPEED); 
-	// 2916x
+	// 384x, 576x, 864x, 1296x, 1944x, 2916x
 	public static final double HIGH_TIME_RATIO = MID_TIME_RATIO 
 							* Math.pow(1.5, HIGH_SPEED - MID_SPEED);
-	// 21870x
+	// 3645x, 7290x, 10935x, 14580x, 18225x, 21870x
 	public static final double MAX_TIME_RATIO = HIGH_TIME_RATIO
 							* Math.pow(1.25, MAX_SPEED - HIGH_SPEED);
 	
@@ -170,7 +170,24 @@ public class MasterClock implements Serializable {
 		clockThreadTask = new ClockThreadTask();
 		
 		if (userTimeRatio > 0) {
-			desiredTR = userTimeRatio;
+			if (userTimeRatio <= MID_TIME_RATIO) {
+				desiredTR = (int)MID_TIME_RATIO;
+				while (desiredTR < userTimeRatio) {
+					decreaseSpeed();
+				}
+			}
+			else if (userTimeRatio <= HIGH_TIME_RATIO) {
+				desiredTR = (int)HIGH_TIME_RATIO;
+				while (desiredTR > userTimeRatio) {
+					decreaseSpeed();
+				}
+			}
+			else if (userTimeRatio <= MAX_TIME_RATIO) {
+				desiredTR = (int)MAX_TIME_RATIO;
+				while (desiredTR > userTimeRatio) {
+					decreaseSpeed();
+				}
+			}	
 		}
 		else {
 			desiredTR = (int)simulationConfig.getTimeRatio();
