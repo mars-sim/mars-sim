@@ -21,6 +21,7 @@ import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskFactory;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
@@ -34,7 +35,7 @@ import com.mars_sim.tools.Msg;
  * Meta task for the ManufactureGood task.
  */
 public class ManufactureGoodMeta extends MetaTask
-    implements SettlementMetaTask {
+    implements SettlementMetaTask, TaskFactory {
 
     /**
      * A potential jon needs to manufacture goods
@@ -176,5 +177,23 @@ public class ManufactureGoodMeta extends MetaTask
             }
         }
         return result;
+    }
+
+    /**
+     * Create a default ManufactureGood job.
+     * @param person Person doing the task
+     */
+    @Override
+    public Task constructInstance(Person person) {
+        return new ManufactureGood(person);
+    }
+
+    /**
+     * Create a default ManufactureGood job.
+     * @param robot Robot doing the task
+     */
+    @Override
+    public Task constructInstance(Robot robot) {
+        return new ManufactureGood(robot);
     }
 }

@@ -90,12 +90,14 @@ public class MetaTaskUtil {
 	
 	private static List<FactoryMetaTask> dutyHourTasks = null;
 	private static List<FactoryMetaTask> nonDutyHourTasks = null;
+	private static List<FactoryMetaTask> onCallTasks = null;
 
-	private static List<FactoryMetaTask> personMetaTasks;
 	private static List<FactoryMetaTask> robotMetaTasks = null;
 
 	private static Map<String, MetaTask> idToMetaTask;
 	private static List<SettlementMetaTask> settlementTasks;
+	private static List<MetaTask> personMetaTasks = null;
+	private static List<TaskFactory> personTaskFactorys;
 
 	/**
 	 * Private constructor for utility class.
@@ -196,19 +198,29 @@ public class MetaTaskUtil {
 
 		// Pick put settlement tasks
 		settlementTasks = allMetaTasks.stream()
-				.filter(m -> (m instanceof SettlementMetaTask))
+				.filter(SettlementMetaTask.class::isInstance)
 				.map(s -> (SettlementMetaTask) s)
 				.collect(Collectors.toUnmodifiableList());
 
 		// Filter out All Unit Tasks
 		personMetaTasks = allMetaTasks.stream()
-				.filter(m -> (m instanceof FactoryMetaTask))
+				.filter(m -> ((m.getSupported() == WorkerType.BOTH)
+								|| (m.getSupported() == WorkerType.PERSON)))
+				.collect(Collectors.toUnmodifiableList());
+		personTaskFactorys = personMetaTasks.stream()
+				.filter(TaskFactory.class::isInstance)
+				.map(s -> (TaskFactory) s)
+				.collect(Collectors.toUnmodifiableList());
+
+		// Filter out All Unit Tasks
+		onCallTasks = allMetaTasks.stream()
+				.filter(FactoryMetaTask.class::isInstance)
 				.map(s -> (FactoryMetaTask) s)
 				.filter(m -> ((m.getSupported() == WorkerType.BOTH)
 								|| (m.getSupported() == WorkerType.PERSON)))
 				.collect(Collectors.toUnmodifiableList());
 		robotMetaTasks = allMetaTasks.stream()
-				.filter(m -> (m instanceof FactoryMetaTask))
+				.filter(FactoryMetaTask.class::isInstance)
 				.map(s -> (FactoryMetaTask) s)
 				.filter(m -> ((m.getSupported() == WorkerType.BOTH)
 								|| (m.getSupported() == WorkerType.ROBOT)))
@@ -216,7 +228,7 @@ public class MetaTaskUtil {
 		
 		// Build special Shift based lists
 		// Should these be just Person task?
-		Map<TaskScope, List<FactoryMetaTask>> metaPerScope = personMetaTasks.stream()
+		Map<TaskScope, List<FactoryMetaTask>> metaPerScope = onCallTasks.stream()
   					.collect(Collectors.groupingBy(MetaTask::getScope));
 
 		List<FactoryMetaTask> tasks = new ArrayList<>();
@@ -244,8 +256,8 @@ public class MetaTaskUtil {
 	 * 
 	 * @return list of meta tasks.
 	 */
-	public static List<FactoryMetaTask> getPersonMetaTasks() {
-		return personMetaTasks;
+	public static List<FactoryMetaTask> getOnCallMetaTasks() {
+		return onCallTasks;
 	}
 
 	/**
@@ -306,6 +318,14 @@ public class MetaTaskUtil {
 		return robotMetaTasks;
 	}
 
+	public static List<MetaTask> getPersonMetaTasks() {
+		return personMetaTasks;
+	}
+
+    public static List<TaskFactory> getPersonTaskFactorys() {
+        return personTaskFactorys;
+    }
+
 	/**
 	 * Loads any references that MetaTasks need.
 	 */
@@ -316,4 +336,5 @@ public class MetaTaskUtil {
 		ExamineBodyMeta.initialiseInstances(sim.getMedicalManager());
 		ReviewMissionPlanMeta.initialiseInstances(sim.getMissionManager());
     }
+
 }
