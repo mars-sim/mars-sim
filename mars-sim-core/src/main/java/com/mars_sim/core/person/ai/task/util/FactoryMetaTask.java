@@ -62,7 +62,7 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * 
 	 * @param person the person to perform the task.
 	 * @return weighted probability value (0 -> positive value).
-	 * @deprecated Replace {@link #getRating(Person)}
+	 * @deprecated Replace {@link #getTaskJobs(Person)}
 	 */
 	public double getProbability(Person person) {
 		throw new UnsupportedOperationException("Can not calculated the probability of " + getName()  + " for Person.");

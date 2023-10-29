@@ -48,6 +48,7 @@ public abstract class MetaTask {
 		ANY_HOUR, WORK_HOUR, NONWORK_HOUR
 	}
 	
+	// Common modifier names for RatingScore
 	private static final String EVA_MODIFIER = "eva";
 	protected static final String GARAGED_MODIFIER = "garaged";
 	protected static final String GOODS_MODIFIER = "goods";
@@ -56,6 +57,7 @@ public abstract class MetaTask {
 	protected static final String PERSON_MODIFIER = "person";
 	private static final String RADIATION_MODIFIER = "radiation";
 	private static final String ROLE_MODIFIER = "role";
+	protected static final String SKILL_MODIFIER = "skill";
     protected static final String STRESS_MODIFIER = "stress";
 	private static final String VEHICLE_MODIFIER = "vehicle";
 

@@ -69,7 +69,18 @@ public class ManufactureGood extends Task {
 	public ManufactureGood(Person person) {
 		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MATERIALS_SCIENCE, 100D, 25);
 
-		init();
+		searchForWorkshop();
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param person the person to perform the task
+	 */
+	public ManufactureGood(Person person, Building building) {
+		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MATERIALS_SCIENCE, 100D, 25);
+
+		setupWorkshop(building);
 	}
 
 	/**
@@ -81,34 +92,59 @@ public class ManufactureGood extends Task {
 		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MATERIALS_SCIENCE, 100D,
 				10D + RandomUtil.getRandomDouble(50D));
 
-		init();
+		searchForWorkshop();
 	}
 	
-	private void init() {
+	/**
+	 * Constructor.
+	 * 
+	 * @param robot the robot to perform the task
+	 * @param building Where the manufacturing is done
+	 */
+	public ManufactureGood(Robot robot, Building building) {
+		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MATERIALS_SCIENCE, 100D,
+				10D + RandomUtil.getRandomDouble(50D));
+
+		setupWorkshop(building);
+	}
+
+	private void searchForWorkshop() {
 		// Initialize data members
 		if (worker.isInSettlement()) {
+			SkillManager skillManager = worker.getSkillManager();
+			int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
 			// Get available manufacturing workshop if any.
-			Building manufactureBuilding = getAvailableManufacturingBuilding(worker);
-			if (manufactureBuilding != null) {
-				setDescription(Msg.getString("Task.description.manufactureGood.building",
-						 manufactureBuilding.getNickName())); //$NON-NLS-1$
-				workshop = manufactureBuilding.getManufacture();
+			Set<Building> potentialBuildings = getAvailableManufacturingBuilding(worker.getSettlement(), skill);
 
-				// Walk to manufacturing building.
-				walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, FunctionType.MANUFACTURE, false);
-				
-				// Initialize phase
-				addPhase(MANUFACTURE);
-				setPhase(MANUFACTURE);
-			} else {
+			if (!potentialBuildings.isEmpty()) {
+				potentialBuildings = getHighestManufacturingTechLevelBuildings(potentialBuildings);
+
+				Building manufactureBuilding = RandomUtil.getARandSet(potentialBuildings);
+				setupWorkshop(manufactureBuilding);
+			}
+			else {
 				endTask();
 			}
-
-
 		} else {
 			endTask();
 		}
+	}
+	
+	/**
+	 * Setup the workshop to start helping process
+	 */
+	private void setupWorkshop(Building manufactureBuilding) {
+		setDescription(Msg.getString("Task.description.manufactureGood.building",
+					manufactureBuilding.getNickName())); //$NON-NLS-1$
+		workshop = manufactureBuilding.getManufacture();
+
+		// Walk to manufacturing building.
+		walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, FunctionType.MANUFACTURE, false);
+		
+		// Initialize phase
+		addPhase(MANUFACTURE);
+		setPhase(MANUFACTURE);
 	}
 
 	/**
@@ -117,76 +153,60 @@ public class ManufactureGood extends Task {
 	 * 
 	 * @param settlement
 	 */
-	public static void cancelDifficultManufacturingProcesses(Settlement settlement) {
+	private static void cancelDifficultManufacturingProcesses(Settlement settlement) {
 
-		if (settlement != null) {
-			int highestSkillLevel = 0;
-			SkillManager skillManager = null;
-			for (Person tempPerson : settlement.getAllAssociatedPeople()) {
-				skillManager = tempPerson.getSkillManager();
+		int highestSkillLevel = 0;
+		SkillManager skillManager = null;
+		for (Person tempPerson : settlement.getAllAssociatedPeople()) {
+			skillManager = tempPerson.getSkillManager();
+			int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
+			if (skill > highestSkillLevel) {
+				highestSkillLevel = skill;
+			}
+		}
+
+		for (Robot tempRobot : settlement.getAllAssociatedRobots()) {
+			if (tempRobot.getRobotType() == RobotType.MAKERBOT) {
+				skillManager = tempRobot.getSkillManager();
 				int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
 				if (skill > highestSkillLevel) {
 					highestSkillLevel = skill;
 				}
 			}
+		}
 
-			skillManager = null;
-			for (Robot tempRobot : settlement.getAllAssociatedRobots()) {
-				if (tempRobot.getRobotType() == RobotType.MAKERBOT) {
-					// if (skillManager == null)
-					skillManager = tempRobot.getSkillManager();
-					int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
-					if (skill > highestSkillLevel) {
-						highestSkillLevel = skill;
-					}
-				}
-			}
-
-			for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE)) {
-				Manufacture manufacturingFunction = building.getManufacture();
-				Set<ManufactureProcess> processes = new HashSet<>(
-						manufacturingFunction.getProcesses());
-				for (ManufactureProcess process : processes) {
-					int processSkillLevel = process.getInfo().getSkillLevelRequired();
-					// NOTE: allow a low material science skill person to have access to do the next 2 levels 
-					// of skill process or else difficult tasks are not learned.
-					if (processSkillLevel - 2 > highestSkillLevel) {
-						// Cancel manufacturing process.
-						manufacturingFunction.endManufacturingProcess(process, true);
-					}
+		for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE)) {
+			Manufacture manufacturingFunction = building.getManufacture();
+			Set<ManufactureProcess> processes = new HashSet<>(
+					manufacturingFunction.getProcesses());
+			for (ManufactureProcess process : processes) {
+				int processSkillLevel = process.getInfo().getSkillLevelRequired();
+				// NOTE: allow a low material science skill person to have access to do the next 2 levels 
+				// of skill process or else difficult tasks are not learned.
+				if (processSkillLevel - 2 > highestSkillLevel) {
+					// Cancel manufacturing process.
+					manufacturingFunction.endManufacturingProcess(process, true);
 				}
 			}
 		}
 	}
 
 	/**
-	 * Gets an available manufacturing building that the worker can use. Returns
+	 * Gets an available manufacturing building at a Settlement needing assistence. Returns
 	 * null if no manufacturing building is currently available.
 	 * 
-	 * @param worker the worker
-	 * @return available manufacturing building
+	 * @param settlement Settlement to be checked
+	 * @param skill Tha maximum manufacturing skill needed
+	 * @return available manufacturing buildings
 	 */
-	public static Building getAvailableManufacturingBuilding(Worker worker) {
+	public static Set<Building> getAvailableManufacturingBuilding(Settlement settlement, int skill) {
 
-		Building result = null;
+		Set<Building> manufacturingBuildings = settlement.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE);
+		manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
+		manufacturingBuildings = getManufacturingBuildingsNeedingWork(manufacturingBuildings, skill);
+		manufacturingBuildings = getBuildingsWithProcessesRequiringWork(manufacturingBuildings, skill);
 
-		SkillManager skillManager = worker.getSkillManager();
-		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-
-		if (worker.isInSettlement()) {
-			Set<Building> manufacturingBuildings = worker.getSettlement().getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE);
-			manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
-			manufacturingBuildings = getManufacturingBuildingsNeedingWork(manufacturingBuildings, skill);
-			manufacturingBuildings = getBuildingsWithProcessesRequiringWork(manufacturingBuildings, skill);
-			manufacturingBuildings = getHighestManufacturingTechLevelBuildings(manufacturingBuildings);
-			manufacturingBuildings = BuildingManager.getLeastCrowded4BotBuildings(manufacturingBuildings);
-
-			if (manufacturingBuildings.size() > 0) {
-				result = RandomUtil.getARandSet(manufacturingBuildings);
-			}
-		}
-
-		return result;
+		return manufacturingBuildings;
 	}
 
 	/**
@@ -224,16 +244,14 @@ public class ManufactureGood extends Task {
 
 		Set<Building> result = new UnitSet<>();
 		// Add all buildings with processes requiring work.
-		Iterator<Building> i = buildingList.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
+		for(Building building : buildingList) {
 			if (hasProcessRequiringWork(building, skill)) {
 				result.add(building);
 			}
 		}
 
 		// If no building with processes requiring work, return original list.
-		if (result.size() == 0) {
+		if (result.isEmpty()) {
 			result = buildingList;
 		}
 
@@ -251,9 +269,7 @@ public class ManufactureGood extends Task {
 
 		boolean result = false;
 
-		Iterator<ManufactureProcess> i = manufacturingBuilding.getManufacture().getProcesses().iterator();
-		while (i.hasNext()) {
-			ManufactureProcess process = i.next();
+		for(ManufactureProcess process : manufacturingBuilding.getManufacture().getProcesses()) {
 			boolean workRequired = (process.getWorkTimeRemaining() > 0D);
 			boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill);
 			if (workRequired && skillRequired)
@@ -275,18 +291,14 @@ public class ManufactureGood extends Task {
 		Set<Building> result = new UnitSet<>();
 
 		int highestTechLevel = 0;
-		Iterator<Building> i = buildingList.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
+		for(Building building : buildingList) {
 			Manufacture manufacturingFunction = building.getManufacture();
 			if (building.getManufacture().getTechLevel() > highestTechLevel) {
 				highestTechLevel = manufacturingFunction.getTechLevel();
 			}
 		}
 
-		Iterator<Building> j = buildingList.iterator();
-		while (j.hasNext()) {
-			Building building = j.next();
+		for(Building building : buildingList) {
 			if (building.getManufacture().getTechLevel() == highestTechLevel) {
 				result.add(building);
 			}
@@ -363,7 +375,7 @@ public class ManufactureGood extends Task {
 
         // Cancel any manufacturing processes that's beyond the skill of any people
         // associated with the settlement.
-		ManufactureGood.cancelDifficultManufacturingProcesses(entity.getSettlement());
+		cancelDifficultManufacturingProcesses(entity.getSettlement());
         
 		// Determine amount of effective work time based on "Materials Science"
 		// skill.
@@ -372,7 +384,7 @@ public class ManufactureGood extends Task {
 		if (skill == 0) {
 			workTime /= 2;
 		} else {
-			workTime += workTime * (.2D * (double) skill);
+			workTime += workTime * (.2D * skill);
 		}
 
 		// Apply work time to manufacturing processes.
