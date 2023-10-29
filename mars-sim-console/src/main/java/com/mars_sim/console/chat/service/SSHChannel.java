@@ -31,14 +31,14 @@ import com.mars_sim.console.chat.UserOutbound;
 import com.mars_sim.core.Simulation;
 
 /**
- * This is the bridge between the active SSH session and a Converse object to handle
+ * This is the bridge between the active SSH session and a conversation object to handle
  * the user input.
  *
  */
 public class SSHChannel implements UserChannel, Command {
 	
 	/**
-	 * Runnable that drives the blockable Converse
+	 * Runnable that drives the blockable conversation
 	 */
 	private final class ConversationThread implements Runnable {  
 		@Override
@@ -49,7 +49,7 @@ public class SSHChannel implements UserChannel, Command {
                 callback.onExit(-1, e.getMessage());
                 return;
             }
-            LOGGER.info("Converse ended" + conv);
+            LOGGER.info("Conversation ended" + conv);
 	        callback.onExit(0);
 	    }
 	}

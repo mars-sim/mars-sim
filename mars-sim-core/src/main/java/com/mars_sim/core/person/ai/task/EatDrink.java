@@ -21,6 +21,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.task.meta.ConverseMeta;
 import com.mars_sim.core.person.ai.task.meta.EatDrinkMeta;
+import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.resource.AmountResource;
@@ -331,7 +332,7 @@ public class EatDrink extends Task {
 
 		boolean want2Chat = true;
 		// See if a person wants to chat while eating
-		int score = person.getPreference().getPreferenceScore(new ConverseMeta());
+		int score = person.getPreference().getPreferenceScore(MetaTaskUtil.getConverseMeta());
 		if (score > 0)
 			want2Chat = true;
 		else if (score < 0)

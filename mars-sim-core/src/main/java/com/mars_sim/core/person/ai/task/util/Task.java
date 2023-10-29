@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
@@ -23,7 +22,6 @@ import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.environment.OrbitInfo;
 import com.mars_sim.core.environment.SurfaceFeatures;
-import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.logging.SimLogger;
@@ -53,7 +51,6 @@ import com.mars_sim.core.structure.construction.ConstructionConfig;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.mapdata.location.LocalBoundedObject;
 import com.mars_sim.mapdata.location.LocalPosition;
 import com.mars_sim.tools.util.RandomUtil;
@@ -1516,39 +1513,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		return false;
 	}
 	
-	
 
-	
-	/**
-	 * Puts off the garment and the thermal bottle.
-	 * 
-	 * @param person
-	 * @param entity
-	 */
-	private void putOff(Person person, Entity entity) {
-		EquipmentOwner housing = null;
-
-		boolean inS = person.isInSettlement();
-		
-		if (inS)
-			housing = ((Building)entity).getSettlement();
-		else
-			housing = (Vehicle)entity;
-		
-		// Remove pressure suit and put on garment
-		if (inS) {
-			if (person.unwearPressureSuit(housing)) {
-				person.wearGarment(housing);
-			}
-		}
-		// Note: vehicle may or may not have garment available
-		else if (((Rover)housing).hasGarment() && person.unwearPressureSuit(housing)) {
-			person.wearGarment(housing);
-		}
-
-		// Assign thermal bottle
-		person.assignThermalBottle();
-	}
 	
 	/**
 	 * Sets the standard pulse time.
@@ -1588,14 +1553,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Get the simualtion underpinning run
+	 * Gets the simulation underpinning run.
 	 */
 	protected Simulation getSimulation() {
 		return sim;
 	}
 
 	/**
-	 * Get teh current Martian time
+	 * Gets the current Martian time.
 	 */
 	protected static MarsTime getMarsTime() {
 		return masterClock.getMarsTime();

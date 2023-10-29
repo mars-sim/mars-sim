@@ -24,6 +24,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
@@ -2318,6 +2319,39 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		return false;
 	}
 
+	/**
+	 * Puts off the garment and the thermal bottle. (UNUSED)
+	 * 
+	 * DO NOT DELETE THIS YET
+	 * 
+	 * @param person
+	 * @param entity
+	 */
+	public void putOff(Person person, Entity entity) {
+		EquipmentOwner housing = null;
+
+		boolean inS = person.isInSettlement();
+		
+		if (inS)
+			housing = ((Building)entity).getSettlement();
+		else
+			housing = (Vehicle)entity;
+		
+		// Remove pressure suit and put on garment
+		if (inS) {
+			if (person.unwearPressureSuit(housing)) {
+				person.wearGarment(housing);
+			}
+		}
+		// Note: vehicle may or may not have garment available
+		else if (((Rover)housing).hasGarment() && person.unwearPressureSuit(housing)) {
+			person.wearGarment(housing);
+		}
+
+		// Assign thermal bottle
+		person.assignThermalBottle();
+	}
+	
 	/**
 	 * Rescues the person from the rover.
 	 * Note: this is more like a hack, rather than a legitimate 

@@ -25,7 +25,7 @@ import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
-import com.mars_sim.core.person.ai.task.util.TaskProbabilityUtil;
+import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
@@ -98,7 +98,7 @@ public class LoadVehicleMeta extends MetaTask
      */
 	@Override
 	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
-        return TaskProbabilityUtil.assessRobot(t, r);
+        return TaskUtil.assessRobot(t, r);
     }
 
 	/**

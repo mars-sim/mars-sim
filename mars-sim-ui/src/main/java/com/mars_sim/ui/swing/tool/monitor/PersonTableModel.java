@@ -36,11 +36,12 @@ import com.mars_sim.tools.Msg;
  * source of the list is the Unit Manager. It maps key attributes of the Person
  * into Columns.
  */
+@SuppressWarnings("serial")
 public class PersonTableModel extends UnitTableModel<Person> {
 
 	// Column indexes
 	private static final int NAME = 0;
-	private static final int TASK = 1;
+	private static final int TASK_DESC = 1;
 	private static final int MISSION_COL = 2;
 	private static final int JOB = 3;
 	private static final int ROLE = 4;
@@ -82,7 +83,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		COLUMNS[JOB] = new ColumnSpec(Msg.getString("PersonTableModel.column.job"), String.class);
 		COLUMNS[SHIFT] = new ColumnSpec(Msg.getString("PersonTableModel.column.shift"), String.class);
 		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("PersonTableModel.column.mission"), String.class);
-		COLUMNS[TASK] = new ColumnSpec(Msg.getString("PersonTableModel.column.task"), String.class);
+		COLUMNS[TASK_DESC] = new ColumnSpec(Msg.getString("PersonTableModel.column.task"), String.class);
 
 		eventColumnMapping = new EnumMap<>(UnitEventType.class);
 		eventColumnMapping.put(UnitEventType.NAME_EVENT, NAME);
@@ -96,10 +97,10 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		eventColumnMapping.put(UnitEventType.JOB_EVENT, JOB);
 		eventColumnMapping.put(UnitEventType.ROLE_EVENT, ROLE);
 		eventColumnMapping.put(UnitEventType.SHIFT_EVENT, SHIFT);
-		eventColumnMapping.put(UnitEventType.TASK_EVENT, TASK);
-		eventColumnMapping.put(UnitEventType.TASK_NAME_EVENT, TASK);
-		eventColumnMapping.put(UnitEventType.TASK_DESCRIPTION_EVENT, TASK);
-		eventColumnMapping.put(UnitEventType.TASK_ENDED_EVENT, TASK);
+		eventColumnMapping.put(UnitEventType.TASK_EVENT, TASK_DESC);
+		eventColumnMapping.put(UnitEventType.TASK_NAME_EVENT, TASK_DESC);
+		eventColumnMapping.put(UnitEventType.TASK_DESCRIPTION_EVENT, TASK_DESC);
+		eventColumnMapping.put(UnitEventType.TASK_ENDED_EVENT, TASK_DESC);
 		eventColumnMapping.put(UnitEventType.MISSION_EVENT, MISSION_COL);
 		eventColumnMapping.put(UnitEventType.ILLNESS_EVENT, HEALTH);
 		eventColumnMapping.put(UnitEventType.DEATH_EVENT, HEALTH);
@@ -258,7 +259,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 
 		switch (columnIndex) {
 
-			case TASK: {
+			case TASK_DESC: {
 				// If the Person is dead, there is no Task Manager
 				Task task = person.getMind().getTaskManager().getTask();
 				result = ((task != null) ? task.getDescription() : "");
@@ -364,7 +365,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	}
 	
 	/**
-     * Return the score breakdown if TASK column is selected
+     * Return the score breakdown if TASK_DESC column is selected
      * @param rowIndex Row index of cell
      * @param columnIndex Column index of cell
      * @return Return null by default
@@ -372,7 +373,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
     @Override
     public String getToolTipAt(int rowIndex, int columnIndex) {
 		String result = null;
-		if (columnIndex == TASK) {
+		if (columnIndex == TASK_DESC) {
 			Person p = getEntity(rowIndex);
 			if (p != null) {
 				// If the Person is dead, there is no Task Manager

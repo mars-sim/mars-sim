@@ -110,7 +110,7 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	}
 
 	/**
-	 * Sets and fixes arguments to this command. Dynamic arguments the {@link #getAutoComplete(Converse, String)}
+	 * Sets and fixes arguments to this command. Dynamic arguments the {@link #getAutoComplete(Conversation, String)}
 	 * method should be overridden.
 	 * 
 	 * @param arguments

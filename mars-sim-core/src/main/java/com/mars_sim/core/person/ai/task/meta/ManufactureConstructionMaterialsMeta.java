@@ -17,7 +17,7 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.ManufactureConstructionMaterials;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.person.ai.task.util.TaskProbabilityUtil;
+import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
@@ -139,7 +139,7 @@ public class ManufactureConstructionMaterialsMeta extends FactoryMetaTask {
                     result = 1D;
 
                     // Crowding modifier.
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot,
+                    result *= TaskUtil.getCrowdingProbabilityModifier(robot,
                             manufacturingBuilding);
 
                     // Manufacturing good value modifier.

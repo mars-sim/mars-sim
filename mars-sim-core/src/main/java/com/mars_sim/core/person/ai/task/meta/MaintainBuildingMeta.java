@@ -21,7 +21,7 @@ import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.person.ai.task.util.TaskProbabilityUtil;
+import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
@@ -98,7 +98,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
      */
 	@Override
 	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
-        var factor = TaskProbabilityUtil.assessRobot(t, r);
+        var factor = TaskUtil.assessRobot(t, r);
 		if (factor.getScore() > 0)
 			factor.addModifier("robot.expert", ROBOT_FACTOR);
         return factor;

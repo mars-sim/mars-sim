@@ -97,6 +97,8 @@ public class MetaTaskUtil {
 	private static Map<String, MetaTask> idToMetaTask;
 	private static List<SettlementMetaTask> settlementTasks;
 
+	private static ConverseMeta converseMeta = new ConverseMeta();
+	
 	/**
 	 * Private constructor for utility class.
 	 */
@@ -130,7 +132,8 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new DigLocalRegolithMeta());
 		allMetaTasks.add(new EatDrinkMeta());
 		allMetaTasks.add(new ExamineBodyMeta());
-		allMetaTasks.add(new ConverseMeta());
+		converseMeta = new ConverseMeta();
+		allMetaTasks.add(converseMeta);
 		allMetaTasks.add(new InviteStudyCollaboratorMeta());
 		
 		allMetaTasks.add(new ListenToMusicMeta());
@@ -306,6 +309,10 @@ public class MetaTaskUtil {
 		return robotMetaTasks;
 	}
 
+	public static ConverseMeta getConverseMeta() {
+		return converseMeta;
+	}
+	
 	/**
 	 * Loads any references that MetaTasks need.
 	 */

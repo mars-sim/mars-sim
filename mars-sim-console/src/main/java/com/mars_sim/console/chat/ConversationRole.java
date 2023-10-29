@@ -8,7 +8,7 @@
 package com.mars_sim.console.chat;
 
 /**
- * Possible roles that a user can have in a Converse
+ * Possible roles that a user can have in a conversation
  */
 public enum ConversationRole {
 	ADMIN,

@@ -18,7 +18,7 @@ import com.mars_sim.core.person.ai.task.PeerReviewStudyPaper;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
-import com.mars_sim.core.person.ai.task.util.TaskProbabilityUtil;
+import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyManager;
@@ -60,7 +60,7 @@ public class PeerReviewStudyPaperMeta extends FactoryMetaTask {
             return EMPTY_TASKLIST;
 		}
 
-		var jobScience = TaskProbabilityUtil.getPersonJobScience(person);
+		var jobScience = TaskUtil.getPersonJobScience(person);
 	    if (jobScience == null) {
 			return EMPTY_TASKLIST;
 		}		

@@ -21,9 +21,10 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.social.RelationshipType;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
-import com.mars_sim.core.person.ai.task.meta.ConverseMeta;
+import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
@@ -111,8 +112,10 @@ public class Converse extends Task {
         super(NAME, person, true, false, 
         		STRESS_MODIFIER - RandomUtil.getRandomDouble(.2),
         		Math.min(1,
-        		 1 + RandomUtil.getRandomDouble(person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.CONVERSATION))/20
-        		 + RandomUtil.getRandomDouble(person.getPreference().getPreferenceScore(new ConverseMeta())/3.0)
+        		 1 + RandomUtil.getRandomDouble(person.getNaturalAttributeManager()
+        				 .getAttribute(NaturalAttributeType.CONVERSATION))/20
+        		 + RandomUtil.getRandomDouble(person.getPreference()
+        				 .getPreferenceScore(MetaTaskUtil.getConverseMeta())/3.0)
         		));
 
     	findInvitee();
@@ -605,7 +608,7 @@ public class Converse extends Task {
 	 */
 	private static void addPerson(boolean checkIdle, Task task, Person initiator, Collection<Person> people, Person person) {
 		if (checkIdle
-			&& isIdleTask(task)) {
+			&& TaskUtil.isIdleTask(task)) {
 				people.add(person);
 	
 		} else if ((task == null 
@@ -616,20 +619,7 @@ public class Converse extends Task {
 		}
 	}
 	
-
-	/**
-	 * Is this an idle task ?
-	 * 
-	 * @param task
-	 * @return
-	 */
-	private static boolean isIdleTask(Task task) {
-        return task instanceof Relax
-        		|| task instanceof Yoga
-        		|| task instanceof Workout
-                || task instanceof Read
-                || task instanceof DayDream
-                || task instanceof Converse
-                || task instanceof EatDrink;
-    }
+	public void destroy() {
+		initiatorLocation = null; 
+	}
 }

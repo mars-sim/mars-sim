@@ -21,7 +21,7 @@ import com.mars_sim.core.person.ai.task.ProposeScientificStudy;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
-import com.mars_sim.core.person.ai.task.util.TaskProbabilityUtil;
+import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
@@ -67,7 +67,7 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
         	targetJobs = JobType.INTELLECTUALS;
         }
 
-		ScienceType science = TaskProbabilityUtil.getPersonJobScience(person);
+		ScienceType science = TaskUtil.getPersonJobScience(person);
         if ((science == null)
 			|| !targetJobs.contains(job)
 			|| !person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)

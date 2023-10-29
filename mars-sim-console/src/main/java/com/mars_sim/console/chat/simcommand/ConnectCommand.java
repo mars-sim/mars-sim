@@ -41,7 +41,7 @@ public class ConnectCommand extends ChatCommand {
 
 	/**
 	 * Connects to another entity. 
-	 * This will change the Converse current command to one specific to the entity.
+	 * This will change the conversation current command to one specific to the entity.
 	 * 
 	 * @return 
 	 */
@@ -130,13 +130,14 @@ public class ConnectCommand extends ChatCommand {
 		return units;
 	}
 
-	@Override
 	/**
-	 * Get the possible Unit names for auto complete.
-	 * @param context Converse taking place
+	 * Gets the possible Unit names for auto complete.
+	 * 
+	 * @param context The conversation taking place
 	 * @param input Partial input
 	 * @return List of Unit names that match
 	 */
+	@Override
 	public List<String> getArguments(Conversation context) {
 		UnitManager um = context.getSim().getUnitManager();
 		List<Unit> units = getAllUnits(um);

@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * Converse.java
+ * Conversation.java
  * @date 2023-06-14
  * @author Barry Evans
  */
@@ -21,7 +21,7 @@ import com.mars_sim.console.chat.command.InteractiveChatCommand;
 import com.mars_sim.core.Simulation;
 
 /**
- * Establishes a Converse with a user.
+ * Establishes a Conversation with a user.
  */
 public class Conversation implements UserOutbound {
 	
@@ -74,7 +74,7 @@ public class Conversation implements UserOutbound {
 	}
 	
 	/**
-	 * The list of stacked commands in the current conversation. It does not include
+	 * Gets the list of stacked commands in the current conversation. It does not include
 	 * the current command; only those stacked.
 	 */
 	public List<InteractiveChatCommand> getCommandStack() {

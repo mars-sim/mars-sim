@@ -24,7 +24,7 @@ import org.apache.sshd.server.session.ServerSession;
 
 /**
  * This provides a remote chat service using a SSH protocol. 
- * Connected SSH channel uses Converse class to interact with the Simulation.
+ * Connected SSH channel uses conversation class to interact with the Simulation.
  *
  */
 public class RemoteChatService {
@@ -39,7 +39,8 @@ public class RemoteChatService {
 	private Credentials creds;
 	
 	/**
-	 * Build a remote chat service that will present an SSH service at the specified port.
+	 * Builds a remote chat service that will present an SSH service at the specified port.
+	 * 
 	 * @param port Port number
 	 * @param dataDir Directory that holds any persistent files such as host key.
 	 * @param creds Credentials of allowed users.
@@ -51,8 +52,9 @@ public class RemoteChatService {
 	}
 
 	/**
-	 * Build the server ready to use.
-	 * @param dataDir Direcotry to host host key
+	 * Builds the server ready to use.
+	 * 
+	 * @param dataDir Directory to host host key
 	 */
 	private void buildServer(File dataDir) {
 		this.sshd = SshServer.setUpDefaultServer();

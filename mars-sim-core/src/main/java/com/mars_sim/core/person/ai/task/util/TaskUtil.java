@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * TaskProbabilityUtil.java
- * @date 2022-06-11
+ * TaskUtil.java
+ * @date 2023-10-29
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task.util;
@@ -12,7 +12,14 @@ import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
+import com.mars_sim.core.person.ai.task.Converse;
+import com.mars_sim.core.person.ai.task.DayDream;
 import com.mars_sim.core.person.ai.task.EVAOperation;
+import com.mars_sim.core.person.ai.task.EatDrink;
+import com.mars_sim.core.person.ai.task.Read;
+import com.mars_sim.core.person.ai.task.Relax;
+import com.mars_sim.core.person.ai.task.Workout;
+import com.mars_sim.core.person.ai.task.Yoga;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.RadiationStatus;
@@ -24,18 +31,19 @@ import com.mars_sim.core.structure.building.function.LifeSupport;
 import com.mars_sim.core.structure.building.function.RoboticStation;
 
 /**
- * Utility class for calculating task probabilities.
+ * Utility class for task related function.
  */
-public class TaskProbabilityUtil {
+public class TaskUtil {
 
     /**
      * Private constructor for utility class.
      */
-    private TaskProbabilityUtil() {};
+    private TaskUtil() {};
 
     /**
-     * Assess if change of Building for a person based on teh overcrowding of the current
+     * Assesses if change of Building for a person based on the overcrowding of the current
      * compared to the new building.
+     * 
      * @param person the person to perform the task.
      * @param newBuilding the building the person is to go to.
      * @return probability modifier
@@ -57,8 +65,9 @@ public class TaskProbabilityUtil {
     }
 
     /**
-     * Get a ratio of the capacity of this building as a percentage of the capacity.
+     * Gets a ratio of the capacity of this building as a percentage of the capacity.
      * Negative means building is over capacity.
+     * 
      * @param b Building being assessed.
      */
     private static double getBuildingCapacityRatio(Building b) {
@@ -132,8 +141,9 @@ public class TaskProbabilityUtil {
     }
 
     /**
-     * Assess the suitability of the Robot for a task. This only assesses the basic Robot 
-     * characteristics against the stanard SettlementTask. 
+     * Assesses the suitability of the Robot for a task. This only assesses the basic Robot 
+     * characteristics against the standard SettlementTask. 
+     * 
      * @param t Task to assess
      * @param r Robot being assessed
      * @return A rating
@@ -204,7 +214,8 @@ public class TaskProbabilityUtil {
 	}
 
     /**
-     * Get the Sciencetype associated with this Person's job
+     * Gets the Science type associated with this Person's job.
+     * 
      * @param person Person being assessed
      * @return Science Type from the associated job; maybe null.
      */
@@ -214,5 +225,22 @@ public class TaskProbabilityUtil {
     		return null;
     	}
     	return ScienceType.getJobScience(job);
+    }
+    
+
+	/**
+	 * Is this an idle task ?
+	 * 
+	 * @param task
+	 * @return
+	 */
+    public static boolean isIdleTask(Task task) {
+        return task instanceof Relax
+        		|| task instanceof Yoga
+        		|| task instanceof Workout
+                || task instanceof Read
+                || task instanceof DayDream
+                || task instanceof Converse
+                || task instanceof EatDrink;
     }
 }
