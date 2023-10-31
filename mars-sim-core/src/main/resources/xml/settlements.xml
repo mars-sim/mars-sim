@@ -101,6 +101,12 @@
 	<!-- The Standard patterns are the default and but always be present. 
 		The others can be added/deleted -->
 	<shifts>
+		<shift-pattern name="Standard 4 Shift" rotation-sols="2">
+			<shift name="A" start="0" end="250" pop-percentage ="30"/>
+			<shift name="B" start="250" end="500" pop-percentage ="30"/>
+			<shift name="C" start="500" end="750" pop-percentage ="30"/>
+			<shift name="Night" start="750" end="0" pop-percentage ="10"/>
+		</shift-pattern>
 		<shift-pattern name="Standard 3 Shift" rotation-sols="2">
 			<shift name="A" start="200" end="550" pop-percentage ="40"/>
 			<shift name="B" start="550" end="900" pop-percentage ="40"/>
