@@ -7,21 +7,16 @@
 package com.mars_sim.ui.swing.unit_window.person;
 
 import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.person.ai.Skill;
 import com.mars_sim.core.person.ai.SkillManager;
-import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -75,16 +70,8 @@ extends TabPanel {
 		skillTable.getColumnModel().getColumn(2).setPreferredWidth(60);
 		skillTable.getColumnModel().getColumn(3).setPreferredWidth(100);
 		skillTable.setRowSelectionAllowed(true);
-		skillTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
-
-		// Align the content to the center of the cell
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
-		skillTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		skillTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
-		skillTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
-		skillTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
+		skillTable.setDefaultRenderer(Integer.class, new NumberCellRenderer(0));
+		skillTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
 		
 		skillScrollPanel.setViewportView(skillTable);
 
@@ -112,38 +99,35 @@ extends TabPanel {
 		private static final long serialVersionUID = 1L;
 
 		private SkillManager skillManager;
-		private Map<String, Integer> levels;
-		private Map<String, Integer> times;
-		private Map<String, Integer> exps;
-		private List<String> skillNames;
+		private List<Skill> skills;
 
 		private SkillTableModel(Worker unit) {
 
 	        skillManager = unit.getSkillManager();
-
-			levels = skillManager.getSkillLevelMap();
-			exps = skillManager.getSkillDeltaExpMap();
-			times = skillManager.getSkillTimeMap();
-			skillNames = skillManager.getKeyStrings();
+			skills = skillManager.getSkills();
 		}
 
+		@Override
 		public int getRowCount() {
-			return skillNames.size();
+			return skills.size();
 		}
 
+		@Override
 		public int getColumnCount() {
 			return 4;
 		}
 
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
+			Class<?> dataType = null;
 			if (columnIndex == 0) dataType = String.class;
 			else if (columnIndex == 1) dataType = Integer.class;
-			else if (columnIndex == 2) dataType = Integer.class;
+			else if (columnIndex == 2) dataType = Double.class;
 			else if (columnIndex == 3) dataType = Double.class;
 			return dataType;
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return Msg.getString("TabPanelSkill.column.skill"); //$NON-NLS-1$
 			else if (columnIndex == 1) return Msg.getString("TabPanelSkill.column.level"); //$NON-NLS-1$
@@ -152,38 +136,23 @@ extends TabPanel {
 			else return null;
 		}
 
+		@Override
 		public Object getValueAt(int row, int column) {
-			if (column == 0) return skillNames.get(row);
-			else if (column == 1) return levels.get(skillNames.get(row));
-			else if (column == 2) return exps.get(skillNames.get(row));
+			Skill s = skills.get(row);
+			if (column == 0) return s.getType().getName();
+			else if (column == 1) return s.getLevel();
+			else if (column == 2) return s.getNeededExp();
 			// Convert the labor time from the unit of millisol to sol
-			else if (column == 3) return Math.round(10.0 * times.get(skillNames.get(row)))/1_000.0;
+			else if (column == 3) return s.getTime()/1_000.0;
 			else return null;
 		}
 
 		public void update() {
-			SkillType[] keys = skillManager.getKeys();
-			List<String> newSkillNames = new ArrayList<>();
-			Map<String, Integer> newSkills = new HashMap<>();
-			Map<String, Integer> newExps = new HashMap<>();
-			Map<String, Integer> newTimes = new HashMap<>();
-			for (SkillType skill : keys) {
-				int level = skillManager.getSkillLevel(skill);
-				int exp = skillManager.getSkillDeltaExp(skill);
-				int time = skillManager.getSkillTime(skill);
-				newExps.put(skill.getName(), exp);
-				newSkillNames.add(skill.getName());
-				newSkills.put(skill.getName(), level);
-				newTimes.put(skill.getName(), time);
-			}
-
-//			if (!levels.equals(newSkills)) {
-				skillNames = newSkillNames;
-				levels = newSkills;
-				exps = newExps;
-				times = newTimes;
+			List<Skill> newSkills = skillManager.getSkills();
+			if(!newSkills.equals(skills)) {
+				skills = newSkills;
 				fireTableDataChanged();
-//			}
+			}
 		}
 	}
 }
