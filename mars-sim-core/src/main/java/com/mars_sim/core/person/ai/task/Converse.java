@@ -111,7 +111,7 @@ public class Converse extends Task {
         // Use Task constructor.
         super(NAME, person, true, false, 
         		STRESS_MODIFIER - RandomUtil.getRandomDouble(.2),
-        		Math.min(1,
+        		Math.max(1,
         		 1 + RandomUtil.getRandomDouble(person.getNaturalAttributeManager()
         				 .getAttribute(NaturalAttributeType.CONVERSATION))/20
         		 + RandomUtil.getRandomDouble(person.getPreference()

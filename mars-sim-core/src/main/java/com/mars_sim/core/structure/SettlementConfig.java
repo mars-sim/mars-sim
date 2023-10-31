@@ -303,7 +303,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		// Obtains the default numbers of robots
 		int defaultNumOfRobots = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_NUM_ROBOTS));
 
-		//Look up the shift pattern
+		// Look up the shift pattern
 		String shiftPattern = templateElement.getAttributeValue(SHIFT_PATTERN);
 		if (shiftPattern == null) {
 			if (defaultPopulation >= 12) {

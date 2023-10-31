@@ -9,7 +9,8 @@ package com.mars_sim.core.person.ai.shift;
 import java.util.List;
 
 /**
- * This class represents the definition of a Shift Pattern template. It consistsof a number of Shits.
+ * This class represents the definition of a Shift Pattern template. 
+ * It consists of a number of Shifts.
  */
 public class ShiftPattern {
 
