@@ -314,7 +314,7 @@ public class Sleep extends Task {
 				// Case 9: marked, empty (ME)
 
 				walkToActivitySpotInBuilding(q7, FunctionType.LIVING_ACCOMMODATIONS, true);
-//						walkToAnUnoccupiedBed(q1, true);
+
 			else {
 				// Case 10: No beds available, go to any activity spots
 
@@ -328,8 +328,9 @@ public class Sleep extends Task {
 					
 					// Register this sleeper
 					bed = b.getLivingAccommodations().registerSleeper(person, false);
+					
 					if (bed != null) {
-						walkToBed(q7, person, true);
+						walkToBed(b, person, true);
 						arrived = true;
 						return;
 					}

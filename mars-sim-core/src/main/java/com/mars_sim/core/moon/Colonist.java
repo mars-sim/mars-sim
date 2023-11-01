@@ -1,7 +1,12 @@
 package com.mars_sim.core.moon;
 
-public class Colonist {
+import java.io.Serializable;
 
+public class Colonist implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+	
 	/** default logger. */
 	// May add back private static final SimLogger logger = SimLogger.getLogger(Colonist.class.getName())
 	

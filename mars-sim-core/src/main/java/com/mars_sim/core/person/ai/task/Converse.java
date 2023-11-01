@@ -136,16 +136,16 @@ public class Converse extends Task {
     public void findInvitee() {
         if (person.isInSettlement()) {
         	if (target == null)
-        		target = selectFromSettlement();
+        		setTarget(selectFromSettlement());
         }
         else if (person.isInVehicle()) {
         	if (target == null)
-        		target = selectFromVehicle();
+        		setTarget(selectFromVehicle());
         }
         else {
         	// Allow a person who are walking on the surface of Mars to have conversation
         	if (target == null)
-        		target = selectforEVA();
+        		setTarget(selectforEVA());
         }
     }
     
@@ -162,7 +162,7 @@ public class Converse extends Task {
         		RandomUtil.getRandomDouble(initiator.getTaskManager().getTask().getTimeLeft())
         		);
     	
-    	this.target = initiator;
+    	setTarget(initiator);
     	
     	// Initialize phase
         addPhase(RESPONDING);
@@ -411,8 +411,8 @@ public class Converse extends Task {
     			logger.warning(person, "inviteeId is -1.");
     		}
     		else
-    			target = Simulation.instance().getUnitManager()
-    						.getPersonByID(targetID);
+    			setTarget(Simulation.instance().getUnitManager()
+    						.getPersonByID(targetID));
     		
     		// starting the conversation talking to the invitee
     		if (target != null)
@@ -503,8 +503,8 @@ public class Converse extends Task {
     			logger.warning(person, "initiator is -1.");
     		}
     		else
-    			target = Simulation.instance().getUnitManager()
-    							.getPersonByID(targetID);
+    			setTarget(Simulation.instance().getUnitManager()
+    							.getPersonByID(targetID));
     		
     		// Start the conversation talking to the initiator
     		if (target != null) {
