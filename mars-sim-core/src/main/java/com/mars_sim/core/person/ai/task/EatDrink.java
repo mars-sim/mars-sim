@@ -19,7 +19,6 @@ import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
-import com.mars_sim.core.person.ai.task.meta.ConverseMeta;
 import com.mars_sim.core.person.ai.task.meta.EatDrinkMeta;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.Task;

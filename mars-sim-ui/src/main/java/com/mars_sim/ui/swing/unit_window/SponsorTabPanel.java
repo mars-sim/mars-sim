@@ -88,7 +88,7 @@ public class SponsorTabPanel extends TabPanel {
 		namePanel.add(iconPanel, BorderLayout.CENTER);
 		
 		String agencyStr = ra.getName();
-	
+
 		Icon icon = ImageLoader.getIconByName(AGENCY_FOLDER + agencyStr);
 		JLabel agencyLabel = null;
 		
