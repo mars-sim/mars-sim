@@ -42,7 +42,7 @@ public class Population implements Serializable, Temporal {
 	
 	private Colony colony;
 	
-	private transient Set<Colonist> colonists = new HashSet<>();
+	private Set<Colonist> colonists = new HashSet<>();
 	
 	public Population(Colony colony) {
 			

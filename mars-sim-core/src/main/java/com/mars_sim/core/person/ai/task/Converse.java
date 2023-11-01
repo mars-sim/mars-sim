@@ -407,7 +407,7 @@ public class Converse extends Task {
         
         // After loading from saved sim, need to reload invitee
     	if (target == null) {
-    		if (targetID == -1) {
+    		if (targetID.equals(Integer.valueOf(-1))) {
     			logger.warning(person, "inviteeId is -1.");
     		}
     		else
@@ -499,7 +499,7 @@ public class Converse extends Task {
         
         // After loading from saved sim, need to reload initiator
     	if (target == null) {
-    		if (targetID == -1) {
+    		if (targetID.equals(Integer.valueOf(-1))) {
     			logger.warning(person, "initiator is -1.");
     		}
     		else

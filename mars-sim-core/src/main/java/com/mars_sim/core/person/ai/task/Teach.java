@@ -74,6 +74,8 @@ public class Teach extends Task {
 	public Teach(Worker worker) {
 		super(NAME, worker, false, false, STRESS_MODIFIER, null, 10, 10);
 
+		setTeacher(worker);
+		
 		// Assume the student is a person.
 		Collection<Person> candidates = getBestStudents(worker);
 		List<Person> students = new ArrayList<>();
