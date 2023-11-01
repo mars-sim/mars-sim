@@ -73,11 +73,11 @@ public class Teach extends Task {
 	 */
 	public Teach(Worker worker) {
 		super(NAME, worker, false, false, STRESS_MODIFIER, null, 10, 10);
-				
+
 		// Assume the student is a person.
 		Collection<Person> candidates = getBestStudents(worker);
 		List<Person> students = new ArrayList<>();
-		
+
 		Iterator<Person> i = candidates.iterator();
 		while (i.hasNext()) {
 			Person candidate = i.next();
