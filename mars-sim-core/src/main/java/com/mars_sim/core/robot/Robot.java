@@ -158,7 +158,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		// Construct the SkillManager instance.
 		skillManager = new SkillManager(this);
 		for(Entry<SkillType, Integer> e : spec.getSkillMap().entrySet()) {
-			skillManager.addNewSkillNExperience(e.getKey(), e.getValue());
+			skillManager.addNewSkill(e.getKey(), e.getValue());
 		}
 
 		// Construct the RoboticAttributeManager instance.
