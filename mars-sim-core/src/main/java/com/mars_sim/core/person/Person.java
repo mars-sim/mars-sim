@@ -2120,7 +2120,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 				// If exiting a vehicle in a garage, it's recommended using garageBuilding as a destination
 			}
 			else if (destination.getUnitType() == UnitType.BUILDING) {
-				BuildingManager.addPersonOrRobotToBuilding(this, (Building)destination);
+				BuildingManager.addToBuilding(this, (Building)destination);
 				transferred = ((Building)destination).getSettlement().addPeopleWithin(this);
 				// Turn a building destination to a settlement to avoid 
 				// casting issue with making containerUnit a building instance

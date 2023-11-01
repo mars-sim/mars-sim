@@ -632,7 +632,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					rover.removePerson(p);
 					
 					// Add this person to the building
-					BuildingManager.addPersonOrRobotToBuilding(p, rover.getGarage());
+					BuildingManager.addToBuilding(p, rover.getGarage());
 					
 					String roverName = "None";
 					

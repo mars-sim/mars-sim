@@ -69,24 +69,14 @@ public class Teach extends Task {
 	/**
 	 * Constructor.
 	 * 
-	 * @param unit the unit performing the task.
+	 * @param worker the worker performing the task.
 	 */
-	public Teach(Worker unit) {
-		super(NAME, unit, false, false, STRESS_MODIFIER, null, 10, 10);
-		
-		if (unit.getUnitType() == UnitType.PERSON)
-			person = (Person) unit;
-		else
-			robot = (Robot) unit;
+	public Teach(Worker worker) {
+		super(NAME, worker, false, false, STRESS_MODIFIER, null, 10, 10);
 				
 		// Assume the student is a person.
-		Collection<Person> candidates = null;
+		Collection<Person> candidates = getBestStudents(worker);
 		List<Person> students = new ArrayList<>();
-		
-		if (worker.getUnitType() == UnitType.PERSON)
-			candidates = getBestStudents(person);
-		else
-			candidates = getBestStudents(robot);
 		
 		Iterator<Person> i = candidates.iterator();
 		while (i.hasNext()) {
@@ -95,7 +85,7 @@ public class Teach extends Task {
 			students.add(candidate);
 		}
 		
-		if (students.size() > 0) {
+		if (!students.isEmpty()) {
 			Iterator<Person> ii = students.iterator();
 			while (ii.hasNext() && teachingTask == null && student == null) {
 				Person candidate = ii.next();
@@ -104,7 +94,7 @@ public class Teach extends Task {
 				Task candidateTask = candidate.getMind().getTaskManager().getTask();
 				MetaTask metaTask = MetaTaskUtil.getMetaTypeFromTask(candidateTask);
 				if (metaTask == null) {
-					// Some tasks don't have a MetaTask becaus ethey are explictly
+					// Some tasks don't have a MetaTask because they are explicitly
 					// created, e.g. Negotiate Trade
 					continue;
 				}
@@ -190,15 +180,7 @@ public class Teach extends Task {
 	 */
 	private double teachingPhase(double time) {
 
-		boolean isInSettlement = false;
-		if (worker.getUnitType() == UnitType.PERSON) {
-			isInSettlement = person.isInSettlement();
-		}
-		else {
-			isInSettlement = robot.isInSettlement();
-		}
-		
-		if (isInSettlement) {
+		if (worker.isInSettlement()) {
 			// If in settlement, move teacher to the building where student is in.
 			Building studentBuilding = BuildingManager.getBuilding(student);
 
@@ -208,7 +190,6 @@ public class Teach extends Task {
 				walkToRandomLocInBuilding(BuildingManager.getBuilding(student), false);
 			}
 		}
-
 
 		// Check if task is finished.
 		if (teachingTask != null && teachingTask.isDone())
@@ -299,7 +280,7 @@ public class Teach extends Task {
 	 * @param teacher the teacher looking for students.
 	 * @return collection of the best students
 	 */
-	public static Collection<Person> getBestStudents(Person teacher) {
+	public static Collection<Person> getBestStudents(Worker teacher) {
 		Collection<Person> result = new ConcurrentLinkedQueue<>();
 		Collection<Person> students = getTeachableStudents(teacher);
 
@@ -368,145 +349,34 @@ public class Teach extends Task {
 			leastCrowded = students;
 		}
 
-		// Get the teacher's favorite students.
-		Collection<Person> favoriteStudents = new ConcurrentLinkedQueue<>();
-
-		// Find favorite opinion.
-		double favorite = Double.NEGATIVE_INFINITY;
-		Iterator<Person> k = leastCrowded.iterator();
-		while (k.hasNext()) {
-			Person student = k.next();
-			double opinion = RelationshipUtil.getOpinionOfPerson(teacher, student);
-			if (opinion > favorite) {
-				favorite = opinion;
-			}
-		}
-
-		// Get list of favorite students.
-		k = leastCrowded.iterator();
-		while (k.hasNext()) {
-			Person student = k.next();
-			double opinion = RelationshipUtil.getOpinionOfPerson(teacher, student);
-			if (opinion == favorite) {
-				favoriteStudents.add(student);
-			}
-		}
-
-		result = favoriteStudents;
-
-		return result;
-	}
-
-	/**
-	 * Gets a collection of the best students the teacher can teach.
-	 * 
-	 * @param teacher the teacher looking for students.
-	 * @return collection of the best students
-	 */
-	public static Collection<Person> getBestStudents(Robot teacher) {
-		Collection<Person> result = new ConcurrentLinkedQueue<>();
-		Collection<Person> students = getTeachableStudents(teacher);
-
-		// If teacher is in a settlement, best students are in least crowded buildings.
-		Collection<Person> leastCrowded = new ConcurrentLinkedQueue<>();
-		if (teacher.isInSettlement()) {
-			// Find the least crowded buildings that teachable students are in.
-			int crowding = Integer.MAX_VALUE;
-			Iterator<Person> i = students.iterator();
-			while (i.hasNext()) {
-				Person student = i.next();
-				Building building = BuildingManager.getBuilding(student);
-				if (building != null) {
-					// If this is an EVA airlock
-					if (building.getCategory() == BuildingCategory.EVA_AIRLOCK) {
-						// Go to the next building
-						continue;
-					}
-						
-					// If this building/hallway is next to the observatory
-					if (building.getSettlement().getBuildingManager().isObservatoryAttached(building)) {
-						// Go to the next building
-						continue;
-					}
-					
-					LifeSupport lifeSupport = building.getLifeSupport();
-					int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
-					if (buildingCrowding < -1) {
-						buildingCrowding = -1;
-					}
-					if (buildingCrowding < crowding) {
-						crowding = buildingCrowding;
-					}
-				}
-			}
-
-			// Add students in least crowded buildings to result.
-			Iterator<Person> j = students.iterator();
-			while (j.hasNext()) {
-				Person student = j.next();
-				Building building = BuildingManager.getBuilding(student);
-				if (building != null) {
-					// If this is an EVA airlock
-					if (building.getCategory() == BuildingCategory.EVA_AIRLOCK) {
-						// Go to the next building
-						continue;
-					}
-						
-					// If this building/hallway is next to the observatory
-					if (building.getSettlement().getBuildingManager().isObservatoryAttached(building)) {
-						// Go to the next building
-						continue;
-					}
-					
-					LifeSupport lifeSupport = building.getLifeSupport();
-					int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
-					if (buildingCrowding < -1) {
-						buildingCrowding = -1;
-					}
-					if (buildingCrowding == crowding) {
-						leastCrowded.add(student);
-					}
-				}
-			}
-		} else {
-			leastCrowded = students;
-		}
-
-		result = leastCrowded;
-
-		return result;
-	}
+		if (teacher instanceof Person person) {
+			// Get the teacher's favorite students.
+			Collection<Person> favoriteStudents = new ConcurrentLinkedQueue<>();
 	
-	/**
-	 * Get a collection of students the teacher can teach.
-	 * 
-	 * @param teacher the teacher looking for students.
-	 * @return collection of students
-	 */
-	private static Collection<Person> getTeachableStudents(Person teacher) {
-		Collection<Person> result = new ConcurrentLinkedQueue<>();
-
-		Iterator<Person> i = getLocalPeople(teacher).iterator();
-		while (i.hasNext()) {
-			Person student = i.next();
-			boolean possibleStudent = false;
-			Task task = student.getMind().getTaskManager().getTask();
-			if (task != null && task.getAssociatedSkills() != null) {
-				Iterator<SkillType> j = task.getAssociatedSkills().iterator();
-				while (j.hasNext()) {
-					SkillType taskSkill = j.next();
-					int studentSkill = student.getSkillManager().getSkillLevel(taskSkill);
-					int teacherSkill = teacher.getSkillManager().getSkillLevel(taskSkill);
-					if ((teacherSkill >= (studentSkill + 1)) && !task.hasTeacher()) {
-						possibleStudent = true;
-					}
-				}
-				if (possibleStudent) {
-					result.add(student);
+			// Find favorite opinion.
+			double favorite = Double.NEGATIVE_INFINITY;
+			Iterator<Person> k = leastCrowded.iterator();
+			while (k.hasNext()) {
+				Person student = k.next();
+				double opinion = RelationshipUtil.getOpinionOfPerson(person, student);
+				if (opinion > favorite) {
+					favorite = opinion;
 				}
 			}
+	
+			// Get list of favorite students.
+			k = leastCrowded.iterator();
+			while (k.hasNext()) {
+				Person student = k.next();
+				double opinion = RelationshipUtil.getOpinionOfPerson(person, student);
+				if (opinion == favorite) {
+					favoriteStudents.add(student);
+				}
+			}
+	
+			result = favoriteStudents;
 		}
-
+		
 		return result;
 	}
 
@@ -516,7 +386,7 @@ public class Teach extends Task {
 	 * @param teacher the teacher looking for students.
 	 * @return collection of students
 	 */
-	private static Collection<Person> getTeachableStudents(Robot teacher) {
+	private static Collection<Person> getTeachableStudents(Worker teacher) {
 		Collection<Person> result = new ConcurrentLinkedQueue<>();
 
 		Iterator<Person> i = getLocalPeople(teacher).iterator();
@@ -543,31 +413,30 @@ public class Teach extends Task {
 		return result;
 	}
 	
-	
 	/**
-	 * Gets a collection of people in a person's settlement or rover. The resulting
-	 * collection doesn't include the given person.
+	 * Gets a collection of people in a worker's settlement or rover. The resulting
+	 * collection doesn't include the given worker.
 	 * 
-	 * @param person the person checking
+	 * @param worker the worker checking
 	 * @return collection of people
 	 */
-	private static Collection<Person> getLocalPeople(Person person) {
+	private static Collection<Person> getLocalPeople(Worker worker) {
 		Collection<Person> people = new ConcurrentLinkedQueue<>();
 
-		if (person.isInSettlement()) {
-			Iterator<Person> i = person.getSettlement().getIndoorPeople().iterator();
+		if (worker.isInSettlement()) {
+			Iterator<Person> i = worker.getSettlement().getIndoorPeople().iterator();
 			while (i.hasNext()) {
 				Person inhabitant = i.next();
-				if (person.equals(inhabitant)) {
+				if (worker.equals(inhabitant)) {
 					people.add(inhabitant);
 				}
 			}
-		} else if (person.isInVehicle()) {
-			Crewable rover = (Crewable) person.getVehicle();
+		} else if (worker.isInVehicle()) {
+			Crewable rover = (Crewable) worker.getVehicle();
 			Iterator<Person> i = rover.getCrew().iterator();
 			while (i.hasNext()) {
 				Person crewmember = i.next();
-				if (person.equals(crewmember)) {
+				if (worker.equals(crewmember)) {
 					people.add(crewmember);
 				}
 			}
@@ -576,29 +445,4 @@ public class Teach extends Task {
 		return people;
 	}
 
-	/**
-	 * Gets a collection of robot in a robot's settlement or rover. The resulting
-	 * collection doesn't include the given robot.
-	 * 
-	 * @param robot the robot checking
-	 * @return collection of person
-	 */
-	private static Collection<Person> getLocalPeople(Robot robot) {
-		Collection<Person> people = new ConcurrentLinkedQueue<>();
-
-		if (robot.isInSettlement()) {
-			Iterator<Person> i = robot.getSettlement().getIndoorPeople().iterator();
-			while (i.hasNext()) {
-				people.add(i.next());
-			}
-		} else if (robot.isInVehicle()) {
-			Crewable rover = (Crewable) robot.getVehicle();
-			Iterator<Person> i = rover.getCrew().iterator();
-			while (i.hasNext()) {
-				people.add(i.next());
-			}
-		}
-
-		return people;
-	}
 }
