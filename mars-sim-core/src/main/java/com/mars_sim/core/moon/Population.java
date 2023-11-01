@@ -120,11 +120,6 @@ public class Population implements Serializable, Temporal {
 				growthRateBeds = -0.5;
 			
 			numBeds += growthRateBeds;
-			
-//			int totPop = getTotalPopulation();
-//			
-//			if ((int)numBeds < totPop)
-//				numBeds = totPop;
 
 			// Checks if there is enough beds. 
 			// If not, slow the growth rate in one type of pop

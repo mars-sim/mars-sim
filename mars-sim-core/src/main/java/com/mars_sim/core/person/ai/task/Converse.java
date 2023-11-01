@@ -120,7 +120,7 @@ public class Converse extends Task {
 
     	findInvitee();
         
-        if (target != null) {
+        if (getTarget() != null) {
             // Initialize phase
             addPhase(CONVERSING);
             setPhase(CONVERSING);
@@ -134,19 +134,28 @@ public class Converse extends Task {
      * Finds an invitee.
      */
     public void findInvitee() {
+    	Person p = null;
         if (person.isInSettlement()) {
-        	if (target == null)
-        		setTarget(selectFromSettlement());
+           	p = selectFromSettlement();
+        	if (p != null)
+        		setTarget(p, true);
         }
         else if (person.isInVehicle()) {
-        	if (target == null)
-        		setTarget(selectFromVehicle());
+        	p = selectFromVehicle();
+        	if (p != null)
+        		setTarget(p, true);
         }
         else {
         	// Allow a person who are walking on the surface of Mars to have conversation
-        	if (target == null)
-        		setTarget(selectforEVA());
+        	p = selectforEVA();
+        	if (p != null)
+        		setTarget(p, true);
         }
+        
+        // If no one is available, then end the task
+        if (p == null)
+        	endTask();
+        
     }
     
     /**
@@ -162,7 +171,7 @@ public class Converse extends Task {
         		RandomUtil.getRandomDouble(initiator.getTaskManager().getTask().getTimeLeft())
         		);
     	
-    	setTarget(initiator);
+    	setTarget(initiator, true);
     	
     	// Initialize phase
         addPhase(RESPONDING);
@@ -296,9 +305,7 @@ public class Converse extends Task {
     			invitee = list.get(RandomUtil.getRandomInt(rand));
     		}
         }
-        
-        if (invitee != null)
-        	targetID = invitee.getIdentifier();
+
     	return invitee;
     }
 
@@ -347,8 +354,6 @@ public class Converse extends Task {
     		}
         }
         
-        if (invitee != null)
-        	targetID = invitee.getIdentifier();
     	return invitee;
     }
 
@@ -383,9 +388,7 @@ public class Converse extends Task {
         else {
         	endTask();
         }
-        
-        if (invitee != null)
-        	targetID = invitee.getIdentifier();
+
     	initiatorLocation = Location.EVA;
     	
     	return invitee;
@@ -406,16 +409,16 @@ public class Converse extends Task {
         }
         
         // After loading from saved sim, need to reload invitee
-    	if (target == null) {
-    		if (targetID.equals(Integer.valueOf(-1))) {
+    	if (getTarget() == null) {
+    		if (getTargetID().equals(Integer.valueOf(-1))) {
     			logger.warning(person, "inviteeId is -1.");
     		}
     		else
     			setTarget(Simulation.instance().getUnitManager()
-    						.getPersonByID(targetID));
+    						.getPersonByID(getTargetID()), false);
     		
     		// starting the conversation talking to the invitee
-    		if (target != null)
+    		if (getTarget() != null)
     			talkWithInvitee();
     		else
     			logger.warning(person, "invitee is null.");
@@ -426,7 +429,7 @@ public class Converse extends Task {
     	else
     		talkWithInvitee();
  
-        RelationshipUtil.changeOpinion(person, target, 
+        RelationshipUtil.changeOpinion(person, getTarget(), 
         		RelationshipType.REMOTE_COMMUNICATION, RandomUtil.getRandomDouble(-.1, .15));
 
         if (getTimeCompleted() + time >= getDuration()) {
@@ -440,22 +443,22 @@ public class Converse extends Task {
      * Talks to the invitee.
      */
     public void talkWithInvitee() {
-		Task task = target.getMind().getTaskManager().getTask();
+		Task task = getTarget().getMind().getTaskManager().getTask();
 		boolean canAdd = false;
-		if (!hasConservation(target)) {
+		if (!hasConservation(getTarget())) {
 			if (task == null)
-				canAdd = target.getMind().getTaskManager()
-					.checkReplaceTask(new Converse(target, person));
+				canAdd = getTarget().getMind().getTaskManager()
+					.checkReplaceTask(new Converse(getTarget(), person));
 			else
 				// Add conversation as a subtask to the invitee
-				canAdd = task.addSubTask(new Converse(target, person));
+				canAdd = task.addSubTask(new Converse(getTarget(), person));
 		}
 		else {
 			canAdd = true;
 		}
 		
 		if (canAdd) {
-			String name = target.getName();
+			String name = getTarget().getName();
 	    	String loc = initiatorLocation.toString();
 	    	String s = CHATTING_WITH + " " + name + " " + loc;
 	    	
@@ -498,27 +501,27 @@ public class Converse extends Task {
         }
         
         // After loading from saved sim, need to reload initiator
-    	if (target == null) {
-    		if (targetID.equals(Integer.valueOf(-1))) {
+    	if (getTarget() == null) {
+    		if (getTargetID().equals(Integer.valueOf(-1))) {
     			logger.warning(person, "initiator is -1.");
     		}
     		else
     			setTarget(Simulation.instance().getUnitManager()
-    							.getPersonByID(targetID));
+    							.getPersonByID(getTargetID()), false);
     		
     		// Start the conversation talking to the initiator
-    		if (target != null) {
+    		if (getTarget() != null) {
     			talkWithInitiator();
     		}
     			
     		else
-    			logger.warning(target, "initiator is null.");
+    			logger.warning(getTarget(), "initiator is null.");
     	}
     	else {
     		talkWithInitiator();
     	}
  
-        RelationshipUtil.changeOpinion(target, person,
+        RelationshipUtil.changeOpinion(getTarget(), person,
         		RelationshipType.REMOTE_COMMUNICATION, RandomUtil.getRandomDouble(-.1, .15));
 
         if (getTimeCompleted() + time >= getDuration()) {
@@ -532,7 +535,7 @@ public class Converse extends Task {
      * Talks with the initiator.
      */
     public void talkWithInitiator() {
-    	String name = target.getName();
+    	String name = getTarget().getName();
     	String s = RESPONDING_TO + " " + name;
     	
     	setDescription(s);

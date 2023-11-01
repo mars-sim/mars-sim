@@ -109,7 +109,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** The id of the teacher. */
 	protected Integer teacherID;
 	/** The id of the target person (either the invitee or the initiator). */
-	protected Integer targetID;
+	private Integer targetID;
 	
 	/** The name of the task. */
 	private String name = "";
@@ -128,7 +128,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** The worker teaching this task if any. */
 	private transient Worker teacher;
 	/** The target person (either the invitee or the initiator) of the Converse task. */
-	protected transient Person target;	
+	private transient Person target;	
 
 	/** The sub-task of this task. */
 	protected Task subTask;
@@ -883,13 +883,33 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
+	 * Gets the target person of this task.
+	 * 
+	 * @return target.
+	 */
+	public Person getTarget() {
+		return target;
+	}
+	
+	/**
+	 * Gets the id of target person of this task.
+	 * 
+	 * @return target id.
+	 */
+	public Integer getTargetID() {
+		return targetID;
+	}
+	
+	/**
 	 * Sets the person who's the target of this task.
 	 * 
-	 * @param newTarget the new target.
+	 * @param newTarget the new target
+	 * @param true if id has not been saved
 	 */
-	public void setTarget(Person newTarget) {
+	public void setTarget(Person newTarget, boolean newID) {
 		this.target = newTarget;
-		targetID = target.getIdentifier();
+		if (newID)
+			targetID = target.getIdentifier();
 	}
 	
 	/**
