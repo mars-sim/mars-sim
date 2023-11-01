@@ -96,8 +96,8 @@ public class SponsorTabPanel extends TabPanel {
 			agencyLabel = new JLabel(icon);
 		}
 		else {
-			Image img = (ImageLoader.getImage(AGENCY_FOLDER + agencyStr))
-					.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+			Image img = (ImageLoader.getImage(AGENCY_FOLDER + agencyStr));
+//					.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
 			agencyLabel = new JLabel(new ImageIcon(img));
 		}
 
