@@ -121,7 +121,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private transient Person teacher;
 	/** The person performing the task. */
 	protected transient Person person;
-	/** The target person performing the task. */
+	/** The target person (either the invitee or the initiator) of the Converse task. */
 	protected transient Person target;
 	/** The robot performing the task. */
 	protected transient Robot robot;
@@ -1548,6 +1548,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (teacherID != null && (!teacherID.equals(Integer.valueOf(-1)) || !teacherID.equals(Integer.valueOf(0))))
 			teacher = unitManager.getPersonByID(teacherID);
 
+		if (targetID != null && (!targetID.equals(Integer.valueOf(-1)) || !targetID.equals(Integer.valueOf(0))))
+			target = unitManager.getPersonByID(targetID);
+		
 		if (subTask != null)
 			subTask.reinit();
 	}
