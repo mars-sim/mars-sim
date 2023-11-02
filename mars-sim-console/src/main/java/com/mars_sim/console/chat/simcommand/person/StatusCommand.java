@@ -57,10 +57,10 @@ public class StatusCommand extends AbstractPersonCommand {
 			
 			String job = person.getMind().getJob().getName().toLowerCase();
 			if (vowels.indexOf(Character.toLowerCase(job.charAt(0))) != -1) {	
-				buffer.append(" an ");
+				buffer.append(" a ");
 			}
 			else {
-				buffer.append(" a ");
+				buffer.append(" an ");
 			}
 			buffer.append(job).append(".");
 			buffer.append(System.lineSeparator());
@@ -74,11 +74,11 @@ public class StatusCommand extends AbstractPersonCommand {
 				buffer.append("where ");
 				buffer.append(genderNoun0.toLowerCase());
 				String role = person.getRole().getType().getName().toLowerCase();
-				if (vowels.indexOf(Character.toLowerCase(role.charAt(0))) != -1) {	
-					buffer.append(" an ");
+				if (vowels.indexOf(Character.toLowerCase(role.charAt(0))) == -1) {	
+					buffer.append(" a ");
 				}
 				else {
-					buffer.append(" a ");
+					buffer.append(" an ");
 				}
 				buffer.append(role).append(". ");
 			}
@@ -101,7 +101,7 @@ public class StatusCommand extends AbstractPersonCommand {
 			buffer.append(person.getName());
 			buffer.append(" and I am ");
 			String job = person.getMind().getJob().getName().toLowerCase();
-			if (vowels.indexOf(Character.toLowerCase(job.charAt(0))) != -1) {	
+			if (vowels.indexOf(Character.toLowerCase(job.charAt(0))) == -1) {	
 				buffer.append("a ");
 			}
 			else {
@@ -117,7 +117,7 @@ public class StatusCommand extends AbstractPersonCommand {
 				buffer.append(System.lineSeparator());
 				buffer.append("where I am ");
 				String role = person.getRole().getType().getName().toLowerCase();
-				if (vowels.indexOf(Character.toLowerCase(role.charAt(0))) != -1) {	
+				if (vowels.indexOf(Character.toLowerCase(role.charAt(0))) == -1) {	
 					buffer.append("a ");
 				}
 				else {
