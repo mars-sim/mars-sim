@@ -1,8 +1,8 @@
 # Mars Simulation Project
 
-Copyright &copy; 2023 Scott Davis
-Project Website: https://mars-sim.com
-GitHub Site: https://github.com/mars-sim/mars-sim
+Copyright &copy; 2023 Scott Davis  
+Project: https://mars-sim.com  
+GitHub: https://github.com/mars-sim/mars-sim  
 
 ------------------------------------------|---------------------
 
@@ -60,11 +60,11 @@ will look like this `20231103T073311`.
 | --- | --- |
 | buildings.xml | Define new buildings with functions |                  
 | construction.xml | Define type of foundations, frames and buildings |
-
 | country_austria.xml | Define settler's names for the country of Austria |
 | country_belgium.xml | Define settler's names for the country of Belgium |
+| country_brazil.xml | Define settler's names for Brazil |
 | country_canada.xml  | Define settler's names for the country of Canada |
-| country_china.xml           | Define settler's names for the country of China |
+| country_china.xml   | Define settler's names for the country of China |
 | country_czech_republic.xml | Define settler's names for the country of Czech Republic |
 | country_denmark.xml | Define settler's names for the country of Denmark |
 | country_estonia.xml | Define settler's names for the country of Estonia |
@@ -76,33 +76,31 @@ will look like this `20231103T073311`.
 | country_india.xml | Define settler's names for the country of India |
 | country_ireland.xml | Define settler's names for the country of Ireland |
 | country_italy.xml  | Define settler's names for the country of Italy |
-| country_japan.xml           | Define settler's names for the country of Japan |
+| country_japan.xml  | Define settler's names for the country of Japan |
 | country_luxembourg.xml | Define settler's names for the country of Luxembourg |
+| country_netherlands.xml | Define settler's names for the Netherlands |
 | country_norway.xml | Define settler's names for the country of Norway |
 | country_poland.xml | Define settler's names for the country of Poland |
 | country_portugal.xml | Define settler's names for the country of Portugal |
 | country_romania.xml | Define settler's names for the country of Romania |
 | country_russia.xml | Define settler's names for the country of Russia |
+| country_saudi_arabia.xml | Define settler's names for the Netherlands |
 | country_south_korea.xml | Define settler's names for the country of South Korea |
 | country_spain.xml | Define settler's names for the country of Spain |
 | country_sweden.xml | Define settler's names for the country of Sweden |
 | country_switzerland.xml | Define settler's names for the country of Switzerland |
-| country_the_netherlands.xml | Define settler's names for the Netherlands |
-| country_uk.xml | Define settler's names for the country of UK |
-| country_usa.xml | Define settler's names for the country of USA |
+| country_united_arab_emirates.xml | Define settler's names for the UAE |
+| country_united_kingdom.xml | Define settler's names for the country of the UK |
+| country_united_states.xml | Define settler's names for the country of the USA |
 | country.xsd | Define the xsd scheme for country-related xmls |
-
 | crew_alpha.xml | Store the alpha crew roster |
 | crew_founders.xml | Store the founders roster |
 | crew.xsd | Define the xsd scheme for crew-related xmls |
-
 | scenario_default.xml | Define the default settlement scenario |
 | scenario_single_settlement.xml | Define the single settlement scenario |
 | scenario.xsd | Define the xsd scheme for scenario-related xmls |
-
 | 30 settlement xml templates | Define the building placements for a settlement phase |
 | settlement.xsd | Define the xsd scheme for all settlement template xmls |
-
 | building_packages.xml | Define building packages for use in settlement templates |
 | buildings.xml | Define building placement for use in settlement templates |
 | construction.xml | Define a list of foundations, frames and buildings that can be constructed |
@@ -126,7 +124,7 @@ will look like this `20231103T073311`.
 | scenarios.xml | Define two simulation scenarios |
 | settlements.xml | Store settlement templates and define properties related to settlements |   
 | simulation.xml | Define simulation properties |
-| vehicles.xml | Define properties related to vehicles and rovers |
+| vehicles.xml | Define properties related to rovers, luvs, and drones |
 
 
 ### Further Information

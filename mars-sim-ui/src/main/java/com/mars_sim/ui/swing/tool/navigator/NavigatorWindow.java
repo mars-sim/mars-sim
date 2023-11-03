@@ -57,9 +57,8 @@ import javax.swing.JSlider;
 import javax.swing.Painter;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
+import com.formdev.flatlaf.FlatLaf;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
@@ -98,7 +97,6 @@ import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
 import com.mars_sim.ui.swing.toolwindow.ToolWindow;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
-import com.formdev.flatlaf.FlatLaf;
 
 /**
  * The NavigatorWindow is a tool window that displays a map and a globe showing
