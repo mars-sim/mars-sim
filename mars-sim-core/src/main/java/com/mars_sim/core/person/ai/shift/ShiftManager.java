@@ -155,7 +155,7 @@ public class ShiftManager implements Serializable {
      * and some are selected to change Shift.
      */
 	private void rotateShift() {
-        logger.info(settlement, "Rotating shifts");
+        logger.info(settlement, "Rotating shifts.");
 
         // Get anyone who is not dead and is not returning from holiday
         // and not onCall
@@ -168,7 +168,7 @@ public class ShiftManager implements Serializable {
         // Select someone to change Shift
         int maxOnLeave = Math.max(1, (int)(potentials.size() * leavePercentage)/100);
         int changedCount = 0;
-        while(!potentials.isEmpty() && (changedCount < maxOnLeave)) {
+        while (!potentials.isEmpty() && (changedCount < maxOnLeave)) {
             int idx = RandomUtil.getRandomInt(potentials.size()-1);
             Person p = potentials.remove(idx);
             ShiftSlot candidate = p.getShiftSlot();
@@ -180,7 +180,8 @@ public class ShiftManager implements Serializable {
                 changedCount++;
                 Shift oldShift = candidate.getShift();
                 candidate.setShift(newShift);
-                logger.info(p, "Changes shift from " + oldShift.getName() + " to " + newShift.getName());
+                logger.info(p, "Assigning the change of shift from " + oldShift.getName() 
+                	+ " to " + newShift.getName() + ".");
             }
         }
     }

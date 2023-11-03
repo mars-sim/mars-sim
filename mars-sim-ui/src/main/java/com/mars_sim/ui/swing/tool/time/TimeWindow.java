@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.mars_sim.console.chat.simcommand.DateCommand;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.OrbitInfo;
 import com.mars_sim.core.time.ClockPulse;
@@ -29,6 +30,7 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.ToolToolBar;
 import com.mars_sim.ui.swing.toolwindow.ToolWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -58,10 +60,8 @@ public class TimeWindow extends ToolWindow {
 	public final String WIKI_URL = Msg.getString("ToolToolBar.calendar.url"); //$NON-NLS-1$
 	public final String WIKI_TEXT = Msg.getString("ToolToolBar.calendar.title"); //$NON-NLS-1$	
 	    
-    private final DateTimeFormatter DATE_TIME_FORMATTER = 
-//                                DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
-    								DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss.SSS");
-    
+    private final DateTimeFormatter DATE_TIME_FORMATTER = DateCommand.DATE_TIME_FORMATTER;
+	
 	/** the execution time label string */
 	private final String EXEC = "Execution";
 	/** the sleep time label string */

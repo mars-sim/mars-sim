@@ -153,7 +153,7 @@ public class StatusCommand extends AbstractPersonCommand {
 		buffer.append("Performance: ")
 			.append(PhysicalCondition.getPerformanceStatus(p));
 		buffer.append(System.lineSeparator());
-
+	
 		return buffer.toString();
 	}
 
