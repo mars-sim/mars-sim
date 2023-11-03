@@ -1249,8 +1249,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		zoomSlider.setVisible(true);
 		
 		zoomSlider.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
-		zoomSlider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent arg0) {
+		zoomSlider.addChangeListener(e -> {
 				// Change scale of map based on slider position.
 				int newSliderValue = zoomSlider.getValue();
 		
@@ -1269,7 +1268,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				if (newRho != oldRho) {				
 					setRho(newRho);
 				}
-			}
 		});
 		
 		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();

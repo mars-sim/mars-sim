@@ -436,8 +436,6 @@ public class SettlementMapPanel extends JPanel {
 	 */
 	public void setScale(double scale) {
 		this.scale = scale;
-
-		// paintDoubleBuffer();
 		repaint();
 	}
 
