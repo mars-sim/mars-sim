@@ -1,7 +1,15 @@
-# Configuration
-`Revised : 24 Aug 2023`
+# Mars Simulation Project
 
-Most of the Mars Simulation Project's configuration files are 
+Copyright (C) 2023 Scott Davis
+https://mars-sim.com
+https://github.com/mars-sim/mars-sim
+
+------------------------------------------|---------------------
+
+## Configuration
+`Revised : 02 Nov 2023`
+
+A majority of the Mars Simulation Project's configuration files are 
 primarily written in XML format. This guide will get you 
 started with editing these files.
 
@@ -10,11 +18,11 @@ tolerate a range of values. However, they are not all
 created equal to have the same degree of user customization. 
 
 Do file a [ticket](https://github.com/mars-sim/mars-sim/issues) or 
-open a [discussion topic](https://github.com/mars-sim/mars-sim/discussions) 
-with us with any ideas you have in mind.
+open up a [discussion](https://github.com/mars-sim/mars-sim/discussions) 
+with us on any ideas or questions you have in mind.
 
 
-## Utility Tool
+### Utility Tool
 
 In order to manipulate these xml files inside the jar file, 
 we recommend installing the [7-Zip File Manager](https://www.7-zip.org/)
@@ -23,24 +31,30 @@ on the fly without having to manually compressing, uncompressing,
  copying and deleting files.
 
 
-## Location
+### Location
 
-Players may manipulate these XML files in /.mar-sim/xml
+Players may find mars-sim XML files in `/.mar-sim/xml`
 folder.
 
 
-## Backup
+### Backup
 
 It is recommended that you make a backup of the original xml 
-configuration file before editing it as the edited XML files 
+configuration file before editing them as the edited XML files 
 often contain errors that can cause mars-sim fail to start.
 
-Whenever a new version of mars-sim and is being run in user machine, it will attempts to compare the content of the `version.txt` file in the `/.mars-sim/xml` folder to determine if it matches the core engine's build version. 
+Whenever a new version/build of mars-sim is being run in user 
+machine, it will attempts to compare the content of the 
+`version.txt` file in the `/.mars-sim/xml` folder to determine 
+if it matches the core engine's build version. 
 
-If they don't match, mars-sim will attempt to backup the existing XML files on user home into a new directory inside the `backup` folder. e.g. `/backup/${build_version}`, where ${build_version} could be, say, `5004`
+If they don't match, mars-sim will attempt to backup the existing 
+XML files on user home into a new directory inside the `backup` 
+folder. e.g. `/.mars-sim/backup/${timestamp}`, where `${timestamp}` 
+will look like this `20231103T073311`.
 
 
-## List of xml files
+### List of xml files
 
 | Filename | Purpose |
 | --- | --- |
@@ -86,20 +100,26 @@ If they don't match, mars-sim will attempt to backup the existing XML files on u
 | scenario_single_settlement.xml | Define the single settlement scenario |
 | scenario.xsd | Define the xsd scheme for scenario-related xmls |
 
+| 30 settlement xml templates | Define the building placements for a settlement phase |
+| settlement.xsd | Define the xsd scheme for all settlement template xmls |
+
+| building_packages.xml | Define building packages for use in settlement templates |
+| buildings.xml | Define building placement for use in settlement templates |
+| construction.xml | Define a list of foundations, frames and buildings that can be constructed |
 | crops.xml | Define food crops grown in greenhouses |
-| foodProduction.xml | Define food technology related processes |
-| governance.xml | Define various default mission agenda, as well as sponsors' settlement and rover names |
+| food_production.xml | Define food technology related processes |
+| governance.xml | Define country and sponsor objectives and mission agendas, as well as settlement and rover naming scheme |
 | landmarks.xml | Define landmarks on the surface of Mars |  
 | malfunctions.xml | Define malfunctions that can occur in the sim |
 | manufacturing.xml | Define manufacturing processes  |
-| meals.xml | Define meal recipes |
+| meals.xml | Define main dish and side dish recipes |
 | medical.xml | Define illnesses or treatments |
 | minerals.xml | Define mineral types |
 | part_packages.xml | Define part packages for initial settlements or resupplies from Earth |
-| parts.xml | Define parts  |
+| parts.xml | Define parts |
 | people.xml | Define properties related to people |
 | quotations.xml | Define a list of space-related quotes |
-| resourceprocess.xml | Define resource processes |
+| resource_process.xml | Define resource processes |
 | resources.xml | Define resources |
 | resupplies.xml | Define initial settlement resupply packages from Earth |
 | robots.xml | Define robot types |
@@ -109,9 +129,9 @@ If they don't match, mars-sim will attempt to backup the existing XML files on u
 | vehicles.xml | Define properties related to vehicles and rovers |
 
 
-## Further Information
+### Further Information
 
-You can find out more information about mars-sim in its [Github](
+Find out more information about mars-sim in its [GitHub](
 https://github.com/mars-sim/mars-sim) page.
 
 

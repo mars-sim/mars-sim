@@ -1,21 +1,31 @@
-# Security Policy
+# Mars Simulation Project
 
-## Supported Versions
+Copyright (C) 2023 Scott Davis
+https://mars-sim.com
+https://github.com/mars-sim/mars-sim
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+---------------------------------------------------------------------
+
+## Security Policy
+
+### Supported Versions
+
+There is no known security issues in the last few versions of mars-sim.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+| 3.7.0   | :white_check_mark: |
+| 3.6.2   | :white_check_mark: |
+| 3.6.1   | :white_check_mark: |
+| 3.6.0   | :white_check_mark: |
 
-## Reporting a Vulnerability
 
-Use this section to tell people how to report a vulnerability.
+### Reporting a Vulnerability
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+If you discover a vulnerability, please open up a new ticket in the 
+[issue tracker](https://github.com/mars-sim/mars-sim/issues). 
+
+If you're a developer, you may request changing or checking on mars-sim 
+security settings [here](https://github.com/mars-sim/mars-sim/security),
+where you may update on a reported vulnerability and what to expect if 
+the vulnerability is accepted or declined.
