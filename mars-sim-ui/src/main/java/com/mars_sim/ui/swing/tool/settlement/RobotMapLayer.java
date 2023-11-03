@@ -9,14 +9,13 @@ package com.mars_sim.ui.swing.tool.settlement;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * A settlement map layer for displaying Robots.
@@ -69,36 +68,6 @@ public class RobotMapLayer implements SettlementMapLayer {
 		g2d.setTransform(saveTransform);
 	}
 
-
-	/**
-	 * Gets a list of robots to display on a settlement map.
-	 * @param settlement the settlement
-	 * @return list of robots to display.
-	 */
-	public static List<Robot> getRobotsToDisplay(Settlement settlement) {
-
-		List<Robot> result = new ArrayList<Robot>();
-
-		if (settlement != null) {
-			Iterator<Robot> i = unitManager.getRobots().iterator();
-			while (i.hasNext()) {
-				Robot robot = i.next();
-
-				// Only select functional robots.
-				if (!robot.getSystemCondition().isInoperable()) {
-
-					// Select a robot that is at the settlement location.
-					Coordinates settlementLoc = settlement.getCoordinates();
-					Coordinates personLoc = robot.getCoordinates();
-					if (personLoc.equals(settlementLoc)) {
-						result.add(robot);
-					}
-				}
-			}
-		}
-
-		return result;
-	}
 	
 	/**
 	 * Draw robots at a settlement.
@@ -107,7 +76,7 @@ public class RobotMapLayer implements SettlementMapLayer {
 	 */
 	private void drawRobots(Graphics2D g2d, Settlement settlement, double scale) {
 
-		List<Robot> robots = getRobotsToDisplay(settlement);
+		List<Robot> robots = CollectionUtils.getAssociatedRobotsInSettlementVicinity(settlement);
 		Robot selectedRobot = mapPanel.getSelectedRobot();
 
 		// Draw all robots except selected robot.

@@ -513,7 +513,7 @@ public class SettlementMapPanel extends JPanel {
 		Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
 		Person selectedPerson = null;
 
-		Iterator<Person> i = CollectionUtils.getPeopleToDisplay(settlement).iterator();
+		Iterator<Person> i = CollectionUtils.getPeopleInSettlementVicinity(settlement).iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			double distanceX = person.getPosition().getX() - settlementPosition.getX();
@@ -543,7 +543,7 @@ public class SettlementMapPanel extends JPanel {
 		Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
 		Robot selectedRobot = null;
 
-		Iterator<Robot> i = RobotMapLayer.getRobotsToDisplay(settlement).iterator();
+		Iterator<Robot> i = CollectionUtils.getAssociatedRobotsInSettlementVicinity(settlement).iterator();
 		while (i.hasNext()) {
 			Robot robot = i.next();
 			double distanceX = robot.getPosition().getX() - settlementPosition.getX();
@@ -707,7 +707,7 @@ public class SettlementMapPanel extends JPanel {
 
 		Vehicle selectedVehicle = null;
 
-		Iterator<Vehicle> j = returnVehicleList(settlement).iterator();
+		Iterator<Vehicle> j = CollectionUtils.getVehiclesInSettlementVicinity(settlement).iterator();
 		while (j.hasNext()) {
 			Vehicle vehicle = j.next();
 			double width = vehicle.getWidth(); // width is on y-axis ?
@@ -746,7 +746,7 @@ public class SettlementMapPanel extends JPanel {
 
 		Vehicle selectedVehicle = null;
 
-		Iterator<Vehicle> j = returnVehicleList(settlement).iterator();
+		Iterator<Vehicle> j = CollectionUtils.getVehiclesInSettlementVicinity(settlement).iterator();
 		while (j.hasNext()) {
 			Vehicle vehicle = j.next();
 			double width = vehicle.getWidth(); // width is on y-axis ?
@@ -778,24 +778,6 @@ public class SettlementMapPanel extends JPanel {
 		return selectedVehicle;
 	}
 
-	/**
-	 * Gets a list of Parked vehicles.
-	 * 
-	 * @param settlement
-	 * @return
-	 */
-	public static List<Vehicle> returnVehicleList(Settlement settlement) {
-
-		List<Vehicle> result = new ArrayList<>();
-		if (settlement != null) {
-			Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
-			while (i.hasNext()) {
-				Vehicle vehicle = i.next();
-				result.add(vehicle);
-			}
-		}
-		return result;
-	}
 
 	/**
 	 * Selects a person on the map.

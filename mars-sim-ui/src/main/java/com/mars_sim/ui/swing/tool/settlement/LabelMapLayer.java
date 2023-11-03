@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -70,17 +71,17 @@ implements SettlementMapLayer {
 
 	// (159,   7, 118) pinkish red purle
 	// (255, 153, 225) light pink
-	static final Color FEMALE_COLOR = new Color(231, 84, 128);
-	static final Color FEMALE_OUTLINE_COLOR = FEMALE_COLOR.brighter();
+	static final Color FEMALE_COLOR = new Color(236, 118, 153);
+	static final Color FEMALE_OUTLINE_COLOR = FEMALE_COLOR.darker();
 	static final Color FEMALE_SELECTED_COLOR = Color.MAGENTA.brighter();
-	static final Color FEMALE_SELECTED_OUTLINE_COLOR = FEMALE_SELECTED_COLOR.darker();
+	static final Color FEMALE_SELECTED_OUTLINE_COLOR = Color.white;
 	
 	// (154, 204, 255) pale light blue
 	// (210, 210, 210) light grey
 	static final Color MALE_COLOR = new Color(154, 204, 255);
 	static final Color MALE_OUTLINE_COLOR = MALE_COLOR.darker();
 	static final Color MALE_SELECTED_COLOR = Color.CYAN;
-	static final Color MALE_SELECTED_OUTLINE_COLOR = MALE_SELECTED_COLOR.darker();
+	static final Color MALE_SELECTED_OUTLINE_COLOR = Color.white; //MALE_SELECTED_COLOR.darker();
 
 	// (156, 126,   9)  pale brown
 	// (186, 129, 145) manila pink
@@ -400,11 +401,11 @@ implements SettlementMapLayer {
 			size = Math.max(size, 12);
 					
 			// Draw all vehicles that are at the settlement location.
-			Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+			Iterator<Vehicle> i = CollectionUtils.getVehiclesInSettlementVicinity(settlement).iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
 				if (vehicle.getVehicleType() == VehicleType.LUV) {
-					drawStructureLabel(g2d,vehicle.getName(), vehicle.getPosition(),
+					drawStructureLabel(g2d, vehicle.getName(), vehicle.getPosition(),
 						VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR, 0);
 				}
 				
@@ -433,8 +434,9 @@ implements SettlementMapLayer {
 		boolean showNonSelectedPeople
 	) {
 
-		Collection<Person> people = settlement.getPeopleInVicinity();
+		Collection<Person> people = CollectionUtils.getPeopleInSettlementVicinity(settlement);
 		Person selectedPerson = mapPanel.getSelectedPerson();
+		
 		int xoffset = 5;
 		double scale = mapPanel.getScale();
 		float yoffset = (float)(scale / 2.0);
@@ -521,8 +523,9 @@ implements SettlementMapLayer {
 		boolean showNonSelectedRobots
 	) {
 
-		List<Robot> robots = RobotMapLayer.getRobotsToDisplay(settlement);
+		List<Robot> robots = CollectionUtils.getAssociatedRobotsInSettlementVicinity(settlement);
 		Robot selectedRobot = mapPanel.getSelectedRobot();
+		
 		float xoffset = 10L;
 		double scale = mapPanel.getScale();
 		float yoffset = (float)(scale / 2.0);

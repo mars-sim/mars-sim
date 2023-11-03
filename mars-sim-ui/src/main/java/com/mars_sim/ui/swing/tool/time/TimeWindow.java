@@ -30,7 +30,6 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.ToolToolBar;
 import com.mars_sim.ui.swing.toolwindow.ToolWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;

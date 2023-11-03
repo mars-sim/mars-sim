@@ -12,6 +12,7 @@ import java.awt.geom.AffineTransform;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
@@ -83,7 +84,10 @@ public class PersonMapLayer implements SettlementMapLayer {
 	 */
 	private void drawPeople(Graphics2D g2d, Settlement settlement, double scale) {
 
-		Collection<Person> people = settlement.getPeopleInVicinity();//  CollectionUtils.getPeopleToDisplay(settlement);
+		Collection<Person> people = CollectionUtils.getPeopleInSettlementVicinity(settlement);
+		// Note: Cannot use settlement.getPeopleInVicinity() since it won't include visitors 
+		// people.addAll(settlement.getIndoorPeople());
+		
 		Person selectedPerson = mapPanel.getSelectedPerson();
 
 		// Draw all people except selected person.

@@ -1823,6 +1823,7 @@ public class Settlement extends Structure implements Temporal,
 
 	/**
 	 * Makes this person's physical location to be inside this settlement.
+	 * Note: they can be just the visitors and don't need to be the citizen.
 	 *
 	 * @param p the person
 	 * @return true if added successfully
@@ -1840,6 +1841,7 @@ public class Settlement extends Structure implements Temporal,
 
 	/**
 	 * Removes this person's physical location from being inside this settlement.
+ 	 * Note: they can be just the visitors and don't need to be the citizen.
 	 *
 	 * @param p the person
 	 * @return true if removed successfully

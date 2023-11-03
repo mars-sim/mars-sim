@@ -47,16 +47,17 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	private static final int ROLE = 4;
 	private static final int SHIFT = 5;
 	private static final int LOCATION = 6;
-	private static final int HEALTH = 7;
-	private static final int ENERGY = 8;
-	private static final int WATER = 9;
-	private static final int FATIGUE = 10;
-	private static final int STRESS = 11;
-	private static final int PERFORMANCE = 12;
-	private static final int EMOTION = 13;
+	private static final int LOCALE = 7;
+	private static final int HEALTH = 8;
+	private static final int ENERGY = 9;
+	private static final int WATER = 10;
+	private static final int FATIGUE = 11;
+	private static final int STRESS = 12;
+	private static final int PERFORMANCE = 13;
+	private static final int EMOTION = 14;
 
 	/** The number of Columns. */
-	private static final int COLUMNCOUNT = 14;
+	private static final int COLUMNCOUNT = 15;
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
 
@@ -79,6 +80,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		COLUMNS[PERFORMANCE] = new ColumnSpec(Msg.getString("PersonTableModel.column.performance"), String.class);
 		COLUMNS[EMOTION] = new ColumnSpec(Msg.getString("PersonTableModel.column.emotion"), String.class);
 		COLUMNS[LOCATION] = new ColumnSpec(Msg.getString("PersonTableModel.column.location"), String.class);
+		COLUMNS[LOCALE] = new ColumnSpec(Msg.getString("PersonTableModel.column.locale"), String.class);
 		COLUMNS[ROLE] = new ColumnSpec(Msg.getString("PersonTableModel.column.role"), String.class);
 		COLUMNS[JOB] = new ColumnSpec(Msg.getString("PersonTableModel.column.job"), String.class);
 		COLUMNS[SHIFT] = new ColumnSpec(Msg.getString("PersonTableModel.column.shift"), String.class);
@@ -328,6 +330,10 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				result = person.getLocationTag().getQuickLocation();
 				break;
 
+			case LOCALE:
+				result = person.getLocationTag().getLocale();
+				break;
+				
 			case ROLE:
 				if (!person.getPhysicalCondition().isDead()) {
 					Role role = person.getRole();
