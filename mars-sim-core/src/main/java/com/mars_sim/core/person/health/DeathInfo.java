@@ -13,6 +13,7 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.Mind;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.role.RoleType;
@@ -93,16 +94,21 @@ public class DeathInfo implements Serializable {
 	private RoleType roleType;
 
 	/**
-	 * The construct creates an instance of a DeathInfo class.
+	 * Constructor 1: creates an instance of a DeathInfo class for a person.
 	 * 
 	 * @param person the dead person
+	 * @param problem
+	 * @param cause
+	 * @param lastWord
+	 * @param martianTime
 	 */
 	public DeathInfo(Person person, HealthProblem problem, String cause, String lastWord,
 							MarsTime martianTime) {
 		this.person = person;
 		this.problem = problem;
-		this.causeOfDeath = cause;
 
+		String medicalCause = "";
+		
 		// Initialize data members
 		if (lastWord == null) {
 			int rand = RandomUtil.getRandomInt(LAST_WORDS.length);
@@ -115,17 +121,31 @@ public class DeathInfo implements Serializable {
 		timeOfDeath = martianTime;	
 
 		if (problem == null) {
+			
+			// Double check if there are any medical complains
 			Complaint serious = person.getPhysicalCondition().getMostSerious();
 			if (serious != null) {
 				this.illness = serious.getType();
 				healthCondition = 0;
-				cause = "Non-Illness Related";
+				medicalCause = illness.getName();
 			}
-		} else {
+			else {
+				medicalCause = "Non-Illness Related";
+			}
+		}
+		else {
 			this.illness = problem.getIllness().getType();
 			healthCondition = problem.getHealthRating();
+			medicalCause = illness.getName();
 		}
 
+		// Set the cause of death
+		if (cause.equals(PhysicalCondition.TBD)) {
+			this.causeOfDeath = medicalCause;
+		}
+		else
+			this.causeOfDeath = cause + "; " + medicalCause;
+		
 		// Record the place of death
 		if (person.isInVehicle()) {
 			// such as died inside a vehicle
@@ -168,6 +188,12 @@ public class DeathInfo implements Serializable {
 			taskPhase = taskMgr.getLastTaskDescription();
 	}
 
+	/**
+	 * Constructor 2: creates an instance of a DeathInfo class for a robot.
+	 * 
+	 * @param robot
+	 * @param martianTime
+	 */
 	public DeathInfo(Robot robot, MarsTime martianTime) {
 		// Initialize data members
 		this.robot = robot;

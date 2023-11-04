@@ -105,6 +105,9 @@ public class PhysicalCondition implements Serializable {
 	/** The standard pre-breathing time in the EVA suit. */
 	private static final double STANDARD_PREBREATHING_TIME = 40;
 
+	public static final String STANDARD_QUOTE_0 = "Thousands have lived without love, not one without water. – W.H.Auden.";
+	public static final String STANDARD_QUOTE_1 = "Remember that no child should go empty stomach in the 21st century.";
+	
 	/** The default string for degree celsius */
 	public static final String DEGREE_CELSIUS = Msg.getString("temperature.sign.degreeCelsius");
 	
@@ -170,10 +173,8 @@ public class PhysicalCondition implements Serializable {
 	private static final String WELL = "Well";
 	private static final String DEAD_COLON = "Dead : ";
 	private static final String SICK_COLON = "Sick : ";
-	private static final String TBD = "(To be determined)";
-	private static final String SUICIDE = "Suicide";
-	private static final String INSTRUCTED = " committed suicide as instructed.";
-
+	public static final String TBD = "[To Be Determined]";
+	private static final String TRIGGERED_DEATH = "[Player Triggered Death]";
 	
 	private static double o2Consumption;
 	private static double h20Consumption;
@@ -204,9 +205,9 @@ public class PhysicalCondition implements Serializable {
 	 * Person's Musculoskeletal system from 0 to 100 (muscle pain tolerance, muscle
 	 * health, muscle soreness).
 	 */
-	private double musculePainTolerance;
-	private double musculeHealth;
-	private double musculeSoreness;
+	private double musclePainTolerance;
+	private double muscleHealth;
+	private double muscleSoreness;
 	
 	/** Person's thirst level. [in millisols]. */
 	private double thirst;
@@ -270,8 +271,8 @@ public class PhysicalCondition implements Serializable {
 	private HealthProblem starved;
 	/** The HealthProblem instance. */
 	private HealthProblem dehydrated;
-	/** Most serious problem. */
-	private HealthProblem serious;
+	/** Most mostSeriousProblem problem. */
+	private HealthProblem mostSeriousProblem;
 
 	private static MasterClock master;
 
@@ -311,9 +312,9 @@ public class PhysicalCondition implements Serializable {
 
 		// Note: may incorporate real world parameters such as areal density in g cm−2,
 		// T-score and Z-score (see https://en.wikipedia.org/wiki/Bone_density)
-		musculePainTolerance = RandomUtil.getRandomInt(-10, 10) + es; // pain tolerance
-		musculeHealth = 50D; // muscle health index; 50 being the average
-		musculeSoreness = RandomUtil.getRandomRegressionInteger(100); // muscle soreness
+		musclePainTolerance = RandomUtil.getRandomInt(-10, 10) + es; // pain tolerance
+		muscleHealth = 50D; // muscle health index; 50 being the average
+		muscleSoreness = RandomUtil.getRandomRegressionInteger(100); // muscle soreness
 
 		personalMaxEnergy = MAX_DAILY_ENERGY_INTAKE;
 		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
@@ -430,7 +431,7 @@ public class PhysicalCondition implements Serializable {
 			// Check once per msol (millisol integer)
 			if (pulse.isNewMSol()) {
 
-				// Calculate performance and most serious illness.
+				// Calculate performance and most mostSeriousProblem illness.
 				recalculatePerformance();
 				// Update radiation counter
 				radiation.timePassing(pulse);
@@ -997,8 +998,7 @@ public class PhysicalCondition implements Serializable {
 			
 			else if (hunger >= MAX_HUNGER) {
 				starved.setState(HealthProblem.DEAD);
-				recordDead(starved, false, 
-					"Remember that no child should go empty stomach in the 21st century.");
+				recordDead(starved, false, STANDARD_QUOTE_1);
 			}
 		}
 	}
@@ -1048,14 +1048,13 @@ public class PhysicalCondition implements Serializable {
 			}
 			else if (thirst >= MAX_THIRST) {
 				dehydrated.setState(HealthProblem.DEAD);
-				recordDead(dehydrated, false, 
-						"Thousands have lived without love, not one without water. – W.H.Auden.");
+				recordDead(dehydrated, false, STANDARD_QUOTE_0);
 			}
 		}
 	}
 
 	/**
-	 * Gets the health problem by a certian complaint type
+	 * Gets the health problem by a certain complaint type.
 	 *
 	 * @return Health problem or null if the Person does not have it
 	 */
@@ -1454,17 +1453,17 @@ public class PhysicalCondition implements Serializable {
 	 * Renders this Person dead, creates DeathInfo, and process the changes
 	 *
 	 * @param problem      The health problem that contributes to his death.
-	 * @param causedByUser True if it's caused by users
+	 * @param triggeredByPlayer True if it's caused by users
 	 */
-	public void recordDead(HealthProblem problem, boolean causedByUser, String lastWord) {
+	public void recordDead(HealthProblem problem, boolean triggeredByPlayer, String lastWord) {
 		alive = false;
 		String reason = TBD;
-		if (causedByUser) {
-			logger.log(person, Level.WARNING, 0, INSTRUCTED);
-			reason = SUICIDE;
+		if (triggeredByPlayer) {
+			reason = TRIGGERED_DEATH;
+			logger.log(person, Level.WARNING, 0, reason);
 		}
 		else {
-			this.serious = problem;
+			this.mostSeriousProblem = problem;
 		}
 
 		deathDetails = new DeathInfo(person, problem, reason, lastWord, master.getMarsTime());
@@ -1487,8 +1486,9 @@ public class PhysicalCondition implements Serializable {
 		person.getAssociatedSettlement().removeAirlockRecord(person);
 		// Set the mind of the person to inactive
 		person.getMind().setInactive();
-		// Add the person's death info to the postmorten exam waiting list
-		medicalManager.addPostmortemExams(person.getAssociatedSettlement(), deathDetails);
+		// Add the person's death info to the postmortem exam waiting list
+		// Note: what if a person died in a settlement outside of home town ?
+		medicalManager.addPostmortemExam(person.getAssociatedSettlement(), deathDetails);
 	}
 
 	/**
@@ -1519,29 +1519,29 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Gets a string description of the most serious health situation.
+	 * Gets a string description of the most mostSeriousProblem health situation.
 	 *
 	 * @return A string containing the current illness if any.
 	 */
 	public String getHealthSituation() {
 		String situation = WELL;
-		if (serious != null) {
+		if (mostSeriousProblem != null) {
 			if (isDead()) {
-				situation = DEAD_COLON + serious.getIllness().getType().toString();
+				situation = DEAD_COLON + mostSeriousProblem.getIllness().getType().toString();
 			} else {
-				situation = SICK_COLON + serious.toString();
+				situation = SICK_COLON + mostSeriousProblem.toString();
 			}
 		}
 		return situation;
 	}
 
 	/**
-	 * Gets the most serious illness.
+	 * Gets the most mostSeriousProblem illness.
 	 *
-	 * @return most serious illness
+	 * @return most mostSeriousProblem illness
 	 */
 	public Complaint getMostSerious() {
-		return serious.getIllness();
+		return mostSeriousProblem.getIllness();
 	}
 
 	/**
@@ -1552,16 +1552,16 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Calculates how the most serious problem and other metrics would affect a
+	 * Calculates how the most mostSeriousProblem problem and other metrics would affect a
 	 * person's performance.
 	 */
 	private void recalculatePerformance() {
 
 		double maxPerformance = 1.0D;
 
-		serious = null;
+		mostSeriousProblem = null;
 
-		// Check the existing problems. find most serious problem and how it
+		// Check the existing problems. find most mostSeriousProblem problem and how it
 		// affects performance. This is the performance baseline
 		for (HealthProblem problem : problems) {
 			double factor = problem.getPerformanceFactor();
@@ -1569,8 +1569,8 @@ public class PhysicalCondition implements Serializable {
 				maxPerformance = factor;
 			}
 
-			if ((serious == null) || (serious.getIllness().getSeriousness() < problem.getIllness().getSeriousness())) {
-				serious = problem;
+			if ((mostSeriousProblem == null) || (mostSeriousProblem.getIllness().getSeriousness() < problem.getIllness().getSeriousness())) {
+				mostSeriousProblem = problem;
 			}
 		}
 
@@ -1730,9 +1730,9 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Checks if the person has any serious medical problems.
+	 * Checks if the person has any mostSeriousProblem medical problems.
 	 *
-	 * @return true if serious medical problems
+	 * @return true if mostSeriousProblem medical problems
 	 */
 	public boolean hasSeriousMedicalProblems() {
 		boolean result = false;
@@ -1969,12 +1969,12 @@ public class PhysicalCondition implements Serializable {
 	 * @param time
 	 */
 	public void stressMuscle(double time) {
-		musculeHealth -= .01 * time; // musculoskeletal health
-		if (musculeHealth < 0)
-			musculeHealth = 0;
-		musculeSoreness += .005 * time; // musculoskeletal soreness
-		if (musculeSoreness > 100)
-			musculeSoreness = 100;
+		muscleHealth -= .01 * time; // musculoskeletal health
+		if (muscleHealth < 0)
+			muscleHealth = 0;
+		muscleSoreness += .005 * time; // musculoskeletal soreness
+		if (muscleSoreness > 100)
+			muscleSoreness = 100;
 	}
 	
 	/**
@@ -1983,15 +1983,15 @@ public class PhysicalCondition implements Serializable {
 	 * @param time
 	 */
 	public void exerciseMuscle(double time) {
-		musculePainTolerance += .001 * time; // musculoskeletal pain tolerance
-		musculeHealth += .01 * time; // musculoskeletal health
-		musculeSoreness -= .001 * time; // musculoskeletal soreness
-		if (musculePainTolerance > 100)
-			musculePainTolerance = 100;
-		if (musculeHealth > 100)
-			musculeHealth = 100;
-		if (musculeSoreness < 0)
-			musculeSoreness = 0;
+		musclePainTolerance += .001 * time; // musculoskeletal pain tolerance
+		muscleHealth += .01 * time; // musculoskeletal health
+		muscleSoreness -= .001 * time; // musculoskeletal soreness
+		if (musclePainTolerance > 100)
+			musclePainTolerance = 100;
+		if (muscleHealth > 100)
+			muscleHealth = 100;
+		if (muscleSoreness < 0)
+			muscleSoreness = 0;
 		// Increase thirst
 		increaseThirst(-time/4.5); 
 	}
@@ -2002,27 +2002,27 @@ public class PhysicalCondition implements Serializable {
 	 * @param time
 	 */
 	public void relaxMuscle(double time) {
-		musculeHealth += .01 * time; // musculoskeletal health
-		musculeSoreness -= .01 * time; // musculoskeletal soreness
-		if (musculeHealth > 100)
-			musculeHealth = 100;
-		if (musculeSoreness < 0)
-			musculeSoreness = 0;
+		muscleHealth += .01 * time; // musculoskeletal health
+		muscleSoreness -= .01 * time; // musculoskeletal soreness
+		if (muscleHealth > 100)
+			muscleHealth = 100;
+		if (muscleSoreness < 0)
+			muscleSoreness = 0;
 	}
 	
 	/**
 	 * Represent the deterioration of musculoskeletal systems.
 	 */
 	public void entropy(double time) {
-		musculePainTolerance -= .001 * time; // muscle health
-		musculeHealth -= .001 * time; // muscle health
-		musculeSoreness += .001 * time; // muscle health
-		if (musculeSoreness > 100)
-			musculeSoreness = 100;
-		if (musculeHealth < 0)
-			musculeHealth = 0;
-		if (musculePainTolerance < 0)
-			musculePainTolerance = 0;
+		musclePainTolerance -= .001 * time; // muscle health
+		muscleHealth -= .001 * time; // muscle health
+		muscleSoreness += .001 * time; // muscle health
+		if (muscleSoreness > 100)
+			muscleSoreness = 100;
+		if (muscleHealth < 0)
+			muscleHealth = 0;
+		if (musclePainTolerance < 0)
+			musclePainTolerance = 0;
 	}
 	
 
@@ -2033,13 +2033,13 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void recoverFromSoreness(double value) {
 		// Reduce the muscle soreness by 1 point at the end of the day
-		double soreness = musculeSoreness;
+		double soreness = muscleSoreness;
 		soreness = soreness - value * 0.01;
 		if (soreness < 0)
 			soreness = 0;
 		else if (soreness > 100)
 			soreness = 100;
-		musculeSoreness = soreness;
+		muscleSoreness = soreness;
 	}
 
 
@@ -2212,11 +2212,11 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	public double getMuscleSoreness() {
-		return musculeSoreness;
+		return muscleSoreness;
 	}
 
     public double getMusclePainTolerance() {
-        return musculePainTolerance;
+        return musclePainTolerance;
     }
 
 	/**
@@ -2256,7 +2256,7 @@ public class PhysicalCondition implements Serializable {
 
 		deathDetails = null;
 		problems = null;
-		serious = null;
+		mostSeriousProblem = null;
 		person = null;
 		radiation = null;
 		circadian = null;

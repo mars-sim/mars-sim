@@ -55,8 +55,8 @@ public class TopLevel extends InteractiveChatCommand {
 		StringBuilder prompt = new StringBuilder();
 		MasterClock clock = context.getSim().getMasterClock();
 		MarsTime marsClock = clock.getMarsTime();
-		prompt.append("[Sol " + marsClock.getMissionSol() 
-				+ " " + clock.getMarsTime().getTruncatedDateTimeStamp());
+		prompt.append("[" + clock.getMarsTime().getTruncatedDateTimeStamp());
+		prompt.append(" Sol " + marsClock.getMissionSol());
 		prompt.append("] ").append(PROMPT_SEED);
 		return prompt.toString();
 	}

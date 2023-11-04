@@ -38,9 +38,9 @@ public class StatusCommand extends AbstractPersonCommand {
 		buffer.append(System.lineSeparator());
 		
 		if (person.isDeclaredDead()) {
-			buffer.append("It's reported that ");
+			buffer.append("It's been reported that ");
 			buffer.append(person.getName());
-			buffer.append(" had passed away. ");
+			buffer.append(" has passed away. ");
 			
 			String genderNoun0 = "He was ";	
 			String genderNoun1 = "His ";
@@ -53,7 +53,7 @@ public class StatusCommand extends AbstractPersonCommand {
 				genderNoun2 = "She ";	
 			}
 			
-			buffer.append(genderNoun0.toLowerCase());
+			buffer.append(genderNoun0);
 			
 			String job = person.getMind().getJob().getName().toLowerCase();
 			if (vowels.indexOf(Character.toLowerCase(job.charAt(0))) != -1) {	
@@ -68,9 +68,8 @@ public class StatusCommand extends AbstractPersonCommand {
 			Settlement home = person.getAssociatedSettlement();
 			if (home != null) {
 				buffer.append(genderNoun1);
-				buffer.append(" home base was ");
+				buffer.append("home base was ");
 				buffer.append(person.getAssociatedSettlement().getName()).append(", ");
-				buffer.append(System.lineSeparator());
 				buffer.append("where ");
 				buffer.append(genderNoun0.toLowerCase());
 				String role = person.getRole().getType().getName().toLowerCase();
@@ -90,9 +89,9 @@ public class StatusCommand extends AbstractPersonCommand {
 			buffer.append(" died on ");
 			buffer.append(death.getTimeOfDeath());
 			buffer.append(" while ");
-			buffer.append(death.getTask());
+			buffer.append(death.getTask() + ".");
 			buffer.append(System.lineSeparator());
-			buffer.append(". Cause of Death: ");
+			buffer.append("Cause of Death: ");
 			buffer.append(death.getCause());
 		}
 		
@@ -127,7 +126,7 @@ public class StatusCommand extends AbstractPersonCommand {
 			}
 			buffer.append(System.lineSeparator());		
 			
-			buffer.append("At the moment, I am ");
+			buffer.append("At this moment, I am ");
 			buffer.append(person.getTaskDescription().toLowerCase()).append(".");
 		}
 

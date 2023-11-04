@@ -810,7 +810,6 @@ public class SettlementTransparentPanel extends JComponent {
 			public void mouseWheelMoved(MouseWheelEvent evt) {
 				int numClicks = evt.getWheelRotation();
 				int value = zoomSlider.getValue();
-				System.out.println("mouse wheel value: " + value);
 				if (numClicks > 0) {
 					// Move zoom slider down.
 					if (value > zoomSlider.getMinimum())

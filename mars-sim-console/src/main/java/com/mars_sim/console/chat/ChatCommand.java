@@ -81,8 +81,9 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	}
 
 	/**
-	 * Return any introduction to executing this command when working as interactive.
-	 * Assume that the contents may be dynamic as a subclass may override this method.
+	 * Returns any introduction to executing this command when working as interactive.
+	 * Assuming that the contents may be dynamic as a subclass may override this method.
+	 * 
 	 * @return
 	 */
 	public String getIntroduction() {
@@ -90,7 +91,8 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	}
 
 	/**
-	 * Set a default introduction.
+	 * Sets a default introduction.
+	 * 
 	 * @param introduction
 	 */
 	protected void setIntroduction(String introduction) {
