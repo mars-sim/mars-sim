@@ -167,24 +167,21 @@ public class MissionTableModel extends AbstractMonitorModel
 		if (missionCache.contains(mission))
 			return;
 
-		boolean goodToGo = false;
+		boolean goodToGo = true;
 		if (mode == GameMode.COMMAND) {
-			if (mission.getStartingPerson().getAssociatedSettlement().getName()
-					.equals(commanderSettlement.getName())) {
-				goodToGo = true;
-			}
-		}
-
-		else {
-			goodToGo = true;
+			goodToGo = mission.getStartingPerson().getAssociatedSettlement()
+					.equals(commanderSettlement);
 		}
 
 		if (goodToGo) {
-			missionCache.add(mission);
-			mission.addMissionListener(this);
+			synchronized(missionCache) {
+				missionCache.add(mission);
+				mission.addMissionListener(this);
 
-			// Inform listeners of new row
-			fireTableRowsInserted(0, missionCache.size() - 1);
+				// Inform listeners of new row
+				int index = missionCache.size() - 1;
+				fireTableRowsInserted(index, index);
+			}
 		}
 	}
 
@@ -201,7 +198,7 @@ public class MissionTableModel extends AbstractMonitorModel
 			mission.removeMissionListener(this);
 
 			// Delete a particular row
-			SwingUtilities.invokeLater(new MissionTableRowDeleter(index));
+			fireTableRowsDeleted(index, index);
 		}
 	}
 
@@ -226,7 +223,7 @@ public class MissionTableModel extends AbstractMonitorModel
 
 		int index = missionCache.indexOf(event.getSource());
 
-		if (index > -1) {
+		if (index >= 0) {
 			List<Integer> columnsToUpdate = new ArrayList<>();
 			MissionEventType eventType = event.getType();
 			int column0 = switch (eventType) {
@@ -245,7 +242,6 @@ public class MissionTableModel extends AbstractMonitorModel
 
 			if (event.getSource() instanceof VehicleMission) {	
 				switch(eventType) {
-
 					case DISTANCE_EVENT: {
 						columnsToUpdate.add(TRAVELLED_DISTANCE);
 						columnsToUpdate.add(TOTAL_REMAINING_DISTANCE);
@@ -283,136 +279,105 @@ public class MissionTableModel extends AbstractMonitorModel
 	 */
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
+		if (rowIndex >= missionCache.size()) {
+			return null;
+		}
+
 		Object result = null;
+	Mission mission = missionCache.get(rowIndex);
 
-		if (rowIndex < missionCache.size()) {
-			Mission mission = missionCache.get(rowIndex);
-
-			if (mission != null) {
-				switch (columnIndex) {
-
-				case DATE_FILED: {
-					result = mission.getLog().getDateCreated();
-				}
-					break;
-
-				case DATE_EMBARKED: {
-					result = mission.getLog().getDateStarted();
-				}
-					break;
-
-				case DATE_RETURNED : {
-					result = mission.getLog().getDateFinished();
-
-				}
-					break;
-
-				case STARTING_MEMBER: {
-					result = mission.getStartingPerson().getName();
-				}
-					break;
-
-				case TYPE_ID: {
-					result = mission.getName();
-				}
-					break;
-
-				case DESIGNATION: {
-					result = mission.getFullMissionDesignation();
-				}
-					break;
-
-				case PHASE: {
-					MissionPlanning plan = mission.getPlan();
-					if ((plan != null) && plan.getStatus() == PlanType.PENDING) {
-						int percent = (int) plan.getPercentComplete();
-						if (percent > 100)
-							percent = 100;
-						int score = (int)plan.getScore();
-						int min = (int)mission.getAssociatedSettlement().getMinimumPassingScore();
-						result = percent + "% Reviewed - Score: " + score + " [Min: " + min + "]";
-					}
-					else
-						result = mission.getPhaseDescription();
-
-				}
-					break;
-
-				case VEHICLE: {
-					result = "";
-					Vehicle reserved = null;
-					if (mission instanceof VehicleMission vm) {
-						reserved = vm.getVehicle();
-					} else if (mission instanceof ConstructionMission constructionMission) {
-						List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
-						if (!constVehicles.isEmpty()) {
-							reserved = constVehicles.get(0);
-						}
-					}
-					if (reserved != null) {
-						result = reserved.getName();
-					}
-				}
-					break;
-
-				case STARTING_SETTLEMENT: {
-					Settlement s = mission.getAssociatedSettlement();
-					result = (s != null? s.getName() : null);
-				}
-					break;
-
-				case MEMBER_NUM: {
-					result = mission.getSignup().size();
-				}
-					break;
-
-				case NAVPOINT_NUM: {
-					if (mission instanceof VehicleMission vm) {
-						result = vm.getNavpoints().size();
-					} else
-						result = 0;
-				}
-					break;
-
-				case TRAVELLED_DISTANCE: {
-					if (mission instanceof VehicleMission vm) {
-						result = vm.getTotalDistanceTravelled();
-					} else
-						result = 0;
-				}
-					break;
-
-				case TOTAL_REMAINING_DISTANCE: {
-					if (mission instanceof VehicleMission vm) {
-						result = vm.getTotalDistanceRemaining();
-					} else
-						result = 0;
-				}
-
+		switch (columnIndex) {
+			case DATE_FILED:
+				result = mission.getLog().getDateCreated();
 				break;
 
-				case REMAINING_DISTANCE_TO_NEXT_NAVPOINT: {
-					if (mission instanceof VehicleMission vm) {
-						result = vm.getDistanceCurrentLegRemaining();
-					} else
-						result = 0;
-				}
-
+			case DATE_EMBARKED:
+				result = mission.getLog().getDateStarted();
 				break;
-				
-				case PROPOSED_ROUTE_DISTANCE: {
-					if (mission instanceof VehicleMission vm) {
-						result = vm.getDistanceProposed();
-					} else
-						result = 0;
-				}
 
+			case DATE_RETURNED:
+				result = mission.getLog().getDateFinished();
 				break;
-				
-				default:
-					result = "";
+
+			case STARTING_MEMBER:
+				result = mission.getStartingPerson().getName();
+				break;
+
+			case TYPE_ID:
+				result = mission.getName();
+				break;
+
+			case DESIGNATION:
+				result = mission.getFullMissionDesignation();
+				break;
+
+			case PHASE:
+				MissionPlanning plan = mission.getPlan();
+				if ((plan != null) && plan.getStatus() == PlanType.PENDING) {
+					int percent = (int) plan.getPercentComplete();
+					int score = (int)plan.getScore();
+					int min = (int)mission.getAssociatedSettlement().getMinimumPassingScore();
+					result = percent + "% Reviewed - Score: " + score + " [Min: " + min + "]";
 				}
-			}
+				else
+					result = mission.getPhaseDescription();
+				break;
+
+			case VEHICLE:
+				Vehicle reserved = null;
+				if (mission instanceof VehicleMission vm) {
+					reserved = vm.getVehicle();
+				} else if (mission instanceof ConstructionMission constructionMission) {
+					List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
+					if (!constVehicles.isEmpty()) {
+						reserved = constVehicles.get(0);
+					}
+				}
+				if (reserved != null) {
+					result = reserved.getName();
+				}
+				break;
+
+			case STARTING_SETTLEMENT: 
+				Settlement s = mission.getAssociatedSettlement();
+				result = (s != null? s.getName() : null);
+				break;
+
+			case MEMBER_NUM:
+				result = mission.getSignup().size();
+				break;
+
+			case NAVPOINT_NUM:
+				if (mission instanceof VehicleMission vm) {
+					result = vm.getNavpoints().size();
+				}
+				break;
+
+			case TRAVELLED_DISTANCE:
+				if (mission instanceof VehicleMission vm) {
+					result = vm.getTotalDistanceTravelled();
+				}
+				break;
+
+			case TOTAL_REMAINING_DISTANCE:
+				if (mission instanceof VehicleMission vm) {
+					result = vm.getTotalDistanceRemaining();
+				}
+				break;
+
+			case REMAINING_DISTANCE_TO_NEXT_NAVPOINT:
+				if (mission instanceof VehicleMission vm) {
+					result = vm.getDistanceCurrentLegRemaining();
+				}
+				break;
+			
+			case PROPOSED_ROUTE_DISTANCE:
+				if (mission instanceof VehicleMission vm) {
+					result = vm.getDistanceProposed();
+				}
+				break;
+			
+			default:
 		}
 
 		return result;
@@ -452,20 +417,6 @@ public class MissionTableModel extends AbstractMonitorModel
 						fireTableCellUpdated(row, column);
 				}
 			}
-		}
-	}
-
-	private class MissionTableRowDeleter implements Runnable {
-
-		private int row;
-
-		private MissionTableRowDeleter(int row) {
-			this.row = row;
-		}
-
-		public void run() {
-			if (row < getRowCount())
-				fireTableRowsDeleted(row, row);
 		}
 	}
 }
