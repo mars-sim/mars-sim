@@ -29,11 +29,11 @@ public class HazardEvent extends HistoricalEvent {
 	 * @param whatCause		The cause for this event.
 	 * @param whileDoing	The activity the person was engaging.
 	 * @param whoAffected	Who is being primarily affected by this event.
-	 * @param container		the building/vehicle where it occurs
+	 * @param entity		the building/vehicle where it occurs
 	 */
 	public HazardEvent(EventType eventType, Object source, String whatCause, String whileDoing, String whoAffected,
-			Unit container) {
+			Unit entity) {
 		super(HistoricalEventCategory.HAZARD, eventType, source, whatCause, whileDoing, whoAffected,
-				container);
+				entity);
 	}
 }

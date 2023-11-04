@@ -81,7 +81,7 @@ public class HistoricalEventManager implements Serializable {
 						&& e.getWhatCause().equals(newEvent.getWhatCause())
 						&& e.getWhileDoing().equals(newEvent.getWhileDoing())
 						&& e.getWho().equals(newEvent.getWho())
-						&& e.getContainer().equals(newEvent.getContainer())
+						&& e.getEntity().equals(newEvent.getEntity())
 						&& e.getCoordinates().equals(newEvent.getCoordinates())) {
 					return true;
 				}

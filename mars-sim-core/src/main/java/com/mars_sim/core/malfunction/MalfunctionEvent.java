@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MalfunctionEvent.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-11-04
  * @author Scott Davis
  */
 package com.mars_sim.core.malfunction;
@@ -26,12 +26,12 @@ public class MalfunctionEvent extends HistoricalEvent {
 	 * @param type        {@link EventType} Type of event.
 	 * @param whileDoing  the activity the person was engaging.
 	 * @param whoAffected Who is being primarily affected by this event.
-	 * @param container		the building/vehicle where it occurs
+	 * @param entity		the building/vehicle where it occurs
 	 * @param homeTown		the associated settlement where it belongs
 	 * @param coordinates	the coordinates where it belongs
 	 */
 	public MalfunctionEvent(EventType type, Malfunction malfunction, String whileDoing,
-			String whoAffected, Unit container) {
-		super(HistoricalEventCategory.MALFUNCTION, type, malfunction, malfunction.getName(), whileDoing, whoAffected, container);
+			String whoAffected, Unit entity) {
+		super(HistoricalEventCategory.MALFUNCTION, type, malfunction, malfunction.getName(), whileDoing, whoAffected, entity);
 	}
 }
