@@ -292,6 +292,8 @@ public class TimeWindow extends ToolWindow {
 
 	/**
 	 * Updates various time labels.
+	 * 
+	 * @param mc
 	 */
 	private void updateRateLabels(MasterClock mc) {
 
@@ -304,11 +306,11 @@ public class TimeWindow extends ToolWindow {
 		sleepTimeLabel.setText(sleepTime + MS);
 
 		// Update pulse width label
-		double lastPulseTime = mc.getLastPulseTime();
+		double nextPulseTime = mc.getNextPulseTime();
 		double OptPulseTime = mc.getOptPulseTime();
 		
 		StringBuilder pulseText = new StringBuilder();
-		pulseText.append(StyleManager.DECIMAL_PLACES4.format(lastPulseTime))
+		pulseText.append(StyleManager.DECIMAL_PLACES4.format(nextPulseTime))
 			  .append(OPTIMAL)
 			  .append(StyleManager.DECIMAL_PLACES4.format(OptPulseTime))
 			  .append(CLOSE_P);

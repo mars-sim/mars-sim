@@ -21,12 +21,7 @@ public class UpTimer implements Serializable {
 	private static final long serialVersionUID = -4992839027918134952L;
 
 	/** Initialized logger. */
-//  private static final Logger logger = Logger.getLogger(UpTimer.class.getName());
-
-//	private static final long NANOSECONDS_PER_MILLISECONDS = 1_000_000L;
-
-	/** The time limit (ms) allowed between time pulses. */
-//	private static final long TIME_LIMIT = 1_000L;
+//  may add back private static final Logger logger = Logger.getLogger(UpTimer.class.getName())
 
 	private static final String DAY = "d ";
 //	private static final String HR = "h ";
@@ -34,6 +29,8 @@ public class UpTimer implements Serializable {
 //	private static final String SEC = "s ";
 //	private static final String ZERO = "0";
 
+	private static final String TIMESTAMP_FORMAT = "%02dh %02dm %02ds";
+	
 	private static final long SECS_PER_MIN = 60;
 	private static final long HOURS_PER_DAY = 24;
 	private static final long MINS_PER_HOUR = 60;
@@ -70,6 +67,7 @@ public class UpTimer implements Serializable {
      */
     public String getUptime() {
     	long uptimeSec = uptime/1000;
+    	
        	StringBuilder result = new StringBuilder();
        	long days = uptimeSec / SECS_PER_DAY;
        	long hours = (uptimeSec / SECS_PER_HOUR) % HOURS_PER_DAY;
@@ -81,7 +79,7 @@ public class UpTimer implements Serializable {
         	result.append(DAY);
         }
 
-        result.append(String.format("%02dh %02dm %02ds", hours, mins, secs));
+        result.append(String.format(TIMESTAMP_FORMAT, hours, mins, secs));
 
         return result.toString();
      }
