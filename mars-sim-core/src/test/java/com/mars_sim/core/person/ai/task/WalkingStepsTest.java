@@ -58,7 +58,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         buildingManager.setupBuildingFunctionsMap();
 
 		Person person = new Person(settlement);
-        BuildingManager.addPersonOrRobotToBuilding(person, building0);
+        BuildingManager.addToBuilding(person, building0);
 
         LocalPosition target = new LocalPosition(-6D, 0.5D);
         WalkingSteps walkingSteps = new WalkingSteps(person, target, 0D, building2);
@@ -91,7 +91,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
 		Person person = new Person(settlement);
 
-        BuildingManager.addPersonOrRobotToBuilding(person, building0);
+        BuildingManager.addToBuilding(person, building0);
 
         WalkingSteps walkingSteps = new WalkingSteps(person, target, 0D, building1);
         assertNotNull(walkingSteps);
@@ -122,7 +122,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         buildingManager.setupBuildingFunctionsMap();
 
 		Person person = new Person(settlement);
-        BuildingManager.addPersonOrRobotToBuilding(person, building0);
+        BuildingManager.addToBuilding(person, building0);
 
         WalkingSteps walkingSteps = new WalkingSteps(person, target, 0D, building1);
         assertNotNull(walkingSteps);
@@ -170,7 +170,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         buildingManager.setupBuildingFunctionsMap();
         
 		Person person = new Person(settlement);
-        BuildingManager.addPersonOrRobotToBuilding(person, building0);
+        BuildingManager.addToBuilding(person, building0);
 
         LocalPosition target = new LocalPosition(10D, 15D);
         WalkingSteps walkingSteps = new WalkingSteps(person, target, 0D, null);
@@ -213,7 +213,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         buildingManager.setupBuildingFunctionsMap();
 
 		Person person = new Person(settlement);
-        BuildingManager.addPersonOrRobotToBuilding(person, building0);
+        BuildingManager.addToBuilding(person, building0);
 
         WalkingSteps walkingSteps = new WalkingSteps(person, new LocalPosition(10D, 15D), 0D, null);
 
@@ -242,7 +242,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         buildingManager.setupBuildingFunctionsMap();
 
 		Person person = new Person(settlement);
-        BuildingManager.addPersonOrRobotToBuilding(person, building0);
+        BuildingManager.addToBuilding(person, building0);
 
         Rover rover = buildRover(settlement, "Test Rover", new LocalPosition(15D, -10D));
 
@@ -348,7 +348,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         buildingManager.setupBuildingFunctionsMap();
 
 		Person person = new Person(settlement);
-        BuildingManager.addPersonOrRobotToBuilding(person, building0);
+        BuildingManager.addToBuilding(person, building0);
 
         WalkingSteps walkingSteps = new WalkingSteps(person, parked, 0D, rover);
         
@@ -399,7 +399,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         buildingManager.setupBuildingFunctionsMap();
         
 		Person person = new Person(settlement);
-        BuildingManager.addPersonOrRobotToBuilding(person, building0);
+        BuildingManager.addToBuilding(person, building0);
 
         WalkingSteps walkingSteps = new WalkingSteps(person, parked, 0D, rover);
         
@@ -480,7 +480,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
 		Person person = new Person(settlement);
         person.setPosition(new LocalPosition(4D, 4D));
-        BuildingManager.addPersonOrRobotToBuilding(person, garage.getBuilding());
+        BuildingManager.addToBuilding(person, garage.getBuilding());
 
         WalkingSteps walkingSteps = new WalkingSteps(person, LocalPosition.DEFAULT_POSITION, 0D, rover);
         

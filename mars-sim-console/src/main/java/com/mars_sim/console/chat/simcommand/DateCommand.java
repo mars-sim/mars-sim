@@ -9,7 +9,6 @@ package com.mars_sim.console.chat.simcommand;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
@@ -24,7 +23,10 @@ import com.mars_sim.core.time.MasterClock;
 public class DateCommand extends ChatCommand {
 
 	public static final ChatCommand DATE = new DateCommand();
-	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
+	
+	public static final DateTimeFormatter DATE_TIME_FORMATTER = 
+			DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss.SSS");
+//			DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
 
 	private DateCommand() {
 		super(TopLevel.SIMULATION_GROUP, "d", "date", "What is the date?");
@@ -43,7 +45,7 @@ public class DateCommand extends ChatCommand {
 
 		responseText.appendLabelledDigit("Mission Sol", marsClock.getMissionSol());
 		responseText.appendLabeledString("Mars Date", marsClock.getTruncatedDateTimeStamp());
-		responseText.appendLabeledString("Earth Date", earthClock.format(DATE_FORMAT));
+		responseText.appendLabeledString("Earth Date", earthClock.format(DATE_TIME_FORMATTER));
 		responseText.appendLabeledString("Uptime", clock.getUpTimer().getUptime());
 
 		if (context.getRoles().contains(ConversationRole.ADMIN)) {

@@ -18,8 +18,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseWheelEvent;
@@ -28,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -50,8 +49,6 @@ import javax.swing.JSlider;
 import javax.swing.Painter;
 import javax.swing.UIDefaults;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
@@ -770,7 +767,7 @@ public class SettlementTransparentPanel extends JComponent {
             }
         });
 
-        zoomSlider = new JSlider(JSlider.VERTICAL, 1, 90, 10);//-20, 30, 0);
+        zoomSlider = new JSlider(JSlider.VERTICAL, 1, 90, 10);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
         zoomSlider.setPreferredSize(new Dimension(40, 300));
         zoomSlider.setSize(new Dimension(40, 300));
@@ -780,33 +777,49 @@ public class SettlementTransparentPanel extends JComponent {
 		zoomSlider.setPaintTicks(true);
 		zoomSlider.setPaintLabels(true);
 		
-//		zoomSlider.setForeground(Color.ORANGE.darker().darker());
-//		zoomSlider.setOpaque(false);
+		// Consider changing zoom slider color to distinguish it 
+		// from the background tiles
+		// zoomSlider.setForeground(Color.ORANGE.darker().darker());
+		
+		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+		labelTable.put( Integer.valueOf(90), new JLabel("90") );
+		labelTable.put( Integer.valueOf(80), new JLabel("80") );
+		labelTable.put( Integer.valueOf(70), new JLabel("70") );
+		labelTable.put( Integer.valueOf(60), new JLabel("60") );
+		labelTable.put( Integer.valueOf(50), new JLabel("50") );		
+		labelTable.put( Integer.valueOf(40), new JLabel("40") );
+		labelTable.put( Integer.valueOf(30), new JLabel("30") );
+		labelTable.put( Integer.valueOf(20), new JLabel("20") );
+		labelTable.put( Integer.valueOf(10), new JLabel("10") );
+		labelTable.put( Integer.valueOf(1), new JLabel("0.1") );		
+		zoomSlider.setLabelTable(labelTable);
 		
 		zoomSlider.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
-		zoomSlider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent arg0) {
+		zoomSlider.addChangeListener(e -> {
 				// Change scale of map based on slider position.
-				int sliderValue = zoomSlider.getValue();
-				if (sliderValue == 0)
-					sliderValue = 1/10;
-				mapPanel.setScale(sliderValue);
-			}
+				int value = zoomSlider.getValue();
+				if (value == 0) {
+					value = 1/10;
+					zoomSlider.setValue(1/10);
+				}
+				mapPanel.setScale(value);
 		});
 
 		// Add mouse wheel listener for zooming.
 		mapPanel.addMouseWheelListener(new MouseWheelListener() {
 			public void mouseWheelMoved(MouseWheelEvent evt) {
 				int numClicks = evt.getWheelRotation();
+				int value = zoomSlider.getValue();
 				if (numClicks > 0) {
 					// Move zoom slider down.
-					if (zoomSlider.getValue() > zoomSlider.getMinimum())
+					if (value > zoomSlider.getMinimum())
 						zoomSlider.setValue(zoomSlider.getValue() - 1);
 				}
 				else if (numClicks < 0) {
 					// Move zoom slider up.
-					if (zoomSlider.getValue() < zoomSlider.getMaximum())
+					if (value < zoomSlider.getMaximum()) {
 						zoomSlider.setValue(zoomSlider.getValue() + 1);
+					}
 				}
 			}
 		});
@@ -823,14 +836,12 @@ public class SettlementTransparentPanel extends JComponent {
 		infoButton.setBackground(new Color(0,0,0,128));
 		infoButton.setContentAreaFilled(false);
 		infoButton.setBorderPainted(false);
-		infoButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		infoButton.addActionListener(e -> {
 				Settlement settlement = mapPanel.getSettlement();
 				if (settlement != null) {
 					desktop.showDetails(settlement);
 				}
-			};
-		});
+			});
 
 //		infoP.add(infoButton);
     }
@@ -845,10 +856,8 @@ public class SettlementTransparentPanel extends JComponent {
 		renameBtn.setContentAreaFilled(false);
 		renameBtn.setBorderPainted(false);
 
-		renameBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		renameBtn.addActionListener(e -> {
 				openRenameDialog();
-			};
 		});
     }
 
@@ -869,10 +878,8 @@ public class SettlementTransparentPanel extends JComponent {
 		cwButton.setBackground(new Color(0,0,0,128));
 
 		cwButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.clockwise")); //$NON-NLS-1$
-		cwButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
+		cwButton.addActionListener(e -> {
 				mapPanel.setRotation(mapPanel.getRotation() + ROTATION_CHANGE);
-			}
 		});
 
 		// Create center button.
@@ -885,11 +892,9 @@ public class SettlementTransparentPanel extends JComponent {
 		recenterButton.setBackground(new Color(0,0,0,128));
 
 		recenterButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.recenter")); //$NON-NLS-1$
-		recenterButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
+		recenterButton.addActionListener(e -> {
 				mapPanel.reCenter();
 				zoomSlider.setValue(0);
-			}
 		});
 
 		// Create rotate counter-clockwise button.
@@ -902,10 +907,8 @@ public class SettlementTransparentPanel extends JComponent {
 		ccwButton.setBackground(new Color(0,0,0,128));
 
 		ccwButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.counterClockwise")); //$NON-NLS-1$
-		ccwButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
+		ccwButton.addActionListener(e -> {
 				mapPanel.setRotation(mapPanel.getRotation() - ROTATION_CHANGE);
-			}
 		});
 
 		buttonPane.add(ccwButton);
@@ -935,15 +938,13 @@ public class SettlementTransparentPanel extends JComponent {
 		labelsButton.setBorderPainted(false);
 
 		labelsButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.labels")); //$NON-NLS-1$
-		labelsButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				JButton button = (JButton) evt.getSource();
+		labelsButton.addActionListener(e -> {
+				JButton button = (JButton) e.getSource();
 				if (labelsMenu == null) {
 					labelsMenu = createLabelsMenu();
 				}
 				labelsMenu.show(button, 0, button.getHeight());
 				//repaint();
-			}
 		});
 
 		labelPane.add(renameBtn);
@@ -965,10 +966,8 @@ public class SettlementTransparentPanel extends JComponent {
 		JCustomCheckBoxMenuItem dayNightLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.daylightTracking"), mapPanel.isDaylightTrackingOn()); //$NON-NLS-1$
 		dayNightLabelMenuItem.setContentAreaFilled(false);
-		dayNightLabelMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		dayNightLabelMenuItem.addActionListener(e -> {
 				mapPanel.setShowDayNightLayer(!mapPanel.isDaylightTrackingOn());
-			}
 		});
 		dayNightLabelMenuItem.setSelected(mapPanel.isDaylightTrackingOn());
 		popMenu.add(dayNightLabelMenuItem);
@@ -977,10 +976,8 @@ public class SettlementTransparentPanel extends JComponent {
 		buildingLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.buildings"), mapPanel.isShowBuildingLabels()); //$NON-NLS-1$
 		buildingLabelMenuItem.setContentAreaFilled(false);
-		buildingLabelMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		buildingLabelMenuItem.addActionListener(e -> {
 				mapPanel.setShowBuildingLabels(!mapPanel.isShowBuildingLabels());
-			}
 		});
 		popMenu.add(buildingLabelMenuItem);
 
@@ -988,10 +985,8 @@ public class SettlementTransparentPanel extends JComponent {
 		constructionLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.constructionSites"), mapPanel.isShowConstructionLabels()); //$NON-NLS-1$
 		constructionLabelMenuItem.setContentAreaFilled(false);
-		constructionLabelMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		constructionLabelMenuItem.addActionListener(e -> {
 				mapPanel.setShowConstructionLabels(!mapPanel.isShowConstructionLabels());
-			}
 		});
 		popMenu.add(constructionLabelMenuItem);
 
@@ -999,10 +994,8 @@ public class SettlementTransparentPanel extends JComponent {
 		vehicleLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.vehicles"), mapPanel.isShowVehicleLabels()); //$NON-NLS-1$
 		vehicleLabelMenuItem.setContentAreaFilled(false);
-		vehicleLabelMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		vehicleLabelMenuItem.addActionListener(e -> {
 				mapPanel.setShowVehicleLabels(!mapPanel.isShowVehicleLabels());
-			}
 		});
 		popMenu.add(vehicleLabelMenuItem);
 
@@ -1010,10 +1003,8 @@ public class SettlementTransparentPanel extends JComponent {
 		personLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.people"), mapPanel.isShowPersonLabels()); //$NON-NLS-1$
 		personLabelMenuItem.setContentAreaFilled(false);
-		personLabelMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		personLabelMenuItem.addActionListener(e -> {
 				mapPanel.setShowPersonLabels(!mapPanel.isShowPersonLabels());
-			}
 		});
 		popMenu.add(personLabelMenuItem);
 
@@ -1021,10 +1012,8 @@ public class SettlementTransparentPanel extends JComponent {
 		robotLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.robots"), mapPanel.isShowRobotLabels()); //$NON-NLS-1$
 		robotLabelMenuItem.setContentAreaFilled(false);
-		robotLabelMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		robotLabelMenuItem.addActionListener(e -> {
 				mapPanel.setShowRobotLabels(!mapPanel.isShowRobotLabels());
-			}
 		});
 		popMenu.add(robotLabelMenuItem);
 

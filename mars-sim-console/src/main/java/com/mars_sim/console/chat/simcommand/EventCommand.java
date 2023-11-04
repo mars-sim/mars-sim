@@ -50,8 +50,8 @@ public class EventCommand extends ChatCommand {
 				response.appendLabeledString("Type", e.getType().getName());
 				response.appendLabeledString("Source", source);
 				response.appendLabeledString("Cause", e.getWhatCause());
-				response.appendLabeledString("Location", (e.getContainer() != null ?
-								e.getContainer().getName() : ""));
+				response.appendLabeledString("Entity", (e.getEntity() != null ?
+								e.getEntity().getName() : ""));
 				response.appendLabeledString("Coords", e.getCoordinates());
 				response.appendLabeledString("Settlement", e.getHomeTown());
 				

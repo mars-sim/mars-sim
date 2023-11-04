@@ -1,20 +1,19 @@
 /**
  * Mars Simulation Project
  * WorkerSkillsCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2023-10-31
  * @author Barry Evans
  */
 
 package com.mars_sim.console.chat.simcommand.unit;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.person.ai.Skill;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 
@@ -34,8 +33,8 @@ public class WorkerSkillsCommand extends AbstractUnitCommand {
 	protected boolean execute(Conversation context, String input, Unit target) {
 
 		SkillManager skillManager = null;
-		if (target instanceof Worker) {
-			skillManager = ((Worker)target).getSkillManager();
+		if (target instanceof Worker w) {
+			skillManager = w.getSkillManager();
 		}
 		else {
 			context.println("Sorry I am not a Worker");
@@ -47,15 +46,13 @@ public class WorkerSkillsCommand extends AbstractUnitCommand {
 			StructuredResponse responseText = new StructuredResponse();
 			responseText.appendTableHeading("Type of Skill", CommandHelper.TASK_WIDTH, "Level", "Exp. Needed", "Labor Time [sols]");
 
-			Map<String, Integer> levels = skillManager.getSkillLevelMap();
-			Map<String, Integer> exps = skillManager.getSkillDeltaExpMap();
-			Map<String, Integer> times = skillManager.getSkillTimeMap();
-			List<String> skillNames = skillManager.getKeyStrings();
-			Collections.sort(skillNames);
+			List<Skill> skills = skillManager.getSkills();
 
-			for (String n : skillNames) {
-				responseText.appendTableRow(n, levels.get(n), exps.get(n),
-											Math.round(100.0 * times.get(n))/100000.0);	
+			for (Skill n : skills) {
+				responseText.appendTableRow(n.getType().getName(), n.getLevel(),
+											n.getNeededExp(),
+											String.format(CommandHelper.DOUBLE_FORMAT,
+														n.getTime()/1000D));	
 			}
 			context.println(responseText.getOutput());
 			

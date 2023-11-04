@@ -158,13 +158,13 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * Gets a list of people to display on a settlement map.
+	 * Gets a list of associated people of a settlement in its vicinity.
 	 * Note: a person can be either inside the settlement or within its vicinity
 	 *
 	 * @param settlement the settlement
 	 * @return list of people to display.
 	 */
-	public static List<Person> getPeopleToDisplay(Settlement settlement) {
+	public static List<Person> getAssociatedPeopleInSettlementVicinity(Settlement settlement) {
 
 		List<Person> result = new ArrayList<>();
 
@@ -188,6 +188,35 @@ public class CollectionUtils {
 	}
 
 	/**
+	 * Gets a list of people (regardless their association) of a settlement in its vicinity.
+	 * Note: a person can be either inside the settlement or within its vicinity
+	 *
+	 * @param settlement the settlement
+	 * @return list of people to display.
+	 */
+	public static List<Person> getPeopleInSettlementVicinity(Settlement settlement) {
+
+		List<Person> result = new ArrayList<>();
+
+		if (settlement != null) {
+			Iterator<Person> i = unitManager.getPeople().iterator();
+			while (i.hasNext()) {
+				Person person = i.next();
+				// Only select living people.
+				if (!person.getPhysicalCondition().isDead()) {
+
+					// Select a person that is at the settlement coordinate.
+					if (person.getCoordinates().equals(settlement.getCoordinates())) {
+						result.add(person);
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+	
+	/**
 	 * Gets a set of other people that are NOT on this settlement.
 	 * Note: a person can be either inside the settlement or within its vicinity
 	 *
@@ -201,6 +230,63 @@ public class CollectionUtils {
 		
 		group0.removeAll(group1);
 		return group0;
+	}
+	
+	/**
+	 * Gets a list of vehicles (regardless their association) of a settlement in its vicinity.
+	 * Note: a vehicle can be either inside the settlement or within its vicinity
+	 *
+	 * @param settlement the settlement
+	 * @return list of vehicles to display.
+	 */
+	public static List<Vehicle> getVehiclesInSettlementVicinity(Settlement settlement) {
+
+		List<Vehicle> result = new ArrayList<>();
+
+		if (settlement != null) {
+			Iterator<Vehicle> i = unitManager.getVehicles().iterator();
+			while (i.hasNext()) {
+				Vehicle vehicle = i.next();
+				// Select a vehicle at the settlement coordinate.
+				if (vehicle.getCoordinates().equals(settlement.getCoordinates())) {
+					result.add(vehicle);
+				}
+			}
+		}
+
+		return result;
+	}
+	
+	/**
+	 * Gets a list of robots associated people of a settlement in its vicinity.
+ 	 * Note: a person can be either inside the settlement or within its vicinity
+	 * 
+	 * @param settlement the settlement
+	 * @return list of robots to display.
+	 */
+	public static List<Robot> getAssociatedRobotsInSettlementVicinity(Settlement settlement) {
+
+		List<Robot> result = new ArrayList<Robot>();
+
+		if (settlement != null) {
+			Iterator<Robot> i = settlement.getAllAssociatedRobots().iterator();
+			while (i.hasNext()) {
+				Robot robot = i.next();
+
+				// Only select functional robots.
+				if (!robot.getSystemCondition().isInoperable()) {
+
+					// Select a robot that is at the settlement location.
+					Coordinates settlementLoc = settlement.getCoordinates();
+					Coordinates personLoc = robot.getCoordinates();
+					if (personLoc.equals(settlementLoc)) {
+						result.add(robot);
+					}
+				}
+			}
+		}
+
+		return result;
 	}
 	
 	/**

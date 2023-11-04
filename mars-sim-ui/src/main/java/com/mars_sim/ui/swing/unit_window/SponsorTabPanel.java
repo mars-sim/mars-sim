@@ -88,7 +88,7 @@ public class SponsorTabPanel extends TabPanel {
 		namePanel.add(iconPanel, BorderLayout.CENTER);
 		
 		String agencyStr = ra.getName();
-	
+
 		Icon icon = ImageLoader.getIconByName(AGENCY_FOLDER + agencyStr);
 		JLabel agencyLabel = null;
 		
@@ -96,8 +96,8 @@ public class SponsorTabPanel extends TabPanel {
 			agencyLabel = new JLabel(icon);
 		}
 		else {
-			Image img = (ImageLoader.getImage(AGENCY_FOLDER + agencyStr))
-					.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+			Image img = (ImageLoader.getImage(AGENCY_FOLDER + agencyStr));
+//					.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
 			agencyLabel = new JLabel(new ImageIcon(img));
 		}
 

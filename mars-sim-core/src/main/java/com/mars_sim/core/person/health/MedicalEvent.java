@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MedicalEvent.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-11-04
  * @author Scott Davis
  */
 package com.mars_sim.core.person.health;
@@ -24,6 +24,7 @@ public class MedicalEvent extends HistoricalEvent {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param person the person with the medical problem.
 	 * @param illness the medical problem.
 	 * @param eventType the medical event type.

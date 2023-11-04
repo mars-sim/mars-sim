@@ -29,6 +29,7 @@ import com.mars_sim.ui.swing.MainDesktopPane;
  * provides a mean to display the Historical Event. This is actually an Adapter
  * onto the existing Event Manager.
  */
+@SuppressWarnings("serial")
 public class EventTableModel extends AbstractMonitorModel implements HistoricalEventListener{
 
 	// Column names
@@ -38,8 +39,8 @@ public class EventTableModel extends AbstractMonitorModel implements HistoricalE
 	private static final int CAUSE = 3;
 	private static final int WHILE = 4;
 	private static final int WHO = 5;
-	private static final int CONTAINER = 6;
-	private static final int HOMETOWN = 7;
+	private static final int ENTITY = 6;
+	private static final int SETTLEMENT = 7;
 	private static final int COORDINATES = 8;
 	
 	private static final int COLUMNCOUNT = 9;
@@ -68,8 +69,8 @@ public class EventTableModel extends AbstractMonitorModel implements HistoricalE
 		COLUMNS[CAUSE] = new ColumnSpec(Msg.getString("EventTableModel.column.cause"), String.class);
 		COLUMNS[WHILE] = new ColumnSpec(Msg.getString("EventTableModel.column.while"),String.class);
 		COLUMNS[WHO] = new ColumnSpec(Msg.getString("EventTableModel.column.who"), Object.class);
-		COLUMNS[CONTAINER] = new ColumnSpec(Msg.getString("EventTableModel.column.container"), String.class);
-		COLUMNS[HOMETOWN] = new ColumnSpec(Msg.getString("EventTableModel.column.hometown"), String.class);
+		COLUMNS[ENTITY] = new ColumnSpec(Msg.getString("EventTableModel.column.entity"), String.class);
+		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("EventTableModel.column.hometown"), String.class);
 		COLUMNS[COORDINATES] = new ColumnSpec(Msg.getString("EventTableModel.column.coordinates"), String.class);
 	}
 
@@ -78,7 +79,7 @@ public class EventTableModel extends AbstractMonitorModel implements HistoricalE
 	private Set<HistoricalEventCategory> blockedTypes = new HashSet<>();
 
 	/**
-	 * constructor. Create a new Event model based on the specified event manager.
+	 * Constructor. Create a new Event model based on the specified event manager.
 	 *
 	 * @param manager   Manager to extract events from.
 	 * @param notifyBox to present notification message to user.
@@ -132,7 +133,7 @@ public class EventTableModel extends AbstractMonitorModel implements HistoricalE
 
 
 	/**
-	 * Get the number of rows in the model.
+	 * Gets the number of rows in the model.
 	 *
 	 * @return the number of Events.
 	 */
@@ -145,7 +146,7 @@ public class EventTableModel extends AbstractMonitorModel implements HistoricalE
 	}
 
 	/**
-	 * Get the unit at the specified row.
+	 * Gets the unit at the specified row.
 	 *
 	 * @param row Indexes of Unit to retrieve.
 	 * @return Unit associated with the Event as the specified position.
@@ -155,13 +156,13 @@ public class EventTableModel extends AbstractMonitorModel implements HistoricalE
 		HistoricalEvent event = cachedEvents.get(row);
 		Object result = event.getSource();
 		if (!(result instanceof Entity)) {
-			result = event.getContainer();
+			result = event.getEntity();
 		}
 		return result;
 	}
 
 	/**
-	 * Return the value of a Cell
+	 * Returns the value of a Cell.
 	 *
 	 * @param rowIndex    Row index of the cell.
 	 * @param columnIndex Column index of the cell.
@@ -205,13 +206,13 @@ public class EventTableModel extends AbstractMonitorModel implements HistoricalE
 				}
 					break;
 
-				case CONTAINER: {
-					var con = event.getContainer();
+				case ENTITY: {
+					var con = event.getEntity();
 					result = (con != null ? con.getName() : null);
 				}
 					break;
 
-				case HOMETOWN: {
+				case SETTLEMENT: {
 					result = event.getHomeTown();
 				}
 					break;
@@ -235,7 +236,7 @@ public class EventTableModel extends AbstractMonitorModel implements HistoricalE
 	}
 
 	/**
-	 * New event has been added
+	 * New event has been added.
 	 */
 	public synchronized void eventAdded(HistoricalEvent event) {
 		if (isDisplayable(event)) {
@@ -255,7 +256,8 @@ public class EventTableModel extends AbstractMonitorModel implements HistoricalE
 	}
 
 	/**
-	 * Set the category type to display
+	 * Sets the category type to display.
+	 * 
 	 * @param type
 	 * @param isDisplayed
 	 */
@@ -271,6 +273,7 @@ public class EventTableModel extends AbstractMonitorModel implements HistoricalE
 
 	/**
 	 * Is a category event being displayed?
+	 * 
 	 * @param type
 	 * @return
 	 */

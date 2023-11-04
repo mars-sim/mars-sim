@@ -281,7 +281,6 @@ public class MarsTime implements Serializable {
 		return getTotalMillisols() - earlierTime.getTotalMillisols();
 	}
 
-
 	/**
 	 * Returns the mission sol. Note: the first day of the mission is Sol 1.
 	 *

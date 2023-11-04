@@ -40,7 +40,7 @@ public class WalkInteriorTest extends AbstractMarsSimUnitTest {
 
 		Person person = buildPerson("Walker", settlement);
 		person.setPosition(LocalPosition.DEFAULT_POSITION);
-        BuildingManager.addPersonOrRobotToBuilding(person, b1);
+        BuildingManager.addToBuilding(person, b1);
 
         LocalPosition target = new LocalPosition(-2D, 1D);
         WalkSettlementInterior walkTask = new WalkSettlementInterior(person, b1, target, 0D);
@@ -75,7 +75,7 @@ public class WalkInteriorTest extends AbstractMarsSimUnitTest {
         
 		Person person = buildPerson("Walker", settlement);
 		person.setPosition(LocalPosition.DEFAULT_POSITION);
-        BuildingManager.addPersonOrRobotToBuilding(person, b1);
+        BuildingManager.addToBuilding(person, b1);
 
         LocalPosition target = new LocalPosition(-16D, 1D);
         WalkSettlementInterior walkTask = new WalkSettlementInterior(person, b4, target, 0D);
@@ -107,7 +107,7 @@ public class WalkInteriorTest extends AbstractMarsSimUnitTest {
 
 		Person person = buildPerson("Walker", settlement);
 		person.setPosition(LocalPosition.DEFAULT_POSITION);
-        BuildingManager.addPersonOrRobotToBuilding(person, b3);
+        BuildingManager.addToBuilding(person, b3);
 
         LocalPosition target = new LocalPosition(-11D, 1D);
         WalkSettlementInterior walkTask = new WalkSettlementInterior(person, b5, target, 0D);

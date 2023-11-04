@@ -14,6 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.mars_sim.core.moon.Colonist;
 
 public class Researcher extends Colonist implements ResearcherInterface {
+	
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+	
 	/** default logger. */
 	// May add back private static final SimLogger logger = SimLogger.getLogger(Researcher.class.getName())
 	

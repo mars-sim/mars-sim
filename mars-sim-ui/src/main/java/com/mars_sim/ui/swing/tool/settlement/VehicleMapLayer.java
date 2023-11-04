@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.batik.gvt.GraphicsNode;
+
+import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
@@ -96,9 +98,9 @@ public class VehicleMapLayer implements SettlementMapLayer {
 		if (settlement != null) {
 
 			// Draw all parked vehicles at this settlement location
-			Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+			Iterator<Vehicle> i = CollectionUtils.getVehiclesInSettlementVicinity(settlement).iterator();
 			while (i.hasNext()) {
-				drawVehicle(i.next(), g2d);
+				drawVehicle(i.next(), settlement, g2d);
 			}
 		}
 	}
@@ -109,7 +111,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	 * @param vehicle the vehicle.
 	 * @param g2d the graphics context.
 	 */
-	private void drawVehicle(Vehicle vehicle, Graphics2D g2d) {
+	private void drawVehicle(Vehicle vehicle, Settlement settlement, Graphics2D g2d) {
 
 		// Use SVG image for vehicle if available.
 		GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
@@ -124,13 +126,13 @@ public class VehicleMapLayer implements SettlementMapLayer {
 			}
 
 			// Draw overlay if the vehicle is being loaded or unloaded.
-			if (isVehicleLoading(vehicle)) {
+			if (isVehicleLoading(vehicle, settlement)) {
 				drawSVGLoading(g2d, vehicle);
 			}
 
 			// Draw attachment parts for light utility vehicle.
-			if (vehicle instanceof LightUtilityVehicle) {
-				drawSVGPartAttachments(g2d, (LightUtilityVehicle) vehicle);
+			if (vehicle instanceof LightUtilityVehicle luv) {
+				drawSVGPartAttachments(g2d, luv);
 			}
 		}
 		else {
@@ -182,9 +184,10 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	 * Checks if the vehicle is currently being loaded or unloaded.
 	 * 
 	 * @param vehicle the vehicle
+	 * @param settlement the settlement
 	 * @return true if vehicle is being loaded or unloaded.
 	 */
-	private boolean isVehicleLoading(Vehicle vehicle) {
+	private boolean isVehicleLoading(Vehicle vehicle, Settlement settlement) {
 		boolean result = false;
 
 		// For vehicle missions, check if vehicle is loading or unloading for the mission.
@@ -199,26 +202,28 @@ public class VehicleMapLayer implements SettlementMapLayer {
 			Iterator<Person> i = unitManager.getPeople().iterator();
 			while (i.hasNext()) {
 				Person person = i.next();
-				if (!person.getPhysicalCondition().isDead()) {
+				if (person.getCoordinates().equals(vehicle.getCoordinates())
+					&& person.getCoordinates().equals(settlement.getCoordinates())	
+					&& !person.getPhysicalCondition().isDead()) {
 					Task task = person.getMind().getTaskManager().getTask();
 					if (task != null) {
-						if (task instanceof LoadVehicleGarage) {
-							if (vehicle.equals(((LoadVehicleGarage) task).getVehicle())) {
+						if (task instanceof LoadVehicleGarage t0) {
+							if (vehicle.equals(t0.getVehicle())) {
 								result = true;
 							}
 						}
-						else if (task instanceof LoadVehicleEVA) {
-							if (vehicle.equals(((LoadVehicleEVA) task).getVehicle())) {
+						else if (task instanceof LoadVehicleEVA t1) {
+							if (vehicle.equals(t1.getVehicle())) {
 								result = true;
 							}
 						}
-						else if (task instanceof UnloadVehicleGarage) {
-							if (vehicle.equals(((UnloadVehicleGarage) task).getVehicle())) {
+						else if (task instanceof UnloadVehicleGarage t2) {
+							if (vehicle.equals(t2.getVehicle())) {
 								result = true;
 							}
 						}
-						else if (task instanceof UnloadVehicleEVA) {
-							if (vehicle.equals(((UnloadVehicleEVA) task).getVehicle())) {
+						else if (task instanceof UnloadVehicleEVA t3) {
+							if (vehicle.equals(t3.getVehicle())) {
 								result = true;
 							}
 						}

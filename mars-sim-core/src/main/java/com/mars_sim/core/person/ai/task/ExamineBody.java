@@ -90,7 +90,7 @@ public class ExamineBody extends Task {
 			return;
 		}
 
-	// Determine patient and health problem to treat.
+		// Determine patient and health problem to treat.
 		deathInfo = body;
 		if (!deathInfo.getBodyRetrieved()) {
 			retrieveBody();
@@ -337,11 +337,13 @@ public class ExamineBody extends Task {
 	 */
 	public void recordCause(HealthProblem problem) {
 		String cause = deathInfo.getCause();
-		if (!cause.toLowerCase().equals("suicide")) {
-			cause = problem.toString().toLowerCase();
+		String problemStr = problem.toString();
+		
+		if (!cause.contains(problemStr)) {
+			cause += problemStr;
 			deathInfo.setCause(cause);
 		}
-
+			
 		logger.log(worker, Level.WARNING, 1000, "Completed the postmortem exam on " 
 					+ patient.getName() + ". Cause of death : " + cause);
 

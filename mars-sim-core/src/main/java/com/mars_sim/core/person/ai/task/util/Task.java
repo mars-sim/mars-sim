@@ -108,28 +108,27 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected Integer id;
 	/** The id of the teacher. */
 	protected Integer teacherID;
-	/** The id of the target person. */
-	protected Integer targetID;
+	/** The id of the target person (either the invitee or the initiator). */
+	private Integer targetID;
 	
 	/** The name of the task. */
 	private String name = "";
 	/** Description of the task. */
 	private String description = "";
 
-
-	/** The person teaching this task if any. */
-	private transient Person teacher;
 	/** The person performing the task. */
 	protected transient Person person;
-	/** The target person performing the task. */
-	protected transient Person target;
 	/** The robot performing the task. */
 	protected transient Robot robot;
-
 	/** The worker performing the task */
 	protected transient Worker worker;
 	/** Unit for events distribution */
 	private transient Unit eventTarget;
+	
+	/** The worker teaching this task if any. */
+	private transient Worker teacher;
+	/** The target person (either the invitee or the initiator) of the Converse task. */
+	private transient Person target;	
 
 	/** The sub-task of this task. */
 	protected Task subTask;
@@ -258,7 +257,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		// Set standard pulse time to a quarter of the value of the current pulse width
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
-		standardPulseTime = Math.min(MAX_PULSE_WIDTH, masterClock.getLastPulseTime());
+		standardPulseTime = Math.min(MAX_PULSE_WIDTH, masterClock.getNextPulseTime());
 	}
 
 	/**
@@ -865,23 +864,54 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Gets the person teaching this task.
+	 * Gets the worker teaching this task.
 	 * 
 	 * @return teacher or null if none.
 	 */
-	public Person getTeacher() {
+	public Worker getTeacher() {
 		return teacher;
 	}
 
 	/**
-	 * Sets the person teaching this task.
+	 * Sets the worker teaching this task.
 	 * 
 	 * @param newTeacher the new teacher.
 	 */
-	public void setTeacher(Person newTeacher) {
+	public void setTeacher(Worker newTeacher) {
 		this.teacher = newTeacher;
+		teacherID = teacher.getIdentifier();
 	}
 
+	/**
+	 * Gets the target person of this task.
+	 * 
+	 * @return target.
+	 */
+	public Person getTarget() {
+		return target;
+	}
+	
+	/**
+	 * Gets the id of target person of this task.
+	 * 
+	 * @return target id.
+	 */
+	public Integer getTargetID() {
+		return targetID;
+	}
+	
+	/**
+	 * Sets the person who's the target of this task.
+	 * 
+	 * @param newTarget the new target
+	 * @param true if id has not been saved
+	 */
+	public void setTarget(Person newTarget, boolean newID) {
+		this.target = newTarget;
+		if (newID)
+			targetID = target.getIdentifier();
+	}
+	
 	/**
 	 * Who is working on this Task.
 	 * 
@@ -1533,6 +1563,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		 return standardPulseTime;
 	}
 	
+	/**
+	 * Reinitializes instances.
+	 */
 	public void reinit() {
 		person = unitManager.getPersonByID(id);
 		robot = unitManager.getRobotByID(id);
@@ -1548,6 +1581,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (teacherID != null && (!teacherID.equals(Integer.valueOf(-1)) || !teacherID.equals(Integer.valueOf(0))))
 			teacher = unitManager.getPersonByID(teacherID);
 
+		if (targetID != null && (!targetID.equals(Integer.valueOf(-1)) || !targetID.equals(Integer.valueOf(0))))
+			target = unitManager.getPersonByID(targetID);
+		
 		if (subTask != null)
 			subTask.reinit();
 	}

@@ -53,7 +53,7 @@ public class ConnectCommand extends ChatCommand {
 			context.println("");
 		}
 		else {
-			context.println("Connecting to " + input + " .....");
+			context.println("Connecting to " + input + "...");
 	
 			UnitManager um = context.getSim().getUnitManager();
 			InteractiveChatCommand newCommand = null;

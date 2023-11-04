@@ -46,6 +46,7 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 	private final String GENDER_ATTR = "gender-ratio";
 	private final String PERFERENCE_EL = "preference";
 	private final String TYPE_ATTR = "type";
+	private final String TRUE = "true";
 	
 	private Map<String, MissionAgenda> agendas;
 
@@ -162,10 +163,10 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 				.map(a -> a.getAttributeValue(NAME_ATTR))
 				.collect(Collectors.toList());
 		
-		// Check if it's a corporation (or a space agency)
+		// Check if it's a corporation (false if it's a space agency)
 		boolean isCorporation = false;
 		
-		if (isCorporationString.equalsIgnoreCase("true"))
+		if (isCorporationString.equalsIgnoreCase(TRUE))
 			isCorporation = true;
 		
 		return new Authority(acronym, fullName, isCorporation, predefined, maleRatio, agenda,

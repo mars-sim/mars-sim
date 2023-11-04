@@ -13,6 +13,8 @@ import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.command.InteractiveChatCommand;
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.time.MasterClock;
 
 /**
  * This class is used to handle the outcome of a Connect command. It repesents a connection with a Unit. 
@@ -39,7 +41,8 @@ public abstract class ConnectedUnitCommand extends InteractiveChatCommand {
 	}
 
 	/**
-	 * The Unit with teh connection.
+	 * Gets the Unit with the connection.
+	 * 
 	 * @return
 	 */
 	public Unit getUnit() {
@@ -49,8 +52,11 @@ public abstract class ConnectedUnitCommand extends InteractiveChatCommand {
 	@Override
 	public String getPrompt(Conversation context) {
 		StringBuilder prompt = new StringBuilder();
-		prompt.append(context.getSim().getMasterClock().getMarsTime().getTruncatedDateTimeStamp());
-		prompt.append(' ').append(unitName);
+		MasterClock clock = context.getSim().getMasterClock();
+		MarsTime marsClock = clock.getMarsTime();
+		prompt.append("[" + clock.getMarsTime().getTruncatedDateTimeStamp());
+		prompt.append(" Sol " + marsClock.getMissionSol());
+		prompt.append("] ").append(unitName);
 		return prompt.toString();
 	}
 
