@@ -552,7 +552,7 @@ public class MasterClock implements Serializable {
 				// NOTE: actualTR is just the ratio of the simulation's pulse time to the real elapsed time 	
 				
 				// Obtain the latest time pulse width [in millisols], given the ratio of realElapsedMillisec to desiredTR
-				lastPulseTime = (realElapsedMillisec * actualTR) / MILLISECONDS_PER_MILLISOL;
+				lastPulseTime = (realElapsedMillisec * desiredTR) / MILLISECONDS_PER_MILLISOL;
 				
 				// Adjust the optimal time pulse and get the deviation
 				optPulseDeviation = adjustOptPulseWidth();
@@ -644,49 +644,51 @@ public class MasterClock implements Serializable {
 			
 			///////////////////////////
 			
-			if (lastPulse / optPulse > 1.05) {
-				double diff = lastPulse - optPulse;
-				optPulse = optPulse + diff / lastPulse / 120;
-//				logger.config(20_000, "Increasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
-//						+ " toward " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
-			}
-			
-			else if (lastPulse / optPulse < .95) {
-				double diff = optPulse - lastPulse;
-				optPulse = optPulse - diff / lastPulse / 120;
-//				logger.config(20_000, "Decreasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
-//						+ " toward " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
-			}
-			
-			///////////////////////////
-			
 			// Note: need to limit the optPulse to a max
-			if (optPulse / maxMilliSolPerPulse > 1.05) {
+			else if (optPulse / maxMilliSolPerPulse > 1.05) {
+				double diff = optPulse - maxMilliSolPerPulse;
+				optPulse = optPulse - diff / 120;
 //				logger.config(20_000, "Restricting optimal pulse width " + Math.round(optPulse * 10_000.0) / 10_000.0
 //						+ " from reaching the maximum of " + Math.round(maxMilliSolPerPulse * 10_000.0) / 10_000.0 + ".");
-				optPulse = maxMilliSolPerPulse;
 			}
 			// Note: need to limit the optPulse to a min
 			else if (optPulse / minMilliSolPerPulse < .95) {
+				double diff = minMilliSolPerPulse - optPulse;
+				optPulse = optPulse + diff / 120;
 //				logger.config(20_000, "Restricting optimal pulse width " + Math.round(optPulse * 10_000.0) / 10_000.0
 //						+ " from reaching the minimum of " + Math.round(minMilliSolPerPulse * 10_000.0) / 10_000.0 + ".");
-				optPulse = minMilliSolPerPulse;
 			}
 			
 			///////////////////////////
 			
-			if (referencePulse / optPulse > 1.05) {
+			else if (referencePulse / optPulse > 1.05) {
 				double diff = referencePulse - optPulse;
-				optPulse = optPulse + diff / referencePulse / 60;
+				optPulse = optPulse + diff / referencePulse / 50;
 //				logger.config(20_000, "Increasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
 //						+ " toward reference pulse " + Math.round(referencePulse * 10_000.0) / 10_000.0 + ".");
 			}
 			
 			else if (referencePulse / optPulse < .95) {
 				double diff = optPulse - referencePulse;
-				optPulse = optPulse - diff / referencePulse / 60;
+				optPulse = optPulse - diff / referencePulse / 50;
 //				logger.config(20_000, "Decreasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
 //						+ " toward reference pulse " + Math.round(referencePulse * 10_000.0) / 10_000.0 + ".");
+			}
+					
+			///////////////////////////
+			
+			else if (lastPulse / optPulse > 1.05) {
+				double diff = lastPulse - optPulse;
+				optPulse = optPulse + diff / lastPulse / 60;
+//				logger.config(20_000, "Increasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
+//						+ " toward " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
+			}
+			
+			else if (lastPulse / optPulse < .95) {
+				double diff = optPulse - lastPulse;
+				optPulse = optPulse - diff / lastPulse / 60;
+//				logger.config(20_000, "Decreasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
+//						+ " toward " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
 			}
 		}
 				
@@ -910,7 +912,7 @@ public class MasterClock implements Serializable {
 		// Recompute the delta TR
 		calculateDeltaTR();
 		// Adjust the optimal time pulse and get the deviation
-		optPulseDeviation = adjustOptPulseWidth();
+//		optPulseDeviation = adjustOptPulseWidth();
 	}
 
 	/**
@@ -938,7 +940,7 @@ public class MasterClock implements Serializable {
 		// Compute the delta TR
 		calculateDeltaTR();
 		// Adjust the optimal time pulse and get the deviation
-		optPulseDeviation = adjustOptPulseWidth();
+//		optPulseDeviation = adjustOptPulseWidth();
 	}
 
 
