@@ -241,22 +241,25 @@ public class ExploreSite extends EVAOperation {
 				probability = .9;
 
 			if (RandomUtil.getRandomDouble(1.0D) <= probability) {
+				// Box is empty so choose at random
+				int randomNum = RandomUtil.getRandomInt(((ResourceUtil.rockIDs).length) - 1);
+				int rockId = ResourceUtil.rockIDs[randomNum];
+				// Question: should we use ROCK_SAMPLES_ID instead of rockId ?
 				
 				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
-				int rockId = box.getResource();
-				if (rockId == -1) {
-					// Box is empty so choose at random
-					int randomNum = RandomUtil.getRandomInt(((ResourceUtil.rockIDs).length) - 1);
-					rockId = ResourceUtil.rockIDs[randomNum];
+				
+				if (box != null) {
 					logger.info(person, 10_000, "Type of rocks collected: " + ResourceUtil.ROCKS[randomNum] + ".");
+	
+					double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS / 2D, AVERAGE_ROCK_SAMPLE_MASS * 2D);
+					double cap = box.getAmountResourceRemainingCapacity(rockId);
+					if (mass <= cap) {
+						double excess = box.storeAmountResource(rockId, mass);
+						totalCollected += mass - excess;
+					}
 				}
-
-				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS / 2D, AVERAGE_ROCK_SAMPLE_MASS * 2D);
-				double cap = box.getAmountResourceRemainingCapacity(rockId);
-				if (mass <= cap) {
-					double excess = box.storeAmountResource(rockId, mass);
-					totalCollected += mass - excess;
-				}
+				else
+					endTask();
 			}
 		}
 	}
@@ -349,9 +352,9 @@ public class ExploreSite extends EVAOperation {
 	 * @return true if the person receives a specimen container.
 	 */
 	private boolean takeSpecimenContainer() {
-		Container container = ContainerUtil.findLeastFullContainer(
-											rover, EquipmentType.SPECIMEN_BOX,
-											ROCK_SAMPLES_ID);
+		
+		Container container = rover.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
+//		Container container = ContainerUtil.findLeastFullContainer(rover, EquipmentType.SPECIMEN_BOX, ROCK_SAMPLES_ID);
 
 		if (container != null) {
 			return container.transfer(person);
