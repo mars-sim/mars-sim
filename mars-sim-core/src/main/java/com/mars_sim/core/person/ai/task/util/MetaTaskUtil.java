@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.Simulation;
@@ -191,40 +192,38 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new YogaMeta());
 		
 		// Build the name lookup for later
-		idToMetaTask = new HashMap<>();
-		for(MetaTask t : allMetaTasks) {
-			idToMetaTask.put(t.getID(), t);
-		}
+		idToMetaTask = allMetaTasks.stream()
+				.collect(Collectors.toMap(MetaTask::getID, Function.identity()));
 
 		// Pick put settlement tasks
 		settlementTasks = allMetaTasks.stream()
 				.filter(SettlementMetaTask.class::isInstance)
-				.map(s -> (SettlementMetaTask) s)
-				.collect(Collectors.toUnmodifiableList());
+				.map(SettlementMetaTask.class::cast)
+				.toList();
 
 		// Filter out All Unit Tasks
 		personMetaTasks = allMetaTasks.stream()
 				.filter(m -> ((m.getSupported() == WorkerType.BOTH)
 								|| (m.getSupported() == WorkerType.PERSON)))
-				.collect(Collectors.toUnmodifiableList());
+				.toList();
 		personTaskFactorys = personMetaTasks.stream()
 				.filter(TaskFactory.class::isInstance)
-				.map(s -> (TaskFactory) s)
-				.collect(Collectors.toUnmodifiableList());
+				.map(TaskFactory.class::cast)
+				.toList();
 
 		// Filter out All Unit Tasks
 		onCallTasks = allMetaTasks.stream()
 				.filter(FactoryMetaTask.class::isInstance)
-				.map(s -> (FactoryMetaTask) s)
+				.map(FactoryMetaTask.class::cast)
 				.filter(m -> ((m.getSupported() == WorkerType.BOTH)
 								|| (m.getSupported() == WorkerType.PERSON)))
-				.collect(Collectors.toUnmodifiableList());
+				.toList();
 		robotMetaTasks = allMetaTasks.stream()
 				.filter(FactoryMetaTask.class::isInstance)
-				.map(s -> (FactoryMetaTask) s)
+				.map(FactoryMetaTask.class::cast)
 				.filter(m -> ((m.getSupported() == WorkerType.BOTH)
 								|| (m.getSupported() == WorkerType.ROBOT)))
-				.collect(Collectors.toUnmodifiableList());
+				.toList();
 		
 		// Build special Shift based lists
 		// Should these be just Person task?
@@ -335,6 +334,7 @@ public class MetaTaskUtil {
 		UnloadVehicleMeta.initialiseInstances(sim);
 		ExamineBodyMeta.initialiseInstances(sim.getMedicalManager());
 		ReviewMissionPlanMeta.initialiseInstances(sim.getMissionManager());
+		ObserveAstronomicalObjectsMeta.initialiseInstances(sim.getScientificStudyManager());
     }
 
 }

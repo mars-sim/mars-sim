@@ -342,7 +342,7 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 	 * Gets the contribution of a researcher to this study. Maybe primary researcher or a collaborator.
 	 * 
 	 * @param researcher
-	 * @return
+	 * @return Can return null if this person does not play a part.
 	 */
 	public ScienceType getContribution(Person researcher) {
 		ScienceType result = null;
@@ -350,11 +350,22 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 			result = science;
 		}
 		else {
-			result = getCollaboratorStats(researcher).contribution;
+			CollaboratorStats c = collaborators.get(researcher.getIdentifier());
+			result = (c != null ? c.contribution : null);
 		}
 		return result;
 	}
 	
+	/**
+	 * Get the Science contributions to this study.
+	 * @return The collaboration science.
+	 */
+	public Set<ScienceType> getCollaborationScience() {
+		return collaborators.values().stream()
+				.map(s -> s.contribution)
+				.collect(Collectors.toSet());
+	}
+
 	/**
 	 * Gets the study's collaborative researchers and their fields of science.
 	 * 

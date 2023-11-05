@@ -33,7 +33,7 @@ public class RespondToStudyInvitationMeta extends FactoryMetaTask {
             "Task.description.respondToStudyInvitation"); //$NON-NLS-1$
 
     public RespondToStudyInvitationMeta() {
-		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.RESEARCH);
 		setTrait(TaskTrait.ACADEMIC);
 		setPreferredJob(JobType.ACADEMICS);

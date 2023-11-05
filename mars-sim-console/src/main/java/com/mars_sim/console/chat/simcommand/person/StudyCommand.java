@@ -11,9 +11,11 @@ import java.util.Set;
 
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
+import com.mars_sim.console.chat.ConversationRole;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.ProposeScientificStudy;
 import com.mars_sim.core.science.ScientificStudy;
 
 /** 
@@ -45,6 +47,24 @@ public class StudyCommand extends AbstractPersonCommand {
 			}
 		}
 		context.println(response.getOutput());
+
+		// If expert offer the option to create a study
+		if ((pristudy == null)
+			&& context.getRoles().contains(ConversationRole.EXPERT)
+			&& context.getInput("Create Primary Study (Y/N)").equalsIgnoreCase("Y")) {
+			
+			// Create primary study
+			pristudy = ProposeScientificStudy.createStudy(person);
+			if (pristudy != null) {
+				context.println("Create study");
+				StructuredResponse newStudy = new StructuredResponse();
+				CommandHelper.outputStudy(newStudy, pristudy);
+				context.println(newStudy.getOutput());
+			}
+			else {
+				context.println("No study created");
+			}
+		}
 		return true;
 	}
 }

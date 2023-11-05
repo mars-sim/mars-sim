@@ -39,7 +39,7 @@ public class InviteStudyCollaboratorMeta extends FactoryMetaTask {
     private static SimLogger logger = SimLogger.getLogger(InviteStudyCollaboratorMeta.class.getName());
     
     public InviteStudyCollaboratorMeta() {
-		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.RESEARCH);
 		setTrait(TaskTrait.LEADERSHIP);
 		setPreferredJob(JobType.ACADEMICS);
@@ -97,7 +97,7 @@ public class InviteStudyCollaboratorMeta extends FactoryMetaTask {
         JobType job = person.getMind().getJob();
         ScienceType science = study.getScience();
         if (science == ScienceType.getJobScience(job)) {
-            result.addModifier("science", 2D);
+            result.addModifier(SCIENCE_MODIFIER, 2D);
         }
         result.addModifier(GOODS_MODIFIER, person.getAssociatedSettlement().getGoodsManager().getResearchFactor());
 

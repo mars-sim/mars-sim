@@ -57,6 +57,7 @@ public abstract class MetaTask {
 	protected static final String PERSON_MODIFIER = "person";
 	private static final String RADIATION_MODIFIER = "radiation";
 	private static final String ROLE_MODIFIER = "role";
+	protected static final String SCIENCE_MODIFIER = "science";
 	protected static final String SKILL_MODIFIER = "skill";
     protected static final String STRESS_MODIFIER = "stress";
 	private static final String VEHICLE_MODIFIER = "vehicle";
