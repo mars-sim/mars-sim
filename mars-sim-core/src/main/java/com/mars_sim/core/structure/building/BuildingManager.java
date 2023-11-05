@@ -1540,16 +1540,15 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Adds the person to the building if possible.
+	 * Adds a worker to the building if possible.
 	 *
-	 * @param person   the person to add.
-	 * @param building the building to add the person to.
+	 * @param worker   the worker to add.
+	 * @param building the building to add.
 	 */
-	public static void addPersonOrRobotToBuilding(Worker unit, Building building) {
+	public static void addToBuilding(Worker worker, Building building) {
 		if (building != null) {
 			try {
-				if (unit.getUnitType() == UnitType.PERSON) {
-					Person person = (Person) unit;
+				if (worker instanceof Person person) {
 					LifeSupport lifeSupport = building.getLifeSupport();
 
 					if (!lifeSupport.containsOccupant(person)) {
@@ -1560,7 +1559,7 @@ public class BuildingManager implements Serializable {
 				}
 
 				else {
-					Robot robot = (Robot) unit;
+					Robot robot = (Robot) worker;
 					RoboticStation roboticStation = building.getRoboticStation();
 
 					if (!roboticStation.containsRobotOccupant(robot)) {
@@ -1571,12 +1570,12 @@ public class BuildingManager implements Serializable {
 				}
 
 			} catch (Exception e) {
-				logger.log(building, unit, Level.SEVERE, SimLogger.DEFAULT_SEVERE_TIME, "Could not be added", e);
+				logger.log(building, worker, Level.SEVERE, SimLogger.DEFAULT_SEVERE_TIME, "Could not be added", e);
 			}
 		}
 
 		else
-			logger.log(unit, Level.SEVERE, 2000, "The building is null.");
+			logger.log(worker, Level.SEVERE, 2000, "The building is null.");
 	}
 
 

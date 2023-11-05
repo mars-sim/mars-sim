@@ -191,8 +191,8 @@ public class MedicalManager implements Serializable {
 			return supportedTreatments.get(level);
 		
 		List<Treatment> results = new ArrayList<>();
-		List<Treatment> list = medicalConfig.getTreatmentList() ; //SimulationConfig.instance().getMedicalConfiguration().getTreatmentList();
-
+		List<Treatment> list = medicalConfig.getTreatmentList() ;
+		
 		Iterator<Treatment> iter = list.iterator();
 		while (iter.hasNext()) {
 			Treatment next = iter.next();
@@ -280,7 +280,7 @@ public class MedicalManager implements Serializable {
 		return deathRegistry.getOrDefault(s.getIdentifier(), null);
 	}
 
-	public void addPostmortemExams(Settlement s, DeathInfo death) {
+	public void addPostmortemExam(Settlement s, DeathInfo death) {
 		int id = s.getIdentifier();
 		if (awaitingPostmortemExam.containsKey(id)) {
 			awaitingPostmortemExam.get(id).add(death);
@@ -291,7 +291,7 @@ public class MedicalManager implements Serializable {
 		}
 	}
 
-	public List<DeathInfo> getPostmortemExams(Settlement s) {
+	public List<DeathInfo> getPostmortemExam(Settlement s) {
 		if (awaitingPostmortemExam.containsKey(s.getIdentifier())) {
 			return awaitingPostmortemExam.get(s.getIdentifier());
 		}

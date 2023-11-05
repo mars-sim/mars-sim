@@ -110,9 +110,9 @@ extends TabPanel {
 	
 	private static String[] RADIATION_TOOL_TIPS = {
 		    "Exposure Interval",
-		    "[Max for BFO]  30-Day :  250; Annual :  500; Career : 1000",
-		    "[Max for Eye]  30-Day : 1000; Annual : 2000; Career : 4000",
-		    "[Max for Skin] 30-Day : 1500; Annual : 3000; Career : 6000"};
+		    "[Max mSv BFO]  30-Day:  250; Annual: 1000; Career: 1500",
+		    "[Max mSv Eye]  30-Day:  500; Annual: 2000; Career: 3000",
+		    "[Max mSv Skin] 30-Day: 1000; Annual: 4000; Career: 6000"};
 
 
 	/**
@@ -580,7 +580,6 @@ extends TabPanel {
 		private RadiationTableModel(PhysicalCondition condition) {
 			radiation = condition.getRadiationExposure();
 			dose = radiation.getDose();
-
 		}
 
 		public int getRowCount() {

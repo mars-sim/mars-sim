@@ -52,12 +52,13 @@ implements ActionListener {
 	/** The Person instance. */
 	private Person person = null;
 	
-	private JTextField causeTF, timeTF, malTF;
+	private JTextField causeTF, timeTF, malTF, examinerTF;
 
 	/**
 	 * Constructor.
-	 * @param unit the unit to display.
-	 * @param desktop the main desktop.
+	 * 
+	 * @param unit the unit to display
+	 * @param desktop the main desktop
 	 */
 	public TabPanelDeath(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
@@ -78,7 +79,7 @@ implements ActionListener {
 		DeathInfo death = condition.getDeathDetails();
 
 		// Prepare death label panel
-		JPanel deathLabelPanel = new JPanel(new SpringLayout());//GridLayout(3, 2, 0, 0));
+		JPanel deathLabelPanel = new JPanel(new SpringLayout());
 		content.add(deathLabelPanel, BorderLayout.NORTH);
 
 		// Prepare cause label
@@ -90,7 +91,7 @@ implements ActionListener {
         causeTF.setText(death.getIllness().getName());
         causeTF.setEditable(false);
         causeTF.setColumns(20);
-        wrapper1.add(causeTF);//, BorderLayout.CENTER);
+        wrapper1.add(causeTF);
         deathLabelPanel.add(wrapper1);
 
 		// Prepare time label
@@ -102,24 +103,41 @@ implements ActionListener {
         timeTF.setText(death.getTimeOfDeath().getTruncatedDateTimeStamp());
         timeTF.setEditable(false);
         timeTF.setColumns(20);
-        wrapper2.add(timeTF);//, BorderLayout.CENTER);
+        wrapper2.add(timeTF);
         deathLabelPanel.add(wrapper2);
 
+		// Prepare examiner label
+		JLabel examinerLabel = new JLabel(Msg.getString("TabPanelDeath.examiner"), JLabel.LEFT); //$NON-NLS-1$
+		deathLabelPanel.add(examinerLabel);
+
+		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		examinerTF = new JTextField();
+		String text = "[Not Yet]";
+		if (death.getExamDone()) {
+			text = death.getDoctor() + " [" 
+				+ Math.round(death.getTimeExam() * 10.0)/10.0 + " millisols]";
+		}
+		examinerTF.setText(text);
+		examinerTF.setEditable(false);
+		examinerTF.setColumns(20);
+        wrapper3.add(examinerTF);
+        deathLabelPanel.add(wrapper3);
+        
 		// Prepare malfunction label
 		JLabel malfunctionLabel = new JLabel(Msg.getString("TabPanelDeath.malfunctionIfAny"), JLabel.LEFT); //$NON-NLS-1$
 		deathLabelPanel.add(malfunctionLabel);
 
-		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		malTF = new JTextField();
         malTF.setText(death.getMalfunction());
         malTF.setEditable(false);
         malTF.setColumns(20);
-        wrapper3.add(malTF);//, BorderLayout.CENTER);
-        deathLabelPanel.add(wrapper3);
+        wrapper4.add(malTF);        
+        deathLabelPanel.add(wrapper4);
 
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(deathLabelPanel,
-		                                3, 2, //rows, cols
+		                                4, 2, //rows, cols
 		                                50, 5,        //initX, initY
 		                                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
 
@@ -127,9 +145,9 @@ implements ActionListener {
 		JPanel bottomContentPanel = new JPanel(new BorderLayout(5, 5));
 		content.add(bottomContentPanel, BorderLayout.CENTER);
 
-		JPanel innerPanel = new JPanel();//new FlowLayout(FlowLayout.CENTER));
+		JPanel innerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.Y_AXIS));
-		bottomContentPanel.add(innerPanel, BorderLayout.CENTER);
+		bottomContentPanel.add(innerPanel, BorderLayout.NORTH);
 
 		// Prepare location label panel
 		JPanel locationLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -161,33 +179,30 @@ implements ActionListener {
 			locationLabelPanel.add(topContainerButton);
 		}
 		else {
-			JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+			JPanel wrapper41 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 			JTextField TF4 = new JTextField();
 	        TF4.setText(death.getPlaceOfDeath());
 	        TF4.setEditable(false);
 	        TF4.setColumns(20);
-	        wrapper4.add(TF4);//, BorderLayout.CENTER);
-	        locationLabelPanel.add(wrapper4);
+	        wrapper41.add(TF4);//, BorderLayout.CENTER);
+	        locationLabelPanel.add(wrapper41);
 		}
 
 		// Prepare location panel
-		JPanel springPanel = new JPanel(new SpringLayout());//BorderLayout());
-		//springPanel.setBorder(new MarsPanelBorder());
-		//springPanel.setSize(300, 100);
-		//bottomContentPanel.add(springPanel, BorderLayout.SOUTH);
+		JPanel springPanel = new JPanel(new SpringLayout());
 		innerPanel.add(springPanel);
 
 		// Initialize location cache
 		Coordinates deathLocation = death.getLocationOfDeath();
 
-		JLabel label0 = new JLabel(Msg.getString("TabPanelDeath.latitude"), JLabel.RIGHT); //$NON-NLS-1$
+		JLabel label0 = new JLabel(Msg.getString("TabPanelDeath.latitude"), JLabel.LEFT); //$NON-NLS-1$
 		springPanel.add(label0);
 
 		// Prepare latitude label
 		JLabel latitudeLabel = new JLabel(deathLocation.getFormattedLatitudeString(), JLabel.LEFT); //$NON-NLS-1$
 		springPanel.add(latitudeLabel);
 
-		JLabel label1 = new JLabel(Msg.getString("TabPanelDeath.longitude"), JLabel.RIGHT); //$NON-NLS-1$
+		JLabel label1 = new JLabel(Msg.getString("TabPanelDeath.longitude"), JLabel.LEFT); //$NON-NLS-1$
 		springPanel.add(label1);
 
 		// Prepare longitude label
@@ -222,6 +237,7 @@ implements ActionListener {
 
 	/**
 	 * Action event occurs.
+	 * 
 	 * @param event the action event
 	 */
 	@Override

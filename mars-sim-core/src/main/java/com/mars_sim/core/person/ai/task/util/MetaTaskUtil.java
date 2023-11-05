@@ -9,7 +9,6 @@ package com.mars_sim.core.person.ai.task.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -100,6 +99,8 @@ public class MetaTaskUtil {
 	private static List<MetaTask> personMetaTasks = null;
 	private static List<TaskFactory> personTaskFactorys;
 
+	private static ConverseMeta converseMeta = new ConverseMeta();
+	
 	/**
 	 * Private constructor for utility class.
 	 */
@@ -133,7 +134,8 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new DigLocalRegolithMeta());
 		allMetaTasks.add(new EatDrinkMeta());
 		allMetaTasks.add(new ExamineBodyMeta());
-		allMetaTasks.add(new ConverseMeta());
+		converseMeta = new ConverseMeta();
+		allMetaTasks.add(converseMeta);
 		allMetaTasks.add(new InviteStudyCollaboratorMeta());
 		
 		allMetaTasks.add(new ListenToMusicMeta());
@@ -325,6 +327,10 @@ public class MetaTaskUtil {
         return personTaskFactorys;
     }
 
+	public static ConverseMeta getConverseMeta() {
+		return converseMeta;
+	}
+	
 	/**
 	 * Loads any references that MetaTasks need.
 	 */

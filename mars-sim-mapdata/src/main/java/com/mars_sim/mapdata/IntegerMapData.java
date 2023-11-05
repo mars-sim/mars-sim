@@ -323,8 +323,8 @@ import com.mars_sim.mapdata.common.FileLocator;
 		// Set the new map rho
 		setRho(newRho);
  		
-		logger.log(Level.INFO, "centerPhiCache: " + centerPhiCache + "  centerThetaCache: " + centerThetaCache
-				+ "  scale: " + newRho);
+//		logger.log(Level.INFO, "centerPhiCache: " + centerPhiCache + "  centerThetaCache: " + centerThetaCache
+//				+ "  scale: " + newRho);
 		
  		// Create a new buffered image to draw the map on.
  		BufferedImage bImage = new BufferedImage(mapBoxWidth, mapBoxHeight, 

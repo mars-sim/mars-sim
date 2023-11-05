@@ -24,14 +24,6 @@ import com.mars_sim.mapdata.location.Coordinates;
  */
 public interface Mission extends Entity, Serializable {
 
-//	/**
-//	 * Aborts the mission via established reasons and/or events.
-//	 * 
-//	 * @param reason Reason to abort
-//	 * @param event Optional type of event to create
-//	 */
-//	void abortMission(MissionStatus reason, EventType event);
-
 	/**
 	 * Aborts the mission via custom reasons. Will stop current phase.
 	 * 
@@ -101,8 +93,9 @@ public interface Mission extends Entity, Serializable {
 	MissionType getMissionType();
 
 	/**
-	 * Get the objectives that Mission satisfies. 
-	 * @return May be an empty set.
+	 * Gets the objectives that Mission satisfies. 
+	 * 
+	 * @return May be an empty set
 	 */
 	Set<ObjectiveType> getObjectiveSatisified();
 
@@ -112,13 +105,14 @@ public interface Mission extends Entity, Serializable {
 	 * qualification value, the more likely the member will be picked for the
 	 * mission.
 	 *
-	 * @param member the member to check.
-	 * @return mission qualification value.
+	 * @param member the member to check
+	 * @return mission qualification value
 	 */
 	double getMissionQualification(Worker member);
 
 	/**
-	 * Get the stage of the Mission
+	 * Gets the stage of the Mission.
+	 * 
 	 * @return
 	 */
 	Stage getStage();
@@ -126,7 +120,7 @@ public interface Mission extends Entity, Serializable {
     /**
 	 * Gets the description of the current phase.
 	 *
-	 * @return phase description.
+	 * @return phase description
 	 */
 	String getPhaseDescription();
 
@@ -204,7 +198,7 @@ public interface Mission extends Entity, Serializable {
 	 */
 	void addMissionListener(MissionListener newListener);
 
-	/* 
+	/** 
 	 * Removes a listener.
 	 *
 	 * @param oldListener the listener to remove.

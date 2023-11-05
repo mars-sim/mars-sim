@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.mars_sim.console.chat.simcommand.DateCommand;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.OrbitInfo;
 import com.mars_sim.core.time.ClockPulse;
@@ -58,10 +59,8 @@ public class TimeWindow extends ToolWindow {
 	public final String WIKI_URL = Msg.getString("ToolToolBar.calendar.url"); //$NON-NLS-1$
 	public final String WIKI_TEXT = Msg.getString("ToolToolBar.calendar.title"); //$NON-NLS-1$	
 	    
-    private final DateTimeFormatter DATE_TIME_FORMATTER = 
-//                                DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
-    								DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss.SSS");
-    
+    private final DateTimeFormatter DATE_TIME_FORMATTER = DateCommand.DATE_TIME_FORMATTER;
+	
 	/** the execution time label string */
 	private final String EXEC = "Execution";
 	/** the sleep time label string */
@@ -293,6 +292,8 @@ public class TimeWindow extends ToolWindow {
 
 	/**
 	 * Updates various time labels.
+	 * 
+	 * @param mc
 	 */
 	private void updateRateLabels(MasterClock mc) {
 
@@ -305,11 +306,11 @@ public class TimeWindow extends ToolWindow {
 		sleepTimeLabel.setText(sleepTime + MS);
 
 		// Update pulse width label
-		double lastPulseTime = mc.getLastPulseTime();
+		double nextPulseTime = mc.getNextPulseTime();
 		double OptPulseTime = mc.getOptPulseTime();
 		
 		StringBuilder pulseText = new StringBuilder();
-		pulseText.append(StyleManager.DECIMAL_PLACES4.format(lastPulseTime))
+		pulseText.append(StyleManager.DECIMAL_PLACES4.format(nextPulseTime))
 			  .append(OPTIMAL)
 			  .append(StyleManager.DECIMAL_PLACES4.format(OptPulseTime))
 			  .append(CLOSE_P);

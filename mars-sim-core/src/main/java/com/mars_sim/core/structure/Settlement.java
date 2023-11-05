@@ -218,7 +218,7 @@ public class Settlement extends Structure implements Temporal,
 	/** The flag signifying this settlement as the destination of the user-defined commander. */
 	private boolean hasDesignatedCommander = false;
 	/** The Flag showing if the settlement has been exposed to the last radiation event. */
-	private RadiationStatus exposed = RadiationStatus.calculateCurrent(0D);
+	private RadiationStatus exposed = RadiationStatus.calculateChance(0D);
 	
 	/** The water ration level of the settlement. The higher the more urgent. */
 	private int waterRationLevel = 1;
@@ -398,7 +398,7 @@ public class Settlement extends Structure implements Temporal,
 		creditManager = new CreditManager(this, unitManager);
 
 		// Mock use the default shifts
-		ShiftPattern shifts = settlementConfig.getShiftPattern(SettlementConfig.DEFAULT_3SHIFT);
+		ShiftPattern shifts = settlementConfig.getShiftPattern(SettlementConfig.STANDARD_3_SHIFT);
 		shiftManager = new ShiftManager(this, shifts, 0,
 										masterClock.getMarsTime().getMillisolInt());
 	}
@@ -1018,16 +1018,16 @@ public class Settlement extends Structure implements Temporal,
 			if (isOnDuty && p.getMission() == null) {
 
 				// Gets the number of digits in millisol time 
-				String startTimeEVAString = String.format("%03d", startTimeEVA);	
 				
 				Appointment ap = new Appointment(p, sol, startTimeEVA, DURATION, null, DigLocalRegolith.SIMPLE_NAME, null);
 				p.getScheduleManager().setAppointment(ap);
-				logger.info(this, p, 
-						"At Sol " + sol + ":" + startTimeEVAString 
-						+ ", the daily EVA task '" + DigLocalRegolith.SIMPLE_NAME 
-						+ "' was authorized for " + DURATION + " millisols ("
-						+ "deltaTime: " + deltaTime + ")."
-						);
+				/**
+				 * Do keep the following logger for future debugging
+				 */
+//				String startTimeEVAString = String.format("%03d", startTimeEVA);	
+//				logger.info(this, p, "At Sol " + sol + ":" + startTimeEVAString 
+//						+ ", the daily EVA task '" + DigLocalRegolith.SIMPLE_NAME + "' was authorized for " 
+//						+ DURATION + " millisols (" + "deltaTime: " + deltaTime + ")." );
 			}
 			else {
 				count--;
@@ -1125,8 +1125,8 @@ public class Settlement extends Structure implements Temporal,
 			// Check every RADIATION_CHECK_FREQ (in millisols)
 			// Compute whether a baseline, GCR, or SEP event has occurred
 			remainder = msol % RadiationExposure.RADIATION_CHECK_FREQ;
-			if (remainder == 5) {
-				RadiationStatus newExposed = RadiationStatus.calculateCurrent(pulse.getElapsed());
+			if (remainder == RadiationExposure.RADIATION_CHECK_FREQ - 1) {
+				RadiationStatus newExposed = RadiationStatus.calculateChance(pulse.getElapsed());
 				setExposed(newExposed);
 			}
 
@@ -1823,6 +1823,7 @@ public class Settlement extends Structure implements Temporal,
 
 	/**
 	 * Makes this person's physical location to be inside this settlement.
+	 * Note: they can be just the visitors and don't need to be the citizen.
 	 *
 	 * @param p the person
 	 * @return true if added successfully
@@ -1840,6 +1841,7 @@ public class Settlement extends Structure implements Temporal,
 
 	/**
 	 * Removes this person's physical location from being inside this settlement.
+ 	 * Note: they can be just the visitors and don't need to be the citizen.
 	 *
 	 * @param p the person
 	 * @return true if removed successfully
@@ -2419,17 +2421,17 @@ public class Settlement extends Structure implements Temporal,
 		exposed = newExposed;
 		
 		if (exposed.isBaselineEvent() && !oldStatus.isBaselineEvent()) {
-			logger.log(this, Level.INFO, 1_000, DETECTOR_GRID + UnitEventType.BASELINE_EVENT.toString() + " is imminent.");
+			logger.log(this, Level.INFO, 1_000, DETECTOR_GRID + UnitEventType.BASELINE_EVENT.toString() + " imminent.");
 			this.fireUnitUpdate(UnitEventType.BASELINE_EVENT);
 		}
 
 		if (exposed.isGCREvent() && !oldStatus.isGCREvent()) {
-			logger.log(this, Level.INFO, 1_000, DETECTOR_GRID + UnitEventType.GCR_EVENT.toString() + " is imminent.");
+			logger.log(this, Level.INFO, 1_000, DETECTOR_GRID + UnitEventType.GCR_EVENT.toString() + " imminent.");
 			this.fireUnitUpdate(UnitEventType.GCR_EVENT);
 		}
 
 		if (exposed.isSEPEvent() && !oldStatus.isSEPEvent()) {
-			logger.log(this, Level.INFO, 1_000, DETECTOR_GRID + UnitEventType.SEP_EVENT.toString() + " is imminent.");
+			logger.log(this, Level.INFO, 1_000, DETECTOR_GRID + UnitEventType.SEP_EVENT.toString() + " imminent.");
 			this.fireUnitUpdate(UnitEventType.SEP_EVENT);
 		}
 	}

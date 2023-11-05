@@ -19,7 +19,7 @@ public class Skill implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	/** The base factor. */
-	static final int BASE = 75;
+	public static final int BASE = 75;
 	
 	// Data members
 	/** The skill level (0 to infinity). */
@@ -33,15 +33,15 @@ public class Skill implements Serializable {
 	private double time;
 	
 	/** The unique (for each person) skill. */
-	private SkillType skill;
+	private SkillType sType;
 
 	/**
 	 * Constructor, starting at level 0.
 	 * 
 	 * @param skill {@link SkillType}
 	 */
-	public Skill(SkillType skill) {
-		this.skill = skill;
+	Skill(SkillType skill) {
+		this.sType = skill;
 		level = 0;
 		experiencePoints = 0D;
 		threshold = BASE;
@@ -53,18 +53,18 @@ public class Skill implements Serializable {
 	 * @param skill {@link SkillType} the skill's name.
 	 * @param level the skill's initial level.
 	 */
-	public Skill(SkillType skill, int level) {
+	Skill(SkillType skill, int level) {
 		this(skill);
 		setLevel(level);
 	}
 
 	/**
-	 * Returns the name of the skill.
+	 * Returns the skilltype associated with this skill
 	 * 
-	 * @return the skill's name
+	 * @return the skill type
 	 */
-	public SkillType getSkill() {
-		return skill;
+	public SkillType getType() {
+		return sType;
 	}
 
 	/**
@@ -154,5 +154,29 @@ public class Skill implements Serializable {
 	 */
 	void addTime(double time) {
 		this.time += time; 
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		return prime * level + sType.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Skill other = (Skill) obj;
+		if (level != other.level)
+			return false;
+		if (Double.doubleToLongBits(experiencePoints) != Double.doubleToLongBits(other.experiencePoints))
+			return false;
+		if (Double.doubleToLongBits(time) != Double.doubleToLongBits(other.time))
+			return false;
+		return (sType == other.sType);
 	}
 }

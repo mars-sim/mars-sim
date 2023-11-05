@@ -520,8 +520,8 @@ for developers. Also, we will answer your questions in our
 
 ## Website
 For a more detail description of this project, see our 
-[project website](https://mars-sim.github.io/) or 
-to to our [domain](https://www.mars-sim.com/) directly.
+[project website](https://mars-sim.github.io/) or go to
+our [domain](https://www.mars-sim.com/) directly.
 
 
 ## Wiki

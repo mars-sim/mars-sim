@@ -29,6 +29,7 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
+import com.mars_sim.console.chat.simcommand.DateCommand;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
@@ -61,9 +62,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private static final String EXIT = "EXIT";
 	private static final String MARSCAL = "MARS-CAL";
 
-	private static final DateTimeFormatter DATE_TIME_FORMATTER
-//								= DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
-								= DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss");
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateCommand.DATE_TIME_FORMATTER;
 	
 	/** Main window that contains this toolbar. */
 	private MainWindow parentMainWindow;

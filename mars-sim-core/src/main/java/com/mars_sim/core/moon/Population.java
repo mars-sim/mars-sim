@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.mars_sim.core.authority.Nation;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.science.Researcher;
 import com.mars_sim.core.time.ClockPulse;
@@ -41,7 +42,7 @@ public class Population implements Serializable, Temporal {
 	
 	private Colony colony;
 	
-	private transient Set<Colonist> colonists = new HashSet<>();
+	private Set<Colonist> colonists = new HashSet<>();
 	
 	public Population(Colony colony) {
 			
@@ -119,11 +120,6 @@ public class Population implements Serializable, Temporal {
 				growthRateBeds = -0.5;
 			
 			numBeds += growthRateBeds;
-			
-//			int totPop = getTotalPopulation();
-//			
-//			if ((int)numBeds < totPop)
-//				numBeds = totPop;
 
 			// Checks if there is enough beds. 
 			// If not, slow the growth rate in one type of pop
@@ -158,7 +154,7 @@ public class Population implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Remove a researcher.
+	 * Removes a researcher.
 	 */
 	public void removeOneResearcher() {
 	
@@ -169,12 +165,18 @@ public class Population implements Serializable, Temporal {
 		Colonist c = list.get(rand);
 		
 		colonists.remove(c);
+
+		Nation nation = colony.getNation();
 		
-//		String countryName = colony.getAuthority().getOneCountry();
-//		System.out.println("Colony: " + colony.getName() 
-//						+ "  Country: " + countryName);
-		
-		colony.getNation().addColonist(c);
+		if (nation == null) {
+			String countryName = colony.getAuthority().getOneCountry();
+			logger.warning("Colony: " + colony.getName() 
+							+ "  Sponsor: " + colony.getAuthority().getName()
+							+ "  Country: " + countryName);
+		}
+		else {
+			nation.addColonist(c);
+		}
 		
 	}
 	

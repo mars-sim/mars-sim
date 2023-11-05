@@ -648,7 +648,7 @@ public class InteractiveTerm {
 	}
 
 	/**
-	 * Loads the terminal menu
+	 * Loads the terminal menu.
 	 */
 	public static void loadTerminalMenu() {
 
@@ -659,12 +659,12 @@ public class InteractiveTerm {
         Conversation conversation = new Conversation(channel, new TopLevel(), roles, sim);
 
         conversation.interact();
-		logger.info("Converse ended");
+		logger.info("Conversation ended.");
 
 	}
 
 	/**
-	 * Get the Commander's profile
+	 * Gets the Commander's profile.
 	 *
 	 * @return profile
 	 */
@@ -694,7 +694,7 @@ public class InteractiveTerm {
 	}
 
 	/*
-	 * Get the dimension of the screen size selected by the user.
+	 * Gets the dimension of the screen size selected by the user.
 	 * This is null if none has been selected.
 	 */
 	public Dimension getSelectedScreen() {

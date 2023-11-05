@@ -134,6 +134,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		addBorder(taskPanel, "Task");
 		topPanel.add(taskPanel, BorderLayout.SOUTH);
 		taskStack = new JTextArea(3, 30);
+		taskStack.setToolTipText("Show the description and phase of a task and its subtask(s)");
 		taskPanel.add(taskStack, BorderLayout.CENTER);
 
 		AttributePanel scorePanel = new AttributePanel(1);

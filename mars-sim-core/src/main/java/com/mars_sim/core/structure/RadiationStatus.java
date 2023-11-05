@@ -8,6 +8,7 @@ package com.mars_sim.core.structure;
 
 import java.io.Serializable;
 
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -18,7 +19,9 @@ public class RadiationStatus implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(RadiationStatus.class.getName());
+
     private boolean baselineEvent;
     private boolean gcrEvent;
     private boolean sepEvent;
@@ -42,26 +45,35 @@ public class RadiationStatus implements Serializable {
     }
 
     /**
-     * Calculate the current status of pending radiation events for a period of time.
+     * Calculates the current status of pending radiation events for a period of time.
+     * 
+     * @param time
+     * @return
      */
-    public static RadiationStatus calculateCurrent(double time) {
-        double ratio = time / RadiationExposure.RADIATION_CHECK_FREQ;
-		double magVariation1 = 1 + RandomUtil.getRandomDouble(-RadiationExposure.GCR_CHANCE_SWING, RadiationExposure.GCR_CHANCE_SWING);
-		if (magVariation1 < 0)
-			magVariation1 = 0;
-		double magVariation2 = 1 + RandomUtil.getRandomDouble(- RadiationExposure.SEP_CHANCE_SWING, RadiationExposure.SEP_CHANCE_SWING);
-		if (magVariation2 < 0)
-			magVariation2 = 0;
+    public static RadiationStatus calculateChance(double time) {
+    	if (time == 0)
+    		return new RadiationStatus(false, false, false);
+    	
+        double ratio = time * RadiationExposure.RADIATION_CHECK_FREQ;
+		double var1 = 1 + RandomUtil.getRandomDouble(-RadiationExposure.GCR_CHANCE_SWING, RadiationExposure.GCR_CHANCE_SWING);
+		if (var1 < 0)
+			var1 = 0;
+		double var2 = 1 + RandomUtil.getRandomDouble(- RadiationExposure.SEP_CHANCE_SWING, RadiationExposure.SEP_CHANCE_SWING);
+		if (var2 < 0)
+			var2 = 0;
 
 		// Galactic cosmic rays (GCRs) event // average 1.22% per 1000 millisols
-		double chance1 = (1.22/1000 + RadiationExposure.GCR_PERCENT * ratio * magVariation1) / 2.0; 
+		double chance1 = Math.max(0, ratio * (1.22/1000 + RadiationExposure.GCR_PERCENT * var1));
+//		logger.info("chance1: " + chance1);
 		// Solar energetic particles (SEPs) event // average 0.122 % per 1000 millisols
-		double chance2 = (0.122/1000 + RadiationExposure.SEP_PERCENT * ratio * magVariation2) / 2.0; 
+		double chance2 = Math.max(0, ratio * (0.122/1000 + RadiationExposure.SEP_PERCENT * var2)); 
+//		logger.info("chance2: " + chance2);
 		// Baseline radiation event
-		double chance0 = (3.53/1000 + .1 - chance1 - chance2) / 2.0; // average 3.53% per 1000 millisols
-
+		double chance0 = Math.max(0, (ratio * 3.53/1000 + .1 - chance1 - chance2)); // average 3.53% per 1000 millisols
+//		logger.info("chance0: " + chance0);
+		
 		// Note that RadiationExposure.BASELINE_PERCENT * ratio * (variation1 + variation2);
-        boolean baseLine = (chance0 > 0) && RandomUtil.lessThanRandPercent(chance0);
+        boolean baseline = RandomUtil.lessThanRandPercent(chance0);
 		
 		// Galactic cosmic rays (GCRs) event
 		// double rand2 = Math.round(RandomUtil.getRandomDouble(100) * 100.0)/100.0;
@@ -71,6 +83,6 @@ public class RadiationStatus implements Serializable {
 		// Solar energetic particles (SEPs) event
 		boolean gcr = RandomUtil.lessThanRandPercent(chance2);
 
-        return new RadiationStatus(baseLine, gcr, sep);
+        return new RadiationStatus(baseline, gcr, sep);
     }
 }

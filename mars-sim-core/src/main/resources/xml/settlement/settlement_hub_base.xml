@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-        name="Hub Base" 
+        name="Hub Base" shift-pattern="Standard 4 Shift" 
         default-population="36" number-of-robots="18" sponsor="MS"
         description="Base With Central Hub">
 

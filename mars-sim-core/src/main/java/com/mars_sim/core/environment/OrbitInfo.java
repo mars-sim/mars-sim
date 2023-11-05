@@ -19,7 +19,7 @@ import com.mars_sim.core.time.Temporal;
 import com.mars_sim.mapdata.location.Coordinates;
 
 /**
- * The OrbitInfo class keeps track of the orbital position of Mars
+ * The OrbitInfo class keeps track of the orbital position of Mars.
  */
 public class OrbitInfo implements Serializable, Temporal {
 
@@ -59,44 +59,66 @@ public class OrbitInfo implements Serializable, Temporal {
 
 	private static final double HRS_TO_MILLISOLS = 1 / MarsTime.HOURS_PER_MILLISOL; //1.0275D * MarsTime.MILLISOLS_PER_DAY / 24D; 
 	
-	/** Nautical Dawn occurs at 12° below the horizon, when it becomes possible to see the horizon properly and distinguish some objects.  */
-	private static final double NAUTICAL_DAWN_ANGLE = 12D; // in degree
 
 	// Date of the 2000K start second
 	private static final LocalDateTime Y2K = LocalDateTime.of(2000,1,1,0,0);
-	/** 
-	 * Adopts the nautical dawn as the angle of the sun below the horizon for calculating the zenith angle at dawn.
-	 * See http://wordpress.mrreid.org/2013/02/05/dawn-dusk-sunrise-sunset-and-twilight/
-	 */
-	private static final double ZENITH_ANGLE_AT_DAWN = (90D + NAUTICAL_DAWN_ANGLE) / DEGREE_TO_RADIAN; // in radian
-	/** The cosine of the dawn zenith angle. */
-	private static final double COSINE_ZENITH_ANGLE_AT_DAWN =  Math.cos(ZENITH_ANGLE_AT_DAWN);
+	
+	// There's a different between civil and nautical dawn/dusk as the angle of the sun below the horizon 
+	// for calculating the zenith angle at dawn/dusk.
+	// See http://wordpress.mrreid.org/2013/02/05/dawn-dusk-sunrise-sunset-and-twilight/
 
-	/** 
-	 * Adopts the nautical dusk as the angle of the sun below the horizon for calculating the zenith angle at dawn.
-	 * See http://wordpress.mrreid.org/2013/02/05/dawn-dusk-sunrise-sunset-and-twilight/
-	 */
-	private static final double ZENITH_ANGLE_AT_DUSK = (90D + NAUTICAL_DAWN_ANGLE) / DEGREE_TO_RADIAN; // in radian
-	/** The cosine of the dusk zenith angle. */
-	private static final double COSINE_ZENITH_ANGLE_AT_DUSK =  Math.cos(ZENITH_ANGLE_AT_DUSK);
+	/** The nautical dawn occurs at 12° below the horizon, when it becomes possible to see the horizon properly and distinguish some objects.  */
+	private static final double NAUTICAL_DAWN_ANGLE = 12D; // in degree\
 	
+	/** The zenith angle at nautical dawn. */
+	private static final double ZENITH_ANGLE_AT_NAUTICAL_DAWN = (-90 - NAUTICAL_DAWN_ANGLE) * DEGREE_TO_RADIAN; // in radian
+	/** The cosine of the nautical dawn zenith angle. */
+	private static final double COSINE_ZENITH_ANGLE_AT_NAUTICAL_DAWN = Math.cos(ZENITH_ANGLE_AT_NAUTICAL_DAWN);
+	/** The zenith angle at nautical dusk. */
+	private static final double ZENITH_ANGLE_AT_NAUTICAL_DUSK = (90 + NAUTICAL_DAWN_ANGLE) * DEGREE_TO_RADIAN; // in radian
+	/** The cosine of the nautical dusk zenith angle. */
+	private static final double COSINE_ZENITH_ANGLE_AT_NAUTICAL_DUSK = Math.cos(ZENITH_ANGLE_AT_NAUTICAL_DUSK);
+
+	/** The civil dawn occurs at 6° below the horizon, when it becomes possible to see the horizon properly and distinguish some objects.  */
+	private static final double CIVIL_DAWN_ANGLE = 12D; // in degree
 	
-	// from https://www.teuse.net/games/mars/mars_dates.html
-	// Demios only takes 30hrs, and Phobos 7.6hrs to rotate around mars
+	/** The zenith angle at civil dawn. */
+	private static final double ZENITH_ANGLE_AT_CIVIL_DAWN = (-90 - CIVIL_DAWN_ANGLE) * DEGREE_TO_RADIAN; // in radian
+	/** The cosine of the civil dawn zenith angle. */
+	private static final double COSINE_ZENITH_ANGLE_AT_CIVIL_DAWN = Math.cos(ZENITH_ANGLE_AT_CIVIL_DAWN);
+	/** The zenith angle at civil dusk. */
+	private static final double ZENITH_ANGLE_AT_CIVIL_DUSK = (90 + CIVIL_DAWN_ANGLE) * DEGREE_TO_RADIAN; // in radian
+	/** The cosine of the civil dusk zenith angle. */
+	private static final double COSINE_ZENITH_ANGLE_AT_CIVIL_DUSK = Math.cos(ZENITH_ANGLE_AT_CIVIL_DUSK);
+	
+	/** The early civil dusk occurs at 6° above the horizon, when it becomes blurry to see the horizon properly and distinguish some objects.  */
+	private static final double EARLY_CIVIL_DUSK_ANGLE = 6D; // in degree
+	
+	/** The zenith angle at early civil dusk. */
+	private static final double ZENITH_ANGLE_AT_EARLY_CIVIL_DUSK = (90 - EARLY_CIVIL_DUSK_ANGLE) * DEGREE_TO_RADIAN; // in radian
+	/** The cosine of the early civil dusk zenith angle. */
+	private static final double COSINE_ZENITH_ANGLE_AT_EARLY_CIVIL_DUSK = Math.cos(ZENITH_ANGLE_AT_EARLY_CIVIL_DUSK);
+
+
+	
+	// From https://www.teuse.net/games/mars/mars_dates.html
+	//
+	// Demios only takes 30hrs, and Phobos 7.6 hrs to rotate around mars
 	// Spring lasts 193.30 sols
 	// Summer lasts 178.64 sols
 	// Autumn lasts 142.70 sols
 	// Winter lasts 153.94 sols
-	// No thats doesnt add up exactly to 668.5921 sols. Worry about that later
-	// just like our ancestors did.
-	// That gives us 4 "holidays". Round off the numbers for when they occur.
+	// Note that they don't add up exactly to 668.5921 sols.
+	
+	// We could derive 4 "holidays" for Mars. 
+	// Note: round off the fractional sol.
+	//
 	// Spring Equinox at sol 1,
 	// Summer Solstice at sol 193,
 	// Autumnal equinox sol 372,
 	// Winter solstice at sol 515,
-	// Spring again sol 669 or 1 new annus.
-	// This gives them 4 periods to use like we do months.
-	// They are a bit long so maybe they divide them up more later.
+	// Spring again sol 669 or 1 new annus or orbit.
+
 	public static final int NORTHERN_HEMISPHERE = 1;
 	public static final int SOUTHERN_HEMISPHERE = 2;
 	private static final String EARLY = "Early ";
@@ -249,39 +271,39 @@ public class OrbitInfo implements Serializable, Temporal {
 		return true;
 	}
 
-	/**
-	 * Is the sun rising (at dawn) at this location ?
-	 * 
-	 * @param location
-	 * @param extended true if extending the dawn further (doubling the dawn angle)
-	 * @return
-	 */
-	public boolean isSunRising(Coordinates location, boolean extended) {
-		boolean result = false;
-		
-		double cosZenith = getCosineSolarZenithAngle(location);	
-
-		// cosZenith is increasing
-		if (cosZenithAngleCache < cosZenith) {
-
-			// See if the solar zenith angle is between 90 and (90 + the dawn angle) 
-			// Note: if the sun is below the horizon, the solar zenith angle should be negative
-			if (cosZenith <= 0 && cosZenith > COSINE_ZENITH_ANGLE_AT_DAWN) {
-				result = true;
-			}
-			
-			// See if the solar zenith angle is between 90 and (90 - the dawn angle) 
-			// Note: if the sun is above the horizon, the solar zenith angle should be positive
-			if (extended && cosZenith >= 0 && cosZenith < - COSINE_ZENITH_ANGLE_AT_DAWN) {
-				result = true;
-			}
-		}
-		
-		// Update the cache value
-		cosZenithAngleCache = cosZenith;
-		
-		return result;
-	}
+//	/**
+//	 * Is the sun rising (at dawn) at this location ?
+//	 * 
+//	 * @param location
+//	 * @param extended true if extending the dawn further (doubling the dawn angle)
+//	 * @return
+//	 */
+//	public boolean isSunRising(Coordinates location, boolean extended) {
+//		boolean result = false;
+//		
+//		double cosZenith = getCosineSolarZenithAngle(location);	
+//
+//		// cosZenith is increasing and becomes larger than its previous value
+//		if (cosZenithAngleCache < cosZenith) {
+//
+//			// See if the solar zenith angle is between 90 and (90 + the dawn angle) 
+//			// Note: if the sun is below the horizon, the solar zenith angle should be negative
+//			if (cosZenith <= 0 && cosZenith > COSINE_ZENITH_ANGLE_AT_DAWN) {
+//				result = true;
+//			}
+//			
+//			// See if the solar zenith angle is between 90 and (90 - the dawn angle) 
+//			// Note: if the sun is above the horizon, the solar zenith angle should be positive
+//			if (extended && cosZenith >= 0 && cosZenith < - COSINE_ZENITH_ANGLE_AT_DAWN) {
+//				result = true;
+//			}
+//		}
+//		
+//		// Update the cache value
+//		cosZenithAngleCache = cosZenith;
+//		
+//		return result;
+//	}
 
 	/**
 	 * Is the sun setting (at dusk) at this location ? 
@@ -295,18 +317,26 @@ public class OrbitInfo implements Serializable, Temporal {
 		
 		double cosZenith = getCosineSolarZenithAngle(location);	
 		
-		// cosZenith is decreasing
-		if (cosZenithAngleCache < cosZenith) {
-				
-			// See if the solar zenith angle is between 90 and (90 + the dusk angle) 
-			// Note: if the sun is below the horizon, the solar zenith angle should be negative
-			if (cosZenith >= 0 && cosZenith <= 0 && cosZenith > COSINE_ZENITH_ANGLE_AT_DUSK) {
+		// Note 0: cosZenith is decreasing and becomes smaller than its previous value
+		if (cosZenithAngleCache > cosZenith) {
+
+			// Note 1: cosine of solar zenith angle at 90 is zero
+			// Note 2: cosine of solar zenith angle at >90 is -ve
+			// Note 3: cosine of solar zenith angle at <90 is +ve
+			
+			
+			// Check if the solar zenith angle is between 90 and (90 + the dusk angle)
+			// Note: when the sun is below the horizon, the cosine of solar zenith angle becomes negative
+			if (!extended && cosZenith <= 0 && cosZenith >= COSINE_ZENITH_ANGLE_AT_CIVIL_DUSK) {
+				// Note 3: if the sun is below the horizon, the cosine of solar zenith angle should be negative
 				result = true;
 			}
 			
-			// See if the solar zenith angle is between 90 and (90 - the dusk angle) 
-			// Note: if the sun is above the horizon, the solar zenith angle should be positive
-			if (extended && cosZenith >= 0 && cosZenith < - COSINE_ZENITH_ANGLE_AT_DUSK) {
+			// See if the solar zenith angle is between (90 - the early dusk angle) and (90 + the dusk angle) 
+			// Note: when the sun is above the horizon, the cosine of solar zenith angle is still positive
+			else if (extended && 
+				((cosZenith >= 0 && cosZenith >= COSINE_ZENITH_ANGLE_AT_EARLY_CIVIL_DUSK)
+				  || (cosZenith <= 0 && cosZenith >= COSINE_ZENITH_ANGLE_AT_EARLY_CIVIL_DUSK))) {
 				result = true;
 			}
 		}

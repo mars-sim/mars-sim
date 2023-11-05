@@ -18,7 +18,7 @@ import com.mars_sim.core.person.ai.task.PerformLaboratoryExperiment;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
-import com.mars_sim.core.person.ai.task.util.TaskProbabilityUtil;
+import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
@@ -61,7 +61,7 @@ public class PerformLaboratoryExperimentMeta extends FactoryMetaTask {
         	return EMPTY_TASKLIST;
         }
 
-        ScienceType jobScience = TaskProbabilityUtil.getPersonJobScience(person);
+        ScienceType jobScience = TaskUtil.getPersonJobScience(person);
         double base = 0D;
 
         // Add probability for researcher's primary study (if any).

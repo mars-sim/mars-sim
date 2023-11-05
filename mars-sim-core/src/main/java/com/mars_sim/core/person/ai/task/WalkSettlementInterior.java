@@ -398,7 +398,7 @@ public class WalkSettlementInterior extends Task {
 				Building currentBuilding = BuildingManager.getBuilding(person);
 				if (!hatch.getBuilding().equals(currentBuilding)) {
 					BuildingManager.removePersonFromBuilding(person, currentBuilding);
-					BuildingManager.addPersonOrRobotToBuilding(person, hatch.getBuilding());
+					BuildingManager.addToBuilding(person, hatch.getBuilding());
 				}
 			} 
 			
@@ -406,7 +406,7 @@ public class WalkSettlementInterior extends Task {
 				Building currentBuilding = BuildingManager.getBuilding(robot);
 				if (!hatch.getBuilding().equals(currentBuilding)) {
 					BuildingManager.removeRobotFromBuilding(robot, currentBuilding);
-					BuildingManager.addPersonOrRobotToBuilding(robot, hatch.getBuilding());
+					BuildingManager.addToBuilding(robot, hatch.getBuilding());
 				}
 			}
 
@@ -414,14 +414,15 @@ public class WalkSettlementInterior extends Task {
 			// If non-split building connector, place person in the new building.
 			if (!connector.isSplitConnection()) {
 				Building currentBuilding = null;
+				
 				if (person != null) {
 					currentBuilding = BuildingManager.getBuilding(person);
 				} 
 				
-				else if (robot != null) {
+				else {
 					currentBuilding = BuildingManager.getBuilding(robot);
 				}
-
+				
 				Building newBuilding = null;
 				if (connector.getBuilding1().equals(currentBuilding)) {
 					newBuilding = connector.getBuilding2();
@@ -442,11 +443,11 @@ public class WalkSettlementInterior extends Task {
 					
 					if (person != null) {
 						BuildingManager.removePersonFromBuilding(person, currentBuilding);
-						BuildingManager.addPersonOrRobotToBuilding(person, newBuilding);
+						BuildingManager.addToBuilding(person, newBuilding);
 					}
 					else if (robot != null) {
 						BuildingManager.removeRobotFromBuilding(robot, currentBuilding);
-						BuildingManager.addPersonOrRobotToBuilding(robot, newBuilding);
+						BuildingManager.addToBuilding(robot, newBuilding);
 					}
 				}
 			}

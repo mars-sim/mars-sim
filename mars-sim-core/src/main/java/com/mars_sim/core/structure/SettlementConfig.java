@@ -102,9 +102,12 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private final String ROBOT = "robot";
 
 	/** These must be present in the settlements.xml */
-	public static final String DEFAULT_3SHIFT = "Standard 3 Shift";
-	public static final String DEFAULT_2SHIFT = "Standard 2 Shift";
-
+	public static final String STANDARD_4_SHIFT = "Standard 4 Shift";
+	public static final String STANDARD_3_SHIFT = "Standard 3 Shift";
+	public static final String STANDARD_2_SHIFT = "Standard 2 Shift";
+	public static final String LONG_3_SHIFT = "Long 3 Shift";
+	public static final String SKELETON_NIGHT_SHIFT = "Skeleton Night Shift";
+	
 	private final String FREQUENCY = "frequency-sols";
 	private final String MANIFEST_NAME = "manifest-name";
 
@@ -303,14 +306,20 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		// Obtains the default numbers of robots
 		int defaultNumOfRobots = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_NUM_ROBOTS));
 
-		//Look up the shift pattern
+		// Look up the shift pattern
 		String shiftPattern = templateElement.getAttributeValue(SHIFT_PATTERN);
 		if (shiftPattern == null) {
 			if (defaultPopulation >= 12) {
-				shiftPattern = DEFAULT_3SHIFT;
+				shiftPattern = LONG_3_SHIFT;
 			}
+			else if (defaultPopulation >= 24) {
+				shiftPattern = STANDARD_3_SHIFT;
+			}
+			else if (defaultPopulation >= 36) {
+				shiftPattern = STANDARD_4_SHIFT;
+			}	
 			else {
-				shiftPattern = DEFAULT_2SHIFT;
+				shiftPattern = STANDARD_2_SHIFT;
 			}
 		}
 		ShiftPattern pattern = getShiftPattern(shiftPattern);

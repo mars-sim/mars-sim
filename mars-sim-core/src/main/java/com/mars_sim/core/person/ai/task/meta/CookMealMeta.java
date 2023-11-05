@@ -16,7 +16,7 @@ import com.mars_sim.core.person.ai.task.CookMeal;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
-import com.mars_sim.core.person.ai.task.util.TaskProbabilityUtil;
+import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
@@ -118,7 +118,7 @@ public class CookMealMeta extends FactoryMetaTask {
                 	
                     result = 500D;
                     // Crowding modifier.
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
+                    result *= TaskUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
                     // Effort-driven task modifier.
                     result *= robot.getPerformanceRating();
                 }

@@ -993,29 +993,14 @@ public class ExitAirlock extends Task {
 	 */
 	private double prebreathe(double time) {
 
-//		if (isSuperUnFit()) {
-//			// Doff the suit, get back the garment and thermal bottle
-//			EVASuitUtil.checkIn(person, airlock.getEntity());
-//			
-//			walkAway(person, NOT_FIT + " to prebreath.");
-//			return time;
-//		}
-		
-//		if (isOccupant3QuartersPrebreathed()) {
-//			// Get back the garment and thermal bottle
-//			checkIn(person, airlock.getEntity());
-//			
-//			walkAway(person, CANT_DON_SUIT + PREBREATH_THREE_QUARTERS_DONE);
-//			return time;
-//		}
+		if (isSuperUnFit()) {
+			// Doff the suit, get back the garment and thermal bottle
+			EVASuitUtil.checkIn(person, airlock.getEntity(), inSettlement, true);
+			walkAway(person, NOT_FIT + " to prebreath.");
+			return time;
+		}
 		
 		boolean canProceed = false;
-		
-//		if (person.getSuit() == null) {
-//			// Go back to previous task phase
-//			setPhase(DON_EVA_SUIT);
-//			return time;
-//		}
 
 		PhysicalCondition pc = person.getPhysicalCondition();
 		

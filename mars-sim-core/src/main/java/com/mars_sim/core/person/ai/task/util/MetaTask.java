@@ -288,8 +288,8 @@ public abstract class MetaTask {
 			factor = assessPersonSuitability(factor, p);
 			if (t.isEVA()) {
 				// EVA factor is the radiation and the EVA modifiers applied extra
-				factor.addModifier(RADIATION_MODIFIER, TaskProbabilityUtil.getRadiationModifier(p.getSettlement()));
-				factor.addModifier(EVA_MODIFIER, TaskProbabilityUtil.getEVAModifier(p));
+				factor.addModifier(RADIATION_MODIFIER, TaskUtil.getRadiationModifier(p.getSettlement()));
+				factor.addModifier(EVA_MODIFIER, TaskUtil.getEVAModifier(p));
 			}
 		}
 		return factor;
@@ -382,8 +382,8 @@ public abstract class MetaTask {
 	protected static double getBuildingModifier(Building building, Person person) {
 		double result = 1D;
 		if (building != null) {
-			result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-			result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+			result *= TaskUtil.getCrowdingProbabilityModifier(person, building);
+			result *= TaskUtil.getRelationshipModifier(person, building);
 		}
 		return result;
 	}
@@ -400,9 +400,9 @@ public abstract class MetaTask {
 															Person person) {
 		if (building != null) {
 			score.addModifier("crowding",
-					TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building));
+					TaskUtil.getCrowdingProbabilityModifier(person, building));
 			score.addModifier("occupants",
-					TaskProbabilityUtil.getRelationshipModifier(person, building));
+					TaskUtil.getRelationshipModifier(person, building));
 		}
 
 		return score;

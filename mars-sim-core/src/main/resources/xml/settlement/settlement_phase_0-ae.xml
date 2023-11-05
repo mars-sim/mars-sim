@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-        name="Phase 0-UAE" default-population="2" description="Phase 0 base for United Arab Emirates"
+        name="Phase 0-AE" default-population="2" description="Phase 0 base for United Arab Emirates"
 		number-of-robots="6" sponsor="UAESA">
 
     <!-- Lander habitat building is the main habitation in the Mars Direct

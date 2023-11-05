@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
@@ -23,7 +22,6 @@ import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.environment.OrbitInfo;
 import com.mars_sim.core.environment.SurfaceFeatures;
-import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.logging.SimLogger;
@@ -53,7 +51,6 @@ import com.mars_sim.core.structure.construction.ConstructionConfig;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.mapdata.location.LocalBoundedObject;
 import com.mars_sim.mapdata.location.LocalPosition;
 import com.mars_sim.tools.util.RandomUtil;
@@ -111,28 +108,27 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected Integer id;
 	/** The id of the teacher. */
 	protected Integer teacherID;
-	/** The id of the target person. */
-	protected Integer targetID;
+	/** The id of the target person (either the invitee or the initiator). */
+	private Integer targetID;
 	
 	/** The name of the task. */
 	private String name = "";
 	/** Description of the task. */
 	private String description = "";
 
-
-	/** The person teaching this task if any. */
-	private transient Person teacher;
 	/** The person performing the task. */
 	protected transient Person person;
-	/** The target person performing the task. */
-	protected transient Person target;
 	/** The robot performing the task. */
 	protected transient Robot robot;
-
 	/** The worker performing the task */
 	protected transient Worker worker;
 	/** Unit for events distribution */
 	private transient Unit eventTarget;
+	
+	/** The worker teaching this task if any. */
+	private transient Worker teacher;
+	/** The target person (either the invitee or the initiator) of the Converse task. */
+	private transient Person target;	
 
 	/** The sub-task of this task. */
 	protected Task subTask;
@@ -261,7 +257,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		// Set standard pulse time to a quarter of the value of the current pulse width
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
-		standardPulseTime = Math.min(MAX_PULSE_WIDTH, masterClock.getLastPulseTime());
+		standardPulseTime = Math.min(MAX_PULSE_WIDTH, masterClock.getNextPulseTime());
 	}
 
 	/**
@@ -868,23 +864,54 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Gets the person teaching this task.
+	 * Gets the worker teaching this task.
 	 * 
 	 * @return teacher or null if none.
 	 */
-	public Person getTeacher() {
+	public Worker getTeacher() {
 		return teacher;
 	}
 
 	/**
-	 * Sets the person teaching this task.
+	 * Sets the worker teaching this task.
 	 * 
 	 * @param newTeacher the new teacher.
 	 */
-	public void setTeacher(Person newTeacher) {
+	public void setTeacher(Worker newTeacher) {
 		this.teacher = newTeacher;
+		teacherID = teacher.getIdentifier();
 	}
 
+	/**
+	 * Gets the target person of this task.
+	 * 
+	 * @return target.
+	 */
+	public Person getTarget() {
+		return target;
+	}
+	
+	/**
+	 * Gets the id of target person of this task.
+	 * 
+	 * @return target id.
+	 */
+	public Integer getTargetID() {
+		return targetID;
+	}
+	
+	/**
+	 * Sets the person who's the target of this task.
+	 * 
+	 * @param newTarget the new target
+	 * @param true if id has not been saved
+	 */
+	public void setTarget(Person newTarget, boolean newID) {
+		this.target = newTarget;
+		if (newID)
+			targetID = target.getIdentifier();
+	}
+	
 	/**
 	 * Who is working on this Task.
 	 * 
@@ -1516,39 +1543,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		return false;
 	}
 	
-	
 
-	
-	/**
-	 * Puts off the garment and the thermal bottle.
-	 * 
-	 * @param person
-	 * @param entity
-	 */
-	private void putOff(Person person, Entity entity) {
-		EquipmentOwner housing = null;
-
-		boolean inS = person.isInSettlement();
-		
-		if (inS)
-			housing = ((Building)entity).getSettlement();
-		else
-			housing = (Vehicle)entity;
-		
-		// Remove pressure suit and put on garment
-		if (inS) {
-			if (person.unwearPressureSuit(housing)) {
-				person.wearGarment(housing);
-			}
-		}
-		// Note: vehicle may or may not have garment available
-		else if (((Rover)housing).hasGarment() && person.unwearPressureSuit(housing)) {
-			person.wearGarment(housing);
-		}
-
-		// Assign thermal bottle
-		person.assignThermalBottle();
-	}
 	
 	/**
 	 * Sets the standard pulse time.
@@ -1568,6 +1563,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		 return standardPulseTime;
 	}
 	
+	/**
+	 * Reinitializes instances.
+	 */
 	public void reinit() {
 		person = unitManager.getPersonByID(id);
 		robot = unitManager.getRobotByID(id);
@@ -1583,19 +1581,22 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (teacherID != null && (!teacherID.equals(Integer.valueOf(-1)) || !teacherID.equals(Integer.valueOf(0))))
 			teacher = unitManager.getPersonByID(teacherID);
 
+		if (targetID != null && (!targetID.equals(Integer.valueOf(-1)) || !targetID.equals(Integer.valueOf(0))))
+			target = unitManager.getPersonByID(targetID);
+		
 		if (subTask != null)
 			subTask.reinit();
 	}
 
 	/**
-	 * Get the simualtion underpinning run
+	 * Gets the simulation underpinning run.
 	 */
 	protected Simulation getSimulation() {
 		return sim;
 	}
 
 	/**
-	 * Get teh current Martian time
+	 * Gets the current Martian time.
 	 */
 	protected static MarsTime getMarsTime() {
 		return masterClock.getMarsTime();

@@ -54,13 +54,13 @@ public class Nation implements Serializable, Temporal {
 	 * Nominal GDP divided by the number of people in a country. 
 	 */
 	private double GDPPerCapita;
-	
 	/**
 	 * Population in millions
 	 */
 	private double population;
-
-	// Space expenditure in millions
+	/**
+	 * Space expenditure in millions
+	 */
 	private double spaceExpenditure;
 	
 	private String name;

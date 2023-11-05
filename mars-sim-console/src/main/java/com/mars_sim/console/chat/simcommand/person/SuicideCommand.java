@@ -32,7 +32,7 @@ public class SuicideCommand extends AbstractPersonCommand {
 		String toExit = context.getInput("Get the person to commit suicide (Y/N)?");
         if ("Y".equalsIgnoreCase(toExit)) {
         	HealthProblem problem = new HealthProblem(ComplaintType.DEPRESSION, person);
-			person.getPhysicalCondition().recordDead(problem, true, "I've had enough.");
+			person.getPhysicalCondition().recordDead(problem, true, "I'm depressed and I've had enough.");
         }
 		return true;
 	}

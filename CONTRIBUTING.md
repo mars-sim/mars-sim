@@ -1,19 +1,27 @@
-# $$\color{#D29922}\textsf{\Large\&#x26A0;\kern{0.2cm}\normalsize Contributing}$$ 
+# Mars Simulation Project
 
-We are very glad for your help and contributions to mars-sim.
+Copyright &copy; 2023 Scott Davis  
+Project: https://mars-sim.com  
+GitHub: https://github.com/mars-sim/mars-sim  
+
+------------------------------------------|---------------------
 
 ## Overview
+
 ### Table of contents 
 * [Discussions](#discussion)
 * [Issues and Bugs](#issue)
+* [Pull Request](#pull)
 * [Submission Guidelines](#submit)
 * [Code Development](#coding)
 * [Further Info](#info)
+
 
 ## <a name="discussion"></a> Open an Discussion Topic
 
 If you are interested in asking a question or providing a feedback regarding this project, 
 do not hesitate in opening up an discussion topic in the project's GitHub Repository. 
+
 
 ## <a name="issue"></a> Found an Issue/bug
 
@@ -24,27 +32,43 @@ If you have crafted a solution to an existing issue, please submit a Pull Reques
 
 __Please observe the rules and guidelines below__.
 
+
+## <a name="pull"></a> Pull Request
+
+If you discover a bug and would like to offer a fix, do by all means 
+do a `Pull Request` and write a few words telling us your approach 
+and methodology. We welcome your help and contributions to mars-sim. 
+
+
+
 ## <a name="submit"></a> Submission Guidelines
 
-Before you submit your issue, search the archive, your question may have been partially answered.
+Before you submit your issue, search the archive to check if your 
+question may have been at least partially answered in the issue tracker or
+discussion page or not.
 
-If your issue appears to be a bug, and hasn't been reported, open a new issue.
+For instructions on filing an issue, see [README.md](https://github.com/mars-sim/mars-sim#issuestickets). 
+Provide the relevant information to increase the chances of it 
+being dealt with quickly.
 
-Help us to maximize the effort we can spend fixing issues and adding new
-features, by not reporting duplicate issues. 
+If your issue appears to be a bug, and hasn't been reported, open a new ticket.
 
-See under Issues/Tickets at [README.md](https://github.com/mars-sim/mars-sim#issuestickets) and provide the relevant 
-information to increase the chances of it being dealt with quickly.
+Do help us to maximize the effort of fixing bugs by deconflicting similar 
+issues that have already been reported or worked on.  
+
 
 __If you get help, help others. That way everyone benefits!__
 
+
 ## <a name="coding"></a> Code Development
 
-We welcome anyone to contribute to mars-sim in terms of ideas, concepts and coding. 
+We welcome anyone to contribute to mars-sim in terms of ideas, 
+concepts and coding. 
 
-If you would like to become a developer and contribute to coding, see this [wiki](https://github.com/mars-sim/mars-sim/wiki/Development-Environment) about setting the development environment on your machine.
+If you would like to become a developer and contribute to coding, 
+see this [wiki](https://github.com/mars-sim/mars-sim/wiki/Development-Environment) 
+about setting up the development environment on your machine.
 
 ## <a name="info"></a> Further Information
 
-You can find out more information about mars-sim [here](
-https://github.com/mars-sim/mars-sim).
+You can find out more information about mars-sim [here](https://github.com/mars-sim/mars-sim).

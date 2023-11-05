@@ -7,17 +7,19 @@
 
 package com.mars_sim.core.person;
 
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.PersonAttributeManager;
 import com.mars_sim.core.person.ai.PersonalityTraitType;
-import com.mars_sim.core.person.ai.Skill;
+import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.training.TrainingType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.tools.util.RandomUtil;
 
 public class PersonBuilderImpl implements PersonBuilder<Person> {
 
@@ -69,17 +71,90 @@ public class PersonBuilderImpl implements PersonBuilder<Person> {
 	 */
 	public PersonBuilder<Person> setSkill(Map<String, Integer> skillMap) {
 		if (skillMap == null || skillMap.isEmpty()) {
-			person.getSkillManager().setRandomSkills();
-		} else {
-			Iterator<String> i = skillMap.keySet().iterator();
-			while (i.hasNext()) {
-				String skillName = i.next();
-				int level = skillMap.get(skillName);
-				person.getSkillManager().addNewSkill(new Skill(SkillType.valueOf(ConfigHelper.convertToEnumName(skillName)),
-													level));
+			buildDefaultSkills();
+		}
+		else {
+			for(Entry<String, Integer> e : skillMap.entrySet()) {
+				SkillType sType = SkillType.valueOf(ConfigHelper.convertToEnumName(e.getKey()));
+				person.getSkillManager().addNewSkill(sType, e.getValue());
 			}
 		}
 		return this;
+	}
+
+		
+	/**
+	 * Sets some random skills for a person.
+	 */
+	private void buildDefaultSkills() {
+		int ageFactor = person.getAge();
+		SkillManager sm = person.getSkillManager();
+
+		// Add starting skills randomly for a person.
+		for (SkillType startingSkill : SkillType.values()) {
+			int skillLevel = -1;
+
+			switch (startingSkill) {
+				case PILOTING: 
+					// Checks to see if a person has a pilot license/certification
+					if (person.getTrainings().contains(TrainingType.AVIATION_CERTIFICATION)) {
+						skillLevel = getInitialSkillLevel(1, 35);
+					}
+					break;
+			
+				// Medicine skill is highly needed for diagnosing sickness and prescribing medication 
+				case MEDICINE:
+					skillLevel = getInitialSkillLevel(0, 35);
+					break;
+
+				// psychology skill is sought after for living in confined environment
+				case PSYCHOLOGY: 
+					skillLevel = getInitialSkillLevel(0, 35);
+					break;
+		
+			
+			// Mechanics skill is sought after for repairing malfunctions
+				case MATERIALS_SCIENCE:
+				case MECHANICS:
+					skillLevel = getInitialSkillLevel(0, 45);
+					break;
+
+				default: {
+					int rand = RandomUtil.getRandomInt(0, 3);
+					if (rand == 0) {
+						skillLevel = getInitialSkillLevel(0, (int)(10 + ageFactor/10.0));
+					}
+					else if (rand == 1) {
+						skillLevel = getInitialSkillLevel(1, (int)(5 + ageFactor/8.0));
+					}
+					else if (rand == 2) {
+						skillLevel = getInitialSkillLevel(2, (int)(2.5 + ageFactor/6.0));
+					}
+				} break;
+			}
+
+			// If a initial skill level then add it and assign experience
+			if (skillLevel >= 0) {
+				int exp = RandomUtil.getRandomInt(0, 24);
+				sm.addNewSkill(startingSkill, skillLevel);
+				sm.addExperience(startingSkill, exp, 0D);
+			}
+		}
+	}
+
+		
+	/**
+	 * Returns an initial skill level.
+	 * 
+	 * @param level  lowest possible skill level
+	 * @param chance the chance that the skill will be greater
+	 * @return the initial skill level
+	 */
+	private static int getInitialSkillLevel(int level, int chance) {
+		if (RandomUtil.lessThanRandPercent(chance))
+			return getInitialSkillLevel(level + 1, chance / 2);
+		else
+			return level;
 	}
 
 	/**
@@ -94,11 +169,11 @@ public class PersonBuilderImpl implements PersonBuilder<Person> {
 		
 		if (map == null || map.isEmpty()) {
 			person.getMind().getTraitManager().setRandomBigFive();
-		} else {
-			for (String type : map.keySet()) {
-				int value = map.get(type);
-				person.getMind().getTraitManager().setPersonalityTrait(PersonalityTraitType.fromString(type),
-						value);
+		}
+		else {
+			for (Entry<String, Integer> e : map.entrySet()) {
+				person.getMind().getTraitManager().setPersonalityTrait(PersonalityTraitType.fromString(e.getKey()),
+						e.getValue());
 			}
 		}
 		
@@ -135,10 +210,9 @@ public class PersonBuilderImpl implements PersonBuilder<Person> {
 			((PersonAttributeManager) person.getNaturalAttributeManager()).setRandomAttributes(person);	
 		}
 		else {
-			Iterator<String> i = attributeMap.keySet().iterator();
-			while (i.hasNext()) {
-				String attributeName = i.next();
-				int value = (Integer) attributeMap.get(attributeName);
+			for(Entry<String,Integer> e : attributeMap.entrySet()) {
+				String attributeName = e.getKey();
+				int value = e.getValue();
 				person.getNaturalAttributeManager()
 						.setAttribute(NaturalAttributeType.valueOfIgnoreCase(attributeName), value);
 			}

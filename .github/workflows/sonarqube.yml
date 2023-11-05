@@ -28,4 +28,4 @@ jobs:
         SONAR_LABEL: ${{ github.workflow }}/${{ github.run_number }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
       run:
-        mvn --file pom.xml -B -DskipTests -Dsonar.login=$SONAR_LOGIN -Dsonar.organization=$SONAR_ORGANISATION -Dsonar.projectVersion="$SONAR_LABEL" verify sonar:sonar
+        mvn --file pom.xml -B -Pcoverage -Dsonar.token=$SONAR_LOGIN -Dsonar.organization=$SONAR_ORGANISATION -Dsonar.projectVersion="$SONAR_LABEL" verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar

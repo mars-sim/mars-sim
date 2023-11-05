@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * HistoricalEvent.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-11-04
  * @author Barry Evans
  */
 package com.mars_sim.core.events;
@@ -42,12 +42,12 @@ public abstract class HistoricalEvent implements Serializable {
 	private String whatCause;
 	private String whileDoing;
 	private String who;
-	private Unit container;
+	private Unit entity;
 	private String homeTown;
 	private String coordinates;
 
 	/**
-	 * Construct an event with the appropriate information. The time is not defined
+	 * Constructs an event with the appropriate information. The time is not defined
 	 * until the event is registered with the Event Manager.
 	 * 
 	 * @param category		{@link HistoricalEventCategory} Category of event
@@ -56,18 +56,18 @@ public abstract class HistoricalEvent implements Serializable {
 	 * @param whatCause		The cause for this event
 	 * @param whileDoing	during or While doing what
 	 * @param whoAffected	Who is being primarily affected by this event
-	 * @param container		the building/vehicle where it occurs
+	 * @param entity		the building/vehicle where it occurs
 	 * @see com.mars_sim.core.events.HistoricalEventManager#registerNewEvent
 	 */
 	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String whatCause,
-			String whileDoing, String whoAffected, Unit container) {
-		this(category, type, source, whatCause, whileDoing, whoAffected, container,
-				container.getAssociatedSettlement().getName(),
-				container.getCoordinates());
+			String whileDoing, String whoAffected, Unit entity) {
+		this(category, type, source, whatCause, whileDoing, whoAffected, entity,
+				entity.getAssociatedSettlement().getName(),
+				entity.getCoordinates());
 	}
 
 	/**
-	 * Construct an event with the appropriate information. The time is not defined
+	 * Constructs an event with the appropriate information. The time is not defined
 	 * until the event is registered with the Event Manager.
 	 * 
 	 * @param category		{@link HistoricalEventCategory} Category of event
@@ -76,26 +76,26 @@ public abstract class HistoricalEvent implements Serializable {
 	 * @param whatCause		The cause for this event
 	 * @param whileDoing	during or While doing what
 	 * @param whoAffected	Who is being primarily affected by this event
-	 * @param container		the building/vehicle where it occurs
+	 * @param entity		the building/vehicle where it occurs
 	 * @param homeTown		the associated settlement where it belongs
 	 * @param coordinates	the coordinates where it belongs
 	 * @see com.mars_sim.core.events.HistoricalEventManager#registerNewEvent
 	 */
 	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String whatCause,
-			String whileDoing, String whoAffected, Unit container, String homeTown, Coordinates coordinates) {
+			String whileDoing, String whoAffected, Unit entity, String homeTown, Coordinates coordinates) {
 		this.category = category;
 		this.type = type;
 		this.source = source;
 		this.whatCause = whatCause;
 		this.whileDoing = whileDoing;
 		this.who = whoAffected;
-		this.container = container;
+		this.entity = entity;
 		this.homeTown = homeTown;
 		this.coordinates = coordinates.getFormattedString();
 	}
 
 	/**
-	 * Set the timestamp for this event.
+	 * Sets the timestamp for this event.
 	 * 
 	 * @param marsTime
 	 */
@@ -104,7 +104,7 @@ public abstract class HistoricalEvent implements Serializable {
 	}
 	
 	/**
-	 * Get the cause.
+	 * Gets the cause.
 	 * 
 	 * @return String the cause.
 	 */
@@ -113,7 +113,7 @@ public abstract class HistoricalEvent implements Serializable {
 	}
 
 	/**
-	 * Get the activity a person was engaging.
+	 * Gets the activity a person was engaging.
 	 * 
 	 * @return String the activity.
 	 */
@@ -122,7 +122,7 @@ public abstract class HistoricalEvent implements Serializable {
 	}
 
 	/**
-	 * Get the name of the offender or the person affected.
+	 * Gets the name of the offender or the person affected.
 	 * 
 	 * @return String the name.
 	 */
@@ -131,16 +131,16 @@ public abstract class HistoricalEvent implements Serializable {
 	}
 
 	/**
-	 * Get the building/vehicle container.
+	 * Gets the building/vehicle entity.
 	 * 
-	 * @return he building/vehicle container string
+	 * @return he building/vehicle entity string
 	 */
-	public Unit getContainer() {
-		return container;
+	public Unit getEntity() {
+		return entity;
 	}
 
 	/**
-	 * Get the coordinates.
+	 * Gets the coordinates.
 	 * 
 	 * @return the coordinates string
 	 */
@@ -149,7 +149,7 @@ public abstract class HistoricalEvent implements Serializable {
 	}
 
 	/**
-	 * Get the associated settlement.
+	 * Gets the associated settlement.
 	 * 
 	 * @return the associated settlement string
 	 */
@@ -158,7 +158,7 @@ public abstract class HistoricalEvent implements Serializable {
 	}
 	
 	/**
-	 * Get event time.
+	 * Gets event time.
 	 * 
 	 * @return Time the event happened
 	 */
@@ -167,7 +167,7 @@ public abstract class HistoricalEvent implements Serializable {
 	}
 
 	/**
-	 * Get the type of event.
+	 * Gets the type of event.
 	 * 
 	 * @return String representing the type.
 	 */
@@ -176,7 +176,7 @@ public abstract class HistoricalEvent implements Serializable {
 	}
 
 	/**
-	 * Get event source.
+	 * Gets event source.
 	 * 
 	 * @return source
 	 */

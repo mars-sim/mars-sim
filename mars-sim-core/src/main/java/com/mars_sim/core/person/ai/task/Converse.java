@@ -21,9 +21,10 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.social.RelationshipType;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
-import com.mars_sim.core.person.ai.task.meta.ConverseMeta;
+import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
@@ -70,31 +71,31 @@ public class Converse extends Task {
     private enum Location {
         ANOTHER_BUILDING,
         ANOTHER_SETTLEMENT,
-    	DINING_BUILDING,
     	EVA,
     	NONE,
         SAME_BUILDING,
+    	SAME_DINING,
         SAME_SETTLEMENT,
         SAME_VEHICLE;
     	
     	public String toString(){
             switch(this) {
                 case ANOTHER_BUILDING:
-                    return "from Another Building";
+                    return "from another building";
                 case ANOTHER_SETTLEMENT:
-                    return "in Same Settlement";
-                case DINING_BUILDING:
-                    return "in Same Dining Fac";
+                    return "in same settlement";
                 case EVA:
                     return "while in EVA";
                 case NONE:
                     return "";        
                 case SAME_BUILDING:
-                    return "in Same Building"; 
+                    return "in same building"; 
+                case SAME_DINING:
+                    return "in same dining hall";
                 case SAME_SETTLEMENT:
-                    return "in Same Settlement";  
+                    return "in same settlement";  
                 case SAME_VEHICLE:
-                    return "in Same Vehicle";  
+                    return "in same vehicle";  
                 default: 
                 	return "";
             }
@@ -110,14 +111,16 @@ public class Converse extends Task {
         // Use Task constructor.
         super(NAME, person, true, false, 
         		STRESS_MODIFIER - RandomUtil.getRandomDouble(.2),
-        		Math.min(1,
-        		 1 + RandomUtil.getRandomDouble(person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.CONVERSATION))/20
-        		 + RandomUtil.getRandomDouble(person.getPreference().getPreferenceScore(new ConverseMeta())/3.0)
+        		Math.max(1,
+        		 1 + RandomUtil.getRandomDouble(person.getNaturalAttributeManager()
+        				 .getAttribute(NaturalAttributeType.CONVERSATION))/20
+        		 + RandomUtil.getRandomDouble(person.getPreference()
+        				 .getPreferenceScore(MetaTaskUtil.getConverseMeta())/3.0)
         		));
 
     	findInvitee();
         
-        if (target != null) {
+        if (getTarget() != null) {
             // Initialize phase
             addPhase(CONVERSING);
             setPhase(CONVERSING);
@@ -131,19 +134,28 @@ public class Converse extends Task {
      * Finds an invitee.
      */
     public void findInvitee() {
+    	Person p = null;
         if (person.isInSettlement()) {
-        	if (target == null)
-        		target = selectFromSettlement();
+           	p = selectFromSettlement();
+        	if (p != null)
+        		setTarget(p, true);
         }
         else if (person.isInVehicle()) {
-        	if (target == null)
-        		target = selectFromVehicle();
+        	p = selectFromVehicle();
+        	if (p != null)
+        		setTarget(p, true);
         }
         else {
         	// Allow a person who are walking on the surface of Mars to have conversation
-        	if (target == null)
-        		target = selectforEVA();
+        	p = selectforEVA();
+        	if (p != null)
+        		setTarget(p, true);
         }
+        
+        // If no one is available, then end the task
+        if (p == null)
+        	endTask();
+        
     }
     
     /**
@@ -159,7 +171,7 @@ public class Converse extends Task {
         		RandomUtil.getRandomDouble(initiator.getTaskManager().getTask().getTimeLeft())
         		);
     	
-    	this.target = initiator;
+    	setTarget(initiator, true);
     	
     	// Initialize phase
         addPhase(RESPONDING);
@@ -228,13 +240,13 @@ public class Converse extends Task {
                 // Gets a list of chatty people in the same building
             	candidates = getChattingPeople(person, true, true, true);
             	pool.addAll(candidates);
-            	initiatorLocation = Location.DINING_BUILDING;
+            	initiatorLocation = Location.SAME_DINING;
             	
                 if (pool.isEmpty()) {
                 	// Gets a list of busy people in the same dining building
                     candidates = getChattingPeople(person, false, true, true);
                 	pool.addAll(candidates);
-                	initiatorLocation = Location.DINING_BUILDING;
+                	initiatorLocation = Location.SAME_DINING;
                 }
             }
         }
@@ -293,9 +305,7 @@ public class Converse extends Task {
     			invitee = list.get(RandomUtil.getRandomInt(rand));
     		}
         }
-        
-        if (invitee != null)
-        	targetID = invitee.getIdentifier();
+
     	return invitee;
     }
 
@@ -344,8 +354,6 @@ public class Converse extends Task {
     		}
         }
         
-        if (invitee != null)
-        	targetID = invitee.getIdentifier();
     	return invitee;
     }
 
@@ -380,9 +388,7 @@ public class Converse extends Task {
         else {
         	endTask();
         }
-        
-        if (invitee != null)
-        	targetID = invitee.getIdentifier();
+
     	initiatorLocation = Location.EVA;
     	
     	return invitee;
@@ -403,16 +409,16 @@ public class Converse extends Task {
         }
         
         // After loading from saved sim, need to reload invitee
-    	if (target == null) {
-    		if (targetID == -1) {
+    	if (getTarget() == null) {
+    		if (getTargetID().equals(Integer.valueOf(-1))) {
     			logger.warning(person, "inviteeId is -1.");
     		}
     		else
-    			target = Simulation.instance().getUnitManager()
-    						.getPersonByID(targetID);
+    			setTarget(Simulation.instance().getUnitManager()
+    						.getPersonByID(getTargetID()), false);
     		
     		// starting the conversation talking to the invitee
-    		if (target != null)
+    		if (getTarget() != null)
     			talkWithInvitee();
     		else
     			logger.warning(person, "invitee is null.");
@@ -423,8 +429,12 @@ public class Converse extends Task {
     	else
     		talkWithInvitee();
  
-        RelationshipUtil.changeOpinion(person, target, 
-        		RelationshipType.REMOTE_COMMUNICATION, RandomUtil.getRandomDouble(-.1, .15));
+    	if (initiatorLocation.toString().contains("same"))
+    		RelationshipUtil.changeOpinion(person, getTarget(), 
+            	RelationshipType.FACE_TO_FACE_COMMUNICATION, RandomUtil.getRandomDouble(-.1, .3));
+    	else 
+    		RelationshipUtil.changeOpinion(person, getTarget(), 
+        		RelationshipType.REMOTE_COMMUNICATION, RandomUtil.getRandomDouble(-.1, .2));
 
         if (getTimeCompleted() + time >= getDuration()) {
         	endTask();
@@ -437,24 +447,28 @@ public class Converse extends Task {
      * Talks to the invitee.
      */
     public void talkWithInvitee() {
-		Task task = target.getMind().getTaskManager().getTask();
+		Task task = getTarget().getMind().getTaskManager().getTask();
 		boolean canAdd = false;
-		if (!hasConservation(target)) {
-	    	// Add conversation as a subtask to the invitee
-			canAdd = task.addSubTask(new Converse(target, person));
+		if (!hasConservation(getTarget())) {
+			if (task == null)
+				canAdd = getTarget().getMind().getTaskManager()
+					.checkReplaceTask(new Converse(getTarget(), person));
+			else
+				// Add conversation as a subtask to the invitee
+				canAdd = task.addSubTask(new Converse(getTarget(), person));
 		}
 		else {
 			canAdd = true;
 		}
 		
 		if (canAdd) {
-			String name = target.getName();
+			String name = getTarget().getName();
 	    	String loc = initiatorLocation.toString();
 	    	String s = CHATTING_WITH + " " + name + " " + loc;
 	    	
 	    	setDescription(s);
 
-			logger.log(person, Level.INFO, 30_000, s + ".");
+//			logger.log(person, Level.INFO, 30_000, s + ".");
 		}
 		else {
 			findInvitee();
@@ -491,29 +505,26 @@ public class Converse extends Task {
         }
         
         // After loading from saved sim, need to reload initiator
-    	if (target == null) {
-    		if (targetID == -1) {
+    	if (getTarget() == null) {
+    		if (getTargetID().equals(Integer.valueOf(-1))) {
     			logger.warning(person, "initiator is -1.");
     		}
     		else
-    			target = Simulation.instance().getUnitManager()
-    							.getPersonByID(targetID);
+    			setTarget(Simulation.instance().getUnitManager()
+    							.getPersonByID(getTargetID()), false);
     		
     		// Start the conversation talking to the initiator
-    		if (target != null) {
+    		if (getTarget() != null) {
     			talkWithInitiator();
     		}
     			
     		else
-    			logger.warning(target, "initiator is null.");
+    			logger.warning(getTarget(), "initiator is null.");
     	}
     	else {
     		talkWithInitiator();
     	}
  
-        RelationshipUtil.changeOpinion(target, person,
-        		RelationshipType.REMOTE_COMMUNICATION, RandomUtil.getRandomDouble(-.1, .15));
-
         if (getTimeCompleted() + time >= getDuration()) {
         	endTask();
         }
@@ -525,12 +536,12 @@ public class Converse extends Task {
      * Talks with the initiator.
      */
     public void talkWithInitiator() {
-    	String name = target.getName();
+    	String name = getTarget().getName();
     	String s = RESPONDING_TO + " " + name;
     	
     	setDescription(s);
 
-		logger.log(person, Level.INFO, 30_000, s + ".");
+//		logger.log(person, Level.INFO, 30_000, s + ".");
     }
     
 	/**
@@ -605,7 +616,7 @@ public class Converse extends Task {
 	 */
 	private static void addPerson(boolean checkIdle, Task task, Person initiator, Collection<Person> people, Person person) {
 		if (checkIdle
-			&& isIdleTask(task)) {
+			&& TaskUtil.isIdleTask(task)) {
 				people.add(person);
 	
 		} else if ((task == null 
@@ -616,20 +627,7 @@ public class Converse extends Task {
 		}
 	}
 	
-
-	/**
-	 * Is this an idle task ?
-	 * 
-	 * @param task
-	 * @return
-	 */
-	private static boolean isIdleTask(Task task) {
-        return task instanceof Relax
-        		|| task instanceof Yoga
-        		|| task instanceof Workout
-                || task instanceof Read
-                || task instanceof DayDream
-                || task instanceof Converse
-                || task instanceof EatDrink;
-    }
+	public void destroy() {
+		initiatorLocation = null; 
+	}
 }

@@ -19,7 +19,7 @@ import com.mars_sim.core.time.MasterClock;
 import junit.framework.TestCase;
 
 /**
- * Unit test suite for the sving and loading a simulation
+ * Unit test suite for the saving and loading a simulation
  */
 public class TestSaving extends TestCase implements SimulationListener {
 

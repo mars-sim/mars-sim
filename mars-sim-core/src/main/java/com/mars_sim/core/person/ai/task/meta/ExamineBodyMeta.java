@@ -57,7 +57,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 	private static final double DEFAULT_SCORE = 500D;
 
 	// Extra score for every day body not examined
-	private static final double SOL_SCORE = 50;
+	private static final double MOD_SCORE = 0.1;
 
 	private static MedicalManager medicalManager;
 
@@ -69,7 +69,8 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 	}
 
 	/**
-     * Get the score for a Settlement task for a person. to examine a body based on Job & Skill
+     * Gets the score for a Settlement task for a person. to examine a body based on Job & Skill.
+     * 
 	 * @param t Task being scored
 	 * @parma p Person requesting work.
 	 * @return The factor to adjust task score; 0 means task is not applicable
@@ -96,20 +97,21 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 
 
 	/**
-	 * Scan the Settlement for any post mortems that are needed
-	 * @param settlement Settlemnt to scan.
+	 * Scans the settlement for any post mortems that are needed.
+	 * 
+	 * @param settlement the settlement to scan.
 	 */
 	@Override
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask>  tasks = new ArrayList<>();
-		List<DeathInfo> deaths = medicalManager.getPostmortemExams(settlement);
+		List<DeathInfo> deaths = medicalManager.getPostmortemExam(settlement);
 
 		if (!deaths.isEmpty() && hasNeedyMedicalAidsAtSettlement(settlement)) {
 			for(DeathInfo pm : deaths) {
 				if (!pm.getExamDone()) {
 					RatingScore score = new RatingScore(DEFAULT_SCORE);
-					score.addBase("due",
-							(getMarsTime().getMissionSol() - pm.getTimeOfDeath().getMissionSol()) * SOL_SCORE);
+					score.addBase("due", 
+							getMarsTime().getTimeDiff(pm.getTimeOfDeath()) * MOD_SCORE);
 					tasks.add(new ExamineBodyJob(this, pm, score));
 				}
 			}
@@ -128,7 +130,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 	private boolean hasNeedyMedicalAidsAtSettlement(Settlement settlement) {
 
 		// Check all medical care buildings.
-		for(Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.MEDICAL_CARE)) {
+		for (Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.MEDICAL_CARE)) {
 			// Check if there are any sick beds at building.
 			if (b.getMedical().hasEmptyBeds()) {
 				return true;
