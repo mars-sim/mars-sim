@@ -72,7 +72,7 @@ public class SalvageMission extends AbstractMission
 	public static final int MIN_PEOPLE = 3;
 	private static final int MAX_PEOPLE = 10;
 
-	public static int FIRST_AVAILABLE_SOL = 2000;
+	public static final int FIRST_AVAILABLE_SOL = 2000;
 	/**
 	 * Time (millisols) required to prepare construction site for salvaging stage.
 	 */
@@ -464,9 +464,7 @@ public class SalvageMission extends AbstractMission
 			Vehicle vehicle = i.next();
 
 			if (vehicle instanceof LightUtilityVehicle) {
-				boolean usable = !vehicle.isReserved();
-
-                usable = vehicle.isVehicleReady();
+                boolean usable = vehicle.isVehicleReady();
 					
 				if (((Crewable) vehicle).getCrewNum() > 0 || ((Crewable) vehicle).getRobotCrewNum() > 0)
 					usable = false;
@@ -616,11 +614,9 @@ public class SalvageMission extends AbstractMission
 	 */
 	private void salvageConstructionParts() {
 
-		double salvageChance = 50D;
-
 		// Modify salvage chance based on building wear condition.
 		// Note: if non-building construction stage, wear condition should be 100%.
-		salvageChance = (wearCondition * .25D) + 25D;
+		double salvageChance = (wearCondition * .25D) + 25D;
 
 		// Get average construction skill of mission members.
 		double totalSkill = 0D;

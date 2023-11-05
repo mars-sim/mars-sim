@@ -7,22 +7,16 @@
 package com.mars_sim.core.person.ai.task;
 
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import com.mars_sim.core.LocalAreaUtil;
-import com.mars_sim.core.Simulation;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.SalvageMission;
-import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.Airlock;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.construction.ConstructionSite;
 import com.mars_sim.core.structure.construction.ConstructionStage;
 import com.mars_sim.core.vehicle.Crewable;
@@ -41,7 +35,7 @@ public class SalvageBuilding extends EVAOperation {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(SalvageBuilding.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(SalvageBuilding.class.getName());
 
 	/** Task name */
     private static final String NAME = Msg.getString(
@@ -69,7 +63,7 @@ public class SalvageBuilding extends EVAOperation {
      * Constructor.
      * @param person the person performing the task.
      */
-    public SalvageBuilding(Person person) {
+    public SalvageBuilding(Person person, SalvageMission mission) {
         // Use EVAOperation parent constructor.
         super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.CONSTRUCTION);
 
@@ -78,26 +72,24 @@ public class SalvageBuilding extends EVAOperation {
 			return;
 		}
 
-        SalvageMission mission = getMissionNeedingAssistance();
-        if ((mission != null) && canSalvage(person)) {
-
-            // Initialize data members.
-            this.stage = mission.getConstructionStage();
-            this.site = mission.getConstructionSite();
-            this.vehicles = mission.getConstructionVehicles();
-
-            // Determine location for salvage site.
-            LocalPosition salvageSiteLoc = determineSalvageLocation();
-            setOutsideSiteLocation(salvageSiteLoc);
-
-            // Add task phase
-            addPhase(SALVAGE);
-
-            logger.fine(person.getName() + " has started the SalvageBuilding task.");
-        }
-        else {
+        if (mission.isDone() || !canSalvage(person)) {
             endTask();
+            return;
         }
+
+        // Initialize data members.
+        this.stage = mission.getConstructionStage();
+        this.site = mission.getConstructionSite();
+        this.vehicles = mission.getConstructionVehicles();
+
+        // Determine location for salvage site.
+        LocalPosition salvageSiteLoc = determineSalvageLocation();
+        setOutsideSiteLocation(salvageSiteLoc);
+
+        // Add task phase
+        addPhase(SALVAGE);
+
+        logger.fine(person, "Started the SalvageBuilding task.");
     }
 
 	/**
@@ -118,10 +110,10 @@ public class SalvageBuilding extends EVAOperation {
 
         init();
 
-        logger.fine(person.getName() + " has started the SalvageBuilding task.");
+        logger.fine(person, "Started the SalvageBuilding task.");
     }
 
-	public void init() {
+	private void init() {
 
         // Determine location for salvage site.
         LocalPosition salvageSiteLoc = determineSalvageLocation();
@@ -136,7 +128,7 @@ public class SalvageBuilding extends EVAOperation {
      * @param person the person.
      * @return true if person can salvage.
      */
-    public static boolean canSalvage(Person person) {
+    public  static boolean canSalvage(Person person) {
 
         // Check if person can exit the settlement airlock.
         Airlock airlock = getWalkableAvailableEgressAirlock(person);
@@ -151,49 +143,9 @@ public class SalvageBuilding extends EVAOperation {
 		}
 
         // Check if person's medical condition will not allow task.
-        return !(person.getPerformanceRating() < .5D);
+        return (person.getPerformanceRating() >= .5D);
     }
-
-    /**
-     * Gets a random building salvage mission that needs assistance.
-     * @return salvage mission or null if none found.
-     */
-    private SalvageMission getMissionNeedingAssistance() {
-
-        SalvageMission result = null;
-
-        List<SalvageMission> salvageMissions = getAllMissionsNeedingAssistance(
-                worker.getSettlement());
-
-        if (salvageMissions.size() > 0) {
-            int index = RandomUtil.getRandomInt(salvageMissions.size() - 1);
-            result = (SalvageMission) salvageMissions.get(index);
-        }
-
-        return result;
-    }
-
-    /**
-     * Gets a list of all building salvage missions that need assistance at a settlement.
-     * @param settlement the settlement.
-     * @return list of building salvage missions.
-     */
-    public static List<SalvageMission> getAllMissionsNeedingAssistance(
-            Settlement settlement) {
-
-        List<SalvageMission> result = new ArrayList<SalvageMission>();
-
-        MissionManager manager = Simulation.instance().getMissionManager();
-        Iterator<Mission> i = manager.getMissionsForSettlement(settlement).iterator();
-        while (i.hasNext()) {
-            Mission mission = (Mission) i.next();
-            if (mission instanceof SalvageMission) {
-                result.add((SalvageMission) mission);
-            }
-        }
-
-        return result;
-    }
+   
 
     /**
      * Determine location to go to at salvage site.
@@ -213,7 +165,7 @@ public class SalvageBuilding extends EVAOperation {
         if (getOutsideSitePhase().equals(getPhase()) && operatingLUV) {
             int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 
-            double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+            double experienceAptitudeModifier = ((experienceAptitude) - 50D) / 100D;
             double drivingExperience = time / 10D;
             drivingExperience += drivingExperience * experienceAptitudeModifier;
             worker.getSkillManager().addExperience(SkillType.PILOTING, drivingExperience, time);
@@ -344,34 +296,21 @@ public class SalvageBuilding extends EVAOperation {
      * Obtains a construction vehicle from the settlement if possible.
      */
     private void obtainVehicle() {
-        Iterator<GroundVehicle> i = vehicles.iterator();
-        while (i.hasNext() && (luv == null)) {
-            GroundVehicle vehicle = i.next();
-            if (!vehicle.getMalfunctionManager().hasMalfunction()) {
-                if (vehicle instanceof LightUtilityVehicle) {
-                    LightUtilityVehicle tempLuv = (LightUtilityVehicle) vehicle;
-                    if (tempLuv.getOperator() == null) {
+        for(GroundVehicle vehicle : vehicles) {
+            if (!vehicle.getMalfunctionManager().hasMalfunction()
+                && (vehicle instanceof LightUtilityVehicle tempLuv) 
+                && (tempLuv.getOperator() == null)) {
+                    tempLuv.addPerson(person);
+                    tempLuv.setOperator(person);
 
-//	                   	 if (person != null) {
-	                		 tempLuv.addPerson(person);
-	                         tempLuv.setOperator(person);
-//	                	 }
-//
-//	                     else if (robot != null) {
-//	                        //tempLuv.getInventory().storeUnit(robot);
-//	                        //tempLuv.setOperator(robot);
-//	                     }
+                    luv = tempLuv;
+                    operatingLUV = true;
 
-                        luv = tempLuv;
-                        operatingLUV = true;
+                    // Place light utility vehicles at random location in construction site.
+                    LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalRelativePosition(site);
+                    luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
 
-                        // Place light utility vehicles at random location in construction site.
-                        LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalRelativePosition(site);
-                        luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
-
-                        break;
-                    }
-                }
+                    break;
             }
         }
     }
@@ -380,11 +319,7 @@ public class SalvageBuilding extends EVAOperation {
      * Returns the construction vehicle used to the settlement.
      */
     private void returnVehicle() {
-//    	if (person != null)
-            luv.removePerson(person);
-//		else if (robot != null)
-//	        luv.getInventory().retrieveUnit(robot);
-
+        luv.removePerson(person);
         luv.setOperator(null);
         operatingLUV = false;
     }
