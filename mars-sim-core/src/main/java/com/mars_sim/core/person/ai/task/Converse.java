@@ -71,31 +71,31 @@ public class Converse extends Task {
     private enum Location {
         ANOTHER_BUILDING,
         ANOTHER_SETTLEMENT,
-    	DINING_BUILDING,
     	EVA,
     	NONE,
         SAME_BUILDING,
+    	SAME_DINING,
         SAME_SETTLEMENT,
         SAME_VEHICLE;
     	
     	public String toString(){
             switch(this) {
                 case ANOTHER_BUILDING:
-                    return "from Another Building";
+                    return "from another building";
                 case ANOTHER_SETTLEMENT:
-                    return "in Same Settlement";
-                case DINING_BUILDING:
-                    return "in Same Dining Fac";
+                    return "in same settlement";
                 case EVA:
                     return "while in EVA";
                 case NONE:
                     return "";        
                 case SAME_BUILDING:
-                    return "in Same Building"; 
+                    return "in same building"; 
+                case SAME_DINING:
+                    return "in same dining hall";
                 case SAME_SETTLEMENT:
-                    return "in Same Settlement";  
+                    return "in same settlement";  
                 case SAME_VEHICLE:
-                    return "in Same Vehicle";  
+                    return "in same vehicle";  
                 default: 
                 	return "";
             }
@@ -240,13 +240,13 @@ public class Converse extends Task {
                 // Gets a list of chatty people in the same building
             	candidates = getChattingPeople(person, true, true, true);
             	pool.addAll(candidates);
-            	initiatorLocation = Location.DINING_BUILDING;
+            	initiatorLocation = Location.SAME_DINING;
             	
                 if (pool.isEmpty()) {
                 	// Gets a list of busy people in the same dining building
                     candidates = getChattingPeople(person, false, true, true);
                 	pool.addAll(candidates);
-                	initiatorLocation = Location.DINING_BUILDING;
+                	initiatorLocation = Location.SAME_DINING;
                 }
             }
         }
@@ -429,8 +429,12 @@ public class Converse extends Task {
     	else
     		talkWithInvitee();
  
-        RelationshipUtil.changeOpinion(person, getTarget(), 
-        		RelationshipType.REMOTE_COMMUNICATION, RandomUtil.getRandomDouble(-.1, .15));
+    	if (initiatorLocation.toString().contains("same"))
+    		RelationshipUtil.changeOpinion(person, getTarget(), 
+            	RelationshipType.FACE_TO_FACE_COMMUNICATION, RandomUtil.getRandomDouble(-.1, .3));
+    	else 
+    		RelationshipUtil.changeOpinion(person, getTarget(), 
+        		RelationshipType.REMOTE_COMMUNICATION, RandomUtil.getRandomDouble(-.1, .2));
 
         if (getTimeCompleted() + time >= getDuration()) {
         	endTask();
@@ -464,7 +468,7 @@ public class Converse extends Task {
 	    	
 	    	setDescription(s);
 
-			logger.log(person, Level.INFO, 30_000, s + ".");
+//			logger.log(person, Level.INFO, 30_000, s + ".");
 		}
 		else {
 			findInvitee();
@@ -521,9 +525,6 @@ public class Converse extends Task {
     		talkWithInitiator();
     	}
  
-        RelationshipUtil.changeOpinion(getTarget(), person,
-        		RelationshipType.REMOTE_COMMUNICATION, RandomUtil.getRandomDouble(-.1, .15));
-
         if (getTimeCompleted() + time >= getDuration()) {
         	endTask();
         }
@@ -540,7 +541,7 @@ public class Converse extends Task {
     	
     	setDescription(s);
 
-		logger.log(person, Level.INFO, 30_000, s + ".");
+//		logger.log(person, Level.INFO, 30_000, s + ".");
     }
     
 	/**

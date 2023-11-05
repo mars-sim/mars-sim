@@ -24,7 +24,6 @@ import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.tools.Msg;
 
 /**

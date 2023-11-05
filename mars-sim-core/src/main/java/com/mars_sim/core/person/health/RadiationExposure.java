@@ -36,10 +36,10 @@ import com.mars_sim.tools.util.RandomUtil;
  * <br> 
  * <p> Notes on unit conversion: 
  * <br> 1000 millirem = 1 rem 
- * <br> 1 Sievert (Sv) is 100 rem 
- * <br> 1000 mSv = 1 Sv 
- * <br> 500 mSv = 50 rem 
- * <br> 10 mSv = 1 rem
+ * <br> 1 Sievert (Sv) = 1000 mSv = 100 rem 
+ * <br> .5 Sv = 500 mSv = 50 rem 
+ * <br> .05 Sv = 50 mSv = 5 rem
+ * <br> .01 Sv = 10 mSv = 1 rem
  *
  * <br> <p> GRAY UNIT (Gy)
  * <p> Exposure from x-rays or gamma rays is measured in units of roentgens. For
@@ -104,7 +104,7 @@ public class RadiationExposure implements Serializable, Temporal {
 		public DoseHistory(double thirtyDay, double annual, double career) {
 			this.thirtyDay = thirtyDay;
 			this.annual = annual;
-			this.career = career;
+			this.career = career + annual + thirtyDay;
 		}
 		
 		public double getThirtyDay() {
@@ -141,7 +141,7 @@ public class RadiationExposure implements Serializable, Temporal {
 		}
 
 		/**
-		 * Compare this dose hsitory to another and see if any values are higher
+		 * Compares this dose history to another and see if any values are higher.
 		 */
 		boolean higherThan(DoseHistory limit) {
 			// Only check the 30 day value currently
@@ -151,11 +151,11 @@ public class RadiationExposure implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(RadiationExposure.class.getName());
 
 	/** The time interval that a person checks for radiation exposure. */
-	public static final int RADIATION_CHECK_FREQ = 50; // in millisols
+	public static final int RADIATION_CHECK_FREQ = 10; // in millisols
 	/** The chance modifier for SEP. Can be twice as much probability of occurrence (an arbitrary value for now). */
 	public static final double SEP_CHANCE_SWING = 2D;
 	/** The chance modifier for GCR. Can be 3x as much probability of occurrence (an arbitrary value for now). */
@@ -226,27 +226,40 @@ public class RadiationExposure implements Serializable, Temporal {
 	/** Randomize dose at the start of the sim when a settler arrives on Mars. */
 	private DoseHistory[] dose;
 
-	private Map<Integer,Radiation> eventMap = new ConcurrentHashMap<>();
+	private Map<Integer, Radiation> eventMap = new ConcurrentHashMap<>();
 
 	private Person person;
 
 	private static MasterClock masterClock;
 
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param person
+	 */
 	public RadiationExposure(Person person) {
 		this.person = person;
 		dose = new DoseHistory[BodyRegionType.values().length];
-		DoseHistory bfoDose = new DoseHistory(rand(10), rand(30), rand(40));
-		DoseHistory ocularDose = new DoseHistory(bfoDose.getThirtyDay() + rand(15),
-												 bfoDose.getAnnual() + rand(45),
-												 bfoDose.getCareer() + rand(70));
-		DoseHistory skinDose = new DoseHistory(ocularDose.getThirtyDay() + rand(25),
-												ocularDose.getAnnual() + rand(60),
-												ocularDose.getCareer() + rand(100));
+		
+		double bfo0 = rand(10);
+		double bfo1 = rand(30) + bfo0;
+		double bfo2 = rand(40) + bfo1;
+		DoseHistory bfoDose = new DoseHistory(bfo0, bfo1, bfo2);
+		
+		double ocular0 = rand(5);
+		double ocular1 = rand(15) + ocular0;
+		double ocular2 = rand(20) + ocular1;			
+		DoseHistory ocularDose = new DoseHistory(ocular0, ocular1, ocular2);
+		
+		double skin0 = rand(20);
+		double skin1 = rand(50) + skin0;
+		double skin2 = rand(70) + skin1;
+		DoseHistory skinDose = new DoseHistory(skin0, skin1, skin2);
+		
 		dose[BodyRegionType.BFO.ordinal()] = bfoDose;
 		dose[BodyRegionType.OCULAR.ordinal()] = ocularDose;
 		dose[BodyRegionType.SKIN.ordinal()] = skinDose;
-
 	}
 
 	/**
@@ -265,7 +278,7 @@ public class RadiationExposure implements Serializable, Temporal {
 		active.addToCareer(amount);
 
 		// Record for later
-		Radiation rad = new Radiation(radiationType, bodyRegionType, Math.round(amount * 10000.0) / 10000.0);
+		Radiation rad = new Radiation(radiationType, bodyRegionType, Math.round(amount * 1000.0) / 1000.0);
 		eventMap.put(solCache, rad);
 
 		return rad;
@@ -273,7 +286,7 @@ public class RadiationExposure implements Serializable, Temporal {
 	}
 
 	/*
-	 * Reduces the dose
+	 * Reduces the dose.
 	 *
 	 * @bodyRegion
 	 *
