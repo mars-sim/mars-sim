@@ -149,9 +149,6 @@ public class MineSite extends EVAOperation {
 	 */
 	private double miningPhase(double time) {
 		double remainingTime = 0;
-		
-		if (checkReadiness(time, false) > 0)
-			return time;
 
 		// Check if there is reason to cut the mining phase short and return
 		// to the rover.
@@ -170,7 +167,12 @@ public class MineSite extends EVAOperation {
 
 			checkLocation("Time on site expired.");
 		}
-
+	
+		// Note: need to call addTimeOnSite() ahead of checkReadiness() since
+		// checkReadiness's addTimeOnSite() lacks the details of handling LUV
+		if (checkReadiness(time, true) > 0)
+			return time;
+		
 		// Operate light utility vehicle if no one else is operating it.
 		if (person != null && !luv.getMalfunctionManager().hasMalfunction()
 				&& (luv.getCrewNum() == 0) && (luv.getRobotCrewNum() == 0)) {

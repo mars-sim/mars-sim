@@ -135,9 +135,6 @@ public class UnloadVehicleEVA extends EVAOperation {
 	protected double unloadingPhase(double time) {		
 		double remainingTime = 0;
 		
-		if (checkReadiness(time, true) > 0)
-			return time;
-
 		if (settlement == null) {
 			checkLocation("Settlement is null.");
 			return time;
@@ -148,6 +145,9 @@ public class UnloadVehicleEVA extends EVAOperation {
 			return time;
 		}
 		
+		if (checkReadiness(time, true) > 0)
+			return time;
+
 		// Check if the vehicle is in a garage
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {
 			checkLocation("Vehicle in garage.");

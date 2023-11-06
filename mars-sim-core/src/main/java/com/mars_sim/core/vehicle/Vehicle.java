@@ -1378,8 +1378,7 @@ public abstract class Vehicle extends Unit
 				RadiationStatus newExposed = RadiationStatus.calculateChance(pulse.getElapsed());
 				setExposed(newExposed);
 			}
-			
-			
+
 			// TODO: Should the following be executed when a vehicle is on the road ? 
 			
 			int count = 0;

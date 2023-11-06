@@ -272,29 +272,6 @@ public class SalvageBuilding extends EVAOperation {
      */
     private double salvage(double time) {
     	double remainingTime = 0;
-    	
-		// Check for radiation exposure during the EVA operation.
-		if (isRadiationDetected(time)) {
-			checkLocation("Radiation detected.");
-			return time;
-		}
-
-		// Check if EVA operation needs to end
-		if (shouldEndEVAOperation(true)) {
-			checkLocation("EVA ended.");
-			return time;
-		}
-
-        // Check time on site
-		if (addTimeOnSite(time)) {
-			checkLocation("Time on site expired.");
-			return time;
-		}		
-		
-		if (person.isSuperUnFit()) {
-			checkLocation("Person unfit.");
-			return time;
-		}
 
         if (stage.isComplete() || addTimeOnSite(time)) {
             // End operating light utility vehicle.
@@ -312,7 +289,12 @@ public class SalvageBuilding extends EVAOperation {
 			checkLocation("Stage completed.");
 			return remainingTime;
         }
-
+	
+		// Note: need to call addTimeOnSite() ahead of checkReadiness() since
+		// checkReadiness's addTimeOnSite() lacks the details of handling LUV
+		if (checkReadiness(time, true) > 0)
+			return time;
+		
         // Operate light utility vehicle if no one else is operating it.
         if (!operatingLUV) {
             obtainVehicle();

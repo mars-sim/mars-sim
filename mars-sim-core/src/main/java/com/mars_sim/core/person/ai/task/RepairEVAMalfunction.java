@@ -116,41 +116,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 	private double repairMalfunctionPhase(double time) {
 		double remainingTime = 0;
 		
-		// Check for radiation exposure during the EVA operation.
-		if (isDone()) {
-			checkLocation("Task duration ended.");
+		if (checkReadiness(time, false) > 0) {
 			return time;
 		}
-
-		// Check for radiation exposure during the EVA operation.
-		if (isRadiationDetected(time)) {
-			checkLocation("Radiation detected.");
-			return time;
-		}
-		
-		// Check if there is a reason to cut short and return.
-		if (shouldEndEVAOperation(false)) {
-			checkLocation("EVA ended.");
-			return time;
-		}
-			
-		// Check for radiation expo
-		// Check if there is a reason to cut short and return.
-		if (shouldEndEVAOperation(false)) {
-			checkLocation("EVA ended.");
-			return time;
-		}
-			
-		if (person != null && person.isSuperUnFit()) {
-			checkLocation("Person unfit.");
-			return time;
-		}
-
-        // Check time on site
-		if (addTimeOnSite(time)) {
-			checkLocation("Time on site expired.");
-			return time;
-		}	
 		
         // Check if malfunction repair is done
 		if (malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {

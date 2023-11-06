@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import com.mars_sim.core.environment.ExploredLocation;
 import com.mars_sim.core.environment.MineralMap;
 import com.mars_sim.core.equipment.Container;
-import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -174,12 +173,12 @@ public class ExploreSite extends EVAOperation {
 	private double exploringPhase(double time) {
 		double remainingTime = 0;
 		
-		// Add to the cumulative combined site time
-		((Exploration)person.getMission()).addSiteTime(time);
-		
 		if (checkReadiness(time, false) > 0)
 			return time;
 
+		// Add to the cumulative combined site time
+		((Exploration)person.getMission()).addSiteTime(time);
+		
 		if (totalCollected >= AVERAGE_ROCK_SAMPLES_COLLECTED_SITE) {
 			checkLocation("Rock samples collected exceeded set average.");
 			return time;
@@ -212,13 +211,6 @@ public class ExploreSite extends EVAOperation {
 
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
-
-		// Check if site duration has ended or there is reason to cut the exploring
-		// phase short and return to the rover.
-		if (addTimeOnSite(time)) {
-			checkLocation("Time on site expired.");
-			return remainingTime;
-		}
 
 		return remainingTime;
 	}
@@ -258,8 +250,10 @@ public class ExploreSite extends EVAOperation {
 						totalCollected += mass - excess;
 					}
 				}
-				else
+				else {
+					logger.info(person, 10_000, "No specimen box is available for " + ResourceUtil.ROCKS[randomNum] + ".");
 					endTask();
+				}
 			}
 		}
 	}

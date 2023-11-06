@@ -119,9 +119,6 @@ public class MaintainEVAVehicle extends EVAOperation {
      */
     private double maintainVehiclePhase(double time) {
     	double remainingTime = 0;
-    	
-		if (checkReadiness(time, true) > 0)
-			return remainingTime;
 				
 		if (settlement == null) {
 			checkLocation("Settlement is null.");
@@ -131,22 +128,13 @@ public class MaintainEVAVehicle extends EVAOperation {
 		if (vehicle == null) {
 			checkLocation("Vehicle is null.");
 			return time;
-		}
-		
+		}		
+	   	
+		if (checkReadiness(time, true) > 0)
+			return time;
+			
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {
 			checkLocation("Vehicle in garage.");
-			return time;
-		}
-		
-        // Check if there is a reason to cut short and return.
-		if (shouldEndEVAOperation(true)) {
-			checkLocation("No sunlight.");
-			return time;
-		}
-		
-        // Check time on site
-		if (addTimeOnSite(time)) {
-			checkLocation("Time on site expired.");
 			return time;
 		}
 		

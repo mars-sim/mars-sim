@@ -432,7 +432,7 @@ public class PhysicalCondition implements Serializable {
 
 				// Calculate performance and most mostSeriousProblem illness.
 				recalculatePerformance();
-				// Update radiation counter
+				// Check radiation 
 				radiation.timePassing(pulse);
 				
 				// Get stress factor due to settlement overcrowding

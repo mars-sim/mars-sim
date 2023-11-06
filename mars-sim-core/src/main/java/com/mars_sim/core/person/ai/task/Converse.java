@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Simulation;
@@ -283,7 +282,7 @@ public class Converse extends Task {
         
         if (pool.isEmpty()) {
         	initiatorLocation = Location.NONE;
-//        	logger.info(person, 30_000, "can't find anyone to chat with.");
+        	logger.info(person, 30_000, "Unable to find anyone to chat with.");
         	return null;
         }
 
@@ -328,14 +327,13 @@ public class Converse extends Task {
         	initiatorLocation = Location.ANOTHER_SETTLEMENT;
         }
 
-        // TODO: find someone who's inside other vehicles
-
         if (pool.isEmpty()) {
         	initiatorLocation = Location.NONE;
-//        	logger.info(person, "can't find anyone to chat with.");
+        	logger.info(person, "Unable to find anyone to chat with in " + v);
         	return null;
-         }
-        
+        }
+        // TODO: find someone who's inside other vehicles
+
         int num = pool.size();
         List<Person> list = new ArrayList<>();
         list.addAll(pool);
@@ -467,8 +465,6 @@ public class Converse extends Task {
 	    	String s = CHATTING_WITH + " " + name + " " + loc;
 	    	
 	    	setDescription(s);
-
-//			logger.log(person, Level.INFO, 30_000, s + ".");
 		}
 		else {
 			findInvitee();
@@ -540,8 +536,6 @@ public class Converse extends Task {
     	String s = RESPONDING_TO + " " + name;
     	
     	setDescription(s);
-
-//		logger.log(person, Level.INFO, 30_000, s + ".");
     }
     
 	/**

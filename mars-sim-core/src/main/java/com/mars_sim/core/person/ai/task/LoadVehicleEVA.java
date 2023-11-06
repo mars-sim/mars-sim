@@ -135,37 +135,13 @@ public class LoadVehicleEVA extends EVAOperation {
 			return time;
 		}
 		
+		if (checkReadiness(time, false) > 0) {
+			return time;
+		}
+		
 		// Check if the vehicle is in a garage
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {
 			checkLocation("Vehicle in garage.");
-			return time;
-		}
-		
-		// Task duration has expired
-		if (isDone()) {
-			checkLocation("Task duration ended.");
-			return time;
-		}
-		// Check for radiation exposure during the EVA operation.
-		if (isRadiationDetected(time)) {
-			checkLocation("Radiation detected.");
-			return time;
-		}
-		
-        // Check if there is a reason to cut short and return.
-		if (shouldEndEVAOperation(true)) {
-			checkLocation("No sunlight.");
-			return time;
-		}
-
-        // Check time on site
-		if (addTimeOnSite(time)) {
-			checkLocation("Time on site expired.");
-			return time;
-		}
-		
-		if (person.isSuperUnFit()) {
-			checkLocation("Person is unfit.");
 			return time;
 		}
 		

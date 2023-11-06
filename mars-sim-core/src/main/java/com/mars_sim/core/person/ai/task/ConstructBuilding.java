@@ -236,10 +236,9 @@ public class ConstructBuilding extends EVAOperation {
 	 * @throws Exception
 	 */
 	private double constructionPhase(double time) {
-		double remainingTime = 0;
-		
+
 		if (checkReadiness(time, true) > 0)
-			return remainingTime;
+			return time;
 		
 		// Operate light utility vehicle if no one else is operating it.
 		if (!operatingLUV) {

@@ -150,30 +150,9 @@ public class CollectMinedMinerals extends EVAOperation {
 	 */
 	private double collectMineralsPhase(double time) {
 
-		// Check for radiation exposure during the EVA operation.
-		if (isDone()) {
-			checkLocation("Task duration ended.");
+		if (checkReadiness(time, false) > 0) {
 			return time;
 		}
-		
-		// Check for radiation exposure during the EVA operation.
-		if (isRadiationDetected(time)) {
-			checkLocation("Radiation detected.");
-			return time;
-		}
-		
-		// Check if site duration has ended or there is reason to cut the collect
-		// minerals phase short and return to the rover.
-		if (shouldEndEVAOperation(false)) {
-			checkLocation("EVA ended.");
-			return time;
-		}
-
-        // Check time on site
-		if (addTimeOnSite(time)) {
-			checkLocation("Time on site expired.");
-			return time;
-		}		
 		
 		Mining mission = (Mining) worker.getMission();
 
