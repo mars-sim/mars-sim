@@ -136,9 +136,9 @@ public class CommandHelper {
 			
 			Set<Person> c = study.getCollaborativeResearchers();
 			for (Person person :  study.getInvitedResearchers()) {
-				response.appendTableRow(person.getName(),
-										study.hasInvitedResearcherResponded(person),
-										c.contains(person));
+				boolean responded = study.hasInvitedResearcherResponded(person);
+				Boolean accepted = (responded ? c.contains(person) : null);
+				response.appendTableRow(person.getName(), responded, accepted);
 			}
 			break;
 		

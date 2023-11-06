@@ -116,12 +116,15 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
 
         // Add probability for researcher's primary study (if any).
         ScientificStudy s = (ScientificStudy) st.getFocus();
-        if (s.equals(p.getStudy())
-            && !s.isPrimaryResearchCompleted()) {
-           researchModifier = 1.3D;
+        if (s.equals(p.getStudy())) {
+            // Lead researcher and it's astronomy
+            if ((ScienceType.ASTRONOMY == s.getScience())
+                && !s.isPrimaryResearchCompleted()) {
+                researchModifier = 1.3D;
+            }
         }
         // Add probability for each study researcher is collaborating on.
-        if ((ScienceType.ASTRONOMY == s.getContribution(p))
+        else if ((ScienceType.ASTRONOMY == s.getContribution(p))
             && !s.isCollaborativeResearchCompleted(p)) {
             researchModifier = 1.1D;
         }
