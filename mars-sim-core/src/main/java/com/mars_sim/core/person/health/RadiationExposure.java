@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RadiationExposure.java
- * @date 2022-06-17
+ * @date 2023-11-05
  * @author Manny Kung
  */
 
@@ -11,17 +11,21 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.hazard.HazardEvent;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.RadiationStatus;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.util.RandomUtil;
 
 /**
@@ -155,7 +159,7 @@ public class RadiationExposure implements Serializable, Temporal {
 	private static final SimLogger logger = SimLogger.getLogger(RadiationExposure.class.getName());
 
 	/** The time interval that a person checks for radiation exposure. */
-	public static final int RADIATION_CHECK_FREQ = 10; // in millisols
+	public static final int RADIATION_CHECK_FREQ = 50; // in millisols
 	/** The chance modifier for SEP. Can be twice as much probability of occurrence (an arbitrary value for now). */
 	public static final double SEP_CHANCE_SWING = 2D;
 	/** The chance modifier for GCR. Can be 3x as much probability of occurrence (an arbitrary value for now). */
@@ -210,7 +214,8 @@ public class RadiationExposure implements Serializable, Temporal {
 	private static final int WHOLE_BODY_DOSE = 1000; 
 
 	private static final String EXPOSED_TO = "Exposed to ";
-	private static final String DOSE_OF_RAD = " mSv dose of radiation";
+	private static final String DOSE_OF = " mSv dose of ";
+	private static final String RAD = "radiation ";
 	private static final String EVA_OPERATION = " during an EVA operation.";
 
 	private int solCache = 1, counter30 = 1, counter360 = 1;
@@ -231,7 +236,7 @@ public class RadiationExposure implements Serializable, Temporal {
 	private Person person;
 
 	private static MasterClock masterClock;
-
+	private static UnitManager unitManager;
 
 	/**
 	 * Constructor.
@@ -278,7 +283,7 @@ public class RadiationExposure implements Serializable, Temporal {
 		active.addToCareer(amount);
 
 		// Record for later
-		Radiation rad = new Radiation(radiationType, bodyRegionType, Math.round(amount * 1000.0) / 1000.0);
+		Radiation rad = new Radiation(radiationType, bodyRegionType, Math.round(amount * 10000.0) / 10000.0);
 		eventMap.put(solCache, rad);
 
 		return rad;
@@ -319,6 +324,13 @@ public class RadiationExposure implements Serializable, Temporal {
 		if (msol % 17 == 0) {
 			checkExposureLimit();
 		}
+		
+		// Checks radiation
+		// Note: if a person is outside, it's handled by EVAOperation's isRadiationDetected()
+		if (!person.isOutside()) {
+			isRadiationDetected(pulse.getElapsed());
+		}
+			
 		return true;
 	}
 
@@ -386,7 +398,7 @@ public class RadiationExposure implements Serializable, Temporal {
 	}
 
 	/**
-	 * Check for radiation exposure of the person performing this EVA.
+	 * Checks for radiation exposure of the person performing this EVA.
 	 *
 	 * @param time the amount of time on EVA (in millisols)
 	 * @return true if radiation is detected
@@ -394,126 +406,196 @@ public class RadiationExposure implements Serializable, Temporal {
 	public boolean isRadiationDetected(double time) {
 		// Check every RADIATION_CHECK_FREQ (in millisols)
 		if (masterClock.getClockPulse().isNewMSol() 
-			&& masterClock.getMarsTime().getMillisolInt() % RadiationExposure.RADIATION_CHECK_FREQ == 0) {
+			&& masterClock.getMarsTime().getMillisolInt() 
+				% RadiationExposure.RADIATION_CHECK_FREQ == RadiationExposure.RADIATION_CHECK_FREQ - 1) {
 
 			RadiationType radiationType = null;
 			BodyRegionType bodyRegionType = null;
 			
 			double totalExposure = 0;
-			double exposure = 0;
-			double shield_factor = 0;
+			// The strength of the radiation is reduced by shieldOff param (location dependent)
+			double shieldOff = 1;
 
 			double baseline = 0;
 			double sep = 0;
 			double gcr = 0;
 
+			Radiation rad = null;			
+			
+			RadiationStatus exposed = null;
+
+			if (person.isInSettlement()) {
+				exposed = person.getSettlement().getExposed();
+			}
+			else if (person.isInVehicle()) {
+				exposed = person.getVehicle().getExposed();
+			}
+			else if (person.isOutside()) {
+				
+				if (unitManager == null) {
+					unitManager = Simulation.instance().getUnitManager();
+				}
+				
+				// Check first if a person is in a settlement vicinity
+				Settlement settlement = unitManager.findSettlement(person.getCoordinates());	
+				if (settlement != null) {
+					exposed = settlement.getExposed();
+				}
+				else {
+					// Check if a person is in a vehicle vicinity
+					Vehicle vehicle = CollectionUtils.findVehicle(person.getCoordinates());
+					if (vehicle != null) {
+						exposed = vehicle.getExposed();
+					}
+					else
+						return false;
+				}
+			}
+			else
+				return false;
+			
+			// Note: for now, target at only one body region. In reality, it can hit all 3 at the same time.
+			int rand = RandomUtil.getRandomInt(10);
+			if (rand == 0) // 0
+				bodyRegionType = BodyRegionType.OCULAR;
+			else if (rand <= 3) // 1, 2, 3
+				bodyRegionType = BodyRegionType.BFO;
+			else // 4-10
+				bodyRegionType = BodyRegionType.SKIN;
+							
+			double base = 0;
+			
 			// Future: account for the effect of atmosphere pressure on radiation dosage as
 			// shown by RAD data
 
 			// Future: compute radiation if a person steps outside of a rover on a mission
 			// somewhere on Mars
-			
-			if (person.isOutside()) {
-				// Future: how to make radiation more consistent/less random by coordinates/locale
-			
-				Radiation rad = null;
-				
-				RadiationStatus exposed = person.getAssociatedSettlement().getExposed();
-
-				if (exposed.isGCREvent())
-					shield_factor = RandomUtil.getRandomDouble(1); // arbitrary
-				// NOTE: SEP may shield off GCR as shown in Curiosity's RAD data
-				// since GCR flux is modulated by solar activity.
-				// It DECREASES during solar activity maximum and 
-				// INCREASES during solar activity minimum
-				else
-					shield_factor = 1; // arbitrary
-
-				int rand = RandomUtil.getRandomInt(10);
-				if (rand == 0)
-					bodyRegionType = BodyRegionType.OCULAR;
-				else if (rand <= 3)
-					bodyRegionType = BodyRegionType.BFO;
-				else
-					bodyRegionType = BodyRegionType.SKIN;
-								
-				double baselevel = 0;
+			if (person.isInVehicle()) {
+				shieldOff = .5;
 				if (exposed.isSEPEvent()) {
 					radiationType = RadiationType.SEP;
-
-					baselevel = 0.0; 
-					// highly unpredictable, somewhat arbitrary
-					sep += (baselevel + RandomUtil.getRandomInt(-1, 1)
-							* RandomUtil.getRandomDouble(SEP_RAD_PER_SOL * time / RADIATION_CHECK_FREQ)) 
-							* RandomUtil.getRandomDouble(SEP_SWING_FACTOR);
+					
+					shieldOff = RandomUtil.getRandomDouble(shieldOff); 
+					base = SEP_RAD_PER_SOL; 
+					
+					// Note: the onset of SEP should be predictable and detectable,
+					// making it easier to avoid
+					double mean = RandomUtil.getRandomDouble(shieldOff * SEP_SWING_FACTOR * base * time); 
+					sep = RandomUtil.computeGaussianWithLimit(mean, mean / 10, mean / 100);
+//					sep = Math.min(RandomUtil.getRandomRegressionInteger((int)SEP_SWING_FACTOR), 
+//							RandomUtil.getRandomDouble(shieldOff * SEP_SWING_FACTOR * base * time));
 					if (sep > 0) {
-						rad = addDose(radiationType, bodyRegionType, exposure);
+						rad = addDose(radiationType, bodyRegionType, sep);
 					}	
 				}
-				// for now, if SEP happens, ignore GCR and Baseline
+			}
+			
+			else if (person.isInSettlement()) {
+				shieldOff = .25;
+				if (exposed.isSEPEvent()) {
+					radiationType = RadiationType.SEP;
+					
+					shieldOff = RandomUtil.getRandomDouble(shieldOff);
+					base = SEP_RAD_PER_SOL; 
+					
+					// Note: the onset of SEP should be predictable and detectable,
+					// making it easier to avoid
+					double mean = RandomUtil.getRandomDouble(shieldOff * SEP_SWING_FACTOR * base * time); 
+					sep = RandomUtil.computeGaussianWithLimit(mean, mean / 10, mean / 100);
+//					sep = Math.min(RandomUtil.getRandomRegressionInteger((int)SEP_SWING_FACTOR), 
+//							RandomUtil.getRandomDouble(shieldOff * SEP_SWING_FACTOR * base * time));
+					if (sep > 0) {
+						rad = addDose(radiationType, bodyRegionType, sep);
+					}	
+				}
+			}
+						
+			else if (person.isOutside()) {
+				// Future: how to make radiation more consistent/less random by coordinates/locale
+			
+				if (exposed.isBaselineEvent()) {
+					radiationType = RadiationType.BASELINE;
+					base = BASELINE_RAD_PER_SOL * time;
+					// arbitrary
+					baseline 
+					= base + RandomUtil.getRandomInt(-1, 1) * RandomUtil.getRandomDouble(base / 3D); 
+					if (baseline > 0) {
+						rad = addDose(radiationType, bodyRegionType, baseline);
+					}	
+				}
+				
+				// Note: for now, if SEP happens, ignore GCR and Baseline
 				else if (exposed.isGCREvent()) {
+					shieldOff = RandomUtil.getRandomDouble(shieldOff);
+					// NOTE: SEP may shield off GCR as shown in Curiosity's RAD data
+					// since GCR flux is modulated by solar activity.
+					// It DECREASES during solar activity maximum and 
+					// INCREASES during solar activity minimum
+					
 					radiationType = RadiationType.GCR;
-					baselevel = GCR_RAD_PER_SOL * time / 100D;
+					base = GCR_RAD_PER_SOL * time / 100D;
 					// according
 					// to
 					// Curiosity
 					// RAD's
 					// data
-					gcr += baselevel + RandomUtil.getRandomInt(-1, 1) * RandomUtil
-							.getRandomDouble(shield_factor * GCR_RAD_SWING * time / RADIATION_CHECK_FREQ); 
+					gcr = base + RandomUtil.getRandomInt(-1, 1) * RandomUtil
+							.getRandomDouble(shieldOff * GCR_RAD_SWING * time); 
 					if (gcr > 0) {
-						rad = addDose(radiationType, bodyRegionType, exposure);
+						rad = addDose(radiationType, bodyRegionType, gcr);
+					}
+				}
+					
+				else if (exposed.isSEPEvent()) {
+					radiationType = RadiationType.SEP;
+					
+					shieldOff = RandomUtil.getRandomDouble(shieldOff); // arbitrary
+					base = SEP_RAD_PER_SOL; 
+					
+					// Note: the onset of SEP should be predictable and detectable,
+					// making it easier to avoid
+					double mean = RandomUtil.getRandomDouble(shieldOff * SEP_SWING_FACTOR * base * time); 
+					sep = RandomUtil.computeGaussianWithLimit(mean, mean / 10, mean / 100);
+//					sep = Math.min(RandomUtil.getRandomRegressionInteger((int)SEP_SWING_FACTOR), 
+//							RandomUtil.getRandomDouble(shieldOff * SEP_SWING_FACTOR * base * time));
+					if (sep > 0) {
+						rad = addDose(radiationType, bodyRegionType, sep);
 					}	
 				}
-				// for now, if GCR happens, ignore Baseline
-				else if (exposed.isBaselineEvent()) {
-					radiationType = RadiationType.BASELINE;
-					baselevel = BASELINE_RAD_PER_SOL * time / RADIATION_CHECK_FREQ;
-					// arbitrary
-					baseline += baselevel
-							+ RandomUtil.getRandomInt(-1, 1) * RandomUtil.getRandomDouble(baselevel / 3D); 
-					if (baseline > 0) {
-						rad = addDose(radiationType, bodyRegionType, exposure);
-					}	
+			}
+			
+			totalExposure = sep + gcr + baseline;
+			
+			if (totalExposure > 0 && rad != null) {
+				String str = EXPOSED_TO + Math.round(totalExposure * 10_000.0) / 10_000.0
+						+ DOSE_OF + rad.getRadiationType().getName() 
+						+ " on " + bodyRegionType.getName() + EVA_OPERATION;
+
+				if (person.getVehicle() == null) {
+					// if a person steps outside of the vehicle
+					logger.info(person, str);
 				}
 				else {
-					return false;
+					String activity = "";
+					if (person.getMind().getMission() != null)
+						activity = person.getMind().getMission().getName();
+					else
+						activity = person.getTaskDescription();
+					logger.info(person, str + " while " + activity);
 				}
 
-				exposure = sep + gcr + baseline;
-				totalExposure += exposure;
-				
-				if (totalExposure > 0 && rad != null) {
-					String str = EXPOSED_TO + rad.getRadiationType().getName()
-							+ " and received " 
-							+ Math.round(totalExposure * 10_000.0) / 10_000.0
-							+ DOSE_OF_RAD;
+				HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_RADIATION_EXPOSURE,
+						rad,
+						rad.toString(),
+						person.getTaskDescription(),
+						person.getName(), 
+						person
+						);
+				Simulation.instance().getEventManager().registerNewEvent(hEvent);
 
-					if (person.getVehicle() == null)
-						// if a person steps outside of the vehicle
-						logger.info(person, str + EVA_OPERATION);
-					else {
-						String activity = "";
-						if (person.getMind().getMission() != null)
-							activity = person.getMind().getMission().getName();
-						else
-							activity = person.getTaskDescription();
-						logger.info(person, str + " while " + activity);
-					}
+				person.fireUnitUpdate(UnitEventType.RADIATION_EVENT);
 
-					HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_RADIATION_EXPOSURE,
-							rad,
-							rad.toString(),
-							person.getTaskDescription(),
-							person.getName(), 
-							person
-							);
-					Simulation.instance().getEventManager().registerNewEvent(hEvent);
-
-					person.fireUnitUpdate(UnitEventType.RADIATION_EVENT);
-
-					return true;
-				}
+				return true;
 			}
 		}
 
@@ -537,7 +619,8 @@ public class RadiationExposure implements Serializable, Temporal {
 	 */
 	public void destroy() {
 		person = null;
+		dose = null;
+		eventMap.clear();
+		eventMap = null;
 	}
-
-
 }

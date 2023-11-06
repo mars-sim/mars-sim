@@ -110,8 +110,8 @@ public class Settlement extends Structure implements Temporal,
 	private static final SimLogger logger = SimLogger.getLogger(Settlement.class.getName());
 
 	// Static members
-
-	private static final String DETECTOR_GRID = "The detector grid forecast a ";
+	private static final String IMMINENT = " be imminent.";
+	private static final String DETECTOR = "The radiation detector just forecasted a ";
 	private static final String TRADING_OUTPOST = "Trading Outpost";
 	private static final String MINING_OUTPOST = "Mining Outpost";
 	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
@@ -217,9 +217,7 @@ public class Settlement extends Structure implements Temporal,
 	private boolean justLoaded = true;
 	/** The flag signifying this settlement as the destination of the user-defined commander. */
 	private boolean hasDesignatedCommander = false;
-	/** The Flag showing if the settlement has been exposed to the last radiation event. */
-	private RadiationStatus exposed = RadiationStatus.calculateChance(0D);
-	
+
 	/** The water ration level of the settlement. The higher the more urgent. */
 	private int waterRationLevel = 1;
 	/** The number of people at the start of the settlement. */
@@ -236,7 +234,6 @@ public class Settlement extends Structure implements Temporal,
 	private int numOwnedBots;
 	/** Numbers of vehicles owned by this settlement. */
 	private int numOwnedVehicles;
-
 
 	/** The average regolith collection rate nearby. */
 	private double regolithCollectionRate = RandomUtil.getRandomDouble(4, 8);
@@ -271,6 +268,8 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement template name. */
 	private String template;
 
+	/** The radiation status instance that capture if the settlement has been exposed to a radiation event. */
+	private RadiationStatus exposed = RadiationStatus.calculateChance(0D);
 	/** The settlement's ReportingAuthority instance. */
 	private Authority sponsor;
 	/** The settlement's building manager. */
@@ -2407,6 +2406,11 @@ public class Settlement extends Structure implements Temporal,
 		return shiftManager;
 	}
 
+	/**
+	 * Gets the radiation status.
+	 * 
+	 * @return
+	 */
 	public RadiationStatus getExposed() {
 		return exposed;
 	}
@@ -2417,21 +2421,20 @@ public class Settlement extends Structure implements Temporal,
 	 * @param newExposed
 	 */
 	public void setExposed(RadiationStatus newExposed) {
-		RadiationStatus oldStatus = exposed;
 		exposed = newExposed;
 		
-		if (exposed.isBaselineEvent() && !oldStatus.isBaselineEvent()) {
-			logger.log(this, Level.INFO, 1_000, DETECTOR_GRID + UnitEventType.BASELINE_EVENT.toString() + " imminent.");
+		if (exposed.isBaselineEvent()) {
+			logger.log(this, Level.INFO, 1_000, DETECTOR + UnitEventType.BASELINE_EVENT.toString() + IMMINENT);
 			this.fireUnitUpdate(UnitEventType.BASELINE_EVENT);
 		}
 
-		if (exposed.isGCREvent() && !oldStatus.isGCREvent()) {
-			logger.log(this, Level.INFO, 1_000, DETECTOR_GRID + UnitEventType.GCR_EVENT.toString() + " imminent.");
+		if (exposed.isGCREvent()) {
+			logger.log(this, Level.INFO, 1_000, DETECTOR + UnitEventType.GCR_EVENT.toString() + IMMINENT);
 			this.fireUnitUpdate(UnitEventType.GCR_EVENT);
 		}
 
-		if (exposed.isSEPEvent() && !oldStatus.isSEPEvent()) {
-			logger.log(this, Level.INFO, 1_000, DETECTOR_GRID + UnitEventType.SEP_EVENT.toString() + " imminent.");
+		if (exposed.isSEPEvent()) {
+			logger.log(this, Level.INFO, 1_000, DETECTOR + UnitEventType.SEP_EVENT.toString() + IMMINENT);
 			this.fireUnitUpdate(UnitEventType.SEP_EVENT);
 		}
 	}

@@ -178,17 +178,24 @@ public final class RandomUtil {
 	/**
 	 * Compute the gaussian random double number.
 	 * 
-	 * @param center
-	 * @param fraction
-	 * @param oneVariance the size of one variance of the gaussian distribution
+	 * @param center the mean (where the average values will cluster around)of the random number with one variance
+	 * @param fraction the fraction of the mean
+	 * @param oneVariance the variance of the gaussian distribution
 	 * @return
 	 */
 	public static double computeGaussianWithLimit(double center, double fraction, double oneVariance) {
-		double value = RandomUtil.getGaussianDouble() * oneVariance;
-		if (value > 0)
-			return (center + Math.min(center * fraction, value));
-		else
-			return (center - Math.min(center * fraction, -value));
+		double delay = 0;
+		
+		do {
+			double value = RandomUtil.getGaussianDouble() * oneVariance;
+			if (value > 0)
+				delay = (center + Math.min(center * fraction, value));
+			else
+				delay = (center - Math.min(center * fraction, -value));
+			// Note: The do while loop to enforce the return of a positive only random double number.
+		} while (delay <= 0);
+		
+		return delay;
 	}
 	
 	/**

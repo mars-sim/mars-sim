@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Unit;
@@ -46,8 +47,10 @@ import com.mars_sim.core.person.ai.task.MaintainBuilding;
 import com.mars_sim.core.person.ai.task.Repair;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.structure.RadiationStatus;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingCategory;
@@ -90,6 +93,9 @@ public abstract class Vehicle extends Unit
 	/** The error margin for determining vehicle range. (Actual distance / Safe distance). */
 	private static double fuel_range_error_margin;
 	private static double life_support_range_error_margin;
+
+	private static final String IMMINENT = " be imminent.";
+	private static final String DETECTOR = "The radiation detector just forecasted a ";
 
 	/** The types of status types that make a vehicle unavailable for us. */
 	private static final List<StatusType> badStatus = Arrays.asList(
@@ -150,30 +156,15 @@ public abstract class Vehicle extends Unit
 	private String specName;
 	
 	/** Parked position (meters) from center of settlement. */
-	private LocalPosition posParked;
-	
+	private LocalPosition posParked;	
+	/** The radiation status instance that capture if the settlement has been exposed to a radiation event. */
+	private RadiationStatus exposed = RadiationStatus.calculateChance(0D);
+
 	/** The vehicle type. */
 	protected VehicleType vehicleType;
-
-	/** A collection of locations that make up the vehicle's trail. */
-	private List<Coordinates> trail;
-	/** List of operator activity spots. */
-	private List<LocalPosition> operatorActivitySpots;
-	/** List of passenger activity spots. */
-	private List<LocalPosition> passengerActivitySpots;
-	/** List of status types. */
-	private Set<StatusType> statusTypes = new HashSet<>();
-	
 	/** The primary status type. */
 	private StatusType primaryStatus;
 
-	/** The vehicle's status log. */
-	private History<Set<StatusType>> vehicleLog = new History<>(40);
-	/** The vehicle's road speed history. */
-	private MSolDataLogger<Integer> roadSpeedHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
-	/** The vehicle's road power history. */	
-	private MSolDataLogger<Integer> roadPowerHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
-	
 	/** The malfunction manager for the vehicle. */
 	protected MalfunctionManager malfunctionManager;
 	/** Direction vehicle is traveling */
@@ -190,8 +181,24 @@ public abstract class Vehicle extends Unit
 	private VehicleController vehicleController;
 	/** The VehicleSpec instance. */
 	private VehicleSpec spec;
-
+	/** The mission instance. */
 	private Mission mission;
+
+	/** A collection of locations that make up the vehicle's trail. */
+	private List<Coordinates> trail;
+	/** List of operator activity spots. */
+	private List<LocalPosition> operatorActivitySpots;
+	/** List of passenger activity spots. */
+	private List<LocalPosition> passengerActivitySpots;
+	/** List of status types. */
+	private Set<StatusType> statusTypes = new HashSet<>();
+	
+	/** The vehicle's status log. */
+	private History<Set<StatusType>> vehicleLog = new History<>(40);
+	/** The vehicle's road speed history. */
+	private MSolDataLogger<Integer> roadSpeedHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
+	/** The vehicle's road power history. */	
+	private MSolDataLogger<Integer> roadPowerHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
 	
 	static {
 		life_support_range_error_margin = simulationConfig.getSettlementConfiguration()
@@ -1357,8 +1364,24 @@ public abstract class Vehicle extends Unit
 				removeSecondaryStatus(StatusType.MALFUNCTION);
 		}
 		
+
 		// Check once per msol (millisol integer)
 		if (pulse.isNewMSol()) {
+			
+			// Sample a data point every SAMPLE_FREQ (in msols)
+			int msol = pulse.getMarsTime().getMillisolInt();
+
+			// Check every RADIATION_CHECK_FREQ (in millisols)
+			// Compute whether a baseline, GCR, or SEP event has occurred
+			int remainder = msol % RadiationExposure.RADIATION_CHECK_FREQ;
+			if (remainder == RadiationExposure.RADIATION_CHECK_FREQ - 1) {
+				RadiationStatus newExposed = RadiationStatus.calculateChance(pulse.getElapsed());
+				setExposed(newExposed);
+			}
+			
+			
+			// TODO: Should the following be executed when a vehicle is on the road ? 
+			
 			int count = 0;
 			int sum = 0;
 
@@ -1390,6 +1413,39 @@ public abstract class Vehicle extends Unit
 		return true;
 	}
 
+	/*
+	 * Updates the status of Radiation exposure.
+	 * 
+	 * @param newExposed
+	 */
+	public void setExposed(RadiationStatus newExposed) {
+		exposed = newExposed;
+		
+		if (exposed.isBaselineEvent()) {
+			logger.log(this, Level.INFO, 1_000, DETECTOR + UnitEventType.BASELINE_EVENT.toString() + IMMINENT);
+			this.fireUnitUpdate(UnitEventType.BASELINE_EVENT);
+		}
+
+		if (exposed.isGCREvent()) {
+			logger.log(this, Level.INFO, 1_000, DETECTOR + UnitEventType.GCR_EVENT.toString() + IMMINENT);
+			this.fireUnitUpdate(UnitEventType.GCR_EVENT);
+		}
+
+		if (exposed.isSEPEvent()) {
+			logger.log(this, Level.INFO, 1_000, DETECTOR + UnitEventType.SEP_EVENT.toString() + IMMINENT);
+			this.fireUnitUpdate(UnitEventType.SEP_EVENT);
+		}
+	}
+	
+	/**
+	 * Gets the radiation status.
+	 * 
+	 * @return
+	 */
+	public RadiationStatus getExposed() {
+		return exposed;
+	}
+	
 	/**
 	 * Resets the vehicle reservation status.
 	 */
@@ -2381,7 +2437,7 @@ public abstract class Vehicle extends Unit
 	public VehicleSpec getVehicleSpec() {
 		return spec;
 	}
-
+	
 	/**
 	 * Compares if an object is the same as this unit.
 	 *

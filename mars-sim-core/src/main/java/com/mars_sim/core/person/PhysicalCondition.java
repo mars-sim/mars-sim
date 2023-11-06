@@ -322,9 +322,8 @@ public class PhysicalCondition implements Serializable {
 		bodyMassDeviation = Math.sqrt(person.getBaseMass() / Person.getAverageWeight()
 				* person.getHeight() / Person.getAverageHeight());
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
-		double mod2 = RandomUtil.computeGaussianWithLimit(1, .5, .2);
 		// bodyMassDeviation average around 0.7 to 1.3
-		bodyMassDeviation = bodyMassDeviation * mod2;
+		bodyMassDeviation = bodyMassDeviation * RandomUtil.computeGaussianWithLimit(1, .5, .2);;
 
 		// Assume a person drinks 10 times a day, each time ~375 mL
 		waterConsumedPerSol = h20Consumption * bodyMassDeviation ;
