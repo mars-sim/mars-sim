@@ -9,9 +9,9 @@ package com.mars_sim.core.person.ai.task.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.Simulation;
@@ -90,12 +90,14 @@ public class MetaTaskUtil {
 	
 	private static List<FactoryMetaTask> dutyHourTasks = null;
 	private static List<FactoryMetaTask> nonDutyHourTasks = null;
+	private static List<FactoryMetaTask> onCallTasks = null;
 
-	private static List<FactoryMetaTask> personMetaTasks;
 	private static List<FactoryMetaTask> robotMetaTasks = null;
 
 	private static Map<String, MetaTask> idToMetaTask;
 	private static List<SettlementMetaTask> settlementTasks;
+	private static List<MetaTask> personMetaTasks = null;
+	private static List<TaskFactory> personTaskFactorys;
 
 	private static ConverseMeta converseMeta = new ConverseMeta();
 	
@@ -192,34 +194,42 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new YogaMeta());
 		
 		// Build the name lookup for later
-		idToMetaTask = new HashMap<>();
-		for(MetaTask t : allMetaTasks) {
-			idToMetaTask.put(t.getID(), t);
-		}
+		idToMetaTask = allMetaTasks.stream()
+				.collect(Collectors.toMap(MetaTask::getID, Function.identity()));
 
 		// Pick put settlement tasks
 		settlementTasks = allMetaTasks.stream()
-				.filter(m -> (m instanceof SettlementMetaTask))
-				.map(s -> (SettlementMetaTask) s)
-				.collect(Collectors.toUnmodifiableList());
+				.filter(SettlementMetaTask.class::isInstance)
+				.map(SettlementMetaTask.class::cast)
+				.toList();
 
 		// Filter out All Unit Tasks
 		personMetaTasks = allMetaTasks.stream()
-				.filter(m -> (m instanceof FactoryMetaTask))
-				.map(s -> (FactoryMetaTask) s)
 				.filter(m -> ((m.getSupported() == WorkerType.BOTH)
 								|| (m.getSupported() == WorkerType.PERSON)))
-				.collect(Collectors.toUnmodifiableList());
+				.toList();
+		personTaskFactorys = personMetaTasks.stream()
+				.filter(TaskFactory.class::isInstance)
+				.map(TaskFactory.class::cast)
+				.toList();
+
+		// Filter out All Unit Tasks
+		onCallTasks = allMetaTasks.stream()
+				.filter(FactoryMetaTask.class::isInstance)
+				.map(FactoryMetaTask.class::cast)
+				.filter(m -> ((m.getSupported() == WorkerType.BOTH)
+								|| (m.getSupported() == WorkerType.PERSON)))
+				.toList();
 		robotMetaTasks = allMetaTasks.stream()
-				.filter(m -> (m instanceof FactoryMetaTask))
-				.map(s -> (FactoryMetaTask) s)
+				.filter(FactoryMetaTask.class::isInstance)
+				.map(FactoryMetaTask.class::cast)
 				.filter(m -> ((m.getSupported() == WorkerType.BOTH)
 								|| (m.getSupported() == WorkerType.ROBOT)))
-				.collect(Collectors.toUnmodifiableList());
+				.toList();
 		
 		// Build special Shift based lists
 		// Should these be just Person task?
-		Map<TaskScope, List<FactoryMetaTask>> metaPerScope = personMetaTasks.stream()
+		Map<TaskScope, List<FactoryMetaTask>> metaPerScope = onCallTasks.stream()
   					.collect(Collectors.groupingBy(MetaTask::getScope));
 
 		List<FactoryMetaTask> tasks = new ArrayList<>();
@@ -247,8 +257,8 @@ public class MetaTaskUtil {
 	 * 
 	 * @return list of meta tasks.
 	 */
-	public static List<FactoryMetaTask> getPersonMetaTasks() {
-		return personMetaTasks;
+	public static List<FactoryMetaTask> getOnCallMetaTasks() {
+		return onCallTasks;
 	}
 
 	/**
@@ -309,6 +319,14 @@ public class MetaTaskUtil {
 		return robotMetaTasks;
 	}
 
+	public static List<MetaTask> getPersonMetaTasks() {
+		return personMetaTasks;
+	}
+
+    public static List<TaskFactory> getPersonTaskFactorys() {
+        return personTaskFactorys;
+    }
+
 	public static ConverseMeta getConverseMeta() {
 		return converseMeta;
 	}
@@ -322,5 +340,7 @@ public class MetaTaskUtil {
 		UnloadVehicleMeta.initialiseInstances(sim);
 		ExamineBodyMeta.initialiseInstances(sim.getMedicalManager());
 		ReviewMissionPlanMeta.initialiseInstances(sim.getMissionManager());
+		ObserveAstronomicalObjectsMeta.initialiseInstances(sim.getScientificStudyManager());
     }
+
 }

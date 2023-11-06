@@ -59,57 +59,66 @@ public class ProposeScientificStudy extends Task {
 		study = person.getStudy();
 		if (study == null) {		
 			// Create new scientific study.
-			JobType job = person.getMind().getJob();
-			ScienceType science = ScienceType.getJobScience(job);
-			if (science != null) {
-				SkillType skill = science.getSkill();
-				int level = person.getSkillManager().getSkillLevel(skill);
-				study = scientificStudyManager.createScientificStudy(person, science, level);
-
-				
-			} else {
+			study = createStudy(person);
+			if (study == null) {
 				logger.severe(person, "Not a scientist.");
 				endTask();
+				return;
+			}
+		}
+			
+		addAdditionSkill(study.getScience().getSkill());
+		setDescription(
+				Msg.getString("Task.description.proposeScientificStudy.detail", study.getScience().getName())); // $NON-NLS-1$
+
+		// If person is in a settlement, try to find a building.
+		boolean walk = false;
+		if (person.isInSettlement()) {
+			Building b = BuildingManager.getAvailableBuilding(study, person);
+			if (b != null) {
+				// Walk to this specific building.
+				walkToResearchSpotInBuilding(b, false);
+				walk = true;
 			}
 		}
 
-		if (study != null) {
-			
-			addAdditionSkill(study.getScience().getSkill());
-			setDescription(
-					Msg.getString("Task.description.proposeScientificStudy.detail", study.getScience().getName())); // $NON-NLS-1$
+		if (!walk) {
 
-			// If person is in a settlement, try to find a building.
-			boolean walk = false;
-			if (person.isInSettlement()) {
-				Building b = BuildingManager.getAvailableBuilding(study, person);
-				if (b != null) {
-					// Walk to this specific building.
-					walkToResearchSpotInBuilding(b, false);
-					walk = true;
+			if (person.isInVehicle()) {
+				// If person is in rover, walk to passenger activity spot.
+				if (person.getVehicle() instanceof Rover rover) {
+					walkToPassengerActivitySpotInRover(rover, false);
 				}
+			} else {
+				// Walk to random location.
+				walkToRandomLocation(true);
 			}
-
-			if (!walk) {
-
-				if (person.isInVehicle()) {
-					// If person is in rover, walk to passenger activity spot.
-					if (person.getVehicle() instanceof Rover rover) {
-						walkToPassengerActivitySpotInRover(rover, false);
-					}
-				} else {
-					// Walk to random location.
-					walkToRandomLocation(true);
-				}
-			}
-		} else {
-			endTask();
 		}
 
 		// Initialize phase
 		addPhase(PROPOSAL_PHASE);
 		setPhase(PROPOSAL_PHASE);
 	}
+
+	/**
+	 * Create a study for a Person using their Job to select the most appropirate 
+	 * science.
+	 * @param p
+	 * @return
+	 */
+	public static ScientificStudy createStudy(Person p) {
+		// Create new scientific study.
+		ScientificStudy study = null;
+		JobType job = p.getMind().getJob();
+		ScienceType science = ScienceType.getJobScience(job);
+		if (science != null) {
+			SkillType skill = science.getSkill();
+			int level = p.getSkillManager().getSkillLevel(skill);
+			study = scientificStudyManager.createScientificStudy(p, science, level);
+		}
+		return study;	
+	}
+
 
 	@Override
 	protected double performMappedPhase(double time) {

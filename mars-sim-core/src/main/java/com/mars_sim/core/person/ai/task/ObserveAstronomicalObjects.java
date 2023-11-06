@@ -7,25 +7,19 @@
 
 package com.mars_sim.core.person.ai.task;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 
-import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.meta.ObserveAstronomicalObjectsMeta;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.function.AstronomicalObservation;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.tools.Msg;
@@ -51,16 +45,15 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	/** Task phases. */
 	private static final TaskPhase OBSERVING = new TaskPhase(Msg.getString("Task.phase.observing")); //$NON-NLS-1$
 
+	private static final double SEED = RandomUtil.getRandomDouble(.05, 0.25);
+
 	// Data members.
 	/** True if person is active observer. */
 	private boolean isActiveObserver = false;
 	/** Computing Units needed per millisol. */		
 	private double computingNeeded;
-	/** The seed value. */
-    private double seed = RandomUtil.getRandomDouble(.05, 0.25);
-    
-	private final double TOTAL_COMPUTING_NEEDED;
-	
+	private double initialComputingNeeded;
+    	
 	/** The scientific study the person is researching for. */
 	private ScientificStudy study;
 	/** The observatory the person is using. */
@@ -72,160 +65,40 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	 * Constructor.
 	 * 
 	 * @param person the person performing the task.
+	 * @param scientificStudy Target building
 	 */
-	public ObserveAstronomicalObjects(Person person) {
+	public ObserveAstronomicalObjects(Person person, ScientificStudy study) {
 		// Use task constructor.
 		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.ASTRONOMY, 25D,
 			  100D + RandomUtil.getRandomDouble(100D));
 		
-		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
-		computingNeeded = TOTAL_COMPUTING_NEEDED;
+		initialComputingNeeded = getDuration() * SEED;
+		computingNeeded = initialComputingNeeded;
 		
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		
-		// Determine study.
-		study = determineStudy();
-		if (study != null) {
-			// Determine observatory to use.
-			observatory = determineObservatory(person);
-			if (observatory != null) {
-				// Walk to observatory building.
-				walkToTaskSpecificActivitySpotInBuilding(observatory.getBuilding(),
-														FunctionType.ASTRONOMICAL_OBSERVATION, false);
-				observatory.addObserver();
-				isActiveObserver = true;
-				
-				// Initialize phase
-				addPhase(OBSERVING);
-				setPhase(OBSERVING);
-				
-			} else {
-				logger.log(person, Level.SEVERE, 5000, 
-						"Could not find the observatory.");
-				endTask();
-			}
+		observatory = ObserveAstronomicalObjectsMeta.determineObservatory(person.getAssociatedSettlement());
+		
+		this.study = study;
+		// Determine observatory to use.
+		if (observatory != null) {
+			// Walk to observatory building.
+			walkToTaskSpecificActivitySpotInBuilding(observatory.getBuilding(),
+													FunctionType.ASTRONOMICAL_OBSERVATION, false);
+			observatory.addObserver();
+			isActiveObserver = true;
+			
+			// Initialize phase
+			addPhase(OBSERVING);
+			setPhase(OBSERVING);
 		}
-		else
+		else {
+			logger.log(person, Level.SEVERE, 5000, 
+					"Could not find the observatory.");
 			endTask();
+		}
 	}
-
-	/**
-	 * Gets the preferred local astronomical observatory for an observer.
-	 * 
-	 * @param observer the observer.
-	 * @return observatory or null if none found.
-	 */
-	public static AstronomicalObservation determineObservatory(Person observer) {
-		AstronomicalObservation result = null;
-
-		if (observer.isInSettlement()) {
-
-			BuildingManager manager = observer.getSettlement().getBuildingManager();
-			Set<Building> observatoryBuildings = manager.getBuildingSet(FunctionType.ASTRONOMICAL_OBSERVATION);
-			observatoryBuildings = BuildingManager.getNonMalfunctioningBuildings(observatoryBuildings);
-			observatoryBuildings = getObservatoriesWithAvailableSpace(observatoryBuildings);
-			observatoryBuildings = BuildingManager.getLeastCrowdedBuildings(observatoryBuildings);
-
-			if (!observatoryBuildings.isEmpty()) {
-				Map<Building, Double> observatoryBuildingProbs = BuildingManager.getBestRelationshipBuildings(observer,
-						observatoryBuildings);
-				Building building = RandomUtil.getWeightedRandomObject(observatoryBuildingProbs);
-				if (building != null) {
-					result = building.getAstronomicalObservation();
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the crowding modifier for an observer to use a given observatory
-	 * building.
-	 * 
-	 * @param observer    the observer.
-	 * @param observatory the astronomical observatory.
-	 * @return crowding modifier.
-	 */
-	public static double getObservatoryCrowdingModifier(Person observer, AstronomicalObservation observatory) {
-		double result = 1D;
-		if (observer.isInSettlement()) {
-			Building observatoryBuilding = observatory.getBuilding();
-			if (observatoryBuilding != null) {
-				result *= Task.getCrowdingProbabilityModifier(observer, observatoryBuilding);
-				result *= Task.getRelationshipModifier(observer, observatoryBuilding);
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Gets a list of observatory buildings with available research space from a
-	 * list of observatory buildings.
-	 * 
-	 * @param buildingList list of buildings with astronomical observation function.
-	 * @return observatory buildings with available observatory space.
-	 */
-	private static Set<Building> getObservatoriesWithAvailableSpace(Set<Building> buildings) {
-		Set<Building> result = new UnitSet<>();
-
-		Iterator<Building> i = buildings.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			AstronomicalObservation observatory = building.getAstronomicalObservation();
-			if (observatory.getObserverNum() < observatory.getObservatoryCapacity()) {
-				result.add(building);
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Determines the scientific study for the observations.
-	 * 
-	 * @return study or null if none available.
-	 */
-	private ScientificStudy determineStudy() {
-		ScientificStudy result = null;
-
-		ScienceType astronomy = ScienceType.ASTRONOMY;
-		List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
-
-		// Add primary study if in research phase.
-		ScientificStudy primaryStudy = person.getStudy();
-		if (primaryStudy != null) {
-			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
-					&& !primaryStudy.isPrimaryResearchCompleted()) {
-				if (astronomy == primaryStudy.getScience()) {
-					// Primary study added twice to double chance of random selection.
-					possibleStudies.add(primaryStudy);
-					possibleStudies.add(primaryStudy);
-				}
-			}
-		}
-
-		// Add all collaborative studies in research phase.
-		Iterator<ScientificStudy> i = person.getCollabStudies().iterator();
-		while (i.hasNext()) {
-			ScientificStudy collabStudy = i.next();
-			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
-					&& !collabStudy.isCollaborativeResearchCompleted(person)) {
-				if (astronomy == collabStudy.getContribution(person)) {
-					possibleStudies.add(collabStudy);
-				}
-			}
-		}
-
-		// Randomly select study.
-		if (possibleStudies.size() > 0) {
-			int selected = RandomUtil.getRandomInt(possibleStudies.size() - 1);
-			result = possibleStudies.get(selected);
-		}
-
-		return result;
-	}
-
+	
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
@@ -258,9 +131,8 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 
 		if (isDone()) {
     		logger.info(person, 30_000L, NAME + " - " 
-    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
+    				+ Math.round((initialComputingNeeded - computingNeeded) * 100.0)/100.0 
     				+ " CUs Used.");
-			endTask();
 			endTask();
 			return time;
 		}
@@ -271,15 +143,14 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		}
 
 		// Check sunlight and end the task if sunrise
-		double sunlight = surfaceFeatures.getSolarIrradiance(person.getCoordinates());
-		if (sunlight > 12) {
+		if (!areConditionsSuitable(person.getAssociatedSettlement())) {
 			endTask();
 		}
 
-		if (isDone() || getTimeCompleted() + time > getDuration() || computingNeeded <= 0) {
+		if (isDone() || ((getTimeCompleted() + time) > getDuration()) || computingNeeded <= 0) {
         	// this task has ended
 	  		logger.info(person, 30_000L, NAME + " - " 
-    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
+    				+ Math.round((initialComputingNeeded - computingNeeded) * 100.0)/100.0 
     				+ " CUs Used.");
 			endTask();
 			return time;
@@ -288,21 +159,13 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		int msol = getMarsTime().getMillisolInt(); 
               
         computingNeeded = person.getAssociatedSettlement().getBuildingManager().
-            	accessNode(person, computingNeeded, time, seed, 
+            	accessNode(person, computingNeeded, time, SEED, 
             			msol, getDuration(), NAME);
         
 		// Add research work time to study.
-		double observingTime = getEffectiveObservingTime(time);
-		
-		boolean isPrimary = study.getPrimaryResearcher().equals(person);
-		if (isPrimary) {
+		double observingTime = getEffectiveObservingTime(time);		
+		if (study.getPrimaryResearcher().equals(person)) {
 			study.addPrimaryResearchWorkTime(observingTime);
-		} else {
-			study.addCollaborativeResearchWorkTime(person, observingTime);
-		}
-
-		// Check if research in study is completed.
-		if (isPrimary) {
 			if (study.isPrimaryResearchCompleted()) {
 				logger.log(person, Level.INFO, 0, 
 						"Just spent " 
@@ -310,7 +173,9 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 						+ " millisols to complete a primary research using " + person.getLocationTag().getImmediateLocation());				
 				endTask();
 			}
-		} else {
+		}
+		else {
+			study.addCollaborativeResearchWorkTime(person, observingTime);
 			if (study.isCollaborativeResearchCompleted(person)) {
 				logger.log(person, Level.INFO, 0, 
 						"Just spent " 
@@ -319,6 +184,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 				endTask();
 			}
 		}
+
 		// Add experience
 		addExperience(observingTime);
 
@@ -326,6 +192,16 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		checkForAccident(observatory.getBuilding(), time, 0.002);
 
 		return 0D;
+	}
+
+	/**
+	 * Are the conditions suitable to use the astronomy. Must be low light and no dust storm.
+	 * @param target
+	 * @return
+	 */
+	public static boolean areConditionsSuitable(Settlement target) {
+		double sunlight = surfaceFeatures.getSolarIrradiance(target.getCoordinates());
+		return ((sunlight < 12) && (target.getDustStorm() == null));
 	}
 
 	/**
@@ -363,16 +239,6 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		return observingTime;
 	}
 
-	/**
-	 * Checks if the sky is dimming and is at dusk
-	 * 
-	 * @param person
-	 * @return
-	 */
-	public static boolean isGettingDark(Person person) {
-        return EVAOperation.isGettingDark(person);
-    }
-	
 	
 	/**
 	 * Release Observatory
@@ -381,13 +247,12 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	protected void clearDown() {
 
 		// Remove person from observatory so others can use it.
-		try {
-			if ((observatory != null) && isActiveObserver) {
-				observatory.removeObserver();
-				isActiveObserver = false;
-			}
-		} catch (Exception e) {
+		if ((observatory != null) && isActiveObserver) {
+			observatory.removeObserver();
+			isActiveObserver = false;
 		}
+
+		super.clearDown();
 	}
 
 	@Override

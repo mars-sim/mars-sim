@@ -60,8 +60,8 @@ import com.mars_sim.core.moon.Colony;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.util.BasicTaskJob;
-import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
+import com.mars_sim.core.person.ai.task.util.TaskFactory;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
@@ -359,7 +359,7 @@ public class CommanderWindow extends ToolWindow {
 		panel.add(topPanel, BorderLayout.NORTH);
 		panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		JTabbedPane tabbedPane = new JTabbedPane(SwingConstants.TOP);
 		
 		topPanel.add(tabbedPane, BorderLayout.NORTH);
 		
@@ -384,11 +384,11 @@ public class CommanderWindow extends ToolWindow {
 				
 				labelGrid.addRow("Coordinates", c.getCoordinates().getFormattedString());
 				
-				List<String> list = c.getAuthority().getCountries();
+				List<String> cnyList = c.getAuthority().getCountries();
 				
 				String countryCode = "";
 				String countryName = "Multi-Nationals";
-				if (list.size() == 1) {
+				if (cnyList.size() == 1) {
 					countryName = c.getAuthority().getCountries().get(0);
 					countryCode = FlagString.getEmoji(countryName);
 				}
@@ -442,8 +442,6 @@ public class CommanderWindow extends ToolWindow {
 				researcherLabel = popGrid.addRow("# of Researchers", researcherRateCacheString + "");
 			}	
 		}
-		else
-			System.out.println("colonyList is null.");
 	}
 	
 	/**
@@ -694,14 +692,12 @@ public class CommanderWindow extends ToolWindow {
 	 * @param panel
 	 */
 	private void createTaskCombobox(JPanel panel) {
-		DefaultComboBoxModel<FactoryMetaTask> taskComboBoxModel = new DefaultComboBoxModel<>();
+		DefaultComboBoxModel<TaskFactory> taskComboBoxModel = new DefaultComboBoxModel<>();
       	// Set up combo box model.
-		for(FactoryMetaTask n : MetaTaskUtil.getPersonMetaTasks()) {
-	    	taskComboBoxModel.addElement(n);
-		}
+	    taskComboBoxModel.addAll(MetaTaskUtil.getPersonTaskFactorys());
 
 		// Create comboBox.
-		JComboBoxMW<FactoryMetaTask> taskComboBox = new JComboBoxMW<>(taskComboBoxModel);
+		JComboBoxMW<TaskFactory> taskComboBox = new JComboBoxMW<>(taskComboBoxModel);
 		taskComboBox.setMaximumRowCount(10);
 
 		JPanel comboBoxPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -723,7 +719,7 @@ public class CommanderWindow extends ToolWindow {
 		addButton.setPreferredSize(new Dimension(80, 25));
 		addButton.addActionListener(e -> {
 				Person selected = (Person) personBox.getSelectedItem();
-				FactoryMetaTask task = (FactoryMetaTask) taskComboBox.getSelectedItem();
+				TaskFactory task = (TaskFactory) taskComboBox.getSelectedItem();
 				selected.getMind().getTaskManager().addPendingTask(new BasicTaskJob(task,
 													new RatingScore(1D)), true);
 
@@ -1182,7 +1178,7 @@ public class CommanderWindow extends ToolWindow {
 				settlements = unitManager.getCommanderSettlements();
 			}
 
-			else { // if (GameManager.getGameMode() == GameMode.SANDBOX) {
+			else { 
 				settlements.addAll(unitManager.getSettlements());
 			}
 

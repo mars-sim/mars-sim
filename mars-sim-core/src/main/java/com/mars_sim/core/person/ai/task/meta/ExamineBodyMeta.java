@@ -89,8 +89,8 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 
 			double skill = p.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 			if (skill == 0)
-				skill = 0.1D;
-			factor.addModifier("medical", skill);
+				skill = 0.01D;
+			factor.addModifier(SKILL_MODIFIER, skill);
 		}
 		return factor;
 	}

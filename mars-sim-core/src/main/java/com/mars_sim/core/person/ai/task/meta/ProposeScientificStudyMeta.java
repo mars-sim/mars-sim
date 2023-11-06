@@ -56,20 +56,9 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
     public List<TaskJob> getTaskJobs(Person person) {
 
 		Settlement settlement = person.getAssociatedSettlement();
-        int pop = settlement.getInitialPopulation();
-		Set<JobType> targetJobs = JobType.SCIENTISTS;
-		JobType job = person.getMind().getJob();
-
-        if (pop <= 6) {
-	        targetJobs = JobType.ACADEMICS;
-        }
-        else if (pop <= 12) {
-        	targetJobs = JobType.INTELLECTUALS;
-        }
 
 		ScienceType science = TaskUtil.getPersonJobScience(person);
         if ((science == null)
-			|| !targetJobs.contains(job)
 			|| !person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
 			|| !person.isInside()) {
         	return EMPTY_TASKLIST;
@@ -86,50 +75,44 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 			// Check if study is in proposal phase.
 			if (study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
 				// Once a person starts a study in the proposal phase,
-				// there's a greater chance to continue on the proposal.
-				base = 100D;
-	            	
-				// Check person has a science role
-				switch(roleType) {
-					case CHIEF_OF_SCIENCE:
-						base += 100D;
-						break;
-					case SCIENCE_SPECIALIST:
-						base += 200D;
-						break;
-					default:
-						break;
-				}
+				// there's a greater chance to continue on the proposal so give a high base score
+				base = switch(roleType) {
+					case CHIEF_OF_SCIENCE -> 250D;
+					case SCIENCE_SPECIALIST -> 200D;
+					default -> 150D;
+				};
 			}
 		}
 		else {
-			// Probability of starting a new scientific study.	        	
-			base = 500D;
-	        	
-			// Check person has a science role
-			switch(roleType) {
-				case CHIEF_OF_SCIENCE:
-				case SCIENCE_SPECIALIST:
-					base += 50D;
-					break;
-				case CHIEF_OF_COMPUTING:
-				case COMPUTING_SPECIALIST:
-					base += 20D;
-					break;
-				case CHIEF_OF_AGRICULTURE:
-				case AGRICULTURE_SPECIALIST:
-					base += 10D;
-					break;
-				default:
-					break;
+			// Probability of starting a new scientific study base don Job
+			int pop = settlement.getInitialPopulation();
+			Set<JobType> targetJobs = JobType.SCIENTISTS;
+			JobType job = person.getMind().getJob();
+
+			if (pop <= 6) {
+				targetJobs = JobType.ACADEMICS;
 			}
+			else if (pop <= 12) {
+				targetJobs = JobType.INTELLECTUALS;
+			}
+			if (!targetJobs.contains(job)) {
+				return EMPTY_TASKLIST;
+			}
+		
+			// Check person has a science role
+			base = switch(roleType) {
+				case CHIEF_OF_SCIENCE, SCIENCE_SPECIALIST -> 200D;
+				case CHIEF_OF_COMPUTING, COMPUTING_SPECIALIST -> 150D;
+				case CHIEF_OF_AGRICULTURE, AGRICULTURE_SPECIALIST -> 100D;
+				default -> 50D;
+			};
 		}
 		if (base <= 0) {
 			return EMPTY_TASKLIST;
 		}
 
 		RatingScore result = new RatingScore(base);
-		result.addModifier("science", settlement.getPreferenceModifier(
+		result.addModifier(SCIENCE_MODIFIER, settlement.getPreferenceModifier(
 								new PreferenceKey(PreferenceCategory.SCIENCE, science.name())));
 		// Crowding modifier
 		if (person.isInSettlement()) {

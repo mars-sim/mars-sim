@@ -23,7 +23,8 @@ import com.mars_sim.core.robot.Robot;
  * The side effect is these instances can support creating contextless Task instances with the need
  * for any extra information to be passed. Hence these are a Factory for their associated Task object.
  */
-public abstract class FactoryMetaTask extends MetaTask {
+public abstract class FactoryMetaTask extends MetaTask 
+	implements TaskFactory {
     
 	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
 
@@ -40,6 +41,7 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * @param person the person to perform the task.
 	 * @return task instance.
 	 */
+	@Override
 	public Task constructInstance(Person person) {
 		throw new UnsupportedOperationException("Can not create '" + getName() + "' for Person.");
 	}
@@ -51,6 +53,7 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * @param person the person to perform the task.
 	 * @return task instance.
 	 */
+	@Override
 	public Task constructInstance(Robot robot) {
 		throw new UnsupportedOperationException("Can not create " + getName() + " for Robot.");
 	}
@@ -62,7 +65,7 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * 
 	 * @param person the person to perform the task.
 	 * @return weighted probability value (0 -> positive value).
-	 * @deprecated Replace {@link #getRating(Person)}
+	 * @deprecated Replace {@link #getTaskJobs(Person)}
 	 */
 	public double getProbability(Person person) {
 		throw new UnsupportedOperationException("Can not calculated the probability of " + getName()  + " for Person.");

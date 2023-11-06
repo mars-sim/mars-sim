@@ -6,34 +6,50 @@
  */
 package com.mars_sim.core.person.ai.task.meta;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.SalvageMission;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.SalvageBuilding;
-import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
+import com.mars_sim.core.person.ai.task.util.MetaTask;
+import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
+import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.tools.Msg;
 
 /**
  * Meta task for the SalvageBuilding task.
  */
-public class SalvageBuildingMeta extends FactoryMetaTask {
+public class SalvageBuildingMeta extends MetaTask implements SettlementMetaTask {
+    /**
+     * Represents a Job needed in a Salvage Mission
+     */
+    private static class SalvageBuildingTaskJob extends SettlementTask {
+
+		private static final long serialVersionUID = 1L;
+
+        public SalvageBuildingTaskJob(SettlementMetaTask owner, SalvageMission mission, RatingScore score) {
+            super(owner, "Salvage Building", mission, score);
+            setEVA(true);
+        }
+
+        @Override
+        public Task createTask(Person person) {
+            return new SalvageBuilding(person, (SalvageMission) getFocus());
+        }
+    }
 
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.salvageBuilding"); //$NON-NLS-1$
 
-    /** default logger. */
-    private static final Logger logger = Logger.getLogger(SalvageBuildingMeta.class.getName());
 
     public SalvageBuildingMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -42,92 +58,50 @@ public class SalvageBuildingMeta extends FactoryMetaTask {
 		setPreferredJob(JobType.ARCHITECT);
 	}
 
+    /**
+     * Create Settlement tasks for any salvage missions in fight.
+     * @param target Being assessed.
+     */
     @Override
-    public Task constructInstance(Person person) {
-        return new SalvageBuilding(person);
-    }
-
-    @Override
-    public double getProbability(Person person) {
-
-        double result = 0D;
-
-        // Probability affected by the person's stress and fatigue.
-        if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
-        	return 0;
-        
-        // Check if an airlock is available
-        if (EVAOperation.getWalkableAvailableAirlock(person, false) == null) {
-            return 0;
-        }
-
-        // Check if it is night time.
-        if (EVAOperation.isGettingDark(person)) {
-                return 0;
-        }
-
-        if (person.isInSettlement()) {
-
-            // Check all building salvage missions occurring at the settlement.
-            try {
-                List<SalvageMission> missions = SalvageBuilding.
-                        getAllMissionsNeedingAssistance(person.getSettlement());
-                result = 100D * missions.size();
+    public List<SettlementTask> getSettlementTasks(Settlement target) {
+        List<SettlementTask>  result = new ArrayList<>();
+        if (!EVAOperation.isGettingDark(target)) {
+            for(SalvageMission sm : getAllMissionsNeedingAssistance(target)) {
+                RatingScore score = new RatingScore(300D);
+                result.add(new SalvageBuildingTaskJob(this, sm, score));
             }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Error finding building salvage missions.", e);
-            }
-
-            // Crowded settlement modifier
-            Settlement settlement = person.getSettlement();
-            if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity()) {
-                result *= 2D;
-            }
-
-            result *= getPersonModifier(person);
         }
-
         return result;
     }
 
-	@Override
-	public double getProbability(Robot robot) {
+     /**
+     * Gets a list of all building salvage missions that need assistance at a settlement.
+     * @param settlement the settlement.
+     * @return list of building salvage missions.
+     */
+    private static List<SalvageMission> getAllMissionsNeedingAssistance(
+            Settlement settlement) {
 
-        double result = 0D;
-/*
-        if (robot.getBotMind().getRobotJob() instanceof Constructionbot) {
+        return missionManager.getMissionsForSettlement(settlement).stream()
+                        .filter(SalvageMission.class::isInstance)
+                        .map (SalvageMission.class::cast)
+                        .toList();
+    }
 
-	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-	            // Check all building salvage missions occurring at the settlement.
-	            try {
-	                List<BuildingSalvageMission> missions = SalvageBuilding.
-	                        getAllMissionsNeedingAssistance(robot.getSettlement());
-	                result = 100D * missions.size();
-	            }
-	            catch (Exception e) {
-	                logger.log(Level.SEVERE, "Error finding building salvage missions.", e);
-	            }
-	        }
-
-	        // Effort-driven task modifier.
-            result *= robot.getPerformanceRating();
-
-	        // Check if an airlock is available
-            if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
-                result = 0D;
-            }
-
-	        // Check if it is night time.
-            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-            if (surface.getSolarIrradiance(robot.getCoordinates()) == 0D) {
-                if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
-                    result = 0D;
-                }
-            }
-
+    /**
+     * Assess the suitability a person to do this settlement task for salvage.
+     * @param person Being assessed
+     * @return Rating 
+     */
+    @Override
+    public RatingScore assessPersonSuitability(SettlementTask st, Person p) {
+        RatingScore score = RatingScore.ZERO_RATING;
+        if(p.isInSettlement()
+            && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
+            && (EVAOperation.getWalkableAvailableAirlock(p, false) != null)) {
+            
+            score = super.assessPersonSuitability(st, p);
         }
-*/
-        return result;
+        return score;
     }
 }

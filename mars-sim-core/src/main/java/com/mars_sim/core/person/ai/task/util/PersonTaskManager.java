@@ -151,7 +151,7 @@ public class PersonTaskManager extends TaskManager {
 				shiftDesc = "Shift: NonDuty";
 				break;
 			case ON_CALL:
-				mtList = MetaTaskUtil.getPersonMetaTasks();
+				mtList = MetaTaskUtil.getOnCallMetaTasks();
 				shiftDesc = "Shift: OnCall";
 				break;
 			case ON_DUTY:

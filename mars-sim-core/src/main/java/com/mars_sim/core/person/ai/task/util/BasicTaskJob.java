@@ -12,33 +12,33 @@ import com.mars_sim.core.robot.Robot;
 
 /**
  * This is an implementation of a TaskJob that delegates the Task creation to a
- * MetaTask instance. Tasks have no extra entities defined in the creation.
+ * TaskFactory instance. Tasks have no extra entities defined in the creation.
  */
 public class BasicTaskJob extends AbstractTaskJob {
 
     // MetaTask cannot be serialised
-    private transient FactoryMetaTask mt;
+    private transient TaskFactory mt;
     private String mtID;
 
     /**
      * Create a basic implemmation of a TaskJob that references a MetaTask as the generator
      * of the actual Task.
-     * @param metaTask Creator of the Task
+     * @param factory Creator of the Task
      * @param score The score of the activity
      */
-    public BasicTaskJob(FactoryMetaTask metaTask, RatingScore score) {
-        super(metaTask.getName(), score);
+    public BasicTaskJob(TaskFactory factory, RatingScore score) {
+        super(factory.getName(), score);
         
-        this.mtID = metaTask.getID();
-        this.mt = metaTask;
+        this.mtID = factory.getID();
+        this.mt = factory;
     }
 
     /**
      * Reconnects to the MetaTask even after a deserialised instance.
      */
-    private FactoryMetaTask getMeta() {
+    private TaskFactory getFactory() {
         if (mt == null) {
-            mt = (FactoryMetaTask) MetaTaskUtil.getMetaTask(mtID);
+            mt = (TaskFactory) MetaTaskUtil.getMetaTask(mtID);
         }
 
         return mt;
@@ -46,11 +46,11 @@ public class BasicTaskJob extends AbstractTaskJob {
     
     @Override
     public Task createTask(Person person) {
-    	return getMeta().constructInstance(person);
+    	return getFactory().constructInstance(person);
     }
     
     @Override
     public Task createTask(Robot robot) {
-        return getMeta().constructInstance(robot);
+        return getFactory().constructInstance(robot);
     }
 }

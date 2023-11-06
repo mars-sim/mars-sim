@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.Equipment;
@@ -420,12 +421,12 @@ public abstract class EVAOperation extends Task {
 	/**
 	 * Checks if the sky light is dimming.
 	 *
-	 * @param person
+	 * @param active The Unit checking the daylight
 	 * @return
 	 */
-	public static boolean isGettingDark(Person person) {	
+	public static boolean isGettingDark(Unit active) {	
 		return orbitInfo.isSunSetting(
-        		person.getCoordinates(), false);
+        		active.getCoordinates(), false);
     }
 
 	/**
