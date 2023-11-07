@@ -23,7 +23,7 @@
 		<!-- Set file encoding to UTF-8. See https://stackoverflow.com/questions/3017695/how-to-configure-encoding-in-maven#3018152 -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<libgdx.version>1.12.0</libgdx.version>
+		<libgdx.version>1.12.1</libgdx.version>
 		<lwjgl.version>3.2.3</lwjgl.version>
 		<kotlin.version>1.9.0</kotlin.version>
 		<!--  TextIO needs 1.8 -->
