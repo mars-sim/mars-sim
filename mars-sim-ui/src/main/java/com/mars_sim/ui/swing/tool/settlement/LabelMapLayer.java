@@ -73,26 +73,26 @@ implements SettlementMapLayer {
 	// (159,   7, 118) pinkish red purle
 	// (255, 153, 225) light pink
 	// Use this color wheel: https://convertingcolors.com/rgb-color-236_118_153.html?search=RGB(236,%20118,%20153)
-	static final Color femaleColor = new Color(148, 36, 78);
+	static final Color femaleColor = new Color(120, 0, 56);
 	static final Color femaleOutline = femaleColor.brighter();
 	static final Color femaleSelected = new Color(236, 0, 70);
-	static final Color femaleSelectedOutline = femaleSelected.brighter().brighter();
+	static final Color femaleSelectedOutline = Color.white; // femaleSelected.brighter();
 	
 	// (154, 204, 255) pale light blue
 	// (210, 210, 210) light grey
 	// Use this color wheel: https://convertingcolors.com/rgb-color-154_204_255.html?search=RGB(154,%20204,%20255)
-	static final Color maleColor = new Color(39, 99, 144);
-	static final Color maleOutline = maleColor.brighter().brighter();
+	static final Color maleColor = new Color(0, 76, 118);
+	static final Color maleOutline = maleColor.brighter();
 	static final Color maleSelected = new Color(52, 152, 255);
 	static final Color maleSelectedOutline = Color.white;
 
 	// (156, 126,   9)  pale brown
 	// (186, 129, 145) manila pink
 	// Use this color wheel: https://convertingcolors.com/rgb-color-255_233_124.html?search=RGB(255,%20233,%20124)
-	static final Color robotColor = new Color(85, 77, 0).brighter(); 
+	static final Color robotColor = new Color(85, 77, 0); 
 	static final Color robotOutline = robotColor.brighter();
-	static final Color robotSelected = new Color(139, 125, 12); 
-	static final Color robotSelectedOutline = robotSelected.brighter().brighter();
+	static final Color robotSelected = new Color(196, 178, 71); 
+	static final Color robotSelectedOutline = Color.white; //robotSelected.brighter();
 
 	/** Label font for artificial object. */
 //	private static final Font LABEL_FONT = new Font("Dialog", Font.PLAIN, 10);
@@ -619,7 +619,7 @@ implements SettlementMapLayer {
 		
 		BufferedImage labelImage = getLabelImage(
 			label, font, g2d.getFontRenderContext(),
-			labelColor, labelOutlineColor
+			labelColor, labelOutlineColor, true
 		);
 
 		// Determine transform information.
@@ -672,7 +672,7 @@ implements SettlementMapLayer {
 		
 		BufferedImage labelImage = getLabelImage(
 			label, font, g2d.getFontRenderContext(),
-			labelColor, labelOutlineColor
+			labelColor, labelOutlineColor, false
 		);
 
 		// Determine transform information.
@@ -709,14 +709,14 @@ implements SettlementMapLayer {
 	 */
 	private BufferedImage getLabelImage(
 		String label, Font font, FontRenderContext fontRenderContext, Color labelColor,
-		Color labelOutlineColor
+		Color labelOutlineColor, boolean hasOutline
 	) { 
 		BufferedImage labelImage = null;
 		String labelId = label + font.toString() + labelColor.toString() + labelOutlineColor.toString();
 		if (labelImageCache.containsKey(labelId)) {
 			labelImage = labelImageCache.get(labelId);
 		} else {
-			labelImage = createLabelImage(label, font, fontRenderContext, labelColor, labelOutlineColor);
+			labelImage = createLabelImage(label, font, fontRenderContext, labelColor, labelOutlineColor, hasOutline);
 			labelImageCache.put(labelId, labelImage);
 		}
 		return labelImage;
@@ -734,7 +734,7 @@ implements SettlementMapLayer {
 	 */
 	private BufferedImage createLabelImage(
 		String label, Font font, FontRenderContext fontRenderContext, Color labelColor,
-		Color labelOutlineColor) {
+		Color labelOutlineColor, boolean hasOutline) {
 
 		// Determine bounds.
 		TextLayout textLayout1 = new TextLayout(label, font, fontRenderContext);
@@ -742,7 +742,7 @@ implements SettlementMapLayer {
 
 		// Get label shape.
 		Shape labelShape = textLayout1.getOutline(null);
-
+		
 		// Create buffered image for label.
 		int width = (int) (bounds1.getWidth() + bounds1.getX()) + 4;
 		int height = (int) (bounds1.getHeight()) + 4;
@@ -753,16 +753,19 @@ implements SettlementMapLayer {
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.translate(2D - bounds1.getX(), 2D - bounds1.getY());
 
+		Stroke saveStroke = null;
 		// Draw label outline.
-		Stroke saveStroke = g2d.getStroke();
-		g2d.setColor(labelOutlineColor);
-		g2d.setStroke(new BasicStroke(font.getSize()/10, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		if (hasOutline) {
+			saveStroke = g2d.getStroke();
+			g2d.setColor(labelOutlineColor);
+			g2d.setStroke(new BasicStroke(font.getSize()/10, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+			
+			// Draw outline
+			g2d.draw(labelShape);
 
-		// Draw outline
-		g2d.draw(labelShape);
-
-		// Restore stroke
-		g2d.setStroke(saveStroke);
+			// Restore stroke
+			g2d.setStroke(saveStroke);
+		}
 		
 		g2d.setColor(labelColor);
 		// Fill label

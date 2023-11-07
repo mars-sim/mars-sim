@@ -41,26 +41,27 @@ import com.mars_sim.core.time.Temporal;
  * <p>According to https://en.wikipedia.org/wiki/Space_suit,
  *
  * <p>Generally speaking, in order to supply enough oxygen for respiration, a space suit
- * using pure oxygen should have a pressure of about
- * <p> (A) 32.4 kPa (240 Torr; 4.7 psi),
+ * using pure oxygen should have a pressure of about a total of 32.4 kPa (240 Torr; 4.7 psi),
  *
- * <p>    which is equal to the 20.7 kPa (160 Torr; 3.0 psi) partial pressure of oxygen
+ * <p> (A) which is equal to the 20.7 kPa (160 Torr; 3.0 psi) partial pressure of oxygen
  *     in the Earth's atmosphere at sea level,
  *
- * <p> (B) plus 5.31 kPa (40 Torr; 0.77 psi) CO2 and 6.28 kPa (47 Torr; 0.91 psi) water vapor
- *     pressure,
+ * <p> (B) plus 5.31 kPa (40 Torr; 0.77 psi) CO2 and 
+ * 
+ * <p> (C) 6.28 kPa (47 Torr; 0.91 psi) water vapor pressure,
  * 
  * <p> both of which must be subtracted from the alveolar pressure to get alveolar oxygen
  * partial pressure in 100% oxygen atmospheres, by the alveolar gas equation.
  *
- * <p>According to https://en.wikipedia.org/wiki/Mars_suit#Breathing for a Mars suit, the
+ * <p> According to https://en.wikipedia.org/wiki/Mars_suit#Breathing for a Mars suit, the
  * absolute minimum safe O2 requirement is a partial pressure of 11.94 kPa (1.732 psi)
  *
- * <p>In contrast, The Russian Orlan spacesuit system operates at 40.0 kPa (5.8 psia).
- * On the other hand, the U.S. EMU system operates at 29.6 kPa (4.3 psia) of oxygen,
+ * <p> In contrast, the Russian Orlan spacesuit system operates at 40.0 kPa (5.8 psia).
+ * 
+ * <p> On the other hand, the U.S. EMU system operates at 29.6 kPa (4.3 psia) of oxygen,
  * with traces of CO2 and water vapor.
  *
- * <p>The Russian EVA preparation protocol includes a 30-minute oxygen pre-breathe in
+ * <p> The Russian EVA preparation protocol includes a 30-minute oxygen pre-breathe in
  * the Orlan spacesuit at a pressure of 73 kPa (10.6 psia) to partially wash out
  * nitrogen from crew members’ blood and tissues (Barer and Filipenkov, 1994)
  *
@@ -100,7 +101,9 @@ public class EVASuit extends Equipment
 	/** capacity (kg). */
 	public static final double CAPACITY = OXYGEN_CAPACITY + CO2_CAPACITY + WATER_CAPACITY;
 	/** Typical O2 air pressure (Pa) inside EVA suit is set to be 20.7 kPa. */
-	private static final double NORMAL_AIR_PRESSURE = 17;
+	private static final double NOMINAL_O2_PRESSURE = 20.7;
+	/** Typical O2 air pressure (Pa) inside EVA suit is set to be 17 kPa. */
+	private static final double TARGET_O2_PRESSURE = 17;
 	/** Normal temperature (celsius). */
 	private static final double NORMAL_TEMP = 25D;
 	/** The wear lifetime value is 1 orbit. */
@@ -146,20 +149,20 @@ public class EVASuit extends Equipment
 		
 		MASS_O2_MINIMUM_LIMIT = MIN_O2_PRESSURE / FULL_O2_PARTIAL_PRESSURE * OXYGEN_CAPACITY;
 		
-		MASS_O2_NOMINAL_LIMIT = NORMAL_AIR_PRESSURE / MIN_O2_PRESSURE * MASS_O2_MINIMUM_LIMIT;
+		MASS_O2_NOMINAL_LIMIT = NOMINAL_O2_PRESSURE / MIN_O2_PRESSURE * MASS_O2_MINIMUM_LIMIT;
 		
 		logger.config(DASHES);
 		logger.config("  Total Gas Tank Volume : " + Math.round(TOTAL_VOLUME * 100.0)/100.0 + "L");
 		logger.config("           Full Tank O2 : " + Math.round(FULL_O2_PARTIAL_PRESSURE*100.0)/100.0 
 					+ " kPa -> " + OXYGEN_CAPACITY + "  kg - Maximum Tank Pressure");
-		logger.config("             Nomimal O2 : " + NORMAL_AIR_PRESSURE + "  kPa -> "
+		logger.config("             Nomimal O2 : " + NOMINAL_O2_PRESSURE + "  kPa -> "
 					+ Math.round(MASS_O2_NOMINAL_LIMIT * 100.0)/100.0  + " kg - Suit Target Pressure");
 		logger.config("             Minimum O2 : " + Math.round(MIN_O2_PRESSURE * 100.0)/100.0 + " kPa -> "
 					+ Math.round(MASS_O2_MINIMUM_LIMIT * 100.0)/100.0  + " kg - Safety Limit");
 		logger.config(DASHES);
 			
 			// 66.61 kPa -> 1      kg (full tank O2 pressure)
-			// 20.7  kPa -> 0.3107 kg
+			// 20.7  kPa -> 0.3107 kg (nominal O2 pressure)
 			// 17    kPa -> 0.2552 kg (target O2 pressure)
 			// 11.94 kPa -> 0.1792 kg (min O2 pressure)
 	}
@@ -409,7 +412,7 @@ public class EVASuit extends Equipment
 			return pp;
 		}
 //		Note: the outside ambient air pressure is weather.getAirPressure(getCoordinates());
-		return NORMAL_AIR_PRESSURE;// * (malfunctionManager.getAirPressureModifier() / 100D);
+		return NOMINAL_O2_PRESSURE;// * (malfunctionManager.getAirPressureModifier() / 100D);
 	}
 
 	/**

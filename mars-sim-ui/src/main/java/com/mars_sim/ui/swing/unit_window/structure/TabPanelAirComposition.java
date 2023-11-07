@@ -52,6 +52,14 @@ import com.mars_sim.ui.swing.utils.UnitTableLauncher;
 @SuppressWarnings("serial")
 public class TabPanelAirComposition extends TabPanel {
 
+	private static final String BLDG = Msg.getString("TabPanelAirComposition.column.buildingName"); //$NON-NLS-1$
+	private static final String TOTAL = Msg.getString("TabPanelAirComposition.column.total"); //$NON-NLS-1$
+	private static final String O2 = Msg.getString("TabPanelAirComposition.o2"); //$NON-NLS-1$
+	private static final String H2O = Msg.getString("TabPanelAirComposition.h2o"); //$NON-NLS-1$
+	private static final String N2 = Msg.getString("TabPanelAirComposition.n2"); //$NON-NLS-1$
+	private static final String CO2 = Msg.getString("TabPanelAirComposition.co2"); //$NON-NLS-1$
+	private static final String AR = Msg.getString("TabPanelAirComposition.ar"); //$NON-NLS-1$
+	
 	private static final String AIR_ICON = "air";
 	private static final DecimalFormat DECIMAL_KPA = new DecimalFormat("0.00 kPa");
 	private static final DecimalFormat DECIMAL_ATM = new DecimalFormat("0.0 atm");
@@ -144,16 +152,11 @@ public class TabPanelAirComposition extends TabPanel {
 		AttributePanel gasPanel = new AttributePanel(2, 3);
 		gasPanel.setBorder(StyleManager.createLabelBorder(Msg.getString("TabPanelAirComposition.label")));
 		topContentPanel.add(gasPanel); 
-		cO2Label = gasPanel.addTextField(Msg.getString("TabPanelAirComposition.cO2"),
-											StyleManager.DECIMAL_PERC2.format(cO2Cache), null);
-		arLabel = gasPanel.addTextField(Msg.getString("TabPanelAirComposition.ar"),
-											StyleManager.DECIMAL_PERC2.format(arCache), null);
-		n2Label = gasPanel.addTextField(Msg.getString("TabPanelAirComposition.n2"),
-											StyleManager.DECIMAL_PERC2.format(n2Cache), null);
-		o2Label = gasPanel.addTextField(Msg.getString("TabPanelAirComposition.o2"),
-											StyleManager.DECIMAL_PERC2.format(o2Cache), null);
-		h2OLabel = gasPanel.addTextField(Msg.getString("TabPanelAirComposition.h2o"),
-											StyleManager.DECIMAL_PERC2.format(h2OCache), null);
+		cO2Label = gasPanel.addTextField(CO2, StyleManager.DECIMAL_PERC2.format(cO2Cache), null);
+		arLabel = gasPanel.addTextField(AR, StyleManager.DECIMAL_PERC2.format(arCache), null);
+		n2Label = gasPanel.addTextField(N2, StyleManager.DECIMAL_PERC2.format(n2Cache), null);
+		o2Label = gasPanel.addTextField(O2, StyleManager.DECIMAL_PERC2.format(o2Cache), null);
+		h2OLabel = gasPanel.addTextField(H2O, StyleManager.DECIMAL_PERC2.format(h2OCache), null);
 		gasPanel.addTextField(null, null, null); // Add a blank to balance it out
 
 		// Create override check box panel.
@@ -194,8 +197,7 @@ public class TabPanelAirComposition extends TabPanel {
 	    bG.add(psi_btn);
 	    bG.add(mass_btn);
 	    bG.add(percent_btn);
-
-	    
+ 
 		// Create scroll panel for the outer table panel.
 		scrollPane = new JScrollPane();
 		// scrollPane.setPreferredSize(new Dimension(257, 230));
@@ -231,7 +233,7 @@ public class TabPanelAirComposition extends TabPanel {
 
 		scrollPane.setViewportView(table);
 
-		//Foruce an update to load
+		//Force an update to load
 		update();
 
 	}
@@ -422,23 +424,23 @@ public class TabPanelAirComposition extends TabPanel {
 		}
 
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return Msg.getString("TabPanelAirComposition.column.buildingName"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("TabPanelAirComposition.column.total"); //$NON-NLS-1$
-			else if (columnIndex == 2) return Msg.getString("TabPanelAirComposition.cO2"); //$NON-NLS-1$
-			else if (columnIndex == 3) return Msg.getString("TabPanelAirComposition.ar"); //$NON-NLS-1$
-			else if (columnIndex == 4) return Msg.getString("TabPanelAirComposition.n2"); //$NON-NLS-1$
-			else if (columnIndex == 5) return Msg.getString("TabPanelAirComposition.o2"); //$NON-NLS-1$
-			else if (columnIndex == 6) return Msg.getString("TabPanelAirComposition.h2o"); //$NON-NLS-1$
+			if (columnIndex == 0) return BLDG;
+			else if (columnIndex == 1) return TOTAL;
+			else if (columnIndex == 2) return O2;
+			else if (columnIndex == 3) return H2O;
+			else if (columnIndex == 4) return N2;
+			else if (columnIndex == 5) return CO2;
+			else if (columnIndex == 6) return AR;
 
 			else return null;
 		}
 
 		private int getGasId(int columnIndex) {
-		 	if (columnIndex == 2) return ResourceUtil.co2ID;
-			else if (columnIndex == 3) return ResourceUtil.argonID;
+		 	if (columnIndex == 2) return ResourceUtil.oxygenID;
+			else if (columnIndex == 3) return ResourceUtil.waterID;
 			else if (columnIndex == 4) return ResourceUtil.nitrogenID;
-			else if (columnIndex == 5) return ResourceUtil.oxygenID;
-			else if (columnIndex == 6) return ResourceUtil.waterID;
+			else if (columnIndex == 5) return ResourceUtil.co2ID;
+			else if (columnIndex == 6) return ResourceUtil.argonID;
 
 			else return -1;
 		}

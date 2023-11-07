@@ -41,7 +41,7 @@ import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 public class VehicleMapLayer implements SettlementMapLayer {
 
 	// Static members
-	private final Color vehicleColor = new Color(249, 134, 134).darker();
+	private final Color vehicleColor = new Color(208, 224, 242); // pale grey color
 
 	// Data members
 	private SettlementMapPanel mapPanel;

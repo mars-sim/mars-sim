@@ -52,28 +52,31 @@ public class AirComposition implements Serializable {
         }
     }
 
-	// see https://en.wikipedia.org/wiki/Gas_constant
+	// See https://en.wikipedia.org/wiki/Gas_constant
 	private static final double R_GAS_CONSTANT = 0.082057338D; // [ in L atm K^−1 mol^−1 ]
 	public static final double MB_PER_ATM = 1013.2501D;
 	public static final double KPA_PER_ATM = 101.32501D;
 	public static final double PSI_PER_ATM = 14.696D;
-
+	public static final double KPA_PER_PSI = KPA_PER_ATM / PSI_PER_ATM; // ~ 6.8947
 	/**
      * The % of air composition used by US Skylab Hab Modules. 5 psi or 340 mb is
      * the overall pressure rating.
      */
-    // see http://www.collectspace.com/ubb/Forum29/HTML/001309.html
+    // See http://www.collectspace.com/ubb/Forum29/HTML/001309.html
     // The partial pressures of each gas are in atm
     private static final double CO2_PARTIAL_PRESSURE = 0.5D / MB_PER_ATM;
     private static final double ARGON_PARTIAL_PRESSURE = 0.1D / MB_PER_ATM;
     private static final double N2_PARTIAL_PRESSURE = 120D / MB_PER_ATM;
+    // For O2, it's 200 / 1013.2501 * 14.696 =  2.9008 psi or ~ 20 kPa
     private static final double O2_PARTIAL_PRESSURE = 200D / MB_PER_ATM;
     private static final double H2O_PARTIAL_PRESSURE = 19.4D / MB_PER_ATM;
+    
     private static final double H2O_MOLAR_MASS = 18.02D / 1000D;
     private static final double O2_MOLAR_MASS = 32D / 1000D;
     private static final double N2_MOLAR_MASS = 28.02D / 1000D;
     private static final double ARGON_MOLAR_MASS = 39.948D / 1000D;
     private static final double CO2_MOLAR_MASS = 44.0095D / 1000D;
+    
 	private static final int MILLISOLS_PER_UPDATE = 2;
 	private static final double CALCULATE_FREQUENCY = 2D;
 	private static final double GAS_CAPTURE_EFFICIENCY = .95D;
@@ -129,7 +132,7 @@ public class AirComposition implements Serializable {
 	}
 
 	/**
-	 * Initialise a new gas to the composition
+	 * Initialises a new gas to the composition.
 	 */
 	private void initialiseGas(int gasId) {
 		GasDetails gas = new GasDetails();
@@ -139,7 +142,7 @@ public class AirComposition implements Serializable {
 	}
 
 	/**
-	 * Update all the individual Gas percentages based on the partial & total pressure.
+	 * Updates all the individual Gas percentages based on the partial & total pressure.
 	 */
 	private void updateGasPercentage() {
 		for (GasDetails gd : gases.values()) {
@@ -181,7 +184,7 @@ public class AirComposition implements Serializable {
 	}
 
 	/**
-	 * Updates the gasses for occupants.
+	 * Updates each gas for occupants.
 	 * 
 	 * @param t Current temperature
 	 * @param numPeople Number of people in using air
@@ -192,7 +195,7 @@ public class AirComposition implements Serializable {
 		totalPressure = 0;
 		totalMass = 0;
 		
-		for(Entry<Integer, GasDetails> g : gases.entrySet()) {
+		for (Entry<Integer, GasDetails> g : gases.entrySet()) {
 			int gasId = g.getKey();
 			GasDetails gas = g.getValue();
 
@@ -309,7 +312,7 @@ public class AirComposition implements Serializable {
  	 * @param rh        local store of gases
  	*/
 	public void releaseOrRecaptureAir(double volume, boolean isReleasing, ResourceHolder rh) {
-		for(Entry<Integer,GasDetails> g : gases.entrySet()) {
+		for (Entry<Integer,GasDetails> g : gases.entrySet()) {
 			int gasId = g.getKey();
 			GasDetails gas = g.getValue();
 
