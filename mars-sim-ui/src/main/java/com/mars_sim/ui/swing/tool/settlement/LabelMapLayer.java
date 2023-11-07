@@ -75,7 +75,7 @@ implements SettlementMapLayer {
 	// Use this color wheel: https://convertingcolors.com/rgb-color-236_118_153.html?search=RGB(236,%20118,%20153)
 	static final Color femaleColor = new Color(148, 36, 78);
 	static final Color femaleOutline = femaleColor.brighter();
-	static final Color femaleSelected = new Color(236, 118, 153);
+	static final Color femaleSelected = new Color(236, 0, 70);
 	static final Color femaleSelectedOutline = femaleSelected.brighter().brighter();
 	
 	// (154, 204, 255) pale light blue
