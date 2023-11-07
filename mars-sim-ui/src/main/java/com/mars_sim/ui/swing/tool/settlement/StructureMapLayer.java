@@ -1,7 +1,7 @@
-/*
+/**
  * Mars Simulation Project
  * StructureMapLayer.java
- * @date 2023-08-12
+ * @date 2023-11-06
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.settlement;
@@ -41,33 +41,36 @@ public class StructureMapLayer implements SettlementMapLayer {
 	private static final String HATCH = "hatch";
 	
     // Static members
-    private static final Color BUILDING_COLOR = Color.GREEN;
+    private final Color bldgColor = Color.GREEN;
     
-    private static final Color SELECTED_BUILDING_BORDER_COLOR = Color.WHITE;//new Color(119, 85, 0); // dark orange
+    private final Color bldgSelectedBorder = Color.WHITE;//new Color(119, 85, 0); // dark orange
     
-    private static final Color CONSTRUCTION_SITE_COLOR = new Color(119, 59, 0); // dark orange
-    private static final Color SELECTED_CONSTRUCTION_SITE_COLOR = new Color(119, 85, 0); // dark orange
+    private final Color constSiteColor = new Color(119, 59, 0); // dark orange
+    private final Color constSiteSelected = new Color(119, 85, 0); // dark orange
     
-    private static final Color BUILDING_CONNECTOR_COLOR = Color.RED;
-    private static final Color BUILDING_SPLIT_CONNECTOR_COLOR = Color.WHITE;
+    private final Color connectorColor = Color.RED;
+    private final Color splitConnectorColor = Color.WHITE;
 
-    private static final Color SITE_BORDER_COLOR = Color.BLACK;
-    private final static float dash[] = {50.0f, 20.0f, 10.0f, 20.0f};
+    private final Color siteBorder = Color.BLACK;
+    private final float dash[] = {50.0f, 20.0f, 10.0f, 20.0f};
     
     // See https://docstore.mik.ua/orelly/java-ent/jfc/ch04_05.htm for instructions on BasicStroke
-    private final static BasicStroke THIN_DASHES = new BasicStroke(2.0f,
+    private final BasicStroke thinDash = new BasicStroke(2.0f,
     	      BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0.0f);
     
-//    private final static BasicStroke THICK_DASHES = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0);
+//  private final BasicStroke thickDash = new BasicStroke(3,
+//    	BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0);
     
-    private final static BasicStroke THICK_DASHES = new BasicStroke(10.0f,
+    private final BasicStroke thickDash = new BasicStroke(10.0f,
   	      BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 50.0f, dash, 0.0f);
  
     // Data members
     private boolean selected = false;
     
     private double scale;
+    
     private SettlementMapPanel mapPanel;
+    
     private Map<Double, Map<BuildingKey, BufferedImage>> svgImageCache;
 
     /**
@@ -181,7 +184,7 @@ public class StructureMapLayer implements SettlementMapLayer {
             drawRectangleStructure(
                     g2d, building.getXLocation(), building.getYLocation(),
                     building.getWidth(), building.getLength(), building.getFacing(),
-                    BUILDING_COLOR
+                    bldgColor
                     );
         }
     }
@@ -229,12 +232,12 @@ public class StructureMapLayer implements SettlementMapLayer {
                     );
         }
         else {
-        	Color color = SELECTED_CONSTRUCTION_SITE_COLOR;
+        	Color color = constSiteSelected;
             // Else draw colored rectangle for construction site.
         	if (site.isMousePicked())
-        		color = SELECTED_CONSTRUCTION_SITE_COLOR;
+        		color = constSiteSelected;
         	else
-        		color = CONSTRUCTION_SITE_COLOR;
+        		color = constSiteColor;
             drawRectangleStructure(
                     g2d, site.getXLocation(), site.getYLocation(),
                     site.getWidth(), site.getLength(), site.getFacing(),
@@ -285,7 +288,7 @@ public class StructureMapLayer implements SettlementMapLayer {
             Point2D.Double rightHatch1Loc = LocalAreaUtil.getLocalRelativeLocation(hatch1.getWidth() / -2D, 0D, hatch1);
             splitAreaPath.lineTo(rightHatch1Loc.getX(), rightHatch1Loc.getY());
             splitAreaPath.closePath();
-            drawPathShape(splitAreaPath, g2d, BUILDING_SPLIT_CONNECTOR_COLOR);
+            drawPathShape(splitAreaPath, g2d, splitConnectorColor);
 
             // Use SVG image for hatch 1 if available.
             GraphicsNode hatch1SVG = SVGMapUtil.getBuildingConnectorSVG(HATCH);
@@ -299,7 +302,7 @@ public class StructureMapLayer implements SettlementMapLayer {
                 // Otherwise draw colored rectangle for hatch 1.
                 drawRectangleStructure(g2d, hatch1.getXLocation(), hatch1.getYLocation(),
                         hatch1.getWidth(), hatch1.getLength(), hatch1.getFacing(),
-                        BUILDING_CONNECTOR_COLOR);
+                        connectorColor);
             }
 
             // Use SVG image for hatch 2 if available.
@@ -314,7 +317,7 @@ public class StructureMapLayer implements SettlementMapLayer {
                 // Otherwise draw colored rectangle for hatch 2.
                 drawRectangleStructure(g2d, hatch2.getXLocation(), hatch2.getYLocation(),
                         hatch2.getWidth(), hatch2.getLength(), hatch2.getFacing(),
-                        BUILDING_CONNECTOR_COLOR);
+                        connectorColor);
             }
         }
         else {
@@ -333,7 +336,7 @@ public class StructureMapLayer implements SettlementMapLayer {
                 // Otherwise draw colored rectangle for hatch.
                 drawRectangleStructure(g2d, hatch.getXLocation(), hatch.getYLocation(),
                         hatch.getWidth(), hatch.getLength(), hatch.getFacing(),
-                        BUILDING_CONNECTOR_COLOR);
+                        connectorColor);
             }
         }
     }
@@ -460,10 +463,10 @@ public class StructureMapLayer implements SettlementMapLayer {
             g2d.setColor(color);
             g2d.fill(bounds);
             
-        	if (color.equals(SELECTED_CONSTRUCTION_SITE_COLOR)) {
+        	if (color.equals(constSiteSelected)) {
                 // Draw the dashed border
-                g2d.setPaint(SITE_BORDER_COLOR);
-                g2d.setStroke(THIN_DASHES);
+                g2d.setPaint(siteBorder);
+                g2d.setStroke(thinDash);
                 g2d.draw(bounds);
                 g2d.setStroke(oldStroke);
         	}
@@ -530,8 +533,8 @@ public class StructureMapLayer implements SettlementMapLayer {
 //            }
             
 			// Draw the dashed border over the selected building
-			g2d.setPaint(SELECTED_BUILDING_BORDER_COLOR);
-			g2d.setStroke(THICK_DASHES);                                           
+			g2d.setPaint(bldgSelectedBorder);
+			g2d.setStroke(thickDash);                                           
 			g2d.draw(bounds);
 			
 			// Restore the stroke

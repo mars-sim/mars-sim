@@ -41,7 +41,7 @@ import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 public class VehicleMapLayer implements SettlementMapLayer {
 
 	// Static members
-	private final Color VEHICLE_COLOR = new Color(249, 134, 134).darker();
+	private final Color vehicleColor = new Color(249, 134, 134).darker();
 
 	// Data members
 	private SettlementMapPanel mapPanel;
@@ -140,7 +140,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 			drawRectangleVehicle(
 				g2d, vehicle.getXLocation(), vehicle.getYLocation(), 
 				vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), 
-				VEHICLE_COLOR
+				vehicleColor
 			);
 		}
 	}

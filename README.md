@@ -127,35 +127,36 @@ communication towers, and, in future, road/train network.
 
 The key to achieve this is developing a network of viable and self-sustainable settlements. 
 Initially, the sponsor would guide the development of her settlements. Eventually, each settlement
-will evolve and develop her own laws and governance, *[command structure](https://github.com/mars-sim/mars-sim/wiki/Role)*, 
-and *[development objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective)*.
+will evolve and develop her own laws and governance, going beyond its former [command structure](https://github.com/mars-sim/mars-sim/wiki/Role), 
+and it previously confined [objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective).
 
 ## Economics
 
-In terms of [economics](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim implements the
-**Value Point (VP)** system, which keeps track of the supply and demand on each good and resource.
-As there is no standard currency established on Mars yet, settlers barter trades with neighboring settlements
-by keeping track of the credits and deficit based on the VPs of the exchange of resources in a 
-Trading mission or Delivery mission.
+In terms of [economics](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim 
+implements the **Value Point (VP)** system, which keeps track of the supply and demand on each 
+good and resource. As there is no standard currency established on Mars yet, settlers barter 
+trades with neighboring settlements by keeping track of the credits and deficit based on the 
+VPs of the exchange of resources in a Trading mission or Delivery mission.
 
 ## Countries and Sponsors
 
-It is an incredible undertaking in that 32 [countries](https://github.com/mars-sim/mars-sim/wiki/Countries) 
-are participating in this dream of making Mars as the second home for humanity. Altogether, there's a total of 14 
-space agencies and corporations to choose from as the sponsoring organization for funding settlements. 
+In mars-sim, we witness an incredible undertaking in that 32 [countries](https://github.com/mars-sim/mars-sim/wiki/Countries) 
+are participating in this dream of making Mars as the second home for humanity. Altogether, 
+there's a total of 14 space agencies and 2 corporations to choose from for funding 
+settlements. 
 
 Notably, Mars Society is the only organization that comprises all 32 member nations. 
 
-On the other hand, European Space Agency (ESA) is a bloc that consists of 22 member nations willing to 
-sponsor this space development effort. 
+On the other hand, European Space Agency (ESA) is a bloc that consists of 22 member nations 
+united in shaping the development of Europe's space capability. 
 
 ---
 
 # Operation Modeling
 
-mars-sim depicts near-term human exploration and settlement on Mars. It speaks of a rich scientific
-language selected from research journal and paper in defining operation paradigms and programming models
-conceived from known present-day technological progress.
+mars-sim depicts near-term human exploration and settlement on Mars. It speaks of a rich 
+scientific language selected from research journal and paper in defining operation paradigms 
+and programming models conceived from known present-day technological progress.
 
 ## Timekeeping
 
@@ -169,7 +170,7 @@ on one Martian orbit (or year). Therefore, it is not a straight-foward exercise 
 between Mars and Earth by merely a simple equation.
 
 > [!NOTE]
-> See [timekeeping wiki](https://github.com/mars-sim/mars-sim/wiki/Timekeeping) for further discussions on 
+> See [Timekeeping](https://github.com/mars-sim/mars-sim/wiki/Timekeeping) for further discussions on 
 this topic.
 
 ## Indoor Atmosphere
@@ -201,46 +202,50 @@ with outside world.
 
 ## EVA
 
-An example of operation modeling is the sequence of steps involving the ingress and egress of airlocks.
+In order to walk onto the surface of Mars, a settler must come through an intermediate 
+chamber called the *airlock* to exit the settlement. The airlock allows the passage 
+of people between a pressure vessel and its surroundings while minimizing the change of 
+pressure in the vessel and loss of air from it. 
 
-To walk onto the surface of Mars, a settler must come through an intermediate chamber
-called the *airlock* to exit the settlement. The airlock allows the passage of people between
-a pressure vessel and its surroundings while minimizing the change of pressure in the vessel and loss of
-air from it. 
+mars-sim attempts to do an in-depth operation modeling of the sequence of steps 
+involving the ingress and egress of airlocks. There are two types of airlocks, a building 
+airlock and a vehicle airlock. A building airlcok may join to any *Hab* building 
+(which stands for cylindrical *habitation module*) such as *Lander Hab*, or *Outpost Hub*, 
+*Astronomy Observatory*, etc. All rovers have a vehicular airlock built-in.
 
-In mars-sim, the airlock is a separate building joined to any *Hab* (which stands for cylindrical
-*habitation module*) such as *Lander Hab*, or *Outpost Hub*, *Astronomy Observatory*, etc.
-All rovers have vehicular airlock built-in.
-
-To perform a team EVA, one of the members will be selected as the *airlock operator*, who will ensure that proper
-procedures be followed before going out for an EVA or after coming back from an EVA.
+To perform a team EVA, one of the members will be selected as the *airlock operator*, who 
+will ensure that proper procedures be followed before going out for an EVA or after 
+coming back from an EVA.
 
 In case of an egress operation, 
-(1) the airlock would have to be *pressurized*. 
-(2) The air would be heated
+(1) The airlock would have to be *pressurized*. 
+(2) The air would be heated.
 so that the atmospheric pressure and temperature are equalized. 
 (3) Next, the airlock operator would unlock and open the inner door. 
 (4) The whole team would enter into the airlock. 
-(5) After all have donned EVA suits, the operator will depressurize the chamber and gases would be re-captured to match the
-outside air pressure. 
-(6) At last, he/she would unlock and open the outer door and the whole team will exit to the outside surface of Mars.
+(5) After all have donned EVA suits, the operator will depressurize the chamber and gases 
+would be re-captured to match the outside air pressure. 
+(6) At last, he/she would unlock and open the outer door and the whole team will exit 
+to the outside surface of Mars.
 
 > [!NOTE]
-> See [Airlock wiki](https://github.com/mars-sim/mars-sim/wiki/Airlock) for details on this topic.
+> See [Airlock](https://github.com/mars-sim/mars-sim/wiki/Airlock) for details on this topic.
 
 ## Radiation
 
 Another example is [Radiation Modeling](https://github.com/mars-sim/mars-sim/wiki/Radiation-Exposure),
-which account for how often the **Galactic Cosmic Ray (GCR)** and **Solar Energetic Particles (SEP)**
-would occur during EVA. The cumulative dose is closely monitored in 3 specific exposure interval,
-namely, the 30-day, the annual and the career lifetime of a settler. It would affect 3 different regions
-of our body, namely, the *Blood Forming Organs (BFO)*, the *Ocular Lens*, and the *Skin*. The dose limits are
-measured in *milli-Severt*.
+which account for how often the **Galactic Cosmic Ray (GCR)** and 
+**Solar Energetic Particles (SEP)** would occur during EVA. The cumulative dose is 
+closely monitored in 3 specific exposure interval, namely, the 30-day, the annual 
+and the career lifetime of a settler. It would affect 3 different regions of our body, 
+namely, the *Blood Forming Organs (BFO)*, the *Ocular Lens*, and the *Skin*. The dose 
+limits are measured in *milli-Severt*.
 
 ## Job
 
 Each settler is initially assigned a meaningful [job](https://github.com/mars-sim/mars-sim/wiki/Jobs) 
-that fit one's attributes and career profile. Player may designate the job of a settler in the xml file.
+that fit one's attributes and career profile. Player may also designate the job of 
+a predefined settler in the crew xml file.
 
 ## Role
 
@@ -276,24 +281,29 @@ in mars-sim.
 ## Maintenance and Malfunction
 
 The perils of living on Mars are very real. There is a total of 39 types of 
-[Malfunctions](https://github.com/mars-sim/mars-sim/wiki/Malfunctions) that can occur at a given moment. 
+[Malfunctions](https://github.com/mars-sim/mars-sim/wiki/Malfunctions) 
+that can occur at a given moment. 
 
-There are 3 metrics for tracking how reliable a Part is. The [Reliability](https://github.com/mars-sim/mars-sim/wiki/Reliability)
-is shown in terms of Percentage, Failure Rate, Mean Time Between Failure (MTBF), which are 
-dynamically updated in light of any incidents that occur during the simulation. Besides 
-malfunction, workshops and machinery factories are to produce parts for
-replenishing parts to be used during regular [maintenance](https://github.com/mars-sim/mars-sim/wiki/Maintenance) tasks.
+There are 3 metrics for tracking how reliable a Part is. The 
+[Reliability](https://github.com/mars-sim/mars-sim/wiki/Reliability)
+is shown in terms of Percentage, Failure Rate, Mean Time Between Failure 
+(MTBF), which are dynamically updated in light of any incidents that occur 
+during the simulation. Besides malfunction, workshops and machinery factories 
+are to produce parts for replenishing parts to be used during regular 
+[maintenance](https://github.com/mars-sim/mars-sim/wiki/Maintenance) tasks.
 
 
 ---
 
 ## Summary
-Mars is a harsh world but is certainly less unforgiving than our Moon. Settlers come face-to-face with accidents,
-equipment malfunctions, illnesses, injuries, and even death. Survival depends on how well they work together,
+Mars is a harsh world but is certainly not as unforgiving than Earth's barren Moon. 
+Still, settlers come face-to-face with accidents, equipment malfunctions, illnesses, 
+injuries, and even death. Survival depends on how well they work together,
 improve their survival skills and balance individual versus settlement needs.
 
-As the settlers learn how to survive hardship and build up their settlements, players are rewarded with the
-pure joy of participating in this grand social experiment of creating a new branch of human society on another
+As the settlers learn how to survive hardship and build up their settlements, 
+players are rewarded with the pure joy of participating in this grand social 
+experiment of creating a new branch of human society on another
 planetary surface.
 
 ---

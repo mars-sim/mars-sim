@@ -27,8 +27,8 @@ public class BackgroundTileMapLayer
 implements SettlementMapLayer {
 
 	// Static members.
-	private static final int MAX_BACKGROUND_IMAGE_NUM = 20;
-	private static final int MAX_BACKGROUND_DIMENSION = 1600;
+	private final int MAX_BACKGROUND_IMAGE_NUM = 20;
+	private final int MAX_BACKGROUND_DIMENSION = 1600;
 
 	private static final String MAP_TILE = "settlement_map/";
 	

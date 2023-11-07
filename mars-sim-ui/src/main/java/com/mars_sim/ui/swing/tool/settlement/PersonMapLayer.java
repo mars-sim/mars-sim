@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonMapLayer.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-11-06
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.settlement;
@@ -24,15 +24,15 @@ import com.mars_sim.core.structure.building.Building;
 public class PersonMapLayer implements SettlementMapLayer {
 
 	// Static members
-	private final Color MALE_COLOR = LabelMapLayer.MALE_COLOR;
-	private final Color MALE_OUTLINE_COLOR = LabelMapLayer.MALE_OUTLINE_COLOR;
-	private final Color MALE_SELECTED_COLOR = LabelMapLayer.MALE_SELECTED_COLOR;
-	private final Color MALE_SELECTED_OUTLINE_COLOR = LabelMapLayer.MALE_SELECTED_OUTLINE_COLOR;
+	private final Color maleColor = LabelMapLayer.maleColor;
+	private final Color maleOutline = LabelMapLayer.maleOutline;
+	private final Color maleSelected = LabelMapLayer.maleSelected;
+	private final Color maleSelectedOutline = LabelMapLayer.maleSelectedOutline;
 
-	private final Color FEMALE_COLOR = LabelMapLayer.FEMALE_COLOR;
-	private final Color FEMALE_OUTLINE_COLOR = LabelMapLayer.FEMALE_OUTLINE_COLOR;
-	private final Color FEMALE_SELECTED_COLOR = LabelMapLayer.FEMALE_SELECTED_COLOR;
-	private final Color FEMALE_SELECTED_OUTLINE_COLOR = LabelMapLayer.FEMALE_SELECTED_OUTLINE_COLOR;
+	private final Color femaleColor = LabelMapLayer.femaleColor;
+	private final Color femaleOutline = LabelMapLayer.femaleOutline;
+	private final Color femaleSelected = LabelMapLayer.femaleSelected;
+	private final Color femaleSelectedOutline = LabelMapLayer.femaleSelectedOutline;
 	
 	// Data members
 	private SettlementMapPanel mapPanel;
@@ -96,16 +96,16 @@ public class PersonMapLayer implements SettlementMapLayer {
 			Person person = i.next();
 			if (!person.equals(selectedPerson)) {
 				boolean male = person.getGender().equals(GenderType.MALE);
-				drawPerson(g2d, person, (male ? MALE_COLOR : FEMALE_COLOR), 
-							   (male ? MALE_OUTLINE_COLOR : FEMALE_OUTLINE_COLOR), scale);
+				drawPerson(g2d, person, (male ? maleColor : femaleColor), 
+							   (male ? maleOutline : femaleOutline), scale);
 			}
 		}
 
 		// Draw selected person.
 		if (people.contains(selectedPerson)) {
 			boolean male = selectedPerson.getGender().equals(GenderType.MALE);
-			drawPerson(g2d, selectedPerson, (male ? MALE_SELECTED_COLOR : FEMALE_SELECTED_COLOR),
-					   (male ? MALE_SELECTED_OUTLINE_COLOR : FEMALE_SELECTED_OUTLINE_COLOR), scale);
+			drawPerson(g2d, selectedPerson, (male ? maleSelected : femaleSelected),
+					   (male ? maleSelectedOutline : femaleSelectedOutline), scale);
 		}
 	}
 
@@ -119,13 +119,6 @@ public class PersonMapLayer implements SettlementMapLayer {
 
 		int size = (int)(Math.round(scale / 3.0));
 		size = Math.max(size, 4);
-		
-//		if (sizeCache != size) {
-//			sizeCache = size;
-//			System.out.println("size : " + size);	
-//		}
-		
-//		int size1 = (int)(Math.round(size * 1.1));
 		
 		double radius = size / 2.0;
 		
@@ -141,12 +134,6 @@ public class PersonMapLayer implements SettlementMapLayer {
 		newTransform.rotate(mapPanel.getRotation() * -1D, radius, radius);
 		g2d.setTransform(newTransform);
 
-//		// Set color outline color.
-//		g2d.setColor(outlineColor);
-//		
-//		// Draw outline circle.
-//		g2d.fillOval(0,  0, size1, size1);
-		
 		// Set circle color.
 		g2d.setColor(iconColor);
 		

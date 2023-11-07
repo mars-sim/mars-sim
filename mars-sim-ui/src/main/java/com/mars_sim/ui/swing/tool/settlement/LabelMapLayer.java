@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LabelMapLayer.java
- * @date 2022-07-01
+ * @date 2023-11-06
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.settlement;
@@ -45,51 +45,59 @@ public class LabelMapLayer
 implements SettlementMapLayer {
  
 	// Static members
-	private final Color HALLWAY_LABEL_COLOR = Color.gray;; //Color.blue;//new Color (79, 108, 44); // dull sage green
-	private final Color BUILDING_LABEL_COLOR = Color.gray.darker(); // Color(0, 0, 255);; //dark bright blue //Color.blue;//new Color (79, 108, 44); // dull sage green
+	private final Color hallwayLabel = Color.gray; //Color.blue;//new Color (79, 108, 44); // dull sage green
+	private final Color buildingLabel = Color.gray.darker(); // Color(0, 0, 255);; //dark bright blue //Color.blue;//new Color (79, 108, 44); // dull sage green
 
-	private final Color BLACK_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190); //new Color(0, 0, 0, 150);
-	private final Color WHITE_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 190);
+	private final Color blackOutline = new Color(0, 0, 0, 190); //new Color(0, 0, 0, 150);
+	private final Color whiteOutline = new Color(255, 255, 255, 190);
+	private final Color greyOutline = new Color(192, 192, 192, 190);
 
-	private final Color SHOP_LABEL_COLOR = new Color (195, 176, 145); // khaki: 146, 112, 255; // pale purple
-	private final Color LAB_LABEL_COLOR = new Color (51, 102, 153); // dull dark blue: 51, 102, 153 //sky magenta; 40, 54, 95); // navy blue
-	private final Color HAB_LABEL_COLOR = new Color (255, 102, 102); // Very light red: 255, 102, 102 // Maroon: 184, 134, 11 //147, 197, 114 // pistachio: 48, 213, 200; turquoise: 244, 164, 96; sandy brown: 92, 23, 0; // BURGUNDY
-	private final Color REACTOR_LABEL_COLOR = new Color (174, 198, 207); // pastel blue: 100, 60, 60; // pale red: Color.red.darker(); // red
-	private final Color GARAGE_LABEL_COLOR = Color.yellow;//new Color (255, 222, 122); // pale yellow
-	private final Color GREENHOUSE_LABEL_COLOR = new Color (133, 187, 101);// pale green; // 62, 180, 137); // mint; (153, 234, 37) is bright green; (79, 108, 44) is dull sage green //(69, 92, 0) is dark sage //  // new Color(0, 255, 64); //bright green;//
-	private final Color MEDICAL_LABEL_COLOR = new Color (51, 204, 255); // very light blue: 51, 204, 255 // dull dark blue : 0, 69, 92
-	private final Color LIVING_LABEL_COLOR = new Color (236, 121, 154); // salmon: 236, 121, 154 // pastel orange: 255, 179, 71 //  harvest gold: 225, 179, 120:
-	private final Color RESOURCE_LABEL_COLOR = new Color (182, 201, 255); // pale blue
-	private final Color EVA_LABEL_COLOR = new Color (236, 255, 179); // pale yellow
-	private final Color ERV_LABEL_COLOR = new Color (83, 83, 83); // pale grey
+	private final Color shopLabel = new Color (195, 176, 145); // khaki: 146, 112, 255; // pale purple
+	private final Color labLabel = new Color (51, 102, 153); // dull dark blue: 51, 102, 153 //sky magenta; 40, 54, 95); // navy blue
+	private final Color habLabel = new Color (255, 102, 102).darker(); // Very light red: 255, 102, 102 // Maroon: 184, 134, 11 //147, 197, 114 // pistachio: 48, 213, 200; turquoise: 244, 164, 96; sandy brown: 92, 23, 0; // BURGUNDY
+	private final Color reactorLabel = new Color (174, 198, 207); // pastel blue: 100, 60, 60; // pale red: Color.red.darker(); // red
+	private final Color garageLabel = Color.yellow;//new Color (255, 222, 122); // pale yellow
+	private final Color greenhouseLabel = new Color (133, 187, 101);// pale green; // 62, 180, 137); // mint; (153, 234, 37) is bright green; (79, 108, 44) is dull sage green //(69, 92, 0) is dark sage //  // new Color(0, 255, 64); //bright green;//
+	private final Color medicalLabel = new Color (51, 204, 255); // very light blue: 51, 204, 255 // dull dark blue : 0, 69, 92
+	private final Color livingLabel = new Color (236, 121, 154).darker(); // salmon: 236, 121, 154 // pastel orange: 255, 179, 71 //  harvest gold: 225, 179, 120:
+	private final Color resourceLabel = new Color (182, 201, 255); // pale blue
+	private final Color evaLabel = new Color (236, 255, 179); // pale yellow
+	private final Color ervLabel = new Color (83, 83, 83); // pale grey
 	
-	private final Color CONSTRUCTION_SITE_LABEL_COLOR = new Color(237, 114, 38); //greyish orange
-	private final Color CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);
+	private final Color constSiteLabel = new Color(237, 114, 38); //greyish orange
+	private final Color constSiteOutline = new Color(0, 0, 0, 150);
 
-	private final Color VEHICLE_LABEL_COLOR = Color.YELLOW.darker(); // new Color(249, 134, 134); // light-red //127, 0, 127); // magenta-purple
-	private final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);//(255, 255, 255, 190);
+	private final Color vehicleLabel = Color.YELLOW.darker(); // new Color(249, 134, 134); // light-red //127, 0, 127); // magenta-purple
+	private final Color vehicleOutline = new Color(0, 0, 0, 150);//(255, 255, 255, 190);
 
 	// (159,   7, 118) pinkish red purle
 	// (255, 153, 225) light pink
-	static final Color FEMALE_COLOR = new Color(236, 118, 153);
-	static final Color FEMALE_OUTLINE_COLOR = FEMALE_COLOR.darker();
-	static final Color FEMALE_SELECTED_COLOR = Color.MAGENTA.brighter();
-	static final Color FEMALE_SELECTED_OUTLINE_COLOR = Color.white;
+	// Use this color wheel: https://convertingcolors.com/rgb-color-236_118_153.html?search=RGB(236,%20118,%20153)
+	static final Color femaleColor = new Color(148, 36, 78);
+	static final Color femaleOutline = femaleColor.brighter();
+	static final Color femaleSelected = new Color(236, 118, 153);
+	static final Color femaleSelectedOutline = femaleSelected.brighter().brighter();
 	
 	// (154, 204, 255) pale light blue
 	// (210, 210, 210) light grey
-	static final Color MALE_COLOR = new Color(154, 204, 255);
-	static final Color MALE_OUTLINE_COLOR = MALE_COLOR.darker();
-	static final Color MALE_SELECTED_COLOR = Color.CYAN;
-	static final Color MALE_SELECTED_OUTLINE_COLOR = Color.white;
+	// Use this color wheel: https://convertingcolors.com/rgb-color-154_204_255.html?search=RGB(154,%20204,%20255)
+	static final Color maleColor = new Color(39, 99, 144);
+	static final Color maleOutline = maleColor.brighter().brighter();
+	static final Color maleSelected = new Color(52, 152, 255);
+	static final Color maleSelectedOutline = Color.white;
 
 	// (156, 126,   9)  pale brown
 	// (186, 129, 145) manila pink
-	static final Color ROBOT_COLOR = Color.ORANGE.darker();
-	static final Color ROBOT_OUTLINE_COLOR = ROBOT_COLOR.darker();
-	static final Color ROBOT_SELECTED_COLOR = new Color(255, 233, 124); 
-	static final Color ROBOT_SELECTED_OUTLINE_COLOR = Color.ORANGE.darker().darker();
+	// Use this color wheel: https://convertingcolors.com/rgb-color-255_233_124.html?search=RGB(255,%20233,%20124)
+	static final Color robotColor = new Color(85, 77, 0).brighter(); 
+	static final Color robotOutline = robotColor.brighter();
+	static final Color robotSelected = new Color(139, 125, 12); 
+	static final Color robotSelectedOutline = robotSelected.brighter().brighter();
 
+	/** Label font for artificial object. */
+//	private static final Font LABEL_FONT = new Font("Dialog", Font.PLAIN, 10);
+
+	
 	// Data members
 	private SettlementMapPanel mapPanel;
 	
@@ -186,56 +194,56 @@ implements SettlementMapLayer {
 				String words[] = name.split(" ");
 				int s = words.length;
 				
-				Color frontColor = BUILDING_LABEL_COLOR;
-				Color outlineColor = WHITE_LABEL_OUTLINE_COLOR;
+				Color frontColor = buildingLabel;
+				Color outlineColor = whiteOutline;
 				switch(building.getCategory()) {
 					case WORKSHOP:
-						frontColor = SHOP_LABEL_COLOR;
-						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+						frontColor = shopLabel;
+						outlineColor = blackOutline;
 						break;
 					case LABORATORY:
-						frontColor = LAB_LABEL_COLOR;
-						outlineColor = WHITE_LABEL_OUTLINE_COLOR;
+						frontColor = labLabel;
+						outlineColor = whiteOutline;
 						break;
 					case LIVING:
-						frontColor = LIVING_LABEL_COLOR;
-						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+						frontColor = livingLabel;
+						outlineColor = whiteOutline;
 						break;
 					case MEDICAL:
-						frontColor = MEDICAL_LABEL_COLOR;
-						outlineColor = WHITE_LABEL_OUTLINE_COLOR;
+						frontColor = medicalLabel;
+						outlineColor = whiteOutline;
 						break;
 					case COMMAND:
-						frontColor = HAB_LABEL_COLOR;
-						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+						frontColor = habLabel;
+						outlineColor = whiteOutline;
 						break;
 					case VEHICLE: 
-						frontColor = GARAGE_LABEL_COLOR;
-						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+						frontColor = garageLabel;
+						outlineColor = greyOutline;
 						break;
 					case HALLWAY: 
-						frontColor = HALLWAY_LABEL_COLOR;
-						outlineColor = WHITE_LABEL_OUTLINE_COLOR;
+						frontColor = hallwayLabel;
+						outlineColor = whiteOutline;
 						break;
 					case FARMING:
-						frontColor = GREENHOUSE_LABEL_COLOR;
-						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+						frontColor = greenhouseLabel;
+						outlineColor = whiteOutline;
 						break;
 					case PROCESSING:
-						frontColor = RESOURCE_LABEL_COLOR;
-						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+						frontColor = resourceLabel;
+						outlineColor = blackOutline;
 						break;
 					case POWER:
-						frontColor = REACTOR_LABEL_COLOR;
-						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+						frontColor = reactorLabel;
+						outlineColor = blackOutline;
 						break;
 					case EVA_AIRLOCK:
-						frontColor = EVA_LABEL_COLOR;
-						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+						frontColor = evaLabel;
+						outlineColor = greyOutline;
 						break;
 					case ERV:
-						frontColor = ERV_LABEL_COLOR;
-						outlineColor = WHITE_LABEL_OUTLINE_COLOR;
+						frontColor = ervLabel;
+						outlineColor = whiteOutline;
 						break;
 					default:
 						break;
@@ -352,7 +360,7 @@ implements SettlementMapLayer {
 					}
 					
 					drawStructureLabel(g2d, words[j], site.getPosition(),
-							CONSTRUCTION_SITE_LABEL_COLOR, CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR,
+							constSiteLabel, constSiteOutline,
 							y);
 				}
 			}
@@ -406,7 +414,7 @@ implements SettlementMapLayer {
 				Vehicle vehicle = i.next();
 				if (vehicle.getVehicleType() == VehicleType.LUV) {
 					drawStructureLabel(g2d, vehicle.getName(), vehicle.getPosition(),
-						VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR, 0);
+						vehicleLabel, vehicleOutline, 0);
 				}
 				
 				else {
@@ -415,7 +423,7 @@ implements SettlementMapLayer {
 					int s = words.length;
 					for (int j = 0; j < s; j++) {
 						drawStructureLabel(g2d, words[j], vehicle.getPosition(),
-							VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR, j * size);
+							vehicleLabel, vehicleOutline, j * size);
 					}
 				}
 			}
@@ -442,14 +450,14 @@ implements SettlementMapLayer {
 		float yoffset = (float)(scale / 2.0);
 		yoffset = Math.max(yoffset, 12);
 
-		Color sColor = FEMALE_SELECTED_COLOR;
-		Color soColor = FEMALE_SELECTED_OUTLINE_COLOR;
+		Color sColor = femaleSelected;
+		Color soColor = femaleSelectedOutline;
 		
 		if (selectedPerson != null) {
 			
 			if (selectedPerson.getGender().equals(GenderType.MALE)) {
-				sColor = MALE_SELECTED_COLOR;
-				soColor = MALE_SELECTED_OUTLINE_COLOR;
+				sColor = maleSelected;
+				soColor = maleSelectedOutline;
 			}
 		
 			// Draw selected person.
@@ -501,8 +509,8 @@ implements SettlementMapLayer {
 					boolean male = person.getGender() == GenderType.MALE;
 					float originalFontSize = 10f;
 					drawPersonRobotLabel(g2d, n, person.getPosition(),
-								(male ? MALE_COLOR : FEMALE_COLOR),
-								(male ? MALE_OUTLINE_COLOR : FEMALE_OUTLINE_COLOR), 
+								(male ? maleColor : femaleColor),
+								(male ? maleOutline : femaleOutline), 
 								originalFontSize,
 								xoffset, 0);
 				}
@@ -539,7 +547,7 @@ implements SettlementMapLayer {
 				float originalFontSize = 10f;
 				if (!robot.equals(selectedRobot)) {
 					drawPersonRobotLabel(g2d, robot.getName(), robot.getPosition(),
-							ROBOT_COLOR, ROBOT_OUTLINE_COLOR, 
+							robotColor, robotOutline, 
 							originalFontSize, xoffset, 0);
 				}
 			}
@@ -551,7 +559,7 @@ implements SettlementMapLayer {
 			// Draw robot name.
 			drawPersonRobotLabel(
 				g2d, selectedRobot.getName(), selectedRobot.getPosition(),
-				ROBOT_COLOR, ROBOT_SELECTED_OUTLINE_COLOR,
+				robotColor, robotSelectedOutline,
 				originalFontSize, xoffset, 0);
 
 			originalFontSize = 8f;
@@ -560,7 +568,7 @@ implements SettlementMapLayer {
 			if (taskString != null && !taskString.equals(""))
 				drawPersonRobotLabel(
 					g2d, taskString, selectedRobot.getPosition(),
-					ROBOT_COLOR, ROBOT_SELECTED_OUTLINE_COLOR,
+					robotColor, robotSelectedOutline,
 					originalFontSize, xoffset, yoffset);
 
 			// Draw mission.
@@ -570,7 +578,7 @@ implements SettlementMapLayer {
 				if (missionString != null && !missionString.equals(""))
 					drawPersonRobotLabel(
 						g2d, missionString, selectedRobot.getPosition(),
-						ROBOT_SELECTED_COLOR.darker(), ROBOT_SELECTED_OUTLINE_COLOR,
+						robotSelected.darker(), robotSelectedOutline,
 						originalFontSize, xoffset, 1.8f * yoffset);
 			}
 		}
@@ -590,25 +598,23 @@ implements SettlementMapLayer {
 		Color labelColor, Color labelOutlineColor, float yOffset
 	) {
 		double scale = mapPanel.getScale();
-		float fontSize = Math.round(scale / 1.2);
+		float fontSize = Math.round(scale * 1.1);
 		float size = (float) Math.max(fontSize / 30.0, 1.2);
 		
-		// If the scale is smaller than 5, then 
-		// there is no need of using labelOutlineColor 
-		if (scale <= 5)
-			labelOutlineColor = labelColor;
+		// If the scale is smaller than 5, then there is no need of using labelOutlineColor 
+//		May add back: if (scale <= 9) labelOutlineColor = labelColor;
 		
 		// yDiff cause the label to shift upward
+		// Note: may add back the following : 
 //		double yDiff = scale / 30.0;
-//		if (yOffset == -1)
-//			yDiff = 0;
+//		if (yOffset == -1) yDiff = 0;
 		
 		// Save original graphics transforms.
 		AffineTransform saveTransform = g2d.getTransform();
 		Font saveFont = g2d.getFont();
 
 		// Get the label image.
-		Font font = g2d.getFont().deriveFont(Font.BOLD, fontSize);
+		Font font = new Font(Font.SERIF, Font.PLAIN, (int)fontSize); //g2d.getFont().deriveFont(Font.BOLD, fontSize);
 		g2d.setFont(font);
 		
 		BufferedImage labelImage = getLabelImage(
@@ -661,7 +667,7 @@ implements SettlementMapLayer {
 		Font saveFont = g2d.getFont();
 
 		// Get the label image.
-		Font font = g2d.getFont().deriveFont(Font.PLAIN, originalFontSize + fontSize);
+		Font font = new Font("Arial", Font.PLAIN, (int)(originalFontSize + fontSize)); //g2d.getFont().deriveFont(Font.PLAIN, originalFontSize + fontSize);
 		g2d.setFont(font);
 		
 		BufferedImage labelImage = getLabelImage(
@@ -716,54 +722,6 @@ implements SettlementMapLayer {
 		return labelImage;
 	}
 
-//	/**
-//	 * Creates a label image.
-//	 * @param label the label string.
-//	 * @param font the font to use.
-//	 * @param fontRenderContext the font render context to use.
-//	 * @param labelColor the color of the label.
-//	 * @param labelOutlineColor the color of the outline of the label.
-//	 * @return buffered image of label.
-//   */
-//	private BufferedImage createLabelImage(
-//		String label, Font font, FontRenderContext fontRenderContext, Color labelColor,
-//		Color labelOutlineColor) {
-//
-//		// Determine bounds.
-//		TextLayout textLayout1 = new TextLayout(label, font, fontRenderContext);
-//		Rectangle2D bounds1 = textLayout1.getBounds();
-//
-//		// Get label shape.
-//		Shape labelShape = textLayout1.getOutline(null);
-//
-//		// Create buffered image for label.
-//		int width = (int) (bounds1.getWidth() + bounds1.getX()) + 4;
-//		int height = (int) (bounds1.getHeight()) + 4;
-//		BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-//
-//		// Get graphics context from buffered image.
-//		Graphics2D g2d = (Graphics2D) bufferedImage.getGraphics();
-//		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//		g2d.translate(2D - bounds1.getX(), 2D - bounds1.getY());
-//
-//		// Draw label outline.
-//		Stroke saveStroke = g2d.getStroke();
-//		g2d.setColor(labelOutlineColor);
-//		g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-//		g2d.draw(labelShape);
-//		g2d.setStroke(saveStroke);
-//
-//		// Fill label
-//		g2d.setColor(labelColor);
-//		g2d.fill(labelShape);
-//
-//		// Dispose of image graphics context.
-//		g2d.dispose();
-//
-//		return bufferedImage;
-//	}
-
-
 	/**
 	 * Creates a label image.
 	 * 
@@ -798,7 +756,7 @@ implements SettlementMapLayer {
 		// Draw label outline.
 		Stroke saveStroke = g2d.getStroke();
 		g2d.setColor(labelOutlineColor);
-		g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		g2d.setStroke(new BasicStroke(font.getSize()/10, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
 		// Draw outline
 		g2d.draw(labelShape);

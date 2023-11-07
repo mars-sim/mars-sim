@@ -17,10 +17,8 @@ import com.mars_sim.core.structure.building.Building;
  * The DayNightMapLayer is a graphics layer to display twilight and night time shading of the settlement
  */
 public class DayNightMapLayer implements SettlementMapLayer {
-
-//    private static final Logger logger = Logger.getLogger(DayNightMapLayer.class.getName());
-    
-    private static final int LIGHT_THRESHOLD = 196;
+   
+    private final int LIGHT_THRESHOLD = 196;
     
     private int opacity;
     

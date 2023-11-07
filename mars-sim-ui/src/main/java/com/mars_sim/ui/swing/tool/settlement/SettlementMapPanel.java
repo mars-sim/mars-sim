@@ -48,21 +48,21 @@ import com.mars_sim.ui.swing.UIConfig;
 public class SettlementMapPanel extends JPanel {
 
 	// Property names for UI Config
-	private static final String BUILDING_LBL_PROP = "BUILDING_LABELS";
-	private static final String CONSTRUCTION_LBL_PROP = "CONSTRUCTION_LABELS";
-	private static final String PERSON_LBL_PROP = "PERSON_LABELS";
-	private static final String VEHICLE_LBL_PROP = "VEHICLE_LABELS";
-	private static final String ROBOT_LBL_PROP = "ROBOT_LABELS";
-	private static final String SETTLEMENT_PROP = "SETTLEMENT";
-	private static final String DAYLIGHT_PROP = "DAYLIGHT_LAYER";
-	private static final String X_PROP = "XPOS";
-	private static final String Y_PROP = "YPOS";
-	private static final String SCALE_PROP = "SCALE";
-	private static final String ROTATION_PROP = "ROTATION";
+	private final String BUILDING_LBL_PROP = "BUILDING_LABELS";
+	private final String CONSTRUCTION_LBL_PROP = "CONSTRUCTION_LABELS";
+	private final String PERSON_LBL_PROP = "PERSON_LABELS";
+	private final String VEHICLE_LBL_PROP = "VEHICLE_LABELS";
+	private final String ROBOT_LBL_PROP = "ROBOT_LABELS";
+	private final String SETTLEMENT_PROP = "SETTLEMENT";
+	private final String DAYLIGHT_PROP = "DAYLIGHT_LAYER";
+	private final String X_PROP = "XPOS";
+	private final String Y_PROP = "YPOS";
+	private final String SCALE_PROP = "SCALE";
+	private final String ROTATION_PROP = "ROTATION";
 
 	// Static members.
-	private static final double WIDTH = 6D;
-	public static final double DEFAULT_SCALE = 10D;
+	private final double WIDTH = 6D;
+	public final static double DEFAULT_SCALE = 10D;
 
 	// Data members
 	private boolean exit = true;
@@ -102,7 +102,7 @@ public class SettlementMapPanel extends JPanel {
 	private Font sansSerif = new Font("SansSerif", Font.BOLD, 11);
 
 	/**
-	 * Constructor 1 A panel for displaying a settlement map.
+	 * Constructor 1: A panel for displaying a settlement map.
 	 */
 	public SettlementMapPanel(MainDesktopPane desktop, final SettlementWindow settlementWindow,
 							Properties userSettings) {

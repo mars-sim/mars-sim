@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RobotMapLayer.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-11-06
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.tool.settlement;
@@ -23,10 +23,10 @@ import com.mars_sim.core.structure.building.Building;
 public class RobotMapLayer implements SettlementMapLayer {
 
 	// Static members
-	private final Color ROBOT_COLOR = LabelMapLayer.ROBOT_COLOR;//Color.green; 
-	private final Color ROBOT_OUTLINE_COLOR = LabelMapLayer.ROBOT_OUTLINE_COLOR;//new Color(0, 0, 0, 190);
-	private final Color SELECTED_COLOR = LabelMapLayer.ROBOT_SELECTED_COLOR;//Color.red; 
-	private final Color SELECTED_OUTLINE_COLOR = LabelMapLayer.ROBOT_SELECTED_OUTLINE_COLOR;//.new Color(0, 0, 0, 190);
+	private final Color robotColor = LabelMapLayer.robotColor;//Color.green; 
+	private final Color robotOutline = LabelMapLayer.robotOutline;//new Color(0, 0, 0, 190);
+	private final Color robotSelected = LabelMapLayer.robotSelected;//Color.red; 
+	private final Color robotSelectedOutline = LabelMapLayer.robotSelectedOutline;//.new Color(0, 0, 0, 190);
 
 	// Data members
 	private SettlementMapPanel mapPanel;
@@ -84,13 +84,13 @@ public class RobotMapLayer implements SettlementMapLayer {
 		while (i.hasNext()) {
 			Robot robot = i.next();
 			if (!robot.equals(selectedRobot)) {
-				drawRobot(g2d, robot, ROBOT_COLOR, ROBOT_OUTLINE_COLOR, scale);
+				drawRobot(g2d, robot, robotColor, robotOutline, scale);
 			}
 		}
 
 		// Draw selected robot.
 		if (robots.contains(selectedRobot)) {
-			drawRobot(g2d, selectedRobot, SELECTED_COLOR, SELECTED_OUTLINE_COLOR, scale);
+			drawRobot(g2d, selectedRobot, robotSelected, robotSelectedOutline, scale);
 		}
 	}
 
