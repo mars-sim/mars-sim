@@ -513,46 +513,46 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Lander Hab-->
 
 
-	<building type="EVA Airlock" width="6.0" length="4.0" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="1500"
+	<building type="EVA Airlock" width="6.0" length="4.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="150" room-temperature="20" base-mass="1500"
 			category="EVA_AIRLOCK">
 		<description> The EVA Airlock is a node to be attached to building for giving direct access
 			in performing EVA operations.
 		</description>
-		<power-required base-power="0.5" base-power-down-power="0.05" />
+		<power-required base-power="1.0" base-power-down-power="0.1" />
 		<functions>
 			<!-- This building has an airlock and changing room for EVA operations. -->
-			<!--         capacity : the number of people who can use the airlock at once. -->
-			<!--       xloc, yloc : the relative X/Y location inside the airlock. -->
-			<!--    interior-position : the inner or inteior door position of the airlock. -->
-			<!--    exterior-position : the outer or exterior door position of the airlock. -->
+			<!--          capacity : the number of people who can use the airlock at once. -->
+			<!--        xloc, yloc : the relative X/Y location inside the airlock. -->
+			<!--   center-position : the center position of the airlock. -->
+			<!-- interior-position : the inner or inteior door position of the airlock. -->
+			<!-- exterior-position : the outer or exterior door position of the airlock. -->
 			<EVA capacity="4">
-				<center-position xloc="1.0" yloc="0.0"/>
-				<interior-position xloc="-1.3" yloc="0.0"/>
-				<exterior-position xloc="3.2" yloc="0.0"/>
+				<center-position xloc="0.0" yloc="0.0"/>
+				<interior-position xloc="-2.3" yloc="0.0"/>
+				<exterior-position xloc="3.3" yloc="0.0"/>
 				<activity>
-					<activity-spot xloc="1.55" yloc="1.35" />
-					<activity-spot xloc="1.55" yloc="-1.0" />
-					<activity-spot xloc="0.0" yloc="1.0" />
-					<activity-spot xloc="0.0" yloc="-1.35" />
+					<activity-spot xloc="1" yloc="1.25" />
+					<activity-spot xloc="1" yloc="-1.25" />
+					<activity-spot xloc="-1" yloc="1.25" />
+					<activity-spot xloc="-1" yloc="-1.25" />
 				</activity>
 			</EVA>
+
 			<life-support capacity="6" power-required="0.3" />
-			<living-accommodations capacity="2">
-				<activity>
-					<activity-spot xloc="-2.6" yloc="1.35" />
-					<activity-spot xloc="-2.6" yloc="-1.35" />
-				</activity>
-			</living-accommodations>
+
 			<power-generation>
 				<power-source type="Solar Power Source" power="2.5" />
 			</power-generation>
+
 			<power-storage capacity="20" discharge-rate="1.25"/>
+
 			<robotic-station capacity="1" >
 				<activity>
 					<activity-spot xloc="-1.3" yloc="0.7" />
 				</activity>
 			</robotic-station>
+
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="2.0" />
 				<heat-source type="Electric Heating" capacity="10.0" />

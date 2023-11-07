@@ -33,21 +33,21 @@ public class LandmarkMapLayer implements MapLayer, SimulationConstants {
 	private int AO_CIRCLE_DIAMETER = 4;
 	
 	/** Light pink color for landmarks on surface map. */
-	private static final Color SURFACE_COLOR = new Color(230, 186, 186);
+	private final Color SURFACE_COLOR = new Color(230, 186, 186);
 
 	/** Dark pink color for landmarks on topo map. */
-	private static final Color TOPO_COLOR = new Color(95, 60, 60);
+	private final Color TOPO_COLOR = new Color(95, 60, 60);
 
 	/** Light violet color for artificial objects on surface map. */
-	private static final Color AO_SURFACE_COLOR = new Color(127, 127, 255);
+	private final Color AO_SURFACE_COLOR = new Color(127, 127, 255);
 
 	/** Gray color for artificial objects on topo map. */
-	private static final Color AO_TOPO_COLOR = new Color(173, 173, 173);
+	private final Color AO_TOPO_COLOR = new Color(173, 173, 173);
 	
 	/** Label font for landmarks. */
-	private static final Font MAP_LABEL_FONT = new Font("Monospaced", Font.PLAIN, 18);
+	private final Font MAP_LABEL_FONT = new Font("Monospaced", Font.PLAIN, 18);
 	/** Label font for artificial object. */
-	private static final Font AO_LABEL_FONT = new Font("Dialog", Font.ITALIC, 10);
+	private final Font AO_LABEL_FONT = new Font("Dialog", Font.ITALIC, 10);
 	
 	/** Horizontal offset for label. */
 	private int LABEL_HORIZONTAL_OFFSET = 2;
@@ -55,7 +55,7 @@ public class LandmarkMapLayer implements MapLayer, SimulationConstants {
 	/** Horizontal offset for artificial objects. */
 	private int AO_LABEL_HORIZONTAL_OFFSET = 1;
 	
-	private static final List<Landmark> landmarks = SimulationConfig.instance().getLandmarkConfiguration().getLandmarkList();
+	private final List<Landmark> landmarks = SimulationConfig.instance().getLandmarkConfiguration().getLandmarkList();
 
 	/**
 	 * Displays the layer on the map image.
@@ -79,15 +79,13 @@ public class LandmarkMapLayer implements MapLayer, SimulationConstants {
 			double ha = baseMap.getHalfAngle();
 
 			if (a < ha) {
-//			if (mapCenter.getAngle(landmark.getLandmarkCoord()) < baseMap.getHalfAngle())
-//				System.out.println(a + "  " + ha);
 				displayLandmark(landmark, mapCenter, baseMap, g2d);
 			}
 		}
 	}
 
 	/**
-	 * Display a landmark on the map layer.
+	 * Displays a landmark on the map layer.
 	 * 
 	 * @param landmark  {@link Landmark} the landmark to be displayed.
 	 * @param mapCenter {@link Coordinates} the location of the center of the map.

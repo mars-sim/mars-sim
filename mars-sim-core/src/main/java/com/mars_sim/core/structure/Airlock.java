@@ -55,10 +55,6 @@ public abstract class Airlock implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Airlock.class.getName());
 
-//	/** Pressurize/depressurize time (millisols). */
-//	public static final double CYCLE_TIME = 5D; 
-//	/** The maximum number of space in the chamber. */
-//	public static final int MAX_SLOTS = 2;
 	/** The maximum number of reservations that can be made for an airlock. */
 	public static final int MAX_RESERVED = 4;
 	/** The effective reservation period [in millisols]. */

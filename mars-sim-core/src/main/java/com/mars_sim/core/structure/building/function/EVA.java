@@ -24,7 +24,7 @@ public class EVA extends Function {
 
 	private static final double MAINTENANCE_FACTOR = 5D;
 
-	// Nmaes of the different Positions of an Airlock; must match the buildings.xml
+	// Different Positions of an airlock that must match the buildings.xml
 	private static final String CENTER_POSITION = "center-position";
 	private static final String INTERIOR_POSITION = "interior-position";
 	private static final String EXTERIOR_POSITION = "exterior-position"; 
@@ -143,7 +143,7 @@ public class EVA extends Function {
 	 */
 	@Override
 	public double getFullPowerRequired() {
-		return 0.5;
+		return 0.75;
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class EVA extends Function {
 	 */
 	@Override
 	public double getPoweredDownPowerRequired() {
-		return 0.05;
+		return 0.075;
 	}
 
 	@Override

@@ -93,7 +93,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	
 		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
 
-	    building0.addFunction(new EVA(building0, evaFunction));
+//	    building0.addFunction(new EVA(building0, evaFunction));
 	
 	    LocalPosition parkingLocation = LocalPosition.DEFAULT_POSITION;
 	    VehicleGarage garage = new VehicleGarage(building0,
@@ -125,7 +125,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	protected Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
 
-	    building0.addFunction(new EVA(building0,  evaFunction));
+	    building0.addFunction(new EVA(building0, evaFunction));
 	    return building0;
 	}
 
