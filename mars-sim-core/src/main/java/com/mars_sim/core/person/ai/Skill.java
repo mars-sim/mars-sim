@@ -59,7 +59,7 @@ public class Skill implements Serializable {
 	}
 
 	/**
-	 * Returns the skilltype associated with this skill
+	 * Returns the skill type associated with this skill
 	 * 
 	 * @return the skill type
 	 */

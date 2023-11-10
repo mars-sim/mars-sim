@@ -198,7 +198,7 @@ extends TabPanel {
      }
 
     public double getSolarDeclination() {
- 		return orbitInfo.getSolarDeclinationAngleDegree();
+ 		return orbitInfo.getSolarDeclinationAngleInDeg();
      }
 
 

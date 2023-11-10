@@ -231,26 +231,18 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	
 		// Prepare content pane		
 		JPanel contentPane = new JPanel(new BorderLayout(0, 0));
-//		contentPane.setBackground(new Color(0, 0, 0, 128));
-//		contentPane.setOpaque(false);
 		setContentPane(contentPane);
 		
 		// Prepare whole 
 		JPanel wholePane = new JPanel(new BorderLayout(0, 0));
-//		wholePane.setBackground(new Color(0, 0, 0, 128));
-//		wholePane.setOpaque(false);
 		wholePane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
 								BorderFactory.createEmptyBorder(1, 1, 1, 1)));
 		contentPane.add(wholePane, BorderLayout.CENTER);
 
-		JPanel mapPane = new JPanel();//new FlowLayout(FlowLayout.CENTER, 0, 0));//new GridLayout(1, 2));
-//		mapPane.setBackground(new Color(0, 0, 0, 128));
-//		mapPane.setOpaque(false);
+		JPanel mapPane = new JPanel();
 		wholePane.add(mapPane, BorderLayout.CENTER);
 
 		mapLayerPanel = new MapPanel(desktop, this);
-//		mapLayerPanel.setBackground(new Color(0, 0, 0, 128));
-//		mapLayerPanel.setOpaque(false);
 		mapLayerPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
 		
 		mapLayerPanel.setMouseDragger(true);
@@ -347,7 +339,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
         // Set up the label and the settlement pane
         createSettlementPane(false);
 
-		
 		////////////////////////////////////////////
 			
 		// Prepare latitude entry components
@@ -475,6 +466,22 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		statusBar.addRightComponent(coordLabel, false);
 		
 		// Apply user choice from xml config file
+		checkSettings();
+		
+		setClosable(true);
+		setResizable(false);
+		setMaximizable(false);
+
+		setVisible(true);
+		// Pack window
+		pack();
+	}
+
+	/**
+	 * Checks for config settings.
+	 */
+	private void checkSettings() {
+		// Apply user choice from xml config file
 		Properties userSettings = desktop.getMainWindow().getConfig().getInternalWindowProps(NAME);
 		if (userSettings != null) {
 			
@@ -491,26 +498,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 			mapTypeCache = MapDataFactory.DEFAULT_MAP_TYPE;
 			
-			for (Object key : userSettings.keySet()) {
-				String prop = (String) key;
-				String propValue = userSettings.getProperty(prop);
-
-				if (prop.startsWith(LAYER_ACTION)) {
-					String layer = prop.substring(LAYER_ACTION.length());
-					// Check if a layer is selected
-					boolean selected = Boolean.parseBoolean(propValue);
-					setMapLayer(selected, layer);
-
-					if (MINERAL_LAYER.equals(layer)) {
-						selectMineralLayer(selected);
-					}
-
-				}
-				else if (prop.startsWith(MINERAL_ACTION)) {
-					String mineral = prop.substring(MINERAL_ACTION.length());
-					mineralLayer.setMineralDisplayed(mineral, Boolean.parseBoolean(propValue));
-				}
-			}
+			// Check for layer action and mineral action
+			checkLayerAction(userSettings);
 
 			String latString = userSettings.getProperty(LAT_PROP);
 			String lonString = userSettings.getProperty(LON_PROP);
@@ -520,26 +509,48 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			}
 		}
 		else {
-			// Add default map layers.
-			for(String layerName : mapLayers.keySet()) {
+			// Add default map layers
+			for (String layerName : mapLayers.keySet()) {
 				if (!layerName.equals(DAYLIGHT_LAYER) && !layerName.equals(MINERAL_LAYER)
 					&& !layerName.equals(EXPLORED_LAYER)) {
 					setMapLayer(true, layerName);
 				}
 			}
 		}
-		
-		setClosable(true);
-		setResizable(false);
-		setMaximizable(false);
-
-		setVisible(true);
-		// Pack window
-		pack();
 	}
-
+	
 	/**
-	 * Creates the go button.
+	 * Checks for layer actions.
+	 * 
+	 * @param userSettings
+	 */
+	private void checkLayerAction(Properties userSettings) {
+		for (Object key : userSettings.keySet()) {
+			String prop = (String) key;
+			String propValue = userSettings.getProperty(prop);
+
+			if (prop.startsWith(LAYER_ACTION)) {
+				String layer = prop.substring(LAYER_ACTION.length());
+				// Check if a layer is selected
+				boolean selected = Boolean.parseBoolean(propValue);
+				setMapLayer(selected, layer);
+
+				if (MINERAL_LAYER.equals(layer)) {
+					selectMineralLayer(selected);
+				}
+
+			}
+			else if (prop.startsWith(MINERAL_ACTION)) {
+				String mineral = prop.substring(MINERAL_ACTION.length());
+				mineralLayer.setMineralDisplayed(mineral, Boolean.parseBoolean(propValue));
+			}
+		}
+	}
+	
+	/**
+	 * Creates the go button and pane.
+	 * 
+	 * @param isCreatingButton
 	 */
 	public void createGoPane(boolean isCreatingButton) {
 		
@@ -597,6 +608,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		return settlements;
 	}
 	
+	/**
+	 * Creates the map layer.
+	 * 
+	 * @param name
+	 * @param order
+	 * @param layer
+	 */
 	private void createMapLayer(String name, int order, MapLayer layer) {
 		mapLayers.put(name, new MapOrder(order, layer));
 	}
@@ -702,7 +720,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 	
 	/**
-	 * Update map and globe.
+	 * Updates map and globe.
 	 * 
 	 * @param newCoords the new center location
 	 */
@@ -710,7 +728,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		mapLayerPanel.showMap(newCoords);
 	}
 	
-	/** ActionListener method overridden */
+	/** ActionListener method overridden. */
 	public void actionPerformed(ActionEvent event) {
 
 		Object source = event.getSource();
@@ -810,7 +828,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */
 	private int selectUnloadedMap(String newMapType) {
 
-//		int oldRes =  mapDataUtil.loadMapData(newMapType).getMetaData().getResolution();
+		// Previously, int oldRes =  mapDataUtil.loadMapData(newMapType).getMetaData().getResolution()
 		int oldRes = mapLayerPanel.getMapMetaData().getResolution(); 
 		if (oldRes < 0) {
 			oldRes = 0;

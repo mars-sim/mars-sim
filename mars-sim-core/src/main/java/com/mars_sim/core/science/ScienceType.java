@@ -26,7 +26,7 @@ import com.mars_sim.tools.Msg;
 public enum ScienceType {
 	// the actual enum value is followed by data associated to the value.
 
-	/** Environmental science of Mars. */
+	/** The study of the evolution of the planet Mars. */
 	AREOLOGY(
 			Msg.getString("ScienceType.areology"), //$NON-NLS-1$
 			SkillType.AREOLOGY, JobType.AREOLOGIST),
@@ -78,7 +78,7 @@ public enum ScienceType {
 
 	/** Maps for keeping track of collaborative sciences. */
 	private static Map<ScienceType, Science> collabSciences;
-
+	/** Sets for keeping track of experimental sciences. */
 	private static Set<ScienceType> experimentalSciences;
 	 
 	private String name;

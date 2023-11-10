@@ -47,8 +47,9 @@ public class PeerReviewStudyPaperMeta extends FactoryMetaTask {
     }
 
 	/**
-	 * Assess a person doing a review of a study paper. Assessment is based on the Person having a job
+	 * Assesses a person doing a review of a study paper. Assessment is based on the Person having a job
 	 * that is associated with the science subject of a Study that is in the review phase.
+	 * 
 	 * @param person Being assessed
 	 * @return List of reviews needed.
 	 */

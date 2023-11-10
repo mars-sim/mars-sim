@@ -186,12 +186,12 @@ public class CollectMinedMinerals extends EVAOperation {
 		
 		double mineralsCollected = variance * time * reserve * MINERAL_SELECTION_RATE * concentration;
 
-		// Modify collection rate by "Areology" skill.
-		int areologySkill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
-		if (areologySkill == 0)
+		// Modify collection rate by skill.
+		int compositeSkills = getEffectiveSkillLevel();
+		if (compositeSkills == 0)
 			mineralsCollected /= 2D;
-		if (areologySkill > 1)
-			mineralsCollected += mineralsCollected * (.2D * areologySkill);
+		if (compositeSkills > 1)
+			mineralsCollected += mineralsCollected * (.2D * compositeSkills);
 
 		if (mineralsCollected > remainingPersonCapacity)
 			mineralsCollected = remainingPersonCapacity;

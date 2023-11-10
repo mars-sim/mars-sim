@@ -43,7 +43,8 @@ public class ListenToMusicMeta extends FactoryMetaTask {
     }
 
 	/**
-	 * Assess the sutbility of a Person to listen to music.
+	 * Assesses the suitability of a Person to listen to music.
+	 * 
 	 * @param person Being assessed
 	 */
     @Override

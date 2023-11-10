@@ -12,7 +12,7 @@ import java.util.Map;
 import com.mars_sim.tools.Msg;
 
 /**
- * The skill of a settler. A total of 19 types is available
+ * The skill of a settler. A total of 21 types is available
  */
 public enum SkillType {
 

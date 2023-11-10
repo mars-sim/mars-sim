@@ -58,6 +58,9 @@ public class AirComposition implements Serializable {
 	public static final double KPA_PER_ATM = 101.32501D;
 	public static final double PSI_PER_ATM = 14.696D;
 	public static final double KPA_PER_PSI = KPA_PER_ATM / PSI_PER_ATM; // ~ 6.8947
+	
+	// Future: for EVA suit, may opt for 8.2 psi (56.54 kPa) suit with 34% O2 (19.222 kPa)
+	
 	/**
      * The % of air composition used by US Skylab Hab Modules. 5 psi or 340 mb is
      * the overall pressure rating.

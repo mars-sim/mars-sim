@@ -60,7 +60,7 @@ public class MineSite extends EVAOperation {
 	private boolean operatingLUV;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @param person the person performing the task.
 	 * @param site   the explored site to mine.
@@ -103,8 +103,7 @@ public class MineSite extends EVAOperation {
 	 */
 	public static boolean canMineSite(Worker member, Rover rover) {
 
-		if (member instanceof Person) {
-			Person person = (Person) member;
+		if (member instanceof Person person) {
 
 			// Check if person can exit the rover.
 			if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))

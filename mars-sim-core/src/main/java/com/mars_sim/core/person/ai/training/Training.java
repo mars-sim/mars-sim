@@ -1,4 +1,4 @@
-/*
+/**
  * Mars Simulation Project
  * Training.java
  * @date 2023-07-21

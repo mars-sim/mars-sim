@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WeatherCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2023-11-09
  * @author Barry Evans
  */
 
@@ -31,6 +31,8 @@ public class WeatherCommand extends AbstractSettlementCommand {
 
 	static DecimalFormat fmt2 = new DecimalFormat("#0.00");
 
+	private String DEG = Msg.getString("direction.degreeSign");
+	
 	private WeatherCommand() {
 		super("w", "weather", "Settlement weather");
 	}
@@ -54,7 +56,7 @@ public class WeatherCommand extends AbstractSettlementCommand {
 		response.appendLabeledString("Location", location.toString());
 
 		double t = weather.getTemperature(location);
-		String tt = fmt2.format(t) + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
+		String tt = fmt2.format(t) + DEG; //$NON-NLS-1$
 		response.appendLabeledString("Outside temperature", tt);
 
 		double p = weather.getAirPressure(location);
@@ -69,14 +71,14 @@ public class WeatherCommand extends AbstractSettlementCommand {
 						 weather.getWindSpeed(location)));
 
 		double wd = weather.getWindDirection(location);
-		String wwd = fmt2.format(wd) + Msg.getString("windDirection.unit.deg"); //$NON-NLS-1$
+		String wwd = fmt2.format(wd) + DEG; //$NON-NLS-1$
 		response.appendLabeledString("Wind Direction", wwd);
 
 		double od = surfaceFeatures.getOpticalDepth(location);
 		response.appendLabeledString("Optical Depth", fmt2.format(od));
-
-		double sda = orbitInfo.getSolarDeclinationAngleDegree();
-		String ssda = fmt2.format(sda) + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
+			
+		double sda = orbitInfo.getSolarDeclinationAngleInDeg();
+		String ssda = fmt2.format(sda) + DEG; //$NON-NLS-1$
 		response.appendLabeledString("Solar Declination Angle", ssda);
 
 		double si = surfaceFeatures.getSolarIrradiance(location);

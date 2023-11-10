@@ -166,13 +166,12 @@ public class Settlement extends Structure implements Temporal,
 	private static final int CONCRETE_ID = ResourceUtil.concreteID;
 	private static final int CEMENT_ID = ResourceUtil.cementID;
 	
-
 	private static final int GREY_WATER_ID = ResourceUtil.greyWaterID;
 	private static final int BLACK_WATER_ID = ResourceUtil.blackWaterID;
 	private static final int ROCK_SAMPLES_ID = ResourceUtil.rockSamplesID;
 
 	/** The settlement sampling resources. */
-	public static final int[] samplingResources;
+	protected static final int[] samplingResources;
 	
 	/** The definition of static arrays */
 	static {

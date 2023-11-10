@@ -1,7 +1,7 @@
-/*
+/**
  * Mars Simulation Project
  * OrbitInfo.java
- * @date 2022-08-09
+ * @date 2023-11-09
  * @author Scott Davis
  */
 package com.mars_sim.core.environment;
