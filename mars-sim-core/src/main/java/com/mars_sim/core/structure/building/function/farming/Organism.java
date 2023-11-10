@@ -81,7 +81,7 @@ public class Organism implements Serializable {
       
       
    /**
-   * Set this <CODE>Organism</CODE>�s size and growth rate to zero.
+   * Set this <CODE>Organism</CODE> size and growth rate to zero.
    * <b>Postcondition:</b>
    *   The size and growth rate of this <CODE>Organism</CODE> have been set
    *    to zero. 
@@ -117,7 +117,7 @@ public class Organism implements Serializable {
    /**
    * Determine whether this <CODE>Organism</CODE> is currently alive.
    * @return
-   *   If this <CODE>Organism</CODE>�s current current size is greater than
+   *   If this <CODE>Organism</CODE> current current size is greater than
    *   zero, then the return value is <CODE>true</CODE>; otherwise the return 
    *   value is <CODE>false</CODE>.
    **/

@@ -74,7 +74,7 @@ public class Herbivore extends Animal {
    *   by activating both <CODE>eat(amount)</CODE> and 
    *   <CODE>meal.nibbledOn(amount)</CODE>. The <CODE>amount</CODE> is usually
    *   half of the <CODE>Plant</CODE>, but it will not be more than 10% of 
-   *   this <CODE>Herbivore</CODE>�s weekly need nor more than the amount that 
+   *   this <CODE>Herbivore</CODE> weekly need nor more than the amount that 
    *   this <CODE>Herbivore</CODE> still needs to eat to survive this frame.
    **/
    public void nibble(Plant meal)
