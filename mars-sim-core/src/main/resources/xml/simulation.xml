@@ -93,9 +93,11 @@
 		<!-- Earth start date/time -->
 		<!-- "yyyy-MM-dd hh:mm:ss" format -->
 		<!-- Previously designated as "2043-09-30 00:00:00.000" (iso8601 String: "2043-09-30T00:0:00.000Z") -->
-		<!-- Default: 2028-08-17 15:23:13.740 -->
+		<!-- Default: 2028-08-16 17:50:22.000 -->
+		<!-- Other Value 1: 1609-03-12 02:45:00.000 (when L_s is ~0) -->
+		<!-- Other Value 2: 2043-09-03 12:45:51.000 (when L_s is ~0) -->
 		<!-- See https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_ZONED_DATE_TIME -->
-		<earth-start-date-time value="2028-08-17 15:23:13.740"/>
+		<earth-start-date-time value="2028-08-16 17:50:22.000"/>
 
 		<!-- Mars start date/time -->
 		<!-- "orbit-month-sol:millisol" format -->

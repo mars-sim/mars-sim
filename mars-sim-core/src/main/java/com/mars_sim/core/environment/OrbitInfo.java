@@ -43,9 +43,9 @@ public class OrbitInfo implements Serializable, Temporal {
 	public static final double DEGREE_TO_RADIAN = Math.PI / 180D; // convert a number in degrees to radians
 
 	/** Mars tilt in radians. */
-	private static final double TILT = 0.4398D; // 25.2 deg // 25.2 / 180 *pi = 0.4398
-	/** Mars tilt in sine. */
-	private static final double SINE_TILT = 0.4258D; // sin (25.2 / 180 *pi) = 0.4258
+	private static final double TILT = 0.4397D; // 25.1918 deg / 180 *pi = 0.4397
+	/** Mars tilt in sine [unit-less] . */
+	private static final double SINE_TILT = 0.42565D; // sin (25.1918 deg / 180 deg *pi) = 0.42565
 	/** Mars solar day in seconds. */
 	public static final double SOLAR_DAY = 88775.244D;
 	/** The area of Mars' orbit in au squared. */
@@ -132,14 +132,17 @@ public class OrbitInfo implements Serializable, Temporal {
 	// Data members
 	/** The total time in the current orbit (in seconds). */
 	private double orbitTime;
+	/** The Equation of Center (EOC). */ 
+	private double equationOfCenter;
+	
 	/** The angle of Mars's position to the Sun (in radians). */
-	private double theta;
+//	private double theta;
 
 	// To calculate the approximate distance between Earth and Mars, see
 	// https://www.johndcook.com/blog/2015/10/24/distance-to-mars/
 
 	/** The current distance from the Sun to Mars (in au). */
-	private double instantaneousSunMarsDistance;
+//	private double instantaneousSunMarsDistance;
 	
 	// Note 1 : The apparent seasonal advance of the Sun at Mars is commonly
 	// measured in terms of the areocentric
@@ -166,7 +169,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	// as related to the occasional onset of global dust storms within the advance
 	// of this season.
 
-	// Note 4 : As defined, Ls = 0°, 90°, 180°, and 270° indicate the Mars northern
+	// Note 4 : As defined, L_s = 0°, 90°, 180°, and 270° indicate the Mars northern
 	// hemisphere
 	// vernal equinox, summer solstice, autumnal equinox, and winter solstice,
 	// respectively.
@@ -174,13 +177,13 @@ public class OrbitInfo implements Serializable, Temporal {
 	// Reference : http://www.giss.nasa.gov/tools/mars24/help/notes.html
 
 	/**
-	 * The current areocentric longitude of the Sun (or the orbital position of
+	 * The current areocentric longitude of the Sun (or L_s, the orbital position of
 	 * Mars).
 	 */
 	private double sunAreoLongitude;
 	
-	/** The Sine of the solar declination angle. */
-	private double sineSolarDeclinationAngle;
+	/** The partial sine solar declination angle. */
+//	private double partialSineSolarDecAngle;
 	/** The cache value of the cos zenith angle. */
 	private double cosZenithAngleCache = 0;
 
@@ -189,6 +192,7 @@ public class OrbitInfo implements Serializable, Temporal {
 
 	// static instances
 	private MasterClock clock;
+	
 	private LocalDateTime earthTime;
 
 	/** Constructs an {@link OrbitInfo} object */
@@ -196,19 +200,20 @@ public class OrbitInfo implements Serializable, Temporal {
 		// Set orbit coordinates to start of orbit.
 	
 		orbitTime = 0D;
-		theta = 0D;
+//		theta = 0D;
 		this.clock = clock;
 
-		// Compute the initial L_s and initial r based on the earth start date/time in
-		// simulation.xml
 		earthTime = simulationConfig.getEarthStartDate();
-		sunAreoLongitude = getLs(earthTime) % 360;
-		
-		logger.config("Areocentric Longitude: " + Math.round(sunAreoLongitude * 1_000.0)/1_000.0 + " deg");
-		
-		instantaneousSunMarsDistance = getHeliocentricDistance(earthTime);
+		// Compute initial L_s based on the earth start date/time in simulation.xml		
+		double L_s = computeSunAreoLongitude(earthTime);
 
-		logger.config("0. instantaneousSunMarsDistance: " + Math.round(instantaneousSunMarsDistance * 1_000_000.0)/1_000_000.0 + " km");
+		logger.config("Earth Start Time: " + earthTime);
+		
+		logger.config("Areocentric Longitude (L_s): " + L_s + " deg");
+		
+		double instantaneousSunMarsDistance = getHeliocentricDistance(earthTime);
+
+		logger.config("Sun-to-Mars Distance: " + Math.round(instantaneousSunMarsDistance * 1_000_000.0)/1_000_000.0 + " km");
 		
 		sunDirection = new Coordinates(HALF_PI + TILT, Math.PI);
 	}
@@ -237,7 +242,7 @@ public class OrbitInfo implements Serializable, Temporal {
 		else
 			areaTemp = (ORBIT_AREA / 2D) - area;
 
-		theta = Math.abs(2D * Math.atan(1.097757562D * Math.tan(.329512059D * areaTemp)));
+		double theta = Math.abs(2D * Math.atan(1.097757562D * Math.tan(.329512059D * areaTemp)));
 
 		if (area < (ORBIT_AREA / 2D))
 			theta = 0D - theta;
@@ -248,10 +253,10 @@ public class OrbitInfo implements Serializable, Temporal {
 			theta -= TWO_PI;
 
 		// Determine new radius
-		instantaneousSunMarsDistance = getHeliocentricDistance(earthTime);
+//		double instantaneousSunMarsDistance = getHeliocentricDistance(earthTime);
 				
 		// Recompute the areocentric longitude of Mars
-		sunAreoLongitude = computeSunLongitude(pulse.getMasterClock().getEarthTime());
+		sunAreoLongitude = computeSunAreoLongitude(pulse.getMasterClock().getEarthTime());
 
 		// Determine Sun theta
 		double sunTheta = sunDirection.getTheta();
@@ -265,8 +270,8 @@ public class OrbitInfo implements Serializable, Temporal {
 
 		sunDirection = new Coordinates(sunPhi, sunTheta);
 		
-		// Recompute sineSolarDeclinationAngle
-		computeSineSolarDeclinationAngle();
+		// Recompute the Solar Declination Angle
+//		computeSineSolarDeclinationAngle();
 
 		return true;
 	}
@@ -380,12 +385,11 @@ public class OrbitInfo implements Serializable, Temporal {
 		// This results in a fifty minute variation in the timing of local noon (as
 		// measured on a 24 "hour" Mars clock).
 
-		// Mars' Analemma has a pear shape or tear-drop shape. For an explanation of
-		// analema,
-		// see paper at http://pubs.giss.nasa.gov/docs/1997/1997_Allison_1.pdf
+		// Mars Analemma has a pear shape or tear-drop shape. 
+		// See paper at http://pubs.giss.nasa.gov/docs/1997/1997_Allison_1.pdf
 
 		// See media below for the projection of the location of the sun on Mars
-		// Oppoortunity Rover
+		// Opportunity Rover
 		// 1. pic 1 at
 		// https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Mars_Analemma_Time_Lapse_Opportunity.webm/220px--Mars_Analemma_Time_Lapse_Opportunity.webm.jpg
 		// 2. pic 2 at
@@ -399,27 +403,29 @@ public class OrbitInfo implements Serializable, Temporal {
 		// 3. https://en.wiki2.org/wiki/Analemma
 		// 4. http://www.planetary.org/blogs/emily-lakdawalla/2014/a-martian-analemma.html
 
-		// Recompute sineSolarDeclinationAngle
-		computeSineSolarDeclinationAngle();
-		double d = getCacheSolarDeclinationAngle();
-
-		double equationTimeOffset = 0;
-
-		double Ls = getSunAreoLongitude();
-		if (Ls == 57.7)
-			equationTimeOffset = 0;
-		else if (Ls <= 90)
-			equationTimeOffset = 0.7106 * Ls - 41D;
-		else if (Ls <= 180)
-			equationTimeOffset = 0.1803 * Ls + 6.7277;
-		else if (Ls <= 190)
-			equationTimeOffset = 39.1817;
-		else if (Ls == 258)
-			equationTimeOffset = 39.1817 * Math.cos(90D / 68D * (Ls - 190) * DEGREE_TO_RADIAN);
-		else if (Ls <= 326)
-			equationTimeOffset = -51D * Math.sin(90D / 69D * (Ls - 258) * DEGREE_TO_RADIAN);
-		else if (Ls <= 360)
-			equationTimeOffset = -41D - 10 * Math.sin(90D / 34D * (Ls - 326) * DEGREE_TO_RADIAN);
+		// Recompute L_s
+		// Note: already done in timePassing()
+		
+		double L_s = getSunAreoLongitude();
+		
+		// Find equationTimeOffset (EOT) in degrees
+		double equationTimeOffset = 2.861 * Math.sin(2 * L_s) - 0.071 * Math.sin(4 * L_s)
+									+ 0.002 * Math.sin(6 * L_s) - equationOfCenter;
+//
+//		if (L_s == 57.7)
+//			equationTimeOffset = 0;
+//		else if (L_s <= 90)
+//			equationTimeOffset = 0.7106 * L_s - 41D;
+//		else if (L_s <= 180)
+//			equationTimeOffset = 0.1803 * L_s + 6.7277;
+//		else if (L_s <= 190)
+//			equationTimeOffset = 39.1817;
+//		else if (L_s == 258)
+//			equationTimeOffset = 39.1817 * Math.cos(90D / 68D * (L_s - 190) * DEGREE_TO_RADIAN);
+//		else if (L_s <= 326)
+//			equationTimeOffset = -51D * Math.sin(90D / 69D * (L_s - 258) * DEGREE_TO_RADIAN);
+//		else if (L_s <= 360)
+//			equationTimeOffset = -41D - 10 * Math.sin(90D / 34D * (L_s - 326) * DEGREE_TO_RADIAN);
 
 		double thetaOffset = location.getTheta() * 159.1519;
 
@@ -429,63 +435,94 @@ public class OrbitInfo implements Serializable, Temporal {
 		// The hour angle is measured from the true noon westward, represented by h = 2
 		// * pi * t / P, t is time past noon in seconds
 		double h = 0.0063 * Math.abs(modifiedSolarTime - 500D);
+		
+		// Recompute Solar Declination Angle in radians
+		double dec = getSolarDeclinationAngleInRad();
 
-		return Math.sin(lat) * sineSolarDeclinationAngle + Math.cos(lat) * Math.cos(d) * Math.cos(h);
-
+		return Math.sin(lat) * Math.sin(dec) + Math.cos(lat) * Math.cos(dec) * Math.cos(h);
 	}
 
 	/**
-	 * Computes the instantaneous areocentric longitude numerically using
-	 * ClockUtil's methods.
-	 */
-	private double computeSunLongitude(LocalDateTime c) {
-		double ls = getLs(c) % 360;
-		sunAreoLongitude = ls;
-		return ls;
-	}
-
-	/**
-	 * Determine areocentric solar longitude. (AM2000, eq. 19)
+	 * Determine areocentric solar longitude L_s, given the Earth's time.(AM2000, eq. 19)
 	 *
 	 * @return degree L_s
 	 */
-	private static double getLs(LocalDateTime earthTime) {
-		double j2000 = getDaysSinceJ2kEpoch(earthTime);
+	private double computeSunAreoLongitude(LocalDateTime earthTime) {
+		// Use the steps laid out by NASA GSFC's Mars24 Sunclock in
+		// https://www.giss.nasa.gov/tools/mars24/help/algorithm.html
+		
+		// A. Days since J2000 Epoch
+		//    Steps A-2 thru A-6 are abbreviated into the following single method for 
+		//    finding the Time Offset from J2000 epoch (TT).
+		double timeOffsetJ2000 = getDaysSinceJ2kEpoch(earthTime);
 
-		double M = (19.3871 + 0.52402073 * j2000) * DEGREE_TO_RADIAN;
+		// B. Mars Parmeters of Date
+		//    Step B-1: find Mars Mean Anomaly
+		double M = (19.3871 + 0.52402073 * timeOffsetJ2000) * DEGREE_TO_RADIAN;
+		//    Step B-2: find Angle of Fiction Mean Sun
+		double alphaFMS = 270.3871 + 0.524038496 * timeOffsetJ2000;
+		//    Step B-3: find Perturbers
 		double d = 360.0 / 365.25;
-		double PBS = 0.0071 * Math.cos(DEGREE_TO_RADIAN * ((d * j2000 / 2.2353) + 49.409))
-				+ 0.0057 * Math.cos(DEGREE_TO_RADIAN * ((d * j2000 / 2.7543) + 168.173))
-				+ 0.0039 * Math.cos(DEGREE_TO_RADIAN * ((d * j2000 / 1.1177) + 191.837))
-				+ 0.0037 * Math.cos(DEGREE_TO_RADIAN * ((d * j2000 / 15.7866) + 21.736))
-				+ 0.0021 * Math.cos(DEGREE_TO_RADIAN * ((d * j2000 / 2.1354) + 15.704))
-				+ 0.0020 * Math.cos(DEGREE_TO_RADIAN * ((d * j2000 / 2.4694) + 95.528))
-				+ 0.0018 * Math.cos(DEGREE_TO_RADIAN * ((d * j2000 / 32.8493) + 49.095));
-		double EOC = (10.691 + 3.0 * j2000 / 1_000_000) * Math.sin(M) + 0.623 * Math.sin(2 * M)
-				+ 0.050 * Math.sin(3 * M) + 0.005 * Math.sin(4 * M) + 0.0005 * Math.sin(5 * M) + PBS;
-		double alphaFMS = 270.3871 + 0.524038496 * j2000;
-		return alphaFMS + EOC;
+		double PBS = 
+				  0.0071 * Math.cos(DEGREE_TO_RADIAN * ((d * timeOffsetJ2000 / 2.2353) + 49.409))
+				+ 0.0057 * Math.cos(DEGREE_TO_RADIAN * ((d * timeOffsetJ2000 / 2.7543) + 168.173))
+				+ 0.0039 * Math.cos(DEGREE_TO_RADIAN * ((d * timeOffsetJ2000 / 1.1177) + 191.837))
+				+ 0.0037 * Math.cos(DEGREE_TO_RADIAN * ((d * timeOffsetJ2000 / 15.7866) + 21.736))
+				+ 0.0021 * Math.cos(DEGREE_TO_RADIAN * ((d * timeOffsetJ2000 / 2.1354) + 15.704))
+				+ 0.0020 * Math.cos(DEGREE_TO_RADIAN * ((d * timeOffsetJ2000 / 2.4694) + 95.528))
+				+ 0.0018 * Math.cos(DEGREE_TO_RADIAN * ((d * timeOffsetJ2000 / 32.8493) + 49.095));
+		//    Step B-4: find Equation of Center (EOC) 
+		equationOfCenter = (10.691 + 3.0 * timeOffsetJ2000 / 1_000_000) * Math.sin(M) 
+				+ 0.623 * Math.sin(2 * M)
+				+ 0.050 * Math.sin(3 * M) 
+				+ 0.005 * Math.sin(4 * M) 
+				+ 0.0005 * Math.sin(5 * M) 
+				+ PBS;
+		//    Step B-5: find L_s
+		double L_s = alphaFMS + equationOfCenter;
+		
+		L_s = L_s % 360;
+		
+		if (L_s < 0) {
+			L_s = L_s + 360;
+		} 
+		else if (L_s >= 360)
+			L_s = L_s - 360;
+		
+		sunAreoLongitude = L_s;
+		return L_s;
 	}
 
-	/*
-	 * Determine heliocentric distance. (AM2000, eq. 25, corrected)
+	/**
+	 * Determines heliocentric distance [in A.U.]. (AM2000, eq. 25, corrected).
 	 *
 	 * @param clock Earth clock
 	 *
 	 * @return distance in A.U.
 	 */
 	private static double getHeliocentricDistance(LocalDateTime earthTime) {
+		// Use NASA GSFC's Mars24 Sunclock's formula in step D-2 in
+		// https://www.giss.nasa.gov/tools/mars24/help/algorithm.html
+		
 		double M = (19.3871 + 0.52402073 * getDaysSinceJ2kEpoch(earthTime)) * DEGREE_TO_RADIAN;
-		return 1.52367934 * (1.00436 - 0.09309 * Math.cos(M) - 0.004336 * Math.cos(2 * M) - 0.00031 * Math.cos(3 * M)
+		return 1.52367934 * (1.00436 - 0.09309 * Math.cos(M) 
+				- 0.004336 * Math.cos(2 * M) 
+				- 0.00031 * Math.cos(3 * M)
 				- 0.00003 * Math.cos(4 * M));
 	}
 
+	/**
+	 * Gets the time offset since J2k epoch.
+	 * 
+	 * @param earthTime
+	 * @return
+	 */
 	private static double getDaysSinceJ2kEpoch(LocalDateTime earthTime) {
 		return Duration.between(Y2K, earthTime).getSeconds() / 86400D;
 	}
 
 	/**
-	 * Gets the instantaneous areocentric longitude.
+	 * Gets the areocentric longitude [in degrees].
 	 * 
 	 * @return angle in degrees (0 - 360).
 	 */
@@ -494,35 +531,29 @@ public class OrbitInfo implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the cached solar declination angle of a given areocentric longitude.
+	 * Gets the solar declination angle (planetographic) of a given areocentric longitude L_s [in radians].
 	 * 
 	 * @return angle in radians (0 - 2 PI).
 	 */
-	private double getCacheSolarDeclinationAngle() {
-		// WRNING: must call computeSineSolarDeclinationAngle() elsewhere to update the value	
-		return Math.asin(sineSolarDeclinationAngle);
+	private double getSolarDeclinationAngleInRad() {
+		// Note that d, lsSine and SINE_TILT are unit-less
+		double lsSine = Math.sin(sunAreoLongitude * DEGREE_TO_RADIAN);
+		double d = SINE_TILT * lsSine;
+		// WARNING: must call computeSineSolarDeclinationAngle() first to update partialSineSolarDecAngle
+		return Math.asin(d) + 0.25 * DEGREE_TO_RADIAN * lsSine;
 	}
 
 	/**
-	 * Compute the sine of the solar declination angle of a given areocentric
-	 * longitude.
-	 */
-	private void computeSineSolarDeclinationAngle() {
-		sineSolarDeclinationAngle = - SINE_TILT * Math.sin(sunAreoLongitude * DEGREE_TO_RADIAN);
-	}
-
-	/**
-	 * Gets the solar declination angle from a given areocentric longitude.
+	 * Gets the solar declination angle from a given areocentric longitude [in degrees].
 	 * 
-	 * @return angle in radians (0 - 2 PI).
+	 * @return angle in degree (0 - 360 deg).
 	 */
-	public double getSolarDeclinationAngleDegree() {
-		computeSineSolarDeclinationAngle();
-		return getCacheSolarDeclinationAngle() / DEGREE_TO_RADIAN;
+	public double getSolarDeclinationAngleInDeg() {
+		return getSolarDeclinationAngleInRad() / DEGREE_TO_RADIAN;
 	}
 
 	/**
-	 * Gets the hour angle from a given location [in millisols]
+	 * Gets the hour angle from a given location [in millisols].
 	 * Note: the hour angle has not been adjusted with longitude yet.
 	 * 
 	 * @Reference : Solar radiation on Mars: Stationary Photovoltaic Array. 
@@ -532,7 +563,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * @return millisols.
 	 */
 	private double getHourAngle(Coordinates location) {
-		computeSineSolarDeclinationAngle();
+
 		double phi = location.getPhi();
 		
 		// For the geographical latitude geoLat (in radians)
@@ -549,7 +580,11 @@ public class OrbitInfo implements Serializable, Temporal {
 		
 		double tanPhi = Math.tan(geoLat);
 		
-		double dec = getCacheSolarDeclinationAngle();
+		// Recompute L_s
+		// Note: already done in timePassing()
+		
+		// Get the solar dec angle in radians
+		double dec = getSolarDeclinationAngleInRad();
 
 		double tanSDA = Math.tan(dec);
 		
@@ -651,7 +686,7 @@ public class OrbitInfo implements Serializable, Temporal {
 		// Summer lasts 178.64 sols
 		// Autumn lasts 142.70 sols
 		// Winter lasts 153.94 sols
-		int phaseId = (int)sunAreoLongitude/30; // Cnnvert into 12 phases
+		int phaseId = (int)sunAreoLongitude/30; // Convert into 12 phases
 		String phase = switch(phaseId % 3) {
 			case 0 -> EARLY;
 			case 1 -> MID;
