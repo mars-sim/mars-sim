@@ -560,10 +560,7 @@ public class SettlementTransparentPanel extends JComponent {
 		return weather.getTemperature(c);
     }
 
-    private String getTemperatureString(double value) {
-    	// Note: Use of Msg.getString("temperature.sign.degreeCelsius") for the degree sign 
-    	// does not work on the digital banner.
-    	// May use of " °C", " �C", or " deg C" 
+    private String getTemperatureString(double value) { 
     	return StyleManager.DECIMAL_PLACES0.format(value) + " deg C";
     }
 

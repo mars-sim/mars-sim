@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    types: [opened, synchronize, reopened]
 jobs:
   sonarqube:
     name: SonarQube Trigger
@@ -19,13 +21,25 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: 17
-
+        
+    - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+    - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+          
     - name: SonarCloud Analysis
       if: ${{ github.repository == 'mars-sim/mars-sim' }}
       env:
         SONAR_ORGANISATION: ${{ secrets.SONAR_ORGANISATION }}
         SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
-        SONAR_LABEL: ${{ github.workflow }}/${{ github.run_number }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
       run:
-        mvn --file pom.xml -B -Pcoverage -Dsonar.token=$SONAR_LOGIN -Dsonar.organization=$SONAR_ORGANISATION -Dsonar.projectVersion="$SONAR_LABEL" verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        mvn --file pom.xml -B -Pcoverage -Dsonar.token=$SONAR_LOGIN -Dsonar.projectKey=com.mars-sim:mars-sim -Dsonar.organization=$SONAR_ORGANISATION  verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
