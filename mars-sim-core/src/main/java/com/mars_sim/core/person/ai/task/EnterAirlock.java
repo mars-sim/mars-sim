@@ -398,6 +398,16 @@ public class EnterAirlock extends Task {
 
 		boolean canProceed = false;
 		
+		if (!airlock.isActivated()) {
+			// Only the airlock operator may activate the airlock
+			airlock.setActivated(true);
+		}
+		
+		if (airlock.isOperator(id)) {
+			// Command the airlock state to be transitioned to "depressurizing"
+			airlock.setTransitioning(true);
+		}
+		
 		if (airlock.isDepressurized() && !airlock.isOuterDoorLocked()) {
 
 			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
@@ -421,15 +431,6 @@ public class EnterAirlock extends Task {
 				// need to wait here for them to put on the EVA suit first
 			}
 
-			if (!airlock.isActivated()) {
-				// Only the airlock operator may activate the airlock
-				airlock.setActivated(true);
-			}
-			
-			if (airlock.isOperator(id)) {
-				// Command the airlock state to be transitioned to "depressurizing"
-				airlock.setTransitioning(true);
-			}
 		}
 
 		if (canProceed && accumulatedTime > STANDARD_TIME * time) {
