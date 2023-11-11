@@ -578,7 +578,7 @@ public class Settlement extends Structure implements Temporal,
 	 * 
 	 * @return
 	 */
-	public synchronized String getSettlementCode() {
+	public String getSettlementCode() {
 		return settlementCode;
 	}
 	
@@ -1499,17 +1499,24 @@ public class Settlement extends Structure implements Temporal,
 		while (i.hasNext()) {
 			Building nextBuilding = unitManager.getBuildingByID(i.next());
 			Airlock airlock = nextBuilding.getEVA().getAirlock();
+			
+			boolean isIngress = airlock.getAirlockMode() == AirlockMode.INGRESS;
+			boolean notInUse = airlock.getAirlockMode() == AirlockMode.NOT_IN_USE;
+			
 			boolean chamberFull = nextBuilding.getEVA().getAirlock().areAll4ChambersFull();
 //			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
 
-			// Note: ingress is not being used here
-			
-			if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(nextBuilding.getBuildingType())) {
+			if ((isIngress == ingress || notInUse)
+				&& !ASTRONOMY_OBSERVATORY.equalsIgnoreCase(nextBuilding.getBuildingType())) {
+
+				double distance = nextBuilding.getPosition().getDistanceTo(person.getPosition());
+				
 				if (result == null) {
 					result = airlock;
+					leastDistance = distance;
 					continue;
 				}
-				double distance = nextBuilding.getPosition().getDistanceTo(person.getPosition());
+				
 				if (distance < leastDistance
 					&& !chamberFull) {
 						result = airlock;
