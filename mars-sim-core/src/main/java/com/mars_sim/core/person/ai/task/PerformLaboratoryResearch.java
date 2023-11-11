@@ -337,6 +337,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 
 	/**
 	 * Adds a person to a lab.
+	 * 
 	 * @param person 
 	 */
 	private void addPersonToLab(Person person) {
@@ -494,7 +495,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	}
 
 	/**
-	 * Release the lab space
+	 * Releases the lab space.
 	 */
 	@Override
 	protected void clearDown() {

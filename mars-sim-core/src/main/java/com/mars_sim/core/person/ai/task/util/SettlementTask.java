@@ -25,8 +25,9 @@ public abstract class SettlementTask extends AbstractTaskJob {
     private boolean needsEVA = false;
 
     /**
-     * Create an abstract Settlement task for the backlog that relates to an Entity within a Settlement
+     * Creates an abstract Settlement task for the backlog that relates to an Entity within a Settlement
      * that can be executed by any Citizen.
+     * 
      * @param parent The metatask that defines the eventual Task.
      * @param name Name to the potential task
      * @param focus Entity the focus of the work; maybe null
@@ -41,7 +42,8 @@ public abstract class SettlementTask extends AbstractTaskJob {
     }
 
     /**
-     * Get a short name that does not include the Entity reference.
+     * Gets a short name that does not include the Entity reference.
+     * 
      * @return
      */
     public String getShortName() {
@@ -49,7 +51,7 @@ public abstract class SettlementTask extends AbstractTaskJob {
     }
 
     /**
-     * Does this task need a an EVA activity
+     * Does this task need a an EVA activity ?
      */
     public boolean isEVA() {
         return needsEVA;
@@ -97,7 +99,8 @@ public abstract class SettlementTask extends AbstractTaskJob {
     }
 
     /**
-     * Get the Entity that is the focus of this Task. Default returns null as this is overridden
+     * Gets the Entity that is the focus of this Task. Default returns null as this is overridden.
+     * 
      * @return
      */
     public Entity getFocus() {

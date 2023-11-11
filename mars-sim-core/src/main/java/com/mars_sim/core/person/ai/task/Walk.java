@@ -531,31 +531,6 @@ public class Walk extends Task {
 	}
 
 
-	/**
-	 * Checks for available airlocks.
-	 * 
-	 * @param buildingManager
-	 */
-	public static void checkAvailableAirlocks(BuildingManager buildingManager) {
-		Set<Building> pressurizedBldgs = new UnitSet<>();
-		Set<Building> depressurizedBldgs = new UnitSet<>();
-
-		for(Building airlockBdg : buildingManager.getBuildingSet(FunctionType.EVA)) {
-			Airlock airlock = airlockBdg.getEVA().getAirlock();
-			if (airlock.isPressurized()	|| airlock.isPressurizing())
-				pressurizedBldgs.add(airlockBdg);
-			else if (airlock.isDepressurized() || airlock.isDepressurizing())
-				depressurizedBldgs.add(airlockBdg);
-		}
-
-		if (!pressurizedBldgs.isEmpty()) {
-			buildingManager.getSettlement().trackAirlocks(pressurizedBldgs, true);
-		}
-
-		if (!depressurizedBldgs.isEmpty()) {
-			buildingManager.getSettlement().trackAirlocks(depressurizedBldgs, false);
-		}
-	}
 
 	@Override
 	protected double performMappedPhase(double time) {

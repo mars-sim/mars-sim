@@ -327,9 +327,9 @@ public class Settlement extends Structure implements Temporal,
 	private List<Double> missionScores;
 
 	/** The set of available pressurized/pressurizing airlocks. */
-	private Set<Integer> availablePAirlocks = new HashSet<>();
+	private Set<Integer> pressurizedAirlocks = new HashSet<>();
 	/** The set of available depressurized/depressurizing airlocks. */
-	private Set<Integer> availableDAirlocks = new HashSet<>();
+	private Set<Integer> depressurizedAirlocks = new HashSet<>();
 	/** The settlement's list of citizens. */
 	private Set<Person> citizens;
 	/** The settlement's list of owned robots. */
@@ -1136,7 +1136,7 @@ public class Settlement extends Structure implements Temporal,
 			checkOxygenDemand();
 			
 			// Tag available airlocks into two categories
-			Walk.checkAvailableAirlocks(buildingManager);
+			checkAvailableAirlocks();
 
 			// Check if good need updating
 			int remainder = msol % UPDATE_GOODS_PERIOD;
@@ -1417,6 +1417,33 @@ public class Settlement extends Structure implements Temporal,
 		return goodsManager;
 	}
 
+
+	/**
+	 * Checks for available airlocks.
+	 * 
+	 * @param buildingManager
+	 */
+	public void checkAvailableAirlocks() {
+		Set<Building> pressurizedBldgs = new UnitSet<>();
+		Set<Building> depressurizedBldgs = new UnitSet<>();
+
+		for(Building airlockBdg : buildingManager.getBuildingSet(FunctionType.EVA)) {
+			Airlock airlock = airlockBdg.getEVA().getAirlock();
+			if (airlock.isPressurized()	|| airlock.isPressurizing())
+				pressurizedBldgs.add(airlockBdg);
+			else if (airlock.isDepressurized() || airlock.isDepressurizing())
+				depressurizedBldgs.add(airlockBdg);
+		}
+
+		if (!pressurizedBldgs.isEmpty()) {
+			trackAirlocks(pressurizedBldgs, true);
+		}
+
+		if (!depressurizedBldgs.isEmpty()) {
+			trackAirlocks(depressurizedBldgs, false);
+		}
+	}
+	
 	/**
 	 * Is there an airlock available ? 
 	 * Note: currently not being used.
@@ -1430,9 +1457,9 @@ public class Settlement extends Structure implements Temporal,
 	
 		Set<Integer> bldgs = null;
 		if (ingress)
-			bldgs = availableDAirlocks;
+			bldgs = depressurizedAirlocks;
 		else
-			bldgs = availablePAirlocks;
+			bldgs = pressurizedAirlocks;
 		Iterator<Integer> i = bldgs.iterator();
 		while (i.hasNext()) {
 			Building building = unitManager.getBuildingByID(i.next());
@@ -1490,24 +1517,24 @@ public class Settlement extends Structure implements Temporal,
 
 		Set<Integer> bldgs = null;
 		if (ingress) {
-			bldgs = availableDAirlocks;
+			bldgs = depressurizedAirlocks;
 		}
 		else {
-			bldgs = availablePAirlocks;
+			bldgs = pressurizedAirlocks;
 		}
 		Iterator<Integer> i = bldgs.iterator();
 		while (i.hasNext()) {
 			Building nextBuilding = unitManager.getBuildingByID(i.next());
 			Airlock airlock = nextBuilding.getEVA().getAirlock();
 			
-			boolean isIngress = airlock.getAirlockMode() == AirlockMode.INGRESS;
-			boolean notInUse = airlock.getAirlockMode() == AirlockMode.NOT_IN_USE;
+//			boolean isIngress = airlock.getAirlockMode() == AirlockMode.INGRESS;
+//			boolean notInUse = airlock.getAirlockMode() == AirlockMode.NOT_IN_USE;
 			
 			boolean chamberFull = nextBuilding.getEVA().getAirlock().areAll4ChambersFull();
 //			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
 
-			if ((isIngress == ingress || notInUse)
-				&& !ASTRONOMY_OBSERVATORY.equalsIgnoreCase(nextBuilding.getBuildingType())) {
+//			if ((isIngress == ingress || notInUse) 
+			if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(nextBuilding.getBuildingType())) {
 
 				double distance = nextBuilding.getPosition().getDistanceTo(person.getPosition());
 				
@@ -1529,8 +1556,8 @@ public class Settlement extends Structure implements Temporal,
 	}
 	
 	/**
-	 * Gets an airlock for an EVA egress, preferably an pressurized airlock.
-	 * Consider if the chambers are full and if the reservation is full.
+	 * Gets an airlock for an EVA ingress or egress.
+	 * Considers if the chambers are full and if the reservation is full.
 	 *
 	 * @param currentBuilding
 	 * @param pos Position for search
@@ -1545,10 +1572,10 @@ public class Settlement extends Structure implements Temporal,
 
 		Set<Integer> bldgs = null;
 		if (ingress) {
-			bldgs = availableDAirlocks;
+			bldgs = depressurizedAirlocks;
 		}
 		else {
-			bldgs = availablePAirlocks;
+			bldgs = pressurizedAirlocks;
 		}
 		Iterator<Integer> i = bldgs.iterator();
 		while (i.hasNext()) {
@@ -1597,25 +1624,25 @@ public class Settlement extends Structure implements Temporal,
 			// 2. Chambers are full but the reservation is NOT full
 			if (!chamberFull || !reservationFull) {
 				if (pressurized) {
-					if (!availablePAirlocks.contains(id)) {
-						availablePAirlocks.add(id);
+					if (!pressurizedAirlocks.contains(id)) {
+						pressurizedAirlocks.add(id);
 					}
 				}
 				else {
-					if (!availableDAirlocks.contains(id)) {
-						availableDAirlocks.add(id);
+					if (!depressurizedAirlocks.contains(id)) {
+						depressurizedAirlocks.add(id);
 					}
 				}
 			}
 			else {
 				if (pressurized) {
-					if (availablePAirlocks.contains(id)) {
-						availablePAirlocks.remove(id);
+					if (pressurizedAirlocks.contains(id)) {
+						pressurizedAirlocks.remove(id);
 					}
 				}
 				else {
-					if (!availableDAirlocks.contains(id)) {
-						availableDAirlocks.add(id);
+					if (!depressurizedAirlocks.contains(id)) {
+						depressurizedAirlocks.add(id);
 					}
 				}
 			}
