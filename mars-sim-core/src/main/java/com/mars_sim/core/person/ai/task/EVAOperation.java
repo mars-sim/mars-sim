@@ -503,7 +503,7 @@ public abstract class EVAOperation extends Task {
 		}		
 		
 		if (person.isSuperUnFit()) {
-			abortEVA("No longer fit enough.");
+			abortEVA("Super unfit.");
 			return time;
 		}
 		return 0;

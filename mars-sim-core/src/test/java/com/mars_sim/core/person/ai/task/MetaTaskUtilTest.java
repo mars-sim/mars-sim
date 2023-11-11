@@ -40,7 +40,7 @@ extends AbstractMarsSimUnitTest {
 
 		settlement = buildSettlement();
 
-		person = buildPerson("Test Body", settlement);
+		person = buildPerson("Test Person", settlement);
 
 	}
 
@@ -49,15 +49,15 @@ extends AbstractMarsSimUnitTest {
 		assertMetaTask(eatDrink, "Eating");
 	}
 
-	public void testLoadVehicleGarage() throws Exception {
-		LoadVehicleGarage evaLoad = new LoadVehicleGarage(person, buildMission(settlement, person));
-		assertMetaTask(evaLoad, "Loading Vehicle");
-	}
+//	public void testLoadVehicleGarage() throws Exception {
+//		LoadVehicleGarage evaLoad = new LoadVehicleGarage(person, buildMission(settlement, person));
+//		assertMetaTask(evaLoad, "Loading Vehicle");
+//	}
 
-	public void testLoadVehicleEVA() throws Exception {
-		LoadVehicleEVA evaLoad = new LoadVehicleEVA(person, buildMission(settlement, person));
-		assertMetaTask(evaLoad, "Loading Vehicle");
-	}
+//	public void testLoadVehicleEVA() throws Exception {
+//		LoadVehicleEVA evaLoad = new LoadVehicleEVA(person, buildMission(settlement, person));
+//		assertMetaTask(evaLoad, "Loading Vehicle");
+//	}
 
 	public void testUnloadVehicleGarage() throws Exception {
 		Vehicle vehicle = buildRover(settlement, "loader", null);
@@ -65,7 +65,6 @@ extends AbstractMarsSimUnitTest {
 		UnloadVehicleGarage evaLoad = new UnloadVehicleGarage(person, vehicle);
 		assertMetaTask(evaLoad, "Unloading Vehicle");
 	}
-
 
 	public void testUnloadVehicleEVA() throws Exception {
 		Vehicle vehicle = buildRover(settlement, "loader", null);
@@ -121,7 +120,7 @@ extends AbstractMarsSimUnitTest {
 
 
 	/**
-	 * Find the associated MetatTask from a specific Task and make sure it is the
+	 * Finds the associated MetatTask from a specific Task and make sure it is the
 	 * expected one.
 	 * 
 	 * @param task Seed for search

@@ -383,7 +383,7 @@ public class Settlement extends Structure implements Temporal,
 		this.templateID = id;
 		this.location = location;
 
-		logger.info(name + "(" + settlementCode + ")" + "  templateID: " + templateID + " " );
+//		logger.info(name + " (" + settlementCode + ")" + "  templateID: " + templateID + " " );
 		
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
