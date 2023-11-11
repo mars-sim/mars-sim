@@ -552,7 +552,8 @@ public class MasterClock implements Serializable {
 				// NOTE: actualTR is just the ratio of the simulation's pulse time to the real elapsed time
 				
 				// Obtain the delta time, given the ratio of realElapsedMillisec to the diff between actualTR and desiredTR 
-				double deltaPulseTime = (realElapsedMillisec * deltaTR) / MILLISECONDS_PER_MILLISOL / 200;
+				double deltaPulseTime = (realElapsedMillisec * deltaTR) 
+						/ MILLISECONDS_PER_MILLISOL / 100;
 				// Update the next time pulse width [in millisols]
 				nextPulseTime -= deltaPulseTime;
 				if (nextPulseTime < 0)
@@ -606,7 +607,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Checks for the actual time ratio.
+	 * Checks for the delta time ratio.
 	 * 
 	 * @return deviation of the optimal pulse width
 	 */
