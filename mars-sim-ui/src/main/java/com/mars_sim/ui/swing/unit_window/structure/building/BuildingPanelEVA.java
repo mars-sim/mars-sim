@@ -8,11 +8,14 @@ package com.mars_sim.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.util.Collection;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Airlock.AirlockMode;
@@ -67,10 +70,10 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	private JLabel outerDoorStateLabel;
 	private JLabel airlockModeLabel;
 
-	private UnitListPanel<Person> occupants;
-	private UnitListPanel<Person> outsideList;
-	private UnitListPanel<Person> insideList;
-	private UnitListPanel<Person> reservationList;
+	private UnitListPanel<Person> occupantListPanel;
+	private UnitListPanel<Person> outsideListPanel;
+	private UnitListPanel<Person> insideListPanel;
+	private UnitListPanel<Person> reservationListPanel;
 
 	private EVA eva;
 	private BuildingAirlock buildingAirlock;
@@ -103,7 +106,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	 */
 	@Override
 	protected void buildUI(JPanel content) {
-
+		MainDesktopPane desktop = getDesktop();
+		
 		// Create label panel
 		JPanel topPanel = new JPanel(new BorderLayout());
 		content.add(topPanel, BorderLayout.NORTH);
@@ -112,7 +116,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		topPanel.add(labelGrid, BorderLayout.NORTH);
 		
 		// Create innerDoorLabel
-		innerDoorLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.innerDoor.number"),
+		innerDoorLabel = labelGrid.addTextField(Msg.getString("BuildingPanelEVA.innerDoor.number"),
 									  Integer.toString(eva.getNumAwaitingInnerDoor()), null);
 
 		if (eva.getAirlock().isInnerDoorLocked())
@@ -152,82 +156,89 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 
 		// Create airlockStateLabel
 		airlockStateLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.airlock.state"),
-										 buildingAirlock.getState().toString(), null);
+								buildingAirlock.getState().toString(), null);
 
 		// Create cycleTimeLabel
 		cycleTimeLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.airlock.cycleTime"),
-									  StyleManager.DECIMAL_PLACES1.format(buildingAirlock.getRemainingCycleTime()), null);
+					StyleManager.DECIMAL_PLACES1.format(buildingAirlock.getRemainingCycleTime()), null);
 		
 		// Create transitionLabel
 		transitionLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.airlock.transition"),
-				 Boolean.toString(buildingAirlock.isTransitioning()), null);
+				Conversion.capitalize0(Boolean.toString(buildingAirlock.isTransitioning())), null);
 
 		// Create activationLabel
 		activationLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.airlock.activation"),
-										 Boolean.toString(buildingAirlock.isActivated()), null);
+				Conversion.capitalize0(Boolean.toString(buildingAirlock.isActivated())), null);
 
 		// Create OperatorLabel
 		operatorLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.operator"),
 									 eva.getOperatorName(), null);
 		
-		JPanel listPanel = new JPanel(new BorderLayout());
+		// Create listPanel
+		JPanel listPanel = new JPanel(new GridLayout(2, 2));
+		Border margin = new EmptyBorder(10, 10, 10, 10);
+		listPanel.setBorder(margin);
+		listPanel.setPreferredSize(new Dimension(440, -1));
 		content.add(listPanel, BorderLayout.CENTER);
 		
-		// Create outside wait panel
-		JPanel outsidePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		addBorder(outsidePanel, Msg.getString("BuildingPanelEVA.titledB.outside"));
-		listPanel.add(outsidePanel, BorderLayout.WEST);
+		// Create outside list panel
+		JPanel outsidePanel = new JPanel();
+		outsidePanel.setPreferredSize(new Dimension(120, -1));
+		outsidePanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.outer")));
+		listPanel.add(outsidePanel);
 
-		// Create outsideList panel 
-		MainDesktopPane desktop = getDesktop();
-		outsideList = new UnitListPanel<>(desktop, new Dimension(80, 100)) {
+		// Create outsideListPanel 
+		outsideListPanel = new UnitListPanel<>(desktop, new Dimension(100, 100)) {
 			@Override
 			protected Collection<Person> getData() {
 				return getUnitsFromIds(buildingAirlock.getAwaitingOuterDoor());
 			}
 		};
-		outsidePanel.add(outsideList);
+		outsidePanel.add(outsideListPanel);
 		
 		// Create occupant panel
-		JPanel occupantPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		addBorder(occupantPanel, Msg.getString("BuildingPanelEVA.titledB.occupants"));
-		listPanel.add(occupantPanel, BorderLayout.CENTER);
+		JPanel occupantPanel = new JPanel();
+		occupantPanel.setPreferredSize(new Dimension(120, -1));
+		occupantPanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.occupants")));
+		listPanel.add(occupantPanel);
 
 		// Create occupant list panel
-		occupants = new UnitListPanel<>(desktop, new Dimension(80, 100)) {
+		occupantListPanel = new UnitListPanel<>(desktop, new Dimension(100, 100)) {
 			@Override
 			protected Collection<Person> getData() {
 				return getUnitsFromIds(buildingAirlock.getAllInsideOccupants());
 			}
 		};
-		occupantPanel.add(occupants);
+		occupantPanel.add(occupantListPanel);
 
 		// Create outside wait panel
-		JPanel insidePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		addBorder(insidePanel, Msg.getString("BuildingPanelEVA.titledB.inside"));
-		listPanel.add(insidePanel, BorderLayout.EAST);
+		JPanel insidePanel = new JPanel();
+		insidePanel.setPreferredSize(new Dimension(120, -1));
+		insidePanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.inner")));
+		listPanel.add(insidePanel);
 
-		// Create insideList panel 
-		insideList = new UnitListPanel<>(desktop, new Dimension(80, 100)) {
+		// Create insideListPanel 
+		insideListPanel = new UnitListPanel<>(desktop, new Dimension(100, 100)) {
 			@Override
 			protected Collection<Person> getData() {
 				return getUnitsFromIds(buildingAirlock.getAwaitingInnerDoor());
 			}
 		};
-		insidePanel.add(insideList);
+		insidePanel.add(insideListPanel);
 		
 		// Create reservation panel
-		JPanel reservationPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel reservationPanel = new JPanel();
+		reservationPanel.setPreferredSize(new Dimension(120, -1));
 		addBorder(reservationPanel, Msg.getString("BuildingPanelEVA.titledB.Reserved"));
-		content.add(reservationPanel, BorderLayout.SOUTH);
-
-		reservationList = new UnitListPanel<>(desktop, new Dimension(150, 100)) {
+		listPanel.add(reservationPanel);
+		
+		reservationListPanel = new UnitListPanel<>(desktop, new Dimension(100, 100)) {
 			@Override
 			protected Collection<Person> getData() {
 				return getUnitsFromIds(buildingAirlock.getReserved());
 			}		
 		};	
-		reservationPanel.add(reservationList);
+		reservationPanel.add(reservationListPanel);
 	}
 
 	@Override
@@ -330,20 +341,20 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		}
 		
 		// Update list
-		occupants.update();
-		outsideList.update();
-		insideList.update();
-		reservationList.update();
+		occupantListPanel.update();
+		outsideListPanel.update();
+		insideListPanel.update();
+		reservationListPanel.update();
 	}
 
 	@Override
 	public void destroy() {
 		super.destroy();
 
-		occupants = null;
-		outsideList = null;
-		insideList = null;
-		reservationList = null;
+		occupantListPanel = null;
+		outsideListPanel = null;
+		insideListPanel = null;
+		reservationListPanel = null;
 		
 		eva = null;
 		buildingAirlock = null;

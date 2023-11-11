@@ -61,7 +61,7 @@ implements SettlementMapLayer {
 	private final Color medicalLabel = new Color (51, 204, 255); // very light blue: 51, 204, 255 // dull dark blue : 0, 69, 92
 	private final Color livingLabel = new Color (236, 121, 154).darker(); // salmon: 236, 121, 154 // pastel orange: 255, 179, 71 //  harvest gold: 225, 179, 120:
 	private final Color resourceLabel = new Color (182, 201, 255); // pale blue
-	private final Color evaLabel = new Color (236, 255, 179); // pale yellow
+	private final Color evaLabel = new Color (184, 134, 11); // Maroon ; pale yellow: (236, 255, 179)
 	private final Color ervLabel = new Color (83, 83, 83); // pale grey
 	
 	private final Color constSiteLabel = new Color(237, 114, 38); //greyish orange
