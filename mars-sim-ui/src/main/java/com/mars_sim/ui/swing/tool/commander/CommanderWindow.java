@@ -27,6 +27,7 @@ import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
@@ -78,7 +79,7 @@ import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.FlagString;
 import com.mars_sim.ui.swing.tool.SmartScroller;
-import com.mars_sim.ui.swing.toolwindow.ToolWindow;
+import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 
@@ -179,6 +180,9 @@ public class CommanderWindow extends ToolWindow {
 	private JPanel tradingPartnersPanel;
 	
 	private Map<String, Settlement> tradingPartners;
+	
+	private List<Building> greenhouseBldgs;
+	
 	private List<Colony> colonyList;
 	
 
@@ -536,9 +540,9 @@ public class CommanderWindow extends ToolWindow {
 		JLabel buildingLabel = new JLabel(" Select a Farm : ");		
 		buildingPanel.add(buildingLabel, BorderLayout.NORTH);
 
-		List<Building> bldgList = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
+		greenhouseBldgs = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
 		
-		constructBuildingBox(settlement, bldgList);
+		constructBuildingBox(settlement, greenhouseBldgs);
 		buildingPanel.add(buildingBox, BorderLayout.CENTER);
 
 		// Create spinner panel
@@ -570,8 +574,8 @@ public class CommanderWindow extends ToolWindow {
 			int newArea = (int)spinnerModel.getValue();
 			logger.info(settlement, "Setting Growing Area per Crop (in SM) to " + newArea + ".");
 			
-			if (!bldgList.isEmpty()) {
-				for (Building b: bldgList) {
+			if (!greenhouseBldgs.isEmpty()) {
+				for (Building b: greenhouseBldgs) {
 					b.getFarming().setDesignatedCropArea(newArea);
 					logger.info(settlement, b, newArea + " SM.");
 				}
@@ -1073,8 +1077,24 @@ public class CommanderWindow extends ToolWindow {
 		
 		// Update lunar colonies
 		updateLunarPanel();
+		
+		// Update the greenhouse building list
+		updateGreenhouses();
 	}
 
+	/**
+	 * Updates the greenhouse list.
+	 */
+	private void updateGreenhouses() {
+		List<Building> newList = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
+		
+		if (!greenhouseBldgs.equals(newList)) {
+			greenhouseBldgs = newList;
+			ComboBoxModel<Building> model = buildingBox.getModel();
+			((BuildingComboBoxModel)model).replaceGreenhouses(settlement, newList);
+		}		
+	}
+	
 	private void disableAllCheckedSettlement() {
 		for(Component c : tradingPartnersPanel.getComponents()) {
 			((JCheckBox) c).setSelected(false);
@@ -1258,6 +1278,27 @@ public class CommanderWindow extends ToolWindow {
 			}
 		}
 
+		public void replaceGreenhouses(Settlement newSettlement, List<Building> newBldgs) {
+			// Remove previous UnitListener and elements
+			Iterator<Building> i = bldgs.iterator();
+			while (i.hasNext()) {
+				Building b = i.next();
+				b.removeUnitListener(this);
+				removeElement(b);
+			}
+				
+			this.settlement = newSettlement;
+			this.bldgs = newBldgs;
+			
+			// Add addUnitListener
+			Iterator<Building> ii = newBldgs.iterator();
+			while (ii.hasNext()) {
+				Building b = ii.next();
+				b.addUnitListener(this);
+				addElement(b);
+			}
+		}
+		
 		/**
 		 * Prepares class for deletion.
 		 */
