@@ -428,7 +428,8 @@ public class Sleep extends Task {
 	}
 
 	/**
-	 * If worker is a Robot then send them to report to duty
+	 * Clears down the task. 
+	 * Note: if worker is a robot then send them to report to duty.
 	 */
 	@Override
 	protected void clearDown() {

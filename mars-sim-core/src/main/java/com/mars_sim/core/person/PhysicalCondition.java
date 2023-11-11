@@ -1804,8 +1804,8 @@ public class PhysicalCondition implements Serializable {
 	 * 
 	 * @return
 	 */
-	public boolean isFitEVAScreening() {
-        return isFitByLevel(350, 35, 350, 200);
+	public boolean isEVAFit() {
+        return isFitByLevel(350, 30, 350, 300);
 	}
 	
 	/**

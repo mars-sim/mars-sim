@@ -18,13 +18,13 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Airlock.AirlockMode;
 import com.mars_sim.core.structure.building.function.BuildingAirlock;
 import com.mars_sim.core.structure.building.function.EVA;
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.unit_window.UnitListPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-
 
 /**
  * The BuildingPanelEVA class presents the EVA activities
@@ -68,6 +68,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	private JLabel airlockModeLabel;
 
 	private UnitListPanel<Person> occupants;
+	private UnitListPanel<Person> outsideList;
+	private UnitListPanel<Person> insideList;
 	private UnitListPanel<Person> reservationList;
 
 	private EVA eva;
@@ -75,6 +77,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param eva the eva function of a building this panel is for.
 	 * @param desktop The main desktop.
 	 */
@@ -167,15 +170,31 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		operatorLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.operator"),
 									 eva.getOperatorName(), null);
 		
+		JPanel listPanel = new JPanel(new BorderLayout());
+		content.add(listPanel, BorderLayout.CENTER);
+		
+		// Create outside wait panel
+		JPanel outsidePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		addBorder(outsidePanel, Msg.getString("BuildingPanelEVA.titledB.outside"));
+		listPanel.add(outsidePanel, BorderLayout.WEST);
+
+		// Create outsideList panel 
+		MainDesktopPane desktop = getDesktop();
+		outsideList = new UnitListPanel<>(desktop, new Dimension(80, 100)) {
+			@Override
+			protected Collection<Person> getData() {
+				return getUnitsFromIds(buildingAirlock.getAwaitingOuterDoor());
+			}
+		};
+		outsidePanel.add(outsideList);
 		
 		// Create occupant panel
 		JPanel occupantPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		addBorder(occupantPanel, Msg.getString("BuildingPanelEVA.titledB.occupants"));
-		content.add(occupantPanel, BorderLayout.CENTER);
+		listPanel.add(occupantPanel, BorderLayout.CENTER);
 
-		// Create occupant list 
-		MainDesktopPane desktop = getDesktop();
-		occupants = new UnitListPanel<>(desktop, new Dimension(150, 100)) {
+		// Create occupant list panel
+		occupants = new UnitListPanel<>(desktop, new Dimension(80, 100)) {
 			@Override
 			protected Collection<Person> getData() {
 				return getUnitsFromIds(buildingAirlock.getAllInsideOccupants());
@@ -183,6 +202,20 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		};
 		occupantPanel.add(occupants);
 
+		// Create outside wait panel
+		JPanel insidePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		addBorder(insidePanel, Msg.getString("BuildingPanelEVA.titledB.inside"));
+		listPanel.add(insidePanel, BorderLayout.EAST);
+
+		// Create insideList panel 
+		insideList = new UnitListPanel<>(desktop, new Dimension(80, 100)) {
+			@Override
+			protected Collection<Person> getData() {
+				return getUnitsFromIds(buildingAirlock.getAwaitingInnerDoor());
+			}
+		};
+		insidePanel.add(insideList);
+		
 		// Create reservation panel
 		JPanel reservationPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		addBorder(reservationPanel, Msg.getString("BuildingPanelEVA.titledB.Reserved"));
@@ -279,14 +312,14 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		boolean activated = buildingAirlock.isActivated();
 		if (activationCache != activated) {
 			activationCache = activated;
-			activationLabel.setText(Boolean.toString(activated));
+			activationLabel.setText(Conversion.capitalize0(Boolean.toString(activated)));
 		}
 
 		// Update activationLabel
 		boolean transition = buildingAirlock.isTransitioning();
 		if (transitionCache != transition) {
 			transitionCache = transition;
-			transitionLabel.setText(Boolean.toString(transition));
+			transitionLabel.setText(Conversion.capitalize0(Boolean.toString(transition)));
 		}
 		
 		// Update airlockModeLabel
@@ -296,8 +329,10 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 			airlockModeLabel.setText(airlockMode.getName());
 		}
 		
-		// Update occupant list
+		// Update list
 		occupants.update();
+		outsideList.update();
+		insideList.update();
 		reservationList.update();
 	}
 
@@ -306,9 +341,26 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		super.destroy();
 
 		occupants = null;
+		outsideList = null;
+		insideList = null;
 		reservationList = null;
 		
 		eva = null;
 		buildingAirlock = null;
+		
+		airlockModeCache = null;
+
+		innerDoorLabel = null;
+		outerDoorLabel = null;
+		occupiedLabel = null;
+		emptyLabel = null;
+		operatorLabel = null;
+		airlockStateLabel = null;
+		activationLabel = null;
+		transitionLabel = null;
+		cycleTimeLabel = null;
+		innerDoorStateLabel = null;
+		outerDoorStateLabel = null;
+		airlockModeLabel = null;
 	}
 }

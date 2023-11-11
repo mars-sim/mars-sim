@@ -95,7 +95,9 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
 	}
 
     /**
-     * Get the score for a Settlement task for a person. Considers EVA fitness and overcrowding for inside activities.
+     * Gets the score for a Settlement task for a person. 
+     * Considers EVA fitness and overcrowding for inside activities.
+     * 
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
@@ -122,14 +124,16 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
 	}
     
     /**
-     * Find any tasks realetd to toggle power supplies. Scans for POWER_GENERATION functions
-     * @param settlemetn Source Settlement to scna
-     * @return Lit of potential Tasks.
+     * Finds any tasks related to toggle power supplies. 
+     * Scans for POWER_GENERATION functions.
+     * 
+     * @param settlement Source Settlement to scan
+     * @return List of potential Tasks.
      */
     @Override
     public List<SettlementTask> getSettlementTasks(Settlement settlement) {
         List<SettlementTask> tasks = new ArrayList<>();
-        for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.POWER_GENERATION)) {
+        for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.POWER_GENERATION)) {
             // Select the best Fuel power source
             double bestDiff = 0D;
             FuelPowerSource bestSource = null;
@@ -155,8 +159,8 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
     }
 
 	/**
-     * Gets the score of a Power source based on the difference in vlaue between inputs and output
-	 * and whether it is running but exhausted inputs.
+     * Gets the score of a Power source based on the difference in value 
+     * between inputs and output and whether it is running but exhausted inputs.
      * 
      * @param settlement the settlement the resource process is at.
      * @param fuelSource the fuel power source.
@@ -166,7 +170,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
 
         double diff = 0D;
 
-        // If sourc eis not on; then score is the differenc ebetween outputs and inputs
+        // If source is not on; then score is the difference between outputs and inputs
         if (!fuelSource.isToggleON()) {
             double inputValue = getInputResourcesValue(settlement, fuelSource);
             double outputValue = getPowerOutputValue(settlement, fuelSource);
@@ -198,6 +202,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
 
     /**
      * Gets the total value of the power produced by the power source.
+     * 
      * @param settlement the settlement.
      * @param fuelSource the fuel power source.
      * @return the value of the power generated per Sol.

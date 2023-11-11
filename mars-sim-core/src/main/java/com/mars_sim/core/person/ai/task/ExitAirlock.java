@@ -53,12 +53,16 @@ public class ExitAirlock extends Task {
 	
 	private static final String CANT_DON_SUIT = "Can't don an EVA suit - ";
 	private static final String TO_REQUEST_EGRESS = " to request egress"; 
+	private static final String TO_PRESSURIZE_CHAMBER = " to pressurize chamber.";
+	private static final String TO_WALK_TO_CHAMBER = " to walk to a chamber.";
 	private static final String TRIED_TO_STEP_THRU_INNER_DOOR = "Tried to step through inner door"; 
 	private static final String PREBREATH_HALF_DONE = "Other occupant(s) already pre-breathed half-way thru.";
 	private static final String PREBREATH_ONE_QUARTER_DONE = "Other occupant(s) already pre-breathed a quarter of time.";
 	private static final String PREBREATH_THREE_QUARTERS_DONE = "Other occupant(s) already pre-breathed 3/4 quarters of time.";
 	private static final String RESERVATION_NOT_MADE = "Reservation not made.";
-	private static final String NOT_FIT = "Not fit enough";
+	private static final String NOT_FIT = "Not nominally fit";
+	private static final String NOT_EVA_FIT = "Not EVA fit";
+	private static final String SUPER_UNFIT = "Super unfit";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
 	private static final String CHAMBER_FULL = "All chambers are occupied.";
 	private static final String NOT_IN_RIGHT_AIRLOCK_MODE = "Airlock is not in egress mode.";
@@ -306,11 +310,40 @@ public class ExitAirlock extends Task {
 	}
 
 	/**
+	 * Checks if a person is initially fit for EVA.
+	 *
+	 * @return true if a person is initially fit for EVA
+	 */
+	private boolean isEVAFit() {
+		
+		if (inSettlement) {
+			if (isObservatoryAttached) {
+				// Note: if the person is in an airlock next to the observatory 
+				// sitting at an isolated and remote part of the settlement,
+				// it will not check if he's physically fit to leave that place, or else
+				// he may get stranded.
+				return true;
+			}
+			
+			// else need to go to the bottom to check fitness
+		}
+		else if (person.isInVehicle() && person.getVehicle().getSettlement() != null) {
+			// if vehicle occupant is unfit and the vehicle is at settlement/vicinity,
+			// bypass checking for fitness since the person may just be too exhausted and
+			// should be allowed to return home to recuperate.
+			return true;
+		}
+		
+		// Checks if a person is nominally fit 
+		return person.isEVAFit();
+	}
+	
+	/**
 	 * Checks if a person is tired, too stressful or hungry and need to take break, eat and/or sleep.
 	 *
-	 * @return true if a person is fit
+	 * @return true if a person is nominally fit
 	 */
-	private boolean isFit() {
+	private boolean isNominallyFit() {
 		
 		if (inSettlement) {
 			if (isObservatoryAttached) {
@@ -493,12 +526,17 @@ public class ExitAirlock extends Task {
 			return time;
 		}
 
-		if (inSettlement && !isFit()) {
-			walkAway(person, NOT_FIT + TO_REQUEST_EGRESS + ". Current task: " 
+		if (inSettlement && !isEVAFit()) {
+			walkAway(person, NOT_EVA_FIT + TO_REQUEST_EGRESS + ". Current task: " 
 					+ person.getTaskDescription() + ".");
 			return time;
 		}
-
+		else if (isSuperUnFit()) {
+			walkAway(person, SUPER_UNFIT + TO_REQUEST_EGRESS + ". Current task: " 
+					+ person.getTaskDescription() + ".");
+			return time;
+		}
+		
 		if (person.isOutside()) {
 			walkAway(person, "Already outside, not supposed " + TO_REQUEST_EGRESS 
 					+ ". Current task: " + person.getTaskDescription() + ".");
@@ -627,9 +665,13 @@ public class ExitAirlock extends Task {
 			// Only the airlock operator may activate the airlock
 			airlock.setActivated(true);
 		}
-		
-		if (!isFit()) {
-			walkAway(person, NOT_FIT + " to pressurize chamber.");
+			
+		if (inSettlement && !isEVAFit()) {
+			walkAway(person, NOT_EVA_FIT + TO_PRESSURIZE_CHAMBER);
+			return time;
+		}
+		else if (isSuperUnFit()) {
+			walkAway(person, SUPER_UNFIT + TO_PRESSURIZE_CHAMBER);
 			return time;
 		}
 		
@@ -695,11 +737,15 @@ public class ExitAirlock extends Task {
 
 		boolean canProceed = false;
 
-		if (!isFit()) {
+		if (inSettlement && !isNominallyFit()) {
 			walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + NOT_FIT + ".");
 			return time;
 		}
-
+		else if (isSuperUnFit()) {
+			walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + SUPER_UNFIT + ".");
+			return time;
+		}
+		
 		if (isOccupantHalfPrebreathed()) {
 			walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + PREBREATH_HALF_DONE);
 			return time;
@@ -792,11 +838,15 @@ public class ExitAirlock extends Task {
 			airlock.setActivated(true);
 		}
 		
-		if (!isFit()) {
-			walkAway(person, NOT_FIT + " to walk to a chamber.");
+		if (inSettlement && !isNominallyFit()) {
+			walkAway(person, NOT_FIT + TO_WALK_TO_CHAMBER);
+			return time;
+		} 
+		else if (isSuperUnFit()) {
+			walkAway(person, SUPER_UNFIT + TO_WALK_TO_CHAMBER);
 			return time;
 		}
-
+		
 		if (isOccupant3QuartersPrebreathed()) {
 			walkAway(person, "Can't walk to chamber. " + PREBREATH_THREE_QUARTERS_DONE);
 			return time;
@@ -883,7 +933,7 @@ public class ExitAirlock extends Task {
 			if (isSuperUnFit()) {
 				// Doff the suit, get back the garment and thermal bottle
 				EVASuitUtil.checkIn(person, airlock.getEntity(), inSettlement, true);
-				walkAway(person, NOT_FIT + " to don an EVA suit.");
+				walkAway(person, SUPER_UNFIT + " to don an EVA suit.");
 				return time;
 			}
 	
@@ -996,7 +1046,7 @@ public class ExitAirlock extends Task {
 		if (isSuperUnFit()) {
 			// Doff the suit, get back the garment and thermal bottle
 			EVASuitUtil.checkIn(person, airlock.getEntity(), inSettlement, true);
-			walkAway(person, NOT_FIT + " to prebreath.");
+			walkAway(person, SUPER_UNFIT + " to prebreath.");
 			return time;
 		}
 		
@@ -1058,7 +1108,7 @@ public class ExitAirlock extends Task {
 			// Get back the garment and thermal bottle
 			EVASuitUtil.checkIn(person, airlock.getEntity(), inSettlement, true);
 			
-			walkAway(person, NOT_FIT + " to depressurize chamber.");
+			walkAway(person, SUPER_UNFIT + " to depressurize chamber.");
 			return time;
 		}
 		

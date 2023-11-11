@@ -630,7 +630,7 @@ public abstract class EVAOperation extends Task {
 	 * @return
 	 */
 	public static boolean isEVAFit(Person person) {
-		return person.getPhysicalCondition().isFitEVAScreening() 
+		return person.getPhysicalCondition().isEVAFit() 
 				|| person.getPhysicalCondition().computeHealthScore() > 80;
 	} 
 	

@@ -1107,6 +1107,15 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
     }
 
 	/**
+	 * Checks if a person is EVA fit.
+	 *
+	 * @return true if a person is EVA fit
+	 */
+	public boolean isEVAFit() {
+        return condition.isEVAFit();
+    }
+	
+	/**
 	 * Checks if a person is nominally fit.
 	 *
 	 * @return true if a person is nominally fit

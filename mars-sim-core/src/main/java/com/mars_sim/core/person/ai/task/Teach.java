@@ -187,7 +187,7 @@ public class Teach extends Task {
 			Building studentBuilding = BuildingManager.getBuilding(student);
 
 			if (studentBuilding != null && 
-					studentBuilding.getCategory() != BuildingCategory.EVA_AIRLOCK) {
+				studentBuilding.getCategory() != BuildingCategory.EVA_AIRLOCK) {
 				// Walk to random location in student's building.
 				walkToRandomLocInBuilding(BuildingManager.getBuilding(student), false);
 			}
