@@ -88,6 +88,7 @@ import com.mars_sim.core.structure.construction.ConstructionManager;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -206,11 +207,11 @@ public class Settlement extends Structure implements Temporal,
 	private static final double NORMAL_AIR_PRESSURE = 34D;
 
 	/** The settlement water consumption */
-	public static double water_consumption_rate;
+	public static double waterConsumptionRate;
 	/** The settlement minimum air pressure requirement. */
-	public static double minimum_air_pressure;
+	public static double minimumAirPressure;
 	/** The settlement life support requirements. */
-	public static double[][] life_support_value = new double[2][7];
+	public static double[][] lifeSupportValues = new double[2][7];
 	
 	/** The flag for checking if the simulation has just started. */
 	private boolean justLoaded = true;
@@ -266,7 +267,9 @@ public class Settlement extends Structure implements Temporal,
 
 	/** The settlement template name. */
 	private String template;
-
+	/** The settlement code. */
+	private String settlementCode;
+	
 	/** The radiation status instance that capture if the settlement has been exposed to a radiation event. */
 	private RadiationStatus exposed = RadiationStatus.calculateChance(0D);
 	/** The settlement's ReportingAuthority instance. */
@@ -350,9 +353,9 @@ public class Settlement extends Structure implements Temporal,
 	private static TerrainElevation terrainElevation;
 	
 	static {
-		water_consumption_rate = personConfig.getWaterConsumptionRate();
-		minimum_air_pressure = personConfig.getMinAirPressure();
-		life_support_value = settlementConfig.getLifeSupportRequirements();
+		waterConsumptionRate = personConfig.getWaterConsumptionRate();
+		minimumAirPressure = personConfig.getMinAirPressure();
+		lifeSupportValues = settlementConfig.getLifeSupportRequirements();
 	}
 
 	/**
@@ -376,9 +379,12 @@ public class Settlement extends Structure implements Temporal,
 		// Use Structure constructor.
 		super(name, location);
 
+		this.settlementCode = createCode(name);
 		this.templateID = id;
 		this.location = location;
 
+		logger.info(name + "(" + settlementCode + ")" + "  templateID: " + templateID + " " );
+		
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
@@ -419,15 +425,13 @@ public class Settlement extends Structure implements Temporal,
 		// Use Structure constructor
 		super(name, location);
 
-		this.template = template;
-		this.location = location;
+		this.settlementCode = createCode(name);
 		this.templateID = id;
+		this.location = location;
+		this.template = template;
 		this.initialNumOfRobots = initialNumOfRobots;
 		this.initialPopulation = populationNumber;
-
-		// Determine the reporting authority
 		this.sponsor = sponsor;
-		preferences.putAll(sponsor.getPreferences());
 
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
@@ -437,6 +441,10 @@ public class Settlement extends Structure implements Temporal,
 		robotsWithin = new UnitSet<>();
 		allowTradeMissionSettlements = new HashMap<>();
 		
+		logger.info(name + " (" + settlementCode + ")" + "  templateID: " + templateID + " " );
+		
+		preferences.putAll(sponsor.getPreferences());
+
 		// Call weather to add this location
 		weather.addLocation(location);
 	}
@@ -565,6 +573,35 @@ public class Settlement extends Structure implements Temporal,
 
 	}
 
+	/**
+	 * Gets the 2-letter settlement code.
+	 * 
+	 * @return
+	 */
+	public synchronized String getSettlementCode() {
+		return settlementCode;
+	}
+	
+	public synchronized String createCode(String name) {
+		boolean duplicate = false;
+		String code = "";
+		
+		do {
+			code = Conversion.getTwoLetterInitial(name);
+			
+			Collection<Settlement> settlements = unitManager.getSettlements();
+			for (Settlement s: settlements) {
+				String c = s.getSettlementCode();
+				if (c.equalsIgnoreCase(code)) {
+					duplicate = true;
+				}
+			}
+		} while (duplicate);
+		
+		return code;
+	}
+	
+	
 	/**
 	 * Gets the terrain elevation.
 	 * 
@@ -762,14 +799,14 @@ public class Settlement extends Structure implements Temporal,
 
 			// Check against indoor air pressure
 			double p = getAirPressure();
-			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p < Settlement.minimum_air_pressure) {
+			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p < Settlement.minimumAirPressure) {
 				logger.warning(this, "Out-of-range overall air pressure at " + Math.round(p * 10D) / 10D + " kPa detected.");
 				return false;
 			}
 
 			double t = currentTemperature;
-			if (t < life_support_value[0][4] - SAFE_TEMPERATURE_RANGE
-					|| t > life_support_value[1][4] + SAFE_TEMPERATURE_RANGE) {
+			if (t < lifeSupportValues[0][4] - SAFE_TEMPERATURE_RANGE
+					|| t > lifeSupportValues[1][4] + SAFE_TEMPERATURE_RANGE) {
 				logger.warning(this, "Out-of-range overall temperature at "
 						   + Math.round(t * 10D) / 10D
 						   + " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.");
@@ -2454,7 +2491,7 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	private void computeWaterRationLevel() {
 		double storedWater = Math.max(1, getAmountResourceStored(WATER_ID) - getNumCitizens() * 500.0);
-		double requiredDrinkingWaterOrbit = water_consumption_rate * getNumCitizens()
+		double requiredDrinkingWaterOrbit = waterConsumptionRate * getNumCitizens()
 				* MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
 		double ratio = requiredDrinkingWaterOrbit / storedWater;

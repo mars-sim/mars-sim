@@ -58,8 +58,7 @@ public interface Mission extends Entity, Serializable {
     void setName(String name);
 
 	/**
-	 * Returns the current mission location. 
-	 * For a Vehicle Mission used the vehicles position directly.
+	 * Returns the current mission location. For a vehicle mission, return its vehicle's position.
 	 */
 	Coordinates getCurrentMissionLocation();
 

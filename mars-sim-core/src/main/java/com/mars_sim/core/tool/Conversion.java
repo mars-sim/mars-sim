@@ -125,12 +125,12 @@ public class Conversion {
 	}
 
 	/**
-	 * Obtains the initials of each word in the input phase
+	 * Obtains the one-letter initial of each word in the input phase.
 	 * 
 	 * @param input The input phase
 	 * @return The initials
 	 */
-	public static String getInitials(String input) {
+	public static String getOneLetterInitial(String input) {
 		if (input != null) {
 			StringBuilder titleCase = new StringBuilder();
 			boolean nextTitleCase = true;
@@ -150,6 +150,52 @@ public class Conversion {
 			return null;
 	}
 
+	/**
+	 * Obtains the two-letter initial of the input phase.
+	 * 
+	 * @param input The input phase
+	 * @return The initials
+	 */
+	public static String getTwoLetterInitial(String input) {
+		if (input != null) {
+			StringBuilder titleCase = new StringBuilder();
+			boolean hasSpace = input.contains(" ");
+			
+			if (hasSpace) {
+				String[] inputs = input.split(" "); 
+				titleCase.append(inputs[0].charAt(0));
+				titleCase.append(inputs[1].charAt(0));
+			}
+			else {
+				boolean firstInitial = true;
+				boolean secondInitial = true;
+			
+				for (char c : input.toCharArray()) {
+					if (Character.isSpaceChar(c) || c == '(') {
+						if (titleCase.toString().length() == 2) 
+							return titleCase.toString();
+						firstInitial = true;
+					} else if (firstInitial) {
+						if (titleCase.toString().length() == 2) 
+							return titleCase.toString();
+						c = Character.toTitleCase(c);
+						titleCase.append(c);
+						firstInitial = false;
+					} else if (secondInitial) {
+						if (titleCase.toString().length() == 2) 
+							return titleCase.toString();
+						c = Character.toTitleCase(c);
+						titleCase.append(c);
+						secondInitial = false;
+					}
+				}
+			}
+
+			return titleCase.toString();
+		} else
+			return null;
+	}
+	
 	/**
 	 * Is this character an integer ?
 	 * 

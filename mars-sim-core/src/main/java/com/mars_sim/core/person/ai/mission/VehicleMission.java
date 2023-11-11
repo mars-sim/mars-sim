@@ -85,7 +85,7 @@ public interface VehicleMission extends Mission {
     List<NavPoint> getNavpoints();
 
     /**
-     * Something has gone wrong so request help
+     * Requests help as things have gone wrong.
      */
     void getHelp(MissionStatus status);
 

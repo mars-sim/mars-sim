@@ -179,7 +179,7 @@ public class ConstructionMission extends AbstractMission
 		// e.g. Pouring the foundation, Building the frame, or Constructing the building
 
 		// Create mission designation
-		createFullDesignation();
+		createDesignationString();
 		// Call missionManager to add this mission
 	    missionManager.addMission(this);
 	}

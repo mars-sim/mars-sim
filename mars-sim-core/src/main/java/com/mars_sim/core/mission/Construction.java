@@ -12,7 +12,7 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.vehicle.GroundVehicle;
 
 /**
- * A mission with the behaviour of doing Construction that uses GroundVehicles
+ * A mission with the behaviour of doing Construction that uses GroundVehicles.
  */
 public interface Construction extends Mission {
 

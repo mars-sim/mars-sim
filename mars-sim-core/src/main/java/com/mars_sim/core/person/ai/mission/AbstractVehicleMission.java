@@ -215,7 +215,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 		else {
 			// Set initial mission phase.
-			createFullDesignation();
+			createDesignationString();
 			startLoadingPhase();
 		}
 

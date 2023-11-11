@@ -118,37 +118,36 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private boolean done = false;
 	private boolean aborted = false;
 
-
-	/** The Name of this mission. */
-	private String missionName;
 	/** Unique identifier  */
 	protected int identifier;
-	/** The full mission designation. */
-	private String fullMissionDesignation = "";
+	
+	/** The Name of this mission. */
+	private String missionName;
+	/** The sol mission identifier string */
+	private String missionString;
+	/** The mission designation string. */
+	private String missionDesignationString = "";
+	/** The description of the current phase of operation. */
+	private String phaseDescription;
 	
 	/** The mission type enum. */
 	private MissionType missionType;
 
-	/** A list of mission status. */
-	private Set<MissionStatus> missionStatus;
 	/** The current phase of the mission. */
 	private MissionPhase phase;
-	/** The description of the current phase of operation. */
-	private String phaseDescription;
 	/** Time the phase started */
 	private MarsTime phaseStartTime;
 	/** Log of mission activity	 */
 	private MissionLog log = new MissionLog();
-
 	/** The name of the starting member */
 	private Worker startingMember;
 	/** The mission plan. */
 	private MissionPlanning plan;
 
-	/** 
-	 * A set of those who sign up for this mission. 
-	 * After the mission is over. It will be retained and will not be deleted.
-	 */
+	/** A list of mission status. */
+	private Set<MissionStatus> missionStatus;
+	
+	/** A set of those who sign up for this mission. After the mission is over, it will still be retained and will not be deleted. */
 	private Set<Worker> signUp;
 
 	/** 
@@ -179,9 +178,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 	protected AbstractMission(MissionType missionType, Worker startingMember) {
 		// Initialize data members
 
-		this.identifier = missionManager.getNextIdentifier();
+		this.missionString = missionManager.getMissionString();
+		this.identifier = missionManager.getIdentifier();
 		
-		this.missionName = missionType.getName() + " #" + identifier;
+		this.missionName = missionType.getName() + " " + missionString;
 		this.missionType = missionType;
 		this.startingMember = startingMember;
 
@@ -1234,7 +1234,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 				break;
 			
 			case APPROVED:
-				createFullDesignation();
+				createDesignationString();
 
 				logger.log(p, Level.INFO, 0, "Mission plan for " + getName() + " was approved.");
 
@@ -1252,7 +1252,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Start reviewing this Mission
+	 * Starts reviewing this mission.
 	 */
 	protected void startReview() {
 		setPhase(REVIEWING, null);
@@ -1275,8 +1275,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	@Override
 	public Person getStartingPerson() {
-		if (startingMember.getUnitType() == UnitType.PERSON)
-			return (Person)startingMember;
+		if (startingMember instanceof Person person)
+			return person;
 		else
 			return null;
 	}
@@ -1292,28 +1292,28 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Mission designation code. Only defined once mission has started.
+	 * Gets the mission designation string. Only defined once mission has started.
+	 * 
+	 * @return
 	 */
 	@Override
 	public String getFullMissionDesignation() {
-		return fullMissionDesignation;
+		return missionDesignationString;
 	}
 
 	/**
 	 * Creates the mission designation string for this mission.
-	 *
-	 * @return
 	 */
-	protected void createFullDesignation() {
+	protected void createDesignationString() {
 		StringBuilder buffer = new StringBuilder();
-		buffer.append(Conversion.getInitials(missionType.getName().replace("with", "").trim()))
-			  .append(" ")
-			  .append(Conversion.getInitials(getAssociatedSettlement().getName()))
+		buffer.append(Conversion.getOneLetterInitial(missionType.getName().replace("with", "").trim()))
+			  .append("-")
+			  .append(getAssociatedSettlement().getSettlementCode())
 			  .append('-')
-			  .append(String.format("%03d", identifier));
-		fullMissionDesignation = buffer.toString();
+			  .append(missionString);
+		missionDesignationString = buffer.toString();
 
-		fireMissionUpdate(MissionEventType.DESIGNATION_EVENT, fullMissionDesignation);
+		fireMissionUpdate(MissionEventType.DESIGNATION_EVENT, missionDesignationString);
 	}
 
 	@Override
@@ -1361,7 +1361,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		AbstractMission m = (AbstractMission) obj;
-		return this.identifier == m.identifier;
+		return this.missionString == m.missionString;
 	}
 
 	/**

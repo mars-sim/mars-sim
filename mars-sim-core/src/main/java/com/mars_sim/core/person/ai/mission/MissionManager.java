@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.authority.PreferenceCategory;
 import com.mars_sim.core.authority.PreferenceKey;
@@ -57,16 +58,21 @@ public class MissionManager implements Serializable {
 
 	}
 
-	/** default serial id. */
+	/** default serial identifier. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(MissionManager.class.getName());
 
-	/** static mission identifier */
-	private int missionIdentifer;
+	/** The mission identifier */
+	private int identifier;
+	/** The sol cache */	
+	private int solCache = 1;
 
-	/** Mission listeners. */
+	/** The mission identifier string */
+	private String missionString;
+	
+	/** The mission listeners. */
 	private transient List<MissionManagerListener> listeners;
 
 	/** The currently on-going missions in the simulation. */
@@ -78,24 +84,41 @@ public class MissionManager implements Serializable {
 	 * Constructor.
 	 */
 	public MissionManager() {
-
 		// Initialize data members
-		missionIdentifer = 1;
+		identifier = 1;
 		onGoingMissions = new CopyOnWriteArrayList<>();
 		historicalMissions = new SolMetricDataLogger<>(30);
 		listeners = null;
 	}
 
 	/**
-	 * Must be synchronised to prevent duplicate ids being assigned via different
-	 * threads.
+	 * Gets the mission string. Must be synchronised to prevent duplicate identifiers 
+	 * being assigned via different threads.
 	 *
 	 * @return
 	 */
-	synchronized int getNextIdentifier() {
-		return missionIdentifer++;
+	synchronized String getMissionString() {
+		int missionSol = Simulation.instance().getMasterClock().getMarsTime().getMissionSol();
+		int id = 1;
+		if (solCache != missionSol) {
+			solCache = missionSol;
+			identifier = 1;
+		}
+		else
+			id = identifier++;
+		missionString = missionSol + "-" + String.format("%03d", id);
+		return missionString;
 	}
 
+	/**
+	 * Gets the identifier.
+	 *
+	 * @return
+	 */
+	public int getIdentifier() {
+		return identifier;
+	}
+	
 	/**
 	 * Adds a listener.
 	 *
@@ -384,6 +407,11 @@ public class MissionManager implements Serializable {
 		}
 	}
 
+	/**
+	 * Gets the historical mission maps.
+	 * 
+	 * @return
+	 */
 	public Map<Integer, Map<String, Double>> getHistoricalMissions() {
 		return historicalMissions.getHistory();
 	}
@@ -408,6 +436,8 @@ public class MissionManager implements Serializable {
 			listeners.clear();
 			listeners = null;
 		}
+		if (historicalMissions != null) {
+			historicalMissions = null;
+		}
 	}
-
 }
