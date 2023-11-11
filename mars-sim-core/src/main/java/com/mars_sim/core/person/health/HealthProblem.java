@@ -390,16 +390,16 @@ public class HealthProblem implements Serializable {
 
 					if (nextPhase == null) {
 						if (type.toString().equalsIgnoreCase("suffocation")) {
-							logger.info(sufferer, " was suffocated for too long and was dead.");
+							logger.info(sufferer, "Suffocated for too long and was dead.");
 						}
 						else {
-							logger.info(sufferer, " suffered from '" 
+							logger.info(sufferer, "Suffered from '" 
 									+ type.toString() + "' too long and was dead.");
 						}
 						setState(DEAD);
 						condition.recordDead(this, false, "My suffering is over. Good bye!");
 					} else {
-						logger.info(sufferer, " suffered from '" 
+						logger.info(sufferer, "Suffered from '" 
 								+ type.toString() + "', which was just degraded to " + nextPhase + ".");
 						result = nextPhase;
 					}

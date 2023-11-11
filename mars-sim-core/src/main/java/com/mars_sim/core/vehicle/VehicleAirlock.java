@@ -129,13 +129,19 @@ extends Airlock {
     }
 
     /**
-     * Steps back into the airlock of a vehicle
+     * Steps inside the vehicle.
      *
      * @param person
      */
     public boolean stepInside(Person person) {
     	boolean successful = false;
-    	if (person.isOutside()) {
+    	
+    	if (person.isInVehicle()) {
+    		// The person is already inside
+    		successful = true;
+    	}
+    	
+    	else if (person.isOutside()) {
             // 1.1. Transfer a person from the surface of Mars to the vehicle
     		successful = person.transfer(vehicle);
 

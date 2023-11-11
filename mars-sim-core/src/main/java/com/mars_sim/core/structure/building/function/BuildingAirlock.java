@@ -147,7 +147,12 @@ public class BuildingAirlock extends Airlock {
     public boolean stepInside(Person person) {
     	boolean successful = false;
 
-        if (person.isOutside()) {
+    	if (person.isInSettlement()) {
+    		// The person is already inside
+    		successful = true;
+    	}
+    	
+    	else if (person.isOutside()) {
 
 			Settlement settlement = building.getSettlement();
 
