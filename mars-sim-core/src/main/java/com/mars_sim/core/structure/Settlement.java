@@ -582,6 +582,12 @@ public class Settlement extends Structure implements Temporal,
 		return settlementCode;
 	}
 	
+	/**
+	 * Creates a code name for this settlement.
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public synchronized String createCode(String name) {
 		boolean duplicate = false;
 		String code = "";
@@ -589,7 +595,9 @@ public class Settlement extends Structure implements Temporal,
 		do {
 			code = Conversion.getTwoLetterInitial(name);
 			
-			Collection<Settlement> settlements = unitManager.getSettlements();
+			List<Settlement> settlements = new ArrayList<>(unitManager.getSettlements());
+			if (settlements.isEmpty())
+				break;
 			for (Settlement s: settlements) {
 				String c = s.getSettlementCode();
 				if (c.equalsIgnoreCase(code)) {
