@@ -45,7 +45,7 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.mission.create.CreateMissionWizard;
 import com.mars_sim.ui.swing.tool.mission.edit.EditMissionDialog;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
-import com.mars_sim.ui.swing.toolwindow.ToolWindow;
+import com.mars_sim.ui.swing.tool_window.ToolWindow;
 
 /**
  * Window for the mission tool.

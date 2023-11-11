@@ -81,7 +81,7 @@ import com.mars_sim.core.astroarts.TimeSpan;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.toolwindow.ToolWindow;
+import com.mars_sim.ui.swing.tool_window.ToolWindow;
 
 
 /**

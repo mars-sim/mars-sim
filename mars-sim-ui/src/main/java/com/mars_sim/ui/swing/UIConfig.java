@@ -34,7 +34,7 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import com.mars_sim.core.SimulationFiles;
-import com.mars_sim.ui.swing.toolwindow.ToolWindow;
+import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
 
 import com.google.common.base.Charsets;

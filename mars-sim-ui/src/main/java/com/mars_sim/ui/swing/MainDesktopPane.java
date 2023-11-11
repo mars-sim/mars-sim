@@ -63,7 +63,7 @@ import com.mars_sim.ui.swing.tool.science.ScienceWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.TimeWindow;
-import com.mars_sim.ui.swing.toolwindow.ToolWindow;
+import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
 import com.mars_sim.ui.swing.unit_window.UnitWindowFactory;

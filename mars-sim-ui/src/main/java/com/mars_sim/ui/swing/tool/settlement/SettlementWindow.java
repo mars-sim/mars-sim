@@ -33,7 +33,7 @@ import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.SpotlightLayerUI;
-import com.mars_sim.ui.swing.toolwindow.ToolWindow;
+import com.mars_sim.ui.swing.tool_window.ToolWindow;
 
 /**
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.

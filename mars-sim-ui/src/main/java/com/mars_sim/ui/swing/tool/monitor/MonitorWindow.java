@@ -43,7 +43,7 @@ import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
-import com.mars_sim.ui.swing.toolwindow.ToolWindow;
+import com.mars_sim.ui.swing.tool_window.ToolWindow;
 
 /**
  * The MonitorWindow is a tool window that displays a selection of tables each

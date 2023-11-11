@@ -94,7 +94,7 @@ import com.mars_sim.ui.swing.tool.map.ShadingMapLayer;
 import com.mars_sim.ui.swing.tool.map.UnitIconMapLayer;
 import com.mars_sim.ui.swing.tool.map.UnitLabelMapLayer;
 import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
-import com.mars_sim.ui.swing.toolwindow.ToolWindow;
+import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 

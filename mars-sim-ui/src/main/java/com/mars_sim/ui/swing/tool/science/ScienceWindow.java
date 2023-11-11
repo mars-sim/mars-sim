@@ -18,7 +18,7 @@ import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.toolwindow.ToolWindow;
+import com.mars_sim.ui.swing.tool_window.ToolWindow;
 
 /**
  * Window for the science tool.
