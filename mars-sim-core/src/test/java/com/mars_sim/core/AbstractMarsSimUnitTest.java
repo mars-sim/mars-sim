@@ -130,7 +130,11 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	}
 
 	protected Settlement buildSettlement() {
-		Settlement settlement = new MockSettlement();
+		return buildSettlement(MockSettlement.DEFAULT_NAME);
+	}
+
+	protected Settlement buildSettlement(String name) {
+		Settlement settlement = new MockSettlement(name);
 		unitManager.addUnit(settlement);
 
 		return settlement;
