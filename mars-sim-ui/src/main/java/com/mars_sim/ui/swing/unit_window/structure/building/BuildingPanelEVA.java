@@ -1,7 +1,7 @@
-/*
+/**
  * Mars Simulation Project
  * BuildingPanelEVA.java
- * @date 2022-09-12
+ * @date 2023-11-11
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.unit_window.structure.building;
@@ -41,15 +41,16 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	private static final String UNLOCKED = "Unlocked";
 	private static final String LOCKED = "Locked";
 
+	private boolean activationCache;
+	private boolean transitionCache;
+	
 	private int innerDoorCache;
 	private int outerDoorCache;
 	private int occupiedCache;
 	private int emptyCache;
 	
 	private double cycleTimeCache;
-	private boolean activationCache;
-	private boolean transitionCache;
-	
+
 	private String operatorCache = "";
 	private String airlockStateCache = "";
 	private String innerDoorStateCache = "";
@@ -182,7 +183,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		content.add(listPanel, BorderLayout.CENTER);
 		
 		// Create outside list panel
-		JPanel outsidePanel = new JPanel();
+		JPanel outsidePanel = new JPanel(new BorderLayout());
 		outsidePanel.setPreferredSize(new Dimension(120, -1));
 		outsidePanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.outer")));
 		listPanel.add(outsidePanel);
@@ -197,7 +198,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		outsidePanel.add(outsideListPanel);
 		
 		// Create occupant panel
-		JPanel occupantPanel = new JPanel();
+		JPanel occupantPanel = new JPanel(new BorderLayout());
 		occupantPanel.setPreferredSize(new Dimension(120, -1));
 		occupantPanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.occupants")));
 		listPanel.add(occupantPanel);
@@ -212,7 +213,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		occupantPanel.add(occupantListPanel);
 
 		// Create outside wait panel
-		JPanel insidePanel = new JPanel();
+		JPanel insidePanel = new JPanel(new BorderLayout());
 		insidePanel.setPreferredSize(new Dimension(120, -1));
 		insidePanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.inner")));
 		listPanel.add(insidePanel);
@@ -227,7 +228,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		insidePanel.add(insideListPanel);
 		
 		// Create reservation panel
-		JPanel reservationPanel = new JPanel();
+		JPanel reservationPanel = new JPanel(new BorderLayout());
 		reservationPanel.setPreferredSize(new Dimension(120, -1));
 		addBorder(reservationPanel, Msg.getString("BuildingPanelEVA.titledB.Reserved"));
 		listPanel.add(reservationPanel);

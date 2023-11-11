@@ -1,21 +1,27 @@
-/*
+/**
  * Mars Simulation Project
  * TabPanelEVA.java
- * @date 2022-09-05
+ * @date 2023-11-11
  * @author Manny Kung
  */
 
 package com.mars_sim.ui.swing.unit_window.vehicle;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.util.Collection;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Airlock.AirlockMode;
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.VehicleAirlock;
 import com.mars_sim.tools.Msg;
@@ -47,13 +53,13 @@ public class TabPanelEVA extends TabPanel {
 	
 	private double cycleTimeCache;
 	
-	private AirlockMode airlockModeCache;
-	
 	private String operatorCache = "";
 	private String airlockStateCache = "";
 	private String innerDoorStateCache = "";
 	private String outerDoorStateCache = "";
 
+	private AirlockMode airlockModeCache;
+	
 	private JLabel innerDoorLabel;
 	private JLabel outerDoorLabel;
 	private JLabel occupiedLabel;
@@ -67,13 +73,15 @@ public class TabPanelEVA extends TabPanel {
 	private JLabel outerDoorStateLabel;
 	private JLabel airlockModeLabel;
 	
-	private	UnitListPanel<Person> occupants;
-
+	private	UnitListPanel<Person> occupantListPanel;
+	private UnitListPanel<Person> outsideListPanel;
+	private UnitListPanel<Person> insideListPanel;
+	
 	private VehicleAirlock vehicleAirlock;
-
 
     /**
      * Constructor.
+     * 
      * @param vehicle the vehicle.
      * @param desktop The main desktop.
      */
@@ -96,13 +104,15 @@ public class TabPanelEVA extends TabPanel {
 	 */
     @Override
     protected void buildUI(JPanel content) {
+		MainDesktopPane desktop = getDesktop();
+		
     	if (vehicleAirlock == null) {
     		return;
     	}
 
         // Create top panel
         JPanel topPanel = new JPanel(new BorderLayout());
-        content.add(topPanel, BorderLayout.CENTER);
+        content.add(topPanel, BorderLayout.NORTH);
 
 		AttributePanel labelGrid = new AttributePanel(6, 2);
 		topPanel.add(labelGrid, BorderLayout.NORTH);
@@ -165,19 +175,56 @@ public class TabPanelEVA extends TabPanel {
 		operatorLabel = labelGrid.addTextField(Msg.getString("TabPanelEVA.operator"),
 				vehicleAirlock.getOperatorName(), null);
 
+		// Create listPanel
+		JPanel listPanel = new JPanel(new GridLayout(1, 2));
+		Border margin = new EmptyBorder(10, 10, 10, 10);
+		listPanel.setBorder(margin);
+		listPanel.setPreferredSize(new Dimension(440, -1));
+		content.add(listPanel, BorderLayout.CENTER);
+		
+		// Create outside list panel
+		JPanel outsidePanel = new JPanel(new BorderLayout());
+		outsidePanel.setPreferredSize(new Dimension(120, -1));
+		outsidePanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.outer")));
+		listPanel.add(outsidePanel);
+
+		// Create outsideListPanel 
+		outsideListPanel = new UnitListPanel<>(desktop, new Dimension(100, 100)) {
+			@Override
+			protected Collection<Person> getData() {
+				return getUnitsFromIds(vehicleAirlock.getAwaitingOuterDoor());
+			}
+		};
+		outsidePanel.add(outsideListPanel);
+		
+		// Create outside wait panel
+		JPanel insidePanel = new JPanel(new BorderLayout());
+		insidePanel.setPreferredSize(new Dimension(120, -1));
+		insidePanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.inner")));
+		listPanel.add(insidePanel);
+
+		// Create insideListPanel 
+		insideListPanel = new UnitListPanel<>(desktop, new Dimension(100, 100)) {
+			@Override
+			protected Collection<Person> getData() {
+				return getUnitsFromIds(vehicleAirlock.getAwaitingInnerDoor());
+			}
+		};
+		insidePanel.add(insideListPanel);
+		
 		// Create occupant panel
-		JPanel occupantPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel occupantPanel = new JPanel(new BorderLayout());
 		addBorder(occupantPanel, Msg.getString("TabPanelEVA.titledB.occupants"));
 		content.add(occupantPanel, BorderLayout.SOUTH);
 		
         // Create occupant list
-        occupants = new UnitListPanel<>(getDesktop()) {
+        occupantListPanel = new UnitListPanel<>(desktop, new Dimension(100, 100)) {
 			@Override
 			protected Collection<Person> getData() {
 				return getUnitsFromIds(vehicleAirlock.getAllInsideOccupants());
 			}
         };
-        occupantPanel.add(occupants);
+        occupantPanel.add(occupantListPanel);
     }
 
     @Override
@@ -229,14 +276,14 @@ public class TabPanelEVA extends TabPanel {
 		boolean activated = vehicleAirlock.isActivated();
 		if (activationCache != activated) {
 			activationCache = activated;
-			activationLabel.setText(Boolean.toString(activated));
+			activationLabel.setText(Conversion.capitalize0(Boolean.toString(activated)));
 		}
 
 		// Update activationLabel
 		boolean transition = vehicleAirlock.isTransitioning();
 		if (transitionCache != transition) {
 			transitionCache = transition;
-			transitionLabel.setText(Boolean.toString(transition));
+			transitionLabel.setText(Conversion.capitalize0(Boolean.toString(transition)));
 		}
 		
 		// Update airlockModeLabel
@@ -281,7 +328,7 @@ public class TabPanelEVA extends TabPanel {
 
 		
         // Update occupant list
-        occupants.update();
+        occupantListPanel.update();
     }
 
     @Override
@@ -294,7 +341,7 @@ public class TabPanelEVA extends TabPanel {
         airlockStateLabel = null;
         cycleTimeLabel = null;
 
-        occupants = null;
+        occupantListPanel = null;
 
         vehicleAirlock = null;
     }

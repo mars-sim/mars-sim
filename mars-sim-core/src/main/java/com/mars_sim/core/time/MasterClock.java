@@ -481,7 +481,7 @@ public class MasterClock implements Serializable {
 		// on actualTR by adjusting the sleepTime. May need to adjust the pulse width as well.
 		
 		// Get the desired millisols per second
-		// Note: make deltaTR affect the sleepTime
+		// Note: make deltaTR (= actualTR - desiredTR) affect the sleepTime
 		double desiredMsolPerSecond = (actualTR + desiredTR - deltaTR * 3) / 2 / MarsTime.SECONDS_PER_MILLISOL;
 
 		// Get the desired number of pulses
