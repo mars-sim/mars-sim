@@ -290,6 +290,7 @@ public class CommanderWindow extends ToolWindow {
 
 		buildingBox = new JComboBox<>(model);
 		buildingBox.setToolTipText("Select a Building");
+	
 		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
 		listRenderer.setHorizontalAlignment(SwingConstants.CENTER); // center-aligned items
 		buildingBox.setRenderer(listRenderer);
@@ -534,12 +535,10 @@ public class CommanderWindow extends ToolWindow {
 		panel.add(topPanel, BorderLayout.NORTH);
 
 		JPanel buildingPanel = new JPanel(new BorderLayout(20, 20));
+		buildingPanel.setBorder(BorderFactory.createTitledBorder(" Select a Farm : "));	
 		buildingPanel.setToolTipText("Choose a farm from the building combobox in this settlement");
 		topPanel.add(buildingPanel, BorderLayout.WEST);
 		
-		JLabel buildingLabel = new JLabel(" Select a Farm : ");		
-		buildingPanel.add(buildingLabel, BorderLayout.NORTH);
-
 		greenhouseBldgs = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
 		
 		constructBuildingBox(settlement, greenhouseBldgs);
@@ -547,13 +546,12 @@ public class CommanderWindow extends ToolWindow {
 
 		// Create spinner panel
 		JPanel spinnerPanel = new JPanel(new BorderLayout(20, 20));
+		spinnerPanel.setBorder(BorderFactory.createTitledBorder(" Area Per Crop (in SM) : "));
+		
 		topPanel.add(spinnerPanel, BorderLayout.CENTER);
 		
-		JLabel areaLabel = new JLabel(" Area Per Crop (in SM) : ");		
-		spinnerPanel.add(areaLabel, BorderLayout.NORTH);
-
 		SpinnerModel spinnerModel = new SpinnerNumberModel(1, 1, 50, 1);
-		
+	
 		// Go to that selected settlement
 		Building bldg = (Building)buildingBox.getSelectedItem();
 		Farming farm = null;

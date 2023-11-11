@@ -33,7 +33,7 @@ public class CircadianClock implements Serializable {
 	private static int SLEEP_MAP_RESOLUTION = 20;
 
 	/** Sleep Habit maximum value. */
-	private static int SLEEP_MAX_FACTOR = 30;
+	private static int SLEEP_MAX_FACTOR = 100;
 
 	private boolean awake = true;
 
@@ -243,75 +243,87 @@ public class CircadianClock implements Serializable {
 		int currentValue = 0;
 
 		int d = msols - SLEEP_MAP_RESOLUTION;
-		int d2 = msols - 2 * SLEEP_MAP_RESOLUTION;
+		int d1 = msols - 2 * SLEEP_MAP_RESOLUTION;
+		int d2 = msols - 3 * SLEEP_MAP_RESOLUTION;
 
 		if (d <= 0)
-			d = 1000 + msols - SLEEP_MAP_RESOLUTION;
+			d = 1000 + d;
 
+		if (d1 <= 0)
+			d1 = 1000 + d1;
+		
 		if (d2 <= 0)
-			d2 = 1000 + msols - 2 * SLEEP_MAP_RESOLUTION;
+			d2 = 1000 + d2;
 
 		int a = msols + SLEEP_MAP_RESOLUTION;
-		int a2 = msols + 2 * SLEEP_MAP_RESOLUTION;
+		int a1 = msols + 2 * SLEEP_MAP_RESOLUTION;
+		int a2 = msols + 3 * SLEEP_MAP_RESOLUTION;
 
 		if (a > 1000)
-			a = msols + SLEEP_MAP_RESOLUTION - 1000;
+			a = a - 1000;
 
+		if (a1 > 1000)
+			a1 = a1 - 1000;
+		
 		if (a2 > 1000)
-			a2 = msols + 2 * SLEEP_MAP_RESOLUTION - 1000;
+			a2 = a2 - 1000;
 
 		if (sleepCycleMap.containsKey(msols)) {
 			currentValue = sleepCycleMap.get(msols);
 
 			if (type) {
-				// Increase the central weight value by 30%
-				sleepCycleMap.put(msols, (int) (currentValue * .7 + SLEEP_MAX_FACTOR * .3));
+				// Increase the central weight value by 50%
+				sleepCycleMap.put(msols, (int) (currentValue * .5 + SLEEP_MAX_FACTOR * .5));
 
 				int c2 = (int) (currentValue * .95 + SLEEP_MAX_FACTOR * .075);
-				int c = (int) (currentValue * .85 + SLEEP_MAX_FACTOR * .15);
+				int c1 = (int) (currentValue * .85 + SLEEP_MAX_FACTOR * .15);
+				int c = (int) (currentValue * .75 + SLEEP_MAX_FACTOR * .35);
 
 				sleepCycleMap.put(d2, c2);
+				sleepCycleMap.put(d1, c1);
 				sleepCycleMap.put(d, c);
 				sleepCycleMap.put(a, c);
+				sleepCycleMap.put(a1, c1);
 				sleepCycleMap.put(a2, c2);
 
 			} else {
 
-				// Reduce the central weight value by 10%
-				sleepCycleMap.put(msols, (int) (currentValue / 1.1));
+				// Reduce the central weight value by 20%
+				sleepCycleMap.put(msols, (int) (currentValue / 1.2));
 
 				int b = (int) (currentValue / 1.05);
-				int b2 = (int) (currentValue / 1.025);
+				int b1 = (int) (currentValue / 1.025);
+				int b2 = (int) (currentValue / 1.0125);
 
 				sleepCycleMap.put(d2, b2);
+				sleepCycleMap.put(d1, b1);
 				sleepCycleMap.put(d, b);
 				sleepCycleMap.put(a, b);
+				sleepCycleMap.put(a1, b1);
 				sleepCycleMap.put(a2, b2);
-
 			}
 		} else {
-			// For the first time, create the central weight value with 10% of MAX_WEIGHT
-			sleepCycleMap.put(msols, (int) (SLEEP_MAX_FACTOR * .1));
+			// For the first time, create the central weight value with 20% of MAX_WEIGHT
+			sleepCycleMap.put(msols, (int) (SLEEP_MAX_FACTOR * .2));
 
 			int e = (int) (SLEEP_MAX_FACTOR * .05);
-			int e2 = (int) (SLEEP_MAX_FACTOR * .025);
+			int e1 = (int) (SLEEP_MAX_FACTOR * .025);
+			int e2 = (int) (SLEEP_MAX_FACTOR * .0125);
 
 			sleepCycleMap.put(d2, e2);
+			sleepCycleMap.put(d1, e1);
 			sleepCycleMap.put(d, e);
 			sleepCycleMap.put(a, e);
+			sleepCycleMap.put(a1, e1);
 			sleepCycleMap.put(a2, e2);
 		}
-
-		// System.out.println(person + "'s sleepHabitMap : " + sleepHabitMap);
 	}
 
 	/**
-	 * Scales down the weight of the Sleep Habit Map
+	 * Scales down the weight of the Sleep Habit Map.
 	 */
 	public void inflateSleepHabit() {
-		// Iterator<Integer> i = sleepCycleMap.keySet().iterator();
-		// while (i.hasNext()) {
-		for (int key : sleepCycleMap.keySet()) {// int key = i.next();
+		for (int key : sleepCycleMap.keySet()) {
 			int value = sleepCycleMap.get(key);
 
 			if (value > SLEEP_MAX_FACTOR) {
@@ -321,7 +333,7 @@ public class CircadianClock implements Serializable {
 				while (j.hasNext()) {
 					int key1 = j.next();
 					int value1 = sleepCycleMap.get(key1);
-					value1 = (int) (value1 / SLEEP_INFLATION / SLEEP_INFLATION);
+					value1 = (int) (value1 / SLEEP_INFLATION);
 					sleepCycleMap.put(key1, value1);
 				}
 			}

@@ -486,7 +486,7 @@ public class MasterClock implements Serializable {
 
 		// Get the desired number of pulses
 		double desiredPulses = desiredMsolPerSecond / 
-				(0.1 * optMilliSolPerPulse + 0.8 * nextPulseTime + 0.1 * referencePulse);
+				(0.3 * optMilliSolPerPulse + 0.6 * nextPulseTime + 0.1 * referencePulse);
 		
 		// Limit the desired pulses to at least 1
 		desiredPulses = Math.max(desiredPulses, 1D);
@@ -533,6 +533,9 @@ public class MasterClock implements Serializable {
 				// Reset the elapsed clock to ignore this pulse
 				logger.warning(10_000, "Elapsed real time is " + realElapsedMillisec 
 						+ " ms, longer than the max time " + MAX_ELAPSED + " ms.");
+				
+				// Adjust the optimal time pulse and get the deviation
+				optPulseDeviation = adjustPulseWidth();
 			}
 			
 			else if (realElapsedMillisec == 0.0) {
@@ -543,6 +546,9 @@ public class MasterClock implements Serializable {
 					realElapsedMillisec = (long) (nextPulseTime * MILLISECONDS_PER_MILLISOL / desiredTR);
 				// Reset the elapsed clock to ignore this pulse
 				logger.warning(10_000, "Zero elapsed real time. Resetting it back to " + realElapsedMillisec + " ms.");
+				
+				// Adjust the optimal time pulse and get the deviation
+				optPulseDeviation = adjustPulseWidth();
 			}
 			
 			else {
@@ -646,30 +652,13 @@ public class MasterClock implements Serializable {
 				double diff = actualTR - desiredTR;
 				// Decrease the optimal pulse width
 				optPulse = optPulse - diff / desiredTR / 60;
-				if (optPulse < 0) optPulse = minMilliSolPerPulse;
+				if (optPulse < minMilliSolPerPulse) optPulse = minMilliSolPerPulse;
 //				logger.config(20_000, "Setting optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0 + " based on TR deviation to " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
 			}
 			
 			///////////////////////////
 			
-//			// Note: need to limit the optPulse to a max
-//			if (optPulse / maxMilliSolPerPulse > 1.05) {
-//				double diff = optPulse - maxMilliSolPerPulse;
-//				optPulse = optPulse - diff / optPulse / 60;
-//				if (optPulse < 0) optPulse = minMilliSolPerPulse;
-////				logger.config(20_000, "Restricting optimal pulse width " + Math.round(optPulse * 10_000.0) / 10_000.0 + " from reaching the maximum of " + Math.round(maxMilliSolPerPulse * 10_000.0) / 10_000.0 + ".");
-//			}
-//			// Note: need to limit the optPulse to a min
-//			else if (optPulse / minMilliSolPerPulse < .95) {
-//				double diff = minMilliSolPerPulse - optPulse;
-//				optPulse = optPulse + diff / optPulse / 60;
-//				if (optPulse > maxMilliSolPerPulse) optPulse = maxMilliSolPerPulse;
-////				logger.config(20_000, "Restricting optimal pulse width " + Math.round(optPulse * 10_000.0) / 10_000.0 + " from reaching the minimum of " + Math.round(minMilliSolPerPulse * 10_000.0) / 10_000.0 + ".");
-//			}
-			
-			///////////////////////////
-			
-			else if (referencePulse / optPulse > 1.05) {
+			if (referencePulse / optPulse > 1.05) {
 				double diff = referencePulse - optPulse;
 				optPulse = optPulse + diff / referencePulse / 50;
 				if (optPulse > maxMilliSolPerPulse * 1.05) optPulse = maxMilliSolPerPulse * 1.05;
@@ -679,7 +668,7 @@ public class MasterClock implements Serializable {
 			else if (referencePulse / optPulse < .95) {
 				double diff = optPulse - referencePulse;
 				optPulse = optPulse - diff / referencePulse / 50;
-				if (optPulse < 0) optPulse = minMilliSolPerPulse;
+				if (optPulse < minMilliSolPerPulse) optPulse = minMilliSolPerPulse;
 //				logger.config(20_000, "Decreasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0 + " toward reference pulse " + Math.round(referencePulse * 10_000.0) / 10_000.0 + ".");
 			}
 					
@@ -689,7 +678,7 @@ public class MasterClock implements Serializable {
 			if (nextPulse / optPulse > 1.05) {
 				double diff = nextPulse - optPulse;
 				nextPulse = nextPulse - diff / optPulse / 60;
-				if (nextPulse < 0) nextPulse = minMilliSolPerPulse;
+				if (nextPulse < minMilliSolPerPulse) nextPulse = minMilliSolPerPulse;
 //				logger.config(20_000, "Increasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0 + " toward " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
 			}
 			

@@ -49,9 +49,9 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	private static final int LOCATION = 6;
 	private static final int LOCALE = 7;
 	private static final int HEALTH = 8;
-	private static final int ENERGY = 9;
-	private static final int WATER = 10;
-	private static final int FATIGUE = 11;
+	private static final int FATIGUE = 9;
+	private static final int ENERGY = 10;
+	private static final int WATER = 11;
 	private static final int STRESS = 12;
 	private static final int PERFORMANCE = 13;
 	private static final int EMOTION = 14;
