@@ -59,7 +59,8 @@ public class SalvageBuildingMeta extends MetaTask implements SettlementMetaTask 
 	}
 
     /**
-     * Create Settlement tasks for any salvage missions in fight.
+     * Creates Settlement tasks for any salvage missions in fight.
+     * 
      * @param target Being assessed.
      */
     @Override
@@ -76,6 +77,7 @@ public class SalvageBuildingMeta extends MetaTask implements SettlementMetaTask 
 
      /**
      * Gets a list of all building salvage missions that need assistance at a settlement.
+     * 
      * @param settlement the settlement.
      * @return list of building salvage missions.
      */
@@ -89,7 +91,8 @@ public class SalvageBuildingMeta extends MetaTask implements SettlementMetaTask 
     }
 
     /**
-     * Assess the suitability a person to do this settlement task for salvage.
+     * Assesses the suitability a person to do this settlement task for salvage.
+     * 
      * @param person Being assessed
      * @return Rating 
      */
@@ -98,7 +101,7 @@ public class SalvageBuildingMeta extends MetaTask implements SettlementMetaTask 
         RatingScore score = RatingScore.ZERO_RATING;
         if(p.isInSettlement()
             && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
-            && (EVAOperation.getWalkableAvailableAirlock(p, false) != null)) {
+            && (EVAOperation.getWalkableEgressAirlock(p) != null)) {
             
             score = super.assessPersonSuitability(st, p);
         }

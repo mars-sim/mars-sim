@@ -136,7 +136,7 @@ public class ConstructBuilding extends EVAOperation {
 	public static boolean canConstruct(Person person, ConstructionSite site) {
 
 		// Check if person can exit the settlement airlock.
-		Airlock airlock = getClosestWalkableAvailableAirlock(person, site.getPosition(), false);
+		Airlock airlock = getClosestWalkableEgressAirlock(person, site.getPosition());
 		if (airlock != null && !ExitAirlock.canExitAirlock(person, airlock))
 			return false;
 

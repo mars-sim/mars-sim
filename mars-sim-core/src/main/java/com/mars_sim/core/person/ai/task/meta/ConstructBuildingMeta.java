@@ -59,7 +59,7 @@ public class ConstructBuildingMeta extends FactoryMetaTask {
         }
 
         // Check if an airlock is available
-        if (EVAOperation.getWalkableAvailableAirlock(person, false) == null) {
+        if (EVAOperation.getWalkableEgressAirlock(person) == null) {
             return 0;
         }
 

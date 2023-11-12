@@ -99,27 +99,31 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 				lab = getLocalLab(person, science);
 				if (lab != null) {
 					addPersonToLab();
+
+					// Initialize phase
+					addPhase(STUDYING_SAMPLES);
+					setPhase(STUDYING_SAMPLES);
 				} else {
 					logger.log(person, Level.WARNING, 0, "No lab was available.");
 					endTask();
+					return;
 				}
 			} else {
 				logger.log(person, Level.WARNING, 0, "The science subject could not be determined.");
 				endTask();
+				return;
 			}
 		} else {
 			logger.log(person, Level.WARNING, 0, "The scientific study could not be determined.");
 			endTask();
+			return;
 		}
 
 		// Check if person is in a moving rover.
 		if (Vehicle.inMovingRover(person)) {
 			endTask();
+			return;
 		}
-
-		// Initialize phase
-		addPhase(STUDYING_SAMPLES);
-		setPhase(STUDYING_SAMPLES);
 	}
 
 	/**

@@ -69,8 +69,9 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
 	}
     
     /**
-     * Get task for any Scientific study that needs Astronomy observation time.
-     * Assessment is based on it getting dark and available Observatory
+     * Gets task for any Scientific study that needs Astronomy observation time.
+     * Assessment is based on it getting dark and available Observatory.
+     * 
      * @param target Settlement being checked
      */
     @Override
@@ -94,9 +95,10 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
     }
 
     /**
-     * Assess the suitability of a Person do to an Observation task. Based largely on the Study
-     * the eprson is performing.
-     * @param st Task  on offer
+     * Assesses the suitability of a Person do to an Observation task. Based largely on the Study
+     * the person is performing.
+     * 
+     * @param st Task on offer
      * @param p Person being assessed
      */
     @Override
@@ -152,8 +154,9 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
     }
 
     /**
-     * Is this study suitable for Astronomy. Either primary science type or has a collaboration
-     * of Astronomy from at least one collabarator.
+     * Is this study suitable for Astronomy? Either primary science type or has a collaboration
+     * of Astronomy from at least one collaborator.
+     * 
      * @param study
      * @return
      */

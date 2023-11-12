@@ -1486,10 +1486,9 @@ public class Settlement extends Structure implements Temporal,
 	 *
 	 * @param person    the person.
 	 * @param pos Position to search
-	 * @param ingress is the person ingressing ?
 	 * @return airlock or null if none available.
 	 */
-	public Airlock getClosestWalkableAvailableAirlock(Worker worker, LocalPosition pos, boolean ingress) {
+	public Airlock getClosestWalkableEgressAirlock(Worker worker, LocalPosition pos) {
 		Building currentBuilding = BuildingManager.getBuilding(worker);
 
 		if (currentBuilding == null) {
@@ -1499,41 +1498,46 @@ public class Settlement extends Structure implements Temporal,
 			return null;
 		}
 
-		return getAirlock(currentBuilding, pos, ingress);
+		return getAirlock(currentBuilding, pos, false);
 	}
 
 	/**
-	 * Gets the closest available airlock to a person.
+	 * Gets the closest ingress airlock for a person.
 	 *
 	 * @param person the person.
-	 * @param ingress is the person ingressing ?
 	 * @return airlock or null if none available.
 	 */
-	public Airlock getClosestAvailableAirlock(Person person, boolean ingress) {
-
+	public Airlock getClosestIngressAirlock(Person person) {
 		Airlock result = null;
 
+		result = getAvailableAirlock(person, depressurizedAirlocks);
+		
+		if (result == null) {
+			result = getAvailableAirlock(person, pressurizedAirlocks);
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Gets an available airlock to a person.
+	 *  
+	 * @param person
+	 * @param bldgs
+	 * @return
+	 */
+	private Airlock getAvailableAirlock(Person person, Set<Integer> bldgs) {
+
+		Airlock result = null;
 		double leastDistance = Double.MAX_VALUE;
 
-		Set<Integer> bldgs = null;
-		if (ingress) {
-			bldgs = depressurizedAirlocks;
-		}
-		else {
-			bldgs = pressurizedAirlocks;
-		}
 		Iterator<Integer> i = bldgs.iterator();
 		while (i.hasNext()) {
 			Building nextBuilding = unitManager.getBuildingByID(i.next());
 			Airlock airlock = nextBuilding.getEVA().getAirlock();
-			
-//			boolean isIngress = airlock.getAirlockMode() == AirlockMode.INGRESS;
-//			boolean notInUse = airlock.getAirlockMode() == AirlockMode.NOT_IN_USE;
-			
+		
 			boolean chamberFull = nextBuilding.getEVA().getAirlock().areAll4ChambersFull();
-//			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
 
-//			if ((isIngress == ingress || notInUse) 
 			if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(nextBuilding.getBuildingType())) {
 
 				double distance = nextBuilding.getPosition().getDistanceTo(person.getPosition());

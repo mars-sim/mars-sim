@@ -105,7 +105,7 @@ public class SleepMeta extends FactoryMetaTask {
             double soreness = person.getPhysicalCondition().getMuscleSoreness();
             
         	// the desire to go to bed increase linearly after 6 hours of wake time
-            result += Math.max((fatigue - 250), 0) * 10 + stress * 10 
+            result += Math.max((1.5 * fatigue - 250), 0) * 10 + stress * 10 
             		+ (ghrelin - leptin)
             		// High hunger makes it harder to fall asleep
             		// Therefore, limit the hunger contribution to a max of 300

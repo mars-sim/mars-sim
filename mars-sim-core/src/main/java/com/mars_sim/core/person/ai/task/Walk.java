@@ -137,7 +137,7 @@ public class Walk extends Task {
 
 					if (goodEVASuit) {
 						// Walk to nearest emergency airlock in settlement.
-						Airlock airlock = settlement.getClosestAvailableAirlock(person, true);
+						Airlock airlock = settlement.getClosestIngressAirlock(person);
 						if (airlock != null) {
 							targetObject = (LocalBoundedObject) airlock.getEntity();
 							walkToSettlement = true;
@@ -435,7 +435,7 @@ public class Walk extends Task {
 				Worker member = i.next();
 				if (member != person) {
 					if (member.isInSettlement()) {
-						result = member.getSettlement().getClosestAvailableAirlock(person, true);
+						result = member.getSettlement().getClosestIngressAirlock(person);
 					} else if (member.isInVehicle()) {
 						Vehicle vehicle = member.getVehicle();
 						if (vehicle instanceof Airlockable v) {
@@ -456,7 +456,7 @@ public class Walk extends Task {
 			while (i.hasNext() && (result == null)) {
 				Settlement settlement = i.next();
 				if (person.getCoordinates().equals(settlement.getCoordinates())) {
-					result = settlement.getClosestAvailableAirlock(person, true);
+					result = settlement.getClosestIngressAirlock(person);
 				}
 			}
 		}

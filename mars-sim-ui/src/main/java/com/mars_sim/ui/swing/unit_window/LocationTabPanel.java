@@ -30,6 +30,7 @@ import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.tools.Msg;
@@ -538,7 +539,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		if (locationStateTypeCache != locationStateType) {
 			locationStateTypeCache = locationStateType;
 			String n = locationStateType != null ? locationStateType.getName() : "";
-			locationStateLabel.setText(n);
+			locationStateLabel.setText(Conversion.capitalize0(n));
 		}
 		
 		updateLocationBanner(unit);

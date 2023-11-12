@@ -101,8 +101,9 @@ public class ProposeScientificStudy extends Task {
 	}
 
 	/**
-	 * Create a study for a Person using their Job to select the most appropirate 
+	 * Creates a study for a Person using their Job to select the most appropriate 
 	 * science.
+	 * 
 	 * @param p
 	 * @return
 	 */

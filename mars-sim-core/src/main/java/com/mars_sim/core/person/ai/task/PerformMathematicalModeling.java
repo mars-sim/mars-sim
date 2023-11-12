@@ -95,20 +95,22 @@ implements ResearchScientificStudy {
             lab = getLocalLab(person);
             if (lab != null) {
                 addPersonToLab(person);
+                
+                // Initialize phase
+                addPhase(MODELING);
+                setPhase(MODELING);   
             }
             
             else {
             	logger.log(person, Level.WARNING, 5000, NO_LAB_SLOT);
             	endTask();
+            	return;
             }
-            
-            // Initialize phase
-            addPhase(MODELING);
-            setPhase(MODELING);       
         }
         
         else {
         	endTask();
+        	return;
         }
     }
 

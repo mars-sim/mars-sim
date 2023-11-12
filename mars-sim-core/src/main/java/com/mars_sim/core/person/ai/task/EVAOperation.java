@@ -293,7 +293,7 @@ public abstract class EVAOperation extends Task {
 				// Get closest airlock building at settlement.
 				Settlement s = unitManager.findSettlement(person.getCoordinates());
 				if (s != null) {
-					interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person, true)).getEntity();
+					interiorObject = (LocalBoundedObject)(s.getClosestIngressAirlock(person)).getEntity();
 					if (interiorObject instanceof Building b)
 						logger.log(person, Level.INFO, 30_000,
 							"Found " + b.getName()
@@ -755,16 +755,15 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Gets the closest available airlock to a given location that has a walkable
+	 * Gets the closest egress airlock to a given location that has a walkable
 	 * path from the person's current location.
 	 *
 	 * @param worker the worker.
 	 * @param        double xLocation the destination's X location.
 	 * @param        double yLocation the destination's Y location.
-	 * @param ingress is the person ingressing.
 	 * @return airlock or null if none available
 	 */
-	public static Airlock getClosestWalkableAvailableAirlock(Worker worker, LocalPosition pos, boolean ingress) {
+	public static Airlock getClosestWalkableEgressAirlock(Worker worker, LocalPosition pos) {
 		Airlock result = null;
 
 		if (worker.isInVehicle()) {
@@ -776,7 +775,7 @@ public abstract class EVAOperation extends Task {
 		else {
 			Settlement s = worker.getSettlement();
 			if (s != null) {
-				result = s.getClosestWalkableAvailableAirlock(worker, pos, ingress);
+				result = s.getClosestWalkableEgressAirlock(worker, pos);
 			}
 		}
 
@@ -791,8 +790,8 @@ public abstract class EVAOperation extends Task {
 	 * @param ingress is the person ingressing.
 	 * @return airlock or null if none available
 	 */
-	public static Airlock getWalkableAvailableAirlock(Worker worker, boolean ingress) {
-		return getClosestWalkableAvailableAirlock(worker, worker.getPosition(), ingress);
+	public static Airlock getWalkableEgressAirlock(Worker worker) {
+		return getClosestWalkableEgressAirlock(worker, worker.getPosition());
 	}
 
 	/**
@@ -804,7 +803,7 @@ public abstract class EVAOperation extends Task {
 	 * @return airlock or null if none available
 	 */
 	public static Airlock getWalkableAvailableEgressAirlock(Worker worker) {
-		return getClosestWalkableAvailableAirlock(worker, worker.getPosition(), false);
+		return getClosestWalkableEgressAirlock(worker, worker.getPosition());
 	}
 
 	/**

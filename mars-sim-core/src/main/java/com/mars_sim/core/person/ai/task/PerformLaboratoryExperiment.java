@@ -100,30 +100,34 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
                 lab = getLocalLab(person, science);
                 if (lab != null) {
                     addPersonToLab(person);
+
+                    // Initialize phase
+                    addPhase(EXPERIMENTING);
+                    setPhase(EXPERIMENTING);
                 }
                 else {
                     logger.warning(person, "The lab could not be determined.");
                     endTask();
+                    return;
                 }
             }
             else {
                 logger.warning(person, "The science of a study could not be determined");
                 endTask();
+                return;
             }
         }
         else {
             logger.warning(person, "The study could not be determined");
             endTask();
+            return;
         }
 
         // Check if person is in a moving rover.
         if (Vehicle.inMovingRover(person)) {
             endTask();
+            return;
         }
-
-        // Initialize phase
-        addPhase(EXPERIMENTING);
-        setPhase(EXPERIMENTING);
     }
 
     /**

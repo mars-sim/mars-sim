@@ -195,7 +195,7 @@ public class TaskUtil {
 	 */
 	public static double getEVAModifier(Person person) {
 		// Check if an airlock is available
-		if (EVAOperation.getWalkableAvailableAirlock(person, false) == null)
+		if (EVAOperation.getWalkableEgressAirlock(person) == null)
 			return 0;
 
 		// Check if it is night time.
