@@ -56,7 +56,7 @@ public abstract class MetaTask {
 	private static final String JOB_MODIFIER = "job";
 	protected static final String PERSON_MODIFIER = "person";
 	private static final String RADIATION_MODIFIER = "radiation";
-	private static final String ROLE_MODIFIER = "role";
+	protected static final String ROLE_MODIFIER = "role";
 	protected static final String SCIENCE_MODIFIER = "science";
 	protected static final String SKILL_MODIFIER = "skill";
     protected static final String STRESS_MODIFIER = "stress";
@@ -355,38 +355,6 @@ public abstract class MetaTask {
 
 		return result;
 	}	
-		
-	/**
-	 * This will apply a number of modifier to the current score based on the Person to produce a modifier.
-	 * 1. If the task has a Trait that is performance related the Person's performance rating is applied as a modifier
-	 * 2. Apply the Job start modifier for this task
-	 * 3. Apply the Persons individual preference to this Task
-	 * 
-	 * @deprecated #assessPersonSuitability(RatingScore, Person)
-	 * @param person Person scoring Task
-	 * @return Modified score.
-	 */
-	protected double getPersonModifier(Person person) {
-        RatingScore temp = new RatingScore(1D);
-		assessPersonSuitability(temp, person);
-		return temp.getScore();
-	}
-
-	/**
-	 * Gets the modifier for a Person using a building.
-	 * 
-	 * @param building Building the Person is entering
-	 * @param person Person working
-	 * @deprecated Replace with {@link #assessBuildingSuitability(RatingScore, Building, Person)}
-	 */
-	protected static double getBuildingModifier(Building building, Person person) {
-		double result = 1D;
-		if (building != null) {
-			result *= TaskUtil.getCrowdingProbabilityModifier(person, building);
-			result *= TaskUtil.getRelationshipModifier(person, building);
-		}
-		return result;
-	}
 
 	/**
 	 * Assesses the suitability of a Building to do a Task.

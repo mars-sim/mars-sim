@@ -7,6 +7,7 @@
 package com.mars_sim.core.person.ai.task;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -47,9 +48,6 @@ public class ManufactureConstructionMaterials extends Task {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-//	private static final Logger logger = Logger.getLogger(ManufactureConstructionMaterials.class.getName());
-
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.manufactureConstructionMaterials"); //$NON-NLS-1$
 
@@ -75,7 +73,7 @@ public class ManufactureConstructionMaterials extends Task {
 
 		// Initialize data members
 		if (person.getSettlement() != null) {
-			setDescription(Msg.getString("Task.description.manufactureConstructionMaterials"));
+			setDescription(NAME);
 		} else {
 			endTask();
 		}
@@ -107,7 +105,7 @@ public class ManufactureConstructionMaterials extends Task {
 		
 		// Initialize data members
 		if (robot.getSettlement() != null) {
-			setDescription(Msg.getString("Task.description.manufactureConstructionMaterials"));
+			setDescription(NAME);
 		} else {
 			endTask();
 		}
@@ -227,7 +225,7 @@ public class ManufactureConstructionMaterials extends Task {
 		}
 
 		// If no building with processes requiring work, return original list.
-		if (result.size() == 0) {
+		if (result.isEmpty()) {
 			result = buildingList;
 		}
 
@@ -280,14 +278,13 @@ public class ManufactureConstructionMaterials extends Task {
 	 */
 	private static Set<Building> getHighestManufacturingTechLevelBuildings(Set<Building> buildingList) {
 
-		Set<Building> result = new UnitSet<Building>();
+		Set<Building> result = new HashSet<>();
 
 		int highestTechLevel = 0;
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Manufacture manufacturingFunction = building.getManufacture();// (Manufacture)
-																			// building.getFunction(FunctionType.MANUFACTURE);
+			Manufacture manufacturingFunction = building.getManufacture();
 			if (manufacturingFunction.getTechLevel() > highestTechLevel) {
 				highestTechLevel = manufacturingFunction.getTechLevel();
 			}
@@ -296,8 +293,7 @@ public class ManufactureConstructionMaterials extends Task {
 		Iterator<Building> j = buildingList.iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			Manufacture manufacturingFunction = building.getManufacture();// (Manufacture)
-																			// building.getFunction(FunctionType.MANUFACTURE);
+			Manufacture manufacturingFunction = building.getManufacture();
 			if (manufacturingFunction.getTechLevel() == highestTechLevel) {
 				result.add(building);
 			}
@@ -314,50 +310,13 @@ public class ManufactureConstructionMaterials extends Task {
 	 * @param manufacturingBuilding the manufacturing building.
 	 * @return highest process good value.
 	 */
-	public static double getHighestManufacturingProcessValue(Person person, Building manufacturingBuilding) {
+	public static double getHighestManufacturingProcessValue(Worker person, Building manufacturingBuilding) {
 
 		double highestProcessValue = 0D;
 
 		int skillLevel = person.getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
 		Manufacture manufacturingFunction = manufacturingBuilding.getManufacture();
-		int techLevel = manufacturingFunction.getTechLevel();
-
-		Iterator<ManufactureProcessInfo> i = ManufactureUtil
-				.getManufactureProcessesForTechSkillLevel(techLevel, skillLevel).iterator();
-		while (i.hasNext()) {
-			ManufactureProcessInfo process = i.next();
-			if (ManufactureUtil.canProcessBeStarted(process, manufacturingFunction)
-					|| isProcessRunning(process, manufacturingFunction)) {
-				if (producesConstructionMaterials(process)) {
-					Settlement settlement = manufacturingBuilding.getSettlement();
-					double processValue = ManufactureUtil.getManufactureProcessValue(process, settlement);
-					if (processValue > highestProcessValue) {
-						highestProcessValue = processValue;
-					}
-				}
-			}
-		}
-
-		return highestProcessValue;
-	}
-
-	/**
-	 * Gets the highest manufacturing process goods value for the person and the
-	 * manufacturing building.
-	 * 
-	 * @param person                the person to perform manufacturing.
-	 * @param manufacturingBuilding the manufacturing building.
-	 * @return highest process good value.
-	 */
-	public static double getHighestManufacturingProcessValue(Robot robot, Building manufacturingBuilding) {
-
-		double highestProcessValue = 0D;
-
-		int skillLevel = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-
-		Manufacture manufacturingFunction = manufacturingBuilding.getManufacture();
-		
 		int techLevel = manufacturingFunction.getTechLevel();
 
 		Iterator<ManufactureProcessInfo> i = ManufactureUtil
@@ -450,7 +409,7 @@ public class ManufactureConstructionMaterials extends Task {
 		if (skill == 0) {
 			workTime /= 2;
 		} else {
-			workTime += workTime * (.2D * (double) skill);
+			workTime += workTime * (.2D * skill);
 		}
 
 		// Apply work time to manufacturing processes.

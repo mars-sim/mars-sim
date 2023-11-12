@@ -6,11 +6,15 @@
  */
 package com.mars_sim.core.person.ai.task.meta;
 
+import java.util.List;
+
+import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.DelegateWork;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
@@ -38,53 +42,35 @@ public class DelegateWorkMeta extends FactoryMetaTask {
     }
 
     @Override
-    public double getProbability(Person person) {
-
-    	double result = 0D;
-
-    	// May check if he has this meta task done, use if (!person.getPreference().isTaskDue(this)) {
-    		
-    	if (person.isInside()) {
+    public List<TaskJob> getTaskJobs(Person person) {
+        RoleType roleType = person.getRole().getType();
+    	if (!person.isInside()
+            || !roleType.isLeadership()
+            || !person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
+            return EMPTY_TASKLIST;
+        }
+           
+        double base;
+        if (roleType.equals(RoleType.PRESIDENT))
+            base = 50D;
+        else if (roleType.equals(RoleType.MAYOR))
+            base = 40D;
+        else if (roleType.equals(RoleType.COMMANDER))
+            base = 30D;
+        else if (roleType.equals(RoleType.SUB_COMMANDER))
+            base = 20D;
+        else if (roleType.isChief())
+            base = 15D;
+        else
+            return EMPTY_TASKLIST;
         
-            RoleType roleType = person.getRole().getType();
+        var score = new RatingScore(base);
+            
+        // Get an available office space.
+        Building building = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
+        score = assessBuildingSuitability(score, building, person);
+        score = assessPersonSuitability(score, person);
 
-            if (roleType.isLeadership()) {
-            	return 0;
-            }
-            	
-            if (roleType.equals(RoleType.PRESIDENT))
-            	result += 50D;
-            
-        	else if (roleType.equals(RoleType.MAYOR))
-            	result -= 40D;
-        			
-        	else if (roleType.equals(RoleType.COMMANDER))
-                result += 30D;
-        	
-        	else if (roleType.equals(RoleType.SUB_COMMANDER))
-        		result += 20D;
-            
-            else if (roleType.isChief())
-            	result += 15D;
-            
-            else
-            	return 0;
-            
-            // Probability affected by the person's stress and fatigue.
-            if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
-            	return 0;
-            
-            if (result <= 0) result = 0;
-            
-            // Get an available office space.
-            Building building = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
-
-            // Note: if an office space is not available such as in a vehicle, he can still delegate work.
-            result *= getBuildingModifier(building, person);
-
-            result *= getPersonModifier(person);
-    	}
-        
-        return result;
+        return createTaskJobs(score);
     }
 }

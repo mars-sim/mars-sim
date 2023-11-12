@@ -38,7 +38,7 @@ public class TaskUtil {
     /**
      * Private constructor for utility class.
      */
-    private TaskUtil() {};
+    private TaskUtil() {}
 
     /**
      * Assesses if change of Building for a person based on the overcrowding of the current
