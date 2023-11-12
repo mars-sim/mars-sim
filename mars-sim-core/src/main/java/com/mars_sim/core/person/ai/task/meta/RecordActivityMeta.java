@@ -6,13 +6,16 @@
  */
 package com.mars_sim.core.person.ai.task.meta;
 
+import java.util.List;
+
+import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.RecordActivity;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
@@ -38,74 +41,34 @@ public class RecordActivityMeta extends FactoryMetaTask {
     }
 
     @Override
-    public double getProbability(Person person) {
+    public List<TaskJob> getTaskJobs(Person person) {
 
     	// Do not allow to record activity outside for now
-    	if (person.isOutside())
-    		return 0;
-
-    	double result = 0D;
-
-        // Probability affected by the person's stress and fatigue.
-        PhysicalCondition condition = person.getPhysicalCondition();
-        double fatigue = condition.getFatigue();
-        double stress = condition.getStress();
-        double hunger = condition.getHunger();
-
-        if (fatigue > 1500 || stress > 75 || hunger > 750)
-        	return 0;
-
-        if (person.getMind().getJob() == JobType.REPORTER) {
-        	result += RandomUtil.getRandomDouble(200);
+    	if (!person.isOutside()
+            || !person.getPhysicalCondition().isFitByLevel(1500, 75, 750)) {
+    		return EMPTY_TASKLIST;
         }
 
-        result *= getPersonModifier(person);
+    	var score = new RatingScore(RandomUtil.getRandomDouble(200));
+        score = assessPersonSuitability(score, person);
+        score.addModifier(GOODS_MODIFIER, 0.5 * person.getAssociatedSettlement().getGoodsManager().getTourismFactor());
 
-        if (person.isInside()) {
-
-            if (fatigue < 1200D || stress < 75D || hunger < 750D) {
-
-            	result -= (fatigue/50 + stress/15 + hunger/50);
-            }
-
-            // NOTE: what drives a person go to a particular building ?
-
-    	}
-
-        else {
-            if (fatigue < 600D && stress< 25D|| hunger < 500D) {
-            	result -= (fatigue/100 + stress/10 + hunger/50);
-            }
-            else
-            	result = 0;
+        // Certain roels are less likely
+        RoleType roleType = person.getRole().getType();
+        double roleModifier = 1D;
+        if (roleType != null) {
+            if (roleType == RoleType.PRESIDENT)
+                roleModifier = 0.1D;
+            else if (roleType == RoleType.MAYOR)
+                roleModifier = 0.2D;
+            else if (roleType == RoleType.COMMANDER)
+                roleModifier = 0.3D;
+            else if (roleType == RoleType.SUB_COMMANDER)
+                roleModifier = 0.4D;
+            else if (roleType.isChief())
+                roleModifier = 0.5D;
         }
-
-        // Effort-driven task modifier.
-        result *= .5 * person.getAssociatedSettlement().getGoodsManager().getTourismFactor();
-
-        if (result > 0) {
-            RoleType roleType = person.getRole().getType();
-
-            if (roleType != null) {
-            	if (roleType == RoleType.PRESIDENT)
-	            	result -= 300D;
-
-	        	else if (roleType == RoleType.MAYOR)
-	            	result -= 200D;
-
-	        	else if (roleType == RoleType.COMMANDER)
-	                result -= 100D;
-
-	        	else if (roleType == RoleType.SUB_COMMANDER)
-	        		result -= 50D;
-
-		        else if (roleType.isChief())
-	            	result -= 10D;
-            }
-        }
-
-        if (result < 0) result = 0;
-
-        return result;
+        score.addModifier(ROLE_MODIFIER, roleModifier);
+        return createTaskJobs(score);
     }
 }

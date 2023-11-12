@@ -87,8 +87,9 @@ public class ManufactureConstructionMaterialsMeta extends FactoryMetaTask {
         score = assessBuildingSuitability(score, manufacturingBuilding, person);
 
             // Manufacturing good value modifier.
-        score.addModifier("process", ManufactureConstructionMaterials.getHighestManufacturingProcessValue(person,
-                    manufacturingBuilding));
+        score.addModifier("production",
+                ManufactureConstructionMaterials.getHighestManufacturingProcessValue(person,
+                    manufacturingBuilding)/1000D);
             
         score.addModifier(GOODS_MODIFIER, person.getSettlement().getGoodsManager().getManufacturingFactor());
         score = assessPersonSuitability(score, person);
