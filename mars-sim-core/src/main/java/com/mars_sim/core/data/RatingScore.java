@@ -34,12 +34,12 @@ public class RatingScore implements Serializable {
         @Override
         public void addBase(String name, double base) {
             throw new UnsupportedOperationException("Cannot change base of zero rating");
-        };
+        }
 
         @Override
         public void addModifier(String name, double value) {
             throw new UnsupportedOperationException("Cannot add modifier to zero rating");
-        };
+        }
     };
 
     public static final String BASE = "base";
@@ -48,6 +48,16 @@ public class RatingScore implements Serializable {
     private Map<String,Double> modifiers;
     private double score = -1;
 
+    public RatingScore() {
+        this.modifiers = new HashMap<>();
+        this.bases = new HashMap<>();
+        this.score = 0;
+    }
+
+    /**
+     * Create a rating with a single base value using @see RatingScore.BASE.
+     * @param base Initial base value
+     */
     public RatingScore(double base) {
         this(BASE, base);
     }
@@ -58,9 +68,8 @@ public class RatingScore implements Serializable {
      * @param base Score of the first base
      */
     public RatingScore(String name, double base) {
+        this();
         this.score = base;
-        this.modifiers = new HashMap<>();
-        this.bases = new HashMap<>();
         this.bases.put(name, base);
     }
  

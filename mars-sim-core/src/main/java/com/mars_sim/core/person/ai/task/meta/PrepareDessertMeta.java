@@ -6,6 +6,9 @@
  */
 package com.mars_sim.core.person.ai.task.meta;
 
+import java.util.List;
+
+import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -13,6 +16,7 @@ import com.mars_sim.core.person.ai.task.CookMeal;
 import com.mars_sim.core.person.ai.task.PrepareDessert;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.robot.Robot;
@@ -32,9 +36,9 @@ public class PrepareDessertMeta extends FactoryMetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.prepareDessertMeta"); //$NON-NLS-1$
 
+    private static final double CAP = 2000D;
     private static final double VALUE = 1;
-    private static final int MOD = 10;
-    private static final int CAP = 2_000;
+    private static final double MOD = 0.1D;
     
     public PrepareDessertMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
@@ -57,52 +61,42 @@ public class PrepareDessertMeta extends FactoryMetaTask {
         return new PrepareDessert(robot);
     }
 
-
+    /**
+     * Assess if a Person can prepare any desserts
+     */
     @Override
-    public double getProbability(Person person) {
+    public List<TaskJob> getTaskJobs(Person person) {
 
-        double result = 0D;
-        
-        if (person.isInSettlement()) {
-            // Desserts should be prepared during meal times.
-        	
-            // Probability affected by the person's stress and fatigue.
-            if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
-            	return 0;
-            
-            // See if there is an available kitchen.
-            Building kitchenBuilding = BuildingManager.getAvailableKitchen(person, FunctionType.PREPARING_DESSERT);
-
-            if (kitchenBuilding != null) {
-
-                PreparingDessert kitchen = kitchenBuilding.getPreparingDessert();
-                // Check if there are enough ingredients to prepare a dessert.
-                int numGoodRecipes = kitchen.getListDessertsToMake().size();
-                // Check if enough desserts have been prepared at kitchen for this meal time.
-                boolean enoughMeals = kitchen.getMakeNoMoreDessert();
-
-                if (numGoodRecipes == 0 || enoughMeals) {
-             	   return 0;
-                }
-                
-                result = numGoodRecipes * VALUE;
-                // Crowding modifier.
-                result *= getBuildingModifier(kitchenBuilding, person);
-
-                // Effort-driven task modifier.
-                result *= person.getPerformanceRating();
-                
-        		// If it's meal time, decrease probability
-        		if (CookMeal.isMealTime(person, PrepareDessert.PREP_TIME)) {
-        			result /= MOD;
-        		}
-            }
+        if (!person.isInSettlement()
+            || !person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
+            return EMPTY_TASKLIST;
         }
-        
-        if (result > CAP)
-        	result = CAP;
-        
-        return result;
+            
+        // See if there is an available kitchen.
+        Building kitchenBuilding = BuildingManager.getAvailableKitchen(person, FunctionType.PREPARING_DESSERT);
+        if (kitchenBuilding == null) {
+            return EMPTY_TASKLIST;
+        }
+
+        // Calculate the tasks
+        PreparingDessert kitchen = kitchenBuilding.getPreparingDessert();
+        // Check if there are enough ingredients to prepare a dessert.
+        int numGoodRecipes = kitchen.getListDessertsToMake().size();
+        // Check if enough desserts have been prepared at kitchen for this meal time.
+        boolean enoughMeals = kitchen.getMakeNoMoreDessert();
+        if (numGoodRecipes == 0 || enoughMeals) {
+            return EMPTY_TASKLIST;
+        }
+                
+        var score = new RatingScore(numGoodRecipes * VALUE);
+        score = assessBuildingSuitability(score, kitchenBuilding, person);
+        score = assessPersonSuitability(score, person);
+
+        // If it's meal time, decrease probability
+        if (CookMeal.isMealTime(person, PrepareDessert.PREP_TIME)) {
+            score.addModifier("eatdrink.dessert", MOD);
+        }
+        return createTaskJobs(score);
     }
 
 

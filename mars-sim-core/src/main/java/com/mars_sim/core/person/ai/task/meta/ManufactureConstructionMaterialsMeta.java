@@ -6,9 +6,11 @@
  */
 package com.mars_sim.core.person.ai.task.meta;
 
+import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillType;
@@ -17,6 +19,7 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.ManufactureConstructionMaterials;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.robot.Robot;
@@ -30,14 +33,12 @@ import com.mars_sim.tools.Msg;
  */
 public class ManufactureConstructionMaterialsMeta extends FactoryMetaTask {
     
-    private static final double CAP = 3000D;
-    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.manufactureConstructionMaterials"); //$NON-NLS-1$
     
     /** default logger. */
-    private static final Logger logger = Logger.getLogger(ManufactureConstructionMaterialsMeta.class.getName());
+    private static final SimLogger logger = SimLogger.getLogger(ManufactureConstructionMaterialsMeta.class.getName());
 
     public ManufactureConstructionMaterialsMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
@@ -56,64 +57,43 @@ public class ManufactureConstructionMaterialsMeta extends FactoryMetaTask {
     }
 
     @Override
-    public double getProbability(Person person) {
+    public List<TaskJob> getTaskJobs(Person person) {
         // Probability affected by the person's stress and fatigue.
-        if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
-        	return 0;
-            
-        double result = 0D;
-
-        if (person.isInSettlement()) {
-            // Check for the override
-            if (person.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
-                return 0;
-            }
-
-            try {
-                // See if there is an available manufacturing building.
-                Building manufacturingBuilding = ManufactureConstructionMaterials.getAvailableManufacturingBuilding(person);
-                if (manufacturingBuilding != null) {
-                	
-                	if (manufacturingBuilding.getManufacture().getBuilding().getMalfunctionManager().hasMalfunction())
-                		return 0;
-                	
-                    result = 1D;
-
-                    // If manufacturing building has process requiring work, add
-                    // modifier.
-                    SkillManager skillManager = person.getSkillManager();
-                    int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-                    
-                    if (ManufactureConstructionMaterials.hasProcessRequiringWork(manufacturingBuilding, skill)) {
-                        result += 10D;
-                    }
-                    
-                    // Crowding modifier.
-                    result *= getBuildingModifier(manufacturingBuilding, person);
-
-                    // Manufacturing good value modifier.
-                    result *= ManufactureConstructionMaterials.getHighestManufacturingProcessValue(person,
-                            manufacturingBuilding);
-                    
-            		result *= person.getSettlement().getGoodsManager().getManufacturingFactor();
-
-            		result *= getPersonModifier(person);
-            		
-                    // Capping the probability as manufacturing process values can be very large numbers.
-                    if (result > CAP) {
-                        result = CAP;
-                    }
-                    else if (result < 0) result = 0;
-                }
-                
-            } catch (Exception e) {
-                logger.log(Level.SEVERE,
-                        "ManufactureConstructionMaterials.getProbability()", e);
-            }
-
+        if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
+            || !person.isInSettlement()
+            || person.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
+        	return EMPTY_TASKLIST;
         }
 
-        return result;
+
+        // See if there is an available manufacturing building.
+        Building manufacturingBuilding = ManufactureConstructionMaterials.getAvailableManufacturingBuilding(person);
+        if ((manufacturingBuilding == null) 
+           || manufacturingBuilding.getManufacture().getBuilding().getMalfunctionManager().hasMalfunction()) {
+            return EMPTY_TASKLIST;
+        }
+        
+        double base = 1D;
+
+        // If manufacturing building has process requiring work, add
+        // modifier.
+        SkillManager skillManager = person.getSkillManager();
+        int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+        if (ManufactureConstructionMaterials.hasProcessRequiringWork(manufacturingBuilding, skill)) {
+            base += 10D;
+        }
+            
+        var score = new RatingScore(base);
+        score = assessBuildingSuitability(score, manufacturingBuilding, person);
+
+            // Manufacturing good value modifier.
+        score.addModifier("process", ManufactureConstructionMaterials.getHighestManufacturingProcessValue(person,
+                    manufacturingBuilding));
+            
+        score.addModifier(GOODS_MODIFIER, person.getSettlement().getGoodsManager().getManufacturingFactor());
+        score = assessPersonSuitability(score, person);
+
+        return createTaskJobs(score);
     }
 
 	@Override

@@ -6,8 +6,11 @@
  */
 package com.mars_sim.core.person.ai.task.meta;
 
+import java.util.List;
+
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
@@ -16,6 +19,7 @@ import com.mars_sim.core.person.ai.task.CookMeal;
 import com.mars_sim.core.person.ai.task.EatDrink;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
@@ -32,7 +36,6 @@ public class EatDrinkMeta extends FactoryMetaTask {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.eatDrink"); //$NON-NLS-1$
 
-	private static final int CAP = 6_000;
 	public static final double VEHICLE_FOOD_RATION = .25;
 	public static final double MISSION_FOOD_RATION = .5;
 		
@@ -51,57 +54,45 @@ public class EatDrinkMeta extends FactoryMetaTask {
 	}
 
 	@Override
-	public double getProbability(Person person) {
+	public List<TaskJob> getTaskJobs(Person person) {
 		// Checks if this person has eaten too much already 
 		if (person.getPhysicalCondition().eatTooMuch()
 			// Checks if this person has drank enough water already
 			&& person.getPhysicalCondition().drinkEnoughWater()) {
-			return 0;
+			return EMPTY_TASKLIST;
 		}
 		
-		double result = 0;
-		double foodAmount = 0;
-		double waterAmount = 0;
-
-		Vehicle vehicle = null;
-		
-		ResourceHolder rh = (ResourceHolder) person;
-		foodAmount = rh.getAmountResourceStored(FOOD_ID);
-		waterAmount = rh.getAmountResourceStored(WATER_ID);
+		// Identify the available amoutn first
+		double foodAmount = person.getAmountResourceStored(FOOD_ID);
+		double waterAmount = person.getAmountResourceStored(WATER_ID);
 		
 		Unit container = person.getContainerUnit();
-		
-		if (container != null && container instanceof ResourceHolder) {
-			rh = (ResourceHolder) container;
+		if (container instanceof ResourceHolder rh) {
 			if (foodAmount == 0)
 				foodAmount = rh.getAmountResourceStored(FOOD_ID);
 			if (waterAmount == 0)
 				waterAmount = rh.getAmountResourceStored(WATER_ID);
 		}
 
-		boolean food = false;
-		boolean water = false;
+		boolean needFood = false;
+		boolean needWater = false;
+		boolean inSettlement = false;
 
-		int meals = 0;
 		double mFactor = 1;
-
-		int desserts = 0;
 		double dFactor = 1;
 
 		if (CookMeal.isMealTime(person, 0)) {
 			// Check if a cooked meal is available in a kitchen building at the settlement.
 			Cooking kitchen0 = EatDrink.getKitchenWithMeal(person);
 			if (kitchen0 != null) {
-				meals = kitchen0.getNumberOfAvailableCookedMeals();
-				mFactor = 200.0 * meals;
+				mFactor = 200.0 * kitchen0.getNumberOfAvailableCookedMeals();
 			}
 		}
 
 		// Check dessert is available in a kitchen building at the settlement.
 		PreparingDessert kitchen1 = EatDrink.getKitchenWithDessert(person);
 		if (kitchen1 != null) {
-			desserts = kitchen1.getAvailableServingsDesserts();
-			dFactor = 100.0 * desserts;
+			dFactor = 100.0 * kitchen1.getAvailableServingsDesserts();
 		}
 
 		PhysicalCondition pc = person.getPhysicalCondition();
@@ -118,40 +109,28 @@ public class EatDrinkMeta extends FactoryMetaTask {
 		 
 		// Each meal (.155 kg = .62/4) has an average of 2525 kJ. Thus ~10,000 kJ
 		// person per sol
-
 		if (person.isInSettlement()) {
-			if ((hungry || leptinS == 0 || ghrelinS > 0)
-					&& (foodAmount > 0 || meals > 0 || desserts > 0)) {
-				food = true;
-			}
+			inSettlement = true;
+			needFood = ((hungry || leptinS == 0 || ghrelinS > 0)
+					&& (foodAmount > 0 || mFactor > 1 || dFactor > 1));
 
-			if (thirsty && waterAmount > 0) {
-				water = true;
-			}
 		}
-
 		else if (person.isInVehicle()) {
 			
 			if (UnitType.VEHICLE == container.getUnitType()) {
-				vehicle = (Vehicle)container;
+				Vehicle vehicle = (Vehicle)container;
 				
 				if (vehicle.isInSettlement()) {
+					inSettlement = true;
+
 					// How to make a person walk out of vehicle back to settlement 
 					// if hunger is >500 ?
-		
-					rh = (ResourceHolder) vehicle.getSettlement();
 					if (foodAmount == 0)
-						foodAmount = rh.getAmountResourceStored(FOOD_ID);
+						foodAmount = vehicle.getSettlement().getAmountResourceStored(FOOD_ID);
 					if (waterAmount == 0)
-						waterAmount = rh.getAmountResourceStored(WATER_ID);
+						waterAmount = vehicle.getSettlement().getAmountResourceStored(WATER_ID);
 		
-					if (hungry && (foodAmount > 0 || desserts > 0)) {
-						food = true;
-					}
-
-					else if (thirsty && waterAmount > 0) {
-						water = true;
-					}
+					needFood = (hungry && (foodAmount > 0 || dFactor > 1));
 				}
 				else {
 					// One way that prevents a person from eating vehicle food
@@ -160,80 +139,55 @@ public class EatDrinkMeta extends FactoryMetaTask {
 					
 					// Note: if not, it may affect the amount of water/food available 
 					// for the mission
-					
-					rh = (ResourceHolder) person;
 					if (foodAmount == 0)
-						foodAmount = rh.getAmountResourceStored(FOOD_ID);
+						foodAmount = person.getAmountResourceStored(FOOD_ID);
 					if (waterAmount == 0)
-						waterAmount = rh.getAmountResourceStored(WATER_ID);
+						waterAmount = person.getAmountResourceStored(WATER_ID);
 		
-					if (hungry && (foodAmount > 0 || desserts > 0)) {
-						food = true;
-					}
-	
-					else if (thirsty && waterAmount > 0) {
-						water = true;
-					}
+					needFood = (hungry && (foodAmount > 0 || dFactor > 1));
 				}
 			}
 		}
 
-		else {
-			if (thirsty && waterAmount > 0) {
-				water = true;
-			}
-		}
+		needWater = (thirsty && waterAmount > 0);
 
-
-		if (food || water) {
+		// Calculate score
+		RatingScore result = new RatingScore();
+		if (needFood) {
 			// Only eat a meal if person is sufficiently hungry or low on caloric energy.
-			double h0 = 0;
-			if (hungry) {
-				
-				double ghrelin = person.getCircadianClock().getGhrelin();
-				double leptin = person.getCircadianClock().getLeptin();
-				
-				h0 += hunger * hunger / 50 + ghrelin / 2 - leptin / 2;
+			double ghrelin = person.getCircadianClock().getGhrelin();
+			double leptin = person.getCircadianClock().getLeptin();	
+			double hungerBase = hunger + ghrelin / 2 - leptin / 2;
 
-				if (energy < 2525)
-					h0 += (2525 - energy) / 30D;
-				
-				if (person.isInSettlement() || (vehicle != null && vehicle.isInSettlement())) {
+			if (energy < 2525)
+				hungerBase += (2525 - energy) / 30D;
+			RatingScore hungerScore = new RatingScore(hungerBase);
 
-					// Check if there is a local dining building.
-					Building diningBuilding = BuildingManager.getAvailableDiningBuilding(person, false);
-					h0 *= getBuildingModifier(diningBuilding, person);
-
-				}
-				else if (person.isInVehicle() ) {
-					// Person will try refraining from eating food while in a vehicle
-					h0 *= VEHICLE_FOOD_RATION;
-				}
-				else if (person.getMission() != null) {
-					// Person will tends to ration food while in a mission
-					h0 *= MISSION_FOOD_RATION;
-				}
+			if (inSettlement) {
+				// Check if there is a local dining building.
+				Building diningBuilding = BuildingManager.getAvailableDiningBuilding(person, false);
+				hungerScore = assessBuildingSuitability(hungerScore, diningBuilding, person);
 			}
-
-			double t0 = .5 * (thirst - PhysicalCondition.THIRST_THRESHOLD);
-			if (t0 <= 0)
-				t0 = 0;
-
-			result = (h0 * mFactor * dFactor) + t0;
+			else if (person.isInVehicle() ) {
+				// Person will try refraining from eating food while in a vehicle
+				hungerScore.addModifier("vehicle", VEHICLE_FOOD_RATION);
+			}
+			else if (person.getMission() != null) {
+				// Person will tends to ration food while in a missi0on
+				hungerScore.addModifier("mission", MISSION_FOOD_RATION);
+			}
+			hungerScore.addModifier("eatdrink.meals", mFactor);
+			hungerScore.addModifier("eatdrink.desserts", dFactor);
+			result.addBase("hunger", hungerScore.getScore());
 		}
 
-		else
-			return 0;
+		if (needWater) {
+			double thirstBase = .5 * (thirst - PhysicalCondition.THIRST_THRESHOLD);
+			if (thirstBase <= 0)
+				thirstBase = 0;
 
-		if (result <= 0)
-			return 0;
-		else
-			// Add Preference modifier
-			result += result * person.getPreference().getPreferenceScore(this) / 8D;
-
-        if (result > CAP)
-        	result = CAP;
-        
-		return result;
+			result.addBase("thirst", thirstBase);
+		}
+		return createTaskJobs(result);
 	}
 }

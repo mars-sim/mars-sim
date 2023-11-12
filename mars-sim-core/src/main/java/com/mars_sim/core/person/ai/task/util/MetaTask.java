@@ -373,22 +373,6 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Gets the modifier for a Person using a building.
-	 * 
-	 * @param building Building the Person is entering
-	 * @param person Person working
-	 * @deprecated Replace with {@link #assessBuildingSuitability(RatingScore, Building, Person)}
-	 */
-	protected static double getBuildingModifier(Building building, Person person) {
-		double result = 1D;
-		if (building != null) {
-			result *= TaskUtil.getCrowdingProbabilityModifier(person, building);
-			result *= TaskUtil.getRelationshipModifier(person, building);
-		}
-		return result;
-	}
-
-	/**
 	 * Assesses the suitability of a Building to do a Task.
 	 * 
 	 * @param score Base rating
