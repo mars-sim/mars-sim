@@ -88,7 +88,6 @@ import com.mars_sim.core.structure.construction.ConstructionManager;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -383,7 +382,6 @@ public class Settlement extends Structure implements Temporal,
 		this.templateID = id;
 		this.location = location;
 
-//		logger.info(name + " (" + settlementCode + ")" + "  templateID: " + templateID + " " );
 		
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
@@ -585,28 +583,41 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Creates a code name for this settlement.
 	 * 
-	 * @param name
 	 * @return
 	 */
-	public synchronized String createCode(String name) {
-		boolean duplicate = false;
-		String code = "";
+	private String createCode(String name) {
+		// In theory this settlement should not be in the existing Settlements but be safe
+		var existingCodes = unitManager.getSettlements().stream()
+								.filter(s -> !s.equals(this))
+								.map(Settlement::getSettlementCode)
+								.collect(Collectors.toSet());
 		
-		do {
-			code = Conversion.getTwoLetterInitial(name);
-			
-			List<Settlement> settlements = new ArrayList<>(unitManager.getSettlements());
-			if (settlements.isEmpty())
-				break;
-			for (Settlement s: settlements) {
-				String c = s.getSettlementCode();
-				if (c.equalsIgnoreCase(code)) {
-					duplicate = true;
-				}
+		// First strategy use the words
+		char [] letters = new char[2];
+		letters[0] = name.charAt(0);
+		String[] words = name.split(" ");
+		for(int secondWord = 1; secondWord < words.length; secondWord++) {
+			letters[1]  = words[secondWord].charAt(0);
+			String newCode = new String(letters);
+			newCode = newCode.toUpperCase();
+			if (!existingCodes.contains(newCode)) {
+				return newCode;
 			}
-		} while (duplicate);
-		
-		return code;
+		}
+
+		// Second Strategy is based on any letter in the name
+		String filteredName = name.replaceAll("[^A-Za-z]+", "");
+		for(int secondIdx = 1; secondIdx < filteredName.length(); secondIdx++) {
+			letters[1] = filteredName.charAt(secondIdx);
+			String newCode = new String(letters);
+			newCode = newCode.toUpperCase();
+			if (!existingCodes.contains(newCode)) {
+				return newCode;
+			}
+		}
+
+		// Problem now
+		return "ZZ";
 	}
 	
 	

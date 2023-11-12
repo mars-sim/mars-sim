@@ -12,17 +12,24 @@ import com.mars_sim.mapdata.location.Coordinates;
 @SuppressWarnings("serial")
 public class MockSettlement extends Settlement {
 
+	/**
+	 *
+	 */
+	public static final String DEFAULT_NAME = "Mock Settlement";
+
 	/* default logger. */
 	private static final Logger logger = Logger.getLogger(MockSettlement.class.getName());
 	
 	private Simulation sim = Simulation.instance();
 
-	/**
-	 * Constructor
-	 */
+
 	public MockSettlement()  {
+		this(DEFAULT_NAME);
+	}
+
+	public MockSettlement(String name) {
 		// Use Settlement constructor.
-		super("Mock Settlement", 0, new Coordinates(Math.PI / 2D, 0));
+		super(name, 0, new Coordinates(Math.PI / 2D, 0));
 		
 		if (sim == null)
 			logger.severe("sim is null");
@@ -34,7 +41,7 @@ public class MockSettlement extends Settlement {
 		getEquipmentInventory().addCargoCapacity(Double.MAX_VALUE);
 
         // Initialize building manager
-        buildingManager = new BuildingManager(this, "Mock Settlement");
+        buildingManager = new BuildingManager(this, DEFAULT_NAME);
 
         // Initialize building connector manager.
         buildingConnectorManager = new BuildingConnectorManager(this,
@@ -45,11 +52,5 @@ public class MockSettlement extends Settlement {
 
         // Initialize power grid
         powerGrid = new PowerGrid(this);
-	}
-	
-	@Override
-	public String toString() {
-		return getName();
-	}
-	
+	}	
 }

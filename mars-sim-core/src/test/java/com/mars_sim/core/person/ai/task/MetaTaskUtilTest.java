@@ -49,15 +49,15 @@ extends AbstractMarsSimUnitTest {
 		assertMetaTask(eatDrink, "Eating");
 	}
 
-//	public void testLoadVehicleGarage() throws Exception {
-//		LoadVehicleGarage evaLoad = new LoadVehicleGarage(person, buildMission(settlement, person));
-//		assertMetaTask(evaLoad, "Loading Vehicle");
-//	}
+	public void testLoadVehicleGarage() throws Exception {
+		LoadVehicleGarage evaLoad = new LoadVehicleGarage(person, buildMission(settlement, person));
+		assertMetaTask(evaLoad, "Loading Vehicle");
+	}
 
-//	public void testLoadVehicleEVA() throws Exception {
-//		LoadVehicleEVA evaLoad = new LoadVehicleEVA(person, buildMission(settlement, person));
-//		assertMetaTask(evaLoad, "Loading Vehicle");
-//	}
+	public void testLoadVehicleEVA() throws Exception {
+		LoadVehicleEVA evaLoad = new LoadVehicleEVA(person, buildMission(settlement, person));
+		assertMetaTask(evaLoad, "Loading Vehicle");
+	}
 
 	public void testUnloadVehicleGarage() throws Exception {
 		Vehicle vehicle = buildRover(settlement, "loader", null);
