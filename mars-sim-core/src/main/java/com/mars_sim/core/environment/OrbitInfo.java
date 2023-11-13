@@ -42,6 +42,8 @@ public class OrbitInfo implements Serializable, Temporal {
 	// public static final double INSTANTANEOUS_RADIUS_NUMERATOR = SEMI_MAJOR_AXIS
 	public static final double DEGREE_TO_RADIAN = Math.PI / 180D; // convert a number in degrees to radians
 
+	public static final double RADIANS_TO_MILLISOLS = 1000 / (2 * Math.PI);
+
 	/** Mars tilt in radians. */
 	private static final double TILT = 0.4397D; // 25.1918 deg / 180 *pi = 0.4397
 	/** Mars tilt in sine [unit-less] . */
@@ -55,7 +57,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	/** Two PIs. */
 	private static final double TWO_PI = Math.PI * 2D;
 	// On earth, use 15; On Mars, use 14.6 instead.
-	private static final double ANGLE_TO_HOURS = 90D / HALF_PI  / 14.6D;
+	private static final double ANGLE_TO_HOURS = 90D / HALF_PI  / 14.6D; // (or = 24 hrs / (2*pi) * 15 / 14.6)
 
 	private static final double HRS_TO_MILLISOLS = 1 / MarsTime.HOURS_PER_MILLISOL; //1.0275D * MarsTime.MILLISOLS_PER_DAY / 24D; 
 	
@@ -65,7 +67,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	
 	// There's a different between civil and nautical dawn/dusk as the angle of the sun below the horizon 
 	// for calculating the zenith angle at dawn/dusk.
-	// See http://wordpress.mrreid.org/2013/02/05/dawn-dusk-sunrise-sunset-and-twilight/
+	// See https://wordpress.mrreid.org/2013/02/05/dawn-dusk-sunrise-sunset-and-twilight/
 
 	/** The nautical dawn occurs at 12° below the horizon, when it becomes possible to see the horizon properly and distinguish some objects.  */
 	private static final double NAUTICAL_DAWN_ANGLE = 12D; // in degree\
@@ -80,7 +82,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	private static final double COSINE_ZENITH_ANGLE_AT_NAUTICAL_DUSK = Math.cos(ZENITH_ANGLE_AT_NAUTICAL_DUSK);
 
 	/** The civil dawn occurs at 6° below the horizon, when it becomes possible to see the horizon properly and distinguish some objects.  */
-	private static final double CIVIL_DAWN_ANGLE = 12D; // in degree
+	private static final double CIVIL_DAWN_ANGLE = 6D; // in degree
 	
 	/** The zenith angle at civil dawn. */
 	private static final double ZENITH_ANGLE_AT_CIVIL_DAWN = (-90 - CIVIL_DAWN_ANGLE) * DEGREE_TO_RADIAN; // in radian
@@ -99,7 +101,8 @@ public class OrbitInfo implements Serializable, Temporal {
 	/** The cosine of the early civil dusk zenith angle. */
 	private static final double COSINE_ZENITH_ANGLE_AT_EARLY_CIVIL_DUSK = Math.cos(ZENITH_ANGLE_AT_EARLY_CIVIL_DUSK);
 
-
+	/** The twilight angle [in radians] is set to the civil dawn angle. */
+	private static final double TWILIGHT_RADIANS = CIVIL_DAWN_ANGLE * DEGREE_TO_RADIAN;
 	
 	// From https://www.teuse.net/games/mars/mars_dates.html
 	//
@@ -252,12 +255,6 @@ public class OrbitInfo implements Serializable, Temporal {
 		if (theta >= TWO_PI)
 			theta -= TWO_PI;
 
-		// Determine new radius
-//		double instantaneousSunMarsDistance = getHeliocentricDistance(earthTime);
-				
-		// Recompute the areocentric longitude of Mars
-		sunAreoLongitude = computeSunAreoLongitude(pulse.getMasterClock().getEarthTime());
-
 		// Determine Sun theta
 		double sunTheta = sunDirection.getTheta();
 		sunTheta -= 0.000070774 * seconds;
@@ -270,7 +267,17 @@ public class OrbitInfo implements Serializable, Temporal {
 
 		sunDirection = new Coordinates(sunPhi, sunTheta);
 		
-		// Recompute the Solar Declination Angle
+		// Note: at L_s = 0, sunTheta is pi, sunPhi is (HALF_PI + TILT) 
+		// sunDirection = new Coordinates(HALF_PI + TILT, Math.PI);
+		
+		// Determine new radius
+//		double instantaneousSunMarsDistance = getHeliocentricDistance(earthTime);
+				
+		// Recompute the areocentric longitude of Mars
+		sunAreoLongitude = computeSunAreoLongitude(pulse.getMasterClock().getEarthTime());
+
+		// Recompute the Solar Declination Angle *ON DEMAND ONLY*
+		// No need to call the method below in each frame
 //		computeSineSolarDeclinationAngle();
 
 		return true;
@@ -553,14 +560,14 @@ public class OrbitInfo implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the hour angle from a given location [in millisols].
+	 * Gets the hour angle from a given location [in radians].
 	 * Note: the hour angle has not been adjusted with longitude yet.
 	 * 
-	 * @Reference : Solar radiation on Mars: Stationary Photovoltaic Array. 
+	 * @Reference Solar radiation on Mars: Stationary Photovoltaic Array. 
 	 * NASA Technical Memo. 1993.
 	 * 
-	 * @param location.
-	 * @return millisols.
+	 * @param location
+	 * @return radians
 	 */
 	private double getHourAngle(Coordinates location) {
 
@@ -588,62 +595,86 @@ public class OrbitInfo implements Serializable, Temporal {
 
 		double tanSDA = Math.tan(dec);
 		
-		double omega = tanSDA * tanPhi;
-		if (- omega > 1) {
+		double angle = tanSDA * tanPhi;
+
+		if (0 - angle > 1) {
 			logger.info("At " + location + ", the sun will not rise. No daylight. Polar night.");
 			return -10;
 		}
-		else if (omega == 1 || omega == -1) {
+		else if ((0 - angle) == 1 || (0 - angle) == -1) {
 			logger.info("At " + location + ", the sun will be on the horizon for an instant only.");
 		}
-		else if (- omega < -1) {
+		else if (0 - angle < -1) {
 			logger.info("At " + location + ", the sun will not set. Daylight all day. Polar day.");
 			return 10;
 		}
 		
-		return - Math.acos(-omega);
+		// omega = arccos( cos(z-r) - sin(dec) * sin(phi)  
+		//				 	/ (cos(dec) * cos(phi)) ) 
+		// omega = arccos(0 - sin(dec) * sin(phi) / (cos(dec) * cos(phi)))
+		
+		// Since z is 90 and assume r (refraction angle) is zero
+		// cos(z-r) is 0
+		return - Math.acos(0 - angle);
 	}
 
 	/**
 	 * Gets the sunrise and sunset time [in millisols].
-	 * See https://www.omnicalculator.com/physics/sunrise-sunset
+	 * @See also https://www.omnicalculator.com/physics/sunrise-sunset
 	 * 
 	 * @param location
 	 * @return
 	 */
-	public double[] getSunriseSunsetTime(Coordinates location) {
-
-		double omegaSunrise = getHourAngle(location);
-		if (omegaSunrise == 10) {
-			// the sun will not set. Daylight all day. Polar day.
-			return new double[] {-1, -1, 1000};
-		}
-		if (omegaSunrise == -10) {
-			// the sun will not rise. No daylight. Polar night.
+	public double[] getSunTimes(Coordinates location) {
+		// Gets the omega value [in radians]
+		double omega = getHourAngle(location);
+		
+		if (omega == -10) {
+			//  the sun will not rise. No daylight. Polar night.
+			logger.info("At " + location + ", the sun will not rise. No daylight. Polar night.");
 			return new double[] {-1, -1, 0};
 		}
+		else if (omega == 1 || omega == -1) {
+			logger.info("At " + location + ", the sun will be on the horizon for an instant only.");
+		}
+		else if (omega == 10) {
+			// the sun will not set. Daylight all day. Polar day.
+			logger.info("At " + location + ", the sun will not set. Daylight all day. Polar day.");
+			return new double[] {-1, -1, 1000};
+		}
 	
-		// The sunrise and sunset time will need to be adjusted according to the longitude
-		// of the location of interest.
-		double lon = location.getTheta();
+		/** 
+		 * OLD METHOD : Please do not delete. Will need it back
+		 */
+//		// The sunrise and sunset time will need to be adjusted according to the longitude
+//		// of the location of interest.
+//		double lon = location.getTheta();
+//		
+//		// Find the time for sunrise 
+//		double sunriseHrs = 12 + (omega - lon) * ANGLE_TO_HOURS;
+//		if (sunriseHrs < 0)
+//			sunriseHrs = 24 + sunriseHrs;
+//		
+//		double sunriseMillisol = sunriseHrs * HRS_TO_MILLISOLS;
+//		
+//		// Find the time for sunset 
+//		double sunsetHrs = 12 - (omega + lon) * ANGLE_TO_HOURS;
+//		if (sunsetHrs > 24)
+//			sunsetHrs = sunsetHrs - 24;
+//
+//		double sunsetMillisol = sunsetHrs * HRS_TO_MILLISOLS;
 		
-		// Find the time for sunrise 
-		double sunriseHrs = 12 + (omegaSunrise - lon) * ANGLE_TO_HOURS;
-		if (sunriseHrs < 0)
-			sunriseHrs = 24 + sunriseHrs;
-		
-		double sunriseMillisol = sunriseHrs * HRS_TO_MILLISOLS;
+		// Find the millisol time for sunrise 
+		double sunriseMillisol = getSunrise(location).getMillisol();
+				
 		if (sunriseMillisol < 0)
 			sunriseMillisol = 1000 + sunriseMillisol;
 		if (sunriseMillisol > 999)
 			sunriseMillisol = sunriseMillisol - 1000;
 		
-		// Find the time for sunset 
-		double sunsetHrs = 12 - (omegaSunrise + lon) * ANGLE_TO_HOURS;
-		if (sunsetHrs > 24)
-			sunsetHrs = sunsetHrs - 24;
-
-		double sunsetMillisol = sunsetHrs * HRS_TO_MILLISOLS;
+		// Find the millisol time for sunset 
+		double sunsetMillisol = getSunset(location).getMillisol();
+		
 		if (sunsetMillisol < 0)
 			sunsetMillisol = 1000 + sunsetMillisol;
 		if (sunsetMillisol > 999)
@@ -657,6 +688,60 @@ public class OrbitInfo implements Serializable, Temporal {
 		}
 		
 		return new double[] {sunriseMillisol, sunsetMillisol, duration};
+	}
+	
+	/**
+	 * Estimates when the sunrise is for this location.
+	 * 
+	 * @param location
+	 * @return
+	 */
+	public MarsTime getSunrise(Coordinates location) {
+		Coordinates sunDirection = getSunDirection();
+		// Find the sun theta when it decrease over time
+		double sunTheta = sunDirection.getTheta();
+		// Gets the longitude angle due to the specific location
+		double lon = location.getTheta();
+	
+		// Rotate the globe 90 degree to a location closer to the sun to find the sunrise delta time
+		double gapTheta = sunTheta - lon - HALF_PI + TWILIGHT_RADIANS;
+
+		if (gapTheta < 0) {
+			// Gone round the planet,
+			gapTheta += (2 * Math.PI);
+		}
+
+		// Convert time from radian to millisols
+		double timeToSunrise = gapTheta * RADIANS_TO_MILLISOLS;
+
+		return clock.getMarsTime().addTime(timeToSunrise);
+	}
+	
+	/**
+	 * Estimates when the sunset is for this location.
+	 * 
+	 * @param location
+	 * @return
+	 */
+	public MarsTime getSunset(Coordinates location) {
+		Coordinates sunDirection = getSunDirection();
+		// Find the sun theta when it decrease over time
+		double sunTheta = sunDirection.getTheta();
+		// Gets the longitude angle due to the specific location
+		double lon = location.getTheta();
+	
+		// Rotate the globe 90 degree to a location further away from the sun to find the sunset delta time
+		double gapTheta = sunTheta - lon + HALF_PI; // - TWILIGHT_RADIANS;
+
+		if (gapTheta < 0) {
+			// Gone round the planet,
+			gapTheta += (2 * Math.PI);
+		}
+
+		// Convert time from radian to millisols
+		double timeToSunset = gapTheta * RADIANS_TO_MILLISOLS;
+
+		return clock.getMarsTime().addTime(timeToSunset);
 	}
 	
 	/**

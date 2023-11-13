@@ -100,7 +100,7 @@ abstract class EVAMission extends RoverMission {
 		}
 		else {
 			// Decide what to do
-			MarsTime sunrise = surfaceFeatures.getSunRise(getCurrentMissionLocation());
+			MarsTime sunrise = surfaceFeatures.getOrbitInfo().getSunrise(getCurrentMissionLocation());
 			if (surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation())
 					|| (sunrise.getTimeDiff(getMarsTime()) > MAX_WAIT_SUBLIGHT)) {
 				// No point waiting, move to next site

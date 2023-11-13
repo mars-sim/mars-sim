@@ -19,7 +19,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.mapdata.location.Coordinates;
@@ -506,31 +505,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		return result;
 	}
 
-	/**
-	 * Estimates when the sunrise is for this location.
-	 * 
-	 * @param location
-	 * @return
-	 */
-	public MarsTime getSunRise(Coordinates location) {
-		Coordinates sunDirection = orbitInfo.getSunDirection();
 
-		// Sun Theta decreases over time so the Sun theta will be greater
-		// Move the location 1/4 global closer to the sun so sunrise.
-		// Allow for twilight
-		double sunTheta = sunDirection.getTheta();
-		double gapTheta = sunTheta - (location.getTheta() + HALF_PI - 0.2);
-
-		if (gapTheta < 0) {
-			// Gone round the planet,
-			gapTheta += (2 * Math.PI);
-		}
-
-		// Get the time as a ratio of the global times msols per day
-		double timeToSunRise = (gapTheta * 1000D)/(2 * Math.PI);
-
-		return clock.getMarsTime().addTime(timeToSunRise);
-	}
 
 	/**
 	 * Checks if location is within a polar region of Mars.

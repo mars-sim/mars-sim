@@ -335,32 +335,32 @@ public class SettlementTransparentPanel extends JComponent {
 	    roundPane.setPreferredSize(new Dimension(260, 185));
 	    sunPane.add(roundPane, BorderLayout.EAST);
   		
-	    double time[] = {0, 0, 0};
+	    double projectSunTime[] = {0, 0, 0};
 	    if (mapPanel.getSettlement() != null) {
-	    	time = orbitInfo.getSunriseSunsetTime(mapPanel.getSettlement().getCoordinates());
+	    	projectSunTime = orbitInfo.getSunTimes(mapPanel.getSettlement().getCoordinates());
 	    }
 	    
 	    projectSunriseLabel = new JLabel(PROJECTED_SUNRISE 
-	    		+ Math.round(time[0] *10.0)/10.0 + MSOL);
+	    		+ Math.round(projectSunTime[0] *10.0)/10.0 + MSOL);
 	    
 	    projectSunsetLabel = new JLabel(PROJECTED_SUNSET 
-	    		+ Math.round(time[1] *10.0)/10.0 + MSOL);
+	    		+ Math.round(projectSunTime[1] *10.0)/10.0 + MSOL);
 	    
+		projectDaylightLabel  = new JLabel(PROJECTED_DAYLIGHT 
+	    		+ Math.round(projectSunTime[2] *10.0)/10.0 + MSOL);
+		
 	    sunriseLabel = new JLabel(SUNRISE + PENDING);
 		sunsetLabel = new JLabel(SUNSET + PENDING);
 		zenithLabel = new JLabel(ZENITH + PENDING);
 		maxSunLabel = new JLabel(MAX_LIGHT + PENDING);
 		daylightLabel = new JLabel(DAYLIGHT + PENDING);
-		
-		projectDaylightLabel  = new JLabel(PROJECTED_DAYLIGHT 
-	    		+ Math.round(time[2] *10.0)/10.0 + MSOL);
-		
 		currentSunLabel = new JLabel(CURRENT_LIGHT + PENDING);
 
 		projectSunriseLabel.setFont(sunFont);
 		sunriseLabel.setFont(sunFont);
 		projectSunsetLabel.setFont(sunFont);
 		sunsetLabel.setFont(sunFont);
+		
 		zenithLabel.setFont(sunFont);
 		maxSunLabel.setFont(sunFont);
 		daylightLabel.setFont(sunFont);
@@ -1172,7 +1172,7 @@ public class SettlementTransparentPanel extends JComponent {
 	 * Gets the sunlight data and display it on the top left panel of the settlement map.
 	 */
 	private void displaySunData(Coordinates location) {
-	    double time[] = orbitInfo.getSunriseSunsetTime(mapPanel.getSettlement().getCoordinates());
+	    double time[] = orbitInfo.getSunTimes(mapPanel.getSettlement().getCoordinates());
 	    
 		projectSunriseLabel.setText (PROJECTED_SUNRISE + Math.round(time[0] *10.0)/10.0 + MSOL);
 		projectSunsetLabel.setText (PROJECTED_SUNSET + Math.round(time[1] *10.0)/10.0 + MSOL);

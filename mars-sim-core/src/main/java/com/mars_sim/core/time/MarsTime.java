@@ -103,7 +103,7 @@ public class MarsTime implements Serializable {
 	private transient String dateTimeTruncString = null;
 
 	/**
-	 * Constructor 2 : create a MarsTime instance with the given mission sol.
+	 * Constructor 1. Create a MarsTime instance with the given mission sol.
 	 * Note that time will NOT increment in this clock.
 	 *
 	 * @param newSols the sols to be added to the calendar
@@ -226,7 +226,7 @@ public class MarsTime implements Serializable {
 	}
 
 	/**
-	 * Constructor 3 : create a MarsTime object with a given time.
+	 * Constructor 2. Creates a MarsTime object with a given time.
 	 * Note that time will NOT increment in this clock.
 	 *
 	 * @param orbit    current orbit
@@ -240,6 +240,16 @@ public class MarsTime implements Serializable {
 				calculateTotalMillisols(orbit, month, sol, millisol));
 	}
 
+	/**
+	 * Constructor 3.
+	 * 
+	 * @param orbit
+	 * @param month
+	 * @param sol
+	 * @param millisol
+	 * @param missionSol
+	 * @param totalMillisols
+	 */
 	private MarsTime(int orbit, int month, int sol, double millisol, int missionSol, double totalMillisols) {
 		// Set date/time to given parameters.
 		this.orbit = orbit;
@@ -340,7 +350,8 @@ public class MarsTime implements Serializable {
 	}
 
 	/**
-	 * Get teh Mars date element of this timestamp.
+	 * Gets the Mars date element of this timestamp.
+	 * 
 	 * @return
 	 */
 	public MarsDate getDate() {

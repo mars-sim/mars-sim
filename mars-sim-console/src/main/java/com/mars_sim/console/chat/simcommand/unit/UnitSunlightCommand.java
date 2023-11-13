@@ -38,7 +38,9 @@ public class UnitSunlightCommand extends AbstractUnitCommand {
 														surfaceFeatures.getSolarIrradiance(locn)));
 		response.appendLabeledString("Dark Polar Region", (surfaceFeatures.inDarkPolarRegion(locn) ?
 															"Yes" : "No"));
-		response.appendLabeledString("Recent Sunrise", surfaceFeatures.getSunRise(locn).getTruncatedDateTimeStamp());
+		response.appendLabeledString("Recent Sunrise", surfaceFeatures.getOrbitInfo().getSunrise(locn).getTruncatedDateTimeStamp());
+
+		response.appendLabeledString("Recent Sunset", surfaceFeatures.getOrbitInfo().getSunset(locn).getTruncatedDateTimeStamp());
 
 		context.println(response.getOutput());
 		return true;

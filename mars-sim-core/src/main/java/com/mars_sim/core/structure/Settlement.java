@@ -1063,7 +1063,7 @@ public class Settlement extends Structure implements Temporal,
 			count++;
 			double deltaTime = AIRLOCK_OPERATION_OFFSET * Math.floor(count * multiplier);
 			
-			int startTimeEVA = (int)deltaTime +  WAIT_FOR_SUNLIGHT_DELAY + (int)(surfaceFeatures.getOrbitInfo().getSunriseSunsetTime(location))[0];
+			int startTimeEVA = (int)deltaTime +  WAIT_FOR_SUNLIGHT_DELAY + (int)(surfaceFeatures.getOrbitInfo().getSunTimes(location))[0];
 			
 			// On Duty if less than 75% of the shift completed
 			boolean isOnDuty = (p.getShiftSlot().getShift().getShiftCompleted(startTimeEVA) < 0.75D);
