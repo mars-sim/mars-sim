@@ -596,7 +596,7 @@ public class Settlement extends Structure implements Temporal,
 		char [] letters = new char[2];
 		letters[0] = name.charAt(0);
 		String[] words = name.split(" ");
-		for(int secondWord = 1; secondWord < words.length; secondWord++) {
+		for (int secondWord = 1; secondWord < words.length; secondWord++) {
 			letters[1]  = words[secondWord].charAt(0);
 			String newCode = new String(letters);
 			newCode = newCode.toUpperCase();
@@ -607,7 +607,7 @@ public class Settlement extends Structure implements Temporal,
 
 		// Second Strategy is based on any letter in the name
 		String filteredName = name.replaceAll("[^A-Za-z]+", "");
-		for(int secondIdx = 1; secondIdx < filteredName.length(); secondIdx++) {
+		for (int secondIdx = 1; secondIdx < filteredName.length(); secondIdx++) {
 			letters[1] = filteredName.charAt(secondIdx);
 			String newCode = new String(letters);
 			newCode = newCode.toUpperCase();
@@ -616,8 +616,8 @@ public class Settlement extends Structure implements Temporal,
 			}
 		}
 
-		// Problem now
-		return "ZZ";
+		int size = unitManager.getSettlements().size() + 1;
+		return String.format("%02d", size);
 	}
 	
 	

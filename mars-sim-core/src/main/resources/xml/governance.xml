@@ -566,7 +566,7 @@
 			<rover-name name="Huojian" />  <!-- Chinese for rocket -->
 			<rover-name name="Bolang" />   <!-- Chinese for wave front -->
 			<rover-name name="Lingxian" /> <!-- Chinese for leading the way -->
-			<rover-name name="guoLu" />    <!-- Chinese for passing through -->
+			<rover-name name="GuoLu" />    <!-- Chinese for passing through -->
 			<rover-name name="Youli" />    <!-- Chinese for traveling -->
 			<rover-name name="Changtu" />   <!-- Chinese for long journey" -->
 			<rover-name name="Hangcheng" /> <!-- Chinese for voyage -->

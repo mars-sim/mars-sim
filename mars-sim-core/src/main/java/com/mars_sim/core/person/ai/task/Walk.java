@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;

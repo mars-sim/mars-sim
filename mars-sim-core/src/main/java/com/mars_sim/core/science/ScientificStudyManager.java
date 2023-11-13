@@ -8,11 +8,14 @@ package com.mars_sim.core.science;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
 
@@ -29,14 +32,28 @@ public class ScientificStudyManager // extends Thread
 	private static final Logger logger = Logger.getLogger(ScientificStudyManager.class.getName());
 	
 	// Data members
+	/** The mission identifier. */
+	private int identifier;
+	/** The sol cache. */	
+	private int solCache;
+	/** The list of scientific study. */
 	private List<ScientificStudy> studies = new ArrayList<>();
-
+	/** The codes for each science type. */
+	private Map<ScienceType, String> codeMap = new HashMap<>();
+	
 	/**
 	 * Constructor.
 	 */
 	public ScientificStudyManager() {
+		// Initialize data members
+		identifier = 1;
+		solCache = 1;
 		// Methods are threadsafe
-//		studies = new ArrayList<>();
+		
+		for (ScienceType type: ScienceType.values()) {
+			String code = createCode(type);
+			codeMap.put(type, code);
+		}
 	}
 
 	/**
@@ -56,9 +73,21 @@ public class ScientificStudyManager // extends Thread
 			throw new IllegalArgumentException("difficultyLevel must be positive value");
 		
 		ScientificStudy study = null;
+
+		// Gets the scientific study string. Must be synchronised to prevent duplicate identifiers 
+		// being assigned via different threads
 		synchronized (studies) {
-			int id = studies.size() + 1;
-			String name = science.getName() + " #" + id;
+			int missionSol = Simulation.instance().getMasterClock().getMarsTime().getMissionSol();
+			int id = 1;
+			if (solCache != missionSol) {
+				solCache = missionSol;
+				identifier = 1;
+			}
+			else
+				id = identifier++;
+			String numString = missionSol + "-" + String.format("%03d", id);
+			String name = codeMap.get(science) + "-" + researcher.getAssociatedSettlement().getSettlementCode()
+					+ "-" + numString;
 			study = new ScientificStudy(id, name, researcher, science, difficultyLevel);
 			studies.add(study);
 		}
@@ -68,6 +97,47 @@ public class ScientificStudyManager // extends Thread
 		return study;
 	}
 
+	/**
+	 * Creates a code name for each science type.
+	 * 
+	 * @return
+	 */
+	private String createCode(ScienceType type) {
+		String name = type.getName();
+		// In theory this science type should not be in the existing codeMap yet
+		var existingCodes = codeMap.values().stream()
+								.filter(t -> t != name)
+								.collect(Collectors.toSet());
+		
+		// First strategy use the words
+		char [] letters = new char[2];
+		letters[0] = name.charAt(0);
+		String[] words = name.split(" ");
+		for (int secondWord = 1; secondWord < words.length; secondWord++) {
+			letters[1]  = words[secondWord].charAt(0);
+			String newCode = new String(letters);
+			newCode = newCode.toUpperCase();
+			if (!existingCodes.contains(newCode)) {
+				return newCode;
+			}
+		}
+
+		// Second Strategy is based on any letter in the name
+		String filteredName = name.replaceAll("[^A-Za-z]+", "");
+		for(int secondIdx = 1; secondIdx < filteredName.length(); secondIdx++) {
+			letters[1] = filteredName.charAt(secondIdx);
+			String newCode = new String(letters);
+			newCode = newCode.toUpperCase();
+			if (!existingCodes.contains(newCode)) {
+				return newCode;
+			}
+		}
+
+		int size = codeMap.size() + 1;
+		return String.format("%02d", size);
+	}
+	
+	
 	/**
 	 * Gets all ongoing scientific studies.
 	 * 

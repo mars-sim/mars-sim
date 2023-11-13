@@ -64,12 +64,12 @@ public class MissionManager implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(MissionManager.class.getName());
 
-	/** The mission identifier */
+	/** The mission identifier. */
 	private int identifier;
-	/** The sol cache */	
-	private int solCache = 1;
+	/** The sol cache. */	
+	private int solCache;
 
-	/** The mission identifier string */
+	/** The mission identifier string. */
 	private String missionString;
 	
 	/** The mission listeners. */
@@ -86,6 +86,7 @@ public class MissionManager implements Serializable {
 	public MissionManager() {
 		// Initialize data members
 		identifier = 1;
+		solCache = 1;
 		onGoingMissions = new CopyOnWriteArrayList<>();
 		historicalMissions = new SolMetricDataLogger<>(30);
 		listeners = null;

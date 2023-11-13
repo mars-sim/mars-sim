@@ -9,14 +9,13 @@ package com.mars_sim.ui.swing.unit_window.vehicle;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.Collection;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.person.Person;
@@ -165,27 +164,28 @@ public class TabPanelEVA extends TabPanel {
 		
 		// Create transitionLabel
 		transitionLabel = labelGrid.addTextField(Msg.getString("TabPanelEVA.airlock.transition"),
-				 							Boolean.toString(vehicleAirlock.isTransitioning()), null);
+				Conversion.capitalize0(Boolean.toString(vehicleAirlock.isTransitioning())), null);
 
 		// Create activationLabel
 		activationLabel = labelGrid.addTextField(Msg.getString("TabPanelEVA.airlock.activation"),
-				Boolean.toString(vehicleAirlock.isActivated()), null);
+				Conversion.capitalize0(Boolean.toString(vehicleAirlock.isActivated())), null);
 		
 		// Create OperatorLabel
 		operatorLabel = labelGrid.addTextField(Msg.getString("TabPanelEVA.operator"),
 				vehicleAirlock.getOperatorName(), null);
 
+		JPanel borderPanel = new JPanel(new BorderLayout());
+		content.add(borderPanel, BorderLayout.CENTER);
+		
 		// Create listPanel
 		JPanel listPanel = new JPanel(new GridLayout(1, 2));
-		Border margin = new EmptyBorder(10, 10, 10, 10);
-		listPanel.setBorder(margin);
-		listPanel.setPreferredSize(new Dimension(440, -1));
-		content.add(listPanel, BorderLayout.CENTER);
+		borderPanel.add(listPanel, BorderLayout.CENTER);
 		
 		// Create outside list panel
 		JPanel outsidePanel = new JPanel(new BorderLayout());
-		outsidePanel.setPreferredSize(new Dimension(120, -1));
-		outsidePanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.outer")));
+		outsidePanel.setBorder(new CompoundBorder(new EmptyBorder(1, 1, 1, 1), 
+			BorderFactory.createTitledBorder(
+				Msg.getString("BuildingPanelEVA.titledB.outer"))));
 		listPanel.add(outsidePanel);
 
 		// Create outsideListPanel 
@@ -199,8 +199,9 @@ public class TabPanelEVA extends TabPanel {
 		
 		// Create outside wait panel
 		JPanel insidePanel = new JPanel(new BorderLayout());
-		insidePanel.setPreferredSize(new Dimension(120, -1));
-		insidePanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.inner")));
+		insidePanel.setBorder(new CompoundBorder(new EmptyBorder(1, 1, 1, 1), 
+			BorderFactory.createTitledBorder(
+				Msg.getString("BuildingPanelEVA.titledB.inner"))));
 		listPanel.add(insidePanel);
 
 		// Create insideListPanel 
@@ -212,10 +213,15 @@ public class TabPanelEVA extends TabPanel {
 		};
 		insidePanel.add(insideListPanel);
 		
+		JPanel lowerPanel = new JPanel(new BorderLayout());
+		content.add(lowerPanel, BorderLayout.SOUTH);
+		
 		// Create occupant panel
 		JPanel occupantPanel = new JPanel(new BorderLayout());
-		addBorder(occupantPanel, Msg.getString("TabPanelEVA.titledB.occupants"));
-		content.add(occupantPanel, BorderLayout.SOUTH);
+		occupantPanel.setBorder(new CompoundBorder(new EmptyBorder(1, 1, 1, 1), 
+			BorderFactory.createTitledBorder(
+				Msg.getString("BuildingPanelEVA.titledB.occupants"))));
+		lowerPanel.add(occupantPanel, BorderLayout.CENTER);
 		
         // Create occupant list
         occupantListPanel = new UnitListPanel<>(desktop, new Dimension(100, 100)) {

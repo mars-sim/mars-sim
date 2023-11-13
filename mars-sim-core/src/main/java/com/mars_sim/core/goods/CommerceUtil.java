@@ -78,11 +78,13 @@ public final class CommerceUtil {
 		}
 
 		if (bestDeal == null) {
-			logger.info(startingSettlement, 30_000, "No deal for a " + commerceType.name().toLowerCase() + " mission.");
+			logger.info(startingSettlement, 30_000, "No deal for a " 
+				+ commerceType.name().toLowerCase() + " mission.");
 			return null;
 		}
-		logger.info(startingSettlement, "New best deal for " + commerceType.name() + " to " + bestDeal.getBuyer().getName()
-									+ " profit " + bestDeal.getProfit() + ".");
+		logger.info(startingSettlement, "New best deal for a " + commerceType.name().toLowerCase() 
+				+ " mission to " + bestDeal.getBuyer().getName()
+				+ ": Profit " + Math.round(bestDeal.getProfit() * 10.0)/10.0 + ".");
 		return bestDeal;
 	}
 
@@ -172,7 +174,8 @@ public final class CommerceUtil {
 	}
 
 	/**
-	 * Gets the Deal details for a trade between 2 settlements.	 * 
+	 * Gets the Deal details for a trade between 2 settlements.
+	 * 
 	 * @param startingSettlement the settlement to trade from.
 	 * @param delivery              the vehicle to carry the trade goods.
 	 * @param tradingSettlement  the settlement to trade to.
@@ -192,7 +195,8 @@ public final class CommerceUtil {
 
 
 	/**
-	 * Gets the desired buy load from a trading settlement. Check there is sufficent Credit in place.
+	 * Gets the desired buy load from a trading settlement. 
+	 * Note: Checks if there is sufficient credit in place.
 	 * 
 	 * @param buyingSettlement the settlement that is buying.
 	 * @param delivery              the vehicle used for trade.
@@ -201,7 +205,7 @@ public final class CommerceUtil {
 	 * @throws Exception if error determining the buy load.
 	 */
 	public static Shipment getDesiredBuyLoad(Settlement buyingSettlement,
-													Vehicle delivery, Settlement sellingSettlement) {
+								Vehicle delivery, Settlement sellingSettlement) {
 		// Get the credit that the starting settlement has with the destination
 		// settlement.
 		double credit = CreditManager.getCredit(buyingSettlement, sellingSettlement);
@@ -209,15 +213,16 @@ public final class CommerceUtil {
 		Shipment desiredBuyLoad = null;
 		if (credit > (SELL_CREDIT_LIMIT * -1D)) {
 			// Determine desired buy load,
-			desiredBuyLoad 	= determineLoad(buyingSettlement, sellingSettlement, delivery,
-					Double.POSITIVE_INFINITY);
+			desiredBuyLoad 	= determineLoad(buyingSettlement, sellingSettlement, 
+					delivery, Double.POSITIVE_INFINITY);
 		}
 
 		return desiredBuyLoad;
 	}
 
 	/**
-	 * Determines the best sell load from a settlement to another. Check there is sufficent Credit in place.
+	 * Determines the best sell load from a settlement to another. 
+	 * Note: Checks if there is sufficient credit in place.
 	 * 
 	 * @param sellingSettlement the settlement to trade from.
 	 * @param delivery              the vehicle to carry the goods.
