@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
@@ -80,20 +81,48 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
         if (ObserveAstronomicalObjects.areConditionsSuitable(target)
                 && !target.getBuildingManager().getBuildingSet(FunctionType.ASTRONOMICAL_OBSERVATION).isEmpty()) {    
             // Any Astro based study active at this Settlement
-            for(ScientificStudy s : ssm.getAllStudies(target)) {
-                if (isSuitableReseach(s)) {
-                    // Suitable study so create tasks for each Observatory
-                    RatingScore score = new RatingScore(100);
-                    score.addModifier(GOODS_MODIFIER, (target.getGoodsManager().getTourismFactor()
+            for(ScientificStudy s : getAstroStudies(target)) {
+            	// Suitable study so create tasks for each Observatory
+                RatingScore score = new RatingScore(100);
+                score.addModifier(GOODS_MODIFIER, (target.getGoodsManager().getTourismFactor()
                             + target.getGoodsManager().getResearchFactor())/1.5D);
-
-                    result.add(new AstronomicalTaskJob(this, s, score));
-                }
+                result.add(new AstronomicalTaskJob(this, s, score));
             }      
         }
         return result;
     }
 
+//    /**
+//     * Is this study suitable for Astronomy? Either primary science type or has a collaboration
+//     * of Astronomy from at least one collaborator.
+//     * 
+//     * @param study
+//     * @return
+//     */
+//    private static boolean isSuitableReseach(ScientificStudy study) {
+//        return (ScientificStudy.RESEARCH_PHASE.equals(study.getPhase())
+//            && ((ScienceType.ASTRONOMY == study.getScience())
+//                || study.getCollaborationScience().contains(ScienceType.ASTRONOMY)));
+//    }
+//    
+	/**
+	 * Gets a list of astronomy studies a settlement is primary for.
+	 * Note: Either primary science type or has a collaboration
+     * of Astronomy from at least one collaborator.
+	 * 
+	 * @param settlement the settlement.
+	 * @return list of scientific studies.
+	 */
+	public List<ScientificStudy> getAstroStudies(Settlement settlement) {
+		return ssm.getAllStudies(settlement).stream().filter(s -> 
+		(ScientificStudy.RESEARCH_PHASE.equals(s.getPhase())
+	            && ((ScienceType.ASTRONOMY == s.getScience())
+	                || s.getCollaborationScience().contains(ScienceType.ASTRONOMY)))
+								&&	(s.getPrimarySettlement()  == null ?
+									false : s.getPrimarySettlement().equals(settlement)))
+				.collect(Collectors.toList());		
+	}
+	
     /**
      * Assesses the suitability of a Person do to an Observation task. Based largely on the Study
      * the person is performing.
@@ -151,19 +180,6 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
         result = assessBuildingSuitability(result, observatory.getBuilding(), p);
 
         return result;
-    }
-
-    /**
-     * Is this study suitable for Astronomy? Either primary science type or has a collaboration
-     * of Astronomy from at least one collaborator.
-     * 
-     * @param study
-     * @return
-     */
-    private static boolean isSuitableReseach(ScientificStudy study) {
-        return (ScientificStudy.RESEARCH_PHASE.equals(study.getPhase())
-            && ((ScienceType.ASTRONOMY == study.getScience())
-                || study.getCollaborationScience().contains(ScienceType.ASTRONOMY)));
     }
 
     /**
