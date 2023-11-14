@@ -72,7 +72,7 @@ public class RelationshipUtil implements Serializable {
 			case REMOTE_COMMUNICATION -> getRemoteRelationship(person1, person2);
 			default -> 1D;
 		};
-		person1.getRelation().setOpinion(person2, opinion);
+		person1.getRelation().setRandomOpinion(person2, opinion);
 	}
 
 	
@@ -95,7 +95,9 @@ public class RelationshipUtil implements Serializable {
 	 * @return true if the two people have a relationship
 	 */
 	private static boolean hasRelationship(Person person1, Person person2) {
-		return (person1.getRelation().getOpinion(person2).getAverage() > 0);
+		if (person1.getRelation().getOpinion(person2) == null)
+			return false;
+		return true;
 	}
 
 	/**
@@ -224,6 +226,8 @@ public class RelationshipUtil implements Serializable {
 	 *         friend).
 	 */
 	public static double getOpinionOfPerson(Person person1, Person person2) {
+		if (person1.getRelation().getOpinion(person2) == null)
+			return Relation.EMPTY_OPINION.getAverage();
 		return person1.getRelation().getOpinion(person2).getAverage();
 	}
 	
@@ -296,7 +300,7 @@ public class RelationshipUtil implements Serializable {
 				if (!hasRelationship(person, localPerson)) {
 					createRelationship(person, localPerson, RelationshipType.FACE_TO_FACE_COMMUNICATION);
 				}
-	
+		
 				// Determine probability of relationship change per millisol.
 				double changeProbability = BASE_RELATIONSHIP_CHANGE_PROBABILITY * time;
 				double stressProbModifier = 1D + ((personStress + localPersonStress) / 100D);
@@ -327,7 +331,7 @@ public class RelationshipUtil implements Serializable {
 							.getAttribute(NaturalAttributeType.ATTRACTIVENESS);
 					double attractivenessModifier = (attractiveness - 50D) / 50D;
 					attractivenessModifier *= BASE_ATTRACTIVENESS_MODIFIER * time;
-					boolean oppositeGenders = (!person.getGender().equals(localPerson.getGender()));
+					boolean oppositeGenders = (person.getGender() != localPerson.getGender());
 					if (oppositeGenders) {
 						changeAmount += attractivenessModifier;
 						RandomUtil.getRandomDouble(changeAmount);
@@ -419,10 +423,10 @@ public class RelationshipUtil implements Serializable {
 	 * @return the person's opinion of the target as a value from 0 to 100.
 	 */
 	private static double getFirstImpression(Person person, Person target) {
-		double result = 0;
+		double result = 10;
 
 		// Random with bell curve around 50.
-		int numberOfIterations = 3;
+		int numberOfIterations = RandomUtil.getRandomInt(10);
 		for (int x = 0; x < numberOfIterations; x++)
 			result += RandomUtil.getRandomDouble(100D);
 		result /= numberOfIterations;
@@ -438,10 +442,8 @@ public class RelationshipUtil implements Serializable {
 		result += RandomUtil.getRandomDouble(conversationModifier);
 
 		// Modify based on attractiveness attribute if people are of opposite genders.
-		// Note: We may add sexual orientation later that will add further complexity to
-		// this.
 		double attractivenessModifier = attributes.getAttribute(NaturalAttributeType.ATTRACTIVENESS) - 50D;
-		boolean oppositeGenders = (!person.getGender().equals(target.getGender()));
+		boolean oppositeGenders = (person.getGender() != target.getGender());
 		if (oppositeGenders)
 			result += RandomUtil.getRandomDouble(attractivenessModifier);
 		
@@ -459,6 +461,9 @@ public class RelationshipUtil implements Serializable {
 		if (result < 50D)
 			result += RandomUtil.getRandomDouble(SETTLER_MODIFIER);
 
+		if (result > 100)
+			result = 100; 
+			
 		return result;
 	}
 
@@ -471,10 +476,10 @@ public class RelationshipUtil implements Serializable {
 	 * @return the person's opinion of the target as a value from 0 to 100.
 	 */
 	private static double getExistingRelationship(Person person, Person target) {
-		double result = 0D;
+		double result = 10D;
 
 		// Random with bell curve around 50.
-		int numberOfIterations = 3;
+		int numberOfIterations = RandomUtil.getRandomInt(10);
 		for (int x = 0; x < numberOfIterations; x++)
 			result += RandomUtil.getRandomDouble(100D);
 		result /= numberOfIterations;
@@ -486,10 +491,8 @@ public class RelationshipUtil implements Serializable {
 		result += RandomUtil.getRandomDouble((conversationModifier0 + conversationModifier1)/8.0);
 		
 		// Modify based on attractiveness attribute if people are of opposite genders.
-		// Note: We may add sexual orientation later that will add further complexity to
-		// this.
 		double attractivenessModifier = target.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ATTRACTIVENESS) - 50D;
-		boolean oppositeGenders = (!person.getGender().equals(target.getGender()));
+		boolean oppositeGenders = (person.getGender() != target.getGender());
 		if (oppositeGenders)
 			result += RandomUtil.getRandomDouble(attractivenessModifier);
 
@@ -511,7 +514,10 @@ public class RelationshipUtil implements Serializable {
 		// Modify as settlers are trained to try to get along with each other.
 		if (result < 50D)
 			result += RandomUtil.getRandomDouble(SETTLER_MODIFIER);
-
+		
+		if (result > 100)
+			result = 100; 
+		
 		return result;
 	}
 
@@ -541,6 +547,9 @@ public class RelationshipUtil implements Serializable {
 		ScienceType science = ScienceType.getJobScience(target.getMind().getJob());
 		result += target.getScientificAchievement(science);
 
+		if (result > 100)
+			result = 100; 
+		
 		return result;
 	}
 }

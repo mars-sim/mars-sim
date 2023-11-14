@@ -24,7 +24,7 @@ public class Relation implements Serializable {
 	/**
 	 * Details of a specific relationship to a Person
 	 */
-	public record Opinion(double trust, double care, double respect) implements Serializable {
+	public record Opinion(double respect, double care, double trust) implements Serializable {
 		public double getAverage() {
 			return (trust + care + respect)/3D;
 		}
@@ -33,9 +33,7 @@ public class Relation implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-
-	private static final Opinion EMPTY_OPINION = new Opinion(0, 0, 0);
-
+	public static final Opinion EMPTY_OPINION = new Opinion(50, 50, 50);
 	
 	/** The person's opinion of another person. */
 	private Map<Integer, Opinion> opinionMap = new HashMap<>();
@@ -52,51 +50,83 @@ public class Relation implements Serializable {
 	}
 	
 	/**
-	 * Gets the Opinion regarding a person.
+	 * Gets the opinion regarding a person.
 	 * 
-	 * @param p Person to get an opnion on
+	 * @param p Person to get an opinion on
 	 * @return
 	 */
 	public Opinion getOpinion(Person p) {
-		return opinionMap.getOrDefault(p.getIdentifier(), EMPTY_OPINION);
+		if (opinionMap.containsKey(p.getIdentifier())) {
+			return opinionMap.get(p.getIdentifier());
+		}
+		return null;
+//		return opinionMap.getOrDefault(p.getIdentifier(), EMPTY_OPINION);
 	}
 	
 	/**
-	 * Sets the opinion regarding a person.
+	 * Sets a random opinion regarding a person.
 	 * 
 	 * @param p
 	 * @param opinion
 	 */
-	void setOpinion(Person p, double opinion) {
-		if (opinion < 1)
-			opinion = 1;
-		if (opinion > 100)
-			opinion = 100;
-		double care, trust, respect;
+	void setRandomOpinion(Person p, double opinion) {
+		double score = opinion;
+		if (score < 0)
+			score = 10;
+		if (score > 100)
+			score = 100;
+		
+		double care = 0;
+		double trust = 0;
+		double respect = 0;
+		
 		int personID = p.getIdentifier();
 		Opinion found = opinionMap.get(personID);
+		
 		if (found == null) {
-			trust = 50.0 + RandomUtil.getRandomDouble(-10, 10);
-			care = 50.0 + RandomUtil.getRandomDouble(-10, 10);
-			respect = 50.0 + RandomUtil.getRandomDouble(-10, 10);
-		}
-		else {
-			care = found.care;
-			trust = found.trust;
-			respect = found.respect;
-			int rand = RandomUtil.getRandomInt(2);
-			if (rand == 0) {
-				trust = opinion;
+			respect = RandomUtil.getRandomDouble(score/1.5, score * 1.5);
+			care = RandomUtil.getRandomDouble(respect/1.5, respect * 1.5);			
+			trust = RandomUtil.getRandomDouble(care/1.5, care * 1.5);
+
+			// Gauge the difference between respect and trust
+			double d = respect - trust;
+			if (d >= 20 || d >= -20) {
+				respect = respect - d/4;
+				trust = trust + d/4;
 			}
-			else if (rand == 1) {
-				care = opinion;
+
+			// Gauge the difference between care and trust
+			d = care - trust;
+			if (d >= 15 || d >= -15) {
+				care = care - d/4;
+				trust = trust + d/4;
 			}
-			else {
-				respect = opinion;
+			
+			// Gauge the difference between care and respect
+			d = care - respect;
+			if (d >= 10 || d >= -10) {
+				care = care - d/4;
+				respect = respect + d/4;
 			}
+			
+			if (respect < 0)
+				respect = 0;
+			if (respect > 100)
+				respect = 100;
+			
+			if (care < 0)
+				care = 0;
+			if (care > 100)
+				care = 100;
+			
+			if (trust < 0)
+				trust = 0;
+			if (trust > 100)
+				trust = 100;
 		}
 
-		opinionMap.put(personID, new Opinion(trust, care, respect));
+		found = new Opinion(respect, care, trust);
+		opinionMap.put(personID, found);
 	}
 	
 	
@@ -107,12 +137,43 @@ public class Relation implements Serializable {
 	 * @param mod
 	 */
 	void changeOpinion(Person p, double mod) {
-		double result = getOpinion(p).getAverage() + mod;
-		if (result < 1)
-			result = 1;
-		if (result > 100)
-			result = 100;
-		setOpinion(p, result);
+		
+		int personID = p.getIdentifier();
+		Opinion found = opinionMap.get(personID);
+		
+		double care = found.care;
+		double trust = found.trust;
+		double respect = found.respect;
+		int rand = RandomUtil.getRandomInt(6);
+		if (rand == 0) {
+			// Less likely to change the trust than care and respect
+			trust += mod;
+		}
+		else if (rand == 1 || rand == 2) {
+			care += mod;
+		}
+		else { // 3, 4, 5, 6
+			// Most likely to change the respect than care and trust
+			respect += mod;
+		}
+		
+		if (respect < 0)
+			respect = 0;
+		if (respect > 100)
+			respect = 100;
+		
+		if (care < 0)
+			care = 0;
+		if (care > 100)
+			care = 100;
+		
+		if (trust < 0)
+			trust = 0;
+		if (trust > 100)
+			trust = 100;
+		
+		found = new Opinion(respect, care, trust);
+		opinionMap.put(personID, found);
 	}
 	
 	/**
