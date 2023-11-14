@@ -110,6 +110,8 @@ public class Settlement extends Structure implements Temporal,
 	private static final SimLogger logger = SimLogger.getLogger(Settlement.class.getName());
 
 	// Static members
+	private static final int NUM_BACKGROUND_IMAGES = 20;
+	
 	private static final String IMMINENT = " be imminent.";
 	private static final String DETECTOR = "The radiation detector just forecasted a ";
 	private static final String TRADING_OUTPOST = "Trading Outpost";
@@ -233,13 +235,15 @@ public class Settlement extends Structure implements Temporal,
 	private int numOwnedBots;
 	/** Numbers of vehicles owned by this settlement. */
 	private int numOwnedVehicles;
-
+	/** The composite value of the minerals nearby. */
+	public int mineralValue = -1;
+	/** The background map image id used by this settlement. */
+	private int mapImageID;
+	
 	/** The average regolith collection rate nearby. */
 	private double regolithCollectionRate = RandomUtil.getRandomDouble(4, 8);
 	/** The average ice collection rate of the water ice nearby. */
 	private double iceCollectionRate = RandomUtil.getRandomDouble(0.2, 1);
-	/** The composite value of the minerals nearby. */
-	public int mineralValue = -1;
 	/** The rate [kg per millisol] of filtering grey water for irrigating the crop. */
 	public double greyWaterFilteringRate = 1;
 	/** The currently minimum passing score for mission approval. */
@@ -431,6 +435,8 @@ public class Settlement extends Structure implements Temporal,
 		this.initialPopulation = populationNumber;
 		this.sponsor = sponsor;
 
+		this.mapImageID = RandomUtil.getRandomInt(NUM_BACKGROUND_IMAGES - 1) + 1;
+				
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
@@ -3896,7 +3902,7 @@ public class Settlement extends Structure implements Temporal,
 	 * 
 	 * @return A read only copy of preferences
 	 */
-	public Map<PreferenceKey,Object> getPreferences() {
+	public Map<PreferenceKey, Object> getPreferences() {
 		return Collections.unmodifiableMap(preferences);
 	}
 
@@ -3923,6 +3929,13 @@ public class Settlement extends Structure implements Temporal,
 		preferences.put(key, value);
 	}
 
+	/** 
+	 * Gets the background map image id used by this settlement. 
+	 */
+	public int getMapImageID() {
+		return mapImageID;
+	}
+	
 	/**
 	 * Reinitializes references after loading from a saved sim.
 	 */

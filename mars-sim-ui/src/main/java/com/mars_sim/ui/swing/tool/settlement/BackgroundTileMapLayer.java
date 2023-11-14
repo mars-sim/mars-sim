@@ -26,11 +26,12 @@ import com.mars_sim.ui.swing.ImageLoader;
 public class BackgroundTileMapLayer
 implements SettlementMapLayer {
 
-	// Static members.
-	private final int MAX_BACKGROUND_IMAGE_NUM = 20;
-	private final int MAX_BACKGROUND_DIMENSION = 1600;
+	/** default logger. */
+//	May add back private static SimLogger logger = SimLogger.getLogger(BackgroundTileMapLayer.class.getName())
 
-	private static final String MAP_TILE = "settlement_map/";
+	// Static members.
+	// This pointer prefix points to an image file in icons.properties
+	private static final String MAP_TILE_POINTER = "map_tile/";
 	
 	// Data members.
 	private Map<Settlement, String> settlementBackgroundMap;
@@ -58,7 +59,7 @@ implements SettlementMapLayer {
 		if (settlement != null && !settlement.equals(currentSettlement)) {
 			backgroundTileImage = null;
 			currentSettlement = settlement;
-			scaleCache = -1;
+			scaleCache = scale;
 		}
 
 		// Clear background tile image is scale has changed.
@@ -81,14 +82,14 @@ implements SettlementMapLayer {
 		    }
 		    
 		    double imageScale = scale / SettlementMapPanel.DEFAULT_SCALE;
-		    int imageWidth = (int) Math.round(backgroundTileIcon.getWidth(imageObserver) * imageScale);
-		    int imageHeight = (int) Math.round(backgroundTileIcon.getHeight(imageObserver) * imageScale);
+		    int tileWidth = (int) Math.round(backgroundTileIcon.getWidth(imageObserver) * imageScale);
+		    int tileHeight = (int) Math.round(backgroundTileIcon.getHeight(imageObserver) * imageScale);
 
 			// No Image observer so assuming image has already loaded from file
 			backgroundTileImage = resizeImage(
 		            backgroundTileIcon, 
 		            imageObserver,
-		            imageWidth, imageHeight
+		            tileWidth, tileHeight
 		            );
 		}
 
@@ -159,49 +160,53 @@ implements SettlementMapLayer {
 	/**
 	 * Creates a resized instance of a background image.
 	 * 
-	 * @param image the original background image.
-	 * @param width the resized image width.
-	 * @param height the resized image height.
+	 * @param image the original background tile image.
+	 * @param scaleWidth the resized image tile width.
+	 * @param scaleHeight the resized image tile height.
 	 * @return image with the new size.
 	 */
-	private Image resizeImage(Image image, ImageObserver observer, int width, int height) {
+	private Image resizeImage(Image image, ImageObserver observer, int scaleWidth, int scaleHeight) {
 		Image result = image;
 
 		int w = image.getWidth(observer);
 		int h = image.getHeight(observer);
-
+    
 		do {
-			if (w > width) {
+			if (w > scaleWidth) {
 				w /= 2;
-				if (w < width) w = width;
+				if (w < scaleWidth) w = scaleWidth;
 			}
-			else if (w < width) {
-				w = width;
+			else if (w < scaleWidth) {
+				w = scaleWidth;
 			}
 
-			if (h > height) {
+			if (h > scaleHeight) {
 				h /= 2;
-				if (h < height) h = height;
+				if (h < scaleHeight) h = scaleHeight;
 			}
-			else if (h < height) {
-				h = height;
+			else if (h < scaleHeight) {
+				h = scaleHeight;
 			}
 
 			int bufferWidth = w;
 			int bufferHeight = h;
 			int xOffset = 0;
 			int yOffset = 0;
-			if ((w > MAX_BACKGROUND_DIMENSION) || (h > MAX_BACKGROUND_DIMENSION)) {
-				float reductionW = (float) MAX_BACKGROUND_DIMENSION / (float) w;
-				float reductionH = (float) MAX_BACKGROUND_DIMENSION / (float) h;
-				float reduction = Math.min(reductionH, reductionW);
-
-				bufferWidth = (int) (w * reduction);
-				bufferHeight = (int) (h * reduction);
-
-				xOffset = (w - bufferWidth) / -2;
-				yOffset = (h - bufferHeight) / -2;
-			}
+			
+			// Warning: The purpose of the following code block is unknown
+			// It causes the texture of the background tile to shift undesirably with respect to the buildings
+			
+//			if ((w > MAX_BACKGROUND_DIMENSION) || (h > MAX_BACKGROUND_DIMENSION)) {
+//				float reductionW = (float) MAX_BACKGROUND_DIMENSION / (float) w;
+//				float reductionH = (float) MAX_BACKGROUND_DIMENSION / (float) h;
+//				float reduction = Math.min(reductionH, reductionW);
+//
+//				bufferWidth = (int) (w * reduction);
+//				bufferHeight = (int) (h * reduction);
+//
+//				xOffset = (w - bufferWidth) / -2;
+//				yOffset = (h - bufferHeight) / -2;
+//			}
 
 			BufferedImage tmpImage = new BufferedImage(bufferWidth, bufferHeight, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g2d = (Graphics2D) tmpImage.getGraphics();
@@ -212,7 +217,7 @@ implements SettlementMapLayer {
 
 			result = tmpImage;
 
-		} while ((w != width) || (h != height));
+		} while ((w != scaleWidth) || (h != scaleHeight));
 
 		return result;
 	}
@@ -231,10 +236,11 @@ implements SettlementMapLayer {
 			result = ImageLoader.getImage(backgroundImageName);
 		}
 		else {
-			int count = settlementBackgroundMap.size() + 1;
-			count = count % MAX_BACKGROUND_IMAGE_NUM;
+			int id = settlement.getMapImageID();
+//			int count = settlementBackgroundMap.size() + 1;
+//			count = count % NUM_BACKGROUND_IMAGES;
 
-			String backgroundImageName = MAP_TILE + count;
+			String backgroundImageName = MAP_TILE_POINTER + id;
 			settlementBackgroundMap.put(settlement, backgroundImageName);
 			result = ImageLoader.getImage(backgroundImageName);
 		}
