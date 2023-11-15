@@ -17,7 +17,10 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.tools.Msg;
 
 /**
  * A class that keeps track of all scientific studies in the simulation.
@@ -39,8 +42,24 @@ public class ScientificStudyManager // extends Thread
 	/** The list of scientific study. */
 	private List<ScientificStudy> studies = new ArrayList<>();
 	/** The codes for each science type. */
-	private Map<ScienceType, String> codeMap = new HashMap<>();
+	private static Map<ScienceType, String> codeMap = new HashMap<>();
 	
+	static {
+		codeMap.put(ScienceType.AREOLOGY, "ARE");
+		codeMap.put(ScienceType.ASTRONOMY, "AST");
+		codeMap.put(ScienceType.BIOLOGY, "BIO");
+		codeMap.put(ScienceType.BOTANY, "BOT");
+		codeMap.put(ScienceType.CHEMISTRY, "CHE");
+		codeMap.put(ScienceType.COMPUTING, "COM");
+		codeMap.put(ScienceType.ENGINEERING, "ENG");
+		codeMap.put(ScienceType.MATHEMATICS, "MAT");
+		codeMap.put(ScienceType.MEDICINE, "MED");
+		codeMap.put(ScienceType.METEOROLOGY, "MET");
+		codeMap.put(ScienceType.PHYSICS, "PHY");
+		codeMap.put(ScienceType.PSYCHOLOGY, "PSY");
+	}
+
+
 	/**
 	 * Constructor.
 	 */
@@ -49,11 +68,6 @@ public class ScientificStudyManager // extends Thread
 		identifier = 1;
 		solCache = 1;
 		// Methods are threadsafe
-		
-		for (ScienceType type: ScienceType.values()) {
-			String code = createCode(type);
-			codeMap.put(type, code);
-		}
 	}
 
 	/**
@@ -96,47 +110,6 @@ public class ScientificStudyManager // extends Thread
 
 		return study;
 	}
-
-	/**
-	 * Creates a code name for each science type.
-	 * 
-	 * @return
-	 */
-	private String createCode(ScienceType type) {
-		String name = type.getName();
-		// In theory this science type should not be in the existing codeMap yet
-		var existingCodes = codeMap.values().stream()
-								.filter(t -> t != name)
-								.collect(Collectors.toSet());
-		
-		// First strategy use the words
-		char [] letters = new char[2];
-		letters[0] = name.charAt(0);
-		String[] words = name.split(" ");
-		for (int secondWord = 1; secondWord < words.length; secondWord++) {
-			letters[1]  = words[secondWord].charAt(0);
-			String newCode = new String(letters);
-			newCode = newCode.toUpperCase();
-			if (!existingCodes.contains(newCode)) {
-				return newCode;
-			}
-		}
-
-		// Second Strategy is based on any letter in the name
-		String filteredName = name.replaceAll("[^A-Za-z]+", "");
-		for(int secondIdx = 1; secondIdx < filteredName.length(); secondIdx++) {
-			letters[1] = filteredName.charAt(secondIdx);
-			String newCode = new String(letters);
-			newCode = newCode.toUpperCase();
-			if (!existingCodes.contains(newCode)) {
-				return newCode;
-			}
-		}
-
-		int size = codeMap.size() + 1;
-		return String.format("%02d", size);
-	}
-	
 	
 	/**
 	 * Gets all ongoing scientific studies.

@@ -24,7 +24,7 @@ import com.mars_sim.core.person.ai.social.RelationshipUtil;
 public class ScientificStudyUtil {
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-
+	
 	/**
 	 * Private constructor for utility class.
 	 */
