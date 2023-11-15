@@ -78,14 +78,14 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 				// Once a person starts a study in the proposal phase,
 				// there's a greater chance to continue on the proposal so give a high base score
 				base = switch(roleType) {
-					case CHIEF_OF_SCIENCE -> 250D;
-					case SCIENCE_SPECIALIST -> 200D;
-					default -> 150D;
+					case CHIEF_OF_SCIENCE -> 100D;
+					case SCIENCE_SPECIALIST -> 75D;
+					default -> 25D;
 				};
 			}
 		}
 		else {
-			// Probability of starting a new scientific study base don Job
+			// Probability of starting a new scientific study based on Job
 			int pop = settlement.getInitialPopulation();
 			Set<JobType> targetJobs = JobType.SCIENTISTS;
 			JobType job = person.getMind().getJob();
@@ -102,10 +102,10 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 		
 			// Check person has a science role
 			base = switch(roleType) {
-				case CHIEF_OF_SCIENCE, SCIENCE_SPECIALIST -> 200D;
-				case CHIEF_OF_COMPUTING, COMPUTING_SPECIALIST -> 150D;
-				case CHIEF_OF_AGRICULTURE, AGRICULTURE_SPECIALIST -> 100D;
-				default -> 50D;
+				case CHIEF_OF_SCIENCE, SCIENCE_SPECIALIST, CREW_SCIENTIST -> 20D;
+				case CHIEF_OF_COMPUTING, COMPUTING_SPECIALIST -> 15D;
+				case CHIEF_OF_AGRICULTURE, AGRICULTURE_SPECIALIST -> 10D;
+				default -> 5D;
 			};
 		}
 		if (base <= 0) {
