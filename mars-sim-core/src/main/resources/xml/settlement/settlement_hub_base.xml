@@ -60,13 +60,12 @@
         </connection-list>
     </building>
     
-    <building id="6" type="Lander Hab" xloc="-100.0" yloc="55.5" facing="0.0">
+    <building id="6" type="Medical Hab" xloc="-100.0" yloc="55.5" facing="0.0">
         <connection-list>
             <connection id="5" hatch-facing="north" />          
         </connection-list>
     </building>
 
-    
     <!-- End of SOUTH WING -->
     
 
@@ -79,7 +78,7 @@
         </connection-list>
     </building>
 
-	<building id="10" type="Lounge" xloc="-118.5"  yloc="100" facing="270.0">
+	<building id="10" type="Fish Farm" xloc="-118.5"  yloc="100" facing="270.0">
         <connection-list>
             <connection id="9" hatch-facing="west" />
             <connection id="11" hatch-facing="east" />
@@ -93,10 +92,11 @@
         </connection-list>
     </building>
     
-    <building id="12" type="Laboratory" xloc="-131.5" yloc="100" facing="270.0">
+    <building id="12" type="Algae Pond" xloc="-131.5" yloc="100" facing="270.0">
         <connection-list>
             <connection id="11" hatch-facing="west" />
-            <connection id="13" hatch-facing="east" />          
+            <connection id="13" hatch-facing="east" />
+            <connection id="34" hatch-facing="north" />          
         </connection-list>
     </building>
     
@@ -107,11 +107,10 @@
         </connection-list>
     </building>
     
-    <building id="14" type="Workshop" xloc="-144.5" yloc="100" facing="270.0">
+    <building id="14" type="Residential Quarters" xloc="-144.5" yloc="100" facing="270.0">
         <connection-list>
             <connection id="13" hatch-facing="west" />
-            <connection id="15" hatch-facing="east" />    
-            <connection id="34" hatch-facing="north" />                  
+            <connection id="15" hatch-facing="east" />                
         </connection-list>
     </building>
     
@@ -122,7 +121,7 @@
         </connection-list>
     </building>
     
-    <building id="16" type="Command and Control" xloc="-157.5" yloc="100"  facing="270.0">
+    <building id="16" type="Residential Quarters" xloc="-157.5" yloc="100"  facing="270.0">
         <connection-list>
             <connection id="15" hatch-facing="west" />
             <connection id="17" hatch-facing="east" />  
@@ -136,21 +135,21 @@
         </connection-list>
     </building>
     
-    <building id="18" type="Server Farm" xloc="-170.5" yloc="100" facing="0.0">
+    <building id="18" type="Residential Quarters" xloc="-170.5" yloc="100" facing="270.0">
         <connection-list>
             <connection id="17" hatch-facing="west" />
         </connection-list>
     </building>
     
     <!-- EAST WING EXTENSION -->
-    <!-- Connect this hallway to north of Workshop 14 -->
-    <building id="34" type="Hallway" length="4.0" xloc="-144.5" yloc="105.5" facing="0.0">
+    <!-- Connect this hallway to north of Algae Pond 12 -->
+    <building id="34" type="Hallway" length="4.0" xloc="-131.5" yloc="105.5" facing="0.0">
         <connection-list>
-            <connection id="14" hatch-facing="south" />
+            <connection id="12" hatch-facing="south" />
             <connection id="35" hatch-facing="north" />
         </connection-list>
     </building>
-    <building id="35" type="Loading Dock Garage" xloc="-144.5" yloc="116.5" facing="0.0">
+    <building id="35" type="Large Greenhouse" xloc="-131.5" yloc="116.5" facing="0.0">
         <connection-list>
             <connection id="34" hatch-facing="south" />
         </connection-list>
@@ -169,7 +168,7 @@
         </connection-list>
     </building>
 
-	<building id="20" type="Fish Farm" xloc="-81.5" yloc="100" facing="270.0">
+	<building id="20" type="Lounge" xloc="-81.5" yloc="100" facing="270.0">
         <connection-list>
             <connection id="21" hatch-facing="west" />
             <connection id="19" hatch-facing="east" />
@@ -183,7 +182,7 @@
         </connection-list>
     </building>
     
-    <building id="22" type="Algae Pond" xloc="-68.5" yloc="100" facing="270.0">
+    <building id="22" type="Laboratory" xloc="-68.5" yloc="100" facing="270.0">
         <connection-list>
             <connection id="23" hatch-facing="west" />
             <connection id="21" hatch-facing="east" />
@@ -198,7 +197,7 @@
         </connection-list>
     </building>
     
-    <building id="24" type="Residential Quarters" xloc="-55.5" yloc="100" facing="270.0">
+    <building id="24" type="Workshop" xloc="-55.5" yloc="100" facing="270.0">
         <connection-list>
             <connection id="25" hatch-facing="west" />
             <connection id="23" hatch-facing="east" />          
@@ -212,7 +211,7 @@
         </connection-list>
     </building>
     
-    <building id="26" type="Residential Quarters" xloc="-42.5" yloc="100"  facing="270.0">
+    <building id="26" type="Server Farm" xloc="-42.5" yloc="100"  facing="0">
         <connection-list>
             <connection id="27" hatch-facing="west" />
             <connection id="25" hatch-facing="east" />  
@@ -226,15 +225,13 @@
         </connection-list>
     </building>
     
-    <building id="28" type="Infirmary" xloc="-29.5" yloc="100" facing="270.0">
+    <building id="28" type="Command and Control" xloc="-29.5" yloc="100" facing="270.0">
         <connection-list>
 			<connection id="8" hatch-facing="west" />
             <connection id="27" hatch-facing="east" />
         </connection-list>
     </building>
     
-    <!-- EVA Airlock with building id 8 has been relocated to West Wing 
-         and is attached to Infirmary -->
     <building id="8" type="EVA Airlock" xloc="-22" yloc="100" facing="0.0">
         <connection-list>
             <connection id="28" hatch-facing="east" />
@@ -249,7 +246,7 @@
             <connection id="33" hatch-facing="north" />
         </connection-list>
     </building>
-    <building id="33" type="Large Greenhouse" xloc="-68.5" yloc="116.5" facing="0.0">
+    <building id="33" type="Loading Dock Garage" xloc="-68.5" yloc="116.5" facing="0.0">
         <connection-list>
             <connection id="32" hatch-facing="south" />
         </connection-list>

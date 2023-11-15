@@ -43,17 +43,18 @@ public class ChainOfCommand implements Serializable {
 	private static final Logger logger = Logger.getLogger(ChainOfCommand.class.getName());
 
 	public static final int POPULATION_WITH_COMMANDER = 4;
-	public static final int POPULATION_WITH_SUB_COMMANDER = 9;
-	public static final int POPULATION_WITH_CHIEFS = 17;
-	public static final int POPULATION_WITH_MAYOR = 51;
-	public static final int POPULATION_WITH_PRESIDENT = 101;
+	public static final int POPULATION_WITH_SUB_COMMANDER = 10;
+	public static final int POPULATION_WITH_CHIEFS = 20;
+	public static final int POPULATION_WITH_ADMINISTRATOR = 50;
+	public static final int POPULATION_WITH_MAYOR = 100;
+	public static final int POPULATION_WITH_PRESIDENT = 1000;
 	
 	
 	/** Stores the number for each role. */
 	private Map<RoleType, Integer> roleRegistry;
 	/** Store the availability of each role. */
 	private Map<RoleType, Integer> roleAvailability;
-
+	/** The settlement of interest. */
 	private Settlement settlement;
 
 
@@ -83,7 +84,7 @@ public class ChainOfCommand implements Serializable {
 
 		List<RoleType> roles = null;
 
-		if (pop > POPULATION_WITH_COMMANDER + 1) {
+		if (pop > POPULATION_WITH_COMMANDER) {
 			roles = new ArrayList<>(RoleUtil.getSpecialists());
 		}
 		else {
@@ -382,7 +383,7 @@ public class ChainOfCommand implements Serializable {
 
 		List<RoleType> roleList = null;
 				
-		if (pop <= ChainOfCommand.POPULATION_WITH_COMMANDER + 1) {
+		if (pop <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
 			roleList = new ArrayList<>(RoleUtil.getCrewRoles());
 		}
 		else {
@@ -432,19 +433,8 @@ public class ChainOfCommand implements Serializable {
 	private void establishChiefs() {
 
 		int popSize = settlement.getNumCitizens();
-		boolean electChiefs = false;
 
-		if (popSize >= POPULATION_WITH_MAYOR) {
-			electChiefs = true;
-		}
-
-		else if (popSize >= POPULATION_WITH_COMMANDER) {
-			if (popSize >= POPULATION_WITH_CHIEFS) {
-				electChiefs = true;
-			}
-		}
-
-		if (electChiefs) {
+		if (popSize >= POPULATION_WITH_CHIEFS) {
 			// Elect chiefs
 			int i = 0;
 			int maxChiefs = popSize - POPULATION_WITH_CHIEFS + 1;

@@ -228,7 +228,7 @@ public class TabPanelOrganization extends TabPanel {
 	public void buildTreeNodes() {
 		int population = settlement.getNumCitizens();
 		
-		if (population <= ChainOfCommand.POPULATION_WITH_COMMANDER + 1) {
+		if (population <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
 
 			commanderNode = new DefaultMutableTreeNode(RoleType.COMMANDER.toString());
 			crewNode = new DefaultMutableTreeNode("Crew");
@@ -356,7 +356,7 @@ public class TabPanelOrganization extends TabPanel {
 	public void constructNodes() {
 		int population = settlement.getNumCitizens();
 		
-		if (population <= ChainOfCommand.POPULATION_WITH_COMMANDER + 1) {
+		if (population <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
 			root.add(commanderNode);
 			root.add(crewNode);
 			return;
@@ -443,7 +443,7 @@ public class TabPanelOrganization extends TabPanel {
 			commanderStaffNode.add(subCommanderNode);
 		}
 
-		else if (population >= ChainOfCommand.POPULATION_WITH_COMMANDER) {
+		else if (population > ChainOfCommand.POPULATION_WITH_COMMANDER) {
 			root.add(commanderStaffNode);
 			commanderStaffNode.add(commanderNode);
 		}
@@ -468,7 +468,7 @@ public class TabPanelOrganization extends TabPanel {
 
 			roles.put(p, rt);
 
-			if (population <= ChainOfCommand.POPULATION_WITH_COMMANDER + 1) {
+			if (population <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
 				if (rt == RoleType.COMMANDER) {
 					commanderNode.add(new DefaultMutableTreeNode(p));
 				} else if (rt == RoleType.CREW_ENGINEER) {

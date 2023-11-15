@@ -118,7 +118,7 @@ public class RoleUtil implements Serializable {
 		
 		List<RoleType> types = null;
 				
-		if (pop <= ChainOfCommand.POPULATION_WITH_COMMANDER + 1) {
+		if (pop <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
 			types = crewRoles;
 		}
 		
@@ -287,7 +287,7 @@ public class RoleUtil implements Serializable {
 
 		Set<String> roleNames = new HashSet<>();
 
-		if (pop <= ChainOfCommand.POPULATION_WITH_COMMANDER + 1) {
+		if (pop <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
 			roleNames.add(RoleType.COMMANDER.getName());
 			for (RoleType r : RoleUtil.getCrewRoles()) {
 				roleNames.add(r.getName());

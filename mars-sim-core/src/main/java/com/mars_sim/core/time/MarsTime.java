@@ -99,8 +99,8 @@ public class MarsTime implements Serializable {
 	/** The total Millisols */
 	private final double totalMillisols;
 
-	private transient String dateTimeString = null;
-	private transient String dateTimeTruncString = null;
+	private transient String marsTimeString = null;
+	private transient String marsTruncatedTimeString = null;
 
 	/**
 	 * Constructor 1. Create a MarsTime instance with the given mission sol.
@@ -364,11 +364,11 @@ public class MarsTime implements Serializable {
 	 * @return formatted time stamp string
 	 */
 	public String getDateTimeStamp() {
-		if (dateTimeString == null) {
-			dateTimeString = MarsTimeFormat.getDateTimeStamp(this);
+		if (marsTimeString == null) {
+			marsTimeString = MarsTimeFormat.getDateTimeStamp(this);
 		}
 
-		return dateTimeString;
+		return marsTimeString;
 	}
 
 	/**
@@ -377,11 +377,11 @@ public class MarsTime implements Serializable {
 	 * @return formatted time stamp string
 	 */
 	public String getTruncatedDateTimeStamp() {
-		if (dateTimeTruncString == null) {
-			dateTimeTruncString = MarsTimeFormat.getTruncatedDateTimeStamp(this);
+		if (marsTruncatedTimeString == null) {
+			marsTruncatedTimeString = MarsTimeFormat.getTruncatedDateTimeStamp(this);
 		}
 
-		return dateTimeTruncString;
+		return marsTruncatedTimeString;
 	}
 
 	/**

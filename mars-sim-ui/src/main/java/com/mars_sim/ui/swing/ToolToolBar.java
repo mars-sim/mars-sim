@@ -62,7 +62,8 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private static final String EXIT = "EXIT";
 	private static final String MARSCAL = "MARS-CAL";
 
-	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateCommand.DATE_TIME_FORMATTER;
+	private static final DateTimeFormatter SHORT_TIMESTAMP_FORMATTER = 
+			DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss");
 	
 	/** Main window that contains this toolbar. */
 	private MainWindow parentMainWindow;
@@ -208,7 +209,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		MarsTime marsClock = master.getMarsTime();
 		missionSol.setText("Sol : " + marsClock.getMissionSol());
 
-		earthDate.setText(master.getEarthTime().format(DATE_TIME_FORMATTER));
+		earthDate.setText(master.getEarthTime().format(SHORT_TIMESTAMP_FORMATTER));
 		marsTime.setText(marsClock.getTruncatedDateTimeStamp());
 	}
 

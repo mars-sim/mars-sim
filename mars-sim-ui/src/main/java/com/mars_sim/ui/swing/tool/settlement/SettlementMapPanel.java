@@ -29,7 +29,6 @@ import javax.swing.JPanel;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
@@ -49,7 +48,7 @@ import com.mars_sim.ui.swing.UIConfig;
 public class SettlementMapPanel extends JPanel {
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(SettlementMapPanel.class.getName());
+	// may add back private static SimLogger logger = SimLogger.getLogger(SettlementMapPanel.class.getName())
 
 	// Property names for UI Config
 	private final String BUILDING_LBL_PROP = "BUILDING_LABELS";
@@ -440,7 +439,6 @@ public class SettlementMapPanel extends JPanel {
 	 */
 	public void setScale(double scale) {
 		this.scale = scale;
-		logger.info(10_000, "scale: " + scale);
 		repaint();
 	}
 

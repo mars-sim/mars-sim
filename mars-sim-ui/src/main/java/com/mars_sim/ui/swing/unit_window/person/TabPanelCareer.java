@@ -401,7 +401,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				firstNotification = false;
 			}
 
-			// detects a change of status from pending to approved
+			// Detect a change of status from pending to approved
 			else if (statusCache == AssignmentType.PENDING) {
 				if (status.equals(AssignmentType.APPROVED)) {
 					statusCache = AssignmentType.APPROVED;
@@ -459,8 +459,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			}
 		}
 		else {
-			// Update the jobComboBox if pop is less than
-			// POPULATION_WITH_COMMANDER
+			// Update the jobComboBox immediately
 			JobType selectedJob = jobHistory.get(last).getWhat().getType();
 			
 			if (jobCache != selectedJob) {
@@ -636,7 +635,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				jobHistoryTableModel.update();
 			}
 
-			else if (pop > 0 && pop <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
+			else {
 				displayNotice("", false);
 				jobComboBox.setSelectedItem(selectedJob.getName());
 				// pop is small, things need to be flexible. Thus automatic approval

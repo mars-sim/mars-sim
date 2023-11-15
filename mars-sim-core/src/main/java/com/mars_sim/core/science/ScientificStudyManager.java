@@ -17,10 +17,7 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.tools.Msg;
 
 /**
  * A class that keeps track of all scientific studies in the simulation.
