@@ -270,7 +270,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		update();
 	}
 
-	/*
+	/**
 	 * Checks a job rating is submitted or a job reassignment is submitted and is
 	 * still not being reviewed.
 	 *
@@ -330,8 +330,11 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		changeNotice.setForeground((error ? Color.RED : Color.BLUE));
 	}
 	
-	/*
+	/**
 	 * Calculates the cumulative career performance score of a person.
+	 * 
+	 * @param assignmentHistory
+	 * @return
 	 */
 	private int calculateAveRating(AssignmentHistory assignmentHistory) {
 		double score = assignmentHistory.getCummulativeJobRating();
@@ -340,7 +343,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		return (int) score;
 	}
 
-	/*
+	/**
 	 * Checks for any role change or reassignment.
 	 * Note that change in population affects the list of role types.
 	 */
@@ -370,8 +373,10 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	}
 
 
-	/*
+	/**
 	 * Checks for the status of job reassignment.
+	 * 
+	 * @param assignments
 	 */
 	private void checkJobReassignment(AssignmentHistory assignments) {
 		int pop = settlement.getNumCitizens();

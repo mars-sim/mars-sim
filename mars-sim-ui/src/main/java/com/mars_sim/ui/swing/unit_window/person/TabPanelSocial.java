@@ -1,7 +1,7 @@
-/*
+/**
  * Mars Simulation Project
  * TabPanelSocial.java
- * @date 2022-06-17
+ * @date 2023-11-14
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.person;

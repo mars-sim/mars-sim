@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RoleLevel.java
- * @date 2021-09-29
+ * @date 2023-11-14
  * @author Barry Evans
  */
 package com.mars_sim.core.person.ai.role;
@@ -12,5 +12,6 @@ package com.mars_sim.core.person.ai.role;
 public enum RoleLevel {
 	CHIEF,
 	SPECIALIST,
-	COUNCIL;
+	COUNCIL,
+	CREW;
 }

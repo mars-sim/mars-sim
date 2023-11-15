@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RoleProspectCommand.java
- * @date 2022-08-24
+ * @date 2023-11-15
  * @author Barry Evans
  */
 
@@ -31,15 +31,16 @@ public class RoleProspectCommand extends AbstractPersonCommand {
 	public boolean execute(Conversation context, String input, Person person) {
 		StructuredResponse response = new StructuredResponse();
 
-		List<RoleType> list = new ArrayList<>(RoleUtil.getSpecialists());
-		Collections.sort(list);
+		List<RoleType> roles = new ArrayList<>(RoleUtil.getSpecialists());
+		roles.addAll(RoleUtil.getCrewRoles());
+		Collections.sort(roles);
 
 		response.appendTableHeading("Role", CommandHelper.ROLE_WIDTH, "Job Score", "Training Score", "Total");
 
 		JobType job = person.getMind().getJob();
 		Map<RoleType, Double> weights = RoleUtil.getRoleWeights().get(job);
 		
-		for (RoleType roleType : list) {
+		for (RoleType roleType : roles) {
 			double jScore = Math.round(
 					weights.get(roleType) * 10.0)
 					/ 10.0;

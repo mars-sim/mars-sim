@@ -44,7 +44,8 @@ public class PerformLaboratoryExperimentMeta extends FactoryMetaTask {
 		setFavorite(FavoriteType.LAB_EXPERIMENTATION);
 		setTrait(TaskTrait.ACADEMIC);
 		setPreferredJob(JobType.ACADEMICS);
-		setPreferredRole(RoleType.CHIEF_OF_SCIENCE, RoleType.SCIENCE_SPECIALIST);
+		setPreferredRole(RoleType.CHIEF_OF_SCIENCE, RoleType.SCIENCE_SPECIALIST,
+				RoleType.CREW_SCIENTIST);
 	}
 
     @Override

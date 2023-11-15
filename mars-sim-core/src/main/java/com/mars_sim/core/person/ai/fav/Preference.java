@@ -123,7 +123,7 @@ public class Preference implements Serializable {
 				case GAMING:
 				case OPERATION:
 				case SPORT:
-				case TENDING_GARDEN:
+				case TENDING_FARM:
 				case TINKERING:
 					rand += 1 * RandomUtil.getRandomDouble(3);
 					break;

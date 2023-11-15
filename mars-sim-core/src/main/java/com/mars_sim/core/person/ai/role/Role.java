@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Role.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-11-14
  * @author Manny Kung
  */
 package com.mars_sim.core.person.ai.role;
@@ -24,11 +24,6 @@ public class Role implements Serializable {
 	private RoleType roleType;
 
 	private History<RoleType> roleHistory = new History<>();
-
-	// TODO: Use more methods of parallel operation in ConcurrentHashMap.
-	// see https://dzone.com/articles/concurrenthashmap-in-java8
-	// see https://dzone.com/articles/how-concurrenthashmap-works-internally-in-java
-	// see https://dzone.com/articles/concurrenthashmap-isnt-always-enough
 
 	public Role(Person person) {
 		this.person = person;
@@ -98,7 +93,8 @@ public class Role implements Serializable {
 	}
 
 	/**
-	 * How has this Perosns role assignment changed over time
+	 * Gets how has this person's role assignment has changed over time.
+	 * 
 	 * @return
 	 */
 	public List<HistoryItem<RoleType>> getChanges() {
@@ -106,7 +102,7 @@ public class Role implements Serializable {
 	}
 	
 	/**
-	 * Obtains a new role 
+	 * Obtains a new role.
 	 * 
 	 * @param s
 	 */

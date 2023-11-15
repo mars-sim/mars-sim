@@ -13,6 +13,7 @@ import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.TendAlgaePond;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
@@ -64,11 +65,11 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
 	
     public TendAlgaePondMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
-		setFavorite(FavoriteType.TENDING_GARDEN);
+		setFavorite(FavoriteType.TENDING_FARM);
 		setPreferredJob(JobType.BOTANIST, JobType.BIOLOGIST, JobType.CHEMIST);
-
+		setPreferredRole(RoleType.SCIENCE_SPECIALIST, RoleType.CHIEF_OF_SCIENCE,
+				RoleType.CHIEF_OF_SUPPLY_N_RESOURCES);
 		setTrait(TaskTrait.ARTISTIC, TaskTrait.RELAXATION);
-        
         addPreferredRobot(RobotType.GARDENBOT);
 	}
 

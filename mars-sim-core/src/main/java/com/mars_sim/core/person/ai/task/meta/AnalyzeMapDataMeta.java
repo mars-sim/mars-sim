@@ -44,10 +44,13 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
 		setPreferredJob(JobType.AREOLOGIST, JobType.PHYSICIST, 
 				JobType.ENGINEER,
 				JobType.MATHEMATICIAN, JobType.PILOT);
+		setPreferredRole(RoleType.CREW_ENGINEER, RoleType.SCIENCE_SPECIALIST,
+				RoleType.CREW_OPERATION_OFFICER);
 		addPreferredJob(JobType.COMPUTER_SCIENTIST, 1.5D);
 		addPreferredRole(RoleType.CHIEF_OF_SCIENCE, 1.25D);
 		addPreferredRole(RoleType.COMPUTING_SPECIALIST, 1.5D);
 		addPreferredRole(RoleType.CHIEF_OF_COMPUTING, 1.5D);
+		
 	}
     @Override
     public Task constructInstance(Person person) {

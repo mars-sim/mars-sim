@@ -38,8 +38,10 @@ public class PerformMathematicalModelingMeta extends FactoryMetaTask {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.RESEARCH);
 		setTrait(TaskTrait.ACADEMIC);
-		setPreferredJob(JobType.MATHEMATICIAN, JobType.PHYSICIST, JobType.COMPUTER_SCIENTIST, JobType.ENGINEER);
-		setPreferredRole(RoleType.CHIEF_OF_SCIENCE, RoleType.SCIENCE_SPECIALIST);
+		setPreferredJob(JobType.MATHEMATICIAN, JobType.PHYSICIST, 
+				JobType.COMPUTER_SCIENTIST, JobType.ENGINEER);
+		setPreferredRole(RoleType.CHIEF_OF_SCIENCE, RoleType.SCIENCE_SPECIALIST,
+				RoleType.CREW_SCIENTIST);
 	}
 
 

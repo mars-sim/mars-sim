@@ -66,7 +66,8 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
 		setFavorite(FavoriteType.ASTRONOMY, FavoriteType.RESEARCH);
 		setTrait(TaskTrait.ACADEMIC, TaskTrait.ARTISTIC);
 		setPreferredJob(JobType.ASTRONOMER);
-		setPreferredRole(RoleType.CHIEF_OF_SCIENCE, RoleType.SCIENCE_SPECIALIST);
+		setPreferredRole(RoleType.CHIEF_OF_SCIENCE, RoleType.SCIENCE_SPECIALIST,
+				RoleType.CREW_SCIENTIST, RoleType.CREW_ENGINEER);
 	}
     
     /**

@@ -113,7 +113,7 @@ public abstract class Job {
 	}
 
 	/**
-	 * Builds a Map to cover the Specialist RoleTypes.
+	 * Builds a Map to cover specialist and crew roles.
 	 * 
 	 * @return
 	 */
@@ -131,6 +131,11 @@ public abstract class Job {
 		m.put(RoleType.SAFETY_SPECIALIST, saf);
 		m.put(RoleType.SCIENCE_SPECIALIST, sci);	
 
+		m.put(RoleType.CREW_ENGINEER, eng);
+		m.put(RoleType.CREW_HEALTH_N_SAFETY_OFFICER, saf);
+		m.put(RoleType.CREW_OPERATION_OFFICER, log);
+		m.put(RoleType.CREW_SCIENTIST, sci);
+		
 		return Collections.unmodifiableMap(m);
 	}
 	

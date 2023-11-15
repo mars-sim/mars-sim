@@ -46,7 +46,8 @@ public class PerformLaboratoryResearchMeta extends FactoryMetaTask {
 		jobs.add(JobType.COMPUTER_SCIENTIST);
 		jobs.add(JobType.METEOROLOGIST);
 		setPreferredJob(jobs);
-		setPreferredRole(RoleType.CHIEF_OF_SCIENCE, RoleType.SCIENCE_SPECIALIST);
+		setPreferredRole(RoleType.CHIEF_OF_SCIENCE, RoleType.SCIENCE_SPECIALIST,
+				RoleType.CREW_SCIENTIST);
 	}
 
     @Override

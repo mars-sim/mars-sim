@@ -37,6 +37,8 @@ public class OptimizeSystemMeta extends FactoryMetaTask {
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
 		setTrait(TaskTrait.ACADEMIC);
 			
+		setPreferredRole(RoleType.CREW_ENGINEER, RoleType.CREW_OPERATION_OFFICER);
+		
 		addPreferredJob(JobType.COMPUTER_SCIENTIST, 4D);
 		addPreferredJob(JobType.ENGINEER, 3D);
 		addPreferredJob(JobType.MATHEMATICIAN, JOB_BONUS);

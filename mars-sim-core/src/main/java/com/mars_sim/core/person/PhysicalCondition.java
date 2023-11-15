@@ -1449,7 +1449,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Renders this Person dead, creates DeathInfo, and process the changes
+	 * Renders this Person dead, creates DeathInfo, and processes the change.
 	 *
 	 * @param problem      The health problem that contributes to his death.
 	 * @param triggeredByPlayer True if it's caused by users

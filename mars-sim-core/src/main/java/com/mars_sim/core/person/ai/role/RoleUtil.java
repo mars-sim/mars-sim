@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RoleUtil.java
- * @date 2021-09-27
+ * @date 2023-11-15
  * @author Manny Kung
  */
 package com.mars_sim.core.person.ai.role;
@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.SimulationConfig;
@@ -38,6 +40,8 @@ public class RoleUtil implements Serializable {
 
 	private static List<RoleType> specalistsRoles;
 
+	private static List<RoleType> crewRoles;
+	
 	public RoleUtil() {
 		// nothing
 	}
@@ -58,6 +62,13 @@ public class RoleUtil implements Serializable {
 							Arrays.stream(RoleType.values())
 								.filter(RoleType::isSpecialist)
 								.collect(Collectors.toList()));
+		
+		// Cache the crew roles
+		crewRoles = Collections.unmodifiableList(
+							Arrays.stream(RoleType.values())
+								.filter(RoleType::isCrew)
+								.collect(Collectors.toList()));
+		
 	}
 
 	public static boolean isRoleWeightsInitialized() {
@@ -74,6 +85,15 @@ public class RoleUtil implements Serializable {
 	}
 
 	/**
+	 * Returns a list of crew roles.
+	 * 
+	 * @return
+	 */
+	public static List<RoleType> getCrewRoles() {
+		return crewRoles;
+	}
+	
+	/**
 	 * Finds the best role for a given person in a settlement.
 	 *
 	 * @param settlement
@@ -85,6 +105,9 @@ public class RoleUtil implements Serializable {
 		double highestWeight = 0;
 
 		ChainOfCommand chain = p.getSettlement().getChainOfCommand();
+		
+		int pop = p.getSettlement().getInitialPopulation();
+		
 		JobType job = p.getMind().getJob();
 		Map<RoleType, Double> weights = roleWeights.get(job);
 
@@ -92,15 +115,24 @@ public class RoleUtil implements Serializable {
 		List<RoleType> roles = new ArrayList<>();
 		int leastNum = 0;
 		RoleType leastFilledRole = null;
-		for (RoleType rt: RoleType.values()) {
-			if (rt.isSpecialist()) {
-				int num = chain.getNumFilled(rt);
-				if (leastNum >= num) {
-					leastNum = num;
-					leastFilledRole = rt;
-				}
-				roles.add(rt);
+		
+		List<RoleType> types = null;
+				
+		if (pop <= ChainOfCommand.POPULATION_WITH_COMMANDER + 1) {
+			types = crewRoles;
+		}
+		
+		else {
+			types = specalistsRoles;
+		}
+		
+		for (RoleType rt: types) {
+			int num = chain.getNumFilled(rt);
+			if (leastNum >= num) {
+				leastNum = num;
+				leastFilledRole = rt;
 			}
+			roles.add(rt);
 		}
 
 		// Move the least polluted role to the front
@@ -132,8 +164,6 @@ public class RoleUtil implements Serializable {
 		}
 		return selectedRole;
 	}
-
-
 
 	/**
 	 * Finds the person who is the best fit for a given role from a pool of candidates.
@@ -176,7 +206,6 @@ public class RoleUtil implements Serializable {
 		double trainingScore = getTrainingScore(person, role);
 
 		return jobScore + trainingScore;
-
 	}
 
 	/**
@@ -256,11 +285,11 @@ public class RoleUtil implements Serializable {
 	 */
 	public static List<String> getRoleNames(int pop) {
 
-		List<String> roleNames = new ArrayList<>();
+		Set<String> roleNames = new HashSet<>();
 
-		if (pop <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
+		if (pop <= ChainOfCommand.POPULATION_WITH_COMMANDER + 1) {
 			roleNames.add(RoleType.COMMANDER.getName());
-			for (RoleType r : RoleUtil.getSpecialists()) {
+			for (RoleType r : RoleUtil.getCrewRoles()) {
 				roleNames.add(r.getName());
 			}
 		}
@@ -292,9 +321,10 @@ public class RoleUtil implements Serializable {
 				roleNames.add(r.getName());
 			}
 		}
-
-		Collections.sort(roleNames);
-		return roleNames;
+		
+		List<String> list = new ArrayList<>(roleNames);
+		Collections.sort(list);
+		return list;
 	}
 	
 	public static Map<JobType, Map<RoleType, Double>> getRoleWeights() {

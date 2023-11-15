@@ -38,7 +38,8 @@ public class PeerReviewStudyPaperMeta extends FactoryMetaTask {
 		setFavorite(FavoriteType.RESEARCH);
 		setTrait(TaskTrait.ACADEMIC, TaskTrait.TEACHING);
 		setPreferredJob(JobType.ACADEMICS);
-		setPreferredRole(RoleType.CHIEF_OF_SCIENCE, RoleType.SCIENCE_SPECIALIST);
+		setPreferredRole(RoleType.CHIEF_OF_SCIENCE, RoleType.SCIENCE_SPECIALIST,
+				RoleType.CREW_SCIENTIST);
 	}
 
     @Override

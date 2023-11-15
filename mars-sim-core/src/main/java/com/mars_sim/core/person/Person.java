@@ -1404,7 +1404,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	}
 
 	/**
-	 * Get vehicle person is in, null if person is not in vehicle
+	 * Gets vehicle person is in, null if person is not in vehicle.
 	 *
 	 * @return the person's vehicle
 	 */
@@ -1422,7 +1422,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	}
 
 	/**
-	 * Adds the mission experience score
+	 * Adds the mission experience score.
 	 *
 	 * @param missionType
 	 * @param score
@@ -1434,7 +1434,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	}
 
 	/**
-	 * Gets the mission experiences map
+	 * Gets the mission experiences map.
 	 *
 	 * @return a map of mission experiences
 	 */
@@ -1447,7 +1447,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	}
 
 	/**
-	 * Adds the EVA time
+	 * Adds the EVA time.
 	 *
 	 * @param taskName
 	 * @param time

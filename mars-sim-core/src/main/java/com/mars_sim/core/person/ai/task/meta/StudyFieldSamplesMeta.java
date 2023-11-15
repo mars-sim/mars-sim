@@ -14,6 +14,7 @@ import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.StudyFieldSamples;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -42,6 +43,8 @@ public class StudyFieldSamplesMeta extends FactoryMetaTask {
 		setTrait(TaskTrait.ACADEMIC);
 		setPreferredJob(JobType.AREOLOGIST, JobType.BIOLOGIST,
 						JobType.BOTANIST, JobType.CHEMIST);
+		setPreferredRole(RoleType.CHIEF_OF_SCIENCE, RoleType.SCIENCE_SPECIALIST,
+				RoleType.CREW_SCIENTIST);
 	}
     
     @Override

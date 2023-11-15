@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RoleType.java
- * @date 2021-09-27
+ * @date 2023-11-14
  * @author Manny Kung
  */
 
@@ -28,6 +28,11 @@ public enum RoleType {
 	CHIEF_OF_SAFETY_N_HEALTH			(RoleLevel.CHIEF),
 	CHIEF_OF_SCIENCE					(RoleLevel.CHIEF),
 	CHIEF_OF_SUPPLY_N_RESOURCES			(RoleLevel.CHIEF),
+	
+	CREW_ENGINEER						(RoleLevel.CREW),
+	CREW_HEALTH_N_SAFETY_OFFICER		(RoleLevel.CREW),
+	CREW_OPERATION_OFFICER				(RoleLevel.CREW),
+	CREW_SCIENTIST						(RoleLevel.CREW),
 	
 	PRESIDENT							(RoleLevel.COUNCIL),
 	MAYOR								(RoleLevel.COUNCIL),
@@ -74,6 +79,10 @@ public enum RoleType {
 		return level == RoleLevel.SPECIALIST;
 	}
 
+	public boolean isCrew() {
+		return level == RoleLevel.CREW;
+	}
+	
 	public boolean isCouncil() {
 		return level == RoleLevel.COUNCIL;
 	}

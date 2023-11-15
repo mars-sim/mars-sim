@@ -164,7 +164,8 @@ public abstract class MetaTask {
 	}
 	
 	/**
-	 * Add a preferred job with a specific weight. The weight is appleid to the Rating Score.
+	 * Adds a preferred job with a specific weight. The weight is applied to the Rating Score.
+	 * 
 	 * @param job
 	 * @param w weight.
 	 */
@@ -173,7 +174,8 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Add a preferred role with a specific weight. The weight is appleid to the Rating Score.
+	 * Adds a preferred role with a specific weight. The weight is applied to the Rating Score.
+	 * 
 	 * @param role
 	 * @param w weight.
 	 */

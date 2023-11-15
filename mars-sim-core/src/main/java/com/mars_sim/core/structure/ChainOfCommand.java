@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ChainOfCommand.java
- * @date 2021-12-05
+ * @date 2023-11-15
  * @author Manny Kung
  */
 
@@ -46,7 +46,9 @@ public class ChainOfCommand implements Serializable {
 	public static final int POPULATION_WITH_SUB_COMMANDER = 9;
 	public static final int POPULATION_WITH_CHIEFS = 17;
 	public static final int POPULATION_WITH_MAYOR = 51;
-
+	public static final int POPULATION_WITH_PRESIDENT = 101;
+	
+	
 	/** Stores the number for each role. */
 	private Map<RoleType, Integer> roleRegistry;
 	/** Store the availability of each role. */
@@ -74,17 +76,24 @@ public class ChainOfCommand implements Serializable {
 	}
 
 	/**
-	 * Initialize the role maps
+	 * Initializes the role maps.
 	 */
 	public void initializeRoleMaps() {
 		int pop = settlement.getInitialPopulation();
 
-		List<RoleType> types = new ArrayList<>(RoleUtil.getSpecialists());
+		List<RoleType> roles = null;
 
+		if (pop > POPULATION_WITH_COMMANDER + 1) {
+			roles = new ArrayList<>(RoleUtil.getSpecialists());
+		}
+		else {
+			roles = new ArrayList<>(RoleUtil.getCrewRoles());
+		}
+		
 		// Shuffle the role types randomize
-		Collections.shuffle(types);
+		Collections.shuffle(roles);
 
-		for (RoleType t : types) {
+		for (RoleType t : roles) {
 			if (!roleAvailability.containsKey(t)) {
 				roleAvailability.put(t, 0);
 			}
@@ -94,14 +103,14 @@ public class ChainOfCommand implements Serializable {
 		}
 
 		for (int i=0; i < pop; i++) {
-			RoleType rt = types.get(i % types.size());
+			RoleType rt = roles.get(i % roles.size());
 			int num = roleAvailability.get(rt);
 			roleAvailability.put(rt, num+1);
 		}
 	}
 
 	/**
-	 * Is the given role type available
+	 * Is the given role type available ?
 	 *
 	 * @param type
 	 * @return
@@ -111,7 +120,7 @@ public class ChainOfCommand implements Serializable {
 	}
 
 	/**
-	 * Gets the role availability map
+	 * Gets the role availability map.
 	 *
 	 * @return
 	 */
@@ -202,7 +211,7 @@ public class ChainOfCommand implements Serializable {
 	}
 
 	/**
-	 * Elect the commanders
+	 * Elects the commanders.
 	 *
 	 * @param pop
 	 */
@@ -250,26 +259,7 @@ public class ChainOfCommand implements Serializable {
 					cc_leadership = p_leadership;
 					cc_combined = p_combined;
 				}
-//				 else {
-				// if this person p has a lower combined score than previous cc
-				// but have a higher leadership score than the previous cv
-//					 if (pop >= POPULATION_WITH_SUB_COMMANDER) {
-//						 if ( p_leadership > cv_leadership) {
-//							// this person p becomes the sub-commander
-//							cv = p;
-//							cv_leadership = p_leadership;
-//							cv_combined = p_combined;
-//						 }
-//
-//						 else if ( p_leadership == cv_leadership) {
-//						 	if (p_combined > cv_combined) {
-//								cv = p;
-//								cv_leadership = p_leadership;
-//								cv_combined = p_combined;
-//							}
-//						}
-//					}
-//				 }
+
 			} else if (pop >= POPULATION_WITH_SUB_COMMANDER) {
 
 				if (p_leadership > cv_leadership) {
@@ -318,7 +308,8 @@ public class ChainOfCommand implements Serializable {
 	}
 
 	/**
-	 * Apply the Commander profile to the Person with the COMMANDER role.
+	 * Applies the Commander profile to the Person with the COMMANDER role.
+	 * 
 	 * @param profile
 	 * @return
 	 */
@@ -338,7 +329,7 @@ public class ChainOfCommand implements Serializable {
 	}
 
 	/**
-	 * Update the commander's profile
+	 * Updates the commander's profile.
 	 *
 	 * @param cc the person instance
 	 */
@@ -357,38 +348,48 @@ public class ChainOfCommand implements Serializable {
 	}
 
 	/**
-	 * Establish or reset the system of governance of a settlement.
+	 * Establishes or reset the system of governance of a settlement.
 	 *
 	 */
 	public void establishSettlementGovernance() {
 		// Elect commander, subcommander, mayor
 		establishTopLeadership();
 
-		// Assign a role to each person
-		assignRoles();
+		// Assign a basic role to each person
+		assignBasicRoles();
 
 		// Elect chiefs
 		establishChiefs();
 	}
 
 	/**
-	 * Assign a role to each person
+	 * Assigns a basic role to each person.
 	 *
 	 * @param settlement
 	 */
-	private void assignRoles() {
+	private void assignBasicRoles() {
 		// Assign roles to each person
 		List<Person> oldlist = new ArrayList<>(settlement.getAllAssociatedPeople());
 		List<Person> plist = new ArrayList<>();
 
+		int pop = settlement.getInitialPopulation();
+		
 		// If a person does not have a (specialist) role, add him/her to the list
 		for (Person p: oldlist) {
 			if (p.getRole().getType() == null)
 				plist.add(p);
 		}
 
-		while (plist.size() > 0) {
-			List<RoleType> roleList = new ArrayList<>(RoleUtil.getSpecialists());
+		List<RoleType> roleList = null;
+				
+		if (pop <= ChainOfCommand.POPULATION_WITH_COMMANDER + 1) {
+			roleList = new ArrayList<>(RoleUtil.getCrewRoles());
+		}
+		else {
+			roleList = new ArrayList<>(RoleUtil.getSpecialists());
+		}
+		
+		while (!plist.isEmpty()) {
 			// Randomly reorient the order of roleList so that the
 			// roles to go in different order each time
 			Collections.shuffle(roleList);
@@ -404,7 +405,7 @@ public class ChainOfCommand implements Serializable {
 	}
 
 	/**
-	 * Establish the top leadership of a settlement.
+	 * Establishes the top leadership of a settlement.
 	 *
 	 * @param settlement the settlement.
 	 */
@@ -415,8 +416,6 @@ public class ChainOfCommand implements Serializable {
 		if (popSize >= POPULATION_WITH_MAYOR) {
 			// Elect a mayor
 			electMayor(RoleType.MAYOR);
-			// Elect commander and sub-commander
-			electCommanders(popSize);
 		}
 		// for pop < POPULATION_WITH_MAYOR
 		else if (popSize >= POPULATION_WITH_COMMANDER) {
@@ -426,7 +425,7 @@ public class ChainOfCommand implements Serializable {
 	}
 
 	/**
-	 * Establish the chiefs of a settlement.
+	 * Establishes the chiefs of a settlement.
 	 *
 	 * @param settlement the settlement.
 	 */
@@ -458,7 +457,7 @@ public class ChainOfCommand implements Serializable {
 	}
 
 	/**
-	 * Establish the mayor in a settlement
+	 * Establishes the mayor in a settlement.
 	 *
 	 * @param settlement
 	 * @param role
@@ -653,7 +652,7 @@ public class ChainOfCommand implements Serializable {
 		}
 	}
 
-	public static Set<JobType> getJobsFromole(RoleType roleType) {
+	public static Set<JobType> getJobsFromRole(RoleType roleType) {
 		Set<JobType> jobTypes = new HashSet<>();
 
 		switch(roleType) {
@@ -720,7 +719,7 @@ public class ChainOfCommand implements Serializable {
 	}
 	
 	/**
-	 * Finds a list of people with a particular role
+	 * Finds a list of people with a particular role.
 	 *
 	 * @param role
 	 * @return List<Person>

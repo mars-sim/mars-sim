@@ -1,7 +1,7 @@
-/*
+/**
  * Mars Simulation Project
  * Relation.java
- * @date 2023-05-24
+ * @date 2023-11-14
  * @author Manny Kung
  */
 package com.mars_sim.core.person.ai.social;
