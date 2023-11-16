@@ -52,12 +52,12 @@ public class HealthProblem implements Serializable {
 	private static HistoricalEventManager eventManager = Simulation.instance().getEventManager();
 	
 	/**
-	 * Create a new Health Problem that relates to a single Physical Condition
+	 * Constructor. Creates a new Health Problem that relates to a single Physical Condition
 	 * object. It also references a complaint that defines the behaviour. If the
 	 * Complaint has no degrade period then self-recovery starts immediately.
 	 *
-	 * @param complainttype Medical complaint enum being suffered.
-	 * @param person    The Physical condition being effected.
+	 * @param complaintType Medical complaint enum being suffered.
+	 * @param person    The person whose physical condition being effected.
 	 */
 	public HealthProblem(ComplaintType complaintType, Person person) {
 		type = complaintType;
@@ -89,7 +89,7 @@ public class HealthProblem implements Serializable {
 	}
 
 	/**
-	 * Is the problem in a degrading state.
+	 * Is the problem in a degrading state ?
 	 * 
 	 * @return true if degrading
 	 */
@@ -98,14 +98,14 @@ public class HealthProblem implements Serializable {
 	}
 
 	/**
-	 * Has the problem been cured.
+	 * Has the problem been cured ?
 	 */
 	public boolean isCured() {
 		return (state == CURED);
 	}
 
 	/**
-	 * Get a rating of the current health situation. This is a percentage value and
+	 * Gets a rating of the current health situation. This is a percentage value and
 	 * may either represent the recovering or degradation of the current illness.
 	 * 
 	 * @return Percentage value.
@@ -121,11 +121,11 @@ public class HealthProblem implements Serializable {
 	}
 
 	/**
-	 * Return the illness that this problem has.
+	 * Returns the complaint.
 	 *
-	 * @return Complaint defining problem.
+	 * @return Complaint.
 	 */
-	public Complaint getIllness() {
+	public Complaint getComplaint() {
 		if (complaint == null) {
 			complaint = medicalManager.getComplaintByName(type);
 		}
@@ -133,23 +133,23 @@ public class HealthProblem implements Serializable {
 	}
 
 	/**
-	 * Return the illness that this problem has.
+	 * Returns the complaint type.
 	 *
-	 * @return Complaint defining problem.
+	 * @return Complaint Type.
 	 */
 	public ComplaintType getType() {
 		return type;
 	}
 	
 	/**
-	 * Sufferer of problem
+	 * Returns the sufferer of this problem.
 	 */
 	public Person getSufferer() {
 		return sufferer;
 	}
 
 	/**
-	 * The performance rating for this Problem. If there is an aid in used, then the
+	 * Gets the performance rating for this Problem. If there is an aid in used, then the
 	 * factor is zero otherwise it is the illness rating.
 	 */
 	public double getPerformanceFactor() {
@@ -191,7 +191,7 @@ public class HealthProblem implements Serializable {
 	}
 
 	/**
-	 * Awaiting treatment
+	 * Is it awaiting treatment ?
 	 */
 	public boolean getAwaitingTreatment() {
 		return (state == DEGRADING);
@@ -230,7 +230,7 @@ public class HealthProblem implements Serializable {
 	}
 
 	/**
-	 * Start the required treatment. It will take the specified duration.
+	 * Starts the required treatment. It will take the specified duration.
 	 *
 	 * @param treatmentLength Length of treatment.
 	 */
@@ -261,7 +261,7 @@ public class HealthProblem implements Serializable {
 	}
 
 	/**
-	 * Start degrading the health problem.
+	 * Starts degrading the health problem.
 	 */
 	private void startDegrading() {
 		setState(DEGRADING);
@@ -272,13 +272,13 @@ public class HealthProblem implements Serializable {
 	}
 
 	/**
-	 * This is now moving to a recovery state.
+	 * Stars the recovery process and moving to a recovery state.
 	 */
 	public void startRecovery() {
 
 		if ((state == DEGRADING) || (state == BEING_TREATED)) {
 			// If no recovery period, then it's done.
-			duration = getIllness().getRecoveryPeriod();
+			duration = getComplaint().getRecoveryPeriod();
 
 			// Randomized the duration and varied it according to the complaint type
 			if (type == ComplaintType.COLD || type == ComplaintType.FEVER)
@@ -314,7 +314,7 @@ public class HealthProblem implements Serializable {
 				}
 
 				// Check if recovery requires bed rest.
-				requiresBedRest = getIllness().requiresBedRestRecovery();
+				requiresBedRest = getComplaint().requiresBedRestRecovery();
 //				if (requiresBedRest)
 //					sufferer.getTaskSchedule().setShiftType(ShiftType.OFF);
 				// Create medical event for recovering.
@@ -351,7 +351,7 @@ public class HealthProblem implements Serializable {
 
 		if ((state == DEGRADING) && !isEnvironmentalProblem()) {
 			// If no required treatment,
-			Treatment treatment = getIllness().getRecoveryTreatment();
+			Treatment treatment = getComplaint().getRecoveryTreatment();
 			if (treatment == null) {
 				startRecovery();
 			}
@@ -380,7 +380,7 @@ public class HealthProblem implements Serializable {
 			else if (state == DEGRADING) {
 				if (duration != 0D) {
 					// Illness has moved to next phase, if null then dead
-					Complaint nextPhase = getIllness().getNextPhase();
+					Complaint nextPhase = getComplaint().getNextPhase();
 					if (usedAid != null) {
 						if (usedAid.getProblemsBeingTreated().contains(this)) {
 							usedAid.stopTreatment(this);
@@ -426,7 +426,7 @@ public class HealthProblem implements Serializable {
 		else if (state == BEING_TREATED) {
 			buffer.append(type);
 			buffer.append(" with ");
-			Treatment treatment = getIllness().getRecoveryTreatment();
+			Treatment treatment = getComplaint().getRecoveryTreatment();
 			if (treatment != null) {
 				buffer.append(treatment.getName());
 			}
@@ -453,11 +453,11 @@ public class HealthProblem implements Serializable {
 	 * @return true if environmental problem.
 	 */
 	public boolean isEnvironmentalProblem() {
-		return medicalManager.isEnvironmentalComplaint(getIllness());
+		return medicalManager.isEnvironmentalComplaint(getComplaint());
 	}
 	
 	/**
-	 * initializes instances after loading from a saved sim
+	 * Initializes instances after loading from a saved sim
 	 * 
 	 * @param m {@link medicalManager}
 	 * @param h {@link HistoricalEventManager}

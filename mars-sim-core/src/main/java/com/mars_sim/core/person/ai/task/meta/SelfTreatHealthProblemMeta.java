@@ -92,7 +92,7 @@ public class SelfTreatHealthProblemMeta extends FactoryMetaTask {
         while (i.hasNext()) {
             HealthProblem problem = i.next();
             if (problem.isDegrading()) {
-                Treatment treatment = problem.getIllness().getRecoveryTreatment();
+                Treatment treatment = problem.getComplaint().getRecoveryTreatment();
                 if (treatment != null) {
                     boolean selfTreatable = treatment.getSelfAdminister();
                     int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);

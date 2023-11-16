@@ -76,7 +76,7 @@ public class RequestMedicalTreatmentMeta extends FactoryMetaTask {
         List<HealthProblem> problemsNeedingTreatment = new ArrayList<>();
         for( HealthProblem problem : person.getPhysicalCondition().getProblems()) {
             if (problem.isDegrading()) {
-                Treatment treatment = problem.getIllness().getRecoveryTreatment();
+                Treatment treatment = problem.getComplaint().getRecoveryTreatment();
                 if (treatment != null) {
 
                     // Can other person with best medical skill treat health problem.

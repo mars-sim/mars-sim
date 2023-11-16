@@ -73,7 +73,7 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 			responseText.appendLabeledString("Surplus Leptin", String.format(CommandHelper.MILLISOL_FORMAT,
 											 person.getCircadianClock().getSurplusLeptin()));
 			
-			List<String> probs = pc.getProblems().stream().map(hp -> hp.getIllness().getType().getName())
+			List<String> probs = pc.getProblems().stream().map(hp -> hp.getComplaint().getType().getName())
 												 .collect(Collectors.toList());
 			responseText.appendNumberedList("Problems", probs);
 			

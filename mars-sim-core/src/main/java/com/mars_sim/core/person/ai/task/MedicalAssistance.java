@@ -95,7 +95,7 @@ public class MedicalAssistance extends Task {
 			int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 
 			// Treat medical problem.
-			Treatment treatment = problem.getIllness().getRecoveryTreatment();
+			Treatment treatment = problem.getComplaint().getRecoveryTreatment();
 			setDescription(Msg.getString("Task.description.medicalAssistance.detail", treatment.getName())); // $NON-NLS-1$
 			setDuration(treatment.getAdjustedDuration(skill));
 			setStressModifier(STRESS_MODIFIER * treatment.getSkill());
@@ -104,7 +104,7 @@ public class MedicalAssistance extends Task {
 			try {
 				medical.startTreatment(problem, duration);
 				
-				logger.log(worker, Level.INFO, 0, "Treating " + problem.getIllness().getType().getName());
+				logger.log(worker, Level.INFO, 0, "Treating " + problem.getComplaint().getType().getName());
 
 				// Add person to medical care building if necessary.
 				if (medical instanceof MedicalCare) {

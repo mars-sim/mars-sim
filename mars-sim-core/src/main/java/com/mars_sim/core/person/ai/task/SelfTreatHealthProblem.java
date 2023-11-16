@@ -83,7 +83,7 @@ public class SelfTreatHealthProblem extends Task {
                 int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 
                 // Determine medical treatment.
-                Treatment treatment = healthProblem.getIllness().getRecoveryTreatment();
+                Treatment treatment = healthProblem.getComplaint().getRecoveryTreatment();
                 if (treatment != null) {
                     duration = treatment.getAdjustedDuration(skill);
                     setStressModifier(STRESS_MODIFIER * treatment.getSkill());
@@ -250,7 +250,7 @@ public class SelfTreatHealthProblem extends Task {
             while (i.hasNext()) {
                 HealthProblem problem = i.next();
                 if (medicalAid.canTreatProblem(problem)) {
-                    int severity = problem.getIllness().getSeriousness();
+                    int severity = problem.getComplaint().getSeriousness();
                     if (severity > highestSeverity) {
                         result = problem;
                         highestSeverity = severity;
@@ -277,7 +277,7 @@ public class SelfTreatHealthProblem extends Task {
         while (i.hasNext()) {
             HealthProblem problem = i.next();
             if (problem.isDegrading()) {
-                Treatment treatment = problem.getIllness().getRecoveryTreatment();
+                Treatment treatment = problem.getComplaint().getRecoveryTreatment();
                 if (treatment != null) {
                     boolean selfTreatable = treatment.getSelfAdminister();
                     int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
@@ -330,7 +330,7 @@ public class SelfTreatHealthProblem extends Task {
             medicalAid.startTreatment(healthProblem, duration);
 
         	logger.log(person, Level.INFO, 0, "Self-treating " 
-        			+ healthProblem.getIllness().getType().getName());
+        			+ healthProblem.getComplaint().getType().getName());
 
             // Create starting task event if needed.
             if (getCreateEvents()) {

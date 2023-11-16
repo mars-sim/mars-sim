@@ -716,7 +716,7 @@ extends TabPanel {
 
 			if (problem != null) {
 				if (column == 0) {
-				    return problem.getIllness().getType().toString();
+				    return problem.getComplaint().getType().toString();
 				}
 				else if (column == 1) {
 					String conditionStr = problem.getStateString();

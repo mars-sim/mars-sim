@@ -86,7 +86,7 @@ public class TreatMedicalPatient extends Task {
                 int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 
                 // Determine medical treatment.
-                Treatment treatment = healthProblem.getIllness().getRecoveryTreatment();
+                Treatment treatment = healthProblem.getComplaint().getRecoveryTreatment();
                 if (treatment != null) {
                     duration = treatment.getAdjustedDuration(skill);
                     setStressModifier(STRESS_MODIFIER * treatment.getSkill());
@@ -223,7 +223,7 @@ public class TreatMedicalPatient extends Task {
         Iterator<HealthProblem> j = aid.getProblemsAwaitingTreatment().iterator();
         while (j.hasNext() && !result) {
             HealthProblem problem = j.next();
-            Treatment treatment = problem.getIllness().getRecoveryTreatment();
+            Treatment treatment = problem.getComplaint().getRecoveryTreatment();
             if (treatment != null) {
                 int requiredSkill = treatment.getSkill();
                 if (skill >= requiredSkill) {
@@ -252,7 +252,7 @@ public class TreatMedicalPatient extends Task {
         Iterator<HealthProblem> i = medicalAid.getProblemsAwaitingTreatment().iterator();
         while (i.hasNext()) {
             HealthProblem problem = i.next();
-            Treatment treatment = problem.getIllness().getRecoveryTreatment();
+            Treatment treatment = problem.getComplaint().getRecoveryTreatment();
             if (treatment != null) {
                 int requiredSkill = treatment.getSkill();
                 if (skill >= requiredSkill) {
@@ -308,7 +308,7 @@ public class TreatMedicalPatient extends Task {
         if (healthProblem.getAwaitingTreatment()) {
 
             medicalAid.startTreatment(healthProblem, duration);
-    		logger.log(worker, Level.INFO, 0, "Treating " + patient + " for " + healthProblem.getIllness().getType().getName() + ".");
+    		logger.log(worker, Level.INFO, 0, "Treating " + patient + " for " + healthProblem.getComplaint().getType().getName() + ".");
     		
             // Create starting task event if needed.
             if (getCreateEvents()) {

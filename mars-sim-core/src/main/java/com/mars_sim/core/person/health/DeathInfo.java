@@ -134,7 +134,7 @@ public class DeathInfo implements Serializable {
 			}
 		}
 		else {
-			this.illness = problem.getIllness().getType();
+			this.illness = problem.getComplaint().getType();
 			healthCondition = problem.getHealthRating();
 			medicalCause = illness.getName();
 		}

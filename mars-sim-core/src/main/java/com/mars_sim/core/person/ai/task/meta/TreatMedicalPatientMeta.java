@@ -166,7 +166,7 @@ public class TreatMedicalPatientMeta extends FactoryMetaTask {
         Iterator<HealthProblem> j = aid.getProblemsAwaitingTreatment().iterator();
         while (j.hasNext() && !result) {
             HealthProblem problem = j.next();
-            Treatment treatment = problem.getIllness().getRecoveryTreatment();
+            Treatment treatment = problem.getComplaint().getRecoveryTreatment();
             if (treatment != null) {
                 int requiredSkill = treatment.getSkill();
                 if (skill >= requiredSkill) {

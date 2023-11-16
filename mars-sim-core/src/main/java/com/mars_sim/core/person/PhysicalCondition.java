@@ -1068,11 +1068,14 @@ public class PhysicalCondition implements Serializable {
 
 
 	/**
-	 * Checks if person has very high fatigue.
+	 * Checks if person has radiation poisoning.
 	 *
 	 * @param time the time passing (millisols)
 	 */
 	private void checkRadiationPoisoning(double time) {
+		
+		// TODO: need to check on a person's 30-day radiation dosage to determine if he's sick with it.
+		// Use a person's age, weight, health and strength, etc. as modifiers
 		
 		var radiationPoisoned = getProblemByType(ComplaintType.RADIATION_SICKNESS);
 
@@ -1459,11 +1462,13 @@ public class PhysicalCondition implements Serializable {
 		String reason = TBD;
 		if (triggeredByPlayer) {
 			reason = TRIGGERED_DEATH;
-			logger.log(person, Level.WARNING, 0, reason);
+			logger.log(person, Level.WARNING, 0, "Declared dead. Reason: " + reason + ".");
 		}
-		else {
-			this.mostSeriousProblem = problem;
-		}
+
+		// Set the state of the health problem to DEAD
+		problem.setState(HealthProblem.DEAD);
+		// Set mostSeriousProblem to this problem
+		this.mostSeriousProblem = problem;
 
 		deathDetails = new DeathInfo(person, problem, reason, lastWord, master.getMarsTime());
 		// Declare the person dead
@@ -1479,8 +1484,7 @@ public class PhysicalCondition implements Serializable {
 		person.getRole().relinquishOldRoleType();
 		// Re-elect any vacated top leaders or chiefs role
 		person.getAssociatedSettlement().getChainOfCommand().reelectLeadership(deathDetails.getRoleType());
-		// Set the state of the health problem to DEAD
-		problem.setState(HealthProblem.DEAD);
+
 		// Remove the person from the airlock's record
 		person.getAssociatedSettlement().removeAirlockRecord(person);
 		// Set the mind of the person to inactive
@@ -1526,7 +1530,7 @@ public class PhysicalCondition implements Serializable {
 		String situation = WELL;
 		if (mostSeriousProblem != null) {
 			if (isDead()) {
-				situation = DEAD_COLON + mostSeriousProblem.getIllness().getType().toString();
+				situation = DEAD_COLON + mostSeriousProblem.getComplaint().getType().toString();
 			} else {
 				situation = SICK_COLON + mostSeriousProblem.toString();
 			}
@@ -1540,7 +1544,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return most mostSeriousProblem illness
 	 */
 	public Complaint getMostSerious() {
-		return mostSeriousProblem.getIllness();
+		return mostSeriousProblem.getComplaint();
 	}
 
 	/**
@@ -1568,7 +1572,7 @@ public class PhysicalCondition implements Serializable {
 				maxPerformance = factor;
 			}
 
-			if ((mostSeriousProblem == null) || (mostSeriousProblem.getIllness().getSeriousness() < problem.getIllness().getSeriousness())) {
+			if ((mostSeriousProblem == null) || (mostSeriousProblem.getComplaint().getSeriousness() < problem.getComplaint().getSeriousness())) {
 				mostSeriousProblem = problem;
 			}
 		}
@@ -1737,7 +1741,7 @@ public class PhysicalCondition implements Serializable {
 		boolean result = false;
 		Iterator<HealthProblem> meds = getProblems().iterator();
 		while (meds.hasNext()) {
-			if (meds.next().getIllness().getSeriousness() >= 50)
+			if (meds.next().getComplaint().getSeriousness() >= 50)
 				result = true;
 		}
 		return result;

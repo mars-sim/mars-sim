@@ -156,7 +156,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 			boolean degrading = problem.isDegrading();
 
 			// Check if treatment is supported in this medical station.
-			Treatment requiredTreatment = problem.getIllness().getRecoveryTreatment();
+			Treatment requiredTreatment = problem.getComplaint().getRecoveryTreatment();
 			boolean supported = supportedTreatments.contains(requiredTreatment);
 
 			// Check if problem is already being treated.
@@ -181,7 +181,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 			// Add the problem to the waiting queue.
 			problemsAwaitingTreatment.add(problem);
 		} else {
-			logger.info("[" + name + "] " + problem.getIllness() + " cannot be treated in medical station.");
+			logger.info("[" + name + "] " + problem.getComplaint() + " cannot be treated in medical station.");
 		}
 	}
 
@@ -196,7 +196,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 		if (problemsAwaitingTreatment.contains(problem)) {
 			problemsAwaitingTreatment.remove(problem);
 		} else {
-			logger.severe("[" + name + "] " + "Health problem " + problem.getIllness()
+			logger.severe("[" + name + "] " + "Health problem " + problem.getComplaint()
 					+ " request cannot be canceled as it is not awaiting response.");
 		}
 	}
@@ -213,7 +213,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 			problemsBeingTreated.add(problem);
 			problemsAwaitingTreatment.remove(problem);
 		} else {
-			logger.warning("[" + name + "] " + problem.getIllness()
+			logger.warning("[" + name + "] " + problem.getComplaint()
 					+ " cannot be treated in medical station is not equipped to handle.");
 		}
 	}
@@ -231,7 +231,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 				problemsAwaitingTreatment.add(problem);
 			}
 		} else {
-			logger.severe("[" + name + "] " + "Health problem " + problem.getIllness() + " not currently being treated.");
+			logger.severe("[" + name + "] " + "Health problem " + problem.getComplaint() + " not currently being treated.");
 		}
 	}
 

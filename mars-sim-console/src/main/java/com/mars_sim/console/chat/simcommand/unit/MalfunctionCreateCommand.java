@@ -57,7 +57,8 @@ public class MalfunctionCreateCommand extends AbstractUnitCommand {
 		}
 
 		// Choose one
-		int choice = CommandHelper.getOptionInput(context, names, "Pick a malfunction from above by entering a number");
+		int choice = CommandHelper.getOptionInput(context, names, 
+				"Pick a malfunction from above by entering a number");
 		if (choice < 0) {
 			return false;
 		}
