@@ -20,6 +20,7 @@ import com.mars_sim.core.hazard.HazardEvent;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.structure.RadiationStatus;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
@@ -30,7 +31,7 @@ import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * <p> Curiosity's Radiation Assessment Detector (RAD)
- * Mars rover Curiosity received an average dose of 300 milli-sieverts (mSv) 
+ * Mars rover Curiosity received an average cumulativeDoses of 300 milli-sieverts (mSv) 
  * over the 180-day journey. 300 mSv is equivalent to 24 CAT scans, or more 
  * than 15x the annual radiation limit for a worker in a nuclear power plant.
  *
@@ -55,33 +56,33 @@ import com.mars_sim.tools.util.RandomUtil;
  * almost immediate unconsciousness and death within an hour.
  *
  * <br> <p> REM
- * <p> A prompt dose of up to 75 rem result in no apparent health effects. Between
+ * <p> A prompt cumulativeDoses of up to 75 rem result in no apparent health effects. Between
  * 75 and 200 rem, radiation sickness results (symptoms are vomiting, fatigue,
  * loss of appetite. Almost everyone recovers within a few weeks. At 300 rem,
  * some fatalities start to appear, rising to 50% at 450 rem and 80% at 600 rem
- * Almost no one survives dose of 1,000 rem or more.
+ * Almost no one survives cumulativeDoses of 1,000 rem or more.
  *
- * <p> Living at sea level receives an annual dose of 150 millirem (or .15 rem),
+ * <p> Living at sea level receives an annual cumulativeDoses of 150 millirem (or .15 rem),
  * versus 300 millirem (or .3 rem) on top of a mountain.
  *
  * <p> According to one study, for every 100 rem received, the likelihood of fatal
  * cancer is 1.8% within 30 years.
  *
  * <p> If a Mars Direct mission uses Conjunction trajectory, the estimated round
- * trip mission radiation dose varies between 41 and 62 rem, depending upon
+ * trip mission radiation cumulativeDoses varies between 41 and 62 rem, depending upon
  * whether the Sun is at solar min or solar max phase of its 11-year cycle.
  *
- * <p> If an astronaut gets a typical dose of 50 rem over the course of a 2.5 years
+ * <p> If an astronaut gets a typical cumulativeDoses of 50 rem over the course of a 2.5 years
  * Mars mission, the chance of getting a fatal cancer due to that exposure is
  * 50/100 * 1.81% = .905%.
  * 
  * <p> Probability of getting hit by GCG/SPE radiation within an interval of 100
  * milliSol during an EVA [in % per earth hour roughly] RAD surface radiation
- * data show an average GCR dose equivalent rate of 0.67 millisieverts per day
+ * data show an average GCR cumulativeDoses equivalent rate of 0.67 millisieverts per day
  * from August 2012 to June 2013 on the Martian surface. .67 mSv per day * 180
  * sols = 120.6 mSv
  *
- * <p> In comparison, RAD data show an average GCR dose equivalent rate of 1.8
+ * <p> In comparison, RAD data show an average GCR cumulativeDoses equivalent rate of 1.8
  * millisieverts per day on the journey to Mars
  *
  * <p> References ::
@@ -95,7 +96,7 @@ import com.mars_sim.tools.util.RandomUtil;
 public class RadiationExposure implements Serializable, Temporal {
 
 	/**
-	 * Class models a dose of radiation over a time range
+	 * Class models a cumulativeDoses of radiation over a time range
 	 */
 	public static class DoseHistory implements Serializable {
 		/** default serial id. */
@@ -108,7 +109,7 @@ public class RadiationExposure implements Serializable, Temporal {
 		public DoseHistory(double thirtyDay, double annual, double career) {
 			this.thirtyDay = thirtyDay;
 			this.annual = annual;
-			this.career = career + annual + thirtyDay;
+			this.career = career;
 		}
 		
 		public double getThirtyDay() {
@@ -145,12 +146,29 @@ public class RadiationExposure implements Serializable, Temporal {
 		}
 
 		/**
-		 * Compares this dose history to another and see if any values are higher.
+		 * Is the 30-day cumulative doses history higher than the set limit ?
 		 */
-		boolean higherThan(DoseHistory limit) {
+		boolean thirtyDayHigherThan(DoseHistory limit) {
 			// Only check the 30 day value currently
 			return thirtyDay > limit.thirtyDay;
 		}
+		
+		/**
+		 * Is the annual cumulative doses history higher than the set limit ?
+		 */
+		boolean annualHigherThan(DoseHistory limit) {
+			// Only check the 30 day value currently
+			return annual > limit.annual;
+		}
+		
+		/**
+		 * Is the career cumulative doses history higher than the set limit ?
+		 */
+		boolean careerHigherThan(DoseHistory limit) {
+			// Only check the 30 day value currently
+			return career > limit.career;
+		}
+		
 	};
 
 	/** default serial id. */
@@ -180,22 +198,22 @@ public class RadiationExposure implements Serializable, Temporal {
 	 * <br>Source : http://www.mars-one.com/faq/health-and-ethics/how-much-radiation-will-the-settlers-be-exposed-to. 
 	 */
 	public static final double SEP_PERCENT = 2.5/1000; 
-	/** THe Baseline radiation dose per sol [in mSv] arbitrary. */
+	/** THe Baseline radiation cumulativeDoses per sol [in mSv] arbitrary. */
 	public static final double BASELINE_RAD_PER_SOL = .1;
 
-	/** The average GCR dose equivalent rate [mSv] on the Mars, based on DAT. Note: based on Ref_A's DAT data, the average GCR dose equivalent rate on the Mars surface is 0.64 ± 0.12 mSv/day. The dose equivalent is 50 μSv. */
+	/** The average GCR cumulativeDoses equivalent rate [mSv] on the Mars, based on DAT. Note: based on Ref_A's DAT data, the average GCR cumulativeDoses equivalent rate on the Mars surface is 0.64 ± 0.12 mSv/day. The cumulativeDoses equivalent is 50 μSv. */
 	public static final double GCR_RAD_PER_SOL = .64;
-	/** THe GCR dose modifier[in mSv], based on DAT value. */
+	/** THe GCR cumulativeDoses modifier[in mSv], based on DAT value. */
 	public static final double GCR_RAD_SWING = .12;
 
 	/**
-	 * The SEP dose [mSv] per sol.
+	 * The SEP cumulativeDoses [mSv] per sol.
 	 * <br>Note : frequency and intensity of SEP events is sporadic and difficult to predict.
 	 * <br>Its flux varies by several orders of magnitude and are typically dominated by protons.
 	 */
 	public static final double SEP_RAD_PER_SOL = .21;
 	/** 
-	 * The SEP dose modifier [mSv], assuming 3 orders of magnitude (arbitrary) 
+	 * The SEP cumulativeDoses modifier [mSv], assuming 3 orders of magnitude (arbitrary) 
 	 * <br>	The orders of magnitude are written in powers of 10.
 	 * <br> e.g. the order of magnitude of 1500 is 3, since 1500 may be written as 1.5 × 10^3.
 	 * <br> e.g. the order of magnitude of 1000 is 3, since 1500 may be written as 1.0 × 10^3.
@@ -203,18 +221,18 @@ public class RadiationExposure implements Serializable, Temporal {
 	public static final double SEP_SWING_FACTOR = 1000;
 	
 	// Additional notes :
-	// Ref_A assumes absorbed dose of ~150 mGy/year at the Martian surface.
-	// Pavlov et al. assumed an absorbed dose of 50 ±5 mGy/year.
-	// The actual absorbed dose measured by the RAD is 76 mGy/yr at the surface.
+	// Ref_A assumes absorbed cumulativeDoses of ~150 mGy/year at the Martian surface.
+	// Pavlov et al. assumed an absorbed cumulativeDoses of 50 ±5 mGy/year.
+	// The actual absorbed cumulativeDoses measured by the RAD is 76 mGy/yr at the surface.
 
 	/**
-	 * Career whole-body effective dose limits, per NCRP guidelines. 
+	 * Career whole-body effective cumulativeDoses limits, per NCRP guidelines. 
 	 * <br> Note : it should vary with age and differs in male and female
 	 */
 	private static final int WHOLE_BODY_DOSE = 1000; 
 
 	private static final String EXPOSED_TO = "Exposed to ";
-	private static final String DOSE_OF = " mSv dose of ";
+	private static final String DOSE_OF = " mSv cumulativeDoses of ";
 	private static final String RAD = "radiation ";
 	private static final String EVA_OPERATION = " during an EVA operation.";
 
@@ -223,13 +241,13 @@ public class RadiationExposure implements Serializable, Temporal {
 	private boolean isSick;
 
 	/** Dose equivalent limits in mSv (milliSieverts). */
-	private static final DoseHistory[] DOSE_LIMITS = {
+	private DoseHistory[] doseLimits = {
 										new DoseHistory(250, 1000, 1500), 
 										new DoseHistory(500, 2000, 3000), 
 										new DoseHistory(WHOLE_BODY_DOSE, 4000, 6000) };
 
-	/** Randomize dose at the start of the sim when a settler arrives on Mars. */
-	private DoseHistory[] dose;
+	/** Randomize cumulativeDoses at the start of the sim when a settler arrives on Mars. */
+	private DoseHistory[] cumulativeDoses;
 
 	private Map<Integer, Radiation> eventMap = new ConcurrentHashMap<>();
 
@@ -245,7 +263,7 @@ public class RadiationExposure implements Serializable, Temporal {
 	 */
 	public RadiationExposure(Person person) {
 		this.person = person;
-		dose = new DoseHistory[BodyRegionType.values().length];
+		cumulativeDoses = new DoseHistory[BodyRegionType.values().length];
 		
 		double bfo0 = rand(10);
 		double bfo1 = rand(30) + bfo0;
@@ -262,20 +280,43 @@ public class RadiationExposure implements Serializable, Temporal {
 		double skin2 = rand(70) + skin1;
 		DoseHistory skinDose = new DoseHistory(skin0, skin1, skin2);
 		
-		dose[BodyRegionType.BFO.ordinal()] = bfoDose;
-		dose[BodyRegionType.OCULAR.ordinal()] = ocularDose;
-		dose[BodyRegionType.SKIN.ordinal()] = skinDose;
+		cumulativeDoses[BodyRegionType.BFO.ordinal()] = bfoDose;
+		cumulativeDoses[BodyRegionType.OCULAR.ordinal()] = ocularDose;
+		cumulativeDoses[BodyRegionType.SKIN.ordinal()] = skinDose;
+		
+		// Vary the dose limit by person'a attributes
+		int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
+		int endurance = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ENDURANCE);
+		
+		double rand = RandomUtil.getRandomDouble(strength + endurance - 100);
+		
+		DoseHistory bfoLimit = doseLimits[0];
+		bfoLimit.addToThirtyDay(rand/10);
+		bfoLimit.addToAnnual(rand/5);
+		bfoLimit.addToCareer(rand/2.5);
+		
+		DoseHistory ocularLimit = doseLimits[1];
+		ocularLimit.addToThirtyDay(rand/5);
+		ocularLimit.addToAnnual(rand/2.5);
+		ocularLimit.addToCareer(rand);
+
+		DoseHistory skinLimit = doseLimits[2];
+		skinLimit.addToThirtyDay(rand/2.5);
+		skinLimit.addToAnnual(rand);
+		skinLimit.addToCareer(rand*2.5);
 	}
 
 	/**
-	 * Adds the dose of radiation exposure. Called by isRadiationDetected.
+	 * Adds the cumulative doses of radiation exposure. Called by isRadiationDetected.
 	 *
-	 * @param bodyRegion
-	 * @param amount
 	 * @see checkForRadiation() in EVAOperation and WalkOutside
+	 * @param radiationType
+	 * @param bodyRegionType
+	 * @param amount
+	 * @return
 	 */
 	private Radiation addDose(RadiationType radiationType, BodyRegionType bodyRegionType, double amount) {
-		DoseHistory active = dose[bodyRegionType.ordinal()];
+		DoseHistory active = cumulativeDoses[bodyRegionType.ordinal()];
 		
 		// Since amount is cumulative, need to carry over
 		active.addToThirtyDay(amount);
@@ -287,18 +328,16 @@ public class RadiationExposure implements Serializable, Temporal {
 		eventMap.put(solCache, rad);
 
 		return rad;
-
 	}
 
 	/*
-	 * Reduces the dose.
+	 * Reduces the cumulative doses.
 	 *
-	 * @bodyRegion
-	 *
-	 * @amount
+	 * @param bodyRegionType
+	 * @param amount
 	 */
 	public void reduceDose(BodyRegionType bodyRegionType, double amount) {
-		DoseHistory active = dose[bodyRegionType.ordinal()];
+		DoseHistory active = cumulativeDoses[bodyRegionType.ordinal()];
 
 		// amount is cumulative
 		active.addToThirtyDay(-amount);
@@ -321,7 +360,7 @@ public class RadiationExposure implements Serializable, Temporal {
 		}
 
 		int msol = pulse.getMarsTime().getMillisolInt();
-		if (msol % 17 == 0) {
+		if (msol % 20 == 0) {
 			checkExposureLimit();
 		}
 		
@@ -339,16 +378,28 @@ public class RadiationExposure implements Serializable, Temporal {
 	}
 
 	/*
-	 * Checks if the exposure exceeds the limit and reset counters
+	 * Checks if the exposure exceeds the limit and reset counters.
 	 */
 	private void checkExposureLimit() {
 
-		// Compare if any element in a person's dose matrix exceeds the limit
+		// Compare if any element in a person's cumulativeDoses matrix exceeds the limit
 		boolean exceeded = false;
-		for(BodyRegionType type : BodyRegionType.values()) {
-			DoseHistory active = dose[type.ordinal()];
-			DoseHistory limit = DOSE_LIMITS[type.ordinal()];
-			if (active.higherThan(limit)) {
+		for (BodyRegionType type : BodyRegionType.values()) {
+			
+			DoseHistory active = cumulativeDoses[type.ordinal()];
+			DoseHistory limit = doseLimits[type.ordinal()];
+			
+			if (active.thirtyDayHigherThan(limit)) {
+				exceeded = true;
+			}
+			
+			int rand = RandomUtil.getRandomInt(60);
+			if (rand == 60 && active.annualHigherThan(limit)) {
+				exceeded = true;
+			}
+			
+			rand = RandomUtil.getRandomInt(100);
+			if (rand == 100 && active.careerHigherThan(limit)) {
 				exceeded = true;
 			}
 		}
@@ -360,17 +411,16 @@ public class RadiationExposure implements Serializable, Temporal {
 			counter30 = 0;
 		}
 
-		// TODO: convert to martian system. For now, use 360 sol for simplicity and
+		// TODO: convert to Martian system. For now, use 360 sol for simplicity and
 		// synchronization with the 30-day carryover
 		if (counter360 == 360) {
 			carryOverDosage(true);
 			counter360 = 0;
 		}
-
 	}
 
 	/*
-	 * Recomputes the values in the radiation dosage chart
+	 * Recomputes the values in the radiation dosage chart.
 	 *
 	 * @param type of interval
 	 */
@@ -384,17 +434,17 @@ public class RadiationExposure implements Serializable, Temporal {
 
 			if (!annualCheck) {
 				// remove the recorded dosage from 31 sols ago
-				dose[region.ordinal()].addToThirtyDay(-dosage);
+				cumulativeDoses[region.ordinal()].addToThirtyDay(-dosage);
 			}
 			else {
 				// remove the recorded dosage from 361 sols ago
-				dose[region.ordinal()].addToAnnual(-dosage);
+				cumulativeDoses[region.ordinal()].addToAnnual(-dosage);
 			}
 		}
 	}
 
 	public DoseHistory[] getDose() {
-		return dose;
+		return cumulativeDoses;
 	}
 
 	/**
@@ -602,6 +652,14 @@ public class RadiationExposure implements Serializable, Temporal {
 		return false;
 	}
 
+	/**
+	 * Gets the dose limits for this person.
+	 * 
+	 * @return
+	 */
+	public DoseHistory[] getDoseLimits() {
+		return doseLimits;
+	}
 
 	/**
 	 * Reloads instances after loading from a saved sim
@@ -619,7 +677,7 @@ public class RadiationExposure implements Serializable, Temporal {
 	 */
 	public void destroy() {
 		person = null;
-		dose = null;
+		cumulativeDoses = null;
 		eventMap.clear();
 		eventMap = null;
 	}

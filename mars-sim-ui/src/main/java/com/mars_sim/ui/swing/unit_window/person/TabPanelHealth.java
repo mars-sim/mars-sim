@@ -108,11 +108,18 @@ extends TabPanel {
 	private PhysicalCondition condition;
 	private CircadianClock circadianClock;
 	
+//	private static String[] RADIATION_TOOL_TIPS = {
+//		    " Exposure Interval - Standard Dose Limit (Vary by Person) ", 
+//		    " -----------------------------------------------------------------",
+//		    "   [Max mSv BFO]   |  30-Day:  250;  Annual: 1000;  Career: 1500",
+//		    "   [Max mSv Eye]   |  30-Day:  500;  Annual: 2000;  Career: 3000",
+//		    "  [Max mSv Skin]   |  30-Day: 1000;  Annual: 4000;  Career: 6000"};
+
 	private static String[] RADIATION_TOOL_TIPS = {
-		    "Exposure Interval",
-		    "[Max mSv BFO]  30-Day:  250; Annual: 1000; Career: 1500",
-		    "[Max mSv Eye]  30-Day:  500; Annual: 2000; Career: 3000",
-		    "[Max mSv Skin] 30-Day: 1000; Annual: 4000; Career: 6000"};
+		    " Exposure Interval - 30-Day, Annual, or Career", 
+		    " Standard Dose Limit [mSv] on BFO - 30-Day:  250;  Annual: 1000;  Career: 1500",
+		    " Standard Dose Limit [mSv] on Eye - 30-Day:  500;  Annual: 2000;  Career: 3000",
+		    " Standard Dose Limit [mSv] on Skin - 30-Day: 1000;  Annual: 4000;  Career: 6000"};
 
 
 	/**
@@ -342,9 +349,9 @@ extends TabPanel {
 		rModel.getColumn(3).setCellRenderer(renderer);
 
 		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 75));
-		rModel.getColumn(0).setPreferredWidth(40);
-		rModel.getColumn(1).setPreferredWidth(100);
-		rModel.getColumn(2).setPreferredWidth(65);
+		rModel.getColumn(0).setPreferredWidth(35);
+		rModel.getColumn(1).setPreferredWidth(75);
+		rModel.getColumn(2).setPreferredWidth(45);
 		rModel.getColumn(3).setPreferredWidth(35);
 		radiationTable.setRowSelectionAllowed(true);
 		radiationScrollPanel.setViewportView(radiationTable);
