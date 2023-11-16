@@ -107,6 +107,7 @@ extends TabPanel {
 	/** The PhysicalCondition instance. */
 	private PhysicalCondition condition;
 	private CircadianClock circadianClock;
+	private DoseHistory[] doseLimits;
 	
 //	private static String[] RADIATION_TOOL_TIPS = {
 //		    " Exposure Interval - Standard Dose Limit (Vary by Person) ", 
@@ -324,22 +325,39 @@ extends TabPanel {
 		// Prepare radiation table model
 		radiationTableModel = new RadiationTableModel(condition);
 
+		// Gets the person's radiation dose limits
+        doseLimits = condition.getRadiationExposure().getDoseLimits();
+        
+        String[] regions = {"BFO", "Ocular", "Skin"};
+        String[] limits = new String[3];
+        
+        for (int i=0; i<3; i++) {
+            limits[i] = "Dose Limit [mSv] on " + regions[i]
+            	+ " - 30-Day: " + Math.round(doseLimits[i].getThirtyDay()*10.0)/10.0
+            	+ ";  Annual: " + Math.round(doseLimits[i].getAnnual()*10.0)/10.0
+            	+ ";  Career: " + Math.round(doseLimits[i].getCareer()*10.0)/10.0;
+        }
+ 
 		// Create radiation table
 		radiationTable = new JTable(radiationTableModel) {
-
-            //Implement table cell tool tips.           
+            // Implement table cell tool tips.           
             public String getToolTipText(MouseEvent e) {
                 String tip = null;
                 java.awt.Point p = e.getPoint();
 //              int rowIndex = rowAtPoint(p);
                 int colIndex = columnAtPoint(p);
-				if (colIndex < RADIATION_TOOL_TIPS.length) {
+				if (colIndex == 0) {
                     tip = RADIATION_TOOL_TIPS[colIndex];
+				}
+				else if (colIndex < 4) {			
+                    tip = limits[colIndex-1];
 				}
                 return tip;
             }
         };
 	
+
+        
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		TableColumnModel rModel = radiationTable.getColumnModel();

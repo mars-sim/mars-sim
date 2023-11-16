@@ -294,8 +294,6 @@ public class PhysicalCondition implements Serializable {
 
 		alive = true;
 
-		radiation = new RadiationExposure(newPerson);
-
 		deathDetails = null;
 
 		problems = new CopyOnWriteArrayList<>();
@@ -308,11 +306,11 @@ public class PhysicalCondition implements Serializable {
 		agility = naturalAttributeManager.getAttribute(NaturalAttributeType.AGILITY);
 
 		// Computes the adjustment from a person's natural attributes
-		double es = (endurance + strength + agility) / 300D;
+		double compositeScore = (endurance + strength + agility) / 300D;
 
 		// Note: may incorporate real world parameters such as areal density in g cm−2,
 		// T-score and Z-score (see https://en.wikipedia.org/wiki/Bone_density)
-		musclePainTolerance = RandomUtil.getRandomInt(-10, 10) + es; // pain tolerance
+		musclePainTolerance = RandomUtil.getRandomInt(-10, 10) + compositeScore; // pain tolerance
 		muscleHealth = 50D; // muscle health index; 50 being the average
 		muscleSoreness = RandomUtil.getRandomRegressionInteger(100); // muscle soreness
 
@@ -350,6 +348,8 @@ public class PhysicalCondition implements Serializable {
 		consumption.increaseDataPoint(3, 0.0);
 		consumption.increaseDataPoint(4, 0.0);
 		
+		radiation = new RadiationExposure(newPerson, bodyMassDeviation, compositeScore);
+
 		initialize();
 	}
 
