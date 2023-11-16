@@ -87,8 +87,8 @@ public class ReportMissionControl extends Task {
 			// }
 		} else if (person.isInVehicle()) {
 
-			if (person.getVehicle() instanceof Rover) {
-				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
+			if (person.getVehicle() instanceof Rover rover) {
+				walkToPassengerActivitySpotInRover(rover, true);
 
 				// set the boolean to true so that it won't be done again today
 //				person.getPreference().setTaskDue(this, true);

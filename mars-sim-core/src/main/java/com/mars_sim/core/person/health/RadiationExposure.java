@@ -265,30 +265,31 @@ public class RadiationExposure implements Serializable, Temporal {
 		this.person = person;
 		cumulativeDoses = new DoseHistory[BodyRegionType.values().length];
 		
-		double bfo0 = rand(10);
-		double bfo1 = rand(30) + bfo0;
-		double bfo2 = rand(40) + bfo1;
+		double bfo0 = rand(7);
+		double bfo1 = rand(25);
+		double bfo2 = rand(350);
 		DoseHistory bfoDose = new DoseHistory(bfo0, bfo1, bfo2);
 		
-		double ocular0 = rand(5);
-		double ocular1 = rand(15) + ocular0;
-		double ocular2 = rand(20) + ocular1;			
+		double ocular0 = rand(25);
+		double ocular1 = rand(80);
+		double ocular2 = rand(125);			
 		DoseHistory ocularDose = new DoseHistory(ocular0, ocular1, ocular2);
 		
-		double skin0 = rand(20);
-		double skin1 = rand(50) + skin0;
-		double skin2 = rand(70) + skin1;
+		double skin0 = rand(50);
+		double skin1 = rand(120);
+		double skin2 = rand(200);
 		DoseHistory skinDose = new DoseHistory(skin0, skin1, skin2);
 		
 		cumulativeDoses[BodyRegionType.BFO.ordinal()] = bfoDose;
 		cumulativeDoses[BodyRegionType.OCULAR.ordinal()] = ocularDose;
 		cumulativeDoses[BodyRegionType.SKIN.ordinal()] = skinDose;
 		
-		// Vary the dose limit by person'a attributes
+		// Vary the dose limit by person's attributes
 		int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
 		int endurance = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ENDURANCE);
-		
-		double rand = RandomUtil.getRandomDouble(strength + endurance - 100);
+		double weightFactor = person.getPhysicalCondition().getBodyMassDeviation() * 60;
+
+		double rand = RandomUtil.getRandomDouble(strength + endurance - weightFactor);
 		
 		DoseHistory bfoLimit = doseLimits[0];
 		bfoLimit.addToThirtyDay(rand/10);
@@ -346,8 +347,9 @@ public class RadiationExposure implements Serializable, Temporal {
 	}
 
 
-	private int rand(int num) {
-		return RandomUtil.getRandomInt(num);
+	private int rand(int ceil) {
+		int base = (int)(ceil / 2);
+		return RandomUtil.getRandomInt(base, ceil);
 	}
 
 	@Override
@@ -505,17 +507,17 @@ public class RadiationExposure implements Serializable, Temporal {
 				return false;
 			
 			// Note: for now, target at only one body region. In reality, it can hit all 3 at the same time.
-			int rand = RandomUtil.getRandomInt(10);
-			if (rand == 0) // 0
+			int rand = RandomUtil.getRandomInt(9);
+			if (rand == 0) // 10%
 				bodyRegionType = BodyRegionType.OCULAR;
-			else if (rand <= 3) // 1, 2, 3
+			else if (rand <= 3) // 30%
 				bodyRegionType = BodyRegionType.BFO;
-			else // 4-10
+			else // 60%
 				bodyRegionType = BodyRegionType.SKIN;
 							
 			double base = 0;
 			
-			// Future: account for the effect of atmosphere pressure on radiation dosage as
+			// Future: account for the effect of atmospheric pressure on radiation dosage as
 			// shown by RAD data
 
 			// Future: compute radiation if a person steps outside of a rover on a mission
@@ -530,10 +532,9 @@ public class RadiationExposure implements Serializable, Temporal {
 					
 					// Note: the onset of SEP should be predictable and detectable,
 					// making it easier to avoid
-					double mean = RandomUtil.getRandomDouble(shieldOff * SEP_SWING_FACTOR * base * time); 
-					sep = RandomUtil.computeGaussianWithLimit(mean, mean / 10, mean / 100);
-//					sep = Math.min(RandomUtil.getRandomRegressionInteger((int)SEP_SWING_FACTOR), 
-//							RandomUtil.getRandomDouble(shieldOff * SEP_SWING_FACTOR * base * time));
+					double strength = shieldOff * SEP_SWING_FACTOR * base * time;
+					double mean = RandomUtil.getRandomDouble(strength / 50, strength); 
+					sep = RandomUtil.computeGaussianWithLimit(mean, mean / 10, mean / 10);
 					if (sep > 0) {
 						rad = addDose(radiationType, bodyRegionType, sep);
 					}	
@@ -550,10 +551,9 @@ public class RadiationExposure implements Serializable, Temporal {
 					
 					// Note: the onset of SEP should be predictable and detectable,
 					// making it easier to avoid
-					double mean = RandomUtil.getRandomDouble(shieldOff * SEP_SWING_FACTOR * base * time); 
-					sep = RandomUtil.computeGaussianWithLimit(mean, mean / 10, mean / 100);
-//					sep = Math.min(RandomUtil.getRandomRegressionInteger((int)SEP_SWING_FACTOR), 
-//							RandomUtil.getRandomDouble(shieldOff * SEP_SWING_FACTOR * base * time));
+					double strength = shieldOff * SEP_SWING_FACTOR * base * time;
+					double mean = RandomUtil.getRandomDouble(strength / 50, strength); 
+					sep = RandomUtil.computeGaussianWithLimit(mean, mean / 10, mean / 10);
 					if (sep > 0) {
 						rad = addDose(radiationType, bodyRegionType, sep);
 					}	
@@ -567,8 +567,8 @@ public class RadiationExposure implements Serializable, Temporal {
 					radiationType = RadiationType.BASELINE;
 					base = BASELINE_RAD_PER_SOL * time;
 					// arbitrary
-					baseline 
-					= base + RandomUtil.getRandomInt(-1, 1) * RandomUtil.getRandomDouble(base / 3D); 
+					baseline = base + RandomUtil.getRandomInt(-1, 1) 
+							* RandomUtil.getRandomDouble(base / 3D); 
 					if (baseline > 0) {
 						rad = addDose(radiationType, bodyRegionType, baseline);
 					}	
@@ -583,7 +583,7 @@ public class RadiationExposure implements Serializable, Temporal {
 					// INCREASES during solar activity minimum
 					
 					radiationType = RadiationType.GCR;
-					base = GCR_RAD_PER_SOL * time / 100D;
+					base = GCR_RAD_PER_SOL * time / 50;
 					// according
 					// to
 					// Curiosity
@@ -604,10 +604,9 @@ public class RadiationExposure implements Serializable, Temporal {
 					
 					// Note: the onset of SEP should be predictable and detectable,
 					// making it easier to avoid
-					double mean = RandomUtil.getRandomDouble(shieldOff * SEP_SWING_FACTOR * base * time); 
-					sep = RandomUtil.computeGaussianWithLimit(mean, mean / 10, mean / 100);
-//					sep = Math.min(RandomUtil.getRandomRegressionInteger((int)SEP_SWING_FACTOR), 
-//							RandomUtil.getRandomDouble(shieldOff * SEP_SWING_FACTOR * base * time));
+					double strength = shieldOff * SEP_SWING_FACTOR * base * time;
+					double mean = RandomUtil.getRandomDouble(strength / 50, strength); 
+					sep = RandomUtil.computeGaussianWithLimit(mean, mean / 10, mean / 10);
 					if (sep > 0) {
 						rad = addDose(radiationType, bodyRegionType, sep);
 					}	

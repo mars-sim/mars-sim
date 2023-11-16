@@ -239,7 +239,7 @@ implements SettlementMapLayer {
 						break;
 					case EVA_AIRLOCK:
 						frontColor = evaLabel;
-						outlineColor = greyOutline;
+						outlineColor = whiteOutline;
 						break;
 					case ERV:
 						frontColor = ervLabel;

@@ -2222,6 +2222,10 @@ public class PhysicalCondition implements Serializable {
         return musclePainTolerance;
     }
 
+    public double getMuscleHealth() {
+    	return muscleHealth;
+    }
+    
 	/**
 	 * Initializes that static instances.
 	 * 

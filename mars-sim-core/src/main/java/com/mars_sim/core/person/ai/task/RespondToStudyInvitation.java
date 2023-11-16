@@ -169,7 +169,7 @@ public class RespondToStudyInvitation extends Task {
 			int studyCount = (person.getStudy() != null ? 1 : 0);
 			studyCount += person.getCollabStudies().size();
 			if (studyCount >= ScienceConfig.getMaxStudies()) {
-				logger.warning(person, "Doing too many studies to accept " + study.getName());
+				logger.warning(person, "Doing too many studies. Not accepting " + study.getName() + ".");
 				endTask();
 				return time;
 			}
