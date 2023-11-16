@@ -481,7 +481,7 @@ extends TabPanel {
 				if (i != 0) {
 					text.append(",  ");
 				}
-				text.append("@ ").append(sleepTime)
+				text.append(sleepTime)
 				.append(" msol (w:")
 				.append(person.getSleepWeight(sleepTime))
 				.append(")");
