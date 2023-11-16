@@ -20,7 +20,6 @@ import com.mars_sim.core.hazard.HazardEvent;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.structure.RadiationStatus;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;

@@ -55,9 +55,8 @@ public class TimeWindow extends ToolWindow {
 	public final String AVERAGE = " (Average : ";
 	public final String CLOSE_P = ")";
 
-
-	public final String WIKI_URL = Msg.getString("ToolToolBar.calendar.url"); //$NON-NLS-1$
-	public final String WIKI_TEXT = Msg.getString("ToolToolBar.calendar.title"); //$NON-NLS-1$	
+	public final String WIKI_URL = Msg.getString("TimeWindow.calendar.url"); //$NON-NLS-1$
+	public final String WIKI_TEXT = Msg.getString("TimeWindow.calendar.title"); //$NON-NLS-1$	
 	    
     private final DateTimeFormatter DATE_TIME_FORMATTER = DateCommand.DATE_TIME_FORMATTER;
 	
@@ -238,7 +237,7 @@ public class TimeWindow extends ToolWindow {
 		southernSeasonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.southernHemisphere"),
 													"", null);
 		// Create areocentric longitude header label
-		lonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.areocentricL"), "", null);
+		lonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.areocentricLon"), "", null);
 		
 		// Create Earth time panel
 		JPanel earthTimePane = new JPanel(new BorderLayout());

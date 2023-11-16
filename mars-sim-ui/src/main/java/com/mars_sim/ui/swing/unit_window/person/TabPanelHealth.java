@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -48,6 +49,7 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.SpringUtilities;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The HealthTabPanel is a tab panel for a person's health.
@@ -63,6 +65,9 @@ extends TabPanel {
 	private static final String CAREER = "Career";
 	private static final DecimalFormat DECIMAL_MSOLS = new DecimalFormat("0 msols");
 
+	public final String WIKI_URL = Msg.getString("TabPanelHealth.radiation.url"); //$NON-NLS-1$
+	public final String WIKI_TEXT = Msg.getString("TabPanelHealth.radiation.title"); //$NON-NLS-1$	
+	
 	private int fatigueCache;
 	private int thirstCache;
 	private int hungerCache;
@@ -108,20 +113,12 @@ extends TabPanel {
 	private PhysicalCondition condition;
 	private CircadianClock circadianClock;
 	private DoseHistory[] doseLimits;
-	
-//	private static String[] RADIATION_TOOL_TIPS = {
-//		    " Exposure Interval - Standard Dose Limit (Vary by Person) ", 
-//		    " -----------------------------------------------------------------",
-//		    "   [Max mSv BFO]   |  30-Day:  250;  Annual: 1000;  Career: 1500",
-//		    "   [Max mSv Eye]   |  30-Day:  500;  Annual: 2000;  Career: 3000",
-//		    "  [Max mSv Skin]   |  30-Day: 1000;  Annual: 4000;  Career: 6000"};
 
 	private static String[] RADIATION_TOOL_TIPS = {
 		    " Exposure Interval - 30-Day, Annual, or Career", 
 		    " Standard Dose Limit [mSv] on BFO - 30-Day:  250;  Annual: 1000;  Career: 1500",
 		    " Standard Dose Limit [mSv] on Eye - 30-Day:  500;  Annual: 2000;  Career: 3000",
 		    " Standard Dose Limit [mSv] on Skin - 30-Day: 1000;  Annual: 4000;  Career: 6000"};
-
 
 	/**
 	 * Constructor.
@@ -190,7 +187,7 @@ extends TabPanel {
 		northPanel.add(springPanel);
 		
 		// Prepare sleep hour name label
-		JLabel sleepHrLabel = new JLabel(Msg.getString("TabPanelFavorite.sleepHour"), SwingConstants.RIGHT); //$NON-NLS-1$
+		JLabel sleepHrLabel = new JLabel(Msg.getString("TabPanelHealth.sleepTime"), SwingConstants.RIGHT); //$NON-NLS-1$
 		sleepHrLabel.setFont(StyleManager.getLabelFont());
 		springPanel.add(sleepHrLabel);
 		
@@ -199,7 +196,7 @@ extends TabPanel {
 		
 		sleepTF = new JTextField(text.toString());
 		sleepTF.setEditable(false);
-		sleepTF.setColumns(30);
+		sleepTF.setColumns(28);
 		sleepTF.setCaretPosition(0);
 		
 		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -303,24 +300,35 @@ extends TabPanel {
 		// Add sorting
 		foodTable.setAutoCreateRowSorter(true);
 
-		
-		/////////////////////////////////////////////////////////
-		
+		/////////////////////////////////////////////////////////		
 
 		// Add radiation dose info
 		// Prepare radiation panel
 		JPanel radiationPanel = new JPanel(new BorderLayout(0, 0));
 		midPanel.add(radiationPanel, BorderLayout.SOUTH);
 
+		JPanel radLabelPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
+		radiationPanel.add(radLabelPane, BorderLayout.NORTH);
+		
 		// Prepare radiation label
 		JLabel radiationLabel = new JLabel(Msg.getString("TabPanelHealth.rad"), SwingConstants.CENTER); //$NON-NLS-1$
 		StyleManager.applySubHeading(radiationLabel);
-		radiationPanel.add(radiationLabel, BorderLayout.NORTH);
+		radLabelPane.add(radiationLabel);
 		radiationLabel.setToolTipText(Msg.getString("TabPanelHealth.radiation.tooltip")); //$NON-NLS-1$
 			 
 		// Prepare radiation scroll panel
 		JScrollPane radiationScrollPanel = new JScrollPane();
 		radiationPanel.add(radiationScrollPanel, BorderLayout.CENTER);
+
+		JPanel linkPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
+		radiationPanel.add(linkPane, BorderLayout.SOUTH);
+		
+		JButton link = new JButton(WIKI_TEXT);
+		linkPane.add(link, SwingConstants.CENTER);
+		link.setAlignmentX(.5f);
+		link.setAlignmentY(.5f);
+		link.setToolTipText("Open Radiation Wiki in GitHub");
+		link.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
 
 		// Prepare radiation table model
 		radiationTableModel = new RadiationTableModel(condition);
@@ -356,8 +364,6 @@ extends TabPanel {
             }
         };
 	
-
-        
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		TableColumnModel rModel = radiationTable.getColumnModel();
@@ -366,7 +372,7 @@ extends TabPanel {
 		rModel.getColumn(2).setCellRenderer(renderer);
 		rModel.getColumn(3).setCellRenderer(renderer);
 
-		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 75));
+		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 65));
 		rModel.getColumn(0).setPreferredWidth(35);
 		rModel.getColumn(1).setPreferredWidth(75);
 		rModel.getColumn(2).setPreferredWidth(45);
@@ -376,35 +382,9 @@ extends TabPanel {
 		
 		// Added sorting
 		radiationTable.setAutoCreateRowSorter(true);
-
-		/////////////////////////////////////////////////////////
-		
-		// Prepare attribute panel.
-		AttributePanel attributePanel = new AttributePanel(10);
-		
-		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); //BorderLayout(1, 1));
-		listPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		listPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
-		listPanel.add(attributePanel, BorderLayout.CENTER);
-		bottomPanel.add(listPanel, BorderLayout.NORTH);
-		
-		addBorder(listPanel, Msg.getString("TabPanelHealth.healthRisks.title"));
-
-		Map<HealthRiskType, Double> riskMap = condition.getHealthRisks();
-		
-		List<HealthRiskType> riskList = new ArrayList<>(riskMap.keySet());
-		
-		Collections.sort(riskList);
-		
-		for (int i = 0; i < 10; i++) {
-			HealthRiskType type = riskList.get(i);
-			attributePanel.addTextField(type.getName(), Math.round(riskMap.get(type) * 100.0)/100.0 + " %", null);
-		}
-
 		
 		/////////////////////////////////////////////////////////	
-		
-		
+			
 		// Prepare medication panel.
 		JPanel medicationPanel = new JPanel(new BorderLayout());
 		bottomPanel.add(medicationPanel, BorderLayout.SOUTH);
@@ -457,9 +437,31 @@ extends TabPanel {
 
 		// Add sorting
 		healthProblemTable.setAutoCreateRowSorter(true);
+	
+		/////////////////////////////////////////////////////////
 		
+		// Prepare attribute panel.
+		AttributePanel attributePanel = new AttributePanel(10);
 		
+		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		listPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		listPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+		listPanel.add(attributePanel, BorderLayout.CENTER);
+		bottomPanel.add(listPanel, BorderLayout.NORTH);
 		
+		addBorder(listPanel, Msg.getString("TabPanelHealth.healthRisks.title"));
+
+		Map<HealthRiskType, Double> riskMap = condition.getHealthRisks();
+		
+		List<HealthRiskType> riskList = new ArrayList<>(riskMap.keySet());
+		
+		Collections.sort(riskList);
+		
+		for (int i = 0; i < 10; i++) {
+			HealthRiskType type = riskList.get(i);
+			attributePanel.addTextField(type.getName(), Math.round(riskMap.get(type) * 100.0)/100.0 + " %", null);
+		}
+
 		// Update at least one before displaying it
 		update();
 	}
