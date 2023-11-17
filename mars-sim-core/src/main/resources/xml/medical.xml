@@ -326,7 +326,7 @@
 		<medical-complaint name="Radiation Sickness">
 			<seriousness value="30" />
 			<degrade-time value="8.0" />
-			<recovery-time value="4.0" />
+			<recovery-time value="3.0" />
 			<probability value="0" />
 			<performance-percent value="30.0" />
 			<bed-rest-recovery value="false" />

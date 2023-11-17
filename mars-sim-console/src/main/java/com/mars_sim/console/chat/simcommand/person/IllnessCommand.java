@@ -18,8 +18,12 @@ import com.mars_sim.console.chat.ConversationRole;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.health.BodyRegionType;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.HealthProblem;
+import com.mars_sim.core.person.health.RadiationExposure;
+import com.mars_sim.core.person.health.RadiationType;
+import com.mars_sim.tools.util.RandomUtil;
 
 /** 
  * 
@@ -58,7 +62,30 @@ public class IllnessCommand extends AbstractPersonCommand {
 		
 		HealthProblem problem = new HealthProblem(complaintType, person);
 		person.getPhysicalCondition().addMedicalComplaint(problem.getComplaint());
-		
+	
+		if (complaintNames.get(choice).equalsIgnoreCase(ComplaintType.RADIATION_SICKNESS.getName())) {			
+			
+			RadiationExposure rad = person.getPhysicalCondition().getRadiationExposure();
+			
+			int region = RandomUtil.getRandomInt(2);
+			
+			double buffer = rad.getBufferDose(region);
+			
+			BodyRegionType regionType = null;
+			
+			if (region == 0) {
+				regionType = BodyRegionType.BFO;
+			}
+			else if (region == 1) {
+				regionType = BodyRegionType.OCULAR;
+			}
+			else if (region == 2) {
+				regionType = BodyRegionType.SKIN;
+			}
+			
+			rad.addDose(RadiationType.SEP, regionType, buffer * 1.2);
+		}
+	
 		context.println("You picked the illness '" + complaintType + "'.");
 		
 		GenderType type = person.getGender();

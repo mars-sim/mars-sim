@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TreatMedicalPatient.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-11-16
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task;
@@ -64,6 +64,7 @@ public class TreatMedicalPatient extends Task {
 
     /**
      * Constructor.
+     * 
      * @param person the person to perform the task
      */
     public TreatMedicalPatient(Person person) {

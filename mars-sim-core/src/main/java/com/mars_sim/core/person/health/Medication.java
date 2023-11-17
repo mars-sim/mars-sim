@@ -100,11 +100,12 @@ public abstract class Medication implements Serializable, Temporal, Comparable<M
 		return (timeElapsed < duration);
 	}
 
+	public abstract ComplaintType getComplaintType();
+	
 	@Override
 	public boolean equals(Object object) {
 		boolean result = true;
-		if (object instanceof Medication) {
-			Medication med = (Medication) object;
+		if (object instanceof Medication med) {
 			if (!name.equals(med.name))
 				result = false;
 			if (duration != med.duration)

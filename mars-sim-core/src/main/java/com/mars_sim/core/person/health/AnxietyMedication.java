@@ -22,15 +22,18 @@ public class AnxietyMedication extends Medication {
     public static final String NAME = "Anxiety Medication";
     
     // Stress reduction amount.
-    private static final double STRESS_REDUCTION = -1.0D;
+    private static final double STRESS_REDUCTION = -0.01;
     
     // Duration (millisols).
     private static final double DURATION = 200D;
     
     private PhysicalCondition condition;
     
+    private ComplaintType complaintType = ComplaintType.PANIC_ATTACK;
+    
     /**
-     * Constructor
+     * Constructor.
+     * 
      * @param person the person taking the medication.
      */
     public AnxietyMedication(Person person) {
@@ -49,4 +52,8 @@ public class AnxietyMedication extends Medication {
         
         return true;
     }
+    
+	public ComplaintType getComplaintType() {
+		return complaintType;
+	}
 }

@@ -526,7 +526,16 @@ public class PhysicalCondition implements Serializable {
 					// If nextPhase is not null, remove this problem so that it can
 					// properly be transitioned into the next.
 					problems.remove(problem);
-
+					
+					// Remove the medication related to this particular problem
+					Iterator<Medication> i = getMedicationList().iterator();
+					while (i.hasNext()) {
+						Medication med = i.next();
+						if (problem.getComplaint().getType() == med.getComplaintType()) {
+							i.remove();
+							break;
+						}
+					}
 				}
 
 				// If a new problem, check it doesn't exist already
@@ -553,15 +562,19 @@ public class PhysicalCondition implements Serializable {
 		if (illnessEvent) {
 			person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 		}
-
-		// Add time to all medications affecting the person.
-		Iterator<Medication> i = medicationList.iterator();
+		
+		// Take a person off medications that have "expired"
+		Iterator<Medication> i = getMedicationList().iterator();
 		while (i.hasNext()) {
-			Medication med = i.next();
-			med.timePassing(pulse);
-			if (!med.isMedicated()) {
+			if (!i.next().isMedicated()) {
 				i.remove();
 			}
+		}
+		
+		// Add time to all medications affecting the person.
+		Iterator<Medication> ii = getMedicationList().iterator();
+		while (ii.hasNext()) {
+			ii.next().timePassing(pulse);
 		}
 	}
 
@@ -1873,7 +1886,7 @@ public class PhysicalCondition implements Serializable {
 
 		boolean result = false;
 
-		Iterator<Medication> i = medicationList.iterator();
+		Iterator<Medication> i = getMedicationList().iterator();
 		while (i.hasNext()) {
 			if (medicationName.equals(i.next().getName()))
 				result = true;

@@ -389,7 +389,7 @@ public class HealthProblem implements Serializable {
 					}
 
 					if (nextPhase == null) {
-						if (type.toString().equalsIgnoreCase("suffocation")) {
+						if (type == ComplaintType.SUFFOCATION) {
 							logger.info(sufferer, "Suffocated for too long and was dead.");
 						}
 						else {

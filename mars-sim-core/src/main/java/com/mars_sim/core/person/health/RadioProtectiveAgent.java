@@ -7,8 +7,8 @@
 package com.mars_sim.core.person.health;
 
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.health.RadiationExposure.DoseHistory;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A medication that relieves radiation exposure sickness.
@@ -21,18 +21,21 @@ public class RadioProtectiveAgent extends Medication {
     public static final String NAME = "Radioprotective Agent";
     		
     // Stress reduction amount.
-    private static final double REDUCTION = .0005D;
+    private static final double REDUCTION = .01D;
     
     // Duration (millisols).
-    private static final double DURATION = 200D;
+    private static final double DURATION = 3000D;
     
     // Note: Research which medication is more effective under what situation
     // private static final String[] AGENTS = new String[] {"Amifostine", "Melatonin", "Genistein"};
     
     private RadiationExposure exposure;
     
+    private ComplaintType complaintType = ComplaintType.RADIATION_SICKNESS;
+    
     /**
-     * Constructor
+     * Constructor.
+     * 
      * @param person the person taking the medication.
      */
     public RadioProtectiveAgent(Person person) {
@@ -46,8 +49,41 @@ public class RadioProtectiveAgent extends Medication {
     public boolean timePassing(ClockPulse pulse) {
         super.timePassing(pulse);
         
-        int region = RandomUtil.getRandomInt(2);
-        exposure.reduceDose(BodyRegionType.values()[region], pulse.getElapsed() * REDUCTION);
+        // Find an region
+        BodyRegionType region = getExposedRegion();
+        // Reduce the dose with medication
+        exposure.reduceDose(region, pulse.getElapsed() * REDUCTION);
+
         return true;
     }
+    
+	/*
+	 * Gets the body region that has exposure exceeding the limit.
+	 */
+	private BodyRegionType getExposedRegion() {
+
+		// Compare if any element in a person's cumulativeDoses matrix exceeds the limit
+		for (BodyRegionType type : BodyRegionType.values()) {
+			
+			DoseHistory active = exposure.getDose()[type.ordinal()];
+			DoseHistory limit = exposure.getDoseLimits()[type.ordinal()];
+			
+			if (active.thirtyDayHigherThan(limit)) {
+				return type;
+			}
+			
+			if (active.annualHigherThan(limit)) {
+				return type;
+			}
+
+			if (active.careerHigherThan(limit)) {
+				return type;
+			}
+		}
+		return null;
+	}
+	
+	public ComplaintType getComplaintType() {
+		return complaintType;
+	}
 }

@@ -264,19 +264,19 @@ public class RadiationExposure implements Serializable, Temporal {
 		this.person = person;
 		cumulativeDoses = new DoseHistory[BodyRegionType.values().length];
 		
-		double bfo0 = rand(70);
-		double bfo1 = rand(250);
-		double bfo2 = rand(3500);
+		double bfo0 = rand(7);
+		double bfo1 = rand(25);
+		double bfo2 = rand(350);
 		DoseHistory bfoDose = new DoseHistory(bfo0, bfo1, bfo2);
 		
-		double ocular0 = rand(250);
-		double ocular1 = rand(800);
-		double ocular2 = rand(1250);			
+		double ocular0 = rand(25);
+		double ocular1 = rand(80);
+		double ocular2 = rand(125);			
 		DoseHistory ocularDose = new DoseHistory(ocular0, ocular1, ocular2);
 		
-		double skin0 = rand(500);
-		double skin1 = rand(1200);
-		double skin2 = rand(2000);
+		double skin0 = rand(50);
+		double skin1 = rand(120);
+		double skin2 = rand(200);
 		DoseHistory skinDose = new DoseHistory(skin0, skin1, skin2);
 		
 		cumulativeDoses[BodyRegionType.BFO.ordinal()] = bfoDose;
@@ -312,7 +312,7 @@ public class RadiationExposure implements Serializable, Temporal {
 	 * @param amount
 	 * @return
 	 */
-	private Radiation addDose(RadiationType radiationType, BodyRegionType bodyRegionType, double amount) {
+	public Radiation addDose(RadiationType radiationType, BodyRegionType bodyRegionType, double amount) {
 		DoseHistory active = cumulativeDoses[bodyRegionType.ordinal()];
 		
 		// Since amount is cumulative, need to carry over
@@ -647,6 +647,17 @@ public class RadiationExposure implements Serializable, Temporal {
 		return false;
 	}
 
+	/**
+	 * Gets the buffer dose.
+	 * 
+	 * @param bodyRegion
+	 * @return
+	 */
+	public double getBufferDose(int bodyRegion) {
+		return getDoseLimits()[bodyRegion].getThirtyDay() 
+			- getDose()[bodyRegion].getThirtyDay();
+	}
+	
 	/**
 	 * Gets the dose limits for this person.
 	 * 

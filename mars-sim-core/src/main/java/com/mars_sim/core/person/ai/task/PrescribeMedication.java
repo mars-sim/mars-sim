@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * PrescribeMedication.java
  * @date 2023-09-17
@@ -150,8 +150,7 @@ public class PrescribeMedication extends Task {
         }
         else if (doctor.isInVehicle()) {
             Vehicle vehicle = doctor.getVehicle();
-            if (vehicle instanceof Crewable) {
-                Crewable crewVehicle = (Crewable) vehicle;
+            if (vehicle instanceof Crewable crewVehicle) {
                 patientList = crewVehicle.getCrew();
             }
         }
@@ -261,15 +260,16 @@ public class PrescribeMedication extends Task {
                     
                 	if (!worker.equals(patient)) {
                 		phrase = phrase.append("Prescribing ").append(medication.getName())
-                			.append(" to ").append(patient.getName()).append(" in ").append(patient.getBuildingLocation().getNickName())
+                			.append(" to ").append(patient.getName()).append(" in ")
+                			.append(patient.getBuildingLocation().getNickName())
                 			.append("."); 
                 	}
                 	else {
-                		phrase = phrase.append("Is self-prescribing ").append(medication.getName())
-                    			.append(" to onself in ").append(person.getBuildingLocation().getNickName())
+                		phrase = phrase.append("Self-prescribing ").append(medication.getName())
+                    			.append(" in ").append(person.getBuildingLocation().getNickName())
                     			.append("."); 
                 	}
-            		logger.log(worker, Level.INFO, 5000,  phrase.toString());
+            		logger.log(worker, Level.INFO, 5000, phrase.toString());
                 }
                 
                 produceMedicalWaste();
