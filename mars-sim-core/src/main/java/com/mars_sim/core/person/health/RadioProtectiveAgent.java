@@ -9,6 +9,7 @@ package com.mars_sim.core.person.health;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.health.RadiationExposure.DoseHistory;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A medication that relieves radiation exposure sickness.
@@ -51,9 +52,14 @@ public class RadioProtectiveAgent extends Medication {
         
         // Find an region
         BodyRegionType region = getExposedRegion();
+        
+        double doseNeutrailized = pulse.getElapsed() * REDUCTION;
+        double rand = RandomUtil.getRandomDouble(doseNeutrailized / 1.5, doseNeutrailized * 1.5);
+        
         // Reduce the dose with medication
-        exposure.reduceDose(region, pulse.getElapsed() * REDUCTION);
-
+        exposure.reduceDose(region, 0, rand);
+        exposure.reduceDose(region, 1, rand / 4);
+        exposure.reduceDose(region, 2, rand / 16);
         return true;
     }
     

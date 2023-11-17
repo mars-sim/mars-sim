@@ -333,13 +333,15 @@ public class RadiationExposure implements Serializable, Temporal {
 	 * @param bodyRegionType
 	 * @param amount
 	 */
-	public void reduceDose(BodyRegionType bodyRegionType, double amount) {
+	public void reduceDose(BodyRegionType bodyRegionType, int interval, double amount) {
 		DoseHistory active = cumulativeDoses[bodyRegionType.ordinal()];
 
-		// amount is cumulative
-		active.addToThirtyDay(-amount);
-		active.addToAnnual(-amount);
-		active.addToCareer(-amount);
+		if (interval == 0)
+			active.addToThirtyDay(-amount);
+		else if (interval == 1)
+			active.addToAnnual(-amount);
+		else if (interval == 2)
+			active.addToCareer(-amount);
 	}
 
 
