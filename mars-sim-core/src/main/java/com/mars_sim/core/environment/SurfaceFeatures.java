@@ -79,7 +79,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	// non-static instances
 	private MineralMap mineralMap;
 	private AreothermalMap areothermalMap;
-	private MasterClock clock;
+//	private MasterClock clock;
 	private Weather weather;
 	private OrbitInfo orbitInfo;
 	private TerrainElevation terrainElevation;
@@ -96,7 +96,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @throws Exception when error in creating surface features.
 	 */
 	public SurfaceFeatures(MasterClock mc, OrbitInfo oi, Weather w) {
-		clock = mc;
+//		clock = mc;
 		orbitInfo = oi;
 		weather = w;
 		w.setSurfaceFeatures(this);

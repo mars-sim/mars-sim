@@ -72,6 +72,12 @@ public class RelationshipUtil implements Serializable {
 			case REMOTE_COMMUNICATION -> getRemoteRelationship(person1, person2);
 			default -> 1D;
 		};
+		
+		if (opinion < 0)
+			opinion = 10;
+		if (opinion > 100)
+			opinion = 100;
+		
 		person1.getRelation().setRandomOpinion(person2, opinion);
 	}
 
@@ -95,9 +101,7 @@ public class RelationshipUtil implements Serializable {
 	 * @return true if the two people have a relationship
 	 */
 	private static boolean hasRelationship(Person person1, Person person2) {
-		if (person1.getRelation().getOpinion(person2) == null)
-			return false;
-		return true;
+		return (person1.getRelation().getOpinion(person2) != null);
 	}
 
 	/**

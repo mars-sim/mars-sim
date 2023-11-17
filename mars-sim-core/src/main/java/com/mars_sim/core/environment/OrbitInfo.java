@@ -57,10 +57,8 @@ public class OrbitInfo implements Serializable, Temporal {
 	/** Two PIs. */
 	private static final double TWO_PI = Math.PI * 2D;
 	// On earth, use 15; On Mars, use 14.6 instead.
-	private static final double ANGLE_TO_HOURS = 90D / HALF_PI  / 14.6D; // (or = 24 hrs / (2*pi) * 15 / 14.6)
-
-	private static final double HRS_TO_MILLISOLS = 1 / MarsTime.HOURS_PER_MILLISOL; //1.0275D * MarsTime.MILLISOLS_PER_DAY / 24D; 
-	
+//	private static final double ANGLE_TO_HOURS = 90D / HALF_PI  / 14.6D; // (or = 24 hrs / (2*pi) * 15 / 14.6)
+//	private static final double HRS_TO_MILLISOLS = 1 / MarsTime.HOURS_PER_MILLISOL; //1.0275D * MarsTime.MILLISOLS_PER_DAY / 24D; 
 
 	// Date of the 2000K start second
 	private static final LocalDateTime Y2K = LocalDateTime.of(2000,1,1,0,0);
@@ -268,17 +266,17 @@ public class OrbitInfo implements Serializable, Temporal {
 		sunDirection = new Coordinates(sunPhi, sunTheta);
 		
 		// Note: at L_s = 0, sunTheta is pi, sunPhi is (HALF_PI + TILT) 
-		// sunDirection = new Coordinates(HALF_PI + TILT, Math.PI);
+		// Thus, sunDirection = new Coordinates(HALF_PI + TILT, Math.PI)
 		
 		// Determine new radius
-//		double instantaneousSunMarsDistance = getHeliocentricDistance(earthTime);
+		// May add back: double instantaneousSunMarsDistance = getHeliocentricDistance(earthTime)
 				
 		// Recompute the areocentric longitude of Mars
 		sunAreoLongitude = computeSunAreoLongitude(pulse.getMasterClock().getEarthTime());
 
 		// Recompute the Solar Declination Angle *ON DEMAND ONLY*
 		// No need to call the method below in each frame
-//		computeSineSolarDeclinationAngle();
+		// May add back: computeSineSolarDeclinationAngle();
 
 		return true;
 	}
@@ -697,9 +695,9 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * @return
 	 */
 	public MarsTime getSunrise(Coordinates location) {
-		Coordinates sunDirection = getSunDirection();
+
 		// Find the sun theta when it decrease over time
-		double sunTheta = sunDirection.getTheta();
+		double sunTheta = getSunDirection().getTheta();
 		// Gets the longitude angle due to the specific location
 		double lon = location.getTheta();
 	
@@ -731,7 +729,8 @@ public class OrbitInfo implements Serializable, Temporal {
 		double lon = location.getTheta();
 	
 		// Rotate the globe 90 degree to a location further away from the sun to find the sunset delta time
-		double gapTheta = sunTheta - lon + HALF_PI; // - TWILIGHT_RADIANS;
+		// Future: May add TWILIGHT_RADIANS below ;
+		double gapTheta = sunTheta - lon + HALF_PI; 
 
 		if (gapTheta < 0) {
 			// Gone round the planet,

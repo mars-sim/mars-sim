@@ -68,9 +68,6 @@ public class MissionManager implements Serializable {
 	private int identifier;
 	/** The sol cache. */	
 	private int solCache;
-
-	/** The mission identifier string. */
-	private String missionString;
 	
 	/** The mission listeners. */
 	private transient List<MissionManagerListener> listeners;
@@ -107,8 +104,7 @@ public class MissionManager implements Serializable {
 		}
 		else
 			id = identifier++;
-		missionString = missionSol + "-" + String.format("%03d", id);
-		return missionString;
+		return missionSol + "-" + String.format("%03d", id);
 	}
 
 	/**

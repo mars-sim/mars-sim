@@ -581,7 +581,7 @@ public class MasterClock implements Serializable {
 
 				// Allows actualTR to gradually catch up with desiredTR
 				// Note that the given value of actualTR is the ratio of Earth time to real time elapsed
-				if (realElapsedMillisec != 0)
+				if (realElapsedMillisec != 0.0)
 					actualTR = 0.9 * actualTR + 0.1 * (double) earthMillisec / realElapsedMillisec;
 
 				if (!listenerExecutor.isTerminated()

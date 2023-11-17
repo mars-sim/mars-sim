@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * Relation.java
  * @date 2023-11-14
@@ -71,11 +71,7 @@ public class Relation implements Serializable {
 	 */
 	void setRandomOpinion(Person p, double opinion) {
 		double score = opinion;
-		if (score < 0)
-			score = 10;
-		if (score > 100)
-			score = 100;
-		
+
 		double care = 0;
 		double trust = 0;
 		double respect = 0;
@@ -109,26 +105,28 @@ public class Relation implements Serializable {
 				respect = respect + d/4;
 			}
 			
-			if (respect < 0)
-				respect = 0;
-			if (respect > 100)
-				respect = 100;
-			
-			if (care < 0)
-				care = 0;
-			if (care > 100)
-				care = 100;
-			
-			if (trust < 0)
-				trust = 0;
-			if (trust > 100)
-				trust = 100;
+			trust = limit(trust);
+			respect = limit(respect);
+			care = limit(care);
 		}
 
 		found = new Opinion(respect, care, trust);
 		opinionMap.put(personID, found);
 	}
 	
+	/**
+	 * Places a limit over a value.
+	 * 
+	 * @param value
+	 * @return
+	 */
+	private double limit(double value) {
+		if (value < 0)
+			value = 0;
+		else if (value > 100)
+			value = 100;
+		return value;
+	}
 	
 	/**
 	 * Changes the opinion regarding a person.
@@ -156,21 +154,6 @@ public class Relation implements Serializable {
 			// Most likely to change the respect than care and trust
 			respect += mod;
 		}
-		
-		if (respect < 0)
-			respect = 0;
-		if (respect > 100)
-			respect = 100;
-		
-		if (care < 0)
-			care = 0;
-		if (care > 100)
-			care = 100;
-		
-		if (trust < 0)
-			trust = 0;
-		if (trust > 100)
-			trust = 100;
 		
 		found = new Opinion(respect, care, trust);
 		opinionMap.put(personID, found);

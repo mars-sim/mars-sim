@@ -323,8 +323,9 @@ public class CircadianClock implements Serializable {
 	 * Scales down the weight of the Sleep Habit Map.
 	 */
 	public void inflateSleepHabit() {
-		for (int key : sleepCycleMap.keySet()) {
-			int value = sleepCycleMap.get(key);
+		for (Map.Entry<Integer, Integer> entry : sleepCycleMap.entrySet()) {
+		    int key = entry.getKey();
+		    int value = entry.getValue();
 
 			if (value > SLEEP_MAX_FACTOR) {
 				value = SLEEP_MAX_FACTOR;

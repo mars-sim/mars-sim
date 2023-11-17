@@ -93,19 +93,6 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
         return result;
     }
 
-//    /**
-//     * Is this study suitable for Astronomy? Either primary science type or has a collaboration
-//     * of Astronomy from at least one collaborator.
-//     * 
-//     * @param study
-//     * @return
-//     */
-//    private static boolean isSuitableReseach(ScientificStudy study) {
-//        return (ScientificStudy.RESEARCH_PHASE.equals(study.getPhase())
-//            && ((ScienceType.ASTRONOMY == study.getScience())
-//                || study.getCollaborationScience().contains(ScienceType.ASTRONOMY)));
-//    }
-//    
 	/**
 	 * Gets a list of astronomy studies a settlement is primary for.
 	 * Note: Either primary science type or has a collaboration
@@ -116,11 +103,11 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
 	 */
 	public List<ScientificStudy> getAstroStudies(Settlement settlement) {
 		return ssm.getAllStudies(settlement).stream().filter(s -> 
-		(ScientificStudy.RESEARCH_PHASE.equals(s.getPhase())
+				(ScientificStudy.RESEARCH_PHASE.equals(s.getPhase())
 	            && ((ScienceType.ASTRONOMY == s.getScience())
 	                || s.getCollaborationScience().contains(ScienceType.ASTRONOMY)))
-								&&	(s.getPrimarySettlement()  == null ?
-									false : s.getPrimarySettlement().equals(settlement)))
+						&& (s.getPrimarySettlement() != null 
+						&& s.getPrimarySettlement().equals(settlement)))
 				.collect(Collectors.toList());		
 	}
 	

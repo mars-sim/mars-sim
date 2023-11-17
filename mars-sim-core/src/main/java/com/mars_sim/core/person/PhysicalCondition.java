@@ -1074,8 +1074,7 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private void checkRadiationPoisoning(double time) {
 		
-		// TODO: need to check on a person's 30-day radiation dosage to determine if he's sick with it.
-		// Use a person's age, weight, health and strength, etc. as modifiers
+		// Future: need to double check on a person's radiation dosage to determine if he's sick with it.
 		
 		var radiationPoisoned = getProblemByType(ComplaintType.RADIATION_SICKNESS);
 
