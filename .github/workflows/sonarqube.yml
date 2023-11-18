@@ -1,11 +1,14 @@
 name: SonarQube Analysis
 on:
-  # Trigger analysis when pushing in master 
+  # Trigger analysis when pushing in master
   push:
     branches:
       - master
+  # Trigger analysis when creating a PR but ignore dependabot branches
   pull_request:
     types: [opened, synchronize, reopened]
+    branches-ignore:    
+      - 'dependabot/**'
 jobs:
   sonarqube:
     name: SonarQube Trigger
