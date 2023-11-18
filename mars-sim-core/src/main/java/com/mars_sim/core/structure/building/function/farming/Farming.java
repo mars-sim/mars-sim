@@ -838,12 +838,12 @@ public class Farming extends Function {
 
 			// Compute the effect of the temperature
 			double temperatureModifier = 1D;
-			double tempNow = building.getCurrentTemperature();
-			double tempInitial = building.getInitialTemperature();
-			if (tempNow > (tempInitial + T_TOLERANCE))
-				temperatureModifier = tempInitial / tempNow;
-			else if (tempNow < (tempInitial - T_TOLERANCE))
-				temperatureModifier = tempNow / tempInitial;
+			double tNow = building.getCurrentTemperature();
+			double tPreset = building.getPresetTemperature();
+			if (tNow > (tPreset + T_TOLERANCE))
+				temperatureModifier = tPreset / tNow;
+			else if (tNow < (tPreset - T_TOLERANCE))
+				temperatureModifier = tNow / tPreset;
 
 			// Call timePassing on each crop.
 			List<Crop> toRemove = new ArrayList<>();
@@ -956,9 +956,9 @@ public class Farming extends Function {
 		}
 
 		// The normal lighting power during growing phase
-//		powerRequired += getTotalLightingPower();
-
 		// Note: add separate auxiliary power for subsystem, not just lighting power
+		// May add back powerRequired += getTotalLightingPower()
+	
 		return powerRequired;
 	}
 
@@ -1225,7 +1225,7 @@ public class Farming extends Function {
 	}
 	
 	/**
-	 * Gets the cumulative work time.
+	 * Adds the cumulative work time.
 	 * 
 	 * @return
 	 */

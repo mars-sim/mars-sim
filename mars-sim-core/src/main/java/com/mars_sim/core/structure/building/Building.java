@@ -130,7 +130,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	protected int baseLevel;
 
 	/** Default : 22.5 deg celsius. */
-	private double initialTemperature = 22.5D;
+	private double presetTemperature = 0;//22.5D;
 	protected double width;
 	protected double length;
 	protected double floorArea;
@@ -268,16 +268,16 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		description = spec.getDescription();
 		this.category = spec.getCategory();
 
-		// Get the building's functions
-		functions = buildFunctions(spec);
-
 		// Get base power requirements.
 		basePowerRequirement = spec.getBasePowerRequirement();
 		basePowerDownPowerRequirement = spec.getBasePowerDownPowerRequirement();
 
 		// Set room temperature
-		initialTemperature = spec.getRoomTemperature();
+		presetTemperature = spec.getPresetTemperature();
 
+		// Get the building's functions
+		functions = buildFunctions(spec);
+		
 		// Determine total maintenance time.
 		double totalMaintenanceTime = spec.getMaintenanceTime();
 		for (Function mfunction : functions) {
@@ -354,12 +354,12 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Gets the initial temperature of a building.
+	 * Gets the preset temperature of a building.
 	 *
 	 * @return temperature (deg C)
 	 */
-	public double getInitialTemperature() {
-		return initialTemperature;
+	public double getPresetTemperature() {
+		return presetTemperature;
 	}
 
 
@@ -553,10 +553,15 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * @return temperature (deg C)
 	 */
 	public double getCurrentTemperature() {
+//		furnace = getThermalGeneration();
+//		if (heating == null)
+//			heating = furnace.getHeating();
 		if (heating != null)
 			return heating.getCurrentTemperature();
-		else
-			return initialTemperature;
+		else {
+//			logger.config(this, 10_000L, "preset t: " + Math.round(presetTemperature * 10.0)/10.0);
+			return presetTemperature;
+		}
 	}
 
 	/**

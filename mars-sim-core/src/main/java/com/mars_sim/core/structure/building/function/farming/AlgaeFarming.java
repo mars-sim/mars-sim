@@ -267,7 +267,7 @@ public class AlgaeFarming extends Function {
 
 	    logger.log(building, Level.CONFIG, 0, "Algae: " 
 	    		+ Math.round(currentAlgae * 10.0)/10.0 
-	    		+ " kg.  food: " + Math.round(initalFood * 10.0)/10.0 
+	    		+ " kg.  nutrient: " + Math.round(initalFood * 10.0)/10.0 
 	    		+ " kg.  total mass: " + Math.round(totalMass * 10.0)/10.0);
 	}
 
@@ -348,7 +348,7 @@ public class AlgaeFarming extends Function {
 	}
 	
 	/**
-	 * Gets the cumulative work time.
+	 * Adds the cumulative work time.
 	 * 
 	 * @return
 	 */
@@ -467,7 +467,7 @@ public class AlgaeFarming extends Function {
 	private void retrieveWater(double amount, int id) {
 		if (amount > 0) {
 			retrieve(amount, WATER_ID, true);
-			// Record the amount of water taken up by the crop
+			// Record the amount of water consumed
 			addResourceUsage(amount, id);		
 		}
 	}
@@ -502,8 +502,8 @@ public class AlgaeFarming extends Function {
 	 */
 	private void storeGreyWater(double amount, int id) {
 		if (amount > 0) {
-			retrieve(amount, GREY_WATER_ID, true);
-			// Record the amount of water taken up by the crop
+			store(amount, GREY_WATER_ID, "AlgaeFarming::storeGreyWater");
+			// Record the amount of grey water produced
 			addResourceUsage(amount, id);		
 		}
 	}
@@ -517,7 +517,7 @@ public class AlgaeFarming extends Function {
 	private double storeGas(double amount, double gasCache, int gasId) {
 		if (amount > 0) {
 			if (gasCache + amount > gasThreshold) {
-				store(gasCache, gasId, "Crop::storeGas");
+				store(gasCache, gasId, "AlgaeFarming::storeGas");
 				gasCache = amount;
 			}
 			else {
@@ -549,8 +549,8 @@ public class AlgaeFarming extends Function {
 		// Consume fresh water
 		retrieveWater(freshWater, 0);
 	   
-		// Generate grey water
-		storeGreyWater(freshWater, 3);
+		// Produce grey water
+		storeGreyWater(freshWater * .99, 3);
 	
 		// STEP 1 : COMPUTE THE EFFECTS OF THE SUNLIGHT AND ARTIFICIAL LIGHT
 		
@@ -563,7 +563,7 @@ public class AlgaeFarming extends Function {
 		// Compute the effect of the temperature
 		double temperatureModifier = 1D;
 		double tempNow = building.getCurrentTemperature();
-		double tempInitial = building.getInitialTemperature();
+		double tempInitial = building.getPresetTemperature();
 		if (tempNow > (tempInitial + T_TOLERANCE))
 			temperatureModifier = tempInitial / tempNow;
 		else if (tempNow < (tempInitial - T_TOLERANCE))
@@ -589,8 +589,7 @@ public class AlgaeFarming extends Function {
 		// COMPUTE THE EFFECTS OF GASES (O2 and CO2 USAGE)
 		
 		// Note: computeGases takes up 25% of all cpu utilization
-		computeGases(watt, compositeFactor * GAS_MODIFIER);
-		
+		computeGases(watt, compositeFactor * GAS_MODIFIER);	
 		
 		// Create new spirulina, using BIRTH_RATE
 		if (currentAlgae < maxAlgae && currentFood > 0) {
@@ -628,6 +627,10 @@ public class AlgaeFarming extends Function {
  
 	public void resetPAR() {
 		cumulativeDailyPAR = 0;
+	}
+	
+	public double getLightingPower() {
+		return lightingPower;
 	}
 	
 	/**
@@ -761,8 +764,10 @@ public class AlgaeFarming extends Function {
 	@Override
 	public double getFullPowerRequired() {
 		// Power (kW) required for normal operations.
-		return tankSize * POWER_PER_LITRE + getCurrentAlgae() * POWER_PER_KG_ALGAE 
-				+ getFoodMass() * POWER_PER_KG_FOOD;
+		return tankSize * POWER_PER_LITRE 
+				+ getCurrentAlgae() * POWER_PER_KG_ALGAE 
+				+ getFoodMass() * POWER_PER_KG_FOOD
+				+ getLightingPower();
 	}
 
 	/**
@@ -833,8 +838,13 @@ public class AlgaeFarming extends Function {
 	 */
 	public double tending(double workTime) {
 		double surplus = 0;
+		
+		// Record the work time
+		addCumulativeWorkTime(workTime);
+		
 		currentFood += workTime * ADD_FOOD_RATE;
 		tendertime -= workTime;
+		
 		if (tendertime < 0) {
 			surplus = Math.abs(tendertime);
 			tendertime = currentFood * TEND_TIME_FOR_FOOD;

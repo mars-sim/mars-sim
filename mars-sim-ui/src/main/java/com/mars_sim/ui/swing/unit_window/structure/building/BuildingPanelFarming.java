@@ -169,31 +169,32 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		cropsLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.numCrops.title"),
 							   Integer.toString(cropsCache), null);
 
-		waterUsageCache = farm.computeUsage(ResourceUtil.waterID);
-		waterLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.waterUsage.title"),
-									DECIMAL_KG_SOL.format(waterUsageCache),
-									Msg.getString("BuildingPanelFarming.waterUsage.tooltip"));
-
-		greyWaterUsageCache = farm.computeUsage(ResourceUtil.greyWaterID);
-		greyWaterLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.greyWaterUsage.title"),
-									DECIMAL_KG_SOL.format(greyWaterUsageCache),
-									Msg.getString("BuildingPanelFarming.greyWaterUsage.tooltip"));
-		
-		o2Cache = farm.computeUsage(ResourceUtil.oxygenID);
-		o2Label = springPanel.addTextField(Msg.getString("BuildingPanelFarming.o2.title"),
-									DECIMAL_KG_SOL.format(o2Cache),
-									Msg.getString("BuildingPanelFarming.o2.tooltip"));
-
-		co2Cache = farm.computeUsage(ResourceUtil.co2ID);
-		co2Label = springPanel.addTextField(Msg.getString("BuildingPanelFarming.co2.title"),
-									DECIMAL_KG_SOL.format(co2Cache),
-								 	Msg.getString("BuildingPanelFarming.co2.tooltip"));
 
 		// Update the cumulative work time
 		workTimeCache = farm.getCumulativeWorkTime()/1000.0;
 		workTimeLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.workTime.title"),
 									StyleManager.DECIMAL_SOLS.format(workTimeCache),
 									Msg.getString("BuildingPanelFarming.workTime.tooltip"));
+
+		waterUsageCache = farm.computeUsage(ResourceUtil.waterID);
+		waterLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.waterUsage.title"),
+									DECIMAL_KG_SOL.format(waterUsageCache),
+									Msg.getString("BuildingPanelFarming.waterUsage.tooltip"));
+		
+		o2Cache = farm.computeUsage(ResourceUtil.oxygenID);
+		o2Label = springPanel.addTextField(Msg.getString("BuildingPanelFarming.o2.title"),
+									DECIMAL_KG_SOL.format(o2Cache),
+									Msg.getString("BuildingPanelFarming.o2.tooltip"));
+
+		greyWaterUsageCache = farm.computeUsage(ResourceUtil.greyWaterID);
+		greyWaterLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.greyWaterUsage.title"),
+									DECIMAL_KG_SOL.format(greyWaterUsageCache),
+									Msg.getString("BuildingPanelFarming.greyWaterUsage.tooltip"));
+
+		co2Cache = farm.computeUsage(ResourceUtil.co2ID);
+		co2Label = springPanel.addTextField(Msg.getString("BuildingPanelFarming.co2.title"),
+									DECIMAL_KG_SOL.format(co2Cache),
+								 	Msg.getString("BuildingPanelFarming.co2.tooltip"));
 
 		JPanel southPanel = new JPanel(new BorderLayout());
 		center.add(southPanel, BorderLayout.SOUTH);

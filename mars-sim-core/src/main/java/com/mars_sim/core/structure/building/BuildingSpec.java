@@ -36,7 +36,7 @@ public class BuildingSpec {
 	
 	private double basePowerRequirement;
 	private double basePowerDownPowerRequirement;
-	private double roomTemperature;
+	private double presetTemperature;
 
 	private double length;
 	private double width;
@@ -69,7 +69,7 @@ public class BuildingSpec {
 	private BuildingCategory category;
 	
 	BuildingSpec(String buildingType, String description, BuildingCategory category, double width, double length, int baseLevel,
-			double roomTemperature, int maintenanceTime,
+			double presetTemperature, int maintenanceTime,
 			int wearLifeTime, double basePowerRequirement, double basePowerDownPowerRequirement,
 			Map<FunctionType, FunctionSpec> supportedFunctions) {
 		
@@ -81,7 +81,7 @@ public class BuildingSpec {
 		this.width = width;
 		this.length = length;
 		this.baseLevel = baseLevel;
-		this.roomTemperature = roomTemperature;
+		this.presetTemperature = presetTemperature;
 		this.maintenanceTime = maintenanceTime;
 		this.wearLifeTime = wearLifeTime;
 		this.basePowerRequirement = basePowerRequirement;
@@ -152,8 +152,8 @@ public class BuildingSpec {
 		return maintenanceTime;
 	}
 
-	public double getRoomTemperature() {
-		return roomTemperature;
+	public double getPresetTemperature() {
+		return presetTemperature;
 	}
 
 	public double getLength() {

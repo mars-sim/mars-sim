@@ -283,6 +283,17 @@ public class SimLogger {
 	}
 
 	/**
+	 * Helper method to log a config message.
+	 * 
+	 * @param actor
+	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
+	 * @param string
+	 */
+	public void config(Loggable actor, long timeBetweenLogs, String string) {
+		log(null, actor, Level.CONFIG, timeBetweenLogs, string, null);
+	}
+	
+	/**
 	 * Logs directly without formatting.
 	 * 
 	 * @param message

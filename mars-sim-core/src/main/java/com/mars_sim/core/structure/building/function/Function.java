@@ -385,11 +385,26 @@ public abstract class Function implements Serializable, Temporal {
 	}
 
 
+	/**
+	 * Retrieves a resource from settlement.
+	 * 
+	 * @param amount
+	 * @param resource
+	 * @param value
+	 * @return
+	 */
 	protected boolean retrieve(double amount, int resource, boolean value) {
 		return Storage.retrieveAnResource(amount, resource, building.getSettlement(), value);
 	}
 
 
+	/**
+	 * Stores a resource to settlement.
+	 * 
+	 * @param amount
+	 * @param resource
+	 * @param source
+	 */
 	protected void store(double amount, int resource, String source) {
 		Storage.storeAnResource(amount, resource, building.getSettlement(), source);
 	}

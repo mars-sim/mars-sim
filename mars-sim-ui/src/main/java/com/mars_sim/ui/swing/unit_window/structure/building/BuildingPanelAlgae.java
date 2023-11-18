@@ -12,8 +12,10 @@ import java.text.DecimalFormat;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.building.function.farming.AlgaeFarming;
+import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -28,6 +30,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 public class BuildingPanelAlgae extends BuildingFunctionPanel {
 
 	private static final String FISH_ICON = "fish";
+	private static final String DEGREE_CELSIUS = " " + Msg.getString("temperature.sign.degreeCelsius");
 	
 	private static final DecimalFormat DECIMAL_KG_SOL = new DecimalFormat("#,##0.0 kg/Sol");
 
@@ -38,18 +41,22 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 	private double foodMass;
 	private double foodDemand;
 	private double powerReq;
+	private double tempCache;
 	
 	/** The cache value for the average water usage per sol per square meters. */
 	private double waterUsageCache;
-	/** The cache value for the average grey water usage per sol per square meters. */
-	private double greyWaterUsageCache;
+	/** The cache value for the average grey water produced per sol per square meters. */
+	private double greyWaterProducedCache;
 	/** The cache value for the average O2 generated per sol per square meters. */
 	private double o2Cache;
 	/** The cache value for the average CO2 consumed per sol per square meters. */
 	private double co2Cache;
 	/** The cache value for the work time done in this greenhouse. */
 	private double workTimeCache;
-	
+	/** The cache for the amount of solar irradiance. */
+	private double radCache;
+
+	private JLabel tempLabel;
 	private JLabel algaeMassLabel;
 	private JLabel idealAlgaeMassLabel;
 	private JLabel maxAlgaeMassLabel;
@@ -58,7 +65,7 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 	private JLabel foodDemandLabel;
 
 	private JLabel powerReqLabel;
-
+	private JLabel radLabel;
 	private JLabel waterLabel;
 	private JLabel greyWaterLabel;
 	private JLabel o2Label;
@@ -67,6 +74,9 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 	
 	private AlgaeFarming pond;
 
+	private Coordinates location;
+
+	private SurfaceFeatures surfaceFeatures;
 	
 	/**
 	 * Constructor.
@@ -83,6 +93,10 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 		);
 		
 		this.pond = pond;
+		
+		location = pond.getBuilding().getCoordinates();
+	
+		surfaceFeatures = getSimulation().getSurfaceFeatures();
 	}
 	
 	/**
@@ -90,7 +104,7 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
-		AttributePanel labelPanel = new AttributePanel(12);
+		AttributePanel labelPanel = new AttributePanel(14);
 		center.add(labelPanel, BorderLayout.NORTH);
 		
 		labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.tankSize"), Integer.toString(pond.getTankSize()), null);
@@ -119,31 +133,40 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 		powerReqLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.powerReq"),
 								 StyleManager.DECIMAL_KW.format(powerReq), null);
 		
+		tempCache = pond.getBuilding().getCurrentTemperature();	
+		tempLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.temp"),
+								 StyleManager.DECIMAL_PLACES1.format(tempCache) + DEGREE_CELSIUS, null);
+			
+		// Prepare solar irradiance label
+		radCache = surfaceFeatures.getSolarIrradiance(location);
+		radLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.solarIrradiance.title"),
+							 radCache + " W/m", "Estimated sunlight on top of the greenhouse roof");
+		
 		waterUsageCache = pond.computeUsage(ResourceUtil.waterID);
-		waterLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFarming.waterUsage.title"),
+		waterLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.waterUsage.title"),
 									DECIMAL_KG_SOL.format(waterUsageCache),
-									Msg.getString("BuildingPanelFarming.waterUsage.tooltip"));
+									Msg.getString("BuildingPanelAlgae.waterUsage.tooltip"));
 
-		greyWaterUsageCache = pond.computeUsage(ResourceUtil.greyWaterID);
-		greyWaterLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFarming.greyWaterUsage.title"),
-									DECIMAL_KG_SOL.format(greyWaterUsageCache),
-									Msg.getString("BuildingPanelFarming.greyWaterUsage.tooltip"));
+		greyWaterProducedCache = pond.computeUsage(ResourceUtil.greyWaterID);
+		greyWaterLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.greyWaterProduced.title"),
+									DECIMAL_KG_SOL.format(greyWaterProducedCache),
+									Msg.getString("BuildingPanelAlgae.greyWaterProduced.tooltip"));
 		
 		o2Cache = pond.computeUsage(ResourceUtil.oxygenID);
-		o2Label = labelPanel.addTextField(Msg.getString("BuildingPanelFarming.o2.title"),
+		o2Label = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.o2.title"),
 									DECIMAL_KG_SOL.format(o2Cache),
-									Msg.getString("BuildingPanelFarming.o2.tooltip"));
+									Msg.getString("BuildingPanelAlgae.o2.tooltip"));
 
 		co2Cache = pond.computeUsage(ResourceUtil.co2ID);
-		co2Label = labelPanel.addTextField(Msg.getString("BuildingPanelFarming.co2.title"),
+		co2Label = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.co2.title"),
 									DECIMAL_KG_SOL.format(co2Cache),
-								 	Msg.getString("BuildingPanelFarming.co2.tooltip"));
+								 	Msg.getString("BuildingPanelAlgae.co2.tooltip"));
 
 		// Update the cumulative work time
 		workTimeCache = pond.getCumulativeWorkTime()/1000.0;
-		workTimeLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFarming.workTime.title"),
+		workTimeLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.workTime.title"),
 									StyleManager.DECIMAL_SOLS.format(workTimeCache),
-									Msg.getString("BuildingPanelFarming.workTime.tooltip"));
+									Msg.getString("BuildingPanelAlgae.workTime.tooltip"));
 	}
 
 	/**
@@ -188,6 +211,19 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 			powerReqLabel.setText(StyleManager.DECIMAL_KW.format(newPowerReq));
 		}
 		
+		double newTemp = building.getCurrentTemperature();
+		if (tempCache != newTemp) {
+			tempCache = newTemp;
+			tempLabel.setText(StyleManager.DECIMAL_PLACES1.format(newTemp) + DEGREE_CELSIUS);
+		}
+		
+		// Update solar irradiance label
+		double rad = Math.round(surfaceFeatures.getSolarIrradiance(location)*10.0)/10.0;
+		if (radCache != rad) {
+			radCache = rad;
+			radLabel.setText(String.valueOf(rad) + " W/m");
+		}
+		
 		// Update the average water usage
 		double newWater = pond.computeUsage(ResourceUtil.waterID);
 		if (waterUsageCache != newWater) {
@@ -211,8 +247,8 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 
 		// Update the average grey water usage
 		double newGreyWater = pond.computeUsage(ResourceUtil.greyWaterID);
-		if (greyWaterUsageCache != newGreyWater) {
-			greyWaterUsageCache = newGreyWater;
+		if (greyWaterProducedCache != newGreyWater) {
+			greyWaterProducedCache = newGreyWater;
 			greyWaterLabel.setText(DECIMAL_KG_SOL.format(newGreyWater));
 		}
 		

@@ -233,7 +233,8 @@ public class TendAlgaePond extends Task {
 		}
 
 		// Check if building has malfunction.
-		if (building.getMalfunctionManager() != null && building.getMalfunctionManager().hasMalfunction()) {
+		if (building.getMalfunctionManager() != null 
+				&& building.getMalfunctionManager().hasMalfunction()) {
 			endTask();
 			return time;
 		}

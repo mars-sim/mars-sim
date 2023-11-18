@@ -145,7 +145,7 @@ public class BuildingConfig {
 		double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
 		double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
 		int baseLevel = Integer.parseInt(buildingElement.getAttributeValue(BASE_LEVEL));
-		double roomTemp = Double.parseDouble(buildingElement.getAttributeValue(ROOM_TEMPERATURE));
+		double presetTemp = Double.parseDouble(buildingElement.getAttributeValue(ROOM_TEMPERATURE));
 		int maintenanceTime = Integer.parseInt(buildingElement.getAttributeValue(MAINTENANCE_TIME));
 		int wearLifeTime = Integer.parseInt(buildingElement.getAttributeValue(WEAR_LIFETIME));
 
@@ -194,7 +194,7 @@ public class BuildingConfig {
 		}
 
 		BuildingSpec newSpec = new BuildingSpec(buildingTypeName, desc, category, width, length, baseLevel,
-			 	roomTemp, maintenanceTime, wearLifeTime,
+			 	presetTemp, maintenanceTime, wearLifeTime,
 			 	basePowerRequirement, basePowerDownPowerRequirement,
 			 	supportedFunctions);
 		

@@ -156,7 +156,7 @@ extends Function {
 	/** The previously recorded temperature of this building. */
 	private double[] temperatureCache = new double[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	
-	private double tInitial;
+	private double tPreset;
 
 	private double heatSink = 0;
 	
@@ -247,12 +247,12 @@ extends Function {
 		uValueAreaCrackLengthAirlock = 0.244 * .075 * airChangePerHr * qHFactor * (2 * (2 + 6) + 4 * (.5 + .5) );
 		//assuming two EVA airlock
 		
-		tInitial = building.getInitialTemperature();
+		tPreset = building.getPresetTemperature();
 		
-		currentTemperature = tInitial;
+		currentTemperature = tPreset;
 	
 		for (int i=0; i<temperatureCache.length; i++) {
-			temperatureCache[i] = tInitial;
+			temperatureCache[i] = tPreset;
 		}
 	}
     
@@ -265,7 +265,9 @@ extends Function {
     	return currentTemperature;
     }
 
-	/** Turn heat source off if reaching pre-setting temperature
+	/** 
+	 * Turns heat source off when reaching the preset temperature.
+	 * 
 	 * @return none. set heatMode
 	 */
 	private void adjustHeatMode(double time) {
@@ -278,19 +280,19 @@ extends Function {
 		double tNow = currentTemperature;
 			
 	    // If T_NOW deg above INITIAL_TEMP, turn off furnace
-		if (tNow > tInitial + 1) {
+		if (tNow > tPreset + 1) {
 			building.setHeatMode(HeatMode.HEAT_OFF);
 		}
-		else if (tNow >= tInitial + 2 * T_LOWER_SENSITIVITY / time) {
+		else if (tNow >= tPreset + 2 * T_LOWER_SENSITIVITY / time) {
 			building.setHeatMode(HeatMode.ONE_EIGHTH_HEAT);
 		}
-		else if (tNow >= tInitial - 1 * T_LOWER_SENSITIVITY / time) {
+		else if (tNow >= tPreset - 1 * T_LOWER_SENSITIVITY / time) {
 			building.setHeatMode(HeatMode.QUARTER_HEAT);
 		}
-		else if (tNow >= tInitial - 4 * T_LOWER_SENSITIVITY / time) {
+		else if (tNow >= tPreset - 4 * T_LOWER_SENSITIVITY / time) {
 			building.setHeatMode(HeatMode.HALF_HEAT);
 		}
-		else if (tNow >= tInitial - 7 * T_LOWER_SENSITIVITY / time) {
+		else if (tNow >= tPreset - 7 * T_LOWER_SENSITIVITY / time) {
 			building.setHeatMode(HeatMode.THREE_QUARTER_HEAT);
 		}
 		else {
@@ -383,25 +385,25 @@ extends Function {
 		
 		// if temperature inside is too high, will automatically close the "blind" or "curtain" partially to block the 
 		// excessive sunlight from coming in as a way of cooling off the building.
-		if (inTCelsius < tInitial + 2.0 * T_UPPER_SENSITIVITY) {
+		if (inTCelsius < tPreset + 2.0 * T_UPPER_SENSITIVITY) {
 			solarHeatGain = solarHeatGain/2;
 		}
-		else if (inTCelsius < tInitial + 3.0 * T_UPPER_SENSITIVITY) {
+		else if (inTCelsius < tPreset + 3.0 * T_UPPER_SENSITIVITY) {
 			solarHeatGain = solarHeatGain/3;
 		}			
-		else if (inTCelsius < tInitial + 4.0 * T_UPPER_SENSITIVITY) {
+		else if (inTCelsius < tPreset + 4.0 * T_UPPER_SENSITIVITY) {
 			solarHeatGain = solarHeatGain/4;
 		}			
-		else if (inTCelsius < tInitial + 5.0 * T_UPPER_SENSITIVITY) {
+		else if (inTCelsius < tPreset + 5.0 * T_UPPER_SENSITIVITY) {
 			solarHeatGain = solarHeatGain/5;
 		}				
-		else if (inTCelsius < tInitial + 6.0 * T_UPPER_SENSITIVITY) {
+		else if (inTCelsius < tPreset + 6.0 * T_UPPER_SENSITIVITY) {
 			solarHeatGain = solarHeatGain/6;
 		}				
-		else if (inTCelsius < tInitial + 7.0 * T_UPPER_SENSITIVITY) {
+		else if (inTCelsius < tPreset + 7.0 * T_UPPER_SENSITIVITY) {
 			solarHeatGain = solarHeatGain/7;
 		}				
-		else if (inTCelsius < tInitial + 8.0 * T_UPPER_SENSITIVITY) {
+		else if (inTCelsius < tPreset + 8.0 * T_UPPER_SENSITIVITY) {
 			solarHeatGain = solarHeatGain/8;
 		}				
 		else
@@ -720,8 +722,8 @@ extends Function {
 	 */
 	private double heatGainVentilation(double t, double time) {
 		double totalGain = 0; //heat_dump_1 = 0 , heat_dump_2 = 0;
-		boolean tooLow = t < (tInitial - 2 * T_LOWER_SENSITIVITY);
-		boolean tooHigh = t > (tInitial + 2 * T_UPPER_SENSITIVITY);
+		boolean tooLow = t < (tPreset - 2 * T_LOWER_SENSITIVITY);
+		boolean tooHigh = t > (tPreset + 2 * T_UPPER_SENSITIVITY);
 		double speedFactor = .01 * time * CFM;
 		
 		if (tooLow || tooHigh) { // this temperature range is arbitrary
@@ -745,7 +747,7 @@ extends Function {
 		
 			for (int i = 0; i < size; i++) {
 				double tNext = adjacentBuildings.get(i).getCurrentTemperature();
-				double tInit = adjacentBuildings.get(i).getInitialTemperature();
+				double tInit = adjacentBuildings.get(i).getPresetTemperature();
 
 				boolean tooLowNext = tNext < (tInit - 2.5 * T_LOWER_SENSITIVITY);
 				boolean tooHighNext = tNext > (tInit + 2.5 * T_UPPER_SENSITIVITY);
@@ -872,11 +874,11 @@ extends Function {
 		
 		// STEP 2 : LIMIT THE TEMPERATURE CHANGE
 		// Limit any spurious change of temperature for the sake of stability 
-		if (oldT < tInitial + 10.0 * T_LOWER_SENSITIVITY) {
+		if (oldT < tPreset + 10.0 * T_LOWER_SENSITIVITY) {
 			if (dt < -10)
 				dt = -10;
 		}
-		else if (oldT > tInitial + 10.0 * T_UPPER_SENSITIVITY) {
+		else if (oldT > tPreset + 10.0 * T_UPPER_SENSITIVITY) {
 			if (dt > 10)
 				dt = 10;			
 		}		

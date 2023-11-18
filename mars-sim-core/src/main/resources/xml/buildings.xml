@@ -991,12 +991,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end for large greenhouse -->
 
 	<building type="Fish Farm" width="6.0" length="9.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="3000">
+			wear-lifetime="3340000" maintenance-time="150" room-temperature="20.0" base-mass="3000">
 		<description>
 			The Fish Farm is made of stronger structural and cladding material such as coextruded laminate of polyamide and polyolefin interwoven around
 			an aluminum frame to give rise to a scaffolded retention bladder. It is furnished with a biology research lab with instruments.
 		</description>
-		<power-required base-power="4.0" base-power-down-power="0.4" />
+		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
 			<fishery capacity="10000">
@@ -1040,10 +1040,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="Algae Pond" width="6.0" length="9.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="30.0" base-mass="3000">
 		<description>
-			The Algae Pond is a building that grows spirulina in pond. 
-			It is also furnished with a biology research lab with instruments.
+			This building grows spirulina in ponds. It is furnished with a biology research lab 
+			with instruments.
 		</description>
-		<power-required base-power="4.0" base-power-down-power="0.4" />
+		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
 			<algae-farming capacity="10000">
