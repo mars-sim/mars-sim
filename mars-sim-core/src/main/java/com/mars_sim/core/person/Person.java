@@ -62,7 +62,6 @@ import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.meta.WorkoutMeta;
-import com.mars_sim.core.person.ai.task.util.ScheduleManager;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.ai.training.TrainingType;
@@ -103,12 +102,12 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	/** A small amount. */
 	private static final double SMALL_AMOUNT = 0.01;
 
-	private final static String EARTH_BIRTHPLACE = "Earth";
-	private final static String MARS_BIRTHPLACE = "Mars";
-	private final static String HEIGHT_GENE = "Height";
-	private final static String WEIGHT_GENE = "Weight";
+	private static final String EARTH_BIRTHPLACE = "Earth";
+	private static final String MARS_BIRTHPLACE = "Mars";
+	private static final String HEIGHT_GENE = "Height";
+	private static final String WEIGHT_GENE = "Weight";
 
-	private final static String EARTHLING = "Earthling";
+	private static final String EARTHLING = "Earthling";
 
 	/** The average height of a person. */
 	private static final double averageHeight;
@@ -204,8 +203,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	private ScientificStudy study;
 	/** The person's EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
-	/** The schedule manger that keeps track of scheduled appointments. */
-	private ScheduleManager scheduleManager;
 	
 	/** The person's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement = new ConcurrentHashMap<>();
@@ -335,7 +332,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		// Create shift schedule
 		shiftSlot = getAssociatedSettlement().getShiftManager().allocationShift(this);
 		
-		scheduleManager = new ScheduleManager(this);
 		// Set up life support type
 		support = getLifeSupportType();
 		// Create the mission experiences map
@@ -849,9 +845,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		// Mental changes with time passing.
 		mind.timePassing(pulse);
 
-		// Check schedule
-		scheduleManager.timePassing(pulse);
-		
 		// If Person is dead, then skip
 		if (getLifeSupportType() != null) {
 			// Get the life support type
@@ -2412,10 +2405,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	
 	public int getMeetingInvitee() {
 		return inviteeId;
-	}
-	
-	public ScheduleManager getScheduleManager() {
-		return scheduleManager;
 	}
 	
 	/**

@@ -11,6 +11,7 @@ import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -27,13 +28,14 @@ public class WorkerTaskCommand extends AbstractUnitCommand {
 	@Override
 	public boolean execute(Conversation context, String input, Unit source) {
 		TaskManager mgr = null;
-		if (source instanceof Worker) {
-			mgr = ((Worker) source).getTaskManager();
+		if (source instanceof Worker w) {
+			mgr = w.getTaskManager();
 		}
 		else {
 			context.println("Unit " + source.getName() + " is not a Worker.");
 			return false;
 		}
+
 		StructuredResponse response = new StructuredResponse();
 		response.appendBlankLine();
 		response.appendHeading("Task stack");
@@ -63,6 +65,16 @@ public class WorkerTaskCommand extends AbstractUnitCommand {
 			prefix.append("->");
 		}
 		
+		// Add pending tasks
+		var pending = mgr.getPendingTasks();
+		if (!pending.isEmpty()) {
+			response.appendBlankLine();
+			response.appendHeading("Pending tasks");
+			for (TaskJob job : mgr.getPendingTasks()) {
+				response.appendText(job.getName());
+			}
+		}
+
 		context.println(response.getOutput());
 		return true;
 	}

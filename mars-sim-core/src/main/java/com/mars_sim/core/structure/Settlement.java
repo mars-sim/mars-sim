@@ -47,6 +47,7 @@ import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.equipment.ItemHolder;
 import com.mars_sim.core.equipment.ResourceHolder;
+import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.goods.CreditManager;
 import com.mars_sim.core.goods.GoodsManager;
@@ -68,7 +69,8 @@ import com.mars_sim.core.person.ai.shift.ShiftManager;
 import com.mars_sim.core.person.ai.shift.ShiftPattern;
 import com.mars_sim.core.person.ai.task.DigLocalRegolith;
 import com.mars_sim.core.person.ai.task.Walk;
-import com.mars_sim.core.person.ai.task.util.Appointment;
+import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
+import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.SettlementTaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.RadiationExposure;
@@ -125,7 +127,6 @@ public class Settlement extends Structure implements Temporal,
 																	"Active Missions");
 	private static final int WAIT_FOR_SUNLIGHT_DELAY = 40;
 	private static final int AIRLOCK_OPERATION_OFFSET = 40;
-	private static final int DURATION = 150;
 	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
 	public static final int MAX_NUM_SOLS = 3;
@@ -1005,7 +1006,7 @@ public class Settlement extends Structure implements Temporal,
 			
 			checkMineralMapImprovement();
 			
-			setAppointedTask(sol);
+			setAppointedTask(pulse.getMarsTime());
 		}
 		
 		// At the beginning of a new sol,
@@ -1015,7 +1016,7 @@ public class Settlement extends Structure implements Temporal,
 			// Perform the end of day tasks
 			performEndOfDayTasks(pulse.getMarsTime());	
 
-			setAppointedTask(sol);
+			setAppointedTask(pulse.getMarsTime());
 
 			int range = (int) getVehicleWithMinimalRange().getRange();
 			
@@ -1059,38 +1060,35 @@ public class Settlement extends Structure implements Temporal,
 	 * 
 	 * @param sol
 	 */
-	public void setAppointedTask(int sol) {
+	private void setAppointedTask(MarsTime currentTime) {
 		int numAirlocks = getAirlockNum();
 		// Note: leave 1 chamber open
 		int numPerAirlock = 3; 
 		int count = 0; 
 		double multiplier = 0.1 + numAirlocks / numPerAirlock;	
 		for (Person p: citizens) {
-			count++;
 			double deltaTime = AIRLOCK_OPERATION_OFFSET * Math.floor(count * multiplier);
-			
+
 			int startTimeEVA = (int)deltaTime +  WAIT_FOR_SUNLIGHT_DELAY + (int)(surfaceFeatures.getOrbitInfo().getSunTimes(location))[0];
-			
+			int futureTime = startTimeEVA - currentTime.getMillisolInt();
+			if (futureTime < 0) {
+				futureTime += 1000;
+			}
+			MarsTime mTime = currentTime.addTime(futureTime);
+
 			// On Duty if less than 75% of the shift completed
-			boolean isOnDuty = (p.getShiftSlot().getShift().getShiftCompleted(startTimeEVA) < 0.75D);
+			boolean isOnDuty = (p.getShiftSlot().getShift().getShiftCompleted(mTime.getMillisolInt()) < 0.30D);
 			
 			// Select only personnel on duty and without a mission
 			if (isOnDuty && p.getMission() == null) {
+				count++;
+
+				FactoryMetaTask mt = (FactoryMetaTask) MetaTaskUtil.getMetaTask(DigLocalRegolith.SIMPLE_NAME);
+				ScheduledEventHandler appointment = new PersonFutureTask(p, mt);
 
 				// Gets the number of digits in millisol time 
-				
-				Appointment ap = new Appointment(p, sol, startTimeEVA, DURATION, null, DigLocalRegolith.SIMPLE_NAME, null);
-				p.getScheduleManager().setAppointment(ap);
-				/**
-				 * Do keep the following logger for future debugging
-				 */
-//				String startTimeEVAString = String.format("%03d", startTimeEVA);	
-//				logger.info(this, p, "At Sol " + sol + ":" + startTimeEVAString 
-//						+ ", the daily EVA task '" + DigLocalRegolith.SIMPLE_NAME + "' was authorized for " 
-//						+ DURATION + " millisols (" + "deltaTime: " + deltaTime + ")." );
-			}
-			else {
-				count--;
+				futureEvents.addEvent(mTime, appointment);
+
 			}
 		}
 	}
@@ -1098,7 +1096,7 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Checks and prints the average mineral map improvement made.
 	 */
-	public void checkMineralMapImprovement() {
+	private void checkMineralMapImprovement() {
 		
 		int improved = 0;
 		
@@ -1134,7 +1132,6 @@ public class Settlement extends Structure implements Temporal,
 		}
 		return 0;
 	}
-
 
 	/**
 	 * Keeps track of things based on msol.
@@ -1335,6 +1332,7 @@ public class Settlement extends Structure implements Temporal,
 			}
 		}
 
+		// Load data from file
 		return average;
 	}
 
