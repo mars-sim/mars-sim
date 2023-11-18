@@ -93,13 +93,15 @@ public abstract class Transportable
 		this.arrivalDate = arrivalDate;
 
 		// Determine launch date.
-		launchDate = arrivalDate.addTime(-1D * ResupplyUtil.getAverageTransitTime() * 1000D);
+		int travelSols = ResupplyUtil.getAverageTransitTime();
+		launchDate = arrivalDate.addTime(-1D * travelSols * 1000D);
 
 		// Set resupply state based on launch and arrival time.
 		MarsTime now = master.getMarsTime();
 		MarsTime nextScheduledEvent = launchDate;
 		state = TransitState.PLANNED;
-		if (now.getTimeDiff(launchDate) > 0D) {
+		if (now.getMissionSol() < travelSols) {
+			// Not enough sols to cover the travel duration so already in flight
 			state = TransitState.IN_TRANSIT;
 			nextScheduledEvent = arrivalDate;
 			if (now.getTimeDiff(arrivalDate) > 0D) {
