@@ -4,13 +4,13 @@ on:
   push:
     branches:
       - master
-  # Trigger analysis when creating a PR but ignore dependabot branches
   pull_request:
     types: [opened, synchronize, reopened]
-    branches-ignore:    
-      - 'dependabot/**'
+
 jobs:
   sonarqube:
+    # Dependabot actor does not have access to secrets so skill the analysis
+    if: ${{ github.actor != 'dependabot[bot]' }}
     name: SonarQube Trigger
     runs-on: ubuntu-latest
     steps:
