@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.data.SolMetricDataLogger;
-import com.mars_sim.core.data.SolSingleMetricDataLogger;
 import com.mars_sim.core.food.FoodType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -123,17 +122,15 @@ public class Farming extends Function {
 	private Map<Integer, String> cropHistory;
 	/** The attribute scores map for this greenhouse. */
 	private Map<Aspect, Double> attributes;
-	/** The crop usage on each crop in this facility [kg/sol]. */
+	/** The resource usage on each crop in this facility [kg/sol]. */
 	private Map<String, SolMetricDataLogger<Integer>> cropUsage;
 	
-
-	/** The daily water usage in this facility [kg/sol]. */
-	private SolSingleMetricDataLogger dailyWaterUsage;
-
 	/** The last crop the workers were tending. */
 	private Crop needyCropCache;
 	
 	private Research lab;
+	
+	/** Keep track of cleaning and inspections. */
 	private HouseKeeping houseKeeping;
 
 	/**
@@ -157,7 +154,7 @@ public class Farming extends Function {
 		cropListInQueue = new ArrayList<>();
 		cropList = new ArrayList<>();
 		cropHistory = new HashMap<>();
-		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
+//		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
 		cropUsage = new HashMap<>();
 		
 		defaultCropNum = spec.getIntegerProperty(CROPS);
@@ -1112,10 +1109,12 @@ public class Farming extends Function {
 	}
 
 	/**
-	 * Records the average water usage on a particular crop.
+	 * Records the average resource usage of a resource on a crop.
 	 *
 	 * @param cropName
 	 * @param usage    average water consumption in kg/sol
+	 * @Note positive usage amount means consumption 
+	 * @Note negative usage amount means generation
 	 * @param type resource (0 for water, 1 for o2, 2 for co2, 3 for grey water)
 	 */
 	public void addCropUsage(String cropName, double usage, int type) {
@@ -1129,8 +1128,10 @@ public class Farming extends Function {
 	}
 
 	/**
-	 * Computes the average water usage on a particular crop.
+	 * Computes the average usage of a resource on a crop.
 	 *
+	 * @param type resource (0 for water, 1 for o2, 2 for co2, 3 for grey water)
+	 * @param cropName
 	 * @return average water consumption in kg/sol
 	 */
 	private double computeUsage(int type, String cropName) {
@@ -1166,17 +1167,7 @@ public class Farming extends Function {
 	 * @return
 	 */
 	public double getDailyAverageWaterUsage() {
-		return dailyWaterUsage.getDailyAverage();
-	}
-
-	/**
-	 * Adds to the daily water usage.
-	 *
-	 * @param waterUssed
-	 * @param solElapsed
-	 */
-	public void addDailyWaterUsage(double waterUsed) {
-		dailyWaterUsage.increaseDataPoint(waterUsed);
+		return computeUsage(0);
 	}
 
 	public int getNumCrops2Plant() {

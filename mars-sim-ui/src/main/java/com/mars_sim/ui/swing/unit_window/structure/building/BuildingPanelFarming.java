@@ -78,14 +78,14 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 
 	
 	// Data members
-	private JLabel radTF;
-	private JLabel farmersTF;
-	private JLabel cropsTF;
-	private JLabel waterUsageTF;
-	private JLabel greyWaterUsageTF;
-	private JLabel o2TF;
-	private JLabel co2TF;
-	private JLabel workTimeTF;
+	private JLabel radLabel;
+	private JLabel farmerLabel;
+	private JLabel cropsLabel;
+	private JLabel waterLabel;
+	private JLabel greyWaterLabel;
+	private JLabel o2Label;
+	private JLabel co2Label;
+	private JLabel workTimeLabel;
 
 	// Data cache
 	/** The number of farmers cache. */
@@ -156,42 +156,42 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 
 		// Prepare solar irradiance label
 		radCache = surfaceFeatures.getSolarIrradiance(location);
-		radTF = springPanel.addTextField(Msg.getString("BuildingPanelFarming.solarIrradiance.title"),
+		radLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.solarIrradiance.title"),
 							 radCache + " W/m", "Estimated sunlight on top of the greenhouse roof");
 
 		// Prepare farmers label
 		farmersCache = farm.getFarmerNum();
-		farmersTF = springPanel.addTextField(Msg.getString("BuildingPanelFarming.numFarmers.title"),
+		farmerLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.numFarmers.title"),
 				                 Integer.toString(farmersCache), "# of active gardeners tending the greenhouse");
 
 		// Prepare crops label
 		cropsCache = farm.getCrops().size();
-		cropsTF = springPanel.addTextField(Msg.getString("BuildingPanelFarming.numCrops.title"),
+		cropsLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.numCrops.title"),
 							   Integer.toString(cropsCache), null);
 
 		waterUsageCache = farm.computeUsage(ResourceUtil.waterID);
-		waterUsageTF = springPanel.addTextField(Msg.getString("BuildingPanelFarming.waterUsage.title"),
+		waterLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.waterUsage.title"),
 									DECIMAL_KG_SOL.format(waterUsageCache),
 									Msg.getString("BuildingPanelFarming.waterUsage.tooltip"));
 
 		greyWaterUsageCache = farm.computeUsage(ResourceUtil.greyWaterID);
-		greyWaterUsageTF = springPanel.addTextField(Msg.getString("BuildingPanelFarming.greyWaterUsage.title"),
+		greyWaterLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.greyWaterUsage.title"),
 									DECIMAL_KG_SOL.format(greyWaterUsageCache),
 									Msg.getString("BuildingPanelFarming.greyWaterUsage.tooltip"));
 		
 		o2Cache = farm.computeUsage(ResourceUtil.oxygenID);
-		o2TF = springPanel.addTextField(Msg.getString("BuildingPanelFarming.o2.title"),
+		o2Label = springPanel.addTextField(Msg.getString("BuildingPanelFarming.o2.title"),
 									DECIMAL_KG_SOL.format(o2Cache),
 									Msg.getString("BuildingPanelFarming.o2.tooltip"));
 
 		co2Cache = farm.computeUsage(ResourceUtil.co2ID);
-		co2TF = springPanel.addTextField(Msg.getString("BuildingPanelFarming.co2.title"),
+		co2Label = springPanel.addTextField(Msg.getString("BuildingPanelFarming.co2.title"),
 									DECIMAL_KG_SOL.format(co2Cache),
 								 	Msg.getString("BuildingPanelFarming.co2.tooltip"));
 
 		// Update the cumulative work time
 		workTimeCache = farm.getCumulativeWorkTime()/1000.0;
-		workTimeTF = springPanel.addTextField(Msg.getString("BuildingPanelFarming.workTime.title"),
+		workTimeLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.workTime.title"),
 									StyleManager.DECIMAL_SOLS.format(workTimeCache),
 									Msg.getString("BuildingPanelFarming.workTime.tooltip"));
 
@@ -341,7 +341,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		int farmers = farm.getFarmerNum();
 		if (farmersCache != farmers) {
 			farmersCache = farmers;
-			farmersTF.setText(String.valueOf(farmers));
+			farmerLabel.setText(String.valueOf(farmers));
 		}
 
 		
@@ -349,49 +349,49 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		int crops = farm.getCrops().size();
 		if (cropsCache != crops) {
 			cropsCache = crops;
-			cropsTF.setText(String.valueOf(crops));
+			cropsLabel.setText(String.valueOf(crops));
 		}
 
 		// Update solar irradiance label
 		double rad = Math.round(surfaceFeatures.getSolarIrradiance(location)*10.0)/10.0;
 		if (radCache != rad) {
 			radCache = rad;
-			radTF.setText(String.valueOf(rad) + " W/m");
+			radLabel.setText(String.valueOf(rad) + " W/m");
 		}
 
 		// Update the average water usage
 		double newWater = farm.computeUsage(ResourceUtil.waterID);
 		if (waterUsageCache != newWater) {
 			waterUsageCache = newWater;
-			waterUsageTF.setText(DECIMAL_KG_SOL.format(newWater));
+			waterLabel.setText(DECIMAL_KG_SOL.format(newWater));
 		}
 
 		// Update the average O2 generated
 		double newO2 = farm.computeUsage(ResourceUtil.oxygenID);
 		if (o2Cache != newO2) {
 			o2Cache = newO2;
-			o2TF.setText(DECIMAL_KG_SOL.format(newO2));
+			o2Label.setText(DECIMAL_KG_SOL.format(newO2));
 		}
 
 		// Update the average CO2 consumed
 		double newCo2 = farm.computeUsage(ResourceUtil.co2ID);
 		if (co2Cache != newCo2) {
 			co2Cache = newCo2;
-			co2TF.setText(DECIMAL_KG_SOL.format(newCo2));
+			co2Label.setText(DECIMAL_KG_SOL.format(newCo2));
 		}
 
 		// Update the average grey water usage
 		double newGreyWater = farm.computeUsage(ResourceUtil.greyWaterID);
 		if (greyWaterUsageCache != newGreyWater) {
 			greyWaterUsageCache = newGreyWater;
-			greyWaterUsageTF.setText(DECIMAL_KG_SOL.format(newGreyWater));
+			greyWaterLabel.setText(DECIMAL_KG_SOL.format(newGreyWater));
 		}
 		
 		// Update the cumulative work time
 		double workTime = farm.getCumulativeWorkTime()/1000.0;
 		if (workTimeCache != workTime) {
 			workTimeCache = workTime;
-			workTimeTF.setText(StyleManager.DECIMAL_SOLS.format(workTime));
+			workTimeLabel.setText(StyleManager.DECIMAL_SOLS.format(workTime));
 		}
 		
 		// Update crop table.

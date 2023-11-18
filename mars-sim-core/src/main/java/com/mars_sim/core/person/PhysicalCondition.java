@@ -527,11 +527,13 @@ public class PhysicalCondition implements Serializable {
 					// properly be transitioned into the next.
 					problems.remove(problem);
 					
-					// Remove the medication related to this particular problem
 					Iterator<Medication> i = getMedicationList().iterator();
 					while (i.hasNext()) {
 						Medication med = i.next();
-						if (problem.getComplaint().getType() == med.getComplaintType()) {
+						// Remove the medication related to this particular problem
+						if (problem.getComplaint().getType() == med.getComplaintType()
+						// Take a person off medications that have been "expired"
+							|| !med.isMedicated()) {
 							i.remove();
 							break;
 						}
@@ -561,14 +563,6 @@ public class PhysicalCondition implements Serializable {
 
 		if (illnessEvent) {
 			person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-		}
-		
-		// Take a person off medications that have "expired"
-		Iterator<Medication> i = getMedicationList().iterator();
-		while (i.hasNext()) {
-			if (!i.next().isMedicated()) {
-				i.remove();
-			}
 		}
 		
 		// Add time to all medications affecting the person.

@@ -29,6 +29,12 @@ public class HouseKeeping implements Serializable {
 	private Map<String, Integer> inspectionMap;
 	private Map<String, Integer> cleaningMap;
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param cleaningList
+	 * @param inspectionList
+	 */
 	public HouseKeeping(String[] cleaningList, String[] inspectionList) {
 
 		inspectionMap = new HashMap<>();

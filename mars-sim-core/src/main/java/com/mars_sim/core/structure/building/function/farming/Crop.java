@@ -34,6 +34,23 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Crop.class.getName());
 	
+	/**
+	 * The watt to photon conversion ratio on Mars as defined in crops.xml [in umol
+	 * /m^2 /s /(Wm^-2)].
+	 */
+	private static double wattToPhotonConversionRatio;
+	/**
+	 * The converted value of the watt to photon conversion ratio on Mars as defined
+	 * in crops.xml [in umol /m^2 /millisols /(Wm^-2)].
+	 */
+	private static double conversionFactor;
+	/** The average water needed [in kg] */
+	private static double averageWaterNeeded;
+	/** The average O2 needed [in kg] */
+	private static double averageOxygenNeeded;
+	/** The average CO2 needed [in kg] */
+	private static double averageCarbonDioxideNeeded;
+	
 	private static final int WATER_ID = ResourceUtil.waterID;
 	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
 	private static final int CO2_ID = ResourceUtil.co2ID;
@@ -82,9 +99,10 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	/**
 	 * The limiting factor that determines how fast and how much PAR can be absorbed
 	 * in one frame.
+	 * Note: 1 is max. if set to 1, a lot of lights will toggle on and off undesirably.
 	 */
-	private static final double PHYSIOLOGICAL_LIMIT = 0.9; // 1 is max. if set to 1, a lot of lights will toggle on and
-															// off undesirably.
+	private static final double PHYSIOLOGICAL_LIMIT = 0.9; 
+	
 	private static final double RATIO_LEAVES = .75;
 
 	/** The average amount of new soil needed needed per square meters. */
@@ -167,22 +185,8 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	private double lightingPower = 0;
 	/** The health condition factor of the crop. 1 = excellent. 0 = worst*/
 	private double healthCondition = 1;
-	/** The average water needed [in kg] */
-	private double averageWaterNeeded;
-	/** The average O2 needed [in kg] */
-	private double averageOxygenNeeded;
-	/** The average CO2 needed [in kg] */
-	private double averageCarbonDioxideNeeded;
-	/**
-	 * The watt to photon conversion ratio on Mars as defined in crops.xml [in umol
-	 * /m^2 /s /(Wm^-2)].
-	 */
-	private double wattToPhotonConversionRatio;
-	/**
-	 * The converted value of the watt to photon conversion ratio on Mars as defined
-	 * in crops.xml [in umol /m^2 /millisols /(Wm^-2)].
-	 */
-	private double conversion_factor;
+
+
 	/** The disease index of a crop. */
 	private double diseaseIndex = 0;
 	/** The cache for co2. */
@@ -191,7 +195,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	private double o2Cache = 0;
 	/** The time accumulated [in millisols] for each crop update call. */
 	private double accumulatedTime = RandomUtil.getRandomDouble(0, 1.0);
-
+	/** The threshold for tracking a gas [in kg] */
 	private final double gasThreshold;
 	
 	/** The cache values of the past environment factors influencing the crop */
@@ -233,6 +237,13 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		this.gasThreshold = growingArea/10.0;
 		this.name = cropSpec.getName();
 
+		averageWaterNeeded = cropConfig.getWaterConsumptionRate();
+		averageOxygenNeeded = cropConfig.getOxygenConsumptionRate();
+		averageCarbonDioxideNeeded = cropConfig.getCarbonDioxideConsumptionRate();
+		wattToPhotonConversionRatio = cropConfig.getWattToPhotonConversionRatio();
+		// Note: conversionFactor is 51.45578648029399;
+		conversionFactor = 1000D * wattToPhotonConversionRatio / MarsTime.SECONDS_PER_MILLISOL;
+		
 		// Set up env factor to be balanced
 		Arrays.fill(environmentalFactor, 1D);
 
@@ -250,14 +261,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		if (cropSpec.getSeedID() > 0) {
 			massRatio = 1;
 		}
-
-		averageWaterNeeded = cropConfig.getWaterConsumptionRate();
-		averageOxygenNeeded = cropConfig.getOxygenConsumptionRate();
-		averageCarbonDioxideNeeded = cropConfig.getCarbonDioxideConsumptionRate();
-		wattToPhotonConversionRatio = cropConfig.getWattToPhotonConversionRatio();
-
-		conversion_factor = 1000D * wattToPhotonConversionRatio / MarsTime.SECONDS_PER_MILLISOL;
-
+		
 		PhaseType phaseType;
 		if (!isStartup) {
 			// if this is not a grown crop at the start of the sim, start from the beginning
@@ -313,7 +317,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 			currentPhaseWorkCompleted = 1000D * cropSpec.getPhase(phaseType).getWorkRequired();
 					
-			// TODO: how to allow crops such as cilantro to be harvested early to collect leaves, 
+			// Future: how to allow crops such as cilantro to be harvested early to collect leaves, 
 			// instead of waiting for seeds (coriander) to be matured ?
 			
 			// Set the daily harvest
@@ -563,7 +567,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 //				+ " - diseaseIndex: " + diseaseIndex
 //				+ "   currentWorkRequired: " + currentWorkRequired);
 		
-		// TODO: will need to model diseaseIndex
+		// Future: will need to model diseaseIndex
 		
 		double workTimeFactor = 0;
 		if (currentWorkRequired < 10)
@@ -739,7 +743,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		if (isSeedPlant) {
 			// Extract Sesame Seed.
 			// Note the purpose for this plant is primarily the seeds
-			// TODO: how best to handle Peanut ?
+			// Future: how best to handle Peanut ?
 			// Is peanut considered a seed plant ?			
 			store(harvestMass, seedID, source);
 		}
@@ -791,7 +795,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 		double elapsed = pulse.getElapsed();
 		
-		// TODO: currentWorkRequired should be modified by the crop category. 
+		// Future: currentWorkRequired should be modified by the crop category. 
 		// Some category of crop doesn't need much care while some need more attention
 		currentWorkRequired += elapsed * growingArea / WORK_FACTOR;
 
@@ -886,6 +890,10 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		return false;
 	}
 
+	public void resetPAR() {
+		cumulativeDailyPAR = 0;
+	}
+	
 	/**
 	 * Turns on lighting.
 	 *
@@ -916,7 +924,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		// Calculate instantaneous PAR from solar irradiance
 		double uPAR = wattToPhotonConversionRatio * solarIrradiance;
 		// [umol /m^2 /s] = [u mol /m^2 /s /(Wm^-2)] * [Wm^-2]
-		double PAR_interval = uPAR / 1_000_000D * time * MarsTime.SECONDS_PER_MILLISOL; // in mol / m^2 within this
+		double PARInterval = uPAR / 1_000_000D * time * MarsTime.SECONDS_PER_MILLISOL; // in mol / m^2 within this
 
 		double dailyPARRequired = cropSpec.getDailyPAR();
 		// period of time
@@ -929,7 +937,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 		// When enough PAR have been administered to the crop, HPS_LAMP will turn off.
 		
-		// TODO: what if the time zone of a settlement causes sunlight to shine at near
+		// Future: what if the time zone of a settlement causes sunlight to shine at near
 		// the tail end of the currentMillisols time ?
 		
 		// Compared cumulativeDailyPAR / dailyPARRequired vs. current time /
@@ -941,28 +949,28 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 //		if (0.5 * progress < clock && millisols <= 333 || 0.7 * progress < clock 
 //				&& millisols > 333 && millisols <= 666
 //				|| progress < clock && millisols > 666) {
-			// TODO: also compare also how much more sunlight will still be available
+			// Future: also compare also how much more sunlight will still be available
 			if (uPAR > 40) { // if sunlight is available
 				turnOffLighting();
-				cumulativeDailyPAR = cumulativeDailyPAR + PAR_interval;
+				cumulativeDailyPAR = cumulativeDailyPAR + PARInterval;
 				// Gets the effectivePAR
-				effectivePAR = PAR_interval;
+				effectivePAR = PARInterval;
 			}
 
 			else { // if no sunlight, turn on artificial lighting
-					// double conversion_factor = 1000D * wattToPhotonConversionRatio /
+					// double conversionFactor = 1000D * wattToPhotonConversionRatio /
 					// MarsTime.SECONDS_IN_MILLISOL ;
 					// DLI is Daily Light Integral is the unit for for cumulative light -- the
 					// accumulation of all the PAR received during a day.
 				double DLI = dailyPARRequired - cumulativeDailyPAR; // [in mol / m^2 / day]
-				double delta_PAR_outstanding = DLI * (time / 1000D) * growingArea;
+				double deltaPAROutstanding = DLI * (time / 1000D) * growingArea;
 				// in mol needed at this delta time [mol] = [mol /m^2 /day] * [millisol] /
 				// [millisols /day] * m^2
-				double delta_kW = delta_PAR_outstanding / time / conversion_factor;
+				double deltakW = deltaPAROutstanding / time / conversionFactor;
 				// [kW] = [mol] / [u mol /m^2 /s /(Wm^-2)] / [millisols] / [s /millisols] = [W
 				// /u] * u * k/10e-3 = [kW]; since 1 u = 10e-6
 				
-				// TODO: Typically, 5 lamps per square meter for a level of ~1000 mol/ m^2 /s
+				// Future: Typically, 5 lamps per square meter for a level of ~1000 mol/ m^2 /s
 				// Added PHYSIOLOGICAL_LIMIT sets a realistic limit for tuning how
 				// much PAR a food crop can absorb per frame.
 				
@@ -974,34 +982,29 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 				
 				// each HPS_LAMP lamp supplies 400W has only 40% visible radiation efficiency
 				int numLamp = (int) (Math.ceil(
-						delta_kW / KW_PER_HPS / VISIBLE_RADIATION_HPS / (1 - BALLAST_LOSS_HPS) * PHYSIOLOGICAL_LIMIT));
-				// TODO: should also allow the use of LED_KIT for lighting
+						deltakW / KW_PER_HPS / VISIBLE_RADIATION_HPS / (1 - BALLAST_LOSS_HPS) * PHYSIOLOGICAL_LIMIT));
+				// Future: should also allow the use of LED_KIT for lighting
 				// For converting lumens to PAR/PPF, see
 				// http://www.thctalk.com/cannabis-forum/showthread.php?55580-Converting-lumens-to-PAR-PPF
 				// Note: do NOT include any losses below
 				double supplykW = numLamp * KW_PER_HPS * VISIBLE_RADIATION_HPS * (1 - BALLAST_LOSS_HPS)
 						/ PHYSIOLOGICAL_LIMIT;
 				turnOnLighting(supplykW);
-				double delta_PAR_supplied = supplykW * time * conversion_factor / growingArea; // in mol / m2
+				double deltaPARSupplied = supplykW * time * conversionFactor / growingArea; // in mol / m2
 				// [ mol / m^2] = [kW] * [u mol /m^2 /s /(Wm^-2)] * [millisols] * [s /millisols]
 				// / [m^2] = k u mol / W / m^2 * (10e-3 / u / k) = [mol / m^-2]
-				cumulativeDailyPAR = cumulativeDailyPAR + delta_PAR_supplied + PAR_interval;
+				cumulativeDailyPAR = cumulativeDailyPAR + deltaPARSupplied + PARInterval;
 				// [mol /m^2 /d]
 
 				// Gets the effectivePAR
-				effectivePAR = delta_PAR_supplied + PAR_interval;
+				effectivePAR = deltaPARSupplied + PARInterval;
 			}
-//		}
-//
-//		else {
-//			turnOffLighting();
-//		}
 
 		// check for the passing of each day
 		int newSol = pulse.getMarsTime().getMissionSol();
 		// the crop has memory of the past lighting condition
 		lightModifier = cumulativeDailyPAR / (dailyPARRequired + .0001) * 1000D / ( time  + .0001);
-		// TODO: If too much light, the crop's health may suffer unless a person comes
+		// Future: If too much light, the crop's health may suffer unless a person comes
 		// to intervene
 		if (isStartup && newSol == 1) {
 			// if this crop is generated at the start of the sim,
@@ -1015,21 +1018,20 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	}
 
 	/**
-	 * Retrieve water from the Settlment and record the usage in the Farm.
+	 * Retrieves water or grey water from the Settlement and record the usage in the Farm.
+	 * 
 	 * @param amount Amount being retrieved
 	 * @param id Resource id
 	 */
 	private void retrieveWater(double amount, int id) {
 		if (amount > 0) {
 			retrieve(amount, id, true);
-			//  Records the daily water usage in the farm
-			farm.addDailyWaterUsage(amount);
-			// Record the amount of grey water taken up by the crop
+			// Record the amount of water or grey water taken up by the crop
 			farm.addCropUsage(name, amount, id);		
 		}
 	}
 	
-	/***
+	/**
 	 * Computes the effect of water and fertilizer.
 	 *
 	 * @param compositeFactor
@@ -1147,7 +1149,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 			double cO2Available = building.getSettlement().getAmountResourceStored(CO2_ID);
 			double cO2Used = cO2Req;
 
-			// TODO: allow higher concentration of co2 to be pumped to increase the harvest
+			// Future: allow higher concentration of co2 to be pumped to increase the harvest
 			// modifier to the harvest.
 
 			co2Modifier = cO2Available / cO2Req;
@@ -1216,7 +1218,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		adjustEnvironmentFactor(temperatureModifier, TEMPERATURE_FACTOR);
 
 		// STEP 3 : COMPUTE THE NEED FACTOR AND COMPOSITE FACTOR (BASED ON LIGHT AND GROWTH FACTOR)
-		double watt = effectivePAR / time / conversion_factor * growingArea * 1000;
+		double watt = effectivePAR / time / conversionFactor * growingArea * 1000;
 		// Note: effectivePAR already includes both sunlight and artificial light
 
 		// Note: needFactor aims to give a better modeling of the amount of water
@@ -1267,10 +1269,6 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		// NOTE 6: Add air pressure modifier in future
 
 		return harvestModifier;
-	}
-
-	public void resetPAR() {
-		cumulativeDailyPAR = 0;
 	}
 
 	public double getHealthCondition() {
@@ -1350,12 +1348,9 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	 * @param source
 	 * @return
 	 */
-	private boolean store(double amount, int resource, String source) {
-		if (building.getSettlement().storeAmountResource(resource, amount) == 0)
-			return true;
-		return false;
+	private double store(double amount, int resource, String source) {
+		return building.getSettlement().storeAmountResource(resource, amount);
 	}
-
 
 	/**
 	 * Does the Crop need power ? Checks the current phase to see if that is not the first or last.

@@ -1038,7 +1038,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end for fish farm -->
 
 	<building type="Algae Pond" width="6.0" length="9.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="3000">
+			wear-lifetime="3340000" maintenance-time="150" room-temperature="30.0" base-mass="3000">
 		<description>
 			The Algae Pond is a building that grows spirulina in pond. 
 			It is also furnished with a biology research lab with instruments.
