@@ -31,6 +31,7 @@ public class Computation extends Function {
 	
 	// Configuration properties
 	private static final double ENTROPY_FACTOR = .001;
+	private static final double WASTE_HEAT_PERCENT = .1;
 	
 	private static final String COMPUTING_UNIT = "computing-unit";
 	private static final String POWER_DEMAND = "power-demand";
@@ -132,6 +133,14 @@ public class Computation extends Function {
 		return peakCU;
 	}
 	
+	/**
+	 * Dumps the excess heat from server equipment.
+	 * 
+	 * @param heatGenerated
+	 */
+	public void dumpExcessHeat(double heatGenerated) {
+		building.dumpExcessHeat(heatGenerated);
+	}
 	
 	/**
 	 * Gets the power demand [in kW].
@@ -382,6 +391,12 @@ public class Computation extends Function {
 			// Notes: 
 			// if it falls below 10%, flash yellow
 			// if it falls below 0%, flash red
+			
+			double fullPower = getFullPowerRequired();
+			double heat = fullPower * WASTE_HEAT_PERCENT;
+			// Dump the generated heat into the building to raise the room temperature
+			dumpExcessHeat(heat);
+			
 		}
 		return valid;
 	}

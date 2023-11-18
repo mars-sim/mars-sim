@@ -239,41 +239,19 @@ public class ThermalGeneration extends Function {
 		boolean valid = isValid(pulse);
 		if (valid) {
 			heating.timePassing(pulse);
-			
-			double heatGenerated = 0;
-			double powerGenerated = 0;
-			
-			// Set heatGenerated at the building the furnace belongs
-			if (building.getPowerMode() == PowerMode.FULL_POWER) {
-				heatGenerated = calculateGeneratedHeat(pulse.getElapsed());		
+
+			double heatGenerated = calculateGeneratedHeat(pulse.getElapsed());		
 				// Note: could be cheating if the mechanism of conversion is NOT properly defined
 		    	// Convert heat to electricity to help out
-				powerGenerated = calculateGeneratedPower();
-			}
-			
-			if (heatGeneratedCache != heatGenerated) {
-				heatGeneratedCache = heatGenerated;
-				building.setHeatGenerated(heatGenerated);
-			}
-	
-			if (powerGeneratedCache != powerGenerated) {
-				powerGeneratedCache = powerGenerated;
-			}
-			
-			// set new efficiency. Needs a new method in HeatSource updateEffeciency 
-			
-	//		for (HeatSource source : heatSources)
-	//			if (source instanceof SolarHeatSource) {
-	//				SolarHeatSource solarHeatSource = (SolarHeatSource) source;
-	//				//System.out.println("solarHeatSource.getMaxHeat() is "+ solarHeatSource.getMaxHeat());
-	//				double factor = solarHeatSource.getCurrentHeat(getBuilding()) / solarHeatSource.getMaxHeat();
-	//				// TODO : use HeatMode.FULL_POWER ?
-	//				double d_factor = SolarHeatSource.DEGRADATION_RATE_PER_SOL * time/1000D;
-	//				double eff = solarHeatSource.getEfficiency() ;
-	//				double new_eff = eff - eff * d_factor * factor;
-	//				solarHeatSource.setEfficiency(new_eff);
-	//				//System.out.println("new_eff is " + new_eff);
-	//			}
+			double powerGenerated = calculateGeneratedPower();
+
+			// Need to update this cache value in Heating continuously
+			building.setHeatGenerated(heatGenerated);
+
+			heatGeneratedCache = heatGenerated;
+			powerGeneratedCache = powerGenerated;
+		
+			// Future: set new efficiency. Needs a new method in HeatSource updateEffeciency 
 		}
 		return valid;
 	}

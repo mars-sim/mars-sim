@@ -553,13 +553,9 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * @return temperature (deg C)
 	 */
 	public double getCurrentTemperature() {
-//		furnace = getThermalGeneration();
-//		if (heating == null)
-//			heating = furnace.getHeating();
 		if (heating != null)
 			return heating.getCurrentTemperature();
 		else {
-//			logger.config(this, 10_000L, "preset t: " + Math.round(presetTemperature * 10.0)/10.0);
 			return presetTemperature;
 		}
 	}
@@ -958,7 +954,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * @return heat in kW.
 	 */
 	public double getFullHeatRequired() {
-		// double result = baseHeatRequirement;
+		// Note: Not in used
 		double result = 0;
 
 		if (furnace != null && heating != null)
@@ -978,6 +974,17 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		heating.setHeatGenerated(heatGenerated);
 	}
 
+	/**
+	 * Dumps the excess heat to the building.
+	 *
+	 * @param heatGenerated
+	 */
+	public void dumpExcessHeat(double heatGenerated) {
+		if (heating == null)
+			heating = furnace.getHeating();
+		heating.dumpExcessHeat(heatGenerated);
+	}
+	
 	/**
 	 * Sets the required power for heating.
 	 *
