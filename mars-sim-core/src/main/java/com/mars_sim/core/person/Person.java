@@ -1312,13 +1312,14 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 * @return
 	 */
 	public boolean isRestingTask() {
-		return !getMind().getTaskManager().getTask().isEffortDriven();
+		if (getMind().getTaskManager().getTask() != null)
+			return !getMind().getTaskManager().getTask().isEffortDriven();
+		return true;
 	}
     		
 	public String getTaskPhase() {
 		if (getMind().getTaskManager().getPhase() != null)
-		return getMind().getTaskManager().getPhase().getName();
-
+			return getMind().getTaskManager().getPhase().getName();
 		return "";
 	}
 
