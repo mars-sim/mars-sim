@@ -152,6 +152,15 @@ public class ExitAirlock extends Task {
 	}
 
 	/**
+	 * Is this Task interruptable? This Task can not be interrupted.
+	 * @return Returns false by default
+	 */
+	@Override
+	public boolean isInterruptable() {
+        return false;
+    }
+
+	/**
 	 * Performs the method mapped to the task's current phase.
 	 *
 	 * @param time the amount of time (millisols) the phase is to be performed.

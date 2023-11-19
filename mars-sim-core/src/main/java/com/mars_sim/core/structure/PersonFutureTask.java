@@ -71,14 +71,11 @@ public class PersonFutureTask implements ScheduledEventHandler{
      */
     @Override
     public int execute(MarsTime currentTime) {
-        if (person.getMission() != null) {
-            logger.info(person, "Future task skipped; person is on a mission");
-        }
-        else {
-            logger.info(person, "Future task arrived; created pemding task " + getFactory().getName());
-            TaskJob job = new BasicTaskJob(getFactory(), RatingScore.ZERO_RATING);
-            person.getTaskManager().addPendingTask(job, false);
-        }
+
+        logger.info(person, "Future task arrived; created pemding task " + getFactory().getName());
+        TaskJob job = new BasicTaskJob(getFactory(), RatingScore.ZERO_RATING);
+        person.getTaskManager().addPendingTask(job, false);
+        
         // Do not reschedule this event
         return 0;
     }

@@ -7,14 +7,13 @@
 
 package com.mars_sim.console.chat.simcommand.unit;
 
-import java.util.List;
-
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.ConversationRole;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.PendingTask;
 import com.mars_sim.core.person.ai.task.util.TaskCache;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
@@ -52,12 +51,12 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 		}
 
 		// List pending tasks first
-		List<TaskJob> pending = tm.getPendingTasks();
+		var pending = tm.getPendingTasks();
 		if (!pending.isEmpty()) {
 			response.appendTableHeading("Pending Task", 45, 
-							"P Score", 9);
-			for (TaskJob item : pending) {
-				response.appendTableRow(item.getName(), item.getScore());
+							"When", 9);
+			for (PendingTask item : pending) {
+				response.appendTableRow(item.job().getName(), item.when().getTruncatedDateTimeStamp());
 			}
 			response.appendBlankLine();
 		}

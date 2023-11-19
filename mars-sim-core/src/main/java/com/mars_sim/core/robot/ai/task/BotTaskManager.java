@@ -184,7 +184,7 @@ public class BotTaskManager extends TaskManager {
 	 * Calculates and caches the probabilities.
 	 */
 	@Override
-	protected TaskCache rebuildTaskCache() {
+	protected TaskCache rebuildTaskCache(MarsTime now) {
 
 		// If robot is low power then can only charge
 		if (robot.getSystemCondition().isLowPower()) {
@@ -199,7 +199,7 @@ public class BotTaskManager extends TaskManager {
 		}
 		
 		// Reset taskProbCache and totalProbCache
-		TaskCache newCache = new TaskCache("Robot", getMarsTime());
+		TaskCache newCache = new TaskCache("Robot", now);
 		
 		// Determine probabilities.
 		List<FactoryMetaTask> potentials = robotTasks.get(robot.getRobotType());
@@ -239,42 +239,11 @@ public class BotTaskManager extends TaskManager {
 	}
 
 	/**
-	 * Starts a new Task by first checking for pending tasks.
+	 * A Robot can always do a pending task.
+	 * @return true
 	 */
-	@Override
-	public void startNewTask() {
-		// Check if there are any assigned tasks that are pending
-		if (!getPendingTasks().isEmpty()) {
-			TaskJob pending = getPendingTask();
-			if (pending != null) {
-				Task newTask = pending.createTask(robot);
-
-				if (newTask == null) {
-					// Note: need to track how some TaskJob has been done and no longer available.
-					logger.info(robot, "'" + pending.getName() + "' was no longer needed and should be removed.");
-					
-					// Next, go to super.startNewTask() to find a new task
-				}
-				
-				else if (currentTask != null 
-					&& !newTask.getName().equals(getTaskName())
-					&& !newTask.getDescription().equals(currentTask.getDescription())
-					&& !isFilteredTask(currentTask.getDescription())) {
-					
-					// Note: this is the only eligible condition for replacing the
-					// current task with the new task
-					replaceTask(newTask);
-					// Remove the new task from the pending task list
-					removePendingTask(pending);
-					
-					// At this point, do NOT need to call super.startNewTask()
-					// or else the newTask will be replaced
-					return;
-				}
-			}
-		}
-
-		super.startNewTask();
+	protected boolean isPendingPossible() {
+		return true;
 	}
 	
 	@Override

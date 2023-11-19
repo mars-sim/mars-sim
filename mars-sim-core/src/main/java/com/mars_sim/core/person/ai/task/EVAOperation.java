@@ -178,6 +178,15 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
+	 * Is this Task interruptable? EVAs can not be interrupted.
+	 * @return Returns false by default
+	 */
+	@Override
+	public boolean isInterruptable() {
+        return false;
+    }
+
+	/**
 	 * Checks if EVA should end.
 	 */
 	public void endEVA() {

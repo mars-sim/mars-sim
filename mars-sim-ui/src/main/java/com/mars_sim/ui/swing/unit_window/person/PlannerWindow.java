@@ -35,9 +35,9 @@ import javax.swing.table.AbstractTableModel;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.data.History.HistoryItem;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.OneActivity;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.person.ai.task.util.TaskManager.OneActivity;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -174,7 +174,6 @@ implements InternalFrameListener, ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		Object source = e.getSource();
 		//if (source == prevButton) buttonClickedPrev();
 		//else if (source == nextButton) buttonClickedNext();
 		//else if (source == finalButton) buttonClickedFinal();

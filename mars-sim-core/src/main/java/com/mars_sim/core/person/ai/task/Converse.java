@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.CollectionUtils;
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -66,6 +65,11 @@ public class Converse extends Task {
     private static final double STRESS_MODIFIER = -.3D;
     
     private Location initiatorLocation = null;
+
+	/** The id of the target person (either the invitee or the initiator). */
+	private Integer targetID;
+
+	private Person target;
 
     private enum Location {
         ANOTHER_BUILDING,
@@ -177,6 +181,37 @@ public class Converse extends Task {
         setPhase(RESPONDING);
     }
     
+	
+	/**
+	 * Gets the target person of this task.
+	 * 
+	 * @return target.
+	 */
+	public Person getTarget() {
+		return target;
+	}
+	
+	/**
+	 * Gets the id of target person of this task.
+	 * 
+	 * @return target id.
+	 */
+	public Integer getTargetID() {
+		return targetID;
+	}
+	
+	/**
+	 * Sets the person who's the target of this task.
+	 * 
+	 * @param newTarget the new target
+	 * @param true if id has not been saved
+	 */
+	public void setTarget(Person newTarget, boolean newID) {
+		this.target = newTarget;
+		if (newID)
+			targetID = target.getIdentifier();
+	}
+	
     /**
      * Gets a likable person.
      *
@@ -406,26 +441,11 @@ public class Converse extends Task {
             return time;
         }
         
-        // After loading from saved sim, need to reload invitee
-    	if (getTarget() == null) {
-    		if (getTargetID().equals(Integer.valueOf(-1))) {
-    			logger.warning(person, "inviteeId is -1.");
-    		}
-    		else
-    			setTarget(Simulation.instance().getUnitManager()
-    						.getPersonByID(getTargetID()), false);
-    		
-    		// starting the conversation talking to the invitee
-    		if (getTarget() != null)
-    			talkWithInvitee();
-    		else
-    			logger.warning(person, "invitee is null.");
-    		
-    		// TODO: check if the invitee can or cannot carry on the conversation 
-    		// and switch to another invitee
-    	}
-    	else
-    		talkWithInvitee();
+		// starting the conversation talking to the invitee
+		if (getTarget() != null)
+			talkWithInvitee();
+		else
+			logger.warning(person, "invitee is null.");
  
     	if (initiatorLocation.toString().contains("same"))
     		RelationshipUtil.changeOpinion(person, getTarget(), 
@@ -499,28 +519,14 @@ public class Converse extends Task {
         	endTask();
             return time;
         }
-        
-        // After loading from saved sim, need to reload initiator
-    	if (getTarget() == null) {
-    		if (getTargetID().equals(Integer.valueOf(-1))) {
-    			logger.warning(person, "initiator is -1.");
-    		}
-    		else
-    			setTarget(Simulation.instance().getUnitManager()
-    							.getPersonByID(getTargetID()), false);
-    		
-    		// Start the conversation talking to the initiator
-    		if (getTarget() != null) {
-    			talkWithInitiator();
-    		}
-    			
-    		else
-    			logger.warning(getTarget(), "initiator is null.");
-    	}
-    	else {
-    		talkWithInitiator();
-    	}
- 
+        	
+		// Start the conversation talking to the initiator
+		if (getTarget() != null) {
+			talkWithInitiator();
+		}	
+		else
+			logger.warning(getTarget(), "initiator is null.");
+
         if (getTimeCompleted() + time >= getDuration()) {
         	endTask();
         }
@@ -537,7 +543,16 @@ public class Converse extends Task {
     	
     	setDescription(s);
     }
-    
+    /**
+	 * Reinitializes instances. Reload the target of the coversation
+	 */
+	public void reinit() {
+		super.reinit();
+
+		if (targetID != null && (targetID.intValue() > 0))
+			target = unitManager.getPersonByID(targetID);
+	}
+
 	/**
 	 * Gets a collection of people who are available for social conversation in the
 	 * same/another building in the same/another settlement

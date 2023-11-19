@@ -108,8 +108,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected Integer id;
 	/** The id of the teacher. */
 	protected Integer teacherID;
-	/** The id of the target person (either the invitee or the initiator). */
-	private Integer targetID;
 	
 	/** The name of the task. */
 	private String name = "";
@@ -127,8 +125,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	
 	/** The worker teaching this task if any. */
 	private transient Worker teacher;
-	/** The target person (either the invitee or the initiator) of the Converse task. */
-	private transient Person target;	
 
 	/** The sub-task of this task. */
 	protected Task subTask;
@@ -883,36 +879,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Gets the target person of this task.
-	 * 
-	 * @return target.
-	 */
-	public Person getTarget() {
-		return target;
-	}
-	
-	/**
-	 * Gets the id of target person of this task.
-	 * 
-	 * @return target id.
-	 */
-	public Integer getTargetID() {
-		return targetID;
-	}
-	
-	/**
-	 * Sets the person who's the target of this task.
-	 * 
-	 * @param newTarget the new target
-	 * @param true if id has not been saved
-	 */
-	public void setTarget(Person newTarget, boolean newID) {
-		this.target = newTarget;
-		if (newID)
-			targetID = target.getIdentifier();
-	}
-	
-	/**
 	 * Who is working on this Task.
 	 * 
 	 * @return
@@ -1580,9 +1546,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 		if (teacherID != null && (!teacherID.equals(Integer.valueOf(-1)) || !teacherID.equals(Integer.valueOf(0))))
 			teacher = unitManager.getPersonByID(teacherID);
-
-		if (targetID != null && (!targetID.equals(Integer.valueOf(-1)) || !targetID.equals(Integer.valueOf(0))))
-			target = unitManager.getPersonByID(targetID);
 		
 		if (subTask != null)
 			subTask.reinit();
@@ -1601,7 +1564,16 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected static MarsTime getMarsTime() {
 		return masterClock.getMarsTime();
 	}
-	
+
+	/**
+	 * Is this Task interruptable? This method should be overridden by Task that can not
+	 * be interrupted.
+	 * @return Returns true by default
+	 */
+	public boolean isInterruptable() {
+        return true;
+    }
+
 	/**
 	 * Reloads instances after loading from a saved sim.
 	 * 

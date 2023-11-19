@@ -10,8 +10,8 @@ package com.mars_sim.console.chat.simcommand.unit;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.person.ai.task.util.PendingTask;
 import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -70,8 +70,8 @@ public class WorkerTaskCommand extends AbstractUnitCommand {
 		if (!pending.isEmpty()) {
 			response.appendBlankLine();
 			response.appendHeading("Pending tasks");
-			for (TaskJob job : mgr.getPendingTasks()) {
-				response.appendText(job.getName());
+			for (PendingTask p : pending) {
+				response.appendText(p.job().getName() + " @ " + p.when().getTruncatedDateTimeStamp());
 			}
 		}
 
