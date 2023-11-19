@@ -4,7 +4,6 @@
  * @date 2022-06-24
  * @author Scott Davis
  */
-
 package com.mars_sim.core.person.ai.task.util;
 
 import java.io.Serializable;
@@ -37,105 +36,6 @@ public abstract class TaskManager implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(TaskManager.class.getName());
-	
-	private static final String SLEEPING = "Sleeping";
-	private static final String EVA = "EVA";
-	private static final String AIRLOCK = "Airlock";
-	private static final String DIG = "Digging";
-	
-	/*
-	 * This class represents a record of a given activity (task or mission)
-	 * undertaken by a person or a robot
-	 */
-	public final class OneActivity implements Serializable {
-
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
-		// Data members
-		private String taskName;
-		private String missionName;
-		private String description;
-		private String phase;
-
-		public OneActivity(String taskName, String description, String phase, String missionName) {
-			this.taskName = taskName;
-			this.description = description;
-			this.phase = phase;
-		}
-
-		/**
-		 * Gets the task name.
-		 * 
-		 * @return task name
-		 */
-		public String getTaskName() {
-			return taskName;
-		}
-
-		/**
-		 * Gets the description what the actor is doing.
-		 * 
-		 * @return description
-		 */
-		public String getDescription() {
-			return description;
-		}
-
-		/**
-		 * Gets the task phase.
-		 * 
-		 * @return task phase
-		 */
-		public String getPhase() {
-			return phase;
-		}
-
-		public String getMission() {
-			return missionName;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((taskName == null) ? 0 : taskName.hashCode());
-			result = prime * result + ((phase == null) ? 0 : phase.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			OneActivity other = (OneActivity) obj;
-			if (taskName == null) {
-				if (other.taskName != null)
-					return false;
-			} else if (!taskName.equals(other.taskName))
-				return false;
-			if (missionName == null) {
-				if (other.missionName != null)
-					return false;
-			} else if (!missionName.equals(other.missionName))
-				return false;
-			if (description == null) {
-				if (other.description != null)
-					return false;
-			} else if (!description.equals(other.description))
-				return false;
-			if (phase == null) {
-				if (other.phase != null)
-					return false;
-			} else if (!phase.equals(other.phase))
-				return false;
-			return true;
-		}
-	}
 
 	/** Number of days to record Tack Activities. */	
 	private static MasterClock master;
@@ -155,7 +55,7 @@ public abstract class TaskManager implements Serializable {
 	/** The history of tasks. */
 	private History<OneActivity> allActivities;
 	/** The list of pending of tasks. */
-	private List<TaskJob> pendingTasks;
+	private List<PendingTask> pendingTasks;
 	
 	/**
 	 * Constructor.
@@ -194,6 +94,7 @@ public abstract class TaskManager implements Serializable {
 	/**
 	 * Gets the stack of Tasks that are active. The 1st entry in the is the top level task
 	 * whilst the last entry is the one actually active.
+	 * @return Top down list of Tasks
 	 */
 	public List<Task> getTaskStack() {
 		List<Task> stack = new ArrayList<>();
@@ -312,17 +213,6 @@ public abstract class TaskManager implements Serializable {
 	}
 
 	/**
-	 * Ends all sub tasks.
-	 */
-	public void endSubTask() {
-		if (currentTask != null && currentTask.getSubTask() != null) {
-			currentTask.getSubTask().endTask();
-		}
-	}
-	
-
-
-	/**
 	 * Sets the current task to null.
 	 * 
 	 * @param reason May be used in an override method
@@ -383,8 +273,9 @@ public abstract class TaskManager implements Serializable {
 	 * Calculates and caches the probabilities.
 	 * 
 	 * This will NOT use the cache but assumes the callers know when a cahce can be used or not used. 
+	 * @param now The current MarsTime
 	 */
-	protected abstract TaskCache rebuildTaskCache();
+	protected abstract TaskCache rebuildTaskCache(MarsTime now);
 
 	/**
 	 * Constructs a new Task of the specified type.
@@ -506,6 +397,44 @@ public abstract class TaskManager implements Serializable {
 		return result;
 	}
 	
+	/**
+	 * Check if any pending task can be processed.
+	 * @return Whether a task was started
+	 */
+	private boolean processPendingTask() {
+		// Check if there are any assigned tasks that are pending
+		// and Worker can accept a change
+		// and the current Task can be interrupted
+		if (!pendingTasks.isEmpty() && isPendingPossible()
+			&& ((currentTask == null) || currentTask.isInterruptable())) {
+			PendingTask firstTask = pendingTasks.remove(0);
+			TaskJob job = firstTask.job();
+			Task newTask = createTask(job);
+
+			if (newTask == null) {
+				logger.severe(worker, "Pending '" + job.getName() + "' could not be created.");				
+			}
+			else if (newTask.isDone()) {
+				logger.warning(worker, "Pending '" + job.getName() + "' was no longer possible.");				
+			}
+			// TODO Potential here to loose started Task if new pending matches the existing
+			// check should be done against the TaskJob and delay the Task creation untilt eh name check
+			else if ((currentTask == null) || !hasSameTask(newTask.getName())) {		
+				// Note: this is the only eligible condition for replacing the
+				// current task with the new task
+				replaceTask(newTask);
+				currentScore = null; // Clear score to show it was directly assigned
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Can this worker start a pending task?
+	 * @return
+	 */
+	protected abstract boolean isPendingPossible();
 
 	/**
 	 * Starts a new task for the worker based on tasks available at their location.
@@ -513,15 +442,19 @@ public abstract class TaskManager implements Serializable {
 	 * to the manager to start working.
 	 */
 	public void startNewTask() {
+		if (processPendingTask()) {
+			return;
+		}
+
 		Task selectedTask = null;
 		TaskJob selectedJob = null;
 
 		// If cache is not current, calculate the probabilities. If it is a static cache, i.e. no createdOn then
 		// ignore the cache
-		MarsTime now = getMarsTime();
+		MarsTime now = master.getMarsTime();
 		if ((taskProbCache == null)  || (taskProbCache.getCreatedOn() == null) || taskProbCache.getTasks().isEmpty()
 				|| (now.getMillisol() != taskProbCache.getCreatedOn().getMillisol())) {
-			taskProbCache = rebuildTaskCache();
+			taskProbCache = rebuildTaskCache(now);
 		}
 
 		if (taskProbCache.getTasks().isEmpty()) { 
@@ -570,7 +503,7 @@ public abstract class TaskManager implements Serializable {
 			if (newTask.getDescription().equalsIgnoreCase(currentDes))
 				return false;	
 		
-			if (isFilteredTask(currentDes))
+			if (!currentTask.isInterruptable())
 				return false;
 			
 			if (newTask.getName().equals(getTaskName())) {
@@ -583,18 +516,6 @@ public abstract class TaskManager implements Serializable {
 		
 		return true;
 	}
-	
-
-	protected boolean isFilteredTask(String des) {
-		if (des.contains(SLEEPING)
-				|| des.contains(EVA)
-				|| des.contains(AIRLOCK)
-				|| des.contains(DIG))
-				return true;
-		
-		return false;
-	}
-	
 	
 	/**
 	 * Records current task as last task and replaces it with a new task.
@@ -628,18 +549,11 @@ public abstract class TaskManager implements Serializable {
 	}
 	
 	/**
-	 * Gets the current mars time.
-	 */
-	protected static MarsTime getMarsTime() {
-		return master.getMarsTime();
-	}
-
-	/**
 	 * Gets all pending tasks.
 	 *
 	 * @return
 	 */
-	public List<TaskJob> getPendingTasks() {
+	public List<PendingTask> getPendingTasks() {
 		return pendingTasks;
 	}
 	
@@ -695,30 +609,23 @@ public abstract class TaskManager implements Serializable {
 	 * @return
 	 */
 	public boolean addPendingTask(TaskJob task, boolean allowDuplicate) {
-		if (allowDuplicate || !pendingTasks.contains(task)) {
-			boolean success = pendingTasks.add(task);
-			if (success) 
+		boolean addTask = true;
+
+		// Duplicate need a check on the actual Task
+		if (!allowDuplicate) {
+			// Add the task if this TaskJob does not appear in the List
+			addTask = (pendingTasks.stream().filter(s -> s.job().equals(task)).count() == 0);
+		}
+
+		// Add it
+		if (addTask) {
+			addTask = pendingTasks.add(new PendingTask(master.getMarsTime(), task));
+			if (addTask) 
 				logger.info(worker, 20_000L, "Successfully added pending task '" + task.getName() + "'.");
 			else
 				logger.info(worker, 20_000L, "Failed to add pending task '" + task.getName() + "'.");
-			return success;
 		}
-		return false;
-	}
-
-	/**
-	 * Gets the first pending meta task in the queue.
-	 * Note: It no longer automatically remove the retrieved task. 
-	 * Must call removePendingTask() separately to remove it.
-	 *
-	 * @return
-	 */
-	protected TaskJob getPendingTask() {
-		if (!pendingTasks.isEmpty()) {
-			TaskJob firstTask = pendingTasks.get(0);
-			return firstTask;
-		}
-		return null;
+		return addTask;
 	}
 
 	/**
@@ -726,15 +633,12 @@ public abstract class TaskManager implements Serializable {
 	 *
 	 * @return
 	 */
-	public boolean removePendingTask(TaskJob taskJob) {
-		boolean success = false;
-		if (!pendingTasks.isEmpty() && pendingTasks.contains(taskJob)) {
-			success = pendingTasks.remove(taskJob);
-			if (success)
-				logger.info(worker, "Successfully removed the pending task '" + taskJob.getName() + "'.");
-			else
-				logger.info(worker, "Failed to remove the pending task '" + taskJob.getName() + "'.");
-		}
+	public boolean removePendingTask(PendingTask n) {
+		boolean success = pendingTasks.remove(n);
+		if (success)
+			logger.info(worker, "Successfully removed the pending task '" + n.job().getName() + "'.");
+		else
+			logger.warning(worker, "Failed to remove the pending task '" + n.job().getName() + "'.");
 		return success;
 	}
 	

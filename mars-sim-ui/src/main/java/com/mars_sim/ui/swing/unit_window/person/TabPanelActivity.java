@@ -15,6 +15,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -80,6 +81,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 	private TaskCacheModel cacheModel;
 
+	private JTextArea pendingTasks;
+
 	/**
 	 * Constructor.
 	 *
@@ -133,13 +136,16 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		JPanel taskPanel = new JPanel(new BorderLayout(1, 3));
 		addBorder(taskPanel, "Task");
 		topPanel.add(taskPanel, BorderLayout.SOUTH);
-		taskStack = new JTextArea(3, 30);
-		taskStack.setToolTipText("Show the description and phase of a task and its subtask(s)");
-		taskPanel.add(taskStack, BorderLayout.CENTER);
+
+		JPanel currentPanel = new JPanel(new BorderLayout(1, 3));
+		taskPanel.add(currentPanel, BorderLayout.NORTH);
 
 		AttributePanel scorePanel = new AttributePanel(1);
-		taskPanel.add(scorePanel, BorderLayout.NORTH);
+		currentPanel.add(scorePanel, BorderLayout.NORTH);
 		scoreTextArea = scorePanel.addTextField("Score", "", null);
+		taskStack = new JTextArea(3, 30);
+		taskStack.setToolTipText("Show the description and phase of a task and its subtask(s)");
+		currentPanel.add(taskStack, BorderLayout.CENTER);
 
 		cacheModel = new TaskCacheModel();
 		JPanel cachePanel = new JPanel(new BorderLayout(1, 3));
@@ -160,7 +166,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		};
 		cacheTable.setDefaultRenderer(Double.class,
 						new NumberCellRenderer(2, true));
-		cacheTable.setPreferredScrollableViewportSize(new Dimension(225, 150));
+		cacheTable.setPreferredScrollableViewportSize(new Dimension(225, 120));
 		cacheTable.getColumnModel().getColumn(0).setPreferredWidth(30);
 		cacheTable.getColumnModel().getColumn(1).setPreferredWidth(150);
 
@@ -168,8 +174,14 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		JScrollPane scroller = new JScrollPane(cacheTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 								ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		cachePanel.add(scroller, BorderLayout.CENTER);
-		taskPanel.add(cachePanel, BorderLayout.SOUTH);
-		
+		taskPanel.add(cachePanel, BorderLayout.CENTER);
+
+		JPanel pendingPanel = new JPanel(new BorderLayout(1, 3));
+		pendingTasks = new JTextArea(2, 30);
+		pendingPanel.add(pendingTasks, BorderLayout.CENTER);
+		addBorder(pendingPanel, "Pending");
+		taskPanel.add(pendingPanel, BorderLayout.SOUTH);
+
 		update();
 	}
 
@@ -206,8 +218,16 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			cacheModel.setCache(newCache);
 		}
 
+		// Pending text
+		String newPendingText = taskManager.getPendingTasks().stream()
+								.map(s -> s.job().getName() + " @ " + s.when().getTruncatedDateTimeStamp())
+								.collect(Collectors.joining("\n"));
+		if (!newPendingText.equals(pendingTasks.getText())) {
+			pendingTasks.setText(newPendingText);
+		}
+
 		// Task has changed so update the score
-		var scoreLabel = "";
+		var scoreLabel = "Directly Assigned";
 		String scoreTooltip = null; 
 		RatingScore score = taskManager.getScore();
 		if (score != null) {

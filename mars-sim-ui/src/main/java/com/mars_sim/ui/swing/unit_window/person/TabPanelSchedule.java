@@ -23,7 +23,7 @@ import com.mars_sim.core.person.ai.shift.Shift;
 import com.mars_sim.core.person.ai.shift.ShiftSlot;
 import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
-import com.mars_sim.core.person.ai.task.util.TaskManager.OneActivity;
+import com.mars_sim.core.person.ai.task.util.OneActivity;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.tools.Msg;

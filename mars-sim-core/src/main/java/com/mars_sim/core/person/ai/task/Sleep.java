@@ -42,9 +42,7 @@ public class Sleep extends Task {
 
 	/** Simple Task name */
 	public static final String SIMPLE_NAME = Sleep.class.getSimpleName();
-	
-//	private static final int MAX_FATIGUE = 3000;
-	
+		
     private static final int MAX_SUPPRESSION = 100;
 
 	/** Task name */
@@ -123,6 +121,15 @@ public class Sleep extends Task {
 		}
 	}
 	
+	/**
+	 * Is this Task interruptable? This Task can not be interrupted.
+	 * @return Returns false by default
+	 */
+	@Override
+	public boolean isInterruptable() {
+        return false;
+    }
+
 	/**
 	 * Refers the person to sleep in a medical bed inside the EVA airlock.
 	 *

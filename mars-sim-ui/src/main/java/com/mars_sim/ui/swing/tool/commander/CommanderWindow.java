@@ -54,7 +54,6 @@ import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.moon.Colony;
@@ -62,8 +61,8 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.util.BasicTaskJob;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
+import com.mars_sim.core.person.ai.task.util.PendingTask;
 import com.mars_sim.core.person.ai.task.util.TaskFactory;
-import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -139,7 +138,7 @@ public class CommanderWindow extends ToolWindow {
 	private JSpinner areaSpinner;
 	
 	private ListModel listModel;
-	private JList<TaskJob> list;
+	private JList<PendingTask> list;
 	private JTextArea logBookTA;
 
 	private JPanel policyMainPanel;
@@ -169,8 +168,6 @@ public class CommanderWindow extends ToolWindow {
 	private Person cc;
 
 	private Settlement settlement;
-	
-	private Authority sponsor;
 
 	/** The MasterClock instance. */
 	private MasterClock masterClock;
@@ -201,7 +198,6 @@ public class CommanderWindow extends ToolWindow {
 		List<Settlement> settlementList = new ArrayList<>(unitManager.getSettlements());
 		Collections.sort(settlementList);
 		settlement = settlementList.get(0);
-		sponsor = settlement.getReportingAuthority();
 		
 		cc = settlement.getCommander();
 		
@@ -340,9 +336,6 @@ public class CommanderWindow extends ToolWindow {
 											
 			// Set the selected settlement
 			settlement = s;
-			
-			// Set the sponsor
-			sponsor = settlement.getReportingAuthority();
 			
 			// Set the box opaque
 			settlementBox.setOpaque(false);
@@ -1039,7 +1032,7 @@ public class CommanderWindow extends ToolWindow {
 	 * Picks a task and delete it.
 	 */
 	public void deleteATask() {
-		TaskJob n = list.getSelectedValue();
+		PendingTask n = list.getSelectedValue();
 		if (n != null) {
 			((Person) personBox.getSelectedItem()).getMind().getTaskManager().removePendingTask(n);
 			logBookTA.append("Delete '" + n + "' from the list of task orders.\n");
@@ -1102,26 +1095,26 @@ public class CommanderWindow extends ToolWindow {
 	/**
 	 * Lists model for the tasks in queue.
 	 */
-	private class ListModel extends AbstractListModel<TaskJob> {
+	private class ListModel extends AbstractListModel<PendingTask> {
 
 	    /** default serial id. */
 	    private static final long serialVersionUID = 1L;
 
-	    private List<TaskJob> list = new ArrayList<>();
+	    private List<PendingTask> list = new ArrayList<>();
 
 	    private ListModel() {
 	    	Person selected = (Person) personBox.getSelectedItem();
 
 	    	if (selected != null) {
-	        	List<TaskJob> tasks = selected.getMind().getTaskManager().getPendingTasks();
+	        	List<PendingTask> tasks = selected.getMind().getTaskManager().getPendingTasks();
 		        if (tasks != null)
 		        	list.addAll(tasks);
 	    	}
 	    }
 
         @Override
-        public TaskJob getElementAt(int index) {
-        	TaskJob result = null;
+        public PendingTask getElementAt(int index) {
+        	PendingTask result = null;
 
             if ((index >= 0) && (index < list.size())) {
                 result = list.get(index);
@@ -1144,7 +1137,7 @@ public class CommanderWindow extends ToolWindow {
         	Person selected = (Person) personBox.getSelectedItem();
         	
         	if (selected != null) {
-	        	List<TaskJob> newTasks = selected.getMind().getTaskManager().getPendingTasks();
+	        	List<PendingTask> newTasks = selected.getMind().getTaskManager().getPendingTasks();
 	
 	        	if (newTasks != null) {
                 // if the list contains duplicate items, it somehow pass this test

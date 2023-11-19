@@ -13,12 +13,10 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.Mind;
 import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
-import com.mars_sim.core.person.ai.task.DigLocal;
-import com.mars_sim.core.person.ai.task.DigLocalRegolith;
-import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.EatDrink;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.Walk;
+import com.mars_sim.core.time.MarsTime;
 
 /**
  * The PersonTaskManager class keeps track of a person's current task and can randomly
@@ -137,9 +135,10 @@ public class PersonTaskManager extends TaskManager {
 	/**
 	 * Calculates and caches the probabilities.
 	 * This will NOT use the cache but assumes the callers know when a cache can be used or not used.
+	 * @param now The current mars time
 	 */
 	@Override
-	protected TaskCache rebuildTaskCache() {
+	protected TaskCache rebuildTaskCache(MarsTime now) {
 
 		List<FactoryMetaTask> mtList = null;
 		String shiftDesc = null;
@@ -163,7 +162,7 @@ public class PersonTaskManager extends TaskManager {
 		}
 
 		// Create new taskProbCache
-		TaskCache newCache = new TaskCache(shiftDesc, getMarsTime());
+		TaskCache newCache = new TaskCache(shiftDesc, now);
 
 		// Determine probabilities.
 		for (FactoryMetaTask mt : mtList) {
@@ -252,88 +251,11 @@ public class PersonTaskManager extends TaskManager {
 	}
 	
 	/**
-	 * Starts a new Task by first checking for pending tasks.
+	 * A Person can do pending tasks if they are not outside and not on a Mission.
+	 * @return Whether person is inside
 	 */
-	@Override
-	public void startNewTask() {
-		// Check if there are any assigned tasks that are pending
-		if (!getPendingTasks().isEmpty()) {
-			TaskJob pending = getPendingTask();
-			if (pending != null) {
-				Task newTask = pending.createTask(person);
-				
-				boolean isEVATask = newTask instanceof EVAOperation;
-				
-				if (newTask == null) {
-					// Note: need to track how some TaskJob has been done and no longer available.
-					logger.info(person, "'" + pending.getName() + "' was no longer needed and should be removed.");
-					
-					removePendingTask(pending);
-					
-					// Next, go to super.startNewTask() to find a new task
-				}
-
-				else if (person.isOutside()) {
-					
-					if (newTask.getName().toLowerCase().contains(SLEEP) || isEVATask) {
-						// Note :the person should 
-						// come in and rest and is no longer eligible for performing
-						// another EVA task
-						
-						// Skip doing anything for now
-					}
-
-					// Next, go to super.startNewTask() to find a new task
-				}
-				
-				else if (person.getMission() != null) {
-					
-					// Skip doing anything for now
-					// Next, go to super.startNewTask() to find a new task
-				}
-				
-				else if (newTask != null && currentTask != null 
-					&& !newTask.getName().equals(getTaskName())
-					&& !newTask.getDescription().equals(currentTask.getDescription())
-					&& !isFilteredTask(currentTask.getDescription())) {
-					
-					if (newTask.getName().equals(DigLocalRegolith.NAME)) {
-						// Check if the person is qualified for digging local
-						if (!DigLocal.canDigLocal(person)) {
-					    	// Skip doing anything for now
-							// Next, go to super.startNewTask() to find a new task
-						}
-						else {
-							
-							// Note: this is the only eligible condition for replacing the
-							// current task with the new task
-							replaceTask(newTask);
-							// Remove the new task from the pending task list
-							removePendingTask(pending);
-							
-							// At this point, do NOT need to call super.startNewTask()
-							// or else the newTask will be replaced
-						}
-					}
-					else {
-					
-						// Note: this is the only eligible condition for replacing the
-						// current task with the new task
-						replaceTask(newTask);
-						// Remove the new task from the pending task list
-						removePendingTask(pending);
-						
-						// At this point, do NOT need to call super.startNewTask()
-						// or else the newTask will be replaced
-						return;
-					}
-				}
-			}
-		}
-
-		super.startNewTask();	
-		// Note that in super.startNewTask() in TaskManager, 
-		// it will run replaceTask(selectedTask)
+	protected boolean isPendingPossible() {
+		return (!person.isOutside() || (person.getMission() == null));
 	}
 
 	@Override
