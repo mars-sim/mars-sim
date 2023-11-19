@@ -16,6 +16,8 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.tools.Msg;
 
 /**
@@ -30,6 +32,8 @@ public class RelaxMeta extends FactoryMetaTask{
     /** Modifier if during person's work shift. */
     private static final double WORK_SHIFT_MODIFIER = .25D;
 
+	private static final double WEIGHT = 2D;
+	
     public RelaxMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		setTrait(TaskTrait.RELAXATION);
@@ -41,7 +45,8 @@ public class RelaxMeta extends FactoryMetaTask{
     }
 
     /**
-     * Assess whether a person can relax. Many depends upon whether they are on Duty or not.
+     * Assesses whether a person can relax. Many depends upon whether they are on Duty or not.
+     * 
      * @param person Being assessed.
      * @return Potential TaskJobs.
      */
@@ -51,9 +56,9 @@ public class RelaxMeta extends FactoryMetaTask{
             return EMPTY_TASKLIST;
         }
 
-        RatingScore result = new RatingScore(1D);
+        RatingScore result = new RatingScore(WEIGHT);
             
-        Building recBuilding = Relax.getAvailableRecreationBuilding(person);
+        Building recBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
         result = assessBuildingSuitability(result, recBuilding, person);
         result = assessPersonSuitability(result, person);
 

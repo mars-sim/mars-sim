@@ -97,7 +97,8 @@ public class BotTaskManager extends TaskManager {
     }
 
 	/**
-	 * Perform the current task for a given amount of time.
+	 * Performs the current task for a given amount of time.
+	 * 
 	 * @param time amount of time to perform the action
 	 * @param efficiency The performance rating of person performance task.
 	 * @return remaining time.
@@ -113,7 +114,7 @@ public class BotTaskManager extends TaskManager {
 			}
 
 			if (currentTask.isEffortDriven()) {
-				// For effort driven task, reduce the effective time based on efficiency.
+				// For physical effort driven task, reduce the effective time based on efficiency.
 				time *= efficiency;
 			}
 

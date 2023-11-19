@@ -1168,12 +1168,7 @@ public class PhysicalCondition implements Serializable {
 
 				if (ct == ComplaintType.LACERATION || ct == ComplaintType.BROKEN_BONE
 						|| ct == ComplaintType.PULLED_MUSCLE_TENDON || ct == ComplaintType.RUPTURED_APPENDIX) {
-					if (person.getTaskDescription().toLowerCase().contains("assist")
-							|| person.getTaskDescription().toLowerCase().contains("compil")
-							|| person.getTaskDescription().toLowerCase().contains("peer")
-							|| person.getTaskDescription().toLowerCase().contains("teach")
-						|| restingTask
-					) {
+					if (person.isRestingTask()) {
 						// If a person is performing a resting task, then it is impossible to suffer
 						// from laceration.
 						noGo = true;

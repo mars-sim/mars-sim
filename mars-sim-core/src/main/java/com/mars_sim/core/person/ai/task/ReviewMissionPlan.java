@@ -71,7 +71,7 @@ public class ReviewMissionPlan extends Task {
 	 */
 	public ReviewMissionPlan(Person person, MissionPlanning target) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MANAGEMENT,
+		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.MANAGEMENT,
 				RandomUtil.getRandomInt(20, 40), RandomUtil.getRandomInt(40, 80));
 				
 		if (person.isInSettlement()) {

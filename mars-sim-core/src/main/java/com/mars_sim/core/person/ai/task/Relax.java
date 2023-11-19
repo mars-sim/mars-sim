@@ -6,8 +6,6 @@
  */
 package com.mars_sim.core.person.ai.task;
 
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,26 +43,30 @@ extends Task {
 
 	// Static members
 	/** The stress modified per millisol. */
+	private static final double DURATION = 20D;
+	
+	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -1D;
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param person the person to perform the task
 	 */
 	public Relax(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, 10D);
+		super(NAME, person, false, false, STRESS_MODIFIER, DURATION);
 		
 		// If during person's work shift, only relax for short period.
         boolean isShiftHour = person.isOnDuty();
 		if (isShiftHour) {
-		    setDuration(10D);
+		    setDuration(RandomUtil.getRandomDouble(DURATION/6, DURATION/2));
 		}
 		
 		// If person is in a settlement, try to find a place to relax.
 		boolean walkSite = false;
 		if (person.isInSettlement()) {
 			try {
-				Building rec = getAvailableRecreationBuilding(person);
+				Building rec = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
 				if (rec != null) {
 					// Walk to recreation building.
 				    walkToTaskSpecificActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
@@ -85,15 +87,13 @@ extends Task {
 		}
 
 		if (!walkSite) {
-		    if (person.isInVehicle()) {
-                // If person is in rover, walk to passenger activity spot.
-                if (person.getVehicle() instanceof Rover) {
-                    walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
-                }
+            // If person is in rover, walk to passenger activity spot.
+            if (person.getVehicle() instanceof Rover rover) {
+                walkToPassengerActivitySpotInRover(rover, true);
             }
-		    else {
-                // Walk to random location.
-                walkToRandomLocation(true);
+            else {
+	            // Walk to random location.
+	            walkToRandomLocation(true);
             }
 		}
 
@@ -117,6 +117,7 @@ extends Task {
 
 	/**
 	 * Performs the relaxing phase of the task.
+	 * 
 	 * @param time the amount of time (millisol) to perform the phase.
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
@@ -131,40 +132,19 @@ extends Task {
 		
 			PhysicalCondition pc = person.getPhysicalCondition();
 			double f =  pc.getFatigue();
-					
+			double perf = pc.getPerformanceFactor();		
+			
 	        // Reduce person's fatigue
 	        pc.reduceFatigue(f * fractionOfRest);
 	        
 	        pc.relaxMuscle(time);
+	        
+	        if (perf < 1) {
+	        	perf *= (1 + fractionOfRest);
+	        	pc.setPerformanceFactor(perf);
+	        }
 		}
 		
 		return remainingTime;
-	}
-
-
-	/**
-	 * Gets an available recreation building that the person can use.
-	 * Returns null if no recreation building is currently available.
-	 * @param person the person
-	 * @return available recreation building
-	 */
-	public static Building getAvailableRecreationBuilding(Person person) {
-
-		Building result = null;
-
-		if (person.isInSettlement()) {
-			BuildingManager manager = person.getSettlement().getBuildingManager();
-			Set<Building> recreationBuildings = manager.getBuildingSet(FunctionType.RECREATION);
-			recreationBuildings = BuildingManager.getNonMalfunctioningBuildings(recreationBuildings);
-			recreationBuildings = BuildingManager.getLeastCrowdedBuildings(recreationBuildings);
-
-			if (!recreationBuildings.isEmpty()) {
-				Map<Building, Double> recreationBuildingProbs = BuildingManager.getBestRelationshipBuildings(
-						person, recreationBuildings);
-				result = RandomUtil.getWeightedRandomObject(recreationBuildingProbs);
-			}
-		}
-
-		return result;
 	}
 }

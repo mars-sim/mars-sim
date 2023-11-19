@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Recreation.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-11-18
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.function;
@@ -25,6 +25,7 @@ public class Recreation extends Function {
 
     /**
      * Constructor.
+     * 
      * @param building the building this function is for.
      * @param spec Details of teh Recreation function.
      */
@@ -38,6 +39,7 @@ public class Recreation extends Function {
 
     /**
      * Gets the value of the function for a named building.
+     * 
      * @param buildingName the building name.
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
@@ -70,6 +72,7 @@ public class Recreation extends Function {
 
     /**
      * Gets the number of people this recreation facility can support.
+     * 
      * @return population that can be supported.
      */
     public int getPopulationSupport() {

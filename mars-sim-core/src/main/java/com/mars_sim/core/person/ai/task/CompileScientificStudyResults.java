@@ -66,7 +66,7 @@ extends Task {
      */
     public CompileScientificStudyResults(Person person) {
         // Use task constructor. Skill determined by Study
-        super(NAME, person, true, false,
+        super(NAME, person, false, false,
                 STRESS_MODIFIER, null, 25D, RandomUtil.getRandomDouble(20, 50));
         
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;

@@ -71,7 +71,7 @@ public class MeetTogether extends Task {
      */
     public MeetTogether(Person person) {
         // Use Task constructor.
-        super(NAME, person, true, false, 
+        super(NAME, person, false, false, 
         		STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), 
         		null, 100D, 
         		10D + RandomUtil.getRandomDouble(20));

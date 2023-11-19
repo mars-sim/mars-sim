@@ -81,7 +81,7 @@ implements ResearchScientificStudy {
      */
     public PerformMathematicalModeling(Person person) {
         // Use task constructor.
-        super(NAME, person, true, false, STRESS_MODIFIER,
+        super(NAME, person, false, false, STRESS_MODIFIER,
         		SkillType.MATHEMATICS, 20D, 10D + RandomUtil.getRandomDouble(10D));
         
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;

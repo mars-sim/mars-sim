@@ -1306,27 +1306,15 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		return getMind().getTaskManager().getTaskDescription(false);
 	}
 
+	/**
+	 * Does the current task require no physical effort ?
+	 * 
+	 * @return
+	 */
 	public boolean isRestingTask() {
-		String des = getTaskDescription().toLowerCase();
-		// Check if a person is performing low aerobic tasks
-    	return (des.contains("eat")
-            || des.contains("drink")
-            || des.contains("meet")
-            || des.contains("relax")
-            || des.contains("rest")
-            || des.contains("sleep")
-            || des.contains("study")
-            || des.contains("compil")
-            || des.contains("lab")
-            || des.contains("connect")
-            || des.contains("convers")
-            || des.contains("dream")
-            || des.contains("listen")
-            || des.contains("invit")
-            || des.contains("teach"));
-    	
+		return !getMind().getTaskManager().getTask().isEffortDriven();
 	}
-    
+    		
 	public String getTaskPhase() {
 		if (getMind().getTaskManager().getPhase() != null)
 		return getMind().getTaskManager().getPhase().getName();

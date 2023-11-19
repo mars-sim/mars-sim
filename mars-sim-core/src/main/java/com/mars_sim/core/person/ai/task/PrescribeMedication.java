@@ -65,7 +65,7 @@ public class PrescribeMedication extends Task {
 	 */
 	public PrescribeMedication(Person person) {
         // Use task constructor.
-        super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MEDICINE, 100D, 10D);
+        super(NAME, person, false, false, STRESS_MODIFIER, SkillType.MEDICINE, 100D, 10D);
 
         // Determine patient needing medication
         patient = determinePatient(person);
@@ -101,7 +101,7 @@ public class PrescribeMedication extends Task {
 
 	public PrescribeMedication(Robot robot) {
         // Use task constructor.
-        super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MEDICINE, 100D, 10D);
+        super(NAME, robot, false, false, STRESS_MODIFIER, SkillType.MEDICINE, 100D, 10D);
 
         // Determine patient needing medication
         patient = determinePatient(robot);

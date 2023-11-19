@@ -84,10 +84,10 @@ public class EmotionManager implements Serializable {
 	public EmotionManager(Person person) {
 		this.person = person;
 		
-//		System.out.println(Arrays.deepToString(description));
-//		System.out.println("# of rows: " + description.length);
-//		System.out.println("# of cols: " + description[0].length);
-//		
+//		may println(Arrays.deepToString(description))
+//		may println("# of rows: " + description.length)
+//		may println("# of cols: " + description[0].length)
+	
 		// Create emotional state vectors using random values
 		// Note that .4 is the mid-point
 		eVector[0] = .4 + RandomUtil.getRandomDouble(-.3, .3);
@@ -106,6 +106,11 @@ public class EmotionManager implements Serializable {
 		oVector.add(eVector);
 	}
 
+	/**
+	 * Updates the emotional states.
+	 * 
+	 * @param v
+	 */
 	public void updateEmotion(double[] v) {
 		saveEmotion();
 		eVector = v;

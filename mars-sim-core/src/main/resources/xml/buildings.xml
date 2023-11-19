@@ -822,6 +822,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<power-storage capacity="40"  discharge-rate="1.25"/>
 
+			<recreation capacity="4">
+				<activity>
+					<activity-spot xloc="1" yloc="1" />
+					<activity-spot xloc="-1" yloc="1" />
+					<activity-spot xloc="1" yloc="-1" />
+					<activity-spot xloc="-1" yloc="-1" />
+				</activity>
+			</recreation>
+			
 			<research tech-level="2" capacity="2">
 				<research-specialty name="BIOLOGY" />
 				<research-specialty name="BOTANY" />
@@ -906,20 +915,26 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<farming crops="40" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="800.0">
 				<activity>
-					<activity-spot xloc="1.6" yloc="-2.45" />
-					<activity-spot xloc="1.6" yloc="-4.9" />
-					<activity-spot xloc="-1.6" yloc="4.9" />
-					<activity-spot xloc="-1.6" yloc="2.45" />
-					<activity-spot xloc="-1.6" yloc="0.0" />
-					<activity-spot xloc="-1.6" yloc="-2.45" />
-					<activity-spot xloc="-1.6" yloc="-4.9" />
+					<activity-spot xloc="1.6" yloc="1" />
+					<activity-spot xloc="1.6" yloc="-1" />
+					<activity-spot xloc="1.6" yloc="-3" />
+					<activity-spot xloc="1.6" yloc="-5" />
+					<activity-spot xloc="1.6" yloc="-7" />
+					
+					<activity-spot xloc="-1.6" yloc="1" />
+					<activity-spot xloc="-1.6" yloc="-1" />
+					<activity-spot xloc="-1.6" yloc="-3" />
+					<activity-spot xloc="-1.6" yloc="-5" />
+					<activity-spot xloc="-1.6" yloc="-7" />
 				</activity>
 			</farming>
 
-			<fishery capacity="1000">
+			<fishery capacity="5000">
 				<activity>
-					<activity-spot xloc="1.6" yloc="2.45" />
-					<activity-spot xloc="1.6" yloc="0.0" />
+					<activity-spot xloc="1.6" yloc="5" />
+					<activity-spot xloc="-1.6" yloc="3" />
+					<activity-spot xloc="1.6" yloc="3" />
+					<activity-spot xloc="-1.6" yloc="5" />					
 				</activity>
 			</fishery>
 
@@ -927,6 +942,41 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<power-storage capacity="80" discharge-rate="1.25" />
 
+			<recreation capacity="26">
+				<activity>
+					<activity-spot xloc="1.6" yloc="1" />
+					<activity-spot xloc="1.6" yloc="-1" />
+					<activity-spot xloc="1.6" yloc="-3" />
+					<activity-spot xloc="1.6" yloc="-5" />
+					<activity-spot xloc="1.6" yloc="-7" />
+					
+					<activity-spot xloc="-1.6" yloc="1" />
+					<activity-spot xloc="-1.6" yloc="-1" />
+					<activity-spot xloc="-1.6" yloc="-3" />
+					<activity-spot xloc="-1.6" yloc="-5" />
+					<activity-spot xloc="-1.6" yloc="-7" />
+					
+					<activity-spot xloc="5.2" yloc="7" />
+					<activity-spot xloc="5.2" yloc="5" />
+					<activity-spot xloc="5.2" yloc="3" />
+					<activity-spot xloc="5.2" yloc="1" />
+					<activity-spot xloc="5.2" yloc="-1" />
+					<activity-spot xloc="5.2" yloc="-3" />
+					<activity-spot xloc="5.2" yloc="-5" />
+					<activity-spot xloc="5.2" yloc="-7" />
+									
+					<activity-spot xloc="-5.2" yloc="7" />
+					<activity-spot xloc="-5.2" yloc="5" />
+					<activity-spot xloc="-5.2" yloc="3" />
+					<activity-spot xloc="-5.2" yloc="1" />
+					<activity-spot xloc="-5.2" yloc="-1" />
+					<activity-spot xloc="-5.2" yloc="-3" />
+					<activity-spot xloc="-5.2" yloc="-5" />
+					<activity-spot xloc="-5.2" yloc="-7" />
+				
+				</activity>
+			</recreation>
+			
 			<research tech-level="3" capacity="4">
 				<research-specialty name="BIOLOGY" />
 				<research-specialty name="BOTANY" />
@@ -1012,6 +1062,19 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<power-storage capacity="80"  discharge-rate="1.25"/>
 
+			<recreation capacity="8">
+				<activity>
+					<activity-spot xloc="-2.5" yloc="3.5" />
+					<activity-spot xloc="-2.5" yloc="2.5" />
+					<activity-spot xloc="-2.5" yloc="1.5" />
+					<activity-spot xloc="-2.5" yloc="0.5" />
+					<activity-spot xloc="2.5" yloc="3.5" />
+					<activity-spot xloc="2.5" yloc="2.5" />
+					<activity-spot xloc="2.5" yloc="1.5" />
+					<activity-spot xloc="2.5" yloc="0.5" />					
+				</activity>
+			</recreation>
+			
 			<research tech-level="2" capacity="4">
 				<research-specialty name="BIOLOGY" />
 				<activity>
@@ -1631,7 +1694,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</preparing-dessert>
 
-			<recreation capacity="25">
+			<recreation capacity="20">
 				<activity>
 					<activity-spot xloc="1.6" yloc="1.0" />
 					<activity-spot xloc="1.0" yloc="1.05" />
@@ -2964,7 +3027,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</preparing-dessert>
 			
-			<recreation capacity="4">
+			<recreation capacity="10">
 				<activity>
 					<activity-spot xloc="-2.15" yloc="1.35" />
 					<activity-spot xloc="-1.9" yloc=".5" />
@@ -3313,6 +3376,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<power-storage capacity="40"  discharge-rate="1.25"/>
 
+			<recreation capacity="4">
+				<activity>
+					<activity-spot xloc="1" yloc="1" />
+					<activity-spot xloc="-1" yloc="1" />
+					<activity-spot xloc="1" yloc="-1" />
+					<activity-spot xloc="-1" yloc="-1" />
+				</activity>
+			</recreation>
+			
 			<research tech-level="2" capacity="2">
 				<research-specialty name="BIOLOGY" />
 				<research-specialty name="BOTANY" />

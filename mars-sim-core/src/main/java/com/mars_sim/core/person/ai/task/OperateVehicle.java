@@ -114,7 +114,7 @@ public abstract class OperateVehicle extends Task {
 			MarsTime startTripTime, double startTripDistance, double duration) {
 		
 		// Use Task constructor
-		super(name, person, false, false, STRESS_MODIFIER, SkillType.PILOTING, EXP, duration);
+		super(name, person, true, false, STRESS_MODIFIER, SkillType.PILOTING, EXP, duration);
 		
 		// Initialize data members.
 		this.vehicle = vehicle;
@@ -178,7 +178,7 @@ public abstract class OperateVehicle extends Task {
 			MarsTime startTripTime, double startTripDistance, double duration) {
 		
 		// Use Task constructor
-		super(name, robot, false, false, STRESS_MODIFIER, SkillType.PILOTING, EXP, duration);
+		super(name, robot, true, false, STRESS_MODIFIER, SkillType.PILOTING, EXP, duration);
 		
 		// Initialize data members.
 		this.vehicle = vehicle;

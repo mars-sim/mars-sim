@@ -137,9 +137,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	/** A collection of the task's phases. */
 	private Collection<TaskPhase> phases;
-
+	/** A list of the skill types. */
 	private List<SkillType> neededSkills = null;
-
 
 	/** What natural attribute influences experience points */
 	private NaturalAttributeType experienceAttribute = NaturalAttributeType.EXPERIENCE_APTITUDE;
@@ -373,7 +372,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 	
 	/**
-	 * Returns the value of the effort driven flag.
+	 * Returns if the task requires physical effort.
 	 * 
 	 * @return Effort driven.
 	 */

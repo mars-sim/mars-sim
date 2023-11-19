@@ -69,7 +69,7 @@ public class PeerReviewStudyPaper extends Task {
 	 */
 	public PeerReviewStudyPaper(Person person) {
         // Use task constructor. Skill determined later by Study
-        super(NAME, person, true, false, STRESS_MODIFIER, null, 25D,
+        super(NAME, person, false, false, STRESS_MODIFIER, null, 25D,
                 50D + RandomUtil.getRandomDouble(20D));
         
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;

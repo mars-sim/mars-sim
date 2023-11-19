@@ -69,7 +69,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	 */
 	public ObserveAstronomicalObjects(Person person, ScientificStudy study) {
 		// Use task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.ASTRONOMY, 25D,
+		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.ASTRONOMY, 25D,
 			  100D + RandomUtil.getRandomDouble(100D));
 		
 		initialComputingNeeded = getDuration() * SEED;

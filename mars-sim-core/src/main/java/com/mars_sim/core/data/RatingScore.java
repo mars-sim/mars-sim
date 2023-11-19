@@ -48,6 +48,10 @@ public class RatingScore implements Serializable {
     private Map<String,Double> modifiers;
     private double score = -1;
 
+    /**
+     * Constructor 1.
+     * 
+     */
     public RatingScore() {
         this.modifiers = new HashMap<>();
         this.bases = new HashMap<>();
@@ -55,7 +59,8 @@ public class RatingScore implements Serializable {
     }
 
     /**
-     * Create a rating with a single base value using @see RatingScore.BASE.
+     * Constructor 2. Creates a rating with a single base value using @see RatingScore.BASE.
+     * 
      * @param base Initial base value
      */
     public RatingScore(double base) {
@@ -63,7 +68,8 @@ public class RatingScore implements Serializable {
     }
     
     /**
-     * Create a Rating Score that has a single base value
+     * Constructor 3. Creates a Rating Score that has a single base value.
+     * 
      * @param name Name associated with the base
      * @param base Score of the first base
      */
@@ -74,7 +80,8 @@ public class RatingScore implements Serializable {
     }
  
     /**
-     * This is a copy constrcutor that takes a private copy of the modifiers.
+     * Constructor 4. This is a copy constructor that takes a private copy of the modifiers.
+     * 
      * @param source Source of the copy
      */
     public RatingScore(RatingScore source) {
@@ -84,7 +91,8 @@ public class RatingScore implements Serializable {
     }
 
     /**
-     * Get the score for this rating.
+     * Gets the score for this rating.
+     * 
      * @return
      */
     public double getScore() {
@@ -92,7 +100,8 @@ public class RatingScore implements Serializable {
     }
 
     /**
-     * Get the modifiers applied in this Rating
+     * Gets the modifiers applied in this Rating.
+     * 
      * @return
      */
     public Map<String,Double> getModifiers() {
@@ -100,7 +109,8 @@ public class RatingScore implements Serializable {
     }
 
     /**
-     * Get the bases score in this Rating
+     * Gets the bases score in this Rating.
+     * 
      * @return
      */
     public Map<String,Double> getBases() {
@@ -108,7 +118,8 @@ public class RatingScore implements Serializable {
     }
 
     /**
-     * Add a modifier to the Rating. Apply the value as a modifier
+     * Adds a modifier to the Rating. Apply the value as a modifier.
+     * 
      * @param name
      * @param value
      */
@@ -123,8 +134,9 @@ public class RatingScore implements Serializable {
     }
     
     /**
-     * Recalculate the score by multiplying the base with the known modifiers.
-     * This will replace any existing base
+     * Recalculates the score by multiplying the base with the known modifiers.
+     * This will replace any existing base.
+     * 
      * @param name Name of the base score.
      * @param base New base score.
      */
@@ -140,8 +152,9 @@ public class RatingScore implements Serializable {
     }
 
     /**
-     * Apply a range to the final score.
-     * This is not persist and needs to be reappliyed if the based or midifeirs change.
+     * Applies a range to the final score.
+     * This is not persist and needs to be re-applied if the base or modifier change.
+     * 
      * @param lower
      * @param upper
      */
@@ -155,7 +168,8 @@ public class RatingScore implements Serializable {
     }
 
     /**
-     * Produce a string output of this rating
+     * Produces a string output of this rating.
+     * 
      * @return
      */
     public String getOutput() {
@@ -176,7 +190,8 @@ public class RatingScore implements Serializable {
     }
 
     /**
-     * Produce a structure output of this rating. This s not ideal being in this class
+     * Produces a structure output of this rating. This s not ideal being in this class.
+     * 
      * @return HTML formatted string localised.
      */
     public String getHTMLOutput() {

@@ -795,7 +795,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (person.isSuperUnFit())
 			return false;
 
-		// If task is effort-driven and person too ill, do not assign task.
+		// If task is physical effort driven and person too ill, do not assign task.
 		Task currentTask = person.getMind().getTaskManager().getTask();
 		
 		if (currentTask != null) {

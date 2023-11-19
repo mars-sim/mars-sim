@@ -98,7 +98,7 @@ public class TendGreenhouse extends Task {
 	 */
 	public TendGreenhouse(Person person, Farming greenhouse) {
 		// Use Task constructor
-		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.BOTANY, 100D, RandomUtil.getRandomDouble(10, 50));
+		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.BOTANY, 100D, RandomUtil.getRandomDouble(10, 50));
 
 		if (person.isOutside()) {
 			endTask();
@@ -124,7 +124,7 @@ public class TendGreenhouse extends Task {
 	 */
 	public TendGreenhouse(Robot robot, Farming greenhouse) {
 		// Use Task constructor
-		super(NAME, robot, false, false, 0, SkillType.BOTANY, 100D, 50D);
+		super(NAME, robot, true, false, 0, SkillType.BOTANY, 100D, 50D);
 
 		// Initialize data members
 		if (robot.isOutside()) {

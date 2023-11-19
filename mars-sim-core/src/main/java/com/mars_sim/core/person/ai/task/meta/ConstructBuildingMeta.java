@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * ConstructBuildingMeta.java
  * @date 2021-10-20
@@ -26,7 +26,6 @@ import com.mars_sim.tools.Msg;
  * Meta task for the ConstructBuilding task.
  */
 public class ConstructBuildingMeta extends FactoryMetaTask {
-
 
     /** Task name */
     private static final String NAME = Msg.getString(

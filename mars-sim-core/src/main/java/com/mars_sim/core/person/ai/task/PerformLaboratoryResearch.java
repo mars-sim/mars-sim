@@ -76,7 +76,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	 */
 	public PerformLaboratoryResearch(Person person) {
 		// Use task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, null, 25D, 10D + RandomUtil.getRandomDouble(50D));
+		super(NAME, person, false, false, STRESS_MODIFIER, null, 25D, 10D + RandomUtil.getRandomDouble(50D));
 		
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
 		computingNeeded = TOTAL_COMPUTING_NEEDED;
