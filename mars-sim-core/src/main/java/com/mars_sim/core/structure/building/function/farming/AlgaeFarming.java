@@ -23,6 +23,7 @@ import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.HouseKeeping;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.tools.util.RandomUtil;
 
 /**
@@ -78,8 +79,6 @@ public class AlgaeFarming extends Function {
 // intensities of 1500 to 3500 lux. With a light intensity of 2500 lux, 
 // the best growth rates were achieved.
 
-
-	
 	/**
 	 * The limiting factor that determines how fast and how much PAR can be absorbed
 	 * in one frame.
@@ -215,14 +214,7 @@ public class AlgaeFarming extends Function {
 	/** The resource usage on each crop in this facility [kg/sol]. */
 	private SolMetricDataLogger<Integer> resourceUsage = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 	
-	static {
-		averageWaterNeeded = cropConfig.getWaterConsumptionRate();
-		averageOxygenNeeded = cropConfig.getOxygenConsumptionRate();
-		averageCarbonDioxideNeeded = cropConfig.getCarbonDioxideConsumptionRate();
-		wattToPhotonConversionRatio = cropConfig.getWattToPhotonConversionRatio();
-		// Note: conversionFactor is 51.45578648029399;
-		conversionFactor = 1000D * wattToPhotonConversionRatio / MarsTime.SECONDS_PER_MILLISOL;
-	}
+	private static CropConfig cropConfig;
 	
 	/**
 	 * Constructor.
@@ -235,6 +227,13 @@ public class AlgaeFarming extends Function {
 		// Use Function constructor.
 		super(FunctionType.ALGAE_FARMING, spec, building);
 	
+		averageWaterNeeded = cropConfig.getWaterConsumptionRate();
+		averageOxygenNeeded = cropConfig.getOxygenConsumptionRate();
+		averageCarbonDioxideNeeded = cropConfig.getCarbonDioxideConsumptionRate();
+		wattToPhotonConversionRatio = cropConfig.getWattToPhotonConversionRatio();
+		// Note: conversionFactor is 51.45578648029399;
+		conversionFactor = 1000D * wattToPhotonConversionRatio / MarsTime.SECONDS_PER_MILLISOL;
+		
 		houseKeeping = new HouseKeeping(CLEANING_LIST, INSPECTION_LIST);
 
 		// Calculate the tank size via config
@@ -902,5 +901,25 @@ public class AlgaeFarming extends Function {
 	 */
 	public double getFoodDemand() {
 		return foodAge / FOOD_DEMAND;
+	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim.
+	 * 
+	 * @param cropConfig2
+	 *
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 */
+	public static void initializeInstances(CropConfig cropConfig2) {
+		cropConfig = cropConfig2;
+	}
+	
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	public void destroy() {
+		resourceUsage = null;
+		houseKeeping = null;
 	}
 }

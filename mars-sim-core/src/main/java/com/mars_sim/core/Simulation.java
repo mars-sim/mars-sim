@@ -77,6 +77,7 @@ import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.PowerSource;
 import com.mars_sim.core.structure.building.function.ResourceProcess;
 import com.mars_sim.core.structure.building.function.SolarHeatSource;
+import com.mars_sim.core.structure.building.function.farming.AlgaeFarming;
 import com.mars_sim.core.structure.building.function.farming.Crop;
 import com.mars_sim.core.structure.building.function.farming.CropConfig;
 import com.mars_sim.core.structure.construction.SalvageValues;
@@ -414,7 +415,7 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	/**
-	 * Initialize intransient data in the simulation.
+	 * Initializes intransient data in the simulation.
 	 */
 	private void initializeIntransientData(int timeRatio) {
 
@@ -466,8 +467,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Initialize UnitManager instance
 		unitManager = new UnitManager();
-
-		
+	
 		// Initialize OuterSpace instance
 		OuterSpace outerSpace = new OuterSpace();
 		// Add it to unitManager
@@ -525,8 +525,11 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize Building function related class
 		Function.initializeInstances(bc, masterClock, pc, cc, surfaceFeatures,
 								     weather, unitManager);
+
+		AlgaeFarming.initializeInstances(cc);
 		
 		Crop.initializeInstances(cc);
+		
 		// Initialize meta tasks
 		MetaTaskUtil.initializeMetaTasks();
 		
@@ -585,7 +588,7 @@ public class Simulation implements ClockListener, Serializable {
 	}
 	
 	/**
-	 *  Re-initialize instances after loading from a saved sim
+	 *  Re-initializes instances after loading from a saved sim.
 	 */
 	private void reinitializeInstances() {		
 		// Re-initialize the resources for the saved sim
@@ -626,7 +629,6 @@ public class Simulation implements ClockListener, Serializable {
 
 		PhysicalCondition.initializeInstances(masterClock, medicalManager,
 								simulationConfig.getPersonConfig());
-
 		
 		// Re-nitialize ScientificStudy
 		ScientificStudy.initializeInstances(masterClock);
@@ -657,6 +659,8 @@ public class Simulation implements ClockListener, Serializable {
 		SolarHeatSource.initializeInstances(surfaceFeatures);
 		// Re-initialize Building function related class
 		Function.initializeInstances(bc, masterClock, pc, cc, surfaceFeatures, weather, unitManager);
+		
+		AlgaeFarming.initializeInstances(cc);
 		
 		Crop.initializeInstances(cc);
 		
@@ -699,8 +703,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Re-initialize Structure related class
 		BuildingManager.initializeInstances(simulationConfig, masterClock, eventManager, unitManager);
-
-		
+	
 		// Start a chain of calls to set instances
 		// Warning: must call this at the end of this method
 		// after all instances are set
