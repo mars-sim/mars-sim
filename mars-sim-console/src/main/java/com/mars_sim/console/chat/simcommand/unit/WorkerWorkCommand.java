@@ -53,8 +53,8 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 		// List pending tasks first
 		var pending = tm.getPendingTasks();
 		if (!pending.isEmpty()) {
-			response.appendTableHeading("Pending Task", 45, 
-							"When", 9);
+			response.appendTableHeading(true, "Pending Task", 45, 
+							"When", -CommandHelper.TIMESTAMP_TRUNCATED_WIDTH);
 			for (PendingTask item : pending) {
 				response.appendTableRow(item.job().getName(), item.when().getTruncatedDateTimeStamp());
 			}
@@ -74,8 +74,8 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 			}
 
 			double sum = tasks.getTotal();
-			response.appendTableHeading("Potential Task", CommandHelper.TASK_WIDTH, "P %", 6,
-										"P Score", 20);
+			response.appendTableHeading(true, "Potential Task", 30, "P %", 6,
+										"P Score", -60);
 
 			// Display the last selected as 1st entry
 			TaskJob lastSelected = tasks.getLastSelected();
