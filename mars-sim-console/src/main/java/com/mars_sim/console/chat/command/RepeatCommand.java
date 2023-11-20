@@ -38,7 +38,7 @@ public class RepeatCommand extends ChatCommand implements CancellableCommand {
 	public boolean execute(Conversation context, String input) {
 		InteractiveChatCommand parent = context.getCurrentCommand();
 		
-		// Extract repate parameters
+		// Extract repeat parameters
 		String[] parts = ((input != null) ? input : "").split(" ", 3);
 		boolean badFormat = (parts.length != 3);
 		int delaySec = 0;

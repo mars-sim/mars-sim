@@ -1,5 +1,5 @@
 /*
- * Mars Simulation Project
+/ * Mars Simulation Project
  * WorkerTaskCommand.java
  * @date 2022-06-24
  * @author Barry Evans

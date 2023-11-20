@@ -43,6 +43,7 @@ extends TabPanel {
 	// default logger.
 
 	private static final String COMPUTING_ICON = "computing";
+	private static final String CU = " CUs";
 
 	private JLabel powerDemandLabel;
 	private JLabel percentUsageLabel;
@@ -111,7 +112,7 @@ extends TabPanel {
 		// Total CUs Available
 		double cUs = Math.round(manager.getTotalCapacityCUsComputing() * 1_000.0)/1_000.0;
 		
-		String text = cUs + " / " + peak + " CUs";
+		String text = cUs + " / " + peak + CU;
 		cULabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.computingUnit"),
 				text, Msg.getString("BuildingPanelComputation.computingUnit.tooltip"));
 	
@@ -182,7 +183,7 @@ extends TabPanel {
 		// Total CUs Available
 		double cUs = Math.round(manager.getTotalCapacityCUsComputing() * 100.0)/100.0;
 		
-		String text = cUs + " / " + peak;
+		String text = cUs + " / " + peak + CU;
 		
 		if (!cULabel.getText().equalsIgnoreCase(text))
 			cULabel.setText(text);
@@ -254,7 +255,7 @@ extends TabPanel {
 				double peak = Math.round(buildings.get(row).getComputation().getPeakComputingUnit() * 1_000.0)/1_000.0;
 				// Current
 				double computingUnit = Math.round(buildings.get(row).getComputation().getComputingUnitCapacity() * 1_000.0)/1_000.0;
-				return computingUnit + " / " + peak + " CUs";
+				return computingUnit + " (" + peak + ")";
 			}
 			else if (column == 4) {
 				// Entropy

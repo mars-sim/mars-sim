@@ -195,11 +195,12 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 			}
 		});
 
+
+        frame.setResizable(true);
+        
 		setPaneTitle(Simulation.TITLE);
 
         setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-
-        frame.setResizable(false);
 
 		ImageIcon icon = new ImageIcon(MarsTerminal.class.getResource(ICON_IMAGE));
 		frame.setIconImage(iconToImage(icon));
