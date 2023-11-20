@@ -26,7 +26,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JLayer;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -39,6 +38,7 @@ import javax.swing.KeyStroke;
 import org.beryx.textio.TextTerminal;
 import org.beryx.textio.jline.JLineTextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
+
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
@@ -66,7 +66,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 	private int width;
 	private int height;
 
-	private final WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
+//	private final WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
 
 	private JFrame frame = getFrame();
 
@@ -113,7 +113,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 			}
 		};
     	// Set up the glassy wait layer for pausing
-    	frame.add(new JLayer<>(panel, layerUI));
+//    	frame.add(new JLayer<>(panel, layerUI));
 
     	frame.toBack();
     	
@@ -308,7 +308,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 
         frame.setVisible(true);
 		// Start the wait layer
-		layerUI.start();
+//		layerUI.start();
     }
 
     private boolean addAction(String keyStroke, String menuText, Runnable action) {
@@ -361,14 +361,14 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 		}
 	}
 
-	public void startLayer() {
-        changeTitle(false);
-		layerUI.start();
-	}
+//	public void startLayer() {
+//        changeTitle(false);
+//		layerUI.start();
+//	}
 
-	public void stopLayer() {
-		layerUI.stop();
-	}
+//	public void stopLayer() {
+//		layerUI.stop();
+//	}
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {

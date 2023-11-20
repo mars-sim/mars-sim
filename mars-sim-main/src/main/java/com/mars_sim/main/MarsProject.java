@@ -186,7 +186,7 @@ public class MarsProject {
 						builder.startSocietySim();
 
 						// Start the wait layer
-						InteractiveTerm.startLayer();
+//						InteractiveTerm.startLayer();
 
 						// Start beryx console
 						startConsoleThread();
@@ -204,7 +204,7 @@ public class MarsProject {
 			sim = builder.start();
 
 			// Start the wait layer
-			InteractiveTerm.startLayer();
+//			InteractiveTerm.startLayer();
 
 			// Start beryx console
 			startConsoleThread();

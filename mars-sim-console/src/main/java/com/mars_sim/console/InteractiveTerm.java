@@ -643,9 +643,9 @@ public class InteractiveTerm {
 		return loaded;
 	}
 
-	public static void startLayer() {
-		marsTerminal.startLayer();
-	}
+//	public static void startLayer() {
+//		marsTerminal.startLayer();
+//	}
 
 	/**
 	 * Loads the terminal menu.
