@@ -91,7 +91,7 @@ public class SSHChannel implements UserChannel, Command {
 		this.hotkeys = new HashMap<>();
 		this.parent = parent;
 		
-		// Internet services expect \r\n as line seperator
+		// Internet services expect \r\n as line separator
 		replaceSeperator = !System.lineSeparator().equals(INTERNET_SEPERATOR);
 	}
 

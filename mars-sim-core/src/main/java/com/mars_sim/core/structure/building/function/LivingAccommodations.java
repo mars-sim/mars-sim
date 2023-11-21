@@ -61,7 +61,7 @@ public class LivingAccommodations extends Function {
 	/** percent portion of grey water generated from waste water.*/
 	private double greyWaterFraction;
 
-	/** The bed registry in this facility. */
+	/** The bed registry in this facility (it uses settlement-wide reference coordinate). */
 	private Map<Integer, LocalPosition> assignedBeds = new ConcurrentHashMap<>();
 
 	/** The daily water usage in this facility [kg/sol]. */
@@ -244,7 +244,7 @@ public class LivingAccommodations extends Function {
 	 * @return
 	 */
 	public LocalPosition designateABed(Person person, boolean guest) {
-		LocalPosition bed = null;
+		LocalPosition bedLoc = null;
 
 		int numDesignated = getNumAssignedBeds();
 		if (numDesignated >= maxNumBeds) {
@@ -254,25 +254,25 @@ public class LivingAccommodations extends Function {
 		// TODO: How do we allocate guest beds for a
 		// traveler to sleep on it.
 		
-		List<LocalPosition> spots = super.getActivitySpotsList();
-		for (LocalPosition spot : spots) {
+		List<LocalPosition> locs = getActivitySpotsList();
+		for (LocalPosition loc : locs) {
 			
 			// Convert the activity spot (the bed location) to the settlement reference coordinate
-			bed = LocalAreaUtil.getLocalRelativePosition(spot, building);
+			bedLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
 	
-			if (!assignedBeds.containsValue(bed)) {
+			if (!assignedBeds.containsValue(bedLoc)) {
 				if (!guest) {
-					assignABed(person, bed);
+					assignABed(person, bedLoc);
 				}
 				else { // is a guest
 					logger.log(building, person, Level.INFO, 0, "Given a temporary bed at ("
-							+ bed + ").", null);
+							+ bedLoc + ").", null);
 				}
 				break;
 			}
 		}
 
-		return bed;
+		return bedLoc;
 	}
 
 	/**
@@ -486,7 +486,8 @@ public class LivingAccommodations extends Function {
 	}
 	
 	/**
-	 * Release any bed assigned to a Person
+	 * Releases any bed assigned to a Person.
+	 * 
 	 * @param person
 	 * @return
 	 */

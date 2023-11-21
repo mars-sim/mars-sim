@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RoboticStation.java
- * @date 2022-07-17
+ * @date 2023-11-20
  * @author Manny Kung
  */
 package com.mars_sim.core.structure.building.function;
@@ -210,17 +210,15 @@ public class RoboticStation extends Function {
 	 */
 	public void addRobot(Robot robot) {
 		if (!robotOccupants.contains(robot)) {
-			// Remove robot from any other inhabitable building in the settlement.
-			Iterator<Building> i = getBuilding().getBuildingManager().getBuildingSet().iterator();
-			while (i.hasNext()) {
-				Building building = i.next();
-				if (building.hasFunction(FunctionType.ROBOTIC_STATION)) {
-					BuildingManager.removeRobotFromBuilding(robot, building);
-				}
-			}
 
+			if (robot.getBuildingLocation() != null) {
+				// Remove this person from the old building first
+				BuildingManager.removeRobotFromBuilding(robot, robot.getBuildingLocation());
+			}
+			
 			// Add robot to this building.
-			logger.fine(robot, "Added to " + getBuilding() + "'s robotic station.");
+			logger.fine(robot,  10_000L, "Added to " + getBuilding() + "'s robotic station.");
+			
 			robotOccupants.add(robot);
 		} else {
 			throw new IllegalStateException("This robot is already in this building.");
@@ -236,7 +234,7 @@ public class RoboticStation extends Function {
 	public void removeRobot(Robot robot) {
 		if (robotOccupants.contains(robot)) {
 			robotOccupants.remove(robot);
-			logger.fine(robot, "Removed from " + getBuilding() + "'s robotic station.");
+			logger.fine(robot, 10_000L, "Removed from " + getBuilding() + "'s robotic station.");
 		} else {
 			throw new IllegalStateException("The robot is not in this building.");
 		}

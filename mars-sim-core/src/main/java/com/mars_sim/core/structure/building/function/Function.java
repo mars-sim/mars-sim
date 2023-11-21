@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Function.java
- * @date 2021-10-21
+ * @date 2023-11-20
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.function;
@@ -9,21 +9,19 @@ package com.mars_sim.core.structure.building.function;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
-import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.Weather;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingConfig;
 import com.mars_sim.core.structure.building.FunctionSpec;
@@ -32,7 +30,6 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A settlement building function.
@@ -52,12 +49,15 @@ public abstract class Function implements Serializable, Temporal {
 	protected static final int TOILET_TISSUE_ID = ResourceUtil.toiletTissueID;
 	protected static final int TOXIC_WASTE_ID = ResourceUtil.toxicWasteID;
 
-	private FunctionType type;
-	protected Building building;
-	private List<LocalPosition> activitySpots;
-
 	private long lastPulse = 0; // First initial pulse is always 1
 
+	private FunctionType type;
+	
+	protected Building building;
+
+	/**	A map of activity spot with the id of a person occupying this spot.  */
+	private Map<LocalPosition, Integer> activitySpotMap = new HashMap<>();
+	
 	protected static BuildingConfig buildingConfig;
 	protected static PersonConfig personConfig;
 	protected static CropConfig cropConfig;
@@ -67,7 +67,6 @@ public abstract class Function implements Serializable, Temporal {
 	protected static Weather weather;
 
 	protected static MasterClock masterClock;
-
 
 	/**
 	 * Constructor.
@@ -82,10 +81,11 @@ public abstract class Function implements Serializable, Temporal {
 
 		// load any activity spots
 		if (spec != null) {
-			activitySpots = spec.getActivitySpots();
-		}
-		else {
-			activitySpots = Collections.emptyList();
+			List<LocalPosition> activitySpots = spec.getActivitySpots();
+
+			for (LocalPosition p: activitySpots) {
+				activitySpotMap.put(p, -1);
+			}
 		}
 	}
 
@@ -199,41 +199,94 @@ public abstract class Function implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets an available activity spot for the worker.
+	 * Adds the id of the unit to a local position.
+	 * 
+	 * @param p
+	 * @param id
+	 * @return
+	 */
+	public boolean addToNewActivitySpot(LocalPosition p, int id) {
+		if (activitySpotMap.isEmpty())
+			return false;
+		
+		if (activitySpotMap.containsKey(p) && activitySpotMap.get(p) == -1) {
+			activitySpotMap.put(p, id);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Removes the id of the unit in a local position.
+	 * 
+	 * @param p
+	 * @param id
+	 * @return
+	 */
+	public boolean removeFromActivitySpot(int id) {
+		if (activitySpotMap.isEmpty())
+			return false;
+		
+		for (Entry<LocalPosition, Integer> entry : activitySpotMap.entrySet()) {
+	        if (entry.getValue().equals(id)) {
+	        	LocalPosition p = entry.getKey();
+	        	activitySpotMap.put(p, -1);
+	        	return true;
+	        }
+	    }
+	
+		return false;
+	}
+	
+	/**
+	 * Gets an available local activity spot for the worker.
 	 *
-	 * @param worker the worker looking for the activity spot.
+	 * @param worker the worker looking for activity spot.
 	 * @return activity spot as {@link Point2D} or null if none found.
 	 */
 	public LocalPosition getAvailableActivitySpot() {
 
-		LocalPosition result = null;
-
-		if (activitySpots != null) {
-
-			List<LocalPosition> availableActivitySpots = new ArrayList<>();
-			Iterator<LocalPosition> i = activitySpots.iterator();
-			while (i.hasNext()) {
-				LocalPosition buildingLoc = i.next();
-				// Check if spot is unoccupied.
-				boolean available = isActivitySpotEmpty(buildingLoc);
-
-				// If available, add activity spot to available list.
-				if (available) {
-					// Convert activity spot from building local to settlement local.
-					LocalPosition settlementActivitySpot = LocalAreaUtil.getLocalRelativePosition(buildingLoc, getBuilding());
-					availableActivitySpots.add(settlementActivitySpot);
-				}
-			}
-
-			if (!availableActivitySpots.isEmpty()) {
-
-				// Choose a random available activity spot.
-				int index = RandomUtil.getRandomInt(availableActivitySpots.size() - 1);
-				result = availableActivitySpots.get(index);
+		if (activitySpotMap.isEmpty())
+			return null;
+				
+		for (Entry<LocalPosition, Integer> entry : activitySpotMap.entrySet()) {
+			LocalPosition p = entry.getKey();
+			int id = entry.getValue();
+			if (id == -1) {
+				return p;
 			}
 		}
 
-		return result;
+		return null;
+		
+//		LocalPosition result = null;		
+//		
+//		if (activitySpots != null) {
+//
+//			List<LocalPosition> availableActivitySpots = new ArrayList<>();
+//			Iterator<LocalPosition> i = activitySpots.iterator();
+//			while (i.hasNext()) {
+//				LocalPosition buildingLoc = i.next();
+//				// Check if spot is unoccupied.
+//				boolean available = isActivitySpotEmpty(buildingLoc);
+//
+//				// If available, add activity spot to available list.
+//				if (available) {
+//					// Convert activity spot from building local to settlement local.
+//					LocalPosition settlementActivitySpot = LocalAreaUtil.getLocalRelativePosition(buildingLoc, getBuilding());
+//					availableActivitySpots.add(settlementActivitySpot);
+//				}
+//			}
+//
+//			if (!availableActivitySpots.isEmpty()) {
+//
+//				// Choose a random available activity spot.
+//				int index = RandomUtil.getRandomInt(availableActivitySpots.size() - 1);
+//				result = availableActivitySpots.get(index);
+//			}
+//		}
+//
+//		return result;
 	}
 
 	/**
@@ -243,32 +296,41 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return true if this activity spot is empty.
 	 */
 	public boolean isActivitySpotEmpty(LocalPosition s) {
-		if (activitySpots == null || activitySpots.isEmpty())
+		
+		if (!activitySpotMap.isEmpty() 
+			&& activitySpotMap.keySet().contains(s)
+			&& activitySpotMap.get(s) == -1) {
 			return true;
-
-		boolean result = true;
-
-		// Convert activity spot from building local to settlement local.
-		Building b = getBuilding();
-		LocalPosition settlementActivitySpot = LocalAreaUtil.getLocalRelativePosition(s, b);
-
-		for (Person person : b.getInhabitants()) {
-			// Check if person's location is identical or very very close (1e-5 meters) to
-			// activity spot.
-			if (person.isInSettlement() && settlementActivitySpot.isClose(person.getPosition())) {
-				return false;
-			}
 		}
-
-		for (Robot robot : b.getRobots()) {
-			// Check if robot location is identical or very very close (1e-5 meters) to
-			// activity spot.
-			if (settlementActivitySpot.isClose(robot.getPosition())) {
-				return false;
-			}
-		}
-
-		return result;
+		
+		return false;
+		
+//		if (activitySpots == null || activitySpots.isEmpty())
+//			return true;
+//
+//		boolean result = true;
+//
+//		// Convert activity spot from building local to settlement local.
+//		Building b = getBuilding();
+//		LocalPosition settlementActivitySpot = LocalAreaUtil.getLocalRelativePosition(s, b);
+//
+//		for (Person person : b.getInhabitants()) {
+//			// Check if person's location is identical or very very close (1e-5 meters) to
+//			// activity spot.
+//			if (person.isInSettlement() && settlementActivitySpot.isClose(person.getPosition())) {
+//				return false;
+//			}
+//		}
+//
+//		for (Robot robot : b.getRobots()) {
+//			// Check if robot location is identical or very very close (1e-5 meters) to
+//			// activity spot.
+//			if (settlementActivitySpot.isClose(robot.getPosition())) {
+//				return false;
+//			}
+//		}
+//
+//		return result;
 	}
 
 	/**
@@ -278,22 +340,30 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return true if the worker's Position is currently at an activity spot.
 	 */
 	public boolean isAtActivitySpot(Worker worker) {
-		LocalPosition target = worker.getPosition();
-		boolean result = false;
-
-		Iterator<LocalPosition> i = activitySpots.iterator();
-		while (i.hasNext() && !result) {
-			LocalPosition activitySpot = i.next();
-			// Convert activity spot from building local to settlement local.
-			LocalPosition settlementActivitySpot = LocalAreaUtil.getLocalRelativePosition(activitySpot, getBuilding());
-
-			// Check if location is very close to activity spot.
-			if (settlementActivitySpot.isClose(target)) {
-				result = true;
-			}
+		
+		if (!activitySpotMap.isEmpty() && 
+				!activitySpotMap.isEmpty() && activitySpotMap.values().contains(worker.getIdentifier())) {
+			return true;
 		}
-
-		return result;
+		
+		return false;
+				
+//		LocalPosition target = worker.getPosition();
+//		boolean result = false;
+//
+//		Iterator<LocalPosition> i = activitySpots.iterator();
+//		while (i.hasNext() && !result) {
+//			LocalPosition activitySpot = i.next();
+//			// Convert activity spot from building local to settlement local.
+//			LocalPosition settlementActivitySpot = LocalAreaUtil.getLocalRelativePosition(activitySpot, getBuilding());
+//
+//			// Check if location is very close to activity spot.
+//			if (settlementActivitySpot.isClose(target)) {
+//				result = true;
+//			}
+//		}
+//
+//		return result;
 	}
 
 	/**
@@ -302,11 +372,16 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return true if building function has activity spots.
 	 */
 	public boolean hasActivitySpots() {
-		return !activitySpots.isEmpty();
+		return !activitySpotMap.isEmpty() && !activitySpotMap.keySet().isEmpty();
 	}
 
+	/**
+	 * Gets a list of activity spots.
+	 * 
+	 * @return
+	 */
 	public List<LocalPosition> getActivitySpotsList() {
-		return activitySpots;
+		return new ArrayList<>(activitySpotMap.keySet());
 	}
 
 	/**
@@ -315,13 +390,24 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return
 	 */
 	public int getNumEmptyActivitySpots() {
+		if (activitySpotMap.isEmpty())
+			return 0;
+		
 		int empty = 0;
-		if (activitySpots != null && !activitySpots.isEmpty()) {
-			for (LocalPosition s: activitySpots) {
-				if (isActivitySpotEmpty(s))
-					empty++;
+		
+		for (int id: activitySpotMap.values()) {
+			if (id == -1) {
+				empty++;
 			}
 		}
+	
+//		if (activitySpots != null && !activitySpots.isEmpty()) {
+//			for (LocalPosition s: activitySpots) {
+//				if (isActivitySpotEmpty(s))
+//					empty++;
+//			}
+//		}
+		
 		return empty;
 	}
 
@@ -331,12 +417,23 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return
 	 */
 	public boolean hasEmptyActivitySpot() {
-		if (activitySpots != null && !activitySpots.isEmpty()) {
-			for (LocalPosition s: activitySpots) {
-				if (isActivitySpotEmpty(s))
-					return true;
+		
+		if (activitySpotMap.isEmpty())
+			return false;
+		
+		for (int id: activitySpotMap.values()) {
+			if (id == -1) {
+				return true;
 			}
 		}
+				
+//		if (activitySpots != null && !activitySpots.isEmpty()) {
+//			for (LocalPosition s: activitySpots) {
+//				if (isActivitySpotEmpty(s))
+//					return true;
+//			}
+//		}
+		
 		return false;
 	}
 
@@ -346,15 +443,50 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return
 	 */
 	public int getNumOccupiedActivitySpots() {
+		
+		if (activitySpotMap.isEmpty())
+			return 0;
+		
 		int occupied = 0;
-		if (activitySpots != null && !activitySpots.isEmpty()) {
-			for (LocalPosition s: activitySpots) {
-				if (!isActivitySpotEmpty(s))
-					occupied++;
+		
+		for (int id: activitySpotMap.values()) {
+			if (id != -1) {
+				occupied++;
 			}
 		}
+		
+//		if (activitySpots != null && !activitySpots.isEmpty()) {
+//			for (LocalPosition s: activitySpots) {
+//				if (!isActivitySpotEmpty(s))
+//					occupied++;
+//			}
+//		}
 		return occupied;
 
+	}
+
+
+	/**
+	 * Retrieves a resource from settlement.
+	 * 
+	 * @param amount
+	 * @param resource
+	 * @param value
+	 * @return
+	 */
+	protected boolean retrieve(double amount, int resource, boolean value) {
+		return Storage.retrieveAnResource(amount, resource, building.getSettlement(), value);
+	}
+
+	/**
+	 * Stores a resource to settlement.
+	 * 
+	 * @param amount
+	 * @param resource
+	 * @param source
+	 */
+	protected void store(double amount, int resource, String source) {
+		Storage.storeAnResource(amount, resource, building.getSettlement(), source);
 	}
 
 	/**
@@ -381,31 +513,7 @@ public abstract class Function implements Serializable, Temporal {
 	public void destroy() {
 		type = null;
 		building = null;
-		activitySpots = null;
-	}
-
-
-	/**
-	 * Retrieves a resource from settlement.
-	 * 
-	 * @param amount
-	 * @param resource
-	 * @param value
-	 * @return
-	 */
-	protected boolean retrieve(double amount, int resource, boolean value) {
-		return Storage.retrieveAnResource(amount, resource, building.getSettlement(), value);
-	}
-
-
-	/**
-	 * Stores a resource to settlement.
-	 * 
-	 * @param amount
-	 * @param resource
-	 * @param source
-	 */
-	protected void store(double amount, int resource, String source) {
-		Storage.storeAnResource(amount, resource, building.getSettlement(), source);
+		activitySpotMap.clear();
+		activitySpotMap = null;
 	}
 }

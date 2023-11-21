@@ -998,7 +998,7 @@ public class BuildingManager implements Serializable {
 				.getABuilding(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT);
 
 		if (building != null) {
-			addPersonToActivitySpot(p, building);
+			addPersonToActivitySpot(p, building, FunctionType.MEDICAL_CARE);
 		}
 
 		else {
@@ -1036,23 +1036,23 @@ public class BuildingManager implements Serializable {
 	public static void addPersonToRandomBuilding(Person person, Settlement s) {
 		
 		// Go to the default zone 0 only
-		Set<Building> set = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.LIFE_SUPPORT)
+		Set<Building> bldgSet = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.LIFE_SUPPORT)
 					.stream()
 					.filter(b -> b.getZone() == 0
 							&& !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toSet());
 
-		if (set.isEmpty()) {
+		if (bldgSet.isEmpty()) {
 			logger.warning(person, "No habitable buildings available in zone 0.");
 			return;
 		}
 		
 		boolean found = false;
 		
-		for (Building building: set) {
+		for (Building building: bldgSet) {
 			if (!found && building != null) {
-				// Add the person to a building loc
-				found = addPersonToActivitySpot(person, building);
+				// Add the person to a building activity spot
+				found = addPersonToActivitySpot(person, building, null);
 			}
 		}
 
@@ -1078,22 +1078,18 @@ public class BuildingManager implements Serializable {
 			manager = s.getBuildingManager();
 		}
 		
-		final FunctionType function = FunctionType.getDefaultFunction(robot.getRobotType());
-
-		final Set<Building> functionBuildings = manager.getBuildingSet(function);
+		final Set<Building> functionBuildings = manager.getBuildingSet(FunctionType.ROBOTIC_STATION);
 
 		for (Building bldg : functionBuildings) {
-			RoboticStation roboticStation = bldg.getRoboticStation();
-			if (roboticStation != null) {
-				Building destination = null;
-				BuildingCategory category = bldg.getCategory();
-				// Do not add robot to hallway, tunnel
-				if ((category != BuildingCategory.HALLWAY)
-						&& bldg.hasFunction(function)) {
-					destination = bldg;
-					addRobotToRoboticStation(robot, destination);
-					break;
-				}
+	
+			Building destination = null;
+			BuildingCategory category = bldg.getCategory();
+			
+			// Do not add robot to hallway, tunnel
+			if (category != BuildingCategory.HALLWAY) {
+				destination = bldg;
+				addRobotToRoboticStation(robot, destination, FunctionType.ROBOTIC_STATION);
+				break;
 			}
 		}
 	}
@@ -1108,34 +1104,57 @@ public class BuildingManager implements Serializable {
 	public static void addRobotToRandomBuilding(Robot robot, Settlement s) {
 		BuildingManager manager = s.getBuildingManager();
 		
-		final FunctionType function = FunctionType.getDefaultFunction(robot.getRobotType());
-
-		final Set<Building> functionBuildings = manager.getBuildingSet(function);
+		final FunctionType functionType = FunctionType.getDefaultFunction(robot.getRobotType());
+		
+		Set<Building> functionBuildings = manager.getBuildingSet(functionType);
 
 		Building destination = null;
+		
 		for (Building bldg : functionBuildings) {
-			RoboticStation roboticStation = bldg.getRoboticStation();
-			
 			// Go to the default zone 0 only
-			if (bldg.getZone() == 0 && roboticStation != null) {
+			if (bldg.getZone() == 0
+					&& bldg.getFunction(functionType).hasEmptyActivitySpot()) {
 				BuildingCategory category = bldg.getCategory();
-				// Do not add robot to hallway, tunnel
-				if ((category != BuildingCategory.HALLWAY)
-						&& bldg.hasFunction(function)) {
+				// Do not add robot to hallway and tunnel
+				if (category != BuildingCategory.HALLWAY) {
 					destination = bldg;
+					logger.warning(robot, "Initially placed in " + destination.getName() 
+						+ "'s " + functionType.getName() + ".");
+					addRobotToRoboticStation(robot, destination, functionType);
 					break;
 				}
 			}
 		}
 
 		if (destination == null) {
-			List<Building> robotStations = manager.getBuildings(FunctionType.LIFE_SUPPORT);
-			destination = robotStations.get(0);
-
-			logger.warning(robot, "Initially placed in random building " + destination.getName() + ".");
-		}
+			functionBuildings = manager.getBuildingSet(FunctionType.ROBOTIC_STATION);
+			for (Building bldg : functionBuildings) {
+				if (bldg.getZone() == 0
+						&& bldg.getFunction(FunctionType.ROBOTIC_STATION).hasEmptyActivitySpot()) {
+					destination = bldg;
 		
-		addRobotToRoboticStation(robot, destination);
+					logger.warning(robot, "Initially placed in " + destination.getName() + "'s robotic station.");
+					addRobotToRoboticStation(robot, destination, FunctionType.ROBOTIC_STATION);
+					break;
+				}
+			}	
+		}
+		else {
+			Set<Building> buildings = manager.getBuildingSet();
+			for (Building bldg : buildings) {
+				for (Function function: bldg.getFunctions()) {
+					if (bldg.getZone() == 0
+							&& function.hasEmptyActivitySpot()) {
+						destination = bldg;
+			
+						logger.warning(robot, "Initially placed in " + destination.getName() 
+							+ "'s " + function.getFunctionType().getName() + ".");
+						addRobotToRoboticStation(robot, destination, function.getFunctionType());
+						break;
+					}
+				}
+			}	
+		}
 	}
 	
 	/**
@@ -1160,7 +1179,7 @@ public class BuildingManager implements Serializable {
 			int rand = RandomUtil.getRandomInt(stations.size() - 1);
 			destination = stations.get(rand);
 		}
-		addRobotToRoboticStation(robot, destination);
+		addRobotToRoboticStation(robot, destination, null);
 	}
 
 	/**
@@ -1562,11 +1581,11 @@ public class BuildingManager implements Serializable {
 					Robot robot = (Robot) worker;
 					RoboticStation roboticStation = building.getRoboticStation();
 
-					if (!roboticStation.containsRobotOccupant(robot)) {
+					if (roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
 						roboticStation.addRobot(robot);
-
-						robot.setCurrentBuilding(building);
 					}
+					
+					robot.setCurrentBuilding(building);
 				}
 
 			} catch (Exception e) {
@@ -1579,59 +1598,89 @@ public class BuildingManager implements Serializable {
 	}
 
 
-	/**
-	 * Adds a unit to the building at a random location if possible.
-	 *
-	 * @param unit   the unit to add.
-	 * @param building the building to add the unit to.
-	 */
-	public static void addPersonOrRobotToBuildingRandomLocation(Unit unit, Building building) {
-		if (building != null) {
-			if (unit.getUnitType() == UnitType.PERSON) {
-				addPersonToActivitySpot((Person) unit, building);
-			}
-
-			else {
-				addRobotToRoboticStation((Robot) unit, building);
-			}
-		} else {
-			logger.log(unit, Level.SEVERE, 2000, "Building is null.");
-		}
-	}
+//	/**
+//	 * Adds a unit to the building at a random location if possible.
+//	 *
+//	 * @param unit   the unit to add.
+//	 * @param building the building to add the unit to.
+//	 */
+//	public static void addPersonOrRobotToBuildingRandomLocation(Unit unit, Building building) {
+//		if (building != null) {
+//			if (unit.getUnitType() == UnitType.PERSON) {
+//				addPersonToActivitySpot((Person) unit, building);
+//			}
+//
+//			else {
+//				addRobotToRoboticStation((Robot) unit, building);
+//			}
+//		} else {
+//			logger.log(unit, Level.SEVERE, 2000, "Building is null.");
+//		}
+//	}
 	
 	/**
-	 * Adds the person to the building at a random location if possible.
+	 * Adds the person to an activity spot in a building.
 	 *
 	 * @param person   the person to add.
 	 * @param building the building to add the person to.
+	 * @return
 	 */
-	public static boolean addPersonToActivitySpot(Person person, Building building) {
+	public static boolean addPersonToActivitySpot(Person person, Building building, FunctionType functionType) {
 		boolean result = false;
+	
 		try {
 			LifeSupport lifeSupport = building.getLifeSupport();
-
-			if (!lifeSupport.containsOccupant(person)) {
-				// Add the person to a life support spot
-				lifeSupport.addPerson(person);
-				// Find an empty spot in life support
-				LocalPosition loc = lifeSupport.getAvailableActivitySpot();
+			Function f = lifeSupport;
+			
+//			if (!lifeSupport.containsOccupant(person)) {
+				
+				LocalPosition loc = null;
+				
+				if (functionType != null)  {
+					f = building.getFunction(functionType);
+					loc = f.getAvailableActivitySpot();
+				
+				}
+				else {
+					functionType = FunctionType.LIFE_SUPPORT;
+					// Find an empty spot in life support
+					loc = lifeSupport.getAvailableActivitySpot();
+				}
+					
+				// Add the person to this building, even if an activity spot is not available				
+				if (lifeSupport != null && lifeSupport.containsOccupant(person)) {
+					lifeSupport.addPerson(person);
+				}
 				
 				if (loc == null) {
 					loc = building.getRandomEmptyActivitySpot();	
 					
-					if (loc == null) {
-						loc = LocalAreaUtil.getRandomLocalRelativePosition(building);
-					}
+//					if (loc == null) {
+						// Don't want to add a person to a spot overlapping a furniture or an object
+//						loc = LocalAreaUtil.getRandomLocalRelativePosition(building);
+//					}
 				}
 				
 				if (loc != null) {
+					// Convert the local activity spot to the settlement reference coordinate
+					LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
 					// Put the person there
-					person.setPosition(loc);
+					person.setPosition(settlementLoc);
+					
+					// Add the person to this activity spot
+					f.addToNewActivitySpot(loc, person.getIdentifier());
+					// Remove the person from the previous activity spot
+					if (person.getFunction() != null) {
+						person.getFunction().removeFromActivitySpot(person.getIdentifier());
+					}
+					// Set the new function type
+					person.setFunction(f);
+					
 					result = true;
 				}
-			}
-			
-			person.setCurrentBuilding(building);
+				
+				person.setCurrentBuilding(building);
+//			}
 
 		} catch (Exception e) {
 			logger.log(building, person, Level.SEVERE, 2000, "Could not be added.", e);
@@ -1641,40 +1690,76 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Adds the robot to a robotic station in the building.
+	 * Adds the robot to a robotic station activity spot in a building.
 	 *
 	 * @param robot   the robot to add.
 	 * @param building the building to add the robot to.
+	 * @param functionType
+	 * @return
 	 */
-	public static void addRobotToRoboticStation(Robot robot, Building building) {
+	public static boolean addRobotToRoboticStation(Robot robot, Building building, FunctionType functionType) {
+		boolean result = false;
+	
 		try {
 			RoboticStation roboticStation = building.getRoboticStation();
+			Function f = roboticStation;
+			
+//			if (!roboticStation.containsRobotOccupant(robot)) {
 
-			if (!roboticStation.containsRobotOccupant(robot)) {
-				// Add the robot to the station
-				roboticStation.addRobot(robot);
 				// Find an empty robotic station spot
-				LocalPosition loc = roboticStation.getAvailableActivitySpot();
-							
+				LocalPosition loc = null;
+				
+				if (functionType != null)  {
+					f = building.getFunction(functionType);
+					loc = f.getAvailableActivitySpot();
+				
+				}
+				else {
+					functionType = FunctionType.ROBOTIC_STATION;
+					// Find an empty spot in life support
+					loc = roboticStation.getAvailableActivitySpot();
+				}
+				
+				// Add the robot to the station
+				if (roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
+					roboticStation.addRobot(robot);
+				}
+					
 				if (loc == null) {
 					loc = building.getRandomEmptyActivitySpot();	
 	
-					if (loc == null) {
-						loc = LocalAreaUtil.getRandomLocalRelativePosition(building);
-					}
+//					if (loc == null) {
+//						// Don't want to add a person to a spot overlapping a furniture or an object
+//						loc = LocalAreaUtil.getRandomLocalRelativePosition(building);
+//					}
 				}
 				
 				if (loc != null) {
+					// Convert the local activity spot to the settlement reference coordinate
+					LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
 					// Put the robot there
-					robot.setPosition(loc);
+					robot.setPosition(settlementLoc);
+	
+					// Add the robot to this activity spot
+					f.addToNewActivitySpot(loc, robot.getIdentifier());
+					// Remove the robot from the previous activity spot
+					if (robot.getFunction() != null) {
+						robot.getFunction().removeFromActivitySpot(robot.getIdentifier());
+					}
+					// Set the new function type
+					robot.setFunction(f);
+					
+					result = true;
 				}
-			}
-
-			robot.setCurrentBuilding(building);
+				
+				robot.setCurrentBuilding(building);
+//			}
 
 		} catch (Exception e) {
 			logger.log(building, robot, Level.SEVERE, 2000, "Could not be added.", e);
 		}
+		
+		return result;
 	}
 	
 	/**
@@ -1713,11 +1798,11 @@ public class BuildingManager implements Serializable {
 			try {
 				RoboticStation roboticStation = building.getRoboticStation();
 
-				if (roboticStation.containsRobotOccupant(robot)) {
+				if (roboticStation != null && roboticStation.containsRobotOccupant(robot)) {
 					roboticStation.removeRobot(robot);
-
-					robot.setCurrentBuilding(null);
 				}
+				
+				robot.setCurrentBuilding(null);
 			} catch (Exception e) {
 				logger.log(building, robot, Level.SEVERE, 2000,
 						   " could not be removed", e);

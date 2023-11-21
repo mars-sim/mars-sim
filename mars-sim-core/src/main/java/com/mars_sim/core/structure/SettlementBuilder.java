@@ -316,9 +316,10 @@ public final class SettlementBuilder {
 	}
 
 	/**
-	 * Build a single Robot in a settlement according to a spec.
+	 * Builds a single Robot in a settlement according to a spec.
+	 * 
 	 * @param settlement Home of the Robot
-	 * @param spec Sepcification of what to build
+	 * @param spec Specification of what to build
 	 * @param name New name
 	 */
 	private void buildRobot(Settlement settlement, RobotSpec spec, String name) {

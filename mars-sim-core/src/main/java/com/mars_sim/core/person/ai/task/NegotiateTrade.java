@@ -123,22 +123,18 @@ public class NegotiateTrade extends Task {
 	private void followSeller() {
 		Building sellerBuilding = null;
 		Building building = null;
-		Person person = null;
-		Robot robot = null;
-
-		if (sellingTrader instanceof Person) {
-			person = (Person) sellingTrader;
+		
+		if (sellingTrader instanceof Person person) {
 			sellerBuilding = BuildingManager.getBuilding(person);
 			building = BuildingManager.getBuilding(person);
-		} else if (sellingTrader instanceof Robot) {
-			robot = (Robot) sellingTrader;
+		} else if (sellingTrader instanceof Robot robot) {
 			sellerBuilding = BuildingManager.getBuilding(robot);
 			building = BuildingManager.getBuilding(robot);
 		}
 
 		if ((sellerBuilding != null) && (!sellerBuilding.equals(building))) {
 			// Walk to seller trader's building.
-			walkToRandomLocInBuilding(sellerBuilding, false);
+			walkToEmptyActivitySpotInBuilding(sellerBuilding, false);
 		}
 	}
 

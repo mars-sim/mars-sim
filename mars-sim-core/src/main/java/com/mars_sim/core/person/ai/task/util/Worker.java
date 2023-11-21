@@ -20,6 +20,7 @@ import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.mapdata.location.LocalPosition;
@@ -201,4 +202,18 @@ public interface Worker extends Loggable, Serializable, UnitIdentifer, Equipment
 	 * @return
 	 */
 	public UnitType getUnitType();
+	
+	/**
+	 * Gets the function type the person is actively participating.
+	 * 
+	 * @return
+	 */
+	public Function getFunction();
+	
+	/**
+	 * Sets the function type.
+	 * 
+	 * @param functionType
+	 */
+	public void setFunction(Function function);
 }

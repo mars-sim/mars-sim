@@ -265,12 +265,12 @@ implements Serializable {
             if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(pos, building)) {
             	if (person != null)
             		logger.log(person, Level.SEVERE, 4000,
-            			"Invalid walk destination location. (" +
-                        pos + ") and not within " + building + ".");
+            			"Invalid walk destination location " +
+                        pos + " (not within " + building + ".)");
             	else if (robot != null)
         			logger.log(robot, Level.SEVERE, 4000,
-        					"Invalid walk destination location at (" +
-                            pos + ") and not within " + building + ".");
+        				"Invalid walk destination location " +
+                        pos + " (not within " + building + ".)");
             }
         }
         else if (interiorObject instanceof Rover rover) {

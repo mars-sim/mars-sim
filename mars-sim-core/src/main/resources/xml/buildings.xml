@@ -371,12 +371,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			</resource-processing>
 
-			<robotic-station capacity="4">
+			<robotic-station capacity="2">
 				<activity>
 					<activity-spot xloc="0.4" yloc="0.0" />
 					<activity-spot xloc="-0.55" yloc="0.0" />
-					<activity-spot xloc="-0.08" yloc="0.5" />
-					<activity-spot xloc="-0.08" yloc="1.1" />
 				</activity>
 			</robotic-station>
 
@@ -546,12 +544,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 
 			<power-storage capacity="20" discharge-rate="1.25"/>
-
-			<robotic-station capacity="1" >
-				<activity>
-					<activity-spot xloc="-1.3" yloc="0.7" />
-				</activity>
-			</robotic-station>
 
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="2.0" />
@@ -993,14 +985,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</resource-processing>
 
-			<robotic-station capacity="6">
+			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="1.6" yloc="0.0" />
-					<activity-spot xloc="-1.6" yloc="0.0" />
-					<activity-spot xloc="1.6" yloc="-2.45" />
-					<activity-spot xloc="1.6" yloc="-4.9" />
-					<activity-spot xloc="-1.6" yloc="4.9" />
-					<activity-spot xloc="-1.6" yloc="2.45" />
+					<activity-spot xloc="5.5" yloc="8.5" />
+					<activity-spot xloc="-5.5" yloc="8.5" />
 				</activity>
 			</robotic-station>
 
@@ -1062,16 +1050,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<power-storage capacity="80"  discharge-rate="1.25"/>
 
-			<recreation capacity="8">
+			<recreation capacity="6">
 				<activity>
-					<activity-spot xloc="-2.5" yloc="3.5" />
 					<activity-spot xloc="-2.5" yloc="2.5" />
 					<activity-spot xloc="-2.5" yloc="1.5" />
 					<activity-spot xloc="-2.5" yloc="0.5" />
 					<activity-spot xloc="2.5" yloc="3.5" />
 					<activity-spot xloc="2.5" yloc="2.5" />
-					<activity-spot xloc="2.5" yloc="1.5" />
-					<activity-spot xloc="2.5" yloc="0.5" />					
+					<activity-spot xloc="2.5" yloc="1.5" />				
 				</activity>
 			</recreation>
 			
@@ -1083,10 +1069,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 
-			<robotic-station capacity="2">
+			<robotic-station capacity="1">
 				<activity>
-					<activity-spot xloc="2.6" yloc="-1.0" />
-					<activity-spot xloc="-2.6" yloc="1.0" />
+					<activity-spot xloc="-2.5" yloc="3.5" />
 				</activity>
 			</robotic-station>
 
@@ -1130,10 +1115,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 
-			<robotic-station capacity="2">
+			<robotic-station capacity="1">
 				<activity>
-					<activity-spot xloc="1.5" yloc="-0.5" />
-					<activity-spot xloc="-1.5" yloc="-0.5" />
+					<activity-spot xloc="-2.5" yloc="3.5" />
 				</activity>
 			</robotic-station>
 
@@ -1545,12 +1529,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				fuel-type="methane"	consumption-rate="7.9897" />
 			</power-generation>
 			<power-storage capacity="20"  discharge-rate="1.25"/>
-			<robotic-station capacity="4">
+			<robotic-station capacity="1">
 				<activity>
 					<activity-spot xloc="0.0" yloc="-0.5" />
-					<activity-spot xloc="0.0" yloc="-1.5" />
-					<activity-spot xloc="0.0" yloc="0.5" />
-					<activity-spot xloc="0.0" yloc="1.5" />
 				</activity>
 			</robotic-station>
 
@@ -1722,11 +1703,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</recreation>
 
-			<robotic-station capacity="4">
+			<robotic-station capacity="2">
 				<activity>
 					<activity-spot xloc="-3.0" yloc="-3.4" />
-					<activity-spot xloc="3.0" yloc="-3.4" />
-					<activity-spot xloc="-2.5" yloc="-4.05" />
 					<activity-spot xloc="2.5" yloc="-4.05" />
 				</activity>
 			</robotic-station>
@@ -1856,12 +1835,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.72" yloc="3.2" />
 				</activity>
 			</research>
-			<robotic-station capacity="4">
+			<robotic-station capacity="1">
 				<activity>
 					<activity-spot xloc="0.5" yloc="-0.5" />
-					<activity-spot xloc="-0.5" yloc="-0.5" />
-					<activity-spot xloc="-0.5" yloc="0.5" />
-					<activity-spot xloc="0.5" yloc="0.5" />
 				</activity>
 			</robotic-station>
 			<thermal-generation>
@@ -1942,12 +1918,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				fuel-type="methane"	consumption-rate="7.9897" />
 			</power-generation>
 			<power-storage capacity="40"  discharge-rate="1.25"/>
-			<robotic-station capacity="4">
+			<robotic-station capacity="1">
 				<activity>
 					<activity-spot xloc="-2.0" yloc="1.8" />
-					<activity-spot xloc="-2.0" yloc="-1.8" />
-					<activity-spot xloc="2.0" yloc="1.8" />
-					<activity-spot xloc="2.0" yloc="-1.8" />
 				</activity>
 			</robotic-station>
 			<thermal-generation>
@@ -2031,10 +2004,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				fuel-type="methane"	consumption-rate="7.9897" />
 			</power-generation>
 			<power-storage capacity="40"  discharge-rate="1.25"/>
-			<robotic-station capacity="2">
+			<robotic-station capacity="1">
 				<activity>
 					<activity-spot xloc="2.0" yloc="-1.8" />
-					<activity-spot xloc="-2.0" yloc="-0.5" />
 				</activity>
 			</robotic-station>
 			<thermal-generation>
@@ -2100,12 +2072,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.61" yloc="-2.19" />
 				</activity>
 			</research>
-			<robotic-station capacity="4">
+			<robotic-station capacity="1">
 				<activity>
 					<activity-spot xloc="2.9" yloc="3.7" />
-					<activity-spot xloc="2.9" yloc="-3.7" />
-					<activity-spot xloc="-2.9" yloc="-3.7" />
-					<activity-spot xloc="-2.9" yloc="3.7" />
 				</activity>
 			</robotic-station>
 			<storage capacity="5000" />
@@ -2154,11 +2123,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				fuel-type="methane"	consumption-rate="7.9897" />
 			</power-generation>
 			<power-storage capacity="60" discharge-rate="1.25"/>
-			<robotic-station capacity="4">
+			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="-5.8" yloc="2.0" />
-					<activity-spot xloc="-5.8" yloc="2.5" />
-					<activity-spot xloc="-5.8" yloc="3.0" />
+					<activity-spot xloc="-5.8" yloc="3.5" />
 					<activity-spot xloc="5.8" yloc="3.5" />
 				</activity>
 			</robotic-station>
@@ -2208,17 +2175,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				fuel-type="methane"	consumption-rate="7.9897" />
 			</power-generation>
 			<power-storage capacity="40"  discharge-rate="1.25"/>
-			<robotic-station capacity="8">
+			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="2" yloc="-3.0" />
+					<activity-spot xloc="2" yloc="3.0" />
 					<activity-spot xloc="-2" yloc="3.0" />
-					<activity-spot xloc="-1.8" yloc="-3.2" />
-					<activity-spot xloc="2" yloc="-3.0" />
-
-					<activity-spot xloc="-2" yloc="-3.0" />
-					<activity-spot xloc="-2.2" yloc="-2.8" />
-					<activity-spot xloc="2.2" yloc="-2.8" />
-					<activity-spot xloc="-2.2" yloc="2.8" />
 				</activity>
 			</robotic-station>
 
@@ -2924,11 +2884,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Solar Power Source" power="1.0" />
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25" />
-			<robotic-station capacity="1">
-				<activity>
-					<activity-spot xloc="0.5" yloc="0.0" />
-				</activity>
-			</robotic-station>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="1.0" />
 				<heat-source type="Electric Heating" capacity="2.0" />
@@ -3285,11 +3240,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				fuel-type="methane"	consumption-rate="7.9897" />
 			</power-generation>
 			<power-storage capacity="40" discharge-rate="1.25"/>
-			<robotic-station capacity="4">
+			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="-2.25" yloc="3.75" />
-					<activity-spot xloc="2.25" yloc="-5.25" />
-					<activity-spot xloc="-2.5" yloc="3.5" />
+					<activity-spot xloc="-2.25" yloc="-5.5" />
 					<activity-spot xloc="2.5" yloc="-5.5" />
 				</activity>
 			</robotic-station>
@@ -3401,11 +3354,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</resource-processing>
 
-			<robotic-station capacity="3">
+			<robotic-station capacity="1">
 				<activity>
-					<activity-spot xloc="0" yloc="-2" />
-					<activity-spot xloc="0" yloc="0" />
-					<activity-spot xloc="0" yloc="2" />
+					<activity-spot xloc="2" yloc="4.5" />
 				</activity>
 			</robotic-station>
 
@@ -3457,11 +3408,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<building-connection />
 			<life-support capacity="3" power-required="0.15" />
-			<robotic-station capacity="1">
-				<activity>
-					<activity-spot xloc="1.0" yloc="0.0" />
-				</activity>
-			</robotic-station>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="1.0" />
 				<heat-source type="Electric Heating" capacity="2.0" />

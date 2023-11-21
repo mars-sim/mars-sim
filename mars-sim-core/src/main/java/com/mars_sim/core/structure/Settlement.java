@@ -952,22 +952,6 @@ public class Settlement extends Structure implements Temporal,
 			return false;
 		}
 
-		int sol = pulse.getMarsTime().getMissionSol();
-
-		// Calls other time passings
-		futureEvents.timePassing(pulse);
-		powerGrid.timePassing(pulse);
-		thermalSystem.timePassing(pulse);
-		buildingManager.timePassing(pulse);
-		taskManager.timePassing();
-
-		// Update citizens
-		timePassingCitizens(pulse);
-
-		// Update remaining Units
-		timePassing(pulse, ownedVehicles);
-		timePassing(pulse, ownedRobots);
-
 		// Run at the start of the sim once only
 		if (justLoaded) {	
 			// Reset justLoaded
@@ -978,7 +962,7 @@ public class Settlement extends Structure implements Temporal,
 			regolithProbabilityValue = computeRegolithProbability();
 			
 			for (Person p : citizens) {
-				// Register each settler a quarter/bed
+				// Register each settler with a bed
 				Building b = LivingAccommodations.getBestAvailableQuarters(p, true, true);
 				if (b != null)
 					b.getLivingAccommodations().registerSleeper(p, false);
@@ -1008,6 +992,24 @@ public class Settlement extends Structure implements Temporal,
 			
 			setAppointedTask(pulse.getMarsTime());
 		}
+		
+		int sol = pulse.getMarsTime().getMissionSol();
+
+		// Calls other time passings
+		futureEvents.timePassing(pulse);
+		powerGrid.timePassing(pulse);
+		thermalSystem.timePassing(pulse);
+		buildingManager.timePassing(pulse);
+		taskManager.timePassing();
+
+		// Update citizens
+		timePassingCitizens(pulse);
+
+		// Update remaining Units
+		timePassing(pulse, ownedVehicles);
+		timePassing(pulse, ownedRobots);
+
+
 		
 		// At the beginning of a new sol,
 		// there's a chance a new site is automatically discovered
@@ -1058,7 +1060,7 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Sets up the daily appointed task of doing EVA.
 	 * 
-	 * @param sol
+	 * @param currentTime
 	 */
 	private void setAppointedTask(MarsTime currentTime) {
 		int numAirlocks = getAirlockNum();

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExitAirlock.java
- * @date 2023-09-18
+ * @date 2023-11-20
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task;
@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EVASuitUtil;
@@ -276,43 +277,42 @@ public class ExitAirlock extends Task {
 	 * @param zone the destination zone
 	 */
 	private boolean moveThere(LocalPosition newPos, int zone) {
+		
+		Building b = (Building) airlock.getEntity();
+		
 		if (zone == 2) {
-			boolean canWalk = false;
-			
-			LocalPosition loc = walkToEVASpot((Building) airlock.getEntity());
+		
+			LocalPosition loc = walkToEVASpot(b);
 			
 			if (loc != null) {
-				// Create subtask for walking to destination.
-				canWalk = createWalkingSubtask((Building) airlock.getEntity(), loc, false);
-			}
-			
-			if (canWalk) {
-				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4000, "Arrived at "
+				logger.log(b, person, Level.FINE, 4000, "Arrived at "
 						+ newPos.getShortFormat() + " in airlock zone " + zone + ".");
+				// Convert the local activity spot to the settlement reference coordinate
+				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, b);
+				// Set the person's new position
+				person.setPosition(settlementLoc);
 				return true;
 			}
 			else {
-				logger.log((Unit)airlock.getEntity(), person, Level.INFO, 4000, "Could not enter the chamber at "
+				logger.log(b, person, Level.INFO, 4000, "Could not enter the chamber at "
 						+ newPos.getShortFormat() + " in airlock zone " + zone + ".");
 				return false;
 			}
 		}
 
 		else if (zone == 4) {
-			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4000, "Creating a subtask to walk outside at "
+			logger.log(b, person, Level.FINE, 4000, "Creating a subtask to walk outside at "
 					+ newPos.getShortFormat() + " in airlock zone " + zone + ".");	
-//			Task currentTask = person.getMind().getTaskManager().getTask();
-//    		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
-//    		if ((currentTask != null && !currentTask.getName().equalsIgnoreCase(WalkOutside.SIMPLE_NAME))
-//    			|| (subTask != null && !subTask.getName().equalsIgnoreCase(WalkOutside.SIMPLE_NAME))) {	
-    			addSubTask(new WalkOutside(person, person.getPosition(), newPos, true));
-//    		}
+    		addSubTask(new WalkOutside(person, person.getPosition(), newPos, true));
 			return true;
 		}
 
 		else {
-			person.setPosition(newPos);
-			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4000, "Arrived at "
+			// Convert the local activity spot to the settlement reference coordinate
+			LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(newPos, b);
+			// Set the person's new position
+			person.setPosition(settlementLoc);
+			logger.log(b, person, Level.FINE, 4000, "Arrived at "
 					+ newPos.getShortFormat() + " in airlock zone " + zone + ".");
 			return true;
 		}

@@ -1,18 +1,17 @@
 /*
  * Mars Simulation Project
  * LifeSupport.java
- * @date 2021-12-22
+ * @date 2023-11-20
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.function;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.data.UnitSet;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -32,7 +31,7 @@ public class LifeSupport extends Function {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(LifeSupport.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(LifeSupport.class.getName());
 
 	// Data members
 	private int occupantCapacity;
@@ -50,7 +49,7 @@ public class LifeSupport extends Function {
 	 * Constructor.
 	 * 
 	 * @param building the building this function is for.
-	 * @param spec Defiens the Life support capability
+	 * @param spec the definition of Life support function capability
 	 */
 	public LifeSupport(Building building, FunctionSpec spec) {
 		super(FunctionType.LIFE_SUPPORT, spec, building);
@@ -170,20 +169,18 @@ public class LifeSupport extends Function {
 	 */
 	public void addPerson(Person person) {
 		if (!occupants.contains(person)) {
-			// Remove person from any other inhabitable building in the settlement.
-			Iterator<Building> i = building.getBuildingManager().getBuildingSet().iterator(); 
-			while (i.hasNext()) {
-				Building building = i.next();
-				if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-					// remove this person from the old building first
-					BuildingManager.removePersonFromBuilding(person, building);
-				}
+
+			if (person.getBuildingLocation() != null) {
+				// Remove this person from the old building first
+				BuildingManager.removePersonFromBuilding(person, person.getBuildingLocation());
 			}
-			
+				
 			// Add person to this building.
 			occupants.add(person);
-			logger.finest("Adding " + person + " to " + building + " life support.");
-		} else {
+			
+			logger.fine(person, 10_000L, "Added to " + building + "'s life support.");	
+		} 
+		else {
 			throw new IllegalStateException("Person already occupying building.");
 		}
 	}
@@ -196,7 +193,7 @@ public class LifeSupport extends Function {
 	public void removePerson(Person occupant) {
 		if (occupants.contains(occupant)) {
 			occupants.remove(occupant);
-			logger.finest("Removing " + occupant + " from " + building + " life support.");
+			logger.fine(occupant, 10_000L, "Removed from " + building + "'s life support.");
 		} else {
 			throw new IllegalStateException("Person does not occupy building.");
 		}
@@ -225,9 +222,7 @@ public class LifeSupport extends Function {
 			int overcrowding = getOccupantNumber() - occupantCapacity;
 			if (overcrowding > 0) {
 	
-				if (logger.isLoggable(Level.FINEST)) {
-					logger.finest("Overcrowding at " + building);
-				}
+				logger.info("Overcrowding at " + building + ".");
 	
 				double stressModifier = .1D * overcrowding * pulse.getElapsed();
 	
@@ -246,7 +241,8 @@ public class LifeSupport extends Function {
 	}
 
 	/**
-	 * Get details about the composition of the air
+	 * Gets details about the composition of the air.
+	 * 
 	 * @return
 	 */
 	public AirComposition getAir() {

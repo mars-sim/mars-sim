@@ -268,8 +268,10 @@ public class RepairInsideMalfunction extends Task implements Repair {
 
 				if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
 					// Walk to malfunctioning building.
-					walkToRandomLocInBuilding(building, true);
-					isWalk = true;
+					isWalk = walkToActivitySpotInBuilding(building, FunctionType.LIFE_SUPPORT, true);
+					
+					if (!isWalk)
+						isWalk = walkToEmptyActivitySpotInBuilding(building, true);
 				}
 			}
 
@@ -278,10 +280,15 @@ public class RepairInsideMalfunction extends Task implements Repair {
 				// Note 2 : robot cannot come thru the airlock yet to the astronomy building
 				if (building.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
 						|| building.hasFunction(FunctionType.EARTH_RETURN)) {
-					if (worker.getSettlement().getAdjacentBuildings(building).size() > 0) {
+					
+					if (!worker.getSettlement().getAdjacentBuildings(building).isEmpty()) {
 						// Walk to malfunctioning building.
-						walkToRandomLocInBuilding(building, true);
-						isWalk = true;
+						// Walk to malfunctioning building.
+						isWalk = walkToActivitySpotInBuilding(building, FunctionType.LIFE_SUPPORT, true);
+						
+						if (!isWalk)
+							isWalk = walkToEmptyActivitySpotInBuilding(building, true);
+
 					}
 					else {
 						logger.warning(worker, "Can not walk inside " + building.getNickName());

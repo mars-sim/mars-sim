@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Task.java
- * @date 2023-06-30
+ * @date 2023-11-20
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task.util;
@@ -1043,7 +1043,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 	
 	/**
-	 * Walks to an available activity spot in a building.
+	 * Walks to an available activity spot for a specific task in a building.
 	 * 
 	 * @param building  the destination building.
 	 * @param function  Particular area within the building
@@ -1054,8 +1054,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if ((function != null) && (building.hasFunction(function))) {
 			walkToActivitySpotInBuilding(building, function, allowFail);
 		} else {
-			// If no available activity spot, go to random location in building.
-			walkToRandomLocInBuilding(building, allowFail);
+			// If no available activity spot, go to an empty spot in building.
+			walkToEmptyActivitySpotInBuilding(building, allowFail);
 		}
 	}
 
@@ -1076,12 +1076,15 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		else if (building.hasFunction(FunctionType.DINING)) {
 			walkToActivitySpotInBuilding(building, FunctionType.DINING, allowFail);
 		} 
+		else if (building.hasFunction(FunctionType.RECREATION)) {
+			walkToActivitySpotInBuilding(building, FunctionType.RECREATION, allowFail);			
+		} 
 		else if (building.hasFunction(FunctionType.LIVING_ACCOMMODATIONS)) {
 			walkToActivitySpotInBuilding(building, FunctionType.LIVING_ACCOMMODATIONS, allowFail);			
 		} 
 		else {
-			// If no available activity spot, go to random location in building.
-			walkToRandomLocInBuilding(building, allowFail);
+			// If no available activity spot, go to an empty location in building
+			walkToEmptyActivitySpotInBuilding(building, allowFail);
 		}
 	}
 
@@ -1119,18 +1122,31 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected boolean walkToActivitySpotInBuilding(Building building, FunctionType functionType, boolean allowFail) {
 		boolean canWalk = false;
-		
+	
 		Function f = building.getFunction(functionType);
 		if (f == null) {
 			return canWalk;
 		}
 		
-		// Find available activity spot in building.
-		LocalPosition settlementLoc = f.getAvailableActivitySpot();
+		// Find an available local activity spot in building.
+		LocalPosition loc = f.getAvailableActivitySpot();
 
-		if (settlementLoc != null) {
+		if (loc != null) {
+			// Convert the local activity spot to the settlement reference coordinate
+			LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
 			// Create subtask for walking to destination.
 			canWalk = createWalkingSubtask(building, settlementLoc, allowFail);
+			
+			if (canWalk) {
+				// Add the worker to this activity spot
+				f.addToNewActivitySpot(loc, worker.getIdentifier());
+				// Remove the worker from the previous activity spot
+				if (worker.getFunction() != null) {
+					worker.getFunction().removeFromActivitySpot(worker.getIdentifier());
+				}
+				// Set the new function type
+				worker.setFunction(f);
+			}
 		}
 
 		return canWalk;
@@ -1144,16 +1160,29 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected LocalPosition walkToEVASpot(Building building) {
 		boolean canWalk = false;
-		
-		LocalPosition loc = building.getFunction(FunctionType.EVA).getAvailableActivitySpot();
+
+		Function f = building.getFunction(FunctionType.EVA);
+		LocalPosition loc = f.getAvailableActivitySpot();
 		
 		if (loc != null) {
+			// Convert the local activity spot to the settlement reference coordinate
+			LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
 			// Create subtask for walking to destination.
-			canWalk = createWalkingSubtask(building, loc, false);
-		}
+			canWalk = createWalkingSubtask(building, settlementLoc, false);
 
-		if (canWalk)
-			return loc;
+			if (canWalk) { 
+				// Add the person to this activity spot
+				f.addToNewActivitySpot(loc, person.getIdentifier());
+				// Remove the person from the previous activity spot
+				if (person.getFunction() != null) {
+					person.getFunction().removeFromActivitySpot(person.getIdentifier());
+				}
+				// Set the new function type
+				person.setFunction(f);
+					
+				return loc;
+			}
+		}
 
 		return null;
 	}
@@ -1163,36 +1192,47 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @param building     the destination building.
 	 * @param allowFail    true if walking is allowed to fail.
+	 * @return
 	 */
-	private void walkToEmptyActivitySpotInBuilding(Building building, boolean allowFail) {
-
+	protected boolean walkToEmptyActivitySpotInBuilding(Building building, boolean allowFail) {
+		boolean canWalk = false;
+	
 		Function f = building.getEmptyActivitySpotFunction();
+		
 		if (f == null) {
-			// If the functionType does not exist in this building, go to random location in
-			// building.
-//			walkToRandomLocInBuilding(building, allowFail);
-//			endTask();
-			return;
+			return canWalk;
 		}
 
-		LocalPosition settlementLoc = null;
+		LocalPosition loc = null;
+		
 		if (person != null) {
-			// Find available activity spot in building.
-			settlementLoc = f.getAvailableActivitySpot();
+			// Find an available local activity spot in building.
+			loc = f.getAvailableActivitySpot();
 		} else {
-			// Find available activity spot in building.
-			settlementLoc = f.getAvailableActivitySpot();
+			// Find an available local activity spot in building.
+			loc = f.getAvailableActivitySpot();
 		}
 
-		if (settlementLoc != null) {
+		if (loc != null) {
+			// Convert the local activity spot to the settlement reference coordinate
+			LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
 			// Create subtask for walking to destination.
-			createWalkingSubtask(building, settlementLoc, allowFail);
-		} else {
-//			endTask();
-			// If no available activity spot, go to random location in building.
-//			walkToRandomLocInBuilding(building, allowFail);
-			return;
-		}
+			canWalk = createWalkingSubtask(building, settlementLoc, allowFail);
+			
+			if (canWalk) {
+				// Add the person to this activity spot
+				building.getFunction(f.getFunctionType())
+					.addToNewActivitySpot(loc, person.getIdentifier());
+				// Remove the person from the previous activity spot
+				if (person.getFunction() != null) {
+					person.getFunction().removeFromActivitySpot(person.getIdentifier());
+				}
+				// Set the new function type
+				person.setFunction(f);
+			}
+		} 
+
+		return canWalk;
 	}
 
 	
@@ -1202,12 +1242,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param building  the destination building.
 	 * @param allowFail true if walking is allowed to fail.
 	 */
-	protected void walkToRandomLocInBuilding(Building building, boolean allowFail) {
+	protected boolean walkToRandomLocInBuilding(Building building, boolean allowFail) {
 
 		LocalPosition adjustedInteriorPos = LocalAreaUtil.getRandomLocalRelativePosition(building);
 
 		// Create subtask for walking to destination.
-		createWalkingSubtask(building, adjustedInteriorPos, allowFail);
+		return createWalkingSubtask(building, adjustedInteriorPos, allowFail);
 	}
 
 	
@@ -1257,8 +1297,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			List<LocalPosition> availableSpots = new ArrayList<>();
 			Iterator<LocalPosition> i = activitySpots.iterator();
 			while (i.hasNext()) {
-				LocalPosition localLoc = i.next();
-				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(localLoc, rover);
+				LocalPosition roverLocalLoc = i.next();
+				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(roverLocalLoc, rover);
 				if (isActivitySpotAvailable(rover, settlementLoc)) {
 					availableSpots.add(settlementLoc);
 				}
@@ -1277,10 +1317,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * Checks if an activity spot is available (unoccupied).
 	 * 
 	 * @param rover        the rover.
-	 * @param localSpot the activity spot (local-relative)
+	 * @param settlementLoc the activity spot (local-relative)
 	 * @return true if activity spot is unoccupied.
 	 */
-	private boolean isActivitySpotAvailable(Rover rover, LocalPosition localSpot) {
+	private boolean isActivitySpotAvailable(Rover rover, LocalPosition settlementLoc) {
 
 		boolean result = true;
 
@@ -1291,8 +1331,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				Person crewmember = i.next();
 				if (!crewmember.equals(person)) {
 
-					// Check if crew member's location is very close to activity spot.
-					if (localSpot.isClose(crewmember.getPosition())) {
+					// Check if crew member's position is very close to settlementLoc
+					if (settlementLoc.isClose(crewmember.getPosition())) {
 						result = false;
 					}
 				}
@@ -1304,8 +1344,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				Robot crewmember = i.next();
 				if (!crewmember.equals(robot)) {
 
-					// Check if crew member's location is very close to activity spot.
-					if (localSpot.isClose(crewmember.getPosition())) {
+					// Check if crew member's position is very close to settlementLoc
+					if (settlementLoc.isClose(crewmember.getPosition())) {
 						result = false;
 					}
 				}
@@ -1439,16 +1479,17 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (robot.isInSettlement()) {
 			Building currentBuilding = BuildingManager.getBuilding(robot);
 
-			FunctionType fct = FunctionType.ROBOTIC_STATION;
+			FunctionType functionType = FunctionType.ROBOTIC_STATION;
 			
-			if (currentBuilding != null && currentBuilding.hasFunction(fct)) {
-				canWalk = walkToActivitySpotInBuilding(currentBuilding, fct, allowFail);
-				if(canWalk)
+			if (currentBuilding != null && currentBuilding.hasFunction(functionType)) {
+				canWalk = walkToActivitySpotInBuilding(currentBuilding, functionType, allowFail);
+				
+				if (canWalk)
 					destination = currentBuilding;
 			}
 			else {
 				List<Building> buildingList = robot.getSettlement().getBuildingManager()
-						.getBuildingsNoHallwayTunnelObservatory(fct);
+						.getBuildingsNoHallwayTunnelObservatory(functionType);
 
 				if (buildingList.size() > 0) {
 					int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
@@ -1457,16 +1498,17 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 					if (robot.getSettlement().getAdjacentBuildings(building).size() > 0) {
 						logger.log(robot, Level.FINER, 5000, "Walking toward " + building.getNickName());
-						canWalk = walkToActivitySpotInBuilding(building, fct, allowFail);
-						if(canWalk)
+						canWalk = walkToActivitySpotInBuilding(building, functionType, allowFail);
+						
+						if (canWalk)
 							destination = building;
 					}
 				}
 			}
-		}
-		
-		if (canWalk) {
-		   BuildingManager.addRobotToRoboticStation(robot, destination);
+			
+			if (canWalk) {
+				BuildingManager.addRobotToRoboticStation(robot, destination, functionType);
+			}
 		}
 		
 		return canWalk;
@@ -1476,23 +1518,24 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * Creates a walk to an interior position in a building or vehicle.
 	 * 
 	 * @param interiorObject the destination interior object.
-	 * @param settlementLoc  the settlement local position destination.
+	 * @param loc  the settlement local position destination.
 	 * @param allowFail      true if walking is allowed to fail.
 	 */
-	public boolean createWalkingSubtask(LocalBoundedObject interiorObject, LocalPosition settlementLoc, boolean allowFail) {
+	public boolean createWalkingSubtask(LocalBoundedObject interiorObject, LocalPosition loc, boolean allowFail) {
 
 		Walk walkingTask = null;
 		
 		if (person != null) {
-			walkingTask = Walk.createWalkingTask(person, settlementLoc, 0, interiorObject);
+			walkingTask = Walk.createWalkingTask(person, loc, 0, interiorObject);
 		}
 		else {
-			walkingTask = Walk.createWalkingTask(robot, settlementLoc, interiorObject);
+			walkingTask = Walk.createWalkingTask(robot, loc, interiorObject);
 		}
 		
 		if (walkingTask != null) {
 			// Add subtask for walking to destination.
 			addSubTask(walkingTask);
+			
 			return true;
 		}
 		else {

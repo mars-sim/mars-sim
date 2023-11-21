@@ -64,12 +64,12 @@ public class ChargeMeta extends FactoryMetaTask {
 				return 0;
 			}
         	
-			RoboticStation station = currentBldg.getRoboticStation();
-			if (station.getSleepers() >= station.getSlots()) {
-				// This is a good building to sleep and charge up
-				result /= 2;
-				return result;
-			}
+//			RoboticStation station = currentBldg.getRoboticStation();
+//			if (station.getSleepers() >= station.getSlots()) {
+//				// This is a good building to sleep and charge up
+//				result /= 2;
+//				return result;
+//			}
         }
 
         return result;

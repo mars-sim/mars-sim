@@ -164,7 +164,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 		Rover rover = buildRover(starting, "loader", null);
 
 		Building garage = buildBuilding(starting.getBuildingManager(), new LocalPosition(0,0), 0D, 1);
-		BuildingManager.addPersonToActivitySpot(leader, garage);
+		BuildingManager.addPersonToActivitySpot(leader, garage, FunctionType.VEHICLE_MAINTENANCE);
 
 		List<Worker> members = new ArrayList<>();
 		members.add(leader);

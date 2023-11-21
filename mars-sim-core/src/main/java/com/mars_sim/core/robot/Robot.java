@@ -45,6 +45,7 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.RoboticStation;
 import com.mars_sim.core.structure.building.function.SystemType;
@@ -92,8 +93,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	/** The building the robot is at. */
 	private int currentBuildingInt;
-	/** The year of birth of this robot. */
-	private LocalDate birthDate;
 	/** The age of this robot. */
 	private int age;
 	/** The settlement the robot is currently associated with. */
@@ -104,7 +103,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	private int carryingCapacity;
 
 	private String model;
-
+	
+	/** The Function the robot's is actively participating. */
+	private Function function;
+	/** The year of birth of this robot. */
+	private LocalDate birthDate;
 	/** Settlement position (meters) from settlement center. */
 	private LocalPosition position;
 	/** The Robot Type. */
@@ -1143,7 +1146,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		Building building = getBuildingLocation();
 		if (building != null) {
 			RoboticStation roboticStation = building.getRoboticStation();
-			if (roboticStation.containsRobotOccupant(this))
+			if (roboticStation != null && roboticStation.containsRobotOccupant(this))
 				return true;
 		}
 		return false;
@@ -1158,7 +1161,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		Building building = getBuildingLocation();
 		if (building != null) {
 			RoboticStation roboticStation = building.getRoboticStation();
-			if (roboticStation.containsRobotOccupant(this))
+			if (roboticStation != null && roboticStation.containsRobotOccupant(this))
 				return roboticStation;
 		}
 		return null;
@@ -1281,6 +1284,24 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	
 	public EquipmentInventory getEquipmentInventory() {
 		return eqmInventory;
+	}
+	
+	/**
+	 * Gets the function the person is actively participating.
+	 * 
+	 * @return
+	 */
+	public Function getFunction() {
+		return function;
+	}
+	
+	/**
+	 * Sets the function.
+	 * 
+	 * @param functionType
+	 */
+	public void setFunction(Function function) {
+		this.function = function;
 	}
 	
 	/**

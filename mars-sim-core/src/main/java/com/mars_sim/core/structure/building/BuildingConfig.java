@@ -506,7 +506,7 @@ public class BuildingConfig {
 						name.append(functionElement.getName()).append(' ');
 						functionElement = functionElement.getParentElement();
 					} while (!functionElement.getName().equals(BUILDING));
-					name.append(" in building '").append(functionElement.getAttributeValue(TYPE)).append("'");
+					name.append("in building '").append(functionElement.getAttributeValue(TYPE)).append("'");
 
 					throw new IllegalArgumentException("Locations '" + locations
 							+ "' of " + name.toString()

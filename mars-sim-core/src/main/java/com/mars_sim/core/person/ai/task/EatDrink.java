@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.equipment.Container;
@@ -393,11 +394,26 @@ public class EatDrink extends Task {
 	 */
 	protected void walkToDiningLoc(Building building, boolean allowFail) {
 
-		LocalPosition pos = findDiningSpot(building);
+		LocalPosition loc = findDiningSpot(building);
 
-		if (pos != null) {
-			// Create subtask for walking to destination.
-			createWalkingSubtask(building, pos, allowFail);
+		// Create subtask for walking to destination.
+		if (loc != null) {
+			// Convert the local activity spot to the settlement reference coordinate
+			LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
+			
+			boolean canWalk = createWalkingSubtask(building, settlementLoc, allowFail);
+		
+			if (canWalk) {
+				Function f = building.getFunction(FunctionType.DINING);
+				// Add the person to this activity spot
+				f.addToNewActivitySpot(loc, person.getIdentifier());
+				// Remove the person from the previous activity spot
+				if (person.getFunction() != null) {
+					person.getFunction().removeFromActivitySpot(person.getIdentifier());
+				}
+				// Set the new function type
+				person.setFunction(f);
+			}
 		}
 	}
 
@@ -419,7 +435,7 @@ public class EatDrink extends Task {
 		if (f == null) {
 			return null;
 		}
-
+		
 		// Find available activity spot in building.
 		return f.getAvailableActivitySpot();
 	}

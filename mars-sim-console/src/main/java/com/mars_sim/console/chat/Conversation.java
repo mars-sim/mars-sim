@@ -193,6 +193,7 @@ public class Conversation implements UserOutbound {
 
 	/**
 	 * User has pressed a special key that is listened for.
+	 * 
 	 * @param keyStroke Key pressed
 	 */
 	@Override

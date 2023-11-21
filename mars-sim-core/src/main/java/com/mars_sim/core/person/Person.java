@@ -73,6 +73,7 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
@@ -160,8 +161,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	private double height;
 	/** The height of the person (in kg). */
 	private double weight;
-	/** Settlement position (meters) from settlement center. */
-	private LocalPosition position;
 	/** Settlement Z location (meters) from settlement center. */
 	private double zLoc;
 
@@ -172,6 +171,10 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	/** The person's blood type. */
 	private String bloodType;
 
+	/** Settlement position (meters) from settlement center. */
+	private LocalPosition position;
+	/** The Function the person is actively participating. */
+	private Function function;
 	/** The gender of the person (male or female). */
 	private GenderType gender = GenderType.MALE;
 
@@ -700,7 +703,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	}
 
 	/**
-	 * Sets the person's position at a settlement.
+	 * Sets the person's settlement-wide position.
 	 *
 	 * @param position
 	 */
@@ -799,14 +802,16 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 * Deregisters the person's quarters.
 	 */
 	void deregisterBed() {
-		// Set quarters to null
+		
 		if (quartersInt != -1) {
+			// Release the bed
 			unitManager.getBuildingByID(quartersInt).getLivingAccommodations().releaseBed(this);
+			// Release quarters id
 			quartersInt = -1;
+			// Empty the bed
+			if (bed != null)
+				bed = null;
 		}
-		// Empty the bed
-		if (bed != null)
-			bed = null;
 	}
 
 	/**
@@ -2394,6 +2399,24 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	
 	public int getMeetingInvitee() {
 		return inviteeId;
+	}
+	
+	/**
+	 * Gets the function the person is actively participating.
+	 * 
+	 * @return
+	 */
+	public Function getFunction() {
+		return function;
+	}
+	
+	/**
+	 * Sets the function.
+	 * 
+	 * @param function
+	 */
+	public void setFunction(Function function) {
+		this.function = function;
 	}
 	
 	/**

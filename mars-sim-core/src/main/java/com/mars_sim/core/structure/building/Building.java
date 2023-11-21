@@ -573,26 +573,26 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			return null;
 	}
 
-	/**
-	 * Gets all activity spots from all functions.
-	 *
-	 * @return 
-	 */
-	public List<LocalPosition> getAllActivitySpots() {
-		if (activitySpots == null) {
-			List<LocalPosition> allSpots = new ArrayList<>();
-			
-			for (Function f : functions) {
-				if (f.hasActivitySpots())
-					allSpots.addAll(f.getActivitySpotsList());
-			}
-	
-			activitySpots = allSpots;
-			return allSpots;
-		}
-		
-		return activitySpots;
-	}
+//	/**
+//	 * Gets all activity spots from all functions.
+//	 *
+//	 * @return 
+//	 */
+//	public List<LocalPosition> getAllActivitySpots() {
+//		if (activitySpots == null) {
+//			List<LocalPosition> allSpots = new ArrayList<>();
+//			
+//			for (Function f : functions) {
+//				if (f.hasActivitySpots())
+//					allSpots.addAll(f.getActivitySpotsList());
+//			}
+//	
+//			activitySpots = allSpots;
+//			return allSpots;
+//		}
+//		
+//		return activitySpots;
+//	}
 	
 	/**
 	 * Gets a function that has with openly available (empty) activity spot.
@@ -617,7 +617,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Gets an activity spot that is available (empty).
+	 * Gets a local activity spot that is available (empty).
 	 *
 	 * @return FunctionType
 	 */

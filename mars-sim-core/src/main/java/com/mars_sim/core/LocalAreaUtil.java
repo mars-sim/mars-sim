@@ -434,7 +434,7 @@ public class LocalAreaUtil {
 	/**
 	 * Checks if a position is within a local bounded object's bounds.
 	 *
-	 * @param position Position to test
+	 * @param position the settlement loc to test
 	 * @param object the local bounded object.
 	 * @return true if position is within object bounds.
 	 */

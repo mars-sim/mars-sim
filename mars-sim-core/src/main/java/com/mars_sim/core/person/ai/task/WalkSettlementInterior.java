@@ -52,12 +52,12 @@ public class WalkSettlementInterior extends Task {
 	// Static members
 	private static final double VERY_SMALL_DISTANCE = .00001D;
 	private static final double STRESS_MODIFIER = -.2D;
-	private static final double MIN_PULSE_TIME = Walk.MIN_PULSE_TIME;
+//	private static final double MIN_PULSE_TIME = Walk.MIN_PULSE_TIME;
 	/** The minimum pulse time for completing a task phase in this class.  */
 	private static double minPulseTime = 0; //Math.min(standardPulseTime, MIN_PULSE_TIME);
 	
 	// Data members
-	private double destZLoc;
+//	private double destZLoc;
 
 	private LocalPosition destPosition;
 	private Settlement settlement;
@@ -88,12 +88,13 @@ public class WalkSettlementInterior extends Task {
 		this.settlement = person.getSettlement();
 		this.destBuilding = destinationBuilding;
 		this.destPosition = destinationPosition;
-		this.destZLoc = destinationZLocation;
+//		this.destZLoc = destinationZLocation;
 		
 		// Check if (destXLoc, destYLoc) is within destination building.
 		if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(destPosition, destBuilding)) {
-			logger.warning(person, "Unable to walk from " + robot.getBuildingLocation() 
-					+ " to " + destPosition + " in " + destBuilding );
+			logger.warning(person, "Unable to walk from " + person.getPosition() 
+				+ " in " + person.getBuildingLocation() 
+				+ " to " + destPosition + " in " + destBuilding + ".");
 			endTask();
 			return;
 		}
@@ -156,8 +157,9 @@ public class WalkSettlementInterior extends Task {
 		
 		// Check that destination location is within destination building.
 		if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(destPosition, destBuilding)) {
-			logger.warning(robot, "Unable to walk from " + robot.getBuildingLocation() 
-					+ " to " + destPosition + " in " + destBuilding );
+			logger.warning(robot, "Unable to walk from " + robot.getPosition() 
+				+ " in " + robot.getBuildingLocation() 
+				+ " to " + destPosition + " in " + destBuilding + ".");
 			endTask();
 			return;
 		}

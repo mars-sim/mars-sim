@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RemoteTopLevel.java
- * @version 3.1.2 2020-12-30
+ * @date 2023-11-19
  * @author Barry Evans
  */
 
@@ -15,7 +15,7 @@ import com.mars_sim.console.chat.simcommand.TopLevel;
  */
 public class RemoteTopLevel extends TopLevel {
 
-	private static final String INTRO = "Welcome %s to the Mars Sim chat service.";
+	private static final String INTRO = "Welcome %s to the mars-sim Chat AI.";
 
 	public RemoteTopLevel(String username) {
 		
