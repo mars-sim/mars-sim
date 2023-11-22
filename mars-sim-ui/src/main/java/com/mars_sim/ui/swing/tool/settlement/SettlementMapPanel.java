@@ -287,38 +287,43 @@ public class SettlementMapPanel extends JPanel {
 	 */
 	private void doPop(final MouseEvent evt) {
 
-		int x = evt.getX();
-		int y = evt.getY();
-
-		final ConstructionSite site = selectConstructionSiteAt(x, y);
-		final Building building = selectBuildingAt(x, y);
-		final Vehicle vehicle = selectVehicleAt(x, y);
-		final Person person = selectPersonAt(x, y);
-		final Robot robot = selectRobotAt(x, y);
-
-		// Deconflict cases by the virtue of the if-else order below
-		// when one or more are detected
-		if (person != null) {
-			menu = new PopUpUnitMenu(settlementWindow, person);
-			menu.show(evt.getComponent(), x, y);
+		if (evt.isPopupTrigger()) {
+			int x = evt.getX();
+			int y = evt.getY();
+	
+			final ConstructionSite site = selectConstructionSiteAt(x, y);
+			final Building building = selectBuildingAt(x, y);
+			final Vehicle vehicle = selectVehicleAt(x, y);
+			final Person person = selectPersonAt(x, y);
+			final Robot robot = selectRobotAt(x, y);
+	
+			// Deconflict cases by the virtue of the if-else order below
+			// when one or more are detected
+			if (person != null) {
+				menu = new PopUpUnitMenu(settlementWindow, person);
+				menu.show(evt.getComponent(), x, y);
+			}
+			else if (robot != null) {
+				menu = new PopUpUnitMenu(settlementWindow, robot);
+				menu.show(evt.getComponent(), x, y);
+			}
+			else if (vehicle != null) {
+				menu = new PopUpUnitMenu(settlementWindow, vehicle);
+				menu.show(evt.getComponent(), x, y);
+			}
+			else if (building != null) {
+				menu = new PopUpUnitMenu(settlementWindow, building);
+				menu.show(evt.getComponent(), x, y);
+			}
+			else if (site != null) {
+				menu = new PopUpUnitMenu(settlementWindow, site);
+				menu.show(evt.getComponent(), x, y);
+			}
+			
+	    	setComponentPopupMenu(menu);
+	    	
+			repaint();
 		}
-		else if (robot != null) {
-			menu = new PopUpUnitMenu(settlementWindow, robot);
-			menu.show(evt.getComponent(), x, y);
-		}
-		else if (vehicle != null) {
-			menu = new PopUpUnitMenu(settlementWindow, vehicle);
-			menu.show(evt.getComponent(), x, y);
-		}
-		else if (building != null) {
-			menu = new PopUpUnitMenu(settlementWindow, building);
-			menu.show(evt.getComponent(), x, y);
-		}
-		else if (site != null) {
-			menu = new PopUpUnitMenu(settlementWindow, site);
-			menu.show(evt.getComponent(), x, y);
-		}
-		repaint();
 	}
 
 	/**

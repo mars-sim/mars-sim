@@ -66,7 +66,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 
     public PopUpUnitMenu(final SettlementWindow swindow, final Unit unit){
     	MainDesktopPane desktop = swindow.getDesktop();
-
+    	
     	switch (unit.getUnitType()) {
 			case PERSON:
         		add(buildDetailsItem(unit, desktop));

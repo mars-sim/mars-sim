@@ -64,9 +64,9 @@ import com.mars_sim.mapdata.common.FileLocator;
 	// height pixels divided by pi (equals to pixelHeight / Math.PI)
 	private double rho;
 	
-	private double centerPhiCache;
+//	private double centerPhiCache;
 	
-	private double centerThetaCache;
+//	private double centerThetaCache;
 
 	// Name of the map
 	private MapMetaData meta;
@@ -102,7 +102,10 @@ import com.mars_sim.mapdata.common.FileLocator;
 		
 		logger.info("Loaded " + metaMap + " with pixels " + pixelWidth + " by " + pixelHeight + ".");
 		
-		setKernel();
+		// Exclude mac from use openCL
+		if (!System.getProperty("os.name").toLowerCase().equalsIgnoreCase("mac")) {
+			setKernel();
+		}
  	}
  	
  	/**
@@ -317,9 +320,9 @@ import com.mars_sim.mapdata.common.FileLocator;
 // 		}
  		
 		// Set the new phi		
- 		centerPhiCache = centerPhi;
+// 		centerPhiCache = centerPhi;
 		// Set the new theta 		
- 		centerThetaCache = centerTheta;
+// 		centerThetaCache = centerTheta;
 		// Set the new map rho
 		setRho(newRho);
  		
