@@ -48,10 +48,11 @@ import com.mars_sim.core.time.MasterClock;
 
 @SuppressWarnings("serial")
 public class MarsTerminal extends SwingTextTerminal implements ClockListener {
+	
     private static final Logger logger = Logger.getLogger(MarsTerminal.class.getName());
 
 	/** Icon image filename for frame */
-    private final String ICON_IMAGE = "/icons/landerhab16.png";
+    private final String ICON_IMAGE = "/icons/lander_hab64.png";
 	private final String MARS_SIM =
 			  "      Mars Simulation Project\n"
     		+ "                   "

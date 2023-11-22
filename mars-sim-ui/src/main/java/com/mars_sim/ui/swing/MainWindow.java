@@ -68,8 +68,11 @@ public class MainWindow
 	public static final int HEIGHT_STATUS_BAR = 20;
 	
 	/** Icon image filename for frame */
-	public static final String LANDER_PNG = "landerhab16.png";
-
+	public static final String LANDER_91_PNG = "lander_hab91.png";
+	public static final String LANDER_64_PNG = "lander_hab64.png";
+	public static final String LANDER_16 = "lander16";
+	
+	
 	private static final Icon PAUSE_ICON = ImageLoader.getIconByName("speed/pause");
 	private static final Icon PLAY_ICON = ImageLoader.getIconByName("speed/play");
 	private static final Icon DECREASE_ICON = ImageLoader.getIconByName("speed/decrease");
@@ -622,16 +625,21 @@ public class MainWindow
 	}
 
 	/**
-	 * Gets the lander hab icon instance
+	 * Gets the lander hab icon instance.
 	 *
 	 * @return
 	 */
 	public static Icon getLanderIcon() {
-		return ImageLoader.getIconByName("lander");
+		return ImageLoader.getIconByName(LANDER_16);
 	}
 
+	/**
+	 * Gets the lander hab image icon instance.
+	 *
+	 * @return
+	 */
 	public static Image getIconImage() {
-		return ImageLoader.getImage(LANDER_PNG);
+		return ImageLoader.getImage(LANDER_91_PNG);
 	}
 
 	/**

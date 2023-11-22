@@ -194,6 +194,6 @@ public class SplashWindow extends JComponent {
 	}
 
 	public void setIconImage() {
-		window.setIconImage(ImageLoader.getImage(MainWindow.LANDER_PNG));
+		window.setIconImage(ImageLoader.getImage(MainWindow.LANDER_64_PNG));
 	}
 }
