@@ -28,6 +28,7 @@ import java.util.Properties;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.CollectionUtils;
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
@@ -286,46 +287,44 @@ public class SettlementMapPanel extends JPanel {
 	 * @param evt
 	 */
 	private void doPop(final MouseEvent evt) {
+		int x = evt.getX();
+		int y = evt.getY();
 
-		if (evt.isPopupTrigger()) {
-			int x = evt.getX();
-			int y = evt.getY();
-	
-			final ConstructionSite site = selectConstructionSiteAt(x, y);
-			final Building building = selectBuildingAt(x, y);
-			final Vehicle vehicle = selectVehicleAt(x, y);
-			final Person person = selectPersonAt(x, y);
-			final Robot robot = selectRobotAt(x, y);
-	
-			// Deconflict cases by the virtue of the if-else order below
-			// when one or more are detected
-			if (person != null) {
-				menu = new PopUpUnitMenu(settlementWindow, person);
-				menu.show(evt.getComponent(), x, y);
-			}
-			else if (robot != null) {
-				menu = new PopUpUnitMenu(settlementWindow, robot);
-				menu.show(evt.getComponent(), x, y);
-			}
-			else if (vehicle != null) {
-				menu = new PopUpUnitMenu(settlementWindow, vehicle);
-				menu.show(evt.getComponent(), x, y);
-			}
-			else if (building != null) {
-				menu = new PopUpUnitMenu(settlementWindow, building);
-				menu.show(evt.getComponent(), x, y);
-			}
-			else if (site != null) {
-				menu = new PopUpUnitMenu(settlementWindow, site);
-				menu.show(evt.getComponent(), x, y);
-			}
-			
-	    	setComponentPopupMenu(menu);
-	    	
-			repaint();
+		final ConstructionSite site = selectConstructionSiteAt(x, y);
+		final Building building = selectBuildingAt(x, y);
+		final Vehicle vehicle = selectVehicleAt(x, y);
+		final Person person = selectPersonAt(x, y);
+		final Robot robot = selectRobotAt(x, y);
+
+		// Deconflict cases by the virtue of the if-else order below
+		// when one or more are detected
+		if (person != null) {
+			setPopUp(evt, x, y, person);
 		}
+		else if (robot != null) {
+			setPopUp(evt, x, y, robot);
+		}
+		else if (vehicle != null) {
+			setPopUp(evt, x, y, vehicle);
+		}
+		else if (building != null) {
+			setPopUp(evt, x, y, building);
+		}
+		else if (site != null) {
+			setPopUp(evt, x, y, site);
+		}
+		
+		repaint();
 	}
 
+	private void setPopUp(final MouseEvent evt, int x, int y, Unit unit) {
+		menu = new PopUpUnitMenu(settlementWindow, unit);
+		setComponentPopupMenu(menu);
+		if (evt.isPopupTrigger()) {
+			menu.show(evt.getComponent(), x, y);
+		}
+	}
+	
 	/**
 	 * Displays the specific x y coordinates within a building
 	 * (based upon where the mouse is pointing at).
