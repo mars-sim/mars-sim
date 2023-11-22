@@ -103,7 +103,10 @@ import com.mars_sim.mapdata.common.FileLocator;
 		logger.info("Loaded " + metaMap + " with pixels " + pixelWidth + " by " + pixelHeight + ".");
 		
 		// Exclude mac from use openCL
-		if (!System.getProperty("os.name").toLowerCase().equalsIgnoreCase("mac")) {
+		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+			HARDWARE_ACCELERATION = false;
+		}
+		else {
 			setKernel();
 		}
  	}
@@ -340,7 +343,7 @@ import com.mars_sim.mapdata.common.FileLocator;
  		// Create an array of int RGB color values to create the map image from.
  		int[] mapArray = new int[mapBoxWidth * mapBoxHeight];
  
-		if(HARDWARE_ACCELERATION || program == null || kernel == null) {
+		if (HARDWARE_ACCELERATION) {
 			try {
 				gpu(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, mapArray);
 			} catch(Exception e) {
