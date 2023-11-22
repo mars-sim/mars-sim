@@ -64,7 +64,7 @@ public class PersonFutureTask implements ScheduledEventHandler{
     }
 
     /**
-     * When executed this will create a pending Task and add it to the person
+     * When executed this will create a pending Task and add it to the person.
      * 
      * @param currentTime This time of the event fired but not needed
      * @return Returns zero as this is not rescheduled.
@@ -72,7 +72,7 @@ public class PersonFutureTask implements ScheduledEventHandler{
     @Override
     public int execute(MarsTime currentTime) {
 
-        logger.info(person, "Future task arrived; created pemding task " + getFactory().getName());
+//        logger.info(person, "Executing future task to add " + getFactory().getName() + ".");
         TaskJob job = new BasicTaskJob(getFactory(), RatingScore.ZERO_RATING);
         person.getTaskManager().addPendingTask(job, false);
         

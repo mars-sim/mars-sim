@@ -444,7 +444,7 @@ public abstract class Airlock implements Serializable {
 		occupantIDs.remove(id);
 		awaitingInnerDoor.remove(id);
 		awaitingOuterDoor.remove(id);
-
+		
 		// remove the reservation
 		if (getAirlockType() == AirlockType.BUILDING_AIRLOCK)
 			removeReservation(id);
@@ -1008,9 +1008,6 @@ public abstract class Airlock implements Serializable {
 	public abstract boolean vacate(int zone, Integer id);
 
 	public abstract boolean isInZone(Person p, int zone);
-
-	public abstract void loadEVAActivitySpots();
-
 	/**
 	 * Gets a collection of occupants' ids.
 	 *

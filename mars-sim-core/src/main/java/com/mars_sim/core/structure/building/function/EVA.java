@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EVA.java
- * @date 2022-07-18
+ * @date 2023-11-21
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.function;
@@ -36,7 +36,7 @@ public class EVA extends Function {
 	/**
 	 * Constructor.
 	 * 
-	 * @param building the building this function is for.
+	 * @param building the building this function is for
 	 * @param spec Specification of this Function
 	 */
 	public EVA(Building building, FunctionSpec spec) {
@@ -51,6 +51,8 @@ public class EVA extends Function {
 
 		airlock = new BuildingAirlock(building, airlockCapacity, airlockLoc, 
 											airlockInteriorLoc, airlockExteriorLoc);
+		
+		((BuildingAirlock)airlock).setEVA(this);
 	}
 
 	/**

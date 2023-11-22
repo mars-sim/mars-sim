@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleAirlock.java
- * @date 2022-09-05
+ * @date 2023-11-21
  * @author Scott Davis
  */
 package com.mars_sim.core.vehicle;
@@ -19,6 +19,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.AirlockType;
+import com.mars_sim.core.structure.building.function.EVA;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.mapdata.location.LocalPosition;
 import com.mars_sim.tools.Msg;
@@ -52,7 +53,9 @@ extends Airlock {
 	
 	/** The vehicle this airlock is for. */
 	private Vehicle vehicle;
-
+	/** The EVA building function. */
+    private EVA eva;
+    
     private Map<LocalPosition, Integer> airlockInsidePosMap;
     private Map<LocalPosition, Integer> airlockInteriorPosMap;
     private Map<LocalPosition, Integer> airlockExteriorPosMap;
@@ -64,14 +67,16 @@ extends Airlock {
 	 * @param capacity number of people airlock can hold.
 	 */
 	public VehicleAirlock(
-		Vehicle vehicle, int capacity, 
-		LocalPosition loc, 
-		LocalPosition interiorLoc,
-		LocalPosition exteriorLoc) {
+			Vehicle vehicle, int capacity, 
+			LocalPosition loc, 
+			LocalPosition interiorLoc,
+			LocalPosition exteriorLoc) {
 		
 		// User Airlock constructor
 		super(capacity);
 
+        this.eva = eva;
+        
 		if (vehicle == null) {
 			throw new IllegalArgumentException(Msg.getString("VehicleAirlock.error.null")); //$NON-NLS-1$
 		}
@@ -327,7 +332,6 @@ extends Airlock {
 	 */
 	public int getInsideChamberNum() {
 		int result = 0;
-		loadEVAActivitySpots();
 		for (LocalPosition p : airlockInsidePosMap.keySet()) {
 			if (!airlockInsidePosMap.get(p).equals(-1))
 				result++;
@@ -419,11 +423,7 @@ extends Airlock {
     		LocalPosition p0 = getOldPos(airlockInteriorPosMap, p.getIdentifier());
     		if (p0 == null)
     			return false;
-    		for(LocalPosition pt : airlockInteriorPosMap.keySet()) {
-    			if (p0.isClose(pt)) {
-    				return true;
-    			}
-    		}
+    		return true;
     	}
 
     	else if (zone == 1 || zone == 3) {
@@ -434,32 +434,17 @@ extends Airlock {
     		LocalPosition p0 = getOldPos(airlockInsidePosMap, p.getIdentifier());
     		if (p0 == null)
     			return false;
-    		for(LocalPosition pt : airlockInsidePosMap.keySet()) {
-    			if (p0.isClose(pt)) {
-    				return true;
-    			}
-    		}
+    		return true;
     	}
 
     	else if (zone == 4) {
     		LocalPosition p0 = getOldPos(airlockExteriorPosMap, p.getIdentifier());
     		if (p0 == null)
     			return false;
-    		for(LocalPosition pt : airlockExteriorPosMap.keySet()) {
-    			if (p0.isClose(pt)) {
-    				return true;
-    			}
-    		}
+    		return true;
     	}
 
 		return false;
-		
-//		Set<Integer> set = getZoneOccupants(zone);
-//		if (set.contains(p.getIdentifier())) {
-//			return true;
-//		}
-//
-//		return false;
 	}
 	
 	 /**
@@ -516,14 +501,6 @@ extends Airlock {
     	
 		return false;
    	}
-    	
-	/**
-	 * Loads up and converts the native EVA activity spots
-	 */
-	@Override
-	public void loadEVAActivitySpots() {
-		// nothing
-	}
 	
 	/**
 	 * Activates the airlock.

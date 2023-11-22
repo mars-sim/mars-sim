@@ -30,6 +30,7 @@ import com.mars_sim.core.structure.Airlock.AirlockMode;
 import com.mars_sim.core.structure.AirlockType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.structure.building.function.BuildingAirlock;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.mapdata.location.LocalPosition;
@@ -195,13 +196,13 @@ public class ExitAirlock extends Task {
 	/**
 	 * Transitions the person into a particular zone.
 	 *
-	 * @param zone the destination
+	 * @param newZone the destination
 	 * @return true if the transition is successful
 	 */
-	private boolean transitionTo(int zone) {
+	private boolean transitionTo(int newZone) {
 		
 		// Is the person already in this zone ?
-		if (isInZone(zone)) {
+		if (isInZone(newZone)) {
 			return true;
 		}
 		
@@ -213,18 +214,18 @@ public class ExitAirlock extends Task {
 		// At zone 4, he just stepped outside onto the surface of Mars.
 		
 		// the previous zone #  a lower numeric #
-		int previousZone = zone - 1;
-		LocalPosition newPos = fetchNewPos(zone);
-		if (newPos != null && airlock.occupy(zone, newPos, id)) {
+		int previousZone = newZone - 1;
+		LocalPosition newPos = fetchNewPos(newZone);
+		if (newPos != null && airlock.occupy(newZone, newPos, id)) {
 			if (previousZone >= 0) {
 				if (airlock.vacate(previousZone, id)) {
-					return moveThere(newPos, zone);
+					return moveThere(newPos, newZone);
 				}
 				else
 					return false;
 			}
 			else {
-				return moveThere(newPos, zone);
+				return moveThere(newPos, newZone);
 			}
 		}
 			
@@ -405,7 +406,7 @@ public class ExitAirlock extends Task {
 	}
 	
 	/**
-	 * Walks to another location outside the airlock and ends the egress.
+	 * Quits the egress.
 	 *
 	 * @param person the person of interest
 	 * @param reason the reason for walking away
@@ -413,6 +414,10 @@ public class ExitAirlock extends Task {
 	private void walkAway(Person person, String reason) {
 		// Reset accumulatedTime back to zero
 		accumulatedTime = 0;
+		
+		if (inSettlement) {
+			((BuildingAirlock)airlock).removeFromActivitySpot(id);
+		}
 		
 		airlock.removeID(person.getIdentifier());
 		
@@ -513,20 +518,23 @@ public class ExitAirlock extends Task {
 	 * @return the remaining time
 	 */
 	private double requestEgress(double time) {
+		
+		Unit unit = (Unit)airlock.getEntity();
+		
 		// Accumulate work for this task phase
 		accumulatedTime += time;
 
 		boolean canProceed = false;
 		
-		logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
+		logger.log(unit, person, Level.FINE, 4_000,
 				"Requesting EVA egress in " + airlock.getEntity().toString() + ".");
 		
 		// If the airlock mode is ingress, will need to wait until its done
-		if (airlock.getAirlockMode() == AirlockMode.INGRESS) {
-			walkAway(person, NOT_IN_RIGHT_AIRLOCK_MODE 
-					+ " Current task: " + person.getTaskDescription() + ".");
-			return time;
-		}
+//		if (!airlock.isEmpty() && airlock.getAirlockMode() == AirlockMode.INGRESS) {
+//			walkAway(person, NOT_IN_RIGHT_AIRLOCK_MODE 
+//					+ " Current task: " + person.getTaskDescription() + ".");
+//			return time;
+//		}
 		
 		// If a person is in a vehicle, not needed of checking for reservation
 		if (inSettlement && !airlock.addReservation(person.getIdentifier())) {
@@ -572,12 +580,11 @@ public class ExitAirlock extends Task {
 		if (airlock.isOperator(id)) {
 			// Command the airlock state to be transitioned to "pressurized"
 			airlock.setTransitioning(true);
+			
+			airlock.setAirlockMode(AirlockMode.EGRESS);
 		}
 		
 		if (inSettlement) {
-			// Load up the EVA activity spots
-			airlock.loadEVAActivitySpots();
-
 			if (!airlock.addAwaitingInnerDoor(id)) {
 				walkAway(person, "Can't egress. Cannot get a spot at the inner door of " 
 						+ airlock.getEntity().toString() + ".");
@@ -601,7 +608,7 @@ public class ExitAirlock extends Task {
 			
 			else if (airlock.isEmpty()) {
 				// If the airlock is empty, it means no one is using it
-				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 60_000,
+				logger.log(unit, person, Level.FINE, 60_000,
 						"No one is at " + airlock.getEntity().toString() + ".");
 				// Go to the next phase in order for the inner door to be unlocked.
 				// After the pressurization has finished, it should be open.
@@ -611,11 +618,12 @@ public class ExitAirlock extends Task {
 
 		else {
 
-			if (airlock.addAwaitingInnerDoor(id) || (!airlock.isInnerDoorLocked() || airlock.isEmpty())) {
+			if (airlock.addAwaitingInnerDoor(id) || !airlock.isInnerDoorLocked() || airlock.isEmpty()) {
 				canProceed = true;
 			}
 			else {
-				walkAway(person, "Requesting egress. can't get thru " + airlock.getEntity().toString() + "'s inner door.");
+				walkAway(person, "Requesting egress. can't get thru " 
+						+ airlock.getEntity().toString() + "'s inner door.");
 				return time;
 			}
 		}
@@ -628,7 +636,7 @@ public class ExitAirlock extends Task {
 				// If airlock has already been pressurized,
 				// then it's ready for entry
 
-				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
+				logger.log(unit, person, Level.FINE, 4_000,
 						"Chamber already pressurized for entry in "
 								+ airlock.getEntity().toString() + ".");
 
@@ -643,7 +651,7 @@ public class ExitAirlock extends Task {
 					// Command the airlock state to be transitioned to "pressurized"
 					airlock.setTransitioning(true);
 					
-					logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000, "Ready to pressurize the chamber.");
+					logger.log(unit, person, Level.FINE, 4_000, "Ready to pressurize the chamber.");
 
 					if (!airlock.isPressurized() || !airlock.isPressurizing()) {
 						// Get ready for pressurization
@@ -1307,6 +1315,10 @@ public class ExitAirlock extends Task {
 						"Concluded the vehicle airlock operator task.");
 			}
 
+			if (inSettlement) {
+				((BuildingAirlock)airlock).removeFromActivitySpot(id);
+			}
+			
 			airlock.removeID(id);
 			
 			if (airlock.isEmpty())
@@ -1461,7 +1473,14 @@ public class ExitAirlock extends Task {
 			}
 		}
 		
+		if (inSettlement) {
+			((BuildingAirlock)airlock).removeFromActivitySpot(id);
+		}
+		
 		airlock.removeID(id);
+		
+		if (airlock.isEmpty())
+			airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
 	}
 
 	/**

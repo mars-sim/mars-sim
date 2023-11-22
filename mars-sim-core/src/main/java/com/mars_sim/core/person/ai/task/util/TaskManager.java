@@ -620,10 +620,10 @@ public abstract class TaskManager implements Serializable {
 		// Add it
 		if (addTask) {
 			addTask = pendingTasks.add(new PendingTask(master.getMarsTime(), task));
-			if (addTask) 
-				logger.info(worker, 20_000L, "Successfully added pending task '" + task.getName() + "'.");
-			else
-				logger.info(worker, 20_000L, "Failed to add pending task '" + task.getName() + "'.");
+//			if (addTask) 
+//				logger.info(worker, 20_000L, "Successfully added pending task '" + task.getName() + "'.");
+//			else
+//				logger.info(worker, 20_000L, "Failed to add pending task '" + task.getName() + "'.");
 		}
 		return addTask;
 	}

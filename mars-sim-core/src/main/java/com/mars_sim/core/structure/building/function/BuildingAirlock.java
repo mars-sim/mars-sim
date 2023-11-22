@@ -1,17 +1,15 @@
 /*
  * Mars Simulation Project
  * BuildingAirlock.java
- * @date 2021-09-25
+ * @date 2023-11-21
  * @author Scott Davis
  */
 
 package com.mars_sim.core.structure.building.function;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -59,12 +57,12 @@ public class BuildingAirlock extends Airlock {
 	
 	/** The building this airlock is for. */
     private Building building;
-
-    private LocalPosition airlockInsidePos;
+	/** The EVA building function. */
+    private EVA eva;
+    
+//    private LocalPosition airlockInsidePos;
     private LocalPosition airlockInteriorPos;
     private LocalPosition airlockExteriorPos;
-
-    private List<LocalPosition> EVASpots;
 
     private Map<LocalPosition, Integer> outsideInteriorDoorMap;
     private Map<LocalPosition, Integer> outsideExteriorDoorMap;
@@ -72,25 +70,29 @@ public class BuildingAirlock extends Airlock {
     private Map<LocalPosition, Integer> insideInteriorDoorMap;
     private Map<LocalPosition, Integer> insideExteriorDoorMap;
 
-    private Map<LocalPosition, Integer> activitySpotMap;
-
     /**
      * Constructor.
      * 
-     * @param building the building this airlock of for.
-     * @param capacity number of people airlock can hold.
+     * @param eva
+     * @param building
+     * @param capacity
+     * @param position
+     * @param interiorPos
+     * @param exteriorPos
      */
-    public BuildingAirlock(Building building, int capacity, LocalPosition position,
-    		LocalPosition interiorPos, LocalPosition exteriorPos) {
+    public BuildingAirlock(Building building, int capacity, 
+    		LocalPosition position,
+    		LocalPosition interiorPos, 
+    		LocalPosition exteriorPos) {
         // User Airlock constructor
         super(capacity);
 
         this.building = building;
-        
+ 
 		activated = false;
 		remainingCycleTime = CYCLE_TIME;
 		
-        activitySpotMap  = new HashMap<>();
+//        activitySpotMap  = new HashMap<>();
 
         // Determine airlock inner/interior door position.
         airlockInteriorPos = LocalAreaUtil.getLocalRelativePosition(interiorPos, building);
@@ -103,9 +105,13 @@ public class BuildingAirlock extends Airlock {
         outsideExteriorDoorMap = buildDoorMap(exteriorPos, building, 0.5, 1.0, 0.5);
 
         // Determine airlock inside position.
-        airlockInsidePos = LocalAreaUtil.getLocalRelativePosition(position, building);
+//        airlockInsidePos = LocalAreaUtil.getLocalRelativePosition(position, building);
     }
 
+    public void setEVA(EVA eva) {
+    	this.eva = eva;
+    }
+    
     /**
      * Builds a map for the door positions. Creates four positioned around the center offset by the x and y values.
      * 
@@ -333,15 +339,7 @@ public class BuildingAirlock extends Airlock {
     	}
     	
     	else if (zone == 2) {
-    		if (activitySpotMap.values().contains(id))
-    			return false;
-    		
-    		// If someone is at that position, do not allow to occupy it
-    		if (activitySpotMap.get(p) != -1)
-    			return false;
-    		
-    		activitySpotMap.put(p, id);
-    			return true;
+    		return eva.addActivitySpot(p, id);
     	}
 
     	else if (zone == 3) {
@@ -393,70 +391,49 @@ public class BuildingAirlock extends Airlock {
 	@Override
     public boolean vacate(int zone, Integer id) {
     	if (zone == 0) {
-    		LocalPosition oldPos = getOldPos(outsideInteriorDoorMap, id);
-    		if (oldPos == null)
-    			return false;
-//    		for (int i=0; i<4; i++) {
-//    			LocalPosition pp = outsideInteriorList.get(i);
-    			if (outsideInteriorDoorMap.get(oldPos).equals(id)) {
-    				outsideInteriorDoorMap.put(oldPos, -1);
-    				return true;
-    			}
-//    		}
+    		return removeFromActivitySpot(outsideInteriorDoorMap, id);
     	}
 
     	else if (zone == 1) {
-    		LocalPosition oldPos = getOldPos(insideInteriorDoorMap, id);
-    		if (oldPos == null)
-    			return false;
-//    		for (int i=0; i<4; i++) {
-//    			LocalPosition pp = insideInteriorList.get(i);
-    			if (insideInteriorDoorMap.get(oldPos).equals(id)) {
-    				insideInteriorDoorMap.put(oldPos, -1);
-    				return true;
-    			}
-//    		}
+    		return removeFromActivitySpot(insideInteriorDoorMap, id);
     	}
 
-    	else if (zone == 2) {
-    		LocalPosition oldPos = getOldPos(activitySpotMap, id);
-    		if (oldPos == null)
-    			return false;
-			if (activitySpotMap.get(oldPos).equals(id)) {
-				activitySpotMap.put(oldPos, -1);
-				return true;
-			}
-//    		return true;
+    	else if (zone == 2) {    		
+    		return eva.removeFromActivitySpot(id);
     	}
 
     	else if (zone == 3) {
-    		LocalPosition oldPos = getOldPos(insideExteriorDoorMap, id);
-    		if (oldPos == null)
-    			return false;
-//    		for (int i=0; i<4; i++) {
-//    			LocalPosition pp = insideExteriorList.get(i);
-    			if (insideExteriorDoorMap.get(oldPos).equals(id)) {
-    				insideExteriorDoorMap.put(oldPos, -1);
-    				return true;
-    			}
-//    		}
+    		return removeFromActivitySpot(insideExteriorDoorMap, id);
     	}
 
     	else if (zone == 4) {
-    		LocalPosition oldPos = getOldPos(outsideExteriorDoorMap, id);
-    		if (oldPos == null)
-    			return false;
-//    		for (int i=0; i<4; i++) {
-//    			LocalPosition pp = outsideExteriorList.get(i);
-    			if (outsideExteriorDoorMap.get(oldPos).equals(id)) {
-    				outsideExteriorDoorMap.put(oldPos, -1);
-    				return true;
-    			}
-//    		}
+    		return removeFromActivitySpot(outsideExteriorDoorMap, id);
     	}
-    	return false;
+    	return true;
     }
 
+	/**
+	 * Removes the id of the unit in a local position.
+	 * 
+	 * @param p
+	 * @param id
+	 * @return
+	 */
+	public boolean removeFromActivitySpot(Map<LocalPosition, Integer> map, int id) {
+		if (map.isEmpty())
+			return false;
+		
+		for (Entry<LocalPosition, Integer> entry : map.entrySet()) {
+	        if (entry.getValue().equals(id)) {
+	        	LocalPosition p = entry.getKey();
+	        	map.put(p, -1);
+	        	return true;
+	        }
+	    }
+	
+		return false;
+	}
+	
     /**
      * Checks if the person is in a particular zone.
      *
@@ -470,56 +447,32 @@ public class BuildingAirlock extends Airlock {
     		LocalPosition p0 = getOldPos(outsideInteriorDoorMap, p.getIdentifier());
     		if (p0 == null)
     			return false;
-    		for(LocalPosition pt : outsideInteriorDoorMap.keySet()) {
-    			if (p0.isClose(pt)) {
-    				return true;
-    			}
-    		}
+    		return true;
     	}
 
     	else if (zone == 1) {
     		LocalPosition p0 = getOldPos(insideInteriorDoorMap, p.getIdentifier());
     		if (p0 == null)
     			return false;
-    		for(LocalPosition pt : insideInteriorDoorMap.keySet()) {
-    			if (p0.isClose(pt)) {
-    				return true;
-    			}
-    		}
+    		return true;
     	}
 
     	else if (zone == 2) {
-    		loadEVAActivitySpots();
-    		LocalPosition p0 = getOldPos(activitySpotMap, p.getIdentifier());
-    		if (p0 == null)
-    			return false;
-    		for(LocalPosition pt : EVASpots) {
-    			if (p0.isClose(pt)) {
-    				return true;
-    			}
-    		}
+    		return eva.isAtActivitySpot(p);
     	}
 
     	else if (zone == 3) {
     		LocalPosition p0 = getOldPos(insideExteriorDoorMap, p.getIdentifier());
     		if (p0 == null)
     			return false;
-    		for(LocalPosition pt : insideExteriorDoorMap.keySet()) {
-    			if (p0.isClose(pt)) {
-    				return true;
-    			}
-    		}
+    		return true;
     	}
 
     	else if (zone == 4) {
     		LocalPosition p0 = getOldPos(outsideExteriorDoorMap, p.getIdentifier());
     		if (p0 == null)
     			return false;
-    		for(LocalPosition pt : outsideExteriorDoorMap.keySet()) {
-    			if (p0.isClose(pt)) {
-    				return true;
-    			}
-    		}
+    		return true;
     	}
 
 		return false;
@@ -531,18 +484,12 @@ public class BuildingAirlock extends Airlock {
 	 * @return a list of occupants inside zone 2
 	 */
 	public int getInsideChamberNum() {
-		int result = 0;
-		loadEVAActivitySpots();
-		for (LocalPosition p : activitySpotMap.keySet()) {
-			if (!activitySpotMap.get(p).equals(-1))
-				result++;
-		}
-		return result;
+		return eva.getNumOccupiedActivitySpots();
 	}
 
 	/**
-	 * Gets the total number of people occupying zone 1, 2, and 3,
-	 * excluding zone 0 and 4.
+	 * Gets the total number of people occupying zone 1, 2, and 3 only
+	 * Note: Excludes zone 0 and 4.
 	 * 
 	 * @return number of occupants
 	 */
@@ -552,11 +499,9 @@ public class BuildingAirlock extends Airlock {
 			if (!p.equals(-1))
 				result++;
 		}
-		loadEVAActivitySpots();
-		for (Integer p : activitySpotMap.values()) {
-			if (!p.equals(-1))
-				result++;
-		}
+		
+		result += eva.getNumOccupiedActivitySpots();
+		
 		for (Integer p : insideInteriorDoorMap.values()) {
 			if (!p.equals(-1))
 				result++;
@@ -576,8 +521,7 @@ public class BuildingAirlock extends Airlock {
 			if (!p.equals(-1))
 				list.add(p);
 		}
-		loadEVAActivitySpots();
-		for (Integer p : activitySpotMap.values()) {
+		for (Integer p : eva.getOccupiedID()) {
 			if (!p.equals(-1))
 				list.add(p);
 		}
@@ -614,7 +558,7 @@ public class BuildingAirlock extends Airlock {
     	}
 
     	else if (zone == 2) {
-    		for (int i: activitySpotMap.values()) {
+    		for (int i: eva.getOccupiedID()) {
     			if (i != -1) {
     				list.add(i);
     			}
@@ -656,8 +600,7 @@ public class BuildingAirlock extends Airlock {
     	}
 
     	else if (zone == 2) {
-    		loadEVAActivitySpots();
-			occupants = activitySpotMap.values();
+			occupants = eva.getOccupiedID();
     	}
 
     	else if (zone == 3) {
@@ -680,46 +623,24 @@ public class BuildingAirlock extends Airlock {
 		return result;
 	}
 
-
-	/**
-	 * Loads up and converts the native EVA activity spots into the settlement coordinates.
-	 */
-	@Override
-	public void loadEVAActivitySpots() {
-		if (EVASpots == null) {
-			EVASpots = new ArrayList<>();
-			for (int i=0; i<MAX_SLOTS; i++) {
-    			LocalPosition buildingLoc = building.getEVA().getActivitySpotsList().get(i);
-    			LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(buildingLoc, building);
-    			EVASpots.add(settlementLoc);
-    			activitySpotMap.put(settlementLoc, -1);
-    		}
-		}
-	}
-
-
     /**
      * Gets the exact number of occupants who are within the chamber.
      * 
      * @return
      */
     public int getNumInChamber() {
-    	loadEVAActivitySpots();
     	return getInsideChamberNum();
     }
     
     @Override
     public LocalPosition getAvailableAirlockPosition() {
-    	for (Entry<LocalPosition, Integer> i : activitySpotMap.entrySet()) {
-			if (i.getValue() == -1) {
-				return i.getKey();
-			}
-		}
-    	
-    	return null;
-//        return airlockInsidePos;
+    	return eva.getAvailableActivitySpot();
     }
 
+    public boolean removeFromActivitySpot(int id) {
+    	return eva.removeFromActivitySpot(id);
+    }
+    
 	public boolean removePosition(int zone, LocalPosition p, int id) {
 		if (zone == 0 && outsideInteriorDoorMap.containsKey(p)) {
 			outsideInteriorDoorMap.put(p, -1);
@@ -731,9 +652,8 @@ public class BuildingAirlock extends Airlock {
 			return true;
 		}
 
-		if (zone == 2 && activitySpotMap.containsKey(p)) {
-			activitySpotMap.put(p, -1);
-			return true;
+		if (zone == 2) {
+			return eva.removeFromActivitySpot(id);
 		}
 
 		if (zone == 3 && insideExteriorDoorMap.containsKey(p)) {
@@ -839,7 +759,7 @@ public class BuildingAirlock extends Airlock {
 	public double getRemainingCycleTime() {
 		return remainingCycleTime;
 	}
-	
+
 	/**
 	 * Time passing for airlock. Checks for unusual situations and deal with them.
 	 * Called from the unit owning the airlock.
@@ -896,19 +816,15 @@ public class BuildingAirlock extends Airlock {
 	
 	public void destroy() {
 	    building = null;
-	    airlockInsidePos = null;
+//	    airlockInsidePos = null;
 	    airlockInteriorPos = null;
 	    airlockExteriorPos = null;
-
-	    activitySpotMap.clear();
 
 	    outsideInteriorDoorMap.clear();
 	    outsideExteriorDoorMap.clear();
 
 	    insideInteriorDoorMap.clear();
 	    insideExteriorDoorMap.clear();
-
-	    activitySpotMap = null;
 
 	    outsideInteriorDoorMap = null;
 	    outsideExteriorDoorMap = null;

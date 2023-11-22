@@ -236,15 +236,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has exercise facilities. -->
 			<exercise capacity="2">
 				<activity>
-					<activity-spot xloc="2.4" yloc="2.4" />
+					<activity-spot xloc="2.4" yloc="2.25" />
 					<activity-spot xloc="2.8" yloc="1.5" />
 				</activity>
 			</exercise>
 
 			<food-production tech-level="2" concurrent-processes="3">
 				<activity>
-					<activity-spot xloc="1.12" yloc="-3.28" />
-					<activity-spot xloc="0.36" yloc="-3.28" />
+					<activity-spot xloc="1.15" yloc="-3.28" />
+					<activity-spot xloc="0.4" yloc="-3.28" />
 					<activity-spot xloc="0.76" yloc="-3.79" />
 				</activity>
 			</food-production>

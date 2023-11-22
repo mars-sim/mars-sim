@@ -406,7 +406,7 @@ public class EatDrink extends Task {
 			if (canWalk) {
 				Function f = building.getFunction(FunctionType.DINING);
 				// Add the person to this activity spot
-				f.addToNewActivitySpot(loc, person.getIdentifier());
+				f.addActivitySpot(loc, person.getIdentifier());
 				// Remove the person from the previous activity spot
 				if (person.getFunction() != null) {
 					person.getFunction().removeFromActivitySpot(person.getIdentifier());

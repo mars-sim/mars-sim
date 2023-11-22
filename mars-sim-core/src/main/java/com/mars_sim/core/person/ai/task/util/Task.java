@@ -1139,7 +1139,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			
 			if (canWalk) {
 				// Add the worker to this activity spot
-				f.addToNewActivitySpot(loc, worker.getIdentifier());
+				f.addActivitySpot(loc, worker.getIdentifier());
 				// Remove the worker from the previous activity spot
 				if (worker.getFunction() != null) {
 					worker.getFunction().removeFromActivitySpot(worker.getIdentifier());
@@ -1172,7 +1172,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 			if (canWalk) { 
 				// Add the person to this activity spot
-				f.addToNewActivitySpot(loc, person.getIdentifier());
+				f.addActivitySpot(loc, person.getIdentifier());
 				// Remove the person from the previous activity spot
 				if (person.getFunction() != null) {
 					person.getFunction().removeFromActivitySpot(person.getIdentifier());
@@ -1222,7 +1222,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			if (canWalk) {
 				// Add the person to this activity spot
 				building.getFunction(f.getFunctionType())
-					.addToNewActivitySpot(loc, person.getIdentifier());
+					.addActivitySpot(loc, person.getIdentifier());
 				// Remove the person from the previous activity spot
 				if (person.getFunction() != null) {
 					person.getFunction().removeFromActivitySpot(person.getIdentifier());
