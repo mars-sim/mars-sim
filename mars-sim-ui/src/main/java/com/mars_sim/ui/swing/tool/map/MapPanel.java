@@ -372,11 +372,13 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 //			magnification = getRho()/RHO_DEFAULT;
 			
 			recreateMap = true;
-		}
 			
-		showMap(centerCoords, getRho());
+			showMap(centerCoords, getRho());
+			
+			return true;
+		}
 		
-		return true;
+		return false;
 	}
 
 	public Coordinates getCenterLocation() {

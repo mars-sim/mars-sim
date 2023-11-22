@@ -10,7 +10,6 @@ import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.RoboticStation;
 import com.mars_sim.tools.Msg;
 
 /**
