@@ -275,36 +275,37 @@ public class ExitAirlock extends Task {
 	 * Moves the person to a particular zone.
 	 *
 	 * @param newPos the target position in that zone
-	 * @param zone the destination zone
+	 * @param newZone the destination zone
 	 */
-	private boolean moveThere(LocalPosition newPos, int zone) {
+	private boolean moveThere(LocalPosition newPos, int newZone) {
 		
 		Building b = (Building) airlock.getEntity();
 		
-		if (zone == 2) {
-		
+		if (newZone == 2) {	
 			LocalPosition loc = walkToEVASpot(b);
+			// Convert the local activity spot to the settlement reference coordinate
+			LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, b);
 			
 			if (loc != null) {
 				logger.log(b, person, Level.FINE, 4000, "Arrived at "
-						+ newPos.getShortFormat() + " in airlock zone " + zone + ".");
-				// Convert the local activity spot to the settlement reference coordinate
-				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, b);
+						+ newPos.getShortFormat() + " in airlock zone " + newZone + ".");
 				// Set the person's new position
 				person.setPosition(settlementLoc);
 				return true;
 			}
 			else {
 				logger.log(b, person, Level.INFO, 4000, "Could not enter the chamber at "
-						+ newPos.getShortFormat() + " in airlock zone " + zone + ".");
+						+ settlementLoc.getShortFormat() + " in airlock zone " + newZone + ".");
 				return false;
 			}
 		}
 
-		else if (zone == 4) {
+		else if (newZone == 4) {
+			// Convert the local activity spot to the settlement reference coordinate
+			LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(newPos, b);
 			logger.log(b, person, Level.FINE, 4000, "Creating a subtask to walk outside at "
-					+ newPos.getShortFormat() + " in airlock zone " + zone + ".");	
-    		addSubTask(new WalkOutside(person, person.getPosition(), newPos, true));
+					+ settlementLoc.getShortFormat() + " in airlock zone " + newZone + ".");	
+    		addSubTask(new WalkOutside(person, person.getPosition(), settlementLoc, true));
 			return true;
 		}
 
@@ -314,7 +315,7 @@ public class ExitAirlock extends Task {
 			// Set the person's new position
 			person.setPosition(settlementLoc);
 			logger.log(b, person, Level.FINE, 4000, "Arrived at "
-					+ newPos.getShortFormat() + " in airlock zone " + zone + ".");
+					+ settlementLoc.getShortFormat() + " in airlock zone " + newZone + ".");
 			return true;
 		}
 	}

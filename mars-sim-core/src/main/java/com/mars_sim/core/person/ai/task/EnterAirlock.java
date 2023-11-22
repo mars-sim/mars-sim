@@ -161,13 +161,13 @@ public class EnterAirlock extends Task {
 	/**
 	 * Transitions the person into a particular zone.
 	 *
-	 * @param zone the destination
+	 * @param newZone the destination
 	 * @return true if the transition is successful
 	 */
-	private boolean transitionTo(int zone) {
+	private boolean transitionTo(int newZone) {
 
 		// Is the person already in this zone ?
-		if (isInZone(zone))
+		if (isInZone(newZone))
 			return true;
 		
 		// For ingress, 
@@ -179,18 +179,18 @@ public class EnterAirlock extends Task {
 		// At zone 0, he's just stepped back onto the settlement.
 		
 		// The previous zone # has a higher numeric #
-		int previousZone = zone + 1;
-		LocalPosition newPos = fetchNewPos(zone);
-		if (newPos != null && airlock.occupy(zone, newPos, id)) {
+		int previousZone = newZone + 1;
+		LocalPosition newPos = fetchNewPos(newZone);
+		if (newPos != null && airlock.occupy(newZone, newPos, id)) {
 			if (previousZone <= 4) {
 				if (airlock.vacate(previousZone, id)) {
-					return moveThere(newPos, zone);
+					return moveThere(newPos, newZone);
 				}
 				else
 					return false;
 			}
 			else {
-				return moveThere(newPos, zone);
+				return moveThere(newPos, newZone);
 			}
 		}
 
@@ -240,37 +240,37 @@ public class EnterAirlock extends Task {
 	 * Moves the person to a particular zone.
 	 *
 	 * @param newPos the target position in that zone
-	 * @param zone
+	 * @param newZone
 	 */
-	private boolean moveThere(LocalPosition newPos, int zone) {
+	private boolean moveThere(LocalPosition newPos, int newZone) {
 		
 		Building b = (Building) airlock.getEntity();
 		
-		if (zone == 2) {
+		if (newZone == 2) {
 			// Walk indoor to that activity spot in the chamber
 			LocalPosition loc = walkToEVASpot(b);
-
+			// Convert the local activity spot to the settlement reference coordinate
+			LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, b);
+			
 			if (loc != null) {
 				logger.log(b, person, Level.FINE, 4000, "Arrived at "
-						+ newPos.getShortFormat() + " in airlock zone " + zone + ".");
-				// Convert the local activity spot to the settlement reference coordinate
-				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, b);
+						+ settlementLoc.getShortFormat() + " in airlock zone " + newZone + ".");
 				// Set the person's new position
 				person.setPosition(settlementLoc);
 				return true;
 			}
 			else {
 				logger.log(b, person, Level.INFO, 4000, "Could not enter the chamber at "
-						+ newPos.getShortFormat() + " in airlock zone " + zone + ".");
+						+ settlementLoc.getShortFormat() + " in airlock zone " + newZone + ".");
 				return false;
 			}
 		}
 
-		else if (zone == 4) {
-			logger.log(b, person, Level.FINE, 4000, "Creating a subtask to walk outside at "
-					+ newPos.getShortFormat() + " in airlock zone " + zone + ".");	
+		else if (newZone == 4) {
 			// Convert the local activity spot to the settlement reference coordinate
 			LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(newPos, b);
+			logger.log(b, person, Level.FINE, 4000, "Creating a subtask to walk outside at "
+					+ settlementLoc.getShortFormat() + " in airlock zone " + newZone + ".");	
 			// Create a sub task to walk there
     		addSubTask(new WalkOutside(person, person.getPosition(), settlementLoc, true));
 			return true;
@@ -284,7 +284,7 @@ public class EnterAirlock extends Task {
 			// Set the person's new position
 			person.setPosition(settlementLoc);
 			logger.log(b, person, Level.FINE, 4000, "Arrived at "
-					+ newPos.getShortFormat() + " in airlock zone " + zone + ".");
+					+ settlementLoc.getShortFormat() + " in airlock zone " + newZone + ".");
 			return true;
 		}
 	}
