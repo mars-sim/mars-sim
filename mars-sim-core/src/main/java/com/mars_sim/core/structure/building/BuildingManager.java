@@ -1118,7 +1118,7 @@ public class BuildingManager implements Serializable {
 				// Do not add robot to hallway and tunnel
 				if (category != BuildingCategory.HALLWAY) {
 					destination = bldg;
-					logger.warning(robot, "Initially placed in " + destination.getName() 
+					logger.config(robot, "Initially placed in " + destination.getName() 
 						+ "'s " + functionType.getName() + ".");
 					addRobotToRoboticStation(robot, destination, functionType);
 					break;
@@ -1133,7 +1133,7 @@ public class BuildingManager implements Serializable {
 						&& bldg.getFunction(FunctionType.ROBOTIC_STATION).hasEmptyActivitySpot()) {
 					destination = bldg;
 		
-					logger.warning(robot, "Initially placed in " + destination.getName() + "'s robotic station.");
+					logger.config(robot, "Initially placed in " + destination.getName() + "'s robotic station.");
 					addRobotToRoboticStation(robot, destination, FunctionType.ROBOTIC_STATION);
 					break;
 				}
@@ -1147,7 +1147,7 @@ public class BuildingManager implements Serializable {
 							&& function.hasEmptyActivitySpot()) {
 						destination = bldg;
 			
-						logger.warning(robot, "Initially placed in " + destination.getName() 
+						logger.config(robot, "Initially placed in " + destination.getName() 
 							+ "'s " + function.getFunctionType().getName() + ".");
 						addRobotToRoboticStation(robot, destination, function.getFunctionType());
 						break;

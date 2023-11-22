@@ -407,7 +407,7 @@ public class Walk extends Task {
 					Airlock airlock = step.airlock;
 					if (!ExitAirlock.canExitAirlock(person, airlock)) {
 						logger.log(person, Level.WARNING, 10_000L,
-								"Could not exit " + airlock.getEntityName());
+								"Could not exit " + airlock.getEntityName() + ".");
 						return false;
 					}
 				}

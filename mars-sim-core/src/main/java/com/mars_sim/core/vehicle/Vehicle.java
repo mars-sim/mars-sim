@@ -833,7 +833,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public void setAverageRoadLoadSpeed(int value) {
-		logger.info(this, 10_000L, " AverageRoadLoadSpeed: " + value);
+//		logger.info(this, 10_000L, " AverageRoadLoadSpeed: " + value);
 		roadSpeedHistory.addDataPoint(value);
 	}
 	
@@ -843,7 +843,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public void setAverageRoadLoadPower(int value) {
-		logger.info(this, 10_000L, " AverageRoadLoadPower: " + value);
+//		logger.info(this, 10_000L, " AverageRoadLoadPower: " + value);
 		roadPowerHistory.addDataPoint(value);
 	}
 	
