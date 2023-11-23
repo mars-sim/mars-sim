@@ -7,7 +7,6 @@
 package com.mars_sim.core.structure.building.function;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -254,7 +253,7 @@ public class LivingAccommodations extends Function {
 		// TODO: How do we allocate guest beds for a
 		// traveler to sleep on it.
 		
-		List<LocalPosition> locs = getActivitySpotsList();
+		Set<LocalPosition> locs = getActivitySpots();
 		for (LocalPosition loc : locs) {
 			
 			// Convert the activity spot (the bed location) to the settlement reference coordinate

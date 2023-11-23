@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.UnitManager;
@@ -57,10 +56,10 @@ public abstract class Function implements Serializable, Temporal {
 //	private Map<LocalPosition, Integer> activitySpotMap = new HashMap<>();
 	
 	/** A list of predefined activity spots. */
-	private List<LocalPosition> setSpots = new ArrayList<>();
+	private Set<LocalPosition> presetSpots = new HashSet<>();
 	
 	/** A list of occupied activity spots. */
-	private List<ActivitySpot> occupiedSpots = new ArrayList<>();
+	private Set<ActivitySpot> occupiedSpots = new HashSet<>();
 	
 	protected static BuildingConfig buildingConfig;
 	protected static PersonConfig personConfig;
@@ -85,7 +84,7 @@ public abstract class Function implements Serializable, Temporal {
 
 		// load any activity spots
 		if (spec != null) {
-			setSpots = spec.getActivitySpots();
+			presetSpots = spec.getActivitySpots();
 		}
 	}
 
@@ -269,7 +268,7 @@ public abstract class Function implements Serializable, Temporal {
 			occupied.add(as.getPos());
 		}
 		
-		Set<LocalPosition> existing = new HashSet<>(setSpots);
+		Set<LocalPosition> existing = new HashSet<>(presetSpots);
 		
 		existing.removeAll(occupied);
 
@@ -316,23 +315,23 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return true if building function has predefined activity spots.
 	 */
 	public boolean hasActivitySpots() {
-		return setSpots.size() > 0;
+		return presetSpots.size() > 0;
 	}
 
 	/** 
-	 * Returns a list of occupied activity spots. 
+	 * Returns a set of occupied activity spots. 
 	 */
-	public List<ActivitySpot> getOccupiedSpots() {
+	public Set<ActivitySpot> getOccupiedSpots() {
 		return occupiedSpots;
 	}
 	
 	/**
-	 * Gets a list of predefined activity spots.
+	 * Gets a set of predefined activity spots.
 	 * 
 	 * @return
 	 */
-	public List<LocalPosition> getActivitySpotsList() {
-		return setSpots;
+	public Set<LocalPosition> getActivitySpots() {
+		return presetSpots;
 	}
 
 	/**
@@ -341,11 +340,11 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return
 	 */
 	public int getNumEmptyActivitySpots() {
-		return setSpots.size() - occupiedSpots.size();
+		return presetSpots.size() - occupiedSpots.size();
 	}
 
 	/**
-	 * Checks if an empty activity spot is available.
+	 * Checks if an empty unoccupied activity spot is available.
 	 *
 	 * @return
 	 */
@@ -412,7 +411,7 @@ public abstract class Function implements Serializable, Temporal {
 		building = null;
 		occupiedSpots.clear();
 		occupiedSpots = null;
-		setSpots.clear();
-		setSpots = null;
+		presetSpots.clear();
+		presetSpots = null;
 	}
 }

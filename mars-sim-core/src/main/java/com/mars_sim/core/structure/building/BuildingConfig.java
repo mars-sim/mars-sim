@@ -161,7 +161,7 @@ public class BuildingConfig {
 			FunctionType function = FunctionType.valueOf(ConfigHelper.convertToEnumName(name));
 
 			// Has any Activity spots ?
-			List<LocalPosition> spots = parsePositions(element, ACTIVITY, ACTIVITY_SPOT,
+			Set<LocalPosition> spots = parsePositions(element, ACTIVITY, ACTIVITY_SPOT,
 													width, length);
 
 			// Get attributes as basic properties
@@ -246,20 +246,20 @@ public class BuildingConfig {
 
 		Element vehicleElement = functionsElement.getChild(VEHICLE_MAINTENANCE);
 		if (vehicleElement != null) {
-			List<LocalPosition> parking = parsePositions(vehicleElement, "parking", PARKING_LOCATION,
+			Set<LocalPosition> parking = parsePositions(vehicleElement, "parking", PARKING_LOCATION,
 												   width, length);
 			newSpec.setParking(parking);
 		}
 
 		if (vehicleElement != null) {
-			List<LocalPosition> flyerParking = parsePositions(vehicleElement, "flyerParking", FLYER_LOCATION,
+			Set<LocalPosition> flyerParking = parsePositions(vehicleElement, "flyerParking", FLYER_LOCATION,
 												   width, length);
 			newSpec.setFlyerParking(flyerParking);
 		}
 		
 		Element medicalElement = functionsElement.getChild(MEDICAL_CARE);
 		if (medicalElement != null) {
-			List<LocalPosition> beds = parsePositions(medicalElement, BEDS, BED_LOCATION,
+			Set<LocalPosition> beds = parsePositions(medicalElement, BEDS, BED_LOCATION,
 												width, length);
 			newSpec.setBeds(beds);
 		}
@@ -476,16 +476,16 @@ public class BuildingConfig {
 	}
 
 	/**
-	 * Parses an list of position for a building's function. These have a <xloc> & <yloc> structure.
+	 * Parses an set of position for a building's function. These have a <xloc> & <yloc> structure.
 	 *
 	 * @param functionElement Element holding locations
 	 * @param locations Name of the location elements
 	 * @param pointName Nmae of the point item
-	 * @return list of activity spots as Point2D objects.
+	 * @return set of activity spots as Point2D objects.
 	 */
-	private List<LocalPosition> parsePositions(Element functionElement, String locations, String pointName,
+	private Set<LocalPosition> parsePositions(Element functionElement, String locations, String pointName,
 										 double buildingWidth, double buildingLength) {
-		List<LocalPosition> result = new ArrayList<>();
+		Set<LocalPosition> result = new HashSet<>();
 
 		// Maximum coord is half the width or length
 		double maxX = buildingWidth/2D;
@@ -631,7 +631,7 @@ public class BuildingConfig {
 	 * @return Positions containing the relative X & Y position from the building
 	 *         center.
 	 */
-	public List<LocalPosition> getParkingLocations(String buildingType) {
+	public Set<LocalPosition> getParkingLocations(String buildingType) {
 		return getBuildingSpec(buildingType).getParking();
 	}
 
@@ -642,7 +642,7 @@ public class BuildingConfig {
 	 * @return Positions containing the relative X & Y position from the building
 	 *         center.
 	 */
-	public List<LocalPosition> getDroneLocations(String buildingType) {
+	public Set<LocalPosition> getDroneLocations(String buildingType) {
 		return getBuildingSpec(buildingType).getFlyerParking();
 	}
 

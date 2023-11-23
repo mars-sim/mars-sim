@@ -8,7 +8,6 @@
 package com.mars_sim.console.chat.simcommand.person;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -18,14 +17,7 @@ import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.ConversationRole;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.health.BodyRegionType;
-import com.mars_sim.core.person.health.ComplaintType;
-import com.mars_sim.core.person.health.HealthProblem;
-import com.mars_sim.core.person.health.RadiationExposure;
-import com.mars_sim.core.person.health.RadiationType;
-import com.mars_sim.tools.util.RandomUtil;
 
 /** 
  * The command for resuscitating a dead person.

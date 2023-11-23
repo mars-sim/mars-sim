@@ -971,16 +971,20 @@ public class EnterAirlock extends Task {
 	@Override
 	protected void clearDown() {
 		// Clear the person as the airlock operator if task ended prematurely.
-		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
+		if (airlock != null) {
+			
+			// Release the responsibility of being the airlock operator if he's one
+			airlock.releaseOperatorID(id);
+			
 			if (inSettlement) {
-				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
-							"Concluded the airlock operator task.");
+				logger.log(((Building) (airlock.getEntity())), person, Level.FINE, 4_000,
+						"Concluded the building airlock operator task.");
 			}
 			else {
-				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
+				logger.log(person.getVehicle(), person, Level.FINE, 4_000,
 						"Concluded the vehicle airlock operator task.");
 			}
-
+			
 			if (inSettlement) {
 				((BuildingAirlock)airlock).removeFromActivitySpot(id);
 			}
@@ -997,26 +1001,8 @@ public class EnterAirlock extends Task {
 	 * tasks.
 	 */
 	public void completeAirlockTask() {
-		// Clear the person as the airlock operator if task ended prematurely.
-		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
-			if (airlock.getEntity() instanceof Building b) {
-				logger.log(b, person, Level.FINE, 4_000,
-						"Concluded the building airlock operator task.");
-			}
-			else {
-				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
-						"Concluded the vehicle airlock operator task.");
-			}
-
-			if (inSettlement) {
-				((BuildingAirlock)airlock).removeFromActivitySpot(id);
-			}
-			
-			airlock.removeID(id);
-			
-			if (airlock.isEmpty())
-				airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
-		}
+		
+		clearDown();
 		
 		super.endTask();
 	}

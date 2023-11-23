@@ -423,21 +423,13 @@ public class ExitAirlock extends Task {
 		// Reset accumulatedTime back to zero
 		accumulatedTime = 0;
 		
-		if (inSettlement) {
-			((BuildingAirlock)airlock).removeFromActivitySpot(id);
-		}
+		clearDown();
 		
-		airlock.removeID(person.getIdentifier());
-		
-		if (airlock.isEmpty())
-			airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
-
 		logger.log((Unit)airlock.getEntity(), person, Level.INFO, 16_000, reason);
-		
+
 		// Note: For person in a vehicle with high fatigue or hunger,
 		// need to call clearAllTasks() to cause a person to quit the task
 		// or else it gets stuck forever in the vehicle airlock
-		
 		person.getTaskManager().clearAllTasks(reason);
 	}
 	
@@ -1325,26 +1317,8 @@ public class ExitAirlock extends Task {
 	 * Removes the person from airlock and walk away and ends the airlock and walk tasks.
 	 */
 	public void completeAirlockTask() {
-		// Clear the person as the airlock operator if task ended prematurely.
-		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
-			if (inSettlement) {
-				logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
-						"Concluded the airlock operator task.");
-			}
-			else {
-				logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
-						"Concluded the vehicle airlock operator task.");
-			}
-
-			if (inSettlement) {
-				((BuildingAirlock)airlock).removeFromActivitySpot(id);
-			}
-			
-			airlock.removeID(id);
-			
-			if (airlock.isEmpty())
-				airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
-		}
+		
+		clearDown();
 
 		// Resets the pre-breath time
 		person.getPhysicalCondition().resetRemainingPrebreathingTime();
@@ -1479,29 +1453,30 @@ public class ExitAirlock extends Task {
 	 */
 	@Override
 	protected void clearDown() {
-		if (airlock == null)
-			return;
-		
 		// Clear the person as the airlock operator if task ended prematurely.
-		if (person.getName().equals(airlock.getOperatorName())) {
+		if (airlock != null) {
+					
+			// Release the responsibility of being the airlock operator if he's one
+			airlock.releaseOperatorID(id);
+					
 			if (inSettlement) {
-				logger.log(((Building) (airlock.getEntity())), person, Level.FINE, 1_000,
-						"Concluded the airlock operator task.");
+				logger.log(((Building) (airlock.getEntity())), person, Level.FINE, 4_000,
+						"Concluded the building airlock operator task.");
 			}
 			else {
 				logger.log(person.getVehicle(), person, Level.FINE, 4_000,
 						"Concluded the vehicle airlock operator task.");
 			}
+			
+			if (inSettlement) {
+				((BuildingAirlock)airlock).removeFromActivitySpot(id);
+			}
+			
+			airlock.removeID(id);
+			
+			if (airlock.isEmpty())
+				airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
 		}
-		
-		if (inSettlement) {
-			((BuildingAirlock)airlock).removeFromActivitySpot(id);
-		}
-		
-		airlock.removeID(id);
-		
-		if (airlock.isEmpty())
-			airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
 	}
 
 	/**

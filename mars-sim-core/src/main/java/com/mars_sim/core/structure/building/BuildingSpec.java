@@ -62,9 +62,9 @@ public class BuildingSpec {
 	private List<ResourceProcessEngine> resourceProcess = EMPTY_RESOURCE;
 	private List<ResourceProcessEngine> wasteProcess = EMPTY_RESOURCE;
 
-	private List<LocalPosition> beds;
-	private List<LocalPosition> parking;
-	private List<LocalPosition> flyerParking;
+	private Set<LocalPosition> beds;
+	private Set<LocalPosition> parking;
+	private Set<LocalPosition> flyerParking;
 
 	private BuildingCategory category;
 	
@@ -237,27 +237,27 @@ public class BuildingSpec {
 		return buildingType;
 	}
 	
-	public List<LocalPosition> getBeds() {
+	public Set<LocalPosition> getBeds() {
 		return beds;
 	}
 
-	void setBeds(List<LocalPosition> beds) {
+	void setBeds(Set<LocalPosition> beds) {
 		this.beds = beds;
 	}
 	
-	public List<LocalPosition> getParking() {
+	public Set<LocalPosition> getParking() {
 		return parking;
 	}
 
-	void setParking(List<LocalPosition> parking) {
-		this.parking = Collections.unmodifiableList(parking);
+	void setParking(Set<LocalPosition> parking) {
+		this.parking = Collections.unmodifiableSet(parking);
 	}
 	
-	public List<LocalPosition> getFlyerParking() {
+	public Set<LocalPosition> getFlyerParking() {
 		return flyerParking;
 	}
 
-	void setFlyerParking(List<LocalPosition> droneParking) {
-		this.flyerParking = Collections.unmodifiableList(droneParking);
+	void setFlyerParking(Set<LocalPosition> droneParking) {
+		this.flyerParking = Collections.unmodifiableSet(droneParking);
 	}
 }

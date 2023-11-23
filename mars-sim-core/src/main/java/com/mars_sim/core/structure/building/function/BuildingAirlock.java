@@ -91,8 +91,6 @@ public class BuildingAirlock extends Airlock {
  
 		activated = false;
 		remainingCycleTime = CYCLE_TIME;
-		
-//        activitySpotMap  = new HashMap<>();
 
         // Determine airlock inner/interior door position.
         airlockInteriorPos = LocalAreaUtil.getLocalRelativePosition(interiorPos, building);

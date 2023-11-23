@@ -512,6 +512,17 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
+	 * Releases the operator responsibility if the person's id. 
+	 * 
+	 * @param id
+	 */
+	public void releaseOperatorID(int id) {
+		if (isOperator(id)) {
+			operatorID = Integer.valueOf(-1); 
+		}
+	}
+	
+	/**
 	 * Gets the operator's Person instance.
 	 *
 	 * @return
@@ -823,15 +834,6 @@ public abstract class Airlock implements Serializable {
 				// Choose a pool of candidates from a particular zone
 				electAnOperator(getOperatorPool());
 			}
-//			else {
-//				int rand = RandomUtil.getRandomInt(1);
-//				// Note: Provide some randomness in case the existing operator is stuck
-//				// And require someone elsewhere as operator to help out.
-//				if (rand == 0) {
-//					// Choose a pool of candidates from a particular zone
-//					electAnOperator(getOperatorPool());
-//				}
-//			}
 		}
 	}
 

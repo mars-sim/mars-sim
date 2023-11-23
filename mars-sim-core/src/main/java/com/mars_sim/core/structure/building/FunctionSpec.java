@@ -7,8 +7,8 @@
 package com.mars_sim.core.structure.building;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.mars_sim.mapdata.location.LocalPosition;
 
@@ -24,19 +24,19 @@ public class FunctionSpec {
   private static final String TECH_LEVEL = "tech-level";
 
 	private Map<String, Object> props;
-	private List<LocalPosition> spots;
+	private Set<LocalPosition> spots;
 
-	public FunctionSpec(Map<String, Object> props, List<LocalPosition> spots) {
+	public FunctionSpec(Map<String, Object> props, Set<LocalPosition> spots) {
 		this.props = props;
 	    if (spots == null) {
-	      this.spots = Collections.emptyList();
+	      this.spots = Collections.emptySet();
 	    }
 	    else {
-			  this.spots = Collections.unmodifiableList(spots);
+			  this.spots = Collections.unmodifiableSet(spots);
 	    }
 	}
 
-	public List<LocalPosition> getActivitySpots() {
+	public Set<LocalPosition> getActivitySpots() {
 		return spots;
 	}
 	
