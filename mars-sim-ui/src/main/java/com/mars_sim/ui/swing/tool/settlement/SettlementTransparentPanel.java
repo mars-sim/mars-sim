@@ -379,7 +379,7 @@ public class SettlementTransparentPanel extends JComponent {
 		
 		projectDaylightLabel.setForeground(yellow);
 		daylightLabel.setForeground(yellow);
-		zenithLabel.setForeground(Color.gray);
+		zenithLabel.setForeground(Color.cyan.brighter());
 		
 		maxSunLabel.setForeground(white);
 		currentSunLabel.setForeground(white);
