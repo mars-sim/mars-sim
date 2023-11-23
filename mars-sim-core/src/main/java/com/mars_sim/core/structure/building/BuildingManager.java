@@ -1648,7 +1648,7 @@ public class BuildingManager implements Serializable {
 				}
 					
 				// Add the person to this building, even if an activity spot is not available				
-				if (lifeSupport != null && lifeSupport.containsOccupant(person)) {
+				if (lifeSupport != null && !lifeSupport.containsOccupant(person)) {
 					lifeSupport.addPerson(person);
 				}
 				
