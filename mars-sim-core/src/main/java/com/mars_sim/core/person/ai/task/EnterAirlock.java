@@ -385,6 +385,8 @@ public class EnterAirlock extends Task {
 						+ " but cannot wait at " + airlock.getEntity().toString() + "'s outer door.");
 				
 				clearDown();
+				
+				return time * .75;
 			}
 		}
 
@@ -453,19 +455,22 @@ public class EnterAirlock extends Task {
 
 		else if (airlock.isDepressurizing()) {
 			// just wait for depressurizing to finish
+			return time * .75;
 		}
 
 		else {
 
 			Set<Person> list = airlock.noEVASuit();
-			if (list.size() > 0) {
+			if (!list.isEmpty()) {
 				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
 						"Could not depressurize " + airlock.getEntity().toString() + ". "
 						+ list + " still inside not wearing EVA suit.");
 
 				// need to wait here for them to put on the EVA suit first
 			}
-
+			
+			// just wait for depressurization to start and complete
+			return time * .75;
 		}
 
 		if (canProceed && accumulatedTime > STANDARD_TIME * time) {
@@ -545,6 +550,13 @@ public class EnterAirlock extends Task {
 				logger.log(unit, person, Level.WARNING, 16_000,
 						"Can't step thru outer door. "
 						+ CHAMBER_FULL + airlock.getEntity().toString() + ".");
+				
+				clearDown();
+				
+				// The outer door is locked probably because of not being 
+				// at the correct airlock state. Go back to the previous task phase
+				setPhase(REQUEST_INGRESS);
+				
 				// Reset accumulatedTime back to zero accumulatedTime = 0
 				// Do nothing in this frame
 				// Wait and see if he's allowed to be at the outer door in the next frame
@@ -641,6 +653,10 @@ public class EnterAirlock extends Task {
 				
 				clearDown();
 				
+				// The outer door is locked probably because of not being 
+				// at the correct airlock state. Go back to the previous task phase
+				setPhase(REQUEST_INGRESS);
+				
 				// Reset accumulatedTime back to zero accumulatedTime = 0
 				// Do nothing in this frame
 				// Wait and see if he's allowed to be at the outer door in the next frame
@@ -651,6 +667,7 @@ public class EnterAirlock extends Task {
 				canProceed = true;
 			}
 			else {
+
 				setPhase(STEP_THRU_OUTER_DOOR);
 				// Reset accumulatedTime back to zero
 				accumulatedTime = 0;
