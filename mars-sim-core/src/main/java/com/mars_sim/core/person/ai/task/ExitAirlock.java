@@ -800,6 +800,19 @@ public class ExitAirlock extends Task {
 				// True if the person is already there from previous frame
 				canProceed = true;
 			}
+            else {
+				logger.log(person, Level.WARNING, 4_000,
+						"Not in zone 2 or 3 in " + airlock.getEntity() + ".");
+				
+				walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + "Not in right zone.");
+				
+				// The outer door is locked probably because of not being 
+				// at the correct airlock state. Go back to the previous task phase
+				setPhase(REQUEST_EGRESS);
+				// Reset accumulatedTime back to zero 
+				accumulatedTime = 0;
+				return time * .75;
+            }
 		}
 
 		else {

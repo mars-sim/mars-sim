@@ -814,7 +814,7 @@ public abstract class Airlock implements Serializable {
 			// Choose a pool of candidates from a particular zone
 			electAnOperator(getOperatorPool());
 		}
-		// If the airlock already has an existing operator,
+		// If the airlock already has an existing operator
 		else {
 			// Check to see if he's still inside or has left the airlock
 			if (!isInAnyZones(operatorID)) {

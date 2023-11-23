@@ -379,7 +379,7 @@ public class SettlementTransparentPanel extends JComponent {
 		
 		projectDaylightLabel.setForeground(yellow);
 		daylightLabel.setForeground(yellow);
-		zenithLabel.setForeground(yellow);
+		zenithLabel.setForeground(Color.gray);
 		
 		maxSunLabel.setForeground(white);
 		currentSunLabel.setForeground(white);
@@ -408,7 +408,7 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
     /**
-     * Gets the length of the most lengthy settlement name
+     * Gets the length of the most lengthy settlement name.
      *
      * @return
      */

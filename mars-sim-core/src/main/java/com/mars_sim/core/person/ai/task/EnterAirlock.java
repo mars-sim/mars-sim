@@ -501,13 +501,25 @@ public class EnterAirlock extends Task {
 		
 		boolean canProceed = false;
 
-		if (!airlock.isDepressurized()) {
-			// Not at the correct airlock state. Go back to the previous task phase
-			setPhase(DEPRESSURIZE_CHAMBER);
-			// Reset accumulatedTime back to zero 
-			accumulatedTime = 0;
-			return time * .75;
+		if (!airlock.isActivated()) {
+			// Only the airlock operator may activate the airlock
+			airlock.setActivated(true);
 		}
+		
+		if (airlock.isOperator(id)) {
+			// Command the airlock state to be transitioned to "depressurizing"
+			airlock.setTransitioning(true);
+		}
+		
+		// WARNING: do NOT setPhase(DEPRESSURIZE_CHAMBER) or else it will go through
+		// endless cycle of pressurizing and depressurizing airlock
+//		if (!airlock.isDepressurized()) {
+//			// Not at the correct airlock state. Go back to the previous task phase
+//			setPhase(DEPRESSURIZE_CHAMBER);
+//			// Reset accumulatedTime back to zero 
+//			accumulatedTime = 0;
+//			return time * .75;
+//		}
 
 		if (inSettlement) {
 
@@ -544,10 +556,25 @@ public class EnterAirlock extends Task {
 				canProceed = airlock.enterAirlock(person, id, false) 
 						&& transitionTo(3);						
 			}
+            
+            else {
+				logger.log(unit, person, Level.WARNING, 4_000,
+						"Not in zone 2 or 3 in " + airlock.getEntity() + ".");
+				
+				clearDown();
+				
+				// The outer door is locked probably because of not being 
+				// at the correct airlock state. Go back to the previous task phase
+				setPhase(REQUEST_INGRESS);
+				// Reset accumulatedTime back to zero 
+				accumulatedTime = 0;
+				
+				return time * .75;
+            }
 		}
 
 		else {
-
+			// in vehicle
 			if (!airlock.isOuterDoorLocked()) {
 
 				if (!airlock.inAirlock(person)) {

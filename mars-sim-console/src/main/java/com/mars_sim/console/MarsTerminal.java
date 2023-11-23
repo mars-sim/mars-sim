@@ -71,11 +71,14 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 
 	private JFrame frame = getFrame();
 
+	private JPanel panel;
+	
     private final JPopupMenu popup = new JPopupMenu();
 
 	private MasterClock masterClock;
 
     private static class PopupListener extends MouseAdapter {
+    	
         private final JPopupMenu popup;
 
         public PopupListener(JPopupMenu popup) {
@@ -107,7 +110,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
         MouseListener popupListener = new PopupListener(popup);
         textPane.addMouseListener(popupListener);
 
-		JPanel panel = new JPanel() {
+		panel = new JPanel() {
 			@Override
 			public Dimension getPreferredSize() {
 				return new Dimension(this.getWidth(), this.getHeight());
@@ -305,6 +308,9 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
         menu.add(menuItem);
 
         menuBar.add(menu);
+        
+//        getTextPane().setComponentPopupMenu(menu);
+		
         frame.setJMenuBar(menuBar);
 
         frame.setVisible(true);

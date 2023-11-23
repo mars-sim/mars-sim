@@ -320,9 +320,7 @@ public class SettlementMapPanel extends JPanel {
 	private void setPopUp(final MouseEvent evt, int x, int y, Unit unit) {
 		menu = new PopUpUnitMenu(settlementWindow, unit);
 		setComponentPopupMenu(menu);
-		if (evt.isPopupTrigger()) {
-			menu.show(evt.getComponent(), x, y);
-		}
+		menu.show(evt.getComponent(), x, y);
 	}
 	
 	/**
