@@ -799,6 +799,14 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	}
 
 	/**
+	 * Revives the person.
+	 */
+	void setRevived() {
+		declaredDead = false;
+		setDescription("Recovering");
+	}
+	
+	/**
 	 * Deregisters the person's quarters.
 	 */
 	void deregisterBed() {

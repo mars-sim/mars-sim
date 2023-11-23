@@ -56,6 +56,7 @@ public class PersonChat extends ConnectedUnitCommand {
 																    StudyCommand.STUDY,
 																    SuicideCommand.SUICIDE,
 																    IllnessCommand.ILLNESS,
+																    ResuscitationCommand.RESURRECT,
 																    new WorkerActivityCommand(PERSON_GROUP),
 																    new WorkerTaskCommand(PERSON_GROUP),
 																    new WorkerWorkCommand(PERSON_GROUP),

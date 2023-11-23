@@ -1453,6 +1453,35 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
+	 * Revive this person who is dead and bring him back to life.
+	 */
+	public void reviveToLife() {
+		alive = true;
+		
+		HealthProblem problem = deathDetails.getProblem();
+		
+		problem.setState(HealthProblem.RECOVERING);
+		
+		deathDetails = null;
+		// Reset the declaredDead
+		person.setRevived();
+		
+		// Get a new role type
+//		person.setRoleType(person.getRole().getType());
+		
+		// Re-elect any vacated top leaders or chiefs role
+		person.getAssociatedSettlement().getChainOfCommand().reelectLeadership(person.getRole().getType());
+
+		// Set the mind of the person to active
+		person.getMind().setActive();
+		// See a doctor ?
+		//medicalManager
+
+		logger.log(person, Level.WARNING, 0, "Person was revived as ordered.");
+	}
+
+	
+	/**
 	 * Renders this Person dead, creates DeathInfo, and processes the change.
 	 *
 	 * @param problem      The health problem that contributes to his death.
@@ -1471,6 +1500,7 @@ public class PhysicalCondition implements Serializable {
 		// Set mostSeriousProblem to this problem
 		this.mostSeriousProblem = problem;
 
+		// Create the death details
 		deathDetails = new DeathInfo(person, problem, reason, lastWord, master.getMarsTime());
 		// Declare the person dead
 		person.setDeclaredDead();

@@ -403,6 +403,13 @@ public class Mind implements Serializable, Temporal {
 	}
 
 	/**
+	 * Sets this mind active.
+	 */
+	public void setActive() {
+		taskManager.clearAllTasks("Revived");
+	}
+	
+	/**
 	 * Sets the person's current mission.
 	 *
 	 * @param newMission the new mission

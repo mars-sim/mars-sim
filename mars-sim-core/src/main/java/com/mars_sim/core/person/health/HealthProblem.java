@@ -32,7 +32,7 @@ public class HealthProblem implements Serializable {
 
 	private static final int DEGRADING = 0;
 	private static final int BEING_TREATED = 1;
-	private static final int RECOVERING = 2;
+	public static final int RECOVERING = 2;
 	private static final int CURED = 3;
 	public static final int DEAD = 4;
 
