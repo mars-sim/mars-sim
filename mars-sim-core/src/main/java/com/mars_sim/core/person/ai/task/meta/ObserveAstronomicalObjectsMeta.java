@@ -181,9 +181,13 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
 		BuildingManager manager = target.getBuildingManager();
 		Set<Building> observatoryBuildings = manager.getBuildingSet(FunctionType.ASTRONOMICAL_OBSERVATION);
 		observatoryBuildings = BuildingManager.getNonMalfunctioningBuildings(observatoryBuildings);
-		observatoryBuildings = getObservatoriesWithAvailableSpace(observatoryBuildings);
-		observatoryBuildings =  BuildingManager.getLeastCrowdedBuildings(observatoryBuildings);
+//		observatoryBuildings = getObservatoriesWithAvailableSpace(observatoryBuildings);
+//		observatoryBuildings =  BuildingManager.getLeastCrowdedBuildings(observatoryBuildings);
 
+		if (observatoryBuildings == null || observatoryBuildings.isEmpty()) {
+			return null;
+		}
+		
 		Building selected = RandomUtil.getARandSet(observatoryBuildings);
 		if (selected == null) {
 			return null;
