@@ -128,6 +128,9 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
 
             RatingScore score = new RatingScore(farm.getTendingScore());
 
+            score.addBase("maintenance", 
+                    (200 - farm.getCleaningScore() - farm.getInspectionScore())/10);
+ 
             // Settlement factors
             score.addModifier(GOODS_MODIFIER, goodsFactor);
 

@@ -117,18 +117,18 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
     public List<SettlementTask> getSettlementTasks(Settlement settlement) {
         List<SettlementTask> tasks = new ArrayList<>();
 
-        for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.ALGAE_FARMING)) {
+        for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.ALGAE_FARMING)) {
             AlgaeFarming pond = building.getAlgae();
             RatingScore result = new RatingScore("maintenance",
-                        (pond.getUncleaned().size() + pond.getUninspected().size()) * 3D);
+                        (200 - pond.getCleaningScore() - pond.getInspectionScore())/10);
 
             double ratio = pond.getSurplusRatio();
             		
             result.addBase("surplus", (1 - ratio) * 10D);
             
-            double foodDemand = pond.getFoodDemand();
+            double foodDemand = pond.getNutrientDemand();
          
-            result.addBase("food.demand", foodDemand * 10);
+            result.addBase("nutrient.demand", foodDemand * 10);
             
             double foodMass = pond.getFoodMass();
             double algaeMass = pond.getCurrentAlgae();

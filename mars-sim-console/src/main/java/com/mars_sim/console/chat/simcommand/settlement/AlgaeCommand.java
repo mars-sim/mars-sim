@@ -1,8 +1,8 @@
 /*
  * Mars Simulation Project
- * FishCommand.java
+ * AlgaeCommand.java
  * @date 2023-11-22
- * @author Barry Evans
+ * @author Manny Kung
  */
 
 package com.mars_sim.console.chat.simcommand.settlement;
@@ -17,17 +17,17 @@ import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.farming.Fishery;
+import com.mars_sim.core.structure.building.function.farming.AlgaeFarming;
 
 /**
- * Command to display the fishery status.
+ * Command to display the algae farming status.
  */
-public class FishCommand extends AbstractSettlementCommand {
+public class AlgaeCommand extends AbstractSettlementCommand {
 
-	public static final ChatCommand FISH = new FishCommand();
+	public static final ChatCommand ALGAE = new AlgaeCommand();
 
-	private FishCommand() {
-		super("fi", "fish", "Status of fish stocks");
+	private AlgaeCommand() {
+		super("al", "algae", "Status of algae farming");
 	}
 
 	/** 
@@ -37,22 +37,22 @@ public class FishCommand extends AbstractSettlementCommand {
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 		response.appendTableHeading("Building", CommandHelper.BUILIDNG_WIDTH, "Size m3",
-									"Fish #", 6,
-									"Surplus", "Weeds",  "Inspection", "Cleanliness");
+									"Mass of Algae", 6,
+									"Surplus Ratio", "Nutrient Demand",  "Inspection", "Cleanliness");
 
-		List<Fishery> tanks = settlement.getBuildingManager().getBuildings(FunctionType.FISHERY)
-				 					.stream().map(Building::getFishery)
+		List<AlgaeFarming> farms = settlement.getBuildingManager().getBuildings(FunctionType.ALGAE_FARMING)
+				 					.stream().map(Building::getAlgae)
 									.collect(Collectors.toList());
 		// Display each farm separately
-		for (Fishery tank : tanks) {			
+		for (AlgaeFarming farm : farms) {			
 
-			response.appendTableRow(tank.getBuilding().getName(),
-									tank.getTankSize(),
-									tank.getNumFish(),
-									tank.getSurplusStock(),
-									tank.getWeedDemand(),
-									tank.getInspectionScore(),
-									tank.getCleaningScore());
+			response.appendTableRow(farm.getBuilding().getName(),
+									farm.getTankSize(),
+									farm.getCurrentAlgae(),
+									farm.getSurplusRatio(),
+									farm.getNutrientDemand(),
+									farm.getInspectionScore(),
+									farm.getCleaningScore());
 		}
 		context.println(response.getOutput());
 		return true;

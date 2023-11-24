@@ -117,10 +117,10 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
     public List<SettlementTask> getSettlementTasks(Settlement settlement) {
         List<SettlementTask> tasks = new ArrayList<>();
 
-        for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.FISHERY)) {
+        for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.FISHERY)) {
             Fishery fishTank = building.getFishery();
             RatingScore result = new RatingScore("maintenance", 
-                    (fishTank.getUncleaned().size() + fishTank.getUninspected().size()) *3D);
+                    (200 - fishTank.getCleaningScore() - fishTank.getInspectionScore())/10);
 
             result.addBase("surplus", (fishTank.getSurplusStock() * 10D));
             result.addBase("fish.weeds", fishTank.getWeedDemand());

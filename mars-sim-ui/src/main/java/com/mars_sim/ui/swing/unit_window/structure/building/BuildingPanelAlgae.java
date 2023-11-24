@@ -125,7 +125,7 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 		foodMassLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.foodMass"),
 								 StyleManager.DECIMAL_KG2.format(foodMass), null);
 		
-		foodDemand = pond.getFoodDemand();	
+		foodDemand = pond.getNutrientDemand();	
 		foodDemandLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.foodDemand"),
 								 StyleManager.DECIMAL_PLACES2.format(foodDemand), null);
 		
@@ -199,7 +199,7 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 			foodMassLabel.setText(StyleManager.DECIMAL_KG2.format(newFoodMass));
 		}
 		
-		double newFoodDemand = pond.getFoodDemand();
+		double newFoodDemand = pond.getNutrientDemand();
 		if (foodDemand != newFoodDemand) {
 			foodDemand = newFoodDemand;
 			foodDemandLabel.setText(StyleManager.DECIMAL_PLACES1.format(newFoodDemand));

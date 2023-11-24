@@ -77,12 +77,16 @@ public class Farming extends Function {
 	public static final String TISSUE = " " + FoodType.TISSUE.getName();
 
 	private static final String [] INSPECTION_LIST = {"Environmental Control",
-													  "HVAC", "Waste Disposal",
-													  "Containment System", "Contamination Control",
-													  "Foundation",	"Structural Element", "Thermal Budget",
+													  "Waste Disposal",
+													  "Containment System", 
+													  "Contamination Control",
+													  "Foundation",	
+//													  "Structural Element", 
+//													  "Thermal Budget",
 													  "Irrigation"};
-	private static final String [] CLEANING_LIST = {"Floor", "Curtains", "Canopy", "Equipment",
-													"Pipings", "Trays", "Valves"};
+	private static final String [] CLEANING_LIST = {"Floor", "Curtains", 
+													"Canopy", "Pipings", 
+													"Trays", "Valves"};
 
 	/** The mission sol. */
 //	private int currentSol = 1;
@@ -811,14 +815,11 @@ public class Farming extends Function {
 					updateAttribute(aspect, -0.01);
 				}
 				
-				// Reset the cleaning
-				houseKeeping.resetCleaning();
+				// degrade the cleanliness
+				houseKeeping.degradeCleaning(1);
 
-				// Inspect every 2 days
-				if ((pulse.getMarsTime().getMissionSol() % 2) == 0)
-				{
-					houseKeeping.resetInspected();
-				}
+				// degrade the housekeeping item
+				houseKeeping.degradeInspected(1);
 
 				// Reset cumulativeDailyPAR
 				for (Crop c : cropList)
@@ -1092,20 +1093,28 @@ public class Farming extends Function {
 		return cropList;
 	}
 
-	public List<String> getUninspected() {
-		return houseKeeping.getUninspected();
+	public String getUninspected() {
+		return houseKeeping.getLeastInspected();
 	}
 
-	public List<String> getUncleaned() {
-		return houseKeeping.getUncleaned();
+	public String getUncleaned() {
+		return houseKeeping.getLeastCleaned();
 	}
 
-	public void markInspected(String s) {
-		houseKeeping.inspected(s);
+	public double getInspectionScore() {
+		return houseKeeping.getAverageInspectionScore();
+	}
+	
+	public double getCleaningScore() {
+		return houseKeeping.getAverageCleaningScore();
+	}
+	
+	public void markInspected(String s, double value) {
+		houseKeeping.inspected(s, value);
 	}
 
-	public void markCleaned(String s) {
-		houseKeeping.cleaned(s);
+	public void markCleaned(String s, double value) {
+		houseKeeping.cleaned(s, value);
 	}
 
 	/**

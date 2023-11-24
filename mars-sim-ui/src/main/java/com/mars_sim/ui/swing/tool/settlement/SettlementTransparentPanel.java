@@ -261,7 +261,7 @@ public class SettlementTransparentPanel extends JComponent {
 	    westPanel.setBackground(new Color(0,0,0,128));
 	    westPanel.setOpaque(false);
 	    westPanel.add(sunlightPanel, BorderLayout.CENTER);
-	    westPanel.add(weatherPane, BorderLayout.WEST);
+	    westPanel.add(weatherPane, BorderLayout.SOUTH);
 
         // Make zoom pane drag-able
 		// Register cm cmZoom.registerComponent(zoomPane);

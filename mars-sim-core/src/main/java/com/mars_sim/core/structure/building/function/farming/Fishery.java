@@ -214,12 +214,11 @@ public class Fishery extends Function {
 
 			// check for the passing of each day
 			if (pulse.isNewSol()) {
-				houseKeeping.resetCleaning();
-				
-				// Inspect every 2 days
-				if ((pulse.getMarsTime().getMissionSol() % 2) == 0) {
-					houseKeeping.resetInspected();
-				}
+				// degrade the cleanliness
+				houseKeeping.degradeCleaning(1);
+
+				// degrade the housekeeping item
+				houseKeeping.degradeInspected(1);
 			}
 			
 			weedAge += pulse.getElapsed();
@@ -341,20 +340,28 @@ public class Fishery extends Function {
 		return tankSize * 5D;
 	}
 
-	public List<String> getUninspected() {
-		return houseKeeping.getUninspected();
+	public String getUninspected() {
+		return houseKeeping.getLeastInspected();
 	}
 
-	public List<String> getUncleaned() {
-		return houseKeeping.getUncleaned();
+	public String getUncleaned() {
+		return houseKeeping.getLeastCleaned();
 	}
 
-	public void markInspected(String s) {
-		houseKeeping.inspected(s);
+	public double getInspectionScore() {
+		return houseKeeping.getAverageInspectionScore();
+	}
+	
+	public double getCleaningScore() {
+		return houseKeeping.getAverageCleaningScore();
+	}
+	
+	public void markInspected(String s, double value) {
+		houseKeeping.inspected(s, value);
 	}
 
-	public void markCleaned(String s) {
-		houseKeeping.cleaned(s);
+	public void markCleaned(String s, double value) {
+		houseKeeping.cleaned(s, value);
 	}
 
 	public int getNumFish() {

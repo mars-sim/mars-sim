@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.person.ai.task;
 
-import java.util.List;
 import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
@@ -91,7 +90,7 @@ public class TendAlgaePond extends Task {
 			setPhase(HARVESTING);
 			addPhase(HARVESTING);
 		}
-		else if (pond.getFoodDemand() > 0) {
+		else if (pond.getNutrientDemand() > 0) {
 			setPhase(TENDING);
 			addPhase(TENDING);
 			addPhase(INSPECTING);
@@ -281,14 +280,7 @@ public class TendAlgaePond extends Task {
 	 */
 	private double inspectingPhase(double time) {
 		if (inspectGoal == null) {
-			List<String> uninspected = pond.getUninspected();
-			int size = uninspected.size();
-	
-			if (size > 0) {
-				int rand = RandomUtil.getRandomInt(size - 1);
-	
-				inspectGoal = uninspected.get(rand);
-			}
+			inspectGoal = pond.getUninspected();
 		}
 
 		if (inspectGoal != null) {
@@ -309,7 +301,7 @@ public class TendAlgaePond extends Task {
 			addExperience(workTime);
 			
 			if (getDuration() <= (getTimeCompleted() + time)) {
-				pond.markInspected(inspectGoal);
+				pond.markInspected(inspectGoal, workTime);
 				endTask();
 			}
 		}
@@ -337,14 +329,7 @@ public class TendAlgaePond extends Task {
 	private double cleaningPhase(double time) {
 
 		if (cleanGoal == null) {
-			List<String> uncleaned = pond.getUncleaned();
-			int size = uncleaned.size();
-	
-			if (size > 0) {
-				int rand = RandomUtil.getRandomInt(size - 1);
-	
-				cleanGoal = uncleaned.get(rand);
-			}
+			cleanGoal = pond.getUncleaned();
 		}
 		
 		if (cleanGoal != null) {
@@ -365,7 +350,7 @@ public class TendAlgaePond extends Task {
 			addExperience(workTime);
 			
 			if (getDuration() <= (getTimeCompleted() + time)) {
-				pond.markCleaned(cleanGoal);
+				pond.markCleaned(cleanGoal, workTime);
 				endTask();
 			}
 		}

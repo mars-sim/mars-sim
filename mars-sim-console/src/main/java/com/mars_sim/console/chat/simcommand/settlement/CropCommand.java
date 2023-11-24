@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CropCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2023-11-22
  * @author Barry Evans
  */
 
@@ -20,8 +20,7 @@ import com.mars_sim.core.structure.building.function.farming.Crop;
 import com.mars_sim.core.structure.building.function.farming.Farming;
 
 /**
- * Command to display settlement crop
- * This is a singleton.
+ * Command to display crop status.
  */
 public class CropCommand extends AbstractSettlementCommand {
 
@@ -34,7 +33,8 @@ public class CropCommand extends AbstractSettlementCommand {
 	}
 
 	/** 
-	 * Output the current immediate location of the Unit
+	 * Outputs the current immediate location of the Unit.
+	 * 
 	 * @return 
 	 */
 	@Override
@@ -44,7 +44,7 @@ public class CropCommand extends AbstractSettlementCommand {
 		List<Farming> farms = settlement.getBuildingManager().getBuildings(FunctionType.FARMING)
 				 					.stream().map(Building::getFarming)
 									.collect(Collectors.toList());
-		// Display each farm seperately
+		// Display each farm separately
 		for (Farming farm : farms) {			
 			response.append(farm.getBuilding().getName());
 			response.appendBlankLine();

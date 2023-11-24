@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.person.ai.task;
 
-import java.util.List;
 import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
@@ -118,11 +117,11 @@ public class TendFishTank extends Task {
 			return;
 		}
 
-		// Get available greenhouse if any.
+		// Get available fish tank if any.
 		this.fishTank = fishTank;
 		this.building = fishTank.getBuilding();
 
-		// Walk to fishtank.
+		// Walk to fish tank.
 		walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.FISHERY, false);
 		
 		// Initialize phase
@@ -279,14 +278,7 @@ public class TendFishTank extends Task {
 	 */
 	private double inspectingPhase(double time) {
 		if (inspectGoal == null) {
-			List<String> uninspected = fishTank.getUninspected();
-			int size = uninspected.size();
-	
-			if (size > 0) {
-				int rand = RandomUtil.getRandomInt(size - 1);
-	
-				inspectGoal = uninspected.get(rand);
-			}
+			inspectGoal = fishTank.getUninspected();
 		}
 
 		if (inspectGoal != null) {
@@ -307,7 +299,7 @@ public class TendFishTank extends Task {
 			addExperience(workTime);
 			
 			if (getDuration() <= (getTimeCompleted() + time)) {
-				fishTank.markInspected(inspectGoal);
+				fishTank.markInspected(inspectGoal, workTime);
 				endTask();
 			}
 		}
@@ -335,14 +327,7 @@ public class TendFishTank extends Task {
 	private double cleaningPhase(double time) {
 
 		if (cleanGoal == null) {
-			List<String> uncleaned = fishTank.getUncleaned();
-			int size = uncleaned.size();
-	
-			if (size > 0) {
-				int rand = RandomUtil.getRandomInt(size - 1);
-	
-				cleanGoal = uncleaned.get(rand);
-			}
+			cleanGoal = fishTank.getUncleaned();
 		}
 		
 		if (cleanGoal != null) {
@@ -363,7 +348,7 @@ public class TendFishTank extends Task {
 			addExperience(workTime);
 			
 			if (getDuration() <= (getTimeCompleted() + time)) {
-				fishTank.markCleaned(cleanGoal);
+				fishTank.markCleaned(cleanGoal, workTime);
 				endTask();
 			}
 		}

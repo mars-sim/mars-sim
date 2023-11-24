@@ -7,12 +7,11 @@
 package com.mars_sim.core.structure.building.function;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * Utility class to represent a fixed set of inspection & cleaning activities.
@@ -21,13 +20,10 @@ public class HouseKeeping implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	// Number of inspections
-	private static final int NUM_INSPECTIONS = 2;
-	// Number of cleaning
-	private static final int NUM_CLEANING = 2;
-	
-	private Map<String, Integer> inspectionMap;
-	private Map<String, Integer> cleaningMap;
+	// The map of each system that needs inspection and its condition score
+	private Map<String, Double> inspectionMap;
+	// The map of each system that needs inspection and its cleanliness score
+	private Map<String, Double> cleaningMap;
 	
 	/**
 	 * Constructor.
@@ -39,64 +35,60 @@ public class HouseKeeping implements Serializable {
 
 		inspectionMap = new HashMap<>();
 		for (String s : inspectionList) {
-			inspectionMap.put(s, 0);
+			inspectionMap.put(s, RandomUtil.getRandomDouble(75, 95));
 		}
 
 		cleaningMap = new HashMap<>();
 		for (String s : cleaningList) {
-			cleaningMap.put(s, 0);
+			cleaningMap.put(s, RandomUtil.getRandomDouble(75, 95));
 		}
 	}
 
-	/**
-	 * Resets all the cleaning tasks to back zero.
-	 */
-	public void resetCleaning() {
-		Map<String, Integer> newMap = new HashMap<>();
-		Iterator<Map.Entry<String, Integer>> i = cleaningMap.entrySet().iterator();
-		while (i.hasNext()) {
-			Map.Entry<String, Integer> entry = i.next();
-			String s = entry.getKey();
-			i.remove();
-			newMap.put(s, 0);
-		}
-		cleaningMap.putAll(newMap);
-//		cleaningMap.replaceAll((s, v) -> 0);
+	public double getAverageInspectionScore() {
+		return inspectionMap.values().stream().mapToDouble(Double::doubleValue).average().orElse(0);
 	}
-
-	/**
-	 * Resets all the cleaning tasks to back zero.
-	 */
-	public void resetInspected() {
-		inspectionMap.replaceAll((s, v) -> 0);
+	
+	public double getAverageCleaningScore() {
+		return cleaningMap.values().stream().mapToDouble(Double::doubleValue).average().orElse(0);
 	}
 	
 	/**
-	 * Gets list of items not inspected.
-	 * 
-	 * @return
+	 * Degrades the cleanliness of each system.
 	 */
-	public List<String> getUninspected() {
-		List<String> uninspected = new ArrayList<>();
-		for (Entry<String, Integer> s : inspectionMap.entrySet()) {
-			if (s.getValue() < NUM_INSPECTIONS)
-				uninspected.add(s.getKey());
-		}
-		return uninspected;
+	public void degradeCleaning(double value) {
+		cleaningMap.replaceAll((s, v) -> v - value);
 	}
 
 	/**
-	 * Gets a list of items not cleaned.
+	 * Degrades the condition of each system.
+	 */
+	public void degradeInspected(double value) {
+		inspectionMap.replaceAll((s, v) -> v - value);
+	}
+	
+	public String getLeastInspected() {
+		return getLeast(this.inspectionMap);
+	}
+	
+	public String getLeastCleaned() {
+		return getLeast(this.cleaningMap);
+	}
+	
+	/**
+	 * Gets the least inspected or cleaned item.
 	 * 
 	 * @return
 	 */
-	public List<String> getUncleaned() {
-		List<String> uncleaned = new ArrayList<>();
-		for (Entry<String, Integer> s : cleaningMap.entrySet()) {
-			if (s.getValue() < NUM_CLEANING)
-				uncleaned.add(s.getKey());
+	public String getLeast(Map<String, Double> map) {
+		// In future, each person can become the knowledge expert on a particular system
+		// and may be more proficient on one system over another
+		Entry<String, Double> least = null;
+		for (Entry<String, Double> s : map.entrySet()) {
+			if (least == null || least.getValue() > least.getValue()) {
+				least = s;
+		    }
 		}
-		return uncleaned;
+		return least.getKey();
 	}
 
 	/**
@@ -104,8 +96,8 @@ public class HouseKeeping implements Serializable {
 	 * 
 	 * @param s
 	 */
-	public void inspected(String s) {
-		inspectionMap.put(s, inspectionMap.get(s) + 1);
+	public void inspected(String s, double value) {
+		inspectionMap.put(s, inspectionMap.get(s) + value);
 	}
 
 	/**
@@ -113,8 +105,8 @@ public class HouseKeeping implements Serializable {
 	 * 
 	 * @param s
 	 */
-	public void cleaned(String s) {
-		cleaningMap.put(s, cleaningMap.get(s) + 1);
+	public void cleaned(String s, double value) {
+		cleaningMap.put(s, cleaningMap.get(s) + value);
 	}
 
 }

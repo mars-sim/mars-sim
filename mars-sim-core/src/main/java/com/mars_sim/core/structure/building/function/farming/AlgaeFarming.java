@@ -7,7 +7,6 @@
 
 package com.mars_sim.core.structure.building.function.farming;
 
-import java.util.List;
 import java.util.logging.Level;
 
 import com.mars_sim.core.data.SolMetricDataLogger;
@@ -65,7 +64,7 @@ public class AlgaeFarming extends Function {
 	// Initial amount of water [in liters] per kg algae
 	private static final int INITIAL_WATER_NEED_PER_KG_ALGAE = 333; 
 	/** The food nutrient demand of algae. **/
-	private static final int FOOD_DEMAND = 250;
+	private static final int NUTRIENT_DEMAND = 250;
 	
 	private static final double GAS_MODIFIER = 1.5;
 	
@@ -318,12 +317,11 @@ public class AlgaeFarming extends Function {
 
 			// Check for the passing of each day
 			if (pulse.isNewSol()) {
-				houseKeeping.resetCleaning();
-				
-				// Inspect every 2 days
-				if ((pulse.getMarsTime().getMissionSol() % 2) == 0) {
-					houseKeeping.resetInspected();
-				}
+				// degrade the cleanliness
+				houseKeeping.degradeCleaning(1);
+
+				// degrade the housekeeping item
+				houseKeeping.degradeInspected(1);
 			}
 			
 			foodAge += pulse.getElapsed();
@@ -784,22 +782,30 @@ public class AlgaeFarming extends Function {
 		return tankSize * 5D;
 	}
 
-	public List<String> getUninspected() {
-		return houseKeeping.getUninspected();
+	public String getUninspected() {
+		return houseKeeping.getLeastInspected();
 	}
 
-	public List<String> getUncleaned() {
-		return houseKeeping.getUncleaned();
+	public String getUncleaned() {
+		return houseKeeping.getLeastCleaned();
 	}
 
-	public void markInspected(String s) {
-		houseKeeping.inspected(s);
+	public double getInspectionScore() {
+		return houseKeeping.getAverageInspectionScore();
+	}
+	
+	public double getCleaningScore() {
+		return houseKeeping.getAverageCleaningScore();
+	}
+	
+	public void markInspected(String s, double value) {
+		houseKeeping.inspected(s, value);
 	}
 
-	public void markCleaned(String s) {
-		houseKeeping.cleaned(s);
+	public void markCleaned(String s, double value) {
+		houseKeeping.cleaned(s, value);
 	}
-
+	
 	public double getCurrentAlgae() {
 		return currentAlgae;
 	}
@@ -895,12 +901,12 @@ public class AlgaeFarming extends Function {
 
 
 	/**
-	 * What is algae's demand for food nutrients ?
+	 * What is algae's demand for food nutrient ?
 	 * 
 	 * @return
 	 */
-	public double getFoodDemand() {
-		return foodAge / FOOD_DEMAND;
+	public double getNutrientDemand() {
+		return foodAge / NUTRIENT_DEMAND;
 	}
 	
 	/**

@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.person.ai.task;
 
-import java.util.List;
 import java.util.logging.Level;
 
 import com.mars_sim.core.UnitType;
@@ -460,7 +459,7 @@ public class TendGreenhouse extends Task {
 	 * 
 	 * @param time
 	 */
-	private void createExperienceFromSkill(double time) {
+	private double createExperienceFromSkill(double time) {
 		double mod = 0;
 		// Determine amount of effective work time based on "Botany" skill
 		int greenhouseSkill = getEffectiveSkillLevel();
@@ -473,6 +472,8 @@ public class TendGreenhouse extends Task {
 		double workTime = time * mod;
 		
 		addExperience(workTime);
+		
+		return workTime;
 	}
 	
 	/**
@@ -484,23 +485,16 @@ public class TendGreenhouse extends Task {
 	private double inspectingPhase(double time) {
 	
 		if (goal == null) {
-			List<String> uninspected = greenhouse.getUninspected();
-			int size = uninspected.size();
-	
-			if (size > 0) {
-				int rand = RandomUtil.getRandomInt(size - 1);
-	
-				goal = uninspected.get(rand);
-			}
+			goal = greenhouse.getUninspected();
 		}
 
 		if (goal != null) {
 			printDescription(INSPECT_DETAIL + " " + goal.toLowerCase());
 
-			createExperienceFromSkill(time);
+			double workTime = createExperienceFromSkill(time);
 			
 			if (getDuration() <= (getTimeCompleted() + time)) {
-				greenhouse.markInspected(goal);
+				greenhouse.markInspected(goal, workTime);
 				endTask();
 			}
 		}
@@ -519,23 +513,16 @@ public class TendGreenhouse extends Task {
 	private double cleaningPhase(double time) {
 	
 		if (goal == null) {
-			List<String> uncleaned = greenhouse.getUncleaned();
-			int size = uncleaned.size();
-	
-			if (size > 0) {
-				int rand = RandomUtil.getRandomInt(size - 1);
-	
-				goal = uncleaned.get(rand);
-			}
+			goal = greenhouse.getUncleaned();
 		}
 		
 		if (goal != null) {
 			printDescription(CLEAN_DETAIL + " " + goal.toLowerCase());
 				
-			createExperienceFromSkill(time);
+			double workTime = createExperienceFromSkill(time);
 			
 			if (getDuration() <= (getTimeCompleted() + time)) {
-				greenhouse.markCleaned(goal);
+				greenhouse.markCleaned(goal, workTime);
 				endTask();
 			}
 		}
