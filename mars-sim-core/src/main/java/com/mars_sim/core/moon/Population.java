@@ -82,7 +82,7 @@ public class Population implements Serializable, Temporal {
 		if (pulse.isNewHalfSol()) {
 
 			// Recalculate tourists
-			growthRateTourists += RandomUtil.getRandomDouble(-.15, .2);
+			growthRateTourists += RandomUtil.getRandomDouble(-.125, .2);
 			
 			if (growthRateTourists > 1)
 				growthRateTourists = 1;
@@ -92,7 +92,7 @@ public class Population implements Serializable, Temporal {
 			numTourists += growthRateTourists;
 			
 			// Recalculate residents
-			growthRateResidents += RandomUtil.getRandomDouble(-.15, .2);
+			growthRateResidents += RandomUtil.getRandomDouble(-.125, .2);
 			
 			if (growthRateResidents > 1)
 				growthRateResidents = 1;
@@ -102,7 +102,7 @@ public class Population implements Serializable, Temporal {
 			numResidents += growthRateResidents;
 
 			// Recalculate researchers
-			growthRateResearchers += RandomUtil.getRandomDouble(-.15, .2);
+			growthRateResearchers += RandomUtil.getRandomDouble(-.125, .2);
 			
 			if (growthRateResearchers > 1)
 				growthRateResearchers = 1;
@@ -112,12 +112,12 @@ public class Population implements Serializable, Temporal {
 			numResearchers += growthRateResearchers;
 
 			// Recalculate beds
-			growthRateBeds += RandomUtil.getRandomDouble(-.15, .2);
+			growthRateBeds += RandomUtil.getRandomDouble(-.125, .2);
 			
-			if (growthRateBeds > 1)
-				growthRateBeds = 1;
-			else if (growthRateBeds < -0.5)
-				growthRateBeds = -0.5;
+			if (growthRateBeds > 2)
+				growthRateBeds = 2;
+			else if (growthRateBeds < -0.25)
+				growthRateBeds = -0.25;
 			
 			numBeds += growthRateBeds;
 
@@ -127,20 +127,21 @@ public class Population implements Serializable, Temporal {
 				
 				int rand = RandomUtil.getRandomInt(0, 10);
 				if (rand == 0) {
-					growthRateResidents -= 0.2;
+					growthRateResidents -= 0.1;
 					numResidents += growthRateResidents;
 				}
 				else if ((rand == 1 || rand == 2)) {
-					growthRateResearchers -= 0.2;
+					growthRateResearchers -= 0.1;
 					numResearchers += growthRateResearchers;
 				}
 				else {
-					growthRateTourists -= 0.2;
+					growthRateTourists -= 0.1;
 					numTourists += growthRateTourists;
 				}
 			}
 					
-			if ((int)researchersCache < (int)numResearchers) {
+			if ((int)researchersCache < (int)numResearchers 
+					&& colonists.size() > 0) {
 				removeOneResearcher();
 			}
 			else if ((int)researchersCache > (int)numResearchers) {

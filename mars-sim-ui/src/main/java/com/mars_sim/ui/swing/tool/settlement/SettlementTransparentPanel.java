@@ -225,6 +225,7 @@ public class SettlementTransparentPanel extends JComponent {
         buildZoomSlider();
         buildBanner();
         buildWeatherPanel();
+	    JPanel sunPane = BuildSunPane();
 
 	    JPanel topPane = new JPanel(new BorderLayout(20, 20));
 	    topPane.setBackground(new Color(0,0,0,128));
@@ -233,12 +234,12 @@ public class SettlementTransparentPanel extends JComponent {
 	    JPanel settlementPanel = new JPanel();
 		settlementPanel.setBackground(new Color(0,0,0,128));
 		settlementPanel.setOpaque(false);
-
 		settlementPanel.add(settlementListBox, BorderLayout.NORTH);
 
 	    mapPanel.add(topPane, BorderLayout.NORTH);
 
 	    JPanel weatherPane = new JPanel(new GridLayout(1, 3, 5, 5));
+	    weatherPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 	    weatherPane.setBackground(new Color(0,0,0,128));
 	    weatherPane.setOpaque(false);
 
@@ -246,12 +247,11 @@ public class SettlementTransparentPanel extends JComponent {
 	    weatherPane.add(windIcon);
 	    weatherPane.add(opticalIcon);
 
-	    JPanel sunPane = createSunPane();
-
-	    JPanel panel = new JPanel(new BorderLayout(5, 5));
-	    panel.setBackground(new Color(0,0,0,128));
-	    panel.setOpaque(false);
-	    panel.add(sunPane, BorderLayout.NORTH);
+	    JPanel sunlightPanel = new JPanel(new BorderLayout(5, 5));
+	    sunlightPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+	    sunlightPanel.setBackground(new Color(0,0,0,128));
+	    sunlightPanel.setOpaque(false);
+	    sunlightPanel.add(sunPane, BorderLayout.NORTH);
 
 	    JPanel centerPanel = new JPanel(new BorderLayout(2, 2));
 	    centerPanel.setBackground(new Color(0,0,0,128));
@@ -260,8 +260,8 @@ public class SettlementTransparentPanel extends JComponent {
 	    JPanel westPanel = new JPanel(new BorderLayout(5, 5));
 	    westPanel.setBackground(new Color(0,0,0,128));
 	    westPanel.setOpaque(false);
-	    westPanel.add(panel, BorderLayout.CENTER);
-	    westPanel.add(weatherPane, BorderLayout.NORTH);
+	    westPanel.add(sunlightPanel, BorderLayout.CENTER);
+	    westPanel.add(weatherPane, BorderLayout.WEST);
 
         // Make zoom pane drag-able
 		// Register cm cmZoom.registerComponent(zoomPane);
@@ -272,8 +272,8 @@ public class SettlementTransparentPanel extends JComponent {
 		topPane.add(centerPanel, BorderLayout.CENTER);
 		topPane.add(bannerBar, BorderLayout.NORTH);
 
-	    controlPane = new JPanel(new BorderLayout());//GridLayout(2,1,10,2));
-	    controlPane.setBackground(new Color(0,0,0,128));//,0));
+	    controlPane = new JPanel(new BorderLayout());
+	    controlPane.setBackground(new Color(0,0,0,128));
 		controlPane.setOpaque(false);
 
 	    controlCenterPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -286,9 +286,9 @@ public class SettlementTransparentPanel extends JComponent {
 	    controlPane.add(labelPane, BorderLayout.SOUTH);
        	controlPane.add(controlCenterPane, BorderLayout.CENTER);
 
-	    eastPane = new JPanel(new BorderLayout());//GridLayout(3,1,10,2));
+	    eastPane = new JPanel(new BorderLayout());
 		eastPane.setBackground(new Color(0,0,0,15));
-		eastPane.setBackground(new Color(0,0,0));//,0));
+		eastPane.setBackground(new Color(0,0,0));
 		eastPane.setOpaque(false);
         eastPane.add(emptyLabel, BorderLayout.EAST);
         eastPane.add(emptyLabel, BorderLayout.WEST);
@@ -306,7 +306,7 @@ public class SettlementTransparentPanel extends JComponent {
      * 
      * @return
      */
-    private JPanel createSunPane() {
+    private JPanel BuildSunPane() {
 	    JPanel sunPane = new JPanel(new BorderLayout(3, 3));
 	    sunPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 	    sunPane.setBackground(new Color(0, 0, 0, 128));
@@ -596,14 +596,14 @@ public class SettlementTransparentPanel extends JComponent {
      * Builds the weather panel
      */
 	private void buildWeatherPanel() {
-        int size = WEATHER_ICON_SIZE;
+//        int size = WEATHER_ICON_SIZE;
 
     	temperatureIcon = new JLabel();
-    	temperatureIcon.setPreferredSize(new Dimension(size, size));
+//    	temperatureIcon.setPreferredSize(new Dimension(size, size));
     	windIcon = new JLabel();
-    	windIcon.setPreferredSize(new Dimension(size, size));
+//    	windIcon.setPreferredSize(new Dimension(size, size));
     	opticalIcon = new JLabel();
-    	opticalIcon.setPreferredSize(new Dimension(size, size));
+//    	opticalIcon.setPreferredSize(new Dimension(size, size));
 
         updateIcon();
 	}
@@ -691,7 +691,7 @@ public class SettlementTransparentPanel extends JComponent {
 			tooltip = "Dry";
 		}
 		else {
-			updatedIcon = emptyIcon;
+			updatedIcon = ImageLoader.getIconByName("weather/line_of_sight"); //emptyIcon;
 			tooltip = "Clear Line of Sight";
 		}
 		

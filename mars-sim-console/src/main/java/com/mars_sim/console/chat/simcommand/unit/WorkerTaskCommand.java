@@ -1,5 +1,5 @@
 /*
-/ * Mars Simulation Project
+ * Mars Simulation Project
  * WorkerTaskCommand.java
  * @date 2022-06-24
  * @author Barry Evans
@@ -17,12 +17,12 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 
 /** 
- * 
+ * The command that outputs the task stack and the pending tasks.
  */
 public class WorkerTaskCommand extends AbstractUnitCommand {
 	
 	public WorkerTaskCommand(String group) {
-		super(group, "ta", "task", "About my current activity");
+		super(group, "ta", "task", "About my task stack and pending tasks");
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class WorkerTaskCommand extends AbstractUnitCommand {
 				
 			task = task.getSubTask();
 			if ((task != null) && task.isDone()) {
-				// If the Tak is done why has it not been removed ????
+				// If the Task is done why has it not been removed ????
 				task = null;
 			}
 			prefix.append("->");
@@ -71,7 +71,7 @@ public class WorkerTaskCommand extends AbstractUnitCommand {
 			response.appendBlankLine();
 			response.appendHeading("Pending tasks");
 			for (PendingTask p : pending) {
-				response.appendText(p.job().getName() + " @ " + p.when().getTruncatedDateTimeStamp());
+				response.appendText(" " + p.job().getName() + " @ " + p.when().getTruncatedDateTimeStamp());
 			}
 		}
 
