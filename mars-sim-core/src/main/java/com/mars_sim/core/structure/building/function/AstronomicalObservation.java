@@ -65,15 +65,16 @@ public class AstronomicalObservation extends Function {
 	/**
 	 * Adds a new observer to the observatory.
 	 * 
-	 * @throws Exception if observatory is already at capacity.
+	 * @return If there is space
 	 */
-	public void addObserver() {
+	public boolean addObserver() {
 		observerNum++;
 		if (observerNum > observatoryCapacity) {
 			observerNum = observatoryCapacity;
 			logger.log(Level.SEVERE, "addObserver(): " + "Observatory is already full of observers.");
-			throw new IllegalStateException("Observatory is already full of observers.");
+			return false;
 		}
+		return true;
 	}
 
 	/**
