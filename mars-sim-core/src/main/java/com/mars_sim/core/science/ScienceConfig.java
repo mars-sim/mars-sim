@@ -62,9 +62,8 @@ public class ScienceConfig implements Serializable {
 		JsonObject jsonObject = null;
 
         // Load the scientific study param json files
-        try(InputStream fis = this.getClass().getResourceAsStream(JSON_DIR + SCIENTIFIC_STUDY_JSON)) {
-        	JsonReader jsonReader = Json.createReader(fis);
-
+        try(InputStream fis = this.getClass().getResourceAsStream(JSON_DIR + SCIENTIFIC_STUDY_JSON);
+			JsonReader jsonReader = Json.createReader(fis)) {
         	// Get JsonObject from JsonReader
         	jsonObject = jsonReader.readObject();
 		} catch (IOException e1) {
@@ -96,8 +95,9 @@ public class ScienceConfig implements Serializable {
 		List<Topic> results = new ArrayList<>();
     	
         // Load the topic json files
-    	try(InputStream fis = this.getClass().getResourceAsStream(fileName)) {
-	    	var jsonReader = Json.createReader(fis);
+    	try(InputStream fis = this.getClass().getResourceAsStream(fileName);
+			JsonReader jsonReader = Json.createReader(fis)) {
+	    	
 	        var jsonObject = jsonReader.readObject();
 
 	        // Retrieve a subject from JsonObject
