@@ -8,28 +8,26 @@ package com.mars_sim.core.science;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
 
 /**
  * A class that keeps track of all scientific studies in the simulation.
  */
-public class ScientificStudyManager // extends Thread
+public class ScientificStudyManager
 		implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(ScientificStudyManager.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(ScientificStudyManager.class.getName());
 	
 	// Data members
 	/** The mission identifier. */
@@ -38,25 +36,8 @@ public class ScientificStudyManager // extends Thread
 	private int solCache;
 	/** The list of scientific study. */
 	private List<ScientificStudy> studies = new ArrayList<>();
-	/** The codes for each science type. */
-	private static Map<ScienceType, String> codeMap = new HashMap<>();
+
 	
-	static {
-		codeMap.put(ScienceType.AREOLOGY, "ARE");
-		codeMap.put(ScienceType.ASTRONOMY, "AST");
-		codeMap.put(ScienceType.BIOLOGY, "BIO");
-		codeMap.put(ScienceType.BOTANY, "BOT");
-		codeMap.put(ScienceType.CHEMISTRY, "CHE");
-		codeMap.put(ScienceType.COMPUTING, "COM");
-		codeMap.put(ScienceType.ENGINEERING, "ENG");
-		codeMap.put(ScienceType.MATHEMATICS, "MAT");
-		codeMap.put(ScienceType.MEDICINE, "MED");
-		codeMap.put(ScienceType.METEOROLOGY, "MET");
-		codeMap.put(ScienceType.PHYSICS, "PHY");
-		codeMap.put(ScienceType.PSYCHOLOGY, "PSY");
-	}
-
-
 	/**
 	 * Constructor.
 	 */
@@ -97,13 +78,13 @@ public class ScientificStudyManager // extends Thread
 			else
 				id = identifier++;
 			String numString = missionSol + "-" + String.format("%03d", id);
-			String name = codeMap.get(science) + "-" + researcher.getAssociatedSettlement().getSettlementCode()
+			String name = science.getCode() + "-" + researcher.getAssociatedSettlement().getSettlementCode()
 					+ "-" + numString;
 			study = new ScientificStudy(id, name, researcher, science, difficultyLevel);
 			studies.add(study);
 		}
 
-		logger.fine(researcher.getName() + " began writing proposal for " + study.getName());
+		logger.fine(researcher, "Began writing proposal for " + study.getName());
 
 		return study;
 	}

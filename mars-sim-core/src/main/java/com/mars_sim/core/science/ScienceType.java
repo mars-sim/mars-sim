@@ -25,65 +25,67 @@ public enum ScienceType {
 	/** The study of the evolution of the planet Mars. */
 	AREOLOGY(
 			Msg.getString("ScienceType.areology"), //$NON-NLS-1$
-			SkillType.AREOLOGY, JobType.AREOLOGIST),
+			"ARE", SkillType.AREOLOGY, JobType.AREOLOGIST),
 
 	/** Keeping track of heavenly bodies. */
 	ASTRONOMY(Msg.getString("ScienceType.astronomy"), //$NON-NLS-1$
-			SkillType.ASTRONOMY, JobType.ASTRONOMER),
+			"AST", SkillType.ASTRONOMY, JobType.ASTRONOMER),
 
 	/** Concerned with the processes of life from micro to macro scale. */
 	BIOLOGY(Msg.getString("ScienceType.biology"), //$NON-NLS-1$
-			SkillType.BIOLOGY, JobType.BIOLOGIST),
+			"BIO", SkillType.BIOLOGY, JobType.BIOLOGIST),
 
 	/** How to grow plants. */
 	BOTANY(Msg.getString("ScienceType.botany"), //$NON-NLS-1$
-			SkillType.BOTANY, JobType.BOTANIST),
+			"BOT", SkillType.BOTANY, JobType.BOTANIST),
 
 	/** How to mix elements and compounds. */
 	CHEMISTRY(Msg.getString("ScienceType.chemistry"), //$NON-NLS-1$
-			SkillType.CHEMISTRY, JobType.CHEMIST),
+			"CHE", SkillType.CHEMISTRY, JobType.CHEMIST),
 
 	/** Provides fundamental computing skill. */
 	COMPUTING (Msg.getString("ScienceType.computing"), //$NON-NLS-1$
-			SkillType.COMPUTING, JobType.COMPUTER_SCIENTIST),
+			"COM", SkillType.COMPUTING, JobType.COMPUTER_SCIENTIST),
 
 	/** How to make stuff. */
 	ENGINEERING(Msg.getString("ScienceType.engineering"), //$NON-NLS-1$
-			SkillType.MATERIALS_SCIENCE, JobType.ENGINEER),
+			"ENG", SkillType.MATERIALS_SCIENCE, JobType.ENGINEER),
 
 	/** Provides fundamental basics for all sciences. */
 	MATHEMATICS(Msg.getString("ScienceType.mathematics"), //$NON-NLS-1$
-			SkillType.MATHEMATICS, JobType.MATHEMATICIAN),
+			"MAT", SkillType.MATHEMATICS, JobType.MATHEMATICIAN),
 
 	/** How to tell sick from healthy. */
 	MEDICINE(Msg.getString("ScienceType.medicine"), //$NON-NLS-1$
-			SkillType.MEDICINE, JobType.DOCTOR),
+			"MED", SkillType.MEDICINE, JobType.DOCTOR),
 
 	/** Weather forecasting, climate modeling. */
 	METEOROLOGY(Msg.getString("ScienceType.meteorology"), //$NON-NLS-1$
-			SkillType.METEOROLOGY, JobType.METEOROLOGIST),
+			"MET", SkillType.METEOROLOGY, JobType.METEOROLOGIST),
 
 	/** Laws of nature. Study of forces and mechanics. */
 	PHYSICS(Msg.getString("ScienceType.physics"), //$NON-NLS-1$
-			SkillType.PHYSICS, JobType.PHYSICIST),
+			"PHY", SkillType.PHYSICS, JobType.PHYSICIST),
 
 	/** The Study of the mind and behavior.  */
 	PSYCHOLOGY(Msg.getString("ScienceType.psychology"), //$NON-NLS-1$
-			SkillType.PSYCHOLOGY, JobType.PSYCHOLOGIST);
+			"PSY", SkillType.PSYCHOLOGY, JobType.PSYCHOLOGIST);
 
 
 	/** Maps for keeping track of collaborative sciences. */
 	private static Map<ScienceType, Science> collabSciences;
 	 
 	private String name;
+	private String code;
 	private JobType job;
 	private SkillType skill;
 
 	/** 
 	 * Hidden constructor. 
 	 */
-	private ScienceType(String name, SkillType skill, JobType job) {
+	private ScienceType(String name, String code, SkillType skill, JobType job) {
 		this.name = name;
+		this.code = code;
 		this.job = job;
 		this.skill = skill;
 	}
@@ -95,6 +97,10 @@ public enum ScienceType {
 	 */
 	public final String getName() {
 		return this.name;
+	}
+
+	public String getCode() {
+		return code;
 	}
 
 	public JobType getJobType() {
