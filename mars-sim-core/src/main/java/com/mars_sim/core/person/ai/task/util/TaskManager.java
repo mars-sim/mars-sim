@@ -20,6 +20,7 @@ import com.mars_sim.core.data.RatingLog;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.task.RespondToStudyInvitation;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.time.MarsTime;
@@ -664,6 +665,7 @@ public abstract class TaskManager implements Serializable {
 
 		MetaTaskUtil.initialiseInstances(sim);
 		Task.initializeInstances(sim, conf.getPersonConfig());
+		RespondToStudyInvitation.initialiseInstances(conf.getScienceConfig());
 		master = sim.getMasterClock();
 	}
 	

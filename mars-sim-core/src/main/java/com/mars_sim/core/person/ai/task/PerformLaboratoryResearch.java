@@ -351,6 +351,9 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		if (!isDone()) {
 			lab.addResearcher();
 		}
+		else {
+			logger.warning(person, "Could not allocate lab research " + getName() + ", completed early.");
+		}
 	}
 
 	/**

@@ -7,13 +7,9 @@
 
 package com.mars_sim.core.science;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.Job;
@@ -78,8 +74,6 @@ public enum ScienceType {
 
 	/** Maps for keeping track of collaborative sciences. */
 	private static Map<ScienceType, Science> collabSciences;
-	/** Sets for keeping track of experimental sciences. */
-	private static Set<ScienceType> experimentalSciences;
 	 
 	private String name;
 	private JobType job;
@@ -114,7 +108,7 @@ public enum ScienceType {
 	/** 
 	 * Initializes collaborative sciences.
 	 */
-	private static void initSciences() {
+	static  {
 		// Load available sciences in list.
 		collabSciences = new HashMap<>();
 		for (ScienceType scienceType : ScienceType.values()) {
@@ -147,36 +141,7 @@ public enum ScienceType {
 		physics.setCollaborativeSciences(new Science[]     { astronomy, mathematics, engineering });
 		psychology.setCollaborativeSciences(new Science[]  { biology, chemistry, medicine });
 	}
-    
-    /**
-     * Initializes all the sciences related to laboratory experimentation.
-     * 
-     */
-    public static void initExperimentalSciences() {
-    	experimentalSciences = new HashSet<>();
-        experimentalSciences.add(ScienceType.AREOLOGY);
-        experimentalSciences.add(ScienceType.BOTANY);
-        experimentalSciences.add(ScienceType.BIOLOGY);
-        experimentalSciences.add(ScienceType.CHEMISTRY);
-        experimentalSciences.add(ScienceType.COMPUTING);
-        experimentalSciences.add(ScienceType.ENGINEERING);
-        experimentalSciences.add(ScienceType.MEDICINE);
-        experimentalSciences.add(ScienceType.METEOROLOGY);
-        experimentalSciences.add(ScienceType.PHYSICS);
-        experimentalSciences.add(ScienceType.PSYCHOLOGY);
-    }
 
-	/**
-     * Gets all the sciences related to laboratory experimentation.
-     * 
-     * @return set of sciences.
-     */
-    public static Set<ScienceType> getExperimentalSciences() {
-		if (experimentalSciences == null)
-			initExperimentalSciences();
-    	return experimentalSciences;
-    }
-    
 	/**
 	 * Gives back the {@link ScienceType} associated with the given job or
 	 * <code>null</code>.
@@ -185,19 +150,14 @@ public enum ScienceType {
 	 * @return {@link ScienceType}
 	 */
 	public static ScienceType getJobScience(JobType job) {
-		ScienceType result = null;
 		if (job != null) {
-			if (collabSciences == null)
-				initSciences();
-			Iterator<Science> i = collabSciences.values().iterator();
-			while (result == null && i.hasNext()) {
-				Science science = i.next();
+			for(Science science : collabSciences.values()) {
 				List<JobType> jobs = science.getJobs();
 				if (jobs.contains(job))
-					result = science.getType();
+					return science.getType();
 			}
 		}
-		return result;
+		return null;
 	}
 
 	/**
@@ -208,27 +168,6 @@ public enum ScienceType {
 	 * @return {@link Boolean}
 	 */
 	public static boolean isCollaborativeScience(ScienceType sciencePrimary, ScienceType scienceSecondary) {
-		if (collabSciences == null)
-			initSciences();
 		return collabSciences.get(sciencePrimary).getCollaborativeSciences().contains(scienceSecondary);
-	}
-
-	/**
-	 * Gives back a list of all valid values for the ScienceType enum.
-	 */
-	public static List<ScienceType> valuesList() {
-		return Arrays.asList(ScienceType.values());
-	}
-
-	public static ScienceType getType(String name) {
-		if (name != null) {
-	    	for (ScienceType t : ScienceType.values()) {
-	    		if (name.equalsIgnoreCase(t.name)) {
-	    			return t;
-	    		}
-	    	}
-		}
-
-		return null;
 	}
 }

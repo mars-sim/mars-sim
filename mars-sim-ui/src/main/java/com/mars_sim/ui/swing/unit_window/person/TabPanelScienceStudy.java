@@ -383,7 +383,7 @@ public class TabPanelScienceStudy extends TabPanel {
 
 		// Data members.
 		private Person person;
-		private List<ScienceType> sciences;
+		private ScienceType[] sciences;
 		private ScientificStudyManager manager;
 
 		private AchievementTableModel(Person person, ScientificStudyManager manager) {
@@ -392,7 +392,7 @@ public class TabPanelScienceStudy extends TabPanel {
 
 			this.person = person;
 			this.manager = manager;
-			sciences = ScienceType.valuesList();
+			sciences = ScienceType.values();
 		}
 
 		/**
@@ -443,7 +443,7 @@ public class TabPanelScienceStudy extends TabPanel {
 		 * @return the number of rows in the model.
 		 */
 		public int getRowCount() {
-			return sciences.size();
+			return sciences.length;
 		}
 
 		/**
@@ -455,8 +455,8 @@ public class TabPanelScienceStudy extends TabPanel {
 		 */
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			Object result = null;
-			if ((rowIndex >= 0) && (rowIndex < sciences.size())) {
-				ScienceType science = sciences.get(rowIndex);
+			if ((rowIndex >= 0) && (rowIndex < sciences.length)) {
+				ScienceType science = sciences[rowIndex];
 				if (columnIndex == 0)
 					result = science.getName();
 				else if (columnIndex == 1)

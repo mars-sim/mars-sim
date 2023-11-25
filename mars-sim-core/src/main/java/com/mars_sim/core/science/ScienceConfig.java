@@ -4,7 +4,6 @@
  * @date 2021-08-28
  * @author Manny Kung
  */
-
 package com.mars_sim.core.science;
 
 import java.io.IOException;
@@ -21,6 +20,7 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
+import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.tools.util.RandomUtil;
  
@@ -46,12 +46,10 @@ public class ScienceConfig implements Serializable {
 
 	private final String TOPICS_JSON_FILE_EXT = UNDERSCORE + TOPICS + DOT + JSON;
 	private final String SCIENTIFIC_STUDY_JSON = SCIENTIFIC_STUDY + DOT + JSON;
-	
-	private String[] jsonFiles = new String[ScienceType.valuesList().size()]; 
     
-    private static List<Integer> averageTime = new ArrayList<>(); 
+    private int[] averageTime = null; 
     
-    private static int aveNumCollaborators;
+    private int aveNumCollaborators;
 
 	private static int maxStudiesPerPerson = 2;
         
@@ -61,99 +59,72 @@ public class ScienceConfig implements Serializable {
      * Constructor.
      */
     public ScienceConfig() {
-        InputStream fis = null;
-        JsonReader jsonReader = null;
-        JsonObject jsonObject = null;
-        
-        // Load the scientific study param json files
-        fis = this.getClass().getResourceAsStream(JSON_DIR + SCIENTIFIC_STUDY_JSON);
-        jsonReader = Json.createReader(fis);
+		JsonObject jsonObject = null;
 
-        // Get JsonObject from JsonReader
-        jsonObject = jsonReader.readObject();
-         
-        // Close IO resource and JsonReade
-        jsonReader.close();
-        try {
-			fis.close();
+        // Load the scientific study param json files
+        try(InputStream fis = this.getClass().getResourceAsStream(JSON_DIR + SCIENTIFIC_STUDY_JSON)) {
+        	JsonReader jsonReader = Json.createReader(fis);
+
+        	// Get JsonObject from JsonReader
+        	jsonObject = jsonReader.readObject();
 		} catch (IOException e1) {
-          	logger.log(Level.SEVERE, "Cannot close json file: "+ e1.getMessage());
+          	logger.log(Level.SEVERE, "Cannot open json file: "+ e1.getMessage());
+			throw new IllegalStateException("Cannot open science json file", e1);
 		}
          
         aveNumCollaborators = jsonObject.getInt("average_num_collaborators");
         maxStudiesPerPerson = jsonObject.getInt("max_studies_per_person");
 
-        averageTime.add(jsonObject.getInt("base_proposal_time"));
-        averageTime.add(jsonObject.getInt("base_primary_research_study_time"));
-        averageTime.add(jsonObject.getInt("base_collaborative_research_study_time"));
-        averageTime.add(jsonObject.getInt("base_primary_researcher_paper_writing_time"));
-        averageTime.add(jsonObject.getInt("base_collaborator_paper_writing_time"));
-        averageTime.add(jsonObject.getInt("peer_review_time"));
-        averageTime.add(jsonObject.getInt("primary_researcher_work_downtime_allowed"));
-        averageTime.add(jsonObject.getInt("collaborator_work_downtime_allowed"));
+		averageTime = new int[SciencePhaseTime.values().length];
+		for(SciencePhaseTime pt : SciencePhaseTime.values()) {
+			averageTime[pt.ordinal()] = jsonObject.getInt(pt.name().toLowerCase() + "_time");
+		}
     	     
-    	// Create a list of science topic filenames 
-    	createJsonFiles();
+    	// Create a list of science topic filenames
+		for(ScienceType sType : ScienceType.values()) {
+			try {
+				var topics = parseScienceJSON(sType);
+				scienceTopics.put(sType, topics);
+			} catch (IOException e) {
+				throw new IllegalStateException("Cannot open science json file", e);
+			}
+		}
+    }
+ 
+    private List<Topic> parseScienceJSON(ScienceType sType) throws IOException {
+    	String fileName = JSON_DIR + sType.name().toLowerCase() + TOPICS_JSON_FILE_EXT;
+		List<Topic> results = new ArrayList<>();
     	
         // Load the topic json files
-    	for (String fileName : jsonFiles) {  
-	        fis = this.getClass().getResourceAsStream(fileName);
-	        jsonReader = Json.createReader(fis);
-	         
-	        // Get JsonObject from JsonReader
-	        try {
-	        	jsonObject = jsonReader.readObject();
-	        }  
-	        catch (RuntimeException rte) {
-	        	logger.severe("Problem parsing JSON " + fileName);
-	        	throw rte;
-	        }
-	        
-	        // Close IO resource and JsonReader
-	        jsonReader.close();
-	        try {
-				fis.close();
-			} catch (IOException e1) {
-	          	logger.log(Level.SEVERE, "Cannot close json file: "+ e1.getMessage());
-			}
-	         
-	        Subject s = new Subject();
+    	try(InputStream fis = this.getClass().getResourceAsStream(fileName)) {
+	    	var jsonReader = Json.createReader(fis);
+	        var jsonObject = jsonReader.readObject();
+
 	        // Retrieve a subject from JsonObject
-	        s.setSubject(jsonObject.getString(SUBJECT));
-	     
-//	        s.setNum(jsonObject.getInt("numbers"));
-//	        int size = s.getNum();
+	        String subject = jsonObject.getString(SUBJECT);
+			subject = ConfigHelper.convertToEnumName(subject);
+			if (!sType.name().equals(subject)) {
+				throw new IllegalArgumentException("Science type " + sType.getName() + " is not defiend in file " + fileName);
+			}
 	        
 	        // Read the json array of topics
 	        JsonArray jsonArray = jsonObject.getJsonArray(TOPICS);
-	        
-	        int size = jsonArray.size();
-	        
-	        s.setNum(size);
-	        
-	        try {
-		        for (int i = 0; i< size; i++) {
-	                JsonObject child = jsonArray.getJsonObject(i);
-		        	s.createTopic(child.getString(TOPIC));
-		        }
-	        } catch (Exception e1) {
-	          	logger.log(Level.SEVERE, "Cannot get json object: "+ e1.getMessage());
+			for (int i = 0; i< jsonArray.size(); i++) {
+				JsonObject child = jsonArray.getJsonObject(i);
+				Topic e = new Topic(child.getString(TOPIC));
+				results.add(e);
 			}
-     
-	        scienceTopics.put(ScienceType.getType(s.getName()), s.getTopics());
     	}
-    }
- 
-    
-    public void createJsonFiles() {
-    	int size = ScienceType.valuesList().size();
-    	for (int i=0; i<size; i++) {
-    		ScienceType type = ScienceType.valuesList().get(i);
-    		jsonFiles[i] = JSON_DIR + type.getName().toLowerCase() + TOPICS_JSON_FILE_EXT;
-    	}
-    }
-    
-    
+
+		return results;
+	}
+
+	/**
+	 * Find a random topic for a science type.
+
+	 * @param type
+	 * @return
+	 */
     public String getATopic(ScienceType type) {
     	if (scienceTopics.containsKey(type)) {
     		List<Topic> topics = scienceTopics.get(type);
@@ -166,64 +137,24 @@ public class ScienceConfig implements Serializable {
     	return GENERAL;	
     }
     
-    public static int getAverageTime(int index) {
-    	return averageTime.get(index); 
+    public int getAverageTime(SciencePhaseTime time) {
+    	return averageTime[time.ordinal()];
     }
     
-    static int getAveNumCollaborators() {
+    int getAveNumCollaborators() {
     	return aveNumCollaborators;
     }
 
-	public static int getMaxStudies() {
+	public int getMaxStudies() {
 		return maxStudiesPerPerson ;
-	}
-
-    /**
-     * The scientific subject holding a list of topics.
-     */
-	class Subject {
-	    
-		int num;
-		
-		String name;
-
-		List<Topic> topics = new ArrayList<>();
-		
-		Subject() {}
-
-		void setSubject(String value) {
-			this.name = value;
-		}
-		
-		void setNum(int num) {
-			this.num = num;
-		}
-		
-		int getNum() {
-			return num;
-		}
-		
-		String getName() {
-			return name;
-		}
-		
-	   	void createTopic(String name) {
-	   		Topic e = new Topic(name);
-	   		topics.add(e);
-    	}
-	   	
-	   	List<Topic> getTopics() {
-	   		return topics;
-	   	}
 	}
 	
     /**
      * The Topic of a Subject.
      */
-    class Topic {
+    private static class Topic {
     
     	String name;
-    	String id;
     	
     	Topic(String name) {
     		this.name = name;
@@ -232,17 +163,5 @@ public class ScienceConfig implements Serializable {
     	String getName() {
     		return name;
     	}
-    	
-    }
-    
-    /**
-     * Prepares object for garbage collection.
-     */
-    public void destroy() {
-        jsonFiles = null;
-        averageTime.clear();
-        averageTime = null; 
-        scienceTopics.clear();
-        scienceTopics = null;   
     }
 }

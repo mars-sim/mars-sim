@@ -42,6 +42,8 @@ public class RespondToStudyInvitation extends Task {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(RespondToStudyInvitation.class.getName());
 
+	private static ScienceConfig scienceConfig;
+
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.respondToStudyInvitation"); //$NON-NLS-1$
 
@@ -67,11 +69,6 @@ public class RespondToStudyInvitation extends Task {
 		// Skill determined based on person job type
 		super(NAME, person, false, true, STRESS_MODIFIER, null, 25D, DURATION);
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-
-//		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
-//			logger.fine(person, "Ended responding to study invitation. Not feeling well.");
-//			endTask();
-//		}
 
 		ScienceType scienceType = ScienceType.getJobScience(person.getMind().getJob());
 		if (scienceType != null) {
@@ -168,7 +165,7 @@ public class RespondToStudyInvitation extends Task {
 			// LImit how many studies a person can do
 			int studyCount = (person.getStudy() != null ? 1 : 0);
 			studyCount += person.getCollabStudies().size();
-			if (studyCount >= ScienceConfig.getMaxStudies()) {
+			if (studyCount >= scienceConfig.getMaxStudies()) {
 				logger.warning(person, "Doing too many studies. Not accepting " + study.getName() + ".");
 				endTask();
 				return time;
@@ -281,5 +278,9 @@ public class RespondToStudyInvitation extends Task {
 		} else {
 			return time;
 		}
+	}
+
+	public static void initialiseInstances(ScienceConfig sc) {
+		scienceConfig = sc;
 	}
 }
