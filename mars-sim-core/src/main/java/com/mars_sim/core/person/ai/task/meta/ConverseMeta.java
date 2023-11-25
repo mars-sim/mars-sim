@@ -39,6 +39,11 @@ public class ConverseMeta extends FactoryMetaTask {
 
     @Override
     public double getProbability(Person person) {
+        // Avoid chatting when outside        
+        if (person.isOutside()) {
+            return 0D;
+        }
+
     	double result = RandomUtil.getRandomDouble(person.getNaturalAttributeManager()
     			.getAttribute(NaturalAttributeType.CONVERSATION))/20;
  

@@ -85,7 +85,10 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 			// Walk to observatory building.
 			walkToTaskSpecificActivitySpotInBuilding(observatory.getBuilding(),
 													FunctionType.ASTRONOMICAL_OBSERVATION, false);
-			observatory.addObserver();
+			if (!observatory.addObserver()) {
+				endTask();
+				return;
+			}
 			isActiveObserver = true;
 			
 			// Initialize phase
