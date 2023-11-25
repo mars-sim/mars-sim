@@ -39,7 +39,6 @@ import com.mars_sim.core.person.ai.task.meta.MeetTogetherMeta;
 import com.mars_sim.core.person.ai.task.meta.ObserveAstronomicalObjectsMeta;
 import com.mars_sim.core.person.ai.task.meta.OptimizeSystemMeta;
 import com.mars_sim.core.person.ai.task.meta.PeerReviewStudyPaperMeta;
-import com.mars_sim.core.person.ai.task.meta.PerformLaboratoryExperimentMeta;
 import com.mars_sim.core.person.ai.task.meta.PerformLaboratoryResearchMeta;
 import com.mars_sim.core.person.ai.task.meta.PerformMathematicalModelingMeta;
 import com.mars_sim.core.person.ai.task.meta.PlanMissionMeta;
@@ -150,7 +149,6 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new OptimizeSystemMeta());
 		allMetaTasks.add(new PeerReviewStudyPaperMeta());
 		
-		allMetaTasks.add(new PerformLaboratoryExperimentMeta());
 		allMetaTasks.add(new PerformLaboratoryResearchMeta());
 		allMetaTasks.add(new PerformMathematicalModelingMeta());
 		allMetaTasks.add(new PlanMissionMeta());

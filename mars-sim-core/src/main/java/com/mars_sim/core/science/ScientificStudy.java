@@ -38,7 +38,7 @@ import com.mars_sim.tools.util.RandomUtil;
 /**
  * A class representing a scientific study.
  */
-public class ScientificStudy implements Entity, Serializable, Temporal, Comparable<ScientificStudy> {
+public class ScientificStudy implements Entity, Temporal, Comparable<ScientificStudy> {
 	// POJO holding collaborators effort
 	private static final class CollaboratorStats implements Serializable {
 		private static final long serialVersionUID = 1L;
@@ -146,33 +146,33 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 		phase = PROPOSAL_PHASE;
 		
 		// Gets the average number from scientific_study.json
-		int aveNum = ScienceConfig.getAveNumCollaborators();
+		int aveNum = scienceConfig.getAveNumCollaborators();
 		// Compute the number for this particular scientific study
 		maxCollaborators = aveNum + (int)(aveNum/5D * RandomUtil.getGaussianDouble());
 		
 		// Compute the base proposal study time for this particular scientific study
-		baseProposalTime = computeTime(0) * Math.max(1, difficultyLevel);
+		baseProposalTime = computeTime(SciencePhaseTime.PROPOSAL) * Math.max(1, difficultyLevel);
 		
 		// Compute the primary research time for this particular scientific study
-		basePrimaryResearchTime = computeTime(1) * Math.max(1, difficultyLevel);
+		basePrimaryResearchTime = computeTime(SciencePhaseTime.PRIMARY_RESEARCH) * Math.max(1, difficultyLevel);
 		
 		// Compute the collaborative research time for this particular scientific study
-		baseCollaborativeResearchTime = computeTime(2) * Math.max(1, difficultyLevel);
+		baseCollaborativeResearchTime = computeTime(SciencePhaseTime.COLLABORATIVE_RESEARCH) * Math.max(1, difficultyLevel);
 		
 		// Compute the primary research paper writing time for this particular scientific study
-		basePrimaryWritingPaperTime = computeTime(3)  * Math.max(1, difficultyLevel);
+		basePrimaryWritingPaperTime = computeTime(SciencePhaseTime.PRIMARY_RESEARCHER_WRITING) * Math.max(1, difficultyLevel);
 		
 		// Compute the collaborative paper writing time for this particular scientific study
-		baseCollaborativePaperWritingTime = computeTime(4) * Math.max(1, difficultyLevel);
+		baseCollaborativePaperWritingTime = computeTime(SciencePhaseTime.COLLABORATOR_WRITING) * Math.max(1, difficultyLevel);
 		
 		// Compute the base peer review time for this particular scientific study
-		basePeerReviewTime = computeTime(5);
+		basePeerReviewTime = computeTime(SciencePhaseTime.PEER_REVIEW);
 		
 		// Compute the primary work downtime allowed for this particular scientific study
-		primaryWorkDownTimeAllowed = computeTime(6);
+		primaryWorkDownTimeAllowed = computeTime(SciencePhaseTime.PRIMARY_RESEARCHER_IDLE);
 		
 		// Compute the collaborative work downtime allowed for this particular scientific study
-		collaborativeWorkDownTimeAllowed = computeTime(7);
+		collaborativeWorkDownTimeAllowed = computeTime(SciencePhaseTime.COLLABORATOR_IDLE);
 		
 		// These must be concurrent otherwise the internal representation will be corrupted
 		// after a reload due to multiple threads.
@@ -192,9 +192,9 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 	 * @param index
 	 * @return
 	 */
-	private double computeTime(int index) {
+	private double computeTime(SciencePhaseTime index) {
 		// Gets the average time from scientific_study.json
-		int mean = ScienceConfig.getAverageTime(index);
+		int mean = scienceConfig.getAverageTime(index);
 		// Modify it with random gaussian for this particular scientific study
 		double mod = RandomUtil.getGaussianDouble();
 		if (mod > 10)
@@ -1028,8 +1028,9 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 	/**
 	 * Initializes instances after loading from a saved sim.
 	 * 	 */
-	public static void initializeInstances(MasterClock c) {	
+	public static void initializeInstances(MasterClock c, ScienceConfig sc) {	
 		masterClock = c;
+		scienceConfig = sc;
 	}
 	
 	/**

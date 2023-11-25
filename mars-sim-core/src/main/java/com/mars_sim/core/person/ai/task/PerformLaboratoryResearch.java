@@ -7,13 +7,13 @@
 package com.mars_sim.core.person.ai.task;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
-import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.Person;
@@ -169,9 +169,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		}
 
 		// Add all collaborative studies in research phase.
-		Iterator<ScientificStudy> i = person.getCollabStudies().iterator();
-		while (i.hasNext()) {
-			ScientificStudy collabStudy = i.next();
+		for(ScientificStudy collabStudy : person.getCollabStudies()) {
 			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
 					&& !collabStudy.isCollaborativeResearchCompleted(person)) {
 
@@ -187,7 +185,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		}
 
 		// Randomly select study.
-		if (possibleStudies.size() > 0) {
+		if (!possibleStudies.isEmpty()) {
 			int selected = RandomUtil.getRandomInt(possibleStudies.size() - 1);
 			result = possibleStudies.get(selected);
 		}
@@ -274,11 +272,9 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	 * @return research buildings with available lab space.
 	 */
 	private static Set<Building> getSettlementLabsWithAvailableSpace(Set<Building> buildingList) {
-		Set<Building> result = new UnitSet<>();
+		Set<Building> result = new HashSet<>();
 
-		Iterator<Building> i = buildingList.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
+		for(Building building : buildingList) {
 			Research lab = building.getResearch();
 			if (lab.getResearcherNum() < lab.getLaboratorySize()) {
 				result.add(building);
@@ -297,18 +293,9 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	 * @return research buildings with science specialty.
 	 */
 	private static Set<Building> getSettlementLabsWithSpecialty(ScienceType science, Set<Building> buildingList) {
-		Set<Building> result = new UnitSet<>();
-
-		Iterator<Building> i = buildingList.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			Research lab = building.getResearch();
-			if (lab.hasSpecialty(science)) {
-				result.add(building);
-			}
-		}
-
-		return result;
+		return buildingList.stream()
+							.filter(b -> b.getResearch().hasSpecialty(science))
+							.collect(Collectors.toSet());
 	}
 
 	/**
@@ -323,8 +310,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 
 		Lab result = null;
 
-		if (vehicle instanceof Rover) {
-			Rover rover = (Rover) vehicle;
+		if (vehicle instanceof Rover rover) {
 			if (rover.hasLab()) {
 				Lab lab = rover.getLab();
 				boolean availableSpace = (lab.getResearcherNum() < lab.getLaboratorySize());
@@ -346,25 +332,27 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	 */
 	private void addPersonToLab(Person person) {
 
-		try {
-			if (person.isInSettlement()) {
-				Building labBuilding = ((Research) lab).getBuilding();
+		if (person.isInSettlement()) {
+			Building labBuilding = ((Research) lab).getBuilding();
 
-				// Walk to lab building.
-				walkToResearchSpotInBuilding(labBuilding, false);
+			// Walk to lab building.
+			walkToResearchSpotInBuilding(labBuilding, false);
 
-				lab.addResearcher();
-				malfunctions = labBuilding;
-			} else if (person.isInVehicle()) {
+			malfunctions = labBuilding;
+		} else if (person.isInVehicle()) {
 
-				// Walk to lab internal location in rover.
-				walkToLabActivitySpotInRover((Rover) person.getVehicle(), false);
+			// Walk to lab internal location in rover.
+			walkToLabActivitySpotInRover((Rover) person.getVehicle(), false);
 
-				lab.addResearcher();
-				malfunctions = person.getVehicle();
-			}
-		} catch (Exception e) {
-        	logger.log(person, Level.SEVERE, 10_000, "Couldn't be added to a lab", e);
+			malfunctions = person.getVehicle();
+		}
+
+		// Task can close if Walk fails
+		if (!isDone()) {
+			lab.addResearcher();
+		}
+		else {
+			logger.warning(person, "Could not allocate lab research " + getName() + ", completed early.");
 		}
 	}
 
@@ -420,7 +408,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	 * @param time the amount of time (millisols) to perform the phase.
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
-	protected double researchingPhase(double time) {
+	private double researchingPhase(double time) {
 		double remainingTime = 0;
 		
 		// If person is incapacitated, end task.
@@ -504,13 +492,12 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	@Override
 	protected void clearDown() {
 		// Remove person from lab so others can use it.
-		try {
-			if (lab != null) {
-				lab.removeResearcher();
-				lab = null;
-			}
-		} catch (Exception e) {
+		if (lab != null) {
+			lab.removeResearcher();
+			lab = null;
 		}
+
+		super.clearDown();
 	}
 
 	@Override

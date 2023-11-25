@@ -378,14 +378,14 @@ extends TabPanel {
 
 		// Data members.
 		private Settlement settlement;
-		private List<ScienceType> sciences;
+		private ScienceType[] sciences;
 
 		/** hidden constructor. */
 		private AchievementTableModel(Settlement settlement) {
 			// Use AbstractTableModel constructor.
 			super();
 			this.settlement = settlement;
-			sciences = ScienceType.valuesList();
+			sciences = ScienceType.values();
 		}
 
 		/**
@@ -420,7 +420,7 @@ extends TabPanel {
 		 * @return the number of rows in the model.
 		 */
 		public int getRowCount() {
-			return sciences.size();
+			return sciences.length;
 		}
 
 		/**
@@ -431,8 +431,8 @@ extends TabPanel {
 		 */
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			Object result = null;
-			if ((rowIndex >= 0) && (rowIndex < sciences.size())) {
-				ScienceType science = sciences.get(rowIndex);
+			if ((rowIndex >= 0) && (rowIndex < sciences.length)) {
+				ScienceType science = sciences[rowIndex];
 				if (columnIndex == 0) result = science.getName();
 				else if (columnIndex == 1) {
 					result = settlement.getScientificAchievement(science);

@@ -390,7 +390,7 @@ public class Simulation implements ClockListener, Serializable {
 												simulationConfig.getPartConfiguration());
 
 		// Initialize ScientificStudy
-		ScientificStudy.initializeInstances(masterClock);
+		ScientificStudy.initializeInstances(masterClock, simulationConfig.getScienceConfig());
 		// Initialize ScientificStudyUtil
 		ScientificStudyUtil.initializeInstances(unitManager);
 
@@ -494,7 +494,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		scientificStudyManager = new ScientificStudyManager();
 		// Re-initialize ScientificStudy
-		ScientificStudy.initializeInstances(masterClock);
+		ScientificStudy.initializeInstances(masterClock, simulationConfig.getScienceConfig());
 		// Re-initialize ScientificStudyUtil
 		ScientificStudyUtil.initializeInstances(unitManager);
 		
@@ -631,7 +631,7 @@ public class Simulation implements ClockListener, Serializable {
 								simulationConfig.getPersonConfig());
 		
 		// Re-nitialize ScientificStudy
-		ScientificStudy.initializeInstances(masterClock);
+		ScientificStudy.initializeInstances(masterClock, simulationConfig.getScienceConfig());
 		// Re-nitialize ScientificStudyUtil
 		ScientificStudyUtil.initializeInstances(unitManager);
 		

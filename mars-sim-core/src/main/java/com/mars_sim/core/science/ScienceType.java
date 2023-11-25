@@ -7,13 +7,9 @@
 
 package com.mars_sim.core.science;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.Job;
@@ -29,67 +25,67 @@ public enum ScienceType {
 	/** The study of the evolution of the planet Mars. */
 	AREOLOGY(
 			Msg.getString("ScienceType.areology"), //$NON-NLS-1$
-			SkillType.AREOLOGY, JobType.AREOLOGIST),
+			"ARE", SkillType.AREOLOGY, JobType.AREOLOGIST),
 
 	/** Keeping track of heavenly bodies. */
 	ASTRONOMY(Msg.getString("ScienceType.astronomy"), //$NON-NLS-1$
-			SkillType.ASTRONOMY, JobType.ASTRONOMER),
+			"AST", SkillType.ASTRONOMY, JobType.ASTRONOMER),
 
 	/** Concerned with the processes of life from micro to macro scale. */
 	BIOLOGY(Msg.getString("ScienceType.biology"), //$NON-NLS-1$
-			SkillType.BIOLOGY, JobType.BIOLOGIST),
+			"BIO", SkillType.BIOLOGY, JobType.BIOLOGIST),
 
 	/** How to grow plants. */
 	BOTANY(Msg.getString("ScienceType.botany"), //$NON-NLS-1$
-			SkillType.BOTANY, JobType.BOTANIST),
+			"BOT", SkillType.BOTANY, JobType.BOTANIST),
 
 	/** How to mix elements and compounds. */
 	CHEMISTRY(Msg.getString("ScienceType.chemistry"), //$NON-NLS-1$
-			SkillType.CHEMISTRY, JobType.CHEMIST),
+			"CHE", SkillType.CHEMISTRY, JobType.CHEMIST),
 
 	/** Provides fundamental computing skill. */
 	COMPUTING (Msg.getString("ScienceType.computing"), //$NON-NLS-1$
-			SkillType.COMPUTING, JobType.COMPUTER_SCIENTIST),
+			"COM", SkillType.COMPUTING, JobType.COMPUTER_SCIENTIST),
 
 	/** How to make stuff. */
 	ENGINEERING(Msg.getString("ScienceType.engineering"), //$NON-NLS-1$
-			SkillType.MATERIALS_SCIENCE, JobType.ENGINEER),
+			"ENG", SkillType.MATERIALS_SCIENCE, JobType.ENGINEER),
 
 	/** Provides fundamental basics for all sciences. */
 	MATHEMATICS(Msg.getString("ScienceType.mathematics"), //$NON-NLS-1$
-			SkillType.MATHEMATICS, JobType.MATHEMATICIAN),
+			"MAT", SkillType.MATHEMATICS, JobType.MATHEMATICIAN),
 
 	/** How to tell sick from healthy. */
 	MEDICINE(Msg.getString("ScienceType.medicine"), //$NON-NLS-1$
-			SkillType.MEDICINE, JobType.DOCTOR),
+			"MED", SkillType.MEDICINE, JobType.DOCTOR),
 
 	/** Weather forecasting, climate modeling. */
 	METEOROLOGY(Msg.getString("ScienceType.meteorology"), //$NON-NLS-1$
-			SkillType.METEOROLOGY, JobType.METEOROLOGIST),
+			"MET", SkillType.METEOROLOGY, JobType.METEOROLOGIST),
 
 	/** Laws of nature. Study of forces and mechanics. */
 	PHYSICS(Msg.getString("ScienceType.physics"), //$NON-NLS-1$
-			SkillType.PHYSICS, JobType.PHYSICIST),
+			"PHY", SkillType.PHYSICS, JobType.PHYSICIST),
 
 	/** The Study of the mind and behavior.  */
 	PSYCHOLOGY(Msg.getString("ScienceType.psychology"), //$NON-NLS-1$
-			SkillType.PSYCHOLOGY, JobType.PSYCHOLOGIST);
+			"PSY", SkillType.PSYCHOLOGY, JobType.PSYCHOLOGIST);
 
 
 	/** Maps for keeping track of collaborative sciences. */
 	private static Map<ScienceType, Science> collabSciences;
-	/** Sets for keeping track of experimental sciences. */
-	private static Set<ScienceType> experimentalSciences;
 	 
 	private String name;
+	private String code;
 	private JobType job;
 	private SkillType skill;
 
 	/** 
 	 * Hidden constructor. 
 	 */
-	private ScienceType(String name, SkillType skill, JobType job) {
+	private ScienceType(String name, String code, SkillType skill, JobType job) {
 		this.name = name;
+		this.code = code;
 		this.job = job;
 		this.skill = skill;
 	}
@@ -103,6 +99,10 @@ public enum ScienceType {
 		return this.name;
 	}
 
+	public String getCode() {
+		return code;
+	}
+
 	public JobType getJobType() {
 		return job;
 	}
@@ -114,7 +114,7 @@ public enum ScienceType {
 	/** 
 	 * Initializes collaborative sciences.
 	 */
-	private static void initSciences() {
+	static  {
 		// Load available sciences in list.
 		collabSciences = new HashMap<>();
 		for (ScienceType scienceType : ScienceType.values()) {
@@ -147,36 +147,7 @@ public enum ScienceType {
 		physics.setCollaborativeSciences(new Science[]     { astronomy, mathematics, engineering });
 		psychology.setCollaborativeSciences(new Science[]  { biology, chemistry, medicine });
 	}
-    
-    /**
-     * Initializes all the sciences related to laboratory experimentation.
-     * 
-     */
-    public static void initExperimentalSciences() {
-    	experimentalSciences = new HashSet<>();
-        experimentalSciences.add(ScienceType.AREOLOGY);
-        experimentalSciences.add(ScienceType.BOTANY);
-        experimentalSciences.add(ScienceType.BIOLOGY);
-        experimentalSciences.add(ScienceType.CHEMISTRY);
-        experimentalSciences.add(ScienceType.COMPUTING);
-        experimentalSciences.add(ScienceType.ENGINEERING);
-        experimentalSciences.add(ScienceType.MEDICINE);
-        experimentalSciences.add(ScienceType.METEOROLOGY);
-        experimentalSciences.add(ScienceType.PHYSICS);
-        experimentalSciences.add(ScienceType.PSYCHOLOGY);
-    }
 
-	/**
-     * Gets all the sciences related to laboratory experimentation.
-     * 
-     * @return set of sciences.
-     */
-    public static Set<ScienceType> getExperimentalSciences() {
-		if (experimentalSciences == null)
-			initExperimentalSciences();
-    	return experimentalSciences;
-    }
-    
 	/**
 	 * Gives back the {@link ScienceType} associated with the given job or
 	 * <code>null</code>.
@@ -185,19 +156,14 @@ public enum ScienceType {
 	 * @return {@link ScienceType}
 	 */
 	public static ScienceType getJobScience(JobType job) {
-		ScienceType result = null;
 		if (job != null) {
-			if (collabSciences == null)
-				initSciences();
-			Iterator<Science> i = collabSciences.values().iterator();
-			while (result == null && i.hasNext()) {
-				Science science = i.next();
+			for(Science science : collabSciences.values()) {
 				List<JobType> jobs = science.getJobs();
 				if (jobs.contains(job))
-					result = science.getType();
+					return science.getType();
 			}
 		}
-		return result;
+		return null;
 	}
 
 	/**
@@ -208,27 +174,6 @@ public enum ScienceType {
 	 * @return {@link Boolean}
 	 */
 	public static boolean isCollaborativeScience(ScienceType sciencePrimary, ScienceType scienceSecondary) {
-		if (collabSciences == null)
-			initSciences();
 		return collabSciences.get(sciencePrimary).getCollaborativeSciences().contains(scienceSecondary);
-	}
-
-	/**
-	 * Gives back a list of all valid values for the ScienceType enum.
-	 */
-	public static List<ScienceType> valuesList() {
-		return Arrays.asList(ScienceType.values());
-	}
-
-	public static ScienceType getType(String name) {
-		if (name != null) {
-	    	for (ScienceType t : ScienceType.values()) {
-	    		if (name.equalsIgnoreCase(t.name)) {
-	    			return t;
-	    		}
-	    	}
-		}
-
-		return null;
 	}
 }
