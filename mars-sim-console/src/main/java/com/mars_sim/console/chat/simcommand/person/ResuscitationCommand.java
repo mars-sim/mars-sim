@@ -16,13 +16,14 @@ import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.ConversationRole;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
-import com.mars_sim.core.Simulation;
+import com.mars_sim.console.chat.simcommand.settlement.AbstractSettlementCommand;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.structure.Settlement;
 
 /** 
  * The command for resuscitating a dead person.
  */
-public class ResuscitationCommand extends AbstractPersonCommand {
+public class ResuscitationCommand extends AbstractSettlementCommand {
 	public static final ChatCommand RESURRECT = new ResuscitationCommand();
 	
 	private ResuscitationCommand() {
@@ -33,19 +34,19 @@ public class ResuscitationCommand extends AbstractPersonCommand {
 	}
 
 	@Override
-	public boolean execute(Conversation context, String input, Person person) {
+	public boolean execute(Conversation context, String input, Settlement settlement) {
 		
-		Collection<Person> persons = Simulation.instance().getUnitManager().getPeople();
+		Collection<Person> persons = settlement.getAllAssociatedPeople();
 
-		List<Person> dead = new ArrayList<>();
+		List<Person> deadPersons = new ArrayList<>();
 		for (Person p: persons) {
 			if (p.isDeclaredDead())
-				dead.add(p);
+				deadPersons.add(p);
 		}
-		Collections.sort(dead);
+		Collections.sort(deadPersons);
 	
 		List<String> deadNames = new ArrayList<>();
-		for (Person p: dead) {
+		for (Person p: deadPersons) {
 			deadNames.add(p.getName());
 		}
 		Collections.sort(deadNames);
