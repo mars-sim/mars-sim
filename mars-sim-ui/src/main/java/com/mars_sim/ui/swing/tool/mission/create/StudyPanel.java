@@ -178,7 +178,7 @@ public class StudyPanel extends WizardPanel {
 
 			this.studyScience = studyScience;
 			// Add all ongoing scientific studies to table sorted by name.
-			studies = manager.getOngoingStudies();
+			studies = manager.getAllStudies(false);
 			Collections.sort(studies);
 
 			scienceName = studyScience.getName().substring(0, 1).toUpperCase() + studyScience.getName().substring(1);
@@ -270,14 +270,6 @@ public class StudyPanel extends WizardPanel {
 
 			if (study.getScience().equals(studyScience))
 				result++;
-/**
- * TODO
-			Iterator<ScienceType> i = study.getCollaborativeResearchers().iterator();
-			while (i.hasNext()) {
-				if (i.next().equals(studyScience))
-					result++;
-			}
-**/
 			return result;
 		}
 
@@ -286,7 +278,7 @@ public class StudyPanel extends WizardPanel {
 		 */
 		void updateTable() {
 			// Add all ongoing scientific studies to table sorted by name.
-			studies = manager.getOngoingStudies();
+			studies = manager.getAllStudies(false);
 			Collections.sort(studies);
 
 			fireTableStructureChanged();

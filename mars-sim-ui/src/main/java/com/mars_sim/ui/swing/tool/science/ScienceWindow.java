@@ -66,7 +66,7 @@ extends ToolWindow {
 		ongoingStudyListPane = new AbstractStudyListPanel(this, "OngoingStudyListPanel") {		
 			@Override
 			protected List<ScientificStudy> getStudies() {
-				return mgr.getOngoingStudies();
+				return mgr.getAllStudies(false);
 			}
 		};
 		listsPane.add(ongoingStudyListPane);
@@ -75,7 +75,7 @@ extends ToolWindow {
 		finishedStudyListPane = new AbstractStudyListPanel(this, "FinishedStudyListPanel") {		
 			@Override
 			protected List<ScientificStudy> getStudies() {
-				return mgr.getCompletedStudies();
+				return mgr.getAllStudies(true);
 			}
 		};
 		listsPane.add(finishedStudyListPane);

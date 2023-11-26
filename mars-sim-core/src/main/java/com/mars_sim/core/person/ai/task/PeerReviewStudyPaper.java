@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.ai.task;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -164,9 +163,7 @@ public class PeerReviewStudyPaper extends Task {
         List<ScientificStudy> possibleStudies = new ArrayList<>();
 
         // Get all studies in the peer review phase.
-        Iterator<ScientificStudy> i = scientificStudyManager.getOngoingStudies().iterator();
-        while (i.hasNext()) {
-            ScientificStudy study = i.next();
+        for(ScientificStudy study : scientificStudyManager.getAllStudies(false)) {
             if (ScientificStudy.PEER_REVIEW_PHASE.equals(study.getPhase())) {
 
                 // Check that person isn't a researcher in the study.
