@@ -114,7 +114,7 @@ public class MissionDisembarkStep extends MissionStep {
             // Shouldn't happen
             destBuilding = target.getBuildingManager().getRandomAirlockBuilding();
         }
-        BuildingManager.addToBuilding(w, destBuilding);
+        BuildingManager.setToBuilding(w, destBuilding);
         return false;
     }
     

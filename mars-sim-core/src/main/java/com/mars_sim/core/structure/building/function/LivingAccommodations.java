@@ -474,15 +474,18 @@ public class LivingAccommodations extends Function {
 	 * Registers a guest bed.
 	 * 
 	 * @param id
+	 * @return
 	 */
-	public void registerGuestBed(int id) {
+	public LocalPosition registerGuestBed(int id) {
 		for (Entry<Integer, LocalPosition> entry: guestBeds.entrySet()) {
 			int oldID = entry.getKey();
 			if (oldID == -1) {
 				LocalPosition p = entry.getValue();
 				guestBeds.put(id, p);
+				return p;
 			}
 		}
+		return null;
 	}
 	
 	/**

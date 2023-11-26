@@ -219,10 +219,10 @@ public class LifeSupport extends Function {
 			}
 	
 			// Add stress if building is overcrowded.
-			int overcrowding = getOccupantNumber() - occupantCapacity;
+			int overcrowding = getOccupantNumber() * 2 - occupantCapacity;
 			if (overcrowding > 0) {
 	
-				logger.info("Overcrowding at " + building + ".");
+				logger.info(building.getSettlement(), 30_000L, "Overcrowding at " + building + ".");
 	
 				double stressModifier = .1D * overcrowding * pulse.getElapsed();
 	

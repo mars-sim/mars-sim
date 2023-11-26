@@ -273,7 +273,7 @@ implements Serializable {
 			while (i.hasNext()) {
 				Person occupant = i.next();
 				BuildingManager.removePersonFromBuilding(occupant, salvagedBuilding);
-				BuildingManager.addToRandomBuilding(occupant, buildingManager.getSettlement());
+				BuildingManager.addPersonToRandomBuilding(occupant, buildingManager.getSettlement());
 			}
 		}
 
@@ -284,7 +284,7 @@ implements Serializable {
 			while (i.hasNext()) {
 				Robot occupant = i.next();
 				BuildingManager.removeRobotFromBuilding(occupant, salvagedBuilding);
-				BuildingManager.addToRandomBuilding(occupant, buildingManager.getSettlement());
+				BuildingManager.addRobotToRandomBuilding(occupant, buildingManager.getSettlement());
 			}
 		}
 

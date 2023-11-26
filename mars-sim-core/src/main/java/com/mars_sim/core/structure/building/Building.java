@@ -187,8 +187,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	private Storage storage;
 	private VehicleMaintenance vehicleMaintenance;
 	private WasteProcessing wasteProcessing;
-	
-	private BuildingSpec buildingSpec;
+
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
 	private BuildingCategory category;
@@ -213,7 +212,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		// NOTE: needed for setting inhabitable id
 		// Question: why is the following needed ?
-		if (!buildingSpec.isInhabitable()) {
+		if (!isInhabitable()) {
 			// Set the instance of life support
 			lifeSupport = (LifeSupport) getFunction(FunctionType.LIFE_SUPPORT);
 		}
@@ -246,7 +245,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		
 		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 		
-		buildingSpec = buildingConfig.getBuildingSpec(buildingType);
+		BuildingSpec buildingSpec = buildingConfig.getBuildingSpec(buildingType);
 
 		constructionType = buildingSpec.getConstruction();
 		powerModeCache = PowerMode.FULL_POWER;
@@ -339,15 +338,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		super("Mock Building", new Coordinates(0D, 0D));
 	}
 
-	/**
-	 * Returns the building buildingSpec.
-	 * 
-	 * @return
-	 */
-	public BuildingSpec getBuildingSpec() {
-		return buildingSpec;
-	}
-	
+
 	/**
 	 * Gets the description of a building.
 	 *

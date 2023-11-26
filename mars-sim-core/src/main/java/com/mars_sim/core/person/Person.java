@@ -255,7 +255,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		setContainerUnit(settlement);
 
 		// Add to a random building
-		BuildingManager.addPersonToRandomBuilding(this, settlement);
+		BuildingManager.landOnRandomBuilding(this, settlement);
 		// Create PersonAttributeManager instance
 		attributes = new PersonAttributeManager();
 	}
@@ -313,7 +313,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		// Reloading from a saved sim
 		
 		// Add to a random building
-		BuildingManager.addPersonToRandomBuilding(this, getAssociatedSettlement());
+		BuildingManager.landOnRandomBuilding(this, getAssociatedSettlement());
 		// Set up the time stamp for the person
 		calculateBirthDate(masterClock.getEarthTime());
 		// Create favorites
@@ -2118,14 +2118,14 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 				transferred = ((MarsSurface)destination).addPerson(this);
 			}
 			else if (destination.getUnitType() == UnitType.SETTLEMENT) {
-				transferred = ((Settlement)destination).addPeopleWithin(this);
+				transferred = ((Settlement)destination).addToIndoor(this);
 				// WARNING: Transferring a person/robot/equipment from a vehicle into a settlement 
 				// can be problematic if no building is assigned.
 				// If exiting a vehicle in a garage, it's recommended using garageBuilding as a destination
 			}
 			else if (destination.getUnitType() == UnitType.BUILDING) {
-				BuildingManager.addToBuilding(this, (Building)destination);
-				transferred = ((Building)destination).getSettlement().addPeopleWithin(this);
+				BuildingManager.setToBuilding(this, (Building)destination);
+				transferred = ((Building)destination).getSettlement().addToIndoor(this);
 				// Turn a building destination to a settlement to avoid 
 				// casting issue with making containerUnit a building instance
 				destination = (((Building)destination)).getSettlement();

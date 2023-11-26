@@ -135,7 +135,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 
 	protected Building buildAccommodation(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
-
+		// Need to rework to allow maven to test this
 	    building0.addFunction(new LivingAccommodations(building0, quartersSpec));
 	    return building0;
 	}

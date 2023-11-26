@@ -400,7 +400,7 @@ public class WalkSettlementInterior extends Task {
 				Building currentBuilding = BuildingManager.getBuilding(person);
 				if (!hatch.getBuilding().equals(currentBuilding)) {
 					BuildingManager.removePersonFromBuilding(person, currentBuilding);
-					BuildingManager.addToBuilding(person, hatch.getBuilding());
+					BuildingManager.setToBuilding(person, hatch.getBuilding());
 				}
 			} 
 			
@@ -408,7 +408,7 @@ public class WalkSettlementInterior extends Task {
 				Building currentBuilding = BuildingManager.getBuilding(robot);
 				if (!hatch.getBuilding().equals(currentBuilding)) {
 					BuildingManager.removeRobotFromBuilding(robot, currentBuilding);
-					BuildingManager.addToBuilding(robot, hatch.getBuilding());
+					BuildingManager.setToBuilding(robot, hatch.getBuilding());
 				}
 			}
 
@@ -445,11 +445,11 @@ public class WalkSettlementInterior extends Task {
 					
 					if (person != null) {
 						BuildingManager.removePersonFromBuilding(person, currentBuilding);
-						BuildingManager.addToBuilding(person, newBuilding);
+						BuildingManager.setToBuilding(person, newBuilding);
 					}
 					else if (robot != null) {
 						BuildingManager.removeRobotFromBuilding(robot, currentBuilding);
-						BuildingManager.addToBuilding(robot, newBuilding);
+						BuildingManager.setToBuilding(robot, newBuilding);
 					}
 				}
 			}

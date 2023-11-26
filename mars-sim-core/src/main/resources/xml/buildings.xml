@@ -2892,10 +2892,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<building-connection />
 			<life-support capacity="3" power-required="0.15" />
+
 			<power-generation>
 				<power-source type="Solar Power Source" power="1.0" />
 			</power-generation>
+			
 			<power-storage capacity="20" discharge-rate="1.25" />
+			
+			<robotic-station capacity="1"/>
+			
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="1.0" />
 				<heat-source type="Electric Heating" capacity="2.0" />
@@ -3421,7 +3426,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<building-connection />
+			
 			<life-support capacity="3" power-required="0.15" />
+			
+			<robotic-station capacity="1"/>
+			
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="1.0" />
 				<heat-source type="Electric Heating" capacity="2.0" />

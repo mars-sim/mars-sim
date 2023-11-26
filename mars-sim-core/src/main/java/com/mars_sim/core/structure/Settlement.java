@@ -342,7 +342,7 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement's list of parked vehicles. */
 	private Set<Vehicle> parkedVehicles;
 	/** The list of people currently within the settlement. */
-	private Set<Person> peopleWithin;
+	private Set<Person> indoorPeopleMap;
 	/** The settlement's list of robots within. */
 	private Set<Robot> robotsWithin;
 	/** The settlement's preference map. */
@@ -391,7 +391,7 @@ public class Settlement extends Structure implements Temporal,
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
 		parkedVehicles = new UnitSet<>();
-		peopleWithin = new UnitSet<>();
+		indoorPeopleMap = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 
 		final double GEN_MAX = 1_000_000;
@@ -441,7 +441,7 @@ public class Settlement extends Structure implements Temporal,
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
 		parkedVehicles = new UnitSet<>();
-		peopleWithin = new UnitSet<>();
+		indoorPeopleMap = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 		allowTradeMissionSettlements = new HashMap<>();
 		
@@ -703,7 +703,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return the number indoor
 	 */
 	public int getIndoorPeopleCount() {
-		return peopleWithin.size();
+		return indoorPeopleMap.size();
 	}
 
 	/**
@@ -724,7 +724,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return Collection of people within
 	 */
 	public Collection<Person> getIndoorPeople() {
-		return peopleWithin;
+		return indoorPeopleMap;
 	}
 
 	/**
@@ -959,6 +959,9 @@ public class Settlement extends Structure implements Temporal,
 			iceProbabilityValue = computeIceProbability();
 
 			regolithProbabilityValue = computeRegolithProbability();
+			
+			// Future: should register a bed when calling addACitizen(() to 
+			// add this person as a citizen and not here
 			
 			for (Person p : citizens) {
 				// Register each settler with a bed
@@ -1913,23 +1916,23 @@ public class Settlement extends Structure implements Temporal,
 	 * @return true if added successfully
 	 */
 	public boolean containsPerson(Person p) {
-		if (peopleWithin.contains(p))
+		if (indoorPeopleMap.contains(p))
 			return true;
 		return false;
 	}
 
 	/**
 	 * Makes this person's physical location to be inside this settlement.
-	 * Note: they can be just the visitors and don't need to be the citizen.
+	 * Note: a visitor needs to be added.
 	 *
 	 * @param p the person
 	 * @return true if added successfully
 	 */
-	public boolean addPeopleWithin(Person p) {
-		if (peopleWithin.contains(p)) {
+	public boolean addToIndoor(Person p) {
+		if (indoorPeopleMap.contains(p)) {
 			return true;
 		}
-		if (peopleWithin.add(p)) {
+		if (indoorPeopleMap.add(p)) {
 			p.setContainerUnit(this);
 			return true;
 		}
@@ -1944,9 +1947,9 @@ public class Settlement extends Structure implements Temporal,
 	 * @return true if removed successfully
 	 */
 	public boolean removePeopleWithin(Person p) {
-		if (!peopleWithin.contains(p))
+		if (!indoorPeopleMap.contains(p))
 			return true;
-		if (peopleWithin.remove(p)) {
+		if (indoorPeopleMap.remove(p)) {
 			return true;
 		}
 		return false;
@@ -1962,10 +1965,16 @@ public class Settlement extends Structure implements Temporal,
 		if (citizens.contains(p))
 			return true;
 		if (citizens.add(p)) {
-			addPeopleWithin(p);
+			// Add this person indoor map
+			addToIndoor(p);
+			
 			p.setCoordinates(getCoordinates());
-			p.setContainerUnit(this);
 
+			// Register each settler with a bed
+//			Building b = BuildingManager.getBestAvailableQuarters(p, true, true);
+//			if (b != null)
+//				b.getLivingAccommodations().registerSleeper(p, false);
+			
 			// Update the numCtizens
 			numCitizens = citizens.size();
 

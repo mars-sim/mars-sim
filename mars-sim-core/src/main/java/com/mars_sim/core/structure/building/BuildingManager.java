@@ -1012,23 +1012,6 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Adds a person/robot to a random habitable building within a settlement.
-	 *
-	 * @param unit       the person/robot to add.
-	 * @param s the settlement to find a building.
-	 * @throws BuildingException if person/robot cannot be added to any building.
-	 */
-	public static void addToRandomBuilding(Unit unit, Settlement s) {
-		if (unit.getUnitType() == UnitType.PERSON) {
-			addPersonToRandomBuilding((Person) unit, s);
-		}
-		
-		else {
-			addRobotToRandomBuilding((Robot) unit, s);
-		}
-	}
-	
-	/**
 	 * Adds a person to a random habitable building within a settlement.
 	 * Note: excluding the astronomical observation building
 	 *
@@ -1067,6 +1050,55 @@ public class BuildingManager implements Serializable {
 		}
 	}
 
+	/**
+	 * Adds a person to a random habitable building within a settlement.
+	 * Note: excluding the astronomical observation building
+	 *
+	 * @param unit       the person to add.
+	 * @param s the settlement to find a building.
+	 * @throws BuildingException if person cannot be added to any building.
+	 */
+	public static void landOnRandomBuilding(Person person, Settlement s) {
+		
+		// Go to the default zone 0 only
+		Set<Building> bldgSet = person.getSettlement().getBuildingManager()
+					.getBuildingSet(FunctionType.LIFE_SUPPORT)
+					.stream()
+					.filter(b -> b.getZone() == 0
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toSet());
+
+		if (bldgSet.isEmpty()) {
+			logger.warning(person, "No habitable buildings available in zone 0.");
+			return;
+		}
+		
+		boolean found = false;
+		
+		for (Building building: bldgSet) {
+			if (!found && building != null
+					&& building.getCategory() != BuildingCategory.HALLWAY
+					&& building.getCategory() != BuildingCategory.EVA_AIRLOCK) {
+				
+				// Add the person to the life support
+				LifeSupport lifeSupport = building.getLifeSupport();
+
+				if (!lifeSupport.containsOccupant(person)) {
+					lifeSupport.addPerson(person);
+
+					person.setCurrentBuilding(building);
+					
+					return;
+				}
+			}
+		}
+
+		if (!found) {
+			logger.warning(person, "No habitable buildings with life support available in zone 0.");
+		}
+	}
+
+	
 	/**
 	 * Adds a robot to a random habitable building within a settlement.
 	 *
@@ -1561,6 +1593,46 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
+	 * Sets the building of a worker and add to life support or robotic station.
+	 *
+	 * @param worker   the worker to add.
+	 * @param building the building to add.
+	 */
+	public static void setToBuilding(Worker worker, Building building) {
+
+		if (building != null) {
+			try {
+				if (worker instanceof Person person) {
+					LifeSupport lifeSupport = building.getLifeSupport();
+
+					if (!lifeSupport.containsOccupant(person)) {
+						lifeSupport.addPerson(person);
+
+						person.setCurrentBuilding(building);
+					}
+				}
+
+				else {
+					Robot robot = (Robot) worker;
+					RoboticStation roboticStation = building.getRoboticStation();
+
+					if (roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
+						roboticStation.addRobot(robot);
+					}
+					
+					robot.setCurrentBuilding(building);
+				}
+
+			} catch (Exception e) {
+				logger.log(building, worker, Level.SEVERE, SimLogger.DEFAULT_SEVERE_TIME, "Could not be added", e);
+			}
+		}
+
+		else
+			logger.log(worker, Level.SEVERE, 2000, "The building is null.");
+	}
+
+	/**
 	 * Adds a worker to the building if possible.
 	 *
 	 * @param worker   the worker to add.
@@ -1572,39 +1644,8 @@ public class BuildingManager implements Serializable {
 			addPersonToActivitySpot(person, building, null);
 		else if (worker instanceof Robot robot)
 			addRobotToRoboticStation(robot, building, null);
-		
-//		if (building != null) {
-//?			try {
-//				if (worker instanceof Person person) {
-//					LifeSupport lifeSupport = building.getLifeSupport();
-//
-//					if (!lifeSupport.containsOccupant(person)) {
-//						lifeSupport.addPerson(person);
-//
-//						person.setCurrentBuilding(building);
-//					}
-//				}
-//
-//				else {
-//					Robot robot = (Robot) worker;
-//					RoboticStation roboticStation = building.getRoboticStation();
-//
-//					if (roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
-//						roboticStation.addRobot(robot);
-//					}
-//					
-//					robot.setCurrentBuilding(building);
-//				}
-//
-//			} catch (Exception e) {
-//				logger.log(building, worker, Level.SEVERE, SimLogger.DEFAULT_SEVERE_TIME, "Could not be added", e);
-//			}
-//		}
-//
-//		else
-//			logger.log(worker, Level.SEVERE, 2000, "The building is null.");
 	}
-
+	
 	/**
 	 * Adds the person to an activity spot in a building.
 	 *
@@ -1635,6 +1676,8 @@ public class BuildingManager implements Serializable {
 			// Add the person to this building, even if an activity spot is not available				
 			if (lifeSupport != null && !lifeSupport.containsOccupant(person)) {
 				lifeSupport.addPerson(person);
+				
+				person.setCurrentBuilding(building);
 			}
 			
 			if (loc == null) {
@@ -1657,8 +1700,6 @@ public class BuildingManager implements Serializable {
 				}
 				// Set the new function type
 				person.setFunction(f);
-								
-				person.setCurrentBuilding(building);
 				
 				result = true;
 			}
@@ -1708,6 +1749,8 @@ public class BuildingManager implements Serializable {
 			// Add the robot to the station
 			if (roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
 				roboticStation.addRobot(robot);
+				
+				robot.setCurrentBuilding(building);
 			}
 				
 			if (loc == null) {
@@ -1728,8 +1771,6 @@ public class BuildingManager implements Serializable {
 				}
 				// Set the new function type
 				robot.setFunction(f);
-				
-				robot.setCurrentBuilding(building);
 
 				result = true;
 			}	
