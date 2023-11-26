@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * InsidePathLocation.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-11-24
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.connection;

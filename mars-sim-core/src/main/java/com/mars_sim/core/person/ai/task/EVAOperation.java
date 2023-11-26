@@ -259,7 +259,7 @@ public abstract class EVAOperation extends Task {
 	    // If not at field work site location, create walk outside subtask.
         if (person.isInside()) {
         	// A person is walking toward an airlock or inside an airlock
-            Walk walkingTask = Walk.createWalkingTask(person, outsideSitePos, 0, null);
+            Walk walkingTask = Walk.createWalkingTask(person, outsideSitePos, null);
             if (walkingTask != null) {
                 addSubTask(walkingTask);
             }
@@ -355,7 +355,7 @@ public abstract class EVAOperation extends Task {
 							+ " at (" + returnInsideLoc
 							+ "). Attempting to enter the airlock.");
 
-				Walk walkingTask = Walk.createWalkingTask(person, returnInsideLoc, 0, interiorObject);
+				Walk walkingTask = Walk.createWalkingTask(person, returnInsideLoc, interiorObject);
 				if (walkingTask != null) {
 					addSubTask(walkingTask);
 				}
@@ -717,7 +717,7 @@ public abstract class EVAOperation extends Task {
 	 */
 	protected boolean setRandomOutsideLocation(Rover rover) {
 
-		LocalPosition newLocation = null;
+		LocalPosition sLoc = null;
 		boolean goodLocation = false;
 		for (int x = 0; (x < 5) && !goodLocation; x++) {
 			for (int y = 0; (y < 10) && !goodLocation; y++) {
@@ -727,13 +727,13 @@ public abstract class EVAOperation extends Task {
 
 				LocalPosition boundedLocalPoint = rover.getPosition().getPosition(distance, radianDirection);
 
-				newLocation = LocalAreaUtil.getLocalRelativePosition(boundedLocalPoint, rover);
-				goodLocation = LocalAreaUtil.isPositionCollisionFree(newLocation, worker.getCoordinates());
+				sLoc = LocalAreaUtil.getLocalRelativePosition(boundedLocalPoint, rover);
+				goodLocation = LocalAreaUtil.isPositionCollisionFree(sLoc, worker.getCoordinates());
 			}
 		}
 
 		if (goodLocation) {
-			setOutsideSiteLocation(newLocation);
+			setOutsideSiteLocation(sLoc);
 		}
 		else {
 			endTask();

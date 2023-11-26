@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelLiving.java
- * @date 2022-07-10
+ * @date 2023-11-24
  * @author Manny Kung
  */
 
@@ -29,11 +29,13 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 	private static final String BED_ICON = "bed";
 
 	private int bedCapCache;
+	private int guestBedCapCache;
 	private int bedAssignedCache;
 	private int bedOccupiedCache;
 	private int bedEmptyCache;
 
 	private JLabel bedCapLabel;
+	private JLabel guestBedCapLabel;
 	private JLabel bedAssignsLabel;
 	private JLabel bedOccupiedLabel;
 	private JLabel bedEmptyLabel;
@@ -69,7 +71,7 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		// Create label panel
-		AttributePanel labelPanel = new AttributePanel(4);
+		AttributePanel labelPanel = new AttributePanel(5);
 		center.add(labelPanel, BorderLayout.NORTH);
 
 		// Create bed capacity label
@@ -87,6 +89,11 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 		// Create bedEmptyLabel
 		bedEmptyLabel = labelPanel.addTextField(Msg.getString("BuildingPanelLiving.beds.empty"),
 									 Integer.toString(living.getNumEmptyActivitySpots()), "Number of empty beds available");
+	
+		// Create guest bed capacity label
+		guestBedCapLabel = labelPanel.addTextField(Msg.getString("BuildingPanelLiving.guestBeds.capacity"),
+									Integer.toString(living.getMaxGuestBeds()), "Max number of guest beds available");
+
 	}
 
 	@Override
@@ -97,6 +104,12 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 			bedCapLabel.setText(Integer.toString(bedCapCache));
 		}
 
+		// Update guestBedCapLabel
+		if (guestBedCapCache != living.getMaxGuestBeds()) {
+			guestBedCapCache = living.getMaxGuestBeds();
+			guestBedCapLabel.setText(Integer.toString(guestBedCapCache));
+		}
+			
 		// Update bedAssignsLabel
 		if (bedAssignedCache != living.getNumAssignedBeds()) {
 			bedAssignedCache = living.getNumAssignedBeds();

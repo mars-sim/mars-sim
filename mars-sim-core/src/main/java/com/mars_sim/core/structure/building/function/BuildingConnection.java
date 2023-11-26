@@ -46,21 +46,17 @@ public class BuildingConnection extends Function {
 		while (i.hasNext()) {
 			Building building = i.next();
 			// Demand based on life support buildings that are not building connections.
-			if (!building.hasFunction(FunctionType.BUILDING_CONNECTION)) {
-
+			if (!building.hasFunction(FunctionType.BUILDING_CONNECTION)
 				// Only add demand from buildings with same base level as this one.
-				if (building.getBaseLevel() == baseLevel) {
+				 && building.getBaseLevel() == baseLevel) {
 					demand += 1D;
 
-					// If building is not EVA and does not have a walkable airlock path, add more
-					// demand.
-					if ((settlement.getAirlockNum() > 0) && !building.hasFunction(FunctionType.EVA)) {
-
-						if (!settlement.hasWalkableAvailableAirlock(building)) {
-
-							demand += 100D;
-						}
-					}
+				// If building is not EVA and does not have a walkable airlock path, 
+				// add more demand.
+				if (settlement.getAirlockNum() > 0 
+//					&& !settlement.hasWalkableAvailableAirlock(building)
+					&& !building.hasFunction(FunctionType.EVA)) {
+					demand += 100D;
 				}
 			}
 		}
@@ -71,7 +67,6 @@ public class BuildingConnection extends Function {
 				.iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-
 			// Only add supply from connector buildings with same base level as this one.
 			if (building.getBaseLevel() == baseLevel) {
 				supply += (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;

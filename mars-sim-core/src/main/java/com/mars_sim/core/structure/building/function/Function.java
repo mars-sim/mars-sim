@@ -52,9 +52,6 @@ public abstract class Function implements Serializable, Temporal {
 	
 	protected Building building;
 
-	/**	A map of activity spot with the id of a person occupying this spot.  */
-//	private Map<LocalPosition, Integer> activitySpotMap = new HashMap<>();
-	
 	/** A list of predefined activity spots. */
 	private Set<LocalPosition> presetSpots = new HashSet<>();
 	
@@ -258,7 +255,7 @@ public abstract class Function implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Gets an empty local activity spot.
+	 * Gets an empty available local activity spot.
 	 *
 	 * @return
 	 */
@@ -272,7 +269,7 @@ public abstract class Function implements Serializable, Temporal {
 		
 		existing.removeAll(occupied);
 
-		if (existing.size() > 0) {
+		if (!existing.isEmpty()) {
 			return new ArrayList<>(existing).get(0);
 		}
 		

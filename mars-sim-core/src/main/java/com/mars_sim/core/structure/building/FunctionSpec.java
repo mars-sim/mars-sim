@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * FunctionSpec.java
- * @date 2022-07-06
+ * @date 2023-11-24
  * @author Barry Evans
  */
 package com.mars_sim.core.structure.building;
@@ -19,23 +19,22 @@ public class FunctionSpec {
   // Name of the standard capacity property
   public static final String CAPACITY = "capacity";
   public static final String GUEST_BED = "guest";
-
+  public static final String BED = "bed";
+  
   // Name of the standard tech level property
   private static final String TECH_LEVEL = "tech-level";
 
-	private Map<String, Object> props;
-	private Set<LocalPosition> spots;
+  private BuildingSpec buildingSpec;
+  private Map<String, Object> props;
+  private Set<LocalPosition> spots;
 
 	public FunctionSpec(Map<String, Object> props, Set<LocalPosition> spots) {
 		this.props = props;
-	    if (spots == null) {
-	      this.spots = Collections.emptySet();
-	    }
-	    else {
-			  this.spots = Collections.unmodifiableSet(spots);
+	    if (spots != null) {
+	    	this.spots = Collections.unmodifiableSet(spots);
 	    }
 	}
-
+	
 	public Set<LocalPosition> getActivitySpots() {
 		return spots;
 	}
@@ -51,19 +50,19 @@ public class FunctionSpec {
 	}
 
     /**
-     * Gets the value of the standard Capacity property.
+     * Gets the value of the standard capacity property.
      */
     public int getCapacity() {
 		return getIntegerProperty(CAPACITY);
     }
     
     /**
-     * Gets the value of the guest bed property.
+     * Gets the value of the standard bed property.
      */
-    public int getGuestBed() {
+    public int getGuestBeds() {
 		return getIntegerProperty(GUEST_BED);
     }
-
+  
     /**
      * Gets the value of the standard TechLevel property.
      */
@@ -108,4 +107,22 @@ public class FunctionSpec {
     	}
     	return Integer.parseInt((String) value);
     }
+
+    /**
+     * Sets the building specs instance.
+     * 
+     * @param spec
+     */
+	public void setBuildingSpec(BuildingSpec spec) {
+		buildingSpec = spec;
+	}
+	
+    /**
+     * Gets the building specs instance.
+     * 
+     * @param spec
+     */
+	public BuildingSpec getBuildingSpec() {
+		return buildingSpec;
+	}
 }

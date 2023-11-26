@@ -123,11 +123,10 @@ public class InsideBuildingPath implements Serializable {
      * 
      * @return path length (meters).
      */
-    public double getPathLength() {
-        
+    public double getPathLength() {      
         double result = 0D;
         
-        if (pathLocations.size() > 0) {
+        if (!pathLocations.isEmpty()) {
             InsidePathLocation previousLocation = pathLocations.get(0);
             Iterator<InsidePathLocation> i = pathLocations.iterator();
             while (i.hasNext()) {

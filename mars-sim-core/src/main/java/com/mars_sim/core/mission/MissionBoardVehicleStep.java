@@ -195,7 +195,7 @@ public class MissionBoardVehicleStep extends MissionStep {
 		Walk walk = null;
 		LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
 		if (worker instanceof Person p) {
-			walk = Walk.createWalkingTask(p, adjustedLoc, 0, v);
+			walk = Walk.createWalkingTask(p, adjustedLoc, v);
 		}
 
 		else if (worker instanceof Robot r) {

@@ -61,7 +61,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         BuildingManager.addToBuilding(person, building0);
 
         LocalPosition target = new LocalPosition(-6D, 0.5D);
-        WalkingSteps walkingSteps = new WalkingSteps(person, target, 0D, building2);
+        WalkingSteps walkingSteps = new WalkingSteps(person, target, building2);
         assertNotNull(walkingSteps);
         assertTrue(walkingSteps.canWalkAllSteps());
         assertNotNull(walkingSteps.getWalkingStepsList());
@@ -93,7 +93,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         BuildingManager.addToBuilding(person, building0);
 
-        WalkingSteps walkingSteps = new WalkingSteps(person, target, 0D, building1);
+        WalkingSteps walkingSteps = new WalkingSteps(person, target, building1);
         assertNotNull(walkingSteps);
 
         assertFalse(walkingSteps.canWalkAllSteps());
@@ -124,7 +124,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 		Person person = new Person(settlement);
         BuildingManager.addToBuilding(person, building0);
 
-        WalkingSteps walkingSteps = new WalkingSteps(person, target, 0D, building1);
+        WalkingSteps walkingSteps = new WalkingSteps(person, target, building1);
         assertNotNull(walkingSteps);
 
         assertTrue(walkingSteps.canWalkAllSteps());
@@ -173,7 +173,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         BuildingManager.addToBuilding(person, building0);
 
         LocalPosition target = new LocalPosition(10D, 15D);
-        WalkingSteps walkingSteps = new WalkingSteps(person, target, 0D, null);
+        WalkingSteps walkingSteps = new WalkingSteps(person, target, null);
         assertNotNull(walkingSteps);
 
         assertTrue(walkingSteps.canWalkAllSteps()); // junit.framework.AssertionFailedError
@@ -215,7 +215,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 		Person person = new Person(settlement);
         BuildingManager.addToBuilding(person, building0);
 
-        WalkingSteps walkingSteps = new WalkingSteps(person, new LocalPosition(10D, 15D), 0D, null);
+        WalkingSteps walkingSteps = new WalkingSteps(person, new LocalPosition(10D, 15D), null);
 
         assertNotNull(walkingSteps);
 
@@ -249,7 +249,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         person.transfer(rover);
 
         LocalPosition target = new LocalPosition(20D, 15D);
-        WalkingSteps walkingSteps = new WalkingSteps(person, target, 0D, null);
+        WalkingSteps walkingSteps = new WalkingSteps(person, target, null);
         assertNotNull(walkingSteps);
 
         assertTrue(walkingSteps.canWalkAllSteps());
@@ -293,7 +293,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 		Person person = new Person(settlement);
         person.transfer(rover);
 
-        WalkingSteps walkingSteps = new WalkingSteps(person, LocalPosition.DEFAULT_POSITION, 0D, building0);
+        WalkingSteps walkingSteps = new WalkingSteps(person, LocalPosition.DEFAULT_POSITION, building0);
         assertNotNull(walkingSteps);
 
         assertTrue(walkingSteps.canWalkAllSteps());
@@ -350,7 +350,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 		Person person = new Person(settlement);
         BuildingManager.addToBuilding(person, building0);
 
-        WalkingSteps walkingSteps = new WalkingSteps(person, parked, 0D, rover);
+        WalkingSteps walkingSteps = new WalkingSteps(person, parked, rover);
         
         assertNotNull(walkingSteps);
 
@@ -401,7 +401,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 		Person person = new Person(settlement);
         BuildingManager.addToBuilding(person, building0);
 
-        WalkingSteps walkingSteps = new WalkingSteps(person, parked, 0D, rover);
+        WalkingSteps walkingSteps = new WalkingSteps(person, parked, rover);
         
         assertNotNull(walkingSteps);
 
@@ -430,7 +430,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 		Person person = new Person(settlement);
 		person.transfer(rover1);
 		
-        WalkingSteps walkingSteps = new WalkingSteps(person, parked2, 0D, rover2);
+        WalkingSteps walkingSteps = new WalkingSteps(person, parked2, rover2);
         
         assertNotNull(walkingSteps);
 
@@ -482,7 +482,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         person.setPosition(new LocalPosition(4D, 4D));
         BuildingManager.addToBuilding(person, garage.getBuilding());
 
-        WalkingSteps walkingSteps = new WalkingSteps(person, LocalPosition.DEFAULT_POSITION, 0D, rover);
+        WalkingSteps walkingSteps = new WalkingSteps(person, LocalPosition.DEFAULT_POSITION, rover);
         
         assertNotNull(walkingSteps);
 
@@ -526,7 +526,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         person.transfer(rover);
         
         LocalPosition target = new LocalPosition(4D, 4D);
-        WalkingSteps walkingSteps = new WalkingSteps(person, target, 0D, garage.getBuilding());
+        WalkingSteps walkingSteps = new WalkingSteps(person, target, garage.getBuilding());
         
         assertNotNull(walkingSteps);
         
@@ -566,7 +566,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 		person.transfer(surface);
 
 		LocalPosition target = new LocalPosition(4D, 4D);
-        WalkingSteps walkingSteps = new WalkingSteps(person, target, 0D, building0);
+        WalkingSteps walkingSteps = new WalkingSteps(person, target, building0);
         
         assertNotNull(walkingSteps);
 
@@ -610,7 +610,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         Person person = new Person(settlement);
         person.transfer(surface);
         
-        WalkingSteps walkingSteps = new WalkingSteps(person, new LocalPosition(3D, 3D), 0D, building0);
+        WalkingSteps walkingSteps = new WalkingSteps(person, new LocalPosition(3D, 3D), building0);
         
         assertNotNull(walkingSteps);
 
@@ -638,7 +638,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         person.setPosition(new LocalPosition(20D,15D));
         person.transfer(surface);
 
-        WalkingSteps walkingSteps = new WalkingSteps(person, parkedPosition, 0D, rover);
+        WalkingSteps walkingSteps = new WalkingSteps(person, parkedPosition, rover);
         
         assertNotNull(walkingSteps);
         

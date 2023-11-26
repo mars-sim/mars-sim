@@ -19,7 +19,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.AirlockType;
-import com.mars_sim.core.structure.building.function.EVA;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.mapdata.location.LocalPosition;
 import com.mars_sim.tools.Msg;
@@ -53,9 +52,7 @@ extends Airlock {
 	
 	/** The vehicle this airlock is for. */
 	private Vehicle vehicle;
-	/** The EVA building function. */
-    private EVA eva;
-    
+	
     private Map<LocalPosition, Integer> airlockInsidePosMap;
     private Map<LocalPosition, Integer> airlockInteriorPosMap;
     private Map<LocalPosition, Integer> airlockExteriorPosMap;
@@ -75,8 +72,6 @@ extends Airlock {
 		// User Airlock constructor
 		super(capacity);
 
-        this.eva = eva;
-        
 		if (vehicle == null) {
 			throw new IllegalArgumentException(Msg.getString("VehicleAirlock.error.null")); //$NON-NLS-1$
 		}

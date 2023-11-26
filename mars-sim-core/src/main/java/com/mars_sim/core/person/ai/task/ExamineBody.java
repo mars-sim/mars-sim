@@ -114,24 +114,21 @@ public class ExamineBody extends Task {
 		
 		deathInfo.setEstTimeExam(durationExam);
 
-
 		// Walk to medical aid.
-		if (medicalAid instanceof MedicalCare) {
-			// Walk to medical care building.
-			MedicalCare medicalCare = (MedicalCare) medicalAid;
+		if (medicalAid instanceof MedicalCare medicalCare) {
 			Building hospital = medicalCare.getBuilding();
 			malfunctionable = hospital;
 			
 			// Walk to medical care building.
 			walkToTaskSpecificActivitySpotInBuilding(hospital, FunctionType.MEDICAL_CARE, false);
 			
-		} else if (medicalAid instanceof SickBay) {
+		} else if (medicalAid instanceof SickBay bay) {
 			// Walk to medical activity spot in rover.
-			Vehicle vehicle = ((SickBay) medicalAid).getVehicle();
+			Vehicle vehicle = bay.getVehicle();
 			malfunctionable = vehicle;
-			if (vehicle instanceof Rover) {
+			if (vehicle instanceof Rover rover) {
 				// Walk to rover sick bay activity spot.
-				walkToSickBayActivitySpotInRover((Rover) vehicle, false);
+				walkToSickBayActivitySpotInRover(rover, false);
 			}
 		}
 		else {

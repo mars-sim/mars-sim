@@ -378,7 +378,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				// If person is not aboard the rover, board the rover and be ready to depart.
 				if (!getRover().isCrewmember(person)) {
 
-					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, 0, v);
+					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, v);
 					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
 					
 					if (canWalk) {
@@ -397,7 +397,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 			else if (member instanceof Robot robot) {
 				
-				WalkingSteps walkingSteps = new WalkingSteps(robot, adjustedLoc, 0, v);
+				WalkingSteps walkingSteps = new WalkingSteps(robot, adjustedLoc, v);
 				boolean canWalk = Walk.canWalkAllSteps(robot, walkingSteps);
 				
 				if (canWalk) {
@@ -747,7 +747,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 				boolean hasStrength = person.getPhysicalCondition().isFitByLevel(1500, 90, 1500);
 
-				WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, 0, rover);
+				WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, rover);
 				boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
 				
 				if (canWalk) {

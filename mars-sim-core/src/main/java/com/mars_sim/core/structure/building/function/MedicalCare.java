@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MedicalCare.java
- * @date 2021-12-22
+ * @date 2023-11-24
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.function;
@@ -9,6 +9,7 @@ package com.mars_sim.core.structure.building.function;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.RequestMedicalTreatment;
@@ -22,6 +23,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.FunctionSpec;
+import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * The MedicalCare class represents a building function for providing medical
@@ -46,11 +48,14 @@ public class MedicalCare extends Function implements MedicalAid {
 		super(FunctionType.MEDICAL_CARE, spec, building);
 
 		int techLevel = spec.getTechLevel();
-		int beds = spec.getCapacity();
-		medicalStation = new MedicalStation(building.getName(), techLevel, beds);
+		
+		Set<LocalPosition> bedSet = spec.getBuildingSpec().getBeds();
 
-		// NOTE: will need to distinguish between activity spots and bed locations
-		// Load bed locations by loadBedLocations(buildingConfig.getMedicalCareBedLocations(building.getBuildingType()))
+		// NOTE: distinguish between activity spots and bed locations
+		
+		medicalStation = new MedicalStation(building.getName(), techLevel, bedSet.size());
+		
+		medicalStation.setSickBeds(bedSet);
 	}
 
 	/**
@@ -81,14 +86,10 @@ public class MedicalCare extends Function implements MedicalAid {
 			}
 		}
 
-		double medicalPointValue = demand / (supply + 1D) / 10D;
+		double value = demand / (supply + 1D) / 10D;
 
-		FunctionSpec fSpec = buildingConfig.getFunctionSpec(type, FunctionType.MEDICAL_CARE);
-		double tech = fSpec.getTechLevel();
-		double beds = fSpec.getCapacity();
-		double medicalPoints = (tech * tech) * beds;
-
-		return medicalPoints * medicalPointValue;
+		double tech = buildingConfig.getFunctionSpec(type, FunctionType.MEDICAL_CARE).getTechLevel();
+		return tech * value;
 	}
 
 	/**

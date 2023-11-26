@@ -74,9 +74,11 @@ public class BuildingConfig {
 	private static final String MODULES = "modules";
 	private static final String CONVERSION = "thermal-conversion";
 	private static final String PERCENT_LOADING = "percent-loading";
-	
+
+	private static final String ACCOMMODATIONS = "living-accommodations";
 	private static final String MEDICAL_CARE = "medical-care";
 	private static final String BEDS = "beds";
+	private static final String GUEST = "guest";
 	private static final String VEHICLE_MAINTENANCE = "vehicle-maintenance";
 	private static final String PARKING_LOCATION = "parking-location";
 	private static final String FLYER_LOCATION = "flyer-location";
@@ -160,13 +162,13 @@ public class BuildingConfig {
 			String name = element.getName();
 			FunctionType function = FunctionType.valueOf(ConfigHelper.convertToEnumName(name));
 
-			// Has any Activity spots ?
+			// Get activity spots
 			Set<LocalPosition> spots = parsePositions(element, ACTIVITY, ACTIVITY_SPOT,
 													width, length);
 
 			// Get attributes as basic properties
 			Map<String, Object> props = new HashMap<>();
-			for(Attribute attr : element.getAttributes()) {
+			for (Attribute attr : element.getAttributes()) {
 				props.put(attr.getName(), attr.getValue());
 			}
 
@@ -263,6 +265,14 @@ public class BuildingConfig {
 												width, length);
 			newSpec.setBeds(beds);
 		}
+		
+		Element accommodationsElement = functionsElement.getChild(ACCOMMODATIONS);
+		if (accommodationsElement != null) {
+			Set<LocalPosition> beds = parsePositions(accommodationsElement, GUEST, ACTIVITY_SPOT,
+												width, length);
+			newSpec.setBeds(beds);
+		}
+		
 		return newSpec;
 	}
 	

@@ -100,15 +100,15 @@ public class SettlementTransparentPanel extends JComponent {
 	private static final String ZENITH_ANGLE 	= "   Zenith Angle: ";
 	private static final String OPTICAL_DEPTH 	= "   Optical Depth: ";
 
-	private static final String PROJECTED_SUNRISE	= " Projected Sunrise: ";
-	private static final String PROJECTED_SUNSET	= "  Projected Sunset: ";
-	private static final String SUNRISE				= " Yestersol Sunrise: ";
-	private static final String SUNSET				= "  Yestersol Sunset: ";
-	private static final String PROJECTED_DAYLIGHT	= "Projected Daylight: ";	
-	private static final String DAYLIGHT			= "Yestersol Daylight: ";
-	private static final String ZENITH				= "       Zenith Time: ";
-	private static final String MAX_LIGHT			= "      Max Sunlight: ";
-	private static final String CURRENT_LIGHT		= "  Current Sunlight: ";
+	private static final String PROJECTED_SUNRISE	= "  Projected Sunrise: ";
+	private static final String PROJECTED_SUNSET	= "   Projected Sunset: ";
+	private static final String SUNRISE				= "  Yestersol Sunrise: ";
+	private static final String SUNSET				= "   Yestersol Sunset: ";
+	private static final String PROJECTED_DAYLIGHT	= " Projected Daylight: ";	
+	private static final String DAYLIGHT			= " Yestersol Daylight: ";
+	private static final String ZENITH				= "        Zenith Time: ";
+	private static final String MAX_LIGHT			= "       Max Sunlight: ";
+	private static final String CURRENT_LIGHT		= "   Current Sunlight: ";
 	private static final String WM					= " W/m\u00B2 ";
 	private static final String MSOL				= " msol ";
 	private static final String PENDING				= " ...  ";
@@ -257,11 +257,11 @@ public class SettlementTransparentPanel extends JComponent {
 	    centerPanel.setBackground(new Color(0,0,0,128));
 	    centerPanel.setOpaque(false);
 
-	    JPanel westPanel = new JPanel(new BorderLayout(5, 5));
+	    JPanel westPanel = new JPanel(new BorderLayout());
 	    westPanel.setBackground(new Color(0,0,0,128));
 	    westPanel.setOpaque(false);
+	    westPanel.add(weatherPane, BorderLayout.NORTH);
 	    westPanel.add(sunlightPanel, BorderLayout.CENTER);
-	    westPanel.add(weatherPane, BorderLayout.SOUTH);
 
         // Make zoom pane drag-able
 		// Register cm cmZoom.registerComponent(zoomPane);

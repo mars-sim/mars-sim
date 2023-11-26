@@ -20,7 +20,6 @@ import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.LivingAccommodations;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
@@ -78,7 +77,7 @@ public class PlayHoloGameMeta extends FactoryMetaTask {
             else {
                 // Check if a person has a designated bed
                 if ((person.getQuarters() == null) 
-                        && (LivingAccommodations.getBestAvailableQuarters(person, true, true) == null)) {
+                        && (BuildingManager.getBestAvailableQuarters(person, true, true) == null)) {
 
                     result.addModifier("quarters", RandomUtil.getRandomDouble(0.8));
                 }

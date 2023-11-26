@@ -65,11 +65,12 @@ public class LocalAreaUtil {
 	}
 
 	/**
-	 * Converts a position or an activity spot from a bounded object (e.g. within building) local to settlement local.
+	 * Converts a local position (or an activity spot) from a bounded object 
+	 * (e.g. within building or vehicle) to settlement wide position.
 	 *
-	 * @param position          the position relative to this bounded object.
+	 * @param position          the local position relative to this bounded object.
 	 * @param boundedObject the local bounded object.
-	 * @return Point containing the X and Y locations relative to the local area's
+	 * @return Point containing the X and Y locations relative to settlement wide
 	 *         center point.
 	 */
 	public static LocalPosition getLocalRelativePosition(LocalPosition position, LocalBoundedObject boundedObject) {
@@ -84,7 +85,7 @@ public class LocalAreaUtil {
 	}
 
 	/**
-	 * Translates a bounded object (e.g. within building) location to a settlement location.
+	 * Translates a bounded object (e.g. within building or vehicle) location to a settlement location.
 	 * 
 	 * @param xLoc
 	 * @param yLoc
@@ -103,7 +104,7 @@ public class LocalAreaUtil {
 	}
 	
 	/**
-	 * Converts an activity spot from a bounded object (e.g. within building/vehicle) local to settlement-wide location.
+	 * Converts a local activity spot from a bounded object (e.g. within building/vehicle) local to settlement-wide location.
 	 *
 	 * @param xLoc          the X location relative to this bounded object.
 	 * @param yLoc          the Y location relative to this bounded object.
@@ -124,7 +125,7 @@ public class LocalAreaUtil {
 	}
 
 	/**
-	 * Converts a settlement-wide location back to an activity spot within a bounded object (e.g. within building/vehicle).
+	 * Converts a settlement-wide location back to a local activity spot within a bounded object (e.g. within building/vehicle).
 	 *
 	 * @param position          the position relative to the local area.
 	 * @param boundedObject the local bounded object.
@@ -145,7 +146,7 @@ public class LocalAreaUtil {
 	 * Gets a random position inside relative to the bounded Object.
 	 *
 	 * @param boundedObject the local bounded object.
-	 * @return random X/Y location relative to the center of the bounded object.
+	 * @return random settlement wide location relative to the center of the bounded object.
 	 */
 	public static LocalPosition getRandomLocalRelativePosition(LocalBoundedObject boundedObject) {
 		LocalPosition randomInternal = getRandomInteriorPosition(boundedObject, true);
@@ -268,14 +269,14 @@ public class LocalAreaUtil {
 	 */
 	public static LocalPosition getCollisionFreeRandomPosition(LocalBoundedObject b, Coordinates c, double maxDistance)  {
 		boolean goodLocation = false;
-		LocalPosition newLocation = null;
+		LocalPosition sLoc = null;
 		for (int x = 0; (x < 50) && !goodLocation; x++) {
 			LocalPosition boundedLocalPoint = LocalAreaUtil.getRandomExteriorPosition(b, maxDistance);
-			newLocation = LocalAreaUtil.getLocalRelativePosition(boundedLocalPoint,	b);
-			goodLocation = LocalAreaUtil.isPositionCollisionFree(newLocation, c);
+			sLoc = LocalAreaUtil.getLocalRelativePosition(boundedLocalPoint, b);
+			goodLocation = LocalAreaUtil.isPositionCollisionFree(sLoc, c);
 		}
 
-		return newLocation;
+		return sLoc;
 	}
 
 

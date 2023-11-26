@@ -303,7 +303,7 @@ public class BuildingManager implements Serializable {
 		int result = 0;
 		Set<Building> bs = getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
 		for (Building building : bs) {
-			result += building.getLivingAccommodations().getBedCap();
+			result += building.getLivingAccommodations().getTotalBeds();
 		}
 		popCap = result;
 	}
@@ -761,7 +761,10 @@ public class BuildingManager implements Serializable {
 		if (settlement != null) {
 			
 			Set<Building> list0 = settlement.getBuildingManager().getDiningBuildings(person);
-			Set<Building> list1 = BuildingManager.getWalkableBuildings(person, list0);
+			if (list0.isEmpty())
+				return null;
+			
+			Set<Building> list1 = list0;// BuildingManager.getWalkableBuildings(person, list0);
 			if (list1.isEmpty()) {
 				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
 						list0);
@@ -1036,7 +1039,8 @@ public class BuildingManager implements Serializable {
 	public static void addPersonToRandomBuilding(Person person, Settlement s) {
 		
 		// Go to the default zone 0 only
-		Set<Building> bldgSet = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.LIFE_SUPPORT)
+		Set<Building> bldgSet = person.getSettlement().getBuildingManager()
+					.getBuildingSet(FunctionType.LIFE_SUPPORT)
 					.stream()
 					.filter(b -> b.getZone() == 0
 							&& !b.getMalfunctionManager().hasMalfunction())
@@ -1050,7 +1054,9 @@ public class BuildingManager implements Serializable {
 		boolean found = false;
 		
 		for (Building building: bldgSet) {
-			if (!found && building != null) {
+			if (!found && building != null
+					&& building.getCategory() != BuildingCategory.HALLWAY
+					&& building.getCategory() != BuildingCategory.EVA_AIRLOCK) {
 				// Add the person to a building activity spot
 				found = addPersonToActivitySpot(person, building, null);
 			}
@@ -1109,10 +1115,11 @@ public class BuildingManager implements Serializable {
 		Set<Building> functionBuildings = manager.getBuildingSet(functionType);
 
 		Building destination = null;
+		boolean canAdd = false;
 		
 		for (Building bldg : functionBuildings) {
 			// Go to the default zone 0 only
-			if (bldg.getZone() == 0
+			if (!canAdd && bldg.getZone() == 0
 					&& bldg.getFunction(functionType).hasEmptyActivitySpot()) {
 				BuildingCategory category = bldg.getCategory();
 				// Do not add robot to hallway and tunnel
@@ -1120,40 +1127,36 @@ public class BuildingManager implements Serializable {
 					destination = bldg;
 					logger.config(robot, "Initially placed in " + destination.getName() 
 						+ "'s " + functionType.getName() + ".");
-					addRobotToRoboticStation(robot, destination, functionType);
-					break;
+					canAdd = addRobotToRoboticStation(robot, destination, functionType);
+					return;
 				}
 			}
 		}
 
-		if (destination == null) {
-			functionBuildings = manager.getBuildingSet(FunctionType.ROBOTIC_STATION);
-			for (Building bldg : functionBuildings) {
-				if (bldg.getZone() == 0
-						&& bldg.getFunction(FunctionType.ROBOTIC_STATION).hasEmptyActivitySpot()) {
+		functionBuildings = manager.getBuildingSet(FunctionType.ROBOTIC_STATION);
+		for (Building bldg : functionBuildings) {
+			if (!canAdd && bldg.getZone() == 0
+					&& bldg.getFunction(FunctionType.ROBOTIC_STATION).hasEmptyActivitySpot()) {
+				destination = bldg;
+				logger.config(robot, "Initially placed in " + destination.getName() + "'s robotic station.");
+				canAdd = addRobotToRoboticStation(robot, destination, FunctionType.ROBOTIC_STATION);
+				return;
+			}
+		}	
+
+		Set<Building> buildings = manager.getBuildingSet();
+		for (Building bldg : buildings) {
+			for (Function function: bldg.getFunctions()) {
+				if (!canAdd && bldg.getZone() == 0
+						&& function.hasEmptyActivitySpot()) {
 					destination = bldg;
 		
-					logger.config(robot, "Initially placed in " + destination.getName() + "'s robotic station.");
-					addRobotToRoboticStation(robot, destination, FunctionType.ROBOTIC_STATION);
-					break;
+					logger.config(robot, "Initially placed in " + destination.getName() 
+						+ "'s " + function.getFunctionType().getName() + ".");
+					canAdd = addRobotToRoboticStation(robot, destination, function.getFunctionType());
+					return;
 				}
-			}	
-		}
-		else {
-			Set<Building> buildings = manager.getBuildingSet();
-			for (Building bldg : buildings) {
-				for (Function function: bldg.getFunctions()) {
-					if (bldg.getZone() == 0
-							&& function.hasEmptyActivitySpot()) {
-						destination = bldg;
-			
-						logger.config(robot, "Initially placed in " + destination.getName() 
-							+ "'s " + function.getFunctionType().getName() + ".");
-						addRobotToRoboticStation(robot, destination, function.getFunctionType());
-						break;
-					}
-				}
-			}	
+			}
 		}
 	}
 	
@@ -1519,17 +1522,15 @@ public class BuildingManager implements Serializable {
 	 * @param buildingList initial list of buildings.
 	 * @return list of buildings with valid walking path.
 	 */
-	public static Set<Building> getWalkableBuildings(Unit unit, Set<Building> buildingList) {
+	public static Set<Building> getWalkableBuildings(Worker worker, Set<Building> buildingList) {
 		Set<Building> result = new UnitSet<>();
-		Person person = null;
-		Robot robot = null;
 
-		if (unit.getUnitType() == UnitType.PERSON) {
-			person = (Person) unit;
+		if (worker instanceof Person person) {
 			Building currentBuilding = BuildingManager.getBuilding(person);
-			if (currentBuilding != null) {
-				BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+			BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
 
+			if (currentBuilding != null) {
+				
 				for (Building building : buildingList) {
 					InsideBuildingPath validPath = connectorManager.determineShortestPath(currentBuilding,
 							currentBuilding.getPosition(), building, building.getPosition());
@@ -1540,11 +1541,12 @@ public class BuildingManager implements Serializable {
 				}
 			}
 		} else {
-			robot = (Robot) unit;
+			Robot robot = (Robot) worker;
 			Building currentBuilding = BuildingManager.getBuilding(robot);
-			if (currentBuilding != null) {
-				BuildingConnectorManager connectorManager = robot.getSettlement().getBuildingConnectorManager();
+			BuildingConnectorManager connectorManager = robot.getSettlement().getBuildingConnectorManager();
 
+			if (currentBuilding != null) {
+				
 				for (Building building : buildingList) {
 					InsideBuildingPath validPath = connectorManager.determineShortestPath(currentBuilding,
 							currentBuilding.getPosition(), building, building.getPosition());
@@ -1597,27 +1599,6 @@ public class BuildingManager implements Serializable {
 			logger.log(worker, Level.SEVERE, 2000, "The building is null.");
 	}
 
-
-//	/**
-//	 * Adds a unit to the building at a random location if possible.
-//	 *
-//	 * @param unit   the unit to add.
-//	 * @param building the building to add the unit to.
-//	 */
-//	public static void addPersonOrRobotToBuildingRandomLocation(Unit unit, Building building) {
-//		if (building != null) {
-//			if (unit.getUnitType() == UnitType.PERSON) {
-//				addPersonToActivitySpot((Person) unit, building);
-//			}
-//
-//			else {
-//				addRobotToRoboticStation((Robot) unit, building);
-//			}
-//		} else {
-//			logger.log(unit, Level.SEVERE, 2000, "Building is null.");
-//		}
-//	}
-	
 	/**
 	 * Adds the person to an activity spot in a building.
 	 *
@@ -1632,55 +1613,49 @@ public class BuildingManager implements Serializable {
 			LifeSupport lifeSupport = building.getLifeSupport();
 			Function f = lifeSupport;
 			
-//			if (!lifeSupport.containsOccupant(person)) {
+			LocalPosition loc = null;
+			
+			if (functionType != null)  {
+				f = building.getFunction(functionType);
+				loc = f.getAvailableActivitySpot();
+			
+			}
+			else {
+				functionType = FunctionType.LIFE_SUPPORT;
+				// Find an empty spot in life support
+				loc = lifeSupport.getAvailableActivitySpot();
+			}
+
+			// Add the person to this building, even if an activity spot is not available				
+			if (lifeSupport != null && !lifeSupport.containsOccupant(person)) {
+				lifeSupport.addPerson(person);
+			}
+			
+			if (loc == null) {
+				f = building.getEmptyActivitySpotFunction();
+				if (f != null)
+					loc = f.getAvailableActivitySpot();	
+			}
+			
+			if (loc != null) {
+				// Convert the local activity spot to the settlement reference coordinate
+				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
+				// Put the person there
+				person.setPosition(settlementLoc);
 				
-				LocalPosition loc = null;
-				
-				if (functionType != null)  {
-					f = building.getFunction(functionType);
-					loc = f.getAvailableActivitySpot();
-				
+				// Add the person to this activity spot
+				f.addActivitySpot(loc, person.getIdentifier());
+				// Remove the person from the previous activity spot
+				if (person.getFunction() != null) {
+					person.getFunction().removeFromActivitySpot(person.getIdentifier());
 				}
-				else {
-					functionType = FunctionType.LIFE_SUPPORT;
-					// Find an empty spot in life support
-					loc = lifeSupport.getAvailableActivitySpot();
-				}
-					
-				// Add the person to this building, even if an activity spot is not available				
-				if (lifeSupport != null && !lifeSupport.containsOccupant(person)) {
-					lifeSupport.addPerson(person);
-				}
-				
-				if (loc == null) {
-					loc = building.getRandomEmptyActivitySpot();	
-					
-//					if (loc == null) {
-						// Don't want to add a person to a spot overlapping a furniture or an object
-//						loc = LocalAreaUtil.getRandomLocalRelativePosition(building);
-//					}
-				}
-				
-				if (loc != null) {
-					// Convert the local activity spot to the settlement reference coordinate
-					LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
-					// Put the person there
-					person.setPosition(settlementLoc);
-					
-					// Add the person to this activity spot
-					f.addActivitySpot(loc, person.getIdentifier());
-					// Remove the person from the previous activity spot
-					if (person.getFunction() != null) {
-						person.getFunction().removeFromActivitySpot(person.getIdentifier());
-					}
-					// Set the new function type
-					person.setFunction(f);
-					
-					result = true;
-				}
-				
+				// Set the new function type
+				person.setFunction(f);
+								
 				person.setCurrentBuilding(building);
-//			}
+				
+				result = true;
+			}
 
 		} catch (Exception e) {
 			logger.log(building, person, Level.SEVERE, 2000, "Could not be added.", e);
@@ -1703,58 +1678,56 @@ public class BuildingManager implements Serializable {
 		try {
 			RoboticStation roboticStation = building.getRoboticStation();
 			Function f = roboticStation;
-			
-//			if (!roboticStation.containsRobotOccupant(robot)) {
 
-				// Find an empty robotic station spot
-				LocalPosition loc = null;
+			// Find an empty robotic station spot
+			LocalPosition loc = null;
+			
+			if (functionType != null)  {
+				f = building.getFunction(functionType);
+				loc = f.getAvailableActivitySpot();
+			
+			}
+			else {
+				functionType = FunctionType.ROBOTIC_STATION;
+				// Find an empty spot in life support
+				loc = roboticStation.getAvailableActivitySpot();
+			}
+			
+			if (loc == null) {
+				f = building.getEmptyActivitySpotFunction();
+				if (f != null)
+					loc = f.getAvailableActivitySpot();	
+			}
+			
+			// Add the robot to the station
+			if (roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
+				roboticStation.addRobot(robot);
+			}
 				
-				if (functionType != null)  {
-					f = building.getFunction(functionType);
-					loc = f.getAvailableActivitySpot();
-				
+			if (loc == null) {
+				loc = building.getRandomEmptyActivitySpot();
+			}
+			
+			if (loc != null) {
+				// Convert the local activity spot to the settlement reference coordinate
+				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
+				// Put the robot there
+				robot.setPosition(settlementLoc);
+
+				// Add the robot to this activity spot
+				f.addActivitySpot(loc, robot.getIdentifier());
+				// Remove the robot from the previous activity spot
+				if (robot.getFunction() != null) {
+					robot.getFunction().removeFromActivitySpot(robot.getIdentifier());
 				}
-				else {
-					functionType = FunctionType.ROBOTIC_STATION;
-					// Find an empty spot in life support
-					loc = roboticStation.getAvailableActivitySpot();
-				}
-				
-				// Add the robot to the station
-				if (roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
-					roboticStation.addRobot(robot);
-				}
-					
-				if (loc == null) {
-					loc = building.getRandomEmptyActivitySpot();	
-	
-//					if (loc == null) {
-//						// Don't want to add a person to a spot overlapping a furniture or an object
-//						loc = LocalAreaUtil.getRandomLocalRelativePosition(building);
-//					}
-				}
-				
-				if (loc != null) {
-					// Convert the local activity spot to the settlement reference coordinate
-					LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
-					// Put the robot there
-					robot.setPosition(settlementLoc);
-	
-					// Add the robot to this activity spot
-					f.addActivitySpot(loc, robot.getIdentifier());
-					// Remove the robot from the previous activity spot
-					if (robot.getFunction() != null) {
-						robot.getFunction().removeFromActivitySpot(robot.getIdentifier());
-					}
-					// Set the new function type
-					robot.setFunction(f);
-					
-					result = true;
-				}
+				// Set the new function type
+				robot.setFunction(f);
 				
 				robot.setCurrentBuilding(building);
-//			}
 
+				result = true;
+			}	
+		
 		} catch (Exception e) {
 			logger.log(building, robot, Level.SEVERE, 2000, "Could not be added.", e);
 		}
@@ -2557,7 +2530,7 @@ public class BuildingManager implements Serializable {
 			
 			else {
 				if (RandomUtil.getRandomInt(2) == 0) // robot is not as inclined to move around
-					kitchenBuildings = BuildingManager.getLeastCrowded4BotBuildings(kitchenBuildings);
+					kitchenBuildings = getLeastCrowded4BotBuildings(kitchenBuildings);
 	
 				if (!kitchenBuildings.isEmpty()) {
 					result = RandomUtil.getARandSet(kitchenBuildings);
@@ -2855,7 +2828,6 @@ public class BuildingManager implements Serializable {
 		for (Entry<Integer, Integer> entry: partMap.entrySet()) {
 			int p = entry.getKey();
 			int number = entry.getValue();
-//			Part pp = ItemResourceUtil.findItemResource(p);
 			if (part.getID() == p) {
 				numRequest += number;
 			}
@@ -2882,6 +2854,111 @@ public class BuildingManager implements Serializable {
 			.getBuildings(FunctionType.STORAGE).stream()
 			.filter(b -> b.getStorage().getResourceStorageCapacity().containsKey(resourceID))
 			.collect(Collectors.groupingBy(x -> (x.getCategory() == cat)));
+	}
+	
+
+	/**
+	 * Gets the best available living accommodations building that the person can
+	 * use. Returns null if no living accommodations building is currently
+	 * available.
+	 *
+	 * @param person   the person
+	 * @param unmarked does the person wants an unmarked(aka undesignated) bed ?
+	 * @param sameZone must be in the same zone. True if it's optional to be in the same zone.                
+	 * @return a building with available bed(s)
+	 */
+	public static Building getBestAvailableQuarters(Person person, boolean unmarked, boolean sameZone) {
+
+		Building result = null;
+		Building locaBldg = person.getBuildingLocation();
+		
+		if (person.isInSettlement()) {
+			Set<Building> set0 = person.getSettlement().getBuildingManager()
+					.getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
+
+			if (sameZone && locaBldg != null) {
+				set0 = set0
+						.stream()
+						.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
+								&& !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
+			}
+			else if (!sameZone) {
+				// If the person is not in a building or 
+				// the quarters is not required to be in the same zone
+				set0 = set0
+						.stream()
+						.filter(b -> !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());		
+			}
+			
+			Set<Building> set1 = BuildingManager.getNonMalfunctioningBuildings(set0);
+			if (set1.isEmpty()) {
+				return getBestQuarters(person, set0);
+			}
+			
+			Set<Building> set2 = getQuartersWithEmptyBeds(set1, unmarked);
+			if (set2.isEmpty()) {
+				return getBestQuarters(person, set1);
+			}
+			
+			Set<Building> set3 = BuildingManager.getLeastCrowdedBuildings(set2);
+			if (set3.isEmpty()) {
+				return getBestQuarters(person, set2);
+			}
+
+			return getBestQuarters(person, set3);
+		}
+
+		return result;
+	}
+
+	
+	/**
+	 * Gets living accommodations with empty beds from a list of buildings with the
+	 * living accommodations function.
+	 *
+	 * @param buildingList list of buildings with the living accommodations
+	 *                     function.
+	 * @param unmarked     does the person wants an unmarked(aka undesignated) bed
+	 *                     or not.
+	 * @return list of buildings with empty beds.
+	 */
+	private static Set<Building> getQuartersWithEmptyBeds(Set<Building> buildingList, boolean unmarked) {
+		Set<Building> result = new UnitSet<>();
+
+		for (Building building : buildingList) {
+			LivingAccommodations quarters = building.getLivingAccommodations();
+			boolean hasUnoccupiedSpots = quarters.getNumEmptyActivitySpots() > 0;
+			boolean hasEmptyGuestBed = quarters.hasEmptyGuestBed();
+			
+			// Check if an unmarked bed is wanted
+			if (unmarked && quarters.hasAnUnmarkedBed() && hasUnoccupiedSpots) {
+				result.add(building);
+			}
+			else if (unmarked && hasEmptyGuestBed) {
+				result.add(building);
+			}
+			else if (hasUnoccupiedSpots) {
+				result.add(building);
+			}
+		}
+
+		return result;
+	}
+	
+	
+	/**
+	 * Gets the best quarters.
+	 * 
+	 * @param person
+	 * @param set
+	 * @return
+	 */
+	private static Building getBestQuarters(Person person, Set<Building> set) {
+		Map<Building, Double> probs = getBestRelationshipBuildings(person,
+				set);
+		return RandomUtil.getWeightedRandomObject(probs);
 	}
 	
 	/**

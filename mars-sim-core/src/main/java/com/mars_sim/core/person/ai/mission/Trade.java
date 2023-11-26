@@ -264,7 +264,7 @@ public class Trade extends RoverMission implements CommerceMission {
 				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(destinationBuilding);
 				if (member instanceof Person person) {
 					
-					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, 0, destinationBuilding);
+					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, destinationBuilding);
 					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
 					
 					if (canWalk) {
@@ -279,7 +279,7 @@ public class Trade extends RoverMission implements CommerceMission {
 				}
 				else if (member instanceof Robot robot) {
 					
-					WalkingSteps walkingSteps = new WalkingSteps(robot, adjustedLoc, 0, destinationBuilding);
+					WalkingSteps walkingSteps = new WalkingSteps(robot, adjustedLoc, destinationBuilding);
 					boolean canWalk = Walk.canWalkAllSteps(robot, walkingSteps);
 					
 					if (canWalk) {
@@ -469,7 +469,7 @@ public class Trade extends RoverMission implements CommerceMission {
 					// Check if an EVA suit is available
 					EVASuitUtil.fetchEVASuitFromAny(person, v, tradingSettlement);
 
-					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, 0, v);
+					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, v);
 					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
 					// Walk back to the vehicle and be ready to embark and go home
 					if (canWalk) {

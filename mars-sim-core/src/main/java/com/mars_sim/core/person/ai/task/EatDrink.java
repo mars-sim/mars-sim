@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EatDrink.java
- * @date 2023-06-10
+ * @date 2023-11-24
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task;
@@ -394,16 +394,19 @@ public class EatDrink extends Task {
 	 */
 	protected void walkToDiningLoc(Building building, boolean allowFail) {
 
-		LocalPosition loc = findDiningSpot(building);
+		LocalPosition loc = findLocalDiningSpot(building);
 
 		// Create subtask for walking to destination.
 		if (loc != null) {
 			// Convert the local activity spot to the settlement reference coordinate
-			LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
+			LocalPosition sLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
 			
-			boolean canWalk = createWalkingSubtask(building, settlementLoc, allowFail);
+			boolean canWalk = createWalkingSubtask(building, sLoc, allowFail);
 		
 			if (canWalk) {
+				// Set the new position
+				person.setPosition(sLoc);
+						
 				Function f = building.getFunction(FunctionType.DINING);
 				// Add the person to this activity spot
 				f.addActivitySpot(loc, person.getIdentifier());
@@ -418,12 +421,12 @@ public class EatDrink extends Task {
 	}
 
 	/**
-	 * Finds a dining spot in this building.
+	 * Finds a local dining spot in this building.
 	 * 
 	 * @param building
 	 * @return
 	 */
-	private LocalPosition findDiningSpot(Building building) {
+	private LocalPosition findLocalDiningSpot(Building building) {
 
 		LocalPosition loc = building.getFunction(FunctionType.DINING).getAvailableActivitySpot();
 		

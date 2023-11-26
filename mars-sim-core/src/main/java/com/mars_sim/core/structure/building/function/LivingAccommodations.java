@@ -1,27 +1,25 @@
 /*
  * Mars Simulation Project
  * LivingAccommodations.java
- * @date 2021-08-20
+ * @date 2023-11-24
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.function;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.data.SolSingleMetricDataLogger;
-import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;
-import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.FunctionSpec;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.mapdata.location.LocalPosition;
@@ -51,6 +49,8 @@ public class LivingAccommodations extends Function {
 	
 	/** max # of beds. */
 	private int maxNumBeds;
+	/** max # of guest beds. */
+	private int maxGuestBeds;
 	/** The # of registered sleepers. */
 	private int registeredSleepers;
 	/** The average water used per person for washing (showers, washing clothes, hands, dishes, etc) [kg/sol].*/
@@ -60,9 +60,12 @@ public class LivingAccommodations extends Function {
 	/** percent portion of grey water generated from waste water.*/
 	private double greyWaterFraction;
 
-	/** The bed registry in this facility (it uses settlement-wide reference coordinate). */
+	/** The bed registry in this facility, using settlement-wide position. */
 	private Map<Integer, LocalPosition> assignedBeds = new ConcurrentHashMap<>();
 
+	/** The guest beds in this facility, using settlement-wide position. */
+	private Map<Integer, LocalPosition> guestBeds = new ConcurrentHashMap<>();
+	
 	/** The daily water usage in this facility [kg/sol]. */
 	private SolSingleMetricDataLogger dailyWaterUsage;
 	
@@ -83,8 +86,20 @@ public class LivingAccommodations extends Function {
 		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
 		
 		greyWaterGen = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
-		// Loads the max # of beds available
+		// Loads the max # of regular beds available
 		maxNumBeds = spec.getCapacity();
+		
+		Set<LocalPosition> bedSet = spec.getBuildingSpec().getBeds();
+		
+		for (LocalPosition loc: bedSet) {
+			// Convert to settlement position
+			LocalPosition bedLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
+			guestBeds.put(-1, bedLoc);
+		}
+		
+		// Loads the max # of guest beds available
+		maxGuestBeds = bedSet.size();
+		
 		// Loads the wash water usage kg/sol
 		washWaterUsage = personConfig.getWaterUsageRate();
 		// Loads the grey to black water ratio
@@ -116,26 +131,43 @@ public class LivingAccommodations extends Function {
 				removedBuilding = true;
 			} else {
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += building.getLivingAccommodations().maxNumBeds * wearModifier;
+				supply += building.getLivingAccommodations().getTotalBeds() * wearModifier;
 			}
 		}
 
-		double bedCapacityValue = demand / (supply + 1D);
+		double value = demand / (supply + 1D) / 5;
 
-		double bedCapacity = buildingConfig.getFunctionSpec(buildingName, FunctionType.LIVING_ACCOMMODATIONS).getCapacity();
-
-		return bedCapacity * bedCapacityValue;
+		return value * buildingConfig.getFunctionSpec(buildingName, FunctionType.LIVING_ACCOMMODATIONS).getCapacity();
 	}
 
 	/**
-	 * Gets the number of beds in the living accommodations.
+	 * Gets the max number of regular beds in the living accommodations.
 	 *
-	 * @return number of beds.
+	 * @return
 	 */
 	public int getBedCap() {
 		return maxNumBeds;
 	}
 
+	/**
+	 * Gets the max number of guest beds in the living accommodations.
+	 *
+	 * @return
+	 */
+	public int getMaxGuestBeds() {
+		return maxGuestBeds;
+	}
+	
+	/**
+	 * Gets the total number of beds (regular and guest) in the living accommodations.
+	 *
+	 * @return
+	 */
+	public int getTotalBeds() {
+		return maxNumBeds + maxGuestBeds;
+	}
+
+	
 	/**
 	 * Gets the number of assigned beds in this building.
 	 *
@@ -145,6 +177,14 @@ public class LivingAccommodations extends Function {
 		return assignedBeds.size();
 	}
 
+	/**
+	 * Gets the total number of guest beds in this building.
+	 *
+	 * @return total number of guest beds
+	 */
+	public int getTotalGuestBeds() {
+		return guestBeds.size();
+	}
 	/**
 	 * Gets the number of people registered to sleep in this building.
 	 *
@@ -191,9 +231,9 @@ public class LivingAccommodations extends Function {
 		if (registeredBed == null) {
 
 			if (areAllBedsTaken()) {
-				 logger.log(building, Level.WARNING, 5000,  " All beds have been taken"
+				 logger.log(building, Level.WARNING, 5000,  "All regular beds have been taken"
 						 		+ " (# Registered Beds: " + registeredSleepers
-						 		+ ", Bed Capacity: " + maxNumBeds + ").");
+						 		+ ", Regular Bed Capacity: " + maxNumBeds + ").");
 			}
 
 			else if (!assignedBeds.containsKey(person.getIdentifier())) {
@@ -250,12 +290,11 @@ public class LivingAccommodations extends Function {
 			return null;
 		}
 		
-		// TODO: How do we allocate guest beds for a
-		// traveler to sleep on it.
+		// Note: guest beds are reserved for temporary use and 
+		// are not assigned here for use here
 		
 		Set<LocalPosition> locs = getActivitySpots();
 		for (LocalPosition loc : locs) {
-			
 			// Convert the activity spot (the bed location) to the settlement reference coordinate
 			bedLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
 	
@@ -389,106 +428,10 @@ public class LivingAccommodations extends Function {
 	}
 
 	/**
-	 * Gets living accommodations with empty beds from a list of buildings with the
-	 * living accommodations function.
-	 *
-	 * @param buildingList list of buildings with the living accommodations
-	 *                     function.
-	 * @param unmarked     does the person wants an unmarked(aka undesignated) bed
-	 *                     or not.
-	 * @return list of buildings with empty beds.
-	 */
-	private static Set<Building> getQuartersWithEmptyBeds(Set<Building> buildingList, boolean unmarked) {
-		Set<Building> result = new UnitSet<>();
-
-		for (Building building : buildingList) {
-			LivingAccommodations quarters = building.getLivingAccommodations();
-			boolean notFull = quarters.getNumEmptyActivitySpots() > 0;//quarters.getRegisteredSleepers() < quarters.getBedCap();
-			// Check if an unmarked bed is wanted
-			if (unmarked) {
-				if (quarters.hasAnUnmarkedBed() && notFull) {
-					result.add(building);
-				}
-			}
-			else if (notFull) {
-				result.add(building);
-			}
-		}
-
-		return result;
-	}
-	
-	/**
-	 * Gets the best available living accommodations building that the person can
-	 * use. Returns null if no living accommodations building is currently
-	 * available.
-	 *
-	 * @param person   the person
-	 * @param unmarked does the person wants an unmarked(aka undesignated) bed ?
-	 * @param sameZone must be in the same zone. True if it's optional to be in the same zone.                
-	 * @return a building with available bed(s)
-	 */
-	public static Building getBestAvailableQuarters(Person person, boolean unmarked, boolean sameZone) {
-
-		Building result = null;
-
-		if (person.isInSettlement()) {
-			Set<Building> set0 = person.getSettlement().getBuildingManager()
-					.getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
-
-			if (sameZone && person.getBuildingLocation() != null) {
-				set0 = set0
-						.stream()
-						.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
-								&& !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());
-			}
-			else if (!sameZone) {
-				set0 = set0
-						.stream()
-						.filter(b -> !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());		
-			}
-			
-			Set<Building> set1 = BuildingManager.getNonMalfunctioningBuildings(set0);
-			if (!set1.isEmpty()) {
-				return getBestQuarters(person, set0);
-			}
-			
-			Set<Building> set2 = getQuartersWithEmptyBeds(set1, unmarked);
-			if (!set2.isEmpty()) {
-				return getBestQuarters(person, set1);
-			}
-			
-			Set<Building> set3 = BuildingManager.getLeastCrowdedBuildings(set2);
-			if (!set3.isEmpty()) {
-				return getBestQuarters(person, set2);
-			}
-
-			return getBestQuarters(person, set3);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the best quarters.
-	 * 
-	 * @param person
-	 * @param set
-	 * @return
-	 */
-	private static Building getBestQuarters(Person person, Set<Building> set) {
-		Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
-				set);
-		return RandomUtil.getWeightedRandomObject(probs);
-	}
-	
-	/**
 	 * Releases any bed assigned to a Person.
 	 * 
 	 * @param person
-	 * @return
+	 * @returno
 	 */
 	public void releaseBed(Person person) {
 		assignedBeds.remove(person.getIdentifier());
@@ -498,9 +441,66 @@ public class LivingAccommodations extends Function {
 	 * Checks if an unmarked or unassigned bed is available
 	 */
 	public boolean hasAnUnmarkedBed() {
-        return getNumAssignedBeds() < maxNumBeds;
+        return getNumAssignedBeds() < maxNumBeds || hasEmptyGuestBed();
 	}
 
+	/**
+	 * Checks if there is an empty guest bed.
+	 *  
+	 * @return
+	 */
+	public boolean hasEmptyGuestBed() {
+		for (int i: guestBeds.keySet()) {
+			if (i == -1) 
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Gets an empty guest bed.
+	 * 
+	 * @return
+	 */
+	public LocalPosition getEmptyGuestBed() {
+		for (int i: guestBeds.keySet()) {
+			if (i == -1) 
+				return guestBeds.get(i);
+		}
+		return null;
+	}
+	
+	/**
+	 * Registers a guest bed.
+	 * 
+	 * @param id
+	 */
+	public void registerGuestBed(int id) {
+		for (Entry<Integer, LocalPosition> entry: guestBeds.entrySet()) {
+			int oldID = entry.getKey();
+			if (oldID == -1) {
+				LocalPosition p = entry.getValue();
+				guestBeds.put(id, p);
+			}
+		}
+	}
+	
+	/**
+	 * Deregisters a guest bed.
+	 * 
+	 * @param id
+	 */
+	public void deRegisterGuestBed(int id) {
+		for (Entry<Integer, LocalPosition> entry: guestBeds.entrySet()) {
+			int oldID = entry.getKey();
+			if (oldID == id) {
+				LocalPosition p = entry.getValue();
+				guestBeds.put(-1, p);
+			}
+		}
+	}
+	
+	
 	@Override
 	public double getMaintenanceTime() {
 		return maxNumBeds * 7D;
@@ -510,6 +510,8 @@ public class LivingAccommodations extends Function {
 		building = null;
 		assignedBeds.clear();
 		assignedBeds = null;
+		guestBeds.clear();
+		guestBeds = null;
 		dailyWaterUsage = null;
 	}
 }

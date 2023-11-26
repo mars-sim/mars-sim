@@ -256,7 +256,7 @@ implements Serializable {
 			int popSize = settlement.getNumCitizens();
 			int popCapacity = settlement.getPopulationCapacity();
 			LivingAccommodations livingAccommodations = building.getLivingAccommodations();
-			int buildingPopCapacity = livingAccommodations.getBedCap();
+			int buildingPopCapacity = livingAccommodations.getTotalBeds();
 			if ((popCapacity - buildingPopCapacity) < popSize) {
 				result = 0D;
 			}

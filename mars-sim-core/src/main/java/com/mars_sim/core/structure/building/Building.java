@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Building.java
- * @date 2023-09-19
+ * @date 2023-11-24
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building;
@@ -188,6 +188,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	private VehicleMaintenance vehicleMaintenance;
 	private WasteProcessing wasteProcessing;
 	
+	private BuildingSpec spec;
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
 	private BuildingCategory category;
@@ -196,7 +197,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	private static BuildingConfig buildingConfig;
 
 	/**
-	 * Constructor 1 : Constructs a Building object.
+	 * Constructor 1 : Constructs a Building object. 
+	 * Called by MockBuilding and addBuilding().
 	 *
 	 * @param template the building template.
 	 * @param manager  the building's building manager.
@@ -218,6 +220,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 	/**
 	 * Constructor 2 : Constructs a Building object.
+	 * Called by Constructor 1 and ConstructionSite's createBuilding().
 	 *
 	 * @param id           the building's unique ID number.
 	 * @param buildingType the building Type.
@@ -336,6 +339,15 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		super("Mock Building", new Coordinates(0D, 0D));
 	}
 
+	/**
+	 * Returns the building spec.
+	 * 
+	 * @return
+	 */
+	public BuildingSpec getBuildingSpec() {
+		return spec;
+	}
+	
 	/**
 	 * Gets the description of a building.
 	 *
@@ -573,27 +585,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			return null;
 	}
 
-//	/**
-//	 * Gets all activity spots from all functions.
-//	 *
-//	 * @return 
-//	 */
-//	public List<LocalPosition> getAllActivitySpots() {
-//		if (activitySpots == null) {
-//			List<LocalPosition> allSpots = new ArrayList<>();
-//			
-//			for (Function f : functions) {
-//				if (f.hasActivitySpots())
-//					allSpots.addAll(f.getActivitySpotsList());
-//			}
-//	
-//			activitySpots = allSpots;
-//			return allSpots;
-//		}
-//		
-//		return activitySpots;
-//	}
-	
 	/**
 	 * Gets a function that has with openly available (empty) activity spot.
 	 *
@@ -602,8 +593,17 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	public Function getEmptyActivitySpotFunction() {
 		List<Function> goodFunctions = new ArrayList<>();
 
+		// First, use recreation function's empty activity spot if available
+		Function rec = getFunction(FunctionType.RECREATION);
+		if (rec != null && rec.hasEmptyActivitySpot()) {
+			return rec;
+		}
+				
+		Collections.shuffle(functions);
+				
 		for (Function f : functions) {
-			if (f.hasEmptyActivitySpot())
+			if (f.getFunctionType() != FunctionType.EVA 
+				&& f.hasEmptyActivitySpot())
 				goodFunctions.add(f);
 		}
 
@@ -623,12 +623,23 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	public LocalPosition getRandomEmptyActivitySpot() {
 		
+		// First, use the recreation function activity spot if available
+		Function rec = getFunction(FunctionType.RECREATION);
+		if (rec != null) {
+			LocalPosition loc = rec.getAvailableActivitySpot();
+			if (loc != null) {
+				return loc;
+			}
+		}
+				
 		Collections.shuffle(functions);
 
 		for (Function f : functions) {
-			LocalPosition loc = f.getAvailableActivitySpot();
-			if (loc != null)
-				return loc;
+			if (f.getFunctionType() != FunctionType.EVA) {
+				loc = f.getAvailableActivitySpot();
+				if (loc != null)
+					return loc;
+			}
 		}
 
 		return null;
@@ -645,6 +656,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		for(FunctionType supported : spec.getFunctionSupported()) {
 			FunctionSpec fSpec = spec.getFunctionSpec(supported);
+			fSpec.setBuildingSpec(spec);
 			switch (supported) {
 
 			case ADMINISTRATION:

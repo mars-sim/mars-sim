@@ -180,7 +180,7 @@ public class Walk extends Task {
 		}
 
 		LocalPosition targetPosition = LocalAreaUtil.getRandomLocalRelativePosition(targetObject);
-		walkingSteps = new WalkingSteps(person, targetPosition, 0, targetObject);
+		walkingSteps = new WalkingSteps(person, targetPosition, targetObject);
 
 		if (!canWalkAllSteps(person, walkingSteps)) {
 			logger.log(person, Level.SEVERE, 30_000, "Could not walk all steps.");
@@ -241,13 +241,13 @@ public class Walk extends Task {
 	 * This is a factory method to create a Walk task if there is a valid path.
 	 *
 	 * @param person Person doing the walking
-	 * @param destPosition FInal destination within an interior object
+	 * @param destPosition Final destination within an interior object
 	 * @param destZ Vertical destination
 	 * @param destObject Destination
 	 * @return
 	 */
-	public static Walk createWalkingTask(Person person, LocalPosition destPosition, double destZ, LocalBoundedObject destObject) {
-		WalkingSteps walkingSteps = new WalkingSteps(person, destPosition, destZ, destObject);
+	public static Walk createWalkingTask(Person person, LocalPosition destPosition, LocalBoundedObject destObject) {
+		WalkingSteps walkingSteps = new WalkingSteps(person, destPosition, destObject);
 		boolean canWalk = walkingSteps.canWalkAllSteps();
 
         // Check if all airlocks can be exited.
@@ -269,8 +269,8 @@ public class Walk extends Task {
 	 * @param destObject Destination
 	 * @return
 	 */
-	public static boolean canWalk(Person person, LocalPosition destPosition, double destZ, LocalBoundedObject destObject) {
-		WalkingSteps walkingSteps = new WalkingSteps(person, destPosition, destZ, destObject);
+	public static boolean canWalk(Person person, LocalPosition destPosition, LocalBoundedObject destObject) {
+		WalkingSteps walkingSteps = new WalkingSteps(person, destPosition, destObject);
 		return canWalkAllSteps(person, walkingSteps);
 	}
 
@@ -284,7 +284,7 @@ public class Walk extends Task {
 	 * @return
 	 */
 	public static Walk createWalkingTask(Robot robot, LocalPosition destPosition, LocalBoundedObject destObject) {
-		WalkingSteps walkingSteps = new WalkingSteps(robot, destPosition, 0D, destObject);
+		WalkingSteps walkingSteps = new WalkingSteps(robot, destPosition, destObject);
 		boolean canWalk = walkingSteps.canWalkAllSteps();
 
 		if (canWalk) {
@@ -302,8 +302,8 @@ public class Walk extends Task {
 	 * @param destObject Destination
 	 * @return
 	 */
-	public static boolean canWalk(Robot robot, LocalPosition destPosition, double destZ, LocalBoundedObject destObject) {
-		WalkingSteps walkingSteps = new WalkingSteps(robot, destPosition, destZ, destObject);
+	public static boolean canWalk(Robot robot, LocalPosition destPosition, LocalBoundedObject destObject) {
+		WalkingSteps walkingSteps = new WalkingSteps(robot, destPosition, destObject);
 		return canWalkAllSteps(robot, walkingSteps);
 	}
 	

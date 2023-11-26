@@ -329,7 +329,7 @@ public class EmergencySupply extends RoverMission {
 
 				if (member instanceof Person person) {
 					
-					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, 0, destinationBuilding);
+					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, destinationBuilding);
 					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
 					
 					if (canWalk) {
@@ -455,7 +455,7 @@ public class EmergencySupply extends RoverMission {
 
 					// If person is not aboard the rover, board rover.
 					
-					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, 0, v);
+					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, v);
 					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
 					
 					if (canWalk) {

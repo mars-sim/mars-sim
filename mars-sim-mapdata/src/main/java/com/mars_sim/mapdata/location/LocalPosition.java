@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LocalPosition.java
- * @date 2021-11-26
+ * @date 2023-11-24
  * @author Barry Evans
  */
 
@@ -10,7 +10,8 @@ package com.mars_sim.mapdata.location;
 import java.io.Serializable;
 
 /**
- * This represent a position within the local frame of reference of a Unit, e.g. Vehicle, Building
+ * This represent a position within a frame of reference.
+ * It can be a local position within a building or a settlement wide position within a settlement
  */
 public class LocalPosition implements Serializable {
 	
@@ -23,7 +24,7 @@ public class LocalPosition implements Serializable {
     public static final LocalPosition DEFAULT_POSITION = new LocalPosition(0D, 0D);
 
 	/** A very small distance (meters) for measuring how close two positions are. */
-	private static final double VERY_SMALL_DISTANCE = .00001D;
+	private static final double VERY_SMALL_DISTANCE = .01; // within a centimeter
 	
 	private double x;
 	private double y;
@@ -51,8 +52,7 @@ public class LocalPosition implements Serializable {
      * coordinates.
      * @since 1.2
      */
-    public double getDistanceTo(LocalPosition other)
-    {
+    public double getDistanceTo(LocalPosition other) {
         double x1 = x - other.x;
         double y1 = y - other.y;
         return Math.sqrt(x1 * x1 + y1 * y1);

@@ -27,9 +27,9 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.air.AirComposition;
+import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.authority.PreferenceCategory;
 import com.mars_sim.core.authority.PreferenceKey;
-import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.DustStorm;
@@ -85,7 +85,6 @@ import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.connection.BuildingConnectorManager;
 import com.mars_sim.core.structure.building.function.EVA;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.LivingAccommodations;
 import com.mars_sim.core.structure.construction.ConstructionManager;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
@@ -963,7 +962,7 @@ public class Settlement extends Structure implements Temporal,
 			
 			for (Person p : citizens) {
 				// Register each settler with a bed
-				Building b = LivingAccommodations.getBestAvailableQuarters(p, true, true);
+				Building b = BuildingManager.getBestAvailableQuarters(p, true, true);
 				if (b != null)
 					b.getLivingAccommodations().registerSleeper(p, false);
 			}

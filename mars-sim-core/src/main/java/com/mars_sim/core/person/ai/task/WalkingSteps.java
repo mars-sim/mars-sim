@@ -46,8 +46,12 @@ implements Serializable {
 
 	/**
 	 * constructor 1.
+	 * 
+	 * @param person
+	 * @param pos
+	 * @param interiorObject
 	 */
-	public WalkingSteps(Person person, LocalPosition pos, double zLoc, LocalBoundedObject interiorObject) {
+	public WalkingSteps(Person person, LocalPosition pos, LocalBoundedObject interiorObject) {
         this.person = person;
 
         // Initialize data members.
@@ -74,8 +78,13 @@ implements Serializable {
 
 	/**
 	 * constructor 2.
+	 * 
+	 * @param robot
+	 * @param pos
+	 * @param zLoc
+	 * @param interiorObject
 	 */
-	public WalkingSteps(Robot robot, LocalPosition pos, double zLoc, LocalBoundedObject interiorObject) {
+	public WalkingSteps(Robot robot, LocalPosition pos, LocalBoundedObject interiorObject) {
         this.robot = robot;
 
         // Initialize data members.
@@ -408,10 +417,11 @@ implements Serializable {
         // Determine walking steps based on initial walk state.
         switch(initialWalkState.stateType) {
 
-            case RobotWalkState.BUILDING_LOC:    determineBuildingInteriorWalkingSteps(initialWalkState,
-                    destinationWalkState);
-                                            break;
-            default:                        throw new IllegalArgumentException("Invalid walk state type: " +
+            case RobotWalkState.BUILDING_LOC:    
+            	determineBuildingInteriorWalkingSteps(initialWalkState, destinationWalkState);
+            	break;
+            default:
+            	throw new IllegalArgumentException("Invalid walk state type: " +
                     initialWalkState.stateType);
         }
 

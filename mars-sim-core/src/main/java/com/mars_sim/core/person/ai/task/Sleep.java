@@ -62,6 +62,7 @@ public class Sleep extends Task {
 
 	// Data members
 	private boolean arrived = false;
+	private boolean useGuestBed = false;
 
 	/**
 	 * Constructor 1.
@@ -238,25 +239,33 @@ public class Sleep extends Task {
 	}
 
 	/**
-	 * Looks for a bed for a guest.
+	 * Looks for a guest bed.
 	 */
 	private void lookForGuestBed() {
 		
+		// Case 0 : A guest bed - The BEST case for a guest
+		boolean hasGuestBed = walkToGuestBed(person, true);
+		
+		if (hasGuestBed) {
+			useGuestBed = true;
+			return;
+		}
+			
 		//////////////////// Case 1 - 3 /////////////////////////
 
-		Building q0 = LivingAccommodations.getBestAvailableQuarters(person, true, false);
+		Building q0 = BuildingManager.getBestAvailableQuarters(person, true, false);
 
 		if (q0 != null) {
-			// Case 1 : (the BEST case for a guest) unmarked, empty (UE) bed(s)
+			// Case 1 : have unmarked, empty (UE) bed
 
 			walkToActivitySpotInBuilding(q0, FunctionType.LIVING_ACCOMMODATIONS, true);
-
 		}
 
 		else { 
-			// There is no unmarked/guest bed
+			// Since there is no unmarked/guest bed,
+			// look for a marked bed
 
-			q0 = LivingAccommodations.getBestAvailableQuarters(person, false, false);
+			q0 = BuildingManager.getBestAvailableQuarters(person, false, false);
 
 			if (q0 != null) {
 				// Case 2 : marked, empty (ME) bed(s)
@@ -267,7 +276,7 @@ public class Sleep extends Task {
 				walkToActivitySpotInBuilding(q0, FunctionType.LIVING_ACCOMMODATIONS, true);
 			}
 			else {
-				// Case 3 :  NO empty bed(s)
+				// Case 3 : No empty bed(s)
 
 				walkToRandomLocation(true);
 				
@@ -285,10 +294,9 @@ public class Sleep extends Task {
 	private void lookForAssignedBed(Building building) {
 		
 		// Case 4: marked and empty (ME)
-
 		if (!walkToBed(building, person, true)) {
-			
-			// His/her marked bed is not empty and is occupied.
+			// Since his/her marked bed is being occupied,
+			// go look for a guest bed
 			lookForGuestBed();
 		}
 	}
@@ -299,7 +307,7 @@ public class Sleep extends Task {
 	private void lookTobeAssignedABed() {
 		
 		// Case 7: unmarked, empty (UE) bed
-		Building q7 = LivingAccommodations.getBestAvailableQuarters(person, true, false);
+		Building q7 = BuildingManager.getBestAvailableQuarters(person, true, false);
 		
 		if (q7 != null) {
 			// Register this sleeper
@@ -315,7 +323,7 @@ public class Sleep extends Task {
 		
 		else { // no unmarked bed
 
-			q7 = LivingAccommodations.getBestAvailableQuarters(person, false, false);
+			q7 = BuildingManager.getBestAvailableQuarters(person, false, false);
 
 			if (q7 != null)
 				// Case 9: marked, empty (ME)
@@ -367,7 +375,8 @@ public class Sleep extends Task {
 		Building q4 = person.getQuarters();
 
 		if (q4 != null) {
-			// The BEST case for an inhabitant
+			// This is the BEST case for an inhabitant
+			
 			// This person has his quarters and have a designated bed
 			lookForAssignedBed(q4);
 		}
@@ -450,11 +459,18 @@ public class Sleep extends Task {
 			circadian.setNumSleep(circadian.getNumSleep() + 1);
 			circadian.updateSleepCycle((int) getMarsTime().getMillisol(), true);
 			circadian.setAwake(true);
+			
+			if (useGuestBed) {
+				// Deregister this person if using a guest bed
+				LivingAccommodations q = person.getBuildingLocation().getLivingAccommodations();
+				// Register this person to use this guest bed
+				q.deRegisterGuestBed(person.getIdentifier());
+			}
 		} 
 	}
 
 	/**
-	 * Gets the wake-up alarm time, based on a person's shift
+	 * Gets the wake-up alarm time, based on a person's shift.
 	 *
 	 * @return alarm time in millisols.
 	 */

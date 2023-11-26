@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MedicalStation.java
- * @date 2022-06-30
+ * @date 2023-11-24
  * @author Scott Davis
  * Based on Barry Evan's SickBay class
  */
@@ -12,12 +12,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
  * This class represents a medical station. It provides a number of treatments
@@ -35,6 +37,10 @@ public class MedicalStation implements MedicalAid, Serializable {
 	private int level;
 	/** Number of sick beds. */
 	private int sickBeds;
+
+	/** The name of this medical station. */
+	private String name;
+	
 	/** List of health problems currently being treated. */
 	private List<HealthProblem> problemsBeingTreated;
 	/** List of health problems awaiting treatment. */
@@ -43,26 +49,26 @@ public class MedicalStation implements MedicalAid, Serializable {
 	private List<Person> restingRecoveryPeople;
 	/** Treatments supported by the medical station. */
 	private List<Treatment> supportedTreatments;
-
-	private String name;
+	/** The set of sick beds. */
+	private Set<LocalPosition> bedSet;
 	
 	private static MedicalManager medManager;
-
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param level    The treatment level of the medical station.
-	 * @param sickBeds Number of sickbeds.
+	 * @param level		The treatment level of the medical station.
+	 * @param beds		# of sickbeds
 	 */
-	public MedicalStation(String name, int level, int sickBeds) {
+	public MedicalStation(String name, int level, int beds) {
 		this.name = name;
 		this.level = level;
-		this.sickBeds = sickBeds;
+
+		this.sickBeds = beds;
+		
 		problemsBeingTreated = new CopyOnWriteArrayList<>();
 		problemsAwaitingTreatment = new CopyOnWriteArrayList<>();
 		restingRecoveryPeople = new CopyOnWriteArrayList<>();
-
 
 		if (medManager == null) {
 			medManager = Simulation.instance().getMedicalManager();
@@ -72,6 +78,24 @@ public class MedicalStation implements MedicalAid, Serializable {
 		supportedTreatments = medManager.getSupportedTreatments(level);
 	}
 
+	/**
+	 * Sets the sick beds.
+	 * 
+	 * @param bedSet
+	 */
+	public void setSickBeds(Set<LocalPosition> bedSet) {
+		this.bedSet = bedSet;
+	}
+	
+	/**
+	 * Returns a set of sick beds.
+	 * 
+	 * @return
+	 */
+	public Set<LocalPosition> getBedSet() {
+		return bedSet;
+	}
+	
 	@Override
 	public List<HealthProblem> getProblemsAwaitingTreatment() {
 		return new ArrayList<>(problemsAwaitingTreatment);
@@ -120,7 +144,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 	 * @return Collection of People.
 	 */
 	public Collection<Person> getPatients() {
-		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> result = new ConcurrentLinkedQueue<>();
 
 		// Add patients being treated for health problems.
 		Iterator<HealthProblem> i = problemsBeingTreated.iterator();
@@ -145,7 +169,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 
 	@Override
 	public List<Treatment> getSupportedTreatments() {
-		return new CopyOnWriteArrayList<Treatment>(supportedTreatments);
+		return new CopyOnWriteArrayList<>(supportedTreatments);
 	}
 
 	@Override
