@@ -188,7 +188,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	private VehicleMaintenance vehicleMaintenance;
 	private WasteProcessing wasteProcessing;
 	
-	private BuildingSpec spec;
+	private BuildingSpec buildingSpec;
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
 	private BuildingCategory category;
@@ -212,7 +212,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		settlementID = settlement.getIdentifier();
 
 		// NOTE: needed for setting inhabitable id
-		if (!buildingConfig.getBuildingSpec(template.getBuildingType()).isInhabitable()) {
+		// Question: why is the following needed ?
+		if (!buildingSpec.isInhabitable()) {
 			// Set the instance of life support
 			lifeSupport = (LifeSupport) getFunction(FunctionType.LIFE_SUPPORT);
 		}
@@ -245,16 +246,16 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		
 		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 		
-		BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
+		buildingSpec = buildingConfig.getBuildingSpec(buildingType);
 
-		constructionType = spec.getConstruction();
+		constructionType = buildingSpec.getConstruction();
 		powerModeCache = PowerMode.FULL_POWER;
 		heatModeCache = HeatMode.HALF_HEAT;
-		width = spec.getWidth();
+		width = buildingSpec.getWidth();
 		if (width < 0) {
 			width = bounds.getWidth();
 		}
-		length = spec.getLength();
+		length = buildingSpec.getLength();
 		if (length < 0) {
 			length = bounds.getLength();
 		}
@@ -265,40 +266,39 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		}
 
 		// Sets the base mass
-		setBaseMass(spec.getBaseMass());
+		setBaseMass(buildingSpec.getBaseMass());
 
-		baseLevel = spec.getBaseLevel();
-		description = spec.getDescription();
-		this.category = spec.getCategory();
+		baseLevel = buildingSpec.getBaseLevel();
+		description = buildingSpec.getDescription();
+		this.category = buildingSpec.getCategory();
 
 		// Get base power requirements.
-		basePowerRequirement = spec.getBasePowerRequirement();
-		basePowerDownPowerRequirement = spec.getBasePowerDownPowerRequirement();
+		basePowerRequirement = buildingSpec.getBasePowerRequirement();
+		basePowerDownPowerRequirement = buildingSpec.getBasePowerDownPowerRequirement();
 
 		// Set room temperature
-		presetTemperature = spec.getPresetTemperature();
+		presetTemperature = buildingSpec.getPresetTemperature();
 
 		// Get the building's functions
-		functions = buildFunctions(spec);
+		functions = buildFunctions(buildingSpec);
 		
 		// Determine total maintenance time.
-		double totalMaintenanceTime = spec.getMaintenanceTime();
+		double totalMaintenanceTime = buildingSpec.getMaintenanceTime();
 		for (Function mfunction : functions) {
 			totalMaintenanceTime += mfunction.getMaintenanceTime();
 		}
 
 		// Set up malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, spec.getWearLifeTime(), totalMaintenanceTime);
+		malfunctionManager = new MalfunctionManager(this, buildingSpec.getWearLifeTime(), totalMaintenanceTime);
 		// Add 'Building' to malfunction manager.
 		malfunctionManager.addScopeString(SystemType.BUILDING.getName());
 		
 		// Add building type to the standard scope
-		SimulationConfig.instance().getPartConfiguration().addScopes(spec.getBuildingType());
+		SimulationConfig.instance().getPartConfiguration().addScopes(buildingSpec.getBuildingType());
 		
 		// Add building type to malfunction manager.
-		malfunctionManager.addScopeString(spec.getBuildingType());
-		
-		
+		malfunctionManager.addScopeString(buildingSpec.getBuildingType());
+			
 		// Add each function to the malfunction scope.
 		for (Function sfunction : functions) {
 			Set<String> scopes = sfunction.getMalfunctionScopeStrings();
@@ -340,12 +340,12 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Returns the building spec.
+	 * Returns the building buildingSpec.
 	 * 
 	 * @return
 	 */
 	public BuildingSpec getBuildingSpec() {
-		return spec;
+		return buildingSpec;
 	}
 	
 	/**

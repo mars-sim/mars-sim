@@ -31,7 +31,7 @@ public class MockBuilding extends Building {
     
     public MockBuilding(BuildingManager manager, String name)  {
 		super(manager, name);
-		buildingType = "EVA Airlock";
+		buildingType = "Mock Type";
 
 		if (manager == null) {
 			throw new IllegalArgumentException("Bulding manager can not be null");

@@ -1567,36 +1567,42 @@ public class BuildingManager implements Serializable {
 	 * @param building the building to add.
 	 */
 	public static void addToBuilding(Worker worker, Building building) {
-		if (building != null) {
-			try {
-				if (worker instanceof Person person) {
-					LifeSupport lifeSupport = building.getLifeSupport();
-
-					if (!lifeSupport.containsOccupant(person)) {
-						lifeSupport.addPerson(person);
-
-						person.setCurrentBuilding(building);
-					}
-				}
-
-				else {
-					Robot robot = (Robot) worker;
-					RoboticStation roboticStation = building.getRoboticStation();
-
-					if (roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
-						roboticStation.addRobot(robot);
-					}
-					
-					robot.setCurrentBuilding(building);
-				}
-
-			} catch (Exception e) {
-				logger.log(building, worker, Level.SEVERE, SimLogger.DEFAULT_SEVERE_TIME, "Could not be added", e);
-			}
-		}
-
-		else
-			logger.log(worker, Level.SEVERE, 2000, "The building is null.");
+		
+		if (worker instanceof Person person)
+			addPersonToActivitySpot(person, building, null);
+		else if (worker instanceof Robot robot)
+			addRobotToRoboticStation(robot, building, null);
+		
+//		if (building != null) {
+//?			try {
+//				if (worker instanceof Person person) {
+//					LifeSupport lifeSupport = building.getLifeSupport();
+//
+//					if (!lifeSupport.containsOccupant(person)) {
+//						lifeSupport.addPerson(person);
+//
+//						person.setCurrentBuilding(building);
+//					}
+//				}
+//
+//				else {
+//					Robot robot = (Robot) worker;
+//					RoboticStation roboticStation = building.getRoboticStation();
+//
+//					if (roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
+//						roboticStation.addRobot(robot);
+//					}
+//					
+//					robot.setCurrentBuilding(building);
+//				}
+//
+//			} catch (Exception e) {
+//				logger.log(building, worker, Level.SEVERE, SimLogger.DEFAULT_SEVERE_TIME, "Could not be added", e);
+//			}
+//		}
+//
+//		else
+//			logger.log(worker, Level.SEVERE, 2000, "The building is null.");
 	}
 
 	/**
@@ -1608,7 +1614,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public static boolean addPersonToActivitySpot(Person person, Building building, FunctionType functionType) {
 		boolean result = false;
-	
+
 		try {
 			LifeSupport lifeSupport = building.getLifeSupport();
 			Function f = lifeSupport;
@@ -1617,8 +1623,8 @@ public class BuildingManager implements Serializable {
 			
 			if (functionType != null)  {
 				f = building.getFunction(functionType);
-				loc = f.getAvailableActivitySpot();
-			
+				if (f != null)
+					loc = f.getAvailableActivitySpot();	
 			}
 			else {
 				functionType = FunctionType.LIFE_SUPPORT;
@@ -1684,8 +1690,8 @@ public class BuildingManager implements Serializable {
 			
 			if (functionType != null)  {
 				f = building.getFunction(functionType);
-				loc = f.getAvailableActivitySpot();
-			
+				if (f != null)
+					loc = f.getAvailableActivitySpot();	
 			}
 			else {
 				functionType = FunctionType.ROBOTIC_STATION;

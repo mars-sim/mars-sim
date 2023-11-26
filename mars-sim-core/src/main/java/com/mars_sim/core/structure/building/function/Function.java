@@ -260,11 +260,14 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return
 	 */
 	public LocalPosition getAvailableActivitySpot() {
+		if (presetSpots == null || presetSpots.isEmpty())
+			return null;
+
 		Set<LocalPosition> occupied = new HashSet<>();
 		for (ActivitySpot as: occupiedSpots) {
 			occupied.add(as.getPos());
 		}
-		
+						
 		Set<LocalPosition> existing = new HashSet<>(presetSpots);
 		
 		existing.removeAll(occupied);

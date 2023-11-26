@@ -24,6 +24,7 @@ import com.mars_sim.core.structure.building.MockBuilding;
 import com.mars_sim.core.structure.building.function.EVA;
 import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
+import com.mars_sim.core.structure.building.function.LivingAccommodations;
 import com.mars_sim.core.structure.building.function.VehicleGarage;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
@@ -42,7 +43,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	protected UnitManager unitManager;
 	protected MarsSurface surface;
 	protected Simulation sim;
-	private FunctionSpec evaFunction;
+	private FunctionSpec evaSpec;
+	private FunctionSpec quartersSpec;
 	protected SimulationConfig simConfig;
 	private int pulseID = 1;
 
@@ -75,7 +77,9 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	    							 sim.getWeather(), unitManager);
 	    
 	    surface = unitManager.getMarsSurface();
-		evaFunction = simConfig.getBuildingConfiguration().getFunctionSpec("EVA Airlock", FunctionType.EVA);
+		evaSpec = simConfig.getBuildingConfiguration().getFunctionSpec("EVA Airlock", FunctionType.EVA);
+		quartersSpec = simConfig.getBuildingConfiguration().getFunctionSpec("Residential Quarters", FunctionType.LIVING_ACCOMMODATIONS);
+		
 	}
 
 	
@@ -93,7 +97,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	
 		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
 
-//	    building0.addFunction(new EVA(building0, evaFunction));
+//	    building0.addFunction(new EVA(building0, evaSpec));
 	
 	    LocalPosition parkingLocation = LocalPosition.DEFAULT_POSITION;
 	    VehicleGarage garage = new VehicleGarage(building0,
@@ -125,10 +129,17 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	protected Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
 
-	    building0.addFunction(new EVA(building0, evaFunction));
+	    building0.addFunction(new EVA(building0, evaSpec));
 	    return building0;
 	}
 
+	protected Building buildAccommodation(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
+
+	    building0.addFunction(new LivingAccommodations(building0, quartersSpec));
+	    return building0;
+	}
+	
 	protected Settlement buildSettlement() {
 		return buildSettlement(MockSettlement.DEFAULT_NAME);
 	}

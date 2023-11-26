@@ -530,7 +530,7 @@ public class BuildingConfig {
 	}
 
 	/**
-	 * Finds a Building spec according to the name.
+	 * Finds a building spec according to the name.
 	 * 
 	 * @param buildingType
 	 * @return
