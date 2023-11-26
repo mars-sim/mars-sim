@@ -61,9 +61,14 @@ public class Sleep extends Task {
 	private static final double RESIDUAL_MODIFIER = .005;
 
 	// Data members
-	private boolean arrived = false;
-	private boolean useGuestBed = false;
-
+	/**
+	 * 0 = none
+	 * 1 = regular bed
+	 * 2 = guest bed
+	 * 3 = vehicle seat
+	 */
+	private int typeOfBed = 0;
+	
 	/**
 	 * Constructor 1.
 	 *
@@ -166,14 +171,19 @@ public class Sleep extends Task {
 	private double sleepingPhase(double time) {
 		
 		if (isDone() || getTimeLeft() <= 0) {
+			if (typeOfBed == 2) {
+				releaseGuestBed();
+			}
         	// this task has ended
 			endTask();
 			return time;
 		}
 
 		if (person.isInSettlement()) {
-			// Walk to a location
-			walkToDestination();
+			if (typeOfBed == 0) {
+				// Walk to a location
+				walkToDestination();
+			}
 		}
 
 //			// Check if a person's subtask is not the Sleep task itself
@@ -218,6 +228,9 @@ public class Sleep extends Task {
 		// Check if fatigue is zero
 		if (pc.getFatigue() <= 0) {
 			logger.log(person, Level.FINE, 0, "Totally refreshed from a good sleep.");
+			if (typeOfBed == 2) {
+				releaseGuestBed();
+			}
 			endTask();
 		}
 
@@ -247,7 +260,7 @@ public class Sleep extends Task {
 		boolean hasGuestBed = walkToGuestBed(person, true);
 		
 		if (hasGuestBed) {
-			useGuestBed = true;
+			typeOfBed = 2;
 			return;
 		}
 			
@@ -259,6 +272,8 @@ public class Sleep extends Task {
 			// Case 1 : have unmarked, empty (UE) bed
 
 			walkToActivitySpotInBuilding(q0, FunctionType.LIVING_ACCOMMODATIONS, true);
+
+			typeOfBed = 1;
 		}
 
 		else { 
@@ -274,6 +289,8 @@ public class Sleep extends Task {
 				// Find a bed whose owner is on a mission
 				
 				walkToActivitySpotInBuilding(q0, FunctionType.LIVING_ACCOMMODATIONS, true);
+				
+				typeOfBed = 1;
 			}
 			else {
 				// Case 3 : No empty bed(s)
@@ -282,10 +299,10 @@ public class Sleep extends Task {
 				
 				// NOTE: should allow him/her to sleep in gym or a medical bed 
 				// or anywhere based on his/her usual preferences
+				
+				typeOfBed = 0;
 			}
 		}
-		
-		arrived = true;
 	}
 	
 	/**
@@ -316,7 +333,9 @@ public class Sleep extends Task {
 			if (bed != null) {
 				// Case 8: unmarked, empty (UE) bed
 				walkToBed(q7, person, true);
-				arrived = true;
+
+				typeOfBed = 2;
+				
 				return;
 			}
 		}
@@ -325,11 +344,13 @@ public class Sleep extends Task {
 
 			q7 = BuildingManager.getBestAvailableQuarters(person, false, false);
 
-			if (q7 != null)
+			if (q7 != null) {
 				// Case 9: marked, empty (ME)
 
 				walkToActivitySpotInBuilding(q7, FunctionType.LIVING_ACCOMMODATIONS, true);
 
+				typeOfBed = 2;
+			}
 			else {
 				// Case 10: No beds available, go to any activity spots
 
@@ -346,7 +367,7 @@ public class Sleep extends Task {
 					
 					if (bed != null) {
 						walkToBed(b, person, true);
-						arrived = true;
+						typeOfBed = 2;
 						return;
 					}
 				}
@@ -354,7 +375,7 @@ public class Sleep extends Task {
 				if (bed == null) {
 					logger.info("No bed is found.");
 					walkToRandomLocation(true);					
-					arrived = true;
+					typeOfBed = 0;
 					return;
 				}			
 			}
@@ -392,14 +413,13 @@ public class Sleep extends Task {
 	 */
 	private void walkToDestination() {
 		
-		if (!arrived) {
+		if (typeOfBed == 0) {
 			// If person is in rover, walk to passenger activity spot.
 			if (person.getVehicle() instanceof Rover rover) {
 				
 				walkToPassengerActivitySpotInRover(rover, true);
 				
-				arrived = true;
-				
+				typeOfBed = 3;
 				return;
 			}
 
@@ -417,7 +437,7 @@ public class Sleep extends Task {
 					// Rest in one of the 2 beds there
 					walkToActivitySpotInBuilding(q0, FunctionType.LIVING_ACCOMMODATIONS, true);
 					
-					arrived = true;
+					typeOfBed = 2;
 					
 					return;
 				}
@@ -438,11 +458,19 @@ public class Sleep extends Task {
 					lookForBed();
 				}
 			}
-
-			arrived = true;
 		}
 	}
 
+	/**
+	 * Releases the guest bed.
+	 */
+	public void releaseGuestBed() {
+		// Deregister this person if using a guest bed
+		LivingAccommodations q = person.getBuildingLocation().getLivingAccommodations();
+		// Register this person to use this guest bed
+		q.deRegisterGuestBed(person.getIdentifier());
+	}
+	
 	/**
 	 * Clears down the task. 
 	 * Note: if worker is a robot then send them to report to duty.
@@ -459,13 +487,6 @@ public class Sleep extends Task {
 			circadian.setNumSleep(circadian.getNumSleep() + 1);
 			circadian.updateSleepCycle((int) getMarsTime().getMillisol(), true);
 			circadian.setAwake(true);
-			
-			if (useGuestBed) {
-				// Deregister this person if using a guest bed
-				LivingAccommodations q = person.getBuildingLocation().getLivingAccommodations();
-				// Register this person to use this guest bed
-				q.deRegisterGuestBed(person.getIdentifier());
-			}
 		} 
 	}
 
