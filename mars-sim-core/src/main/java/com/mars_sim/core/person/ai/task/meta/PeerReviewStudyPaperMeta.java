@@ -70,7 +70,7 @@ public class PeerReviewStudyPaperMeta extends FactoryMetaTask {
 	    // Get all studies in the peer review phase.
 		double base = 0D;
         ScientificStudyManager sm = Simulation.instance().getScientificStudyManager();
-	    for(ScientificStudy study : sm.getOngoingStudies()) {
+	    for(ScientificStudy study : sm.getAllStudies(false)) {
 			// Study needs peer review phase and person cannot be contributing
 			// plus Person must have a job that is suitable for the Study subject
 	        if (ScientificStudy.PEER_REVIEW_PHASE.equals(study.getPhase())

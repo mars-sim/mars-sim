@@ -21,11 +21,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.science.ScienceType;
@@ -105,6 +103,7 @@ public class TabPanelScienceStudy extends TabPanel {
 		studyTable = new JTable(studyTableModel);
 		studyTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		studyTable.setRowSelectionAllowed(true);
+		studyTable.setDefaultRenderer(Double.class, new NumberCellRenderer(1));
 		studyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		studyTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {
@@ -136,7 +135,6 @@ public class TabPanelScienceStudy extends TabPanel {
 
 		// Create the achievement panel.
 		JPanel achievementPane = new JPanel(new BorderLayout());
-//		achievementPane.setBorder(new MarsPanelBorder());
 		mainPane.add(achievementPane);
 
 		// Create achievement label panel.
@@ -164,14 +162,6 @@ public class TabPanelScienceStudy extends TabPanel {
 		achievementTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		achievementTable.setRowSelectionAllowed(true);
 		achievementTable.setDefaultRenderer(Double.class, new NumberCellRenderer(1));
-
-		// Align the content to the center of the cell
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		achievementTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		achievementTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
-		achievementTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
-		achievementTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
 		
 		achievementScrollPane.setViewportView(achievementTable);
 
@@ -234,6 +224,12 @@ public class TabPanelScienceStudy extends TabPanel {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
+		private static final int NAME_COL = 0;
+		private static final int ROLE_COL = 1;
+		private static final int PHASE_COL = 2;
+		private static final int RESEARCH_COL = 3;
+		private static final int PAPER_COL = 4;
+
 		// Data members.
 		private Person person;
 		private List<ScientificStudy> studies;
@@ -262,25 +258,31 @@ public class TabPanelScienceStudy extends TabPanel {
 		 * @return the number of columns in the model.
 		 */
 		public int getColumnCount() {
-			return 6;
+			return PAPER_COL + 1;
 		}
 
 		@Override
 		public String getColumnName(int column) {
-			if (column == 0) 
-				return Msg.getString("TabPanelScience.column.id"); //$NON-NLS-1$
-			else if (column == 1)
-				return Msg.getString("TabPanelScience.column.study"); //$NON-NLS-1$
-			else if (column == 2)
-				return Msg.getString("TabPanelScience.column.role"); //$NON-NLS-1$
-			else if (column == 3)
-				return Msg.getString("TabPanelScience.column.phase"); //$NON-NLS-1$
-			else if (column == 4)
-				return Msg.getString("TabPanelScience.column.researchTime"); //$NON-NLS-1$
-			else if (column == 5)
-				return Msg.getString("TabPanelScience.column.paperTime"); //$NON-NLS-1$
-			
-			return null;
+			return switch (column) {
+				case NAME_COL -> Msg.getString("TabPanelScience.column.study"); //$NON-NLS-1$
+				case ROLE_COL -> Msg.getString("TabPanelScience.column.role"); //$NON-NLS-1$
+				case PHASE_COL -> Msg.getString("TabPanelScience.column.phase"); //$NON-NLS-1$
+				case RESEARCH_COL -> Msg.getString("TabPanelScience.column.researchTime"); //$NON-NLS-1$
+				case PAPER_COL -> Msg.getString("TabPanelScience.column.paperTime"); //$NON-NLS-1$
+				default -> null;
+			};
+		}
+
+		@Override
+		public Class<?> getColumnClass(int column) {
+			return switch (column) {
+				case NAME_COL -> String.class;
+				case ROLE_COL -> String.class;
+				case PHASE_COL -> String.class;
+				case RESEARCH_COL -> Double.class;
+				case PAPER_COL -> Double.class;
+				default -> null;
+			};
 		}
 
 		/**
@@ -300,37 +302,38 @@ public class TabPanelScienceStudy extends TabPanel {
 		 * @return the value Object at the specified cell.
 		 */
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			String result = null;
+			Object result = null;
 			if ((rowIndex >= 0) && (rowIndex < studies.size())) {
 				ScientificStudy study = studies.get(rowIndex);
-				if (columnIndex == 0) 
-					result = study.getID() + "";
-				else if (columnIndex == 1)
-					result = study.getName();
-				else if (columnIndex == 2) {
-					if (person.equals(study.getPrimaryResearcher()))
-						result = Msg.getString("TabPanelScience.primary"); //$NON-NLS-1$
-					else if (study.getCollaborativeResearchers().contains(person))
-						result = Msg.getString("TabPanelScience.collaborator"); //$NON-NLS-1$
-				} else if (columnIndex == 3) {
-					if (study.isCompleted())
-						result = study.getCompletionState();
-					else
-						result = study.getPhase();
-				} else if (columnIndex == 4) {
-					if (study.getPrimaryResearcher().equals(person))
-						return Math.round(study.getPrimaryResearchWorkTimeCompleted())/1000.0;
-					else if (study.getCollaborativeResearchers().contains(person))
-						return Math.round(study.getCollaborativeResearchWorkTimeCompleted(person))/1000.0;
-					else
-						return 0;
-				} else {
-					if (study.getPrimaryResearcher().equals(person))
-						return Math.round(study.getPrimaryPaperWorkTimeCompleted())/1000.0;
-					else if (study.getCollaborativeResearchers().contains(person))
-						return Math.round(study.getCollaborativePaperWorkTimeCompleted(person))/1000.0;
-					else
-						return 0;
+				switch (columnIndex) {
+					case NAME_COL:
+						result = study.getName();
+						break;
+					case ROLE_COL:
+						if (person.equals(study.getPrimaryResearcher()))
+							result = Msg.getString("TabPanelScience.primary"); //$NON-NLS-1$
+						else if (study.getCollaborativeResearchers().contains(person))
+							result = Msg.getString("TabPanelScience.collaborator"); //$NON-NLS-1$
+						break;
+					case PHASE_COL:
+						if (study.isCompleted())
+							result = study.getCompletionState();
+						else
+							result = study.getPhase();
+						break;
+					case RESEARCH_COL:
+						if (study.getPrimaryResearcher().equals(person))
+							result = study.getPrimaryResearchWorkTimeCompleted();
+						else if (study.getCollaborativeResearchers().contains(person))
+							result = study.getCollaborativeResearchWorkTimeCompleted(person);
+						break;
+					case PAPER_COL:
+						if (study.getPrimaryResearcher().equals(person))
+							result = study.getPrimaryPaperWorkTimeCompleted();
+						else if (study.getCollaborativeResearchers().contains(person))
+							result = study.getCollaborativePaperWorkTimeCompleted(person);
+					default:
+						return result = null;
 				}
 			}
 			return result;
