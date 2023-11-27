@@ -41,12 +41,14 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("GuideWindow.title"); //$NON-NLS-1$
-	public static final String ICON = "action/help";
+	public static final String HELP_ICON = "action/help";
+	public static final String HOME_ICON = "action/home";
 	
+	public static final String WIKI_ICON = "action/wiki";
 	public static final String WIKI_URL = Msg.getString("GuideWindow.githubwiki.url"); //$NON-NLS-1$
 	public static final String WIKI_TEXT = Msg.getString("GuideWindow.githubwiki.title"); //$NON-NLS-1$
     
-	private JButton link;
+//	private JButton link;
 	
 	private JLabel urlLabel;
 	
@@ -58,12 +60,14 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	/** The guide window URL. */
 	private URL guideURL;
 	
-	private Icon homeIcon = ImageLoader.getIconByName("home");
+	private Icon homeIcon = ImageLoader.getIconByName(HOME_ICON);
+	private Icon wikiIcon = ImageLoader.getIconByName(WIKI_ICON);
 	
 	private JButton homeButton = new JButton(homeIcon);
 	private JButton backButton = new JButton("<");
 	private JButton forwardButton = new JButton(">");
-
+	private JButton wikiButton = new JButton(wikiIcon);
+	
 	/**
 	 * Constructor.
 	 * 
@@ -111,15 +115,11 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		JPanel linkPanel = new JPanel(new FlowLayout(2, 2, FlowLayout.LEFT));
 		topPanel.add(linkPanel, BorderLayout.EAST);
 		
-		link = new JButton(WIKI_TEXT);
-		link.setAlignmentY(1f);
-		link.setToolTipText("Open mars-sim wiki in GitHub");
-		linkPanel.add(link);
-		link.addActionListener(e -> {
-							SwingHelper.openBrowser(WIKI_URL);
-							}
-						);
-
+//		link = new JButton(WIKI_TEXT);
+//		link.setAlignmentY(1f);
+		wikiButton.setToolTipText("Open mars-sim wiki in GitHub");
+		linkPanel.add(wikiButton);
+		wikiButton.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
 
 		// Initialize the status bar
 		mainPane.add(initializeStatusBar(),  BorderLayout.SOUTH);

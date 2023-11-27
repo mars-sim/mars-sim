@@ -13,6 +13,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.time.format.DateTimeFormatter;
 
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,9 +28,11 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.tools.Msg;
+import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -57,7 +60,10 @@ public class TimeWindow extends ToolWindow {
 
 	public final String WIKI_URL = Msg.getString("TimeWindow.calendar.url"); //$NON-NLS-1$
 	public final String WIKI_TEXT = Msg.getString("TimeWindow.calendar.title"); //$NON-NLS-1$	
-	    
+	
+	private Icon wikiIcon = ImageLoader.getIconByName(GuideWindow.WIKI_ICON);
+	private JButton wikiButton = new JButton(wikiIcon);
+	
     private final DateTimeFormatter DATE_TIME_FORMATTER = DateCommand.DATE_TIME_FORMATTER;
 	
 	/** the execution time label string */
@@ -200,14 +206,13 @@ public class TimeWindow extends ToolWindow {
 		innerCalendarPane.add(calendarDisplay);
 		calendarMonthPane.add(innerCalendarPane, BorderLayout.CENTER);
 
-		JButton link = new JButton(WIKI_TEXT);
-		link.setAlignmentX(.5f);
-		link.setAlignmentY(.5f);
-		link.setToolTipText("Open Timekeeping Wiki in GitHub");
-		link.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
+		wikiButton.setAlignmentX(.5f);
+		wikiButton.setAlignmentY(.5f);
+		wikiButton.setToolTipText("Open Timekeeping Wiki in GitHub");
+		wikiButton.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
 
 		JPanel linkPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
-		linkPane.add(link, SwingConstants.CENTER);
+		linkPane.add(wikiButton, SwingConstants.CENTER);
 		martianMonthPane.add(linkPane, BorderLayout.SOUTH);
 		
 		JPanel seasonPane = new JPanel(new BorderLayout());

@@ -1160,7 +1160,6 @@ public class BuildingManager implements Serializable {
 					logger.config(robot, "Initially placed in " + destination.getName() 
 						+ "'s " + functionType.getName() + ".");
 					canAdd = addRobotToRoboticStation(robot, destination, functionType);
-					return;
 				}
 			}
 		}
@@ -1172,7 +1171,6 @@ public class BuildingManager implements Serializable {
 				destination = bldg;
 				logger.config(robot, "Initially placed in " + destination.getName() + "'s robotic station.");
 				canAdd = addRobotToRoboticStation(robot, destination, FunctionType.ROBOTIC_STATION);
-				return;
 			}
 		}	
 
@@ -1186,7 +1184,6 @@ public class BuildingManager implements Serializable {
 					logger.config(robot, "Initially placed in " + destination.getName() 
 						+ "'s " + function.getFunctionType().getName() + ".");
 					canAdd = addRobotToRoboticStation(robot, destination, function.getFunctionType());
-					return;
 				}
 			}
 		}

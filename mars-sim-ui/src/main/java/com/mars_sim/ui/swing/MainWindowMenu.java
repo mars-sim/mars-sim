@@ -255,7 +255,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		helpMenu.add(new JSeparator());
 		helpMenu.add(createMenuItem("mainMenu.tutorial", null, TUTORIAL, null,
 										KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK, false)));
-		helpMenu.add(createMenuItem("mainMenu.guide", GuideWindow.ICON, OPEN_GUIDE, null,
+		helpMenu.add(createMenuItem("mainMenu.guide", GuideWindow.HELP_ICON, OPEN_GUIDE, null,
 										KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_DOWN_MASK, false)));
 	}
 

@@ -147,7 +147,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addSeparator(new Dimension(20, 20));
 
 		// Add guide button
-		addToolButton(GuideWindow.NAME, "View the Help tool", GuideWindow.ICON); //$NON-NLS-1$
+		addToolButton(GuideWindow.NAME, "View the Help tool", GuideWindow.HELP_ICON);
 	}
 
 	private void addToolButton(String toolName, String tooltip, String iconKey) {
