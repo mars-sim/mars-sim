@@ -169,7 +169,8 @@ public class SkillManager implements Serializable {
 	}
 
 	/**
-	 * Get all the skills known by the owner
+	 * Gets all the skills known by the owner.
+	 * 
 	 * @return
 	 */
 	public List<Skill> getSkills() {

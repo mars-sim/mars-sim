@@ -959,8 +959,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			newPoints *= getTeachingExperienceModifier();
 
 			SkillManager sm = worker.getSkillManager();
+			int size = neededSkills.size();
 			for (SkillType skillType : neededSkills) {
-				sm.addExperience(skillType, newPoints, time);
+				sm.addExperience(skillType, newPoints/size, time/size);
 			}
 		}
 	}

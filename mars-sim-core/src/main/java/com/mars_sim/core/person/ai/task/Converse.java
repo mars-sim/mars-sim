@@ -17,6 +17,7 @@ import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
+import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.social.RelationshipType;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
@@ -118,9 +119,12 @@ public class Converse extends Task {
         		 1 + RandomUtil.getRandomDouble(person.getNaturalAttributeManager()
         				 .getAttribute(NaturalAttributeType.CONVERSATION))/20
         		 + RandomUtil.getRandomDouble(person.getPreference()
-        				 .getPreferenceScore(MetaTaskUtil.getConverseMeta())/3.0)
-        		));
+        				 .getPreferenceScore(MetaTaskUtil.getConverseMeta())/3.0))
+        		);
 
+    	addAdditionSkill(SkillType.PSYCHOLOGY);
+    	addAdditionSkill(SkillType.REPORTING);
+    	
     	findInvitee();
         
         if (getTarget() != null) {
@@ -223,8 +227,16 @@ public class Converse extends Task {
     	double bestScore = 0;
     	Person bestFriend = null;
 
+    	// High conversation attribute with psychology skill 
+    	// increase the chance of finding more friends to converse
+        double variance = (1 + person.getSkillManager()
+        		.getSkillLevel(SkillType.PSYCHOLOGY)) * 2.5 
+        		+ person.getNaturalAttributeManager()
+       				 .getAttribute(NaturalAttributeType.CONVERSATION) / 20;
+	
     	for (int i= 0; i<size; i++) {
     		double score = RelationshipUtil.getOpinionOfPerson(person, list.get(i));
+    		score += RandomUtil.getRandomDouble(-variance/2, variance);
     		if (score > bestScore) {
     			bestScore = score;
     			bestFriend = list.get(i);
@@ -527,6 +539,9 @@ public class Converse extends Task {
 		else
 			logger.warning(getTarget(), "initiator is null.");
 
+		// Add experience points
+        addExperience(time);
+        
         if (getTimeCompleted() + time >= getDuration()) {
         	endTask();
         }
@@ -544,7 +559,7 @@ public class Converse extends Task {
     	setDescription(s);
     }
     /**
-	 * Reinitializes instances. Reload the target of the coversation
+	 * Reinitializes instances and reloads the target of the conversation.
 	 */
 	public void reinit() {
 		super.reinit();

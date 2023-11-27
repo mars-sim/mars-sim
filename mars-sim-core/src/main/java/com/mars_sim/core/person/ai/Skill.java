@@ -59,7 +59,7 @@ public class Skill implements Serializable {
 	}
 
 	/**
-	 * Returns the skill type associated with this skill
+	 * Returns the skill type associated with this skill.
 	 * 
 	 * @return the skill type
 	 */
@@ -139,7 +139,7 @@ public class Skill implements Serializable {
 	}
 	
 	/**
-	 * Gets the labor time one has put in.
+	 * Gets the labor time [in millisols] one has put in.
 	 * 
 	 * @return the labor time
 	 */
@@ -148,9 +148,9 @@ public class Skill implements Serializable {
 	}
 	
 	/**
-	 * Adds to the labor time.
+	 * Adds to the labor time [in millisols].
 	 * 
-	 * @param time the labor tme
+	 * @param time the labor time
 	 */
 	void addTime(double time) {
 		this.time += time; 
@@ -173,10 +173,10 @@ public class Skill implements Serializable {
 		Skill other = (Skill) obj;
 		if (level != other.level)
 			return false;
-		if (Double.doubleToLongBits(experiencePoints) != Double.doubleToLongBits(other.experiencePoints))
-			return false;
-		if (Double.doubleToLongBits(time) != Double.doubleToLongBits(other.time))
-			return false;
+//		if (Double.doubleToLongBits(experiencePoints) != Double.doubleToLongBits(other.experiencePoints))
+//			return false;
+//		if (Double.doubleToLongBits(time) != Double.doubleToLongBits(other.time))
+//			return false;
 		return (sType == other.sType);
 	}
 }
