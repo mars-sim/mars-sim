@@ -1591,7 +1591,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param allowFail      true if walking is allowed to fail.
 	 */
 	public boolean createWalkingSubtask(LocalBoundedObject interiorObject, LocalPosition sLoc, boolean allowFail) {
+		// Check my own position
+		LocalPosition myLoc = worker.getPosition();
 
+		if (myLoc.equals(sLoc))
+			return false;
+		
 		Walk walkingTask = null;
 		
 		if (person != null) {

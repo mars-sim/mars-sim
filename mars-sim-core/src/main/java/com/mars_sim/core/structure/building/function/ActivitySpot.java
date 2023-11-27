@@ -9,7 +9,6 @@ package com.mars_sim.core.structure.building.function;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.person.Person;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 public final class ActivitySpot implements Serializable {
