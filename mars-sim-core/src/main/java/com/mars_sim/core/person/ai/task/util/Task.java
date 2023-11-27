@@ -1143,17 +1143,31 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		boolean canWalk = false;
 		
 		LocalPosition bed = person.getBed();
+		if (bed == null)
+			logger.info(person, "bed is at " + bed);
 		
 		// Converts a settlement-wide bed location back to an activity spot within a building
 		LocalPosition loc = LocalAreaUtil.getObjectRelativePosition(bed, building);
-
+		// Check my own position
+		LocalPosition myLoc = person.getPosition();
+		
 		boolean empty = building.getLivingAccommodations().isActivitySpotEmpty(loc);
-					
-		if (empty && bed != null) {		
+		
+		if (!empty) {
+			 if (myLoc.equals(bed))
+				 logger.info(person, "I'm already in my own bed at " + bed + ".");		
+			 else
+				 logger.warning(person, "Someone is using my bed at " + bed + ".");		
+		}
+		
+		if (!myLoc.equals(bed) && empty && bed != null) {		
 			// Create subtask for walking to destination.
 			canWalk = createWalkingSubtask(building, bed, allowFail);
 			
 			if (canWalk) {
+				// Put the person there
+				person.setPosition(bed);
+				
 				Function f = building.getFunction(FunctionType.LIVING_ACCOMMODATIONS);
 				// Add the worker to this activity spot
 				f.addActivitySpot(loc, worker.getIdentifier());

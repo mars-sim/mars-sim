@@ -92,7 +92,7 @@ public class WalkSettlementInterior extends Task {
 		
 		// Check if (destXLoc, destYLoc) is within destination building.
 		if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(destPosition, destBuilding)) {
-			logger.warning(person, "Unable to walk from " + person.getPosition() 
+			logger.warning(person, 60_000L, "Unable to walk from " + person.getPosition() 
 				+ " in " + person.getBuildingLocation() 
 				+ " to " + destPosition + " in " + destBuilding + ".");
 			endTask();
@@ -102,7 +102,7 @@ public class WalkSettlementInterior extends Task {
 		// Check if the person is currently inside a building.
 		Building startBuilding = BuildingManager.getBuilding(person);
 		if (startBuilding == null) {
-			logger.warning(person, "Not in a building.");
+			logger.warning(person, 60_000L, "Not in a building.");
 			person.getMind().getTaskManager().clearAllTasks("Not in a building.");
 			return;
 		}
@@ -115,7 +115,7 @@ public class WalkSettlementInterior extends Task {
 	
 			// If no valid walking path is found, end task.
 			if (walkingPath == null) {
-				logger.warning(person, "Unable to walk from " + startBuilding.getNickName() + " to "
+				logger.warning(person, 60_000L, "Unable to walk from " + startBuilding.getNickName() + " to "
 						+ destinationBuilding.getNickName());
 //				person.getMind().getTaskManager().clearAllTasks("No valid interior path.");
 				endTask();
@@ -126,8 +126,8 @@ public class WalkSettlementInterior extends Task {
 			addPhase(WALKING);
 			setPhase(WALKING);
 		
-		} catch (StackOverflowError ex) {
-			logger.severe(person, "Unable to walk. No valid interior path.", ex);
+		} catch (Exception ex) {
+			logger.severe(person, 60_000L, "Unable to walk. No valid interior path.", ex);
 			person.getMind().getTaskManager().clearAllTasks("No valid interior path");
 		}
 	}
@@ -157,7 +157,7 @@ public class WalkSettlementInterior extends Task {
 		
 		// Check that destination location is within destination building.
 		if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(destPosition, destBuilding)) {
-			logger.warning(robot, "Unable to walk from " + robot.getPosition() 
+			logger.warning(robot, 60_000L, "Unable to walk from " + robot.getPosition() 
 				+ " in " + robot.getBuildingLocation() 
 				+ " to " + destPosition + " in " + destBuilding + ".");
 			endTask();
@@ -167,7 +167,7 @@ public class WalkSettlementInterior extends Task {
 		// Check if  the robot is currently inside a building.
 		Building startBuilding = BuildingManager.getBuilding(robot);
 		if (startBuilding == null) {
-			logger.warning(robot, "Not in a building.");
+			logger.warning(robot, 60_000L, "Not in a building.");
 			robot.getBotMind().getBotTaskManager().clearAllTasks("Not in a building.");
 			return;
 		}
@@ -180,7 +180,7 @@ public class WalkSettlementInterior extends Task {
 	
 			// If no valid walking path is found, end task.
 			if (walkingPath == null) {
-				logger.warning(robot, "Unable to walk from " + startBuilding.getNickName() + " to "
+				logger.warning(robot, 60_000L, "Unable to walk from " + startBuilding.getNickName() + " to "
 						+ destinationBuilding.getNickName());
 	//			robot.getBotMind().getBotTaskManager().clearAllTasks("No valid interior path.");
 				endTask();
@@ -191,8 +191,8 @@ public class WalkSettlementInterior extends Task {
 			addPhase(WALKING);
 			setPhase(WALKING);
 			
-		} catch (StackOverflowError ex) {
-			logger.severe(robot, "Unable to walk. No valid interior path.", ex);
+		} catch (Exception ex) {
+			logger.severe(robot, 60_000L, "Unable to walk. No valid interior path.", ex);
 			robot.getBotMind().getBotTaskManager().clearAllTasks("No valid interior path");
 		}			
 	}

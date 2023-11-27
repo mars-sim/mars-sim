@@ -263,6 +263,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-3.3" yloc="0.9" />
 					<activity-spot xloc="-3.17" yloc="-1.08" />
 				</activity>
+				<guest>
+					<activity-spot xloc="0" yloc="0" />
+				</guest>
 			</living-accommodations>
 
 			<!-- The building provides command and control for the population. -->
@@ -1522,9 +1525,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-2.2" yloc="-.6" />
 					
 					<activity-spot xloc="-2.2" yloc="-2.0" />
+					<activity-spot xloc="-2.2" yloc="-3.4" />
 				</activity>
 				<guest>
-					<activity-spot xloc="-2.2" yloc="-3.4" />
+					<activity-spot xloc="0" yloc="0" />
 				</guest>
 			</living-accommodations>
 			<power-generation>

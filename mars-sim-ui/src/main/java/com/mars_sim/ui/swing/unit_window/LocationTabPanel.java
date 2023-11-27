@@ -30,6 +30,7 @@ import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.mapdata.location.Coordinates;
@@ -70,11 +71,13 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private Unit containerCache;
 	private Unit topContainerCache;
 	private Settlement settlementCache;
+	private Building buildingCache;
 	private LocationStateType locationStateTypeCache;
 	
 	private JLabel topContainerLabel;
 	private JLabel containerLabel;
 	private JLabel settlementLabel;
+	private JLabel buildingLabel;
 	private JLabel locationStateLabel;
 	
 	private Coordinates locationCache;
@@ -253,13 +256,16 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		String n2 = settlementCache != null ? settlementCache.getName() : "";
 		LocationStateType locationStateTypeCache = unit.getLocationStateType();
 		String n3 = locationStateTypeCache != null ? locationStateTypeCache.getName() : "";
+		buildingCache = unit.getBuildingLocation();
+		String n4 = buildingCache != null ? buildingCache.getName() : "";
 		
 		// Prepare info panel.
-		AttributePanel containerPanel = new AttributePanel(4);
+		AttributePanel containerPanel = new AttributePanel(5);
 		content.add(containerPanel, BorderLayout.CENTER);
 		topContainerLabel = containerPanel.addRow("Top Container Unit", n0);
 		containerLabel = containerPanel.addRow("Container Unit", n1);
 		settlementLabel = containerPanel.addRow("Settlement Container", n2);
+		buildingLabel = containerPanel.addRow("Building", n4);
 		locationStateLabel = containerPanel.addRow("Location State", n3);
 		
 		updateLocationBanner(unit);
@@ -342,9 +348,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		// gauge.setMaximumSize(new Dimension(250, 250));
 		// gauge.setPreferredSize(new Dimension(250, 250));
 
-		gauge.setSize(new Dimension(250, 250));
-		gauge.setMaximumSize(new Dimension(250, 250));
-		gauge.setPreferredSize(new Dimension(250, 250));
+		gauge.setSize(new Dimension(220, 220));
+		gauge.setMaximumSize(new Dimension(220, 220));
+		gauge.setPreferredSize(new Dimension(220, 220));
 
 		gauge.setVisible(true);
 
@@ -535,6 +541,13 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			settlementLabel.setText(n);
 		}
 		
+		Building building = unit.getBuildingLocation();
+		if (buildingCache != building) {
+			buildingCache = building;
+			String n = building != null ? building.getName() : "";
+			buildingLabel.setText(n);
+		}
+
 		LocationStateType locationStateType = unit.getLocationStateType();
 		if (locationStateTypeCache != locationStateType) {
 			locationStateTypeCache = locationStateType;

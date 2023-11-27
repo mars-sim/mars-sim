@@ -231,9 +231,9 @@ public class LivingAccommodations extends Function {
 		if (registeredBed == null) {
 
 			if (areAllBedsTaken()) {
-				 logger.log(building, Level.WARNING, 5000,  "All regular beds have been taken"
-						 		+ " (# Registered Beds: " + registeredSleepers
-						 		+ ", Regular Bed Capacity: " + maxNumBeds + ").");
+//				 logger.log(building, Level.WARNING, 5000,  "All regular beds have been taken"
+//						 		+ " (# Registered Beds: " + registeredSleepers
+//						 		+ ", Regular Bed Capacity: " + maxNumBeds + ").");
 			}
 
 			else if (!assignedBeds.containsKey(person.getIdentifier())) {

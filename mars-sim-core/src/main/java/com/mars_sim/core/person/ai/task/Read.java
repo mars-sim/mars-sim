@@ -76,10 +76,18 @@ public class Read extends Task {
 						walkToActivitySpotInBuilding(dining, FunctionType.DINING, true);
 					}
 					else {
-						// Go back to his quarters
-						Building quarters = person.getQuarters();
-						if (quarters != null) {
-							walkToBed(quarters, person, true);
+						Building rec = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
+						if (rec != null) {
+							// Walk to recreation building.
+						    walkToTaskSpecificActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
+						}
+						else {
+								
+							// Go back to his quarters
+							Building quarters = person.getQuarters();
+							if (quarters != null) {
+								walkToBed(quarters, person, true);
+							}
 						}
 					}
 				}

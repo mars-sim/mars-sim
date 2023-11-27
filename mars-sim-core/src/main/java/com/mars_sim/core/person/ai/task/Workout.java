@@ -62,15 +62,26 @@ public class Workout extends Task {
 				setPhase(EXERCISING);
 			}
 			else {
-				// Go back to his quarters
-				Building quarters = person.getQuarters();
-				if (quarters != null) {
-					walkToBed(quarters, person, true);
+				Building rec = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
+				if (rec != null) {
+					// Walk to recreation building.
+				    walkToTaskSpecificActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
+				    
+					// Initialize phase
+					addPhase(EXERCISING);
+					setPhase(EXERCISING);
 				}
-
-				// Initialize phase
-				addPhase(EXERCISING);
-				setPhase(EXERCISING);
+				else {
+					// Go back to his quarters
+					Building quarters = person.getQuarters();
+					if (quarters != null) {
+						walkToBed(quarters, person, true);
+					}
+	
+					// Initialize phase
+					addPhase(EXERCISING);
+					setPhase(EXERCISING);
+				}
 			}
 
 		} else {

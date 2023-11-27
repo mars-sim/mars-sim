@@ -255,12 +255,15 @@ public class Sleep extends Task {
 	 * Looks for a guest bed.
 	 */
 	private void lookForGuestBed() {
+		logger.info(person + " in need of getting a guest bed.");	
 		
 		// Case 0 : A guest bed - The BEST case for a guest
 		boolean hasGuestBed = walkToGuestBed(person, true);
 		
 		if (hasGuestBed) {
+			
 			typeOfBed = 2;
+			
 			return;
 		}
 			
@@ -311,7 +314,12 @@ public class Sleep extends Task {
 	private void lookForAssignedBed(Building building) {
 		
 		// Case 4: marked and empty (ME)
-		if (!walkToBed(building, person, true)) {
+		if (person.getQuarters() != null) {
+			walkToBed(building, person, true);
+
+			typeOfBed = 2;
+		}
+		else {
 			// Since his/her marked bed is being occupied,
 			// go look for a guest bed
 			lookForGuestBed();
@@ -335,52 +343,13 @@ public class Sleep extends Task {
 				walkToBed(q7, person, true);
 
 				typeOfBed = 2;
-				
-				return;
 			}
 		}
 		
 		else { // no unmarked bed
-
-			q7 = BuildingManager.getBestAvailableQuarters(person, false, false);
-
-			if (q7 != null) {
-				// Case 9: marked, empty (ME)
-
-				walkToActivitySpotInBuilding(q7, FunctionType.LIVING_ACCOMMODATIONS, true);
-
-				typeOfBed = 2;
-			}
-			else {
-				// Case 10: No beds available, go to any activity spots
-
-				// If not found, get any quarters
-				Set<Building> set = person.getSettlement().getBuildingManager()
-						.getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
-				
-				LocalPosition bed = null;
-				
-				for (Building b: set) {
-					
-					// Register this sleeper
-					bed = b.getLivingAccommodations().registerSleeper(person, false);
-					
-					if (bed != null) {
-						walkToBed(b, person, true);
-						typeOfBed = 2;
-						return;
-					}
-				}
-				
-				if (bed == null) {
-					logger.info("No bed is found.");
-					walkToRandomLocation(true);					
-					typeOfBed = 0;
-					return;
-				}			
-			}
-			// NOTE: should allow him/her to sleep in gym or anywhere based on his/her usual
-			// preferences
+			
+			// Case 9: Get a guest bed
+			lookForGuestBed();
 		}
 	}
 	
@@ -420,11 +389,10 @@ public class Sleep extends Task {
 				walkToPassengerActivitySpotInRover(rover, true);
 				
 				typeOfBed = 3;
-				return;
 			}
 
 			// If person is in a settlement, try to find a living accommodations building.
-			if (person.isInSettlement()) {
+			else if (person.isInSettlement()) {
 				// Double the sleep duration
 				setDuration(getDuration() * 2);
 

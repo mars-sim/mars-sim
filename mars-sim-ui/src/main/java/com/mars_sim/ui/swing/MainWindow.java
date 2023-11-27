@@ -174,7 +174,7 @@ public class MainWindow
 
 		// Set the UI configuration
 		boolean useDefault = configs.useUIDefault();
-		logger.config("useDefault is: " + useDefault);
+//		logger.config("useDefault is: " + useDefault);
 
 		if (useDefault) {
 			logger.config("Will calculate screen size for default display instead.");
@@ -269,7 +269,7 @@ public class MainWindow
 	 */
 	private Dimension calculatedScreenSize(int screenWidth, int screenHeight, boolean useDefault) {
 		logger.config("Current screen size is " + screenWidth + " x " + screenHeight);
-		logger.config("useDefault is: " + useDefault);
+//		logger.config("useDefault is: " + useDefault);
 
 		Dimension frameSize = null;
 		if (useDefault) {

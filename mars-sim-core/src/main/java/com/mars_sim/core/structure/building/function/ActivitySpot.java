@@ -9,6 +9,7 @@ package com.mars_sim.core.structure.building.function;
 
 import java.io.Serializable;
 
+import com.mars_sim.core.person.Person;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 public final class ActivitySpot implements Serializable {
@@ -33,5 +34,15 @@ public final class ActivitySpot implements Serializable {
 
 	public LocalPosition getPos() {
 		return pos;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		LocalPosition p = ((ActivitySpot) obj).getPos();
+		int d = ((ActivitySpot)obj).getID();
+		return p.equals(pos) && id == d;
 	}
 }

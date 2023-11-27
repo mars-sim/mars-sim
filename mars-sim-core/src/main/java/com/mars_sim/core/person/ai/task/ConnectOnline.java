@@ -87,7 +87,7 @@ public class ConnectOnline extends Task {
 				} 
 			}
 			
-			if (bldg != null) {
+			if (!proceed || bldg == null) {
 				// Go back to his quarters
 				Building quarters = person.getQuarters();
 				if (quarters != null) {
