@@ -34,6 +34,11 @@ public class TendAlgaePond extends Task {
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.tendAlgaePond"); //$NON-NLS-1$
+	
+	private static final String INSPECT_DETAIL = Msg.getString("Task.description.tendGreenhouse.inspect.detail");
+	
+	private static final String CLEAN_DETAIL = Msg.getString("Task.description.tendGreenhouse.clean.detail");
+	
 	/** Task phases. */
 	private static final TaskPhase TENDING = new TaskPhase(Msg.getString("Task.phase.tending")); //$NON-NLS-1$
 	/** Task phases. */
@@ -284,8 +289,7 @@ public class TendAlgaePond extends Task {
 		}
 
 		if (inspectGoal != null) {
-			printDescription(Msg.getString("Task.description.tendAlgaePond.inspect.detail", 
-					inspectGoal.toLowerCase()));
+			printDescription(INSPECT_DETAIL + inspectGoal.toLowerCase());
 
 			double mod = 0;
 			// Determine amount of effective work time based on "Botany" skill
@@ -333,8 +337,7 @@ public class TendAlgaePond extends Task {
 		}
 		
 		if (cleanGoal != null) {
-			printDescription(Msg.getString("Task.description.tendAlgaePond.clean.detail", 
-					cleanGoal.toLowerCase()));
+			printDescription(CLEAN_DETAIL + cleanGoal.toLowerCase());
 				
 			double mod = 0;
 			// Determine amount of effective work time based on "Botany" skill

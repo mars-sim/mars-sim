@@ -2553,12 +2553,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</dining>
 			<life-support capacity="8" power-required="0.4" />
 
-			<living-accommodations capacity="1">
-				<activity>
-					<activity-spot xloc="2" yloc="-2" />
-				</activity>
+			<living-accommodations capacity="0">
 				<guest>
-					<activity-spot xloc="-2" yloc="-2" />
+					<activity-spot xloc="3" yloc="-3" />
+					<activity-spot xloc="-3" yloc="-3" />
+					<activity-spot xloc="3" yloc="3" />
+					<activity-spot xloc="-3" yloc="3" />					
 				</guest>
 			</living-accommodations>
 

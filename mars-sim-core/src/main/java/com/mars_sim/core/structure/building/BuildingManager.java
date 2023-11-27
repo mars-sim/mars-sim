@@ -490,15 +490,6 @@ public class BuildingManager implements Serializable {
 		return buildings.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
 	}
 
-//	/**
-//	 * Gets a list of settlement's buildings with Robotic Station function.
-//	 *
-//	 * @return list of buildings
-//	 */
-//	public List<Building> getBuildingsWithRoboticStation() {
-//		return getBuildings(FunctionType.ROBOTIC_STATION);
-//	}
-
 	/**
 	 * Gets a list of settlement's buildings with Life Support function.
 	 *
@@ -2914,16 +2905,17 @@ public class BuildingManager implements Serializable {
 	public static Building getBestAvailableQuarters(Person person, boolean unmarked, boolean sameZone) {
 
 		Building result = null;
-		Building locaBldg = person.getBuildingLocation();
+		Building localBldg = person.getBuildingLocation();
 		
 		if (person.isInSettlement()) {
 			Set<Building> set0 = person.getSettlement().getBuildingManager()
 					.getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
 
-			if (sameZone && locaBldg != null) {
+			if (sameZone && localBldg != null) {
 				set0 = set0
 						.stream()
-						.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
+						.filter(b -> b.getZone() == localBldg.getZone()
+								&& !b.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
 								&& !b.getMalfunctionManager().hasMalfunction())
 						.collect(Collectors.toSet());
 			}

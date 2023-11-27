@@ -1112,10 +1112,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				if (canWalk) {
 					// Register this person to use this guest bed
 					quarters.registerGuestBed(person.getIdentifier());
+					// Set this quarters
+					person.setQuarters(building);
 					
 					// Add the person to this activity spot
-					building.getFunction(f.getFunctionType())
-						.addActivitySpot(loc, person.getIdentifier());
+					f.addActivitySpot(loc, person.getIdentifier());
 					// Remove the person from the previous activity spot
 					if (person.getFunction() != null) {
 						person.getFunction().removeFromActivitySpot(person.getIdentifier());

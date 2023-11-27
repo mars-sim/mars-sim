@@ -466,7 +466,7 @@ public class Sleep extends Task {
 	 */
 	public void releaseGuestBed() {
 		// Deregister this person if using a guest bed
-		LivingAccommodations q = person.getBuildingLocation().getLivingAccommodations();
+		LivingAccommodations q = person.getQuarters().getLivingAccommodations();
 		// Register this person to use this guest bed
 		q.deRegisterGuestBed(person.getIdentifier());
 	}
