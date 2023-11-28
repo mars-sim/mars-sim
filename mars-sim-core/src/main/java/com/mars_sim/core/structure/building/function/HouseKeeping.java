@@ -84,7 +84,7 @@ public class HouseKeeping implements Serializable {
 		// and may be more proficient on one system over another
 		Entry<String, Double> least = null;
 		for (Entry<String, Double> s : map.entrySet()) {
-			if (least == null || least.getValue() > least.getValue()) {
+			if (least == null || least.getValue() > s.getValue()) {
 				least = s;
 		    }
 		}

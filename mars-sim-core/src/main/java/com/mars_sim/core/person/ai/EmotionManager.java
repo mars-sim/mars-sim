@@ -29,6 +29,8 @@ public class EmotionManager implements Serializable {
 	private Person person;
 
 	private static final String[][] EMOTIONAL_DESCRIPTIONS = {
+		// Note that each row is a degree of appeal
+		// and each column is a degree of engagement
 		{ "crushed", "rejected", "deceived", "sad", 		"hated", "restless", "reckless", "manipulative"}, 
 		{ "oppressed", "gloomy", "weary", "insecure", 		"disappointed", "troubled", "disgusted", "defiant" },
 		{ "fatigued", "guarded", "skeptical", "displeased", 	"disbelieving", "suspecting", "irritated", "upset" },
@@ -41,9 +43,9 @@ public class EmotionManager implements Serializable {
 
 	private static final String[] EMOTIONAL_AXES = {
 			// row or x-axis
-			"engagement", // (or arousal) from deactivation (0) to activation (7) 
+			"appeal", // (or valence) from unpleasant (0) to pleasant (7)		
 			// column or y-axis
-			"appeal" // (or valence) from unpleasant (0) to pleasant (7)
+			"engagement" // (or arousal) from deactivation (0) to activation (7) 
 	};
 
 	/** The existing emotional State vector. */
