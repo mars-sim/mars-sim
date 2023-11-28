@@ -82,12 +82,8 @@ public class Read extends Task {
 						    walkToTaskSpecificActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
 						}
 						else {
-								
-							// Go back to his quarters
-							Building quarters = person.getQuarters();
-							if (quarters != null) {
-								walkToBed(quarters, person, true);
-							}
+		    				// Go back to his bed
+							goToQuarters();
 						}
 					}
 				}
@@ -98,20 +94,14 @@ public class Read extends Task {
 						walkToActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
 					}
 					else {
-						// Go back to his quarters
-						Building quarters = person.getQuarters();
-						if (quarters != null) {
-							walkToBed(quarters, person, true);
-						}
+	    				// Go back to his bed
+						goToQuarters();
 					}
 				}
 
 				else {
-					// Go back to his quarters
-					Building quarters = person.getQuarters();
-					if (quarters != null) {
-						walkToBed(quarters, person, true);
-					}
+    				// Go back to his bed
+					goToQuarters();
 				}
 			}
 
@@ -134,6 +124,14 @@ public class Read extends Task {
 		}
 	}
 
+	private void goToQuarters() {
+		// Go back to his bed
+		if (person.hasBed()) {
+			// Walk to the bed
+			walkToBed(person.getQuarters(), person, true);
+		}
+	}
+		
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {

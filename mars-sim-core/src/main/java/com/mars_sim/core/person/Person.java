@@ -1357,10 +1357,20 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		circadian.updateSleepCycle(millisols, updateType);
 	}
 
+	/**
+	 * Gets the assigned quarters.
+	 * 
+	 * @return
+	 */
 	public Building getQuarters() {
 		return unitManager.getBuildingByID(quartersInt);
 	}
 
+	/**
+	 * Gets the assigned quarters.
+	 * 
+	 * @param b
+	 */
 	public void setQuarters(Building b) {
 		this.quartersInt = b.getIdentifier();
 	}
@@ -1378,6 +1388,10 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		this.bed = bed;
 	}
 
+	public boolean hasBed() {
+		return bed != null;// && getQuarters() != null;
+	}
+	
 	public String getCountry() {
 		return country;
 	}

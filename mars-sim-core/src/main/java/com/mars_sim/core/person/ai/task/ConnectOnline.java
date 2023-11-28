@@ -88,11 +88,10 @@ public class ConnectOnline extends Task {
 			}
 			
 			if (!proceed || bldg == null) {
-				// Go back to his quarters
-				Building quarters = person.getQuarters();
-				if (quarters != null) {
+				// Go back to his bed
+				if (person.hasBed()) {
 					// Walk to the bed
-					walkToBed(quarters, person, true);	
+					walkToBed(person.getQuarters(), person, true);	
 					proceed = true;
 				}
 			}

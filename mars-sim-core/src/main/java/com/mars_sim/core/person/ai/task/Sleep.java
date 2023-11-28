@@ -313,8 +313,9 @@ public class Sleep extends Task {
 	private void lookForAssignedBed(Building building) {
 		
 		// Case 4: marked and empty (ME)
-		if (person.getQuarters() != null) {
-			walkToBed(building, person, true);
+		if (person.hasBed()) {
+			// Walk to the bed
+			walkToBed(person.getQuarters(), person, true);
 
 			typeOfBed = 2;
 		}

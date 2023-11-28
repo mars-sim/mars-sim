@@ -1114,7 +1114,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					// Register this person to use this guest bed
 					quarters.registerGuestBed(person.getIdentifier());
 					// Set this quarters
-					person.setQuarters(building);
+//					person.setQuarters(building);
 					
 					// Add the person to this activity spot
 					f.addActivitySpot(loc, person.getIdentifier());
@@ -1144,8 +1144,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		boolean canWalk = false;
 		
 		LocalPosition bed = person.getBed();
-		if (bed == null)
-			logger.info(person, "bed is at " + bed);
+		if (bed == null) {
+			logger.info(person, "No bed is assigned.");
+			return false;
+		}
 		
 		// Converts a settlement-wide bed location back to an activity spot within a building
 		LocalPosition loc = LocalAreaUtil.getObjectRelativePosition(bed, building);
@@ -1159,6 +1161,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				 logger.info(person, "I'm already in my own bed at " + bed + ".");		
 			 else
 				 logger.warning(person, "Someone is using my bed at " + bed + ".");		
+			 
+			 return true;
 		}
 		
 		if (!myLoc.equals(bed) && empty && bed != null) {		

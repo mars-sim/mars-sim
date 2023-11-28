@@ -80,10 +80,10 @@ extends Task {
                 	if (gym != null) {
 	                	walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
 	                } else {
-						// Go back to his quarters
-						Building quarters = person.getQuarters();
-						if (quarters != null) {
-							walkToBed(quarters, person, true);
+	    				// Go back to his bed
+	    				if (person.hasBed()) {
+	    					// Walk to the bed
+	    					walkToBed(person.getQuarters(), person, true);
 		                }
 	                }
 				}

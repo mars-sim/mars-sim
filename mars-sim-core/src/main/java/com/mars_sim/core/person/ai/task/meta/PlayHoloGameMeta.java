@@ -46,7 +46,8 @@ public class PlayHoloGameMeta extends FactoryMetaTask {
     }
 
     /**
-     * Assess this person playing a Holo game
+     * Assesses this person playing a Holo game.
+     * 
      * @param person Being assessed
      * @return Potential suitable tasks
      */
@@ -76,9 +77,7 @@ public class PlayHoloGameMeta extends FactoryMetaTask {
             }
             else {
                 // Check if a person has a designated bed
-                if ((person.getQuarters() == null) 
-                        && (BuildingManager.getBestAvailableQuarters(person, true, true) == null)) {
-
+				if (person.hasBed()) {
                     result.addModifier("quarters", RandomUtil.getRandomDouble(0.8));
                 }
             }
