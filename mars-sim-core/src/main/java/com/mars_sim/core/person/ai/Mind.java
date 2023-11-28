@@ -44,9 +44,7 @@ public class Mind implements Serializable, Temporal {
 	private static final int MAX_ZERO_EXECUTE = 100; // Maximum number of executeTask action that consume no time
 	private static final int STRESS_UPDATE_CYCLE = 300;
 
-	private static final double RANGE = .8;
 	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;
-	private static final double FACTOR = .05;
 	private static final double SMALL_AMOUNT_OF_TIME = 0.001;
 
 	// Data members
@@ -122,15 +120,15 @@ public class Mind implements Serializable, Temporal {
 		if (msol % STRESS_UPDATE_CYCLE == 0) {
 			// Update stress based on personality.
 			mbti.updateStress(pulse.getElapsed());
-			// Update emotion
-			updateEmotion();
+			// Update emotion with the personality vector
+			emotionMgr.updateEmotion(trait.getPersonalityVector());
 			// Update relationships.
 			RelationshipUtil.timePassing(person, pulse.getElapsed());
 		}
 
-		// Note : for now, a Mayor/Manager cannot switch job
+		// Note: for now, a Mayor/Manager cannot switch job
 		if (jobLock && job != JobType.POLITICIAN) {
-			// check for the passing of each day
+			// Check for the passing of each day
 			if (pulse.isNewSol()) {
 				// Note: for non-managerial position, the new job needs to be locked in
 				// (i.e. no change allowed) until the beginning of the next sol
@@ -293,7 +291,7 @@ public class Mind implements Serializable, Temporal {
 	}
 
 	/**
-	 * Resumes a mission
+	 * Resumes a mission.
 	 *
 	 * @param modifier
 	 */
@@ -307,7 +305,7 @@ public class Mind implements Serializable, Temporal {
 	}
 
 	/**
-	 * Checks if a person can start a new mission
+	 * Checks if a person can start a new mission.
 	 *
 	 * @return
 	 */
@@ -328,7 +326,7 @@ public class Mind implements Serializable, Temporal {
 	}
 
 	/**
-	 * Reassign the person's job.
+	 * Reassigns the person's job.
 	 *
 	 * @param newJob           the new job
 	 * @param bypassingJobLock
@@ -453,138 +451,11 @@ public class Mind implements Serializable, Temporal {
 		}
 	}
 
-
 	/**
-	 * Calls the psi function.
-	 *
-	 * @param av
-	 * @param pv
+	 * Gets the emotion manager.
+	 * 
 	 * @return
 	 */
-	private static double[] callPsi(double[] av, double[] pv) {
-		double[] v = new double[2];
-
-		for (int i=0; i<pv.length; i++) {
-			if (i == 0) { // Openness
-				if (pv[0] > .5) {
-					v[0] = av[0] + pv[0]/2D * FACTOR; // Engagement
-					v[1] = av[1] + pv[0]/2D * FACTOR; // Valence
-				}
-				else if (pv[0] < .5) {
-					v[0] = av[0] - pv[0] * FACTOR; // Engagement
-					v[1] = av[1] - pv[0] * FACTOR; // Valence
-				}
-			}
-			else if (i == 1) { // Conscientiousness
-				if (pv[1] > .5) {
-//					v[0] = av[0] + pv[1]/2D * FACTOR; // Engagement
-					v[1] = av[1] + pv[1]/2D * FACTOR; // Valence
-				}
-				else if (pv[1] < .5) {
-//					v[0] = av[0] - pv[1] * FACTOR; // Engagement
-					v[1] = av[1] - pv[1] * FACTOR; // Valence
-				}
-
-			}
-			else if (i == 2) { // Extraversion
-				if (pv[2] > .5) {
-					v[0] = av[0] + pv[2]/2D * FACTOR;
-//					v[1] = av[1] + pv[2]/2D * FACTOR;
-				}
-				else if (pv[2] < .5) {
-					v[0] = av[0] - pv[2] * FACTOR;
-//					v[1] = av[1] - pv[2] * FACTOR;
-				}
-
-			}
-			else if (i == 3) { // Agreeableness
-				if (pv[3] > .5) {
-//					v[0] = av[0] + pv[3]/2D * FACTOR; // Engagement
-					v[1] = av[1] + pv[3]/2D * FACTOR; // Valence
-				}
-				else if (pv[3] < .5) {
-//					v[0] = av[0] - pv[3] * FACTOR;
-					v[1] = av[1] - pv[3] * FACTOR;
-				}
-			}
-			else if (i == 4) { // Neuroticism
-				if (pv[4] > .5) {
-					v[0] = av[0] - pv[4]/2D * FACTOR;
-					v[1] = av[1] - pv[4]/2D * FACTOR;
-				}
-				else if (pv[4] < .5) {
-					v[0] = av[0] + pv[4] * FACTOR;
-					v[1] = av[1] + pv[4] * FACTOR;
-				}
-			}
-
-			if (v[0] > RANGE)
-				v[0] = RANGE;
-			else if (v[0] < 0)
-				v[0] = 0;
-
-			if (v[1] > RANGE)
-				v[1] = RANGE;
-			else if (v[1] < 0)
-				v[1] = 0;
-
-		}
-
-		return v;
-	}
-
-	/**
-	 * Updates the emotion states.
-	 */
-	public void updateEmotion() {
-		// Check for physical stimulus
-		emotionMgr.checkStimulus();
-	
-		// Get the prior history vector
-		List<double[]> oVector = emotionMgr.getOmegaVector(); 
-		// Get the personality vector
-		double[] pVector = trait.getPersonalityVector(); 
-		// Get the new emotional stimulus/Influence vector
-		double[] iVector = emotionMgr.getEmotionInfoVector(); 
-		// Get the existing emotional State vector
-		double[] eVector = emotionMgr.getEmotionVector();
-		
-		// Get Psi Function to incorporate new stimulus
-		double[] psi = callPsi(iVector, pVector);
-		// Get Omega Function to normalize internal changes such as decay of emotional states
-		double[] omega = MathUtils.normalize(oVector.get(oVector.size()-1));
-		
-		int dim = emotionMgr.getDimension();
-		// Construct a new emotional state function modified by psi and omega functions
-		double[] newE = new double[dim];
-
-		for (int i=0; i<2; i++) {
-			newE[i] = (eVector[i] + psi[i] + omega[i]) / 2.05;
-		}
-
-		// Find the new emotion vector
-		// java.lang.OutOfMemoryError: Java heap space
-//		double[] e_tt = DoubleStream.concat(Arrays.stream(eVector),
-//				Arrays.stream(psi)).toArray();
-//		double[] e_tt2 = DoubleStream.concat(Arrays.stream(e_tt),
-//				Arrays.stream(omega)).toArray();
-		// java.lang.OutOfMemoryError: Java heap space
-//		double[] e_tt = MathUtils.concatAll(eVector, psi, omega);
-
-		if (newE[0] > RANGE)
-			newE[0] = RANGE;
-		else if (newE[0] < 0)
-			newE[0] = 0;
-
-		if (newE[1] > RANGE)
-			newE[1] = RANGE;
-		else if (newE[1] < 0)
-			newE[1] = 0;
-
-		// Update the emotional states
-		emotionMgr.updateEmotion(newE);
-	}
-
 	public EmotionManager getEmotion() {
 		return emotionMgr;
 	}
