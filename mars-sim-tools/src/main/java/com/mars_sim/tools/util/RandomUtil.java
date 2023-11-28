@@ -180,14 +180,14 @@ public final class RandomUtil {
 	 * 
 	 * @param center the mean (where the average values will cluster around)of the random number with one variance
 	 * @param fraction the fraction of the mean
-	 * @param oneVariance the variance of the gaussian distribution
+	 * @param variance the variance of the gaussian distribution
 	 * @return
 	 */
-	public static double computeGaussianWithLimit(double center, double fraction, double oneVariance) {
+	public static double computeGaussianWithLimit(double center, double fraction, double variance) {
 		double delay = 0;
 		
 		do {
-			double value = RandomUtil.getGaussianDouble() * oneVariance;
+			double value = RandomUtil.getGaussianDouble() * variance;
 			if (value > 0)
 				delay = (center + Math.min(center * fraction, value));
 			else

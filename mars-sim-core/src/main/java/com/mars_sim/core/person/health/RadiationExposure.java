@@ -532,7 +532,7 @@ public class RadiationExposure implements Serializable, Temporal {
 					// making it easier to avoid
 					double strength = shieldOff * SEP_SWING_FACTOR * base * time;
 					double mean = RandomUtil.getRandomDouble(strength / 50, strength); 
-					sep = RandomUtil.computeGaussianWithLimit(mean, mean / 5, mean / 10);
+					sep = RandomUtil.computeGaussianWithLimit(mean, .1, .1);
 					if (sep > 0) {
 						rad = addDose(radiationType, bodyRegionType, sep);
 					}	
@@ -551,7 +551,7 @@ public class RadiationExposure implements Serializable, Temporal {
 					// making it easier to avoid
 					double strength = shieldOff * SEP_SWING_FACTOR * base * time;
 					double mean = RandomUtil.getRandomDouble(strength / 50, strength); 
-					sep = RandomUtil.computeGaussianWithLimit(mean, mean / 5, mean / 10);
+					sep = RandomUtil.computeGaussianWithLimit(mean, .1, .1);
 					if (sep > 0) {
 						rad = addDose(radiationType, bodyRegionType, sep);
 					}	
@@ -604,7 +604,7 @@ public class RadiationExposure implements Serializable, Temporal {
 					// making it easier to avoid
 					double strength = shieldOff * SEP_SWING_FACTOR * base * time;
 					double mean = RandomUtil.getRandomDouble(strength / 50, strength); 
-					sep = RandomUtil.computeGaussianWithLimit(mean, mean / 5, mean / 10);
+					sep = RandomUtil.computeGaussianWithLimit(mean, .1, .1);
 					if (sep > 0) {
 						rad = addDose(radiationType, bodyRegionType, sep);
 					}	

@@ -432,9 +432,16 @@ public class RelationshipUtil implements Serializable {
 		// Random with bell curve around 50.
 		int numberOfIterations = RandomUtil.getRandomInt(10);
 		for (int x = 0; x < numberOfIterations; x++)
-			result += RandomUtil.getRandomDouble(100D);
+			result += RandomUtil.computeGaussianWithLimit(50, .15, .3);
 		result /= numberOfIterations;
 
+		if (result > 100) {
+			result = 100;
+		}
+		else if (result < -100) {
+			result = -100;
+		}
+		
 		NaturalAttributeManager attributes = target.getNaturalAttributeManager();
 
 		// Modify based on leadership attribute.
@@ -463,7 +470,7 @@ public class RelationshipUtil implements Serializable {
 		
 		// Modify as settlers are trained to try to get along with each other.
 		if (result < 50D)
-			result += RandomUtil.getRandomDouble(SETTLER_MODIFIER);
+			result += RandomUtil.getRandomDouble(50);
 
 		if (result > 100)
 			result = 100; 
@@ -481,12 +488,6 @@ public class RelationshipUtil implements Serializable {
 	 */
 	private static double getExistingRelationship(Person person, Person target) {
 		double result = 10D;
-
-		// Random with bell curve around 50.
-		int numberOfIterations = RandomUtil.getRandomInt(10);
-		for (int x = 0; x < numberOfIterations; x++)
-			result += RandomUtil.getRandomDouble(100D);
-		result /= numberOfIterations;
 
 		// Modify based on person's conversation attribute.
 		double conversationModifier0 = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.CONVERSATION) - 50D;
@@ -517,7 +518,7 @@ public class RelationshipUtil implements Serializable {
 
 		// Modify as settlers are trained to try to get along with each other.
 		if (result < 50D)
-			result += RandomUtil.getRandomDouble(SETTLER_MODIFIER);
+			result += RandomUtil.getRandomDouble(50 * SETTLER_MODIFIER);
 		
 		if (result > 100)
 			result = 100; 
