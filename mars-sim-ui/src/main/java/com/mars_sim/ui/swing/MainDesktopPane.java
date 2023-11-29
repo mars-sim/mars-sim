@@ -109,7 +109,7 @@ public class MainDesktopPane extends JDesktopPane
 	// Preload the Tool windows
 	private boolean preloadTools = true;
 
-	// Siumulation refernece used by the UI windows
+	// Simulation reference used by the UI windows
 	private Simulation sim;
 
 	/**
@@ -185,7 +185,7 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Create background tile when MainDesktopPane is first displayed. Center
+	 * Creates background tile when MainDesktopPane is first displayed. Center
 	 * logoLabel on MainWindow and set backgroundLabel to the size of
 	 * MainDesktopPane.
 	 *
@@ -269,7 +269,7 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Sets up this class with two listeners
+	 * Sets up this class with two listeners.
 	 */
 	private void prepareListeners() {
 		// Attach UnitManagerListener to desktop

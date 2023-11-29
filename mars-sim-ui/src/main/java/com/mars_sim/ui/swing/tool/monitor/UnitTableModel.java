@@ -18,6 +18,7 @@ import com.mars_sim.core.UnitType;
  * The UnitTableModel that maintains a table model of Units objects. It is only
  * a partial implementation of the TableModel interface.
  */
+@SuppressWarnings("serial")
 public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 		implements UnitListener {
 
@@ -79,8 +80,9 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 
 	
 	/**
-	 * Set whether the changes to the Entities should be monitor for change. Set up the 
+	 * Sets whether the changes to the Entities should be monitor for change. Set up the 
 	 * Unitlisteners for the Units in the table.
+	 * 
 	 * @param activate 
 	 */
     public void setMonitorEntites(boolean activate) {
@@ -100,7 +102,7 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 	}
 
 	/**
-	 * Add a unit to the model. Attach a listner to the Unit
+	 * Adds a unit to the model. Attach a listener to the Unit.
 	 *
 	 * @param newUnit Unit to add to the model.
 	 */
@@ -114,7 +116,7 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 	}
 
 	/**
-	 * Remove a unit from the model.
+	 * Removes a unit from the model.
 	 *
 	 * @param oldUnit Unit to remove from the model.
 	 */

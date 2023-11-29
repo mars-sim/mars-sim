@@ -28,7 +28,8 @@ interface MonitorModel extends TableModel {
 
 
 	/**
-	 * Return the object at the specified row indexes.
+	 * Returns the object at the specified row indexes.
+	 * 
 	 * @param row Index of the row object.
 	 * @return Object at the specified row.
 	 */
@@ -45,20 +46,23 @@ interface MonitorModel extends TableModel {
 	public String getCountString();
 
 	/**
-	 * Set the Settlement as a filter
+	 * Sets the Settlement as a filter.
+	 * 
 	 * @param filter Settlement
 	 * @return 
 	 */
 	public boolean setSettlementFilter(Settlement filter);
 
 	/**
-	 * Set whether the changes to the Entities should be monitor for change.
+	 * Sets whether the changes to the Entities should be monitor for change.
+	 * 
 	 * @param activate 
 	 */
     public void setMonitorEntites(boolean activate);
 
 	/**
-	 * Get a tooltip representation of a cell. Most cells with return null.
+	 * Gets a tooltip representation of a cell. Most cells with return null.
+	 * 
 	 * @param rowIndex
 	 * @param colIndex
 	 * @return

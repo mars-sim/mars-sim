@@ -19,7 +19,7 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
         implements MonitorModel {
 
     /**
-     * Helper class to define the specification of a column
+     * Helper class to define the specification of a column.
      */
     protected record ColumnSpec (String name, Class<?> type) implements Serializable {};
 
@@ -35,7 +35,7 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
 
 
     /**
-	 * Return the number of columns
+	 * Returns the number of columns.
 	 *
 	 * @return column count.
 	 */
@@ -45,7 +45,7 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
 	}
 
 	/**
-	 * Return the type of the column requested.
+	 * Returns the type of the column requested.
 	 *
 	 * @param columnIndex Index of column.
 	 * @return Class of specified column.
@@ -59,7 +59,7 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
 	}
 
 	/**
-	 * Return the name of the column requested.
+	 * Returns the name of the column requested.
 	 *
 	 * @param columnIndex Index of column.
 	 * @return name of specified column.
@@ -73,7 +73,7 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
 	}
 
 	/**
-	 * Get the name of the model.
+	 * Gets the name of the model.
 	 *
 	 * @return model name.
 	 */
@@ -91,7 +91,8 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
 	}
 
     /**
-     * Default implementation return null as no tooltips are supported by default
+     * Default implementation return null as no tooltips are supported by default.
+     * 
      * @param rowIndex Row index of cell
      * @param columnIndex Column index of cell
      * @return Return null by default
@@ -102,7 +103,7 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
     }
 
     /**
-     * Tidy up any listenres or external dependencies
+     * Tidies up any listeners or external dependencies.
      */
     @Override
 	public void destroy() {

@@ -9,6 +9,8 @@ package com.mars_sim.ui.swing.tool.monitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.mars_sim.core.Unit;
@@ -115,6 +117,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 
 	private ValidSourceType sourceType;
 
+	private boolean isCheck = true;
+	
 	private transient Crewable vehicle;
 	private Settlement settlement;
 	private Mission mission;
@@ -216,14 +220,35 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		this.settlement = filter;
 		if (settlement == null)
 			return false;
-		
+
 		if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
-			resetEntities(settlement.getAllAssociatedPeople());
+			List<Person> entities = new ArrayList<>(settlement.getAllAssociatedPeople());
+			if (!isCheck) {
+				Iterator<Person> p = entities.iterator(); 
+				while(p.hasNext()) {
+					if (p.next().isDeclaredDead()) 
+						p.remove();
+				}
+			}
+			
+			resetEntities(entities);
 			settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
 														UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
 			settlement.addUnitListener(settlementListener);
-		} else {
-			resetEntities(settlement.getIndoorPeople());
+		} 
+		
+		else {
+			List<Person> entities = new ArrayList<>(settlement.getIndoorPeople());
+			if (!isCheck) {
+				Iterator<Person> p = entities.iterator(); 
+				while(p.hasNext()) {
+					if (p.next().isDeclaredDead()) 
+						p.remove();
+				}
+			}
+			
+			resetEntities(entities);
+
 			settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
 														UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 			settlement.addUnitListener(settlementListener);
@@ -232,6 +257,16 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		return true;
 	}
 
+
+	/**
+	 * Changes if the deceased personnel checkbox is selected.
+	 * 
+	 * @param isCheck
+	 */
+	public void modifyPersonnel(boolean isCheck) {
+		this.isCheck = isCheck;
+	}
+	
 	/**
 	 * Catches unit update event.
 	 *
@@ -418,7 +453,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	 */
 	private class LocalMissionListener implements MissionListener {
 		/**
-		 * Catch mission update event.
+		 * Catches mission update event.
 		 *
 		 * @param event the mission event.
 		 */
@@ -438,7 +473,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	}
 
 	/**
-	 * UnitListener inner class for watching Person move in/out of a Unit
+	 * UnitListener inner class for watching Person move in/out of a Unit.
 	 */
 	private class PersonChangeListener implements UnitListener {
 
@@ -451,7 +486,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		}
 
 		/**
-		 * Catch unit update event.
+		 * Catches unit update event.
 		 *
 		 * @param event the unit event.
 		 */

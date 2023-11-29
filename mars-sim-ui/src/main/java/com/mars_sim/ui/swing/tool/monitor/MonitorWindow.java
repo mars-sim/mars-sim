@@ -20,9 +20,11 @@ import java.util.Properties;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.event.TableModelEvent;
@@ -95,6 +97,8 @@ public class MonitorWindow extends ToolWindow
 	private JButton buttonDetails;
 	private JButton buttonFilter;
 	private JButton buttonProps;
+	
+	private JCheckBox deceasedBox; 
 
 	/** Settlement Combo box */
 	private JComboBox<Settlement> settlementComboBox;
@@ -275,6 +279,14 @@ public class MonitorWindow extends ToolWindow
 		buttonFilter.addActionListener(this);
 		statusPanel.add(buttonFilter);
 
+		statusPanel.add(new JSeparator(JSeparator.VERTICAL));
+		
+		// if it's a person table model, then display the deceased personnel checkbox
+		deceasedBox = new JCheckBox("Show Deceased", true);
+		deceasedBox.setBorder(BorderFactory.createLoweredBevelBorder());
+		deceasedBox.setToolTipText("Display or hide the deceased personnel in the settlement"); //$NON-NLS-1$
+		deceasedBox.addActionListener(this);
+		statusPanel.add(deceasedBox);
 	}
 
 	/**
@@ -485,7 +497,7 @@ public class MonitorWindow extends ToolWindow
 				previousModel.setMonitorEntites(false);
 			}
 
-			// Stop listenering for table size changes
+			// Stop listening for table size changes
 			previousModel.removeTableModelListener(this);
 		}
 		if (activiateListeners) {
@@ -507,6 +519,13 @@ public class MonitorWindow extends ToolWindow
 		buttonMap.setEnabled(enableMap);
 		buttonDetails.setEnabled(enableDetails);
 		buttonFilter.setEnabled(enableFilter);
+		
+		if (tabTableModel instanceof PersonTableModel model) {
+			deceasedBox.setVisible(true);
+		}
+		else {
+			deceasedBox.setVisible(false);
+		}
 	}
 
 	@Override
@@ -606,11 +625,31 @@ public class MonitorWindow extends ToolWindow
 			displayProps();
 		} else if (source == this.buttonFilter) {
 			filterCategories();
+		} else if (source == this.deceasedBox) {
+			displayDeceased(e);
 		}
 	}
 
+	/**
+	 * Displays or hides the deceased personnel.
+	 * 
+	 * @param e
+	 */
+	private void displayDeceased(ActionEvent e) {
+		if (e.getID() == ActionEvent.ACTION_PERFORMED) {
+			boolean isCheck = deceasedBox.isSelected();
+			MonitorTab selectedTab = getSelectedTab();
+			MonitorModel tabTableModel = selectedTab.getModel();
+			if (tabTableModel instanceof PersonTableModel model) {
+				model.modifyPersonnel(isCheck);
+				// refresh the tab
+				selectNewTab(selectedTab);
+			}
+		}
+	}
+		
 	/** 
-	 * Get the details of which tab is selected
+	 * Gets the details of which tab is selected.
 	 */
 	@Override
 	public Properties getUIProps() {
@@ -620,6 +659,10 @@ public class MonitorWindow extends ToolWindow
 		return result;
 	}
 
+	public boolean isDeceasedCheck() {
+		return deceasedBox.isSelected();
+	}
+	
 	/**
 	 * Prepares tool window for deletion.
 	 */

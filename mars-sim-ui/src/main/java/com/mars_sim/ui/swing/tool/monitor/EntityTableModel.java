@@ -48,9 +48,10 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
     }
  
     /**
-     * Set which columns can be cached. This will add to any other existing cached columns
+     * Sets which columns can be cached. This will add to any other existing cached columns.
+     * 
      * @param minCOl First column that can be cached.
-     * @param maxCol Last column (inclusive) that can be cahced.
+     * @param maxCol Last column (inclusive) that can be cached.
      */
     protected void setCachedColumns(int minCol, int maxCol) {
         for(int i = minCol; i <= maxCol; i++) {

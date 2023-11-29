@@ -7,13 +7,12 @@
 package com.mars_sim.core.person.ai;
 
 import java.io.Serializable;
-import java.util.List;
 
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.job.util.AssignmentType;
 import com.mars_sim.core.person.ai.job.util.AssignmentHistory;
+import com.mars_sim.core.person.ai.job.util.AssignmentType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -25,7 +24,6 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.tools.util.RandomUtil;
 
 /**
