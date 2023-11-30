@@ -11,6 +11,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.tools.Msg;
+import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * Meta task for the Charge task.
@@ -23,6 +24,7 @@ public class ChargeMeta extends FactoryMetaTask {
     private static final String NAME = Msg.getString("Task.description.charge"); //$NON-NLS-1$
 		
 	private static final double LOW_FACTOR = 5;
+	private static final double CHANCE = 0.2;
     
     public ChargeMeta() {
 		super(NAME, WorkerType.ROBOT, TaskScope.ANY_HOUR);
@@ -36,7 +38,7 @@ public class ChargeMeta extends FactoryMetaTask {
 	@Override
 	public double getProbability(Robot robot) {
 
-        double result = 1D;
+        double result = 0;
 
         // No sleeping outside.
         if (robot.isOutside())
@@ -49,14 +51,18 @@ public class ChargeMeta extends FactoryMetaTask {
         // Crowding modifier.
         else if (robot.isInSettlement()) {
      
-        	double level = robot.getSystemCondition().getBatteryState();
+        	double batteryLevel = robot.getSystemCondition().getBatteryState();
         	
         	// Checks if the battery is low
         	if (robot.getSystemCondition().isLowPower()) {
-        		result += (100 - level) * LOW_FACTOR;
+        		result += (100 - batteryLevel) * LOW_FACTOR;
         	}
-        	else
-        		result += (100 - level);
+        	else if (batteryLevel < 90) {
+    			double rand = RandomUtil.getRandomDouble(batteryLevel);
+    			if (rand < robot.getSystemCondition().getLowPowerPercent())
+    				// At max, ~20% chance it will need to charge 
+    				result += (100 - batteryLevel) * CHANCE;
+    		}
         	
         	Building currentBldg = robot.getBuildingLocation();
 			if (currentBldg == null) {

@@ -27,6 +27,8 @@ public class SystemCondition implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(SystemCondition.class.getName());
 
+	private static final int RECOMMENDED_LEVEL = 70;
+	
     // Data members
     /** Is the robot operational ? */
     private boolean operable;
@@ -118,6 +120,15 @@ public class SystemCondition implements Serializable {
     	return (getBatteryState() > percent);
     }
 
+    /**
+     * Gets the recommended battery charing threshold.
+     * 
+     * @return
+     */
+    public double getRecommendedThreshold() {
+        return RECOMMENDED_LEVEL;
+    }
+    
 	/** 
 	 * Returns the current amount of energy in kWh. 
 	 */
@@ -241,17 +252,9 @@ public class SystemCondition implements Serializable {
     }
 
     /**
-     * Prepare object for garbage collection.
+     * Prepares object for garbage collection.
      */
     public void destroy() {
         robot = null;
-    }
-
-    /**
-     * Get the minimum battery power when charging.
-     * @return Percentage (0..100)
-     */
-    public double getMinimumChargeBattery() {
-        return 70D;
     }
 }

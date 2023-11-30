@@ -1528,7 +1528,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 					Building building = buildingList.get(buildingIndex);
 
-					if (robot.getSettlement().getAdjacentBuildings(building).size() > 0) {
+					if (!robot.getSettlement().getAdjacentBuildings(building).isEmpty()) {
 						logger.log(robot, Level.FINER, 5000, "Walking toward " + building.getNickName());
 						walkToActivitySpotInBuilding(building, fct, allowFail);
 					}
@@ -1555,9 +1555,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			
 			if (currentBuilding != null && currentBuilding.hasFunction(functionType)) {
 				canWalk = walkToActivitySpotInBuilding(currentBuilding, functionType, allowFail);
-				
-				if (canWalk)
+	
+				if (canWalk) {
 					destination = currentBuilding;
+					BuildingManager.addRobotToRoboticStation(robot, destination, functionType);
+				}
 			}
 			else {
 				List<Building> buildingList = robot.getSettlement().getBuildingManager()
@@ -1568,7 +1570,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 					Building building = buildingList.get(buildingIndex);
 
-					if (robot.getSettlement().getAdjacentBuildings(building).size() > 0) {
+					if (!robot.getSettlement().getAdjacentBuildings(building).isEmpty()) {
 						logger.log(robot, Level.FINER, 5000, "Walking toward " + building.getNickName());
 						canWalk = walkToActivitySpotInBuilding(building, functionType, allowFail);
 						
@@ -1576,10 +1578,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 							destination = building;
 					}
 				}
-			}
-			
-			if (canWalk) {
-				BuildingManager.addRobotToRoboticStation(robot, destination, functionType);
 			}
 		}
 		

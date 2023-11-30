@@ -831,7 +831,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			return false;
 		}
 
-		if (!robot.getSystemCondition().isBatteryAbove(5))
+		if (!robot.getSystemCondition().isBatteryAbove(10))
 			return false;
 
 		Task currentTask = robot.getBotMind().getBotTaskManager().getTask();

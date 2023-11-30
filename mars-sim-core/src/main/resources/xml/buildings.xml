@@ -292,7 +292,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- beds: the number of patients the infirmary can support. -->
 			<medical-care tech-level="4" bed="1">
 				<activity>
-					<activity-spot xloc="-1.25" yloc="-1.69" />
+					<activity-spot xloc="-2" yloc="2" />
 				</activity>
 				<bed>
 					<bed-location xloc="-1.97" yloc="1.83" />

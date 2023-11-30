@@ -101,7 +101,7 @@ public abstract class MissionStep extends ProjectStep {
         // Bit messy
         if (worker instanceof Robot r) {
             assignTask = (!r.getMalfunctionManager().hasMalfunction() 
-                                && r.getSystemCondition().isBatteryAbove(5));
+                                && r.getSystemCondition().isBatteryAbove(10));
         }
         else if (worker instanceof Person p) {
             assignTask = (!task.isEffortDriven() || (p.getPerformanceRating() != 0D));

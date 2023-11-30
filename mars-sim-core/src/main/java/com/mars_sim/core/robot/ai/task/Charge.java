@@ -24,7 +24,7 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
 
 /**
- * The Charge task will replenish a Robots battery
+ * The Charge task will replenish a robot's battery.
  */
 public class Charge extends Task {
 
@@ -42,12 +42,31 @@ public class Charge extends Task {
 
 	/** Task phases for robot. */
 	private static final TaskPhase CHARGING = new TaskPhase(Msg.getString("Task.phase.charging")); //$NON-NLS-1$
-
 	
 	public Charge(Robot robot) {
-		super(NAME, robot, false, false, 0, 10D);
+		super(NAME, robot, false, false, 0, 100D);
 		setDescription(NAME);
 		
+		boolean canWalk = false;
+		RoboticStation station = robot.getStation();
+		if (station == null) {
+			canWalk = walkToRoboticStation(robot, false);
+//			logger.info(robot, 10_000L, "canWalk: " + canWalk + ".");
+		}
+		
+		if (canWalk) {	
+			logger.info(robot, 10_000L, "Walking to " + station + ".");
+			station = robot.getStation();
+		}
+
+		if (station != null && station.getSleepers() < station.getSlots()) {
+			station.addSleeper();
+		}
+		else {
+			// End charging
+			endTask();
+		}
+			
 		// Initialize phase
 		addPhase(CHARGING);
 		setPhase(CHARGING);
@@ -77,58 +96,52 @@ public class Charge extends Task {
 			endTask();
 			return time;
 		}
-			
-		RoboticStation station = null;
-
+	
 		boolean toCharge = false;
 		SystemCondition sc = robot.getSystemCondition();
 		double batteryLevel = sc.getBatteryState();
 
-		// if power is below a certain threshold, stay to get a recharge
-		if (batteryLevel < sc.getMinimumChargeBattery()) {
+		if (batteryLevel > 95) {
+			toCharge = false;
+		}
+		// if power is below a certain threshold ~70%, stay to get a recharge
+		else if (batteryLevel < sc.getRecommendedThreshold()) {
 			toCharge = true;
 		}
-		
-		else if (batteryLevel < 100D) {
+
+		else if (batteryLevel > 80) {
+			// Note that the charging process will continue until it's at least 80%
+			// before ending
 			double rand = RandomUtil.getRandomDouble(batteryLevel);
 			if (rand < sc.getLowPowerPercent())
+				// At max, 20% chance it will need to charge 
 				toCharge = true;
 		}
-		
-		boolean canWalk = false;
+
 		if (toCharge) {
 			// Switch to charging
-			robot.getSystemCondition().setCharging(true);
+			sc.setCharging(true);
 			
-			station = robot.getStation();
-			if (station == null) {
-				canWalk = walkToRoboticStation(robot, false);
-				logger.info(robot, 10_000L, "canWalk: " + canWalk + ".");
-			}
-			
-			if (canWalk) {	
-				logger.info(robot, 10_000L, "Walking to " + station + ".");
-				station = robot.getStation();
-			}
-
+			RoboticStation station = robot.getStation();
+		
 			if (station != null) {
-				if (station.getSleepers() < station.getSlots()) {
-					station.addSleeper();
-				}
-				
 				double hrs = time * MarsTime.HOURS_PER_MILLISOL;
-
-				double energy = robot.getSystemCondition().deliverEnergy(RoboticStation.CHARGE_RATE * hrs);
+	
+				double energy = sc.deliverEnergy(RoboticStation.CHARGE_RATE * hrs);
 				
 				// Record the power spent at the robotic station
 				station.setPowerLoad(energy/hrs);
-
+	
 				// Lengthen the duration for charging the battery
 				setDuration(getDuration() + 1.5 * (100 - batteryLevel));
 			}
+			else {
+				// End charging
+				endTask();
+			}
 		}
 		else {
-			// Disable charging
+			// End charging
 			endTask();
 		}
 
@@ -151,6 +164,7 @@ public class Charge extends Task {
 			station.removeSleeper();
 			// NOTE: assess how well this work
 		}
+		
 		walkToAssignedDutyLocation(robot, true);
 
 		super.clearDown();
