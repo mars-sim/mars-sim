@@ -84,11 +84,11 @@ public class Cooking extends Function {
 	// public double mealsReplenishmentRate;
 	private double cleaningAgentPerSol;
 	private double waterUsagePerMeal;
+	/** Cleanliness score between -1 and 1. */
 	private double cleanliness;
 	private double cookingWorkTime;
 	private double dryMassPerServing;
 	private double bestQualityCache = 0;
-
 
 	// Data members
 	/** The last cooked meal. */
@@ -862,6 +862,15 @@ public class Cooking extends Function {
 		cleanUpKitchen();
 	}
 
+	/**
+	 * Gets the cleanliness score.
+	 * 
+	 * @return
+	 */
+	public double getCleanliness() {
+		return cleanliness;
+	}
+	
 	/**
 	 * Cleans up the kitchen with cleaning agent and water.
 	 * NOTE: turn this into a task that a person should do

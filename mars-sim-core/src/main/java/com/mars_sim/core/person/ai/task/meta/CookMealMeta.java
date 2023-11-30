@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.CookMeal;
@@ -66,7 +67,7 @@ public class CookMealMeta extends FactoryMetaTask {
     		return EMPTY_TASKLIST;
         }
 
-        RatingScore result = RatingScore.ZERO_RATING;
+        RatingScore score = RatingScore.ZERO_RATING;
     		
         // See if there is an available kitchen.
         Building kitchenBuilding = BuildingManager.getAvailableKitchen(person, FunctionType.COOKING);
@@ -79,15 +80,23 @@ public class CookMealMeta extends FactoryMetaTask {
 
             if (!enoughMeals && kitchen.canCookMeal()) {
 
-                result = new RatingScore(200);
-                assessBuildingSuitability(result, kitchenBuilding, person);
+            	score = new RatingScore(100);
+            	
+        		score.addBase("clealiness", (kitchen.getCleanliness() + 1) * 10);
+            
+        		double att = person.getNaturalAttributeManager()
+        				.getAttribute(NaturalAttributeType.CREATIVITY) / 20;
+        		
+                score.addModifier("attribute", att);
+                
+                assessBuildingSuitability(score, kitchenBuilding, person);
 
                 // Apply the standard Person modifiers
-                assessPersonSuitability(result, person);
+                assessPersonSuitability(score, person);
             }
         }
 
-        return createTaskJobs(result);
+        return createTaskJobs(score);
     }
 
 	@Override
