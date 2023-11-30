@@ -27,6 +27,7 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import com.mars_sim.console.InteractiveTerm;
 import com.mars_sim.core.Simulation;
@@ -307,8 +308,8 @@ public class MarsProject {
 				isSandbox = true;
 			}
 		}
-		catch (Exception e1) {
-			usage("Problem with arguments: " + e1.getMessage(), options);
+		catch (ParseException e) {
+			usage("Problem with arguments: " + e.getMessage(), options);
 		}
 	}
 

@@ -74,7 +74,7 @@ public class SimulationBuilder {
 	 * 
 	 * @param timeRatio
 	 */
-	public void setTimeRatio(int timeRatio) {
+	private void setTimeRatio(int timeRatio) {
 		this.userTimeRatio = timeRatio;
 	}
 
@@ -87,7 +87,7 @@ public class SimulationBuilder {
 		this.useCrews = useCrew;
 	}
 	
-	public void setLatitude(String lat) {
+	private void setLatitude(String lat) {
 		String error = Coordinates.checkLat(lat);
 		if (error != null) {
 			throw new IllegalArgumentException(error);
@@ -95,7 +95,7 @@ public class SimulationBuilder {
 		latitude = lat;
 	}
 	
-	public void setLongitude(String lon) {
+	private void setLongitude(String lon) {
 		String error = Coordinates.checkLon(lon);
 		if (error != null) {
 			throw new IllegalArgumentException(error);
@@ -112,11 +112,11 @@ public class SimulationBuilder {
 		template = optionValue;
 	}
 
-	public void setSponsor(String optionValue) {
+	private void setSponsor(String optionValue) {
 		authorityName = optionValue;
 	}
 
-	public void setDiagnostics(String modules) {
+	private void setDiagnostics(String modules) {
 		try {
 			for (String name : modules.split(",")) {
 				if (!DiagnosticsManager.setDiagnostics(name.trim(), true)) {
@@ -175,26 +175,26 @@ public class SimulationBuilder {
 
 		options.add(Option.builder(TIMERATIO_ARG).argName("Ratio (power of 2)").hasArg()
 								.desc("Define the time ratio of the simulation").build());
-		options.add(Option.builder(DATADIR_ARG).argName("path to data directory").hasArg().optionalArg(false)
+		options.add(Option.builder(DATADIR_ARG).argName("path to data directory").hasArg()
 				.desc("Path to the data directory for simulation files (defaults to user.home)").build());
-		options.add(Option.builder(BASEURL_ARG).argName("URL to remote content").hasArg().optionalArg(false)
+		options.add(Option.builder(BASEURL_ARG).argName("URL to remote content").hasArg()
 				.desc("URL to the remote content repository (defaults to master in GitHub)").build());
 		
 		options.add(Option.builder(NEW_ARG)
 						.desc("Create a new simulation if one is not present").build());
-		options.add(Option.builder(SCENARIO_ARG).argName("scenario name").hasArg().optionalArg(false)
+		options.add(Option.builder(SCENARIO_ARG).argName("scenario name").hasArg()
 				.desc("New simulation from a scenario").build());
-		options.add(Option.builder(TEMPLATE_ARG).argName("template name").hasArg().optionalArg(false)
+		options.add(Option.builder(TEMPLATE_ARG).argName("template name").hasArg()
 						.desc("New simulation from a template").build());
-		options.add(Option.builder(SPONSOR_ARG).argName(SPONSOR_ARG).hasArg().optionalArg(false)
+		options.add(Option.builder(SPONSOR_ARG).argName(SPONSOR_ARG).hasArg()
 						.desc("Set the sponsor for the settlement template").build());		
-		options.add(Option.builder(LATITUDE_ARG).argName("latitude").hasArg().optionalArg(false)
+		options.add(Option.builder(LATITUDE_ARG).argName("latitude").hasArg()
 				.desc("Set the latitude of the new template Settlement").build());	
-		options.add(Option.builder(LONGITUDE_ARG).argName("longitude").hasArg().optionalArg(false)
+		options.add(Option.builder(LONGITUDE_ARG).argName("longitude").hasArg()
 				.desc("Set the longitude of the new template Settlement").build());	
-		options.add(Option.builder(CREW_ARG).argName("true|false").hasArg().optionalArg(false)
+		options.add(Option.builder(CREW_ARG).argName("true|false").hasArg()
 				.desc("Enable or disable use of the crews").build());	
-		options.add(Option.builder(DIAGNOSTICS_ARG).argName("<module>,<module>.....").hasArg().optionalArg(false)
+		options.add(Option.builder(DIAGNOSTICS_ARG).argName("<module>,<module>.....").hasArg()
 				.desc("Enable diagnositics modules").build());	
 		return options;
 	}
