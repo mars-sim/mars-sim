@@ -252,9 +252,9 @@ extends TabPanel {
 			}
 			else if (column == 3) {
 				// Peak
-				double peak = Math.round(buildings.get(row).getComputation().getPeakComputingUnit() * 1_000.0)/1_000.0;
+				double peak = Math.round(buildings.get(row).getComputation().getPeakCU() * 1_000.0)/1_000.0;
 				// Current
-				double computingUnit = Math.round(buildings.get(row).getComputation().getComputingUnitCapacity() * 1_000.0)/1_000.0;
+				double computingUnit = Math.round(buildings.get(row).getComputation().getCurrentCU() * 1_000.0)/1_000.0;
 				return computingUnit + " (" + peak + ")";
 			}
 			else if (column == 4) {

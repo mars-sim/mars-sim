@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * Rating.java
+ * RatingScore.java
  * @date 2023-07-25
  * @author Barry Evans
  */
@@ -44,8 +44,8 @@ public class RatingScore implements Serializable {
 
     public static final String BASE = "base";
 
-    private Map<String,Double> bases;
-    private Map<String,Double> modifiers;
+    private Map<String, Double> bases;
+    private Map<String, Double> modifiers;
     private double score = -1;
 
     /**
@@ -104,7 +104,7 @@ public class RatingScore implements Serializable {
      * 
      * @return
      */
-    public Map<String,Double> getModifiers() {
+    public Map<String, Double> getModifiers() {
         return Collections.unmodifiableMap(modifiers);
     }
 
@@ -113,12 +113,13 @@ public class RatingScore implements Serializable {
      * 
      * @return
      */
-    public Map<String,Double> getBases() {
+    public Map<String, Double> getBases() {
         return Collections.unmodifiableMap(bases);
     }
 
     /**
      * Adds a modifier to the Rating. Apply the value as a modifier.
+     * Note: modifiers are multiplied.
      * 
      * @param name
      * @param value
@@ -135,7 +136,8 @@ public class RatingScore implements Serializable {
     
     /**
      * Recalculates the score by multiplying the base with the known modifiers.
-     * This will replace any existing base.
+     * If having the same key, it will replace the value.
+     * Note: base values are added.
      * 
      * @param name Name of the base score.
      * @param base New base score.
@@ -147,7 +149,9 @@ public class RatingScore implements Serializable {
     }
 
     private void calculateScore() {
+    	// base values are added
         double base = bases.values().stream().reduce(0D, (a, b) -> a + b);
+        // modifiers are multiplied
         score = modifiers.values().stream().reduce(base, (a, b) -> a * b);
     }
 

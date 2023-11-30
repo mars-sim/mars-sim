@@ -78,9 +78,9 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 				// Once a person starts a study in the proposal phase,
 				// there's a greater chance to continue on the proposal so give a high base score
 				base = switch(roleType) {
-					case CHIEF_OF_SCIENCE -> 100D;
-					case SCIENCE_SPECIALIST -> 75D;
-					default -> 25D;
+					case CHIEF_OF_SCIENCE -> 5D;
+					case SCIENCE_SPECIALIST -> 2.5D;
+					default -> 1D;
 				};
 			}
 		}

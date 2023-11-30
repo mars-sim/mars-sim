@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * NaturalAttributeManager.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-11-30
  * @author Scott Davis
  */
 

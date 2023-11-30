@@ -65,16 +65,16 @@ public class WriteReportMeta extends FactoryMetaTask {
 		if (roleType.isChief())
 			base = 15D;
 
-		var result = new RatingScore(base);
+		RatingScore score = new RatingScore(base);
 		
 		// Get an available office space.
 		Building building = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
 
 		// Note: if an office space is not available such as in a vehicle, one can still write reports!
-		assessBuildingSuitability(result, building, person);
+		assessBuildingSuitability(score, building, person);
 
-		assessPersonSuitability(result, person);
+		score = assessPersonSuitability(score, person);
 		
-		return createTaskJobs(result);
+		return createTaskJobs(score);
     }
 }

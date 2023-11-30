@@ -2231,7 +2231,7 @@ public class BuildingManager implements Serializable {
 			return 0;
 		for (Building b: nodeBldgs) {
 			Computation node = b.getComputation();
-			usage += node.getPeakComputingUnit();
+			usage += node.getPeakCU();
 		}
 		return usage;
 	}
@@ -2245,7 +2245,7 @@ public class BuildingManager implements Serializable {
 		double units = 0;
 		for (Building b: getBuildingSet(FunctionType.COMPUTATION)) {
 			Computation node = b.getComputation();
-			units += node.getComputingUnitCapacity();
+			units += node.getCurrentCU();
 		}
 		return units;
 	}
@@ -2262,8 +2262,8 @@ public class BuildingManager implements Serializable {
 		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
 		for (Building b: nodeBldgs) {
 			Computation node = b.getComputation();
-			units += node.getComputingUnitCapacity();
-			max += node.getPeakComputingUnit();
+			units += node.getCurrentCU();
+			max += node.getPeakCU();
 		}
 		
 		if (max == 0) {
@@ -2297,6 +2297,59 @@ public class BuildingManager implements Serializable {
 		return entropy;
 	}
 	
+	/**
+	 * Gets total entropy of all computing nodes in a settlement.
+	 * 
+	 * @return
+	 */
+	public double getTotalEntropyPerNode() {
+		double entropy = 0;
+		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
+		if (nodeBldgs.isEmpty())
+			return 0;		
+		int size = nodeBldgs.size();
+		for (Building b: nodeBldgs) {
+			Computation node = b.getComputation();
+			entropy += node.getEntropy();
+		}
+		return entropy/size;
+	}
+	
+	/**
+	 * Gets total entropy of all computing nodes in a settlement.
+	 * 
+	 * @return
+	 */
+	public double getTotalEntropyPerCU() {
+		double entropy = 0;
+		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
+		if (nodeBldgs.isEmpty())
+			return 0;		
+		for (Building b: nodeBldgs) {
+			Computation node = b.getComputation();
+			double ePerCU = node.getEntropyPerCU();
+			entropy += ePerCU;
+		}
+		return entropy;
+	}
+	
+	/**
+	 * Gets average minimum entropy of all computing nodes in a settlement.
+	 * 
+	 * @return
+	 */
+	public double getAverageMinimumEntropy() {
+		double entropy = 0;
+		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
+		if (nodeBldgs.isEmpty())
+			return 0;
+		int size = nodeBldgs.size();
+		for (Building b: nodeBldgs) {
+			Computation node = b.getComputation();
+			entropy += node.getMinEntropy();
+		}
+		return entropy/size;
+	}
 	
 	/**
 	 * Gets a computing node for having the worst entropy.

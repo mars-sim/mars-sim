@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Computation.java
- * @date 2022-07-17
+ * @date 2023-11-30
  * @author Manny Kung
  */
 package com.mars_sim.core.structure.building.function;
@@ -45,7 +45,7 @@ public class Computation extends Function {
 	/** The amount of entropy in the system. */
 	private double entropy;
 	/** The amount of computing resources capacity currently available [in CUs]. */
-	private double computingUnitCapacity;
+	private double currentCU;
 	/** The power load in kW for each running CU [in kW/CU]. */
 	private double powerDemand;
 	/** The power load in kW needed for cooling each running CU [in kW/CU]. */
@@ -71,7 +71,7 @@ public class Computation extends Function {
 		peakCU = spec.getDoubleProperty(COMPUTING_UNIT);
 		maxEntropy = peakCU;
 		
-		computingUnitCapacity = peakCU; 
+		currentCU = peakCU; 
 		powerDemand = spec.getDoubleProperty(POWER_DEMAND);
 		coolingDemand = spec.getDoubleProperty(COOLING_DEMAND);	
 		
@@ -103,7 +103,7 @@ public class Computation extends Function {
 			} else {
 				Computation com = building.getComputation();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += com.getComputingUnitCapacity() * wearModifier;
+				supply += com.getCurrentCU() * wearModifier;
 			}
 		}
 
@@ -120,8 +120,8 @@ public class Computation extends Function {
 	 * 
 	 * @return
 	 */
-	public double getComputingUnitCapacity() {
-		return computingUnitCapacity;
+	public double getCurrentCU() {
+		return currentCU;
 	}
 
 	/**
@@ -129,7 +129,7 @@ public class Computation extends Function {
 	 * 
 	 * @return
 	 */
-	public double getPeakComputingUnit() {
+	public double getPeakCU() {
 		return peakCU;
 	}
 	
@@ -292,54 +292,15 @@ public class Computation extends Function {
 	}
 	
 	/**
-	 * Sets the computing resource to a new value and fires the unit event type alert.
+	 * Sets the computing units or resources to a new value and fires the unit event type alert.
 	 * 
 	 * @param value
 	 */
-	public void setComputingResource(double value) {
+	public void setCU(double value) {
 		double cu = Math.round(value * 100_000.0) / 100_000.0;
-		if (computingUnitCapacity != cu) {
-			computingUnitCapacity = cu;
+		if (currentCU != cu) {
+			currentCU = cu;
 			building.getSettlement().fireUnitUpdate(UnitEventType.CONSUMING_COMPUTING_EVENT);
-		}
-	}
-
-	/**
-	 * Reduces the entropy.
-	 * 
-	 * @param the suggested value of entropy to be reduced
-	 * @return the final value of entropy being reduced
-	 */
-	public double reduceEntropy(double value) {
-		double oldEntropy = entropy;
-		double diff = entropy - value;
-		
-		if (diff < -0.5 * maxEntropy) {
-			// Note that entropy can become negative
-			// This means that the system has been tuned up
-			// to perform very well
-			diff = -0.5 * maxEntropy;
-			entropy = diff + value;
-
-		}
-		else
-			entropy -= value;
-		
-		return oldEntropy - entropy;
-	}
-	
-	/**
-	 * Increases the entropy.
-	 * 
-	 * @param value
-	 */
-	public void increaseEntropy(double value) {
-		entropy += value;
-		
-		if (entropy > maxEntropy) {
-			// This will trigger system crash and will need longer time to reconfigure
-			
-			entropy = maxEntropy;
 		}
 	}
 	
@@ -358,11 +319,11 @@ public class Computation extends Function {
 			boolean newMsol = pulse.isNewMSol();
 			
 			if (newMsol) {
-				entropy += pulse.getElapsed() * ENTROPY_FACTOR;
+				entropy += pulse.getElapsed() * ENTROPY_FACTOR * currentCU;
 				if (entropy > maxEntropy) {
 					// This will trigger system crash and need longer time to reconfigure
 					
-					entropy = maxEntropy;
+//					entropy = maxEntropy;
 				}
 			}
 			
@@ -382,10 +343,10 @@ public class Computation extends Function {
 			}
 			if (newDemand > 0) {
 				// Updates the CUs
-				setComputingResource(peakCU - newDemand); 
+				setCU(peakCU - newDemand); 
 			}
 			else {
-				setComputingResource(peakCU);
+				setCU(peakCU);
 			}
 
 			// Notes: 
@@ -407,12 +368,60 @@ public class Computation extends Function {
 	 * @return
 	 */
 	public double getUsagePercent() {
-		return (peakCU - computingUnitCapacity)/peakCU * 100.0;
+		return (peakCU - currentCU)/peakCU * 100.0;
+	}	
+	
+	/**
+	 * Gets the minimum entropy (a negative number).
+	 * 
+	 * @return
+	 */
+	public double getMinEntropy() {
+		return -0.5 * maxEntropy;
 	}
 	
+	/**
+	 * Reduces the entropy.
+	 * 
+	 * @param the suggested value of entropy to be reduced
+	 * @return the final value of entropy being reduced
+	 */
+	public double reduceEntropy(double value) {
+		double oldEntropy = entropy;
+		double diff = entropy - value;
+		
+		if (diff < getMinEntropy()) {
+			// Note that entropy can become negative
+			// This means that the system has been tuned up
+			// to perform very well
+			diff = getMinEntropy();
+			entropy = diff + value;
+
+		}
+		else
+			entropy -= value;
+		
+		return oldEntropy - entropy;
+	}
+	
+	/**
+	 * Increases the entropy.
+	 * 
+	 * @param value
+	 */
+	public void increaseEntropy(double value) {
+		entropy += value;
+		
+		if (entropy > maxEntropy) {
+			// Future: This should trigger a system crash and will need longer time to reconfigure
+			
+//			entropy = maxEntropy;
+		}
+	}
 	
 	/**
 	 * Gets the penalty factor due to entropy.
+	 * Note: it's bad if negative
 	 * 
 	 * @return
 	 */
@@ -430,14 +439,23 @@ public class Computation extends Function {
 	}
 	
 	/**
+	 * Gets the entropy per CU in this node.
+	 * 
+	 * @return
+	 */
+	public double getEntropyPerCU() {
+		return entropy/currentCU;
+	}
+	
+	/**
 	 * Gets the amount of power required, based on the current load.
 	 *
 	 * @return power (kW) default zero
 	 */
 	@Override
 	public double getFullPowerRequired() {
-		double load = peakCU - computingUnitCapacity;
-		double nonLoad = computingUnitCapacity;
+		double load = peakCU - currentCU;
+		double nonLoad = currentCU;
 		// Note: Should entropy also increase the power required to run the node ?
 		// When entropy is negative, it should reduce or save power
 		return (load + NON_LOAD_KW * nonLoad) * combinedkW;

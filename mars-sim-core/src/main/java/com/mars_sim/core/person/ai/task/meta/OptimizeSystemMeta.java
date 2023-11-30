@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * OptimizeSystem.java
- * @date 2023-07-29
+ * @date 2023-11-30
  * @author Manny Kung
  */
 package com.mars_sim.core.person.ai.task.meta;
@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -21,15 +22,19 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * Meta task for the OptimizeSystem task.
  */
 public class OptimizeSystemMeta extends FactoryMetaTask {
 
+	private static final int CU_FACTOR = 5;
+	private static final int NODE_FACTOR = 7;
+	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.optimizeSystem"); //$NON-NLS-1$
+	/** default logger. */
+	// May add back private static SimLogger logger = SimLogger.getLogger(OptimizeSystemMeta.class.getName())
 
 	
     public OptimizeSystemMeta() {
@@ -45,8 +50,8 @@ public class OptimizeSystemMeta extends FactoryMetaTask {
 		addPreferredJob(JobType.PHYSICIST, JOB_BONUS);
 			
 	    addPreferredRole(RoleType.COMPUTING_SPECIALIST, 3D);
-	    addPreferredRole(RoleType.ENGINEERING_SPECIALIST, 2D);
-	    addPreferredRole(RoleType.CHIEF_OF_COMPUTING, 2.5D);
+	    addPreferredRole(RoleType.ENGINEERING_SPECIALIST, 1.5D);
+	    addPreferredRole(RoleType.CHIEF_OF_COMPUTING, 3D);
 	    addPreferredRole(RoleType.CHIEF_OF_ENGINEERING,1.5D);
     }
     
@@ -58,28 +63,55 @@ public class OptimizeSystemMeta extends FactoryMetaTask {
 	@Override
 	public List<TaskJob> getTaskJobs(Person person) {
         
-		if (!person.isInSettlement()) {
+		if (!person.isInside()) {
 			return EMPTY_TASKLIST;
 		}
 
-		// Compute total entropy
-		double base = person.getSettlement().getBuildingManager().
-						getTotalEntropy();
-						
-		if (base < 0.01)
-			base = 0.01;
+		// Compute total entropy and average minimum entropy per node
+		double totENPerN = person.getAssociatedSettlement().getBuildingManager()
+					.getTotalEntropyPerNode();
+		
+		double totENPerCU = person.getAssociatedSettlement().getBuildingManager()
+				.getTotalEntropyPerCU();
+		
+//		double ave = person.getAssociatedSettlement().getBuildingManager()
+//					.getAverageMinimumEntropy();
+		
+		if (totENPerN < 0 && totENPerCU < 0) {
+			return EMPTY_TASKLIST;
+		}
+		
+		if (totENPerN > 0 && totENPerCU < 0.1) {
+			if (totENPerCU < 0.01) {
+				totENPerCU = 0.01;
+			}
+			else {
+				totENPerCU = 0.1;
+			}
+		}
+		
+		RatingScore score = new RatingScore("entropy.CU", CU_FACTOR * totENPerCU);
 				
-		double org = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ORGANIZATION);
-		double com = 0;
+		score.addBase("entropy.nodes", NODE_FACTOR * totENPerN);
+		
+		NaturalAttributeManager manager = person.getNaturalAttributeManager();
+		
+		double att = (.5 * manager.getAttribute(NaturalAttributeType.ORGANIZATION)
+				+ .3 * manager.getAttribute(NaturalAttributeType.METICULOUSNESS)
+				+ .2 * manager.getAttribute(NaturalAttributeType.CREATIVITY)) / 20;
+		
+		// Make sure the minimum skillF is 1, not zero
+		double skillF = 1;
 		
 		if (person.getSkillManager().getSkill(SkillType.COMPUTING) != null) {
-			com = person.getSkillManager().getSkill(SkillType.COMPUTING).getCumuativeExperience();
+			skillF = 1 + person.getSkillManager().getSkill(SkillType.COMPUTING).getLevel();
 		}
 
-		var result = new RatingScore(RandomUtil.getRandomDouble(base + org + com));
-			
-		result = assessPersonSuitability(result, person);
-
-		return createTaskJobs(result);
+		score.addModifier("skill", skillF);
+        score.addModifier("attribute", att);
+        
+        score = assessPersonSuitability(score, person);
+        
+		return createTaskJobs(score);
 	}
 }

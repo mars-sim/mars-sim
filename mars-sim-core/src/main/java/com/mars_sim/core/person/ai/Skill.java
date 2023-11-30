@@ -113,7 +113,7 @@ public class Skill implements Serializable {
 	 * 
 	 * @return the cumulative experience points
 	 */
-	public double getCumuativeExperience() {
+	public double getCumulativeExperience() {
 		// Calculate exp points at the current level
 		double pts = experiencePoints;
 		// Calculate the exp points at previous levels

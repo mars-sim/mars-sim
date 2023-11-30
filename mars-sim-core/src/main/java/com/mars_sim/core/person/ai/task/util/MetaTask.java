@@ -80,7 +80,7 @@ public abstract class MetaTask {
 	protected static SurfaceFeatures surfaceFeatures;
 	private static MasterClock masterClock;
 	protected static MissionManager missionManager;
-	
+	/* Does this task primarily require physical effort ? */	
 	private boolean effortDriven = true;
 	
 	/* The string name for this meta task. */	
@@ -93,9 +93,9 @@ public abstract class MetaTask {
 	
 	private Set<TaskTrait> traits = Collections.emptySet();
 	private Set<FavoriteType> favourites = Collections.emptySet();
-	private Map<JobType,Double> preferredJobs = new EnumMap<>(JobType.class);
+	private Map<JobType, Double> preferredJobs = new EnumMap<>(JobType.class);
 	private Set<RobotType> preferredRobots = new HashSet<>();
-	private Map<RoleType,Double> preferredRoles = new EnumMap<>(RoleType.class);
+	private Map<RoleType, Double> preferredRoles = new EnumMap<>(RoleType.class);
 	
 	
 	/**
@@ -147,7 +147,7 @@ public abstract class MetaTask {
 	 * @param jobs
 	 */
     protected void setPreferredJob(Set<JobType> jobs) {
-		for(JobType j : jobs) {
+		for (JobType j : jobs) {
     		this.preferredJobs.put(j, JOB_BONUS);
 		}
 	}
@@ -158,7 +158,7 @@ public abstract class MetaTask {
 	 * @param jobs
 	 */
     protected void setPreferredJob(JobType... jobs) {
-		for(JobType j : jobs) {
+		for (JobType j : jobs) {
     		this.preferredJobs.put(j, JOB_BONUS);
 		}
 	}
@@ -170,7 +170,7 @@ public abstract class MetaTask {
 	 * @param w weight.
 	 */
     protected void addPreferredJob(JobType job, double w) {
-		this.preferredJobs.put(job, w);
+		preferredJobs.put(job, w);
 	}
 
 	/**
@@ -189,7 +189,7 @@ public abstract class MetaTask {
 	 * @param jobs
 	 */
     protected void setPreferredRole(RoleType... roles) {
-		for(RoleType r : roles) {
+		for (RoleType r : roles) {
 			preferredRoles.put(r, ROLE_BONUS);
 		}
 	}

@@ -71,10 +71,10 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 					 			StyleManager.DECIMAL_PERC.format(usage), Msg.getString("BuildingPanelComputation.usage.tooltip"));
 
 		// Peak
-		double peak = Math.round(building.getComputation().getPeakComputingUnit() * 1_000.0)/1_000.0;
+		double peak = Math.round(building.getComputation().getPeakCU() * 1_000.0)/1_000.0;
 		
 		// Current
-		double computingUnit = Math.round(building.getComputation().getComputingUnitCapacity() * 1_000.0)/1_000.0;
+		double computingUnit = Math.round(building.getComputation().getCurrentCU() * 1_000.0)/1_000.0;
 		String text = computingUnit + " / " + peak + " CUs";
 		cULabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.computingUnit"),
 				text, Msg.getString("BuildingPanelComputation.computingUnit.tooltip"));
@@ -96,9 +96,9 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 		double util = building.getComputation().getUsagePercent();
 		percentUsageLabel.setText(StyleManager.DECIMAL_PERC.format(util));
 		
-		double peak = Math.round(building.getComputation().getPeakComputingUnit()* 1_000.0)/1_000.0;
+		double peak = Math.round(building.getComputation().getPeakCU()* 1_000.0)/1_000.0;
 
-		double computingUnit = Math.round(building.getComputation().getComputingUnitCapacity()* 1_000.0)/1_000.0;
+		double computingUnit = Math.round(building.getComputation().getCurrentCU()* 1_000.0)/1_000.0;
 		String text = computingUnit + " / " + peak + " CUs";
 		if (!cULabel.getText().equalsIgnoreCase(text))
 			cULabel.setText(text);

@@ -64,6 +64,8 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
     public ReviewMissionPlanMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setTrait(TaskTrait.LEADERSHIP);
+		addPreferredRole(RoleType.MISSION_SPECIALIST, 1.5D);
+		addPreferredRole(RoleType.CHIEF_OF_MISSION_PLANNING, 3);
 	}
 
 	/**

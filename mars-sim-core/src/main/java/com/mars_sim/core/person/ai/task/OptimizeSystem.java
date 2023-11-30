@@ -58,7 +58,6 @@ public class OptimizeSystem extends Task {
 		super(NAME, person, true, false, STRESS_MODIFIER, 10D + RandomUtil.getRandomInt(30));
 
 		if (person.isInSettlement()) {
-
 			// If person is in a settlement, try to find a server node.
 			node = person.getSettlement().getBuildingManager().getWorstEntropyComputingNodeByProbability(person);
 			if (node != null) {
@@ -72,6 +71,19 @@ public class OptimizeSystem extends Task {
 			addPhase(OPTIMIZING_SYSTEM);
 			setPhase(OPTIMIZING_SYSTEM);
 		}
+		
+		else if (person.isInVehicle()) {
+			// If person is in a settlement, try to find a server node.
+			node = person.getAssociatedSettlement().getBuildingManager().getWorstEntropyComputingNodeByProbability(person);
+			if (node != null) {
+				// May be done remotely in a vehicle
+				// Walk to the passenger spot
+//				walkToPassengerActivitySpotInRover((Rover)(person.getVehicle()), false);
+			}
+			else
+				endTask();
+		}
+		
 		else
 			endTask();
 	}
@@ -103,7 +115,7 @@ public class OptimizeSystem extends Task {
 		double com = 0;
 		
 		if (person.getSkillManager().getSkill(SkillType.COMPUTING) != null) {
-			com = person.getSkillManager().getSkill(SkillType.COMPUTING).getCumuativeExperience();
+			com = 1 + person.getSkillManager().getSkill(SkillType.COMPUTING).getLevel();
 		}
 		
 		double modTime = time * FACTOR * com;

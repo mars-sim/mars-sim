@@ -30,7 +30,7 @@ import com.mars_sim.tools.Msg;
 public class AnalyzeMapDataMeta extends FactoryMetaTask {
     
 	/** Task name */
-	private static final double VALUE = 0.5D;
+	private static final double VALUE = 0.15D;
 	
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -44,9 +44,10 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
 		setPreferredJob(JobType.AREOLOGIST, JobType.PHYSICIST, 
 				JobType.ENGINEER,
 				JobType.MATHEMATICIAN, JobType.PILOT);
+		addPreferredJob(JobType.COMPUTER_SCIENTIST, 1.5D);
+		
 		setPreferredRole(RoleType.CREW_ENGINEER, RoleType.SCIENCE_SPECIALIST,
 				RoleType.CREW_OPERATION_OFFICER);
-		addPreferredJob(JobType.COMPUTER_SCIENTIST, 1.5D);
 		addPreferredRole(RoleType.CHIEF_OF_SCIENCE, 1.25D);
 		addPreferredRole(RoleType.COMPUTING_SPECIALIST, 1.5D);
 		addPreferredRole(RoleType.CHIEF_OF_COMPUTING, 1.5D);
@@ -59,7 +60,6 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
     
 	/**
 	 * Gets the list of Analyse map Tasks that this Person can perform all individually scored.
-	 * Assessment is based on th explored 
 	 * 
 	 * @param person the Person to perform the task.
 	 * @return List of TasksJob specifications.

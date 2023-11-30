@@ -43,6 +43,10 @@ implements Lab {
 	public static final int MAX_NUM_SOLS = 100;
 	
 	private static final int NUM_INSPECTIONS = 3;
+	// Configuration properties
+	private static final double ENTROPY_FACTOR = .001;
+	/** The amount of entropy in the system. */
+	private static final double maxEntropy = 5;
 	
     /** Number of researchers supported at any given time. */
     private int researcherCapacity;
@@ -50,7 +54,9 @@ implements Lab {
     private int technologyLevel;
     /** The number of people currently doing research in laboratory. */
     private int researcherNum = 0;
-    
+	/** The amount of entropy in the laboratory. */
+	private double entropy;
+
     /** The usage history in millisols per researcher. */
     private SolSingleMetricDataLogger history = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
 
@@ -259,7 +265,17 @@ implements Lab {
             tissueCultureInspection.replaceAll((s, v) -> 0);
 		}
 		
-		if (pulse.isNewMSol()) {
+		boolean newMsol = pulse.isNewMSol();
+		
+		if (newMsol) {
+			entropy += pulse.getElapsed() * ENTROPY_FACTOR;
+			if (entropy > maxEntropy) {
+				// This should trigger some sort of collapse and 
+				// need longer time to reconfigure
+				
+				entropy = maxEntropy;
+			}
+		
 			Map<String, Double> newMap = new HashMap<>();
 			Iterator<Map.Entry<String, Double>> i = tissueIncubator.entrySet().iterator();
 			while (i.hasNext()) {
@@ -411,6 +427,63 @@ implements Lab {
     	return false;
     }
     
+	/**
+	 * Reduces the entropy.
+	 * 
+	 * @param the suggested value of entropy to be reduced
+	 * @return the final value of entropy being reduced
+	 */
+	public double reduceEntropy(double value) {
+		double oldEntropy = entropy;
+		double diff = entropy - value;
+		
+		if (diff < -0.5 * maxEntropy) {
+			// Note that entropy can become negative
+			// This means that the system has been tuned up
+			// to perform very well
+			diff = -0.5 * maxEntropy;
+			entropy = diff + value;
+
+		}
+		else
+			entropy -= value;
+		
+		return oldEntropy - entropy;
+	}
+	
+	/**
+	 * Increases the entropy.
+	 * 
+	 * @param value
+	 */
+	public void increaseEntropy(double value) {
+		entropy += value;
+		
+		if (entropy > maxEntropy) {
+			// This will trigger system crash and will need longer time to reconfigure
+			
+			entropy = maxEntropy;
+		}
+	}
+	
+	/**
+	 * Gets the penalty factor due to entropy.
+	 * 
+	 * @return
+	 */
+	public double getEntropyPenalty() {
+		return 1 - entropy / maxEntropy;
+	}
+	
+	/**
+	 * Gets the current entropy.
+	 * 
+	 * @return
+	 */
+	public double getEntropy() {
+		return entropy;
+	}
+	
     @Override
     public double getMaintenanceTime() {
 
