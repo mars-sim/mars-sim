@@ -17,13 +17,14 @@ public enum EventType {
 	MALFUNCTION_ACT_OF_GOD		(Msg.getString("EventType.malfunction.actOfGod")), //$NON-NLS-1$
 	MALFUNCTION_FIXED			(Msg.getString("EventType.malfunction.fixed")), //$NON-NLS-1$
 
-	MEDICAL_CURED		(Msg.getString("EventType.illness.cured")), //$NON-NLS-1$
-	MEDICAL_STARTS		(Msg.getString("EventType.illness.starts")), //$NON-NLS-1$
-	MEDICAL_DEGRADES	(Msg.getString("EventType.illness.degrades")), //$NON-NLS-1$
-	MEDICAL_RECOVERY	(Msg.getString("EventType.illness.recovering")), //$NON-NLS-1$
-	MEDICAL_TREATED		(Msg.getString("EventType.illness.treated")), //$NON-NLS-1$
-	MEDICAL_DEATH		(Msg.getString("EventType.illness.dead")), //$NON-NLS-1$
-	MEDICAL_RESCUE		(Msg.getString("EventType.medical.rescue")), //$NON-NLS-1$
+	MEDICAL_CURED			(Msg.getString("EventType.illness.cured")), //$NON-NLS-1$
+	MEDICAL_STARTS			(Msg.getString("EventType.illness.starts")), //$NON-NLS-1$
+	MEDICAL_DEGRADES		(Msg.getString("EventType.illness.degrades")), //$NON-NLS-1$
+	MEDICAL_RECOVERY		(Msg.getString("EventType.illness.recovering")), //$NON-NLS-1$
+	MEDICAL_TREATED			(Msg.getString("EventType.illness.treated")), //$NON-NLS-1$
+	MEDICAL_DEATH			(Msg.getString("EventType.illness.dead")), //$NON-NLS-1$
+	MEDICAL_RESCUE			(Msg.getString("EventType.medical.rescue")), //$NON-NLS-1$
+	MEDICAL_RESUSCITATE		(Msg.getString("EventType.medical.resuscitated")), //$NON-NLS-1$
 	
 	MISSION_START					(Msg.getString("EventType.mission.started")), //$NON-NLS-1$
 	MISSION_JOINING					(Msg.getString("EventType.mission.joined")), //$NON-NLS-1$

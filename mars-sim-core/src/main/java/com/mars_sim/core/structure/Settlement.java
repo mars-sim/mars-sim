@@ -1220,7 +1220,7 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	private void timePassingCitizens(ClockPulse pulse) {
 		List<Person> remove = null;
-		for(Person p : citizens) {
+		for (Person p : citizens) {
 			if (p.isDeclaredDead()) {
 				// If also buried then remove it at the end of loop
 				if (p.isBuried()) {
@@ -1884,7 +1884,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 	
 	/**
-	 * Returns a collection of people buried outside this settlement
+	 * Returns a collection of people buried outside this settlement.
 	 *
 	 * @return {@link Collection<Person>}
 	 */

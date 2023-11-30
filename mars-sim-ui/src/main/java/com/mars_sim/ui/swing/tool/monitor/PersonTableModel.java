@@ -65,7 +65,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 
 	private static Map<UnitEventType, Integer> eventColumnMapping;
 
-	private static final String DEYDRATED = "Deydrated";
+	private static final String DEHYDRATED = "Dehydrated";
 	private static final String STARVING = "Starving";
 	
 	/**
@@ -108,9 +108,13 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		eventColumnMapping.put(UnitEventType.MISSION_EVENT, MISSION_COL);
 		eventColumnMapping.put(UnitEventType.ILLNESS_EVENT, HEALTH);
 		eventColumnMapping.put(UnitEventType.DEATH_EVENT, HEALTH);
+		eventColumnMapping.put(UnitEventType.BURIAL_EVENT, HEALTH);
+		eventColumnMapping.put(UnitEventType.REVIVED_EVENT, HEALTH);
 	}
 
-	/** inner enum with valid source types. */
+	/** 
+	 * Inner enum with valid source types. 
+	 */
 	private enum ValidSourceType {
 		ALL_PEOPLE, VEHICLE_CREW, SETTLEMENT_INHABITANTS, SETTLEMENT_ALL_ASSOCIATED_PEOPLE, MISSION_PEOPLE;
 	}
@@ -330,7 +334,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				PhysicalCondition pc = person.getPhysicalCondition();
 				if (!pc.isDead()) {
 					if (pc.isDehydrated())
-						result = DEYDRATED;
+						result = DEHYDRATED;
 					else
 						result = PhysicalCondition.getThirstyStatus(pc.getThirst());
 				}

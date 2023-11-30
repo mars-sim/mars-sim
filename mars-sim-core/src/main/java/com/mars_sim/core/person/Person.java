@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.LifeSupportInterface;
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
@@ -65,6 +66,8 @@ import com.mars_sim.core.person.ai.task.meta.WorkoutMeta;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.ai.training.TrainingType;
+import com.mars_sim.core.person.health.HealthProblem;
+import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ResearcherInterface;
@@ -780,12 +783,10 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		isBuried = true;
 		// Back up the last container unit
 		condition.getDeathDetails().backupContainerUnit(getContainerUnit());
-
 		// Set his/her currentStateType
 		currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 		// Set his/her buried settlement
 		buriedSettlement = associatedSettlementID;
-
 		// Throw unit event.
 		fireUnitUpdate(UnitEventType.BURIAL_EVENT);
 	}
@@ -794,16 +795,36 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 * Declares the person dead.
 	 */
 	void setDeclaredDead() {
+		// Set declaredDead
 		declaredDead = true;
+		// Set description
 		setDescription("Dead");
+		// Throw unit event
+		fireUnitUpdate(UnitEventType.DEATH_EVENT);
 	}
 
 	/**
 	 * Revives the person.
+	 * 
+	 * @param problem
 	 */
-	void setRevived() {
+	void setRevived(HealthProblem problem) {
+		// Reset declaredDead
 		declaredDead = false;
+		// Set description
 		setDescription("Recovering");
+		// Reset isBuried
+		isBuried = false;
+		// Set currentStateType
+		currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+		// Set buried settlement
+		buriedSettlement = -1;
+		// Throw unit event
+		fireUnitUpdate(UnitEventType.REVIVED_EVENT);
+		// Generate medical event
+		MedicalEvent event = new MedicalEvent(this, problem, EventType.MEDICAL_RESUSCITATE);
+		// Register event
+		Simulation.instance().getEventManager().registerNewEvent(event);
 	}
 	
 	/**

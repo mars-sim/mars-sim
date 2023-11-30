@@ -55,6 +55,7 @@ public enum UnitEventType {
 	ILLNESS_EVENT					("illness event"),
 	DEATH_EVENT						("death event"),
 	BURIAL_EVENT					("burial event"),
+	REVIVED_EVENT					("revived event"),
 	RADIATION_EVENT					("radiation event"),
 	METEORITE_EVENT					("meteorite event"),
 	

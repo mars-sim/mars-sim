@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package com.mars_sim.console.chat.simcommand.person;
+package com.mars_sim.console.chat.simcommand.settlement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +16,6 @@ import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.ConversationRole;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
-import com.mars_sim.console.chat.simcommand.settlement.AbstractSettlementCommand;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
 

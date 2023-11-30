@@ -344,8 +344,9 @@ public class ExamineBody extends Task {
 		logger.log(worker, Level.WARNING, 1000, "Completed the postmortem exam on " 
 					+ patient.getName() + ". Cause of death : " + cause);
 
-		// Create medical event for death.
+		// Create medical event for death
 		MedicalEvent event = new MedicalEvent(person, problem, EventType.MEDICAL_DEATH);
+		// Register event
 		registerNewEvent(event);
 	}
 }

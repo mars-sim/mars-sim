@@ -14,7 +14,6 @@ import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.command.InteractiveChatCommand;
 import com.mars_sim.console.chat.simcommand.ConnectedUnitCommand;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
-import com.mars_sim.console.chat.simcommand.person.ResuscitationCommand;
 import com.mars_sim.console.chat.simcommand.unit.EquipmentCommand;
 import com.mars_sim.console.chat.simcommand.unit.InventoryCommand;
 import com.mars_sim.console.chat.simcommand.unit.MalfunctionCreateCommand;

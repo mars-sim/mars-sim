@@ -1464,18 +1464,17 @@ public class PhysicalCondition implements Serializable {
 		
 		deathDetails = null;
 		// Reset the declaredDead
-		person.setRevived();
-		
-		// Get a new role type
-//		person.setRoleType(person.getRole().getType());
-		
-		// Re-elect any vacated top leaders or chiefs role
-		person.getAssociatedSettlement().getChainOfCommand().reelectLeadership(person.getRole().getType());
-
+		person.setRevived(problem);
 		// Set the mind of the person to active
 		person.getMind().setActive();
-		// See a doctor ?
-		//medicalManager
+		
+		// See a doctor for checkup ?
+		// Call medicalManager
+
+		// Note: will automatically get a new role type	
+		
+		// Note: check if the vacated role has been filled or not 
+		// Should the person retake the same role ?
 
 		logger.log(person, Level.WARNING, 0, "Person was revived as ordered.");
 	}

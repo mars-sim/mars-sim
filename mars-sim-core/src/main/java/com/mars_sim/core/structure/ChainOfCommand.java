@@ -130,7 +130,7 @@ public class ChainOfCommand implements Serializable {
 	}
 
 	/**
-	 * Increments the number of the target role type in the map
+	 * Increments the number of the target role type in the map.
 	 *
 	 * @param key {@link RoleType}
 	 */
@@ -140,7 +140,7 @@ public class ChainOfCommand implements Serializable {
 	}
 
 	/**
-	 * Decrements the number of the target role type from the map
+	 * Decrements the number of the target role type from the map.
 	 *
 	 * @param key {@link RoleType}
 	 */
