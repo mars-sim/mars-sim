@@ -566,7 +566,7 @@ public class RadiationExposure implements Serializable, Temporal {
 					base = RadiationExposure.RADIATION_CHECK_FREQ * BASELINE_RAD_PER_SOL * time;
 					// arbitrary
 					baseline = base + RandomUtil.getRandomInt(-1, 1) 
-							* RandomUtil.getRandomDouble(base / 3D); 
+							* RandomUtil.getRandomDouble(base / 9D); 
 					if (baseline > 0) {
 						rad = addDose(radiationType, bodyRegionType, baseline);
 					}	

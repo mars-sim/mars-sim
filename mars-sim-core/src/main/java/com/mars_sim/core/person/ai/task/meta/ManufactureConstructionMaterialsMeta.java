@@ -46,6 +46,7 @@ public class ManufactureConstructionMaterialsMeta extends FactoryMetaTask {
 		setTrait(TaskTrait.ARTISTIC);
 		setPreferredJob(JobType.ARCHITECT, JobType.CHEMIST, JobType.ENGINEER);
         
+		addPreferredRobot(RobotType.MEDICBOT);
         addPreferredRobot(RobotType.MAKERBOT);
         addPreferredRobot(RobotType.REPAIRBOT);
         addPreferredRobot(RobotType.CONSTRUCTIONBOT);

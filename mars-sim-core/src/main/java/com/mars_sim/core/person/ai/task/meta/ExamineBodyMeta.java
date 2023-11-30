@@ -21,6 +21,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.person.health.MedicalManager;
+import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
@@ -66,6 +67,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 
 		setTrait(TaskTrait.MEDICAL);
 		setPreferredJob(JobType.MEDICS);
+		addPreferredRobot(RobotType.MEDICBOT);
 	}
 
 	/**

@@ -84,6 +84,7 @@ public class ManufactureGoodMeta extends MetaTask
                         
         addPreferredRobot(RobotType.MAKERBOT);
         addPreferredRobot(RobotType.REPAIRBOT);
+        addPreferredRobot(RobotType.MEDICBOT);
         addPreferredRobot(RobotType.CONSTRUCTIONBOT);
 	}
 

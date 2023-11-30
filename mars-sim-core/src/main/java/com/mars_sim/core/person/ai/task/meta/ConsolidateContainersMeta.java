@@ -64,7 +64,7 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
 		
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
 		setTrait(TaskTrait.STRENGTH, TaskTrait.ORGANIZATION, TaskTrait.DISCIPLINE);
-
+		addPreferredRobot(RobotType.MEDICBOT);
         addPreferredRobot(RobotType.DELIVERYBOT);
 	}
 

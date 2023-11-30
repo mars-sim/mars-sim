@@ -42,7 +42,7 @@ public class CookMealMeta extends FactoryMetaTask {
 		setFavorite(FavoriteType.COOKING);
 		setTrait(TaskTrait.ARTISTIC);
 		setPreferredJob(JobType.CHEF);
-
+		addPreferredRobot(RobotType.MEDICBOT);
         addPreferredRobot(RobotType.CHEFBOT);
 	}
 
