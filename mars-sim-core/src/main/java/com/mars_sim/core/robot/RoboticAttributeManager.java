@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RoboticAttributeManager.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-11-30
  * @author Manny Kung
  */
 
@@ -23,7 +23,7 @@ public class RoboticAttributeManager extends NaturalAttributeManager {
 
 	
 	/**
-	 * Person specific Natural Attributes.
+	 * Specific Natural Attributes for bots.
 	 */
 	private static final NaturalAttributeType[] ROBOT_ATTRIBUTES = {
 												NaturalAttributeType.AGILITY,
@@ -36,25 +36,25 @@ public class RoboticAttributeManager extends NaturalAttributeManager {
 	
 
 	/**
-	 * Sets some random attributes
+	 * Randomizes attributes with modifiers.
 	 */
 	public void	setRandomAttributes() {		
 		// Create attributes using random values (averaged for bell curve around 50%).
 		// Note: this may change later.
 		for (NaturalAttributeType type : ROBOT_ATTRIBUTES) {
 			int attributeValue = 0;
-			int numberOfIterations = 3;
+			int numberOfIterations = 5;
 			for (int y = 0; y < numberOfIterations; y++) attributeValue += RandomUtil.getRandomInt(100);
 			attributeValue /= numberOfIterations;
 			setAttribute(type, attributeValue);
 		}
 
 		// TODO: need to overhaul and define the use of attributes for robots.
-		addAttributeModifier(NaturalAttributeType.STRENGTH, 50);
-		addAttributeModifier(NaturalAttributeType.ENDURANCE, 50);
 		addAttributeModifier(NaturalAttributeType.AGILITY, 50);
-		addAttributeModifier(NaturalAttributeType.TEACHING, 5);
-		addAttributeModifier(NaturalAttributeType.EXPERIENCE_APTITUDE, 50);
 		addAttributeModifier(NaturalAttributeType.CONVERSATION, 5);
+		addAttributeModifier(NaturalAttributeType.ENDURANCE, 50);
+		addAttributeModifier(NaturalAttributeType.EXPERIENCE_APTITUDE, 50);
+		addAttributeModifier(NaturalAttributeType.STRENGTH, 50);
+		addAttributeModifier(NaturalAttributeType.TEACHING, 5);
 	}
 }
