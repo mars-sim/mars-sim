@@ -42,7 +42,8 @@ public class AbstractMetaMission implements MetaMission {
 	private Set<JobType> preferredLeaderJob = null;
 	
 	/**
-	 * Creates a new Mission meta instance
+	 * Creates a new Mission meta instance.
+	 * 
 	 * @param type 
 	 * @param preferredLeaderJob Jobs that a leader should have; null means no preference
 	 */
@@ -113,7 +114,8 @@ public class AbstractMetaMission implements MetaMission {
 	}
 
 	/**
-	 * Get the current time on Mars
+	 * Gets the current time on Mars.
+	 * 
 	 * @return
 	 */
 	protected MarsTime getMarsTime() {

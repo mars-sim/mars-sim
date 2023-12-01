@@ -30,6 +30,8 @@ import com.mars_sim.core.structure.construction.ConstructionValues;
  */
 public class ConstructionMissionMeta extends AbstractMetaMission {
       
+	private static final int BASE_SCORE = 200;
+	
     ConstructionMissionMeta() {
     	super(MissionType.CONSTRUCTION, 
 				Set.of(JobType.ARCHITECT, JobType.ENGINEER));
@@ -55,8 +57,6 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 		
 		RatingScore missionProbability = RatingScore.ZERO_RATING;
 		if (person.getMind().getJob() == JobType.ARCHITECT
-//					|| RoleType.MISSION_SPECIALIST == roleType
-//					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
 				|| RoleType.CHIEF_OF_ENGINEERING == roleType
 				|| RoleType.ENGINEERING_SPECIALIST == roleType
 				|| RoleType.COMMANDER == roleType
@@ -103,7 +103,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 				return RatingScore.ZERO_RATING;
 			}
 			
-			missionProbability = new RatingScore(100D);
+			missionProbability = new RatingScore(BASE_SCORE);
 			missionProbability.addModifier(SETTLEMENT_POPULATION,
 								getSettlementPopModifier(settlement, 8)/2);
 
@@ -111,7 +111,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 			double existingSiteProfit = values.getAllConstructionSitesProfit(constructionSkill);
 
 			if (newSiteProfit > existingSiteProfit) {
-				missionProbability.addModifier("Site", getProbability(settlement));
+				missionProbability.addModifier("settlement.demand", getProbability(settlement));
 			}
 
 			// Modify if construction is the person's favorite activity.

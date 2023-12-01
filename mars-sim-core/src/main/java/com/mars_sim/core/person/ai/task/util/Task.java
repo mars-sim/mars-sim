@@ -274,7 +274,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Set the Natural attribute that influences experience points. By default this
+	 * Sets the Natural attribute that influences experience points. By default this
 	 * is EXPERIENCE_APTITUDE
 	 * 
 	 * @param experienceAttribute the NaturalAttributeType enum
@@ -896,7 +896,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		double result = 1D;
 
 		if (hasTeacher()) {
-			int teachingModifier = teacher.getNaturalAttributeManager().getAttribute(NaturalAttributeType.TEACHING);
+			int teachingModifier = teacher.getNaturalAttributeManager()
+					.getAttribute(NaturalAttributeType.TEACHING);
 			int learningModifier = worker.getNaturalAttributeManager()
 					.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
@@ -943,7 +944,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Adds experience to the worker;s skills used in this task.
+	 * Adds experience to the worker's skills used in this task.
 	 * 
 	 * @param time the amount of time (ms) the person performed this task.
 	 */
@@ -1687,6 +1688,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/**
 	 * Is this Task interruptable? This method should be overridden by Task that can not
 	 * be interrupted.
+	 * 
 	 * @return Returns true by default
 	 */
 	public boolean isInterruptable() {

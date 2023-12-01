@@ -90,9 +90,9 @@ public class OptimizeSystemMeta extends FactoryMetaTask {
 			}
 		}
 		
-		RatingScore score = new RatingScore("entropy.CU", CU_FACTOR * totENPerCU);
+		RatingScore score = new RatingScore(ENTROPY_CU, CU_FACTOR * totENPerCU);
 				
-		score.addBase("entropy.nodes", NODE_FACTOR * totENPerN);
+		score.addBase(ENTROPY_NODE, NODE_FACTOR * totENPerN);
 		
 		NaturalAttributeManager manager = person.getNaturalAttributeManager();
 		
@@ -107,8 +107,8 @@ public class OptimizeSystemMeta extends FactoryMetaTask {
 			skillF = 1 + person.getSkillManager().getSkill(SkillType.COMPUTING).getLevel();
 		}
 
-		score.addModifier("skill", skillF);
-        score.addModifier("attribute", att);
+		score.addModifier(SKILL_MODIFIER, skillF);
+        score.addModifier(ATTRIBUTE, att);
         
         score = assessPersonSuitability(score, person);
         

@@ -61,7 +61,11 @@ public abstract class MetaTask {
 	protected static final String SKILL_MODIFIER = "skill";
     protected static final String STRESS_MODIFIER = "stress";
 	private static final String VEHICLE_MODIFIER = "vehicle";
-
+	protected static final String ATTRIBUTE = "attribute";
+	protected static final String ENTROPY_LAB = "entropy.lab";
+	protected static final String ENTROPY_NODE = "entropy.node";
+	protected static final String ENTROPY_CU = "entropy.CUs";
+	
 	// Traits used to identify non-effort tasks
 	private static final Set<TaskTrait> PASSIVE_TRAITS
 		= Set.of(TaskTrait.RELAXATION, 

@@ -61,7 +61,7 @@ public class RespondToStudyInvitation extends Task {
 	private ScientificStudy study;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @param person the person performing the task.
 	 */
@@ -76,7 +76,7 @@ public class RespondToStudyInvitation extends Task {
 		}
 
 		List<ScientificStudy> invitedStudies = scientificStudyManager.getOpenInvitationStudies(person);
-		if (invitedStudies.size() > 0) {
+		if (!invitedStudies.isEmpty()) {
 			study = invitedStudies.get(0);
 
 			// If person is in a settlement, try to find an administration building.
@@ -94,8 +94,8 @@ public class RespondToStudyInvitation extends Task {
 
 				if (person.isInVehicle()) {
 					// If person is in rover, walk to passenger activity spot.
-					if (person.getVehicle() instanceof Rover) {
-						walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), false);
+					if (person.getVehicle() instanceof Rover rover) {
+						walkToPassengerActivitySpotInRover(rover, false);
 					}
 				} else {
 					// Walk to random location.

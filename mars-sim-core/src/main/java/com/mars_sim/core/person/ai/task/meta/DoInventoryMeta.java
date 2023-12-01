@@ -12,17 +12,12 @@ import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
-import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.DoInventory;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
-import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
-import com.mars_sim.core.person.ai.task.util.TaskUtil;
-import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.tools.Msg;
 
 /**
@@ -67,7 +62,7 @@ public class DoInventoryMeta extends FactoryMetaTask {
 			return EMPTY_TASKLIST;
 		}
 		
-		RatingScore score = new RatingScore("entropy.lab", LAB_FACTOR * totENPerL);
+		RatingScore score = new RatingScore(ENTROPY_LAB, LAB_FACTOR * totENPerL);
 
 		NaturalAttributeManager manager = person.getNaturalAttributeManager();
 		
@@ -85,7 +80,7 @@ public class DoInventoryMeta extends FactoryMetaTask {
 //
 //		score.addModifier("skill", skillF);
 		
-        score.addModifier("attribute", att);
+        score.addModifier(ATTRIBUTE, att);
         
         score = assessPersonSuitability(score, person);
         
