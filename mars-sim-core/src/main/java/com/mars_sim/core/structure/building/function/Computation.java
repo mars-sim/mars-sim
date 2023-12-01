@@ -215,7 +215,7 @@ public class Computation extends Function {
 			todayDemand.put(sol, existing + needed);
 			
 			// Increase the entropy
-			this.increaseEntropy(needed * ENTROPY_FACTOR);
+			increaseEntropy(needed * ENTROPY_FACTOR);
 		}
 
 		return true;
@@ -319,12 +319,7 @@ public class Computation extends Function {
 			boolean newMsol = pulse.isNewMSol();
 			
 			if (newMsol) {
-				entropy += pulse.getElapsed() * ENTROPY_FACTOR * currentCU;
-				if (entropy > maxEntropy) {
-					// This will trigger system crash and need longer time to reconfigure
-					
-//					entropy = maxEntropy;
-				}
+				increaseEntropy(pulse.getElapsed() * ENTROPY_FACTOR * currentCU / 10);
 			}
 			
 			double newDemand = 0;

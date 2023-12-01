@@ -2498,6 +2498,63 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
+	 * Gets total entropy of all computing nodes in a settlement.
+	 * 
+	 * @return
+	 */
+	public double getTotalEntropyPerLab() {
+		double entropy = 0;
+		Set<Building> bldgs = getBuildingSet(FunctionType.RESEARCH);
+		if (bldgs.isEmpty())
+			return 0;		
+		int size = bldgs.size();
+		for (Building b: bldgs) {
+			Research lab = b.getResearch();
+			entropy += lab.getEntropy();
+		}
+		return entropy/size;
+	}
+	
+	/**
+	 * Gets a lab for having the worst entropy by probability.
+	 * 
+	 * @param person
+	 * @return
+	 */
+	public Research getWorstEntropyLabByProbability(Person person) {
+		Map<Research, Double> scores = new HashMap<>();
+		Set<Building> bldgs = getBuildingSet(FunctionType.RESEARCH);
+		if (person.getBuildingLocation() != null) {
+			bldgs = bldgs
+					.stream()
+					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toSet());
+		}
+		else {
+			bldgs = bldgs
+					.stream()
+					.filter(b -> b.getZone() == 0
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toSet());		
+		}
+				
+		if (bldgs.isEmpty())
+			return null;
+		for (Building b: bldgs) {
+			Research lab = b.getResearch();
+			double entropy = lab.getEntropy();
+			scores.put(lab, entropy);
+		}
+
+		if (scores.isEmpty())
+			return null;
+
+		// Note: Use probability selection	
+		return RandomUtil.getWeightedRandomObject(scores);
+	}
+	
+	/**
 	 * Gets a list of farm buildings needing work from a list of buildings with the
 	 * farming function.
 	 *

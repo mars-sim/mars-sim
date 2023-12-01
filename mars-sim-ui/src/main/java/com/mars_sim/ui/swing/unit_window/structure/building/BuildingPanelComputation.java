@@ -96,15 +96,15 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 		double util = building.getComputation().getUsagePercent();
 		percentUsageLabel.setText(StyleManager.DECIMAL_PERC.format(util));
 		
+		
 		double peak = Math.round(building.getComputation().getPeakCU()* 1_000.0)/1_000.0;
-
 		double computingUnit = Math.round(building.getComputation().getCurrentCU()* 1_000.0)/1_000.0;
 		String text = computingUnit + " / " + peak + " CUs";
 		if (!cULabel.getText().equalsIgnoreCase(text))
 			cULabel.setText(text);
 		
+		// Update entropy
 		String entropy = Math.round(building.getComputation().getEntropy() * 1_000.0)/1_000.0 + "";
-		
 		if (!entropyLabel.getText().equalsIgnoreCase(entropy))
 			entropyLabel.setText(entropy);
 	}

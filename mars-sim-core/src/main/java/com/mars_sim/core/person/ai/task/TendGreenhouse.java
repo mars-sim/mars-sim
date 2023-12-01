@@ -17,6 +17,7 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
+import com.mars_sim.core.structure.building.function.Research;
 import com.mars_sim.core.structure.building.function.farming.Crop;
 import com.mars_sim.core.structure.building.function.farming.CropSpec;
 import com.mars_sim.core.structure.building.function.farming.Farming;
@@ -443,6 +444,8 @@ public class TendGreenhouse extends Task {
 
 			greenhouse.getResearch().harvestTissue(worker);
 
+			greenhouse.getResearch().increaseEntropy(time * Research.ENTROPY_FACTOR);
+			
 			logger.log(greenhouse.getBuilding(), worker, Level.INFO, 0, DONE_GROWING + goal + TISSUES_IN_LAB);
 					
 			// Reset goal to null

@@ -47,6 +47,8 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	
 	private JLabel cumulativeTotalLabel;
 
+	private JLabel entropyLabel;
+	
 	/**
 	 * Constructor.
 	 * 
@@ -74,7 +76,7 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		// Prepare label panel
-		AttributePanel labelPanel = new AttributePanel(4);
+		AttributePanel labelPanel = new AttributePanel(5);
 		center.add(labelPanel, BorderLayout.NORTH);
 	
 		// Prepare researcher number label
@@ -92,6 +94,12 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 		
 		cumulativeTotalLabel = labelPanel.addTextField(Msg.getString("BuildingPanelResearch.cumulativeTotal"),
 				Double.toString(Math.round(tally[0] * 10.0)/10.0) + MILLISOLS, null);
+		
+		// Entropy
+		double entropy = building.getResearch().getEntropy();
+		entropyLabel = labelPanel.addTextField(Msg.getString("BuildingPanelResearch.entropy"),
+	 			Math.round(entropy * 1_000.0)/1_000.0 + "", Msg.getString("BuildingPanelResearch.entropy.tooltip"));
+
 		
 		// Get the research specialties of the building.
 		ScienceType[] specialties = lab.getTechSpecialties();
@@ -129,5 +137,19 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 		double[] tally = lab.getTotCumulativeDailyAverage();
 		dailyAverageLabel.setText(Double.toString(Math.round(tally[1] * 10.0)/10.0) + MILLISOLS);
 		cumulativeTotalLabel.setText(Double.toString(Math.round(tally[0] * 10.0)/10.0) + MILLISOLS);
+		
+		// Update entropy
+		String entropy = Math.round(building.getResearch().getEntropy() * 1_000.0)/1_000.0 + "";
+		if (!entropyLabel.getText().equalsIgnoreCase(entropy))
+			entropyLabel.setText(entropy);
+	}
+	
+	@Override
+	public void destroy() {
+		researchersLabel = null;
+		dailyAverageLabel = null;
+		cumulativeTotalLabel = null;
+		entropyLabel = null;
+		lab = null;
 	}
 }

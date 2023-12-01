@@ -44,7 +44,7 @@ implements Lab {
 	
 	private static final int NUM_INSPECTIONS = 3;
 	// Configuration properties
-	private static final double ENTROPY_FACTOR = .001;
+	public static final double ENTROPY_FACTOR = .001;
 	/** The amount of entropy in the system. */
 	private static final double maxEntropy = 5;
 	
@@ -258,8 +258,10 @@ implements Lab {
 			return false;
 		}
 		
-		if (researcherNum > 0)
+		if (researcherNum > 0) {
 			recordUsage(researcherNum * pulse.getElapsed());
+			increaseEntropy(researcherNum * pulse.getElapsed() * ENTROPY_FACTOR / 2);
+		}
 		
 		if (pulse.isNewSol()) {
             tissueCultureInspection.replaceAll((s, v) -> 0);
@@ -268,13 +270,7 @@ implements Lab {
 		boolean newMsol = pulse.isNewMSol();
 		
 		if (newMsol) {
-			entropy += pulse.getElapsed() * ENTROPY_FACTOR;
-			if (entropy > maxEntropy) {
-				// This should trigger some sort of collapse and 
-				// need longer time to reconfigure
-				
-				entropy = maxEntropy;
-			}
+			increaseEntropy(pulse.getElapsed() * ENTROPY_FACTOR / 10);
 		
 			Map<String, Double> newMap = new HashMap<>();
 			Iterator<Map.Entry<String, Double>> i = tissueIncubator.entrySet().iterator();
@@ -285,6 +281,8 @@ implements Lab {
 				if (amount > 0) {
 					i.remove();
 					
+					increaseEntropy(pulse.getElapsed() * ENTROPY_FACTOR / 2);
+		
 					double time = pulse.getMarsTime().getMillisol();
 					double delta = obtainGrow(time, key);
 					
@@ -428,6 +426,15 @@ implements Lab {
     }
     
 	/**
+	 * Gets the minimum entropy (a negative number).
+	 * 
+	 * @return
+	 */
+	public double getMinEntropy() {
+		return -0.5 * maxEntropy;
+	}
+	
+	/**
 	 * Reduces the entropy.
 	 * 
 	 * @param the suggested value of entropy to be reduced
@@ -437,11 +444,11 @@ implements Lab {
 		double oldEntropy = entropy;
 		double diff = entropy - value;
 		
-		if (diff < -0.5 * maxEntropy) {
+		if (diff < getMinEntropy()) {
 			// Note that entropy can become negative
 			// This means that the system has been tuned up
 			// to perform very well
-			diff = -0.5 * maxEntropy;
+			diff = getMinEntropy();
 			entropy = diff + value;
 
 		}
@@ -460,7 +467,7 @@ implements Lab {
 		entropy += value;
 		
 		if (entropy > maxEntropy) {
-			// This will trigger system crash and will need longer time to reconfigure
+			// Future: This should trigger a system crash and will need longer time to reconfigure
 			
 			entropy = maxEntropy;
 		}
