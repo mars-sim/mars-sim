@@ -988,28 +988,28 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		heating.dumpExcessHeat(heatGenerated);
 	}
 	
-	/**
-	 * Sets the required power for heating.
-	 *
-	 * @param powerReq
-	 */
-	public void setPowerRequiredForHeating(double powerReq) {
-		if (heating == null)
-			heating = furnace.getHeating();
-		heating.setPowerRequired(powerReq);
-	}
+//	/**
+//	 * Sets the required power for heating.
+//	 *
+//	 * @param powerReq
+//	 */
+//	public void setPowerRequiredForHeating(double powerReq) {
+//		if (heating == null)
+//			heating = furnace.getHeating();
+//		heating.setPowerRequired(powerReq);
+//	}
 
-	/**
-	 * Gets the heat the building requires for power-down mode.
-	 *
-	 * @return heat in kJ/s.
-	 */
-	public double getPoweredDownHeatRequired() {
-		double result = 0;
-		if (furnace != null && heating != null)
-			result = heating.getPoweredDownHeatRequired();
-		return result;
-	}
+//	/**
+//	 * Gets the heat the building requires for power-down mode.
+//	 *
+//	 * @return heat in kJ/s.
+//	 */
+//	public double getPoweredDownHeatRequired() {
+//		double result = 0;
+//		if (furnace != null && heating != null)
+//			result = heating.getPoweredDownHeatRequired();
+//		return result;
+//	}
 
 	/**
 	 * Gets the building's power mode.

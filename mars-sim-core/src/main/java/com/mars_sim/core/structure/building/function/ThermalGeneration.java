@@ -169,26 +169,15 @@ public class ThermalGeneration extends Function {
 	private double calculateGeneratedHeat(double time) {
 
 		double heatGen = 0D;
-		
-		double powerRequired = 0;
-		Building build = getBuilding();
+//		double powerRequired = 0;	
 		double percentageHeat = building.getHeatMode().getPercentage();
+		
 		for (HeatSource heatSource : heatSources) {
 			heatSource.setPercentagePower(percentageHeat);
 	    	heatSource.setTime(time);
-
-	    	double heatCreated = heatSource.getCurrentHeat(build);
-
-	    	if (heatSource.getType() == HeatSourceType.ELECTRIC_HEATING) {
-	    		// Electric heating needs electric
-	    		powerRequired += heatCreated;
-	    	}
-	
-			heatGen += heatCreated;
+			heatGen += heatSource.getCurrentHeat(building);
 		}
 			
-		building.setPowerRequiredForHeating(powerRequired);
-
 		return heatGen;
 	}
 
@@ -279,6 +268,7 @@ public class ThermalGeneration extends Function {
 
 	/**
 	 * Gets the heat sources for the building.
+	 * 
 	 * @return list of heat sources.
 	 */
 	public List<HeatSource> getHeatSources() {
@@ -302,6 +292,11 @@ public class ThermalGeneration extends Function {
 		return getElectricPowerRequired();
 	}
 
+	/**
+	 * Gets the power required for generating electric heat.
+	 * 
+	 * @return
+	 */
 	public double getElectricPowerRequired() {
 		HeatMode heatMode = building.getHeatMode();
 		
@@ -312,12 +307,16 @@ public class ThermalGeneration extends Function {
 		double result = 0;
 
 		for (HeatSource source : heatSources) {
-			if (source instanceof ElectricHeatSource) {
-				// if it needs to be ON, use getMaxHeat() since it's the max power needed before counting in the heater efficiency 
-				result = result + ((ElectricHeatSource)source).getCurrentHeat(building);
-			}
+
+	    	if (source.getType() == HeatSourceType.ELECTRIC_HEATING) {
+	    		// Electric heating consumes electricity
+	    		result += source.getCurrentHeat(building);
+	    	}
 		}
 		
+		// Note: Need to set this
+//		building.setPowerRequiredForHeating(powerRequired);
+
 		return result;
 	}
 
@@ -325,7 +324,7 @@ public class ThermalGeneration extends Function {
 	@Override
 	public void destroy() {
 		super.destroy();
-
+		heating.destroy();
 		heating = null;
 		heatSources = null;
 	}

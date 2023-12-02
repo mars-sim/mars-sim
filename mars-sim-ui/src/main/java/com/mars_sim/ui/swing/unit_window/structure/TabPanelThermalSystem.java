@@ -182,17 +182,18 @@ extends TabPanel {
 		heatTable.setRowSelectionAllowed(true);
 		TableColumnModel heatColumns = heatTable.getColumnModel();
 		heatColumns.getColumn(0).setPreferredWidth(10);
-		heatColumns.getColumn(1).setPreferredWidth(150);
+		heatColumns.getColumn(1).setPreferredWidth(130);
 		heatColumns.getColumn(2).setPreferredWidth(30);
-		heatColumns.getColumn(3).setPreferredWidth(40);
-		heatColumns.getColumn(4).setPreferredWidth(40);
+		heatColumns.getColumn(3).setPreferredWidth(55);
+		heatColumns.getColumn(4).setPreferredWidth(55);
+		heatColumns.getColumn(5).setPreferredWidth(40);
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
-//		heatColumns.getColumn(1).setCellRenderer(renderer);
 		heatColumns.getColumn(2).setCellRenderer(renderer);
 		heatColumns.getColumn(3).setCellRenderer(renderer);
 		heatColumns.getColumn(4).setCellRenderer(renderer);
+		heatColumns.getColumn(5).setCellRenderer(renderer);
 		
 		// Resizable automatically when its Panel resizes
 		heatTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
@@ -336,16 +337,14 @@ extends TabPanel {
 		}
 
 		public int getColumnCount() {
-			return 5;
+			return 6;
 		}
 		
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = Icon.class;
 			else if (columnIndex == 1) dataType = Building.class;
-			else if (columnIndex == 2) dataType = Double.class;
-			else if (columnIndex == 3) dataType = Double.class;
-			else if (columnIndex == 4) dataType = Double.class;
+			else if (columnIndex > 1) dataType = Double.class;
 			return dataType;
 		}
 
@@ -354,7 +353,8 @@ extends TabPanel {
 			else if (columnIndex == 1) return Msg.getString("TabPanelThermalSystem.column.building"); //$NON-NLS-1$
 			else if (columnIndex == 2) return Msg.getString("TabPanelThermalSystem.column.temperature"); //$NON-NLS-1$
 			else if (columnIndex == 3) return Msg.getString("TabPanelThermalSystem.column.generated"); //$NON-NLS-1$
-			else if (columnIndex == 4) return Msg.getString("TabPanelThermalSystem.column.capacity"); //$NON-NLS-1$
+			else if (columnIndex == 4) return Msg.getString("TabPanelThermalSystem.column.powerReq"); //$NON-NLS-1$
+			else if (columnIndex == 5) return Msg.getString("TabPanelThermalSystem.column.capacity"); //$NON-NLS-1$
 			else return null;
 		}
 
@@ -396,22 +396,26 @@ extends TabPanel {
 				else if (column == 3) {
 					if (heatMode == HeatMode.HEAT_OFF) {
 						return 0.0;
+					}			
+					ThermalGeneration heater = building.getThermalGeneration();
+					if (heater != null) {
+						return Math.round(heater.getGeneratedHeat()*100.0)/100.0;
 					}
-					if (heatMode != HeatMode.FULL_HEAT 
-							|| heatMode == HeatMode.THREE_QUARTER_HEAT
-							|| heatMode == HeatMode.HALF_HEAT
-							|| heatMode == HeatMode.QUARTER_HEAT
-							|| heatMode == HeatMode.ONE_EIGHTH_HEAT
-							) {
-							ThermalGeneration heater = building.getThermalGeneration();
-							if (heater != null) {
-								return  Math.round(heater.getGeneratedHeat()*100.0)/100.0;
-							}
-							else
-								return 0;
-					}
+					else
+						return 0;
 				}
 				else if (column == 4) {
+					if (heatMode == HeatMode.HEAT_OFF) {
+						return 0.0;
+					}			
+					ThermalGeneration heater = building.getThermalGeneration();
+					if (heater != null) {
+						return Math.round(heater.getFullPowerRequired()*100.0)/100.0;
+					}
+					else
+						return 0;
+				}
+				else if (column == 5) {
 					double generatedCapacity = 0.0;
 					try {
 						generatedCapacity = building.getThermalGeneration().getHeatGenerationCapacity();

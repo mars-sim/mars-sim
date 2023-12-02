@@ -248,7 +248,7 @@ public class SettlementTransparentPanel extends JComponent {
 	    weatherPane.add(opticalIcon);
 
 	    JPanel sunlightPanel = new JPanel(new BorderLayout(5, 5));
-	    sunlightPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+	    sunlightPanel.setBorder(new EmptyBorder(3, 3, 3, 3));
 	    sunlightPanel.setBackground(new Color(0,0,0,128));
 	    sunlightPanel.setOpaque(false);
 	    sunlightPanel.add(sunPane, BorderLayout.NORTH);
@@ -332,7 +332,7 @@ public class SettlementTransparentPanel extends JComponent {
 
 	    roundPane.setBackground(new Color(0,0,0,128));
 	    roundPane.setOpaque(false);
-	    roundPane.setPreferredSize(new Dimension(260, 185));
+	    roundPane.setPreferredSize(new Dimension(290, 185));
 	    sunPane.add(roundPane, BorderLayout.EAST);
   		
 	    double projectSunTime[] = {0, 0, 0};
