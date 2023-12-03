@@ -348,22 +348,20 @@ extends Airlock {
      * Vacate the person from a particular zone
      *
      * @param zone the zone of interest
-     * @param id the person's id
+     * @param p the person
 	 * @return true if the person has been successfully vacated
      */
 	@Override
-	public boolean vacate(int zone, Integer id) {
+	public boolean vacate(int zone, Person p) {
+		int id = p.getIdentifier();
 	 	if (zone == 0) {
     		LocalPosition oldPos = getOldPos(airlockInteriorPosMap, id);
     		if (oldPos == null)
     			return false;
-//    		for (int i=0; i<2; i++) {
-//    			LocalPosition pp = outsideInteriorList.get(i);
     			if (airlockInteriorPosMap.get(oldPos).equals(id)) {
     				airlockInteriorPosMap.put(oldPos, -1);
     				return true;
     			}
-//    		}
     	}
 
 	   	else if (zone == 1 || zone == 3) {
@@ -378,20 +376,17 @@ extends Airlock {
 				airlockInsidePosMap.put(oldPos, -1);
 				return true;
 			}
-//    		return true;
     	}
 
     	else if (zone == 4) {
     		LocalPosition oldPos = getOldPos(airlockExteriorPosMap, id);
     		if (oldPos == null)
     			return false;
-//    		for (int i=0; i<2; i++) {
-//    			LocalPosition pp = outsideExteriorList.get(i);
-    			if (airlockExteriorPosMap.get(oldPos).equals(id)) {
-    				airlockExteriorPosMap.put(oldPos, -1);
-    				return true;
-    			}
-//    		}
+
+			if (airlockExteriorPosMap.get(oldPos).equals(id)) {
+				airlockExteriorPosMap.put(oldPos, -1);
+				return true;
+			}
     	}
     	return false;
     }
@@ -447,10 +442,11 @@ extends Airlock {
      * 
      * @param zone
      * @param p
-     * @param id
+     * @param person
      */
     @Override
-    public boolean occupy(int zone, LocalPosition p, Integer id) {
+    public boolean occupy(int zone, LocalPosition p, Person per) {
+		int id = per.getIdentifier();
     	if (zone == 0) {
     		// Do not allow the same person who has already occupied a position to take another position
     		if (airlockInteriorPosMap.values().contains(id))

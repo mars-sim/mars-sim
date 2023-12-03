@@ -76,8 +76,9 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.Function;
+import com.mars_sim.core.structure.building.function.ActivitySpot;
 import com.mars_sim.core.structure.building.function.FunctionType;
+import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.vehicle.Crewable;
@@ -176,8 +177,8 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 
 	/** Settlement position (meters) from settlement center. */
 	private LocalPosition position;
-	/** The Function the person is actively participating. */
-	private Function function;
+	/** The spot owned by this Person */
+	private AllocatedSpot spot;
 	/** The gender of the person (male or female). */
 	private GenderType gender = GenderType.MALE;
 
@@ -2444,22 +2445,21 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		return inviteeId;
 	}
 	
-	/**
-	 * Gets the function the person is actively participating.
-	 * 
-	 * @return
-	 */
-	public Function getFunction() {
-		return function;
+	public ActivitySpot getActivitySpot() {
+		return (spot != null ? spot.getAllocated() : null);
 	}
 	
 	/**
-	 * Sets the function.
+	 * Sets the activity spot allocated.
 	 * 
-	 * @param function
+	 * @param newSpot Can be null if no spot assigned
 	 */
-	public void setFunction(Function function) {
-		this.function = function;
+	@Override
+	public void setActivitySpot(AllocatedSpot newSpot) {
+		if (spot != null) {
+			spot.release(this);
+		}
+		spot = newSpot;
 	}
 	
 	/**

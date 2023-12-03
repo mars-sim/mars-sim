@@ -67,7 +67,6 @@ public class ExitAirlock extends Task {
 	private static final String SUPER_UNFIT = "Super unfit";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
 	private static final String CHAMBER_FULL = "All chambers are occupied.";
-	private static final String NOT_IN_RIGHT_AIRLOCK_MODE = "Airlock is not in egress mode.";
 	
     /** The minimum performance needed. */
 	private static final double MIN_PERFORMANCE = 0.05;
@@ -216,9 +215,9 @@ public class ExitAirlock extends Task {
 		// the previous zone #  a lower numeric #
 		int previousZone = newZone - 1;
 		LocalPosition newPos = fetchNewPos(newZone);
-		if (newPos != null && airlock.occupy(newZone, newPos, id)) {
+		if (newPos != null && airlock.occupy(newZone, newPos, person)) {
 			if (previousZone >= 0) {
-				if (airlock.vacate(previousZone, id)) {
+				if (airlock.vacate(previousZone, person)) {
 					return moveThere(newPos, newZone);
 				}
 				else
@@ -1279,7 +1278,7 @@ public class ExitAirlock extends Task {
 			
 			if (inSettlement) {
 				// Remove the position at zone 4 before ending the task
-				if (airlock.vacate(4, id)) {
+				if (airlock.vacate(4, person)) {
 					// Add experience
 			 		addExperience(time);
 		
@@ -1469,10 +1468,10 @@ public class ExitAirlock extends Task {
 			}
 			
 			if (inSettlement) {
-				((BuildingAirlock)airlock).removeFromActivitySpot(id);
+				((BuildingAirlock)airlock).removeFromActivitySpot(person);
 			}
 			
-			airlock.removeID(id);
+			airlock.remove(person);
 			
 			if (airlock.isEmpty())
 				airlock.setAirlockMode(AirlockMode.NOT_IN_USE);

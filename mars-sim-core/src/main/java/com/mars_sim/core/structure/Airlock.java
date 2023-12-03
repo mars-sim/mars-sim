@@ -425,17 +425,15 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Removes the id of a person.
+	 * Removes the person.
 	 *
-	 * @param id the person's id
+	 * @param p Person   removed
 	 */
-	public void removeID(Integer id) {
-//		if (getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
-			for (int i=0; i<5; i++) {
-				// Remove this person from all zone maps
-				vacate(i, id);
-			}
-//		}
+	public void remove(Person p) {
+		int id = p.getIdentifier();
+		for (int i=0; i<5; i++) {
+			vacate(i, p);
+		}
 
 		if (operatorID.equals(id)) {;
 			operatorID = Integer.valueOf(-1);
@@ -1005,9 +1003,9 @@ public abstract class Airlock implements Serializable {
 	 */
 	public abstract LocalPosition getAvailableAirlockPosition();
 
-    public abstract boolean occupy(int zone, LocalPosition p, Integer id);
+    public abstract boolean occupy(int zone, LocalPosition pos, Person p);
 
-	public abstract boolean vacate(int zone, Integer id);
+	public abstract boolean vacate(int zone, Person p);
 
 	public abstract boolean isInZone(Person p, int zone);
 	/**

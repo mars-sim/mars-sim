@@ -96,9 +96,6 @@ public class Walk extends Task {
 	public Walk(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER, null, 100D);
 
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
-
 		LocalBoundedObject targetObject = null;
 		if (person.isInSettlement()) {
 			// Walk to random inhabitable building at settlement.
@@ -221,6 +218,9 @@ public class Walk extends Task {
 		addPhase(CLIMB_DOWN_LADDER);
 
 		setPhase(getWalkingStepPhase());
+
+		// Release any starting actvity spot
+		worker.setActivitySpot(null);
 	}
 
 	public Walk(Robot robot, WalkingSteps walkingSteps) {
@@ -235,6 +235,9 @@ public class Walk extends Task {
 		addPhase(WALKING_SETTLEMENT_INTERIOR);
 
 		setPhase(getWalkingStepPhase());
+
+		// Release any starting actvity spot
+		worker.setActivitySpot(null);
 	}
 
 	/**

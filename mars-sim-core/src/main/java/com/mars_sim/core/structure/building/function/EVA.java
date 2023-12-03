@@ -31,7 +31,7 @@ public class EVA extends Function {
 	
 	private int airlockCapacity;
 	
-	private Airlock airlock;
+	private BuildingAirlock airlock;
 
 	/**
 	 * Constructor.
@@ -49,10 +49,8 @@ public class EVA extends Function {
 		LocalPosition airlockInteriorLoc = spec.getPositionProperty(INTERIOR_POSITION);
 		LocalPosition airlockExteriorLoc = spec.getPositionProperty(EXTERIOR_POSITION);
 
-		airlock = new BuildingAirlock(building, airlockCapacity, airlockLoc, 
+		airlock = new BuildingAirlock(building, this, airlockCapacity, airlockLoc, 
 											airlockInteriorLoc, airlockExteriorLoc);
-		
-		((BuildingAirlock)airlock).setEVA(this);
 	}
 
 	/**
@@ -90,10 +88,6 @@ public class EVA extends Function {
 		return airlockCapacity * airlockCapacityValue;
 	}
 
-	public int getAirlockCapacity() {
-		return airlockCapacity;
-	}
-	
 	/**
 	 * Gets the building's airlock.
 	 * 

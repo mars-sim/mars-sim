@@ -1681,13 +1681,7 @@ public class BuildingManager implements Serializable {
 				person.setPosition(settlementLoc);
 				
 				// Add the person to this activity spot
-				f.addActivitySpot(loc, person.getIdentifier());
-				// Remove the person from the previous activity spot
-				if (person.getFunction() != null) {
-					person.getFunction().removeFromActivitySpot(person.getIdentifier());
-				}
-				// Set the new function type
-				person.setFunction(f);
+				f.claimActivitySpot(loc, person);
 				
 				result = true;
 			}
@@ -1752,13 +1746,7 @@ public class BuildingManager implements Serializable {
 				robot.setPosition(settlementLoc);
 
 				// Add the robot to this activity spot
-				f.addActivitySpot(loc, robot.getIdentifier());
-				// Remove the robot from the previous activity spot
-				if (robot.getFunction() != null) {
-					robot.getFunction().removeFromActivitySpot(robot.getIdentifier());
-				}
-				// Set the new function type
-				robot.setFunction(f);
+				f.claimActivitySpot(loc, robot);
 
 				result = true;
 			}	

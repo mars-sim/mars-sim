@@ -293,10 +293,10 @@ public class LivingAccommodations extends Function {
 		// Note: guest beds are reserved for temporary use and 
 		// are not assigned here for use here
 		
-		Set<LocalPosition> locs = getActivitySpots();
-		for (LocalPosition loc : locs) {
+		Set<ActivitySpot> spots = getActivitySpots();
+		for (var sp : spots) {
 			// Convert the activity spot (the bed location) to the settlement reference coordinate
-			bedLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
+			bedLoc = LocalAreaUtil.getLocalRelativePosition(sp.getPos(), building);
 	
 			if (!assignedBeds.containsValue(bedLoc)) {
 				if (!guest) {

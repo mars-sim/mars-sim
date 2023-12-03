@@ -56,7 +56,6 @@ public class EnterAirlock extends Task {
 	private static final TaskPhase LEAVE_AIRLOCK = new TaskPhase(Msg.getString("Task.phase.leaveAirlock")); //$NON-NLS-1$
 
 	private static final String CHAMBER_FULL = "All chambers are occupied in ";
-	private static final String NOT_IN_RIGHT_AIRLOCK_MODE = "Airlock is not in ingress mode.";
 	
 	// Static members
 	/** The standard time for doffing the EVA suit. */
@@ -181,9 +180,9 @@ public class EnterAirlock extends Task {
 		// The previous zone # has a higher numeric #
 		int previousZone = newZone + 1;
 		LocalPosition newPos = fetchNewPos(newZone);
-		if (newPos != null && airlock.occupy(newZone, newPos, id)) {
+		if (newPos != null && airlock.occupy(newZone, newPos, person)) {
 			if (previousZone <= 4) {
-				if (airlock.vacate(previousZone, id)) {
+				if (airlock.vacate(previousZone, person)) {
 					return moveThere(newPos, newZone);
 				}
 				else
@@ -942,7 +941,7 @@ public class EnterAirlock extends Task {
 			accumulatedTime -= STANDARD_TIME * time;
 			
 			// Remove the position at zone 0 before ending the task
-			airlock.vacate(0, id);
+			airlock.vacate(0, person);
 			
 			// Add experience
 			addExperience(time);
@@ -1003,10 +1002,10 @@ public class EnterAirlock extends Task {
 			}
 			
 			if (inSettlement) {
-				((BuildingAirlock)airlock).removeFromActivitySpot(id);
+				((BuildingAirlock)airlock).removeFromActivitySpot(person);
 			}
 			
-			airlock.removeID(id);
+			airlock.remove(person);
 			
 			if (airlock.isEmpty())
 				airlock.setAirlockMode(AirlockMode.NOT_IN_USE);

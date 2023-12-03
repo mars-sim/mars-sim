@@ -7,8 +7,6 @@
 
 package com.mars_sim.core.person.ai.task.util;
 
-import java.io.Serializable;
-
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitIdentifer;
 import com.mars_sim.core.UnitListener;
@@ -20,12 +18,13 @@ import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.Function;
+import com.mars_sim.core.structure.building.function.ActivitySpot;
+import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.mapdata.location.LocalPosition;
 
-public interface Worker extends Loggable, Serializable, UnitIdentifer, EquipmentOwner {
+public interface Worker extends Loggable, UnitIdentifer, EquipmentOwner {
 
 	/**
 	 * Returns a reference to the Worker natural attribute manager
@@ -204,16 +203,11 @@ public interface Worker extends Loggable, Serializable, UnitIdentifer, Equipment
 	public UnitType getUnitType();
 	
 	/**
-	 * Gets the function type the person is actively participating.
-	 * 
-	 * @return
+	 * An activity spot has been assigned to a Worker.
+	 * This should release any activity spot already assigned
+	 * @param spot Owned spot
+	 * @see ActivitySpot#claim(Worker)
+	 * @see ActivitySpot#release(Worker)
 	 */
-	public Function getFunction();
-	
-	/**
-	 * Sets the function type.
-	 * 
-	 * @param functionType
-	 */
-	public void setFunction(Function function);
+    public void setActivitySpot(AllocatedSpot spot);
 }
