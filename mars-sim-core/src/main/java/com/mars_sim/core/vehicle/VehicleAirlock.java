@@ -358,10 +358,10 @@ extends Airlock {
     		LocalPosition oldPos = getOldPos(airlockInteriorPosMap, id);
     		if (oldPos == null)
     			return false;
-    			if (airlockInteriorPosMap.get(oldPos).equals(id)) {
-    				airlockInteriorPosMap.put(oldPos, -1);
-    				return true;
-    			}
+			if (airlockInteriorPosMap.get(oldPos).equals(id)) {
+				airlockInteriorPosMap.put(oldPos, -1);
+				return true;
+			}
     	}
 
 	   	else if (zone == 1 || zone == 3) {

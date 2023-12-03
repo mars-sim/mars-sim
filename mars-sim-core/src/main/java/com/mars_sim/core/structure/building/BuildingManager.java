@@ -8,6 +8,7 @@ package com.mars_sim.core.structure.building;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1656,7 +1657,6 @@ public class BuildingManager implements Serializable {
 					loc = f.getAvailableActivitySpot();	
 			}
 			else {
-				functionType = FunctionType.LIFE_SUPPORT;
 				// Find an empty spot in life support
 				loc = lifeSupport.getAvailableActivitySpot();
 			}
@@ -1712,20 +1712,24 @@ public class BuildingManager implements Serializable {
 			LocalPosition loc = null;
 			
 			if (functionType != null)  {
-				f = building.getFunction(functionType);
-				if (f != null)
-					loc = f.getAvailableActivitySpot();	
+				var specificF = building.getFunction(functionType);
+				if (specificF != null) {
+					f = specificF;
+					loc = f.getAvailableActivitySpot();
+				}
 			}
-			else {
-				functionType = FunctionType.ROBOTIC_STATION;
+			if (loc == null){
 				// Find an empty spot in life support
 				loc = roboticStation.getAvailableActivitySpot();
-			}
 			
-			if (loc == null) {
-				f = building.getEmptyActivitySpotFunction();
-				if (f != null)
+				if (loc == null) {
+					f = building.getEmptyActivitySpotFunction();
+					if (f == null) {
+						logger.warning(robot, "No empty activity spot function in " + building.getName() + ".");
+						return false;
+					}
 					loc = f.getAvailableActivitySpot();	
+				}
 			}
 			
 			// Add the robot to the station
@@ -1734,11 +1738,7 @@ public class BuildingManager implements Serializable {
 				
 				robot.setCurrentBuilding(building);
 			}
-				
-			if (loc == null) {
-				loc = building.getRandomEmptyActivitySpot();
-			}
-			
+
 			if (loc != null) {
 				// Convert the local activity spot to the settlement reference coordinate
 				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
@@ -2020,9 +2020,7 @@ public class BuildingManager implements Serializable {
 	 * @return building value (VP).
 	 */
 	public double getBuildingValue(Building building) {
-		double result = 0D;
-
-		result = getBuildingValue(building.getBuildingType(), false);
+		double result = getBuildingValue(building.getBuildingType(), false);
 
 		// Modify building value by its wear condition.
 		double wearCondition = building.getMalfunctionManager().getWearCondition();
@@ -2754,26 +2752,7 @@ public class BuildingManager implements Serializable {
 	 * @return map of parts and their number.
 	 */
 	public Map<Integer, Integer> getMaintenanceParts(Malfunctionable requestEntity) {
-		if (partsMaint.isEmpty())
-			return new HashMap<>();
-//		logger.info(settlement, 10_000L, "1. partsMaint size: " + partsMaint.size());
-		Iterator<Malfunctionable> i = partsMaint.keySet().iterator();
-		while (i.hasNext()) {
-			Malfunctionable entity = i.next();
-//			Map<Integer, Integer> partMap = partsMaint.get(entity);
-//			
-//			for (Entry<Integer, Integer> entry: partMap.entrySet()) {
-//				Integer part = entry.getKey();
-//				int number = entry.getValue();
-			
-//				logger.info(entity, 10_000L, "2. " + MalfunctionManager.getPartsString(partsMaint.get(entity)));
-				if (requestEntity.equals(entity)) {
-//					logger.info(entity, 10_000L, "3. " + MalfunctionManager.getPartsString(partsMaint.get(entity)));
-					return partsMaint.get(entity);
-				}
-//			}
-		}
-		return new HashMap<>();
+		return partsMaint.getOrDefault(requestEntity, Collections.emptyMap());
 	}
 	
 	/**
