@@ -822,7 +822,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		// Throw unit event
 		fireUnitUpdate(UnitEventType.REVIVED_EVENT);
 		// Generate medical event
-		MedicalEvent event = new MedicalEvent(this, problem, EventType.MEDICAL_RESUSCITATE);
+		MedicalEvent event = new MedicalEvent(this, problem, EventType.MEDICAL_RESUSCITATED);
 		// Register event
 		Simulation.instance().getEventManager().registerNewEvent(event);
 	}

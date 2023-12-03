@@ -24,7 +24,7 @@ public enum EventType {
 	MEDICAL_TREATED			(Msg.getString("EventType.illness.treated")), //$NON-NLS-1$
 	MEDICAL_DEATH			(Msg.getString("EventType.illness.dead")), //$NON-NLS-1$
 	MEDICAL_RESCUE			(Msg.getString("EventType.medical.rescue")), //$NON-NLS-1$
-	MEDICAL_RESUSCITATE		(Msg.getString("EventType.medical.resuscitated")), //$NON-NLS-1$
+	MEDICAL_RESUSCITATED	(Msg.getString("EventType.medical.resuscitated")), //$NON-NLS-1$
 	
 	MISSION_START					(Msg.getString("EventType.mission.started")), //$NON-NLS-1$
 	MISSION_JOINING					(Msg.getString("EventType.mission.joined")), //$NON-NLS-1$

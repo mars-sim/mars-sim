@@ -59,7 +59,11 @@ public class LivingAccommodations extends Function {
 	// urination/defecation per person per millisol (avg over Sol).
 	/** percent portion of grey water generated from waste water.*/
 	private double greyWaterFraction;
-
+	/** The estimated water usage. */
+	private double estimatedWaterUsed;
+	/** The estimated waste water produced. */
+	private double estimatedWasteWaterProduced;
+	
 	/** The bed registry in this facility, using settlement-wide position. */
 	private Map<Integer, LocalPosition> assignedBeds = new ConcurrentHashMap<>();
 
@@ -375,37 +379,18 @@ public class LivingAccommodations extends Function {
 	 * @param time amount of time passing (millisols)
 	 */
 	private void generateWaste(double time) {
-		double random = 1 + RandomUtil.getRandomDouble(0.5);
-		int numBed = getNumAssignedBeds();
-		// int pop = settlement.getNumCurrentPopulation();
-		// Total average wash water used at the settlement over this time period.
-		// This includes showering, washing hands, washing dishes, etc.
-		Settlement settlement = building.getSettlement();
-
-		double ration = 1;
-		// If settlement is rationing water, reduce water usage according to its level
-		int level = settlement.getWaterRationLevel();
-		if (level != 0)
-			ration = 1.0 / level;
-		// Account for people who are out there in an excursion and NOT in the
-		// settlement
-		double absenteeFactor = (double)settlement.getIndoorPeopleCount() / settlement.getPopulationCapacity();
-
-		double usage =  washWaterUsage * time / 1_000 * numBed * absenteeFactor;
-		double waterUsed = usage * RandomUtil.getRandomDouble(TOILET_CHANCE) * random * ration;
-		double wasteWaterProduced = waterUsed * WASH_AND_WASTE_WATER_RATIO;
 
 		// Remove wash water from settlement.
-		if (waterUsed> MIN) {
-			retrieve(waterUsed, WATER_ID, true);
+		if (estimatedWaterUsed > MIN) {
+			retrieve(estimatedWaterUsed, WATER_ID, true);
 			// Track daily average
-			addDailyWaterUsage(waterUsed);
+			addDailyWaterUsage(estimatedWaterUsed);
 		}
 
 		// Grey water is produced by wash water.
-		double greyWaterProduced = wasteWaterProduced * greyWaterFraction;
+		double greyWaterProduced = estimatedWasteWaterProduced * greyWaterFraction;
 		// Black water is only produced by waste water.
-		double blackWaterProduced = wasteWaterProduced * (1 - greyWaterFraction);
+		double blackWaterProduced = estimatedWasteWaterProduced * (1 - greyWaterFraction);
 
 		if (greyWaterProduced > MIN) {
 			store(greyWaterProduced, GREY_WATER_ID, wasteName);
@@ -419,14 +404,47 @@ public class LivingAccommodations extends Function {
 		// Use toilet paper and generate toxic waste (used toilet paper).
 		double toiletPaperUsagePerMillisol = TOILET_WASTE_PERSON_SOL / 1000;
 
-		double toiletPaperUsageBuilding = toiletPaperUsagePerMillisol * time * numBed * random;		
-		// buildingProportionCap;
+		double toiletPaperUsageBuilding = toiletPaperUsagePerMillisol * time 
+				*  getNumAssignedBeds() * (1 + RandomUtil.getRandomDouble(0.5));	
+
 		if (toiletPaperUsageBuilding > MIN) {
 			retrieve(toiletPaperUsageBuilding, TOILET_TISSUE_ID, true);
 			store(toiletPaperUsageBuilding, TOXIC_WASTE_ID, wasteName);
 		}
 	}
 
+	/**
+	 * Calculates the water usage level.
+	 * 
+	 * @param time
+	 * @return
+	 */
+	public double[] calculateWaterLevel(double time) {
+		Settlement settlement = building.getSettlement();
+		double randomness = 1 + RandomUtil.getRandomDouble(0.5);
+		int numBed = getNumAssignedBeds();
+		double portion = 1;
+		
+		// If settlement is rationing water, reduce water usage according to its level
+		int level = settlement.getWaterRationLevel();
+		if (level != 0)
+			portion = 1.0 / level;
+		
+		// Account for people who are out there in an excursion and NOT in the
+		// settlement
+		double absenteeFactor = (double)settlement.getIndoorPeopleCount() 
+				/ settlement.getPopulationCapacity();
+
+		double usage =  washWaterUsage * time / 1_000 * numBed * absenteeFactor;
+		
+		estimatedWaterUsed = usage * RandomUtil.getRandomDouble(TOILET_CHANCE) 
+				* randomness * portion;
+		
+		estimatedWasteWaterProduced = estimatedWaterUsed * WASH_AND_WASTE_WATER_RATIO;
+		
+		return new double[] {estimatedWaterUsed, estimatedWasteWaterProduced};
+	}
+	
 	/**
 	 * Releases any bed assigned to a Person.
 	 * 

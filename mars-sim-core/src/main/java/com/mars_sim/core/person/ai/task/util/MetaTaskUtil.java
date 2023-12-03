@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.person.ai.task.meta.AnalyzeMapDataMeta;
 import com.mars_sim.core.person.ai.task.meta.AssistScientificStudyResearcherMeta;
+import com.mars_sim.core.person.ai.task.meta.BudgetResourcesMeta;
 import com.mars_sim.core.person.ai.task.meta.CompileScientificStudyResultsMeta;
 import com.mars_sim.core.person.ai.task.meta.ConnectOnlineMeta;
 import com.mars_sim.core.person.ai.task.meta.ConsolidateContainersMeta;
@@ -121,6 +122,7 @@ public class MetaTaskUtil {
 		List<MetaTask> allMetaTasks = new ArrayList<>();
 		allMetaTasks.add(new AnalyzeMapDataMeta());
 		allMetaTasks.add(new AssistScientificStudyResearcherMeta());
+		allMetaTasks.add(new BudgetResourcesMeta());
 		allMetaTasks.add(new ChargeMeta());
 		allMetaTasks.add(new CompileScientificStudyResultsMeta());
 		allMetaTasks.add(new ConnectOnlineMeta());

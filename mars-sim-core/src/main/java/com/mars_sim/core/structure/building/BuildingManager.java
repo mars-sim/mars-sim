@@ -736,6 +736,33 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
+	 * Gets a quarter randomly.
+	 * 
+	 * @param person
+	 * @return
+	 */
+	public static Building getRandomQuarter(Person person) {
+		Building b = null;
+
+		// If this person is located in the settlement
+		Settlement settlement = person.getAssociatedSettlement();	
+		if (settlement != null) {
+			
+			Set<Building> set = settlement.getBuildingManager()
+					.getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
+
+	    	if (set.isEmpty())
+				return null;
+			
+			Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
+						set);
+			b = RandomUtil.getWeightedRandomObject(probs);
+		}
+		
+		return b;
+	}
+	
+	/**
 	 * Gets an available dining building that the person can use. Returns null if no
 	 * dining building is currently available.
 	 *

@@ -1453,7 +1453,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Revive this person who is dead and bring him back to life.
+	 * Revives this person who is dead and bring him back to life.
 	 */
 	public void reviveToLife() {
 		alive = true;

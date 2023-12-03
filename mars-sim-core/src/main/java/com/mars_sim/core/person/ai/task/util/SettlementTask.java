@@ -28,7 +28,7 @@ public abstract class SettlementTask extends AbstractTaskJob {
      * Creates an abstract Settlement task for the backlog that relates to an Entity within a Settlement
      * that can be executed by any Citizen.
      * 
-     * @param parent The metatask that defines the eventual Task.
+     * @param parent The meta task that defines the eventual Task.
      * @param name Name to the potential task
      * @param focus Entity the focus of the work; maybe null
      * @param score The Rating score for this work
