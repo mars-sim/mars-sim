@@ -132,7 +132,7 @@ public class Settlement extends Structure implements Temporal,
 	public static final int MAX_SOLS_DAILY_OUTPUT = 14;
 	public static final int SUPPLY_DEMAND_REFRESH = 7;
 	private static final int RESOURCE_UPDATE_FREQ = 30;
-//	private static final int CHECK_WATER_RATION = 66;
+	private static final int CHECK_WATER_RATION = 60;
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
 	public static final int NUM_CRITICAL_RESOURCES = 10;
 	private static final int RESOURCE_STAT_SOLS = 12;
@@ -218,7 +218,7 @@ public class Settlement extends Structure implements Temporal,
 	/** The flag signifying this settlement as the destination of the user-defined commander. */
 	private boolean hasDesignatedCommander = false;
 	/** The flag to see if a water ration review is due. */
-	private boolean reviewWaterRation = false;
+	private boolean flag4FutureReviewWaterRatio = false;
 	
 	/** The water ratio of the settlement. The higher the more urgent for water resource. */
 	private int waterRatioCache = 1;
@@ -1019,8 +1019,8 @@ public class Settlement extends Structure implements Temporal,
 		// there's a chance a new site is automatically discovered
 		if (pulse.isNewSol()) {
 			
-			// Reset the flag to allow for future review
-			setReviewWaterRation(false);
+			// Reset the flag to allow for possible future review
+			setReviewWaterRatio(true);
 			
 			// Perform the end of day tasks
 			performEndOfDayTasks(pulse.getMarsTime());	
@@ -1182,11 +1182,11 @@ public class Settlement extends Structure implements Temporal,
 				sampleAllResources(pulse.getMarsTime());
 			}
 
-//			remainder = msol % CHECK_WATER_RATION;
-//			if (remainder == 1) {
-//				// Recompute the water ration level
-//				computeWaterRationLevel(); ?
-//			}
+			remainder = msol % CHECK_WATER_RATION;
+			if (remainder == 1) {
+				// Reset the review to true
+				setReviewWaterRatio(true);
+			}
 
 			// Check every RADIATION_CHECK_FREQ (in millisols)
 			// Compute whether a baseline, GCR, or SEP event has occurred
@@ -2580,21 +2580,21 @@ public class Settlement extends Structure implements Temporal,
 	}
 	
 	/**
-	 * Sets the value of water ration review.
+	 * Sets the flag for reviewing water ratio.
 	 * 
 	 * @param value
 	 */
-	public void setReviewWaterRation(boolean value) {
-		reviewWaterRation = value;
+	public void setReviewWaterRatio(boolean value) {
+		flag4FutureReviewWaterRatio = value;
 	}
 	
 	/**
-	 * Returns if the water ration is under review.
+	 * Returns if the water ratio can be reviewed.
 	 * 
 	 * @return
 	 */
-	public boolean isUnderReviewWaterRation() {
-		return reviewWaterRation;
+	public boolean canReviewWaterRatio() {
+		return flag4FutureReviewWaterRatio;
 	}
 	
 	
@@ -2610,11 +2610,11 @@ public class Settlement extends Structure implements Temporal,
 		double requiredWater = waterConsumptionRate * getNumCitizens() * 90;
 
 		int newRatio = Math.max(1, (int)((requiredWater + reserveWater) / storedWater));
-		
-		logger.info(this, 20_000L, "Calculated Water Ratio: " + newRatio);
-		
+//		logger.info(this, 20_000L, "Calculated Water Ratio: " + newRatio);		
 		if (newRatio < 1)
 			newRatio = 1;
+		else if (newRatio > 1)
+			logger.info(this, 20_000L, "Calculated Water Ratio: " + newRatio);
 		else if (newRatio > 1000)
 			newRatio = 1000;
 

@@ -66,8 +66,8 @@ public class BudgetResources extends Task {
 				
 		if (person.isInSettlement()) {
 
-			// Inform other that this settlement's water ratio is under review
-			person.getAssociatedSettlement().setReviewWaterRation(true);	
+			// Inform other that this settlement's water ratio is locked
+			person.getAssociatedSettlement().setReviewWaterRatio(false);	
 			
 			// If person is in a settlement, try to find an office building.
 			Building officeBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
@@ -145,8 +145,8 @@ public class BudgetResources extends Task {
 				setPhase(APPROVING);
 			}
 			else {
-				// Inform other that this settlement's water ratio is no longer under review
-				person.getAssociatedSettlement().setReviewWaterRation(false);	
+				// Inform other that this settlement's water ratio is ready and open for future review
+				person.getAssociatedSettlement().setReviewWaterRatio(true);	
 				
 				endTask();
 			}
@@ -179,7 +179,7 @@ public class BudgetResources extends Task {
 		addExperience(time);
 
 		// Inform other that this settlement's water ratio is no longer under review
-		person.getAssociatedSettlement().setReviewWaterRation(false);	
+		person.getAssociatedSettlement().setReviewWaterRatio(true);	
 		
 		// Approval phase is a one shot activity so end task
 		endTask();

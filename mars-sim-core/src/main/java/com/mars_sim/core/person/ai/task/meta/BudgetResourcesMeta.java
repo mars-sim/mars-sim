@@ -40,7 +40,6 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 			super(owner, "Budget Resources", null, score);
         }
 
-
         @Override
         public Task createTask(Person person) {
             return new BudgetResources(person);
@@ -106,16 +105,18 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask> tasks = new ArrayList<>();
 
-		boolean isUnderReview = settlement.isUnderReviewWaterRation();
-		if (isUnderReview)
+		boolean canReview = settlement.canReviewWaterRatio();
+		if (!canReview)
 			return tasks;
 			
-		boolean isReviewDue = settlement.isWaterRatioChanged();
-		if (!isReviewDue)
+		boolean changed = settlement.isWaterRatioChanged();
+		if (!changed) {
+			// Set the flag to false for future review
+			settlement.setReviewWaterRatio(false);
 			return tasks;
+		}
 		
 		int levelDiff = settlement.getWaterRatioDiff();
-		logger.info("levelDiff: " + levelDiff);
 		if (levelDiff > 0) {
 			RatingScore score = new RatingScore(BASE_SCORE);               	
 	
