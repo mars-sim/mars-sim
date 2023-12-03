@@ -131,7 +131,11 @@ public class DelegateWork extends Task {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double compilingPhase(double time) {
-		// Do nothing
+
+		if (getTimeCompleted() > .5 * getDuration()) {
+			setPhase(SELECTING);
+		}
+		
 		return 0D;
 	}
 
@@ -142,7 +146,11 @@ public class DelegateWork extends Task {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double selectingPhase(double time) {
-		// Do nothing
+		
+		if (getTimeCompleted() > .75 * getDuration()) {
+			setPhase(ASSIGNING);
+		}
+		
 		return 0D;
 	}
 	
@@ -153,7 +161,11 @@ public class DelegateWork extends Task {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double assigningPhase(double time) {
-		// Do nothing
+		
+		if (getTimeCompleted() > getDuration()) {
+			endTask();
+		}
+
 		return 0D;
 	}
 	
