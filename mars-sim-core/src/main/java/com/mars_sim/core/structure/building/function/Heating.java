@@ -589,7 +589,7 @@ public class Heating implements Serializable {
 		
 		double airHeatCap = heatCapAirMoisture * airMass;
 
-		double airkW = airHeatCap / 1000 * inTKelvin * millisols * timeSlice;
+		double airkW = airHeatCap * inTKelvin * millisols / timeSlice;
 
 		double dTCelcius = 0;
 		
@@ -615,7 +615,7 @@ public class Heating implements Serializable {
 	
 			double convFactor2 = timeSlice / waterHeatCap; 
 			
-			double waterkW = waterHeatCap / 1000 * inTKelvin * millisols * timeSlice / floorArea;
+			double waterkW = waterHeatCap * inTKelvin * millisols / timeSlice / floorArea;
 			// Assuming the floor area affects the energy that the water can hold 
 
 			double deltaWaterHeat = computeHeatSink(deltaAirHeat, waterkW, 1, millisols);
@@ -629,11 +629,11 @@ public class Heating implements Serializable {
 			// d_t = deltaHeat  * millisols * timeSlice * / C_s / mass 
 			dTCelcius = deltaWaterHeat * millisols * convFactor2 ; 
 			
-			if (isGreenhouse) logger.info(building, 
-					"convFactor2: " + Math.round(convFactor2*100.0)/100.0
-					+ "   deltaAirHeat: " + Math.round(deltaAirHeat*100.0)/100.0
-					+ "   deltaWaterHeat: " + Math.round(deltaWaterHeat*100.0)/100.0
-					+ "   dTCelcius: " + Math.round(dTCelcius*100.0)/100.0);
+//			if (isGreenhouse) logger.info(building, 
+//					"convFactor2: " + Math.round(convFactor2*100.0)/100.0
+//					+ "   deltaAirHeat: " + Math.round(deltaAirHeat*100.0)/100.0
+//					+ "   deltaWaterHeat: " + Math.round(deltaWaterHeat*100.0)/100.0
+//					+ "   dTCelcius: " + Math.round(dTCelcius*100.0)/100.0);
 		}
 		else {
 			double convFactor = timeSlice / airHeatCap; 
@@ -647,10 +647,10 @@ public class Heating implements Serializable {
 			// d_t = deltaHeat  * millisols * timeSlice * / C_s / mass 
 			dTCelcius = deltaAirHeat * millisols * convFactor ; 
 			
-			if (isGreenhouse) logger.info(building, 
-					"convFactor: " + Math.round(convFactor*100.0)/100.0
-					+ "   deltaAirHeat: " + Math.round(deltaAirHeat*100.0)/100.0
-					+ "   dTCelcius: " + Math.round(dTCelcius*100.0)/100.0);
+//			if (isGreenhouse) logger.info(building, 
+//					"convFactor: " + Math.round(convFactor*100.0)/100.0
+//					+ "   deltaAirHeat: " + Math.round(deltaAirHeat*100.0)/100.0
+//					+ "   dTCelcius: " + Math.round(dTCelcius*100.0)/100.0);
 		}
 		
 		return dTCelcius;
