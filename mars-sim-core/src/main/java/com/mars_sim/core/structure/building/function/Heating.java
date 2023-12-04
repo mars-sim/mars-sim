@@ -537,6 +537,9 @@ public class Heating implements Serializable {
 			solarHeatLoss = 0;
 		}		
 		
+		/**
+		 * Do NOT delete. For Debugging
+		 */
 //		if (isGreenhouse) logger.info(building, 
 //					"inTKelvin: " + inTKelvin
 //					+ "   outTKelvin: " + outTKelvin
@@ -589,7 +592,7 @@ public class Heating implements Serializable {
 		
 		double airHeatCap = heatCapAirMoisture * airMass;
 
-		double airkW = airHeatCap * inTKelvin * millisols / timeSlice;
+		double airkW = airHeatCap * millisols * timeSlice;
 
 		double dTCelcius = 0;
 		
@@ -615,7 +618,7 @@ public class Heating implements Serializable {
 	
 			double convFactor2 = timeSlice / waterHeatCap; 
 			
-			double waterkW = waterHeatCap * inTKelvin * millisols / timeSlice / floorArea;
+			double waterkW = waterHeatCap * millisols * timeSlice ;
 			// Assuming the floor area affects the energy that the water can hold 
 
 			double deltaWaterHeat = computeHeatSink(deltaAirHeat, waterkW, 1, millisols);
@@ -629,11 +632,19 @@ public class Heating implements Serializable {
 			// d_t = deltaHeat  * millisols * timeSlice * / C_s / mass 
 			dTCelcius = deltaWaterHeat * millisols * convFactor2 ; 
 			
+			/**
+			 * Do NOT delete. For Debugging
+			 */
 //			if (isGreenhouse) logger.info(building, 
 //					"convFactor2: " + Math.round(convFactor2*100.0)/100.0
-//					+ "   deltaAirHeat: " + Math.round(deltaAirHeat*100.0)/100.0
-//					+ "   deltaWaterHeat: " + Math.round(deltaWaterHeat*100.0)/100.0
-//					+ "   dTCelcius: " + Math.round(dTCelcius*100.0)/100.0);
+//					+ "  airMass: " + Math.round(airMass*100.0)/100.0
+//					+ "  waterMass: " + Math.round(waterMass*100.0)/100.0				
+//					+ "  diffHeatGainLoss: " + Math.round(diffHeatGainLoss*1000.0)/1000.0
+//					+ "  airkW: " + Math.round(airkW*1000.0)/1000.0
+//					+ "  waterkW: " + Math.round(waterkW*1000.0)/1000.0
+//					+ "  deltaAirHeat: " + Math.round(deltaAirHeat*100.0)/100.0
+//					+ "  deltaWaterHeat: " + Math.round(deltaWaterHeat*100.0)/100.0
+//					+ "  dTCelcius: " + Math.round(dTCelcius*100.0)/100.0);
 		}
 		else {
 			double convFactor = timeSlice / airHeatCap; 
@@ -647,10 +658,16 @@ public class Heating implements Serializable {
 			// d_t = deltaHeat  * millisols * timeSlice * / C_s / mass 
 			dTCelcius = deltaAirHeat * millisols * convFactor ; 
 			
+			/**
+			 * Do NOT delete. For Debugging
+			 */
 //			if (isGreenhouse) logger.info(building, 
 //					"convFactor: " + Math.round(convFactor*100.0)/100.0
-//					+ "   deltaAirHeat: " + Math.round(deltaAirHeat*100.0)/100.0
-//					+ "   dTCelcius: " + Math.round(dTCelcius*100.0)/100.0);
+//					+ "  airMass: " + Math.round(airMass*100.0)/100.0
+//					+ "  diffHeatGainLoss: " + Math.round(diffHeatGainLoss*1000.0)/1000.0
+//					+ "  airkW: " + Math.round(airkW*1000.0)/1000.0
+//					+ "  deltaAirHeat: " + Math.round(deltaAirHeat*100.0)/100.0
+//					+ "  dTCelcius: " + Math.round(dTCelcius*100.0)/100.0);
 		}
 		
 		return dTCelcius;
@@ -675,23 +692,35 @@ public class Heating implements Serializable {
 		// limit = 70.33 kW
 		// conversionFactor = 0.64
 		
-		double timeFactor = Math.min(millisols * 10, 3);
-		double efficiency = (limit - excessHeat)/limit;
-		double fraction = Math.min(timeFactor * efficiency, 1);
-		double transfer = 0;
+		double timeFactor = Math.max(millisols, 1);
 		
+		// How efficient is the heat transfer
+		// If it's air heat sink, assume 100%
+		double efficiency = 1;
+		if (index == 1) {
+			// If it's water heat sink, it's 30%
+			efficiency = .3;
+		}
+			
+		// The fraction of the speed of a perfect conductor for the heat transfer
+		double fraction = Math.min(1, timeFactor * efficiency);
+		// Calculate the amount of heat that can be absorbed or released
+		double transfer = excessHeat * fraction;
+				
+		/**
+		 * Do NOT delete. For debugging.
+		 */
 //		if (isGreenhouse)
 //			logger.info(building, 
 //					"efficiency: " + Math.round(efficiency*100.0)/100.0
-//					+ "   timeFactor: " + Math.round(timeFactor*100.0)/100.0 + ""
-//					+ "   millisols: " + Math.round(millisols*100.0)/100.0 + ""
-//					+ "   fraction: " + Math.round(fraction*100.0)/100.0 + ""
-//					+ "   limit: " + Math.round(limit*100.0)/100.0 + ""
-//					+ "   heatNeedAbsorbed: " + Math.round(heatNeedAbsorbed*100.0)/100.0 + " kW"
+//					+ "  timeFactor: " + Math.round(timeFactor*100.0)/100.0 + ""
+//					+ "  millisols: " + Math.round(millisols*100.0)/100.0 + ""
+//					+ "  fraction: " + Math.round(fraction*100.0)/100.0 + ""
+////					+ "  limit: " + Math.round(limit*100.0)/100.0 + ""
+//					+ "  heatNeedAbsorbed: " + Math.round(heatNeedToAbsorb*100.0)/100.0 + " kW"
 //					);
 		
-		// Calculate the amount of heat that can be absorbed or released
-		transfer = excessHeat * fraction;
+		
 		
 		if (excessHeat > 0) {
 			// Need to suck up some heat
@@ -730,10 +759,13 @@ public class Heating implements Serializable {
 			}
 		}
 		
+		/**
+		 * Do NOT delete. For debugging.
+		 */
 //		if (isGreenhouse) logger.info(building, 
 //				"index: " + index
 //				+ "  heatSink[]: " + Math.round(heatSink[index]*100.0)/100.0 + " kW"
-//				+ "  heatNeedToAbsorb: " + Math.round(heatNeedToAbsorb*100.0)/100.0 + " kW"
+////				+ "  heatNeedToAbsorb: " + Math.round(heatNeedToAbsorb*100.0)/100.0 + " kW"
 //				+ "  limit: " + Math.round(limit*100D)/100D + " kW"
 //				+ "  transfer: " + Math.round(transfer*100.0)/100.0 + " kW"
 //				+ "  excessHeat: " + Math.round(excessHeat*100.0)/100.0 + " kW"
@@ -747,14 +779,15 @@ public class Heating implements Serializable {
 	 * Computes heat gain from adjacent room(s) due to air ventilation. 
 	 * This helps the temperature equilibrium.
 	 * 
-	 * @param t temperature
+	 * @param t inTCelsius
+	 * @param time
 	 * @return temperature
 	 */
 	private double heatGainVentilation(double t, double time) {
 		double totalGain = 0; //heat_dump_1 = 0 , heat_dump_2 = 0;
 		boolean tooLow = t < (tPreset - 2 * T_LOWER_SENSITIVITY);
 		boolean tooHigh = t > (tPreset + 2 * T_UPPER_SENSITIVITY);
-		double speedFactor = .01 * time * CFM;
+		double speedFactor = .005 * time * CFM;
 		
 		if (tooLow || tooHigh) { // this temperature range is arbitrary
 			// Note : time = .121 at x128
@@ -845,7 +878,6 @@ public class Heating implements Serializable {
 				adjacentBuildings.get(i).extractHeat(gain);
 				
 				totalGain += gain;
-
 			}
 		}
 		
@@ -887,7 +919,7 @@ public class Heating implements Serializable {
 		// Detect temperatures
 		double oldT = currentTemperature;
 
-//		double outT = building.getSettlement().getOutsideTemperature();
+		double outT = building.getSettlement().getOutsideTemperature();
 			
 		// STEP 1 : CALCULATE HEAT GAIN/LOSS AND RELATE IT TO THE TEMPERATURE CHANGE
 		double dt = determineDeltaTemperature(oldT, deltaTime);
@@ -911,14 +943,23 @@ public class Heating implements Serializable {
 		
 		// STEP 3 : Limit the current temperature
 		double newT = oldT + dt;
-		// Safeguard against anomalous dt that would have crashed mars-sim
-		if (newT > tPreset + 10.0 * T_UPPER_SENSITIVITY)
-			// newT cannot be higher than 45 deg celsius
-			newT = tPreset + 10.0 * T_UPPER_SENSITIVITY;
 		
-		else if (newT < tPreset - 20.0 * T_LOWER_SENSITIVITY)
+		// Safeguard against anomalous dt that would have crashed mars-sim
+	
+		if (newT > oldT + 5.0 * T_UPPER_SENSITIVITY)
+			// newT cannot be higher than 45 deg celsius
+			newT = oldT + 5.0 * T_UPPER_SENSITIVITY;
+
+		else if (newT < oldT - 5.0 * T_LOWER_SENSITIVITY)
 			// newT cannot be lower than the outside temperature
-			newT = tPreset - 20.0 * T_LOWER_SENSITIVITY;
+			newT = oldT - 5.0 * T_LOWER_SENSITIVITY;
+		
+		if (newT > 40)
+			// newT cannot be higher than 40 deg celsius
+			newT = 40;
+		else if (newT < outT)
+			// newT cannot be lower than the outside temperature
+			newT = outT;
 		
 		// STEP 4 : Stabilize the temperature by delaying the change
 		double t = 0;
@@ -962,31 +1003,31 @@ public class Heating implements Serializable {
 	
 		double tNow = currentTemperature;
 
-		double deltaT =  (tNow - outTCelsius) / 15;
+		double deltaT =  (tNow - outTCelsius) / 35;
 			
 	    // If T_NOW deg above INITIAL_TEMP, turn off furnace
-		if (tNow > tPreset + deltaT + 9 * T_UPPER_SENSITIVITY) {
+		if (tNow > tPreset + deltaT/4.5 + 5.5 * T_UPPER_SENSITIVITY) {
 			building.setHeatMode(HeatMode.HEAT_OFF);
 		}
-		else if (tNow >= tPreset + deltaT + 7 * T_UPPER_SENSITIVITY) {
+		else if (tNow >= tPreset + deltaT/4 + 4 * T_UPPER_SENSITIVITY) {
 			building.setHeatMode(HeatMode.ONE_EIGHTH_HEAT);
 		}
-		else if (tNow >= tPreset + deltaT + 5 * T_LOWER_SENSITIVITY) {
+		else if (tNow >= tPreset + deltaT/3.5 + 2.5 * T_LOWER_SENSITIVITY) {
 			building.setHeatMode(HeatMode.QUARTER_HEAT);
 		}
-		else if (tNow >= tPreset + deltaT + 3 * T_UPPER_SENSITIVITY) {
+		else if (tNow >= tPreset + deltaT/3 + 1 * T_UPPER_SENSITIVITY) {
 			building.setHeatMode(HeatMode.THREE_EIGHTH_HEAT);
 		}
-		else if (tNow >= tPreset + deltaT + 1 * T_UPPER_SENSITIVITY) {
+		else if (tNow >= tPreset + deltaT/2.5 - 1 * T_LOWER_SENSITIVITY) {
 			building.setHeatMode(HeatMode.HALF_HEAT);
 		}
-		else if (tNow >= tPreset + deltaT - 1 * T_LOWER_SENSITIVITY) {
+		else if (tNow >= tPreset + deltaT/2 - 3 * T_LOWER_SENSITIVITY) {
 			building.setHeatMode(HeatMode.FIVE_EIGHTH_HEAT);
 		}
-		else if (tNow >= tPreset + deltaT - 3 * T_LOWER_SENSITIVITY) {
+		else if (tNow >= tPreset + deltaT/1.5 - 5 * T_LOWER_SENSITIVITY) {
 			building.setHeatMode(HeatMode.THREE_QUARTER_HEAT);
 		}
-		else if (tNow >= tPreset + deltaT - 5 * T_UPPER_SENSITIVITY) {
+		else if (tNow >= tPreset + deltaT/1.25 - 7 * T_UPPER_SENSITIVITY) {
 			building.setHeatMode(HeatMode.SEVEN_EIGHTH_HEAT);
 		}
 		else {
@@ -1102,6 +1143,8 @@ public class Heating implements Serializable {
 		building = null;
 		location = null;
 		adjacentBuildings = null;
+		temperatureCache = null;
+		heatSink = null;
 	}
 
 }

@@ -2906,7 +2906,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<!-- A hallway's length is variable and determined in templates or during construction. -->
 	<building type="Hallway" width="2.0" length="-1.0" construction="SEMI_SOLID" base-level="0"
-			wear-lifetime="3340000" maintenance-time="20" room-temperature="22.5" base-mass="200">
+			wear-lifetime="3340000" maintenance-time="20" room-temperature="20.5" base-mass="200">
 		<description> The Hallway is a pressurized access tube connecting
 			two inhabitable buildings. It allows only one person to access it
 			at a time.
@@ -2927,9 +2927,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="2.0" />
-				<heat-source type="Electric Heating" capacity="3.0" />
+				<heat-source type="Electric Heating" capacity="2.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.959" capacity="20.0"/>
+					fuel-type="methane"	consumption-rate="31.959" capacity="5.0"/>
 			</thermal-generation>
 		</functions>
 	</building>
@@ -3443,7 +3443,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<!-- A tunnel's length is variable and determined in templates or during construction. -->
 	<building type="Tunnel" width="3.0" length="-1.0" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="20" room-temperature="22.5" base-mass="200">
+			wear-lifetime="3340000" maintenance-time="20" room-temperature="20.5" base-mass="200">
 		<description> The Tunnel is an underground pressurized access tube connecting
 			two inhabitable buildings. It allows only one person to access it
 			at a time.
@@ -3459,9 +3459,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="2.0" />
-				<heat-source type="Electric Heating" capacity="3.0" />
+				<heat-source type="Electric Heating" capacity="2.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.959" capacity="20.0"/>
+					fuel-type="methane"	consumption-rate="31.959" capacity="5.0"/>
 			</thermal-generation>
 		</functions>
 	</building>
