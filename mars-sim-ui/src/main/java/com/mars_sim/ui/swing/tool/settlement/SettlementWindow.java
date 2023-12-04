@@ -11,6 +11,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Point;
 import java.util.Properties;
 
@@ -47,21 +48,21 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	private static final int HORIZONTAL = 800;
 	private static final int VERTICAL = 800;
 	private static final int HEIGHT_STATUS_BAR = 16;
-	private static final int LABEL_WIDTH = 220;
+//	private static final int LABEL_WIDTH = 190;
 	
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 	public static final String ICON = "settlement_map";
 
-	private static final String POPULATION = "  Population : ";
-	private static final String WHITESPACES_2 = "  ";
-	private static final String CLOSE_PARENT = ")  ";
-	private static final String WITHIN_BLDG = "  Building : (";
-	private static final String SETTLEMENT_MAP = "  Map : (";
-	private static final String PIXEL_MAP = "  Window : (";
+	private static final String POPULATION = " Pop: ";
+	private static final String WHITESPACES_2 = " ";
+	private static final String CLOSE_PARENT = ") ";
+	private static final String WITHIN_BLDG = " Building: (";
+	private static final String SETTLEMENT_MAP = " Map: (";
+	private static final String PIXEL_MAP = " Window: (";
 
 	private JLabel buildingXYLabel;
 	private JLabel mapXYLabel;
-	private JLabel pixelXYLabel;
+	private JLabel windowXYLabel;
 	private JLabel popLabel;
 	private JPanel subPanel;
 
@@ -70,8 +71,8 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	/** Map panel. */
 	private SettlementMapPanel mapPanel;
 
-	private Font font0 = new Font("Times New Roman", Font.PLAIN, 12);
-	private Font font1 = new Font("Times New Roman", Font.BOLD, 13);
+	private Font font0 = new Font(Font.MONOSPACED, Font.PLAIN, 11);
+//	private Font font1 = new Font(Font.DIALOG, Font.PLAIN, 12);
 	
 	/**
 	 * Constructor.
@@ -95,34 +96,45 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
         popLabel = new JLabel();
-        popLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
-        popLabel.setFont(font1);
-        popLabel.setForeground(Color.DARK_GRAY);
-        popLabel.setPreferredSize(new Dimension(160, HEIGHT_STATUS_BAR));
-        
+//        popLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
+        popLabel.setFont(font0);
+//        popLabel.setForeground(Color.DARK_GRAY);
+//        popLabel.setPreferredSize(new Dimension(160, HEIGHT_STATUS_BAR));
+//	    JPanel popP = new JPanel();
+//	    popP.add(popLabel);
+	    
+        JPanel gridPanel = new JPanel(new GridLayout(1, 4));
+          
 	    buildingXYLabel = new JLabel();
-	    buildingXYLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
+//	    buildingXYLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
 	    buildingXYLabel.setFont(font0);
-	    buildingXYLabel.setForeground(Color.GREEN.darker().darker().darker());
-	    buildingXYLabel.setPreferredSize(new Dimension(LABEL_WIDTH, HEIGHT_STATUS_BAR));
-      	    
-	    pixelXYLabel = new JLabel();
-	    pixelXYLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
-	    pixelXYLabel.setFont(font0);
-	    pixelXYLabel.setForeground(Color.GRAY);
-	    pixelXYLabel.setPreferredSize(new Dimension(LABEL_WIDTH, HEIGHT_STATUS_BAR));
+//	    buildingXYLabel.setForeground(Color.GREEN.darker());
+//	    buildingXYLabel.setPreferredSize(new Dimension(LABEL_WIDTH + 40, HEIGHT_STATUS_BAR));
+//	    JPanel buildingP = new JPanel();
+//	    buildingP.add(buildingXYLabel);
+	    		
+	    windowXYLabel = new JLabel();
+//	    windowXYLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
+	    windowXYLabel.setFont(font0);
+//	    windowXYLabel.setForeground(Color.GRAY);
+//	    windowXYLabel.setPreferredSize(new Dimension(LABEL_WIDTH, HEIGHT_STATUS_BAR));
+//	    JPanel windowP = new JPanel();
+//	    windowP.add(windowXYLabel);
 	    
 	    mapXYLabel = new JLabel();
-	    mapXYLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
+//	    mapXYLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
 	    mapXYLabel.setFont(font0);
-	    mapXYLabel.setForeground(Color.ORANGE.darker().darker());
-	    mapXYLabel.setPreferredSize(new Dimension(145, HEIGHT_STATUS_BAR));
+//	    mapXYLabel.setForeground(Color.ORANGE.darker().darker());
+//	    mapXYLabel.setPreferredSize(new Dimension(145, HEIGHT_STATUS_BAR));
+//	    JPanel mapP = new JPanel();
+//	    mapP.add(mapXYLabel);
 	    
-        statusBar.addLeftComponent(popLabel, false);
-        statusBar.addCenterComponent(buildingXYLabel, false);
-        statusBar.addRightComponent(pixelXYLabel, false);
-        statusBar.addRightComponent(mapXYLabel, false);
-        
+	    gridPanel.add(popLabel);
+	    gridPanel.add(windowXYLabel);
+	    gridPanel.add(mapXYLabel);
+	    gridPanel.add(buildingXYLabel);
+	    statusBar.addFullBarComponent(gridPanel, false);
+	    
         // Create subPanel for housing the settlement map
 		subPanel = new JPanel(new BorderLayout());
 		mainPanel.add(subPanel, BorderLayout.CENTER);
@@ -157,7 +169,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	}
 
 	/**
-	 * Sets the label of the coordinates within a building
+	 * Sets the label of the coordinates within a building.
 	 *
 	 * @param x
 	 * @param y
@@ -175,24 +187,24 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	}
 
 	/**
-	 * Sets the x/y pixel label of the settlement window
+	 * Sets the x/y pixel label of the settlement window.
 	 *
 	 * @param point
 	 * @param blank
 	 */
 	void setPixelXYCoord(double x, double y, boolean blank) {
 		if (blank) {
-			pixelXYLabel.setText("");
+			windowXYLabel.setText("");
 		}
 		else {
 			StringBuilder sb = new StringBuilder();
 			sb.append(PIXEL_MAP).append(format1(x, y)).append(CLOSE_PARENT);
-			pixelXYLabel.setText(sb.toString());
+			windowXYLabel.setText(sb.toString());
 		}
 	}
 
 	/**
-	 * Sets the label of the settlement map coordinates
+	 * Sets the label of the settlement map coordinates.
 	 *
 	 * @param point
 	 * @param blank
@@ -209,7 +221,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	}
 
 	/**
-	 * Sets the population label
+	 * Sets the population label.
 	 *
 	 * @param pop
 	 */
@@ -218,12 +230,14 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	}
 
 	/**
-	 * Update this tool based on a change of time
+	 * Updates this tool based on a change of time.
+	 * 
 	 * @param pulse Clock pulse
 	 */
 	@Override
 	public void update(ClockPulse pulse) {
 		mapPanel.update(pulse);
+		setPop(mapPanel.getSettlement().getNumCitizens());
 	}
 
 	/**
@@ -330,7 +344,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	@Override
 	public void destroy() {
 		buildingXYLabel = null;
-		pixelXYLabel = null;
+		windowXYLabel = null;
 		mapXYLabel = null;
 		popLabel = null;
 		subPanel = null;
@@ -342,6 +356,6 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		desktop = null;
 
 		font0 = null;
-		font1 = null;
+//		font1 = null;
 	}
 }

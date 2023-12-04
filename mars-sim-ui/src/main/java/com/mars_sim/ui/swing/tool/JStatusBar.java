@@ -22,14 +22,14 @@ import javax.swing.JPanel;
 @SuppressWarnings("serial")
 public class JStatusBar extends TexturedPanel {
 		   
-        private static final Color almond = new Color(239,222,205,128);
+    private static final Color almond = new Color(239,222,205,128);
 
-        private static final int MARGIN = 1;
+    private static final int MARGIN = 1;
 
-        private int barHeight = 30;
-        private int leftPadding;
-        private int rightPadding;
-	
+    private int barHeight = 30;
+    private int leftPadding;
+    private int rightPadding;
+
     protected JPanel leftPanel;
     protected JPanel rightPanel;
     protected JPanel centerPanel;
@@ -55,20 +55,27 @@ public class JStatusBar extends TexturedPanel {
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(getWidth(), barHeight + (2 * (MARGIN + 2))));
     
-        leftPanel = new JPanel(new FlowLayout(
-                FlowLayout.CENTER, 3, 1));
+        leftPanel = new JPanel(new BorderLayout());
         leftPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         add(leftPanel, BorderLayout.WEST);
         
-        centerPanel = new JPanel(new FlowLayout(
-                FlowLayout.CENTER, 3, 1));
+        centerPanel = new JPanel(new BorderLayout());
         centerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         add(centerPanel, BorderLayout.CENTER);
         
-        rightPanel = new JPanel(new FlowLayout(
-                FlowLayout.CENTER, 3, 1));
+        rightPanel = new JPanel(new BorderLayout());
         rightPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         add(rightPanel, BorderLayout.EAST);
+    }
+    
+    public void addFullBarComponent(JPanel panel, boolean separator) {
+    	JPanel fpanel = new JPanel(new BorderLayout());
+        if (separator) {
+            addBorder(panel);
+            fpanel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
+        }
+        fpanel.add(panel, BorderLayout.CENTER);
+        centerPanel.add(fpanel);
     }
     
     public void addLeftComponent(JComponent component, boolean separator) {

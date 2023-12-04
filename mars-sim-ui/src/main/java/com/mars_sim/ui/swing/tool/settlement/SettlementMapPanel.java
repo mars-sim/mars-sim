@@ -125,7 +125,7 @@ public class SettlementMapPanel extends JPanel {
 			String userChoice = ((userSettings != null) && userSettings.containsKey(SETTLEMENT_PROP) ?
 											userSettings.getProperty(SETTLEMENT_PROP) : null);
 			if (userChoice != null) {
-				for(Settlement s : settlements) {
+				for (Settlement s : settlements) {
 					if (s.getName().equals(userChoice)) {
 						settlement = s;
 					}
@@ -220,7 +220,8 @@ public class SettlementMapPanel extends JPanel {
 			public void mouseMoved(MouseEvent evt) {
 				int x = evt.getX();
 				int y = evt.getY();
-
+				
+				settlementWindow.setPop(getSettlement().getNumCitizens());
 				// Call to determine if it should display or remove the building coordinate within a building
 				showBuildingCoord(x, y);
 				// Display the pixel coordinate of the window panel
@@ -247,6 +248,8 @@ public class SettlementMapPanel extends JPanel {
 				if (!exit)  {
 					int x = evt.getX();
 					int y = evt.getY();
+					
+					settlementWindow.setPop(getSettlement().getNumCitizens());
 					// Remove the pixel coordinate of the window panel
 					// Note: the top left most corner is (0,0)
 					settlementWindow.setPixelXYCoord(x, y, true);
@@ -357,7 +360,7 @@ public class SettlementMapPanel extends JPanel {
 					xx = length / 2D;
 				}
 				// Loading Dock Garage
-				if (facing == 180) {
+				else if (facing == 180) {
 					xx = width / 2D;
 					yy = length / 2D;
 				} else if (facing == 270) {
