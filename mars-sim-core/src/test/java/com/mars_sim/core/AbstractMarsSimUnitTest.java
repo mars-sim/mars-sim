@@ -19,12 +19,12 @@ import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.FunctionSpec;
 import com.mars_sim.core.structure.building.MockBuilding;
 import com.mars_sim.core.structure.building.function.EVA;
 import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.LivingAccommodations;
+import com.mars_sim.core.structure.building.function.Recreation;
 import com.mars_sim.core.structure.building.function.VehicleGarage;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
@@ -43,8 +43,6 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	protected UnitManager unitManager;
 	protected MarsSurface surface;
 	protected Simulation sim;
-	private FunctionSpec evaSpec;
-	private FunctionSpec quartersSpec;
 	protected SimulationConfig simConfig;
 	private int pulseID = 1;
 
@@ -76,10 +74,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	    							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), sim.getSurfaceFeatures(),
 	    							 sim.getWeather(), unitManager);
 	    
-	    surface = unitManager.getMarsSurface();
-		evaSpec = simConfig.getBuildingConfiguration().getFunctionSpec("EVA Airlock", FunctionType.EVA);
-		quartersSpec = simConfig.getBuildingConfiguration().getFunctionSpec("Residential Quarters", FunctionType.LIVING_ACCOMMODATIONS);
-		
+	    surface = unitManager.getMarsSurface();		
 	}
 
 	
@@ -96,9 +91,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	protected VehicleGarage buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 	
 		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
-
-//	    building0.addFunction(new EVA(building0, evaSpec));
 	
+		// TODO this should be built off a FunctionSpec
 	    LocalPosition parkingLocation = LocalPosition.DEFAULT_POSITION;
 	    VehicleGarage garage = new VehicleGarage(building0,
 	            new LocalPosition[] { parkingLocation });
@@ -126,9 +120,19 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	    return building0;
 	}
 
+	protected Building buildRecreation(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
+
+		var spec = simConfig.getBuildingConfiguration().getFunctionSpec("Lander Hab", FunctionType.LIVING_ACCOMMODATIONS);
+
+	    building0.addFunction(new Recreation(building0, spec));
+	    return building0;
+	}
+
 	protected Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
 
+		var evaSpec = simConfig.getBuildingConfiguration().getFunctionSpec("EVA Airlock", FunctionType.EVA);
 	    building0.addFunction(new EVA(building0, evaSpec));
 	    return building0;
 	}
@@ -136,6 +140,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	protected Building buildAccommodation(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
 		// Need to rework to allow maven to test this
+		var quartersSpec = simConfig.getBuildingConfiguration().getFunctionSpec("Residential Quarters", FunctionType.LIVING_ACCOMMODATIONS);
+
 	    building0.addFunction(new LivingAccommodations(building0, quartersSpec));
 	    return building0;
 	}

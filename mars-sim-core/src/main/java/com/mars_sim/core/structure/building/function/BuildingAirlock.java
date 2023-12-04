@@ -80,7 +80,7 @@ public class BuildingAirlock extends Airlock {
      * @param interiorPos
      * @param exteriorPos
      */
-    public BuildingAirlock(Building building, int capacity, 
+    public BuildingAirlock(Building building, EVA eva, int capacity, 
     		LocalPosition position,
     		LocalPosition interiorPos, 
     		LocalPosition exteriorPos) {
@@ -88,6 +88,8 @@ public class BuildingAirlock extends Airlock {
         super(capacity);
 
         this.building = building;
+		this.eva = eva;
+
  
 		activated = false;
 		remainingCycleTime = CYCLE_TIME;
@@ -101,15 +103,8 @@ public class BuildingAirlock extends Airlock {
         airlockExteriorPos = LocalAreaUtil.getLocalRelativePosition(exteriorPos, building);
         insideExteriorDoorMap = buildDoorMap(exteriorPos, building, -0.5, -1.0, 0.5);
         outsideExteriorDoorMap = buildDoorMap(exteriorPos, building, 0.5, 1.0, 0.5);
-
-        // Determine airlock inside position.
-//        airlockInsidePos = LocalAreaUtil.getLocalRelativePosition(position, building);
     }
 
-    public void setEVA(EVA eva) {
-    	this.eva = eva;
-    }
-    
     /**
      * Builds a map for the door positions. Creates four positioned around the center offset by the x and y values.
      * 
@@ -148,7 +143,7 @@ public class BuildingAirlock extends Airlock {
      *
      * @param person
      */
-    public boolean stepInside(Person person) {
+    private boolean stepInside(Person person) {
     	boolean successful = false;
 
     	if (person.isInSettlement()) {
@@ -198,7 +193,7 @@ public class BuildingAirlock extends Airlock {
      *
      * @param person
      */
-    public boolean stepOnMars(Person person) {
+    private boolean stepOnMars(Person person) {
     	boolean successful = false;
     	logger.log(person, Level.FINER, 0,
     			"Just stepped onto the surface of Mars.");
@@ -306,10 +301,11 @@ public class BuildingAirlock extends Airlock {
      * 
      * @param zone
      * @param p
-     * @param id
+     * @param per
      */
     @Override
-    public boolean occupy(int zone, LocalPosition p, Integer id) {
+    public boolean occupy(int zone, LocalPosition p, Person per) {
+		int id = per.getIdentifier();
     	if (zone == 0) {
     		// Do not allow the same person who has already occupied a position to take another position
     		if (outsideInteriorDoorMap.values().contains(id))
@@ -337,7 +333,7 @@ public class BuildingAirlock extends Airlock {
     	}
     	
     	else if (zone == 2) {
-    		return eva.addActivitySpot(p, id);
+    		return eva.claimActivitySpot(p, per);
     	}
 
     	else if (zone == 3) {
@@ -387,7 +383,8 @@ public class BuildingAirlock extends Airlock {
 	 * @return true if the person has been successfully vacated
      */
 	@Override
-    public boolean vacate(int zone, Integer id) {
+    public boolean vacate(int zone, Person per) {
+		int id = per.getIdentifier();
     	if (zone == 0) {
     		return removeFromActivitySpot(outsideInteriorDoorMap, id);
     	}
@@ -397,7 +394,8 @@ public class BuildingAirlock extends Airlock {
     	}
 
     	else if (zone == 2) {    		
-    		return eva.removeFromActivitySpot(id);
+    		per.setActivitySpot(null);
+			return true;
     	}
 
     	else if (zone == 3) {
@@ -417,7 +415,7 @@ public class BuildingAirlock extends Airlock {
 	 * @param id
 	 * @return
 	 */
-	public boolean removeFromActivitySpot(Map<LocalPosition, Integer> map, int id) {
+	private boolean removeFromActivitySpot(Map<LocalPosition, Integer> map, int id) {
 		if (map.isEmpty())
 			return false;
 		
@@ -456,7 +454,7 @@ public class BuildingAirlock extends Airlock {
     	}
 
     	else if (zone == 2) {
-    		return eva.isAtActivitySpot(p);
+    		return p.getActivitySpot() != null;
     	}
 
     	else if (zone == 3) {
@@ -481,7 +479,7 @@ public class BuildingAirlock extends Airlock {
 	 *
 	 * @return a list of occupants inside zone 2
 	 */
-	public int getInsideChamberNum() {
+	private int getInsideChamberNum() {
 		return eva.getNumOccupiedActivitySpots();
 	}
 
@@ -491,6 +489,7 @@ public class BuildingAirlock extends Airlock {
 	 * 
 	 * @return number of occupants
 	 */
+	@Override
 	public int getNumOccupants() {
 		int result = 0;
 		for (Integer p : insideExteriorDoorMap.values()) {
@@ -519,9 +518,9 @@ public class BuildingAirlock extends Airlock {
 			if (!p.equals(-1))
 				list.add(p);
 		}
-		for (Integer p : eva.getOccupiedID()) {
-			if (!p.equals(-1))
-				list.add(p);
+		for (var as : eva.getActivitySpots()) {
+			if (!as.isEmpty())
+				list.add(as.getID());
 		}
 		for (Integer p : insideInteriorDoorMap.values()) {
 			if (!p.equals(-1))
@@ -556,10 +555,9 @@ public class BuildingAirlock extends Airlock {
     	}
 
     	else if (zone == 2) {
-    		for (int i: eva.getOccupiedID()) {
-    			if (i != -1) {
-    				list.add(i);
-    			}
+    		for (var i: eva.getActivitySpots()) {
+    			if (!i.isEmpty())
+    				list.add(i.getID());
     		}
     	}
 
@@ -588,6 +586,11 @@ public class BuildingAirlock extends Airlock {
 	 * @return
 	 */
 	public int getInZoneNum(int zone) {
+
+		if (zone == 2) {
+			return eva.getNumOccupiedActivitySpots();
+		}
+
 		Collection<Integer> occupants = null;
     	if (zone == 0) {
     		occupants = outsideInteriorDoorMap.values();
@@ -595,10 +598,6 @@ public class BuildingAirlock extends Airlock {
 
     	else if (zone == 1) {
 			occupants = insideInteriorDoorMap.values();
-    	}
-
-    	else if (zone == 2) {
-			occupants = eva.getOccupiedID();
     	}
 
     	else if (zone == 3) {
@@ -626,6 +625,7 @@ public class BuildingAirlock extends Airlock {
      * 
      * @return
      */
+	@Override
     public int getNumInChamber() {
     	return getInsideChamberNum();
     }
@@ -635,37 +635,11 @@ public class BuildingAirlock extends Airlock {
     	return eva.getAvailableActivitySpot();
     }
 
-    public boolean removeFromActivitySpot(int id) {
-    	return eva.removeFromActivitySpot(id);
+    public void removeFromActivitySpot(Person p) {
+    	p.setActivitySpot(null);
     }
     
-	public boolean removePosition(int zone, LocalPosition p, int id) {
-		if (zone == 0 && outsideInteriorDoorMap.containsKey(p)) {
-			outsideInteriorDoorMap.put(p, -1);
-			return true;
-		}
-
-		if (zone == 1 && insideInteriorDoorMap.containsKey(p)) {
-			insideInteriorDoorMap.put(p, -1);
-			return true;
-		}
-
-		if (zone == 2) {
-			return eva.removeFromActivitySpot(id);
-		}
-
-		if (zone == 3 && insideExteriorDoorMap.containsKey(p)) {
-			insideExteriorDoorMap.put(p, -1);
-			return true;
-		}
-
-		if (zone == 4 && outsideExteriorDoorMap.containsKey(p)) {
-			outsideExteriorDoorMap.put(p, -1);
-			return true;
-		}
-		return false;
-	}
-
+	
 	/**
 	 * Checks if all 4 chambers in zone 2 are full.
 	 *

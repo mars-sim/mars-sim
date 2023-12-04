@@ -222,10 +222,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		}
 		this.worker = worker;
 
-		if (worker instanceof Person person) {
-			this.person = person;
-			this.id = person.getIdentifier();
-			this.eventTarget = person;
+		if (worker instanceof Person p) {
+			this.person = p;
+			this.id = p.getIdentifier();
+			this.eventTarget = p;
 		}
 
 		else {
@@ -249,11 +249,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			subTask.setPhase(null);
 			subTask = null;
 		}
-		
-		// Set standard pulse time to a quarter of the value of the current pulse width
-		if (masterClock == null)
-			masterClock = Simulation.instance().getMasterClock();
-		standardPulseTime = Math.min(MAX_PULSE_WIDTH, masterClock.getNextPulseTime());
 	}
 
 	/**
@@ -461,15 +456,15 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * Sets the task's description.
 	 * 
 	 * @param des the task description.
-	 * @param record true if wanting to record
+	 * @param recordTask true if wanting to record
 	 */
-	protected void setDescription(String des, boolean record) {
+	protected void setDescription(String des, boolean recordTask) {
 		description = des;
 		eventTarget.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
 		
 		if (!des.equals("") && worker.getTaskManager().getTask() != null
 			// Record the activity
-			&& record && canRecord()) {
+			&& recordTask && canRecord()) {
 				Mission ms = worker.getMission();
 				worker.getTaskManager().recordTask(this, ms);
 		}
@@ -737,6 +732,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return integer comparison of the two objects.
 	 * @throws ClassCastException if the object in not of a Task.
 	 */
+	@Override
 	public int compareTo(Task other) {
 		return name.compareTo(other.name);
 	}
@@ -803,19 +799,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				modifier /= ((double) newOverCrowding + 2);
 			}
 		}
-
-		return modifier;
-	}
-
-	/**
-	 * Gets the crowding probability modifier.
-	 * 
-	 * @param robot
-	 * @param newBuilding
-	 * @return
-	 */
-	protected static double getCrowdingProbabilityModifier(Robot robot, Building newBuilding) {
-		double modifier = 1D;
 
 		return modifier;
 	}
@@ -901,7 +884,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			int learningModifier = worker.getNaturalAttributeManager()
 					.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
-			result += (double) (teachingModifier + learningModifier) / 100D;
+			result += (teachingModifier + learningModifier) / 100D;
 		}
 
 		return result;
@@ -956,7 +939,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			double newPoints = time / experienceRatio;
 			int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(experienceAttribute);
 
-			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+			newPoints += newPoints * (experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
 
 			SkillManager sm = worker.getSkillManager();
@@ -1114,17 +1097,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				if (canWalk) {
 					// Register this person to use this guest bed
 					quarters.registerGuestBed(person.getIdentifier());
-					// Set this quarters
-//					person.setQuarters(building);
 					
 					// Add the person to this activity spot
-					f.addActivitySpot(loc, person.getIdentifier());
-					// Remove the person from the previous activity spot
-					if (person.getFunction() != null) {
-						person.getFunction().removeFromActivitySpot(person.getIdentifier());
-					}
-					// Set the new function type
-					person.setFunction(f);
+					f.claimActivitySpot(loc, person);
 					
 					return true;
 				}
@@ -1151,22 +1126,23 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		}
 		
 		// Converts a settlement-wide bed location back to an activity spot within a building
-		LocalPosition loc = LocalAreaUtil.getObjectRelativePosition(bed, building);
+		LocalPosition relBedLoc = LocalAreaUtil.getObjectRelativePosition(bed, building);
 		// Check my own position
 		LocalPosition myLoc = person.getPosition();
-		
-		boolean empty = building.getLivingAccommodations().isActivitySpotEmpty(loc);
-		
-		if (!empty) {
-			 if (myLoc.equals(bed))
-				 logger.info(person, "I'm already in my own bed at " + bed + ".");		
-			 else
+		var livingAccom = building.getLivingAccommodations();
+		var bedSpot = livingAccom.findActivitySpot(relBedLoc);
+		if (bedSpot == null) {
+			logger.warning(person, "Can not find my bed " + relBedLoc + "in " + building.getName()
+					+ ", quarters is " + person.getQuarters().getName());		
+			return true;
+		}
+		else if (!bedSpot.isEmpty()) {
+			 if (!myLoc.equals(bed))
 				 logger.warning(person, "Someone is using my bed at " + bed + ".");		
 			 
 			 return true;
 		}
-		
-		if (!myLoc.equals(bed) && empty && bed != null) {		
+		else if (!myLoc.equals(bed)) {		
 			// Create subtask for walking to destination.
 			canWalk = createWalkingSubtask(building, bed, allowFail);
 			
@@ -1174,15 +1150,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				// Put the person there
 				person.setPosition(bed);
 				
-				Function f = building.getFunction(FunctionType.LIVING_ACCOMMODATIONS);
 				// Add the worker to this activity spot
-				f.addActivitySpot(loc, worker.getIdentifier());
-				// Remove the worker from the previous activity spot
-				if (worker.getFunction() != null) {
-					worker.getFunction().removeFromActivitySpot(worker.getIdentifier());
-				}
-				// Set the new function type
-				worker.setFunction(f);
+				livingAccom.claimActivitySpot(relBedLoc, worker);
 			}
 		}
 		
@@ -1219,13 +1188,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				// Set the new position
 				worker.setPosition(sLoc);
 				// Add to this activity spot
-				f.addActivitySpot(loc, worker.getIdentifier());
-				// Remove the previous activity spot
-				if (worker.getFunction() != null) {
-					worker.getFunction().removeFromActivitySpot(worker.getIdentifier());
-				}
-				// Set the new function type
-				worker.setFunction(f);
+				f.claimActivitySpot(loc, worker);
 			}
 		}
 
@@ -1254,13 +1217,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				// Set the new position
 				worker.setPosition(sLoc);
 				// Add to this activity spot
-				f.addActivitySpot(loc, worker.getIdentifier());
-				// Remove the previous activity spot
-				if (worker.getFunction() != null) {
-					worker.getFunction().removeFromActivitySpot(worker.getIdentifier());
-				}
-				// Set the new function type
-				worker.setFunction(f);
+				f.claimActivitySpot(loc, worker);
 					
 				return loc;
 			}
@@ -1297,13 +1254,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				// Set the new position
 				worker.setPosition(sLoc);
 				// Add to this activity spot
-				f.addActivitySpot(loc, worker.getIdentifier());
-				// Remove the previous activity spot
-				if (worker.getFunction() != null) {
-					worker.getFunction().removeFromActivitySpot(worker.getIdentifier());
-				}
-				// Set the new function type
-				worker.setFunction(f);
+				f.claimActivitySpot(loc, worker);
 			}
 		} 
 
@@ -1400,28 +1351,18 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 		if (person != null) {
 			// Check all crew members other than person doing task.
-			Iterator<Person> i = rover.getCrew().iterator();
-			while (i.hasNext()) {
-				Person crewmember = i.next();
-				if (!crewmember.equals(person)) {
-
-					// Check if crew member's position is very close to settlementLoc
-					if (settlementLoc.isClose(crewmember.getPosition())) {
-						result = false;
-					}
+			for(Person crewmember: rover.getCrew()) {
+				// Check if crew member's position is very close to settlementLoc
+				if (!crewmember.equals(person) && settlementLoc.isClose(crewmember.getPosition())) {
+					result = false;
 				}
 			}
 		} else {
 			// Check all crew members other than robot doing task.
-			Iterator<Robot> i = rover.getRobotCrew().iterator();
-			while (i.hasNext()) {
-				Robot crewmember = i.next();
-				if (!crewmember.equals(robot)) {
-
-					// Check if crew member's position is very close to settlementLoc
-					if (settlementLoc.isClose(crewmember.getPosition())) {
+			for(Robot crewmember : rover.getRobotCrew()) {
+				// Check if crew member's position is very close to settlementLoc
+				if (!crewmember.equals(robot) && settlementLoc.isClose(crewmember.getPosition())) {
 						result = false;
-					}
 				}
 			}
 		}
@@ -1476,24 +1417,17 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			if (s != null) {
 				Set<Building> buildingList = s.getBuildingManager()
 						.getBuildingsWithoutFctNotAstro(FunctionType.EVA);
-
-				if (!buildingList.isEmpty()) {
-					for (Building b : buildingList) {
-						FunctionType ft = b.getEmptyActivitySpotFunctionType();
-						if (ft != null) {
-							walkToEmptyActivitySpotInBuilding(b, allowFail);
-							return;
-						}
+				for (Building b : buildingList) {
+					FunctionType ft = b.getEmptyActivitySpotFunctionType();
+					if (ft != null) {
+						walkToEmptyActivitySpotInBuilding(b, allowFail);
+						return;
 					}
 				}
 			}
 			// If person is in a vehicle, walk to random location within vehicle.
-			else if (person.isInVehicle()) {
-
-				// Walk to a random location within rover if possible.
-				if (person.getVehicle() instanceof Rover rover) {
-					walkToRandomLocInRover(rover, allowFail);
-				}
+			else if (person.isInVehicle() && (person.getVehicle() instanceof Rover rover)) {
+				walkToRandomLocInRover(rover, allowFail);
 			}
 		} 
 		else {
@@ -1547,7 +1481,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected boolean walkToRoboticStation(Robot robot, boolean allowFail) {
 		boolean canWalk = false;
-		Building destination = null;
 		
 		if (robot.isInSettlement()) {
 			Building currentBuilding = BuildingManager.getBuilding(robot);
@@ -1558,8 +1491,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				canWalk = walkToActivitySpotInBuilding(currentBuilding, functionType, allowFail);
 	
 				if (canWalk) {
-					destination = currentBuilding;
-					BuildingManager.addRobotToRoboticStation(robot, destination, functionType);
+					BuildingManager.addRobotToRoboticStation(robot, currentBuilding, functionType);
 				}
 			}
 			else {
@@ -1574,9 +1506,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					if (!robot.getSettlement().getAdjacentBuildings(building).isEmpty()) {
 						logger.log(robot, Level.FINER, 5000, "Walking toward " + building.getNickName());
 						canWalk = walkToActivitySpotInBuilding(building, functionType, allowFail);
-						
-						if (canWalk)
-							destination = building;
 					}
 				}
 			}
@@ -1704,6 +1633,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	static void initializeInstances(Simulation s, PersonConfig pc) {
 		sim = s;
 		masterClock = s.getMasterClock();
+				
+		// Set standard pulse time to a quarter of the value of the current pulse width
+		standardPulseTime = Math.min(MAX_PULSE_WIDTH, masterClock.getNextPulseTime());
+		
 		eventManager = s.getEventManager();
 		unitManager = s.getUnitManager();
 		scientificStudyManager = s.getScientificStudyManager();

@@ -45,10 +45,10 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.RoboticStation;
 import com.mars_sim.core.structure.building.function.SystemType;
+import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.vehicle.Crewable;
@@ -104,8 +104,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 	private String model;
 	
-	/** The Function the robot's is actively participating. */
-	private Function function;
+	/** The spot assigned to the Robot */
+	private AllocatedSpot spot;
 	/** The year of birth of this robot. */
 	private LocalDate birthDate;
 	/** Settlement position (meters) from settlement center. */
@@ -1287,21 +1287,16 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 	
 	/**
-	 * Gets the function the person is actively participating.
+	 * Sets the activity spot assigned.
 	 * 
-	 * @return
+	 * @param newSpot Can be null if no spot assigned
 	 */
-	public Function getFunction() {
-		return function;
-	}
-	
-	/**
-	 * Sets the function.
-	 * 
-	 * @param functionType
-	 */
-	public void setFunction(Function function) {
-		this.function = function;
+	@Override
+	public void setActivitySpot(AllocatedSpot newSpot) {
+		if (spot != null) {
+			spot.release(this);
+		}
+		spot = newSpot;
 	}
 	
 	/**

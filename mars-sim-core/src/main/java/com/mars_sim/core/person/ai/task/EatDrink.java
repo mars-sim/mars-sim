@@ -393,8 +393,17 @@ public class EatDrink extends Task {
 	 * @param allowFail true if walking is allowed to fail.
 	 */
 	protected void walkToDiningLoc(Building building, boolean allowFail) {
-
-		LocalPosition loc = findLocalDiningSpot(building);
+		// Find a free spot in the building
+		Function f = building.getFunction(FunctionType.DINING);
+		LocalPosition loc = f.getAvailableActivitySpot();
+		if (loc == null) {
+			// Find another spot in the smae building
+			f = building.getEmptyActivitySpotFunction();
+			if (f == null) {
+				return;
+			}
+			loc = f.getAvailableActivitySpot();
+		}
 
 		// Create subtask for walking to destination.
 		if (loc != null) {
@@ -407,40 +416,10 @@ public class EatDrink extends Task {
 				// Set the new position
 				person.setPosition(sLoc);
 						
-				Function f = building.getFunction(FunctionType.DINING);
 				// Add the person to this activity spot
-				f.addActivitySpot(loc, person.getIdentifier());
-				// Remove the person from the previous activity spot
-				if (person.getFunction() != null) {
-					person.getFunction().removeFromActivitySpot(person.getIdentifier());
-				}
-				// Set the new function type
-				person.setFunction(f);
+				f.claimActivitySpot(loc, person);
 			}
 		}
-	}
-
-	/**
-	 * Finds a local dining spot in this building.
-	 * 
-	 * @param building
-	 * @return
-	 */
-	private LocalPosition findLocalDiningSpot(Building building) {
-
-		LocalPosition loc = building.getFunction(FunctionType.DINING).getAvailableActivitySpot();
-		
-		if (loc != null) {
-			return loc;
-		}
-		
-		Function f = building.getEmptyActivitySpotFunction();
-		if (f == null) {
-			return null;
-		}
-		
-		// Find available activity spot in building.
-		return f.getAvailableActivitySpot();
 	}
 
 	private void goForWater() {

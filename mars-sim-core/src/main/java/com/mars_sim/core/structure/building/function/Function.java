@@ -7,10 +7,10 @@
 package com.mars_sim.core.structure.building.function;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.environment.SurfaceFeatures;
@@ -53,10 +53,7 @@ public abstract class Function implements Serializable, Temporal {
 	protected Building building;
 
 	/** A list of predefined activity spots. */
-	private Set<LocalPosition> presetSpots = new HashSet<>();
-	
-	/** A list of occupied activity spots. */
-	private Set<ActivitySpot> occupiedSpots = new HashSet<>();
+	private Set<ActivitySpot> spots = new HashSet<>();
 	
 	protected static BuildingConfig buildingConfig;
 	protected static PersonConfig personConfig;
@@ -79,9 +76,15 @@ public abstract class Function implements Serializable, Temporal {
 		this.type = type;
 		this.building = building;
 
+		// A FunctionSpec should ALWAYS be present. root cause is the UnitTests
 		// load any activity spots
 		if (spec != null) {
-			presetSpots = spec.getActivitySpots();
+			spots = spec.getActivitySpots().stream()
+							.map(ActivitySpot::new)
+							.collect(Collectors.toSet());
+		}
+		else {
+			spots = Collections.emptySet();
 		}
 	}
 
@@ -193,90 +196,49 @@ public abstract class Function implements Serializable, Temporal {
 	public void removeFromSettlement() {
 		// Override as needed.
 	}
-
+	
 	/**
-	 * Returns a set of ids in the occupied list.
+	 * A worker claims an Acitivty spot at a position wwithin the Function.
 	 * 
-	 * @return
+	 * @param p Position being claimed
+	 * @param w Worker claiming
+	 * @return Was an activity spot found?
 	 */
-	public Set<Integer> getOccupiedID() {
-		Set<Integer> occupied = new HashSet<>();
-		for (ActivitySpot as: occupiedSpots) {
-			occupied.add(as.getID());
+	public boolean claimActivitySpot(LocalPosition p, Worker w) {
+		var as = findActivitySpot(p);
+		if (as == null) {
+			throw new IllegalArgumentException("No activity spot " + p.getShortFormat());
 		}
-		return occupied;
-	}
-	
-	/**
-	 * Adds the entry into the occupied list.
-	 * 
-	 * @param p
-	 * @param id
-	 * @return
-	 */
-	public boolean addActivitySpot(LocalPosition p, int id) {
-		ActivitySpot as = new ActivitySpot(p, id);
-		return addActivitySpot(as);
+		var allocated = as.claim(w);
+		w.setActivitySpot(allocated);
+		return true;
 	}
 
-
 	/**
-	 * Adds an entry into the occupied list.
-	 * 
-	 * @param spot
-	 * @return
+	 * Find an Activity spot via it's position
+	 * @param p Position to search
+	 * @return Matched activity
 	 */
-	public boolean addActivitySpot(ActivitySpot spot) {
-		if (!occupiedSpots.contains(spot)) {
-			occupiedSpots.add(spot);
-			return true;
-		}
-		return false;
-	}
-	
-	
-	/**
-	 * Removes the entry of the person with given id from the occupied list.
-	 * 
-	 * @param p
-	 * @param id
-	 * @return
-	 */
-	public boolean removeFromActivitySpot(int id) {
-		Iterator<ActivitySpot> i = occupiedSpots.iterator();
-		while (i.hasNext()) {
-			ActivitySpot as = i.next();
-			if (as.getID() == id) {
-				i.remove();
-				return true;
+	public ActivitySpot findActivitySpot(LocalPosition p) {
+		for(var a : spots) {
+			if (a.getPos().equals(p)) {
+				return a;
 			}
 		}
-		return false;
+		return null;
 	}
-	
+
 	/**
 	 * Gets an empty available local activity spot.
 	 *
 	 * @return
 	 */
 	public LocalPosition getAvailableActivitySpot() {
-		if (presetSpots == null || presetSpots.isEmpty())
-			return null;
-
-		Set<LocalPosition> occupied = new HashSet<>();
-		for (ActivitySpot as: occupiedSpots) {
-			occupied.add(as.getPos());
-		}
-						
-		Set<LocalPosition> existing = new HashSet<>(presetSpots);
-		
-		existing.removeAll(occupied);
-
-		if (!existing.isEmpty()) {
-			return new ArrayList<>(existing).get(0);
-		}
-		
-		return null;
+		var f =  spots.stream()
+							.filter(ActivitySpot::isEmpty)
+							.map(ActivitySpot::getPos)
+							.findFirst();
+		return f.orElse(null);
 	}
 
 	/**
@@ -286,52 +248,19 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return true if this activity spot is empty.
 	 */
 	public boolean isActivitySpotEmpty(LocalPosition pos) {
-		for (ActivitySpot s: occupiedSpots) {
-			if (s.getPos().equals(pos))
-				return false;
-		}
-
-		return true;
+		ActivitySpot a = findActivitySpot(pos);
+		if (a == null)
+			return false;
+		return a.isEmpty();
 	}
 
-	/**
-	 * Checks if a worker is at an activity spot for this building function.
-	 *
-	 * @param worker the Worker.
-	 * @return true if the worker's Position is currently at an activity spot.
-	 */
-	public boolean isAtActivitySpot(Worker worker) {
-		for (ActivitySpot s: occupiedSpots) {
-			if (s.getID() == worker.getIdentifier())
-				return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Checks if this building function has predefined activity spots.
-	 *
-	 * @return true if building function has predefined activity spots.
-	 */
-	public boolean hasActivitySpots() {
-		return presetSpots.size() > 0;
-	}
-
-	/** 
-	 * Returns a set of occupied activity spots. 
-	 */
-	public Set<ActivitySpot> getOccupiedSpots() {
-		return occupiedSpots;
-	}
-	
 	/**
 	 * Gets a set of predefined activity spots.
 	 * 
 	 * @return
 	 */
-	public Set<LocalPosition> getActivitySpots() {
-		return presetSpots;
+	public Set<ActivitySpot> getActivitySpots() {
+		return spots;
 	}
 
 	/**
@@ -340,7 +269,9 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return
 	 */
 	public int getNumEmptyActivitySpots() {
-		return presetSpots.size() - occupiedSpots.size();
+		return (int) spots.stream()
+					.filter(ActivitySpot::isEmpty)
+					.count();
 	}
 
 	/**
@@ -349,7 +280,7 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return
 	 */
 	public boolean hasEmptyActivitySpot() {
-		return getNumEmptyActivitySpots() > 0;
+		return spots.stream().anyMatch(ActivitySpot::isEmpty);
 	}
 
 	/**
@@ -358,7 +289,7 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return
 	 */
 	public int getNumOccupiedActivitySpots() {
-		return occupiedSpots.size();
+		return spots.size() - getNumEmptyActivitySpots();
 	}
 
 
@@ -409,9 +340,7 @@ public abstract class Function implements Serializable, Temporal {
 	public void destroy() {
 		type = null;
 		building = null;
-		occupiedSpots.clear();
-		occupiedSpots = null;
-		presetSpots.clear();
-		presetSpots = null;
+		spots.clear();
+		spots = null;
 	}
 }

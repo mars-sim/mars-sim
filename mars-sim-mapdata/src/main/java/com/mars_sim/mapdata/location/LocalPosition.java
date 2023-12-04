@@ -24,7 +24,7 @@ public class LocalPosition implements Serializable {
     public static final LocalPosition DEFAULT_POSITION = new LocalPosition(0D, 0D);
 
 	/** A very small distance (meters) for measuring how close two positions are. */
-	private static final double VERY_SMALL_DISTANCE = .01; // within a centimeter
+	private static final double ONE_CENTIMETER = .01; // within a centimeter
 	
 	private double x;
 	private double y;
@@ -120,7 +120,7 @@ public class LocalPosition implements Serializable {
 	 * @return
 	 */
 	public boolean isClose(LocalPosition other) {
-		return getDistanceTo(other) < VERY_SMALL_DISTANCE;
+		return getDistanceTo(other) < ONE_CENTIMETER;
 	}
 
 	/**
@@ -155,11 +155,11 @@ public class LocalPosition implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		LocalPosition other = (LocalPosition) obj;
-		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
+		double xdiff = x - other.x;
+		if (Math.abs(xdiff) > ONE_CENTIMETER)
 			return false;
-		if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
-			return false;
-		return true;
+		double ydiff = y - other.y;
+		return (Math.abs(ydiff) < ONE_CENTIMETER);
 	}
 
 	/**
