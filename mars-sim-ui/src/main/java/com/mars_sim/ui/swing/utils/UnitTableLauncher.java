@@ -26,7 +26,7 @@ public class UnitTableLauncher extends MouseInputAdapter {
     private MainDesktopPane desktop;
 
     /**
-     * Create a luancher that will create a UnitDetails window.
+     * Creates a launcher that will create a UnitDetail window.
      * 
      * @param desktop
      */
@@ -35,7 +35,7 @@ public class UnitTableLauncher extends MouseInputAdapter {
     }
 
     /**
-     * Catch the double click mouse event. The compoenent under the click event is retrieved
+     * Catches the double click mouse event. The component under the click event is retrieved
      * which should be a JTable; from this the assigned UnitModel is used to find the
      * associated Unit. This desktop is that used to open the appropriate Unit window.
      * This method supports the JTable being sorted.
@@ -47,7 +47,7 @@ public class UnitTableLauncher extends MouseInputAdapter {
             // Get the mouse-selected row
             int r = table.getSelectedRow();
             RowSorter<? extends TableModel> sorter = table.getRowSorter();
-            if (sorter != null)
+            if (sorter != null && r >= 0)
                 r = sorter.convertRowIndexToModel(r);
 
             UnitModel model = (UnitModel)table.getModel();
