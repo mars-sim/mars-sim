@@ -46,6 +46,7 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_PLACES2 = new DecimalFormat("#,###,##0.00");
     
     // Unit specific formatters
+    public static final DecimalFormat DECIMAL_LITER2 = new DecimalFormat("#,##0.00 Liter");
     public static final DecimalFormat DECIMAL_KM_KG = new DecimalFormat("#,##0.00 km/kg");
     public static final DecimalFormat DECIMAL_WH_KM = new DecimalFormat("#,##0.00 Wh/km");
     public static final DecimalFormat DECIMAL_WH_KG = new DecimalFormat("#,##0.00 Wh/kg");

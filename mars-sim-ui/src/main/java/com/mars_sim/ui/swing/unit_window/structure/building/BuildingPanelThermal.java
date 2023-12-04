@@ -33,12 +33,22 @@ extends BuildingFunctionPanel {
 	private JLabel statusTF;
 	/** The heat production textfield. */
 	private JLabel producedTF;
-
+	/** The air heat sink label. */
+	private JLabel airHeatSinkLabel;
+	/** The water heat sink label. */
+	private JLabel waterHeatSinkLabel;
+	
 	// Caches
-	/** The heat status cache. */
-	private HeatMode heatStatusCache;
 	/** The heat production cache. */
 	private double productionCache;
+	/** The air heat sink cache. */
+	private double airHeatSinkCache;
+	/** The water heat sink cache. */
+	private double waterHeatSinkCache;
+	
+	
+	/** The heat status cache. */
+	private HeatMode heatStatusCache;
 	/** The ThermalGeneration instance. */
 	private ThermalGeneration furnace;
 	
@@ -66,7 +76,7 @@ extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 	
 		// Prepare spring layout info panel.
-		AttributePanel infoPanel = new AttributePanel(2);
+		AttributePanel infoPanel = new AttributePanel(4);
 		center.add(infoPanel, BorderLayout.NORTH);
 		
 		// Prepare heat status label.
@@ -76,7 +86,16 @@ extends BuildingFunctionPanel {
 		
 		productionCache = furnace.getGeneratedHeat();		
 		producedTF = infoPanel.addTextField(Msg.getString("BuildingPanelThermal.heatProduced"),
-								  StyleManager.DECIMAL_KW.format(productionCache), "The heat production of this building");
+								  StyleManager.DECIMAL_KW.format(productionCache), 
+								  "The heat production of this building");
+	
+		airHeatSinkCache = building.getThermalGeneration().getHeating().getAirHeatSink();		
+		airHeatSinkLabel = infoPanel.addTextField(Msg.getString("BuildingPanelThermal.airHeatSink"),
+				  StyleManager.DECIMAL_KW.format(airHeatSinkCache), "The air heat sink of this building");
+
+		waterHeatSinkCache = building.getThermalGeneration().getHeating().getWaterHeatSink();		
+		waterHeatSinkLabel = infoPanel.addTextField(Msg.getString("BuildingPanelThermal.waterHeatSink"),
+				  StyleManager.DECIMAL_KW.format(waterHeatSinkCache), "The water heat sink of this building");
 	}
 
 	/**
@@ -94,6 +113,19 @@ extends BuildingFunctionPanel {
 		if (productionCache != newProductionCache) {
 			productionCache = newProductionCache;
 			producedTF.setText(StyleManager.DECIMAL_KW.format(productionCache));
+		}
+		
+		
+		double newAirHeatSink = building.getThermalGeneration().getHeating().getAirHeatSink();	
+		if (airHeatSinkCache != newAirHeatSink) {
+			airHeatSinkCache = newAirHeatSink;
+			airHeatSinkLabel.setText(StyleManager.DECIMAL_KW.format(newAirHeatSink));
+		}
+		
+		double newWaterHeatSink = building.getThermalGeneration().getHeating().getWaterHeatSink();	
+		if (waterHeatSinkCache != newWaterHeatSink) {
+			waterHeatSinkCache = newWaterHeatSink;
+			waterHeatSinkLabel.setText(StyleManager.DECIMAL_KW.format(newWaterHeatSink));
 		}
 	}
 }

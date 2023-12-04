@@ -374,13 +374,16 @@ extends TabPanel {
 					else if (heatMode == HeatMode.QUARTER_HEAT) {
 						return dotGreen_quarter;
 					}
-					else if (heatMode == HeatMode.HALF_HEAT) {
+					else if (heatMode == HeatMode.THREE_EIGHTH_HEAT
+							|| heatMode == HeatMode.HALF_HEAT) {
 						return dotGreen_half;
 					}
-					else if (heatMode == HeatMode.THREE_QUARTER_HEAT) {
+					else if (heatMode == HeatMode.FIVE_EIGHTH_HEAT
+							|| heatMode == HeatMode.THREE_QUARTER_HEAT) {
 						return dotGreen_threeQuarter;
 					}
-					else if (heatMode == HeatMode.FULL_HEAT) {
+					else if (heatMode == HeatMode.SEVEN_EIGHTH_HEAT
+							|| heatMode == HeatMode.FULL_HEAT) {
 						return dotGreen_full;
 					}
 					else if (heatMode == HeatMode.OFFLINE) {
