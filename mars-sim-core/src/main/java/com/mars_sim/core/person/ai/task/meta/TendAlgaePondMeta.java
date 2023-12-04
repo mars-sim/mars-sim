@@ -35,12 +35,12 @@ import com.mars_sim.tools.Msg;
 public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
 
     /**
-     * Represents the job needed in an algae pond
+     * Represents the job needed in an algae pond.
      */
     private static class AlgaeTaskJob extends SettlementTask {
 
 		private static final long serialVersionUID = 1L;
-
+	
         private AlgaeFarming pond;
 
         public AlgaeTaskJob(SettlementMetaTask owner, AlgaeFarming pond, RatingScore score) {
@@ -59,6 +59,8 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
         }
     }
 
+	private static final int BASE_SCORE = 100;
+	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.tendAlgaePond"); //$NON-NLS-1$
@@ -119,15 +121,15 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
 
         for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.ALGAE_FARMING)) {
             AlgaeFarming pond = building.getAlgae();
-            RatingScore result = new RatingScore("maintenance",
-                        (200 - pond.getCleaningScore() - pond.getInspectionScore())/10);
+            
+            RatingScore result = new RatingScore("base", BASE_SCORE);
 
+            result.addBase("maintenance", (200 - pond.getCleaningScore() - pond.getInspectionScore())/10);
+    
             double ratio = pond.getSurplusRatio();
-            		
             result.addBase("surplus", (1 - ratio) * 10D);
             
-            double foodDemand = pond.getNutrientDemand();
-         
+            double foodDemand = pond.getNutrientDemand();     
             result.addBase("nutrient.demand", foodDemand * 10);
             
             double foodMass = pond.getFoodMass();

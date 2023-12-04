@@ -42,7 +42,7 @@ public class AlgaeFarming extends Function {
 	private static final String [] CLEANING_LIST = Fishery.CLEANING_LIST;
 	
 	/** The average water needed [in kg] */
-	private static double averageWaterNeeded;
+//	private static double averageWaterNeeded;
 	/** The average O2 needed [in kg] */
 	private static double averageOxygenNeeded;
 	/** The average CO2 needed [in kg] */
@@ -54,22 +54,18 @@ public class AlgaeFarming extends Function {
 	private static final int GREY_WATER_ID = ResourceUtil.greyWaterID;
 	
 	private static final int LIGHT_FACTOR = 0;
-	private static final int FERTILIZER_FACTOR = 1;
+//	private static final int FERTILIZER_FACTOR = 1;
 	private static final int TEMPERATURE_FACTOR = 2;	
-	private static final int WATER_FACTOR = 3;
+//	private static final int WATER_FACTOR = 3;
 	private static final int O2_FACTOR = 4;
 	private static final int CO2_FACTOR = 5;
-
 	
 	// Initial amount of water [in liters] per kg algae
-	private static final int INITIAL_WATER_NEED_PER_KG_ALGAE = 333; 
+//	private static final int INITIAL_WATER_NEED_PER_KG_ALGAE = 333; 
 	/** The food nutrient demand of algae. **/
 	private static final int NUTRIENT_DEMAND = 250;
-	
 	private static final double GAS_MODIFIER = 1.5;
-	
-	private static final double WATER_MODIFIER = 1.1;
-	
+//	private static final double WATER_MODIFIER = 1.1;
 	private static final double TUNING_FACTOR = 3.5;
 	
 // When grown in darkness or light intensity below 1000 lux, the algal cultures 
@@ -133,16 +129,19 @@ public class AlgaeFarming extends Function {
 	 * <p> 6nCO2 + 5nH2O ⇒ (C6H10O5)n + 6nO2
 	 */
 	private static final double CO2_TO_O2_RATIO = 32 / 44D; 
-	// The algae must consume FRACTION times its size during a frame, or it will die.
-//	public static final double FRACTION = 0.4;
+
+	// By providing the ideal conditions (ph 10.5, temp 32 Cel, 70% light)  
+	// and a proper nutrient balance), Spirulina can multiply by 25% every day
+	// growth rate per millisol = 25% / 1000 = 0.00025
+	
 	// Birth or growth rate of algae in kg/millisol
-	public static final double BIRTH_RATE = 0.00005;
-	// Max amount of food in the pond per kg of algae
-	private static final double MAX_FOOD = 0.05;
+	public static final double BIRTH_RATE = 0.00025;
+	// The ideal ratio of nutrient to algae
+	private static final double NUTRIENT_RATIO = 0.05;
 	// Average amount of food nibbled by 1 kg of algae per sol
 	private static final double AVERAGE_NIBBLES = 0.001;
 	// Average amount of fresh water supplied to 1 kg of algae per sol
-	private static final double AVERAGE_FRESH_WATER = 0.01;
+	private static final double AVERAGE_FRESH_WATER = 0.1;
 	// kW per litre of water
 	private static final double POWER_PER_LITRE = 0.0001D;
 	// kW per kg algae
@@ -156,21 +155,46 @@ public class AlgaeFarming extends Function {
 	/** The ideal amount of algae as a percentage. **/
 	private static final double IDEAL_PERCENTAGE = 0.8D;
 	
+	
+	// For proper growth, add 30 grams of spirulina for every 10 liters of water.
+	// https://krishijagran.com/agripedia/all-about-organic-spirulina-cultivation-basic-requirements-water-quality-nutrient-requirements-economics-much-more/
+	// The initial ratio of spirulina and water
+	private static final double INITIAL_RATIO = 0.03 / 10; 
+	
+
 	// Based on https://www.sciencedirect.com/science/article/pii/S2352484718303974,
 	// Biomass yield obtained from an open pond system was 11.34 g/l, 
 	// and 12.28 g/l in the closed reactor system. 
-	/** The amount of algae per harvest. **/
-	private static final double KG_PER_HARVEST = 1;
-
-	/** The size of tank [in liters]. **/
-	private int tankSize;
 	
-	/** The surface area of tank [in SM]. **/
-	private double growingArea;
+	// Based on https://grow-organic-spirulina.com/blog/how-much-spirulina-can-i-harvest-per-day-free-harvesting-calculator-included/
+	// ~ 10 grams per CM per day (or between 6 to 15 grams per cubic meter per day
+	// The best spirulina growing practices improve production.
+	// Note: 1 CM = 1000 L
+	
+	// The expected biomass yield in an open pond system [kg/L/millisols]
+	private static final double EXPECTED_YIELD_RATE = .01134; 
+	/** The amount of algae per harvest. **/
+//	private static final double KG_PER_HARVEST_PER_MILLISOL = .05;
+
+	// Note: 1000 L = 1 m^3; 10000 L = 10 m^3 or 10 CM;
+	// Assuming 0.5 m deep with room utilization 40 %
+	// 6 m * 9 m * 40% * 0.5 m = 10.8 m^3
+	/** The size of tank [in liters]. **/
+	private double tankSize;
+	/** The area of tank [in m^2]. **/
+	private double tankArea;
+	/** The depth of tank [in m]. **/
+	private double tankDepth;
+	/** The amount of water [in m]. **/
+	private double waterMass;
+	
+	// By providing the ideal conditions (ph 10.5, temp 32 Cel, 70% light)  
+	// and a proper nutrient balance), Spirulina can multiply by 25% every day
+	
 	/** The amount iteration for growing new spirulina. */
 	private double birthIterationCache;
 	/** The total mass in the tank. **/
-	private double totalMass;
+//	private double totalMass;
 	/** Maximum amount of algae. **/
 	private double maxAlgae;
 	/** Current amount of algae. **/
@@ -179,7 +203,7 @@ public class AlgaeFarming extends Function {
 	private double currentFood;
 	/** Optimal amount of algae. **/
 	private double idealAlgae;
-	/** Current health of algae. **/	
+	/** Current health of algae (from 0 to 1). **/	
 	private double health = 1;
 	/** How old are the food nutrient since the last tending ? **/
 	private double foodAge = 0;
@@ -199,9 +223,6 @@ public class AlgaeFarming extends Function {
 	/** The total amount of light received by this crop. */
 	private double effectivePAR;
 	
-	/** The threshold for tracking a gas [in kg] */
-	private final double gasThreshold;
-	
 	/** The cache values of the past environment factors influencing the crop */
 	private double[] environmentalFactor = new double[CO2_FACTOR + 1];
 
@@ -210,7 +231,7 @@ public class AlgaeFarming extends Function {
 	/** Keep track of cleaning and inspections. */
 	private HouseKeeping houseKeeping;
 	
-	/** The resource usage on each crop in this facility [kg/sol]. */
+	/** The resource usage of algae in this facility [kg/sol]. */
 	private SolMetricDataLogger<Integer> resourceUsage = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 	
 	private static CropConfig cropConfig;
@@ -226,7 +247,7 @@ public class AlgaeFarming extends Function {
 		// Use Function constructor.
 		super(FunctionType.ALGAE_FARMING, spec, building);
 	
-		averageWaterNeeded = cropConfig.getWaterConsumptionRate();
+//		averageWaterNeeded = cropConfig.getWaterConsumptionRate();
 		averageOxygenNeeded = cropConfig.getOxygenConsumptionRate();
 		averageCarbonDioxideNeeded = cropConfig.getCarbonDioxideConsumptionRate();
 		wattToPhotonConversionRatio = cropConfig.getWattToPhotonConversionRatio();
@@ -235,38 +256,36 @@ public class AlgaeFarming extends Function {
 		
 		houseKeeping = new HouseKeeping(CLEANING_LIST, INSPECTION_LIST);
 
-		// Calculate the tank size via config
-		tankSize = spec.getCapacity();
-
-		growingArea = building.getFloorArea() * .8;
+		tankArea = spec.getArea();
+		tankDepth = spec.getDepth();
 		
+		// Calculate the tank size in Liter 
+		// Note:  1000 L = 1 m^3; 10000 L = 10 m^3;
+		tankSize = tankArea * tankDepth * 1000;
 		// Calculate max algae based on tank size
-		maxAlgae = tankSize / INITIAL_WATER_NEED_PER_KG_ALGAE;
+		maxAlgae = tankSize * INITIAL_RATIO;
 		
-		currentAlgae = maxAlgae * IDEAL_PERCENTAGE;
-
-		currentAlgae = RandomUtil.getRandomDouble(currentAlgae * 0.85, currentAlgae * 1.15);
-
-	    double initalFood = currentAlgae * MAX_FOOD * 2.5;
+		idealAlgae = maxAlgae * IDEAL_PERCENTAGE;
 	    
-	    // Healthy stock is the initial amount of algae
-	    idealAlgae = currentAlgae;
+		currentAlgae = RandomUtil.getRandomDouble(idealAlgae * 0.85, idealAlgae * 1.15);
+		// The amount of water in kg
+		waterMass = tankSize * currentAlgae / maxAlgae;
+		
+		// Retrieve water to create pond
+		// Note that 1 L of water is 1 kg
+		building.getSettlement().retrieveAmountResource(ResourceUtil.waterID, waterMass);
+		
+	    double initalFood = currentAlgae * NUTRIENT_RATIO;
+	    
 		tendertime = initalFood * TEND_TIME_FOR_FOOD;
     
 		// Give variation to the amount of food nutrient for algae at the start for each tank
-		initalFood = RandomUtil.getRandomDouble(initalFood * 0.85, initalFood * 1.15);
+		initalFood = RandomUtil.getRandomDouble(initalFood * 0.95, initalFood * 1.05);
 		currentFood = initalFood;
 		
-		totalMass = tankSize + currentAlgae + initalFood;
-
-		this.gasThreshold = totalMass / 100;
-		
-		foodAge = 0;
-
-	    logger.log(building, Level.CONFIG, 0, "Algae: " 
+	    logger.log(building, Level.CONFIG, 0, "Spirulina: " 
 	    		+ Math.round(currentAlgae * 10.0)/10.0 
-	    		+ " kg.  nutrient: " + Math.round(initalFood * 10.0)/10.0 
-	    		+ " kg.  total mass: " + Math.round(totalMass * 10.0)/10.0);
+	    		+ " kg.  nutrient: " + Math.round(initalFood * 10.0)/10.0);
 	}
 
 
@@ -356,24 +375,24 @@ public class AlgaeFarming extends Function {
 	/**
 	 * Records the average resource usage of a resource
 	 *
-	 * @param usage    average water consumption in kg/sol
+	 * @param usage    average consumption/production in kg/sol
 	 * @Note positive usage amount means consumption 
 	 * @Note negative usage amount means generation
-	 * @param type resource (0 for water, 1 for o2, 2 for co2, 3 for grey water)
+	 * @param id The resource id (exception: 0 for algae harvested)
 	 */
-	public void addResourceUsage(double usage, int type) {
-		resourceUsage.increaseDataPoint(type, usage);
+	public void addResourceUsage(double usage, int id) {
+		resourceUsage.increaseDataPoint(id, usage);
 	}
 	
 
 	/**
 	 * Computes the average usage of a particular resource.
 	 * 
-	 * @type resource type (0 for water, 1 for o2, 2 for co2)
+	 * @param id The resource id (exception: 0 for algae harvested)
 	 * @return average water consumption in kg/sol
 	 */
-	public double computeUsage(int type) {
-		return resourceUsage.getDailyAverage(type);
+	public double computeUsage(int id) {
+		return resourceUsage.getDailyAverage(id);
 	}
 	
 	/**
@@ -479,7 +498,7 @@ public class AlgaeFarming extends Function {
 	 */
 	private double retrieveGas(double amount, double gasCache, int gasId) {
 		if (amount > 0) {
-			if (gasCache - amount < -gasThreshold) {
+			if (gasCache - amount < -getGasThreshold()) {
 				retrieve(gasCache, gasId, true);
 				gasCache = -amount;
 			}
@@ -509,11 +528,13 @@ public class AlgaeFarming extends Function {
 	 * Stores the gas.
 	 *
 	 * @param amount
+	 * @param gasCache
+	 * @param gasId resource id
 	 * @return
 	 */
 	private double storeGas(double amount, double gasCache, int gasId) {
 		if (amount > 0) {
-			if (gasCache + amount > gasThreshold) {
+			if (gasCache + amount > getGasThreshold()) {
 				store(gasCache, gasId, "AlgaeFarming::storeGas");
 				gasCache = amount;
 			}
@@ -525,6 +546,10 @@ public class AlgaeFarming extends Function {
 		return gasCache;
 	}
 
+	private double getGasThreshold() {
+		return (waterMass + currentAlgae + currentFood) / 100; 
+	}
+	
 	/**
 	* Simulates life in the pond, using the values indicated in the
 	* documentation.
@@ -533,22 +558,45 @@ public class AlgaeFarming extends Function {
 	**/
 	private void simulatePond(ClockPulse pulse) {
 		double time = pulse.getElapsed();
-		// kg per millisol
-		double timeFactor =  time * currentAlgae / 1000;
+		// per gram of algae per millisol
+		double timeFactor =  time / 1000;
 		// amount of food per millisol
-		double nibbleAmount = AVERAGE_NIBBLES * timeFactor;
+		double nibbleAmount = RandomUtil.getRandomDouble(.9, 1.1) 
+				* currentAlgae * AVERAGE_NIBBLES * timeFactor;
 	   
 		// Compute the amount of food nutrient to be consumed per millisol
-		currentFood = currentFood - RandomUtil.getRandomDouble(.9, 1.1) * nibbleAmount;	   
-		// Compute the amount of fresh water to be consumed per millisol
-		double freshWater = AVERAGE_FRESH_WATER * timeFactor;
-	   
-		// Consume fresh water
-		retrieveWater(freshWater, 0);
-	   
+		currentFood = currentFood - nibbleAmount;	   
+		
+		// Future: treat this as a task for turning on and off inlet and outlet
+		
+		// Check if it's too concentrated (more than 1% of its target ratio) and need more fresh water
+		if (currentAlgae/waterMass > INITIAL_RATIO * 1.01) {
+			// Compute the amount of fresh water to be replenished at the inlet
+			double freshWater = AVERAGE_FRESH_WATER * currentAlgae * timeFactor;
+			// Consume fresh water
+			retrieveWater(freshWater, ResourceUtil.waterID);
+		    // Add fresh water to the existing tank water
+			waterMass += freshWater;
+		}
+		
+		// Check if it's too diluted (less than 90% of its target ratio) and need to release water
+		else if (currentAlgae/waterMass < INITIAL_RATIO * 0.9) {
+			// Compute the amount of fresh water to be released at the outlet
+			double greyWater = AVERAGE_FRESH_WATER * currentAlgae * timeFactor;
+			// Produce grey water
+			storeGreyWater(greyWater, ResourceUtil.greyWaterID);
+		    // Retrieve grey water from the existing tank water
+			waterMass -= greyWater;
+		}
+		
+		
+		// Estimate 0.05% evaporated water or grey water at the outlet
+		double greyWater = waterMass * .0005 * timeFactor;
 		// Produce grey water
-		storeGreyWater(freshWater * .99, 3);
-	
+		storeGreyWater(greyWater, ResourceUtil.greyWaterID);
+	    // Retrieve grey water from the existing tank water
+		waterMass -= greyWater;
+		
 		// STEP 1 : COMPUTE THE EFFECTS OF THE SUNLIGHT AND ARTIFICIAL LIGHT
 		
 		adjustEnvironmentFactor(1D, LIGHT_FACTOR);
@@ -569,7 +617,7 @@ public class AlgaeFarming extends Function {
 		adjustEnvironmentFactor(temperatureModifier, TEMPERATURE_FACTOR);
 
 		// STEP 3 : COMPUTE THE NEED FACTOR AND COMPOSITE FACTOR (BASED ON LIGHT AND GROWTH FACTOR)
-		double watt = effectivePAR / time / conversionFactor * growingArea * 1000;
+		double watt = effectivePAR / time / conversionFactor * tankArea * 1000;
 		// Note: effectivePAR already includes both sunlight and artificial light
 
 		// Note: needFactor aims to give a better modeling of the amount of water
@@ -588,15 +636,22 @@ public class AlgaeFarming extends Function {
 		// Note: computeGases takes up 25% of all cpu utilization
 		computeGases(watt, compositeFactor * GAS_MODIFIER);	
 		
+		// By providing the ideal conditions (ph 10.5, temp 32 Cel, 70% light)  
+		// and a proper nutrient balance), Spirulina can multiply by 25% every day
+		// Ref: https://grow-organic-spirulina.com/blog/how-much-spirulina-can-i-harvest-per-day-free-harvesting-calculator-included/
+		
 		// Create new spirulina, using BIRTH_RATE
-		if (currentAlgae < maxAlgae && currentFood > 0) {
+		if (currentAlgae < maxAlgae * 1.1 && currentFood > 0) {
 			   birthIterationCache += BIRTH_RATE * time * currentAlgae 
 					   * (1 + .01 * RandomUtil.getRandomInt(-10, 10));
 			   if (birthIterationCache > 1) {
 				   double newAlgae = birthIterationCache;
 				   birthIterationCache = birthIterationCache - newAlgae;
 				   currentAlgae += newAlgae;
-				   totalMass += newAlgae;
+				   
+				   // Record the harvest amount
+				   // Note: need a separate id to record the daily production of algae
+//					addResourceUsage(-newAlgae, ResourceUtil.spirulinaID);
 			   }
 		}	   
 	}
@@ -699,7 +754,7 @@ public class AlgaeFarming extends Function {
 					// DLI is Daily Light Integral is the unit for for cumulative light -- the
 					// accumulation of all the PAR received during a day.
 				double DLI = dailyPARRequired - cumulativeDailyPAR; // [in mol / m^2 / day]
-				double deltaPAROutstanding = DLI * (time / 1000D) * growingArea;
+				double deltaPAROutstanding = DLI * (time / 1000D) * tankArea;
 				// in mol needed at this delta time [mol] = [mol /m^2 /day] * [millisol] /
 				// [millisols /day] * m^2
 				double deltakW = deltaPAROutstanding / time / conversionFactor;
@@ -726,7 +781,7 @@ public class AlgaeFarming extends Function {
 				double supplykW = numLamp * KW_PER_HPS * VISIBLE_RADIATION_HPS * (1 - BALLAST_LOSS_HPS)
 						/ PHYSIOLOGICAL_LIMIT;
 				turnOnLighting(supplykW);
-				double deltaPARSupplied = supplykW * time * conversionFactor / growingArea; // in mol / m2
+				double deltaPARSupplied = supplykW * time * conversionFactor / tankArea; // in mol / m2
 				// [ mol / m^2] = [kW] * [u mol /m^2 /s /(Wm^-2)] * [millisols] * [s /millisols]
 				// / [m^2] = k u mol / W / m^2 * (10e-3 / u / k) = [mol / m^-2]
 				cumulativeDailyPAR = cumulativeDailyPAR + deltaPARSupplied + PARInterval;
@@ -818,8 +873,12 @@ public class AlgaeFarming extends Function {
 		return maxAlgae;
 	}
 	
-	public int getTankSize() {
+	public double getTankSize() {
 		return tankSize;
+	}
+	
+	public double getWaterMass() {
+		return waterMass;
 	}
 	
 	public double getFoodMass() {
@@ -842,22 +901,27 @@ public class AlgaeFarming extends Function {
 	 * @return
 	 */
 	public double tending(double workTime) {
-		double surplus = 0;
+		double remaining = workTime;
 		
-		// Record the work time
-		addCumulativeWorkTime(workTime);
-		
-		currentFood += workTime * ADD_FOOD_RATE;
-		tendertime -= workTime;
-		
-		if (tendertime < 0) {
-			surplus = Math.abs(tendertime);
-			tendertime = currentFood * TEND_TIME_FOR_FOOD;
-			logger.log(building, Level.INFO, 10_000, "Algae fully tended for " 
-					+ Math.round(tendertime * 100.0)/100.0 + " millisols.");
-			foodAge = 0;
+		if (currentFood < NUTRIENT_RATIO * currentAlgae) {
+			// Record the work time
+			addCumulativeWorkTime(workTime);
+	
+			currentFood += workTime * ADD_FOOD_RATE;
+			tendertime -= workTime;
+			
+			if (tendertime < 0) {
+				remaining = Math.abs(tendertime);
+				tendertime = currentFood * TEND_TIME_FOR_FOOD;
+				logger.log(building, Level.INFO, 10_000, "Algae fully tended for " 
+						+ Math.round(tendertime * 100.0)/100.0 + " millisols.");
+				foodAge = 0;
+			}
 		}
-		return surplus;
+		else 
+			return remaining;
+				
+		return remaining;
 	}
 
 
@@ -866,37 +930,61 @@ public class AlgaeFarming extends Function {
 	 *  
 	 * @param worker
 	 * @param workTime
-	 * @return
+	 * @return spirulinaExtracted
 	 */
 	public double harvestAlgae(Worker worker, double workTime) {
 		if (getSurplusRatio() < 0.5) {
-			return workTime;
+			return 0;
 		}
+
+		// With adequate amount of sunshine, it takes a minimum of 10 to 15 days time 
+		// for the spirulina to develop.
+		// https://krishijagran.com/agripedia/all-about-organic-spirulina-cultivation-basic-requirements-water-quality-nutrient-requirements-economics-much-more/
 		
-		int rand = RandomUtil.getRandomInt((int)currentAlgae);
-		if (rand > idealAlgae * 0.25) {
+		addCumulativeWorkTime(workTime);
+		
+		// Should define the algae liquid flow rate, not currentAlgae
+				
+		// Harvesting a certain amount (~ 1 kg)
+		double harvestedWetBiomass = RandomUtil.getRandomDouble(.9, 1.1)
+				* EXPECTED_YIELD_RATE / waterMass * workTime;
+		
+//		logger.log(building, worker, Level.INFO, 5000, "Harvesting " 
+//				+ Math.round(harvested * 100.0)/100.0 
+//				+ " kg algae. Pond stock: " +  Math.round(currentAlgae * 100.0)/100.0, null);
+		
+		if (currentAlgae < harvestedWetBiomass)
+			return 0;
 			
-			// Harvesting a certain amount (~ 1 kg)
-			double harvested = RandomUtil.getRandomDouble(.9, 1.1) * KG_PER_HARVEST;
-			
-			logger.log(building, worker, Level.INFO, 5000, "Harvesting " 
-					+ Math.round(harvested * 100.0)/100.0 
-					+ " kg algae. Stock: " + currentAlgae, null);
-			
-			currentAlgae = currentAlgae - harvested;
-			
-			totalMass = totalMass - harvested;
-			
-			double spirulinaExtracted = harvested * RandomUtil.getRandomDouble(.1, .2) * health;
-			
-			double waste = harvested - spirulinaExtracted;
-			
-			store(waste, ResourceUtil.foodWasteID, "AlgaeFarming::harvestAlgae");
-			
-			store(harvested, ResourceUtil.spirulinaID, "AlgaeFarming::harvestAlgae");
-			
-		}
-		return 0;
+		currentAlgae = currentAlgae - harvestedWetBiomass;
+
+		// Assuming the dry mass is ~15% 
+		double spirulinaExtracted = harvestedWetBiomass * RandomUtil.getRandomDouble(.1, .2) * health;
+		
+		// Future: specify harvesting equipment and sieving parameter
+		
+		// See https://grow-organic-spirulina.com/blog/the-complete-guide-to-harvesting-spirulina/
+		// regarding the use of harvesting mesh to filter spirulina
+		
+		double filteredMass = harvestedWetBiomass - spirulinaExtracted;
+		
+		double returnAlgae = filteredMass * .7;
+		
+		double greyWaterWaste = filteredMass * .25;
+		
+		double foodWaste = filteredMass * .05;
+		
+		currentAlgae += returnAlgae;
+
+		store(foodWaste, ResourceUtil.foodWasteID, "AlgaeFarming::foodWaste");
+		
+		storeGreyWater(greyWaterWaste, ResourceUtil.greyWaterID);
+		
+		store(spirulinaExtracted, ResourceUtil.spirulinaID, "AlgaeFarming::harvestAlgae");
+		// Record the harvest amount
+		addResourceUsage(spirulinaExtracted, ResourceUtil.spirulinaID);
+
+		return spirulinaExtracted;
 	}
 
 

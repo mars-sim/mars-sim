@@ -59,7 +59,10 @@ public class TendAlgaePond extends Task {
 	// Data members
 	private double harvestingTime = 0D;
 	
+	private double totalHarvested;
+	
 	private double tendTime = 0D;
+	
 	/** The goal of the task at hand. */
 	private String cleanGoal;
 	/** The goal of the task at hand. */
@@ -90,20 +93,25 @@ public class TendAlgaePond extends Task {
 		// Walk to algae pond.
 		walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.ALGAE_FARMING, false);	
 
-		if (pond.getSurplusRatio() > 0.5) {
-			// Do fishing
+		int rand = RandomUtil.getRandomInt(6);
+		
+		if (rand == 6 || pond.getSurplusRatio() > 0.5) {
+			// Harvest
 			setPhase(HARVESTING);
 			addPhase(HARVESTING);
 		}
-		else if (pond.getNutrientDemand() > 0) {
+		else if ((rand == 4 && rand == 5) || pond.getNutrientDemand() > 0) {
 			setPhase(TENDING);
 			addPhase(TENDING);
 			addPhase(INSPECTING);
 			addPhase(CLEANING);
 		}
-		else {
+		else if (rand == 0 && rand == 1) {
 			setPhase(INSPECTING);
 			addPhase(INSPECTING);
+		}
+		else if (rand == 2 && rand == 3) {
+			setPhase(CLEANING);
 			addPhase(CLEANING);
 		}
 	}
@@ -131,8 +139,10 @@ public class TendAlgaePond extends Task {
 		walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.ALGAE_FARMING, false);
 		
 		// Initialize phase
-		// Robots do not do anything with water
-		setPhase(CLEANING);
+		// Robots do not do anything with harvesting
+		setPhase(TENDING);
+		addPhase(TENDING);
+		addPhase(INSPECTING);
 		addPhase(CLEANING);
 	}
 
@@ -194,25 +204,39 @@ public class TendAlgaePond extends Task {
 
 		workTime *= mod;
 
-		double remainingTime = pond.harvestAlgae(worker, workTime);
-
+		double algaeMass = pond.harvestAlgae(worker, workTime);
+		if (algaeMass == 0.0) {
+			logger.log(building, worker, Level.INFO, 0, "Total kg algae harvested: " 
+					+ Math.round(totalHarvested * 100.0)/100.0 , null);
+			endTask();
+		}
+		
+		totalHarvested += algaeMass;
+		
 		// Add experience
 		addExperience(time);
 
 		// Check for accident
 		checkForAccident(building, time, 0.003);
 
-		if ((remainingTime > 0) || (pond.getSurplusRatio() > 0.5)) {
+		if (pond.getSurplusRatio() < 0.5) {
+			logger.log(building, worker, Level.INFO, 0, "Surplus ratio: " 
+					+ Math.round(pond.getSurplusRatio() * 100.0)/100.0 , null);
+			logger.log(building, worker, Level.INFO, 0, "Total kg algae harvested: " 
+					+ Math.round(totalHarvested * 100.0)/100.0 , null);
 			endTask();
 
 			// Scale it back to the. Calculate used time 
-			double usedTime = workTime - remainingTime;
+			double usedTime = workTime;
 			return time - (usedTime / mod);
 		}
 		else {
 			harvestingTime += time;
+			
 			if (harvestingTime > MAX_HARVESTING) {
-				logger.log(building, worker, Level.INFO, 0, "Ended harvesting algae.", null);
+				
+				logger.log(building, worker, Level.INFO, 0, "Total kg algae harvested: " 
+						+ Math.round(totalHarvested * 100.0)/100.0 , null);
 				endTask();
 			}
 		}
@@ -262,8 +286,12 @@ public class TendAlgaePond extends Task {
 		checkForAccident(building, time, 0.005D);
 
 		if (remainingTime > 0) {
-			setPhase(INSPECTING);
-
+			int rand = RandomUtil.getRandomInt(1);
+			if (rand == 0)
+				setPhase(INSPECTING);
+			else
+				setPhase(CLEANING);
+			
 			// Scale it back to the. Calculate used time 
 			double usedTime = workTime - remainingTime;
 			return time - (usedTime / mod);

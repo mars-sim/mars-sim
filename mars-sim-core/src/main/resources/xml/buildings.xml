@@ -27,7 +27,8 @@
 	<!ATTLIST administration capacity CDATA #REQUIRED>
 	<!ATTLIST administration population-support CDATA #REQUIRED>
 	<!ELEMENT algae-farming (activity?)>
-	<!ATTLIST algae-farming capacity CDATA #REQUIRED>
+	<!ATTLIST algae-farming area CDATA #REQUIRED>
+	<!ATTLIST algae-farming depth CDATA #REQUIRED>
 	<!ELEMENT astronomical-observation (activity?)>
 	<!ATTLIST astronomical-observation tech-level CDATA #REQUIRED>
 	<!ATTLIST astronomical-observation capacity CDATA #REQUIRED>
@@ -890,7 +891,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				 Assume thermal efficiency at 100%,
 				 1 kW_t for 1.5960 g/millisol or kg/sol
 				 -->
-				<heat-source type="Electric Heating" capacity="30.0" />
+				<heat-source type="Electric Heating" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1082,14 +1083,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="10.0" />
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="47.9385" capacity="30.0" />
-				<heat-source type="Electric Heating" capacity="50.0" />
+				<heat-source type="Electric Heating" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 <!-- end for fish farm -->
 
 	<building type="Algae Pond" width="6.0" length="9.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="150" room-temperature="30.0" base-mass="3000">
+			wear-lifetime="3340000" maintenance-time="150" room-temperature="28.0" base-mass="3000">
 		<description>
 			This building grows spirulina in ponds. It is furnished with a biology research lab 
 			with instruments.
@@ -1097,7 +1098,26 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<algae-farming capacity="10000">
+			<!-- 
+			Note: 1000 L = 1 m^3, 10000 L = 10 m^3; 
+			
+			At 40% space utilization within the building
+			
+			Area: 6 m * 9 m * 40% = 21.6 SM; 
+			Vol: 21.6 SM * 0.25 m = 10.8 CM
+			
+			Assume 4 stackable ponds. total area: 86.4 SM
+			
+			The pH levels must range between 8 and 11. The water levels should be 
+			maintained in a controlled manner. 
+			
+			Higher water levels in the tank can lead to difficulty in photosynthesis 
+			and algae development. Average water level should be kept 25 centimeter.  
+			
+			area in square meters (SM)
+			depth in meters (M)
+			-->
+			<algae-farming area="86.4" depth="0.25">
 				<activity>
 					<activity-spot xloc="2.7" yloc="4.0" />
 					<activity-spot xloc="2.7" yloc="-4.0" />
@@ -1128,7 +1148,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="10.0" />
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="47.9385" capacity="30.0" />
-				<heat-source type="Electric Heating" capacity="50.0" />
+				<heat-source type="Electric Heating" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2906,8 +2926,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<robotic-station capacity="1"/>
 			
 			<thermal-generation>
-				<heat-source type="Solar Heating" capacity="1.0" />
-				<heat-source type="Electric Heating" capacity="2.0" />
+				<heat-source type="Solar Heating" capacity="2.0" />
+				<heat-source type="Electric Heating" capacity="3.0" />
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	consumption-rate="31.959" capacity="20.0"/>
 			</thermal-generation>
 		</functions>
 	</building>
@@ -3436,8 +3458,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<robotic-station capacity="1"/>
 			
 			<thermal-generation>
-				<heat-source type="Solar Heating" capacity="1.0" />
-				<heat-source type="Electric Heating" capacity="2.0" />
+				<heat-source type="Solar Heating" capacity="2.0" />
+				<heat-source type="Electric Heating" capacity="3.0" />
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	consumption-rate="31.959" capacity="20.0"/>
 			</thermal-generation>
 		</functions>
 	</building>

@@ -18,6 +18,8 @@ import com.mars_sim.mapdata.location.LocalPosition;
 public class FunctionSpec {
 	// Name of the standard capacity property
 	public static final String CAPACITY = "capacity";
+	private static final String AREA = "area";
+	private static final String DEPTH = "depth";
 	public static final String GUEST_BED = "guest";
 	public static final String BED = "bed";
 
@@ -58,6 +60,20 @@ public class FunctionSpec {
 		return getIntegerProperty(CAPACITY);
 	}
 
+	/**
+	 * Gets the value of the standard area property.
+	 */
+	public double getArea() {
+		return getDoubleProperty(AREA);
+	}
+	
+	/**
+	 * Gets the value of the standard depth property.
+	 */
+	public double getDepth() {
+		return getDoubleProperty(DEPTH);
+	}
+	
 	/**
 	 * Gets the value of the standard bed property.
 	 */
