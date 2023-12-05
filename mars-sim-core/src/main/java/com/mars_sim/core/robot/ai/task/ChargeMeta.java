@@ -9,6 +9,7 @@ package com.mars_sim.core.robot.ai.task;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.robot.SystemCondition;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
@@ -52,16 +53,20 @@ public class ChargeMeta extends FactoryMetaTask {
         
         // Crowding modifier.
         else if (robot.isInSettlement()) {
-     
-        	double batteryLevel = robot.getSystemCondition().getBatteryState();
+        	SystemCondition sc = robot.getSystemCondition();
         	
+        	double batteryLevel = sc.getBatteryState();
+        	
+        	if (batteryLevel >= 95) {
+        		return 0;
+        	}
         	// Checks if the battery is low
-        	if (robot.getSystemCondition().isLowPower()) {
+        	else if (sc.isLowPower()) {
         		result += (100 - batteryLevel) * LOW_FACTOR;
         	}
-        	else if (batteryLevel <= robot.getSystemCondition().getRecommendedThreshold()) {
+        	else if (batteryLevel <= sc.getRecommendedThreshold()) {
     			double rand = RandomUtil.getRandomDouble(batteryLevel);
-    			if (rand < robot.getSystemCondition().getLowPowerPercent())
+    			if (rand < sc.getLowPowerPercent())
     				// At max, ~20% chance it will need to charge 
     				result += (100 - batteryLevel) * CHANCE;
     			else

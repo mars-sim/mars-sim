@@ -471,7 +471,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 	
 	/**
-	 * Returns a boolean whether this task should generate events
+	 * Returns a boolean whether this task should generate events.
 	 * 
 	 * @return boolean flag.
 	 */

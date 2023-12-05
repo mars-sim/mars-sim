@@ -37,7 +37,10 @@ public class Charge extends Task {
 	
 	/** Task name for robot */
 	public static final String NAME = Msg.getString("Task.description.charge"); //$NON-NLS-1$
-
+	public static final String CHARGING_AT = "Charging at ";
+	public static final String END_CHARGING = "Charging Ended";
+	public static final String NO_STATION = "No Station Available";
+	
 	/** Task phases for robot. */
 	private static final TaskPhase CHARGING = new TaskPhase(Msg.getString("Task.phase.charging")); //$NON-NLS-1$
 	
@@ -51,6 +54,7 @@ public class Charge extends Task {
 		}
 		
 		if (buildingStation == null) {
+			setDescription(NO_STATION);
 			endTask();
 			return;
 		}
@@ -70,6 +74,7 @@ public class Charge extends Task {
 			station.addSleeper();
 		}
 		else {
+			setDescription(NO_STATION);
 			// End charging
 			endTask();
 		}
@@ -137,6 +142,7 @@ public class Charge extends Task {
 	private double chargingPhase(double time) {
 		
 		if (isDone() || getTimeLeft() <= 0) {
+			setDescription(END_CHARGING, false);
         	// this task has ended
 			endTask();
 			return time;
@@ -157,7 +163,7 @@ public class Charge extends Task {
 			// Note that the charging process will continue until it's at least 80%
 			// before ending
 			double rand = RandomUtil.getRandomDouble(batteryLevel);
-			if (rand < lowPower + timeLeft/2)
+			if (rand < lowPower + timeLeft * 2)
 				// At max, 20% chance it will need to charge 
 				toCharge = true;
 			else
@@ -167,7 +173,7 @@ public class Charge extends Task {
 		else if (batteryLevel > lowPower) {
 
 			double rand = RandomUtil.getRandomDouble(batteryLevel);
-			if (rand < lowPower + timeLeft)
+			if (rand < lowPower + timeLeft * 2)
 				// At max, 20% chance it will need to charge 
 				toCharge = true;
 			else
@@ -187,7 +193,7 @@ public class Charge extends Task {
 		
 			if (station != null) {
 				
-				setDescription(NAME);
+				setDescription(CHARGING_AT + Math.round(batteryLevel * 10.0)/10.0 + "%");
 				
 				double hrs = time * MarsTime.HOURS_PER_MILLISOL;
 	
@@ -196,15 +202,17 @@ public class Charge extends Task {
 				// Record the power spent at the robotic station
 				station.setPowerLoad(energy/hrs);
 	
-				// Lengthen the duration for charging the battery
-				setDuration(timeLeft + (100 - batteryLevel));
+				// Reset the duration
+				setDuration(95 - batteryLevel);
 			}
 			else {
+				setDescription(END_CHARGING, false);
 				// End charging
 				endTask();
 			}
 		}
 		else {
+			setDescription(END_CHARGING, false);
 			// End charging
 			endTask();
 		}
