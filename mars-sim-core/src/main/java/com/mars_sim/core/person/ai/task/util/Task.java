@@ -1491,7 +1491,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				canWalk = walkToActivitySpotInBuilding(currentBuilding, functionType, allowFail);
 	
 				if (canWalk) {
-					BuildingManager.addRobotToRoboticStation(robot, currentBuilding, functionType);
+					BuildingManager.addRobotToActivitySpot(robot, currentBuilding, functionType);
 				}
 			}
 			else {

@@ -75,6 +75,7 @@ public class MissionDisembarkStep extends MissionStep {
 
     /**
      * Has everyone left the vehicle ?
+     * 
 	 * @param m Controlling mission
      * @param vehicle Vehicle being checked
      * @return
@@ -119,7 +120,8 @@ public class MissionDisembarkStep extends MissionStep {
     }
     
     /**
-     * Leave a vehcile b walking to a builing airlock
+     * Leaves a vehicle and walk to a building airlock.
+     * 
      * @param w Worker wanting to leave
      * @param target Settlement to reach
      * @return Assign a task
@@ -146,7 +148,8 @@ public class MissionDisembarkStep extends MissionStep {
     }
 
     /**
-     * Attempt to get the worker to unload a vehicle.
+     * Attempts to get the worker to unload a vehicle.
+     * 
      * @param worker Worker asking to help
      * @param v Vehicle to unload
      * @return

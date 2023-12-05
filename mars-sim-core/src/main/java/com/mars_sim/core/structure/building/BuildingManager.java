@@ -1145,7 +1145,7 @@ public class BuildingManager implements Serializable {
 			// Do not add robot to hallway, tunnel
 			if (category != BuildingCategory.HALLWAY) {
 				destination = bldg;
-				addRobotToRoboticStation(robot, destination, FunctionType.ROBOTIC_STATION);
+				addRobotToActivitySpot(robot, destination, FunctionType.ROBOTIC_STATION);
 				break;
 			}
 		}
@@ -1178,7 +1178,7 @@ public class BuildingManager implements Serializable {
 					destination = bldg;
 					logger.config(robot, "Initially placed in " + destination.getName() 
 						+ "'s " + functionType.getName() + ".");
-					canAdd = addRobotToRoboticStation(robot, destination, functionType);
+					canAdd = addRobotToActivitySpot(robot, destination, functionType);
 				}
 			}
 		}
@@ -1189,7 +1189,7 @@ public class BuildingManager implements Serializable {
 					&& bldg.getFunction(FunctionType.ROBOTIC_STATION).hasEmptyActivitySpot()) {
 				destination = bldg;
 				logger.config(robot, "Initially placed in " + destination.getName() + "'s robotic station.");
-				canAdd = addRobotToRoboticStation(robot, destination, FunctionType.ROBOTIC_STATION);
+				canAdd = addRobotToActivitySpot(robot, destination, FunctionType.ROBOTIC_STATION);
 			}
 		}	
 
@@ -1202,7 +1202,7 @@ public class BuildingManager implements Serializable {
 		
 					logger.config(robot, "Initially placed in " + destination.getName() 
 						+ "'s " + function.getFunctionType().getName() + ".");
-					canAdd = addRobotToRoboticStation(robot, destination, function.getFunctionType());
+					canAdd = addRobotToActivitySpot(robot, destination, function.getFunctionType());
 				}
 			}
 		}
@@ -1230,7 +1230,7 @@ public class BuildingManager implements Serializable {
 			int rand = RandomUtil.getRandomInt(stations.size() - 1);
 			destination = stations.get(rand);
 		}
-		addRobotToRoboticStation(robot, destination, null);
+		addRobotToActivitySpot(robot, destination, null);
 	}
 
 	/**
@@ -1634,9 +1634,9 @@ public class BuildingManager implements Serializable {
 
 					if (roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
 						roboticStation.addRobot(robot);
+						
+						robot.setCurrentBuilding(building);
 					}
-					
-					robot.setCurrentBuilding(building);
 				}
 
 			} catch (Exception e) {
@@ -1659,7 +1659,7 @@ public class BuildingManager implements Serializable {
 		if (worker instanceof Person person)
 			addPersonToActivitySpot(person, building, null);
 		else if (worker instanceof Robot robot)
-			addRobotToRoboticStation(robot, building, null);
+			addRobotToActivitySpot(robot, building, null);
 	}
 	
 	/**
@@ -1691,8 +1691,6 @@ public class BuildingManager implements Serializable {
 			// Add the person to this building, even if an activity spot is not available				
 			if (lifeSupport != null && !lifeSupport.containsOccupant(person)) {
 				lifeSupport.addPerson(person);
-				
-				person.setCurrentBuilding(building);
 			}
 			
 			if (loc == null) {
@@ -1706,7 +1704,8 @@ public class BuildingManager implements Serializable {
 				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
 				// Put the person there
 				person.setPosition(settlementLoc);
-				
+				// Set the building
+				person.setCurrentBuilding(building);
 				// Add the person to this activity spot
 				f.claimActivitySpot(loc, person);
 				
@@ -1728,50 +1727,61 @@ public class BuildingManager implements Serializable {
 	 * @param functionType
 	 * @return
 	 */
-	public static boolean addRobotToRoboticStation(Robot robot, Building building, FunctionType functionType) {
+	public static boolean addRobotToActivitySpot(Robot robot, Building building, FunctionType functionType) {
 		boolean result = false;
 	
 		try {
-			RoboticStation roboticStation = building.getRoboticStation();
-			Function f = roboticStation;
+			Function f = null;
 
 			// Find an empty robotic station spot
 			LocalPosition loc = null;
 			
 			if (functionType != null)  {
 				var specificF = building.getFunction(functionType);
-				if (specificF != null) {
+				if (specificF == null) {
+					logger.warning(robot, "No " + functionType.getName() + " in " + building.getName() + ".");
+				}
+				else {
 					f = specificF;
+					// Find an empty spot in this function
 					loc = f.getAvailableActivitySpot();
 				}
 			}
-			if (loc == null){
-				// Find an empty spot in life support
-				loc = roboticStation.getAvailableActivitySpot();
 			
-				if (loc == null) {
-					f = building.getEmptyActivitySpotFunction();
-					if (f == null) {
-						logger.warning(robot, "No empty activity spot function in " + building.getName() + ".");
-						return false;
+			if (loc == null){
+				RoboticStation roboticStation = building.getRoboticStation();
+				if (roboticStation == null) {
+					logger.warning(robot, "No robotic function in " + building.getName() + ".");
+				}
+				else {	
+					f = roboticStation;
+					// Find an empty spot in robotic station
+					loc = roboticStation.getAvailableActivitySpot();
+					
+					// Add the robot to the station
+					if (loc != null && roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
+						roboticStation.addRobot(robot);
 					}
-					loc = f.getAvailableActivitySpot();	
 				}
 			}
 			
-			// Add the robot to the station
-			if (roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
-				roboticStation.addRobot(robot);
-				
-				robot.setCurrentBuilding(building);
+			if (loc == null) {
+				f = building.getEmptyActivitySpotFunction();
+				if (f == null) {
+					logger.warning(robot, "No empty activity spot function in " + building.getName() + ".");
+					return false;
+				}
+				loc = f.getAvailableActivitySpot();	
 			}
 
 			if (loc != null) {
+				
 				// Convert the local activity spot to the settlement reference coordinate
 				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
 				// Put the robot there
 				robot.setPosition(settlementLoc);
-
+				// Set the building
+				robot.setCurrentBuilding(building);
 				// Add the robot to this activity spot
 				f.claimActivitySpot(loc, robot);
 

@@ -198,7 +198,7 @@ public abstract class Function implements Serializable, Temporal {
 	}
 	
 	/**
-	 * A worker claims an Acitivty spot at a position wwithin the Function.
+	 * A worker claims an activity spot at a position within the Function.
 	 * 
 	 * @param p Position being claimed
 	 * @param w Worker claiming
@@ -215,7 +215,8 @@ public abstract class Function implements Serializable, Temporal {
 	}
 
 	/**
-	 * Find an Activity spot via it's position
+	 * Finds an activity spot via its position.
+	 * 
 	 * @param p Position to search
 	 * @return Matched activity
 	 */
