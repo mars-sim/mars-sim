@@ -27,6 +27,7 @@ public class SystemCondition implements Serializable {
 	private static SimLogger logger = SimLogger.getLogger(SystemCondition.class.getName());
 
 	private static final int RECOMMENDED_LEVEL = 70;
+	private static final double POWER_SAVE_CONSUMPTION = .02;
 	
     // Data members
     /** Is the robot operational ? */
@@ -35,9 +36,13 @@ public class SystemCondition implements Serializable {
     private boolean isLowPower;
     /** Is the robot charging ? */  
     private boolean isCharging;
+    /** Is the robot on power save mode ? */  
+    private boolean onPowerSave;
     
-    /** The standby power consumption in kW. */
-    private double standbyPower;
+    /** The power consumed in the standby mode in kW. */
+    private double standbykW;
+    /** The power consumed in the power save mode in kW. */
+    private double powerSavekW;
     /** Robot's stress level (0.0 - 100.0). */
     private double systemLoad;
     /** Performance factor. */
@@ -62,7 +67,8 @@ public class SystemCondition implements Serializable {
         operable = true;
 
         lowPowerPercent = spec.getLowPowerModePercent();
-        standbyPower = spec.getStandbyPowerConsumption();
+        standbykW = spec.getStandbyPowerConsumption();
+        powerSavekW = POWER_SAVE_CONSUMPTION * standbykW; 
         maxCapacity = spec.getMaxCapacity();
         currentEnergy = RandomUtil.getRandomDouble(maxCapacity * (lowPowerPercent/100 * 2), maxCapacity);
         updateLowPowerMode();
@@ -73,7 +79,7 @@ public class SystemCondition implements Serializable {
     }
 
     /**
-     * This timePassing method 2 reflect a passing of time.
+     * This method reflects a passing of time.
      * 
      * @param time amount of time passing (in millisols)
      * @param support life support system.
@@ -81,9 +87,12 @@ public class SystemCondition implements Serializable {
      */
     public boolean timePassing(double time) {
 
-        // 3. Consume a minute amount of energy even if a robot does not perform any tasks
-        if (!isCharging)
-        	consumeEnergy(time * MarsTime.HOURS_PER_MILLISOL * standbyPower);
+        // Consume a minute amount of energy even if a robot does not perform any tasks
+    	if (onPowerSave) {
+    		consumeEnergy(time * MarsTime.HOURS_PER_MILLISOL * powerSavekW);
+    	}
+    	else if (!isCharging)
+        	consumeEnergy(time * MarsTime.HOURS_PER_MILLISOL * standbykW);
 
         return operable;
     }
@@ -250,9 +259,30 @@ public class SystemCondition implements Serializable {
      * @throws Exception if error in configuration.
      */
     public double getStandbyPowerConsumption() {
-        return standbyPower;
+        return standbykW;
     }
 
+    /** 
+     * Is the robot on power save mode ? 
+     */ 
+    public boolean isPowerSave() {  
+    	return onPowerSave;
+    }
+    
+    /** 
+     * Sets the robot power save mode. 
+     * 
+     * @param value
+     */
+    public void setPowerSave(boolean value) {  
+    	onPowerSave = value;
+    	
+    	if (value && isCharging) {
+    		// Turns off charging
+    		isCharging = false;
+    	}
+    }
+    
     /**
      * Prepares object for garbage collection.
      */

@@ -191,6 +191,13 @@ public interface Worker extends Loggable, UnitIdentifer, EquipmentOwner {
 	public void setPosition(LocalPosition position);
 
 	/**
+	 * Sets the building the worker is located at.
+	 *
+	 * @param position
+	 */
+	public void setCurrentBuilding(Building building);
+
+	/**
 	 * Gets the manager of the Worker's Tasks.
 	 */
 	public TaskManager getTaskManager();
@@ -203,8 +210,9 @@ public interface Worker extends Loggable, UnitIdentifer, EquipmentOwner {
 	public UnitType getUnitType();
 	
 	/**
-	 * An activity spot has been assigned to a Worker.
-	 * This should release any activity spot already assigned
+	 * Assigns an activity spot to a Worker.
+	 * Note: This will release any activity spot previously assigned.
+	 * 
 	 * @param spot Owned spot
 	 * @see ActivitySpot#claim(Worker)
 	 * @see ActivitySpot#release(Worker)

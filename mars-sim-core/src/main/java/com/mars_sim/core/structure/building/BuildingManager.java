@@ -1720,7 +1720,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Adds the robot to a robotic station activity spot in a building.
+	 * Adds the robot to aN activity spot in a building.
 	 *
 	 * @param robot   the robot to add.
 	 * @param building the building to add the robot to.
@@ -1732,10 +1732,9 @@ public class BuildingManager implements Serializable {
 	
 		try {
 			Function f = null;
-
-			// Find an empty robotic station spot
 			LocalPosition loc = null;
 			
+			// Case 1: Gets an empty pos from functionType
 			if (functionType != null)  {
 				var specificF = building.getFunction(functionType);
 				if (specificF == null) {
@@ -1748,6 +1747,7 @@ public class BuildingManager implements Serializable {
 				}
 			}
 			
+			// Case 2: Gets an empty pos from building's robotic station
 			if (loc == null){
 				RoboticStation roboticStation = building.getRoboticStation();
 				if (roboticStation == null) {
@@ -1765,6 +1765,7 @@ public class BuildingManager implements Serializable {
 				}
 			}
 			
+			// Case 3: Gets an empty pos from any building's function
 			if (loc == null) {
 				f = building.getEmptyActivitySpotFunction();
 				if (f == null) {
@@ -1774,8 +1775,7 @@ public class BuildingManager implements Serializable {
 				loc = f.getAvailableActivitySpot();	
 			}
 
-			if (loc != null) {
-				
+			if (loc != null) {		
 				// Convert the local activity spot to the settlement reference coordinate
 				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
 				// Put the robot there

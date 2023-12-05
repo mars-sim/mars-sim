@@ -79,6 +79,7 @@ import com.mars_sim.core.person.ai.task.meta.YogaMeta;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.person.ai.task.util.MetaTask.WorkerType;
 import com.mars_sim.core.robot.ai.task.ChargeMeta;
+import com.mars_sim.core.robot.ai.task.SavePowerMeta;
 
 /**
  * A utility task for getting the list of meta tasks.
@@ -157,6 +158,7 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new PerformMathematicalModelingMeta());
 		allMetaTasks.add(new PlanMissionMeta());
 		allMetaTasks.add(new PlayHoloGameMeta());
+		allMetaTasks.add(new SavePowerMeta());
 		
 		allMetaTasks.add(new PrepareDessertMeta());
 		allMetaTasks.add(new PrescribeMedicationMeta());

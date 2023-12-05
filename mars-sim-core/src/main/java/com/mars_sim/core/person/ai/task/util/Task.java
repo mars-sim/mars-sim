@@ -1193,6 +1193,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			canWalk = createWalkingSubtask(building, sLoc, allowFail);
 			
 			if (canWalk) {
+				// Warning: there is no need to manually set the building
+//				worker.setCurrentBuilding(building);
 				// Set the new position
 				worker.setPosition(sLoc);
 				// Add to this activity spot
@@ -1514,9 +1516,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				}
 			}
 			
-			if (canWalk) {
-				BuildingManager.addRobotToActivitySpot(robot, currentBuilding, functionType);
-			}
+//			if (canWalk) {
+//				BuildingManager.addRobotToActivitySpot(robot, currentBuilding, functionType);
+//			}
 		}
 		
 		return canWalk;

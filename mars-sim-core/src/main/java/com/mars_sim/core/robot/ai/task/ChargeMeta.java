@@ -24,6 +24,8 @@ public class ChargeMeta extends FactoryMetaTask {
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.charge"); //$NON-NLS-1$
 		
+    private static final int LEVEL_UPPER_LIMIT = Charge.LEVEL_UPPER_LIMIT;
+    
 	private static final double LOW_FACTOR = 5;
 	private static final double CHANCE = 0.2;
     
@@ -57,25 +59,25 @@ public class ChargeMeta extends FactoryMetaTask {
         	
         	double batteryLevel = sc.getBatteryState();
         	
-        	if (batteryLevel >= 95) {
+        	if (batteryLevel >= LEVEL_UPPER_LIMIT) {
         		return 0;
         	}
         	// Checks if the battery is low
         	else if (sc.isLowPower()) {
-        		result += (100 - batteryLevel) * LOW_FACTOR;
+        		result += (LEVEL_UPPER_LIMIT - batteryLevel) * LOW_FACTOR;
         	}
         	else if (batteryLevel <= sc.getRecommendedThreshold()) {
     			double rand = RandomUtil.getRandomDouble(batteryLevel);
     			if (rand < sc.getLowPowerPercent())
     				// At max, ~20% chance it will need to charge 
-    				result += (100 - batteryLevel) * CHANCE;
+    				result += (LEVEL_UPPER_LIMIT - batteryLevel) * CHANCE;
     			else
     				return 0;
     		}
         	else
         		return 0;
 
-        	buildingStation = Charge.findChargingStation(robot);
+        	buildingStation = Charge.findStation(robot);
         	
         	if (buildingStation != null) {
         		return result;

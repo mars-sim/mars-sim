@@ -32,6 +32,8 @@ public class Charge extends Task {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Charge.class.getName());
 
+	static final int LEVEL_UPPER_LIMIT = 95;
+	
 	/** Simple Task name */
 	public static final String SIMPLE_NAME = Charge.class.getSimpleName();
 	
@@ -40,7 +42,7 @@ public class Charge extends Task {
 	public static final String CHARGING_AT = "Charging at ";
 	public static final String END_CHARGING = "Charging Ended";
 	public static final String NO_STATION = "No Station Available";
-	
+	 
 	/** Task phases for robot. */
 	private static final TaskPhase CHARGING = new TaskPhase(Msg.getString("Task.phase.charging")); //$NON-NLS-1$
 	
@@ -50,7 +52,7 @@ public class Charge extends Task {
 		boolean canWalk = false;
 		
 		if (buildingStation == null) {
-			buildingStation = findChargingStation(robot);
+			buildingStation = findStation(robot);
 		}
 		
 		if (buildingStation == null) {
@@ -62,7 +64,6 @@ public class Charge extends Task {
 		RoboticStation station = buildingStation.getRoboticStation();
 		if (station == null) {
 			canWalk = walkToRoboticStation(robot, false);
-//			logger.info(robot, 10_000L, "canWalk: " + canWalk + ".");
 		}
 		
 		if (canWalk) {	
@@ -85,11 +86,11 @@ public class Charge extends Task {
 	}
 
 	/**
-	 * Looks for a robotic charging station.
+	 * Looks for a robotic station.
 	 * 
 	 * @return
 	 */
-	static Building findChargingStation(Robot robot) {
+	static Building findStation(Robot robot) {
 		Building currentBldg = robot.getBuildingLocation();
     	
 		if (currentBldg != null && currentBldg.hasFunction(FunctionType.ROBOTIC_STATION)) {
@@ -155,7 +156,7 @@ public class Charge extends Task {
 		double lowPower = sc.getLowPowerPercent();
 		double timeLeft = getTimeLeft();
 		
-		if (batteryLevel >= 95) {
+		if (batteryLevel >= LEVEL_UPPER_LIMIT) {
 			toCharge = false;
 		}
 

@@ -43,9 +43,12 @@ public class BotTaskManager extends TaskManager {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(BotTaskManager.class.getName());
 
-	// This is a shared cache with the fixed Charge taskjob
+	// The shared cache with the charging job
 	private static TaskCache chargeMap;
 
+	// The shared cache with the power saving job
+	private static TaskCache powerSaveMap;
+	
 	// Mapping of RobotType to the applicable MetaTasks
 	private static Map<RobotType,List<FactoryMetaTask>> robotTasks;
 
@@ -189,8 +192,7 @@ public class BotTaskManager extends TaskManager {
 
 		// If robot is low power then can only charge
 		if (robot.getSystemCondition().isLowPower()) {
-
-			logger.info(robot, "Forcing to be recharged due to low power.");
+			logger.info(robot, 20_000L, "Charging is triggered due to low power.");
 			return getChargeTaskMap();
 		}
 		
@@ -217,9 +219,26 @@ public class BotTaskManager extends TaskManager {
 		newCache.add(stm.getTasks(robot));
 
 		if (newCache.getTasks().isEmpty()) {
-			newCache = getChargeTaskMap();
+			newCache = getPowerSaveTaskMap();
 		}
 		return newCache;
+	}
+
+	private static synchronized TaskCache getPowerSaveTaskMap() {
+		if (powerSaveMap == null) {
+			powerSaveMap = new TaskCache("Power Save Mode", null);
+			TaskJob powerSaveJob = new AbstractTaskJob("SavePower", new RatingScore(SavePower.DEFAULT_SCORE)) {
+				
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public Task createTask(Robot robot) {
+					return new SavePower(robot);
+				}	
+			};
+			powerSaveMap.put(powerSaveJob);
+		}
+		return powerSaveMap;
 	}
 
 	private static synchronized TaskCache getChargeTaskMap() {
@@ -238,9 +257,10 @@ public class BotTaskManager extends TaskManager {
 		}
 		return chargeMap;
 	}
-
+	
 	/**
 	 * A Robot can always do a pending task.
+	 * 
 	 * @return true
 	 */
 	protected boolean isPendingPossible() {
