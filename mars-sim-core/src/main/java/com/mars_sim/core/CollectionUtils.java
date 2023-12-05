@@ -9,13 +9,13 @@ package com.mars_sim.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
@@ -225,8 +225,10 @@ public class CollectionUtils {
 	 */
 	public static Set<Person> getOtherPeople(Settlement settlement) {
 
-		Set<Person> group0 = new HashSet<>(unitManager.getPeople());
-		Set<Person> group1 = new HashSet<>(settlement.getAllAssociatedPeople());
+		Set<Person> group0 = new UnitSet<>();
+		group0.addAll(unitManager.getPeople());
+		Set<Person> group1 = new UnitSet<>();
+		group1.addAll(settlement.getAllAssociatedPeople());
 		
 		group0.removeAll(group1);
 		return group0;

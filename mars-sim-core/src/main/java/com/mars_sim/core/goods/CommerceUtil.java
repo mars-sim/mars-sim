@@ -260,12 +260,12 @@ public final class CommerceUtil {
 
 		Map<Good, Integer> tradeList = new HashMap<>();
 		double costValue = 0;
-		Map<Good,ShoppingItem> buyList = buyingSettlement.getGoodsManager().getBuyList();
-		Map<Good,ShoppingItem> sellList = sellingSettlement.getGoodsManager().getSellList();
+		Map<Good, ShoppingItem> buyList = buyingSettlement.getGoodsManager().getBuyList();
+		Map<Good, ShoppingItem> sellList = sellingSettlement.getGoodsManager().getSellList();
 
 		double massCapacity = delivery.getCargoCapacity() * 0.8D;
 
-		// Find the matchign Goods being sold and bought
+		// Find the matching Goods being sold and bought
 		Set<Good> unionGoods = new HashSet<>(buyList.keySet());
 		unionGoods.retainAll(sellList.keySet());
 		

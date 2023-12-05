@@ -9,7 +9,6 @@ package com.mars_sim.core.person.ai.mission;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +18,7 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.equipment.Equipment;
@@ -591,7 +591,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		
 //		Person p = (Person)member; 	
 		Rover rover = (Rover) v;
-		Set<Person> crew = new HashSet<>(rover.getCrew());
+		Set<Person> crew = new UnitSet<>();
+		crew.addAll(rover.getCrew());
 		
 		if (!crew.isEmpty()) {
 			

@@ -215,7 +215,7 @@ public abstract class VehicleMaintenance extends Function {
 //				Settlement settlement = building.getSettlement();
 //
 //				Rover rover = ((Rover) vehicle);
-//				Set<Person> crew = new HashSet<>(rover.getCrew());
+//				Set<Person> crew = new UnitSet<>(rover.getCrew());
 //				
 //				if (crew != null && !crew.isEmpty()) {
 //					for (Person p: crew) {

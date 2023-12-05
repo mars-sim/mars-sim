@@ -6,12 +6,12 @@
  */
 package com.mars_sim.core.person.ai.task;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -161,7 +161,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 
 		// Unload equipment.
 		if (amountUnloading > 0D) {
-			Set<Equipment> surplus = new HashSet<>();
+			Set<Equipment> surplus = new UnitSet<>();
 			for(Equipment equipment : vehicle.getSuitSet()) {
 				boolean doUnload = true;
 				

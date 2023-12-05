@@ -7,13 +7,13 @@
 package com.mars_sim.core.person.ai.task;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.Person;
@@ -272,7 +272,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	 * @return research buildings with available lab space.
 	 */
 	private static Set<Building> getSettlementLabsWithAvailableSpace(Set<Building> buildingList) {
-		Set<Building> result = new HashSet<>();
+		Set<Building> result = new UnitSet<>();
 
 		for(Building building : buildingList) {
 			Research lab = building.getResearch();

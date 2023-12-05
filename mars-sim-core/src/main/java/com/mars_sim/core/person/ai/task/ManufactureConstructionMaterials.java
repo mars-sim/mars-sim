@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.ai.task;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -278,7 +277,7 @@ public class ManufactureConstructionMaterials extends Task {
 	 */
 	private static Set<Building> getHighestManufacturingTechLevelBuildings(Set<Building> buildingList) {
 
-		Set<Building> result = new HashSet<>();
+		Set<Building> result = new UnitSet<>();
 
 		int highestTechLevel = 0;
 		Iterator<Building> i = buildingList.iterator();
