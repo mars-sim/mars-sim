@@ -1121,41 +1121,49 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		
 		LocalPosition bed = person.getBed();
 		if (bed == null) {
-			logger.info(person, "No bed is assigned.");
-			return false;
+			logger.info(person, 10_000L, "I have no bed assigned to me.");
+			return canWalk;
+		}
+		
+		// Check my own position
+		LocalPosition myLoc = person.getPosition();
+		
+		if (myLoc.equals(bed)) {
+			logger.info(person, 10_000L, "Already in my own bed.");
+			return canWalk;
 		}
 		
 		// Converts a settlement-wide bed location back to an activity spot within a building
 		LocalPosition relBedLoc = LocalAreaUtil.getObjectRelativePosition(bed, building);
-		// Check my own position
-		LocalPosition myLoc = person.getPosition();
+		
 		var livingAccom = building.getLivingAccommodations();
+		
 		var bedSpot = livingAccom.findActivitySpot(relBedLoc);
 		if (bedSpot == null) {
 			logger.warning(person, "Can not find my bed " + relBedLoc + "in " + building.getName()
 					+ ", quarters is " + person.getQuarters().getName());		
-			return true;
+			return canWalk;
 		}
-		else if (!bedSpot.isEmpty()) {
+		
+		if (!bedSpot.isEmpty()) {
 			 if (!myLoc.equals(bed))
 				 logger.warning(person, "Someone is using my bed at " + bed + ".");		
 			 
-			 return true;
+			 return canWalk;
 		}
-		else if (!myLoc.equals(bed)) {		
+		else {		
 			// Create subtask for walking to destination.
 			canWalk = createWalkingSubtask(building, bed, allowFail);
 			
 			if (canWalk) {
 				// Put the person there
 				person.setPosition(bed);
-				
 				// Add the worker to this activity spot
 				livingAccom.claimActivitySpot(relBedLoc, worker);
 			}
 		}
 		
-		return false;
+		return canWalk;
 	}
 
 	/**
@@ -1527,8 +1535,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		// Check my own position
 		LocalPosition myLoc = worker.getPosition();
 
-		if (myLoc.equals(sLoc))
-			return false;
+		if (myLoc.equals(sLoc)) {
+			logger.info(worker, 10_000L, "Already at " + sLoc + ".");
+			return true;
+		}
 		
 		Walk walkingTask = null;
 		
