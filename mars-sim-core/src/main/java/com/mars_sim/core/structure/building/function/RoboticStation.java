@@ -31,7 +31,7 @@ public class RoboticStation extends Function {
 	private static final SimLogger logger = SimLogger.getLogger(RoboticStation.class.getName());
 	
 	/** The charge rate of the bot in kW. */
-	public final static double CHARGE_RATE = 15D;
+	public final static double CHARGE_RATE = 10D;
 
 	private int slots;
 	private int sleepers;

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ChargeMeta.java
- * @date 2022-09-18
+ * @date 2023-12-04
  * @author Barry Evans
  */
 package com.mars_sim.core.robot.ai.task;
@@ -26,13 +26,15 @@ public class ChargeMeta extends FactoryMetaTask {
 	private static final double LOW_FACTOR = 5;
 	private static final double CHANCE = 0.2;
     
+	private Building buildingStation;
+	
     public ChargeMeta() {
 		super(NAME, WorkerType.ROBOT, TaskScope.ANY_HOUR);
 	}
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		return new Charge(robot);
+		return new Charge(robot, buildingStation);
 	}
 
 	@Override
@@ -57,26 +59,24 @@ public class ChargeMeta extends FactoryMetaTask {
         	if (robot.getSystemCondition().isLowPower()) {
         		result += (100 - batteryLevel) * LOW_FACTOR;
         	}
-        	else if (batteryLevel < 90) {
+        	else if (batteryLevel <= robot.getSystemCondition().getRecommendedThreshold()) {
     			double rand = RandomUtil.getRandomDouble(batteryLevel);
     			if (rand < robot.getSystemCondition().getLowPowerPercent())
     				// At max, ~20% chance it will need to charge 
     				result += (100 - batteryLevel) * CHANCE;
+    			else
+    				return 0;
     		}
+        	else
+        		return 0;
+
+        	buildingStation = Charge.findChargingStation(robot);
         	
-        	Building currentBldg = robot.getBuildingLocation();
-			if (currentBldg == null) {
-				return 0;
-			}
-        	
-//			RoboticStation station = currentBldg.getRoboticStation();
-//			if (station.getSleepers() >= station.getSlots()) {
-//				// This is a good building to sleep and charge up
-//				result /= 2;
-//				return result;
-//			}
+        	if (buildingStation != null) {
+        		return result;
+        	}
         }
 
-        return result;
+        return 0;
 	}
 }

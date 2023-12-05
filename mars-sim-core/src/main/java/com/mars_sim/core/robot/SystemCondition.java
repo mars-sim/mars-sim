@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SystemCondition.java
- * @date 2022-07-19
+ * @date 2023-12-04
  * @author Manny Kung
  */
 
@@ -11,7 +11,6 @@ import java.io.Serializable;
 
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -149,7 +148,8 @@ public class SystemCondition implements Serializable {
 	}
 
     /**
-     * Get the performance factor that effect Person with the complaint.
+     * Gets the performance factor that effect Person with the complaint.
+     * 
      * @return The value is between 0 -> 1.
      */
     public double getPerformanceFactor() {
@@ -158,6 +158,7 @@ public class SystemCondition implements Serializable {
 
     /**
      * Sets the performance factor.
+     * 
      * @param newPerformance new performance (between 0 and 1).
      */
     private void setPerformanceFactor(double newPerformance) {
@@ -169,7 +170,8 @@ public class SystemCondition implements Serializable {
     }
 
     /**
-     * Gets the robot system stress level
+     * Gets the robot system stress level.
+     * 
      * @return stress (0.0 to 100.0)
      */
     public double getStress() {
@@ -177,10 +179,9 @@ public class SystemCondition implements Serializable {
     }
 
     /**
-     * This Person is now dead.
-     * @param illness The compliant that makes person dead.
+     * Sets this robot to inoperable.
      */
-    public void setInoperable(HealthProblem illness) {
+    public void setInoperable() {
         setPerformanceFactor(0D);
         operable = false;
     }
@@ -204,7 +205,7 @@ public class SystemCondition implements Serializable {
     }
     
     /**
-     * Get teh maximum battery capacity in kWh.
+     * Gets the maximum battery capacity in kWh.
      */
     public double getBatteryCapacity() {
         return maxCapacity;
@@ -230,6 +231,7 @@ public class SystemCondition implements Serializable {
         double targetEnergy = 0.95 * maxCapacity;
     	if (newEnergy > targetEnergy) {
     		newEnergy = targetEnergy;
+    		// Target reached and quit charging
     		isCharging = false;
     	}
     	double diff = newEnergy - currentEnergy;

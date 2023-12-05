@@ -34,6 +34,7 @@ import com.mars_sim.tools.Msg;
  * This class model how mission data is organized and displayed
  * within the Monitor Window for all settlements.
  */
+@SuppressWarnings("serial")
 public class MissionTableModel extends AbstractMonitorModel
 		implements MissionManagerListener, MissionListener {
 

@@ -1489,10 +1489,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			
 			if (currentBuilding != null && currentBuilding.hasFunction(functionType)) {
 				canWalk = walkToActivitySpotInBuilding(currentBuilding, functionType, allowFail);
-	
-				if (canWalk) {
-					BuildingManager.addRobotToActivitySpot(robot, currentBuilding, functionType);
-				}
 			}
 			else {
 				List<Building> buildingList = robot.getSettlement().getBuildingManager()
@@ -1508,6 +1504,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 						canWalk = walkToActivitySpotInBuilding(building, functionType, allowFail);
 					}
 				}
+			}
+			
+			if (canWalk) {
+				BuildingManager.addRobotToActivitySpot(robot, currentBuilding, functionType);
 			}
 		}
 		

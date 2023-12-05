@@ -15,6 +15,7 @@ import com.mars_sim.tools.Msg;
 /**
  * Default implementation of the MonitorModel
  */
+@SuppressWarnings("serial")
 public abstract class AbstractMonitorModel extends AbstractTableModel
         implements MonitorModel {
 

@@ -231,7 +231,7 @@ public class BotTaskManager extends TaskManager {
 
 				@Override
 				public Task createTask(Robot robot) {
-					return new Charge(robot);
+					return new Charge(robot, null);
 				}	
 			};
 			chargeMap.put(chargeJob);
