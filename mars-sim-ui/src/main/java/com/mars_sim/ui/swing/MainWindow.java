@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
@@ -65,7 +66,7 @@ public class MainWindow
 
 	private static final Logger logger = Logger.getLogger(MainWindow.class.getName());
 
-	public static final int HEIGHT_STATUS_BAR = 20;
+	public static final int HEIGHT_STATUS_BAR = 25;
 	
 	/** Icon image filename for frame */
 	public static final String LANDER_91_PNG = "lander_hab91.png";
@@ -471,11 +472,13 @@ public class MainWindow
 	}
 
 	private void createSpeedButtons(JStatusBar statusBar) {
+		
+		JPanel speedPanel = new JPanel(new FlowLayout());
+		
 		// Add the decrease speed button
 		JButton decreaseSpeed = new JButton();
 		decreaseSpeed.setIcon(DECREASE_ICON);
 		decreaseSpeed.setToolTipText("Decrease the sim speed (aka time ratio)");
-		
 		
 		decreaseSpeed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -484,12 +487,9 @@ public class MainWindow
 				}
 			};
 		});
-
-		statusBar.addLeftComponent(decreaseSpeed, false);
-
+		
 		// Create pause switch
 		createPauseSwitch();
-		statusBar.addLeftComponent(pauseSwitch, false);
 
 		JButton increaseSpeed = new JButton();
 		increaseSpeed.setIcon(INCREASE_ICON);
@@ -502,8 +502,13 @@ public class MainWindow
 				}
 			};
 		});
+		
 		// Add the increase speed button
-		statusBar.addLeftComponent(increaseSpeed, false);
+		speedPanel.add(decreaseSpeed);
+		speedPanel.add(pauseSwitch);
+		speedPanel.add(increaseSpeed);
+		statusBar.addLeftComponent(speedPanel, false);
+		
 	}
 
 	/**

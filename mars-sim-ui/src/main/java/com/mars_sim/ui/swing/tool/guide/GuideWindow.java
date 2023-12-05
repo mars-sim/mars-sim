@@ -167,7 +167,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
         urlLabel.setForeground(Color.DARK_GRAY);
 		statusBar.addLeftComponent(urlLabel, false);
 
-		statusBar.addRightCorner();
+//		statusBar.addRightCorner();
 
         return statusBar;
     }
