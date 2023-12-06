@@ -37,7 +37,15 @@ public class SavePower extends Task {
 	
 	public SavePower(Robot robot) {
 		super(NAME, robot, false, false, 0, 50D);
-	
+		
+		// If robot is low power, leave the power save mode
+		if (robot.getSystemCondition().isLowPower()) {
+			
+			setDescriptionDone(END_POWER_SAVING);
+        	// this task has ended
+			endTask();
+		}
+					
 		walkToAssignedDutyLocation(robot, true);
 		
 		// Initialize phase
@@ -65,17 +73,21 @@ public class SavePower extends Task {
 	private double powerSavingPhase(double time) {
 		
 		if (isDone() || getTimeLeft() <= 0) {
+			
 			setDescription(END_POWER_SAVING, false);
         	// this task has ended
 			endTask();
+			
 			return time;
 		}
 
-		// If robot is low power then can only charge
+		// If robot is low power, leave the power save mode
 		if (robot.getSystemCondition().isLowPower()) {
-			setDescription(END_POWER_SAVING, false);
+			
+			setDescriptionDone(END_POWER_SAVING);
         	// this task has ended
 			endTask();
+			
 			return time;
 		}
 		

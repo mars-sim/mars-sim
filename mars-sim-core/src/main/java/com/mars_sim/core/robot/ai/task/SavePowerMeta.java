@@ -39,6 +39,11 @@ public class SavePowerMeta extends FactoryMetaTask {
         if (robot.isOutside())
             return 0;
 
+    	// Checks if the battery is low
+    	if (robot.getSystemCondition().isLowPower()) {
+    		return 0;
+    	}
+  
         return DEFAULT_SCORE;
 	}
 }

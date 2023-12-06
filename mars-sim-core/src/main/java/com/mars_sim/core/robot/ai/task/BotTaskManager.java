@@ -191,7 +191,7 @@ public class BotTaskManager extends TaskManager {
 	protected TaskCache rebuildTaskCache(MarsTime now) {
 
 		// If robot is low power then can only charge
-		if (robot.getSystemCondition().isLowPower()) {
+		if (robot.getSystemCondition().getBatteryState() < 20) {
 			logger.info(robot, 20_000L, "Charging is triggered due to low power.");
 			return getChargeTaskMap();
 		}
@@ -244,13 +244,13 @@ public class BotTaskManager extends TaskManager {
 	private static synchronized TaskCache getChargeTaskMap() {
 		if (chargeMap == null) {
 			chargeMap = new TaskCache("Robot Charge", null);
-			TaskJob chargeJob = new AbstractTaskJob("Charge", new RatingScore(1D)) {
+			TaskJob chargeJob = new AbstractTaskJob("Charge", new RatingScore(1000D)) {
 				
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public Task createTask(Robot robot) {
-					return new Charge(robot, null);
+					return new Charge(robot, Charge.findStation(robot));
 				}	
 			};
 			chargeMap.put(chargeJob);

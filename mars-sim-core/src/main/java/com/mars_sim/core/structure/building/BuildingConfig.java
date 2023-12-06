@@ -486,11 +486,11 @@ public class BuildingConfig {
 	}
 
 	/**
-	 * Parses an set of position for a building's function. These have a <xloc> & <yloc> structure.
+	 * Parses an set of position for a building's function. These have a xloc & yloc structure.
 	 *
 	 * @param functionElement Element holding locations
 	 * @param locations Name of the location elements
-	 * @param pointName Nmae of the point item
+	 * @param pointName Name of the point item
 	 * @return set of activity spots as Point2D objects.
 	 */
 	private Set<LocalPosition> parsePositions(Element functionElement, String locations, String pointName,

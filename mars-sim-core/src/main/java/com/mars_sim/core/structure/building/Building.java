@@ -590,7 +590,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			return rec;
 		}
 				
-		Collections.shuffle(functions);
+//		Collections.shuffle(functions);
 				
 		for (Function f : functions) {
 			if (f.getFunctionType() != FunctionType.EVA 

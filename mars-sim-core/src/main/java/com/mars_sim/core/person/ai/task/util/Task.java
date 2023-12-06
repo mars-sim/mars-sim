@@ -458,6 +458,17 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param des the task description.
 	 * @param recordTask true if wanting to record
 	 */
+	protected void setDescriptionDone(String des) {
+		description = des;
+		eventTarget.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
+	}
+		
+	/**
+	 * Sets the task's description.
+	 * 
+	 * @param des the task description.
+	 * @param recordTask true if wanting to record
+	 */
 	protected void setDescription(String des, boolean recordTask) {
 		description = des;
 		eventTarget.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
@@ -1177,7 +1188,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected boolean walkToActivitySpotInBuilding(Building building, FunctionType functionType, boolean allowFail) {
 		boolean canWalk = false;
-	
+		
 		Function f = building.getFunction(functionType);
 		if (f == null) {
 			return canWalk;

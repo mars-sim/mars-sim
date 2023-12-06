@@ -27,7 +27,7 @@ public class SystemCondition implements Serializable {
 	private static SimLogger logger = SimLogger.getLogger(SystemCondition.class.getName());
 
 	private static final int RECOMMENDED_LEVEL = 70;
-	private static final double POWER_SAVE_CONSUMPTION = .02;
+	private static final double POWER_SAVE_CONSUMPTION = .01;
 	
     // Data members
     /** Is the robot operational ? */

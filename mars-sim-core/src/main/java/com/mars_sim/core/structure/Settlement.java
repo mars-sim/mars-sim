@@ -767,7 +767,7 @@ public class Settlement extends Structure implements Temporal,
 		int stations = 0;
 		Set<Building> bs = buildingManager.getBuildingSet(FunctionType.ROBOTIC_STATION);
 		for (Building b : bs) {
-			stations += b.getRoboticStation().getSlots();
+			stations += b.getRoboticStation().getOccupantCapacity();
 		}
 
 		result = result + stations;

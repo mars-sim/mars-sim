@@ -481,7 +481,7 @@ public abstract class TaskManager implements Serializable {
 	}
 
 	/**
-	 * The diagnostics modulename to used in any output
+	 * The diagnostics module name to used in any output
 	 * @return
 	 */
 	protected abstract String getDiagnosticsModule();

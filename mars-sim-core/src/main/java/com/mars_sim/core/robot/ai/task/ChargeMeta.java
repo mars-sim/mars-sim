@@ -26,9 +26,10 @@ public class ChargeMeta extends FactoryMetaTask {
 		
     private static final int LEVEL_UPPER_LIMIT = Charge.LEVEL_UPPER_LIMIT;
     
-	private static final double LOW_FACTOR = 5;
-	private static final double CHANCE = 0.2;
-    
+	private static final double CHANCE_0 = 10;
+	private static final double CHANCE_1 = 5;
+//	private static final double CHANCE_2 = 1;
+	
 	private Building buildingStation;
 	
     public ChargeMeta() {
@@ -43,7 +44,7 @@ public class ChargeMeta extends FactoryMetaTask {
 	@Override
 	public double getProbability(Robot robot) {
 
-        double result = 0;
+        double result = 0.5;
 
         // No sleeping outside.
         if (robot.isOutside())
@@ -51,7 +52,7 @@ public class ChargeMeta extends FactoryMetaTask {
 
         else if (robot.isInVehicle())
         	// Future: will re-enable robot serving in a vehicle
-            return result;
+            return 0;
         
         // Crowding modifier.
         else if (robot.isInSettlement()) {
@@ -64,26 +65,33 @@ public class ChargeMeta extends FactoryMetaTask {
         	}
         	// Checks if the battery is low
         	else if (sc.isLowPower()) {
-        		result += (LEVEL_UPPER_LIMIT - batteryLevel) * LOW_FACTOR;
+        		result += (LEVEL_UPPER_LIMIT - batteryLevel) * CHANCE_0;
         	}
         	else if (batteryLevel <= sc.getRecommendedThreshold()) {
     			double rand = RandomUtil.getRandomDouble(batteryLevel);
     			if (rand < sc.getLowPowerPercent())
     				// At max, ~20% chance it will need to charge 
-    				result += (LEVEL_UPPER_LIMIT - batteryLevel) * CHANCE;
-    			else
-    				return 0;
+    				result += (LEVEL_UPPER_LIMIT - batteryLevel) * CHANCE_1;
+//    			else
+//    				result += (LEVEL_UPPER_LIMIT - batteryLevel) * CHANCE_2;
     		}
-        	else
-        		return 0;
 
-        	buildingStation = Charge.findStation(robot);
+
+    		// Future: robot should first "reserve" a spot before going there
+        	// Avoid calling twice to find a robotic station and an empty spot 
+
+        	// Future: Avoid not just getting the instance of the robotic station
+        	// but reserving the exact activity spot
         	
-        	if (buildingStation != null) {
-        		return result;
-        	}
+        	// NOTE: May offer directional charging in future
+        	
+//        	buildingStation = Charge.findStation(robot);
+//        	
+//        	if (buildingStation != null) {
+//        		return result;
+//        	}
         }
 
-        return 0;
+        return result;
 	}
 }

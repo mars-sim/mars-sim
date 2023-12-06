@@ -31,10 +31,8 @@ public class RoboticStation extends Function {
 	private static final SimLogger logger = SimLogger.getLogger(RoboticStation.class.getName());
 	
 	/** The charge rate of the bot in kW. */
-	public final static double CHARGE_RATE = 10D;
+	public final static double CHARGE_RATE = 5D;
 
-	private int slots;
-	private int sleepers;
 	private int occupantCapacity;
 	
 	private double powerToDraw;
@@ -54,9 +52,9 @@ public class RoboticStation extends Function {
 
 		robotOccupants = new UnitSet<>();
 		// Set occupant capacity.
-		occupantCapacity = buildingConfig.getFunctionSpec(building.getBuildingType(), FunctionType.ROBOTIC_STATION).getCapacity();
+		occupantCapacity = spec.getCapacity();
 
-		slots = spec.getCapacity();
+//		slots = occupantCapacity;
 	}
 
 	/**
@@ -83,57 +81,13 @@ public class RoboticStation extends Function {
 			} else {
 				RoboticStation station = building.getRoboticStation();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += station.slots * wearModifier;
+				supply += station.getOccupantCapacity() * wearModifier;
 			}
 		}
 
 		double stationCapacityValue = demand / (supply + 1D);
 		int stationCapacity = buildingConfig.getFunctionSpec(buildingName, FunctionType.ROBOTIC_STATION).getCapacity();
 		return stationCapacity * stationCapacityValue;
-	}
-
-	/**
-	 * Gets the number of slots in the living accommodations.
-	 * 
-	 * @return number of slots.
-	 */
-	public int getSlots() {
-		return slots;
-	}
-
-	/**
-	 * Gets the number of robots sleeping in the stations.
-	 * 
-	 * @return number of robots
-	 */
-	public int getSleepers() {
-		return sleepers;
-	}
-
-	/**
-	 * Adds a sleeper to a station.
-	 * 
-	 * @throws BuildingException if stations are already in use.
-	 */
-	public void addSleeper() {
-		sleepers++;
-		if (sleepers > slots) {
-			sleepers = slots;
-			throw new IllegalStateException("All slots are full.");
-		}
-	}
-
-	/**
-	 * Removes a sleeper from a station.
-	 * 
-	 * @throws BuildingException if no sleepers to remove.
-	 */
-	public void removeSleeper() {
-		sleepers--;
-		if (sleepers < 0) {
-			sleepers = 0;
-			throw new IllegalStateException("Slots are empty.");
-		}
 	}
 
 	/**
@@ -157,7 +111,7 @@ public class RoboticStation extends Function {
 	
 	@Override
 	public double getMaintenanceTime() {
-		return slots * 7D;
+		return occupantCapacity * 2D;
 	}
 
 	/**
@@ -178,10 +132,25 @@ public class RoboticStation extends Function {
 		return robotOccupants;
 	}
 
+	/**
+	 * Gets the occupant size.
+	 * 
+	 * @return
+	 */
 	public int getRobotOccupantNumber() {
 		return robotOccupants.size();
 	}
 
+	/**
+	 * Gets the occupant size.
+	 * 
+	 * @return
+	 */
+	public boolean isSpaceAvailable() {
+		return occupantCapacity > getRobotOccupantNumber();
+	}
+
+	
 	/**
 	 * Gets the available occupancy room.
 	 * 
@@ -215,11 +184,12 @@ public class RoboticStation extends Function {
 				// Remove this person from the old building first
 				BuildingManager.removeRobotFromBuilding(robot, robot.getBuildingLocation());
 			}
+				
+			robotOccupants.add(robot);
 			
 			// Add robot to this building.
 			logger.fine(robot,  10_000L, "Added to " + getBuilding() + "'s robotic station.");
-			
-			robotOccupants.add(robot);
+		
 		} else {
 			throw new IllegalStateException("This robot is already in this building.");
 		}

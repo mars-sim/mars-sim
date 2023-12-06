@@ -33,11 +33,9 @@ import com.mars_sim.tools.Msg;
  * of the list is the Unit Manager. It maps key attributes of the Robot into
  * Columns.
  */
+@SuppressWarnings("serial")
 public class RobotTableModel extends UnitTableModel<Robot> {
 
-	/**
-	 *
-	 */
 	private static final String COUNTING_ROBOTS_KEY = "RobotTableModel.countingRobots";
 	private static final String NAME_ROBOTS_KEY = "RobotTableModel.nameRobots";
 
@@ -301,16 +299,22 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 */
 	private static String getBatteryStatus(double level) {
 		String status;
-		if (level < 10)
+		if (level < 1)
+			status = Msg.getString("RobotTableModel.column.battery.level0");
+		else if (level < 10)
 			status = Msg.getString("RobotTableModel.column.battery.level1");
-		else if (level < 30)
+		else if (level < 20)
 			status = Msg.getString("RobotTableModel.column.battery.level2");
-		else if (level < 60)
+		else if (level < 40)
 			status = Msg.getString("RobotTableModel.column.battery.level3");
-		else if (level < 99)
+		else if (level < 60)
 			status = Msg.getString("RobotTableModel.column.battery.level4");
-		else
+		else if (level < 80)
 			status = Msg.getString("RobotTableModel.column.battery.level5");
+		else if (level < 95)
+			status = Msg.getString("RobotTableModel.column.battery.level6");
+		else
+			status = Msg.getString("RobotTableModel.column.battery.level7");
 		return status;
 	}
 

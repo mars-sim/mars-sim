@@ -1153,7 +1153,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 	
 	/**
-	 * Returns the robotic station the robot is at ?
+	 * Returns the robotic station the robot is at.
 	 * 
 	 * @return
 	 */

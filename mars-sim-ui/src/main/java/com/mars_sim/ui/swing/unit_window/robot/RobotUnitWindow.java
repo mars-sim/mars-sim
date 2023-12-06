@@ -43,7 +43,6 @@ public class RobotUnitWindow extends UnitWindow {
 		this.robot = robot;
 
 		// Add tab panels
-		addTabPanel(new TabPanelGeneral(robot, desktop));
 		addTabPanel(new TabPanelActivity(robot, desktop));
 		addTabPanel(new TabPanelAttribute(robot, desktop));
 		addTabPanel(new MaintenanceTabPanel(robot, desktop));
@@ -64,6 +63,8 @@ public class RobotUnitWindow extends UnitWindow {
 		
 		// Add tab sorting
 		sortTabPanels();
+		
+		addFirstPanel(new TabPanelGeneral(robot, desktop));
 		
 		// Add to tab panels. 
 		addTabIconPanels();

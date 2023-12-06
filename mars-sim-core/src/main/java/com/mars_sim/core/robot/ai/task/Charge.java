@@ -17,7 +17,6 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.RoboticStation;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.mapdata.location.LocalPosition;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -49,80 +48,60 @@ public class Charge extends Task {
 	public Charge(Robot robot, Building buildingStation) {
 		super(NAME, robot, false, false, 0, 50D);
 	
+		// NOTE: May offer directional charging in future
+    	
 		boolean canWalk = false;
+		
+		// Future: robot should first "reserve" a spot before going there
 		
 		if (buildingStation == null) {
 			buildingStation = findStation(robot);
 		}
 		
 		if (buildingStation == null) {
-			setDescription(NO_STATION);
-			endTask();
-			return;
+			setDescriptionDone(NO_STATION);
+			logger.severe(robot, 30_000L, "Unable to find a robotic station. Current building: " 
+					+ robot.getBuildingLocation() + ".");
+
+			// Try it again
+			buildingStation = findStation(robot);
+			if (buildingStation == null) {
+				logger.severe(robot, 30_000L, "Unable to find a robotic station. Current building: " 
+						+ robot.getBuildingLocation() + ".");
+
+				endTask();
+				return;
+			}
+			else {
+				setDescription(NAME);
+			}
 		}
 		
 		RoboticStation station = buildingStation.getRoboticStation();
-		if (station == null) {
+		if (station != null) {
+			
+			logger.info(robot, 30_000L, "Walking to " + buildingStation + ".");
+			
 			canWalk = walkToRoboticStation(robot, false);
 		}
 		
-		if (canWalk) {	
-			logger.info(robot, 10_000L, "Walking to " + station + ".");
-			station = robot.getStation();
-		}
+		if (!canWalk) {
+			logger.severe(robot, 30_000L, "Unable to walk to robotic station in " 
+					+ robot.getBuildingLocation() + ".");
 
-		if (station != null && station.getSleepers() < station.getSlots()) {
-			station.addSleeper();
-		}
-		else {
-			setDescription(NO_STATION);
-			// End charging
-			endTask();
+			// TODO: it is unknown why a robot cannot walk there
+			
+//			endTask();
+//			return;
 		}
 			
-		// Initialize phase
-		addPhase(CHARGING);
-		setPhase(CHARGING);
+		else {
+			// Initialize phase
+			addPhase(CHARGING);
+			setPhase(CHARGING);
+		}
 	}
 
-	/**
-	 * Looks for a robotic station.
-	 * 
-	 * @return
-	 */
-	static Building findStation(Robot robot) {
-		Building currentBldg = robot.getBuildingLocation();
-    	
-		if (currentBldg != null && currentBldg.hasFunction(FunctionType.ROBOTIC_STATION)) {
-			RoboticStation roboticStation = currentBldg.getRoboticStation();
-			if (roboticStation != null) {
-				// Find an empty spot in robotic station
-				LocalPosition loc = roboticStation.getAvailableActivitySpot();
-				if (loc != null) {
-					return currentBldg;
-				}
-			}
-		}
-		
-		Set<Building> functionBuildings = robot.getAssociatedSettlement()
-				.getBuildingManager().getBuildingSet(FunctionType.ROBOTIC_STATION);
-
-		for (Building bldg : functionBuildings) {
-			if (bldg != null && bldg.hasFunction(FunctionType.ROBOTIC_STATION)) {
-				RoboticStation roboticStation = bldg.getRoboticStation();
-				if (roboticStation != null) {
-					// Find an empty spot in robotic station
-					LocalPosition loc = roboticStation.getAvailableActivitySpot();
-					if (loc != null) {
-						return bldg;
-					}
-				}
-			}
-		}
-		
-		return null;
-	}
-	
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null)
@@ -143,9 +122,11 @@ public class Charge extends Task {
 	private double chargingPhase(double time) {
 		
 		if (isDone() || getTimeLeft() <= 0) {
-			setDescription(END_CHARGING, false);
+			setDescriptionDone(END_CHARGING);
+			
+			setDuration(0);
         	// this task has ended
-			endTask();
+//			endTask();
 			return time;
 		}
 	
@@ -204,18 +185,28 @@ public class Charge extends Task {
 				station.setPowerLoad(energy/hrs);
 	
 				// Reset the duration
-				setDuration(95 - batteryLevel);
+				setDuration(LEVEL_UPPER_LIMIT - batteryLevel);
 			}
 			else {
-				setDescription(END_CHARGING, false);
+				setDescriptionDone(END_CHARGING);
+				
+				setDuration(0);
+				
 				// End charging
-				endTask();
+//				endTask();
+				
+				return time;
 			}
 		}
 		else {
-			setDescription(END_CHARGING, false);
+			setDescriptionDone(END_CHARGING);
+			
+			setDuration(0);
+			
 			// End charging
-			endTask();
+//			endTask();
+			
+			return time;
 		}
 
 		return 0;
@@ -231,18 +222,65 @@ public class Charge extends Task {
 		// be doing other tasks while consuming energy
 		robot.getSystemCondition().setCharging(false);
 
-		// Remove robot from stations so other robots can use it.
-		RoboticStation station = robot.getStation();
-		if (station != null && station.getSleepers() > 0) {
-			station.removeSleeper();
-			// NOTE: assess how well this work
-		}
+//		if (robot.getStation() != null) {
+//			robot.getStation().removeRobot(robot);
+//		}
 		
 		walkToAssignedDutyLocation(robot, true);
-
+		
 		super.clearDown();
 	}
 
+
+	/**
+	 * Looks for a robotic station.
+	 * 
+	 * @return
+	 */
+	static Building findStation(Robot robot) {
+		RoboticStation roboticStation = robot.getStation();
+		if (roboticStation != null) {
+			return roboticStation.getBuilding();
+		}
+		
+		Building currentBldg = robot.getBuildingLocation();
+		
+		if (currentBldg != null && currentBldg.hasFunction(FunctionType.ROBOTIC_STATION)) {
+			roboticStation = currentBldg.getRoboticStation();
+			if (roboticStation != null) {
+					
+//				// Find an empty spot in robotic station
+//				LocalPosition loc = roboticStation.getAvailableActivitySpot();
+//				// Check if space is available
+//				if (loc != null && roboticStation.isSpaceAvailable()) {
+//					return currentBldg;
+//				}
+				
+				if (roboticStation.isSpaceAvailable()) {
+					return currentBldg;
+				}
+			}
+		}
+		
+		Set<Building> functionBuildings = robot.getAssociatedSettlement()
+				.getBuildingManager().getBuildingSet(FunctionType.ROBOTIC_STATION);
+	
+		for (Building bldg : functionBuildings) {
+			// Find an empty spot in robotic station
+//			LocalPosition loc = bldg.getRoboticStation().getAvailableActivitySpot();
+//			if (loc != null && roboticStation.isSpaceAvailable()) {
+//				return bldg;
+//			}
+			
+			if (roboticStation.isSpaceAvailable()) {
+				return bldg;
+			}
+		}
+		
+		return null;
+	}
+	
+	
 //	public static Building getAvailableRoboticStationBuilding(Robot robot) {
 //		if (robot.isInSettlement()) {
 //			BuildingManager manager = robot.getSettlement().getBuildingManager();
@@ -283,27 +321,6 @@ public class Charge extends Task {
 //		}
 //
 //		return null;
-//	}
-//
-//	/**
-//	 * Gets a set of robotic stations with empty spots
-//	 *
-//	 * @param buildingList
-//	 * @return
-//	 */
-//	private static Set<Building> getRoboticStationsWithEmptySlots(Set<Building> buildings) {
-//		Set<Building> result = new UnitSet<>();
-//
-//		Iterator<Building> i = buildings.iterator();
-//		while (i.hasNext()) {
-//			Building building = i.next();
-//			RoboticStation station = building.getRoboticStation();
-//			if (station.getSleepers() < station.getSlots()) {
-//				result.add(building);
-//			}
-//		}
-//
-//		return result;
 //	}
 
 }

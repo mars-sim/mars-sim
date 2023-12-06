@@ -22,18 +22,21 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.mapdata.location.Coordinates;
+import com.mars_sim.mapdata.location.LocalPosition;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -79,6 +82,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private JLabel settlementLabel;
 	private JLabel buildingLabel;
 	private JLabel locationStateLabel;
+	private JLabel buildingXYLabel;
+	private JLabel settlementXYLabel;
 	
 	private Coordinates locationCache;
 
@@ -86,9 +91,13 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 	private DisplaySingle lcdLong;
 	private DisplaySingle lcdLat;
-	private DisplaySingle lcdText; 
+	private DisplaySingle bannerText; 
 	private DisplayCircular gauge;
 
+	private Dimension latLonDim = new Dimension(120, 30);
+	private Dimension gaugeDim = new Dimension(70, 70);
+	private Dimension bannerDim = new Dimension(150, 30);
+	
 	/**
 	 * Constructor.
 	 *
@@ -146,7 +155,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			dir_E_W = Msg.getString("direction.degreeSign") + "W";
 
 		JPanel northPanel = new JPanel(new FlowLayout());
-		locationPanel.add(northPanel, BorderLayout.NORTH);
+		locationPanel.add(northPanel, BorderLayout.SOUTH);
 
 		lcdLat = new DisplaySingle();
 		lcdLat.setLcdUnitString(dir_N_S);
@@ -159,9 +168,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		// lcd1.setBorder(new EmptyBorder(5, 5, 5, 5));
 		lcdLat.setDigitalFont(true);
 		lcdLat.setLcdDecimals(4);
-		lcdLat.setSize(new Dimension(150, 45));
-		lcdLat.setMaximumSize(new Dimension(150, 45));
-		lcdLat.setPreferredSize(new Dimension(150, 45));
+		lcdLat.setSize(latLonDim);
+		lcdLat.setMaximumSize(latLonDim);
+		lcdLat.setPreferredSize(latLonDim);
 		lcdLat.setVisible(true);
 
 		northPanel.add(lcdLat);
@@ -213,42 +222,42 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		lcdLong.setGlowColor(Color.yellow);
 		lcdLong.setDigitalFont(true);
 		lcdLong.setLcdDecimals(4);
-		lcdLong.setSize(new Dimension(150, 40));
-		lcdLong.setMaximumSize(new Dimension(150, 40));
-		lcdLong.setPreferredSize(new Dimension(150, 40));
+		lcdLong.setSize(latLonDim);
+		lcdLong.setMaximumSize(latLonDim);
+		lcdLong.setPreferredSize(latLonDim);
 		lcdLong.setVisible(true);
 		lcdPanel.add(lcdLong);
 		northPanel.add(lcdPanel);
 
 		JPanel gaugePanel = new JPanel();
 		gauge = new DisplayCircular();
-		gauge.setSize(new Dimension(100, 100));
-		gauge.setMaximumSize(new Dimension(100, 100));
-		gauge.setPreferredSize(new Dimension(100, 100));
+		gauge.setSize(gaugeDim);
+		gauge.setMaximumSize(gaugeDim);
+		gauge.setPreferredSize(gaugeDim);
 		setGauge(gauge, elevationCache);
 		gaugePanel.add(gauge);
 		
 		locationPanel.add(gaugePanel, BorderLayout.CENTER);
 
-		lcdText = new DisplaySingle();
-		lcdText.setLcdInfoString("Last Known Position");
+		bannerText = new DisplaySingle();
+		bannerText.setLcdInfoString("Last Known Position");
 		// lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
-		lcdText.setGlowColor(Color.ORANGE);
+		bannerText.setGlowColor(Color.ORANGE);
 		// lcdText.setBackground(Background.SATIN_GRAY);
-		lcdText.setDigitalFont(true);
-		lcdText.setSize(new Dimension(150, 30));
-		lcdText.setMaximumSize(new Dimension(150, 30));
-		lcdText.setPreferredSize(new Dimension(150, 30));
-		lcdText.setVisible(true);
-		lcdText.setLcdNumericValues(false);
-		lcdText.setLcdValueFont(new Font("Serif", Font.ITALIC, 8));
+		bannerText.setDigitalFont(true);
+		bannerText.setSize(bannerDim);
+		bannerText.setMaximumSize(bannerDim);
+		bannerText.setPreferredSize(bannerDim);
+		bannerText.setVisible(true);
+		bannerText.setLcdNumericValues(false);
+		bannerText.setLcdValueFont(new Font("Serif", Font.ITALIC, 8));
 
-		lcdText.setLcdText(locationStringCache);
+		bannerText.setLcdText(locationStringCache);
 
 		// Pause the location lcd text the sim is pause
-        lcdText.setLcdTextScrolling(true);
+        bannerText.setLcdTextScrolling(true);
 
-		locationPanel.add(lcdText, BorderLayout.SOUTH);
+		locationPanel.add(bannerText, BorderLayout.NORTH);
 
 		/////
 		
@@ -259,22 +268,35 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		buildingCache = unit.getBuildingLocation();
 		String n4 = buildingCache != null ? buildingCache.getName() : "";
 		
+		Worker worker = (Worker)unit;
+		LocalPosition sLoc = worker.getPosition();
+		String n6 = sLoc.toString();
+		String n5 = "";
+		if (buildingCache != null) {
+			LocalPosition bLoc = LocalAreaUtil.getObjectRelativePosition(sLoc, buildingCache);
+			n5 = bLoc.toString();
+		}
+		
 		// Prepare info panel.
-		AttributePanel containerPanel = new AttributePanel(5);
+		AttributePanel containerPanel = new AttributePanel(7);
 		content.add(containerPanel, BorderLayout.CENTER);
 		topContainerLabel = containerPanel.addRow("Top Container Unit", n0);
 		containerLabel = containerPanel.addRow("Container Unit", n1);
 		settlementLabel = containerPanel.addRow("Settlement Container", n2);
+		
 		buildingLabel = containerPanel.addRow("Building", n4);
 		locationStateLabel = containerPanel.addRow("Location State", n3);
 		
+		buildingXYLabel = containerPanel.addRow("Building Loc", n5);
+		settlementXYLabel = containerPanel.addRow("Settlemnet Loc", n6);
+			
 		updateLocationBanner(unit);
 
 		checkTheme(true);
 	}
 
 	public void checkTheme(boolean firstRun) {
-		lcdText.setLcdColor(LcdColor.DARKBLUE_LCD);
+		bannerText.setLcdColor(LcdColor.DARKBLUE_LCD);
 		gauge.setFrameDesign(FrameDesign.STEEL);
 //		locatorButton.setIcon(ImageLoader.getIcon(FIND_ORANGE));
 	}
@@ -555,6 +577,18 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			locationStateLabel.setText(Conversion.capitalize0(n));
 		}
 		
+		Worker worker = (Worker)unit;
+		LocalPosition sLoc = worker.getPosition();
+		String n6 = sLoc.toString();
+		String n5 = "";
+		if (building != null) {
+			LocalPosition bLoc = LocalAreaUtil.getObjectRelativePosition(sLoc, buildingCache);
+			n5 = bLoc.toString();
+		}
+		
+		buildingXYLabel.setText(n5);
+		settlementXYLabel.setText(n6);
+		
 		updateLocationBanner(unit);
 	}
 
@@ -567,7 +601,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 		if (!locationStringCache.equalsIgnoreCase(loc)) {
 			locationStringCache = loc;
-			lcdText.setLcdText(loc);
+			bannerText.setLcdText(loc);
 		}
 	}
 
@@ -584,7 +618,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		locatorButton = null;
 		lcdLong = null;
 		lcdLat = null;
-		lcdText = null;
+		bannerText = null;
 		gauge = null;
 
 	}

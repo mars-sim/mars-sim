@@ -221,7 +221,7 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return Matched activity
 	 */
 	public ActivitySpot findActivitySpot(LocalPosition p) {
-		for(var a : spots) {
+		for (var a : spots) {
 			if (a.getPos().equals(p)) {
 				return a;
 			}
@@ -235,7 +235,7 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return
 	 */
 	public LocalPosition getAvailableActivitySpot() {
-		var f =  spots.stream()
+		var f = spots.stream()
 							.filter(ActivitySpot::isEmpty)
 							.map(ActivitySpot::getPos)
 							.findFirst();
