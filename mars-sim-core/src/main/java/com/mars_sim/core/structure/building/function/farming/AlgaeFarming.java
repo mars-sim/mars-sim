@@ -52,6 +52,9 @@ public class AlgaeFarming extends Function {
 	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
 	private static final int CO2_ID = ResourceUtil.co2ID;
 	private static final int GREY_WATER_ID = ResourceUtil.greyWaterID;
+
+	public static final int HARVESTED_ALGAE_ID = ResourceUtil.spirulinaID;
+	public static final int PRODUCED_ALGAE_ID = HARVESTED_ALGAE_ID + 1; // id: 362
 	
 	private static final int LIGHT_FACTOR = 0;
 //	private static final int FERTILIZER_FACTOR = 1;
@@ -231,8 +234,8 @@ public class AlgaeFarming extends Function {
 	/** Keep track of cleaning and inspections. */
 	private HouseKeeping houseKeeping;
 	
-	/** The resource usage of algae in this facility [kg/sol]. */
-	private SolMetricDataLogger<Integer> resourceUsage = new SolMetricDataLogger<>(MAX_NUM_SOLS);
+	/** The resource logs for growing algae in this facility [kg/sol]. */
+	private SolMetricDataLogger<Integer> resourceLog = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 	
 	private static CropConfig cropConfig;
 	
@@ -375,24 +378,24 @@ public class AlgaeFarming extends Function {
 	/**
 	 * Records the average resource usage of a resource
 	 *
-	 * @param usage    average consumption/production in kg/sol
+	 * @param amount    average consumption/production in kg/sol
 	 * @Note positive usage amount means consumption 
 	 * @Note negative usage amount means generation
-	 * @param id The resource id (exception: 0 for algae harvested)
+	 * @param id The resource id
 	 */
-	public void addResourceUsage(double usage, int id) {
-		resourceUsage.increaseDataPoint(id, usage);
+	public void addResourceLog(double amount, int id) {
+		resourceLog.increaseDataPoint(id, amount);
 	}
 	
 
 	/**
-	 * Computes the average usage of a particular resource.
+	 * Computes the daily average of a particular resource.
 	 * 
-	 * @param id The resource id (exception: 0 for algae harvested)
-	 * @return average water consumption in kg/sol
+	 * @param id The resource id
+	 * @return average consumed or produced in kg/sol
 	 */
-	public double computeUsage(int id) {
-		return resourceUsage.getDailyAverage(id);
+	public double computeDaily(int id) {
+		return resourceLog.getDailyAverage(id);
 	}
 	
 	/**
@@ -484,7 +487,7 @@ public class AlgaeFarming extends Function {
 		if (amount > 0) {
 			retrieve(amount, WATER_ID, true);
 			// Record the amount of water consumed
-			addResourceUsage(amount, id);		
+			addResourceLog(amount, id);		
 		}
 	}
 	
@@ -505,7 +508,7 @@ public class AlgaeFarming extends Function {
 			else {
 				gasCache -= amount;
 			}
-			addResourceUsage(amount, gasId);
+			addResourceLog(amount, gasId);
 		}
 		return gasCache;
 	}
@@ -520,7 +523,7 @@ public class AlgaeFarming extends Function {
 		if (amount > 0) {
 			store(amount, GREY_WATER_ID, "AlgaeFarming::storeGreyWater");
 			// Record the amount of grey water produced
-			addResourceUsage(amount, id);		
+			addResourceLog(amount, id);		
 		}
 	}
 	
@@ -541,7 +544,7 @@ public class AlgaeFarming extends Function {
 			else {
 				gasCache -= amount;
 			}
-			addResourceUsage(-amount, gasId);
+			addResourceLog(-amount, gasId);
 		}
 		return gasCache;
 	}
@@ -644,15 +647,14 @@ public class AlgaeFarming extends Function {
 		if (currentAlgae < maxAlgae * 1.1 && currentFood > 0) {
 			   birthIterationCache += BIRTH_RATE * time * currentAlgae 
 					   * (1 + .01 * RandomUtil.getRandomInt(-10, 10));
-			   if (birthIterationCache > 1) {
-				   double newAlgae = birthIterationCache;
-				   birthIterationCache = birthIterationCache - newAlgae;
-				   currentAlgae += newAlgae;
-				   
-				   // Record the harvest amount
-				   // Note: need a separate id to record the daily production of algae
-//					addResourceUsage(-newAlgae, ResourceUtil.spirulinaID);
-			   }
+		   if (birthIterationCache > 1) {
+			   double newAlgae = birthIterationCache;
+			   birthIterationCache = birthIterationCache - newAlgae;
+			   currentAlgae += newAlgae;
+			   
+			   // Record the freshly produced spirulina
+			   addResourceLog(newAlgae, PRODUCED_ALGAE_ID);
+		   }
 		}	   
 	}
 
@@ -887,6 +889,7 @@ public class AlgaeFarming extends Function {
 
 	/**
 	 * Gets the ratio of current algae mass to ideal algae mass.
+	 * Note: this ratio should be open for player to adjust.
 	 * 
 	 * @return
 	 */
@@ -947,11 +950,11 @@ public class AlgaeFarming extends Function {
 				
 		// Harvesting a certain amount (~ 1 kg)
 		double harvestedWetBiomass = RandomUtil.getRandomDouble(.9, 1.1)
-				* EXPECTED_YIELD_RATE / waterMass * workTime;
+				* EXPECTED_YIELD_RATE * waterMass * workTime / 1000;
 		
-//		logger.log(building, worker, Level.INFO, 5000, "Harvesting " 
-//				+ Math.round(harvested * 100.0)/100.0 
-//				+ " kg algae. Pond stock: " +  Math.round(currentAlgae * 100.0)/100.0, null);
+		logger.log(building, worker, Level.INFO, 5000, "harvestedWetBiomass: " 
+				+ Math.round(harvestedWetBiomass * 100.0)/100.0 
+				+ " kg algae. Pond stock: " +  Math.round(currentAlgae * 100.0)/100.0);
 		
 		if (currentAlgae < harvestedWetBiomass)
 			return 0;
@@ -968,9 +971,9 @@ public class AlgaeFarming extends Function {
 		
 		double filteredMass = harvestedWetBiomass - spirulinaExtracted;
 		
-		double returnAlgae = filteredMass * .7;
+		double returnAlgae = filteredMass * .8;
 		
-		double greyWaterWaste = filteredMass * .25;
+		double greyWaterWaste = filteredMass * .15;
 		
 		double foodWaste = filteredMass * .05;
 		
@@ -978,12 +981,20 @@ public class AlgaeFarming extends Function {
 
 		store(foodWaste, ResourceUtil.foodWasteID, "AlgaeFarming::foodWaste");
 		
-		storeGreyWater(greyWaterWaste, ResourceUtil.greyWaterID);
-		
-		store(spirulinaExtracted, ResourceUtil.spirulinaID, "AlgaeFarming::harvestAlgae");
-		// Record the harvest amount
-		addResourceUsage(spirulinaExtracted, ResourceUtil.spirulinaID);
+		storeGreyWater(greyWaterWaste, GREY_WATER_ID);
 
+		// Record the grey water amount
+		addResourceLog(greyWaterWaste, GREY_WATER_ID);
+		
+		store(spirulinaExtracted, HARVESTED_ALGAE_ID, "AlgaeFarming::harvestAlgae");
+		// Record the harvest amount
+		addResourceLog(spirulinaExtracted, HARVESTED_ALGAE_ID);
+
+		logger.log(building, worker, Level.INFO, 5000, "spirulinaExtracted: " 
+				+ Math.round(spirulinaExtracted * 100.0)/100.0 
+				+ " kg algae.");
+		
+		
 		return spirulinaExtracted;
 	}
 
@@ -1013,7 +1024,7 @@ public class AlgaeFarming extends Function {
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
-		resourceUsage = null;
+		resourceLog = null;
 		houseKeeping = null;
 	}
 }

@@ -206,8 +206,9 @@ public class TendAlgaePond extends Task {
 
 		double algaeMass = pond.harvestAlgae(worker, workTime);
 		if (algaeMass == 0.0) {
-			logger.log(building, worker, Level.INFO, 0, "Total kg algae harvested: " 
-					+ Math.round(totalHarvested * 100.0)/100.0 , null);
+			// if algaeMass is zero, none can be harvested
+//			logger.log(building, worker, Level.INFO, 0, "Total kg algae harvested: " 
+//					+ Math.round(totalHarvested * 100.0)/100.0 , null);
 			endTask();
 		}
 		
