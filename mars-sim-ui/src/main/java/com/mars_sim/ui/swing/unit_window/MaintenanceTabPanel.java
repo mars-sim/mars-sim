@@ -178,9 +178,9 @@ public class MaintenanceTabPanel extends TabPanel {
 
 		// Update last completed label.
 		StringBuilder text = new StringBuilder();
-		text.append(StyleManager.DECIMAL_SOLS.format(manager.getTimeSinceLastMaintenance()/1000D));
+		text.append(StyleManager.DECIMAL_SOLS3.format(manager.getTimeSinceLastMaintenance()/1000D));
 		text.append(" (Per Period: ");
-		text.append(StyleManager.DECIMAL_SOLS.format(manager.getMaintenancePeriod()/1000D));
+		text.append(StyleManager.DECIMAL_SOLS3.format(manager.getMaintenancePeriod()/1000D));
 		text.append(")");
 
 		lastCompletedLabel.setText(text.toString());

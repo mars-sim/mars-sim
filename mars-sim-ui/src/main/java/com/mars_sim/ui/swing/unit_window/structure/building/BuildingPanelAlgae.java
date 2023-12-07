@@ -33,7 +33,9 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 	private static final String DEGREE_CELSIUS = " " + Msg.getString("temperature.sign.degreeCelsius");
 	
 	private static final DecimalFormat DECIMAL_KG_SOL = new DecimalFormat("#,##0.0 kg/Sol");
+	private static final DecimalFormat DECIMAL_G_LITER = new DecimalFormat("#,##0.00 g/L");
 
+	
 	// Caches
 	private double algaeMass;
 	private double idealAlgaeMass; 
@@ -61,6 +63,8 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 	private double workTimeCache;
 	/** The cache for the amount of solar irradiance. */
 	private double radCache;
+	/** The cache for the ratio of algae to water. */
+	private double algaeWaterRatio;
 
 	private JLabel tempLabel;
 	private JLabel algaeMassLabel;
@@ -73,6 +77,9 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 	private JLabel foodDemandLabel;
 
 	private JLabel waterMassLabel;
+	
+
+	private JLabel algaeWaterRatioLabel;
 	
 	private JLabel powerReqLabel;
 	private JLabel radLabel;
@@ -115,7 +122,7 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
-		AttributePanel labelPanel = new AttributePanel(17);
+		AttributePanel labelPanel = new AttributePanel(18);
 		center.add(labelPanel, BorderLayout.NORTH);
 		
 //		labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.tankSize"), 
@@ -150,6 +157,10 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 		waterMassLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.waterMass"),
 				StyleManager.DECIMAL_LITER2.format(waterMass), null);
 		
+		algaeWaterRatio = pond.getAlgaeWaterRatio();
+		algaeWaterRatioLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.algaeWaterRatio"),
+			DECIMAL_G_LITER.format(algaeWaterRatio)
+				+ " (" + Math.round(AlgaeFarming.ALGAE_TO_WATER_RATIO*100000.0)/100.0 + ")", null);
 		
 		foodMass = pond.getFoodMass();	
 		foodMassLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.foodMass"),
@@ -195,7 +206,7 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 		// Update the cumulative work time
 		workTimeCache = pond.getCumulativeWorkTime()/1000.0;
 		workTimeLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.workTime.title"),
-									StyleManager.DECIMAL_SOLS.format(workTimeCache),
+									StyleManager.DECIMAL_SOLS3.format(workTimeCache),
 									Msg.getString("BuildingPanelAlgae.workTime.tooltip"));
 	}
 
@@ -239,6 +250,13 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 		if (algaeProducedCache != newAlgaeProduced) {
 			algaeProducedCache = newAlgaeProduced;
 			algaeProducedLabel.setText(DECIMAL_KG_SOL.format(newAlgaeProduced));
+		}
+		
+		double newAlgaeWaterRatio = pond.getAlgaeWaterRatio();
+		if (algaeWaterRatio != newAlgaeWaterRatio) {
+			algaeWaterRatio = newAlgaeWaterRatio;
+			algaeWaterRatioLabel.setText(DECIMAL_G_LITER.format(newAlgaeWaterRatio)
+					+ " (" + Math.round(AlgaeFarming.ALGAE_TO_WATER_RATIO *100000.0)/100.0 + ")");
 		}
 		
 		double newFoodMass = pond.getFoodMass();
@@ -304,7 +322,7 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 		double workTime = pond.getCumulativeWorkTime()/1000.0;
 		if (workTimeCache != workTime) {
 			workTimeCache = workTime;
-			workTimeLabel.setText(StyleManager.DECIMAL_SOLS.format(workTime));
+			workTimeLabel.setText(StyleManager.DECIMAL_SOLS3.format(workTime));
 		}
 	}
 }

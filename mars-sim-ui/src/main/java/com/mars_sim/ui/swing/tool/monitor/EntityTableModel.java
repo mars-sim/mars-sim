@@ -17,7 +17,7 @@ import java.util.Set;
 import javax.swing.SwingUtilities;
 
 /**
- * This provides a table modle implementation that allows each row to be mapped to
+ * This provides a table model implementation that allows each row to be mapped to
  * a single SImualtion entity. The properties of the entity are mapped into columns
  * by the sub implementation.
  * The class provides the ability to cache specific columns in a backing store to reduce the
@@ -69,7 +69,8 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
     }
 
     /**
-     * Reset the entities that provide the Row data.
+     * Resets the entities that provide the Row data.
+     * 
      * @param newEntities
      */
     protected void resetEntities(Collection<T> newEntities) {
@@ -93,8 +94,9 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
     }
 
     /**
-     * Add an entity to the model. This can be overriden if special onboarding
+     * Adds an entity to the model. This can be overridden if special onboarding
      * logic is need, e.g. register listeners.
+     * 
      * @param newEntity
      * @return 
      */
@@ -117,7 +119,7 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
     }
 
     /**
-     * Remove a previously added Entity form the model.
+     * Removes a previously added Entity form the model.
      */
     protected void removeEntity(T oldEntity) {
         int idx = entities.indexOf(oldEntity);
@@ -133,7 +135,8 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
     }
 
     /**
-     * Get the Entities held withink the model.
+     * Gets the Entities held within the model.
+     * 
      * @return
      */
     protected List<T> getEntities() {
@@ -141,7 +144,7 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
     }
 
     /**
-	 * Get the Entity<T> at the specified row.
+	 * Gets the Entity<T> at the specified row.
 	 *
 	 * @param index Index of the row.
 	 * @return Entity matching row
@@ -157,7 +160,7 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
 	}
 
 	/**
-	 * Get the unit at the specified row.
+	 * Gets the unit at the specified row.
 	 *
 	 * @param row Indexes of Unit to retrieve.
 	 * @return Unit at specified position.
@@ -169,7 +172,7 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
 
 
 	/**
-	 * Get the number of rows in the model.
+	 * Gets the number of rows in the model.
 	 *
 	 * @return the number of Units.
 	 */
@@ -179,8 +182,9 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
 	}
 
     /**
-     * Get a value for a particular cell. This may come from a cached value
+     * Gets a value for a particular cell. This may come from a cached value
      * if the column is one of the cached columns.
+     * 
      * @param rowIndex
      * @param columnIndex
      * @see #getEntityValue(Object, int)
@@ -226,8 +230,10 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
     }
 
     /**
-     * A range of column values have changed. This will recalculate any cached columns if needed
+     * Updates a range of column values that have been changed. 
+     * This will recalculate any cached columns if needed
      * and always fire a model change event asynchronously.
+     * 
      * @param entity
      * @param firstCol
      * @param lastCol
@@ -255,7 +261,7 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
     }
 
     /**
-     * Get the real value of this entity for a specific column. This implementation
+     * Gets the real value of this entity for a specific column. This implementation
      * may involve expensive calculations.
      */
     protected abstract Object getEntityValue(T entity, int column);
@@ -274,6 +280,5 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
         public void run() {
             fireTableCellUpdated(rowIndex, colIndex);
         }
-
     }
 }

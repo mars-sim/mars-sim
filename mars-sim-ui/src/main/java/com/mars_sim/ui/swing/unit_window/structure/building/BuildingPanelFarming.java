@@ -173,7 +173,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		// Update the cumulative work time
 		workTimeCache = farm.getCumulativeWorkTime()/1000.0;
 		workTimeLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.workTime.title"),
-									StyleManager.DECIMAL_SOLS.format(workTimeCache),
+									StyleManager.DECIMAL_SOLS3.format(workTimeCache),
 									Msg.getString("BuildingPanelFarming.workTime.tooltip"));
 
 		waterUsageCache = farm.computeUsage(ResourceUtil.waterID);
@@ -392,7 +392,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		double workTime = farm.getCumulativeWorkTime()/1000.0;
 		if (workTimeCache != workTime) {
 			workTimeCache = workTime;
-			workTimeLabel.setText(StyleManager.DECIMAL_SOLS.format(workTime));
+			workTimeLabel.setText(StyleManager.DECIMAL_SOLS3.format(workTime));
 		}
 		
 		// Update crop table.

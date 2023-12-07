@@ -213,19 +213,18 @@ public class Fishery extends Function {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
-		    // Account for fish and weeds
-		    simulatePond(pulse.getElapsed());
-
-			// check for the passing of each day
-			if (pulse.isNewSol()) {
-				// degrade the cleanliness
-				houseKeeping.degradeCleaning(1);
-
-				// degrade the housekeeping item
-				houseKeeping.degradeInspected(1);
-			}
+			double time = pulse.getElapsed();
 			
-			weedAge += pulse.getElapsed();
+		    // Account for fish and weeds
+		    simulatePond(time);
+
+		    double degradeValue = time / 1000;
+			// degrade the cleanliness
+			houseKeeping.degradeCleaning(degradeValue);
+			// degrade the housekeeping item
+			houseKeeping.degradeInspected(degradeValue);
+			
+			weedAge += time;
 		}
 		return valid;
 	}

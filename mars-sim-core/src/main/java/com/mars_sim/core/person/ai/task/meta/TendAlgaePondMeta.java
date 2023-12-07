@@ -124,23 +124,20 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
             
             RatingScore result = new RatingScore("base", BASE_SCORE);
 
-            result.addBase("maintenance", (200 - pond.getCleaningScore() - pond.getInspectionScore())/10);
+            result.addBase("maintenance", 
+            		2 * (200 - pond.getCleaningScore() - pond.getInspectionScore()));
     
             double ratio = pond.getSurplusRatio();
-            result.addBase("surplus", (1 - ratio) * 10D);
+            result.addBase("surplus", ratio * 50);
             
             double foodDemand = pond.getNutrientDemand();     
-            result.addBase("nutrient.demand", foodDemand * 10);
+            result.addBase("nutrient.demand", foodDemand * 50);
             
-            double foodMass = pond.getFoodMass();
-            double algaeMass = pond.getCurrentAlgae();
-            
-            if (foodMass < 0)
-            	// Need to 
-            	result.addBase("algae.ratio", Math.exp(2 * (1 - foodMass)));
-            else
-            	result.addBase("algae.ratio", algaeMass / foodMass / 5);
-            
+            double nutrientRatio = pond.getCurrentNutrientRatio();
+            double defaultNRatio = AlgaeFarming.NUTRIENT_RATIO;
+  
+            result.addBase("nutrient.ratio", defaultNRatio / nutrientRatio * 50);
+      
             if (result.getScore() > 0) {
                 tasks.add(new AlgaeTaskJob(this, pond, result));
             }

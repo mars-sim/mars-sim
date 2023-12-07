@@ -61,7 +61,7 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_PERC = new DecimalFormat("0 '%'");
     public static final DecimalFormat DECIMAL_PERC1 = new DecimalFormat("0.0 '%'");
     public static final DecimalFormat DECIMAL_PERC2 = new DecimalFormat("0.00 '%'");
-    public static final DecimalFormat DECIMAL_SOLS = new DecimalFormat("#,##0.0 Sols");
+    public static final DecimalFormat DECIMAL_SOLS3 = new DecimalFormat("#,##0.000 Sols");
     public static final DecimalFormat DECIMAL_DEG = new DecimalFormat("0.# \u00B0");
     public static final DecimalFormat DECIMAL_CELCIUS = new DecimalFormat("0.0 \u00B0C");
 

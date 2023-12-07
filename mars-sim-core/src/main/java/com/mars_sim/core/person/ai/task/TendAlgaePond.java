@@ -95,23 +95,36 @@ public class TendAlgaePond extends Task {
 
 		int rand = RandomUtil.getRandomInt(6);
 		
-		if (rand == 6 || pond.getSurplusRatio() > 0.5) {
-			// Harvest
-			setPhase(HARVESTING);
-			addPhase(HARVESTING);
-		}
-		else if ((rand == 4 && rand == 5) || pond.getNutrientDemand() > 0) {
+		double surplus = pond.getSurplusRatio();
+		
+		// If it hasn't tended the algae for over 500 millisols, do it now
+		if (pond.getNutrientDemand() > 2) {
 			setPhase(TENDING);
 			addPhase(TENDING);
 			addPhase(INSPECTING);
 			addPhase(CLEANING);
 		}
-		else if (rand == 0 && rand == 1) {
+		// If surplus is less than or equal to 0.5, do NOT harvest
+		// Note: may offer exception in future
+		else if ((rand == 0 && surplus > 0.5) 
+				// If the mass of algae exceeds the ideal mass, harvest it now
+				|| pond.getSurplusRatio() > 1) {
+			// Harvest
+			setPhase(HARVESTING);
+			addPhase(HARVESTING);
+		}
+		else if (rand == 1 || rand == 2) {
+			setPhase(CLEANING);
+			addPhase(CLEANING);
+		}
+		else if (rand == 3 || rand == 4) {
 			setPhase(INSPECTING);
 			addPhase(INSPECTING);
 		}
-		else if (rand == 2 && rand == 3) {
-			setPhase(CLEANING);
+		else {
+			setPhase(TENDING);
+			addPhase(TENDING);
+			addPhase(INSPECTING);
 			addPhase(CLEANING);
 		}
 	}
@@ -210,6 +223,10 @@ public class TendAlgaePond extends Task {
 //			logger.log(building, worker, Level.INFO, 0, "Total kg algae harvested: " 
 //					+ Math.round(totalHarvested * 100.0)/100.0 , null);
 			endTask();
+			
+			// Calculate used time 
+			double usedTime = workTime;
+			return time - (usedTime / mod);
 		}
 		
 		totalHarvested += algaeMass;
@@ -220,28 +237,19 @@ public class TendAlgaePond extends Task {
 		// Check for accident
 		checkForAccident(building, time, 0.003);
 
-		if (pond.getSurplusRatio() < 0.5) {
-			logger.log(building, worker, Level.INFO, 0, "Surplus ratio: " 
-					+ Math.round(pond.getSurplusRatio() * 100.0)/100.0 , null);
+		harvestingTime += time;
+		
+		if (harvestingTime > MAX_HARVESTING) {
+			
 			logger.log(building, worker, Level.INFO, 0, "Total kg algae harvested: " 
 					+ Math.round(totalHarvested * 100.0)/100.0 , null);
 			endTask();
-
-			// Scale it back to the. Calculate used time 
+			
+			// Calculate used time 
 			double usedTime = workTime;
 			return time - (usedTime / mod);
 		}
-		else {
-			harvestingTime += time;
-			
-			if (harvestingTime > MAX_HARVESTING) {
-				
-				logger.log(building, worker, Level.INFO, 0, "Total kg algae harvested: " 
-						+ Math.round(totalHarvested * 100.0)/100.0 , null);
-				endTask();
-			}
-		}
-		
+
 		return 0;
 	}
 	

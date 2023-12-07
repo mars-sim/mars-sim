@@ -138,13 +138,13 @@ public class AlgaeFarming extends Function {
 	// growth rate per millisol = 25% / 1000 = 0.00025
 	
 	// Birth or growth rate of algae in kg/millisol
-	public static final double BIRTH_RATE = 0.00025;
-	// The ideal ratio of nutrient to algae
-	private static final double NUTRIENT_RATIO = 0.05;
+	public static final double BIRTH_RATE = 0.25 / 1000;
+	// The ideal ratio of the mass of food nutrient to mass of algae
+	public static final double NUTRIENT_RATIO = 0.05;
 	// Average amount of food nibbled by 1 kg of algae per sol
 	private static final double AVERAGE_NIBBLES = 0.001;
 	// Average amount of fresh water supplied to 1 kg of algae per sol
-	private static final double AVERAGE_FRESH_WATER = 0.1;
+	private static final double AVERAGE_FRESH_WATER = 0.2;
 	// kW per litre of water
 	private static final double POWER_PER_LITRE = 0.0001D;
 	// kW per kg algae
@@ -161,8 +161,8 @@ public class AlgaeFarming extends Function {
 	
 	// For proper growth, add 30 grams of spirulina for every 10 liters of water.
 	// https://krishijagran.com/agripedia/all-about-organic-spirulina-cultivation-basic-requirements-water-quality-nutrient-requirements-economics-much-more/
-	// The initial ratio of spirulina and water
-	private static final double INITIAL_RATIO = 0.03 / 10; 
+	// The initial ratio of spirulina and water [in kg /L]
+	public static final double ALGAE_TO_WATER_RATIO = 0.03 / 10; 
 	
 
 	// Based on https://www.sciencedirect.com/science/article/pii/S2352484718303974,
@@ -217,7 +217,7 @@ public class AlgaeFarming extends Function {
 	/** The cache for o2. */	
 	private double o2Cache = 0;
 
-	/** The cumulative time spent in this greenhouse. */
+	/** The cumulative time spent in this greenhouse [in sols]. */
 	private double cumulativeWorkTime;	
 	/** The cumulative value of the daily PAR so far. */
 	private double cumulativeDailyPAR = 0;
@@ -266,11 +266,11 @@ public class AlgaeFarming extends Function {
 		// Note:  1000 L = 1 m^3; 10000 L = 10 m^3;
 		tankSize = tankArea * tankDepth * 1000;
 		// Calculate max algae based on tank size
-		maxAlgae = tankSize * INITIAL_RATIO;
+		maxAlgae = tankSize * ALGAE_TO_WATER_RATIO;
 		
 		idealAlgae = maxAlgae * IDEAL_PERCENTAGE;
 	    
-		currentAlgae = RandomUtil.getRandomDouble(idealAlgae * 0.85, idealAlgae * 1.15);
+		currentAlgae = RandomUtil.getRandomDouble(idealAlgae * 0.05, idealAlgae * 0.15);
 		// The amount of water in kg
 		waterMass = tankSize * currentAlgae / maxAlgae;
 		
@@ -334,19 +334,18 @@ public class AlgaeFarming extends Function {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
+			double time = pulse.getElapsed();
+			
 		    // Simulate the pond activity
 		    simulatePond(pulse);
 
-			// Check for the passing of each day
-			if (pulse.isNewSol()) {
-				// degrade the cleanliness
-				houseKeeping.degradeCleaning(1);
-
-				// degrade the housekeeping item
-				houseKeeping.degradeInspected(1);
-			}
+		    double degradeValue = time / 1000;
+			// degrade the cleanliness
+			houseKeeping.degradeCleaning(degradeValue);
+			// degrade the housekeeping item
+			houseKeeping.degradeInspected(degradeValue);
 			
-			foodAge += pulse.getElapsed();
+			foodAge += time;
 			
 			// Resets thing at the end of a sol.
 			if (resetEndOfSol(pulse)) {
@@ -358,7 +357,7 @@ public class AlgaeFarming extends Function {
 	}
 	
 	/**
-	 * Gets the cumulative work time.
+	 * Gets the cumulative work time [in sols].
 	 * 
 	 * @return
 	 */
@@ -514,7 +513,7 @@ public class AlgaeFarming extends Function {
 	}
 
 	/**
-	 * Store grey water in the Settlement and record the usage.
+	 * Stores grey water in the Settlement and record the usage.
 	 * 
 	 * @param amount Amount being retrieved
 	 * @param id Resource id
@@ -554,6 +553,15 @@ public class AlgaeFarming extends Function {
 	}
 	
 	/**
+	 * Gets the algae-to-water ratio [in g/L].
+	 * 
+	 * @return
+	 */
+	public double getAlgaeWaterRatio() {
+		return currentAlgae/waterMass * 1000;
+	}
+	
+	/**
 	* Simulates life in the pond, using the values indicated in the
 	* documentation.
 	*
@@ -571,11 +579,11 @@ public class AlgaeFarming extends Function {
 		currentFood = currentFood - nibbleAmount;	   
 		
 		// Future: treat this as a task for turning on and off inlet and outlet
-		
+		double new2Old = currentAlgae/waterMass / ALGAE_TO_WATER_RATIO;
 		// Check if it's too concentrated (more than 1% of its target ratio) and need more fresh water
-		if (currentAlgae/waterMass > INITIAL_RATIO * 1.01) {
+		if (new2Old > 1.01) {
 			// Compute the amount of fresh water to be replenished at the inlet
-			double freshWater = AVERAGE_FRESH_WATER * currentAlgae * timeFactor;
+			double freshWater = new2Old * AVERAGE_FRESH_WATER * currentAlgae * timeFactor;
 			// Consume fresh water
 			retrieveWater(freshWater, ResourceUtil.waterID);
 		    // Add fresh water to the existing tank water
@@ -583,9 +591,9 @@ public class AlgaeFarming extends Function {
 		}
 		
 		// Check if it's too diluted (less than 90% of its target ratio) and need to release water
-		else if (currentAlgae/waterMass < INITIAL_RATIO * 0.9) {
+		else if (new2Old < 0.9) {
 			// Compute the amount of fresh water to be released at the outlet
-			double greyWater = AVERAGE_FRESH_WATER * currentAlgae * timeFactor;
+			double greyWater = AVERAGE_FRESH_WATER / new2Old * currentAlgae * timeFactor;
 			// Produce grey water
 			storeGreyWater(greyWater, ResourceUtil.greyWaterID);
 		    // Retrieve grey water from the existing tank water
@@ -593,8 +601,8 @@ public class AlgaeFarming extends Function {
 		}
 		
 		
-		// Estimate 0.05% evaporated water or grey water at the outlet
-		double greyWater = waterMass * .0005 * timeFactor;
+		// Estimate 0.01% water evaporated
+		double greyWater = waterMass * .0001 * timeFactor;
 		// Produce grey water
 		storeGreyWater(greyWater, ResourceUtil.greyWaterID);
 	    // Retrieve grey water from the existing tank water
@@ -641,21 +649,34 @@ public class AlgaeFarming extends Function {
 		
 		// By providing the ideal conditions (ph 10.5, temp 32 Cel, 70% light)  
 		// and a proper nutrient balance), Spirulina can multiply by 25% every day
-		// Ref: https://grow-organic-spirulina.com/blog/how-much-spirulina-can-i-harvest-per-day-free-harvesting-calculator-included/
+		// https://grow-organic-spirulina.com/blog/how-much-spirulina-can-i-harvest-per-day-free-harvesting-calculator-included/
 		
+		// Create new spirulina
+		birthSpirulina(time);
+	}
+	
+	private void birthSpirulina(double time) {
+
 		// Create new spirulina, using BIRTH_RATE
-		if (currentAlgae < maxAlgae * 1.1 && currentFood > 0) {
-			   birthIterationCache += BIRTH_RATE * time * currentAlgae 
-					   * (1 + .01 * RandomUtil.getRandomInt(-10, 10));
+		if (currentAlgae < maxAlgae * 1.25 && currentFood > 0) {
+			birthIterationCache += BIRTH_RATE * time * currentAlgae 
+					   * (1 + .01 * RandomUtil.getRandomInt(-25, 25));
 		   if (birthIterationCache > 1) {
 			   double newAlgae = birthIterationCache;
 			   birthIterationCache = birthIterationCache - newAlgae;
 			   currentAlgae += newAlgae;
-			   
+		   
 			   // Record the freshly produced spirulina
 			   addResourceLog(newAlgae, PRODUCED_ALGAE_ID);
+			   
+			   // Compute the amount of fresh water to be replenished at the inlet
+			   double freshWater = newAlgae / ALGAE_TO_WATER_RATIO;
+			   // Consume fresh water
+			   retrieveWater(freshWater, ResourceUtil.waterID);
+			   // Add fresh water to the existing tank water
+			   waterMass += freshWater;
 		   }
-		}	   
+		}
 	}
 
 	/**
@@ -856,10 +877,16 @@ public class AlgaeFarming extends Function {
 	}
 	
 	public void markInspected(String s, double value) {
+		// Record the work time
+		addCumulativeWorkTime(value);
+		
 		houseKeeping.inspected(s, value);
 	}
 
 	public void markCleaned(String s, double value) {
+		// Record the work time
+		addCumulativeWorkTime(value);
+		
 		houseKeeping.cleaned(s, value);
 	}
 	
@@ -906,7 +933,7 @@ public class AlgaeFarming extends Function {
 	public double tending(double workTime) {
 		double remaining = workTime;
 		
-		if (currentFood < NUTRIENT_RATIO * currentAlgae) {
+		if (getCurrentNutrientRatio() < NUTRIENT_RATIO ) {
 			// Record the work time
 			addCumulativeWorkTime(workTime);
 	
@@ -1006,6 +1033,10 @@ public class AlgaeFarming extends Function {
 	 */
 	public double getNutrientDemand() {
 		return foodAge / NUTRIENT_DEMAND;
+	}
+	
+	public double getCurrentNutrientRatio() {
+		return currentFood / currentAlgae;
 	}
 	
 	/**
