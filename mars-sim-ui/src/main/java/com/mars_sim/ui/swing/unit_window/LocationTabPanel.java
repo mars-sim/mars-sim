@@ -268,12 +268,26 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		buildingCache = unit.getBuildingLocation();
 		String n4 = buildingCache != null ? buildingCache.getName() : "";
 		
-		Worker worker = (Worker)unit;
-		LocalPosition sLoc = worker.getPosition();
-		String n6 = sLoc.toString();
+		String n6 = "";
 		String n5 = "";
-		if (buildingCache != null) {
-			LocalPosition bLoc = LocalAreaUtil.getObjectRelativePosition(sLoc, buildingCache);
+		LocalPosition sLoc = null;
+		LocalPosition bLoc = null;
+		
+		if (unit instanceof Vehicle v) {
+			 sLoc = v.getPosition();
+			 n6 = sLoc.toString();
+		}
+		else if (unit instanceof Person p) {
+			 sLoc = p.getPosition();
+			 n6 = sLoc.toString();
+		}
+		else if (unit instanceof Robot r) {
+			 sLoc = r.getPosition();
+			 n6 = sLoc.toString();
+		}
+		
+		if (buildingCache != null && sLoc != null) {
+			bLoc = LocalAreaUtil.getObjectRelativePosition(sLoc, buildingCache);
 			n5 = bLoc.toString();
 		}
 		
