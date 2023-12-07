@@ -120,7 +120,7 @@ public class DoInventory extends Task {
 		addExperience(time);
 
 		// Check for accident
-		checkForAccident(lab.getBuilding(), time, 0.001);
+		checkForAccident(lab.getBuilding(), time, 0.005);
 		
 		return time;
 	}

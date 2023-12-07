@@ -77,26 +77,42 @@ public class TendFishTank extends Task {
 			return;
 		}
 
-		// Get available greenhouse if any.
+		// Get available fish tank if any.
 		this.fishTank = fishTank;
 		this.building = fishTank.getBuilding();
 
 		// Walk to fish tank.
 		walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.FISHERY, false);	
 
-		if (fishTank.getSurplusStock() > 0) {
-			// Do fishing
-			setPhase(CATCHING);
-			addPhase(CATCHING);
-		}
-		else if (fishTank.getWeedDemand() > 0) {
+		int rand = RandomUtil.getRandomInt(6);
+		
+		double surplus = fishTank.getSurplusStock();
+		
+		// If it hasn't tended the fish for over 500 millisols, do it now
+		if (fishTank.getWeedDemand() > 0) {
 			setPhase(TENDING);
 			addPhase(TENDING);
 			addPhase(INSPECTING);
 			addPhase(CLEANING);
 		}
-		else {
+		// If surplus is less than zero, do NOT catch any fish
+		// Note: may offer exception in future
+		else if (rand == 0 && surplus > 0) {
+			// Do fishing
+			setPhase(CATCHING);
+			addPhase(CATCHING);
+		}
+		else if (rand == 1 || rand == 2) {
+			setPhase(CLEANING);
+			addPhase(CLEANING);
+		}
+		else if (rand == 3 || rand == 4) {
 			setPhase(INSPECTING);
+			addPhase(INSPECTING);
+		}
+		else {
+			setPhase(TENDING);
+			addPhase(TENDING);
 			addPhase(INSPECTING);
 			addPhase(CLEANING);
 		}
@@ -125,8 +141,10 @@ public class TendFishTank extends Task {
 		walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.FISHERY, false);
 		
 		// Initialize phase
-		// Robots do not do anything with water
-		setPhase(CLEANING);
+		// Robots don't catch fish
+		setPhase(TENDING);
+		addPhase(TENDING);
+		addPhase(INSPECTING);
 		addPhase(CLEANING);
 	}
 
@@ -231,7 +249,8 @@ public class TendFishTank extends Task {
 		}
 
 		// Check if building has malfunction.
-		if (building.getMalfunctionManager() != null && building.getMalfunctionManager().hasMalfunction()) {
+		if (building.getMalfunctionManager() != null 
+				&& building.getMalfunctionManager().hasMalfunction()) {
 			endTask();
 			return time;
 		}
@@ -241,7 +260,7 @@ public class TendFishTank extends Task {
 		// Determine amount of effective work time based on "Botany" skill
 		int skill = getEffectiveSkillLevel();
 		if (skill > 0) {
-			mod += RandomUtil.getRandomDouble(.25) + 1.25 * skill;
+			mod += RandomUtil.getRandomDouble(.25, .75) + 1.25 * skill;
 		}
 
 		workTime *= mod;
@@ -252,17 +271,21 @@ public class TendFishTank extends Task {
 		addExperience(time);
 
 		// Check for accident
-		checkForAccident(building, time, 0.005D);
+		checkForAccident(building, time, 0.005);
 
 		if (remainingTime > 0) {
-			setPhase(INSPECTING);
+			int rand = RandomUtil.getRandomInt(1);
+			if (rand == 0)
+				setPhase(INSPECTING);
+			else
+				setPhase(CLEANING);
 
 			// Scale it back to the. Calculate used time 
 			double usedTime = workTime - remainingTime;
 			return time - (usedTime / mod);
 		}
 		else if (tendTime > MAX_TEND) {
-			logger.log(building, worker, Level.INFO, 0, "Giving up on tending.", null);
+//			logger.log(building, worker, Level.INFO, 0, "Ended tending the fish tank.", null);
 			endTask();
 		}
 		tendTime += time;

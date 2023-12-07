@@ -256,7 +256,7 @@ public class ExamineBody extends Task {
 			deathInfo.setExamDone(true);
 			
 			// Check for accident in medical aid.
-			checkForAccident(malfunctionable, timeExam, 0.001);
+			checkForAccident(malfunctionable, timeExam, 0.002);
 	
 			// Add experience.
 			addExperience(timeExam);
@@ -307,7 +307,7 @@ public class ExamineBody extends Task {
 		getSimulation().getMedicalManager().addDeathRegistry(person.getSettlement(), deathInfo);
 				
 		// Check for accident in medical aid.
-		checkForAccident(malfunctionable, time, 0.005);
+		checkForAccident(malfunctionable, time, 0.003);
 
 		// Add experience.
 		addExperience(time);

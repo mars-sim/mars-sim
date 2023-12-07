@@ -505,7 +505,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 		addExperience(researchTime);
 
 		// Check for lab accident.
-		checkForAccident(malfunctions, time, 0.005);
+		checkForAccident(malfunctions, time, 0.001);
 
 		return 0D;
 	}

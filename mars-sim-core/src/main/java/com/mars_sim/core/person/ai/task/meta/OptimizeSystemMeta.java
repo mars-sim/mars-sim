@@ -28,8 +28,8 @@ import com.mars_sim.tools.Msg;
  */
 public class OptimizeSystemMeta extends FactoryMetaTask {
 
-	private static final int CU_FACTOR = 5;
-	private static final int NODE_FACTOR = 7;
+	private static final int CU_FACTOR = 15;
+	private static final int NODE_FACTOR = 20;
 	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.optimizeSystem"); //$NON-NLS-1$

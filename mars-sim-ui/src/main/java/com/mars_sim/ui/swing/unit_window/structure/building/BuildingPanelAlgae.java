@@ -44,9 +44,9 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 	private double foodDemand;
 	private double powerReq;
 	private double tempCache;
-	/** The amount of water. */
-	private double waterMass;
 	
+	/** The amount of water in the tank */
+	private double waterMass;	
 	/** The cache value for the average water usage per sol per square meters. */
 	private double waterUsageCache;
 	/** The cache value for the average grey water produced per sol per square meters. */
@@ -75,10 +75,9 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 	
 	private JLabel foodMassLabel;
 	private JLabel foodDemandLabel;
-
+	
 	private JLabel waterMassLabel;
 	
-
 	private JLabel algaeWaterRatioLabel;
 	
 	private JLabel powerReqLabel;

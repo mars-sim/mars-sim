@@ -445,7 +445,7 @@ public class ManufactureConstructionMaterials extends Task {
 		addExperience(time);
 
 		// Check for accident in workshop.
-		checkForAccident(entity, time, 0.004);
+		checkForAccident(entity, time, 0.006);
 
 		return 0D;
 	}

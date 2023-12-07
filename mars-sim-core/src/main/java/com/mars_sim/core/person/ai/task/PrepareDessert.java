@@ -174,7 +174,7 @@ public class PrepareDessert extends Task {
 		addExperience(time);
 
 		// Check for accident in kitchen.
-		checkForAccident(kitchen.getBuilding(), time, 0.005);
+		checkForAccident(kitchen.getBuilding(), time, 0.002);
 		
 		if (nameOfDessert != null) {
 			// if nameOfDessert is done

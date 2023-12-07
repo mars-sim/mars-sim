@@ -177,7 +177,7 @@ extends EVAOperation {
         addExperience(time);
 
 		// Check if an accident happens during maintenance.
-		checkForAccident(entity, time, 0.005);
+		checkForAccident(entity, time, 0.01);
 		
 		return 0;
 	}

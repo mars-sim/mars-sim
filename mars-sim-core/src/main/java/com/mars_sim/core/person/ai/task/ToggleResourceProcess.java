@@ -176,7 +176,7 @@ public class ToggleResourceProcess extends Task {
 
 		// Check if an accident happens during the manual toggling.
 		if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT)) {
-			checkForAccident(resourceProcessBuilding, time, 0.005);
+			checkForAccident(resourceProcessBuilding, time, 0.002);
 		}
 
 		return 0;

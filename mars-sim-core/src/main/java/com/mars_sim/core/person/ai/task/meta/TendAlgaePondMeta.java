@@ -59,7 +59,7 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
         }
     }
 
-	private static final int BASE_SCORE = 100;
+	private static final int BASE_SCORE = 50;
 	
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -131,7 +131,7 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
             result.addBase("surplus", ratio * 50);
             
             double foodDemand = pond.getNutrientDemand();     
-            result.addBase("nutrient.demand", foodDemand * 50);
+            result.addBase("nutrient.demand", foodDemand * 200);
             
             double nutrientRatio = pond.getCurrentNutrientRatio();
             double defaultNRatio = AlgaeFarming.NUTRIENT_RATIO;

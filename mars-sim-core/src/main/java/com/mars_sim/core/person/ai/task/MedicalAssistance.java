@@ -197,7 +197,7 @@ public class MedicalAssistance extends Task {
 		}
 
 		// Check for accident in infirmary.
-		checkForAccident(entity, time, 0.005);
+		checkForAccident(entity, time, 0.002);
 
 		if (getDuration() <= (getTimeCompleted() + time)) {
 			problem.startRecovery();

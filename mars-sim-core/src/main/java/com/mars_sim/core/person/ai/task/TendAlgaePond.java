@@ -86,7 +86,7 @@ public class TendAlgaePond extends Task {
 			return;
 		}
 
-		// Get available greenhouse if any.
+		// Get available pond if any.
 		this.pond = pond;
 		this.building = pond.getBuilding();
 
@@ -98,7 +98,7 @@ public class TendAlgaePond extends Task {
 		double surplus = pond.getSurplusRatio();
 		
 		// If it hasn't tended the algae for over 500 millisols, do it now
-		if (pond.getNutrientDemand() > 2) {
+		if (pond.getNutrientDemand() > 1) {
 			setPhase(TENDING);
 			addPhase(TENDING);
 			addPhase(INSPECTING);
@@ -108,7 +108,7 @@ public class TendAlgaePond extends Task {
 		// Note: may offer exception in future
 		else if ((rand == 0 && surplus > 0.5) 
 				// If the mass of algae exceeds the ideal mass, harvest it now
-				|| pond.getSurplusRatio() > 1) {
+				|| surplus > 1) {
 			// Harvest
 			setPhase(HARVESTING);
 			addPhase(HARVESTING);
@@ -152,7 +152,7 @@ public class TendAlgaePond extends Task {
 		walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.ALGAE_FARMING, false);
 		
 		// Initialize phase
-		// Robots do not do anything with harvesting
+		// Robots don't harvest algae
 		setPhase(TENDING);
 		addPhase(TENDING);
 		addPhase(INSPECTING);
@@ -281,7 +281,7 @@ public class TendAlgaePond extends Task {
 		// Determine amount of effective work time based on "Botany" skill
 		int skill = getEffectiveSkillLevel();
 		if (skill > 0) {
-			mod += RandomUtil.getRandomDouble(.25) + 1.25 * skill;
+			mod += RandomUtil.getRandomDouble(.25, 1) + 1.25 * skill;
 		}
 
 		workTime *= mod;
@@ -292,7 +292,7 @@ public class TendAlgaePond extends Task {
 		addExperience(time);
 
 		// Check for accident
-		checkForAccident(building, time, 0.005D);
+		checkForAccident(building, time, 0.005);
 
 		if (remainingTime > 0) {
 			int rand = RandomUtil.getRandomInt(1);
@@ -306,7 +306,7 @@ public class TendAlgaePond extends Task {
 			return time - (usedTime / mod);
 		}
 		else if (tendTime > MAX_TEND) {
-			logger.log(building, worker, Level.INFO, 0, "Ended tending the algae pond.", null);
+//			logger.log(building, worker, Level.INFO, 0, "Ended tending the algae pond.", null);
 			endTask();
 		}
 		tendTime += time;

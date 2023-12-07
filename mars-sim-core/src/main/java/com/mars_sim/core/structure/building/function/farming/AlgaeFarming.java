@@ -38,14 +38,13 @@ public class AlgaeFarming extends Function {
 	private static final int MAX_NUM_SOLS = 14;
 	
 	private static final String [] INSPECTION_LIST = Fishery.INSPECTION_LIST;
-	
 	private static final String [] CLEANING_LIST = Fishery.CLEANING_LIST;
 	
-	/** The average water needed [in kg] */
+	/** The average water needed [in kg]. */
 //	private static double averageWaterNeeded;
-	/** The average O2 needed [in kg] */
+	/** The average O2 needed [in kg]. */
 	private static double averageOxygenNeeded;
-	/** The average CO2 needed [in kg] */
+	/** The average CO2 needed [in kg]. */
 	private static double averageCarbonDioxideNeeded;
 	
 	private static final int WATER_ID = ResourceUtil.waterID;
@@ -152,7 +151,7 @@ public class AlgaeFarming extends Function {
 	// kW per kg food mass
 	private static final double POWER_PER_KG_FOOD = 0.0001D;
 	// The rate of adding food when tending the pond 
-	private static final double ADD_FOOD_RATE = 1.25;
+	private static final double ADD_FOOD_RATE = 0.75;
 	// Tend time for food
 	private static final double TEND_TIME_FOR_FOOD = 0.2D;
 	/** The ideal amount of algae as a percentage. **/
@@ -161,7 +160,7 @@ public class AlgaeFarming extends Function {
 	
 	// For proper growth, add 30 grams of spirulina for every 10 liters of water.
 	// https://krishijagran.com/agripedia/all-about-organic-spirulina-cultivation-basic-requirements-water-quality-nutrient-requirements-economics-much-more/
-	// The initial ratio of spirulina and water [in kg /L]
+	// The initial ratio of spirulina and water [in kg/L]
 	public static final double ALGAE_TO_WATER_RATIO = 0.03 / 10; 
 	
 
@@ -196,21 +195,21 @@ public class AlgaeFarming extends Function {
 	
 	/** The amount iteration for growing new spirulina. */
 	private double birthIterationCache;
-	/** The total mass in the tank. **/
+	/** The total mass in the tank. */
 //	private double totalMass;
-	/** Maximum amount of algae. **/
+	/** Maximum amount of algae. */
 	private double maxAlgae;
-	/** Current amount of algae. **/
+	/** Current amount of algae. */
 	private double currentAlgae;
-	/** Current amount of food. **/
+	/** Current amount of food. */
 	private double currentFood;
-	/** Optimal amount of algae. **/
+	/** Optimal amount of algae. */
 	private double idealAlgae;
-	/** Current health of algae (from 0 to 1). **/	
+	/** Current health of algae (from 0 to 1). */	
 	private double health = 1;
-	/** How old are the food nutrient since the last tending ? **/
+	/** How old are the food nutrient since the last tending ? */
 	private double foodAge = 0;
-	/** How long it has been tendered. **/
+	/** How long it has been tendered. */
 	private double tendertime;
 	/** The cache for co2. */
 	private double co2Cache = 0;
@@ -582,7 +581,7 @@ public class AlgaeFarming extends Function {
 		double new2Old = currentAlgae/waterMass / ALGAE_TO_WATER_RATIO;
 		// Check if it's too concentrated (more than 1% of its target ratio) and need more fresh water
 		if (new2Old > 1.01) {
-			// Compute the amount of fresh water to be replenished at the inlet
+			// Compute the amount of fresh water to be added at the inlet
 			double freshWater = new2Old * AVERAGE_FRESH_WATER * currentAlgae * timeFactor;
 			// Consume fresh water
 			retrieveWater(freshWater, ResourceUtil.waterID);
@@ -655,11 +654,16 @@ public class AlgaeFarming extends Function {
 		birthSpirulina(time);
 	}
 	
+	/**
+	 * Births spirulina.
+	 * 
+	 * @param time
+	 */
 	private void birthSpirulina(double time) {
 
 		// Create new spirulina, using BIRTH_RATE
 		if (currentAlgae < maxAlgae * 1.25 && currentFood > 0) {
-			birthIterationCache += BIRTH_RATE * time * currentAlgae 
+			birthIterationCache += BIRTH_RATE * time * currentAlgae * health
 					   * (1 + .01 * RandomUtil.getRandomInt(-25, 25));
 		   if (birthIterationCache > 1) {
 			   double newAlgae = birthIterationCache;
@@ -839,7 +843,7 @@ public class AlgaeFarming extends Function {
 	@Override
 	public double getFullPowerRequired() {
 		// Power (kW) required for normal operations.
-		return tankSize * POWER_PER_LITRE 
+		return waterMass * POWER_PER_LITRE 
 				+ getCurrentAlgae() * POWER_PER_KG_ALGAE 
 				+ getFoodMass() * POWER_PER_KG_FOOD
 				+ getLightingPower();
@@ -931,26 +935,26 @@ public class AlgaeFarming extends Function {
 	 * @return
 	 */
 	public double tending(double workTime) {
-		double remaining = workTime;
+		double remaining = 0;
 		
-		if (getCurrentNutrientRatio() < NUTRIENT_RATIO ) {
-			// Record the work time
-			addCumulativeWorkTime(workTime);
-	
-			currentFood += workTime * ADD_FOOD_RATE;
-			tendertime -= workTime;
-			
-			if (tendertime < 0) {
-				remaining = Math.abs(tendertime);
-				tendertime = currentFood * TEND_TIME_FOR_FOOD;
-				logger.log(building, Level.INFO, 10_000, "Algae fully tended for " 
-						+ Math.round(tendertime * 100.0)/100.0 + " millisols.");
-				foodAge = 0;
-			}
+		// Record the work time
+		addCumulativeWorkTime(workTime);
+		
+		if (getCurrentNutrientRatio() < NUTRIENT_RATIO) {
+			currentFood += workTime * ADD_FOOD_RATE * NUTRIENT_RATIO / getCurrentNutrientRatio();
 		}
-		else 
-			return remaining;
-				
+
+		tendertime -= workTime;
+
+		if (tendertime < 0) {
+			remaining = Math.abs(tendertime);
+			tendertime = currentFood * TEND_TIME_FOR_FOOD;
+			logger.log(building, Level.INFO, 10_000, 
+					"Algae fully tended for " 
+					+ Math.round(tendertime * 100.0)/100.0 + " millisols.");
+			foodAge = 0;
+		}
+		
 		return remaining;
 	}
 
@@ -989,7 +993,8 @@ public class AlgaeFarming extends Function {
 		currentAlgae = currentAlgae - harvestedWetBiomass;
 
 		// Assuming the dry mass is ~15% 
-		double spirulinaExtracted = harvestedWetBiomass * RandomUtil.getRandomDouble(.1, .2) * health;
+		double spirulinaExtracted = harvestedWetBiomass 
+				* RandomUtil.getRandomDouble(.1, .2) * health;
 		
 		// Future: specify harvesting equipment and sieving parameter
 		

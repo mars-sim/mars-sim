@@ -39,7 +39,7 @@ public class OptimizeSystem extends Task {
 	private static final double STRESS_MODIFIER = .5D;
 
 	// Data members
-	private double FACTOR = .001;
+	private static final double FACTOR = .05;
 
 	private double totalEntropyReduce;
 	

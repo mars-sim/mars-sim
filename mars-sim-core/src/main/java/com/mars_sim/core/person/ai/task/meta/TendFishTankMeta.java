@@ -34,6 +34,8 @@ import com.mars_sim.tools.Msg;
  */
 public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
 
+	private static final int BASE_SCORE = 50;
+	
     /**
      * Represents a Job needed in a Fishery
      */
@@ -119,10 +121,14 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
 
         for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.FISHERY)) {
             Fishery fishTank = building.getFishery();
-            RatingScore result = new RatingScore("maintenance", 
-                    2 * (200 - fishTank.getCleaningScore() - fishTank.getInspectionScore()));
+            
+            RatingScore result = new RatingScore("base", BASE_SCORE);
+            
+            result.addBase("maintenance", 
+            		3 * (200 - fishTank.getCleaningScore() - fishTank.getInspectionScore()));
 
-            result.addBase("surplus", (fishTank.getSurplusStock() * 10));
+            result.addBase("surplus", Math.abs(fishTank.getSurplusStock()));
+            
             result.addBase("fish.weeds", fishTank.getWeedDemand() * 50);
             
             if (result.getScore() > 0) {

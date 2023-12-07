@@ -34,8 +34,11 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 
 	private double weedMass;
 	private double weedDemand;
-	
 	private double powerReq;
+	/** The amount of water in the tank */
+	private double waterMass;
+	/** The cache value for the work time done in this greenhouse. */
+	private double workTimeCache;
 	
 	private JLabel numFishLabel;
 	private JLabel numIdealFishLabel;
@@ -44,8 +47,10 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	private JLabel weedMassLabel;
 	private JLabel weedDemandLabel;
 
+	private JLabel waterMassLabel;
 	private JLabel powerReqLabel;
-
+	private JLabel workTimeLabel;
+	
 	private Fishery tank;
 
 	
@@ -71,10 +76,15 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
-		AttributePanel labelPanel = new AttributePanel(7);
+		AttributePanel labelPanel = new AttributePanel(9);
 		center.add(labelPanel, BorderLayout.NORTH);
 		
-		labelPanel.addTextField(Msg.getString("BuildingPanelFishery.tankSize"), Integer.toString(tank.getTankSize()), null);
+		labelPanel.addTextField(Msg.getString("BuildingPanelFishery.tankSize"), 
+				StyleManager.DECIMAL_LITER2.format(tank.getTankSize()), null);
+		
+		waterMass = tank.getWaterMass();
+		waterMassLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.waterMass"),
+				StyleManager.DECIMAL_LITER2.format(waterMass), null);
 		
 		numFish = tank.getNumFish();
 		numFishLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.numFish"),
@@ -90,7 +100,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 
 		weedMass = tank.getWeedMass();	
 		weedMassLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.weedMass"),
-								 StyleManager.DECIMAL_KG.format(weedMass), null);
+								 StyleManager.DECIMAL_KG2.format(weedMass), null);
 		
 		weedDemand = tank.getWeedDemand();	
 		weedDemandLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.weedDemand"),
@@ -99,6 +109,12 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 		powerReq = tank.getFullPowerRequired();	
 		powerReqLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.powerReq"),
 								 StyleManager.DECIMAL_KW.format(powerReq), null);
+		
+		// Update the cumulative work time
+		workTimeCache = tank.getCumulativeWorkTime()/1000.0;
+		workTimeLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.workTime.title"),
+									StyleManager.DECIMAL_SOLS3.format(workTimeCache),
+									Msg.getString("BuildingPanelAlgae.workTime.tooltip"));
 	}
 
 	/**
@@ -137,10 +153,23 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 			weedDemandLabel.setText(StyleManager.DECIMAL_PLACES1.format(newWeedDemand));
 		}
 		
+		double newWaterMass = tank.getWaterMass();
+		if (waterMass != newWaterMass) {
+			waterMass = newWaterMass;
+			waterMassLabel.setText(StyleManager.DECIMAL_KG2.format(newWaterMass));
+		}
+		
 		double newPowerReq = tank.getFullPowerRequired();	
 		if (powerReq != newPowerReq) {
 			powerReq = newPowerReq;
 			powerReqLabel.setText(StyleManager.DECIMAL_KW.format(newPowerReq));
+		}
+		
+		// Update the cumulative work time
+		double workTime = tank.getCumulativeWorkTime()/1000.0;
+		if (workTimeCache != workTime) {
+			workTimeCache = workTime;
+			workTimeLabel.setText(StyleManager.DECIMAL_SOLS3.format(workTime));
 		}
 	}
 }
