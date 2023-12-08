@@ -13,6 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
+import com.mars_sim.core.logging.Loggable;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
@@ -236,9 +237,9 @@ implements Serializable {
 
             if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(robot.getPosition(), building)) {
             	logger.log(robot, Level.SEVERE, 5000,
-            			"Invalid walk start location at " +
-                        robot.getPosition()
-                        + ", not within " + building + ".");
+            			"Invalid Robot start location at " + robot.getPosition()
+                        + ", not within " + building + " @ "
+                        + LocalAreaUtil.getDescription(building));
             }
         }
 
@@ -272,14 +273,14 @@ implements Serializable {
             result.building = building;
 
             if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(pos, building)) {
-            	if (person != null)
-            		logger.log(person, Level.SEVERE, 60_000,
-            				"Invalid walk destination location at " +
-            				pos + " and not within " + building);
-            	else if (robot != null)
-        			logger.log(robot, Level.SEVERE, 60_000,
-            				"Invalid walk destination location at " +
-            				pos + " and not within " + building);
+                Loggable walker = person;
+                if (walker == null) {
+                    walker = robot;
+                }
+            	logger.log(walker, Level.SEVERE, 60_000,
+            				"Invalid destination " +
+            				pos + " not within building " + building + " @ "
+                            + LocalAreaUtil.getDescription(building));
             }
         }
         else if (interiorObject instanceof Rover rover) {
@@ -290,8 +291,9 @@ implements Serializable {
 
 	            if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(pos, rover)) {
 	            	logger.log(person, Level.SEVERE, 5000,
-	            			"Invalid walk destination location at " +
-	                        pos + " and not within " + rover + ".");
+	            			"Invalid destination " +
+	                        pos + " not within rover " + rover + " @ "
+                            + LocalAreaUtil.getDescription(rover));
 	            }
         	}
         }
@@ -327,8 +329,9 @@ implements Serializable {
 
             if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(pos, building)) {
         			logger.log(robot, Level.SEVERE, 5000,
-        					"Invalid walk destination location at " +
-                            pos + " and not within " + building);
+        					"Invalid robot destination  " +
+                            pos + " and not within " + building
+                            + " @ " + LocalAreaUtil.getDescription(building));
             }
 
             result.loc = pos;

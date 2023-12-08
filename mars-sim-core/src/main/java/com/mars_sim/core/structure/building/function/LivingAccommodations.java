@@ -299,8 +299,7 @@ public class LivingAccommodations extends Function {
 		
 		Set<ActivitySpot> spots = getActivitySpots();
 		for (var sp : spots) {
-			// Convert the activity spot (the bed location) to the settlement reference coordinate
-			bedLoc = LocalAreaUtil.getLocalRelativePosition(sp.getPos(), building);
+			bedLoc = sp.getPos();
 	
 			if (!assignedBeds.containsValue(bedLoc)) {
 				if (!guest) {

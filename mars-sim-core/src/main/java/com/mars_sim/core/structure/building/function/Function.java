@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.Weather;
@@ -79,15 +80,26 @@ public abstract class Function implements Serializable, Temporal {
 		// A FunctionSpec should ALWAYS be present. root cause is the UnitTests
 		// load any activity spots
 		if (spec != null) {
-			spots = spec.getActivitySpots().stream()
-							.map(ActivitySpot::new)
-							.collect(Collectors.toSet());
+			spots = createActivitySpot(spec.getActivitySpots(), building);
 		}
 		else {
 			spots = Collections.emptySet();
 		}
 	}
 
+	/**
+	 * Create a set of Activity Spots from a set of LocalPositions. The Activity spots are created
+	 * into the global Settlement coordinate frame.
+	 * 
+	 * @param positions Source positions
+	 * @param owner     Building that owns this function, provide reference point.
+
+	 */
+	private static Set<ActivitySpot> createActivitySpot(Set<LocalPosition> positions, Building owner) {
+		return positions.stream()
+							.map(p -> new ActivitySpot(LocalAreaUtil.getLocalRelativePosition(p, owner)))
+							.collect(Collectors.toSet());
+	}
 
 	/**
 	 * Gets the function.

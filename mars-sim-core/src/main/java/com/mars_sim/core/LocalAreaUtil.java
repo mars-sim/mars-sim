@@ -433,6 +433,14 @@ public class LocalAreaUtil {
 	}
 
 	/**
+	 * Helper method to output the various geometry aspects in string format.
+	 */
+	public static String getDescription(LocalBoundedObject box) {
+		return box.getPosition().getShortFormat() + "(" + box.getWidth() + "x" + box.getLength()
+				+ ") @ " + box.getFacing();
+	} 
+
+	/**
 	 * Checks if a position is within a local bounded object's bounds.
 	 *
 	 * @param position the settlement loc to test

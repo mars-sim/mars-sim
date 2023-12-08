@@ -889,7 +889,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		// Calculate instantaneous PAR from solar irradiance
 		double uPAR = wattToPhotonConversionRatio * solarIrradiance;
 		// [umol /m^2 /s] = [u mol /m^2 /s /(Wm^-2)] * [Wm^-2]
-		double PARInterval = uPAR / 1_000_000D * time * MarsTime.SECONDS_PER_MILLISOL; // in mol / m^2 within this
+		double intervalPAR = uPAR / 1_000_000D * time * MarsTime.SECONDS_PER_MILLISOL; // in mol / m^2 within this
 
 		double dailyPARRequired = cropSpec.getDailyPAR();
 		// period of time
@@ -897,8 +897,6 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		// 1 u = 1 micro = 1/1_000_000
 		// Note : daily-PAR has the unit of [mol /m^2 /day]
 		// Gauge if there is enough sunlight
-//		double progress = cumulativeDailyPAR / dailyPARRequired; // [max is 1]
-//		double clock = time / 1000D; // [max is 1]
 
 		// When enough PAR have been administered to the crop, HPS_LAMP will turn off.
 		
@@ -910,25 +908,19 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		
 		// Reduce the frequent toggling on and off of lamp and to check on
 		// the time of day to anticipate the need of sunlight.
-//		double millisols = pulse.getMarsTime().getMillisol();
-//		if (0.5 * progress < clock && millisols <= 333 || 0.7 * progress < clock 
-//				&& millisols > 333 && millisols <= 666
-//				|| progress < clock && millisols > 666) {
 			// Future: also compare also how much more sunlight will still be available
 			if (uPAR > 40) { // if sunlight is available
 				turnOffLighting();
-				cumulativeDailyPAR = cumulativeDailyPAR + PARInterval;
+				cumulativeDailyPAR = cumulativeDailyPAR + intervalPAR;
 				// Gets the effectivePAR
-				effectivePAR = PARInterval;
+				effectivePAR = intervalPAR;
 			}
 
 			else { // if no sunlight, turn on artificial lighting
-					// double conversionFactor = 1000D * wattToPhotonConversionRatio /
-					// MarsTime.SECONDS_IN_MILLISOL ;
 					// DLI is Daily Light Integral is the unit for for cumulative light -- the
 					// accumulation of all the PAR received during a day.
-				double DLI = dailyPARRequired - cumulativeDailyPAR; // [in mol / m^2 / day]
-				double deltaPAROutstanding = DLI * (time / 1000D) * growingArea;
+				double dli = dailyPARRequired - cumulativeDailyPAR; // [in mol / m^2 / day]
+				double deltaPAROutstanding = dli * (time / 1000D) * growingArea;
 				// in mol needed at this delta time [mol] = [mol /m^2 /day] * [millisol] /
 				// [millisols /day] * m^2
 				double deltakW = deltaPAROutstanding / time / conversionFactor;
@@ -958,11 +950,11 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 				double deltaPARSupplied = supplykW * time * conversionFactor / growingArea; // in mol / m2
 				// [ mol / m^2] = [kW] * [u mol /m^2 /s /(Wm^-2)] * [millisols] * [s /millisols]
 				// / [m^2] = k u mol / W / m^2 * (10e-3 / u / k) = [mol / m^-2]
-				cumulativeDailyPAR = cumulativeDailyPAR + deltaPARSupplied + PARInterval;
+				cumulativeDailyPAR = cumulativeDailyPAR + deltaPARSupplied + intervalPAR;
 				// [mol /m^2 /d]
 
 				// Gets the effectivePAR
-				effectivePAR = deltaPARSupplied + PARInterval;
+				effectivePAR = deltaPARSupplied + intervalPAR;
 			}
 
 		// check for the passing of each day

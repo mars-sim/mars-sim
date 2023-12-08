@@ -88,11 +88,6 @@ public class Charge extends Task {
 		if (!canWalk) {
 			logger.severe(robot, 30_000L, "Unable to walk to robotic station in " 
 					+ robot.getBuildingLocation() + ".");
-
-			// TODO: it is unknown why a robot cannot walk there
-			
-//			endTask();
-//			return;
 		}
 			
 		else {

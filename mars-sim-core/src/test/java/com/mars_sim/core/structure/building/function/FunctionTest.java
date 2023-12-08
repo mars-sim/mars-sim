@@ -4,13 +4,22 @@ package com.mars_sim.core.structure.building.function;
 import java.util.ArrayList;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.mapdata.location.LocalPosition;
 
 public class FunctionTest extends AbstractMarsSimUnitTest {
 
+    /**
+     *
+     */
+    private static final int X_OFFSET = 10;
+    private static final int Y_OFFSET = 15;
+
+
     public void testBuildActivitySpot() {
         var home = buildSettlement("Test");
-        var building = buildRecreation(home.getBuildingManager(), null, 0D, 0);
+        var building = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
         var b = building.getRecreation();
 
         var spots = b.getActivitySpots();
@@ -27,7 +36,7 @@ public class FunctionTest extends AbstractMarsSimUnitTest {
 
     public void testClaimActivitySpot() {
         var home = buildSettlement("Test");
-        var building = buildRecreation(home.getBuildingManager(), null, 0D, 0);
+        var building = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
         var b = building.getRecreation();
 
         Person p = buildPerson("Worker", home);
@@ -47,7 +56,7 @@ public class FunctionTest extends AbstractMarsSimUnitTest {
 
     public void testReleaseActivitySpot() {
         var home = buildSettlement("Test");
-        var building = buildRecreation(home.getBuildingManager(), null, 0D, 0);
+        var building = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
         var b = building.getRecreation();
 
         Person p = buildPerson("Worker", home);
@@ -64,11 +73,42 @@ public class FunctionTest extends AbstractMarsSimUnitTest {
         assertEquals("Occupied count", 0, b.getNumOccupiedActivitySpots());
     }
 
+    public void testActivitySpotPosition() {
+        var home = buildSettlement("Test");
+        var building1 = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 90D, 0);
+        var spots1 = building1.getRecreation().getActivitySpots();
+        
+        // Check the 2 sets of Activy spots are offset according to the Building
+        for(var as : spots1) {
+            var asp1 = as.getPos();
+            assertTrue("Activity spot in Build:" + asp1.getShortFormat(),
+                    LocalAreaUtil.isPositionWithinLocalBoundedObject(asp1, building1));
+        }
+    }
+
+    public void testCreateActivitySpot() {
+        var home = buildSettlement("Test");
+        var p1 = LocalPosition.DEFAULT_POSITION;
+        var building1 = buildRecreation(home.getBuildingManager(), p1, 0D, 0).getRecreation();
+        var spots1 = building1.getActivitySpots();
+
+        var p2 = new LocalPosition(p1.getX() + X_OFFSET, p1.getY() + Y_OFFSET);
+        var building2 = buildRecreation(home.getBuildingManager(), p2, 0D, 1).getRecreation();
+        
+        // Check the 2 sets of Activy spots are offset according to the Building
+        for(var as : spots1) {
+            var asp1 = as.getPos();
+            var asp2 = new LocalPosition(asp1.getX() + X_OFFSET, asp1.getY() + Y_OFFSET);
+            var as2 = building2.findActivitySpot(asp2);
+            assertNotNull("Activity spot found:" + asp2.getShortFormat(), as2);
+        }
+    }
+
     public void testReassignActivitySpot() {
         var home = buildSettlement("Test");
-        var building = buildRecreation(home.getBuildingManager(), null, 0D, 0);
+        var building = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
         var b1 = building.getRecreation();
-        var building2 = buildRecreation(home.getBuildingManager(), null, 0D, 1);
+        var building2 = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
         var b2 = building2.getRecreation();
         Person p = buildPerson("Worker", home);
 

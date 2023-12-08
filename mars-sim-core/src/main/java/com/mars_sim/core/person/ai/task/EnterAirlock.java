@@ -251,12 +251,11 @@ public class EnterAirlock extends Task {
 			
 			if (loc != null) {
 				// Convert the local activity spot to the settlement reference coordinate
-				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, b);
 				// Set the person's new position
-				person.setPosition(settlementLoc);
+				person.setPosition(loc);
 				
 				logger.log(b, person, Level.FINE, 4000, "Arrived at "
-						+ settlementLoc.getShortFormat() + " in airlock zone " + newZone + ".");
+						+ loc.getShortFormat() + " in airlock zone " + newZone + ".");
 				return true;
 			}
 			else {
@@ -267,30 +266,21 @@ public class EnterAirlock extends Task {
 		}
 
 		else if (newZone == 4) {
-			// Convert the local activity spot to the settlement reference coordinate
-			LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(newPos, b);
 			// Set the person's new position
-			person.setPosition(settlementLoc);
+			person.setPosition(newPos);
 			
 			logger.log(b, person, Level.FINE, 4000, "Creating a subtask to walk outside at "
-					+ settlementLoc.getShortFormat() + " in airlock zone " + newZone + ".");
-			// Note: no need of calling WalkOutside anymore since the person would have
-			// already been considered inside the settlement
-			// Create a sub task to walk there
-//    		addSubTask(new WalkOutside(person, person.getPosition(), settlementLoc, true));
+					+ newPos.getShortFormat() + " in airlock zone " + newZone + ".");
 			return true;
 		}
 
 		else {
 			// Future: create a walking task to get there
-			
-			// Convert the local activity spot to the settlement reference coordinate
-			LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(newPos, b);
 			// Set the person's new position
-			person.setPosition(settlementLoc);
+			person.setPosition(newPos);
 			
 			logger.log(b, person, Level.FINE, 4000, "Arrived at "
-					+ settlementLoc.getShortFormat() + " in airlock zone " + newZone + ".");
+					+ newPos.getShortFormat() + " in airlock zone " + newZone + ".");
 			return true;
 		}
 	}
@@ -309,13 +299,6 @@ public class EnterAirlock extends Task {
 		
 		logger.log(unit, person, Level.FINE, 20_000, "Requested EVA ingress in " + airlock.getEntity().toString() + ".");
 
-		// If the airlock mode is egress, will need to wait until its done
-//		if (!airlock.isEmpty() && airlock.getAirlockMode() == AirlockMode.EGRESS) {
-//			logger.log(unit, person, Level.FINE, 60_000,
-//					NOT_IN_RIGHT_AIRLOCK_MODE);
-//			return time *.75;
-//		}
-		
 		if (!airlock.isActivated()) {
 			// Only the airlock operator may activate the airlock
 			airlock.setActivated(true);
