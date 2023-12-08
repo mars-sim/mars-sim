@@ -17,10 +17,10 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -211,8 +211,6 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	private Farming farm;
 	private Building building;
 
-	private static CropConfig cropConfig;
-
 	/**
 	 * Constructor.
 	 *
@@ -236,13 +234,6 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		this.isStartup = isStartup;
 		this.gasThreshold = growingArea/10.0;
 		this.name = cropSpec.getName();
-
-		averageWaterNeeded = cropConfig.getWaterConsumptionRate();
-		averageOxygenNeeded = cropConfig.getOxygenConsumptionRate();
-		averageCarbonDioxideNeeded = cropConfig.getCarbonDioxideConsumptionRate();
-		wattToPhotonConversionRatio = cropConfig.getWattToPhotonConversionRatio();
-		// Note: conversionFactor is 51.45578648029399;
-		conversionFactor = 1000D * wattToPhotonConversionRatio / MarsTime.SECONDS_PER_MILLISOL;
 		
 		// Set up env factor to be balanced
 		Arrays.fill(environmentalFactor, 1D);
@@ -270,7 +261,6 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 				// assume a max 2-day incubation period if no 0% tissue culture is available
 				phaseType = PhaseType.INCUBATION;
 				currentPhaseWorkCompleted = 0;
-				logger.log(building, this, Level.INFO, 0, "No tissue-culture left. Restocking.");
 				// Need a petri dish
 				if (building.getSettlement().hasItemResource(PETRI_DISH_ID)) {
 					building.getSettlement().retrieveItemResource(PETRI_DISH_ID, 1);
@@ -342,12 +332,13 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	 * Sets up mushroom.
 	 */
 	private void setupMushroom() {
-		if (building.getSettlement().hasItemResource(MUSHROOM_BOX_ID)) {
-			building.getSettlement().retrieveItemResource(MUSHROOM_BOX_ID, 1);
+		Settlement s = building.getSettlement();
+		if (s.hasItemResource(MUSHROOM_BOX_ID)) {
+			s.retrieveItemResource(MUSHROOM_BOX_ID, 1);
 		}
 		// Need a petri dish
-		if (building.getSettlement().hasItemResource(PETRI_DISH_ID)) {
-			building.getSettlement().retrieveItemResource(PETRI_DISH_ID, 1);
+		if (s.hasItemResource(PETRI_DISH_ID)) {
+			s.retrieveItemResource(PETRI_DISH_ID, 1);
 		}
 		else
 			logger.log(building, this, Level.WARNING, 60_000, 
@@ -453,18 +444,12 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		if (currentWorkRequired > POSITIVE_ENTROPY) {
 			score = (int)Math.floor(currentWorkRequired / 50); 
 		}
-		switch (currentPhase.getPhaseType()) {
-			case HARVESTING:
-				score = score + 3;
-			case PLANTING:
-				score = score + 1;
-			case INCUBATION:
-				score = score + 1.5;
-			default:
-				score = score + 2;
-		}
-		
-		return score;
+		return switch(currentPhase.getPhaseType()) {
+			case HARVESTING -> score + 3;
+			case PLANTING -> score + 1;
+			case INCUBATION -> score + 1.5;
+			default -> score + 2;
+		};
 	}
 
 	/**
@@ -510,7 +495,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 				// Add Crop Waste
 				double amt = percentageGrowth * remainingHarvest / 100D;
 				if (amt > 0) {
-					store(amt, CROP_WASTE_ID, "Crop::trackHealth");
+					store(amt, CROP_WASTE_ID);
 					logger.log(building, this, Level.WARNING, 10_000, 
 							amt + " kg crop waste generated.");
 				}
@@ -529,7 +514,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 				// Add Crop Waste
 				double amt = percentageGrowth * remainingHarvest / 100D;
 				if (amt > 0) {
-					store(amt, CROP_WASTE_ID, "Crop::trackHealth");
+					store(amt, CROP_WASTE_ID);
 					logger.log(building, this, Level.WARNING, 10_000, 
 							amt + " kg crop waste generated.");
 				}
@@ -562,10 +547,6 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 				total = total + environmentalFactor[i];
 			}
 		}
-
-//		logger.log(building, Level.INFO, 0, name
-//				+ " - diseaseIndex: " + diseaseIndex
-//				+ "   currentWorkRequired: " + currentWorkRequired);
 		
 		// Future: will need to model diseaseIndex
 		
@@ -627,7 +608,6 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 			currentPhaseWorkCompleted += modTime;
 			
 			if (currentPhaseWorkCompleted >= phaseWorkReqMillisols * 1.01) {
-//				remainingTime = currentPhaseWorkCompleted - workMillisols;
 				currentPhaseWorkCompleted = 0;
 				advancePhase();
 				logger.log(building, this, Level.FINE, 0, "Entered a new phase " + currentPhase.getPhaseType()
@@ -655,17 +635,16 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 					// Don't end until there is nothing left ?
 					if (remainingHarvest <= 0) {
+						String phaseDescription = "";
+						if (phaseType == PhaseType.MATURATION)
+							phaseDescription = " during the initial harvest.";
+						else if (phaseType == PhaseType.HARVESTING)
+							phaseDescription = " during the final harvest.";
+
 						logger.log(building, this, Level.INFO, 4_000, 
 								"Harvested a total of "
-									+ Math.round(totalHarvest * 100.0) / 100.0 + " kg.");
-
-						if (phaseType == PhaseType.MATURATION)
-							logger.log(building, this, Level.INFO, 4_000, 
-									"Closed out the initial harvest.");
-
-						else if (phaseType == PhaseType.HARVESTING)
-							logger.log(building, this, Level.INFO, 4_000, 
-									"Closed out the final harvest.");
+									+ Math.round(totalHarvest * 100.0) / 100.0 + " kg."
+									+ phaseDescription);
 
 						// Reset the totalHarvest back to zero.
 						totalHarvest = 0;
@@ -674,7 +653,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 						//  Check to see if a botany lab is available
 						if (worker instanceof Person && !farm.checkBotanyLab())
-							logger.log(building, worker, Level.INFO, 0,
+							logger.log(building, worker, Level.WARNING, 0,
 									"Can't find an available lab bench to work on its tissue culture.");
 					}
 				}
@@ -689,7 +668,6 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 						remainingHarvest -= modifiedHarvest;
 						totalHarvest += modifiedHarvest;
 					}
-//					remainingTime = 0D;
 				}
 			}
 			break;
@@ -703,7 +681,6 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 			currentPhaseWorkCompleted += modTime;
 
 			if (currentPhaseWorkCompleted >= phaseWorkReqMillisols * 1.01) {
-//				remainingTime = Math.min(time, currentPhaseWorkCompleted - workMillisols);
 				currentPhaseWorkCompleted = 0D;
 			}
 			break;
@@ -725,7 +702,6 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	private void advancePhase() {
 		currentPhase = cropSpec.getNextPhase(currentPhase);
 		currentPhaseWorkCompleted = 0;
-		logger.log(building, this, Level.INFO, 0, "Now in " + currentPhase.getPhaseType() + ".");
 	}
 	
 	
@@ -738,37 +714,36 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		boolean isSeedPlant = cropSpec.isSeedPlant();
 		int seedID = cropSpec.getSeedID();
 		int cropID = cropSpec.getCropID();
-		String source = "Crop::collectProduce";
 		
 		if (isSeedPlant) {
 			// Extract Sesame Seed.
 			// Note the purpose for this plant is primarily the seeds
 			// Future: how best to handle Peanut ?
 			// Is peanut considered a seed plant ?			
-			store(harvestMass, seedID, source);
+			store(harvestMass, seedID);
 		}
 		else if ((seedID > 0) && harvestMass * massRatio > 0) {
 			// Cilantro & White Mustard has leaves as food. 
 			// White Mustard makes mustard seed
 			// Cilantro makes coriander seed
-			store(harvestMass * massRatio, seedID, source);
-			store(harvestMass, cropID, source);
+			store(harvestMass * massRatio, seedID);
+			store(harvestMass, cropID);
 		}
 		else {
-			store(harvestMass, cropID, source);
+			store(harvestMass, cropID);
 		}
 
 		// Calculate the amount of leaves and crop wastes that are generated
 		double inedible = harvestMass / cropSpec.getEdibleBiomass() * cropSpec.getInedibleBiomass();
 		double cropWaste = inedible * RandomUtil.getRandomDouble(RATIO_LEAVES);
 		if (cropWaste > 0) {
-			store(cropWaste, CROP_WASTE_ID, source);
+			store(cropWaste, CROP_WASTE_ID);
 		}
 
 		if (cropSpec.getCropCategory() == CropCategory.LEAVES) {
 			double leaves = inedible - cropWaste;
 			if (leaves > 0) {
-				store(leaves, ResourceUtil.leavesID, source);
+				store(leaves, ResourceUtil.leavesID);
 			}
 		}
 	}
@@ -812,15 +787,6 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 			growingTimeCompleted += time;
 			
 			percentageGrowth = (growingTimeCompleted * 100D) / cropSpec.getGrowingTime();
-
-//			if (name.equalsIgnoreCase("strawberry"))
-//				logger.info(building, name 
-//					+ "   currentWorkRequired: " + (int)currentWorkRequired
-//					+ "   percentageGrowth: " + (int)percentageGrowth
-//					+ "   growingTimeCompleted: " + (int)growingTimeCompleted 
-//					+ "   elapsed: " + elapsed
-//					+ "   accumulatedTime: " + (int)accumulatedTime
-//					+ "   time: " + (int)time);
 			
 			// Right before the harvesting phase
 			if (phaseType != PhaseType.HARVESTING && percentageGrowth > cropSpec.getNextPhasePercentage(phaseType)) {
@@ -877,7 +843,6 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 			// Note: is it better off doing the actualHarvest computation once a day or
 			// every time
 			// Reset the daily work counter currentPhaseWorkCompleted back to zero
-			// currentPhaseWorkCompleted = 0D;
 			cumulativeDailyPAR = 0;
 			
 			if (dailyHarvest < 0) {
@@ -1315,9 +1280,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	 * @return
 	 */
 	private boolean retrieve(double amount, int resource, boolean value) {
-		if (building.getSettlement().retrieveAmountResource(resource, amount) == 0)
-			return true;
-		return false;
+		return (building.getSettlement().retrieveAmountResource(resource, amount) == 0);
 	}
 
 	/**
@@ -1329,7 +1292,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	private double storeGas(double amount, double gasCache, int gasId) {
 		if (amount > 0) {
 			if (gasCache + amount > gasThreshold) {
-				store(gasCache, gasId, "Crop::storeGas");
+				store(gasCache, gasId);
 				gasCache = amount;
 			}
 			else {
@@ -1345,10 +1308,9 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	 *
 	 * @param amount
 	 * @param resource
-	 * @param source
 	 * @return
 	 */
-	private double store(double amount, int resource, String source) {
+	private double store(double amount, int resource) {
 		return building.getSettlement().storeAmountResource(resource, amount);
 	}
 
@@ -1382,13 +1344,16 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	/**
 	 * Reloads instances after loading from a saved sim.
 	 * 
-	 * @param cropConfig2
-	 *
-	 * @param {@link MasterClock}
-	 * @param {{@link MarsClock}
+	 * @param cropConfig
 	 */
-	public static void initializeInstances(CropConfig cropConfig2) {
-		cropConfig = cropConfig2;
+	public static void initializeInstances(CropConfig cropConfig) {
+
+		averageWaterNeeded = cropConfig.getWaterConsumptionRate();
+		averageOxygenNeeded = cropConfig.getOxygenConsumptionRate();
+		averageCarbonDioxideNeeded = cropConfig.getCarbonDioxideConsumptionRate();
+		wattToPhotonConversionRatio = cropConfig.getWattToPhotonConversionRatio();
+		// Note: conversionFactor is 51.45578648029399
+		conversionFactor = 1000D * wattToPhotonConversionRatio / MarsTime.SECONDS_PER_MILLISOL;
 	}
 
 	@Override
@@ -1408,7 +1373,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 	@Override
 	public String getName() {
-		return name;
+		return getCropName();
 	}
 
 	@Override

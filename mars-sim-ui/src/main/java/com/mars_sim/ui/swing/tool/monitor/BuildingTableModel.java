@@ -6,7 +6,6 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
@@ -153,37 +152,27 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	 */
 	@Override
 	public void unitUpdate(UnitEvent event) {
-		Unit unit = (Unit) event.getSource();
-		UnitEventType eventType = event.getType();
-		
-		if (eventType == UnitEventType.REMOVE_BUILDING_EVENT) {
-			removeEntity((Building) unit);
-		}
-		else if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
-			// Determine the new row to be added
-			Building building = (Building)unit;
-			addEntity(building);			
-		}
-
-		else if (event.getSource() instanceof Building) { 
-			int columnIndex = 51;
-			switch(eventType) {
-				case POWER_MODE_EVENT:
-					columnIndex = POWER_MODE;
-					break;
-				case GENERATED_POWER_EVENT:
-					columnIndex = POWER_GEN;
-					break;
-				case REQUIRED_POWER_EVENT:
-					columnIndex = POWER_REQUIRED;
-					break;
-				case HEAT_MODE_EVENT:
-					columnIndex = HEAT_MODE;
-					break;
-				default:
+		if (event.getSource() instanceof Building building) {
+			UnitEventType eventType = event.getType();
+			
+			if (eventType == UnitEventType.REMOVE_BUILDING_EVENT) {
+				removeEntity(building);
 			}
-			if (columnIndex > 0) {
-				entityValueUpdated((Building) event.getSource(), columnIndex, columnIndex);
+			else if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
+				addEntity(building);			
+			}
+			else if (event.getSource() instanceof Building) { 
+				int columnIndex = switch(eventType) {
+					case POWER_MODE_EVENT -> POWER_MODE;
+					case GENERATED_POWER_EVENT -> POWER_GEN;
+					case REQUIRED_POWER_EVENT -> POWER_REQUIRED;
+					case HEAT_MODE_EVENT -> HEAT_MODE;
+					default -> -1;
+				};
+
+				if (columnIndex >= 0) {
+					entityValueUpdated(building, columnIndex, columnIndex);
+				}
 			}
 		}
 	}
