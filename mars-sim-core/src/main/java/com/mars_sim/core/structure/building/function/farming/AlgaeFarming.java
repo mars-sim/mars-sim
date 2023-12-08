@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AlgaeFarming.java
- * @date 2023-09-19
+ * @date 2023-12-07
  * @author Manny Kung
  */
 
@@ -674,7 +674,7 @@ public class AlgaeFarming extends Function {
 			   addResourceLog(newAlgae, PRODUCED_ALGAE_ID);
 			   
 			   // Compute the amount of fresh water to be replenished at the inlet
-			   double freshWater = newAlgae / ALGAE_TO_WATER_RATIO;
+			   double freshWater = newAlgae / ALGAE_TO_WATER_RATIO * RandomUtil.getRandomDouble(.9, 1.1);
 			   // Consume fresh water
 			   retrieveWater(freshWater, ResourceUtil.waterID);
 			   // Add fresh water to the existing tank water
@@ -935,7 +935,7 @@ public class AlgaeFarming extends Function {
 	 * @return
 	 */
 	public double tending(double workTime) {
-		double remaining = 0;
+		double surplus = 0;
 		
 		// Record the work time
 		addCumulativeWorkTime(workTime);
@@ -947,7 +947,7 @@ public class AlgaeFarming extends Function {
 		tendertime -= workTime;
 
 		if (tendertime < 0) {
-			remaining = Math.abs(tendertime);
+			surplus = Math.abs(tendertime);
 			tendertime = currentFood * TEND_TIME_FOR_FOOD;
 			logger.log(building, Level.INFO, 10_000, 
 					"Algae fully tended for " 
@@ -955,7 +955,7 @@ public class AlgaeFarming extends Function {
 			foodAge = 0;
 		}
 		
-		return remaining;
+		return surplus;
 	}
 
 

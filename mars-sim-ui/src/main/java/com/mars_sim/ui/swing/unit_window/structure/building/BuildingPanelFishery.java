@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelFishery.java
- * @date 2023-09-19
+ * @date 2023-12-07
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.unit_window.structure.building;
@@ -31,7 +31,9 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	private int numFish;
 	private int numIdealFish; 
 	private int maxFish;
-
+	private int numWeed;
+	
+	private double fishMass;
 	private double weedMass;
 	private double weedDemand;
 	private double powerReq;
@@ -43,7 +45,9 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	private JLabel numFishLabel;
 	private JLabel numIdealFishLabel;
 	private JLabel maxFishLabel;
+	private JLabel fishMassLabel;
 	
+	private JLabel numWeedLabel;
 	private JLabel weedMassLabel;
 	private JLabel weedDemandLabel;
 
@@ -72,11 +76,11 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	}
 	
 	/**
-	 * Build the UI
+	 * Builds the UI.
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
-		AttributePanel labelPanel = new AttributePanel(9);
+		AttributePanel labelPanel = new AttributePanel(11);
 		center.add(labelPanel, BorderLayout.NORTH);
 		
 		labelPanel.addTextField(Msg.getString("BuildingPanelFishery.tankSize"), 
@@ -90,6 +94,10 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 		numFishLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.numFish"),
 									Integer.toString(numFish), null);
 				
+		fishMass = tank.getTotalFishMass();	
+		fishMassLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.fishMass"),
+								 StyleManager.DECIMAL_KG2.format(fishMass), null);
+				
 		numIdealFish = tank.getIdealFish();
 		numIdealFishLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.numIdealFish"),
 									Integer.toString(numIdealFish), null);
@@ -98,7 +106,11 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 		maxFishLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.maxFish"),
 									Integer.toString(maxFish), null);
 
-		weedMass = tank.getWeedMass();	
+		numWeed = tank.getNumWeed();
+		numWeedLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.numWeed"),
+									Integer.toString(numWeed), null);
+		
+		weedMass = tank.getTotalWeedMass();	
 		weedMassLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.weedMass"),
 								 StyleManager.DECIMAL_KG2.format(weedMass), null);
 		
@@ -141,7 +153,19 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 			maxFishLabel.setText(Integer.toString(newMaxFish));
 		}
 
-		double newWeedMass = tank.getWeedMass();
+		int newNumWeed = tank.getNumWeed();
+		if (numWeed != newNumWeed) {
+			numWeed = newNumWeed;
+			numWeedLabel.setText(Integer.toString(newNumWeed));
+		}
+		
+		double newFishMass = tank.getTotalFishMass();
+		if (fishMass != newFishMass) {
+			fishMass = newFishMass;
+			fishMassLabel.setText(StyleManager.DECIMAL_KG.format(newFishMass));
+		}
+		
+		double newWeedMass = tank.getTotalWeedMass();
 		if (weedMass != newWeedMass) {
 			weedMass = newWeedMass;
 			weedMassLabel.setText(StyleManager.DECIMAL_KG.format(newWeedMass));

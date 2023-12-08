@@ -154,7 +154,7 @@ public class PondLife {
 	   while (i < fish.size( ))
 	   {
 	      nextFish = fish.elementAt(i);
-	      nextFish.growPerFrame( );
+	      nextFish.growPerFrame();
 	      if (nextFish.isAlive( ))
 	         i++;
 	      else

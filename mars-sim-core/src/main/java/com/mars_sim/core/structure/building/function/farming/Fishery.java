@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Fishery.java
- * @date 2023-09-19
+ * @date 2023-12-07
  * @author Barry Evans
  */
 
@@ -82,9 +82,9 @@ public class Fishery extends Function {
 	/** kW per litre of water. */
 	private static final double POWER_PER_LITRE = 0.0001D;
 	/** kW per fish. */
-	private static final double POWER_PER_FISH = 0.01D;
+	private static final double POWER_PER_FISH = 0.02D;
 	/** kW per weed mass. */
-	private static final double POWER_PER_WEED_MASS = 0.001D;
+	private static final double POWER_PER_WEED_MASS = 0.002D;
 	/** Tend time per weed. */
 	private static final double TIME_PER_WEED = 0.2D;
 	/** Adult fish length per litre. Cold water is 2.5cm per 4.55 litre. */
@@ -110,7 +110,7 @@ public class Fishery extends Function {
 	/** The amount iteration for nibbling weed */
 	private double nibbleIterationCache;
 	/** How long has the weed been tendered. */
-	private double weedTendertime;
+	private double tendertime;
 	/** How old is the weed since the last tendering. */
 	private double weedAge = 0;
 	/** The area of tank [in m^2]. */
@@ -164,7 +164,7 @@ public class Fishery extends Function {
 
 	    int numWeeds = numFish * 10;
 	    
-		weedTendertime = numWeeds * TIME_PER_WEED;
+		tendertime = numWeeds * TIME_PER_WEED;
 
 		weedAge = 0;
 		
@@ -290,7 +290,7 @@ public class Fishery extends Function {
 		   ListIterator<Herbivore> it = fish.listIterator();
 		   while(it.hasNext()) {
 			  nextFish = it.next();
-		      nextFish.growPerFrame();
+		      nextFish.growPerFrame(time);
 		      if (!nextFish.isAlive())
 		         it.remove();
 		   }
@@ -310,7 +310,7 @@ public class Fishery extends Function {
 			   birthIterationCache = birthIterationCache - newFish;
 			   for (i = 0; i < newFish; i++) {
 //			       fish.add(new Herbivore(FISH_WEIGHT, 0, FISH_WEIGHT * FRACTION));	
-
+				   // Assume the beginning weight of a baby fish is 1/30 of an adult fish
 				   double weight = RandomUtil.getRandomDouble(FISH_WEIGHT / 30 *.75, FISH_WEIGHT / 30 * 1.25);
 				   double eatingRate = RandomUtil.getRandomDouble(weight * FRACTION *.75, weight * FRACTION * 1.25);
 				   fish.add(new Herbivore(weight,  
@@ -368,7 +368,7 @@ public class Fishery extends Function {
 		// Power (kW) required for normal operations.
 		return waterMass * POWER_PER_LITRE 
 				+ getNumFish() * POWER_PER_FISH 
-				+ getWeedMass() * POWER_PER_WEED_MASS;
+				+ getTotalWeedMass() * POWER_PER_WEED_MASS;
 	}
 
 	/**
@@ -432,10 +432,18 @@ public class Fishery extends Function {
 		return tankSize;
 	}
 	
-	public double getWeedMass() {
+	public double getTotalWeedMass() {
 		return Math.round(totalMass(weeds)/ OUNCE_PER_KG * 100.0)/100.0;
 	}
 
+	public double getTotalFishMass() {
+		return Math.round(totalMass(fish)/ OUNCE_PER_KG * 100.0)/100.0;
+	}
+	
+	public int getNumWeed() {
+		return weeds.size();
+	}
+	
 	public int getSurplusStock() {
 		return fish.size() - idealFish;
 	}
@@ -457,14 +465,14 @@ public class Fishery extends Function {
 			p.growPerFrame();
 		}
 
-		weedTendertime -= workTime;
+		tendertime -= workTime;
 
-		if (weedTendertime < 0) {
-			surplus = Math.abs(weedTendertime);
-			weedTendertime = weeds.size() * TIME_PER_WEED;
+		if (tendertime < 0) {
+			surplus = Math.abs(tendertime);
+			tendertime = weeds.size() / fish.size() * TIME_PER_WEED;
 			logger.log(building, Level.INFO, 10_000L, 
 					"Weeds fully tended for " 
-						+ Math.round(weedTendertime * 100.0)/100.0 + " millisols.");
+						+ Math.round(tendertime * 100.0)/100.0 + " millisols.");
 			weedAge = 0;
 		}
 		

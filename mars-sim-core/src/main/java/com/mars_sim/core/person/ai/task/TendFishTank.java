@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TendFishTank.java
- * @date 2023-09-19
+ * @date 2023-12-07
  * @author Barry Evans
  */
 package com.mars_sim.core.person.ai.task;
@@ -257,10 +257,10 @@ public class TendFishTank extends Task {
 
 		double mod = 1;
 
-		// Determine amount of effective work time based on "Botany" skill
+		// Determine amount of effective work time based on skill
 		int skill = getEffectiveSkillLevel();
 		if (skill > 0) {
-			mod += RandomUtil.getRandomDouble(.25, .75) + 1.25 * skill;
+			mod += RandomUtil.getRandomDouble(.5, .75) + 0.75 * skill;
 		}
 
 		workTime *= mod;

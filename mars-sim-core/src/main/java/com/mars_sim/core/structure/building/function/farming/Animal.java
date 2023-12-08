@@ -130,7 +130,7 @@ public class Animal extends Organism {
    **/
    public void growPerFrame(double time) 
    {
-      super.growPerFrame( );
+      super.growPerFrame();
       totalTime += time;
       // For each day
       if (totalTime > ONE_SOL && eatenThisFrame < needEachFrame) {
@@ -138,7 +138,6 @@ public class Animal extends Organism {
     	 expire( );
          eatenThisFrame = 0;
       }
- 
    }
 
 

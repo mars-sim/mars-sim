@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TendFishTankMeta.java
- * @date 2023-09-19
+ * @date 2023-12-07
  * @author Barry Evans
  */
 package com.mars_sim.core.person.ai.task.meta;
@@ -125,11 +125,11 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
             RatingScore result = new RatingScore("base", BASE_SCORE);
             
             result.addBase("maintenance", 
-            		3 * (200 - fishTank.getCleaningScore() - fishTank.getInspectionScore()));
+            		2 * (200 - fishTank.getCleaningScore() - fishTank.getInspectionScore()));
 
             result.addBase("surplus", Math.abs(fishTank.getSurplusStock()));
             
-            result.addBase("fish.weeds", fishTank.getWeedDemand() * 50);
+            result.addBase("fish.weeds", fishTank.getWeedDemand() * 15);
             
             if (result.getScore() > 0) {
                 tasks.add(new FishTaskJob(this, fishTank, result));
