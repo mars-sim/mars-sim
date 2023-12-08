@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -30,7 +29,7 @@ public class BuildingPackageConfig implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = Logger.getLogger(BuildingPackageConfig.class.getName());
+	// May add back private static final Logger logger = Logger.getLogger(BuildingPackageConfig.class.getName())
 
 	// Element names
 	private final String BUILDING_PACKAGE = "building-package";

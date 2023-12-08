@@ -336,7 +336,7 @@ public class SettlementMapPanel extends JPanel {
 	public void showBuildingCoord(int xPixel, int yPixel) {
 		boolean showBlank = true;
 
-		Point.Double clickPosition = convertToSettlementLocation(xPixel, yPixel);
+		Point.Double hoverPosition = convertToSettlementLocation(xPixel, yPixel);
 
 		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet().iterator();
 		while (j.hasNext()) {
@@ -353,23 +353,29 @@ public class SettlementMapPanel extends JPanel {
 				double yy = 0;
 
 				if (facing == 0) {
+					// Server Farm
 					xx = width / 2D;
 					yy = length / 2D;
-				} else if (facing == 90) {
+				} 
+				else if (facing == 90) {
 					yy = width / 2D;
 					xx = length / 2D;
 				}
-				// Loading Dock Garage
 				else if (facing == 180) {
-					xx = width / 2D;
+					// Loading Dock Garage
+					xx = - width / 2D;
 					yy = length / 2D;
-				} else if (facing == 270) {
+					
+				} 
+				else if (facing == 270) {
+					// Fish Farm, Algae Pond
 					yy = width / 2D;
-					xx = length / 2D;
+					xx = - length / 2D;
 				}
 
 				// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
 				// Fortunately, they both have the same width and length
+				// Future: Need to fix the xx and yy for the following two facings
 				else if (facing == 45) {
 					yy = width / 2D;
 					xx = length / 2D;
@@ -378,15 +384,15 @@ public class SettlementMapPanel extends JPanel {
 					xx = length / 2D;
 				}
 
-				double c_x = clickPosition.getX();
-				double c_y = clickPosition.getY();
+				double c_x = hoverPosition.getX();
+				double c_y = hoverPosition.getY();
 
-				double distanceX = Math.round((c_x - x) * 100.0) / 100.0; // Math.abs(x - c_x);
-				double distanceY = Math.round((c_y - y) * 100.0) / 100.0; // Math.abs(y - c_y);
+				double rangeX = Math.round((c_x - x) * 100.0) / 100.0; // Math.abs(x - c_x);
+				double rangeY = Math.round((c_y - y) * 100.0) / 100.0; // Math.abs(y - c_y);
 
-				if (Math.abs(distanceX) <= xx && Math.abs(distanceY) <= yy) {
+				if (Math.abs(rangeX) <= Math.abs(xx) && Math.abs(rangeY) <= Math.abs(yy)) {
 					// Display the coordinate within a building of the hovering mouse pointer
-					settlementWindow.setBuildingXYCoord(distanceX, distanceY, false);
+					settlementWindow.setBuildingXYCoord(rangeX, rangeY, false);
 					showBlank = false;
 					break;
 				}

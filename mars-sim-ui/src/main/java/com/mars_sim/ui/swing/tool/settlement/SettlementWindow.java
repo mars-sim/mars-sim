@@ -96,39 +96,19 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
         popLabel = new JLabel();
-//        popLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
         popLabel.setFont(font0);
-//        popLabel.setForeground(Color.DARK_GRAY);
-//        popLabel.setPreferredSize(new Dimension(160, HEIGHT_STATUS_BAR));
-//	    JPanel popP = new JPanel();
-//	    popP.add(popLabel);
-	    
+  
         JPanel gridPanel = new JPanel(new GridLayout(1, 4));
           
 	    buildingXYLabel = new JLabel();
-//	    buildingXYLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
 	    buildingXYLabel.setFont(font0);
-//	    buildingXYLabel.setForeground(Color.GREEN.darker());
-//	    buildingXYLabel.setPreferredSize(new Dimension(LABEL_WIDTH + 40, HEIGHT_STATUS_BAR));
-//	    JPanel buildingP = new JPanel();
-//	    buildingP.add(buildingXYLabel);
-	    		
+  		
 	    windowXYLabel = new JLabel();
-//	    windowXYLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
 	    windowXYLabel.setFont(font0);
-//	    windowXYLabel.setForeground(Color.GRAY);
-//	    windowXYLabel.setPreferredSize(new Dimension(LABEL_WIDTH, HEIGHT_STATUS_BAR));
-//	    JPanel windowP = new JPanel();
-//	    windowP.add(windowXYLabel);
-	    
+    
 	    mapXYLabel = new JLabel();
-//	    mapXYLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
 	    mapXYLabel.setFont(font0);
-//	    mapXYLabel.setForeground(Color.ORANGE.darker().darker());
-//	    mapXYLabel.setPreferredSize(new Dimension(145, HEIGHT_STATUS_BAR));
-//	    JPanel mapP = new JPanel();
-//	    mapP.add(mapXYLabel);
-	    
+    
 	    gridPanel.add(popLabel);
 	    gridPanel.add(windowXYLabel);
 	    gridPanel.add(mapXYLabel);

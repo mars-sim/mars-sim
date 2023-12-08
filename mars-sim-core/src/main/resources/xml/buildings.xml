@@ -1075,7 +1075,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<robotic-station capacity="1">
 				<activity>
-					<activity-spot xloc="-2.5" yloc="3.5" />
+					<activity-spot xloc="-2.2" yloc="3.8" />
 				</activity>
 			</robotic-station>
 
@@ -1140,7 +1140,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<robotic-station capacity="1">
 				<activity>
-					<activity-spot xloc="-2.5" yloc="3.5" />
+					<activity-spot xloc="-2.2" yloc="3.8" />					
 				</activity>
 			</robotic-station>
 
