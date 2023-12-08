@@ -178,6 +178,11 @@ public class SettlementMapPanel extends JPanel {
 		repaint();
 	}
 
+	/**
+	 * Initializes map layers.
+	 * 
+	 * @param desktop
+	 */
 	public void initLayers(MainDesktopPane desktop) {
 
 		// Set up the dayNightMapLayer layers
@@ -200,6 +205,9 @@ public class SettlementMapPanel extends JPanel {
 		settlementTransparentPanel.createAndShowGUI();
 		settlementTransparentPanel.getSettlementListBox().setSelectedItem(settlement);
 
+		// Loads the value of scale possibly modified from UIConfig's Properties
+		settlementTransparentPanel.setZoomValue((int)scale);
+		
 		repaint();
 	}
 

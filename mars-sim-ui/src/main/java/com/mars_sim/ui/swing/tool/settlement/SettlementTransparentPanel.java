@@ -34,7 +34,6 @@ import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
@@ -93,7 +92,7 @@ public class SettlementTransparentPanel extends JComponent {
 	/** Zoom change. */
 	public static final double ZOOM_CHANGE = 0.25;
 
-	private static final int WEATHER_ICON_SIZE = 64;
+//	private static final int WEATHER_ICON_SIZE = 64;
 
 	private static final String TEMPERATURE 	= "   Temperature: ";
 	private static final String WINDSPEED 		= "   Windspeed: ";
@@ -125,7 +124,7 @@ public class SettlementTransparentPanel extends JComponent {
 	private String zaString;
 	private String odString;
 
-	private ImageIcon emptyIcon = new ImageIcon();
+//	private ImageIcon emptyIcon = new ImageIcon();
 	private Font sunFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 	
 	private Map<Settlement, String> resourceCache = new HashMap<>();
@@ -820,6 +819,15 @@ public class SettlementTransparentPanel extends JComponent {
 				}
 			}
 		});
+    }
+    
+    /**
+     * Sets the zoom slider value.
+     * 
+     * @param value
+     */
+    public void setZoomValue(int value) {
+    	zoomSlider.setValue(value);
     }
 
     private void buildInfoP() {

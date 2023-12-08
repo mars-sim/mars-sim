@@ -18,6 +18,7 @@ import com.mars_sim.ui.swing.StyleManager;
 /**
  * Simple table cell renderer that styles the values as percentages according to the Stylemanager
  */
+@SuppressWarnings("serial")
 public class PercentageCellRenderer extends DefaultTableCellRenderer {
 
     /**

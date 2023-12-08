@@ -716,4 +716,7 @@ public class InteractiveTerm {
 		return new Dimension(screenWidth, screenHeight);
 	}
 
+	public void destroy() {
+		profile = null;
+	}
 }

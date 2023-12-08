@@ -578,7 +578,7 @@ public class MainWindow
 	}
 
 	/**
-	 * Exit the simulation for running and exit.
+	 * Exits the running simulation.
 	 */
 	public void exitSimulation() {
 		if (!masterClock.isPaused() && !sim.isSavePending()) {
@@ -785,6 +785,14 @@ public class MainWindow
 		toolToolbar = null;
 		desktop.destroy();
 		desktop = null;
+		configs = null;
+		splashWindow = null;
+		interactiveTerm.destroy();
+		interactiveTerm = null;
+		pauseSwitch = null;
+		selectedSize = null;
+		sim = null;
+		masterClock = null;
+		memoryBar = null;
 	}
-
 }
