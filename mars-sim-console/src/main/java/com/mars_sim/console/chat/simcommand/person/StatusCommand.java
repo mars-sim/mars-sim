@@ -141,22 +141,24 @@ public class StatusCommand extends AbstractPersonCommand {
 
 		buffer.append(System.lineSeparator());
 		buffer.append(System.lineSeparator());
-		buffer.append("Hunger: ").append(PhysicalCondition.getHungerStatus(h, e) 
-				+ " (" + Math.round(h*10.0)/10.0 + ") Energy: " + Math.round(e*10.0)/10.0 + " kJ");
+		buffer.append("     Hunger : ").append(PhysicalCondition.getHungerStatus(h, e) 
+				+ " (" + Math.round(h*10.0)/10.0 + ")");
 		buffer.append(System.lineSeparator());
-		buffer.append("Thirst: ").append(PhysicalCondition.getThirstyStatus(t) 
+		buffer.append("     Energy : ").append(Math.round(e*10.0)/10.0 + " kJ");
+		buffer.append(System.lineSeparator());
+		buffer.append("     Thirst : ").append(PhysicalCondition.getThirstyStatus(t) 
 				+ " (" + Math.round(t*10.0)/10.0 + ")");
 		buffer.append(System.lineSeparator());
-		buffer.append("Stress: ").append(PhysicalCondition.getStressStatus(s)
+		buffer.append("     Stress : ").append(PhysicalCondition.getStressStatus(s)
 				+ " (" + Math.round(s*10.0)/10.0 + " %)");
 		buffer.append(System.lineSeparator());
-		buffer.append("Fatigue: ").append(PhysicalCondition.getFatigueStatus(f)
+		buffer.append("    Fatigue : ").append(PhysicalCondition.getFatigueStatus(f)
 				+ " (" + Math.round(f*10.0)/10.0 + ")");
 		buffer.append(System.lineSeparator());
-		buffer.append("Performance: ").append(PhysicalCondition.getPerformanceStatus(p)
-				+ " (" + Math.round(p*10.0)/10.0 + " %");
+		buffer.append("Performance : ").append(PhysicalCondition.getPerformanceStatus(p)
+				+ " (" + Math.round(p*10.0)/10.0 + " %)");
 		buffer.append(System.lineSeparator());
-		buffer.append("Emotion: ").append(person.getMind().getEmotion().getDescription());
+		buffer.append("    Emotion : ").append(person.getMind().getEmotion().getDescription());
 		buffer.append(System.lineSeparator());
 		
 		return buffer.toString();

@@ -39,6 +39,7 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 		for (Person p : people) {
 			response.appendBlankLine();
 			response.append(p.getName());
+			response.appendBlankLine();
 			response.append("Job : " + p.getMind().getJob().getName());
 
 			ScientificStudy ss = p.getStudy();

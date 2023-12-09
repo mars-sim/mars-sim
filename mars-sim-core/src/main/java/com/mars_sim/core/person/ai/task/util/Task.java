@@ -359,7 +359,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @param newEvent the new event
 	 */
-	protected static void registerNewEvent(HistoricalEvent newEvent) {
+	public static void registerNewEvent(HistoricalEvent newEvent) {
 		eventManager.registerNewEvent(newEvent);
 	}
 	

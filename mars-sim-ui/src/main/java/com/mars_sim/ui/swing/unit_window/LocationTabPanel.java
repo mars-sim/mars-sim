@@ -29,7 +29,6 @@ import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;

@@ -50,6 +50,7 @@ public class EventTableModel extends AbstractMonitorModel implements HistoricalE
 //			EventType.MEDICAL_STARTS,
 //			EventType.MEDICAL_TREATED,
 //			EventType.MEDICAL_DEATH,
+//			EventType.MEDICAL_POSTMORTEM_EXAM,
 			EventType.MISSION_EMERGENCY_BEACON_ON,
 			EventType.MISSION_EMERGENCY_BEACON_OFF,
 			EventType.MISSION_EMERGENCY_DESTINATION,

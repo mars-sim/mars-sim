@@ -20,7 +20,7 @@ public class PersonResetCommand extends AbstractPersonCommand {
 	public static final ChatCommand RESET = new PersonResetCommand();
 	
 	private PersonResetCommand() {
-		super("rt", "reset", "Reset a person's 5 performance factors");
+		super("res", "reset", "Reset a person's 5 performance factors");
 		
 		addRequiredRole(ConversationRole.EXPERT);
 	}

@@ -76,7 +76,6 @@ import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.tool.FlagString;
 import com.mars_sim.ui.swing.tool.SmartScroller;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;

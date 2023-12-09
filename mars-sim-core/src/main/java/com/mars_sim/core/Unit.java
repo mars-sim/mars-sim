@@ -383,7 +383,6 @@ public abstract class Unit implements Loggable, UnitIdentifer, Comparable<Unit> 
 		}
 	}
 
-	
 	/**
 	 * Gets the unit's container unit. Returns null if unit has no container unit.
 	 *
@@ -538,7 +537,7 @@ public abstract class Unit implements Loggable, UnitIdentifer, Comparable<Unit> 
 		synchronized (listeners) {
 			for(UnitListener i : listeners) {
 				try {
-					// Stop listeners breaking th update thread
+					// Stop listeners breaking the update thread
 					i.unitUpdate(ue);
 				}
 				catch(RuntimeException rte) {
