@@ -1294,7 +1294,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	@Override
 	public void setActivitySpot(AllocatedSpot newSpot) {
 		if (spot != null) {
-			spot.release(this);
+			spot.leave(this);
 		}
 		spot = newSpot;
 	}

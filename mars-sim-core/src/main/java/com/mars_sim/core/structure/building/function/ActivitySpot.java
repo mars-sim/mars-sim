@@ -36,13 +36,14 @@ public final class ActivitySpot implements Serializable {
 		}
 
 		/**
-		 * Releases a previously allocated activity spot.
+		 * Leave a previously allocated activity spot.
 		 * 
 		 * @param w Worker releasing
 		 */
-		public void release(Worker w) {
-			spot.release(w);
-			spot = null;
+		public void leave(Worker w) {
+			if (spot.leave(w)) {
+				spot = null;
+			}
 		}
 
 		/**
@@ -56,10 +57,11 @@ public final class ActivitySpot implements Serializable {
 	private static final int EMPTY_ID = -1;
 
 	private int id;
-
+	private String name;
 	private LocalPosition pos;
 	
-	ActivitySpot(LocalPosition pos) {
+	ActivitySpot(String name, LocalPosition pos) {
+		this.name = name;
 		this.pos = pos;
 		this.id = EMPTY_ID;
 	}
@@ -81,16 +83,21 @@ public final class ActivitySpot implements Serializable {
 	}
 
 	/**
-	 * Releases this spot for the given worker. Release is ignored if the worker
+	 * Leaves this spot for the given worker. Release is ignored if the worker
 	 * does not own the spot.
 	 * 
-	 * @param w Worker doing the release.
+	 * @param w Worker leaving the spot
+	 * @param release Release any permanent reservation.
+	 * @return Allocation releases
+	 * 
 	 */
-	private void release(Worker w) {
-		// Only release it if still allocated to the worker
+	private boolean leave(Worker w) {
+		// Only leave it if still allocated to the worker
 		if (id == w.getIdentifier()) {
 			id = EMPTY_ID;
+			return true;
 		}
+		return false;
 	}
 
 	/**
@@ -108,6 +115,14 @@ public final class ActivitySpot implements Serializable {
 	public int getID() {
 		return id;
 	}
+
+	/**
+	 * Gets the name of the spot.
+	 * @return Name of the spot
+	 */
+	public String getName() {
+		return name;
+	}		
 
 	public LocalPosition getPos() {
 		return pos;

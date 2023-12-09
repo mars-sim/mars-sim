@@ -23,6 +23,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingConfig;
 import com.mars_sim.core.structure.building.FunctionSpec;
+import com.mars_sim.core.structure.building.NamedPosition;
 import com.mars_sim.core.structure.building.function.farming.CropConfig;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
@@ -91,13 +92,14 @@ public abstract class Function implements Serializable, Temporal {
 	 * Create a set of Activity Spots from a set of LocalPositions. The Activity spots are created
 	 * into the global Settlement coordinate frame.
 	 * 
-	 * @param positions Source positions
+	 * @param set Source positions
 	 * @param owner     Building that owns this function, provide reference point.
 
 	 */
-	private static Set<ActivitySpot> createActivitySpot(Set<LocalPosition> positions, Building owner) {
-		return positions.stream()
-							.map(p -> new ActivitySpot(LocalAreaUtil.getLocalRelativePosition(p, owner)))
+	private static Set<ActivitySpot> createActivitySpot(Set<NamedPosition> set, Building owner) {
+		return set.stream()
+							.map(p -> new ActivitySpot(p.name(),
+											LocalAreaUtil.getLocalRelativePosition(p.position(), owner)))
 							.collect(Collectors.toSet());
 	}
 
@@ -221,6 +223,8 @@ public abstract class Function implements Serializable, Temporal {
 		if (as == null) {
 			throw new IllegalArgumentException("No activity spot " + p.getShortFormat());
 		}
+
+		// Spot is claimed but only temporarily
 		var allocated = as.claim(w);
 		w.setActivitySpot(allocated);
 		return true;

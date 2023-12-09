@@ -99,9 +99,9 @@ public class BuildingConfig {
 
 	private static final String POSITION = "-position";
 
-	private transient Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
+	private Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
 
-	private static Set<String> buildingTypes = new HashSet<>(); 
+	private Set<String> buildingTypes = new HashSet<>(); 
 	
 	/**
 	 * Constructor.
@@ -117,6 +117,8 @@ public class BuildingConfig {
 			String key = generateSpecKey(buildingType);
 			buildSpecMap.put(key, parseBuilding(buildingType, buildingElement, resProcConfig));
 		}
+
+		buildingTypes = buildSpecMap.values().stream().map(BuildingSpec::getBuildingType).collect(Collectors.toSet());
 	}
 
 	/**
@@ -125,9 +127,6 @@ public class BuildingConfig {
 	 * @return set of building types.
 	 */
 	public Set<String> getBuildingTypes() {
-		if (buildingTypes.isEmpty()) {
-			buildingTypes = buildSpecMap.values().stream().map(BuildingSpec::getBuildingType).collect(Collectors.toSet());
-		}
 		return buildingTypes;
 	}
 
@@ -163,8 +162,9 @@ public class BuildingConfig {
 			FunctionType function = FunctionType.valueOf(ConfigHelper.convertToEnumName(name));
 
 			// Get activity spots
-			Set<LocalPosition> spots = parsePositions(element, ACTIVITY, ACTIVITY_SPOT,
-													width, length);
+			String spotName = getDefaultSpotName(function);
+			Set<NamedPosition> spots = parseNamedPositions(element, ACTIVITY,
+													spotName, width, length);
 
 			// Get attributes as basic properties
 			Map<String, Object> props = new HashMap<>();
@@ -277,86 +277,58 @@ public class BuildingConfig {
 	}
 	
 	/**
+	 * Get the spot name that is best associated with a certain FunctionType.
+	 * @param function
+	 * @return
+	 */
+	private static String getDefaultSpotName(FunctionType function) {
+		return switch(function) {
+			case ADMINISTRATION -> "Desk";
+			case DINING -> "Seat";
+			case LIVING_ACCOMMODATIONS -> "Bed";
+			case MANUFACTURE -> "Workbench";
+			case MEDICAL_CARE -> "Sickbay";
+			case RECREATION -> "Chair";
+			case ROBOTIC_STATION -> "Charge Point";
+			default -> "Spot";
+		};
+	}
+
+	/**
 	 * Derives the category from the types of Functions.
 	 * 
 	 * @param functions
 	 * @return
 	 */
-	public BuildingCategory deriveCategory(Set<FunctionType> functions) {
+	private static BuildingCategory deriveCategory(Set<FunctionType> functions) {
 
 		// Get a set of categories
 		Set<BuildingCategory> cats = new HashSet<>();
 		for (FunctionType fType : functions) {
-			switch(fType) {
-				case EARTH_RETURN:
-					cats.add(BuildingCategory.ERV);
-					break;
+			var bCat = switch(fType) {
+				case EARTH_RETURN -> BuildingCategory.ERV;
+				case EVA -> BuildingCategory.EVA_AIRLOCK;
+				case FARMING, FISHERY -> BuildingCategory.FARMING;
+				case BUILDING_CONNECTION -> BuildingCategory.HALLWAY;
+				case ASTRONOMICAL_OBSERVATION, FIELD_STUDY,
+					 RESEARCH, COMPUTATION -> BuildingCategory.LABORATORY;
+				case ADMINISTRATION, COMMUNICATION,
+				     MANAGEMENT -> BuildingCategory.COMMAND;
+				case COOKING, DINING, EXERCISE, FOOD_PRODUCTION,
+				     LIVING_ACCOMMODATIONS, PREPARING_DESSERT,
+					 RECREATION -> BuildingCategory.LIVING;
+				case STORAGE -> BuildingCategory.STORAGE;					
+				case MEDICAL_CARE -> BuildingCategory.MEDICAL;
+				case POWER_GENERATION, POWER_STORAGE,
+				     THERMAL_GENERATION -> BuildingCategory.POWER;
+				case RESOURCE_PROCESSING, WASTE_PROCESSING -> BuildingCategory.PROCESSING;
+				case VEHICLE_MAINTENANCE -> BuildingCategory.VEHICLE;
+				case MANUFACTURE -> BuildingCategory.WORKSHOP;
+				default -> null;
+			};
 
-				case EVA:
-					cats.add(BuildingCategory.EVA_AIRLOCK);
-					break;
-
-				case FARMING:
-				case FISHERY:
-					cats.add(BuildingCategory.FARMING);
-					break;
-
-				case BUILDING_CONNECTION:
-					cats.add(BuildingCategory.HALLWAY);
-					break;
-
-				case ASTRONOMICAL_OBSERVATION:
-				case FIELD_STUDY:
-				case RESEARCH:
-				case COMPUTATION:
-					cats.add(BuildingCategory.LABORATORY);
-					break;
-
-				case ADMINISTRATION:
-				case COMMUNICATION:
-				case MANAGEMENT:
-					cats.add(BuildingCategory.COMMAND);
-					break;
-
-				case COOKING:
-				case DINING:
-				case EXERCISE:
-				case FOOD_PRODUCTION:
-				case LIVING_ACCOMMODATIONS:
-				case PREPARING_DESSERT:
-				case RECREATION:
-					cats.add(BuildingCategory.LIVING);
-					break;
-
-				case STORAGE:
-					cats.add(BuildingCategory.STORAGE);
-					break;
-					
-				case MEDICAL_CARE:
-					cats.add(BuildingCategory.MEDICAL);
-					break;
-
-				case POWER_GENERATION:
-				case POWER_STORAGE:
-				case THERMAL_GENERATION:
-					cats.add(BuildingCategory.POWER);
-					break; 
-
-				case RESOURCE_PROCESSING:
-				case WASTE_PROCESSING:
-					cats.add(BuildingCategory.PROCESSING);
-					break;
-
-				case VEHICLE_MAINTENANCE:
-					cats.add(BuildingCategory.VEHICLE);
-					break;
-
-				case MANUFACTURE:
-					cats.add(BuildingCategory.WORKSHOP);
-					break;
-
-				default:
-					// Not important
+			if (bCat != null) {
+				cats.add(bCat);
 			}
 		}
 
@@ -407,8 +379,6 @@ public class BuildingConfig {
 		List<Element> researchSpecialities = researchElement.getChildren(RESEARCH_SPECIALTY);
 		for (Element researchSpecialityElement : researchSpecialities) {
 			String value = researchSpecialityElement.getAttributeValue(NAME);
-			// The name of research-specialty in buildings.xml must conform to enum values of {@link
-			// ScienceType}
 			result.add(ScienceType.valueOf(ConfigHelper.convertToEnumName(value)));
 		}
 		newSpec.setScienceType(result);
@@ -485,6 +455,58 @@ public class BuildingConfig {
 		newSpec.setStorage(storageMap, initialMap);
 	}
 
+	/**
+	 * Parses an set of named position for a building's function. These have a xloc & yloc structure.
+	 *
+	 * @param functionElement Element holding locations
+	 * @param locations Name of the location elements
+	 * @param namePrefix The default name prefix to assign to the spots
+	 * @return set of activity spots as Point2D objects.
+	 */
+	private Set<NamedPosition> parseNamedPositions(Element functionElement, String locations,
+												   String namePrefix,
+										 		   double buildingWidth, double buildingLength) {
+		Set<NamedPosition> result = new HashSet<>();
+
+		// Maximum coord is half the width or length
+		double maxX = buildingWidth/2D;
+		double maxY = buildingLength/2D;
+		boolean hasMax = (maxX > 0 && maxY > 0);
+
+		Element activityElement = functionElement.getChild(locations);
+		if (activityElement != null) {
+			int i = 1;
+			for(Element activitySpot : activityElement.getChildren(ACTIVITY_SPOT)) {
+				LocalPosition point = ConfigHelper.parseLocalPosition(activitySpot);
+
+				// Check location is within the building. Check as long as the maximum
+				// is defined
+				if (hasMax && !point.isWithin(maxX, maxY)) {
+					// Roughly walk back over the XPath
+					StringBuilder name = new StringBuilder();
+					do {
+						name.append(functionElement.getName()).append(' ');
+						functionElement = functionElement.getParentElement();
+					} while (!functionElement.getName().equals(BUILDING));
+					name.append("in building '").append(functionElement.getAttributeValue(TYPE)).append("'");
+
+					throw new IllegalArgumentException("Locations '" + locations
+							+ "' of " + name.toString()
+							+ " are outside building");
+				}
+
+				// Identify name
+				String name = activitySpot.getAttributeValue(NAME);
+				if (name == null) {
+					name = namePrefix + " #" + i;
+					i++;
+				}
+				result.add(new NamedPosition(name, point));
+				i++;
+			}
+		}
+		return result;
+	}
 	/**
 	 * Parses an set of position for a building's function. These have a xloc & yloc structure.
 	 *

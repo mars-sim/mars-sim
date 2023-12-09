@@ -2457,7 +2457,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	@Override
 	public void setActivitySpot(AllocatedSpot newSpot) {
 		if (spot != null) {
-			spot.release(this);
+			spot.leave(this);
 		}
 		spot = newSpot;
 	}
