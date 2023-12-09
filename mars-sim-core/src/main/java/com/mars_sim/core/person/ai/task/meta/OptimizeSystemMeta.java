@@ -63,7 +63,7 @@ public class OptimizeSystemMeta extends FactoryMetaTask {
 	@Override
 	public List<TaskJob> getTaskJobs(Person person) {
         
-		if (!person.isInside()) {
+		if (!person.isInSettlement()) {
 			return EMPTY_TASKLIST;
 		}
 
