@@ -385,10 +385,10 @@ public class CommanderWindow extends ToolWindow {
 				List<String> cnyList = c.getAuthority().getCountries();
 				
 				String countryCode = "";
-				String countryName = "Multi-Nationals";
+				String countryName = "Multi-National";
 				if (cnyList.size() == 1) {
 					countryName = c.getAuthority().getCountries().get(0);
-					countryCode = FlagString.getEmoji(countryName);
+//					countryCode = FlagString.getEmoji(countryName);
 				}
 				
 				labelGrid.addLabels("Country", countryName, countryCode);

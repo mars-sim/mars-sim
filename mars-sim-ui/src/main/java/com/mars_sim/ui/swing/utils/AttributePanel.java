@@ -41,8 +41,16 @@ public class AttributePanel extends JPanel {
 	 */
 	public JLabel addLabels(String titleLabel, String content, String unicode) {
 		JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 5));
-		JLabel contentLabel = new JLabel("<html>" + content + " (" + String.valueOf(unicode) + ") </html>");
-		wrapper.add(contentLabel);
+		JLabel contentLabel = new JLabel();
+		if (unicode.equals("")) {
+			contentLabel.setText(content);
+			wrapper.add(contentLabel);
+		}
+		else {
+			contentLabel.setText("<html>" + content + " (" + String.valueOf(unicode) + ") </html>");
+//			contentLabel.setText(content + " (" + String.valueOf(unicode) + ")");
+			wrapper.add(contentLabel);
+		}
 		addLabelledItem(titleLabel, contentLabel);
 		return contentLabel;
 	}

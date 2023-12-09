@@ -114,4 +114,10 @@ public class Zone implements Serializable, Temporal {
 		return growthRate;
 	}
 	
+	/**
+	 * Prepares for deletion.
+	 */
+	public void destroy() {
+		type = null;
+	}
 }
