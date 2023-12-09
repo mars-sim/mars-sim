@@ -40,7 +40,7 @@ public class PersonChat extends ConnectedUnitCommand {
 																	LoadingCommand.LOADING,
 																	EvaCommand.EVA,
 																	FriendCommand.FRIEND,
-																	PersonReviveCommand.REVIVE,
+																	PersonResetCommand.RESET,
 																	JobProspectCommand.JOB_PROSPECT,
 																	new EquipmentCommand(PERSON_GROUP),
 																	new UnitLocationCommand(PERSON_GROUP),

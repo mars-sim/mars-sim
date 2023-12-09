@@ -178,12 +178,12 @@ public class Sleep extends Task {
 			return time;
 		}
 
-		if (person.isInSettlement()) {
+//		if (person.isInSettlement()) {
 			if (typeOfBed == 0) {
 				// Walk to a location
 				walkToDestination();
 			}
-		}
+//		}
 
 //			// Check if a person's subtask is not the Sleep task itself
 //			if (isNotSubTask())
