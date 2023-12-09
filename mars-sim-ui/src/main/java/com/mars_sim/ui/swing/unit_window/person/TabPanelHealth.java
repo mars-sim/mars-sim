@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -47,6 +48,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.SpringUtilities;
+import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -66,7 +68,6 @@ extends TabPanel {
 	private static final DecimalFormat DECIMAL_MSOLS = new DecimalFormat("0 msols");
 
 	public final String WIKI_URL = Msg.getString("TabPanelHealth.radiation.url"); //$NON-NLS-1$
-	public final String WIKI_TEXT = Msg.getString("TabPanelHealth.radiation.title"); //$NON-NLS-1$	
 	
 	private int fatigueCache;
 	private int thirstCache;
@@ -323,12 +324,13 @@ extends TabPanel {
 		JPanel linkPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
 		radiationPanel.add(linkPane, BorderLayout.SOUTH);
 		
-		JButton link = new JButton(WIKI_TEXT);
-		linkPane.add(link, SwingConstants.CENTER);
-		link.setAlignmentX(.5f);
-		link.setAlignmentY(.5f);
-		link.setToolTipText("Open Radiation Wiki in GitHub");
-		link.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
+		Icon wikiIcon = ImageLoader.getIconByName(GuideWindow.WIKI_ICON);
+		JButton wikiButton = new JButton(wikiIcon);
+		linkPane.add(wikiButton, SwingConstants.CENTER);
+		wikiButton.setAlignmentX(.5f);
+		wikiButton.setAlignmentY(.5f);
+		wikiButton.setToolTipText("Open Radiation Wiki in GitHub");
+		wikiButton.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
 
 		// Prepare radiation table model
 		radiationTableModel = new RadiationTableModel(condition);
