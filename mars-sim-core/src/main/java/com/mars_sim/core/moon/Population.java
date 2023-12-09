@@ -220,4 +220,13 @@ public class Population implements Serializable, Temporal {
 	public double getGrowthTotalPopulation() {
 		return growthRateTourists + growthRateResidents + growthRateResearchers;
 	}
+	
+	/**
+	 * Prepares for deletion.
+	 */
+	public void destroy() {
+		colony = null;
+		colonists.clear();
+		colonists = null;
+	}
 }

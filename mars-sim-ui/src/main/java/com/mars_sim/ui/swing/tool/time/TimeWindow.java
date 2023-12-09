@@ -61,9 +61,6 @@ public class TimeWindow extends ToolWindow {
 	public final String WIKI_URL = Msg.getString("TimeWindow.calendar.url"); //$NON-NLS-1$
 	public final String WIKI_TEXT = Msg.getString("TimeWindow.calendar.title"); //$NON-NLS-1$	
 	
-	private Icon wikiIcon = ImageLoader.getIconByName(GuideWindow.WIKI_ICON);
-	private JButton wikiButton = new JButton(wikiIcon);
-	
     private final DateTimeFormatter DATE_TIME_FORMATTER = DateCommand.DATE_TIME_FORMATTER;
 	
 	/** the execution time label string */
@@ -200,12 +197,13 @@ public class TimeWindow extends ToolWindow {
 		innerCalendarPane.setAlignmentX(SwingConstants.CENTER);
 		innerCalendarPane.setAlignmentY(SwingConstants.CENTER);
 
-		
 		// Create Martian calendar display
 		calendarDisplay = new MarsCalendarDisplay(marsTime, desktop);
 		innerCalendarPane.add(calendarDisplay);
 		calendarMonthPane.add(innerCalendarPane, BorderLayout.CENTER);
 
+		Icon wikiIcon = ImageLoader.getIconByName(GuideWindow.WIKI_ICON);
+		JButton wikiButton = new JButton(wikiIcon);
 		wikiButton.setAlignmentX(.5f);
 		wikiButton.setAlignmentY(.5f);
 		wikiButton.setToolTipText("Open Timekeeping Wiki in GitHub");
