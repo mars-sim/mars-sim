@@ -48,25 +48,22 @@ import com.mars_sim.ui.swing.UIConfig;
 @SuppressWarnings("serial")
 public class SettlementMapPanel extends JPanel {
 
-	/** default logger. */
-	// may add back private static SimLogger logger = SimLogger.getLogger(SettlementMapPanel.class.getName())
-
 	// Property names for UI Config
-	private final String BUILDING_LBL_PROP = "BUILDING_LABELS";
-	private final String CONSTRUCTION_LBL_PROP = "CONSTRUCTION_LABELS";
-	private final String PERSON_LBL_PROP = "PERSON_LABELS";
-	private final String VEHICLE_LBL_PROP = "VEHICLE_LABELS";
-	private final String ROBOT_LBL_PROP = "ROBOT_LABELS";
-	private final String SETTLEMENT_PROP = "SETTLEMENT";
-	private final String DAYLIGHT_PROP = "DAYLIGHT_LAYER";
-	private final String X_PROP = "XPOS";
-	private final String Y_PROP = "YPOS";
-	private final String SCALE_PROP = "SCALE";
-	private final String ROTATION_PROP = "ROTATION";
+	private static final String BUILDING_LBL_PROP = "BUILDING_LABELS";
+	private static final String CONSTRUCTION_LBL_PROP = "CONSTRUCTION_LABELS";
+	private static final String PERSON_LBL_PROP = "PERSON_LABELS";
+	private static final String VEHICLE_LBL_PROP = "VEHICLE_LABELS";
+	private static final String ROBOT_LBL_PROP = "ROBOT_LABELS";
+	private static final String SETTLEMENT_PROP = "SETTLEMENT";
+	private static final String DAYLIGHT_PROP = "DAYLIGHT_LAYER";
+	private static final String X_PROP = "XPOS";
+	private static final String Y_PROP = "YPOS";
+	private static final String SCALE_PROP = "SCALE";
+	private static final String ROTATION_PROP = "ROTATION";
 
 	// Static members.
-	private final double WIDTH = 6D;
-	public final static double DEFAULT_SCALE = 10D;
+	private static final double WIDTH = 6D;
+	public static final double DEFAULT_SCALE = 10D;
 
 	// Data members
 	private boolean exit = true;
@@ -90,7 +87,6 @@ public class SettlementMapPanel extends JPanel {
 
 	private MainDesktopPane desktop;
 
-	//private Building building;
 	private SettlementWindow settlementWindow;
 	private Settlement settlement;
 	private PopUpUnitMenu menu;
@@ -199,7 +195,6 @@ public class SettlementMapPanel extends JPanel {
 		mapLayers.add(new VehicleMapLayer(this));
 		mapLayers.add(new PersonMapLayer(this));
 		mapLayers.add(new RobotMapLayer(this));
-		mapLayers.add(new LabelMapLayer(this));
 
 		settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
 		settlementTransparentPanel.createAndShowGUI();
@@ -330,7 +325,6 @@ public class SettlementMapPanel extends JPanel {
 
 	private void setPopUp(final MouseEvent evt, int x, int y, Unit unit) {
 		menu = new PopUpUnitMenu(settlementWindow, unit);
-//		setComponentPopupMenu(menu);
 		menu.show(evt.getComponent(), x, y);
 	}
 	
@@ -392,11 +386,11 @@ public class SettlementMapPanel extends JPanel {
 					xx = length / 2D;
 				}
 
-				double c_x = hoverPosition.getX();
-				double c_y = hoverPosition.getY();
+				double cX = hoverPosition.getX();
+				double cY = hoverPosition.getY();
 
-				double rangeX = Math.round((c_x - x) * 100.0) / 100.0; // Math.abs(x - c_x);
-				double rangeY = Math.round((c_y - y) * 100.0) / 100.0; // Math.abs(y - c_y);
+				double rangeX = Math.round((cX - x) * 100.0) / 100.0;
+				double rangeY = Math.round((cY - y) * 100.0) / 100.0;
 
 				if (Math.abs(rangeX) <= Math.abs(xx) && Math.abs(rangeY) <= Math.abs(yy)) {
 					// Display the coordinate within a building of the hovering mouse pointer
@@ -477,8 +471,6 @@ public class SettlementMapPanel extends JPanel {
 	 */
 	public void setRotation(double rotation) {
 		this.rotation = rotation;
-
-		// paintDoubleBuffer();
 		repaint();
 	}
 
@@ -492,7 +484,6 @@ public class SettlementMapPanel extends JPanel {
 		setRotation(0D);
 		scale = DEFAULT_SCALE;
 
-		// paintDoubleBuffer();
 		repaint();
 	}
 
@@ -517,7 +508,6 @@ public class SettlementMapPanel extends JPanel {
 		xPos += realXDiff;
 		yPos += realYDiff;
 
-		// paintDoubleBuffer();
 		repaint();
 	}
 
@@ -531,7 +521,7 @@ public class SettlementMapPanel extends JPanel {
 	public Person selectPersonAt(int xPixel, int yPixel) {
 		double range = WIDTH / scale;
 		Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
-		Person selectedPerson = null;
+		Person foundPerson = null;
 
 		Iterator<Person> i = CollectionUtils.getPeopleInSettlementVicinity(settlement).iterator();
 		while (i.hasNext()) {
@@ -540,15 +530,15 @@ public class SettlementMapPanel extends JPanel {
 			double distanceY = person.getPosition().getY() - settlementPosition.getY();
 			double distance = Math.hypot(distanceX, distanceY);
 			if (distance <= range) {
-				selectedPerson = person;
+				foundPerson = person;
 			}
 		}
 
-		if (selectedPerson != null) {
-			selectPerson(selectedPerson);
+		if (foundPerson != null) {
+			selectPerson(foundPerson);
 
 		}
-		return selectedPerson;
+		return foundPerson;
 	}
 
 	/**
@@ -561,7 +551,7 @@ public class SettlementMapPanel extends JPanel {
 	public Robot selectRobotAt(int xPixel, int yPixel) {
 		double range = WIDTH / scale;
 		Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
-		Robot selectedRobot = null;
+		Robot foundRobot = null;
 
 		Iterator<Robot> i = CollectionUtils.getAssociatedRobotsInSettlementVicinity(settlement).iterator();
 		while (i.hasNext()) {
@@ -570,15 +560,15 @@ public class SettlementMapPanel extends JPanel {
 			double distanceY = robot.getPosition().getY() - settlementPosition.getY();
 			double distance = Math.hypot(distanceX, distanceY);
 			if (distance <= range) {
-				selectedRobot = robot;
+				foundRobot = robot;
 			}
 		}
 
-		if (selectedRobot != null) {
-			selectRobot(selectedRobot);
+		if (foundRobot != null) {
+			selectRobot(foundRobot);
 
 		}
-		return selectedRobot;
+		return foundRobot;
 	}
 
 	/**
@@ -590,7 +580,7 @@ public class SettlementMapPanel extends JPanel {
 	 */
 	public Building selectBuildingAt(int xPixel, int yPixel) {
 		Point.Double clickPosition = convertToSettlementLocation(xPixel, yPixel);
-		Building selectedBuilding = null;
+		Building foundBuilding = null;
 
 		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet().iterator();
 		while (j.hasNext()) {
@@ -632,24 +622,20 @@ public class SettlementMapPanel extends JPanel {
 					xx = length / 2D;
 				}
 
-				double c_x = clickPosition.getX();
-				double c_y = clickPosition.getY();
+				double cX = clickPosition.getX();
+				double cY = clickPosition.getY();
 
-				double distanceX = Math.round((c_x - x) * 100.0) / 100.0; // Math.abs(x - c_x);
-				double distanceY = Math.round((c_y - y) * 100.0) / 100.0; // Math.abs(y - c_y);
+				double distanceX = Math.round((cX - x) * 100.0) / 100.0; 
+				double distanceY = Math.round((cY - y) * 100.0) / 100.0;
 
 				if (Math.abs(distanceX) <= xx && Math.abs(distanceY) <= yy) {
-					selectedBuilding = building;
-
-					if (selectedBuilding != null) {
-						selectBuilding(selectedBuilding);
-					}
-
-					break;
+					foundBuilding = building;
+					selectBuilding(foundBuilding);
+					return foundBuilding;
 				}
 			}
 		}
-		return selectedBuilding;
+		return foundBuilding;
 	}
 
 	/**
@@ -667,7 +653,7 @@ public class SettlementMapPanel extends JPanel {
 		while (j.hasNext()) {
 			ConstructionSite s = j.next();
 
-			if (!LabelMapLayer.getConstructionLabel(s).equals(Msg.getString("LabelMapLayer.noConstruction"))) {
+			if (!StructureMapLayer.getConstructionLabel(s).equals(Msg.getString("LabelMapLayer.noConstruction"))) {
 				double width = s.getWidth();
 				double length = s.getLength();
 				int facing = (int) s.getFacing();
@@ -791,7 +777,6 @@ public class SettlementMapPanel extends JPanel {
 			if (distance <= newRange) {
 				selectedVehicle = vehicle;
 
-				//// paintDoubleBuffer();
 				repaint();
 			}
 		}
@@ -1055,6 +1040,7 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 
+	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
