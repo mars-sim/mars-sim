@@ -7,6 +7,7 @@
 package com.mars_sim.ui.swing.tool.settlement;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
@@ -33,20 +34,23 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.mapdata.location.LocalBoundedObject;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 
 /**
  * A settlement map layer for displaying vehicles.
  */
-public class VehicleMapLayer implements SettlementMapLayer {
+public class VehicleMapLayer extends AbstractMapLayer {
 
 	// Static members
-	private final Color vehicleColor = new Color(208, 224, 242); // pale grey color
+	private static final Color RECT_COLOR = new Color(208, 224, 242); // pale grey color
+	private static final ColorChoice VEHICLE_COLOR = new ColorChoice(Color.YELLOW.darker(), Color.BLACK);
+	private static final Font LABEL_FONT = new Font(Font.SERIF, Font.PLAIN, 10); // Note size doesn;t matter
+
 
 	// Data members
 	private SettlementMapPanel mapPanel;
 	private Map<Double, Map<GraphicsNode, BufferedImage>> svgImageCache;
-	private double scale;
 
 	/**
 	 * Constructor.
@@ -56,7 +60,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	public VehicleMapLayer(SettlementMapPanel mapPanel) {
 		// Initialize data members.
 		this.mapPanel = mapPanel;
-		svgImageCache = new HashMap<Double, Map<GraphicsNode, BufferedImage>>();
+		svgImageCache = new HashMap<>();
 	}
 
 
@@ -64,8 +68,6 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	public void displayLayer(Graphics2D g2d, Settlement settlement, Building building,
 			double xPos, double yPos, int mapWidth, int mapHeight,
 			double rotation, double scale) {
-
-		this.scale = scale;
 
 		// Save original graphics transforms.
 		AffineTransform saveTransform = g2d.getTransform();
@@ -81,29 +83,15 @@ public class VehicleMapLayer implements SettlementMapLayer {
 		g2d.rotate(rotation, 0D - (xPos * scale), 0D - (yPos * scale));
 
 		// Draw all vehicles.
-		drawVehicles(g2d, settlement);
+		// Draw all parked vehicles at this settlement location
+		for(Vehicle v : CollectionUtils.getVehiclesInSettlementVicinity(settlement)) {
+			drawVehicle(v, settlement, g2d, rotation, scale, mapPanel.isShowVehicleLabels());
+		}
 
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
 	}
 
-	/**
-	 * Draws all of the vehicles parked at the settlement.
-	 * 
-	 * @param g2d the graphics context.
-	 * @param settlement the settlement.
-	 */
-	private void drawVehicles(Graphics2D g2d, Settlement settlement) {
-
-		if (settlement != null) {
-
-			// Draw all parked vehicles at this settlement location
-			Iterator<Vehicle> i = CollectionUtils.getVehiclesInSettlementVicinity(settlement).iterator();
-			while (i.hasNext()) {
-				drawVehicle(i.next(), settlement, g2d);
-			}
-		}
-	}
 
 	/**
 	 * Draws a vehicle on the map.
@@ -111,37 +99,39 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	 * @param vehicle the vehicle.
 	 * @param g2d the graphics context.
 	 */
-	private void drawVehicle(Vehicle vehicle, Settlement settlement, Graphics2D g2d) {
+	private void drawVehicle(Vehicle vehicle, Settlement settlement, Graphics2D g2d,
+							double rotation, double scale,
+							boolean showLabel) {
 
 		// Use SVG image for vehicle if available.
 		GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
 		if (svg != null) {
 			// Draw base SVG image for vehicle.
-			drawSVGVehicle(g2d, vehicle.getXLocation(), vehicle.getYLocation(), 
-					vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), svg);
+			drawSVGVehicle(g2d, scale, vehicle, svg);
 
 			// Draw overlay if the vehicle is being maintained or repaired.
 			if (isVehicleRepairOrMaintenance(vehicle)) {
-				drawSVGRepairMaint(g2d, vehicle);
+				drawSVGRepairMaint(g2d, scale, vehicle);
 			}
 
 			// Draw overlay if the vehicle is being loaded or unloaded.
 			if (isVehicleLoading(vehicle, settlement)) {
-				drawSVGLoading(g2d, vehicle);
+				drawSVGLoading(g2d, scale, vehicle);
 			}
 
 			// Draw attachment parts for light utility vehicle.
 			if (vehicle instanceof LightUtilityVehicle luv) {
-				drawSVGPartAttachments(g2d, luv);
+				drawSVGPartAttachments(g2d, scale, luv);
 			}
 		}
 		else {
 			// Otherwise draw colored rectangle for vehicle.
-			drawRectangleVehicle(
-				g2d, vehicle.getXLocation(), vehicle.getYLocation(), 
-				vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), 
-				vehicleColor
-			);
+			drawRectangleVehicle(g2d, scale, vehicle, RECT_COLOR);
+		}
+
+		if (showLabel) {
+			drawCenteredLabel(g2d, vehicle.getName(), LABEL_FONT, vehicle.getPosition(),
+							VEHICLE_COLOR, 0, rotation, scale);
 		}
 	}
 
@@ -158,7 +148,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 
         // Check if vehicle has malfunction.
 		if (vehicle.getMalfunctionManager().hasMalfunction()) {
-			result = true;;
+			result = true;
 		}
 
 		return result;
@@ -170,13 +160,12 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	 * @param g2d the graphics context.
 	 * @param vehicle the vehicle.
 	 */
-	private void drawSVGRepairMaint(Graphics2D g2d, Vehicle vehicle) {
+	private void drawSVGRepairMaint(Graphics2D g2d, double scale, Vehicle vehicle) {
 		// Use SVG image for vehicle maintenance overlay if available.
 		GraphicsNode maintOverlaySvg = SVGMapUtil.getMaintenanceOverlaySVG(vehicle.getBaseImage());
 		GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
 		if ((maintOverlaySvg != null) && (vehicleSvg != null)) {
-			drawVehicleOverlay(g2d, vehicle.getXLocation(), vehicle.getYLocation(),
-					vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), vehicleSvg, maintOverlaySvg);
+			drawVehicleOverlay(g2d, scale, vehicle, vehicleSvg, maintOverlaySvg);
 		}
 	}
 
@@ -241,14 +230,13 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	 * @param g2d the graphics context.
 	 * @param vehicle the vehicle.
 	 */
-	private void drawSVGLoading(Graphics2D g2d, Vehicle vehicle) {
+	private void drawSVGLoading(Graphics2D g2d, double scale, Vehicle vehicle) {
 
 		// Use SVG image for vehicle loading overlay if available.
 		GraphicsNode loadOverlaySvg = SVGMapUtil.getLoadingOverlaySVG(vehicle.getBaseImage());
 		GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
 		if ((loadOverlaySvg != null) && (vehicleSvg != null)) {
-			drawVehicleOverlay(g2d, vehicle.getXLocation(), vehicle.getYLocation(),
-					vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), vehicleSvg, loadOverlaySvg);
+			drawVehicleOverlay(g2d, scale, vehicle, vehicleSvg, loadOverlaySvg);
 		}
 	}
 
@@ -256,34 +244,26 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	 * Draws a vehicle as a SVG image on the map.
 	 * 
 	 * @param g2d the graphics2D context.
-	 * @param xLoc the X location from center of settlement (meters).
-	 * @param yLoc the y Location from center of settlement (meters).
-	 * @param width the vehicle width (meters).
-	 * @param length the vehicle length (meters).
-	 * @param facing the vehicle facing (degrees from North clockwise).
+	 * @param scale Map scale
+	 * @param vehiclePlacement Vehicle location
 	 * @param svg the SVG graphics node.
 	 */
-	private void drawSVGVehicle(Graphics2D g2d, double xLoc, double yLoc,
-			double width, double length, double facing, GraphicsNode svg) {
+	private void drawSVGVehicle(Graphics2D g2d, double scale, LocalBoundedObject vehiclePlacement, GraphicsNode svg) {
 
-		drawVehicle(true, g2d, xLoc, yLoc, width, length, facing, svg, null);
+		drawVehicle(true, g2d, scale, vehiclePlacement, svg, null);
 	}
 
 	/**
 	 * Draws a vehicle as a rectangle on the map.
 	 * 
 	 * @param g2d the graphics2D context.
-	 * @param xLoc the X location from center of settlement (meters).
-	 * @param yLoc the y Location from center of settlement (meters).
-	 * @param width the vehicle width (meters).
-	 * @param length the vehicle length (meters).
-	 * @param facing the vehicle facing (degrees from North clockwise).
+	 * @param scale Map scale
+	 * @param vehiclePlacement Vehicle location
 	 * @param color the color to draw the rectangle.
 	 */
-	private void drawRectangleVehicle(Graphics2D g2d, double xLoc, double yLoc, 
-			double width, double length, double facing, Color color) {
+	private void drawRectangleVehicle(Graphics2D g2d, double scale, LocalBoundedObject vehiclePlacement, Color color) {
 
-		drawVehicle(false, g2d, xLoc, yLoc, width, length, facing, null, color);
+		drawVehicle(false, g2d, scale, vehiclePlacement, null, color);
 	}
 
 	/**
@@ -291,16 +271,17 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	 * 
 	 * @param isSVG true if using a SVG image.
 	 * @param g2d the graphics2D context.
-	 * @param xLoc the X location from center of settlement (meters).
-	 * @param yLoc the y Location from center of settlement (meters).
-	 * @param width the vehicle width (meters).
-	 * @param length the vehicle length (meters).
-	 * @param facing the vehicle facing (degrees from North clockwise).
+	 * @param scale Map scale
+	 * @param vehiclePlacement Vehicle location
 	 * @param svg the SVG graphics node.
 	 * @param color the color to display the rectangle if no SVG image.
 	 */
-	private void drawVehicle(boolean isSVG, Graphics2D g2d, double xLoc, double yLoc,
-			double width, double length, double facing, GraphicsNode svg, Color color) {
+	private void drawVehicle(boolean isSVG, Graphics2D g2d, double scale, LocalBoundedObject vehiclePlacement, GraphicsNode svg, Color color) {
+		double xLoc = vehiclePlacement.getXLocation();
+		double yLoc = vehiclePlacement.getYLocation();
+		double width = vehiclePlacement.getWidth();
+		double length = vehiclePlacement.getLength();
+		double facing = vehiclePlacement.getFacing();
 
 		// Save original graphics transforms.
 		AffineTransform saveTransform = g2d.getTransform();
@@ -327,13 +308,8 @@ public class VehicleMapLayer implements SettlementMapLayer {
 		newTransform.rotate(facingRadian, centerX + boundsPosX, centerY + boundsPosY);        
 
 		if (isSVG) {
-			// Draw SVG image.
-			// newTransform.scale(scalingWidth, scalingLength);
-			// svg.setTransform(newTransform);
-			// svg.paint(g2d);
-
 			// Draw buffered image of vehicle.
-			BufferedImage image = getBufferedImage(svg, width, length);
+			BufferedImage image = getBufferedImage(svg, scale, width, length);
 			if (image != null) {
 				g2d.transform(newTransform);
 				g2d.drawImage(image, 0, 0, mapPanel);
@@ -357,7 +333,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	 * @param g2d the graphics context
 	 * @param vehicle the light utility vehicle.
 	 */
-	private void drawSVGPartAttachments(Graphics2D g2d, LightUtilityVehicle vehicle) {
+	private void drawSVGPartAttachments(Graphics2D g2d, double scale, LightUtilityVehicle vehicle) {
 		Iterator<Part> i = vehicle.getPossibleAttachmentParts().iterator();
 		while (i.hasNext()) {
 			Part part = i.next();
@@ -366,8 +342,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 				GraphicsNode partSvg = SVGMapUtil.getAttachmentPartSVG(part.getName().toLowerCase());
 				GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
 				if ((partSvg != null) && (vehicleSvg != null)) {
-					drawVehicleOverlay(g2d, vehicle.getXLocation(), vehicle.getYLocation(),
-							vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), vehicleSvg, partSvg);
+					drawVehicleOverlay(g2d, scale, vehicle, vehicleSvg, partSvg);
 				}
 			}
 		}
@@ -377,17 +352,18 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	 * Draws an overlay for a vehicle on the map.
 	 * 
 	 * @param g2d the graphics2D context.
-	 * @param xLoc the X location from center of settlement (meters).
-	 * @param yLoc the y Location from center of settlement (meters).
-	 * @param width the vehicle width (meters).
-	 * @param length the vehicle length (meters).
-	 * @param facing the vehicle facing (degrees from North clockwise).
+	 * @param scale Map scale
+	 * @param vehiclePlacement Vehicle position
 	 * @param vehicleSvg the vehicle SVG graphics node.
 	 * @param overlaySvg the overlay SVG graphics node.
 	 */
-	private void drawVehicleOverlay(Graphics2D g2d, double xLoc, double yLoc,
-			double vehicleWidth, double vehicleLength, double facing, GraphicsNode vehicleSvg, 
+	private void drawVehicleOverlay(Graphics2D g2d, double scale, LocalBoundedObject vehiclePlacement, GraphicsNode vehicleSvg, 
 			GraphicsNode overlaySvg) {
+		double xLoc = vehiclePlacement.getXLocation();
+		double yLoc = vehiclePlacement.getYLocation();
+		double vehicleWidth = vehiclePlacement.getWidth();
+		double vehicleLength = vehiclePlacement.getLength();
+		double facing = vehiclePlacement.getFacing();
 
 		// Save original graphics transforms.
 		AffineTransform saveTransform = g2d.getTransform();
@@ -417,7 +393,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 		newTransform.rotate(facingRadian, centerX + boundsPosX, centerY + boundsPosY);        
 
 		// Draw buffered image of vehicle.
-		BufferedImage image = getBufferedImage(overlaySvg, partWidth, partLength);
+		BufferedImage image = getBufferedImage(overlaySvg, scale, partWidth, partLength);
 		if (image != null) {
 			g2d.transform(newTransform);
 			g2d.drawImage(image, 0, 0, mapPanel);
@@ -435,7 +411,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	 * @param length the vehicle length.
 	 * @return buffered image.
 	 */
-	private BufferedImage getBufferedImage(GraphicsNode svg, double width, double length) {
+	private BufferedImage getBufferedImage(GraphicsNode svg, double scale, double width, double length) {
 
 		// Get image cache for current scale or create it if it doesn't exist.
 		Map<GraphicsNode, BufferedImage> imageCache = null;
@@ -443,7 +419,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 			imageCache = svgImageCache.get(scale);
 		}
 		else {
-			imageCache = new HashMap<GraphicsNode, BufferedImage>(100);
+			imageCache = new HashMap<>(100);
 			svgImageCache.put(scale, imageCache);
 		}
 
@@ -451,7 +427,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 		BufferedImage image = null;
 		if (imageCache.containsKey(svg)) image = imageCache.get(svg);
 		else {
-			image = createBufferedImage(svg, width, length);
+			image = createBufferedImage(svg, scale, width, length);
 			imageCache.put(svg, image);
 		}
 
@@ -466,7 +442,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	 * @param length the length of the produced image.
 	 * @return the created buffered image.
 	 */
-	private BufferedImage createBufferedImage(GraphicsNode svg, double width, double length) {
+	private BufferedImage createBufferedImage(GraphicsNode svg, double scale, double width, double length) {
 
 		int imageWidth = (int) (width * scale);
 		if (imageWidth <= 0) {
@@ -503,10 +479,6 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	@Override
 	public void destroy() {
 		// Clear all buffered image caches.
-		Iterator<Map<GraphicsNode, BufferedImage>> i = svgImageCache.values().iterator();
-		while (i.hasNext()) {
-			i.next().clear();
-		}
 		svgImageCache.clear();
 	}
 }
