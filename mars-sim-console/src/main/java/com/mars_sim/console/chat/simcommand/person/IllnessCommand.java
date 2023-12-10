@@ -16,11 +16,17 @@ import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.ConversationRole;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
+import com.mars_sim.core.Simulation;
+import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.hazard.HazardEvent;
+import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.health.BodyRegionType;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.HealthProblem;
+import com.mars_sim.core.person.health.Radiation;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.person.health.RadiationType;
 import com.mars_sim.tools.util.RandomUtil;
@@ -49,6 +55,8 @@ public class IllnessCommand extends AbstractPersonCommand {
 		}
 		Collections.sort(complaintNames);
 	
+		context.println("");
+		
 		// Choose one
 		int choice = CommandHelper.getOptionInput(context, complaintNames, 
 				"Pick an illness from above by entering a number");
@@ -65,11 +73,12 @@ public class IllnessCommand extends AbstractPersonCommand {
 	
 		if (complaintNames.get(choice).equalsIgnoreCase(ComplaintType.RADIATION_SICKNESS.getName())) {			
 			
-			RadiationExposure rad = person.getPhysicalCondition().getRadiationExposure();
-			
+			RadiationExposure exposure = person.getPhysicalCondition().getRadiationExposure();
+			Radiation rad = null;
+					
 			int region = RandomUtil.getRandomInt(2);
 			
-			double buffer = rad.getBufferDose(region);
+			double buffer = exposure.getBufferDose(region);
 			
 			BodyRegionType regionType = null;
 			
@@ -83,9 +92,21 @@ public class IllnessCommand extends AbstractPersonCommand {
 				regionType = BodyRegionType.SKIN;
 			}
 			
-			rad.addDose(RadiationType.SEP, regionType, buffer * 1.2);
+			rad = exposure.addDose(RadiationType.SEP, regionType, buffer * 1.2);
+			
+			HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_RADIATION_EXPOSURE,
+					rad,
+					rad.toString(),
+					person.getTaskDescription(),
+					person.getName(), 
+					person
+					);
+			Simulation.instance().getEventManager().registerNewEvent(hEvent);
+
+			person.fireUnitUpdate(UnitEventType.RADIATION_EVENT);
 		}
 	
+		context.println("");
 		context.println("You picked the illness '" + complaintType + "'.");
 		
 		GenderType type = person.getGender();
@@ -93,6 +114,7 @@ public class IllnessCommand extends AbstractPersonCommand {
 		if (type == GenderType.FEMALE)
 			pronoun = "her";
 		
+		context.println("");
 		String toSave = context.getInput("Do you want " 
 				+ pronoun
 				+ " to be dead (Y/N)?");

@@ -76,17 +76,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 
 	private static final DecimalFormat DECIMAL_KG_SOL = new DecimalFormat("#,##0.0 kg/Sol");
 
-	
 	// Data members
-	private JLabel radLabel;
-	private JLabel farmerLabel;
-	private JLabel cropsLabel;
-	private JLabel waterLabel;
-	private JLabel greyWaterLabel;
-	private JLabel o2Label;
-	private JLabel co2Label;
-	private JLabel workTimeLabel;
-
 	// Data cache
 	/** The number of farmers cache. */
 	private int farmersCache;
@@ -105,6 +95,15 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	/** The cache value for the work time done in this greenhouse. */
 	private double workTimeCache;
 
+	private JLabel radLabel;
+	private JLabel farmerLabel;
+	private JLabel cropsLabel;
+	private JLabel waterLabel;
+	private JLabel greyWaterLabel;
+	private JLabel o2Label;
+	private JLabel co2Label;
+	private JLabel workTimeLabel;
+	
 	private JComboBox<CropSpec> comboBox;
 	private ListModel listModel;
 	/** Table model for crop info. */
@@ -609,11 +608,23 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	public void destroy() {
 		super.destroy();
 		
+		radLabel = null;
+		farmerLabel = null;
+		cropsLabel = null;
+		waterLabel = null;
+		greyWaterLabel = null;
+		o2Label = null;
+		co2Label = null;
+		workTimeLabel = null;
+			
+		comboBox = null;
+		listModel = null;
+		cropTableModel = null;
+		listScrollPanel = null;
 		farm = null;
-		comboBox= null;
-		list= null;
-		listModel= null;
-		cropTableModel= null;
-		listScrollPanel= null;
+		location = null;
+		list = null;
+		cropConfig = null;
+		surfaceFeatures = null;
 	}
 }

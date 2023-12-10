@@ -39,7 +39,8 @@ public class StructuredResponse {
 	private boolean wrapTableCells;
 	
 	/**
-	 * Adda free text"
+	 * Adds free text.
+	 * 
 	 * @param string
 	 */
 	public void append(String string) {
@@ -47,14 +48,15 @@ public class StructuredResponse {
 	}
 
 	/**
-	 * Add a blank line to the structured output.
+	 * Adds a blank line to the structured output.
 	 */
 	public void appendBlankLine() {
 		buffer.append(LF);
 	}
 	
 	/**
-	 * Add a subheading to the output. This will also add a seperator.
+	 * Adds a subheading to the output. This will also add a separator.
+	 * 
 	 * @param heading
 	 */
 	public void appendHeading(String heading) {
@@ -63,7 +65,18 @@ public class StructuredResponse {
 	}
 
 	/**
-	 * Add a string value to the output with a label.
+	 * Adds a string value to the output with a label.
+	 * 
+	 * @param label
+	 * @param value
+	 */
+	public void appendString(String label, String value) {
+		buffer.append(String.format("", label, value));
+	}
+	
+	/**
+	 * Adds a string value to the output with a label one column away from the left margin.
+	 * 
 	 * @param label
 	 * @param value
 	 */
@@ -72,7 +85,8 @@ public class StructuredResponse {
 	}
 	
 	/**
-	 * Adda initeger value to the output with a label
+	 * Adds integer value to the output with a label.
+	 * 
 	 * @param label
 	 * @param value
 	 */
@@ -81,7 +95,8 @@ public class StructuredResponse {
 	}
 	
 	/**
-	 * Output a numbered list of items
+	 * Outputs a numbered list of items.
+	 * 
 	 * @param heading An optional heading
 	 * @param items
 	 */
@@ -103,7 +118,7 @@ public class StructuredResponse {
 	}
 
 	/**
-	 * Seperator
+	 * Separator
 	 */
 	public void appendSeperator() {
 		buffer.append(" --------------------------------------------");

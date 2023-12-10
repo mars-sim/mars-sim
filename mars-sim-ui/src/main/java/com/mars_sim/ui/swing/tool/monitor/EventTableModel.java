@@ -46,17 +46,19 @@ public class EventTableModel extends AbstractMonitorModel implements HistoricalE
 	private static final int COLUMNCOUNT = 9;
 
 	// Event that are too low level to display
-	private static final Set<EventType> BLOCKED_EVENTS = Set.of(EventType.MEDICAL_STARTS,
-																EventType.MEDICAL_TREATED,
-																EventType.MEDICAL_DEATH,
-																EventType.MISSION_EMERGENCY_BEACON_ON,
-																EventType.MISSION_EMERGENCY_BEACON_OFF,
-																EventType.MISSION_EMERGENCY_DESTINATION,
-																EventType.MISSION_NOT_ENOUGH_RESOURCES,
-																EventType.MISSION_MEDICAL_EMERGENCY,
-																EventType.MISSION_RENDEZVOUS,
-																EventType.MISSION_RESCUE_PERSON,
-																EventType.MISSION_SALVAGE_VEHICLE);
+	private static final Set<EventType> BLOCKED_EVENTS = Set.of(
+//			EventType.MEDICAL_STARTS,
+//			EventType.MEDICAL_TREATED,
+//			EventType.MEDICAL_DEATH,
+//			EventType.MEDICAL_POSTMORTEM_EXAM,
+			EventType.MISSION_EMERGENCY_BEACON_ON,
+			EventType.MISSION_EMERGENCY_BEACON_OFF,
+			EventType.MISSION_EMERGENCY_DESTINATION,
+			EventType.MISSION_NOT_ENOUGH_RESOURCES,
+			EventType.MISSION_MEDICAL_EMERGENCY,
+			EventType.MISSION_RENDEZVOUS,
+			EventType.MISSION_RESCUE_PERSON,
+			EventType.MISSION_SALVAGE_VEHICLE);
 
 	/** Names of the displayed columns. */
 	private static final ColumnSpec[] COLUMNS;
@@ -295,7 +297,8 @@ public class EventTableModel extends AbstractMonitorModel implements HistoricalE
 	}
 
 	/**
-	 * No impelmentation is needed.
+	 * No implementation is needed.
+	 * 
 	 * @param activate Not used
 	 */
 	@Override

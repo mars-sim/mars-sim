@@ -324,4 +324,37 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 			workTimeLabel.setText(StyleManager.DECIMAL_SOLS3.format(workTime));
 		}
 	}
+	
+	/**
+	 * Prepares for deletion.
+	 */
+	public void destroy() {
+		super.destroy();
+		
+		tempLabel = null;
+		algaeMassLabel = null;
+		idealAlgaeMassLabel = null;
+		maxAlgaeMassLabel = null;
+		algaeHarvestLabel = null;
+		algaeProducedLabel = null;
+		
+		foodMassLabel = null;
+		foodDemandLabel = null;
+		
+		waterMassLabel = null;
+		
+		algaeWaterRatioLabel = null;
+		
+		powerReqLabel = null;
+		radLabel = null;
+		
+		waterUsageLabel = null;
+		greyWaterLabel = null;
+		o2GenLabel = null;
+		co2ConsumedLabel = null;
+		workTimeLabel = null;
+		pond = null;
+		location = null;
+		surfaceFeatures = null;
+	}
 }

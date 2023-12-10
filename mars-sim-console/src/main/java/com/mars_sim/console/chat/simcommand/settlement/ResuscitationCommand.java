@@ -26,7 +26,7 @@ public class ResuscitationCommand extends AbstractSettlementCommand {
 	public static final ChatCommand RESURRECT = new ResuscitationCommand();
 	
 	private ResuscitationCommand() {
-		super("re", "resuscitation", "Get resurrected");
+		super("rn", "resuscitation", "Get resurrected");
 		
 		setInteractive(true);
 		addRequiredRole(ConversationRole.EXPERT);

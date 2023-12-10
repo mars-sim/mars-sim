@@ -18,17 +18,20 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import com.mars_sim.core.LifeSupportInterface;
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.meta.EatDrinkMeta;
+import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.health.Complaint;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.HealthRiskType;
+import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.person.health.Medication;
 import com.mars_sim.core.person.health.RadiationExposure;
@@ -1460,13 +1463,21 @@ public class PhysicalCondition implements Serializable {
 		
 		HealthProblem problem = deathDetails.getProblem();
 		
-		problem.setState(HealthProblem.RECOVERING);
-		
-		deathDetails = null;
 		// Reset the declaredDead
 		person.setRevived(problem);
 		// Set the mind of the person to active
 		person.getMind().setActive();
+		// Starts the recovery
+		problem.startRecovery();
+		
+		// If a person is outside or in a vehicle when he passed away,
+		// should he be revived in the same container unit ? 
+		// Get the saved container unit
+		Unit cu = deathDetails.getContainerUnit();
+		// Reset the container unit
+		person.setContainerUnit(cu);
+		// Set death detail to null
+		deathDetails = null;
 		
 		// See a doctor for checkup ?
 		// Call medicalManager
@@ -1504,6 +1515,13 @@ public class PhysicalCondition implements Serializable {
 		// Declare the person dead
 		person.setDeclaredDead();
 
+		
+	    // Create medical event for performing an post-mortem exam
+	    MedicalEvent event = new MedicalEvent(person, problem, EventType.MEDICAL_DEATH);
+	    // Register event
+	    Task.registerNewEvent(event);
+	    
+				
 		// Deregister the person's quarters
 		person.deregisterBed();
 		// Set work shift to OFF

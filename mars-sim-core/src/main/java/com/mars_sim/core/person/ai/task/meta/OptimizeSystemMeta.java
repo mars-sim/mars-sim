@@ -28,8 +28,8 @@ import com.mars_sim.tools.Msg;
  */
 public class OptimizeSystemMeta extends FactoryMetaTask {
 
-	private static final int CU_FACTOR = 15;
-	private static final int NODE_FACTOR = 20;
+	private static final int CU_FACTOR = 10;
+	private static final int NODE_FACTOR = 15;
 	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.optimizeSystem"); //$NON-NLS-1$
@@ -44,15 +44,15 @@ public class OptimizeSystemMeta extends FactoryMetaTask {
 			
 		setPreferredRole(RoleType.CREW_ENGINEER, RoleType.CREW_OPERATION_OFFICER);
 		
-		addPreferredJob(JobType.COMPUTER_SCIENTIST, 4D);
-		addPreferredJob(JobType.ENGINEER, 3D);
+		addPreferredJob(JobType.COMPUTER_SCIENTIST, 3);
+		addPreferredJob(JobType.ENGINEER, 2.5);
 		addPreferredJob(JobType.MATHEMATICIAN, JOB_BONUS);
 		addPreferredJob(JobType.PHYSICIST, JOB_BONUS);
 			
-	    addPreferredRole(RoleType.COMPUTING_SPECIALIST, 3D);
-	    addPreferredRole(RoleType.ENGINEERING_SPECIALIST, 1.5D);
-	    addPreferredRole(RoleType.CHIEF_OF_COMPUTING, 3D);
-	    addPreferredRole(RoleType.CHIEF_OF_ENGINEERING,1.5D);
+	    addPreferredRole(RoleType.COMPUTING_SPECIALIST, 2.5);
+	    addPreferredRole(RoleType.ENGINEERING_SPECIALIST, 2);
+	    addPreferredRole(RoleType.CHIEF_OF_COMPUTING, 2);
+	    addPreferredRole(RoleType.CHIEF_OF_ENGINEERING, 1.5);
     }
     
 	@Override
@@ -63,7 +63,7 @@ public class OptimizeSystemMeta extends FactoryMetaTask {
 	@Override
 	public List<TaskJob> getTaskJobs(Person person) {
         
-		if (!person.isInside()) {
+		if (!person.isInSettlement()) {
 			return EMPTY_TASKLIST;
 		}
 
@@ -98,13 +98,13 @@ public class OptimizeSystemMeta extends FactoryMetaTask {
 		
 		double att = (.5 * manager.getAttribute(NaturalAttributeType.ORGANIZATION)
 				+ .3 * manager.getAttribute(NaturalAttributeType.METICULOUSNESS)
-				+ .2 * manager.getAttribute(NaturalAttributeType.CREATIVITY)) / 20;
+				+ .2 * manager.getAttribute(NaturalAttributeType.CREATIVITY)) / 25;
 		
 		// Make sure the minimum skillF is 1, not zero
 		double skillF = 1;
 		
 		if (person.getSkillManager().getSkill(SkillType.COMPUTING) != null) {
-			skillF = 1 + person.getSkillManager().getSkill(SkillType.COMPUTING).getLevel();
+			skillF = 1 + person.getSkillManager().getSkill(SkillType.COMPUTING).getLevel()/5;
 		}
 
 		score.addModifier(SKILL_MODIFIER, skillF);

@@ -176,10 +176,12 @@ public class Sleep extends Task {
 			return time;
 		}
 
-		if (person.isInSettlement() && (typeOfBed == 0)) {
-			// Walk to a location
-			walkToDestination();
-		}
+//		if (person.isInSettlement()) {
+			if (typeOfBed == 0) {
+				// Walk to a location
+				walkToDestination();
+			}
+//		}
 
 		PhysicalCondition pc = person.getPhysicalCondition();
 		

@@ -76,7 +76,6 @@ import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.tool.FlagString;
 import com.mars_sim.ui.swing.tool.SmartScroller;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -385,10 +384,10 @@ public class CommanderWindow extends ToolWindow {
 				List<String> cnyList = c.getAuthority().getCountries();
 				
 				String countryCode = "";
-				String countryName = "Multi-Nationals";
+				String countryName = "Multi-National";
 				if (cnyList.size() == 1) {
 					countryName = c.getAuthority().getCountries().get(0);
-					countryCode = FlagString.getEmoji(countryName);
+//					countryCode = FlagString.getEmoji(countryName);
 				}
 				
 				labelGrid.addLabels("Country", countryName, countryCode);

@@ -72,13 +72,13 @@ public class DoInventory extends Task {
 		
 		else if (person.isInVehicle()) {
 			// If person is in a settlement, try to find a lab.
-			lab = person.getAssociatedSettlement().getBuildingManager().getWorstEntropyLabByProbability(person);
-			if (lab != null) {
-				// May be done remotely in a vehicle
-				// Walk to the passenger spot
-//				walkToPassengerActivitySpotInRover((Rover)(person.getVehicle()), false);
-			}
-			else
+//			lab = person.getAssociatedSettlement().getBuildingManager().getWorstEntropyLabByProbability(person);
+//			if (lab != null) {
+//				// May be done remotely in a vehicle
+//				// Walk to the passenger spot
+////				walkToPassengerActivitySpotInRover((Rover)(person.getVehicle()), false);
+//			}
+//			else
 				endTask();
 		}
 		

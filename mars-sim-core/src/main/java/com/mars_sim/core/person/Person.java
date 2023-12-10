@@ -782,10 +782,12 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	public void buryBody() {
 		// Bury the body
 		isBuried = true;
+		
+		// Q: When should a person be removed from being a citizen of a settlement ?
+		// A: after being buried ? 
+		
 		// Back up the last container unit
 		condition.getDeathDetails().backupContainerUnit(getContainerUnit());
-		// Set his/her currentStateType
-		currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 		// Set his/her buried settlement
 		buriedSettlement = associatedSettlementID;
 		// Throw unit event.
@@ -816,8 +818,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		setDescription("Recovering");
 		// Reset isBuried
 		isBuried = false;
-		// Set currentStateType
-		currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+		
 		// Set buried settlement
 		buriedSettlement = -1;
 		// Throw unit event
@@ -945,6 +946,10 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		if (!isBuried && !declaredDead) {
 			// Declares the person dead
 			setDeclaredDead();
+			
+			// Q: When should a person be removed from being a citizen of a settlement ?
+			// A: after being buried ? 
+			
 			// Deregisters the person's quarters
 			deregisterBed();
 			// Deactivates the person's mind

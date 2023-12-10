@@ -38,7 +38,9 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 
 		for (Person p : people) {
 			response.appendBlankLine();
-			response.appendHeading(p.getName() + " - " + p.getMind().getJob().getName());
+			response.append(p.getName());
+			response.appendBlankLine();
+			response.append("Job : " + p.getMind().getJob().getName());
 
 			ScientificStudy ss = p.getStudy();
 			String priName = "None";
@@ -47,7 +49,7 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 				priName = ss.getScience().getName();
 				priPhase = ss.getPhase();
 			}
-			response.appendLabeledString("Ongoing Primary Study", priName + " - " + priPhase);
+			response.appendString("Ongoing Primary Study", priName + " - " + priPhase);
 
 			Set<ScientificStudy> cols = p.getCollabStudies();
 			if (!cols.isEmpty()) {
@@ -67,6 +69,8 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 				double score = p.getScientificAchievement(t);
 				response.appendTableRow(t.getName(), score);
 			}
+			
+			response.appendBlankLine();
 		}
 		context.println(response.getOutput());
 		return true;

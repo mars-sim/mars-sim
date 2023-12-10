@@ -42,13 +42,10 @@ import com.mars_sim.ui.swing.tool_window.ToolWindow;
 @SuppressWarnings("serial")
 public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 
-	// default logger.
-	// private static final Logger logger = Logger.getLogger(SettlementWindow.class.getName());
 
 	private static final int HORIZONTAL = 800;
 	private static final int VERTICAL = 800;
 	private static final int HEIGHT_STATUS_BAR = 16;
-//	private static final int LABEL_WIDTH = 190;
 	
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 	public static final String ICON = "settlement_map";
@@ -72,7 +69,6 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	private SettlementMapPanel mapPanel;
 
 	private Font font0 = new Font(Font.MONOSPACED, Font.PLAIN, 11);
-//	private Font font1 = new Font(Font.DIALOG, Font.PLAIN, 12);
 	
 	/**
 	 * Constructor.
@@ -139,12 +135,10 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	}
 
 	private String format0(double x, double y) {
-//		return String.format("%6.2f,%6.2f", x, y);
 		return Math.round(x*100.00)/100.00 + ", " + Math.round(y*100.00)/100.00;
 	}
 
 	private String format1(double x, double y) {
-//		return String.format("%6.2f,%6.2f", x, y);
 		return (int)x + ", " + (int)y;
 	}
 
@@ -290,10 +284,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	 */
     public void displayRobot(Robot r) {
 		if (displayWorker(r)) {
-			mapPanel.setShowRobotLabels(true);
-
-			if (mapPanel.getSelectedRobot() != null && mapPanel.getSelectedRobot() != r)
-				mapPanel.selectRobot(r);
+			mapPanel.selectRobot(r);
 		}
     }
 
@@ -305,10 +296,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	 */
     public void displayPerson(Person p) {
 		if (displayWorker(p)) {
-			mapPanel.setShowPersonLabels(true);
-
-			if (mapPanel.getSelectedPerson() != null && mapPanel.getSelectedPerson() != p)
-				mapPanel.selectPerson(p);
+			mapPanel.selectPerson(p);
 		}
     }
 
@@ -336,6 +324,5 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		desktop = null;
 
 		font0 = null;
-//		font1 = null;
 	}
 }

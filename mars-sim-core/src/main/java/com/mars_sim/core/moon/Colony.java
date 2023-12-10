@@ -43,7 +43,7 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	
 	private Nation nation;
 	
-	Set<Zone> zones = new HashSet<>();
+	private Set<Zone> zones = new HashSet<>();
 	
 	public Colony(int id, String name, Authority sponsor, Coordinates location) {
 		this.id = id;
@@ -178,6 +178,19 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 			sim = Simulation.instance();
 		}
 		return sim.getUnitManager().getMoon();
+	}
+	
+	/**
+	 * Prepares for deletion.
+	 */
+	public void destroy() {
+		sponsor = null;
+		location = null;
+		population = null;
+		sim = null;
+		nation = null; 
+		zones.clear();
+		zones = null;
 	}
 }
 

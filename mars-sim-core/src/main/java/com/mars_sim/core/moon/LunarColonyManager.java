@@ -67,4 +67,14 @@ public class LunarColonyManager implements Serializable, Temporal {
 		return colonies;
 	}
 	
+	/**
+	 * Prepares for deletion.
+	 */
+	public void destroy() {
+		for (Colony c: colonies) {
+			c.destroy();
+		}
+		colonies = null;
+		raFactory = null;  
+	}
 }

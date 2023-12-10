@@ -196,4 +196,25 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 			workTimeLabel.setText(StyleManager.DECIMAL_SOLS3.format(workTime));
 		}
 	}
+	
+	/**
+	 * Prepares for deletion.
+	 */
+	public void destroy() {
+		super.destroy();
+		
+		waterMassLabel = null;
+		powerReqLabel = null;
+		workTimeLabel = null;
+		
+		numFishLabel = null;
+		numIdealFishLabel = null;
+		maxFishLabel = null;
+		fishMassLabel = null;
+		
+		numWeedLabel = null;
+		weedMassLabel = null;
+		weedDemandLabel = null;
+		tank = null;
+	}
 }

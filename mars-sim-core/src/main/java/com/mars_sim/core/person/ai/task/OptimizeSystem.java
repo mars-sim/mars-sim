@@ -74,13 +74,13 @@ public class OptimizeSystem extends Task {
 		
 		else if (person.isInVehicle()) {
 			// If person is in a settlement, try to find a server node.
-			node = person.getAssociatedSettlement().getBuildingManager().getWorstEntropyComputingNodeByProbability(person);
-			if (node != null) {
-				// May be done remotely in a vehicle
-				// Walk to the passenger spot
-//				walkToPassengerActivitySpotInRover((Rover)(person.getVehicle()), false);
-			}
-			else
+//			node = person.getAssociatedSettlement().getBuildingManager().getWorstEntropyComputingNodeByProbability(person);
+//			if (node != null) {
+//				// May be done remotely in a vehicle
+//				// Walk to the passenger spot
+////				walkToPassengerActivitySpotInRover((Rover)(person.getVehicle()), false);
+//			}
+//			else
 				endTask();
 		}
 		
