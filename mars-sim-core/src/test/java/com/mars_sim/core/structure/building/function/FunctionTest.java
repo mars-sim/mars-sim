@@ -54,7 +54,7 @@ public class FunctionTest extends AbstractMarsSimUnitTest {
         assertEquals("Occupied count", 1, b.getNumOccupiedActivitySpots());
     }
 
-    public void testReleaseActivitySpot() {
+    public void testLeaveActivitySpot() {
         var home = buildSettlement("Test");
         var building = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
         var b = building.getRecreation();
@@ -71,6 +71,25 @@ public class FunctionTest extends AbstractMarsSimUnitTest {
         assertTrue("Activity spot released", claimed.isEmpty());
         assertEquals("Unoccupied count", spots.size(), b.getNumEmptyActivitySpots());
         assertEquals("Occupied count", 0, b.getNumOccupiedActivitySpots());
+    }
+
+    public void testReleaseActivitySpot() {
+        var home = buildSettlement("Test");
+
+        Person p = buildPerson("Worker", home);
+
+        var spot = new ActivitySpot("Spot", LocalPosition.DEFAULT_POSITION);
+        var allocated = spot.claim(p, true);
+
+        assertTrue("Activity spot allocated", !spot.isEmpty());
+
+        //Leave spot
+        allocated.leave(p, false);
+        assertTrue("Activity spot still allocated", !spot.isEmpty());
+
+        // Release spot
+        allocated.leave(p, true);
+        assertTrue("Activity spot release", spot.isEmpty());
     }
 
     public void testActivitySpotPosition() {

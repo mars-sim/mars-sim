@@ -22,7 +22,6 @@ import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.LivingAccommodations;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.mapdata.location.LocalPosition;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -143,7 +142,6 @@ public class Sleep extends Task {
 	public boolean sleepInEVAMedicalBed() {
 		Building currentBuilding = BuildingManager.getBuilding(person);
 		if (currentBuilding != null && currentBuilding.hasFunction(FunctionType.EVA)) {
-//			return walkToEVABed(currentBuilding, person, true);
 			// Future: need to rework this method to find the two emergency beds in EVA Airlock
 			walkToActivitySpotInBuilding(currentBuilding, FunctionType.MEDICAL_CARE, true);
 		}
@@ -178,17 +176,10 @@ public class Sleep extends Task {
 			return time;
 		}
 
-		if (person.isInSettlement()) {
-			if (typeOfBed == 0) {
-				// Walk to a location
-				walkToDestination();
-			}
+		if (person.isInSettlement() && (typeOfBed == 0)) {
+			// Walk to a location
+			walkToDestination();
 		}
-
-//			// Check if a person's subtask is not the Sleep task itself
-//			if (isNotSubTask())
-//				// Clear the sub task to avoid getting stuck before walking to a bed or a destination
-//				endSubTask();
 
 		PhysicalCondition pc = person.getPhysicalCondition();
 		
@@ -310,12 +301,12 @@ public class Sleep extends Task {
 	/**
 	 * Looks for assigned bed.
 	 */
-	private void lookForAssignedBed(Building building) {
+	private void lookForAssignedBed() {
 		
 		// Case 4: marked and empty (ME)
 		if (person.hasBed()) {
 			// Walk to the bed
-			walkToBed(person.getQuarters(), person, true);
+			walkToBed(person, true);
 
 			typeOfBed = 2;
 		}
@@ -336,11 +327,11 @@ public class Sleep extends Task {
 		
 		if (q7 != null) {
 			// Register this sleeper
-			LocalPosition bed = q7.getLivingAccommodations().registerSleeper(person, false);
+			var bed = q7.getLivingAccommodations().registerSleeper(person, false);
 
 			if (bed != null) {
 				// Case 8: unmarked, empty (UE) bed
-				walkToBed(q7, person, true);
+				walkToBed(person, true);
 
 				typeOfBed = 2;
 			}
@@ -368,7 +359,7 @@ public class Sleep extends Task {
 			// This is the BEST case for an inhabitant
 			
 			// This person has his quarters and have a designated bed
-			lookForAssignedBed(q4);
+			lookForAssignedBed();
 		}
 
 		else {
@@ -401,7 +392,6 @@ public class Sleep extends Task {
 				// Case A : if a person is in the astronomy observatory
 				Building q0 = person.getBuildingLocation();
 				if (q0 != null && q0.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)) {
-//					|| BuildingManager.isAdjacentBuilding(FunctionType.ASTRONOMICAL_OBSERVATION, person, building)) {
 					// Rest in one of the 2 beds there
 					walkToActivitySpotInBuilding(q0, FunctionType.LIVING_ACCOMMODATIONS, true);
 					

@@ -205,7 +205,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	/** Person's ReportingAuthority instance. */
 	private Authority ra;
 	/** The bed location of the person */
-	private LocalPosition bed;
+	private AllocatedSpot bed;
 	/** The person's current scientific study. */
 	private ScientificStudy study;
 	/** The person's EquipmentInventory instance. */
@@ -835,7 +835,8 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		
 		if (quartersInt != -1) {
 			// Release the bed
-			unitManager.getBuildingByID(quartersInt).getLivingAccommodations().releaseBed(this);
+			bed.leave(this, true);
+
 			// Release quarters id
 			quartersInt = -1;
 			// Empty the bed
@@ -1389,29 +1390,21 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	}
 
 	/**
-	 * Gets the assigned quarters.
-	 * 
-	 * @param b
-	 */
-	public void setQuarters(Building b) {
-		this.quartersInt = b.getIdentifier();
-	}
-
-	/**
 	 * Gets the settlement location of this bed.
 	 * 
 	 * @return
 	 */
-	public LocalPosition getBed() {
-		return bed;
+	public ActivitySpot getBed() {
+		return (bed != null ? bed.getAllocated() : null);
 	}
 
-	public void setBed(LocalPosition bed) {
-		this.bed = bed;
+	public void setBed(Building b, AllocatedSpot bed2) {
+		this.bed = bed2;
+		this.quartersInt = b.getIdentifier();
 	}
 
 	public boolean hasBed() {
-		return bed != null;// && getQuarters() != null;
+		return bed != null;
 	}
 	
 	public String getCountry() {
@@ -2457,7 +2450,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	@Override
 	public void setActivitySpot(AllocatedSpot newSpot) {
 		if (spot != null) {
-			spot.leave(this);
+			spot.leave(this, false);
 		}
 		spot = newSpot;
 	}

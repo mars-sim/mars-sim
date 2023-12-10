@@ -10,7 +10,7 @@ package com.mars_sim.console.chat.simcommand.person;
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.mapdata.location.LocalPosition;
+import com.mars_sim.core.structure.building.function.ActivitySpot;
 
 /** 
  * 
@@ -24,14 +24,15 @@ public class BedCommand extends AbstractPersonCommand {
 
 	@Override
 	public boolean execute(Conversation context, String input, Person person) {
-		LocalPosition bed = person.getBed();
+		ActivitySpot bed = person.getBed();
 		if (bed == null) {
 			context.println("I haven't got my own private quarters yet.");
 		} 
 		else {
 			StringBuilder responseText = new StringBuilder();
-			responseText.append("My designated quarters is at ");
-			responseText.append(bed.getShortFormat());
+			responseText.append("My designated quarters is ");
+			responseText.append(bed.getName() + " at ");
+			responseText.append(bed.getPos().getShortFormat());
 			responseText.append(" in ");
 			responseText.append(person.getQuarters());
 			responseText.append(" at ");

@@ -62,9 +62,6 @@ public class Read extends Task {
 			// Factor in a person's preference for the new stress modifier
 			setStressModifier(-score / 20D + STRESS_MODIFIER);
 
-			// Set the boolean to true so that it won't be done again today
-			// person.getPreference().setTaskStatus(this, false);
-
 			if (person.isInSettlement()) {
 
 				int rand = RandomUtil.getRandomInt(2);
@@ -128,7 +125,7 @@ public class Read extends Task {
 		// Go back to his bed
 		if (person.hasBed()) {
 			// Walk to the bed
-			walkToBed(person.getQuarters(), person, true);
+			walkToBed(person, true);
 		}
 	}
 		

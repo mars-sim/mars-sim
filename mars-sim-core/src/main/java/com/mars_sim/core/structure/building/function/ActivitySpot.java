@@ -39,9 +39,10 @@ public final class ActivitySpot implements Serializable {
 		 * Leave a previously allocated activity spot.
 		 * 
 		 * @param w Worker releasing
+		 * @param release Release the permanent reservation
 		 */
-		public void leave(Worker w) {
-			if (spot.leave(w)) {
+		public void leave(Worker w, boolean release) {
+			if (spot.leave(w, release)) {
 				spot = null;
 			}
 		}
@@ -59,6 +60,8 @@ public final class ActivitySpot implements Serializable {
 	private int id;
 	private String name;
 	private LocalPosition pos;
+
+	private boolean permanent;
 	
 	ActivitySpot(String name, LocalPosition pos) {
 		this.name = name;
@@ -74,9 +77,10 @@ public final class ActivitySpot implements Serializable {
 	 * @param w Worker claiming
 	 * @return Allocation reference or null if it is already allocated
 	 */
-	AllocatedSpot claim(Worker w) {
+	AllocatedSpot claim(Worker w, boolean permanent) {
 		if (id == EMPTY_ID) {
 			id = w.getIdentifier();
+			this.permanent = permanent;
 			return new AllocatedSpot(this);
 		}
 		return null;
@@ -91,9 +95,9 @@ public final class ActivitySpot implements Serializable {
 	 * @return Allocation releases
 	 * 
 	 */
-	private boolean leave(Worker w) {
+	private boolean leave(Worker w, boolean release) {
 		// Only leave it if still allocated to the worker
-		if (id == w.getIdentifier()) {
+		if (id == w.getIdentifier() && (release || !permanent)) {
 			id = EMPTY_ID;
 			return true;
 		}

@@ -6,9 +6,6 @@
  */
 package com.mars_sim.core.person.ai.task;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -29,9 +26,6 @@ extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	private static final Logger logger = Logger.getLogger(Relax.class.getName());
 
 	/** Task name */
     private static final String NAME = Msg.getString(
@@ -65,24 +59,18 @@ extends Task {
 		// If person is in a settlement, try to find a place to relax.
 		boolean walkSite = false;
 		if (person.isInSettlement()) {
-			try {
-				Building rec = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
-				if (rec != null) {
-					// Walk to recreation building.
-				    walkToTaskSpecificActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
-				    walkSite = true;
-				}
-				else {
-    				// Go back to his bed
-    				if (person.hasBed()) {
-    					// Walk to the bed
-    					walkToBed(person.getQuarters(), person, true);
-					}
-				}
+			Building rec = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
+			if (rec != null) {
+				// Walk to recreation building.
+				walkToTaskSpecificActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
+				walkSite = true;
 			}
-			catch (Exception e) {
-				logger.log(Level.SEVERE,"Relax.constructor(): " + e.getMessage());
-				endTask();
+			else {
+				// Go back to his bed
+				if (person.hasBed()) {
+					// Walk to the bed
+					walkToBed(person, true);
+				}
 			}
 		}
 

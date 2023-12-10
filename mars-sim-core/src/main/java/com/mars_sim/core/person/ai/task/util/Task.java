@@ -43,6 +43,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.ActivitySpot;
 import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.LifeSupport;
@@ -1122,14 +1123,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/**
 	 * Walks to the bed previously assigned for this person.
 	 * 
-	 * @param building the building the bed is at
 	 * @param person the person who walks to the bed
 	 * @param allowFail true if allowing the walk task to fail
 	 */
-	protected boolean walkToBed(Building building, Person person, boolean allowFail) {
+	protected boolean walkToBed(Person person, boolean allowFail) {
 		boolean canWalk = false;
 		
-		LocalPosition bed = person.getBed();
+		ActivitySpot bed = person.getBed();
 		if (bed == null) {
 			logger.info(person, 10_000L, "I have no bed assigned to me.");
 			return canWalk;
@@ -1138,34 +1138,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		// Check my own position
 		LocalPosition myLoc = person.getPosition();
 		
-		if (myLoc.equals(bed)) {
+		if (myLoc.equals(bed.getPos())) {
 			logger.info(person, 10_000L, "Already in my own bed.");
 			return canWalk;
 		}
-		
-		var livingAccom = building.getLivingAccommodations();
-		
-		var bedSpot = livingAccom.findActivitySpot(bed);
-		if (bedSpot == null) {
-			logger.warning(person, "Can not find my bed " + bed + "in " + building.getName()
-					+ ", quarters is " + person.getQuarters().getName());		
-			return canWalk;
-		}
-		
-		if (!bedSpot.isEmpty()) {
-			 return canWalk;
-		}
-		else {		
-			// Create subtask for walking to destination.
-			canWalk = createWalkingSubtask(building, bed, allowFail);
-			
-			if (canWalk) {
-				// Add the worker to this activity spot
-				livingAccom.claimActivitySpot(bed, worker);
-			}
-		}
-		
-		return canWalk;
+	
+		// Create subtask for walking to destination.
+		return createWalkingSubtask(person.getQuarters(), bed.getPos(), allowFail);
 	}
 
 	/**

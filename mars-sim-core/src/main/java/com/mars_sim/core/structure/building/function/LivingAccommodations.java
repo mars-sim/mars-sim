@@ -21,6 +21,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.FunctionSpec;
+import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.mapdata.location.LocalPosition;
 import com.mars_sim.tools.util.RandomUtil;
@@ -45,14 +46,12 @@ public class LivingAccommodations extends Function {
 	/** The chance of going to a restroom. */
 	public static final int TOILET_CHANCE = 50;
 	
-	public static final String wasteName = "LivingAccomodation::generateWaste";
+	private static final String WASTE_NAME = "LivingAccomodation::generateWaste";
 	
 	/** max # of beds. */
 	private int maxNumBeds;
 	/** max # of guest beds. */
 	private int maxGuestBeds;
-	/** The # of registered sleepers. */
-	private int registeredSleepers;
 	/** The average water used per person for washing (showers, washing clothes, hands, dishes, etc) [kg/sol].*/
 	private double washWaterUsage;
 	// private double wasteWaterProduced; // Waste water produced by
@@ -63,9 +62,6 @@ public class LivingAccommodations extends Function {
 	private double estimatedWaterUsed;
 	/** The estimated waste water produced. */
 	private double estimatedWasteWaterProduced;
-	
-	/** The bed registry in this facility, using settlement-wide position. */
-	private Map<Integer, LocalPosition> assignedBeds = new ConcurrentHashMap<>();
 
 	/** The guest beds in this facility, using settlement-wide position. */
 	private Map<Integer, LocalPosition> guestBeds = new ConcurrentHashMap<>();
@@ -178,7 +174,7 @@ public class LivingAccommodations extends Function {
 	 * @return number of assigned beds
 	 */
 	public int getNumAssignedBeds() {
-		return assignedBeds.size();
+		return getNumOccupiedActivitySpots();
 	}
 
 	/**
@@ -195,18 +191,9 @@ public class LivingAccommodations extends Function {
 	 * @return number of registered sleepers
 	 */
 	public int getRegisteredSleepers() {
-		return registeredSleepers;
+		return getNumOccupiedActivitySpots();
 	}
 
-	/**
-	 * Checks if all the beds have been taken/registered.
-	 * 
-	 * @return
-	 */
-	public boolean areAllBedsTaken() {
-        return registeredSleepers >= maxNumBeds;
-    }
-	
 	/**
 	 * Assigns standard living necessity.
 	 */
@@ -230,22 +217,13 @@ public class LivingAccommodations extends Function {
 		// Assign standard necessity
 		assignStandardNecessity(person);	
 		
-		LocalPosition registeredBed = person.getBed();
+		ActivitySpot registeredBed = person.getBed();
 
 		if (registeredBed == null) {
 
-			if (areAllBedsTaken()) {
-//				 logger.log(building, Level.WARNING, 5000,  "All regular beds have been taken"
-//						 		+ " (# Registered Beds: " + registeredSleepers
-//						 		+ ", Regular Bed Capacity: " + maxNumBeds + ").");
-			}
-
-			else if (!assignedBeds.containsKey(person.getIdentifier())) {
+			if (getNumEmptyActivitySpots() > 0) {
 				LocalPosition bed = designateABed(person, isAGuest);
 				if (bed != null) {
-					if (!isAGuest) {
-						registeredSleepers++;
-					}
 					return bed;
 				}
 
@@ -255,29 +233,10 @@ public class LivingAccommodations extends Function {
 		}
 
 		else {
-			// Ensure the person's registered bed has been added to the assignedBeds map
-			if (!assignedBeds.containsValue(registeredBed)) {
-				assignedBeds.put(person.getIdentifier(), registeredBed);
-			}
-			return registeredBed;
+			return registeredBed.getPos();
 		}
 
 		return null;
-	}
-
-	/**
-	 * Assigns a given bed to a given person.
-	 *
-	 * @param person
-	 * @param bed
-	 */
-	public void assignABed(Person person, LocalPosition bed) {
-		assignedBeds.put(person.getIdentifier(), bed);
-		person.setBed(bed);
-		person.setQuarters(building);
-
-		logger.log(building, person, Level.INFO, 0, "Designated a bed at "
-					+ bed.getShortFormat() + ".");
 	}
 
 	/**
@@ -286,7 +245,7 @@ public class LivingAccommodations extends Function {
 	 * @param person
 	 * @return
 	 */
-	public LocalPosition designateABed(Person person, boolean guest) {
+	private LocalPosition designateABed(Person person, boolean guest) {
 		LocalPosition bedLoc = null;
 
 		int numDesignated = getNumAssignedBeds();
@@ -296,19 +255,18 @@ public class LivingAccommodations extends Function {
 		
 		// Note: guest beds are reserved for temporary use and 
 		// are not assigned here for use here
-		
 		Set<ActivitySpot> spots = getActivitySpots();
 		for (var sp : spots) {
-			bedLoc = sp.getPos();
-	
-			if (!assignedBeds.containsValue(bedLoc)) {
+			if (sp.isEmpty()) {
 				if (!guest) {
-					assignABed(person, bedLoc);
+					// Claim the bed permanently
+					AllocatedSpot bed = sp.claim(person, true);
+					person.setBed(building, bed);
 				}
-				else { // is a guest
-					logger.log(building, person, Level.INFO, 0, "Given a temporary bed at ("
-							+ bedLoc + ").", null);
-				}
+				logger.log(building, person, Level.INFO, 0, "Given a bed ("
+							+ sp.getName() + ").");
+				
+				bedLoc = sp.getPos();
 				break;
 			}
 		}
@@ -392,13 +350,13 @@ public class LivingAccommodations extends Function {
 		double blackWaterProduced = estimatedWasteWaterProduced * (1 - greyWaterFraction);
 
 		if (greyWaterProduced > MIN) {
-			store(greyWaterProduced, GREY_WATER_ID, wasteName);
+			store(greyWaterProduced, GREY_WATER_ID, WASTE_NAME);
 			// Track daily average
 			addDailyGreyWaterGen(greyWaterProduced);
 		}
 		
 		if (blackWaterProduced > MIN)
-			store(blackWaterProduced, BLACK_WATER_ID, wasteName);
+			store(blackWaterProduced, BLACK_WATER_ID, WASTE_NAME);
 
 		// Use toilet paper and generate toxic waste (used toilet paper).
 		double toiletPaperUsagePerMillisol = TOILET_WASTE_PERSON_SOL / 1000;
@@ -408,7 +366,7 @@ public class LivingAccommodations extends Function {
 
 		if (toiletPaperUsageBuilding > MIN) {
 			retrieve(toiletPaperUsageBuilding, TOILET_TISSUE_ID, true);
-			store(toiletPaperUsageBuilding, TOXIC_WASTE_ID, wasteName);
+			store(toiletPaperUsageBuilding, TOXIC_WASTE_ID, WASTE_NAME);
 		}
 	}
 
@@ -442,16 +400,6 @@ public class LivingAccommodations extends Function {
 		estimatedWasteWaterProduced = estimatedWaterUsed * WASH_AND_WASTE_WATER_RATIO;
 		
 		return new double[] {estimatedWaterUsed, estimatedWasteWaterProduced};
-	}
-	
-	/**
-	 * Releases any bed assigned to a Person.
-	 * 
-	 * @param person
-	 * @returno
-	 */
-	public void releaseBed(Person person) {
-		assignedBeds.remove(person.getIdentifier());
 	}
 
 	/*
@@ -526,12 +474,13 @@ public class LivingAccommodations extends Function {
 		return maxNumBeds * 7D;
 	}
 
+	@Override
 	public void destroy() {
 		building = null;
-		assignedBeds.clear();
-		assignedBeds = null;
 		guestBeds.clear();
 		guestBeds = null;
 		dailyWaterUsage = null;
+
+		super.destroy();
 	}
 }
