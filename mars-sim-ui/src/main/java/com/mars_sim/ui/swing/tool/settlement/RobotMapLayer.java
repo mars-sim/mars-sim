@@ -27,7 +27,8 @@ public class RobotMapLayer extends WorkerMapLayer<Robot> {
 	private SettlementMapPanel mapPanel;
 
 	/**
-	 * Constructor
+	 * Constructor.
+	 * 
 	 * @param mapPanel the settlement map panel.
 	 */
 	public RobotMapLayer(SettlementMapPanel mapPanel) {
@@ -49,7 +50,8 @@ public class RobotMapLayer extends WorkerMapLayer<Robot> {
 	}
 
 	/**
-	 * Identify the best colour to render this Robot in the Settlement Map.
+	 * Identifies the best colour to render this Robot in the Settlement Map.
+	 * 
 	 * @param r Robot
 	 * @param selected Are they selected
 	 * @return

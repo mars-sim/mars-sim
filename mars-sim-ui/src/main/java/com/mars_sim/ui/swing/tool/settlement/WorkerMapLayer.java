@@ -14,16 +14,15 @@ import java.util.Collection;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.mapdata.location.LocalPosition;
-import com.mars_sim.tools.Msg;
 
 /**
  * This provides a map layer that can draw Workers on the Map panel. 
  * It is aware of selected and nonselected Workers and draw accordingly.
  */
 public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer {
-    private static final int LABEL_XOFFSET = 5;
-    private static final Font NAME_FONT = new Font("Arial", Font.PLAIN, 10); 
-    private static final Font DETAILS_FONT = new Font("Arial", Font.PLAIN, 8); 
+    private static final int LABEL_XOFFSET = 4;
+    private static final Font NAME_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 8); 
+    private static final Font DETAILS_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 6); 
 
     /**
 	 * Draws workers at a settlement.
@@ -76,13 +75,14 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
 
         if (showLabels) {
             // Draw label
-            drawRightLabel(g2d, w.getName(), pos, color,
+            drawRightLabel(g2d, false, w.getName(), pos, color,
                         NAME_FONT, LABEL_XOFFSET, 0, rotation, scale);
         }
     }
 
     /**
-     * Draw a selected worker on the Map. Selected works also shows labels.
+     * Draws a selected worker on the Map. Selected works also shows labels.
+     * 
      * @param g2d
      * @param w
      * @param rotation
@@ -96,33 +96,34 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
         drawOval(g2d, pos, color, rotation, scale);
 
         // Draw label
-        drawRightLabel(g2d, w.getName(), pos, color,
+        drawRightLabel(g2d, true, w.getName(), pos, color,
                     NAME_FONT, LABEL_XOFFSET, 0, rotation, scale);
             
-        float yoffset = (float)(scale / 2.0);
+        float yoffset = (float)((33 + scale) / 3);
 
         // Draw task.
         String taskDesc = w.getTaskDescription();
         if (!taskDesc.equals("")) {
-            String taskString = "- " + Msg.getString("LabelMapLayer.activity", taskDesc); 
+            String taskString = "- " + taskDesc; 
 
             drawRightLabel(
-                g2d, taskString, w.getPosition(), color,
+                g2d, true, taskString, w.getPosition(), color,
                 DETAILS_FONT, LABEL_XOFFSET, yoffset, rotation, scale);
         }
             
         // Draw mission.
         Mission mission = w.getMission();
         if (mission != null) {
-            String missionString = "-- " + Msg.getString("LabelMapLayer.mission", mission.getName(), mission.getPhaseDescription()); 
+            String missionString = "-- " + mission.getName(); 
             drawRightLabel(
-                g2d, missionString, w.getPosition(), color,
+                g2d, true, missionString, w.getPosition(), color,
                 DETAILS_FONT, LABEL_XOFFSET, 2f * yoffset, rotation, scale);
         }
     }
 
     /**
-     * Get the appropriate Color to render a Worker
+     * Gets the appropriate Color to render a Worker.
+     * 
      * @param w The worker
      * @param b Are they selected
      * @return
