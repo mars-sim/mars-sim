@@ -1545,7 +1545,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		LocalPosition myLoc = worker.getPosition();
 
 		if (myLoc.equals(sLoc)) {
-			logger.info(worker, 10_000L, "Already at " + sLoc + ".");
+//			logger.info(worker, 10_000L, "Already at " + sLoc + ".");
 			return true;
 		}
 		

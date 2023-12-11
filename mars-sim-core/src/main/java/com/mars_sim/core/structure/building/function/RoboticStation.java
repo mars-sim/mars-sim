@@ -33,6 +33,9 @@ public class RoboticStation extends Function {
 	/** The charge rate of the bot in kW. */
 	public final static double CHARGE_RATE = 5D;
 
+	/** The wireless charge rate of the bot in kW. */
+	public final static double WIRELESS_CHARGE_RATE = 1D;
+	
 	private int occupantCapacity;
 	
 	private double powerToDraw;
@@ -53,8 +56,6 @@ public class RoboticStation extends Function {
 		robotOccupants = new UnitSet<>();
 		// Set occupant capacity.
 		occupantCapacity = spec.getCapacity();
-
-//		slots = occupantCapacity;
 	}
 
 	/**
@@ -105,6 +106,11 @@ public class RoboticStation extends Function {
 		return valid;
 	}
 
+	/**
+	 * Sets the power load.
+	 * 
+	 * @param value
+	 */
     public void setPowerLoad(double value) {
     	powerToDraw += value;
     }

@@ -40,11 +40,14 @@ public class Charge extends Task {
 	/** Task name for robot */
 	public static final String NAME = Msg.getString("Task.description.charge"); //$NON-NLS-1$
 	public static final String CHARGING_AT = "Charging at ";
+	public static final String WIRELESS_CHARGING_AT = "Wireless Charging at ";
 	public static final String END_CHARGING = "Charging Ended";
 	public static final String NO_STATION = "No Station Available";
 	 
 	/** Task phases for robot. */
 	private static final TaskPhase CHARGING = new TaskPhase(Msg.getString("Task.phase.charging")); //$NON-NLS-1$
+	
+	private boolean isWirelessCharge = false;
 	
 	public Charge(Robot robot, Building buildingStation) {
 		super(NAME, robot, false, false, 0, 50D);
@@ -61,46 +64,34 @@ public class Charge extends Task {
 		
 		if (buildingStation == null) {
 			setDescriptionDone(NO_STATION);
-			logger.severe(robot, 30_000L, "Unable to find a robotic station. Current building: " 
-					+ robot.getBuildingLocation() + ".");
-
-			// Try it one more time
-			buildingStation = findStation(robot);
-			if (buildingStation == null) {
-				logger.severe(robot, 30_000L, "Unable to find a robotic station. Current building: " 
-						+ robot.getBuildingLocation() + ".");
-
-				endTask();
-				return;
-			}
-			else {
-				setDescription(NAME);
-			}
 		}
 		
+		if (buildingStation != null) {
+			
 		RoboticStation station = buildingStation.getRoboticStation();
-		if (station != null) {
-			
-			logger.info(robot, 30_000L, "Walking to " + buildingStation + ".");
-			
-			canWalk = walkToRoboticStation(robot, false);
+		
+			if (station != null) {
+				
+				setDescription(NAME);
+	//			logger.info(robot, 30_000L, "Walking to " + buildingStation + ".");
+				
+				canWalk = walkToRoboticStation(robot, false);
+			}
 		}
 		
 		if (!canWalk) {
-			logger.severe(robot, 30_000L, "Unable to walk to robotic station in " 
+			// Future: at this point. May switch to wireless charging that would be slower
+			
+			isWirelessCharge = true;
+			
+			logger.info(robot, 30_000L, "Switching to wireless charging. "
+					+ "Unable to find a robotic station. Current building: " 
 					+ robot.getBuildingLocation() + ".");
+		}
 
-			// TODO: it is unknown why a robot cannot walk there
-			
-//			endTask();
-//			return;
-		}
-			
-		else {
-			// Initialize phase
-			addPhase(CHARGING);
-			setPhase(CHARGING);
-		}
+		// Initialize phase
+		addPhase(CHARGING);
+		setPhase(CHARGING);
 	}
 
 	@Override
@@ -172,31 +163,74 @@ public class Charge extends Task {
 			// Switch to charging
 			sc.setCharging(true);
 			
-			RoboticStation station = robot.getStation();
+			if (isWirelessCharge) {
+				
+				setDescription(WIRELESS_CHARGING_AT + Math.round(batteryLevel * 10.0)/10.0 + "%");
+
+				// Look for a station that offers wireless charging
+				RoboticStation station = null;
+				
+				Building building = robot.getBuildingLocation();
+				
+				if (building != null) {
+					
+					station = building.getRoboticStation();
+					
+					if (station == null) {
+						Set<Building> functionBuildings = robot.getAssociatedSettlement()
+								.getBuildingManager().getBuildingSet(FunctionType.ROBOTIC_STATION);
+					
+						building = RandomUtil.getARandSet(functionBuildings);
+						
+						station = building.getRoboticStation();
+						
+						if (station == null) {
+							logger.severe(robot, 30_000L, "Unable to find a robotic station with wireless charging. "
+									+ "Current building: " + robot.getBuildingLocation() + ".");
+							endTask();
+							return 0;
+						}
+					}
+				
+					double hrs = time * MarsTime.HOURS_PER_MILLISOL;
 		
-			if (station != null) {
-				
-				setDescription(CHARGING_AT + Math.round(batteryLevel * 10.0)/10.0 + "%");
-				
-				double hrs = time * MarsTime.HOURS_PER_MILLISOL;
-	
-				double energy = sc.deliverEnergy(RoboticStation.CHARGE_RATE * hrs);
-				
-				// Record the power spent at the robotic station
-				station.setPowerLoad(energy/hrs);
-	
-				// Reset the duration
-				setDuration(LEVEL_UPPER_LIMIT - batteryLevel);
+					double energy = sc.deliverEnergy(RoboticStation.WIRELESS_CHARGE_RATE * hrs);
+					
+					// Record the power spent at the robotic station
+					station.setPowerLoad(energy/hrs);
+		
+					// Reset the duration
+					setDuration(LEVEL_UPPER_LIMIT - batteryLevel);
+				}
 			}
+			
 			else {
-				setDescriptionDone(END_CHARGING);
-				
-				setDuration(0);
-				
-				// End charging
-//				endTask();
-				
-				return time;
+				RoboticStation station = robot.getStation();
+			
+				if (station != null) {
+					
+					setDescription(CHARGING_AT + Math.round(batteryLevel * 10.0)/10.0 + "%");
+					
+					double hrs = time * MarsTime.HOURS_PER_MILLISOL;
+		
+					double energy = sc.deliverEnergy(RoboticStation.CHARGE_RATE * hrs);
+					
+					// Record the power spent at the robotic station
+					station.setPowerLoad(energy/hrs);
+		
+					// Reset the duration
+					setDuration(LEVEL_UPPER_LIMIT - batteryLevel);
+				}
+				else {
+					setDescriptionDone(END_CHARGING);
+					
+					setDuration(0);
+					
+					// End charging
+	//				endTask();
+					
+					return time;
+				}
 			}
 		}
 		else {
