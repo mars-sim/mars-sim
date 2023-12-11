@@ -45,6 +45,7 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.RoboticStation;
 import com.mars_sim.core.structure.building.function.SystemType;
@@ -1160,8 +1161,14 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public RoboticStation getStation() {
 		Building building = getBuildingLocation();
 		if (building != null) {
+				
+			Function f = building.getFunction(FunctionType.ROBOTIC_STATION);
+					
+			// Check if this robot has already occupied a spot
+			boolean occupied = f.checkWorkerActivitySpot(this);
+			
 			RoboticStation roboticStation = building.getRoboticStation();
-			if (roboticStation != null && roboticStation.containsRobotOccupant(this))
+			if (occupied && roboticStation != null && roboticStation.containsRobotOccupant(this))
 				return roboticStation;
 		}
 		return null;

@@ -243,6 +243,21 @@ public abstract class Function implements Serializable, Temporal {
 	}
 
 	/**
+	 * Returns if a worker has already occupied an activity spot.
+	 *
+	 * @return
+	 */
+	public boolean checkWorkerActivitySpot(Worker worker) {
+		for (ActivitySpot s: spots) {
+			if (s.getID() == worker.getIdentifier()) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * Checks if an activity spot is empty/unoccupied.
 	 *
 	 * @param pos {@link LocalPosition}

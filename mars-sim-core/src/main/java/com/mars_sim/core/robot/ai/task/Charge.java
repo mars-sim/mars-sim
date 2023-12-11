@@ -14,6 +14,7 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.SystemCondition;
 import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.RoboticStation;
 import com.mars_sim.core.time.MarsTime;
@@ -49,7 +50,7 @@ public class Charge extends Task {
 		super(NAME, robot, false, false, 0, 50D);
 	
 		// NOTE: May offer directional charging in future
-    	
+		
 		boolean canWalk = false;
 		
 		// Future: robot should first "reserve" a spot before going there
@@ -63,7 +64,7 @@ public class Charge extends Task {
 			logger.severe(robot, 30_000L, "Unable to find a robotic station. Current building: " 
 					+ robot.getBuildingLocation() + ".");
 
-			// Try it again
+			// Try it one more time
 			buildingStation = findStation(robot);
 			if (buildingStation == null) {
 				logger.severe(robot, 30_000L, "Unable to find a robotic station. Current building: " 
@@ -238,23 +239,21 @@ public class Charge extends Task {
 	 * @return
 	 */
 	static Building findStation(Robot robot) {
+		// Case 1: Check if robot currently occupies a robotic station spot already
 		RoboticStation roboticStation = robot.getStation();
-		if (roboticStation != null) {
+		if (roboticStation != null) {			
 			return roboticStation.getBuilding();
 		}
 		
+		// Case 2: assume robot is serving a different function (other than robotic station) in a building.
+		// Check if robot's current building may offer a spot
 		Building currentBldg = robot.getBuildingLocation();
 		
 		if (currentBldg != null && currentBldg.hasFunction(FunctionType.ROBOTIC_STATION)) {
 			roboticStation = currentBldg.getRoboticStation();
 			if (roboticStation != null) {
 					
-//				// Find an empty spot in robotic station
-//				LocalPosition loc = roboticStation.getAvailableActivitySpot();
-//				// Check if space is available
-//				if (loc != null && roboticStation.isSpaceAvailable()) {
-//					return currentBldg;
-//				}
+				// Future: reserve an activity spot in robotic station for this bot
 				
 				if (roboticStation.isSpaceAvailable()) {
 					return currentBldg;
@@ -262,15 +261,14 @@ public class Charge extends Task {
 			}
 		}
 		
+		// Case 3: Check other buildigns
 		Set<Building> functionBuildings = robot.getAssociatedSettlement()
 				.getBuildingManager().getBuildingSet(FunctionType.ROBOTIC_STATION);
 	
 		for (Building bldg : functionBuildings) {
-			// Find an empty spot in robotic station
-//			LocalPosition loc = bldg.getRoboticStation().getAvailableActivitySpot();
-//			if (loc != null && roboticStation.isSpaceAvailable()) {
-//				return bldg;
-//			}
+			
+			// Future: reserve an activity spot in robotic station for this bot
+			roboticStation = bldg.getRoboticStation();
 			
 			if (roboticStation.isSpaceAvailable()) {
 				return bldg;
@@ -280,6 +278,17 @@ public class Charge extends Task {
 		return null;
 	}
 	
+	/**
+	 * Walks to a robotic station.
+	 * 
+	 * @param robot
+	 * @param allowFail
+	 * @return
+	 */
+	protected boolean walkToRoboticStation(Robot robot, RoboticStation station, boolean allowFail) {
+		return walkToActivitySpotInBuilding(BuildingManager.getBuilding(robot), 
+				FunctionType.ROBOTIC_STATION, allowFail);
+	}
 	
 //	public static Building getAvailableRoboticStationBuilding(Robot robot) {
 //		if (robot.isInSettlement()) {
