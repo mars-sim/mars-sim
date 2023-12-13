@@ -289,9 +289,9 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		// Create sols text field.
 		MarsTime current = master.getMarsTime();
 		int solsDiff = (int) Math.round((resupplyTime.getTimeDiff(current) / 1000D));
-		
-		int t = ResupplyUtil.getAverageTransitTime();
-		SpinnerModel model = new SpinnerNumberModel(solsDiff, 1, t+ResupplyUtil.MAX_NUM_SOLS_PLANNED, 1);
+		int transit = ResupplyUtil.getAverageTransitTime();
+
+		SpinnerModel model = new SpinnerNumberModel(solsDiff, 0, transit + ResupplyUtil.MAX_NUM_SOLS_PLANNED, 1);
 		solsUntilCB = new JSpinner(model);
 		solsUntilCB.setEnabled(false);
 		solsUntilCB.setValue(solsDiff);

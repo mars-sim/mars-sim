@@ -2127,7 +2127,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 				transferred = ((Crewable)cu).removePerson(this);
 			}
 			else {
-				logger.warning(this + "Not possible to be retrieved from " + cu + ".");
+				logger.warning(this, 60_000L, "Not possible to be retrieved from " + cu + ".");
 			}
 		}
 		else if (ut == UnitType.MARS) {
@@ -2152,7 +2152,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 					transferred = cr.addPerson(this);
 				}
 				else {
-					logger.warning(this + "Not possible to be stored into " + cu + ".");
+					logger.warning(this, 60_000L, "Not possible to be stored into " + cu + ".");
 				}
 			}
 			else if (destination.getUnitType() == UnitType.MARS) {
@@ -2173,7 +2173,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 			}
 
 			if (!transferred) {
-				logger.warning(this + " cannot be stored into " + destination + ".");
+				logger.warning(this, 60_000L, "Cannot be stored into " + destination + ".");
 				// NOTE: need to revert back the storage action
 			}
 			else {
@@ -2186,7 +2186,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 			}
 		}
 		else {
-			logger.warning(this + " cannot be retrieved from " + cu + ".");
+			logger.warning(this, 60_000L, "Cannot be retrieved from " + cu + ".");
 			// NOTE: need to revert back the retrieval action
 		}
 

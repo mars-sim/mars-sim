@@ -1195,7 +1195,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				transferred = ((Crewable)cu).removeRobot(this);
 			}
 			else {
-				logger.warning(this, "Not possible to be retrieved from " + cu + ".");
+				logger.warning(this, 60_000L, "Not possible to be retrieved from " + cu + ".");
 			}
 		}
 		else if (ut == UnitType.MARS) {
@@ -1218,7 +1218,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 					transferred = ((Crewable)destination).addRobot(this);
 				}
 				else {
-					logger.warning(this, "Not possible to be stored into " + cu + ".");
+					logger.warning(this, 60_000L, "Not possible to be stored into " + cu + ".");
 				}
 			}
 			else if (destination.getUnitType() == UnitType.MARS) {
@@ -1236,7 +1236,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			}
 
 			if (!transferred) {
-				logger.warning(this, "Cannot be stored into " + destination + ".");
+				logger.warning(this, 60_000L, "Cannot be stored into " + destination + ".");
 				// NOTE: need to revert back the storage action
 			}
 			else {
@@ -1249,7 +1249,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			}
 		}
 		else {
-			logger.warning(this, "Cannot be retrieved from " + cu + ".");
+			logger.warning(this, 60_000L, "Cannot be retrieved from " + cu + ".");
 			// NOTE: need to revert back the retrieval action
 		}
 
