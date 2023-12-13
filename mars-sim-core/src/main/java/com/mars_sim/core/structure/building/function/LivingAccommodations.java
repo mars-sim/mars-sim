@@ -211,32 +211,27 @@ public class LivingAccommodations extends Function {
 	 *
 	 * @param person
 	 * @param isAGuest is this person a guest (not inhabitant) of this settlement
-	 * @return the bed registered with the given person
+	 * @return Successful with the registeration
 	 */
-	public LocalPosition registerSleeper(Person person, boolean isAGuest) {
+	public boolean registerSleeper(Person person, boolean isAGuest) {
 		// Assign standard necessity
 		assignStandardNecessity(person);	
 		
-		ActivitySpot registeredBed = person.getBed();
+		if (person.getBed() != null) {
+			return true;
+		}
 
-		if (registeredBed == null) {
-
-			if (getNumEmptyActivitySpots() > 0) {
-				LocalPosition bed = designateABed(person, isAGuest);
-				if (bed != null) {
-					return bed;
-				}
-
-				logger.log(building, person, Level.WARNING, 2000,
-								   "Could not find a temporary bed.", null);
+		// Find a bed
+		if (getNumEmptyActivitySpots() > 0) {
+			LocalPosition bed = designateABed(person, isAGuest);
+			if (bed != null) {
+				return true;
 			}
 		}
-
-		else {
-			return registeredBed.getPos();
-		}
-
-		return null;
+		
+		logger.log(building, person, Level.WARNING, 2000,
+								"Could not find a temporary bed.", null);
+		return false;
 	}
 
 	/**
@@ -260,8 +255,8 @@ public class LivingAccommodations extends Function {
 			if (sp.isEmpty()) {
 				if (!guest) {
 					// Claim the bed permanently
-					AllocatedSpot bed = sp.claim(person, true);
-					person.setBed(building, bed);
+					AllocatedSpot bed = sp.claim(person, true, building);
+					person.setBed(bed);
 				}
 				logger.log(building, person, Level.INFO, 0, "Given a bed ("
 							+ sp.getName() + ").");
@@ -428,9 +423,9 @@ public class LivingAccommodations extends Function {
 	 * @return
 	 */
 	public LocalPosition getEmptyGuestBed() {
-		for (int i: guestBeds.keySet()) {
-			if (i == -1) 
-				return guestBeds.get(i);
+		for (Entry<Integer, LocalPosition> i: guestBeds.entrySet()) {
+			if (i.getKey() == -1) 
+				return i.getValue();
 		}
 		return null;
 	}

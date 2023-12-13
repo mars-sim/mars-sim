@@ -225,7 +225,7 @@ public abstract class Function implements Serializable, Temporal {
 		}
 
 		// Spot is claimed but only temporarily
-		var allocated = as.claim(w, false);
+		var allocated = as.claim(w, false, building);
 		w.setActivitySpot(allocated);
 		return true;
 	}

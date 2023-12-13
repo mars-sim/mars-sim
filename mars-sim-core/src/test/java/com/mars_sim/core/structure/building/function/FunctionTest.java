@@ -45,8 +45,9 @@ public class FunctionTest extends AbstractMarsSimUnitTest {
         var as = (new ArrayList<ActivitySpot>(spots)).get(0); // Bad code
         b.claimActivitySpot(as.getPos(), p);
 
-        ActivitySpot claimed = p.getActivitySpot();
-        assertNotNull("Activity spot owned", claimed);
+        var allocation = p.getActivitySpot();
+        assertNotNull("Activity spot owned", allocation);
+        var claimed = allocation.getAllocated();
         assertEquals("Correct activity spot", as, claimed);
         assertFalse("Activity spot empty", claimed.isEmpty());
         assertEquals("Activity spot owned by Person", p.getIdentifier(), claimed.getID());
@@ -65,7 +66,7 @@ public class FunctionTest extends AbstractMarsSimUnitTest {
         var as = (new ArrayList<ActivitySpot>(spots)).get(0); // Bad code
         b.claimActivitySpot(as.getPos(), p);
 
-        ActivitySpot claimed = p.getActivitySpot();
+        var claimed = p.getActivitySpot().getAllocated();
         p.setActivitySpot(null);
         assertNull("No activity spot allocated", p.getActivitySpot());
         assertTrue("Activity spot released", claimed.isEmpty());
@@ -79,7 +80,7 @@ public class FunctionTest extends AbstractMarsSimUnitTest {
         Person p = buildPerson("Worker", home);
 
         var spot = new ActivitySpot("Spot", LocalPosition.DEFAULT_POSITION);
-        var allocated = spot.claim(p, true);
+        var allocated = spot.claim(p, true, null);
 
         assertTrue("Activity spot allocated", !spot.isEmpty());
 
@@ -142,8 +143,9 @@ public class FunctionTest extends AbstractMarsSimUnitTest {
         assertTrue("Previous spot released", as1.isEmpty());
         assertEquals("Previous spots all empty", 0, b1.getNumOccupiedActivitySpots());
 
-        ActivitySpot claimed = p.getActivitySpot();
-        assertNotNull("2nd activity spot allocated", claimed);
+        var allocation = p.getActivitySpot();
+        assertNotNull("2nd activity spot allocated", allocation);
+        var claimed = allocation.getAllocated();
         assertEquals("Person owns correct 2nd spot", as2, claimed);
         assertEquals("Occupied spots in 2nd building", 1, b2.getNumOccupiedActivitySpots());
     }

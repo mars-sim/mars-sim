@@ -1299,6 +1299,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		spot = newSpot;
 	}
 	
+	@Override
+	public AllocatedSpot getActivitySpot() {
+		return spot;
+	}
+	
 	/**
 	 * Compares if an object is the same as this robot
 	 *

@@ -329,9 +329,7 @@ public class Sleep extends Task {
 		
 		if (q7 != null) {
 			// Register this sleeper
-			var bed = q7.getLivingAccommodations().registerSleeper(person, false);
-
-			if (bed != null) {
+			if (q7.getLivingAccommodations().registerSleeper(person, false)) {
 				// Case 8: unmarked, empty (UE) bed
 				walkToBed(person, true);
 
@@ -354,10 +352,7 @@ public class Sleep extends Task {
 		//////////////////// Case 4 - 10 /////////////////////////
 		// He/she is an inhabitant in this settlement
 
-		// Check if a person has a designated quarters and a marked bed
-		Building q4 = person.getQuarters();
-
-		if (q4 != null) {
+		if (person.getBed() != null) {
 			// This is the BEST case for an inhabitant
 			
 			// This person has his quarters and have a designated bed
@@ -426,7 +421,12 @@ public class Sleep extends Task {
 	 */
 	public void releaseGuestBed() {
 		// Deregister this person if using a guest bed
-		LivingAccommodations q = person.getQuarters().getLivingAccommodations();
+		var allocated = person.getBed();
+		if (allocated == null) {
+			logger.warning(person, "No guest bed assigned to release");
+			return;
+		}
+		LivingAccommodations q = allocated.getOwner().getLivingAccommodations();
 		// Register this person to use this guest bed
 		q.deRegisterGuestBed(person.getIdentifier());
 	}

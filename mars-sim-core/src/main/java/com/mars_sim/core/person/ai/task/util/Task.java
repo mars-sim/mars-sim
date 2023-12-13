@@ -43,7 +43,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.ActivitySpot;
 import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.LifeSupport;
@@ -1129,7 +1128,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected boolean walkToBed(Person person, boolean allowFail) {
 		boolean canWalk = false;
 		
-		ActivitySpot bed = person.getBed();
+		var bed = person.getBed();
 		if (bed == null) {
 			logger.info(person, 10_000L, "I have no bed assigned to me.");
 			return canWalk;
@@ -1138,13 +1137,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		// Check my own position
 		LocalPosition myLoc = person.getPosition();
 		
-		if (myLoc.equals(bed.getPos())) {
+		if (myLoc.equals(bed.getAllocated().getPos())) {
 			logger.info(person, 10_000L, "Already in my own bed.");
 			return canWalk;
 		}
 	
 		// Create subtask for walking to destination.
-		return createWalkingSubtask(person.getQuarters(), bed.getPos(), allowFail);
+		return createWalkingSubtask(bed.getOwner(), bed.getAllocated().getPos(), allowFail);
 	}
 
 	/**

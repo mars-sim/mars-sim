@@ -24,17 +24,18 @@ public class BedCommand extends AbstractPersonCommand {
 
 	@Override
 	public boolean execute(Conversation context, String input, Person person) {
-		ActivitySpot bed = person.getBed();
+		var bed = person.getBed();
 		if (bed == null) {
 			context.println("I haven't got my own private quarters yet.");
 		} 
 		else {
+			ActivitySpot bedSpot = bed.getAllocated();
 			StringBuilder responseText = new StringBuilder();
 			responseText.append("My designated quarters is ");
-			responseText.append(bed.getName() + " at ");
-			responseText.append(bed.getPos().getShortFormat());
+			responseText.append(bedSpot.getName() + " at ");
+			responseText.append(bedSpot.getPos().getShortFormat());
 			responseText.append(" in ");
-			responseText.append(person.getQuarters());
+			responseText.append(bed.getOwner());
 			responseText.append(" at ");
 			responseText.append(person.getAssociatedSettlement());
 

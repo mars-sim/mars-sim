@@ -14,9 +14,7 @@ import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +26,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
@@ -67,8 +64,13 @@ extends TabPanel {
 	private static final String CAREER = "Career";
 	private static final DecimalFormat DECIMAL_MSOLS = new DecimalFormat("0 msols");
 
-	public final String WIKI_URL = Msg.getString("TabPanelHealth.radiation.url"); //$NON-NLS-1$
-	
+	private static final String WIKI_URL = Msg.getString("TabPanelHealth.radiation.url"); //$NON-NLS-1$
+	private static final String[] RADIATION_TOOL_TIPS = {
+		    " Exposure Interval - 30-Day, Annual, or Career", 
+		    " Standard Dose Limit [mSv] on BFO - 30-Day:  250;  Annual: 1000;  Career: 1500",
+		    " Standard Dose Limit [mSv] on Eye - 30-Day:  500;  Annual: 2000;  Career: 3000",
+		    " Standard Dose Limit [mSv] on Skin - 30-Day: 1000;  Annual: 4000;  Career: 6000"};
+
 	private int fatigueCache;
 	private int thirstCache;
 	private int hungerCache;
@@ -91,21 +93,16 @@ extends TabPanel {
 	private JLabel ghrelinLabel;
 	private JLabel leptinTLabel;
 	private JLabel ghrelinTLabel;
-	
+
 	/** The sleep hour text field. */	
-	private JTextField sleepTF;
-	
+	private JLabel sleepTF;
+	private JLabel bedTF;
+
 	private MedicationTableModel medicationTableModel;
 	private HealthProblemTableModel healthProblemTableModel;
 	private RadiationTableModel radiationTableModel;
 	private SleepExerciseTableModel sleepExerciseTableModel;
 	private FoodTableModel foodTableModel;
-	
-	private JTable radiationTable;
-	private JTable medicationTable;
-	private JTable healthProblemTable;
-	private JTable sleepExerciseTable;
-	private JTable foodTable;
 	
 	/** The Person instance. */
 	private Person person = null;
@@ -113,13 +110,7 @@ extends TabPanel {
 	/** The PhysicalCondition instance. */
 	private PhysicalCondition condition;
 	private CircadianClock circadianClock;
-	private DoseHistory[] doseLimits;
 
-	private static String[] RADIATION_TOOL_TIPS = {
-		    " Exposure Interval - 30-Day, Annual, or Career", 
-		    " Standard Dose Limit [mSv] on BFO - 30-Day:  250;  Annual: 1000;  Career: 1500",
-		    " Standard Dose Limit [mSv] on Eye - 30-Day:  500;  Annual: 2000;  Career: 3000",
-		    " Standard Dose Limit [mSv] on Skin - 30-Day: 1000;  Annual: 4000;  Career: 6000"};
 
 	/**
 	 * Constructor.
@@ -143,6 +134,12 @@ extends TabPanel {
 
 	@Override
 	protected void buildUI(JPanel content) {
+        DoseHistory[] doseLimits;
+        JTable radiationTable;
+        JTable medicationTable;
+        JTable healthProblemTable;
+        JTable sleepExerciseTable;
+        JTable foodTable;
 				
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
@@ -188,27 +185,26 @@ extends TabPanel {
 		northPanel.add(springPanel);
 		
 		// Prepare sleep hour name label
-		JLabel sleepHrLabel = new JLabel(Msg.getString("TabPanelHealth.sleepTime"), SwingConstants.RIGHT); //$NON-NLS-1$
+		JLabel sleepHrLabel = new JLabel(Msg.getString("TabPanelHealth.sleepTime") + " :", SwingConstants.RIGHT); //$NON-NLS-1$
 		sleepHrLabel.setFont(StyleManager.getLabelFont());
 		springPanel.add(sleepHrLabel);
 		
 		// Prepare sleep time TF
 		StringBuilder text = updateSleepTime();		
-		
-		sleepTF = new JTextField(text.toString());
-		sleepTF.setEditable(false);
-		sleepTF.setColumns(28);
-		sleepTF.setCaretPosition(0);
-		
-		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		wrapper5.add(sleepTF);
-		springPanel.add(wrapper5);
+		sleepTF = new JLabel(text.toString());
 
+		springPanel.add(sleepTF);
 		sleepTF.setToolTipText("3 best times to go to bed [msol (weight)]"); //$NON-NLS-1$
-				
+			
+		JLabel bedLabel = new JLabel("Bed :", SwingConstants.RIGHT); //$NON-NLS-1$
+		bedLabel.setFont(StyleManager.getLabelFont());
+		springPanel.add(bedLabel);
+		bedTF = new JLabel("");
+		springPanel.add(bedTF);
+
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(springPanel,
-		                                1, 2, //rows, cols
+		                                2, 2, //rows, cols
 		                                10, 10,        //initX, initY
 		                                5, 3);       //xPad, yPad
 	
@@ -350,11 +346,11 @@ extends TabPanel {
  
 		// Create radiation table
 		radiationTable = new JTable(radiationTableModel) {
-            // Implement table cell tool tips.           
+            // Implement table cell tool tips. 
+			@Override          
             public String getToolTipText(MouseEvent e) {
                 String tip = null;
                 java.awt.Point p = e.getPoint();
-//              int rowIndex = rowAtPoint(p);
                 int colIndex = columnAtPoint(p);
 				if (colIndex == 0) {
                     tip = RADIATION_TOOL_TIPS[colIndex];
@@ -420,7 +416,6 @@ extends TabPanel {
 		
 		// Prepare health problem label
 		JLabel healthProblemLabel = new JLabel(Msg.getString("TabPanelHealth.healthProblems"), SwingConstants.CENTER); //$NON-NLS-1$
-		//healthProblemLabel.setPadding(7, 0, 0, 0);
 		StyleManager.applySubHeading(healthProblemLabel);
 		healthProblemPanel.add(healthProblemLabel, BorderLayout.NORTH);
 
@@ -470,7 +465,7 @@ extends TabPanel {
 
 	private StringBuilder updateSleepTime() {	
 		// Checks the 3 best sleep time
-    	int bestSleepTime[] = person.getPreferredSleepHours();
+    	int [] bestSleepTime = person.getPreferredSleepHours();
 		Arrays.sort(bestSleepTime);
 		
 		// Prepare sleep time TF
@@ -576,7 +571,14 @@ extends TabPanel {
 
 		if (!sleepTF.getText().equalsIgnoreCase(text.toString()))
 			sleepTF.setText(text.toString());
-		
+	
+		String bedText = "";
+		var allocatedBed = person.getBed();
+		if (allocatedBed != null) {
+			bedText = allocatedBed.getAllocated().getName() + " @ " + allocatedBed.getOwner().getName();
+		}
+ 		bedTF.setText(bedText);
+
 		// Update medication table model.
 		medicationTableModel.update(condition);
 
@@ -619,39 +621,24 @@ extends TabPanel {
 			return 4;
 		}
 
+		/**
+		 * Always returns a String
+		 * @param columnIndex Ignored
+		 */
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) {
-			    dataType = String.class;
-			}
-			if (columnIndex == 1) {
-			    dataType = String.class;
-			}
-			if (columnIndex == 2) {
-			    dataType = String.class;
-			}
-			if (columnIndex == 3) {
-			    dataType = String.class;
-			}
-			return dataType;
+			return String.class;
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) {
-			    return Msg.getString("TabPanelHealth.column.interval"); //$NON-NLS-1$
-			}
-			else if (columnIndex == 1) {
-			    return Msg.getString("TabPanelHealth.column.BFO"); //$NON-NLS-1$
-			}
-			else if (columnIndex == 2) {
-			    return Msg.getString("TabPanelHealth.column.ocular"); //$NON-NLS-1$
-			}
-			else if (columnIndex == 3) {
-			    return Msg.getString("TabPanelHealth.column.skin"); //$NON-NLS-1$
-			}
-			else {
-			    return null;
-			}
+			return switch (columnIndex) {
+				case 0 -> Msg.getString("TabPanelHealth.column.interval"); //$NON-NLS-1$
+				case 1 -> Msg.getString("TabPanelHealth.column.BFO"); //$NON-NLS-1$
+				case 2 -> Msg.getString("TabPanelHealth.column.ocular"); //$NON-NLS-1$
+				case 3 ->  Msg.getString("TabPanelHealth.column.skin"); //$NON-NLS-1$
+				default -> null;
+			};
 		}
 
 		public Object getValueAt(int row, int column) {
@@ -691,11 +678,11 @@ extends TabPanel {
 	private static class HealthProblemTableModel
 	extends AbstractTableModel {
 
-		private Collection<?> problemsCache;
+		private List<HealthProblem> problemsCache;
 		private boolean isDead;
 
 		private HealthProblemTableModel(PhysicalCondition condition) {
-			problemsCache = condition.getProblems();
+			problemsCache = new ArrayList<>(condition.getProblems());
 		}
 
 		public int getRowCount() {
@@ -706,68 +693,40 @@ extends TabPanel {
 			return 2;
 		}
 
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) {
-			    dataType = String.class;
-			}
-			if (columnIndex == 1) {
-			    dataType = String.class;
-			}
-			return dataType;
+			return String.class;
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) {
-			    return Msg.getString("TabPanelHealth.column.problem"); //$NON-NLS-1$
-			}
-			else if (columnIndex == 1) {
-			    return Msg.getString("TabPanelHealth.column.condition"); //$NON-NLS-1$
-			}
-			else {
-			    return null;
-			}
+			return (columnIndex == 0 ? Msg.getString("TabPanelHealth.column.problem")
+									: Msg.getString("TabPanelHealth.column.condition")); //$NON-NLS-1$
 		}
 
 		public Object getValueAt(int row, int column) {
-			HealthProblem problem = null;
-			if (row < problemsCache.size()) {
-				Iterator<?> i = problemsCache.iterator();
-				int count = 0;
-				while (i.hasNext()) {
-					HealthProblem prob = (HealthProblem) i.next();
-					if (count == row) {
-					    problem = prob;
-					}
-					count++;
-				}
-			}
+			HealthProblem problem = problemsCache.get(row);
 
-			if (problem != null) {
-				if (column == 0) {
-				    return problem.getComplaint().getType().toString();
+			if (column == 0) {
+				return problem.getComplaint().getType().toString();
+			}
+			else if (column == 1) {
+				String conditionStr = problem.getStateString();
+				if (!isDead) {
+					conditionStr = Msg.getString("TabPanelHealth.healthRating", //$NON-NLS-1$
+							conditionStr, Integer.toString(problem.getHealthRating()));
 				}
-				else if (column == 1) {
-					String conditionStr = problem.getStateString();
-					if (!isDead) {
-					    conditionStr = Msg.getString("TabPanelHealth.healthRating", //$NON-NLS-1$
-					            conditionStr, Integer.toString(problem.getHealthRating()));
-					}
-					return conditionStr;
-				}
-				else {
-				    return null;
-				}
+				return conditionStr;
 			}
 			else {
-			    return null;
+				return null;
 			}
 		}
 
 		public void update(PhysicalCondition condition) {
 			// Make sure problems cache is current.
-			if (!problemsCache.equals(condition.getProblems())) {
-				problemsCache = condition.getProblems();
+			if (problemsCache.size() != condition.getProblems().size()) {
+				problemsCache = new ArrayList<>(condition.getProblems());
 			}
 			isDead = condition.isDead();
 
@@ -804,8 +763,9 @@ extends TabPanel {
 			return 3;
 		}
 
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
+			Class<?> dataType = null;
 			if (columnIndex == 0) {
 			    dataType = Integer.class;
 			}
@@ -815,6 +775,7 @@ extends TabPanel {
 			return dataType;
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) {
 			    return MISSION_SOL; 
@@ -903,18 +864,12 @@ extends TabPanel {
 			return 5;
 		}
 
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) {
-			    dataType = Integer.class;
-			}
-			else {
-			    dataType = String.class;
-			}
-			
-			return dataType;
+			return (columnIndex == 0) ? Integer.class : String.class;
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) {
 			    return MISSION_SOL; 
@@ -935,38 +890,18 @@ extends TabPanel {
 		}
 
 		public Object getValueAt(int row, int column) {
-			Object result = null;
-			if (row < getRowCount()) {
-				int rowSol = row + solOffset;
-				if (column == 0) {
-					return rowSol;
-				}
-				else if (column == 1) {
-					if (map.containsKey(rowSol))
-						result = StyleManager.DECIMAL_PLACES3.format(returnAmount(rowSol, 0));
-					else
-						result = StyleManager.DECIMAL_PLACES3.format(0);
-				}
-				else if (column == 2) {
-					if (map.containsKey(rowSol))
-						result = StyleManager.DECIMAL_PLACES3.format(returnAmount(rowSol, 1));
-					else
-						result = StyleManager.DECIMAL_PLACES3.format(0);
-				}
-				else if (column == 3) {
-					if (map.containsKey(rowSol))
-						result = StyleManager.DECIMAL_PLACES3.format(returnAmount(rowSol, 2));
-					else
-						result = StyleManager.DECIMAL_PLACES3.format(0);
-				}
-				else if (column == 4) {
-					if (map.containsKey(rowSol))
-						result = StyleManager.DECIMAL_PLACES3.format(returnAmount(rowSol, 3));
-					else
-						result = StyleManager.DECIMAL_PLACES3.format(0);
-				}
+			if (row >= getRowCount()) {
+				return null;
 			}
-			return result;
+
+			int rowSol = row + solOffset;
+			if (column == 0) {
+				return rowSol;
+			}
+			else if (!map.containsKey(rowSol)) {
+				return "0.000";
+			}
+			return StyleManager.DECIMAL_PLACES3.format(returnAmount(rowSol, column-1));
 		}
 
 		private double returnAmount(int rowSol, int type) {
@@ -1014,8 +949,9 @@ extends TabPanel {
 			return 2;
 		}
 
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
+			Class<?> dataType = null;
 			if (columnIndex == 0) {
 			    dataType = String.class;
 			}
@@ -1025,6 +961,7 @@ extends TabPanel {
 			return dataType;
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) {
 			    return Msg.getString("TabPanelHealth.column.medication"); //$NON-NLS-1$

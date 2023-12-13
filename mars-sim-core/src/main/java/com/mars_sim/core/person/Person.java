@@ -76,9 +76,8 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.ActivitySpot;
-import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
+import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.vehicle.Crewable;
@@ -115,17 +114,17 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	private static final String EARTHLING = "Earthling";
 
 	/** The average height of a person. */
-	private static final double averageHeight;
+	private static  double averageHeight;
 	/** The average weight of a person. */
-	private static final double averageWeight;
+	private static  double averageWeight;
 	/** The average upper height of a person. */
-	private static final double tall;
+	private static  double tall;
 	/** The average low height of a person. */
-	private static final double shortH;
+	private static  double shortH;
 	/** The average high weight of a person. */
-	private static final double highW;
+	private static  double highW;
 	/** The average low weight of a person. */
-	private static final double lowW;
+	private static  double lowW;
 
 	// Transient data members
 	/** The extrovert score of a person. */
@@ -143,8 +142,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	private LocalDate birthDate;
 	/** The age of a person */
 	private int age = -1;
-	/** The quarters that the person belongs. */
-	private int quartersInt = -1;
 	/** The current building location of the person. */
 	private int currentBuildingInt;
 	/** The carrying capacity of the person. */
@@ -833,16 +830,10 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 * Deregisters the person's quarters.
 	 */
 	void deregisterBed() {
-		
-		if (quartersInt != -1) {
+		if (bed != null) {
 			// Release the bed
 			bed.leave(this, true);
-
-			// Release quarters id
-			quartersInt = -1;
-			// Empty the bed
-			if (bed != null)
-				bed = null;
+			bed = null;
 		}
 	}
 
@@ -1386,27 +1377,21 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	}
 
 	/**
-	 * Gets the assigned quarters.
-	 * 
-	 * @return
-	 */
-	public Building getQuarters() {
-		return unitManager.getBuildingByID(quartersInt);
-	}
-
-	/**
 	 * Gets the settlement location of this bed.
 	 * 
 	 * @return
 	 */
-	public ActivitySpot getBed() {
-		return (bed != null ? bed.getAllocated() : null);
+	public AllocatedSpot getBed() {
+		return bed;
 	}
 
-	public void setBed(Building b, AllocatedSpot bed2) {
-		this.bed = bed2;
-		this.quartersInt = b.getIdentifier();
-	}
+	/**
+	 * Assign a bed to this person.
+	 * 
+	 * @param bed2 The assignment
+	 */
+	public void setBed(AllocatedSpot bed2) {
+		this.bed = bed2;	}
 
 	public boolean hasBed() {
 		return bed != null;
@@ -2443,8 +2428,12 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		return inviteeId;
 	}
 	
-	public ActivitySpot getActivitySpot() {
-		return (spot != null ? spot.getAllocated() : null);
+	/**
+	 * Get the allocated activity spot
+	 */
+	@Override
+	public AllocatedSpot getActivitySpot() {
+		return spot;
 	}
 	
 	/**
@@ -2492,7 +2481,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		// Hash must be constant and not depend upon changing attributes
 		return getIdentifier() % 64;
 	}
-
 
 	@Override
 	public void destroy() {

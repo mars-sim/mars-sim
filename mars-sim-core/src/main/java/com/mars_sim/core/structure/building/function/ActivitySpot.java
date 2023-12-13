@@ -10,6 +10,7 @@ package com.mars_sim.core.structure.building.function;
 import java.io.Serializable;
 
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
@@ -30,9 +31,11 @@ public final class ActivitySpot implements Serializable {
 		private static final long serialVersionUID = 1L;
 		
 		private ActivitySpot spot;
+		private Building owner;
 
-		private AllocatedSpot(ActivitySpot spot) {
+		private AllocatedSpot(Building owner, ActivitySpot spot) {
 			this.spot = spot;
+			this.owner = owner;
 		}
 
 		/**
@@ -52,6 +55,14 @@ public final class ActivitySpot implements Serializable {
 		 */
 		public ActivitySpot getAllocated() {
 			return spot;
+		}
+
+		/**
+		 * Get the owner of this allocation.
+		 * @return
+		 */
+		public Building getOwner() {
+			return owner;
 		}
 	}
 
@@ -75,13 +86,15 @@ public final class ActivitySpot implements Serializable {
 	 * Returns a callback instance to allow the spot to be released in the future.
 
 	 * @param w Worker claiming
+	 * @param permanent Permanent reservation
+	 * @param allocator Building that is doing the allocation.
 	 * @return Allocation reference or null if it is already allocated
 	 */
-	AllocatedSpot claim(Worker w, boolean permanent) {
+	AllocatedSpot claim(Worker w, boolean permanent, Building allocator) {
 		if (id == EMPTY_ID) {
 			id = w.getIdentifier();
 			this.permanent = permanent;
-			return new AllocatedSpot(this);
+			return new AllocatedSpot(allocator, this);
 		}
 		return null;
 	}
