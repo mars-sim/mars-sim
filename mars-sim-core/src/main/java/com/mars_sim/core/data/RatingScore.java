@@ -179,16 +179,16 @@ public class RatingScore implements Serializable {
     public String getOutput() {
         
         StringBuilder output = new StringBuilder();
-        output.append("Score:").append(SCORE_FORMAT.format(score)).append(" (");
+        output.append("Score: ").append(SCORE_FORMAT.format(score)).append(" (");
         output.append(bases.entrySet().stream()
-                                .map(entry -> entry.getKey() + ":" + SCORE_FORMAT.format(entry.getValue()))
-                                .collect(Collectors.joining(",")));
+                                .map(entry -> entry.getKey() + ": " + SCORE_FORMAT.format(entry.getValue()))
+                                .collect(Collectors.joining(", ")));
         if (!modifiers.isEmpty()) {
-            output.append(',');
+            output.append(", ");
         }
         output.append(modifiers.entrySet().stream()
-                                .map(entry -> entry.getKey() + ":" + SCORE_FORMAT.format(entry.getValue()))
-                                .collect(Collectors.joining(",")));
+                                .map(entry -> entry.getKey() + ": " + SCORE_FORMAT.format(entry.getValue()))
+                                .collect(Collectors.joining(", ")));
         output.append(")");
         return output.toString();
     }

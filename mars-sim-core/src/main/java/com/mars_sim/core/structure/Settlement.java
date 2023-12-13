@@ -1158,12 +1158,14 @@ public class Settlement extends Structure implements Temporal,
 		// due to high cpu util during the change of day
 		if (pulse.isNewMSol() && msol >= 10 && msol < 995) {
 
+			double time = pulse.getElapsed();
+			
 			int remainder = msol % CHECK_RESOURCES;
 			if (remainder == 1) {
 				// Check on demand and supply and amount of water, oxygen and methane
-				checkResourceDemand("Oxygen", OXYGEN_ID, MIN_OXYGEN_RESERVE, OXYGEN_MAX);
-				checkResourceDemand("Methane", METHANE_ID, MIN_METHANE_RESERVE, METHANE_MAX);
-				checkResourceDemand("Water", WATER_ID, MIN_WATER_RESERVE, WATER_MAX);
+				checkResourceDemand("Oxygen", OXYGEN_ID, MIN_OXYGEN_RESERVE, OXYGEN_MAX, time);
+				checkResourceDemand("Methane", METHANE_ID, MIN_METHANE_RESERVE, METHANE_MAX, time);
+				checkResourceDemand("Water", WATER_ID, MIN_WATER_RESERVE, WATER_MAX, time);
 			}
 			
 			// Tag available airlocks into two categories
@@ -2898,7 +2900,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @param gasReserve
 	 * @param gasMax
 	 */
-	private void checkResourceDemand(String gasName, int gasID, int gasReserve, int gasMax) {
+	private void checkResourceDemand(String gasName, int gasID, int gasReserve, int gasMax, double time) {
 		double result = 0;
 
 		int pop = numCitizens;
@@ -2943,10 +2945,10 @@ public class Settlement extends Structure implements Temporal,
 
 		double delta = result - demand;
 
-		if (delta > 20) {
+		if (delta > CHECK_RESOURCES) {
 			
 			// Limit each increase to a value only to avoid an abrupt rise or drop in demand 
-			delta = 20;
+			delta = time * CHECK_RESOURCES;
 			
 			logger.info(this, 60_000L, 
 					"Previous demand for " + gasName + ": " + Math.round(demand * 10.0)/10.0 
