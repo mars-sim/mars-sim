@@ -23,37 +23,15 @@ public class Zone implements Serializable, Temporal {
 	// Area in square meters
 	private double area;
 	
-	private ZoneType type;
-	
 	private double growthRate;
 	
-//	private static Map<ZoneType, Double> initialArea = new HashMap<>();
-//	
-//	static {
-//		initialArea.put(ZoneType.BUSINESS, RandomUtil.getRandomDouble(25, 50));
-//		initialArea.put(ZoneType.COMMAND_CONTROL, RandomUtil.getRandomDouble(50, 100));
-//		initialArea.put(ZoneType.COMMUNICATION, RandomUtil.getRandomDouble(50, 100));
-//		initialArea.put(ZoneType.CONSTRUCTION, RandomUtil.getRandomDouble(100, 200));
-//		initialArea.put(ZoneType.EDUCATION, RandomUtil.getRandomDouble(10, 50));
-//		initialArea.put(ZoneType.ENGINEERING, RandomUtil.getRandomDouble(100, 200));
-//		initialArea.put(ZoneType.LIFE_SUPPORT, RandomUtil.getRandomDouble(200, 300));
-//		initialArea.put(ZoneType.OPERATION, RandomUtil.getRandomDouble(100, 200));
-//		initialArea.put(ZoneType.RECREATION, RandomUtil.getRandomDouble(100, 150));
-//		initialArea.put(ZoneType.RESEARCH, RandomUtil.getRandomDouble(100, 200));
-//		initialArea.put(ZoneType.RESOURCE_EXTRACTION, RandomUtil.getRandomDouble(300, 400));
-//		initialArea.put(ZoneType.TRANSPORTATION, RandomUtil.getRandomDouble(80, 150));
-//	}
+	private ZoneType type;
 	
-	
-//	Zone(ZoneType type, double area) {
-//		this.type = type;
-//		this.area = area;
-//		
-//		growthRate = RandomUtil.getRandomDouble(0, 2);
-//	}
-	
-	public Zone(ZoneType type) {
+	private Colony colony;
+
+	public Zone(ZoneType type, Colony colony) {
 		this.type = type;
+		this.colony = colony;
 
 		if (ZoneType.BUSINESS == type)
 			area = RandomUtil.getRandomDouble(25, 50);
@@ -89,7 +67,24 @@ public class Zone implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 		
 		if (pulse.isNewHalfSol()) {
-			growthRate += RandomUtil.getRandomDouble(-0.35, 0.5);
+			
+			if (ZoneType.RESEARCH == type) {
+				int numResearcher = colony.getPopulation().getNumResearchers();
+				int numResearchProj = colony.getNumResearchProjects();
+				double researchValue = colony.getTotalResearchValue();
+				double score = 0;
+				if (numResearcher > 0)
+					score = Math.log10(.5 +  researchValue / numResearchProj / numResearcher);
+				logger.info(colony.getName() + " zone research: " + score);
+				score = Math.max(.4, Math.min(-.4, score));
+				
+				growthRate += RandomUtil.getRandomDouble(-0.1 + score, 0.1 + score);
+			}
+			else {
+				
+				growthRate += RandomUtil.getRandomDouble(-0.15, 0.25);
+			}
+
 			
 			if (growthRate > 10)
 				growthRate = 10;

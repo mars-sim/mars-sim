@@ -7,6 +7,7 @@
 
 package com.mars_sim.core.science;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.Job;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.tools.Msg;
+import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * Science field names and researcher job descriptions.
@@ -176,4 +178,16 @@ public enum ScienceType {
 	public static boolean isCollaborativeScience(ScienceType sciencePrimary, ScienceType scienceSecondary) {
 		return collabSciences.get(sciencePrimary).getCollaborativeSciences().contains(scienceSecondary);
 	}
+	
+	/**
+	 * Gets a random science type enum.
+	 * 
+	 * @return
+	 */
+	public static ScienceType getRandomScienceType() {
+		List<ScienceType> list = Arrays.asList(ScienceType.values());		
+		int rand = RandomUtil.getRandomInt(list.size() - 1);
+		return list.get(rand);
+	}
+	
 }

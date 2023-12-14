@@ -15,7 +15,7 @@ import java.util.Set;
 
 import com.mars_sim.core.authority.Nation;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.science.Researcher;
+import com.mars_sim.core.moon.project.Researcher;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.tools.util.RandomUtil;
@@ -45,7 +45,6 @@ public class Population implements Serializable, Temporal {
 	private Set<Colonist> colonists = new HashSet<>();
 	
 	public Population(Colony colony) {
-			
 		this.colony = colony;
 		
 		growthRateTourists = RandomUtil.getRandomDouble(-.3, .4);
@@ -63,11 +62,12 @@ public class Population implements Serializable, Temporal {
 //		System.out.println("Colony: " + colony.getName() 
 //				+ "   Tot Pop: " + totPop 
 //				+ "   Quarters: " + numBeds);
-		
-		for (int i = 0; i < numResearchers; i++) {
-			colonists.add(new Researcher(colony.getName() + " R" + i, colony.getId()));
-		}
+	}
 	
+	public void init() {
+		for (int i = 0; i < numResearchers; i++) {
+			colonists.add(new Researcher("R" + i, colony));
+		}
 	}
 	
 	public Colony getColony() {
@@ -79,79 +79,125 @@ public class Population implements Serializable, Temporal {
 		
 		double researchersCache = numResearchers;
 		
-		if (pulse.isNewHalfSol()) {
+		int millisolInt = pulse.getMarsTime().getMillisolInt();
+		if (pulse.isNewMSol() && millisolInt > 5 && millisolInt % 60 == 1) {
 
-			// Recalculate tourists
+			// Recalculate tourists growth rate
 			growthRateTourists += RandomUtil.getRandomDouble(-.125, .2);
+			// Recalculate tourists
+			numTourists += growthRateTourists;
+			if (numTourists < 0)
+				numTourists = 0;
 			
+			// Recalculate residents growth rate
+			growthRateResidents += RandomUtil.getRandomDouble(-.125, .2);
+			// Recalculate residents
+			numResidents += growthRateResidents;
+			if (numResidents < 0)
+				numResidents = 0;
+			
+			// Recalculate researchers growth rate
+			growthRateResearchers += RandomUtil.getRandomDouble(-.125, .2);		
+			// Recalculate researchers	
+			numResearchers += growthRateResearchers;
+			if (numResearchers < 0)
+				numResearchers = 0;
+			
+			// Recalculate beds growth rate
+			growthRateBeds += RandomUtil.getRandomDouble(-.125, .2);
+			// Recalculate beds
+			numBeds += growthRateBeds;
+			if (numBeds < 0)
+				numBeds = 0;
+
+			// Checks if there is enough beds. 
+			// If not, slow the growth rate in one type of pop
+			if (numTourists + numResidents + numResearchers > numBeds * .95) {
+				
+				int rand = RandomUtil.getRandomInt(0, 10);
+				if (rand == 0) {
+					growthRateResidents -= 0.1;
+				}
+				else if ((rand == 1 || rand == 2)) {
+					growthRateResearchers -= 0.1;
+				}
+				else {
+					growthRateTourists -= 0.1;
+				}
+			}
+					
+			// Limit the growth rate
 			if (growthRateTourists > 1)
 				growthRateTourists = 1;
 			else if (growthRateTourists < -.5)
 				growthRateTourists = -.5;
-			
-			numTourists += growthRateTourists;
-			
-			// Recalculate residents
-			growthRateResidents += RandomUtil.getRandomDouble(-.125, .2);
 			
 			if (growthRateResidents > 1)
 				growthRateResidents = 1;
 			else if (growthRateResidents < -.5)
 				growthRateResidents = -.5;
 			
-			numResidents += growthRateResidents;
-
-			// Recalculate researchers
-			growthRateResearchers += RandomUtil.getRandomDouble(-.125, .2);
-			
 			if (growthRateResearchers > 1)
 				growthRateResearchers = 1;
 			else if (growthRateResearchers < -.5)
-				growthRateResearchers = -.5;			
-					
-			numResearchers += growthRateResearchers;
-
-			// Recalculate beds
-			growthRateBeds += RandomUtil.getRandomDouble(-.125, .2);
+				growthRateResearchers = -.5;	
 			
 			if (growthRateBeds > 2)
 				growthRateBeds = 2;
-			else if (growthRateBeds < -0.25)
-				growthRateBeds = -0.25;
+			else if (growthRateBeds < -0.15)
+				growthRateBeds = -0.15;
 			
-			numBeds += growthRateBeds;
-
-			// Checks if there is enough beds. 
-			// If not, slow the growth rate in one type of pop
-			if (numTourists + numResidents + numResearchers < numBeds + 1) {
-				
-				int rand = RandomUtil.getRandomInt(0, 10);
-				if (rand == 0) {
-					growthRateResidents -= 0.1;
-					numResidents += growthRateResidents;
-				}
-				else if ((rand == 1 || rand == 2)) {
-					growthRateResearchers -= 0.1;
-					numResearchers += growthRateResearchers;
-				}
-				else {
-					growthRateTourists -= 0.1;
-					numTourists += growthRateTourists;
-				}
-			}
-					
+			if (numResidents < 0)
+				numResidents = 0;
+			if (numResearchers < 0)
+				numResearchers = 0;
+			if (numTourists < 0)
+				numTourists = 0;
+			
 			if ((int)researchersCache < (int)numResearchers 
-					&& colonists.size() > 0) {
+					&& !colonists.isEmpty()) {
 				removeOneResearcher();
 			}
 			else if ((int)researchersCache > (int)numResearchers) {
-				colonists.add(new Researcher(colony.getName() + " R" 
-					+ (int)numResearchers, colony.getId()));
+				addOneResearcher();
 			}
+			// else if they are equal, then no change
 			
 		}
 		
+		for (Colonist c: colonists) {
+			if (c instanceof Researcher r) {
+				r.timePassing(pulse);
+			}
+		}
+		
 		return false;
+	}
+	
+	
+	/**
+	 * Adds a researcher.
+	 */
+	public void addOneResearcher() {
+		Nation nation = colony.getNation();
+		
+		if (nation == null) {
+			colonists.add(new Researcher("R" 
+					+ (int)numResearchers, colony));
+		}
+		else {
+			Colonist colonist = nation.getOneColonist();
+			if (colonist != null) {
+				colonists.add(colonist);
+			}
+			else {
+				colonists.add(new Researcher("R" 
+					+ (int)numResearchers, colony));
+			}
+		}
+		
+		// Pull back the growth rate as a researcher has just been added
+		growthRateResearchers = growthRateResearchers - 0.25;
 	}
 	
 	/**
@@ -170,15 +216,34 @@ public class Population implements Serializable, Temporal {
 		Nation nation = colony.getNation();
 		
 		if (nation == null) {
-			String countryName = colony.getAuthority().getOneCountry();
-			logger.warning("Colony: " + colony.getName() 
-							+ "  Sponsor: " + colony.getAuthority().getName()
-							+ "  Country: " + countryName);
+//			String countryName = colony.getAuthority().getOneCountry();
+//			logger.warning("Colony: " + colony.getName() 
+//							+ "  Sponsor: " + colony.getAuthority().getName()
+//							+ "  Country: " + countryName);
 		}
 		else {
+			// Go back to one's nation pool
 			nation.addColonist(c);
+			((Researcher)c).setColony(null);	
 		}
 		
+		// Speed up the growth rate as a researcher has just been removed
+		growthRateResearchers = growthRateResearchers + 0.25;		
+	}
+	
+	/**
+	 * Gets a set of researchers.
+	 * 
+	 * @return
+	 */
+	public Set<Researcher> getResearchers() {
+		Set<Researcher> set = new HashSet<>();
+		for (Colonist c: colonists) {
+			if (c instanceof Researcher r) {
+				set.add(r);
+			}
+		}
+		return set;
 	}
 	
 	public int getNumBed() {
@@ -218,7 +283,7 @@ public class Population implements Serializable, Temporal {
 	}
 	
 	public double getGrowthTotalPopulation() {
-		return growthRateTourists + growthRateResidents + growthRateResearchers;
+		return growthRateTourists * growthRateResidents * growthRateResearchers;
 	}
 	
 	/**

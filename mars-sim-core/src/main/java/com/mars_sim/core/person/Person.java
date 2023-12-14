@@ -47,6 +47,7 @@ import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.PersonAttributeManager;
 import com.mars_sim.core.person.ai.SkillManager;
+import com.mars_sim.core.person.ai.SkillOwner;
 import com.mars_sim.core.person.ai.fav.Favorite;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.fav.Preference;
@@ -92,7 +93,7 @@ import com.mars_sim.tools.util.RandomUtil;
  * The Person class represents a person on Mars. It keeps track of everything
  * related to that person and provides information about him/her.
  */
-public class Person extends Unit implements Worker, Temporal, ResearcherInterface {
+public class Person extends Unit implements Worker, SkillOwner, Temporal, ResearcherInterface {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

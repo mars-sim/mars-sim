@@ -110,21 +110,32 @@ public class CommanderWindow extends ToolWindow {
 	private static final String ACCEPT_NO = "Accept NO Trading initiated by other settlements";
 	private static final String SEE_RIGHT = ".    -->";
 
-	private int popCache = 1;
-	private int bedCache;
-	private int touristCache;
-	private int residentCache;
-	private int researcherCache;
+	private Map<Colony, Integer> popCaches = new HashMap<>();
+	private Map<Colony, Integer> bedCaches = new HashMap<>();
+	private Map<Colony, Integer> touristCaches = new HashMap<>();
+	private Map<Colony, Integer> residentCaches = new HashMap<>();
+	private Map<Colony, Integer> researcherCaches = new HashMap<>();
+	private Map<Colony, Integer> numResearchCaches = new HashMap<>();
+	private Map<Colony, Integer> numDevelopmentCaches = new HashMap<>();
 	
-	private double totalAreaCache;
-	private double areaPerPersonCache;
+	private Map<Colony, Double> researchValueCaches = new HashMap<>();
+	private Map<Colony, Double> developmentValueCaches = new HashMap<>();
 	
-	private double popRateCache;
-	private double bedRateCache;
-	private double touristRateCache;
-	private double residentRateCache;
-	private double researcherRateCache;
-		
+	private Map<Colony, Double> activenessResearchCaches = new HashMap<>();
+	private Map<Colony, Double> activenessDevelopmentCaches = new HashMap<>();
+	
+	private Map<Colony, Double> researchAreaCaches = new HashMap<>();
+	private Map<Colony, Double> developmentAreaCaches = new HashMap<>();
+	
+	private Map<Colony, Double> totalAreaCaches = new HashMap<>();
+	private Map<Colony, Double> areaPerPersonCaches = new HashMap<>();
+	
+	private Map<Colony, Double> popRateCaches = new HashMap<>();
+	private Map<Colony, Double> bedRateCaches = new HashMap<>();
+	
+	private Map<Colony, Double> touristRateCaches = new HashMap<>();
+	private Map<Colony, Double> residentRateCaches = new HashMap<>();
+	private Map<Colony, Double> researcherRateCaches = new HashMap<>();
 	
 	private JTabbedPane tabPane;
 	/** Person Combo box */	
@@ -156,13 +167,25 @@ public class CommanderWindow extends ToolWindow {
 	private JRadioButton r3;
 	private JRadioButton r4;
 	
-	private JLabel popLabel;
-	private JLabel bedLabel;
-	private JLabel touristLabel;
-	private JLabel residentLabel;
-	private JLabel researcherLabel;
-	private JLabel totalAreaLabel;
-	private JLabel areaPerPersonLabel;
+	private Map<Colony, JLabel> popLabels = new HashMap<>();
+	private Map<Colony, JLabel> bedLabels = new HashMap<>();
+	private Map<Colony, JLabel> touristLabels = new HashMap<>();
+	private Map<Colony, JLabel> residentLabels = new HashMap<>();
+	private Map<Colony, JLabel> researcherLabels = new HashMap<>();
+	private Map<Colony, JLabel> totalAreaLabels = new HashMap<>();
+	private Map<Colony, JLabel> areaPerPersonLabels = new HashMap<>();
+	
+	private Map<Colony, JLabel> researchValueLabels = new HashMap<>();
+	private Map<Colony, JLabel> developmentValueLabels = new HashMap<>();
+	
+	private Map<Colony, JLabel> numResearchLabels = new HashMap<>();
+	private Map<Colony, JLabel> numDevelopmentLabels = new HashMap<>();
+	
+	private Map<Colony, JLabel> activenessResearchLabels = new HashMap<>();
+	private Map<Colony, JLabel> activenessDevelopmentLabels = new HashMap<>();
+	
+	private Map<Colony, JLabel> researchAreaLabels = new HashMap<>();
+	private Map<Colony, JLabel> developmentAreaLabels = new HashMap<>();
 	
 	private Person cc;
 
@@ -202,8 +225,6 @@ public class CommanderWindow extends ToolWindow {
 		
 		colonyList = new ArrayList<>(Simulation.instance().getLunarColonyManager().getColonySet());
 		Collections.sort(colonyList);
-		
-
 				
 		// Create content panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
@@ -354,7 +375,7 @@ public class CommanderWindow extends ToolWindow {
 		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
 		topPanel.setBorder(BorderFactory.createTitledBorder(" Lunar Colonies "));
 		panel.add(topPanel, BorderLayout.NORTH);
-		panel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		panel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		
 		JTabbedPane tabbedPane = new JTabbedPane(SwingConstants.TOP);
 		
@@ -363,10 +384,10 @@ public class CommanderWindow extends ToolWindow {
 		if (colonyList != null && !colonyList.isEmpty()) {
 			for (Colony c: colonyList) {
 				
-				JPanel infoPanel = new JPanel(new BorderLayout(20, 20));
+				JPanel infoPanel = new JPanel(new BorderLayout(10, 10));
 				
-				AttributePanel labelGrid = new AttributePanel(4, 2);
-				labelGrid.setBorder(new EmptyBorder(10, 10, 10, 10));
+				AttributePanel labelGrid = new AttributePanel(3, 3);
+				labelGrid.setBorder(new EmptyBorder(5, 5, 5, 5));
 				infoPanel.add(labelGrid, BorderLayout.NORTH);
 				
 				String name = c.getName();
@@ -376,67 +397,152 @@ public class CommanderWindow extends ToolWindow {
 	
 				labelGrid.addRow("Base Name", name);
 				
-				String sponsorName = c.getAuthority().getName();
-				labelGrid.addRow("Corporation/Agency", sponsorName);
+				List<String> countryList = c.getAuthority().getCountries();
 				
-				labelGrid.addRow("Coordinates", c.getCoordinates().getFormattedString());
-				
-				List<String> cnyList = c.getAuthority().getCountries();
-				
-				String countryCode = "";
+//				String countryCode = "";
 				String countryName = "Multi-National";
-				if (cnyList.size() == 1) {
+				if (countryList.size() == 1) {
 					countryName = c.getAuthority().getCountries().get(0);
 //					countryCode = FlagString.getEmoji(countryName);
 				}
+				labelGrid.addLabels("Country", countryName, "");
 				
-				labelGrid.addLabels("Country", countryName, countryCode);
+				String sponsorName = c.getAuthority().getName();
+				labelGrid.addRow("Sponsor", sponsorName);
+				
+				labelGrid.addRow("Coordinates", c.getCoordinates().getFormattedString());
 							
-				totalAreaCache = c.getTotalArea();			
-				totalAreaLabel = labelGrid.addRow("Total Area (SM)", Math.round(totalAreaCache * 10.0)/10.0 + "");
+				double totalAreaCache = c.getTotalArea();	
+				totalAreaCaches.put(c, totalAreaCache);
+				JLabel totalAreaLabel = labelGrid.addRow("Total Area", Math.round(totalAreaCache * 10.0)/10.0 + " SM");
+				totalAreaLabels.put(c, totalAreaLabel);
 				
-				areaPerPersonCache = totalAreaCache / popCache;
-				areaPerPersonLabel = labelGrid.addRow("Area (SM) Per Person", Math.round(areaPerPersonCache * 10.0)/10.0 + "");
-
-				bedCache = c.getPopulation().getNumBed();
-				bedRateCache = c.getPopulation().getGrowthNumBed();
+				// Temporary set popCache to 1
+				int popCache = 1;
+				double areaPerPersonCache = totalAreaCache / popCache;
+				areaPerPersonCaches.put(c, areaPerPersonCache);
+				JLabel areaPerPersonLabel = labelGrid.addRow("Area Per Person", Math.round(areaPerPersonCache * 10.0)/10.0 + " SM");
+				areaPerPersonLabels.put(c, areaPerPersonLabel);
+				
+				int bedCache = c.getPopulation().getNumBed();
+				bedCaches.put(c, bedCache);
+				double bedRateCache = c.getPopulation().getGrowthNumBed();
+				bedRateCaches.put(c, bedRateCache);
 				String bedRateCacheString = bedCache + " (" + Math.round(bedRateCache * 10.0)/10.0 + ")";
-				bedLabel = labelGrid.addRow("# of Quarters", bedRateCacheString + "");
-							
+				JLabel bedLabel = labelGrid.addRow("# of Beds", bedRateCacheString + "");
+				bedLabels.put(c, bedLabel);
+				
+				// FUTURE: will model and derive birth rate
 				labelGrid.addRow("Birth Rate", "0.0");
 				
 				/////////////////////////////////////////////////////////////
 				
-				JPanel popPanel = new JPanel(new BorderLayout(20, 20));
-				infoPanel.add(popPanel, BorderLayout.SOUTH);
+				JPanel popPanel = new JPanel(new BorderLayout(10, 10));
+				infoPanel.add(popPanel, BorderLayout.CENTER);
 				
 				AttributePanel popGrid = new AttributePanel(2, 2);
 				popPanel.add(popGrid, BorderLayout.NORTH);
-				popPanel.setBorder(BorderFactory.createTitledBorder(" Population Types"));
+				popGrid.setBorder(BorderFactory.createTitledBorder(" Population Types"));
 				
 				popCache = c.getPopulation().getTotalPopulation();
-				popRateCache = c.getPopulation().getGrowthTotalPopulation();
+				popCaches.put(c, popCache);
+				double popRateCache = c.getPopulation().getGrowthTotalPopulation();
+				popRateCaches.put(c, popRateCache);
 				String popRateCacheString = popCache + " (" + Math.round(popRateCache * 10.0)/10.0 + ")";
-				popLabel = popGrid.addRow("Total Population", popRateCacheString + "");
-	
+				JLabel popLabel = popGrid.addRow("Total Population", popRateCacheString + "");
+				popLabels.put(c, popLabel);
+				
+				//////////////////////////////////////////////////////
+				
 				// Update the area per person label right away
 				areaPerPersonCache = Math.round(totalAreaCache / popCache * 10.0)/10.0;
-				areaPerPersonLabel.setText(areaPerPersonCache + "");
+				areaPerPersonCaches.put(c, areaPerPersonCache);
+				areaPerPersonLabel.setText(areaPerPersonCache + " SM");
+				areaPerPersonLabels.put(c, areaPerPersonLabel);
 				
-				touristCache = c.getPopulation().getNumTourists();
-				touristRateCache = c.getPopulation().getGrowthTourists();
+				//////////////////////////////////////////////////////
+				
+				int touristCache = c.getPopulation().getNumTourists();
+				touristCaches.put(c, touristCache);
+				double touristRateCache = c.getPopulation().getGrowthTourists();
+				touristRateCaches.put(c, touristRateCache);
 				String touristRateCacheString = touristCache + " (" + Math.round(touristRateCache * 10.0)/10.0 + ")";
-				touristLabel = popGrid.addRow("# of Tourists", touristRateCacheString + "");
+				JLabel touristLabel = popGrid.addRow("# of Tourists", touristRateCacheString + "");
+				touristLabels.put(c, touristLabel);
 				
-				residentCache = c.getPopulation().getNumResidents();
-				residentRateCache = c.getPopulation().getGrowthTourists();
+				int residentCache = c.getPopulation().getNumResidents();
+				residentCaches.put(c, residentCache);
+				double residentRateCache = c.getPopulation().getGrowthTourists();
+				residentRateCaches.put(c, residentRateCache);
 				String residentRateCacheString = residentCache + " (" + Math.round(residentRateCache * 10.0)/10.0 + ")";
-				residentLabel = popGrid.addRow("# of Residents", residentRateCacheString + "");
+				JLabel residentLabel = popGrid.addRow("# of Residents", residentRateCacheString + "");
+				residentLabels.put(c, residentLabel);
 				
-				researcherCache = c.getPopulation().getNumResearchers();
-				researcherRateCache = c.getPopulation().getGrowthTourists();
+				int researcherCache = c.getPopulation().getNumResearchers();
+				researcherCaches.put(c, researcherCache);
+				double researcherRateCache = c.getPopulation().getGrowthTourists();
+				researcherRateCaches.put(c, researcherRateCache);
 				String researcherRateCacheString = researcherCache + " (" + Math.round(researcherRateCache * 10.0)/10.0 + ")";
-				researcherLabel = popGrid.addRow("# of Researchers", researcherRateCacheString + "");
+				JLabel researcherLabel = popGrid.addRow("# of Researchers", researcherRateCacheString + "");
+				researcherLabels.put(c, researcherLabel);
+				
+				AttributePanel rdGrid = new AttributePanel(4, 2);
+				popPanel.add(rdGrid, BorderLayout.CENTER);
+				rdGrid.setBorder(BorderFactory.createTitledBorder(" Research and Development"));
+				
+				double researchValueCache = c.getTotalResearchValue();
+				researchValueCaches.put(c, researchValueCache);
+				String researchValueCacheString = Math.round(researchValueCache * 100.0)/100.0
+						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+				JLabel researchValueLabel = rdGrid.addRow("Research Values", researchValueCacheString + "");
+				researchValueLabels.put(c, researchValueLabel);
+				
+				double developmentValueCache = c.getTotalDevelopmentValue();
+				developmentValueCaches.put(c, developmentValueCache);
+				String developmentValueCacheString = Math.round(developmentValueCache * 100.0)/100.0
+						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+				JLabel developmentValueLabel = rdGrid.addRow("Development Values", developmentValueCacheString + "");
+				developmentValueLabels.put(c, developmentValueLabel);
+				
+				int numResearchCache = c.getNumResearchProjects();
+				numResearchCaches.put(c, numResearchCache);
+				String numResearchCacheString = numResearchCache + " (" + Math.round(0 * 10.0)/10.0 + ")";
+				JLabel numResearchLabel = rdGrid.addRow("# Research Proj", numResearchCacheString + "");
+				numResearchLabels.put(c, numResearchLabel);
+				
+				int numDevelopmentCache = c.getNumDevelopmentProjects();
+				numDevelopmentCaches.put(c, numDevelopmentCache);
+				String numDevelopmentCacheString = numDevelopmentCache + " (" + Math.round(0 * 10.0)/10.0 + ")";
+				JLabel numDevelopmentLabel = rdGrid.addRow("# Development Proj", numDevelopmentCacheString + "");
+				numDevelopmentLabels.put(c, numDevelopmentLabel);
+				
+				double activenessResearchCache = c.getAverageResearchActiveness();
+				activenessResearchCaches.put(c, activenessResearchCache);
+				String activenessResearchCacheString = Math.round(activenessResearchCache * 10.0)/10.0
+						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+				JLabel activenessResearchLabel = rdGrid.addRow("Research Activeness", activenessResearchCacheString + "");
+				activenessResearchLabels.put(c, activenessResearchLabel);
+				
+				double activenessDevelopmentCache = c.getAverageDevelopmentActiveness();
+				activenessDevelopmentCaches.put(c, activenessDevelopmentCache);
+				String activenessDevelopmentCacheString = Math.round(activenessDevelopmentCache * 10.0)/10.0
+						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+				JLabel activenessDevelopmentLabel = rdGrid.addRow("Development Activeness", activenessDevelopmentCacheString + "");
+				activenessDevelopmentLabels.put(c, activenessDevelopmentLabel);
+			
+				double researchAreaCache = c.getResearchArea();
+				researchAreaCaches.put(c, researchAreaCache);
+				String researchAreaCacheString = Math.round(researchAreaCache * 10.0)/10.0
+						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+				JLabel researchAreaLabel = rdGrid.addRow("Research Facility Area", researchAreaCacheString + "");
+				researchAreaLabels.put(c, researchAreaLabel);
+		
+				double developmentAreaCache = c.getDevelopmentArea();
+				developmentAreaCaches.put(c, developmentAreaCache);
+				String developmentAreaCacheString = Math.round(developmentAreaCache * 10.0)/10.0
+						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+				JLabel developmentAreaLabel = rdGrid.addRow("Development Facility Area", developmentAreaCacheString + "");
+				developmentAreaLabels.put(c, developmentAreaLabel);
 			}	
 		}
 	}
@@ -452,64 +558,126 @@ public class CommanderWindow extends ToolWindow {
 
 				int newBed = c.getPopulation().getNumBed();
 				double newBedRate = c.getPopulation().getGrowthNumBed();
-				if (bedCache != newBed
-					 || bedRateCache != newBedRate) {
-					bedCache = newBed;
-					bedRateCache = newBedRate;
+				if (bedCaches.get(c) != newBed
+					 || bedRateCaches.get(c) != newBedRate) {
+					bedCaches.put(c, newBed);
+					bedRateCaches.put(c, newBedRate);
 					String bedRateCacheString = newBed + " (" + Math.round(newBedRate * 10.0)/10.0 + ")";
-					bedLabel.setText(bedRateCacheString);
+					bedLabels.get(c).setText(bedRateCacheString);
 				}
 				
 				int newPop = c.getPopulation().getTotalPopulation();
 				double newPopRate = c.getPopulation().getGrowthTotalPopulation();
-				if (popCache != newPop
-					 || popRateCache != newPopRate) {
-					popCache = newPop;
-					popRateCache = newPopRate;
+				if (popCaches.get(c) != newPop
+					 || popRateCaches.get(c) != newPopRate) {
+					popCaches.put(c, newPop);
+					popRateCaches.put(c, newPopRate);
 					String popRateCacheString = newPop + " (" + Math.round(newPopRate * 10.0)/10.0 + ")";
-					popLabel.setText(popRateCacheString);
+					popLabels.get(c).setText(popRateCacheString);
 				}
 	
 				int newTourist = c.getPopulation().getNumTourists();
 				double newTouristRate = c.getPopulation().getGrowthTourists();
-				if (touristCache != newTourist
-					 || touristRateCache != newTouristRate) {
-					touristCache = newTourist;
-					touristRateCache = newTouristRate;
+				if (touristCaches.get(c) != newTourist
+					 || touristRateCaches.get(c) != newTouristRate) {
+					touristCaches.put(c, newTourist);
+					touristRateCaches.put(c, newTouristRate);
 					String touristRateCacheString = newTourist + " (" + Math.round(newTouristRate * 10.0)/10.0 + ")";
-					touristLabel.setText(touristRateCacheString);
+					touristLabels.get(c).setText(touristRateCacheString);
 				}
 				
 				int newResident = c.getPopulation().getNumResidents();
 				double newResidentRate = c.getPopulation().getGrowthResidents();
-				if (residentCache != newResident
-					 || residentRateCache != newResidentRate) {
-					residentCache = newResident;
-					residentRateCache = newResidentRate;
+				if (residentCaches.get(c) != newResident
+					 || residentRateCaches.get(c) != newResidentRate) {
+					residentCaches.put(c, newResident);
+					residentRateCaches.put(c, newResidentRate);
 					String residentRateCacheString = newResident + " (" + Math.round(newResidentRate * 10.0)/10.0 + ")";
-					residentLabel.setText(residentRateCacheString);
+					residentLabels.get(c).setText(residentRateCacheString);
 				}
 				
 				int newResearcher = c.getPopulation().getNumResearchers();
 				double newResearcherRate = c.getPopulation().getGrowthResearchers();
-				if (researcherCache != newResearcher
-					 || researcherRateCache != newResearcherRate) {
-					researcherCache = newResearcher;
-					researcherRateCache = newResearcherRate;
+				if (researcherCaches.get(c) != newResearcher
+					 || researcherRateCaches.get(c) != newResearcherRate) {
+					researcherCaches.put(c, newResearcher);
+					researcherRateCaches.put(c, newResearcherRate);
 					String researcherRateCacheString = newResearcher + " (" + Math.round(newResearcherRate * 10.0)/10.0 + ")";
-					researcherLabel.setText(researcherRateCacheString);
+					researcherLabels.get(c).setText(researcherRateCacheString);
+				}
+				
+				double newResearchValue = c.getTotalResearchValue();
+				if (researchValueCaches.get(c) != newResearchValue) {
+					researchValueCaches.put(c, newResearchValue);
+					String researchValueCacheString = Math.round(newResearchValue * 100.0)/100.0 
+							+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+					researchValueLabels.get(c).setText(researchValueCacheString);
+				}
+				
+				double newDevelopmentValue = c.getTotalDevelopmentValue();
+				if (developmentValueCaches.get(c) != newDevelopmentValue) {
+					developmentValueCaches.put(c, newDevelopmentValue);
+					String developmentValueCacheString = Math.round(newDevelopmentValue * 100.0)/100.0 
+							+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+					developmentValueLabels.get(c).setText(developmentValueCacheString);
+				}
+				
+				double newActivenessResearch = c.getAverageResearchActiveness();
+				if (activenessResearchCaches.get(c) != newActivenessResearch) {
+					activenessResearchCaches.put(c, newActivenessResearch);
+					String activenessResearchCacheString = Math.round(newActivenessResearch * 10.0)/10.0 
+							+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+					activenessResearchLabels.get(c).setText(activenessResearchCacheString);
+				}
+				
+				double newActivenessDevelopment = c.getAverageDevelopmentActiveness();
+				if (activenessDevelopmentCaches.get(c) != newActivenessDevelopment) {
+					activenessDevelopmentCaches.put(c, newActivenessDevelopment);
+					String activenessDevelopmentCacheString = Math.round(newActivenessDevelopment * 10.0)/10.0 
+							+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+					activenessDevelopmentLabels.get(c).setText(activenessDevelopmentCacheString);
+				}
+				
+				double newResearchArea = c.getResearchArea();
+				if (researchAreaCaches.get(c) != newResearchArea) {
+					researchAreaCaches.put(c, newResearchArea);
+					String researchAreaCacheString = Math.round(newResearchArea * 10.0)/10.0 
+							+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+					researchAreaLabels.get(c).setText(researchAreaCacheString);
+				}
+				
+				double newDevelopmentArea = c.getDevelopmentArea();
+				if (developmentAreaCaches.get(c) != newDevelopmentArea) {
+					developmentAreaCaches.put(c, newDevelopmentArea);
+					String developmentAreaCacheString = Math.round(newDevelopmentArea * 10.0)/10.0 
+							+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+					developmentAreaLabels.get(c).setText(developmentAreaCacheString);
+				}
+				
+				int newNumResearch = c.getNumResearchProjects();
+				if (numResearchCaches.get(c) != newNumResearch) {
+					numResearchCaches.put(c, newNumResearch);
+					String numResearchCacheString = newNumResearch + " (" + Math.round(0 * 10.0)/10.0 + ")";
+					numResearchLabels.get(c).setText(numResearchCacheString);
+				}
+				
+				int newNumDevelopment = c.getNumDevelopmentProjects();
+				if (numDevelopmentCaches.get(c) != newNumDevelopment) {
+					numDevelopmentCaches.put(c, newNumDevelopment);
+					String numDevelopmentCacheString = newNumDevelopment + " (" + Math.round(0 * 10.0)/10.0 + ")";
+					numDevelopmentLabels.get(c).setText(numDevelopmentCacheString);
 				}
 				
 				double newTotalArea = Math.round(c.getTotalArea() * 10.0)/10.0;
-				if (totalAreaCache != newTotalArea) {
-					totalAreaCache = newTotalArea;
-					totalAreaLabel.setText(newTotalArea + "");
+				if (totalAreaCaches.get(c) != newTotalArea) {
+					totalAreaCaches.put(c, newTotalArea);
+					totalAreaLabels.get(c).setText(newTotalArea + " SM");
 				}
 				
 				double newAreaPerPerson = Math.round(newTotalArea / newPop * 10.0)/10.0;			
-				if (areaPerPersonCache != newAreaPerPerson) {
-					areaPerPersonCache = newAreaPerPerson;
-					areaPerPersonLabel.setText(newAreaPerPerson + "");
+				if (areaPerPersonCaches.get(c) != newAreaPerPerson) {
+					areaPerPersonCaches.put(c, newAreaPerPerson);
+					areaPerPersonLabels.get(c).setText(newAreaPerPerson + "");
 				}
 			}
 		}

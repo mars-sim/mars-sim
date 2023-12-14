@@ -62,7 +62,7 @@ public interface Worker extends Loggable, UnitIdentifer, EquipmentOwner {
 	public Coordinates getCoordinates();
 
 	/**
-	 * How efficient is this Worker.
+	 * How physically efficient is this Worker.
 	 * 
 	 * @return
 	 */

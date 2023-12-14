@@ -36,6 +36,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillManager;
+import com.mars_sim.core.person.ai.SkillOwner;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
@@ -45,11 +46,11 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.RoboticStation;
 import com.mars_sim.core.structure.building.function.SystemType;
-import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.vehicle.Crewable;
@@ -61,7 +62,7 @@ import com.mars_sim.tools.util.RandomUtil;
 /**
  * The robot class represents operating a robot on Mars.
  */
-public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable, Worker {
+public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable, Worker, SkillOwner {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

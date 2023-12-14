@@ -8,13 +8,16 @@
 package com.mars_sim.core.authority;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.moon.Colonist;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.tools.util.RandomUtil;
 
 public class Nation implements Serializable, Temporal {
 
@@ -67,6 +70,14 @@ public class Nation implements Serializable, Temporal {
 	
 	private Set<Colonist> colonists = new HashSet<>();
 	
+	public Colonist getOneColonist() {
+		List<Colonist> list = new ArrayList<>(colonists);
+		if (!list.isEmpty()) {
+			int rand = RandomUtil.getRandomInt(list.size() - 1);
+			return list.get(rand);
+		}
+		return null;
+	}
 	
 	public Nation(String name) {
 		this.name = name;
