@@ -197,7 +197,7 @@ public class Population implements Serializable, Temporal {
 		}
 		
 		// Pull back the growth rate as a researcher has just been added
-		growthRateResearchers = growthRateResearchers - 0.25;
+		growthRateResearchers = growthRateResearchers * .9;
 	}
 	
 	/**
@@ -228,7 +228,7 @@ public class Population implements Serializable, Temporal {
 		}
 		
 		// Speed up the growth rate as a researcher has just been removed
-		growthRateResearchers = growthRateResearchers + 0.25;		
+		growthRateResearchers = growthRateResearchers * .9;		
 	}
 	
 	/**

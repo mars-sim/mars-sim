@@ -66,23 +66,27 @@ public class Zone implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		
-		if (pulse.isNewHalfSol()) {
+		int millisolInt = pulse.getMarsTime().getMillisolInt();
+		if (pulse.isNewMSol() && millisolInt > 5 && millisolInt % 120 == 1) {
 			
 			if (ZoneType.RESEARCH == type) {
 				int numResearcher = colony.getPopulation().getNumResearchers();
 				int numResearchProj = colony.getNumResearchProjects();
 				double researchValue = colony.getTotalResearchValue();
 				double score = 0;
-				if (numResearcher > 0)
-					score = Math.log10(.5 +  researchValue / numResearchProj / numResearcher);
-				logger.info(colony.getName() + " zone research: " + score);
+				if (numResearcher > 0 && numResearchProj > 0)
+					score = Math.log10(1 +  researchValue / 5 / numResearchProj / numResearcher);
+//				logger.info(colony.getName() + " research: " + score
+//						+ "  researchValue: " + researchValue
+//						+ "  numResearchProj: " + numResearchProj
+//						);
 				score = Math.max(.4, Math.min(-.4, score));
 				
-				growthRate += RandomUtil.getRandomDouble(-0.1 + score, 0.1 + score);
+				growthRate += RandomUtil.getRandomDouble(-0.01 + score, 0.011 + score);
 			}
 			else {
 				
-				growthRate += RandomUtil.getRandomDouble(-0.15, 0.25);
+				growthRate += RandomUtil.getRandomDouble(-0.01, 0.011);
 			}
 
 			
@@ -90,10 +94,13 @@ public class Zone implements Serializable, Temporal {
 				growthRate = 10;
 			else if (growthRate < -5)
 				growthRate = -5;
-		
-			area += growthRate;
+			
+			area = area * (1 + growthRate/100);
+			// Slightly adjust the growth rate after making the contribution to 
+			// the increase or decrease of the zone area
+			growthRate = growthRate *.9;
 		}
-		
+
 		return false;
 	}
 

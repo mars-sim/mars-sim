@@ -164,6 +164,15 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	}
 	
 	/**
+	 * Gets the research area growth rate.
+	 * 
+	 * @return
+	 */
+	public double getResearchAreaGrowthRate() {
+		return getResearchZone().getGrowthRate();
+	}	
+	
+	/**
 	 * Gets the development zone.
 	 * 
 	 * @return
@@ -181,6 +190,15 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 		return developmentZone.getArea();
 	}
 	
+	/**
+	 * Gets the development area growth rate.
+	 * 
+	 * @return
+	 */
+	public double getDevelopmentAreaGrowthRate() {
+		return getDevelopmentZone().getGrowthRate();
+	}
+
 	/**
 	 * Gets the organization.
 	 * 

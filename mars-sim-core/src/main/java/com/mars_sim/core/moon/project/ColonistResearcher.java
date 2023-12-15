@@ -131,7 +131,7 @@ public class ColonistResearcher extends Colonist implements Researcher, Serializ
 		if (pulse.isNewHalfSol()) {
 			// Update the experience once every half sol
 			experience = getTotalSkillExperience();
-			logger.info(colony.getName() + " " + name + " experience: " + Math.round(experience * 100.0)/100.0);
+			logger.info(colony.getName() + " - " + name + " exp: " + Math.round(experience * 100.0)/100.0);
 
 			double timeValue = pulse.getElapsed() / 100;
 			double expertiseValue = Math.log10(1 + experience) * activeness / (1 + num);
@@ -156,6 +156,10 @@ public class ColonistResearcher extends Colonist implements Researcher, Serializ
 
 	private double getResearchArea() {
 		return colony.getResearchArea();
+	}
+	
+	private double getResearchAreaGrowthRate() {
+		return colony.getResearchAreaGrowthRate();
 	}
 	
 	/**

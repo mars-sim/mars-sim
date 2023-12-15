@@ -127,6 +127,9 @@ public class CommanderWindow extends ToolWindow {
 	private Map<Colony, Double> researchAreaCaches = new HashMap<>();
 	private Map<Colony, Double> developmentAreaCaches = new HashMap<>();
 	
+	private Map<Colony, Double> researchAreaGrowthRateCaches = new HashMap<>();
+	private Map<Colony, Double> developmentAreaGrowthRateCaches = new HashMap<>();
+	
 	private Map<Colony, Double> totalAreaCaches = new HashMap<>();
 	private Map<Colony, Double> areaPerPersonCaches = new HashMap<>();
 	
@@ -531,16 +534,20 @@ public class CommanderWindow extends ToolWindow {
 				activenessDevelopmentLabels.put(c, activenessDevelopmentLabel);
 			
 				double researchAreaCache = c.getResearchArea();
+				double researchAreaGrowthRateCache = c.getResearchAreaGrowthRate();
 				researchAreaCaches.put(c, researchAreaCache);
+				researchAreaGrowthRateCaches.put(c, researchAreaGrowthRateCache);
 				String researchAreaCacheString = Math.round(researchAreaCache * 10.0)/10.0
-						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+						+ " (" + Math.round(researchAreaGrowthRateCache * 100.0)/100.0 + ")";
 				JLabel researchAreaLabel = rdGrid.addRow("Research Facility Area", researchAreaCacheString + "");
 				researchAreaLabels.put(c, researchAreaLabel);
 		
 				double developmentAreaCache = c.getDevelopmentArea();
+				double developmentAreaGrowthRateCache = c.getDevelopmentAreaGrowthRate();
 				developmentAreaCaches.put(c, developmentAreaCache);
+				developmentAreaGrowthRateCaches.put(c, developmentAreaGrowthRateCache);
 				String developmentAreaCacheString = Math.round(developmentAreaCache * 10.0)/10.0
-						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+						+ " (" + Math.round(developmentAreaGrowthRateCache * 100.0)/100.0 + ")";
 				JLabel developmentAreaLabel = rdGrid.addRow("Development Facility Area", developmentAreaCacheString + "");
 				developmentAreaLabels.put(c, developmentAreaLabel);
 			}	
@@ -639,18 +646,24 @@ public class CommanderWindow extends ToolWindow {
 				}
 				
 				double newResearchArea = c.getResearchArea();
-				if (researchAreaCaches.get(c) != newResearchArea) {
+				double newResearchAreaGrowthRateCache = c.getResearchAreaGrowthRate();
+				if (researchAreaCaches.get(c) != newResearchArea
+						|| researchAreaGrowthRateCaches.get(c) != newResearchAreaGrowthRateCache) {
 					researchAreaCaches.put(c, newResearchArea);
+					researchAreaGrowthRateCaches.put(c, newResearchAreaGrowthRateCache);
 					String researchAreaCacheString = Math.round(newResearchArea * 10.0)/10.0 
-							+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+							+ " (" + Math.round(newResearchAreaGrowthRateCache * 100.0)/100.0 + ")";
 					researchAreaLabels.get(c).setText(researchAreaCacheString);
 				}
 				
 				double newDevelopmentArea = c.getDevelopmentArea();
-				if (developmentAreaCaches.get(c) != newDevelopmentArea) {
+				double newDevelopmentAreaGrowthRateCache = c.getDevelopmentAreaGrowthRate();
+				if (developmentAreaCaches.get(c) != newDevelopmentArea
+						|| developmentAreaGrowthRateCaches.get(c) != newDevelopmentAreaGrowthRateCache) {
 					developmentAreaCaches.put(c, newDevelopmentArea);
+					developmentAreaGrowthRateCaches.put(c, newDevelopmentAreaGrowthRateCache);
 					String developmentAreaCacheString = Math.round(newDevelopmentArea * 10.0)/10.0 
-							+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+							+ " (" + Math.round(newDevelopmentAreaGrowthRateCache * 100.0)/100.0 + ")";
 					developmentAreaLabels.get(c).setText(developmentAreaCacheString);
 				}
 				
