@@ -47,7 +47,6 @@ import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.PersonAttributeManager;
 import com.mars_sim.core.person.ai.SkillManager;
-import com.mars_sim.core.person.ai.SkillOwner;
 import com.mars_sim.core.person.ai.fav.Favorite;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.fav.Preference;
@@ -71,15 +70,15 @@ import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.science.ResearcherInterface;
+import com.mars_sim.core.science.Researcher;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.ActivitySpot;
-import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
+import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.vehicle.Crewable;
@@ -93,7 +92,7 @@ import com.mars_sim.tools.util.RandomUtil;
  * The Person class represents a person on Mars. It keeps track of everything
  * related to that person and provides information about him/her.
  */
-public class Person extends Unit implements Worker, SkillOwner, Temporal, ResearcherInterface {
+public class Person extends Unit implements Worker, Temporal, Researcher {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

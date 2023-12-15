@@ -19,7 +19,7 @@ import com.mars_sim.core.authority.Organization;
 import com.mars_sim.core.logging.Loggable;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.moon.project.ResearchProject;
-import com.mars_sim.core.moon.project.Researcher;
+import com.mars_sim.core.moon.project.ColonistResearcher;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.mapdata.location.Coordinates;
@@ -88,11 +88,11 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	 * @param researcher
 	 * @return
 	 */
-	public ResearchProject getOneResearchProject(Researcher researcher) {
+	public ResearchProject getOneResearchProject(ColonistResearcher researcher) {
 		for (ResearchProject p: researchProjects) {
 			if (!p.getLead().equals(researcher)) {
-				Set<Researcher> participants = p.getParticipants();
-				for (Researcher r: participants) {
+				Set<ColonistResearcher> participants = p.getParticipants();
+				for (ColonistResearcher r: participants) {
 					if (!r.equals(researcher)) {
 						return p;
 					}

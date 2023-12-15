@@ -7,9 +7,9 @@
 
 package com.mars_sim.core.person.ai;
 
-import com.mars_sim.mapdata.location.Coordinates;
+import com.mars_sim.core.Entity;
 
-public interface SkillOwner {
+public interface SkillOwner extends Entity {
 
 	/**
 	 * Returns a reference to the Person's skill manager
@@ -19,21 +19,7 @@ public interface SkillOwner {
 	public SkillManager getSkillManager();
 
 	/**
-	 * Gets the workers name.
-	 * 
-	 * @return
-	 */
-	public String getName();
-
-	/**
-	 * Where the the Worker positioned on the Mars Surface?
-	 * 
-	 * @return
-	 */
-	public Coordinates getCoordinates();
-
-	/**
-	 * How physically efficient is this Worker.
+	 * Gets the performance rating (0..1) of the owner.
 	 * 
 	 * @return
 	 */

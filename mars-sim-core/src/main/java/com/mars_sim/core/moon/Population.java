@@ -15,7 +15,7 @@ import java.util.Set;
 
 import com.mars_sim.core.authority.Nation;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.moon.project.Researcher;
+import com.mars_sim.core.moon.project.ColonistResearcher;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.tools.util.RandomUtil;
@@ -66,7 +66,7 @@ public class Population implements Serializable, Temporal {
 	
 	public void init() {
 		for (int i = 0; i < numResearchers; i++) {
-			colonists.add(new Researcher("R" + i, colony));
+			colonists.add(new ColonistResearcher("R" + i, colony));
 		}
 	}
 	
@@ -166,7 +166,7 @@ public class Population implements Serializable, Temporal {
 		}
 		
 		for (Colonist c: colonists) {
-			if (c instanceof Researcher r) {
+			if (c instanceof ColonistResearcher r) {
 				r.timePassing(pulse);
 			}
 		}
@@ -182,7 +182,7 @@ public class Population implements Serializable, Temporal {
 		Nation nation = colony.getNation();
 		
 		if (nation == null) {
-			colonists.add(new Researcher("R" 
+			colonists.add(new ColonistResearcher("R" 
 					+ (int)numResearchers, colony));
 		}
 		else {
@@ -191,7 +191,7 @@ public class Population implements Serializable, Temporal {
 				colonists.add(colonist);
 			}
 			else {
-				colonists.add(new Researcher("R" 
+				colonists.add(new ColonistResearcher("R" 
 					+ (int)numResearchers, colony));
 			}
 		}
@@ -224,7 +224,7 @@ public class Population implements Serializable, Temporal {
 		else {
 			// Go back to one's nation pool
 			nation.addColonist(c);
-			((Researcher)c).setColony(null);	
+			((ColonistResearcher)c).setColony(null);	
 		}
 		
 		// Speed up the growth rate as a researcher has just been removed
@@ -236,10 +236,10 @@ public class Population implements Serializable, Temporal {
 	 * 
 	 * @return
 	 */
-	public Set<Researcher> getResearchers() {
-		Set<Researcher> set = new HashSet<>();
+	public Set<ColonistResearcher> getResearchers() {
+		Set<ColonistResearcher> set = new HashSet<>();
 		for (Colonist c: colonists) {
-			if (c instanceof Researcher r) {
+			if (c instanceof ColonistResearcher r) {
 				set.add(r);
 			}
 		}

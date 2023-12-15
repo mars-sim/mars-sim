@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * Researcher.java
+ * ColonistResearcher.java
  * @date 2022-10-05
  * @author Manny Kung
  */
@@ -20,7 +20,7 @@ import com.mars_sim.core.person.PersonBuilderImpl;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillOwner;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.science.ResearcherInterface;
+import com.mars_sim.core.science.Researcher;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.time.ClockPulse;
@@ -28,13 +28,13 @@ import com.mars_sim.core.time.Temporal;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.tools.util.RandomUtil;
 
-public class Researcher extends Colonist implements ResearcherInterface, Serializable, Temporal, SkillOwner {
+public class ColonistResearcher extends Colonist implements Researcher, Serializable, Temporal, SkillOwner {
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
 	/** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(Researcher.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(ColonistResearcher.class.getName());
 	
 	private int age;
 	
@@ -64,7 +64,7 @@ public class Researcher extends Colonist implements ResearcherInterface, Seriali
 	/** A set of research projects this researcher engage in. */
 	private Set<ResearchProject> researchProjects = new HashSet<>();
 	
-	public Researcher(String name, Colony colony) {
+	public ColonistResearcher(String name, Colony colony) {
 		super(name, colony);
 		this.name = name;
 		this.colony = colony;
@@ -331,7 +331,6 @@ public class Researcher extends Colonist implements ResearcherInterface, Seriali
 		return skillManager;
 	}
 
-	@Override
 	public Coordinates getCoordinates() {
 		if (colony != null) {
 			return colony.getCoordinates();

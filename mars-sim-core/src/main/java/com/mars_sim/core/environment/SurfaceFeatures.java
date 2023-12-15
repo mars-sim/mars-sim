@@ -102,7 +102,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		w.setSurfaceFeatures(this);
 		
 		terrainElevation = new TerrainElevation();
-		
 		mineralMap = new RandomMineralMap();
 		regioOfInterestLocations = ConcurrentHashMap.newKeySet(); 
 		areothermalMap = new AreothermalMap();
@@ -733,8 +732,14 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		regioOfInterestLocations = null;
 		areothermalMap.destroy();
 		areothermalMap = null;
-
+		
+		weather.destroy();
 		weather = null;
+		orbitInfo.destroy();
 		orbitInfo = null;
+		
+		terrainElevation.destroy();
+		terrainElevation = null;
+
 	}
 }

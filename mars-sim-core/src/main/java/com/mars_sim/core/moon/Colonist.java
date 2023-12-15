@@ -2,7 +2,9 @@ package com.mars_sim.core.moon;
 
 import java.io.Serializable;
 
-public class Colonist implements Serializable {
+import com.mars_sim.core.Entity;
+
+public class Colonist implements Serializable, Entity {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -19,6 +21,7 @@ public class Colonist implements Serializable {
 		this.colony = colony;
 	}
 	
+	@Override
 	public String getName() {
 		return name;
 	}

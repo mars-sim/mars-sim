@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * ResearcherInterface.java
+ * Researcher.java
  * @date 2022-10-05
  * @author Manny Kung
  */
@@ -9,7 +9,7 @@ package com.mars_sim.core.science;
 
 import java.util.Set;
 
-public interface ResearcherInterface {
+public interface Researcher {
 
 	/**
 	 * Sets the study that this Person is the lead on.
