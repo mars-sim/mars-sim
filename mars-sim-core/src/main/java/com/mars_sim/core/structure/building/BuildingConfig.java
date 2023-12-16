@@ -101,7 +101,8 @@ public class BuildingConfig {
 
 	private Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
 
-	private Set<String> buildingTypes = new HashSet<>(); 
+	private Set<String> buildingTypes = new HashSet<>();
+	private Set<FunctionType> activityFunctions  = new HashSet<>();
 	
 	/**
 	 * Constructor.
@@ -165,6 +166,11 @@ public class BuildingConfig {
 			String spotName = getDefaultSpotName(function);
 			Set<NamedPosition> spots = parseNamedPositions(element, ACTIVITY,
 													spotName, width, length);
+
+			// Record that this Function has activity spots
+			if (!spots.isEmpty()) {
+				activityFunctions.add(function);
+			}
 
 			// Get attributes as basic properties
 			Map<String, Object> props = new HashMap<>();
@@ -289,6 +295,7 @@ public class BuildingConfig {
 			case MANUFACTURE -> "Workbench";
 			case MEDICAL_CARE -> "Sickbay";
 			case RECREATION -> "Chair";
+			case RESEARCH -> "Bench";
 			case ROBOTIC_STATION -> "Charge Point";
 			default -> "Spot";
 		};
@@ -502,7 +509,6 @@ public class BuildingConfig {
 					i++;
 				}
 				result.add(new NamedPosition(name, point));
-				i++;
 			}
 		}
 		return result;
@@ -693,4 +699,12 @@ public class BuildingConfig {
 	public FunctionSpec getFunctionSpec(String type, FunctionType functionType) {
 		return getBuildingSpec(type).getFunctionSpec(functionType);
 	}
+
+	/**
+	 * Get the FunctionTypes that have ActivitySpots assigned
+	 * @return
+	 */
+    public Set<FunctionType> getActivitySpotFunctions() {
+        return activityFunctions;
+    }
 }

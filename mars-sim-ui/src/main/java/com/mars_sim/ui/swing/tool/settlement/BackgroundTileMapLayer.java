@@ -16,18 +16,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.ui.swing.ImageLoader;
 
 /**
  * A settlement map layer for displaying background tile images.
  * It handles translation, rotation, and scaling of the tiles.
  */
-public class BackgroundTileMapLayer
-implements SettlementMapLayer {
-
-	/** default logger. */
-//	May add back private static SimLogger logger = SimLogger.getLogger(BackgroundTileMapLayer.class.getName())
+public class BackgroundTileMapLayer implements SettlementMapLayer {
 
 	// Static members.
 	// This pointer prefix points to an image file in icons.properties
@@ -49,7 +44,7 @@ implements SettlementMapLayer {
 	}
 
 	@Override
-	public void displayLayer(Graphics2D g2d, Settlement settlement, Building building, double xPos, 
+	public void displayLayer(Graphics2D g2d, Settlement settlement, double xPos, 
 			double yPos, int mapWidth, int mapHeight, double rotation, double scale) {
 
 		// Save original graphics transforms.
@@ -193,21 +188,6 @@ implements SettlementMapLayer {
 			int xOffset = 0;
 			int yOffset = 0;
 			
-			// Warning: The purpose of the following code block is unknown
-			// It causes the texture of the background tile to shift undesirably with respect to the buildings
-			
-//			if ((w > MAX_BACKGROUND_DIMENSION) || (h > MAX_BACKGROUND_DIMENSION)) {
-//				float reductionW = (float) MAX_BACKGROUND_DIMENSION / (float) w;
-//				float reductionH = (float) MAX_BACKGROUND_DIMENSION / (float) h;
-//				float reduction = Math.min(reductionH, reductionW);
-//
-//				bufferWidth = (int) (w * reduction);
-//				bufferHeight = (int) (h * reduction);
-//
-//				xOffset = (w - bufferWidth) / -2;
-//				yOffset = (h - bufferHeight) / -2;
-//			}
-
 			BufferedImage tmpImage = new BufferedImage(bufferWidth, bufferHeight, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g2d = (Graphics2D) tmpImage.getGraphics();
 			g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -237,8 +217,6 @@ implements SettlementMapLayer {
 		}
 		else {
 			int id = settlement.getMapImageID();
-//			int count = settlementBackgroundMap.size() + 1;
-//			count = count % NUM_BACKGROUND_IMAGES;
 
 			String backgroundImageName = MAP_TILE_POINTER + id;
 			settlementBackgroundMap.put(settlement, backgroundImageName);

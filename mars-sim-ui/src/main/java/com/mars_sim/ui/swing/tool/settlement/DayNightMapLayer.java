@@ -10,23 +10,25 @@ package com.mars_sim.ui.swing.tool.settlement;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 
 /**
  * The DayNightMapLayer is a graphics layer to display twilight and night time shading of the settlement
  */
 public class DayNightMapLayer implements SettlementMapLayer {
    
-    private final int LIGHT_THRESHOLD = 196;
+    private static final int LIGHT_THRESHOLD = 196;
     
     private int opacity;
     
 	private SettlementMapPanel mapPanel;
+	private SurfaceFeatures surfaceFeatures;
 
     public DayNightMapLayer(SettlementMapPanel mapPanel) {
 		// Initialize data members.
 		this.mapPanel = mapPanel;
+		this.surfaceFeatures = mapPanel.getSettlementWindow().getDesktop().getSimulation().getSurfaceFeatures();
     }
 
     public int getOpacity() {
@@ -35,10 +37,8 @@ public class DayNightMapLayer implements SettlementMapLayer {
     
 	@Override
 	public void displayLayer(Graphics2D g2d, Settlement settlement,
-			Building building, double xPos, double yPos, int width,
+			double xPos, double yPos, int width,
 			int height, double rotation, double scale) {
-
-		// TODO: overlay a red/orange mask if having local dust storm
 
 		if (mapPanel.isDaylightTrackingOn()) {
 
@@ -52,7 +52,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
  
             if (sunlight < 0.85) { 
             	opacity = LIGHT_THRESHOLD - sunlightInt;
-	            g2d.setColor(new Color(5, 0, 0, opacity)); //(0, 0, 0, 196));
+	            g2d.setColor(new Color(5, 0, 0, opacity)); 
 	            g2d.fillRect(0, 0, width, height);
     
             }

@@ -14,7 +14,6 @@ import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 
 /**
  * A settlement map layer for displaying people.
@@ -42,7 +41,7 @@ public class PersonMapLayer extends WorkerMapLayer<Person> {
 	
 	@Override
 	public void displayLayer(
-		Graphics2D g2d, Settlement settlement, Building building,
+		Graphics2D g2d, Settlement settlement,
 		double xPos, double yPos, int mapWidth, int mapHeight,
 		double rotation, double scale
 	) {
