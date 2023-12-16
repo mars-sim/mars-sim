@@ -8,7 +8,6 @@ package com.mars_sim.ui.swing.tool.settlement;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
@@ -28,8 +27,6 @@ import com.mars_sim.core.structure.building.connection.Hatch;
 import com.mars_sim.core.structure.building.function.ActivitySpot;
 import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.mapdata.location.BoundedObject;
-import com.mars_sim.mapdata.location.LocalBoundedObject;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 
 /**
@@ -87,18 +84,10 @@ public class BuildingMapLayer extends AbstractMapLayer {
     }
 
     @Override
-    public void displayLayer(
-            Graphics2D g2d, Settlement settlement, double xPos,
-            double yPos, int mapWidth, int mapHeight, double rotation, double scale) {
+    public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
 
         // Save original graphics transforms.
-        AffineTransform saveTransform = g2d.getTransform();
-
-        // Translate map from settlement center point.
-        g2d.translate(mapWidth / 2D + (xPos * scale), mapHeight / 2D + (yPos * scale));
-
-        // Rotate map from North.
-        g2d.rotate(rotation, 0D - (xPos * scale), 0D - (yPos * scale));
+        AffineTransform saveTransform = viewpoint.prepareGraphics();
 
         if (settlement != null) {  
             boolean bldgLabels = mapPanel.isShowBuildingLabels();
@@ -106,37 +95,31 @@ public class BuildingMapLayer extends AbstractMapLayer {
 
             // Display svg images of all buildings in the entire settlement
             // Draw all buildings.
-            for(Building b: settlement.getBuildingManager().getBuildingSet()) {
-                drawBuilding(b, g2d, rotation, scale, bldgLabels, spotLabels);
+            var buildings = settlement.getBuildingManager().getBuildingSet();
+            for(Building b: buildings) {
+                drawBuilding(b, bldgLabels, viewpoint);
             }
 
             // Draw all building connectors.
-            drawBuildingConnectors(g2d, scale, settlement);
+            drawBuildingConnectors(settlement, viewpoint);
+
+            // Must draw spots last so they are on top of hatches
+            if (!spotLabels.isEmpty()) {
+                for(Building b: buildings) {
+                    drawSpots(b, spotLabels, viewpoint);
+                }
+            }
         }
         // Restore original graphic transforms.
-        g2d.setTransform(saveTransform);
-    }
-
-    public void drawOneBuilding(Building building, Graphics2D g2d) {
-
-        GraphicsNode svg = SVGMapUtil.getBuildingSVG(building.getBuildingType().toLowerCase());
-        if (svg != null) {
-            // Determine building pattern SVG image if available.
-            GraphicsNode patternSVG = SVGMapUtil.getBuildingPatternSVG(building.getBuildingType().toLowerCase());
-            LocalBoundedObject newPosition = new BoundedObject(0, 0, building.getWidth(),
-                                                                building.getLength(), building.getFacing());
-            drawStructure(g2d, 0, newPosition, svg, patternSVG, null);
-        }
+        viewpoint.graphics().setTransform(saveTransform);
     }
 
     /**
      * Draws a building on the map.
      * 
      * @param building the building.
-     * @param g2d the graphics context.
      */
-    private void drawBuilding(Building building, Graphics2D g2d, double rotation, double scale,
-                    boolean showLabel, Set<FunctionType> showSpots) {
+    private void drawBuilding(Building building, boolean showLabel, MapViewPoint viewpoint) {
 
     	// Check if it's drawing the mouse-picked building 
         Color selectedColor = (building.equals(mapPanel.getSelectedBuilding()) ? BLDG_SELECTED_COLOR : null);
@@ -146,42 +129,35 @@ public class BuildingMapLayer extends AbstractMapLayer {
         if (svg != null) {
             // Determine building pattern SVG image if available.
             GraphicsNode patternSVG = SVGMapUtil.getBuildingPatternSVG(building.getBuildingType().toLowerCase());
-
-            drawStructure(g2d, scale, building, svg, patternSVG, selectedColor);
-            if (!showSpots.isEmpty()) {
-                drawSpots(g2d, rotation, scale, building, showSpots);
-            }
+            drawStructure(building, svg, patternSVG, selectedColor, viewpoint);
         }
         else {
             // Otherwise draw colored rectangle for building.
-            drawRectangle(g2d, scale, building, BLDG_COLOR, selectedColor);
+            drawRectangle(building, BLDG_COLOR, selectedColor, viewpoint);
         }
 
         if (showLabel) {
             String[] words = building.getName().split(" ");
             ColorChoice frontColor = BUILDING_COLORS.getOrDefault(building.getCategory(), BUILDING_COLOR);
 
-            drawCenteredMultiLabel(g2d, words, LABEL_FONT, building.getPosition(),
-                frontColor, rotation, scale);
+            drawCenteredMultiLabel(words, LABEL_FONT, building.getPosition(),
+                                    frontColor,  viewpoint);
         }
     }
 
     /**
-     * Draw teh activity spots of a building
-     * @param g2d
-     * @param scale
+     * Draw the activity spots of a building
      * @param building
      * @param showSpots
      */
-    private void drawSpots(Graphics2D g2d, double rotation, double scale, Building building,
-                    Set<FunctionType> showSpots) {
+    private void drawSpots(Building building,Set<FunctionType> showSpots, MapViewPoint viewpoint) {
         for(Function f : building.getFunctions()) {
             if (showSpots.contains(f.getFunctionType())) {
                 for(ActivitySpot spot : f.getActivitySpots()) {
-                    drawOval(g2d, spot.getPos(), SPOT_COLOR, rotation, scale);
+                    drawOval(spot.getPos(), SPOT_COLOR, viewpoint);
                     
-                    drawRightLabel(g2d, false, spot.getName(), spot.getPos(), SPOT_COLOR,
-                            SPOT_FONT, 5f, 0f, rotation, scale);
+                    drawRightLabel(false, spot.getName(), spot.getPos(), SPOT_COLOR,
+                            SPOT_FONT, 5f, 0f, viewpoint);
                 }
             }
         }
@@ -193,12 +169,12 @@ public class BuildingMapLayer extends AbstractMapLayer {
      * @param g2d the graphics context.
      * @param settlement the settlement.
      */
-    private synchronized void drawBuildingConnectors(Graphics2D g2d, double scale, Settlement settlement) {
+    private synchronized void drawBuildingConnectors(Settlement settlement, MapViewPoint viewpoint) {
 
         for(BuildingConnector c : settlement
                     .getBuildingConnectorManager()
                     .getAllBuildingConnections()) {
-            drawBuildingConnector(c, g2d, scale);
+            drawBuildingConnector(c, viewpoint);
         }
     }
 
@@ -208,7 +184,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
      * @param connector the building connector.
      * @param g2d the graphics context.
      */
-    private void drawBuildingConnector(BuildingConnector connector, Graphics2D g2d, double scale) {
+    private void drawBuildingConnector(BuildingConnector connector, MapViewPoint viewpoint) {
 
         if (connector.isSplitConnection()) {
             Hatch hatch1 = connector.getHatch1();
@@ -225,43 +201,44 @@ public class BuildingMapLayer extends AbstractMapLayer {
             Point2D.Double rightHatch1Loc = LocalAreaUtil.getLocalRelativeLocation(hatch1.getWidth() / -2D, 0D, hatch1);
             splitAreaPath.lineTo(rightHatch1Loc.getX(), rightHatch1Loc.getY());
             splitAreaPath.closePath();
-            drawPathShape(splitAreaPath, g2d, scale, SPLIT_CONN_COLOR);
+            drawPathShape(splitAreaPath, SPLIT_CONN_COLOR, viewpoint);
 
-            drawHatch(g2d, scale, hatch1);
-            drawHatch(g2d, scale, hatch2);
+            drawHatch(hatch1, viewpoint);
+            drawHatch(hatch2, viewpoint);
         }
         else {
             Hatch hatch = connector.getHatch1();
-            drawHatch(g2d, scale, hatch);
+            drawHatch(hatch, viewpoint);
         }
     }
 
     /**
      * Draw a Hatch on the map
-     * @param g2d
-     * @param scale
      * @param hatch The Hatch to draw
      */
-    private void drawHatch(Graphics2D g2d, double scale, Hatch hatch) {
+    private void drawHatch(Hatch hatch, MapViewPoint viewpoint) {
         // Use SVG image for hatch if available.
         GraphicsNode hatchSVG = SVGMapUtil.getBuildingConnectorSVG(HATCH);
         if (hatchSVG != null) {
             // Draw hatch.
-            drawStructure(g2d, scale, hatch, hatchSVG, null, null);
+            drawStructure(hatch, hatchSVG, null, null, viewpoint);
         }
         else {
             // Otherwise draw colored rectangle for hatch.
-            drawRectangle(g2d, scale, hatch, CONN_COLOR, null);
+            drawRectangle(hatch, CONN_COLOR, null, viewpoint);
         }
     }
 
     /**
      * Draws a path shape on the map.
      * 
-     * @param g2d the graphics2D context.
+     * @param pathShape The shape to draw
      * @param color the color to display the path shape.
      */
-    private void drawPathShape(Path2D pathShape, Graphics2D g2d, double scale, Color color) {
+    private void drawPathShape(Path2D pathShape, Color color, MapViewPoint viewpoint) {
+
+        var g2d = viewpoint.graphics();
+        double scale = viewpoint.scale();
 
         // Save original graphics transforms.
         AffineTransform saveTransform = g2d.getTransform();

@@ -8,11 +8,9 @@ package com.mars_sim.ui.swing.tool.settlement;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.Iterator;
 
 import org.apache.batik.gvt.GraphicsNode;
 
@@ -52,31 +50,19 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 
 	@Override
-	public void displayLayer(Graphics2D g2d, Settlement settlement,
-			double xPos, double yPos, int mapWidth, int mapHeight,
-			double rotation, double scale) {
+	public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
 
 		// Save original graphics transforms.
-		AffineTransform saveTransform = g2d.getTransform();
-
-		// Get the map center point.
-		double mapCenterX = mapWidth / 2D;
-		double mapCenterY = mapHeight / 2D;
-
-		// Translate map from settlement center point.
-		g2d.translate(mapCenterX + (xPos * scale), mapCenterY + (yPos * scale));
-
-		// Rotate map from North.
-		g2d.rotate(rotation, 0D - (xPos * scale), 0D - (yPos * scale));
+		AffineTransform saveTransform = viewpoint.prepareGraphics();
 
 		// Draw all vehicles.
 		// Draw all parked vehicles at this settlement location
 		for(Vehicle v : CollectionUtils.getVehiclesInSettlementVicinity(settlement)) {
-			drawVehicle(v, g2d, rotation, scale, mapPanel.isShowVehicleLabels());
+			drawVehicle(v,mapPanel.isShowVehicleLabels(), viewpoint);
 		}
 
 		// Restore original graphic transforms.
-		g2d.setTransform(saveTransform);
+		viewpoint.graphics().setTransform(saveTransform);
 	}
 
 
@@ -84,41 +70,38 @@ public class VehicleMapLayer extends AbstractMapLayer {
 	 * Draws a vehicle on the map.
 	 * 
 	 * @param vehicle the vehicle.
-	 * @param g2d the graphics context.
 	 */
-	private void drawVehicle(Vehicle vehicle, Graphics2D g2d,
-							double rotation, double scale,
-							boolean showLabel) {
+	private void drawVehicle(Vehicle vehicle, boolean showLabel, MapViewPoint viewpoint) {
 
 		// Use SVG image for vehicle if available.
 		GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
 		if (svg != null) {
 			// Draw base SVG image for vehicle.
-			drawSVGVehicle(g2d, scale, vehicle, svg);
+			drawStructure(vehicle, svg, null, null, viewpoint);
 
 			// Draw overlay if the vehicle is being maintained or repaired.
 			if (isVehicleRepairOrMaintenance(vehicle)) {
-				drawSVGRepairMaint(g2d, scale, vehicle);
+				drawSVGRepairMaint(vehicle, svg, viewpoint);
 			}
 
 			// Draw overlay if the vehicle is being loaded or unloaded.
 			if (isVehicleLoading(vehicle)) {
-				drawSVGLoading(g2d, scale, vehicle);
+				drawSVGLoading(vehicle, svg, viewpoint);
 			}
 
 			// Draw attachment parts for light utility vehicle.
 			if (vehicle instanceof LightUtilityVehicle luv) {
-				drawSVGPartAttachments(g2d, scale, luv);
+				drawSVGPartAttachments(luv, svg, viewpoint);
 			}
 		}
 		else {
 			// Otherwise draw colored rectangle for vehicle.
-			drawRectangle(g2d, scale, vehicle, RECT_COLOR, null);
+			drawRectangle(vehicle, RECT_COLOR, null, viewpoint);
 		}
 
 		if (showLabel) {
-			drawCenteredLabel(g2d, vehicle.getName(), LABEL_FONT, vehicle.getPosition(),
-							VEHICLE_COLOR, 0, rotation, scale);
+			drawCenteredLabel(vehicle.getName(), LABEL_FONT, vehicle.getPosition(),
+							VEHICLE_COLOR, 0, viewpoint);
 		}
 	}
 
@@ -144,15 +127,13 @@ public class VehicleMapLayer extends AbstractMapLayer {
 	/**
 	 * Draws the SVG repair/maint overlay on the vehicle.
 	 * 
-	 * @param g2d the graphics context.
 	 * @param vehicle the vehicle.
 	 */
-	private void drawSVGRepairMaint(Graphics2D g2d, double scale, Vehicle vehicle) {
+	private void drawSVGRepairMaint(Vehicle vehicle, GraphicsNode vehicleSvg, MapViewPoint viewpoint) {
 		// Use SVG image for vehicle maintenance overlay if available.
 		GraphicsNode maintOverlaySvg = SVGMapUtil.getMaintenanceOverlaySVG(vehicle.getBaseImage());
-		GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
 		if ((maintOverlaySvg != null) && (vehicleSvg != null)) {
-			drawVehicleOverlay(g2d, scale, vehicle, vehicleSvg, maintOverlaySvg);
+			drawVehicleOverlay(vehicle, vehicleSvg, maintOverlaySvg, viewpoint);
 		}
 	}
 
@@ -178,47 +159,30 @@ public class VehicleMapLayer extends AbstractMapLayer {
 	/**
 	 * Draws the SVG loading/unloading overlay on the vehicle.
 	 * 
-	 * @param g2d the graphics context.
 	 * @param vehicle the vehicle.
 	 */
-	private void drawSVGLoading(Graphics2D g2d, double scale, Vehicle vehicle) {
+	private void drawSVGLoading(Vehicle vehicle, GraphicsNode vehicleSvg, MapViewPoint viewpoint) {
 
 		// Use SVG image for vehicle loading overlay if available.
 		GraphicsNode loadOverlaySvg = SVGMapUtil.getLoadingOverlaySVG(vehicle.getBaseImage());
-		GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
 		if ((loadOverlaySvg != null) && (vehicleSvg != null)) {
-			drawVehicleOverlay(g2d, scale, vehicle, vehicleSvg, loadOverlaySvg);
+			drawVehicleOverlay(vehicle, vehicleSvg, loadOverlaySvg, viewpoint);
 		}
-	}
-
-	/**
-	 * Draws a vehicle as a SVG image on the map.
-	 * 
-	 * @param g2d the graphics2D context.
-	 * @param scale Map scale
-	 * @param vehiclePlacement Vehicle location
-	 * @param svg the SVG graphics node.
-	 */
-	private void drawSVGVehicle(Graphics2D g2d, double scale, LocalBoundedObject vehiclePlacement, GraphicsNode svg) {
-		drawStructure(g2d, scale, vehiclePlacement, svg, null, null);
 	}
 
 	/**
 	 * Draws the parts attached to a light utility vehicle.
 	 * 
-	 * @param g2d the graphics context
 	 * @param vehicle the light utility vehicle.
 	 */
-	private void drawSVGPartAttachments(Graphics2D g2d, double scale, LightUtilityVehicle vehicle) {
-		Iterator<Part> i = vehicle.getPossibleAttachmentParts().iterator();
-		while (i.hasNext()) {
-			Part part = i.next();
+	private void drawSVGPartAttachments(LightUtilityVehicle vehicle, GraphicsNode vehicleSvg,
+										MapViewPoint viewpoint) {
+		for(Part part : vehicle.getPossibleAttachmentParts()) {
 			if (vehicle.getItemResourceStored(part.getID()) > 0) {
 				// Use SVG image for part if available.
 				GraphicsNode partSvg = SVGMapUtil.getAttachmentPartSVG(part.getName().toLowerCase());
-				GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
 				if ((partSvg != null) && (vehicleSvg != null)) {
-					drawVehicleOverlay(g2d, scale, vehicle, vehicleSvg, partSvg);
+					drawVehicleOverlay(vehicle, vehicleSvg, partSvg, viewpoint);
 				}
 			}
 		}
@@ -227,14 +191,13 @@ public class VehicleMapLayer extends AbstractMapLayer {
 	/**
 	 * Draws an overlay for a vehicle on the map.
 	 * 
-	 * @param g2d the graphics2D context.
-	 * @param scale Map scale
 	 * @param vehiclePlacement Vehicle position
 	 * @param vehicleSvg the vehicle SVG graphics node.
 	 * @param overlaySvg the overlay SVG graphics node.
 	 */
-	private void drawVehicleOverlay(Graphics2D g2d, double scale, LocalBoundedObject vehiclePlacement, GraphicsNode vehicleSvg, 
-			GraphicsNode overlaySvg) {
+	private void drawVehicleOverlay(LocalBoundedObject vehiclePlacement, GraphicsNode vehicleSvg, 
+			GraphicsNode overlaySvg, MapViewPoint viewpoint) {
+
 		double xLoc = vehiclePlacement.getXLocation();
 		double yLoc = vehiclePlacement.getYLocation();
 		double vehicleWidth = vehiclePlacement.getWidth();
@@ -242,6 +205,8 @@ public class VehicleMapLayer extends AbstractMapLayer {
 		double facing = vehiclePlacement.getFacing();
 
 		// Save original graphics transforms.
+		var g2d = viewpoint.graphics();
+		double scale = viewpoint.scale();
 		AffineTransform saveTransform = g2d.getTransform();
 
 		// Determine bounds.

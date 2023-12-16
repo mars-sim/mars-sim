@@ -53,18 +53,19 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 	 * @param g2d the graphics context.
 	 * @param pos Position to draw oval.
      * @param color Color choice
-     * @param rotation The current rotation
-     * @param scale Map scale
+     * @param viewpoint Map viewpoint to used for rendering
 	 */
-	protected void drawOval(Graphics2D g2d, LocalPosition pos, ColorChoice color,
-                            double rotation, double scale) {
-
+	protected void drawOval(LocalPosition pos, ColorChoice color,
+                            MapViewPoint viewpoint) {
+		
+		double scale = viewpoint.scale();
 		int size = (int)(Math.round(scale / 3.0));
 		size = Math.max(size, 1);
 				
 		double radius = size / 2.0;
 		
 		// Save original graphics transforms.
+		var g2d = viewpoint.graphics();
 		AffineTransform saveTransform = g2d.getTransform();
 
 		double translationX = -1.0 * pos.getX() * scale - radius;
@@ -73,7 +74,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		// Apply graphic transforms for label.
 		AffineTransform newTransform = new AffineTransform(saveTransform);
 		newTransform.translate(translationX, translationY);
-		newTransform.rotate(rotation * -1D, radius, radius);
+		newTransform.rotate(viewpoint.rotation() * -1D, radius, radius);
 		g2d.setTransform(newTransform);
 		
 		// Set circle color.
@@ -95,15 +96,15 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 	 * @param label the label string.
 	 * @param loc the location from center of settlement (meters).
 	 * @param labelColor the color of the label.
-	 * @param xOffset the X pixel offset from the center point.
-	 * @param yOffset the Y pixel offset from the center point.
-     * @param scale Map scale
+	 * @param viewpoint Map view point used for rendering
 	 */
-	protected void drawRightLabel(
-		Graphics2D g2d, boolean isSelected, String label, LocalPosition loc,
+	protected void drawRightLabel(boolean isSelected, String label, LocalPosition loc,
 		ColorChoice labelColor, Font labelFont, float xOffset, float yOffset,
-        double rotation, double scale) {
+        MapViewPoint viewpoint) {
 
+		double scale = viewpoint.scale();
+		double rotation = viewpoint.rotation();
+		var g2d = viewpoint.graphics();
 		float fontSizeIncrease = Math.round(scale / 2.5);
 		
 		// Save original graphics transforms.
@@ -121,8 +122,8 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		);
 
 		// Determine transform information.
-		double centerX = labelImage.getWidth() / 2;
-		double centerY = labelImage.getHeight() / 2;
+		double centerX = labelImage.getWidth() / 2D;
+		double centerY = labelImage.getHeight() / 2D;
 		double translationX = (-1 * loc.getX() * scale) - centerX;
 		double translationY = (-1 * loc.getY() * scale) - centerY;
 
@@ -172,10 +173,11 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 	 * @param loc the location from center of settlement (meters).
 	 * @param labelColor the color of the label.
 	 */
-	protected void drawCenteredLabel(
-		Graphics2D g2d, String label, Font labelFont, LocalPosition loc,
-		ColorChoice labelColor, float yOffset,
-        double rotation, double scale) {
+	protected void drawCenteredLabel(String label, Font labelFont, LocalPosition loc,
+		ColorChoice labelColor, float yOffset, MapViewPoint viewpoint) {
+
+		double scale = viewpoint.scale();
+		var g2d = viewpoint.graphics();
 
 		float fontSize = Math.round(scale * 1.1);
 		float size = (float) Math.max(fontSize / 30.0, 1.2);
@@ -202,7 +204,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		// Apply graphic transforms for label.
 		AffineTransform newTransform = new AffineTransform(saveTransform);
 		newTransform.translate(translationX, translationY);
-		newTransform.rotate(rotation * -1D, centerX, centerY);
+		newTransform.rotate(viewpoint.rotation() * -1D, centerX, centerY);
 		g2d.setTransform(newTransform);
     
 		// Draw image label with yOffset
@@ -216,14 +218,12 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
     /**
 	 * Draws the label for a structure over multiple lines.
 	 * 
-	 * @param g2d
 	 * @param words
 	 * @param position
 	 * @param frontColor
 	 */
-	protected void drawCenteredMultiLabel(Graphics2D g2d, String[] words, Font labelFont,
-                LocalPosition position,
-				ColorChoice frontColor, double rotation, double scale) {
+	protected void drawCenteredMultiLabel(String[] words, Font labelFont,
+                LocalPosition position, ColorChoice frontColor, MapViewPoint viewpoint) {
 		int s = words.length;
 
         // If last words is a number then collapse it
@@ -233,12 +233,12 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
         }
 
         float rowOffset = s/2f;
-        int rowSize = (int)(scale / 1.5f);
+        int rowSize = (int)(viewpoint.scale() / 1.5f);
 
 		// Split up the name into multiple lines
 		for (int j = 0; j < s; j++) {
 			int y = (int)((j - rowOffset) * rowSize);
-			drawCenteredLabel(g2d, words[j], labelFont, position, frontColor, y, rotation, scale);
+			drawCenteredLabel(words[j], labelFont, position, frontColor, y, viewpoint);
 		}
 	}
 
@@ -442,14 +442,17 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 	/**
      * Draws a structure using SVG on the map.
      * 
-     * @param scale Scale
      * @param placement Placement of structure
      * @param svg the SVG graphics node.
      * @param patternSVG the pattern SVG graphics node (null if no pattern).
 	 * @param selectedColor the color to draw as selected
      */
-    protected void drawStructure(Graphics2D g2d, double scale, LocalBoundedObject placement,
-            GraphicsNode svg, GraphicsNode patternSVG, Color selectedColor) {
+    protected void drawStructure(LocalBoundedObject placement, GraphicsNode svg,
+								GraphicsNode patternSVG, Color selectedColor,
+								MapViewPoint viewpoint) {
+		
+		var g2d = viewpoint.graphics();
+		double scale = viewpoint.scale();
 
         double xLoc = placement.getXLocation();
         double yLoc = placement.getYLocation();
@@ -512,13 +515,16 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 	/**
      * Draws a rectangle on the map.
      * 
-     * @param scale Scale
      * @param placement Placement of structure
-     * @param color the color to display the rectangle if no SVG image.
+     * @param color the color to display the rectangle.
+	 * @param selectedColor If not null then the highlight color
+
      */
-    protected void drawRectangle(
-            Graphics2D g2d, double scale, LocalBoundedObject placement,
-            Color color, Color selectedColor) {
+    protected void drawRectangle(LocalBoundedObject placement,
+            Color color, Color selectedColor, MapViewPoint viewpoint) {
+
+		var g2d = viewpoint.graphics();
+		double scale = viewpoint.scale();
 
         double width = placement.getWidth();
         double length = placement.getLength();

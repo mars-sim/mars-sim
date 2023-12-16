@@ -8,7 +8,6 @@ package com.mars_sim.ui.swing.tool.settlement;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
 import org.apache.batik.gvt.GraphicsNode;
@@ -45,41 +44,28 @@ public class ConstructionMapLayer extends AbstractMapLayer {
     }
 
     @Override
-    public void displayLayer(
-            Graphics2D g2d, Settlement settlement, double xPos,
-            double yPos, int mapWidth, int mapHeight, double rotation, double scale) {
+    public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
 
         // Save original graphics transforms.
-        AffineTransform saveTransform = g2d.getTransform();
+        AffineTransform saveTransform = viewpoint.prepareGraphics();
 
-        // Translate map from settlement center point.
-        g2d.translate(mapWidth / 2D + (xPos * scale), mapHeight / 2D + (yPos * scale));
-
-        // Rotate map from North.
-        g2d.rotate(rotation, 0D - (xPos * scale), 0D - (yPos * scale));
-
-        if (settlement != null) {  
-
-            // Draw all construction sites.
-            boolean constLabels = mapPanel.isShowConstructionLabels();
-            for(ConstructionSite c : settlement.getConstructionManager()
-                                    .getConstructionSites()) {
-                drawConstructionSite(c, g2d, rotation, scale, constLabels);
-            }
+        // Draw all construction sites.
+        boolean constLabels = mapPanel.isShowConstructionLabels();
+        for(ConstructionSite c : settlement.getConstructionManager()
+                                .getConstructionSites()) {
+            drawConstructionSite(c, constLabels, viewpoint);
         }
 
 	    // Restore original graphic transforms.
-	    g2d.setTransform(saveTransform);
+	    viewpoint.graphics().setTransform(saveTransform);
     }
 
     /**
      * Draws a construction site on the map.
      * 
      * @param site the construction site.
-     * @param g2d the graphics context.
      */
-    private void drawConstructionSite(ConstructionSite site, Graphics2D g2d, double rotation, double scale,
-                    boolean showLabel) {
+    private void drawConstructionSite(ConstructionSite site, boolean showLabel, MapViewPoint viewpoint) {
         // Use SVG image for construction site if available.
         GraphicsNode svg = null;
         ConstructionStage stage = site.getCurrentConstructionStage();
@@ -95,18 +81,18 @@ public class ConstructionMapLayer extends AbstractMapLayer {
             GraphicsNode patternSVG = SVGMapUtil
                     .getConstructionSitePatternSVG(stageName);
 
-            drawStructure(g2d, scale, site, svg, patternSVG, selectedColor);
+            drawStructure(site, svg, patternSVG, selectedColor, viewpoint);
         }
         else {
-            drawRectangle(g2d, scale, site, CONST_COLOR, selectedColor);
+            drawRectangle(site, CONST_COLOR, selectedColor, viewpoint);
         }
 
         
         if (showLabel) {
             String[] words = getConstructionLabel(site).split(" ");
 
-            drawCenteredMultiLabel(g2d, words, LABEL_FONT, site.getPosition(),
-                CONSTRUCTION_COLOR, rotation, scale);
+            drawCenteredMultiLabel(words, LABEL_FONT, site.getPosition(),
+                                    CONSTRUCTION_COLOR, viewpoint);
         }
     }
 

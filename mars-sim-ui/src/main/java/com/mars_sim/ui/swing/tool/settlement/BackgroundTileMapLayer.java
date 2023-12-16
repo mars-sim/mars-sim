@@ -44,11 +44,16 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 	}
 
 	@Override
-	public void displayLayer(Graphics2D g2d, Settlement settlement, double xPos, 
-			double yPos, int mapWidth, int mapHeight, double rotation, double scale) {
+	public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
 
 		// Save original graphics transforms.
+		var g2d = viewpoint.graphics();
 		AffineTransform saveTransform = g2d.getTransform();
+
+		double scale = viewpoint.scale();
+		int mapHeight = viewpoint.mapHeight();
+		int mapWidth = viewpoint.mapWidth();
+		double rotation = viewpoint.rotation();
 
 		// Clear background tile image if settlement has changed.
 		if (settlement != null && !settlement.equals(currentSettlement)) {
@@ -90,10 +95,10 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 
 		if (backgroundTileImage != null) {
 
-			int offsetX = (int) Math.round(xPos * scale);
+			int offsetX = (int) Math.round(viewpoint.xPos() * scale);
 			int tileWidth = backgroundTileImage.getWidth(mapPanel);
 			int bufferX = (int) Math.round(diagonal - mapWidth);
-			int tileCenterOffsetX = (int) Math.round((mapWidth / 2) % tileWidth - 1.5F * tileWidth);
+			int tileCenterOffsetX = (int) Math.round((mapWidth / 2D) % tileWidth - 1.5F * tileWidth);
 
 			// Calculate starting X position for drawing tile.
 			int startX = tileCenterOffsetX;
@@ -115,10 +120,10 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 
 			for (int x = startX; x < endX; x+= tileWidth) {
 
-				int offsetY = (int) Math.round(yPos * scale);
+				int offsetY = (int) Math.round(viewpoint.yPos() * scale);
 				int tileHeight = backgroundTileImage.getHeight(mapPanel);
 				int bufferY = (int) Math.round(diagonal - mapHeight);
-				int tileCenterOffsetY = (int) Math.round((mapHeight / 2) % tileHeight - 1.5F * tileHeight);
+				int tileCenterOffsetY = (int) Math.round((mapHeight / 2D) % tileHeight - 1.5F * tileHeight);
 
 				// Calculate starting Y position for drawing tile.
 				int startY = tileCenterOffsetY;

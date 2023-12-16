@@ -7,7 +7,6 @@
 package com.mars_sim.ui.swing.tool.settlement;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.util.Collection;
 
 import com.mars_sim.core.CollectionUtils;
@@ -39,16 +38,11 @@ public class PersonMapLayer extends WorkerMapLayer<Person> {
 	}
 	
 	@Override
-	public void displayLayer(
-		Graphics2D g2d, Settlement settlement,
-		double xPos, double yPos, int mapWidth, int mapHeight,
-		double rotation, double scale
-	) {
+	public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
 		Collection<Person> people = CollectionUtils.getPeopleInSettlementVicinity(settlement);		
 		Person selectedPerson = mapPanel.getSelectedPerson();
 
-		drawWorkers(people, selectedPerson, mapPanel.isShowPersonLabels(),
-					g2d, xPos, yPos, mapWidth, mapHeight, rotation, scale);
+		drawWorkers(people, selectedPerson, mapPanel.isShowPersonLabels(), viewpoint);
 	}
 
 	/**
@@ -70,6 +64,7 @@ public class PersonMapLayer extends WorkerMapLayer<Person> {
 
 	@Override
 	public void destroy() {
+		super.destroy();
 		mapPanel = null;
 	}
 }

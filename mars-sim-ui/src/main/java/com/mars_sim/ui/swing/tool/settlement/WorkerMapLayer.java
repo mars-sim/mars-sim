@@ -7,7 +7,6 @@
 package com.mars_sim.ui.swing.tool.settlement;
 
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.util.Collection;
 
@@ -30,53 +29,41 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
      * @param workers Workers to draw
      * @param selected The selected Worker
      * @param showLabels Show the labels
-	 * @param g2d the graphics context.
+	 * @param viewpoint Map viewpoint for rendering
 	 */
 	protected void drawWorkers(Collection<T> workers, T selected, boolean showLabels,
-                            Graphics2D g2d,
-                            double xPos, double yPos, int mapWidth, int mapHeight,
-                            double rotation, double scale) {
+                                MapViewPoint viewpoint) {
                                 
         // Save original graphics transforms.
-        AffineTransform saveTransform = g2d.getTransform();
-
-        // Get the map center point.
-        double mapCenterX = mapWidth / 2D;
-        double mapCenterY = mapHeight / 2D;
-
-        // Translate map from settlement center point.
-        g2d.translate(mapCenterX + (xPos * scale), mapCenterY + (yPos * scale));
-
-        // Rotate map from North.
-        g2d.rotate(rotation, 0D - (xPos * scale), 0D - (yPos * scale));
+        AffineTransform saveTransform = viewpoint.prepareGraphics();
 
 
 		// Draw all workers except selected person.
 		for(T w : workers) {
 			if (!w.equals(selected)) {
-				drawUnselectedWorker(g2d, w, showLabels, rotation, scale);
+				drawUnselectedWorker(w, showLabels, viewpoint);
 			}
 		}
 
 		// Draw selected person.
 		if (workers.contains(selected)) {
-            drawSelectedWorker(g2d, selected, rotation, scale);
+            drawSelectedWorker(selected, viewpoint);
 		}
 
         // Restore original graphic transforms.
-        g2d.setTransform(saveTransform);
+        viewpoint.graphics().setTransform(saveTransform);
 	}
 
-    private void drawUnselectedWorker(Graphics2D g2d, T w, boolean showLabels, double rotation, double scale) {
+    private void drawUnselectedWorker(T w, boolean showLabels, MapViewPoint viewpoint) {
         ColorChoice color = getColor(w, false);
         LocalPosition pos = w.getPosition();
 
-        drawOval(g2d, pos, color, rotation, scale);
+        drawOval(pos, color, viewpoint);
 
         if (showLabels) {
             // Draw label
-            drawRightLabel(g2d, false, w.getName(), pos, color,
-                        NAME_FONT, LABEL_XOFFSET, 0, rotation, scale);
+            drawRightLabel(false, w.getName(), pos, color,
+                        NAME_FONT, LABEL_XOFFSET, 0, viewpoint);
         }
     }
 
@@ -85,39 +72,35 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
      * 
      * @param g2d
      * @param w
-     * @param rotation
-     * @param scale
      */
-    private void drawSelectedWorker(Graphics2D g2d, T w, double rotation, double scale) {
+    private void drawSelectedWorker(T w, MapViewPoint viewpoint) {
         ColorChoice color = getColor(w, true);
 
         LocalPosition pos = w.getPosition();
         
-        drawOval(g2d, pos, color, rotation, scale);
+        drawOval(pos, color, viewpoint);
 
         // Draw label
-        drawRightLabel(g2d, true, w.getName(), pos, color,
-                    NAME_FONT, LABEL_XOFFSET, 0, rotation, scale);
+        drawRightLabel(true, w.getName(), pos, color,
+                    NAME_FONT, LABEL_XOFFSET, 0, viewpoint);
             
-        float yoffset = (float)((33 + scale) / 3);
+        float yoffset = (float)((33 + viewpoint.scale()) / 3);
 
         // Draw task.
         String taskDesc = w.getTaskDescription();
         if (!taskDesc.equals("")) {
             String taskString = "- " + taskDesc; 
 
-            drawRightLabel(
-                g2d, true, taskString, w.getPosition(), color,
-                DETAILS_FONT, LABEL_XOFFSET, yoffset, rotation, scale);
+            drawRightLabel(true, taskString, w.getPosition(), color,
+                DETAILS_FONT, LABEL_XOFFSET, yoffset, viewpoint);
         }
             
         // Draw mission.
         Mission mission = w.getMission();
         if (mission != null) {
             String missionString = "-- " + mission.getName(); 
-            drawRightLabel(
-                g2d, true, missionString, w.getPosition(), color,
-                DETAILS_FONT, LABEL_XOFFSET, 2f * yoffset, rotation, scale);
+            drawRightLabel(true, missionString, w.getPosition(), color,
+                DETAILS_FONT, LABEL_XOFFSET, 2f * yoffset, viewpoint);
         }
     }
 

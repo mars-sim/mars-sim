@@ -1114,8 +1114,9 @@ public class SettlementMapPanel extends JPanel {
 			g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
 			// Display all map layers.
+			var viewpoint = new MapViewPoint(g2d, xPos, yPos, getWidth(), getHeight(), rotation, scale);
 			for(SettlementMapLayer layer : mapLayers) {
-				layer.displayLayer(g2d, settlement, xPos, yPos, getWidth(), getHeight(), rotation, scale);
+				layer.displayLayer(settlement, viewpoint);
 			}
 		}
 	}
