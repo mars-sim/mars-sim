@@ -180,8 +180,8 @@ public class BuildingMapLayer extends AbstractMapLayer {
                 for(ActivitySpot spot : f.getActivitySpots()) {
                     drawOval(g2d, spot.getPos(), SPOT_COLOR, rotation, scale);
                     
-                    drawRightLabel(g2d, spot.getName(), spot.getPos(), SPOT_COLOR,
-                            SPOT_FONT, 5, 0, rotation, scale);
+                    drawRightLabel(g2d, false, spot.getName(), spot.getPos(), SPOT_COLOR,
+                            SPOT_FONT, 5f, 0f, rotation, scale);
                 }
             }
         }

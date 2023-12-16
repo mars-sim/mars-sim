@@ -105,7 +105,6 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
         double rotation, double scale) {
 
 		float fontSizeIncrease = Math.round(scale / 2.5);
-//		float size = (float)(Math.min(labelFont.getSize() * scale / 100.0, 1.1));
 		
 		// Save original graphics transforms.
 		AffineTransform saveTransform = g2d.getTransform();
@@ -139,20 +138,17 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		
 		if (isSelected) {
 			// Draw a white background label
-	        g2d.setColor(Color.gray.brighter().brighter().brighter());//.darker().darker().darker());
+	        g2d.setColor(Color.gray.brighter().brighter().brighter());
 
-	        int x = widthOffset; // (int)Math.round(widthOffset * .975);
+	        int x = widthOffset; 
 	        int y = heightOffset;
 	       	int w = (int)Math.round(centerX * 2.025);
 	       	int h = (int)Math.round(centerY * 2.2);
-	        
-//	    	 g2d.fillRect(x, y, w, h);  
-	       	
+	        	       	
 	        int thickness = 2;
 	
-//	        // Draw a frame rect white background label
+	        // Draw a frame rect white background label
 	        g2d.fill3DRect(x, y, w, h, true);
-//	        g2d.fill3DRect(x, y, w, h, false);
 	        for (int i = 1; i <= thickness; i++)
 	            g2d.draw3DRect(x - i, y - i, w + 2 * i - 1, h + 2 * i - 1, true);
 	        
