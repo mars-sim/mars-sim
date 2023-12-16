@@ -52,8 +52,8 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
     private static final Logger logger = Logger.getLogger(MarsTerminal.class.getName());
 
 	/** Icon image filename for frame */
-    private final String ICON_IMAGE = "/icons/lander_hab64.png";
-	private final String MARS_SIM =
+    private static final String ICON_IMAGE = "/icons/lander_hab64.png";
+	private static final String MARS_SIM =
 			  "      Mars Simulation Project\n"
     		+ "                   "
 			+ Simulation.VERSION
@@ -206,7 +206,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 
         setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
-		ImageIcon icon = new ImageIcon(MarsTerminal.class.getResource(ICON_IMAGE));
+		ImageIcon icon = new ImageIcon(getClass().getResource(ICON_IMAGE));
 		frame.setIconImage(iconToImage(icon));
 
         JMenuBar menuBar = new JMenuBar();

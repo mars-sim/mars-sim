@@ -1436,7 +1436,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			Building currentBuilding = BuildingManager.getBuilding(robot);
 
 			FunctionType functionType = FunctionType.ROBOTIC_STATION;
-			
+		
 			if (currentBuilding != null && currentBuilding.hasFunction(functionType)) {
 				canWalk = walkToActivitySpotInBuilding(currentBuilding, functionType, allowFail);
 			}
@@ -1455,10 +1455,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					}
 				}
 			}
-			
-//			if (canWalk) {
-//				BuildingManager.addRobotToActivitySpot(robot, currentBuilding, functionType);
-//			}
 		}
 		
 		return canWalk;
@@ -1478,7 +1474,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		LocalPosition myLoc = worker.getPosition();
 
 		if (myLoc.equals(sLoc)) {
-			logger.info(worker, 10_000L, "Already at " + sLoc + ".");
+//			logger.info(worker, 10_000L, "Already at " + sLoc + ".");
 			return true;
 		}
 		

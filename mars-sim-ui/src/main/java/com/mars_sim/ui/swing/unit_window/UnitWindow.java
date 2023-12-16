@@ -177,6 +177,8 @@ public abstract class UnitWindow extends ModalInternalFrame
 	 */
 	protected void addTabIconPanels() {
 		tabPanels.forEach(panel -> {
+			// Note: if adding panel.getTabTitle() as the first param, it would take up 
+			// too much space on the left for displaying the name of each tab
 			tabPane.addTab(null, panel.getTabIcon(), panel, panel.getTabToolTip());
 		});
 	}

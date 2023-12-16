@@ -134,7 +134,7 @@
    
     <resupply>
         <resupply-mission name="Food Delivery" manifest-name="Food Resupply 1"
-            first-arrival-time="6"
+            first-arrival-time="40"
             frequency-sols="80" /> 
         <resupply-mission name="Phase 1 Delivery" manifest-name="Resupply for Phase 1"
             first-arrival-time="668"/>

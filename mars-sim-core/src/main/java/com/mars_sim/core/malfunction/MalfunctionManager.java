@@ -862,12 +862,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 			for (Malfunction malfunction : malfunctions) {
 				if (!malfunction.isFixed()) {
 				
-					if (entity instanceof Building building) {
-						if (building.isInhabitable()) {
+					if (entity instanceof Building building
+						 && building.isInhabitable()) {
 							// If this entity is a building and it has no life support,
 							// there is no need to look at life support leaking
 							return;
-						}
 					}
 					
 					Map<String, Double> effects = malfunction.getLifeSupportEffects();
@@ -887,8 +886,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 				oxygenFlowModifier += tempOxygenFlowModifier * time ;
 				if (oxygenFlowModifier < 0)
 					oxygenFlowModifier = 0;
-				logger.log(entity, Level.WARNING, 20_000, "Oxygen flow restricted to "
+				if (oxygenFlowModifier < 100) {
+					logger.log(entity, Level.WARNING, 20_000, "Oxygen flow restricted to "
 								+ Math.round(oxygenFlowModifier * 10.0)/10.0 + " % capacity.");
+				}
 			}
 		}
 	}

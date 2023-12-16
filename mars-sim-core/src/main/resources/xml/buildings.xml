@@ -266,7 +266,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-3.17" yloc="-1.08" />
 				</activity>
 				<guest>
-					<activity-spot xloc="0" yloc="0" />
+					<activity-spot xloc="-1.97" yloc="1.83" />
 				</guest>
 			</living-accommodations>
 
@@ -1537,14 +1537,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="2.2" yloc="1.8" />
 					<activity-spot xloc="2.2" yloc=".4" />
 					<activity-spot xloc="2.2" yloc="-.6" />
-					<activity-spot xloc="2.2" yloc="-2.0" />
-					
+					<activity-spot xloc="2.2" yloc="-2.0" />			
 					<activity-spot xloc="2.2" yloc="-3.4" />
+					
 					<activity-spot xloc="-2.2" yloc="3.2" />
 					<activity-spot xloc="-2.2" yloc="1.8" />
 					<activity-spot xloc="-2.2" yloc=".4" />
 					<activity-spot xloc="-2.2" yloc="-.6" />
-					
 					<activity-spot xloc="-2.2" yloc="-2.0" />
 					<activity-spot xloc="-2.2" yloc="-3.4" />
 				</activity>

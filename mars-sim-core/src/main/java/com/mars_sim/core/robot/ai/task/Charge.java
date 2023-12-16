@@ -14,6 +14,7 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.SystemCondition;
 import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.RoboticStation;
 import com.mars_sim.core.time.MarsTime;
@@ -39,17 +40,20 @@ public class Charge extends Task {
 	/** Task name for robot */
 	public static final String NAME = Msg.getString("Task.description.charge"); //$NON-NLS-1$
 	public static final String CHARGING_AT = "Charging at ";
+	public static final String WIRELESS_CHARGING_AT = "Wireless Charging at ";
 	public static final String END_CHARGING = "Charging Ended";
 	public static final String NO_STATION = "No Station Available";
 	 
 	/** Task phases for robot. */
 	private static final TaskPhase CHARGING = new TaskPhase(Msg.getString("Task.phase.charging")); //$NON-NLS-1$
 	
+	private boolean isWirelessCharge = false;
+	
 	public Charge(Robot robot, Building buildingStation) {
 		super(NAME, robot, false, false, 0, 50D);
 	
 		// NOTE: May offer directional charging in future
-    	
+		
 		boolean canWalk = false;
 		
 		// Future: robot should first "reserve" a spot before going there
@@ -60,41 +64,34 @@ public class Charge extends Task {
 		
 		if (buildingStation == null) {
 			setDescriptionDone(NO_STATION);
-			logger.severe(robot, 30_000L, "Unable to find a robotic station. Current building: " 
-					+ robot.getBuildingLocation() + ".");
-
-			// Try it again
-			buildingStation = findStation(robot);
-			if (buildingStation == null) {
-				logger.severe(robot, 30_000L, "Unable to find a robotic station. Current building: " 
-						+ robot.getBuildingLocation() + ".");
-
-				endTask();
-				return;
-			}
-			else {
-				setDescription(NAME);
-			}
 		}
 		
+		if (buildingStation != null) {
+			
 		RoboticStation station = buildingStation.getRoboticStation();
-		if (station != null) {
-			
-			logger.info(robot, 30_000L, "Walking to " + buildingStation + ".");
-			
-			canWalk = walkToRoboticStation(robot, false);
+		
+			if (station != null) {
+				
+				setDescription(NAME);
+	//			logger.info(robot, 30_000L, "Walking to " + buildingStation + ".");
+				
+				canWalk = walkToRoboticStation(robot, false);
+			}
 		}
 		
 		if (!canWalk) {
-			logger.severe(robot, 30_000L, "Unable to walk to robotic station in " 
+			// Future: at this point. May switch to wireless charging that would be slower
+			
+			isWirelessCharge = true;
+			
+			logger.info(robot, 30_000L, "Switching to wireless charging. "
+					+ "Unable to find a robotic station. Current building: " 
 					+ robot.getBuildingLocation() + ".");
 		}
-			
-		else {
-			// Initialize phase
-			addPhase(CHARGING);
-			setPhase(CHARGING);
-		}
+
+		// Initialize phase
+		addPhase(CHARGING);
+		setPhase(CHARGING);
 	}
 
 	@Override
@@ -166,31 +163,74 @@ public class Charge extends Task {
 			// Switch to charging
 			sc.setCharging(true);
 			
-			RoboticStation station = robot.getStation();
+			if (isWirelessCharge) {
+				
+				setDescription(WIRELESS_CHARGING_AT + Math.round(batteryLevel * 10.0)/10.0 + "%");
+
+				// Look for a station that offers wireless charging
+				RoboticStation station = null;
+				
+				Building building = robot.getBuildingLocation();
+				
+				if (building != null) {
+					
+					station = building.getRoboticStation();
+					
+					if (station == null) {
+						Set<Building> functionBuildings = robot.getAssociatedSettlement()
+								.getBuildingManager().getBuildingSet(FunctionType.ROBOTIC_STATION);
+					
+						building = RandomUtil.getARandSet(functionBuildings);
+						
+						station = building.getRoboticStation();
+						
+						if (station == null) {
+							logger.severe(robot, 30_000L, "Unable to find a robotic station with wireless charging. "
+									+ "Current building: " + robot.getBuildingLocation() + ".");
+							endTask();
+							return 0;
+						}
+					}
+				
+					double hrs = time * MarsTime.HOURS_PER_MILLISOL;
 		
-			if (station != null) {
-				
-				setDescription(CHARGING_AT + Math.round(batteryLevel * 10.0)/10.0 + "%");
-				
-				double hrs = time * MarsTime.HOURS_PER_MILLISOL;
-	
-				double energy = sc.deliverEnergy(RoboticStation.CHARGE_RATE * hrs);
-				
-				// Record the power spent at the robotic station
-				station.setPowerLoad(energy/hrs);
-	
-				// Reset the duration
-				setDuration(LEVEL_UPPER_LIMIT - batteryLevel);
+					double energy = sc.deliverEnergy(RoboticStation.WIRELESS_CHARGE_RATE * hrs);
+					
+					// Record the power spent at the robotic station
+					station.setPowerLoad(energy/hrs);
+		
+					// Reset the duration
+					setDuration(LEVEL_UPPER_LIMIT - batteryLevel);
+				}
 			}
+			
 			else {
-				setDescriptionDone(END_CHARGING);
-				
-				setDuration(0);
-				
-				// End charging
-//				endTask();
-				
-				return time;
+				RoboticStation station = robot.getStation();
+			
+				if (station != null) {
+					
+					setDescription(CHARGING_AT + Math.round(batteryLevel * 10.0)/10.0 + "%");
+					
+					double hrs = time * MarsTime.HOURS_PER_MILLISOL;
+		
+					double energy = sc.deliverEnergy(RoboticStation.CHARGE_RATE * hrs);
+					
+					// Record the power spent at the robotic station
+					station.setPowerLoad(energy/hrs);
+		
+					// Reset the duration
+					setDuration(LEVEL_UPPER_LIMIT - batteryLevel);
+				}
+				else {
+					setDescriptionDone(END_CHARGING);
+					
+					setDuration(0);
+					
+					// End charging
+	//				endTask();
+					
+					return time;
+				}
 			}
 		}
 		else {
@@ -233,23 +273,21 @@ public class Charge extends Task {
 	 * @return
 	 */
 	static Building findStation(Robot robot) {
+		// Case 1: Check if robot currently occupies a robotic station spot already
 		RoboticStation roboticStation = robot.getStation();
-		if (roboticStation != null) {
+		if (roboticStation != null) {			
 			return roboticStation.getBuilding();
 		}
 		
+		// Case 2: assume robot is serving a different function (other than robotic station) in a building.
+		// Check if robot's current building may offer a spot
 		Building currentBldg = robot.getBuildingLocation();
 		
 		if (currentBldg != null && currentBldg.hasFunction(FunctionType.ROBOTIC_STATION)) {
 			roboticStation = currentBldg.getRoboticStation();
 			if (roboticStation != null) {
 					
-//				// Find an empty spot in robotic station
-//				LocalPosition loc = roboticStation.getAvailableActivitySpot();
-//				// Check if space is available
-//				if (loc != null && roboticStation.isSpaceAvailable()) {
-//					return currentBldg;
-//				}
+				// Future: reserve an activity spot in robotic station for this bot
 				
 				if (roboticStation.isSpaceAvailable()) {
 					return currentBldg;
@@ -257,15 +295,14 @@ public class Charge extends Task {
 			}
 		}
 		
+		// Case 3: Check other buildigns
 		Set<Building> functionBuildings = robot.getAssociatedSettlement()
 				.getBuildingManager().getBuildingSet(FunctionType.ROBOTIC_STATION);
 	
 		for (Building bldg : functionBuildings) {
-			// Find an empty spot in robotic station
-//			LocalPosition loc = bldg.getRoboticStation().getAvailableActivitySpot();
-//			if (loc != null && roboticStation.isSpaceAvailable()) {
-//				return bldg;
-//			}
+			
+			// Future: reserve an activity spot in robotic station for this bot
+			roboticStation = bldg.getRoboticStation();
 			
 			if (roboticStation.isSpaceAvailable()) {
 				return bldg;
@@ -275,6 +312,17 @@ public class Charge extends Task {
 		return null;
 	}
 	
+	/**
+	 * Walks to a robotic station.
+	 * 
+	 * @param robot
+	 * @param allowFail
+	 * @return
+	 */
+	protected boolean walkToRoboticStation(Robot robot, RoboticStation station, boolean allowFail) {
+		return walkToActivitySpotInBuilding(BuildingManager.getBuilding(robot), 
+				FunctionType.ROBOTIC_STATION, allowFail);
+	}
 	
 //	public static Building getAvailableRoboticStationBuilding(Robot robot) {
 //		if (robot.isInSettlement()) {

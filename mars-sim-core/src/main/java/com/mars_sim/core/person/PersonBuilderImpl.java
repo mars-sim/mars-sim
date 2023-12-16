@@ -150,7 +150,7 @@ public class PersonBuilderImpl implements PersonBuilder<Person> {
 	 * @param chance the chance that the skill will be greater
 	 * @return the initial skill level
 	 */
-	private static int getInitialSkillLevel(int level, int chance) {
+	public static int getInitialSkillLevel(int level, int chance) {
 		if (RandomUtil.lessThanRandPercent(chance))
 			return getInitialSkillLevel(level + 1, chance / 2);
 		else

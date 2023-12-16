@@ -747,6 +747,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			if (member instanceof Robot robot) {
 				lowPower = robot.getSystemCondition().isLowPower();
 			}
+
+			// how to choose a pilot based on piloting skill ?
 			
 			boolean becomeDriver = false;
 

@@ -847,17 +847,37 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 * Gets a new instance of an OperateVehicle task for the mission member.
 	 *
 	 * @param member the mission member operating the vehicle.
+	 * @param lastOperateVehicleTaskPhase The last task phase
 	 * @return an OperateVehicle task for the person.
 	 */
 	@Override
 	protected OperateVehicle createOperateVehicleTask(Worker member, TaskPhase lastOperateVehicleTaskPhase) {
 		OperateVehicle result = null;
+		
+		boolean areAllOthersUnfit = true;
+		// Check if everyone is unfit
+		for (Worker w: getMembers()) {
+			if (!w.equals(member) && w instanceof Person p) {
+				if (p.isSuperUnFit()) {
+					areAllOthersUnfit = areAllOthersUnfit && true;
+				}
+				else {
+					areAllOthersUnfit = false;
+				}
+			}
+		}
+		
 		if (member instanceof Person person) {
-
 			// Check for fitness
 			if (person.isSuperUnFit()) {
-				logger.warning(person, 10_000L, "Not fit to operate " + getRover() + ".");
-				return null;
+				
+				if (areAllOthersUnfit) {
+					logger.warning(person, 10_000L, "As every is unfit to operate " + getRover() + ", " 
+						+ person + " decided to step up to be the pilot.");
+				} else {
+					logger.warning(person, 10_000L, "Super unfit to operate " + getRover() + ".");
+					return null;
+				}
 			}
 			
 			if (!((Vehicle)getRover()).haveStatusType(StatusType.OUT_OF_FUEL)) {

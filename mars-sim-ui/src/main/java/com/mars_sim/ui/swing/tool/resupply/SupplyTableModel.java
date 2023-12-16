@@ -81,7 +81,9 @@ extends AbstractTableModel {
 		while(l.hasNext()) {
 			buildingList.add(l.next().getBuildingType());
 		}
-		populateSupplyTypeList(BUILDING, buildingList);
+		
+		// Create a supply type list 
+		createSupplyTypeList(BUILDING, buildingList);
 
 		// Populate vehicles.
 		Map<String, Integer> newVehicles = resupply.getVehicles();
@@ -130,7 +132,7 @@ extends AbstractTableModel {
 	 * @param category the supply category.
 	 * @param supplies the list of supplies as strings.
 	 */
-	private void populateSupplyTypeList(String category, List<String> supplies) {
+	private void createSupplyTypeList(String category, List<String> supplies) {
 
 		// Create map of supplies and their numbers.
 		Map<String, Integer> supplyMap =
@@ -176,7 +178,7 @@ extends AbstractTableModel {
 	public String getColumnName(int column) {
 		String result = null;
 		if (column == 0) result = "Category";
-		else if (column == 1) result = "Supply Type";
+		else if (column == 1) result = "Item";
 		else if (column == 2) result = "Quantity (# or kg)";
 		return result;
 	}

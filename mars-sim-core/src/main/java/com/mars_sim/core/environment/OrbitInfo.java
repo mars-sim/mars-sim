@@ -798,4 +798,13 @@ public class OrbitInfo implements Serializable, Temporal {
 	
 		return season.toString();
 	}
+	
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	public void destroy() {
+		sunDirection = null;
+		clock = null;
+		earthTime = null;
+	}
 }

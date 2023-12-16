@@ -45,10 +45,11 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
+import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.RoboticStation;
 import com.mars_sim.core.structure.building.function.SystemType;
-import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.vehicle.Crewable;
@@ -1160,8 +1161,14 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public RoboticStation getStation() {
 		Building building = getBuildingLocation();
 		if (building != null) {
+				
+			Function f = building.getFunction(FunctionType.ROBOTIC_STATION);
+					
+			// Check if this robot has already occupied a spot
+			boolean occupied = f.checkWorkerActivitySpot(this);
+			
 			RoboticStation roboticStation = building.getRoboticStation();
-			if (roboticStation != null && roboticStation.containsRobotOccupant(this))
+			if (occupied && roboticStation != null && roboticStation.containsRobotOccupant(this))
 				return roboticStation;
 		}
 		return null;
@@ -1188,7 +1195,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				transferred = ((Crewable)cu).removeRobot(this);
 			}
 			else {
-				logger.warning(this, "Not possible to be retrieved from " + cu + ".");
+				logger.warning(this, 60_000L, "Not possible to be retrieved from " + cu + ".");
 			}
 		}
 		else if (ut == UnitType.MARS) {
@@ -1211,7 +1218,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 					transferred = ((Crewable)destination).addRobot(this);
 				}
 				else {
-					logger.warning(this, "Not possible to be stored into " + cu + ".");
+					logger.warning(this, 60_000L, "Not possible to be stored into " + cu + ".");
 				}
 			}
 			else if (destination.getUnitType() == UnitType.MARS) {
@@ -1229,7 +1236,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			}
 
 			if (!transferred) {
-				logger.warning(this, "Cannot be stored into " + destination + ".");
+				logger.warning(this, 60_000L, "Cannot be stored into " + destination + ".");
 				// NOTE: need to revert back the storage action
 			}
 			else {
@@ -1242,7 +1249,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			}
 		}
 		else {
-			logger.warning(this, "Cannot be retrieved from " + cu + ".");
+			logger.warning(this, 60_000L, "Cannot be retrieved from " + cu + ".");
 			// NOTE: need to revert back the retrieval action
 		}
 

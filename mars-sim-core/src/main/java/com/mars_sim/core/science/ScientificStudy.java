@@ -120,10 +120,11 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	private Map<Integer, Boolean> invitedResearchers;
 	/** A list of listeners for this scientific study. */
 	private transient List<ScientificStudyListener> listeners; 
-	/** A major topics this scientific study is aiming at. */
+	/** Major topics covered by this research. */
 	private List<String> topics;
 
 	private static MasterClock masterClock;
+	
 	private static ScienceConfig scienceConfig;
 
 	/**

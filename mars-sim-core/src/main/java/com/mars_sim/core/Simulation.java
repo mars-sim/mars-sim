@@ -486,6 +486,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Add colonies to lunarColonyManager
 		lunarColonyManager.addColonies();
+//		lunarColonyManager.init();
 		
 		// Initialize Unit
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);

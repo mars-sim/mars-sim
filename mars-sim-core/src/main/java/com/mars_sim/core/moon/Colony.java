@@ -18,6 +18,8 @@ import com.mars_sim.core.authority.Nation;
 import com.mars_sim.core.authority.Organization;
 import com.mars_sim.core.logging.Loggable;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.moon.project.ResearchProject;
+import com.mars_sim.core.moon.project.ColonistResearcher;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.mapdata.location.Coordinates;
@@ -28,6 +30,8 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 
 	public static final SimLogger logger = SimLogger.getLogger(Colony.class.getName());
 
+	private boolean startup = true;
+	
 	private int id;
 	
 	private String name;
@@ -43,7 +47,13 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	
 	private Nation nation;
 	
+	private Zone researchZone;
+	
+	private Zone developmentZone;
+	
 	private Set<Zone> zones = new HashSet<>();
+	/** A set of research projects this colony's researchers engage in. */
+	private Set<ResearchProject> researchProjects = new HashSet<>();
 	
 	public Colony(int id, String name, Authority sponsor, Coordinates location) {
 		this.id = id;
@@ -52,13 +62,50 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 		this.location = location;
 		
 		population = new Population(this);
-		
+
 		for (ZoneType type: ZoneType.values()) {
-			addZone(new Zone(type));
+			
+			Zone zone = new Zone(type, this);
+			if (type == ZoneType.RESEARCH) {
+				researchZone = zone;
+			}
+			else if (type == ZoneType.ENGINEERING) {
+				developmentZone = zone;
+			}
+			
+			addZone(zone);
 		}
-		
+	}
+	
+	public void init() {
+		population.init();
 	}
 
+	
+	/**
+	 * Gets one researcher project that this researcher may join in.
+	 * 
+	 * @param researcher
+	 * @return
+	 */
+	public ResearchProject getOneResearchProject(ColonistResearcher researcher) {
+		for (ResearchProject p: researchProjects) {
+			if (!p.getLead().equals(researcher)) {
+				Set<ColonistResearcher> participants = p.getParticipants();
+				for (ColonistResearcher r: participants) {
+					if (!r.equals(researcher)) {
+						return p;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	public void addResearchProject(ResearchProject rp) {
+		researchProjects.add(rp);
+	}
+ 	
 	/**
 	 * Gets the id.
 	 * 
@@ -99,6 +146,60 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	}
 	
 	/**
+	 * Gets the research zone.
+	 * 
+	 * @return
+	 */
+	public Zone getResearchZone() {
+		return researchZone;
+	}
+	
+	/**
+	 * Gets the area of research zone.
+	 *  
+	 * @return
+	 */
+	public double getResearchArea() {
+		return researchZone.getArea();
+	}
+	
+	/**
+	 * Gets the research area growth rate.
+	 * 
+	 * @return
+	 */
+	public double getResearchAreaGrowthRate() {
+		return getResearchZone().getGrowthRate();
+	}	
+	
+	/**
+	 * Gets the development zone.
+	 * 
+	 * @return
+	 */
+	public Zone getDevelopmentZone() {
+		return developmentZone;
+	}
+	
+	/**
+	 * Gets the area of development zone.
+	 *  
+	 * @return
+	 */
+	public double getDevelopmentArea() {
+		return developmentZone.getArea();
+	}
+	
+	/**
+	 * Gets the development area growth rate.
+	 * 
+	 * @return
+	 */
+	public double getDevelopmentAreaGrowthRate() {
+		return getDevelopmentZone().getGrowthRate();
+	}
+
+	/**
 	 * Gets the organization.
 	 * 
 	 * @return
@@ -109,6 +210,11 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
+		
+		if (startup && pulse.isNewMSol()) {
+			startup = false;
+			init();
+		}
 		
 		getOrganization().timePassing(pulse);
 		
@@ -143,6 +249,58 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 		return sum;
 	}
 
+	public double getTotalDevelopmentValue() {
+		double sum = 0;
+//		for (DevelopmentProject rp: developmentProjects) {
+//			sum += rp.getDevelopmentValue();
+//		}
+		return sum;
+	}
+	
+	public double getTotalResearchValue() {
+		double sum = 0;
+		for (ResearchProject rp: researchProjects) {
+			sum += rp.getResearchValue();
+		}
+		return sum;
+	}
+	
+	public double getAverageResearchActiveness() {
+		double num = 0;
+		double sum = 0;
+		for (ResearchProject rp: researchProjects) {
+			num++;
+			sum += rp.getAverageResearchActiveness();
+		}
+		
+		if (num == 0)
+			return 0;
+		
+		return sum / num;
+	}
+	
+	public double getAverageDevelopmentActiveness() {
+//		double num = 0;
+//		double sum = 0;
+//		for (DevelopmentProject rp: developmentProjects) {
+//			num++;
+//			sum += rp.getAverageDevelopmentActiveness();
+//		}
+//		
+//		if (num == 0)
+			return 0;
+		
+//		return sum / num;
+	}
+	
+	public int getNumResearchProjects() {
+		return researchProjects.size();
+	}
+	
+	public int getNumDevelopmentProjects() {
+		return 0; //developmentProjects.size();
+	}
+	
 	/**
 	 * Gets the authority.
 	 */

@@ -48,9 +48,10 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 	private Map<Double, Map<StructureKey, BufferedImage>> svgImageCache = new HashMap<>();
 
     /**
-	 * Draw an oval at a settlement.
+	 * Draws an oval at a settlement.
+	 * 
 	 * @param g2d the graphics context.
-	 * @param pos Positino to draw oval.
+	 * @param pos Position to draw oval.
      * @param color Color choice
      * @param rotation The current rotation
      * @param scale Map scale
@@ -90,6 +91,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 	 * Draws a label to the right of an X, Y location.
 	 * 
 	 * @param g2d the graphics 2D context.
+	 * @param isSelected
 	 * @param label the label string.
 	 * @param loc the location from center of settlement (meters).
 	 * @param labelColor the color of the label.
@@ -98,12 +100,12 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
      * @param scale Map scale
 	 */
 	protected void drawRightLabel(
-		Graphics2D g2d, String label, LocalPosition loc,
+		Graphics2D g2d, boolean isSelected, String label, LocalPosition loc,
 		ColorChoice labelColor, Font labelFont, float xOffset, float yOffset,
         double rotation, double scale) {
 
 		float fontSizeIncrease = Math.round(scale / 2.5);
-		float size = (float)(Math.max(fontSizeIncrease / 30.0, 1.25));
+//		float size = (float)(Math.min(labelFont.getSize() * scale / 100.0, 1.1));
 		
 		// Save original graphics transforms.
 		AffineTransform saveTransform = g2d.getTransform();
@@ -120,10 +122,10 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		);
 
 		// Determine transform information.
-		double centerX = labelImage.getWidth() / 2D ;
-		double centerY = labelImage.getHeight() / 2D ;
-		double translationX = (-1D * loc.getX() * scale) - centerX;
-		double translationY = (-1D * loc.getY() * scale) - centerY;
+		double centerX = labelImage.getWidth() / 2;
+		double centerY = labelImage.getHeight() / 2;
+		double translationX = (-1 * loc.getX() * scale) - centerX;
+		double translationY = (-1 * loc.getY() * scale) - centerY;
 
 		// Apply graphic transforms for label.
 		AffineTransform newTransform = new AffineTransform(saveTransform);
@@ -131,11 +133,36 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		newTransform.rotate(rotation * -1D, centerX, centerY);
 		g2d.setTransform(newTransform);
 
-		// Draw image label.
-		int widthOffset =  (int)Math.round((centerX + fontSizeIncrease) + xOffset);
-		int heightOffset = (int)Math.round((centerY + fontSizeIncrease) + yOffset * size);
-		g2d.drawImage(labelImage, widthOffset, heightOffset, null);
+		// Gets the width and height offset
+		int widthOffset  = (int)Math.round((centerX + fontSizeIncrease) + xOffset);
+		int heightOffset = (int)Math.round((centerY + fontSizeIncrease) + yOffset);
+		
+		if (isSelected) {
+			// Draw a white background label
+	        g2d.setColor(Color.gray.brighter().brighter().brighter());//.darker().darker().darker());
 
+	        int x = widthOffset; // (int)Math.round(widthOffset * .975);
+	        int y = heightOffset;
+	       	int w = (int)Math.round(centerX * 2.025);
+	       	int h = (int)Math.round(centerY * 2.2);
+	        
+//	    	 g2d.fillRect(x, y, w, h);  
+	       	
+	        int thickness = 2;
+	
+//	        // Draw a frame rect white background label
+	        g2d.fill3DRect(x, y, w, h, true);
+//	        g2d.fill3DRect(x, y, w, h, false);
+	        for (int i = 1; i <= thickness; i++)
+	            g2d.draw3DRect(x - i, y - i, w + 2 * i - 1, h + 2 * i - 1, true);
+	        
+			// Draw a white background label
+	        g2d.setColor(labelColor.text());
+		}
+		
+        // Draw image label.
+		g2d.drawImage(labelImage, widthOffset, heightOffset, null);
+		
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
 		g2d.setFont(saveFont);
@@ -181,7 +208,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		newTransform.translate(translationX, translationY);
 		newTransform.rotate(rotation * -1D, centerX, centerY);
 		g2d.setTransform(newTransform);
-
+    
 		// Draw image label with yOffset
 		g2d.drawImage(labelImage, 0, Math.round(yOffset * size), null);
 		
@@ -191,7 +218,8 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 	}
 
     /**
-	 * Draw the label for a structure over multiple lines.
+	 * Draws the label for a structure over multiple lines.
+	 * 
 	 * @param g2d
 	 * @param words
 	 * @param position
@@ -274,7 +302,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		Graphics2D g2d = (Graphics2D) bufferedImage.getGraphics();
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.translate(2D - bounds1.getX(), 2D - bounds1.getY());
-
+	
 		Stroke saveStroke = null;
 		// Draw label outline.
 		if (hasOutline) {

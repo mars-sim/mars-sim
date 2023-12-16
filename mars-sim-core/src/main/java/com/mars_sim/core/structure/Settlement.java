@@ -128,6 +128,7 @@ public class Settlement extends Structure implements Temporal,
 	private static final int AIRLOCK_OPERATION_OFFSET = 40;
 	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
+	public static final int CHECK_RESOURCES = 30;
 	public static final int MAX_NUM_SOLS = 3;
 	public static final int MAX_SOLS_DAILY_OUTPUT = 14;
 	public static final int SUPPLY_DEMAND_REFRESH = 7;
@@ -141,17 +142,19 @@ public class Settlement extends Structure implements Temporal,
     private static final int PERSON_PER_MISSION = 5;
 
 	private static final int MAX_PROB = 3000;
-	public static final int REGOLITH_MAX = 4000;
-	public static final int MIN_REGOLITH_RESERVE = 400; // per person
-	public static final int MIN_SAND_RESERVE = 400; // per person
+	private static final int MIN_REGOLITH_RESERVE = 400; // per person
+	private static final int MIN_SAND_RESERVE = 400; // per person
 	
-	public static final int ICE_MAX = 4000;
-	public static final int WATER_MAX = 4000;
-	public static final int OXYGEN_MAX = 4000;
+	private static final int REGOLITH_MAX = 4000;
+	private static final int ICE_MAX = 4000;
+	private static final int WATER_MAX = 10_000;
+	private static final int OXYGEN_MAX = 10_000;
+	private static final int METHANE_MAX = 10_000;
 	
-	public static final int MIN_OXYGEN_RESERVE = 200; // per person
-	public static final int MIN_WATER_RESERVE = 400; // per person
-	public static final int MIN_ICE_RESERVE = 400; // per person
+	private static final int MIN_OXYGEN_RESERVE = 400; // per person
+	private static final int MIN_METHANE_RESERVE = 400; // per person
+	private static final int MIN_WATER_RESERVE = 400; // per person
+	private static final int MIN_ICE_RESERVE = 400; // per person
 	
 	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
 	private static final int HYDROGEN_ID = ResourceUtil.hydrogenID;
@@ -1155,14 +1158,21 @@ public class Settlement extends Structure implements Temporal,
 		// due to high cpu util during the change of day
 		if (pulse.isNewMSol() && msol >= 10 && msol < 995) {
 
-			// Check on demand and supply and amount of oxygen
-			checkOxygenDemand();
+			double time = pulse.getElapsed();
+			
+			int remainder = msol % CHECK_RESOURCES;
+			if (remainder == 1) {
+				// Check on demand and supply and amount of water, oxygen and methane
+				checkResourceDemand("Oxygen", OXYGEN_ID, MIN_OXYGEN_RESERVE, OXYGEN_MAX, time);
+				checkResourceDemand("Methane", METHANE_ID, MIN_METHANE_RESERVE, METHANE_MAX, time);
+				checkResourceDemand("Water", WATER_ID, MIN_WATER_RESERVE, WATER_MAX, time);
+			}
 			
 			// Tag available airlocks into two categories
 			checkAvailableAirlocks();
 
 			// Check if good need updating
-			int remainder = msol % UPDATE_GOODS_PERIOD;
+			remainder = msol % UPDATE_GOODS_PERIOD;
 			if (remainder == templateID) {
 				// Update the goods value gradually with the use of buffers
 				goodsManager.updateGoodValues();
@@ -1368,7 +1378,7 @@ public class Settlement extends Structure implements Temporal,
 			changeGreyWaterFilteringRate(false);
 			double r = getGreyWaterFilteringRate();
 			logger.log(this, Level.WARNING, 1_000,
-					"Low stores of grey water decreases filtering rate to " + Math.round(r*100.0)/100.0 + ".");
+					"Low storage of grey water decreases filtering rate to " + Math.round(r*100.0)/100.0 + ".");
 		}
 		else if (getAmountResourceRemainingCapacity(GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
 			// Adjust the grey water filtering rate
@@ -2883,70 +2893,73 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Checks the demand of oxygen.
+	 * Checks the demand for a gas.
 	 *
-	 * @return 
+	 * @param gasName
+	 * @param gasID
+	 * @param gasReserve
+	 * @param gasMax
 	 */
-	private void checkOxygenDemand() {
+	private void checkResourceDemand(String gasName, int gasID, int gasReserve, int gasMax, double time) {
 		double result = 0;
 
 		int pop = numCitizens;
 		
-		double demand = goodsManager.getDemandValueWithID(OXYGEN_ID);
-		if (demand > OXYGEN_MAX)
-			demand = OXYGEN_MAX;
+		double demand = goodsManager.getDemandValueWithID(gasID);
+		if (demand > gasMax)
+			demand = gasMax;
 		if (demand < 1)
 			demand = 1;
 		
 		// Compare the available amount of oxygen
-		double supply = goodsManager.getSupplyValue(OXYGEN_ID);
+		double supply = goodsManager.getSupplyValue(gasID);
 
-		double reserve = getAmountResourceStored(OXYGEN_ID);
+		double reserve = getAmountResourceStored(gasID);
 	
-		if (reserve + supply * pop > (MIN_OXYGEN_RESERVE * 2 + demand) * pop) {
+		if (reserve + supply * pop > (gasReserve * 2 + demand) * pop) {
 //			logger.info(this, "Case 1.");
+			// change nothing
 			return;
 		}
 		
-		else if (reserve + supply * pop > (MIN_OXYGEN_RESERVE + demand) * pop) {
+		else if (reserve + supply * pop > (gasReserve + demand) * pop) {
 //			logger.info(this, "Case 2.");
-			result = (MIN_OXYGEN_RESERVE + demand - supply) * pop - reserve;
+			result = (gasReserve + demand - supply) * pop - reserve;
 		}
 
-		else if (.5 * (reserve + supply * pop) > (MIN_OXYGEN_RESERVE + demand) * pop) {
+		else if (.5 * (reserve + supply * pop) > (gasReserve + demand) * pop) {
 //			logger.info(this, "Case 3.");
-			result = (MIN_OXYGEN_RESERVE + demand - 0.5 * supply) * pop - .5 * reserve;
+			result = (gasReserve + demand - 0.5 * supply) * pop - .5 * reserve;
 		}
 
 		else {
 //			logger.info(this, "Case 4.");
-			result = (MIN_OXYGEN_RESERVE + demand - 0.5 * supply) * pop - .5 * reserve;
+			result = (gasReserve + demand - 0.5 * supply) * pop - .5 * reserve;
 		}
 		
 		if (result < 0)
 			result = 0;
 				
-		if (result > OXYGEN_MAX)
-			result = OXYGEN_MAX;
+		if (result > gasMax)
+			result = gasMax;
 
 		double delta = result - demand;
 
-		if (delta > 50) {
+		if (delta > CHECK_RESOURCES) {
 			
-			// Limit each increase to 10 only to avoid an abrupt increase 
-			delta = 50;
+			// Limit each increase to a value only to avoid an abrupt rise or drop in demand 
+			delta = time * CHECK_RESOURCES;
 			
-			logger.info(this, 10_000L, 
-					"oxygen demand: " + Math.round(demand * 10.0)/10.0 
-					+ "  supply: " + Math.round(supply * 10.0)/10.0 
-					+ "  reserve: " + Math.round(reserve * 10.0)/10.0		
-					+ "  delta: " + Math.round(delta * 10.0)/10.0
-					+ "  new demand: " + Math.round((demand + delta) * 10.0)/10.0 + ".");
+			logger.info(this, 60_000L, 
+					"Previous demand for " + gasName + ": " + Math.round(demand * 10.0)/10.0 
+					+ "  Supply: " + Math.round(supply * 10.0)/10.0 
+					+ "  Reserve: " + Math.round(reserve * 10.0)/10.0		
+					+ "  Delta: " + Math.round(delta * 10.0)/10.0
+					+ "  New Demand: " + Math.round((demand + delta) * 10.0)/10.0 + ".");
 			
 			// Inject a sudden change of demand
-			goodsManager.setDemandValue(GoodsUtil.getGood(OXYGEN_ID), (demand + delta));
+			goodsManager.setDemandValue(GoodsUtil.getGood(gasID), (demand + delta));
 		}
-		
 	}
 	
 	/**

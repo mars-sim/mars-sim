@@ -499,7 +499,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		}
 
 		if (!canRetrieve) {
-				logger.warning(this + " could not be retrieved/transferred from '"
+				logger.warning(this, 60_000L, "Could not be retrieved/transferred from '"
 						+ cu + "'.");
 		}
 		else {	
@@ -518,17 +518,17 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			}
 
 			if (!canStore) {
-				logger.warning(this, "Could not be stored into '"
+				logger.warning(this, 60_000L, "Could not be stored into '"
 						+ destination + "'.");
 				
 				// Need to go back the original container
 				boolean canStoreBack = ((EquipmentOwner)cu).addEquipment(this);
 				if (canStoreBack) {
-					logger.warning(this, "Just stored back into '"
+					logger.warning(this, 60_000L, "Just stored back into '"
 							+ cu + "'.");
 				}
 				else {
-					logger.warning(this, "Could not be stored back into '"
+					logger.warning(this, 60_000L, "Could not be stored back into '"
 							+ cu + "'.");
 				}
 				

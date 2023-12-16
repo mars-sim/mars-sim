@@ -154,14 +154,14 @@ public class CollectMinedMinerals extends EVAOperation {
 			return time;
 		}
 		
-		Mining mission = (Mining) worker.getMission();
+		Mining mining = (Mining) worker.getMission();
 
-		if (mission.getMiningSite().isEmpty()) {
+		if (mining.getMiningSite().isEmpty()) {
 			checkLocation("No more minerals to mine.");
 			return time;
 		}
 		
-		double mineralsExcavated = mission.getMineralExcavationAmount(mineralType);
+		double mineralsExcavated = mining.getMineralExcavationAmount(mineralType);
 		double remainingPersonCapacity = 0;
 
 //		double roverRemainingCap = rover.getAmountResourceRemainingCapacity(mineralType.getID());
@@ -179,9 +179,9 @@ public class CollectMinedMinerals extends EVAOperation {
 			
 		remainingPersonCapacity = worker.getRemainingCargoCapacity();
 
-		double concentration = mission.getMiningSite().getEstimatedMineralConcentrations().get(mineralType.getName());	
-		double reserve = mission.getMiningSite().getRemainingMass();
-		double certainty = mission.getMiningSite().getDegreeCertainty(mineralType.getName());
+		double concentration = mining.getMiningSite().getEstimatedMineralConcentrations().get(mineralType.getName());	
+		double reserve = mining.getMiningSite().getRemainingMass();
+		double certainty = mining.getMiningSite().getDegreeCertainty(mineralType.getName());
 		double variance = .5 + RandomUtil.getRandomDouble(.5 * certainty) / 100;
 		
 		double mineralsCollected = variance * time * reserve * MINERAL_SELECTION_RATE * concentration;
@@ -198,24 +198,26 @@ public class CollectMinedMinerals extends EVAOperation {
 		if (mineralsCollected > mineralsExcavated)
 			mineralsCollected = mineralsExcavated;
 
-		// Add experience points
-		addExperience(time);
-
-		// Collect minerals.
-		worker.storeAmountResource(mineralType.getID(), mineralsCollected);
-
-		logger.info(worker, "Collected " + Math.round(mineralsCollected * 1000.0)/1000.0 
-				+ " kg " + mineralType.getName() + ".");
-		
-		mission.collectMineral(mineralType, mineralsCollected);
-		
-		if (((mineralsExcavated - mineralsCollected) <= 0D) || (mineralsCollected >= remainingPersonCapacity)) {
-			checkLocation("Excavated minerals collected exceeded capacity.");
+		if (mineralsCollected > 0) {
+			// Add experience points
+			addExperience(time);
+	
+			// Collect minerals.
+			worker.storeAmountResource(mineralType.getID(), mineralsCollected);
+	
+			logger.info(worker, "Collected " + Math.round(mineralsCollected * 1000.0)/1000.0 
+					+ " kg " + mineralType.getName() + ".");
+			
+			mining.collectMineral(mineralType, mineralsCollected);
+			
+			if (((mineralsExcavated - mineralsCollected) <= 0D) || (mineralsCollected >= remainingPersonCapacity)) {
+				checkLocation("Excavated minerals collected exceeded capacity.");
+			}
+	
+			// Check for an accident during the EVA operation.
+			checkForAccident(time);
 		}
-
-		// Check for an accident during the EVA operation.
-		checkForAccident(time);
-
+		
 		return 0;
 	}
 	

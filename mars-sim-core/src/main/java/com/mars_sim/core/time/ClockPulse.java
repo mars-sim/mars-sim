@@ -6,19 +6,28 @@
  */
 package com.mars_sim.core.time;
 
+import com.mars_sim.core.logging.SimLogger;
+
 public class ClockPulse {
+	
+	/** Initialized logger. */
+	private static final SimLogger logger = SimLogger.getLogger(ClockPulse.class.getName());
 	
 	private boolean newSol;
 	private boolean newHalfSol;
 	private boolean newIntMillisol;
-
+	
+	/** The last millisol integer from the last pulse. */
 	private int lastIntMillisol;
+	/** The last sol from the last pulse. */
 	private int lastSol;
 
 	private long id;
 	
 	/** The sols passed since last pulse. */
 	private double elapsed;
+	/** The last millisol from the last pulse. */
+	private double lastMillisol;
 	
 	private MarsTime marsTime;
 	private MasterClock master;
@@ -65,7 +74,7 @@ public class ClockPulse {
 	public double getElapsed() {
 		return elapsed;
 	}
-
+	
 	/**
 	 * Gets MarsClock instance.
 	 * 
@@ -120,28 +129,63 @@ public class ClockPulse {
 	 */
 	public ClockPulse addElapsed(double msolsSkipped) {
 		double actualElapsed = msolsSkipped + elapsed;
-
-		// Identify if it's a new Sol
-		int currentSol = marsTime.getMissionSol();
-		// This pulse cross a day or the total elapsed since the last pulse cross the sol boundary
-		boolean isNewSol = newSol || (actualElapsed > marsTime.getMillisol())
-				|| (lastSol >= 0 && (lastSol != currentSol));
-
-		// Identify if it's half a sol
-		boolean isNewHalfSol = isNewSol || (lastSol <= 500 && currentSol > 500);	
-		
-		// Update the lastSol
-		lastSol = currentSol;	
-		
-		int thisIntMillisol = marsTime.getMillisolInt();
-		// Checks if this pulse starts a new integer millisol
-		boolean isNewIntMillisol = lastIntMillisol != thisIntMillisol; 
-		
-		if (isNewIntMillisol) {
-			lastIntMillisol = thisIntMillisol;
-		}
+		// Add the skipped millisols
 		MarsTime newMars = marsTime.addTime(msolsSkipped);
 
+		////////////////////////////////////////////////////////////////////////////////////		
+		// NOTE: Any changes made below need to be brought to MasterClock's fireClockPulse()
+		////////////////////////////////////////////////////////////////////////////////////
+		double currentMillisol = marsTime.getMillisol();
+		// Check if the simulation is just starting up		
+//		boolean atStartup = actualElapsed > currentMillisol;
+		// Get the current sol
+		int currentSol = marsTime.getMissionSol();
+		// Identify if this pulse crosses a sol
+		boolean isNewSol = (lastSol != currentSol);
+		// Updates lastSol
+		if (isNewSol) {
+//			logger.info(
+//					"newSol: " + newSol 
+//					+ "  isNewSol: " + isNewSol 
+//					+ "  lastSol: " + lastSol 
+//					+ "  currentSol: " + currentSol);
+			lastSol = currentSol;
+		}
+		// Identify if it just passes half a sol
+		boolean isNewHalfSol = isNewSol || (lastMillisol <= 500 && currentMillisol > 500);	
+
+		if (isNewHalfSol) {
+//			logger.info(
+//					"newHalfSol: " + newHalfSol 
+//					+ "  isNewHalfSol: " + isNewHalfSol 
+//					+ "  lastMillisol: " + lastMillisol 
+//					+ "  currentMillisol: " + currentMillisol);
+		}
+		
+		// Update the lastMillisol
+		lastMillisol = currentMillisol;	
+		// Get the current millisol integer
+		int currentIntMillisol = marsTime.getMillisolInt();
+		// Checks if this pulse starts a new integer millisol
+		boolean isNewIntMillisol = lastIntMillisol != currentIntMillisol; 
+		// Update the lastIntMillisol
+		if (isNewIntMillisol) {
+			lastIntMillisol = currentIntMillisol;
+		}
+		////////////////////////////////////////////////////////////////////////////////////
+		// Do NOT delete the following logger. For future debugging when changes are made //		
+//		logger.info(
+//				"newSol: " + newSol 
+//				+ "  newHalfSol: " + newHalfSol 
+//				+ "  isNewSol: " + isNewSol 
+//				+ "  lastSol: " + lastSol 
+//				+ "  currentSol: " + currentSol 
+//				+ "  currentMillisol: " + currentMillisol
+//				+ "  elapsed: " + elapsed 
+//				+ "  actualElapsed: " + actualElapsed 
+//				+ "  msolsSkipped: " + msolsSkipped 
+//				);
+		
 		return new ClockPulse(id, actualElapsed, newMars, master, isNewSol, isNewHalfSol, isNewIntMillisol);
 	}
 }

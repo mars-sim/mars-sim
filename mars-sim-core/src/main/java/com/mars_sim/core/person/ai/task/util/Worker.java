@@ -14,7 +14,7 @@ import com.mars_sim.core.UnitType;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.Loggable;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
-import com.mars_sim.core.person.ai.SkillManager;
+import com.mars_sim.core.person.ai.SkillOwner;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -24,7 +24,7 @@ import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.mapdata.location.LocalPosition;
 
-public interface Worker extends Loggable, UnitIdentifer, EquipmentOwner {
+public interface Worker extends Loggable, UnitIdentifer, EquipmentOwner, SkillOwner {
 
 	/**
 	 * Returns a reference to the Worker natural attribute manager
@@ -33,12 +33,6 @@ public interface Worker extends Loggable, UnitIdentifer, EquipmentOwner {
 	 */
 	public NaturalAttributeManager getNaturalAttributeManager();
 
-	/**
-	 * Returns a reference to the Person's skill manager
-	 *
-	 * @return the person's skill manager
-	 */
-	public SkillManager getSkillManager();
 
 	/**
 	 * Gets the workers name.
@@ -55,18 +49,11 @@ public interface Worker extends Loggable, UnitIdentifer, EquipmentOwner {
 	public String getTaskDescription();
 
 	/**
-	 * Where the the Worker positioned on the Mars Surface?
+	 * Gets the coordinates on Mars surface.
 	 * 
 	 * @return
 	 */
 	public Coordinates getCoordinates();
-
-	/**
-	 * How efficient is this Worker.
-	 * 
-	 * @return
-	 */
-	public double getPerformanceRating();
 
 	/**
 	 * What is the top level container of this worker; this will be a Unit that is on the MarsSurface,

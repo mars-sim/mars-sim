@@ -120,7 +120,7 @@ public class ScienceConfig implements Serializable {
 	}
 
 	/**
-	 * Find a random topic for a science type.
+	 * Finds a random topic for a science type.
 
 	 * @param type
 	 * @return

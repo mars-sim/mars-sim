@@ -117,9 +117,17 @@
 		<autosave-number value="5" />
 
 		<!-- average transit-time is the number of sols to send payload/cargo from Earth to Mars -->
+		<!-- Assume an engine with a speed of 18,564,800 m/s, 
+			 travel time is 525 hours 51 minutes and 23 seconds, or roughly 22 days. 
+			 
+		     Assume the acceleration would stay within a tolerable 1G force onboard,
+		     travel time is 1577 hours 34 minutes and 8 seconds, or roughly 66 days.	          
+		 -->
+		<!-- See https://www.quora.com/How-do-I-calculate-the-time-taken-to-travel-to-Mars-What-are-the-values-I-have-to-consider
+		-->
 		<!-- Min : 1 ; Max : 430 -->
-		<!-- Default: 60 -->
-		<average-transit-time value="60" />
+		<!-- Default: 66 -->
+		<average-transit-time value="66" />
 
 		<!-- unused-cores is the difference between the number of cores and the number of simulation threads -->
 		<!-- unused-cores are the numbers of cores that are free from being used by mars-sim -->

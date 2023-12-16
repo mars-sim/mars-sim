@@ -27,7 +27,6 @@ public class PersonMapLayer extends WorkerMapLayer<Person> {
 
 	// Data members
 	private SettlementMapPanel mapPanel;
-	
 
 	/**
 	 * Constructor.
@@ -53,7 +52,8 @@ public class PersonMapLayer extends WorkerMapLayer<Person> {
 	}
 
 	/**
-	 * Identify the best colour to render this Person in the Settlement Map.
+	 * Identifies the best colour to render this Person in the Settlement Map.
+	 * 
 	 * @param p Person
 	 * @param selected Are they selected
 	 * @return

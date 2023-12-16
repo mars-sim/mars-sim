@@ -13,7 +13,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.tools.util.RandomUtil;
 
 
@@ -26,13 +25,13 @@ public class SkillManager implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-	private Worker owner;
+	private SkillOwner owner;
 	
 	/** A list of skills keyed by skill type enum. */
 	private Map<SkillType, Skill> skills;
 
 	/** Constructor. */
-	public SkillManager(Worker owner) {
+	public SkillManager(SkillOwner owner) {
 	
 		this.owner = owner;
 
@@ -177,6 +176,16 @@ public class SkillManager implements Serializable {
 		return new ArrayList<>(skills.values());
 	}
 
+	
+	public double getTotalSkillExperiences() {
+		List<Skill> skills = getSkills();
+		Double total = skills.stream()
+				  .mapToDouble(Skill::getExperience)
+				  .sum();
+		return total;
+	}
+	
+	
 	/**
 	 * Prepares object for garbage collection.
 	 */

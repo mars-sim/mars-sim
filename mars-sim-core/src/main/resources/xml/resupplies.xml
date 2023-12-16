@@ -99,9 +99,6 @@
 	    <resource name="mustard seed" amount="50.0" />
 	    <resource name="sesame seed" amount="50.0" />
 	
-	    <!-- Food Derived Items -->
-	    <resource name="mustard" amount="50.0" />
-	
 	    <!-- Kitchen Resources -->
 	    <resource name="chlorine" amount="50.0" />
 	    <resource name="Sodium Hypochlorite" amount="20.0" />
@@ -139,20 +136,22 @@
 	    <resource name="Peanut Butter" amount="50.0" />
 	    
 	    <resource name="Soy Sprout" amount="50.0" />
+	    <resource name="Rice Vinegar" amount="50.0" />
+	    <resource name="Soy Sauce" amount="50.0" />
+	    <resource name="Soy Flour" amount="50.0" />
+	    <resource name="Wheat Flour" amount="50.0" />
+	    	    
+	    <resource name="Cane Fiber" amount="100.0" />
+	    
 	    <resource name="Soybean Oil" amount="50.0" />
 	    <resource name="Peanut Oil" amount="50.0" />
 	    <resource name="Garlic Oil" amount="50.0" />
 	    <resource name="Sesame Oil" amount="50.0" />
 	    
-	    <resource name="Cane Fiber" amount="100.0" />
-	    <resource name="Rice Vinegar" amount="50.0" />
-	    <resource name="Soy Sauce" amount="50.0" />
-	    <resource name="Soymilk" amount="50.0" />
-	    <resource name="Soy Flour" amount="50.0" />
-	    
-	    <resource name="Wheat Flour" amount="50.0" />
+	    <!-- Dessert -->
 	    <resource name="Granola Bar" amount="10.0" />
-
+	    <resource name="Soymilk" amount="50.0" />
+	    
 	    <!-- Utility Resources -->
 	    <resource name="iron powder" amount="10.0" />  
 	

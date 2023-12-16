@@ -70,7 +70,7 @@ import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.science.ResearcherInterface;
+import com.mars_sim.core.science.Researcher;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.structure.Settlement;
@@ -91,7 +91,7 @@ import com.mars_sim.tools.util.RandomUtil;
  * The Person class represents a person on Mars. It keeps track of everything
  * related to that person and provides information about him/her.
  */
-public class Person extends Unit implements Worker, Temporal, ResearcherInterface {
+public class Person extends Unit implements Worker, Temporal, Researcher {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -2105,7 +2105,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 				transferred = ((Crewable)cu).removePerson(this);
 			}
 			else {
-				logger.warning(this + "Not possible to be retrieved from " + cu + ".");
+				logger.warning(this, 60_000L, "Not possible to be retrieved from " + cu + ".");
 			}
 		}
 		else if (ut == UnitType.MARS) {
@@ -2130,7 +2130,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 					transferred = cr.addPerson(this);
 				}
 				else {
-					logger.warning(this + "Not possible to be stored into " + cu + ".");
+					logger.warning(this, 60_000L, "Not possible to be stored into " + cu + ".");
 				}
 			}
 			else if (destination.getUnitType() == UnitType.MARS) {
@@ -2151,7 +2151,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 			}
 
 			if (!transferred) {
-				logger.warning(this + " cannot be stored into " + destination + ".");
+				logger.warning(this, 60_000L, "Cannot be stored into " + destination + ".");
 				// NOTE: need to revert back the storage action
 			}
 			else {
@@ -2164,7 +2164,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 			}
 		}
 		else {
-			logger.warning(this + " cannot be retrieved from " + cu + ".");
+			logger.warning(this, 60_000L, "Cannot be retrieved from " + cu + ".");
 			// NOTE: need to revert back the retrieval action
 		}
 

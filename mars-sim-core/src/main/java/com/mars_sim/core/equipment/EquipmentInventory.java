@@ -231,7 +231,7 @@ public class EquipmentInventory
 				return set.add(equipment);
 			}
 			else {
-				logger.warning(owner, "No capacity to hold " + equipment.getName()
+				logger.warning(owner, 60_000L, "No capacity to hold " + equipment.getName()
 								+ ": cargoCapacity = " + cargoCapacity 
 								+ ", container name = " + containerName
 								+ ", totalStored = " + totalStored 

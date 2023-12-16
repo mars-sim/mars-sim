@@ -112,7 +112,9 @@ public class MasterClock implements Serializable {
 	public long sleepTime;
 	/** Records the real milli time when a pulse is excited. */
 	private long[] pulseLog = new long[MAX_PULSE_LOG];
-
+	
+	/** The last millisol from the last pulse. */
+	private double lastMillisol;
 	/** The current simulation time ratio. */
 	private double actualTR = 0;
 	/** The difference between desiredTR and actualTR. */
@@ -786,28 +788,50 @@ public class MasterClock implements Serializable {
 	 * @param time
 	 */
 	private void fireClockPulse(double time) {
-
+		
+		////////////////////////////////////////////////////////////////////////////////////		
+		// NOTE: Any changes made below may need to be brought to ClockPulse's addElapsed()
+		////////////////////////////////////////////////////////////////////////////////////
+		double currentMillisol = marsTime.getMillisol();
+		// Get the current sol
+		int currentSol = marsTime.getMissionSol();
+		// Identify if this pulse crosses a sol
+		boolean isNewSol = (lastSol != currentSol);
+		// Updates lastSol
+		if (isNewSol) {
+			logger.info(
+					"isNewSol: " + isNewSol 
+					+ "  lastSol: " + lastSol 
+					+ "  currentSol: " + currentSol);
+			lastSol = currentSol;
+		}
+		// Identify if it just passes half a sol
+		boolean isNewHalfSol = isNewSol || (lastMillisol <= 500 && currentMillisol > 500);	
+		
+		if (isNewHalfSol) {
+			logger.info(
+					"isNewHalfSol: " + isNewHalfSol 
+					+ "  lastMillisol: " + lastMillisol 
+					+ "  currentMillisol: " + currentMillisol);
+			lastSol = currentSol;
+		}
+		
+		// Update the lastMillisol
+		lastMillisol = currentMillisol;	
+		// Get the current millisol integer
 		int currentIntMillisol = marsTime.getMillisolInt();
 		// Checks if this pulse starts a new integer millisol
-		boolean isNewIntMillisol = lastIntMillisol != currentIntMillisol;
+		boolean isNewIntMillisol = lastIntMillisol != currentIntMillisol; 
+		// Update the lastIntMillisol
 		if (isNewIntMillisol) {
 			lastIntMillisol = currentIntMillisol;
 		}
-	
-		// Identify if it's a new Sol
-		int currentSol = marsTime.getMissionSol();
-		boolean isNewSol = ((lastSol >= 0) && (lastSol != currentSol));
-
-		// Identify if it's half a sol
-		boolean isNewHalfSol = isNewSol || (lastSol <= 500 && currentSol > 500);		
-		
-		// Update the lastSol
-		lastSol = currentSol;
+		////////////////////////////////////////////////////////////////////////////////////
 		
 		// Print the current sol banner
 		if (isNewSol)
 			printNewSol(currentSol);
-
+		
 		// Log the pulse
 		long newPulseId = nextPulseId++;
 		int logIndex = (int)(newPulseId % MAX_PULSE_LOG);

@@ -40,19 +40,28 @@ public class LunarColonyManager implements Serializable, Temporal {
 	public void addColonies() {
 		
 		Colony colony0 = new Colony(colonies.size(), "Shackleton", raFactory.getItem("NASA"), new Coordinates("89.9 S", "0 E"));
+
 		Colony colony1 = new Colony(colonies.size(), "Peary", raFactory.getItem("MS"), new Coordinates("88.63 N", "24.4 E"));
+
 		// Use Lunokhod 2's coordinate on the moon at Le Monnier crater (25.85 degrees N, 30.45 degrees E).
 		// https://en.wikipedia.org/wiki/Lunokhod_2
 		Colony colony2 = new Colony(colonies.size(), "Yue De", raFactory.getItem("CNSA"), new Coordinates("25.85 N", "30.45 E"));
+
 		// Use Lunokhod 1's coordinate on the moon in western Mare Imbrium (Sea of Rains), 
 		// about 60 km south of the Promontorium Heraclides.
 		// https://en.wikipedia.org/wiki/Lunokhod_1
 		Colony colony3 = new Colony(colonies.size(), "Barmingrad", raFactory.getItem("RKA"), new Coordinates("38.2378 N", "35.0017 W"));
-		
+
 		colonies.add(colony0);
 		colonies.add(colony1);
 		colonies.add(colony2);
 		colonies.add(colony3);	
+	}
+	
+	public void init() {
+		for (Colony c: colonies) {
+			c.init();
+		}
 	}
 	
 	@Override
@@ -60,6 +69,7 @@ public class LunarColonyManager implements Serializable, Temporal {
 		for (Colony c: colonies) {
 			c.timePassing(pulse);
 		}
+		
 		return true;
 	}
 

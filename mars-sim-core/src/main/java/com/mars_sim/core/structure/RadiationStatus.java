@@ -62,10 +62,10 @@ public class RadiationStatus implements Serializable {
 			var2 = 0;
 
 		// Galactic cosmic rays (GCRs) event // average 1.22% per 1000 millisols
-		double chance1 = Math.min(ratio * 1.22/1000 * time, RadiationExposure.GCR_PERCENT * var1);
+		double chance1 = Math.min(ratio * 1.22/1000 * time, RadiationExposure.GCR_CHANCE_PER_SOL * var1);
 //		logger.info("chance1: " + chance1);
 		// Solar energetic particles (SEPs) event // average 0.122 % per 1000 millisols
-		double chance2 = Math.min(ratio * 0.122/1000 * time, RadiationExposure.SEP_PERCENT * var2); 
+		double chance2 = Math.min(ratio * 0.122/1000 * time, RadiationExposure.SEP_CHANCE_PER_SOL * var2); 
 //		logger.info("chance2: " + chance2);
 		// Baseline radiation event // average 3.53% per 1000 millisols
 		double chance0 = Math.max(0, (ratio * 3.53/1000 * time - chance1 - chance2)); 

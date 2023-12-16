@@ -32,17 +32,17 @@
 			<version>${project.version}</version>
 		</dependency>
 
-		<dependency>
+		<!-- dependency>
 		    <groupId>net.fellbaum</groupId>
 		    <artifactId>jemoji</artifactId>
 		    <version>1.3.2</version>
-		</dependency>
+		</dependency-->
 
-		<dependency>
+		<!--dependency>
 			<groupId>com.vdurmont</groupId>
 			<artifactId>emoji-java</artifactId>
 			<version>5.1.1</version>
-		</dependency>
+		</dependency-->
 
 		<!-- https://mvnrepository.com/artifact/org.netbeans.swing.outline/outline 
 		<dependency>
