@@ -176,12 +176,16 @@ public class MissionTableModel extends AbstractMonitorModel
 
 		if (goodToGo) {
 			synchronized(missionCache) {
-				missionCache.add(mission);
 				mission.addMissionListener(this);
+				
+				// Structural changes via Swing thread
+				SwingUtilities.invokeLater(() -> {
+					missionCache.add(mission);
 
-				// Inform listeners of new row
-				int index = missionCache.size() - 1;
-				fireTableRowsInserted(index, index);
+					// Inform listeners of new row
+					int index = missionCache.size() - 1;
+					fireTableRowsInserted(index, index);
+				});
 			}
 		}
 	}
@@ -194,12 +198,16 @@ public class MissionTableModel extends AbstractMonitorModel
 	@Override
 	public void removeMission(Mission mission) {
 		if (missionCache.contains(mission)) {
-			int index = missionCache.indexOf(mission);
-			missionCache.remove(mission);
 			mission.removeMissionListener(this);
 
-			// Delete a particular row
-			fireTableRowsDeleted(index, index);
+			// Structural changes via Swing thread
+			SwingUtilities.invokeLater(() -> {
+				int index = missionCache.indexOf(mission);
+				missionCache.remove(mission);
+
+				// Delete a particular row
+				fireTableRowsDeleted(index, index);
+			});
 		}
 	}
 
@@ -285,7 +293,7 @@ public class MissionTableModel extends AbstractMonitorModel
 		}
 
 		Object result = null;
-	Mission mission = missionCache.get(rowIndex);
+		Mission mission = missionCache.get(rowIndex);
 
 		switch (columnIndex) {
 			case DATE_FILED:
