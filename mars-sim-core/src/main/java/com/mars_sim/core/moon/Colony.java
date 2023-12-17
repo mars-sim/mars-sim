@@ -18,8 +18,10 @@ import com.mars_sim.core.authority.Nation;
 import com.mars_sim.core.authority.Organization;
 import com.mars_sim.core.logging.Loggable;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.moon.project.ResearchProject;
+import com.mars_sim.core.moon.project.ColonistEngineer;
 import com.mars_sim.core.moon.project.ColonistResearcher;
+import com.mars_sim.core.moon.project.EngineeringProject;
+import com.mars_sim.core.moon.project.ResearchProject;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.mapdata.location.Coordinates;
@@ -54,6 +56,9 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	private Set<Zone> zones = new HashSet<>();
 	/** A set of research projects this colony's researchers engage in. */
 	private Set<ResearchProject> researchProjects = new HashSet<>();
+	/** A set of engineering projects this colony's engineers engage in. */
+	private Set<EngineeringProject> engineeringProjects = new HashSet<>();
+	
 	
 	public Colony(int id, String name, Authority sponsor, Coordinates location) {
 		this.id = id;
@@ -80,7 +85,6 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	public void init() {
 		population.init();
 	}
-
 	
 	/**
 	 * Gets one researcher project that this researcher may join in.
@@ -102,10 +106,44 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 		return null;
 	}
 	
+	/**
+	 * Gets one engineering project that this engineer may join in.
+	 * 
+	 * @param Engineer
+	 * @return
+	 */
+	public EngineeringProject getOneEngineeringProject(ColonistEngineer engineer) {
+		for (EngineeringProject p: engineeringProjects) {
+			if (!p.getLead().equals(engineer)) {
+				Set<ColonistEngineer> participants = p.getParticipants();
+				for (ColonistEngineer r: participants) {
+					if (!r.equals(engineer)) {
+						return p;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Adds a research project.
+	 * 
+	 * @param rp
+	 */
 	public void addResearchProject(ResearchProject rp) {
 		researchProjects.add(rp);
 	}
  	
+	/**
+	 * Adds an engineering project.
+	 * 
+	 * @param ep
+	 */
+	public void addEngineeringProject(EngineeringProject ep) {
+		engineeringProjects.add(ep);
+	}
+	
 	/**
 	 * Gets the id.
 	 * 
@@ -298,7 +336,7 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	}
 	
 	public int getNumDevelopmentProjects() {
-		return 0; //developmentProjects.size();
+		return engineeringProjects.size();
 	}
 	
 	/**

@@ -15,6 +15,7 @@ import java.util.Set;
 
 import com.mars_sim.core.authority.Nation;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.moon.project.ColonistEngineer;
 import com.mars_sim.core.moon.project.ColonistResearcher;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
@@ -29,14 +30,16 @@ public class Population implements Serializable, Temporal {
 	private static final int INITIAL = 60;
 
 	private double numTourists;
-	
 	private double numResidents;
 	private double numResearchers;
+	private double numEngineers;
+	
 	private double numBeds;
 	
 	private double growthRateTourists;
 	private double growthRateResidents;
 	private double growthRateResearchers;
+	private double growthRateEngineers;
 	
 	private double growthRateBeds;
 	
@@ -47,26 +50,28 @@ public class Population implements Serializable, Temporal {
 	public Population(Colony colony) {
 		this.colony = colony;
 		
+		growthRateEngineers = RandomUtil.getRandomDouble(-.2, .4);
 		growthRateTourists = RandomUtil.getRandomDouble(-.3, .4);
 		growthRateResidents = RandomUtil.getRandomDouble(-.3, .4);
 		growthRateResearchers = RandomUtil.getRandomDouble(-.3, .4);
 		growthRateBeds = RandomUtil.getRandomDouble(-.3, .4);
 		
+		numEngineers = RandomUtil.getRandomInt(5, 10);
 		numTourists = RandomUtil.getRandomInt(0, 3);
 		numResidents = RandomUtil.getRandomInt(10, 20);
 		numResearchers = RandomUtil.getRandomInt(3, 6);
-			
+		numEngineers = RandomUtil.getRandomInt(3, 6);
+		
 		int totPop = getTotalPopulation();
 		numBeds = RandomUtil.getRandomInt(totPop, INITIAL);
-	
-//		System.out.println("Colony: " + colony.getName() 
-//				+ "   Tot Pop: " + totPop 
-//				+ "   Quarters: " + numBeds);
 	}
 	
 	public void init() {
 		for (int i = 0; i < numResearchers; i++) {
 			colonists.add(new ColonistResearcher("R" + i, colony));
+		}
+		for (int i = 0; i < numEngineers; i++) {
+			colonists.add(new ColonistEngineer("E" + i, colony));
 		}
 	}
 	
@@ -78,6 +83,7 @@ public class Population implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 		
 		double researchersCache = numResearchers;
+		double engineersCache = numEngineers;
 		
 		int millisolInt = pulse.getMarsTime().getMillisolInt();
 		if (pulse.isNewMSol() && millisolInt > 5 && millisolInt % 60 == 1) {
@@ -103,6 +109,13 @@ public class Population implements Serializable, Temporal {
 			if (numResearchers < 0)
 				numResearchers = 0;
 			
+			// Recalculate engineers growth rate
+			growthRateEngineers += RandomUtil.getRandomDouble(-.125, .2);		
+			// Recalculate engineers	
+			numEngineers += growthRateEngineers;
+			if (numEngineers < 0)
+				numEngineers = 0;
+
 			// Recalculate beds growth rate
 			growthRateBeds += RandomUtil.getRandomDouble(-.125, .2);
 			// Recalculate beds
@@ -112,7 +125,7 @@ public class Population implements Serializable, Temporal {
 
 			// Checks if there is enough beds. 
 			// If not, slow the growth rate in one type of pop
-			if (numTourists + numResidents + numResearchers > numBeds * .95) {
+			if (numTourists + numResidents + numResearchers + numEngineers > numBeds * .95) {
 				
 				int rand = RandomUtil.getRandomInt(0, 10);
 				if (rand == 0) {
@@ -120,6 +133,9 @@ public class Population implements Serializable, Temporal {
 				}
 				else if ((rand == 1 || rand == 2)) {
 					growthRateResearchers -= 0.1;
+				}
+				else if ((rand >= 3 || rand <= 5)) {
+					growthRateEngineers -= 0.1;
 				}
 				else {
 					growthRateTourists -= 0.1;
@@ -137,6 +153,11 @@ public class Population implements Serializable, Temporal {
 			else if (growthRateResidents < -.5)
 				growthRateResidents = -.5;
 			
+			if (growthRateEngineers > 1)
+				growthRateEngineers = 1;
+			else if (growthRateEngineers < -.5)
+				growthRateEngineers = -.5;	
+			
 			if (growthRateResearchers > 1)
 				growthRateResearchers = 1;
 			else if (growthRateResearchers < -.5)
@@ -151,6 +172,8 @@ public class Population implements Serializable, Temporal {
 				numResidents = 0;
 			if (numResearchers < 0)
 				numResearchers = 0;
+			if (numEngineers < 0)
+				numEngineers = 0;
 			if (numTourists < 0)
 				numTourists = 0;
 			
@@ -163,10 +186,21 @@ public class Population implements Serializable, Temporal {
 			}
 			// else if they are equal, then no change
 			
+			if ((int)engineersCache < (int)numEngineers 
+					&& !colonists.isEmpty()) {
+				removeOneEngineer();
+			}
+			else if ((int)engineersCache > (int)numEngineers) {
+				addOneEngineer();
+			}
+			// else if they are equal, then no change
+			
 		}
 		
 		for (Colonist c: colonists) {
 			if (c instanceof ColonistResearcher r) {
+				r.timePassing(pulse);
+			} else if (c instanceof ColonistEngineer r) {
 				r.timePassing(pulse);
 			}
 		}
@@ -201,6 +235,31 @@ public class Population implements Serializable, Temporal {
 	}
 	
 	/**
+	 * Adds an engineer.
+	 */
+	public void addOneEngineer() {
+		Nation nation = colony.getNation();
+		
+		if (nation == null) {
+			colonists.add(new ColonistEngineer("E" 
+					+ (int)numEngineers, colony));
+		}
+		else {
+			Colonist colonist = nation.getOneColonist();
+			if (colonist != null) {
+				colonists.add(colonist);
+			}
+			else {
+				colonists.add(new ColonistEngineer("E" 
+					+ (int)numEngineers, colony));
+			}
+		}
+		
+		// Pull back the growth rate as an engineer has just been added
+		growthRateEngineers = growthRateEngineers * .9;
+	}
+	
+	/**
 	 * Removes a researcher.
 	 */
 	public void removeOneResearcher() {
@@ -232,6 +291,37 @@ public class Population implements Serializable, Temporal {
 	}
 	
 	/**
+	 * Removes an engineer.
+	 */
+	public void removeOneEngineer() {
+	
+		int rand = RandomUtil.getRandomInt(colonists.size() - 1);
+	
+		List<Colonist> list = new ArrayList<>(colonists);
+		
+		Colonist c = list.get(rand);
+		
+		colonists.remove(c);
+
+		Nation nation = colony.getNation();
+		
+		if (nation == null) {
+//			String countryName = colony.getAuthority().getOneCountry();
+//			logger.warning("Colony: " + colony.getName() 
+//							+ "  Sponsor: " + colony.getAuthority().getName()
+//							+ "  Country: " + countryName);
+		}
+		else {
+			// Go back to one's nation pool
+			nation.addColonist(c);
+			((ColonistEngineer)c).setColony(null);	
+		}
+		
+		// Speed up the growth rate as an engineer has just been removed
+		growthRateEngineers = growthRateEngineers * .9;		
+	}
+	
+	/**
 	 * Gets a set of researchers.
 	 * 
 	 * @return
@@ -259,6 +349,10 @@ public class Population implements Serializable, Temporal {
 	}
 	
 	public int getNumResearchers() {
+		return (int)numResearchers;
+	}
+	
+	public int getNumEngineers() {
 		return (int)numResearchers;
 	}
 	

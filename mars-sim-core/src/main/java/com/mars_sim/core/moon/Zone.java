@@ -84,6 +84,21 @@ public class Zone implements Serializable, Temporal {
 				
 				growthRate += RandomUtil.getRandomDouble(-0.01 + score, 0.011 + score);
 			}
+			else if (ZoneType.ENGINEERING == type) {
+				int numEngineer = colony.getPopulation().getNumEngineers();
+				int numDevelopmentProj = colony.getNumDevelopmentProjects();
+				double developmentValue = colony.getTotalDevelopmentValue();
+				double score = 0;
+				if (numEngineer > 0 && numDevelopmentProj > 0)
+					score = Math.log10(1 +  developmentValue / 5 / numDevelopmentProj / numEngineer);
+//				logger.info(colony.getName() + " research: " + score
+//						+ "  researchValue: " + researchValue
+//						+ "  numResearchProj: " + numResearchProj
+//						);
+				score = Math.max(.4, Math.min(-.4, score));
+				
+				growthRate += RandomUtil.getRandomDouble(-0.01 + score, 0.011 + score);
+			}
 			else {
 				
 				growthRate += RandomUtil.getRandomDouble(-0.01, 0.011);
