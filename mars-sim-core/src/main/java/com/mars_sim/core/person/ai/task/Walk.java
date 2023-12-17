@@ -218,9 +218,6 @@ public class Walk extends Task {
 		addPhase(CLIMB_DOWN_LADDER);
 
 		setPhase(getWalkingStepPhase());
-
-		// Release any starting actvity spot
-		worker.setActivitySpot(null);
 	}
 
 	public Walk(Robot robot, WalkingSteps walkingSteps) {
@@ -235,9 +232,6 @@ public class Walk extends Task {
 		addPhase(WALKING_SETTLEMENT_INTERIOR);
 
 		setPhase(getWalkingStepPhase());
-
-		// Release any starting actvity spot
-		worker.setActivitySpot(null);
 	}
 
 	/**

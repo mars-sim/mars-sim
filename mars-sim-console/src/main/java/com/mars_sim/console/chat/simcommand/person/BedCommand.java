@@ -32,11 +32,9 @@ public class BedCommand extends AbstractPersonCommand {
 			ActivitySpot bedSpot = bed.getAllocated();
 			StringBuilder responseText = new StringBuilder();
 			responseText.append("My designated quarters is ");
-			responseText.append(bedSpot.getName() + " at ");
+			responseText.append(bed.getSpotDescription() + " (");
 			responseText.append(bedSpot.getPos().getShortFormat());
-			responseText.append(" in ");
-			responseText.append(bed.getOwner());
-			responseText.append(" at ");
+			responseText.append(") at ");
 			responseText.append(person.getAssociatedSettlement());
 
 			context.println(responseText.toString());

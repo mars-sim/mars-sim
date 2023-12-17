@@ -304,7 +304,7 @@ public class BuildingManager implements Serializable {
 		int result = 0;
 		Set<Building> bs = getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
 		for (Building building : bs) {
-			result += building.getLivingAccommodations().getTotalBeds();
+			result += building.getLivingAccommodations().getBedCap();
 		}
 		popCap = result;
 	}
@@ -574,10 +574,6 @@ public class BuildingManager implements Serializable {
 			Building b = i.next();
 			if (b.getTemplateID() == id) {
 				result = b;
-				// return b;
-				// NOTE: do NOT use return b or else it fails maven test.
-				// break;
-				// NOTE: the word 'break' here will cause maven test to fail
 			}
 		}
 
@@ -650,7 +646,6 @@ public class BuildingManager implements Serializable {
 	 * @return list of buildings
 	 */
 	public Set<Building>getBuildingsWithScienceType(Person person, ScienceType type) {
-//		return buildings.stream().filter(b -> b.hasSpecialty(type)).collect(Collectors.toSet());
 		
 		if (person.getBuildingLocation() != null) {
 			return buildings
@@ -736,32 +731,6 @@ public class BuildingManager implements Serializable {
 				.collect(Collectors.toSet());
 	}
 	
-	/**
-	 * Gets a quarter randomly.
-	 * 
-	 * @param person
-	 * @return
-	 */
-	public static Building getRandomQuarter(Person person) {
-		Building b = null;
-
-		// If this person is located in the settlement
-		Settlement settlement = person.getAssociatedSettlement();	
-		if (settlement != null) {
-			
-			Set<Building> set = settlement.getBuildingManager()
-					.getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
-
-	    	if (set.isEmpty())
-				return null;
-			
-			Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
-						set);
-			b = RandomUtil.getWeightedRandomObject(probs);
-		}
-		
-		return b;
-	}
 	
 	/**
 	 * Gets an available dining building that the person can use. Returns null if no
@@ -783,7 +752,7 @@ public class BuildingManager implements Serializable {
 			if (list0.isEmpty())
 				return null;
 			
-			Set<Building> list1 = list0;// BuildingManager.getWalkableBuildings(person, list0);
+			Set<Building> list1 = list0;
 			if (list1.isEmpty()) {
 				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
 						list0);
@@ -3001,111 +2970,6 @@ public class BuildingManager implements Serializable {
 			.collect(Collectors.groupingBy(x -> (x.getCategory() == cat)));
 	}
 	
-
-	/**
-	 * Gets the best available living accommodations building that the person can
-	 * use. Returns null if no living accommodations building is currently
-	 * available.
-	 *
-	 * @param person   the person
-	 * @param unmarked does the person wants an unmarked(aka undesignated) bed ?
-	 * @param sameZone must be in the same zone. True if it's optional to be in the same zone.                
-	 * @return a building with available bed(s)
-	 */
-	public static Building getBestAvailableQuarters(Person person, boolean unmarked, boolean sameZone) {
-
-		Building result = null;
-		Building localBldg = person.getBuildingLocation();
-		
-		if (person.isInSettlement()) {
-			Set<Building> set0 = person.getSettlement().getBuildingManager()
-					.getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
-
-			if (sameZone && localBldg != null) {
-				set0 = set0
-						.stream()
-						.filter(b -> b.getZone() == localBldg.getZone()
-								&& !b.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
-								&& !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());
-			}
-			else if (!sameZone) {
-				// If the person is not in a building or 
-				// the quarters is not required to be in the same zone
-				set0 = set0
-						.stream()
-						.filter(b -> !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());		
-			}
-			
-			Set<Building> set1 = BuildingManager.getNonMalfunctioningBuildings(set0);
-			if (set1.isEmpty()) {
-				return getBestQuarters(person, set0);
-			}
-			
-			Set<Building> set2 = getQuartersWithEmptyBeds(set1, unmarked);
-			if (set2.isEmpty()) {
-				return getBestQuarters(person, set1);
-			}
-			
-			Set<Building> set3 = BuildingManager.getLeastCrowdedBuildings(set2);
-			if (set3.isEmpty()) {
-				return getBestQuarters(person, set2);
-			}
-
-			return getBestQuarters(person, set3);
-		}
-
-		return result;
-	}
-
-	
-	/**
-	 * Gets living accommodations with empty beds from a list of buildings with the
-	 * living accommodations function.
-	 *
-	 * @param buildingList list of buildings with the living accommodations
-	 *                     function.
-	 * @param unmarked     does the person wants an unmarked(aka undesignated) bed
-	 *                     or not.
-	 * @return list of buildings with empty beds.
-	 */
-	private static Set<Building> getQuartersWithEmptyBeds(Set<Building> buildingList, boolean unmarked) {
-		Set<Building> result = new UnitSet<>();
-
-		for (Building building : buildingList) {
-			LivingAccommodations quarters = building.getLivingAccommodations();
-			boolean hasUnoccupiedSpots = quarters.getNumEmptyActivitySpots() > 0;
-			boolean hasEmptyGuestBed = quarters.hasEmptyGuestBed();
-			
-			// Check if an unmarked bed is wanted
-			if (unmarked && quarters.hasAnUnmarkedBed() && hasUnoccupiedSpots) {
-				result.add(building);
-			}
-			else if (unmarked && hasEmptyGuestBed) {
-				result.add(building);
-			}
-			else if (hasUnoccupiedSpots) {
-				result.add(building);
-			}
-		}
-
-		return result;
-	}
-	
-	
-	/**
-	 * Gets the best quarters.
-	 * 
-	 * @param person
-	 * @param set
-	 * @return
-	 */
-	private static Building getBestQuarters(Person person, Set<Building> set) {
-		Map<Building, Double> probs = getBestRelationshipBuildings(person,
-				set);
-		return RandomUtil.getWeightedRandomObject(probs);
-	}
 	
 	/**
 	 * Sets the probability of impact per square meter per sol. 

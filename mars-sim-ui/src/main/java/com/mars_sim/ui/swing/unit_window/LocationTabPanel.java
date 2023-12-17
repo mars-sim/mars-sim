@@ -459,7 +459,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		if (unit instanceof Worker w) {
 			var allocated = w.getActivitySpot();
 			if (allocated != null) {
-				n5 = allocated.getAllocated().getName() + " @ " + allocated.getOwner().getName();
+				n5 = allocated.getSpotDescription();
 			}
 		}
 		

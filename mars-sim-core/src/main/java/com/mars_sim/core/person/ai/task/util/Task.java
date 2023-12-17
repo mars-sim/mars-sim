@@ -46,7 +46,6 @@ import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.LifeSupport;
-import com.mars_sim.core.structure.building.function.LivingAccommodations;
 import com.mars_sim.core.structure.building.function.farming.CropConfig;
 import com.mars_sim.core.structure.construction.ConstructionConfig;
 import com.mars_sim.core.time.MarsTime;
@@ -1081,45 +1080,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Walks to a guest bed.
-	 * 
-	 * @param building the building the bed is at
-	 * @param person the person who walks to the bed
-	 * @param allowFail true if allowing the walk task to fail
-	 */
-	protected boolean walkToGuestBed(Person person, boolean allowFail) {
-		LocalPosition bed = null;
-		Building target = null;
-		
-		Set<Building> set = person.getSettlement().getBuildingManager()
-				.getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
-		
-		for (Building building : set) {
-			LivingAccommodations quarters = building.getLivingAccommodations();
-			bed = quarters.getEmptyGuestBed();
-			if (bed != null) {
-				target = building;
-				// Converts a settlement-wide bed location back to an activity spot within a building
-				Function f = building.getFunction(FunctionType.LIVING_ACCOMMODATIONS);
-				
-				// Create subtask for walking to destination.
-				boolean canWalk = createWalkingSubtask(target, bed, allowFail);
-				if (canWalk) {
-					// Register this person to use this guest bed
-					quarters.registerGuestBed(person.getIdentifier());
-					
-					// Add the person to this activity spot
-					f.claimActivitySpot(bed, person);
-					
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
-	
-	/**
 	 * Walks to the bed previously assigned for this person.
 	 * 
 	 * @param person the person who walks to the bed
@@ -1136,7 +1096,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		
 		// Check my own position
 		LocalPosition myLoc = person.getPosition();
-		
+		person.setActivitySpot(bed);
+
 		if (myLoc.equals(bed.getAllocated().getPos())) {
 			logger.info(person, 10_000L, "Already in my own bed.");
 			return canWalk;

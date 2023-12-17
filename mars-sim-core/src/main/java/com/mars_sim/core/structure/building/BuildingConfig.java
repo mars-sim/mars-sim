@@ -75,10 +75,8 @@ public class BuildingConfig {
 	private static final String CONVERSION = "thermal-conversion";
 	private static final String PERCENT_LOADING = "percent-loading";
 
-	private static final String ACCOMMODATIONS = "living-accommodations";
 	private static final String MEDICAL_CARE = "medical-care";
 	private static final String BEDS = "beds";
-	private static final String GUEST = "guest";
 	private static final String VEHICLE_MAINTENANCE = "vehicle-maintenance";
 	private static final String PARKING_LOCATION = "parking-location";
 	private static final String FLYER_LOCATION = "flyer-location";
@@ -268,13 +266,6 @@ public class BuildingConfig {
 		Element medicalElement = functionsElement.getChild(MEDICAL_CARE);
 		if (medicalElement != null) {
 			Set<LocalPosition> beds = parsePositions(medicalElement, BEDS, BED_LOCATION,
-												width, length);
-			newSpec.setBeds(beds);
-		}
-		
-		Element accommodationsElement = functionsElement.getChild(ACCOMMODATIONS);
-		if (accommodationsElement != null) {
-			Set<LocalPosition> beds = parsePositions(accommodationsElement, GUEST, ACTIVITY_SPOT,
 												width, length);
 			newSpec.setBeds(beds);
 		}

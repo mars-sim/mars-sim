@@ -289,6 +289,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 		// Set the person's status of death
 		isBuried = false;
 
+
 		// Add this person as a citizen
 		settlement.addACitizen(this);
 		// Set the container unit
@@ -344,9 +345,9 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 		eVATaskTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		// Create a set of collaborative studies
 		collabStudies = new HashSet<>();
+
 		// Construct the EquipmentInventory instance.
 		eqmInventory = new EquipmentInventory(this, carryingCapacity);
-		
 		eqmInventory.setResourceCapacity(ResourceUtil.foodID, CARRYING_CAPACITY_FOOD);
 	}
 
@@ -2443,7 +2444,8 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	 */
 	@Override
 	public void setActivitySpot(AllocatedSpot newSpot) {
-		if (spot != null) {
+		// Check the spot is really chnging and not just a reallocation
+		if ((spot != null) && !spot.equals(newSpot)) {
 			spot.leave(this, false);
 		}
 		spot = newSpot;

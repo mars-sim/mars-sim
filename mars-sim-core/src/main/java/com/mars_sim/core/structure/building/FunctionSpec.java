@@ -20,7 +20,6 @@ public class FunctionSpec {
 	public static final String CAPACITY = "capacity";
 	private static final String AREA = "area";
 	private static final String DEPTH = "depth";
-	public static final String GUEST_BED = "guest";
 	public static final String BED = "bed";
 
 	// Name of the standard tech level property
@@ -73,13 +72,6 @@ public class FunctionSpec {
 	public double getDepth() {
 		return getDoubleProperty(DEPTH);
 	}
-	
-	/**
-	 * Gets the value of the standard bed property.
-	 */
-	public int getGuestBeds() {
-		return getIntegerProperty(GUEST_BED);
-	}
 
 	/**
 	 * Gets the value of the standard TechLevel property.
@@ -127,6 +119,23 @@ public class FunctionSpec {
 	}
 
 	/**
+	 * Gets a Function property as a boolean object.
+	 * 
+	 * @param propName
+	 * @return
+	 */
+    public boolean getBoolProperty(String propName, boolean defaultValue) {
+		Object value = props.get(propName);
+		if (value == null) {
+			return defaultValue;
+		}
+		if (value instanceof Boolean v) {
+			return v;
+		}
+		return Boolean.parseBoolean((String) value);
+    }
+
+	/**
 	 * Sets the building specs instance.
 	 * 
 	 * @param spec
@@ -143,4 +152,5 @@ public class FunctionSpec {
 	public BuildingSpec getBuildingSpec() {
 		return buildingSpec;
 	}
+
 }
