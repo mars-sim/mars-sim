@@ -88,13 +88,10 @@ public class WalkSettlementInterior extends Task {
 		this.settlement = person.getSettlement();
 		this.destBuilding = destinationBuilding;
 		this.destPosition = destinationPosition;
-//		this.destZLoc = destinationZLocation;
 		
-		// Check if (destXLoc, destYLoc) is within destination building.
 		if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(destPosition, destBuilding)) {
-			logger.warning(person, 60_000L, "Unable to walk from " + person.getPosition() 
-				+ " in " + person.getBuildingLocation() 
-				+ " to " + destPosition + " in " + destBuilding + ".");
+			logger.warning(person, 60_000L, "Destination position " + destPosition + " is not inside "
+						+ destBuilding + " @ " + LocalAreaUtil.getDescription(destinationBuilding));
 			endTask();
 			return;
 		}
@@ -115,9 +112,11 @@ public class WalkSettlementInterior extends Task {
 	
 			// If no valid walking path is found, end task.
 			if (walkingPath == null) {
-				logger.warning(person, 60_000L, "Unable to walk from " + startBuilding.getNickName() + " to "
-						+ destinationBuilding.getNickName());
-//				person.getMind().getTaskManager().clearAllTasks("No valid interior path.");
+				logger.warning(person, 60_000L, "No walkable path from "
+						+ person.getPosition() + " in "
+						+ startBuilding.getName() + " to "
+						+ destPosition + " in "
+						+ destinationBuilding.getName());
 				endTask();
 				return;
 			}
@@ -157,9 +156,8 @@ public class WalkSettlementInterior extends Task {
 		
 		// Check that destination location is within destination building.
 		if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(destPosition, destBuilding)) {
-			logger.warning(robot, 60_000L, "Unable to walk from " + robot.getPosition() 
-				+ " in " + robot.getBuildingLocation() 
-				+ " to " + destPosition + " in " + destBuilding + ".");
+			logger.warning(worker, 60_000L, "Destination position " + destPosition + " is not inside "
+						+ destBuilding + " @ " + LocalAreaUtil.getDescription(destinationBuilding));
 			endTask();
 			return;
 		}
@@ -180,9 +178,11 @@ public class WalkSettlementInterior extends Task {
 	
 			// If no valid walking path is found, end task.
 			if (walkingPath == null) {
-				logger.warning(robot, 60_000L, "Unable to walk from " + startBuilding.getNickName() + " to "
-						+ destinationBuilding.getNickName());
-	//			robot.getBotMind().getBotTaskManager().clearAllTasks("No valid interior path.");
+				logger.warning(robot, 60_000L, "No walkable path from "
+						+ robot.getPosition() + " in "
+						+ startBuilding.getName() + " to "
+						+ destPosition + " in "
+						+ destinationBuilding.getName());
 				endTask();
 				return;
 			}
@@ -248,11 +248,6 @@ public class WalkSettlementInterior extends Task {
 			if (speedKPH > 0) {
 				double usedTime = MarsTime.convertSecondsToMillisols(coveredMeters / speedKPH * 3.6);
 				remainingTime = remainingTime - usedTime;
-//				logger.info(worker, 20_000L, "time: " + Math.round(time * 1000.0)/1000.0
-//						+ "  speedKPH: " + Math.round(speedKPH * 1000.0)/1000.0
-//						+ "  coveredMeters: " + Math.round(coveredMeters * 1000.0)/1000.0
-//						+ "  remainingTime: " + Math.round(remainingTime * 1000.0)/1000.0
-//						+ "  usedTime: " + Math.round(usedTime * 1000.0)/1000.0);
 			}
 			
 			if (remainingTime < 0)
@@ -276,10 +271,6 @@ public class WalkSettlementInterior extends Task {
 				
 				if (!changeBuildings(location)) {
 					logger.severe(worker, "Unable to change building.");
-//					if (worker.getUnitType() == UnitType.PERSON)
-//						((Person)worker).getMind().getTaskManager().clearAllTasks("Unable to change building");
-//					else
-//						((Robot)worker).getBotMind().getBotTaskManager().clearAllTasks("Unable to change building");
 				}
 				
 				if (!walkingPath.isEndOfPath()) {
@@ -297,7 +288,6 @@ public class WalkSettlementInterior extends Task {
 				walkInDirection(direction, coveredMeters);
 
 				// Set person at next path location, changing buildings if necessary.
-				// TODO Is this right because the walk in direction also updates 
 				worker.setPosition(location.getPosition());
 				
 				coveredMeters = 0;

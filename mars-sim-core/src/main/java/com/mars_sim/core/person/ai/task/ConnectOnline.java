@@ -64,9 +64,7 @@ public class ConnectOnline extends Task {
 		computingNeeded = TOTAL_COMPUTING_NEEDED;
 		
 		if (person.isInSettlement()) {
-			// set the boolean to true so that it won't be done again today
-//			person.getPreference().setTaskDue(this, true);
-			
+			// set the boolean to true so that it won't be done again today			
 			List<FunctionType> types = List.of(FunctionType.COMMUNICATION, 
 											FunctionType.ADMINISTRATION,
 											FunctionType.MANAGEMENT,
@@ -91,7 +89,7 @@ public class ConnectOnline extends Task {
 				// Go back to his bed
 				if (person.hasBed()) {
 					// Walk to the bed
-					walkToBed(person.getQuarters(), person, true);	
+					walkToBed(person, true);	
 					proceed = true;
 				}
 			}
@@ -107,8 +105,6 @@ public class ConnectOnline extends Task {
 		
 		// Note: this task can be done in principle anywhere using tablets and handheld device
 		// but preferably it will look for a suitable location first
-//		proceed = true;
-
 		if (proceed) {
 			setDescription(connection.getName());
 			// Initialize phase

@@ -10,6 +10,7 @@ package com.mars_sim.core.structure.building.function;
 import java.io.Serializable;
 
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
@@ -30,19 +31,23 @@ public final class ActivitySpot implements Serializable {
 		private static final long serialVersionUID = 1L;
 		
 		private ActivitySpot spot;
+		private Building owner;
 
-		private AllocatedSpot(ActivitySpot spot) {
+		private AllocatedSpot(Building owner, ActivitySpot spot) {
 			this.spot = spot;
+			this.owner = owner;
 		}
 
 		/**
-		 * Releases a previously allocated activity spot.
+		 * Leave a previously allocated activity spot.
 		 * 
 		 * @param w Worker releasing
+		 * @param release Release the permanent reservation
 		 */
-		public void release(Worker w) {
-			spot.release(w);
-			spot = null;
+		public void leave(Worker w, boolean release) {
+			if (spot.leave(w, release)) {
+				spot = null;
+			}
 		}
 
 		/**
@@ -51,15 +56,26 @@ public final class ActivitySpot implements Serializable {
 		public ActivitySpot getAllocated() {
 			return spot;
 		}
+
+		/**
+		 * Get the owner of this allocation.
+		 * @return
+		 */
+		public Building getOwner() {
+			return owner;
+		}
 	}
 
 	private static final int EMPTY_ID = -1;
 
 	private int id;
-
+	private String name;
 	private LocalPosition pos;
+
+	private boolean permanent;
 	
-	ActivitySpot(LocalPosition pos) {
+	ActivitySpot(String name, LocalPosition pos) {
+		this.name = name;
 		this.pos = pos;
 		this.id = EMPTY_ID;
 	}
@@ -70,27 +86,35 @@ public final class ActivitySpot implements Serializable {
 	 * Returns a callback instance to allow the spot to be released in the future.
 
 	 * @param w Worker claiming
+	 * @param permanent Permanent reservation
+	 * @param allocator Building that is doing the allocation.
 	 * @return Allocation reference or null if it is already allocated
 	 */
-	AllocatedSpot claim(Worker w) {
+	AllocatedSpot claim(Worker w, boolean permanent, Building allocator) {
 		if (id == EMPTY_ID) {
 			id = w.getIdentifier();
-			return new AllocatedSpot(this);
+			this.permanent = permanent;
+			return new AllocatedSpot(allocator, this);
 		}
 		return null;
 	}
 
 	/**
-	 * Releases this spot for the given worker. Release is ignored if the worker
+	 * Leaves this spot for the given worker. Release is ignored if the worker
 	 * does not own the spot.
 	 * 
-	 * @param w Worker doing the release.
+	 * @param w Worker leaving the spot
+	 * @param release Release any permanent reservation.
+	 * @return Allocation releases
+	 * 
 	 */
-	private void release(Worker w) {
-		// Only release it if still allocated to the worker
-		if (id == w.getIdentifier()) {
+	private boolean leave(Worker w, boolean release) {
+		// Only leave it if still allocated to the worker
+		if (id == w.getIdentifier() && (release || !permanent)) {
 			id = EMPTY_ID;
+			return true;
 		}
+		return false;
 	}
 
 	/**
@@ -108,6 +132,14 @@ public final class ActivitySpot implements Serializable {
 	public int getID() {
 		return id;
 	}
+
+	/**
+	 * Gets the name of the spot.
+	 * @return Name of the spot
+	 */
+	public String getName() {
+		return name;
+	}		
 
 	public LocalPosition getPos() {
 		return pos;

@@ -205,4 +205,10 @@ public interface Worker extends Loggable, UnitIdentifer, EquipmentOwner, SkillOw
 	 * @see ActivitySpot#release(Worker)
 	 */
     public void setActivitySpot(AllocatedSpot spot);
+
+	/**
+	 * Get the activity spot allocated to a Worker
+	 * @return
+	 */
+	public AllocatedSpot getActivitySpot();
 }

@@ -18,12 +18,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.swing.JPanel;
 
@@ -34,6 +37,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.construction.ConstructionSite;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -54,6 +58,7 @@ public class SettlementMapPanel extends JPanel {
 	private static final String PERSON_LBL_PROP = "PERSON_LABELS";
 	private static final String VEHICLE_LBL_PROP = "VEHICLE_LABELS";
 	private static final String ROBOT_LBL_PROP = "ROBOT_LABELS";
+	private static final String SPOT_LBL_PROP = "SPOT_LABELS_";
 	private static final String SETTLEMENT_PROP = "SETTLEMENT";
 	private static final String DAYLIGHT_PROP = "DAYLIGHT_LAYER";
 	private static final String X_PROP = "XPOS";
@@ -83,6 +88,8 @@ public class SettlementMapPanel extends JPanel {
 	private boolean showPersonLabels;
 	private boolean showVehicleLabels;
 	private boolean showRobotLabels;
+	private Set<FunctionType> showSpotLabels = new HashSet<>();
+
 	private boolean showDaylightLayer;
 
 	private MainDesktopPane desktop;
@@ -149,7 +156,11 @@ public class SettlementMapPanel extends JPanel {
 		showRobotLabels = UIConfig.extractBoolean(userSettings, ROBOT_LBL_PROP, false);
 		showDaylightLayer = UIConfig.extractBoolean(userSettings, DAYLIGHT_PROP, false); 
 
-
+		for(FunctionType ft : FunctionType.values()) {
+			if (UIConfig.extractBoolean(userSettings, SPOT_LBL_PROP + ft.name(), false)) {
+				showSpotLabels.add(ft);
+			}
+		}
 		selectedBuilding = new HashMap<>();
 		selectedPerson = new HashMap<>();
 		selectedRobot = new HashMap<>();
@@ -191,7 +202,8 @@ public class SettlementMapPanel extends JPanel {
 		mapLayers = new ArrayList<>();
 		mapLayers.add(new BackgroundTileMapLayer(this));
 		mapLayers.add(dayNightMapLayer);
-		mapLayers.add(new StructureMapLayer(this));
+		mapLayers.add(new BuildingMapLayer(this));
+		mapLayers.add(new ConstructionMapLayer(this));
 		mapLayers.add(new VehicleMapLayer(this));
 		mapLayers.add(new PersonMapLayer(this));
 		mapLayers.add(new RobotMapLayer(this));
@@ -653,7 +665,7 @@ public class SettlementMapPanel extends JPanel {
 		while (j.hasNext()) {
 			ConstructionSite s = j.next();
 
-			if (!StructureMapLayer.getConstructionLabel(s).equals(Msg.getString("LabelMapLayer.noConstruction"))) {
+			if (!ConstructionMapLayer.getConstructionLabel(s).equals(Msg.getString("LabelMapLayer.noConstruction"))) {
 				double width = s.getWidth();
 				double length = s.getLength();
 				int facing = (int) s.getFacing();
@@ -935,8 +947,54 @@ public class SettlementMapPanel extends JPanel {
 	 *
 	 * @param showLabels true if building labels should be displayed.
 	 */
-	public void setShowBuildingLabels(boolean showLabels) {
+	void setShowBuildingLabels(boolean showLabels) {
 		this.showBuildingLabels = showLabels;
+		repaint();
+	}
+
+	/**
+	 * Reverse the settings of the Spot label
+	 * @param possible The range of possible values
+	 */
+	void reverseSpotLabels(Collection<FunctionType> possible) {
+		if (!showSpotLabels.isEmpty()) {
+			showSpotLabels.clear();
+		}
+		else {
+			showSpotLabels.addAll(possible);
+		}
+	}
+
+	/**
+	 * Checks if building spots should be displayed.
+	 * @param ft
+	 *
+	 * @return true if building activity spots should be displayed.
+	 */
+	boolean isShowSpotLabels(FunctionType ft) {
+		return showSpotLabels.contains(ft);
+	}
+
+	/**
+	 * Get all active Function Activity Spots enabled
+	 */
+	Set<FunctionType> getShowSpotLabels() {
+		return showSpotLabels;
+	}
+
+	/**
+	 * Sets if spot labels should be displayed.
+	 * @param ft
+	 *
+	 * @param showLabels true if spot labels should be displayed.
+	 */
+	void setShowSpotLabels(FunctionType ft, boolean showLabels) {
+		if (showLabels) {
+			this.showSpotLabels.add(ft);
+		}
+		else {
+			this.showSpotLabels.remove(ft);
+		}
 		repaint();
 	}
 
@@ -1056,10 +1114,9 @@ public class SettlementMapPanel extends JPanel {
 			g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
 			// Display all map layers.
-			Iterator<SettlementMapLayer> i = mapLayers.iterator();
-			while (i.hasNext()) {
-				// Add building parameter
-				i.next().displayLayer(g2d, settlement, null, xPos, yPos, getWidth(), getHeight(), rotation, scale);
+			var viewpoint = new MapViewPoint(g2d, xPos, yPos, getWidth(), getHeight(), rotation, scale);
+			for(SettlementMapLayer layer : mapLayers) {
+				layer.displayLayer(settlement, viewpoint);
 			}
 		}
 	}
@@ -1091,6 +1148,9 @@ public class SettlementMapPanel extends JPanel {
 		props.setProperty(ROTATION_PROP, Double.toString(rotation));
 		props.setProperty(SCALE_PROP, Double.toString(scale));
 
+		for(FunctionType ft : showSpotLabels) {
+			props.setProperty(SPOT_LBL_PROP + ft.name(), "true");
+		}
 		return props;
 	}
 
@@ -1115,5 +1175,4 @@ public class SettlementMapPanel extends JPanel {
 		selectedRobot = null;
 		settlementTransparentPanel = null;
 	}
-
 }

@@ -76,7 +76,6 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.ActivitySpot;
 import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.ClockPulse;
@@ -115,17 +114,17 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	private static final String EARTHLING = "Earthling";
 
 	/** The average height of a person. */
-	private static final double averageHeight;
+	private static  double averageHeight;
 	/** The average weight of a person. */
-	private static final double averageWeight;
+	private static  double averageWeight;
 	/** The average upper height of a person. */
-	private static final double tall;
+	private static  double tall;
 	/** The average low height of a person. */
-	private static final double shortH;
+	private static  double shortH;
 	/** The average high weight of a person. */
-	private static final double highW;
+	private static  double highW;
 	/** The average low weight of a person. */
-	private static final double lowW;
+	private static  double lowW;
 
 	// Transient data members
 	/** The extrovert score of a person. */
@@ -143,8 +142,6 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	private LocalDate birthDate;
 	/** The age of a person */
 	private int age = -1;
-	/** The quarters that the person belongs. */
-	private int quartersInt = -1;
 	/** The current building location of the person. */
 	private int currentBuildingInt;
 	/** The carrying capacity of the person. */
@@ -205,7 +202,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	/** Person's ReportingAuthority instance. */
 	private Authority ra;
 	/** The bed location of the person */
-	private LocalPosition bed;
+	private AllocatedSpot bed;
 	/** The person's current scientific study. */
 	private ScientificStudy study;
 	/** The person's EquipmentInventory instance. */
@@ -833,15 +830,10 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	 * Deregisters the person's quarters.
 	 */
 	void deregisterBed() {
-		
-		if (quartersInt != -1) {
+		if (bed != null) {
 			// Release the bed
-			unitManager.getBuildingByID(quartersInt).getLivingAccommodations().releaseBed(this);
-			// Release quarters id
-			quartersInt = -1;
-			// Empty the bed
-			if (bed != null)
-				bed = null;
+			bed.leave(this, true);
+			bed = null;
 		}
 	}
 
@@ -1385,38 +1377,24 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	}
 
 	/**
-	 * Gets the assigned quarters.
-	 * 
-	 * @return
-	 */
-	public Building getQuarters() {
-		return unitManager.getBuildingByID(quartersInt);
-	}
-
-	/**
-	 * Gets the assigned quarters.
-	 * 
-	 * @param b
-	 */
-	public void setQuarters(Building b) {
-		this.quartersInt = b.getIdentifier();
-	}
-
-	/**
 	 * Gets the settlement location of this bed.
 	 * 
 	 * @return
 	 */
-	public LocalPosition getBed() {
+	public AllocatedSpot getBed() {
 		return bed;
 	}
 
-	public void setBed(LocalPosition bed) {
-		this.bed = bed;
-	}
+	/**
+	 * Assign a bed to this person.
+	 * 
+	 * @param bed2 The assignment
+	 */
+	public void setBed(AllocatedSpot bed2) {
+		this.bed = bed2;	}
 
 	public boolean hasBed() {
-		return bed != null;// && getQuarters() != null;
+		return bed != null;
 	}
 	
 	public String getCountry() {
@@ -2450,8 +2428,12 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 		return inviteeId;
 	}
 	
-	public ActivitySpot getActivitySpot() {
-		return (spot != null ? spot.getAllocated() : null);
+	/**
+	 * Get the allocated activity spot
+	 */
+	@Override
+	public AllocatedSpot getActivitySpot() {
+		return spot;
 	}
 	
 	/**
@@ -2462,7 +2444,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	@Override
 	public void setActivitySpot(AllocatedSpot newSpot) {
 		if (spot != null) {
-			spot.release(this);
+			spot.leave(this, false);
 		}
 		spot = newSpot;
 	}
@@ -2499,7 +2481,6 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 		// Hash must be constant and not depend upon changing attributes
 		return getIdentifier() % 64;
 	}
-
 
 	@Override
 	public void destroy() {

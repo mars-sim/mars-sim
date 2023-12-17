@@ -406,15 +406,12 @@ public class EatDrink extends Task {
 		}
 
 		// Create subtask for walking to destination.
-		if (loc != null) {
-			// Convert the local activity spot to the settlement reference coordinate
-			LocalPosition sLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
-			
-			boolean canWalk = createWalkingSubtask(building, sLoc, allowFail);
+		if (loc != null) {			
+			boolean canWalk = createWalkingSubtask(building, loc, allowFail);
 		
 			if (canWalk) {
 				// Set the new position
-				person.setPosition(sLoc);
+				person.setPosition(loc);
 						
 				// Add the person to this activity spot
 				f.claimActivitySpot(loc, person);

@@ -28,9 +28,9 @@ public class FunctionSpec {
 
 	private BuildingSpec buildingSpec;
 	private Map<String, Object> props;
-	private Set<LocalPosition> spots;
+	private Set<NamedPosition> spots;
 
-	public FunctionSpec(Map<String, Object> props, Set<LocalPosition> spots) {
+	public FunctionSpec(Map<String, Object> props, Set<NamedPosition> spots) {
 		this.props = props;
 		if (spots == null) {
 			this.spots = Collections.emptySet();
@@ -39,7 +39,7 @@ public class FunctionSpec {
 		}
 	}
 
-	public Set<LocalPosition> getActivitySpots() {
+	public Set<NamedPosition> getActivitySpots() {
 		return spots;
 	}
 

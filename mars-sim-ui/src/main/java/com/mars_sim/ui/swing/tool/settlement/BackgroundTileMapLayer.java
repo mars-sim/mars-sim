@@ -16,18 +16,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.ui.swing.ImageLoader;
 
 /**
  * A settlement map layer for displaying background tile images.
  * It handles translation, rotation, and scaling of the tiles.
  */
-public class BackgroundTileMapLayer
-implements SettlementMapLayer {
-
-	/** default logger. */
-//	May add back private static SimLogger logger = SimLogger.getLogger(BackgroundTileMapLayer.class.getName())
+public class BackgroundTileMapLayer implements SettlementMapLayer {
 
 	// Static members.
 	// This pointer prefix points to an image file in icons.properties
@@ -49,11 +44,16 @@ implements SettlementMapLayer {
 	}
 
 	@Override
-	public void displayLayer(Graphics2D g2d, Settlement settlement, Building building, double xPos, 
-			double yPos, int mapWidth, int mapHeight, double rotation, double scale) {
+	public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
 
 		// Save original graphics transforms.
+		var g2d = viewpoint.graphics();
 		AffineTransform saveTransform = g2d.getTransform();
+
+		double scale = viewpoint.scale();
+		int mapHeight = viewpoint.mapHeight();
+		int mapWidth = viewpoint.mapWidth();
+		double rotation = viewpoint.rotation();
 
 		// Clear background tile image if settlement has changed.
 		if (settlement != null && !settlement.equals(currentSettlement)) {
@@ -95,10 +95,10 @@ implements SettlementMapLayer {
 
 		if (backgroundTileImage != null) {
 
-			int offsetX = (int) Math.round(xPos * scale);
+			int offsetX = (int) Math.round(viewpoint.xPos() * scale);
 			int tileWidth = backgroundTileImage.getWidth(mapPanel);
 			int bufferX = (int) Math.round(diagonal - mapWidth);
-			int tileCenterOffsetX = (int) Math.round((mapWidth / 2) % tileWidth - 1.5F * tileWidth);
+			int tileCenterOffsetX = (int) Math.round((mapWidth / 2D) % tileWidth - 1.5F * tileWidth);
 
 			// Calculate starting X position for drawing tile.
 			int startX = tileCenterOffsetX;
@@ -120,10 +120,10 @@ implements SettlementMapLayer {
 
 			for (int x = startX; x < endX; x+= tileWidth) {
 
-				int offsetY = (int) Math.round(yPos * scale);
+				int offsetY = (int) Math.round(viewpoint.yPos() * scale);
 				int tileHeight = backgroundTileImage.getHeight(mapPanel);
 				int bufferY = (int) Math.round(diagonal - mapHeight);
-				int tileCenterOffsetY = (int) Math.round((mapHeight / 2) % tileHeight - 1.5F * tileHeight);
+				int tileCenterOffsetY = (int) Math.round((mapHeight / 2D) % tileHeight - 1.5F * tileHeight);
 
 				// Calculate starting Y position for drawing tile.
 				int startY = tileCenterOffsetY;
@@ -193,21 +193,6 @@ implements SettlementMapLayer {
 			int xOffset = 0;
 			int yOffset = 0;
 			
-			// Warning: The purpose of the following code block is unknown
-			// It causes the texture of the background tile to shift undesirably with respect to the buildings
-			
-//			if ((w > MAX_BACKGROUND_DIMENSION) || (h > MAX_BACKGROUND_DIMENSION)) {
-//				float reductionW = (float) MAX_BACKGROUND_DIMENSION / (float) w;
-//				float reductionH = (float) MAX_BACKGROUND_DIMENSION / (float) h;
-//				float reduction = Math.min(reductionH, reductionW);
-//
-//				bufferWidth = (int) (w * reduction);
-//				bufferHeight = (int) (h * reduction);
-//
-//				xOffset = (w - bufferWidth) / -2;
-//				yOffset = (h - bufferHeight) / -2;
-//			}
-
 			BufferedImage tmpImage = new BufferedImage(bufferWidth, bufferHeight, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g2d = (Graphics2D) tmpImage.getGraphics();
 			g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -237,8 +222,6 @@ implements SettlementMapLayer {
 		}
 		else {
 			int id = settlement.getMapImageID();
-//			int count = settlementBackgroundMap.size() + 1;
-//			count = count % NUM_BACKGROUND_IMAGES;
 
 			String backgroundImageName = MAP_TILE_POINTER + id;
 			settlementBackgroundMap.put(settlement, backgroundImageName);

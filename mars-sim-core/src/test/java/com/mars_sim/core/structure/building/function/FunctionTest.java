@@ -4,13 +4,22 @@ package com.mars_sim.core.structure.building.function;
 import java.util.ArrayList;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.mapdata.location.LocalPosition;
 
 public class FunctionTest extends AbstractMarsSimUnitTest {
 
+    /**
+     *
+     */
+    private static final int X_OFFSET = 10;
+    private static final int Y_OFFSET = 15;
+
+
     public void testBuildActivitySpot() {
         var home = buildSettlement("Test");
-        var building = buildRecreation(home.getBuildingManager(), null, 0D, 0);
+        var building = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
         var b = building.getRecreation();
 
         var spots = b.getActivitySpots();
@@ -27,7 +36,7 @@ public class FunctionTest extends AbstractMarsSimUnitTest {
 
     public void testClaimActivitySpot() {
         var home = buildSettlement("Test");
-        var building = buildRecreation(home.getBuildingManager(), null, 0D, 0);
+        var building = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
         var b = building.getRecreation();
 
         Person p = buildPerson("Worker", home);
@@ -36,8 +45,9 @@ public class FunctionTest extends AbstractMarsSimUnitTest {
         var as = (new ArrayList<ActivitySpot>(spots)).get(0); // Bad code
         b.claimActivitySpot(as.getPos(), p);
 
-        ActivitySpot claimed = p.getActivitySpot();
-        assertNotNull("Activity spot owned", claimed);
+        var allocation = p.getActivitySpot();
+        assertNotNull("Activity spot owned", allocation);
+        var claimed = allocation.getAllocated();
         assertEquals("Correct activity spot", as, claimed);
         assertFalse("Activity spot empty", claimed.isEmpty());
         assertEquals("Activity spot owned by Person", p.getIdentifier(), claimed.getID());
@@ -45,9 +55,9 @@ public class FunctionTest extends AbstractMarsSimUnitTest {
         assertEquals("Occupied count", 1, b.getNumOccupiedActivitySpots());
     }
 
-    public void testReleaseActivitySpot() {
+    public void testLeaveActivitySpot() {
         var home = buildSettlement("Test");
-        var building = buildRecreation(home.getBuildingManager(), null, 0D, 0);
+        var building = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
         var b = building.getRecreation();
 
         Person p = buildPerson("Worker", home);
@@ -56,7 +66,7 @@ public class FunctionTest extends AbstractMarsSimUnitTest {
         var as = (new ArrayList<ActivitySpot>(spots)).get(0); // Bad code
         b.claimActivitySpot(as.getPos(), p);
 
-        ActivitySpot claimed = p.getActivitySpot();
+        var claimed = p.getActivitySpot().getAllocated();
         p.setActivitySpot(null);
         assertNull("No activity spot allocated", p.getActivitySpot());
         assertTrue("Activity spot released", claimed.isEmpty());
@@ -64,11 +74,61 @@ public class FunctionTest extends AbstractMarsSimUnitTest {
         assertEquals("Occupied count", 0, b.getNumOccupiedActivitySpots());
     }
 
+    public void testReleaseActivitySpot() {
+        var home = buildSettlement("Test");
+
+        Person p = buildPerson("Worker", home);
+
+        var spot = new ActivitySpot("Spot", LocalPosition.DEFAULT_POSITION);
+        var allocated = spot.claim(p, true, null);
+
+        assertTrue("Activity spot allocated", !spot.isEmpty());
+
+        //Leave spot
+        allocated.leave(p, false);
+        assertTrue("Activity spot still allocated", !spot.isEmpty());
+
+        // Release spot
+        allocated.leave(p, true);
+        assertTrue("Activity spot release", spot.isEmpty());
+    }
+
+    public void testActivitySpotPosition() {
+        var home = buildSettlement("Test");
+        var building1 = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 90D, 0);
+        var spots1 = building1.getRecreation().getActivitySpots();
+        
+        // Check the 2 sets of Activy spots are offset according to the Building
+        for(var as : spots1) {
+            var asp1 = as.getPos();
+            assertTrue("Activity spot in Build:" + asp1.getShortFormat(),
+                    LocalAreaUtil.isPositionWithinLocalBoundedObject(asp1, building1));
+        }
+    }
+
+    public void testCreateActivitySpot() {
+        var home = buildSettlement("Test");
+        var p1 = LocalPosition.DEFAULT_POSITION;
+        var building1 = buildRecreation(home.getBuildingManager(), p1, 0D, 0).getRecreation();
+        var spots1 = building1.getActivitySpots();
+
+        var p2 = new LocalPosition(p1.getX() + X_OFFSET, p1.getY() + Y_OFFSET);
+        var building2 = buildRecreation(home.getBuildingManager(), p2, 0D, 1).getRecreation();
+        
+        // Check the 2 sets of Activy spots are offset according to the Building
+        for(var as : spots1) {
+            var asp1 = as.getPos();
+            var asp2 = new LocalPosition(asp1.getX() + X_OFFSET, asp1.getY() + Y_OFFSET);
+            var as2 = building2.findActivitySpot(asp2);
+            assertNotNull("Activity spot found:" + asp2.getShortFormat(), as2);
+        }
+    }
+
     public void testReassignActivitySpot() {
         var home = buildSettlement("Test");
-        var building = buildRecreation(home.getBuildingManager(), null, 0D, 0);
+        var building = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
         var b1 = building.getRecreation();
-        var building2 = buildRecreation(home.getBuildingManager(), null, 0D, 1);
+        var building2 = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
         var b2 = building2.getRecreation();
         Person p = buildPerson("Worker", home);
 
@@ -83,8 +143,9 @@ public class FunctionTest extends AbstractMarsSimUnitTest {
         assertTrue("Previous spot released", as1.isEmpty());
         assertEquals("Previous spots all empty", 0, b1.getNumOccupiedActivitySpots());
 
-        ActivitySpot claimed = p.getActivitySpot();
-        assertNotNull("2nd activity spot allocated", claimed);
+        var allocation = p.getActivitySpot();
+        assertNotNull("2nd activity spot allocated", allocation);
+        var claimed = allocation.getAllocated();
         assertEquals("Person owns correct 2nd spot", as2, claimed);
         assertEquals("Occupied spots in 2nd building", 1, b2.getNumOccupiedActivitySpots());
     }

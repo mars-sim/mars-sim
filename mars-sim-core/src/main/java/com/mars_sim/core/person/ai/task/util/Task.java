@@ -1100,7 +1100,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			if (bed != null) {
 				target = building;
 				// Converts a settlement-wide bed location back to an activity spot within a building
-				LocalPosition loc = LocalAreaUtil.getObjectRelativePosition(bed, target);	
 				Function f = building.getFunction(FunctionType.LIVING_ACCOMMODATIONS);
 				
 				// Create subtask for walking to destination.
@@ -1110,7 +1109,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					quarters.registerGuestBed(person.getIdentifier());
 					
 					// Add the person to this activity spot
-					f.claimActivitySpot(loc, person);
+					f.claimActivitySpot(bed, person);
 					
 					return true;
 				}
@@ -1123,14 +1122,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/**
 	 * Walks to the bed previously assigned for this person.
 	 * 
-	 * @param building the building the bed is at
 	 * @param person the person who walks to the bed
 	 * @param allowFail true if allowing the walk task to fail
 	 */
-	protected boolean walkToBed(Building building, Person person, boolean allowFail) {
+	protected boolean walkToBed(Person person, boolean allowFail) {
 		boolean canWalk = false;
 		
-		LocalPosition bed = person.getBed();
+		var bed = person.getBed();
 		if (bed == null) {
 			logger.info(person, 10_000L, "I have no bed assigned to me.");
 			return canWalk;
@@ -1139,42 +1137,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		// Check my own position
 		LocalPosition myLoc = person.getPosition();
 		
-		if (myLoc.equals(bed)) {
+		if (myLoc.equals(bed.getAllocated().getPos())) {
 			logger.info(person, 10_000L, "Already in my own bed.");
 			return canWalk;
 		}
-		
-		// Converts a settlement-wide bed location back to an activity spot within a building
-		LocalPosition relBedLoc = LocalAreaUtil.getObjectRelativePosition(bed, building);
-		
-		var livingAccom = building.getLivingAccommodations();
-		
-		var bedSpot = livingAccom.findActivitySpot(relBedLoc);
-		if (bedSpot == null) {
-			logger.warning(person, "Can not find my bed " + relBedLoc + "in " + building.getName()
-					+ ", quarters is " + person.getQuarters().getName());		
-			return canWalk;
-		}
-		
-		if (!bedSpot.isEmpty()) {
-			 if (!myLoc.equals(bed))
-				 logger.warning(person, "Someone is using my bed at " + bed + ".");		
-			 
-			 return canWalk;
-		}
-		else {		
-			// Create subtask for walking to destination.
-			canWalk = createWalkingSubtask(building, bed, allowFail);
-			
-			if (canWalk) {
-				// Put the person there
-				person.setPosition(bed);
-				// Add the worker to this activity spot
-				livingAccom.claimActivitySpot(relBedLoc, worker);
-			}
-		}
-		
-		return canWalk;
+	
+		// Create subtask for walking to destination.
+		return createWalkingSubtask(bed.getOwner(), bed.getAllocated().getPos(), allowFail);
 	}
 
 	/**
@@ -1187,33 +1156,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return
 	 */
 	protected boolean walkToActivitySpotInBuilding(Building building, FunctionType functionType, boolean allowFail) {
-		boolean canWalk = false;
 		
 		Function f = building.getFunction(functionType);
 		if (f == null) {
-			return canWalk;
+			return false;
 		}
-		
-		// Find an available local activity spot in building.
-		LocalPosition loc = f.getAvailableActivitySpot();
-
-		if (loc != null) {
-			// Convert the local activity spot to the settlement reference coordinate
-			LocalPosition sLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
-			// Create subtask for walking to destination.
-			canWalk = createWalkingSubtask(building, sLoc, allowFail);
-			
-			if (canWalk) {
-				// Warning: there is no need to manually set the building
-//				worker.setCurrentBuilding(building);
-				// Set the new position
-//				worker.setPosition(sLoc);
-				// Add to this activity spot
-				f.claimActivitySpot(loc, worker);
-			}
-		}
-
-		return canWalk;
+		return walkToActivitySpotInFunction(building, f, allowFail) != null;
 	}
 
 	/**
@@ -1223,28 +1171,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return
 	 */
 	protected LocalPosition walkToEVASpot(Building building) {
-		boolean canWalk = false;
-
 		Function f = building.getFunction(FunctionType.EVA);
-		LocalPosition loc = f.getAvailableActivitySpot();
-		
-		if (loc != null) {
-			// Convert the local activity spot to the settlement reference coordinate
-			LocalPosition sLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
-			// Create subtask for walking to destination.
-			canWalk = createWalkingSubtask(building, sLoc, false);
-
-			if (canWalk) {
-				// Set the new position
-				worker.setPosition(sLoc);
-				// Add to this activity spot
-				f.claimActivitySpot(loc, worker);
-					
-				return loc;
-			}
-		}
-
-		return null;
+		return walkToActivitySpotInFunction(building, f, false);
 	}
 
 	/**
@@ -1254,32 +1182,33 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param allowFail    true if walking is allowed to fail.
 	 * @return
 	 */
-	protected boolean walkToEmptyActivitySpotInBuilding(Building building, boolean allowFail) {
-		boolean canWalk = false;
-	
+	protected boolean walkToEmptyActivitySpotInBuilding(Building building, boolean allowFail) {	
 		Function f = building.getEmptyActivitySpotFunction();
 		
 		if (f == null) {
-			return canWalk;
+			return false;
 		}
 
+		return walkToActivitySpotInFunction(building, f, allowFail) != null;
+	}
+
+	private LocalPosition walkToActivitySpotInFunction(Building building, Function f, boolean allowFail) {
 		LocalPosition loc = f.getAvailableActivitySpot();
 
 		if (loc != null) {
-			// Convert the local activity spot to the settlement reference coordinate
-			LocalPosition sLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
 			// Create subtask for walking to destination.
-			canWalk = createWalkingSubtask(building, sLoc, allowFail);
+			boolean canWalk = createWalkingSubtask(building, loc, allowFail);
 			
 			if (canWalk) {
-				// Set the new position
-				worker.setPosition(sLoc);
 				// Add to this activity spot
 				f.claimActivitySpot(loc, worker);
 			}
+			else {
+				loc = null;
+			}
 		} 
 
-		return canWalk;
+		return loc;
 	}
 
 	

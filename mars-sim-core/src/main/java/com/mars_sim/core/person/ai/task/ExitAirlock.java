@@ -284,13 +284,11 @@ public class ExitAirlock extends Task {
 			LocalPosition loc = walkToEVASpot(b);
 
 			if (loc != null) {
-				// Convert the local activity spot to the settlement reference coordinate
-				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, b);
 				// Set the person's new position
-				person.setPosition(settlementLoc);
+				person.setPosition(loc);
 				
 				logger.log(b, person, Level.FINE, 4000, "Arrived at "
-						+ settlementLoc.getShortFormat() + " in airlock zone " + newZone + ".");
+						+ loc.getShortFormat() + " in airlock zone " + newZone + ".");
 				return true;
 			}
 			else {
@@ -301,27 +299,20 @@ public class ExitAirlock extends Task {
 		}
 
 		else if (newZone == 4) {
-			// Convert the local activity spot to the settlement reference coordinate
-			LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(newPos, b);
 			// Set the person's new position
-			person.setPosition(settlementLoc);
+			person.setPosition(newPos);
 			
 			logger.log(b, person, Level.FINE, 4000, "Creating a subtask to walk outside at "
-					+ settlementLoc.getShortFormat() + " in airlock zone " + newZone + ".");	
-			// Note: no need of calling WalkOutside anymore since the person would have
-			// already been considered inside the settlement
-//			addSubTask(new WalkOutside(person, person.getPosition(), settlementLoc, true));
+					+ newPos.getShortFormat() + " in airlock zone " + newZone + ".");	
 			return true;
 		}
 
 		else {
-			// Convert the local activity spot to the settlement reference coordinate
-			LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(newPos, b);
 			// Set the person's new position
-			person.setPosition(settlementLoc);
+			person.setPosition(newPos);
 			
 			logger.log(b, person, Level.FINE, 4000, "Arrived at "
-					+ settlementLoc.getShortFormat() + " in airlock zone " + newZone + ".");
+					+ newPos.getShortFormat() + " in airlock zone " + newZone + ".");
 			return true;
 		}
 	}

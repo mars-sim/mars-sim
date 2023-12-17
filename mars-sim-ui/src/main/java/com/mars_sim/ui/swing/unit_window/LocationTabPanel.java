@@ -14,7 +14,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -22,20 +21,19 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.mapdata.location.LocalPosition;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -56,9 +54,6 @@ import eu.hansolo.steelseries.tools.LcdColor;
 @SuppressWarnings("serial")
 public class LocationTabPanel extends TabPanel implements ActionListener{
 
-	/** default logger. */
-	private static final Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
-
 	private static final String MAP_ICON = NavigatorWindow.PIN_ICON;
 
 	private static final String N = "N";
@@ -66,23 +61,18 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private static final String E = "E";
 	private static final String W = "W";
 
-	private double elevationCache;
-
 	private String locationStringCache;
 
 	private Unit containerCache;
-	private Unit topContainerCache;
 	private Settlement settlementCache;
 	private Building buildingCache;
 	private LocationStateType locationStateTypeCache;
 	
-	private JLabel topContainerLabel;
 	private JLabel containerLabel;
 	private JLabel settlementLabel;
 	private JLabel buildingLabel;
 	private JLabel locationStateLabel;
-	private JLabel buildingXYLabel;
-	private JLabel settlementXYLabel;
+	private JLabel activitySpot;
 	
 	private Coordinates locationCache;
 
@@ -108,26 +98,11 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		super(null, ImageLoader.getIconByName(MAP_ICON), Msg.getString("LocationTabPanel.title"), unit, desktop);
 
 		locationStringCache = unit.getLocationTag().getExtendedLocation();
-		containerCache = unit.getContainerUnit();
-		topContainerCache = unit.getTopContainerUnit();
 	}
 
 	@Override
 	protected void buildUI(JPanel content) {
 
-		Unit unit = getUnit();
-		Unit container = unit.getContainerUnit();
-		if (containerCache != container) {
-			containerCache = container;
-		}
-		String n1 = container != null ? container.getName() : "";
-		
-		Unit topContainer = unit.getTopContainerUnit();
-		if (topContainerCache != topContainer) {
-			topContainerCache = topContainer;
-		}
-		String n0 = topContainer != null ? topContainer.getName() : "";
-		
 		// Create location panel
 		JPanel locationPanel = new JPanel(new BorderLayout(5, 5));
 		locationPanel.setBorder(new MarsPanelBorder());
@@ -135,36 +110,22 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		content.add(locationPanel, BorderLayout.NORTH);
 
 		// Initialize location cache
-		locationCache = unit.getCoordinates();
+		locationCache = getUnit().getCoordinates();
 
 		if (locationCache == null) {
-			locationCache = unit.getContainerUnit().getCoordinates();
+			locationCache = getUnit().getContainerUnit().getCoordinates();
 		}
 		
-		String dir_N_S = null;
-		String dir_E_W = null;
-		if (locationCache.getLatitudeDouble() >= 0)
-			dir_N_S = Msg.getString("direction.degreeSign") + "N";
-		else
-			dir_N_S = Msg.getString("direction.degreeSign") + "S";
-
-		if (locationCache.getLongitudeDouble() >= 0)
-			dir_E_W = Msg.getString("direction.degreeSign") + "E";
-		else
-			dir_E_W = Msg.getString("direction.degreeSign") + "W";
 
 		JPanel northPanel = new JPanel(new FlowLayout());
 		locationPanel.add(northPanel, BorderLayout.SOUTH);
 
 		lcdLat = new DisplaySingle();
-		lcdLat.setLcdUnitString(dir_N_S);
+		lcdLat.setLcdUnitString("");
 		lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
 		lcdLat.setLcdInfoString("Latitude");
-		// lcd1.setLcdColor(LcdColor.BLUELIGHTBLUE_LCD);
 		lcdLat.setLcdColor(LcdColor.BEIGE_LCD);
-		// lcdLat.setBackground(BackgroundColor.NOISY_PLASTIC);
 		lcdLat.setGlowColor(Color.orange);
-		// lcd1.setBorder(new EmptyBorder(5, 5, 5, 5));
 		lcdLat.setDigitalFont(true);
 		lcdLat.setLcdDecimals(4);
 		lcdLat.setSize(latLonDim);
@@ -174,28 +135,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 		northPanel.add(lcdLat);
 
-		elevationCache = Math.round(TerrainElevation.getAverageElevation(unit.getCoordinates()) * 1000.0) / 1000.0;
-
-		logger.info(unit.getName()
-				+ "'s coordinates: " + unit.getCoordinates()
-				+ "   Elevation: " + elevationCache + " km.");
-
-//        lcdElev = new DisplaySingle();
-//        lcdElev.setLcdValueFont(new Font("Serif", Font.ITALIC, 12));
-//        lcdElev.setLcdUnitString("km");
-//        lcdElev.setLcdValueAnimated(elevationCache);
-//        lcdElev.setLcdDecimals(3);
-//        lcdElev.setLcdInfoString("Elevation");
-//        //lcd0.setLcdColor(LcdColor.DARKBLUE_LCD);
-//        lcdElev.setLcdColor(LcdColor.YELLOW_LCD);//REDDARKRED_LCD);
-//        lcdElev.setDigitalFont(true);
-//        //lcd0.setBorder(new EmptyBorder(5, 5, 5, 5));
-//        lcdElev.setSize(new Dimension(150, 60));
-//        lcdElev.setMaximumSize(new Dimension(150, 60));
-//        lcdElev.setPreferredSize(new Dimension(150, 60));
-//        lcdElev.setVisible(true);
-//        locationPanel.add(lcdElev, BorderLayout.NORTH);
-
 		// Create center map button
 		locatorButton = new JButton(ImageLoader.getIconByName(NavigatorWindow.ICON));
 
@@ -203,7 +142,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		locatorButton.addActionListener(this);
 		locatorButton.setOpaque(false);
 		locatorButton.setToolTipText("Locate the unit on Mars Navigator");
-		locatorButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));// new Cursor(Cursor.HAND_CURSOR));
+		locatorButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
 		JPanel locatorPane = new JPanel(new FlowLayout());
 		locatorPane.add(locatorButton);
@@ -212,12 +151,10 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 		JPanel lcdPanel = new JPanel();
 		lcdLong = new DisplaySingle();
-		// lcdLong.setCustomLcdForeground(getForeground());
-		lcdLong.setLcdUnitString(dir_E_W);
+		lcdLong.setLcdUnitString("");
 		lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
 		lcdLong.setLcdInfoString("Longitude");
 		lcdLong.setLcdColor(LcdColor.BEIGE_LCD);
-//		lcdLong.setBackgroundColor(BackgroundColor.LINEN);
 		lcdLong.setGlowColor(Color.yellow);
 		lcdLong.setDigitalFont(true);
 		lcdLong.setLcdDecimals(4);
@@ -233,16 +170,14 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		gauge.setSize(gaugeDim);
 		gauge.setMaximumSize(gaugeDim);
 		gauge.setPreferredSize(gaugeDim);
-		setGauge(gauge, elevationCache);
+		setGauge(gauge, 0D);
 		gaugePanel.add(gauge);
 		
 		locationPanel.add(gaugePanel, BorderLayout.CENTER);
 
 		bannerText = new DisplaySingle();
 		bannerText.setLcdInfoString("Last Known Position");
-		// lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
 		bannerText.setGlowColor(Color.ORANGE);
-		// lcdText.setBackground(Background.SATIN_GRAY);
 		bannerText.setDigitalFont(true);
 		bannerText.setSize(bannerDim);
 		bannerText.setMaximumSize(bannerDim);
@@ -259,59 +194,24 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		locationPanel.add(bannerText, BorderLayout.NORTH);
 
 		/////
-		
-		settlementCache = unit.getSettlement();
-		String n2 = settlementCache != null ? settlementCache.getName() : "";
-		LocationStateType locationStateTypeCache = unit.getLocationStateType();
-		String n3 = locationStateTypeCache != null ? locationStateTypeCache.getName() : "";
-		buildingCache = unit.getBuildingLocation();
-		String n4 = buildingCache != null ? buildingCache.getName() : "";
-		
-		String n6 = "";
-		String n5 = "";
-		LocalPosition sLoc = null;
-		LocalPosition bLoc = null;
-		
-		if (unit instanceof Vehicle v) {
-			 sLoc = v.getPosition();
-			 n6 = sLoc.toString();
-		}
-		else if (unit instanceof Person p) {
-			 sLoc = p.getPosition();
-			 n6 = sLoc.toString();
-		}
-		else if (unit instanceof Robot r) {
-			 sLoc = r.getPosition();
-			 n6 = sLoc.toString();
-		}
-		
-		if (buildingCache != null && sLoc != null) {
-			bLoc = LocalAreaUtil.getObjectRelativePosition(sLoc, buildingCache);
-			n5 = bLoc.toString();
-		}
-		
+
 		// Prepare info panel.
-		AttributePanel containerPanel = new AttributePanel(7);
+		AttributePanel containerPanel = new AttributePanel(5);
 		content.add(containerPanel, BorderLayout.CENTER);
-		topContainerLabel = containerPanel.addRow("Top Container Unit", n0);
-		containerLabel = containerPanel.addRow("Container Unit", n1);
-		settlementLabel = containerPanel.addRow("Settlement Container", n2);
+		containerLabel = containerPanel.addRow("Container Unit", "");
+		settlementLabel = containerPanel.addRow("Settlement Container", "");
 		
-		buildingLabel = containerPanel.addRow("Building", n4);
-		locationStateLabel = containerPanel.addRow("Location State", n3);
+		buildingLabel = containerPanel.addRow("Building", "");
+		locationStateLabel = containerPanel.addRow("Location State", "");
 		
-		buildingXYLabel = containerPanel.addRow("Building Loc", n5);
-		settlementXYLabel = containerPanel.addRow("Settlemnet Loc", n6);
+		activitySpot = containerPanel.addRow("Reserved Spot", "");
 			
-		updateLocationBanner(unit);
+		updateLocationBanner(getUnit());
 
-		checkTheme(true);
-	}
-
-	public void checkTheme(boolean firstRun) {
 		bannerText.setLcdColor(LcdColor.DARKBLUE_LCD);
 		gauge.setFrameDesign(FrameDesign.STEEL);
-//		locatorButton.setIcon(ImageLoader.getIcon(FIND_ORANGE));
+
+		update();
 	}
 
 	private void setGauge(DisplayCircular gauge, double elevationCache) {
@@ -356,33 +256,14 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 		gauge.setDisplayMulti(false);
 		gauge.setDigitalFont(true);
-		// gauge.setFrameDesign(FrameDesign.GOLD);
-		// gauge.setOrientation(Orientation.EAST);//.NORTH);//.VERTICAL);
-		// gauge.setPointerType(PointerType.TYPE5);
-		// gauge.setTextureColor(Color.yellow);//, Texture_Color BRUSHED_METAL and
-		// PUNCHED_SHEET);
 		gauge.setUnitString("km");
 		gauge.setTitle("Elevation");
 		gauge.setMinValue(min);
 		gauge.setMaxValue(max);
-		// gauge.setTicklabelsVisible(true);
-		// gauge.setMaxNoOfMajorTicks(10);
-		// gauge.setMaxNoOfMinorTicks(10);
-		gauge.setBackgroundColor(BackgroundColor.NOISY_PLASTIC);// .BRUSHED_METAL);
-		// alt.setGlowColor(Color.yellow);
-		// gauge.setLcdColor(LcdColor.BEIGE_LCD);//.BLACK_LCD);
-		// gauge.setLcdInfoString("Elevation");
-		// gauge.setLcdUnitString("km");
+		gauge.setBackgroundColor(BackgroundColor.NOISY_PLASTIC);
 		gauge.setLcdValueAnimated(elevationCache);
 		gauge.setValueAnimated(elevationCache);
-		// gauge.setValue(elevationCache);
 		gauge.setLcdDecimals(4);
-
-		// alt.setMajorTickmarkType(TICKMARK_TYPE);
-		// gauge.setSize(new Dimension(250, 250));
-		// gauge.setMaximumSize(new Dimension(250, 250));
-		// gauge.setPreferredSize(new Dimension(250, 250));
-
 		gauge.setSize(new Dimension(220, 220));
 		gauge.setMaximumSize(new Dimension(220, 220));
 		gauge.setPreferredSize(new Dimension(220, 220));
@@ -515,8 +396,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		Unit unit = getUnit();
 		
 		// If unit's location has changed, update location display.
-		// TODO: if a person goes outside the settlement for servicing an equipment
-		// does the coordinate (down to how many decimal) change?
 		Coordinates location = unit.getCoordinates();
 		
 		if (location == null) {
@@ -526,28 +405,20 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		if (!locationCache.equals(location)) {
 			locationCache = location;
 
-			String dir_N_S = null;
-			String dir_E_W = null;
+			String dirNS = Msg.getString("direction.degreeSign") 
+							+ ((locationCache.getLatitudeDouble() >= 0) ? N : S);
+			String dirEW = Msg.getString("direction.degreeSign")
+							+ ((locationCache.getLongitudeDouble() >= 0) ? E : W);
 
-			if (locationCache.getLatitudeDouble() >= 0)
-				dir_N_S = Msg.getString("direction.degreeSign") + N;
-			else
-				dir_N_S = Msg.getString("direction.degreeSign") + S;
-
-			if (locationCache.getLongitudeDouble() >= 0)
-				dir_E_W = Msg.getString("direction.degreeSign") + E;
-			else
-				dir_E_W = Msg.getString("direction.degreeSign") + W;
-
-			lcdLat.setLcdUnitString(dir_N_S);
-			lcdLong.setLcdUnitString(dir_E_W);
+			lcdLat.setLcdUnitString(dirNS);
+			lcdLong.setLcdUnitString(dirEW);
 			lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
 			lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
 
-			double elevationCache = Math.round(TerrainElevation.getAverageElevation(location)
+			double newElevation = Math.round(TerrainElevation.getAverageElevation(location)
 					* 1000.0) / 1000.0;
 
-			setGauge(gauge, elevationCache);
+			setGauge(gauge, newElevation);
 
 		}
 
@@ -556,19 +427,12 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		// Update labels as necessary
 		
 		Unit container = unit.getContainerUnit();
-		if (containerCache != container) {
+		if ((containerCache == null) || !containerCache.equals(container)) {
 			containerCache = container;
 			String n = container != null ? container.getName() : "";
 			containerLabel.setText(n);
 		}
 
-		Unit topContainer = unit.getTopContainerUnit();
-		if (topContainerCache != topContainer) {
-			topContainerCache = topContainer;
-			String n = topContainer != null ? topContainer.getName() : "";
-			topContainerLabel.setText(n);
-		}
-		
 		Settlement settlement = unit.getSettlement();
 		if (settlementCache != settlement) {
 			settlementCache = settlement;
@@ -590,31 +454,16 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			locationStateLabel.setText(Conversion.capitalize0(n));
 		}
 		
-		String n6 = "";
 		String n5 = "";
-		LocalPosition sLoc = null;
-		LocalPosition bLoc = null;
 		
-		if (unit instanceof Vehicle v) {
-			 sLoc = v.getPosition();
-			 n6 = sLoc.toString();
-		}
-		else if (unit instanceof Person p) {
-			 sLoc = p.getPosition();
-			 n6 = sLoc.toString();
-		}
-		else if (unit instanceof Robot r) {
-			 sLoc = r.getPosition();
-			 n6 = sLoc.toString();
+		if (unit instanceof Worker w) {
+			var allocated = w.getActivitySpot();
+			if (allocated != null) {
+				n5 = allocated.getAllocated().getName() + " @ " + allocated.getOwner().getName();
+			}
 		}
 		
-		if (buildingCache != null && sLoc != null) {
-			bLoc = LocalAreaUtil.getObjectRelativePosition(sLoc, buildingCache);
-			n5 = bLoc.toString();
-		}
-		
-		buildingXYLabel.setText(n5);
-		settlementXYLabel.setText(n6);
+		activitySpot.setText(n5);
 		
 		updateLocationBanner(unit);
 	}
@@ -640,7 +489,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		super.destroy();
 		
 		containerCache = null;
-		topContainerCache = null;
 		locationCache = null;
 		locatorButton = null;
 		lcdLong = null;

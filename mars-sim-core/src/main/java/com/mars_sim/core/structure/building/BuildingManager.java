@@ -1700,10 +1700,8 @@ public class BuildingManager implements Serializable {
 			}
 			
 			if (loc != null) {
-				// Convert the local activity spot to the settlement reference coordinate
-				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
 				// Put the person there
-				person.setPosition(settlementLoc);
+				person.setPosition(loc);
 				// Set the building
 				person.setCurrentBuilding(building);
 				// Add the person to this activity spot
@@ -1748,7 +1746,7 @@ public class BuildingManager implements Serializable {
 			}
 			
 			// Case 2: Gets an empty pos from building's robotic station
-			if (loc == null){
+			if (loc == null) {
 				RoboticStation roboticStation = building.getRoboticStation();
 				if (roboticStation == null) {
 					logger.warning(robot, "No robotic function in " + building.getName() + ".");
@@ -1776,10 +1774,8 @@ public class BuildingManager implements Serializable {
 			}
 
 			if (loc != null) {		
-				// Convert the local activity spot to the settlement reference coordinate
-				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
 				// Put the robot there
-				robot.setPosition(settlementLoc);
+				robot.setPosition(loc);
 				// Set the building
 				robot.setCurrentBuilding(building);
 				// Add the robot to this activity spot

@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.Weather;
@@ -22,6 +23,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingConfig;
 import com.mars_sim.core.structure.building.FunctionSpec;
+import com.mars_sim.core.structure.building.NamedPosition;
 import com.mars_sim.core.structure.building.function.farming.CropConfig;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
@@ -79,15 +81,27 @@ public abstract class Function implements Serializable, Temporal {
 		// A FunctionSpec should ALWAYS be present. root cause is the UnitTests
 		// load any activity spots
 		if (spec != null) {
-			spots = spec.getActivitySpots().stream()
-							.map(ActivitySpot::new)
-							.collect(Collectors.toSet());
+			spots = createActivitySpot(spec.getActivitySpots(), building);
 		}
 		else {
 			spots = Collections.emptySet();
 		}
 	}
 
+	/**
+	 * Create a set of Activity Spots from a set of LocalPositions. The Activity spots are created
+	 * into the global Settlement coordinate frame.
+	 * 
+	 * @param set Source positions
+	 * @param owner     Building that owns this function, provide reference point.
+
+	 */
+	private static Set<ActivitySpot> createActivitySpot(Set<NamedPosition> set, Building owner) {
+		return set.stream()
+							.map(p -> new ActivitySpot(p.name(),
+											LocalAreaUtil.getLocalRelativePosition(p.position(), owner)))
+							.collect(Collectors.toSet());
+	}
 
 	/**
 	 * Gets the function.
@@ -209,7 +223,9 @@ public abstract class Function implements Serializable, Temporal {
 		if (as == null) {
 			throw new IllegalArgumentException("No activity spot " + p.getShortFormat());
 		}
-		var allocated = as.claim(w);
+
+		// Spot is claimed but only temporarily
+		var allocated = as.claim(w, false, building);
 		w.setActivitySpot(allocated);
 		return true;
 	}

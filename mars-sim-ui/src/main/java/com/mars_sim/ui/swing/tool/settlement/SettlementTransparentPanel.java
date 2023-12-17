@@ -18,18 +18,16 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.RenderingHints;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -41,17 +39,21 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
 import javax.swing.Painter;
+import javax.swing.SwingConstants;
 import javax.swing.UIDefaults;
 import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitListener;
@@ -67,7 +69,9 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.structure.building.BuildingConfig;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.tools.Msg;
@@ -91,8 +95,6 @@ public class SettlementTransparentPanel extends JComponent {
 
 	/** Zoom change. */
 	public static final double ZOOM_CHANGE = 0.25;
-
-//	private static final int WEATHER_ICON_SIZE = 64;
 
 	private static final String TEMPERATURE 	= "   Temperature: ";
 	private static final String WINDSPEED 		= "   Windspeed: ";
@@ -124,7 +126,6 @@ public class SettlementTransparentPanel extends JComponent {
 	private String zaString;
 	private String odString;
 
-//	private ImageIcon emptyIcon = new ImageIcon();
 	private Font sunFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 	
 	private Map<Settlement, String> resourceCache = new HashMap<>();
@@ -134,7 +135,6 @@ public class SettlementTransparentPanel extends JComponent {
 	private JLabel emptyLabel;
 	private DisplaySingle bannerBar;
 	private JSlider zoomSlider;
-	private JPanel controlCenterPane, eastPane, labelPane, buttonPane, controlPane;
 
 	/** label for projected sunrise time. */
 	private JLabel projectSunriseLabel;
@@ -167,8 +167,6 @@ public class SettlementTransparentPanel extends JComponent {
 	/** Settlement Combo box model. */
 	private SettlementComboBoxModel settlementCBModel;
 
-	private JCustomCheckBoxMenuItem buildingLabelMenuItem, personLabelMenuItem, constructionLabelMenuItem, vehicleLabelMenuItem, robotLabelMenuItem ;
-
 	private SettlementMapPanel mapPanel;
 	private MainDesktopPane desktop;
 
@@ -199,8 +197,6 @@ public class SettlementTransparentPanel extends JComponent {
 		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0f)); // draw transparent background
 		super.paintComponent(g);
 		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f)); // turn on opacity
-//		g.setColor(Color.RED);
-//		g.fillRect(20, 20, 500, 300);
 	}
 
     public void createAndShowGUI() {
@@ -218,13 +214,13 @@ public class SettlementTransparentPanel extends JComponent {
 
         buildInfoP();
         buildrenameBtn();
-        buildLabelPane();
-        buildButtonPane();
+        var labelPane = buildLabelPane();
+        var buttonPane = buildButtonPane();
         buildSettlementNameComboBox();
         buildZoomSlider();
         buildBanner();
         buildWeatherPanel();
-	    JPanel sunPane = BuildSunPane();
+	    JPanel sunPane = buildSunPane();
 
 	    JPanel topPane = new JPanel(new BorderLayout(20, 20));
 	    topPane.setBackground(new Color(0,0,0,128));
@@ -262,20 +258,17 @@ public class SettlementTransparentPanel extends JComponent {
 	    westPanel.add(weatherPane, BorderLayout.NORTH);
 	    westPanel.add(sunlightPanel, BorderLayout.CENTER);
 
-        // Make zoom pane drag-able
-		// Register cm cmZoom.registerComponent(zoomPane);
-
 		centerPanel.add(westPanel, BorderLayout.WEST);
 		centerPanel.add(settlementPanel, BorderLayout.NORTH);
 
 		topPane.add(centerPanel, BorderLayout.CENTER);
 		topPane.add(bannerBar, BorderLayout.NORTH);
 
-	    controlPane = new JPanel(new BorderLayout());
+	    var controlPane = new JPanel(new BorderLayout());
 	    controlPane.setBackground(new Color(0,0,0,128));
 		controlPane.setOpaque(false);
 
-	    controlCenterPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+	    var controlCenterPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 	    controlCenterPane.setBackground(new Color(0,0,0,128));
 	    controlCenterPane.setOpaque(false);
 	    controlCenterPane.add(zoomSlider);
@@ -285,7 +278,7 @@ public class SettlementTransparentPanel extends JComponent {
 	    controlPane.add(labelPane, BorderLayout.SOUTH);
        	controlPane.add(controlCenterPane, BorderLayout.CENTER);
 
-	    eastPane = new JPanel(new BorderLayout());
+	    var eastPane = new JPanel(new BorderLayout());
 		eastPane.setBackground(new Color(0,0,0,15));
 		eastPane.setBackground(new Color(0,0,0));
 		eastPane.setOpaque(false);
@@ -305,7 +298,7 @@ public class SettlementTransparentPanel extends JComponent {
      * 
      * @return
      */
-    private JPanel BuildSunPane() {
+    private JPanel buildSunPane() {
 	    JPanel sunPane = new JPanel(new BorderLayout(3, 3));
 	    sunPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 	    sunPane.setBackground(new Color(0, 0, 0, 128));
@@ -334,7 +327,7 @@ public class SettlementTransparentPanel extends JComponent {
 	    roundPane.setPreferredSize(new Dimension(290, 185));
 	    sunPane.add(roundPane, BorderLayout.EAST);
   		
-	    double projectSunTime[] = {0, 0, 0};
+	    double []projectSunTime = {0, 0, 0};
 	    if (mapPanel.getSettlement() != null) {
 	    	projectSunTime = orbitInfo.getSunTimes(mapPanel.getSettlement().getCoordinates());
 	    }
@@ -432,19 +425,15 @@ public class SettlementTransparentPanel extends JComponent {
 		settlementListBox.setPreferredSize(new Dimension(getNameLength() * 12, 30));
 		settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		settlementListBox.setRenderer(new PromptComboBoxRenderer());
-		settlementListBox.addItemListener(new ItemListener() {
-			@Override
-			// unitUpdate will update combobox when a new building is added
-			public void itemStateChanged(ItemEvent event) {
-				Settlement s = (Settlement) event.getItem();
-				if (s != null) {
-					// Change to the selected settlement in SettlementMapPanel
-					changeSettlement(s);
-					// Update the sun data
-					displaySunData(s.getCoordinates());
-					// Update the display banner
-					displayBanner(s);
-				}
+		settlementListBox.addItemListener(event -> {
+			Settlement s = (Settlement) event.getItem();
+			if (s != null) {
+				// Change to the selected settlement in SettlementMapPanel
+				changeSettlement(s);
+				// Update the sun data
+				displaySunData(s.getCoordinates());
+				// Update the display banner
+				displayBanner(s);
 			}
 		});
 
@@ -479,8 +468,6 @@ public class SettlementTransparentPanel extends JComponent {
 		mapPanel.setSettlement(s);
 		// Set the population label in the status bar
 		mapPanel.getSettlementWindow().setPop(s.getNumCitizens());
-		// Set the box opaque
-//		settlementListBox.setOpaque(false);
 	}
 
 	/**
@@ -595,14 +582,10 @@ public class SettlementTransparentPanel extends JComponent {
      * Builds the weather panel
      */
 	private void buildWeatherPanel() {
-//        int size = WEATHER_ICON_SIZE;
 
     	temperatureIcon = new JLabel();
-//    	temperatureIcon.setPreferredSize(new Dimension(size, size));
     	windIcon = new JLabel();
-//    	windIcon.setPreferredSize(new Dimension(size, size));
     	opticalIcon = new JLabel();
-//    	opticalIcon.setPreferredSize(new Dimension(size, size));
 
         updateIcon();
 	}
@@ -667,11 +650,8 @@ public class SettlementTransparentPanel extends JComponent {
 		else {
 			updatedIcon = ImageLoader.getIconByName("weather/lowWind");
 			tooltip = "Low Wind";
-			
-//			updatedIcon = ImageLoader.getIconByName("weather/drySpell");
-//			tooltip = "Dry Wind";
 		}
-//		
+	
 		windIcon.setIcon(updatedIcon);
 		windIcon.setToolTipText(tooltip);
 		
@@ -690,7 +670,7 @@ public class SettlementTransparentPanel extends JComponent {
 			tooltip = "Dry";
 		}
 		else {
-			updatedIcon = ImageLoader.getIconByName("weather/line_of_sight"); //emptyIcon;
+			updatedIcon = ImageLoader.getIconByName("weather/line_of_sight");
 			tooltip = "Clear Line of Sight";
 		}
 		
@@ -711,6 +691,7 @@ public class SettlementTransparentPanel extends JComponent {
 				this.prompt = prompt;
 			}
 
+		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value,
 		            int index, boolean isSelected, boolean cellHasFocus) {
 				Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
@@ -719,14 +700,6 @@ public class SettlementTransparentPanel extends JComponent {
 					setText(prompt);
 					return this;
 				}
-
-//				if (isSelected) {
-//		        	  c.setForeground(Color.black);
-//		        	  c.setBackground(new Color(255,229,204,50)); // pale orange
-//		          } else {
-//						c.setForeground(Color.black);
-//				        c.setBackground(new Color(184,134,11,50)); // mud orange
-//		          }
 
 		        return c;
 		    }
@@ -741,29 +714,26 @@ public class SettlementTransparentPanel extends JComponent {
 
         sliderDefaults.put("Slider.thumbWidth", 15);
         sliderDefaults.put("Slider.thumbHeight", 15);
-        sliderDefaults.put("Slider:SliderThumb.backgroundPainter", new Painter<JComponent>() {
-            public void paint(Graphics2D g, JComponent c, int w, int h) {
-                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g.setStroke(new BasicStroke(2f));
-                g.setColor(Color.WHITE);//.ORANGE.darker().darker());
-                g.fillOval(1, 1, w-1, h-1);
-                g.setColor(Color.ORANGE);
-                g.drawOval(1, 1, w-1, h-1);
-            }
-        });
-        sliderDefaults.put("Slider:SliderTrack.backgroundPainter", new Painter<JComponent>() {
-            public void paint(Graphics2D g, JComponent c, int w, int h) {
-                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g.setStroke(new BasicStroke(2f));
-                //g.setColor(new Color(139,69,19)); // brown
-                g.setColor(Color.WHITE);//ORANGE.darker().darker());
-                g.fillRoundRect(0, 6, w, 6, 6, 6); // g.fillRoundRect(0, 6, w-1, 6, 6, 6);
-                g.setColor(Color.ORANGE);
-                g.drawRoundRect(0, 6, w, 6, 6, 6);
-            }
-        });
+        sliderDefaults.put("Slider:SliderThumb.backgroundPainter",
+					(Painter<JComponent>) (g, c, w, h) -> {
+						g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+						g.setStroke(new BasicStroke(2f));
+						g.setColor(Color.WHITE);
+						g.fillOval(1, 1, w-1, h-1);
+						g.setColor(Color.ORANGE);
+						g.drawOval(1, 1, w-1, h-1);
+					});
+        sliderDefaults.put("Slider:SliderTrack.backgroundPainter",
+					(Painter<JComponent>) (g, c, w, h) -> {
+						g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+						g.setStroke(new BasicStroke(2f));
+						g.setColor(Color.WHITE);
+						g.fillRoundRect(0, 6, w, 6, 6, 6); 
+						g.setColor(Color.ORANGE);
+						g.drawRoundRect(0, 6, w, 6, 6, 6);
+					});
 
-        zoomSlider = new JSlider(JSlider.VERTICAL, 1, 90, 10);
+        zoomSlider = new JSlider(SwingConstants.VERTICAL, 1, 90, 10);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
         zoomSlider.setPreferredSize(new Dimension(40, 300));
         zoomSlider.setSize(new Dimension(40, 300));
@@ -773,11 +743,7 @@ public class SettlementTransparentPanel extends JComponent {
 		zoomSlider.setPaintTicks(true);
 		zoomSlider.setPaintLabels(true);
 		
-		// Consider changing zoom slider color to distinguish it 
-		// from the background tiles
-		// zoomSlider.setForeground(Color.ORANGE.darker().darker());
-		
-		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+		Dictionary<Integer, JLabel> labelTable = new Hashtable<>();
 		labelTable.put( Integer.valueOf(90), new JLabel("90") );
 		labelTable.put( Integer.valueOf(80), new JLabel("80") );
 		labelTable.put( Integer.valueOf(70), new JLabel("70") );
@@ -802,20 +768,18 @@ public class SettlementTransparentPanel extends JComponent {
 		});
 
 		// Add mouse wheel listener for zooming.
-		mapPanel.addMouseWheelListener(new MouseWheelListener() {
-			public void mouseWheelMoved(MouseWheelEvent evt) {
-				int numClicks = evt.getWheelRotation();
-				int value = zoomSlider.getValue();
-				if (numClicks > 0) {
-					// Move zoom slider down.
-					if (value > zoomSlider.getMinimum())
-						zoomSlider.setValue(zoomSlider.getValue() - 1);
-				}
-				else if (numClicks < 0) {
-					// Move zoom slider up.
-					if (value < zoomSlider.getMaximum()) {
-						zoomSlider.setValue(zoomSlider.getValue() + 1);
-					}
+		mapPanel.addMouseWheelListener(evt -> {
+			int numClicks = evt.getWheelRotation();
+			int value = zoomSlider.getValue();
+			if (numClicks > 0) {
+				// Move zoom slider down.
+				if (value > zoomSlider.getMinimum())
+					zoomSlider.setValue(zoomSlider.getValue() - 1);
+			}
+			else if (numClicks < 0) {
+				// Move zoom slider up.
+				if (value < zoomSlider.getMaximum()) {
+					zoomSlider.setValue(zoomSlider.getValue() + 1);
 				}
 			}
 		});
@@ -832,7 +796,6 @@ public class SettlementTransparentPanel extends JComponent {
 
     private void buildInfoP() {
 
-    	// SvgIcon icon = (SvgIcon) displayIcons.getIcon ("info");
 		Icon icon =  ImageLoader.getIconByName ("settlement_map/info");
     	infoButton = new JButton(icon);
 
@@ -847,8 +810,6 @@ public class SettlementTransparentPanel extends JComponent {
 					desktop.showDetails(settlement);
 				}
 			});
-
-//		infoP.add(infoButton);
     }
 
     private void buildrenameBtn() {
@@ -861,14 +822,12 @@ public class SettlementTransparentPanel extends JComponent {
 		renameBtn.setContentAreaFilled(false);
 		renameBtn.setBorderPainted(false);
 
-		renameBtn.addActionListener(e -> {
-				openRenameDialog();
-		});
+		renameBtn.addActionListener(e -> openRenameDialog());
     }
 
-    private void buildButtonPane() {
+    private JPanel buildButtonPane() {
 
-        buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        var buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
         buttonPane.setPreferredSize(new Dimension(150, 36));
         buttonPane.setBackground(new Color(0,0,0,128));
         buttonPane.setOpaque(false);
@@ -883,9 +842,8 @@ public class SettlementTransparentPanel extends JComponent {
 		cwButton.setBackground(new Color(0,0,0,128));
 
 		cwButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.clockwise")); //$NON-NLS-1$
-		cwButton.addActionListener(e -> {
-				mapPanel.setRotation(mapPanel.getRotation() + ROTATION_CHANGE);
-		});
+		cwButton.addActionListener(e -> 
+				mapPanel.setRotation(mapPanel.getRotation() + ROTATION_CHANGE));
 
 		// Create center button.
         final Icon centerIcon = ImageLoader.getIconByName("settlement_map/center");
@@ -912,18 +870,19 @@ public class SettlementTransparentPanel extends JComponent {
 		ccwButton.setBackground(new Color(0,0,0,128));
 
 		ccwButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.counterClockwise")); //$NON-NLS-1$
-		ccwButton.addActionListener(e -> {
-				mapPanel.setRotation(mapPanel.getRotation() - ROTATION_CHANGE);
-		});
+		ccwButton.addActionListener(e ->
+				mapPanel.setRotation(mapPanel.getRotation() - ROTATION_CHANGE));
 
 		buttonPane.add(ccwButton);
 		buttonPane.add(recenterButton);
 		buttonPane.add(cwButton);
 		buttonPane.add(emptyLabel);
+
+		return buttonPane;
     }
 
-    private void buildLabelPane() {
-        labelPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
+    private JPanel buildLabelPane() {
+        var labelPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
         labelPane.setPreferredSize(new Dimension(150, 36));
         labelPane.setBackground(new Color(0,0,0,128));
 		labelPane.setOpaque(false);
@@ -934,8 +893,8 @@ public class SettlementTransparentPanel extends JComponent {
 		labelsButton.setFont(new Font("Dialog", Font.BOLD, 13));
 		labelsButton.setForeground(Color.ORANGE.darker().darker());
 		labelsButton.setPreferredSize(new Dimension(32, 32));
-		labelsButton.setVerticalAlignment(JLabel.CENTER);
-		labelsButton.setHorizontalAlignment(JLabel.CENTER);
+		labelsButton.setVerticalAlignment(SwingConstants.CENTER);
+		labelsButton.setHorizontalAlignment(SwingConstants.CENTER);
 
 		labelsButton.setOpaque(false);
 		labelsButton.setBackground(new Color(0,0,0,128));
@@ -949,7 +908,6 @@ public class SettlementTransparentPanel extends JComponent {
 					labelsMenu = createLabelsMenu();
 				}
 				labelsMenu.show(button, 0, button.getHeight());
-				//repaint();
 		});
 
 		labelPane.add(renameBtn);
@@ -957,6 +915,15 @@ public class SettlementTransparentPanel extends JComponent {
 		labelPane.add(labelsButton);
 
 		labelPane.add(emptyLabel);
+
+		return labelPane;
+	}
+
+	/**
+	 * Clear the labelsmenu
+	 */
+	private void clearLabelsMenu() {
+		labelsMenu = null;
 	}
 
 	/**
@@ -968,58 +935,79 @@ public class SettlementTransparentPanel extends JComponent {
 		popMenu.setBorderPainted(false);
 
 		// Create Day Night Layer menu item.
-		JCustomCheckBoxMenuItem dayNightLabelMenuItem = new JCustomCheckBoxMenuItem(
+		JCheckBoxMenuItem dayNightLabelMenuItem = new JCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.daylightTracking"), mapPanel.isDaylightTrackingOn()); //$NON-NLS-1$
 		dayNightLabelMenuItem.setContentAreaFilled(false);
-		dayNightLabelMenuItem.addActionListener(e -> {
-				mapPanel.setShowDayNightLayer(!mapPanel.isDaylightTrackingOn());
-		});
+		dayNightLabelMenuItem.addActionListener(e ->
+				mapPanel.setShowDayNightLayer(!mapPanel.isDaylightTrackingOn()));
 		dayNightLabelMenuItem.setSelected(mapPanel.isDaylightTrackingOn());
 		popMenu.add(dayNightLabelMenuItem);
 
+		// Activity spot menu
+		var spotLabelMenuItem = new JMenu("Activity Spots");
+		popMenu.add(spotLabelMenuItem);
+		
+		BuildingConfig bc = getConfig();
+		List<FunctionType> sortedFT = new ArrayList<>(bc.getActivitySpotFunctions());
+		Collections.sort(sortedFT);
+
+		// Add an All
+		var allItem = new JMenuItem("All"); //$NON-NLS-1$
+		allItem.setContentAreaFilled(false);
+		allItem.addActionListener(e -> {
+				BuildingConfig config = getConfig();
+				mapPanel.reverseSpotLabels(config.getActivitySpotFunctions());
+				clearLabelsMenu(); // Clear the menu because all the values will change
+		});
+		spotLabelMenuItem.add(allItem);
+
+		// Add one per function type
+		for(FunctionType ft : sortedFT) {
+			var ftItem = new JCheckBoxMenuItem(ft.getName(), mapPanel.isShowSpotLabels(ft)); //$NON-NLS-1$
+			ftItem.setContentAreaFilled(false);
+			ftItem.addActionListener(e -> 
+					mapPanel.setShowSpotLabels(ft, !mapPanel.isShowSpotLabels(ft)));
+			spotLabelMenuItem.add(ftItem);
+		}
+
 		// Create building label menu item.
-		buildingLabelMenuItem = new JCustomCheckBoxMenuItem(
+		var buildingLabelMenuItem = new JCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.buildings"), mapPanel.isShowBuildingLabels()); //$NON-NLS-1$
 		buildingLabelMenuItem.setContentAreaFilled(false);
-		buildingLabelMenuItem.addActionListener(e -> {
-				mapPanel.setShowBuildingLabels(!mapPanel.isShowBuildingLabels());
-		});
+		buildingLabelMenuItem.addActionListener(e ->
+				mapPanel.setShowBuildingLabels(!mapPanel.isShowBuildingLabels()));
 		popMenu.add(buildingLabelMenuItem);
 
 		// Create construction/salvage label menu item.
-		constructionLabelMenuItem = new JCustomCheckBoxMenuItem(
+		var constructionLabelMenuItem = new JCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.constructionSites"), mapPanel.isShowConstructionLabels()); //$NON-NLS-1$
 		constructionLabelMenuItem.setContentAreaFilled(false);
-		constructionLabelMenuItem.addActionListener(e -> {
-				mapPanel.setShowConstructionLabels(!mapPanel.isShowConstructionLabels());
-		});
+		constructionLabelMenuItem.addActionListener(e -> 
+				mapPanel.setShowConstructionLabels(!mapPanel.isShowConstructionLabels()));
 		popMenu.add(constructionLabelMenuItem);
 
 		// Create vehicle label menu item.
-		vehicleLabelMenuItem = new JCustomCheckBoxMenuItem(
+		var vehicleLabelMenuItem = new JCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.vehicles"), mapPanel.isShowVehicleLabels()); //$NON-NLS-1$
 		vehicleLabelMenuItem.setContentAreaFilled(false);
-		vehicleLabelMenuItem.addActionListener(e -> {
-				mapPanel.setShowVehicleLabels(!mapPanel.isShowVehicleLabels());
-		});
+		vehicleLabelMenuItem.addActionListener(e -> 
+				mapPanel.setShowVehicleLabels(!mapPanel.isShowVehicleLabels()));
 		popMenu.add(vehicleLabelMenuItem);
 
 		// Create person label menu item.
-		personLabelMenuItem = new JCustomCheckBoxMenuItem(
+		var personLabelMenuItem = new JCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.people"), mapPanel.isShowPersonLabels()); //$NON-NLS-1$
 		personLabelMenuItem.setContentAreaFilled(false);
-		personLabelMenuItem.addActionListener(e -> {
-				mapPanel.setShowPersonLabels(!mapPanel.isShowPersonLabels());
-		});
+		personLabelMenuItem.addActionListener(e -> 
+				mapPanel.setShowPersonLabels(!mapPanel.isShowPersonLabels()));
 		popMenu.add(personLabelMenuItem);
 
 		// Create person label menu item.
-		robotLabelMenuItem = new JCustomCheckBoxMenuItem(
+		var robotLabelMenuItem = new JCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.robots"), mapPanel.isShowRobotLabels()); //$NON-NLS-1$
 		robotLabelMenuItem.setContentAreaFilled(false);
-		robotLabelMenuItem.addActionListener(e -> {
-				mapPanel.setShowRobotLabels(!mapPanel.isShowRobotLabels());
-		});
+		robotLabelMenuItem.addActionListener(e ->
+				mapPanel.setShowRobotLabels(!mapPanel.isShowRobotLabels()));
 		popMenu.add(robotLabelMenuItem);
 
 		popMenu.pack();
@@ -1027,14 +1015,10 @@ public class SettlementTransparentPanel extends JComponent {
 		return popMenu;
 	}
 
-
-	private class JCustomCheckBoxMenuItem extends JCheckBoxMenuItem {
-
-		public JCustomCheckBoxMenuItem(String s, boolean b) {
-			super(s, b);
-		}
+	private static BuildingConfig getConfig() {
+		// Donot like this method using the instance method
+		return SimulationConfig.instance().getBuildingConfiguration();
 	}
-
 
 	/**
 	 * Open dialog box to take in the new settlement name
@@ -1054,8 +1038,6 @@ public class SettlementTransparentPanel extends JComponent {
 			desktop.closeToolWindow(SettlementWindow.NAME);
 			desktop.openToolWindow(SettlementWindow.NAME);
 
-		} else {
-			return;
 		}
 	}
 
@@ -1105,14 +1087,15 @@ public class SettlementTransparentPanel extends JComponent {
 			// Clear all elements
 			removeAllElements();
 
-			List<Settlement> settlements = new ArrayList<>();
+			List<Settlement> settlements;
 
 			// Add the command dashboard button
 			if (mode == GameMode.COMMAND) {
 				settlements = unitManager.getCommanderSettlements();
 			}
 
-			else { //if (mode == GameMode.SANDBOX) {
+			else { 
+				settlements = new ArrayList<>();
 				settlements.addAll(unitManager.getSettlements());
 			}
 
@@ -1152,8 +1135,6 @@ public class SettlementTransparentPanel extends JComponent {
 				mapPanel.setSettlement(s);
 				// Set the population label in the status bar
 				mapPanel.getSettlementWindow().setPop(s.getNumCitizens());
-				// Set the box opaque
-//				settlementListBox.setOpaque(false);
 			}
 		}
 
@@ -1180,7 +1161,7 @@ public class SettlementTransparentPanel extends JComponent {
 	 * Gets the sunlight data and display it on the top left panel of the settlement map.
 	 */
 	private void displaySunData(Coordinates location) {
-	    double time[] = orbitInfo.getSunTimes(mapPanel.getSettlement().getCoordinates());
+	    double [] time = orbitInfo.getSunTimes(mapPanel.getSettlement().getCoordinates());
 	    
 		projectSunriseLabel.setText (PROJECTED_SUNRISE + Math.round(time[0] *10.0)/10.0 + MSOL);
 		projectSunsetLabel.setText (PROJECTED_SUNSET + Math.round(time[1] *10.0)/10.0 + MSOL);
@@ -1267,28 +1248,28 @@ public class SettlementTransparentPanel extends JComponent {
 	 * @param s
 	 */
 	private void prepareResourceStat(Settlement s, int missionSol) {
-		String text = "";
+		StringBuilder text = new StringBuilder(YESTERSOL_RESOURCE);
 		Map<Integer, Double> yestersolResources = s.gatherResourceStat(missionSol - 1);
 		int size = yestersolResources.size();
 		int i = 0;
-		for (int id: yestersolResources.keySet()) {
-			String resource = ResourceUtil.findAmountResourceName(id);
-			double amount = yestersolResources.get(id);
-			text += amount + " kg " + resource;
+		for (Entry<Integer, Double> id: yestersolResources.entrySet()) {
+			String resource = ResourceUtil.findAmountResourceName(id.getKey());
+			double amount = id.getValue();
+			text.append(amount).append(" kg ").append(resource);
 			i++;
 			if (i == size - 1) {
-				text += ")  ";
+				text.append(")  ");
 			}
 			else {
-				text += ",  ";
+				text.append(",  ");
 			}
 		}
 
-		if (text.equalsIgnoreCase(""))
+		if (yestersolResources.isEmpty())
 			return;
 
 		resourceCache.remove(s);
-	   	resourceCache.put(s, YESTERSOL_RESOURCE + text);
+	   	resourceCache.put(s, text.toString());
 	}
 
 	/**

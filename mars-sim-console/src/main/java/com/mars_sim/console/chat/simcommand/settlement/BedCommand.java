@@ -11,7 +11,9 @@ import java.util.List;
 
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
+import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
+import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
@@ -37,23 +39,22 @@ public class BedCommand extends AbstractSettlementCommand {
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 
-		int designedBeds = 0;
-		int unoccupiedBeds = 0;
-		int occupiedBeds =  0;
+		UnitManager um = context.getSim().getUnitManager();
 		
+		response.appendTableHeading("Building", CommandHelper.BUILIDNG_WIDTH,
+							 "Bed", 7, "Person");
 		List<Building> bs = settlement.getBuildingManager().getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
 		for (Building building : bs) {
 			LivingAccommodations living = building.getLivingAccommodations();
-			designedBeds += living.getNumAssignedBeds();
-			unoccupiedBeds += living.getNumEmptyActivitySpots();
-			occupiedBeds += living.getNumOccupiedActivitySpots();
+			for(var as : living.getActivitySpots()) {
+				String name = "";
+				if (as.getID() >= 0) {
+					name = um.getPersonByID(as.getID()).getName();
+				}
+				response.appendTableRow(building.getName(), as.getName(), name);
+			}
 		}
-		
-		response.appendLabelledDigit("Total number of beds", settlement.getPopulationCapacity());
-		response.appendLabelledDigit("Desginated beds", designedBeds);
-		response.appendLabelledDigit("Unoccupied beds", unoccupiedBeds);
-		response.appendLabelledDigit("Occupied beds", occupiedBeds);
-		
+
 		context.println(response.getOutput());
 		
 		return true;

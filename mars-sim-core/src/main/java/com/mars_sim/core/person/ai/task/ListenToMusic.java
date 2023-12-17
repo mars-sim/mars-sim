@@ -6,9 +6,6 @@
  */
 package com.mars_sim.core.person.ai.task;
 
-import java.util.logging.Level;
-
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
@@ -29,16 +26,12 @@ extends Task {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(ListenToMusic.class.getName());
-
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.listenToMusic"); //$NON-NLS-1$
 
     /** Task phases. */
-    private static final TaskPhase LISTENING_TO_MUSIC = new TaskPhase(Msg.getString(
-            "Task.phase.listeningToMusic")); //$NON-NLS-1$
+    private static final TaskPhase LISTENING_TO_MUSIC = new TaskPhase(NAME); //$NON-NLS-1$
 
     private static final TaskPhase FINDING_A_SONG = new TaskPhase(Msg.getString(
             "Task.phase.findingASong")); //$NON-NLS-1$
@@ -69,38 +62,30 @@ extends Task {
 
 		// If person is in a settlement, try to find a place to relax.	
 		if (person.isInSettlement()) {
-			try {
-				Building rec = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
-				if (rec != null) {
-					// Walk to recreation building.
-				    walkToActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
-				} else {
-                	// if rec building is not available, go to a gym
-                	Building gym = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.EXERCISE);
-                	if (gym != null) {
-	                	walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
-	                } else {
-	    				// Go back to his bed
-	    				if (person.hasBed()) {
-	    					// Walk to the bed
-	    					walkToBed(person.getQuarters(), person, true);
-		                }
-	                }
+			Building rec = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
+			if (rec != null) {
+				// Walk to recreation building.
+				walkToActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
+			} else {
+				// if rec building is not available, go to a gym
+				Building gym = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.EXERCISE);
+				if (gym != null) {
+					walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
 				}
-				
-			} catch (Exception e) {
-				logger.log(Level.SEVERE,"ListenToMusic's constructor(): " + e.getMessage());
-				endTask();
+				else if (person.hasBed()) {
+					// Walk to the bed
+					walkToBed(person, true);
+				}
 			}
 		}
 
 		else if (person.isInVehicle()
                 && person.getVehicle() instanceof Rover r) {
-				// If person is in rover, walk to passenger activity spot.
-				walkToPassengerActivitySpotInRover(r, true);
+			// If person is in rover, walk to passenger activity spot.
+			walkToPassengerActivitySpotInRover(r, true);
 		}
 		    
-        setDescription(Msg.getString("Task.description.listenToMusic"));
+        setDescription(NAME);
 	
     
 		// Initialize phase

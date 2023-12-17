@@ -146,6 +146,7 @@
 	<!ELEMENT activity-spot EMPTY>
 	<!ATTLIST activity-spot xloc CDATA #REQUIRED>
 	<!ATTLIST activity-spot yloc CDATA #REQUIRED>
+	<!ATTLIST activity-spot name CDATA #IMPLIED>
 	<!ELEMENT bed (bed-location+)>
 	<!ELEMENT bed-location EMPTY>
 	<!ATTLIST bed-location xloc CDATA #REQUIRED>
@@ -237,8 +238,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has exercise facilities. -->
 			<exercise capacity="2">
 				<activity>
-					<activity-spot xloc="2.4" yloc="2.25" />
-					<activity-spot xloc="2.8" yloc="1.5" />
+					<activity-spot xloc="2.4" yloc="2.25" name="Running Machine"/>
+					<activity-spot xloc="2.8" yloc="1.5" name="Bike"/>
 				</activity>
 			</exercise>
 

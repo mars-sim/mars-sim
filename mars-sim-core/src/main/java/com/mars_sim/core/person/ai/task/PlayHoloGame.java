@@ -93,7 +93,7 @@ public class PlayHoloGame extends Task {
 				// Go back to his bed
 				if (person.hasBed()) {
 					// Walk to the bed
-					walkToBed(person.getQuarters(), person, true);
+					walkToBed(person, true);
 					walkSite = true;
 				}
 				else 
