@@ -289,9 +289,9 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 
 	public double getTotalDevelopmentValue() {
 		double sum = 0;
-//		for (DevelopmentProject rp: developmentProjects) {
-//			sum += rp.getDevelopmentValue();
-//		}
+		for (EngineeringProject rp: engineeringProjects) {
+			sum += rp.getDevelopmentValue();
+		}
 		return sum;
 	}
 	
@@ -318,17 +318,17 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	}
 	
 	public double getAverageDevelopmentActiveness() {
-//		double num = 0;
-//		double sum = 0;
-//		for (DevelopmentProject rp: developmentProjects) {
-//			num++;
-//			sum += rp.getAverageDevelopmentActiveness();
-//		}
-//		
-//		if (num == 0)
+		double num = 0;
+		double sum = 0;
+		for (EngineeringProject rp: engineeringProjects) {
+			num++;
+			sum += rp.getAverageDevelopmentActiveness();
+		}
+		
+		if (num == 0)
 			return 0;
 		
-//		return sum / num;
+		return sum / num;
 	}
 	
 	public int getNumResearchProjects() {

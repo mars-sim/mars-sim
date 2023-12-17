@@ -799,20 +799,20 @@ public class MasterClock implements Serializable {
 		boolean isNewSol = (lastSol != currentSol);
 		// Updates lastSol
 		if (isNewSol) {
-			logger.info(
-					"isNewSol: " + isNewSol 
-					+ "  lastSol: " + lastSol 
-					+ "  currentSol: " + currentSol);
+//			logger.info(
+//					"isNewSol: " + isNewSol 
+//					+ "  lastSol: " + lastSol 
+//					+ "  currentSol: " + currentSol);
 			lastSol = currentSol;
 		}
 		// Identify if it just passes half a sol
 		boolean isNewHalfSol = isNewSol || (lastMillisol <= 500 && currentMillisol > 500);	
 		
 		if (isNewHalfSol) {
-			logger.info(
-					"isNewHalfSol: " + isNewHalfSol 
-					+ "  lastMillisol: " + lastMillisol 
-					+ "  currentMillisol: " + currentMillisol);
+//			logger.info(
+//					"isNewHalfSol: " + isNewHalfSol 
+//					+ "  lastMillisol: " + lastMillisol 
+//					+ "  currentMillisol: " + currentMillisol);
 			lastSol = currentSol;
 		}
 		

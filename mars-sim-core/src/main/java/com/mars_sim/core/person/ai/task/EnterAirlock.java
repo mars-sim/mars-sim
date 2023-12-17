@@ -9,7 +9,6 @@ package com.mars_sim.core.person.ai.task;
 import java.util.Set;
 import java.util.logging.Level;
 
-import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EVASuitUtil;

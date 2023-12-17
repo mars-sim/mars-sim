@@ -68,10 +68,10 @@ public class Population implements Serializable, Temporal {
 	
 	public void init() {
 		for (int i = 0; i < numResearchers; i++) {
-			colonists.add(new ColonistResearcher("R" + i, colony));
+			colonists.add(new ColonistResearcher("Researcher" + i, colony));
 		}
 		for (int i = 0; i < numEngineers; i++) {
-			colonists.add(new ColonistEngineer("E" + i, colony));
+			colonists.add(new ColonistEngineer("Engineer" + i, colony));
 		}
 	}
 	

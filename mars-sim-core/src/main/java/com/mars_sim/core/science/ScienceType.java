@@ -7,7 +7,7 @@
 
 package com.mars_sim.core.science;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,13 +74,83 @@ public enum ScienceType {
 			"PSY", SkillType.PSYCHOLOGY, JobType.PSYCHOLOGIST);
 
 
+	/** A list of science subjects for research projects. */
+	private static List<ScienceType> sciencesSubjects = new ArrayList<>();
+
+	/** A list of engineering subjects for development projects. */
+	private static List<ScienceType> engineeringSubjects = new ArrayList<>();
+
+	
 	/** Maps for keeping track of collaborative sciences. */
-	private static Map<ScienceType, Science> collabSciences;
+	private static Map<ScienceType, Science> collabSciences = new HashMap<>();
 	 
 	private String name;
 	private String code;
 	private JobType job;
 	private SkillType skill;
+
+	/** 
+	 * Initializes engineering subjects.
+	 */
+	static  {
+		engineeringSubjects.add(AREOLOGY);
+		engineeringSubjects.add(COMPUTING);
+		engineeringSubjects.add(ENGINEERING);
+	}
+		
+	/** 
+	 * Initializes science subjects.
+	 */
+	static  {
+		sciencesSubjects.add(AREOLOGY);
+		sciencesSubjects.add(ASTRONOMY);
+		sciencesSubjects.add(BIOLOGY);
+		sciencesSubjects.add(BOTANY);
+		sciencesSubjects.add(CHEMISTRY);
+		sciencesSubjects.add(COMPUTING);
+		sciencesSubjects.add(MATHEMATICS);
+		sciencesSubjects.add(MEDICINE);
+		sciencesSubjects.add(METEOROLOGY);
+		sciencesSubjects.add(PHYSICS);
+		sciencesSubjects.add(PSYCHOLOGY);
+	}
+	
+	/** 
+	 * Initializes collaborative sciences.
+	 */
+	static  {
+		// Load available sciences in list.
+
+		for (ScienceType scienceType : ScienceType.values()) {
+			collabSciences.put(scienceType, new Science(scienceType));
+		}
+
+		// Configure collaborative sciences.
+		Science areology = collabSciences.get(ScienceType.AREOLOGY);
+		Science astronomy = collabSciences.get(ScienceType.ASTRONOMY);
+		Science biology = collabSciences.get(ScienceType.BIOLOGY);
+		Science botany = collabSciences.get(ScienceType.BOTANY);
+		Science chemistry = collabSciences.get(ScienceType.CHEMISTRY);
+		Science computing = collabSciences.get(ScienceType.COMPUTING);
+		Science engineering = collabSciences.get(ScienceType.ENGINEERING);
+		Science mathematics = collabSciences.get(ScienceType.MATHEMATICS);
+		Science medicine = collabSciences.get(ScienceType.MEDICINE);
+		Science meteorology = collabSciences.get(ScienceType.METEOROLOGY);
+		Science physics = collabSciences.get(ScienceType.PHYSICS);
+		Science psychology = collabSciences.get(ScienceType.PSYCHOLOGY);
+
+		areology.setCollaborativeSciences(new Science[]    { biology, chemistry, physics, meteorology });
+		astronomy.setCollaborativeSciences(new Science[]   { biology, chemistry, mathematics, physics });
+		biology.setCollaborativeSciences(new Science[]     { botany, chemistry, mathematics, medicine });
+		botany.setCollaborativeSciences(new Science[]      { biology, chemistry, medicine });
+		chemistry.setCollaborativeSciences(new Science[]   { biology, mathematics, medicine });
+		computing.setCollaborativeSciences(new Science[]   { astronomy, engineering, physics, mathematics, medicine, meteorology });
+		mathematics.setCollaborativeSciences(new Science[] { astronomy, engineering, physics });
+		medicine.setCollaborativeSciences(new Science[]    { biology, botany, chemistry, mathematics });
+		meteorology.setCollaborativeSciences(new Science[] { chemistry, mathematics, physics });
+		physics.setCollaborativeSciences(new Science[]     { astronomy, mathematics, engineering });
+		psychology.setCollaborativeSciences(new Science[]  { biology, chemistry, medicine });
+	}
 
 	/** 
 	 * Hidden constructor. 
@@ -111,43 +181,6 @@ public enum ScienceType {
 
 	public final SkillType getSkill() {
 		return this.skill;
-	}
-
-	/** 
-	 * Initializes collaborative sciences.
-	 */
-	static  {
-		// Load available sciences in list.
-		collabSciences = new HashMap<>();
-		for (ScienceType scienceType : ScienceType.values()) {
-			collabSciences.put(scienceType, new Science(scienceType));
-		}
-
-		// Configure collaborative sciences.
-		Science areology = collabSciences.get(ScienceType.AREOLOGY);
-		Science astronomy = collabSciences.get(ScienceType.ASTRONOMY);
-		Science biology = collabSciences.get(ScienceType.BIOLOGY);
-		Science botany = collabSciences.get(ScienceType.BOTANY);
-		Science chemistry = collabSciences.get(ScienceType.CHEMISTRY);
-		Science computing = collabSciences.get(ScienceType.COMPUTING);
-		Science engineering = collabSciences.get(ScienceType.ENGINEERING);
-		Science mathematics = collabSciences.get(ScienceType.MATHEMATICS);
-		Science medicine = collabSciences.get(ScienceType.MEDICINE);
-		Science meteorology = collabSciences.get(ScienceType.METEOROLOGY);
-		Science physics = collabSciences.get(ScienceType.PHYSICS);
-		Science psychology = collabSciences.get(ScienceType.PSYCHOLOGY);
-
-		areology.setCollaborativeSciences(new Science[]    { biology, chemistry, physics, meteorology });
-		astronomy.setCollaborativeSciences(new Science[]   { biology, chemistry, mathematics, physics });
-		biology.setCollaborativeSciences(new Science[]     { botany, chemistry, mathematics, medicine });
-		botany.setCollaborativeSciences(new Science[]      { biology, chemistry, medicine });
-		chemistry.setCollaborativeSciences(new Science[]   { biology, mathematics, medicine });
-		computing.setCollaborativeSciences(new Science[]   { astronomy, engineering, physics, mathematics, medicine, meteorology });
-		mathematics.setCollaborativeSciences(new Science[] { astronomy, engineering, physics });
-		medicine.setCollaborativeSciences(new Science[]    { biology, botany, chemistry, mathematics });
-		meteorology.setCollaborativeSciences(new Science[] { chemistry, mathematics, physics });
-		physics.setCollaborativeSciences(new Science[]     { astronomy, mathematics, engineering });
-		psychology.setCollaborativeSciences(new Science[]  { biology, chemistry, medicine });
 	}
 
 	/**
@@ -185,7 +218,18 @@ public enum ScienceType {
 	 * @return
 	 */
 	public static ScienceType getRandomScienceType() {
-		List<ScienceType> list = Arrays.asList(ScienceType.values());		
+		List<ScienceType> list = sciencesSubjects; //Arrays.asList(ScienceType.values());		
+		int rand = RandomUtil.getRandomInt(list.size() - 1);
+		return list.get(rand);
+	}
+	
+	/**
+	 * Gets a random science type enum.
+	 * 
+	 * @return
+	 */
+	public static ScienceType getRandomEngineeringSubject() {
+		List<ScienceType> list = engineeringSubjects;		
 		int rand = RandomUtil.getRandomInt(list.size() - 1);
 		return list.get(rand);
 	}
