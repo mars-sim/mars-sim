@@ -50,15 +50,18 @@ public class ActivitySpotModel extends AbstractTableModel implements UnitModel {
         ActivitySpot sp = spots.get(rowIndex);
         String result = null;
         switch(columnIndex) {
-            case NAME_COL: result = sp.getName(); break;
-            case POS_COL: result = sp.getPos().getShortFormat(); break;
+            case NAME_COL: result = sp.getName();
+                        break;
+            case POS_COL: result = sp.getPos().getShortFormat(); 
+                        break;
             case WORK_COL: {
                 Unit u = getAssociatedUnit(rowIndex);
                 if (u != null) {
                     result = u.getName();
                 }
             } break;
-            default: break;
+            default:
+                break;
         }
 
         return result;
