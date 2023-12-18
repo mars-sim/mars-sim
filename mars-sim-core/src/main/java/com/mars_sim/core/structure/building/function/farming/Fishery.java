@@ -150,7 +150,7 @@ public class Fishery extends Function {
 		
 		// Retrieve water to create pond
 		// Note that 1 L of water is 1 kg
-		building.getSettlement().retrieveAmountResource(ResourceUtil.waterID, tankSize);
+//		building.getSettlement().retrieveAmountResource(ResourceUtil.waterID, tankSize);
 		
 		// Calculate fish & weeds by tank size
 		maxFish = (int)((tankSize * FISHSIZE_LITRE)/FISH_LENGTH);

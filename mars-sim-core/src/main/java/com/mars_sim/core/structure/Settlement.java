@@ -150,9 +150,15 @@ public class Settlement extends Structure implements Temporal,
 	private static final int WATER_MAX = 10_000;
 	private static final int OXYGEN_MAX = 10_000;
 	private static final int METHANE_MAX = 10_000;
+	private static final int HYDROGEN_MAX = 10_000;
+	private static final int N2_MAX = 3_000;
+	private static final int CO2_MAX = 2_000;
 	
 	private static final int MIN_OXYGEN_RESERVE = 400; // per person
 	private static final int MIN_METHANE_RESERVE = 400; // per person
+	private static final int MIN_HYDROGEN_RESERVE = 400; // per person
+	private static final int MIN_N2_RESERVE = 150; // per person
+	private static final int MIN_CO2_RESERVE = 100; // per person
 	private static final int MIN_WATER_RESERVE = 400; // per person
 	private static final int MIN_ICE_RESERVE = 400; // per person
 	
@@ -161,6 +167,7 @@ public class Settlement extends Structure implements Temporal,
 	private static final int METHANE_ID = ResourceUtil.methaneID;
 	private static final int METHANOL_ID = ResourceUtil.methanolID;
 	private static final int CO2_ID = ResourceUtil.co2ID;
+	private static final int NITROGEN_ID = ResourceUtil.nitrogenID;
 	
 	private static final int WATER_ID = ResourceUtil.waterID;
 	private static final int ICE_ID = ResourceUtil.iceID;
@@ -1165,6 +1172,9 @@ public class Settlement extends Structure implements Temporal,
 				// Check on demand and supply and amount of water, oxygen and methane
 				checkResourceDemand("Oxygen", OXYGEN_ID, MIN_OXYGEN_RESERVE, OXYGEN_MAX, time);
 				checkResourceDemand("Methane", METHANE_ID, MIN_METHANE_RESERVE, METHANE_MAX, time);
+				checkResourceDemand("Hydrogen", HYDROGEN_ID, MIN_HYDROGEN_RESERVE, HYDROGEN_MAX, time);
+				checkResourceDemand("Nitrogen", NITROGEN_ID, MIN_N2_RESERVE, N2_MAX, time);
+				checkResourceDemand("Carbon Dioxide", CO2_ID, MIN_CO2_RESERVE, CO2_MAX, time);
 				checkResourceDemand("Water", WATER_ID, MIN_WATER_RESERVE, WATER_MAX, time);
 			}
 			

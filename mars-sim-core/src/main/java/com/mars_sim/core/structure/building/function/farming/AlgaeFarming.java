@@ -275,7 +275,7 @@ public class AlgaeFarming extends Function {
 		
 		// Retrieve water to create pond
 		// Note that 1 L of water is 1 kg
-		building.getSettlement().retrieveAmountResource(ResourceUtil.waterID, waterMass);
+//		building.getSettlement().retrieveAmountResource(ResourceUtil.waterID, waterMass);
 		
 	    double initalFood = currentAlgae * NUTRIENT_RATIO;
 	    
