@@ -81,7 +81,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 		this.vehicle = vehicle;
 
 		if (person.isSuperUnFit()) {
-			checkLocation("Person is unfit.");
+			checkLocation("Super unfit.");
         	return;
 		}
 		

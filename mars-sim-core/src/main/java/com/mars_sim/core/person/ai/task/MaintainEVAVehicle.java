@@ -53,7 +53,7 @@ public class MaintainEVAVehicle extends EVAOperation {
         super(NAME, person, true, 25, SkillType.MECHANICS);
 
 		if (!person.isNominallyFit()) {
-			checkLocation("Person not fit.");
+			checkLocation("Not nominally fit.");
         	return;
 		}
 		

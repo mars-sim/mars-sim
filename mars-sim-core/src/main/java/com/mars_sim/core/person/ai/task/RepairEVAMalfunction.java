@@ -54,7 +54,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 		super(NAME, person, true, 25, SkillType.MECHANICS);
 
 		if (!person.isNominallyFit()) {
-			checkLocation("Person is unfit.");
+			checkLocation("Not nominally fit.");
         	return;
 		}
 
