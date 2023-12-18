@@ -68,7 +68,7 @@ public class SalvageBuilding extends EVAOperation {
         super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.CONSTRUCTION);
 
 		if (person.isSuperUnFit()) {
-			checkLocation("Person unfit.");
+			checkLocation("Super unfit.");
 			return;
 		}
 

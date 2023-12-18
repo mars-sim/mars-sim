@@ -131,7 +131,7 @@
 		<input resource="carbon monoxide" rate="84.0"  />
 		<input resource="hydrogen" rate="2.0"  />
 		
-		<output resource="carbon dioxide" rate="44.0" waste="true" />
+		<output resource="carbon dioxide" rate="44.0" waste="false" />
 		<output resource="water" rate="18.0"  />
 		<output resource="carbon" rate="24.0"  />
 	</process>
@@ -602,7 +602,7 @@
 		<input resource="sand" rate="44.5"  />					
 		<input resource="sodium carbonate" rate="2.5"  />
 
-		<output resource="carbon dioxide" rate="0.5" waste="true" />
+		<output resource="carbon dioxide" rate="0.5" waste="false" />
 		<output resource="aluminum oxide" rate="2.0"  />
 		<output resource="sodium oxide" rate="2.5"  />
 		<output resource="aluminum" rate="8.0"  />
@@ -630,7 +630,7 @@
 
 		<output resource="calcium sulfate" rate="2.0"  />
 		<output resource="calcium carbonate" rate="27.0"  />
-		<output resource="carbon dioxide" rate="12.7" waste="true" />
+		<output resource="carbon dioxide" rate="12.7" waste="false" />
 		<output resource="brine water" rate="5.2"  />
 	</process>
 
@@ -647,7 +647,7 @@
 		
 		<output resource="calcium sulfate" rate="2.0"  />
 		<output resource="calcium carbonate" rate="27.0"  />
-		<output resource="carbon dioxide" rate="38.1" waste="true" />
+		<output resource="carbon dioxide" rate="38.1" waste="false" />
 		<output resource="brine water" rate="5.2"  />
 	</process>
 

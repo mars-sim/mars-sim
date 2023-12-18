@@ -211,7 +211,7 @@ public class LivingAccommodations extends Function {
 	 *
 	 * @param person
 	 * @param isAGuest is this person a guest (not inhabitant) of this settlement
-	 * @return Successful with the registeration
+	 * @return Successful with the registration
 	 */
 	public boolean registerSleeper(Person person, boolean isAGuest) {
 		// Assign standard necessity

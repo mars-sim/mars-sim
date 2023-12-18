@@ -66,7 +66,7 @@ public class LoadVehicleEVA extends EVAOperation {
 		this.vehicleMission = mission;
 		
 		if (person.isSuperUnFit()) {
-			checkLocation("Person is super unfit.");
+			checkLocation("Super unfit.");
         	return;
 		}
 		

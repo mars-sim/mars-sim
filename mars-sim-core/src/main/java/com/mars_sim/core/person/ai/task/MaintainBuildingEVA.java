@@ -56,7 +56,7 @@ extends EVAOperation {
 		super(NAME, person, true, RandomUtil.getRandomDouble(90, 100), SkillType.MECHANICS);
 
 		if (!person.isNominallyFit()) {
-			checkLocation("Person is unfit.");
+			checkLocation("Not nominally fit.");
         	return;
 		}
 		

@@ -84,7 +84,7 @@ public class CollectResources extends EVAOperation {
 		addAdditionSkill(SkillType.PROSPECTING);
 		
 		if (person.isSuperUnFit()) {
-			checkLocation("Person is unfit.");
+			checkLocation("Super unfit.");
 	      	return;
 		}
 
