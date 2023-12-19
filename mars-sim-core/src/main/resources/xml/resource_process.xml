@@ -254,10 +254,31 @@
 		<output resource="oxygen" rate="12.8"  />
 	</process>
 	
-	<process name="Carbon Dioxide Pump" power-required="0.04" >
-		<input resource="carbon dioxide" rate="40.0" ambient="true" />
+	     
+	<process name="Atmospheric Processing" power-required="0.04" >
+		<description> 
+		 
+		 It is likely that all the nitrogen obtain through atmospheric processing will 
+	     become part of the colony atmosphere, at least in the early stages. 
+	     
+	     If the nitrogen is obtained though CO2 compression to 520 kPa (about 5 atmosphere,
+	     or 75 psi) it can remain a liquid if cooled to about -170°C. To keep the nitrogen
+	     liquid at a room temperature of 23°C requires a pressure of about 1500 kPa (220 psi).
+	     
+	     This can be easily maintained in small pressure vessels but requires extremely 
+	     strong and heavy vessels in large volumes.
+	
+	     See https://marspedia.org/Atmospheric_processing and https://marspedia.org/Nitrogen 
+		 
+		</description> 			
+		<input resource="carbon dioxide" rate="100.0" ambient="true" />
 		
-		<output resource="carbon dioxide" rate="40.0"  />
+		<output resource="nitrogen" rate="2.7"  />	
+		<output resource="oxygen" rate="0.161"  />	
+		<output resource="argon" rate="1.94"  />
+		<output resource="water" rate="0.03"  />
+		<output resource="carbon monoxide" rate=".058"  />
+		<output resource="carbon dioxide" rate="95.111"  />
 	</process>
 
 
@@ -350,7 +371,8 @@
 		<output resource="akaganeite" rate="2.0"  />
 		<output resource="bassanite" rate="2.0"  />
 
-		<output resource="sand" rate="62.0"  />
+		<output resource="sand" rate="61.9"  />
+		<output resource="nitrogen" rate="0.1"  />
 	</process>
 
 

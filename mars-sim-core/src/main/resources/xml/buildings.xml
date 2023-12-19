@@ -364,7 +364,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>		
 				<process-engine name="Oxygen Generation System" number-modules="2"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="4"/>
-				<process-engine name="Carbon Dioxide Pump"/>
+				<process-engine name="Atmospheric processing"/>
 				<process-engine name="Syngas Plant"/>
 				<process-engine name="Melt Ice" number-modules="3" />
 				<process-engine name="Filter Brine Water" number-modules="3" />
@@ -736,7 +736,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Carbon Dioxide Pump"/>
+				<process-engine name="Atmospheric processing" number-modules="2"/>
 				<activity>
 					<activity-spot xloc="7.27" yloc="4.54" />
 					<activity-spot xloc="6.94" yloc="5.11" />
@@ -839,7 +839,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Carbon Dioxide Pump"/>
+				<process-engine name="Atmospheric processing" number-modules="2"/>
 				<activity>
 					<activity-spot xloc="-1.47" yloc="3.68" />
 				</activity>
@@ -984,7 +984,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Carbon Dioxide Pump" number-modules="3"/>
+				<process-engine name="Atmospheric processing" number-modules="4"/>
 				<activity>
 					<activity-spot xloc="-4.5" yloc="8.25" />
 				</activity>
@@ -3092,7 +3092,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>
 				<process-engine name="Oxygen Generation System" number-modules="2" />
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="4"/>
-				<process-engine name="Carbon Dioxide Pump"/>
+				<process-engine name="Atmospheric processing"/>
 				<process-engine name="Syngas Plant"/>
 				<process-engine name="Melt Ice" number-modules="3" />
 				<process-engine name="Filter Brine Water" number-modules="3" />
@@ -3415,7 +3415,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Carbon Dioxide Pump" number-modules="2"/>
+				<process-engine name="Atmospheric processing" number-modules="2"/>
 				<activity>
 					<activity-spot xloc="2.0" yloc="4.5" />
 				</activity>

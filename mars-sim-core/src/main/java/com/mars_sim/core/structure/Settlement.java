@@ -151,14 +151,14 @@ public class Settlement extends Structure implements Temporal,
 	private static final int OXYGEN_MAX = 10_000;
 	private static final int METHANE_MAX = 10_000;
 	private static final int HYDROGEN_MAX = 10_000;
-	private static final int N2_MAX = 3_000;
+	private static final int N2_MAX = 5_000;
 	private static final int CO2_MAX = 2_000;
 	
 	private static final int MIN_OXYGEN_RESERVE = 400; // per person
 	private static final int MIN_METHANE_RESERVE = 400; // per person
 	private static final int MIN_HYDROGEN_RESERVE = 400; // per person
-	private static final int MIN_N2_RESERVE = 150; // per person
-	private static final int MIN_CO2_RESERVE = 100; // per person
+	private static final int MIN_N2_RESERVE = 100; // per person
+	private static final int MIN_CO2_RESERVE = 50; // per person
 	private static final int MIN_WATER_RESERVE = 400; // per person
 	private static final int MIN_ICE_RESERVE = 400; // per person
 	

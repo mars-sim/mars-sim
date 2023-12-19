@@ -270,43 +270,44 @@ public class ResourceProcess implements Serializable {
 				double bottleneck = 1D;
 
 				// Input resources from inventory.
-				for(Integer resource : engine.getInputResources()) {				
-					
-					double fullRate = engine.getBaseFullInputRate(resource);
-					double resourceRate = fullRate * level;
-					double required = resourceRate * accumulatedTime;
-					double stored = settlement.getAmountResourceStored(resource);
-					
-					// Get resource bottleneck
-					double desiredResourceAmount = fullRate * time;
-					double proportionAvailable = 1D;
-					if (desiredResourceAmount > 0D)
-						proportionAvailable = stored / desiredResourceAmount;
-					if (bottleneck > proportionAvailable)
-						bottleneck = proportionAvailable;
-					
-					// Retrieve the right amount
-					if (stored > SMALL_AMOUNT) {
-						if (required > stored) {
-							logger.fine(settlement, 30_000, "Case A. Used up all '" + ResourceUtil.findAmountResourceName(resource)
+				for (Integer resource : engine.getInputResources()) {			
+					if (!engine.isAmbientInputResource(resource)) {
+						double fullRate = engine.getBaseFullInputRate(resource);
+						double resourceRate = fullRate * level;
+						double required = resourceRate * accumulatedTime;
+						double stored = settlement.getAmountResourceStored(resource);
+						
+						// Get resource bottleneck
+						double desiredResourceAmount = fullRate * time;
+						double proportionAvailable = 1D;
+						if (desiredResourceAmount > 0D)
+							proportionAvailable = stored / desiredResourceAmount;
+						if (bottleneck > proportionAvailable)
+							bottleneck = proportionAvailable;
+						
+						// Retrieve the right amount
+						if (stored > SMALL_AMOUNT) {
+							if (required > stored) {
+								logger.fine(settlement, 30_000, "Case A. Used up all '" + ResourceUtil.findAmountResourceName(resource)
+									+ "' input to start '" + name + "'. Required: " + Math.round(required * 1000.0)/1000.0 + " kg. Remaining: "
+									+ Math.round(stored * 1000.0)/1000.0 + " kg in storage.");
+								required = stored;
+								settlement.retrieveAmountResource(resource, required);
+								setProcessRunning(false);
+								break;
+								// Note: turn on a yellow flag and indicate which the input resource is missing
+							}
+							else
+								settlement.retrieveAmountResource(resource, required);
+							
+						}
+						else {
+							logger.fine(settlement, 30_000, "Case B. Not enough '" + ResourceUtil.findAmountResourceName(resource)
 								+ "' input to start '" + name + "'. Required: " + Math.round(required * 1000.0)/1000.0 + " kg. Remaining: "
 								+ Math.round(stored * 1000.0)/1000.0 + " kg in storage.");
-							required = stored;
-							settlement.retrieveAmountResource(resource, required);
 							setProcessRunning(false);
 							break;
-							// Note: turn on a yellow flag and indicate which the input resource is missing
 						}
-						else
-							settlement.retrieveAmountResource(resource, required);
-						
-					}
-					else {
-						logger.fine(settlement, 30_000, "Case B. Not enough '" + ResourceUtil.findAmountResourceName(resource)
-							+ "' input to start '" + name + "'. Required: " + Math.round(required * 1000.0)/1000.0 + " kg. Remaining: "
-							+ Math.round(stored * 1000.0)/1000.0 + " kg in storage.");
-						setProcessRunning(false);
-						break;
 					}
 				}
 
@@ -315,7 +316,7 @@ public class ResourceProcess implements Serializable {
 					level = bottleneck;
 				
 				// Output resources to inventory.
-				for(Integer resource : engine.getOutputResources()) {
+				for (Integer resource : engine.getOutputResources()) {
 					double maxRate = engine.getBaseFullOutputRate(resource);
 					double resourceRate = maxRate * level;
 					double required = resourceRate * accumulatedTime;

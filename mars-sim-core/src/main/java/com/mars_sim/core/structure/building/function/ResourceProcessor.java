@@ -18,12 +18,13 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 
 /**
- * The Abstratc class that runs ResoruceProcesses as a building function.
+ * The Abstract class that runs ResoruceProcesses as a building function.
  */
 public abstract class ResourceProcessor extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
 	private static final String POWER_DOWN_LEVEL = "power-down-level";
 
 	private static final double PROCESS_MAX_VALUE = 100D;
