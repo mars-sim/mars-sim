@@ -7,13 +7,9 @@
 package com.mars_sim.core.structure.building.function;
 
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
-import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.data.SolSingleMetricDataLogger;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -23,7 +19,6 @@ import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.FunctionSpec;
 import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.mapdata.location.LocalPosition;
 import com.mars_sim.tools.util.RandomUtil;
 
 /**
@@ -48,10 +43,6 @@ public class LivingAccommodations extends Function {
 	
 	private static final String WASTE_NAME = "LivingAccomodation::generateWaste";
 	
-	/** max # of beds. */
-	private int maxNumBeds;
-	/** max # of guest beds. */
-	private int maxGuestBeds;
 	/** The average water used per person for washing (showers, washing clothes, hands, dishes, etc) [kg/sol].*/
 	private double washWaterUsage;
 	// private double wasteWaterProduced; // Waste water produced by
@@ -63,14 +54,14 @@ public class LivingAccommodations extends Function {
 	/** The estimated waste water produced. */
 	private double estimatedWasteWaterProduced;
 
-	/** The guest beds in this facility, using settlement-wide position. */
-	private Map<Integer, LocalPosition> guestBeds = new ConcurrentHashMap<>();
-	
 	/** The daily water usage in this facility [kg/sol]. */
 	private SolSingleMetricDataLogger dailyWaterUsage;
 	
 	/** The daily grey water generated in this facility [kg/sol]. */
 	private SolSingleMetricDataLogger greyWaterGen;
+
+	/** Can this be used as a bunk house for guests */
+	private boolean guesthouse;
 
 	/**
 	 * Constructor.
@@ -86,26 +77,15 @@ public class LivingAccommodations extends Function {
 		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
 		
 		greyWaterGen = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
-		// Loads the max # of regular beds available
-		maxNumBeds = spec.getCapacity();
-		
-		Set<LocalPosition> bedSet = spec.getBuildingSpec().getBeds();
-		
-		for (LocalPosition loc: bedSet) {
-			// Convert to settlement position
-			LocalPosition bedLoc = LocalAreaUtil.getLocalRelativePosition(loc, building);
-			guestBeds.put(-1, bedLoc);
-		}
-		
-		// Loads the max # of guest beds available
-		maxGuestBeds = bedSet.size();
-		
+
 		// Loads the wash water usage kg/sol
 		washWaterUsage = personConfig.getWaterUsageRate();
 		// Loads the grey to black water ratio
 		double grey2BlackWaterRatio = personConfig.getGrey2BlackWaterRatio();
 		// Calculate the grey water fraction
 		greyWaterFraction = grey2BlackWaterRatio / (grey2BlackWaterRatio + 1);
+
+		guesthouse = spec.getBoolProperty("guesthouse", false);
 	}
 
 	/**
@@ -131,7 +111,7 @@ public class LivingAccommodations extends Function {
 				removedBuilding = true;
 			} else {
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += building.getLivingAccommodations().getTotalBeds() * wearModifier;
+				supply += building.getLivingAccommodations().getBedCap() * wearModifier;
 			}
 		}
 
@@ -146,27 +126,8 @@ public class LivingAccommodations extends Function {
 	 * @return
 	 */
 	public int getBedCap() {
-		return maxNumBeds;
+		return getActivitySpots().size();
 	}
-
-	/**
-	 * Gets the max number of guest beds in the living accommodations.
-	 *
-	 * @return
-	 */
-	public int getMaxGuestBeds() {
-		return maxGuestBeds;
-	}
-	
-	/**
-	 * Gets the total number of beds (regular and guest) in the living accommodations.
-	 *
-	 * @return
-	 */
-	public int getTotalBeds() {
-		return maxNumBeds + maxGuestBeds;
-	}
-
 	
 	/**
 	 * Gets the number of assigned beds in this building.
@@ -178,14 +139,6 @@ public class LivingAccommodations extends Function {
 	}
 
 	/**
-	 * Gets the total number of guest beds in this building.
-	 *
-	 * @return total number of guest beds
-	 */
-	public int getTotalGuestBeds() {
-		return guestBeds.size();
-	}
-	/**
 	 * Gets the number of people registered to sleep in this building.
 	 *
 	 * @return number of registered sleepers
@@ -195,78 +148,34 @@ public class LivingAccommodations extends Function {
 	}
 
 	/**
-	 * Assigns standard living necessity.
-	 */
-	public void	assignStandardNecessity(Person person) {
-
-		// Obtain a standard set of clothing items
-		person.wearGarment(building.getSettlement());
-
-		// Assign thermal bottle
-		person.assignThermalBottle();
-	}
-	
-	/**
-	 * Registers a sleeper with a bed.
-	 *
-	 * @param person
-	 * @param isAGuest is this person a guest (not inhabitant) of this settlement
-	 * @return Successful with the registration
-	 */
-	public boolean registerSleeper(Person person, boolean isAGuest) {
-		// Assign standard necessity
-		assignStandardNecessity(person);	
-		
-		if (person.getBed() != null) {
-			return true;
-		}
-
-		// Find a bed
-		if (getNumEmptyActivitySpots() > 0) {
-			LocalPosition bed = designateABed(person, isAGuest);
-			if (bed != null) {
-				return true;
-			}
-		}
-		
-		logger.log(building, person, Level.WARNING, 2000,
-								"Could not find a temporary bed.", null);
-		return false;
-	}
-
-	/**
 	 * Assigns/designates an available bed to a person.
 	 *
 	 * @param person
 	 * @return
 	 */
-	private LocalPosition designateABed(Person person, boolean guest) {
-		LocalPosition bedLoc = null;
+	private AllocatedSpot assignBed(Person person, boolean permanent) {		
 
-		int numDesignated = getNumAssignedBeds();
-		if (numDesignated >= maxNumBeds) {
-			return null;
-		}
-		
 		// Note: guest beds are reserved for temporary use and 
 		// are not assigned here for use here
 		Set<ActivitySpot> spots = getActivitySpots();
 		for (var sp : spots) {
 			if (sp.isEmpty()) {
-				if (!guest) {
-					// Claim the bed permanently
-					AllocatedSpot bed = sp.claim(person, true, building);
+				// Claim the bed
+				AllocatedSpot bed = sp.claim(person, permanent, building);
+				if (permanent) {
 					person.setBed(bed);
 				}
-				logger.log(building, person, Level.INFO, 0, "Given a bed ("
+				
+				logger.log(building, person, Level.INFO, 0, "Given a "
+							+ (permanent ? "permanent" : "temporary")
+							+ " bed at " + sp.getPos() + "("
 							+ sp.getName() + ").");
 				
-				bedLoc = sp.getPos();
-				break;
+				return bed;
 			}
 		}
 
-		return bedLoc;
+		return null;
 	}
 
 	/**
@@ -397,85 +306,75 @@ public class LivingAccommodations extends Function {
 		return new double[] {estimatedWaterUsed, estimatedWasteWaterProduced};
 	}
 
-	/*
-	 * Checks if an unmarked or unassigned bed is available
-	 */
-	public boolean hasAnUnmarkedBed() {
-        return getNumAssignedBeds() < maxNumBeds || hasEmptyGuestBed();
+	@Override
+	public double getMaintenanceTime() {
+		return getActivitySpots().size() * 7D;
 	}
 
 	/**
-	 * Checks if there is an empty guest bed.
-	 *  
-	 * @return
+	 * Allocate a bed for sleeping
+	 * @param settlement
+	 * @param p
+	 * @param permenant Looking to make the allocate fixed
 	 */
-	public boolean hasEmptyGuestBed() {
-		for (int i: guestBeds.keySet()) {
-			if (i == -1) 
-				return true;
+	public static AllocatedSpot allocateBed(Settlement settlement, Person p, boolean permanent) {
+		boolean guest = (!settlement.equals(p.getAssociatedSettlement()));
+		if (guest) {
+			permanent = false;
 		}
-		return false;
-	}
-	
-	/**
-	 * Gets an empty guest bed.
-	 * 
-	 * @return
-	 */
-	public LocalPosition getEmptyGuestBed() {
-		for (Entry<Integer, LocalPosition> i: guestBeds.entrySet()) {
-			if (i.getKey() == -1) 
-				return i.getValue();
+
+		var blgManager = settlement.getBuildingManager();
+		Set<Building> dorms = blgManager.getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
+		if (dorms.isEmpty()) {
+			return null;
 		}
-		return null;
-	}
-	
-	/**
-	 * Registers a guest bed.
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public LocalPosition registerGuestBed(int id) {
-		for (Entry<Integer, LocalPosition> entry: guestBeds.entrySet()) {
-			int oldID = entry.getKey();
-			if (oldID == -1) {
-				LocalPosition p = entry.getValue();
-				guestBeds.put(id, p);
-				return p;
+
+		LivingAccommodations guestHouse = null;
+		for(Building b : dorms) {
+			// If looking for permanent then find an unassigned ActivitySpot
+			LivingAccommodations lvi = b.getLivingAccommodations();
+			if ((lvi.getNumEmptyActivitySpots() > 0)
+				&& (permanent || (guest && lvi.isGuestHouse()))) {
+				return lvi.assignBed(p, permanent);
+			}
+
+			if (lvi.isGuestHouse()) {
+				guestHouse = lvi;
 			}
 		}
-		return null;
-	}
-	
-	/**
-	 * Deregisters a guest bed.
-	 * 
-	 * @param id
-	 */
-	public void deRegisterGuestBed(int id) {
-		for (Entry<Integer, LocalPosition> entry: guestBeds.entrySet()) {
-			int oldID = entry.getKey();
-			if (oldID == id) {
-				LocalPosition p = entry.getValue();
-				guestBeds.put(-1, p);
+
+		// No bed found
+		if (guestHouse == null) {
+			if (guest) {
+				logger.warning(p, "No guest bunk provided");
+				return null;
 			}
+			guestHouse = RandomUtil.getARandSet(dorms).getLivingAccommodations();
 		}
+
+		// Looking for a citizen with no capacity
+		logger.warning(p, "All beds are allocated");
+
+		// Pick a random bed in the guesthouse; unoikely to arrive here
+		return RandomUtil.getARandSet(guestHouse.getActivitySpots()).claim(p, false,
+									  guestHouse.getBuilding());
 	}
-	
-	
-	@Override
-	public double getMaintenanceTime() {
-		return maxNumBeds * 7D;
+
+	/**
+	 * Can guest sstay here and squat on allocated beds
+	 * @return
+	 */
+	public boolean isGuestHouse() {
+		return guesthouse;
 	}
 
 	@Override
 	public void destroy() {
 		building = null;
-		guestBeds.clear();
-		guestBeds = null;
 		dailyWaterUsage = null;
 
 		super.destroy();
 	}
+
+
 }

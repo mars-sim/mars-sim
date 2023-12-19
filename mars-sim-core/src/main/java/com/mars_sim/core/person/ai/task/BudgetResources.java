@@ -79,6 +79,7 @@ public class BudgetResources extends Task {
 					office.addStaff();
 					// Walk to the office building.
 					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
+					building = officeBuilding;
 				}
 			}
 
@@ -87,6 +88,7 @@ public class BudgetResources extends Task {
 				if (managementBuilding != null) {
 					// Walk to the management building.
 					walkToTaskSpecificActivitySpotInBuilding(managementBuilding, FunctionType.MANAGEMENT, true);
+					building = managementBuilding;
 				}
 				else {	
 					Building dining = BuildingManager.getAvailableDiningBuilding(person, false);
@@ -94,6 +96,7 @@ public class BudgetResources extends Task {
 					if (dining != null) {
 						// Walk to the dining building.
 						walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
+						building = dining;
 					}
 				}
 			}
@@ -129,9 +132,6 @@ public class BudgetResources extends Task {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double reviewingPhase(double time) {
-		
-		if (building == null)
-			building = BuildingManager.getRandomQuarter(person);
 	
 		if (getTimeCompleted() > .9 * getDuration()) {
 

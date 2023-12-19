@@ -85,6 +85,7 @@ import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.connection.BuildingConnectorManager;
 import com.mars_sim.core.structure.building.function.EVA;
 import com.mars_sim.core.structure.building.function.FunctionType;
+import com.mars_sim.core.structure.building.function.LivingAccommodations;
 import com.mars_sim.core.structure.construction.ConstructionManager;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
@@ -973,16 +974,6 @@ public class Settlement extends Structure implements Temporal,
 			iceProbabilityValue = computeIceProbability();
 
 			regolithProbabilityValue = computeRegolithProbability();
-			
-			// Future: should register a bed when calling addACitizen(() to 
-			// add this person as a citizen and not here
-			
-			for (Person p : citizens) {
-				// Register each settler with a bed
-				Building b = BuildingManager.getBestAvailableQuarters(p, false, true);
-				if (b != null)
-					b.getLivingAccommodations().registerSleeper(p, false);
-			}
 
 			// Initialize the goods manager
 			goodsManager.updateGoodValues();
@@ -1995,11 +1986,9 @@ public class Settlement extends Structure implements Temporal,
 			
 			p.setCoordinates(getCoordinates());
 
-			// Register each settler with a bed
-//			Building b = BuildingManager.getBestAvailableQuarters(p, true, true);
-//			if (b != null)
-//				b.getLivingAccommodations().registerSleeper(p, false);
-			
+			// Assign a permenant bed reservatinoif possible
+			LivingAccommodations.allocateBed(this, p, true);
+
 			// Update the numCtizens
 			numCitizens = citizens.size();
 

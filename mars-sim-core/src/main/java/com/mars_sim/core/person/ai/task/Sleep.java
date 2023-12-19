@@ -16,11 +16,15 @@ import com.mars_sim.core.person.ai.shift.ShiftSlot;
 import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.ActivitySpot;
+import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.LivingAccommodations;
+import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
@@ -58,14 +62,6 @@ public class Sleep extends Task {
 	private static final double TIME_FACTOR = 1.7; // NOTE: should vary this factor by person
 	private static final double RESIDUAL_MODIFIER = .005;
 
-	// Data members
-	/**
-	 * 0 = none
-	 * 1 = regular bed
-	 * 2 = guest bed
-	 * 3 = vehicle seat
-	 */
-	private int typeOfBed = 0;
 	
 	/**
 	 * Constructor 1.
@@ -100,6 +96,13 @@ public class Sleep extends Task {
 				logger.info(person, 20_000, "Sleep adjusted for shift starts at " + (int)alarmTime + ". Duration: " + (int)maxSleep);
 				setDuration(maxSleep);
 			}
+
+			walkToDestination();
+
+			
+			// Finally assign essentials for sleeping
+			person.wearGarment(person.getSettlement());
+			person.assignThermalBottle();
 		}
 	}
 
@@ -122,6 +125,8 @@ public class Sleep extends Task {
 			// Initialize phase
 			addPhase(SLEEPING);
 			setPhase(SLEEPING);
+
+			walkToDestination();
 		}
 	}
 	
@@ -168,20 +173,10 @@ public class Sleep extends Task {
 	private double sleepingPhase(double time) {
 		
 		if (isDone() || getTimeLeft() <= 0) {
-			if (typeOfBed == 2) {
-				releaseGuestBed();
-			}
         	// this task has ended
 			endTask();
 			return time;
 		}
-
-//		if (person.isInSettlement()) {
-			if (typeOfBed == 0) {
-				// Walk to a location
-				walkToDestination();
-			}
-//		}
 
 		PhysicalCondition pc = person.getPhysicalCondition();
 		
@@ -220,9 +215,6 @@ public class Sleep extends Task {
 		// Check if fatigue is zero
 		if (pc.getFatigue() <= 0) {
 			logger.log(person, Level.FINE, 0, "Totally refreshed from a good sleep.");
-			if (typeOfBed == 2) {
-				releaseGuestBed();
-			}
 			endTask();
 		}
 
@@ -242,195 +234,67 @@ public class Sleep extends Task {
 			setDuration(newDuration);
 		}
 	}
-
-	/**
-	 * Looks for a guest bed.
-	 */
-	private void lookForGuestBed() {
-		logger.info(person + " in need of getting a guest bed.");	
-		
-		// Case 0 : A guest bed - The BEST case for a guest
-		boolean hasGuestBed = walkToGuestBed(person, true);
-		
-		if (hasGuestBed) {
-			
-			typeOfBed = 2;
-			
-			return;
-		}
-			
-		//////////////////// Case 1 - 3 /////////////////////////
-
-		Building q0 = BuildingManager.getBestAvailableQuarters(person, true, false);
-
-		if (q0 != null) {
-			// Case 1 : have unmarked, empty (UE) bed
-
-			walkToActivitySpotInBuilding(q0, FunctionType.LIVING_ACCOMMODATIONS, true);
-
-			typeOfBed = 1;
-		}
-
-		else { 
-			// Since there is no unmarked/guest bed,
-			// look for a marked bed
-
-			q0 = BuildingManager.getBestAvailableQuarters(person, false, false);
-
-			if (q0 != null) {
-				// Case 2 : marked, empty (ME) bed(s)
-
-				// FUTURE: may disable the use of a marked bed 
-				// Find a bed whose owner is on a mission
-				
-				walkToActivitySpotInBuilding(q0, FunctionType.LIVING_ACCOMMODATIONS, true);
-				
-				typeOfBed = 1;
-			}
-			else {
-				// Case 3 : No empty bed(s)
-
-				walkToRandomLocation(true);
-				
-				// NOTE: should allow him/her to sleep in gym or a medical bed 
-				// or anywhere based on his/her usual preferences
-				
-				typeOfBed = 0;
-			}
-		}
-	}
-	
-	/**
-	 * Looks for assigned bed.
-	 */
-	private void lookForAssignedBed() {
-		
-		// Case 4: marked and empty (ME)
-		if (person.hasBed()) {
-			// Walk to the bed
-			walkToBed(person, true);
-
-			typeOfBed = 2;
-		}
-		else {
-			// Since his/her marked bed is being occupied,
-			// go look for a guest bed
-			lookForGuestBed();
-		}
-	}
-	
-	/**
-	 * Looks to be assigned a bed.
-	 */
-	private void lookTobeAssignedABed() {
-		
-		// Case 7: unmarked, empty (UE) bed
-		Building q7 = BuildingManager.getBestAvailableQuarters(person, true, false);
-		
-		if (q7 != null) {
-			// Register this sleeper
-			if (q7.getLivingAccommodations().registerSleeper(person, false)) {
-				// Case 8: unmarked, empty (UE) bed
-				walkToBed(person, true);
-
-				typeOfBed = 2;
-			}
-		}
-		
-		else { // no unmarked bed
-			
-			// Case 9: Get a guest bed
-			lookForGuestBed();
-		}
-	}
-	
-	/**
-	 * Looks for a bed.
-	 */
-	private void lookForBed() {
-		
-		//////////////////// Case 4 - 10 /////////////////////////
-		// He/she is an inhabitant in this settlement
-
-		if (person.getBed() != null) {
-			// This is the BEST case for an inhabitant
-			
-			// This person has his quarters and have a designated bed
-			lookForAssignedBed();
-		}
-
-		else {
-			// this inhabitant has never registered a bed and have no designated quarters
-			lookTobeAssignedABed();
-		}
-	}
 	
 	/**
 	 * Walks to a destination.
 	 */
 	private void walkToDestination() {
 		
-		if (typeOfBed == 0) {
-			// If person is in rover, walk to passenger activity spot.
-			if (person.getVehicle() instanceof Rover rover) {
-				
-				walkToPassengerActivitySpotInRover(rover, true);
-				
-				typeOfBed = 3;
+		// If person is in rover, walk to passenger activity spot.
+		if (person.getVehicle() instanceof Rover rover) {
+			
+			walkToPassengerActivitySpotInRover(rover, true);
+		}
+
+		// If person is in a settlement, try to find a living accommodations building.
+		else if (person.isInSettlement()) {
+			// Double the sleep duration
+			setDuration(getDuration() * 2);
+
+			Settlement s = person.getSettlement();
+			// Home settlement and bed assigned
+			if (person.getAssociatedSettlement().equals(s) && person.hasBed()) {
+				walkToBed(person, effortDriven);
+				return;
 			}
 
-			// If person is in a settlement, try to find a living accommodations building.
-			else if (person.isInSettlement()) {
-				// Double the sleep duration
-				setDuration(getDuration() * 2);
-
-				//////////////////// Case 0 /////////////////////////
-				
-				// Case A : if a person is in the astronomy observatory
-				Building q0 = person.getBuildingLocation();
-				if (q0 != null && q0.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)) {
-					// Rest in one of the 2 beds there
-					walkToActivitySpotInBuilding(q0, FunctionType.LIVING_ACCOMMODATIONS, true);
-					
-					typeOfBed = 2;
-					
+			// Find a bed, if at home Settlemnt attempt to make it permanent
+			var tempBed = LivingAccommodations.allocateBed(s, person,
+							s.equals(person.getAssociatedSettlement()));
+			if (tempBed == null) {
+				tempBed = findSleepRoughLocation(s, person);
+				if (tempBed == null) {
+					logger.severe(person, "Nowhere to sleep; staying awake");
+					endTask();
 					return;
 				}
-				
-				// Note: A bed can be either unmarked(U) or marked(M); and either empty(E) or occupied(O).
-				// 4 possibilities : ME, MO, UE, or UO
-
-				Settlement s1 = person.getSettlement();
-				Settlement s0 = person.getAssociatedSettlement();
-
-				if (!s1.equals(s0)) {
-					// If this person is a trader, a tourist, or a guest to this settlement
-					lookForGuestBed();
-				}
-
-				else {
-					// This person is a resident/citizen of this settlement
-					lookForBed();
-				}
+				logger.warning(person, "No bed can be found; sleeping rough at "
+										+ tempBed.getSpotDescription());
 			}
+
+			createWalkingSubtask(tempBed.getOwner(), tempBed.getAllocated().getPos(), effortDriven);
 		}
 	}
 
 	/**
-	 * Releases the guest bed.
+	 * Find an empty AciivitySpot in a Building that supports Life
 	 */
-	public void releaseGuestBed() {
-		// Deregister this person if using a guest bed
-		var allocated = person.getBed();
-		if (allocated == null) {
-			logger.warning(person, "No guest bed assigned to release");
-			return;
+	private AllocatedSpot findSleepRoughLocation(Settlement s, Worker w) {
+		var buildMgr = s.getBuildingManager();
+		for(Building b: buildMgr.getBuildingSet(FunctionType.LIFE_SUPPORT)) {
+			for(Function f : b.getFunctions()) {
+				for(ActivitySpot as : f.getActivitySpots()) {
+					if (as.isEmpty()) {
+						f.claimActivitySpot(as.getPos(), worker);
+						return worker.getActivitySpot();
+					}
+				}
+			}
 		}
-		LivingAccommodations q = allocated.getOwner().getLivingAccommodations();
-		// Register this person to use this guest bed
-		q.deRegisterGuestBed(person.getIdentifier());
+
+		return null;
 	}
-	
+
 	/**
 	 * Clears down the task. 
 	 * Note: if worker is a robot then send them to report to duty.
@@ -441,6 +305,8 @@ public class Sleep extends Task {
 			if (person.getPhysicalCondition().getFatigue() > 0) {
 				logger.fine(person, "Still fatigued after Sleep " + (int)person.getPhysicalCondition().getFatigue());
 			}
+
+			person.setActivitySpot(null);
 
 	    	// Update sleep times once ending
 	    	CircadianClock circadian = person.getCircadianClock();

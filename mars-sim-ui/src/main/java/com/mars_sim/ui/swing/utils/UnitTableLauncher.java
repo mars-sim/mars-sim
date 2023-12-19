@@ -49,9 +49,10 @@ public class UnitTableLauncher extends MouseInputAdapter {
             RowSorter<? extends TableModel> sorter = table.getRowSorter();
             if (sorter != null && r >= 0) {
                 r = sorter.convertRowIndexToModel(r);
-                UnitModel model = (UnitModel)table.getModel();
-                desktop.showDetails(model.getAssociatedUnit(r));
             }
+
+            UnitModel model = (UnitModel)table.getModel();
+            desktop.showDetails(model.getAssociatedUnit(r));
         }
     }
 }

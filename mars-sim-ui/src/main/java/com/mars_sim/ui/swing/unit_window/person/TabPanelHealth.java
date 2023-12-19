@@ -575,7 +575,7 @@ extends TabPanel {
 		String bedText = "";
 		var allocatedBed = person.getBed();
 		if (allocatedBed != null) {
-			bedText = allocatedBed.getAllocated().getName() + " @ " + allocatedBed.getOwner().getName();
+			bedText = allocatedBed.getSpotDescription();
 		}
  		bedTF.setText(bedText);
 

@@ -7,56 +7,63 @@
 package com.mars_sim.core.structure.building.function;
 
 import com.mars_sim.core.robot.RobotType;
+import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.tools.Msg;
 
 public enum FunctionType {
 
-    ADMINISTRATION              (Msg.getString("FunctionType.administration")), //$NON-NLS=1$
-	ALGAE_FARMING				(Msg.getString("FunctionType.algaeFarming")), //$NON-NLS-1$
-    ASTRONOMICAL_OBSERVATION	(Msg.getString("FunctionType.astronomicalObservations")), //$NON-NLS-1$
-	BUILDING_CONNECTION			(Msg.getString("FunctionType.buildingConnection")), //$NON-NLS-1$
-	COMMUNICATION				(Msg.getString("FunctionType.communication")), //$NON-NLS-1$
-	COMPUTATION					(Msg.getString("FunctionType.computation")), //$NON-NLS-1$
-	COOKING						(Msg.getString("FunctionType.cooking")), //$NON-NLS-1$
-	DINING						(Msg.getString("FunctionType.dining")), //$NON-NLS-1$
-	EARTH_RETURN				(Msg.getString("FunctionType.earthReturn")), //$NON-NLS-1$
-	EVA							(Msg.getString("FunctionType.eva")), //$NON-NLS-1$
-	EXERCISE					(Msg.getString("FunctionType.exercise")), //$NON-NLS-1$
-	FARMING						(Msg.getString("FunctionType.farming")), //$NON-NLS-1$
-	FISHERY						(Msg.getString("FunctionType.fishery")), //$NON-NLS-1$
-	FOOD_PRODUCTION  			(Msg.getString("FunctionType.foodProduction")), //$NON-NLS-1$	
-	VEHICLE_MAINTENANCE			(Msg.getString("FunctionType.vehicleMaintenance")), //$NON-NLS-1$
-	LIFE_SUPPORT				(Msg.getString("FunctionType.lifeSupport")), //$NON-NLS-1$
-	LIVING_ACCOMMODATIONS		(Msg.getString("FunctionType.livingAccommodations")), //$NON-NLS-1$
-	MANAGEMENT					(Msg.getString("FunctionType.management")), //$NON-NLS-1$
-	MANUFACTURE					(Msg.getString("FunctionType.manufacture")), //$NON-NLS-1$
-	MEDICAL_CARE				(Msg.getString("FunctionType.medicalCare")), //$NON-NLS-1$
-	POWER_GENERATION			(Msg.getString("FunctionType.powerGeneration")), //$NON-NLS-1$
-	POWER_STORAGE				(Msg.getString("FunctionType.powerStorage")), //$NON-NLS-1$
-	PREPARING_DESSERT			(Msg.getString("FunctionType.preparingDessert")),  //$NON-NLS-1$
-	RECREATION					(Msg.getString("FunctionType.recreation")), //$NON-NLS-1$
-	RESEARCH					(Msg.getString("FunctionType.research")), //$NON-NLS-1$
-	RESOURCE_PROCESSING			(Msg.getString("FunctionType.resourceProcessing")), //$NON-NLS-1$
-	ROBOTIC_STATION				(Msg.getString("FunctionType.roboticStation")), //$NON-NLS-1$
-	STORAGE						(Msg.getString("FunctionType.storage")),  //$NON-NLS-1$
-	THERMAL_GENERATION			(Msg.getString("FunctionType.thermalGeneration")), //$NON-NLS-1$
-	WASTE_PROCESSING			(Msg.getString("FunctionType.wasteProcessing")), //$NON-NLS-1$
-	FIELD_STUDY					(Msg.getString("FunctionType.fieldStudy")), //$NON-NLS-1$
-	UNKNOWN						(Msg.getString("FunctionType.unknown")) //$NON-NLS-1$
+    ADMINISTRATION              (BuildingCategory.COMMAND, Msg.getString("FunctionType.administration")), //$NON-NLS=1$
+	ALGAE_FARMING				(BuildingCategory.FARMING, Msg.getString("FunctionType.algaeFarming")), //$NON-NLS-1$
+    ASTRONOMICAL_OBSERVATION	(BuildingCategory.LABORATORY, Msg.getString("FunctionType.astronomicalObservations")), //$NON-NLS-1$
+	BUILDING_CONNECTION			(BuildingCategory.HALLWAY, Msg.getString("FunctionType.buildingConnection")), //$NON-NLS-1$
+	COMMUNICATION				(BuildingCategory.COMMAND,Msg.getString("FunctionType.communication")), //$NON-NLS-1$
+	COMPUTATION					(BuildingCategory.LABORATORY, Msg.getString("FunctionType.computation")), //$NON-NLS-1$
+	COOKING						(BuildingCategory.LIVING, Msg.getString("FunctionType.cooking")), //$NON-NLS-1$
+	DINING						(BuildingCategory.LIVING, Msg.getString("FunctionType.dining")), //$NON-NLS-1$
+	EARTH_RETURN				(BuildingCategory.ERV, Msg.getString("FunctionType.earthReturn")), //$NON-NLS-1$
+	EVA							(BuildingCategory.EVA_AIRLOCK, Msg.getString("FunctionType.eva")), //$NON-NLS-1$
+	EXERCISE					(BuildingCategory.LIVING, Msg.getString("FunctionType.exercise")), //$NON-NLS-1$
+	FARMING						(BuildingCategory.FARMING, Msg.getString("FunctionType.farming")), //$NON-NLS-1$
+	FISHERY						(BuildingCategory.FARMING, Msg.getString("FunctionType.fishery")), //$NON-NLS-1$
+	FOOD_PRODUCTION  			(BuildingCategory.LIVING, Msg.getString("FunctionType.foodProduction")), //$NON-NLS-1$	
+	VEHICLE_MAINTENANCE			(BuildingCategory.VEHICLE, Msg.getString("FunctionType.vehicleMaintenance")), //$NON-NLS-1$
+	LIFE_SUPPORT				(BuildingCategory.LIVING, Msg.getString("FunctionType.lifeSupport")), //$NON-NLS-1$
+	LIVING_ACCOMMODATIONS		(BuildingCategory.LIVING, Msg.getString("FunctionType.livingAccommodations")), //$NON-NLS-1$
+	MANAGEMENT					(BuildingCategory.COMMAND, Msg.getString("FunctionType.management")), //$NON-NLS-1$
+	MANUFACTURE					(BuildingCategory.WORKSHOP, Msg.getString("FunctionType.manufacture")), //$NON-NLS-1$
+	MEDICAL_CARE				(BuildingCategory.MEDICAL, Msg.getString("FunctionType.medicalCare")), //$NON-NLS-1$
+	POWER_GENERATION			(BuildingCategory.POWER, Msg.getString("FunctionType.powerGeneration")), //$NON-NLS-1$
+	POWER_STORAGE				(BuildingCategory.POWER, Msg.getString("FunctionType.powerStorage")), //$NON-NLS-1$
+	PREPARING_DESSERT			(BuildingCategory.LIVING, Msg.getString("FunctionType.preparingDessert")),  //$NON-NLS-1$
+	RECREATION					(BuildingCategory.LIVING, Msg.getString("FunctionType.recreation")), //$NON-NLS-1$
+	RESEARCH					(BuildingCategory.LABORATORY, Msg.getString("FunctionType.research")), //$NON-NLS-1$
+	RESOURCE_PROCESSING			(BuildingCategory.PROCESSING, Msg.getString("FunctionType.resourceProcessing")), //$NON-NLS-1$
+	ROBOTIC_STATION				(BuildingCategory.LIVING, Msg.getString("FunctionType.roboticStation")), //$NON-NLS-1$
+	STORAGE						(BuildingCategory.STORAGE, Msg.getString("FunctionType.storage")),  //$NON-NLS-1$
+	THERMAL_GENERATION			(BuildingCategory.POWER, Msg.getString("FunctionType.thermalGeneration")), //$NON-NLS-1$
+	WASTE_PROCESSING			(BuildingCategory.PROCESSING, Msg.getString("FunctionType.wasteProcessing")), //$NON-NLS-1$
+	FIELD_STUDY					(BuildingCategory.LABORATORY, Msg.getString("FunctionType.fieldStudy")), //$NON-NLS-1$
+	UNKNOWN						(BuildingCategory.LIVING, Msg.getString("FunctionType.unknown")) //$NON-NLS-1$
 	;
 
 	private String name;
+	private BuildingCategory category;
 
 
 	/** hidden constructor. */
-	private FunctionType(String name) {
+	private FunctionType(BuildingCategory category, String name) {
 		this.name = name;
+		this.category = category;
 	}
 
 	public String getName() {
 		return this.name;
 	}
 	
+	public BuildingCategory getCategory() {
+		return this.category;
+	}
+
 	/**
 	 * Gets the default Function for a Robot Type.
 	 * 

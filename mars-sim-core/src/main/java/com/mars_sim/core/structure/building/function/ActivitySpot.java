@@ -64,6 +64,41 @@ public final class ActivitySpot implements Serializable {
 		public Building getOwner() {
 			return owner;
 		}
+
+		/**
+		 * Get a description of the spot
+		 */
+        public String getSpotDescription() {
+            return spot.getName() + " @ " + owner.getName();
+        }
+		
+
+		@Override
+		public int hashCode() {
+			return owner.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			AllocatedSpot other = (AllocatedSpot) obj;
+			if (spot == null) {
+				if (other.spot != null)
+					return false;
+			} else if (!spot.equals(other.spot))
+				return false;
+			if (owner == null) {
+				if (other.owner != null)
+					return false;
+			} else if (!owner.equals(other.owner))
+				return false;
+			return true;
+		}
 	}
 
 	private static final int EMPTY_ID = -1;

@@ -75,10 +75,8 @@ public class BuildingConfig {
 	private static final String CONVERSION = "thermal-conversion";
 	private static final String PERCENT_LOADING = "percent-loading";
 
-	private static final String ACCOMMODATIONS = "living-accommodations";
 	private static final String MEDICAL_CARE = "medical-care";
 	private static final String BEDS = "beds";
-	private static final String GUEST = "guest";
 	private static final String VEHICLE_MAINTENANCE = "vehicle-maintenance";
 	private static final String PARKING_LOCATION = "parking-location";
 	private static final String FLYER_LOCATION = "flyer-location";
@@ -272,13 +270,6 @@ public class BuildingConfig {
 			newSpec.setBeds(beds);
 		}
 		
-		Element accommodationsElement = functionsElement.getChild(ACCOMMODATIONS);
-		if (accommodationsElement != null) {
-			Set<LocalPosition> beds = parsePositions(accommodationsElement, GUEST, ACTIVITY_SPOT,
-												width, length);
-			newSpec.setBeds(beds);
-		}
-		
 		return newSpec;
 	}
 	
@@ -310,34 +301,9 @@ public class BuildingConfig {
 	private static BuildingCategory deriveCategory(Set<FunctionType> functions) {
 
 		// Get a set of categories
-		Set<BuildingCategory> cats = new HashSet<>();
-		for (FunctionType fType : functions) {
-			var bCat = switch(fType) {
-				case EARTH_RETURN -> BuildingCategory.ERV;
-				case EVA -> BuildingCategory.EVA_AIRLOCK;
-				case FARMING, FISHERY -> BuildingCategory.FARMING;
-				case BUILDING_CONNECTION -> BuildingCategory.HALLWAY;
-				case ASTRONOMICAL_OBSERVATION, FIELD_STUDY,
-					 RESEARCH, COMPUTATION -> BuildingCategory.LABORATORY;
-				case ADMINISTRATION, COMMUNICATION,
-				     MANAGEMENT -> BuildingCategory.COMMAND;
-				case COOKING, DINING, EXERCISE, FOOD_PRODUCTION,
-				     LIVING_ACCOMMODATIONS, PREPARING_DESSERT,
-					 RECREATION -> BuildingCategory.LIVING;
-				case STORAGE -> BuildingCategory.STORAGE;					
-				case MEDICAL_CARE -> BuildingCategory.MEDICAL;
-				case POWER_GENERATION, POWER_STORAGE,
-				     THERMAL_GENERATION -> BuildingCategory.POWER;
-				case RESOURCE_PROCESSING, WASTE_PROCESSING -> BuildingCategory.PROCESSING;
-				case VEHICLE_MAINTENANCE -> BuildingCategory.VEHICLE;
-				case MANUFACTURE -> BuildingCategory.WORKSHOP;
-				default -> null;
-			};
-
-			if (bCat != null) {
-				cats.add(bCat);
-			}
-		}
+		Set<BuildingCategory> cats = functions.stream()
+						.map(f -> f.getCategory())
+						.collect(Collectors.toSet());
 
 		BuildingCategory category = BuildingCategory.HALLWAY;
 		if (!cats.isEmpty()) {

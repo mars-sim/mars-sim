@@ -80,8 +80,9 @@
 	<!ELEMENT life-support EMPTY>
 	<!ATTLIST life-support capacity CDATA #REQUIRED>
 	<!ATTLIST life-support power-required CDATA #REQUIRED>
-	<!ELEMENT living-accommodations (activity?, guest?)>
+	<!ELEMENT living-accommodations (activity)>
 	<!ATTLIST living-accommodations capacity CDATA #REQUIRED>
+	<!ATTLIST living-accommodations guesthouse CDATA #IMPLIED>
 	<!ELEMENT management (activity?)>
 	<!ATTLIST management capacity CDATA #REQUIRED>
 	<!ELEMENT manufacture (activity?)>
@@ -142,7 +143,6 @@
 	<!ATTLIST resource-initial amount CDATA #REQUIRED>
 
 	<!ELEMENT activity (activity-spot+)>
-	<!ELEMENT guest (activity-spot+)>
 	<!ELEMENT activity-spot EMPTY>
 	<!ATTLIST activity-spot xloc CDATA #REQUIRED>
 	<!ATTLIST activity-spot yloc CDATA #REQUIRED>
@@ -265,9 +265,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-3.3" yloc="0.9" />
 					<activity-spot xloc="-3.17" yloc="-1.08" />
 				</activity>
-				<guest>
-					<activity-spot xloc="-1.97" yloc="1.83" />
-				</guest>
 			</living-accommodations>
 
 			<!-- The building provides command and control for the population. -->
@@ -1531,7 +1528,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<life-support capacity="16" power-required="0.8" />
-			<living-accommodations capacity="11">
+			<living-accommodations capacity="11" guesthouse="true">
 				<activity>
 					<activity-spot xloc="2.2" yloc="3.2" />
 					<activity-spot xloc="2.2" yloc="1.8" />
@@ -1547,9 +1544,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-2.2" yloc="-2.0" />
 					<activity-spot xloc="-2.2" yloc="-3.4" />
 				</activity>
-				<guest>
-					<activity-spot xloc="0" yloc="0" />
-				</guest>
 			</living-accommodations>
 			<power-generation>
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
@@ -2603,15 +2597,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</dining>
 			
 			<life-support capacity="8" power-required="0.4" />
-				
-			<living-accommodations capacity="0">
-				<guest>
-					<activity-spot xloc="-1.2" yloc="2.9" />
-					<activity-spot xloc="1.2" yloc="-2.95" />
-					<activity-spot xloc="-1.9" yloc="-2.35" />
-					<activity-spot xloc="-1.9" yloc="-2.35" />					
-				</guest>
-			</living-accommodations>
 
 			<power-storage capacity="40"  discharge-rate="1.25"/>
 			<research tech-level="4" capacity="3">
@@ -2765,10 +2750,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="2.89" yloc="0.31" />
 					<activity-spot xloc="2.67" yloc="-0.92" />
 					<activity-spot xloc="-0.18" yloc="-2.97" />
-				</activity>
-				<guest>
-					<activity-spot xloc="-2.82" yloc="-1.14" />
-				</guest>				
+				</activity>			
 			</living-accommodations>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
@@ -3212,13 +3194,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<life-support capacity="4" power-required="0.2" />
-			<living-accommodations capacity="1">
+			<living-accommodations capacity="2" guesthouse="true">
 				<activity>
 					<activity-spot xloc="1.35" yloc="-1.35" />
-				</activity>
-				<guest>
 					<activity-spot xloc="-1.35" yloc="-1.35" />
-				</guest>
+				</activity>
 			</living-accommodations>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
