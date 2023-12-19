@@ -248,11 +248,11 @@ Note: 1 kg of H2 is 14.13 liter
 		<!-- TODO:
 		1. Chemists may tweak the input amount and the yield
 		2. Arbitrary figures are used. Need research
+		See https://www.extension.purdue.edu/extmedia/ay/ay-204.html
 		-->
 			<resource name="methane" amount="1" />
 			<resource name="hydrogen" amount="0.5" />
-			<resource name="nitrogen" amount="0.5" />
-			<resource name="nitrate" amount="1" />
+			<resource name="nitrate" amount="0.5" />
 			<resource name="nitrite" amount="0.5" />
 			<resource name="ammonia" amount="2" />
 			<resource name="potassium" amount="0.5" />
@@ -264,39 +264,54 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="iron powder" amount="0.02" />
 		</inputs>
 		<outputs>
-			<resource name="Fertilizer" amount="7.0" />
+			<resource name="Fertilizer" amount="6.0" />
 		</outputs>
 	</process>
 
-	<process name="Make fertilizers for growing crops (large batch)"
-			tech="2" skill="2"
-			work-time="50"
-			process-time="500"
-			power-required="1">
+	<process name="Make Nitrites"
+			tech="1" skill="1"
+			work-time="5"
+			process-time="5"
+			power-required="0.01">
+		<description> 
+			1 mole of N2 : 14 g
+			1 mole of O2 : 16 g
+			For Nitrite NO2(-1) 
+			14 g/mole N + 32 g/mole O = 46 g/mole NO2(-1) 
+			
+		</description>
+
 		<inputs>
-		<!-- TODO:
-		1. Chemists may tweak the input amount and the yield
-		2. Arbitrary figures are used. Need research
-		-->
-			<resource name="methane" amount="10" />
-			<resource name="hydrogen" amount="5" />
-			<resource name="nitrogen" amount="5" />
-			<resource name="nitrate" amount="10" />
-			<resource name="nitrite" amount="5" />
-			<resource name="ammonia" amount="20" />
-			<resource name="potassium" amount="5" />
-			<resource name="phosphorus" amount="5" />
-			<resource name="zinc" amount="0.2" />
-			<resource name="calcium" amount="0.2" />
-			<resource name="sulfur" amount="0.2" />
-			<resource name="magnesium" amount="0.2" />
-			<resource name="iron powder" amount="0.2" />
+			<resource name="oxygen" amount="3.2" />
+			<resource name="nitrogen" amount="1.4" />
 		</inputs>
 		<outputs>
-			<resource name="Fertilizer" amount="70.0" />
+			<resource name="nitrite" amount="4.6" />
 		</outputs>
 	</process>
 
+	<process name="Make Nitrates"
+			tech="1" skill="1"
+			work-time="5"
+			process-time="5"
+			power-required="0.01">
+		<description> 
+			1 mole of N2 : 14 g
+			1 mole of O2 : 16 g
+			For Nitrate NO3(-2) 
+			14 g/mole N + 48 g/mole O = 62 g/mole NO3(-2) 
+			
+		</description>
+
+		<inputs>
+			<resource name="oxygen" amount="4.8" />
+			<resource name="nitrogen" amount="1.4" />
+		</inputs>
+		<outputs>
+			<resource name="nitrite" amount="6.2" />
+		</outputs>
+	</process>
+	
 <!--	DISABLE THIS PROCESS AND USE IRON POWDER INSTEAD OF IRON
         ALSO IRON POWDER IS PRODUCED IN TWO PROCESSES ALREADY
 	<process name="extract iron from iron oxide"
@@ -3209,11 +3224,10 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="Carbon" amount="2"/>
 			<resource name="Hydrogen" amount=".5"/>
-			<resource name="Nitrogen" amount=".5"/>
 			<resource name="Silica" amount="3" />
 		</inputs>
 		<outputs>
-			<resource name="Silicone Elastomer" amount="6" />
+			<resource name="Silicone Elastomer" amount="5.5" />
 		</outputs>
 	</process>
 	

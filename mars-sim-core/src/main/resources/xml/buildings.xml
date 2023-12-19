@@ -402,7 +402,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="food" capacity="5000.0" />
 				<resource-storage resource="water" capacity="10000.0" />
 				<resource-storage resource="oxygen" capacity="500.0" />
-				<resource-storage resource="carbon dioxide" capacity="500.0" />
+				<resource-storage resource="carbon dioxide" capacity="1000.0" />
 				<resource-storage resource="carbon monoxide" capacity="500.0" />
 				<resource-storage resource="argon" capacity="500.0" />
 				<resource-storage resource="nitrogen" capacity="500.0" />
@@ -752,7 +752,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<storage capacity="20000">
 				<!-- gases -->
-				<resource-storage resource="carbon dioxide" capacity="500.0" />
+				<resource-storage resource="carbon dioxide" capacity="1000.0" />
 				<resource-storage resource="oxygen" capacity="5000.0" />				
 				<resource-storage resource="nitrogen" capacity="2500.0" />
 				<resource-storage resource="ammonia" capacity="500.0" />
@@ -854,7 +854,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<storage capacity="20000">
 				<!-- gases -->
-				<resource-storage resource="carbon dioxide" capacity="1000.0" />
+				<resource-storage resource="carbon dioxide" capacity="3000.0" />
 				<resource-storage resource="oxygen" capacity="5000.0" />				
 				<resource-storage resource="nitrogen" capacity="2500.0" />
 				<resource-storage resource="ammonia" capacity="500.0" />
@@ -1000,7 +1000,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<storage capacity="50000">
 
 				<!-- gases -->
-				<resource-storage resource="carbon dioxide" capacity="2000.0" />
+				<resource-storage resource="carbon dioxide" capacity="6000.0" />
 				<resource-storage resource="oxygen" capacity="10000.0" />					
 				<resource-storage resource="nitrogen" capacity="5000.0" />
 				<resource-storage resource="ammonia" capacity="1000.0" />
