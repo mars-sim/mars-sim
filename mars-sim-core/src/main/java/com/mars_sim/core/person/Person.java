@@ -2288,12 +2288,10 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 		}
 	}
 	
-	
-	
 	/**
 	 * Puts on a garment.
 	 *
-	 * @param holder the previous holder of the clothing
+	 * @param holder the current equipment holder of the clothing
 	 */
 	public void wearGarment(EquipmentOwner holder) {
 		if (!hasGarment() && holder.retrieveItemResource(ItemResourceUtil.garmentID, 1) == 0) {
@@ -2304,7 +2302,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	/**
 	 * Puts on a pressure suit set.
 	 *
-	 * @param suit
+	 * @param holder the current equipment holder of the clothing
 	 */
 	public void wearPressureSuit(EquipmentOwner holder) {
 		if (!hasPressureSuit() && holder.retrieveItemResource(ItemResourceUtil.pressureSuitID, 1) == 0) {
@@ -2362,13 +2360,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 			housing = (Vehicle)entity;
 		
 		// Remove pressure suit and put on garment
-		if (inS) {
-			if (person.unwearPressureSuit(housing)) {
-				person.wearGarment(housing);
-			}
-		}
-		// Note: vehicle may or may not have garment available
-		else if (((Rover)housing).hasGarment() && person.unwearPressureSuit(housing)) {
+		if (person.unwearPressureSuit(housing)) {
 			person.wearGarment(housing);
 		}
 

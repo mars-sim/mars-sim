@@ -8,6 +8,7 @@ package com.mars_sim.core.person.ai.task;
 
 import java.util.logging.Level;
 
+import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.CircadianClock;
 import com.mars_sim.core.person.Person;
@@ -101,7 +102,7 @@ public class Sleep extends Task {
 
 			
 			// Finally assign essentials for sleeping
-			person.wearGarment(person.getSettlement());
+			person.wearGarment(((EquipmentOwner)person.getContainerUnit()));
 			person.assignThermalBottle();
 		}
 	}
