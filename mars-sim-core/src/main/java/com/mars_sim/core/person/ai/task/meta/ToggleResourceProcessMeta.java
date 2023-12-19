@@ -30,6 +30,7 @@ import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.ResourceProcess;
 import com.mars_sim.core.structure.building.function.ResourceProcessing;
 import com.mars_sim.tools.Msg;
+import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * Meta task for the ToggleResourceProcess task.
@@ -86,7 +87,10 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
 	
-	private static final double URGENT_FACTOR = 2.5;
+	private static final double URGENT_FACTOR = 2;
+	private static final double DOUBLE_URGENT_FACTOR = 4;
+	private static final double WASTE_URGENT_FACTOR = 10;
+	private static final double WASTE_DOUBLE_URGENT_FACTOR = WASTE_URGENT_FACTOR * 5;
 	
     public ToggleResourceProcessMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
@@ -117,18 +121,33 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask> tasks = new ArrayList<>();
 
-		if ((settlement != null) && !settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS)) {
-
+		if (settlement == null)
+			return tasks;
+				
+		int rand = RandomUtil.getRandomInt(3);
+		
+		if (rand <= 2 && !settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS)) {
 			// Get the most suitable process per Building; not each process as too many will be created
 			for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.RESOURCE_PROCESSING)) {
 				// In this building, select the best resource to compete
-				SettlementTask entry = selectMostPosNegResourceProcess(building);
+				SettlementTask entry = selectMostPosNegResourceProcess(building, building.getResourceProcessing().getProcesses());
 				if (entry != null) {
 					tasks.add(entry);
 				}
 			}
 		}
 
+		else if (!settlement.getProcessOverride(OverrideType.WASTE_PROCESSING)) {
+			// Get the most suitable process per Building; not each process as too many will be created
+			for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.WASTE_PROCESSING)) {
+				// In this building, select the best resource to compete
+				SettlementTask entry = selectMostPosNegWasteProcess(building, building.getWasteProcessing().getProcesses());
+				if (entry != null) {
+					tasks.add(entry);
+				}
+			}
+		}
+		
 		return tasks;
 	}
 
@@ -138,7 +157,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	 * @param building the building
 	 * @return the resource process to toggle or null if none.
 	 */
-	private SettlementTask selectMostPosNegResourceProcess(Building building) {
+	private SettlementTask selectMostPosNegResourceProcess(Building building, List<ResourceProcess> processes) {
 		ResourceProcess mostPosProcess = null;
 		ResourceProcess mostNegProcess = null;
 		double highest = 0;
@@ -155,7 +174,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		double waterVP = goodsManager.getGoodValuePoint(ResourceUtil.waterID);
 		double oxygenVP = goodsManager.getGoodValuePoint(ResourceUtil.oxygenID);
 
-		for (ResourceProcess process : building.getResourceProcessing().getProcesses()) {
+		for (ResourceProcess process : processes) {
 			if (process.isToggleAvailable() && !process.isFlagged()) {
 				double score = computeResourceScore(settlement, process);
 
@@ -199,7 +218,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 				else if (score > 0 && !process.isProcessRunning()) {
 					// need to turn it on
-					score *= URGENT_FACTOR;
+					score *= DOUBLE_URGENT_FACTOR;
 				}
 
 				else if (score < 0 && !process.isProcessRunning()) {
@@ -210,17 +229,17 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// This is bad and the logic is very fragile being based on the Process Name !!
 				String name = process.getProcessName().toLowerCase();
 
-				boolean sel = name.equalsIgnoreCase(ResourceProcessing.SELECTIVE);
-				boolean olefin = name.equalsIgnoreCase(ResourceProcessing.OLEFIN);
-				boolean sab = name.equalsIgnoreCase(ResourceProcessing.SABATIER);
+				boolean sel = name.contains(ResourceProcessing.SELECTIVE);
+				boolean olefin = name.contains(ResourceProcessing.OLEFIN);
+				boolean sab = name.contains(ResourceProcessing.SABATIER);
 				boolean reg = name.contains(ResourceProcessing.REGOLITH);
 				boolean ice = name.equalsIgnoreCase(ResourceProcessing.ICE);
-				boolean ppa = name.equalsIgnoreCase(ResourceProcessing.PPA);
-				boolean cfr = name.equalsIgnoreCase(ResourceProcessing.CFR);
-				boolean ogs = name.equalsIgnoreCase(ResourceProcessing.OGS);
+				boolean ppa = name.contains(ResourceProcessing.PPA);
+				boolean cfr = name.contains(ResourceProcessing.CFR);
+				boolean ogs = name.contains(ResourceProcessing.OGS);
 
 				if (reg) {
-					score *= goodsManager.getDemandValueWithID(ResourceUtil.regolithID) * (1 + regStored);
+					score *= 0.5 * goodsManager.getDemandValueWithID(ResourceUtil.regolithID) * (1 + regStored);
 				}
 
 				else if (ice) {
@@ -228,19 +247,19 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				}
 
 				else if (ppa) {
-					score *= hydrogenVP / methaneVP;
+					score *= .5 * hydrogenVP / methaneVP;
 				}
 
 				else if (cfr) {
-					score *= waterVP / hydrogenVP;
+					score *= .75 * waterVP / hydrogenVP;
 				}
 
 				else if (sab) {
-					score *= waterVP * methaneVP / hydrogenVP;
+					score *= .75 * waterVP * methaneVP / hydrogenVP;
 				}
 
 				else if (sel) {
-					score *= methanolVP / methaneVP / oxygenVP;
+					score *= .75 * methanolVP / methaneVP / oxygenVP;
 				}
 				
 				else if (olefin) {
@@ -281,6 +300,110 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		return null;
 	}
 
+	/**
+	 * Selects a waste process (from a building) based on its input resource score.
+	 *
+	 * @param building the building
+	 * @return the resource process to toggle or null if none.
+	 */
+	private SettlementTask selectMostPosNegWasteProcess(Building building, List<ResourceProcess> processes) {
+		ResourceProcess mostPosProcess = null;
+		ResourceProcess mostNegProcess = null;
+		double highest = 0;
+		double lowest = 0;
+
+		Settlement settlement = building.getSettlement();
+
+		for (ResourceProcess process : processes) {
+			if (process.isToggleAvailable() && !process.isFlagged()) {
+				double score = computeResourceScore(settlement, process);
+
+				for (int res: process.getInputResources()) {
+					double amount = settlement.getAmountResourceStored(res);
+					if (amount > 0) {
+						score = Math.abs(score) * amount;
+					}
+				}
+				
+				// Check if settlement is missing one or more of the output resources.
+				// Will multiply by 10 internally within computeResourcesValue() in
+				// ToggleResourceProcess
+				if (process.isEmptyOutputs(settlement)) {
+					// will push for toggling on this process to produce more output resources
+					if (process.isProcessRunning()) {
+						// no need to change it
+						continue;
+					} else {
+						// will need to push for toggling on this process since output resource is zero
+						score *= WASTE_URGENT_FACTOR;
+					}
+				}
+
+				// NOTE: Need to detect if the output resource is dwindling
+
+				// Check if settlement is missing one or more of the input resources.
+				if (!process.isInputsPresent(settlement)) { 
+					if (process.isProcessRunning()) {
+						// will need to push for toggling off this process since input resource is
+						// insufficient
+						score *= WASTE_URGENT_FACTOR;
+					} else {
+						// no need to turn it on
+						continue;
+					}
+				}
+
+				if (score > 0 && process.isProcessRunning()) {
+					// let it continue running. No need to turn it off.
+					continue;
+				}
+
+				else if (score < 0 && process.isProcessRunning()) {
+					// need to shut it down
+					score *= WASTE_URGENT_FACTOR;
+				}
+
+				else if (score > 0 && !process.isProcessRunning()) {
+					// need to turn it on
+					// Biased toward turning it on
+					score *= WASTE_DOUBLE_URGENT_FACTOR;
+				}
+
+				else if (score < 0 && !process.isProcessRunning()) {
+					// let it continue not running. No need to turn it on.
+					continue;
+				}
+				
+				if (score >= highest) {
+					highest = score;
+					mostPosProcess = process;
+				} else if (score <= lowest) {
+					lowest = score;
+					mostNegProcess = process;
+				}
+			}
+		}
+
+		// Decide whether to create a TaskJob
+		ResourceProcess bestProcess = null;
+		double bestScore = 0;
+		if ((mostPosProcess != null) && (highest >= Math.abs(lowest))) {
+			bestProcess = mostPosProcess;
+			bestScore = highest;
+		}
+		else if (mostNegProcess != null) {
+			bestProcess = mostNegProcess;
+			bestScore = -lowest;
+		}
+
+		if (bestProcess != null) {
+			return new ToggleProcessJob(this, building, bestProcess, new RatingScore(bestScore));
+		}
+
+		return null;
+	}
+
+	
 	/**
 	 * Gets the composite resource score based on the ratio of
 	 * VPs of outputs to VPs of inputs for a resource process.

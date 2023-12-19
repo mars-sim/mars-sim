@@ -357,9 +357,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="4"/>
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>				
-				<process-engine name="Carbon Formation Reactor" number-modules="2"/>	
+				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="2"/>	
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>		
-				<process-engine name="Oxygen Generation System" number-modules="2"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="2"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="4"/>
 				<process-engine name="Atmospheric processing"/>
 				<process-engine name="Syngas Plant"/>
@@ -1185,9 +1185,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="4"/>
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>
-				<process-engine name="Carbon Formation Reactor" number-modules="2"/>
+				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="2"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="6"/>
-				<process-engine name="Oxygen Generation System" number-modules="2"/>			
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="2"/>			
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="6"/>
 				<process-engine name="Melt Ice" number-modules="4"/>	
 				<process-engine name="Filter Brine Water" number-modules="4"/>						
@@ -1482,9 +1482,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>				
-				<process-engine name="Carbon Formation Reactor" number-modules="2"/>
+				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="2"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="8"/>
-				<process-engine name="Oxygen Generation System" number-modules="6"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="6"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="8"/>
 			</resource-processing>
 
@@ -3070,9 +3070,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="4" />
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>				
-				<process-engine name="Carbon Formation Reactor" number-modules="2" />
+				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="2" />
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>
-				<process-engine name="Oxygen Generation System" number-modules="2" />
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="2" />
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="4"/>
 				<process-engine name="Atmospheric processing"/>
 				<process-engine name="Syngas Plant"/>

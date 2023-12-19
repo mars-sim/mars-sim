@@ -145,7 +145,7 @@ public abstract class ResourceProcessor extends Function {
 			else if (getBuilding().getPowerMode() == PowerMode.POWER_DOWN)
 				productionLevel = powerDownProcessingLevel;
 			// Run each resource process.
-			for(ResourceProcess p : processes) {
+			for (ResourceProcess p : processes) {
 				p.processResources(pulse, productionLevel, getBuilding().getSettlement());
 			}
 		}

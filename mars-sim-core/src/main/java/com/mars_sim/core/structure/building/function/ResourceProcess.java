@@ -270,7 +270,7 @@ public class ResourceProcess implements Serializable {
 				double bottleneck = 1D;
 
 				// Input resources from inventory.
-				for (Integer resource : engine.getInputResources()) {			
+				for (Integer resource : engine.getInputResources()) {
 					if (!engine.isAmbientInputResource(resource)) {
 						double fullRate = engine.getBaseFullInputRate(resource);
 						double resourceRate = fullRate * level;
@@ -317,36 +317,38 @@ public class ResourceProcess implements Serializable {
 				
 				// Output resources to inventory.
 				for (Integer resource : engine.getOutputResources()) {
-					double maxRate = engine.getBaseFullOutputRate(resource);
-					double resourceRate = maxRate * level;
-					double required = resourceRate * accumulatedTime;
-					double remainingCap = settlement.getAmountResourceRemainingCapacity(resource);
-					
-					// Store the right amount
-					if (remainingCap > SMALL_AMOUNT) {
-						if (required > remainingCap) {
-							logger.fine(settlement, 30_000, "Case C. Used up all remaining space for storing '" 
-									+ ResourceUtil.findAmountResourceName(resource)
-									+ "' output in '" + name + "'. Required: " + Math.round((required - remainingCap) * 1000.0)/1000.0 
-									+ " kg of storage. Remaining cap: 0 kg.");
-							required = remainingCap;
-							settlement.storeAmountResource(resource, required);
-							setProcessRunning(false);						
-							break;
-							// Note: turn on a yellow flag and indicate which the output resource is missing
-						}
-						else
-							settlement.storeAmountResource(resource, required);
+//					if (!engine.isWasteOutputResource(resource)) {
+						double maxRate = engine.getBaseFullOutputRate(resource);
+						double resourceRate = maxRate * level;
+						double required = resourceRate * accumulatedTime;
+						double remainingCap = settlement.getAmountResourceRemainingCapacity(resource);
 						
-					}
-					else {
-						logger.fine(settlement, 30_000, "Case D. Not enough space for storing '" 
-								+ ResourceUtil.findAmountResourceName(resource)
-								+ "' output to continue '" + name + "'. Required: " + Math.round(required * 1000.0)/1000.0 
-								+ " kg of storage. Remaining cap: " + Math.round(remainingCap * 1000.0)/1000.0 + " kg.");
-						setProcessRunning(false);
-						break;
-					}
+						// Store the right amount
+						if (remainingCap > SMALL_AMOUNT) {
+							if (required > remainingCap) {
+								logger.fine(settlement, 30_000, "Case C. Used up all remaining space for storing '" 
+										+ ResourceUtil.findAmountResourceName(resource)
+										+ "' output in '" + name + "'. Required: " + Math.round((required - remainingCap) * 1000.0)/1000.0 
+										+ " kg of storage. Remaining cap: 0 kg.");
+								required = remainingCap;
+								settlement.storeAmountResource(resource, required);
+								setProcessRunning(false);						
+								break;
+								// Note: turn on a yellow flag and indicate which the output resource is missing
+							}
+							else
+								settlement.storeAmountResource(resource, required);
+							
+						}
+						else {
+							logger.fine(settlement, 30_000, "Case D. Not enough space for storing '" 
+									+ ResourceUtil.findAmountResourceName(resource)
+									+ "' output to continue '" + name + "'. Required: " + Math.round(required * 1000.0)/1000.0 
+									+ " kg of storage. Remaining cap: " + Math.round(remainingCap * 1000.0)/1000.0 + " kg.");
+							setProcessRunning(false);
+							break;
+						}
+//					}
 				}
 			}
 

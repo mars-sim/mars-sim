@@ -268,7 +268,7 @@ public class LivingAccommodations extends Function {
 		double toiletPaperUsagePerMillisol = TOILET_WASTE_PERSON_SOL / 1000;
 
 		double toiletPaperUsageBuilding = toiletPaperUsagePerMillisol * time 
-				*  getNumAssignedBeds() * (1 + RandomUtil.getRandomDouble(0.5));	
+				*  getNumAssignedBeds() * (1 + RandomUtil.getRandomDouble(-0.5, 0.5));	
 
 		if (toiletPaperUsageBuilding > MIN) {
 			retrieve(toiletPaperUsageBuilding, TOILET_TISSUE_ID, true);
@@ -301,12 +301,12 @@ public class LivingAccommodations extends Function {
 
 		double usage =  washWaterUsage * time / 1_000 * numBed * absenteeFactor;
 		
-		estimatedWaterUsed = usage * RandomUtil.getRandomDouble(TOILET_CHANCE / 10) * portion;
+		estimatedWaterUsed = usage * RandomUtil.getRandomDouble(TOILET_CHANCE/3, TOILET_CHANCE*3) * portion;
 		
 		estimatedWasteWaterProduced = estimatedWaterUsed * WASH_AND_WASTE_WATER_RATIO;
 		
-		logger.config(building, "water: " + estimatedWaterUsed 
-				+ "  waste water: " + estimatedWasteWaterProduced);
+//		logger.config(building, "water: " + estimatedWaterUsed 
+//				+ "  waste water: " + estimatedWasteWaterProduced);
 		
 		return new double[] {estimatedWaterUsed, estimatedWasteWaterProduced};
 	}

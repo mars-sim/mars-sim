@@ -91,7 +91,7 @@
 	</process>
 
 		
-	<process name="Carbon Formation Reactor" power-required="0.05" >
+	<process name="Carbon Formation Reactor (CFR)" power-required="0.05" >
 		<description> 						
 		In recent years, under the SpaceCraft Oxygen Recovery (SCOR) program, 
 		NASA seeks to increase oxygen recovery beyond the state of the art (42%) 
@@ -178,7 +178,7 @@
 	</process>
 
 
-	<process name="Oxygen Generation System" power-required="0.25" defaultOn="true">
+	<process name="Oxygen Generation System (OGS)" power-required="0.25" defaultOn="true">
 	<description> 
 	
 		Oxygen Generation System can split water into H2 and O2.
@@ -1000,7 +1000,7 @@
 	2 kg of toxic waste. There is a lost of 1 kg of water.
 	-->
 	<process name="Black Water Processor" power-required=".315" >
-		<input resource="black water" rate="20"  />
+		<input resource="black water" rate="10"  />
 		<!-- Residual requirement for using chlorine in water treatment
 				is 0.25 to 1 mg of Cl gas per kg of water. Thus 20 kg water
 				requires 20 mg of Cl gas -->
@@ -1008,12 +1008,13 @@
 		<input resource="nitrospira spp" rate="0.02"  />
 		<input resource="nitrosomonas spp" rate="0.02"  />
 
-		<output resource="grey water" rate="17"  />
+		<output resource="grey water" rate="3.5"  />
+		<output resource="water" rate="5"  />
 		<output resource="toxic waste" rate="1"  />
-		<output resource="nitrogen" rate=".5"  />
+		<output resource="nitrogen" rate=".25"  />
 		<output resource="nitrite" rate=".5"  />
 		<output resource="nitrate" rate=".5"  />
-		<output resource="phosphorus" rate=".5"  />
+		<output resource="phosphorus" rate=".25"  />
 	</process>
 
 	<!-- For Waste Management
