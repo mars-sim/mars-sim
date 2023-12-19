@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * BuildingPanelLiving.java
+ * BuildingPanelAccommodation.java
  * @date 2023-11-24
  * @author Manny Kung
  */
@@ -29,7 +29,7 @@ import com.mars_sim.ui.swing.utils.UnitTableLauncher;
  * the living accommodation details of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelLiving extends BuildingFunctionPanel {
+public class BuildingPanelAccommodation extends BuildingFunctionPanel {
 
 	private static final String BED_ICON = "bed";
 
@@ -49,11 +49,11 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 	 * @param living the building this panel is for.
 	 * @param desktop The main desktop.
 	 */
-	public BuildingPanelLiving(LivingAccommodations living, MainDesktopPane desktop) {
+	public BuildingPanelAccommodation(LivingAccommodations living, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
 		super(
-			Msg.getString("BuildingPanelLiving.title"), 
+			Msg.getString("BuildingPanelAccommodation.title"), 
 			ImageLoader.getIconByName(BED_ICON),
 			living.getBuilding(), 
 			desktop
@@ -77,15 +77,15 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 		center.add(labelPanel, BorderLayout.NORTH);
 
 		// Create bed capacity label
-		bedCapLabel = labelPanel.addTextField(Msg.getString("BuildingPanelLiving.beds.capacity"),
+		bedCapLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAccommodation.beds.capacity"),
 									Integer.toString(living.getBedCap()), "Max number of beds available");
 
 		// Create bedOccupiedLabel
-		bedOccupiedLabel = labelPanel.addTextField(Msg.getString("BuildingPanelLiving.beds.assigned"),
+		bedOccupiedLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAccommodation.beds.assigned"),
 									Integer.toString(living.getNumOccupiedActivitySpots()), "Number of beds already occupied");
 
 		// Create guest bed capacity label
-		labelPanel.addTextField(Msg.getString("BuildingPanelLiving.guesthouse"),
+		labelPanel.addTextField(Msg.getString("BuildingPanelAccommodation.guesthouse"),
 									Boolean.toString(living.isGuestHouse()), "Max number of guest beds available");
 		
 		// Create scroll panel for beds

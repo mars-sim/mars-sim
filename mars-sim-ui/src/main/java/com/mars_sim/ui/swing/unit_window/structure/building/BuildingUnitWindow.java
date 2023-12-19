@@ -76,7 +76,7 @@ public class BuildingUnitWindow extends UnitWindow {
 				addTabPanel( new BuildingPanelInhabitable(building.getLifeSupport(), desktop));
 				break;
 	       	case LIVING_ACCOMMODATIONS:
-            	addTabPanel( new BuildingPanelLiving(building.getLivingAccommodations(), desktop));
+            	addTabPanel( new BuildingPanelAccommodation(building.getLivingAccommodations(), desktop));
             	break;
 			case MANUFACTURE:
 				addTabPanel( new BuildingPanelManufacture(building.getManufacture(), desktop));

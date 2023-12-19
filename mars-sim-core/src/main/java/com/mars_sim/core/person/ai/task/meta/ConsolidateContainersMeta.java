@@ -30,8 +30,8 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.tools.Msg;
 
 /**
- * Meta task for the ConsolidateContainers task. This can created shared SettlementTask
- * and individual Person tasks when they are in a Vehicle
+ * Meta task for the ConsolidateContainers task to create shared SettlementTask
+ * and individual Person tasks when they are in a Vehicle.
  */
 public class ConsolidateContainersMeta extends FactoryMetaTask implements SettlementMetaTask {
     private static class ConsolidateTaskJob extends SettlementTask {
@@ -126,7 +126,8 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
     /**
      * Consolidates the container's resources.
      * 
-     * @param inv
+     * @param topContainer
+     * @param useTopInventory
      * @return
      */
     private static boolean needsConsolidation(EquipmentOwner topContainer, boolean useTopInventory) {   	        

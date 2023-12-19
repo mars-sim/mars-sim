@@ -163,26 +163,31 @@ public class BudgetResources extends Task {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double approvingPhase(double time) {
-        
-		LivingAccommodations quarters = building.getLivingAccommodations();	
-		// Calculate the new water ration level
-		double[] data = quarters.calculateWaterLevel(time);
+        // Pick one building having beds
+		Building building = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.LIVING_ACCOMMODATIONS);
 		
-		logger.log(worker, Level.INFO, 0, "Approved " + building.getName()
-			+ "'s new ration level.  water: " + Math.round(data[0]*10.0)/10.0
-				+ "  Waste water: " + Math.round(data[1]*10.0)/10.0);
-		
-		// Make the new water ratio the same as the cache
-		person.getAssociatedSettlement().setWaterRatio();
-		
-		// Add experience
-		addExperience(time);
-
-		// Inform other that this settlement's water ratio is no longer under review
-		person.getAssociatedSettlement().setReviewWaterRatio(true);	
-		
-		// Approval phase is a one shot activity so end task
-		endTask();
+		if (building != null) {
+			
+			LivingAccommodations quarters = building.getLivingAccommodations();	
+			// Calculate the new water ration level
+			double[] data = quarters.calculateWaterLevel(time);
+			
+			logger.log(worker, Level.INFO, 0, "Approved " + building.getName()
+				+ "'s new ration level.  water: " + Math.round(data[0]*10.0)/10.0
+					+ "  Waste water: " + Math.round(data[1]*10.0)/10.0);
+			
+			// Make the new water ratio the same as the cache
+			person.getAssociatedSettlement().setWaterRatio();
+			
+			// Add experience
+			addExperience(time);
+	
+			// Inform other that this settlement's water ratio is no longer under review
+			person.getAssociatedSettlement().setReviewWaterRatio(true);	
+			
+			// Approval phase is a one shot activity so end task
+			endTask();
+		}
 		
 		return 0;
 	}

@@ -34,7 +34,7 @@ public class LivingAccommodations extends Function {
 
 	public static final int MAX_NUM_SOLS = 14;
 
-	public static final double TOILET_WASTE_PERSON_SOL = .02D;
+	public static final double TOILET_WASTE_PERSON_SOL = .05D;
 	public static final double WASH_AND_WASTE_WATER_RATIO = .85D;
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.0001;
@@ -188,8 +188,10 @@ public class LivingAccommodations extends Function {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
-			int rand = RandomUtil.getRandomInt(TOILET_CHANCE);
-			if (rand == 0) {
+			if (pulse.getMarsTime().getMillisolInt() % TOILET_CHANCE == 1) {
+				// Calculate water level
+				calculateWaterLevel(pulse.getElapsed());
+				// Use water and produce waste water
 				generateWaste(pulse.getElapsed());
 			}
 		}
@@ -240,7 +242,7 @@ public class LivingAccommodations extends Function {
 	 * @param time amount of time passing (millisols)
 	 */
 	private void generateWaste(double time) {
-
+		
 		// Remove wash water from settlement.
 		if (estimatedWaterUsed > MIN) {
 			retrieve(estimatedWaterUsed, WATER_ID, true);
@@ -282,7 +284,7 @@ public class LivingAccommodations extends Function {
 	 */
 	public double[] calculateWaterLevel(double time) {
 		Settlement settlement = building.getSettlement();
-		double randomness = 1 + RandomUtil.getRandomDouble(0.5);
+		// Get the # of beds in this building
 		int numBed = getNumAssignedBeds();
 		double portion = 1;
 		
@@ -293,15 +295,18 @@ public class LivingAccommodations extends Function {
 		
 		// Account for people who are out there in an excursion and NOT in the
 		// settlement
-		double absenteeFactor = (double)settlement.getIndoorPeopleCount() 
-				/ settlement.getPopulationCapacity();
+		// Note: Will starting using absenteeFactor after accounting for wastes
+		// generated in vehicles on mission
+		double absenteeFactor = 1; //(double)settlement.getIndoorPeopleCount() / settlement.getPopulationCapacity();
 
 		double usage =  washWaterUsage * time / 1_000 * numBed * absenteeFactor;
 		
-		estimatedWaterUsed = usage * RandomUtil.getRandomDouble(TOILET_CHANCE) 
-				* randomness * portion;
+		estimatedWaterUsed = usage * RandomUtil.getRandomDouble(TOILET_CHANCE / 10) * portion;
 		
 		estimatedWasteWaterProduced = estimatedWaterUsed * WASH_AND_WASTE_WATER_RATIO;
+		
+		logger.config(building, "water: " + estimatedWaterUsed 
+				+ "  waste water: " + estimatedWasteWaterProduced);
 		
 		return new double[] {estimatedWaterUsed, estimatedWasteWaterProduced};
 	}
@@ -312,9 +317,10 @@ public class LivingAccommodations extends Function {
 	}
 
 	/**
-	 * Allocate a bed for sleeping
+	 * Allocates a bed for sleeping.
+	 * 
 	 * @param settlement
-	 * @param p
+	 * @param p the person
 	 * @param permenant Looking to make the allocate fixed
 	 */
 	public static AllocatedSpot allocateBed(Settlement settlement, Person p, boolean permanent) {
@@ -355,13 +361,14 @@ public class LivingAccommodations extends Function {
 		// Looking for a citizen with no capacity
 		logger.warning(p, "All beds are allocated");
 
-		// Pick a random bed in the guesthouse; unoikely to arrive here
+		// Pick a random bed in the guesthouse; unlikely to arrive here
 		return RandomUtil.getARandSet(guestHouse.getActivitySpots()).claim(p, false,
 									  guestHouse.getBuilding());
 	}
 
 	/**
-	 * Can guest sstay here and squat on allocated beds
+	 * Can guest stay here and squat on allocated beds ?
+	 * 
 	 * @return
 	 */
 	public boolean isGuestHouse() {
