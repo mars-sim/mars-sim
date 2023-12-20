@@ -24,7 +24,7 @@ import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.ActivitySpot;
 import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.LivingAccommodations;
+import com.mars_sim.core.structure.building.function.LivingAccommodation;
 import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.tools.Msg;
@@ -247,7 +247,7 @@ public class Sleep extends Task {
 			walkToPassengerActivitySpotInRover(rover, true);
 		}
 
-		// If person is in a settlement, try to find a living accommodations building.
+		// If person is in a settlement, try to find a living accommodation building.
 		else if (person.isInSettlement()) {
 			// Double the sleep duration
 			setDuration(getDuration() * 2);
@@ -260,7 +260,7 @@ public class Sleep extends Task {
 			}
 
 			// Find a bed, if at home Settlemnt attempt to make it permanent
-			var tempBed = LivingAccommodations.allocateBed(s, person,
+			var tempBed = LivingAccommodation.allocateBed(s, person,
 							s.equals(person.getAssociatedSettlement()));
 			if (tempBed == null) {
 				tempBed = findSleepRoughLocation(s, person);

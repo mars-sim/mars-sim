@@ -18,7 +18,7 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.Administration;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.LivingAccommodations;
+import com.mars_sim.core.structure.building.function.LivingAccommodation;
 import com.mars_sim.core.structure.building.function.Management;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
@@ -66,8 +66,14 @@ public class BudgetResources extends Task {
 				
 		if (person.isInSettlement()) {
 
-			// Inform other that this settlement's water ratio is locked
-			person.getAssociatedSettlement().setReviewWaterRatio(false);	
+			// Pick a building that needs review
+			building = BuildingManager.getLivingAccommodationNeedingReview(person);
+						
+			if (building != null) {
+				// Inform others that this quarters' water ratio review flag is locked
+				// and not available for review
+				building.getLivingAccommodation().setReviewWaterRatio(false);
+			}		
 			
 			// If person is in a settlement, try to find an office building.
 			Building officeBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
@@ -79,7 +85,7 @@ public class BudgetResources extends Task {
 					office.addStaff();
 					// Walk to the office building.
 					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
-					building = officeBuilding;
+//					building = officeBuilding;
 				}
 			}
 
@@ -88,7 +94,7 @@ public class BudgetResources extends Task {
 				if (managementBuilding != null) {
 					// Walk to the management building.
 					walkToTaskSpecificActivitySpotInBuilding(managementBuilding, FunctionType.MANAGEMENT, true);
-					building = managementBuilding;
+//					building = managementBuilding;
 				}
 				else {	
 					Building dining = BuildingManager.getAvailableDiningBuilding(person, false);
@@ -96,7 +102,7 @@ public class BudgetResources extends Task {
 					if (dining != null) {
 						// Walk to the dining building.
 						walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
-						building = dining;
+//						building = dining;
 					}
 				}
 			}
@@ -134,22 +140,23 @@ public class BudgetResources extends Task {
 	private double reviewingPhase(double time) {
 	
 		if (getTimeCompleted() > .9 * getDuration()) {
-
-			if (building != null) {
-
-				logger.log(worker, Level.INFO, 0, "Done reviewing " + building.getName()
-					+ "'s water level.");
-				// Add experience
-				addExperience(time);
 				
-				setPhase(APPROVING);
-			}
-			else {
-				// Inform other that this settlement's water ratio is ready and open for future review
-				person.getAssociatedSettlement().setReviewWaterRatio(true);	
-				
-				endTask();
-			}
+			LivingAccommodation quarters = building.getLivingAccommodation();	
+			// Calculate the new water ration level
+			double[] data = quarters.calculateWaterLevel(time);
+			
+			logger.log(worker, Level.INFO, 0, "Reviewing " + building.getName()
+				+ "'s water ration level.  water: " + Math.round(data[0]*10.0)/10.0
+					+ "  Waste water: " + Math.round(data[1]*10.0)/10.0);
+			
+			// Make the new water ratio the same as the cache
+			person.getAssociatedSettlement().setWaterRatio();
+			
+			// Add experience
+			addExperience(time);
+			
+			// Go to the next phase
+			setPhase(APPROVING);
 		}
 
         return 0;
@@ -163,31 +170,29 @@ public class BudgetResources extends Task {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double approvingPhase(double time) {
-        // Pick one building having beds
-		Building building = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.LIVING_ACCOMMODATIONS);
-		
-		if (building != null) {
 			
-			LivingAccommodations quarters = building.getLivingAccommodations();	
-			// Calculate the new water ration level
-			double[] data = quarters.calculateWaterLevel(time);
-			
-			logger.log(worker, Level.INFO, 0, "Approved " + building.getName()
-				+ "'s new ration level.  water: " + Math.round(data[0]*10.0)/10.0
-					+ "  Waste water: " + Math.round(data[1]*10.0)/10.0);
-			
-			// Make the new water ratio the same as the cache
-			person.getAssociatedSettlement().setWaterRatio();
-			
-			// Add experience
-			addExperience(time);
+		LivingAccommodation quarters = building.getLivingAccommodation();	
 	
-			// Inform other that this settlement's water ratio is no longer under review
-			person.getAssociatedSettlement().setReviewWaterRatio(true);	
-			
-			// Approval phase is a one shot activity so end task
-			endTask();
-		}
+		// Reset the water ratio review flag
+		quarters.setReviewWaterRatio(true);	
+		
+		// Use water and produce waste water
+		quarters.generateWaste(time);
+		
+		logger.log(worker, Level.INFO, 0, "New water waste measures approved for " 
+				+ building.getName() + ".");
+		
+		// Make the new water ratio the same as the cache
+		person.getAssociatedSettlement().setWaterRatio();
+		
+		// Add experience
+		addExperience(time);
+
+		// Inform other that this settlement's water ratio is no longer under review
+		quarters.setReviewWaterRatio(true);	
+		
+		// Approval phase is a one shot activity so end task
+		endTask();
 		
 		return 0;
 	}

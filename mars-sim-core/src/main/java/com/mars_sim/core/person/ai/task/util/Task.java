@@ -1070,8 +1070,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		else if (building.hasFunction(FunctionType.RECREATION)) {
 			walkToActivitySpotInBuilding(building, FunctionType.RECREATION, allowFail);			
 		} 
-		else if (building.hasFunction(FunctionType.LIVING_ACCOMMODATIONS)) {
-			walkToActivitySpotInBuilding(building, FunctionType.LIVING_ACCOMMODATIONS, allowFail);			
+		else if (building.hasFunction(FunctionType.LIVING_ACCOMMODATION)) {
+			walkToActivitySpotInBuilding(building, FunctionType.LIVING_ACCOMMODATION, allowFail);			
 		} 
 		else {
 			// If no available activity spot, go to an empty location in building

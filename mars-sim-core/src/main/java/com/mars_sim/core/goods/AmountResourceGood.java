@@ -29,7 +29,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.LivingAccommodations;
+import com.mars_sim.core.structure.building.function.LivingAccommodation;
 import com.mars_sim.core.structure.building.function.ResourceProcess;
 import com.mars_sim.core.structure.building.function.ResourceProcessing;
 import com.mars_sim.core.structure.building.function.cooking.Cooking;
@@ -1567,7 +1567,7 @@ class AmountResourceGood extends Good {
 	 */
 	private double getToiletryUsageDemand(Settlement settlement) {
 		if (getID() == ResourceUtil.toiletTissueID) {
-			double amountNeededSol = LivingAccommodations.TOILET_WASTE_PERSON_SOL;
+			double amountNeededSol = LivingAccommodation.TOILET_WASTE_PERSON_SOL;
 			int numPeople = settlement.getIndoorPeopleCount();
 			return numPeople * amountNeededSol;
 		}

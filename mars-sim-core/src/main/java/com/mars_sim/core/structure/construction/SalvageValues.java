@@ -22,7 +22,7 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.LifeSupport;
-import com.mars_sim.core.structure.building.function.LivingAccommodations;
+import com.mars_sim.core.structure.building.function.LivingAccommodation;
 import com.mars_sim.core.structure.building.function.RoboticStation;
 import com.mars_sim.core.structure.building.function.VehicleGarage;
 import com.mars_sim.core.time.MarsTime;
@@ -251,12 +251,12 @@ implements Serializable {
 		    }
 		}
 
-		// Check if building has needed living accommodations for settlement population.
-		if (building.hasFunction(FunctionType.LIVING_ACCOMMODATIONS)) {
+		// Check if building has needed living accommodation for settlement population.
+		if (building.hasFunction(FunctionType.LIVING_ACCOMMODATION)) {
 			int popSize = settlement.getNumCitizens();
 			int popCapacity = settlement.getPopulationCapacity();
-			LivingAccommodations livingAccommodations = building.getLivingAccommodations();
-			int buildingPopCapacity = livingAccommodations.getBedCap();
+			LivingAccommodation livingaccommodation = building.getLivingAccommodation();
+			int buildingPopCapacity = livingaccommodation.getBedCap();
 			if ((popCapacity - buildingPopCapacity) < popSize) {
 				result = 0D;
 			}

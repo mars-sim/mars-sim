@@ -63,7 +63,7 @@ import com.mars_sim.core.structure.building.function.FoodProduction;
 import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.LifeSupport;
-import com.mars_sim.core.structure.building.function.LivingAccommodations;
+import com.mars_sim.core.structure.building.function.LivingAccommodation;
 import com.mars_sim.core.structure.building.function.Management;
 import com.mars_sim.core.structure.building.function.Manufacture;
 import com.mars_sim.core.structure.building.function.MedicalCare;
@@ -302,9 +302,9 @@ public class BuildingManager implements Serializable {
 	 */
 	public void computePopulationCapacity() {
 		int result = 0;
-		Set<Building> bs = getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
+		Set<Building> bs = getBuildingSet(FunctionType.LIVING_ACCOMMODATION);
 		for (Building building : bs) {
-			result += building.getLivingAccommodations().getBedCap();
+			result += building.getLivingAccommodation().getBedCap();
 		}
 		popCap = result;
 	}
@@ -693,7 +693,7 @@ public class BuildingManager implements Serializable {
 				buildings = getBuildingsinSameZone(person, FunctionType.DINING);
 			}
 			if (buildings == null || buildings.isEmpty()) {
-				buildings = getBuildingsinSameZone(person, FunctionType.LIVING_ACCOMMODATIONS);
+				buildings = getBuildingsinSameZone(person, FunctionType.LIVING_ACCOMMODATION);
 			}
 
 			if (buildings != null && !buildings.isEmpty()) {
@@ -1914,8 +1914,8 @@ public class BuildingManager implements Serializable {
 					result += LifeSupport.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
 
-				case LIVING_ACCOMMODATIONS:
-					result += LivingAccommodations.getFunctionValue(buildingType, newBuilding, settlement);
+				case LIVING_ACCOMMODATION:
+					result += LivingAccommodation.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
 
 				case MANAGEMENT:
@@ -2620,6 +2620,72 @@ public class BuildingManager implements Serializable {
 		return null;
 	}
 
+	/**
+	 * Gets an available living accommodation that needs waste water review.
+	 *
+	 * @param person the person looking for a facility.
+	 * @return an available space or null if none found.
+	 */
+	public static Building getLivingAccommodationNeedingReview(Person person) {
+	
+		// If person is in a settlement, try to find a building of functionType
+		if (person.isInSettlement()) {
+			
+			List<Building> bldgs0 = null;
+					
+			if (person.getBuildingLocation() != null) {
+				bldgs0 = person.getSettlement().getBuildingManager().getBuildings(FunctionType.LIVING_ACCOMMODATION)
+						.stream()
+						.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
+								&& !b.getMalfunctionManager().hasMalfunction()
+								// True if this quarter needs a review
+								&& b.getLivingAccommodation().canReviewWaterRatio())
+						.collect(Collectors.toList());
+			}
+			else {
+				bldgs0 = person.getSettlement().getBuildingManager().getBuildings(FunctionType.LIVING_ACCOMMODATION)
+						.stream()
+						.filter(b -> b.getZone() == 0
+								&& !b.getMalfunctionManager().hasMalfunction()
+								// True if this quarter needs a review
+								&& b.getLivingAccommodation().canReviewWaterRatio())
+						.collect(Collectors.toList());		
+			}
+
+			if (bldgs0 != null && !bldgs0.isEmpty()) {
+				int size = bldgs0.size();
+				int rand = RandomUtil.getRandomInt(size - 1);
+				return bldgs0.get(rand);
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Gets a number of living accommodations that need waste water review.
+	 *
+	 * @param settlement
+	 * @return the number
+	 */
+	public static int getNumAccommodationNeedingReview(Settlement settlement) {
+		int result = 0;
+	
+		List<Building> bldgs0 = settlement.getBuildingManager().getBuildings(FunctionType.LIVING_ACCOMMODATION)
+					.stream()
+					.filter(b -> !b.getMalfunctionManager().hasMalfunction()
+							// True if this quarter needs a review
+							&& b.getLivingAccommodation().canReviewWaterRatio())
+					.collect(Collectors.toList());
+
+		if (bldgs0 != null && !bldgs0.isEmpty()) {
+			result = bldgs0.size();
+		}
+
+		
+		return result;
+	}
+	
 	/**
 	 * Gets an available kitchen for a worker.
 	 * 

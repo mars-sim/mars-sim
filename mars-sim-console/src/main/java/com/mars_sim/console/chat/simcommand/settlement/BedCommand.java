@@ -17,7 +17,7 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.LivingAccommodations;
+import com.mars_sim.core.structure.building.function.LivingAccommodation;
 
 /**
  * Command to display bed allocation in a Settlement
@@ -43,9 +43,9 @@ public class BedCommand extends AbstractSettlementCommand {
 		
 		response.appendTableHeading("Building", CommandHelper.BUILIDNG_WIDTH,
 							 "Bed", 7, "Person");
-		List<Building> bs = settlement.getBuildingManager().getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
+		List<Building> bs = settlement.getBuildingManager().getBuildings(FunctionType.LIVING_ACCOMMODATION);
 		for (Building building : bs) {
-			LivingAccommodations living = building.getLivingAccommodations();
+			LivingAccommodation living = building.getLivingAccommodation();
 			for(var as : living.getActivitySpots()) {
 				String name = "";
 				if (as.getID() >= 0) {

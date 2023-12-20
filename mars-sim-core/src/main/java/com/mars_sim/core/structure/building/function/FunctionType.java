@@ -28,7 +28,7 @@ public enum FunctionType {
 	FOOD_PRODUCTION  			(BuildingCategory.LIVING, Msg.getString("FunctionType.foodProduction")), //$NON-NLS-1$	
 	VEHICLE_MAINTENANCE			(BuildingCategory.VEHICLE, Msg.getString("FunctionType.vehicleMaintenance")), //$NON-NLS-1$
 	LIFE_SUPPORT				(BuildingCategory.LIVING, Msg.getString("FunctionType.lifeSupport")), //$NON-NLS-1$
-	LIVING_ACCOMMODATIONS		(BuildingCategory.LIVING, Msg.getString("FunctionType.livingAccommodations")), //$NON-NLS-1$
+	LIVING_ACCOMMODATION		(BuildingCategory.LIVING, Msg.getString("FunctionType.livingAccommodation")), //$NON-NLS-1$
 	MANAGEMENT					(BuildingCategory.COMMAND, Msg.getString("FunctionType.management")), //$NON-NLS-1$
 	MANUFACTURE					(BuildingCategory.WORKSHOP, Msg.getString("FunctionType.manufacture")), //$NON-NLS-1$
 	MEDICAL_CARE				(BuildingCategory.MEDICAL, Msg.getString("FunctionType.medicalCare")), //$NON-NLS-1$

@@ -282,7 +282,7 @@ public class BuildingConfig {
 		return switch(function) {
 			case ADMINISTRATION -> "Desk";
 			case DINING -> "Seat";
-			case LIVING_ACCOMMODATIONS -> "Bed";
+			case LIVING_ACCOMMODATION -> "Bed";
 			case MANUFACTURE -> "Workbench";
 			case MEDICAL_CARE -> "Sickbay";
 			case RECREATION -> "Chair";

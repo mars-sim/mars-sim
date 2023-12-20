@@ -58,7 +58,7 @@ import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.HeatMode;
 import com.mars_sim.core.structure.building.function.Heating;
 import com.mars_sim.core.structure.building.function.LifeSupport;
-import com.mars_sim.core.structure.building.function.LivingAccommodations;
+import com.mars_sim.core.structure.building.function.LivingAccommodation;
 import com.mars_sim.core.structure.building.function.Management;
 import com.mars_sim.core.structure.building.function.Manufacture;
 import com.mars_sim.core.structure.building.function.MedicalCare;
@@ -171,7 +171,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	private FoodProduction foodFactory;
 	private VehicleGarage maint;
 	private Heating heating;
-	private LivingAccommodations livingAccommodations;
+	private LivingAccommodation livingAccommodation;
 	private LifeSupport lifeSupport;
 	private Management management;
 	private Manufacture manufacture;
@@ -453,10 +453,10 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return maint;
 	}
 
-	public LivingAccommodations getLivingAccommodations() {
-		if (livingAccommodations == null)
-			livingAccommodations = (LivingAccommodations) getFunction(FunctionType.LIVING_ACCOMMODATIONS);
-		return livingAccommodations;
+	public LivingAccommodation getLivingAccommodation() {
+		if (livingAccommodation == null)
+			livingAccommodation = (LivingAccommodation) getFunction(FunctionType.LIVING_ACCOMMODATION);
+		return livingAccommodation;
 	}
 
 	public Management getManagement() {
@@ -714,8 +714,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				buildingFunctions.add(new LifeSupport(this, fSpec));
 				break;
 
-			case LIVING_ACCOMMODATIONS:
-				buildingFunctions.add(new LivingAccommodations(this, fSpec));
+			case LIVING_ACCOMMODATION:
+				buildingFunctions.add(new LivingAccommodation(this, fSpec));
 				break;
 
 			case MANAGEMENT:

@@ -19,7 +19,7 @@
 
 	<!ELEMENT functions (administration?, algae-farming?, astronomical-observation?, building-connection?,
 	communication?, computation?, cooking?, dining?, earth-return?, EVA?, exercise?, food-production?, farming?, fishery?,
-	vehicle-maintenance?, life-support?, living-accommodations?, management?, manufacture?,
+	vehicle-maintenance?, life-support?, living-accommodation?, management?, manufacture?,
 	medical-care?, power-generation?, power-storage?, preparing-dessert?, recreation?, research?,
 	resource-processing?, robotic-station?, storage?, thermal-generation?, thermal-storage?, waste-processing? )>
 
@@ -80,9 +80,9 @@
 	<!ELEMENT life-support EMPTY>
 	<!ATTLIST life-support capacity CDATA #REQUIRED>
 	<!ATTLIST life-support power-required CDATA #REQUIRED>
-	<!ELEMENT living-accommodations (activity)>
-	<!ATTLIST living-accommodations capacity CDATA #REQUIRED>
-	<!ATTLIST living-accommodations guesthouse CDATA #IMPLIED>
+	<!ELEMENT living-accommodation (activity)>
+	<!ATTLIST living-accommodation capacity CDATA #REQUIRED>
+	<!ATTLIST living-accommodation guesthouse CDATA #IMPLIED>
 	<!ELEMENT management (activity?)>
 	<!ATTLIST management capacity CDATA #REQUIRED>
 	<!ELEMENT manufacture (activity?)>
@@ -258,14 +258,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<!-- The building provides sleeping quarters for people. -->
 			<!-- beds: the number of sleeping quarters provided. -->
-			<living-accommodations capacity="4">
+			<living-accommodation capacity="4">
 				<activity>
 					<activity-spot xloc="1.55" yloc="3.28" />
 					<activity-spot xloc="-0.4" yloc="3.6" />
 					<activity-spot xloc="-3.3" yloc="0.9" />
 					<activity-spot xloc="-3.17" yloc="-1.08" />
 				</activity>
-			</living-accommodations>
+			</living-accommodation>
 
 			<!-- The building provides command and control for the population. -->
 			<!-- capacity: the number of population managed. -->
@@ -1528,7 +1528,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<life-support capacity="16" power-required="0.8" />
-			<living-accommodations capacity="11" guesthouse="true">
+			<living-accommodation capacity="11" guesthouse="true">
 				<activity>
 					<activity-spot xloc="2.2" yloc="3.2" />
 					<activity-spot xloc="2.2" yloc="1.8" />
@@ -1544,7 +1544,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-2.2" yloc="-2.0" />
 					<activity-spot xloc="-2.2" yloc="-3.4" />
 				</activity>
-			</living-accommodations>
+			</living-accommodation>
 			<power-generation>
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				fuel-type="methane"	consumption-rate="7.9897" />
@@ -2744,14 +2744,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!--EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" /!-->
 			<life-support capacity="12" power-required="0.6" />
-			<living-accommodations capacity="4">
+			<living-accommodation capacity="4">
 				<activity>
 					<activity-spot xloc="1.13" yloc="2.67" />
 					<activity-spot xloc="2.89" yloc="0.31" />
 					<activity-spot xloc="2.67" yloc="-0.92" />
 					<activity-spot xloc="-0.18" yloc="-2.97" />
 				</activity>			
-			</living-accommodations>
+			</living-accommodation>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
@@ -3194,12 +3194,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<life-support capacity="4" power-required="0.2" />
-			<living-accommodations capacity="2" guesthouse="true">
+			<living-accommodation capacity="2" guesthouse="true">
 				<activity>
 					<activity-spot xloc="1.35" yloc="-1.35" />
 					<activity-spot xloc="-1.35" yloc="-1.35" />
 				</activity>
-			</living-accommodations>
+			</living-accommodation>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"

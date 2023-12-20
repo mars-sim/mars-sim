@@ -31,7 +31,7 @@
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="4" />
 			<entity name="farming" probability="5" max-number="6" />
-			<entity name="living accommodations" probability="5" max-number="4" />
+			<entity name="living accommodation" probability="5" max-number="4" />
 			<entity name="manufacture" probability="5" max-number="6" />
 			<entity name="eva suit" probability="5" max-number="1" />
 			<entity name="thermal generation" probability="5" max-number="1" />
@@ -42,7 +42,7 @@
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="2" />
 			<entity name="farming" probability="5" max-number="3" />
-			<entity name="living accommodations" probability="5" max-number="2" />
+			<entity name="living accommodation" probability="5" max-number="2" />
 			<entity name="manufacture" probability="5" max-number="3" />
 			<entity name="eva suit" probability="5" max-number="1" />
 			<entity name="areothermal power source" probability="5" max-number="1" />
@@ -56,7 +56,7 @@
 		<maintenance-entity-list>
 			<entity name="vehicle" probability="5" max-number="6" />
 			<entity name="farming" probability="5" max-number="12" />
-			<entity name="living accommodations" probability="5" max-number="4" />
+			<entity name="living accommodation" probability="5" max-number="4" />
 			<entity name="manufacture" probability="5" max-number="6" />
 			<entity name="eva suit" probability="5" max-number="1" />
 			<entity name="resource processing" probability="5" max-number="5" />	
@@ -227,7 +227,7 @@
 	<part name="Copper Pipe" type="metallic" mass="	1.011">
 		<description>A density of 8.94 g/cm3. length of 1m. Thickness of 2mm. Diameter of 20mm</description>
 		<maintenance-entity-list>
-			<entity name="living accommodations" probability="2" max-number="1" />
+			<entity name="living accommodation" probability="2" max-number="1" />
 			<entity name="farming" probability="2" max-number="2" />
 			<entity name="manufacture" probability="2" max-number="2" />
 			<entity name="resource processing" probability="5" max-number="3" />
@@ -237,7 +237,7 @@
 
 	<part name="Plastic Pipe" type="utility" mass="1.0">
 		<maintenance-entity-list>
-			<entity name="living accommodations" probability="5" max-number="2" />
+			<entity name="living accommodation" probability="5" max-number="2" />
 			<entity name="farming" probability="5" max-number="4" />
 			<entity name="manufacture" probability="5" max-number="2" />
 			<entity name="rover" probability="5" max-number="1" />
@@ -638,7 +638,7 @@
 		<entity name="astronomical observations" probability="1" max-number="1" />			
 		<entity name="communication" probability="1" max-number="1" />		
 		<entity name="manufacture" probability="1" max-number="2" />
-		<entity name="living accommodations" probability="1" max-number="1" />
+		<entity name="living accommodation" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -652,7 +652,7 @@
 		<entity name="astronomical observations" probability="1" max-number="1" />
 		<entity name="communication" probability="1" max-number="1" />	
 		<entity name="computation" probability="1" max-number="1" />	
-		<entity name="living accommodations" probability="1" max-number="1" />
+		<entity name="living accommodation" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -665,7 +665,7 @@
 		<entity name="astronomical observations" probability="1" max-number="1" />
 		<entity name="communication" probability="1" max-number="1" />	
 		<entity name="computation" probability="1" max-number="1" />			
-		<entity name="living accommodations" probability="3" max-number="1" />
+		<entity name="living accommodation" probability="3" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -694,7 +694,7 @@
 			<entity name="farming" probability="3" max-number="3" />
 			<entity name="vehicle" probability="3" max-number="1" />
 			<entity name="manufacture" probability="3" max-number="3" />
-			<entity name="living accommodations" probability="3" max-number="2" />
+			<entity name="living accommodation" probability="3" max-number="2" />
 		</maintenance-entity-list>
 	</part>
 
@@ -722,7 +722,7 @@
 			<entity name="farming" probability="3" max-number="15" />
 			<entity name="vehicle" probability="3" max-number="3" />
 			<entity name="manufacture" probability="3" max-number="10" />
-			<entity name="living accommodations" probability="3" max-number="10" />
+			<entity name="living accommodation" probability="3" max-number="10" />
 			<entity name="life support" probability="5" max-number="4" />
 		</maintenance-entity-list>
 	</part>
@@ -784,7 +784,7 @@
 		<maintenance-entity-list>
 			<entity name="farming" probability="1" max-number="2" />
 			<entity name="dining" probability="2" max-number="2" />
-			<entity name="living accommodations" probability="2" max-number="2" />
+			<entity name="living accommodation" probability="2" max-number="2" />
 			<entity name="eva" probability="3" max-number="2" />
 			<entity name="exercise" probability="1" max-number="1" />
 			<entity name="waste processing" probability="3" max-number="1" />
@@ -798,7 +798,7 @@
 		<maintenance-entity-list>
 			<entity name="farming" probability="1" max-number="2" />
 			<entity name="dining" probability="2" max-number="2" />
-			<entity name="living accommodations" probability="2" max-number="2" />
+			<entity name="living accommodation" probability="2" max-number="2" />
 			<entity name="eva" probability="3" max-number="2" />
 			<entity name="exercise" probability="1" max-number="1" />
 			<entity name="waste processing" probability="3" max-number="1" />
@@ -816,7 +816,7 @@
 		<maintenance-entity-list>
 			<entity name="farming" probability="1" max-number="1" />
 			<entity name="dining" probability="2" max-number="1" />
-			<entity name="living accommodations" probability="2" max-number="1" />
+			<entity name="living accommodation" probability="2" max-number="1" />
 			<entity name="eva" probability="3" max-number="1" />
 			<entity name="waste processing" probability="3" max-number="1" />
 			<entity name="resource processing" probability="3" max-number="1" />			
@@ -830,7 +830,7 @@
 			<entity name="cooking" probability="2" max-number="2" />
 			<entity name="farming" probability="2" max-number="2" />
 			<entity name="manufacture" probability="2" max-number="2" />
-			<entity name="living accommodations" probability="2" max-number="2" />
+			<entity name="living accommodation" probability="2" max-number="2" />
 			<entity name="life support" probability="2" max-number="2" />
 		</maintenance-entity-list>
 	</part>
@@ -934,7 +934,7 @@
 		<maintenance-entity-list>
 			<entity name="manufacture" probability="5" max-number="1" />
 			<entity name="vehicle" probability="5" max-number="1" />
-			<entity name="Living Accommodations" probability="5" max-number="1" />
+			<entity name="Living accommodation" probability="5" max-number="1" />
 			<entity name="Life Support" probability="5" max-number="1" />
 			<entity name="Farming" probability="5" max-number="1" />
 			<entity name="thermal generation" probability="1" max-number="2" />
@@ -998,7 +998,7 @@
 			<entity name="vehicle" probability="3" max-number="1" />
 			<entity name="manufacture" probability="3" max-number="2" />
 			<entity name="Areothermal Power Source" probability="1" max-number="2" />
-			<entity name="living accommodations" probability="3" max-number="1" />
+			<entity name="living accommodation" probability="3" max-number="1" />
 			<entity name="resource processing" probability="3" max-number="1" />			
 		</maintenance-entity-list>
 	</part>
@@ -1013,7 +1013,7 @@
 			<entity name="Areothermal Power Source" probability="1" max-number="3" />
 			<entity name="life support" probability="1" max-number="1" />
 			<entity name="manufacture" probability="1" max-number="1" />
-			<entity name="living accommodations" probability="3" max-number="2" />		
+			<entity name="living accommodation" probability="3" max-number="2" />		
 			<entity name="thermal generation" probability="1" max-number="1" />
 			<entity name="vehicle" probability="1" max-number="1" />		
 			<entity name="resource processing" probability="3" max-number="1" />	

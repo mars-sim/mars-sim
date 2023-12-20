@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import com.mars_sim.core.structure.building.function.LivingAccommodations;
+import com.mars_sim.core.structure.building.function.LivingAccommodation;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -39,7 +39,7 @@ public class BuildingPanelAccommodation extends BuildingFunctionPanel {
 	private JLabel bedCapLabel;
 	private JLabel bedOccupiedLabel;
 
-	private LivingAccommodations living;
+	private LivingAccommodation living;
 
 	
 
@@ -49,7 +49,7 @@ public class BuildingPanelAccommodation extends BuildingFunctionPanel {
 	 * @param living the building this panel is for.
 	 * @param desktop The main desktop.
 	 */
-	public BuildingPanelAccommodation(LivingAccommodations living, MainDesktopPane desktop) {
+	public BuildingPanelAccommodation(LivingAccommodation living, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
 		super(

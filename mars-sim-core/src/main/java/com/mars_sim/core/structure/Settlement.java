@@ -85,7 +85,7 @@ import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.connection.BuildingConnectorManager;
 import com.mars_sim.core.structure.building.function.EVA;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.LivingAccommodations;
+import com.mars_sim.core.structure.building.function.LivingAccommodation;
 import com.mars_sim.core.structure.construction.ConstructionManager;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
@@ -229,7 +229,9 @@ public class Settlement extends Structure implements Temporal,
 	/** The flag signifying this settlement as the destination of the user-defined commander. */
 	private boolean hasDesignatedCommander = false;
 	/** The flag to see if a water ration review is due. */
-	private boolean flag4FutureReviewWaterRatio = false;
+	private boolean waterRatioReviewFlag = false;
+	/** The flag to see if a water ration review is due. */
+	private boolean[] resourceReviewFlag = new boolean[6];
 	
 	/** The water ratio of the settlement. The higher the more urgent for water resource. */
 	private int waterRatioCache = 1;
@@ -1016,13 +1018,18 @@ public class Settlement extends Structure implements Temporal,
 		timePassing(pulse, ownedVehicles);
 		timePassing(pulse, ownedRobots);
 
+		
+		if (pulse.isNewHalfSol()) {
+			// Reset all resource review flags to allow for next review
+			int size = resourceReviewFlag.length;
+			for (int i=0; i<size; i++) {
+				resourceReviewFlag[i] = false;
+			}
+		}
+		
 		// At the beginning of a new sol,
 		// there's a chance a new site is automatically discovered
 		if (pulse.isNewSol()) {
-			
-			// Reset the flag to allow for possible future review
-			setReviewWaterRatio(true);
-			
 			// Perform the end of day tasks
 			performEndOfDayTasks(pulse.getMarsTime());	
 
@@ -1158,16 +1165,16 @@ public class Settlement extends Structure implements Temporal,
 
 			double time = pulse.getElapsed();
 			
-			int remainder = msol % CHECK_RESOURCES;
-			if (remainder == 1) {
-				// Check on demand and supply and amount of water, oxygen and methane
-				checkResourceDemand("Oxygen", OXYGEN_ID, MIN_OXYGEN_RESERVE, OXYGEN_MAX, time);
-				checkResourceDemand("Methane", METHANE_ID, MIN_METHANE_RESERVE, METHANE_MAX, time);
-				checkResourceDemand("Hydrogen", HYDROGEN_ID, MIN_HYDROGEN_RESERVE, HYDROGEN_MAX, time);
-				checkResourceDemand("Nitrogen", NITROGEN_ID, MIN_N2_RESERVE, N2_MAX, time);
-				checkResourceDemand("Carbon Dioxide", CO2_ID, MIN_CO2_RESERVE, CO2_MAX, time);
-				checkResourceDemand("Water", WATER_ID, MIN_WATER_RESERVE, WATER_MAX, time);
-			}
+			int remainder = 0; // msol % CHECK_RESOURCES;
+//			if (remainder == 1) {
+//				// Check on demand and supply and amount of water, oxygen and methane
+//				checkResourceDemand("Oxygen", OXYGEN_ID, MIN_OXYGEN_RESERVE, OXYGEN_MAX, time);
+//				checkResourceDemand("Methane", METHANE_ID, MIN_METHANE_RESERVE, METHANE_MAX, time);
+//				checkResourceDemand("Hydrogen", HYDROGEN_ID, MIN_HYDROGEN_RESERVE, HYDROGEN_MAX, time);
+//				checkResourceDemand("Nitrogen", NITROGEN_ID, MIN_N2_RESERVE, N2_MAX, time);
+//				checkResourceDemand("Carbon Dioxide", CO2_ID, MIN_CO2_RESERVE, CO2_MAX, time);
+//				checkResourceDemand("Water", WATER_ID, MIN_WATER_RESERVE, WATER_MAX, time);
+//			}
 			
 			// Tag available airlocks into two categories
 			checkAvailableAirlocks();
@@ -1191,12 +1198,6 @@ public class Settlement extends Structure implements Temporal,
 				// the simulation load
 				// take a sample of how much each critical resource has in store
 				sampleAllResources(pulse.getMarsTime());
-			}
-
-			remainder = msol % CHECK_WATER_RATION;
-			if (remainder == 1) {
-				// Reset the review to true
-				setReviewWaterRatio(true);
 			}
 
 			// Check every RADIATION_CHECK_FREQ (in millisols)
@@ -1987,7 +1988,7 @@ public class Settlement extends Structure implements Temporal,
 			p.setCoordinates(getCoordinates());
 
 			// Assign a permenant bed reservatinoif possible
-			LivingAccommodations.allocateBed(this, p, true);
+			LivingAccommodation.allocateBed(this, p, true);
 
 			// Update the numCtizens
 			numCitizens = citizens.size();
@@ -2584,6 +2585,9 @@ public class Settlement extends Structure implements Temporal,
 		return newWaterRatio - waterRatioCache;
 	}
 
+	/**
+	 * Sets the water ratio.
+	 */
 	public void setWaterRatio() {
 		waterRatioCache = newWaterRatio;
 	}
@@ -2594,18 +2598,51 @@ public class Settlement extends Structure implements Temporal,
 	 * @param value
 	 */
 	public void setReviewWaterRatio(boolean value) {
-		flag4FutureReviewWaterRatio = value;
+		waterRatioReviewFlag = value;
 	}
 	
 	/**
-	 * Returns if the water ratio can be reviewed.
+	 * Returns if the water ratio has been reviewed.
 	 * 
 	 * @return
 	 */
 	public boolean canReviewWaterRatio() {
-		return flag4FutureReviewWaterRatio;
+		return waterRatioReviewFlag;
 	}
 	
+	/**
+	 * Returns if a resource has been reviewed.
+	 * 
+	 * @return
+	 */
+	public boolean canReviewResource(int i) {
+		return resourceReviewFlag[i];
+	}
+	
+	/**
+	 * Reviews a resource.
+	 * 
+	 * @param i
+	 * @param time
+	 */
+	public void reviewResource(int i, double time) {
+		switch (i) {
+        case 0:
+        	checkResourceDemand("Oxygen", OXYGEN_ID, MIN_OXYGEN_RESERVE, OXYGEN_MAX, time);
+		case 1:
+			checkResourceDemand("Methane", METHANE_ID, MIN_METHANE_RESERVE, METHANE_MAX, time);
+		case 2:
+			checkResourceDemand("Water", WATER_ID, MIN_WATER_RESERVE, WATER_MAX, time);
+		case 3:
+			checkResourceDemand("Hydrogen", HYDROGEN_ID, MIN_HYDROGEN_RESERVE, HYDROGEN_MAX, time);
+		case 4:
+			checkResourceDemand("Nitrogen", NITROGEN_ID, MIN_N2_RESERVE, N2_MAX, time);
+		case 5:	
+			checkResourceDemand("Carbon Dioxide", CO2_ID, MIN_CO2_RESERVE, CO2_MAX, time);
+		default:
+			//
+        }
+	}
 	
 	/**
 	 * Computes the water ratio at the settlement.

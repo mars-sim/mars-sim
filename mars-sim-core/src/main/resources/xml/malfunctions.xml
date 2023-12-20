@@ -579,7 +579,7 @@
 		<repair-inside time="50.0" />
 		<system-list>
 			<system name="rover" />
-			<system name="living accommodations" />
+			<system name="living accommodation" />
 			<system name="farming" />
 			<system name="manufacture" />
 			<system name="cooking" />
@@ -624,7 +624,7 @@
 		<malfunction-probability value="3.0" />
 		<repair-inside time="100.0" />
 		<system-list>
-			<system name="living accommodations" />
+			<system name="living accommodation" />
 			<system name="farming" />
 			<system name="manufacture" />
 			<system name="rover" />
@@ -855,7 +855,7 @@
 		<malfunction-probability value="2.0" />
 		<repair-inside time="80.0" />
 		<system-list>
-			<system name="living accommodations" />
+			<system name="living accommodation" />
 			<system name="farming" />
 			<system name="cooking" />
 		</system-list>
@@ -873,7 +873,7 @@
 		<malfunction-probability value="2.0" />
 		<repair-inside time="80.0" />
 		<system-list>
-			<system name="living accommodations" />
+			<system name="living accommodation" />
 			<system name="farming" />
 		</system-list>
 		<repair-parts-list>
@@ -1025,7 +1025,7 @@
 			<system name="farming" />
 			<system name="vehicle" />
 			<system name="manufacture" />
-			<system name="living accommodations" />
+			<system name="living accommodation" />
 		</system-list>
 		<repair-parts-list>
 			<part name="electrical wire" number="2" repair-probability="30" />

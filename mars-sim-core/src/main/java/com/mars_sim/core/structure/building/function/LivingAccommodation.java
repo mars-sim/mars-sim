@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * LivingAccommodations.java
+ * LivingAccommodation.java
  * @date 2023-11-24
  * @author Scott Davis
  */
@@ -22,15 +22,15 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.tools.util.RandomUtil;
 
 /**
- * The LivingAccommodations class is a building function for a living
- * accommodations.
+ * The LivingAccommodation class is a building function for a living
+ * accommodation.
  */
-public class LivingAccommodations extends Function {
+public class LivingAccommodation extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
-	private static SimLogger logger = SimLogger.getLogger(LivingAccommodations.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(LivingAccommodation.class.getName());
 
 	public static final int MAX_NUM_SOLS = 14;
 
@@ -42,6 +42,11 @@ public class LivingAccommodations extends Function {
 	public static final int TOILET_CHANCE = 50;
 	
 	private static final String WASTE_NAME = "LivingAccomodation::generateWaste";
+	
+	/** Can this be used as a bunk house for guests */
+	private boolean guesthouse;
+	/** The flag to see if a water ration review is due. */
+	private boolean waterRatioReviewFlag = false;
 	
 	/** The average water used per person for washing (showers, washing clothes, hands, dishes, etc) [kg/sol].*/
 	private double washWaterUsage;
@@ -60,8 +65,7 @@ public class LivingAccommodations extends Function {
 	/** The daily grey water generated in this facility [kg/sol]. */
 	private SolSingleMetricDataLogger greyWaterGen;
 
-	/** Can this be used as a bunk house for guests */
-	private boolean guesthouse;
+
 
 	/**
 	 * Constructor.
@@ -70,9 +74,9 @@ public class LivingAccommodations extends Function {
 	 * @param spec Details of the Living details
 	 * @throws BuildingException if error in constructing function.
 	 */
-	public LivingAccommodations(Building building, FunctionSpec spec) {
+	public LivingAccommodation(Building building, FunctionSpec spec) {
 		// Call Function constructor.
-		super(FunctionType.LIVING_ACCOMMODATIONS, spec, building);
+		super(FunctionType.LIVING_ACCOMMODATION, spec, building);
 
 		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
 		
@@ -104,24 +108,24 @@ public class LivingAccommodations extends Function {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.LIVING_ACCOMMODATION).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += building.getLivingAccommodations().getBedCap() * wearModifier;
+				supply += building.getLivingAccommodation().getBedCap() * wearModifier;
 			}
 		}
 
 		double value = demand / (supply + 1D) / 5;
 
-		return value * buildingConfig.getFunctionSpec(buildingName, FunctionType.LIVING_ACCOMMODATIONS).getCapacity();
+		return value * buildingConfig.getFunctionSpec(buildingName, FunctionType.LIVING_ACCOMMODATION).getCapacity();
 	}
 
 	/**
-	 * Gets the max number of regular beds in the living accommodations.
+	 * Gets the max number of regular beds in the living accommodation.
 	 *
 	 * @return
 	 */
@@ -188,16 +192,32 @@ public class LivingAccommodations extends Function {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
-			if (pulse.getMarsTime().getMillisolInt() % TOILET_CHANCE == 1) {
-				// Calculate water level
-				calculateWaterLevel(pulse.getElapsed());
-				// Use water and produce waste water
-				generateWaste(pulse.getElapsed());
+			if (pulse.isNewHalfSol()) {
+				// Reset the water ratio flag to allow for next review
+				setReviewWaterRatio(true);
 			}
 		}
 		return valid;
 	}
 
+	/**
+	 * Sets the flag for reviewing water ratio.
+	 * 
+	 * @param value
+	 */
+	public void setReviewWaterRatio(boolean value) {
+		waterRatioReviewFlag = value;
+	}
+	
+	/**
+	 * Returns if the water ratio has been reviewed.
+	 * 
+	 * @return
+	 */
+	public boolean canReviewWaterRatio() {
+		return waterRatioReviewFlag;
+	}
+	
 	/**
 	 * Adds to the daily water usage.
 	 *
@@ -241,7 +261,7 @@ public class LivingAccommodations extends Function {
 	 *
 	 * @param time amount of time passing (millisols)
 	 */
-	private void generateWaste(double time) {
+	public void generateWaste(double time) {
 		
 		// Remove wash water from settlement.
 		if (estimatedWaterUsed > MIN) {
@@ -330,15 +350,15 @@ public class LivingAccommodations extends Function {
 		}
 
 		var blgManager = settlement.getBuildingManager();
-		Set<Building> dorms = blgManager.getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
+		Set<Building> dorms = blgManager.getBuildingSet(FunctionType.LIVING_ACCOMMODATION);
 		if (dorms.isEmpty()) {
 			return null;
 		}
 
-		LivingAccommodations guestHouse = null;
+		LivingAccommodation guestHouse = null;
 		for(Building b : dorms) {
 			// If looking for permanent then find an unassigned ActivitySpot
-			LivingAccommodations lvi = b.getLivingAccommodations();
+			LivingAccommodation lvi = b.getLivingAccommodation();
 			if ((lvi.getNumEmptyActivitySpots() > 0)
 				&& (permanent || (guest && lvi.isGuestHouse()))) {
 				return lvi.assignBed(p, permanent);
@@ -355,7 +375,7 @@ public class LivingAccommodations extends Function {
 				logger.warning(p, "No guest bunk provided");
 				return null;
 			}
-			guestHouse = RandomUtil.getARandSet(dorms).getLivingAccommodations();
+			guestHouse = RandomUtil.getARandSet(dorms).getLivingAccommodation();
 		}
 
 		// Looking for a citizen with no capacity

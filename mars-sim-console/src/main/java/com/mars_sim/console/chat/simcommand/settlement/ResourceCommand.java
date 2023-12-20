@@ -22,7 +22,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.WaterUseType;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.LivingAccommodations;
+import com.mars_sim.core.structure.building.function.LivingAccommodation;
 import com.mars_sim.core.structure.building.function.ResourceProcess;
 import com.mars_sim.core.structure.building.function.ResourceProcessing;
 import com.mars_sim.core.structure.building.function.farming.Farming;
@@ -190,10 +190,10 @@ public class ResourceCommand extends AbstractSettlementCommand {
 
 		// Prints living usage
 		List<Building> quarters = settlement.getBuildingManager()
-				.getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
+				.getBuildings(FunctionType.LIVING_ACCOMMODATION);
 		double livingUsage = 0;
 		for (Building b : quarters) {
-			LivingAccommodations la = b.getLivingAccommodations();
+			LivingAccommodation la = b.getLivingAccommodation();
 			livingUsage += la.getDailyAverageWaterUsage();
 		}		
 		response.appendTableRow("Accommodation", Math.round(livingUsage * 100.0) / 100.0);

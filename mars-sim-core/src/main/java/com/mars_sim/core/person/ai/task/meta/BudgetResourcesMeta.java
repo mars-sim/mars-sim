@@ -20,6 +20,7 @@ import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.tools.Msg;
 
 /**
@@ -50,8 +51,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
     private static final String NAME = Msg.getString(
             "Task.description.budgetResources"); //$NON-NLS-1$
         
-    private static final double BASE_SCORE = 100.0;
-//	private static final double MAX_SCORE = 300.0;
+    private static final double BASE_SCORE = 50.0;
 
     public BudgetResourcesMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -105,23 +105,23 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask> tasks = new ArrayList<>();
 
-		boolean canReview = settlement.canReviewWaterRatio();
-		if (!canReview)
-			return tasks;
-			
-		boolean changed = settlement.isWaterRatioChanged();
-		if (!changed) {
-			// Set the flag to false for future review
-			settlement.setReviewWaterRatio(false);
-			return tasks;
-		}
-		
-		int levelDiff = settlement.getWaterRatioDiff();
-		if (levelDiff > 0) {
-			RatingScore score = new RatingScore(BASE_SCORE);               	
-	
-			score.addBase("water.ratio", levelDiff);
-	
+//		boolean canReview = settlement.canReviewWaterRatio();
+//		if (!canReview)
+//			return tasks;
+//			
+//		boolean changed = settlement.isWaterRatioChanged();
+//		if (!changed) {
+//			// Set the flag to false for future review
+//			settlement.setReviewWaterRatio(false);
+//			return tasks;
+//		}
+//		
+//		int levelDiff = settlement.getWaterRatioDiff();
+//		
+		int num = BuildingManager.getNumAccommodationNeedingReview(settlement);
+
+		if (num > 0) {
+			RatingScore score = new RatingScore("wasteWater", num * BASE_SCORE);             
 			tasks.add(new BudgetResourcesJob(this, score));
 		}
 		
