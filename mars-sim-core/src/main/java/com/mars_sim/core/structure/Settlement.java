@@ -236,7 +236,7 @@ public class Settlement extends Structure implements Temporal,
 	/** The water ratio of the settlement. The higher the more urgent for water resource. */
 	private int waterRatioCache = 1;
 	/** The new water ratio of the settlement. */
-	private int newWaterRatio = -1;
+	private int newWaterRatio = 0;
 	
 	/** The number of people at the start of the settlement. */
 	private int initialPopulation;
