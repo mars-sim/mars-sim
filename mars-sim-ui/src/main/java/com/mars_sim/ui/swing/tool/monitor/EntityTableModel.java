@@ -103,19 +103,29 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
     protected boolean addEntity(T newEntity) {
         boolean add = !entities.contains(newEntity);
         if (add) {
-            entities.add(newEntity);
-
-            if (rowCache != null) {
-                // Add the data row now
-                rowCache.put(newEntity, new HashMap<>());
-            }
-
             if (fireEnabled) {
-                int idx = entities.indexOf(newEntity);
-                fireTableRowsInserted(idx, idx);
+                // Do async
+                SwingUtilities.invokeLater(() ->addRow(newEntity));
+            }
+            else {
+                addRow(newEntity);
             }
         }
         return add;
+    }
+
+    private void addRow(T newEntity) {
+        entities.add(newEntity);
+
+        if (rowCache != null) {
+            // Add the data row now
+            rowCache.put(newEntity, new HashMap<>());
+        }
+
+        if (fireEnabled) {
+            int idx = entities.indexOf(newEntity);
+            fireTableRowsInserted(idx, idx);
+        }
     }
 
     /**
@@ -123,7 +133,20 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
      */
     protected void removeEntity(T oldEntity) {
         int idx = entities.indexOf(oldEntity);
+        if (idx < 0) {
+            return;
+        }
 
+        if (fireEnabled) {
+            // Do async
+            SwingUtilities.invokeLater(() -> removeRow(oldEntity, idx));
+        }
+        else {
+            removeRow(oldEntity, idx);
+        }
+    }
+
+    private void removeRow(T oldEntity, int idx) {
         entities.remove(oldEntity);
         if (rowCache != null) {
             rowCache.remove(oldEntity);
