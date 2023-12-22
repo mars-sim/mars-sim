@@ -15,6 +15,7 @@ import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.Weather;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.PersonConfig;
+import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -25,6 +26,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.mapdata.location.Coordinates;
+import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The Heating class is a building function for regulating temperature in a settlement.
@@ -34,9 +36,7 @@ public class Heating implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(Heating.class.getName());
-	
-//	private static final FunctionType FUNCTION = FunctionType.THERMAL_GENERATION;
+	// May add back private static SimLogger logger = SimLogger.getLogger(Heating.class.getName())
 
 	// Heat gain and heat loss calculation
 	// Source 1: Engineering concepts for Inflatable Mars Surface Greenhouses
@@ -906,9 +906,38 @@ public class Heating implements Serializable {
 	 * @param deltaTime amount of time passing (in millisols)
 	 */
 	public void timePassing(ClockPulse pulse) {
-		cycleThermalControl(pulse.getElapsed());
+		moderateTime(pulse.getElapsed());
 	}
 
+	/**
+	 * Moderate the time for heating.
+	 * 
+	 * @param time time in millisols
+	 * @throws Exception if error during action.
+	 */
+	private void moderateTime(double time) {
+		double remainingTime = time;
+		double pulseTime = Task.getStandardPulseTime();
+//		logger.info("remainingTime: " + remainingTime + "  pulseTime: " + pulseTime);
+		while (remainingTime > 0 && pulseTime > 0) {
+			// Vary the amount of time to be injected
+			double rand = RandomUtil.getRandomDouble(.8, 1);
+			double deltaTime = pulseTime * rand;
+			if (remainingTime > deltaTime) {
+				// Call cycleThermalControl and consume the pulse time.
+				cycleThermalControl(deltaTime);
+				// Reduce the total time by the pulse time
+				remainingTime -= deltaTime;
+			}
+			else {
+				// Call cycleThermalControl and consume the pulse time.
+				cycleThermalControl(remainingTime);
+				// Reduce the total time by the pulse time
+				remainingTime = 0;
+			}
+		}
+	}
+	
 	/**
 	 * Notifies thermal control subsystem for the temperature change and power up and power down
 	 * via 3 steps (this method houses the main thermal control codes).

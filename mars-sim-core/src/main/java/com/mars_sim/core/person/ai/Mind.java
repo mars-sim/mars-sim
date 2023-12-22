@@ -40,11 +40,14 @@ public class Mind implements Serializable, Temporal {
 
 	private static final int MAX_EXECUTE = 100; // Maximum number of iterations of a Task per pulse
 	private static final int MAX_ZERO_EXECUTE = 100; // Maximum number of executeTask action that consume no time
-	private static final int STRESS_UPDATE_CYCLE = 300;
-
+	private static final int RELATION_UPDATE_CYCLE = 300;
+	private static final int EMOTION_UPDATE_CYCLE = 300;
 	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;
 	private static final double SMALL_AMOUNT_OF_TIME = 0.001;
 
+	private final int relationUpdate = RandomUtil.getRandomInt(RELATION_UPDATE_CYCLE);
+	private final int emotionUpdate = RandomUtil.getRandomInt(EMOTION_UPDATE_CYCLE);
+	
 	// Data members
 	/** Is the job locked so another can't be chosen? */
 	private boolean jobLock;
@@ -108,22 +111,28 @@ public class Mind implements Serializable, Temporal {
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
+		double time = pulse.getElapsed();
 		if (taskManager != null) {
 			// Decides what tasks to inject time
 			if (pulse.getElapsed() > 0)
-				decideTask(pulse.getElapsed());
+				moderateTime(time);
 		}
 
-		int msol = pulse.getMarsTime().getMillisolInt();
-		if (msol % STRESS_UPDATE_CYCLE == 0) {
+		if (pulse.isNewMSol()) {
 			// Update stress based on personality.
-			mbti.updateStress(pulse.getElapsed());
+			mbti.updateStress(time);
+		}
+		
+		int msol = pulse.getMarsTime().getMillisolInt();
+		if (msol % RELATION_UPDATE_CYCLE == relationUpdate) {
+			// Update relationships.
+			RelationshipUtil.timePassing(person, time);
+		}
+		if (msol % EMOTION_UPDATE_CYCLE == emotionUpdate) {
 			// Update emotion with the personality vector
 			emotionMgr.updateEmotion(trait.getPersonalityVector());
-			// Update relationships.
-			RelationshipUtil.timePassing(person, pulse.getElapsed());
 		}
-
+		
 		// Note: for now, a Mayor/Manager cannot switch job
 		if (jobLock && job != JobType.POLITICIAN) {
 			// Check for the passing of each day
@@ -154,12 +163,12 @@ public class Mind implements Serializable, Temporal {
 	}
 
 	/**
-	 * Decides what tasks to take for a given amount of time.
+	 * Moderates the time for decisions.
 	 * 
-	 * @param time time in millisols
+	 * @param time in millisols
 	 * @throws Exception if error during action.
 	 */
-	private void decideTask(double time) {
+	private void moderateTime(double time) {
 		double remainingTime = time;
 		double pulseTime = Task.getStandardPulseTime();
 		while (remainingTime > 0 && pulseTime > 0) {

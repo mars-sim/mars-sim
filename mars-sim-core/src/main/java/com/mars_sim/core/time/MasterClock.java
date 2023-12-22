@@ -704,9 +704,13 @@ public class MasterClock implements Serializable {
 			
 		// Update the pulse time for use in tasks
 		double oldPulse = Task.getStandardPulseTime();
-		double newPulse = Math.max(Math.min(nextPulse, maxMilliSolPerPulse), minMilliSolPerPulse);
+		double newPulse = Math.max(.25 * Math.min(nextPulse, maxMilliSolPerPulse), minMilliSolPerPulse);
+		if (newPulse > MAX_PULSE_WIDTH) {
+			newPulse = MAX_PULSE_WIDTH;
+		}
 		if (newPulse != oldPulse) {
 			Task.setStandardPulseTime(newPulse);
+//			logger.info("StandardPulseTime: " + newPulse);
 		}
 
 		// Returns the deviation
@@ -952,13 +956,13 @@ public class MasterClock implements Serializable {
 	public synchronized void decreaseSpeed() {
 		int tr = desiredTR;
 		if (tr > HIGH_TIME_RATIO) {
-			tr = (int)(tr / 1.25);
+			tr = (int)Math.round(tr / 1.25);
 		}
 		else if (tr > MID_TIME_RATIO) {
-			tr = (int)(tr / 1.5);
+			tr = (int)Math.round(tr / 1.5);
 		}
 		else if (tr > 1) {
-			tr = (int)(tr / 2);
+			tr = (int)Math.round(tr / 2);
 		}
 		else {
 			return;
