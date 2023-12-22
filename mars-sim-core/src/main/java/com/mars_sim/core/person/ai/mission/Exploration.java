@@ -595,7 +595,7 @@ public class Exploration extends EVAMission
 		if (count == 0)
 			return 0;
 
-		return siteValue / count /;
+		return siteValue / count;
 	}
 
 	
