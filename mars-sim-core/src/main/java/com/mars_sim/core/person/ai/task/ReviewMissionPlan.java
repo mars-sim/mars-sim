@@ -268,8 +268,9 @@ public class ReviewMissionPlan extends Task {
 		
 		// 6. Site Value
 		double siteValue = 0;
-		if (m instanceof SiteMission) {
-			siteValue = ((SiteMission)m).getTotalSiteScore(reviewerSettlement);
+		if (m instanceof SiteMission sm) {
+			// The site value is divided by the distance proposed
+			siteValue = sm.getTotalSiteScore(reviewerSettlement)/ ((VehicleMission)m).getDistanceProposed();
 		}
 
 		// 7. proposed route distance (note that a negative score represents a penalty)
@@ -310,8 +311,7 @@ public class ReviewMissionPlan extends Task {
 
 		StringBuilder msg = new StringBuilder();
 		msg.append("Grading ").append(m.getName());
-		msg.append(" Plan -");
-		msg.append(" Rating: ").append(rating); 
+		msg.append(" - Rating: ").append(rating); 
 		msg.append(", Rels: ").append(relation); 
 		msg.append(", Quals: ").append(qual); 
 		msg.append(", Obj: ").append(obj);
@@ -391,7 +391,8 @@ public class ReviewMissionPlan extends Task {
 		// 6. Site Value
 		double siteValue = 0;
 		if (m instanceof SiteMission sm) {
-			siteValue = sm.getTotalSiteScore(reviewerSettlement);
+			// The site value is divided by the distance proposed
+			siteValue = sm.getTotalSiteScore(reviewerSettlement)/ ((VehicleMission)m).getDistanceProposed();
 		}
 
 		// 9. reviewer role weight
@@ -403,9 +404,8 @@ public class ReviewMissionPlan extends Task {
 		mp.scoreMissionPlan(score, person);
 
 		StringBuilder msg = new StringBuilder();
-		msg.append("Grading ").append(m.getName());
-		msg.append(" Plan -");
-		msg.append(" Rels: ").append(relation); 
+		msg.append("Reviewing ").append(m.getName());
+		msg.append(" - Rels: ").append(relation); 
 		msg.append(", Site: ").append(Math.round(siteValue*10.0)/10.0); 							
 		msg.append(", Review: ").append(reviewerRole); 
 		msg.append("; Subtotal: ").append(score);

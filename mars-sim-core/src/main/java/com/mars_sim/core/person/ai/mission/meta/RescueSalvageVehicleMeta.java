@@ -86,7 +86,7 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
             }
             
 			missionProbability.addModifier(SETTLEMENT_POPULATION,
-                            getSettlementPopModifier(settlement, 4));
+                            getSettlementPopModifier(settlement, 2));
 
            	RoleType roleType = person.getRole().getType();
             double roleModifier = switch(roleType) {

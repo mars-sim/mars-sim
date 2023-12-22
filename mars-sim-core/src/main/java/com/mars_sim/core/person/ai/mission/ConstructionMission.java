@@ -88,7 +88,6 @@ public class ConstructionMission extends AbstractMission
 	
 	private static final int MAX_PEOPLE = 10;
 
-	public final static int FIRST_AVAILABLE_SOL = 2;
 
 	private static final int DIG_REGOLITH_PERCENT_PROBABILITY = 10;
 	

@@ -25,10 +25,12 @@ import com.mars_sim.core.vehicle.Rover;
  */
 public class ExplorationMeta extends AbstractMetaMission {
 
-	/** Mission name */
-	private static final double VALUE = 20D;
-
 	private static final int MAX = 200;
+	
+	/** Starting sol for this mission to commence. */
+	public static final int MIN_STARTING_SOL = 4;
+
+	private static final double VALUE = 20D;
 
 	ExplorationMeta() {
 		super(MissionType.EXPLORATION, 
@@ -44,7 +46,10 @@ public class ExplorationMeta extends AbstractMetaMission {
 	public RatingScore getProbability(Person person) {
 
 		RatingScore missionProbability = RatingScore.ZERO_RATING;
-
+    	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
+    		return RatingScore.ZERO_RATING;
+    	}
+    	
 		Settlement settlement = person.getSettlement();
 		
 		if (settlement != null) {

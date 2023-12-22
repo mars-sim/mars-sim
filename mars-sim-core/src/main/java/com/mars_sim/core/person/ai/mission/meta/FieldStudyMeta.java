@@ -39,6 +39,12 @@ public class FieldStudyMeta extends AbstractMetaMission {
 	@Override
 	public RatingScore getProbability(Person person) {
 
+		// Check if mission is possible for person based on their circumstance.
+		Settlement settlement = person.getAssociatedSettlement();
+		
+		if (settlement.isFirstSol())
+			return RatingScore.ZERO_RATING;
+		
 		RoleType roleType = person.getRole().getType();
 		JobType jobType = person.getMind().getJob();
 
@@ -48,8 +54,6 @@ public class FieldStudyMeta extends AbstractMetaMission {
 					&& !PREFERRED_ROLES.contains(roleType))) {
 			return RatingScore.ZERO_RATING;
 		}
-
-		Settlement settlement = person.getSettlement();
 
 		RatingScore missionProbability = new RatingScore(STUDY_BASE, 1D);
 			

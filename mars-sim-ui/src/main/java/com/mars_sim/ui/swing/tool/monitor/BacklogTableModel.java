@@ -25,6 +25,7 @@ import com.mars_sim.tools.Msg;
  * This class models how SettlementTasks are organized and displayed
  * within the Monitor Window for a settlement.
  */
+@SuppressWarnings("serial")
 public class BacklogTableModel extends AbstractMonitorModel
 					implements UnitListener {
 
@@ -76,7 +77,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 	}
 
 	/**
-	 * The Object 
+	 * Gets the Object.
 	 */
 	@Override
 	public Object getObject(int row) {
@@ -201,7 +202,8 @@ public class BacklogTableModel extends AbstractMonitorModel
     }
 
 	/**
-	 * Get the value of a cell of a SettlementTask
+	 * Gets the value of a cell of a SettlementTask.
+	 * 
      * @param rowIndex Row index of cell
      * @param columnIndex Column index of cell
      * @return Object value of the cell

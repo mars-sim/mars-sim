@@ -764,7 +764,7 @@ public class Weather implements Serializable, Temporal {
 			return;
 		}
 		
-		if (dailyWeatherList.isEmpty())
+		if (dailyWeatherList == null || dailyWeatherList.isEmpty())
 			return;
 
 		int sunrise = 0;

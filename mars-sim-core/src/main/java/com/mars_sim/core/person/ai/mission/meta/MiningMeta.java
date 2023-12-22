@@ -24,7 +24,9 @@ import com.mars_sim.core.vehicle.Rover;
  * A meta mission for the Mining mission.
  */
 public class MiningMeta extends AbstractMetaMission {
-
+	
+	/** Starting sol for this mission to commence. */
+	public static final int MIN_STARTING_SOL = 4;
 
     MiningMeta() {
     	super(MissionType.MINING, Set.of(JobType.AREOLOGIST, JobType.ENGINEER));
@@ -39,11 +41,17 @@ public class MiningMeta extends AbstractMetaMission {
     public RatingScore getProbability(Person person) {
 
         RatingScore missionProbability = RatingScore.ZERO_RATING;
-
+    	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
+    		return RatingScore.ZERO_RATING;
+    	}
+    	
         if (person.isInSettlement()) {
 
         	Settlement settlement = person.getSettlement();
 
+    		if (settlement.isFirstSol())
+    			return missionProbability;
+    		
             RoleType roleType = person.getRole().getType();
 
  			if (RoleType.CHIEF_OF_SCIENCE == roleType
@@ -72,7 +80,7 @@ public class MiningMeta extends AbstractMetaMission {
 
 				missionProbability = new RatingScore(1D);
 				missionProbability.addModifier(SETTLEMENT_POPULATION, 
-									getSettlementPopModifier(settlement, 8));
+									getSettlementPopModifier(settlement, 4));
 	
 				// Get available rover.
 				Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);

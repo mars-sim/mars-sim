@@ -30,7 +30,9 @@ public class TradeMeta extends AbstractMetaMission {
 
 	/** default logger. */
 //	private static SimLogger logger = SimLogger.getLogger(TradeMeta.class.getName());
-
+	
+	/** Starting sol for this mission to commence. */
+	public static final int MIN_STARTING_SOL = 4;
 
 	TradeMeta() {
 		super(MissionType.TRADE, 
@@ -49,8 +51,9 @@ public class TradeMeta extends AbstractMetaMission {
 
 		Settlement settlement = person.getAssociatedSettlement();
 		
-		if (settlement.isFirstSol())
-			return missionProbability;
+    	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
+    		return missionProbability;
+    	}
 		
 		// Check if person is in a settlement.
 		if (settlement != null) {

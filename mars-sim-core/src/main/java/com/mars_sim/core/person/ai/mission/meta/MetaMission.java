@@ -18,7 +18,7 @@ import com.mars_sim.core.robot.Robot;
  */
 public interface MetaMission {
 
-    public static final double LIMIT = 200D;
+    public static final double LIMIT = 100D;
 	
 	/**
 	 * Type of Mission created by this Meta object

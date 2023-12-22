@@ -20,7 +20,10 @@ import com.mars_sim.tools.Msg;
  * of modifiers that are applied to create a final score.
  */
 public class RatingScore implements Serializable {
-    /**
+
+	private static final long serialVersionUID = 1L;
+
+	/**
      * Prefix to the key in the message bundle
      */
     private static final String RATING_KEY = "RatingScore.";
@@ -31,7 +34,9 @@ public class RatingScore implements Serializable {
      * An instance that is a zero score that is immutable
      */
     public static final RatingScore ZERO_RATING = new RatingScore(0) {
-        @Override
+        private static final long serialVersionUID = 1L;
+
+		@Override
         public void addBase(String name, double base) {
             throw new UnsupportedOperationException("Cannot change base of zero rating");
         }

@@ -32,6 +32,8 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
       
 	private static final int BASE_SCORE = 200;
 	
+	public static final int FIRST_AVAILABLE_SOL = 2;
+	
     ConstructionMissionMeta() {
     	super(MissionType.CONSTRUCTION, 
 				Set.of(JobType.ARCHITECT, JobType.ENGINEER));
@@ -46,7 +48,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
     public RatingScore getProbability(Person person) {
          
         // No construction until after the x sols of the simulation.
-        if ((getMarsTime().getMissionSol() < ConstructionMission.FIRST_AVAILABLE_SOL)
+        if ((getMarsTime().getMissionSol() < FIRST_AVAILABLE_SOL)
 			|| !person.isInSettlement()) {
         	return RatingScore.ZERO_RATING;
         }
@@ -57,6 +59,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 		
 		RatingScore missionProbability = RatingScore.ZERO_RATING;
 		if (person.getMind().getJob() == JobType.ARCHITECT
+				|| person.getMind().getJob() == JobType.ENGINEER
 				|| RoleType.CHIEF_OF_ENGINEERING == roleType
 				|| RoleType.ENGINEERING_SPECIALIST == roleType
 				|| RoleType.COMMANDER == roleType
@@ -105,7 +108,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 			
 			missionProbability = new RatingScore(BASE_SCORE);
 			missionProbability.addModifier(SETTLEMENT_POPULATION,
-								getSettlementPopModifier(settlement, 8)/2);
+								getSettlementPopModifier(settlement, 4)*2);
 
 			double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);
 			double existingSiteProfit = values.getAllConstructionSitesProfit(constructionSkill);
@@ -141,7 +144,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
      */
     private double getProbability(Settlement settlement) {
 
-        double result = 1D;
+        double result = 10D;
         
         // Consider the num of construction sites
         int numSites = settlement.getConstructionManager().getConstructionSites().size();

@@ -23,10 +23,10 @@ import com.mars_sim.core.structure.Settlement;
 public class CollectIceMeta extends AbstractMetaMission {
 
 
-	private static final double VALUE = 200D;
+	private static final int VALUE = 1000;
 
-	/** starting sol for this mission to commence. */
-	public final static int MIN_STARTING_SOL = 3;
+	/** Starting sol for this mission to commence. */
+	public static final int MIN_STARTING_SOL = 4;
 	
 	CollectIceMeta() {
 		super(MissionType.COLLECT_ICE, Set.of(JobType.CHEMIST, JobType.BOTANIST, JobType.CHEF));
@@ -41,7 +41,10 @@ public class CollectIceMeta extends AbstractMetaMission {
 	public RatingScore getProbability(Person person) {
 
 		RatingScore missionProbability = RatingScore.ZERO_RATING;
-
+    	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
+    		return RatingScore.ZERO_RATING;
+    	}
+    	
 		if (person.isInSettlement()) {
 
 			Settlement settlement = person.getSettlement();
@@ -52,9 +55,9 @@ public class CollectIceMeta extends AbstractMetaMission {
 					|| person.getMind().getJob() == JobType.CHEMIST
 					|| person.getMind().getJob() == JobType.BOTANIST
 					|| person.getMind().getJob() == JobType.CHEF
-					|| RoleType.MISSION_SPECIALIST == roleType
 					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
-					|| RoleType.CHIEF_OF_AGRICULTURE == roleType
+					|| RoleType.CHIEF_OF_SUPPLY_N_RESOURCES == roleType
+					|| RoleType.MISSION_SPECIALIST == roleType
 					|| RoleType.RESOURCE_SPECIALIST == roleType
 					|| RoleType.COMMANDER == roleType
 					|| RoleType.SUB_COMMANDER == roleType
@@ -65,13 +68,13 @@ public class CollectIceMeta extends AbstractMetaMission {
 				if (missionProbability.getScore() == 0) {
 					return missionProbability;
 				}
-	    		missionProbability.addModifier(MINERALS, (settlement.getIceProbabilityValue() / VALUE));
+	    		missionProbability.addModifier(MINERALS, settlement.getIceProbabilityValue() / VALUE);
 
 				// Job modifier.
 	    		missionProbability.addModifier(LEADER, getLeaderSuitability(person));
 
-				// If this town has a tourist objective, divided by bonus
-				missionProbability.addModifier(GOODS, 1D / settlement.getGoodsManager().getTourismFactor());
+				// If this town has a crop farm objective, divided by bonus
+				missionProbability.addModifier(GOODS, Math.min(1, settlement.getGoodsManager().getCropFarmFactor()/2));
 
 				// if introvert, score  0 to  50 --> -2 to 0
 				// if extrovert, score 50 to 100 -->  0 to 2

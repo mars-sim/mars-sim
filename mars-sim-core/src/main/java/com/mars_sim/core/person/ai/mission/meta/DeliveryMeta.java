@@ -29,7 +29,9 @@ public class DeliveryMeta extends AbstractMetaMission {
 	private static SimLogger logger = SimLogger.getLogger(DeliveryMeta.class.getName());
     
     private static final int VALUE = 1;
-    
+	/** Starting sol for this mission to commence. */
+	public static final int MIN_STARTING_SOL = 4;
+	
     private static final double DIVISOR = 10;
 
 
@@ -51,8 +53,9 @@ public class DeliveryMeta extends AbstractMetaMission {
 		// Check if mission is possible for person based on their circumstance.
 		Settlement settlement = person.getAssociatedSettlement();
 
-		if (settlement.isFirstSol())
-			return missionProbability;
+    	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
+    		return missionProbability;
+    	}
 		
 		RoleType roleType = person.getRole().getType();
 		if (RoleType.CHIEF_OF_SUPPLY_N_RESOURCES == roleType
@@ -78,9 +81,7 @@ public class DeliveryMeta extends AbstractMetaMission {
 		// Reduce probability if introvert
 		int extrovert = person.getExtrovertmodifier();
 		missionProbability.addModifier(PERSON_EXTROVERT, (1D + extrovert/2D));
-		
 		missionProbability.applyRange(0, LIMIT);
-
 		return missionProbability;
 	}
 

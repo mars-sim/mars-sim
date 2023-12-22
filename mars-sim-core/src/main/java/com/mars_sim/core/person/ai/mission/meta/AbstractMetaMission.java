@@ -126,27 +126,26 @@ public class AbstractMetaMission implements MetaMission {
 	 * Gets the score modifier for a Settlement based on its population for this type of mission.
 	 * 
 	 * @param target The settlement to check
-	 * @param capacity The number of person needed for capacity calcs
+	 * @param modifier
 	 */
-	protected double getSettlementPopModifier(Settlement target, int capacity) {
+	protected double getSettlementPopModifier(Settlement target, int modifier) {
 		int numEmbarking = MissionUtil.numEmbarkingMissions(target);
 	    int numThisMission = missionMgr.numParticularMissions(type, target);
 		int pop = target.getNumCitizens();
-				
-		// Check for # of embarking missions.
-	    if (Math.max(1, pop / capacity) < numEmbarking) {
+		double value = Math.max(1.0, 1.0 * pop / modifier);	
+		
+	    if (numEmbarking > value) {
 	    	return 0;
 	    }
 
-		// 
-	    if (numThisMission > Math.max(1, pop / capacity)) {
+	    if (numThisMission > value) {
 	    	return 0;
 	    }
 		
-	    int f1 = numEmbarking + 1;
-	    int f2 = numThisMission + 1;
+	    int f1 = 2 * numEmbarking;
+	    int f2 = 3 * numThisMission;
 		
-	    return (double)Math.max(1, pop / capacity) / f1 / f2;
+	    return value / f1 / f2;
 	}
 	
     public static void initializeInstances(MasterClock mc, MissionManager m) {
