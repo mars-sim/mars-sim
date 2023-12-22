@@ -1142,22 +1142,33 @@
 		of millions of pixel sensors, each of which includes a photodetector.</description>
 	</part>	
 		
-<!-- Future:
-	1. work glove
+	<part name="Power Panel" type="electrical" mass="5">
 		<maintenance-entity-list>
-			<entity name="manufacture" probability="1" max-number="5" />
+			<entity name="power generation" probability="5" max-number="1" />
+			<entity name="power storage" probability="5" max-number="1" />
 		</maintenance-entity-list>
-	2.<part name="knife" mass=".5">
+	</part>
+	
+	<part name="Surge Protector" type="electrical" mass="1">
+		<maintenance-entity-list>
+			<entity name="building" probability="5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
+	<part name="Metal Oxide Varistor" type="electronic" mass=".2" />				
+	
+<!-- Future:
+	<part name="knife" mass=".5">
 	- utility knife
 	- kitchen knives set
 		<maintenance-entity-list>
 			<entity name="cooking" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	3. water heater 12kW
-	4. ceramic tile.
-	2. water heater
-	3. laser headlights
+	water heater 12kW
+	ceramic tile.
+	water heater
+	laser headlights
 
 
 -->

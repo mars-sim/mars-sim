@@ -69,7 +69,7 @@ public class WindPowerSource extends PowerSource {
 	
 	@Override
 	public double getAveragePower(Settlement settlement) {
-		return getMaxPower() * 0.707;
+		return getMaxPower();
 	}
 
 	@Override

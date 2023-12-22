@@ -18,6 +18,8 @@ extends PowerSource {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final double MAINTENANCE_FACTOR = .5D;
+	
 	/**
 	 * Constructor.
 	 * @param maxPower the max power generated (kW).
@@ -29,20 +31,16 @@ extends PowerSource {
 
 	@Override
 	public double getCurrentPower(Building building) {
-		double areothermalHeat = surface.getAreothermalPotential(building.getSettlement().getCoordinates());
-
-		return getMaxPower() * (areothermalHeat / 100D);
+		return surface.getAreothermalPotential(building.getSettlement().getCoordinates());
 	}
 
 	@Override
 	public double getAveragePower(Settlement settlement) {
-		double areothermalHeat =surface.getAreothermalPotential(settlement.getCoordinates());
-
-		return getMaxPower() * (areothermalHeat / 100D);
+		return surface.getAreothermalPotential(settlement.getCoordinates());
 	}
 
 	@Override
 	public double getMaintenanceTime() {
-	    return getMaxPower();
+	    return getMaxPower() * MAINTENANCE_FACTOR;
 	}
 }

@@ -57,7 +57,12 @@ public class PartGood extends Good {
 	private static final String BOARD = "board";
 	private static final String MICROCONTROLLER = "microcontroller";
 	private static final String WAFER = "semiconductor wafer";
-
+	private static final String WIRE = "wire";
+	private static final String BATTERY = "battery";
+		
+	private static final int VEHICLE_PART_COST = 3;
+	private static final int EVA_PARTS_VALUE = 20;
+	
 	private static final double DRILL_DEMAND  = .5;
 	private static final double BOTTLE_DEMAND = .02;
 	private static final double FIBERGLASS_DEMAND = .0002;
@@ -78,15 +83,9 @@ public class PartGood extends Good {
 	private static final double CONSTRUCTION_DEMAND = 2;
 	private static final double GLASS_SHEET_DEMAND = .1;
 	private static final double GLASS_TUBE_DEMAND  = 8;
-	
 	private static final double ITEM_DEMAND = 1;
-	
 	private static final double PARTS_MAINTENANCE_VALUE = 1000;
-	
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
-
-	private static final int VEHICLE_PART_COST = 3;
-	private static final int EVA_PARTS_VALUE = 20;
 	private static final double ATTACHMENT_PARTS_DEMAND = 20;
 
 	// Cost modifiers
@@ -100,10 +99,8 @@ public class PartGood extends Good {
 	private static final double INSTRUMENT_COST = 1;
 	private static final double WIRE_COST = .005;
 	private static final double ELECTRONIC_COST = .5;
-	
     private static final double INITIAL_PART_DEMAND = 30;
 	private static final double INITIAL_PART_SUPPLY = 1;
-
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 
 	private static Set<Integer> kithenWare = ItemResourceUtil.convertNameArray2ResourceIDs(new String [] {
@@ -163,12 +160,12 @@ public class PartGood extends Good {
 	private static double calculateCostModifier(Part part) {
         String name = part.getName().toLowerCase();
         
-        if (name.contains("wire"))
+        if (name.contains(WIRE))
             return WIRE_COST;
         
         GoodType type = part.getGoodType();
         
-        if (name.contains("battery"))
+        if (name.contains(BATTERY))
             return BATTERY_COST;    
         if (type == GoodType.VEHICLE)
             return VEHICLE_PART_COST;     
@@ -270,7 +267,6 @@ public class PartGood extends Good {
 			+ geFuelCellDemand(owner)
 			// Calculate maintenance part demand.
 			+ getMaintenancePartsDemand(settlement, part);
-
 		
 		projected = projected
 			// Flatten raw part demand.
@@ -420,7 +416,7 @@ public class PartGood extends Good {
 				return .005;
 			else if (name.contains("steel wire"))
 				return 10;
-			else if (name.contains("wire"))
+			else if (name.contains(WIRE))
 				return .05;
 			return ELECTRICAL_DEMAND;
 		}
@@ -450,8 +446,6 @@ public class PartGood extends Good {
 
 		if (type == GoodType.EVA)
 			return EVA_PART_DEMAND;
-		
-
 
 		return 1;
 	}

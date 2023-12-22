@@ -45,6 +45,7 @@ public class SolarPowerSource extends PowerSource {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param maxPower the maximum generated power (kW).
 	 */
 	public SolarPowerSource(double maxPower) {
@@ -55,6 +56,7 @@ public class SolarPowerSource extends PowerSource {
 
 	/**
 	 * Gets the current power produced by the power source.
+	 * 
 	 * @param building the building this power source is for.
 	 * @return power (kW)
 	 */
@@ -70,7 +72,7 @@ public class SolarPowerSource extends PowerSource {
 
 	@Override
 	public double getAveragePower(Settlement settlement) {
-		return getMaxPower() * 0.707;
+		return getMaxPower();
 	}
 
 	@Override

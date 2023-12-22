@@ -78,7 +78,7 @@ public class FissionPowerSource extends PowerSource implements AdjustablePowerSo
 	 * @return power (kW)
 	 */
 	public double getAveragePower(Settlement settlement) {
-		return currentPowerElectrical * 0.707;
+		return currentPowerElectrical;
 	}
 
 	/**

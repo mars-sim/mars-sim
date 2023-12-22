@@ -13,7 +13,6 @@ import java.util.List;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.Weather;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.resource.ResourceUtil;

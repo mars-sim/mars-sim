@@ -446,6 +446,7 @@
 			<part name="microcontroller" number="1" repair-probability="1" />
 			<part name="logic board" number="1" repair-probability="5" />
 			<part name="power cable" number="1" repair-probability="5" />
+			<part name="Surge Protector" number="1" repair-probability="5" />	
 			<part name="fire extinguisher" number="1" repair-probability="30" />
 		</repair-parts-list>
 	</malfunction>
@@ -467,8 +468,8 @@
 			<part name="electrical wire" number="2" repair-probability="40" />
 			<part name="battery module" number="1" repair-probability="2" />
 			<part name="microcontroller" number="1" repair-probability="1" />
-			<part name="logic board" number="1" repair-probability="5" />
-			<part name="power cable" number="2" repair-probability="20" />
+			<part name="power cable" number="2" repair-probability="10" />
+			<part name="Power Panel" number="1" repair-probability="5" />	
 			<part name="fire extinguisher" number="1" repair-probability="30" />
 		</repair-parts-list>
 	</malfunction>
@@ -784,8 +785,9 @@
 		<repair-parts-list>
 			<part name="wire connector" number="4" repair-probability="50" />
 			<part name="electrical wire" number="4" repair-probability="50" />
+			<part name="Surge Protector" number="1" repair-probability="10" />			
 			<part name="work gloves" number="1" repair-probability="10" />
-			<part name="power cable" number="1" repair-probability="10" />
+			<part name="power cable" number="1" repair-probability="5" />
 		</repair-parts-list>
 	</malfunction>
 

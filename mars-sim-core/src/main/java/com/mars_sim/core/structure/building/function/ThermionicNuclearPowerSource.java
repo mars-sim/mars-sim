@@ -79,7 +79,7 @@ public class ThermionicNuclearPowerSource extends PowerSource
 	 * @return power (kW)
 	 */
 	public double getAveragePower(Settlement settlement) {
-		return currentPowerElectrical * 0.707;
+		return currentPowerElectrical;
 	}
 
 	/**

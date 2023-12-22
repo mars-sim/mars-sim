@@ -1104,7 +1104,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="Cane Fiber" name1="Polyester Fiber" amount="0.2" />
 			<resource name="Polyethylene" name1="Polypropylene" amount="0.5" />
-			<resource name="Polycarbonate resin" amount="0.5" />
+			<resource name="Polycarbonate Resin" amount="0.5" />
 			<resource name="Aluminized Mylar" amount="0.25" />
 			<part name="plastic tubing" number="2" />
 			<part name="electrical wire" number="2" />
@@ -1119,7 +1119,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make helmet visor" tech="2" skill="2" work-time="100" process-time="200"
 			power-required=".1">
 		<inputs>
-			<resource name="polycarbonate resin" amount=".2" />
+			<resource name="Polycarbonate Resin" amount=".2" />
 			<part name="glass sheet" number="1" />
 		</inputs>
 		<outputs>
@@ -1133,7 +1133,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="Polyethylene" name1="Polypropylene" amount="0.2" />
 			<resource name="Cane Fiber" name1="Polyester Fiber" amount="0.3" />
 			<resource name="Silicone Elastomer" amount="1.0" />
-			<resource name="Polyester Resin" name1="polycarbonate resin" amount="0.5" />
+			<resource name="Polyester Resin" name1="Polycarbonate Resin" amount="0.5" />
 			<part name="plastic tubing" number="3" />
 						
 		</inputs>
@@ -1220,7 +1220,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make eva antenna" tech="2" skill="2" work-time="100" process-time="50"
 			power-required=".3">
 		<inputs>
-			<resource name="Polyester Resin" name1="polycarbonate resin" amount=".5" />
+			<resource name="Polyester Resin" name1="Polycarbonate Resin" amount=".5" />
 			<resource name="styrene" amount=".5" />
 			<part name="fiberglass" number="1" />
 			<part name="aluminum sheet" number="1" />
@@ -1345,7 +1345,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture vehicle chassis panel" tech="2" skill="3" work-time="100" process-time="100"
 			power-required=".1">
 		<inputs>
-			<resource name="Polyester Resin" name1="polycarbonate resin" amount="5.0" />
+			<resource name="Polyester Resin" name1="Polycarbonate Resin" amount="5.0" />
 			<resource name="polystyrene" amount="5" />
 			<resource name="styrene" amount="5.0" />
 			<part name="fiberglass" number="5" />
@@ -1500,7 +1500,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture propeller" tech="2" skill="3" work-time="80" process-time="120"
 			power-required=".3">
 		<inputs>
-			<resource name="polycarbonate resin" amount="1.5" />
+			<resource name="Polycarbonate Resin" amount="1.5" />
 			<resource name="titanium" amount=".25" />
 			<resource name="iron" amount=".25" />			
 		</inputs>
@@ -1513,7 +1513,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="1.0">
 		<inputs>
 			<resource name="Polyethylene" name1="Polypropylene" amount="3.0" />
-			<resource name="Polyester Resin" name1="polycarbonate resin" amount="5.0" />
+			<resource name="Polyester Resin" name1="Polycarbonate Resin" amount="5.0" />
 			<resource name="polystyrene" amount="10.0" />			
 			<resource name="styrene" amount="2.0" />
 			<part name="fiberglass" number="5" />
@@ -1532,7 +1532,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="1.0">
 		<inputs>
 			<resource name="Polyethylene" name1="Polypropylene" amount=".5" />
-			<resource name="Polyester Resin" name1="polycarbonate resin" amount="2.0" />
+			<resource name="Polyester Resin" name1="Polycarbonate Resin" amount="2.0" />
 			<resource name="polystyrene" amount="1.0" />
 			<resource name="styrene" amount="1.0" />
 			<part name="fiberglass" number="5" />
@@ -2108,7 +2108,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Fabricate turbine blade" tech="2" skill="3" work-time="200" process-time="200"
 			power-required="1.0">
 		<inputs>
-			<resource name="Polyester Resin" name1="polycarbonate resin" amount=".5" />
+			<resource name="Polyester Resin" name1="Polycarbonate Resin" amount=".5" />
 			<resource name="styrene" amount=".5" />
 			<part name="fiberglass" number="1" />
 		</inputs>
@@ -2876,7 +2876,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="bisphenol-a" amount="1.0" />
 		</inputs>
 		<outputs>
-			<resource name="polycarbonate resin" amount="3.0" />
+			<resource name="Polycarbonate Resin" amount="3.0" />
 		</outputs>
 	</process>
 
@@ -2900,7 +2900,7 @@ Note: 1 kg of H2 is 14.13 liter
 			reaction between ethylene oxide and carbon dioxide.
 		</description>
 		<inputs>
-			<resource name="polycarbonate resin" amount="3.5" />
+			<resource name="Polycarbonate Resin" amount="3.5" />
 		</inputs>
 		<outputs>
 			<part name="polycarbonate roofing" number="3" />
@@ -3228,6 +3228,62 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<resource name="Silicone Elastomer" amount="5.5" />
+		</outputs>
+	</process>
+
+	<process name="Make Power Panel" tech="2" skill="2" work-time="200" process-time="50"
+			power-required="0.1">
+		<description> A power panel safely distributes electricity throughout a building. It divides 
+			an electrical power feed into branch circuits, while providing a protective circuit 
+			breaker or fuse for each circuit, in a common enclosure. A panelboard services to protect 
+			branch circuits from overloads and short circuits. 
+		</description>		 
+		<inputs>
+			<resource name="Polycarbonate Resin" name1="Styrene" amount="1"/>
+			<part name="Steel Sheet" number="1"/>
+			<part name="Electrical Wire" number="6"/>
+			<part name="Power Cable" number="2"/>
+			<part name="Plastic Tubing" number="6" />
+			<part name="Surge Protector" number="3" />
+		</inputs>
+		<outputs>
+			<part name="Power Panel" number="3" />
+		</outputs>
+	</process>
+
+	<process name="Make Surge Protector" tech="2" skill="2" work-time="100" process-time="50"
+			power-required="0.1">
+		<description> A surge protector protects electrical devices in alternating current (AC) circuits from 
+			voltage spikes, which can arise from a variety of causes including lightning strikes in the 
+			vicinity and have a very short duration measured in microseconds. It limits the voltage supplied 
+			to electrical devices to a certain threshold, by short-circuiting current to ground or absorbing 
+			the spike when a transient occurs, thus avoiding damage to the appliances and devices connected 
+			to it.
+		</description>		 
+		<inputs>
+			<resource name="Polycarbonate Resin" name1="Styrene" amount=".2"/>
+			<part name="Electrical Wire" number="2"/>
+			<part name="Metal Oxide Varistor" number="4"/>
+		</inputs>
+		<outputs>
+			<part name="Surge Protector" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="Make Metal Oxide Varistor" tech="2" skill="2" work-time="50" process-time="50"
+			power-required="0.1">
+		<description> A metal-oxide varistor is a surge protecting electronic component with an 
+			electrical resistance that varies with the applied voltage. It is made of sintered ceramic
+			metal-oxide materials protecting against excessive transient voltages from sensitive components 
+			when triggered.
+		</description>		 
+		<inputs>
+			<resource name="Sand" amount=".25"/>
+			<resource name="Polycarbonate Resin" name1="Styrene" amount=".05"/>
+			<part name="Electrical Wire" number="1"/>	
+		</inputs>
+		<outputs>
+			<part name="Metal Oxide Varistor" number="4" />
 		</outputs>
 	</process>
 	
