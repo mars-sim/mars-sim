@@ -49,7 +49,7 @@ public class PartGood extends Good {
 	private static final String BRICK = "brick";
 	private static final String HEAT_PROBE = "heat probe";
 	private static final String BOTTLE = "bottle";
-	private static final String GLASS_TUBE = "glass";
+	private static final String GLASS_TUBE = "glass tube";
 	private static final String GLASS_SHEET = "glass sheet";
 	private static final String DRILL = "drill";
 	private static final String STACK = "stack";
@@ -75,9 +75,9 @@ public class PartGood extends Good {
 	private static final double TRUSS_DEMAND = .05;
 	private static final double STEEL_DEMAND = .1;
 	private static final double BRICK_DEMAND = .005;
-	private static final double ELECTRICAL_DEMAND = 7;
+	private static final double ELECTRICAL_DEMAND = 5;
 	private static final double INSTRUMENT_DEMAND = 6;
-	private static final double METALLIC_DEMAND = 3;
+	private static final double METALLIC_DEMAND = 2;
 	private static final double UTILITY_DEMAND = 3;
 	private static final double TOOL_DEMAND = 4;
 	private static final double CONSTRUCTION_DEMAND = 2;
@@ -377,6 +377,8 @@ public class PartGood extends Good {
 	 */
 	private static double calculateFlattenPartDemand(Part part) {
 		String name = part.getName();
+		if (name.contains(WIRE))
+			return .0005;
 		
 		if (name.contains("pipe"))
 			return 1;
@@ -411,13 +413,9 @@ public class PartGood extends Good {
 				|| name.contains("diode")) {
 				return 5;
 			}
-			else if (name.contains("electrical wire")
-					|| name.contains("wire connector"))
-				return .005;
-			else if (name.contains("steel wire"))
-				return 10;
-			else if (name.contains(WIRE))
-				return .05;
+			else if (name.equalsIgnoreCase("steel wire"))
+				return 7;
+			
 			return ELECTRICAL_DEMAND;
 		}
 
@@ -425,7 +423,7 @@ public class PartGood extends Good {
 			return INSTRUMENT_DEMAND;
 
 		if (type == GoodType.METALLIC)
-			return  METALLIC_DEMAND;
+			return METALLIC_DEMAND;
 		
 		if (type == GoodType.UTILITY) {
 			if (name.contains(FIBERGLASS)) {

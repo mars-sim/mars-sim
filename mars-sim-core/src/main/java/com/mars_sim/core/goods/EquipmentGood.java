@@ -37,12 +37,12 @@ public class EquipmentGood extends Good {
 	private static final int PROJECTED_THERMAL_BOTTLE = 1;
 	private static final double PROJECTED_WHEELBARROW = 1;
 	
-	private static final double GAS_CANISTER_DEMAND = 1.5;
+	private static final double GAS_CANISTER_DEMAND = 0.25;
 	private static final double SPECIMEN_BOX_DEMAND = 1.2;
 	private static final double LARGE_BAG_DEMAND = 1.5;
 	private static final double BAG_DEMAND = 1;
-	private static final double BARREL_DEMAND = 1;
-	private static final double THERMAL_BOTTLE_DEMAND = 0.5;
+	private static final double BARREL_DEMAND = 0.5;
+	private static final double THERMAL_BOTTLE_DEMAND = 0.25;
 	private static final double WHEELBARROW_DEMAND = .5;
 	
 	private static final double INITIAL_EQUIPMENT_DEMAND = 0;
