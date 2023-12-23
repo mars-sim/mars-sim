@@ -348,9 +348,10 @@ public class SettlementMapPanel extends JPanel {
 	 * @param yPixel the y pixel position on the displayed map.
 	 */
 	public void showBuildingCoord(int xPixel, int yPixel) {
+		
 		boolean showBlank = true;
 
-		Point.Double hoverPosition = convertToSettlementLocation(xPixel, yPixel);
+		Point.Double mousePos = convertToSettlementLocation(xPixel, yPixel);
 
 		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet().iterator();
 		while (j.hasNext()) {
@@ -377,14 +378,15 @@ public class SettlementMapPanel extends JPanel {
 				}
 				else if (facing == 180) {
 					// Loading Dock Garage
-					xx = - width / 2D;
+					xx = width / 2D;
 					yy = length / 2D;
 					
 				} 
 				else if (facing == 270) {
-					// Fish Farm, Algae Pond
+					// Most of the 7mx9m modules such as Inflatable Greenhouse, 
+					// Fish Farm, Algae Pond, Command and Control, etc.
 					yy = width / 2D;
-					xx = - length / 2D;
+					xx = length / 2D;
 				}
 
 				// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
@@ -398,15 +400,27 @@ public class SettlementMapPanel extends JPanel {
 					xx = length / 2D;
 				}
 
-				double cX = hoverPosition.getX();
-				double cY = hoverPosition.getY();
+				double mX = mousePos.getX();
+				double mY = mousePos.getY();
 
-				double rangeX = Math.round((cX - x) * 100.0) / 100.0;
-				double rangeY = Math.round((cY - y) * 100.0) / 100.0;
+				double rangeX = Math.round((mX - x) * 100.0) / 100.0;
+				double rangeY = Math.round((mY - y) * 100.0) / 100.0;
 
 				if (Math.abs(rangeX) <= Math.abs(xx) && Math.abs(rangeY) <= Math.abs(yy)) {
-					// Display the coordinate within a building of the hovering mouse pointer
-					settlementWindow.setBuildingXYCoord(rangeX, rangeY, false);
+					if (facing == 0) {
+						// Display the coordinate within a building of the hovering mouse pointer
+						settlementWindow.setBuildingXYCoord(rangeX, rangeY, false);
+					} else if (facing == 180) {
+						// Display the coordinate within a building of the hovering mouse pointer
+						settlementWindow.setBuildingXYCoord(-rangeX, -rangeY, false);
+					} else if (facing == 90) {
+						// Display the coordinate within a building of the hovering mouse pointer
+						settlementWindow.setBuildingXYCoord(rangeY, rangeX, false);
+					} else if (facing == 270) {
+						// Display the coordinate within a building of the hovering mouse pointer
+						settlementWindow.setBuildingXYCoord(-rangeY, rangeX, false);
+					}
+					// Note: not considering facing = 45 and 135 yet
 					showBlank = false;
 					break;
 				}
@@ -591,9 +605,11 @@ public class SettlementMapPanel extends JPanel {
 	 * @return selectedBuilding
 	 */
 	public Building selectBuildingAt(int xPixel, int yPixel) {
-		Point.Double clickPosition = convertToSettlementLocation(xPixel, yPixel);
-		Building foundBuilding = null;
 
+		Building foundBuilding = null;
+		
+		Point.Double mousePos = convertToSettlementLocation(xPixel, yPixel);
+		
 		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet().iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
@@ -634,13 +650,13 @@ public class SettlementMapPanel extends JPanel {
 					xx = length / 2D;
 				}
 
-				double cX = clickPosition.getX();
-				double cY = clickPosition.getY();
+				double cX = mousePos.getX();
+				double cY = mousePos.getY();
 
-				double distanceX = Math.round((cX - x) * 100.0) / 100.0; 
-				double distanceY = Math.round((cY - y) * 100.0) / 100.0;
+				double rangeX = Math.round((cX - x) * 100.0) / 100.0; 
+				double rangeY = Math.round((cY - y) * 100.0) / 100.0;
 
-				if (Math.abs(distanceX) <= xx && Math.abs(distanceY) <= yy) {
+				if (Math.abs(rangeX) <= Math.abs(xx) && Math.abs(rangeY) <= Math.abs(yy)) {
 					foundBuilding = building;
 					selectBuilding(foundBuilding);
 					return foundBuilding;
@@ -953,7 +969,8 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Reverse the settings of the Spot label
+	 * Reverses the settings of the Spot label.
+	 * 
 	 * @param possible The range of possible values
 	 */
 	void reverseSpotLabels(Collection<FunctionType> possible) {
@@ -967,8 +984,8 @@ public class SettlementMapPanel extends JPanel {
 
 	/**
 	 * Checks if building spots should be displayed.
+	 * 
 	 * @param ft
-	 *
 	 * @return true if building activity spots should be displayed.
 	 */
 	boolean isShowSpotLabels(FunctionType ft) {
@@ -976,7 +993,7 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Get all active Function Activity Spots enabled
+	 * Gets all active Function Activity Spots enabled.
 	 */
 	Set<FunctionType> getShowSpotLabels() {
 		return showSpotLabels;
@@ -984,8 +1001,8 @@ public class SettlementMapPanel extends JPanel {
 
 	/**
 	 * Sets if spot labels should be displayed.
+	 * 
 	 * @param ft
-	 *
 	 * @param showLabels true if spot labels should be displayed.
 	 */
 	void setShowSpotLabels(FunctionType ft, boolean showLabels) {

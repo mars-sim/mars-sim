@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BoundedObject.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-06-20
  * @author Manny Kung
  */
 
@@ -9,9 +9,6 @@ package com.mars_sim.mapdata.location;
 
 public class BoundedObject implements LocalBoundedObject {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	double w;
@@ -46,7 +43,8 @@ public class BoundedObject implements LocalBoundedObject {
 	}
 
 	/**
-	 * Get the local position within the context of an existing Unit.
+	 * Gets the local position within the context of an existing Unit.
+	 * 
 	 * @return
 	 */
 	public LocalPosition getPosition() {

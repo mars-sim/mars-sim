@@ -803,12 +803,21 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- growing-area: the max growing area (square meters) for all crops. -->
 			<farming crops="10" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="200.0" >
 				<activity>
-					<activity-spot xloc="1.5" yloc="2.25" />
-					<activity-spot xloc="-1.5" yloc="2.25" />
-					<activity-spot xloc="-1.5" yloc="1.25" />
-					<activity-spot xloc="1.5" yloc="-2.25" />
-					<activity-spot xloc="1.5" yloc="2.25" />
-					<activity-spot xloc="-1.5" yloc="-3.5" />
+					<activity-spot xloc="1.5" yloc="3" />
+					<activity-spot xloc="1.5" yloc="2" />
+					<activity-spot xloc="1.5" yloc="1" />
+					<activity-spot xloc="1.5" yloc="0" />
+					<activity-spot xloc="1.5" yloc="-1" />
+					<activity-spot xloc="1.5" yloc="-2" />
+					<activity-spot xloc="1.5" yloc="-3" />
+					
+					<activity-spot xloc="-1.5" yloc="3" />
+					<activity-spot xloc="-1.5" yloc="2" />
+					<activity-spot xloc="-1.5" yloc="1" />
+					<activity-spot xloc="-1.5" yloc="0" />
+					<activity-spot xloc="-1.5" yloc="-1" />
+					<activity-spot xloc="-1.5" yloc="-2" />
+					<activity-spot xloc="-1.5" yloc="-3" />
 				</activity>
 			</farming>
 
@@ -816,12 +825,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<power-storage capacity="40"  discharge-rate="1.25"/>
 
-			<recreation capacity="4">
+			<recreation capacity="7">
 				<activity>
+					<activity-spot xloc="0" yloc="3" />
 					<activity-spot xloc="0" yloc="2" />
 					<activity-spot xloc="0" yloc="1" />
+					<activity-spot xloc="0" yloc="0" />
 					<activity-spot xloc="0" yloc="-1" />
 					<activity-spot xloc="0" yloc="-2" />
+					<activity-spot xloc="0" yloc="-3" />
 				</activity>
 			</recreation>
 			
@@ -2002,19 +2014,19 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<computation computing-unit="30.0" power-demand="0.5" cooling-demand=".25">
 				<activity>
 					<activity-spot xloc="0.65" yloc="-2.2" />
-					<activity-spot xloc="0.65" yloc="-1.15" />
+					<activity-spot xloc="0.65" yloc="-1.5" />
 					<activity-spot xloc="0.65" yloc="-0.8" />
 					
 					<activity-spot xloc="-0.25" yloc="-2.2" />
-					<activity-spot xloc="-0.25" yloc="-1.15" />
+					<activity-spot xloc="-0.25" yloc="-1.5" />
 					<activity-spot xloc="-0.25" yloc="-0.8" />
 					
 					<activity-spot xloc="-1.2" yloc="-2.2" />
-					<activity-spot xloc="-1.2" yloc="-1.15" />
+					<activity-spot xloc="-1.2" yloc="-1.5" />
 					<activity-spot xloc="-1.2" yloc="-0.8" />	
 					
 					<activity-spot xloc="-2.15" yloc="-2.2" />
-					<activity-spot xloc="-2.15" yloc="-1.15" />
+					<activity-spot xloc="-2.15" yloc="-1.5" />
 					<activity-spot xloc="-2.15" yloc="-0.8" />																			
 				</activity>
 			</computation>
@@ -2033,9 +2045,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-3.1" yloc="1.95" />
 					<activity-spot xloc="-2.75" yloc="1.5" />
 
-					<activity-spot xloc="-3.1" yloc="2.7" />
-					<activity-spot xloc="-3.1" yloc="1.95" />				
-					<activity-spot xloc="-2.75" yloc="1.5" />	
+					<activity-spot xloc="-3.1" yloc="-2.7" />
+					<activity-spot xloc="-3.1" yloc="-1.95" />				
+					<activity-spot xloc="-2.75" yloc="-1.5" />	
 				</activity>
 			</management>
 			<power-generation>
@@ -2195,19 +2207,19 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<computation computing-unit="4.0" power-demand="1.0" cooling-demand=".5">
 				<activity>
-					<activity-spot xloc="0" yloc="0" />
+					<activity-spot xloc="-2.3" yloc="2.5" />
 				</activity>
 			</computation>			
 			<life-support capacity="8" power-required="0.4" />
 			<manufacture tech-level="4" concurrent-processes="4">
 				<activity>
-					<activity-spot xloc=".6" yloc="2.9" />
-					<activity-spot xloc="-2.0" yloc="-.7" />
-					<activity-spot xloc="-.6" yloc="-2.9" />
+					<activity-spot xloc=".6" yloc="3.2" />
+					<activity-spot xloc="-2.45" yloc="-1.7" />
+					<activity-spot xloc="-.6" yloc="-3.05" />
 					<activity-spot xloc="1.7" yloc="0.0" />
-					<activity-spot xloc="-.5" yloc="1.1" />
-					<activity-spot xloc=".7" yloc="-1.3" />
-					<activity-spot xloc=".7" yloc=".4" />
+					<activity-spot xloc="-.5" yloc="1.41" />
+					<activity-spot xloc="-.2" yloc="-0.9" />
+					<activity-spot xloc=".65" yloc=".4" />
 				</activity>
 			</manufacture>
 			<power-generation>

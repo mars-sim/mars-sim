@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * MapViewPoint.java
  * @date 2023-12-16
@@ -16,8 +16,9 @@ record MapViewPoint(Graphics2D graphics, double xPos, double yPos,
 		int mapWidth, int mapHeight, double rotation, double scale) {
 
     /**
-     * This prepares the graphicsfor rendering in the map by translating and
+     * This prepares the graphics for rendering in the map by translating and
      * rotating the graphics to the correct position.
+     * 
      * @return
      */
     AffineTransform prepareGraphics() {
