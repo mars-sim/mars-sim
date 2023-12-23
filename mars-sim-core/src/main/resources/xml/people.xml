@@ -259,7 +259,7 @@
 
 	<!-- Average characteristics -->
     <characteristics average-male-height="176.5" average-female-height="162.5"
-	            average-male-weight="68.5" average-female-weight="57.2"/>
+	            average-male-weight="72" average-female-weight="65"/>
 
 	<!-- Myers-Briggs Type Indicator: http://www.wikipedia.org/wiki/MBTI -->
 	<!-- engineers or computer programmers. -->

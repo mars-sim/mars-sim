@@ -38,6 +38,10 @@ public class NationSpecConfigTest extends TestCase {
         testNationSpec("Norway", true);
     }
 
+    public void testGetSpain() {
+        testNationSpec("Spain", false);
+    }
+
     private void testNationSpec(String name, boolean hasCharacterisitcs) {
         var n = config.getItem(name);
 

@@ -8,6 +8,10 @@
 		 <GDP-growth value="2.06"/>
 	</economics-data>
 	
+    <!-- Taken from https://www.worlddata.info/average-bodyheight.php -->
+    <characteristics average-male-height="177" average-female-height="163"
+	            average-male-weight="90.6" average-female-weight="77.1"/>
+
     <first-name-list>
         <!-- U.S.A., 1-60 male first name http://www2.census.gov/topics/genealogy/1990surnames/dist.male.first -->
         <first-name value="James" gender="male" />

@@ -8,6 +8,10 @@
 		 <GDP-growth value="7.0"/>
 	</economics-data>
 	
+    <!-- Taken from https://www.worlddata.info/average-bodyheight.php -->
+    <characteristics average-male-height="166" average-female-height="155"
+	            average-male-weight="59.6" average-female-weight="52.5"/>
+                
     <first-name-list>
 
         <!-- http://babynamescountry.com/origins/popular_indian_baby_names1.html

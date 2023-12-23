@@ -8,8 +8,11 @@
 		 <GDP-growth value="1.03"/>
 	</economics-data>
 	
+    <!-- Taken from https://www.worlddata.info/average-bodyheight.php -->
+    <characteristics average-male-height="172" average-female-height="158"
+	            average-male-weight="69.5" average-female-weight="54.8"/>
+                
     <first-name-list>
-
         <!-- http://www.babynamewizard.com/name-list/japanese-boys-names-most-popular-names-for-boys-in-japan -->
         <first-name value="Haruto" gender="male" />
         <first-name value="Yuto" gender="male" />
