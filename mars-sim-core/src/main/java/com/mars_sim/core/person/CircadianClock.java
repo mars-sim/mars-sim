@@ -159,10 +159,6 @@ public class CircadianClock implements Serializable {
 	private void modifyThresholds(Person person) {
 		double dev = Math.sqrt(
 				person.getBaseMass() / Person.getAverageWeight() * person.getHeight() / Person.getAverageHeight()); 
-		// condition.getBodyMassDeviation();
-		// person.getBaseMass()
-		// Person.AVERAGE_WEIGHT;
-		double age = person.getAge();
 
 		// Leptin threshold, the appetite/sleep suppressor, are lower when you're thin
 		// and higher when you're fat.
@@ -174,7 +170,7 @@ public class CircadianClock implements Serializable {
 
 		// Ghrelin levels have been found to increase in children with anorexia nervosa
 		// and decrease in children who are obese.
-		if (age <= 21)
+		if (person.getAge() <= 21)
 			ghrelinThreshold /= dev;
 
 		// LogConsolidated.log(logger, Level.INFO, 2000, sourceName, person

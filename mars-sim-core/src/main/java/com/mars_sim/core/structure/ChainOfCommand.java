@@ -344,7 +344,7 @@ public class ChainOfCommand implements Serializable {
 		cc.setJob(JobType.valueOf(commander.getJob().toUpperCase()), JobUtil.MISSION_CONTROL);
 		logger.config(commander.getFullName() + " accepted the role of being a Commander by the order of the Mission Control.");
 		cc.setRole(RoleType.COMMANDER);
-		cc.setCountry(commander.getCountryStr());
+		//cc.setCountry(commander.getCountryStr());
 		cc.setSponsor(SimulationConfig.instance().getReportingAuthorityFactory().getItem(commander.getSponsorStr()));
 	}
 

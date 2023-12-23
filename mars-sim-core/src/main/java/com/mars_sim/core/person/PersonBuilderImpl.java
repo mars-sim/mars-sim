@@ -7,13 +7,14 @@
 
 package com.mars_sim.core.person;
 
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
-import com.mars_sim.core.person.ai.PersonAttributeManager;
 import com.mars_sim.core.person.ai.PersonalityTraitType;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillType;
@@ -21,45 +22,41 @@ import com.mars_sim.core.person.ai.training.TrainingType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.tools.util.RandomUtil;
 
-public class PersonBuilderImpl implements PersonBuilder<Person> {
+public class PersonBuilderImpl implements PersonBuilder {
 
-	private Person person;
+	private int age;
+	private String name;
+	private Settlement settlement;
+	private GenderType gender;
+	private Map<String, Integer> personality;
+	private String mbti;
+	private NationSpec country;
+	private Authority sponsor;
+	private Map<String, Integer> skillMap;
+	private Map<NaturalAttributeType, Integer> attributeMap;
 
-	public PersonBuilderImpl() {
-		person = new Person("tester", null);
+	public PersonBuilderImpl(String name, Settlement settlement, GenderType gender) {
+		this.name = name;
+		this.settlement = settlement;
+		this.gender = gender;
 	}
 
-	public PersonBuilderImpl(String name, Settlement settlement) {
-		person = new Person(name, settlement);
-	}
-
-	public PersonBuilder<Person> setName(String n) {
-		person.setName(n);
+	@Override
+	public PersonBuilder setSponsor(Authority sponsor) {
+		this.sponsor = sponsor;
 		return this;
 	}
 
-	public PersonBuilder<Person> setGender(GenderType gender) {
-		person.setGender(gender);
-		return this;
-	}
-
-	public PersonBuilder<Person> setAge(int age) {
-		person.setAge(age);
-		return this;
-	}
 	
-	public PersonBuilder<Person> setCountry(String c) {
-		person.setCountry(c);
+	@Override
+	public PersonBuilder setAge(int age) {
+		this.age = age;
 		return this;
 	}
 
-	public PersonBuilder<Person> setAssociatedSettlement(int s) {
-		person.setAssociatedSettlement(s);
-		return this;
-	}
-
-	public PersonBuilder<Person> setSponsor(Authority sponsor) {
-		person.setSponsor(sponsor);
+	@Override
+	public PersonBuilder setCountry(NationSpec spec) {
+		this.country = spec;
 		return this;
 	}
 
@@ -69,24 +66,30 @@ public class PersonBuilderImpl implements PersonBuilder<Person> {
 	 * @param skillMap
 	 * @return {@link PersonBuilder<>}
 	 */
-	public PersonBuilder<Person> setSkill(Map<String, Integer> skillMap) {
+	public PersonBuilder setSkill(Map<String, Integer> skillMap) {
+		this.skillMap = skillMap;
+		return this;
+	}
+
+	private void applySkillMap(Person p) {
+
 		if (skillMap == null || skillMap.isEmpty()) {
-			buildDefaultSkills();
+			buildDefaultSkills(p);
 		}
 		else {
+			var skillMgr = p.getSkillManager();
 			for(Entry<String, Integer> e : skillMap.entrySet()) {
 				SkillType sType = SkillType.valueOf(ConfigHelper.convertToEnumName(e.getKey()));
-				person.getSkillManager().addNewSkill(sType, e.getValue());
+				skillMgr.addNewSkill(sType, e.getValue());
 			}
 		}
-		return this;
 	}
 
 		
 	/**
 	 * Sets some random skills for a person.
 	 */
-	private void buildDefaultSkills() {
+	private void buildDefaultSkills(Person person) {
 		int ageFactor = person.getAge();
 		SkillManager sm = person.getSkillManager();
 
@@ -163,40 +166,48 @@ public class PersonBuilderImpl implements PersonBuilder<Person> {
 	 * @param map
 	 * @return {@link PersonBuilder<>}
 	 */
-	public PersonBuilder<Person> setPersonality(Map<String, Integer> map, String mbti) {
+	public PersonBuilder setPersonality(Map<String, Integer> personality, String mbti) {
+		this.personality = personality;
+		this.mbti = mbti;
+
+		return this;
+	}
+
+	private void applyPersonality(Person person) {
 		int scoreFromMBTI = 0;
 		int scoreFromBigFive = 0;
 		
-		if (map == null || map.isEmpty()) {
-			person.getMind().getTraitManager().setRandomBigFive();
+		var mind = person.getMind();
+		var traitMgr = mind.getTraitManager();
+
+		if (personality == null || personality.isEmpty()) {
+			traitMgr.setRandomBigFive();
 		}
 		else {
-			for (Entry<String, Integer> e : map.entrySet()) {
-				person.getMind().getTraitManager().setPersonalityTrait(PersonalityTraitType.fromString(e.getKey()),
+			for (Entry<String, Integer> e : personality.entrySet()) {
+				traitMgr.setPersonalityTrait(PersonalityTraitType.fromString(e.getKey()),
 						e.getValue());
 			}
 		}
 		
 		if (mbti == null) {
-			person.getMind().getMBTI().setRandomMBTI();
+			mind.getMBTI().setRandomMBTI();
 		}
 		else {
-			person.getMind().getMBTI().setTypeString(mbti);
+			mind.getMBTI().setTypeString(mbti);
 		}
 		
-		scoreFromMBTI = person.getMind().getMBTI().getIntrovertExtrovertScore();
-		scoreFromBigFive = person.getMind().getTraitManager().getIntrovertExtrovertScore();
+		scoreFromMBTI = mind.getMBTI().getIntrovertExtrovertScore();
+		scoreFromBigFive = traitMgr.getIntrovertExtrovertScore();
 		
 		// Call syncUpExtraversion() to sync up the extraversion score between the two
 		// personality models
-		if (map != null && !map.isEmpty() && mbti == null)
+		if (personality != null && !personality.isEmpty() && mbti == null)
 			// Use Big Five's extraversion score to derive the introvert/extrovert score in MBTI 
-			person.getMind().getMBTI().syncUpIntrovertExtravertScore(scoreFromBigFive);
+			mind.getMBTI().syncUpIntrovertExtravertScore(scoreFromBigFive);
 		else
 			// Use MBTI's introvert/extrovert score to derive the extraversion score in Big Five
-			person.getMind().getTraitManager().syncUpExtraversionScore(scoreFromMBTI);
-		
-		return this;
+			traitMgr.syncUpExtraversionScore(scoreFromMBTI);
 	}
 	
 	/**
@@ -205,26 +216,99 @@ public class PersonBuilderImpl implements PersonBuilder<Person> {
 	 * @param attribute map
 	 * @return {@link PersonBuilder<>}
 	 */
-	public PersonBuilder<Person> setAttribute(Map<String, Integer> attributeMap) {
-		if (attributeMap == null || attributeMap.isEmpty()) {
-			((PersonAttributeManager) person.getNaturalAttributeManager()).setRandomAttributes(person);	
-		}
-		else {
-			for(Entry<String,Integer> e : attributeMap.entrySet()) {
-				String attributeName = e.getKey();
-				int value = e.getValue();
-				person.getNaturalAttributeManager()
-						.setAttribute(NaturalAttributeType.valueOfIgnoreCase(attributeName), value);
-			}
-		}
-		
+	public PersonBuilder setAttribute(Map<String, Integer> attributeMap) {
+		this.attributeMap = attributeMap.entrySet().stream()
+								.collect(Collectors.toMap(e ->
+										NaturalAttributeType.valueOf(ConfigHelper.convertToEnumName(e.getKey())),
+										Entry::getValue));
 		return this;
 	}
 	
 	
+	/**
+	 * Modify an attribute.
+	 * 
+	 * @param origValue The attribute value
+	 * @param modifier  a positive or negative random number ceiling 
+	 */
+	private static int applyAttributeModifier(int origValue, int modifier) {
+		int random = RandomUtil.getRandomInt(Math.abs(modifier));
+		if (modifier < 0)
+			random *= -1;
+		return origValue + random;
+	}
+	
+	/**
+	 * Randomizes attributes with modifiers.
+	 */
+	private Map<NaturalAttributeType,Integer> buildDefaultAttributes() {
+		Map<NaturalAttributeType,Integer> result = new EnumMap<>(NaturalAttributeType.class);
+
+		// Create natural attributes using random values (averaged for bell curve around
+		// 50%).
+		// Note: this may change later.
+		for (NaturalAttributeType attributeKey : NaturalAttributeType.values()) {
+			int attributeValue = 0;
+			int numberOfIterations = 5;
+			for (int y = 0; y < numberOfIterations; y++)
+				attributeValue += RandomUtil.getRandomInt(100);
+			attributeValue /= numberOfIterations;
+
+			// Randomize the attributes reflective of the earth-borne Martian settlers.
+			int modifier = switch(attributeKey) {
+				case ACADEMIC_APTITUDE -> 20;
+				case AGILITY -> 20;
+				case ARTISTRY -> -10;
+				case ATTRACTIVENESS -> 20;
+				case CONVERSATION -> -10;
+				case COURAGE -> 30;
+				case EMOTIONAL_STABILITY -> 20;
+				case ENDURANCE -> 5;
+				case EXPERIENCE_APTITUDE -> 10;
+				case LEADERSHIP -> 15;
+				case SPIRITUALITY -> -15;
+				case STRESS_RESILIENCE -> 25;
+				case TEACHING -> 10;
+				default -> 0;
+			};
+			if (modifier != 0) {
+				attributeValue = applyAttributeModifier(attributeValue, modifier);
+			}
+			
+			// Adjust certain attributes reflective of differences between the genders.
+			if (attributeKey == NaturalAttributeType.STRENGTH) {
+				if (gender == GenderType.MALE) {
+					attributeValue = applyAttributeModifier(attributeValue, RandomUtil.getRandomInt(20));
+				}
+				else {
+					attributeValue = applyAttributeModifier(attributeValue, -RandomUtil.getRandomInt(15));
+				}
+			}
+
+			result.put(attributeKey, attributeValue);
+		}
+		return result;
+	}
 	
 	public Person build() {
-		return person;
-	}
+		if (age < 0) {
+			age = RandomUtil.getRandomInt(21, 65);
+		}
+		PopulationCharacteristics ethnicity = null;
+		if (country != null) {
+			ethnicity = country.getPopulation();
+		}
+		if (attributeMap == null) {
+			attributeMap = buildDefaultAttributes();
+		}
+		
+		Person p = new Person(name, settlement, gender, age, ethnicity, attributeMap);
 
+		applyPersonality(p);
+		applySkillMap(p);
+		if (sponsor != null) {
+			p.setSponsor(sponsor);
+		}
+		return p;
+	}
 }

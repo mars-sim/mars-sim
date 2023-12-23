@@ -10,6 +10,7 @@ package com.mars_sim.core.person.ai.task;
 import java.util.Iterator;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.WalkingSteps.WalkStep;
 import com.mars_sim.core.structure.MockSettlement;
@@ -57,7 +58,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = new Person(settlement);
+		Person person = Person.create("Walker", settlement, GenderType.MALE).build();
         BuildingManager.addToBuilding(person, building0);
 
         LocalPosition target = new LocalPosition(-6D, 0.5D);
@@ -89,7 +90,8 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = new Person(settlement);
+		Person person = Person.create("Walker", settlement, GenderType.MALE).build();
+;
 
         BuildingManager.addToBuilding(person, building0);
 
@@ -121,7 +123,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = new Person(settlement);
+		Person person = Person.create("Walker", settlement, GenderType.MALE).build();
 
         BuildingManager.addToBuilding(person, building0);
 
@@ -129,14 +131,12 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         assertNotNull(walkingSteps);
 
         boolean canWalk = walkingSteps.canWalkAllSteps();
-//        System.out.println("canWalk: " + canWalk);
         
         assertFalse(canWalk);
 
         assertNotNull(walkingSteps.getWalkingStepsList());
 
         int steps = walkingSteps.getWalkingStepsNumber();
-//        System.out.println("steps: " + steps);
         assertEquals(0, steps); 
 
         assertEquals(0, walkingSteps.getWalkingStepsList().size()); 
@@ -159,7 +159,8 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 //
 //        buildingManager.setupBuildingFunctionsMap();
 //
-//		Person person = new Person(settlement);
+//		Person person = Person.create("Walker", settlement, GenderType.MALE).build();
+
 //
 //        BuildingManager.addToBuilding(person, building0);
 //
@@ -191,7 +192,8 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = new Person(settlement);
+		Person person = Person.create("Walker", settlement, GenderType.MALE).build();
+
 
         BuildingManager.addToBuilding(person, building0);
 
@@ -226,7 +228,8 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         Building building1 = buildEVA(buildingManager, target, 270D, 1);
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = new Person(settlement);
+		Person person = Person.create("Walker", settlement, GenderType.MALE).build();
+
         BuildingManager.addToBuilding(person, building0);
 
         WalkingSteps walkingSteps = new WalkingSteps(person, target, building1);
@@ -274,7 +277,8 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
         
-		Person person = new Person(settlement);
+		Person person = Person.create("Walker", settlement, GenderType.MALE).build();
+
         BuildingManager.addToBuilding(person, building0);
 
         LocalPosition target = new LocalPosition(10D, 15D);
@@ -317,7 +321,8 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = new Person(settlement);
+		Person person = Person.create("Walker", settlement, GenderType.MALE).build();
+
 		
         BuildingManager.addToBuilding(person, building0);
 
@@ -347,7 +352,8 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = new Person(settlement);
+		Person person = Person.create("Walker", settlement, GenderType.MALE).build();
+
         BuildingManager.addToBuilding(person, building0);
 
         Rover rover = buildRover(settlement, "Test Rover", new LocalPosition(15D, -10D));
@@ -396,7 +402,8 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = new Person(settlement);
+		Person person = Person.create("Walker", settlement, GenderType.MALE).build();
+
         person.transfer(rover);
 
         WalkingSteps walkingSteps = new WalkingSteps(person, LocalPosition.DEFAULT_POSITION, building0);
@@ -453,7 +460,8 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         		new MockBuilding(buildingManager, "B0");
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = new Person(settlement);
+		Person person = Person.create("Walker", settlement, GenderType.MALE).build();
+
         BuildingManager.addToBuilding(person, building0);
 
         WalkingSteps walkingSteps = new WalkingSteps(person, parked, rover);
@@ -504,7 +512,8 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         Building building0 = buildBuilding(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
         buildingManager.setupBuildingFunctionsMap();
         
-		Person person = new Person(settlement);
+		Person person = Person.create("Walker", settlement, GenderType.MALE).build();
+
         BuildingManager.addToBuilding(person, building0);
 
         WalkingSteps walkingSteps = new WalkingSteps(person, parked, rover);
@@ -533,7 +542,8 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 		LocalPosition parked2 = new LocalPosition(-50D, 20D);
         Rover rover2 = buildRover(settlement, "Test Rover 2", parked2);
         
-		Person person = new Person(settlement);
+		Person person = Person.create("Walker", settlement, GenderType.MALE).build();
+
 		person.transfer(rover1);
 		
         WalkingSteps walkingSteps = new WalkingSteps(person, parked2, rover2);
@@ -584,7 +594,8 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = new Person(settlement);
+		Person person = Person.create("Walker", settlement, GenderType.MALE).build();
+
         person.setPosition(new LocalPosition(4D, 4D));
         BuildingManager.addToBuilding(person, garage.getBuilding());
 
@@ -627,7 +638,8 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         garage.addVehicle(rover);
         buildingManager.setupBuildingFunctionsMap();
         
-		Person person = new Person(settlement);
+		Person person = Person.create("Walker", settlement, GenderType.MALE).build();
+
         person.setPosition(LocalPosition.DEFAULT_POSITION);
         person.transfer(rover);
         
@@ -668,7 +680,8 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         buildingManager.setupBuildingFunctionsMap();
 
-		Person person = new Person(settlement);
+		Person person = Person.create("Walker", settlement, GenderType.MALE).build();
+
 		person.transfer(surface);
 
 		LocalPosition target = new LocalPosition(4D, 4D);
@@ -713,7 +726,8 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         Building building0 = buildBuilding(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
         buildingManager.setupBuildingFunctionsMap();
 
-        Person person = new Person(settlement);
+        Person person = Person.create("Walker", settlement, GenderType.MALE).build();
+
         person.transfer(surface);
         
         WalkingSteps walkingSteps = new WalkingSteps(person, new LocalPosition(3D, 3D), building0);
@@ -740,7 +754,8 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         Rover rover = buildRover(settlement, "Test Rover", parkedPosition);
         rover.transfer(surface);
         
-		Person person = new Person(settlement);
+		Person person = Person.create("Walker", settlement, GenderType.MALE).build();
+
         person.setPosition(new LocalPosition(20D,15D));
         person.transfer(surface);
 

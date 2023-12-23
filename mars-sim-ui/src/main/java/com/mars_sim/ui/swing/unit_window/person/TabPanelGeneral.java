@@ -59,7 +59,7 @@ public class TabPanelGeneral extends TabPanel {
 	protected void buildUI(JPanel content) {
 
 		// Prepare attribute panel.
-		AttributePanel infoPanel = new AttributePanel(9);
+		AttributePanel infoPanel = new AttributePanel(8);
 		
 		content.add(infoPanel, BorderLayout.NORTH);
 
@@ -74,11 +74,6 @@ public class TabPanelGeneral extends TabPanel {
 			birthDate,
 			Integer.toString(person.getAge())); //$NON-NLS-1$
 		birthDateTF = infoPanel.addTextField(Msg.getString("TabPanelGeneral.birthDate"), birthTxt, null);
-
-		// Prepare birth location textfield
-		String birthLocation = person.getBirthplace();
-		infoPanel.addTextField(Msg.getString("TabPanelGeneral.birthLocation"), //$NON-NLS-1$
-				birthLocation, null);		
 		
 		// Prepare country of origin textfield
 		String country = person.getCountry();

@@ -77,59 +77,57 @@ public class SimulationConfig implements Serializable {
 	private static final int BACKUP_FOLDER_COUNT = 5;
 
 	/** The version.txt denotes the xml build version. */
-	public final String VERSION_FILE = "version.txt";
+	private static final String VERSION_FILE = "version.txt";
 	/** The exception.txt denotes any user modified xml to be included to bypass the checksum. */
-	public final String EXCEPTION_FILE = "exception.txt";
+	private static final String EXCEPTION_FILE = "exception.txt";
 
-	public final String XML_FOLDER = "xml";
-	public final String XML_EXTENSION = ".xml";
-	private final String SIMULATION_FILE = "simulation";
-	private final String GOVERNANCE_FILE = "governance";
-	private final String PEOPLE_FILE = "people";
-	private final String VEHICLE_FILE = "vehicles";
-	private final String SETTLEMENT_FILE = "settlements";
-	private final String RESUPPLY_FILE = "resupplies";
-	private final String MEDICAL_FILE = "medical";
-	private final String MALFUNCTION_FILE = "malfunctions";
-	private final String CROP_FILE = "crops";
-	private final String LANDMARK_FILE = "landmarks";
-	private final String MINERAL_MAP_FILE = "minerals";
-	private final String RESPROCESS_FILE = "resource_process";
-	private final String BUILDING_FILE = "buildings";
-	private final String PART_FILE = "parts";
-	private final String PART_PACKAGE_FILE = "part_packages";
-	private final String BUILDING_PACKAGE_FILE = "building_packages";
-	private final String RESOURCE_FILE = "resources";
-	private final String MANUFACTURE_FILE = "manufacturing";
-	private final String CONSTRUCTION_FILE = "construction";
-	private final String FOODPRODUCTION_FILE = "food_production";
-	private final String MEAL_FILE = "meals";
-	private final String ROBOT_FILE = "robots";
-	private final String QUOTATION_FILE = "quotations";
-	private final String VALUE = "value";
-
-    public final String EXPERIMENTS_FILE = "/" + "json" + "/" + "experiments.json";
+	private static final String XML_FOLDER = "xml";
+	private static final String XML_EXTENSION = ".xml";
+	private static final String SIMULATION_FILE = "simulation";
+	private static final String GOVERNANCE_FILE = "governance";
+	private static final String PEOPLE_FILE = "people";
+	private static final String VEHICLE_FILE = "vehicles";
+	private static final String SETTLEMENT_FILE = "settlements";
+	private static final String RESUPPLY_FILE = "resupplies";
+	private static final String MEDICAL_FILE = "medical";
+	private static final String MALFUNCTION_FILE = "malfunctions";
+	private static final String CROP_FILE = "crops";
+	private static final String LANDMARK_FILE = "landmarks";
+	private static final String MINERAL_MAP_FILE = "minerals";
+	private static final String RESPROCESS_FILE = "resource_process";
+	private static final String BUILDING_FILE = "buildings";
+	private static final String PART_FILE = "parts";
+	private static final String PART_PACKAGE_FILE = "part_packages";
+	private static final String BUILDING_PACKAGE_FILE = "building_packages";
+	private static final String RESOURCE_FILE = "resources";
+	private static final String MANUFACTURE_FILE = "manufacturing";
+	private static final String CONSTRUCTION_FILE = "construction";
+	private static final String FOODPRODUCTION_FILE = "food_production";
+	private static final String MEAL_FILE = "meals";
+	private static final String ROBOT_FILE = "robots";
+	private static final String QUOTATION_FILE = "quotations";
+	private static final String VALUE = "value";
 
 	// Simulation element names.
-	private final String TIME_CONFIGURATION = "time-configuration";
+	private static final String TIME_CONFIGURATION = "time-configuration";
 
-	private final String ACCURACY_BIAS = "accuracy-bias";
-	private final String MIN_SIMULATED_PULSE = "min-simulated-pulse";
-	private final String MAX_SIMULATED_PULSE = "max-simulated-pulse";
+	private static final String ACCURACY_BIAS = "accuracy-bias";
+	private static final String MIN_SIMULATED_PULSE = "min-simulated-pulse";
+	private static final String MAX_SIMULATED_PULSE = "max-simulated-pulse";
 
-	private final String EARTH_START_DATE_TIME = "earth-start-date-time";
-	private final String MARS_START_DATE_TIME = "mars-start-date-time";
+	private static final String EARTH_START_DATE_TIME = "earth-start-date-time";
+	private static final String MARS_START_DATE_TIME = "mars-start-date-time";
 
-	private final String AUTOSAVE_INTERVAL = "autosave-interval";
-	private final String AUTOSAVE_NUMBER = "autosave-number";
-	private final String AVERAGE_TRANSIT_TIME = "average-transit-time";
-	private final String DEFAULT_TIME_PULSE = "default-time-pulse";
-	private final String BASE_TIME_RATIO = "base-time-ratio";
-	private final String DEFAULT_UNUSEDCORES = "unused-cores";
+	private static final String AUTOSAVE_INTERVAL = "autosave-interval";
+	private static final String AUTOSAVE_NUMBER = "autosave-number";
+	private static final String AVERAGE_TRANSIT_TIME = "average-transit-time";
+	private static final String DEFAULT_TIME_PULSE = "default-time-pulse";
+	private static final String BASE_TIME_RATIO = "base-time-ratio";
+	private static final String DEFAULT_UNUSEDCORES = "unused-cores";
 
-	private final String MISSION_CONFIGURATION = "mission-configuration";
-	private final String EVA_LIGHT = "min-eva-light";
-	private final String CONTENT_URL = "content-url";
+	private static final String MISSION_CONFIGURATION = "mission-configuration";
+	private static final String EVA_LIGHT = "min-eva-light";
+	private static final String CONTENT_URL = "content-url";
 
 	private transient String marsStartDate = null;
 	private transient String earthStartDate = null;
@@ -155,7 +153,6 @@ public class SimulationConfig implements Serializable {
 	// Subset configuration classes
 	private transient PartConfig partConfig;
 	private transient PartPackageConfig partPackageConfig;
-	private transient BuildingPackageConfig buildingPackageConfig;
 	private transient AmountResourceConfig resourceConfig;
 	private transient PersonConfig personConfig;
 	private transient MedicalConfig medicalConfig;
@@ -174,7 +171,6 @@ public class SimulationConfig implements Serializable {
 	private transient MealConfig mealConfig;
 	private transient RobotConfig robotConfig;
 	private transient QuotationConfig quotationConfig;
-	//private transient ExperimentConfig experimentConfig;
 	private transient ScienceConfig scienceConfig;
 
 	private transient List<String> excludedList;
@@ -237,41 +233,41 @@ public class SimulationConfig implements Serializable {
 		}
 		loaded = true;
 		
-		// Load simulation document
-		Document simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
-
-		// Load key attributes
-		Element root = simulationDoc.getRootElement();
-		String contentURL = root.getAttributeValue(CONTENT_URL);
-		if (contentURL != null) {
-			FileLocator.setContentURL(contentURL);
-		}
-		// Load time configurations
-		Element timeConfig = root.getChild(TIME_CONFIGURATION);
-		earthStartDate = loadValue(timeConfig, EARTH_START_DATE_TIME);	
-		marsStartDate = loadValue(timeConfig, MARS_START_DATE_TIME);
-		
-		accuracyBias =  loadDoubleValue(timeConfig, ACCURACY_BIAS, 0D, 1D);
-		minSimulatedPulse = loadDoubleValue(timeConfig, MIN_SIMULATED_PULSE, 0.01, 1.4795874);
-		maxSimulatedPulse = loadDoubleValue(timeConfig, MAX_SIMULATED_PULSE, 1.4795874, 40.55184573753467);
-	
-		defaultTimePulse = loadIntValue(timeConfig, DEFAULT_TIME_PULSE, 1, 2048);
-		baseTimeRatio = loadIntValue(timeConfig, BASE_TIME_RATIO, 1, (int)MasterClock.MAX_TIME_RATIO);
-		unusedCores = loadIntValue(timeConfig, DEFAULT_UNUSEDCORES, 1, 360);
-		averageTransitTime = loadIntValue(timeConfig, AVERAGE_TRANSIT_TIME, 0, 430);
-		autosaveInterval = loadIntValue(timeConfig, AUTOSAVE_INTERVAL, 1, 360);
-		numberOfAutoSaves = loadIntValue(timeConfig, AUTOSAVE_NUMBER, 1, 100);
-
-		// LOad MIssion Types
-		Element missionConfig = root.getChild(MISSION_CONFIGURATION);
-		minEVALight = loadDoubleValue(missionConfig, EVA_LIGHT, 0D, 1000D);
-		checkXMLFileVersion();
-
 		try {
+			// Load simulation document
+			Document simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
+
+			// Load key attributes
+			Element root = simulationDoc.getRootElement();
+			String contentURL = root.getAttributeValue(CONTENT_URL);
+			if (contentURL != null) {
+				FileLocator.setContentURL(contentURL);
+			}
+			// Load time configurations
+			Element timeConfig = root.getChild(TIME_CONFIGURATION);
+			earthStartDate = loadValue(timeConfig, EARTH_START_DATE_TIME);	
+			marsStartDate = loadValue(timeConfig, MARS_START_DATE_TIME);
+			
+			accuracyBias =  loadDoubleValue(timeConfig, ACCURACY_BIAS, 0D, 1D);
+			minSimulatedPulse = loadDoubleValue(timeConfig, MIN_SIMULATED_PULSE, 0.01, 1.4795874);
+			maxSimulatedPulse = loadDoubleValue(timeConfig, MAX_SIMULATED_PULSE, 1.4795874, 40.55184573753467);
+		
+			defaultTimePulse = loadIntValue(timeConfig, DEFAULT_TIME_PULSE, 1, 2048);
+			baseTimeRatio = loadIntValue(timeConfig, BASE_TIME_RATIO, 1, (int)MasterClock.MAX_TIME_RATIO);
+			unusedCores = loadIntValue(timeConfig, DEFAULT_UNUSEDCORES, 1, 360);
+			averageTransitTime = loadIntValue(timeConfig, AVERAGE_TRANSIT_TIME, 0, 430);
+			autosaveInterval = loadIntValue(timeConfig, AUTOSAVE_INTERVAL, 1, 360);
+			numberOfAutoSaves = loadIntValue(timeConfig, AUTOSAVE_NUMBER, 1, 100);
+
+			// LOad MIssion Types
+			Element missionConfig = root.getChild(MISSION_CONFIGURATION);
+			minEVALight = loadDoubleValue(missionConfig, EVA_LIGHT, 0D, 1000D);
+			checkXMLFileVersion();
+
 			loadDefaultConfiguration();
-		} catch (RuntimeException rte) {
+		} catch (RuntimeException | JDOMException | IOException rte) {
           	logger.log  (Level.SEVERE, "Cannot load default config : " + rte.getMessage(), rte);
-			throw rte;
+			throw new IllegalStateException("Cannot load the configurations", rte);
 		}
 	}
 
@@ -355,14 +351,13 @@ public class SimulationConfig implements Serializable {
 			logger.config("The version.txt is invalid.");
 		}
 
-		if (xmlDirExist) {
-			if (!versionFileExist || buildText == null || buildText.equals("") || !sameBuild) {
+		if (xmlDirExist
+			&& (!versionFileExist || buildText == null || buildText.equals("") || !sameBuild)) {
 				try {
 					FileUtils.copyDirectory(xmlLoc, getBackupDir(), true);
 				} catch (IOException e) {
 		          	logger.log(Level.SEVERE, "Issues with build folder or backup folder: " + e.getMessage());
 				}
-			}
 		}
 
 		xmlDirExist = xmlLoc.exists();
@@ -806,6 +801,7 @@ public class SimulationConfig implements Serializable {
 			try {
 				existingChecksum = Hash.MD5.getChecksumString(existingFile);
 			} catch (IOException e) {
+				logger.severe("Cannot calculate checksum for " + existingFile, e);
 			}
 		}
 
@@ -860,8 +856,6 @@ public class SimulationConfig implements Serializable {
 		if (backupLocation == null) {
 			String s0 = SimulationFiles.getBackupDir();
 
-			// Copy it to /.mars-sim/backup/{$timestamp}/
-			// if that buildText directory already exists
 			// Get timestamp in UTC
 			String timestamp = LocalDateTime.now().toString().replace(":", "").replace("-", "");
 			int lastIndxDot = timestamp.lastIndexOf('.');
@@ -917,33 +911,30 @@ public class SimulationConfig implements Serializable {
 	 * @return DOM document
 	 * @throws IOException
 	 * @throws JDOMException
-	 * @throws Exception     if XML could not be parsed or file could not be found.
 	 */
-	public Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) {
+	public Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD)
+			throws JDOMException, IOException {
 		File f = getBundledXML(filename);
 		if (f != null) {
-			try {
-			    SAXBuilder builder = new SAXBuilder();
-			    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-			    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-				return builder.build(f);
-		    }
-		    catch (JDOMException | IOException e)
-		    {
-		        logger.severe("Can parse XML " + filename + ", " + e.getMessage());
-		    }
+			SAXBuilder builder = new SAXBuilder();
+			builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+			builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+			return builder.build(f);
 		}
 		else {
 			logger.warning("Can not find default XML " + filename);
+			throw new IllegalStateException("Can not find default XML " + filename);
 		}
-		return null;
 	}
 
 
 	/**
 	 * load the default config files
+	 * @throws IOException
+	 * @throws JDOMException
 	 */
-	private void loadDefaultConfiguration() {
+	private void loadDefaultConfiguration() throws JDOMException, IOException {
+  BuildingPackageConfig buildingPackageConfig;
 
 		// Load subset configuration classes.
 		raFactory = new AuthorityFactory(parseXMLFileAsJDOMDocument(GOVERNANCE_FILE, true));
@@ -971,7 +962,6 @@ public class SimulationConfig implements Serializable {
 		mealConfig = new MealConfig(parseXMLFileAsJDOMDocument(MEAL_FILE, true));
 		robotConfig = new RobotConfig(parseXMLFileAsJDOMDocument(ROBOT_FILE, true));
 		quotationConfig = new QuotationConfig(parseXMLFileAsJDOMDocument(QUOTATION_FILE, true));
-//		experimentConfig = new ExperimentConfig(EXPERIMENTS_FILE);
 		scienceConfig = new ScienceConfig();
 
 		logger.config("Done loading all xml config files.");

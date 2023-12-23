@@ -11,19 +11,13 @@ import java.util.Map;
 
 import com.mars_sim.core.authority.Authority;
 
-public interface PersonBuilder<T> {
+public interface PersonBuilder {
 
-	public PersonBuilder<Person> setGender(GenderType g);
+	public PersonBuilder setAge(int age);
 
-	public PersonBuilder<Person> setAge(int age);
-	
-	public PersonBuilder<Person> setName(String name);
+	public PersonBuilder setCountry(NationSpec spec);
 
-	public PersonBuilder<Person> setCountry(String c);
-
-	public PersonBuilder<Person> setAssociatedSettlement(int s);
-
-	public PersonBuilder<Person> setSponsor(Authority sponsor);
+	public PersonBuilder setSponsor(Authority sponsor);
 	
 	/**
 	 * Sets the skills of a person
@@ -31,7 +25,7 @@ public interface PersonBuilder<T> {
 	 * @param skillMap
 	 * @return {@link PersonBuilder<>}
 	 */
-	public PersonBuilder<Person> setSkill(Map<String, Integer> skillMap);
+	public PersonBuilder setSkill(Map<String, Integer> skillMap);
 	
 	/**
 	 * Sets the personality of a person
@@ -39,7 +33,7 @@ public interface PersonBuilder<T> {
 	 * @param map
 	 * @return {@link PersonBuilder<>}
 	 */
-	public PersonBuilder<Person> setPersonality(Map<String, Integer> map, String mbti);
+	public PersonBuilder setPersonality(Map<String, Integer> map, String mbti);
 
 	/**
 	 * Sets the attributes of a person
@@ -47,7 +41,7 @@ public interface PersonBuilder<T> {
 	 * @param attribute map
 	 * @return {@link PersonBuilder<>}
 	 */
-	public PersonBuilder<Person> setAttribute(Map<String, Integer> attributeMap);
+	public PersonBuilder setAttribute(Map<String, Integer> attributeMap);
 	
-	public T build();
+	public Person build();
 }

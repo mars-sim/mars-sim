@@ -1,10 +1,3 @@
-/*
- * Mars Simulation Project
- * PersonNameSpecConfigTest.java
- * @date 2023-07-23
- * @author Barry Evans
- */
-
 package com.mars_sim.core.person;
 
 import java.util.HashSet;
@@ -14,8 +7,8 @@ import com.mars_sim.tools.util.RandomUtil;
 
 import junit.framework.TestCase;
 
-public class PersonNameSpecConfigTest extends TestCase {
-	
+public class NationSpecConfigTest extends TestCase {
+    	
     private NationSpecConfig config;
     
     @Override
@@ -39,5 +32,24 @@ public class PersonNameSpecConfigTest extends TestCase {
             assertFalse("Generated name", newName.contains("#"));
             existing.add(newName);
         }
+    }
+
+    public void testGetNorway() {
+        testNationSpec("Norway", true);
+    }
+
+    private void testNationSpec(String name, boolean hasCharacterisitcs) {
+        var n = config.getItem(name);
+
+        assertNotNull(name + " found", n);
+        assertEquals("Name", name, n.getName());
+        if (hasCharacterisitcs) {
+            assertNotNull(" characteristics present", n.getPopulation());
+        }
+        else {
+            assertNull(" characteristics not present", n.getPopulation());
+        }
+
+        assertTrue(name + " GDP", n.getGDP() > 0);
     }
 }

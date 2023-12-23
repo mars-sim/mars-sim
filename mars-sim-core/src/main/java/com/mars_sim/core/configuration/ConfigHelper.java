@@ -8,6 +8,7 @@ package com.mars_sim.core.configuration;
 
 import org.jdom2.Element;
 
+import com.mars_sim.core.person.PopulationCharacteristics;
 import com.mars_sim.mapdata.location.BoundedObject;
 import com.mars_sim.mapdata.location.LocalPosition;
 
@@ -16,13 +17,20 @@ import com.mars_sim.mapdata.location.LocalPosition;
  */
 public class ConfigHelper {
 
+	private static final String MALE_HEIGHT = "average-male-height";
+	private static final String FEMALE_HEIGHT = "average-female-height";
+	private static final String MALE_WEIGHT = "average-male-weight";
+	private static final String FEMALE_WEIGHT = "average-female-weight";
 	private static final String X_LOCATION = "xloc";
 	private static final String Y_LOCATION = "yloc";
 	private static final String WIDTH = "width";
 	private static final String LENGTH = "length";
 	private static final String FACING = "facing";
 	
-		
+	private ConfigHelper() {
+		// static utility class
+	}	
+	
 	/**
 	 * Convert a text label into a format that is suitable to bne used for an Enum.valueof method.
 	 * This involves changing to upper case and repalicing ' ' & '-' with a '_'
@@ -115,5 +123,18 @@ public class ConfigHelper {
 			result = Boolean.parseBoolean(txt);
 		}
 		return result;
+    }
+
+	/**
+	 * Parse an Element that represents a Population Char. entity. The values are Attributes.
+	 * @param el
+	 * @return
+	 */
+    public static PopulationCharacteristics parsePopulation(Element el) {
+		return new PopulationCharacteristics(
+								Double.parseDouble(el.getAttributeValue(MALE_HEIGHT)),
+								Double.parseDouble(el.getAttributeValue(FEMALE_HEIGHT)),
+								Double.parseDouble(el.getAttributeValue(MALE_WEIGHT)),
+								Double.parseDouble(el.getAttributeValue(FEMALE_WEIGHT)));
     }
 }

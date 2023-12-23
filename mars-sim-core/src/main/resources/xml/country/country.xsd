@@ -44,6 +44,15 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="characteristics">
+        <xs:complexType>
+            <xs:attribute name="average-male-height" type="xs:string"/>
+            <xs:attribute name="average-female-height" type="xs:string"/>
+            <xs:attribute name="average-male-weight" type="xs:string"/>
+            <xs:attribute name="average-female-weight" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="country">
         <xs:complexType>
             <xs:sequence>
@@ -67,6 +76,7 @@
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
+                <xs:element ref="characteristics" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="first-name-list">
                     <xs:complexType>
                         <xs:sequence>

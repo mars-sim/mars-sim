@@ -12,6 +12,7 @@ import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.location.LocationStateType;
+import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -159,7 +160,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
 	public void testPersonInGarage() throws Exception {
-		Person person = new Person("Worker One", settlement);
+		Person person = Person.create("Worker One", settlement, GenderType.MALE).build();
 		unitManager.addUnit(person);
 
 		assertInsideSettlement("Initial person", person, settlement);
