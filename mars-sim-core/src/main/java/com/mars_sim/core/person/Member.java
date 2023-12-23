@@ -8,6 +8,8 @@ package com.mars_sim.core.person;
 
 import java.util.Map;
 
+import com.mars_sim.core.person.ai.SkillType;
+
 /**
  * The Member class is for storing the alpha team roster
  */
@@ -26,13 +28,8 @@ public class Member {
 	private String dessert;
 	private String activity;
 
-	private Map<String, Integer> skills;
-
 	private Map<String, Integer> relationships;
-
-	
-	public Member() {
-	}
+	private Map<SkillType, Integer> skills;
 
 	public void setName(String value) {
 		name = value;
@@ -122,11 +119,11 @@ public class Member {
 		return activity;
 	}
 
-	public Map<String, Integer> getSkillMap() {
+	public Map<SkillType, Integer> getSkillMap() {
 		return skills;
 	}
 
-	public void setSkillsMap(Map<String, Integer> skills) {
+	public void setSkillsMap(Map<SkillType, Integer> skills) {
 		this.skills = skills;
 		
 	}

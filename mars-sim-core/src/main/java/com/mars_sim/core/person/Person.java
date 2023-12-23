@@ -45,7 +45,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.Mind;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
-import com.mars_sim.core.person.ai.PersonAttributeManager;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.fav.Favorite;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -231,7 +230,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 		// Create a prior training profile
 		generatePriorTraining();
 		// Construct the PersonAttributeManager instance
-		attributes = new PersonAttributeManager(initialAttrs);
+		attributes = new NaturalAttributeManager(initialAttrs);
 
 		// Construct the SkillManager instance
 		skillManager = new SkillManager(this);
@@ -295,7 +294,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	 * @return
 	 */
 	public static PersonBuilder create(String name, Settlement settlement, GenderType gender) {
-		return new PersonBuilderImpl(name, settlement, gender);
+		return new PersonBuilder(name, settlement, gender);
 	}
 
 	/**
@@ -1186,6 +1185,10 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 		return bed != null;
 	}
 	
+    public void setCountry(String name) {
+		this.country = name;
+    }
+
 	public String getCountry() {
 		return country;
 	}
@@ -2265,4 +2268,5 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
     public static double getAverageHeight() {
         return averageHeight;
     }
+
 }

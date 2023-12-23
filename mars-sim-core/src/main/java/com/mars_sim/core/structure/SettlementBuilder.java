@@ -38,6 +38,7 @@ import com.mars_sim.core.person.Member;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.NationSpec;
 import com.mars_sim.core.person.NationSpecConfig;
+import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.fav.Favorite;
 import com.mars_sim.core.person.ai.job.util.AssignmentType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -508,16 +509,13 @@ public final class SettlementBuilder {
 				var country = namingSpecs.getItem(m.getCountry());
 
 				// Loads the person's preconfigured skills (if any).
-				Map<String, Integer> skillMap = m.getSkillMap();
+				Map<SkillType, Integer> skillMap = m.getSkillMap();
 
 				// Set the person's configured Big Five Personality traits (if any).
 				Map<String, Integer> bigFiveMap = new HashMap<>(); //TOOO
 
 				// Override person's personality type based on people.xml, if any.
 				String mbti = m.getMBTI();
-
-				// Set person's configured natural attributes (if any).
-				Map<String, Integer> attributeMap = new HashMap<>();
 
 				// Create person and add to the unit manager.
 				// Use Builder Pattern for creating an instance of Person
@@ -527,7 +525,6 @@ public final class SettlementBuilder {
 						.setCountry(country)
 						.setSkill(skillMap)
 						.setPersonality(bigFiveMap, mbti)
-						.setAttribute(attributeMap)
 						.build();
 
 				unitManager.addUnit(person);

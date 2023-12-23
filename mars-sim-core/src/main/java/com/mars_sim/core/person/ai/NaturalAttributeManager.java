@@ -17,7 +17,7 @@ import com.mars_sim.tools.util.RandomUtil;
  * The NaturalAttributeManager class manages a person's natural attributes.
  * There is only natural attribute manager for each person.
  */
-public abstract class NaturalAttributeManager implements Serializable {
+public class NaturalAttributeManager implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -26,10 +26,16 @@ public abstract class NaturalAttributeManager implements Serializable {
 	private Map<NaturalAttributeType, Integer> attributeMap;
 	
 	/**
-	 * Constructor.
+	 * Construction an attribute manager with an initial set
+	 * @param initialAttr Initial attribute to load; is optional
 	 */
-	protected NaturalAttributeManager() {
+	public NaturalAttributeManager(Map<NaturalAttributeType, Integer> initialAttr) {
 		attributeMap = new EnumMap<>(NaturalAttributeType.class);
+		if (initialAttr != null) {
+			for(var e : initialAttr.entrySet()) {
+				setAttribute(e.getKey(), e.getValue());
+			}	
+		}
 	}
 
 

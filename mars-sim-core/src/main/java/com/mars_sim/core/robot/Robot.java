@@ -166,10 +166,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		}
 
 		// Construct the RoboticAttributeManager instance.
-		attributes = new RoboticAttributeManager();
-		for(Entry<NaturalAttributeType, Integer> a : spec.getAttributeMap().entrySet()) {
-			attributes.setAttribute(a.getKey(), a.getValue());
-		}
+		attributes = new NaturalAttributeManager(spec.getAttributeMap());
 	}
 
 	/**
