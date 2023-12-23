@@ -857,7 +857,6 @@ public class SettlementTransparentPanel extends JComponent {
 		recenterButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.recenter")); //$NON-NLS-1$
 		recenterButton.addActionListener(e -> {
 				mapPanel.reCenter();
-				zoomSlider.setValue(0);
 		});
 
 		// Create rotate counter-clockwise button.
@@ -920,14 +919,15 @@ public class SettlementTransparentPanel extends JComponent {
 	}
 
 	/**
-	 * Clear the labelsmenu
+	 * Clears the labels menu.
 	 */
 	private void clearLabelsMenu() {
 		labelsMenu = null;
 	}
 
 	/**
-	 * Create the labels popup menu.
+	 * Creates the labels popup menu.
+	 * 
 	 * @return popup menu.
 	 */
 	private JPopupMenu createLabelsMenu() {

@@ -96,23 +96,23 @@ public class BuildingAirlock extends Airlock {
 
         // Determine airlock inner/interior door position.
         airlockInteriorPos = LocalAreaUtil.getLocalRelativePosition(interiorPos, building);
-        insideInteriorDoorMap = buildDoorMap(interiorPos, building, 0.3, 0.6, 0.5);
-        outsideInteriorDoorMap = buildDoorMap(interiorPos, building, -0.3, -0.6, 0.5);
+        insideInteriorDoorMap = buildDoorMap(interiorPos, building, 0.3, 0.6, 0.4);
+        outsideInteriorDoorMap = buildDoorMap(interiorPos, building, -0.3, -0.6, 0.4);
 
         // Determine airlock outer/exterior door position.
         airlockExteriorPos = LocalAreaUtil.getLocalRelativePosition(exteriorPos, building);
-        insideExteriorDoorMap = buildDoorMap(exteriorPos, building, -0.5, -1.0, 0.5);
-        outsideExteriorDoorMap = buildDoorMap(exteriorPos, building, 0.5, 1.0, 0.5);
+        insideExteriorDoorMap = buildDoorMap(exteriorPos, building, -0.5, -1.0, 0.4);
+        outsideExteriorDoorMap = buildDoorMap(exteriorPos, building, 0.5, 1.0, 0.4);
     }
 
     /**
      * Builds a map for the door positions. Creates four positioned around the center offset by the x and y values.
      * 
-     * @param center Position of the center of the positions.
-     * @param building Building hosting the door
-     * @param x1 First x value
-     * @param x2 Second x value
-     * @param y y values; uses +/- of this.
+     * @param center 	The x value of the pos of the interior or exterior door
+     * @param building 	The building hosting the door
+     * @param x1 		The first x value of a pos
+     * @param x2 		The second x value of a pos
+     * @param y 		The +y and -y values of a pos
      * @return
      */
     private static Map<LocalPosition, Integer> buildDoorMap(LocalPosition center, Building building,

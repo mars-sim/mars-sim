@@ -280,14 +280,16 @@ public class ExitAirlock extends Task {
 		Building b = (Building) airlock.getEntity();
 		
 		if (newZone == 2) {	
-			LocalPosition loc = walkToEVASpot(b);
-
-			if (loc != null) {
+			// Check if the person can walk to one of the 4 EVA chambers
+			boolean canWalk = walkToEVASpot(b, newPos);
+			
+			if (canWalk) {
+				// Convert the local activity spot to the settlement reference coordinate
 				// Set the person's new position
-				person.setPosition(loc);
+				person.setPosition(newPos);
 				
 				logger.log(b, person, Level.FINE, 4000, "Arrived at "
-						+ loc.getShortFormat() + " in airlock zone " + newZone + ".");
+						+ newPos.getShortFormat() + " in airlock zone " + newZone + ".");
 				return true;
 			}
 			else {
@@ -298,6 +300,8 @@ public class ExitAirlock extends Task {
 		}
 
 		else if (newZone == 4) {
+			// Person is outside
+			
 			// Set the person's new position
 			person.setPosition(newPos);
 			

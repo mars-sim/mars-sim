@@ -529,13 +529,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- exterior-position : the outer or exterior door position of the airlock. -->
 			<EVA capacity="4">
 				<center-position xloc="0.0" yloc="0.0"/>
-				<interior-position xloc="-2.3" yloc="0.0"/>
-				<exterior-position xloc="3.3" yloc="0.0"/>
+				<interior-position xloc="-2.0" yloc="0.0"/>
+				<exterior-position xloc="3.0" yloc="0.0"/>
 				<activity>
-					<activity-spot xloc="1" yloc="1.25" />
-					<activity-spot xloc="1" yloc="-1.25" />
-					<activity-spot xloc="-1" yloc="1.25" />
-					<activity-spot xloc="-1" yloc="-1.25" />
+					<activity-spot xloc="1.0" yloc="1.25" />
+					<activity-spot xloc="1.0" yloc="-1.25" />
+					<activity-spot xloc="-1.0" yloc="1.25" />
+					<activity-spot xloc="-1.0" yloc="-1.25" />
 				</activity>
 			</EVA>
 

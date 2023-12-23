@@ -509,7 +509,7 @@ public class SettlementMapPanel extends JPanel {
 		yPos = 0D;
 		setRotation(0D);
 		scale = DEFAULT_SCALE;
-
+		settlementTransparentPanel.setZoomValue((int)scale);
 		repaint();
 	}
 

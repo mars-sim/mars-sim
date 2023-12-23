@@ -1131,9 +1131,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param building
 	 * @return
 	 */
-	protected LocalPosition walkToEVASpot(Building building) {
-		Function f = building.getFunction(FunctionType.EVA);
-		return walkToActivitySpotInFunction(building, f, false);
+	protected boolean walkToEVASpot(Building building, LocalPosition newPos) {
+		return walkToActivitySpot(building, building.getFunction(FunctionType.EVA), newPos, false);
 	}
 
 	/**
@@ -1153,6 +1152,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		return walkToActivitySpotInFunction(building, f, allowFail) != null;
 	}
 
+	/**
+	 * Walks to an activity spot in a function.
+	 * 
+	 * @param building
+	 * @param f
+	 * @param allowFail
+	 * @return
+	 */
 	private LocalPosition walkToActivitySpotInFunction(Building building, Function f, boolean allowFail) {
 		LocalPosition loc = f.getAvailableActivitySpot();
 
@@ -1171,7 +1178,29 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 		return loc;
 	}
+	
+	/**
+	 * Walks to a new pos in the function. 
+	 * 
+	 * @param building
+	 * @param f
+	 * @param newPos
+	 * @param allowFail
+	 * @return
+	 */
+	private boolean walkToActivitySpot(Building building, Function f, LocalPosition newPos, boolean allowFail) {
+		if (newPos != null) {
+			// Create subtask for walking to destination.
+			boolean canWalk = createWalkingSubtask(building, newPos, allowFail);
+			
+			if (canWalk) {
+				// Add to this activity spot
+				return f.claimActivitySpot(newPos, worker);
+			}
+		} 
 
+		return false;
+	}
 	
 	/**
 	 * Walks to a random location in a building.

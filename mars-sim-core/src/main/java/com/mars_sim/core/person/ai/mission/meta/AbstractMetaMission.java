@@ -142,10 +142,10 @@ public class AbstractMetaMission implements MetaMission {
 	    	return 0;
 	    }
 		
-	    int f1 = 1 + 2 * numEmbarking;
-	    int f2 = 1 + 3 * numThisMission;
+	    int f1 = 2 * numEmbarking;
+	    int f2 = 3 * numThisMission;
 		
-	    return value / f1 / f2;
+	    return value / (1 + f1) / (1 + f2);
 	}
 	
     public static void initializeInstances(MasterClock mc, MissionManager m) {

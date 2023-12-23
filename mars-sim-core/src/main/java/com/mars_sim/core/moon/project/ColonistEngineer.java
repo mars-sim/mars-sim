@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.moon.Colonist;
 import com.mars_sim.core.moon.Colony;
 import com.mars_sim.core.science.ScienceType;
