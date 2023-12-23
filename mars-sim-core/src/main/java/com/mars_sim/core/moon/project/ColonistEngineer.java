@@ -26,7 +26,7 @@ public class ColonistEngineer extends Colonist implements Serializable, Temporal
 	private static final long serialVersionUID = 1L;
 	
 	/** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(ColonistEngineer.class.getName());
+	// may add back private static final SimLogger logger = SimLogger.getLogger(ColonistEngineer.class.getName())
 	
 	private int numDevelopment = 0;
 	

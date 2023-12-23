@@ -45,7 +45,6 @@ import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A mission for delivering emergency supplies from one settlement to another.
- * TODO externalize strings
  */
 public class EmergencySupply extends RoverMission {
 

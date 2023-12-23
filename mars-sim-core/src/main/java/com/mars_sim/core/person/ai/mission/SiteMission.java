@@ -9,7 +9,7 @@ package com.mars_sim.core.person.ai.mission;
 import com.mars_sim.core.structure.Settlement;
 
 /**
- * A Mission that is associated with a Site(s)
+ * A Mission that is associated with site(s)
  */
 public interface SiteMission {
 

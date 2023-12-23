@@ -22,7 +22,7 @@ public final class ActivitySpot implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	/**
-	 * This provides a binding to an allocated ActivitySpot. Only an Allocated spot
+	 * This class provides a binding to an allocated ActivitySpot. Only an Allocated spot
 	 * can be released.
 	 */
 	public static class AllocatedSpot implements Serializable {
@@ -39,7 +39,7 @@ public final class ActivitySpot implements Serializable {
 		}
 
 		/**
-		 * Leave a previously allocated activity spot.
+		 * Leaves a previously allocated activity spot.
 		 * 
 		 * @param w Worker releasing
 		 * @param release Release the permanent reservation
@@ -58,7 +58,8 @@ public final class ActivitySpot implements Serializable {
 		}
 
 		/**
-		 * Get the owner of this allocation.
+		 * Gets the owner of this allocation.
+		 * 
 		 * @return
 		 */
 		public Building getOwner() {
@@ -66,7 +67,7 @@ public final class ActivitySpot implements Serializable {
 		}
 
 		/**
-		 * Get a description of the spot
+		 * Gets a description of the spot.
 		 */
         public String getSpotDescription() {
             return spot.getName() + " @ " + owner.getName();
@@ -170,6 +171,7 @@ public final class ActivitySpot implements Serializable {
 
 	/**
 	 * Gets the name of the spot.
+	 * 
 	 * @return Name of the spot
 	 */
 	public String getName() {

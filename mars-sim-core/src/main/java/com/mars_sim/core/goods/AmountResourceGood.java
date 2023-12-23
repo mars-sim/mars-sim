@@ -468,19 +468,6 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Gets the average demand.
-	 *
-	 * @param resource
-	 * @param projectedDemand
-	 * @param solElapsed
-	 * @return
-	 */
-	private double getAverageAmountDemand(GoodsManager owner) {
-		return Math.max(0, owner.getDemandValue(this));
-	}
-	
-
-	/**
 	 * Flattens the amount demand on certain selected resources or types of resources.
 	 * 
 	 * @param resource

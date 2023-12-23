@@ -146,10 +146,6 @@ public class ColonistResearcher extends Colonist implements Researcher, Serializ
 		return colony.getResearchArea();
 	}
 	
-	private double getResearchAreaGrowthRate() {
-		return colony.getResearchAreaGrowthRate();
-	}
-	
 	
 	public void addActiveness(double value) {
 		if (activeness + value > 100) {
