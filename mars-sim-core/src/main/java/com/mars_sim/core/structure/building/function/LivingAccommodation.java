@@ -341,7 +341,7 @@ public class LivingAccommodation extends Function {
 	 * 
 	 * @param settlement
 	 * @param p the person
-	 * @param permenant Looking to make the allocate fixed
+	 * @param permanent
 	 */
 	public static AllocatedSpot allocateBed(Settlement settlement, Person p, boolean permanent) {
 		boolean guest = (!settlement.equals(p.getAssociatedSettlement()));
@@ -356,7 +356,7 @@ public class LivingAccommodation extends Function {
 		}
 
 		LivingAccommodation guestHouse = null;
-		for(Building b : dorms) {
+		for (Building b : dorms) {
 			// If looking for permanent then find an unassigned ActivitySpot
 			LivingAccommodation lvi = b.getLivingAccommodation();
 			if ((lvi.getNumEmptyActivitySpots() > 0)
@@ -378,8 +378,7 @@ public class LivingAccommodation extends Function {
 			guestHouse = RandomUtil.getARandSet(dorms).getLivingAccommodation();
 		}
 
-		// Looking for a citizen with no capacity
-		logger.warning(p, "All beds are allocated");
+		logger.config(p, "Cannot find a bed.");
 
 		// Pick a random bed in the guesthouse; unlikely to arrive here
 		return RandomUtil.getARandSet(guestHouse.getActivitySpots()).claim(p, false,

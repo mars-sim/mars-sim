@@ -1041,10 +1041,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<fishery capacity="10000">
 				<activity>
-					<activity-spot xloc="0" yloc="2" />
-					<activity-spot xloc="0" yloc="1" />
-					<activity-spot xloc="0" yloc="-1" />
-					<activity-spot xloc="0" yloc="-2" />
+					<activity-spot xloc="-2.65" yloc="-2.5" />
+					<activity-spot xloc="-2.65" yloc="-1.5" />
+					<activity-spot xloc="-2.65" yloc="0.5" />
+					<activity-spot xloc="2.65" yloc="-0.5" />
+					<activity-spot xloc="2.65" yloc="-1.5" />
+					<activity-spot xloc="2.65" yloc="-2.5" />
 				</activity>
 			</fishery>
 
@@ -1052,14 +1054,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<power-storage capacity="80"  discharge-rate="1.25"/>
 
-			<recreation capacity="6">
+			<recreation capacity="5">
 				<activity>
-					<activity-spot xloc="-2.5" yloc="2.5" />
-					<activity-spot xloc="-2.5" yloc="1.5" />
-					<activity-spot xloc="-2.5" yloc="0.5" />
-					<activity-spot xloc="2.5" yloc="3.5" />
-					<activity-spot xloc="2.5" yloc="2.5" />
-					<activity-spot xloc="2.5" yloc="1.5" />				
+					<activity-spot xloc="0" yloc="1" />
+					<activity-spot xloc="0" yloc="0" />
+					<activity-spot xloc="0" yloc="-1" />
+					<activity-spot xloc="0" yloc="-2" />
+					<activity-spot xloc="0" yloc="-3" />		
 				</activity>
 			</recreation>
 			
@@ -1117,10 +1118,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			-->
 			<algae-farming area="86.4" depth="0.25">
 				<activity>
-					<activity-spot xloc="2.7" yloc="4.0" />
-					<activity-spot xloc="2.7" yloc="-4.0" />
-					<activity-spot xloc="-2.7" yloc="-4.0" />
-					<activity-spot xloc="-2.7" yloc="4.0" />
+					<activity-spot xloc="-1.8" yloc="3.4" />
+					<activity-spot xloc="1.8" yloc="-3.4" />
+					<activity-spot xloc="-1.8" yloc="-3.4" />
+					<activity-spot xloc="1.8" yloc="3.4" />
+					<activity-spot xloc="0" yloc="-3.4" />
+					<activity-spot xloc="0" yloc="3.4" />
 				</activity>
 			</algae-farming>
 
@@ -1128,6 +1131,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<power-storage capacity="80" discharge-rate="1.25"/>
 
+			<recreation capacity="4">
+				<activity>
+					<activity-spot xloc="1.0" yloc="-1.9" />
+					<activity-spot xloc="1.0" yloc="1.9" />
+					<activity-spot xloc="-1.0" yloc="-1.9" />
+					<activity-spot xloc="-1.0" yloc="-1.9" />	
+				</activity>
+			</recreation>
+			
 			<research tech-level="2" capacity="4">
 				<research-specialty name="BIOLOGY" />
 				<activity>
@@ -2744,12 +2756,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!--EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" /!-->
 			<life-support capacity="12" power-required="0.6" />
-			<living-accommodation capacity="4">
+			<living-accommodation capacity="5">
 				<activity>
-					<activity-spot xloc="1.13" yloc="2.67" />
-					<activity-spot xloc="2.89" yloc="0.31" />
-					<activity-spot xloc="2.67" yloc="-0.92" />
-					<activity-spot xloc="-0.18" yloc="-2.97" />
+					<activity-spot xloc="1.33" yloc="3.11" />
+					<activity-spot xloc="3.27" yloc="0.27" />
+					<activity-spot xloc="3.09" yloc="-1.07" />
+					<activity-spot xloc="-0.2" yloc="-3.44" />
+					<activity-spot xloc="-3.13" yloc="-1.33" />
 				</activity>			
 			</living-accommodation>
 			<power-generation>

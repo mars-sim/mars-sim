@@ -46,7 +46,7 @@
         </connection-list>
     </building>
 
-    <building id="5" type="Inflatable Greenhouse" xloc="-24.0"
+    <building id="5" type="Algae Pond" xloc="-24.0"
         yloc="0.0" facing="270.0">
         <connection-list>
             <connection id="4" xloc="0.0" yloc="4.5" />
@@ -54,7 +54,7 @@
         </connection-list>
     </building>
 
-    <building id="6" type="Machinery Hab" xloc="0.0" yloc="13.0"
+    <building id="6" type="Lander Hab" xloc="0.0" yloc="13.0"
         facing="0.0">
         <connection-list>
             <connection id="1" xloc="0.0" yloc="-4.5" />

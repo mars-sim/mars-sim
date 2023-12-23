@@ -129,7 +129,7 @@
             <connection id="16" xloc="0.0" yloc="-1.5" />
         </connection-list>
     </building>
-    <building id="16" type="Inflatable Greenhouse" xloc="-24.0"
+    <building id="16" type="Algae Pond" xloc="-24.0"
         yloc="26.0" facing="270.0">
         <connection-list>
             <connection id="15" xloc="0.0" yloc="4.5" />

@@ -1099,7 +1099,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		person.setActivitySpot(bed);
 
 		if (myLoc.equals(bed.getAllocated().getPos())) {
-			logger.info(person, 10_000L, "Already in my own bed.");
+//			logger.info(person, 10_000L, "Already in my own bed.");
 			return canWalk;
 		}
 	

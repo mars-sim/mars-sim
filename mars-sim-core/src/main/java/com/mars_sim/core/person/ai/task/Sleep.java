@@ -259,7 +259,7 @@ public class Sleep extends Task {
 				return;
 			}
 
-			// Find a bed, if at home Settlemnt attempt to make it permanent
+			// Find a bed, if at home settlement attempt to make it permanent
 			var tempBed = LivingAccommodation.allocateBed(s, person,
 							s.equals(person.getAssociatedSettlement()));
 			if (tempBed == null) {

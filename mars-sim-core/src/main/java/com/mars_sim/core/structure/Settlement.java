@@ -1987,7 +1987,7 @@ public class Settlement extends Structure implements Temporal,
 			
 			p.setCoordinates(getCoordinates());
 
-			// Assign a permenant bed reservatinoif possible
+			// Assign a permanent bed reservation if possible
 			LivingAccommodation.allocateBed(this, p, true);
 
 			// Update the numCtizens
@@ -2760,7 +2760,7 @@ public class Settlement extends Structure implements Temporal,
 		
 		if (objectiveType == ObjectiveType.CROP_FARM)
 			return "Inflatable Greenhouse";
-		// alternatives : "Fishery", "Large Greenhouse", "Inground Greenhouse"
+		// alternatives : "Fish Farm", "Large Greenhouse", "Inground Greenhouse"
 		else if (objectiveType == ObjectiveType.MANUFACTURING_DEPOT)
 			return "Workshop"; 
 		// alternatives : "Manufacturing Shed", MD1, MD4
