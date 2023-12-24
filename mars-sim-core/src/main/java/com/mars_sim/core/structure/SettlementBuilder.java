@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.StopWatch;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.authority.Authority;
@@ -37,6 +38,7 @@ import com.mars_sim.core.person.Member;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.NationSpec;
 import com.mars_sim.core.person.NationSpecConfig;
+import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.fav.Favorite;
 import com.mars_sim.core.person.ai.job.util.AssignmentType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -193,7 +195,7 @@ public final class SettlementBuilder {
 		List<String> remainingNames = new ArrayList<>(sponsor.getSettlementNames());
 
 		List<String> usedNames = unitManager.getSettlements().stream()
-							.map(s -> s.getName()).collect(Collectors.toList());
+							.map(Entity::getName).toList();
 
 		remainingNames.removeAll(usedNames);
 		int idx = RandomUtil.getRandomInt(remainingNames.size());
@@ -409,16 +411,10 @@ public final class SettlementBuilder {
 			existingfullnames.add(fullname);
 
 			// Use Builder Pattern for creating an instance of Person
-			Person person = Person.create(fullname, settlement)
-					.setGender(gender)
-					.setCountry(country)
+			Person person = Person.create(fullname, settlement, gender)
 					.setSponsor(sponsor)
-					.setSkill(null)
-					.setPersonality(null, null)
-					.setAttribute(null)
+					.setCountry(spec)
 					.build();
-
-			person.initialize();
 
 			unitManager.addUnit(person);
 
@@ -510,10 +506,10 @@ public final class SettlementBuilder {
 
 				// Retrieve country & sponsor designation from people.xml (may be edited in
 				// CrewEditorFX)
-				String country = m.getCountry();
+				var country = namingSpecs.getItem(m.getCountry());
 
 				// Loads the person's preconfigured skills (if any).
-				Map<String, Integer> skillMap = m.getSkillMap();
+				Map<SkillType, Integer> skillMap = m.getSkillMap();
 
 				// Set the person's configured Big Five Personality traits (if any).
 				Map<String, Integer> bigFiveMap = new HashMap<>(); //TOOO
@@ -521,22 +517,15 @@ public final class SettlementBuilder {
 				// Override person's personality type based on people.xml, if any.
 				String mbti = m.getMBTI();
 
-				// Set person's configured natural attributes (if any).
-				Map<String, Integer> attributeMap = new HashMap<>();
-
 				// Create person and add to the unit manager.
 				// Use Builder Pattern for creating an instance of Person
-				Person person = Person.create(name, settlement)
-						.setGender(gender)
+				Person person = Person.create(name, settlement, gender)
 						.setAge(age)
-						.setCountry(country)
 						.setSponsor(sponsor)
+						.setCountry(country)
 						.setSkill(skillMap)
 						.setPersonality(bigFiveMap, mbti)
-						.setAttribute(attributeMap)
 						.build();
-
-				person.initialize();
 
 				unitManager.addUnit(person);
 

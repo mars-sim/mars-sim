@@ -7,7 +7,9 @@
 		 <population value="39.857145"/>
 		 <GDP-growth value="4.87"/>
 	</economics-data>
-	
+    <!-- Taken from https://www.worlddata.info/average-bodyheight.php -->
+    <characteristics average-male-height="180" average-female-height="165"
+	            average-male-weight="89.0" average-female-weight="71.5"/>	
     <first-name-list>
         <first-name value="Jan" gender="male" />
         <first-name value="Antoni" gender="male" />

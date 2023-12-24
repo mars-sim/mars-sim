@@ -12,6 +12,7 @@ import java.util.List;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import com.mars_sim.core.authority.Nation;
+import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 
 /**
@@ -20,28 +21,25 @@ import com.mars_sim.core.configuration.UserConfigurableConfig;
  */
 public class NationSpecConfig extends UserConfigurableConfig<NationSpec> {
 
-	private final String COUNTRY_XSD = "country.xsd";
+	private static final String COUNTRY_XSD = "country.xsd";
 	
 	private static final String COUNTRY = "country";
 
-	private final String ECONOMICS_DATA = "economics-data";
-//	private final String GDP = "GDP";
-//	private final String PPP = "PPP";
-//	private final String POPULATION = "population";
-//	private final String GDP_GROWTH = "GDP-growth";
+	private static final String ECONOMICS_DATA = "economics-data";
 
-	private final String LAST_NAME_LIST = "last-name-list";
-	private final String FIRST_NAME_LIST = "first-name-list";	
-	private final String MALE = "male";
-	private final String FEMALE = "female";
-	private final String LAST_NAME = "last-name";
-	private final String FIRST_NAME = "first-name";
-	private final String GENDER = "gender";
-    private final String NAME = "name";
-    private final String VALUE = "value";
+	private static final String LAST_NAME_LIST = "last-name-list";
+	private static final String FIRST_NAME_LIST = "first-name-list";	
+	private static final String MALE = "male";
+	private static final String FEMALE = "female";
+	private static final String LAST_NAME = "last-name";
+	private static final String FIRST_NAME = "first-name";
+	private static final String GENDER = "gender";
+    private static final String NAME = "name";
+    private static final String VALUE = "value";
+    private static final String POPULATION_CHARS = "characteristics";
 
     // Note: each of the predefined country below has a xml file
-    private final String[] COUNTRIES = {
+    private static final String[] COUNTRIES = {
     					"Austria",  "Belgium", "Brazil", 
     					"Canada", "China", "Czech Republic",
                         "Denmark", "Estonia", "Finland", "France", 
@@ -55,6 +53,7 @@ public class NationSpecConfig extends UserConfigurableConfig<NationSpec> {
                         "South Korea", "Spain", "Sweden", "Switzerland", 
                         "United Arab Emirates",
                         "United Kingdom", "United States"};
+
 
 	private static List<Nation> nations = new ArrayList<>();
 	
@@ -83,6 +82,13 @@ public class NationSpecConfig extends UserConfigurableConfig<NationSpec> {
 
 		String country = countryElement.getAttributeValue(NAME);
 		NationSpec result = new NationSpec(country, predefined);
+
+        Element popEl = countryElement.getChild(POPULATION_CHARS);
+        if (popEl != null) {
+            var p = ConfigHelper.parsePopulation(popEl);
+            result.setPeople(p);
+        }
+
 
 		// Scan the economic data
 		double []data = new double[4];

@@ -7,6 +7,7 @@
 package com.mars_sim.core.person;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,10 @@ import java.util.logging.Logger;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
+
+import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
+import com.mars_sim.core.person.ai.SkillType;
 
 /**
  * Provides configuration information about the crew.
@@ -39,15 +43,10 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 	private static final String COUNTRY = "country";
 
 	private static final String PERSONALITY_TYPE = "personality-type";
-//	private static final String PERSONALITY_TRAIT_LIST = "personality-trait-list";
-//	private static final String PERSONALITY_TRAIT = "personality-trait";
 
 	private static final String NAME_ATTR = "name";
 	private static final String DESC_ATTR = "description";
 	private static final String JOB = "job";
-//	private static final String NATURAL_ATTRIBUTE_LIST = "natural-attribute-list";
-//	private static final String NATURAL_ATTRIBUTE = "natural-attribute";
-//	private static final String VALUE = "value";
 	private static final String SKILL_LIST = "skill-list";
 	private static final String SKILL = "skill";
 	private static final String LEVEL = "level";
@@ -65,8 +64,6 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 	 * Crew files preloaded in the code.
 	 */
 	private static final String [] PREDEFINED_CREWS = {"Alpha", "Founders"};
-	
-//	private Map<String, Integer> bigFiveMap = new HashMap<>();
 	
 	/**
 	 * Constructor.
@@ -167,14 +164,6 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 			saveOptionalAttribute(personElement, MAIN_DISH, person.getMainDish());
 			saveOptionalAttribute(personElement, SIDE_DISH, person.getSideDish());
 			saveOptionalAttribute(personElement, DESSERT, person.getDessert());
-	
-//			
-//	        Element traitList = new Element(PERSONALITY_TRAIT_LIST);
-//
-//	        Element trait0 = new Element(PERSONALITY_TRAIT);
-//	        trait0.setAttribute(new Attribute(NAME, "openness"));
-//	        trait0.setAttribute(new Attribute(VALUE, "25"));
-//	        traitList.addContent(trait0);
 	        
 	        personList.add(personElement);
 		}
@@ -255,19 +244,20 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 	 * @param personElement
 	 * @return
 	 */
-	private Map<String, Integer> parseSkillsMap(Element personElement) {
-		Map<String, Integer> result = new HashMap<>();
+	private Map<SkillType, Integer> parseSkillsMap(Element personElement) {
+		Map<SkillType, Integer> result = new EnumMap<>(SkillType.class);
 
 		List<Element> skillListNodes = personElement.getChildren(SKILL_LIST);
-		if ((skillListNodes != null) && (skillListNodes.size() > 0)) {
+		if ((skillListNodes != null) && !skillListNodes.isEmpty()) {
 			Element skillList = skillListNodes.get(0);
 			int skillNum = skillList.getChildren(SKILL).size();
 			for (int x = 0; x < skillNum; x++) {
-				Element skillElement = (Element) skillList.getChildren(SKILL).get(x);
+				Element skillElement = skillList.getChildren(SKILL).get(x);
 				String name = skillElement.getAttributeValue(NAME_ATTR);
 				String level = skillElement.getAttributeValue(LEVEL);
 				int intLevel = Integer.parseInt(level);
-				result.put(name, intLevel);
+				SkillType sType = SkillType.valueOf(ConfigHelper.convertToEnumName(name));
+				result.put(sType, intLevel);
 			}
 		}
 		return result;
@@ -284,13 +274,12 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 		Map<String, Integer> result = new HashMap<>();
 
 		List<Element> relationshipListNodes = personElement.getChildren(RELATIONSHIP_LIST);
-		if ((relationshipListNodes != null) && (relationshipListNodes.size() > 0)) {
+		if ((relationshipListNodes != null) && !relationshipListNodes.isEmpty()) {
 			Element relationshipList = relationshipListNodes.get(0);
 			int relationshipNum = relationshipList.getChildren(RELATIONSHIP).size();
 			for (int x = 0; x < relationshipNum; x++) {
-				Element relationshipElement = (Element) relationshipList.getChildren(RELATIONSHIP).get(x);
+				Element relationshipElement = relationshipList.getChildren(RELATIONSHIP).get(x);
 				String personName = relationshipElement.getAttributeValue(PERSON_NAME);
-//				Integer opinion = new Integer(relationshipElement.getAttributeValue(OPINION));
 				String opinion = relationshipElement.getAttributeValue(OPINION);
 				int intOpinion = Integer.parseInt(opinion);
 				result.put(personName, intOpinion);

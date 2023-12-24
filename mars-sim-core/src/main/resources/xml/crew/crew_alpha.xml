@@ -12,7 +12,7 @@
 		<!--           gender : the person's gender, "male" or "female" (required)-->
 		<!--              age : the person's age (optional) -->		
 		<!-- personality-type : the person's MBTI personality type. (optional) -->
-		<!--          country : the nationality of this person (optional. "USA" by default)  	-->
+		<!--          country : the nationality of this person (optional. "United States" by default)  	-->
 		<!--              job : the person's permanent job. (optional) -->
 		<!--          sponsor : the person's Sponsor; if not defined then the 
 		                        Settlement sponsor is used. (optional) -->
@@ -31,7 +31,7 @@
 			gender="female" 
 			age="37"
 			personality-type="ISTJ"
-			country="USA"
+			country="United States"
 			job="Botanist"
 			favorite-main-dish="Bean Sprout Garlic Stir Fry"
 			favorite-side-dish="Roasted Carrot Soup"
@@ -107,7 +107,7 @@
 		<person name="Rik Declercq" 
 			gender="male" 
 			personality-type="ESTP"
-			country="USA"
+			country="United States"
 			job="Areologist"
 			favorite-main-dish="Salsa Potato Salad" 
 			favorite-side-dish="Sesame Miso Soup" 
@@ -134,7 +134,7 @@
         	gender="male" 
         	personality-type="INFJ"
         	sponsor="MS"
-			country="USA"
+			country="United States"
         	job="Engineer"
 			favorite-main-dish="Steamed Brown Rice" 
 			favorite-side-dish="Roasted Carrot Soup" 
@@ -161,7 +161,7 @@
         	gender="female" 
         	personality-type="ENFJ"
         	sponsor="MS"
-			country="USA"
+			country="United States"
         	job="Technician"
 			favorite-main-dish="Kidney Bean Fried Rice" 
 			favorite-side-dish="Garlic Bread" 
@@ -189,7 +189,7 @@
        		age="50"
        		personality-type="INTP"
         	sponsor="MS"
-			country="USA"
+			country="United States"
         	job="Doctor"
 			favorite-main-dish="Veggie Sandwich" 
 			favorite-side-dish="Taro Soup"

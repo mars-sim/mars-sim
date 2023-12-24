@@ -158,15 +158,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	}
 
 	protected Person buildPerson(String name, Settlement settlement) {
-		Person person = Person.create(name, settlement)
-				.setGender(GenderType.MALE)
-				.setCountry(null)
-				.setSponsor(null)
-				.setSkill(null)
-				.setPersonality(null, null)
-				.setAttribute(null)
+		Person person = Person.create(name, settlement, GenderType.MALE)
 				.build();
-		person.initialize();
 		person.setJob(JobType.ENGINEER, "Test");
 		
 		unitManager.addUnit(person);

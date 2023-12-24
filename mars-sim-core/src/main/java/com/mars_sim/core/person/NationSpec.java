@@ -19,7 +19,7 @@ import com.mars_sim.tools.util.RandomUtil;
  */
 public class NationSpec implements UserConfigurable {
 	
-	private final String PERSON_NO = "Person #";
+	private static final String PERSON_NO = "Person #";
 	
 	private boolean bundled;
 	
@@ -28,14 +28,17 @@ public class NationSpec implements UserConfigurable {
 	private double pop;
 	private double growth;
 	
-	private String scheme;
+	private String country;
 	
 	private List<String> firstMale = new ArrayList<>();
 	private List<String> firstFemale = new ArrayList<>();
 	private List<String> lastNames = new ArrayList<>();
+
+	private PopulationCharacteristics population = null;
+
 	
-	public NationSpec(String scheme, boolean bundled) {
-		this.scheme = scheme;
+	public NationSpec(String country, boolean bundled) {
+		this.country = country;
 		this.bundled = bundled;
 	}
 
@@ -62,6 +65,10 @@ public class NationSpec implements UserConfigurable {
 		this.growth = growth;
 	}
 	
+	void setPeople(PopulationCharacteristics population) {
+		this.population = population;
+	}
+
 	void addLastName(String name) {
 		lastNames.add(name);
 	}
@@ -76,17 +83,25 @@ public class NationSpec implements UserConfigurable {
 
 	@Override
 	public String getDescription() {
-		return scheme;
+		return getName();
 	}
 
 	@Override
 	public String getName() {
-		return scheme;
+		return country;
 	}
 
 	@Override
 	public boolean isBundled() {
 		return bundled;
+	}
+
+	/**
+	 * Get the popultion characterisitcs of this nation.
+	 * @return
+	 */
+	public PopulationCharacteristics getPopulation() {
+		return population;
 	}
 
 	/**

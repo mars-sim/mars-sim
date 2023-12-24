@@ -7,7 +7,9 @@
 		 <population value="51.815,810"/>
 		 <GDP-growth value="2.56"/>
 	</economics-data>
-	
+	<!-- Taken from https://www.worlddata.info/average-bodyheight.php -->
+    <characteristics average-male-height="175" average-female-height="163"
+	            average-male-weight="74.7" average-female-weight="61.0"/>
     <first-name-list>
 
         <!-- https://en.wikipedia.org/wiki/List_of_the_most_popular_given_names_in_South_Korea -->

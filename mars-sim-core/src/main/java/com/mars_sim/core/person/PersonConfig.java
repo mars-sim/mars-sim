@@ -23,7 +23,7 @@ import com.mars_sim.core.person.ai.training.TrainingType;
 public class PersonConfig {
 
 	// Key class to combine role & training types
-	private static final record KeyClass(RoleType r, TrainingType t) {};
+	private static final record KeyClass(RoleType r, TrainingType t) {}
 
 	// Element names
 	private static final String NAME = "name";
@@ -31,11 +31,6 @@ public class PersonConfig {
 	private static final String PERSON_ATTRIBUTES = "person-attributes";
 
 	private static final String BASE_CAPACITY = "base-carrying-capacity";
-	private static final String AVERAGE_TALL_HEIGHT = "average-tall-height";// 176.5;
-	private static final String AVERAGE_SHORT_HEIGHT = "average-short-height";// 162.5;
-
-	private static final String AVERAGE_HIGH_WEIGHT = "average-high-weight";// 68.5;
-	private static final String AVERAGE_LOW_WEIGHT = "average-low-weight";
 
 	private static final String LOW_O2_RATE = "low-activity-metaboic-load-o2-consumption-rate";
 	private static final String NOMINAL_O2_RATE = "nominal-activity-metaboic-load-o2-consumption-rate";
@@ -84,47 +79,48 @@ public class PersonConfig {
 	private static final String MODIFIER = "modifier";
 	private static final String ROLE = "role";
 
+	private static final String CHARACTERISTICS = "characteristics";
+
 	/** The base load-carrying capacity. */
-	private transient double baseCap = -1;
-	/** The upper and lower height. */
-	private transient double[] height = new double[] { -1, -1 };
-	/** The high and lor weight. */
-	private transient double[] weight = new double[] { -1, -1 };
-	/** The 3 types of metabolic loads. */
-	private transient double[] o2ConsumptionRate = new double[] { -1, -1, -1 };
-	/** The consumption rate for water, dessert, food. */
-	private transient double[] consumptionRates = new double[] { -1, -1, -1 };
-	/** The stress breakdown and high fatigue collapse chance. */
-	private transient double[] chance = new double[] { -1, -1 };
-	/** Various time values. */
-	private transient double[] time = new double[] { -1, -1, -1, -1, -1, -1, -1 };
-	/** The min and max temperature. */
-	private transient double[] temperature = new double[] { -1, -1 };
+	private double baseCap = -1;
 	/** The grey2BlackWater ratio. */
-	private transient double grey2BlackWaterRatio = -1;
+	private double grey2BlackWaterRatio = -1;
 	/** The average rate of water usage [kg/sol]. */
-	private transient double waterUsage = -1;
-	/** The min air pressure [kPa]. */
-	private transient double pressure = -1;
+	private double waterUsage = -1;
+	/** The in air pressure [kPa]. */
+	private double pressure = -1;
 	/** The min o2 partial pressure [kPa]. */
-	private transient double o2pressure = -1;
+	private double o2pressure = -1;
 	/** The co2 expulsion rate [kg/sol]. */
-	private transient double co2Rate = -1;
+	private double co2Rate = -1;
 
 	/** The personality distribution map. */
-	private transient Map<String, Double> personalityDistribution;
+	private Map<String, Double> personalityDistribution;
 
-	private transient Commander commander;
+	private Commander commander;
 
-	private transient Map<String, String> personAttributes = new HashMap<>();
 	private Map<KeyClass, Integer> trainingMods = new HashMap<>();
 
+	private PopulationCharacteristics defaultCharacteristics;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param personDoc the person config DOM document.
-	 */
+	private Double waterConsumption;
+	private double foodConsumption;
+	private double dessertConsumption;
+	private double o2DeprivationTime;
+	private double dehyrationStartTime;
+	private double waterDeprivationTime;
+	private double foodDeprivationTime;
+	private double starvationStartTime;
+	private double decompressionTime;
+	private double minTemperature;
+	private double maxTemperature;
+	private double freezingTime;
+	private double highFatigureCollapseChance;
+	private double stressBreakdownChance;
+	private double lowO2ConsumptionRate;
+	private double nominalO2ConsumptionRate;
+	private double highO2ConsumptionRate;
+	
 	public PersonConfig(Document personDoc) {
 		commander = new Commander();
 
@@ -149,12 +145,47 @@ public class PersonConfig {
 
 	private void parsePersonAttrs(Document personDoc) {
 		// Scan the attributes
+		Map<String, Double> personAttributes = new HashMap<>();
 		Element personAttributeEl = personDoc.getRootElement().getChild(PERSON_ATTRIBUTES);
 		for (Element personAttr : personAttributeEl.getChildren()) {
 			String str = personAttr.getAttributeValue(VALUE);
 
-			personAttributes.put(personAttr.getName(), str);
+			personAttributes.put(personAttr.getName(), Double.parseDouble(str));
 		}
+
+		// Pick out values
+		baseCap = personAttributes.get(BASE_CAPACITY);
+
+		lowO2ConsumptionRate = personAttributes.get(LOW_O2_RATE);
+		nominalO2ConsumptionRate = personAttributes.get(NOMINAL_O2_RATE);
+		highO2ConsumptionRate = personAttributes.get(HIGH_O2_RATE);
+		o2DeprivationTime= personAttributes.get(OXYGEN_DEPRIVATION_TIME);
+		o2pressure = personAttributes.get(MIN_O2_PARTIAL_PRESSURE);
+
+		co2Rate = personAttributes.get(CO2_EXPELLED_RATE);
+		waterConsumption = personAttributes.get(WATER_CONSUMPTION_RATE);
+		waterUsage = personAttributes.get(WATER_USAGE_RATE);
+		waterDeprivationTime = personAttributes.get(WATER_DEPRIVATION_TIME);
+		grey2BlackWaterRatio = personAttributes.get(GREY_TO_BLACK_WATER_RATIO);
+
+		minTemperature = personAttributes.get(MIN_TEMPERATURE);
+		maxTemperature = personAttributes.get(MAX_TEMPERATURE);
+
+		foodConsumption = personAttributes.get(FOOD_CONSUMPTION_RATE);
+		dessertConsumption = personAttributes.get(DESSERT_CONSUMPTION_RATE);
+
+		dehyrationStartTime = personAttributes.get(DEHYDRATION_START_TIME);
+		foodDeprivationTime = personAttributes.get(FOOD_DEPRIVATION_TIME);
+		starvationStartTime = personAttributes.get(STARVATION_START_TIME);
+		pressure = personAttributes.get(MIN_AIR_PRESSURE);
+		decompressionTime = personAttributes.get(DECOMPRESSION_TIME);
+
+		freezingTime = personAttributes.get(FREEZING_TIME);
+		stressBreakdownChance = personAttributes.get(STRESS_BREAKDOWN_CHANCE);
+		highFatigureCollapseChance = personAttributes.get(HIGH_FATIGUE_COLLAPSE);
+
+		Element perChar = personDoc.getRootElement().getChild(CHARACTERISTICS);
+		defaultCharacteristics = ConfigHelper.parsePopulation(perChar);
 	}
 
 	/**
@@ -163,186 +194,69 @@ public class PersonConfig {
 	 * @return capacity in kg
 	 */
 	public double getBaseCapacity() {
-		if (baseCap >= 0)
-			return baseCap;
-		else {
-			baseCap = getValueAsDouble(BASE_CAPACITY);
-			return baseCap;
-		}
-	}
-
-	/**
-	 * Gets the upper average height of a person.
-	 * 
-	 * @return height in cm
-	 */
-	public double getTallAverageHeight() {
-		double r = height[0];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(AVERAGE_TALL_HEIGHT);
-			height[0] = r;
-			return r;
-		}
-	}
-
-	/**
-	 * Gets the lower average height of a person.
-	 * 
-	 * @return height in cm
-	 */
-	public double getShortAverageHeight() {
-		double r = height[1];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(AVERAGE_SHORT_HEIGHT);
-			height[1] = r;
-			return r;
-		}
-	}
-
-	/**
-	 * Gets the high average weight of a person.
-	 * 
-	 * @return weight in kg
-	 */
-	public double getHighAverageWeight() {
-		double r = weight[0];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(AVERAGE_HIGH_WEIGHT);
-			weight[0] = r;
-			return r;
-		}
-	}
-
-	/**
-	 * Gets the low average weight of a person.
-	 * 
-	 * @return weight in kg
-	 */
-	public double getLowAverageWeight() {
-		double r = weight[1];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(AVERAGE_LOW_WEIGHT);
-			weight[1] = r;
-			return r;
-		}
+		return baseCap;
 	}
 
 	/**
 	 * Gets the nominal oxygen consumption rate.
 	 * 
 	 * @return oxygen rate (kg/sol)
-	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getNominalO2ConsumptionRate() {
-		double r = o2ConsumptionRate[1];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(NOMINAL_O2_RATE);
-			o2ConsumptionRate[1] = r;
-			return r;
-		}
+		return nominalO2ConsumptionRate;
 	}
 
 	/**
 	 * Gets the low oxygen consumption rate.
 	 * 
 	 * @return oxygen rate (kg/sol)
-	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getLowO2ConsumptionRate() {
-		double r = o2ConsumptionRate[0];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(LOW_O2_RATE);
-			o2ConsumptionRate[0] = r;
-			return r;
-		}
+		return lowO2ConsumptionRate;
 	}
 
 	/**
 	 * Gets the high oxygen consumption rate.
 	 * 
 	 * @return oxygen rate (kg/sol)
-	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getHighO2ConsumptionRate() {
-		double r = o2ConsumptionRate[2];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(HIGH_O2_RATE);
-			o2ConsumptionRate[2] = r;
-			return r;
-		}
+		return highO2ConsumptionRate;
 	}
 
 	/**
 	 * Gets the carbon dioxide expelled rate.
 	 * 
 	 * @return carbon dioxide expelled rate (kg/sol)
-	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getCO2ExpelledRate() {
-		if (co2Rate >= 0)
-			return co2Rate;
-		else {
-			co2Rate = getValueAsDouble(CO2_EXPELLED_RATE);
-			return co2Rate;
-		}
+		return co2Rate;
 	}
 
 	/**
 	 * Gets the water consumption rate.
 	 * 
 	 * @return water rate (kg/sol)
-	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getWaterConsumptionRate() {
-		double r = consumptionRates[0];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(WATER_CONSUMPTION_RATE);
-			consumptionRates[0] = r;
-			return r;
-		}
+		return waterConsumption;
 	}
 
 	/**
 	 * Gets the water usage rate.
 	 * 
 	 * @return water rate (kg/sol)
-	 * @throws Exception if usage rate could not be found.
 	 */
 	public double getWaterUsageRate() {
-		if (waterUsage >= 0)
-			return waterUsage;
-		else {
-			waterUsage = getValueAsDouble(WATER_USAGE_RATE);
-			return waterUsage;
-		}
+		return waterUsage;
 	}
 
 	/**
 	 * Gets the grey to black water ratio.
 	 * 
 	 * @return ratio
-	 * @throws Exception if the ratio could not be found.
 	 */
 	public double getGrey2BlackWaterRatio() {
-		if (grey2BlackWaterRatio < 0) {
-			grey2BlackWaterRatio = getValueAsDouble(GREY_TO_BLACK_WATER_RATIO);
-		}
 		return grey2BlackWaterRatio;
 	}
 
@@ -350,217 +264,117 @@ public class PersonConfig {
 	 * Gets the food consumption rate.
 	 * 
 	 * @return food rate (kg/sol)
-	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getFoodConsumptionRate() {
-		double r = consumptionRates[2];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(FOOD_CONSUMPTION_RATE);
-			consumptionRates[2] = r;
-			return r;
-		}
+		return foodConsumption;
 	}
 
 	/**
 	 * Gets the dessert consumption rate.
 	 * 
 	 * @return dessert rate (kg/sol)
-	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getDessertConsumptionRate() {
-		double r = consumptionRates[1];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(DESSERT_CONSUMPTION_RATE);
-			consumptionRates[1] = r;
-			return r;
-		}
+		return dessertConsumption;
 	}
 
 	/**
 	 * Gets the oxygen deprivation time.
 	 * 
 	 * @return oxygen time in millisols.
-	 * @throws Exception if oxygen deprivation time could not be found.
 	 */
 	public double getOxygenDeprivationTime() {
-		double r = time[0];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(OXYGEN_DEPRIVATION_TIME);
-			time[0] = r;
-			return r;
-		}
+		return o2DeprivationTime;
 	}
 
 	/**
 	 * Gets the water deprivation time.
 	 * 
 	 * @return water time in sols.
-	 * @throws Exception if water deprivation time could not be found.
 	 */
 	public double getWaterDeprivationTime() {
-		double r = time[1];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(WATER_DEPRIVATION_TIME);
-			time[1] = r;
-			return r;
-		}
+		return waterDeprivationTime;
 	}
 
 	/**
 	 * Gets the dehydration start time.
 	 * 
 	 * @return dehydration time in sols.
-	 * @throws Exception if dehydration start time could not be found.
 	 */
 	public double getDehydrationStartTime() {
-		double r = time[2];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(DEHYDRATION_START_TIME);
-			time[2] = r;
-			return r;
-		}
+		return dehyrationStartTime;
 	}
 
 	/**
 	 * Gets the food deprivation time.
 	 * 
 	 * @return food time in sols.
-	 * @throws Exception if food deprivation time could not be found.
 	 */
 	public double getFoodDeprivationTime() {
-		double r = time[3];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(FOOD_DEPRIVATION_TIME);
-			time[3] = r;
-			return r;
-		}
+		return foodDeprivationTime;
 	}
 
 	/**
 	 * Gets the starvation start time.
 	 * 
 	 * @return starvation time in sols.
-	 * @throws Exception if starvation start time could not be found.
 	 */
 	public double getStarvationStartTime() {
-		double r = time[4];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(STARVATION_START_TIME);
-			time[4] = r;
-			return r;
-		}
+		return starvationStartTime;
 	}
 
 	/**
 	 * Gets the minimum air pressure.
 	 * 
 	 * @return air pressure in kPa.
-	 * @throws Exception if air pressure could not be found.
 	 */
 	public double getMinAirPressure() {
-		if (pressure >= 0)
-			return pressure;
-		else {
-			pressure = getValueAsDouble(MIN_AIR_PRESSURE);
-			return pressure;
-		}
+		return pressure;
 	}
 
 	/**
 	 * Gets the absolute minimum oxygen partial pressure of a spacesuit.
 	 * 
 	 * @return partial pressure in kPa.
-	 * @throws Exception if air pressure could not be found.
 	 */
 	public double getMinSuitO2Pressure() {
-		if (o2pressure >= 0)
-			return o2pressure;
-		else {
-			o2pressure = getValueAsDouble(MIN_O2_PARTIAL_PRESSURE);
-			return o2pressure;
-		}
+		return o2pressure;
 	}
 
 	/**
 	 * Gets the max decompression time a person can survive.
 	 * 
 	 * @return decompression time in millisols.
-	 * @throws Exception if decompression time could not be found.
 	 */
 	public double getDecompressionTime() {
-		double r = time[5];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(DECOMPRESSION_TIME);
-			time[5] = r;
-			return r;
-		}
+		return decompressionTime;
 	}
 
 	/**
 	 * Gets the minimum temperature a person can tolerate.
 	 * 
 	 * @return temperature in celsius
-	 * @throws Exception if min temperature cannot be found.
 	 */
 	public double getMinTemperature() {
-		double r = temperature[0];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(MIN_TEMPERATURE);
-			temperature[0] = r;
-			return r;
-		}
+		return minTemperature;
 	}
 
 	/**
 	 * Gets the maximum temperature a person can tolerate.
 	 * 
 	 * @return temperature in celsius
-	 * @throws Exception if max temperature cannot be found.
 	 */
 	public double getMaxTemperature() {
-		double r = temperature[1];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(MAX_TEMPERATURE);
-			temperature[1] = r;
-			return r;
-		}
+		return maxTemperature;
 	}
 
 	/**
 	 * Gets the time a person can survive below minimum temperature.
 	 * 
 	 * @return freezing time in millisols.
-	 * @throws Exception if freezing time could not be found.
 	 */
 	public double getFreezingTime() {
-		double r = time[6];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(FREEZING_TIME);
-			time[6] = r;
-			return r;
-		}
+		return freezingTime;
 	}
 
 	/**
@@ -568,34 +382,18 @@ public class PersonConfig {
 	 * at maximum stress.
 	 * 
 	 * @return percent chance of a breakdown per millisol.
-	 * @throws Exception if stress breakdown time could not be found.
 	 */
 	public double getStressBreakdownChance() {
-		double r = chance[0];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(STRESS_BREAKDOWN_CHANCE);
-			chance[0] = r;
-			return r;
-		}
+		return stressBreakdownChance;
 	}
 
 	/**
 	 * Gets the base percent chance that a person will collapse under high fatigue.
 	 * 
 	 * @return percent chance of a collapse per millisol.
-	 * @throws Exception if collapse time could not be found.
 	 */
 	public double getHighFatigueCollapseChance() {
-		double r = chance[1];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(HIGH_FATIGUE_COLLAPSE);
-			chance[1] = r;
-			return r;
-		}
+		return highFatigureCollapseChance;
 	}
 
 	/**
@@ -635,18 +433,6 @@ public class PersonConfig {
 	}
 
 	/**
-	 * Gets the value of an element as a double
-	 * 
-	 * @param an element
-	 * 
-	 * @return a double
-	 */
-	private double getValueAsDouble(String attr) {
-		String str = personAttributes.get(attr);
-		return Double.parseDouble(str);
-	}
-
-	/**
 	 * Get the Commander's profile
 	 * 
 	 * @return profile
@@ -674,4 +460,12 @@ public class PersonConfig {
 			return v;
 		}
 	}
+
+	/**
+	 * Get the default population characteristics
+	 * @return
+	 */
+    public PopulationCharacteristics getDefaultPhysicalChars() {
+        return defaultCharacteristics;
+    }
 }

@@ -45,7 +45,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.Mind;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
-import com.mars_sim.core.person.ai.PersonAttributeManager;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.fav.Favorite;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -106,33 +105,23 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	/** A small amount. */
 	private static final double SMALL_AMOUNT = 0.01;
 
-	private static final String EARTH_BIRTHPLACE = "Earth";
-	private static final String MARS_BIRTHPLACE = "Mars";
-	private static final String HEIGHT_GENE = "Height";
-	private static final String WEIGHT_GENE = "Weight";
-
 	private static final String EARTHLING = "Earthling";
 
-	/** The average height of a person. */
-	private static  double averageHeight;
-	/** The average weight of a person. */
-	private static  double averageWeight;
-	/** The average upper height of a person. */
-	private static  double tall;
-	/** The average low height of a person. */
-	private static  double shortH;
-	/** The average high weight of a person. */
-	private static  double highW;
-	/** The average low weight of a person. */
-	private static  double lowW;
+	private static double averageWeight;
+	private static double averageHeight;
+
+	static {
+		var pc = SimulationConfig.instance().getPersonConfig();
+
+		averageHeight = pc.getDefaultPhysicalChars().getAverageHeight();
+		averageWeight = pc.getDefaultPhysicalChars().getAverageWeight();
+	}
 
 	// Transient data members
 	/** The extrovert score of a person. */
 	private transient int extrovertScore = -1;
 
 	// Data members
-	/** True if the person is born on Mars. */
-	private boolean bornOnMars;
 	/** True if the person is buried. */
 	private boolean isBuried;
 	/** True if the person is declared dead. */
@@ -162,11 +151,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	private double height;
 	/** The height of the person (in kg). */
 	private double weight;
-	/** Settlement Z location (meters) from settlement center. */
-	private double zLoc;
 
-	/** The birthplace of the person. */
-	private String birthplace;
 	/** The person's country of origin. */
 	private String country;
 	/** The person's blood type. */
@@ -210,10 +195,6 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	
 	/** The person's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement = new ConcurrentHashMap<>();
-	/** The person's paternal chromosome. */
-	private Map<Integer, Gene> paternalChromosome;
-	/** The person's maternal chromosome. */
-	private Map<Integer, Gene> maternalChromosome;
 	/** The person's mission experiences. */
 	private Map<MissionType, Integer> missionExperiences;
 	/** The person's list of prior trainings */
@@ -225,51 +206,20 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	private SolMetricDataLogger<String> eVATaskTime;
 	private ShiftSlot shiftSlot;
 
-	static {
-		// personConfig is needed by maven unit test
-		PersonConfig personConfig = simulationConfig.getPersonConfig();
-
-		// Compute the average height for all
-		tall = personConfig.getTallAverageHeight();
-		shortH = personConfig.getShortAverageHeight();
-		averageHeight = (tall + shortH) / 2D;
-		// Compute the average weight for all
-		highW = personConfig.getHighAverageWeight();
-		lowW = personConfig.getLowAverageWeight();
-		averageWeight = (highW + lowW) / 2D;
-	}
-
 	/**
-	 * Constructor 0 : used by LoadVehicleTest and other maven test suites.
-	 *
-	 * @param settlement
-	 */
-	public Person(Settlement settlement) {
-		super("Mock Person", settlement.getCoordinates());
-		this.position = LocalPosition.DEFAULT_POSITION;
-		this.associatedSettlementID = settlement.getIdentifier();
-		super.setDescription(EARTHLING);
-
-		// Add this person as a citizen
-		settlement.addACitizen(this);
-		// Set the container unit
-		setContainerUnit(settlement);
-
-		// Add to a random building
-		BuildingManager.landOnRandomBuilding(this, settlement);
-		// Create PersonAttributeManager instance
-		attributes = new PersonAttributeManager();
-	}
-
-	/**
-	 * Constructor 1 : used by PersonBuilderImpl Creates a Person object at a given
-	 * settlement.
+	 * Constructor with the mandatory properties defined. All these are needed to construct the minimum person.
 	 *
 	 * @param name       the person's name
 	 * @param settlement {@link Settlement} the settlement the person is at
-	 * @throws Exception if no inhabitable building available at settlement.
+	 * @param gender     the person's gender
+	 * @param age		 Uhe person's age, can be optional of -1
+	 * @param ethnicity Optional parameter of the ethnicity influences phyicaial characteristics
+	 * @param initialAttrs 
+	 * @param personAttrs Persons attributes.
 	 */
-	public Person(String name, Settlement settlement) {
+	public Person(String name, Settlement settlement, GenderType gender,
+					int age, PopulationCharacteristics ethnicity,
+					Map<NaturalAttributeType, Integer> initialAttrs) {
 		super(name, settlement.getCoordinates());
 		super.setDescription(EARTHLING);
 
@@ -280,7 +230,8 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 		// Create a prior training profile
 		generatePriorTraining();
 		// Construct the PersonAttributeManager instance
-		attributes = new PersonAttributeManager();
+		attributes = new NaturalAttributeManager(initialAttrs);
+
 		// Construct the SkillManager instance
 		skillManager = new SkillManager(this);
 		// Construct the Mind instance
@@ -289,41 +240,25 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 		// Set the person's status of death
 		isBuried = false;
 
-
 		// Add this person as a citizen
 		settlement.addACitizen(this);
 		// Set the container unit
 		setContainerUnit(settlement);
-	}
 
-	/*
-	 * Uses static factory method to create an instance of PersonBuilder.
-	 *
-	 * @param name
-	 * @param settlement
-	 * @return
-	 */
-	public static PersonBuilder<?> create(String name, Settlement settlement) {
-		return new PersonBuilderImpl(name, settlement);
-	}
-
-	/**
-	 * Initializes field data and class.
-	 */
-	public void initialize() {
 		// WARNING: setAssociatedSettlement(settlement) may cause suffocation 
 		// Reloading from a saved sim
 		
 		// Add to a random building
 		BuildingManager.landOnRandomBuilding(this, getAssociatedSettlement());
 		// Set up the time stamp for the person
-		calculateBirthDate(masterClock.getEarthTime());
+		calculateBirthDate(masterClock.getEarthTime(), age);
 		// Create favorites
 		favorite = new Favorite(this);
 		// Create preferences
 		preference = new Preference(this);
 		// Set up genetic make-up. Notes it requires attributes.
-		setupChromosomeMap();
+		setupChromosomeMap(ethnicity);
+
 		// Create circadian clock
 		circadian = new CircadianClock(this);
 		// Create physical condition
@@ -341,48 +276,53 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 		support = getLifeSupportType();
 		// Create the mission experiences map
 		missionExperiences = new EnumMap<>(MissionType.class);
-//		// Create the EVA hours map
+		// Create the EVA hours map
 		eVATaskTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		// Create a set of collaborative studies
 		collabStudies = new HashSet<>();
 
-		// Construct the EquipmentInventory instance.
-		eqmInventory = new EquipmentInventory(this, carryingCapacity);
+		// Construct the EquipmentInventory instance. Start with the default
+		eqmInventory = new EquipmentInventory(this, 100D);
 		eqmInventory.setResourceCapacity(ResourceUtil.foodID, CARRYING_CAPACITY_FOOD);
 	}
 
-	/**
-	 * Computes a person's chromosome map.
+	/*
+	 * Uses static factory method to create an instance of PersonBuilder.
+	 *
+	 * @param name
+	 * @param settlement
+	 * @return
 	 */
-	private void setupChromosomeMap() {
-		paternalChromosome = new ConcurrentHashMap<>();
-		maternalChromosome = new ConcurrentHashMap<>();
+	public static PersonBuilder create(String name, Settlement settlement, GenderType gender) {
+		return new PersonBuilder(name, settlement, gender);
+	}
 
-		if (bornOnMars) {
-			// Note: figure out how to account for growing characteristics
-			// such as height and weight
-			// and define various traits get passed on from parents
-		} else {
-			// Biochemistry: id 0 - 19
-			setupBloodType();
-			// Physical Characteristics: id 20 - 39
-			// Set up Height
-			setupHeight();
-			// Set up Weight
-			setupWeight();
-			// Set up carrying capacity and personality traits: id 40 - 59
-			setupCarryingCapAttributeTrait();
+	/**
+	 * Computes a person's chromosome map based on the characterisitics of their nation.
+	 * @param nationPeople The population characteristcs.
+	 */
+	private void setupChromosomeMap(PopulationCharacteristics nationPeople) {
+		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+
+		// Set up physical details based on Nation
+		if (nationPeople == null) {
+			nationPeople = personConfig.getDefaultPhysicalChars();
 		}
+		height = nationPeople.getRandomHeight(gender);
+		setBaseMass(nationPeople.getRandomWeight(gender, height));
+		// Biochemistry: id 0 - 19
+		setupBloodType();
+
+		// Set up carrying capacity and personality traits: id 40 - 59
+		setupCarryingCapAttributeTrait(personConfig);
 	}
 
 	/**
 	 * Computes a person's carrying capacity and attributes and its chromosome.
 	 */
-	private void setupCarryingCapAttributeTrait() {
+	private void setupCarryingCapAttributeTrait(PersonConfig personConfig) {
 		// Note: set up a set of genes that was passed onto this person
 		// from two hypothetical parents
-		int id = 40;
-		boolean dominant = false;
 
 		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
 		int endurance = attributes.getAttribute(NaturalAttributeType.ENDURANCE);
@@ -392,7 +332,9 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 		else if (getFavorite().getFavoriteActivity() == FavoriteType.SPORT)
 			gym += RandomUtil.getRandomRegressionInteger(10);
 
-		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+		if (age < 0) {
+			throw new IllegalStateException("Age is not defined");
+		}
 		int baseCap = (int)personConfig.getBaseCapacity();
 		int load = 0;
 		if (age > 4 && age < 8)
@@ -427,73 +369,39 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 		carryingCapacity = Math.max((int)(EVASuit.getEmptyMass() * 2),
 						(int)(gym + load + Math.max(20, weight/6.0) + (strength - 50)/1.5 + (endurance - 50)/2.0
 				+ RandomUtil.getRandomRegressionInteger(10)));
-		
-		int score = mind.getMBTI().getIntrovertExtrovertScore();
+	}
 
-		Gene trait1G = new Gene(this, id, "Trait 1", true, dominant, "Introvert", score);
-		
-		paternalChromosome.put(id, trait1G);
+	private static final String getRandomBloodtype() {
+		int rand = RandomUtil.getRandomInt(2);
+		return switch(rand) {
+			case 0 -> "A";
+			case 1 -> "B";
+			case 2 -> "O";
+			default -> throw new IllegalStateException("Cannot get bloodtype of value " + rand);
+		};
 	}
 
 	/**
 	 * Computes a person's blood type and its chromosome.
 	 */
 	private void setupBloodType() {
-		int id = 1;
-		boolean dominant = false;
 
-		String dadBloodType = null;
-		int rand = RandomUtil.getRandomInt(2);
-		if (rand == 0) {
-			dadBloodType = "A";
-			dominant = true;
-		} else if (rand == 1) {
-			dadBloodType = "B";
-			dominant = true;
-		} else if (rand == 2) {
-			dadBloodType = "O";
-			dominant = false;
-		}
+		String dadBloodType = getRandomBloodtype();
+		String momBloodType = getRandomBloodtype();
+		String combined = dadBloodType + "-" + momBloodType;
 
-		// Biochemistry 0 - 19
-		Gene dadBloodTypeG = new Gene(this, id, "Blood Type", true, dominant, dadBloodType, 0);
-		paternalChromosome.put(id, dadBloodTypeG);
-
-		String momBloodType = null;
-		rand = RandomUtil.getRandomInt(2);
-		if (rand == 0) {
-			momBloodType = "A";
-			dominant = true;
-		} else if (rand == 1) {
-			momBloodType = "B";
-			dominant = true;
-		} else if (rand == 2) {
-			momBloodType = "O";
-			dominant = false;
-		}
-
-		Gene momBloodTypeG = new Gene(this, 0, "Blood Type", false, dominant, momBloodType, 0);
-		maternalChromosome.put(0, momBloodTypeG);
-
-		if (dadBloodType.equals("A") && momBloodType.equals("A"))
-			bloodType = "A";
-		else if (dadBloodType.equals("A") && momBloodType.equals("B"))
-			bloodType = "AB";
-		else if (dadBloodType.equals("A") && momBloodType.equals("O"))
-			bloodType = "A";
-		else if (dadBloodType.equals("B") && momBloodType.equals("A"))
-			bloodType = "AB";
-		else if (dadBloodType.equals("B") && momBloodType.equals("B"))
-			bloodType = "B";
-		else if (dadBloodType.equals("B") && momBloodType.equals("O"))
-			bloodType = "B";
-		else if (dadBloodType.equals("O") && momBloodType.equals("A"))
-			bloodType = "A";
-		else if (dadBloodType.equals("O") && momBloodType.equals("B"))
-			bloodType = "B";
-		else if (dadBloodType.equals("O") && momBloodType.equals("O"))
-			bloodType = "O";
-
+		bloodType = switch(combined) {
+			case "A-A" -> "A";
+			case "A-B" -> "AB";
+			case "A-O" -> "A";
+			case "B-A" -> "AB";
+			case "B-B" -> "B";
+			case "B-O" -> "B";
+			case "O-A" -> "A";
+			case "O-B" -> "B";
+			case "O-O" -> "O";
+			default -> throw new IllegalStateException("Cannot get bloodtype from parents of " + combined);
+		};
 	}
 
 	/**
@@ -503,86 +411,6 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	 */
 	public String getBloodType() {
 		return bloodType;
-	}
-
-	/**
-	 * Computes a person's height and its chromosome.
-	 */
-	private void setupHeight() {
-		int id = 20;
-		boolean dominant = false;
-
-		// For a 20-year-old in the US:
-		//   male - height: 176.5,  weight: 68.5
-		// female - height: 162.6,  weight: 57.2
-
-		// Note: factor in country of origin.
-		// Note: look for a gender-correlated curve
-
-		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
-		// Attempt to compute height with gaussian curve
-
-		double dadHeight = tall + RandomUtil.getGaussianDouble() * tall / 7D;
-		double momHeight = shortH + RandomUtil.getGaussianDouble() * shortH / 10D;
-
-		Gene dadHeightG = new Gene(this, id, HEIGHT_GENE, true, dominant, null, dadHeight);
-		paternalChromosome.put(id, dadHeightG);
-
-		Gene momHeightG = new Gene(this, id, HEIGHT_GENE, false, dominant, null, momHeight);
-		maternalChromosome.put(id, momHeightG);
-
-		double geneticFactor = .65;
-		double sexFactor = (tall - averageHeight) / averageHeight;
-		// Add arbitrary (US-based) sex and genetic factor
-		if (gender == GenderType.MALE)
-			height = Math.round(
-					(geneticFactor * dadHeight + (1 - geneticFactor) * momHeight * (1 + sexFactor)) * 100D) / 100D;
-		else
-			height = Math.round(
-					((1 - geneticFactor) * dadHeight + geneticFactor * momHeight * (1 - sexFactor)) * 100D) / 100D;
-
-	}
-
-	/**
-	 * Computes a person's weight and its chromosome.
-	 */
-	private void setupWeight() {
-		int id = 21;
-		boolean dominant = false;
-
-		// For a 20-year-old in the US:
-		// male : height : 176.5 weight : 68.5
-		// female : height : 162.6 weight : 57.2
-
-		// Note: factor in country of origin.
-		// Note: look for a gender-correlated curve
-
-		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
-		// Attempt to compute height with gaussian curve
-		double dadWeight = highW + RandomUtil.getGaussianDouble() * highW / 13.5;// RandomUtil.getRandomInt(10);
-		double momWeight = lowW + RandomUtil.getGaussianDouble() * lowW / 10.5;// RandomUtil.getRandomInt(15);
-
-		Gene dadWeightG = new Gene(this, id, WEIGHT_GENE, true, dominant, null, dadWeight);
-		paternalChromosome.put(id, dadWeightG);
-
-		Gene momWeightG = new Gene(this, id, WEIGHT_GENE, false, dominant, null, momWeight);
-		maternalChromosome.put(id, momWeightG);
-
-		double geneticFactor = .65;
-		double sexFactor = (highW - averageWeight) / averageWeight; // for male
-		double heightFactor = height / averageHeight;
-
-		// Add arbitrary (US-based) sex and genetic factor
-		if (gender == GenderType.MALE)
-			weight = Math.round(heightFactor
-					* (geneticFactor * dadWeight + (1 - geneticFactor) * momWeight * (1 + sexFactor)) * 100D)
-					/ 100D;
-		else
-			weight = Math.round(heightFactor
-					* ((1 - geneticFactor) * dadWeight + geneticFactor * momWeight * (1 - sexFactor)) * 100D)
-					/ 100D;
-
-		setBaseMass(weight);
 	}
 
 	/*
@@ -671,9 +499,8 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	 * @param clock
 	 *
 	 */
-	private void calculateBirthDate(LocalDateTime earthLocalTime) {
-		// Remove a random number of days from the current earth date
-		int daysPast = RandomUtil.getRandomInt(21*365, 65*365);
+	private void calculateBirthDate(LocalDateTime earthLocalTime, int initialAge) {
+		int daysPast = (initialAge * 365) + RandomUtil.getRandomInt(0,364);
 		birthDate = earthLocalTime.minusDays(daysPast).toLocalDate();
 
 		// Calculate the year
@@ -712,24 +539,6 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	@Override
 	public void setPosition(LocalPosition position) {
 		this.position = position;
-	}
-
-	/**
-	 * Gets the person's Z location at a settlement.
-	 *
-	 * @return Z distance (meters) from the settlement's center.
-	 */
-	public double getZLocation() {
-		return zLoc;
-	}
-
-	/**
-	 * Sets the person's Z location at a settlement.
-	 *
-	 * @param zLocation the Z distance (meters) from the settlement's center.
-	 */
-	public void setZLocation(double zLocation) {
-		this.zLoc = zLocation;
 	}
 
 	/**
@@ -1081,15 +890,6 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	}
 
 	/**
-	 * Gets the birthplace of the person.
-	 *
-	 * @return the birthplace
-	 */
-	public String getBirthplace() {
-		return birthplace;
-	}
-
-	/**
 	 * Gets the person's local group of people (in building or rover).
 	 *
 	 * @return collection of people in person's location. The collectino incldues the Person
@@ -1149,19 +949,6 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	public boolean isNominallyFit() {
         return condition.isNominallyFit();
     }
-	
-	/**
-	 * Sets the person's name.
-	 *
-	 * @param newName the new name
-	 */
-	public void setName(String newName) {
-		if (!getName().equals(newName)) {
-			logger.config(this, "The Mission Control renamed to '" + newName + "'.");
-			super.setName(newName);
-			super.setDescription(EARTHLING);
-		}
-	}
 
 	/**
 	 * Gets the settlement the person is currently associated with.
@@ -1398,17 +1185,14 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 		return bed != null;
 	}
 	
+    public void setCountry(String name) {
+		this.country = name;
+    }
+
 	public String getCountry() {
 		return country;
 	}
 
-	public void setCountry(String c) {
-		this.country = c;
-		if (c != null)
-			birthplace = c + ", " + EARTH_BIRTHPLACE;
-		else
-			birthplace = MARS_BIRTHPLACE;
-	}
 
 	public boolean isDeclaredDead() {
 		return declaredDead;
@@ -1506,35 +1290,12 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	}
 
 	/**
-	 * Gets the average height of a person.
-	 */
-	public static double getAverageHeight() {
-		return averageHeight;
-	}
-
-	/**
-	 * Gets the average weight of a person.
-	 */
-	public static double getAverageWeight() {
-		return averageWeight;
-	}
-
-	/**
 	 * Gets the age of this person.
 	 *
 	 * @return
 	 */
 	public int getAge() {
 		return age;
-	}
-
-	/**
-	 * Sets the age of this person.
-	 *
-	 * @param value
-	 */
-	public void setAge(int value) {
-		age = value;
 	}
 
 	/**
@@ -2499,4 +2260,13 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 		scientificAchievement.clear();
 		scientificAchievement = null;
 	}
+
+	public static double getAverageWeight() {
+		return averageWeight;
+	}
+
+    public static double getAverageHeight() {
+        return averageHeight;
+    }
+
 }

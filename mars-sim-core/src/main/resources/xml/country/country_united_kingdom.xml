@@ -8,6 +8,10 @@
 		 <GDP-growth value="4.1"/>
 	</economics-data>
 	
+    <!-- Taken from https://www.worlddata.info/average-bodyheight.php -->
+    <characteristics average-male-height="178" average-female-height="164"
+	            average-male-weight="86.7" average-female-weight="72.7"/>
+
     <first-name-list>
 		<!-- https://momlovesbest.com/british-boy-names -->
 		

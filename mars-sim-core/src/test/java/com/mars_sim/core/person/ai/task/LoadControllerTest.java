@@ -18,6 +18,7 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.resource.ItemResourceUtil;
@@ -68,7 +69,7 @@ extends TestCase {
 		settlement.addOwnedVehicle(vehicle);
 		unitManager.addUnit(vehicle);
 
-		person = new Person("Jim Loader", settlement);
+		person = Person.create("Jim Loader", settlement, GenderType.MALE).build();
 		settlement.addACitizen(person);
 		// Set the container unit
 		person.setContainerUnit(settlement);

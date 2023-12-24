@@ -3,7 +3,7 @@ package com.mars_sim.core.moon;
 import java.io.Serializable;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.person.PersonBuilderImpl;
+import com.mars_sim.core.person.PersonBuilder;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillOwner;
 import com.mars_sim.core.person.ai.SkillType;
@@ -56,35 +56,35 @@ public class Colonist implements Serializable, Entity, SkillOwner {
 			switch (startingSkill) {
 				case PILOTING: 
 					// Checks to see if a person has a pilot license/certification
-					skillLevel = PersonBuilderImpl.getInitialSkillLevel(0, 35);
+					skillLevel = PersonBuilder.getInitialSkillLevel(0, 35);
 					break;
 			
 				// Medicine skill is highly needed for diagnosing sickness and prescribing medication 
 				case MEDICINE:
-					skillLevel = PersonBuilderImpl.getInitialSkillLevel(0, 35);
+					skillLevel = PersonBuilder.getInitialSkillLevel(0, 35);
 					break;
 
 				// psychology skill is sought after for living in confined environment
 				case PSYCHOLOGY: 
-					skillLevel = PersonBuilderImpl.getInitialSkillLevel(0, 35);
+					skillLevel = PersonBuilder.getInitialSkillLevel(0, 35);
 					break;
 	
 				// Mechanics skill is sought after for repairing malfunctions
 				case MATERIALS_SCIENCE:
 				case MECHANICS:
-					skillLevel = PersonBuilderImpl.getInitialSkillLevel(0, 45);
+					skillLevel = PersonBuilder.getInitialSkillLevel(0, 45);
 					break;
 
 				default: {
 					int rand = RandomUtil.getRandomInt(0, 3);
 					if (rand == 0) {
-						skillLevel = PersonBuilderImpl.getInitialSkillLevel(0, (int)(10 + age/10.0));
+						skillLevel = PersonBuilder.getInitialSkillLevel(0, (int)(10 + age/10.0));
 					}
 					else if (rand == 1) {
-						skillLevel = PersonBuilderImpl.getInitialSkillLevel(1, (int)(5 + age/8.0));
+						skillLevel = PersonBuilder.getInitialSkillLevel(1, (int)(5 + age/8.0));
 					}
 					else if (rand == 2) {
-						skillLevel = PersonBuilderImpl.getInitialSkillLevel(2, (int)(2.5 + age/6.0));
+						skillLevel = PersonBuilder.getInitialSkillLevel(2, (int)(2.5 + age/6.0));
 					}
 				} break;
 			}
