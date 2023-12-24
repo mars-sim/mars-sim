@@ -60,15 +60,19 @@ public class BuildingAirlock extends Airlock {
 	/** The EVA building function. */
     private EVA eva;
     
-//    private LocalPosition airlockInsidePos;
+    // Between Zone 0 and Zone 1
     private LocalPosition airlockInteriorPos;
+    // Between Zone 3 and Zone 3
     private LocalPosition airlockExteriorPos;
 
+    // For Zone 0
     private Map<LocalPosition, Integer> outsideInteriorDoorMap;
-    private Map<LocalPosition, Integer> outsideExteriorDoorMap;
-
+    // For Zone 1
     private Map<LocalPosition, Integer> insideInteriorDoorMap;
+    // For Zone 3
     private Map<LocalPosition, Integer> insideExteriorDoorMap;
+    // For Zone 4
+    private Map<LocalPosition, Integer> outsideExteriorDoorMap;
 
     /**
      * Constructor.
@@ -96,12 +100,15 @@ public class BuildingAirlock extends Airlock {
 
         // Determine airlock inner/interior door position.
         airlockInteriorPos = LocalAreaUtil.getLocalRelativePosition(interiorPos, building);
-        insideInteriorDoorMap = buildDoorMap(interiorPos, building, 0.3, 0.6, 0.4);
+        // For Zone 0
         outsideInteriorDoorMap = buildDoorMap(interiorPos, building, -0.3, -0.6, 0.4);
-
+        // For Zone 1
+        insideInteriorDoorMap = buildDoorMap(interiorPos, building, 1.7, 2.3, 0.4);
         // Determine airlock outer/exterior door position.
         airlockExteriorPos = LocalAreaUtil.getLocalRelativePosition(exteriorPos, building);
+        // For Zone 3
         insideExteriorDoorMap = buildDoorMap(exteriorPos, building, -0.5, -1.0, 0.4);
+        // For Zone 4
         outsideExteriorDoorMap = buildDoorMap(exteriorPos, building, 0.5, 1.0, 0.4);
     }
 
@@ -110,9 +117,9 @@ public class BuildingAirlock extends Airlock {
      * 
      * @param center 	The x value of the pos of the interior or exterior door
      * @param building 	The building hosting the door
-     * @param x1 		The first x value of a pos
-     * @param x2 		The second x value of a pos
-     * @param y 		The +y and -y values of a pos
+     * @param x1 		The first x pos
+     * @param x2 		The second x pos
+     * @param y 		The +y and -y pos
      * @return
      */
     private static Map<LocalPosition, Integer> buildDoorMap(LocalPosition center, Building building,

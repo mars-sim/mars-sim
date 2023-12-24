@@ -647,8 +647,8 @@ public class EnterAirlock extends Task {
 			if (transitionTo(2)) {
 				canProceed = true;
 			}
+			
 			else {
-
 				setPhase(STEP_THRU_OUTER_DOOR);
 				// Reset accumulatedTime back to zero
 				accumulatedTime = 0;

@@ -590,11 +590,7 @@ public class ExitAirlock extends Task {
 				return time;
 			}
 				
-			if (isInZone(0)) {
-				canProceed = true;
-			}
-			
-			else if (transitionTo(0) && (!airlock.isInnerDoorLocked() || airlock.isEmpty())) {
+			if (transitionTo(0) && (!airlock.isInnerDoorLocked() || airlock.isEmpty())) {
 				// The inner door will stay locked if the chamber is NOT pressurized
 				canProceed = true;
 			}
@@ -1203,7 +1199,7 @@ public class ExitAirlock extends Task {
 					"Chamber already depressurized for exit in "
 				+ airlock.getEntity().toString() + ".");
 
-			if (!inSettlement || transitionTo(3)) {
+			if (!inSettlement || isInZone(3) || transitionTo(3)) {
 				// If in vehicle, it doesn't need to transition to zone 3
 				canProceed = true;
 			}
@@ -1249,7 +1245,7 @@ public class ExitAirlock extends Task {
 				canProceed = airlock.exitAirlock(person, id, true);
 			}
 			
-			if (transitionTo(4)) {
+			if (isInZone(4) || transitionTo(4)) {
 				// True if the person is already there from previous frame
 				canProceed = true;
 			}

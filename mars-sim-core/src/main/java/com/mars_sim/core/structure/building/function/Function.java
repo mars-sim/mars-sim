@@ -224,10 +224,18 @@ public abstract class Function implements Serializable, Temporal {
 			throw new IllegalArgumentException("No activity spot " + p.getShortFormat());
 		}
 
+		// Check if the worker already has already claimed the spot previously
+		if (as.hasSpot(w.getIdentifier())) {
+			return true;
+		}
+		
 		// Spot is claimed but only temporarily
 		var allocated = as.claim(w, false, building);
-		w.setActivitySpot(allocated);
-		return true;
+		if (allocated != null) {
+			w.setActivitySpot(allocated);
+			return true;
+		}
+		return false;
 	}
 
 	/**
