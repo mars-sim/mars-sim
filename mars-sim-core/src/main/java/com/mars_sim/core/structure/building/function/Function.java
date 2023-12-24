@@ -225,7 +225,7 @@ public abstract class Function implements Serializable, Temporal {
 		}
 
 		// Check if the worker already has already claimed the spot previously
-		if (as.hasSpot(w.getIdentifier())) {
+		if (as.possessTheSpot(w.getIdentifier())) {
 			return true;
 		}
 		

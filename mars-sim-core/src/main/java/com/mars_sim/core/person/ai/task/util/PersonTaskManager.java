@@ -133,8 +133,9 @@ public class PersonTaskManager extends TaskManager {
 
 
 	/**
-	 * Calculates and caches the probabilities.
-	 * This will NOT use the cache but assumes the callers know when a cache can be used or not used.
+	 * Calculates and caches the probabilities. This will NOT use the cache but 
+	 * assumes the callers know when a cache can be used or not used.
+	 * 
 	 * @param now The current mars time
 	 */
 	@Override
@@ -241,7 +242,7 @@ public class PersonTaskManager extends TaskManager {
 
 				@Override
 				public Task createTask(Person person) {
-					logger.info(person, "Returning inside to find work.");
+					logger.info(person, 10_000L, "Returning inside to find work.");
 					return new Walk(person);
 				}	
 			};

@@ -21,6 +21,7 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.Airlock.AirlockMode;
 import com.mars_sim.core.structure.AirlockType;
+import com.mars_sim.core.structure.AirlockZone;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.BuildingAirlock;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -162,32 +163,32 @@ public class EnterAirlock extends Task {
 	 * @param newZone the destination
 	 * @return true if the transition is successful
 	 */
-	private boolean transitionTo(int newZone) {
+	private boolean transitionTo(AirlockZone newZone) {
 
 		// Is the person already in this zone ?
 		if (isInZone(newZone))
 			return true;
 		
-		// For ingress, 
-		// a person first arrives at zone 4 right outside an EVA Airlock.
-		// Then he progresses via the outer/exterior door onto zone 3.
+		// For ingress, a person would first arrive at zone 4, right outside an EVA Airlock. 
+		// At zone 4, he progresses via the outer/exterior door onto zone 3.
 		// At zone 3, he's waiting for an empty chamber to be available.
 		// At zone 2, he's at the airlock chamber doffing his EVA suit.
 		// At zone 1, he's waiting for the inner/interior door to open.
 		// At zone 0, he's just stepped back onto the settlement.
 		
 		// The previous zone # has a higher numeric #
-		int previousZone = newZone + 1;
+		int previousZone = newZone.ordinal() + 1;
 		LocalPosition newPos = fetchNewPos(newZone);
-		if (newPos != null && airlock.occupy(newZone, newPos, person)) {
+		if (newPos != null && airlock.claim(newZone, newPos, person)) {
 			if (previousZone <= 4) {
-				if (airlock.vacate(previousZone, person)) {
+				if (airlock.vacate(AirlockZone.convert2Zone(previousZone), person)) {
 					return moveThere(newPos, newZone);
 				}
 				else
 					return false;
 			}
 			else {
+				// Just arrived at zone 4. No need to vacate any zone.
 				return moveThere(newPos, newZone);
 			}
 		}
@@ -201,7 +202,7 @@ public class EnterAirlock extends Task {
 	 * @param zone
 	 * @return true if the person is a particular zone
 	 */
-	private boolean isInZone(int zone) {
+	private boolean isInZone(AirlockZone zone) {
 		return airlock.isInZone(person, zone);
 	}
 
@@ -212,22 +213,22 @@ public class EnterAirlock extends Task {
 	 * @param id   the id of the person
 	 * @return LocalPosition
 	 */
-	private LocalPosition fetchNewPos(int zone) {
+	private LocalPosition fetchNewPos(AirlockZone zone) {
 		LocalPosition newPos = null;
 
-		if (zone == 0) {
+		if (zone == AirlockZone.ZONE_0) {
 			newPos = airlock.getAvailableInteriorPosition(false);
 		}
-		else if (zone == 1) {
+		else if (zone == AirlockZone.ZONE_1) {
 			newPos = airlock.getAvailableInteriorPosition(true);
 		}
-		else if (zone == 2) {
+		else if (zone == AirlockZone.ZONE_2) {
 			newPos = airlock.getAvailableAirlockPosition(); 
 		}
-		else if (zone == 3) {
+		else if (zone == AirlockZone.ZONE_3) {
 			newPos = airlock.getAvailableExteriorPosition(true);
 		}
-		else if (zone == 4) {
+		else if (zone == AirlockZone.ZONE_4) {
 			newPos = airlock.getAvailableExteriorPosition(false);
 		}
 
@@ -240,13 +241,15 @@ public class EnterAirlock extends Task {
 	 * @param newPos the target position in that zone
 	 * @param newZone
 	 */
-	private boolean moveThere(LocalPosition newPos, int newZone) {
+	private boolean moveThere(LocalPosition newPos, AirlockZone newZone) {
 		
 		Building b = (Building) airlock.getEntity();
 		
-		if (newZone == 2) {
+		if (newZone == AirlockZone.ZONE_2) {
 			// Check if the person can walk to one of the 4 EVA chambers
 			boolean canWalk = walkToEVASpot(b, newPos);
+			
+			logger.log(b, person, Level.FINE, 4000, "canWalk: " + canWalk + ".");
 			
 			if (canWalk) {
 				// Convert the local activity spot to the settlement reference coordinate
@@ -254,7 +257,7 @@ public class EnterAirlock extends Task {
 				person.setPosition(newPos);
 				
 				logger.log(b, person, Level.FINE, 4000, "Arrived at "
-						+ newPos.getShortFormat() + " in airlock zone " + newZone + ".");
+						+ newPos.getShortFormat() + " in " + newZone + ".");
 				return true;
 			}
 			else {
@@ -264,22 +267,12 @@ public class EnterAirlock extends Task {
 			}
 		}
 
-		else if (newZone == 4) {
-			// Set the person's new position
-			person.setPosition(newPos);
-			
-			logger.log(b, person, Level.FINE, 4000, "Creating a subtask to walk outside at "
-					+ newPos.getShortFormat() + " in airlock zone " + newZone + ".");
-			return true;
-		}
-
 		else {
-			// Future: create a walking task to get there
 			// Set the person's new position
 			person.setPosition(newPos);
 			
 			logger.log(b, person, Level.FINE, 4000, "Arrived at "
-					+ newPos.getShortFormat() + " in airlock zone " + newZone + ".");
+					+ newPos.getShortFormat() + " in " + newZone + ".");
 			return true;
 		}
 	}
@@ -337,11 +330,11 @@ public class EnterAirlock extends Task {
 				return time * .75;
 			}
 						
-			if (isInZone(4)) {
+			if (isInZone(AirlockZone.ZONE_4)) {
 				canProceed = true;
 			}
 			
-			else if (transitionTo(4)) {
+			else if (transitionTo(AirlockZone.ZONE_4)) {
 				// The outer door will stay locked if the chamber is NOT depressurized
 				canProceed = true;
 			}
@@ -545,13 +538,13 @@ public class EnterAirlock extends Task {
 			}
 			
             // True if the person is already inside the chamber from previous frame
-            if (isInZone(2) || isInZone(3)) {
+            if (isInZone(AirlockZone.ZONE_2) || isInZone(AirlockZone.ZONE_3)) {
              	canProceed = true;
              }
 			
             else if (!airlock.inAirlock(person)) {
 				canProceed = airlock.enterAirlock(person, id, false) 
-						&& transitionTo(3);						
+						&& transitionTo(AirlockZone.ZONE_3);						
 			}
             
             else {
@@ -627,7 +620,7 @@ public class EnterAirlock extends Task {
 
 		if (inSettlement) {
 			
-			if (!isInZone(2) && airlock.areAll4ChambersFull()) {
+			if (!isInZone(AirlockZone.ZONE_2) && airlock.areAll4ChambersFull()) {
 				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 16_000,
 						"Can't walk to a chamber. " 
 						+ CHAMBER_FULL + airlock.getEntity().toString() + ".");
@@ -644,7 +637,7 @@ public class EnterAirlock extends Task {
 				return time * .75;
 			}
 			
-			if (transitionTo(2)) {
+			if (transitionTo(AirlockZone.ZONE_2)) {
 				canProceed = true;
 			}
 			
@@ -858,7 +851,7 @@ public class EnterAirlock extends Task {
 				doneCleaning = true;
 			}
 
-			if (doneCleaning && transitionTo(1)) {
+			if (doneCleaning && transitionTo(AirlockZone.ZONE_1)) {
 				// If in vehicle, it doesn't need to clean up
 				canProceed = true;
 			}
@@ -900,7 +893,7 @@ public class EnterAirlock extends Task {
 				canProceed = airlock.exitAirlock(person, id, false);
 			}
 			
-			if (transitionTo(0)) {
+			if (transitionTo(AirlockZone.ZONE_0)) {
 				// True if the person is already there from previous frame
 				canProceed = true;
 			}	
@@ -923,7 +916,7 @@ public class EnterAirlock extends Task {
 			accumulatedTime -= STANDARD_TIME * time;
 			
 			// Remove the position at zone 0 before ending the task
-			airlock.vacate(0, person);
+			airlock.vacate(AirlockZone.ZONE_0, person);
 			
 			// Add experience
 			addExperience(time);

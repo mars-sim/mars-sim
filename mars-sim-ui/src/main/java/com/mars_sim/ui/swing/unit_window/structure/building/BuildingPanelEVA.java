@@ -8,10 +8,13 @@ package com.mars_sim.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.Collection;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
@@ -26,8 +29,11 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.unit_window.UnitListPanel;
+import com.mars_sim.ui.swing.unit_window.UnitWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The BuildingPanelEVA class presents the EVA activities
@@ -55,6 +61,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	private String airlockStateCache = "";
 	private String innerDoorStateCache = "";
 	private String outerDoorStateCache = "";
+	
+	private final String WIKI_URL = "https://github.com/mars-sim/mars-sim/wiki/Airlock";
 	
 	private AirlockMode airlockModeCache;
 
@@ -175,17 +183,29 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		operatorLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.operator"),
 									 eva.getOperatorName(), null);
 		
+		JPanel wikiPanel = new JPanel(new FlowLayout());
+		Icon wikiIcon = ImageLoader.getIconByName(GuideWindow.WIKI_ICON);
+		JButton wikiButton = new JButton(wikiIcon);
+		wikiPanel.add(wikiButton);
+//		wikiButton.setAlignmentX(.5f);
+//		wikiButton.setAlignmentY(.5f);
+		wikiButton.setToolTipText("Open Airlock Wiki in GitHub");
+		wikiButton.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
+		topPanel.add(wikiPanel, BorderLayout.SOUTH);
+		
 		// Create listPanel
 		JPanel listPanel = new JPanel(new GridLayout(2, 2));
-		Border margin = new EmptyBorder(10, 10, 10, 10);
+		Border margin = new EmptyBorder(2, 2, 2, 2);
 		listPanel.setBorder(margin);
-		listPanel.setPreferredSize(new Dimension(440, -1));
+//		int width = UnitWindow.WIDTH - 40;
+//		int halfWidth = width/2;
+//		listPanel.setSize(new Dimension(width, -1));
 		content.add(listPanel, BorderLayout.CENTER);
 		
 		// Create outside list panel
 		JPanel outsidePanel = new JPanel(new BorderLayout());
-		outsidePanel.setPreferredSize(new Dimension(120, -1));
-		outsidePanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.outer")));
+//		outsidePanel.setSize(new Dimension(halfWidth, -1));
+		outsidePanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.outside4")));
 		listPanel.add(outsidePanel);
 
 		// Create outsideListPanel 
@@ -199,7 +219,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		
 		// Create occupant panel
 		JPanel occupantPanel = new JPanel(new BorderLayout());
-		occupantPanel.setPreferredSize(new Dimension(120, -1));
+//		occupantPanel.setSize(new Dimension(halfWidth, -1));
 		occupantPanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.occupants")));
 		listPanel.add(occupantPanel);
 
@@ -214,8 +234,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 
 		// Create outside wait panel
 		JPanel insidePanel = new JPanel(new BorderLayout());
-		insidePanel.setPreferredSize(new Dimension(120, -1));
-		insidePanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.inner")));
+//		insidePanel.setSize(new Dimension(halfWidth, -1));
+		insidePanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.outside0")));
 		listPanel.add(insidePanel);
 
 		// Create insideListPanel 
@@ -229,7 +249,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		
 		// Create reservation panel
 		JPanel reservationPanel = new JPanel(new BorderLayout());
-		reservationPanel.setPreferredSize(new Dimension(120, -1));
+//		reservationPanel.setSize(new Dimension(halfWidth, -1));
 		addBorder(reservationPanel, Msg.getString("BuildingPanelEVA.titledB.Reserved"));
 		listPanel.add(reservationPanel);
 		

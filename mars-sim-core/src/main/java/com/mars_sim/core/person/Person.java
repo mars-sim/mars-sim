@@ -2183,7 +2183,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	}
 	
 	/**
-	 * Get the allocated activity spot
+	 * Gets the allocated activity spot.
 	 */
 	@Override
 	public AllocatedSpot getActivitySpot() {
@@ -2197,7 +2197,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	 */
 	@Override
 	public void setActivitySpot(AllocatedSpot newSpot) {
-		// Check the spot is really chnging and not just a reallocation
+		// Check the spot is really changing and not just a reallocation
 		if ((spot != null) && !spot.equals(newSpot)) {
 			spot.leave(this, false);
 		}

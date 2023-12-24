@@ -178,12 +178,23 @@ public final class ActivitySpot implements Serializable {
 		return name;
 	}		
 
+	/**
+	 * Gets the position of this spot.
+	 * 
+	 * @return
+	 */
 	public LocalPosition getPos() {
 		return pos;
 	}
 	
-	public boolean hasSpot(int testID) {
-		return (testID == id);
+	/**
+	 * Sees if the worker possesses this spot.
+	 * 
+	 * @param workerID
+	 * @return
+	 */
+	public boolean possessTheSpot(int workerID) {
+		return (workerID == id);
 	}
 	
 	@Override

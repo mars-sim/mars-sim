@@ -1055,7 +1055,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<activity>
 					<activity-spot xloc="-2.65" yloc="-2.5" />
 					<activity-spot xloc="-2.65" yloc="-1.5" />
-					<activity-spot xloc="-2.65" yloc="0.5" />
+					<activity-spot xloc="-2.65" yloc="-0.5" />
 					<activity-spot xloc="2.65" yloc="-0.5" />
 					<activity-spot xloc="2.65" yloc="-1.5" />
 					<activity-spot xloc="2.65" yloc="-2.5" />

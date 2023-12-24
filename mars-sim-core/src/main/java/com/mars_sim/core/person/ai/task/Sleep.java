@@ -278,13 +278,17 @@ public class Sleep extends Task {
 	}
 
 	/**
-	 * Find an empty AciivitySpot in a Building that supports Life
+	 * Finds an empty AciivitySpot in a Building that supports Life.
+	 * 
+	 * @param s
+	 * @param w
+	 * @return
 	 */
 	private AllocatedSpot findSleepRoughLocation(Settlement s, Worker w) {
 		var buildMgr = s.getBuildingManager();
-		for(Building b: buildMgr.getBuildingSet(FunctionType.LIFE_SUPPORT)) {
-			for(Function f : b.getFunctions()) {
-				for(ActivitySpot as : f.getActivitySpots()) {
+		for (Building b: buildMgr.getBuildingSet(FunctionType.LIFE_SUPPORT)) {
+			for (Function f : b.getFunctions()) {
+				for (ActivitySpot as : f.getActivitySpots()) {
 					if (as.isEmpty()) {
 						f.claimActivitySpot(as.getPos(), worker);
 						return worker.getActivitySpot();

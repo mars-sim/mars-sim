@@ -19,6 +19,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.AirlockType;
+import com.mars_sim.core.structure.AirlockZone;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.mapdata.location.LocalPosition;
 import com.mars_sim.tools.Msg;
@@ -352,9 +353,9 @@ extends Airlock {
 	 * @return true if the person has been successfully vacated
      */
 	@Override
-	public boolean vacate(int zone, Person p) {
+	public boolean vacate(AirlockZone zone, Person p) {
 		int id = p.getIdentifier();
-	 	if (zone == 0) {
+	 	if (zone == AirlockZone.ZONE_0) {
     		LocalPosition oldPos = getOldPos(airlockInteriorPosMap, id);
     		if (oldPos == null)
     			return false;
@@ -364,11 +365,11 @@ extends Airlock {
 			}
     	}
 
-	   	else if (zone == 1 || zone == 3) {
+	   	else if (zone == AirlockZone.ZONE_1 || zone == AirlockZone.ZONE_3) {
 				return true;
 	    	}
 
-    	else if (zone == 2) {
+    	else if (zone == AirlockZone.ZONE_2) {
     		LocalPosition oldPos = getOldPos(airlockInsidePosMap, id);
     		if (oldPos == null)
     			return false;
@@ -378,7 +379,7 @@ extends Airlock {
 			}
     	}
 
-    	else if (zone == 4) {
+    	else if (zone == AirlockZone.ZONE_4) {
     		LocalPosition oldPos = getOldPos(airlockExteriorPosMap, id);
     		if (oldPos == null)
     			return false;
@@ -408,26 +409,26 @@ extends Airlock {
 	 * @return a list of occupants inside the chamber
      */
 	@Override
-	public boolean isInZone(Person p, int zone) {
-	   	if (zone == 0) {
+	public boolean isInZone(Person p, AirlockZone zone) {
+	   	if (zone == AirlockZone.ZONE_0) {
     		LocalPosition p0 = getOldPos(airlockInteriorPosMap, p.getIdentifier());
     		if (p0 == null)
     			return false;
     		return true;
     	}
 
-    	else if (zone == 1 || zone == 3) {
+    	else if (zone == AirlockZone.ZONE_1 || zone == AirlockZone.ZONE_3) {
     		return false;
     	}
 
-    	else if (zone == 2) {
+    	else if (zone == AirlockZone.ZONE_2) {
     		LocalPosition p0 = getOldPos(airlockInsidePosMap, p.getIdentifier());
     		if (p0 == null)
     			return false;
     		return true;
     	}
 
-    	else if (zone == 4) {
+    	else if (zone == AirlockZone.ZONE_4) {
     		LocalPosition p0 = getOldPos(airlockExteriorPosMap, p.getIdentifier());
     		if (p0 == null)
     			return false;
@@ -437,17 +438,17 @@ extends Airlock {
 		return false;
 	}
 	
-	 /**
-     * Occupies a position in a zone.
+	/**
+     * Claims a position in a zone.
      * 
      * @param zone
      * @param p
      * @param person
      */
     @Override
-    public boolean occupy(int zone, LocalPosition p, Person per) {
+    public boolean claim(AirlockZone zone, LocalPosition p, Person per) {
 		int id = per.getIdentifier();
-    	if (zone == 0) {
+    	if (zone == AirlockZone.ZONE_0) {
     		// Do not allow the same person who has already occupied a position to take another position
     		if (airlockInteriorPosMap.values().contains(id))
     			return false;
@@ -460,11 +461,11 @@ extends Airlock {
     		return true;
     	}
     		
-    	else if (zone == 1 || zone == 3) {
+    	else if (zone == AirlockZone.ZONE_1 || zone == AirlockZone.ZONE_3) {
 			return false;
     	}
     	
-    	else if (zone == 2) {
+    	else if (zone == AirlockZone.ZONE_2) {
     		// Do not allow the same person who has already occupied a position to take another position
     		if (airlockInsidePosMap.values().contains(id))
     			return false;
@@ -477,7 +478,7 @@ extends Airlock {
     		return true;
     	}
     	
-    	else if (zone == 4) {
+    	else if (zone == AirlockZone.ZONE_4) {
     		// Do not allow the same person who has already occupied a position to take another position
     		if (airlockExteriorPosMap.values().contains(id))
     			return false;

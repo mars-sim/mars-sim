@@ -14,6 +14,7 @@ import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.structure.AirlockZone;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.tools.Msg;
@@ -55,7 +56,7 @@ public class SleepMeta extends FactoryMetaTask {
     	if (person.isInSettlement()) {
 	        Building b = person.getBuildingLocation();
 	        if ((b != null) && (b.getCategory() == BuildingCategory.EVA_AIRLOCK)) {
-		        boolean inZone0 = b.getEVA().getAirlock().isInZone(person, 0);
+		        boolean inZone0 = b.getEVA().getAirlock().isInZone(person, AirlockZone.ZONE_0);
 		        if (!inZone0)
 		        	// if a person is in zone 0 at the inner door trying to ingress,
 		        	// and at the same time very fatigue, 
