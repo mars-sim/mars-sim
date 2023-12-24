@@ -61,7 +61,7 @@ import com.mars_sim.ui.swing.utils.PercentageCellRenderer;
 public class BuildingPanelFarming extends BuildingFunctionPanel {
 
 	private static final String PLANT_ICON = "plant";
-	private static final String G_M2_DAY = " g/m2/day";
+	private static final String G_M2_DAY = " g/m\u00b2/day";
 	private static final String HTML = "<html>";
 	private static final String END_HTML = "</html>";
 	private static final String CROP_NAME = "&emsp;&nbsp;Crop Name:&emsp;";
@@ -72,10 +72,11 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	private static final String WATER_CONTENT = "<br>&nbsp;Water Content:&emsp;";
 	private static final String PERCENT = " %";
 	private static final String PAR_REQUIRED = "<br>&nbsp;&nbsp;PAR required:&emsp;";
-	private static final String MOL_M2_DAY = " mol/m2/day";
+	private static final String MOL_M2_DAY = " mol/m\u00b2/day";
 
 	private static final DecimalFormat DECIMAL_KG_SOL = new DecimalFormat("#,##0.0 kg/Sol");
-
+	private static final DecimalFormat DECIMAL_W_M2 = new DecimalFormat("#,##0.0 W/m\u00b2");
+	
 	// Data members
 	// Data cache
 	/** The number of farmers cache. */
@@ -156,7 +157,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		// Prepare solar irradiance label
 		radCache = surfaceFeatures.getSolarIrradiance(location);
 		radLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.solarIrradiance.title"),
-							 radCache + " W/m", "Estimated sunlight on top of the greenhouse roof");
+				DECIMAL_W_M2.format(radCache), "Estimated sunlight on top of the greenhouse roof");
 
 		// Prepare farmers label
 		farmersCache = farm.getFarmerNum();
@@ -356,7 +357,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		double rad = Math.round(surfaceFeatures.getSolarIrradiance(location)*10.0)/10.0;
 		if (radCache != rad) {
 			radCache = rad;
-			radLabel.setText(String.valueOf(rad) + " W/m");
+			radLabel.setText(DECIMAL_W_M2.format(rad));
 		}
 
 		// Update the average water usage

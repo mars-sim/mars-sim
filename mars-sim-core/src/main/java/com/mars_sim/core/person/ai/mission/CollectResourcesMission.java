@@ -272,9 +272,9 @@ public abstract class CollectResourcesMission extends EVAMission
 
 		// Get capacity for all collectible resources. The collectible
 		// resource at a site may be more than the single one specified.
-		for(int resourceId : getCollectibleResources()) {
+		for (int resourceId : getCollectibleResources()) {
 			double amount = inv.getAmountResourceStored(resourceId);
-			for(Equipment e : inv.getContainerSet()) {
+			for (Equipment e : inv.getContainerSet()) {
 				amount += e.getAmountResourceStored(resourceId);
 			}
 
@@ -312,7 +312,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		// If collected resources are sufficient for this site, end the collecting
 		// phase.
 		if (siteCollectedSoFar >= siteResourceGoal) {
-			logger.info(getRover(), "Full resources collected at site");
+			logger.info(getRover(), "Full resources collected at site.");
 			return false;
 		}
 

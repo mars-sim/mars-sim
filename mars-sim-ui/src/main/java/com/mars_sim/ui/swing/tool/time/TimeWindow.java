@@ -242,7 +242,7 @@ public class TimeWindow extends ToolWindow {
 													"", null);
 		// Create areocentric longitude header label
 		lonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.areocentricLon"), "", null);
-		lonLabel.setToolTipText("The Areocentric Longitude of Mars with respect to the Sun");
+		lonLabel.setToolTipText("The Areocentric Longitude (L_s) of Mars with respect to the Sun");
 		
 		// Create Earth time panel
 		JPanel earthTimePane = new JPanel(new BorderLayout());
