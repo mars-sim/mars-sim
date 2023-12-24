@@ -8,6 +8,10 @@
 		 <GDP-growth value="5.91"/>
 	</economics-data>
 	
+    <!-- Taken from https://www.worlddata.info/average-bodyheight.php -->
+    <characteristics average-male-height="179" average-female-height="165"
+	            average-male-weight="88.1" average-female-weight="73.7"/>
+
     <first-name-list>
         <first-name value="Georgios" gender="male" />
         <first-name value="Ioannis" gender="male" />

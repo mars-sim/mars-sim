@@ -7,7 +7,10 @@
 		 <population value="1425.887337"/>
 		 <GDP-growth value="2.99"/>
 	</economics-data> 
-	
+		
+    <!-- Taken from https://www.worlddata.info/average-bodyheight.php -->
+    <characteristics average-male-height="175" average-female-height="163"
+	            average-male-weight="73.5" average-female-weight="62.2"/>
     <first-name-list>
         <!-- Derived from https://en.wiki2.org/wiki/List_of_Chinese_astronauts
             http://www.20000-names.com/male_chinese_names.htm -->

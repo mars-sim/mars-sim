@@ -110,8 +110,7 @@ public class PersonBuilder {
 		
 			
 			// Mechanics skill is sought after for repairing malfunctions
-				case MATERIALS_SCIENCE:
-				case MECHANICS:
+				case MATERIALS_SCIENCE, MECHANICS:
 					skillLevel = getInitialSkillLevel(0, 45);
 					break;
 

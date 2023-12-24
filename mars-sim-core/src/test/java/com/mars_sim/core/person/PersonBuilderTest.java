@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.authority.AuthorityFactory;
+import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 
@@ -23,6 +24,7 @@ public class PersonBuilderTest extends AbstractMarsSimUnitTest {
         assertEquals("Person name", TEST_NAME, p.getName());
         assertEquals("Person gender", GenderType.MALE, p.getGender());
         assertTrue("Person minimum age", p.getAge() > 20);
+        assertTrue("Person can carry at least EVA", p.getCarryingCapacity() > EVASuit.getEmptyMass());
     }
 
     public void testOptional() {
