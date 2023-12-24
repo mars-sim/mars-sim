@@ -68,14 +68,14 @@ public class Charge extends Task {
 		
 		if (buildingStation != null) {
 			
-		RoboticStation station = buildingStation.getRoboticStation();
+			RoboticStation station = buildingStation.getRoboticStation();
 		
 			if (station != null) {
 				
 				setDescription(NAME);
 	//			logger.info(robot, 30_000L, "Walking to " + buildingStation + ".");
 				
-				canWalk = walkToRoboticStation(robot, false);
+				canWalk = walkToRoboticStation(robot, station, false);
 			}
 		}
 		
@@ -94,6 +94,19 @@ public class Charge extends Task {
 		setPhase(CHARGING);
 	}
 
+	/**
+	 * Walks to a robotic station.
+	 * 
+	 * @param robot
+	 * @param station
+	 * @param allowFail
+	 * @return
+	 */
+	protected boolean walkToRoboticStation(Robot robot, RoboticStation station, boolean allowFail) {
+		return walkToActivitySpotInBuilding(station.getBuilding(), 
+				FunctionType.ROBOTIC_STATION, allowFail);
+	}
+	
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null)
@@ -266,7 +279,6 @@ public class Charge extends Task {
 		super.clearDown();
 	}
 
-
 	/**
 	 * Looks for a robotic station.
 	 * 
@@ -311,59 +323,4 @@ public class Charge extends Task {
 		
 		return null;
 	}
-	
-	/**
-	 * Walks to a robotic station.
-	 * 
-	 * @param robot
-	 * @param allowFail
-	 * @return
-	 */
-	protected boolean walkToRoboticStation(Robot robot, RoboticStation station, boolean allowFail) {
-		return walkToActivitySpotInBuilding(BuildingManager.getBuilding(robot), 
-				FunctionType.ROBOTIC_STATION, allowFail);
-	}
-	
-//	public static Building getAvailableRoboticStationBuilding(Robot robot) {
-//		if (robot.isInSettlement()) {
-//			BuildingManager manager = robot.getSettlement().getBuildingManager();
-//			Set<Building> buildings0 = manager.getBuildingSet(FunctionType.ROBOTIC_STATION);
-//			Set<Building> buildings1 = BuildingManager.getNonMalfunctioningBuildings(buildings0);
-//			Set<Building> buildings2 = getRoboticStationsWithEmptySlots(buildings1);
-//			Set<Building> buildings3 = null;
-//			if (!buildings2.isEmpty()) {
-//				// robot is not as inclined to move around
-//				buildings3 = BuildingManager.getLeastCrowded4BotBuildings(buildings2);
-//				if (buildings3 == null) {
-//					buildings3 = buildings2;
-//				}
-//			}
-//			else if (!buildings1.isEmpty()) {
-//				// robot is not as inclined to move around
-//				buildings3 = BuildingManager.getLeastCrowded4BotBuildings(buildings1);
-//				if (buildings3 == null) {
-//					buildings3 = buildings1;
-//				}
-//			}
-//			else if (!buildings0.isEmpty()) {
-//				// robot is not as inclined to move around
-//				buildings3 = BuildingManager.getLeastCrowded4BotBuildings(buildings0);
-//				if (buildings3 == null) {
-//					buildings3 = buildings0;
-//				}
-//			}
-//			
-//			if (buildings3 == null)
-//				return null;
-//			
-//			int size = buildings3.size();
-//
-//			if (size >= 1) {
-//				return RandomUtil.getARandSet(buildings3);
-//			}
-//		}
-//
-//		return null;
-//	}
-
 }
