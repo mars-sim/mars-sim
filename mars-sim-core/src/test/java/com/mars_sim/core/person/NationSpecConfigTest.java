@@ -39,7 +39,7 @@ public class NationSpecConfigTest extends TestCase {
     }
 
     public void testGetSpain() {
-        testNationSpec("Spain", false);
+        testNationSpec("Spain", true);
     }
 
     private void testNationSpec(String name, boolean hasCharacterisitcs) {
