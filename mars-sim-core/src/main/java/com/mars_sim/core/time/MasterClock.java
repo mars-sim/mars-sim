@@ -66,7 +66,7 @@ public class MasterClock implements Serializable {
 	private final long MAX_ELAPSED = 30_000;
 
 	/** The maximum pulse time allowed in one frame for a task phase. */
-	public static final double MAX_PULSE_WIDTH = .855;
+	public static final double MAX_PULSE_WIDTH = .855 * 2;
 	
 	/** The multiplier for reducing the width of a pulse. */
 //	public static final double MULTIPLIER = 3;
@@ -663,14 +663,14 @@ public class MasterClock implements Serializable {
 			ratio = referencePulse / optPulse;
 			
 			// Adjust optPulse
-			if (ratio > 1.05) {
+			if (ratio > 1.1) {
 				double diff = referencePulse - optPulse;
 				optPulse = optPulse + diff / referencePulse / 50;
-				if (optPulse > maxMilliSolPerPulse * 2) optPulse = maxMilliSolPerPulse * 2;
+				if (optPulse > maxMilliSolPerPulse * 1.05) optPulse = maxMilliSolPerPulse * 1.05;
 //				logger.config(20_000, "Increasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0 + " toward reference pulse " + Math.round(referencePulse * 10_000.0) / 10_000.0 + ".");
 			}
 			
-			else if (ratio < .95) {
+			else if (ratio < .9) {
 				double diff = optPulse - referencePulse;
 				optPulse = optPulse - diff / referencePulse / 50;
 				if (optPulse < minMilliSolPerPulse) optPulse = minMilliSolPerPulse;
@@ -678,20 +678,20 @@ public class MasterClock implements Serializable {
 			}
 					
 			///////////////////////////
-			ratio = nextPulse / (.8 * optPulse + .2 * referencePulse);
+			ratio = nextPulse / (.2 * optPulse + .8 * referencePulse);
 			
 			// Adjust nextPulse
-			if (ratio > 1.05) {
+			if (ratio > 1.1) {
 				double diff = nextPulse - (.8 * optPulse + .2 * referencePulse);
 				nextPulse = nextPulse - diff / (.8 * optPulse + .2 * referencePulse) / 60;
 				if (nextPulse < minMilliSolPerPulse) nextPulse = minMilliSolPerPulse;
 //				logger.config(20_000, "Increasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0 + " toward " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
 			}
 			
-			else if (ratio < .95) {
+			else if (ratio < .9) {
 				double diff = (.8 * optPulse + .2 * referencePulse) - nextPulse;
 				nextPulse = nextPulse + diff / (.8 * optPulse + .2 * referencePulse) / 60;
-				if (nextPulse > maxMilliSolPerPulse * 2) nextPulse = maxMilliSolPerPulse * 2;
+				if (nextPulse > maxMilliSolPerPulse * 1.05) nextPulse = maxMilliSolPerPulse * 1.05;
 //				logger.config(20_000, "Decreasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0 + " toward " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
 			}
 			

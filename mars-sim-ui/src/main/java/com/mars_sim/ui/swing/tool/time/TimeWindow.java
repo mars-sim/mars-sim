@@ -52,6 +52,8 @@ public class TimeWindow extends ToolWindow {
 
 	public static final String NAME = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
 	public final static String ICON = "time";
+	public final static int WIDTH = 300;
+	public final static int HEIGHT = 590;
 	
 	/** Tool name. */
 	public final String DESIRED = "x (Desired : ";
@@ -141,7 +143,7 @@ public class TimeWindow extends ToolWindow {
 		super(NAME, desktop);
 	
 		// Set window resizable to false.
-		setResizable(false);
+		setResizable(true);
 		
 		// Initialize data members
 		Simulation sim = desktop.getSimulation();
@@ -281,10 +283,7 @@ public class TimeWindow extends ToolWindow {
 		// Pack window
 		pack();
 
-
-		// Add x pixels to packed window width
-		Dimension windowSize = getSize();
-		setSize(new Dimension((int) windowSize.getWidth(), (int) windowSize.getHeight()));
+		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
 		// Update the two time labels
 		updateFastLabels(masterClock);

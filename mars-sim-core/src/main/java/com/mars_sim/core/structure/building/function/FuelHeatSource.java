@@ -55,7 +55,7 @@ public class FuelHeatSource extends HeatSource {
 	 * @param maxHeat          the maximum power/heat (kW) of the heat source.
 	 * @param toggle           if the heat source is toggled on or off.
 	 * @param fuelType          the fuel type.
-	 * @param consumptionSpeed the rate of fuel consumption (kg/Sol).
+	 * @param consumptionSpeed the rate of fuel consumption (kg/sol).
 	 */
 	public FuelHeatSource(Building building, double maxHeat, boolean toggle, String fuelType, double consumptionSpeed) {
 		super(HeatSourceType.FUEL_HEATING, maxHeat);
@@ -137,7 +137,7 @@ public class FuelHeatSource extends HeatSource {
 	/**
 	 * Gets the rate the fuel is consumed.
 	 * 
-	 * @return rate (kg/Sol).
+	 * @return rate (kg/sol).
 	 */
 	public double getFuelConsumptionRate() {
 		return rate;

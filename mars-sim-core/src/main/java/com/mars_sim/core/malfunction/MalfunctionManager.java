@@ -1064,7 +1064,16 @@ public class MalfunctionManager implements Serializable, Temporal {
 	public double getAdjustedCondition() { 
 		return currentWearLifeTime / (baseWearLifeTime - cumulativeTime) * 100;
 	}
-	
+
+	/**
+	 * Reduces the current wear life time param.
+	 * 
+	 * @param percent
+	 */
+	public void reduceWearLifeTimebyPercent(double percent) {
+		double value = currentWearLifeTime * percent / 100;
+		currentWearLifeTime = value;
+	}
 	/**
 	 * Issues any necessary medical complaints.
 	 *

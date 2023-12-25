@@ -1217,15 +1217,24 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			isImpactImminent = false;
 			
 			// Find the length this meteorite can penetrate
-			double penetrated_length = getBuildingManager().getWallPenetration();
+			double penetratedLength = getBuildingManager().getWallPenetration();
 
-			if (penetrated_length < getWallThickness()) {
-				// No it's not breached
+			double wallThick = getWallThickness();
+			
+			if (penetratedLength < wallThick) {
+				// Case A: No. it's not breached
 				logger.log(this, Level.INFO, 0, "Meteorite Impact event observed but no building was breached. Damage not detected.");
+						
 				return ;
 			}
 			
-			// Yes it's breached !	
+			double reductionPercent = penetratedLength / wallThick;
+			
+			// The impact reduces the structural health of the building 
+			// TODO: it should also generates a repair task to at least assess the damage
+			malfunctionManager.reduceWearLifeTimebyPercent(reductionPercent);
+			
+			// Case B: Yes it's breached !	
 			
 			// Simulate the meteorite impact as a malfunction event for now
 			Malfunction mal = malfunctionManager.triggerMalfunction(MalfunctionFactory
@@ -1265,12 +1274,12 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 					mal.setTraumatized(victimNames);
 
 					// Store the meteorite fragment in the settlement
-					settlement.storeAmountResource(ResourceUtil.meteoriteID, getBuildingManager().getDebrisMass());
+					settlement.storeAmountResource(ResourceUtil.meteoriteID, floorArea * getBuildingManager().getDebrisMass());
 
 					logger.log(this, Level.INFO, 0, "Found " + Math.round(getBuildingManager().getDebrisMass() * 100.0)/100.0
 							+ " kg of meteorite fragments in " + getNickName() + ".");
 
-					if (pc.getStress() > 30)
+					if (pc.getStress() > 50)
 						logger.log(this, Level.WARNING, 0, victimNames + " was traumatized by the meteorite impact");
 
 				} // check if this person happens to be inside the affected building

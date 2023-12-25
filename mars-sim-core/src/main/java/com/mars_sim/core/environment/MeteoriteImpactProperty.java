@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * MeteoriteImpactImpl.java
- * @date 2022-09-25
+ * MeteoriteImpactProperty.java
+ * @date 2023-12-25
  * @author Manny Kung
  */
 
@@ -12,7 +12,6 @@ import java.io.Serializable;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.tools.util.RandomUtil;
-
 
 /**
  *   Assumptions:
@@ -35,55 +34,70 @@ import com.mars_sim.tools.util.RandomUtil;
  * 
  * @author mkhelios
  */
-public class MeteoriteImpactImpl implements Serializable {
+public class MeteoriteImpactProperty implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
-	private static final double CRITICAL_DIAMETER = .0016; // in cm
-	private static final double AVERAGE_DENSITY = 1D; // in gram/cm^3
-	private static final double IMPACT_VELOCITY = 1D; // in km/s
+	// Set up the initial params for each settlement
+	
+	// A. Critical Diameter is 0.0016 cm for meteorites having a spherical
+	// sphere with 8 um radius
+	private final double CRITICAL_DIAMETER = .0016 * RandomUtil.getRandomDouble(.95, 1.05);
+	
+	private double cDiaCache = CRITICAL_DIAMETER;
+			
+	// B. Density Range from 0.7 to 2.2 gram/cm^3
+	private final double AVERAGE_DENSITY = RandomUtil.getRandomDouble(.7, 2.2);
+	
+	private double aRhoCache = AVERAGE_DENSITY;
+	
+	// C. Velocity of impact < 1 km/s
+	// Note: atmospheric entry simulations indicate particles from 10 to 1000 mm in
+	// diameter are slowed to usually below 1 km/s before impacting the surface of the planet
+	// (Flynn and McKay, 1990)
+	private final double IMPACT_VELOCITY = RandomUtil.getRandomDouble(.25, 1); 
 
-	/*
+	private double impVelCache = IMPACT_VELOCITY;
+	
+	/**
 	 * Calculates the meteorite impact probability for the whole settlement once a
 	 * sol
 	 * 
 	 * @param BuildingManager
 	 */
 	public void calculateMeteoriteProbability(BuildingManager buildingManager) {
-		// TODO: Revise this method to give the incoming meteorite
-		// an unique profile with an arbitrary degree of randomness for each sol
+		
+		// Compute the incoming meteorite unique profile with an arbitrary degree of randomness 
+		// for each settlement locale.
+		
+		// FUTURE: May vary per orbit oer per season
 
 		// Part I
 		// Assuming size and penetration speed of the meteorites are homogeneous,
 		// Find the probability of impact per square meter per sol on the settlement
 
-		// a. average critical diameter is 0.0016 for meteorites having a spherical
-		// sphere with 8 um radius
-		double c_d = CRITICAL_DIAMETER * RandomUtil.getRandomDouble(1, 1_000);// - RandomUtil.getRandomDouble(5_000)); // in cm
-//									* RandomUtil.getRandomRegressionInteger(1_000_000);
-//		logger.info(buildingManager.getSettlement(), "Observed the average critical diameter of " 
-//				+ c_d
-////				+ Math.round(c_d*100_000.0)/100_000.0 
-//				+ " (in meter) for meteorites having a spherical sphere with 8 um in radius.");
-		
-		// b. density range from 0.7 to 2.2g/cm^3
-		double a_rho = AVERAGE_DENSITY - RandomUtil.getRandomDouble(.3) + RandomUtil.getRandomDouble(1.2); // in
-																											// gram/cm^3
+		// a. Update average critical diameter 
+		double cDia = 0.5 * cDiaCache + 0.5 * CRITICAL_DIAMETER * RandomUtil.getRandomDouble(.95, 1.05);
 
-		// c. velocity of impact < 1 km/s
-		// Note: atmospheric entry simulations indicate particles from 10 to 1000 mm in
-		// diameter are slowed to
-		// usually below 1 km/s before impacting the surface of the planet (Flynn and
-		// McKay, 1990)
-		double impact_vel = IMPACT_VELOCITY * (1 + RandomUtil.getRandomDouble(.3) - RandomUtil.getRandomDouble(.3)); // in
-																														// km/s
+		cDiaCache = cDia;
+		
+		// b. Update average density
+		double aRho = 0.5 * aRhoCache + 0.5 * AVERAGE_DENSITY * RandomUtil.getRandomDouble(.95, 1.05);
+		
+		aRhoCache = aRho;
+		
+		// c. Update velocity of impact 
+		double impVel = 0.5 * impVelCache + 0.5 * IMPACT_VELOCITY * RandomUtil.getRandomDouble(.95, 1.05); 	
+		
+		impVelCache = impVel;
+		
 		// d. spherical volume 4/3 * pi * (r/2)^3
 		// 1.33333 * Math.PI *.5*.5*.5 = .5236
-		double sphericalVolume = 0.5236 * c_d * c_d * c_d; // .125 = *.5*.5*.5;
+		double sphericalVolume = 0.5236 * cDia * cDia * cDia; // .125 = *.5*.5*.5;
 
 		// e. mass of a meteorite
-		double massPerMeteorite = a_rho * sphericalVolume;
+		double massPerMeteorite = aRho * sphericalVolume;
 		
 		// f. logN
 		// The influx of meteorites entering Mars atmosphere can be estimated as
@@ -103,10 +117,11 @@ public class MeteoriteImpactImpl implements Serializable {
 ////				+ Math.round(numMeteoritesPerYearPerMeter*100_000.0)/100_000.0 
 //				+ numMeteoritesPerYearPerMeter
 //				+ ".");
+
+		double totalMassPerSqkm = massPerMeteorite * numMeteoritesPerYearPerMeter * 1_000_000;
 		
 		// Save it in the BuildingManager for all buildings in this settlement to apply
 		// this value of mass for this sol
-		double totalMassPerSqkm = massPerMeteorite * numMeteoritesPerYearPerMeter * 1_000_000;
 		buildingManager.setDebrisMass(totalMassPerSqkm);
 		
 //		logger.info(buildingManager.getSettlement(), "Anticipating meteorite fragments with a total mass of " 
@@ -130,14 +145,17 @@ public class MeteoriteImpactImpl implements Serializable {
 		// Part II
 		// Assuming size and impact speed of the meteorites are homogeneous,
 		// determine how far the meteorites may penetrate the wall
-		double penetrationThicknessOnAL = 1.09 * Math.pow(massPerMeteorite * impact_vel, 1 / 3D);
+		double penetrationThicknessOnAL = 1.09 * Math.pow(massPerMeteorite * impVel, 1 / 3D);
 
 		// TODO: does it account for all angles of penetration on average ?
 
 		double wallPenetrationThicknessAL = 1.5 * penetrationThicknessOnAL;
-		// System.out.println("penetrationThicknessOnAL : " + penetrationThicknessOnAL);
+		
+		// Save it in the BuildingManager for all buildings in this settlement
 		buildingManager.setWallPenetration(wallPenetrationThicknessAL);
 
+		// logger.info("penetrationThicknessOnAL : " + penetrationThicknessOnAL);
+		
 		// Part III
 		// TODO : Need helps in finding equations of the probability distribution of
 		// different sizes and impact speed of the meteorites

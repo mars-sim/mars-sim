@@ -74,7 +74,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	private static final String PAR_REQUIRED = "<br>&nbsp;&nbsp;PAR required:&emsp;";
 	private static final String MOL_M2_DAY = " mol/m\u00b2/day";
 
-	private static final DecimalFormat DECIMAL_KG_SOL = new DecimalFormat("#,##0.0 kg/Sol");
+	private static final DecimalFormat DECIMAL_KG_SOL = new DecimalFormat("#,##0.0 kg/sol");
 	private static final DecimalFormat DECIMAL_W_M2 = new DecimalFormat("#,##0.0 W/m\u00b2");
 	
 	// Data members

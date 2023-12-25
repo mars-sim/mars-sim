@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * WindPowerSource.java
- * @version 3.2.0 2021-06-20
+ * AreothermalPowerSource.java
+ * @date 2023-12-25
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.function;
@@ -22,6 +22,7 @@ extends PowerSource {
 	
 	/**
 	 * Constructor.
+	 * 
 	 * @param maxPower the max power generated (kW).
 	 */
 	public AreothermalPowerSource(double maxPower) {
@@ -31,7 +32,7 @@ extends PowerSource {
 
 	@Override
 	public double getCurrentPower(Building building) {
-		return surface.getAreothermalPotential(building.getSettlement().getCoordinates());
+		return getAveragePower(building.getSettlement());
 	}
 
 	@Override

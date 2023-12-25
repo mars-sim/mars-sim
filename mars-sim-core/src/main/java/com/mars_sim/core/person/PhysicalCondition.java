@@ -1958,7 +1958,7 @@ public class PhysicalCondition implements Serializable {
 	/**
 	 * Gets the oxygen consumption rate per Sol.
 	 *
-	 * @return oxygen consumed (kg/Sol)
+	 * @return oxygen consumed (kg/sol)
 	 * @throws Exception if error in configuration.
 	 */
 	public static double getOxygenConsumptionRate() {
@@ -1968,7 +1968,7 @@ public class PhysicalCondition implements Serializable {
 	/**
 	 * Gets the water consumption rate per Sol.
 	 *
-	 * @return water consumed (kg/Sol)
+	 * @return water consumed (kg/sol)
 	 * @throws Exception if error in configuration.
 	 */
 	public static double getWaterConsumptionRate() {
@@ -1982,7 +1982,7 @@ public class PhysicalCondition implements Serializable {
 	/**
 	 * Gets the food consumption rate per Sol.
 	 *
-	 * @return food consumed (kg/Sol)
+	 * @return food consumed (kg/sol)
 	 * @throws Exception if error in configuration.
 	 */
 	public static double getFoodConsumptionRate() {

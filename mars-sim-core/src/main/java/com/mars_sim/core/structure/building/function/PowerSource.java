@@ -80,6 +80,7 @@ implements Serializable {
 
 	/**
      * Gets the maintenance time for this power source.
+     * 
      * @return maintenance work time (millisols).
      */
 	public abstract double getMaintenanceTime();

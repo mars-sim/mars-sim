@@ -32,7 +32,7 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 	private static final String FISH_ICON = "fish";
 	private static final String DEGREE_CELSIUS = " " + Msg.getString("temperature.sign.degreeCelsius");
 	
-	private static final DecimalFormat DECIMAL_KG_SOL = new DecimalFormat("#,##0.0 kg/Sol");
+	private static final DecimalFormat DECIMAL_KG_SOL = new DecimalFormat("#,##0.0 kg/sol");
 	private static final DecimalFormat DECIMAL_G_LITER = new DecimalFormat("#,##0.00 g/L");
 
 	

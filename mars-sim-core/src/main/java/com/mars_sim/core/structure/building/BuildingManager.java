@@ -27,7 +27,7 @@ import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.data.UnitSet;
-import com.mars_sim.core.environment.MeteoriteImpactImpl;
+import com.mars_sim.core.environment.MeteoriteImpactProperty;
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsUtil;
@@ -127,13 +127,14 @@ public class BuildingManager implements Serializable {
 	private Map<Malfunctionable, Map<Integer, Integer>> partsMaint = new HashMap<>();
 	
 	private transient Settlement settlement;
-	private MeteoriteImpactImpl meteorite;
+	private MeteoriteImpactProperty meteorite;
 	
 	// Data members
 	/** The population capacity (determined by the # of beds) of the settlement. */
 	private int popCap = 0;
 
 	private double farmTimeCache = -5D;
+	/** The debris mass (kg per square km) near the settlement . */
 	private double debrisMass;
 	private double probabilityOfImpactPerSQMPerSol;
 	private double wallPenetrationThicknessAL;
@@ -180,7 +181,7 @@ public class BuildingManager implements Serializable {
 		if (buildingFunctionsMap == null)
 			setupBuildingFunctionsMap();
 		
-		meteorite = new MeteoriteImpactImpl();
+		meteorite = new MeteoriteImpactProperty();
 	}
 
 	/**
@@ -3039,7 +3040,6 @@ public class BuildingManager implements Serializable {
 	
 	/**
 	 * Sets the probability of impact per square meter per sol. 
-	 * Called by MeteoriteImpactImpl.
 	 *  
 	 * @param value
 	 */
@@ -3058,18 +3058,38 @@ public class BuildingManager implements Serializable {
 		return probabilityOfImpactPerSQMPerSol;
 	}
 
+	/**
+	 * Sets the debris mass (kg per square km) near the settlement.
+	 * 
+	 * @param value
+	 */
 	public void setDebrisMass(double value) {
 		debrisMass = value;
 	}
 
+	/**
+	 * Gets the debris mass.
+	 * 
+	 * @return
+	 */
 	public double getDebrisMass() {
 		return debrisMass;
 	}
 
+	/**
+	 * Sets the wall penetration param due to meteorite impact.
+	 * 
+	 * @param value
+	 */
 	public void setWallPenetration(double value) {
 		wallPenetrationThicknessAL = value;
 	}
 
+	/**
+	 * Gets the wall penetration param.
+	 * 
+	 * @return
+	 */
 	public double getWallPenetration() {
 		return wallPenetrationThicknessAL;
 	}
