@@ -102,7 +102,7 @@ public class BuildingAirlock extends Airlock {
         // Determine airlock inner/interior door position.
         airlockInteriorPos = LocalAreaUtil.getLocalRelativePosition(interiorPos, building);
         // For Zone 0
-        outsideInteriorDoorMap = buildDoorMap(interiorPos, building, -0.3, -0.6, 0.4);
+        outsideInteriorDoorMap = buildDoorMap(interiorPos, building, -0.3, -0.55, 0.4);
         // For Zone 1
         insideInteriorDoorMap = buildDoorMap(interiorPos, building, 1.7, 2.3, 0.4);
         // Determine airlock outer/exterior door position.

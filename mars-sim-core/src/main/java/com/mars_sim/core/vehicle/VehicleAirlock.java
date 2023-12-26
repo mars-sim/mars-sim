@@ -575,7 +575,7 @@ extends Airlock {
 	@Override
 	public void timePassing(ClockPulse pulse) {
 		
-		if (activated) {
+		if (activated || (getAirlockMode() != AirlockMode.NOT_IN_USE)) {
 
 			double time = pulse.getElapsed();
 			

@@ -529,7 +529,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- exterior-position : the outer or exterior door position of the airlock. -->
 			<EVA capacity="4">
 				<center-position xloc="0.0" yloc="0.0"/>
-				<interior-position xloc="-2.0" yloc="0.0"/>
+				<interior-position xloc="-2.25" yloc="0.0"/>
 				<exterior-position xloc="3.0" yloc="0.0"/>
 				<activity>
 					<activity-spot xloc="1.0" yloc="1.25" />
@@ -2149,8 +2149,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<!--  EVA airlock-capacity="8" xloc="0.0" yloc="7.5" interior-xloc="0.0" interior-yloc="7.0"
-			exterior-xloc="0.0" exterior-yloc="9.0" /-->
 			<vehicle-maintenance>
 				<parking>
 		        	<parking-location xloc="2.60" yloc="2.0" />
@@ -2663,9 +2661,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="1.0" base-power-down-power="0.1" />
 
 		<functions>
-			<!-- EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
-			exterior-xloc="5.5" exterior-yloc="0.0"/ -->
-
 			<life-support capacity="12" power-required="0.6" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
@@ -2765,8 +2760,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<!--EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
-			exterior-xloc="5.5" exterior-yloc="0.0" /!-->
 			<life-support capacity="12" power-required="0.6" />
 			<living-accommodation capacity="5">
 				<activity>
@@ -2810,8 +2803,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<!--EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
-			exterior-xloc="5.5" exterior-yloc="0.0" /!-->
 			<exercise capacity="4">
 				<activity>
 					<activity-spot xloc="-3.0" yloc="1.5" />
