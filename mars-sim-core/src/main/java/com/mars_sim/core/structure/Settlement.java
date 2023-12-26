@@ -1163,7 +1163,7 @@ public class Settlement extends Structure implements Temporal,
 		// due to high cpu util during the change of day
 		if (pulse.isNewMSol() && msol >= 10 && msol < 995) {
 
-			double time = pulse.getElapsed();
+//			double time = pulse.getElapsed();
 			
 			int remainder = 0; // msol % CHECK_RESOURCES;
 //			if (remainder == 1) {
@@ -1253,7 +1253,7 @@ public class Settlement extends Structure implements Temporal,
 		}
 
 		if (remove != null) {
-			for(Person r : remove) {
+			for (Person r : remove) {
 				removeACitizen(r);
 			}
 		}

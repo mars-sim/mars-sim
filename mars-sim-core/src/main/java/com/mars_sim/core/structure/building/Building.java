@@ -1228,11 +1228,11 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				return ;
 			}
 			
-			double reductionPercent = penetratedLength / wallThick;
+			double reductionFraction = penetratedLength / wallThick;
 			
 			// The impact reduces the structural health of the building 
-			// TODO: it should also generates a repair task to at least assess the damage
-			malfunctionManager.reduceWearLifeTimebyPercent(reductionPercent);
+			// Future: it should also generates a repair task to at least assess the damage
+			malfunctionManager.reduceWearLifeTime(reductionFraction);
 			
 			// Case B: Yes it's breached !	
 			

@@ -1068,10 +1068,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/**
 	 * Reduces the current wear life time param.
 	 * 
-	 * @param percent
+	 * @param fraction
 	 */
-	public void reduceWearLifeTimebyPercent(double percent) {
-		double value = currentWearLifeTime * percent / 100;
+	public void reduceWearLifeTime(double fraction) {
+		double value = currentWearLifeTime * fraction;
 		currentWearLifeTime = value;
 	}
 	/**

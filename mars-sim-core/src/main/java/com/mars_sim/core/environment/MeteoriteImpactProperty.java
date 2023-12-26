@@ -147,7 +147,7 @@ public class MeteoriteImpactProperty implements Serializable {
 		// determine how far the meteorites may penetrate the wall
 		double penetrationThicknessOnAL = 1.09 * Math.pow(massPerMeteorite * impVel, 1 / 3D);
 
-		// TODO: does it account for all angles of penetration on average ?
+		// FUTURE: does it account for all angles of penetration on average ?
 
 		double wallPenetrationThicknessAL = 1.5 * penetrationThicknessOnAL;
 		
@@ -155,10 +155,5 @@ public class MeteoriteImpactProperty implements Serializable {
 		buildingManager.setWallPenetration(wallPenetrationThicknessAL);
 
 		// logger.info("penetrationThicknessOnAL : " + penetrationThicknessOnAL);
-		
-		// Part III
-		// TODO : Need helps in finding equations of the probability distribution of
-		// different sizes and impact speed of the meteorites
-
 	}
 }
