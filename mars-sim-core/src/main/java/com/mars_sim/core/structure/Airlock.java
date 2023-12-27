@@ -510,6 +510,15 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
+	 * Checks if the airlock has an operator.
+	 * 
+	 * @return
+	 */
+	public boolean hasNoOperator() {
+		return operatorID.equals(Integer.valueOf(-1));
+	}
+	
+	/**
 	 * Releases the operator responsibility if the person's id. 
 	 * 
 	 * @param id
@@ -518,6 +527,15 @@ public abstract class Airlock implements Serializable {
 		if (isOperator(id)) {
 			operatorID = Integer.valueOf(-1); 
 		}
+	}
+	
+	/**
+	 * Elects an operator with this id.
+	 * 
+	 * @param id
+	 */
+	public void electOperator(int id) {
+		operatorID = Integer.valueOf(id); 
 	}
 	
 	/**

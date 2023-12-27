@@ -955,8 +955,7 @@ public class BuildingManager implements Serializable {
 			// Check if there are any maintenance parts to be submitted
 			retrieveMaintPartsFromMalfunctionMgrs();
 		}
-		
-		
+
 		for (Building b : buildings) {
 			try {
 				b.timePassing(pulse);

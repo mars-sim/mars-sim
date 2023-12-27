@@ -305,41 +305,53 @@ public class EnterAirlock extends Task {
 		
 		if (inSettlement) {
 
-			if (!airlock.addAwaitingOuterDoor(id)) {
+			if (!isInZone(AirlockZone.ZONE_4) && !airlock.addAwaitingOuterDoor(id)) {
 				logger.log(unit, person, Level.INFO, 60_000,
 						"Cannot get a spot outside the outer door in " + airlock.getEntity().toString() + ".");
 				
-				clearDown();
+				// Do not call clearDown since it will wipe a person from awaiting at outer door
+//				clearDown();
 				
 				// Reset accumulatedTime back to zero accumulatedTime = 0
 				// Do nothing in this frame
 				// Wait and see if he's allowed to be at the outer door in the next frame
-				return time * .75;
+				return 0;
 			}
 
+			if (airlock.isOuterDoorLocked()) {
+				logger.log(unit, person, Level.INFO, 60_000,
+						"Cannot ingress. "
+						+ "Exterior door locked at " + airlock.getEntity().toString() + ".");
+				
+				// Do not call clearDown since it will wipe a person from awaiting at outer door
+//				clearDown();
+				
+				// Reset accumulatedTime back to zero accumulatedTime = 0
+				// Do nothing in this frame
+				// Wait and see if he's allowed to be at the outer door in the next frame
+				return 0;
+			}
+			
 			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
 				logger.log(unit, person, Level.INFO, 60_000,
 						"Cannot ingress. "
 						+ CHAMBER_FULL + airlock.getEntity().toString() + ".");
 				
-				clearDown();
+				// Do not call clearDown since it will wipe a person from awaiting at outer door
+//				clearDown();
 				
 				// Reset accumulatedTime back to zero accumulatedTime = 0
 				// Do nothing in this frame
 				// Wait and see if he's allowed to be at the outer door in the next frame
-				return time * .75;
-			}
-						
-			if (isInZone(AirlockZone.ZONE_4)) {
-				canProceed = true;
-			}
+				return 0;
+			}				
 			
-			else if (transitionTo(AirlockZone.ZONE_4)) {
+			if (transitionTo(AirlockZone.ZONE_4)) {
 				// The outer door will stay locked if the chamber is NOT depressurized
 				canProceed = true;
 			}
 			
-			else if (!airlock.isOuterDoorLocked() || airlock.isEmpty()) {
+			if (!airlock.isOuterDoorLocked() || airlock.isEmpty()) {
 				// If the airlock is empty, it means no one is using it
 				logger.log(unit, person, Level.INFO, 60_000,
 						"No one is at " + airlock.getEntity().toString() + ".");
@@ -358,9 +370,10 @@ public class EnterAirlock extends Task {
 				logger.log(unit, person, Level.FINE, 4_000, "Requested ingress" 
 						+ " but cannot wait at " + airlock.getEntity().toString() + "'s outer door.");
 				
-				clearDown();
+				// Do not call clearDown since it will wipe a person from awaiting at outer door
+//				clearDown();
 				
-				return time * .75;
+				return 0;
 			}
 		}
 
@@ -371,7 +384,7 @@ public class EnterAirlock extends Task {
 				// then it's ready for entry
 
 				logger.log(unit, person, Level.INFO, 4_000,
-						"Chamber already depressurized for entry in " + airlock.getEntity().toString() + ".");
+						"Good that chamber already depressurized for entry in " + airlock.getEntity().toString() + ".");
 
 				// Skip DEPRESSURIZE_CHAMBER phase and go to the ENTER_AIRLOCK phase
 				setPhase(STEP_THRU_OUTER_DOOR);
@@ -422,14 +435,14 @@ public class EnterAirlock extends Task {
 		if (airlock.isDepressurized() && !airlock.isOuterDoorLocked()) {
 
 			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
-					"Chamber already depressurized for entry in " + airlock.getEntity().toString() + ".");
+					"Good that chamber already depressurized for entry in " + airlock.getEntity().toString() + ".");
 
 			canProceed = true;
 		}
 
 		else if (airlock.isDepressurizing()) {
 			// just wait for depressurizing to finish
-			return time * .75;
+			return 0;
 		}
 
 		else {
@@ -444,7 +457,7 @@ public class EnterAirlock extends Task {
 			}
 			
 			// just wait for depressurization to start and complete
-			return time * .75;
+			return 0;
 		}
 
 		if (canProceed && accumulatedTime > STANDARD_TIME * time) {
@@ -510,46 +523,25 @@ public class EnterAirlock extends Task {
 				logger.log(unit, person, Level.WARNING, 4_000,
 						"Outer door locked in " + airlock.getEntity() + ".");
 				
-				clearDown();
+//				clearDown();
 				
 				// The outer door is locked probably because of not being 
 				// at the correct airlock state. Go back to the previous task phase
 				setPhase(REQUEST_INGRESS);
 				// Reset accumulatedTime back to zero 
 				accumulatedTime = 0;
-				return time * .75;
-			}
 				
-			if (airlock.areAll4ChambersFull()) {
-				logger.log(unit, person, Level.WARNING, 16_000,
-						"Can't step thru outer door. "
-						+ CHAMBER_FULL + airlock.getEntity().toString() + ".");
-				
-				clearDown();
-				
-				// The outer door is locked probably because of not being 
-				// at the correct airlock state. Go back to the previous task phase
-				setPhase(REQUEST_INGRESS);
-				
-				// Reset accumulatedTime back to zero accumulatedTime = 0
-				// Do nothing in this frame
-				// Wait and see if he's allowed to be at the outer door in the next frame
-				return time * .75;
+				return 0;
 			}
 			
-            // True if the person is already inside the chamber from previous frame
-            if (isInZone(AirlockZone.ZONE_2) || isInZone(AirlockZone.ZONE_3)) {
-             	canProceed = true;
-             }
-			
-            else if (!airlock.inAirlock(person)) {
-				canProceed = airlock.enterAirlock(person, id, false) 
-						&& transitionTo(AirlockZone.ZONE_3);						
+            if (!airlock.inAirlock(person)
+				&& airlock.enterAirlock(person, id, false)) { 
+				canProceed = transitionTo(AirlockZone.ZONE_3);						
 			}
             
             else {
 				logger.log(unit, person, Level.WARNING, 4_000,
-						"Not in zone 2 or 3 in " + airlock.getEntity() + ".");
+						"Can't enter " + airlock.getEntity() + ".");
 				
 				clearDown();
 				
@@ -559,7 +551,7 @@ public class EnterAirlock extends Task {
 				// Reset accumulatedTime back to zero 
 				accumulatedTime = 0;
 				
-				return time * .75;
+				return 0;
             }
 		}
 
@@ -581,7 +573,7 @@ public class EnterAirlock extends Task {
 				// Reset accumulatedTime back to zero 
 				accumulatedTime = 0;
 				
-				return time * .75;
+				return 0;
 			}
 		}
 
@@ -619,22 +611,20 @@ public class EnterAirlock extends Task {
 				"Walking to a chamber in " + airlock.getEntity().toString() + ".");
 
 		if (inSettlement) {
-			
-			if (!isInZone(AirlockZone.ZONE_2) && airlock.areAll4ChambersFull()) {
+
+			if (airlock.areAll4ChambersFull()) {
 				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 16_000,
 						"Can't walk to a chamber. " 
 						+ CHAMBER_FULL + airlock.getEntity().toString() + ".");
-				
-				clearDown();
-				
+								
 				// The outer door is locked probably because of not being 
 				// at the correct airlock state. Go back to the previous task phase
-				setPhase(REQUEST_INGRESS);
+//				setPhase(REQUEST_INGRESS);
 				
 				// Reset accumulatedTime back to zero accumulatedTime = 0
 				// Do nothing in this frame
 				// Wait and see if he's allowed to be at the outer door in the next frame
-				return time * .75;
+				return 0;
 			}
 			
 			if (transitionTo(AirlockZone.ZONE_2)) {
@@ -642,9 +632,13 @@ public class EnterAirlock extends Task {
 			}
 			
 			else {
-				setPhase(STEP_THRU_OUTER_DOOR);
+				// Do nothing in this frame
+				// Wait and see if he's allowed to be at the outer door in the next frame
+
 				// Reset accumulatedTime back to zero
-				accumulatedTime = 0;
+//				accumulatedTime = 0;
+
+				
 				return 0;
 			}
 		}

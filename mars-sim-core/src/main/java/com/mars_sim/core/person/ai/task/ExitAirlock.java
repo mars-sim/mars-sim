@@ -1155,11 +1155,14 @@ public class ExitAirlock extends Task {
 					airlock.setActivated(true);
 				}
 				
+				if (airlock.hasNoOperator()) {
+					airlock.electOperator(id);
+				}
+				
 				if (airlock.isOperator(id)) {
 					// Command the airlock state to be transitioned to "depressurized"
 					airlock.setTransitioning(true);
 				}
-				
 			}
 			else {
 				for (Person p: noEVASuit) {
