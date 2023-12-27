@@ -72,7 +72,9 @@ public class MasterClock implements Serializable {
 //	public static final double MULTIPLIER = 3;
 	/** The number of milliseconds for each millisol.  */
 	private final double MILLISECONDS_PER_MILLISOL = MarsTime.SECONDS_PER_MILLISOL * 1000.0;
-
+	
+	private final int PULSE_STEPS = 90;
+	
 	// Transient members
 	/** Runnable flag. */
 	private transient boolean keepRunning = false;
@@ -129,10 +131,10 @@ public class MasterClock implements Serializable {
 	private double optMilliSolPerPulse;
 	/** The reference pulse in millisols. */
 	private double referencePulse;
-	/** The optimal pulse deviation in fraction. */
-	private double optPulseDeviation;
+	/** The next pulse deviation in fraction. */
+	private double nextPulseDeviation;
 	/** The tick factor. */
-	private double tickFactor;
+	private double cpuFactor;
 	
 	/** The Martian Clock. */
 	private MarsTime marsTime;
@@ -236,14 +238,10 @@ public class MasterClock implements Serializable {
 			cores = ((ThreadPoolExecutor)clockExecutor).getActiveCount();
 		}
 		
-		tickFactor = Math.sqrt(cores + Simulation.NUM_CORES) * 2;
+		cpuFactor = Math.sqrt(cores + Simulation.NUM_CORES) * 2;
 				
 		// Re-evaluate the optimal width of a pulse
-		referencePulse = minMilliSolPerPulse 
-				+ ((maxMilliSolPerPulse / tickFactor / 15 - minMilliSolPerPulse) 
-						* Math.pow(desiredTR, 1.2) / HIGH_TIME_RATIO);
-
-		optMilliSolPerPulse = referencePulse;
+		computeReferencePulse();
 	}
 
 	/**
@@ -252,24 +250,24 @@ public class MasterClock implements Serializable {
 	public void computeReferencePulse() {		
 		// Re-evaluate the optimal width of a pulse
 		referencePulse = minMilliSolPerPulse 
-				+ ((maxMilliSolPerPulse / tickFactor / 15 - minMilliSolPerPulse) 
+				+ ((maxMilliSolPerPulse / cpuFactor / 18 - minMilliSolPerPulse) 
 						* Math.pow(desiredTR, 1.2) / HIGH_TIME_RATIO);
 
 		optMilliSolPerPulse = referencePulse;
 	}
 	
 	/**
-	 * Gets the tick factor.
+	 * Gets the CPU factor.
 	 */
-	public double getTickFactor() {
-		return tickFactor;
+	public double getCpuFactor() {
+		return cpuFactor;
 	}
 	
 	/**
-	 * Gets the tick factor.
+	 * Gets the CPU factor.
 	 */
-	public void setTickFactor(double newTick) {
-		tickFactor = newTick;
+	public void setCPUFactor(double newTick) {
+		cpuFactor = newTick;
 		// Recompute the pulses
 		computeReferencePulse();
 	}
@@ -278,22 +276,22 @@ public class MasterClock implements Serializable {
 	 * Increments the tick factor.
 	 */
 	public void incrementTickFactor() {
-		double tick = tickFactor;
+		double tick = cpuFactor;
 		tick *= 1.1;
-		if (tick > 2 * tickFactor)
-			tick = 2 * tickFactor;
-		tickFactor = tick;
+		if (tick > 2 * cpuFactor)
+			tick = 2 * cpuFactor;
+		cpuFactor = tick;
 	}
 	
 	/**
 	 * Decrements the tick factor.
 	 */
 	public void decrementTickFactor() {
-		double tick = tickFactor;
+		double tick = cpuFactor;
 		tick /= 1.1;
-		if (tick < tickFactor / 2)
-			tick =  tickFactor / 2;
-		tickFactor = tick;
+		if (tick < cpuFactor / 2)
+			tick =  cpuFactor / 2;
+		cpuFactor = tick;
 	}
 	
 	/**
@@ -620,14 +618,15 @@ public class MasterClock implements Serializable {
 
 				// Obtain the delta time, given the ratio of realElapsedMillisec to the diff between actualTR and desiredTR 
 				double deltaPulseTime = (realElapsedMillisec * deltaTR) 
-						/ MILLISECONDS_PER_MILLISOL / 100;
+						/ MILLISECONDS_PER_MILLISOL / PULSE_STEPS;
+				
 				// Update the next time pulse width [in millisols]
 				nextPulseTime -= deltaPulseTime;
-				if (nextPulseTime < 0)
+				if (nextPulseTime < minMilliSolPerPulse)
 					nextPulseTime = minMilliSolPerPulse;
 
-				// Adjust the optimal time pulse and get the deviation
-				optPulseDeviation = adjustPulseWidth();
+				// Adjust the time pulses and get the deviation
+				nextPulseDeviation = adjustPulseWidth();
 			}
 		
 			if (nextPulseTime > 0) {
@@ -708,7 +707,7 @@ public class MasterClock implements Serializable {
 			// Adjust optPulse
 			if (ratio > 1.1) {
 				double diff = refPulse - optPulse;
-				optPulse = optPulse + diff / refPulse / 65;
+				optPulse = optPulse + diff / refPulse / PULSE_STEPS;
 				if (optPulse > maxMilliSolPerPulse * 1.05) {
 					optPulse = maxMilliSolPerPulse * 1.05;
 					logger.config("refPulse / optPulse = " + ratio + ". Set optPulse to max.");
@@ -719,7 +718,7 @@ public class MasterClock implements Serializable {
 			
 			else if (ratio < .9) {
 				double diff = optPulse - refPulse;
-				optPulse = optPulse - diff / refPulse / 65;
+				optPulse = optPulse - diff / refPulse / PULSE_STEPS;
 				if (optPulse < minMilliSolPerPulse) optPulse = minMilliSolPerPulse;
 				goOn = false;
 //				logger.config(20_000, "Decreasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0 + " toward reference pulse " + Math.round(refPulse * 10_000.0) / 10_000.0 + ".");
@@ -734,7 +733,7 @@ public class MasterClock implements Serializable {
 				if (ratio < 0.99) {
 					double diff = desiredTR - actualTR;
 					// Increase the optimal pulse width
-					nextPulse = nextPulse + diff / desiredTR / 75;
+					nextPulse = nextPulse + diff / desiredTR / PULSE_STEPS;
 					if (nextPulse > maxMilliSolPerPulse * 1.05) {
 						logger.config("actualTR / desiredTR = " + ratio + ". Set nextPulse to max.");
 						nextPulse = maxMilliSolPerPulse * 1.05;
@@ -745,7 +744,7 @@ public class MasterClock implements Serializable {
 				else if (ratio > 1.01) {
 					double diff = actualTR - desiredTR;
 					// Decrease the optimal pulse width
-					nextPulse = nextPulse - diff / desiredTR / 75;
+					nextPulse = nextPulse - diff / desiredTR / PULSE_STEPS;
 					if (nextPulse < minMilliSolPerPulse) nextPulse = minMilliSolPerPulse;
 					goOn = false;
 //					logger.config(20_000, "Setting next pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0 + " based on TR deviation to " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
@@ -759,14 +758,14 @@ public class MasterClock implements Serializable {
 				// Adjust nextPulse
 				if (ratio > 1.1) {
 					double diff = nextPulse - (.2 * optPulse + .8 * refPulse);
-					nextPulse = nextPulse - diff / 70;
+					nextPulse = nextPulse - diff / PULSE_STEPS;
 					if (nextPulse < minMilliSolPerPulse) nextPulse = minMilliSolPerPulse;
 	//				logger.config(20_000, "Increasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0 + " toward " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
 				}
 				
 				else if (ratio < .9) {
 					double diff = (.2 * optPulse + .8 * refPulse) - nextPulse;
-					nextPulse = nextPulse + diff / 70;
+					nextPulse = nextPulse + diff / PULSE_STEPS;
 					if (nextPulse > maxMilliSolPerPulse * 1.05) {
 						nextPulse = maxMilliSolPerPulse * 1.05;
 						logger.config("nextPulse / (.2 * optPulse + .8 * refPulse) = " + ratio + ". Set optPulse to max.");
@@ -999,6 +998,9 @@ public class MasterClock implements Serializable {
 			logger.config("Setting up " + num + " thread(s) for clock executor.");
 			clockExecutor = Executors.newFixedThreadPool(num,
 					new ThreadFactoryBuilder().setNameFormat("masterclock-%d").build());
+			
+			// Redo the pulses
+			initReferencePulse();
 		}
 		clockExecutor.execute(clockThreadTask);
 
@@ -1174,12 +1176,12 @@ public class MasterClock implements Serializable {
 	}
 	
 	/**
-	 * Gets the optimal pulse deviation.
+	 * Gets the next pulse deviation.
 	 *
 	 * @return
 	 */
-	public double getOptPulseDeviation() {
-		return optPulseDeviation;
+	public double getNextPulseDeviation() {
+		return nextPulseDeviation;
 	}
 	
 	/**
