@@ -10,4 +10,4 @@ Distribution: development
 Description: Mars Simulation Project
  An open source simulation of Mars exploration and colonization.  Its console menu and 
  the Swing GUI offers players with a functional view of the running simulation as well
- as the ability to interact with the settlements and the settlers within them.
+ as the ability to interact with the settlements and the settlers within it.
