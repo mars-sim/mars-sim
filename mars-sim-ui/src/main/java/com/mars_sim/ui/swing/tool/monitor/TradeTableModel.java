@@ -6,8 +6,6 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
-import java.util.Set;
-
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
@@ -67,17 +65,13 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	/**
 	 * Constructor 2.
 	 * 
-	 * @param selectedSettlement2
-	 * @param window
 	 */
-	public TradeTableModel(Set<Settlement> filter) {
+	public TradeTableModel() {
 		super(Msg.getString("TradeTableModel.tabName"), "TradeTableModel.counting",COLUMNS,
 						GoodsUtil.getGoodsList());
 
 		// Cache the data columns
 		setCachedColumns(NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
-
-		setSettlementFilter(filter);
 	}
 	
 	

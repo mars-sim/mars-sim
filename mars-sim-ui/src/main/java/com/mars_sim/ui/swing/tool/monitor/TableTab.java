@@ -48,7 +48,8 @@ abstract class TableTab extends MonitorTab {
 
 	/** Table component. */
 	protected JTable table;
-
+	private boolean widthAdjusted = false;
+	
 	/**
 	 * Creates a table within a tab displaying the specified model.
 	 *
@@ -118,6 +119,16 @@ abstract class TableTab extends MonitorTab {
 
 	public JTable getTable() {
 		return table;
+	}
+
+	/**
+	 * Automatically adjust the width when a significant data change
+	 */
+	public void autoAdjustWidths() {
+		if (!widthAdjusted) {
+			widthAdjusted = true;
+			adjustColumnWidth(table);
+		}
 	}
 
 	protected static void adjustColumnWidth(JTable table) {
@@ -214,4 +225,5 @@ abstract class TableTab extends MonitorTab {
 		super.removeTab();
 		table = null;
 	}
+
 }

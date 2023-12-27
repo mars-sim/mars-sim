@@ -57,12 +57,10 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	 * @param settlement
 	 * @throws Exception
 	 */
-	public BuildingTableModel(Set<Settlement> settlement) {
+	public BuildingTableModel() {
 		super(UnitType.BUILDING, Msg.getString("BuildingTableModel.nameBuildings", ""),
 				"BuildingTableModel.countingBuilding", //$NON-NLS-1$
-				COLUMNS);
-		
-		setSettlementFilter(settlement);
+				COLUMNS);		
 	}
 
 	@Override

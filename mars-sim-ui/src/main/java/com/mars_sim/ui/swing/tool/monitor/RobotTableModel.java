@@ -144,12 +144,11 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 * @param settlement    the settlement to check.
 
 	 */
-	public RobotTableModel(Set<Settlement> settlement) {
+	public RobotTableModel() {
 		super (UnitType.ROBOT, Msg.getString("RobotTableModel.nameAssociatedRobots"),
 				COUNTING_ROBOTS_KEY, COLUMNS);
 
 		this.allAssociated = true;
-		setSettlementFilter(settlement);
 	}
 
 	/**

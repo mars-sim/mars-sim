@@ -14,7 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
-
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,11 +41,11 @@ import javax.swing.event.TableModelListener;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
-import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitManagerEventType;
 import com.mars_sim.core.UnitManagerListener;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.mapdata.location.Coordinates;
@@ -145,24 +145,27 @@ public class MonitorWindow extends ToolWindow
 		Properties savedProps = desktop.getMainWindow().getConfig().getInternalWindowProps(NAME);
 
 		// Set up settlements
-		List<Settlement> initialSettlements = setupSettlements();
-		if (!initialSettlements.isEmpty()) {
-			String defaultSettlement = (savedProps != null ? savedProps.getProperty(SETTLEMENT_PROP) : null);
-			if (defaultSettlement != null) {
-				for(Settlement s : initialSettlements) {
-					if (s.getName().equals(defaultSettlement)) {
-						currentSelection = Set.of(s);
-					}
+		List<Entity> choices = setupSelectionChoices();
+		Entity defaultSelection = choices.get(0);
+		String previousChoice = (savedProps != null ? savedProps.getProperty(SETTLEMENT_PROP) : null);
+		if (previousChoice != null) {
+			for(Entity s : choices) {
+				if (s.getName().equals(previousChoice)) {
+					defaultSelection = s;
 				}
-			}
-
-			if (currentSelection == null) {
-				currentSelection = Set.of(initialSettlements.get(0));
 			}
 		}
 
+		// Setup the selection
+		if (defaultSelection instanceof Settlement s) {
+			currentSelection = Set.of(s);
+		}
+		else if (defaultSelection instanceof Authority a) {
+			currentSelection = authorities.get(a);
+		}
+
 		// Create the settlement combo box
-        buildSelectionCombo();
+        buildSelectionCombo(choices, defaultSelection);
 
 		// Create top pane
 		JPanel topPane = new JPanel(new FlowLayout());
@@ -176,7 +179,7 @@ public class MonitorWindow extends ToolWindow
 		tabsSection = new JTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
 		
 		// Add all the tabs
-		addAllTabs(initialSettlements,
+		addAllTabs(choices,
 					(savedProps != null ? savedProps.getProperty(TAB_PROP) : null));
 		
 		// Hide settlement box at startup since the all settlement tab is being selected by default
@@ -211,31 +214,31 @@ public class MonitorWindow extends ToolWindow
 	/**
 	 * Adds all the tabs.
 	 */
-	private void addAllTabs(List<Settlement> initialSettlements, String defaultTabName) {
+	private void addAllTabs(List<Entity> choices, String defaultTabName) {
 		List<MonitorTab> newTabs = new ArrayList<>();
 
 		// Add tabs into the table	
-		if (initialSettlements.size() > 1) {
+		if (choices.size() > 1) {
 			newTabs.add(new UnitTab(this, new SettlementTableModel(), true, MARS_ICON));
 		}
 		
-		newTabs.add(new UnitTab(this, new SettlementTableModel(currentSelection), true, COLONY_ICON));
-		newTabs.add(new UnitTab(this, new PersonTableModel(currentSelection), true, PEOPLE_ICON));
-		newTabs.add(new UnitTab(this, new RobotTableModel(currentSelection), true, BOT_ICON));
-		newTabs.add(new UnitTab(this, new BuildingTableModel(currentSelection), true, BUILDING_ICON));
-		newTabs.add(new UnitTab(this, new CropTableModel(currentSelection), true, CROP_ICON));
+		newTabs.add(new UnitTab(this, new SettlementTableModel(), true, COLONY_ICON));
+		newTabs.add(new UnitTab(this, new PersonTableModel(), true, PEOPLE_ICON));
+		newTabs.add(new UnitTab(this, new RobotTableModel(), true, BOT_ICON));
+		newTabs.add(new UnitTab(this, new BuildingTableModel(), true, BUILDING_ICON));
+		newTabs.add(new UnitTab(this, new CropTableModel(), true, CROP_ICON));
 		
-		newTabs.add(new FoodInventoryTab(currentSelection, this));
-		newTabs.add(new BacklogTab(currentSelection, this));
+		newTabs.add(new FoodInventoryTab(this));
+		newTabs.add(new BacklogTab(this));
 
 		
-		newTabs.add(new TradeTab(currentSelection, this));
+		newTabs.add(new TradeTab(this));
 		
 		eventsTab = new EventTab(this, desktop);
 		newTabs.add(eventsTab);
 		
 		newTabs.add(new MissionTab(this));
-		newTabs.add(new UnitTab(this, new VehicleTableModel(currentSelection), true, VEHICLE_ICON));
+		newTabs.add(new UnitTab(this, new VehicleTableModel(), true, VEHICLE_ICON));
 
 		// Add the enw tabs an search for default
 		for(MonitorTab m : newTabs) {
@@ -331,41 +334,43 @@ public class MonitorWindow extends ToolWindow
 	 *
 	 * @return Map of Authority to Settlements
 	 */
-	private List<Settlement> setupSettlements() {
-		List<Settlement> settlements;
+	private List<Entity> setupSelectionChoices() {
 
+		Collection<Settlement> settlements;
 		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			settlements = unitManager.getCommanderSettlements();
 		}
 		else { 
-			settlements = new ArrayList<>(unitManager.getSettlements());
+			settlements = unitManager.getSettlements();
 		}
+		List<Entity> choices = new ArrayList<>(settlements);
 
 		// Create the Authority maps
 		authorities = new HashMap<>();
 		for(var s : settlements) {
-			authorities.computeIfAbsent(s.getReportingAuthority(), k -> new HashSet<>()).add(s);
+			var ra = s.getReportingAuthority();
+			authorities.computeIfAbsent(ra, k -> new HashSet<>()).add(s);
 		}	
-		
-		return settlements;
+		choices.addAll(authorities.keySet());
+		return choices;
 	}
 
 	/**
 	 * Builds the settlement combo box that uses the settlements nd reporting authorities
+	 * @param selected 
 	 */
-	private void buildSelectionCombo() {
+	private void buildSelectionCombo(List<Entity> choices, Entity selected) {
 
 		DefaultComboBoxModel<Entity> model = new DefaultComboBoxModel<>();
-		model.addAll(authorities.values().stream().flatMap(Set::stream).collect(Collectors.toList()));
-		model.addAll(authorities.keySet());
-		model.setSelectedItem(currentSelection);
+		model.addAll(choices);
+		model.setSelectedItem(selected);
 		selectionCombo = new JComboBox<>(model);
 		selectionCombo.setOpaque(false);
 		selectionCombo.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		selectionCombo.setPreferredSize(new Dimension(200, 25));
 	
 		// Add renderer
-		//selectionCombo.setRenderer(new SelectionComboRenderer());
+		selectionCombo.setRenderer(new SelectionComboRenderer());
 
 		// Set the item listener only after the setup is done
 		selectionCombo.addItemListener(this::changeSelection);
@@ -509,12 +514,13 @@ public class MonitorWindow extends ToolWindow
 		boolean enableDetails = selectedTab.isEntityDriven();
 		boolean enableFilter = selectedTab.isFilterable();
 		boolean enableSettlement = tabTableModel.setSettlementFilter(currentSelection);
-		
+
 		boolean enableBar = false;
 		boolean enablePie = false;
-		if (selectedTab instanceof TableTab) {
+		if (selectedTab instanceof TableTab tt) {
 			enableBar = true;
 			enablePie = true;
+			tt.autoAdjustWidths();
 		}
 
 		// Configure the listeners
@@ -680,9 +686,8 @@ public class MonitorWindow extends ToolWindow
 	@Override
 	public Properties getUIProps() {
 		Properties result = new Properties();
-		// if (selectedSettlement.size() == 1) {
-		// 	result.setProperty(SETTLEMENT_PROP, selectedSettlement.getName());
-		// }
+		Entity e = (Entity) selectionCombo.getSelectedItem();
+		result.setProperty(SETTLEMENT_PROP, e.getName());
 		result.setProperty(TAB_PROP, getSelectedTab().getName());
 		return result;
 	}

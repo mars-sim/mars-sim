@@ -160,15 +160,12 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	 * Constructs a PersonTableModel that displays residents are all associated
 	 * people with a specified settlement.
 	 *
-	 * @param settlement    the settlement to check.
 	 */
-	public PersonTableModel(Set<Settlement> settlement)  {
+	public PersonTableModel()  {
 		super (UnitType.PERSON, Msg.getString("PersonTableModel.nameAllCitizens"),
 				"PersonTableModel.countingCitizens", COLUMNS);
 		setupCache();
 		sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE;
-
-		setSettlementFilter(settlement);
 	}
 
 	/**

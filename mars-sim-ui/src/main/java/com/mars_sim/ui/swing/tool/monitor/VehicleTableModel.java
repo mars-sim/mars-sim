@@ -120,14 +120,12 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 
 	private transient LocalMissionManagerListener missionManagerListener;
 	
-	public VehicleTableModel(Set<Settlement> settlement) {
+	public VehicleTableModel() {
 		super(UnitType.VEHICLE,
 			Msg.getString("VehicleTableModel.tabName"),
 			"VehicleTableModel.countingVehicles", //$NON-NLS-1$
 			COLUMNS
 		);
-
-		setSettlementFilter(settlement);
 
 		setCachedColumns(OXYGEN, ICE);
 

@@ -54,7 +54,7 @@ public class CropTableModel extends UnitTableModel<Building> {
 			int idx = FIRST_CROP_CAT + cat.ordinal();
 			COLUMNS[idx] = new ColumnSpec(cat.getName(), Integer.class);
 		}
-	};
+	}
 
 	// Data members
 	/**
@@ -62,14 +62,13 @@ public class CropTableModel extends UnitTableModel<Building> {
 	 */
 	private List<CropCategory> cropCategoryList;
 
-	public CropTableModel(Set<Settlement> settlement) {
+	public CropTableModel() {
 		super (UnitType.BUILDING, Msg.getString("CropTableModel.tabName"), //$NON-NLS-1$
 				"CropTableModel.countingCrops", COLUMNS);
 		cropCategoryList = new ArrayList<>(List.of(CropCategory.values()));
 
 		// Cache all crop categories
 		setCachedColumns(INITIAL_COLS, FIRST_CROP_CAT + CropCategory.values().length);
-		setSettlementFilter(settlement);
 	}
 
 	/**

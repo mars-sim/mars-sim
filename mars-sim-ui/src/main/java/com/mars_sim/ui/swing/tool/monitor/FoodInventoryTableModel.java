@@ -6,8 +6,6 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
-import java.util.Set;
-
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.food.Food;
@@ -57,13 +55,11 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food>
 	/**
 	 * Constructor.
 	 */
-	public FoodInventoryTableModel(Set<Settlement> selectedSettlement2) {
+	public FoodInventoryTableModel() {
 		super(Msg.getString("FoodInventoryTableModel.tabName"), "FoodInventoryTabModel.foodCounting",
 					COLUMNS, FoodUtil.getFoodList());
 		
 		setCachedColumns(DEMAND_COL, PRICE_COL);
-
-		setSettlementFilter(selectedSettlement2);
 	}
 
 	/**

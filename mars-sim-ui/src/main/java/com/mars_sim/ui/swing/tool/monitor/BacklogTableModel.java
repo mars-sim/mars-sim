@@ -47,17 +47,15 @@ public class BacklogTableModel extends AbstractMonitorModel
 
 	private Set<Settlement> selectedSettlements = Collections.emptySet();
 	private boolean monitorSettlement = false;
-	private List<SettlementTask> tasks;
+	private List<SettlementTask> tasks = Collections.emptyList();
 
 	/**
 	 * Constructor.
 	 */
-	public BacklogTableModel(Set<Settlement> filter) {
+	public BacklogTableModel() {
 		super(Msg.getString("BacklogTableModel.tabName"),
 							"BacklogTableModel.counting",
-							COLUMNS);
-		
-		setSettlementFilter(filter);
+							COLUMNS);		
 	}
 
 	/**
