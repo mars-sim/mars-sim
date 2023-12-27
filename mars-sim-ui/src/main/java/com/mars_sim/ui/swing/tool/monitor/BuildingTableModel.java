@@ -6,12 +6,13 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
+import java.util.Set;
+
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.tools.Msg;
 
 /**
@@ -50,37 +51,28 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 		COLUMNS[POWER_GEN]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.powerGenerated"), Double.class);
 	}
 
-
-	private Settlement selectedSettlement;
-
 	/**
 	 * Constructor.
 	 * 
 	 * @param settlement
 	 * @throws Exception
 	 */
-	public BuildingTableModel(Settlement settlement) {
-		super(UnitType.BUILDING, Msg.getString("BuildingTableModel.nameBuildings", //$NON-NLS-1$
-				settlement.getName()),
+	public BuildingTableModel(Set<Settlement> settlement) {
+		super(UnitType.BUILDING, Msg.getString("BuildingTableModel.nameBuildings", ""),
 				"BuildingTableModel.countingBuilding", //$NON-NLS-1$
 				COLUMNS);
 		
-		listenForUnits();
-
 		setSettlementFilter(settlement);
 	}
 
 	@Override
-	public boolean setSettlementFilter(Settlement filter) {
-		if (selectedSettlement != null) {
-			selectedSettlement.removeUnitListener(this);
-		}
+	public boolean setSettlementFilter(Set<Settlement> filter) {
+		getEntities().forEach(s -> s.removeUnitListener(this));
 
-		selectedSettlement = filter;
- 		BuildingManager bm = selectedSettlement.getBuildingManager();
-		resetEntities(bm.getBuildingSet());
+		var newBuildings = filter.stream().flatMap(s -> s.getBuildingManager().getBuildingSet().stream()).toList();
+		resetEntities(newBuildings);
 
-		selectedSettlement.addUnitListener(this);
+		newBuildings.forEach(s -> s.addUnitListener(this));
 
 		return true;
 	}
@@ -139,9 +131,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	
 	@Override
 	public void destroy() {
-		if (selectedSettlement != null) {
-			selectedSettlement.removeUnitListener(this);
-		}
+		getEntities().forEach(s -> s.removeUnitListener(this));
 		super.destroy();
 	}
 	
@@ -154,25 +144,17 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	public void unitUpdate(UnitEvent event) {
 		if (event.getSource() instanceof Building building) {
 			UnitEventType eventType = event.getType();
-			
-			if (eventType == UnitEventType.REMOVE_BUILDING_EVENT) {
-				removeEntity(building);
-			}
-			else if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
-				addEntity(building);			
-			}
-			else if (event.getSource() instanceof Building) { 
-				int columnIndex = switch(eventType) {
-					case POWER_MODE_EVENT -> POWER_MODE;
-					case GENERATED_POWER_EVENT -> POWER_GEN;
-					case REQUIRED_POWER_EVENT -> POWER_REQUIRED;
-					case HEAT_MODE_EVENT -> HEAT_MODE;
-					default -> -1;
-				};
 
-				if (columnIndex >= 0) {
-					entityValueUpdated(building, columnIndex, columnIndex);
-				}
+			int columnIndex = switch(eventType) {
+				case POWER_MODE_EVENT -> POWER_MODE;
+				case GENERATED_POWER_EVENT -> POWER_GEN;
+				case REQUIRED_POWER_EVENT -> POWER_REQUIRED;
+				case HEAT_MODE_EVENT -> HEAT_MODE;
+				default -> -1;
+			};
+
+			if (columnIndex >= 0) {
+				entityValueUpdated(building, columnIndex, columnIndex);
 			}
 		}
 	}

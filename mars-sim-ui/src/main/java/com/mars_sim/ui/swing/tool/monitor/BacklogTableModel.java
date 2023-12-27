@@ -6,7 +6,6 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -46,19 +45,19 @@ public class BacklogTableModel extends AbstractMonitorModel
 		COLUMNS[SCORE_COL] = new ColumnSpec("Score", Double.class);
 	}
 
-	private Settlement selectedSettlement;
+	private Set<Settlement> selectedSettlements = Collections.emptySet();
 	private boolean monitorSettlement = false;
 	private List<SettlementTask> tasks;
 
 	/**
 	 * Constructor.
 	 */
-	public BacklogTableModel(Settlement selectedSettlement) {
+	public BacklogTableModel(Set<Settlement> filter) {
 		super(Msg.getString("BacklogTableModel.tabName"),
 							"BacklogTableModel.counting",
 							COLUMNS);
 		
-		setSettlementFilter(selectedSettlement);
+		setSettlementFilter(filter);
 	}
 
 	/**
@@ -70,7 +69,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
 		UnitEventType eventType = event.getType();
-		if ((eventType == UnitEventType.BACKLOG_EVENT) && unit.equals(selectedSettlement)) {
+		if ((eventType == UnitEventType.BACKLOG_EVENT) && selectedSettlements.contains(unit)) {
 			// Reset the Tasks
 			resetTasks();
 		}
@@ -94,10 +93,10 @@ public class BacklogTableModel extends AbstractMonitorModel
     public void setMonitorEntites(boolean activate) {
 		if (activate != monitorSettlement) {
 			if (activate) {
-				selectedSettlement.addUnitListener(this);
+				selectedSettlements.forEach(s -> s.addUnitListener(this));
 			}
 			else {
-				selectedSettlement.removeUnitListener(this);
+				selectedSettlements.forEach(s -> s.removeUnitListener(this));
 			}
 			monitorSettlement = activate;
 		}
@@ -109,7 +108,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 	@Override
 	public void destroy() {
 		// Remove as listener for all settlements.
-		selectedSettlement.removeUnitListener(this);
+		selectedSettlements.forEach(s -> s.removeUnitListener(this));
 
 		super.destroy();
 	}
@@ -120,38 +119,36 @@ public class BacklogTableModel extends AbstractMonitorModel
 	 * @param filter Settlement
 	 */
 	@Override
-    public boolean setSettlementFilter(Settlement filter) {
-		if (selectedSettlement != null) {
-			selectedSettlement.removeUnitListener(this);
-		}
+    public boolean setSettlementFilter(Set<Settlement> filter) {
+		selectedSettlements.forEach(s -> s.removeUnitListener(this));
 
 		// Initialize settlements.
-		selectedSettlement = filter;	
+		selectedSettlements = filter;	
 
 		// Initialize task list; backlog maybe null.
-		List<SettlementTask> newTasks = selectedSettlement.getTaskManager().getAvailableTasks();
-		if (newTasks == null) {
-			tasks = Collections.emptyList();
-		}
-		else {
-			tasks = new ArrayList<>(newTasks);
-		}
+		tasks = getTasks();
 		fireTableDataChanged();
 			
 		// Add table as listener to each settlement.
 		if (monitorSettlement) {
-			selectedSettlement.addUnitListener(this);
+			selectedSettlements.forEach(s -> s.addUnitListener(this));
 		}
 
 		return true;
     }
+
+	private List<SettlementTask> getTasks() {
+		return selectedSettlements.stream()
+					.flatMap(s -> s.getTaskManager().getAvailableTasks().stream())
+					.toList();
+	}
 
     /**
      * Resets tasks.
      */
 	private void resetTasks() {
 		List<SettlementTask> oldTasks = tasks;
-		tasks = new ArrayList<>(selectedSettlement.getTaskManager().getAvailableTasks());
+		tasks = getTasks();
 
 		Set<SettlementTask> common = tasks.stream()
 						.filter(oldTasks::contains)

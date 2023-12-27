@@ -9,7 +9,7 @@ package com.mars_sim.ui.swing.tool.monitor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Set;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
@@ -120,7 +120,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 
 	private transient LocalMissionManagerListener missionManagerListener;
 	
-	public VehicleTableModel(Settlement settlement) {
+	public VehicleTableModel(Set<Settlement> settlement) {
 		super(UnitType.VEHICLE,
 			Msg.getString("VehicleTableModel.tabName"),
 			"VehicleTableModel.countingVehicles", //$NON-NLS-1$
@@ -138,8 +138,8 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	 * Filter the vehicles to a settlement
 	 */
 	@Override
-	public boolean setSettlementFilter(Settlement filter) {
-		resetEntities(filter.getAllAssociatedVehicles());
+	public boolean setSettlementFilter(Set<Settlement> filter) {
+		resetEntities(filter.stream().flatMap(s -> s.getAllAssociatedVehicles().stream()).toList());
 
 		return true;
 	}

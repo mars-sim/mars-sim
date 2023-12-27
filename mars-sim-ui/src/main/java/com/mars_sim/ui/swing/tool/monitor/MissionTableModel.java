@@ -8,6 +8,7 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.SwingUtilities;
 
@@ -153,7 +154,7 @@ public class MissionTableModel extends AbstractMonitorModel
 	 * Cannot filter missions by Settlement although is should be possible.
 	 */
 	@Override
-	public boolean setSettlementFilter(Settlement filter) {
+	public boolean setSettlementFilter(Set<Settlement> filter) {
 		// Mission doesn't support filtering ???
 		return false;
 	}

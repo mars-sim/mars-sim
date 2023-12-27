@@ -7,6 +7,8 @@
 
 package com.mars_sim.ui.swing.tool.monitor;
 
+import java.util.Set;
+
 import javax.swing.table.TableModel;
 
 import com.mars_sim.core.structure.Settlement;
@@ -48,10 +50,10 @@ interface MonitorModel extends TableModel {
 	/**
 	 * Sets the Settlement as a filter.
 	 * 
-	 * @param filter Settlement
+	 * @param selectedSettlement Settlement
 	 * @return 
 	 */
-	public boolean setSettlementFilter(Settlement filter);
+	public boolean setSettlementFilter(Set<Settlement> selectedSettlement);
 
 	/**
 	 * Sets whether the changes to the Entities should be monitor for change.

@@ -6,6 +6,8 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
+import java.util.Set;
+
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
@@ -26,7 +28,7 @@ public class TradeTab extends TableTab {
 	 * @param selectedSettlement
 	 * @param window {@link MonitorWindow} the containing window.
 	 */
-	public TradeTab(Settlement selectedSettlement, final MonitorWindow window) {
+	public TradeTab(Set<Settlement> selectedSettlement, final MonitorWindow window) {
 		// Use TableTab constructor
 		super(window, new TradeTableModel(selectedSettlement), true, false, TRADE_ICON);
 

@@ -103,7 +103,7 @@ public class EventTableModel extends AbstractMonitorModel implements HistoricalE
 	}
 
 	@Override
-	public boolean setSettlementFilter(Settlement filter) {
+	public boolean setSettlementFilter(Set<Settlement> filter) {
 		// Events do not support filtering
 		return false;
 	}

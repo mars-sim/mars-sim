@@ -6,11 +6,10 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
@@ -142,7 +141,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		}
 	}
 
-	private boolean singleSettlement;
+	private boolean allSettlements;
 
 	/**
 	 * Constructs a SettlementTableModel model that displays all Settlements in the
@@ -151,7 +150,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	public SettlementTableModel() {
 		super(UnitType.SETTLEMENT, "Mars", "SettlementTableModel.countingSettlements",
 				COLUMNS);
-		singleSettlement = false;
+		allSettlements = true;
 
 		setupCaches();
 		resetEntities(unitManager.getSettlements());
@@ -169,11 +168,11 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	 *
 	 * @param settlement
 	 */
-	public SettlementTableModel(Settlement settlement) {
+	public SettlementTableModel(Set<Settlement> settlement) {
 		super(UnitType.SETTLEMENT, Msg.getString("SettlementTableModel.tabName"), //$NON-NLS-2$
 				"SettlementTableModel.countingSettlements", 
 				COLUMNS);
-		singleSettlement = true;
+		allSettlements = false;
 		setupCaches();
 
 		setSettlementFilter(settlement);
@@ -185,14 +184,12 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	 * @param filter
 	 */
 	@Override
-	public boolean setSettlementFilter(Settlement filter) {
+	public boolean setSettlementFilter(Set<Settlement> filter) {
 
-		if (singleSettlement) {
-			List<Settlement> sList = new ArrayList<>();
-			sList.add(filter);
-			resetEntities(sList);
+		if (!allSettlements) {
+			resetEntities(filter);
 		}
-		return singleSettlement;
+		return !allSettlements;
 	}
 
 	/**

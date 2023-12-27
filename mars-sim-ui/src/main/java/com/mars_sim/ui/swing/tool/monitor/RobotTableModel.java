@@ -8,9 +8,13 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
@@ -106,7 +110,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 
 	// List sources.
 	private Crewable vehicle;
-	private Settlement settlement;
+	private Set<Settlement> settlements = Collections.emptySet();
 	private Mission mission;
 
 	private UnitListener crewListener;
@@ -138,19 +142,13 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 * robots with a specified settlement.
 	 *
 	 * @param settlement    the settlement to check.
-	 * @param allAssociated Are all robots associated with this settlement to be
-	 *                      displayed?
-	 */
-	public RobotTableModel(Settlement settlement, boolean allAssociated) {
-		super (UnitType.ROBOT, (allAssociated ? Msg.getString("RobotTableModel.nameAssociatedRobots") //$NON-NLS-1$
-			 	: Msg.getString(NAME_ROBOTS_KEY, //$NON-NLS-1$
-					settlement.getName())
-				),
-				(allAssociated ? COUNTING_ROBOTS_KEY : //$NON-NLS-1$
-						"RobotTableModel.countingResidents" //$NON-NLS-1$
-				), COLUMNS);
 
-		this.allAssociated = allAssociated;
+	 */
+	public RobotTableModel(Set<Settlement> settlement) {
+		super (UnitType.ROBOT, Msg.getString("RobotTableModel.nameAssociatedRobots"),
+				COUNTING_ROBOTS_KEY, COLUMNS);
+
+		this.allAssociated = true;
 		setSettlementFilter(settlement);
 	}
 
@@ -185,29 +183,37 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 * @param filter
 	 */
 	@Override
-	public boolean setSettlementFilter(Settlement filter) {
+	public boolean setSettlementFilter(Set<Settlement> filter) {
 		if (settlementListener != null) {
-			settlement.removeUnitListener(settlementListener);
+			settlements.forEach(s -> s.removeUnitListener(settlementListener));
 		}
 		
-		this.settlement = filter;
-		if (settlement == null)
-			return false;
-		
+		this.settlements = filter;
+
+		List<Robot> entities;
 		if (allAssociated) {
 			sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_ROBOTS;
-			resetEntities(settlement.getAllAssociatedRobots());
+			entities = settlements.stream()
+						.map(Settlement::getAllAssociatedRobots)
+						.flatMap(Collection::stream)
+						.collect(Collectors.toList());
 			settlementListener = new RobotChangeListener(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT,
 														UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT);
-			settlement.addUnitListener(settlementListener);
 		}
 		else {
 			sourceType = ValidSourceType.SETTLEMENT_ROBOTS;
-			resetEntities(settlement.getRobots());
+			entities = settlements.stream()
+						.map(Settlement::getRobots)
+						.flatMap(Collection::stream)
+						.collect(Collectors.toList());
 			settlementListener = new RobotChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
 														UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
-			settlement.addUnitListener(settlementListener);
 		}
+					
+		resetEntities(entities);
+
+		// Listen to the settlements for new People
+		settlements.forEach(s -> s.addUnitListener(settlementListener));
 
 		return true;
 	}
@@ -355,9 +361,8 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 			missionListener = null;
 			mission = null;
 		} else {
-			settlement.removeUnitListener(settlementListener);
-			settlementListener = null;
-			settlement = null;
+			settlements.forEach(s -> s.removeUnitListener(settlementListener));
+			settlements = null;
 		}
 	}	
 

@@ -6,6 +6,8 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
+import java.util.Set;
+
 import javax.swing.table.TableColumnModel;
 
 import com.mars_sim.core.structure.Settlement;
@@ -24,7 +26,7 @@ public class BacklogTab extends TableTab {
 	 * @param selectedSettlement
 	 * @param window {@link MonitorWindow} the containing window.
 	 */
-	public BacklogTab(Settlement selectedSettlement, final MonitorWindow window) {
+	public BacklogTab(Set<Settlement> selectedSettlement, final MonitorWindow window) {
 		// Use TableTab constructor
 		super(window, new BacklogTableModel(selectedSettlement), true, false,
 			  TASK_ICON);

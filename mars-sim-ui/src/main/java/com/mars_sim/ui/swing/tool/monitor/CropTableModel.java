@@ -8,6 +8,8 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
@@ -28,7 +30,8 @@ public class CropTableModel extends UnitTableModel<Building> {
 
 	// Column indexes
 	private static final int GREENHOUSE_NAME = 0;
-	private static final int INITIAL_COLS = 1;
+	private static final int SETTLEMENT_NAME = 1;
+	private static final int INITIAL_COLS = 2;
 
 	private static final int FIRST_CROP_CAT = INITIAL_COLS + 1;
 	
@@ -43,7 +46,8 @@ public class CropTableModel extends UnitTableModel<Building> {
 
 	static {
 		COLUMNS = new ColumnSpec[columnCount];
-		COLUMNS[GREENHOUSE_NAME] = new ColumnSpec("Name of Greenhouse", String.class);
+		COLUMNS[GREENHOUSE_NAME] = new ColumnSpec("Greenhouse", String.class);
+		COLUMNS[SETTLEMENT_NAME] = new ColumnSpec("Settlement", String.class);
 		COLUMNS[INITIAL_COLS] = new ColumnSpec("# Crops", Integer.class);
 
 		for (CropCategory cat : CropCategory.values()) {
@@ -58,7 +62,7 @@ public class CropTableModel extends UnitTableModel<Building> {
 	 */
 	private List<CropCategory> cropCategoryList;
 
-	public CropTableModel(Settlement settlement) {
+	public CropTableModel(Set<Settlement> settlement) {
 		super (UnitType.BUILDING, Msg.getString("CropTableModel.tabName"), //$NON-NLS-1$
 				"CropTableModel.countingCrops", COLUMNS);
 		cropCategoryList = new ArrayList<>(List.of(CropCategory.values()));
@@ -66,16 +70,16 @@ public class CropTableModel extends UnitTableModel<Building> {
 		// Cache all crop categories
 		setCachedColumns(INITIAL_COLS, FIRST_CROP_CAT + CropCategory.values().length);
 		setSettlementFilter(settlement);
-
-		listenForUnits();
 	}
 
 	/**
 	 * Filter the Greenhouses according to a Settlement
 	 */
 	@Override
-	public boolean setSettlementFilter(Settlement filter) {
-		resetEntities(filter.getBuildingManager().getBuildingSet(FunctionType.FARMING));
+	public boolean setSettlementFilter(Set<Settlement> filter) {
+		resetEntities(filter.stream()
+				.flatMap(s -> s.getBuildingManager().getBuildingSet(FunctionType.FARMING).stream())
+				.collect(Collectors.toSet()));
 
 		return true;
 	}
@@ -120,7 +124,10 @@ public class CropTableModel extends UnitTableModel<Building> {
 
 		switch (columnIndex) {
 			case GREENHOUSE_NAME: 
-				result = greenhouse.getNickName();
+				result = greenhouse.getName();
+				break;
+			case SETTLEMENT_NAME: 
+				result = greenhouse.getSettlement().getName();
 				break;
 			case INITIAL_COLS: 
 				result = getTotalNumOfAllCrops(greenhouse);

@@ -8,10 +8,12 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
@@ -124,7 +126,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	private boolean isCheck = true;
 	
 	private transient Crewable vehicle;
-	private Settlement settlement;
+	private Set<Settlement> settlements = Collections.emptySet();
 	private Mission mission;
 
 	private transient UnitListener crewListener;
@@ -159,20 +161,12 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	 * people with a specified settlement.
 	 *
 	 * @param settlement    the settlement to check.
-	 * @param allAssociated Are all people associated with this settlement to be
-	 *                      displayed?
 	 */
-	public PersonTableModel(Settlement settlement, boolean allAssociated)  {
-		super (UnitType.PERSON, (allAssociated ? Msg.getString("PersonTableModel.nameAllCitizens") //$NON-NLS-1$
-				 : Msg.getString("PersonTableModel.nameIndoor", //$NON-NLS-1$
-					settlement.getName())
-				),
-				(allAssociated ? "PersonTableModel.countingCitizens" : //$NON-NLS-1$
-								 "PersonTableModel.countingIndoor" //$NON-NLS-1$
-				), COLUMNS);
+	public PersonTableModel(Set<Settlement> settlement)  {
+		super (UnitType.PERSON, Msg.getString("PersonTableModel.nameAllCitizens"),
+				"PersonTableModel.countingCitizens", COLUMNS);
 		setupCache();
-		sourceType = (allAssociated ? ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE
-							: ValidSourceType.SETTLEMENT_INHABITANTS);
+		sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE;
 
 		setSettlementFilter(settlement);
 	}
@@ -208,55 +202,45 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	}
 
 	@Override
-	public boolean setSettlementFilter(Settlement filter) {	
+	public boolean setSettlementFilter(Set<Settlement> filter) {	
 		if ((sourceType != ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) &&
 			(sourceType != ValidSourceType.SETTLEMENT_INHABITANTS)) {
 				return false;
 		}
 
 		if (settlementListener != null) {
-			if (settlement != null) {
-				settlement.removeUnitListener(settlementListener);
-			}
+			settlements.forEach(s -> s.removeUnitListener(settlementListener));
 			settlementListener = null;
 		}
 
-		this.settlement = filter;
-		if (settlement == null)
-			return false;
-
+		this.settlements = filter;
+		List<Person> entities;
 		if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
-			List<Person> entities = new ArrayList<>(settlement.getAllAssociatedPeople());
-			if (!isCheck) {
-				Iterator<Person> p = entities.iterator(); 
-				while(p.hasNext()) {
-					if (p.next().isDeclaredDead()) 
-						p.remove();
-				}
-			}
-			
-			resetEntities(entities);
+			entities = settlements.stream()
+							.map(Settlement::getAllAssociatedPeople)
+							.flatMap(Collection::stream)
+							.collect(Collectors.toList());
 			settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
-														UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
-			settlement.addUnitListener(settlementListener);
-		} 
-		
-		else {
-			List<Person> entities = new ArrayList<>(settlement.getIndoorPeople());
-			if (!isCheck) {
-				Iterator<Person> p = entities.iterator(); 
-				while(p.hasNext()) {
-					if (p.next().isDeclaredDead()) 
-						p.remove();
-				}
-			}
-			
-			resetEntities(entities);
-
-			settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
-														UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
-			settlement.addUnitListener(settlementListener);
+											UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
 		}
+		else {
+			entities = settlements.stream()
+							.map(Settlement::getIndoorPeople)
+							.flatMap(Collection::stream)
+							.collect(Collectors.toList());
+			settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
+											UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
+		}
+
+		// Pick and attach to People
+		if (!isCheck) {
+			entities = entities.stream().filter(p -> !p.isDeclaredDead()).toList();
+		}
+			
+		resetEntities(entities);
+
+		// Listen to the settlements for new People
+		settlements.forEach(s -> s.addUnitListener(settlementListener));
 
 		return true;
 	}
@@ -446,9 +430,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 			missionListener = null;
 			mission = null;
 		} else {
-			settlement.removeUnitListener(settlementListener);
+			settlements.forEach(s -> s.removeUnitListener(settlementListener));
 			settlementListener = null;
-			settlement = null;
 		}
 	}
 

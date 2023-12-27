@@ -6,12 +6,12 @@
  */
 package com.mars_sim.core.authority;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.configuration.UserConfigurable;
 import com.mars_sim.core.person.NationSpecConfig;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -21,7 +21,7 @@ import com.mars_sim.tools.util.RandomUtil;
  * Represents a sponsor that owns units such as people, settlement, lunar colonies, etc..
  */
 public class Authority
-implements UserConfigurable, Serializable {
+implements Entity, UserConfigurable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -130,6 +130,7 @@ implements UserConfigurable, Serializable {
 	 * 
 	 * @return
 	 */
+	@Override
 	public String getDescription() {
 		return fullName;
 	}
@@ -154,10 +155,7 @@ implements UserConfigurable, Serializable {
 	 * @return
 	 */
 	public boolean isOneCountry() {
-		if (countries.size() == 1)
-			return true;
-		else
-			return false;
+		return (countries.size() == 1);
 	}
 	
 	/**
