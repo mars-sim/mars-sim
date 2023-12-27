@@ -457,7 +457,7 @@ public class UnitManager implements Serializable, Temporal {
 	private void setupExecutor() {
 		if (executor == null) {
 			int size = (int)(getSettlementNum()/2D);
-			int num = Math.min(size, Simulation.NUM_THREADS - simulationConfig.getUnusedCores());
+			int num = Math.min(size, Simulation.NUM_CORES - simulationConfig.getUnusedCores());
 			if (num <= 0) num = 1;
 			logger.config("Setting up " + num + " thread(s) for running the settlement update.");
 			executor = Executors.newFixedThreadPool(num,

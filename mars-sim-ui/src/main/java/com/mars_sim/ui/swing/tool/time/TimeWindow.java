@@ -18,6 +18,8 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
 import com.mars_sim.console.chat.simcommand.DateCommand;
@@ -95,6 +97,8 @@ public class TimeWindow extends ToolWindow {
 	/** Martian calendar panel. */
 	private MarsCalendarDisplay calendarDisplay;
 
+	/** The tick spinner */
+	private JSpinner tickSpinner;
 	/** label for Martian time. */
 	private JLabel martianTimeLabel;
 	/** label for Earth time. */
@@ -264,11 +268,18 @@ public class TimeWindow extends ToolWindow {
 		JPanel southPane = new JPanel(new BorderLayout());
 		seasonPane.add(southPane, BorderLayout.SOUTH);
 
+		// Create the tick spinner
+		createTickSpinner(masterClock);
+		JPanel tickPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		tickPane.add(new JLabel("Tick Factor : "));
+		tickPane.add(tickSpinner);
+		southPane.add(tickPane, BorderLayout.NORTH);
+		
 		// Create param panel
 		AttributePanel paramPane = new AttributePanel(9);
 		paramPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.simParam")));
 
-		southPane.add(paramPane, BorderLayout.NORTH);
+		southPane.add(paramPane, BorderLayout.CENTER);
 
 		ticksPerSecLabel = paramPane.addTextField(Msg.getString("TimeWindow.ticksPerSecond"), "", null);
 		execTimeLabel = paramPane.addTextField(EXEC, "", null);
@@ -289,28 +300,75 @@ public class TimeWindow extends ToolWindow {
 		updateFastLabels(masterClock);
 		updateDateLabels(masterClock);
 		updateRateLabels(masterClock);
+		
 		// Update season labels
 		updateSeason();
 	}
 
 	/**
+	 * Creates the tick spinner.
+	 * 
+	 * @param masterClock
+	 */
+	private void createTickSpinner(MasterClock masterClock) {
+		// Initializes one more time after  
+		// clockExecutor.getActiveCount() is stabilized
+		masterClock.initReferencePulse();
+		
+		double tick = masterClock.getTickFactor();
+	
+		double min = Math.round(tick / 5 * 10.0)/10.0;
+		double max = Math.round(5 * tick * 10.0)/10.0;
+		
+		SpinnerNumberModel spinnerModel = new SpinnerNumberModel(tick, min, max, tick/20);
+
+		spinnerModel.setValue(tick);
+		
+		tickSpinner = new JSpinner(spinnerModel);
+		tickSpinner.getEditor().setAlignmentX(CENTER_ALIGNMENT);
+		
+		tickSpinner.setToolTipText("Manually adjust the tick per sec factor associating with # of threads usage");
+		
+		tickSpinner.addChangeListener(e -> {
+			double tickD = ((Number)spinnerModel.getValue()).doubleValue();
+			masterClock.setTickFactor(tickD);
+		});
+	}
+	
+	
+	/**
 	 * Updates various time labels.
 	 * 
-	 * @param mc
+	 * @param masterClock
 	 */
-	private void updateRateLabels(MasterClock mc) {
-
+	private void updateRateLabels(MasterClock masterClock) {
+		double tickCache = masterClock.getTickFactor();
+		SpinnerNumberModel spinnerModel = (SpinnerNumberModel)(tickSpinner.getModel());
+		
+		double tickD = ((Number)spinnerModel.getValue()).doubleValue();
+		if (tickD != tickCache) {
+		
+			double tick = masterClock.getTickFactor();
+			double min = Math.round(tick / 5 * 10.0)/10.0;
+			double max = Math.round(5 * tick * 10.0)/10.0;
+			
+			spinnerModel.setValue(tick);
+			spinnerModel.setMinimum(min);
+			spinnerModel.setMaximum(max);
+			spinnerModel.setStepSize(tick/20);
+		}
+		
 		// Update execution time label
-		long execTime = mc.getExecutionTime();
+		long execTime = masterClock.getExecutionTime();
 		execTimeLabel.setText(execTime + MS);
 
 		// Update sleep time label
-		long sleepTime = mc.getSleepTime();
+		long sleepTime = masterClock.getSleepTime();
 		sleepTimeLabel.setText(sleepTime + MS);
 
 		// Update pulse width label
-		double nextPulseTime = mc.getNextPulseTime();
-		double OptPulseTime = mc.getOptPulseTime();
+		double nextPulseTime = masterClock.getNextPulseTime();
+		double OptPulseTime = masterClock.getOptPulseTime();
 		
 		StringBuilder pulseText = new StringBuilder();
 		pulseText.append(StyleManager.DECIMAL_PLACES4.format(nextPulseTime))
@@ -319,8 +377,8 @@ public class TimeWindow extends ToolWindow {
 			  .append(CLOSE_P);
 		marsPulseLabel.setText(pulseText.toString());
 
-		double ref = mc.getReferencePulse();
-		double percent = mc.getOptPulseDeviation() * 100;
+		double ref = masterClock.getReferencePulse();
+		double percent = masterClock.getOptPulseDeviation() * 100;
 		StringBuilder pulseDevText = new StringBuilder();
 		pulseDevText.append(StyleManager.DECIMAL_PERC1.format(percent))
 			  .append(REFERENCE)
@@ -330,14 +388,14 @@ public class TimeWindow extends ToolWindow {
 		
 		// Update actual TR label
 		StringBuilder trText = new StringBuilder();
-		trText.append(StyleManager.DECIMAL_PLACES1.format(mc.getActualTR()))
+		trText.append(StyleManager.DECIMAL_PLACES1.format(masterClock.getActualTR()))
 			  .append(DESIRED)
-			  .append(mc.getDesiredTR())
+			  .append(masterClock.getDesiredTR())
 			  .append(X_CLOSE_P);
 		actualTRLabel.setText(trText.toString());
 
 		// Update time compression label
-		timeCompressionLabel.setText(ClockUtils.getTimeString((int)mc.getActualTR()));
+		timeCompressionLabel.setText(ClockUtils.getTimeString((int)masterClock.getActualTR()));
 	}
 
 	/**

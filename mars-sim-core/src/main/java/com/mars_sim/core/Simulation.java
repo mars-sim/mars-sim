@@ -134,7 +134,7 @@ public class Simulation implements ClockListener, Serializable {
 	};
 
 	/** # of thread(s). */
-	public static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
+	public static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
 	/** The current year. */
 	public static final String YEAR = "2023";
 	/** The dashes. */
@@ -160,8 +160,8 @@ public class Simulation implements ClockListener, Serializable {
 	public static final String CH2_SAVE_FILE = SAVE_FILE + ".ch2";
 
 	public static final String TITLE = Msg.getString("Simulation.title", VERSION + " - Build " + BUILD
-			+ " - " + OS_ARCH + " " + JAVA_VERSION + " - " + NUM_THREADS
-			+ ((NUM_THREADS == 1) ? " CPU thread" : " CPU threads")); // $NON-NLS-1$
+			+ " - " + OS_ARCH + " " + JAVA_VERSION + " - " + NUM_CORES
+			+ ((NUM_CORES == 1) ? " CPU thread" : " CPU threads")); // $NON-NLS-1$
 
 	/** true if displaying graphic user interface. */
 	private transient boolean useGUI = true;
