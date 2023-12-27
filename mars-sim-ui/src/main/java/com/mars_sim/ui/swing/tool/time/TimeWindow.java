@@ -18,6 +18,8 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
 import com.mars_sim.console.chat.simcommand.DateCommand;
@@ -95,6 +97,8 @@ public class TimeWindow extends ToolWindow {
 	/** Martian calendar panel. */
 	private MarsCalendarDisplay calendarDisplay;
 
+	/** The tick spinner */
+	private JSpinner cpuSpinner;
 	/** label for Martian time. */
 	private JLabel martianTimeLabel;
 	/** label for Earth time. */
@@ -176,7 +180,7 @@ public class TimeWindow extends ToolWindow {
 		mainPane.add(martianMonthPane, BorderLayout.CENTER);
 		
 		// Create Martian calendar label panel
-		AttributePanel labelPane = new AttributePanel(2);
+		AttributePanel labelPane = new AttributePanel(1, 2);
 		labelPane.setAlignmentX(SwingConstants.CENTER);
 		labelPane.setAlignmentY(SwingConstants.CENTER);
 		martianMonthPane.add(labelPane, BorderLayout.NORTH);
@@ -264,11 +268,18 @@ public class TimeWindow extends ToolWindow {
 		JPanel southPane = new JPanel(new BorderLayout());
 		seasonPane.add(southPane, BorderLayout.SOUTH);
 
+		// Create the tick spinner
+		createCPUSpinner(masterClock);
+		JPanel tickPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		tickPane.add(new JLabel("CPU Pulse : "));
+		tickPane.add(cpuSpinner);
+		southPane.add(tickPane, BorderLayout.NORTH);
+		
 		// Create param panel
 		AttributePanel paramPane = new AttributePanel(9);
 		paramPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.simParam")));
 
-		southPane.add(paramPane, BorderLayout.NORTH);
+		southPane.add(paramPane, BorderLayout.CENTER);
 
 		ticksPerSecLabel = paramPane.addTextField(Msg.getString("TimeWindow.ticksPerSecond"), "", null);
 		execTimeLabel = paramPane.addTextField(EXEC, "", null);
@@ -289,28 +300,75 @@ public class TimeWindow extends ToolWindow {
 		updateFastLabels(masterClock);
 		updateDateLabels(masterClock);
 		updateRateLabels(masterClock);
+		
 		// Update season labels
 		updateSeason();
 	}
 
 	/**
+	 * Creates the CPU spinner.
+	 * 
+	 * @param masterClock
+	 */
+	private void createCPUSpinner(MasterClock masterClock) {
+		// Initializes one more time after  
+		// clockExecutor.getActiveCount() is stabilized
+		masterClock.initReferencePulse();
+		
+		double cpuValue = masterClock.getCpuFactor();
+	
+		double min = Math.round(cpuValue / 5 * 10.0)/10.0;
+		double max = Math.round(5 * cpuValue * 10.0)/10.0;
+		
+		SpinnerNumberModel spinnerModel = new SpinnerNumberModel(cpuValue, min, max, cpuValue/20);
+
+		spinnerModel.setValue(cpuValue);
+		
+		cpuSpinner = new JSpinner(spinnerModel);
+		cpuSpinner.getEditor().setAlignmentX(CENTER_ALIGNMENT);
+		
+		cpuSpinner.setToolTipText("Manually adjust the CPU Utilization associating with # of threads used");
+		
+		cpuSpinner.addChangeListener(e -> {
+			double cpuTicks = ((Number)spinnerModel.getValue()).doubleValue();
+			masterClock.setCPUFactor(cpuTicks);
+		});
+	}
+	
+	
+	/**
 	 * Updates various time labels.
 	 * 
-	 * @param mc
+	 * @param masterClock
 	 */
-	private void updateRateLabels(MasterClock mc) {
-
+	private void updateRateLabels(MasterClock masterClock) {
+		double cpuCache = masterClock.getCpuFactor();
+		SpinnerNumberModel spinnerModel = (SpinnerNumberModel)(cpuSpinner.getModel());
+		
+		double cpuValue = ((Number)spinnerModel.getValue()).doubleValue();
+		if (cpuValue != cpuCache) {
+		
+			double cpu = masterClock.getCpuFactor();
+			double min = Math.round(cpu / 5 * 10.0)/10.0;
+			double max = Math.round(5 * cpu * 10.0)/10.0;
+			
+			spinnerModel.setValue(cpu);
+			spinnerModel.setMinimum(min);
+			spinnerModel.setMaximum(max);
+			spinnerModel.setStepSize(cpu/20);
+		}
+		
 		// Update execution time label
-		long execTime = mc.getExecutionTime();
+		long execTime = masterClock.getExecutionTime();
 		execTimeLabel.setText(execTime + MS);
 
 		// Update sleep time label
-		long sleepTime = mc.getSleepTime();
+		long sleepTime = masterClock.getSleepTime();
 		sleepTimeLabel.setText(sleepTime + MS);
 
 		// Update pulse width label
-		double nextPulseTime = mc.getNextPulseTime();
-		double OptPulseTime = mc.getOptPulseTime();
+		double nextPulseTime = masterClock.getNextPulseTime();
+		double OptPulseTime = masterClock.getOptPulseTime();
 		
 		StringBuilder pulseText = new StringBuilder();
 		pulseText.append(StyleManager.DECIMAL_PLACES4.format(nextPulseTime))
@@ -319,8 +377,8 @@ public class TimeWindow extends ToolWindow {
 			  .append(CLOSE_P);
 		marsPulseLabel.setText(pulseText.toString());
 
-		double ref = mc.getReferencePulse();
-		double percent = mc.getOptPulseDeviation() * 100;
+		double ref = masterClock.getReferencePulse();
+		double percent = masterClock.getNextPulseDeviation() * 100;
 		StringBuilder pulseDevText = new StringBuilder();
 		pulseDevText.append(StyleManager.DECIMAL_PERC1.format(percent))
 			  .append(REFERENCE)
@@ -330,14 +388,14 @@ public class TimeWindow extends ToolWindow {
 		
 		// Update actual TR label
 		StringBuilder trText = new StringBuilder();
-		trText.append(StyleManager.DECIMAL_PLACES1.format(mc.getActualTR()))
+		trText.append(StyleManager.DECIMAL_PLACES1.format(masterClock.getActualTR()))
 			  .append(DESIRED)
-			  .append(mc.getDesiredTR())
+			  .append(masterClock.getDesiredTR())
 			  .append(X_CLOSE_P);
 		actualTRLabel.setText(trText.toString());
 
 		// Update time compression label
-		timeCompressionLabel.setText(ClockUtils.getTimeString((int)mc.getActualTR()));
+		timeCompressionLabel.setText(ClockUtils.getTimeString((int)masterClock.getActualTR()));
 	}
 
 	/**
