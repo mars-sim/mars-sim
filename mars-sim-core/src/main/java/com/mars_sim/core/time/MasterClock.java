@@ -119,8 +119,6 @@ public class MasterClock implements Serializable {
 	private double lastMillisol;
 	/** The current simulation time ratio. */
 	private double actualTR = 0;
-	/** The difference between desiredTR and actualTR. */
-	private double deltaTR = 0;
 	/** The number of millisols to be covered in the next pulse. */
 	private double nextPulseTime;
 	/** The minimum time span covered by each simulation pulse in millisols. */
@@ -469,102 +467,7 @@ public class MasterClock implements Serializable {
 		return actualTR;
 	}
 
-	/**
-	 * Runs master clock's thread using ThreadPoolExecutor.
-	 */
-	private class ClockThreadTask implements Runnable, Serializable {
 
-		private static final long serialVersionUID = 1L;
-
-		private ClockThreadTask() {
-		}
-
-		@Override
-		public void run() {
-			// Keep running until told not to by calling stop()
-			keepRunning = true;
-
-			if (!isPaused) {
-
-				while (keepRunning) {
-					long startTime = System.currentTimeMillis();
-
-					// Call addTime() to increment time in EarthClock and MarsClock
-					if (addTime()) {
-
-						// If a can was applied then potentially adjust the sleep
-						executionTime = System.currentTimeMillis() - startTime;
-						// Get the sleep time
-						calculateSleepTime();	
-					}
-					
-					else {
-						// If on pause or acceptablePulse is false
-						sleepTime = maxWaitTimeBetweenPulses;
-					}
-
-					// If still going then wait
-					if (keepRunning) {
-						if (sleepTime > MAX_ELAPSED) {
-							// This should not happen
-							logger.warning("Sleep too long: clipped to " + maxWaitTimeBetweenPulses);
-							sleepTime = maxWaitTimeBetweenPulses;
-						}
-						if (sleepTime > 0) {
-							// Pause simulation to allow other threads to complete.
-							try {
-								Thread.sleep(sleepTime);
-							} catch (InterruptedException e) {
-								Thread.currentThread().interrupt();
-							}
-						}
-					}
-
-					// Exit program if exitProgram flag is true.
-					if (exitProgram) {
-						System.exit(0);
-					}
-
-				} // end of while
-			} // if fxgl is not used
-
-			logger.warning("Clock Thread stopping");
-
-		} // end of run
-
-	/**
-	 * Determines the sleep time for this frame.
-	 */
-	private void calculateSleepTime() {
-		// Question: how should the difference between actualTR and desiredTR relate to or affect the sleepTime ?
-
-		// Note: actualTR is greater or less than desiredTR, then our goal is to see a increase or decrease 
-		// on actualTR by adjusting the sleepTime. May need to adjust the pulse width as well.
-		
-		// Get the desired millisols per second
-		// Note: make deltaTR (= actualTR - desiredTR) affect the sleepTime
-		double desiredMsolPerSecond = (actualTR + desiredTR - Math.max(deltaTR * 3, 0.2 * actualTR)) / 2 / MarsTime.SECONDS_PER_MILLISOL;
-
-		// Get the desired number of pulses
-		double desiredPulses = desiredMsolPerSecond / 
-				(0.1 * optMilliSolPerPulse + 0.3 * nextPulseTime + 0.6 * referencePulse);
-		
-		// Get the milliseconds between each pulse
-		// // Limit the desired pulses to at least 1
-		double milliSecondsPerPulse = 1000 / Math.max(desiredPulses, 1D);
-
-		// Update the sleep time that will allow room for the execution time
-		sleepTime = (long)(milliSecondsPerPulse - executionTime);
-
-		// if sleepTime is negative, will increase pulse width in checkPulseWidth() 
-		// temporarily to relieve the long execution time
-
-		// Very useful but generates a LOT of log
-//		String msg = String.format("Sleep calcs desiredTR=%d, actualTR=%.2f, msol/sec=%.2f, pulse/sec=%.2f, ms/Pulse=%.2f, exection=%d ms, sleep=%d ms",
-//				desiredTR, actualTR, desiredMsolPerSecond, desiredPulses, milliSecondsPerPulse, executionTime, sleepTime);
-//	    logger.info(msg);
-	}
-}
 
 	/**
 	 * Adds earth time and mars time.
@@ -612,7 +515,7 @@ public class MasterClock implements Serializable {
 			
 			else {
 				// Compute the delta TR
-				calculateDeltaTR();
+				double deltaTR = calculateDeltaTR();
 
 				// NOTE: actualTR is just the ratio of the simulation's pulse time to the real elapsed time
 
@@ -674,17 +577,20 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Checks for the delta time ratio.
+	 * Calculate the difference between the actualTR and the desiredTR.
+	 * 
+	 * @return delta TR
 	 */
-	private void calculateDeltaTR() {
-		deltaTR = actualTR - desiredTR;
+	private double calculateDeltaTR() {
+		return actualTR - desiredTR;
 	}
-	
+
+			
 	/**
 	 * Adjusts the optimal pulse and the next pulse time. Allows it to 
 	 * gradually catch up with the reference pulse.
 	 * 
-	 * @return deviation of the next pulse width from the ref pulse
+	 * @return deviation of the next pulse width from the ref pulse in ratio
 	 */
 	private double adjustPulseWidth() {
 		
@@ -694,7 +600,13 @@ public class MasterClock implements Serializable {
 		
 		if (sleepTime < 0) {
 			// Increase the optimal pulse width proportionally so as to avoid negative sleep time 
-			optPulse = Math.max(1.15, (1 - sleepTime / 1000)) * optPulse;
+			// value would be > 1
+			double value = 1 - sleepTime / 1000;
+			if (value > 1.1)
+				value = 1.1;
+			else if (value < 1.0)
+				value = 1.0;
+			optPulse = value * optPulse;
 		}
 
 		else {
@@ -702,6 +614,7 @@ public class MasterClock implements Serializable {
 			
 			optPulse = .99999 * optPulse;
 			
+			// Between refPulse and optPulse
 			double ratio = refPulse / optPulse;
 			
 			// Adjust optPulse
@@ -713,7 +626,6 @@ public class MasterClock implements Serializable {
 					logger.config("refPulse / optPulse = " + ratio + ". Set optPulse to max.");
 				}
 				goOn = false;
-//				logger.config(20_000, "Increasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0 + " toward reference pulse " + Math.round(refPulse * 10_000.0) / 10_000.0 + ".");
 			}
 			
 			else if (ratio < .9) {
@@ -721,66 +633,67 @@ public class MasterClock implements Serializable {
 				optPulse = optPulse - diff / refPulse / PULSE_STEPS;
 				if (optPulse < minMilliSolPerPulse) optPulse = minMilliSolPerPulse;
 				goOn = false;
-//				logger.config(20_000, "Decreasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0 + " toward reference pulse " + Math.round(refPulse * 10_000.0) / 10_000.0 + ".");
 			}
 
 			///////////////////////////
 
 			if (goOn) {
+				// Between actualTR and desiredTR
 				ratio = actualTR / desiredTR;
 
 				// Adjust next pulse
 				if (ratio < 0.99) {
-					double diff = desiredTR - actualTR;
+//					double diff = desiredTR - actualTR;
 					// Increase the optimal pulse width
-					nextPulse = nextPulse + diff / desiredTR / PULSE_STEPS;
+					nextPulse = nextPulse + (1 - ratio) * nextPulse / PULSE_STEPS / 2;
 					if (nextPulse > maxMilliSolPerPulse * 1.05) {
 						logger.config("actualTR / desiredTR = " + ratio + ". Set nextPulse to max.");
 						nextPulse = maxMilliSolPerPulse * 1.05;
 					}
 					goOn = false;
-//					logger.config(20_000, "Setting next pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0 + " based on TR deviation to " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
 				}
 				else if (ratio > 1.01) {
-					double diff = actualTR - desiredTR;
+//					double diff = actualTR - desiredTR;
 					// Decrease the optimal pulse width
-					nextPulse = nextPulse - diff / desiredTR / PULSE_STEPS;
+					nextPulse = nextPulse - (ratio - 1) * nextPulse / PULSE_STEPS / 2;
 					if (nextPulse < minMilliSolPerPulse) nextPulse = minMilliSolPerPulse;
 					goOn = false;
-//					logger.config(20_000, "Setting next pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0 + " based on TR deviation to " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
 				}
 			}
 					
 			///////////////////////////
+
 			if (goOn) {
-				ratio = nextPulse / (.2 * optPulse + .8 * refPulse);
+				// Between refPulse and nextPulse
+				ratio = refPulse / nextPulse;
 				
-				// Adjust nextPulse
+				// Adjust optPulse
 				if (ratio > 1.1) {
-					double diff = nextPulse - (.2 * optPulse + .8 * refPulse);
-					nextPulse = nextPulse - diff / PULSE_STEPS;
-					if (nextPulse < minMilliSolPerPulse) nextPulse = minMilliSolPerPulse;
-	//				logger.config(20_000, "Increasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0 + " toward " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
+					double diff = refPulse - nextPulse;
+					nextPulse = nextPulse + diff / refPulse / PULSE_STEPS / 2;
+					if (nextPulse > maxMilliSolPerPulse * 1.05) {
+						nextPulse = maxMilliSolPerPulse * 1.05;
+						logger.config("refPulse / nextPulse = " + ratio + ". Set nextPulse to max.");
+					}
+					goOn = false;
 				}
 				
 				else if (ratio < .9) {
-					double diff = (.2 * optPulse + .8 * refPulse) - nextPulse;
-					nextPulse = nextPulse + diff / PULSE_STEPS;
-					if (nextPulse > maxMilliSolPerPulse * 1.05) {
-						nextPulse = maxMilliSolPerPulse * 1.05;
-						logger.config("nextPulse / (.2 * optPulse + .8 * refPulse) = " + ratio + ". Set optPulse to max.");
-					}
-	//				logger.config(20_000, "Decreasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0 + " toward " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
+					double diff = nextPulse - refPulse;
+					nextPulse = nextPulse - diff / refPulse / PULSE_STEPS / 2;
+					if (nextPulse < minMilliSolPerPulse) nextPulse = minMilliSolPerPulse;
+					goOn = false;
 				}
 			}
 			
 			// Update the next pulse time
 			nextPulseTime = nextPulse;
 			
-			// Update the optimal pulse time
-			optMilliSolPerPulse = optPulse;
 		}
-
+		
+		// Update the optimal pulse time
+		optMilliSolPerPulse = optPulse;
+		
 		if (optPulse > 50 * refPulse) logger.info("optPulse is " + optPulse + ", 50x the ref pulse.");
 			
 		// Update the pulse time for use in tasks
@@ -794,7 +707,7 @@ public class MasterClock implements Serializable {
 //			logger.info("StandardPulseTime: " + newPulse);
 		}
 
-		// Returns the deviation
+		// Returns the deviation ratio
 		return (nextPulse - refPulse) / refPulse;
 	}
 	
@@ -1275,4 +1188,104 @@ public class MasterClock implements Serializable {
 		earthTime = null;
 	}
 
+	/**
+	 * Runs master clock's thread using ThreadPoolExecutor.
+	 */
+	private class ClockThreadTask implements Runnable, Serializable {
+
+		private static final long serialVersionUID = 1L;
+
+		private ClockThreadTask() {
+		}
+
+		@Override
+		public void run() {
+			// Keep running until told not to by calling stop()
+			keepRunning = true;
+
+			if (!isPaused) {
+
+				while (keepRunning) {
+					long startTime = System.currentTimeMillis();
+
+					// Call addTime() to increment time in EarthClock and MarsClock
+					if (addTime()) {
+
+						// If a can was applied then potentially adjust the sleep
+						executionTime = System.currentTimeMillis() - startTime;
+						// Get the sleep time
+						calculateSleepTime();	
+					}
+					
+					else {
+						// If on pause or acceptablePulse is false
+						sleepTime = maxWaitTimeBetweenPulses;
+					}
+
+					// If still going then wait
+					if (keepRunning) {
+						if (sleepTime > MAX_ELAPSED) {
+							// This should not happen
+							logger.warning("Sleep too long: clipped to " + maxWaitTimeBetweenPulses);
+							sleepTime = maxWaitTimeBetweenPulses;
+						}
+						if (sleepTime > 0) {
+							// Pause simulation to allow other threads to complete.
+							try {
+								Thread.sleep(sleepTime);
+							} catch (InterruptedException e) {
+								Thread.currentThread().interrupt();
+							}
+						}
+					}
+
+					// Exit program if exitProgram flag is true.
+					if (exitProgram) {
+						System.exit(0);
+					}
+
+				} // end of while
+			} // if fxgl is not used
+
+			logger.warning("Clock Thread stopping");
+
+		} // end of run
+
+		/**
+		 * Determines the sleep time for this frame.
+		 */
+		private void calculateSleepTime() {
+			// Question: how should the difference between actualTR and desiredTR relate to or affect the sleepTime ?
+	
+			// Compute the delta TR
+			double deltaTR = calculateDeltaTR();
+			
+			double delta = Math.min(deltaTR / 10, 5 * Math.abs(desiredTR/Math.min(1, actualTR)));				
+					
+			// Note: actualTR is greater or less than desiredTR, then our goal is to see a increase or decrease 
+			// on actualTR by adjusting the sleepTime. May need to adjust the pulse width as well.
+			
+			// Get the desired millisols per second
+			double desiredMsolPerSecond = (desiredTR - delta) / MarsTime.SECONDS_PER_MILLISOL;
+	
+			// Get the desired number of pulses
+			double desiredPulses = desiredMsolPerSecond / 
+					(0.1 * optMilliSolPerPulse + 0.3 * nextPulseTime + 0.6 * referencePulse);
+			
+			// Get the milliseconds between each pulse
+			// // Limit the desired pulses to at least 1
+			double milliSecondsPerPulse = 1000 / Math.max(desiredPulses, 1D);
+	
+			// Update the sleep time that will allow room for the execution time
+			sleepTime = (long)(milliSecondsPerPulse - executionTime);
+	
+			// if sleepTime is negative, will increase pulse width in checkPulseWidth() 
+			// temporarily to relieve the long execution time
+	
+			// Very useful but generates a LOT of log
+	//		String msg = String.format("Sleep calcs desiredTR=%d, actualTR=%.2f, msol/sec=%.2f, pulse/sec=%.2f, ms/Pulse=%.2f, exection=%d ms, sleep=%d ms",
+	//				desiredTR, actualTR, desiredMsolPerSecond, desiredPulses, milliSecondsPerPulse, executionTime, sleepTime);
+	//	    logger.info(msg);
+		}
+	}
 }
