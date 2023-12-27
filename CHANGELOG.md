@@ -6,21 +6,41 @@ GitHub: https://github.com/mars-sim/mars-sim
 
 ------------------------------------------|---------------------
 
-## 3.7.0 build ____ (__ ___ 2023)
+## Version 3.7.0 (Wed 27 Dec 2023) </H3>
 
-### A. CORE ENGINE IMPROVEMENTS :
+### A. CORE ENGINE IMPROVEMENTS :</H4>
 <OL>
-  <LI></LI>
+  <LI>Activity Spot: spots represent names & reservable spot where Tasks can be completed.</LI>
+  <LI>Algae Pond: add building, function, tasks for growing spirulina. </LI>
+  <LI>Corporation: add Blue Origin as the 3rd corporation. </LI>
+  <LI>Countries: add UAE and Saudi Arabia. </LI>  
+  <LI>Countries: Average wieght & height defined per country to define Person characteristic. </LI>
+  <LI>Economy: add GDP and PPP to xml for each country. </LI>
+  <LI>Group id: rename to com.mars-sim and com.mars_sim in package name. </LI>
+  <LI>Macro Simulation: simulate lunar colonies with influx of researchers and engineers. </LI>
+  <LI>Maven: change all maven package names to start with `com.mars-sim`. </LI>  
+  <LI>Rating: implement rating score for Settlement, Person & Robot Tasks and hold the composite parts of the overall score. </LI>
+  <LI>Sponsor: add sponsor mode for players to choose in console menu. </LI>
+  <LI>UnitTests: add more Unit Tests. </LI>
 </OL>
   
-### B. UI IMPROVEMENT :
+### B. UI IMPROVEMENT :</H4>
 <OL>
-  <LI></LI>
+  <LI>Monitor Tool: optimize Monitor Model.</LI>
+  <LI>Diplomatic: add diplomatic channel in Command Dashboard for viewing live statistics in Lunar Colonies.</LI> 
+  <LI>Orbit Viewer: zoom in between Mars and Earth's orbit.</LI>
+  <LI>Settlement Map: Reworking fo the map layer logic. Activity Spots are now visible on the map.</LI>
+  <LI>Person Monitor Tool: add tooltip to Task column showing Score breakdown. On Duty indicator on Shift column.</LI>
+  <LI>Robot/Person Activity Panel: redesigned to show the stack of Tasks and alternative Tasks not choosen. Tooltip shows Rating breakdown.</LI>
 </OL>  
 
-### C. FIXES :
+### C. FIXES :</H4>
 <OL>
-	<LI></LI>
+	<LI>Airlock: avoid getting stuck in pre-breathing phase when a person is too exhausted.</LI>
+	<LI>Conversation: allow settlers to chat with others as a subtask.</LI>
+	<LI>Mars Navigator: ensure each map type remember its previous choice of resolution.</LI>
+	<LI>Mission Table: fix problem with invalid column. </LI>
+	<LI>Sleep: ensure correct building when assigning a bed.</LI>
 <OL>
 
 ------------------------------------------|---------------------

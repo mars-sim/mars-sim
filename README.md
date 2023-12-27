@@ -1,5 +1,6 @@
 [![Release version](https://img.shields.io/github/v/release/mars-sim/mars-sim?sort=semver&color=blue&label=release&style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
 [![Repo Size](https://img.shields.io/github/repo-size/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
+[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v3.7.0?sort=semver)](https://github.com/mars-sim/mars-sim/commits/v3.7.0)
 [![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v3.6.2?sort=semver)](https://github.com/mars-sim/mars-sim/commits/v3.6.2)
 [![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v.3.6.1?sort=semver)](https://github.com/mars-sim/mars-sim/commits/v.3.6.0)
 [![Last Commit](https://img.shields.io/github/last-commit/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/commits)
@@ -18,10 +19,10 @@
 * [Introduction](#introduction)  
    * [Simulation](#simulation)
    * [Exploration](#exploration)
-   * [Mars Direct Mission Plan](mars-direct-mission-plan) 
+   * [Mars Direct Mission Plan](#mars-direct-mission-plan) 
    * [Settlement Development](#settlement-development)
-   * [Economics](#economics)   
-   * [Countries](#countries)   
+   * [Economics](#economics)
+   * [Sponsors](#sponsors)   
 * [Operation Modeling](#operation-modeling)
    * [Timekeeping](#timekeeping)
    * [Indoor Atmosphere](#indoor-atmosphere)
@@ -138,17 +139,20 @@ good and resource. As there is no standard currency established on Mars yet, set
 trades with neighboring settlements by keeping track of the credits and deficit based on the 
 VPs of the exchange of resources in a Trading mission or Delivery mission.
 
-## Countries and Sponsors
+## Sponsors
 
 In mars-sim, we witness an incredible undertaking in that 32 [countries](https://github.com/mars-sim/mars-sim/wiki/Countries) 
-are participating in this dream of making Mars as the second home for humanity. Altogether, 
-there's a total of 14 space agencies and 2 corporations to choose from for funding 
+from Earth are participating in this dream of making Mars as the second home for humanity. 
+
+Altogether, there's a total of 14 space agencies and 2 corporations to choose from for funding 
 settlements. 
+
+European Space Agency (ESA) is a bloc that consists of 22 member nations united in shaping 
+the development of Europe's space capability. 
 
 Notably, Mars Society is the only organization that comprises all 32 member nations. 
 
-On the other hand, European Space Agency (ESA) is a bloc that consists of 22 member nations 
-united in shaping the development of Europe's space capability. 
+Two corporations, namely, SpaceX and Blue Origin, have joined in to build settlements on Mars.
 
 ---
 
