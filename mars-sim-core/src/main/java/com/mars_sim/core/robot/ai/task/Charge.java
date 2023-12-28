@@ -83,8 +83,7 @@ public class Charge extends Task {
 			
 			isWirelessCharge = true;
 			
-			logger.info(robot, 30_000L, "Switching to wireless charging. "
-					+ "Unable to find a robotic station. Current building: " 
+			logger.info(robot, 60_000L, "Switching to wireless charging in "
 					+ robot.getBuildingLocation() + ".");
 		}
 
