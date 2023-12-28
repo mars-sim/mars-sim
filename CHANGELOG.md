@@ -6,19 +6,19 @@ GitHub: https://github.com/mars-sim/mars-sim
 
 ------------------------------------------|---------------------
 
-## Version 3.7.0 (Wed 27 Dec 2023) </H3>
+## Version 3.7.0 (Thu 28 Dec 2023) </H3>
 
 ### A. CORE ENGINE IMPROVEMENTS :</H4>
 <OL>
   <LI>Activity Spot: spots represent names & reservable spot where Tasks can be completed.</LI>
   <LI>Algae Pond: add building, function, tasks for growing spirulina. </LI>
   <LI>Corporation: add Blue Origin as the 3rd corporation. </LI>
-  <LI>Countries: add UAE and Saudi Arabia. </LI>  
-  <LI>Countries: Average wieght & height defined per country to define Person characteristic. </LI>
+  <LI>Country: add UAE and Saudi Arabia. </LI>  
   <LI>Economy: add GDP and PPP to xml for each country. </LI>
   <LI>Group id: rename to com.mars-sim and com.mars_sim in package name. </LI>
   <LI>Macro Simulation: simulate lunar colonies with influx of researchers and engineers. </LI>
-  <LI>Maven: change all maven package names to start with `com.mars-sim`. </LI>  
+  <LI>Maven: change all maven package names to start with `com.mars-sim`. </LI>
+  <LI>Person: add average weight & height characteristics per country. </LI>  
   <LI>Rating: implement rating score for Settlement, Person & Robot Tasks and hold the composite parts of the overall score. </LI>
   <LI>Sponsor: add sponsor mode for players to choose in console menu. </LI>
   <LI>UnitTests: add more Unit Tests. </LI>
