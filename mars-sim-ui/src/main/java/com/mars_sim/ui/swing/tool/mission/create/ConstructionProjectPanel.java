@@ -118,9 +118,9 @@ class ConstructionProjectPanel extends WizardPanel {
                 BorderLayout.CENTER);
 
         // Create site selection list.
-        siteListModel = new DefaultListModel<String>();
+        siteListModel = new DefaultListModel<>();
         populateSiteListModel();
-        siteList = new JList<String>(siteListModel);
+        siteList = new JList<>(siteListModel);
         siteList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         siteList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent arg0) {
@@ -151,9 +151,9 @@ class ConstructionProjectPanel extends WizardPanel {
                 BorderLayout.CENTER);
 
         // Create project selection list.
-        projectListModel = new DefaultListModel<ConstructionStageInfo>();
+        projectListModel = new DefaultListModel<>();
         populateProjectListModel();
-        projectList = new JList<ConstructionStageInfo>(projectListModel);
+        projectList = new JList<>(projectListModel);
         projectList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         projectList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent arg0) {
@@ -241,7 +241,7 @@ class ConstructionProjectPanel extends WizardPanel {
     }
     
     /**
-     * Perform project selection action.
+     * Performs project selection action.
      */
     private void projectSelection() {
         
@@ -359,6 +359,7 @@ class ConstructionProjectPanel extends WizardPanel {
 
     /**
      * Gets the tool tip text for the project list based on the selected stage.
+     * 
      * @param stageInfo the selected stage info.
      * @return tool tip text.
      * TODO internationalize the construction process tooltips.
@@ -599,6 +600,7 @@ class ConstructionProjectPanel extends WizardPanel {
 
     /**
      * Checks if needed construction vehicles and attachment parts are available.
+     * 
      * @param stageInfo the construction stage.
      * @return true if construction vehicles and attachment parts are available.
      */
@@ -696,7 +698,7 @@ class ConstructionProjectPanel extends WizardPanel {
         }
 
         /**
-         * Update the table.
+         * Updates the table.
          */
         private void update() {
             info = (ConstructionStageInfo) projectList.getSelectedValue();
@@ -706,7 +708,7 @@ class ConstructionProjectPanel extends WizardPanel {
         }
 
         /**
-         * Populate the list of construction materials.
+         * Populates the list of construction materials.
          */
         private void populateMaterialsList() {
 
@@ -863,6 +865,7 @@ class ConstructionProjectPanel extends WizardPanel {
 
         /**
          * Is the table cell a failure?
+         * 
          * @param row the table row.
          * @param col the table column.
          * @return true if cell is a failure.
@@ -886,6 +889,7 @@ class ConstructionProjectPanel extends WizardPanel {
         
         /**
          * Checks if the table cell is a warning.
+         * 
          * @param row the table row.
          * @param col the table column.
          * @return true if cell is a warning.

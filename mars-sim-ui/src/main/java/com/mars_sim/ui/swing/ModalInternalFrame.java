@@ -101,22 +101,21 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 //						}
 //					}
 
-					if (event instanceof ActiveEvent) {
-						ActiveEvent activeEvent = (ActiveEvent) event;
-						activeEvent.dispatch();
+					if (event instanceof ActiveEvent a) {
+						a.dispatch();
 					}
 
 					if (dispatch) {
 
-						if (source instanceof Component) {
+						if (source instanceof Component c) {
 							// Attempting to give a text field correct focus for linux
-							if (source instanceof JTextField) {
-								((JTextField) source).setEditable(true);
+							if (source instanceof JTextField tf) {
+								tf.setEditable(true);
 							}
 
-							((Component) source).dispatchEvent(event);
-						} else if (source instanceof MenuComponent) {
-							((MenuComponent) source).dispatchEvent(event);
+							c.dispatchEvent(event);
+						} else if (source instanceof MenuComponent m) {
+							m.dispatchEvent(event);
 						}
 
 					}

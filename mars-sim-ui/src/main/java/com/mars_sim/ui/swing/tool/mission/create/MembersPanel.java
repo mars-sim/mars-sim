@@ -65,8 +65,9 @@ implements ActionListener {
 
 
 	/**
-	 * Constructor
-	 * @param wizard the create mission wizard.
+	 * Constructor.
+	 * 
+	 * @param wizard the create mission wizard
 	 */
 	MembersPanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor
@@ -187,19 +188,16 @@ implements ActionListener {
 		// Create the remove button.
 		removeButton = new JButton("Remove Members");
 		removeButton.setEnabled(false);
-		removeButton.addActionListener(
-				new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						// Remove the selected rows in the members table to the people table.
-						int[] selectedRows = membersTable.getSelectedRows();
-						Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-						for (int selectedRow : selectedRows)
-							people.add((Person) membersTableModel.getUnit(selectedRow));
-						peopleTableModel.addPeople(people);
-						membersTableModel.removePeople(people);
-						updateVehicleCapacityLabel();
-					}
-				});
+		removeButton.addActionListener(e -> {
+			// Remove the selected rows in the members table to the people table.
+			int[] selectedRows = membersTable.getSelectedRows();
+			Collection<Person> people = new ConcurrentLinkedQueue<>();
+			for (int selectedRow : selectedRows)
+				people.add((Person) membersTableModel.getUnit(selectedRow));
+			peopleTableModel.addPeople(people);
+			membersTableModel.removePeople(people);
+			updateVehicleCapacityLabel();
+		});
 		buttonPane.add(removeButton);
 
 		// Add a vertical strut to make UI space.
@@ -255,6 +253,7 @@ implements ActionListener {
 
 	/**
 	 * Gets the wizard panel name.
+	 * 
 	 * @return panel name.
 	 */
 	String getPanelName() {
@@ -263,10 +262,11 @@ implements ActionListener {
 
 	/**
 	 * Commits changes from this wizard panel.
+	 * 
 	 * @retun true if changes can be committed.
 	 */
 	boolean commitChanges() {
-		Collection<Worker> members = new ConcurrentLinkedQueue<Worker>();
+		Collection<Worker> members = new ConcurrentLinkedQueue<>();
 		for (int x = 0; x < membersTableModel.getRowCount(); x++) {
 			members.add((Worker) membersTableModel.getUnit(x));
 		}
@@ -275,7 +275,7 @@ implements ActionListener {
 	}
 
 	/**
-	 * Clear information on the wizard panel.
+	 * Clears information on the wizard panel.
 	 */
 	void clearInfo() {
 		peopleTable.clearSelection();
@@ -316,6 +316,7 @@ implements ActionListener {
 
 	/**
 	 * Gets the remaining vehicle capacity.
+	 * 
 	 * @return vehicle capacity.
 	 */
 	int getRemainingVehicleCapacity() {
@@ -351,6 +352,7 @@ implements ActionListener {
 			// Add table columns.
 			columns.add("Name");
 			columns.add("Job");
+			columns.add("Work Shift");
 			columns.add("Current Mission");
 			columns.add("Performance");
 			columns.add("Health");
@@ -358,6 +360,7 @@ implements ActionListener {
 
 		/**
 		 * Returns the value for the cell at columnIndex and rowIndex.
+		 * 
 		 * @param row the row whose value is to be queried.
 		 * @param column the column whose value is to be queried.
 		 * @return the value Object at the specified cell.
@@ -374,13 +377,16 @@ implements ActionListener {
 					else if (column == 1) 
 						result = person.getMind().getJob().getName();
 					else if (column == 2) {
+						result = person.getShiftSlot().getStatusDescription();
+					}
+					else if (column == 3) {
 						Mission mission = person.getMind().getMission();
 						if (mission != null) result = mission.getName();
 						else result = "none";
 					}
-					else if (column == 3) 
+					else if (column == 4) 
 						result = (int) (person.getPerformanceRating() * 100D) + "%";
-					else if (column == 4)
+					else if (column == 5)
 						result = person.getPhysicalCondition().getHealthSituation();
 				}
 				catch (Exception e) {}
@@ -408,6 +414,7 @@ implements ActionListener {
 
 		/**
 		 * Checks if a table cell is a failure cell.
+		 * 
 		 * @param row the table row.
 		 * @param column the table column.
 		 * @return true if cell is a failure cell.
@@ -418,7 +425,7 @@ implements ActionListener {
 			if (row < units.size()) {
 				Person person = (Person) getUnit(row);
 
-				if (column == 2) {
+				if (column == 3) {
 					if (person.getMind().getMission() != null) return true;
 				}
 			}
@@ -428,6 +435,7 @@ implements ActionListener {
 
 		/**
 		 * Adds people to the table.
+		 * 
 		 * @param people the collection of people to add.
 		 */
 		void addPeople(Collection<Person> people) {
@@ -442,6 +450,7 @@ implements ActionListener {
 
 		/**
 		 * Removes people from the table.
+		 * 
 		 * @param people the collection of people to remove.
 		 */
 		void removePeople(Collection<Person> people) {
@@ -471,6 +480,7 @@ implements ActionListener {
 			// Add columns.
 			columns.add("Name");
 			columns.add("Job");
+			columns.add("Work Shift");
 			columns.add("Current Mission");
 			columns.add("Performance");
 			columns.add("Health");
@@ -478,6 +488,7 @@ implements ActionListener {
 
 		/**
 		 * Returns the value for the cell at columnIndex and rowIndex.
+		 * 
 		 * @param row the row whose value is to be queried
 		 * @param column the column whose value is to be queried
 		 * @return the value Object at the specified cell
@@ -494,13 +505,16 @@ implements ActionListener {
 					else if (column == 1) 
 						result = person.getMind().getJob().getName();
 					else if (column == 2) {
+						result = person.getShiftSlot().getStatusDescription();
+					}
+					else if (column == 3) {
 						Mission mission = person.getMind().getMission();
 						if (mission != null) result = mission.getName();
 						else result = "none";
-					}
-					else if (column == 3) 
+					}						
+					else if (column == 4) 
 						result = (int) (person.getPerformanceRating() * 100D) + "%";
-					else if (column == 4)
+					else if (column == 5)
 						result = person.getPhysicalCondition().getHealthSituation();
 				}
 				catch (Exception e) {}
@@ -519,6 +533,7 @@ implements ActionListener {
 
 		/**
 		 * Checks if a table cell is a failure cell.
+		 * 
 		 * @param row the table row.
 		 * @param column the table column.
 		 * @return true if cell is a failure cell.
@@ -529,6 +544,7 @@ implements ActionListener {
 
 		/**
 		 * Adds people to the table.
+		 * 
 		 * @param people the collection of people to add.
 		 */
 		void addPeople(Collection<Person> people) {
@@ -540,11 +556,12 @@ implements ActionListener {
 			units = CollectionUtils.sortByName(units);
 			fireTableDataChanged();
 
-			getWizard().setButtons(units.size() > 0);
+			getWizard().setButtons(!units.isEmpty());
 		}
 
 		/**
 		 * Removes people from the list.
+		 * 
 		 * @param people the collection of people to remove.
 		 */
 		void removePeople(Collection<Person> people) {
@@ -555,7 +572,7 @@ implements ActionListener {
 			}
 			fireTableDataChanged();
 
-			getWizard().setButtons(units.size() > 0);
+			getWizard().setButtons(!units.isEmpty());
 		}
 	}
 
@@ -569,8 +586,9 @@ implements ActionListener {
 	private final void addButtonClicked() {
 		// Add the selected rows in the people table to the members table.
 		int[] selectedRows = peopleTable.getSelectedRows();
-		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-		for (int selectedRow : selectedRows) people.add((Person) peopleTableModel.getUnit(selectedRow));
+		Collection<Person> people = new ConcurrentLinkedQueue<>();
+		for (int selectedRow : selectedRows) 
+			people.add((Person) peopleTableModel.getUnit(selectedRow));
 		peopleTableModel.removePeople(people);
 		membersTableModel.addPeople(people);
 		updateVehicleCapacityLabel();

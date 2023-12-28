@@ -110,8 +110,6 @@ implements ActionListener {
 		cancelButton.addActionListener(
 				new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
-        				// Unpause the game loop
-//        				Simulation.instance().getMasterClock().setPaused(false, true);
         				// Dispose this dialog.
         				dispose();
         			}
@@ -135,9 +133,6 @@ implements ActionListener {
 	    
 	    setModal(true);
 	    setVisible(true);
-	    		
-		// Pause the game loop
-//		Simulation.instance().getMasterClock().setPaused(true, true);
 	}
 
 	/**
@@ -295,8 +290,6 @@ implements ActionListener {
 	public void buttonClickedFinal() {
 		if (getCurrentWizardPanel().commitChanges()) {
 			missionBean.createMission();
-			// Unpause the game loop
-//			Simulation.instance().getMasterClock().setPaused(false, true);
 			dispose();
 		}
 	}
