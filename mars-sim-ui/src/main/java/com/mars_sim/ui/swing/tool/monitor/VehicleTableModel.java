@@ -27,7 +27,6 @@ import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.function.cooking.PreparingDessert;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.mapdata.location.Coordinates;
@@ -46,32 +45,30 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 
 	// Column indexes
 	private static final int NAME = 0;
-	private static final int TYPE = 1;
-	private static final int LOCATION = 2;
-	private static final int DESTINATION = 3;
-	private static final int DESTDIST = 4;
-	private static final int MISSION = 5;
-	private static final int CREW = 6;
-	private static final int DRIVER = 7;
-	private static final int STATUS = 8;
-	private static final int BEACON = 9;
-	private static final int RESERVED = 10;
-	private static final int SPEED = 11;
-	private static final int MALFUNCTION = 12;
-	private static final int OXYGEN = 13;
-	private static final int METHANOL = 14;
-	private static final int WATER = 15;
-	private static final int FOOD = 16;
-	private static final int DESSERT = 17;
-	private static final int ROCK_SAMPLES = 18;
-	private static final int ICE = 19;
+	private static final int TYPE = NAME+1;
+	private static final int SETTLEMENT = TYPE+1;
+	private static final int LOCATION = SETTLEMENT+1;
+	private static final int DESTINATION = LOCATION+1;
+	private static final int DESTDIST = DESTINATION+1;
+	private static final int MISSION = DESTDIST+1;
+	private static final int CREW = MISSION+1;
+	private static final int DRIVER = CREW+1;
+	private static final int STATUS = DRIVER+1;
+	private static final int BEACON = STATUS+1;
+	private static final int RESERVED = BEACON+1;
+	private static final int SPEED = RESERVED+1;
+	private static final int MALFUNCTION = SPEED+1;
+	private static final int OXYGEN = MALFUNCTION+1;
+	private static final int METHANOL = OXYGEN+1;
+	private static final int WATER = METHANOL+1;
+	private static final int FOOD = WATER+1;
+	private static final int ROCK_SAMPLES = FOOD+1;
+	private static final int ICE = ROCK_SAMPLES+1;
 	/** The number of Columns. */
-	private static final int COLUMNCOUNT = 20;
+	private static final int COLUMNCOUNT = ICE+1;
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
 	private static final Map<Integer,Integer> RESOURCE_TO_COL;
-
-	private static final int[] AVAILABLE_DESSERTS;
 
 	/**
 	 * Class initialiser creates the static names and classes.
@@ -80,6 +77,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
 		COLUMNS[NAME] = new ColumnSpec("Name", String.class);
 		COLUMNS[TYPE] = new ColumnSpec("Type", String.class);
+		COLUMNS[SETTLEMENT] = new ColumnSpec("Settlement", String.class);
 		COLUMNS[LOCATION] = new ColumnSpec("Location", String.class);
 		COLUMNS[DESTINATION] = new ColumnSpec("Next Waypoint", Coordinates.class);
 		COLUMNS[DESTDIST] = new ColumnSpec("Dist. to next [km]", Double.class);
@@ -95,7 +93,6 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		COLUMNS[METHANOL] = new ColumnSpec("Methanol", Double.class);
 		COLUMNS[WATER] = new ColumnSpec("Water", Double.class);
 		COLUMNS[FOOD] = new ColumnSpec("Food", Double.class);
-		COLUMNS[DESSERT] = new ColumnSpec("Dessert", Double.class);
 		COLUMNS[ROCK_SAMPLES] = new ColumnSpec("Rock Samples", Double.class);
 		COLUMNS[ICE] = new ColumnSpec("Ice", Double.class);
 
@@ -106,14 +103,6 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		RESOURCE_TO_COL.put(ResourceUtil.waterID, WATER);
 		RESOURCE_TO_COL.put(ResourceUtil.rockSamplesID, ROCK_SAMPLES);
 		RESOURCE_TO_COL.put(ResourceUtil.iceID, ICE);
-
-		// Put together a list of available dessert
-		AVAILABLE_DESSERTS = new int[PreparingDessert.getArrayOfDessertsAR().length];
-		int i = 0;
-		for(AmountResource ar : PreparingDessert.getArrayOfDessertsAR()) {
-			RESOURCE_TO_COL.put(ar.getID(), DESSERT);
-			AVAILABLE_DESSERTS[i++] = ar.getID();
-		}
 	}
 
 	private static MissionManager missionManager = Simulation.instance().getMissionManager();
@@ -128,7 +117,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		);
 
 		setCachedColumns(OXYGEN, ICE);
-
+		setSettlementColumn(SETTLEMENT);
 		missionManagerListener = new LocalMissionManagerListener();
 	}
 
@@ -155,6 +144,10 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		switch (columnIndex) {
 			case NAME : 
 				result = vehicle.getName();
+				break;
+
+			case SETTLEMENT : 
+				result = vehicle.getAssociatedSettlement().getName();
 				break;
 
 			case TYPE :
@@ -234,10 +227,6 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 
 			case FOOD : 
 				result = vehicle.getAmountResourceStored(ResourceUtil.foodID);
-				break;
-
-			case DESSERT : 
-				result = SettlementTableModel.getTotalAmount(AVAILABLE_DESSERTS, vehicle);
 				break;
 
 			case OXYGEN : 

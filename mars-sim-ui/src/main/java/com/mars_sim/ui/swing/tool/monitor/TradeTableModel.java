@@ -69,9 +69,9 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	public TradeTableModel() {
 		super(Msg.getString("TradeTableModel.tabName"), "TradeTableModel.counting",COLUMNS,
 						GoodsUtil.getGoodsList());
-
 		// Cache the data columns
 		setCachedColumns(NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
+		setSettlementColumn(SETTLEMENT_COL);
 	}
 	
 	

@@ -21,7 +21,6 @@ import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.tools.Msg;
 
 /**
  * The SettlementTableModel that maintains a list of Settlement objects. It maps
@@ -147,35 +146,20 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	 * Constructs a SettlementTableModel model that displays all Settlements in the
 	 * simulation.
 	 */
-	public SettlementTableModel() {
-		super(UnitType.SETTLEMENT, "Mars", "SettlementTableModel.countingSettlements",
+	public SettlementTableModel(boolean allSettlements) {
+		super(UnitType.SETTLEMENT, (allSettlements ? "Mars" : "Settlement"), "SettlementTableModel.countingSettlements",
 				COLUMNS);
-		allSettlements = true;
+		this.allSettlements = allSettlements;
 
 		setupCaches();
-		resetEntities(unitManager.getSettlements());
-			
-		listenForUnits();
+		if (allSettlements) {
+			resetEntities(unitManager.getSettlements());
+			listenForUnits();
+		}
 	}
 
 	private void setupCaches() {
 		setCachedColumns(OXYGEN_COL, MINERALS_COL);
-	}
-
-	/**
-	 * Constructs a SettlementTableModel model that displays a specific settlement in the
-	 * simulation.
-	 *
-	 * @param settlement
-	 */
-	public SettlementTableModel(Set<Settlement> settlement) {
-		super(UnitType.SETTLEMENT, Msg.getString("SettlementTableModel.tabName"), //$NON-NLS-2$
-				"SettlementTableModel.countingSettlements", 
-				COLUMNS);
-		allSettlements = false;
-		setupCaches();
-
-		setSettlementFilter(settlement);
 	}
 
 	/**

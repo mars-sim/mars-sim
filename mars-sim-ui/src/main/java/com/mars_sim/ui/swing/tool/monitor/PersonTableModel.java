@@ -45,27 +45,28 @@ public class PersonTableModel extends UnitTableModel<Person> {
 
 	// Column indexes
 	private static final int NAME = 0;
-	private static final int TASK_DESC = 1;
-	private static final int MISSION_COL = 2;
-	private static final int JOB = 3;
-	private static final int ROLE = 4;
-	private static final int SHIFT = 5;
-	private static final int LOCATION = 6;
-	private static final int LOCALE = 7;
-	private static final int HEALTH = 8;
-	private static final int FATIGUE = 9;
-	private static final int ENERGY = 10;
-	private static final int WATER = 11;
-	private static final int STRESS = 12;
-	private static final int PERFORMANCE = 13;
-	private static final int EMOTION = 14;
+	private static final int SETTLEMENT = NAME+1;
+	private static final int TASK_DESC = SETTLEMENT+1;
+	private static final int MISSION_COL = TASK_DESC+1;
+	private static final int JOB = MISSION_COL+1;
+	private static final int ROLE = JOB+1;
+	private static final int SHIFT = ROLE+1;
+	private static final int LOCATION = SHIFT+1;
+	private static final int LOCALE = LOCATION+1;
+	private static final int HEALTH = LOCALE+1;
+	private static final int FATIGUE = HEALTH+1;
+	private static final int ENERGY = FATIGUE+1;
+	private static final int WATER = ENERGY+1;
+	private static final int STRESS = WATER+1;
+	private static final int PERFORMANCE = STRESS+1;
+	private static final int EMOTION = PERFORMANCE+1;
 
 	/** The number of Columns. */
-	private static final int COLUMNCOUNT = 15;
+	private static final int COLUMNCOUNT = EMOTION+1;
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
 
-	private static Map<UnitEventType, Integer> eventColumnMapping;
+	private static final Map<UnitEventType, Integer> EVENT_COLUMN_MAPPING;
 
 	private static final String DEHYDRATED = "Dehydrated";
 	private static final String STARVING = "Starving";
@@ -76,6 +77,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
 		COLUMNS[NAME] = new ColumnSpec(Msg.getString("PersonTableModel.column.name"), String.class);
+		COLUMNS[SETTLEMENT] = new ColumnSpec("Settlement", String.class);
 		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("PersonTableModel.column.health"), String.class);
 		COLUMNS[ENERGY] = new ColumnSpec(Msg.getString("PersonTableModel.column.energy"), String.class);
 		COLUMNS[WATER] = new ColumnSpec(Msg.getString("PersonTableModel.column.water"), String.class);
@@ -91,27 +93,27 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("PersonTableModel.column.mission"), String.class);
 		COLUMNS[TASK_DESC] = new ColumnSpec(Msg.getString("PersonTableModel.column.task"), String.class);
 
-		eventColumnMapping = new EnumMap<>(UnitEventType.class);
-		eventColumnMapping.put(UnitEventType.NAME_EVENT, NAME);
-		eventColumnMapping.put(UnitEventType.LOCATION_EVENT, LOCATION);
-		eventColumnMapping.put(UnitEventType.HUNGER_EVENT, ENERGY);
-		eventColumnMapping.put(UnitEventType.THIRST_EVENT, ENERGY);
-		eventColumnMapping.put(UnitEventType.FATIGUE_EVENT, FATIGUE);
-		eventColumnMapping.put(UnitEventType.STRESS_EVENT, STRESS);
-		eventColumnMapping.put(UnitEventType.EMOTION_EVENT, EMOTION);
-		eventColumnMapping.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
-		eventColumnMapping.put(UnitEventType.JOB_EVENT, JOB);
-		eventColumnMapping.put(UnitEventType.ROLE_EVENT, ROLE);
-		eventColumnMapping.put(UnitEventType.SHIFT_EVENT, SHIFT);
-		eventColumnMapping.put(UnitEventType.TASK_EVENT, TASK_DESC);
-		eventColumnMapping.put(UnitEventType.TASK_NAME_EVENT, TASK_DESC);
-		eventColumnMapping.put(UnitEventType.TASK_DESCRIPTION_EVENT, TASK_DESC);
-		eventColumnMapping.put(UnitEventType.TASK_ENDED_EVENT, TASK_DESC);
-		eventColumnMapping.put(UnitEventType.MISSION_EVENT, MISSION_COL);
-		eventColumnMapping.put(UnitEventType.ILLNESS_EVENT, HEALTH);
-		eventColumnMapping.put(UnitEventType.DEATH_EVENT, HEALTH);
-		eventColumnMapping.put(UnitEventType.BURIAL_EVENT, HEALTH);
-		eventColumnMapping.put(UnitEventType.REVIVED_EVENT, HEALTH);
+		EVENT_COLUMN_MAPPING = new EnumMap<>(UnitEventType.class);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.NAME_EVENT, NAME);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.LOCATION_EVENT, LOCATION);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.HUNGER_EVENT, ENERGY);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.THIRST_EVENT, ENERGY);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.FATIGUE_EVENT, FATIGUE);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.STRESS_EVENT, STRESS);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.EMOTION_EVENT, EMOTION);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.JOB_EVENT, JOB);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.ROLE_EVENT, ROLE);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.SHIFT_EVENT, SHIFT);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.TASK_EVENT, TASK_DESC);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.TASK_NAME_EVENT, TASK_DESC);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.TASK_DESCRIPTION_EVENT, TASK_DESC);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.TASK_ENDED_EVENT, TASK_DESC);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.MISSION_EVENT, MISSION_COL);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.ILLNESS_EVENT, HEALTH);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.DEATH_EVENT, HEALTH);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.BURIAL_EVENT, HEALTH);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.REVIVED_EVENT, HEALTH);
 	}
 
 	/** 
@@ -165,6 +167,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		super (UnitType.PERSON, Msg.getString("PersonTableModel.nameAllCitizens"),
 				"PersonTableModel.countingCitizens", COLUMNS);
 		setupCache();
+		setSettlementColumn(SETTLEMENT);
+
 		sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE;
 	}
 
@@ -261,7 +265,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	public void unitUpdate(UnitEvent event) {
 		UnitEventType eventType = event.getType();
 
-		Integer column = eventColumnMapping.get(eventType);
+		Integer column = EVENT_COLUMN_MAPPING.get(eventType);
 
 		if (column != null && column > -1) {
 			Person unit = (Person) event.getSource();
@@ -298,6 +302,10 @@ public class PersonTableModel extends UnitTableModel<Person> {
 
 			case NAME:
 				result = person.getName();
+			break;
+
+			case SETTLEMENT:
+				result = person.getAssociatedSettlement().getName();
 			break;
 
 			case ENERGY: {

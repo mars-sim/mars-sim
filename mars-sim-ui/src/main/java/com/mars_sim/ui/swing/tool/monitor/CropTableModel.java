@@ -69,6 +69,7 @@ public class CropTableModel extends UnitTableModel<Building> {
 
 		// Cache all crop categories
 		setCachedColumns(INITIAL_COLS, FIRST_CROP_CAT + CropCategory.values().length);
+		setSettlementColumn(SETTLEMENT_NAME);
 	}
 
 	/**

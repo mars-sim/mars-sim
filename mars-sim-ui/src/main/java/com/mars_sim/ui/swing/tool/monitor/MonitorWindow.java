@@ -219,10 +219,10 @@ public class MonitorWindow extends ToolWindow
 
 		// Add tabs into the table	
 		if (choices.size() > 1) {
-			newTabs.add(new UnitTab(this, new SettlementTableModel(), true, MARS_ICON));
+			newTabs.add(new UnitTab(this, new SettlementTableModel(true), true, MARS_ICON));
 		}
 		
-		newTabs.add(new UnitTab(this, new SettlementTableModel(), true, COLONY_ICON));
+		newTabs.add(new UnitTab(this, new SettlementTableModel(false), true, COLONY_ICON));
 		newTabs.add(new UnitTab(this, new PersonTableModel(), true, PEOPLE_ICON));
 		newTabs.add(new UnitTab(this, new RobotTableModel(), true, BOT_ICON));
 		newTabs.add(new UnitTab(this, new BuildingTableModel(), true, BUILDING_ICON));
@@ -513,14 +513,14 @@ public class MonitorWindow extends ToolWindow
 		boolean enableMap = selectedTab.isNavigatable();
 		boolean enableDetails = selectedTab.isEntityDriven();
 		boolean enableFilter = selectedTab.isFilterable();
-		boolean enableSettlement = tabTableModel.setSettlementFilter(currentSelection);
+		boolean enableSettlement = false;
 
 		boolean enableBar = false;
 		boolean enablePie = false;
 		if (selectedTab instanceof TableTab tt) {
 			enableBar = true;
 			enablePie = true;
-			tt.autoAdjustWidths();
+			enableSettlement = tt.setSettlementFilter(currentSelection);
 		}
 
 		// Configure the listeners

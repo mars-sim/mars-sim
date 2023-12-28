@@ -23,13 +23,17 @@ import com.mars_sim.tools.Msg;
 public class FoodInventoryTableModel extends CategoryTableModel<Food>
  {
 
-	protected static final int NUM_INITIAL_COLUMNS = 3;
 	protected static final int NUM_DATA_COL = 7;
 
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
 
-	private static final int DEMAND_COL = NUM_INITIAL_COLUMNS;
+	private static final int FOOD_COL = 0;
+	private static final int TYPE_COL = FOOD_COL+1;
+	private static final int SETTLEMENT_COL = TYPE_COL+1;
+	protected static final int NUM_INITIAL_COLUMNS = SETTLEMENT_COL+1;
+
+	private static final int DEMAND_COL = SETTLEMENT_COL+1;
 	private static final int SUPPLY_COL = DEMAND_COL+1;
 	static final int MASS_COL = SUPPLY_COL+1;
 	private static final int LOCAL_VP_COL = MASS_COL+1;
@@ -39,9 +43,9 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food>
 	static {
 		COLUMNS = new ColumnSpec[NUM_INITIAL_COLUMNS + NUM_DATA_COL];
 
-		COLUMNS[0] = new ColumnSpec("Food", String.class);
-		COLUMNS[1] =  new ColumnSpec("Type", String.class);
-		COLUMNS[2] =  new ColumnSpec("Settlement", String.class);
+		COLUMNS[FOOD_COL] = new ColumnSpec("Food", String.class);
+		COLUMNS[TYPE_COL] =  new ColumnSpec("Type", String.class);
+		COLUMNS[SETTLEMENT_COL] =  new ColumnSpec("Settlement", String.class);
 
 		COLUMNS[DEMAND_COL] = new ColumnSpec("Demand", Double.class);
 		COLUMNS[SUPPLY_COL] = new ColumnSpec("Supply", Double.class);
@@ -60,6 +64,7 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food>
 					COLUMNS, FoodUtil.getFoodList());
 		
 		setCachedColumns(DEMAND_COL, PRICE_COL);
+		setSettlementColumn(SETTLEMENT_COL);
 	}
 
 	/**
@@ -85,11 +90,11 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food>
 		Settlement selectedSettlement = selectedRow.getSettlement();
 
 		switch(columnIndex) {
-			case 0:
+			case FOOD_COL:
 				return selectedFood.getName();
-			case 1:
+			case TYPE_COL:
 				return selectedFood.getType();
-			case 2:
+			case SETTLEMENT_COL:
 				return selectedSettlement.getName();
 			
 			case DEMAND_COL:

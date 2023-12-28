@@ -63,6 +63,13 @@ interface MonitorModel extends TableModel {
     public void setMonitorEntites(boolean activate);
 
 	/**
+	 * Get the index of the Settlement column if defined. This is a special column that can be visbile/hidden according
+	 * to the selection.
+	 * @return
+	 */
+	public int getSettlementColumn();
+
+	/**
 	 * Gets a tooltip representation of a cell. Most cells with return null.
 	 * 
 	 * @param rowIndex
