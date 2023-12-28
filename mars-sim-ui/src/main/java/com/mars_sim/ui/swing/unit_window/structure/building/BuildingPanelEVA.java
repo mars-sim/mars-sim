@@ -123,9 +123,6 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		AttributePanel labelGrid = new AttributePanel(6, 2);
 		topPanel.add(labelGrid, BorderLayout.NORTH);
 		
-		// Create innerDoorLabel
-		innerDoorLabel = labelGrid.addTextField(Msg.getString("BuildingPanelEVA.innerDoor.number"),
-									  Integer.toString(eva.getNumAwaitingInnerDoor()), null);
 
 		if (eva.getAirlock().isInnerDoorLocked())
 			innerDoorStateCache = LOCKED;
@@ -136,9 +133,10 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		innerDoorStateLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.innerDoor.state"),
 										   innerDoorStateCache, null);
 
-		// Create outerDoorLabel
-		outerDoorLabel = labelGrid.addTextField(Msg.getString("BuildingPanelEVA.outerDoor.number"),
-									  Integer.toString(eva.getNumAwaitingOuterDoor()), null);
+		// Create innerDoorLabel
+		innerDoorLabel = labelGrid.addTextField(Msg.getString("BuildingPanelEVA.innerDoor.number"),
+									  Integer.toString(eva.getNumAwaitingInnerDoor()), null);
+
 
 		if (eva.getAirlock().isOuterDoorLocked())
 			outerDoorStateCache = LOCKED;
@@ -148,40 +146,45 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		// Create outerDoorStateLabel
 		outerDoorStateLabel = labelGrid.addTextField(Msg.getString("BuildingPanelEVA.outerDoor.state"),
 										   outerDoorStateCache, null);
-		
-		// Create occupiedLabel
-		occupiedLabel = labelGrid.addTextField(Msg.getString("BuildingPanelEVA.occupied"),
-									 Integer.toString(eva.getNumInChamber()), null);
+	
+		// Create outerDoorLabel
+		outerDoorLabel = labelGrid.addTextField(Msg.getString("BuildingPanelEVA.outerDoor.number"),
+									  Integer.toString(eva.getNumAwaitingOuterDoor()), null);
 
 		// Create airlockModeLabel
 		airlockModeCache = buildingAirlock.getAirlockMode();
+		
 		airlockModeLabel = labelGrid.addTextField(Msg.getString("BuildingPanelEVA.airlock.mode"),
 				airlockModeCache.getName(), null);
 
-		// Create emptyLabel
-		emptyLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.empty"),
-								  Integer.toString(eva.getNumEmptied()), null);
+		// Create occupiedLabel
+		occupiedLabel = labelGrid.addTextField(Msg.getString("BuildingPanelEVA.occupied"),
+									 Integer.toString(eva.getNumInChamber()), null);
 
 		// Create airlockStateLabel
 		airlockStateLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.airlock.state"),
 								buildingAirlock.getState().toString(), null);
 
-		// Create cycleTimeLabel
-		cycleTimeLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.airlock.cycleTime"),
-					StyleManager.DECIMAL_PLACES1.format(buildingAirlock.getRemainingCycleTime()), null);
+		// Create emptyLabel
+		emptyLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.empty"),
+								  Integer.toString(eva.getNumEmptied()), null);
 		
 		// Create transitionLabel
 		transitionLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.airlock.transition"),
 				Conversion.capitalize0(Boolean.toString(buildingAirlock.isTransitioning())), null);
 
-		// Create activationLabel
-		activationLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.airlock.activation"),
-				Conversion.capitalize0(Boolean.toString(buildingAirlock.isActivated())), null);
+		// Create cycleTimeLabel
+		cycleTimeLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.airlock.cycleTime"),
+					StyleManager.DECIMAL_PLACES1.format(buildingAirlock.getRemainingCycleTime()), null);
 
 		// Create OperatorLabel
 		operatorLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.operator"),
 									 eva.getOperatorName(), null);
-		
+
+		// Create activationLabel
+		activationLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.airlock.activation"),
+				Conversion.capitalize0(Boolean.toString(buildingAirlock.isActivated())), null);
+
 		JPanel wikiPanel = new JPanel(new FlowLayout());
 		Icon wikiIcon = ImageLoader.getIconByName(GuideWindow.WIKI_ICON);
 		JButton wikiButton = new JButton(wikiIcon);
