@@ -284,7 +284,8 @@ public class Settlement extends Structure implements Temporal,
 
 	/** The settlement terrain profile. */
 	public double[] terrainProfile = new double[2];
-
+	/** The settlement template name. */
+	private String stormMsg;
 	/** The settlement template name. */
 	private String template;
 	/** The settlement code. */
@@ -3062,7 +3063,15 @@ public class Settlement extends Structure implements Temporal,
 	public void setDustStorm(DustStorm storm) {
 		this.storm = storm;
 	}
+	
+	public void setDustStormMsg(String msg) {
+		this.stormMsg = msg;
+	}
 
+	public String getDustStormMsg() {
+		return stormMsg;
+	}
+	
 	public boolean hasDesignatedCommander() {
 		return hasDesignatedCommander;
 	}

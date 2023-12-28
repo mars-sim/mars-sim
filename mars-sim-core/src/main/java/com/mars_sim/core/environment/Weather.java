@@ -915,17 +915,20 @@ public class Weather implements Serializable, Temporal {
 				} 
 		
 				if (ds.getSize() != 0) {
-					Settlement closest = ds.getSettlement();
-					logger.info(closest, "DustStorm " + ds.getName()
-									+ " (size " + ds.getSize() + " with windspeed "
-									+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
+					Settlement s = ds.getSettlement();
+					String msg = "DustStorm " + ds.getName()
+						+ " sized " + ds.getSize() + " with wind speed "
+						+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.";
+					s.setDustStormMsg(msg);
+					logger.info(s, msg);
 				}
 			}
 		}
 	}
 
 	/**
-	 * Get daily variation
+	 * Gets daily variation.
+	 * 
 	 * @param location Not used
 	 * @return
 	 */

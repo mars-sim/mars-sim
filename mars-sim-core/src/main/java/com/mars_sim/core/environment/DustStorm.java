@@ -134,7 +134,7 @@ public class DustStorm implements Serializable {
 		return type;
 	}
 
-	/***
+	/**
 	 * Computes the new size of a storm in spherical diameter [in km]
 	 * 
 	 * @return size in km

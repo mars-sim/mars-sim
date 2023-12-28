@@ -537,8 +537,17 @@ public class SettlementTransparentPanel extends JComponent {
        		String resources = resourceCache.get(s);
        		if (resources == null)
        			resources = "";
-       		bannerBar.setLcdText(resources + TEMPERATURE + tString + WINDSPEED + wsString
-       				+ ZENITH_ANGLE + zaString + OPTICAL_DEPTH + odString);
+       		StringBuilder sb = new StringBuilder("");
+       		if (s.getDustStorm() != null) {
+       			sb.append(s.getDustStormMsg());
+       		}
+       		
+       		sb.append(resources);
+       		sb.append(TEMPERATURE).append(tString);
+       		sb.append(WINDSPEED).append(wsString);
+       		sb.append(ZENITH_ANGLE).append(zaString);
+       		sb.append(OPTICAL_DEPTH).append(odString);
+       		bannerBar.setLcdText(sb.toString());
        	}
 	}
 
