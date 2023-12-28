@@ -249,6 +249,7 @@ public class Walk extends Task {
 
         // Check if all airlocks can be exited.
 		// Q: Why does it have to check for all airlocks if the person may or may not exit airlock ?
+		// A: Only if walkingSteps include WalkStep.EXIT_AIRLOCK
 		canWalk = canWalk && canExitAllAirlocks(person, walkingSteps);
 
 		if (canWalk) {
@@ -313,17 +314,14 @@ public class Walk extends Task {
 	 */
 	public static boolean canWalkAllSteps(Person person, WalkingSteps walkingSteps) {
 		// Check if all steps can be walked.
-		boolean result = walkingSteps.canWalkAllSteps();
-		if (!result)
+		boolean canWalk = walkingSteps.canWalkAllSteps();
+		if (!canWalk)
 			return false;
 		
         // Check if all airlocks can be exited.
 		// Q: Why does it have to check for all airlocks if the person may or may not exit airlock ?
-		if (!canExitAllAirlocks(person, walkingSteps)) {
-			result = false;
-		}
-
-		return result;
+		// A: Only if walkingSteps include WalkStep.EXIT_AIRLOCK
+		return canExitAllAirlocks(person, walkingSteps);
 	}
 	
 	/**
@@ -403,8 +401,8 @@ public class Walk extends Task {
 				if (step.stepType == WalkingSteps.WalkStep.EXIT_AIRLOCK) {
 					Airlock airlock = step.airlock;
 					if (!ExitAirlock.canExitAirlock(person, airlock)) {
-						logger.log(person, Level.WARNING, 10_000L,
-								"Could not exit " + airlock.getEntityName() + ".");
+//						logger.log(person, Level.FINE, 10_000L,
+//								"Could not exit " + airlock.getEntityName() + ".");
 						return false;
 					}
 				}

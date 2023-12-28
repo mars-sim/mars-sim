@@ -351,10 +351,18 @@ public class EnterAirlock extends Task {
 				canProceed = true;
 			}
 			
-			if (!airlock.isOuterDoorLocked() || airlock.isEmpty()) {
+			if (!airlock.isOuterDoorLocked()) {
 				// If the airlock is empty, it means no one is using it
-				logger.log(unit, person, Level.INFO, 60_000,
-						"No one is at " + airlock.getEntity().toString() + ".");
+//				logger.log(unit, person, Level.INFO, 60_000,
+//						"Outer door opened at " + airlock.getEntity().toString() + ".");
+				// Go to the next phase in order for the outer door to be unlocked. 
+				// After the depressurization has finished, it should be open.
+				canProceed = true;
+			}
+			else if (airlock.isEmpty()) {
+				// If the airlock is empty, it means no one is using it
+//				logger.log(unit, person, Level.INFO, 60_000,
+//						"Empty " + airlock.getEntity().toString() + ".");
 				// Go to the next phase in order for the outer door to be unlocked. 
 				// After the depressurization has finished, it should be open.
 				canProceed = true;
@@ -382,10 +390,8 @@ public class EnterAirlock extends Task {
 			if (airlock.isDepressurized() && !airlock.isOuterDoorLocked()) {
 				// If airlock has already been depressurized,
 				// then it's ready for entry
-
-				logger.log(unit, person, Level.INFO, 4_000,
-						"Good that chamber already depressurized for entry in " + airlock.getEntity().toString() + ".");
-
+//				logger.log(unit, person, Level.INFO, 4_000,
+//						"Good that chamber already depressurized for entry in " + airlock.getEntity().toString() + ".");
 				// Skip DEPRESSURIZE_CHAMBER phase and go to the ENTER_AIRLOCK phase
 				setPhase(STEP_THRU_OUTER_DOOR);
 			}
@@ -433,9 +439,10 @@ public class EnterAirlock extends Task {
 		}
 		
 		if (airlock.isDepressurized() && !airlock.isOuterDoorLocked()) {
-
-			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
-					"Good that chamber already depressurized for entry in " + airlock.getEntity().toString() + ".");
+			// If airlock has already been depressurized,
+			// then it's ready for entry
+//			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
+//					"Good that chamber already depressurized for entry in " + airlock.getEntity().toString() + ".");
 
 			canProceed = true;
 		}
