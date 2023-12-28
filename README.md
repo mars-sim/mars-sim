@@ -2,7 +2,6 @@
 [![Repo Size](https://img.shields.io/github/repo-size/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
 [![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v3.7.0?sort=semver)](https://github.com/mars-sim/mars-sim/commits/v3.7.0)
 [![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v3.6.2?sort=semver)](https://github.com/mars-sim/mars-sim/commits/v3.6.2)
-[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v.3.6.1?sort=semver)](https://github.com/mars-sim/mars-sim/commits/v.3.6.0)
 [![Last Commit](https://img.shields.io/github/last-commit/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/commits)
 [![GitHub Downloads](https://img.shields.io/github/downloads/mars-sim/mars-sim/total?label=gitHub%20downloads&style=flat-square&color=blue)](https://github.com/mars-sim/mars-sim/releases)
 

@@ -26,7 +26,7 @@ public class ConstructionSiteWindow extends UnitWindow {
 	private ConstructionSite constructionSite;
 	
     /**
-     * Constructor
+     * Constructor.
      *
      * @param desktop the main desktop panel.
      * @param equipment the constructionSite this window is for.

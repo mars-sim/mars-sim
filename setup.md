@@ -20,7 +20,7 @@ GitHub: https://github.com/mars-sim/mars-sim
 
 ## Installation
 
-- Install the Java JRE or JDK 17 on your machine. 
+- Install Java JRE or JDK 17 on your machine. 
   See `Prerequisites` at [README.md](https://github.com/mars-sim/mars-sim/blob/master/README.md) 
 
 - Download a binary edition of your choice.

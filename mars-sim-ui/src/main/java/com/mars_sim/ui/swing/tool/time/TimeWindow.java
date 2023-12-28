@@ -9,6 +9,7 @@
 package com.mars_sim.ui.swing.tool.time;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -16,9 +17,11 @@ import java.time.format.DateTimeFormatter;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
@@ -324,8 +327,15 @@ public class TimeWindow extends ToolWindow {
 
 		spinnerModel.setValue(cpuValue);
 		
-		cpuSpinner = new JSpinner(spinnerModel);
-		cpuSpinner.getEditor().setAlignmentX(CENTER_ALIGNMENT);
+		cpuSpinner = new JSpinner(spinnerModel);	
+		// 1. Get the editor component of your spinner:
+		Component spinnerEditor = cpuSpinner.getEditor();
+		// 2. Get the text field of your spinner's editor:
+		JFormattedTextField jftf = ((JSpinner.DefaultEditor) spinnerEditor).getTextField();
+		// 3. Set a default size to the text field:
+		jftf.setColumns(3);
+	
+		jftf.setHorizontalAlignment(JTextField.LEFT);
 		
 		cpuSpinner.setToolTipText("Manually adjust the CPU Utilization associating with # of threads used");
 		

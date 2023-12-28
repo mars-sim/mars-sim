@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.moon.Colonist;
 import com.mars_sim.core.moon.Colony;
 import com.mars_sim.core.person.ai.SkillManager;
@@ -31,7 +30,7 @@ public class ColonistResearcher extends Colonist implements Researcher, Serializ
 	private static final long serialVersionUID = 1L;
 	
 	/** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(ColonistResearcher.class.getName());
+	// May add back private static final SimLogger logger = SimLogger.getLogger(ColonistResearcher.class.getName())
 	
 	private int numResearch = 0;
 
