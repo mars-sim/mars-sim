@@ -327,7 +327,7 @@ public abstract class EVAOperation extends Task {
 
 			else {
 				// Set return location.
-				returnInsideLoc = LocalAreaUtil.getRandomLocalRelativePosition(interiorObject);
+				returnInsideLoc = LocalAreaUtil.getRandomLocalPos(interiorObject);
 
 				if (returnInsideLoc != null &&
 						!LocalAreaUtil.isPositionWithinLocalBoundedObject(
@@ -729,7 +729,7 @@ public abstract class EVAOperation extends Task {
 
 				LocalPosition boundedLocalPoint = rover.getPosition().getPosition(distance, radianDirection);
 
-				sLoc = LocalAreaUtil.getLocalRelativePosition(boundedLocalPoint, rover);
+				sLoc = LocalAreaUtil.convert2SettlementPos(boundedLocalPoint, rover);
 				goodLocation = LocalAreaUtil.isPositionCollisionFree(sLoc, worker.getCoordinates());
 			}
 		}

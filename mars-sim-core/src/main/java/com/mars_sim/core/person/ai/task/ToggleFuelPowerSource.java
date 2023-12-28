@@ -197,7 +197,7 @@ public class ToggleFuelPowerSource extends EVAOperation {
 
         // Determine location within power source building.
         // Note: Use action point rather than random internal location.
-        LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalRelativePosition(powerBuilding);
+        LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalPos(powerBuilding);
 
         Walk walk = Walk.createWalkingTask(person, settlementLoc, powerBuilding);
         if (walk != null) {

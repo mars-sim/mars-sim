@@ -100,13 +100,13 @@ public class BuildingAirlock extends Airlock {
 		remainingCycleTime = CYCLE_TIME;
 
         // Determine airlock inner/interior door position.
-        airlockInteriorPos = LocalAreaUtil.getLocalRelativePosition(interiorPos, building);
+        airlockInteriorPos = LocalAreaUtil.convert2SettlementPos(interiorPos, building);
         // For Zone 0
         outsideInteriorDoorMap = buildDoorMap(interiorPos, building, -0.3, -0.55, 0.4);
         // For Zone 1
         insideInteriorDoorMap = buildDoorMap(interiorPos, building, 1.7, 2.3, 0.4);
         // Determine airlock outer/exterior door position.
-        airlockExteriorPos = LocalAreaUtil.getLocalRelativePosition(exteriorPos, building);
+        airlockExteriorPos = LocalAreaUtil.convert2SettlementPos(exteriorPos, building);
         // For Zone 3
         insideExteriorDoorMap = buildDoorMap(exteriorPos, building, -0.5, -1.0, 0.4);
         // For Zone 4
@@ -127,10 +127,10 @@ public class BuildingAirlock extends Airlock {
 			double x1, double x2, double y) {
         Map<LocalPosition, Integer> result = new HashMap<>();
 
-        result.put(LocalAreaUtil.getLocalRelativePosition(new LocalPosition(center.getX() + x1, center.getY() + y), building), -1);
-        result.put(LocalAreaUtil.getLocalRelativePosition(new LocalPosition(center.getX() + x1, center.getY() - y), building), -1);
-        result.put(LocalAreaUtil.getLocalRelativePosition(new LocalPosition(center.getX()+ x2, center.getY() + y), building), -1);
-        result.put(LocalAreaUtil.getLocalRelativePosition(new LocalPosition(center.getX() + x2, center.getY() - y), building), -1);
+        result.put(LocalAreaUtil.convert2SettlementPos(new LocalPosition(center.getX() + x1, center.getY() + y), building), -1);
+        result.put(LocalAreaUtil.convert2SettlementPos(new LocalPosition(center.getX() + x1, center.getY() - y), building), -1);
+        result.put(LocalAreaUtil.convert2SettlementPos(new LocalPosition(center.getX()+ x2, center.getY() + y), building), -1);
+        result.put(LocalAreaUtil.convert2SettlementPos(new LocalPosition(center.getX() + x2, center.getY() - y), building), -1);
 
         return result;
 	}

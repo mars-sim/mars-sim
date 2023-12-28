@@ -1071,7 +1071,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 				break;
 			}
 
-			Point2D position = LocalAreaUtil.getLocalRelativeLocation(xPos, yPos, building);
+			Point2D position = LocalAreaUtil.convert2SettlementPos(xPos, yPos, building);
 			result.add(position);
 		}
 

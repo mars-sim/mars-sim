@@ -371,7 +371,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		}
 		else {
 			// Gets a random location within rover.
-			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
+			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(v);
 			callMembersToMission((int)(DEPARTURE_DURATION - DEPARTURE_PREPARATION));
 			
 			if (member instanceof Person person) {
@@ -744,7 +744,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			Building destinationBuilding = disembarkSettlement.getBuildingManager().getRandomAirlockBuilding();
 
 			if (destinationBuilding != null) {
-				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(destinationBuilding);
+				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(destinationBuilding);
 
 				boolean hasStrength = person.getPhysicalCondition().isFitByLevel(1500, 90, 1500);
 

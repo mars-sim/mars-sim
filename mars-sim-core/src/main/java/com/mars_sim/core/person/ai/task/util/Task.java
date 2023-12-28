@@ -1210,7 +1210,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected boolean walkToRandomLocInBuilding(Building building, boolean allowFail) {
 		// Gets a settlement wide location
-		LocalPosition sPos = LocalAreaUtil.getRandomLocalRelativePosition(building);
+		LocalPosition sPos = LocalAreaUtil.getRandomLocalPos(building);
 		// Create subtask for walking to destination.
 		return createWalkingSubtask(building, sPos, allowFail);
 	}
@@ -1263,7 +1263,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			Iterator<LocalPosition> i = activitySpots.iterator();
 			while (i.hasNext()) {
 				LocalPosition roverLocalLoc = i.next();
-				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(roverLocalLoc, rover);
+				LocalPosition settlementLoc = LocalAreaUtil.convert2SettlementPos(roverLocalLoc, rover);
 				if (isActivitySpotAvailable(rover, settlementLoc)) {
 					availableSpots.add(settlementLoc);
 				}
@@ -1338,7 +1338,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected void walkToRandomLocInRover(Rover rover, boolean allowFail) {
 
-		LocalPosition sPos = LocalAreaUtil.getRandomLocalRelativePosition(rover);
+		LocalPosition sPos = LocalAreaUtil.getRandomLocalPos(rover);
 
 		// Create subtask for walking to destination.
 		createWalkingSubtask(rover, sPos, allowFail);

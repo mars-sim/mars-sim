@@ -176,7 +176,7 @@ public class Walk extends Task {
 			return;
 		}
 
-		LocalPosition targetPosition = LocalAreaUtil.getRandomLocalRelativePosition(targetObject);
+		LocalPosition targetPosition = LocalAreaUtil.getRandomLocalPos(targetObject);
 		walkingSteps = new WalkingSteps(person, targetPosition, targetObject);
 
 		if (!canWalkAllSteps(person, walkingSteps)) {
@@ -668,7 +668,7 @@ public class Walk extends Task {
 				// longer within rover.
 				if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(step.loc, rover)) {
 					// Determine new destination location within rover.
-					LocalPosition relativeRoverLoc = LocalAreaUtil.getRandomLocalRelativePosition(rover);
+					LocalPosition relativeRoverLoc = LocalAreaUtil.getRandomLocalPos(rover);
 					step.loc = relativeRoverLoc;
 				}
 			}
@@ -723,7 +723,7 @@ public class Walk extends Task {
 			if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(step.loc, rover)) {
 				// Determine new destination location within rover.
 				// TODO: Determine location based on activity spot?
-				LocalPosition relativeRoverLoc = LocalAreaUtil.getRandomLocalRelativePosition(rover);
+				LocalPosition relativeRoverLoc = LocalAreaUtil.getRandomLocalPos(rover);
 				step.loc = relativeRoverLoc;
 			}
 

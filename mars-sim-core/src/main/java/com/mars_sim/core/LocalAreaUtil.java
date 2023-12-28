@@ -73,7 +73,7 @@ public class LocalAreaUtil {
 	 * @return Point containing the X and Y locations relative to settlement wide
 	 *         center point.
 	 */
-	public static LocalPosition getLocalRelativePosition(LocalPosition position, LocalBoundedObject boundedObject) {
+	public static LocalPosition convert2SettlementPos(LocalPosition position, LocalBoundedObject boundedObject) {
 		double xLoc = position.getX();
 		double yLoc = position.getY();
 
@@ -112,7 +112,7 @@ public class LocalAreaUtil {
 	 * @return Point containing the X and Y locations relative to the local area's
 	 *         center point.
 	 */
-	public static Point2D.Double getLocalRelativeLocation(double xLoc, double yLoc, LocalBoundedObject boundedObject) {
+	public static Point2D.Double convert2SettlementPos(double xLoc, double yLoc, LocalBoundedObject boundedObject) {
 
 		double[] translate = translateLocation(xLoc, yLoc, boundedObject);
 		double translateX = translate[0];
@@ -131,7 +131,7 @@ public class LocalAreaUtil {
 	 * @param boundedObject the local bounded object.
 	 * @return Point containing the X and Y locations relative to the object.
 	 */
-	public static LocalPosition getObjectRelativePosition(LocalPosition position, LocalBoundedObject boundedObject) {
+	public static LocalPosition convert2LocalPos(LocalPosition position, LocalBoundedObject boundedObject) {
 		double translateX = position.getX() - boundedObject.getPosition().getX();
 		double translateY = position.getY() - boundedObject.getPosition().getY();
 
@@ -148,9 +148,9 @@ public class LocalAreaUtil {
 	 * @param boundedObject the local bounded object.
 	 * @return random settlement wide location relative to the center of the bounded object.
 	 */
-	public static LocalPosition getRandomLocalRelativePosition(LocalBoundedObject boundedObject) {
+	public static LocalPosition getRandomLocalPos(LocalBoundedObject boundedObject) {
 		LocalPosition randomInternal = getRandomInteriorPosition(boundedObject, true);
-		return getLocalRelativePosition(randomInternal, boundedObject);
+		return convert2SettlementPos(randomInternal, boundedObject);
 	}
 
 	/**
@@ -261,18 +261,19 @@ public class LocalAreaUtil {
 	}
 
 	/**
-	 * Get a random position near a base that is collision free.
+	 * Gets a random position near a base that is collision free.
+	 * 
 	 * @param b Base point for new local position.
 	 * @param maxDistance Maximum distance from the base
-	 * @param c The corrodinaet to avoid collision
-	 * @return Postiino or null if none found
+	 * @param c The coordinate to avoid collision
+	 * @return Position or null if none found
 	 */
 	public static LocalPosition getCollisionFreeRandomPosition(LocalBoundedObject b, Coordinates c, double maxDistance)  {
 		boolean goodLocation = false;
 		LocalPosition sLoc = null;
 		for (int x = 0; (x < 50) && !goodLocation; x++) {
 			LocalPosition boundedLocalPoint = LocalAreaUtil.getRandomExteriorPosition(b, maxDistance);
-			sLoc = LocalAreaUtil.getLocalRelativePosition(boundedLocalPoint, b);
+			sLoc = LocalAreaUtil.convert2SettlementPos(boundedLocalPoint, b);
 			goodLocation = LocalAreaUtil.isPositionCollisionFree(sLoc, c);
 		}
 
@@ -601,10 +602,10 @@ public class LocalAreaUtil {
 		double length = object.getLength();
 
 		// Get four points.
-		Point2D frontLeftPt = getLocalRelativeLocation((width / 2D), (length / 2D), object);
-		Point2D frontRightPt = getLocalRelativeLocation((width / -2D), (length / 2D), object);
-		Point2D backLeftPt = getLocalRelativeLocation((width / 2D), (length / -2D), object);
-		Point2D backRightPt = getLocalRelativeLocation((width / -2D), (length / -2D), object);
+		Point2D frontLeftPt = convert2SettlementPos((width / 2D), (length / 2D), object);
+		Point2D frontRightPt = convert2SettlementPos((width / -2D), (length / 2D), object);
+		Point2D backLeftPt = convert2SettlementPos((width / 2D), (length / -2D), object);
+		Point2D backRightPt = convert2SettlementPos((width / -2D), (length / -2D), object);
 
 		// Get four line segments.
 		Line2D frontLine = new Line2D.Double(frontLeftPt, frontRightPt);

@@ -178,7 +178,7 @@ public class MineSite extends EVAOperation {
 
 			if (luv.addPerson(person)) {
 
-				LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalRelativePosition(luv);
+				LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalPos(luv);
 
 				person.setPosition(settlementLoc);
 				luv.setOperator(person);

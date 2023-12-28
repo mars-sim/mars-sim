@@ -113,8 +113,8 @@ extends Airlock {
 			double x1, double x2, double y) {
         Map<LocalPosition, Integer> result = new HashMap<>();
 
-        result.put(LocalAreaUtil.getLocalRelativePosition(new LocalPosition(center.getX() + x1, center.getY() + y), vehicle), -1);
-        result.put(LocalAreaUtil.getLocalRelativePosition(new LocalPosition(center.getX() + x1, center.getY() - y), vehicle), -1);
+        result.put(LocalAreaUtil.convert2SettlementPos(new LocalPosition(center.getX() + x1, center.getY() + y), vehicle), -1);
+        result.put(LocalAreaUtil.convert2SettlementPos(new LocalPosition(center.getX() + x1, center.getY() - y), vehicle), -1);
 
         return result;
 	}

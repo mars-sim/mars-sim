@@ -149,7 +149,7 @@ public abstract class VehicleMaintenance extends Function {
 			LocalPosition newLoc;
 			
 			if (location != null) {
-				newLoc = LocalAreaUtil.getLocalRelativePosition(location.getPosition(), getBuilding());
+				newLoc = LocalAreaUtil.convert2SettlementPos(location.getPosition(), getBuilding());
 				location.parkFlyer(flyer);
 				
 				// change the vehicle status
@@ -199,7 +199,7 @@ public abstract class VehicleMaintenance extends Function {
 			LocalPosition newLoc;
 			
 			if (location != null) {
-				newLoc = LocalAreaUtil.getLocalRelativePosition(location.getPosition(), getBuilding());
+				newLoc = LocalAreaUtil.convert2SettlementPos(location.getPosition(), getBuilding());
 				location.parkVehicle(vehicle);
 				
 				// change the vehicle status

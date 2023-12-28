@@ -406,7 +406,7 @@ public abstract class Vehicle extends Unit
 			Iterator<Person> i = crewable.getCrew().iterator();
 			while (i.hasNext()) {
 				Person crewmember = i.next();
-				LocalPosition crewPos = LocalAreaUtil.getObjectRelativePosition(crewmember.getPosition(), this);
+				LocalPosition crewPos = LocalAreaUtil.convert2LocalPos(crewmember.getPosition(), this);
 				result.put(crewmember, crewPos);
 			}
 		}
@@ -429,7 +429,7 @@ public abstract class Vehicle extends Unit
 			Iterator<Robot> i = crewable.getRobotCrew().iterator();
 			while (i.hasNext()) {
 				Robot robotCrewmember = i.next();
-				LocalPosition crewPos = LocalAreaUtil.getObjectRelativePosition(robotCrewmember.getPosition(), this);
+				LocalPosition crewPos = LocalAreaUtil.convert2LocalPos(robotCrewmember.getPosition(), this);
 				result.put(robotCrewmember, crewPos);
 			}
 		}
@@ -452,7 +452,7 @@ public abstract class Vehicle extends Unit
 				Person crewmember = i.next();
 
 				LocalPosition currentCrewPos = currentCrewPositions.get(crewmember);
-				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(currentCrewPos,
+				LocalPosition settlementLoc = LocalAreaUtil.convert2SettlementPos(currentCrewPos,
 																		this);
 				crewmember.setPosition(settlementLoc);
 			}
@@ -474,7 +474,7 @@ public abstract class Vehicle extends Unit
 				Robot robotCrewmember = i.next();
 
 				LocalPosition currentCrewPos = currentRobotCrewPositions.get(robotCrewmember);
-				LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(currentCrewPos,
+				LocalPosition settlementLoc = LocalAreaUtil.convert2SettlementPos(currentCrewPos,
 														this);
 				robotCrewmember.setPosition(settlementLoc);
 			}

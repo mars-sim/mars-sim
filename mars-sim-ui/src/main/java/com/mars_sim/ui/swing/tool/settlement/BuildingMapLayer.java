@@ -192,13 +192,13 @@ public class BuildingMapLayer extends AbstractMapLayer {
 
             // Draw building connector area between two hatches.
             Path2D.Double splitAreaPath = new Path2D.Double();
-            Point2D.Double leftHatch1Loc = LocalAreaUtil.getLocalRelativeLocation(hatch1.getWidth() / 2D, 0D, hatch1);
+            Point2D.Double leftHatch1Loc = LocalAreaUtil.convert2SettlementPos(hatch1.getWidth() / 2D, 0D, hatch1);
             splitAreaPath.moveTo(leftHatch1Loc.getX(), leftHatch1Loc.getY());
-            Point2D.Double rightHatch2Loc = LocalAreaUtil.getLocalRelativeLocation(hatch2.getWidth() / -2D, 0D,  hatch2);
+            Point2D.Double rightHatch2Loc = LocalAreaUtil.convert2SettlementPos(hatch2.getWidth() / -2D, 0D,  hatch2);
             splitAreaPath.lineTo(rightHatch2Loc.getX(), rightHatch2Loc.getY());
-            Point2D.Double leftHatch2Loc = LocalAreaUtil.getLocalRelativeLocation(hatch2.getWidth() / 2D, 0D,  hatch2);
+            Point2D.Double leftHatch2Loc = LocalAreaUtil.convert2SettlementPos(hatch2.getWidth() / 2D, 0D,  hatch2);
             splitAreaPath.lineTo(leftHatch2Loc.getX(), leftHatch2Loc.getY());
-            Point2D.Double rightHatch1Loc = LocalAreaUtil.getLocalRelativeLocation(hatch1.getWidth() / -2D, 0D, hatch1);
+            Point2D.Double rightHatch1Loc = LocalAreaUtil.convert2SettlementPos(hatch1.getWidth() / -2D, 0D, hatch1);
             splitAreaPath.lineTo(rightHatch1Loc.getX(), rightHatch1Loc.getY());
             splitAreaPath.closePath();
             drawPathShape(splitAreaPath, SPLIT_CONN_COLOR, viewpoint);

@@ -99,7 +99,7 @@ public abstract class Function implements Serializable, Temporal {
 	private static Set<ActivitySpot> createActivitySpot(Set<NamedPosition> set, Building owner) {
 		return set.stream()
 							.map(p -> new ActivitySpot(p.name(),
-											LocalAreaUtil.getLocalRelativePosition(p.position(), owner)))
+											LocalAreaUtil.convert2SettlementPos(p.position(), owner)))
 							.collect(Collectors.toSet());
 	}
 

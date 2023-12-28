@@ -206,7 +206,7 @@ public class ConstructBuilding extends EVAOperation {
 	 * @return location.
 	 */
 	private LocalPosition determineConstructionLocation() {
-		return LocalAreaUtil.getRandomLocalRelativePosition(site);
+		return LocalAreaUtil.getRandomLocalPos(site);
 	}
 
 	@Override
@@ -309,7 +309,7 @@ public class ConstructBuilding extends EVAOperation {
 						operatingLUV = true;
 
 						// Place light utility vehicles at random location in construction site.
-						LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalRelativePosition(site);
+						LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
 						luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
 
 						break;

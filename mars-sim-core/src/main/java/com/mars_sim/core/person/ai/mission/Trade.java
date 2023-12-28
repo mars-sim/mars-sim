@@ -261,7 +261,7 @@ public class Trade extends RoverMission implements CommerceMission {
 			// Get random inhabitable building at trading settlement.
 			Building destinationBuilding = tradingSettlement.getBuildingManager().getRandomAirlockBuilding();
 			if (destinationBuilding != null) {
-				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(destinationBuilding);
+				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(destinationBuilding);
 				if (member instanceof Person person) {
 					
 					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, destinationBuilding);
@@ -434,7 +434,7 @@ public class Trade extends RoverMission implements CommerceMission {
 		if (!isDone() && !member.isInVehicle()) {
 
 			// Move person to random location within rover.
-			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
+			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(v);
 
 			// Elect a new mission lead if the previous one was dead
 			if (member instanceof Person lead) {

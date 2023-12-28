@@ -967,14 +967,14 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 				// Towed rovers should be located behind this rover with same facing.
 				double distance = (getLength() + towedVehicle.getLength()) / 2D;
 				LocalPosition towingPosition = new LocalPosition(0D, - distance);
-				LocalPosition towedLoc = LocalAreaUtil.getLocalRelativePosition(towingPosition, this);
+				LocalPosition towedLoc = LocalAreaUtil.convert2SettlementPos(towingPosition, this);
 				towedVehicle.setParkedLocation(towedLoc, getFacing());
 			} else if (towedVehicle instanceof LightUtilityVehicle) {
 				// Towed light utility vehicles should be attached to back of the rover
 				// sideways and facing to the right.
 				double distance = (getLength() + towedVehicle.getWidth()) / 2D;
 				LocalPosition towingPosition = new LocalPosition(0D, - distance);
-				LocalPosition towedLoc = LocalAreaUtil.getLocalRelativePosition(towingPosition, this);
+				LocalPosition towedLoc = LocalAreaUtil.convert2SettlementPos(towingPosition, this);
 				towedVehicle.setParkedLocation(towedLoc, getFacing() + 90D);
 			}
 		}

@@ -287,7 +287,7 @@ public class BuildingConnectorManager implements Serializable {
 					}
 				}
 				
-				LocalPosition connectionSettlementLoc = LocalAreaUtil.getLocalRelativePosition(connectionTemplate.getPosition(), building);
+				LocalPosition connectionSettlementLoc = LocalAreaUtil.convert2SettlementPos(connectionTemplate.getPosition(), building);
 				
 				PartialBuildingConnector partialConnector = new PartialBuildingConnector(building,
 						connectionSettlementLoc, connectionFacing, connectionBuilding);
@@ -783,9 +783,9 @@ public class BuildingConnectorManager implements Serializable {
 		double secondY = (initialSecondX * Math.sin(offsetAngleRad)) + (initialSecondY * Math.cos(offsetAngleRad))
 				+ position.getY();
 
-		Point2D correctedLinePosition1 = LocalAreaUtil.getLocalRelativeLocation(position.getX(), position.getY(),
+		Point2D correctedLinePosition1 = LocalAreaUtil.convert2SettlementPos(position.getX(), position.getY(),
 				newBuilding);
-		Point2D correctedLinePosition2 = LocalAreaUtil.getLocalRelativeLocation(secondX, secondY, newBuilding);
+		Point2D correctedLinePosition2 = LocalAreaUtil.convert2SettlementPos(secondX, secondY, newBuilding);
 		Line2D line = new Line2D.Double(correctedLinePosition1, correctedLinePosition2);
 
 		Point2D firstBuildingConnectionPt = correctedLinePosition1;
@@ -928,7 +928,7 @@ public class BuildingConnectorManager implements Serializable {
 
 		// Exception in thread "JavaFX Application Thread"
 		// java.lang.NullPointerException
-		LocalPosition buildingRelativePt = LocalAreaUtil.getObjectRelativePosition(new LocalPosition(point.getX(), point.getY()),
+		LocalPosition buildingRelativePt = LocalAreaUtil.convert2LocalPos(new LocalPosition(point.getX(), point.getY()),
 													building);
 
 		if (Math.abs(buildingRelativePt.getY() - (building.getLength() / 2D)) < SMALL_AMOUNT_COMPARISON) {

@@ -324,7 +324,7 @@ public class EmergencySupply extends RoverMission {
 			// Get random inhabitable building at emergency settlement.
 			Building destinationBuilding = emergencySettlement.getBuildingManager().getRandomAirlockBuilding();
 			if (destinationBuilding != null) {
-				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(destinationBuilding);
+				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(destinationBuilding);
 
 				if (member instanceof Person person) {
 					
@@ -441,7 +441,7 @@ public class EmergencySupply extends RoverMission {
 		if (member.isInVehicle()) {
 
 			// Move person to random location within rover.
-			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
+			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(v);
 
 			if (member instanceof Person person) {
 				if (!person.isDeclaredDead()) {
