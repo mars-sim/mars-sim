@@ -45,8 +45,8 @@ public class SystemCommand extends AbstractUnitCommand {
         response.appendLabeledString("Charging", sc.isCharging() ? "Yes" : "No");
         response.appendLabeledString("Standby Power", String.format(KW_FORMAT, sc.getStandbyPowerConsumption()));                                                                                                                                                             
 
-        if (robot.getStation() != null) {
-            response.appendLabeledString("Station", robot.getStation().getBuilding().getName());
+        if (robot.getOccupiedStation() != null) {
+            response.appendLabeledString("Occupied Station", robot.getOccupiedStation().getBuilding().getName());
         }
 
         context.println(response.getOutput());

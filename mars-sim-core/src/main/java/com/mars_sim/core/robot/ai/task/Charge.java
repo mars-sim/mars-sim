@@ -38,6 +38,8 @@ public class Charge extends Task {
 	
 	/** Task name for robot */
 	public static final String NAME = Msg.getString("Task.description.charge"); //$NON-NLS-1$
+	public static final String FINDING = "Finding a robotic station";
+	public static final String WALKING = "Walking to a robotic station";
 	public static final String CHARGING_AT = "Charging at ";
 	public static final String WIRELESS_CHARGING_AT = "Wireless Charging at ";
 	public static final String END_CHARGING = "Charging Ended";
@@ -58,10 +60,14 @@ public class Charge extends Task {
 		// Future: robot should first "reserve" a spot before going there
 		
 		if (buildingStation == null) {
+			
+			setDescription(FINDING);
+			
 			buildingStation = findStation(robot);
 		}
 		
 		if (buildingStation == null) {
+			
 			setDescriptionDone(NO_STATION);
 		}
 		
@@ -71,14 +77,13 @@ public class Charge extends Task {
 		
 			if (station != null) {
 				
-				setDescription(NAME);
+				setDescription(WALKING);
 	//			logger.info(robot, 30_000L, "Walking to " + buildingStation + ".");
-				
 				canWalk = walkToRoboticStation(robot, station, false);
 			}
 		}
 		
-		if (!canWalk) {
+		if (buildingStation == null || !canWalk) {
 			// Future: at this point. May switch to wireless charging that would be slower
 			
 			isWirelessCharge = true;
@@ -86,7 +91,7 @@ public class Charge extends Task {
 			logger.info(robot, 60_000L, "Switching to wireless charging in "
 					+ robot.getBuildingLocation() + ".");
 		}
-
+		
 		// Initialize phase
 		addPhase(CHARGING);
 		setPhase(CHARGING);
@@ -134,11 +139,13 @@ public class Charge extends Task {
 		}
 	
 		boolean toCharge = false;
+		
 		SystemCondition sc = robot.getSystemCondition();
+		
 		double batteryLevel = sc.getBatteryState();
 		double threshold = sc.getRecommendedThreshold();
 		double lowPower = sc.getLowPowerPercent();
-		double timeLeft = getTimeLeft();
+//		double timeLeft = getTimeLeft();
 		
 		if (batteryLevel >= LEVEL_UPPER_LIMIT) {
 			toCharge = false;
@@ -148,8 +155,8 @@ public class Charge extends Task {
 			// Note that the charging process will continue until it's at least 80%
 			// before ending
 			double rand = RandomUtil.getRandomDouble(batteryLevel);
-			if (rand < lowPower + timeLeft * 2)
-				// At max, 20% chance it will need to charge 
+			if (rand < lowPower * .75)
+				// Will need to charge 
 				toCharge = true;
 			else
 				toCharge = false;
@@ -158,54 +165,55 @@ public class Charge extends Task {
 		else if (batteryLevel > lowPower) {
 
 			double rand = RandomUtil.getRandomDouble(batteryLevel);
-			if (rand < lowPower + timeLeft * 2)
-				// At max, 20% chance it will need to charge 
+			if (rand < lowPower)
+				// Will need to charge 
 				toCharge = true;
 			else
 				toCharge = false;
 		}
 
-		// if power is below a certain threshold ~70%, stay to get a recharge
+		// if power is below the low power level, always recharge
 		else {
 			toCharge = true;
 		}
 
-		if (toCharge) {		
+		if (toCharge) {
 			// Switch to charging
 			sc.setCharging(true);
 			
 			if (isWirelessCharge) {
-				
-				setDescription(WIRELESS_CHARGING_AT + Math.round(batteryLevel * 10.0)/10.0 + "%");
 
 				// Look for a station that offers wireless charging
 				RoboticStation station = null;
-				
+
+				// FUTURE: will need to consider if a robot is in a remote station, 
+				// outside or in a vehicle
+
 				Building building = robot.getBuildingLocation();
-				
+							
 				if (building != null) {
 					
 					station = building.getRoboticStation();
 					
-					if (station == null) {
-						Set<Building> functionBuildings = robot.getAssociatedSettlement()
-								.getBuildingManager().getBuildingSet(FunctionType.ROBOTIC_STATION);
-					
-						building = RandomUtil.getARandSet(functionBuildings);
-						
-						station = building.getRoboticStation();
-						
-						if (station == null) {
-							logger.severe(robot, 30_000L, "Unable to find a robotic station with wireless charging. "
-									+ "Current building: " + robot.getBuildingLocation() + ".");
-							endTask();
-							return 0;
-						}
-					}
-				
+					// FUTURE: Will consider how many wireless charging ports are available 
+										
+					setDescription(WIRELESS_CHARGING_AT + Math.round(batteryLevel * 10.0)/10.0 + "%");
+
 					double hrs = time * MarsTime.HOURS_PER_MILLISOL;
 		
 					double energy = sc.deliverEnergy(RoboticStation.WIRELESS_CHARGE_RATE * hrs);
+					
+					if (energy == 0.0) {
+						
+						setDescriptionDone(END_CHARGING);
+						
+						setDuration(0);
+						
+						// End charging
+		//				endTask();
+						
+						return time;
+					}
 					
 					// Record the power spent at the robotic station
 					station.setPowerLoad(energy/hrs);
@@ -216,15 +224,27 @@ public class Charge extends Task {
 			}
 			
 			else {
-				RoboticStation station = robot.getStation();
+				RoboticStation station = robot.getOccupiedStation();
 			
 				if (station != null) {
-					
+
 					setDescription(CHARGING_AT + Math.round(batteryLevel * 10.0)/10.0 + "%");
 					
 					double hrs = time * MarsTime.HOURS_PER_MILLISOL;
 		
 					double energy = sc.deliverEnergy(RoboticStation.CHARGE_RATE * hrs);
+					
+					if (energy == 0.0) {
+						
+						setDescriptionDone(END_CHARGING);
+						
+						setDuration(0);
+						
+						// End charging
+		//				endTask();
+						
+						return time;
+					}
 					
 					// Record the power spent at the robotic station
 					station.setPowerLoad(energy/hrs);
@@ -232,7 +252,9 @@ public class Charge extends Task {
 					// Reset the duration
 					setDuration(LEVEL_UPPER_LIMIT - batteryLevel);
 				}
+				
 				else {
+					
 					setDescriptionDone(END_CHARGING);
 					
 					setDuration(0);
@@ -283,9 +305,10 @@ public class Charge extends Task {
 	 * @return
 	 */
 	static Building findStation(Robot robot) {
+		
 		// Case 1: Check if robot currently occupies a robotic station spot already
-		RoboticStation roboticStation = robot.getStation();
-		if (roboticStation != null) {			
+		RoboticStation roboticStation = robot.getOccupiedStation();
+		if (roboticStation != null) {
 			return roboticStation.getBuilding();
 		}
 		
@@ -305,7 +328,7 @@ public class Charge extends Task {
 			}
 		}
 		
-		// Case 3: Check other buildigns
+		// Case 3: Check other buildings
 		Set<Building> functionBuildings = robot.getAssociatedSettlement()
 				.getBuildingManager().getBuildingSet(FunctionType.ROBOTIC_STATION);
 	

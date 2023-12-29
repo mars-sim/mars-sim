@@ -1155,7 +1155,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * 
 	 * @return
 	 */
-	public RoboticStation getStation() {
+	public RoboticStation getOccupiedStation() {
 		Building building = getBuildingLocation();
 		if (building != null) {
 				

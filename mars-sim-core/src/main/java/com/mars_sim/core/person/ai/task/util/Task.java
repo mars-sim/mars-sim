@@ -452,10 +452,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Sets the task's description.
+	 * Sets the task's description without recording the task.
 	 * 
 	 * @param des the task description.
-	 * @param recordTask true if wanting to record
 	 */
 	protected void setDescriptionDone(String des) {
 		description = des;
@@ -1168,8 +1167,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			boolean canWalk = createWalkingSubtask(building, loc, allowFail);
 			
 			if (canWalk) {
-				// Add to this activity spot
-				f.claimActivitySpot(loc, worker);
+				// Claim this activity spot
+				boolean canClaim = f.claimActivitySpot(loc, worker);
+				
+				if (!canClaim)
+					loc = null;
 			}
 			else {
 				loc = null;

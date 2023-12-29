@@ -1673,10 +1673,14 @@ public class BuildingManager implements Serializable {
 				person.setPosition(loc);
 				// Set the building
 				person.setCurrentBuilding(building);
-				// Add the person to this activity spot
-				f.claimActivitySpot(loc, person);
 				
-				result = true;
+				// Claim this activity spot
+				boolean canClaim = f.claimActivitySpot(loc, person);
+				
+				if (!canClaim)
+					result = false;
+				else
+					result = true;
 			}
 
 		} catch (Exception e) {
@@ -1747,10 +1751,13 @@ public class BuildingManager implements Serializable {
 				robot.setPosition(loc);
 				// Set the building
 				robot.setCurrentBuilding(building);
-				// Add the robot to this activity spot
-				f.claimActivitySpot(loc, robot);
-
-				result = true;
+				// Claim this activity spot
+				boolean canClaim = f.claimActivitySpot(loc, robot);
+				
+				if (!canClaim)
+					result = false;
+				else
+					result = true;
 			}	
 		
 		} catch (Exception e) {
