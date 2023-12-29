@@ -11,8 +11,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.goods.GoodType;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.resource.AmountResource;
@@ -23,14 +23,10 @@ import com.mars_sim.core.structure.Settlement;
  * The factory class for bin containers.
  */
 public final class BinFactory {
-
-	// default logger.
-	private static final SimLogger logger = SimLogger.getLogger(BinFactory.class.getName());
-
 	
-	private static final String crate = "make crate";
-	private static final String basket = "make basket";
-	private static final String pot = "make pot";
+	private static final String CRATE = "make crate";
+	private static final String BASKET = "make basket";
+	private static final String POT = "make pot";
 	
 	private static Map<String, Double> weights = new HashMap<>();
 	
@@ -77,11 +73,11 @@ public final class BinFactory {
 		switch (type) {
 					
 			case BASKET:
-				return calculateMass(basket, productName);
+				return calculateMass(BASKET, productName);
 			case CRATE:
-				return calculateMass(crate, productName);
+				return calculateMass(CRATE, productName);
 			case POT:
-				return calculateMass(pot, productName);
+				return calculateMass(POT, productName);
 			default:
 				throw new IllegalStateException("Class for bin '" + type + "' could not be found.");
 		}		
@@ -121,10 +117,7 @@ public final class BinFactory {
 				// Save the key value pair onto the weights Map
 				weights.put(processName, mass/quantity);
 	    	}
-			
-//			logger.info(productName + " - input mass: " + mass + "  output quantity: " 
-//					+ quantity + "   mass per item: " + Math.round(mass/quantity * 10.0)/10.0);
-			
+
 			return mass;
 		}
 
@@ -143,59 +136,35 @@ public final class BinFactory {
 		
 		BinType type = BinType.convertName2Enum(binName);
 
-		Set<AmountResourceBin> binSet = settlement.getEquipmentInventory().getAmountResourceBinSet();
+		AmountResourceBin binMap = findBinMap(settlement,
+											settlement.getEquipmentInventory().getAmountResourceBinSet(), type);
 	
-		AmountResourceBin binMap = null;
-		Bin newBin = null;
-		boolean hasIt = false;
-		
-		for (AmountResourceBin arb : binSet) {
-			if (arb.getBinType() == type) {
-				hasIt = true;
-				binMap = arb;
-				break;
-			}
-		}
-
-		switch (type) {
-			case CRATE:
-				if (!hasIt) {
-					// Create a bin map
-					binMap = new Crate(settlement, getBinCapacity(type));
-				}	
-				break;
-	
-			case BASKET:
-				if (!hasIt) {
-					// Create a bin map
-					binMap = new Basket(settlement, getBinCapacity(type));
-				}	
-				break;
-	
-			case POT:		
-				if (!hasIt) {
-					// Create a bin map
-					binMap = new Pot(settlement, getBinCapacity(type));
-				}	
-				break;
-				
-			default:
-				throw new IllegalStateException("Bin type '" + type + "' could not be constructed.");
-		}
-
-		if (!hasIt) {
-			// Set owner
-			binMap.setOwner(settlement);
-			// Set bin type
-			binMap.setBinType(type);
-		}
-		
 		// Add this new bin to the bin map
 		int id = binMap.addBin(type, null, 0.0);
 		// Get the instance of this new bin
-		newBin = binMap.getBin(id);
+		return binMap.getBin(id);		
+	}
+
+	/**
+	 * Find a BinMap for certain type.It will check existing map and create a new one if needed
+	 * @param owner
+	 * @param availableMaps
+	 * @param type
+	 * @return
+	 */
+	public static AmountResourceBin findBinMap(Unit owner, Set<AmountResourceBin> availableMaps,
+			BinType type) {
 		
-		return newBin;
+		AmountResourceBin binMap = availableMaps.stream()
+									.filter(a -> a.getBinType() == type)
+									.findFirst()
+									.orElse(null);
+
+		if (binMap == null) {
+			var capacity = getBinCapacity(type);
+			binMap = new AmountResourceBin(owner, capacity, type);
+		}
+		return binMap;
 	}
 
 	/**
