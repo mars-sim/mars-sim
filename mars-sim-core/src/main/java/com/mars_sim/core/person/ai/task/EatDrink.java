@@ -414,6 +414,11 @@ public class EatDrink extends Task {
 						
 				// Add the person to this activity spot
 				f.claimActivitySpot(loc, person);
+				// Claim this activity spot
+				boolean canClaim = f.claimActivitySpot(loc, person);
+				// Future: May need to check if claiming the spot is 
+//				if (!canClaim)
+//					loc = null;
 			}
 		}
 	}

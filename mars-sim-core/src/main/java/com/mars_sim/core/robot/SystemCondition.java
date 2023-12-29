@@ -71,11 +71,6 @@ public class SystemCondition implements Serializable {
         powerSavekW = POWER_SAVE_CONSUMPTION * standbykW; 
         maxCapacity = spec.getMaxCapacity();
         currentEnergy = RandomUtil.getRandomDouble(maxCapacity * (lowPowerPercent/100 * 2), maxCapacity);
-        updateLowPowerMode();
-    }
-
-    private void updateLowPowerMode() {
-        isLowPower = getBatteryState() < lowPowerPercent;
     }
 
     /**
@@ -110,8 +105,6 @@ public class SystemCondition implements Serializable {
 	    	if (diff >= 0) {
 	    		currentEnergy = diff; 
 	    		robot.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
-
-                updateLowPowerMode();
 	    	}
 	    	else
 	    		logger.warning(robot, 30_000L, "Out of power.");
@@ -226,7 +219,7 @@ public class SystemCondition implements Serializable {
      * @return
      */
     public boolean isLowPower() {
-    	return isLowPower;
+    	return getBatteryState() < lowPowerPercent;
     }
     
     /**
@@ -246,9 +239,6 @@ public class SystemCondition implements Serializable {
     	double diff = newEnergy - currentEnergy;
     	currentEnergy = newEnergy;
 		robot.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
-
-        updateLowPowerMode();
-
     	return diff;
     }
 

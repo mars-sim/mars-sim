@@ -290,8 +290,13 @@ public class Sleep extends Task {
 			for (Function f : b.getFunctions()) {
 				for (ActivitySpot as : f.getActivitySpots()) {
 					if (as.isEmpty()) {
-						f.claimActivitySpot(as.getPos(), worker);
-						return worker.getActivitySpot();
+						// Claim this activity spot
+						boolean canClaim = f.claimActivitySpot(as.getPos(), worker);
+						
+						if (!canClaim)
+							return null;
+						else
+							return worker.getActivitySpot();
 					}
 				}
 			}
