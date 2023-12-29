@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -25,6 +26,7 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -48,7 +50,10 @@ abstract class TableTab extends MonitorTab {
 
 	/** Table component. */
 	protected JTable table;
-
+	private boolean widthAdjusted = false;
+	private int settlementColumnId;
+	private TableColumn savedSettlementColumn;
+	
 	/**
 	 * Creates a table within a tab displaying the specified model.
 	 *
@@ -61,6 +66,8 @@ abstract class TableTab extends MonitorTab {
 			String iconname) {
 		super(model, mandatory, true, ImageLoader.getIconByName(iconname));
 
+		settlementColumnId = model.getSettlementColumn();
+		
 		// Simple WebTable
 		this.table = new JTable(model) {
             @Override
@@ -214,4 +221,37 @@ abstract class TableTab extends MonitorTab {
 		super.removeTab();
 		table = null;
 	}
+
+	protected void setSettlementColumnIndex(int idx) {
+		settlementColumnId = idx;
+	}
+
+	public boolean setSettlementFilter(Set<Settlement> currentSelection) {
+		if (settlementColumnId > 0) {
+			boolean showSettlement = (currentSelection.size() > 1);
+			if (showSettlement && (savedSettlementColumn != null)) {
+				// SHow Settlement but it is hidden
+				var tc = table.getColumnModel();
+				tc.addColumn(savedSettlementColumn);
+				tc.moveColumn(tc.getColumnCount()-1, settlementColumnId);
+				savedSettlementColumn = null;
+			}
+			else if (!showSettlement && (savedSettlementColumn == null)) {
+				// No need for Settlement and is no display
+				var tc = table.getColumnModel();
+				savedSettlementColumn = tc.getColumn(settlementColumnId);
+				tc.removeColumn(savedSettlementColumn);
+			}
+		}
+		var accepted = getModel().setSettlementFilter(currentSelection);
+
+		// Automatically adjust the width when a significant data change
+		if (!widthAdjusted) {
+			widthAdjusted = true;
+			adjustColumnWidth(table);
+		}
+
+		return accepted;
+	}
+
 }

@@ -10,7 +10,6 @@ import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.equipment.BinFactory;
 import com.mars_sim.core.equipment.BinType;
 import com.mars_sim.core.equipment.EquipmentFactory;
@@ -26,31 +25,32 @@ import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.tools.Msg;
 
 
-public class TradeTableModel extends EntityTableModel<Good>
-implements UnitListener {
-
-	static final int NUM_INITIAL_COLUMNS = 3;
-	private static final int NUM_DATA_COL = 8;
-	private static final int COLUMNCOUNT = NUM_INITIAL_COLUMNS + NUM_DATA_COL;
+public class TradeTableModel extends CategoryTableModel<Good> {
 
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
+	private static final int GOOD_COL = 0;
+	private static final int CAT_COL = GOOD_COL+1;
+	private static final int TYPE_COL = CAT_COL+1;
+	private static final int SETTLEMENT_COL = TYPE_COL+1;
+	private static final int DEMAND_COL = SETTLEMENT_COL+1;
+	private static final int SUPPLY_COL = DEMAND_COL+1;
+	static final int QUANTITY_COL = SUPPLY_COL+1;
+	private static final int MASS_COL = QUANTITY_COL+1;
+	private static final int MARKET_COL = MASS_COL+1;
+	private static final int VALUE_COL = MARKET_COL+1;
+	static final int COST_COL = VALUE_COL+1;
+	static final int PRICE_COL = COST_COL+1;
 
-
-	private static final int DEMAND_COL = 3;
-	private static final int SUPPLY_COL = 4;
-	static final int QUANTITY_COL = 5;
-	private static final int MASS_COL = 6;
-	private static final int MARKET_COL = 7;
-	private static final int VALUE_COL = 8;
-	static final int COST_COL = 9;
-	static final int PRICE_COL = 10;
+	static final int NUM_INITIAL_COLUMNS = 4;
+	private static final int COLUMNCOUNT = PRICE_COL + 1;
 
 	static {
-		COLUMNS = new ColumnSpec[NUM_INITIAL_COLUMNS + NUM_DATA_COL];
-		COLUMNS[0] = new ColumnSpec ("Good", String.class);
-		COLUMNS[1] = new ColumnSpec ("Category", String.class);
-		COLUMNS[2] = new ColumnSpec ("Type", String.class);
+		COLUMNS = new ColumnSpec[COLUMNCOUNT];
+		COLUMNS[GOOD_COL] = new ColumnSpec ("Good", String.class);
+		COLUMNS[CAT_COL] = new ColumnSpec ("Category", String.class);
+		COLUMNS[TYPE_COL] = new ColumnSpec ("Type", String.class);
+		COLUMNS[SETTLEMENT_COL] = new ColumnSpec("Settlement", String.class);
 
 		COLUMNS[DEMAND_COL] = new ColumnSpec ("Demand", Double.class);
 		COLUMNS[SUPPLY_COL] = new ColumnSpec ("Supply", Double.class);
@@ -60,67 +60,21 @@ implements UnitListener {
 		COLUMNS[VALUE_COL] = new ColumnSpec ("Local VP", Double.class);
 		COLUMNS[COST_COL] = new ColumnSpec ("Cost [$]", Double.class);
 		COLUMNS[PRICE_COL] = new ColumnSpec ("Price [$]", Double.class);
-	};
-
-	// Data members
-	private Settlement selectedSettlement;
-	private boolean monitorSettlement = false;
+	}
 
 	/**
 	 * Constructor 2.
 	 * 
-	 * @param selectedSettlement
-	 * @param window
 	 */
-	public TradeTableModel(Settlement selectedSettlement) {
-		super(Msg.getString("TradeTableModel.tabName"), "TradeTableModel.counting",COLUMNS);
-
+	public TradeTableModel() {
+		super(Msg.getString("TradeTableModel.tabName"), "TradeTableModel.counting",COLUMNS,
+						GoodsUtil.getGoodsList());
 		// Cache the data columns
 		setCachedColumns(NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
-
-		this.selectedSettlement = selectedSettlement;
-
-		setSettlementFilter(selectedSettlement);
+		setSettlementColumn(SETTLEMENT_COL);
 	}
 	
-	@Override
-	public boolean setSettlementFilter(Settlement filter) {
-		if (selectedSettlement != null) {
-			selectedSettlement.removeUnitListener(this);
-		}
-
-		// Initialize settlements.
-		selectedSettlement = filter;
-
-		// Initialize goods list.
-		resetEntities(GoodsUtil.getGoodsList());
-
-		// Add table as listener to each settlement.
-		if (monitorSettlement) {
-			selectedSettlement.addUnitListener(this);
-		}
-
-		return true;
-	}
 	
-	    
-	/**
-	 * Set whether the changes to the Entities should be monitor for change. Set up the 
-	 * Unitlisteners for the selected Settlement where Food comes from for the table.
-	 * @param activate 
-	 */
-    public void setMonitorEntites(boolean activate) {
-		if (activate != monitorSettlement) {
-			if (activate) {
-				selectedSettlement.addUnitListener(this);
-			}
-			else {
-				selectedSettlement.removeUnitListener(this);
-			}
-			monitorSettlement = activate;
-		}
-	}
-
 	/**
 	 * Catches unit update event.
 	 *
@@ -132,9 +86,9 @@ implements UnitListener {
 		UnitEventType eventType = event.getType();
 		if ((eventType == UnitEventType.GOODS_VALUE_EVENT
 			|| eventType == UnitEventType.FOOD_EVENT)
-			&& event.getTarget() instanceof Good 
-			&& unit.equals(selectedSettlement)) {
-				entityValueUpdated((Good)event.getTarget(), NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
+			&& event.getTarget() instanceof Good g
+			&& unit instanceof Settlement s) {
+				entityValueUpdated(new CategoryKey<>(s, g), NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
 			}
 	}
 
@@ -144,14 +98,19 @@ implements UnitListener {
 	 * @param columnIndex COlumn to get
 	 */
 	@Override
-	protected  Object getEntityValue(Good selectedGood, int columnIndex) {
+	protected  Object getEntityValue(CategoryKey<Good> row, int columnIndex) {
+		Good selectedGood = row.getCategory();
+		Settlement selectedSettlement = row.getSettlement();
+
 		switch(columnIndex) {
-			case 0:
+			case GOOD_COL:
 				return selectedGood.getName();
-			case 1:
+			case CAT_COL:
 				return getGoodCategoryName(selectedGood);
-			case 2:
+			case TYPE_COL:
 				return selectedGood.getGoodType().getName();
+			case SETTLEMENT_COL:
+				return selectedSettlement.getName();
 			case DEMAND_COL:
 				return selectedSettlement.getGoodsManager().getDemandValue(selectedGood);
 			case SUPPLY_COL:
@@ -268,18 +227,5 @@ implements UnitListener {
 	 */
 	private static String getGoodCategoryName(Good good) {
 		return good.getCategory().getMsgKey();
-	}
-
-	/**
-	 * Prepares the model for deletion.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		// Remove as listener for all settlements.
-		selectedSettlement.removeUnitListener(this);
-
-		selectedSettlement = null;
 	}
 }

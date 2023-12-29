@@ -8,8 +8,6 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import javax.swing.table.TableColumnModel;
 
-import com.mars_sim.core.structure.Settlement;
-
 /**
  * This class displays the backlog of SettlementTasks at settlement displayed within
  * the Monitor Window.
@@ -24,9 +22,9 @@ public class BacklogTab extends TableTab {
 	 * @param selectedSettlement
 	 * @param window {@link MonitorWindow} the containing window.
 	 */
-	public BacklogTab(Settlement selectedSettlement, final MonitorWindow window) {
+	public BacklogTab(final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new BacklogTableModel(selectedSettlement), true, false,
+		super(window, new BacklogTableModel(), true, false,
 			  TASK_ICON);
 
 		TableColumnModel m = table.getColumnModel();

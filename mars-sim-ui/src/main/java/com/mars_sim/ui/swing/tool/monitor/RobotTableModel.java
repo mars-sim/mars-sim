@@ -8,9 +8,13 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
@@ -40,29 +44,18 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	private static final String NAME_ROBOTS_KEY = "RobotTableModel.nameRobots";
 
 	// Column indexes
-	/** Robot name column. */
 	private static final int NAME = 0;
-	/** Gender column. */
-	private static final int TYPE = 1;
-	/** Location column. */
-	private static final int LOCATION = 2;
-	/** Health column. */
-	private static final int HEALTH = 3;
-	/** Hunger column. */
-	private static final int BATTERY = 4;
+	private static final int TYPE = NAME+1;
+	private static final int LOCATION = TYPE+1;
+	private static final int SETTLEMENT = LOCATION+1;
+	private static final int HEALTH = SETTLEMENT+1;
+	private static final int BATTERY = HEALTH+1;
+	private static final int PERFORMANCE = BATTERY+1;
+	private static final int JOB = PERFORMANCE+1;
+	private static final int TASK = JOB+1;
+	private static final int MISSION_COL = TASK+1;
 
-	/** Performance column. */
-	private static final int PERFORMANCE = 5;
-	/** Job column. */
-	private static final int JOB = 6;
-	/** Task column. */
-	private static final int TASK = 7;
-	/** Mission column. */
-	private static final int MISSION_COL = 8;
-
-	/** The number of Columns. */
-	private static final int COLUMNCOUNT = 9;
-	/** Names of Columns. */
+	private static final int COLUMNCOUNT = MISSION_COL+1;
 	private static final ColumnSpec[] COLUMNS;
 
 	private static final Map<UnitEventType, Integer> eventColumnMapping;
@@ -74,6 +67,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
 		COLUMNS[NAME] = new ColumnSpec(Msg.getString("RobotTableModel.column.name"), String.class);
 		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("RobotTableModel.column.type"), String.class);
+		COLUMNS[SETTLEMENT] = new ColumnSpec("Settlement", String.class);
 		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("RobotTableModel.column.health"), String.class);
 		COLUMNS[BATTERY] = new ColumnSpec(Msg.getString("RobotTableModel.column.battery"), String.class);
 		COLUMNS[PERFORMANCE] = new ColumnSpec(Msg.getString("RobotTableModel.column.performance"), String.class);
@@ -106,7 +100,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 
 	// List sources.
 	private Crewable vehicle;
-	private Settlement settlement;
+	private Set<Settlement> settlements = Collections.emptySet();
 	private Mission mission;
 
 	private UnitListener crewListener;
@@ -138,20 +132,14 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 * robots with a specified settlement.
 	 *
 	 * @param settlement    the settlement to check.
-	 * @param allAssociated Are all robots associated with this settlement to be
-	 *                      displayed?
-	 */
-	public RobotTableModel(Settlement settlement, boolean allAssociated) {
-		super (UnitType.ROBOT, (allAssociated ? Msg.getString("RobotTableModel.nameAssociatedRobots") //$NON-NLS-1$
-			 	: Msg.getString(NAME_ROBOTS_KEY, //$NON-NLS-1$
-					settlement.getName())
-				),
-				(allAssociated ? COUNTING_ROBOTS_KEY : //$NON-NLS-1$
-						"RobotTableModel.countingResidents" //$NON-NLS-1$
-				), COLUMNS);
 
-		this.allAssociated = allAssociated;
-		setSettlementFilter(settlement);
+	 */
+	public RobotTableModel() {
+		super (UnitType.ROBOT, Msg.getString("RobotTableModel.nameAssociatedRobots"),
+				COUNTING_ROBOTS_KEY, COLUMNS);
+
+		this.allAssociated = true;
+		setSettlementColumn(SETTLEMENT);
 	}
 
 	/**
@@ -185,29 +173,37 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 * @param filter
 	 */
 	@Override
-	public boolean setSettlementFilter(Settlement filter) {
+	public boolean setSettlementFilter(Set<Settlement> filter) {
 		if (settlementListener != null) {
-			settlement.removeUnitListener(settlementListener);
+			settlements.forEach(s -> s.removeUnitListener(settlementListener));
 		}
 		
-		this.settlement = filter;
-		if (settlement == null)
-			return false;
-		
+		this.settlements = filter;
+
+		List<Robot> entities;
 		if (allAssociated) {
 			sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_ROBOTS;
-			resetEntities(settlement.getAllAssociatedRobots());
+			entities = settlements.stream()
+						.map(Settlement::getAllAssociatedRobots)
+						.flatMap(Collection::stream)
+						.collect(Collectors.toList());
 			settlementListener = new RobotChangeListener(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT,
 														UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT);
-			settlement.addUnitListener(settlementListener);
 		}
 		else {
 			sourceType = ValidSourceType.SETTLEMENT_ROBOTS;
-			resetEntities(settlement.getRobots());
+			entities = settlements.stream()
+						.map(Settlement::getRobots)
+						.flatMap(Collection::stream)
+						.collect(Collectors.toList());
 			settlementListener = new RobotChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
 														UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
-			settlement.addUnitListener(settlementListener);
 		}
+					
+		resetEntities(entities);
+
+		// Listen to the settlements for new People
+		settlements.forEach(s -> s.addUnitListener(settlementListener));
 
 		return true;
 	}
@@ -243,6 +239,10 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 
 			case TYPE: 
 				result = robot.getRobotType().getName();
+				break;
+
+			case SETTLEMENT: 
+				result = robot.getAssociatedSettlement().getName();
 				break;
 
 			case BATTERY: 
@@ -355,9 +355,8 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 			missionListener = null;
 			mission = null;
 		} else {
-			settlement.removeUnitListener(settlementListener);
-			settlementListener = null;
-			settlement = null;
+			settlements.forEach(s -> s.removeUnitListener(settlementListener));
+			settlements = null;
 		}
 	}	
 

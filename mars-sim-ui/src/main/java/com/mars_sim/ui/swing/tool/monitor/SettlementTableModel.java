@@ -6,11 +6,10 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
@@ -22,7 +21,6 @@ import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.tools.Msg;
 
 /**
  * The SettlementTableModel that maintains a list of Settlement objects. It maps
@@ -142,41 +140,26 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		}
 	}
 
-	private boolean singleSettlement;
+	private boolean allSettlements;
 
 	/**
 	 * Constructs a SettlementTableModel model that displays all Settlements in the
 	 * simulation.
 	 */
-	public SettlementTableModel() {
-		super(UnitType.SETTLEMENT, "Mars", "SettlementTableModel.countingSettlements",
+	public SettlementTableModel(boolean allSettlements) {
+		super(UnitType.SETTLEMENT, (allSettlements ? "Mars" : "Settlement"), "SettlementTableModel.countingSettlements",
 				COLUMNS);
-		singleSettlement = false;
+		this.allSettlements = allSettlements;
 
 		setupCaches();
-		resetEntities(unitManager.getSettlements());
-			
-		listenForUnits();
+		if (allSettlements) {
+			resetEntities(unitManager.getSettlements());
+			listenForUnits();
+		}
 	}
 
 	private void setupCaches() {
 		setCachedColumns(OXYGEN_COL, MINERALS_COL);
-	}
-
-	/**
-	 * Constructs a SettlementTableModel model that displays a specific settlement in the
-	 * simulation.
-	 *
-	 * @param settlement
-	 */
-	public SettlementTableModel(Settlement settlement) {
-		super(UnitType.SETTLEMENT, Msg.getString("SettlementTableModel.tabName"), //$NON-NLS-2$
-				"SettlementTableModel.countingSettlements", 
-				COLUMNS);
-		singleSettlement = true;
-		setupCaches();
-
-		setSettlementFilter(settlement);
 	}
 
 	/**
@@ -185,14 +168,12 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	 * @param filter
 	 */
 	@Override
-	public boolean setSettlementFilter(Settlement filter) {
+	public boolean setSettlementFilter(Set<Settlement> filter) {
 
-		if (singleSettlement) {
-			List<Settlement> sList = new ArrayList<>();
-			sList.add(filter);
-			resetEntities(sList);
+		if (!allSettlements) {
+			resetEntities(filter);
 		}
-		return singleSettlement;
+		return !allSettlements;
 	}
 
 	/**

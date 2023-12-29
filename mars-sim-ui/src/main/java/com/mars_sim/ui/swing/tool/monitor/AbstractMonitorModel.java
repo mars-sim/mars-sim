@@ -22,11 +22,12 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
     /**
      * Helper class to define the specification of a column.
      */
-    protected record ColumnSpec (String name, Class<?> type) implements Serializable {};
+    protected record ColumnSpec (String name, Class<?> type) implements Serializable {}
 
     private String name;
     private String countingMsgKey;
     private ColumnSpec[] columns;
+	private int settlementColumn = -1;
 
     protected AbstractMonitorModel(String name, String countingMsgKey, ColumnSpec[] columns) {
         this.name = name;
@@ -34,6 +35,24 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
         this.columns = columns;
     }
 
+	/**
+	 * This model as a Settlement column. This is a special column that can be visbile/hidden according
+	 * to the selection.
+	 * @param settlementColumn
+	 */
+	protected void setSettlementColumn(int settlementColumn) {
+		this.settlementColumn = settlementColumn;
+	}
+
+	/**
+	 * Get the index of the Settlement column if defined. This is a special column that can be visbile/hidden according
+	 * to the selection.
+	 * @return
+	 */
+	@Override
+	public int getSettlementColumn() {
+		return settlementColumn;
+	}	
 
     /**
 	 * Returns the number of columns.

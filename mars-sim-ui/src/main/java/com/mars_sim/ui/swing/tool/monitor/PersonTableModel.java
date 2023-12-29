@@ -8,10 +8,12 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
@@ -43,27 +45,28 @@ public class PersonTableModel extends UnitTableModel<Person> {
 
 	// Column indexes
 	private static final int NAME = 0;
-	private static final int TASK_DESC = 1;
-	private static final int MISSION_COL = 2;
-	private static final int JOB = 3;
-	private static final int ROLE = 4;
-	private static final int SHIFT = 5;
-	private static final int LOCATION = 6;
-	private static final int LOCALE = 7;
-	private static final int HEALTH = 8;
-	private static final int FATIGUE = 9;
-	private static final int ENERGY = 10;
-	private static final int WATER = 11;
-	private static final int STRESS = 12;
-	private static final int PERFORMANCE = 13;
-	private static final int EMOTION = 14;
+	private static final int SETTLEMENT = NAME+1;
+	private static final int TASK_DESC = SETTLEMENT+1;
+	private static final int MISSION_COL = TASK_DESC+1;
+	private static final int JOB = MISSION_COL+1;
+	private static final int ROLE = JOB+1;
+	private static final int SHIFT = ROLE+1;
+	private static final int LOCATION = SHIFT+1;
+	private static final int LOCALE = LOCATION+1;
+	private static final int HEALTH = LOCALE+1;
+	private static final int FATIGUE = HEALTH+1;
+	private static final int ENERGY = FATIGUE+1;
+	private static final int WATER = ENERGY+1;
+	private static final int STRESS = WATER+1;
+	private static final int PERFORMANCE = STRESS+1;
+	private static final int EMOTION = PERFORMANCE+1;
 
 	/** The number of Columns. */
-	private static final int COLUMNCOUNT = 15;
+	private static final int COLUMNCOUNT = EMOTION+1;
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
 
-	private static Map<UnitEventType, Integer> eventColumnMapping;
+	private static final Map<UnitEventType, Integer> EVENT_COLUMN_MAPPING;
 
 	private static final String DEHYDRATED = "Dehydrated";
 	private static final String STARVING = "Starving";
@@ -74,6 +77,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
 		COLUMNS[NAME] = new ColumnSpec(Msg.getString("PersonTableModel.column.name"), String.class);
+		COLUMNS[SETTLEMENT] = new ColumnSpec("Settlement", String.class);
 		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("PersonTableModel.column.health"), String.class);
 		COLUMNS[ENERGY] = new ColumnSpec(Msg.getString("PersonTableModel.column.energy"), String.class);
 		COLUMNS[WATER] = new ColumnSpec(Msg.getString("PersonTableModel.column.water"), String.class);
@@ -89,27 +93,27 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("PersonTableModel.column.mission"), String.class);
 		COLUMNS[TASK_DESC] = new ColumnSpec(Msg.getString("PersonTableModel.column.task"), String.class);
 
-		eventColumnMapping = new EnumMap<>(UnitEventType.class);
-		eventColumnMapping.put(UnitEventType.NAME_EVENT, NAME);
-		eventColumnMapping.put(UnitEventType.LOCATION_EVENT, LOCATION);
-		eventColumnMapping.put(UnitEventType.HUNGER_EVENT, ENERGY);
-		eventColumnMapping.put(UnitEventType.THIRST_EVENT, ENERGY);
-		eventColumnMapping.put(UnitEventType.FATIGUE_EVENT, FATIGUE);
-		eventColumnMapping.put(UnitEventType.STRESS_EVENT, STRESS);
-		eventColumnMapping.put(UnitEventType.EMOTION_EVENT, EMOTION);
-		eventColumnMapping.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
-		eventColumnMapping.put(UnitEventType.JOB_EVENT, JOB);
-		eventColumnMapping.put(UnitEventType.ROLE_EVENT, ROLE);
-		eventColumnMapping.put(UnitEventType.SHIFT_EVENT, SHIFT);
-		eventColumnMapping.put(UnitEventType.TASK_EVENT, TASK_DESC);
-		eventColumnMapping.put(UnitEventType.TASK_NAME_EVENT, TASK_DESC);
-		eventColumnMapping.put(UnitEventType.TASK_DESCRIPTION_EVENT, TASK_DESC);
-		eventColumnMapping.put(UnitEventType.TASK_ENDED_EVENT, TASK_DESC);
-		eventColumnMapping.put(UnitEventType.MISSION_EVENT, MISSION_COL);
-		eventColumnMapping.put(UnitEventType.ILLNESS_EVENT, HEALTH);
-		eventColumnMapping.put(UnitEventType.DEATH_EVENT, HEALTH);
-		eventColumnMapping.put(UnitEventType.BURIAL_EVENT, HEALTH);
-		eventColumnMapping.put(UnitEventType.REVIVED_EVENT, HEALTH);
+		EVENT_COLUMN_MAPPING = new EnumMap<>(UnitEventType.class);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.NAME_EVENT, NAME);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.LOCATION_EVENT, LOCATION);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.HUNGER_EVENT, ENERGY);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.THIRST_EVENT, ENERGY);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.FATIGUE_EVENT, FATIGUE);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.STRESS_EVENT, STRESS);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.EMOTION_EVENT, EMOTION);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.JOB_EVENT, JOB);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.ROLE_EVENT, ROLE);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.SHIFT_EVENT, SHIFT);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.TASK_EVENT, TASK_DESC);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.TASK_NAME_EVENT, TASK_DESC);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.TASK_DESCRIPTION_EVENT, TASK_DESC);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.TASK_ENDED_EVENT, TASK_DESC);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.MISSION_EVENT, MISSION_COL);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.ILLNESS_EVENT, HEALTH);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.DEATH_EVENT, HEALTH);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.BURIAL_EVENT, HEALTH);
+		EVENT_COLUMN_MAPPING.put(UnitEventType.REVIVED_EVENT, HEALTH);
 	}
 
 	/** 
@@ -124,7 +128,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	private boolean isCheck = true;
 	
 	private transient Crewable vehicle;
-	private Settlement settlement;
+	private Set<Settlement> settlements = Collections.emptySet();
 	private Mission mission;
 
 	private transient UnitListener crewListener;
@@ -158,23 +162,14 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	 * Constructs a PersonTableModel that displays residents are all associated
 	 * people with a specified settlement.
 	 *
-	 * @param settlement    the settlement to check.
-	 * @param allAssociated Are all people associated with this settlement to be
-	 *                      displayed?
 	 */
-	public PersonTableModel(Settlement settlement, boolean allAssociated)  {
-		super (UnitType.PERSON, (allAssociated ? Msg.getString("PersonTableModel.nameAllCitizens") //$NON-NLS-1$
-				 : Msg.getString("PersonTableModel.nameIndoor", //$NON-NLS-1$
-					settlement.getName())
-				),
-				(allAssociated ? "PersonTableModel.countingCitizens" : //$NON-NLS-1$
-								 "PersonTableModel.countingIndoor" //$NON-NLS-1$
-				), COLUMNS);
+	public PersonTableModel()  {
+		super (UnitType.PERSON, Msg.getString("PersonTableModel.nameAllCitizens"),
+				"PersonTableModel.countingCitizens", COLUMNS);
 		setupCache();
-		sourceType = (allAssociated ? ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE
-							: ValidSourceType.SETTLEMENT_INHABITANTS);
+		setSettlementColumn(SETTLEMENT);
 
-		setSettlementFilter(settlement);
+		sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE;
 	}
 
 	/**
@@ -208,55 +203,45 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	}
 
 	@Override
-	public boolean setSettlementFilter(Settlement filter) {	
+	public boolean setSettlementFilter(Set<Settlement> filter) {	
 		if ((sourceType != ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) &&
 			(sourceType != ValidSourceType.SETTLEMENT_INHABITANTS)) {
 				return false;
 		}
 
 		if (settlementListener != null) {
-			if (settlement != null) {
-				settlement.removeUnitListener(settlementListener);
-			}
+			settlements.forEach(s -> s.removeUnitListener(settlementListener));
 			settlementListener = null;
 		}
 
-		this.settlement = filter;
-		if (settlement == null)
-			return false;
-
+		this.settlements = filter;
+		List<Person> entities;
 		if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
-			List<Person> entities = new ArrayList<>(settlement.getAllAssociatedPeople());
-			if (!isCheck) {
-				Iterator<Person> p = entities.iterator(); 
-				while(p.hasNext()) {
-					if (p.next().isDeclaredDead()) 
-						p.remove();
-				}
-			}
-			
-			resetEntities(entities);
+			entities = settlements.stream()
+							.map(Settlement::getAllAssociatedPeople)
+							.flatMap(Collection::stream)
+							.collect(Collectors.toList());
 			settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
-														UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
-			settlement.addUnitListener(settlementListener);
-		} 
-		
-		else {
-			List<Person> entities = new ArrayList<>(settlement.getIndoorPeople());
-			if (!isCheck) {
-				Iterator<Person> p = entities.iterator(); 
-				while(p.hasNext()) {
-					if (p.next().isDeclaredDead()) 
-						p.remove();
-				}
-			}
-			
-			resetEntities(entities);
-
-			settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
-														UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
-			settlement.addUnitListener(settlementListener);
+											UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
 		}
+		else {
+			entities = settlements.stream()
+							.map(Settlement::getIndoorPeople)
+							.flatMap(Collection::stream)
+							.collect(Collectors.toList());
+			settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
+											UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
+		}
+
+		// Pick and attach to People
+		if (!isCheck) {
+			entities = entities.stream().filter(p -> !p.isDeclaredDead()).toList();
+		}
+			
+		resetEntities(entities);
+
+		// Listen to the settlements for new People
+		settlements.forEach(s -> s.addUnitListener(settlementListener));
 
 		return true;
 	}
@@ -280,7 +265,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	public void unitUpdate(UnitEvent event) {
 		UnitEventType eventType = event.getType();
 
-		Integer column = eventColumnMapping.get(eventType);
+		Integer column = EVENT_COLUMN_MAPPING.get(eventType);
 
 		if (column != null && column > -1) {
 			Person unit = (Person) event.getSource();
@@ -317,6 +302,10 @@ public class PersonTableModel extends UnitTableModel<Person> {
 
 			case NAME:
 				result = person.getName();
+			break;
+
+			case SETTLEMENT:
+				result = person.getAssociatedSettlement().getName();
 			break;
 
 			case ENERGY: {
@@ -446,9 +435,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 			missionListener = null;
 			mission = null;
 		} else {
-			settlement.removeUnitListener(settlementListener);
+			settlements.forEach(s -> s.removeUnitListener(settlementListener));
 			settlementListener = null;
-			settlement = null;
 		}
 	}
 
