@@ -61,15 +61,20 @@ public class MasterClock implements Serializable {
 	/** The Maximum number of pulses in the log .*/
 	private final int MAX_PULSE_LOG = 40;
 	
+	private final int PULSE_STEPS = 90;
+	
 	// Note: What is a reasonable jump in the observed real time to be allow for 
 	//       long simulation steps ? 15 seconds for debugging ? 
 	//       How should it trigger in the next pulse ? 
 	
 	/** The maximum allowable elapsed time [in ms] before action is taken. */
-	private final long MAX_ELAPSED = 30_000; // 30,000 ms is 30 secs
+	private final int MAX_ELAPSED = 30_000; // 30,000 ms is 30 secs
 
 	/** The maximum allowable sleep time [in ms] before action is taken. */
-	private final long MAX_SLEEP = 5_000;
+	private final int MAX_SLEEP = 5_000;
+	
+	/** The sleep time [in ms] for letting other CPU tasks to get done. */
+	private final int NEW_SLEEP = 200;
 	
 	/** The maximum pulse time allowed in one frame for a task phase. */
 	public static final double MAX_PULSE_WIDTH = .855 * 2;
@@ -78,8 +83,7 @@ public class MasterClock implements Serializable {
 //	public static final double MULTIPLIER = 3;
 	/** The number of milliseconds for each millisol.  */
 	private final double MILLISECONDS_PER_MILLISOL = MarsTime.SECONDS_PER_MILLISOL * 1000.0;
-	
-	private final int PULSE_STEPS = 90;
+
 	
 	// Transient members
 	/** Runnable flag. */
@@ -111,13 +115,13 @@ public class MasterClock implements Serializable {
 	private int lastIntMillisol = 0;
 	/** The maximum wait time between pulses in terms of milli-seconds. */
 	private int maxWaitTimeBetweenPulses;
-	
+	/** Duration of last sleep in milliseconds per pulse. */
+	public int sleepTime;
 	/** The time taken to execute one frame in the game loop [in ms]. */
-	private long executionTime;
+	private int executionTime;
+	
 	/** Next Clock Pulse ID. Start on 1 as all Unit are primed as 0 for the last. */
 	private long nextPulseId = 1;
-	/** Duration of last sleep in milliseconds per pulse. */
-	public long sleepTime;
 	/** Records the real milli time when a pulse is excited. */
 	private long[] pulseLog = new long[MAX_PULSE_LOG];
 	
@@ -1064,7 +1068,7 @@ public class MasterClock implements Serializable {
 	 *
 	 * @return
 	 */
-	public long getSleepTime() {
+	public int getSleepTime() {
 		return sleepTime;
 	}
 
@@ -1109,7 +1113,7 @@ public class MasterClock implements Serializable {
 	 *
 	 * @return
 	 */
-	public long getExecutionTime() {
+	public int getExecutionTime() {
 		return executionTime;
 	}
 
@@ -1222,29 +1226,32 @@ public class MasterClock implements Serializable {
 				if (addTime()) {
 					// Case 1: Normal Operation: acceptablePulse is true
 					// Gauge the total execution time
-					executionTime = System.currentTimeMillis() - startTime;
+					executionTime = (int) (System.currentTimeMillis() - startTime);
 					// Get the sleep time
 					calculateSleepTime();
 					
 					if (sleepTime < -MAX_SLEEP) {
 
-						logger.warning(30_000, "Sleep was " + sleepTime + " ms. Sleep for " 
-								+ maxWaitTimeBetweenPulses/2 + " ms to let other CPU tasks get done first.");
-						//
-						sleepTime = maxWaitTimeBetweenPulses/2;
+						logger.warning(30_000, "sleepTime was " + sleepTime + " ms. "
+								+ "Set leepTime to " + NEW_SLEEP 
+								+ " ms to allow other CPU tasks get done first.");
+						// Set the sleep time
+						sleepTime = NEW_SLEEP;
 					}
 				}
 				else if (!isPaused) {
-					// Case 2: Abnormal Operation: acceptablePulse is false
-					logger.warning(30_000, "The Time Pulse is not within acceptable range. Sleep for " 
-							+ maxWaitTimeBetweenPulses/2 + " ms to let other CPU tasks get done first.");
-					// 
-					sleepTime = maxWaitTimeBetweenPulses/2;
+					// Case 2: acceptablePulse is false
+					logger.warning(30_000, "The Time Pulse is not within acceptable range. "
+							+ "Set sleepTime to " + NEW_SLEEP 
+							+ " ms to allow other CPU tasks get done first.");
+					// Set the sleep time
+					sleepTime = NEW_SLEEP;
 				}
 				
 				// If still going then wait
 				if (keepRunning && !isPaused && sleepTime > 0) {
-					// Pause simulation to allow other threads to complete.
+					// Pause the execution of this thread 
+					// and allow other threads to complete.
 					try {
 						Thread.sleep(sleepTime);
 					} catch (InterruptedException e) {
@@ -1288,10 +1295,10 @@ public class MasterClock implements Serializable {
 			double millisecPerPulse = 1000 / Math.max(desiredPulsesPerSec, 1);
 	
 			// Update the sleep time that will allow room for the execution time
-			sleepTime = (long)millisecPerPulse - executionTime;
+			sleepTime = (int) millisecPerPulse - (int) executionTime;
 	
-			// if sleepTime is negative, will increase pulse width in checkPulseWidth() 
-			// temporarily to relieve the long execution time
+			// if sleepTime is negative continuously, will consider calling Thread.sleep() 
+			// to pause the execution of this thread and allow other threads to complete.
 	
 			// Do NOT delete the followings. Very useful for debugging.
 //			String msg = String.format("sleep=%d ms, desiredTR=%d, actualTR=%.2f, "
