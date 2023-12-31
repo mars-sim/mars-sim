@@ -20,7 +20,6 @@ import java.util.Set;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.MineralMap;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.tool.SimulationConstants;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.mapdata.map.Map;
@@ -30,8 +29,6 @@ import com.mars_sim.mapdata.map.MapLayer;
  * A map layer showing mineral concentrations.
  */
 public class MineralMapLayer implements MapLayer, SimulationConstants {
-
- 	private static final SimLogger logger = SimLogger.getLogger(MineralMapLayer.class.getName());
 
 	// Domain members
 	private boolean updateLayer;

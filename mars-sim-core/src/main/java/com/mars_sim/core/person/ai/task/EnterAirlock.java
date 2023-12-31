@@ -8,7 +8,6 @@ package com.mars_sim.core.person.ai.task;
 
 import java.util.Set;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.equipment.EquipmentOwner;
@@ -277,12 +276,10 @@ public class EnterAirlock extends Task {
 	/**
 	 * Requests the entry of the airlock.
 	 *
-	 * @param time
+	 * @param time Time elapsed parameter
 	 * @return
 	 */
 	private double requestIngress(double time) {
-
-		Unit unit = (Unit)airlock.getEntity();
 				
 		boolean canProceed = false;
 		
@@ -471,12 +468,7 @@ public class EnterAirlock extends Task {
 			addExperience(time);
 
 			setPhase(STEP_THRU_OUTER_DOOR);
-			
-//			AirlockMode airlockMode = airlock.getAirlockMode();
-//			
-//			if (airlockMode != AirlockMode.INGRESS
-//				&& (airlock.isEmpty() || airlockMode != AirlockMode.EGRESS))
-//					airlock.setAirlockMode(AirlockMode.INGRESS);
+
 			
 			if (airlock.isEmpty())
 				airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
@@ -496,8 +488,6 @@ public class EnterAirlock extends Task {
 	private double stepThruOuterDoor(double time) {
 		// Accumulate work for this task phase
 		accumulatedTime += time;
-
-		Unit unit = (Unit)airlock.getEntity();
 		
 		boolean canProceed = false;
 
@@ -802,9 +792,6 @@ public class EnterAirlock extends Task {
 			// 3. Unload any waste
 			suit.unloadWaste(housing);
 			
-			// 4. Print log
-//			logger.log((Unit)housing, person, Level.INFO, 4_000, "Just doffed " + suit.getName() + ".");
-			
 			// Add experience
 			addExperience(time);
 
@@ -1006,6 +993,7 @@ public class EnterAirlock extends Task {
 		return false;
 	}
 	
+	@Override
 	public void destroy() {
 		airlock = null;
 		super.destroy();

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.equipment.EquipmentOwner;
@@ -505,9 +504,7 @@ public class ExitAirlock extends Task {
 	 * @return the remaining time
 	 */
 	private double requestEgress(double time) {
-		
-		Unit unit = (Unit)airlock.getEntity();
-		
+				
 		// Accumulate work for this task phase
 		accumulatedTime += time;
 
@@ -515,13 +512,6 @@ public class ExitAirlock extends Task {
 		
 		logger.fine(person, 4_000,
 				"Requesting EVA egress in " + airlock.getEntityName() + ".");
-		
-		// If the airlock mode is ingress, will need to wait until its done
-//		if (!airlock.isEmpty() && airlock.getAirlockMode() == AirlockMode.INGRESS) {
-//			walkAway(person, NOT_IN_RIGHT_AIRLOCK_MODE 
-//					+ " Current task: " + person.getTaskDescription() + ".");
-//			return time;
-//		}
 		
 		// If a person is in a vehicle, not needed of checking for reservation
 		if (inSettlement && !airlock.addReservation(person.getIdentifier())) {
@@ -710,12 +700,6 @@ public class ExitAirlock extends Task {
 			addExperience(time);
 	
 			setPhase(STEP_THRU_INNER_DOOR);
-				
-//			AirlockMode airlockMode = airlock.getAirlockMode();
-//			
-//			if (airlockMode != AirlockMode.EGRESS
-//				&& (airlock.isEmpty() || airlockMode != AirlockMode.INGRESS))
-//					airlock.setAirlockMode(AirlockMode.EGRESS);
 			
 			if (airlock.isEmpty())
 				airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
@@ -1004,8 +988,6 @@ public class ExitAirlock extends Task {
 				// 3. Set the person as the owner
 				suit.setRegisteredOwner(person);
 							
-				// 4. Print log
-//				logger.log((Unit)airlock.getEntity(), person, Level.INFO, 4_000, "Just donned " + suit.getName() + ".");
 				// 5. Loads the resources into the EVA suit
 				if (suit.loadResources(housing) < 0.9D) {
 					logger.warning(suit, "Not fully loaded.");
