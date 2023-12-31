@@ -1177,7 +1177,7 @@ class AmountResourceGood extends Good {
 			String sideDish = p.getFavorite().getFavoriteSideDish();
 			mainMeal = getHotMeal(MealConfig.getMainDishList(), mainDish);
 			sideMeal = getHotMeal(MealConfig.getSideDishList(), sideDish);
-			logger.info(30_000, p + "  " + "  mainMeal: " + mainMeal + "  sideMeal: " + sideMeal);
+			logger.info(p, 30_000, "MainMeal: " + mainMeal + "  sideMeal: " + sideMeal);
 			if (mainMeal != null)
 				demand +=  computeIngredientDemand(owner, getID(), mainMeal.getIngredientList());
 			if (sideMeal != null)
@@ -1187,7 +1187,6 @@ class AmountResourceGood extends Good {
 		// Limit the demand between 0 and 100
 		demand =  Math.max(0, Math.min(100, demand));
 		
-//		logger.info(getAmountResource() + " fav meal demand: " + demand);
 		return demand;
 	}
 

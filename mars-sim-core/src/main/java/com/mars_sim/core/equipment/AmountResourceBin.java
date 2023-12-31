@@ -10,7 +10,7 @@ package com.mars_sim.core.equipment;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mars_sim.core.Entity;
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.resource.AmountResource;
 
 
@@ -23,8 +23,8 @@ public class AmountResourceBin extends BaseBin {
 
 	private Map<Integer, Bin> binMap = new HashMap<>();
 	
-	public AmountResourceBin(Entity entity, double cap) {
-		super(entity, cap);
+	public AmountResourceBin(Unit entity, double cap, BinType type) {
+		super(entity, cap, type);
 	}
 	
 	public Map<Integer, Bin> getBinMap() {

@@ -38,7 +38,7 @@ public class VehicleUnitWindow extends UnitWindow {
 	 */
 	public VehicleUnitWindow(MainDesktopPane desktop, Vehicle vehicle) {
 		// Use UnitWindow constructor
-		super(desktop, vehicle, vehicle.getAssociatedSettlement().getName() + " - " + vehicle.getNickName(), true);
+		super(desktop, vehicle, vehicle.getAssociatedSettlement().getName() + " - " + vehicle.getName(), true);
 		this.vehicle = vehicle;
 		
 		if (vehicle instanceof Crewable) {

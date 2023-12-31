@@ -734,9 +734,7 @@ public class CommanderWindow extends ToolWindow {
 			currentArea = farm.getDesignatedCropArea();
 		}
 		spinnerModel.setValue(currentArea);
-		
-		logger.info(settlement, bldg, "Current Growing Area per Crop (in SM): " + currentArea + ".");
-		
+				
 		areaSpinner = new JSpinner(spinnerModel);
 		spinnerPanel.add(areaSpinner, BorderLayout.CENTER);
 		spinnerPanel.setToolTipText("Change the growing area for each crop in a selected farm");
@@ -748,7 +746,7 @@ public class CommanderWindow extends ToolWindow {
 			if (!greenhouseBldgs.isEmpty()) {
 				for (Building b: greenhouseBldgs) {
 					b.getFarming().setDesignatedCropArea(newArea);
-					logger.info(settlement, b, newArea + " SM.");
+					logger.info(b, newArea + " SM.");
 				}
 			}
 		});

@@ -311,8 +311,7 @@ public class EVASuit extends Equipment
 			}
 
 			if (malfunctionManager.getOxygenFlowModifier() < 100D) {
-				logger.log(this, Level.WARNING, 30_000,
-						"Oxygen flow sensor malfunction.", null);
+				logger.warning(this, 30_000, "Oxygen flow sensor malfunction.");
 				return false;
 			}
 
@@ -708,9 +707,11 @@ public class EVASuit extends Equipment
 		return UnitType.EVA_SUIT;
 	}
 	
+	@Override
 	public void destroy() {
 		malfunctionManager = null;
 		microInventory = null;
+		super.destroy();
 	}
 
 }

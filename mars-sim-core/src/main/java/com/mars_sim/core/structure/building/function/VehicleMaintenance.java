@@ -160,7 +160,7 @@ public abstract class VehicleMaintenance extends Function {
 				double newFacing = getBuilding().getFacing();
 				flyer.setFlyerLocation(newLoc, newFacing);
 		
-				logger.fine(flyer, "Added to " + building.getNickName() + " in " + building.getSettlement() + ".");
+				logger.fine(flyer, "Added to " + building.getName() + " in " + building.getSettlement() + ".");
 				
 				return true;
 			}
@@ -210,7 +210,7 @@ public abstract class VehicleMaintenance extends Function {
 				double newFacing = getBuilding().getFacing();
 				vehicle.setParkedLocation(newLoc, newFacing);
 		
-				logger.fine(vehicle, "Added to " + building.getNickName() + " in " + building.getSettlement() + ".");
+				logger.fine(vehicle, "Added to " + building.getName() + " in " + building.getSettlement() + ".");
 				
 //				Settlement settlement = building.getSettlement();
 //
@@ -264,7 +264,7 @@ public abstract class VehicleMaintenance extends Function {
 			 
 			handleParking(vehicle);
 
-			logger.fine(vehicle, "Removed from " + building.getNickName() + " in " + building.getSettlement() + ".");
+			logger.fine(vehicle, "Removed from " + building.getName() + " in " + building.getSettlement() + ".");
 			
 			return true;
 		}
@@ -289,7 +289,7 @@ public abstract class VehicleMaintenance extends Function {
 			 
 			handleParking(flyer);
 
-			logger.fine(flyer, "Removed from " + building.getNickName() + " in " + building.getSettlement() + ".");
+			logger.fine(flyer, "Removed from " + building.getName() + " in " + building.getSettlement() + ".");
 			
 			return true;
 		}

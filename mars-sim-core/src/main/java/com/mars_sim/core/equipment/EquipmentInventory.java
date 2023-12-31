@@ -69,8 +69,8 @@ public class EquipmentInventory
 		//////////////////////////////////////////////
 		// Temporary Use only 
 		
-		Basket baskets = new Basket(owner, 10);
-		Crate crates = new Crate(owner, 30);
+		var baskets = BinFactory.findBinMap(owner, amountResourceBinSet, BinType.BASKET);
+		var crates = BinFactory.findBinMap(owner, amountResourceBinSet, BinType.CRATE);
 		
 		amountResourceBinSet.add(baskets);
 		amountResourceBinSet.add(crates);
@@ -263,54 +263,11 @@ public class EquipmentInventory
 
 	@Override
 	public boolean addBin(Bin bin) {
-		Set<AmountResourceBin> binSet = getAmountResourceBinSet();
+		var	binMap = BinFactory.findBinMap(owner, getAmountResourceBinSet(), bin.getBinType());
 		
-		AmountResourceBin binMap = null;
-		BinType binType = bin.getBinType();
-		boolean hasIt = false;
-		
-		for (AmountResourceBin arb : binSet) {
-			if (arb.getBinType() == bin.getBinType()) {
-				hasIt = true;
-				binMap = arb;
-			}
-		}
-		switch (binType) {
-		case CRATE:
-			if (!hasIt) {
-				// Create a bin map
-				binMap = new Crate(owner, BinFactory.getBinCapacity(binType));
-			}	
-			break;
-
-		case BASKET:
-			if (!hasIt) {
-				// Create a bin map
-				binMap = new Basket(owner, BinFactory.getBinCapacity(binType));
-			}	
-			break;
-
-		case POT:		
-			if (!hasIt) {
-				// Create a bin map
-				binMap = new Pot(owner, BinFactory.getBinCapacity(binType));
-			}	
-			break;
-			
-		default:
-			throw new IllegalStateException("Bin type '" + binType + "' could not be constructed.");
-		}
-		
-		if (!hasIt) {
-			// Set owner
-			binMap.setOwner(owner);
-			// Set bin type
-			binMap.setBinType(binType);			
-		}
-
 		binMap.addBin(bin);
 		
-		return hasIt;
+		return true;
 	}
 	
 	/**

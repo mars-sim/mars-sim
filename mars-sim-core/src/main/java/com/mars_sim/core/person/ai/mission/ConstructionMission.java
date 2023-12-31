@@ -439,15 +439,15 @@ public class ConstructionMission extends AbstractMission
 	 */
 	public void setupConstructionStage(ConstructionSite modSite, ConstructionStageInfo info) {
 		this.site = modSite;
-		logger.info(settlement, modSite, 5_000, "Stage Info: " + info.toString());
+		logger.info(modSite, 5_000, "Stage Info: " + info.toString());
 
 		if (site.hasUnfinishedStage()) {
 			stage = site.getCurrentConstructionStage();
-			logger.info(settlement, modSite, 5_000, "Still in the stage '" + stage + "'.");
+			logger.info(modSite, 5_000, "Still in the stage '" + stage + "'.");
 		}
 		else {
 			stage = new ConstructionStage(info, site);
-			logger.info(settlement, modSite, 5_000, "Starting a new construction stage for '" + stage + "'.");
+			logger.info(modSite, 5_000, "Starting a new construction stage for '" + stage + "'.");
 			site.addNewStage(stage);
 		}
 
@@ -623,7 +623,6 @@ public class ConstructionMission extends AbstractMission
 		// Need player to acknowledge the site location before proceeding
 		if (site.isSiteLocConfirmed()) {
 			setPhaseEnded(true);
-			logger.info(settlement, site, "Ending the 'Select Site' phase.");
 		}
 	}
 	
@@ -667,15 +666,15 @@ public class ConstructionMission extends AbstractMission
 	 * @param member the mission member performing the phase.
 	 */
 	private void prepareSitePhase(Worker member) {
-		logger.info(settlement, member, 60_000, "Preparing '" + site + "'.");
+		logger.info(member, 60_000, "Preparing '" + site.getName() + "'.");
 
 		if (!isMaterialReady(member)) {
-			logger.info(settlement, member, 60_000, "Materials not ready at " + site + ".");
+			logger.info(member, 60_000, "Materials not ready at " + site.getName() + ".");
 			return;
 		}
 	
 		if (!loadAvailableConstructionParts()) {
-			logger.info(settlement, member, 60_000, "Parts not ready at " + site + ".");
+			logger.info(member, 60_000, "Parts not ready at " + site.getName() + ".");
 			return;
 		}
 		
@@ -808,9 +807,9 @@ public class ConstructionMission extends AbstractMission
 		}
 		
 		if (canAssign)
-			logger.info(member.getAssociatedSettlement(), member, 30_000L, "Assigned to construct " + site + ".");
+			logger.info(member, 30_000L, "Assigned to construct " + site.getName() + ".");
 		else
-			logger.info(member.getAssociatedSettlement(), member, 30_000L, "Not ready to be assigned to construct " + site + ".");
+			logger.info(member, 30_000L, "Not ready to be assigned to construct " + site.getName() + ".");
 		
 		checkConstructionStageComplete();
 	}

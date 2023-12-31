@@ -1276,11 +1276,11 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 					// Store the meteorite fragment in the settlement
 					settlement.storeAmountResource(ResourceUtil.meteoriteID, floorArea * getBuildingManager().getDebrisMass());
 
-					logger.log(this, Level.INFO, 0, "Found " + Math.round(getBuildingManager().getDebrisMass() * 100.0)/100.0
-							+ " kg of meteorite fragments in " + getNickName() + ".");
+					logger.info(this, "Found " + Math.round(getBuildingManager().getDebrisMass() * 100.0)/100.0
+							+ " kg of meteorite fragments in " + getName() + ".");
 
 					if (pc.getStress() > 50)
-						logger.log(this, Level.WARNING, 0, victimNames + " was traumatized by the meteorite impact");
+						logger.warning(this, victimNames + " was traumatized by the meteorite impact");
 
 				} // check if this person happens to be inside the affected building
 				

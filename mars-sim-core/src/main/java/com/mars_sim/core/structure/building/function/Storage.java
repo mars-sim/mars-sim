@@ -270,7 +270,7 @@ public class Storage extends Function {
 					if (isRetrieving) {
 						rh.retrieveAmountResource(id, amount);
 					}
-					logger.log(rh.getHolder(), Level.WARNING, 30_000,
+					logger.warning(rh.getHolder(), 30_000,
 							"Ran out of "
 							+ ResourceUtil.findAmountResourceName(id) + "."
 							);
@@ -283,13 +283,13 @@ public class Storage extends Function {
 					result = true;
 				}
 			} catch (Exception e) {
-				logger.log(rh.getHolder(), Level.SEVERE, 10_000,
+				logger.severe(rh.getHolder(),10_000,
 						"Issues with retrieveAnResource(ar) on "
 						+ ResourceUtil.findAmountResourceName(id) + " : " + e.getMessage(), e);
 			}
 		} else {
 			result = false;
-			logger.log(rh.getHolder(), Level.SEVERE, 10_000,
+			logger.severe(rh.getHolder(), 10_000,
 					"Attempting to retrieve non-positive amount of "
 					+ ResourceUtil.findAmountResourceName(id));
 		}

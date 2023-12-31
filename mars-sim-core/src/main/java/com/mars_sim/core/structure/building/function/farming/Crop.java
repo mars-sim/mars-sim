@@ -8,7 +8,6 @@ package com.mars_sim.core.structure.building.function.farming;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.logging.Level;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.logging.Loggable;
@@ -266,7 +265,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 					building.getSettlement().retrieveItemResource(PETRI_DISH_ID, 1);
 				}
 				else
-					logger.log(building, this, Level.WARNING, 60_000, "No petri dish left for growing " + cropSpec.getName()
+					logger.warning(this, 60_000, "No petri dish left for growing " + cropSpec.getName()
 						+ " tissue-culture.");
 			}
 
@@ -274,8 +273,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 				// assume zero day incubation period if 100% tissue culture is available
 				phaseType = PhaseType.PLANTING;
 				currentPhaseWorkCompleted = 0;
-				logger.log(building, this, Level.INFO, 0, 
-						"Done growing its tissue-culture. Transferring plantflets to the field.");
+				logger.info(this, "Done growing its tissue-culture. Transferring plantflets to the field.");
 
 				// if it's growing mushroom
 				if (name.toLowerCase().contains(MUSHROOM)) {
@@ -286,7 +284,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 			else {
 				phaseType = PhaseType.INCUBATION;
 				currentPhaseWorkCompleted = 1000D * cropSpec.getPhase(phaseType).getWorkRequired() * (100D - tissuePercent) / 100D;
-				logger.log(building, this, Level.INFO, 0, "A work period of "
+				logger.info(this, "A work period of "
 								+ Math.round(currentPhaseWorkCompleted / 1000D * 10D) / 10D
 								+ " sols is needed to clone enough tissues before planting.");
 			}
@@ -341,7 +339,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 			s.retrieveItemResource(PETRI_DISH_ID, 1);
 		}
 		else
-			logger.log(building, this, Level.WARNING, 60_000, 
+			logger.warning(this, 60_000, 
 					"No petri dish left for isolating its tissues.");
 		// Require some dead matter for fungi to decompose
 		if (growingArea * .2 > MIN)
@@ -489,14 +487,14 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		if (percentageGrowth > 10D) {
 			// Check on the health of a >10% growing crop
 			if (health < .05) {
-				logger.log(building, this, Level.WARNING, 10_000, 
+				logger.warning(this, 10_000, 
 						"At " + Math.round(percentageGrowth * 10D)/10D 
 						+ " percent of growth, it died of very poor health (" + Math.round(health * 100D) / 1D + " %).");
 				// Add Crop Waste
 				double amt = percentageGrowth * remainingHarvest / 100D;
 				if (amt > 0) {
 					store(amt, CROP_WASTE_ID);
-					logger.log(building, this, Level.WARNING, 10_000, 
+					logger.warning(this, 10_000, 
 							amt + " kg crop waste generated.");
 				}
 				updatePhase(PhaseType.FINISHED);
@@ -507,7 +505,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 				// Seedling (<10% grown crop) is less resilient and more prone to environmental
 				// factors
 			if (health < .1) {
-				logger.log(building, this, Level.WARNING, 10_000, "Its seedlings at " 
+				logger.warning(this, 10_000, "Its seedlings at " 
 						+ Math.round(percentageGrowth * 10D)/10D 
 						+ " percent of growth had very poor health ("
 						+ Math.round(health * 100D) / 1D + " %) and didn't survive.");
@@ -515,7 +513,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 				double amt = percentageGrowth * remainingHarvest / 100D;
 				if (amt > 0) {
 					store(amt, CROP_WASTE_ID);
-					logger.log(building, this, Level.WARNING, 10_000, 
+					logger.warning(this, 10_000, 
 							amt + " kg crop waste generated.");
 				}
 				updatePhase(PhaseType.FINISHED);
@@ -610,7 +608,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 			if (currentPhaseWorkCompleted >= phaseWorkReqMillisols * 1.01) {
 				currentPhaseWorkCompleted = 0;
 				advancePhase();
-				logger.log(building, this, Level.FINE, 0, "Entered a new phase " + currentPhase.getPhaseType()
+				logger.fine(this, "Entered a new phase " + currentPhase.getPhaseType()
 						+ "   Phase Work Completed : " + Math.round(currentPhaseWorkCompleted * 10D) / 10D
 						+ "   Phase Work Required : " + Math.round(phaseWorkReqMillisols * 10D) / 10D);
 			}
@@ -641,7 +639,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 						else if (phaseType == PhaseType.HARVESTING)
 							phaseDescription = " during the final harvest.";
 
-						logger.log(building, this, Level.INFO, 4_000, 
+						logger.info(this, 4_000, 
 								"Harvested a total of "
 									+ Math.round(totalHarvest * 100.0) / 100.0 + " kg."
 									+ phaseDescription);
@@ -653,7 +651,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 						//  Check to see if a botany lab is available
 						if (worker instanceof Person && !farm.checkBotanyLab())
-							logger.log(building, worker, Level.WARNING, 0,
+							logger.warning(worker,
 									"Can't find an available lab bench to work on its tissue culture.");
 					}
 				}
@@ -688,7 +686,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 		// Safety check
 		if ((currentPhase.getPhaseType() == PhaseType.HARVESTING) && percentageGrowth > 115D)  {
-			logger.log(building, this, Level.FINE, 0, "At " + percentageGrowth
+			logger.fine(this, "At " + percentageGrowth
 					   + "% of growth, setting the phase to FINISHED.");
 			updatePhase(PhaseType.FINISHED);
 		}

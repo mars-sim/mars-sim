@@ -89,7 +89,7 @@ public class ManufacturePanel extends JPanel {
 
         if (showBuilding) {
         	// Prepare building name label.
-        	String buildingName = process.getWorkshop().getBuilding().getNickName();
+        	String buildingName = process.getWorkshop().getBuilding().getName();
         	JLabel buildingNameLabel = new JLabel(buildingName, JLabel.CENTER);
         	add(buildingNameLabel);
         }

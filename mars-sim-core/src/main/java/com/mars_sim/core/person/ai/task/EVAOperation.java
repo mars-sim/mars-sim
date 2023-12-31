@@ -344,10 +344,10 @@ public abstract class EVAOperation extends Task {
 			if (interiorObject != null && returnInsideLoc != null && !person.getPosition().isClose(returnInsideLoc)) {
 				String name = "";
 				if (interiorObject instanceof Building b) {
-					name = b.getNickName();
+					name = b.getName();
 				}
 				else if (interiorObject instanceof Vehicle v) {
-					name = v.getNickName();
+					name = v.getName();
 				}
 
 				logger.log(person, Level.FINE, 4_000,
@@ -581,19 +581,19 @@ public abstract class EVAOperation extends Task {
 
 			// Check if life support system in suit is working properly.
 			if (!suit.lifeSupportCheck()) {
-				logger.log(person, Level.WARNING, 20_000,
+				logger.warning(person, 20_000,
 						person.getTaskDescription() + " ended : " + suit.getName()
 								+ " failed the life support check.");
 				result = true;
 			}
 		} catch (Exception e) {
-			logger.log(person, Level.WARNING, 20_000,
+			logger.severe(person, 20_000,
 					person.getTaskDescription() + " ended : " + suit.getName() + " failed the system check.", e);
 		}
 
 		// Check if suit has any malfunctions.
 		if (suit.getMalfunctionManager().hasMalfunction()) {
-			logger.log(person, Level.WARNING, 20_000,
+			logger.warning(person, 20_000,
 					person.getTaskDescription() + "ended : " + suit.getName() + " has malfunction.");
 			result = true;
 		}

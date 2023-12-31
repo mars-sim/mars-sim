@@ -193,7 +193,7 @@ implements Serializable {
     	unitManager.addUnit(site);
 
 		settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_SITE_EVENT, site);
-		logger.info(site.getSettlement(), site, "Just created and registered in ConstructionManager.");
+		logger.info(site, "Just created and registered in ConstructionManager.");
 		
 		return site;
 	}

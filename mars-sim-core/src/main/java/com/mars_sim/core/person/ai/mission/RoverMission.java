@@ -357,7 +357,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 			// Embark from settlement
 			if (v.transfer(unitManager.getMarsSurface())) {
-				logger.info(settlement, v, 10_000L, "Just embarked from the settlement.");
+				logger.info(v, 10_000L, "Just embarked from the settlement.");
 				setPhaseEnded(true);
 			}
 			else {
@@ -372,7 +372,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		else {
 			// Gets a random location within rover.
 			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(v);
-			callMembersToMission((int)(DEPARTURE_DURATION - DEPARTURE_PREPARATION));
+			callMembersToMission((DEPARTURE_DURATION - DEPARTURE_PREPARATION));
 			
 			if (member instanceof Person person) {
 				// If person is not aboard the rover, board the rover and be ready to depart.
@@ -763,7 +763,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					// Note 2: consider inflatable medical tent for emergency transport of incapacitated personnel
 					logger.info(person,
 							 Msg.getString("RoverMission.log.emergencyEnterSettlement", person.getName(),
-									disembarkSettlement.getNickName())); //$NON-NLS-1$
+									disembarkSettlement.getName())); //$NON-NLS-1$
 
 					// Initiate an rescue operation
 					// Note: Gets a lead person to perform it and give him a rescue badge
@@ -771,7 +771,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 					logger.info(person, "Transported to ("
 							+ person.getPosition() + ") in "
-							+ person.getBuildingLocation().getNickName()); //$NON-NLS-1$
+							+ person.getBuildingLocation().getName()); //$NON-NLS-1$
 
 					// Note: how to force the person to receive some form of medical treatment ?
 			

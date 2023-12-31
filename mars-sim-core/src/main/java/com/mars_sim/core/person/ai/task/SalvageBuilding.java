@@ -201,7 +201,7 @@ public class SalvageBuilding extends EVAOperation {
         if (operatingLUV) {
             // Driving skill modification.
             int skill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.PILOTING);
-            checkForAccident(luv, time, BASE_LUV_ACCIDENT_CHANCE, skill, luv.getNickName());
+            checkForAccident(luv, time, BASE_LUV_ACCIDENT_CHANCE, skill, luv.getName());
         }
     }
 

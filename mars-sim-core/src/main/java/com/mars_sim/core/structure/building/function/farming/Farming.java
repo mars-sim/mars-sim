@@ -923,7 +923,7 @@ public class Farming extends Function {
 			cropHistory.put(crop.getIdentifier(), crop.getCropName());
 			building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
 	
-			logger.log(building, worker, Level.INFO, 3_000, "Planted a new crop of " + crop.getCropName() + ".");
+			logger.info(worker, 3_000, "Planted a new crop of " + crop.getCropName() + ".");
 			numCrops2Plant--;
 		}
 	}

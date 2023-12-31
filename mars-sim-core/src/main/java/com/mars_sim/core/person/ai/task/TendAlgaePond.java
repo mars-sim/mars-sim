@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.person.ai.task;
 
-import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -241,8 +240,8 @@ public class TendAlgaePond extends Task {
 		
 		if (harvestingTime > MAX_HARVESTING) {
 			
-			logger.log(building, worker, Level.INFO, 0, "Total kg algae harvested: " 
-					+ Math.round(totalHarvested * 100.0)/100.0 , null);
+			logger.info(worker, "Total kg algae harvested: " 
+					+ Math.round(totalHarvested * 100.0)/100.0 );
 			endTask();
 			
 			// Calculate used time 
@@ -358,7 +357,7 @@ public class TendAlgaePond extends Task {
 	 */
 	private void printDescription(String text) {
 		setDescription(text);
-		logger.log(pond.getBuilding(), worker, Level.FINE, 30_000L, text + ".");
+		logger.fine(worker, 30_000L, text + ".");
 	}
 	
 	/**
