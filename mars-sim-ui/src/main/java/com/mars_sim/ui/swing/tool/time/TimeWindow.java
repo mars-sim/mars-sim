@@ -69,7 +69,7 @@ public class TimeWindow extends ToolWindow {
 	public final String WIKI_URL = Msg.getString("TimeWindow.calendar.url"); //$NON-NLS-1$
 	public final String WIKI_TEXT = Msg.getString("TimeWindow.calendar.title"); //$NON-NLS-1$	
 	
-    private final DateTimeFormatter DATE_TIME_FORMATTER = DateCommand.DATE_TIME_FORMATTER;
+//    private final DateTimeFormatter DATE_TIME_FORMATTER = DateCommand.DATE_TIME_FORMATTER;
 	
 	/** the execution time label string */
 	private final String EXEC = "Execution";
@@ -163,20 +163,47 @@ public class TimeWindow extends ToolWindow {
 		mainPane.setBorder(new MarsPanelBorder());
 		setContentPane(mainPane);
 
+//		// Create Earth time panel
+//		JPanel earthTimePane = new JPanel(new BorderLayout());
+//		mainPane.add(earthTimePane, BorderLayout.NORTH);
+//		
+//		// Create Earth time label
+//		earthTimeLabel = new JLabel();
+//		earthTimeLabel.setHorizontalAlignment(JLabel.CENTER);
+//		earthTimeLabel.setVerticalAlignment(JLabel.CENTER);
+////		earthTimeLabel.setFont(arialFont);
+////		earthTimeLabel.setForeground(new Color(0, 69, 165));
+//		earthTimeLabel.setText("");
+//		earthTimeLabel.setToolTipText("Earth Timestamp in Greenwich Mean Time (GMT)");
+//		earthTimePane.add(earthTimeLabel, BorderLayout.SOUTH);
+//		earthTimePane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.earthTime")));
+
 		// Create Martian time panel
 		JPanel martianTimePane = new JPanel(new BorderLayout());
 		mainPane.add(martianTimePane, BorderLayout.NORTH);
-
+	
 		// Create Martian time header label
 		martianTimeLabel = new JLabel();
 		martianTimeLabel.setHorizontalAlignment(JLabel.CENTER);
 		martianTimeLabel.setVerticalAlignment(JLabel.CENTER);
-		martianTimeLabel.setFont(arialFont);
+//		martianTimeLabel.setFont(arialFont);
 //		martianTimeLabel.setForeground(new Color(135, 100, 39));
+		martianTimeLabel.setText("");
 		martianTimeLabel.setToolTipText("Mars Timestamp in Universal Mean Time (UMT)");
-		martianTimePane.add(martianTimeLabel, BorderLayout.SOUTH);
+		martianTimePane.add(martianTimeLabel, BorderLayout.CENTER);
 		martianTimePane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianTime")));
 
+		Icon wikiIcon = ImageLoader.getIconByName(GuideWindow.WIKI_ICON);
+		JButton wikiButton = new JButton(wikiIcon);
+		wikiButton.setAlignmentX(.5f);
+		wikiButton.setAlignmentY(.5f);
+		wikiButton.setToolTipText("Open Timekeeping Wiki in GitHub");
+		wikiButton.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
+
+		JPanel linkPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
+		linkPane.add(wikiButton, SwingConstants.CENTER);
+		martianTimePane.add(linkPane, BorderLayout.EAST);
+		
 		// Create Martian month panel
 		JPanel martianMonthPane = new JPanel(new BorderLayout());//new FlowLayout(FlowLayout.CENTER));
 		martianMonthPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianMonth")));
@@ -198,9 +225,9 @@ public class TimeWindow extends ToolWindow {
 		JPanel calendarMonthPane = new JPanel(new BorderLayout());
 		calendarMonthPane.setAlignmentX(SwingConstants.CENTER);
 		calendarMonthPane.setAlignmentY(SwingConstants.CENTER);
-		calendarMonthPane.setPreferredSize(new Dimension(MarsCalendarDisplay.BOX_WIDTH, MarsCalendarDisplay.BOX_LENGTH + 45));
-		calendarMonthPane.setMaximumSize(new Dimension(MarsCalendarDisplay.BOX_WIDTH, MarsCalendarDisplay.BOX_LENGTH + 45));
-		calendarMonthPane.setMinimumSize(new Dimension(MarsCalendarDisplay.BOX_WIDTH, MarsCalendarDisplay.BOX_LENGTH + 45));
+//		calendarMonthPane.setPreferredSize(new Dimension(MarsCalendarDisplay.BOX_WIDTH, MarsCalendarDisplay.BOX_LENGTH + 5));
+//		calendarMonthPane.setMaximumSize(new Dimension(MarsCalendarDisplay.BOX_WIDTH, MarsCalendarDisplay.BOX_LENGTH + 5));
+//		calendarMonthPane.setMinimumSize(new Dimension(MarsCalendarDisplay.BOX_WIDTH, MarsCalendarDisplay.BOX_LENGTH + 5));
 		martianMonthPane.add(calendarMonthPane, BorderLayout.CENTER);
 		
 		JPanel innerCalendarPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
@@ -211,17 +238,6 @@ public class TimeWindow extends ToolWindow {
 		calendarDisplay = new MarsCalendarDisplay(marsTime, desktop);
 		innerCalendarPane.add(calendarDisplay);
 		calendarMonthPane.add(innerCalendarPane, BorderLayout.CENTER);
-
-		Icon wikiIcon = ImageLoader.getIconByName(GuideWindow.WIKI_ICON);
-		JButton wikiButton = new JButton(wikiIcon);
-		wikiButton.setAlignmentX(.5f);
-		wikiButton.setAlignmentY(.5f);
-		wikiButton.setToolTipText("Open Timekeeping Wiki in GitHub");
-		wikiButton.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
-
-		JPanel linkPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
-		linkPane.add(wikiButton, SwingConstants.CENTER);
-		martianMonthPane.add(linkPane, BorderLayout.SOUTH);
 		
 		JPanel seasonPane = new JPanel(new BorderLayout());
 		mainPane.add(seasonPane, BorderLayout.SOUTH);
@@ -253,21 +269,7 @@ public class TimeWindow extends ToolWindow {
 		lonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.areocentricLon"), "", null);
 		lonLabel.setToolTipText("The Areocentric Longitude (L_s) of Mars with respect to the Sun");
 		
-		// Create Earth time panel
-		JPanel earthTimePane = new JPanel(new BorderLayout());
-		seasonPane.add(earthTimePane, BorderLayout.CENTER);
-
-		// Create Earth time label
-		earthTimeLabel = new JLabel();
-		earthTimeLabel.setHorizontalAlignment(JLabel.CENTER);
-		earthTimeLabel.setVerticalAlignment(JLabel.CENTER);
-		earthTimeLabel.setFont(arialFont);
-//		earthTimeLabel.setForeground(new Color(0, 69, 165));
-		earthTimeLabel.setText("");
-		earthTimeLabel.setToolTipText("Earth Timestamp in Greenwich Mean Time (GMT)");
-		earthTimePane.add(earthTimeLabel, BorderLayout.SOUTH);
-		earthTimePane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.earthTime")));
-
+		
 		JPanel southPane = new JPanel(new BorderLayout());
 		seasonPane.add(southPane, BorderLayout.SOUTH);
 
@@ -491,8 +493,8 @@ public class TimeWindow extends ToolWindow {
 		String ts = mTime.getDateTimeStamp() + " " + MarsTimeFormat.getSolOfWeekName(mTime) + UMT;
 		martianTimeLabel.setText(ts);
 
-		ts = mc.getEarthTime().format(DATE_TIME_FORMATTER);
-		earthTimeLabel.setText(ts);
+//		ts = mc.getEarthTime().format(DATE_TIME_FORMATTER);
+//		earthTimeLabel.setText(ts);
 
 		// Update average TPS label
 		double ave = mc.getAveragePulsesPerSecond();

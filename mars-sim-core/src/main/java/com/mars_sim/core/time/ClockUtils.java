@@ -37,7 +37,7 @@ public class ClockUtils implements Serializable {
 	 * @return a date time string
 	 */
 	public static String getRTCString(double tr) {
-		double ratio = Math.round(tr * 100.0)/100.0;
+		double ratio = Math.round(tr * 10.0)/10.0;
 		
 		if (mapping.containsKey(ratio)) {
 			return mapping.get(ratio);
@@ -59,7 +59,7 @@ public class ClockUtils implements Serializable {
 			b.append(ZERO_MINUTES);
 		}
 
-		b.append(String.format("%.2f", secs) + SECONDS)
+		b.append(String.format("%.1f", secs) + SECONDS)
 			.append(SIM_TIME);
 		
 		String s = b.toString();

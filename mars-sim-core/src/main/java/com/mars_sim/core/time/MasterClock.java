@@ -47,7 +47,7 @@ public class MasterClock implements Serializable {
 	public static final int MID_SPEED = 8;
 	
 	/** The CPU modifier for adjust the ref pulse width. */
-	public static final int CPU_MODIFIER = 12;
+	public static final int CPU_MODIFIER = 2;
 
 	// 1x, 2x, 4x, 8x, 16x, 32x, 64x, 128x, 256x 
 	public static final double MID_TIME_RATIO = (int)Math.pow(2, MID_SPEED); 
@@ -74,10 +74,10 @@ public class MasterClock implements Serializable {
 	private final int MAX_SLEEP = 5_000;
 	
 	/** The sleep time [in ms] for letting other CPU tasks to get done. */
-	private final int NEW_SLEEP = 200;
+	private final int NEW_SLEEP = 100;
 	
 	/** The maximum pulse time allowed in one frame for a task phase. */
-	public static final double MAX_PULSE_WIDTH = .855 * 2;
+	public static final double MAX_PULSE_WIDTH = .855 * 3;
 	
 	/** The multiplier for reducing the width of a pulse. */
 //	public static final double MULTIPLIER = 3;
@@ -709,7 +709,7 @@ public class MasterClock implements Serializable {
 			
 		// Update the pulse time for use in tasks
 		double oldPulse = Task.getStandardPulseTime();
-		double newPulse = Math.max(.25 * Math.min(nextPulse, maxMilliSolPerPulse), minMilliSolPerPulse);
+		double newPulse = Math.max(Math.min(nextPulse, maxMilliSolPerPulse), minMilliSolPerPulse);
 		if (newPulse > MAX_PULSE_WIDTH) {
 			newPulse = MAX_PULSE_WIDTH;
 		}
@@ -1230,18 +1230,21 @@ public class MasterClock implements Serializable {
 					// Get the sleep time
 					calculateSleepTime();
 					
-					if (sleepTime < -MAX_SLEEP) {
+					if (sleepTime < -MAX_SLEEP && getAveragePulsesPerSecond() < 3) {
 
-						logger.warning(30_000, "sleepTime was " + sleepTime + " ms. "
-								+ "Set leepTime to " + NEW_SLEEP 
-								+ " ms to allow other CPU tasks get done first.");
+						logger.warning(30_000, "sleepTime: " + sleepTime + " ms.  "
+								+ "executionTime: " + executionTime
+								+ "  optMilliSolPerPulse: " + Math.round(optMilliSolPerPulse * 1000.0)/1000.0
+								+ "  ave pulse: " + getAveragePulsesPerSecond());
+//								+ "  Set sleepTime to " + NEW_SLEEP 
+//								+ " ms to allow other CPU tasks get done first.");
 						// Set the sleep time
 						sleepTime = NEW_SLEEP;
 					}
 				}
 				else if (!isPaused) {
 					// Case 2: acceptablePulse is false
-					logger.warning(30_000, "The Time Pulse is not within acceptable range. "
+					logger.warning(30_000, "Time Pulse not within range. "
 							+ "Set sleepTime to " + NEW_SLEEP 
 							+ " ms to allow other CPU tasks get done first.");
 					// Set the sleep time
@@ -1294,8 +1297,14 @@ public class MasterClock implements Serializable {
 			// // Limit the desired pulses to be at least 1
 			double millisecPerPulse = 1000 / Math.max(desiredPulsesPerSec, 1);
 	
+			int executionMod = executionTime;
+			if (executionMod > 1000) {
+				// Future: need to debug why in some cases executionTime is higher than 1000 ms
+				executionMod = 1000;
+			}
+			
 			// Update the sleep time that will allow room for the execution time
-			sleepTime = (int) millisecPerPulse - (int) executionTime;
+			sleepTime = (int) millisecPerPulse - executionMod;
 	
 			// if sleepTime is negative continuously, will consider calling Thread.sleep() 
 			// to pause the execution of this thread and allow other threads to complete.
