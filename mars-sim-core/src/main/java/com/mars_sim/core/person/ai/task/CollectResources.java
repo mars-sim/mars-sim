@@ -7,8 +7,6 @@
 
 package com.mars_sim.core.person.ai.task;
 
-import java.util.logging.Level;
-
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.EVASuit;
@@ -105,8 +103,8 @@ public class CollectResources extends EVAOperation {
 
 			// If container is not available, end task.
 			if (!hasIt) {
-				logger.log(person, Level.WARNING, 5000,
-						"Unable to find containers to collect resources.", null);
+				logger.warning(person, 5000,
+						"Unable to find containers to collect resources.");
 				endTask();
 			}
 		}

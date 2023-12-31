@@ -113,7 +113,6 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 				point = Coordinates.computeDeltaPixels(mapCenterCache, mapCenter, Map.MAP_BOX_HEIGHT / 2.0);
 				deltaX = (int)point.getX();
 				deltaY = (int)point.getY();
-				logger.info(10_000L, "deltaX: " + deltaX + "   deltaY: " + deltaY);
 			}
 			
 			mapTypeCache = mapType;

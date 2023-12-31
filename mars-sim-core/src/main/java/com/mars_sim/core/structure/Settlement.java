@@ -134,7 +134,6 @@ public class Settlement extends Structure implements Temporal,
 	public static final int MAX_SOLS_DAILY_OUTPUT = 14;
 	public static final int SUPPLY_DEMAND_REFRESH = 7;
 	private static final int RESOURCE_UPDATE_FREQ = 30;
-	private static final int CHECK_WATER_RATION = 60;
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
 	public static final int NUM_CRITICAL_RESOURCES = 10;
 	private static final int RESOURCE_STAT_SOLS = 12;
@@ -729,9 +728,8 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public void endAllIndoorTasks() {
 		for (Person p : getIndoorPeople()) {
-			logger.log(this, p, Level.INFO, 4_000,
-						"Ended the current indoor task at "
-						+  p.getPosition() + ".", null);
+			logger.info(p, 4_000, "Ended the current indoor task at "
+						+  p.getPosition() + ".");
 			p.getMind().getTaskManager().clearAllTasks("Stop indoor tasks");
 		}
 	}

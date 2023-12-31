@@ -199,7 +199,7 @@ public class Malfunction implements Serializable {
 			double workTime = effort.getValue().getWorkTime();
 			double actualEffort = computeWorkTime(workTime);
 			if (actualEffort > (2 * Double.MIN_VALUE)) {
-				logger.info(10_000, name + ". " + type.toString() + " repair triggered. Estimated work time: "
+				logger.info(owner.getEntity(), 10_000, name + ". " + type.toString() + " repair triggered. Estimated work time: "
 								+ Math.round(actualEffort * 10.0)/10.0 + " millisols.");
 				work.put(type, new RepairWork(actualEffort, effort.getValue().getDesiredWorkers()));
 			}
@@ -217,10 +217,7 @@ public class Malfunction implements Serializable {
 	 */
 	public boolean hasWorkType(MalfunctionRepairWork type) {
 		Map<MalfunctionRepairWork, EffortSpec> workEffort = definition.getRepairEffort();
-		if (workEffort.keySet().contains(type))
-			return true;
-		
-		return false;
+		return workEffort.keySet().contains(type);
 	}
 	
 	/**
@@ -480,7 +477,7 @@ public class Malfunction implements Serializable {
 			// if this malfunction has repair work
 			if (!w.isCompleted()) {
 				if ((w.workCompleted == 0) && (time > 0D)) {
-					logger.info(10_000, name + " - " + workType.toString() + " repair work initiated by " + repairer + ".");
+					logger.info(owner.getEntity(), 10_000, name + " - " + workType.getName() + " repair work initiated by " + repairer + ".");
 				}
 
 				// How much can be used
@@ -519,7 +516,7 @@ public class Malfunction implements Serializable {
 	public void leaveWork(MalfunctionRepairWork required, String name) {
 		RepairWork w = getWorkType(required);
 		if (w != null && w.leaveWork(name) && !w.isCompleted()) {
-			logger.info(10_000, "Repairer " + name + " leaving the scene.");
+			logger.info(owner.getEntity(), 10_000, "Repairer " + name + " leaving the scene.");
 		}
 	}
 

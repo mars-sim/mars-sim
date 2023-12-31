@@ -59,8 +59,8 @@ public class EVASuitUtil {
 //						+ " to " + (Unit)housing + ".");
 			}
 			else {
-				logger.log((Unit)housing, person, Level.WARNING, 4_000,
-						"Could not transfer " + suit + " from " + person + " to " + (Unit)housing + ".");
+				logger.warning(person, 4_000,
+						"Could not transfer " + suit + " from " + person + " to " + ((Unit)housing).getName() + ".");
 			}
 		}
 		
@@ -145,7 +145,7 @@ public class EVASuitUtil {
 				hasEnoughResources = hasEnoughResourcesForSuit(owner, suit);
 
 			} catch (Exception ex) {
-				logger.log(p, Level.SEVERE, 50_000,
+				logger.severe(p, 50_000,
 						"Could not find enough resources for " + suit.getName() + ".", ex);
 			}
 			

@@ -588,14 +588,14 @@ public class PhysicalCondition implements Serializable {
 		if (time > 0) {
 			try {
 				if (lackOxygen(support, currentO2Consumption * (time / 1000D)))
-					logger.log(person, Level.SEVERE, 60_000, "Reported lack of oxygen.");
+					logger.severe(person, 60_000, "Reported lack of oxygen.");
 				if (badAirPressure(support, minAirPressure))
-					logger.log(person, Level.SEVERE, 60_000, "Reported non-optimal air pressure.");
+					logger.severe(person, 60_000, "Reported non-optimal air pressure.");
 				if (badTemperature(support, minTemperature, maxTemperature))
-					logger.log(person, Level.SEVERE, 60_000, "Reported non-optimal temperature.");
+					logger.severe(person, 60_000, "Reported non-optimal temperature.");
 
 			} catch (Exception e) {
-				logger.log(person, Level.SEVERE, 60_000, "Reported anomaly in the life support system: ", e);
+				logger.severe(person, 60_000, "Reported anomaly in the life support system: ", e);
 			}
 		}
 	}

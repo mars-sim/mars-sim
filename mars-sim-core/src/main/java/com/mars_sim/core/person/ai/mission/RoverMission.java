@@ -357,7 +357,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 			// Embark from settlement
 			if (v.transfer(unitManager.getMarsSurface())) {
-				logger.info(settlement, v, 10_000L, "Just embarked from the settlement.");
+				logger.info(v, 10_000L, "Just embarked from the settlement.");
 				setPhaseEnded(true);
 			}
 			else {
@@ -372,7 +372,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		else {
 			// Gets a random location within rover.
 			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(v);
-			callMembersToMission((int)(DEPARTURE_DURATION - DEPARTURE_PREPARATION));
+			callMembersToMission((DEPARTURE_DURATION - DEPARTURE_PREPARATION));
 			
 			if (member instanceof Person person) {
 				// If person is not aboard the rover, board the rover and be ready to depart.

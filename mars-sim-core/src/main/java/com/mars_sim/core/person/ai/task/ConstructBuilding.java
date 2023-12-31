@@ -274,7 +274,7 @@ public class ConstructBuilding extends EVAOperation {
 		if (person != null
 			&& (stage.isComplete() || !availableWork)) {
 
-			logger.info(site, person, "cumulativeWorkTime: " + Math.round(cumulativeWorkTime * 10.0)/10.0);
+			logger.info(person, site.getName() + " cumulativeWorkTime: " + Math.round(cumulativeWorkTime * 10.0)/10.0);
 			
 			// End operating light utility vehicle.
 			if (luv != null
