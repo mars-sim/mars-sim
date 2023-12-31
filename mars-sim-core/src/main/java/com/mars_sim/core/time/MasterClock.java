@@ -47,7 +47,7 @@ public class MasterClock implements Serializable {
 	public static final int MID_SPEED = 8;
 	
 	/** The CPU modifier for adjust the ref pulse width. */
-	public static final int CPU_MODIFIER = 2;
+	public static final int CPU_MODIFIER = 4;
 
 	// 1x, 2x, 4x, 8x, 16x, 32x, 64x, 128x, 256x 
 	public static final double MID_TIME_RATIO = (int)Math.pow(2, MID_SPEED); 
