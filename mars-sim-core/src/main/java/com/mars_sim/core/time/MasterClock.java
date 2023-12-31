@@ -45,6 +45,9 @@ public class MasterClock implements Serializable {
 	public static final int HIGH_SPEED = 14;
 	/** The mid speed setting. */
 	public static final int MID_SPEED = 8;
+	
+	/** The CPU modifier for adjust the ref pulse width. */
+	public static final int CPU_MODIFIER = 4;
 
 	// 1x, 2x, 4x, 8x, 16x, 32x, 64x, 128x, 256x 
 	public static final double MID_TIME_RATIO = (int)Math.pow(2, MID_SPEED); 
@@ -56,24 +59,31 @@ public class MasterClock implements Serializable {
 							* Math.pow(1.25, MAX_SPEED - HIGH_SPEED);
 	
 	/** The Maximum number of pulses in the log .*/
-	private final int MAX_PULSE_LOG = 20;
+	private final int MAX_PULSE_LOG = 40;
+	
+	private final int PULSE_STEPS = 90;
 	
 	// Note: What is a reasonable jump in the observed real time to be allow for 
 	//       long simulation steps ? 15 seconds for debugging ? 
 	//       How should it trigger in the next pulse ? 
 	
 	/** The maximum allowable elapsed time [in ms] before action is taken. */
-	private final long MAX_ELAPSED = 30_000;
+	private final int MAX_ELAPSED = 30_000; // 30,000 ms is 30 secs
 
+	/** The maximum allowable sleep time [in ms] before action is taken. */
+	private final int MAX_SLEEP = 5_000;
+	
+	/** The sleep time [in ms] for letting other CPU tasks to get done. */
+	private final int NEW_SLEEP = 100;
+	
 	/** The maximum pulse time allowed in one frame for a task phase. */
-	public static final double MAX_PULSE_WIDTH = .855 * 2;
+	public static final double MAX_PULSE_WIDTH = .855 * 3;
 	
 	/** The multiplier for reducing the width of a pulse. */
 //	public static final double MULTIPLIER = 3;
 	/** The number of milliseconds for each millisol.  */
 	private final double MILLISECONDS_PER_MILLISOL = MarsTime.SECONDS_PER_MILLISOL * 1000.0;
-	
-	private final int PULSE_STEPS = 90;
+
 	
 	// Transient members
 	/** Runnable flag. */
@@ -105,13 +115,13 @@ public class MasterClock implements Serializable {
 	private int lastIntMillisol = 0;
 	/** The maximum wait time between pulses in terms of milli-seconds. */
 	private int maxWaitTimeBetweenPulses;
-	
+	/** Duration of last sleep in milliseconds per pulse. */
+	public int sleepTime;
 	/** The time taken to execute one frame in the game loop [in ms]. */
-	private long executionTime;
+	private int executionTime;
+	
 	/** Next Clock Pulse ID. Start on 1 as all Unit are primed as 0 for the last. */
 	private long nextPulseId = 1;
-	/** Duration of last sleep. */
-	public long sleepTime;
 	/** Records the real milli time when a pulse is excited. */
 	private long[] pulseLog = new long[MAX_PULSE_LOG];
 	
@@ -248,7 +258,7 @@ public class MasterClock implements Serializable {
 	public void computeReferencePulse() {		
 		// Re-evaluate the optimal width of a pulse
 		referencePulse = minMilliSolPerPulse 
-				+ ((maxMilliSolPerPulse / cpuFactor / 18 - minMilliSolPerPulse) 
+				+ ((maxMilliSolPerPulse / cpuFactor / CPU_MODIFIER - minMilliSolPerPulse) 
 						* Math.pow(desiredTR, 1.2) / HIGH_TIME_RATIO);
 
 		optMilliSolPerPulse = referencePulse;
@@ -494,7 +504,7 @@ public class MasterClock implements Serializable {
 				nextPulseTime = optMilliSolPerPulse;
 				// Reset realElaspedMilliSec back to its default time ratio
 				realElapsedMillisec = (long) (nextPulseTime * MILLISECONDS_PER_MILLISOL 
-						/ (int)simulationConfig.getTimeRatio());
+						/ simulationConfig.getTimeRatio());
 				// Reset the elapsed clock to ignore this pulse
 				logger.warning(10_000, "Elapsed real time is " + realElapsedMillisec 
 						+ " ms, longer than the max time " + MAX_ELAPSED + " ms.");				
@@ -532,7 +542,7 @@ public class MasterClock implements Serializable {
 				nextPulseDeviation = adjustPulseWidth();
 			}
 		
-			if (nextPulseTime > 0) {
+			if (nextPulseTime > -2.0 ||  nextPulseTime < 2.0) {
 				acceptablePulse = true;
 			}
 			
@@ -568,6 +578,7 @@ public class MasterClock implements Serializable {
 				else {
 					// NOTE: when resuming from power saving, timePulse becomes zero
 					logger.config("The clockListenerExecutor has died. Restarting...");
+					
 					resetClockListeners();
 				}
 			}
@@ -590,7 +601,7 @@ public class MasterClock implements Serializable {
 	 * Adjusts the optimal pulse and the next pulse time. Allows it to 
 	 * gradually catch up with the reference pulse.
 	 * 
-	 * @return deviation of the next pulse width from the ref pulse in ratio
+	 * @return deviation of the next pulse width from the optimal pulse in ratio
 	 */
 	private double adjustPulseWidth() {
 		
@@ -698,7 +709,7 @@ public class MasterClock implements Serializable {
 			
 		// Update the pulse time for use in tasks
 		double oldPulse = Task.getStandardPulseTime();
-		double newPulse = Math.max(.25 * Math.min(nextPulse, maxMilliSolPerPulse), minMilliSolPerPulse);
+		double newPulse = Math.max(Math.min(nextPulse, maxMilliSolPerPulse), minMilliSolPerPulse);
 		if (newPulse > MAX_PULSE_WIDTH) {
 			newPulse = MAX_PULSE_WIDTH;
 		}
@@ -708,7 +719,7 @@ public class MasterClock implements Serializable {
 		}
 
 		// Returns the deviation ratio
-		return (nextPulse - refPulse) / refPulse;
+		return (nextPulse - optPulse) / optPulse;
 	}
 	
 	/**
@@ -1057,7 +1068,7 @@ public class MasterClock implements Serializable {
 	 *
 	 * @return
 	 */
-	public long getSleepTime() {
+	public int getSleepTime() {
 		return sleepTime;
 	}
 
@@ -1102,7 +1113,7 @@ public class MasterClock implements Serializable {
 	 *
 	 * @return
 	 */
-	public long getExecutionTime() {
+	public int getExecutionTime() {
 		return executionTime;
 	}
 
@@ -1203,49 +1214,59 @@ public class MasterClock implements Serializable {
 			// Keep running until told not to by calling stop()
 			keepRunning = true;
 
-			if (!isPaused) {
+			if (isPaused) {
+				keepRunning = false;
+			}
 
-				while (keepRunning) {
-					long startTime = System.currentTimeMillis();
+			while (keepRunning) {
+				
+				long startTime = System.currentTimeMillis();
 
-					// Call addTime() to increment time in EarthClock and MarsClock
-					if (addTime()) {
-
-						// If a can was applied then potentially adjust the sleep
-						executionTime = System.currentTimeMillis() - startTime;
-						// Get the sleep time
-						calculateSleepTime();	
-					}
+				// Call addTime() to increment time in EarthClock and MarsClock
+				if (addTime()) {
+					// Case 1: Normal Operation: acceptablePulse is true
+					// Gauge the total execution time
+					executionTime = (int) (System.currentTimeMillis() - startTime);
+					// Get the sleep time
+					calculateSleepTime();
 					
-					else {
-						// If on pause or acceptablePulse is false
-						sleepTime = maxWaitTimeBetweenPulses;
-					}
+					if (sleepTime < -MAX_SLEEP && getAveragePulsesPerSecond() < 3) {
 
-					// If still going then wait
-					if (keepRunning) {
-						if (sleepTime > MAX_ELAPSED) {
-							// This should not happen
-							logger.warning("Sleep too long: clipped to " + maxWaitTimeBetweenPulses);
-							sleepTime = maxWaitTimeBetweenPulses;
-						}
-						if (sleepTime > 0) {
-							// Pause simulation to allow other threads to complete.
-							try {
-								Thread.sleep(sleepTime);
-							} catch (InterruptedException e) {
-								Thread.currentThread().interrupt();
-							}
-						}
+						logger.warning(30_000, "sleepTime: " + sleepTime + " ms.  "
+								+ "executionTime: " + executionTime
+								+ "  optMilliSolPerPulse: " + Math.round(optMilliSolPerPulse * 1000.0)/1000.0
+								+ "  ave pulse: " + getAveragePulsesPerSecond());
+//								+ "  Set sleepTime to " + NEW_SLEEP 
+//								+ " ms to allow other CPU tasks get done first.");
+						// Set the sleep time
+						sleepTime = NEW_SLEEP;
 					}
-
-					// Exit program if exitProgram flag is true.
-					if (exitProgram) {
-						System.exit(0);
+				}
+				else if (!isPaused) {
+					// Case 2: acceptablePulse is false
+					logger.warning(30_000, "Time Pulse not within range. "
+							+ "Set sleepTime to " + NEW_SLEEP 
+							+ " ms to allow other CPU tasks get done first.");
+					// Set the sleep time
+					sleepTime = NEW_SLEEP;
+				}
+				
+				// If still going then wait
+				if (keepRunning && !isPaused && sleepTime > 0) {
+					// Pause the execution of this thread 
+					// and allow other threads to complete.
+					try {
+						Thread.sleep(sleepTime);
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
 					}
+				}
 
-				} // end of while
-			} // if fxgl is not used
+				// Exit program if exitProgram flag is true.
+				if (exitProgram) {
+					System.exit(0);
+				}
+			} // end of while
 
 			logger.warning("Clock Thread stopping");
 
@@ -1256,7 +1277,7 @@ public class MasterClock implements Serializable {
 		 */
 		private void calculateSleepTime() {
 			// Question: how should the difference between actualTR and desiredTR relate to or affect the sleepTime ?
-	
+
 			// Compute the delta TR
 			double deltaTR = calculateDeltaTR();
 			
@@ -1266,26 +1287,34 @@ public class MasterClock implements Serializable {
 			// on actualTR by adjusting the sleepTime. May need to adjust the pulse width as well.
 			
 			// Get the desired millisols per second
-			double desiredMsolPerSecond = (desiredTR - delta) / MarsTime.SECONDS_PER_MILLISOL;
+			double desiredMsolPerSec = (desiredTR - delta) / MarsTime.SECONDS_PER_MILLISOL;
 	
-			// Get the desired number of pulses
-			double desiredPulses = desiredMsolPerSecond / 
-					(0.1 * optMilliSolPerPulse + 0.3 * nextPulseTime + 0.6 * referencePulse);
+			// Get the desired number of pulses per second
+			double desiredPulsesPerSec = desiredMsolPerSec / 
+					(0.2 * optMilliSolPerPulse + 0.3 * nextPulseTime + 0.5 * referencePulse);
 			
 			// Get the milliseconds between each pulse
-			// // Limit the desired pulses to at least 1
-			double milliSecondsPerPulse = 1000 / Math.max(desiredPulses, 1D);
+			// // Limit the desired pulses to be at least 1
+			double millisecPerPulse = 1000 / Math.max(desiredPulsesPerSec, 1);
 	
+			int executionMod = executionTime;
+			if (executionMod > 1000) {
+				// Future: need to debug why in some cases executionTime is higher than 1000 ms
+				executionMod = 1000;
+			}
+			
 			// Update the sleep time that will allow room for the execution time
-			sleepTime = (long)(milliSecondsPerPulse - executionTime);
+			sleepTime = (int) millisecPerPulse - executionMod;
 	
-			// if sleepTime is negative, will increase pulse width in checkPulseWidth() 
-			// temporarily to relieve the long execution time
+			// if sleepTime is negative continuously, will consider calling Thread.sleep() 
+			// to pause the execution of this thread and allow other threads to complete.
 	
-			// Very useful but generates a LOT of log
-	//		String msg = String.format("Sleep calcs desiredTR=%d, actualTR=%.2f, msol/sec=%.2f, pulse/sec=%.2f, ms/Pulse=%.2f, exection=%d ms, sleep=%d ms",
-	//				desiredTR, actualTR, desiredMsolPerSecond, desiredPulses, milliSecondsPerPulse, executionTime, sleepTime);
-	//	    logger.info(msg);
+			// Do NOT delete the followings. Very useful for debugging.
+//			String msg = String.format("sleep=%d ms, desiredTR=%d, actualTR=%.2f, "
+//					+ "millisol/sec=%.2f, pulse/sec=%.2f, ms/pulse=%.2f, execution=%d ms",
+//					sleepTime, desiredTR, actualTR, 
+//					desiredMsolPerSec, desiredPulsesPerSec, millisecPerPulse, executionTime);
+//		    logger.info(msg);
 		}
 	}
 }

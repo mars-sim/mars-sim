@@ -919,9 +919,7 @@ public class Heating implements Serializable {
 		double pulseTime = Task.getStandardPulseTime();
 //		logger.info("remainingTime: " + remainingTime + "  pulseTime: " + pulseTime);
 		while (remainingTime > 0 && pulseTime > 0) {
-			// Vary the amount of time to be injected
-			double rand = RandomUtil.getRandomDouble(.9, 1.1);
-			double deltaTime = pulseTime * rand;
+			double deltaTime = pulseTime;
 			if (remainingTime > deltaTime) {
 				// Call cycleThermalControl and consume the pulse time.
 				cycleThermalControl(deltaTime);
