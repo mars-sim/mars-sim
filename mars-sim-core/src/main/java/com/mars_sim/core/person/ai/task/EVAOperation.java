@@ -344,10 +344,10 @@ public abstract class EVAOperation extends Task {
 			if (interiorObject != null && returnInsideLoc != null && !person.getPosition().isClose(returnInsideLoc)) {
 				String name = "";
 				if (interiorObject instanceof Building b) {
-					name = b.getNickName();
+					name = b.getName();
 				}
 				else if (interiorObject instanceof Vehicle v) {
-					name = v.getNickName();
+					name = v.getName();
 				}
 
 				logger.log(person, Level.FINE, 4_000,

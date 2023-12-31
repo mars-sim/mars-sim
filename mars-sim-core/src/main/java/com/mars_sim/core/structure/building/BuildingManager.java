@@ -413,8 +413,8 @@ public class BuildingManager implements Serializable {
 	 */
 	public void addToBuildingTypeIDMap(Building b) {
 		String buildingType = b.getBuildingType();
-		String n = b.getNickName();
-		int new_id = Integer.parseInt(b.getNickName().substring(n.lastIndexOf(" ") + 1, n.length()));
+		String n = b.getName();
+		int new_id = Integer.parseInt(b.getName().substring(n.lastIndexOf(" ") + 1, n.length()));
 
 		if (buildingTypeIDMap == null)
 			createBuildingTypeIDMap();
@@ -2133,8 +2133,8 @@ public class BuildingManager implements Serializable {
 		
 		for (Building b : buildings) {
 			String buildingType = b.getBuildingType();
-			String n = b.getNickName();
-			int newID = Integer.parseInt(b.getNickName().substring(n.lastIndexOf(" ") + 1, n.length()));
+			String n = b.getName();
+			int newID = Integer.parseInt(b.getName().substring(n.lastIndexOf(" ") + 1, n.length()));
 
 			if (buildingTypeIDMap.containsKey(buildingType)) {
 				int oldID = buildingTypeIDMap.get(buildingType);
@@ -2755,7 +2755,7 @@ public class BuildingManager implements Serializable {
 		Building eVAAttachedBuilding = null;
 		
 		for (BuildingTemplate bt: templates) {
-			if (bt.getBuildingName().equalsIgnoreCase(evaBuilding.getNickName())) {
+			if (bt.getBuildingName().equalsIgnoreCase(evaBuilding.getName())) {
 				idEVAAttachedBuilding = bt.getEVAAttachedBuildingID();
 			}
 		}
@@ -2767,7 +2767,7 @@ public class BuildingManager implements Serializable {
 		}
 		
 		for (Building b: buildings) {
-			if (b.getNickName().equalsIgnoreCase(nickName)) {
+			if (b.getName().equalsIgnoreCase(nickName)) {
 				eVAAttachedBuilding = b;
 			}
 		}

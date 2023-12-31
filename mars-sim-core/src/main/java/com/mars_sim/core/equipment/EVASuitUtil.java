@@ -228,8 +228,8 @@ public class EVASuitUtil {
 
 		// it's okay even if there's not enough water
 		if (!hasEnoughWater)
-			logger.log(((Settlement) owner), Level.WARNING, 20_000, 
-					"No enough water to feed " + suit.getNickName() 
+			logger.warning(((Settlement) owner), 20_000, 
+					"No enough water to feed " + suit.getName() 
 					+ " but can still use the EVA Suit.");
 
 		return hasEnoughOxygen;

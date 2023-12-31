@@ -763,7 +763,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					// Note 2: consider inflatable medical tent for emergency transport of incapacitated personnel
 					logger.info(person,
 							 Msg.getString("RoverMission.log.emergencyEnterSettlement", person.getName(),
-									disembarkSettlement.getNickName())); //$NON-NLS-1$
+									disembarkSettlement.getName())); //$NON-NLS-1$
 
 					// Initiate an rescue operation
 					// Note: Gets a lead person to perform it and give him a rescue badge
@@ -771,7 +771,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 					logger.info(person, "Transported to ("
 							+ person.getPosition() + ") in "
-							+ person.getBuildingLocation().getNickName()); //$NON-NLS-1$
+							+ person.getBuildingLocation().getName()); //$NON-NLS-1$
 
 					// Note: how to force the person to receive some form of medical treatment ?
 			

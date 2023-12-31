@@ -6,8 +6,7 @@
  */
 package com.mars_sim.core.structure.building.function;
 
-import java.util.logging.Logger;
-
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -18,7 +17,7 @@ public class FuelHeatSource extends HeatSource {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(FuelHeatSource.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(FuelHeatSource.class.getName());
 	
 	/** The ratio of fuel to oxidizer by mass. */
 	private static final int RATIO = 4;
@@ -196,9 +195,9 @@ public class FuelHeatSource extends HeatSource {
 			toggleRunningWorkTime = toggleRunningWorkTime - TOGGLE_RUNNING_WORK_TIME_REQUIRED;
 			toggle = !toggle;
 			if (toggle)
-				logger.info(building.getNickName() + "- " + Msg.getString("FuelHeatSource.log.turnedOn", getType().getName())); //$NON-NLS-1$
+				logger.info(building, Msg.getString("FuelHeatSource.log.turnedOn", getType().getName())); //$NON-NLS-1$
 			else
-				logger.info(building.getNickName() + "- " + Msg.getString("FuelHeatSource.log.turnedOff", getType().getName())); //$NON-NLS-1$
+				logger.info(building, Msg.getString("FuelHeatSource.log.turnedOff", getType().getName())); //$NON-NLS-1$
 		}
 	}
 

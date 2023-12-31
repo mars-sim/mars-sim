@@ -188,7 +188,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 				UnloadVehicleGarage.unloadEquipmentInventory(extra, settlement);
 				extra.transfer(settlement);		
 				
-				logger.log(vehicle, Level.INFO, 10_000, "Surplus unloaded " + extra.getNickName());
+				logger.info(vehicle, 10_000, "Surplus unloaded " + extra.getName());
 			}
 		}
 

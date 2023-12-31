@@ -336,7 +336,7 @@ public class ResourceProcessPanel extends JPanel {
         StringBuilder result = new StringBuilder("<html>");
         // Future: Use another tool tip manager to align text to improve tooltip readability			
         result.append(PROCESS).append(process.getProcessName()).append(BR);
-        result.append(BUILDING_HEADER).append(building.getNickName()).append(BR);
+        result.append(BUILDING_HEADER).append(building.getName()).append(BR);
         result.append(POWER_REQ).append(StyleManager.DECIMAL_KW.format(process.getPowerRequired()))
         .append(BR);
 

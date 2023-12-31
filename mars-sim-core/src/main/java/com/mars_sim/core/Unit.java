@@ -254,15 +254,6 @@ public abstract class Unit implements Loggable, UnitIdentifer, Comparable<Unit> 
 	}
 
 	/**
-	 * Gets the unit's nickname.
-	 *
-	 * @return the unit's nickname
-	 */
-	public String getNickName() {
-		return name;  // This method should be dropped and getName used everywhere
-	}
-
-	/**
 	 * Gets the unit's shortened name.
 	 *
 	 * @return the unit's shortened name
