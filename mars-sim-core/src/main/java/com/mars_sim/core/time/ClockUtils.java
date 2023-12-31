@@ -28,22 +28,24 @@ public class ClockUtils implements Serializable {
 	private static final String ZERO_MINUTES = "00m ";
 	private static final String SECONDS = "s";
 
-	private static Map<Integer, String> map = new HashMap<>();
+	private static Map<Double, String> mapping = new HashMap<>();
 
 	/**
-	 * Returns a date time string in HHh MMm SS.SSs format
+	 * Returns the real time clock (RTC) string in HHh MMm SS.SSs format
 	 *
-	 * @param ratio The time ratio
+	 * @param tr The time ratio
 	 * @return a date time string
 	 */
-	public static String getTimeString(int ratio) {
-		if (map.containsKey(ratio)) {
-			return map.get(ratio);
+	public static String getRTCString(double tr) {
+		double ratio = Math.round(tr * 100.0)/100.0;
+		
+		if (mapping.containsKey(ratio)) {
+			return mapping.get(ratio);
 		}
 
 		int hours = (int) ((ratio % SEC_PER_DAY) / SEC_PER_HR);
 		int minutes = (int) ((ratio % SEC_PER_HR) / SEC_PER_MIN);
-		double secs = (ratio % SEC_PER_MIN);
+		double secs = ratio % SEC_PER_MIN;
 
 		StringBuilder b = new StringBuilder();
 
@@ -57,12 +59,12 @@ public class ClockUtils implements Serializable {
 			b.append(ZERO_MINUTES);
 		}
 
-		b.append(String.format("%02d", (int)secs) + SECONDS)
+		b.append(String.format("%.2f", secs) + SECONDS)
 			.append(SIM_TIME);
 		
 		String s = b.toString();
 
-		map.put(ratio, s);
+		mapping.put(ratio, s);
 
 		return s;
 	}

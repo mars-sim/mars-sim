@@ -63,7 +63,7 @@ public class UpTimer implements Serializable {
     /**
      * Reports the amount of time the simulation has been running, as a String.
      *
-     * @return simulation running time formatted in a string. ex "6 days 5:32:58"
+     * @return simulation running time formatted in a string. e.g. "00h 06m 32s"
      */
     public String getUptime() {
     	long uptimeSec = uptime/1000;
