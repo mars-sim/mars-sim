@@ -13,8 +13,6 @@ import com.mars_sim.core.person.health.Complaint;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.structure.SettlementBuilder;
-import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.time.MasterClock;
 
 import junit.framework.TestCase;
 
@@ -51,15 +49,10 @@ public class TestSaving extends TestCase implements SimulationListener {
         p.getPhysicalCondition().addMedicalComplaint(complaint);
 
         saveFile = File.createTempFile("save-test", ".sim");
-        sim.requestSave(saveFile, this);
+        sim.saveSimulation(Simulation.SaveType.SAVE_AS, saveFile, this);
 
-        // Simulate a clock pulse to trigger the save
-        MasterClock mc = sim.getMasterClock();
-        ClockPulse pulse = new ClockPulse(1, 0.01D, mc.getMarsTime(), mc, false, false, false);
-        sim.clockPulse(pulse);
 
         // Check simulations saved and it contains data
-        assertFalse("Simultion save pending", sim.isSavePending());
         assertEquals("Simulation save status", SimulationListener.SAVE_COMPLETED, saveFeedback);
         assertTrue("Simulation file exists", saveFile.isFile());
         assertTrue("Save file is not empty", saveFile.length() > 0);

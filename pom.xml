@@ -32,6 +32,7 @@
 		<commons-io.version>2.13.0</commons-io.version>
 		<commons-lang3.version>3.14.0</commons-lang3.version>
 		<commons-math3.version>3.6.1</commons-math3.version>	
+		<jacoco.version>0.8.11</jacoco.version>
   		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
   		<sonar.java.source>17</sonar.java.source>
   		<native.maven.plugin.version>0.9.28</native.maven.plugin.version>
@@ -44,7 +45,7 @@
 			<plugin>
 			  <groupId>org.jacoco</groupId>
 			 <artifactId>jacoco-maven-plugin</artifactId>
-			  <version>0.8.11</version>
+			  <version>${jacoco.version}</version>
 			  <executions>
 				<execution>
 				  <id>prepare-agent</id>
