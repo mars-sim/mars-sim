@@ -171,10 +171,8 @@ public class Mind implements Serializable, Temporal {
 	private void moderateTime(double time) {
 		double remainingTime = time;
 		double pulseTime = Task.getStandardPulseTime();
-		while (remainingTime > 0 && pulseTime > 0) {
-			// Vary the amount of time to be injected
-			double rand = RandomUtil.getRandomDouble(.8, 1);
-			double deltaTime = pulseTime * rand;
+		while (remainingTime > 0) {
+			double deltaTime = pulseTime;
 			if (remainingTime > deltaTime) {
 				// Call takeAction to perform a task and consume the pulse time.
 				takeAction(deltaTime);

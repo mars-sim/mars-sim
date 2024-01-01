@@ -13,7 +13,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.time.format.DateTimeFormatter;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -25,7 +24,6 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
-import com.mars_sim.console.chat.simcommand.DateCommand;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.OrbitInfo;
 import com.mars_sim.core.time.ClockPulse;
@@ -335,7 +333,7 @@ public class TimeWindow extends ToolWindow {
 		// 2. Get the text field of your spinner's editor:
 		JFormattedTextField jftf = ((JSpinner.DefaultEditor) spinnerEditor).getTextField();
 		// 3. Set a default size to the text field:
-		jftf.setColumns(3);
+		jftf.setColumns(2);
 	
 		jftf.setHorizontalAlignment(JTextField.LEFT);
 		

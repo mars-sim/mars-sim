@@ -18,7 +18,6 @@ import com.mars_sim.core.robot.ai.job.RobotJob;
 import com.mars_sim.core.robot.ai.task.BotTaskManager;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The BotMind class represents a robot's mind. It keeps track of missions and
@@ -91,25 +90,23 @@ public class BotMind implements Serializable, Temporal {
 		if (botTaskManager != null) {
 			// Decides what tasks to inject time
 			if (pulse.getElapsed() > 0)
-				decideTask(pulse.getElapsed());
+				moderateTime(pulse.getElapsed());
 		}
 
 		return true;
 	}
 
 	/**
-	 * Decides what tasks to take for a given amount of time.
+	 * Moderates the time for decisions.
 	 * 
-	 * @param time time in millisols
+	 * @param time in millisols
 	 * @throws Exception if error during action.
 	 */
-	private void decideTask(double time) {
+	private void moderateTime(double time) {
 		double remainingTime = time;
 		double pulseTime = Task.getStandardPulseTime();
-		while (remainingTime > 0 && pulseTime > 0) {
-			// Vary the amount of time to be injected
-			double rand = RandomUtil.getRandomDouble(.8, 1);
-			double deltaTime = pulseTime * rand;
+		while (remainingTime > 0) {
+			double deltaTime = pulseTime;
 			if (remainingTime > deltaTime) {
 				// Call takeAction to perform a task and consume the pulse time.
 				takeAction(deltaTime);

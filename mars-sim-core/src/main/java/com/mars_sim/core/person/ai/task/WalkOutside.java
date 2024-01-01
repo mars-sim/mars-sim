@@ -9,12 +9,12 @@ package com.mars_sim.core.person.ai.task;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
@@ -52,7 +52,7 @@ public class WalkOutside extends Task {
 	private static final TaskPhase WALKING = new TaskPhase(Msg.getString("Task.phase.walking")); //$NON-NLS-1$
 
 	// Static members
-	private static final double MIN_PULSE_TIME = Walk.MIN_PULSE_TIME;
+//	private static final double MIN_PULSE_TIME = Walk.MIN_PULSE_TIME;
 	/** The speed factor due to walking in EVA suit. */
 	private static final double EVA_MOD = .3;
 	/** The greater than zero distance [km] */
@@ -229,7 +229,7 @@ public class WalkOutside extends Task {
 		openSet.add(start);
 
 		// The map of navigated locations.
-		Map<LocalPosition, LocalPosition> cameFrom = new ConcurrentHashMap<>();
+		Map<LocalPosition, LocalPosition> cameFrom = new HashMap<>();
 
 		// Check each location in openSet.
 		while (!openSet.isEmpty()) {
