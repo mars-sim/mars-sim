@@ -144,7 +144,7 @@ public class ManufactureConstructionMaterialsMeta extends FactoryMetaTask {
                 }
                 
             } catch (Exception e) {
-                logger.log(Level.SEVERE,
+                logger.severe(
                         "ManufactureConstructionMaterials.getProbability()", e);
             }
 

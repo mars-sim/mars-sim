@@ -2478,4 +2478,8 @@ public abstract class Vehicle extends Unit
 			salvageInfo.destroy();
 		salvageInfo = null;
 	}
+
+    public String getChildContext() {
+        return getContext() + ENTITY_SEPERATOR + getName();
+    }
 }

@@ -9,8 +9,7 @@ package com.mars_sim.core.structure.building.function.farming;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import com.mars_sim.core.Unit;
-import com.mars_sim.core.logging.Loggable;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -20,13 +19,12 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The Crop class describes the behavior of a crop growing on a greenhouse.
  */
-public class Crop implements Comparable<Crop>, Loggable, Serializable {
+public class Crop implements Comparable<Crop>, Entity {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1357,18 +1355,16 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	}
 
 	@Override
-	public Unit getContainerUnit() {
-		return building;
-	}
-
-	@Override
 	public String getName() {
 		return getCropName();
 	}
 
+	/**
+	 * The context of a Crop is always th context of the parent Building.
+	 */
 	@Override
-	public Coordinates getCoordinates() {
-		return building.getCoordinates();
+	public String getContext() {
+		return building.getChildContext();
 	}
 
 	/**

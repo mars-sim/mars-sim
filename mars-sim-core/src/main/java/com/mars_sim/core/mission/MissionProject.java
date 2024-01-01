@@ -98,7 +98,7 @@ public abstract class MissionProject implements Mission {
     private Set<Worker> signedUp = new UnitSet<>();
     private Set<MissionStatus> status = new HashSet<>();
 
-    public MissionProject(String name, MissionType type, int priority, int minMembers, int maxMembers, Person leader) {
+    protected MissionProject(String name, MissionType type, int priority, int minMembers, int maxMembers, Person leader) {
         this.type = type;
         this.priority = priority;
         this.maxMembers = maxMembers;
@@ -160,6 +160,11 @@ public abstract class MissionProject implements Mission {
         return control.getName();
     }
 
+    @Override
+    public String getContext() {
+        return leader.getAssociatedSettlement().getName();
+    }
+    
     @Override
     public void setName(String name) {
         control.setName(name);

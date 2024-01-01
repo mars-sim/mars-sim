@@ -506,7 +506,7 @@ public class RandomMineralMap implements MineralMap {
 				for (int x = 0; x < mineralTypes.size(); x++)
 					result[x] = mineralTypes.get(x).name;
 			} catch (Exception e) {
-				logger.log(Level.SEVERE, "Error getting mineral types.", e);
+				logger.severe("Error getting mineral types.", e);
 			}
 			
 			mineralTypeNames = result;

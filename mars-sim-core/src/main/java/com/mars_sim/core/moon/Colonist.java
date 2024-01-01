@@ -113,12 +113,25 @@ public class Colonist implements Serializable, Entity, SkillOwner {
 		return name;
 	}
 	
+	/**
+	 * Context of a colonist is always their parent Colony.
+	 */
+	@Override
+	public String getContext() {
+		return colony.getName();
+	}
+
 	public Colony getColony() {
 		return colony;
+	}
+
+	public void setColony(Colony object) {
+		colony = object;
 	}
 
 	@Override
 	public double getPerformanceRating() {
 		return performance;
 	}
+
 }

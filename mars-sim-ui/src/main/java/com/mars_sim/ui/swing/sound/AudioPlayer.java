@@ -94,7 +94,7 @@ public class AudioPlayer {
 		try {
 			return new OGGSoundClip(name, true);
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Can't obtain the ogg music file '" + name + "': ", e);
+			logger.severe( "Can't obtain the ogg music file '" + name + "': ", e);
 		}
 		return null;
 	}
@@ -115,7 +115,7 @@ public class AudioPlayer {
 			try {
 				FileUtils.forceDelete(folder);
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, "Can't load music files: ", e);
+				logger.severe( "Can't load music files: ", e);
 			}
 		}
 		
@@ -165,7 +165,7 @@ public class AudioPlayer {
 			try {
 				allSoundClips.put(s, new OGGSoundClip(s, false));
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, "Can't load the sound effect files: ", e);
+				logger.severe( "Can't load the sound effect files: ", e);
 			}
 		}
 
@@ -190,7 +190,7 @@ public class AudioPlayer {
 	 */
 	private void loadSound(String filepath) {
 		if (allSoundClips == null) {
-			logger.log(Level.SEVERE, "allSoundClips is null.");
+			logger.severe( "allSoundClips is null.");
 			return;
 		}
 		
@@ -206,7 +206,7 @@ public class AudioPlayer {
 				currentSoundClip.determineGain(currentSoundVol);
 				currentSoundClip.play();
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, "Can't load sound effect: ", e);
+				logger.severe( "Can't load sound effect: ", e);
 			}
 		}
 	}

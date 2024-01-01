@@ -16,7 +16,6 @@ import com.mars_sim.core.moon.Colony;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.tools.util.RandomUtil;
 
 public class ColonistEngineer extends Colonist implements Serializable, Temporal {
@@ -146,13 +145,5 @@ public class ColonistEngineer extends Colonist implements Serializable, Temporal
 	
 	public void setColony(Colony newColony) {
 		colony = newColony;
-	}
-
-
-	public Coordinates getCoordinates() {
-		if (colony != null) {
-			return colony.getCoordinates();
-		}
-		return null;
 	}
 }

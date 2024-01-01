@@ -21,6 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
@@ -29,7 +30,6 @@ import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventManager;
-import com.mars_sim.core.logging.Loggable;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
@@ -467,6 +467,14 @@ public abstract class AbstractMission implements Mission, Temporal {
     }
 
 	/**
+	 * Context of a mission is the Settlement of the starting member
+	 */
+	@Override
+	public String getContext() {
+		return startingMember.getAssociatedSettlement().getName();
+	}
+
+	/**
 	 * Gets the mission type enum.
 	 *
 	 * @return
@@ -719,9 +727,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param source
 	 * @param reason
 	 */
-	protected void endMissionProblem(Loggable source, String reason) {
+	protected void endMissionProblem(Entity source, String reason) {
 		MissionStatus status = new MissionStatus(INTERNAL_PROBLEM, reason);
-		logger.severe(source, getName() + ": " + status.getName());
+		logger.severe(this, "Ended with " + status.getName() + "; source was " + source.getName());
 		endMission(status);
 	}
 	
@@ -1210,7 +1218,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		}
 		else {
-			logger.severe(getName() + ":No starting member");
+			logger.severe(this, "No starting member");
 		}
 
 		return result;
@@ -1236,7 +1244,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			case APPROVED:
 				createDesignationString();
 
-				logger.log(p, Level.INFO, 0, "Mission plan for " + getName() + " was approved.");
+				logger.info(this, "Mission plan for was approved.");
 
 				if (!(this instanceof VehicleMission)) {
 					// Set the members' work shift to on-call to get ready

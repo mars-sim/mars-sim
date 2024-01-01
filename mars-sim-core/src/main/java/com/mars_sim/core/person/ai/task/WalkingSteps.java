@@ -13,9 +13,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
-import com.mars_sim.core.logging.Loggable;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.AirlockType;
@@ -236,7 +236,7 @@ implements Serializable {
             result.building = building;
 
             if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(robot.getPosition(), building)) {
-            	logger.log(robot, Level.SEVERE, 5000,
+            	logger.severe(robot, 5000,
             			"Invalid Robot start location at " + robot.getPosition()
                         + ", not within " + building + " @ "
                         + LocalAreaUtil.getDescription(building));
@@ -244,7 +244,7 @@ implements Serializable {
         }
 
         else {
-        	logger.log(robot, Level.SEVERE, 5000,
+        	logger.severe(robot, 5000,
         			"Invalid location situation for walking task.");
         }
 
@@ -273,11 +273,11 @@ implements Serializable {
             result.building = building;
 
             if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(pos, building)) {
-                Loggable walker = person;
+                Worker walker = person;
                 if (walker == null) {
                     walker = robot;
                 }
-            	logger.log(walker, Level.SEVERE, 60_000,
+            	logger.severe(walker, 60_000,
             				"Invalid destination " +
             				pos + " not within building " + building + " @ "
                             + LocalAreaUtil.getDescription(building));
@@ -290,7 +290,7 @@ implements Serializable {
 	            result.rover = rover;
 
 	            if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(pos, rover)) {
-	            	logger.log(person, Level.SEVERE, 5000,
+	            	logger.severe(person, 5000,
 	            			"Invalid destination " +
 	                        pos + " not within rover " + rover + " @ "
                             + LocalAreaUtil.getDescription(rover));

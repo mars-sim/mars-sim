@@ -50,6 +50,14 @@ public abstract class PlanetaryEntity extends Unit {
 	}
 
 	/**
+	 * This context is empty because it is a top level Entity.
+	 */
+	@Override
+	public String getContext() {
+		return null;
+	}
+
+	/**
 	 * Adds a person.
 	 *
 	 * @param person
