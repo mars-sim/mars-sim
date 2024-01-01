@@ -634,7 +634,7 @@ public class MasterClock implements Serializable {
 				optPulse = optPulse + diff / refPulse / PULSE_STEPS;
 				if (optPulse > maxMilliSolPerPulse * 1.05) {
 					optPulse = maxMilliSolPerPulse * 1.05;
-					logger.config("refPulse / optPulse = " + ratio + ". Set optPulse to max.");
+					logger.warning(30_000L, "refPulse / optPulse = " + ratio + ". Set optPulse to max.");
 				}
 				goOn = false;
 			}
@@ -658,7 +658,7 @@ public class MasterClock implements Serializable {
 					// Increase the optimal pulse width
 					nextPulse = nextPulse + (1 - ratio) * nextPulse / PULSE_STEPS / 2;
 					if (nextPulse > maxMilliSolPerPulse * 1.05) {
-						logger.config("actualTR / desiredTR = " + ratio + ". Set nextPulse to max.");
+						logger.warning(30_000L, "actualTR / desiredTR = " + ratio + ". Set nextPulse to max.");
 						nextPulse = maxMilliSolPerPulse * 1.05;
 					}
 					goOn = false;
@@ -684,7 +684,7 @@ public class MasterClock implements Serializable {
 					nextPulse = nextPulse + diff / refPulse / PULSE_STEPS / 2;
 					if (nextPulse > maxMilliSolPerPulse * 1.05) {
 						nextPulse = maxMilliSolPerPulse * 1.05;
-						logger.config("refPulse / nextPulse = " + ratio + ". Set nextPulse to max.");
+						logger.warning(30_000L, "refPulse / nextPulse = " + ratio + ". Set nextPulse to max.");
 					}
 					goOn = false;
 				}
@@ -705,7 +705,8 @@ public class MasterClock implements Serializable {
 		// Update the optimal pulse time
 		optMilliSolPerPulse = optPulse;
 		
-		if (optPulse > 50 * refPulse) logger.info("optPulse is " + optPulse + ", 50x the ref pulse.");
+		if (optPulse > 10 * refPulse) 
+			logger.warning(30_000L, "optPulse is " + optPulse + ", 10x the ref pulse.");
 			
 		// Update the pulse time for use in tasks
 		double oldPulse = Task.getStandardPulseTime();

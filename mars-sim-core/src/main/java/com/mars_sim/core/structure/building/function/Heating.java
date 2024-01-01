@@ -25,7 +25,6 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The Heating class is a building function for regulating temperature in a settlement.
@@ -917,8 +916,7 @@ public class Heating implements Serializable {
 	private void moderateTime(double time) {
 		double remainingTime = time;
 		double pulseTime = Task.getStandardPulseTime();
-//		logger.info("remainingTime: " + remainingTime + "  pulseTime: " + pulseTime);
-		while (remainingTime > 0 && pulseTime > 0) {
+		while (remainingTime > 0) {
 			double deltaTime = pulseTime;
 			if (remainingTime > deltaTime) {
 				// Call cycleThermalControl and consume the pulse time.
