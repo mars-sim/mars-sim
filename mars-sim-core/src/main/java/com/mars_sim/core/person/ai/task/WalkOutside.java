@@ -747,5 +747,7 @@ public class WalkOutside extends Task {
 		destination = null;
 		walkingPath.clear();
 		walkingPath = null;
+		
+		super.destroy();
 	}
 }

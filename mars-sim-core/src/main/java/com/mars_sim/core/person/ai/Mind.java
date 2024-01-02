@@ -572,5 +572,14 @@ public class Mind implements Serializable, Temporal {
 		if (mbti != null)
 			mbti.destroy();
 		mbti = null;
+		
+		emotionMgr.destroy();
+		emotionMgr = null;
+		trait.destroy();
+		trait = null;
+		relation.destroy();
+		relation = null;
+		missionManager.destroy();
+		missionManager = null;
 	}
 }
