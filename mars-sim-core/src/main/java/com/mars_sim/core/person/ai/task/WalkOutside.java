@@ -740,4 +740,12 @@ public class WalkOutside extends Task {
 	protected boolean canRecord() {
 		return false;
 	}
+	
+	@Override
+	public void destroy() {
+		start = null;
+		destination = null;
+		walkingPath.clear();
+		walkingPath = null;
+	}
 }

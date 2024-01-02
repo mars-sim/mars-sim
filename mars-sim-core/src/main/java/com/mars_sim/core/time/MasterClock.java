@@ -657,8 +657,8 @@ public class MasterClock implements Serializable {
 					// Increase the optimal pulse width
 					nextPulse = nextPulse + (1 - ratio) * nextPulse / PULSE_STEPS / 2;
 					if (nextPulse > maxMilliSolPerPulse * 1.05) {
-						logger.warning(30_000L, "actualTR / desiredTR = " + ratio + ". Set nextPulse to max.");
 						nextPulse = maxMilliSolPerPulse * 1.05;
+						logger.warning(30_000L, "actualTR / desiredTR = " + ratio + ". Set nextPulse to max.");
 					}
 					goOn = false;
 				}
