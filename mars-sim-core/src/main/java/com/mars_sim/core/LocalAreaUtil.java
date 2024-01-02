@@ -718,8 +718,8 @@ public class LocalAreaUtil {
 			if (pathBounds.intersects(obstacleBounds)) {
 				// If rectangles intersect, check for collision of path and obstacle areas
 				// (slower).
-//				Area pathArea = new Area(path);
-				result = !doAreasCollide(new Area(path), obstacleArea);
+				Area pathArea = new Area(path);
+				result = !doAreasCollide(pathArea, obstacleArea);
 			}
 		}
 

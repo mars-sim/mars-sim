@@ -169,10 +169,11 @@ public class Mind implements Serializable, Temporal {
 	 * @throws Exception if error during action.
 	 */
 	private void moderateTime(double time) {
+//		// Call takeAction to perform a task and consume the pulse time.
+//		takeAction(time);
 		double remainingTime = time;
-		double pulseTime = Task.getStandardPulseTime();
-		while (remainingTime > 0) {
-			double deltaTime = pulseTime;
+		double deltaTime = Task.getStandardPulseTime();
+		while (remainingTime > 0 && deltaTime > 0) {
 			if (remainingTime > deltaTime) {
 				// Call takeAction to perform a task and consume the pulse time.
 				takeAction(deltaTime);

@@ -914,10 +914,11 @@ public class Heating implements Serializable {
 	 * @throws Exception if error during action.
 	 */
 	private void moderateTime(double time) {
+//		// Call cycleThermalControl and consume the pulse time.
+//		cycleThermalControl(time);
 		double remainingTime = time;
-		double pulseTime = Task.getStandardPulseTime();
-		while (remainingTime > 0) {
-			double deltaTime = pulseTime;
+		double deltaTime = Task.getStandardPulseTime();
+		while (remainingTime > 0 && deltaTime > 0) {
 			if (remainingTime > deltaTime) {
 				// Call cycleThermalControl and consume the pulse time.
 				cycleThermalControl(deltaTime);
