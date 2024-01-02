@@ -299,12 +299,17 @@ public class EnterAirlock extends Task {
 		
 		if (inSettlement) {
 
-			if (!isInZone(AirlockZone.ZONE_4) && !airlock.addAwaitingOuterDoor(id)) {
+			// If a person is already in zone 4, no need to add to awaiting at outer door
+			if (isInZone(AirlockZone.ZONE_4)) {
+
+				canProceed = true;
+			}
+			
+			if (!airlock.addAwaitingOuterDoor(id)) {
 				logger.info(person, 60_000,
 						"Cannot get a spot outside the outer door in " + airlock.getEntityName() + ".");
 				
-				// Do not call clearDown since it will wipe a person from awaiting at outer door
-//				clearDown();
+				clearDown();
 				
 				// Reset accumulatedTime back to zero accumulatedTime = 0
 				// Do nothing in this frame
@@ -312,20 +317,6 @@ public class EnterAirlock extends Task {
 				return 0;
 			}
 
-			if (airlock.isOuterDoorLocked()) {
-				logger.info(person, 60_000,
-						"Cannot ingress. "
-						+ "Exterior door locked at " + airlock.getEntityName() + ".");
-				
-				// Do not call clearDown since it will wipe a person from awaiting at outer door
-//				clearDown();
-				
-				// Reset accumulatedTime back to zero accumulatedTime = 0
-				// Do nothing in this frame
-				// Wait and see if he's allowed to be at the outer door in the next frame
-				return 0;
-			}
-			
 			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
 				logger.info(person, 60_000,
 						"Cannot ingress. "
@@ -341,24 +332,7 @@ public class EnterAirlock extends Task {
 			}				
 			
 			if (transitionTo(AirlockZone.ZONE_4)) {
-				// The outer door will stay locked if the chamber is NOT depressurized
-				canProceed = true;
-			}
-			
-			if (!airlock.isOuterDoorLocked()) {
-				// If the airlock is empty, it means no one is using it
-//				logger.log(unit, person, Level.INFO, 60_000,
-//						"Outer door opened at " + airlock.getEntity().toString() + ".");
-				// Go to the next phase in order for the outer door to be unlocked. 
-				// After the depressurization has finished, it should be open.
-				canProceed = true;
-			}
-			else if (airlock.isEmpty()) {
-				// If the airlock is empty, it means no one is using it
-//				logger.log(unit, person, Level.INFO, 60_000,
-//						"Empty " + airlock.getEntity().toString() + ".");
-				// Go to the next phase in order for the outer door to be unlocked. 
-				// After the depressurization has finished, it should be open.
+
 				canProceed = true;
 			}
 		}
@@ -521,7 +495,7 @@ public class EnterAirlock extends Task {
 				
 				// The outer door is locked probably because of not being 
 				// at the correct airlock state. Go back to the previous task phase
-				setPhase(REQUEST_INGRESS);
+//				setPhase(REQUEST_INGRESS);
 				// Reset accumulatedTime back to zero 
 				accumulatedTime = 0;
 				
@@ -606,14 +580,22 @@ public class EnterAirlock extends Task {
 
 		if (inSettlement) {
 
+			if (isInZone(AirlockZone.ZONE_2)) {
+				
+				canProceed = true;
+			}
+					
+			// Must check if chambers are full or else getting stuck
 			if (airlock.areAll4ChambersFull()) {
 				logger.warning(person, 16_000,
 						"Can't walk to a chamber. " 
 						+ CHAMBER_FULL + airlock.getEntityName()+ ".");
-								
+				
+				clearDown();
+				
 				// The outer door is locked probably because of not being 
 				// at the correct airlock state. Go back to the previous task phase
-//				setPhase(REQUEST_INGRESS);
+				setPhase(REQUEST_INGRESS);
 				
 				// Reset accumulatedTime back to zero accumulatedTime = 0
 				// Do nothing in this frame
@@ -622,6 +604,7 @@ public class EnterAirlock extends Task {
 			}
 			
 			if (transitionTo(AirlockZone.ZONE_2)) {
+				
 				canProceed = true;
 			}
 			
@@ -631,8 +614,7 @@ public class EnterAirlock extends Task {
 
 				// Reset accumulatedTime back to zero
 //				accumulatedTime = 0;
-
-				
+			
 				return 0;
 			}
 		}
@@ -676,6 +658,15 @@ public class EnterAirlock extends Task {
 
 	}
 
+//	/**
+//	 * Performs cleaning up of EVA suit.
+//	 *
+//	 * @param time
+//	 * @return
+//	 */
+//	private double cleanSuit(double time) {
+//	}
+	
 	/**
 	 * Pressurizes the chamber.
 	 *
