@@ -19,6 +19,7 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.equipment.ItemHolder;
 import com.mars_sim.core.equipment.ResourceHolder;
@@ -1381,7 +1382,14 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	public double getCurrentAirPressure() {
-		return getSettlement().getBuildingAirPressure(this);
+		double p = 0D;
+
+		if (hasFunction(FunctionType.LIFE_SUPPORT)) {
+			p = getLifeSupport().getAir().getTotalPressure();
+		}
+		
+		// convert from atm to kPascal
+		return p * AirComposition.KPA_PER_ATM;
 	}
 
 	@Override

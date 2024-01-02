@@ -1142,7 +1142,7 @@ public class HelpGenerator {
 					.toURI()
 				).getAbsolutePath();
 		} catch (URISyntaxException e) {
-			logger.log(Level.SEVERE, "Error in getAbsPath", e);
+			logger.severe( "Error in getAbsPath", e);
 		}
 		
 		return absPath;
@@ -1226,9 +1226,9 @@ public class HelpGenerator {
 	 */
 	private static void exitWithError(String message, Exception e) {
 		if (e != null) {
-			logger.log(Level.SEVERE, message, e);
+			logger.severe(message, e);
 		} else {
-			logger.log(Level.SEVERE, message);
+			logger.severe(message);
 		}
 
 		JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);

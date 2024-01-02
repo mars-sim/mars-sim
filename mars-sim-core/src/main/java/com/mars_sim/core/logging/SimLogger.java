@@ -13,8 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.construction.ConstructionSite;
+import com.mars_sim.core.Entity;
+
 
 /**
  * This is a logger class similar to Java Logger that is Simulation aware
@@ -90,7 +90,7 @@ public class SimLogger {
 	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
 	 * @param message         The actual message to log.
 	 */
-	public void log(Loggable actor, Level level, long timeBetweenLogs, String message) {
+	public void log(Entity actor, Level level, long timeBetweenLogs, String message) {
 		baseLog(actor, level, timeBetweenLogs, message, null);
 	}
 
@@ -103,7 +103,7 @@ public class SimLogger {
 	 * @param message
 	 * @param t
 	 */
-	private void baseLog(Loggable actor, Level level, long timeBetweenLogs, String message,
+	private void baseLog(Entity actor, Level level, long timeBetweenLogs, String message,
 			Throwable t) {
 		if (!rootLogger.isLoggable(level)) {
 			return;
@@ -139,21 +139,21 @@ public class SimLogger {
 			// Actor unknown
 			outputMessage.append("System").append(CLOSED_BRACKET_SPACE);
 		}
-		else if (actor instanceof Settlement
-				|| actor instanceof ConstructionSite) {
-			// Actor in bracket; it's top level
-			outputMessage.append(actor.getName()).append(CLOSED_BRACKET_SPACE);
+		else {
+			// Has an Actor
+			String context = actor.getContext();
+			if (context == null) {
+				outputMessage.append(actor.getName()).append(CLOSED_BRACKET_SPACE);
+			}
+			else {
+				outputMessage.append(context);
+				outputMessage.append(CLOSED_BRACKET_SPACE).append(actor.getName()).append(DASH);
+			}
 		}
-		else { // In case of a person, robot, building, vehicle
-			// Need container hierarchy in brackets
-			outputMessage.append(LocationFormat.getLocationDescription(actor));
-			outputMessage.append(CLOSED_BRACKET_SPACE).append(actor.getName()).append(DASH);
-		}
-
 		outputMessage.append(message);
 
 		if (t == null) {
-			rootLogger.log(level, outputMessage.toString());
+			rootLogger.log(level, outputMessage::toString);
 		}
 		else {
 			rootLogger.log(level, outputMessage.toString(), t);
@@ -168,7 +168,7 @@ public class SimLogger {
 	 *
 	 * @return
 	 */
-	private static String getUniqueIdentifer(Loggable actor) {
+	private static String getUniqueIdentifer(Entity actor) {
 		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 		String loggerClass = SimLogger.class.getName();
 		String nickName = (actor != null ? actor.getName() : "unknown");
@@ -193,7 +193,7 @@ public class SimLogger {
 	 * @param message
 	 */
 	public void log(Level level, String message) {
-		rootLogger.log(level, sourceName + " : " + message);
+		rootLogger.log(level, () -> sourceName + " : " + message);
 	}
 
 	/**
@@ -203,7 +203,7 @@ public class SimLogger {
 	 * @param message
 	 * @param e Exception
 	 */
-	public void log(Level level, String message, Throwable e) {
+	private void rootLog(Level level, String message, Throwable e) {
 		rootLogger.log(level, sourceName + " : " + message, e);
 	}
 	
@@ -222,7 +222,7 @@ public class SimLogger {
 	 * @param actor
 	 * @param string
 	 */
-	public void fine(Loggable actor, String string) {
+	public void fine(Entity actor, String string) {
 		baseLog(actor, Level.FINE, DEFAULT_INFO_TIME, string, null);
 	}
 
@@ -233,7 +233,7 @@ public class SimLogger {
 	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
 	 * @param string
 	 */
-	public void fine(Loggable actor, long timeBetweenLogs, String string) {
+	public void fine(Entity actor, long timeBetweenLogs, String string) {
 		baseLog(actor, Level.FINE, timeBetweenLogs, string, null);
 	}
 	
@@ -253,7 +253,7 @@ public class SimLogger {
 	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
 	 * @param string
 	 */
-	public void info(Loggable actor, long timeBetweenLogs, String string) {
+	public void info(Entity actor, long timeBetweenLogs, String string) {
 		baseLog(actor, Level.INFO, timeBetweenLogs, string, null);
 	}
 
@@ -263,7 +263,7 @@ public class SimLogger {
 	 * @param actor
 	 * @param string
 	 */
-	public void info(Loggable actor, String string) {
+	public void info(Entity actor, String string) {
 		baseLog(actor, Level.INFO, DEFAULT_INFO_TIME, string, null);
 	}
 
@@ -283,7 +283,7 @@ public class SimLogger {
 	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
 	 * @param string
 	 */
-	public void warning(Loggable actor, long timeBetweenLogs, String string) {
+	public void warning(Entity actor, long timeBetweenLogs, String string) {
 		baseLog(actor, Level.WARNING, timeBetweenLogs, string, null);
 	}
 
@@ -293,7 +293,7 @@ public class SimLogger {
 	 * @param actor
 	 * @param string
 	 */
-	public void warning(Loggable actor, String string) {
+	public void warning(Entity actor, String string) {
 		baseLog(actor, Level.WARNING, DEFAULT_WARNING_TIME, string, null);
 	}
 
@@ -316,7 +316,7 @@ public class SimLogger {
 	 * @param message
 	 */
 	public void severe(String message, Throwable e) {
-		log(Level.SEVERE, message, e);
+		rootLog(Level.SEVERE, message, e);
 	}
 
 	/**
@@ -325,7 +325,7 @@ public class SimLogger {
 	 * @param actor
 	 * @param message
 	 */
-	public void severe(Loggable actor, String string) {
+	public void severe(Entity actor, String string) {
 		baseLog(actor, Level.SEVERE, DEFAULT_SEVERE_TIME, string, null);
 	}
 
@@ -337,7 +337,7 @@ public class SimLogger {
 	 * @param string
 	 * @param e
 	 */
-	public void severe(Loggable actor, long timeBetweenLogs, String string, Exception e) {
+	public void severe(Entity actor, long timeBetweenLogs, String string, Exception e) {
 		baseLog(actor, Level.SEVERE, timeBetweenLogs, string, e);
 	}
 
@@ -348,7 +348,7 @@ public class SimLogger {
 	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
 	 * @param string
 	 */
-	public void severe(Loggable actor, long timeBetweenLogs, String string) {
+	public void severe(Entity actor, long timeBetweenLogs, String string) {
 		baseLog(actor, Level.SEVERE, timeBetweenLogs, string, null);
 	}
 
@@ -359,7 +359,7 @@ public class SimLogger {
 	 * @param message
 	 * @param reason
 	 */
-	public void severe(Loggable actor, String message, Throwable reason) {
+	public void severe(Entity actor, String message, Throwable reason) {
 		baseLog(actor, Level.SEVERE, DEFAULT_SEVERE_TIME, message, reason);
 	}
 
@@ -378,7 +378,7 @@ public class SimLogger {
 	 * @param actor
 	 * @param message
 	 */
-	public void config(Loggable actor, String message) {
+	public void config(Entity actor, String message) {
 		baseLog(actor, Level.CONFIG, 0, message, null);
 	}
 

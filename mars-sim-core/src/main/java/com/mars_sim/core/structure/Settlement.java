@@ -925,21 +925,11 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the air pressure of a particular building.
-	 *
-	 * @param building
-	 * @return air pressure [in kPa] (not Pa)
+	 * Settlement is a top level entity so this return null
 	 */
-	public double getBuildingAirPressure(Building building) {
-		double p = 0;
-		Set<Building> buildings = buildingManager.getBuildingSet(FunctionType.LIFE_SUPPORT);
-		for (Building b : buildings) {
-			if (b == building) {
-				p = b.getLifeSupport().getAir().getTotalPressure();
-			}
-		}
-		// convert from atm to kPascal
-		return p * AirComposition.KPA_PER_ATM;
+	@Override
+	public String getContext() {
+		return null;
 	}
 
 	/**

@@ -126,6 +126,15 @@ implements Entity, UserConfigurable {
 	}
 
 	/**
+	 * The context of the Authority is null as it is a top-level entity.
+	 * @return Returns null.
+	 */
+	@Override
+	public String getContext() {
+		return null;
+	}
+
+	/**
 	 * Gets the full name of the authority.
 	 * 
 	 * @return

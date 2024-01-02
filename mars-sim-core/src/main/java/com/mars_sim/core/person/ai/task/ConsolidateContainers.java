@@ -145,7 +145,7 @@ extends Task {
      * @return the amount of time (millisol) left after performing the consolidating phase.
      */
     private double consolidatingPhase(double time) {
-    	EquipmentOwner parent = (EquipmentOwner)(worker.getContainerUnit());
+    	EquipmentOwner parent = (EquipmentOwner) worker.getTopContainerUnit();
     	boolean useTopInventory = worker.isInSettlement();
     	
         // Determine consolidation load rate.
