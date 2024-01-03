@@ -152,6 +152,8 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	/** The height of the person (in kg). */
 	private double weight;
 
+	private long tLast;
+	
 	/** The person's country of origin. */
 	private String country;
 	/** The person's blood type. */
@@ -658,6 +660,9 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 			return false;
 		}
 
+		// DEBUG: Calculate the real time elapsed [in milliseconds]
+		long tnow = System.currentTimeMillis();
+		
 		// Check to see if the person has deceased
 		if (condition.getDeathDetails() != null
 				&& condition.getDeathDetails().getBodyRetrieved()) {
@@ -735,6 +740,12 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 			}
 		}
 		
+		// DEBUG: Calculate the real time elapsed [in milliseconds]
+		tLast = System.currentTimeMillis();
+		long elapsedMS = tnow - tLast;
+		if (elapsedMS > 10)
+			logger.severe(this, "elapsedMS: " + elapsedMS);
+				
 		return true;
 	}
 

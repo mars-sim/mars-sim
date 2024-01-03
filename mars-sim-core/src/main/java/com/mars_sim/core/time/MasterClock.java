@@ -71,7 +71,7 @@ public class MasterClock implements Serializable {
 	private final int MAX_ELAPSED = 30_000; // 30,000 ms is 30 secs
 
 	/** The maximum allowable sleep time [in ms] before action is taken. */
-	private final int MAX_SLEEP = 5_000;
+	private final int MAX_SLEEP = 2_000;
 	
 	/** The sleep time [in ms] for letting other CPU tasks to get done. */
 	private final int NEW_SLEEP = 100;
@@ -1235,16 +1235,17 @@ public class MasterClock implements Serializable {
 					// Get the sleep time
 					calculateSleepTime();
 					
-					if (sleepTime < -MAX_SLEEP && getAveragePulsesPerSecond() < 3) {
+					if (executionTime > MAX_SLEEP && getAveragePulsesPerSecond() < 3) {
 
-						logger.warning(30_000, "sleepTime: " + sleepTime + " ms.  "
-								+ "executionTime: " + executionTime
+						logger.warning(30_000, 
+								// "sleepTime: " + sleepTime + " ms.  "
+								"executionTime: " + executionTime
 								+ "  optMilliSolPerPulse: " + Math.round(optMilliSolPerPulse * 1000.0)/1000.0
 								+ "  ave pulse: " + getAveragePulsesPerSecond());
 //								+ "  Set sleepTime to " + NEW_SLEEP 
 //								+ " ms to allow other CPU tasks get done first.");
-						// Set the sleep time
-						sleepTime = NEW_SLEEP;
+						// Set the sleep time in proportion to the anomalous executionTime
+						sleepTime = executionTime/30;
 					}
 				}
 				else if (!isPaused) {
@@ -1298,30 +1299,33 @@ public class MasterClock implements Serializable {
 			double desiredPulsesPerSec = desiredMsolPerSec / 
 					(0.2 * optMilliSolPerPulse + 0.3 * nextPulseTime + 0.5 * referencePulse);
 			
-			double mpp = 1000 / desiredPulsesPerSec;
+			double mspp = 1000 / desiredPulsesPerSec;
 			
 			// Get the milliseconds between each pulse
 			// // Limit the desired pulses to be the minimum of 1 (or at least 1)
 			millisecPerPulse = 1000 / Math.max(desiredPulsesPerSec, 1);
-	
-//			int executionMod = executionTime;
-//			if (executionMod > 1000) {
-//				// Future: need to debug why in some cases executionTime is higher than 1000 ms
-//				executionMod = 1000;
-//			}
-			
+		
 			// Update the sleep time that will allow room for the execution time
 			sleepTime = (int) millisecPerPulse - executionTime;
-	
+			
 			// if sleepTime is negative continuously, will consider calling Thread.sleep() 
 			// to pause the execution of this thread and allow other threads to complete.
 	
 			// Do NOT delete the followings. Very useful for debugging.
-			String msg = String.format("sleep=%d ms, desiredTR=%d, actualTR=%.2f, "
-					+ "millisol/sec=%.2f, pulse/sec=%.2f, mpp=%.2f, ms/pulse=%.2f, execution=%d ms",
-					sleepTime, desiredTR, actualTR, 
-					desiredMsolPerSec, desiredPulsesPerSec, mpp, millisecPerPulse, executionTime);
-		    logger.config(msg);
+			if (executionTime > 100) {
+				String msg = String.format(
+					// "sleep=%d ms, desiredTR=%d, actualTR=%.2f, "
+					"execution time = %d ms", 
+//					+ "millisol/sec=%.2f, pulse/sec=%.2f, mspp=%.2f, ms/pulse=%.2f, ",
+					executionTime
+//					sleepTime, desiredTR, actualTR, 
+//					desiredMsolPerSec, desiredPulsesPerSec, mspp, millisecPerPulse 
+					);
+		    	logger.config(msg);
+			}
+		    
+		    if (sleepTime < 0)
+		    	sleepTime = 0;
 		}
 	}
 }
