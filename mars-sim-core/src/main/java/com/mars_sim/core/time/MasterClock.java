@@ -1298,14 +1298,14 @@ public class MasterClock implements Serializable {
 			// // Limit the desired pulses to be at least 1
 			double millisecPerPulse = 1000 / Math.max(desiredPulsesPerSec, 1);
 	
-			int executionMod = executionTime;
-			if (executionMod > 1000) {
-				// Future: need to debug why in some cases executionTime is higher than 1000 ms
-				executionMod = 1000;
-			}
+//			int executionMod = executionTime;
+//			if (executionMod > 1000) {
+//				// Future: need to debug why in some cases executionTime is higher than 1000 ms
+//				executionMod = 1000;
+//			}
 			
 			// Update the sleep time that will allow room for the execution time
-			sleepTime = (int) millisecPerPulse - executionMod;
+			sleepTime = (int) millisecPerPulse - executionTime;
 	
 			// if sleepTime is negative continuously, will consider calling Thread.sleep() 
 			// to pause the execution of this thread and allow other threads to complete.

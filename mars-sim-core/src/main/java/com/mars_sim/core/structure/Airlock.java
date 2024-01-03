@@ -861,25 +861,15 @@ public abstract class Airlock implements Serializable {
 	 */
 	public void addTime(double time) {
 		
-		if (AirlockState.PRESSURIZED == airlockState
-				|| AirlockState.DEPRESSURIZING == airlockState) {
+		if (AirlockState.PRESSURIZED == airlockState) {
 			setState(AirlockState.DEPRESSURIZING);
-			
-			innerDoorLocked = true;
-			outerDoorLocked = true;
-			
-			cycleAir(time);
 		}
 		
-		else if (AirlockState.DEPRESSURIZED == airlockState
-				|| AirlockState.PRESSURIZING == airlockState) {
+		else if (AirlockState.DEPRESSURIZED == airlockState) {
 			setState(AirlockState.PRESSURIZING);
-			
-			innerDoorLocked = true;
-			outerDoorLocked = true;
-			
-			cycleAir(time);
 		}
+		
+		cycleAir(time);
 	}
 	
 	

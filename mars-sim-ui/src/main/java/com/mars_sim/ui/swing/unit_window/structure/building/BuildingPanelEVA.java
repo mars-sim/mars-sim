@@ -108,7 +108,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	}
 	
 	/**
-	 * Build the UI
+	 * Builds the UI.
 	 * 
 	 * @param content
 	 */
@@ -195,20 +195,20 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		wikiButton.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
 		topPanel.add(wikiPanel, BorderLayout.SOUTH);
 		
-		// Create listPanel
-		JPanel listPanel = new JPanel(new GridLayout(2, 2));
+		// Create gridPanel
+		JPanel gridPanel = new JPanel(new GridLayout(2, 2));
 		Border margin = new EmptyBorder(2, 2, 2, 2);
-		listPanel.setBorder(margin);
+		gridPanel.setBorder(margin);
 //		int width = UnitWindow.WIDTH - 40;
 //		int halfWidth = width/2;
 //		listPanel.setSize(new Dimension(width, -1));
-		content.add(listPanel, BorderLayout.CENTER);
+		content.add(gridPanel, BorderLayout.CENTER);
 		
 		// Create outside list panel
 		JPanel outsidePanel = new JPanel(new BorderLayout());
 //		outsidePanel.setSize(new Dimension(halfWidth, -1));
-		outsidePanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.outside4")));
-		listPanel.add(outsidePanel);
+		outsidePanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.zone4")));
+		gridPanel.add(outsidePanel);
 
 		// Create outsideListPanel 
 		outsideListPanel = new UnitListPanel<>(desktop, new Dimension(100, 100)) {
@@ -222,8 +222,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		// Create occupant panel
 		JPanel occupantPanel = new JPanel(new BorderLayout());
 //		occupantPanel.setSize(new Dimension(halfWidth, -1));
-		occupantPanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.occupants")));
-		listPanel.add(occupantPanel);
+		occupantPanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.zone13")));
+		gridPanel.add(occupantPanel);
 
 		// Create occupant list panel
 		occupantListPanel = new UnitListPanel<>(desktop, new Dimension(100, 100)) {
@@ -237,8 +237,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		// Create outside wait panel
 		JPanel insidePanel = new JPanel(new BorderLayout());
 //		insidePanel.setSize(new Dimension(halfWidth, -1));
-		insidePanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.outside0")));
-		listPanel.add(insidePanel);
+		insidePanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.zone0")));
+		gridPanel.add(insidePanel);
 
 		// Create insideListPanel 
 		insideListPanel = new UnitListPanel<>(desktop, new Dimension(100, 100)) {
@@ -252,8 +252,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		// Create reservation panel
 		JPanel reservationPanel = new JPanel(new BorderLayout());
 //		reservationPanel.setSize(new Dimension(halfWidth, -1));
-		addBorder(reservationPanel, Msg.getString("BuildingPanelEVA.titledB.Reserved"));
-		listPanel.add(reservationPanel);
+		addBorder(reservationPanel, Msg.getString("BuildingPanelEVA.titledB.reserved"));
+		gridPanel.add(reservationPanel);
 		
 		reservationListPanel = new UnitListPanel<>(desktop, new Dimension(100, 100)) {
 			@Override

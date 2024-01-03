@@ -509,7 +509,7 @@ extends Airlock {
 	}
 	
 	/**
-	 * Cycles the air and consumes the time
+	 * Cycles the air and consumes the time.
 	 * 
 	 * @param time
 	 */

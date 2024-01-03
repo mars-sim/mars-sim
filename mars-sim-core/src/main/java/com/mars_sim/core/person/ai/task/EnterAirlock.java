@@ -323,7 +323,7 @@ public class EnterAirlock extends Task {
 						+ CHAMBER_FULL + airlock.getEntityName() + ".");
 				
 				// Do not call clearDown since it will wipe a person from awaiting at outer door
-//				clearDown();
+				clearDown();
 				
 				// Reset accumulatedTime back to zero accumulatedTime = 0
 				// Do nothing in this frame
@@ -339,23 +339,39 @@ public class EnterAirlock extends Task {
 
 		else { // For vehicle
 
-			if (airlock.addAwaitingOuterDoor(id) || !airlock.isOuterDoorLocked() || airlock.isEmpty()) {
-				canProceed = true;
-			}
-			else {
-				logger.fine(person, 4_000, "Requested ingress" 
-						+ " but cannot wait at " + airlock.getEntityName() + "'s outer door.");
+			if (!airlock.addAwaitingOuterDoor(id)) {
+				logger.info(person, 60_000,
+						"Cannot get a spot outside the outer door in " + airlock.getEntityName() + ".");
 				
-				// Do not call clearDown since it will wipe a person from awaiting at outer door
-//				clearDown();
+				clearDown();
 				
+				// Reset accumulatedTime back to zero accumulatedTime = 0
+				// Do nothing in this frame
+				// Wait and see if he's allowed to be at the outer door in the next frame
 				return 0;
 			}
+
+			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
+				logger.info(person, 60_000,
+						"Cannot ingress. "
+						+ CHAMBER_FULL + airlock.getEntityName() + ".");
+				
+				// Do not call clearDown since it will wipe a person from awaiting at outer door
+				clearDown();
+				
+				// Reset accumulatedTime back to zero accumulatedTime = 0
+				// Do nothing in this frame
+				// Wait and see if he's allowed to be at the outer door in the next frame
+				return 0;
+			}			
+
+			canProceed = true;
+
 		}
 
 		if (canProceed) {
 
-			if (airlock.isDepressurized() && !airlock.isOuterDoorLocked()) {
+			if (airlock.isDepressurized()) { // && !airlock.isOuterDoorLocked()) {
 				// If airlock has already been depressurized,
 				// then it's ready for entry
 //				logger.log(unit, person, Level.INFO, 4_000,
@@ -406,7 +422,7 @@ public class EnterAirlock extends Task {
 			airlock.setTransitioning(true);
 		}
 		
-		if (airlock.isDepressurized() && !airlock.isOuterDoorLocked()) {
+		if (airlock.isDepressurized()) { //) && !airlock.isOuterDoorLocked()) {
 			// If airlock has already been depressurized,
 			// then it's ready for entry
 //			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
