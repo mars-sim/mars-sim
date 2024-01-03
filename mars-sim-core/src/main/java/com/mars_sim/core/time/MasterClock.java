@@ -125,6 +125,7 @@ public class MasterClock implements Serializable {
 	/** Records the real milli time when a pulse is excited. */
 	private long[] pulseLog = new long[MAX_PULSE_LOG];
 	
+	private double millisecPerPulse;
 	/** The last millisol from the last pulse. */
 	private double lastMillisol;
 	/** The current simulation time ratio. */
@@ -1118,7 +1119,10 @@ public class MasterClock implements Serializable {
 		return executionTime;
 	}
 
-
+	public double getMillisecPerPulse() {
+		return millisecPerPulse;
+	}
+	
 	/**
 	 * Returns the current # pulses per second, namely, current ticks per sec (TPS).
 	 *
@@ -1294,9 +1298,11 @@ public class MasterClock implements Serializable {
 			double desiredPulsesPerSec = desiredMsolPerSec / 
 					(0.2 * optMilliSolPerPulse + 0.3 * nextPulseTime + 0.5 * referencePulse);
 			
+			double mpp = 1000 / desiredPulsesPerSec;
+			
 			// Get the milliseconds between each pulse
-			// // Limit the desired pulses to be at least 1
-			double millisecPerPulse = 1000 / Math.max(desiredPulsesPerSec, 1);
+			// // Limit the desired pulses to be the minimum of 1 (or at least 1)
+			millisecPerPulse = 1000 / Math.max(desiredPulsesPerSec, 1);
 	
 //			int executionMod = executionTime;
 //			if (executionMod > 1000) {
@@ -1311,11 +1317,11 @@ public class MasterClock implements Serializable {
 			// to pause the execution of this thread and allow other threads to complete.
 	
 			// Do NOT delete the followings. Very useful for debugging.
-//			String msg = String.format("sleep=%d ms, desiredTR=%d, actualTR=%.2f, "
-//					+ "millisol/sec=%.2f, pulse/sec=%.2f, ms/pulse=%.2f, execution=%d ms",
-//					sleepTime, desiredTR, actualTR, 
-//					desiredMsolPerSec, desiredPulsesPerSec, millisecPerPulse, executionTime);
-//		    logger.info(msg);
+			String msg = String.format("sleep=%d ms, desiredTR=%d, actualTR=%.2f, "
+					+ "millisol/sec=%.2f, pulse/sec=%.2f, mpp=%.2f, ms/pulse=%.2f, execution=%d ms",
+					sleepTime, desiredTR, actualTR, 
+					desiredMsolPerSec, desiredPulsesPerSec, mpp, millisecPerPulse, executionTime);
+		    logger.config(msg);
 		}
 	}
 }
