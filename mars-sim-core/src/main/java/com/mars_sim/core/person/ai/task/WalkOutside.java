@@ -72,6 +72,8 @@ public class WalkOutside extends Task {
 	private int walkingPathIndex;
 	private double[] obstacleSearchLimits;
 
+	private long tLast;
+	
 	private LocalPosition start;
 	private LocalPosition destination;
 	private List<LocalPosition> walkingPath;
@@ -122,7 +124,10 @@ public class WalkOutside extends Task {
 	}
 
 	private void init(LocalPosition start, LocalPosition destination, boolean ignoreEndEVA) {
-
+		
+		// DEBUG: Calculate the real time elapsed [in milliseconds]
+		long tnow = System.currentTimeMillis();
+		
 		// Initialize data members.
 		this.start = start;
 		this.destination = destination;
@@ -134,6 +139,12 @@ public class WalkOutside extends Task {
 		// Determine walking path.
 		walkingPath = determineWalkingPath();
 
+		// DEBUG: Calculate the real time elapsed [in milliseconds]
+		tLast = System.currentTimeMillis();
+		long elapsedMS = tLast - tnow;
+		if (elapsedMS > 10)
+			logger.severe(worker, "elapsedMS: " + elapsedMS);
+		
 		// Initialize task phase.
 		addPhase(WALKING);
 		setPhase(WALKING);
@@ -741,11 +752,16 @@ public class WalkOutside extends Task {
 		return false;
 	}
 	
+	/**
+	 * Prepares object for garbage collection.
+	 */
 	@Override
 	public void destroy() {
 		start = null;
 		destination = null;
 		walkingPath.clear();
 		walkingPath = null;
+			
+		super.destroy();
 	}
 }

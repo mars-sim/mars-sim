@@ -77,7 +77,7 @@ public class LunarColonyManager implements Serializable, Temporal {
 		
 		// DEBUG: Calculate the real time elapsed [in milliseconds]
 		tLast = System.currentTimeMillis();
-		long elapsedMS = tnow - tLast;
+		long elapsedMS = tLast - tnow;
 		if (elapsedMS > 10)
 			logger.severe("elapsedMS: " + elapsedMS);
 	

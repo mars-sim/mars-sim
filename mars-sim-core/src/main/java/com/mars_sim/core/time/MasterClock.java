@@ -1312,7 +1312,7 @@ public class MasterClock implements Serializable {
 			// to pause the execution of this thread and allow other threads to complete.
 	
 			// Do NOT delete the followings. Very useful for debugging.
-			if (executionTime > 100) {
+			if (executionTime > 40) {
 				String msg = String.format(
 					// "sleep=%d ms, desiredTR=%d, actualTR=%.2f, "
 					"execution time = %d ms", 

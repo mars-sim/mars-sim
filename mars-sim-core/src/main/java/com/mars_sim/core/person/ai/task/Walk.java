@@ -1178,8 +1178,14 @@ public class Walk extends Task {
 		return false;
 	}
 	
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	@Override
 	public void destroy() {
 		walkingSteps = null;
 		walkingStepPhaseMap = null;
+		
+		super.destroy();
 	}
 }

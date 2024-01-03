@@ -276,7 +276,9 @@ public class PersonTaskManager extends TaskManager {
 	 */
 	@Override
 	public void destroy() {
+		mind.destroy();
 		mind = null;
+		person.destroy();
 		person = null;
 
 		super.destroy();

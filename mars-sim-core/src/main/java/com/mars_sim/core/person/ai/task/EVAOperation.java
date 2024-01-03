@@ -883,4 +883,17 @@ public abstract class EVAOperation extends Task {
 		logger.config("Minimum sunlight for EVA = " + minimum);
 		minEVASunlight = minimum;
 	}
+	
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	@Override
+	public void destroy() {
+		outsideSitePos = null;
+		interiorObject = null;
+		returnInsideLoc = null;
+		outsideSkill = null;
+		
+		super.destroy();
+	}
 }
