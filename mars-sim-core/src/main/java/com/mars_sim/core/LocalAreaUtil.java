@@ -361,27 +361,27 @@ public class LocalAreaUtil {
 	}
 
 
-	/**
-	 * Gets a set of vehicles at a given coordinate location.
-	 *
-	 * @param coordinates the coordinate location.
-	 * @return set of local bounded objects at location (may be empty).
-	 */
-	public static Set<LocalBoundedObject> getAllVehicleBoundedObjectsAtLocation(Coordinates coordinates) {
-
-		Set<LocalBoundedObject> result = new HashSet<>(); //ConcurrentHashMap.newKeySet();
-
-		// Add all vehicles at location.
-		Iterator<Vehicle> i = unitManager.getVehicles().iterator();
-		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
-			if (vehicle.getCoordinates().equals(coordinates)) {
-				result.add(vehicle);
-			}
-		}
-
-		return result;
-	}
+//	/**
+//	 * Gets a set of vehicles at a given coordinate location.
+//	 *
+//	 * @param coordinates the coordinate location.
+//	 * @return set of local bounded objects at location (may be empty).
+//	 */
+//	public static Set<LocalBoundedObject> getAllVehicleBoundedObjectsAtLocation(Coordinates coordinates) {
+//
+//		Set<LocalBoundedObject> result = new HashSet<>(); //ConcurrentHashMap.newKeySet();
+//
+//		// Add all vehicles at location.
+//		Iterator<Vehicle> i = unitManager.getVehicles().iterator();
+//		while (i.hasNext()) {
+//			Vehicle vehicle = i.next();
+//			if (vehicle.getCoordinates().equals(coordinates)) {
+//				result.add(vehicle);
+//			}
+//		}
+//
+//		return result;
+//	}
 
 	/**
 	 * Checks for collisions with any immovable objects.

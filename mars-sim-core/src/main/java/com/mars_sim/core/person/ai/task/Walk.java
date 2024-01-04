@@ -401,8 +401,6 @@ public class Walk extends Task {
 				if (step.stepType == WalkingSteps.WalkStep.EXIT_AIRLOCK) {
 					Airlock airlock = step.airlock;
 					if (!ExitAirlock.canExitAirlock(person, airlock)) {
-//						logger.log(person, Level.FINE, 10_000L,
-//								"Could not exit " + airlock.getEntityName() + ".");
 						return false;
 					}
 				}
@@ -780,12 +778,8 @@ public class Walk extends Task {
 					setDescription("Walking outside toward " + step.loc.getShortFormat());
 //					logger.info(person, "Walking outside from (" + x + ", " + y + ") to ("
 //							+ xx + ", " + yy + ")");
-					Task currentTask = person.getMind().getTaskManager().getTask();
-	        		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
-	        		if ((currentTask != null && !currentTask.getName().equalsIgnoreCase(WalkOutside.NAME))
-	        			|| (subTask != null && !subTask.getName().equalsIgnoreCase(WalkOutside.NAME))) {	
-						addSubTask(new WalkOutside(person, person.getPosition(), step.loc, true));
-	        		}
+	        		// Note that addSubTask() will internally check if the task is a duplicate
+					addSubTask(new WalkOutside(person, person.getPosition(), step.loc, true));
 				}
 				else {
 					logger.log(person, Level.SEVERE, 5_000,

@@ -46,6 +46,8 @@ public abstract class DigLocal extends EVAOperation {
 	/** The extended amount of millisols for dropping off resources. */
 	public static final int EXTENDED_TIME = 5;
 	
+	public static final int MAX_DIGGING_DISTANCE = 50;
+	
 	public static final double SMALL_AMOUNT = 0.00001;
 	/** The loading speed of the resource at the storage bin [kg/millisols]. */
 	public static final double LOADING_RATE = 10.0;
@@ -207,27 +209,29 @@ public abstract class DigLocal extends EVAOperation {
 	 * @return
 	 */
     private double walkToBin(double time) {
+		if (dropOffLoc == null) {
+    		// TODO: walk to next to a workshop or manufacturing shed or lander hab
+			logger.severe(person, "No location for storage bin.");
+			endTask();
+			return 0;
+		}
+		
     	// Go to the drop off location
         if (person.isOutside()) {
-			if (dropOffLoc == null) {
-        		// TODO: walk to next to a workshop or manufacturing shed or lander hab
-				logger.severe(person, "No location for storage bin.");
-				endTask();
-			}
-        	else if (!person.getPosition().equals(dropOffLoc)) {
-        		// TODO: how to get the walk time and return the remaining time ?
-//        		Task currentTask = person.getMind().getTaskManager().getTask();
-//        		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
-//        		if ((currentTask != null && !currentTask.getName().toLowerCase().contains(WALK))
-//        			|| (subTask != null && !subTask.getName().toLowerCase().contains(WALK))) {	
-        				addSubTask(new WalkOutside(person, person.getPosition(),
-        					dropOffLoc, true));
-//        		}
+        	
+    		if (!dropOffLoc.isNear(person.getPosition())) { 	
+        		// FUTURE: how to get the walk time and return the remaining time ?
+    			
+        		// Note that addSubTask() will internally check if the task is a duplicate
+        		addSubTask(new WalkOutside(person, person.getPosition(),
+        				dropOffLoc, false));
         	}
+    		
         	else {
         		setPhase(DROP_OFF_RESOURCE);
         	}
         }
+        
         else {
         	logger.severe(person, "Not outside. Unable to walk to the storage bin.");
             endTask();
@@ -481,11 +485,12 @@ public abstract class DigLocal extends EVAOperation {
 				return null;
 			}
 		}
-        int rand = RandomUtil.getRandomInt(binList.size() - 1);
-        Building b = binList.get(rand); 
 
-        // Set the bin drop off location (next to the bin)    	
-		LocalPosition p = LocalAreaUtil.getCollisionFreeRandomPosition(b, worker.getCoordinates(), 1D);
+        // Set the bin drop off location (next to the airlock) 
+		Building b = (Building)(airlock.getEntity());
+		// or Use settlement.getBuildingManager().getRandomAirlockBuilding();
+        
+		LocalPosition p = LocalAreaUtil.getCollisionFreeRandomPosition(b, worker.getCoordinates(), 10);
 		if (p == null) {
 			abortEVA("No suitable drop-off location near " + b + ".");
 		}
@@ -499,8 +504,8 @@ public abstract class DigLocal extends EVAOperation {
      */
     private LocalPosition determineDiggingLocation() {
 		if (airlock.getEntity() instanceof LocalBoundedObject boundedObject) {
-			return  LocalAreaUtil.getCollisionFreeRandomPosition(boundedObject,
-																 person.getCoordinates(), 100D);
+			return LocalAreaUtil.getCollisionFreeRandomPosition(boundedObject,
+																 person.getCoordinates(), MAX_DIGGING_DISTANCE);
 		}
 
         return null;

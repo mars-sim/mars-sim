@@ -232,7 +232,8 @@ public abstract class EVAOperation extends Task {
 	protected double performMappedPhase(double time) {
 		if (person.isOutside()) {
 			if (person.isSuperUnFit()) {
-				setPhase(WALK_BACK_INSIDE);
+//				setPhase(WALK_BACK_INSIDE);
+				walkBackInsidePhase(time);
 			}
 			else
 				person.addEVATime(getTaskSimpleName(), time);
@@ -269,23 +270,20 @@ public abstract class EVAOperation extends Task {
             }
         }
         else {
-        	if (!person.getPosition().equals(outsideSitePos)) {
-    			Task currentTask = person.getMind().getTaskManager().getTask();
-        		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
-        		if ((currentTask != null && !currentTask.getName().equalsIgnoreCase(WalkOutside.NAME))
-        			|| (subTask != null && !subTask.getName().equalsIgnoreCase(WalkOutside.NAME))) {	
-        			addSubTask(new WalkOutside(person, person.getPosition(),
-            				outsideSitePos, true));
-        		}
+        	if (!outsideSitePos.isNear(person.getPosition())) {	
+        		// FUTURE: how to get the walk time and return the remaining time ?
+        		  
+        		// Note that addSubTask() will internally check if the task is a duplicate
+        		addSubTask(new WalkOutside(person, person.getPosition(),
+            				outsideSitePos, false));   		
         	}
         	else {
-                // In case of DigLocalRegolith,
-                // set to getOutsideSitePhase() to COLLECT_REGOLITH
+                // Set to collectionPhase
         		setPhase(getOutsideSitePhase());
         	}
         }
 
-        return time * .9;
+        return 0;
     }
 
 	/**
@@ -381,7 +379,7 @@ public abstract class EVAOperation extends Task {
 		}
 
 
-		return time * .9;
+		return 0;
 	}
 	
 	/**

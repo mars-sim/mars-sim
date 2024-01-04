@@ -26,6 +26,8 @@ public class LocalPosition implements Serializable {
 	/** A very small distance (meters) for measuring how close two positions are. */
 	private static final double ONE_CENTIMETER = .01; // within a centimeter
 	
+	private static final double TWO_METERS = 2;
+	
 	private double x;
 	private double y;
 
@@ -123,6 +125,16 @@ public class LocalPosition implements Serializable {
 		return getDistanceTo(other) < ONE_CENTIMETER;
 	}
 
+	/**
+	 * Is another position near to this one?
+	 * 
+	 * @param other
+	 * @return
+	 */
+	public boolean isNear(LocalPosition other) {
+		return getDistanceTo(other) < TWO_METERS;
+	}
+	
 	/**
 	 * Is this position within the boundaries of an X & Y ?
 	 * 

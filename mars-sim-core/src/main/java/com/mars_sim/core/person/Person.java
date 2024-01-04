@@ -152,7 +152,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	/** The height of the person (in kg). */
 	private double weight;
 
-	private long tLast;
+//	private long tLast;
 	
 	/** The person's country of origin. */
 	private String country;
@@ -215,7 +215,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	 * @param settlement {@link Settlement} the settlement the person is at
 	 * @param gender     the person's gender
 	 * @param age		 Uhe person's age, can be optional of -1
-	 * @param ethnicity Optional parameter of the ethnicity influences phyicaial characteristics
+	 * @param ethnicity Optional parameter of the ethnicity influences phyical characteristics
 	 * @param initialAttrs 
 	 * @param personAttrs Persons attributes.
 	 */
@@ -661,7 +661,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 		}
 
 		// DEBUG: Calculate the real time elapsed [in milliseconds]
-		long tnow = System.currentTimeMillis();
+//		long tnow = System.currentTimeMillis();
 		
 		// Check to see if the person has deceased
 		if (condition.getDeathDetails() != null
@@ -740,11 +740,11 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 			}
 		}
 		
-		// DEBUG: Calculate the real time elapsed [in milliseconds]
-		tLast = System.currentTimeMillis();
-		long elapsedMS = tLast - tnow;
-		if (elapsedMS > 100)
-			logger.severe(this, "elapsedMS: " + elapsedMS);
+//		// DEBUG: Calculate the real time elapsed [in milliseconds]
+//		tLast = System.currentTimeMillis();
+//		long elapsedMS = tLast - tnow;
+//		if (elapsedMS > 100)
+//			logger.severe(this, "elapsedMS: " + elapsedMS);
 				
 		return true;
 	}

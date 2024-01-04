@@ -258,7 +258,7 @@ public class Settlement extends Structure implements Temporal,
 	/** The background map image id used by this settlement. */
 	private int mapImageID;
 	
-	private long tLast;
+//	private long tLast;
 	
 	/** The average regolith collection rate nearby. */
 	private double regolithCollectionRate = RandomUtil.getRandomDouble(4, 8);
@@ -973,7 +973,7 @@ public class Settlement extends Structure implements Temporal,
 		}
 
 		// DEBUG: Calculate the real time elapsed [in milliseconds]
-		long tnow = System.currentTimeMillis();
+//		long tnow = System.currentTimeMillis();
 		
 		// Run at the start of the sim once only
 		if (justLoaded) {	
@@ -1077,10 +1077,10 @@ public class Settlement extends Structure implements Temporal,
 		computeEnvironmentalAverages();
 
 		// DEBUG: Calculate the real time elapsed [in milliseconds]
-		tLast = System.currentTimeMillis();
-		long elapsedMS = tLast - tnow;
-		if (elapsedMS > 100)
-			logger.severe(this, "elapsedMS: " + elapsedMS);
+//		tLast = System.currentTimeMillis();
+//		long elapsedMS = tLast - tnow;
+//		if (elapsedMS > 100)
+//			logger.severe(this, "elapsedMS: " + elapsedMS);
 
 		return true;
 	}
