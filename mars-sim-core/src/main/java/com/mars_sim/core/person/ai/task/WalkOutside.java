@@ -180,17 +180,17 @@ public class WalkOutside extends Task {
 		}
 
 		else {
-			// DEBUG: Calculate the real time elapsed [in milliseconds]
-			long tnow = System.currentTimeMillis();
+//			// DEBUG: Calculate the real time elapsed [in milliseconds]
+//			long tnow = System.currentTimeMillis();
 			
 			// Determine path around obstacles using A* path planning algorithm.
 			List<LocalPosition> obstacleAvoidancePath = determineObstacleAvoidancePath();
 
-			// DEBUG: Calculate the real time elapsed [in milliseconds]
-			tLast = System.currentTimeMillis();
-			long elapsedMS = tLast - tnow;
-			if (elapsedMS > 1000)
-				logger.severe(worker, "elapsedMS: " + elapsedMS);
+//			// DEBUG: Calculate the real time elapsed [in milliseconds]
+//			tLast = System.currentTimeMillis();
+//			long elapsedMS = tLast - tnow;
+//			if (elapsedMS > 1000)
+//				logger.severe(worker, "elapsedMS: " + elapsedMS);
 			
 			if (obstacleAvoidancePath != null) {
 				// Set to obstacle avoidance path.
@@ -247,6 +247,9 @@ public class WalkOutside extends Task {
 		// The map of navigated locations.
 		Map<LocalPosition, LocalPosition> cameFrom = new HashMap<>();
 
+		// DEBUG: Calculate the real time elapsed [in milliseconds]
+		long tnow = System.currentTimeMillis();
+					
 		// Check each location in openSet.
 		while (!openSet.isEmpty()) {
 
@@ -300,6 +303,12 @@ public class WalkOutside extends Task {
 			}
 		}
 
+		// DEBUG: Calculate the real time elapsed [in milliseconds]
+		tLast = System.currentTimeMillis();
+		long elapsedMS = tLast - tnow;
+		if (elapsedMS > 1000)
+			logger.severe(worker, "elapsedMS: " + elapsedMS);
+		
 		return result;
 	}
 
