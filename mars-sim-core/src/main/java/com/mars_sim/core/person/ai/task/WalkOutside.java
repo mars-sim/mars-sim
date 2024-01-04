@@ -173,7 +173,7 @@ public class WalkOutside extends Task {
 		// Check if direct walking path to destination is free of obstacles.
 		Line2D line = new Line2D.Double(start.getX(), start.getY(), destination.getX(), destination.getY());
 
-		boolean freePath = LocalAreaUtil.isLinePathCollisionFree(line, worker.getCoordinates(), true);;
+		boolean freePath = LocalAreaUtil.isLinePathCollisionFree(line, worker.getCoordinates(), true);
 
 		if (freePath) {
 			result.add(destination);
@@ -233,7 +233,9 @@ public class WalkOutside extends Task {
 
 		// Using A* path planning algorithm, testing out neighbor locations in a 1m x 1m
 		// grid.
-		// http://en.wikipedia.org/wiki/A*
+		// https://en.wikipedia.org/wiki/A*_search_algorithm
+		// https://stackabuse.com/graphs-in-java-a-star-algorithm/
+		// https://www.happycoders.eu/algorithms/a-star-algorithm-java/
 
 		// The set of locations already evaluated.
 		Set<LocalPosition> closedSet = new HashSet<>();
@@ -655,8 +657,11 @@ public class WalkOutside extends Task {
 		if (coveredMeters > remainingPathDistance) {
 			coveredMeters = remainingPathDistance;
 			
-			if (speedKPH > 0)
-				remainingTime = remainingTime - MarsTime.convertSecondsToMillisols(coveredMeters / speedKPH * 3.6);
+			if (speedKPH > 0) {
+				double usedTime = MarsTime.convertSecondsToMillisols(coveredMeters / speedKPH * 3.6);
+				remainingTime = remainingTime - usedTime;
+			}
+			
 			if (remainingTime < 0)
 				remainingTime = 0;
 		}
@@ -668,12 +673,14 @@ public class WalkOutside extends Task {
 			// Walk to next path location.
 			LocalPosition location = walkingPath.get(walkingPathIndex);
 			double distanceToLocation = worker.getPosition().getDistanceTo(location);
+			
 			if (coveredMeters >= distanceToLocation) {
 
 				// Set person at next path location.
 				worker.setPosition(location);
 
 				coveredMeters -= distanceToLocation;
+				
 				if (walkingPath.size() > (walkingPathIndex + 1)) {
 					walkingPathIndex++;
 				}
@@ -690,7 +697,7 @@ public class WalkOutside extends Task {
 				walkInDirection(direction, coveredMeters);
 
 				// Set person at next path location.
-				worker.setPosition(location);
+//				worker.setPosition(location);
 
 				coveredMeters = 0D;
 			}
@@ -710,9 +717,9 @@ public class WalkOutside extends Task {
 		
         // Warning: see GitHub issue #1039 for details on return a 
         // non-zero value from this method
-        
-//      return remainingTime;
-        return 0;
+      return remainingTime;
+		
+//        return 0;
 	}
 
 	/**
