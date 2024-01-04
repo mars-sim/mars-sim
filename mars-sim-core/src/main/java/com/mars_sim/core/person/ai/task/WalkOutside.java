@@ -717,9 +717,9 @@ public class WalkOutside extends Task {
 		
         // Warning: see GitHub issue #1039 for details on return a 
         // non-zero value from this method
-      return remainingTime;
+//      return remainingTime;
 		
-//        return 0;
+        return 0;
 	}
 
 	/**
