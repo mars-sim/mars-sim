@@ -41,7 +41,7 @@ public class LocalAreaUtil {
 	private record CachedArea(Area area, MarsTime when) {};
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(LocalAreaUtil.class.getName());
+	// May add back private static SimLogger logger = SimLogger.getLogger(LocalAreaUtil.class.getName())
 
 	
 	/** Distance from edge of boundary when determining internal locations. */

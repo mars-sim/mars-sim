@@ -46,9 +46,9 @@ public abstract class DigLocal extends EVAOperation {
 	/** The extended amount of millisols for dropping off resources. */
 	public static final int EXTENDED_TIME = 5;
 	
-	public static final int MAX_DIGGING_DISTANCE = 50;
+	public static final int MAX_DIGGING_DISTANCE = 100;
 	
-	public static final double SMALL_AMOUNT = 0.00001;
+	public static final double SMALL_AMOUNT = 0.001;
 	/** The loading speed of the resource at the storage bin [kg/millisols]. */
 	public static final double LOADING_RATE = 10.0;
 

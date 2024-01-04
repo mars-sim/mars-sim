@@ -686,7 +686,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					// No need to record consumed time as already know the duration
 					performMappedPhase(timeRequired);
 					timeCompleted = duration;
-					// NOTE: does endTask() cause Sleep task to unncessarily end and restart ?
+					// NOTE: does endTask() cause Sleep task to unnecessarily end and restart ?
 					endTask();
 				} else {
 					double remainingTime = timeLeft;
