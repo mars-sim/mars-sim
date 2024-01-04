@@ -28,7 +28,7 @@ public class LunarColonyManager implements Serializable, Temporal {
 
 	private static AuthorityFactory raFactory = SimulationConfig.instance().getReportingAuthorityFactory();
 	
-	private long tLast;
+//	private long tLast;
 	
 	/**
 	 * Constructor.
@@ -69,17 +69,17 @@ public class LunarColonyManager implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		// DEBUG: Calculate the real time elapsed [in milliseconds]
-		long tnow = System.currentTimeMillis();
+//		long tnow = System.currentTimeMillis();
 
 		for (Colony c: colonies) {
 			c.timePassing(pulse);
 		}
 		
 		// DEBUG: Calculate the real time elapsed [in milliseconds]
-		tLast = System.currentTimeMillis();
-		long elapsedMS = tLast - tnow;
-		if (elapsedMS > 10)
-			logger.severe("elapsedMS: " + elapsedMS);
+//		tLast = System.currentTimeMillis();
+//		long elapsedMS = tLast - tnow;
+//		if (elapsedMS > 10)
+//			logger.severe("elapsedMS: " + elapsedMS);
 	
 		return true;
 	}

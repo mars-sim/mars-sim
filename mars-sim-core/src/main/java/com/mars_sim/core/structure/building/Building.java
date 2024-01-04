@@ -142,7 +142,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	protected double basePowerDownPowerRequirement;
 	protected double powerNeededForEVAHeater;
 
-	private long tLast;
+//	private long tLast;
 	
 	/** Type of building. */
 	protected String buildingType;
@@ -1157,7 +1157,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		}
 		
 		// DEBUG: Calculate the real time elapsed [in milliseconds]
-		long tnow = System.currentTimeMillis();
+//		long tnow = System.currentTimeMillis();
 
 		// Send time to each building function.
 		for (Function f : functions)
@@ -1178,10 +1178,10 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		inTransportMode = false;
 		
 		// DEBUG: Calculate the real time elapsed [in milliseconds]
-		tLast = System.currentTimeMillis();
-		long elapsedMS = tLast - tnow;
-		if (elapsedMS > 10)
-			logger.severe(this, "elapsedMS: " + elapsedMS);
+//		tLast = System.currentTimeMillis();
+//		long elapsedMS = tLast - tnow;
+//		if (elapsedMS > 10)
+//			logger.severe(this, "elapsedMS: " + elapsedMS);
 			
 		return true;
 	}

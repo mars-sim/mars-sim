@@ -743,7 +743,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 		// DEBUG: Calculate the real time elapsed [in milliseconds]
 		tLast = System.currentTimeMillis();
 		long elapsedMS = tLast - tnow;
-		if (elapsedMS > 10)
+		if (elapsedMS > 100)
 			logger.severe(this, "elapsedMS: " + elapsedMS);
 				
 		return true;

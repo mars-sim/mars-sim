@@ -104,9 +104,9 @@ public class LocalPosition implements Serializable {
 	
 
 	/**
-	 * Gets this relative position as an absolute position relative to a basepoint.
+	 * Gets this relative position as an absolute position relative to a base point.
 	 * 
-	 * @param bsaepoint Position as the base
+	 * @param basepoint Position as the base
 	 * @return
 	 */
 	public LocalPosition getAbsolutePosition(LocalPosition basepoint) {
@@ -160,6 +160,11 @@ public class LocalPosition implements Serializable {
 			return false;
 		double ydiff = y - other.y;
 		return (Math.abs(ydiff) < ONE_CENTIMETER);
+//		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
+//			return false;
+//		if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
+//			return false;
+//		return true;
 	}
 
 	/**
@@ -173,6 +178,6 @@ public class LocalPosition implements Serializable {
 
 	@Override
 	public String toString() {
-		return "(" + Math.round(x*10_000.0)/10_000.0 + ", " + Math.round(y*10_000.0)/10_000.0 + ")";
+		return "(" + Math.round(x*100.0)/100.0 + ", " + Math.round(y*100.0)/100.0 + ")";
 	}
 }

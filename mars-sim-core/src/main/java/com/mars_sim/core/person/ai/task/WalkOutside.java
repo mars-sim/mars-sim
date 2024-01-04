@@ -55,8 +55,8 @@ public class WalkOutside extends Task {
 //	private static final double MIN_PULSE_TIME = Walk.MIN_PULSE_TIME;
 	/** The speed factor due to walking in EVA suit. */
 	private static final double EVA_MOD = .3;
-	/** The greater than zero distance [km] */
-	private static final double VERY_SMALL_DISTANCE = .00001D;
+	/** The greater than zero distance [meter] */
+	private static final double VERY_SMALL_DISTANCE = .01D;
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .3D;
 	/** The base chance of an accident per millisol. */
@@ -125,9 +125,6 @@ public class WalkOutside extends Task {
 
 	private void init(LocalPosition start, LocalPosition destination, boolean ignoreEndEVA) {
 		
-		// DEBUG: Calculate the real time elapsed [in milliseconds]
-		long tnow = System.currentTimeMillis();
-		
 		// Initialize data members.
 		this.start = start;
 		this.destination = destination;
@@ -139,12 +136,6 @@ public class WalkOutside extends Task {
 		// Determine walking path.
 		walkingPath = determineWalkingPath();
 
-		// DEBUG: Calculate the real time elapsed [in milliseconds]
-		tLast = System.currentTimeMillis();
-		long elapsedMS = tLast - tnow;
-		if (elapsedMS > 10)
-			logger.severe(worker, "elapsedMS: " + elapsedMS);
-		
 		// Initialize task phase.
 		addPhase(WALKING);
 		setPhase(WALKING);
@@ -189,9 +180,18 @@ public class WalkOutside extends Task {
 		}
 
 		else {
+			// DEBUG: Calculate the real time elapsed [in milliseconds]
+			long tnow = System.currentTimeMillis();
+			
 			// Determine path around obstacles using A* path planning algorithm.
 			List<LocalPosition> obstacleAvoidancePath = determineObstacleAvoidancePath();
 
+			// DEBUG: Calculate the real time elapsed [in milliseconds]
+			tLast = System.currentTimeMillis();
+			long elapsedMS = tLast - tnow;
+			if (elapsedMS > 1000)
+				logger.severe(worker, "elapsedMS: " + elapsedMS);
+			
 			if (obstacleAvoidancePath != null) {
 				// Set to obstacle avoidance path.
 				result = obstacleAvoidancePath;
@@ -214,17 +214,22 @@ public class WalkOutside extends Task {
 	 */
 	private List<LocalPosition> determineObstacleAvoidancePath() {
 
-		List<LocalPosition> result = null;
 
 		// Check if start or destination locations are within obstacles.
 		// Return null if either are within obstacles.
 		boolean startLocWithinObstacle = !LocalAreaUtil.isPositionCollisionFree(start, worker.getCoordinates());
-		boolean destinationLocWithinObstacle = !LocalAreaUtil.isPositionCollisionFree(destination, worker.getCoordinates());
-
-		if (startLocWithinObstacle || destinationLocWithinObstacle) {
+		if (startLocWithinObstacle) {
 			//logger.warning(worker, "Start/End positions are inside an entity");
 			return null;
 		}
+		
+		boolean destinationLocWithinObstacle = !LocalAreaUtil.isPositionCollisionFree(destination, worker.getCoordinates());
+		if (destinationLocWithinObstacle) {
+			//logger.warning(worker, "Start/End positions are inside an entity");
+			return null;
+		}
+
+		List<LocalPosition> result = null;
 
 		// Using A* path planning algorithm, testing out neighbor locations in a 1m x 1m
 		// grid.
@@ -256,8 +261,8 @@ public class WalkOutside extends Task {
 			if (checkClearPathToDestination(currentLoc, destination)) {
 
 				// Create path from currentLoc.
-				List<LocalPosition> path = recreatePath(cameFrom, currentLoc);
-				result = optimizePath(path);
+//				List<LocalPosition> path = recreatePath(cameFrom, currentLoc);
+				result = optimizePath(recreatePath(cameFrom, currentLoc));
 				break;
 			}
 

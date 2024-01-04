@@ -1079,7 +1079,7 @@ public class Settlement extends Structure implements Temporal,
 		// DEBUG: Calculate the real time elapsed [in milliseconds]
 		tLast = System.currentTimeMillis();
 		long elapsedMS = tLast - tnow;
-		if (elapsedMS > 40)
+		if (elapsedMS > 100)
 			logger.severe(this, "elapsedMS: " + elapsedMS);
 
 		return true;
