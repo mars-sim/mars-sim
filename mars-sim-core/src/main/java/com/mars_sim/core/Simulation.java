@@ -1006,7 +1006,7 @@ public class Simulation implements ClockListener, Serializable {
 		if (!isAlreadyPaused) 
 			masterClock.setPaused(false, false);
 		
-		masterClock.restart();
+		masterClock.start();
 	}
 
 	private boolean checkHeapSizeSerialize(SaveType type, File file, Path  srcPath, Path destPath) {
