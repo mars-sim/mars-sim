@@ -585,7 +585,7 @@ public class MasterClock implements Serializable {
 			}
 			else {
 				// NOTE: when resuming from power saving, timePulse becomes zero
-				logger.config(20_000L, "Pulse width deviated too much: " + nextPulseDeviation
+				logger.config("Pulse width deviated too much: " + nextPulseDeviation
 						+ "  acceptablePulse is false.");
 			}
 		}
