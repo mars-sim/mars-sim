@@ -257,7 +257,7 @@ public class Settlement extends Structure implements Temporal,
 	/** The background map image id used by this settlement. */
 	private int mapImageID;
 	
-//	private long tLast;
+	private long tLast;
 	
 	/** The average regolith collection rate nearby. */
 	private double regolithCollectionRate = RandomUtil.getRandomDouble(4, 8);
@@ -970,9 +970,6 @@ public class Settlement extends Structure implements Temporal,
 		if (!isValid(pulse)) {
 			return false;
 		}
-
-		// DEBUG: Calculate the real time elapsed [in milliseconds]
-//		long tnow = System.currentTimeMillis();
 		
 		// Run at the start of the sim once only
 		if (justLoaded) {	
@@ -1036,6 +1033,7 @@ public class Settlement extends Structure implements Temporal,
 		// At the beginning of a new sol,
 		// there's a chance a new site is automatically discovered
 		if (pulse.isNewSol()) {
+
 			// Perform the end of day tasks
 			performEndOfDayTasks(pulse.getMarsTime());	
 
@@ -1066,7 +1064,7 @@ public class Settlement extends Structure implements Temporal,
 			logger.info(this, "On Sol " + sol + ", " +  anotherSite.getFormattedString() 
 						+ " was added to be analyzed and explored.");
 			
-			checkMineralMapImprovement();
+			checkMineralMapImprovement();	
 		}
 
 		// Keeps track of things based on msol
@@ -1074,12 +1072,6 @@ public class Settlement extends Structure implements Temporal,
 
 		// Computes the average air pressure & temperature of the life support system.
 		computeEnvironmentalAverages();
-
-		// DEBUG: Calculate the real time elapsed [in milliseconds]
-//		tLast = System.currentTimeMillis();
-//		long elapsedMS = tLast - tnow;
-//		if (elapsedMS > 100)
-//			logger.severe(this, "elapsedMS: " + elapsedMS);
 
 		return true;
 	}
@@ -1126,7 +1118,11 @@ public class Settlement extends Structure implements Temporal,
 	 * Checks and prints the average mineral map improvement made.
 	 */
 	private void checkMineralMapImprovement() {
+		// A note on benchmark: This mineral map improvement method takes between 2 and 5 ms to complete
 		
+		// DEBUG: Calculate the real time elapsed [in milliseconds]
+		long tnow = System.currentTimeMillis();
+
 		int improved = 0;
 		
 		List<ExploredLocation> siteList = surfaceFeatures
@@ -1141,11 +1137,19 @@ public class Settlement extends Structure implements Temporal,
     	    	
     	int size = siteList.size();
     	
-    	if (size > 0) {
+    	if (size > 0 && improved > 0) {
 	    	double result = 1.0 * improved / size;
-	    
-			logger.info(this, "Overall average # of improvement made on all mineral locations: " + Math.round(result * 10.0)/10.0);
+			logger.info(this, "Average improvement score on " + size + " mineral location(s): " + Math.round(result * 10.0)/10.0);
     	}
+    	else {
+			logger.info(this, "Zero improvement score on mineral locations.");
+    	}
+    	
+		// DEBUG: Calculate the real time elapsed [in milliseconds]
+		tLast = System.currentTimeMillis();
+		long elapsedMS = tLast - tnow;
+		if (elapsedMS > 1)
+			logger.severe(this, "checkMineralMapImprovement() elapsedMS: " + elapsedMS);
 	}
 	
 	/**
