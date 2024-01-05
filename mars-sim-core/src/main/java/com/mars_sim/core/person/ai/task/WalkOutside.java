@@ -72,7 +72,7 @@ public class WalkOutside extends Task {
 	private int walkingPathIndex;
 	private double[] obstacleSearchLimits;
 
-	private long tLast;
+//	private long tLast;
 	
 	private LocalPosition start;
 	private LocalPosition destination;
@@ -180,18 +180,9 @@ public class WalkOutside extends Task {
 		}
 
 		else {
-//			// DEBUG: Calculate the real time elapsed [in milliseconds]
-//			long tnow = System.currentTimeMillis();
-			
 			// Determine path around obstacles using A* path planning algorithm.
 			List<LocalPosition> obstacleAvoidancePath = determineObstacleAvoidancePath();
-
-//			// DEBUG: Calculate the real time elapsed [in milliseconds]
-//			tLast = System.currentTimeMillis();
-//			long elapsedMS = tLast - tnow;
-//			if (elapsedMS > 1000)
-//				logger.severe(worker, "elapsedMS: " + elapsedMS);
-			
+		
 			if (obstacleAvoidancePath != null) {
 				// Set to obstacle avoidance path.
 				result = obstacleAvoidancePath;
@@ -214,7 +205,6 @@ public class WalkOutside extends Task {
 	 */
 	private List<LocalPosition> determineObstacleAvoidancePath() {
 
-
 		// Check if start or destination locations are within obstacles.
 		// Return null if either are within obstacles.
 		boolean startLocWithinObstacle = !LocalAreaUtil.isPositionCollisionFree(start, worker.getCoordinates());
@@ -228,7 +218,7 @@ public class WalkOutside extends Task {
 			//logger.warning(worker, "Start/End positions are inside an entity");
 			return null;
 		}
-
+	
 		List<LocalPosition> result = null;
 
 		// Using A* path planning algorithm, testing out neighbor locations in a 1m x 1m
@@ -248,13 +238,19 @@ public class WalkOutside extends Task {
 
 		// The map of navigated locations.
 		Map<LocalPosition, LocalPosition> cameFrom = new HashMap<>();
-
-		// DEBUG: Calculate the real time elapsed [in milliseconds]
-		long tnow = System.currentTimeMillis();
 					
+		// A note on benchmark: The time it takes for the openSet while loop below 
+		// vary greatly, between 2 and 6000 ms to complete
+		
+		int count = 0;
+		
 		// Check each location in openSet.
-		while (!openSet.isEmpty()) {
-
+		while (!openSet.isEmpty() && count < 40) {
+			// Limit count to 40 to eliminate execution time spike
+			count++;
+			
+			// A note on benchmark: The getLowestFScore() methods below take 2 ms to complete
+			
 			// Find loc in openSet with lowest fScore value.
 			// FScore is distance (m) from start through currentLoc to destination.
 			LocalPosition currentLoc = getLowestFScore(openSet);
@@ -262,6 +258,8 @@ public class WalkOutside extends Task {
 			if (currentLoc == null)
 				break;
 
+			// A note on benchmark: The 3 path methods below take between 2 and 5 ms to complete
+			
 			// Check if clear path to destination.
 			if (checkClearPathToDestination(currentLoc, destination)) {
 
@@ -270,7 +268,7 @@ public class WalkOutside extends Task {
 				result = optimizePath(recreatePath(cameFrom, currentLoc));
 				break;
 			}
-
+			
 			// Remove currentLoc from openSet.
 			openSet.remove(currentLoc);
 
@@ -278,11 +276,26 @@ public class WalkOutside extends Task {
 			closedSet.add(currentLoc);
 
 			double currentGScore = getGScore(currentLoc);
+		
+			// DO NOT DELETE.
+//			long tnow = System.currentTimeMillis();			
 
+			// A note on benchmark: The getNeighbors() methods below take between 2 and 6 ms to complete
+			
 			// Go through each reachable neighbor location.
 			Iterator<LocalPosition> i = getNeighbors(currentLoc).iterator();
-			while (i.hasNext()) {
+//			logger.warning(worker.getAssociatedSettlement(), worker, "getNeighbors() size: " + getNeighbors(currentLoc).size());
+			
+			// DO NOT DELETE. Debug the real time elapsed [in milliseconds]
+//			tLast = System.currentTimeMillis();
+//			long elapsedMS = tLast - tnow;
+//			if (elapsedMS > 1)
+//				logger.severe(worker, "getNeighbors() elapsedMS: " + elapsedMS);
+	
+			// A note on benchmark: Each while loop here takes between 2 and 5 ms to complete
 
+			while (i.hasNext()) {
+				
 				LocalPosition neighborLoc = i.next();
 
 				if (closedSet.contains(neighborLoc)) {
@@ -305,12 +318,6 @@ public class WalkOutside extends Task {
 			}
 		}
 
-		// DEBUG: Calculate the real time elapsed [in milliseconds]
-		tLast = System.currentTimeMillis();
-		long elapsedMS = tLast - tnow;
-		if (elapsedMS > 1000)
-			logger.severe(worker, "elapsedMS: " + elapsedMS);
-		
 		return result;
 	}
 

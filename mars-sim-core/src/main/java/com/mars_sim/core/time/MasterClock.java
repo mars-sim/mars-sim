@@ -996,7 +996,6 @@ public class MasterClock implements Serializable {
 		if (this.isPaused != value) {
 			this.isPaused = value;
 
-
 			if (!value) {
 				// Reset the last pulse time
 				timestampPulseStart();
@@ -1056,17 +1055,6 @@ public class MasterClock implements Serializable {
 			listenerExecutor.shutdownNow();
 		if (clockExecutor != null)
 			clockExecutor.shutdownNow();
-	}
-
-
-	/**
-	 * Gets the Frame per second.
-	 *
-	 * @return
-	 */
-	public double getFPS() {
-		// How to check xFGL version ?
-		return 0;
 	}
 
 	/**
