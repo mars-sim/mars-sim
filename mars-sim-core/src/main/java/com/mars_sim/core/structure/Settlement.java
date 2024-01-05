@@ -54,7 +54,6 @@ import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.moon.Colony;
 import com.mars_sim.core.person.Commander;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
