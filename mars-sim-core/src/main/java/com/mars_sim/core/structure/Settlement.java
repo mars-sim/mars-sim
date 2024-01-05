@@ -257,7 +257,7 @@ public class Settlement extends Structure implements Temporal,
 	/** The background map image id used by this settlement. */
 	private int mapImageID;
 	
-	private long tLast;
+//	private long tLast;
 	
 	/** The average regolith collection rate nearby. */
 	private double regolithCollectionRate = RandomUtil.getRandomDouble(4, 8);
@@ -1120,8 +1120,8 @@ public class Settlement extends Structure implements Temporal,
 	private void checkMineralMapImprovement() {
 		// A note on benchmark: This mineral map improvement method takes between 2 and 5 ms to complete
 		
-		// DEBUG: Calculate the real time elapsed [in milliseconds]
-		long tnow = System.currentTimeMillis();
+		// DO NOT DELETE. Debug the real time elapsed [in milliseconds]
+//		long tnow = System.currentTimeMillis();
 
 		int improved = 0;
 		
@@ -1145,11 +1145,11 @@ public class Settlement extends Structure implements Temporal,
 			logger.info(this, "Zero improvement score on mineral locations.");
     	}
     	
-		// DEBUG: Calculate the real time elapsed [in milliseconds]
-		tLast = System.currentTimeMillis();
-		long elapsedMS = tLast - tnow;
-		if (elapsedMS > 1)
-			logger.severe(this, "checkMineralMapImprovement() elapsedMS: " + elapsedMS);
+		// DO NOT DELETE. Debug the real time elapsed [in milliseconds]
+//		tLast = System.currentTimeMillis();
+//		long elapsedMS = tLast - tnow;
+//		if (elapsedMS > 1)
+//			logger.severe(this, "checkMineralMapImprovement() elapsedMS: " + elapsedMS);
 	}
 	
 	/**
