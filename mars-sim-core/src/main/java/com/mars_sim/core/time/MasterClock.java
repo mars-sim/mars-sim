@@ -70,7 +70,7 @@ public class MasterClock implements Serializable {
 	private final int MAX_ELAPSED = 30_000; // 30,000 ms is 30 secs
 
 	/** The maximum allowable sleep time [in ms] before action is taken. */
-	private final int MAX_SLEEP = 5_000;
+	private final int MAX_SLEEP = 2_000;
 	
 	/** The sleep time [in ms] for letting other CPU tasks to get done. */
 	private final int NEW_SLEEP = 100;
@@ -85,8 +85,8 @@ public class MasterClock implements Serializable {
 
 	
 	// Transient members
-	/** Runnable flag. */
-	private transient boolean keepRunning = false;
+//	/** Runnable flag. */
+//	private transient boolean keepRunning = false;
 	/** Pausing clock. */
 	private transient boolean isPaused = false;
 	/** Flag for ending the simulation program. */
@@ -124,6 +124,7 @@ public class MasterClock implements Serializable {
 	/** Records the real milli time when a pulse is excited. */
 	private long[] pulseLog = new long[MAX_PULSE_LOG];
 	
+	private double millisecPerPulse;
 	/** The last millisol from the last pulse. */
 	private double lastMillisol;
 	/** The current simulation time ratio. */
@@ -541,12 +542,12 @@ public class MasterClock implements Serializable {
 				nextPulseDeviation = adjustPulseWidth();
 			}
 		
-			if (nextPulseTime > -2.0 ||  nextPulseTime < 2.0) {
+			if (nextPulseDeviation > -2.0 ||  nextPulseDeviation < 2.0) {
 				acceptablePulse = true;
 			}
 			
 			// Elapsed time is acceptable
-			if (keepRunning && acceptablePulse) {
+			if (clockThreadTask.getRunning() && acceptablePulse) {
 				
 				// Calculate the time elapsed for EarthClock, based on latest Mars time pulse
 				long earthMillisec = (long) (nextPulseTime * MILLISECONDS_PER_MILLISOL);
@@ -580,6 +581,11 @@ public class MasterClock implements Serializable {
 					
 					resetClockListeners();
 				}
+			}
+			else {
+				// NOTE: when resuming from power saving, timePulse becomes zero
+				logger.config(20_000L, "Pulse width deviated too much: " + nextPulseDeviation
+						+ "  acceptablePulse is false.");
 			}
 		}
 		
@@ -891,15 +897,7 @@ public class MasterClock implements Serializable {
 	 * Stops the clock.
 	 */
 	public void stop() {
-		keepRunning = false;
-	}
-
-	/**
-	 * Restarts the clock.
-	 */
-	public void restart() {
-		keepRunning = true;
-		timestampPulseStart();
+		clockThreadTask.stopRunning();
 	}
 
 	/**
@@ -913,13 +911,13 @@ public class MasterClock implements Serializable {
 	 * Starts the clock.
 	 */
 	public void start() {
-		keepRunning = true;
+		clockThreadTask.startRunning();
 
 		startClockListenerExecutor();
 
 		if (clockExecutor == null) {
 			int num = 1; // Should only have 1 thread updating the time
-			logger.config("Setting up " + num + " thread(s) for clock executor.");
+			logger.config("Setting up " + num + " thread for clock executor.");
 			clockExecutor = Executors.newFixedThreadPool(num,
 					new ThreadFactoryBuilder().setNameFormat("masterclock-%d").build());
 			
@@ -998,11 +996,19 @@ public class MasterClock implements Serializable {
 		if (this.isPaused != value) {
 			this.isPaused = value;
 
+
 			if (!value) {
 				// Reset the last pulse time
 				timestampPulseStart();
 			}
 
+			if (isPaused) {
+				stop();
+			}
+			else {
+				start();
+			}
+			
 			// Fire pause change to all clock listeners.
 			firePauseChange(value, showPane);
 		}
@@ -1117,7 +1123,10 @@ public class MasterClock implements Serializable {
 		return executionTime;
 	}
 
-
+	public double getMillisecPerPulse() {
+		return millisecPerPulse;
+	}
+	
 	/**
 	 * Returns the current # pulses per second, namely, current ticks per sec (TPS).
 	 *
@@ -1188,6 +1197,56 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
+	 * Determines the sleep time for this frame.
+	 */
+	private void calculateSleepTime() {
+		// Question: how should the difference between actualTR and desiredTR relate to or affect the sleepTime ?
+
+		// Compute the delta TR
+		double deltaTR = calculateDeltaTR();
+		
+		double delta = Math.min(deltaTR / 10, 5 * Math.abs(desiredTR/Math.min(1, actualTR)));				
+				
+		// Note: actualTR is greater or less than desiredTR, then our goal is to see a increase or decrease 
+		// on actualTR by adjusting the sleepTime. May need to adjust the pulse width as well.
+		
+		// Get the desired millisols per second
+		double desiredMsolPerSec = (desiredTR - delta) / MarsTime.SECONDS_PER_MILLISOL;
+
+		// Get the desired number of pulses per second
+		double desiredPulsesPerSec = desiredMsolPerSec / 
+				(0.2 * optMilliSolPerPulse + 0.3 * nextPulseTime + 0.5 * referencePulse);
+		
+//		double mspp = 1000 / desiredPulsesPerSec;
+		
+		// Get the milliseconds between each pulse
+		// // Limit the desired pulses to be the minimum of 1 (or at least 1)
+		millisecPerPulse = 1000 / desiredPulsesPerSec;
+	
+		// Update the sleep time that will allow room for the execution time
+		sleepTime = (int) millisecPerPulse - executionTime;
+		
+		// if sleepTime is negative continuously, will consider calling Thread.sleep() 
+		// to pause the execution of this thread and allow other threads to complete.
+
+		// Do NOT delete the followings. Very useful for debugging.
+		if (executionTime > 1000) {
+			String msg = String.format(
+				// "sleep=%d ms, desiredTR=%d, actualTR=%.2f, "
+				"execution time = %d ms", 
+//				+ "millisol/sec=%.2f, pulse/sec=%.2f, mspp=%.2f, ms/pulse=%.2f, ",
+				executionTime
+//				sleepTime, desiredTR, actualTR, 
+//				desiredMsolPerSec, desiredPulsesPerSec, mspp, millisecPerPulse 
+				);
+	    	logger.config(msg);
+		}
+	    
+	    if (sleepTime < 0)
+	    	sleepTime = 0;
+	}
+	
+	/**
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
@@ -1206,18 +1265,32 @@ public class MasterClock implements Serializable {
 
 		private static final long serialVersionUID = 1L;
 
+		private volatile boolean keepRunning = true;
+		
 		private ClockThreadTask() {
 		}
 
+		public boolean getRunning() {
+			return keepRunning;
+		}
+		
+		/**
+		 * Runs the clock.
+		 */
+		public void startRunning() {
+			keepRunning = true;
+		}
+		
+		/**
+		 * Stops the clock.
+		 */
+		public void stopRunning() {
+			keepRunning = false;
+		}
+		
 		@Override
 		public void run() {
 			// Keep running until told not to by calling stop()
-			keepRunning = true;
-
-			if (isPaused) {
-				keepRunning = false;
-			}
-
 			while (keepRunning) {
 				
 				long startTime = System.currentTimeMillis();
@@ -1230,16 +1303,17 @@ public class MasterClock implements Serializable {
 					// Get the sleep time
 					calculateSleepTime();
 					
-					if (sleepTime < -MAX_SLEEP && getAveragePulsesPerSecond() < 3) {
+					if (executionTime > MAX_SLEEP && getAveragePulsesPerSecond() < 3) {
 
-						logger.warning(30_000, "sleepTime: " + sleepTime + " ms.  "
-								+ "executionTime: " + executionTime
+						logger.warning(30_000, 
+								// "sleepTime: " + sleepTime + " ms.  "
+								"executionTime: " + executionTime
 								+ "  optMilliSolPerPulse: " + Math.round(optMilliSolPerPulse * 1000.0)/1000.0
 								+ "  ave pulse: " + getAveragePulsesPerSecond());
 //								+ "  Set sleepTime to " + NEW_SLEEP 
 //								+ " ms to allow other CPU tasks get done first.");
-						// Set the sleep time
-						sleepTime = NEW_SLEEP;
+						// Set the sleep time in proportion to the anomalous executionTime
+						sleepTime = executionTime/30;
 					}
 				}
 				else if (!isPaused) {
@@ -1267,54 +1341,6 @@ public class MasterClock implements Serializable {
 					System.exit(0);
 				}
 			} // end of while
-
-			logger.warning("Clock Thread stopping");
-
 		} // end of run
-
-		/**
-		 * Determines the sleep time for this frame.
-		 */
-		private void calculateSleepTime() {
-			// Question: how should the difference between actualTR and desiredTR relate to or affect the sleepTime ?
-
-			// Compute the delta TR
-			double deltaTR = calculateDeltaTR();
-			
-			double delta = Math.min(deltaTR / 10, 5 * Math.abs(desiredTR/Math.min(1, actualTR)));				
-					
-			// Note: actualTR is greater or less than desiredTR, then our goal is to see a increase or decrease 
-			// on actualTR by adjusting the sleepTime. May need to adjust the pulse width as well.
-			
-			// Get the desired millisols per second
-			double desiredMsolPerSec = (desiredTR - delta) / MarsTime.SECONDS_PER_MILLISOL;
-	
-			// Get the desired number of pulses per second
-			double desiredPulsesPerSec = desiredMsolPerSec / 
-					(0.2 * optMilliSolPerPulse + 0.3 * nextPulseTime + 0.5 * referencePulse);
-			
-			// Get the milliseconds between each pulse
-			// // Limit the desired pulses to be at least 1
-			double millisecPerPulse = 1000 / Math.max(desiredPulsesPerSec, 1);
-	
-//			int executionMod = executionTime;
-//			if (executionMod > 1000) {
-//				// Future: need to debug why in some cases executionTime is higher than 1000 ms
-//				executionMod = 1000;
-//			}
-			
-			// Update the sleep time that will allow room for the execution time
-			sleepTime = (int) millisecPerPulse - executionTime;
-	
-			// if sleepTime is negative continuously, will consider calling Thread.sleep() 
-			// to pause the execution of this thread and allow other threads to complete.
-	
-			// Do NOT delete the followings. Very useful for debugging.
-//			String msg = String.format("sleep=%d ms, desiredTR=%d, actualTR=%.2f, "
-//					+ "millisol/sec=%.2f, pulse/sec=%.2f, ms/pulse=%.2f, execution=%d ms",
-//					sleepTime, desiredTR, actualTR, 
-//					desiredMsolPerSec, desiredPulsesPerSec, millisecPerPulse, executionTime);
-//		    logger.info(msg);
-		}
 	}
 }

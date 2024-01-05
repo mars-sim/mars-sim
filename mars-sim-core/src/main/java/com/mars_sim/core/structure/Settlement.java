@@ -54,6 +54,7 @@ import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.moon.Colony;
 import com.mars_sim.core.person.Commander;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
@@ -255,6 +256,8 @@ public class Settlement extends Structure implements Temporal,
 	public int mineralValue = -1;
 	/** The background map image id used by this settlement. */
 	private int mapImageID;
+	
+//	private long tLast;
 	
 	/** The average regolith collection rate nearby. */
 	private double regolithCollectionRate = RandomUtil.getRandomDouble(4, 8);
@@ -957,6 +960,9 @@ public class Settlement extends Structure implements Temporal,
 			return false;
 		}
 
+		// DEBUG: Calculate the real time elapsed [in milliseconds]
+//		long tnow = System.currentTimeMillis();
+		
 		// Run at the start of the sim once only
 		if (justLoaded) {	
 			// Reset justLoaded
@@ -1057,6 +1063,12 @@ public class Settlement extends Structure implements Temporal,
 
 		// Computes the average air pressure & temperature of the life support system.
 		computeEnvironmentalAverages();
+
+		// DEBUG: Calculate the real time elapsed [in milliseconds]
+//		tLast = System.currentTimeMillis();
+//		long elapsedMS = tLast - tnow;
+//		if (elapsedMS > 100)
+//			logger.severe(this, "elapsedMS: " + elapsedMS);
 
 		return true;
 	}
@@ -4056,6 +4068,43 @@ public class Settlement extends Structure implements Temporal,
 	public void destroy() {
 		super.destroy();
 
+		for (Person p: citizens) {
+			p.destroy();
+		}
+		citizens.clear();
+		citizens = null;
+		
+		for (Person p: indoorPeopleMap) {
+			p.destroy();
+		}
+		indoorPeopleMap.clear();
+		indoorPeopleMap = null;
+		
+		for (Robot r: ownedRobots) {
+			r.destroy();
+		}
+		ownedRobots.clear();
+		ownedRobots = null;
+		
+		for (Robot r: robotsWithin) {
+			r.destroy();
+		}
+		robotsWithin.clear();
+		robotsWithin = null;
+		
+		for (Vehicle v: ownedVehicles) {
+			v.destroy();
+		}
+		ownedVehicles.clear();
+		ownedVehicles = null;
+		
+		for (Vehicle v: parkedVehicles) {
+			v.destroy();
+		}
+		parkedVehicles.clear();
+		parkedVehicles = null;
+		
+	
 		if (buildingManager != null) {
 			buildingManager.destroy();
 		}

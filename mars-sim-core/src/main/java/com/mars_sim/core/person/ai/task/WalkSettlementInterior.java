@@ -50,7 +50,7 @@ public class WalkSettlementInterior extends Task {
 	private static final TaskPhase WALKING = new TaskPhase(Msg.getString("Task.phase.walking")); //$NON-NLS-1$
 
 	// Static members
-	private static final double VERY_SMALL_DISTANCE = .00001D;
+	private static final double VERY_SMALL_DISTANCE = .01D;
 	private static final double STRESS_MODIFIER = -.2D;
 //	private static final double MIN_PULSE_TIME = Walk.MIN_PULSE_TIME;
 	/** The minimum pulse time for completing a task phase in this class.  */
@@ -288,7 +288,7 @@ public class WalkSettlementInterior extends Task {
 				walkInDirection(direction, coveredMeters);
 
 				// Set person at next path location, changing buildings if necessary.
-				worker.setPosition(location.getPosition());
+//				worker.setPosition(location.getPosition());
 				
 				coveredMeters = 0;
 			}
