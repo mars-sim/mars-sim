@@ -487,7 +487,10 @@ public abstract class DigLocal extends EVAOperation {
 		}
 		int rand = RandomUtil.getRandomInt(binList.size() - 1);
         Building b = binList.get(rand); 
-		
+		if (b != null) {
+			return LocalAreaUtil.getCollisionFreeRandomPosition(b, worker.getCoordinates(), 1);
+		}
+
         // If no proper bin is found, set the bin 
         // dropoff location next to the airlock 
 		b = (Building)(airlock.getEntity());
