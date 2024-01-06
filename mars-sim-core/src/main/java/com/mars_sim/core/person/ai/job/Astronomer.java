@@ -65,7 +65,7 @@ public class Astronomer extends Job  {
 			result += observatory.getObservatoryCapacity() * observatory.getTechnologyLevel() / 2.0;
 		}
 
-		result = (result + population / 24D) / 2.0;
+		result = (result + population / 24D) / 4.0;
 				
 		return result;
 	}

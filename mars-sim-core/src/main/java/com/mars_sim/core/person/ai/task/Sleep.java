@@ -71,7 +71,7 @@ public class Sleep extends Task {
 	 */
 	public Sleep(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER,
-				(50 + RandomUtil.getRandomDouble(5) - RandomUtil.getRandomDouble(5)));
+				(50 + RandomUtil.getRandomDouble(-5, 5)));
 
 		if (person.isOutside()) {
 			logger.log(person, Level.WARNING, 1000, "Not supposed to be falling asleep outside.");
@@ -133,6 +133,7 @@ public class Sleep extends Task {
 	
 	/**
 	 * Is this Task interruptable? This Task can not be interrupted.
+	 * 
 	 * @return Returns false by default
 	 */
 	@Override
@@ -255,48 +256,66 @@ public class Sleep extends Task {
 			Settlement s = person.getSettlement();
 			// Home settlement and bed assigned
 			if (person.getAssociatedSettlement().equals(s) && person.hasBed()) {
-				walkToBed(person, effortDriven);
-				return;
-			}
-
-			// Find a bed, if at home settlement attempt to make it permanent
-			var tempBed = LivingAccommodation.allocateBed(s, person,
-							s.equals(person.getAssociatedSettlement()));
-			if (tempBed == null) {
-				tempBed = findSleepRoughLocation(s, person);
-				if (tempBed == null) {
-					logger.severe(person, "Nowhere to sleep; staying awake");
-					endTask();
+				
+				if (person.getBuildingLocation().getZone() == person.getBed().getOwner().getZone()) {
+					// if the person is in the same zone as the building he's in
+					walkToBed(person, effortDriven);
 					return;
 				}
-				logger.warning(person, "No bed can be found; sleeping rough at "
-										+ tempBed.getSpotDescription());
 			}
 
-			createWalkingSubtask(tempBed.getOwner(), tempBed.getAllocated().getPos(), effortDriven);
+			AllocatedSpot tempBed = findTempBed(s);
+
+			if (tempBed != null) {
+				createWalkingSubtask(tempBed.getOwner(), tempBed.getAllocated().getPos(), effortDriven);
+			}
 		}
 	}
 
 	/**
-	 * Finds an empty AciivitySpot in a Building that supports Life.
+	 * Finds a temporary bed.
 	 * 
 	 * @param s
-	 * @param w
 	 * @return
 	 */
-	private AllocatedSpot findSleepRoughLocation(Settlement s, Worker w) {
+	private AllocatedSpot findTempBed(Settlement s) {
+		// Find a bed, if at home settlement attempt to make it permanent
+		AllocatedSpot tempBed = LivingAccommodation.allocateBed(s, person,
+						s.equals(person.getAssociatedSettlement()));
+		if (tempBed == null) {
+			tempBed = findSleepRoughLocation(s, person);
+			if (tempBed == null) {
+				logger.severe(person, "Nowhere to sleep, staying awake.");
+				endTask();
+				return null;
+			}
+			logger.warning(person, "No bed can be found; sleeping rough at "
+									+ tempBed.getSpotDescription());
+		}
+		return tempBed;
+	}
+	
+	/**
+	 * Finds an empty activity spot in a building that supports life.
+	 * 
+	 * @param s
+	 * @param p
+	 * @return
+	 */
+	private AllocatedSpot findSleepRoughLocation(Settlement s, Person p) {
 		var buildMgr = s.getBuildingManager();
-		for (Building b: buildMgr.getBuildingSet(FunctionType.LIFE_SUPPORT)) {
+		// Find a building in the same zone as the person
+		// Avoid sleeping inside EVA Airlock
+		for (Building b: buildMgr.getSameZoneBuildingsF1NoF2(p, 
+				FunctionType.LIFE_SUPPORT, FunctionType.EVA)) {
 			for (Function f : b.getFunctions()) {
 				for (ActivitySpot as : f.getActivitySpots()) {
 					if (as.isEmpty()) {
 						// Claim this activity spot
-						boolean canClaim = f.claimActivitySpot(as.getPos(), worker);
-						
-						if (!canClaim)
-							return null;
-						else
+						boolean canClaim = f.claimActivitySpot(as.getPos(), worker);					
+						if (canClaim) {
 							return worker.getActivitySpot();
+						}
 					}
 				}
 			}

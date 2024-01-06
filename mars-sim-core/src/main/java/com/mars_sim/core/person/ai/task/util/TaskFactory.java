@@ -10,7 +10,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 
 /**
- * Represents a Task Factory that can create Tasks for Workers
+ * Represents a Task Factory that can create Tasks for Workers.
  */
 public interface TaskFactory {
 

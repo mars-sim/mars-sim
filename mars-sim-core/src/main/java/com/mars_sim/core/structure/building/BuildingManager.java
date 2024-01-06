@@ -804,7 +804,8 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Gets the buildings in a settlement have function f1 and have no f2.
 	 *
-	 * @param functions the array of required functions {@link BuildingFunctions}.
+	 * @param f1 the required function 
+	 * @param f2 the excluded function
 	 * @return list of buildings.
 	 */
 	public Set<Building> getBuildingsF1NoF2(FunctionType f1, FunctionType f2) {
@@ -814,9 +815,26 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
+	 * Gets the buildings in the same zone as the person in a settlement that 
+	 * has function f1 and have no f2.
+	 *
+	 * @param p
+	 * @param f1 the required function 
+	 * @param f2 the excluded function
+	 * @return list of buildings
+	 */
+	public Set<Building> getSameZoneBuildingsF1NoF2(Person p, FunctionType f1, FunctionType f2) {
+		return buildings.stream()
+				.filter(b -> b.hasFunction(f1) && !b.hasFunction(f2)
+						&& p.getBuildingLocation().getZone() == b.getZone())
+				.collect(Collectors.toSet());
+	}
+	
+	/**
 	 * Gets the buildings in a settlement have both function f1 and f2.
 	 *
-	 * @param functions the array of required functions {@link BuildingFunctions}.
+	 * @param f1 the first required function 
+	 * @param f2 the second required function
 	 * @return list of buildings.
 	 */
 	public Set<Building> getBuildings(FunctionType f1, FunctionType f2) {

@@ -1192,6 +1192,11 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	public void setBed(AllocatedSpot bed2) {
 		this.bed = bed2;	}
 
+	/**
+	 * Does this person have an assigned bed ?
+	 * 
+	 * @return
+	 */
 	public boolean hasBed() {
 		return bed != null;
 	}
@@ -1203,7 +1208,6 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 	public String getCountry() {
 		return country;
 	}
-
 
 	public boolean isDeclaredDead() {
 		return declaredDead;
