@@ -82,7 +82,7 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
         if (ObserveAstronomicalObjects.areConditionsSuitable(target)
                 && !target.getBuildingManager().getBuildingSet(FunctionType.ASTRONOMICAL_OBSERVATION).isEmpty()) {    
             // Any Astro based study active at this Settlement
-            for(ScientificStudy s : getAstroStudies(target)) {
+            for (ScientificStudy s : getAstroStudies(target)) {
             	// Suitable study so create tasks for each Observatory
                 RatingScore score = new RatingScore(100);
                 score.addModifier(GOODS_MODIFIER, (target.getGoodsManager().getTourismFactor()

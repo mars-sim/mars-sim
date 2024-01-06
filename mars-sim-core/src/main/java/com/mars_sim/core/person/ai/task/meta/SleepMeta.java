@@ -53,17 +53,17 @@ public class SleepMeta extends FactoryMetaTask {
     	if (person.isOutside())
     		return 0;
     	
-    	if (person.isInSettlement()) {
-	        Building b = person.getBuildingLocation();
-	        if ((b != null) && (b.getCategory() == BuildingCategory.EVA_AIRLOCK)) {
-		        boolean inZone0 = b.getEVA().getAirlock().isInZone(person, AirlockZone.ZONE_0);
-		        if (!inZone0)
-		        	// if a person is in zone 0 at the inner door trying to ingress,
-		        	// and at the same time very fatigue, 
-		        	// then it's okay to allow this person to fall asleep.
-		        	return 0;
-	        }
-    	}
+//    	if (person.isInSettlement()) {
+//	        Building b = person.getBuildingLocation();
+//	        if ((b != null) && (b.getCategory() == BuildingCategory.EVA_AIRLOCK)) {
+//		        boolean inZone0 = b.getEVA().getAirlock().isInZone(person, AirlockZone.ZONE_0);
+//		        if (!inZone0)
+//		        	// if a person is in zone 0 at the inner door trying to ingress,
+//		        	// and at the same time very fatigue, 
+//		        	// then it's okay to allow this person to fall asleep.
+//		        	return 0;
+//	        }
+//    	}
     	
    		CircadianClock circadian = person.getCircadianClock();
    		PhysicalCondition pc = person.getPhysicalCondition();
