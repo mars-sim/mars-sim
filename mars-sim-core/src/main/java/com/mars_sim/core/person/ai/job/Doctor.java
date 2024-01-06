@@ -73,7 +73,7 @@ public class Doctor extends Job {
 			result += (double) j.next().getMedical().getTechLevel() / 3D;
 		}
 
-		result = (result + population / 10D) / 5.0;
+		result = (result + population / 10D) / 8.0;
 				
 		return result;
 	}

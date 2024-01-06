@@ -299,22 +299,23 @@ public class Sleep extends Task {
 	 * Finds an empty activity spot in a building that supports life.
 	 * 
 	 * @param s
-	 * @param w
+	 * @param p
 	 * @return
 	 */
-	private AllocatedSpot findSleepRoughLocation(Settlement s, Worker w) {
+	private AllocatedSpot findSleepRoughLocation(Settlement s, Person p) {
 		var buildMgr = s.getBuildingManager();
-		for (Building b: buildMgr.getBuildingSet(FunctionType.LIFE_SUPPORT)) {
+		// Find a building in the same zone as the person
+		// Avoid sleeping inside EVA Airlock
+		for (Building b: buildMgr.getSameZoneBuildingsF1NoF2(p, 
+				FunctionType.LIFE_SUPPORT, FunctionType.EVA)) {
 			for (Function f : b.getFunctions()) {
 				for (ActivitySpot as : f.getActivitySpots()) {
 					if (as.isEmpty()) {
 						// Claim this activity spot
-						boolean canClaim = f.claimActivitySpot(as.getPos(), worker);
-						
-						if (!canClaim)
-							return null;
-						else
+						boolean canClaim = f.claimActivitySpot(as.getPos(), worker);					
+						if (canClaim) {
 							return worker.getActivitySpot();
+						}
 					}
 				}
 			}
