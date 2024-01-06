@@ -19,6 +19,7 @@ import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.SettlementParameters;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
@@ -68,7 +69,9 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
         List<SettlementTask> results = new ArrayList<>();
         int settlementMissions = missionManager.getMissionsForSettlement(settlement).size();
 
-        int optimalMissions = (int) settlement.getPreferenceModifier(Settlement.MISSION_LIMIT);
+        int optimalMissions = settlement.getPreferences().getIntValue(
+                                                SettlementParameters.INSTANCE,
+                                                SettlementParameters.MISSION_LIMIT, 0);
         int shortfall = optimalMissions - settlementMissions;
         if (shortfall > 0) {
             results.add(new PlanTaskJob(this, new RatingScore(shortfall * START_FACTOR)));

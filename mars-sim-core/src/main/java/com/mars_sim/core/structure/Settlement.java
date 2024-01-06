@@ -9,7 +9,6 @@ package com.mars_sim.core.structure;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,8 +27,6 @@ import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.authority.Authority;
-import com.mars_sim.core.authority.PreferenceCategory;
-import com.mars_sim.core.authority.PreferenceKey;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.DustStorm;
@@ -54,6 +51,7 @@ import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.Commander;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
@@ -63,6 +61,7 @@ import com.mars_sim.core.person.ai.job.util.AssignmentType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.mission.Exploration;
+import com.mars_sim.core.person.ai.mission.MissionParameters;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.shift.ShiftManager;
@@ -123,8 +122,6 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Shared preference key for Mission limits
 	 */
-	public static final PreferenceKey MISSION_LIMIT = new PreferenceKey(PreferenceCategory.CONFIGURATION,
-																	"Active Missions");
 	private static final int WAIT_FOR_SUNLIGHT_DELAY = 40;
 	private static final int AIRLOCK_OPERATION_OFFSET = 40;
 	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
@@ -217,9 +214,9 @@ public class Settlement extends Structure implements Temporal,
 	private static final double NORMAL_AIR_PRESSURE = 34D;
 
 	/** The settlement water consumption */
-	public static double waterConsumptionRate;
+	private static double waterConsumptionRate;
 	/** The settlement minimum air pressure requirement. */
-	public static double minimumAirPressure;
+	private static double minimumAirPressure;
 	/** The settlement life support requirements. */
 	public static double[][] lifeSupportValues = new double[2][7];
 	
@@ -363,7 +360,7 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement's list of robots within. */
 	private Set<Robot> robotsWithin;
 	/** The settlement's preference map. */
-	private Map<PreferenceKey, Object> preferences = new HashMap<>();
+	private ParameterManager preferences = new ParameterManager();
 	/** A set of nearby mineral locations. */
 	private Set<Coordinates> nearbyMineralLocations = new HashSet<>();
 	
@@ -464,7 +461,7 @@ public class Settlement extends Structure implements Temporal,
 		
 		logger.info(name + " (" + settlementCode + ")" + "  templateID: " + templateID + " " );
 		
-		preferences.putAll(sponsor.getPreferences());
+		preferences.resetValues(sponsor.getPreferences());
 
 		// Call weather to add this location
 		weather.addLocation(location);
@@ -1983,8 +1980,9 @@ public class Settlement extends Structure implements Temporal,
 			numCitizens = citizens.size();
 
 			// Update active mission limit; always at least 1
-			double optimalMissions = Math.max(1, (numCitizens/PERSON_PER_MISSION));
-			preferences.put(MISSION_LIMIT, optimalMissions);
+			int optimalMissions = Math.max(1, (numCitizens/PERSON_PER_MISSION));
+			preferences.putValue(SettlementParameters.INSTANCE,
+									SettlementParameters.MISSION_LIMIT, optimalMissions);
 
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
 			return true;
@@ -2410,9 +2408,8 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public void setProcessOverride(OverrideType type, boolean override) {
 		logger.log(this, Level.CONFIG, 0L, "Player " + (override ? "enables" : "disable")
-						+ " the override on '" + type.toString() + "'.");
-		PreferenceKey overrideKey = new PreferenceKey(PreferenceCategory.PROCESS_OVERRIDE, type.name());
-		preferences.put(overrideKey, Boolean.valueOf(override));
+						+ " the override on '" + type.getName() + "'.");
+		preferences.putValue(ProcessParameters.INSTANCE, type.name(), Boolean.valueOf(override));
 	}
 
 	/**
@@ -2422,12 +2419,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return Is this override flag set
 	 */
 	public boolean getProcessOverride(OverrideType type) {
-		PreferenceKey overrideKey = new PreferenceKey(PreferenceCategory.PROCESS_OVERRIDE, type.name());
-		Object result = preferences.get(overrideKey);
-		if (result instanceof Boolean b) {
-			return b.booleanValue();
-		}
-		return false;
+		return preferences.getBooleanValue(ProcessParameters.INSTANCE, type.name(), false);
 	}
 
 	/**
@@ -3179,8 +3171,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	public void setMissionDisable(MissionType mission, boolean disable) {
-		double newValue = (disable ? 0D : 1D);
-		preferences.put(new PreferenceKey(PreferenceCategory.MISSION_WEIGHT, mission.name()), newValue);
+		preferences.putValue(MissionParameters.INSTANCE, mission.name(), (disable ? 0D : 1D));
 	}
 
 	public void setAllowTradeMissionFromASettlement(Settlement settlement, boolean allowed) {
@@ -3198,7 +3189,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return probability value
 	 */
 	public boolean isMissionEnable(MissionType mission) {
-		return (getPreferenceModifier(new PreferenceKey(PreferenceCategory.MISSION_WEIGHT, mission.name())) > 0D);
+		return preferences.getDoubleValue(MissionParameters.INSTANCE, mission.name(), 0D) > 0D;
 	}
 
 	/**
@@ -3987,50 +3978,14 @@ public class Settlement extends Structure implements Temporal,
 	}
 	
 	/**
-	 * Gets the modifier to apply of a certain preference.
-	 * 
-	 * @param key The preference
-	 * @return The appropriate modifier; return 1 by default
-	 */
-	public double getPreferenceModifier(PreferenceKey key) {
-		Object result = preferences.get(key);
-		if (result instanceof Double d) {
-			return d.doubleValue();
-		}
-		return 1D;
-	}
-
-	/**
 	 * Gets the preference that this Settlement influences.
 	 * 
 	 * @return A read only copy of preferences
 	 */
-	public Map<PreferenceKey, Object> getPreferences() {
-		return Collections.unmodifiableMap(preferences);
+	public ParameterManager getPreferences() {
+		return preferences;
 	}
 
-	/**
-	 * Updates a saved preference value. Check it is the correct type for the category.
-	 * 
-	 * @param key Key of the preference
-	 * @param value New value.
-	 */
-	public void setPreference(PreferenceKey key, Object value) {
-		switch (key.getCategory().getValueType()) {
-			case BOOLEAN:
-				if (!(value instanceof Boolean)) {
-					throw new IllegalArgumentException("Value is not type Boolean");
-				}
-				break;
-			case DOUBLE:
-				if (!(value instanceof Double)) {
-					throw new IllegalArgumentException("Value is not type Double");
-				}
-				break;
-		}
-		logger.info(this, "Preference "+ key + " now has value " + value);
-		preferences.put(key, value);
-	}
 
 	/** 
 	 * Gets the background map image id used by this settlement. 

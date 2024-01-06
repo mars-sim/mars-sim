@@ -16,13 +16,12 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.authority.PreferenceCategory;
-import com.mars_sim.core.authority.PreferenceKey;
 import com.mars_sim.core.data.Rating;
 import com.mars_sim.core.data.RatingLog;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.parameter.ParameterCategory;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.meta.MetaMission;
 import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
@@ -239,14 +238,15 @@ public class MissionManager implements Serializable {
 		Settlement startingSettlement = person.getAssociatedSettlement();
 
 		// Determine probabilities.
+		ParameterCategory missionCategory = MissionParameters.INSTANCE;
 		for (MetaMission metaMission : MetaMissionUtil.getMetaMissions()) {
 			if (startingSettlement.isMissionEnable(metaMission.getType())) {
 				RatingScore baseProb = metaMission.getProbability(person);
 				if (baseProb.getScore() > 0D) {
 					// Get any overriding ratio
-					double settlementRatio = startingSettlement.getPreferenceModifier(
-										new PreferenceKey(PreferenceCategory.MISSION_WEIGHT,
-														metaMission.getType().name()));
+					double settlementRatio = startingSettlement.getPreferences()
+										.getDoubleValue(missionCategory,
+														metaMission.getType().name(), 1D);
 					baseProb.addModifier("settlementratio", settlementRatio);
 
 					logger.info(person, metaMission.getType().getName() 
