@@ -9,13 +9,13 @@ package com.mars_sim.core.goods;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitEventType;
@@ -52,6 +52,7 @@ public class GoodsManager implements Serializable {
 		 */
 		@Override
 		public int execute(MarsTime now) {
+			// MUST calculate the buy list before the sell
 			calculateBuyList();
 			calculateSellList();
 			return LIST_VALIDITY;
@@ -139,7 +140,7 @@ public class GoodsManager implements Serializable {
 	private Map<Integer, Integer> deflationIndexMap = new HashMap<>();
 
 	/** A standard list of resources to be excluded in buying negotiation. */
-	private static List<Good> exclusionBuyList = null;
+	private static Set<Good> unsellableGoods = null;
 	/** A standard list of buying resources in buying negotiation. */
 	private transient Map<Good, ShoppingItem> buyList =  Collections.emptyMap();
 	private transient Map<Good, ShoppingItem> sellList = Collections.emptyMap();
@@ -184,24 +185,24 @@ public class GoodsManager implements Serializable {
 	 *
 	 * @return
 	 */
-	static List<Good> getExclusionBuyList() {
-		if (exclusionBuyList == null) {
-			exclusionBuyList = new ArrayList<>();
+	static Set<Good> getUnsellableGoods() {
+		if (unsellableGoods == null) {
+			unsellableGoods = new HashSet<>();
 			for (VehicleType type : VehicleType.values()) {
-				exclusionBuyList.add(GoodsUtil.getVehicleGood(type));
+				unsellableGoods.add(GoodsUtil.getVehicleGood(type));
 			}
-			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.regolithID));
-			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.iceID));
-			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.co2ID));
-			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.coID));
-			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.sandID));
-			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.greyWaterID));
-			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.blackWaterID));
-			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.eWasteID));
-			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.toxicWasteID));
+			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.regolithID));
+			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.iceID));
+			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.co2ID));
+			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.coID));
+			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.sandID));
+			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.greyWaterID));
+			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.blackWaterID));
+			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.eWasteID));
+			unsellableGoods.add(GoodsUtil.getGood(ResourceUtil.toxicWasteID));
 			// Note: add vehicles to this list ?
 		}
-		return exclusionBuyList;
+		return unsellableGoods;
 	}
 
 	/**
@@ -302,15 +303,6 @@ public class GoodsManager implements Serializable {
 			// Let the inter-market value affects the value of this good
 			// at this settlement 
 			futureMarket = .9 * currentMarket + .1 * value;
-
-//			double newValue = 0;
-//
-//			if (currentMarket > value)
-//				newValue = (currentMarket - value) / 10;
-//			else if (currentMarket < value)
-//				newValue = (value - currentMarket) / 10;
-//
-//			futureMarket = futureMarket + newValue;
 
 			if (futureMarket > MAX_FINAL_VP)
 				futureMarket = MAX_FINAL_VP;
@@ -778,12 +770,15 @@ public class GoodsManager implements Serializable {
 	
 	/**
 	 * Calculates the sell list.
+	 * Exclude any Good that is on the Buy list.
 	 */
 	private void calculateSellList() {
 		
 		// This logic is a draft and need more refinement
 		Map<Good,ShoppingItem> newSell = new HashMap<>();
-		List<Good> excluded = GoodsManager.getExclusionBuyList();
+		Set<Good> excluded = new HashSet<>(GoodsManager.getUnsellableGoods());
+		excluded.addAll(buyList.keySet());   // Exclude goods that are already being bought
+
 		for(Entry<Integer, Double> item : supplyCache.entrySet()) {
 			Good good = GoodsUtil.getGood(item.getKey());
 
@@ -817,7 +812,7 @@ public class GoodsManager implements Serializable {
 
 		// This logic is a draft and need more refinement
 		Map<Good,ShoppingItem> newBuy = new HashMap<>();
-		List<Good> excluded = GoodsManager.getExclusionBuyList();
+		Set<Good> excluded = GoodsManager.getUnsellableGoods();
 		for(Entry<Integer, Double> item : demandCache.entrySet()) {
 			Good good = GoodsUtil.getGood(item.getKey());
 			if (excluded.contains(good)) {
