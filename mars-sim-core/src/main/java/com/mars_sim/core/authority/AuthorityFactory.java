@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.authority;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,6 +34,7 @@ import com.mars_sim.core.structure.Settlement;
  */
 public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 	
+	private static final String FILE_NAME = "authority";
 	private static final String AUTHORITY_EL = "authority";
 	private static final String AUTHORITIES_EL = "authorities";
 	private static final String CODE_ATTR = "code";
@@ -62,7 +64,7 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 	 * @param governanceDoc
 	 */
 	public AuthorityFactory(Document governanceDoc) {
-		super("authority");
+		super(FILE_NAME);
 		
 		// Load the defaults
 		loadGovernanceDetails(governanceDoc);
@@ -106,12 +108,10 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 					String pTypeValue = preNode.getAttributeValue(TYPE_ATTR);
 					ParameterCategory pType;
 					switch(pTypeValue) {
-						case "MISSION":
-						case "MISSION_WEIGHT":
+						case "MISSION", "MISSION_WEIGHT":
 							pType = MissionWeightParameters.INSTANCE;
 							break;
-						case "TASK":
-						case "TASK_WEIGHT":
+						case "TASK", "TASK_WEIGHT":
 							pType = TaskParameters.INSTANCE;
 							break;
 						case "SCIENCE":
@@ -121,7 +121,7 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 							throw new IllegalArgumentException("Authority " + name
 									+ " has an unsupport preference type " + pTypeValue);	
 					}
-					Object value = Double.parseDouble(preNode.getAttributeValue(MODIFIER_ATTR));
+					Serializable value = Double.parseDouble(preNode.getAttributeValue(MODIFIER_ATTR));
 					String pName = preNode.getAttributeValue(NAME_ATTR).toUpperCase();
 
 					preferences.putValue(pType, pName, value);

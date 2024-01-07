@@ -13,11 +13,8 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.MissionUtil;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 
@@ -120,7 +117,7 @@ public class AbstractMetaMission implements MetaMission {
 		return masterClock.getMarsTime();
 	}
 	
-    public static void initializeInstances(MasterClock mc, MissionManager m) {
+    public static void initializeInstances(MasterClock mc) {
 		masterClock = mc;
     }
 }

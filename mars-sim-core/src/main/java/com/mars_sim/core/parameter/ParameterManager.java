@@ -24,7 +24,7 @@ public class ParameterManager implements Serializable {
     public record ParameterKey(ParameterCategory category, String id)
                     implements Serializable {}
     
-    private Map<ParameterKey,Object> values = new HashMap<>();
+    private Map<ParameterKey,Serializable> values = new HashMap<>();
 
     public ParameterManager() {
     }
@@ -70,7 +70,7 @@ public class ParameterManager implements Serializable {
      * @param id Identifier of the value being defined
      * @param value Actual new value
      */
-    public void putValue(ParameterCategory category, String id, Object value) {
+    public void putValue(ParameterCategory category, String id, Serializable value) {
         values.put(new ParameterKey(category, id), value);
     }
 

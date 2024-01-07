@@ -9,6 +9,8 @@ package com.mars_sim.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -150,7 +152,7 @@ public class TabPanelPreferences extends TabPanel {
 	 */
 	private void addEntry() {
 		RenderableKey key = (RenderableKey) nameCombo.getSelectedItem();
-		Object newValue = switch(key.spec().type()) {
+		Serializable newValue = switch(key.spec().type()) {
 			case BOOLEAN -> Boolean.TRUE;
 			case DOUBLE -> Double.valueOf(1D);
 			case INTEGER -> Integer.valueOf(1);
@@ -188,15 +190,15 @@ public class TabPanelPreferences extends TabPanel {
 
 		private PreferenceTableModel(ParameterManager source) {
 			this.target = source;
-			items = target.getValues().keySet().stream()
+			items = new ArrayList<>(target.getValues().keySet().stream()
 						.map(k -> new RenderableKey(k.category(), k.category().getSpec(k.id())))
-						.toList();
+						.toList());
 		}
 
 		/**
 		 * Adds an entry to the table and the underlying manager
 		 */
-		public void addEntry(RenderableKey newKey, Object value) {
+		public void addEntry(RenderableKey newKey, Serializable value) {
 			if (!items.contains(newKey)) {
 				items.add(newKey);
 				target.putValue(newKey.category(), newKey.spec().id(), value);
@@ -257,7 +259,7 @@ public class TabPanelPreferences extends TabPanel {
 		public void setValueAt(Object value, int row, int col) {
 			if (col == 2) {
 				var selectedRow = items.get(row);
-				Object newValue;
+				Serializable newValue;
 				switch(selectedRow.spec().type()) {
 				case BOOLEAN:
 					newValue = Boolean.parseBoolean((String)value);
