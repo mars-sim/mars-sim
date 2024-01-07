@@ -12,6 +12,7 @@ import java.util.List;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.person.ai.mission.MissionLimitParameters;
 import com.mars_sim.core.person.ai.task.PlanMission;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
@@ -68,7 +69,9 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
         List<SettlementTask> results = new ArrayList<>();
         int settlementMissions = missionManager.getMissionsForSettlement(settlement).size();
 
-        int optimalMissions = (int) settlement.getPreferenceModifier(Settlement.MISSION_LIMIT);
+        int optimalMissions = settlement.getPreferences().getIntValue(
+                                                MissionLimitParameters.INSTANCE,
+                                                MissionLimitParameters.TOTAL_MISSIONS, 0);
         int shortfall = optimalMissions - settlementMissions;
         if (shortfall > 0) {
             results.add(new PlanTaskJob(this, new RatingScore(shortfall * START_FACTOR)));

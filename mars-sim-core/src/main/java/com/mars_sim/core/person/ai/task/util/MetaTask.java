@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.authority.PreferenceCategory;
-import com.mars_sim.core.authority.PreferenceKey;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.person.Person;
@@ -341,8 +339,8 @@ public abstract class MetaTask {
         score.addModifier(FAV_MODIFIER, (1 + (person.getPreference().getPreferenceScore(this)/5D)));
 
 		// Apply the home base modifier
-		score.addModifier("settlement", person.getAssociatedSettlement().getPreferenceModifier(
-							new PreferenceKey(PreferenceCategory.TASK_WEIGHT, getID())));
+		score.addModifier("settlement", person.getAssociatedSettlement().getPreferences()
+							.getDoubleValue(TaskParameters.INSTANCE, getID(), 1D));
 		
 		return score;
 	}

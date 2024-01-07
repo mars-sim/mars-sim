@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.authority;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,9 +16,15 @@ import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
+import com.mars_sim.core.parameter.ParameterCategory;
+import com.mars_sim.core.parameter.ParameterManager;
+import com.mars_sim.core.person.ai.mission.MissionWeightParameters;
+import com.mars_sim.core.person.ai.task.meta.ScienceParameters;
+import com.mars_sim.core.person.ai.task.util.TaskParameters;
 import com.mars_sim.core.structure.Settlement;
 
 /**
@@ -27,26 +34,27 @@ import com.mars_sim.core.structure.Settlement;
  */
 public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 	
-	private final String AUTHORITY_EL = "authority";
-	private final String AUTHORITIES_EL = "authorities";
-	private final String CODE_ATTR = "code";
-	private final String CORPORATION_ATTR = "corporation";
-	private final String MODIFIER_ATTR = "modifier";
-	private final String DESCRIPTION_ATTR = "description";
-	private final String CAPABILITY_EL = "capability";
-	private final String DATA_ATTR = "data";
-	private final String FINDINGS_ATTR = "findings";
-	private final String OBJECTIVE_ATTR = "objective";
-	private final String AGENDA_EL = "agenda";
-	private final String AGENDAS_EL = "agendas";
-	private final String COUNTRY_EL = "country";
-	private final String NAME_ATTR = "name";
-	private final String SETTLEMENTNAME_EL = "settlement-name";
-	private final String ROVERNAME_EL = "rover-name";
-	private final String GENDER_ATTR = "gender-ratio";
-	private final String PERFERENCE_EL = "preference";
-	private final String TYPE_ATTR = "type";
-	private final String TRUE = "true";
+	private static final String FILE_NAME = "authority";
+	private static final String AUTHORITY_EL = "authority";
+	private static final String AUTHORITIES_EL = "authorities";
+	private static final String CODE_ATTR = "code";
+	private static final String CORPORATION_ATTR = "corporation";
+	private static final String MODIFIER_ATTR = "modifier";
+	private static final String DESCRIPTION_ATTR = "description";
+	private static final String CAPABILITY_EL = "capability";
+	private static final String DATA_ATTR = "data";
+	private static final String FINDINGS_ATTR = "findings";
+	private static final String OBJECTIVE_ATTR = "objective";
+	private static final String AGENDA_EL = "agenda";
+	private static final String AGENDAS_EL = "agendas";
+	private static final String COUNTRY_EL = "country";
+	private static final String NAME_ATTR = "name";
+	private static final String SETTLEMENTNAME_EL = "settlement-name";
+	private static final String ROVERNAME_EL = "rover-name";
+	private static final String GENDER_ATTR = "gender-ratio";
+	private static final String PERFERENCE_EL = "preference";
+	private static final String TYPE_ATTR = "type";
+	private static final String TRUE = "true";
 	
 	private Map<String, MissionAgenda> agendas;
 
@@ -56,7 +64,7 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 	 * @param governanceDoc
 	 */
 	public AuthorityFactory(Document governanceDoc) {
-		super("authority");
+		super(FILE_NAME);
 		
 		// Load the defaults
 		loadGovernanceDetails(governanceDoc);
@@ -93,24 +101,33 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 				String description = subNode.getAttributeValue(DESCRIPTION_ATTR);
 	
 				// Load the preferences
-				Map<PreferenceKey, Double> preferences = new HashMap<>();	
+				var preferences = new ParameterManager();
 				for (Element preNode : subNode.getChildren(PERFERENCE_EL)) {
-					double value = Double.parseDouble(preNode.getAttributeValue(MODIFIER_ATTR));
 
 					// Backward compatible with the old naming scheme
 					String pTypeValue = preNode.getAttributeValue(TYPE_ATTR);
-					if (pTypeValue.equals("MISSION") || pTypeValue.equals("TASK")) {
-						pTypeValue = pTypeValue + "_WEIGHT";
+					ParameterCategory pType;
+					switch(pTypeValue) {
+						case "MISSION", "MISSION_WEIGHT":
+							pType = MissionWeightParameters.INSTANCE;
+							break;
+						case "TASK", "TASK_WEIGHT":
+							pType = TaskParameters.INSTANCE;
+							break;
+						case "SCIENCE":
+							pType = ScienceParameters.INSTANCE;
+							break;
+						default:
+							throw new IllegalArgumentException("Authority " + name
+									+ " has an unsupport preference type " + pTypeValue);	
 					}
-
-					PreferenceCategory pType = PreferenceCategory.valueOf(pTypeValue);
+					Serializable value = Double.parseDouble(preNode.getAttributeValue(MODIFIER_ATTR));
 					String pName = preNode.getAttributeValue(NAME_ATTR).toUpperCase();
 
-					preferences.put(new PreferenceKey(pType, pName), value);
+					preferences.putValue(pType, pName, value);
 				}
 
-				subs.add(new MissionCapability(description, 
-												Collections.unmodifiableMap(preferences)));
+				subs.add(new MissionCapability(description, preferences));
 			}	
 				
 			// Add the agenda

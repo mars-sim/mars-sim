@@ -13,11 +13,8 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.MissionUtil;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 
@@ -29,13 +26,11 @@ public class AbstractMetaMission implements MetaMission {
 
 	protected static final String GOODS = "goods";
 	protected static final String LEADER = "leader";
-	protected static final String SETTLEMENT_POPULATION = "population";
 	protected static final String PERSON_EXTROVERT = "extrovert";
 	protected static final String OVER_CROWDING = "crowding";
 	protected static final String MINERALS = "minerals";
 
 	private static MasterClock masterClock;
-	private static MissionManager missionMgr;
 
 	private String name;
 	private MissionType type;
@@ -121,35 +116,8 @@ public class AbstractMetaMission implements MetaMission {
 	protected MarsTime getMarsTime() {
 		return masterClock.getMarsTime();
 	}
-
-	/**
-	 * Gets the score modifier for a Settlement based on its population for this type of mission.
-	 * 
-	 * @param target The settlement to check
-	 * @param modifier
-	 */
-	protected double getSettlementPopModifier(Settlement target, int modifier) {
-		int numEmbarking = MissionUtil.numEmbarkingMissions(target);
-	    int numThisMission = missionMgr.numParticularMissions(type, target);
-		int pop = target.getNumCitizens();
-		double value = Math.max(1.0, 1.0 * pop / modifier);	
-		
-	    if (numEmbarking > value) {
-	    	return 0;
-	    }
-
-	    if (numThisMission > value) {
-	    	return 0;
-	    }
-		
-	    int f1 = 2 * numEmbarking;
-	    int f2 = 3 * numThisMission;
-		
-	    return value / (1 + f1) / (1 + f2);
-	}
 	
-    public static void initializeInstances(MasterClock mc, MissionManager m) {
+    public static void initializeInstances(MasterClock mc) {
 		masterClock = mc;
-		missionMgr = m;
     }
 }

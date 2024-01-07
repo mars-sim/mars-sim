@@ -1230,8 +1230,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param member the mission lead.
 	 */
 	private void requestReviewPhase(Worker member) {
-		Person p = (Person)member;
-
 		if (plan == null) {
 			throw new IllegalStateException("No Mission plan");
 		}
@@ -1404,6 +1402,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		MissionLog.initialise(clock);
 		MissionUtil.initializeInstances(u, m);
-		AbstractMetaMission.initializeInstances(clock, m);
+		AbstractMetaMission.initializeInstances(clock);
 	}
 }

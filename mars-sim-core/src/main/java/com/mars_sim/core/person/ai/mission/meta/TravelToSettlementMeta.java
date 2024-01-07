@@ -99,9 +99,6 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
         // Determine mission probability.
         RatingScore missionProbability = new RatingScore(TravelToSettlement.BASE_MISSION_WEIGHT
                                                 + (topSettlementDesirability / 100D));
-        
-        missionProbability.addModifier(SETTLEMENT_POPULATION,
-                            getSettlementPopModifier(settlement, 8));
 		
         // Crowding modifier.
         int crowding = settlement.getIndoorPeopleCount()

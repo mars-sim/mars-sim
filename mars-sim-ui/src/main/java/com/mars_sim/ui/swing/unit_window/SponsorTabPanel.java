@@ -19,9 +19,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import com.mars_sim.core.authority.MissionCapability;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -78,12 +78,11 @@ public class SponsorTabPanel extends TabPanel {
 		
 		//////////////////////////////////////////////////
 		
-		JLabel longNameLabel = new JLabel(ra.getDescription(), JLabel.CENTER);
+		JLabel longNameLabel = new JLabel(ra.getDescription(), SwingConstants.CENTER);
 		longNameLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		namePanel.add(longNameLabel, BorderLayout.NORTH);
 		
 		JPanel iconPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-//		iconPanel.setPreferredSize(new Dimension(90, 90));	
 		iconPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		namePanel.add(iconPanel, BorderLayout.CENTER);
 		
@@ -97,7 +96,6 @@ public class SponsorTabPanel extends TabPanel {
 		}
 		else {
 			Image img = (ImageLoader.getImage(AGENCY_FOLDER + agencyStr));
-//					.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
 			agencyLabel = new JLabel(new ImageIcon(img));
 		}
 
@@ -108,8 +106,6 @@ public class SponsorTabPanel extends TabPanel {
 		AttributePanel infoNamePanel = new AttributePanel(3);
 		namePanel.add(infoNamePanel, BorderLayout.SOUTH);
 
-		// Prepare sponsor long name label
-//		infoNamePanel.addRow(Msg.getString("SponsorTabPanel.sponsorLong"), ra.getDescription());
 		// Prepare sponsor short name label
 		infoNamePanel.addRow(Msg.getString("SponsorTabPanel.sponsorShort"), agencyStr);
 		
@@ -172,7 +168,7 @@ public class SponsorTabPanel extends TabPanel {
 		// For each phase, add to the text area.
 		createTA(panelCap).append(ra.getMissionAgenda().getCapabilities()
 				.stream()
-				.map(MissionCapability::getHyphenatedDescription)
+				.map(mc -> " - " + mc.getDescription())
 				.collect(Collectors.joining("\n")));
 	}
 	

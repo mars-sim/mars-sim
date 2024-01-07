@@ -62,31 +62,24 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
                 return RatingScore.ZERO_RATING;
             }
     
-            int min_num = 0;
             int all = settlement.getNumCitizens();
- 
+            int minMembers = 0;
             if (all <= 3)
-            	min_num = 0;
+            	minMembers = 0;
             else if (all > 3)	
-            	min_num = RescueSalvageVehicle.MIN_STAYING_MEMBERS;
+            	minMembers = RescueSalvageVehicle.MIN_STAYING_MEMBERS;
     	    
             // Check if min number of EVA suits at settlement.
-            if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
+            if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) < minMembers) {
     	        return RatingScore.ZERO_RATING;
     	    }
    
             // Check if minimum number of people are available at the settlement.
-            if (!MissionUtil.minAvailablePeopleAtSettlement(settlement, min_num)) {
+            // and a backup rover
+            if (!MissionUtil.minAvailablePeopleAtSettlement(settlement, minMembers)
+                    || !RoverMission.hasBackupRover(settlement)) {
                 return RatingScore.ZERO_RATING;
             }
-
-            // Check if available backup rover.
-            else if (!RoverMission.hasBackupRover(settlement)) {
-                return RatingScore.ZERO_RATING;
-            }
-            
-			missionProbability.addModifier(SETTLEMENT_POPULATION,
-                            getSettlementPopModifier(settlement, 2));
 
            	RoleType roleType = person.getRole().getType();
             double roleModifier = switch(roleType) {
