@@ -229,7 +229,7 @@ public class Settlement extends Structure implements Temporal,
 	private boolean hasDesignatedCommander = false;
 	/** The flag to see if a water ration review is due. */
 	private boolean waterRatioReviewFlag = false;
-	/** The flag to see if a water ration review is due. */
+	/** The flag to see if a resource review is due. */
 	private boolean[] resourceReviewFlag = new boolean[6];
 	
 	/** The water ratio of the settlement. The higher the more urgent for water resource. */
@@ -279,7 +279,7 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement's current probability value for regolith. */
 	private double regolithProbabilityValue = 400D;
 	/** The settlement's outside temperature. */
-	private double outside_temperature;
+	private double outsideTemperature;
 	/** Total Crop area */
 	private double cropArea = -1;
 
@@ -923,7 +923,7 @@ public class Settlement extends Structure implements Temporal,
 		currentPressure =  totalPressureArea * AirComposition.KPA_PER_ATM / totalArea;
 		currentTemperature = totalTArea / totalArea;
 
-		outside_temperature = weather.getTemperature(location);
+		outsideTemperature = weather.getTemperature(location);
 	}
 
 	/**
@@ -1005,8 +1005,10 @@ public class Settlement extends Structure implements Temporal,
 		// Update citizens
 		timePassingCitizens(pulse);
 
-		// Update remaining Units
+		// Update vehicles
 		timePassing(pulse, ownedVehicles);
+		
+		// Update robots
 		timePassing(pulse, ownedRobots);
 
 		
@@ -1014,8 +1016,11 @@ public class Settlement extends Structure implements Temporal,
 			// Reset all resource review flags to allow for next review
 			int size = resourceReviewFlag.length;
 			for (int i=0; i<size; i++) {
-				resourceReviewFlag[i] = false;
+				unlockResourceReview(i);
 			}
+			
+			// Reset the flag for water ratio review
+			setReviewWaterRatio(false);
 		}
 		
 		// At the beginning of a new sol,
@@ -1057,9 +1062,6 @@ public class Settlement extends Structure implements Temporal,
 
 		// Keeps track of things based on msol
 		trackByMSol(pulse);
-
-		// Computes the average air pressure & temperature of the life support system.
-		computeEnvironmentalAverages();
 
 		return true;
 	}
@@ -1160,6 +1162,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @param pulse
 	 */
 	private void trackByMSol(ClockPulse pulse) {
+		
 		// Sample a data point every SAMPLE_FREQ (in msols)
 		int msol = pulse.getMarsTime().getMillisolInt();
 
@@ -1167,6 +1170,9 @@ public class Settlement extends Structure implements Temporal,
 		// due to high cpu util during the change of day
 		if (pulse.isNewMSol() && msol >= 10 && msol < 995) {
 
+			// Computes the average air pressure & temperature of the life support system.
+			computeEnvironmentalAverages();
+			
 //			double time = pulse.getElapsed();
 			
 			int remainder = 0; // msol % CHECK_RESOURCES;
@@ -2615,6 +2621,24 @@ public class Settlement extends Structure implements Temporal,
 	}
 	
 	/**
+	 * Locks the flag for reviewing a resource. Won't be able to review until it's unlocked.
+	 * 
+	 * @param value
+	 */
+	public void lockResourceReview(int i) {
+		resourceReviewFlag[i] = false;
+	}
+	
+	/**
+	 * Unlocks the flag for reviewing a resource. Open for review until it's locked.
+	 * 
+	 * @param value
+	 */
+	public void unlockResourceReview(int i) {
+		resourceReviewFlag[i] = true;
+	}
+	
+	/**
 	 * Returns if a resource has been reviewed.
 	 * 
 	 * @return
@@ -2622,6 +2646,34 @@ public class Settlement extends Structure implements Temporal,
 	public boolean canReviewResource(int i) {
 		return resourceReviewFlag[i];
 	}
+	
+	/**
+	 * Finds the number of resources that's due for review.
+	 * 
+	 * @return
+	 */
+	public int findNumResourceReviewDue() {
+		int count = 0;
+		for (boolean value : resourceReviewFlag) {
+			if (value)
+				count++;
+		}
+		return count;
+	}
+	
+	/**
+	 * Finds a resource that's due for review.
+	 * 
+	 * @return
+	 */
+	public int findResourceReview() {
+		for (int i = 0; i < resourceReviewFlag.length; i++) {
+			if (canReviewResource(i))
+				return i;
+		}
+		return -1;
+	}
+	
 	
 	/**
 	 * Reviews a resource.
@@ -3056,7 +3108,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	public double getOutsideTemperature() {
-		return outside_temperature;
+		return outsideTemperature;
 	}
 
 	public DustStorm getDustStorm() {

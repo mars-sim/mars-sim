@@ -7,10 +7,10 @@
 package com.mars_sim.core.person.ai.task.meta;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.BudgetResources;
@@ -28,7 +28,7 @@ import com.mars_sim.tools.Msg;
  */
 public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask {
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(BudgetResourcesMeta.class.getName());
+	// May add back private static SimLogger logger = SimLogger.getLogger(BudgetResourcesMeta.class.getName());
 
 	/**
      * Represents a Job to review a specific mission plan
@@ -51,7 +51,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
     private static final String NAME = Msg.getString(
             "Task.description.budgetResources"); //$NON-NLS-1$
         
-    private static final double BASE_SCORE = 50.0;
+    private static final double BASE_SCORE = 20.0;
 
     public BudgetResourcesMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -105,26 +105,42 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask> tasks = new ArrayList<>();
 
-//		boolean canReview = settlement.canReviewWaterRatio();
-//		if (!canReview)
-//			return tasks;
-//			
-//		boolean changed = settlement.isWaterRatioChanged();
-//		if (!changed) {
-//			// Set the flag to false for future review
-//			settlement.setReviewWaterRatio(false);
-//			return tasks;
-//		}
-//		
-//		int levelDiff = settlement.getWaterRatioDiff();
-//		
-		int num = BuildingManager.getNumAccommodationNeedingReview(settlement);
-
-		if (num > 0) {
-			RatingScore score = new RatingScore("wasteWater", num * BASE_SCORE);             
-			tasks.add(new BudgetResourcesJob(this, score));
+		RatingScore score = new RatingScore();  
+		int levelDiff = 0;
+		
+		boolean canReview = settlement.canReviewWaterRatio();
+		
+		boolean changed = settlement.isWaterRatioChanged();
+		
+		if (canReview) {
+			
+			changed = settlement.isWaterRatioChanged();
+			if (changed) {
+				
+				levelDiff = settlement.getWaterRatioDiff();
+				if (levelDiff > 0) { 
+					score.addBase("water.level", levelDiff * BASE_SCORE); 
+				}
+			}
 		}
 		
-        return tasks;
+		int numResource = settlement.findNumResourceReviewDue();
+		if (numResource > 0) { 
+			score.addBase("resource", numResource * BASE_SCORE); 
+		}
+		
+		int numAcc = BuildingManager.getNumAccommodationNeedingReview(settlement);
+
+		if (numAcc > 0) {
+			score.addBase("waste.water", numAcc * BASE_SCORE);             
+		}
+		
+		if (levelDiff == 0 && numResource == 0 && numAcc == 0) {
+			return Collections.emptyList();
+		}
+		else {
+			tasks.add(new BudgetResourcesJob(this, score));
+			return tasks;
+		}
     }
 }

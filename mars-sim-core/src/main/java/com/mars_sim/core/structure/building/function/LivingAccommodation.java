@@ -194,19 +194,28 @@ public class LivingAccommodation extends Function {
 		if (valid) {
 			if (pulse.isNewHalfSol()) {
 				// Reset the water ratio flag to allow for next review
-				setReviewWaterRatio(true);
+				unlockWaterRatioReview();
 			}
 		}
 		return valid;
 	}
-
+	
 	/**
-	 * Sets the flag for reviewing water ratio.
+	 * Locks the flag for reviewing water ratio. Won't be able to review until it's unlocked.
 	 * 
 	 * @param value
 	 */
-	public void setReviewWaterRatio(boolean value) {
-		waterRatioReviewFlag = value;
+	public void lockWaterRatioReview() {
+		waterRatioReviewFlag = false;
+	}
+	
+	/**
+	 * Unlocks the flag for reviewing water ratio. Open for review until it's locked.
+	 * 
+	 * @param value
+	 */
+	public void unlockWaterRatioReview() {
+		waterRatioReviewFlag = true;
 	}
 	
 	/**
