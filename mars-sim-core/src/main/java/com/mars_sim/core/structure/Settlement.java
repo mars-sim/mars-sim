@@ -61,7 +61,8 @@ import com.mars_sim.core.person.ai.job.util.AssignmentType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.mission.Exploration;
-import com.mars_sim.core.person.ai.mission.MissionParameters;
+import com.mars_sim.core.person.ai.mission.MissionLimitParameters;
+import com.mars_sim.core.person.ai.mission.MissionWeightParameters;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.shift.ShiftManager;
@@ -135,8 +136,6 @@ public class Settlement extends Structure implements Temporal,
 	public static final int NUM_CRITICAL_RESOURCES = 10;
 	private static final int RESOURCE_STAT_SOLS = 12;
 	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
-	
-    private static final int PERSON_PER_MISSION = 5;
 
 	private static final int MAX_PROB = 3000;
 	private static final int MIN_REGOLITH_RESERVE = 400; // per person
@@ -376,16 +375,6 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Constructor 1 called by ConstructionStageTest suite for maven testing.
-	 */
-	private Settlement() {
-		super(null, null);
-
-		// Set location
-		location = getCoordinates();
-	}
-
-	/**
 	 * Constructor 2 called by MockSettlement for maven testing.
 	 *
 	 * @param name
@@ -462,6 +451,10 @@ public class Settlement extends Structure implements Temporal,
 		logger.info(name + " (" + settlementCode + ")" + "  templateID: " + templateID + " " );
 		
 		preferences.resetValues(sponsor.getPreferences());
+
+		// Do mission limits; all have a limit of 1 first
+		preferences.putValue(MissionLimitParameters.INSTANCE,
+							 MissionType.CONSTRUCTION.name(), 1);
 
 		// Call weather to add this location
 		weather.addLocation(location);
@@ -1979,15 +1972,35 @@ public class Settlement extends Structure implements Temporal,
 			// Update the numCtizens
 			numCitizens = citizens.size();
 
-			// Update active mission limit; always at least 1
-			int optimalMissions = Math.max(1, (numCitizens/PERSON_PER_MISSION));
-			preferences.putValue(SettlementParameters.INSTANCE,
-									SettlementParameters.MISSION_LIMIT, optimalMissions);
+			// Update mission limit dependent upon population
+			setMissionLimit(MissionLimitParameters.TOTAL_MISSIONS, 1, 5);
+			setMissionLimit(MissionType.MINING.name(), 0, 8);
+			setMissionLimit(MissionType.COLLECT_ICE.name(), 1, 5);
+			setMissionLimit(MissionType.COLLECT_REGOLITH.name(), 1, 5);
+			setMissionLimit(MissionType.EXPLORATION.name(), 1, 5);
+			setMissionLimit(MissionType.AREOLOGY.name(), 1, 6);
+			setMissionLimit(MissionType.BIOLOGY.name(), 1, 6);
+			setMissionLimit(MissionType.METEOROLOGY.name(), 1, 6);
+			setMissionLimit(MissionType.TRADE.name(), 0, 10);
+			setMissionLimit(MissionType.TRAVEL_TO_SETTLEMENT.name(), 0, 20);
+			setMissionLimit(MissionType.DELIVERY.name(), 0, 6);
+
 
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Calculate the mission limit parameter based on the populaton and person ratio
+	 * @param id Id of the parameter value
+	 * @param minMissions Minimum numebr of missions
+	 * @param personRatio Ratio of person to mission
+	 */
+	private void setMissionLimit(String id, int minMissions, int personRatio) {
+		int optimalMissions = Math.max(minMissions, (numCitizens/personRatio));
+		preferences.putValue(MissionLimitParameters.INSTANCE, id, optimalMissions);
 	}
 
 	/**
@@ -3171,7 +3184,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	public void setMissionDisable(MissionType mission, boolean disable) {
-		preferences.putValue(MissionParameters.INSTANCE, mission.name(), (disable ? 0D : 1D));
+		preferences.putValue(MissionWeightParameters.INSTANCE, mission.name(), (disable ? 0D : 1D));
 	}
 
 	public void setAllowTradeMissionFromASettlement(Settlement settlement, boolean allowed) {
@@ -3189,7 +3202,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return probability value
 	 */
 	public boolean isMissionEnable(MissionType mission) {
-		return preferences.getDoubleValue(MissionParameters.INSTANCE, mission.name(), 0D) > 0D;
+		return preferences.getIntValue(MissionLimitParameters.INSTANCE, mission.name(), 0) > 0;
 	}
 
 	/**

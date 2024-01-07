@@ -21,7 +21,6 @@ import com.mars_sim.core.data.RatingLog;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.parameter.ParameterCategory;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.meta.MetaMission;
 import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
@@ -236,16 +235,19 @@ public class MissionManager implements Serializable {
 		double totalProbCache = 0D;
 
 		Settlement startingSettlement = person.getAssociatedSettlement();
+		var paramMgr = startingSettlement.getPreferences();
 
 		// Determine probabilities.
-		ParameterCategory missionCategory = MissionParameters.INSTANCE;
 		for (MetaMission metaMission : MetaMissionUtil.getMetaMissions()) {
-			if (startingSettlement.isMissionEnable(metaMission.getType())) {
+			// First check if the mission type has reached limit of active missions.
+			int maxMissions = paramMgr.getIntValue(MissionLimitParameters.INSTANCE,
+										metaMission.getType().name(), Integer.MAX_VALUE);
+			int activeMissions = numParticularMissions(metaMission.getType(), startingSettlement);
+			if (activeMissions < maxMissions) {
 				RatingScore baseProb = metaMission.getProbability(person);
 				if (baseProb.getScore() > 0D) {
 					// Get any overriding ratio
-					double settlementRatio = startingSettlement.getPreferences()
-										.getDoubleValue(missionCategory,
+					double settlementRatio = paramMgr.getDoubleValue(MissionWeightParameters.INSTANCE,
 														metaMission.getType().name(), 1D);
 					baseProb.addModifier("settlementratio", settlementRatio);
 
@@ -301,7 +303,7 @@ public class MissionManager implements Serializable {
 	 * @param settlement
 	 * @return number
 	 */
-	public int numParticularMissions(MissionType mType, Settlement settlement) {
+	private int numParticularMissions(MissionType mType, Settlement settlement) {
 		return (int) onGoingMissions.stream()
 							.filter(( m -> !m.isDone()
 									&& settlement.equals(m.getAssociatedSettlement())

@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.Deal;
 import com.mars_sim.core.goods.GoodsManager;
@@ -107,26 +106,12 @@ public class DeliveryMeta extends AbstractMetaMission {
 		if (deal == null) {
 			return RatingScore.ZERO_RATING;
 		}
-		
-		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(MissionType.DELIVERY, settlement);
-
-   		// Check for # of embarking missions.
-		if (Math.max(1, settlement.getNumCitizens() / 2.0) < numThisMission) {
-			return RatingScore.ZERO_RATING;
-		}			
-		
-		else if (numThisMission > 1)
-			return RatingScore.ZERO_RATING;	
 
 		double deliveryProfit = deal.getProfit() * VALUE;
 
 		// Delivery value modifier.
 		RatingScore missionProbability = new RatingScore(deliveryProfit / DIVISOR * gManager.getTradeFactor());
 		missionProbability.applyRange(0, Delivery.MAX_STARTING_PROBABILITY);
-		
-		int f2 = 2 * numThisMission + 1;
-		
-		missionProbability.addModifier("citizen", settlement.getNumCitizens() / f2 / 2D);
 		
 		// Crowding modifier.
 		int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();

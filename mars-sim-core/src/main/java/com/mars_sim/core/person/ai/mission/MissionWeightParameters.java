@@ -16,11 +16,11 @@ import com.mars_sim.core.parameter.ParameterValueType;
 /**
  * Defines the Parameter values to control Mission weights
  */
-public class MissionParameters extends ParameterCategory {
+public class MissionWeightParameters extends ParameterCategory {
 
-    public static final ParameterCategory INSTANCE = new MissionParameters();
+    public static final ParameterCategory INSTANCE = new MissionWeightParameters();
 
-    private MissionParameters() {
+    private MissionWeightParameters() {
         super("MISSION_WEIGHT");
     }
 
@@ -30,8 +30,18 @@ public class MissionParameters extends ParameterCategory {
      */
     @Override
     protected Map<String, ParameterSpec> calculateSpecs() {
+        return createMissionTypeParameters(ParameterValueType.DOUBLE);
+    }
+
+    /**
+     * Create a set of Parameter specs based on the range of MissionTypes.
+
+     * @param t The type of each spec
+     * @return
+     */
+    static Map<String, ParameterSpec> createMissionTypeParameters(ParameterValueType t) {    
         return Stream.of(MissionType.values())
 	 					.collect(Collectors.toMap(MissionType::name,
-                                        e-> new ParameterSpec(e.name(), e.getName(), ParameterValueType.DOUBLE)));
+                                        e-> new ParameterSpec(e.name(), e.getName(), t)));
     }
 }

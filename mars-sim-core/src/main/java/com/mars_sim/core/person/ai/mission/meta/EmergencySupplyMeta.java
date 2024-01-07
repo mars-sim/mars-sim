@@ -74,9 +74,6 @@ public class EmergencySupplyMeta extends AbstractMetaMission {
 	            if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
 	    	        return RatingScore.ZERO_RATING;
 	    	    }
-	
-	        	missionProbability.addModifier(SETTLEMENT_POPULATION,
-									getSettlementPopModifier(settlement, 2));
 	    		
 	           	RoleType roleType = person.getRole().getType();
             	double roleModifier = switch(roleType) {

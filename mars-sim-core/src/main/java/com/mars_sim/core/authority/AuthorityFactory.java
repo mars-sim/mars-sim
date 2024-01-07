@@ -21,7 +21,7 @@ import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.parameter.ParameterCategory;
 import com.mars_sim.core.parameter.ParameterManager;
-import com.mars_sim.core.person.ai.mission.MissionParameters;
+import com.mars_sim.core.person.ai.mission.MissionWeightParameters;
 import com.mars_sim.core.person.ai.task.meta.ScienceParameters;
 import com.mars_sim.core.person.ai.task.util.TaskParameters;
 import com.mars_sim.core.structure.Settlement;
@@ -108,7 +108,7 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 					switch(pTypeValue) {
 						case "MISSION":
 						case "MISSION_WEIGHT":
-							pType = MissionParameters.INSTANCE;
+							pType = MissionWeightParameters.INSTANCE;
 							break;
 						case "TASK":
 						case "TASK_WEIGHT":

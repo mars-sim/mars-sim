@@ -27,7 +27,8 @@ import com.mars_sim.core.parameter.ParameterCategory;
 import com.mars_sim.core.parameter.ParameterCategory.ParameterSpec;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.parameter.ParameterManager.ParameterKey;
-import com.mars_sim.core.person.ai.mission.MissionParameters;
+import com.mars_sim.core.person.ai.mission.MissionLimitParameters;
+import com.mars_sim.core.person.ai.mission.MissionWeightParameters;
 import com.mars_sim.core.person.ai.task.meta.ScienceParameters;
 import com.mars_sim.core.person.ai.task.util.TaskParameters;
 import com.mars_sim.core.structure.ProcessParameters;
@@ -56,7 +57,8 @@ public class TabPanelPreferences extends TabPanel {
 
 	private static final String ICON = "favourite";
 
-	private static final ParameterCategory[] CATEGORIES = {MissionParameters.INSTANCE,
+	private static final ParameterCategory[] CATEGORIES = {MissionWeightParameters.INSTANCE,
+															MissionLimitParameters.INSTANCE,
 															ProcessParameters.INSTANCE,
 															ScienceParameters.INSTANCE,
 															SettlementParameters.INSTANCE,

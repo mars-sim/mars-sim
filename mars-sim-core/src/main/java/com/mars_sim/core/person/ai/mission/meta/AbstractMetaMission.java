@@ -29,13 +29,11 @@ public class AbstractMetaMission implements MetaMission {
 
 	protected static final String GOODS = "goods";
 	protected static final String LEADER = "leader";
-	protected static final String SETTLEMENT_POPULATION = "population";
 	protected static final String PERSON_EXTROVERT = "extrovert";
 	protected static final String OVER_CROWDING = "crowding";
 	protected static final String MINERALS = "minerals";
 
 	private static MasterClock masterClock;
-	private static MissionManager missionMgr;
 
 	private String name;
 	private MissionType type;
@@ -121,35 +119,8 @@ public class AbstractMetaMission implements MetaMission {
 	protected MarsTime getMarsTime() {
 		return masterClock.getMarsTime();
 	}
-
-	/**
-	 * Gets the score modifier for a Settlement based on its population for this type of mission.
-	 * 
-	 * @param target The settlement to check
-	 * @param modifier
-	 */
-	protected double getSettlementPopModifier(Settlement target, int modifier) {
-		int numEmbarking = MissionUtil.numEmbarkingMissions(target);
-	    int numThisMission = missionMgr.numParticularMissions(type, target);
-		int pop = target.getNumCitizens();
-		double value = Math.max(1.0, 1.0 * pop / modifier);	
-		
-	    if (numEmbarking > value) {
-	    	return 0;
-	    }
-
-	    if (numThisMission > value) {
-	    	return 0;
-	    }
-		
-	    int f1 = 2 * numEmbarking;
-	    int f2 = 3 * numThisMission;
-		
-	    return value / (1 + f1) / (1 + f2);
-	}
 	
     public static void initializeInstances(MasterClock mc, MissionManager m) {
 		masterClock = mc;
-		missionMgr = m;
     }
 }

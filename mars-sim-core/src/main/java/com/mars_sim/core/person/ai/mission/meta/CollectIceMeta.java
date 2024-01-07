@@ -63,11 +63,6 @@ public class CollectIceMeta extends AbstractMetaMission {
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
 				missionProbability = new RatingScore(1);
-				missionProbability.addModifier(SETTLEMENT_POPULATION,
-										getSettlementPopModifier(settlement, 8));
-				if (missionProbability.getScore() == 0) {
-					return missionProbability;
-				}
 	    		missionProbability.addModifier(MINERALS, settlement.getIceProbabilityValue() / VALUE);
 
 				// Job modifier.

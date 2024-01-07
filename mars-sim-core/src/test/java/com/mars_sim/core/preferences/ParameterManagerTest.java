@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.mars_sim.core.parameter.ParameterCategory;
 import com.mars_sim.core.parameter.ParameterManager;
-import com.mars_sim.core.person.ai.mission.MissionParameters;
+import com.mars_sim.core.person.ai.mission.MissionWeightParameters;
 import com.mars_sim.core.person.ai.task.meta.ScienceParameters;
 
 import junit.framework.TestCase;
@@ -14,7 +14,7 @@ public class ParameterManagerTest extends TestCase {
      *
      */
     private static final ParameterCategory CATEGORY = ScienceParameters.INSTANCE;
-    private static final ParameterCategory CATEGORY2 = MissionParameters.INSTANCE;
+    private static final ParameterCategory CATEGORY2 = MissionWeightParameters.INSTANCE;
 
     private static final String KEY1 = "Bool";
     private static final String KEY2 = "Bool2";

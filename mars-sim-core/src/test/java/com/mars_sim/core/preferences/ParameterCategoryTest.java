@@ -7,7 +7,7 @@ import java.util.Map;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.parameter.ParameterCategory;
 import com.mars_sim.core.parameter.ParameterValueType;
-import com.mars_sim.core.person.ai.mission.MissionParameters;
+import com.mars_sim.core.person.ai.mission.MissionWeightParameters;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.meta.ScienceParameters;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
@@ -68,7 +68,7 @@ public class ParameterCategoryTest extends TestCase {
 
     public void testFixedCategories() {
         assertEquals("Mission values", MissionType.values().length,
-                                    MissionParameters.INSTANCE.getRange().size());
+                                    MissionWeightParameters.INSTANCE.getRange().size());
 
         assertEquals("Process values", OverrideType.values().length,
                                     ProcessParameters.INSTANCE.getRange().size());
