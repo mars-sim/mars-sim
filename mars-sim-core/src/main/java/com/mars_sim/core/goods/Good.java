@@ -8,13 +8,13 @@ package com.mars_sim.core.goods;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.food.FoodProductionProcessItem;
 import com.mars_sim.core.food.FoodProductionUtil;
@@ -54,10 +54,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	private static final double SKILL_FACTOR = 1D;
 	private static final double TECH_FACTOR = 2D;
 
-	// TODO Initialise explicitly
 	protected static MissionManager missionManager;
-
-    // TODO should load of an instance and not a static
     protected static VehicleConfig vehicleConfig;
 	protected static PersonConfig personConfig;
 	protected static CropConfig cropConfig;
@@ -67,8 +64,8 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	private String name;
 
 	private int id;
-	private int count0_out;
-	private int count1_out;
+	private int count0Out;
+	private int count1Out;
 
 	private double laborTime;
 	private double power;
@@ -160,11 +157,11 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	}
 
 	public double getCount0() {
-		return count0_out;
+		return count0Out;
 	}
 
 	public double getCount1() {
-		return count1_out;
+		return count1Out;
 	}
 
 	/**
@@ -235,18 +232,18 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * Computes the base cost of each good from manufacturing and food production
 	 */
 	public void computeBaseOutputCost() {
-		double labor0_out = 0;
-		double power0_out = 0;
-		double process0_out = 0;
-		double skill0_out = 0;
-		double tech0_out = 0;
+		double labor0Out = 0;
+		double power0Out = 0;
+		double process0Out = 0;
+		double skill0Out = 0;
+		double tech0Out = 0;
 
 		if (manufactureProcessInfos != null || !manufactureProcessInfos.isEmpty()) {
 
-			double goodAmount0_out = 0;
-			double otherAmount0_out = 0;
-			double goodWeight0_out = 1;
-			double otherWeight0_out = 1;
+			double goodAmount0Out = 0;
+			double otherAmount0Out = 0;
+			double goodWeight0Out = 1;
+			double otherWeight0Out = 1;
 			int numProcesses = manufactureProcessInfos.size();
 
 			for (ManufactureProcessInfo i: manufactureProcessInfos) {
@@ -256,64 +253,57 @@ public abstract class Good implements Serializable, Comparable<Good> {
 				for (ManufactureProcessItem j: items) {
 					String goodName = j.getName();
 					if (goodName.equalsIgnoreCase(name)) {
-						goodAmount0_out += j.getAmount();
+						goodAmount0Out += j.getAmount();
 
 						if (ItemType.PART == j.getType())
-							goodWeight0_out += ItemResourceUtil.findItemResource(name).getMassPerItem();
+							goodWeight0Out += ItemResourceUtil.findItemResource(name).getMassPerItem();
 					}
 					else {
-						otherAmount0_out += j.getAmount();
+						otherAmount0Out += j.getAmount();
 
 						if (ItemType.PART == j.getType())
-							otherWeight0_out += ItemResourceUtil.findItemResource(name).getMassPerItem();
+							otherWeight0Out += ItemResourceUtil.findItemResource(name).getMassPerItem();
 					}
 				}
 
-				double laborTime 	= i.getWorkTimeRequired();
-				double power 		= i.getPowerRequired();
-				double processTime 	= i.getProcessTimeRequired();
-				int skillLevel 		= i.getSkillLevelRequired();
-				int techLevel 		= i.getTechLevelRequired();
+				labor0Out 	 += i.getWorkTimeRequired();
+				power0Out 	 += i.getPowerRequired();
+				process0Out += i.getProcessTimeRequired();
+				skill0Out 	 += i.getSkillLevelRequired();
+				tech0Out 	 += i.getTechLevelRequired();
+				count0Out++;
 
-				labor0_out 	 += laborTime;
-				power0_out 	 += power;
-				process0_out += processTime;
-				skill0_out 	 += skillLevel;
-				tech0_out 	 += techLevel;
-				count0_out++;
-
-				if (count0_out != 0) {
-//					double fractionalAmount = goodAmount0_out * goodWeight0_out / (goodAmount0_out * goodWeight0_out + otherAmount0_out * otherWeight0_out);
-					double fraction = 1 / (goodAmount0_out * goodWeight0_out + otherAmount0_out * otherWeight0_out);
-					labor0_out 	 = labor0_out * fraction;
-					power0_out 	 = power0_out * fraction;
-					process0_out = process0_out * fraction;
-					skill0_out	 = skill0_out * fraction;
-					tech0_out 	 = tech0_out * fraction;
+				if (count0Out != 0) {
+					double fraction = 1 / (goodAmount0Out * goodWeight0Out + otherAmount0Out * otherWeight0Out);
+					labor0Out 	 = labor0Out * fraction;
+					power0Out 	 = power0Out * fraction;
+					process0Out = process0Out * fraction;
+					skill0Out	 = skill0Out * fraction;
+					tech0Out 	 = tech0Out * fraction;
 				}
 			}
 
 			if (numProcesses != 0) {
-				labor0_out 	 = labor0_out / numProcesses;
-				power0_out 	 = power0_out / numProcesses;
-				process0_out = process0_out / numProcesses;
-				skill0_out	 = skill0_out / numProcesses;
-				tech0_out 	 = tech0_out / numProcesses;
+				labor0Out 	 = labor0Out / numProcesses;
+				power0Out 	 = power0Out / numProcesses;
+				process0Out = process0Out / numProcesses;
+				skill0Out	 = skill0Out / numProcesses;
+				tech0Out 	 = tech0Out / numProcesses;
 			}
 		}
 
-		double labor1_out = 0;
-		double power1_out = 0;
-		double process1_out = 0;
-		double skill1_out = 0;
-		double tech1_out = 0;
+		double labor1Out = 0;
+		double power1Out = 0;
+		double process1Out = 0;
+		double skill1Out = 0;
+		double tech1Out = 0;
 
 		if (foodProductionProcessInfos != null || !foodProductionProcessInfos.isEmpty()) {
 
-			double goodAmount1_out = 0;
-			double otherAmount1_out = 0;
-			double goodWeight1_out = 1;
-			double otherWeight1_out = 1;
+			double goodAmount1Out = 0;
+			double otherAmount1Out = 0;
+			double goodWeight1Out = 1;
+			double otherWeight1Out = 1;
 			int numProcesses = foodProductionProcessInfos.size();
 
 			for (FoodProductionProcessInfo i: foodProductionProcessInfos) {
@@ -321,85 +311,79 @@ public abstract class Good implements Serializable, Comparable<Good> {
 				for (FoodProductionProcessItem j: items) {
 					String goodName = j.getName();
 					if (goodName.equalsIgnoreCase(name)) {
-						goodAmount1_out += j.getAmount();
+						goodAmount1Out += j.getAmount();
 
 						if (ItemType.PART == j.getType())
-							goodWeight1_out += ItemResourceUtil.findItemResource(name).getMassPerItem();
+							goodWeight1Out += ItemResourceUtil.findItemResource(name).getMassPerItem();
 					}
 					else {
-						otherAmount1_out += j.getAmount();
+						otherAmount1Out += j.getAmount();
 
 						if (ItemType.PART == j.getType())
-							otherWeight1_out += ItemResourceUtil.findItemResource(name).getMassPerItem();
+							otherWeight1Out += ItemResourceUtil.findItemResource(name).getMassPerItem();
 					}
 				}
 
-				double laborTime 	= i.getWorkTimeRequired();
-				double power 		= i.getPowerRequired();
-				double processTime 	= i.getProcessTimeRequired();
-				int skillLevel 		= i.getSkillLevelRequired();
-				int techLevel 		= i.getTechLevelRequired();
-
-				labor1_out 	 += laborTime;
-				power1_out 	 += power;
-				process1_out += processTime;
-				skill1_out 	 += skillLevel;
-				tech1_out 	 += techLevel;
-				count1_out++;
+				labor1Out 	 += i.getWorkTimeRequired();
+				power1Out 	 += i.getPowerRequired();
+				process1Out += i.getProcessTimeRequired();
+				skill1Out 	 += i.getSkillLevelRequired();
+				tech1Out 	 += i.getTechLevelRequired();
+				count1Out++;
 			}
 
-			if (count1_out != 0) {
-				double fraction = 1 / (goodAmount1_out * goodWeight1_out + otherAmount1_out * otherWeight1_out);
-				labor1_out 	 = labor1_out * fraction;
-				power1_out 	 = power1_out * fraction;
-				process1_out = process1_out * fraction;
-				skill1_out	 = skill1_out * fraction;
-				tech1_out 	 = tech1_out * fraction;
+			if (count1Out != 0) {
+				double fraction = 1 / (goodAmount1Out * goodWeight1Out + otherAmount1Out * otherWeight1Out);
+				labor1Out 	 = labor1Out * fraction;
+				power1Out 	 = power1Out * fraction;
+				process1Out = process1Out * fraction;
+				skill1Out	 = skill1Out * fraction;
+				tech1Out 	 = tech1Out * fraction;
 			}
 
 			if (numProcesses != 0) {
-				labor1_out 	 = labor1_out / numProcesses;
-				power1_out 	 = power1_out / numProcesses;
-				process1_out = process1_out / numProcesses;
-				skill1_out	 = skill1_out / numProcesses;
-				tech1_out 	 = tech1_out / numProcesses;
+				labor1Out 	 = labor1Out / numProcesses;
+				power1Out 	 = power1Out / numProcesses;
+				process1Out = process1Out / numProcesses;
+				skill1Out	 = skill1Out / numProcesses;
+				tech1Out 	 = tech1Out / numProcesses;
 			}
 		}
 
-		if (labor0_out == 0)
-			laborTime = labor1_out;
-		else if (labor1_out == 0)
-			laborTime = labor0_out;
+		if (labor0Out == 0)
+			laborTime = labor1Out;
+		else if (labor1Out == 0)
+			laborTime = labor0Out;
 		else
-			laborTime = (labor0_out + labor1_out)/2D;
+			laborTime = (labor0Out + labor1Out)/2D;
 
-		if (power0_out == 0)
-			power = power1_out;
-		else if (power1_out == 0)
-			power = power0_out;
+		if (power0Out == 0)
+			power = power1Out;
+		else if (power1Out == 0)
+			power = power0Out;
 		else
-			power = (power0_out + power1_out)/2D;
+			power = (power0Out + power1Out)/2D;
 
-		if (process0_out == 0)
-			processTime = process1_out;
-		else if (process1_out == 0)
-			processTime = process0_out;
+		if (process0Out == 0)
+			processTime = process1Out;
+		else if (process1Out == 0)
+			processTime = process0Out;
 		else
-			processTime = (process0_out + process1_out)/2D;
+			processTime = (process0Out + process1Out)/2D;
 
-		if (skill0_out == 0)
-			skill = skill1_out;
-		else if (skill1_out == 0)
-			skill = skill0_out;
+		if (skill0Out == 0)
+			skill = skill1Out;
+		else if (skill1Out == 0)
+			skill = skill0Out;
 		else
-			skill = (skill0_out + skill1_out)/2D;
+			skill = (skill0Out + skill1Out)/2D;
 
-		if (tech0_out == 0)
-			tech = tech1_out;
-		else if (tech1_out == 0)
-			tech = tech0_out;
+		if (tech0Out == 0)
+			tech = tech1Out;
+		else if (tech1Out == 0)
+			tech = tech0Out;
 		else
-			tech = (tech0_out + tech1_out)/2D;
+			tech = (tech0Out + tech1Out)/2D;
 
 	}
 
@@ -438,7 +422,6 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * @param buildingStage the building construction stage info.
 	 * @return true if building can be constructed.
 	 */
-	// TODO: reduce the utilization on this method using 5.7% of total cpu
 	protected static boolean isLocallyConstructable(Settlement settlement, ConstructionStageInfo buildingStage) {
 
 		if (buildingStage.isConstructable()) {
@@ -452,11 +435,9 @@ public abstract class Good implements Serializable, Comparable<Good> {
 						// Check if any existing buildings have same frame stage and can be refit or
 						// refurbished
 						// into new building.
-						Iterator<Building> i = settlement.getBuildingManager().getBuildingSet().iterator();
-						while (i.hasNext()) {
+						for(var b : settlement.getBuildingManager().getBuildingSet()) {
 							ConstructionStageInfo tempBuildingStage = ConstructionUtil
-									// TODO: reduce the utilization on this method. 3.5% of total cpu
-									.getConstructionStageInfo(i.next().getBuildingType());
+									.getConstructionStageInfo(b.getBuildingType());
 							if (tempBuildingStage != null) {
 								ConstructionStageInfo tempFrameStage = ConstructionUtil
 										.getPrerequisiteStage(tempBuildingStage);
@@ -488,11 +469,10 @@ public abstract class Good implements Serializable, Comparable<Good> {
 
 		// Add all resources required to build first prestage, if any.
 		ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
-		if ((preStage1 != null)) {
-			Iterator<Integer> i = preStage1.getResources().keySet().iterator();
-			while (i.hasNext()) {
-				Integer resource = i.next();
-				double amount = preStage1.getResources().get(resource);
+		if (preStage1 != null) {
+			for(var e : preStage1.getResources().entrySet()) {
+				Integer resource = e.getKey();
+				double amount = e.getValue();
 				if (result.containsKey(resource)) {
 					double totalAmount = result.get(resource) + amount;
 					result.put(resource, totalAmount);
@@ -503,11 +483,10 @@ public abstract class Good implements Serializable, Comparable<Good> {
 
 			// Add all resources required to build second prestage, if any.
 			ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
-			if ((preStage2 != null)) {
-				Iterator<Integer> j = preStage2.getResources().keySet().iterator();
-				while (j.hasNext()) {
-					Integer resource = j.next();
-					double amount = preStage2.getResources().get(resource);
+			if (preStage2 != null) {
+				for(var e : preStage2.getResources().entrySet()) {
+					Integer resource = e.getKey();
+					double amount = e.getValue();
 					if (result.containsKey(resource)) {
 						double totalAmount = result.get(resource) + amount;
 						result.put(resource, totalAmount);
@@ -534,11 +513,10 @@ public abstract class Good implements Serializable, Comparable<Good> {
 
 		// Add parts from first prestage, if any.
 		ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
-		if ((preStage1 != null)) {
-			Iterator<Integer> i = preStage1.getParts().keySet().iterator();
-			while (i.hasNext()) {
-				Integer part = i.next();
-				int number = preStage1.getParts().get(part);
+		if (preStage1 != null) {
+			for(var e : preStage1.getParts().entrySet()) {
+				Integer part = e.getKey();
+				int number = e.getValue();
 				if (result.containsKey(part)) {
 					int totalNumber = result.get(part) + number;
 					result.put(part, totalNumber);
@@ -549,11 +527,10 @@ public abstract class Good implements Serializable, Comparable<Good> {
 
 			// Add parts from second pre-stage, if any.
 			ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
-			if ((preStage2 != null)) {
-				Iterator<Integer> j = preStage2.getParts().keySet().iterator();
-				while (j.hasNext()) {
-					Integer part = j.next();
-					int number = preStage2.getParts().get(part);
+			if (preStage2 != null) {
+				for(var e : preStage2.getParts().entrySet()) {
+					Integer part = e.getKey();
+					int number = e.getValue();
 					if (result.containsKey(part)) {
 						int totalNumber = result.get(part) + number;
 						result.put(part, totalNumber);
@@ -651,7 +628,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
      */
     protected Stream<Person> getPersonOnEVA(Settlement settlement) {
         return  settlement.getAllAssociatedPeople().stream()
-			              .filter(p -> p.isOutside());
+			              .filter(Unit::isOutside);
     }
 
 	/**
