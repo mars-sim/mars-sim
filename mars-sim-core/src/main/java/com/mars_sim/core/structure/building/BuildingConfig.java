@@ -40,6 +40,7 @@ public class BuildingConfig {
 	private static final String BUILDING_TYPE = "type";
 	private static final String WIDTH = "width";
 	private static final String LENGTH = "length";
+	private static final String N_S_ALIGNMENT = "north-south-alignment";
 	private static final String CONSTRUCTION = "construction";
 	private static final String BASE_LEVEL = "base-level";
 	private static final String BASE_MASS = "base-mass";
@@ -144,6 +145,7 @@ public class BuildingConfig {
 
 		double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
 		double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
+		String alignment = buildingElement.getAttributeValue(N_S_ALIGNMENT);
 		int baseLevel = Integer.parseInt(buildingElement.getAttributeValue(BASE_LEVEL));
 		double presetTemp = Double.parseDouble(buildingElement.getAttributeValue(ROOM_TEMPERATURE));
 		int maintenanceTime = Integer.parseInt(buildingElement.getAttributeValue(MAINTENANCE_TIME));
@@ -199,7 +201,8 @@ public class BuildingConfig {
 			category = deriveCategory(supportedFunctions.keySet());
 		}
 
-		BuildingSpec newSpec = new BuildingSpec(buildingTypeName, desc, category, width, length, baseLevel,
+		BuildingSpec newSpec = new BuildingSpec(buildingTypeName, desc, category, 
+				width, length, alignment, baseLevel,
 			 	presetTemp, maintenanceTime, wearLifeTime,
 			 	basePowerRequirement, basePowerDownPowerRequirement,
 			 	supportedFunctions);
@@ -434,6 +437,8 @@ public class BuildingConfig {
 	 * @param functionElement Element holding locations
 	 * @param locations Name of the location elements
 	 * @param namePrefix The default name prefix to assign to the spots
+	 * @param buildingWidth
+	 * @param buildingLength
 	 * @return set of activity spots as Point2D objects.
 	 */
 	private Set<NamedPosition> parseNamedPositions(Element functionElement, String locations,

@@ -43,6 +43,7 @@ public class BuildingSpec {
 	
 	private double baseMass;
 	
+	private String alignment;
 	private String buildingType;
 	private String description;
 	
@@ -68,7 +69,25 @@ public class BuildingSpec {
 
 	private BuildingCategory category;
 	
-	BuildingSpec(String buildingType, String description, BuildingCategory category, double width, double length, int baseLevel,
+	/**
+	 * The constructor for BuildingSpecs.
+	 * 
+	 * @param buildingType
+	 * @param description
+	 * @param category
+	 * @param width
+	 * @param length
+	 * @param alignment
+	 * @param baseLevel
+	 * @param presetTemperature
+	 * @param maintenanceTime
+	 * @param wearLifeTime
+	 * @param basePowerRequirement
+	 * @param basePowerDownPowerRequirement
+	 * @param supportedFunctions
+	 */
+	BuildingSpec(String buildingType, String description, BuildingCategory category, 
+			double width, double length, String alignment, int baseLevel,
 			double presetTemperature, int maintenanceTime,
 			int wearLifeTime, double basePowerRequirement, double basePowerDownPowerRequirement,
 			Map<FunctionType, FunctionSpec> supportedFunctions) {
@@ -80,6 +99,7 @@ public class BuildingSpec {
 		this.category = category;
 		this.width = width;
 		this.length = length;
+		this.alignment = alignment;
 		this.baseLevel = baseLevel;
 		this.presetTemperature = presetTemperature;
 		this.maintenanceTime = maintenanceTime;
@@ -162,6 +182,10 @@ public class BuildingSpec {
 
 	public double getWidth() {
 		return width;
+	}
+	
+	public String getAlignment() {
+		return alignment;
 	}
 	
 	public double getBaseMass() {

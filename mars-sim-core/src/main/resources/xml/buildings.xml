@@ -6,6 +6,7 @@
 	<!ATTLIST building category CDATA #IMPLIED>
 	<!ATTLIST building width CDATA #REQUIRED>
 	<!ATTLIST building length CDATA #REQUIRED>
+	<!ATTLIST building north-south-alignment (width|length) #REQUIRED>
 	<!ATTLIST building construction CDATA #IMPLIED>
 	<!ATTLIST building base-level CDATA #REQUIRED>
 	<!ATTLIST building wear-lifetime CDATA #REQUIRED>
@@ -175,7 +176,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<!-- maintenance-time: in millisols (old default : 50 millisols). -->
 	<!-- room-temperature: in deg Celsius (old default : 22.5D). -->
 	<!-- base-mass: in kg (old default : 3000). -->
-	<building type="Lander Hab" width="9.0" length="9.0" base-level="1"
+	<building type="Lander Hab" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
 		wear-lifetime="3340000" maintenance-time="200" room-temperature="22.5" base-mass="3000">
 		<description> The Lander Hab is the initial habitat for a crew of four.
 	 		It serves as a jack-of-all-trades building that houses many basic but critical functions
@@ -513,7 +514,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Lander Hab-->
 
 
-	<building type="EVA Airlock" width="6.0" length="4.0" base-level="0"
+	<building type="EVA Airlock" width="6.0" length="4.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="20" base-mass="1500"
 			category="EVA_AIRLOCK">
 		<description> The EVA Airlock is a node to be attached to building for giving direct access
@@ -558,7 +559,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of EVA Airlock -->
 
-	<building type="Central Hub A" width="20.0" length="20.0" construction="INFLATABLE" base-level="0"
+	<building type="Central Hub A" width="20.0" length="20.0" north-south-alignment="length" construction="INFLATABLE" base-level="0"
 		wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="10000">
 		<description> The Central Hub serves to a nexus for connecting other building modules. 
 			It has a flexible air dome and is designed to be a place of gathering and relaxation. 
@@ -785,7 +786,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end for Central Hub Type A -->
 
 
-	<building type="Inflatable Greenhouse" width="6.0" length="9.0" construction="INFLATABLE" base-level="0"
+	<building type="Inflatable Greenhouse" width="6.0" length="9.0" north-south-alignment="length" construction="INFLATABLE" base-level="0"
 		wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="3000">
 		<description> The Inflatable Greenhouse is essentially a flexible air bladder
 		made with interwoven layers of Polyurethane, Kevlar, polyester, Saran and Tedlar materials to retain an atmosphere adequate
@@ -907,7 +908,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end for inflatable greenhouse -->
 
-	<building type="Large Greenhouse" width="12.0" length="18.0" construction="SEMI_SOLID" base-level="0"
+	<building type="Large Greenhouse" width="12.0" length="18.0" north-south-alignment="length" construction="SEMI_SOLID" base-level="0"
 			wear-lifetime="3340000" maintenance-time="200" room-temperature="24.0" base-mass="10000">
 		<description>
 			The Large Greenhouse is made of stronger structural and cladding material such as coextruded
@@ -1042,7 +1043,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end for large greenhouse -->
 
-	<building type="Fish Farm" width="6.0" length="9.0" base-level="0"
+	<building type="Fish Farm" width="6.0" length="9.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="20.0" base-mass="3000">
 		<description>
 			The Fish Farm is made of stronger structural and cladding material such as coextruded laminate of polyamide and polyolefin interwoven around
@@ -1100,7 +1101,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end for fish farm -->
 
-	<building type="Algae Pond" width="6.0" length="9.0" base-level="0"
+	<building type="Algae Pond" width="6.0" length="9.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="28.0" base-mass="3000">
 		<description>
 			This building grows spirulina in ponds. It is furnished with a biology research lab 
@@ -1176,7 +1177,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end for algae pond -->
 
-	<building type="ERV-A" width="10.0" length="10.0" base-level="0"
+	<building type="ERV-A" width="10.0" length="10.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="100" room-temperature="0" base-mass="3000">
 		<description> The Earth Return Vehicle Type A (ERV-A) is a vehicle base sent ahead
 		    of the arrival of the human crew. It provides equipment package for producing 
@@ -1250,7 +1251,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of ERV-A -->
 
-	<building type="ERV-B" width="10.0" length="10.0" base-level="0"
+	<building type="ERV-B" width="10.0" length="10.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="100" room-temperature="0" base-mass="3000">
 		<description> The Earth Return Vehicle Type B (ERV-B) It furnishes many regolith-
 		related processing equipment package that extract ores and minerals. It may be 
@@ -1331,7 +1332,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of ERV-B -->
 
-	<building type="ERV-C" width="10.0" length="10.0" base-level="0"
+	<building type="ERV-C" width="10.0" length="10.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="100" room-temperature="0" base-mass="3000">
 		<description> The Earth Return Vehicle Type C (ERV-C) possesses many chemical-related processing
 		equipment packages that synthesize industrial chemicals. It may be reconfigured into a flight-ready space
@@ -1396,7 +1397,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of ERV-C -->
 
-	<building type="TOPAZ-2A Reactor" width="4.0" length="6.0" base-level="0"
+	<building type="TOPAZ-2A Reactor" width="4.0" length="6.0" north-south-alignment="length" base-level="0"
 		wear-lifetime="3340000" maintenance-time="500" room-temperature= "0" base-mass="4000">
 		<description>The TOPAZ-2A Reactor is a minor improvement of the TOPAZ-II reactor system, 
 		 which was developed by Soviet Union. In 1987, TOPAZ-II was the first successfully demonstrated
@@ -1414,7 +1415,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 	
-	<building type="TOPAZ-3 Reactor" width="4.0" length="6.0" base-level="0"
+	<building type="TOPAZ-3 Reactor" width="4.0" length="6.0" north-south-alignment="length" base-level="0"
 		wear-lifetime="3340000" maintenance-time="500" room-temperature= "0" base-mass="4000">
 		<description>The TOPAZ-3 Reactor doubles the number of TFEs cells to 74 and has higher 
 		 thermal output of 4.7kW per cell. At ~10.37% conversion efficiency, it provides ~30 kWe.</description>
@@ -1428,7 +1429,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 		
-	<building type="Kilopower Reactor" width="2.0" length="2.0" base-level="0"
+	<building type="Kilopower Reactor" width="2.0" length="2.0" north-south-alignment="length" base-level="0"
 		wear-lifetime="3340000" maintenance-time="500" room-temperature= "0" base-mass="1500">
 		<description>The Kilopower Reactor provides ~20 kWe. It contains two 10 kWe modules, 
 		each with a reactor core using depleted uranium as fuel source. 
@@ -1452,7 +1453,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 	
-	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" base-level="0"
+	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" north-south-alignment="length" base-level="0"
 		wear-lifetime="3340000" maintenance-time="500" room-temperature= "0" base-mass="4000">
 		<description>The MD1 Nuclear Reactor is the first compact fission power plant commissioned 
 		    for use off-world. At 83.3% load capacity, it provides a consistent power supply of ~40 kWe.</description>
@@ -1466,7 +1467,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-	<building type="MD4 Nuclear Reactor" width="10.0" length="15.0" base-level="0"
+	<building type="MD4 Nuclear Reactor" width="10.0" length="15.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="500" room-temperature= "0" base-mass="8000">
 		<description>
 			The MD4 Nuclear Reactor is a robust, flight-ready nuclear fission power plant. 
@@ -1486,7 +1487,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-	<building type="Atmospheric Processor" width="8.0" length="11.0" base-level="0"
+	<building type="Atmospheric Processor" width="8.0" length="11.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="0" base-mass="1000">
 		<description> The Atmospheric Processor is an resource-processing
 		building providing black/water recycling, air processing and waste
@@ -1542,7 +1543,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Atmospheric Processor -->
 
-	<building type="Residential Quarters" width="7.0" length="9.0" base-level="0"
+	<building type="Residential Quarters" width="7.0" length="9.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="2000">
 		<description> The Residential Quarters is the first full living accommodation building
 			that is configured to house as many as twelve beds. It also provides storage space
@@ -1614,7 +1615,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Residential Quarters -->
 
-	<building type="Lounge" width="7.0" length="9.0" base-level="0"
+	<building type="Lounge" width="7.0" length="9.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="2000">
 		<description> The Lounge is a rest and relaxation living space furnished
 			with dining tables and chairs for serving almost three dozens of people at a time.
@@ -1844,7 +1845,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Lounge -->
 
 
-	<building type="Infirmary" width="7.0" length="9.0" base-level="0"
+	<building type="Infirmary" width="7.0" length="9.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="2000">
 		<description>
 			The Infirmary is the first medical facility equipped to provide more adequate
@@ -1899,7 +1900,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Infirmiry-->
 
 
-	<building type="Command and Control" width="7.0" length="9.0" base-level="0"
+	<building type="Command and Control" width="7.0" length="9.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="4000">
 		<description>
 			The Command and Control is a communication facility with networking
@@ -1985,7 +1986,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Command and Control -->
 
-	<building type="Server Farm" width="9.0" length="7.0" base-level="0"
+	<building type="Server Farm" width="9.0" length="7.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="18" base-mass="4000"
 			category="LABORATORY">
 		<description>
@@ -2073,7 +2074,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Server Farm -->
 
 
-	<building type="Laboratory" width="7.0" length="9.0" base-level="0"
+	<building type="Laboratory" width="7.0" length="9.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="200" room-temperature="22.5" base-mass="4000">
 		<description> The Laboratory is a modest facility furnished with workbench,
 		instruments, COMPUTINGs and tablets and peer collaboration communication
@@ -2141,7 +2142,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Laboratory -->
 
-	<building type="Garage" width="12.0" length="16.0" base-level="0"
+	<building type="Garage" width="12.0" length="16.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="200" room-temperature="22.5" base-mass="5000">
 		<description> The Garage is an enclosed maintenance facility for
 			building, repairing and modifying Martian rovers and vehicles
@@ -2194,7 +2195,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end for garage-->
 
-	<building type="Workshop" width="7.0" length="9.0" base-level="0"
+	<building type="Workshop" width="7.0" length="9.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="200" room-temperature="22.5"  base-mass="4000">
 		<description> The Workshop is practically a machine shop furnished with
 			3-D printers and additive manufacturing machines for processing resources,
@@ -2263,7 +2264,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Workshop -->
 
 
-	<building type="Methane Power Generator" width="5.0" length="5.0" base-level="0"
+	<building type="Methane Power Generator" width="5.0" length="5.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="500" room-temperature= "0" base-mass="500">
 		<description>The Methane Power generator utilized methane gas for the
 			generation of electricity. It makes use of the freely available carbon dioxide
@@ -2287,7 +2288,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 
 
-	<building type="Wind Turbine" width="5.0" length="5.0" base-level="0"
+	<building type="Wind Turbine" width="5.0" length="5.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="400" room-temperature="0" base-mass="200">
 		<description> This Vertical Axis Wind Turbine (VAWT) is constructed with strong, 
 		lightweight material suited for Mars low gravity and low density wind load. 
@@ -2305,7 +2306,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-	<building type="Solar Photovoltaic Array" width="5.0" length="10.0" base-level="0"
+	<building type="Solar Photovoltaic Array" width="5.0" length="10.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="300" room-temperature="0" base-mass="100">
 		<description>  The Solar Photovoltaic Array is an array of steerable photovoltaic panels
 		that generates electricity from Martian sunlight. It is an essential part of
@@ -2322,7 +2323,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 
 	<!-- Array of solar thermal mirrors with steam power generator. -->
-	<building type="Solar Thermal Collector" width="5.0" length="10.0" base-level="0"
+	<building type="Solar Thermal Collector" width="5.0" length="10.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="350" room-temperature="0" base-mass="100">
 		<description>  The Solar Thermal Array is an array of steerable parabolic
 			reflectors that concentrates sunlight for heating up molten materials
@@ -2339,7 +2340,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 
 	<!-- A small areothermal electrical generator. -->
-	<building type="Small Areothermal Well" width="5.0" length="10.0" base-level="0"
+	<building type="Small Areothermal Well" width="5.0" length="10.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="0" base-mass="400">
 		<description>  The Small Areothermal Well is an geothermal energy production system
 			that captures the trapped underground heat for the power grid.
@@ -2354,7 +2355,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-	<building type="Large Areothermal Well" width="10.0" length="15.0" base-level="0"
+	<building type="Large Areothermal Well" width="10.0" length="15.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="200" room-temperature= "0" base-mass="15">
 		<description>  The Large Areothermal Well is an geothermal energy production system
 			that features more advance geothermal flow path for ground loop design for
@@ -2370,7 +2371,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-	<building type="Concrete Storage Bin" width="2.0" length="3.0" base-level="0"
+	<building type="Concrete Storage Bin" width="2.0" length="3.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" base-mass="1000">
 		<description>  The Concrete Storage Bin is a small brick bin for
 			storing dry concrete material for light construction project.
@@ -2384,7 +2385,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-	<building type="Cement Storage Bin" width="2.0" length="3.0" base-level="0"
+	<building type="Cement Storage Bin" width="2.0" length="3.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="1000">
 		<description>  The Cement Storage Bin is a small brick bin for
 			storing dry cement for light construction project.
@@ -2398,7 +2399,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-	<building type="Mortar Storage Bin" width="2.0" length="3.0" base-level="0"
+	<building type="Mortar Storage Bin" width="2.0" length="3.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="1000">
 		<description>  The Mortar Storage Bin is a small brick bin for
 			storing dry mortar for light contruction project.
@@ -2412,7 +2413,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-	<building type="Lime Storage Bin" width="2.0" length="3.0" base-level="0"
+	<building type="Lime Storage Bin" width="2.0" length="3.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="1000">
 		<description>  The Lime Storage Bin is a small brick bin for
 			storing lime for light contruction project.
@@ -2426,7 +2427,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-	<building type="Carbon Storage Bin" width="2.0" length="3.0" base-level="0"
+	<building type="Carbon Storage Bin" width="2.0" length="3.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="1000">
 		<description> The Carbon Storage Bin is a small brick bin for
 			storing carbon for light contruction project.
@@ -2440,7 +2441,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-	<building type="Regolith Storage Bin" width="2.0" length="3.0" base-level="0"
+	<building type="Regolith Storage Bin" width="2.0" length="3.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="1000">
 		<description> The Regolith Storage Bin is a small brick bin for
 			storing Martian regolith for light contruction project.
@@ -2454,7 +2455,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-	<building type="Sand Storage Bin" width="2.0" length="3.0" base-level="0"
+	<building type="Sand Storage Bin" width="2.0" length="3.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="1000">
 		<description> The Sand Storage Bin is a small brick bin for
 			storing Martian sand for light contruction project.
@@ -2468,7 +2469,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-	<building type="Ice Storage Bin" width="2.0" length="3.0" base-level="0"
+	<building type="Ice Storage Bin" width="2.0" length="3.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="-40" base-mass="1000">
 		<description> The Ice Storage Bin is a small brick bin for handling and
 			storing extracted ice for future use.
@@ -2482,7 +2483,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-	<building type="Manufacturing Shed" width="5.0" length="5.0" base-level="-1"
+	<building type="Manufacturing Shed" width="5.0" length="5.0" north-south-alignment="length" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="200" room-temperature="22.5" base-mass="2500">
 		<description> The Manufacturing Shed is a small brick manufacturing
 			building for forming, cutting, coating and glazing bricks for construction projects.
@@ -2532,7 +2533,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Manufacturing Shed -->
 
-	<building type="Large Sabatier Processor" width="5.0" length="5.0" base-level="0"
+	<building type="Large Sabatier Processor" width="5.0" length="5.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="250" room-temperature="0" base-mass="1500">
 		<description> This building houses a number of high capacity sabatier
 			methanation modules for processing hydrogen and carbon dioxide at
@@ -2556,7 +2557,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- Small Sabatier Processor -->
 
 	<!-- An Array of Electrical Batteries -->
-	<building type="Medium Battery Array" width="5.0" length="10.0" base-level="0"
+	<building type="Medium Battery Array" width="5.0" length="10.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="250" room-temperature="0" base-mass="500">
 		<description> The Medium Battery Array showcase an advanced battery system that
 			stored excess power during non-peak hours and released power during peak power
@@ -2570,7 +2571,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-	<building type="Astronomy Observatory" width="7.0" length="7.0" base-level="0"
+	<building type="Astronomy Observatory" width="7.0" length="7.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="250" room-temperature="22.5" base-mass="3000">
 		<description> The Astronomy Observatory is a small self-contained observatory building
 			furnished with an optical telescope, research workbenches and laboratory equipment.
@@ -2652,7 +2653,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<!-- end of Astronomy Observatory-->
 
 	<!-- A lander hab refitted for storage. -->
-	<building type="Storage Hab" width="9.0" length="9.0" base-level="1"
+	<building type="Storage Hab" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" base-mass="2000">
 		<description> The Storage Hab is a Lander Hab refitted storage
 			building with ample storage space. It has built-in PV panels
@@ -2692,7 +2693,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Storage Hab-->
 
-	<building type="Research Hab" width="9.0" length="9.0" base-level="1"
+	<building type="Research Hab" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="3000">
 		<description> The Research Hab is a Lander Hab refitted laboratory
 			building for scientific research. It can be custom-tailored with COMPUTING
@@ -2751,7 +2752,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Storage Hab-->
 
-	<building type="Residential Hab" width="9.0" length="9.0" base-level="1"
+	<building type="Residential Hab" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="2000">
 		<description> The Residential Hab is a Lander Hab refitted residential
 			quarters for living accommodation of up to 8 persons. It uses solar
@@ -2794,7 +2795,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Residential Hab-->
 
 	<!-- A lander hab refitted as a medical facility. -->
-	<building type="Medical Hab" width="9.0" length="9.0" base-level="1"
+	<building type="Medical Hab" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
 			wear-lifetime="3340000" maintenance-time="100" room-temperature="22.5" base-mass="2500">
 		<description> The Medical Hab is a Lander Hab refitted medical facility
 		 for providing medical basic care. It also has medical research workbench and
@@ -2860,7 +2861,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Medical Hab-->
 
-	<building type="Machinery Hab" width="9.0" length="9.0" base-level="1"
+	<building type="Machinery Hab" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
 			wear-lifetime="3340000" maintenance-time="250" room-temperature="22.5" base-mass="3000">
 		<description> The Machinery Hab is a Lander Hab refitted manufacturing workshop
 		 	for making items and synthesizing resource. It provides storage space for
@@ -2929,7 +2930,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Machinery Hab -->
 
 	<!-- A hallway's length is variable and determined in templates or during construction. -->
-	<building type="Hallway" width="2.0" length="-1.0" construction="SEMI_SOLID" base-level="0"
+	<building type="Hallway" width="2.0" length="-1.0" north-south-alignment="length" construction="SEMI_SOLID" base-level="0"
 			wear-lifetime="3340000" maintenance-time="20" room-temperature="20.5" base-mass="200">
 		<description> The Hallway is a pressurized access tube connecting
 			two inhabitable buildings. It allows only one person to access it
@@ -2961,7 +2962,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- The buildings below are underground and are used primarily for
      Trading and Mining settlements -->
 
-	<building type="Outpost Hub" width="10.0" length="10.0" base-level="-1"
+	<building type="Outpost Hub" width="10.0" length="10.0" north-south-alignment="length" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="250" room-temperature="22.5" base-mass="3000">
 		<description> The Outpost Hub is a vaulted brick building that acts
 			as the main hub of a trading or mining outpost. Like its cousin
@@ -3199,7 +3200,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Outpost Hub  -->
 
-	<building type="Bunkhouse" width="5.0" length="5.0" base-level="-1"
+	<building type="Bunkhouse" width="5.0" length="5.0" north-south-alignment="length" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="1500">
 		<description> The Bunkhouse is a spartan living quarters with
 			two beds. It is a retractable housing custom-tailored for
@@ -3238,7 +3239,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Bunkhouse -->
 
-	<building type="Storage Shed" width="5.0" length="5.0" base-level="-1"
+	<building type="Storage Shed" width="5.0" length="5.0" north-south-alignment="length" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" base-mass="1500">
 		<description> The Storage Shed is a small brick building for
 			storing resources for the settlement.
@@ -3268,7 +3269,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Storage Shed -->
 
-	<building type="Loading Dock Garage" width="15.0" length="18.0" base-level="-1"
+	<building type="Loading Dock Garage" width="15.0" length="18.0" north-south-alignment="length" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="300" room-temperature="22.5" base-mass="10000">
 		<description> The Loading Dock Garage is an enclosed maintenance facility
 			featuring a brick loading dock for easy access. It hosts equipment for
@@ -3322,7 +3323,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end for loading dock garage -->
 
-	<building type="Mining Lab" width="5.0" length="5.0" base-level="-1"
+	<building type="Mining Lab" width="5.0" length="5.0" north-south-alignment="length" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="2500">
 		<description> The Mining Lab is a small brick laboratory furnished for
 			mining-related scientific instruments and research workbench.
@@ -3368,7 +3369,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Mining Lab -->
 
 
-	<building type="Inground Greenhouse" width="5.0" length="10.0" base-level="-1"
+	<building type="Inground Greenhouse" width="5.0" length="10.0" north-south-alignment="length" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="2500">
 		<description> The Inground Greenhouse is a semi underground structure with a
 			vaulted fiber glass roof which is less susceptible to meteor damage.
@@ -3459,7 +3460,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end for inground greenhouse -->
 
 	<!-- A tunnel's length is variable and determined in templates or during construction. -->
-	<building type="Tunnel" width="3.0" length="-1.0" base-level="-1"
+	<building type="Tunnel" width="3.0" length="-1.0" north-south-alignment="length" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="20" room-temperature="20.5" base-mass="200">
 		<description> The Tunnel is an underground pressurized access tube connecting
 			two inhabitable buildings. It allows only one person to access it
