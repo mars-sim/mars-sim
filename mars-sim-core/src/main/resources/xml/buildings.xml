@@ -2805,10 +2805,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<exercise capacity="4">
 				<activity>
-					<activity-spot xloc="-3.0" yloc="1.5" />
-					<activity-spot xloc="-3.3" yloc="0.0" />
-					<activity-spot xloc="-3.0" yloc="-1.2" />
-					<activity-spot xloc="-2.3" yloc="-1.7" />
+					<activity-spot xloc="-3.23" yloc="1.92" />
+					<activity-spot xloc="-3.43" yloc="0.97" />
+					<activity-spot xloc="-3.27" yloc="-0.02" />
+					<activity-spot xloc="-3.0" yloc="-1.35" />
 				</activity>
 			</exercise>
 			<life-support capacity="12" power-required="0.6" />
@@ -2817,8 +2817,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="2.0" yloc="0" />
 				</activity>
 				<bed>
-					<bed-location xloc="3.04" yloc="-1.3" />
-					<bed-location xloc="1.75" yloc="2.33" />
+					<bed-location xloc="3.55" yloc="-.42" />
+					<bed-location xloc="2.26" yloc="2.61" />
 				</bed>
 			</medical-care>
 			<power-generation>
@@ -2833,21 +2833,20 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="MEDICINE" />
 				<research-specialty name="PSYCHOLOGY" />
 				<activity>
-					<activity-spot xloc=".77" yloc="-2.52" />
-					<activity-spot xloc="-2.09" yloc="2.06" />
-					<activity-spot xloc="1.4" yloc="-2.7" />
-					<activity-spot xloc=".8" yloc="-3.0" />
+					<activity-spot xloc="0" yloc="2.62" />
+					<activity-spot xloc="-0.35" yloc="3.75" />
+					<activity-spot xloc="-0.96" yloc="2.85" />
+					<activity-spot xloc="-1.91" yloc="3.15" />
 
-					<activity-spot xloc="-0.8" yloc="-2.5" />
-					<activity-spot xloc="0.7" yloc="2.8" />
-					<activity-spot xloc="-1.4" yloc="2.85" />
-					<activity-spot xloc="-.5" yloc="-3.0" />
+					<activity-spot xloc="1.5" yloc="-2.76" />
+					<activity-spot xloc="0.56" yloc="-3.12" />
+					<activity-spot xloc="-0.44" yloc="-3.16" />
+					<activity-spot xloc="-.69" yloc="-2.4" />
 				</activity>
 			</research>
-			<robotic-station capacity="2">
+			<robotic-station capacity="1">
 				<activity>
-					<activity-spot xloc="-0.5" yloc="0.5" />
-					<activity-spot xloc="0.5" yloc="-0.5" />
+					<activity-spot xloc="0.47" yloc="-0.43" />
 				</activity>
 			</robotic-station>
 			<storage capacity="5000"/>
