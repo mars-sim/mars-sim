@@ -755,7 +755,7 @@ public class Settlement extends Structure implements Temporal,
 	public Collection<Person> getOutsideEVAPeople() {
 		return citizens.stream()
 				.filter(p -> !p.isDeclaredDead()
-						&& (p.getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
+						&& (p.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY
 						|| p.getLocationStateType() == LocationStateType.MARS_SURFACE))
 				.collect(Collectors.toList());
 	}
@@ -768,7 +768,7 @@ public class Settlement extends Structure implements Temporal,
 	public Long getNumOutsideEVA() {
 		return citizens.stream()
 				.filter(p -> !p.isDeclaredDead()
-						&& (p.getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
+						&& (p.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY
 						|| p.getLocationStateType() == LocationStateType.MARS_SURFACE))
 				.collect(Collectors.counting());
 	}
@@ -1915,9 +1915,9 @@ public class Settlement extends Structure implements Temporal,
 		return citizens.stream()
 				.filter(p -> !p.getPhysicalCondition().isDead() 
 					&& (p.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT
-					|| p.getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
+					|| p.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY
 					|| (p.getLocationStateType() == LocationStateType.INSIDE_VEHICLE
-						&& (p.getVehicle().getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
+						&& (p.getVehicle().getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY
 						|| p.getVehicle().getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT))))
 				.collect(Collectors.toList());
 	}
@@ -2135,7 +2135,7 @@ public class Settlement extends Structure implements Temporal,
 		}
 		if (parkedVehicles.add(vehicle)) {
 			// Directly update the location state type
-			vehicle.updateLocationStateType(LocationStateType.WITHIN_SETTLEMENT_VICINITY);
+			vehicle.updateLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
 			vehicle.setContainerUnit(this);
 			return true;
 		}

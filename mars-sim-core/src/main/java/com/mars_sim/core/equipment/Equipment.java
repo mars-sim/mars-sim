@@ -245,7 +245,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @return true if the equipment's is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement() {
-        return LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType;
+        return LocationStateType.SETTLEMENT_VICINITY == currentStateType;
     }
 
 	/**
@@ -370,7 +370,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 				//     then location state is within settlement vicinity
 				if (cu.getUnitType() == UnitType.SETTLEMENT
 					&& newContainer.getUnitType() == UnitType.MARS) {
-						currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+						currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 				}	
 				// 2b. If the previous cu is a vehicle
 				//     and this vehicle is in within settlement vicinity
@@ -380,7 +380,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 						|| cu.getUnitType() == UnitType.PERSON)
 						&& cu.isInSettlementVicinity()
 						&& newContainer.getUnitType() == UnitType.MARS) {
-							currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+							currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 				}
 				else {
 					updateEquipmentState(newContainer);
@@ -545,7 +545,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		
 		return canRetrieve && canStore;
 	}
-
+	
 	/**
 	 * Compares if an object is the same as this equipment.
 	 *

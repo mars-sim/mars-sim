@@ -133,6 +133,8 @@ public class UnitManager implements Serializable, Temporal {
 		lookupEquipment  = new ConcurrentHashMap<>();
 		lookupVehicle    = new ConcurrentHashMap<>();
 		lookupBuilding   = new ConcurrentHashMap<>();
+		
+		settlementCoordinateMap = new HashMap<>();
 	}
 
 	/**
@@ -225,18 +227,22 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public Settlement findSettlement(Coordinates c) {
-		if (settlementCoordinateMap == null) {
-			settlementCoordinateMap = new HashMap<>();
 
+		if (!settlementCoordinateMap.containsKey(c)) {
 			Collection<Settlement> ss = getSettlements();
 			
 			Settlement settlement = null;
 			for (Settlement s : ss) {
-				settlementCoordinateMap.put(s.getCoordinates(), s.getIdentifier());
-				if (s.getCoordinates().equals(c))
+				Coordinates coord = s.getCoordinates();
+				
+				// Put the coord and id into the map
+				if (!settlementCoordinateMap.containsKey(coord))
+					settlementCoordinateMap.put(coord, s.getIdentifier());
+				if (coord.equals(c)) {
 					settlement = s;
+				}
 			}
-			
+
 			return settlement;
 		}
 		

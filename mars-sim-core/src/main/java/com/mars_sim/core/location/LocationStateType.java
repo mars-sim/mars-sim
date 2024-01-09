@@ -21,7 +21,7 @@ public enum LocationStateType {
 	INSIDE_SETTLEMENT				(Msg.getString("LocationStateType.insideSettlement")), //$NON-NLS-1$
 	INSIDE_VEHICLE					(Msg.getString("LocationStateType.insideVehicle")), //$NON-NLS-1$
 	ON_PERSON_OR_ROBOT				(Msg.getString("LocationStateType.onPersonOrRobot")), //$NON-NLS-1$
-	WITHIN_SETTLEMENT_VICINITY		(Msg.getString("LocationStateType.settlementVicinity")), //$NON-NLS-1$
+	SETTLEMENT_VICINITY				(Msg.getString("LocationStateType.settlementVicinity")), //$NON-NLS-1$
 	MARS_SURFACE					(Msg.getString("LocationStateType.marsSurface")), //$NON-NLS-1$
 	OUTER_SPACE						(Msg.getString("LocationStateType.outerSpace")), //$NON-NLS-1$
 	MOON							(Msg.getString("LocationStateType.moon")), //$NON-NLS-1$
@@ -39,7 +39,7 @@ public enum LocationStateType {
 			INSIDE_SETTLEMENT,
 			INSIDE_VEHICLE,
 			ON_PERSON_OR_ROBOT,
-			WITHIN_SETTLEMENT_VICINITY,
+			SETTLEMENT_VICINITY,
 			MARS_SURFACE,
 			OUTER_SPACE,
 			MOON,

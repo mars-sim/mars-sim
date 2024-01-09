@@ -116,9 +116,12 @@ public class CollectionUtils {
 	 * @return
 	 */
 	public static Vehicle findVehicle(Coordinates c) {
+		// Use LocationTag's findSettlementVicinity() for faster search
+		// if the unit is known
+		
 		if (unitManager == null)
 			unitManager = Simulation.instance().getUnitManager();
-
+	
 		Collection<Vehicle> list = unitManager.getVehicles();
 		for (Vehicle v : list) {
 			if (v.getCoordinates().equals(c) || v.getCoordinates() == c)
@@ -129,17 +132,16 @@ public class CollectionUtils {
 	}
 	
 	/**
-	 * Gets the nearby object name.
-	 * 
-	 * @param c the coordinates of interest
+	 * Finds a nearby settlement based on its coordinates.
+	 *
+	 * @param c {@link Coordinates}
 	 * @return
 	 */
-	public static String getNearbyVehicleName(Coordinates c) {
-		Vehicle vehicle = CollectionUtils.findVehicle(c);
-		if (vehicle != null) {
-			return vehicle.getName();
-		}
-		return "No Vehicle";
+	public static Settlement findSettlement(Coordinates c) {
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+
+		return unitManager.findSettlement(c);
 	}
 	
 	public static <T extends Unit> Collection<T> sortByName(

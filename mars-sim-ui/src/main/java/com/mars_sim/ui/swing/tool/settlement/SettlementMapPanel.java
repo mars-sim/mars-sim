@@ -458,6 +458,8 @@ public class SettlementMapPanel extends JPanel {
 	public synchronized void setSettlement(Settlement newSettlement) {
 		if (newSettlement != settlement) {
 			this.settlement = newSettlement;
+			getSettlementTransparentPanel().getSettlementListBox()
+				.setSelectedItem(settlement);
 			repaint();
 		}
 	}

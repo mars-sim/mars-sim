@@ -67,7 +67,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	 * @param base
 	 */
 	private void assertVehicleParked(String msg, Vehicle source, Settlement base) {
-		assertEquals(msg + ": Location state type", LocationStateType.WITHIN_SETTLEMENT_VICINITY, source.getLocationStateType());
+		assertEquals(msg + ": Location state type", LocationStateType.SETTLEMENT_VICINITY, source.getLocationStateType());
 		assertEquals(msg + ": Settlement", base, source.getSettlement());
 		
 		assertTrue(msg + ": InSettlement", source.isInSettlement());
@@ -143,7 +143,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	}
 	
 	private void assertWithinSettlementVicinity(String msg, Unit source) {
-		assertEquals(msg + ": Location state type", LocationStateType.WITHIN_SETTLEMENT_VICINITY, source.getLocationStateType());
+		assertEquals(msg + ": Location state type", LocationStateType.SETTLEMENT_VICINITY, source.getLocationStateType());
 		
 		assertFalse(msg + ": InSettlement", source.isInSettlement());
 		assertNull(msg + ": Settlement", source.getSettlement());
@@ -192,7 +192,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 
 		vehicle.setContainerUnit(settlement);
 
-		testContainment(vehicle, settlement, settlement, LocationStateType.WITHIN_SETTLEMENT_VICINITY);
+		testContainment(vehicle, settlement, settlement, LocationStateType.SETTLEMENT_VICINITY);
 	}
 	
 	/*
