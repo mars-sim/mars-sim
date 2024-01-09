@@ -1340,7 +1340,7 @@ public abstract class Vehicle extends Unit
 		}
 
 		// If it's back at a settlement and is NOT in a garage
-		else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == getLocationStateType()
+		else if (LocationStateType.SETTLEMENT_VICINITY == getLocationStateType()
 			&& !haveStatusType(StatusType.MAINTENANCE)) {
 			int rand = RandomUtil.getRandomInt(3);
 			// Assume the wear and tear factor is 75% less when not operating 
@@ -1777,7 +1777,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public boolean isRightOutsideSettlement() {
-        return getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+        return getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY;
 	}
 
 
@@ -2211,7 +2211,7 @@ public abstract class Vehicle extends Unit
 				&& (cu.getUnitType() == UnitType.SETTLEMENT
 				|| cu.getUnitType() == UnitType.BUILDING)
 					&& newContainer.getUnitType() == UnitType.MARS) {
-						currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+						currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 			}	
 			else {
 				updateVehicleState(newContainer);
@@ -2269,7 +2269,7 @@ public abstract class Vehicle extends Unit
 				return LocationStateType.INSIDE_SETTLEMENT;
 			}
 			else
-				return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+				return LocationStateType.SETTLEMENT_VICINITY;
 		}
 
 //		if (newContainer.getUnitType() == UnitType.BUILDING)
@@ -2306,7 +2306,7 @@ public abstract class Vehicle extends Unit
 			return true;
 
 		// if the vehicle is parked in the vicinity of a settlement and not in a garage
-		if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType)
+		if (LocationStateType.SETTLEMENT_VICINITY == currentStateType)
 			return true;
 
 		if (getContainerUnit().getUnitType() == UnitType.SETTLEMENT

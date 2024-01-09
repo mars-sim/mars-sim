@@ -63,13 +63,15 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 	private String locationStringCache;
 
+	private Unit vicinityUnit;
 	private Unit containerCache;
-	private Settlement settlementCache;
+//	private Settlement settlementCache;
 	private Building buildingCache;
 	private LocationStateType locationStateTypeCache;
 	
+	private JLabel vicinityLabel;
 	private JLabel containerLabel;
-	private JLabel settlementLabel;
+//	private JLabel settlementLabel;
 	private JLabel buildingLabel;
 	private JLabel locationStateLabel;
 	private JLabel activitySpot;
@@ -199,11 +201,10 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		AttributePanel containerPanel = new AttributePanel(5);
 		content.add(containerPanel, BorderLayout.CENTER);
 		containerLabel = containerPanel.addRow("Container Unit", "");
-		settlementLabel = containerPanel.addRow("Settlement Container", "");
-		
-		buildingLabel = containerPanel.addRow("Building", "");
+//		settlementLabel = containerPanel.addRow("Settlement Container", "");
 		locationStateLabel = containerPanel.addRow("Location State", "");
-		
+		vicinityLabel = containerPanel.addRow("Vicinity", "");
+		buildingLabel = containerPanel.addRow("Building", "");
 		activitySpot = containerPanel.addRow("Reserved Spot", "");
 			
 		updateLocationBanner(getUnit());
@@ -272,86 +273,189 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 	}
 
+	/**
+	 * Updates the person.
+	 * 
+	 * @param p
+	 */
 	private void personUpdate(Person p) {
 		MainDesktopPane desktop = getDesktop();
-		boolean useSettlementTool = p.isInSettlement();
+		Settlement settlement = p.getSettlement();
+		boolean useSettlementTool = (settlement != null);
+		vicinityUnit = null;
 		
 		if (p.isInVehicle()) {
-
 			Vehicle vv = p.getVehicle();
 			useSettlementTool = (vv.getSettlement() != null);
 		}
 
 		else if (p.isOutside()) {
-			Vehicle vv = p.getVehicle();
-			if (vv == null) {
-				Settlement s = p.findSettlementVicinity();
-				useSettlementTool = (s != null);
+			settlement = p.getLocationTag().findSettlementVicinity();
+			if (settlement != null) {
+				vicinityUnit = settlement;
+				desktop.showDetails(settlement);
+				useSettlementTool = (settlement != null);
+			}
+			else {
+				Vehicle vehicle = p.getLocationTag().findVehicleVicinity();
+				if (vehicle != null) {
+					vicinityUnit = vehicle;
+					desktop.showDetails(vehicle);
+				}
 			}
 		}
 
 		if (useSettlementTool) {
 			SettlementWindow sw = (SettlementWindow) desktop.openToolWindow(SettlementWindow.NAME);
+			sw.chooseSettlement(settlement);
 			sw.displayPerson(p);
 		}
-		else {
-			NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
-			nw.updateCoordsMaps(p.getCoordinates());
-		}
+//		else {
+//			NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
+//			nw.updateCoordsMaps(p.getCoordinates());
+//		}
 	}
 
+	/**
+	 * Updates the robot.
+	 * 
+	 * @param r
+	 */
 	private void robotUpdate(Robot r) {
 		MainDesktopPane desktop = getDesktop();
-		boolean useSettlementTool = r.isInSettlement();
-
+		Settlement settlement = r.getSettlement();
+		boolean useSettlementTool = (settlement != null);
+		vicinityUnit = null;
+		
 		if (!useSettlementTool && r.isInVehicle()) {
-
 			Vehicle vv = r.getVehicle();
 			useSettlementTool = (vv.getSettlement() != null);
 		}
+		
 		else if (r.isOutside()) {
-			Settlement s = r.findSettlementVicinity();
-
-			useSettlementTool = (s != null);
+			settlement = r.getLocationTag().findSettlementVicinity();
+			if (settlement != null) {
+				vicinityUnit = settlement;
+				desktop.showDetails(settlement);
+				useSettlementTool = (settlement != null);
+			}
+			else {
+				Vehicle vehicle = r.getLocationTag().findVehicleVicinity();
+				if (vehicle != null) {
+					vicinityUnit = vehicle;
+					desktop.showDetails(vehicle);
+				}
+			}
 		}
-
+		
 		if (useSettlementTool) {
 			SettlementWindow sw = (SettlementWindow) desktop.openToolWindow(SettlementWindow.NAME);
+			sw.chooseSettlement(settlement);
 			sw.displayRobot(r);
 		}
-		else {
-			NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
-			nw.updateCoordsMaps(r.getCoordinates());
-		}
+//		else {
+//			NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
+//			nw.updateCoordsMaps(r.getCoordinates());
+//		}
 	}
 
+	/**
+	 * Updates the vehicle.
+	 * 
+	 * @param v
+	 */
 	private void vehicleUpdate(Vehicle v) {
 		MainDesktopPane desktop = getDesktop();
-
-		if (v.getSettlement() != null) {
-			// still parked inside a garage or within the premise of a settlement
-			SettlementWindow sw = (SettlementWindow) desktop.openToolWindow(SettlementWindow.NAME);
-			sw.displayVehicle(v);
-		} else {
-			// out there on a mission
+		Settlement settlement = v.getSettlement();
+		boolean useSettlementTool = (settlement != null);
+		vicinityUnit = null;
+		
+		if (!useSettlementTool) {
+			settlement = v.getLocationTag().findSettlementVicinity();
+			if (settlement != null) {
+				vicinityUnit = settlement;
+				desktop.showDetails(settlement);
+				useSettlementTool = (settlement != null);
+			}
+			
+			// Out there on a mission
 			NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
 			nw.updateCoordsMaps(v.getCoordinates());
 		}
+		
+//		else {
+//			SettlementWindow sw = (SettlementWindow) desktop.openToolWindow(SettlementWindow.NAME);
+//			sw.chooseSettlement(settlement);
+//			sw.displayVehicle(v);
+//		}
 	}
 
+	/**
+	 * Updates the equipment.
+	 * 
+	 * @param e
+	 */
 	private void equipmentUpdate(Equipment e) {
 		MainDesktopPane desktop = getDesktop();
-		Vehicle owner = e.getVehicle();
-
-		if (owner == null) {
-			// out there on a mission
-			NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
-			nw.updateCoordsMaps(e.getCoordinates());
-		} else {
-			// still parked inside a garage or within the premise of a settlement
-			SettlementWindow sw = (SettlementWindow) desktop.openToolWindow(SettlementWindow.NAME);
-			sw.displayVehicle(owner);
+		Settlement settlement = e.getSettlement();
+		vicinityUnit = null;
+		
+		if (settlement != null) {
+			if (settlement != null) {
+				desktop.showDetails(settlement);
+				SettlementWindow sw = (SettlementWindow) desktop.openToolWindow(SettlementWindow.NAME);
+				sw.chooseSettlement(settlement);
+			}
+			
+			Vehicle vehicle = e.getVehicle();
+			if (vehicle != null) {
+				settlement = vehicle.getLocationTag().findSettlementVicinity();
+				if (settlement != null) {
+					vicinityUnit = settlement;
+					desktop.showDetails(settlement);
+				}
+				else {
+					// still parked inside a garage or within the premise of a settlement
+					SettlementWindow sw = (SettlementWindow) desktop.openToolWindow(SettlementWindow.NAME);
+					sw.chooseSettlement(settlement);
+					sw.displayVehicle(vehicle);
+				}
+			}
+			
+			Person person = e.getRegisteredOwner();
+			if (person != null) {
+				settlement = vehicle.getLocationTag().findSettlementVicinity();
+				if (settlement != null) {
+					vicinityUnit = settlement;
+					desktop.showDetails(settlement);
+				}
+				else {
+					// On a person
+					SettlementWindow sw = (SettlementWindow) desktop.openToolWindow(SettlementWindow.NAME);
+					sw.chooseSettlement(settlement);
+					sw.displayPerson(person);
+				}
+			}
 		}
+		
+		else if (e.isOutside()) {
+			settlement = e.getLocationTag().findSettlementVicinity();
+			if (settlement != null) {
+				vicinityUnit = settlement;
+				desktop.showDetails(settlement);
+			}
+			else {
+				Vehicle vehicle = e.getLocationTag().findVehicleVicinity();
+				if (vehicle != null) {
+					vicinityUnit = vehicle;
+					desktop.showDetails(vehicle);
+				}
+			}
+		}
+
+		// Out there on a mission
+//		NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
+//		nw.updateCoordsMaps(e.getCoordinates());
 	}
 
 	/**
@@ -365,36 +469,45 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		if (source == locatorButton) {
 			// Add codes to open the settlement map tool and center the map to
 			// show the exact/building location inside a settlement if possible
-
+			
+			updateUnit(getUnit());
+			// Updates the labels
 			update();
-
-			Unit unit = getUnit();
-			if (unit.getUnitType() == UnitType.PERSON) {
-				personUpdate((Person) unit);
-			}
-
-			else if (unit.getUnitType() == UnitType.ROBOT) {
-				robotUpdate((Robot) unit);
-			}
-
-			else if (unit.getUnitType() == UnitType.VEHICLE) {
-				vehicleUpdate((Vehicle) unit);
-			}
-
-			else if (unit.getUnitType() == UnitType.CONTAINER
-					|| unit.getUnitType() == UnitType.EVA_SUIT) {
-				equipmentUpdate((Equipment) unit);
-			}
 		}
 	}
 
+	public void updateUnit(Unit unit) {
+		
+		if (unit.getUnitType() == UnitType.PERSON) {
+			personUpdate((Person) unit);
+		}
+
+		else if (unit.getUnitType() == UnitType.ROBOT) {
+			robotUpdate((Robot) unit);
+		}
+
+		else if (unit.getUnitType() == UnitType.VEHICLE) {
+			vehicleUpdate((Vehicle) unit);
+		}
+
+		else if (unit.getUnitType() == UnitType.CONTAINER
+				|| unit.getUnitType() == UnitType.EVA_SUIT) {
+			equipmentUpdate((Equipment) unit);
+		}
+		
+	}
+	
 	/**
 	 * Updates the info on this panel.
 	 */
 	@Override
 	public void update() {
+		
 		Unit unit = getUnit();
 		
+		// Update the unit's location
+//		updateUnit(unit);
+	
 		// If unit's location has changed, update location display.
 		Coordinates location = unit.getCoordinates();
 		
@@ -424,6 +537,19 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 		/////////////////
 		
+		updateLabels(unit);
+		
+		updateActivitySpot(unit);
+		
+		updateLocationBanner(unit);
+	}
+
+	/**
+	 * Updates the labels.
+	 * 
+	 * @param unit
+	 */
+	private void updateLabels(Unit unit) {
 		// Update labels as necessary
 		
 		Unit container = unit.getContainerUnit();
@@ -433,12 +559,12 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			containerLabel.setText(n);
 		}
 
-		Settlement settlement = unit.getSettlement();
-		if (settlementCache != settlement) {
-			settlementCache = settlement;
-			String n = settlement != null ? settlement.getName() : "";
-			settlementLabel.setText(n);
-		}
+//		Settlement settlement = unit.getSettlement();
+//		if (settlementCache != settlement) {
+//			settlementCache = settlement;
+//			String n = settlement != null ? settlement.getName() : "";
+//			settlementLabel.setText(n);
+//		}
 		
 		Building building = unit.getBuildingLocation();
 		if (buildingCache != building) {
@@ -454,6 +580,47 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			locationStateLabel.setText(Conversion.capitalize0(n));
 		}
 		
+		if (locationStateType == LocationStateType.SETTLEMENT_VICINITY) {
+			vicinityUnit = unit.getLocationTag().findSettlementVicinity();
+			if (vicinityUnit != null) {
+				vicinityLabel.setText(vicinityUnit.getName());
+			}
+			
+//			Unit vCache = unit.getLocationTag().findSettlementVicinity();
+////			if (vicinityUnit != null && !vicinityUnit.equals(vCache)) {
+//				vicinityUnit = vCache;
+//				String name = "";
+//				if (vicinityUnit instanceof Settlement s) {
+//					name = s.getName();
+//				}
+//				vicinityLabel.setText(name);
+////			}
+		}
+		else if (locationStateType == LocationStateType.MARS_SURFACE) {
+			vicinityUnit = unit.getLocationTag().findVehicleVicinity();
+			if (vicinityUnit != null) {
+				vicinityLabel.setText(vicinityUnit.getName());
+			}
+			
+//			Unit vCache = unit.getLocationTag().findVehicleVicinity();
+////			if (vicinityUnit != null && !vicinityUnit.equals(vCache)) {
+//				vicinityUnit = vCache;
+//				String name = "";
+//				if (vicinityUnit instanceof Vehicle v) {
+//					name = v.getName();
+//				}
+//				vicinityLabel.setText(name);
+////			}
+		}
+		else {
+			vicinityLabel.setText("");
+		}
+	}
+	
+	/**
+	 * Updates the activity spot.
+	 */
+	private void updateActivitySpot(Unit unit) {
 		String n5 = "";
 		
 		if (unit instanceof Worker w) {
@@ -464,10 +631,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		}
 		
 		activitySpot.setText(n5);
-		
-		updateLocationBanner(unit);
 	}
-
+	
 	/**
 	 * Tracks the location of a person, bot, vehicle, or equipment
 	 */

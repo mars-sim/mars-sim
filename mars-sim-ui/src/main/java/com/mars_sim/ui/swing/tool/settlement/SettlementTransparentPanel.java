@@ -1219,7 +1219,8 @@ public class SettlementTransparentPanel extends JComponent {
 			prepBannerResourceString(pulse);
 			// Update the sun data
 			Settlement s = (Settlement)settlementListBox.getSelectedItem();
-			displaySunData(s.getCoordinates());
+			if (s != null) 
+				displaySunData(s.getCoordinates());
 		}
 		
 		if (bannerBar != null) {

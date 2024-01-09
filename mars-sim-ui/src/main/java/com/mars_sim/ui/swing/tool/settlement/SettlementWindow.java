@@ -308,6 +308,14 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		return mapPanel.getUIProps();
 	}
 
+	/**
+	 * Chooses the settlement.
+	 * 
+	 * @param settlement
+	 */
+	public void chooseSettlement(Settlement settlement) {
+		mapPanel.setSettlement(settlement);
+	}
 
 	@Override
 	public void destroy() {

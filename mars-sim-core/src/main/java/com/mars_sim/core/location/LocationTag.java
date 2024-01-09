@@ -89,9 +89,16 @@ public class LocationTag implements LocationState, Serializable {
 					return p.getBuriedSettlement().getName();
 			}
 
-			else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == p.getLocationStateType())
-				return findSettlementVicinity().getName() + VICINITY;
-
+			Settlement settlement = findSettlementVicinity();
+			if (settlement != null) {
+				return settlement.getName() + VICINITY;
+			}
+			
+			Vehicle vehicle = findVehicleVicinity();
+			if (vehicle != null) {
+				return vehicle.getName() + VICINITY;
+			}
+			 
 			return p.getCoordinates().getFormattedString();
 		}
 
@@ -116,17 +123,24 @@ public class LocationTag implements LocationState, Serializable {
 			if (LocationStateType.INSIDE_VEHICLE == p.getLocationStateType())
 				return p.getVehicle().getName();
 
-			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == p.getLocationStateType())
-				return findSettlementVicinity().getName() + VICINITY;
-
-			if (LocationStateType.MARS_SURFACE == p.getLocationStateType()) {
-				Settlement s = findSettlementVicinity();
-				if (s != null)
-					return s.getName() + VICINITY;
-				Vehicle v = findNearbyVehicleVicinity();
-				if (v != null)
-					return v.getName() + VICINITY;
+			Settlement settlement = findSettlementVicinity();
+			if (settlement != null) {
+				return settlement.getName() + VICINITY;
 			}
+			
+			Vehicle vehicle = findVehicleVicinity();
+			if (vehicle != null) {
+				return vehicle.getName() + VICINITY;
+			}
+			
+//			if (LocationStateType.MARS_SURFACE == p.getLocationStateType()) {
+//				Settlement s = findSettlementVicinity();
+//				if (s != null)
+//					return s.getName() + VICINITY;
+//				Vehicle v = findNearbyVehicleVicinity();
+//				if (v != null)
+//					return v.getName() + VICINITY;
+//			}
 		}
 
 		else if (r != null) {
@@ -149,13 +163,13 @@ public class LocationTag implements LocationState, Serializable {
 		else if (v != null) {
 			if (LocationStateType.INSIDE_SETTLEMENT == v.getLocationStateType())
 				return v.getSettlement().getName();
-			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == v.getLocationStateType())
+			if (LocationStateType.SETTLEMENT_VICINITY == v.getLocationStateType())
 				return findSettlementVicinity().getName() + VICINITY;
 			if (LocationStateType.MARS_SURFACE == v.getLocationStateType()) {
 				Settlement s = findSettlementVicinity();
 				if (s != null)
 					return s.getName() + VICINITY;
-				Vehicle v = findNearbyVehicleVicinity();
+				Vehicle v = findVehicleVicinity();
 				if (v != null)
 					return v.getName() + VICINITY;
 			}
@@ -218,8 +232,15 @@ public class LocationTag implements LocationState, Serializable {
 				return p.getVehicle().getName();
 			}
 
-			if (p.isRightOutsideSettlement())
-				return findSettlementVicinity().getName() + VICINITY;
+			Settlement settlement = findSettlementVicinity();
+			if (settlement != null) {
+				return settlement.getName() + VICINITY;
+			}
+			
+			Vehicle vehicle = findVehicleVicinity();
+			if (vehicle != null) {
+				return vehicle.getName() + VICINITY;
+			}
 
 			return MARS_SURFACE;
 		}
@@ -285,36 +306,38 @@ public class LocationTag implements LocationState, Serializable {
 	 * @return {@link Settlement}
 	 */
 	public Settlement findSettlementVicinity() {
+		
+		if (unit instanceof Person && ((Person) unit).isBuried())
+			return ((Person) unit).getBuriedSettlement();
+		
 		Coordinates c = unit.getCoordinates();
 
 		if (unitManager == null)
 			unitManager = Simulation.instance().getUnitManager();
 
-		Collection<Settlement> ss = unitManager.getSettlements();
-		for (Settlement s : ss) {
-			if (s.getCoordinates().equals(c) || s.getCoordinates() == c)
-				return s;
-		}
-
-		if (unit instanceof Person && ((Person) unit).isBuried())
-			return ((Person) unit).getBuriedSettlement();
-
-		return unit.getAssociatedSettlement();
+		return unitManager.findSettlement(c);		
 	}
 
 	/**
-	 * Finds the vehicle that drops off a person/robot outside on Mars
+	 * Finds the nearby vehicle that drops off a person/robot in the vicinity.
 	 *
 	 * @return {@link Vehicle}
 	 */
-	public Vehicle findNearbyVehicleVicinity() {
+	public Vehicle findVehicleVicinity() {
 		Coordinates c = unit.getCoordinates();
-
+		Settlement settlement = unit.getAssociatedSettlement();
+		
+		Collection<Vehicle> list = settlement.getMissionVehicles();
+		for (Vehicle v : list) {
+			if (v.getCoordinates().equals(c) || v.getCoordinates() == c)
+				return v;
+		}
+		
 		if (unitManager == null)
 			unitManager = Simulation.instance().getUnitManager();
 
-		Collection<Vehicle> list = unitManager.getVehicles();
-		for (Vehicle v : list) {
+		Collection<Vehicle> list2 = unitManager.getVehicles();
+		for (Vehicle v : list2) {
 			if (v.getCoordinates().equals(c) || v.getCoordinates() == c)
 				return v;
 		}

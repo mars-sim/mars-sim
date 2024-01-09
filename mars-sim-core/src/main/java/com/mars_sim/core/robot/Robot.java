@@ -218,7 +218,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @return true if the robot is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement() {
-        return LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType;
+        return LocationStateType.SETTLEMENT_VICINITY == currentStateType;
     }
 
 	/**
@@ -624,13 +624,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		skill = (int) Math.round(skill / 7D);
 		return skill;
 	}
-
-	public Settlement findSettlementVicinity() {
-		if (isRightOutsideSettlement())
-			return getLocationTag().findSettlementVicinity();
-		else
-			return null;
-	}
+	
 	/**
 	 * Returns a reference to the robot's skill manager
 	 *

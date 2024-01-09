@@ -520,7 +520,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 		//    and a person doing EVA right outside a vehicle that are on a mission far away from the settlement ?
 		// Ans: Use coordinates to see if it matches 
 		
-		return LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType || isBuried;
+		return LocationStateType.SETTLEMENT_VICINITY == currentStateType || isBuried;
 	}
 
 	/**
@@ -1116,13 +1116,6 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 		else {
 			currentBuildingInt = building.getIdentifier();
 		}
-	}
-
-	public Settlement findSettlementVicinity() {
-		if (isRightOutsideSettlement())
-			return getLocationTag().findSettlementVicinity();
-		else
-			return null;
 	}
 
 	@Override
@@ -1772,7 +1765,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 				//     then location state is within settlement vicinity
 				if (cu.getUnitType() == UnitType.SETTLEMENT
 					&& newContainer.getUnitType() == UnitType.MARS) {
-						currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+						currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 				}	
 				// 2b. If the previous cu is a vehicle
 				//     and this vehicle is in within settlement vicinity
@@ -1781,7 +1774,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher {
 				else if (cu.getUnitType() == UnitType.VEHICLE
 						&& cu.isInSettlementVicinity()
 						&& newContainer.getUnitType() == UnitType.MARS) {
-							currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+							currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 				}
 				else {
 					updatePersonState(newContainer);

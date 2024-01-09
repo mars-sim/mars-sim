@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitManager;
@@ -493,7 +492,7 @@ public class RadiationExposure implements Serializable, Temporal {
 				}
 				else {
 					// Check if a person is in a vehicle vicinity
-					Vehicle vehicle = CollectionUtils.findVehicle(person.getCoordinates());
+					Vehicle vehicle = person.getLocationTag().findVehicleVicinity();
 					if (vehicle != null) {
 						exposed = vehicle.getExposed();
 					}

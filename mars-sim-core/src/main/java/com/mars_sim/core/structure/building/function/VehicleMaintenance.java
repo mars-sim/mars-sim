@@ -363,7 +363,7 @@ public abstract class VehicleMaintenance extends Function {
 
 		vehicle.setPrimaryStatus(StatusType.PARKED);
 		// Update the vehicle's location state type
-		vehicle.updateLocationStateType(LocationStateType.WITHIN_SETTLEMENT_VICINITY);
+		vehicle.updateLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
 
 		vehicle.findNewParkingLoc();
 	}
