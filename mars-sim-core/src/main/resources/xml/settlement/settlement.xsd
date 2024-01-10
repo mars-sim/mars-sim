@@ -31,7 +31,32 @@
             <xs:attribute name="zone" type="xs:integer"/>            
         </xs:complexType>
     </xs:element>
-
+    
+   <xs:element name="connector">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="connection-list" minOccurs="0"/>
+            </xs:sequence>
+            <xs:attribute name="type" type="xs:string"/>
+            <xs:attribute name="width" type="xs:decimal"/>
+            <xs:attribute name="length" type="xs:decimal"/>
+            <xs:attribute name="xloc" type="xs:decimal"/>
+            <xs:attribute name="yloc" type="xs:decimal"/>
+            <xs:attribute name="facing" type="xs:decimal"/>
+            <xs:attribute name="id" type="xs:integer"/>
+            <xs:attribute name="zone" type="xs:integer"/>            
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="standalone">
+        <xs:complexType>
+            <xs:attribute name="type" type="xs:string"/>
+            <xs:attribute name="xloc" type="xs:decimal"/>
+            <xs:attribute name="yloc" type="xs:decimal"/>
+            <xs:attribute name="facing" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+    
     <xs:element name="vehicle">
         <xs:complexType>
             <xs:attribute name="type" type="xs:string"/>
@@ -109,6 +134,8 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="building"  maxOccurs="unbounded"/>
+                <xs:element ref="connector" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="standalone" minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="vehicle"  minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="robot"  minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="equipment"  minOccurs="0" maxOccurs="unbounded"/>

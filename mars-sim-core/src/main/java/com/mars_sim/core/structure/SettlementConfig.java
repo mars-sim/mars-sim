@@ -21,8 +21,8 @@ import org.jdom2.Element;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig;
-import com.mars_sim.core.interplanetary.transport.resupply.ResupplySchedule;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig.SupplyManifest;
+import com.mars_sim.core.interplanetary.transport.resupply.ResupplySchedule;
 import com.mars_sim.core.person.ai.shift.ShiftPattern;
 import com.mars_sim.core.person.ai.shift.ShiftSpec;
 import com.mars_sim.core.resource.AmountResource;
@@ -47,7 +47,10 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 
 	// Element names
 	private final String BUILDING_PACKAGE = "building-package";
-
+	private final String BUILDING = "building";
+	private final String CONNECTOR = "connector";
+	private final String STANDALONE = "standalone";
+	
 	private final String ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN = "rover-life-support-range-error-margin";
 	private final String ROVER_FUEL_RANGE_ERROR_MARGIN = "rover-fuel-range-error-margin";
 	private final String MISSION_CONTROL = "mission-control";
@@ -67,7 +70,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private final String DESCRIPTION = "description";
 	private final String DEFAULT_POPULATION = "default-population";
 	private final String DEFAULT_NUM_ROBOTS = "number-of-robots";
-	private final String BUILDING = "building";
+
 	private final String ID = "id";
 	private final String HATCH_FACE = "hatch-facing";
 	private final String ZONE = "zone";
@@ -292,7 +295,116 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		return names.toArray(new String[0]);
 
 	}
+
+	/**
+	 * Parses the building or connector list.
+	 * 
+	 * @param templateElement
+	 * @param settlementTemplate
+	 * @param settlementTemplateName
+	 * @param existingIDs
+	 * @param typeNumMap
+	 */
+	private void parseBuildingORConnectorList(Element templateElement, SettlementTemplate settlementTemplate, 
+			String elementName,
+			String settlementTemplateName, 
+			Set<Integer> existingIDs, 
+			Map<String, Integer> typeNumMap) {
 		
+		List<Element> buildingNodes = templateElement.getChildren(elementName);
+		for (Element buildingElement : buildingNodes) {
+
+			BoundedObject bounds = ConfigHelper.parseBoundedObject(buildingElement);
+
+			// Track the id
+			int id = -1;
+
+			if (buildingElement.getAttribute(ID) != null) {
+				id = Integer.parseInt(buildingElement.getAttributeValue(ID));
+			}
+
+			if (existingIDs.contains(id)) {
+				throw new IllegalStateException(
+						"Error in SettlementConfig: the id " + id + " in settlement template "
+								+ settlementTemplateName + " is not unique.");
+			} else if (id != -1) {
+				existingIDs.add(id);
+			}
+			
+			// Assume the zone as 0
+			int zone = 0;
+			
+			if (buildingElement.getAttribute(ZONE) != null) {
+				zone = Integer.parseInt(buildingElement.getAttributeValue(ZONE));
+			}
+			
+			// Get the building type
+			String buildingType = buildingElement.getAttributeValue(TYPE);
+			
+			if (typeNumMap.containsKey(buildingType)) {
+				int last = typeNumMap.get(buildingType);
+				typeNumMap.put(buildingType, last + 1);
+			} else {
+				typeNumMap.put(buildingType, 1);
+			}
+				
+			// Create a building nickname for every building
+			// NOTE: i = id + 1 since i must be > 1, if i = 0, s = null
+
+			int buildingTypeID = typeNumMap.get(buildingType);
+
+			// e.g. Lander Hab 1, Lander Hab 2
+			String buildingNickName = buildingType + " " + buildingTypeID;
+
+			BuildingTemplate buildingTemplate = new BuildingTemplate(id, zone, 
+					buildingType, buildingNickName, bounds);
+
+			settlementTemplate.addBuildingTemplate(buildingTemplate);
+
+			// Create building connection templates.
+			Element connectionListElement = buildingElement.getChild(CONNECTION_LIST);
+			if (connectionListElement != null) {
+				List<Element> connectionNodes = connectionListElement.getChildren(CONNECTION);
+				for (Element connectionElement : connectionNodes) {
+					int connectionID = Integer.parseInt(connectionElement.getAttributeValue(ID));
+
+					if (buildingType.equalsIgnoreCase(EVA_AIRLOCK)) {
+						buildingTemplate.addEVAAttachedBuildingID(connectionID);
+					}
+					
+					// Check that connection ID is not the same as the building ID.
+					if (connectionID == id) {
+						throw new IllegalStateException(
+								"Connection ID cannot be the same as id for this building/connector " 
+								+ buildingType
+								+ " in settlement template: " + settlementTemplateName + ".");
+					}
+
+					String hatchFace = connectionElement.getAttributeValue(HATCH_FACE);
+					
+					if (hatchFace == null) {
+						LocalPosition connectionLoc = ConfigHelper.parseLocalPosition(connectionElement);
+						buildingTemplate.addBuildingConnection(connectionID, connectionLoc);
+					}
+					else {
+						buildingTemplate.addBuildingConnection(connectionID, hatchFace);
+					}
+				
+					// Will complete the codes for deriving the xloc and yloc for this connector if not given
+					
+//					double shortestLineFacingDegrees = LocalAreaUtil.getDirection(shortestLine.getP1(), shortestLine.getP2());
+//					Point2D p1 = adjustConnectorEndPoint(shortestLine.getP1(), shortestLineFacingDegrees, firstBuilding, width);
+//					Point2D p2 = adjustConnectorEndPoint(shortestLine.getP2(), shortestLineFacingDegrees, secondBuilding,
+//							width);
+//					double centerX = (p1.getX() + p2.getX()) / 2D;
+//					double centerY = (p1.getY() + p2.getY()) / 2D;
+//					double newLength = p1.distance(p2);
+					
+				}
+			}
+		}
+	}
+	
 	@Override
 	protected SettlementTemplate parseItemXML(Document doc, boolean predefined) {
 		Element templateElement = doc.getRootElement();
@@ -325,7 +437,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		ShiftPattern pattern = getShiftPattern(shiftPattern);
 
 		// Add templateID
-		SettlementTemplate template = new SettlementTemplate(
+		SettlementTemplate settlementTemplate = new SettlementTemplate(
 				settlementTemplateName,
 				description,
 				predefined,
@@ -334,100 +446,50 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				defaultPopulation,
 				defaultNumOfRobots);
 
-		Set<Integer> existingIDs = new HashSet<>();
+		// Process a list of buildings
+		Set<Integer> existingBuildingIDs = new HashSet<>();		
+		Map<String, Integer> buildingTypeNumMap = new HashMap<>();
+		parseBuildingORConnectorList(templateElement, settlementTemplate, 
+				BUILDING,
+				settlementTemplateName, 
+				existingBuildingIDs, 
+				buildingTypeNumMap);
 		
-		// Create buildingTypeIDMap
-		Map<String, Integer> buildingTypeIDMap = new HashMap<>();
+		// Process a list of connectors
+		Set<Integer> existingConnectorIDs = new HashSet<>();
+		Map<String, Integer> connectorTypeNumMap = new HashMap<>();
+		parseBuildingORConnectorList(templateElement, settlementTemplate, 
+				CONNECTOR,
+				settlementTemplateName, 
+				existingConnectorIDs, 
+				connectorTypeNumMap);
 
-		List<Element> buildingNodes = templateElement.getChildren(BUILDING);
-		for (Element buildingElement : buildingNodes) {
-
-			BoundedObject bounds = ConfigHelper.parseBoundedObject(buildingElement);
-
-			// Get the building id
-			int bid = -1;
-
-			if (buildingElement.getAttribute(ID) != null) {
-				bid = Integer.parseInt(buildingElement.getAttributeValue(ID));
-			}
-
-			if (existingIDs.contains(bid)) {
-				throw new IllegalStateException(
-						"Error in SettlementConfig : building ID " + bid + " in settlement template "
-								+ settlementTemplateName + " is not unique.");
-			} else if (bid != -1)
-				existingIDs.add(bid);
-			
-			// Get the zone
-			int zone = 0;
-			
-			if (buildingElement.getAttribute(ZONE) != null) {
-				zone = Integer.parseInt(buildingElement.getAttributeValue(ZONE));
-			}
-			
-			// Get the building type
-			String buildingType = buildingElement.getAttributeValue(TYPE);
-			
-			if (buildingTypeIDMap.containsKey(buildingType)) {
-				int last = buildingTypeIDMap.get(buildingType);
-				buildingTypeIDMap.put(buildingType, last + 1);
-			} else
-				buildingTypeIDMap.put(buildingType, 1);
-
-			// Create a building nickname for every building
-			// NOTE: i = sid + 1 since i must be > 1, if i = 0, s = null
-
-			int buildingTypeID = buildingTypeIDMap.get(buildingType);
-
-			// e.g. Lander Hab 1, Lander Hab 2
-			String buildingNickName = buildingType + " " + buildingTypeID;
-
-			BuildingTemplate buildingTemplate = new BuildingTemplate(bid, zone, 
-					buildingType, buildingNickName, bounds);
-
-			template.addBuildingTemplate(buildingTemplate);
-
-			// Create building connection templates.
-			Element connectionListElement = buildingElement.getChild(CONNECTION_LIST);
-			if (connectionListElement != null) {
-				List<Element> connectionNodes = connectionListElement.getChildren(CONNECTION);
-				for (Element connectionElement : connectionNodes) {
-					int connectionID = Integer.parseInt(connectionElement.getAttributeValue(ID));
-
-					if (buildingType.equalsIgnoreCase(EVA_AIRLOCK)) {
-						buildingTemplate.addEVAAttachedBuildingID(connectionID);
-					}
-					
-					// Check that connection ID is not the same as the building ID.
-					if (connectionID == bid) {
-						throw new IllegalStateException(
-								"Connection ID cannot be the same as building ID for building: " + buildingType
-										+ " in settlement template: " + settlementTemplateName);
-					}
-
-					String hatchFace = connectionElement.getAttributeValue(HATCH_FACE);
-					
-					if (hatchFace == null) {
-						LocalPosition connectionLoc = ConfigHelper.parseLocalPosition(connectionElement);
-						buildingTemplate.addBuildingConnection(connectionID, connectionLoc);
-					}
-					else {
-						buildingTemplate.addBuildingConnection(connectionID, hatchFace);
-					}
-				}
-			}
-		}
-
+		parseBuildingORConnectorList(templateElement, settlementTemplate, 
+				STANDALONE,
+				settlementTemplateName, 
+				existingBuildingIDs, 
+				buildingTypeNumMap);
+		
+		
 		// Check that building connections point to valid building ID's.
-		List<BuildingTemplate> buildingTemplates = template.getBuildings();
-		for (BuildingTemplate buildingTemplate : buildingTemplates) {
+		List<BuildingTemplate> buildingTemplates = settlementTemplate.getBuildings();
+		
+		for (BuildingTemplate buildingTemplate : buildingTemplates) {	
+			
 			List<BuildingConnectionTemplate> connectionTemplates = buildingTemplate
 					.getBuildingConnectionTemplates();
+
 			for (BuildingConnectionTemplate connectionTemplate : connectionTemplates) {
-				if (!existingIDs.contains(connectionTemplate.getID())) {
-					throw new IllegalStateException("Connection ID: " + connectionTemplate.getID()
-							+ " invalid for building: " + buildingTemplate.getBuildingName()
-							+ " in settlement template: " + settlementTemplateName);
+				
+				if (!existingBuildingIDs.contains(connectionTemplate.getID())
+					&& !existingConnectorIDs.contains(connectionTemplate.getID())) {
+					throw new IllegalStateException("XML issues with settlement template: " 
+							+ settlementTemplateName 
+							+ " in " + buildingTemplate.getBuildingName() 
+							+ " at connection id " + connectionTemplate.getID()
+							+ ". existingBuildingIDs: " + existingBuildingIDs
+							+ ". existingConnectorIDs: " + existingConnectorIDs
+							);
 				}
 			}
 		}
@@ -437,7 +499,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		for (Element vehicleElement : vehicleNodes) {
 			String vehicleType = vehicleElement.getAttributeValue(TYPE);
 			int vehicleNumber = Integer.parseInt(vehicleElement.getAttributeValue(NUMBER));
-			template.addVehicles(vehicleType, vehicleNumber);
+			settlementTemplate.addVehicles(vehicleType, vehicleNumber);
 		}
 
 		// Load robots
@@ -446,7 +508,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			RobotType rType = RobotType.valueOf(ConfigHelper.convertToEnumName(robotElement.getAttributeValue(TYPE)));
 			String name = robotElement.getAttributeValue(NAME);
 			String model = robotElement.getAttributeValue(MODEL);
-			template.addRobot(new RobotTemplate(name, rType, model));
+			settlementTemplate.addRobot(new RobotTemplate(name, rType, model));
 		}
 		
 		// Load equipment
@@ -454,7 +516,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		for (Element equipmentElement : equipmentNodes) {
 			String equipmentType = equipmentElement.getAttributeValue(TYPE);
 			int equipmentNumber = Integer.parseInt(equipmentElement.getAttributeValue(NUMBER));
-			template.addEquipment(equipmentType, equipmentNumber);
+			settlementTemplate.addEquipment(equipmentType, equipmentNumber);
 		}
 
 		// Load bins
@@ -462,7 +524,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		for (Element binElement : binNodes) {
 			String binType = binElement.getAttributeValue(TYPE);
 			int binNumber = Integer.parseInt(binElement.getAttributeValue(NUMBER));
-			template.addBins(binType, binNumber);
+			settlementTemplate.addBins(binType, binNumber);
 		}
 		
 		// Load resources
@@ -471,10 +533,12 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			String resourceType = resourceElement.getAttributeValue(TYPE);
 			AmountResource resource = ResourceUtil.findAmountResource(resourceType);
 			if (resource == null)
-				logger.severe(resourceType + " shows up in settlements.xml but doesn't exist in resources.xml.");
+				logger.severe(resourceType + " shows up in settlement template "
+						+ settlementTemplateName
+						+ " but doesn't exist in resources.xml.");
 			else {
 				double resourceAmount = Double.parseDouble(resourceElement.getAttributeValue(AMOUNT));
-				template.addAmountResource(resource, resourceAmount);
+				settlementTemplate.addAmountResource(resource, resourceAmount);
 			}
 		}
 
@@ -484,10 +548,12 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			String partType = partElement.getAttributeValue(TYPE);
 			Part part = (Part) ItemResourceUtil.findItemResource(partType);
 			if (part == null)
-				logger.severe(partType + " shows up in settlements.xml but doesn't exist in parts.xml.");
+				logger.severe(partType + " shows up in settlement template "
+						+ settlementTemplateName
+						+ " but doesn't exist in parts.xml.");
 			else {
 				int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
-				template.addPart(part, partNumber);
+				settlementTemplate.addPart(part, partNumber);
 			}
 		}
 
@@ -503,7 +569,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 					while (i.hasNext()) {
 						Part part = i.next();
 						int partNumber = partPackage.get(part);
-						template.addPart(part, partNumber);
+						settlementTemplate.addPart(part, partNumber);
 					}
 				}
 			}
@@ -521,22 +587,22 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				// Get the building type
 				String buildingType = buildingTemplate.getBuildingType();
 				
-				if (buildingTypeIDMap.containsKey(buildingType)) {
-					int last = buildingTypeIDMap.get(buildingType);
-					buildingTypeIDMap.put(buildingType, last + 1);
+				if (buildingTypeNumMap.containsKey(buildingType)) {
+					int last = buildingTypeNumMap.get(buildingType);
+					buildingTypeNumMap.put(buildingType, last + 1);
 				} else {
 					// If it's new
-					buildingTypeIDMap.put(buildingType, 1);
+					buildingTypeNumMap.put(buildingType, 1);
 				}
 	
-				int buildingTypeID = buildingTypeIDMap.get(buildingType);
+				int buildingTypeID = buildingTypeNumMap.get(buildingType);
 	
 				String buildingNickName = buildingType + " " + buildingTypeID;
 	
 				// Overwrite with a new building nick name
 				buildingTemplate.setBuildingName(buildingNickName);
 	
-				template.addBuildingTemplate(buildingTemplate);
+				settlementTemplate.addBuildingTemplate(buildingTemplate);
 			}
 		}
 		
@@ -553,11 +619,11 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 												FREQUENCY, -1);			
 				ResupplySchedule resupplyMissionTemplate = new ResupplySchedule(resupplyName,
 						arrivalTime, manifest, frequency);
-				template.addResupplyMissionTemplate(resupplyMissionTemplate);
+				settlementTemplate.addResupplyMissionTemplate(resupplyMissionTemplate);
 			}
 		}
 
-		return template;
+		return settlementTemplate;
 	}
 
 	/**

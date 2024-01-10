@@ -178,6 +178,13 @@ public final class SettlementBuilder {
 		createParts(supplies, settlement);
 	}
 
+	/**
+	 * Outputs the time it takes to check on a phase.
+	 * 
+	 * @param settlement
+	 * @param watch
+	 * @param phase
+	 */
 	private static void outputTimecheck(Settlement settlement, StopWatch watch, String phase) {
 		if (MEASURE_PHASES) {
 			watch.split();
@@ -189,6 +196,7 @@ public final class SettlementBuilder {
 	/**
 	 * Generates a unique name for the Settlement.
 	 * 
+	 * @param sponsor
 	 * @return
 	 */
 	private String generateName(Authority sponsor) {
@@ -266,6 +274,8 @@ public final class SettlementBuilder {
 	/**
 	 * Creates the initial equipment at a settlement.
 	 *
+	 * @param template
+	 * @param settlement
 	 * @throws Exception if error making equipment.
 	 */
 	private void createEquipment(SettlementSupplies template, Settlement settlement) {
@@ -281,7 +291,9 @@ public final class SettlementBuilder {
 	/**
 	 * Creates the initial bins at a settlement.
 	 *
-	 * @throws Exception if error making bins.
+	 * @param template
+	 * @param settlement
+	 * @throws Exception if error making bins
 	 */
 	private void createBins(SettlementSupplies template, Settlement settlement) {
 		for(Entry<String, Integer> e : template.getBins().entrySet()) {
@@ -295,8 +307,10 @@ public final class SettlementBuilder {
 
 	/**
 	 * Creates initial Robots based on available capacity at settlements.
-	 *
-	 * @throws Exception if Robots can not be constructed.
+	 * 
+	 * @param settlement
+	 * @param target
+	 * @throws Exception if Robots can not be constructed
 	 */
 	public void createRobots(Settlement settlement, int target) {
 		// Randomly create all remaining robots to fill the settlements to capacity.
@@ -341,8 +355,10 @@ public final class SettlementBuilder {
 	/**
 	 * Creates the initial resources at a settlement. Note: This is in addition to
 	 * any initial resources set in buildings.
-	 *
-	 * @throws Exception if error storing resources.
+	 * 
+	 * @param template
+	 * @param settlement
+	 * @throws Exception if error storing resources
 	 */
 	private void createResources(SettlementSupplies template, Settlement settlement) {
 
@@ -359,8 +375,10 @@ public final class SettlementBuilder {
 
 	/**
 	 * Create initial parts for a settlement.
-	 *
-	 * @throws Exception if error creating parts.
+	 * 
+	 * @param template
+	 * @param settlement
+	 * @throws Exception if error creating parts
 	 */
 	private void createParts(SettlementSupplies template, Settlement settlement) {
 
@@ -435,6 +453,9 @@ public final class SettlementBuilder {
 
 	/**
 	 * Creates all pre-configured people as listed in people.xml.
+	 * 
+	 * @param settlement
+	 * @param crewName
 	 */
 	private void createPreconfiguredPeople(Settlement settlement, String crewName) {
 
@@ -613,8 +634,9 @@ public final class SettlementBuilder {
 
 	/**
 	 * Creates all configured Robots.
+	 * 
 	 * @param template
-	 *
+	 * @param settlement
 	 * @throws Exception if error parsing XML.
 	 */
 	private void createPreconfiguredRobots(SettlementTemplate template, Settlement settlement) {
@@ -648,7 +670,9 @@ public final class SettlementBuilder {
 	}
 
 	/**
-	 * Enable the use of a predefined crews
+	 * Enable the use of a predefined crews.
+	 * 
+	 * @param crewConfig
 	 */
 	public void setCrew(UserConfigurableConfig<Crew> crewConfig) {
 		this.crewConfig = crewConfig;
