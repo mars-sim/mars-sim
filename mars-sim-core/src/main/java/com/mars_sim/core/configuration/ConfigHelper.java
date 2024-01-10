@@ -32,8 +32,9 @@ public class ConfigHelper {
 	}	
 	
 	/**
-	 * Convert a text label into a format that is suitable to bne used for an Enum.valueof method.
-	 * This involves changing to upper case and repalicing ' ' & '-' with a '_'
+	 * Converts a text label into a format that is suitable to be used for an Enum.valueof method.
+	 * This involves changing to upper case and replacing ' ' & '-' with a '_'.
+	 * 
 	 * @param text
 	 * @return
 	 */
@@ -42,7 +43,8 @@ public class ConfigHelper {
 	}
 
 	/**
-	 * Parse an element that conforms to the Bounded Object pattern of x,y,w,h,f
+	 * Parses an element that conforms to the Bounded Object pattern of x,y,w,h,f.
+	 * 
 	 * @param element
 	 * @return
 	 */
@@ -65,21 +67,33 @@ public class ConfigHelper {
 	}
 
 	/**
-	 * Parse an element that conforms to the LocalPosition style.
+	 * Parses an element that conforms to the LocalPosition style.
+	 * 
 	 * @param element
 	 * @return
 	 */
 	public static LocalPosition parseLocalPosition(Element element) {
-		double x = Double.parseDouble(element.getAttributeValue(X_LOCATION));
-		double y = Double.parseDouble(element.getAttributeValue(Y_LOCATION));
+		double x = -1;
+		double y = -1;
+		
+		String xx = element.getAttributeValue(X_LOCATION);
+		if (xx != null) {
+			x = Double.parseDouble(xx);
+		}
+		
+		String yy = element.getAttributeValue(Y_LOCATION);
+		if (yy != null) {
+			y = Double.parseDouble(yy);
+		}
 		
 		return new LocalPosition(x, y);
 	}
 	
 	/**
-	 * A generic extract to get an optional Attribute as int value
+	 * A generic extract to get an optional Attribute as int value.
+	 * 
 	 * @param sourceElement The XML Element to extract Attribute from
-	 * @param attrname Attribute name to look for
+	 * @param attrName Attribute name to look for
 	 * @param defaultInt Default int value if the attribute is not present
 	 * @return The Attribute value converted to an int OR the default
 	 */
@@ -94,9 +108,10 @@ public class ConfigHelper {
 
 		
 	/**
-	 * A generic extract to get an optional Attribute as double value
+	 * A generic extract to get an optional Attribute as double value.
+	 * 
 	 * @param sourceElement The XML Element to extract Attribute from
-	 * @param attrname Attribute name to look for
+	 * @param attrName Attribute name to look for
 	 * @param defaultDouble Default int value if the attribute is not present
 	 * @return The Attribute value converted to an int OR the default
 	 */
@@ -110,9 +125,10 @@ public class ConfigHelper {
 	}
 
 	/**
-	 * A generic extract to get an optional Attribute as bool value
+	 * A generic extract to get an optional Attribute as bool value.
+	 * 
 	 * @param sourceElement The XML Element to extract Attribute from
-	 * @param attrname Attribute name to look for
+	 * @param attrName Attribute name to look for
 	 * @param defaultBool Default boolean value if the attribute is not present
 	 * @return The Attribute value converted to an int OR the default
 	 */
@@ -126,7 +142,8 @@ public class ConfigHelper {
     }
 
 	/**
-	 * Parse an Element that represents a Population Char. entity. The values are Attributes.
+	 * Parses an Element that represents a Population Char. entity. The values are Attributes.
+	 * 
 	 * @param el
 	 * @return
 	 */

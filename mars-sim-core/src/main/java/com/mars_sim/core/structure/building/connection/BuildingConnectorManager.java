@@ -9,11 +9,11 @@ package com.mars_sim.core.structure.building.connection;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
@@ -87,12 +87,12 @@ public class BuildingConnectorManager implements Serializable {
 	 */
 	public void initialize(Settlement settlement, List<BuildingTemplate> buildingTemplates) {
 		
-		buildingConnections = ConcurrentHashMap.newKeySet();
+		buildingConnections = new HashSet<>();
 
 		BuildingManager buildingManager = settlement.getBuildingManager();
 
 		// Create partial building connector list from building connection templates.
-		List<PartialBuildingConnector> partialBuildingConnectorList = new CopyOnWriteArrayList<>();
+		List<PartialBuildingConnector> partialBuildingConnectorList = new ArrayList<>();
 		Iterator<BuildingTemplate> i = buildingTemplates.iterator();
 		while (i.hasNext()) {
 			BuildingTemplate buildingTemplate = i.next();
@@ -296,10 +296,10 @@ public class BuildingConnectorManager implements Serializable {
 		}
 
 		// Match up partial connectors to create building connectors.
-		while (partialBuildingConnectorList.size() > 0) {
+		while (!partialBuildingConnectorList.isEmpty()) {
 			PartialBuildingConnector partialConnector = partialBuildingConnectorList.get(0);
 			LocalPosition partialConnectorLoc = partialConnector.pos;
-			List<PartialBuildingConnector> validPartialConnectors = new CopyOnWriteArrayList<>();
+			List<PartialBuildingConnector> validPartialConnectors = new ArrayList<>();
 			
 			for (int x = 1; x < partialBuildingConnectorList.size(); x++) {
 				PartialBuildingConnector potentialConnector = partialBuildingConnectorList.get(x);
@@ -309,7 +309,7 @@ public class BuildingConnectorManager implements Serializable {
 				}
 			}
 
-			if (validPartialConnectors.size() > 0) {
+			if (!validPartialConnectors.isEmpty()) {
 				PartialBuildingConnector bestFitConnector = null;
 				double closestDistance = Double.MAX_VALUE;
 				Iterator<PartialBuildingConnector> j = validPartialConnectors.iterator();
@@ -414,7 +414,7 @@ public class BuildingConnectorManager implements Serializable {
 	 */
 	public Set<BuildingConnector> getBuildingConnections(Building building1, Building building2) {
 
-		Set<BuildingConnector> result = ConcurrentHashMap.newKeySet();
+		Set<BuildingConnector> result = new HashSet<>();
 
 		Iterator<BuildingConnector> i = buildingConnections.iterator();
 		while (i.hasNext()) {
@@ -457,7 +457,7 @@ public class BuildingConnectorManager implements Serializable {
 	 */
 	public Set<BuildingConnector> getConnectionsToBuilding(Building building) {
 
-		Set<BuildingConnector> result = ConcurrentHashMap.newKeySet();
+		Set<BuildingConnector> result = new HashSet<>();
 
 		Iterator<BuildingConnector> i = buildingConnections.iterator();
 		while (i.hasNext()) {
@@ -509,7 +509,6 @@ public class BuildingConnectorManager implements Serializable {
 	 */
 	public InsideBuildingPath determineShortestPath(Building startBuilding, LocalPosition startPosition,
 			Building endBuilding, LocalPosition endPosition) {
-
 
 		BuildingLocation start = new BuildingLocation(startBuilding, startPosition);
 		BuildingLocation end = new BuildingLocation(endBuilding, endPosition);
@@ -630,9 +629,8 @@ public class BuildingConnectorManager implements Serializable {
 			if (newBuilding.hasFunction(FunctionType.BUILDING_CONNECTION)) {
 				// Try to create connections at North and South ends.
 				createBuildingConnectorEndConnections(newBuilding);
-
 			}
-			// else
+
 			// Determine connections at points along each of the building's four sides.
 			createBuildingConnectionsAlongSides(newBuilding);
 		}
@@ -802,10 +800,10 @@ public class BuildingConnectorManager implements Serializable {
 		while (i.hasNext() && !goodConnection) {
 			Building building = i.next();
 			if (!building.equals(newBuilding)
-				&& getBuildingConnections(newBuilding, building).size() == 0) {
+				&& getBuildingConnections(newBuilding, building).isEmpty()) {
 
 				Set<Point2D> collisionPoints = LocalAreaUtil.getLinePathCollisionPoints(line, building);
-				if (collisionPoints.size() > 0) {
+				if (!collisionPoints.isEmpty()) {
 
 					// Determine closest collision point.
 					Point2D closestCollisionPoint = null;
@@ -926,8 +924,6 @@ public class BuildingConnectorManager implements Serializable {
 
 		BuildingSide result = null;
 
-		// Exception in thread "JavaFX Application Thread"
-		// java.lang.NullPointerException
 		LocalPosition buildingRelativePt = LocalAreaUtil.convert2LocalPos(new LocalPosition(point.getX(), point.getY()),
 													building);
 

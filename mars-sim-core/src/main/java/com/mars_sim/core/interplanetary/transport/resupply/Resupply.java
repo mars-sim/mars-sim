@@ -8,13 +8,13 @@ package com.mars_sim.core.interplanetary.transport.resupply;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.LocalAreaUtil;
@@ -406,7 +406,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * @return list of new buildings.
 	 */
 	private List<BuildingTemplate> orderNewBuildings(BuildingConfig buildingConfig) {
-		List<BuildingTemplate> result = new CopyOnWriteArrayList<>();
+		List<BuildingTemplate> result = new ArrayList<>();
 		
 		List<BuildingTemplate> list = getBuildings().stream()
 				.sorted(Comparator.comparing(bt -> bt.getID()))
@@ -838,7 +838,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		final int right = 2;
 		final int left = 3;
 
-		List<Integer> directions = new CopyOnWriteArrayList<>();
+		List<Integer> directions = new ArrayList<>();
 		directions.add(front);
 		directions.add(back);
 		directions.add(right);
@@ -925,7 +925,8 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * @return new building template with determined position, or null if none
 	 *         found.
 	 */
-	private BuildingTemplate positionConnectorBetweenTwoBuildings(BuildingSpec spec, Building firstBuilding,
+	private BuildingTemplate positionConnectorBetweenTwoBuildings(BuildingSpec spec, 
+			Building firstBuilding,
 			Building secondBuilding) {
 
 		BuildingManager buildingManager = settlement.getBuildingManager();
@@ -933,7 +934,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		BuildingTemplate newPosition = null;
 
 		// Determine valid placement lines for connector building.
-		List<Line2D> validLines = new CopyOnWriteArrayList<>();
+		List<Line2D> validLines = new ArrayList<>();
 
 		// Check each building side for the two buildings for a valid line unblocked by
 		// obstacles.
@@ -999,7 +1000,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 			String buildingNickName = spec.getBuildingType() + " " + buildingTypeID;
 
 			newPosition = new BuildingTemplate(buildingID, zone, spec.getBuildingType(), buildingNickName, 
-					new BoundedObject(centerX, centerY, width, newLength,	facingDegrees));
+					new BoundedObject(centerX, centerY, width, newLength, facingDegrees));
 		}
 
 		return newPosition;
@@ -1041,7 +1042,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 */
 	private List<Point2D> getFourPositionsSurroundingBuilding(Building building, double distanceFromSide) {
 
-		List<Point2D> result = new CopyOnWriteArrayList<>();
+		List<Point2D> result = new ArrayList<>();
 
 		final int front = 0;
 		final int back = 1;
