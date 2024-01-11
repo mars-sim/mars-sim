@@ -42,18 +42,18 @@ public class LunarColonyManager implements Serializable, Temporal {
 	private static List<Coordinates> coords = new ArrayList<>();
 	
 	static {
+		initialColonyNames.put("Kennedy", "NASA");
+		initialColonyNames.put("Kararmin", "ILRA");
+		initialColonyNames.put("Yue De", "CNSA");
+		initialColonyNames.put("Barmingrad", "RKA");
 				
 		colonyNames.put("Kennedy", "NASA");
-		colonyNames.put("Peary", "MS");
+		colonyNames.put("Kararmin", "ILRA");
 		colonyNames.put("Yue De", "CNSA");
 		colonyNames.put("Barmingrad", "RKA");
 		
-		initialColonyNames.put("Kennedy", "NASA");
-		initialColonyNames.put("Peary", "MS");
-		initialColonyNames.put("Yue De", "CNSA");
-		initialColonyNames.put("Barmingrad", "RKA");
-
 		colonyNames.put("Borington", "SpaceX");
+		colonyNames.put("Peary", "MS");
 		
 		colonyNames.put("Selene", "ESA"); // Mahina
 		colonyNames.put("Pacifica", "CSA");

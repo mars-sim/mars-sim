@@ -577,6 +577,74 @@
 			<rover-name name="Gaofei" />    <!-- Chinese for flying up -->
 		</authority>
 		
+		<authority code="ILRA" name="International Lunar Research Alliance" corporation="false"
+					agenda="Space Commerce" gender-ratio="0.75">
+			<country name="China"/>
+			<country name="Russia"/>
+			<settlement-name name="Tian Cheng" />
+			<settlement-name name="Xin Cheng" />
+			<settlement-name name="Huoxing Cheng" />
+			<settlement-name name="Chang-e Cheng" />
+			<settlement-name name="Xin Shenzhen" />
+			<settlement-name name="Xin Tianjin" />
+			<settlement-name name="Xin Shanghai" />
+			<settlement-name name="Xin Beijing" />
+			<settlement-name name="New Macau" />
+			<settlement-name name="Xin Chongqing" />
+			<settlement-name name="New Manchuria" />
+			<settlement-name name="Xin Xianggang" />
+			
+			<settlement-name name="Korolev" />
+			<settlement-name name="Kosmosdrome" />
+			<settlement-name name="Konstantin Point" />
+			<settlement-name name="Gorbachev" />
+			<settlement-name name="New Moscow" />
+			<settlement-name name="Chebyshev" />
+			<settlement-name name="Mendeleev" />
+			<settlement-name name="Kaspersky" />
+			<settlement-name name="Star City" />
+			<settlement-name name="Munku-Sardyk" /> <!-- which means "eternal bald peak" in Russian -->
+			<settlement-name name="Ropa" /> <!-- which means mountain in Russian -->	
+			<settlement-name name="Otechestvo" /> <!-- which means fatherland or in Russian -->
+			<settlement-name name="Rodina" /> <!-- which means homeland or motherland in Russian -->
+			<settlement-name name="Poligon" />
+			<settlement-name name="Chelomei" />
+			<settlement-name name="Tsiolkovsky" />
+		
+			<rover-name name="Shenzhou" />  <!-- Chinese for divine craft -->
+			<rover-name name="Huoxing" />  <!-- Chinese for "Mars" -->
+			<rover-name name="Zidan" />    <!-- Chinese for bullet -->
+			<rover-name name="Huojian" />  <!-- Chinese for rocket -->
+			<rover-name name="Bolang" />   <!-- Chinese for wave front -->
+			<rover-name name="Lingxian" /> <!-- Chinese for leading the way -->
+			<rover-name name="GuoLu" />    <!-- Chinese for passing through -->
+			<rover-name name="Youli" />    <!-- Chinese for traveling -->
+			<rover-name name="Changtu" />   <!-- Chinese for long journey" -->
+			<rover-name name="Hangcheng" /> <!-- Chinese for voyage -->
+			<rover-name name="Youke" />     <!-- Chinese for traveler -->
+			<rover-name name="YouShan" />   <!-- Chinese for treking mountain -->
+			<rover-name name="Aoxiang" />   <!-- Chinese for soaring -->
+			<rover-name name="Piaofu" />    <!-- Chinese for hovering -->
+			<rover-name name="Gaofei" />    <!-- Chinese for flying up -->
+		
+			<rover-name name="Kliper" /> <!-- which means clipper in Russian -->
+			<rover-name name="Ropa" /> <!-- which means mountain or in Russian -->
+			<rover-name name="Chizhevsky" />
+			<rover-name name="Lomonosov" />
+			<rover-name name="Lvov" />
+			<rover-name name="Obruchev" />
+			<rover-name name="Tatishchev" />
+			<rover-name name="Vernadsky" />
+			<rover-name name="Chikhachyov" />
+			<rover-name name="Dokuchaev" />
+			<rover-name name="Karpinsky" />
+			<rover-name name="Middendorf" />
+			<rover-name name="Shirshov" />
+			<rover-name name="Shokalsky" />
+			<rover-name name="Tikhonov" />
+			<rover-name name="Maleev" />
+		</authority>
+		
 		<authority code="CSA" name="Canadian Space Agency" corporation="false"
 					agenda="Communication Network"  gender-ratio="0.5">
 			<country name="Canada"/>
@@ -896,7 +964,7 @@
 		<authority code="RKA" name="Roscosmos" corporation="false"
 					agenda="Health Hazards" gender-ratio="0.75">
 			<country name="Russia"/>
-			<settlement-name name="Mir Town" />
+			<settlement-name name="Korolev" />
 			<settlement-name name="Kosmosdrome" />
 			<settlement-name name="Konstantin Point" />
 			<settlement-name name="Gorbachev" />
@@ -909,6 +977,11 @@
 			<settlement-name name="Ropa" /> <!-- which means mountain in Russian -->	
 			<settlement-name name="Otechestvo" /> <!-- which means fatherland or in Russian -->
 			<settlement-name name="Rodina" /> <!-- which means homeland or motherland in Russian -->
+			<settlement-name name="Poligon" />
+			<settlement-name name="Chelomei" />
+			<settlement-name name="Tsiolkovsky" />
+			
+			
 			<rover-name name="Kliper" /> <!-- which means clipper in Russian -->
 			<rover-name name="Ropa" /> <!-- which means mountain or in Russian -->
 			<rover-name name="Chizhevsky" />
