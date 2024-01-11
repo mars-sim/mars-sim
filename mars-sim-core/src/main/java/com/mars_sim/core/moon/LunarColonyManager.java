@@ -37,6 +37,8 @@ public class LunarColonyManager implements Serializable, Temporal {
 	
 	private static Map<String, String> colonyNames = new HashMap<>();
 
+	private static Map<String, String> initialColonyNames = new HashMap<>();
+	
 	private static List<Coordinates> coords = new ArrayList<>();
 	
 	static {
@@ -46,6 +48,11 @@ public class LunarColonyManager implements Serializable, Temporal {
 		colonyNames.put("Yue De", "CNSA");
 		colonyNames.put("Barmingrad", "RKA");
 		
+		initialColonyNames.put("Kennedy", "NASA");
+		initialColonyNames.put("Peary", "MS");
+		initialColonyNames.put("Yue De", "CNSA");
+		initialColonyNames.put("Barmingrad", "RKA");
+
 		colonyNames.put("Borington", "SpaceX");
 		
 		colonyNames.put("Selene", "ESA"); // Mahina
@@ -120,13 +127,13 @@ public class LunarColonyManager implements Serializable, Temporal {
 	/**
 	 * Adds a colony.
 	 * 
-	 * @param fromScratch
+	 * @param fromScratch Is it a brand new colony ?
 	 */
 	private void addColony(boolean fromScratch) {
-		String aName = getNewColonyName();
+		String aName = getNewColonyName(fromScratch);
 		if (aName == null)
 			return;
-		
+				
 		Coordinates co = getNewCoord();
 		if (co == null)
 			return;
@@ -138,16 +145,33 @@ public class LunarColonyManager implements Serializable, Temporal {
 		colonies.add(colony);
 	}
 	
-	private String getNewColonyName() {
+	/**
+	 * Gets a new colony name.
+	 * 
+	 * @param fromScratch Is it a brand new colony ?
+	 * @return
+	 */
+	private String getNewColonyName(boolean fromScratch) {
 
 		Set<String> namesInUse = new HashSet<>();
 		for (Colony c: colonies) {
 			namesInUse.add(c.getName());
 		}
 		
-		for (String n: colonyNames.keySet()) {
-			if (!namesInUse.contains(n)) {
-				return n;
+		if (fromScratch) {
+			// Brand new colonies
+			for (String n: colonyNames.keySet()) {
+				if (!namesInUse.contains(n)) {
+					return n;
+				}
+			}
+		}
+		else {
+			// Existing colonies
+			for (String n: initialColonyNames.keySet()) {
+				if (!namesInUse.contains(n)) {
+					return n;
+				}
 			}
 		}
 		
