@@ -45,6 +45,8 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	private Zone researchZone;
 	
 	private Zone developmentZone;
+
+	private Coordinates location;
 	
 	private Set<Zone> zones = new HashSet<>();
 	/** A set of research projects this colony's researchers engage in. */
@@ -52,10 +54,8 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	/** A set of engineering projects this colony's engineers engage in. */
 	private Set<EngineeringProject> engineeringProjects = new HashSet<>();
 
-	private Coordinates location;
-	
-	
-	public Colony(int id, String name, Authority sponsor, Coordinates location) {
+		
+	public Colony(int id, String name, Authority sponsor, Coordinates location, boolean scratch) {
 		this.id = id;
 		this.name = name;
 		this.sponsor = sponsor;
@@ -65,7 +65,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 
 		for (ZoneType type: ZoneType.values()) {
 			
-			Zone zone = new Zone(type, this);
+			Zone zone = new Zone(type, this, scratch);
 			if (type == ZoneType.RESEARCH) {
 				researchZone = zone;
 			}

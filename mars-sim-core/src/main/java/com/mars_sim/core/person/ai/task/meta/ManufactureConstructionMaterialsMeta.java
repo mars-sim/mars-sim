@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.ai.task.meta;
 
 import java.util.List;
-import java.util.logging.Level;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
@@ -20,8 +19,8 @@ import com.mars_sim.core.person.ai.task.ManufactureConstructionMaterials;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
-import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
+import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.OverrideType;

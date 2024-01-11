@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.structure.building.function.farming;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 import com.mars_sim.core.Entity;
