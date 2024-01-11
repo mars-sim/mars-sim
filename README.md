@@ -1,7 +1,7 @@
 [![Release version](https://img.shields.io/github/v/release/mars-sim/mars-sim?sort=semver&color=blue&label=release&style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
 [![Repo Size](https://img.shields.io/github/repo-size/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
+[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v3.6.2?sort=semver)](https://github.com/mars-sim/mars-sim/commits/v3.7.1)
 [![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v3.7.0?sort=semver)](https://github.com/mars-sim/mars-sim/commits/v3.7.0)
-[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v3.6.2?sort=semver)](https://github.com/mars-sim/mars-sim/commits/v3.6.2)
 [![Last Commit](https://img.shields.io/github/last-commit/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/commits)
 [![GitHub Downloads](https://img.shields.io/github/downloads/mars-sim/mars-sim/total?label=gitHub%20downloads&style=flat-square&color=blue)](https://github.com/mars-sim/mars-sim/releases)
 
@@ -506,9 +506,9 @@ e.g. Include the followings :
  - Settlement Map, etc.
 
 **Specifications (please complete)**
- - OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04]
+ - OS version : [e.g. Windows 11, macOS 14.2, Ubuntu 23.10]
  - Java version : [e.g. Oracle JDK 17.0.8, AdoptOpenJDK 17.0.8, OpenJFX 17]
- - Major version and build : [e.g. 3.6.2 build 8718]
+ - Major version and build : [e.g. 3.7.1 build 9227]
 
 **Additional context**
  - Add any other context about the problem here. By providing more info above when filing it, 

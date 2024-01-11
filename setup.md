@@ -1,6 +1,6 @@
 # Mars Simulation Project
 
-Copyright &copy; 2023 Scott Davis  
+Copyright &copy; 2024 Scott Davis  
 Project: https://mars-sim.com  
 GitHub: https://github.com/mars-sim/mars-sim  
 
@@ -12,7 +12,7 @@ GitHub: https://github.com/mars-sim/mars-sim
 
 - 2 GB free RAM
 
-- 220 MB free disk space
+- 446 MB free disk space
 
 - Java 17 or openjdk 17
 

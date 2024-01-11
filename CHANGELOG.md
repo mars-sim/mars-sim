@@ -1,14 +1,42 @@
 # Mars Simulation Project
 
-Copyright &copy; 2023 Scott Davis  
+Copyright &copy; 2024 Scott Davis  
 Project: https://mars-sim.com  
 GitHub: https://github.com/mars-sim/mars-sim  
 
 ------------------------------------------|---------------------
 
-## Version 3.7.0 (Thu 28 Dec 2023) </H3>
+## Version 3.7.1 (Fri 11 Jan 2024)
 
-### A. CORE ENGINE IMPROVEMENTS :</H4>
+### A. CORE ENGINE IMPROVEMENTS :
+<OL>
+  <LI>Building: add north-south alignment attribute to each building.</LI>  
+  <LI>Task: add checking for water level change and resource demand in Budget Resource Task.</LI>
+  <LI>Threading: quit clock thread while loop when paused to save CPU cycles.</LI>      
+  <LI>Walking: simplify colision-related methods.</LI>    
+</OL>
+  
+### B. UI IMPROVEMENT :
+<OL>
+  <LI>Airlock: fix failing to ingress.</LI>
+  <LI>Dust Storm: show dust storm status in settlement map banner.</LI>
+  <LI>Layout: rework activity spots and add a lab room in Medical Hab.</LI>
+  <LI>Location Tab: show settlement or vehicle vicinity.</LI>
+</OL>  
+
+### C. FIXES :
+<OL>
+	<LI>Airlock: avoid getting stuck in pre-breathing phase when a person is too exhausted.</LI>
+	<LI>Goods: ensure no same goods be selected in the buying and selling list.</LI>
+	<LI>Sleep: ensure settler can get some sleep in astronomy observatory.</LI>
+    <LI>Time: limit to certain iterations in A* Pathfinding algorithm when walking outside.</LI>
+<OL>
+
+------------------------------------------|---------------------
+
+## Version 3.7.0 (Thu 28 Dec 2023)
+
+### A. CORE ENGINE IMPROVEMENTS :
 <OL>
   <LI>Activity Spot: spots represent names & reservable spot where Tasks can be completed.</LI>
   <LI>Algae Pond: add building, function, tasks for growing spirulina. </LI>
@@ -24,7 +52,7 @@ GitHub: https://github.com/mars-sim/mars-sim
   <LI>UnitTests: add more Unit Tests. </LI>
 </OL>
   
-### B. UI IMPROVEMENT :</H4>
+### B. UI IMPROVEMENT :
 <OL>
   <LI>Monitor Tool: optimize Monitor Model.</LI>
   <LI>Diplomatic: add diplomatic channel in Command Dashboard for viewing live statistics in Lunar Colonies.</LI> 
@@ -34,7 +62,7 @@ GitHub: https://github.com/mars-sim/mars-sim
   <LI>Robot/Person Activity Panel: redesigned to show the stack of Tasks and alternative Tasks not choosen. Tooltip shows Rating breakdown.</LI>
 </OL>  
 
-### C. FIXES :</H4>
+### C. FIXES :
 <OL>
 	<LI>Airlock: avoid getting stuck in pre-breathing phase when a person is too exhausted.</LI>
 	<LI>Conversation: allow settlers to chat with others as a subtask.</LI>

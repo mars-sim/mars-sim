@@ -1,6 +1,6 @@
 # Mars Simulation Project
 
-Copyright &copy; 2023 Scott Davis  
+Copyright &copy; 2024 Scott Davis  
 Project: https://mars-sim.com  
 GitHub: https://github.com/mars-sim/mars-sim  
 
@@ -14,6 +14,7 @@ There is no known security issues in the last few versions of mars-sim.
 
 | Version | Supported          |
 | ------- | ------------------ |
+| 3.7.1   | :white_check_mark: |
 | 3.7.0   | :white_check_mark: |
 | 3.6.2   | :white_check_mark: |
 | 3.6.1   | :white_check_mark: |
