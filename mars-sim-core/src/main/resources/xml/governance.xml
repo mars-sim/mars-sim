@@ -847,8 +847,7 @@
 		<authority code="MS" name="Mars Society" corporation="true"
 					agenda="Settling Mars" gender-ratio="0.5">
 			<country name="Austria"/>
-			<country name="Belgium"/>
-			<country name="Brazil"/>			
+			<country name="Belgium"/>			
 			<country name="Canada"/>
 			<country name="China"/>
 			<country name="Czech Republic"/>
@@ -875,6 +874,11 @@
 			<country name="Switzerland"/>
 			<country name="United Kingdom"/>
 			<country name="United States"/>
+			<country name="Brazil"/>
+			<country name="Saudi Arabia"/>
+			<country name="South Korea"/>
+			<country name="Taiwan"/>
+			<country name="United Arab Emirates"/>
 			<settlement-name name="New Cairo" />
 			<settlement-name name="New Boulder" />
 			<settlement-name name="Burroughsburg" />

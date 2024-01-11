@@ -140,16 +140,18 @@ VPs of the exchange of resources in a Trading mission or Delivery mission.
 
 ## Sponsors
 
-In mars-sim, we witness an incredible undertaking in that 32 [countries](https://github.com/mars-sim/mars-sim/wiki/Countries) 
+In mars-sim, we witness an incredible undertaking in that 33 [countries](https://github.com/mars-sim/mars-sim/wiki/Countries) 
 from Earth are participating in this dream of making Mars as the second home for humanity. 
 
-Altogether, there's a total of 14 space agencies and 2 corporations to choose from for funding 
-settlements. 
+Altogether, there's a total of 2 blocs, 14 space agencies, 1 organization, and 2 corporations 
+to choose from when funding a settlement. 
 
 European Space Agency (ESA) is a bloc that consists of 22 member nations united in shaping 
 the development of Europe's space capability. 
 
-Notably, Mars Society is the only organization that comprises all 32 member nations. 
+International Space Research Alliance (ISRA) comprises China, Russia, Taiwan and United Arab Emirates.
+
+Notably, Mars Society is an international organization that comprises all 33 member nations. 
 
 Two corporations, namely, SpaceX and Blue Origin, have joined in to build settlements on Mars.
 
