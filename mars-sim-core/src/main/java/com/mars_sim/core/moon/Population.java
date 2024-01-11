@@ -15,8 +15,8 @@ import java.util.Set;
 
 import com.mars_sim.core.authority.Nation;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.moon.project.ColonistEngineer;
-import com.mars_sim.core.moon.project.ColonistResearcher;
+import com.mars_sim.core.moon.project.ColonyResearcher;
+import com.mars_sim.core.moon.project.ColonySpecialist;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.tools.util.RandomUtil;
@@ -68,10 +68,10 @@ public class Population implements Serializable, Temporal {
 	
 	public void init() {
 		for (int i = 0; i < numResearchers; i++) {
-			colonists.add(new ColonistResearcher("Researcher" + i, colony));
+			colonists.add(new ColonyResearcher("Researcher" + i, colony));
 		}
 		for (int i = 0; i < numEngineers; i++) {
-			colonists.add(new ColonistEngineer("Engineer" + i, colony));
+			colonists.add(new ColonySpecialist("Engineer" + i, colony));
 		}
 	}
 	
@@ -198,9 +198,9 @@ public class Population implements Serializable, Temporal {
 		}
 		
 		for (Colonist c: colonists) {
-			if (c instanceof ColonistResearcher r) {
+			if (c instanceof ColonyResearcher r) {
 				r.timePassing(pulse);
-			} else if (c instanceof ColonistEngineer r) {
+			} else if (c instanceof ColonySpecialist r) {
 				r.timePassing(pulse);
 			}
 		}
@@ -216,7 +216,7 @@ public class Population implements Serializable, Temporal {
 		Nation nation = colony.getNation();
 		
 		if (nation == null) {
-			colonists.add(new ColonistResearcher("R" 
+			colonists.add(new ColonyResearcher("R" 
 					+ (int)numResearchers, colony));
 		}
 		else {
@@ -225,7 +225,7 @@ public class Population implements Serializable, Temporal {
 				colonists.add(colonist);
 			}
 			else {
-				colonists.add(new ColonistResearcher("R" 
+				colonists.add(new ColonyResearcher("R" 
 					+ (int)numResearchers, colony));
 			}
 		}
@@ -241,7 +241,7 @@ public class Population implements Serializable, Temporal {
 		Nation nation = colony.getNation();
 		
 		if (nation == null) {
-			colonists.add(new ColonistEngineer("E" 
+			colonists.add(new ColonySpecialist("E" 
 					+ (int)numEngineers, colony));
 		}
 		else {
@@ -250,7 +250,7 @@ public class Population implements Serializable, Temporal {
 				colonists.add(colonist);
 			}
 			else {
-				colonists.add(new ColonistEngineer("E" 
+				colonists.add(new ColonySpecialist("E" 
 					+ (int)numEngineers, colony));
 			}
 		}
@@ -314,7 +314,7 @@ public class Population implements Serializable, Temporal {
 		else {
 			// Go back to one's nation pool
 			nation.addColonist(c);
-			((ColonistEngineer)c).setColony(null);	
+			((ColonySpecialist)c).setColony(null);	
 		}
 		
 		// Speed up the growth rate as an engineer has just been removed
@@ -326,10 +326,10 @@ public class Population implements Serializable, Temporal {
 	 * 
 	 * @return
 	 */
-	public Set<ColonistResearcher> getResearchers() {
-		Set<ColonistResearcher> set = new HashSet<>();
+	public Set<ColonyResearcher> getResearchers() {
+		Set<ColonyResearcher> set = new HashSet<>();
 		for (Colonist c: colonists) {
-			if (c instanceof ColonistResearcher r) {
+			if (c instanceof ColonyResearcher r) {
 				set.add(r);
 			}
 		}
@@ -353,11 +353,11 @@ public class Population implements Serializable, Temporal {
 	}
 	
 	public int getNumEngineers() {
-		return (int)numResearchers;
+		return (int)numEngineers;
 	}
 	
 	public int getTotalPopulation() {
-		return (int)numTourists + (int)numResidents + (int)numResearchers;
+		return (int)numTourists + (int)numResidents + (int)numResearchers + (int)numEngineers;
 	}
 	
 	public double getGrowthNumBed() {
@@ -376,8 +376,12 @@ public class Population implements Serializable, Temporal {
 		return growthRateResearchers;
 	}
 	
+	public double getGrowthEngineers() {
+		return growthRateEngineers;
+	}
+	
 	public double getGrowthTotalPopulation() {
-		return growthRateTourists * growthRateResidents * growthRateResearchers;
+		return growthRateTourists * growthRateResidents * growthRateResearchers + growthRateEngineers;
 	}
 	
 	/**

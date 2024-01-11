@@ -98,6 +98,15 @@ public class Colonist implements Serializable, Entity, SkillOwner {
 		}
 	}
 	
+//	@Override
+//	public boolean timePassing(ClockPulse pulse) {
+//		if (c instanceof ColonistResearcher r) {
+//			r.timePassing(pulse);
+//		} else if (c instanceof Specialist r) {
+//			r.timePassing(pulse);
+//		}
+//	}
+	
 	public double getTotalSkillExperience() {
 		return skillManager.getTotalSkillExperiences();
 	}

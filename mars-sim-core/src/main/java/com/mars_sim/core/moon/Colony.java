@@ -15,8 +15,8 @@ import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.authority.Nation;
 import com.mars_sim.core.authority.Organization;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.moon.project.ColonistEngineer;
-import com.mars_sim.core.moon.project.ColonistResearcher;
+import com.mars_sim.core.moon.project.ColonySpecialist;
+import com.mars_sim.core.moon.project.ColonyResearcher;
 import com.mars_sim.core.moon.project.EngineeringProject;
 import com.mars_sim.core.moon.project.ResearchProject;
 import com.mars_sim.core.time.ClockPulse;
@@ -87,11 +87,11 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	 * @param researcher
 	 * @return
 	 */
-	public ResearchProject getOneResearchProject(ColonistResearcher researcher) {
+	public ResearchProject getOneResearchProject(ColonyResearcher researcher) {
 		for (ResearchProject p: researchProjects) {
 			if (!p.getLead().equals(researcher)) {
-				Set<ColonistResearcher> participants = p.getParticipants();
-				for (ColonistResearcher r: participants) {
+				Set<ColonyResearcher> participants = p.getParticipants();
+				for (ColonyResearcher r: participants) {
 					if (!r.equals(researcher)) {
 						return p;
 					}
@@ -107,11 +107,11 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	 * @param Engineer
 	 * @return
 	 */
-	public EngineeringProject getOneEngineeringProject(ColonistEngineer engineer) {
+	public EngineeringProject getOneEngineeringProject(ColonySpecialist engineer) {
 		for (EngineeringProject p: engineeringProjects) {
 			if (!p.getLead().equals(engineer)) {
-				Set<ColonistEngineer> participants = p.getParticipants();
-				for (ColonistEngineer r: participants) {
+				Set<ColonySpecialist> participants = p.getParticipants();
+				for (ColonySpecialist r: participants) {
 					if (!r.equals(engineer)) {
 						return p;
 					}

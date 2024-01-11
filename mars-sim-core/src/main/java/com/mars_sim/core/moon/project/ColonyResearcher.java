@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * ColonistResearcher.java
+ * ColonyResearcher.java
  * @date 2022-10-05
  * @author Manny Kung
  */
@@ -22,7 +22,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.tools.util.RandomUtil;
 
-public class ColonistResearcher extends Colonist implements Researcher, Temporal {
+public class ColonyResearcher extends Colonist implements Researcher, Temporal {
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -49,7 +49,7 @@ public class ColonistResearcher extends Colonist implements Researcher, Temporal
 	/** A set of research projects this researcher engage in. */
 	private Set<ResearchProject> researchProjects = new HashSet<>();
 	
-	public ColonistResearcher(String name, Colony colony) {
+	public ColonyResearcher(String name, Colony colony) {
 		super(name, colony);
 
 		// Determine the main science type
@@ -83,6 +83,7 @@ public class ColonistResearcher extends Colonist implements Researcher, Temporal
 		int num = researchProjects.size();
 
 		var colony = getColony();
+		
 		int numResearchers = colony.getPopulation().getNumResearchers();
 		
 		int numResearchProjects = colony.getNumResearchProjects();
