@@ -63,6 +63,75 @@
         <first-name value="Zhenzheng" gender="male" />
         <first-name value="Ming-En" gender="male" />
         
+       <!-- Derived from https://yen.com.gh/115826-taiwan-female-names-meanings.html -->
+
+        <first-name value="Ah Lam" gender="female" />
+        <first-name value="Akemi" gender="female" />
+        <first-name value="Akina" gender="female" />
+        <first-name value="Annya" gender="female" />
+        <first-name value="Ayako" gender="female" />
+
+        <first-name value="Ayame" gender="female" />
+        <first-name value="Bo" gender="female" />
+        <first-name value="Bai" gender="female" />
+        <first-name value="Bao" gender="female" />
+        <first-name value="Chun" gender="female" />
+
+        <first-name value="Diu" gender="female" />
+        <first-name value="Daruma" gender="female" />
+        <first-name value="Ezume" gender="female" />
+        <first-name value="Eiko" gender="female" />
+        <first-name value="Eshima" gender="female" />
+    
+    
+        <first-name value="Emiyo" gender="female" />
+        <first-name value="Ena" gender="female" />
+        <first-name value="Fen" gender="female" />
+        <first-name value="Genji" gender="female" />
+        <first-name value="Gin" gender="female" />
+
+        <first-name value="Guan-Yin" gender="female" />
+        <first-name value="Hanako" gender="female" />
+        <first-name value="Hana" gender="female" />
+        <first-name value="Hama" gender="female" />
+        <first-name value="Hachi" gender="female" />
+
+        <first-name value="Hayami" gender="female" />
+        <first-name value="Harumi" gender="female" />
+        <first-name value="Haru" gender="female" />
+        <first-name value="Hanan" gender="female" />
+        <first-name value="Hanami" gender="female" />
+
+        <first-name value="Hsiai-Han" gender="female" />
+        <first-name value="Hoshi" gender="female" />
+        <first-name value="Hisa" gender="female" />
+        <first-name value="Hiromi" gender="female" />
+        <first-name value="Heiwa" gender="female" />
+
+        <first-name value="Hui-Fang" gender="female" />
+        <first-name value="Ishi" gender="female" />
+        <first-name value="Jia" gender="female" />
+        <first-name value="Ju" gender="female" />
+        <first-name value="Jun" gender="female" />
+
+        <first-name value="Jui Hui" gender="female" />
+        <first-name value="Jui-Feng" gender="female" />
+        <first-name value="Jumiya" gender="female" />
+        <first-name value="Jumiya" gender="female" />
+        <first-name value="Kaili" gender="female" />
+        
+        <first-name value="Kei" gender="female" />
+        <first-name value="Kiaria" gender="female" />
+        <first-name value="Kibo" gender="female" />
+        <first-name value="Kiku" gender="female" />
+        <first-name value="Kimi" gender="female" />
+
+        <first-name value="Koko" gender="female" />
+        <first-name value="Leiko" gender="female" />
+        <first-name value="Majime" gender="female" />
+        <first-name value="Manami" gender="female" />
+        <first-name value="Mariko" gender="female" />
+		
     </first-name-list>
     
     <last-name-list>

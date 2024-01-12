@@ -1,8 +1,8 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-    name="Phase 3-CN" shift-pattern="Long 3 Shift" 
-    default-population="16" description="Phase 3 base for CNSA"
-    number-of-robots="8" sponsor="CNSA">
+    name="Phase 3-ISRA" shift-pattern="Long 3 Shift" 
+    default-population="16" description="Phase 3 base for ISRA"
+    number-of-robots="8" sponsor="ISRA">
     
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="0.0">
