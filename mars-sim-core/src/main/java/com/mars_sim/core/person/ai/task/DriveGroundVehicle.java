@@ -433,7 +433,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 		// if (malfunctionManager == null)
 		MalfunctionManager malfunctionManager = vehicle.getMalfunctionManager();
 		// Modify based on the vehicle's wear condition.
-		chance *= malfunctionManager.getWearConditionAccidentModifier();
+		chance *= malfunctionManager.getAccidentModifier();
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
 			malfunctionManager.createASeriesOfMalfunctions(vehicle.getName(), (Unit)worker);
