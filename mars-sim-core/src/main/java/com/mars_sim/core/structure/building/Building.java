@@ -1233,18 +1233,23 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 			double wallThick = getWallThickness();
 			
-			if (penetratedLength < wallThick) {
-				// Case A: No. it's not breached
-				logger.log(this, Level.INFO, 0, "Meteorite Impact event observed but no building was breached. Damage not detected.");
-						
-				return ;
-			}
-			
 			double reductionFraction = penetratedLength / wallThick;
+			if (reductionFraction > 1)
+				reductionFraction = 1;
 			
 			// The impact reduces the structural health of the building 
 			// Future: it should also generates a repair task to at least assess the damage
 			malfunctionManager.reduceWearLifeTime(reductionFraction);
+			
+			if (penetratedLength < wallThick) {
+				// Case A: No. it's not breached
+				logger.warning(this, 0, "Meteorite Impact event observed. Building wall not breached but damaged. "
+						+ "Penetration fraction: " + Math.round(reductionFraction * 10.0)/10.0 + ".");
+				
+				return ;
+			}
+	
+			logger.warning(this, 0, "Meteorite Impact event observed. Building wall penetrated.");
 			
 			// Case B: Yes it's breached !	
 			
