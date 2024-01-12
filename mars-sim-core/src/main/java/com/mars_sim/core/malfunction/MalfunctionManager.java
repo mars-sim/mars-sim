@@ -86,12 +86,12 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static SimLogger logger = SimLogger.getLogger(MalfunctionManager.class.getName());
 
 	
-	/** The upper limit factor for both malfunction and maintenance that will result in 100% certainty. */
-	private static final double UPPER_LIMIT = 1.000_335_221_5;
 	/** The lower limit factor for malfunction that will result in 1 % certainty. */	
 	private static final double MALFUNCTION_LOWER_LIMIT = 1.000_003_351_695;
 	/** The lower limit factor for maintenance that will result in 10 % certainty. */	
 	private static final double MAINTENANCE_LOWER_LIMIT = 1.000_033_516_95;
+	/** The upper limit factor for both malfunction and maintenance that will result in 100% certainty. */
+	private static final double UPPER_LIMIT = 1.000_335_221_5;
 
 	
 	/** Wear-and-tear points earned from a low quality inspection. */
@@ -115,7 +115,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** Factor for chance of malfunction by time since last maintenance. */
 	private static final double MAINTENANCE_FACTOR = 10;
 	/** Factor for chance of malfunction due to wear condition. */
-	private static final double WEAR_MALFUNCTION_FACTOR = .0015;
+	private static final double WEAR_MALFUNCTION_FACTOR = .002;
 	/** Factor for chance of accident due to wear condition. */
 	private static final double WEAR_ACCIDENT_FACTOR = 1D;
 
@@ -123,8 +123,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static final String PROBABLE_CAUSE = ". Probable Cause: ";
 	private static final String CAUSED_BY = " Caused by '";
 
+	private static final int FREQUENCY = 3;
 	private static final int SCORE_DEFAULT = 50;
-	private static final int MAX_DELAY = 200;
+	private static final int MAX_DELAY = 100;
 	
 	// Data members
 	private int delay = 0;
@@ -152,7 +153,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** The periodic time window between each inspection/maintenance.  */
 	private double maintPeriod;
 	/** The percentage of the malfunctionable's condition from wear and tear. 0% = worn out -> 100% = new condition. */
-	private double currentWearCond;
+	private double currentWearCondPercent;
 	/** The cumulative time [in millisols] since active use. */
 	private double cumulativeTime;
 	
@@ -209,7 +210,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		this.baseWearLifeTime = wearLifeTime;
 
 		// Assume the maintenance period [in millisols] is the recommended period of time between the last and the next inspection/maintenance 
-		this.maintPeriod = wearLifeTime * 0.03;
+		this.maintPeriod = wearLifeTime * 0.01;
 		
 		// deploymentime accounts for the pre-use time spent during the base deployment phase prior to the start of the sim
 		// FUTURE: vary this time according to deployment scenario.
@@ -226,7 +227,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		effTimeSinceLastMaint = deploymentTime;
 		timeSinceLastMaintenance = deploymentTime;
 		
-		currentWearCond = currentWearLifeTime/baseWearLifeTime * 100D;
+		currentWearCondPercent = currentWearLifeTime/baseWearLifeTime * 100D;
 //		logger.info(entity, 10_000L, "wearLifeTime: " + wearLifeTime 
 //				+ "  maintPeriod: " + maintPeriod
 //				+ "  maintWorkTime: " + maintWorkTime
@@ -675,12 +676,12 @@ public class MalfunctionManager implements Serializable, Temporal {
 		effTimeSinceLastMaint += time;
 		timeSinceLastMaintenance += time;
 		currentWearLifeTime -= time * RandomUtil.getRandomDouble(.5, 1.5);
-		if (currentWearCond < 0D)
-			currentWearCond = 0D;
-		currentWearCond = currentWearLifeTime/baseWearLifeTime * 100;
+		if (currentWearCondPercent < 0D)
+			currentWearCondPercent = 0D;
+		currentWearCondPercent = currentWearLifeTime/baseWearLifeTime * 100;
 
 		if (pulse.isNewMSol()
-				&& pulse.getMarsTime().getMillisolInt() % 3 == 0) {
+				&& pulse.getMarsTime().getMillisolInt() % FREQUENCY == 0) {
 			
 			delay--;
 			
@@ -692,8 +693,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 			
 			double maintFactor = (effTimeSinceLastMaint/maintPeriod) + 1D;
-			double wearFactor = (100 - currentWearCond) * WEAR_MALFUNCTION_FACTOR;		
-			double malfunctionChance = time * maintFactor * wearFactor;
+			double wearFactor = (100 - currentWearCondPercent) * WEAR_MALFUNCTION_FACTOR;		
+			double malfunctionChance = FREQUENCY * time * maintFactor * wearFactor;
 //			logger.info(entity, "MalfunctionChance min: " + Math.round(malfunctionChance * 100_000.0)/100_000.0 + " %");
 			
 			// For one orbit, log10 (1.000001) * 1000 * 687 is 0.2984. 
@@ -1061,8 +1062,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 		}
 	}
 
+	/**
+	 * Gets the adjusted condition.
+	 * 
+	 * @return
+	 */
 	public double getAdjustedCondition() { 
-		return currentWearLifeTime / (baseWearLifeTime - cumulativeTime) * 100;
+		// Compare with currentWearCondPercent = currentWearLifeTime/baseWearLifeTime * 100;
+		return currentWearLifeTime / (baseWearLifeTime + cumulativeTime) * 100;
 	}
 
 	/**
@@ -1071,9 +1078,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param fraction
 	 */
 	public void reduceWearLifeTime(double fraction) {
-		double value = currentWearLifeTime * fraction;
-		currentWearLifeTime = value;
+		currentWearLifeTime = .25 * currentWearLifeTime + .75 * (1 - fraction) * currentWearLifeTime;
 	}
+	
 	/**
 	 * Issues any necessary medical complaints.
 	 *
@@ -1122,13 +1129,13 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/** 
-	 * What Unit is used to fire events
+	 * Gets the unit.
 	 */
 	private Unit getUnit() {
-		if (entity instanceof Unit)
-			return (Unit) entity;
-		else if (entity instanceof Building)
-			return ((Building) entity).getSettlement();
+		if (entity instanceof Unit u)
+			return u;
+		else if (entity instanceof Building b)
+			return b.getSettlement();
 		else
 			throw new IllegalStateException("Could not find unit associated with malfunctionable.");
 	}
@@ -1400,7 +1407,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return wear condition.
 	 */
 	public double getWearCondition() {
-		return currentWearCond;
+		return currentWearCondPercent;
 	}
 
 	/**
@@ -1409,8 +1416,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 *
 	 * @return accident modifier.
 	 */
-	public double getWearConditionAccidentModifier() {
-		return (100D - currentWearCond) / 100D * WEAR_ACCIDENT_FACTOR;
+	public double getAccidentModifier() {
+		return (100D - currentWearCondPercent) / 100D * WEAR_ACCIDENT_FACTOR;
 	}
 
 	/**

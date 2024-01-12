@@ -140,21 +140,20 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 		RatingScore score = RatingScore.ZERO_RATING;
 		double condition = manager.getAdjustedCondition();
 		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-		double minMaintenance = manager.getMaintenancePeriod();
+		double window = manager.getMaintenancePeriod();
 		
 		// Note: look for entities that are NOT malfunction since
 		// malfunctioned entities are being taken care of by the two Repair*Malfunction tasks
 		
 		// About a quarter of time into the next inspection/maintenance that will be due,
 		// One can begin to do a little bit of inspection whenever possible
-		if ((hasNoMalfunction && effectiveTime >= minMaintenance * 0.25 * RandomUtil.getRandomDouble(0.8, 1.2))
+		if ((hasNoMalfunction && effectiveTime >= window * 0.25 * RandomUtil.getRandomDouble(0.8, 1.2))
 			// if needed parts have been posted, hurry up to swap out the parts without waiting for 
 			// the standard inspection/maintenance due
 			|| hasPartsInStore) {
 			// Score is based on condition plus %age overdue
-			score = new RatingScore("condition", 100 - condition);
-			score.addModifier("due", 1D +
-								((effectiveTime - minMaintenance) / minMaintenance));
+			score = new RatingScore("condition", 2 * (100 - condition));
+			score.addModifier("maint.win", 4 * (effectiveTime/ window));
 			if (hasPartsInStore) {
 				// If needed parts are available, double up the speed of the maintenance
 				score.addModifier("parts", 2);
