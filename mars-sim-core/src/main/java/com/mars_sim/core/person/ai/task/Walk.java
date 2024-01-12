@@ -560,8 +560,6 @@ public class Walk extends Task {
 	 */
 	private double walkingSettlementInteriorPhase(double time) {
 		
-		double remainingTime = time - minPulseTime;
-
 		if (person != null) {
 			logger.log(person, Level.FINE, 4000, "Walking inside a settlement.");
 
@@ -635,7 +633,7 @@ public class Walk extends Task {
 			}
 		}
 
-		return remainingTime;
+		return 0;
 	}
 
 	/**
@@ -646,8 +644,6 @@ public class Walk extends Task {
 	 *         phase.
 	 */
 	private double walkingRoverInteriorPhase(double time) {
-		
-		double remainingTime = time - minPulseTime;
 		
 		setDescription(Msg.getString("Task.description.walk")); //$NON-NLS-1$
 
@@ -741,7 +737,7 @@ public class Walk extends Task {
 			}
 		}
 
-		return remainingTime;
+		return 0;
 	}
 
 	/**
@@ -752,9 +748,7 @@ public class Walk extends Task {
 	 *         phase.
 	 */
 	private double walkingExteriorPhase(double time) {
-		
-		double remainingTime = time - minPulseTime;
-		
+	
 		setDescription(Msg.getString("Task.description.walk")); //$NON-NLS-1$
 
 		if (person != null) {
@@ -824,7 +818,7 @@ public class Walk extends Task {
 			}
 		}
 
-		return remainingTime;
+		return 0;
 	}
 
 	/**
@@ -835,8 +829,6 @@ public class Walk extends Task {
 	 *         phase.
 	 */
 	private double egressingAirlockPhase(double time) {
-		
-		double remainingTime = time - minPulseTime;
 		
 		setDescription(Msg.getString("Task.description.walk.egressingAirlock")); //$NON-NLS-1$
 
@@ -881,7 +873,7 @@ public class Walk extends Task {
 			endTask();
 		}
 
-		return remainingTime;
+		return 0;
 	}
 
 	/**
@@ -893,7 +885,7 @@ public class Walk extends Task {
 	 */
 	private double ingressingAirlockPhase(double time) {
 		
-		double remainingTime = time - minPulseTime;
+		double remainingTime = time;
 
 		setDescription(Msg.getString("Task.description.walk.ingressingAirlock")); //$NON-NLS-1$
 
@@ -941,9 +933,7 @@ public class Walk extends Task {
 	 *         phase.
 	 */
 	private double exitingRoverGaragePhase(double time) {
-
-		double remainingTime = time - minPulseTime;
-		
+	
 		boolean canExit = false;
 
 		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
@@ -986,7 +976,7 @@ public class Walk extends Task {
 			}
 		}
 
-		return remainingTime;
+		return 0;
 	}
 
 	/**
@@ -998,7 +988,7 @@ public class Walk extends Task {
 	 */
 	private double enteringRoverInsideGaragePhase(double time) {
 
-		double remainingTime = time - minPulseTime;
+		double remainingTime = time;
 
 		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 		Rover rover = step.rover;
@@ -1057,8 +1047,6 @@ public class Walk extends Task {
 	 */
 	public double climbingUpLadder(double time) {
 
-		double remainingTime = time - minPulseTime;
-
 		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 
 		Building building = step.building;
@@ -1081,7 +1069,7 @@ public class Walk extends Task {
 			endTask();
 		}
 
-		return remainingTime;
+		return 0;
 	}
 
 	/**
@@ -1091,8 +1079,6 @@ public class Walk extends Task {
 	 * @return
 	 */
 	public double climbingDownLadder(double time) {
-
-		double remainingTime = time - minPulseTime;
 
 		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 
@@ -1116,7 +1102,7 @@ public class Walk extends Task {
 			endTask();
 		}
 
-		return remainingTime;
+		return 0;
 	}
 
 	/**
