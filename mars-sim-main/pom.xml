@@ -14,7 +14,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<starterClass>com.mars_sim.main.MarsProjectStarter</starterClass>
 		<mainClass>com.mars_sim.main.MarsProject</mainClass>
-		<target.name>mars-sim_swing_${project.version}</target.name>
+		<target.name>mars-sim-swing-${project.version}</target.name>
 	</properties>
 	
 	<dependencies>
@@ -34,58 +34,6 @@
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
-
-<!-- https://medium.com/graalvm/gradle-and-maven-plugins-for-native-image-with-initial-junit-testing-support-dde00a8caf0b -->
-<!-- https://github.com/graalvm/native-build-tools -->
-<!-- https://graalvm.github.io/native-build-tools/latest/maven-plugin.html 
-	 https://docs.oracle.com/en/graalvm/enterprise/22/docs/reference-manual/native-image/guides/use-native-image-maven-plugin/
--->
-  <profiles>
-    <profile>
-      <id>native</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.graalvm.buildtools</groupId>
-            <artifactId>native-maven-plugin</artifactId>
-            <version>${native.maven.plugin.version}</version>
-            <extensions>true</extensions>
-            <executions>
-              <execution>
-                <id>build-native</id>
-                <goals>
-                  <goal>build</goal>
-                </goals>
-                <phase>package</phase>
-              </execution>
-              <execution>
-                <id>test-native</id>
-                <goals>
-                  <goal>test</goal>
-                </goals>
-                <phase>test</phase>
-              </execution>
-            </executions>
-            <configuration>
-				<imageName>mars-sim-graal</imageName>
-				<mainClass>${mainClass}</mainClass>			  
-				<fallback>false</fallback>
-				<buildArgs>
-					<arg>-H:DashboardDump=fortune -H:+DashboardAll</arg>
-				</buildArgs>
- 				<agent>
- 					<enabled>true</enabled>
- 					<options>
- 					 	<option>experimental-class-loader-support</option>
- 					</options>
-				</agent>			  
-				<verbose>true</verbose>    	            
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
   
 	<build>
 		<plugins>
@@ -107,6 +55,9 @@
 						    <Multi-Release>true</Multi-Release>
 						</manifestEntries>						
 					</archive>
+					<!-- Control the final name of the generated file -->
+					<finalName>${target.name}</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 				<executions>
 					<execution>
@@ -115,101 +66,6 @@
 						<goals>
 							<goal>single</goal> <!-- goals == mojos -->
 						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- Rename create JAR to a constant name -->
-			<plugin>
-                <groupId>com.coderplus.maven.plugins</groupId>
-                <artifactId>copy-rename-maven-plugin</artifactId>
-                <version>1.0.1</version>
-                <executions>
-                    <execution>
-                        <id>copy-file</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <sourceFile>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</sourceFile>
-    						<destinationFile>${project.build.directory}/${target.name}.jar</destinationFile>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-			<!-- Package into a DEB file as well -->
-			<plugin>
-				<groupId>org.vafer</groupId>
-				<artifactId>jdeb</artifactId>
-				<version>1.10</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>jdeb</goal>
-						</goals>
-						<configuration>
-							<deb>${project.build.directory}/${target.name}.deb</deb>
-							<dataSet>
-								<data>
-									<src>${project.build.directory}/${target.name}.jar</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/mars-sim-main</prefix>
-									</mapper>
-								</data>
-								<data>
-									<src>${project.basedir}/src/deb/mars-sim</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/bin</prefix>
-										<filemode>755</filemode>
-									</mapper>
-								</data>
-								<data>
-									<src>${project.basedir}/src/deb/copyright/copyright</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/doc/mars-sim-main</prefix>
-									</mapper>
-								</data>
-								<data>
-									<src>${project.basedir}/src/deb/changelog</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/doc/mars-sim-main</prefix>
-									</mapper>
-								</data>
-								<data>
-									<src>${project.basedir}/src/deb/icon.png</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/doc/mars-sim-main</prefix>
-									</mapper>
-								</data>
-								<data>
-									<src>${project.basedir}/src/deb/mars-sim.desktop</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/applications</prefix>
-									</mapper>
-								</data>
-								<data>
-									<src>${project.basedir}/src/deb/man/mars-sim.1</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/man/man1</prefix>
-									</mapper>
-								</data>
-							</dataSet>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>

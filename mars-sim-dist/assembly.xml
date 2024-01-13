@@ -1,0 +1,27 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 http://maven.apache.org/xsd/assembly-2.2.0.xsd">
+  <id>distribution</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <directory>${basedir}/base</directory>
+	  <outputDirectory>.</outputDirectory>
+    </fileSet>
+  </fileSets>
+  <files>
+	<!-- Get the 2 executable JAR files -->
+    <file>
+      <source>${basedir}/../mars-sim-main/target/mars-sim-swing-${project.version}.jar</source>
+      <outputDirectory>lib</outputDirectory>
+	  <destName>mars-sim-swing.jar</destName>
+    </file>
+	<file>
+      <source>${basedir}/../mars-sim-headless/target/mars-sim-console-${project.version}.jar</source>
+      <outputDirectory>lib</outputDirectory>
+	  <destName>mars-sim-console.jar</destName>
+    </file>
+  </files>
+</assembly>

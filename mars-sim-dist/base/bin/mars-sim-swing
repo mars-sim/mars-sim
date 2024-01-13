@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# This file should be Linux (LF) format
+# Locate the installation directory
+PRG="$0"
+MARS_SIM_DIR=`dirname "$PRG"`/..
+
+# Define the target JAR file
+MARS_TARGET_JAR=$MARS_SIM_DIR/lib/mars-sim-swing.jar
+
+# Get JVM command line
+JVM_ARGS="$(cat $MARS_SIM_DIR/conf/jvm.options)"
+
+# Run it
+java $JVM_ARGS -jar $MARS_TARGET_JAR "$@"

@@ -14,7 +14,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
 		<starterClass>com.mars_sim.headless.MarsProjectHeadlessStarter</starterClass>	
 		<mainClass>com.mars_sim.headless.MarsProjectHeadless</mainClass>
-		<target.name>mars-sim_console_${project.version}</target.name>
+		<target.name>mars-sim-console-${project.version}</target.name>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -57,6 +57,9 @@
 						    <Multi-Release>true</Multi-Release>
 						</manifestEntries>
 					</archive>
+					<!-- Control the final name of the generated file -->
+					<finalName>${target.name}</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 				<executions>
 					<execution>
@@ -65,101 +68,6 @@
 						<goals>
 							<goal>single</goal> <!-- goals == mojos -->
 						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- Rename create JAR to a constant name -->
-			<plugin>
-                <groupId>com.coderplus.maven.plugins</groupId>
-                <artifactId>copy-rename-maven-plugin</artifactId>
-                <version>1.0.1</version>
-                <executions>
-                    <execution>
-                        <id>copy-file</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <sourceFile>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</sourceFile>
-    						<destinationFile>${project.build.directory}/${target.name}.jar</destinationFile>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-			<!-- Create a DEB file-->
-			<plugin>
-				<groupId>org.vafer</groupId>
-				<artifactId>jdeb</artifactId>
-				<version>1.10</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>jdeb</goal>
-						</goals>
-						<configuration>
-							<deb>${project.build.directory}/${target.name}.deb</deb>
-							<dataSet>
-								<data>
-									<src>${project.build.directory}/${target.name}.jar</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/mars-sim-headless</prefix>
-									</mapper>
-								</data>
-								<data>
-									<src>${project.basedir}/src/deb/mars-sim</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/bin</prefix>
-										<filemode>755</filemode>
-									</mapper>
-								</data>
-								<data>
-									<src>${project.basedir}/src/deb/copyright/copyright</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/doc/mars-sim-headless</prefix>
-									</mapper>
-								</data>
-								<data>
-									<src>${project.basedir}/src/deb/changelog</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/doc/mars-sim-headless</prefix>
-									</mapper>
-								</data>
-								<data>
-									<src>${project.basedir}/src/deb/icon.png</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/doc/mars-sim-headless</prefix>
-									</mapper>
-								</data>
-								<data>
-									<src>${project.basedir}/src/deb/mars-sim.desktop</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/applications</prefix>
-									</mapper>
-								</data>
-								<data>
-									<src>${project.basedir}/src/deb/man/mars-sim.1</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/man/man1</prefix>
-									</mapper>
-								</data>
-							</dataSet>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
