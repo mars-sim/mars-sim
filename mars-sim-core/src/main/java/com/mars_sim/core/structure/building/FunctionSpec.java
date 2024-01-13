@@ -29,6 +29,12 @@ public class FunctionSpec {
 	private Map<String, Object> props;
 	private Set<NamedPosition> spots;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param props
+	 * @param spots
+	 */
 	public FunctionSpec(Map<String, Object> props, Set<NamedPosition> spots) {
 		this.props = props;
 		if (spots == null) {

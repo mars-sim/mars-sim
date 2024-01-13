@@ -6,11 +6,11 @@
  */
 package com.mars_sim.core.structure.building.function;
 
+import java.util.Iterator;
+
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.FunctionSpec;
-
-import java.util.Iterator;
 
 /**
  * The Communication class is a building function for communication.
@@ -22,6 +22,7 @@ public class Communication extends Function {
   
     /**
      * Constructor.
+     * 
      * @param building the building this function is for.
      */
     public Communication(Building building, FunctionSpec spec) {
@@ -61,6 +62,6 @@ public class Communication extends Function {
 
     @Override
     public double getMaintenanceTime() {
-        return   20D;
+        return 10;
     }
 }

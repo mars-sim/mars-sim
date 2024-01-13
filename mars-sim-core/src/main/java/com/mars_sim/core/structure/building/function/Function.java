@@ -40,6 +40,7 @@ public abstract class Function implements Serializable, Temporal {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Function.class.getName());
 
+	// The default inspection work time in millisols for a function 
 	protected static final int BASE_MAINT_TIME = 5;
 	
 	protected static final int WATER_ID = ResourceUtil.waterID;

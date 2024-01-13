@@ -181,6 +181,10 @@ public abstract class ResourceProcessor extends Function {
 
 	@Override
 	public double getMaintenanceTime() {
-		return processes.size() * 5D;
+		double result = getFullPowerRequired() * .25;
+		// Add num of processes.
+		result *= processes.size() * .5;
+		
+		return result;
 	}
 }

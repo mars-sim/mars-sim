@@ -161,6 +161,6 @@ public class Management extends Function {
 
     @Override
     public double getMaintenanceTime() {
-        return staffCapacity * 1D;
+        return staffCapacity * 1.5;
     }
 }

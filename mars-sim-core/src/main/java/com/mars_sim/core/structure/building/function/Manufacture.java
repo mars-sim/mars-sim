@@ -709,12 +709,11 @@ public class Manufacture extends Function {
 
 	@Override
 	public double getMaintenanceTime() {
-		double result = 0D;
+		double result = getFullPowerRequired() * .25;
 		// Add maintenance for tech level.
-		result += techLevel * 10D;
+		result *= techLevel * .5;
 		// Add maintenance for num of printers in use.
-		result += numPrintersInUse * 10D;
-
+		result *= numPrintersInUse * .5;
 		return result;
 	}
 

@@ -20,7 +20,7 @@ public class EarthReturn extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	
 	// Data members
 	private int crewCapacity;
 	private boolean hasLaunched;
@@ -94,7 +94,8 @@ public class EarthReturn extends Function {
 
 	@Override
 	public double getMaintenanceTime() {
-		return crewCapacity * 50D;
+		return crewCapacity * 2;
+//		return crewCapacity * spec.getBuildingSpec().getResourceProcess().size();
 	}
 
 }

@@ -117,7 +117,7 @@ public class RoboticStation extends Function {
 	
 	@Override
 	public double getMaintenanceTime() {
-		return occupantCapacity * 2D;
+		return occupantCapacity * 1.5;
 	}
 
 	/**

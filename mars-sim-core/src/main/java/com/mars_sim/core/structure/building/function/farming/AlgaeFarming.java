@@ -861,7 +861,7 @@ public class AlgaeFarming extends Function {
 
 	@Override
 	public double getMaintenanceTime() {
-		return tankSize * 5D;
+		return currentAlgae * .25D;
 	}
 
 	public String getUninspected() {

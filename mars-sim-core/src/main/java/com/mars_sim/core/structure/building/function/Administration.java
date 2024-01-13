@@ -144,6 +144,6 @@ public class Administration extends Function {
 
 	@Override
 	public double getMaintenanceTime() {
-		return populationSupport * 1D;
+		return populationSupport * 1.5;
 	}
 }

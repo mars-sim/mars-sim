@@ -180,13 +180,13 @@ public class AstronomicalObservation extends Function {
 	@Override
 	public double getMaintenanceTime() {
 
-		double result = 0D;
+		double result = powerRequired;
 
 		// Add maintenance for tech level.
-		result += techLevel * 10D;
+		result *= techLevel * .5;
 
 		// Add maintenance for observer capacity.
-		result += observatoryCapacity * 10D;
+		result *= observatoryCapacity * .25;
 
 		return result;
 	}

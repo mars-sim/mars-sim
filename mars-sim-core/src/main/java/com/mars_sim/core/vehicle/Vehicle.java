@@ -1340,8 +1340,8 @@ public abstract class Vehicle extends Unit
 		}
 
 		// If it's back at a settlement and is NOT in a garage
-		else if (LocationStateType.SETTLEMENT_VICINITY == getLocationStateType()
-			&& !haveStatusType(StatusType.MAINTENANCE)) {
+		else if (!haveStatusType(StatusType.MAINTENANCE)
+				&& !haveStatusType(StatusType.GARAGED)) {
 			int rand = RandomUtil.getRandomInt(3);
 			// Assume the wear and tear factor is 75% less when not operating 
 			if (rand == 3)
@@ -1354,7 +1354,8 @@ public abstract class Vehicle extends Unit
 			setReservedForMaintenance(false);
 			removeSecondaryStatus(StatusType.MAINTENANCE);
 		}
-		else { // not under maintenance
+		else if (!haveStatusType(StatusType.GARAGED)) { 
+			// Not under maintenance and not in garage
 			// Note: during maintenance, it doesn't need to be checking for malfunction.
 			malfunctionManager.timePassing(pulse);
 		}

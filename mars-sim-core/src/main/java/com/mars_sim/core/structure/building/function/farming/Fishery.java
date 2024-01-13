@@ -383,7 +383,7 @@ public class Fishery extends Function {
 
 	@Override
 	public double getMaintenanceTime() {
-		return tankSize * 5D;
+		return fish.size() * .075;
 	}
 
 	public String getUninspected() {

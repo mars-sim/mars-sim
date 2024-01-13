@@ -42,12 +42,10 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	private int researchersCache;
 
 	private JLabel researchersLabel;
-	
 	private JLabel dailyAverageLabel;
-	
 	private JLabel cumulativeTotalLabel;
-
 	private JLabel entropyLabel;
+	private JLabel entropyPenaltyLabel;
 	
 	/**
 	 * Constructor.
@@ -76,7 +74,7 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		// Prepare label panel
-		AttributePanel labelPanel = new AttributePanel(5);
+		AttributePanel labelPanel = new AttributePanel(6);
 		center.add(labelPanel, BorderLayout.NORTH);
 	
 		// Prepare researcher number label
@@ -100,12 +98,17 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 		entropyLabel = labelPanel.addTextField(Msg.getString("BuildingPanelResearch.entropy"),
 	 			Math.round(entropy * 1_000.0)/1_000.0 + "", Msg.getString("BuildingPanelResearch.entropy.tooltip"));
 
-		
+		// Entropy
+		double entropyPenalty = building.getResearch().getEntropyPenalty();
+		entropyPenaltyLabel = labelPanel.addTextField(Msg.getString("BuildingPanelResearch.entropyPenalty"),
+			 			Math.round(entropyPenalty * 1_000.0)/1_000.0 + "", Msg.getString("BuildingPanelResearch.entropyPenalty.tooltip"));
+			
 		// Get the research specialties of the building.
 		ScienceType[] specialties = lab.getTechSpecialties();
 		int size = specialties.length;
 
 		JTextArea specialtyTA = new JTextArea();
+		specialtyTA.setSize(150, 200);
 		specialtyTA.setEditable(false);
 		specialtyTA.setColumns(5);
 
@@ -142,6 +145,12 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 		String entropy = Math.round(building.getResearch().getEntropy() * 1_000.0)/1_000.0 + "";
 		if (!entropyLabel.getText().equalsIgnoreCase(entropy))
 			entropyLabel.setText(entropy);
+		
+		// Update entropy Penalty
+		String entropyPenalty = Math.round(building.getResearch().getEntropyPenalty() * 1_000.0)/1_000.0 + "";
+		if (!entropyPenaltyLabel.getText().equalsIgnoreCase(entropyPenalty))
+			entropyPenaltyLabel.setText(entropyPenalty);
+		
 	}
 	
 	@Override

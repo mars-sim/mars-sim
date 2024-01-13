@@ -82,7 +82,7 @@ public class Dining extends Function {
 
     @Override
     public double getMaintenanceTime() {
-        return capacity * 5D;
+        return capacity * .5D;
     }
 
 }

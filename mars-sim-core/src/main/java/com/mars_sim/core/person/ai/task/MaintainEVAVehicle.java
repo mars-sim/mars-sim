@@ -6,8 +6,9 @@
  */
 package com.mars_sim.core.person.ai.task;
 
-import java.util.logging.Logger;
-
+import com.mars_sim.core.Unit;
+import com.mars_sim.core.equipment.EquipmentOwner;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
@@ -27,12 +28,15 @@ public class MaintainEVAVehicle extends EVAOperation {
     private static final long serialVersionUID = 1L;
 
     /** default logger. */
-    private static final Logger logger = Logger.getLogger(MaintainEVAVehicle.class.getName());
+    private static final SimLogger logger = SimLogger.getLogger(MaintainEVAVehicle.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.maintainEVAVehicle"); //$NON-NLS-1$
 
+    private static final String DETAIL = Msg.getString(
+    		"Task.description.maintainEVAVehicle.detail") + " "; //$NON-NLS-1$
+    
     /** Task phases. */
     private static final TaskPhase MAINTAIN_VEHICLE = new TaskPhase(Msg.getString(
             "Task.phase.maintainVehicle")); //$NON-NLS-1$
@@ -79,15 +83,18 @@ public class MaintainEVAVehicle extends EVAOperation {
         
         vehicle.setReservedForMaintenance(true);
         vehicle.addSecondaryStatus(StatusType.MAINTENANCE);
-        setDescription(Msg.getString("Task.description.maintainEVAVehicle.detail", vehicle.getName()));
-
+        
+        String des = DETAIL + vehicle.getName();
+		setDescription(des);
+		logger.info(person, 4_000, des + ".");
+		
         // Determine location for maintenance.
         setOutsideLocation(vehicle);
         
         // Initialize phase.
         addPhase(MAINTAIN_VEHICLE);
 
-        logger.finest(person.getName() + " started maintainEVAVehicle task.");
+        logger.fine(person.getName() + " started maintainEVAVehicle task.");
     }
 
 
@@ -158,14 +165,23 @@ public class MaintainEVAVehicle extends EVAOperation {
         if (skill == 0) workTime /= 2;
         if (skill > 1) workTime += workTime * (.2D * skill);
 
-		int shortfall = manager.transferMaintenanceParts(settlement);
-		if (shortfall == -1) {
-        	checkLocation("Part(s) not available.");
-			return remainingTime;
-        }
+		// Note: if parts don't exist, it simply means that one can still do the 
+		// inspection portion of the maintenance with no need of replacing any parts
+		boolean partsPosted = manager.hasMaintenancePartsInStorage(vehicle.getAssociatedSettlement());
+		
+		if (partsPosted) {
+			Unit containerUnit = vehicle.getAssociatedSettlement();
+
+			int shortfall = manager.transferMaintenanceParts((EquipmentOwner) containerUnit);
+			
+			if (shortfall == -1) {
+				logger.warning(worker, 30_000L, "No spare parts available for maintenance on " 
+						+ vehicle + ".");
+			}
+		}
 
         // Add work to the maintenance
-        manager.addMaintenanceWorkTime(time);
+        manager.addInspectionMaintWorkTime(time);
 
         // Add experience points
         addExperience(time);

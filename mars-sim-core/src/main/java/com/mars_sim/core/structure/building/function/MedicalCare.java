@@ -223,11 +223,9 @@ public class MedicalCare extends Function implements MedicalAid {
 
 	@Override
 	public double getMaintenanceTime() {
-		double result = 0D;
-		// Add maintenance for treatment level.
-		result += medicalStation.getTreatmentLevel() * 10D;
+		double result = medicalStation.getTreatmentLevel() * .5;
 		// Add maintenance for number of sick beds.
-		result += medicalStation.getSickBedNum() * 10D;
+		result *= medicalStation.getSickBedNum() * .5;
 
 		return result;
 	}

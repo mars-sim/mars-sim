@@ -17,6 +17,8 @@ public class ThermalNuclearSource extends HeatSource {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final double MAINTENANCE_FACTOR = 1.5D;
+	
 	private double thermalEfficiency = .9;
 
 	/**
@@ -54,6 +56,6 @@ public class ThermalNuclearSource extends HeatSource {
 
 	@Override
 	public double getMaintenanceTime() {
-	    return getMaxHeat();
+	    return getMaxHeat() * MAINTENANCE_FACTOR;
 	}
 }

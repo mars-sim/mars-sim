@@ -120,6 +120,6 @@ public class Exercise extends Function {
 
 	@Override
 	public double getMaintenanceTime() {
-		return exerciserCapacity * 5D;
+		return exerciserCapacity * 2.5;
 	}
 }

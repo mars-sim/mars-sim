@@ -316,43 +316,41 @@ public class Computation extends Function {
 	
 			int msol = pulse.getMarsTime().getMillisolInt();
 			
-			boolean newMsol = pulse.isNewMSol();
-			
-			if (newMsol) {
+			if (pulse.isNewMSol()) {
+				
 				increaseEntropy(pulse.getElapsed() * ENTROPY_FACTOR * currentCU / 10);
-			}
-			
-			double newDemand = 0;
-			
-			// Delete past demand on previous sol
-			if (msol - 1 > 0 && todayDemand.containsKey(msol - 1)) {
-				todayDemand.remove(msol - 1);
-			}
-			// Delete past demand on the sol before yestersol 
-			if (msol - 2 > 0 && todayDemand.containsKey(msol - 2)) {
-				todayDemand.remove(msol - 2);
-			}
-			
-			if (todayDemand.containsKey(msol)) {
-				newDemand = todayDemand.get(msol);
-			}
-			if (newDemand > 0) {
-				// Updates the CUs
-				setCU(peakCU - newDemand); 
-			}
-			else {
-				setCU(peakCU);
-			}
+	
+				double newDemand = 0;
+				
+				// Delete past demand on previous sol
+				if (msol - 1 > 0 && todayDemand.containsKey(msol - 1)) {
+					todayDemand.remove(msol - 1);
+				}
+				// Delete past demand on the sol before yestersol 
+				if (msol - 2 > 0 && todayDemand.containsKey(msol - 2)) {
+					todayDemand.remove(msol - 2);
+				}
+				
+				if (todayDemand.containsKey(msol)) {
+					newDemand = todayDemand.get(msol);
+				}
+				if (newDemand > 0) {
+					// Updates the CUs
+					setCU(peakCU - newDemand); 
+				}
+				else {
+					setCU(peakCU);
+				}
 
-			// Notes: 
-			// if it falls below 10%, flash yellow
-			// if it falls below 0%, flash red
-			
-			double fullPower = getFullPowerRequired();
-			double heat = fullPower * WASTE_HEAT_PERCENT;
-			// Dump the generated heat into the building to raise the room temperature
-			dumpExcessHeat(heat);
-			
+				// Notes: 
+				// if it falls below 10%, flash yellow
+				// if it falls below 0%, flash red
+				
+				double fullPower = getFullPowerRequired();
+				double heat = fullPower * WASTE_HEAT_PERCENT;
+				// Dump the generated heat into the building to raise the room temperature
+				dumpExcessHeat(heat);
+			}
 		}
 		return valid;
 	}

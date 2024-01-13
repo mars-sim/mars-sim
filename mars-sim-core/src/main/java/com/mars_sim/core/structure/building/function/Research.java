@@ -44,19 +44,21 @@ implements Lab {
 	private static final int NUM_INSPECTIONS = 3;
 	// Configuration properties
 	public static final double ENTROPY_FACTOR = .001;
-	/** The amount of entropy in the system. */
-	private static final double maxEntropy = 5;
 	
+
     /** Number of researchers supported at any given time. */
     private int researcherCapacity;
     /** How advanced the laboratory is. */
     private int technologyLevel;
     /** The number of people currently doing research in laboratory. */
     private int researcherNum = 0;
+    
 	/** The amount of entropy in the laboratory. */
 	private double entropy;
+	/** The max possible amount of entropy in the system. */
+	private double maxEntropy = 5;
 
-    /** The usage history in millisols per researcher. */
+	/** The usage history in millisols per researcher. */
     private SolSingleMetricDataLogger history = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
 
     /** What fields of science the laboratory specialize in. */
@@ -94,6 +96,8 @@ implements Lab {
         // Use Function constructor
         super(FunctionType.RESEARCH, spec, building);
 
+        maxEntropy = maxEntropy + 1.5 * technologyLevel;
+        
         setupTissueCultures();
         
         technologyLevel = spec.getTechLevel();
@@ -259,6 +263,7 @@ implements Lab {
 		
 		if (researcherNum > 0) {
 			recordUsage(researcherNum * pulse.getElapsed());
+			// Increase entropy due to researcher usage
 			increaseEntropy(researcherNum * pulse.getElapsed() * ENTROPY_FACTOR / 2);
 		}
 		
@@ -280,6 +285,7 @@ implements Lab {
 				if (amount > 0) {
 					i.remove();
 					
+					// Increase entropy due to handling crop tissues
 					increaseEntropy(pulse.getElapsed() * ENTROPY_FACTOR / 2);
 		
 					double time = pulse.getMarsTime().getMillisol();
@@ -395,6 +401,11 @@ implements Lab {
        	tissueIncubator = new HashMap<>();
     }
     
+    /**
+     * Gets a list of unchecked or uninspected tissues.
+     * 
+     * @return
+     */
 	public List<String> getUncheckedTissues() {
 		List<String> batch = new ArrayList<>();
 		for (String s : tissueCultureInspection.keySet()) {
@@ -404,6 +415,11 @@ implements Lab {
 		return batch;
 	}
 
+	/**
+	 * Marks the tissue culture during inspection.
+	 * 
+	 * @param s
+	 */
     public void markChecked(String s) {
     	tissueCultureInspection.put(s, tissueCultureInspection.get(s) + 1);
     }
@@ -463,6 +479,9 @@ implements Lab {
 	 * @param value
 	 */
 	public void increaseEntropy(double value) {
+		
+//		double penalty = getEntropyPenalty();
+		
 		entropy += value;
 		
 		if (entropy > maxEntropy) {
@@ -493,11 +512,13 @@ implements Lab {
     @Override
     public double getMaintenanceTime() {
 
-        double result = 0D;
-        // Add maintenance for tech level.
-        result += technologyLevel * 10D;
-        // Add maintenance for researcher capacity.
-        result += researcherCapacity * 10D;
+		double result = researchQualityMap.size();
+
+		// Add maintenance for tech level.
+		result *= technologyLevel * .5;
+
+		// Add maintenance for observer capacity.
+		result *= researcherCapacity * .25;
 
         return result;
     }

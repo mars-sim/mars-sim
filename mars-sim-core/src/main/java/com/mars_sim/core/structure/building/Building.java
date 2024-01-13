@@ -112,12 +112,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	// meteorite impact in an affected building
 	public static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
 
-	/** A list of functions of this building. */
-	protected List<Function> functions;
-	
-	/** A list of all activity spots of this building. */
-	protected List<LocalPosition> activitySpots;
-
 	// Data members
 	boolean isImpactImminent = false;
 	/** Checked by getAllImmovableBoundedObjectsAtLocation() in LocalAreaUtil */
@@ -135,8 +129,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	protected double width;
 	protected double length;
 	protected double floorArea;
-	private ConstructionType constructionType;
-	protected LocalPosition loc;
 	protected double zLoc;
 	protected double facing;
 	protected double basePowerRequirement;
@@ -152,6 +144,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 	/** Unique identifier for the settlement of this building. */
 	private Integer settlementID;
+	
 	/** The settlement of this building. */
 	private transient Settlement settlement;
 
@@ -193,6 +186,15 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
 	private BuildingCategory category;
+	private ConstructionType constructionType;
+	
+	protected LocalPosition loc;
+	
+	/** A list of functions of this building. */
+	protected List<Function> functions;
+	
+	/** A list of all activity spots of this building. */
+	protected List<LocalPosition> activitySpots;
 	
 	private static HistoricalEventManager eventManager;
 	private static BuildingConfig buildingConfig;

@@ -44,6 +44,7 @@ import com.mars_sim.ui.swing.utils.PercentageCellRenderer;
 public class MaintenanceTabPanel extends TabPanel {
     private static final String SPANNER_ICON = "maintenance";
 	private static final String REPAIR_PARTS_NEEDED = "Parts Needed: ";
+	private static final String AGO = " ago";
 
 	protected String[] columnToolTips = {
 		    "The Part name", 
@@ -55,9 +56,11 @@ public class MaintenanceTabPanel extends TabPanel {
 	private MalfunctionManager manager;
 	
 	private JProgressBar wearCondition;
-	private JProgressBar currentMaintenance;
+	private JProgressBar currentInspection;
 	
+	private JLabel inspectionWinLabel;
 	private JLabel lastCompletedLabel;
+	private JLabel baseWorkTimeLabel;
 	private JLabel partsLabel;
 	private JLabel malPLabel;
 	private JLabel maintPLabel;
@@ -96,7 +99,7 @@ public class MaintenanceTabPanel extends TabPanel {
 		JPanel topPanel = new JPanel(new BorderLayout());
 		center.add(topPanel, BorderLayout.NORTH);
 		
-		AttributePanel labelPanel = new AttributePanel(4, 1);
+		AttributePanel labelPanel = new AttributePanel(6, 1);
 		topPanel.add(labelPanel, BorderLayout.NORTH);
 		
 		Dimension barSize = new Dimension(100, 15);
@@ -109,11 +112,15 @@ public class MaintenanceTabPanel extends TabPanel {
 
 		lastCompletedLabel = labelPanel.addTextField(Msg.getString("MaintenanceTabPanel.lastCompleted"), "", 
 												null);
-		currentMaintenance = new JProgressBar();
-		currentMaintenance.setStringPainted(true);		
-		currentMaintenance.setMaximumSize(barSize);
-		currentMaintenance.setToolTipText(Msg.getString("MaintenanceTabPanel.current.toolTip"));
-		labelPanel.addLabelledItem(Msg.getString("MaintenanceTabPanel.currentMaintenance"), currentMaintenance);
+		inspectionWinLabel = labelPanel.addRow(Msg.getString("MaintenanceTabPanel.inspectionWin"), "");
+		
+		baseWorkTimeLabel = labelPanel.addRow(Msg.getString("MaintenanceTabPanel.baseWorkTime"), "");
+		
+		currentInspection = new JProgressBar();
+		currentInspection.setStringPainted(true);		
+		currentInspection.setMaximumSize(barSize);
+		currentInspection.setToolTipText(Msg.getString("MaintenanceTabPanel.current.toolTip"));
+		labelPanel.addLabelledItem(Msg.getString("MaintenanceTabPanel.currentInspection"), currentInspection);
 
 		
 		partsLabel = labelPanel.addTextField(Msg.getString("MaintenanceTabPanel.partsNeeded"), "", null);
@@ -177,18 +184,21 @@ public class MaintenanceTabPanel extends TabPanel {
 		wearCondition.setValue((int) manager.getWearCondition());
 
 		// Update last completed label.
-		StringBuilder text = new StringBuilder();
-		text.append(StyleManager.DECIMAL_SOLS3.format(manager.getTimeSinceLastMaintenance()/1000D));
-		text.append(" (Per Period: ");
-		text.append(StyleManager.DECIMAL_SOLS3.format(manager.getMaintenancePeriod()/1000D));
-		text.append(")");
+		double timeSinceLastMaint = manager.getTimeSinceLastMaintenance()/1000;
+		lastCompletedLabel.setText(StyleManager.DECIMAL_SOLS1.format(timeSinceLastMaint) + AGO);
 
-		lastCompletedLabel.setText(text.toString());
+		// Update inspection window label.
+		double window = manager.getMaintenancePeriod()/1000D;
+		inspectionWinLabel.setText(StyleManager.DECIMAL_SOLS1.format(window));
 
+		// Update inspection work time.
+		double baseWorkTime = manager.getBaseMaintenanceWorkTime()/1000;
+		baseWorkTimeLabel.setText(StyleManager.DECIMAL_SOLS1.format(baseWorkTime));
+		
 		// Update progress bar.
-		double completed = manager.getMaintenanceWorkTimeCompleted();
-		double total = manager.getMaintenanceWorkTime();
-		currentMaintenance.setValue((int)(100.0 * completed / total));
+		double completed = manager.getInspectionWorkTimeCompleted();
+		double total = manager.getBaseMaintenanceWorkTime();
+		currentInspection.setValue((int)(100.0 * completed / total));
 
 		// TODO: compare what parts are missing and what parts are 
 		// available for swapping out (just need time)
