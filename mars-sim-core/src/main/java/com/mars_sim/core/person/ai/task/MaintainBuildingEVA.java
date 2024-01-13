@@ -7,6 +7,8 @@
 package com.mars_sim.core.person.ai.task;
 
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.Unit;
+import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
@@ -35,7 +37,8 @@ extends EVAOperation {
     private static final String NAME = Msg.getString(
             "Task.description.maintainBuildingEVA"); //$NON-NLS-1$
     
-    private static final String DETAIL = "Task.description.maintainBuildingEVA.detail";
+    private static final String DETAIL = Msg.getString(
+    		"Task.description.maintainBuildingEVA.detail") + " "; //$NON-NLS-1$
 
     /** Task phases. */
     private static final TaskPhase MAINTAIN = new TaskPhase(Msg.getString(
@@ -73,21 +76,13 @@ extends EVAOperation {
 		entity = target;
 		MalfunctionManager manager = target.getMalfunctionManager();
 		
-		// Note 2: if parts don't exist, it simply means that one can still do the 
-		// inspection portion of the maintenance with no need of replacing any parts
-		 
-//		if (!manager.hasMaintenancePartsInStorage(worker.getAssociatedSettlement())) {		
-//			clearTask("No parts");
-//			return;
-//		}
-		
 		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 		if (effectiveTime < 10D) {
 			clearTask("Maintenance already done.");
 			return;
 		}
 
-		String des = Msg.getString(DETAIL, entity.getName()); //$NON-NLS-1$
+		String des = DETAIL + entity.getName();
 		setDescription(des);
 		logger.info(person, 4_000, des + ".");
         
@@ -157,21 +152,29 @@ extends EVAOperation {
 		}
 		if (mechanicSkill > 1) {
 		    workTime += workTime * (.4D * mechanicSkill);
-		}
+		}	
 		
-		int shortfall = manager.transferMaintenanceParts(settlement);
+//		String des = DETAIL + entity.getName();
+//		setDescription(des);
+//		logger.info(worker, 4_000, des + ".");
 			
-		String des = Msg.getString(DETAIL, entity.getName()); //$NON-NLS-1$
-		setDescription(des);
-		logger.info(worker, 4_000, des + ".");
+		// Note: if parts don't exist, it simply means that one can still do the 
+		// inspection portion of the maintenance with no need of replacing any parts
+		boolean partsPosted = manager.hasMaintenancePartsInStorage(entity.getAssociatedSettlement());
+		
+		if (partsPosted) {
+			Unit containerUnit = entity.getAssociatedSettlement();
+
+			int shortfall = manager.transferMaintenanceParts((EquipmentOwner) containerUnit);
 			
-        if (shortfall == -1) {
-        	checkLocation("Part(s) not available.");
-        	return 0;
+			if (shortfall == -1) {
+				logger.warning(entity, 30_000L, "No spare parts available for maintenance on " 
+						+ entity + ".");
+			}
 		}
-        
+
         // Add work to the maintenance
-		manager.addMaintenanceWorkTime(workTime);
+		manager.addInspectionMaintWorkTime(workTime);
 		
         // Add experience points
         addExperience(time);

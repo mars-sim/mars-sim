@@ -173,8 +173,8 @@ public class TabPanelMaintenance extends TabPanel {
 			case 2:
 				return manager.getTimeSinceLastMaintenance()/1000D;
 			case 3: {
-				double completed = manager.getMaintenanceWorkTimeCompleted();
-				double total = manager.getMaintenanceWorkTime();
+				double completed = manager.getInspectionWorkTimeCompleted();
+				double total = manager.getBaseMaintenanceWorkTime();
 				return (int)(100.0 * completed / total);
 				}
 			default:

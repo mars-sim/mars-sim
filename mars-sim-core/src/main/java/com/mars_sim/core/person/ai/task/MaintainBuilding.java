@@ -32,9 +32,11 @@ public class MaintainBuilding extends Task  {
 	private static SimLogger logger = SimLogger.getLogger(MaintainBuilding.class.getName());
 	
 	/** Task name */
-	private static final String NAME = Msg.getString("Task.description.maintainBuilding"); //$NON-NLS-1$
+	private static final String NAME = Msg.getString(
+			"Task.description.maintainBuilding"); //$NON-NLS-1$
 
-    private static final String DETAIL = "Task.description.maintainBuilding.detail";
+    private static final String DETAIL = Msg.getString(
+    		"Task.description.maintainBuilding.detail") + " "; //$NON-NLS-1$
     
 	/** Task phases. */
 	private static final TaskPhase MAINTAIN = new TaskPhase(Msg.getString("Task.phase.maintain")); //$NON-NLS-1$
@@ -100,9 +102,10 @@ public class MaintainBuilding extends Task  {
 			return;
 		}
 
-		String des = Msg.getString(DETAIL, entity.getName()); //$NON-NLS-1$
+		String des = DETAIL + entity.getName();
 		setDescription(des);
 		logger.info(worker, 30_000, des + ".");
+		
 		// Walk to random location in building.
 		walkToRandomLocInBuilding(building, false);
 
@@ -159,22 +162,24 @@ public class MaintainBuilding extends Task  {
 		if (mechanicSkill > 1) {
 			workTime += workTime * (.4D * mechanicSkill);
 		}
-
-		Unit containerUnit = worker.getTopContainerUnit();
-
-		if ((containerUnit instanceof EquipmentOwner) == false) {
-			return time;
-		}
-			
-		int shortfall = manager.transferMaintenanceParts((EquipmentOwner) containerUnit);
+	
+		// Note: if parts don't exist, it simply means that one can still do the 
+		// inspection portion of the maintenance with no need of replacing any parts
+		boolean partsPosted = manager.hasMaintenancePartsInStorage(entity.getAssociatedSettlement());
 		
-		if (shortfall == -1) {
-			clearTask("No spare parts for maintenance.");
-			return 0;
+		if (partsPosted) {
+			Unit containerUnit = entity.getAssociatedSettlement();
+
+			int shortfall = manager.transferMaintenanceParts((EquipmentOwner) containerUnit);
+			
+			if (shortfall == -1) {
+				logger.warning(entity, 30_000L, "No spare parts available for maintenance on " 
+						+ entity + ".");
+			}
 		}
 
 		// Add work to the maintenance
-		manager.addMaintenanceWorkTime(workTime);
+		manager.addInspectionMaintWorkTime(workTime);
 
 		// Add experience points
 		addExperience(time);

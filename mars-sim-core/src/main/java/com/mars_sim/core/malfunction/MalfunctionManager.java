@@ -123,7 +123,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static final String PROBABLE_CAUSE = ". Probable Cause: ";
 	private static final String CAUSED_BY = " Caused by '";
 
-	private static final int FREQUENCY = 3;
+	private static final int FREQUENCY = 5;
 	private static final int SCORE_DEFAULT = 50;
 	private static final int MAX_DELAY = 100;
 	
@@ -141,17 +141,17 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** The overall probability that a malfunction is triggered by active use on this entity. */
 	private double malfunctionProbability;
 	/** Time passing (in millisols) since last maintenance on entity. */
-	private double timeSinceLastMaintenance;
+	private double timeSinceLastMaint;
 	/**
 	 * Time (millisols) that entity has been actively used since last maintenance.
 	 */
 	private double effTimeSinceLastMaint;
-	/** The required work time for maintenance on entity. */
-	private double maintWorkTime;
-	/** The completed. */
-	private double maintenanceTimeCompleted;
+	/** The required base work time for each inspection maintenance on entity. */
+	private double baseMaintWorkTime;
+	/** The inspection completed. */
+	private double inspectionTimeCompleted;
 	/** The periodic time window between each inspection/maintenance.  */
-	private double maintPeriod;
+	private double inspectionWindow;
 	/** The percentage of the malfunctionable's condition from wear and tear. 0% = worn out -> 100% = new condition. */
 	private double currentWearCondPercent;
 	/** The cumulative time [in millisols] since active use. */
@@ -206,26 +206,26 @@ public class MalfunctionManager implements Serializable, Temporal {
 		scopes = new HashSet<>();
 		malfunctions = new CopyOnWriteArrayList<>();
 		
-		this.maintWorkTime = maintWorkTime;
+		this.baseMaintWorkTime = maintWorkTime;
 		this.baseWearLifeTime = wearLifeTime;
 
 		// Assume the maintenance period [in millisols] is the recommended period of time between the last and the next inspection/maintenance 
-		this.maintPeriod = wearLifeTime * 0.01;
+		this.inspectionWindow = wearLifeTime * 0.02;
 		
 		// deploymentime accounts for the pre-use time spent during the base deployment phase prior to the start of the sim
 		// FUTURE: vary this time according to deployment scenario.
 		// Usually power building gets deployed first.
 		// Next is in-situ resource building such as ERV 
-		int deploymentTime = 0;
+		double deploymentTime = 0;
 		if (UnitType.EVA_SUIT != entity.getUnitType()
 			|| UnitType.VEHICLE != entity.getUnitType()) {
-			deploymentTime = (int) Math.round(maintPeriod/20 + RandomUtil.getRandomDouble(maintPeriod/40));
+			deploymentTime = inspectionWindow/40 + RandomUtil.getRandomDouble(inspectionWindow/10);
 		}
 		
 		currentWearLifeTime = wearLifeTime - deploymentTime;
 		cumulativeTime = deploymentTime;
 		effTimeSinceLastMaint = deploymentTime;
-		timeSinceLastMaintenance = deploymentTime;
+		timeSinceLastMaint = deploymentTime;
 		
 		currentWearCondPercent = currentWearLifeTime/baseWearLifeTime * 100D;
 //		logger.info(entity, 10_000L, "wearLifeTime: " + wearLifeTime 
@@ -674,7 +674,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		// Updates params
 		cumulativeTime += time;
 		effTimeSinceLastMaint += time;
-		timeSinceLastMaintenance += time;
+		timeSinceLastMaint += time;
 		currentWearLifeTime -= time * RandomUtil.getRandomDouble(.5, 1.5);
 		if (currentWearCondPercent < 0D)
 			currentWearCondPercent = 0D;
@@ -692,7 +692,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 				return;
 			}
 			
-			double maintFactor = (effTimeSinceLastMaint/maintPeriod) + 1D;
+			double maintFactor = (effTimeSinceLastMaint/inspectionWindow) + 1D;
 			double wearFactor = (100 - currentWearCondPercent) * WEAR_MALFUNCTION_FACTOR;		
 			double malfunctionChance = FREQUENCY * time * maintFactor * wearFactor;
 //			logger.info(entity, "MalfunctionChance min: " + Math.round(malfunctionChance * 100_000.0)/100_000.0 + " %");
@@ -797,7 +797,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		depleteResources(time);
 
 		// Add time passing.
-		timeSinceLastMaintenance += time;
+		timeSinceLastMaint += time;
 
 		return true;
 	}
@@ -996,7 +996,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return time (in millisols)
 	 */
 	public double getTimeSinceLastMaintenance() {
-		return timeSinceLastMaintenance;
+		return timeSinceLastMaint;
 	}
 
 	/**
@@ -1012,40 +1012,40 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * The regular maintenance period for this component.
 	 */
 	public double getMaintenancePeriod() {
-		return maintPeriod;
+		return inspectionWindow;
 	}
 
 	/**
-	 * Gets the required work time for maintenance for the entity.
+	 * Gets the required work time for inspection/maintenance for the entity.
 	 *
 	 * @return time (in millisols)
 	 */
-	public double getMaintenanceWorkTime() {
-		return maintWorkTime;
+	public double getBaseMaintenanceWorkTime() {
+		return baseMaintWorkTime;
 	}
 
 	/**
-	 * Gets the work time completed on maintenance.
+	 * Gets the work time completed on the current inspection/maintenance.
 	 *
 	 * @return time (in millisols)
 	 */
-	public double getMaintenanceWorkTimeCompleted() {
-		return maintenanceTimeCompleted;
+	public double getInspectionWorkTimeCompleted() {
+		return inspectionTimeCompleted;
 	}
 
 	/**
-	 * Adds work time to maintenance.
+	 * Adds work time to inspection and maintenance.
 	 *
 	 * @param time (in millisols)
 	 */
-	public void addMaintenanceWorkTime(double time) {
-		maintenanceTimeCompleted += time;
+	public void addInspectionMaintWorkTime(double time) {
+		inspectionTimeCompleted += time;
 		// Check if work if done
-		if (maintenanceTimeCompleted >= maintWorkTime) {
+		if (inspectionTimeCompleted >= baseMaintWorkTime) {
 			// Reset the maint time to zero
-			maintenanceTimeCompleted = 0D;
+			inspectionTimeCompleted = 0D;
 			// Reset time last inspection to zero
-			timeSinceLastMaintenance = 0D;
+			timeSinceLastMaint = 0D;
 			// Reset eff time since last inspection to zero
 			effTimeSinceLastMaint = 0D;
 			// Increment num of maintenance 
@@ -1246,6 +1246,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 *         or # of shortfall
 	 */
 	public int transferMaintenanceParts(EquipmentOwner partStore) {
+		
+		// Future: Can these spare parts be set aside first to avoid others using it ?
+		
 		Map<Integer, Integer> parts = getMaintenanceParts();
 		
 		// Call building manager to check if the maintenance parts have been submitted	

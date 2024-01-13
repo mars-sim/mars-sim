@@ -9,6 +9,8 @@ package com.mars_sim.core.person.ai.task;
 import java.util.Iterator;
 import java.util.logging.Level;
 
+import com.mars_sim.core.Unit;
+import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.ai.SkillType;
@@ -37,8 +39,12 @@ public class MaintainGarageVehicle extends Task {
 	private static SimLogger logger = SimLogger.getLogger(MaintainGarageVehicle.class.getName());
 
 	/** Task name */
-	private static final String NAME = Msg.getString("Task.description.maintainGarageVehicle"); //$NON-NLS-1$
+	private static final String NAME = Msg.getString(
+			"Task.description.maintainGarageVehicle"); //$NON-NLS-1$
 
+    private static final String DETAIL = Msg.getString(
+    		"Task.description.maintainGarageVehicle.detail") + " "; //$NON-NLS-1$
+    
 	/** Task phases. */
 	private static final TaskPhase MAINTAIN_VEHICLE = new TaskPhase(Msg.getString("Task.phase.maintainVehicle")); //$NON-NLS-1$
 
@@ -70,8 +76,11 @@ public class MaintainGarageVehicle extends Task {
 
 		vehicle.setReservedForMaintenance(true);
 		vehicle.addSecondaryStatus(StatusType.MAINTENANCE);
-        setDescription(Msg.getString("Task.description.maintainGarageVehicle.detail", vehicle.getName()));
-
+        
+		String des = DETAIL + vehicle.getName();
+		setDescription(des);
+		logger.info(person, 4_000, des + ".");
+        
 		// Determine the garage it's in.
 		Building building = vehicle.getGarage();
 		if (building != null) {
@@ -119,7 +128,7 @@ public class MaintainGarageVehicle extends Task {
 
 		// End task if vehicle or garage not available.
 		if (garage == null) {
-			clearTask(vehicle.getName() + " Can not find available garage for maintenance.");
+			clearTask(vehicle.getName() + " No available garage for maintenance.");
 		}
 
 		logger.log(worker, Level.FINER, 0, "Starting maintainGarageVehicle task on " + vehicle.getName());
@@ -176,13 +185,20 @@ public class MaintainGarageVehicle extends Task {
 			endTask();
 			return time;
 		}
-
-		Settlement settlement = worker.getSettlement();
+	
+		// Note: if parts don't exist, it simply means that one can still do the 
+		// inspection portion of the maintenance with no need of replacing any parts
+		boolean partsPosted = manager.hasMaintenancePartsInStorage(vehicle.getAssociatedSettlement());
 		
-		int shortfall = manager.transferMaintenanceParts(settlement);
-		if (shortfall == -1) {
-			clearTask("No spare parts for maintenance.");
-			return time;
+		if (partsPosted) {
+			Unit containerUnit = vehicle.getAssociatedSettlement();
+
+			int shortfall = manager.transferMaintenanceParts((EquipmentOwner) containerUnit);
+			
+			if (shortfall == -1) {
+				logger.warning(worker, 30_000L, "No spare parts available for maintenance on " 
+						+ vehicle + ".");
+			}
 		}
 
 		// Determine effective work time based on "Mechanic" skill.
@@ -197,7 +213,7 @@ public class MaintainGarageVehicle extends Task {
 		}
 
 		// Add work to the maintenance
-		manager.addMaintenanceWorkTime(workTime);
+		manager.addInspectionMaintWorkTime(workTime);
 
 		// Add experience points
 		addExperience(time);

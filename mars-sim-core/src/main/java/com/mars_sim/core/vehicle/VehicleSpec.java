@@ -33,7 +33,7 @@ public class VehicleSpec implements Serializable {
 	private static final long serialVersionUID = 12L;
 
 	// default logger.
-	private static final SimLogger logger = SimLogger.getLogger(VehicleSpec.class.getName());
+	// May add back private static final SimLogger logger = SimLogger.getLogger(VehicleSpec.class.getName())
 	
 	public static final String DASHES = " -----------------------------------------------------------------------";
 
@@ -934,10 +934,10 @@ public class VehicleSpec implements Serializable {
     public double getWearModifier() {
 	
 		return switch(type) {
-			case DELIVERY_DRONE -> .75;
+			case DELIVERY_DRONE -> .85;
 			case LUV -> 2D;
 			case EXPLORER_ROVER -> 1D;
-			case TRANSPORT_ROVER -> 1.5D;
+			case TRANSPORT_ROVER -> 1.25D;
 			case CARGO_ROVER -> 1.25D;
 		};
     }

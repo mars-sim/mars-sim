@@ -147,7 +147,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 		
 		// About a quarter of time into the next inspection/maintenance that will be due,
 		// One can begin to do a little bit of inspection whenever possible
-		if ((hasNoMalfunction && effectiveTime >= window * 0.25 * RandomUtil.getRandomDouble(0.8, 1.2))
+		if ((hasNoMalfunction && effectiveTime >= window * 0.25 * RandomUtil.getRandomDouble(0.5, 2))
 			// if needed parts have been posted, hurry up to swap out the parts without waiting for 
 			// the standard inspection/maintenance due
 			|| hasPartsInStore) {
