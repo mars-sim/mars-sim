@@ -44,7 +44,7 @@ public class BeeGrowing extends Function {
 		boolean valid = isValid(pulse);
 		if (valid) {
 		    int millisols =  pulse.getMarsTime().getMillisolInt();
-			if (millisols % TICKS_PER_UPDATE == 1) {	
+			if (pulse.isNewMSol() && millisols % TICKS_PER_UPDATE == 1) {	
 				hive.timePassing(pulse);
 			}
 		}

@@ -121,17 +121,18 @@ public class Mind implements Serializable, Temporal {
 		if (pulse.isNewMSol()) {
 			// Update stress based on personality.
 			mbti.updateStress(time);
+			
+			int msol = pulse.getMarsTime().getMillisolInt();
+			if (msol % RELATION_UPDATE_CYCLE == relationUpdate) {
+				// Update relationships.
+				RelationshipUtil.timePassing(person, time);
+			}
+			if (msol % EMOTION_UPDATE_CYCLE == emotionUpdate) {
+				// Update emotion with the personality vector
+				emotionMgr.updateEmotion(trait.getPersonalityVector());
+			}
 		}
-		
-		int msol = pulse.getMarsTime().getMillisolInt();
-		if (msol % RELATION_UPDATE_CYCLE == relationUpdate) {
-			// Update relationships.
-			RelationshipUtil.timePassing(person, time);
-		}
-		if (msol % EMOTION_UPDATE_CYCLE == emotionUpdate) {
-			// Update emotion with the personality vector
-			emotionMgr.updateEmotion(trait.getPersonalityVector());
-		}
+	
 		
 		// Note: for now, a Mayor/Manager cannot switch job
 		if (jobLock && job != JobType.POLITICIAN) {

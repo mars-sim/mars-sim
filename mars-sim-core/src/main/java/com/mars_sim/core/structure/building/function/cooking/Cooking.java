@@ -779,7 +779,7 @@ public class Cooking extends Function {
 		boolean valid = isValid(pulse);
 		if (valid) {
 			int msol = pulse.getMarsTime().getMillisolInt();
-			if (msol % RECHECKING_FREQ == 0) {
+			if (pulse.isNewMSol() && msol % RECHECKING_FREQ == 0) {
 				// reset
 				no_oil_last_time = false;
 			}

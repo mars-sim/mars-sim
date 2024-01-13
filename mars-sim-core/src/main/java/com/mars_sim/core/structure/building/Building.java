@@ -1219,7 +1219,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
 		int delta = (int) Math.sqrt(Math.sqrt(pulse.getMasterClock().getActualTR()));
 		
-		if (now > moment_of_impact - 2 * delta && now < moment_of_impact + 2 * delta) {
+		if (pulse.isNewMSol()
+				&& now > moment_of_impact - 2 * delta && now < moment_of_impact + 2 * delta) {
 			// Yes the impact event occurs in the vicinity
 			
 			logger.log(this, Level.INFO, 0, "A meteorite impact event was imminent.");
