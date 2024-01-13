@@ -17,7 +17,7 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
 
 /**
- * This class is a task for doing inventory of a facility.
+ * This class is a task for taking inventory of a lab.
  */
 public class DoInventory extends Task {
 

@@ -20,13 +20,18 @@ public class Communication extends Function {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
   
+    private FunctionSpec spec;
+    
     /**
      * Constructor.
+     * 
      * @param building the building this function is for.
      */
     public Communication(Building building, FunctionSpec spec) {
         // Use Function constructor.
         super(FunctionType.COMMUNICATION, spec, building);
+        
+        this.spec = spec;
     }
 
     /**
@@ -61,6 +66,6 @@ public class Communication extends Function {
 
     @Override
     public double getMaintenanceTime() {
-        return   20D;
+        return spec.getTechLevel() * spec.getCapacity();
     }
 }

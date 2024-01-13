@@ -548,7 +548,7 @@ public abstract class VehicleMaintenance extends Function {
 	
 	@Override
 	public double getMaintenanceTime() {
-		return parkingLocations.size() * 50D;
+		return parkingLocations.size() * 5D;
 	}
 
 	@Override

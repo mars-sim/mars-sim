@@ -19,7 +19,7 @@ public class WindPowerSource extends PowerSource {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final double MAINTENANCE_FACTOR = .5D;
+	private static final double MAINTENANCE_FACTOR = 2.5D;
 
 	// NOTE: Parameters below are based on the design of a 500 Watt VAWT scaled up to 2kW  
 	// - http://spectrum.library.concordia.ca/36176/1/low_reynolds_number.doc

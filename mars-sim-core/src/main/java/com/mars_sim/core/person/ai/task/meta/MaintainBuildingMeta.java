@@ -138,7 +138,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 		boolean hasPartsInStore = manager.hasMaintenancePartsInStorage(entity.getAssociatedSettlement());
 
 		RatingScore score = RatingScore.ZERO_RATING;
-		double condition = manager.getAdjustedCondition();
+		
 		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 		double window = manager.getMaintenancePeriod();
 		
@@ -151,9 +151,13 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 			// if needed parts have been posted, hurry up to swap out the parts without waiting for 
 			// the standard inspection/maintenance due
 			|| hasPartsInStore) {
+			
+			double condition = manager.getAdjustedCondition();
 			// Score is based on condition plus %age overdue
-			score = new RatingScore("condition", 2 * (100 - condition));
-			score.addModifier("maint.win", 4 * (effectiveTime/ window));
+			score = new RatingScore("condition", 4 * (100 - condition));
+			
+			score.addModifier("maint.win", 6 * (effectiveTime / window));
+			
 			if (hasPartsInStore) {
 				// If needed parts are available, double up the speed of the maintenance
 				score.addModifier("parts", 2);

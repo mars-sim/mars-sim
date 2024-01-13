@@ -1081,7 +1081,7 @@ public class Farming extends Function {
 
 	@Override
 	public double getMaintenanceTime() {
-		return maxGrowingArea * 5D;
+		return maxGrowingArea * .15D;
 	}
 
 	/**

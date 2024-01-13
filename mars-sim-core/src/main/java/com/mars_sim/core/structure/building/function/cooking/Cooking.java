@@ -925,7 +925,7 @@ public class Cooking extends Function {
 
 	@Override
 	public double getMaintenanceTime() {
-		return cookCapacity * 10D;
+		return cookCapacity * 2.5D;
 	}
 
 	public static synchronized List<Integer> getOilMenu() {

@@ -261,7 +261,7 @@ public class LifeSupport extends Function {
 
 	@Override
 	public double getMaintenanceTime() {
-		return occupantCapacity * 10D;
+		return occupantCapacity * .25D;
 	}
 
 	@Override

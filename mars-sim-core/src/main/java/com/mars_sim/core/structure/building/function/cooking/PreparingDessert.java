@@ -709,7 +709,7 @@ public class PreparingDessert extends Function {
 	
 	@Override
 	public double getMaintenanceTime() {
-		return cookCapacity * 10D;
+		return cookCapacity * 1.5D;
 	}
 
 	@Override
