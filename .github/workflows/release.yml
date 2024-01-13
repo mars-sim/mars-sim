@@ -9,32 +9,6 @@ on:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-        
-    steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: 17
-        distribution: 'temurin'
-        cache: 'maven'
-        
-    - name: Build with Maven
-      run:
-        mvn  --file pom.xml -B package
-        
- on:
-  push:
-    # Sequence of patterns matched against refs/tags
-    tags:
-    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
-
-name: Create Release
-
-jobs:
-  build:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
