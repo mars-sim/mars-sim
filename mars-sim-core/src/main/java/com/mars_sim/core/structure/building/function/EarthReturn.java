@@ -20,8 +20,6 @@ public class EarthReturn extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	private FunctionSpec spec;
 	
 	// Data members
 	private int crewCapacity;
@@ -36,8 +34,6 @@ public class EarthReturn extends Function {
 		// Use Function constructor.
 		super(FunctionType.EARTH_RETURN, spec, building);
 
-		this.spec = spec;
-		
 		// Populate data members.
 		crewCapacity = spec.getCapacity();
 
@@ -98,7 +94,8 @@ public class EarthReturn extends Function {
 
 	@Override
 	public double getMaintenanceTime() {
-		return crewCapacity * spec.getBuildingSpec().getResourceProcess().size();
+		return crewCapacity * 2;
+//		return crewCapacity * spec.getBuildingSpec().getResourceProcess().size();
 	}
 
 }

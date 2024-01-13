@@ -29,8 +29,6 @@ public abstract class ResourceProcessor extends Function {
 
 	private static final double PROCESS_MAX_VALUE = 100D;
 
-	private int techLevel;
-	
 	private double powerDownProcessingLevel;
 
 	private List<ResourceProcess> processes;
@@ -45,7 +43,6 @@ public abstract class ResourceProcessor extends Function {
 		// Use Function constructor
 		super(type, spec, building);
 
-		techLevel = spec.getTechLevel();
 		powerDownProcessingLevel = spec.getDoubleProperty(POWER_DOWN_LEVEL);
 		processes = new ArrayList<>();
 		for (ResourceProcessEngine wspec : processSpecs) {
@@ -185,8 +182,6 @@ public abstract class ResourceProcessor extends Function {
 	@Override
 	public double getMaintenanceTime() {
 		double result = getFullPowerRequired() * .25;
-		// Add maintenance for tech level.
-		result *= techLevel * .5;
 		// Add num of processes.
 		result *= processes.size() * .5;
 		

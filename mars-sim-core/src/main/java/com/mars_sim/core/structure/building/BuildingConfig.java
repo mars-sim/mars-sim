@@ -370,7 +370,7 @@ public class BuildingConfig {
 	private List<SourceSpec> parseSources(List<Element> list, String unitName) {
 		List<SourceSpec> sourceList = new ArrayList<>();
 		for (Element sourceElement : list) {
-			Properties attrs = new  Properties();
+			Properties attrs = new Properties();
 			String type = null;
 			double unitCapacity = 0D;
 			int numModules = 1;
