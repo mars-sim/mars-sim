@@ -56,7 +56,12 @@ public class Weather implements Serializable, Temporal {
 	/** Under Earth's atmosphere, at 25 C, 50% relative humidity, in kPa. */
 	public final double PARTIAL_PRESSURE_WATER_VAPOR_ROOM_CONDITION = 1.6D; 
 
-	private final int MILLISOLS_PER_UPDATE = 2; // one update per x millisols
+	// Weather metrics update frequency
+	private final int PRESSURE_REFRESH = 4;
+	private final int TEMPERATURE_REFRESH = 2;
+	private final int WINDSPEED_REFRESH = 5;
+	private final int DATA_SAMPLING = 4;
+	private final int DUST_STORM_REFRESH = 20;
 
 	private final double DX = 255D * Math.PI / 180D - Math.PI;
 	
@@ -70,11 +75,6 @@ public class Weather implements Serializable, Temporal {
 	// From the chart, it has an average of 25 C temperature variation on the
 	// maximum and minimum temperature curves
 	private final double TEMPERATURE_DELTA_PER_DEG_LAT = 17 / 12.62;
-	
-	// A day has 1000 mSols. Take 500 samples
-	private final int MSOL_PER_SAMPLE = 1000/250;
-
-	private final int WINDSPEED_REFRESH = 3;
 	
 	private int newStormID = 1;
 
@@ -375,11 +375,12 @@ public class Weather implements Serializable, Temporal {
 
 		pressureLock.lock();
 		
-		if (clock.getClockPulse().isNewMSol()
-				&& clock.getMarsTime().getMillisolInt() % MILLISOLS_PER_UPDATE == 1) {
+		if (clock.getClockPulse() != null && clock.getClockPulse().isNewMSol()
+				&& clock.getMarsTime().getMillisolInt() % PRESSURE_REFRESH == 1) {
 			newP = calculateAirPressure(location, 0);
 			airPressureCacheMap.put(location, newP);
-		} else {
+		}
+		else {
 			newP = airPressureCacheMap.computeIfAbsent(location, l -> calculateAirPressure(l, 0));
 		}
 		
@@ -446,7 +447,8 @@ public class Weather implements Serializable, Temporal {
 	
 		tempLock.lock();
 		
-		if (clock.getMarsTime().getMillisolInt() % MILLISOLS_PER_UPDATE == 0) {
+		if (clock.getClockPulse() != null && clock.getClockPulse().isNewMSol()
+				&& clock.getMarsTime().getMillisolInt() % TEMPERATURE_REFRESH == 0) {
 			newT = calculateTemperature(location);
 		} 
 		else {
@@ -677,17 +679,64 @@ public class Weather implements Serializable, Temporal {
 	 * @throws Exception if error during time.
 	 */
 	public boolean timePassing(ClockPulse pulse) {
-		boolean isNewSol = pulse.isNewSol();
-
+		
 		// Sample a data point every RECORDING_FREQUENCY (in millisols)
 		int msol = pulse.getMarsTime().getMillisolInt();
-		int remainder = msol % MSOL_PER_SAMPLE;
-		if (isNewSol || remainder == 0) {		
-			// Add a data point
-			addWeatherDataPoint();
+		int remainder0 = msol % DATA_SAMPLING;
+		int remainder1 = msol % DUST_STORM_REFRESH;
+		
+		if (pulse.isNewMSol()) {
+			
+			if (remainder0 == 1) {		
+				// Add a data point
+				addWeatherDataPoint();
+			}
+			
+			if (remainder1 == 1) {		
+				// More often observed from mid-southern summer, between 241 deg and 270 deg Ls,
+				// with a peak period at 255 deg Ls.
+
+				// Note : The Mars dust storm season begins just after perihelion at around Ls =
+				// 260°.			
+				double aLs = (int) (Math.round(orbitInfo.getSunAreoLongitude()));
+				int aLon = (int) (aLs);
+						
+				if (aLon == 230) {
+					// reset the counter once a year
+					checkStorm = 0;
+				}
+
+				// Arbitrarily assume
+				// (1) 5% is the highest chance of forming a storm, if L_s is right at 255 deg
+				// (2) 0.05% is the lowest chance of forming a storm, if L_s is right at 75 deg
+
+				// By doing curve-fitting a cosine curve
+				// (5% - .05%)/2 = 2.475
+
+				double probability = -2.475 * Math.cos(aLs * Math.PI / 180D - DX) + (2.475 + .05);
+				// probability is 5% at max
+				double size = dustStorms.size();
+				
+				// Artificially limit the # of dust storm to 10
+				if (aLon > 240 && aLon < 271 && size <= 10  && checkStorm < 200) {
+					// When L_s = 250 (use 255 instead), Mars is at perihelion--when the sun is
+					// closed to Mars.
+
+					// All of the observed storms have begun within 50-60 degrees of Ls of
+					// perihelion (Ls ~ 250);
+					createDustDevils(probability, aLs);
+				}
+
+				else if (dustStorms.size() <= 20 && checkStorm < 200) {
+
+					createDustDevils(probability, aLs);
+				}
+
+				checkOnDustStorms();
+			}			
 		}
 
-		if (isNewSol) {
+		if (pulse.isNewSol()) {
 			// Calculate the new sun data for each location based on yestersol
 			coordinateList.forEach(this::calculateSunRecord);
 					
@@ -696,48 +745,8 @@ public class Weather implements Serializable, Temporal {
 				dailyVariationAirPressure = .05;
 			else if (dailyVariationAirPressure < -.05)
 				dailyVariationAirPressure = -.05;
-
-			// more often observed from mid-southern summer, between 241 deg and 270 deg Ls,
-			// with a peak period at 255 deg Ls.
-
-			// Note : The Mars dust storm season begins just after perihelion at around Ls =
-			// 260°.			
-			double aLs = (int) (Math.round(orbitInfo.getSunAreoLongitude()));
-			int aLon = (int) (aLs);
-					
-			if (aLon == 230) {
-				// reset the counter once a year
-				checkStorm = 0;
-			}
-
-			// Arbitrarily assume
-			// (1) 5% is the highest chance of forming a storm, if L_s is right at 255 deg
-			// (2) 0.05% is the lowest chance of forming a storm, if L_s is right at 75 deg
-
-			// By doing curve-fitting a cosine curve
-			// (5% - .05%)/2 = 2.475
-
-			double probability = -2.475 * Math.cos(aLs * Math.PI / 180D - DX) + (2.475 + .05);
-			// probability is 5% at max
-			double size = dustStorms.size();
-			
-			// Artificially limit the # of dust storm to 10
-			if (aLon > 240 && aLon < 271 && size <= 10  && checkStorm < 200) {
-				// When L_s = 250 (use 255 instead), Mars is at perihelion--when the sun is
-				// closed to Mars.
-
-				// All of the observed storms have begun within 50-60 degrees of Ls of
-				// perihelion (Ls ~ 250);
-				createDustDevils(probability, aLs);
-			}
-
-			else if (dustStorms.size() <= 20 && checkStorm < 200) {
-
-				createDustDevils(probability, aLs);
-			}
-
-			checkOnDustStorms();			
 		}
+		
 		return true;
 	}
 
