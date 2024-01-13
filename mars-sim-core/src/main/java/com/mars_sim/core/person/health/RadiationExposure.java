@@ -356,11 +356,11 @@ public class RadiationExposure implements Serializable, Temporal {
 		if (pulse.isNewSol()) {
 			counter30++;
 			counter360++;
-		}
-
-		int msol = pulse.getMarsTime().getMillisolInt();
-		if (msol % 20 == 0) {
-			checkExposureLimit();
+			
+			int msol = pulse.getMarsTime().getMillisolInt();
+			if (msol % 20 == 0) {
+				checkExposureLimit();
+			}
 		}
 		
 		// Checks radiation

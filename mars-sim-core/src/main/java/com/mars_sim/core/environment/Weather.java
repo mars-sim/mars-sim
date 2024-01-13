@@ -233,7 +233,8 @@ public class Weather implements Serializable, Temporal {
 				int msol = clock.getMarsTime().getMillisolInt();
 				
 				// the value of optical depth doesn't need to be refreshed too often
-				if (msol % WINDSPEED_REFRESH == 0) {
+				if (clock.getClockPulse().isNewMSol()
+						&& msol % WINDSPEED_REFRESH == 0) {
 					
 					double rand = RandomUtil.getRandomDouble(-0.02, 0.02);
 					
@@ -374,7 +375,8 @@ public class Weather implements Serializable, Temporal {
 
 		pressureLock.lock();
 		
-		if (clock.getMarsTime().getMillisolInt() % MILLISOLS_PER_UPDATE == 1) {
+		if (clock.getClockPulse().isNewMSol()
+				&& clock.getMarsTime().getMillisolInt() % MILLISOLS_PER_UPDATE == 1) {
 			newP = calculateAirPressure(location, 0);
 			airPressureCacheMap.put(location, newP);
 		} else {

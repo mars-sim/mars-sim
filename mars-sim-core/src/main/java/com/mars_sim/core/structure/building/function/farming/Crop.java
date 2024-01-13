@@ -823,7 +823,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		}
 		
 		int msol = pulse.getMarsTime().getMillisolInt();
-		if (msol % CHECK_HEALTH_FREQUENCY == 0) {
+		if (pulse.isNewMSol() && msol % CHECK_HEALTH_FREQUENCY == 0) {
 			// Checks on crop health
 			trackHealth();
 		}
