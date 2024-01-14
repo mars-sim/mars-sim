@@ -45,7 +45,8 @@ public class MedicalConfig {
 	private List<Treatment> treatmentList;
 
 	/**
-	 * Constructor
+	 * Constructor.
+	 * 
 	 * @param medicalDoc DOM document of medical configuration.
 	 */
 	public MedicalConfig(Document medicalDoc) {
@@ -140,7 +141,7 @@ public class MedicalConfig {
 	}
 
 	/**
-	 * Build the complaint list
+	 * Builds the complaint list.
 	 * 
 	 * @param configDoc
 	 */

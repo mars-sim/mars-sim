@@ -33,7 +33,7 @@ public class BuildingPackageConfig implements Serializable {
 
 	// Element names
 	private final String BUILDING_PACKAGE = "building-package";
-	private final String BUILDING = "building";
+	private final String STANDALONE = "standalone";
 	private final String NAME = "name";
 	private final String TYPE = "type";
 
@@ -72,7 +72,7 @@ public class BuildingPackageConfig implements Serializable {
 
 			buildingPackage.name = packageElement.getAttributeValue(NAME);
 
-			List<Element> buildingNodes = packageElement.getChildren(BUILDING);
+			List<Element> buildingNodes = packageElement.getChildren(STANDALONE);
 
             // Load buildings as building templates
             for (Element buildingElement : buildingNodes) {

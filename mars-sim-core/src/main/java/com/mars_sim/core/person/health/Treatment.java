@@ -53,7 +53,7 @@ implements Serializable, Comparable<Treatment> {
 	}
 
 	/**
-	 * Compare this object with another.
+	 * Compares this object with another.
 	 */
 	@Override
 	public int compareTo(Treatment otherTreatment) {
@@ -61,7 +61,7 @@ implements Serializable, Comparable<Treatment> {
 	}
 
 	/**
-	 * Compare this object with another object.
+	 * Compares this object with another object.
 	 *
 	 * @param other Object to compare.
 	 * @return DO they match or not.
@@ -76,7 +76,7 @@ implements Serializable, Comparable<Treatment> {
 	}
 
 	/**
-	 * Get the time required to perform this treatment by a Person with
+	 * Gets the time required to perform this treatment by a Person with
 	 * the appropriate skill rating.
 	 *
 	 * @param skill The skill rating that will apply the treatment.
@@ -92,7 +92,7 @@ implements Serializable, Comparable<Treatment> {
 	}
 
 	/**
-	 * Return the theoretical duration of this treatment.
+	 * Returns the theoretical duration of this treatment.
 	 *
 	 * @return The duration to apply this Treatment.
 	 */
@@ -101,28 +101,28 @@ implements Serializable, Comparable<Treatment> {
 	}
 
 	/**
-	 * Get the required facility level.
+	 * Gets the required facility level.
 	 */
 	public int getFacilityLevel() {
 		return facilityLevel;
 	}
 
 	/**
-	 * Return the name of the treatment.
+	 * Returns the name of the treatment.
 	 */
 	public String getName() {
 		return name;
 	}
 
 	/**
-	 * Return the Medical skill required for this treatment.
+	 * Returns the Medical skill required for this treatment.
 	 */
 	public int getSkill() {
 		return requiredSkill;
 	}
 
 	/**
-	 * Can the treatment be self administered.
+	 * Can the treatment be self administered ?
 	 */
 	public boolean getSelfAdminister() {
 		return selfAdmin;

@@ -193,7 +193,7 @@ public class MaintenanceTabPanel extends TabPanel {
 
 		// Update inspection work time.
 		double baseWorkTime = manager.getBaseMaintenanceWorkTime()/1000;
-		baseWorkTimeLabel.setText(StyleManager.DECIMAL_SOLS1.format(baseWorkTime));
+		baseWorkTimeLabel.setText(StyleManager.DECIMAL_SOLS3.format(baseWorkTime));
 		
 		// Update progress bar.
 		double completed = manager.getInspectionWorkTimeCompleted();

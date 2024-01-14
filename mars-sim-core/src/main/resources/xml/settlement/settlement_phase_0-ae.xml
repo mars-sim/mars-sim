@@ -12,52 +12,71 @@
             <!-- Connection to another building. "id" is other building's ID. -->
             <!-- X & Y locations are relative to this building, not in the settlement
                 locale. -->
-            <connection id="1" hatch-facing="west" />
-            <connection id="3" hatch-facing="east" />
-        </connection-list>
-    </building>
-
-    <!-- EVA Airlock is attached to the lander hab -->
-    <building id="1" type="EVA Airlock" xloc="7.5" yloc="0.0" facing="0.0">
-        <connection-list>
-            <connection id="0" hatch-facing="east" />
+            <connection id="5" hatch-facing="west" />
+            <connection id="4" hatch-facing="east" />
         </connection-list>
     </building>
 
     <!-- Inflatable greenhouse can be used to grow crops. -->
-    <building id="2" type="Inflatable Greenhouse" xloc="-12.0" yloc="0.0" facing="270.0">
+    <building id="1" type="Inflatable Greenhouse" xloc="-12.0" yloc="0.0" facing="270.0">
         <connection-list>
-            <connection id="3" hatch-facing="west" />
+            <connection id="4" hatch-facing="west" />
         </connection-list>
     </building>
     
+    <building id="2" type="Research Hab" xloc="12.0" yloc="0.0"
+        facing="0.0">
+        <!-- List of all connections to other buildings (optional). -->
+        <connection-list>
+            <!-- Connection to another building. "id" is other building's ID. -->
+            <!-- X & Y locations are relative to this building, not in the settlement
+                locale. -->
+            <connection id="3" hatch-facing="west" />
+            <connection id="5" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <!-- EVA Airlock is attached to the research hab -->
+    <building id="3" type="EVA Airlock" xloc="19.5" yloc="0.0" facing="0.0">
+        <connection-list>
+            <connection id="2" hatch-facing="east" />
+        </connection-list>
+    </building>
+
+        
     <!-- Hallway connecting lander hab and inflatable greenhouse. -->
     <!-- Note: Aa hallway has fixed width but variable length. Therefore,
         the length argument must be provided below. -->
-    <connector id="3" type="Hallway" length="3.0" xloc="-6.0" yloc="0.0" facing="270.0">
+    <connector id="4" type="Hallway" length="3.0" xloc="-6.0" yloc="0.0" facing="270.0">
         <connection-list>
             <connection id="0" hatch-facing="west" />
-            <connection id="2" hatch-facing="east" />
+            <connection id="1" hatch-facing="east" />
         </connection-list>
     </connector>
     
-    <standalone type="MD1 Nuclear Reactor" xloc="500.0"
-        yloc="-500" facing="0.0" />
-
-    <standalone type="Kilopower Reactor" xloc="490.0"
-        yloc="-500" facing="0.0" />
-    <standalone type="Kilopower Reactor" xloc="490.0"
-        yloc="-505" facing="0.0" />
-
-
-    <standalone type="ERV-A" xloc="80.0" yloc="-15.0" facing="0.0" />
-    <standalone type="ERV-B" xloc="80.0" yloc="25.0" facing="0.0" />
-    <standalone type="ERV-C" xloc="80.0" yloc="65.0" facing="0.0" />
     
-    <standalone type="Large Sabatier Processor" xloc="0.0"
-        yloc="-70.0" facing="90.0" />
-    <standalone type="Large Sabatier Processor" xloc="0.0"
-        yloc="-80.0" facing="90.0" />
+    <!-- Hallway connecting lander hab and research hab. -->
+    <!-- Note: Aa hallway has fixed width but variable length. Therefore,
+        the length argument must be provided below. -->
+    <connector id="5" type="Hallway" length="3.0" xloc="6.0" yloc="0.0" facing="270.0">
+        <connection-list>
+            <connection id="2" hatch-facing="west" />
+            <connection id="0" hatch-facing="east" />
+        </connection-list>
+    </connector>
+    
+    <standalone type="MD1 Nuclear Reactor" xloc="200.0"
+        yloc="0" facing="0.0" />
+
+    <standalone type="Kilopower Reactor" xloc="190.0"
+        yloc="0" facing="0.0" />
+    <standalone type="Kilopower Reactor" xloc="190.0"
+        yloc="-5" facing="0.0" />
+ 
+    <standalone type="Large Sabatier Processor" xloc="25.0"
+        yloc="-10.0" facing="90.0" />
+    <standalone type="Large Sabatier Processor" xloc="25.0"
+        yloc="-20.0" facing="90.0" />
 
     <!-- A rover for collecting rock samples from remote sites and ice prospecting. -->
     <vehicle type="Explorer Rover" number="2" />
@@ -114,6 +133,8 @@
     <part-package name="package 1" number="1" />
 
 	<building-package name="Storage Bin Set 1"/>
+   
+   	<building-package name="ERV Set 1"/>
    
 	<!-- The resupply missions from Earth scheduled for this type of settlement. -->
     <resupply>

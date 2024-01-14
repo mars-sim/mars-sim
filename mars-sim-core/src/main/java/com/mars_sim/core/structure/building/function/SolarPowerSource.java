@@ -38,7 +38,7 @@ public class SolarPowerSource extends PowerSource {
 	/*
 	 * The theoretical max efficiency of the triple-junction solar cells 
 	 */
-	private double efficiency_solar_panel = .55;
+	private double efficiency = .55;
 	
 	// As of Sol 4786 (July 11, 2017), the solar array energy production was 352 watt-hours with 
 	// an atmospheric opacity (Tau) of 0.748 and a solar array dust factor of 0.549.
@@ -81,10 +81,10 @@ public class SolarPowerSource extends PowerSource {
 	}
 
 	public void setEfficiency(double value) {
-		 efficiency_solar_panel = value;
+		 efficiency = value;
 	}
 
 	public double getEfficiency() {
-		return efficiency_solar_panel;
+		return efficiency;
 	}
 }

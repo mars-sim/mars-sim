@@ -625,9 +625,8 @@
 		<input resource="sodium carbonate" rate="2.5"  />
 
 		<output resource="carbon dioxide" rate="0.5" waste="false" />
-		<output resource="aluminum oxide" rate="2.0"  />
+		<output resource="aluminum oxide" rate="9.0"  />
 		<output resource="sodium oxide" rate="2.5"  />
-		<output resource="aluminum" rate="8.0"  />
 		<output resource="iron powder" rate="1.0"  />					
 		<output resource="sulfur" rate="4.0"  />					
 		<output resource="silica" rate="13.0"  />
