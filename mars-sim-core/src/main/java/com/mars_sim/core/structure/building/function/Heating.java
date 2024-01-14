@@ -116,7 +116,7 @@ public class Heating implements Serializable {
     // n_air = 1D;
     // n_sum = n_CO2 + n_air;
     
- 	private static final int PER_UPDATE = 1;
+ 	private static final int PER_UPDATE = 20;
  	
 	/** Specific heat capacity (C_p) of air at 300K [kJ/kg/K] */	 
 	private static final double SPECIFIC_HEAT_CAP_AIR_300K = 1.005; 
@@ -131,7 +131,7 @@ public class Heating implements Serializable {
 	/** is this building a greenhouse */
 	private boolean isGreenhouse = false;
 	/** is this building a hallway or tunnel */
-//	private boolean isHallway = false;
+	private boolean isHallway = false;
 	/** Is the airlock door open */
 	private boolean hasHeatDumpViaAirlockOuterDoor = false;
 
@@ -213,7 +213,7 @@ public class Heating implements Serializable {
 
 		switch(building.getCategory()) {
 			case HALLWAY:
-//				isHallway = true;
+				isHallway = true;
 				heatGainEquipment = 0.0117;
 				break;
 			case FARMING:
@@ -351,9 +351,9 @@ public class Heating implements Serializable {
 			solarHeatGain =  I * transmittanceGreenhouse * floorArea;
 		}
 		
-//		else if (isHallway) {
-//			solarHeatGain =  I * transmittanceWindow * floorArea / 2 * .5 * .5;
-//		}
+		else if (isHallway) {
+			solarHeatGain =  I * transmittanceWindow * floorArea / 2 * .5 * .5;
+		}
 		
 		else {
 			solarHeatGain =  I * transmittanceWindow * 4 * .5 * .5;
@@ -694,7 +694,7 @@ public class Heating implements Serializable {
 		
 		// How efficient is the heat transfer
 		// If it's air heat sink, assume 100%
-		double efficiency = 1;
+		double efficiency = .7;
 		if (index == 1) {
 			// If it's water heat sink, it's 30%
 			efficiency = .3;
@@ -793,7 +793,7 @@ public class Heating implements Serializable {
 			adjacentBuildings = new ArrayList<>(building.getSettlement().getAdjacentBuildings(building));
 			
 			int size = adjacentBuildings.size();
-			//area_factor = Math.sqrt(Math.sqrt(floorArea));
+//			area_factor = Math.sqrt(Math.sqrt(floorArea));
 			
 //			if (isHallway)
 //				area_factor = .5;
@@ -971,17 +971,17 @@ public class Heating implements Serializable {
 		
 		// Safeguard against anomalous dt that would have crashed mars-sim
 	
-		if (newT > oldT + 5.0 * T_UPPER_SENSITIVITY)
-			// newT cannot be higher than 45 deg celsius
-			newT = oldT + 5.0 * T_UPPER_SENSITIVITY;
-
-		else if (newT < oldT - 5.0 * T_LOWER_SENSITIVITY)
-			// newT cannot be lower than the outside temperature
-			newT = oldT - 5.0 * T_LOWER_SENSITIVITY;
+//		if (newT > oldT + 5.0 * T_UPPER_SENSITIVITY)
+//			// newT cannot be higher than 45 deg celsius
+//			newT = oldT + 5.0 * T_UPPER_SENSITIVITY;
+//
+//		else if (newT < oldT - 5.0 * T_LOWER_SENSITIVITY)
+//			// newT cannot be lower than the outside temperature
+//			newT = oldT - 5.0 * T_LOWER_SENSITIVITY;
 		
-		if (newT > 40)
+		if (newT > 45)
 			// newT cannot be higher than 40 deg celsius
-			newT = 40;
+			newT = 45;
 		else if (newT < outT)
 			// newT cannot be lower than the outside temperature
 			newT = outT;
@@ -1005,7 +1005,7 @@ public class Heating implements Serializable {
 		
 		// Insert the latest temperature to the first of the list
 		temperatureCache[0] = newT;
-
+		
 		// STEP 5 : CHANGE THE HEAT MODE
 		// Turn heat source off if reaching certain temperature thresholds
 		adjustHeatMode(deltaTime);
@@ -1028,16 +1028,16 @@ public class Heating implements Serializable {
 	
 		double tNow = currentTemperature;
 
-		double deltaT =  (tNow - outTCelsius) / 35;
+		double deltaT =  (tNow - outTCelsius) / 30;
 			
 	    // If T_NOW deg above INITIAL_TEMP, turn off furnace
-		if (tNow > tPreset + deltaT/4.5 + 5.5 * T_UPPER_SENSITIVITY) {
+		if (tNow > tPreset + deltaT/4.5 + 4.5 * T_UPPER_SENSITIVITY) {
 			building.setHeatMode(HeatMode.HEAT_OFF);
 		}
-		else if (tNow >= tPreset + deltaT/4 + 4 * T_UPPER_SENSITIVITY) {
+		else if (tNow >= tPreset + deltaT/4 + 3 * T_UPPER_SENSITIVITY) {
 			building.setHeatMode(HeatMode.ONE_EIGHTH_HEAT);
 		}
-		else if (tNow >= tPreset + deltaT/3.5 + 2.5 * T_LOWER_SENSITIVITY) {
+		else if (tNow >= tPreset + deltaT/3.5 + 2 * T_LOWER_SENSITIVITY) {
 			building.setHeatMode(HeatMode.QUARTER_HEAT);
 		}
 		else if (tNow >= tPreset + deltaT/3 + 1 * T_UPPER_SENSITIVITY) {
