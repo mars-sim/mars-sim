@@ -891,7 +891,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Roll mylar film" tech="2" skill="2" work-time="10" process-time="40"
 			power-required="0.05">
 		<description>
-		 Mylar coated with evaporated aluminum on one side
+		 Mylar film that can be coated with evaporated aluminum on one side
 		</description>
 		<inputs>
 			<resource name="Polyester Resin" amount="1.0" />
@@ -1683,7 +1683,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="communications circuit board" number="1" />
 			<part name="optical lens" number="2" />
 			<part name="vehicle frame small" number="1" />
-			<part name="aluminum sheet" number="1" />
+			<part name="aluminum sheet" number="2" />
 			<part name="vehicle chassis panel" number="2" />
 			<part name="motor small" number="4" />
 			<part name="methanol fuel cell stack" number="2" />

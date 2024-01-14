@@ -459,7 +459,9 @@
 		in food as well as a buffer and firming agent. Artificial sweetener base, 
 		bleaching agent for bread rolls, flour, tinned tomatoes, soy tofu, 
 		dried egg, cheese products, tooth paste. Used in mortar, 
-		cement and plaster of Paris. 
+		cement and plaster of Paris. Calcium sulfate has a long history of use 
+		in medicine and dentistry, including bone regeneration as a graft material 
+		and graft binder/extender, and as a barrier in guided tissue regeneration.
 		
 		Crystalline phases of CaSO4 
 		(1). Anhydrite. CaSO4.
@@ -726,7 +728,6 @@
 <!-- Building Material -->
 	<resource name="Cement" type="construction" phase="solid" >A Building Material.</resource>
 	<resource name="Concrete" type="construction" phase="solid" >A Building Material.</resource>
-	<resource name="Mortar" type="construction" phase="solid" >A Building Material.</resource>
 
 <!-- Drugs and Supplements -->
 	<resource name="Immune booster" type="medical" phase="solid" >A Drug.</resource>

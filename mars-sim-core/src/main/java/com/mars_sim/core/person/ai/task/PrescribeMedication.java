@@ -60,7 +60,8 @@ public class PrescribeMedication extends Task {
 	private Person patient = null;
 
 	/**
-	 * Constructor.
+	 * Constructor 1.
+	 * 
 	 * @param person the person performing the task.
 	 */
 	public PrescribeMedication(Person person) {
@@ -99,6 +100,11 @@ public class PrescribeMedication extends Task {
         setPhase(MEDICATING);
     }
 
+	/**
+	 * Constructor 2.
+	 * 
+	 * @param robot the robot performing the task.
+	 */
 	public PrescribeMedication(Robot robot) {
         // Use task constructor.
         super(NAME, robot, false, false, STRESS_MODIFIER, SkillType.MEDICINE, 100D, 10D);

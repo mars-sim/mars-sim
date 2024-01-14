@@ -520,42 +520,47 @@
 			</vehicle>
 		</building>
 
-		<building name="Concrete Storage Bin" width="2.0" length="3.0" base-level="0" constructable="true"
+		<building name="Concrete Storage" width="2.0" length="3.0" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
 		</building>
 
-		<building name="Cement Storage Bin" width="2.0" length="3.0" base-level="0" constructable="true"
+		<building name="Cement Storage" width="2.0" length="3.0" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
 		</building>
 
-		<building name="Mortar Storage Bin" width="2.0" length="3.0" base-level="0" constructable="true"
+		<building name="Metal Storage" width="2.0" length="3.0" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
 		</building>
 
-		<building name="Lime Storage Bin" width="2.0" length="3.0" base-level="0" constructable="true"
+		<building name="Lime Storage" width="2.0" length="3.0" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
 		</building>
 
-		<building name="Carbon Storage Bin" width="2.0" length="3.0" base-level="0" constructable="true"
+		<building name="Carbon Storage" width="2.0" length="3.0" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
 		</building>
 
-		<building name="Regolith Storage Bin" width="2.0" length="3.0" base-level="0" constructable="true"
+		<building name="Regolith Storage" width="2.0" length="3.0" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
 		</building>
 
-		<building name="Sand Storage Bin" width="2.0" length="3.0" base-level="0" constructable="true"
+		<building name="Sand Storage" width="2.0" length="3.0" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
 		</building>
 
-		<building name="Ice Storage Bin" width="2.0" length="3.0" base-level="0" constructable="true"
+		<building name="Fuel Storage" width="2.0" length="3.0" base-level="0" constructable="true"
+		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
+			<resource name="concrete" amount="60.0" />
+		</building>
+		
+		<building name="Ice Storage" width="2.0" length="3.0" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
 		</building>

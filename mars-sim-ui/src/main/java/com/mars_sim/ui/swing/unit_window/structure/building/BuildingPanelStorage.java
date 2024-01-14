@@ -26,6 +26,7 @@ import com.mars_sim.core.structure.building.function.Storage;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.StyleManager;
 
 
 /**
@@ -41,14 +42,21 @@ public class BuildingPanelStorage extends BuildingFunctionPanel {
 		private List<String> nameList = new ArrayList<>();
 		private Map<String, Double> buildingStorage = new HashMap<>();
 		private Map<String, Double> settlementStorage = new HashMap<>();
+		private Map<String, Double> available = new HashMap<>();
 		
-		public StorageTableModel(Storage storage) {
+		private ResourceHolder holder;
+		
+		public StorageTableModel(Storage storage) {	
+			holder = storage.getBuilding().getAssociatedSettlement();
+			
 			Map<Integer, Double> resourceStorage = storage.getResourceStorageCapacity();
 			for (Entry<Integer, Double> resource : resourceStorage.entrySet()) {
 				int id = resource.getKey();
 				String name = ResourceUtil.findAmountResourceName(id);
 				nameList.add(name);
 				buildingStorage.put(name, resource.getValue());
+
+				available.put(name, holder.getAllAmountResourceStored(id));
 				
 				ResourceHolder rh = (ResourceHolder)storage.getBuilding().getSettlement();
 				settlementStorage.put(name, rh.getAmountResourceCapacity(id));
@@ -63,10 +71,11 @@ public class BuildingPanelStorage extends BuildingFunctionPanel {
 		}
 
 		public int getColumnCount() {
-			return 3;
+			return 4;
 		}
 
 		public Class<?> getColumnClass(int column) {
+//			return String.class;
 			if (column == 0) return String.class;
 			else return Integer.class;
 		}
@@ -76,10 +85,13 @@ public class BuildingPanelStorage extends BuildingFunctionPanel {
 				return "Resource";
 			}
 			else if (column == 1) {
-				return "Building Capacity (kg)";
+				return "Total Stored (kg)";
+			}
+			else if (column == 2) {
+				return "Building Cap (kg)";
 			}
 			else {
-				return "Settlement Capacity (kg)";
+				return "Settlement Cap (kg)";
 			}
 		}
 
@@ -88,10 +100,13 @@ public class BuildingPanelStorage extends BuildingFunctionPanel {
 				return nameList.get(row);
 			}
 			else if (column == 1) {
-				return buildingStorage.get(nameList.get(row));
+				return StyleManager.DECIMAL_PLACES1.format(available.get(nameList.get(row)));
+			}
+			else if (column == 2) {
+				return StyleManager.DECIMAL_PLACES0.format(buildingStorage.get(nameList.get(row)));
 			}
 			else {
-				return settlementStorage.get(nameList.get(row));
+				return StyleManager.DECIMAL_PLACES0.format(settlementStorage.get(nameList.get(row)));
 			}
 		}
 

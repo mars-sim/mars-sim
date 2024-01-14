@@ -433,7 +433,7 @@
         <treatment name="Radioprotective Agent">
         	<skill value="1" />
         	<medical-tech-level value="1" />
-        	<treatment-time value="100.0" />
+        	<treatment-time value="200.0" />
         	<self-admin value="true" />
         </treatment>        
         

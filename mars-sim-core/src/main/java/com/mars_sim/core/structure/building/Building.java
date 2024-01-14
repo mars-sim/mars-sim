@@ -649,7 +649,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	private List<Function> buildFunctions(BuildingSpec spec) {
 		List<Function> buildingFunctions = new ArrayList<>();
 
-		for(FunctionType supported : spec.getFunctionSupported()) {
+		for (FunctionType supported : spec.getFunctionSupported()) {
 			FunctionSpec fSpec = spec.getFunctionSpec(supported);
 			fSpec.setBuildingSpec(spec);
 			switch (supported) {
