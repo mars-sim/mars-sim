@@ -24,6 +24,7 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: 17
+        cache: 'maven'
           
     - name: SonarCloud Analysis
       if: ${{ github.repository == 'mars-sim/mars-sim' }}
