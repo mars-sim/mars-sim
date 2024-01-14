@@ -3,7 +3,7 @@
 # This file should be Linux (LF) format
 # Locate the installation directory
 PRG="$0"
-MARS_SIM_DIR=`dirname "$PRG"`/..
+MARS_SIM_DIR=$(dirname "$PRG")/..
 
 # Define the target JAR file
 MARS_TARGET_JAR=$MARS_SIM_DIR/lib/mars-sim-swing.jar
