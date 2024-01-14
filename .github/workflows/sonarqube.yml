@@ -24,8 +24,7 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: 17
-        cache: 'maven'
-          
+                  
     - name: SonarCloud Analysis
       if: ${{ github.repository == 'mars-sim/mars-sim' }}
       env:
@@ -33,4 +32,4 @@ jobs:
         SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
       run:
-        mvn --file pom.xml -B -Pcoverage -Dsonar.token=$SONAR_LOGIN -Dsonar.projectKey=com.mars-sim:mars-sim -Dsonar.organization=$SONAR_ORGANISATION  verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        mvn --file pom.xml -X -B -Pcoverage -Dsonar.token=$SONAR_LOGIN -Dsonar.projectKey=com.mars-sim:mars-sim -Dsonar.organization=$SONAR_ORGANISATION  verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar

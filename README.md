@@ -368,13 +368,13 @@ running other apps that requires JavaFX.
 
 ## OS Platforms
 
-Assume that OpenJDK 17 is being used.
+Assume that OpenJDK 17 is being used. 
+
+The standard ZIP distribution can work on Linux or Windows based systems.
 
 ### Linux
 
-1. The Debian edition of mars-sim comes with Debian installer for quick installation. However,
-you will have to install, configure and properly update the JDK or openJDK binary in your linux
- machine in order to run mars-sim. Please google to find out the most updated instructions for your distro.
+1. There are shell script command in the bin directory for the console & swing versions.
 
 2. To manage multiple versions of java with the use of a tool called `SDKMan`,
 see this [DZone article](https://dzone.com/articles/how-to-install-multiple-versions-of-java-on-the-sa).
