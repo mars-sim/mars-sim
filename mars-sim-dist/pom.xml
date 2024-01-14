@@ -7,7 +7,6 @@
 	<artifactId>mars-sim</artifactId>
 	<groupId>com.mars-sim</groupId>
 	<version>3.7.0</version>
-	<relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>mars-sim-dist</artifactId>
   <packaging>pom</packaging>
