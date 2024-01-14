@@ -34,7 +34,9 @@ public class FuelHeatSource extends HeatSource {
 	public double thermalEfficiency = .9;
 	/** The fuel consumption rate [kg/sol]. */
 	private double rate;
-
+	/** The fuel consumption rate [kg/millisol]. */
+	private double mRate;
+	
 	private double toggleRunningWorkTime;
 
 	/** The amount of reserved fuel. */
@@ -44,7 +46,6 @@ public class FuelHeatSource extends HeatSource {
 
 	private double time;
 
-	private double modRate;
 	
 	private Building building;
 
@@ -62,7 +63,7 @@ public class FuelHeatSource extends HeatSource {
 		this.toggle = toggle;
 		this.building = building;
 
-		modRate = rate / 1000D;
+		mRate = rate / 1000D;
 	}
 
 //     Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
@@ -85,10 +86,17 @@ public class FuelHeatSource extends HeatSource {
 //	 
 //	 or 90% see https://phys.org/news/2017-07-hydrocarbon-fuel-cells-high-efficiency.html 
 
+	/**
+	 * Consumes the fuel.
+	 * 
+	 * @param time
+	 * @param settlement
+	 * @return
+	 */
 	private double consumeFuel(double time, Settlement settlement) {
 		double consumed = 0;
 		
-		double deltaFuel = (getPercentagePower() / 100.0) * time * modRate;
+		double deltaFuel = (getPercentagePower() / 100.0) * time * mRate;
 		
 		if (deltaFuel <= reserveFuel && deltaFuel * RATIO <= reserveOxidizer) {
 			reserveFuel -= deltaFuel;

@@ -44,6 +44,15 @@ public class ThermalGeneration extends Function {
 		// Call Function constructor.
 		super(FunctionType.THERMAL_GENERATION, spec, building);
 		
+//		double area = building.getFloorArea();
+		double areaFactor = 1;
+		
+		// For hallway and tunnel, the length is not known.
+		// Thus, the capacity and consumption-rate needs to be moderated by its final area
+//		if (building.getCategory() == BuildingCategory.HALLWAY) {
+//			areaFactor = area / 4.5;
+//		}
+		
 		heating = new Heating(building, spec);
 
 		// Determine heat sources.
@@ -56,11 +65,11 @@ public class ThermalGeneration extends Function {
 			
 			switch (sourceType) {
 			case ELECTRIC_HEATING:
-				heatSource = new ElectricHeatSource(heat);				
+				heatSource = new ElectricHeatSource(heat * areaFactor);				
 				break;
 
 			case SOLAR_HEATING:
-				heatSource = new SolarHeatSource(building, heat);
+				heatSource = new SolarHeatSource(building, heat * areaFactor);
 				break;
 				
 			case FUEL_HEATING:
@@ -169,7 +178,7 @@ public class ThermalGeneration extends Function {
 	private double calculateGeneratedHeat(double time) {
 
 		double heatGen = 0D;
-//		double powerRequired = 0;	
+	
 		double percentageHeat = building.getHeatMode().getPercentage();
 		
 		for (HeatSource heatSource : heatSources) {
@@ -191,7 +200,7 @@ public class ThermalGeneration extends Function {
 
 		double result = 0D;
 		HeatMode heatMode = building.getHeatMode();
-		if (heatMode != HeatMode.FULL_HEAT) {
+//		if (heatMode != HeatMode.FULL_HEAT) {
 			boolean sufficientPower = building.getSettlement().getPowerGrid().isSufficientPower();
 			
 			// Calculate the unused
@@ -212,7 +221,7 @@ public class ThermalGeneration extends Function {
 				    }
 			    }	
 			}
-		}
+//		}
 
 		return result;
 	}

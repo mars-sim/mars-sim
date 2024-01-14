@@ -487,9 +487,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- type: the type of heat source. -->
 				<!-- capacity: the maximum  power capacity kW produced by the heat source. -->
 				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="20.0" />
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.959" capacity="20.0"/>
-				<heat-source type="Electric Heating" capacity="20.0" />
 			</thermal-generation>
 
 			<waste-processing power-down-level="0.0">
@@ -776,9 +776,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
+				<heat-source type="Electric Heating" capacity="30.0" />
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.959" capacity="20.0" />
-				<heat-source type="Electric Heating" capacity="30.0" />
 			</thermal-generation>
 			
 		</functions>
@@ -890,8 +890,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
+				<heat-source type="Electric Heating" capacity="20.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.959" capacity="20.0" />
+					fuel-type="methane"	consumption-rate="48" capacity="30.0" />
 				<!-- Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
 				 CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ
 
@@ -902,7 +903,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				 Assume thermal efficiency at 100%,
 				 1 kW_t for 1.5960 g/millisol or kg/sol
 				 -->
-				<heat-source type="Electric Heating" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1035,9 +1035,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
+				<heat-source type="Electric Heating" capacity="50.0" />
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="47.9385" capacity="30.0" />
-				<heat-source type="Electric Heating" capacity="50.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1093,9 +1093,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
+				<heat-source type="Electric Heating" capacity="20.0" />
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="47.9385" capacity="30.0" />
-				<heat-source type="Electric Heating" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1169,9 +1169,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
+				<heat-source type="Electric Heating" capacity="20.0" />
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="47.9385" capacity="30.0" />
-				<heat-source type="Electric Heating" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2198,9 +2198,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
+				<heat-source type="Electric Heating" capacity="30.0" />
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.959" capacity="20.0" />
-				<heat-source type="Electric Heating" capacity="30.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2969,7 +2969,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<!-- A hallway's length is variable and determined in templates or during construction. -->
 	<building type="Hallway" width="2.0" length="-1.0" north-south-alignment="length" construction="SEMI_SOLID" base-level="0"
-			wear-lifetime="3340000" maintenance-time="20" room-temperature="20.5" base-mass="200">
+			wear-lifetime="3340000" maintenance-time="20" room-temperature="20.0" base-mass="200">
 		<description> The Hallway is a pressurized access tube connecting
 			two inhabitable buildings. It allows only one person to access it
 			at a time.
@@ -2992,7 +2992,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="2.0" />
 				<heat-source type="Electric Heating" capacity="2.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.959" capacity="5.0"/>
+					fuel-type="methane"	consumption-rate="16" capacity="2.0"/>
 			</thermal-generation>
 		</functions>
 	</building>
@@ -3219,9 +3219,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="20.0" />
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.959" capacity="20.0" />
-				<heat-source type="Electric Heating" capacity="20.0" />
 			</thermal-generation>
 
 			<waste-processing power-down-level="0.0">
@@ -3353,9 +3353,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="15" />
+				<heat-source type="Electric Heating" capacity="60.0" />
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="47.9385" capacity="30.0" />
-				<heat-source type="Electric Heating" capacity="60.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -3401,6 +3401,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	consumption-rate="31.959" capacity="10.0"/>				
 			</thermal-generation>
 		</functions>
 	</building>
@@ -3489,9 +3491,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
+				<heat-source type="Electric Heating" capacity="30.0" />
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.959" capacity="20.0"/>
-				<heat-source type="Electric Heating" capacity="30.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -3499,10 +3501,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<!-- A tunnel's length is variable and determined in templates or during construction. -->
 	<building type="Tunnel" width="3.0" length="-1.0" north-south-alignment="length" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="20" room-temperature="20.5" base-mass="200">
+			wear-lifetime="3340000" maintenance-time="20" room-temperature="20." base-mass="200">
 		<description> The Tunnel is an underground pressurized access tube connecting
-			two inhabitable buildings. It allows only one person to access it
-			at a time.
+			two inhabitable buildings.
 		</description>
 		<power-required base-power="0.1" base-power-down-power="0.0" />
 
@@ -3517,7 +3518,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="2.0" />
 				<heat-source type="Electric Heating" capacity="2.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.959" capacity="5.0"/>
+					fuel-type="methane"	consumption-rate="16" capacity="2.0"/>
 			</thermal-generation>
 		</functions>
 	</building>

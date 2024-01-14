@@ -32,6 +32,7 @@ import com.mars_sim.core.resource.PartPackageConfig;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.RobotTemplate;
 import com.mars_sim.core.robot.RobotType;
+import com.mars_sim.core.structure.building.BuildingPackageConfig;
 import com.mars_sim.core.structure.building.BuildingTemplate;
 import com.mars_sim.core.structure.building.BuildingTemplate.BuildingConnectionTemplate;
 import com.mars_sim.mapdata.location.BoundedObject;

@@ -253,7 +253,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		constructionType = buildingSpec.getConstruction();
 		powerModeCache = PowerMode.FULL_POWER;
-		heatModeCache = HeatMode.HALF_HEAT;
+		heatModeCache = HeatMode.THREE_EIGHTH_HEAT;
 		width = buildingSpec.getWidth();
 		if (width < 0) {
 			width = bounds.getWidth();

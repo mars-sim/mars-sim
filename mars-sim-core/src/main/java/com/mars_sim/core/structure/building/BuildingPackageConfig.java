@@ -4,7 +4,7 @@
  * @date 2023-10-20
  * @author Scott Davis
  */
-package com.mars_sim.core.structure;
+package com.mars_sim.core.structure.building;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,7 +17,6 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 import com.mars_sim.core.configuration.ConfigHelper;
-import com.mars_sim.core.structure.building.BuildingTemplate;
 import com.mars_sim.mapdata.location.BoundedObject;
 
 /**
