@@ -78,6 +78,11 @@
     <standalone type="Large Sabatier Processor" xloc="25.0"
         yloc="-20.0" facing="90.0" />
 
+    
+    <building-package name="Storage Bin Set 1"/>
+   
+   	<building-package name="ERV Set 1"/>
+
     <!-- A rover for collecting rock samples from remote sites and ice prospecting. -->
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Light Utility Vehicle" number="1" />
@@ -131,10 +136,6 @@
     <!-- name: the part package name. -->
     <!-- number: the number of packages. -->
     <part-package name="package 1" number="1" />
-
-	<building-package name="Storage Bin Set 1"/>
-   
-   	<building-package name="ERV Set 1"/>
    
 	<!-- The resupply missions from Earth scheduled for this type of settlement. -->
     <resupply>

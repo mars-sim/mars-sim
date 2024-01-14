@@ -2442,7 +2442,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Regolith Storage" width="2.0" length="3.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="1000">
-		<description> The Regolith Storage Bin is a small brick bin for
+		<description> The Regolith Storage is a small brick bin for
 			storing Martian regolith for light contruction project.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
