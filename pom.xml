@@ -69,6 +69,24 @@
 		   </plugins>
 		  </build>
 		</profile>
+		
+		<!-- Profile for JavaFX -->
+		<profile>
+			<id>javaFX</id>
+			<modules>
+				<module>mars-sim-tools</module>
+				<module>mars-sim-mapdata</module>
+				<module>mars-sim-main</module>
+				<module>mars-sim-headless</module>
+				<module>mars-sim-console</module>
+				<module>mars-sim-core</module>
+				<module>mars-sim-ui</module>
+				<module>mars-sim-dist</module>
+				<module>mars-sim-base</module>
+				<module>mars-sim-fxgl</module>
+				<module>mars-sim-libgdx</module>
+			</modules>
+		</profile>
 	</profiles>
 	<dependencies>
 		<!-- Needed by graalvm -->
@@ -139,9 +157,7 @@
 		<module>mars-sim-console</module>
 		<module>mars-sim-core</module>
 		<module>mars-sim-ui</module>
-    	<module>mars-sim-base</module>
-		<module>mars-sim-fxgl</module>
-    	<module>mars-sim-libgdx</module>
+    	<module>mars-sim-dist</module>
 	</modules>
   
 	<!-- ************************************************************************************************* -->
