@@ -59,7 +59,7 @@ public class TestSaving extends TestCase implements SimulationListener {
         sim.clockPulse(pulse);
 
         // Check simulations saved and it contains data
-        assertFalse("Simultion save pending", sim.isSavePending());
+        assertFalse("Simulation save pending", sim.isSavePending());
         assertEquals("Simulation save status", SimulationListener.SAVE_COMPLETED, saveFeedback);
         assertTrue("Simulation file exists", saveFile.isFile());
         assertTrue("Save file is not empty", saveFile.length() > 0);

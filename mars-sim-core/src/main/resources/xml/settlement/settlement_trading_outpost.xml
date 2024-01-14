@@ -169,6 +169,11 @@
     <building type="Large Sabatier Processor" xloc="0.0"
         yloc="-80.0" facing="90.0" />
 
+
+    <!-- Building Packages -->
+    <building-package name="Storage Bin Set 1"/>
+
+
     <vehicle type="Cargo Rover" number="2" />
     <vehicle type="Light Utility Vehicle" number="1" />
     <vehicle type="Delivery Drone" number="1" />
@@ -190,9 +195,7 @@
 	<resource type="oxygen" amount="1440" />
 	
     <part-package name="package 1" number="1" />
-
-	<building-package name="Storage Bin Set 1"/>
-   
+ 
     <resupply>
        	<resupply-mission name="Quarterly Delivery" manifest-name="Standard Resupply 1"
             first-arrival-time="11"

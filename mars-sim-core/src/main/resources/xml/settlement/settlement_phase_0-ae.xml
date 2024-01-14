@@ -78,9 +78,8 @@
     <standalone type="Large Sabatier Processor" xloc="25.0"
         yloc="-20.0" facing="90.0" />
 
-    
+    <!-- Building Packages -->
     <building-package name="Storage Bin Set 1"/>
-   
    	<building-package name="ERV Set 1"/>
 
     <!-- A rover for collecting rock samples from remote sites and ice prospecting. -->

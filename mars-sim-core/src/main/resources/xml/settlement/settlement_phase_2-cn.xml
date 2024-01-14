@@ -172,9 +172,10 @@
         yloc="-50.0" facing="90.0" />
 
     
+    <!-- Building Packages -->
     <building-package name="Storage Bin Set 1"/>
-   
    	<building-package name="ERV Set 1"/>
+   	
 
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Light Utility Vehicle" number="1" />

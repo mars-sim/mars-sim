@@ -423,6 +423,10 @@
     <building type="Solar Thermal Collector" xloc="40.0"
         yloc="-110.0" facing="0.0" />
         
+    <!-- Building Packages -->
+    <building-package name="Storage Bin Set 1"/>
+   	<building-package name="ERV Set 1"/>    
+        
     <vehicle type="Long Range Explorer" number="3" />
     <vehicle type="Transport Rover" number="2" />
     <vehicle type="Cargo Rover" number="2" />
@@ -457,8 +461,6 @@
 
     <part-package name="package 2" number="1" />
     <part-package name="package 4" number="1" />
-
-	<building-package name="Storage Bin Set 1"/>
 
     <resupply>
        	<resupply-mission name="Food Delivery" manifest-name="Food Resupply 1"
