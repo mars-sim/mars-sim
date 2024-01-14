@@ -45,9 +45,8 @@
                 <descriptor>assembly.xml</descriptor>
               </descriptors>
 			  
-			  <!-- Control the final name of the generated file.
-					Note final zip name MUST match the name of the eventual release label in GitHub -->
-			  <finalName>mars-sim-v${project.version}</finalName>
+			  <!-- Control the final name of the generated file. -->
+			  <finalName>mars-sim</finalName>
 			  <appendAssemblyId>false</appendAssemblyId>
             </configuration>
           </execution>
