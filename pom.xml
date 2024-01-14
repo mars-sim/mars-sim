@@ -157,7 +157,7 @@
 		<module>mars-sim-console</module>
 		<module>mars-sim-core</module>
 		<module>mars-sim-ui</module>
-    	<!--<module>mars-sim-dist</module>-->
+    	<module>mars-sim-dist</module>
 	</modules>
   
 	<!-- ************************************************************************************************* -->
