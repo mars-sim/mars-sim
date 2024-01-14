@@ -71,7 +71,6 @@
 		</profile>
 		
 		<!-- Profile for JavaFX -->
-		<!--
 		<profile>
 			<id>javaFX</id>
 			<modules>
@@ -88,7 +87,6 @@
 				<module>mars-sim-libgdx</module>
 			</modules>
 		</profile>
-		-->
 	</profiles>
 	<dependencies>
 		<!-- Needed by graalvm -->
