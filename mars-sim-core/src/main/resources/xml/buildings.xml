@@ -486,8 +486,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- Heat Source -->
 				<!-- type: the type of heat source. -->
 				<!-- capacity: the maximum  power capacity kW produced by the heat source. -->
-				<heat-source type="Solar Heating" capacity="5.0" />
-				<heat-source type="Electric Heating" capacity="20.0" />
+				<!-- <heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="20.0" /> -->
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.959" capacity="20.0"/>
 			</thermal-generation>
@@ -1245,7 +1245,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="methanol" amount="4200.0" />
 				<resource-initial resource="hydrogen" amount="3150.0" />
 				<resource-initial resource="water" amount="9450.0" />
-
 			</storage>
 		</functions>
 	</building>
@@ -1410,12 +1409,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="TOPAZ-2A Reactor" width="4.0" length="6.0" north-south-alignment="length" base-level="0"
 		wear-lifetime="3340000" maintenance-time="500" room-temperature= "0" base-mass="4000">
-		<description>The TOPAZ-2A Reactor is a minor improvement of the TOPAZ-II reactor system, 
-		 which was developed by Soviet Union. In 1987, TOPAZ-II was the first successfully demonstrated
-		 for use by Cosmos 1818 and Cosmos 1867 satellites in space. It is based on thermionic energy 
-		 conversion with highly enriched uranium oxide pellet as fuel. It was colled by liquid-metal 
-		 consisting of sodium and potassium. It has 37 single-cell TFEs, with a much improved 10.5% 
-		 thermal-to-electrical conversion efficiency and 83.3% load capacity to provide ~10 kWe.</description>
+		<description>The TOPAZ-2A Reactor is a minor improvement of the TOPAZ-II reactor 
+			system, which was developed by Soviet Union in 1987 for use by Cosmos 1818 
+			and Cosmos 1867 satellites in space. Based on thermionic energy conversion 
+			with highly enriched uranium oxide pellet as fuel, it was cooled by 
+			liquid-metal consisting of sodium and potassium. It has 37 single-cell TFEs, 
+			with a much improved 10.5% thermal-to-electrical conversion efficiency and 
+			83.3% load capacity to provide 10.03 kWe.</description>
 		<power-required base-power="1" base-power-down-power="0.1" />
 		<functions>
 			<power-generation>
@@ -1428,8 +1428,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	
 	<building type="TOPAZ-3 Reactor" width="4.0" length="6.0" north-south-alignment="length" base-level="0"
 		wear-lifetime="3340000" maintenance-time="500" room-temperature= "0" base-mass="4000">
-		<description>The TOPAZ-3 Reactor doubles the number of TFEs cells to 74 and has higher 
-		 thermal output of 4.7kW per cell. At ~10.37% conversion efficiency, it provides ~30 kWe.</description>
+		<description>The TOPAZ-3 Reactor doubles the number of TFEs cells to 74 and has 
+			higher thermal output of 4.7kW per cell. At ~10.37% conversion efficiency, 
+			it provides ~30 kWe.</description>
 		<power-required base-power="1" base-power-down-power="0.1" />
 		<functions>
 			<power-generation>
@@ -2277,22 +2278,25 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Methane Power Generator" width="5.0" length="5.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="500" room-temperature= "0" base-mass="500">
-		<description>The Methane Power generator utilized methane gas for the
-			generation of electricity. It makes use of the freely available carbon dioxide
-			in the Martian atmosphere and creates non-polluting by-products.
+		<description>This 40 kW Methane Power generator uses methane gas for generating
+			electricity.
+			
 			Note : every mole of methane (16 g) releases 810 KJ of energy if burning 
 			       with 2 moles of oxygen (64 g) :
 			CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ
+			
 			Thus, 890kW requires 16 g/s. 
+			
 			Assume electric efficiency at 100%,
 			1 kW_e requires 1.5960 g/millisol or 1.596 kg/sol
+			
 		</description>
-		<power-required base-power="0.5" base-power-down-power="0.05" />
+		<power-required base-power="0.1" base-power-down-power="0.01" />
 
 		<functions>
 			<power-generation>
-				<power-source type="Fuel Power Source" toggle="true" power="60.0"
-				fuel-type="methane"	consumption-rate="95.877" />
+				<power-source type="Fuel Power Source" toggle="true" power="40.0"
+					fuel-type="methane"	consumption-rate="95.877"/>
 			</power-generation>
 			<power-storage capacity="40" discharge-rate="1.25"/>
 		</functions>
@@ -2442,7 +2446,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Regolith Storage" width="2.0" length="3.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="1000">
-		<description> The Regolith Storage Bin is a small brick bin for
+		<description> The Regolith Storage is a small brick bin for
 			storing Martian regolith for light contruction project.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />

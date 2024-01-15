@@ -51,37 +51,15 @@
     </building>
 
         
-    <building type="Kilopower Reactor" xloc="490.0"
-        yloc="-500" facing="0.0" />
-    <building type="Kilopower Reactor" xloc="490.0"
-        yloc="-505" facing="0.0" />
-        
-        
-    <building type="Medium Battery Array" xloc="40.0"
-        yloc="-40.0" facing="0.0" />        
-    <building type="Solar Thermal Collector" xloc="40.0"
-        yloc="-60.0" facing="0.0" />
-    <building type="Solar Thermal Collector" xloc="40.0"
-        yloc="-80.0" facing="0.0" />
 
-
-    <building type="Medium Battery Array" xloc="60.0"
-        yloc="-50.0" facing="0.0" />
-    <building type="Wind Turbine" xloc="60.0"
-        yloc="-60.0" facing="0.0" />
-    <building type="Wind Turbine" xloc="60.0"
-        yloc="-70.0" facing="0.0" />
-        
-
-    <building type="ERV-A" xloc="80.0" yloc="-15.0" facing="0.0" />
-    <building type="ERV-B" xloc="80.0" yloc="25.0" facing="0.0" />
-    <building type="ERV-C" xloc="80.0" yloc="65.0" facing="0.0" />
-
-    <building type="Large Sabatier Processor" xloc="0.0"
-        yloc="-70.0" facing="90.0" />
-    <building type="Large Sabatier Processor" xloc="0.0"
-        yloc="-80.0" facing="90.0" />
-
+    <!-- Building Packages -->
+    <building-package name="Storage Bin Set 1"/>
+   	<building-package name="ERV Set 1"/>
+    <building-package name="Air Set 1"/>
+	<building-package name="Solar Set 1 - 1x3"/>
+   	<building-package name="Wind Set 1 - 1x3"/>
+    <building-package name="Kilo Set 1 - 1x2"/>
+      	
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Light Utility Vehicle" number="1" />
     <vehicle type="Delivery Drone" number="1" />
@@ -104,8 +82,6 @@
 	
     <part-package name="package 1" number="1" />
 
-	<building-package name="Storage Bin Set 1"/>
-   
     <resupply>
         <resupply-mission name="Food Delivery" manifest-name="Food Resupply 1"
             first-arrival-time="1"

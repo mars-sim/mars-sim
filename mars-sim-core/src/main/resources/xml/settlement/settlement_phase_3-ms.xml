@@ -208,28 +208,6 @@
         yloc="-70.0" facing="0.0" />
     <building type="Solar Photovoltaic Array" xloc="40.0"
         yloc="-80.0" facing="0.0" />
-        
-
-    <building type="ERV-A" xloc="80.0" yloc="-15.0"
-        facing="0.0" />
-    <building type="ERV-A" xloc="120.0" yloc="-15.0"
-        facing="0.0" />
-    <building type="ERV-A" xloc="160.0" yloc="-15.0"
-        facing="0.0" />
-        
-    <building type="ERV-B" xloc="80.0" yloc="25.0"
-        facing="0.0" />
-    <building type="ERV-B" xloc="120.0" yloc="25.0"
-        facing="0.0" />
-    <building type="ERV-B" xloc="160.0" yloc="25.0"
-        facing="0.0" />
-   
-    <building type="ERV-C" xloc="80.0" yloc="65.0"
-        facing="0.0" />
-    <building type="ERV-C" xloc="120.0" yloc="65.0"
-        facing="0.0" />
-    <building type="ERV-C" xloc="160.0" yloc="65.0"
-        facing="0.0" />
 
 
     <building type="Atmospheric Processor" xloc="20"
@@ -246,6 +224,10 @@
     <building type="Solar Photovoltaic Array" xloc="50.0"
         yloc="-50.0" facing="0.0" />
 
+
+    <!-- Building Packages -->
+    <building-package name="Storage Bin Set 1"/>
+   	<building-package name="ERV Set 1"/>
 
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Transport Rover" number="1" />
@@ -271,8 +253,6 @@
 	
     <part-package name="package 3" number="1" />
 
-	<building-package name="Storage Bin Set 1"/>
-   
     <resupply>
        	<resupply-mission name="BiMonthly Delivery" manifest-name="Standard Resupply 1"
             first-arrival-time="3.5"

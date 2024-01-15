@@ -919,6 +919,7 @@ public class Simulation implements ClockListener, Serializable {
 	/**
 	 * Saves a simulation instance to a save file.
 	 *
+	 * @param type
 	 * @param file the file to be saved to.
 	 * @param callback
 	 */

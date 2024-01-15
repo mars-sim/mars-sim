@@ -42,10 +42,13 @@ extends BuildingFunctionPanel {
 	private double powerCache;
 	/** The power used cache. */
 	private double usedCache;
+	/** The max power cache. */
+	private double maxPowerCache;
 	
-	private JLabel statusTF;
-	private JLabel producedTF;
-	private JLabel usedTF;
+	private JLabel modeLabel;
+	private JLabel maxPowerLabel;
+	private JLabel producedLabel;
+	private JLabel usedLabel;
 
 	private JLabel loadCapacityLabel;
 	
@@ -81,40 +84,48 @@ extends BuildingFunctionPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 		
-		AttributePanel springPanel = new AttributePanel(isProducer ? 4 : 2);
+		AttributePanel springPanel = new AttributePanel(isProducer ? 5 : 3);
 		center.add(springPanel, BorderLayout.NORTH);
 		
 		// Prepare power status label.
 		powerStatusCache = building.getPowerMode();
-		statusTF = springPanel.addTextField(Msg.getString("BuildingPanelPower.powerStatus"),
+		modeLabel = springPanel.addTextField(Msg.getString("BuildingPanelPower.powerStatus"),
 				                powerStatusCache.getName(), null);
-
+		
 		// If power producer, prepare power producer label.
 		if (isProducer) {
 			powerCache = generator.getGeneratedPower();
-			producedTF = springPanel.addTextField(Msg.getString("BuildingPanelPower.powerProduced"),
+			producedLabel = springPanel.addTextField(Msg.getString("BuildingPanelPower.powerProduced"),
 									  StyleManager.DECIMAL_KW.format(powerCache), null);
 			Iterator<PowerSource> iP = generator.getPowerSources().iterator();
 			while (iP.hasNext()) {
 				PowerSource powerSource = iP.next();
 
+				maxPowerCache = powerSource.getMaxPower();
+				maxPowerLabel = springPanel.addTextField(Msg.getString("BuildingPanelPower.maxPower"),
+						StyleManager.DECIMAL_KW.format(maxPowerCache), null);	
+				
 				if (powerSource.getType() == PowerSourceType.FISSION_POWER
 						|| powerSource.getType() == PowerSourceType.THERMIONIC_NUCLEAR_POWER) {
-					
+							
 					double loadCapacity = ((FissionPowerSource)powerSource).getCurrentLoadCapacity();
 					loadCapacityLabel = springPanel.addTextField(Msg.getString("BuildingPanelPower.loadCapacity"),
 							Math.round(loadCapacity *10.0)/10.0 + " %", null);
+					break;
 				}
 			}
 		}
 
+		modeLabel = springPanel.addTextField(Msg.getString("BuildingPanelPower.powerStatus"),
+                powerStatusCache.getName(), null);
+		
 		// Prepare power used label.
 		if (powerStatusCache == PowerMode.FULL_POWER) 
 			usedCache = building.getFullPowerRequired();
 		else if (powerStatusCache == PowerMode.POWER_DOWN) 
 			usedCache = building.getPoweredDownPowerRequired();
 		else usedCache = 0D;
-		usedTF = springPanel.addTextField(Msg.getString("BuildingPanelPower.powerUsed"),
+		usedLabel = springPanel.addTextField(Msg.getString("BuildingPanelPower.powerUsed"),
 										StyleManager.DECIMAL_KW.format(usedCache), null);
 	}
 
@@ -128,7 +139,7 @@ extends BuildingFunctionPanel {
 		PowerMode mode = building.getPowerMode();
 		if (powerStatusCache != mode) {
 			powerStatusCache = mode;
-			statusTF.setText(powerStatusCache.getName()); //$NON-NLS-1$
+			modeLabel.setText(mode.getName()); //$NON-NLS-1$
 		}
 
 		// Update power production if necessary.
@@ -136,7 +147,7 @@ extends BuildingFunctionPanel {
 			double power = generator.getGeneratedPower();
 			if (powerCache != power) {
 				powerCache = power;
-				producedTF.setText(StyleManager.DECIMAL_KW.format(powerCache)); //$NON-NLS-1$
+				producedLabel.setText(StyleManager.DECIMAL_KW.format(power)); //$NON-NLS-1$
 			}
 			
 			Iterator<PowerSource> iP = generator.getPowerSources().iterator();
@@ -161,7 +172,7 @@ extends BuildingFunctionPanel {
 		
 		if (usedCache != usedPower) {
 			usedCache = usedPower;
-			usedTF.setText(StyleManager.DECIMAL_KW.format(usedCache)); //$NON-NLS-1$
+			usedLabel.setText(StyleManager.DECIMAL_KW.format(usedPower)); //$NON-NLS-1$
 		}
 	}
 	
@@ -171,9 +182,9 @@ extends BuildingFunctionPanel {
 	@Override
 	public void destroy() {
 		super.destroy();
-		statusTF = null;
-		producedTF = null;
-		usedTF = null;
+		modeLabel = null;
+		producedLabel = null;
+		usedLabel = null;
 		powerStatusCache = null;
 		generator = null;
 		loadCapacityLabel = null;
