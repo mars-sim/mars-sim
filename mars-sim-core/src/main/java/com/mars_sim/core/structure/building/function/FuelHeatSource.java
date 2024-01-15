@@ -19,6 +19,8 @@ public class FuelHeatSource extends HeatSource {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(FuelHeatSource.class.getName());
 	
+	private static final double MAINTENANCE_FACTOR = .1;
+	
 	/** The ratio of fuel to oxidizer by mass. */
 	private static final int RATIO = 4;
 	/** The size of the fuel reserve tank. */
@@ -174,7 +176,7 @@ public class FuelHeatSource extends HeatSource {
 
 	@Override
 	public double getMaintenanceTime() {
-		return getMaxHeat() * 2D;
+		return getMaxHeat() * MAINTENANCE_FACTOR;
 	}
 
 	@Override
