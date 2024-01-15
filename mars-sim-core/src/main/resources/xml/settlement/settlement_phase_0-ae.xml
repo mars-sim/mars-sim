@@ -64,24 +64,13 @@
             <connection id="0" hatch-facing="east" />
         </connection-list>
     </connector>
-    
-    <standalone type="MD1 Nuclear Reactor" xloc="200.0"
-        yloc="0" facing="0.0" />
-
-    <standalone type="Kilopower Reactor" xloc="190.0"
-        yloc="0" facing="0.0" />
-    <standalone type="Kilopower Reactor" xloc="190.0"
-        yloc="-5" facing="0.0" />
  
-    <standalone type="Large Sabatier Processor" xloc="25.0"
-        yloc="-10.0" facing="90.0" />
-    <standalone type="Large Sabatier Processor" xloc="25.0"
-        yloc="-20.0" facing="90.0" />
-
     <!-- Building Packages -->
     <building-package name="Storage Bin Set 1"/>
    	<building-package name="ERV Set 1"/>
-
+   	<building-package name="Air Set 1"/>
+   	<building-package name="Nuclear Set 1 - combo"/>
+			   
     <!-- A rover for collecting rock samples from remote sites and ice prospecting. -->
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Light Utility Vehicle" number="1" />

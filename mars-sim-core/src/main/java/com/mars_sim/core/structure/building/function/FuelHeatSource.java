@@ -6,8 +6,7 @@
  */
 package com.mars_sim.core.structure.building.function;
 
-import java.util.logging.Logger;
-
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -18,35 +17,36 @@ public class FuelHeatSource extends HeatSource {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(FuelHeatSource.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(FuelHeatSource.class.getName());
+	
+	private static final double MAINTENANCE_FACTOR = .1;
 	
 	/** The ratio of fuel to oxidizer by mass. */
 	private static final int RATIO = 4;
-	/** The size of the fuel reserve tank. */
-	private static final int STANDARD_RESERVE = 30;
+
 	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
 	private static final int METHANE_ID = ResourceUtil.methaneID;
 	
 	/** The work time (millisol) required to toggle this heat source on or off. */
-	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 5D;
+	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 2D;
 
 	private boolean toggle = false;
-	
+	/** The thermal efficiency for this source. */
 	public double thermalEfficiency = .9;
 	/** The fuel consumption rate [kg/sol]. */
 	private double rate;
 	/** The fuel consumption rate [kg/millisol]. */
 	private double mRate;
-	
+	/** The running work time. */
 	private double toggleRunningWorkTime;
-
 	/** The amount of reserved fuel. */
 	private double reserveFuel;
 	/** The amount of reserved oxidizer. */
 	private double reserveOxidizer;
-
+	/** The time span [in millisol] in releasing the heat. */
 	private double time;
-
+	/** The tank capacity for holding the fuel [in kg]. */
+	private double tankCap;
 	
 	private Building building;
 
@@ -64,6 +64,15 @@ public class FuelHeatSource extends HeatSource {
 		this.toggle = toggle;
 		this.building = building;
 
+		if (building.isInhabitable()) {
+			// e.g. Methane Power Generator
+			// Use the following two params to determine tank size
+			tankCap = .5 * (consumptionSpeed + maxHeat);
+		}
+		else {
+			tankCap = maxHeat / 2;
+		}
+		
 		mRate = rate / 1000D;
 	}
 
@@ -87,6 +96,10 @@ public class FuelHeatSource extends HeatSource {
 //	 
 //	 or 90% see https://phys.org/news/2017-07-hydrocarbon-fuel-cells-high-efficiency.html 
 
+	private double getMaxFuelPerMillisolPerkW() {
+		return 1.5960 / thermalEfficiency / 1000;
+	}
+	
 	/**
 	 * Consumes the fuel.
 	 * 
@@ -97,7 +110,14 @@ public class FuelHeatSource extends HeatSource {
 	private double consumeFuel(double time, Settlement settlement) {
 		double consumed = 0;
 		
-		double deltaFuel = (getPercentagePower() / 100.0) * time * mRate;
+		// Use tankCap and floor area as factors to limit fuel
+		double fuelkg = tankCap * time * mRate;
+		double deltaFuel = fuelkg * getPercentagePower() / 100.0;
+		double maxFuel = getMaxHeat() * getMaxFuelPerMillisolPerkW();
+
+		if (deltaFuel > maxFuel) {
+			deltaFuel = maxFuel;
+		}
 		
 		if (deltaFuel <= reserveFuel && deltaFuel * RATIO <= reserveOxidizer) {
 			reserveFuel -= deltaFuel;
@@ -109,27 +129,33 @@ public class FuelHeatSource extends HeatSource {
 			double fuelStored = settlement.getAmountResourceStored(METHANE_ID);
 			double o2Stored = settlement.getAmountResourceStored(OXYGEN_ID);
 			
-			if (STANDARD_RESERVE <= fuelStored && STANDARD_RESERVE * RATIO <= o2Stored) {
-				reserveFuel += STANDARD_RESERVE;
-				reserveOxidizer += STANDARD_RESERVE * RATIO;
-				settlement.retrieveAmountResource(METHANE_ID, STANDARD_RESERVE);
-				settlement.retrieveAmountResource(OXYGEN_ID, STANDARD_RESERVE * RATIO * 1.0);
+			double transferFuel = tankCap + deltaFuel - reserveFuel;
+			
+			if (transferFuel <= fuelStored && transferFuel * RATIO <= o2Stored) {
 				
-				reserveFuel -= deltaFuel;
-				reserveOxidizer -= deltaFuel * RATIO;
+				reserveFuel = tankCap;
+				reserveOxidizer = tankCap * RATIO;
+				
+				settlement.retrieveAmountResource(METHANE_ID, transferFuel);
+				settlement.retrieveAmountResource(OXYGEN_ID, transferFuel * RATIO * 1.0);
 				
 				consumed = deltaFuel;
 			}
 			
-			else {
-				// Note that 16 g of methane requires 64 g of oxygen, a 1-to-4 ratio
-				consumed = Math.min(deltaFuel, Math.min(fuelStored, o2Stored / RATIO));
-
-				settlement.retrieveAmountResource(METHANE_ID, consumed);
-				settlement.retrieveAmountResource(OXYGEN_ID, RATIO * consumed);
-			}
+			// Stop using it for heating
+			
+//			else {
+//				// Note that 16 g of methane requires 64 g of oxygen, a 1-to-4 ratio
+//				consumed = Math.min(deltaFuel, Math.min(fuelStored, o2Stored / RATIO));
+//
+//				settlement.retrieveAmountResource(METHANE_ID, consumed);
+//				settlement.retrieveAmountResource(OXYGEN_ID, RATIO * consumed);
+//			}
 		}
 
+//		logger.info(building, 20_000, "deltaFuel: " + Math.round(deltaFuel*1000.0)/1000.0 
+//				+ "  maxFuel: " + Math.round(maxFuel*1000.0)/1000.0);
+		
 		return consumed;
 	}
 
@@ -156,7 +182,8 @@ public class FuelHeatSource extends HeatSource {
 
 		if (toggle) {
 			double spentFuel = consumeFuel(time, building.getSettlement());
-			return getMaxHeat() * spentFuel * thermalEfficiency;
+//			logger.info(building, 20_000, "spent fuel: " + spentFuel + "  kW: " + spentFuel / getMaxFuelPerMillisolPerkW());
+			return spentFuel / getMaxFuelPerMillisolPerkW();
 		}
 
 		return 0;
@@ -166,16 +193,15 @@ public class FuelHeatSource extends HeatSource {
 	public double getAverageHeat(Settlement settlement) {
 		double fuelHeat = getMaxHeat();
 		double fuelValue = settlement.getGoodsManager().getGoodValuePoint(METHANE_ID);
-		fuelValue *= getFuelConsumptionRate();
+		fuelValue *= getFuelConsumptionRate() / 1000D * time;
 		fuelHeat -= fuelValue;
-		if (fuelHeat < 0D)
-			fuelHeat = 0D;
+		if (fuelHeat < 0D) fuelHeat = 0D;
 		return fuelHeat;
 	}
 
 	@Override
 	public double getMaintenanceTime() {
-		return getMaxHeat() * 2D;
+		return getMaxHeat() * MAINTENANCE_FACTOR;
 	}
 
 	@Override

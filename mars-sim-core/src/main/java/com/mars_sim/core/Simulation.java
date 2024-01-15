@@ -122,7 +122,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	private static final Logger logger = Logger.getLogger(Simulation.class.getName());
 
-	private enum SaveType {
+	enum SaveType {
 		/** Save as default.sim. */
 		SAVE_DEFAULT,
 		/** Save as other name. */
@@ -919,10 +919,11 @@ public class Simulation implements ClockListener, Serializable {
 	/**
 	 * Saves a simulation instance to a save file.
 	 *
+	 * @param type
 	 * @param file the file to be saved to.
 	 * @param callback
 	 */
-	private synchronized void saveSimulation(SaveType type, File file, SimulationListener callback) {
+	synchronized void saveSimulation(SaveType type, File file, SimulationListener callback) {
 
 		// Checks to see if the simulation is on pause
 		boolean isAlreadyPaused = masterClock.isPaused();
