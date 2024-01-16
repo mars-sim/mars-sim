@@ -42,7 +42,6 @@ public class LocalAreaUtil {
 	/** default logger. */
 	// May add back private static SimLogger logger = SimLogger.getLogger(LocalAreaUtil.class.getName())
 
-	
 	/** Distance from edge of boundary when determining internal locations. */
 	private static final double INNER_BOUNDARY_DISTANCE = 1.5D;
 
@@ -53,7 +52,7 @@ public class LocalAreaUtil {
 	/**
 	 * Cache for total area containing obstacles for a given coordinate location.
 	 */
-	private static final Map<Coordinates, CachedArea> obstacleAreaCache = new HashMap<>();// ConcurrentHashMap<>();
+	private static final Map<Coordinates, CachedArea> obstacleAreaCache = new HashMap<>();
 
 	private static UnitManager unitManager;
 	private static MasterClock master;
@@ -470,7 +469,7 @@ public class LocalAreaUtil {
 	 */
 	public static Set<LocalBoundedObject> getAllLocalBoundedObjectsAtLocation(Coordinates coordinates) {
 
-		Set<LocalBoundedObject> result = new HashSet<>(); //ConcurrentHashMap.newKeySet();
+		Set<LocalBoundedObject> result = new HashSet<>();
 
 		// Add all vehicles at location.
 		Iterator<Vehicle> i = unitManager.getVehicles().iterator();

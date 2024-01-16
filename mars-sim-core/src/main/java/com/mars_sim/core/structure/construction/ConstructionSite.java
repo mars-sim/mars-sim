@@ -389,7 +389,7 @@ implements  LocalBoundedObject {
         BuildingManager manager = settlement.getBuildingManager();
         int id = manager.getNextTemplateID();
         String buildingType = buildingStage.getInfo().getName();
-        String uniqueName = manager.getBuildingNickName(buildingType);
+        String uniqueName = manager.getUniqueName(buildingType);
         
         int zone = 0;
         

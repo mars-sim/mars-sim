@@ -310,7 +310,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			String elementName,
 			String settlementTemplateName, 
 			Set<Integer> existingIDs, 
-			Map<String, Integer> typeNumMap) {
+			Map<String, Integer> buildingTypeNumMap) {
 		
 		List<Element> buildingNodes = templateElement.getChildren(elementName);
 		for (Element buildingElement : buildingNodes) {
@@ -342,24 +342,24 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			// Get the building type
 			String buildingType = buildingElement.getAttributeValue(TYPE);
 			
-			if (typeNumMap.containsKey(buildingType)) {
-				int last = typeNumMap.get(buildingType);
-				typeNumMap.put(buildingType, last + 1);
-			} else {
-				typeNumMap.put(buildingType, 1);
-			}
-				
-			// Create a building nickname for every building
-			// NOTE: i = id + 1 since i must be > 1, if i = 0, s = null
-
-			int buildingTypeID = typeNumMap.get(buildingType);
+			int last = getNextBuildingTypeID(buildingType, buildingTypeNumMap);
 
 			// e.g. Lander Hab 1, Lander Hab 2
-			String buildingNickName = buildingType + " " + buildingTypeID;
+			String uniqueName = buildingType + " " + last;
 
 			BuildingTemplate buildingTemplate = new BuildingTemplate(id, zone, 
-					buildingType, buildingNickName, bounds);
+					buildingType, uniqueName, bounds);
 
+			// Need to check for collision with previous building templates
+			for (BuildingTemplate t: settlementTemplate.getBuildings()) {
+				BoundedObject o0 = buildingTemplate.getBounds();
+				BoundedObject o1 = t.getBounds();
+				if (BoundedObject.isCollided(o0, o1)) {
+					throw new IllegalStateException(uniqueName + " collided with " + t.getBuildingName() 
+						+ " in settlement template: " + settlementTemplateName + ".");
+				}
+			}
+			
 			settlementTemplate.addBuildingTemplate(buildingTemplate);
 
 			// Create building connection templates.
@@ -406,6 +406,23 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		}
 	}
 	
+	/**
+	 * Gets an available building type suffix ID for a new building.
+	 *
+	 * @param buildingType
+	 * @return type ID (starting from 1, not zero)
+	 */
+	public int getNextBuildingTypeID(String buildingType, Map<String, Integer> buildingTypeIDMap) {
+		int last = 1;
+		if (buildingTypeIDMap.containsKey(buildingType)) {
+			last = buildingTypeIDMap.get(buildingType);
+			buildingTypeIDMap.put(buildingType, ++last);
+		} else {
+			buildingTypeIDMap.put(buildingType, last);
+		}
+		return last;
+	}
+	
 	@Override
 	protected SettlementTemplate parseItemXML(Document doc, boolean predefined) {
 		Element templateElement = doc.getRootElement();
@@ -447,9 +464,11 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				defaultPopulation,
 				defaultNumOfRobots);
 
-		// Process a list of buildings
+
 		Set<Integer> existingBuildingIDs = new HashSet<>();		
 		Map<String, Integer> buildingTypeNumMap = new HashMap<>();
+		
+		// Process a list of buildings
 		parseBuildingORConnectorList(templateElement, settlementTemplate, 
 				BUILDING,
 				settlementTemplateName, 
@@ -458,13 +477,13 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		
 		// Process a list of connectors
 		Set<Integer> existingConnectorIDs = new HashSet<>();
-		Map<String, Integer> connectorTypeNumMap = new HashMap<>();
 		parseBuildingORConnectorList(templateElement, settlementTemplate, 
 				CONNECTOR,
 				settlementTemplateName, 
 				existingConnectorIDs, 
-				connectorTypeNumMap);
+				buildingTypeNumMap);
 
+		// Process a list of standalone buildings
 		parseBuildingORConnectorList(templateElement, settlementTemplate, 
 				STANDALONE,
 				settlementTemplateName, 
@@ -588,20 +607,12 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				// Get the building type
 				String buildingType = buildingTemplate.getBuildingType();
 				
-				if (buildingTypeNumMap.containsKey(buildingType)) {
-					int last = buildingTypeNumMap.get(buildingType);
-					buildingTypeNumMap.put(buildingType, last + 1);
-				} else {
-					// If it's new
-					buildingTypeNumMap.put(buildingType, 1);
-				}
-	
-				int buildingTypeID = buildingTypeNumMap.get(buildingType);
-	
-				String buildingNickName = buildingType + " " + buildingTypeID;
+				int last = getNextBuildingTypeID(buildingType, buildingTypeNumMap);
+
+				String uniqueName = buildingType + " " + last;
 	
 				// Overwrite with a new building nick name
-				buildingTemplate.setBuildingName(buildingNickName);
+				buildingTemplate.setBuildingName(uniqueName);
 	
 				settlementTemplate.addBuildingTemplate(buildingTemplate);
 			}

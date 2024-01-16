@@ -209,12 +209,10 @@ public class Resupply extends Transportable implements SettlementSupplies {
 				
 				int zone = btemplate.getZone();
 				
-				int buildingTypeID = buildingManager.getNextBuildingTypeID(btemplate.getBuildingType());
-				// Note: scenario is null since template does NOT have a scenario string yet
-				String buildingNickName = btemplate.getBuildingType() + " " + buildingTypeID;
+				String uniqueName = buildingManager.getUniqueName(btemplate.getBuildingType());
 
 				BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, zone,
-						btemplate.getBuildingType(), buildingNickName, correctedBounds);
+						btemplate.getBuildingType(), uniqueName, correctedBounds);
 
 				checkTemplateAddBuilding(spec, correctedTemplate);
 			}
@@ -225,6 +223,14 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		return false;
 	}
 
+	/**
+	 * Corrects the width and length of a bounded object.
+	 * Note: it doesn't correct its xloc and yloc.
+	 * 
+	 * @param spec
+	 * @param bounds
+	 * @return
+	 */
 	private static BoundedObject getCorrectedBounds(BuildingSpec spec, BoundedObject bounds) {
 		double width = spec.getWidth();
 
@@ -559,20 +565,19 @@ public class Resupply extends Transportable implements SettlementSupplies {
 					length = DEFAULT_VARIABLE_BUILDING_LENGTH;
 				}
 
-				// If no buildings at settlement, position new building at 0, 0 with random
+				// If no buildings at settlement, position new building at (0, 0) with random
 				// facing.
 				// Note: check to make sure it does not overlap another building.
 				int buildingID = buildingManager.getNextTemplateID();
-				int buildingTypeID = buildingManager.getNextBuildingTypeID(spec.getBuildingType());
-
+				
 				int zone = 0;
 				
-				String buildingNickName = spec.getBuildingType() + " " + buildingTypeID;
+				String uniqueName = buildingManager.getUniqueName(spec.getBuildingType());
 				// Note : ask for user to define the location for the new building as well
 				newPosition = new BuildingTemplate(buildingID, zone,
-						spec.getBuildingType(), buildingNickName, new BoundedObject(0,  0, width, length, 0));
+						spec.getBuildingType(), uniqueName, new BoundedObject(0,  0, width, length, 0));
 
-				logger.config("Case 5: " + POSITIONING + buildingNickName + " at (0, 0)");
+				logger.config("Case 5: " + POSITIONING + uniqueName + " at (0, 0)");
 				return newPosition;
 			}
 		}
@@ -897,17 +902,16 @@ public class Resupply extends Transportable implements SettlementSupplies {
 			if (buildingManager.isBuildingLocationOpen(position)) {
 				// Set the new building here.
 				int buildingID = buildingManager.getNextTemplateID();
-				int buildingTypeID = buildingManager.getNextBuildingTypeID(spec.getBuildingType());
-
+			
 				int zone = 0;
 				
-				String buildingNickName = spec.getBuildingType() + " " + buildingTypeID;
+				String uniqueName = buildingManager.getUniqueName(spec.getBuildingType());
 
 				logger.config(POSITIONING + "at (" + Math.round(rectCenterX * 10D) / 10D + ", "
 						+ Math.round(rectCenterY * 10D) / 10D + ") at " + Math.round(rectRotation) + " deg");
 
 				newPosition = new BuildingTemplate(buildingID, zone,
-						spec.getBuildingType(), buildingNickName, position);
+						spec.getBuildingType(), uniqueName, position);
 				break;
 			}
 		}
@@ -991,15 +995,14 @@ public class Resupply extends Transportable implements SettlementSupplies {
 			double centerY = (p1.getY() + p2.getY()) / 2D;
 			double newLength = p1.distance(p2);
 			double facingDegrees = LocalAreaUtil.getDirection(p1, p2);
-			// Set the new building here.
+		
 			int buildingID = buildingManager.getNextTemplateID();
-			int buildingTypeID = buildingManager.getNextBuildingTypeID(spec.getBuildingType());
-
+		
 			int zone = 0;
 			
-			String buildingNickName = spec.getBuildingType() + " " + buildingTypeID;
+			String uniqueName = buildingManager.getUniqueName(spec.getBuildingType());
 
-			newPosition = new BuildingTemplate(buildingID, zone, spec.getBuildingType(), buildingNickName, 
+			newPosition = new BuildingTemplate(buildingID, zone, spec.getBuildingType(), uniqueName, 
 					new BoundedObject(centerX, centerY, width, newLength, facingDegrees));
 		}
 
