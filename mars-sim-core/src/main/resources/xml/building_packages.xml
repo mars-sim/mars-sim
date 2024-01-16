@@ -83,7 +83,7 @@
 	</building-package>
 	
 		<building-package name="Syngas Set 1 - 1x1" >
-	    <standalone type="Syngas Plant" xloc="20.0" yloc="-10.0" facing="90.0" />    
+	    <standalone type="Syngas Plant" xloc="30.0" yloc="-10.0" facing="90.0" />    
 	</building-package>
 
 	<building-package name="Syngas Set 1 - 1x2" >

@@ -45,7 +45,7 @@
 
         
     <!-- Hallway connecting lander hab and inflatable greenhouse. -->
-    <!-- Note: Aa hallway has fixed width but variable length. Therefore,
+    <!-- Note: A hallway has fixed width but variable length. Therefore,
         the length argument must be provided below. -->
     <connector id="4" type="Hallway" length="3.0" xloc="-6.0" yloc="0.0" facing="270.0">
         <connection-list>
@@ -56,8 +56,6 @@
     
     
     <!-- Hallway connecting lander hab and research hab. -->
-    <!-- Note: Aa hallway has fixed width but variable length. Therefore,
-        the length argument must be provided below. -->
     <connector id="5" type="Hallway" length="3.0" xloc="6.0" yloc="0.0" facing="270.0">
         <connection-list>
             <connection id="2" hatch-facing="west" />
