@@ -181,70 +181,18 @@
         </connection-list>
     </building>
 
-    <building type="MD1 Nuclear Reactor" xloc="500.0"
-        yloc="-500" facing="0.0" />
-    <building type="MD1 Nuclear Reactor" xloc="500.0"
-        yloc="-510" facing="0.0" />
-        
-        
-    <building type="Kilopower Reactor" xloc="490.0"
-        yloc="-500" facing="0.0" />
-    <building type="Kilopower Reactor" xloc="490.0"
-        yloc="-505" facing="0.0" />
-        
-
-    <building type="Medium Battery Array" xloc="-24.0" yloc="-40.0"
-        facing="0.0" />
-    <building type="Wind Turbine" xloc="-24.0" yloc="-60.0"
-        facing="0.0" />
-    <building type="Wind Turbine" xloc="-24.0" yloc="-80.0"
-        facing="0.0" />
-    <building type="Wind Turbine" xloc="-24.0" yloc="-100.0"
-        facing="0.0" />
-        
-
-    <building type="Methane Power Generator" xloc="40.0"
-        yloc="-40.0" facing="0.0" />
-    <building type="Methane Power Generator" xloc="55.0"
-        yloc="-40.0" facing="0.0" />
-        
-    <building type="Medium Battery Array" xloc="40.0"
-        yloc="-50.0" facing="0.0" />
-    <building type="Solar Photovoltaic Array" xloc="40.0"
-        yloc="-60.0" facing="0.0" />
-    <building type="Solar Photovoltaic Array" xloc="40.0"
-        yloc="-70.0" facing="0.0" />
-    <building type="Solar Photovoltaic Array" xloc="40.0"
-        yloc="-80.0" facing="0.0" />
-        
-     <building type="Medium Battery Array" xloc="40.0"
-        yloc="-90.0" facing="0.0" />
-    <building type="Solar Photovoltaic Array" xloc="40.0"
-        yloc="-100.0" facing="0.0" />
-    <building type="Solar Photovoltaic Array" xloc="40.0"
-        yloc="-110.0" facing="0.0" />
-    <building type="Solar Photovoltaic Array" xloc="40.0"
-        yloc="-120.0" facing="0.0" />
-
-
-    <building type="Atmospheric Processor" xloc="20"
-        yloc="-50.0" facing="90.0" />
-
-
-    <building type="Large Sabatier Processor" xloc="0.0"
-        yloc="-70.0" facing="90.0" />
-    <building type="Large Sabatier Processor" xloc="0.0"
-        yloc="-80.0" facing="90.0" />
-    <building type="Large Sabatier Processor" xloc="0.0"
-        yloc="-90.0" facing="90.0" />
-
-    <building type="Solar Photovoltaic Array" xloc="50.0"
-        yloc="-50.0" facing="0.0" />
-
 
     <!-- Building Packages -->
-    <building-package name="Storage Bin Set 1"/>
+    <building-package name="Storage Set 1 - 3x3"/>
    	<building-package name="ERV Set 1"/>
+   	<building-package name="Air Set 1 - 1x3"/>
+    <building-package name="Sabatier Set 1 - 1x3"/>
+	<building-package name="Syngas Set 1 - 1x1"/>
+	<building-package name="Solar Set 1 - 1x6"/>
+	<building-package name="Wind Set 1 - 1x3"/>
+	<building-package name="Kilo Set 1 - 1x2"/>
+	<building-package name="MD1 Set 1 - 1x2"/>
+	<building-package name="Methane Set 1 - 1x2"/>   
 
 
     <vehicle type="Explorer Rover" number="2" />

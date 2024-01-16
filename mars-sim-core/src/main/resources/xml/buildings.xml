@@ -362,8 +362,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>		
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="2"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="4"/>
+				
 				<process-engine name="Atmospheric processing"/>
-				<process-engine name="Syngas Plant"/>
+				<process-engine name="Methanol Synthesis"/>
 				<process-engine name="Melt Ice" number-modules="3" />
 				<process-engine name="Filter Brine Water" number-modules="3" />
 			
@@ -1467,7 +1468,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	
 	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" north-south-alignment="length" base-level="0"
 		wear-lifetime="3340000" maintenance-time="500" room-temperature= "0" base-mass="4000">
-		<description>The MD1 Nuclear Reactor is the first compact fission power plant commissioned 
+		<description>The MD1 Nuclear Reactor at 40kW is the first compact fission power plant commissioned 
 		    for use off-world. At 83.3% load capacity, it provides a consistent power supply of ~40 kWe.</description>
 		<power-required base-power="0.25" base-power-down-power="0.025" />
 		<functions>
@@ -1517,7 +1518,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20"  discharge-rate="1.25"/>
 			
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
+				<process-engine name="Atmospheric processing" number-modules="4"/>
+				
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>				
 				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="2"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="8"/>
@@ -1554,6 +1556,35 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 <!-- end of Atmospheric Processor -->
+
+	<building type="Syngas Plant" width="5.0" length="5.0" north-south-alignment="length" base-level="0"
+			wear-lifetime="3340000" maintenance-time="150" room-temperature="0" base-mass="1000">
+		<description> The synthesis gas plant is defined as a gas with H2 and CO as the main 
+			components of fuel. Syngas plants produces chemicals and fuel such as methanol and 
+			ammonia, etc. 
+		</description>
+		<power-required base-power=".1" base-power-down-power=".01"/>
+
+		<functions>
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			
+			<power-storage capacity="20"  discharge-rate="1.25"/>
+			
+			<resource-processing power-down-level="0.0">
+				<process-engine name="Methanol Synthesis" number-modules="4"/>
+			</resource-processing>
+
+			<storage capacity="100000">
+				<resource-storage resource="hydrogen" capacity="20000.0" />
+				<resource-storage resource="methanol" capacity="15000.0" />
+				<resource-storage resource="water" capacity="10000.0" />
+			</storage>
+				
+		</functions>
+	</building>
+<!-- end of Syngas Plant -->
 
 	<building type="Residential Quarters" width="7.0" length="9.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="2000">
@@ -2278,7 +2309,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Methane Power Generator" width="5.0" length="5.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="500" room-temperature= "0" base-mass="500">
-		<description>This 40 kW Methane Power generator uses methane gas for generating
+		<description>This 30 kW Methane Power generator uses methane gas for generating
 			electricity.
 			
 			Note : every mole of methane (16 g) releases 810 KJ of energy if burning 
@@ -2295,7 +2326,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Fuel Power Source" toggle="true" power="40.0"
+				<power-source type="Fuel Power Source" toggle="true" power="30.0"
 					fuel-type="methane"	consumption-rate="95.877"/>
 			</power-generation>
 			<power-storage capacity="40" discharge-rate="1.25"/>
@@ -2596,7 +2627,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 		</functions>
 	</building>
-<!-- Small Sabatier Processor -->
+<!-- Large Sabatier Processor -->
 
 	<!-- An Array of Electrical Batteries -->
 	<building type="Medium Battery Array" width="5.0" length="10.0" north-south-alignment="length" base-level="0"
@@ -3132,8 +3163,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="2" />
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="4"/>
+				
 				<process-engine name="Atmospheric processing"/>
-				<process-engine name="Syngas Plant"/>
+				<process-engine name="Methanol Synthesis"/>
 				<process-engine name="Melt Ice" number-modules="3" />
 				<process-engine name="Filter Brine Water" number-modules="3" />
 								
