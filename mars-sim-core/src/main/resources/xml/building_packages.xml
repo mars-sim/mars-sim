@@ -52,7 +52,7 @@
 	    <standalone type="ERV-C" xloc="12.0" yloc="39.0" facing="0.0" />
 	</building-package>
 
-	<building-package name="Air Set 1 = 1x1" >
+	<building-package name="Air Set 1 - 1x1" >
 	    <standalone type="Atmospheric Processor" xloc="10.0" yloc="-10.0" facing="90.0" />  
 	</building-package>
 	
@@ -131,10 +131,27 @@
 	    <standalone type="Kilopower Reactor" xloc="190.0" yloc="-5" facing="0.0" />	
 	    <standalone type="Kilopower Reactor" xloc="190.0" yloc="-10" facing="0.0" />	  
 	</building-package>
-	   
+
+	<building-package name="Kilo Set 1 - 1x4" >
+	    <standalone type="Kilopower Reactor" xloc="190.0" yloc="0" facing="0.0" />
+	    <standalone type="Kilopower Reactor" xloc="190.0" yloc="-5" facing="0.0" />	
+	    <standalone type="Kilopower Reactor" xloc="190.0" yloc="-10" facing="0.0" />	  
+	    <standalone type="Kilopower Reactor" xloc="190.0" yloc="-15" facing="0.0" />
+	</building-package>
+	
+    <building-package name="TOPAZ-2A Set 1 - 1x1">
+	    <standalone type="TOPAZ-2A Reactor" xloc="200.0" yloc="0" facing="0.0" />    	
+	</building-package>
+		   
     <building-package name="TOPAZ-2A Set 1 - 1x2">
 	    <standalone type="TOPAZ-2A Reactor" xloc="200.0" yloc="0" facing="0.0" />
 	    <standalone type="TOPAZ-2A Reactor" xloc="200.0" yloc="20" facing="0.0" />     	
+	</building-package>
+	
+	<building-package name="TOPAZ-2A Set 1 - 1x3">
+	    <standalone type="TOPAZ-2A Reactor" xloc="200.0" yloc="0" facing="0.0" />
+	    <standalone type="TOPAZ-2A Reactor" xloc="200.0" yloc="20" facing="0.0" />  
+	    <standalone type="TOPAZ-2A Reactor" xloc="200.0" yloc="40" facing="0.0" />   	
 	</building-package>
 	
     <building-package name="TOPAZ-2A Set 1 - 1x4">
