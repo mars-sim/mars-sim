@@ -268,7 +268,8 @@
 	     This can be easily maintained in small pressure vessels but requires extremely 
 	     strong and heavy vessels in large volumes.
 	
-	     See https://marspedia.org/Atmospheric_processing and https://marspedia.org/Nitrogen 
+	     https://marspedia.org/Atmospheric_processing 
+	     https://marspedia.org/Nitrogen 
 		 
 		</description> 			
 		<input resource="carbon dioxide" rate="100.0" ambient="true" />
@@ -282,16 +283,20 @@
 	</process>
 
 
-	<process name="Syngas Plant" power-required=".1" >
+	<process name="Methanol Synthesis" power-required="2" >
 	<description>
 		Synthesis gas (or Syngas) is used to produce methanol as in the following reaction :
+				CO2 + 3 H2 -> H2O + CH3OH	
+			   44 g,  6 g    18 g,   32 g			
 		
-				CO2 + 3 H2 -> H2O + CH3OH
-				
-			   44 g,  6 g    18 g,   32 g
-				
-		see	https://www.essentialchemicalindustry.org/chemicals/methanol.html 
+		Assume the use of heterogeneous catalysts such as Cu/ZnO 
+
+		Assume 1000 kWh per 1000 kg, or 1 kWh per 1 kg, 50 kWh per 50 kg
+		Power required: 50 kWh / 24 h = ~2 kW
 		
+		https://www.essentialchemicalindustry.org/chemicals/methanol.html
+		https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6926878/
+		https://www.biogreen-energy.com/syngas
 	</description>
 		<input resource="carbon dioxide" rate="44" ambient="true" />
 		<input resource="hydrogen" rate="6.0"  />				
@@ -301,9 +306,8 @@
 	</process>
 
 
-	<process name="Melt Ice" power-required="1" >
+	<process name="Melt Ice" power-required="0.3125" >
 		<description> Melting permafrost ice and filtering the water. 
-			Requires 450kJ/kg extraction energy.
 			Specific heat capacity of ice is 2.09 J/g/C	
 					
 			e.g. For 1 mol of ice, from -25 C to 0 C
@@ -317,13 +321,20 @@
 						
 			For 1 kg, heating for 25 millisols,
 			Heat req = 386.7 kJ/(88.775244*25) = 0.1742 kW / kg			
-			       or 1.3939 kW for 8 kg of ice				
+			       or 1.3939 kW for 8 kg of ice	or 10.3785 kW for 60 kg of ice			
 						
+			Assume 450kJ/kg extraction energy in this case,
+			
+			.45 MJ * 60 = 27 MJ = 7.5 kWh for 60 kg water
+			Power required = 7.5 kWh / 24 h = 0.3125 kW
+			
+			(Given that 1 MJ = .278 kWh)
+									
 			See "Water and Brines on Mars: Current Evidence and 
 			Implications for MSL", 2013	
 												
-			Note: assume using vacuum chamber, microwaving, or field effects, 
-			electrocatalysis, or other techniques to reduce power usage of 
+			Future: if using vacuum chamber, microwaving, or field effects, 
+			electrocatalysis, or other techniques, one may reduce power usage of 
 			ice melting by ~10-fold.	
 		</description>
 		<input resource="ice" rate="80.0"  />

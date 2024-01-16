@@ -2,20 +2,20 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="500"
    height="500"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="small_sabatier_processor.svg">
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="large_sabatier_processor.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs4">
     <linearGradient
@@ -271,35 +271,45 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.114"
-     inkscape:cx="91.113106"
-     inkscape:cy="250"
+     inkscape:zoom="1.5754339"
+     inkscape:cx="158.36907"
+     inkscape:cy="241.52076"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer2"
      showgrid="true"
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-global="true"
-     inkscape:window-width="1871"
-     inkscape:window-height="1056"
-     inkscape:window-x="49"
-     inkscape:window-y="24"
-     inkscape:window-maximized="1">
+     inkscape:window-width="1920"
+     inkscape:window-height="1051"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:showpageshadow="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050">
     <inkscape:grid
        type="xygrid"
        id="grid2816"
        empspacing="5"
        visible="true"
        enabled="true"
-       snapvisiblegridlinesonly="true" />
+       snapvisiblegridlinesonly="true"
+       originx="0"
+       originy="0"
+       spacingy="1"
+       spacingx="1"
+       units="px" />
     <sodipodi:guide
        orientation="0,1"
        position="179.53321,249.55117"
-       id="guide2818" />
+       id="guide2818"
+       inkscape:locked="false" />
     <sodipodi:guide
        orientation="1,0"
        position="250.44883,319.56912"
-       id="guide2820" />
+       id="guide2820"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -390,7 +400,8 @@
        height="130.00005"
        x="110"
        y="50"
-       ry="20" />
+       ry="20"
+       inkscape:label="top blue chamber" />
     <path
        sodipodi:type="arc"
        style="fill:url(#radialGradient3652);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
@@ -399,56 +410,64 @@
        sodipodi:cy="230"
        sodipodi:rx="50"
        sodipodi:ry="50"
-       d="m 370,230 a 50,50 0 1 1 -100,0 50,50 0 1 1 100,0 z" />
+       d="m 370,230 a 50,50 0 1 1 -100,0 50,50 0 1 1 100,0 z"
+       inkscape:label="circle1" />
     <rect
        style="fill:#898aa7;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect3654"
        width="130"
        height="150"
        x="140"
-       y="300" />
+       y="300"
+       inkscape:label="pale blue chamber" />
     <rect
        style="fill:#3c5f64;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect3656"
        width="110"
        height="70"
        x="280"
-       y="340" />
+       y="340"
+       inkscape:label="green chamber" />
     <rect
        style="fill:url(#linearGradient3667);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect3658"
        width="20"
        height="120"
        x="150"
-       y="180" />
+       y="180"
+       inkscape:label="pipe3" />
     <rect
        y="180"
        x="180"
        height="120"
        width="20"
        id="rect3671"
-       style="fill:url(#linearGradient3676);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+       style="fill:url(#linearGradient3676);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       inkscape:label="pipe2" />
     <rect
        style="fill:url(#linearGradient3680);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect3678"
        width="20"
        height="120"
        x="210"
-       y="180" />
+       y="180"
+       inkscape:label="pipe1" />
     <rect
        y="180"
        x="240"
        height="120"
        width="20"
        id="rect3682"
-       style="fill:url(#linearGradient3684);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+       style="fill:url(#linearGradient3684);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       inkscape:label="center frame" />
     <rect
        style="fill:url(#linearGradient3694);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect3686"
        width="10"
        height="40"
        x="270"
-       y="350" />
+       y="350"
+       inkscape:label="gold inner pipe" />
     <rect
        style="fill:url(#linearGradient3706);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect3698"
@@ -456,14 +475,16 @@
        height="100"
        x="350"
        y="180"
-       ry="10" />
+       ry="10"
+       inkscape:label="cylinder" />
     <rect
        style="fill:#51526e;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect3710"
        width="230"
        height="50"
        x="150"
-       y="420" />
+       y="420"
+       inkscape:label="bottom rect" />
     <path
        sodipodi:type="arc"
        style="fill:url(#radialGradient3720);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
@@ -472,33 +493,38 @@
        sodipodi:cy="350"
        sodipodi:rx="40"
        sodipodi:ry="40"
-       d="m 230,350 a 40,40 0 1 1 -80,0 40,40 0 1 1 80,0 z" />
+       d="m 230,350 a 40,40 0 1 1 -80,0 40,40 0 1 1 80,0 z"
+       inkscape:label="circle2" />
     <path
        style="fill:#a1a5a3;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dashoffset:0"
        d="m 322.26212,382.40573 c 0,0 4.87983,-8.8033 9.08438,-8.75223 4.10233,0.0498 8.6535,8.75223 8.6535,8.75223 l 0,37.59425 -17.73788,0 0,-37.59425 z"
        id="rect3724"
        sodipodi:nodetypes="cacccc"
-       inkscape:connector-curvature="0" />
+       inkscape:connector-curvature="0"
+       inkscape:label="sliver stand" />
     <rect
        style="fill:url(#linearGradient3736);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect3727"
        width="20"
        height="30"
        x="390"
-       y="100" />
+       y="100"
+       inkscape:label="sliver pipe" />
     <rect
        style="fill:#aa1811;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect3740"
        width="10"
        height="50"
        x="410"
-       y="90" />
+       y="90"
+       inkscape:label="red lid" />
     <path
        style="fill:none;stroke:#ac0000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="m 270,320 c 0,0 33.45821,2.03639 50,0 13.64071,-1.67925 29.27935,-1.4002 40,-10 5.81409,-4.6639 8.28752,-12.74583 10,-20 0.76584,-3.24416 0,-10 0,-10"
        id="path3742"
        sodipodi:nodetypes="caaac"
-       inkscape:connector-curvature="0" />
+       inkscape:connector-curvature="0"
+       inkscape:label="red cable" />
   </g>
   <g
      inkscape:groupmode="layer"
