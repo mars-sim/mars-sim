@@ -169,8 +169,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- List of buildings that can be used in a settlement template (see settlements.xml) -->
 <building-list>
 	<!-- type: the type of the building. -->
-	<!-- width: the width of the building in meters. -->
-	<!-- length: the length of the building in meters. -->
+	<!-- width: the width (east-west span) of the building  in meters. -->
+	<!-- length: the length (north-south span) of the building in meters. -->
 	<!-- base-level: 0 for above-ground building, -1 for in-ground building. -->
 	<!-- wear-lifetime: in millisols (old default : 3340 Sols or 5 orbits). -->
 	<!-- maintenance-time: in millisols (old default : 50 millisols). -->

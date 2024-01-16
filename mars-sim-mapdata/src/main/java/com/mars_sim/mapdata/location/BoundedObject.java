@@ -7,6 +7,8 @@
 
 package com.mars_sim.mapdata.location;
 
+import java.awt.geom.Rectangle2D;
+
 public class BoundedObject implements LocalBoundedObject {
 
 	private static final long serialVersionUID = 1L;
@@ -50,4 +52,26 @@ public class BoundedObject implements LocalBoundedObject {
 	public LocalPosition getPosition() {
 		return loc;
 	}
+	
+	/**
+	 * Are two rectangles collided ? 
+	 * Note: assume no rotation
+	 * 
+	 * @param o0
+	 * @param o1
+	 * @return
+	 */
+	public static boolean isCollided(BoundedObject o0, BoundedObject o1) {
+		Rectangle2D rectA = new Rectangle2D.Double(o0.getXLocation() - (o0.getWidth() / 2D),
+				o0.getYLocation() - (o0.getLength() / 2D), o0.getWidth(), o0.getLength());
+		Rectangle2D rectB = new Rectangle2D.Double(o1.getXLocation() - (o1.getWidth() / 2D),
+				o0.getYLocation() - (o1.getLength() / 2D), o1.getWidth(), o1.getLength());
+	
+		if(rectA.intersects(rectB)) {
+			return true;
+		}
+			
+		return false;
+	}
+	
 }

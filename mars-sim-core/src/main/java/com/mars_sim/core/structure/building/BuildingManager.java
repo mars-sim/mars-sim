@@ -2068,8 +2068,8 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Checks if a proposed building location is open or intersects with existing
-	 * buildings or construction sites.
+	 * Checks if a proposed building location is open and without intersecting with 
+	 * any existing buildings or construction sites.
 	 *
 	 * @param position New building position
 	 * @param site   the new construction site or null if none.
@@ -2172,29 +2172,28 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets an available building type ID for a new building.
+	 * Gets an available building type suffix ID for a new building.
 	 *
 	 * @param buildingType
-	 * @return type ID (starting from 1).
+	 * @return type ID (starting from 1, not zero)
 	 */
 	public int getNextBuildingTypeID(String buildingType) {
-		int id = 1;
+		int last = 1;
 		if (buildingTypeIDMap.containsKey(buildingType)) {
-			id = buildingTypeIDMap.get(buildingType);
-			buildingTypeIDMap.put(buildingType, id + 1);
-			return id;
+			last = buildingTypeIDMap.get(buildingType);
+			buildingTypeIDMap.put(buildingType, ++last);
 		} else {
-			buildingTypeIDMap.put(buildingType, id);
-			return id;
+			buildingTypeIDMap.put(buildingType, last);
 		}
+		return last;
 	}
 
 	/**
-	 * Gets a unique nick name for a new building.
+	 * Gets an unique name for a new building.
 	 *
 	 * @return a unique nick name
 	 */
-	public String getBuildingNickName(String buildingType) {
+	public String getUniqueName(String buildingType) {
 		return buildingType + " " + getNextBuildingTypeID(buildingType);
 	}
 
