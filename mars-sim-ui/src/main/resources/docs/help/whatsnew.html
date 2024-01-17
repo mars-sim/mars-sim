@@ -8,30 +8,37 @@
 <BODY>
 <div id="my_message"><H2> What's New </H2></div>
 
-<H3> Version 3.7.1 (Fri 11 Jan 2024) </H3>
+<H3> Version 3.7.1 (Wed 17 Jan 2024) </H3>
 
 <H4>A. CORE ENGINE IMPROVEMENTS :</H4>
 <OL>
-  <LI>Building: add north-south alignment attribute to each building.</LI>  
+  <LI>Building Alignment: add north-south alignment attribute to each building.</LI> 
+  <LI>Building Package: add standalone building sets for faster settlement template creation.</LI>  
+  <LI>Building: add new Syngas Plant building for synthesizing methanol for vehicles.</LI>
   <LI>Task: add checking for water level change and resource demand in Budget Resource Task.</LI>
   <LI>Threading: quit clock thread while loop when paused to save CPU cycles.</LI>      
   <LI>Walking: simplify colision-related methods.</LI>    
+  <LI>Weather: rework refresh timing with 5 weather params.</LI> 
 </OL>
   
 <H4>B. UI IMPROVEMENT :</H4>
 <OL>
   <LI>Airlock: fix failing to ingress.</LI>
   <LI>Dust Storm: show dust storm status in settlement map banner.</LI>
+  <LI>ERVs: relocate ERV closer to (0,0) and align next to habs.</LI>  
   <LI>Layout: rework activity spots and add a lab room in Medical Hab.</LI>
   <LI>Location Tab: show settlement or vehicle vicinity.</LI>
 </OL>  
 
 <H4>C. FIXES :</H4>
 <OL>
-	<LI>Airlock: avoid getting stuck in pre-breathing phase when a person is too exhausted.</LI>
-	<LI>Goods: ensure no same goods be selected in the buying and selling list.</LI>
-	<LI>Sleep: ensure settler can get some sleep in astronomy observatory.</LI>
-    <LI>Time: limit to certain iterations in A* Pathfinding algorithm when walking outside.</LI>
+  <LI>Airlock: avoid getting stuck in pre-breathing phase when a person is too exhausted.</LI>
+  <LI>Goods: ensure no same goods be selected in the buying and selling list.</LI>
+  <LI>Heating: prevent temperature instability and correct air heat ink.</LI>
+  <LI>Heat/Power Generation: correct calculation with methane fuel spent and its power output.</LI>
+  <LI>Maintenance: correct computing maintenance meta tasks and work time.</LI>
+  <LI>Sleep: ensure settler can get some sleep in astronomy observatory.</LI>
+  <LI>Time: limit to certain iterations in A* pathfinding algorithm when walking outside.</LI>
 <OL>
 
 <br>

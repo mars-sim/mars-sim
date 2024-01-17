@@ -19,13 +19,16 @@ public class RadioProtectiveAgent extends Medication {
 	private static final long serialVersionUID = 1L;
 
     // The name of the medication.
+	// e.g. Amifostine, Melatonin, Genistein, etc.
+	// Note that these are taken preferably prior to exposure but
+	// may still alleviate cell damages by ionizing radiations after exposure events
     public static final String NAME = "Radioprotective Agent";
     		
     // Stress reduction amount.
     private static final double REDUCTION = .01D;
     
     // Duration (millisols).
-    private static final double DURATION = 3000D;
+    private static final double DURATION = 1000D;
     
     // Note: Research which medication is more effective under what situation
     // private static final String[] AGENTS = new String[] {"Amifostine", "Melatonin", "Genistein"};

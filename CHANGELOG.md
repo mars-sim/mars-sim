@@ -5,7 +5,7 @@ Project: https://mars-sim.com
 GitHub: https://github.com/mars-sim/mars-sim  
 
 ------------------------------------------|---------------------
-## Version 3.8.0 (___ __ Jan 2024)
+## Version 3.8.0 (__ __ Jan 2024)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
@@ -37,12 +37,12 @@ GitHub: https://github.com/mars-sim/mars-sim
 ------------------------------------------|---------------------
 
 
-## Version 3.7.1 (Fri 11 Jan 2024)
+## Version 3.7.1 (Wed 17 Jan 2024)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
   <LI>Building Alignment: add north-south alignment attribute to each building.</LI> 
-  <LI>Building Package: add sets of standalone buildings for quicker settlement template creation.</LI>  
+  <LI>Building Package: add standalone building sets for faster settlement template creation.</LI>  
   <LI>Building: add new Syngas Plant building for synthesizing methanol for vehicles.</LI>
   <LI>Task: add checking for water level change and resource demand in Budget Resource Task.</LI>
   <LI>Threading: quit clock thread while loop when paused to save CPU cycles.</LI>      
@@ -61,13 +61,13 @@ GitHub: https://github.com/mars-sim/mars-sim
 
 ### C. FIXES :
 <OL>
-	<LI>Airlock: avoid getting stuck in pre-breathing phase when a person is too exhausted.</LI>
-	<LI>Goods: ensure no same goods be selected in the buying and selling list.</LI>
-    <LI>Heating: prevent temperature instability and correct air heat ink.</LI>
-	<LI>Heat/Power Generation: correct calculation with methane fuel spent and its power output.</LI>
-    <LI>Maintenance: correct computing maintenance meta tasks and work time.</LI>
-	<LI>Sleep: ensure settler can get some sleep in astronomy observatory.</LI>
-    <LI>Time: limit to certain iterations in A* Pathfinding algorithm when walking outside.</LI>
+  <LI>Airlock: avoid getting stuck in pre-breathing phase when a person is too exhausted.</LI>
+  <LI>Goods: ensure no same goods be selected in the buying and selling list.</LI>
+  <LI>Heating: prevent temperature instability and correct air heat ink.</LI>
+  <LI>Heat/Power Generation: correct calculation with methane fuel spent and its power output.</LI>
+  <LI>Maintenance: correct computing maintenance meta tasks and work time.</LI>
+  <LI>Sleep: ensure settler can get some sleep in astronomy observatory.</LI>
+  <LI>Time: limit to certain iterations in A* pathfinding algorithm when walking outside.</LI>
 <OL>
 
 ------------------------------------------|---------------------
