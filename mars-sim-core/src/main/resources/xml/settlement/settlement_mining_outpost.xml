@@ -127,7 +127,7 @@
 
     <!-- Building Packages -->
     <building-package name="Storage Set 1 - 3x3"/>
- 	<building-package name="Air Set 1 - 1x2"/>
+ 	<building-package name="Air Set 2 - 1x2"/>
     <building-package name="Sabatier Set 1 - 1x2"/>
 	<building-package name="Syngas Set 1 - 1x1"/>
  	<building-package name="Wind Set 1 - 1x9"/>   
@@ -151,9 +151,12 @@
  	<equipment type="wheelbarrow" number="12" />
     
     <!-- Life Support Resources -->
-	<resource type="food" amount="720" />
-	<resource type="water" amount="3600" />
-	<resource type="oxygen" amount="1440" />
+	<resource type="food" amount="2880" />
+	<resource type="water" amount="7200" />
+	<resource type="oxygen" amount="7200" />
+	<resource type="hydrogen" amount="7200" />
+	<resource type="methane" amount="7200" />
+	<resource type="methanol" amount="7200" />
 	
     <part-package name="package 1" number="1" />
   

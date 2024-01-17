@@ -192,7 +192,6 @@
    	<building-package name="Wind Set 1 - 1x6"/>	
    	<building-package name="TOPAZ-2A Set 1 - 1x3"/>
 	<building-package name="TOPAZ-3 Set 1 - 1x3"/>		   	
-	<building-package name="Methane Set 1 - 1x2"/>   	
 
 
     <vehicle type="Explorer Rover" number="2" />
