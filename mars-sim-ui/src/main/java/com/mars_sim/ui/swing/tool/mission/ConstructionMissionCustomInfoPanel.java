@@ -71,6 +71,7 @@ implements ConstructionListener {
 
     /**
      * Constructor.
+     * 
      * @param desktop the main desktop panel.
      */
     public ConstructionMissionCustomInfoPanel(MainDesktopPane desktop) {
@@ -119,7 +120,8 @@ implements ConstructionListener {
          
         // Create remaining construction materials label panel.
         JPanel remainingMaterialsLabelPane = new JPanel(new BorderLayout(1, 1));
-        contentsPanel.add(remainingMaterialsLabelPane,  BorderLayout.SOUTH);
+//        contentsPanel.add(remainingMaterialsLabelPane,  BorderLayout.SOUTH);
+        add(remainingMaterialsLabelPane, BorderLayout.CENTER);
         
         // Create remaining construction materials label.
         String remainingMaterialsLabelString = Msg.getString("ConstructionMissionCustomInfoPanel.constructionMaterials"); //$NON-NLS-1$
@@ -129,15 +131,17 @@ implements ConstructionListener {
         // Create the construction materials table and model.
         materialsTableModel = new MaterialsTableModel();
         JTable materialsTable = new JTable(materialsTableModel);
+        materialsTable.setPreferredSize(new Dimension(-1, 100));  
         materialsTable.setRowSelectionAllowed(true);
 
         // Create a scroll pane for the remaining construction materials table.
         scrollPane = new JScrollPane();
+//        add(scrollPane, BorderLayout.CENTER);
         remainingMaterialsLabelPane.add(scrollPane);
         scrollPane.getVerticalScrollBar().setUnitIncrement(5);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setViewportView(materialsTable);
-        scrollPane.setPreferredSize(new Dimension(-1, -1));      
+//        scrollPane.setPreferredSize(new Dimension(100, 120));      
     }
 
     @Override
@@ -318,6 +322,7 @@ implements ConstructionListener {
 
         // Data members.
         protected Map<Good, Integer> missingMap;
+        protected Map<Good, Integer> availableMap;
         protected Map<Good, Integer> originalMap;
         protected List<Good> goodsList;
 
@@ -331,6 +336,7 @@ implements ConstructionListener {
             // Initialize goods map and list.
             goodsList = new ArrayList<>();
             originalMap = new HashMap<>();
+            availableMap = new HashMap<>();
             missingMap = new HashMap<>();
         }
 
@@ -349,7 +355,7 @@ implements ConstructionListener {
          * @return number of columns.
          */
         public int getColumnCount() {
-            return 3;
+            return 4;
         }
 
         /**
@@ -364,6 +370,9 @@ implements ConstructionListener {
             }
             else if (columnIndex == 1) {
                 return Msg.getString("ConstructionMissionCustomInfoPanel.column.missing"); //$NON-NLS-1$
+            }
+            else if (columnIndex == 2) {
+                return Msg.getString("ConstructionMissionCustomInfoPanel.column.available"); //$NON-NLS-1$
             }
             else {
                 return Msg.getString("ConstructionMissionCustomInfoPanel.column.original"); //$NON-NLS-1$
@@ -387,6 +396,9 @@ implements ConstructionListener {
                 }
                 else if (column == 1) {
                     result = missingMap.get(good);
+                }
+                else if (column == 2) {
+                    result = availableMap.get(good);
                 }
                 else {
                     result = originalMap.get(good);
@@ -430,20 +442,38 @@ implements ConstructionListener {
                 goodsList = new ArrayList<>(originalMap.keySet());
                 Collections.sort(goodsList);
 
+                // Add available resources.
+                availableMap = new HashMap<>();
+                
+                Iterator<Integer> i1 = stage.getAvailableResources().keySet().iterator();
+                while (i1.hasNext()) {
+                	Integer resource = i1.next();
+                    double amount = stage.getAvailableResources().get(resource);
+                    availableMap.put(GoodsUtil.getGood(resource), (int) amount);
+                }
+
+                Iterator<Integer> j1 = stage.getAvailableParts().keySet().iterator();
+                while (j1.hasNext()) {
+                	Integer part = j1.next();
+                    int num = stage.getAvailableParts().get(part);
+                    availableMap.put(GoodsUtil.getGood(part), num);
+                }
+                
+        
+                // Add missing resources.
                 missingMap = new HashMap<>();
                 
-                // Add remaining resources.
-                Iterator<Integer> i = stage.getMissingResources().keySet().iterator();
-                while (i.hasNext()) {
-                	Integer resource = i.next();
+                Iterator<Integer> i2 = stage.getMissingResources().keySet().iterator();
+                while (i2.hasNext()) {
+                	Integer resource = i2.next();
                     double amount = stage.getMissingResources().get(resource);
                     missingMap.put(GoodsUtil.getGood(resource), (int) amount);
                 }
 
-                // Add remaining parts.
-                Iterator<Integer> j = stage.getMissingParts().keySet().iterator();
-                while (j.hasNext()) {
-                	Integer part = j.next();
+                // Add missing parts.
+                Iterator<Integer> j2 = stage.getMissingParts().keySet().iterator();
+                while (j2.hasNext()) {
+                	Integer part = j2.next();
                     int num = stage.getMissingParts().get(part);
                     missingMap.put(GoodsUtil.getGood(part), num);
                 }

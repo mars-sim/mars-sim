@@ -637,16 +637,16 @@ public class ConstructionMission extends AbstractMission
 		
 		if (!available) {
 			// If the materials are not ready
-			retrieveMaterials(member);
+			digRegolith(member);
 		}
 				
-		return loadAvailableConstructionMaterials();
+		return available;
 	}
-
+	
 	/**
 	 * Obtains materials by performing the DigLocalRegolith task.
 	 */
-	private void retrieveMaterials(Worker member) {
+	private void digRegolith(Worker member) {
 		// If material not available, prompt settlers to dig local regolith
 		Person p = (Person) member;
 		if (RandomUtil.lessThanRandPercent(DIG_REGOLITH_PERCENT_PROBABILITY)

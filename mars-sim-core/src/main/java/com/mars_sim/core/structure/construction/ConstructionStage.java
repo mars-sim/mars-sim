@@ -42,7 +42,10 @@ public class ConstructionStage implements Serializable {
     
     private Map<Integer, Integer> missingParts;
     private Map<Integer, Double> missingResources;
-
+    
+    private Map<Integer, Double> availableResources;
+    private Map<Integer, Integer> availableParts;
+    
     private Map<Integer, Integer> originalReqParts;
     private Map<Integer, Double> originalReqResources;
     
@@ -66,6 +69,9 @@ public class ConstructionStage implements Serializable {
         originalReqParts = new HashMap<>(info.getParts());
         originalReqResources = new HashMap<>(info.getResources());
 
+        availableResources = new HashMap<>();
+        availableParts = new HashMap<>();
+        
         missingParts = new HashMap<>(info.getParts());
         missingResources = new HashMap<>(info.getResources());
         
@@ -207,6 +213,25 @@ public class ConstructionStage implements Serializable {
     }
     
     /**
+     * Gets the available resources on site for construction.
+     * 
+     * @return map of resources and their amounts (kg).
+     */
+    public Map<Integer, Double> getAvailableResources() {
+        return new HashMap<>(availableResources);
+    }
+    
+    /**
+     * Gets the available parts on site for construction.
+     * 
+     * @return map of parts and their amounts (kg).
+     */
+    public Map<Integer, Integer> getAvailableParts() {
+        return new HashMap<>(availableParts);
+    }
+    
+    
+    /**
      * Adds parts to the construction stage.
      * 
      * @param part the part to add.
@@ -218,13 +243,17 @@ public class ConstructionStage implements Serializable {
             int missingRequiredNum = missingParts.get(part);
             if (number <= missingRequiredNum) {
                 missingRequiredNum -= number;
-                if (missingRequiredNum > 0) {
+                if (missingRequiredNum >= 0) {
                     missingParts.put(part, missingRequiredNum);
                 }
-                else {
-                    missingParts.remove(part);
+          
+                int availableNum = 0;
+                if (availableParts.containsKey(part)) {
+                	availableNum = availableParts.get(part);
                 }
-
+                availableNum += number;
+                availableParts.put(part, availableNum);
+                
                 // Update the missing completable work time.
                 updateCompletableWorkTime();
                 
@@ -257,6 +286,13 @@ public class ConstructionStage implements Serializable {
                 missingRequiredAmount -= amount;
                 missingResources.put(resource, missingRequiredAmount);
 
+                double availableAmount = 0;
+                if (availableResources.containsKey(resource)) {
+                	availableAmount = availableResources.get(resource);
+                }
+                availableAmount += amount;
+                availableResources.put(resource, availableAmount);
+                
                 // Update the missing completable work time.
                 updateCompletableWorkTime();
                 
