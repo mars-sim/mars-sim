@@ -205,7 +205,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 				BuildingSpec spec = buildingConfig.getBuildingSpec(btemplate.getBuildingType());
 				BoundedObject correctedBounds = getCorrectedBounds(spec, btemplate.getBounds());
 
-				int buildingID = buildingManager.getNextTemplateID();
+				String buildingID = "" + buildingManager.getNextTemplateID();
 				
 				int zone = btemplate.getZone();
 				
@@ -568,7 +568,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 				// If no buildings at settlement, position new building at (0, 0) with random
 				// facing.
 				// Note: check to make sure it does not overlap another building.
-				int buildingID = buildingManager.getNextTemplateID();
+				String buildingID = "" + buildingManager.getNextTemplateID();
 				
 				int zone = 0;
 				
@@ -901,7 +901,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 			BoundedObject position =  new BoundedObject(rectCenterX, rectCenterY, width, length, rectRotation);
 			if (buildingManager.isBuildingLocationOpen(position)) {
 				// Set the new building here.
-				int buildingID = buildingManager.getNextTemplateID();
+				String buildingID = "" + buildingManager.getNextTemplateID();
 			
 				int zone = 0;
 				
@@ -996,7 +996,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 			double newLength = p1.distance(p2);
 			double facingDegrees = LocalAreaUtil.getDirection(p1, p2);
 		
-			int buildingID = buildingManager.getNextTemplateID();
+			String buildingID = "" + buildingManager.getNextTemplateID();
 		
 			int zone = 0;
 			

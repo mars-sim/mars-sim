@@ -55,7 +55,7 @@ public class MockBuilding extends Building {
 		functions.add(new LifeSupport(this, getLifeSupportSpec()));
 	}
 
-	public void setTemplateID(int id) {
+	public void setTemplateID(String id) {
 		this.templateID = id;
 	}
 

@@ -107,7 +107,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 		String name = "B" + id;
 		
 	    MockBuilding building0 = new MockBuilding(buildingManager, name);
-	    building0.setTemplateID(id);
+	    building0.setTemplateID("" + id);
 	    building0.setName(name);
 	    building0.setWidth(BUILDING_WIDTH);
 	    building0.setLength(BUILDING_LENGTH);

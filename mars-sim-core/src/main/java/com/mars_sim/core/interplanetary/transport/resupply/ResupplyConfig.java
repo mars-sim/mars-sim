@@ -91,9 +91,10 @@ public class ResupplyConfig implements Serializable {
 	            List<Element> buildingNodes = resupplyElement.getChildren(BUILDING);
 	            for (Element buildingElement : buildingNodes) {
 	                String buildingType = buildingElement.getAttributeValue(TYPE);
+//	                String buildingID = "" + buildingManager.getNextTemplateID();
 	                BoundedObject bounds = ConfigHelper.parseBoundedObject(buildingElement);
 	
-	                buildings.add(new BuildingTemplate(0, zone, buildingType,
+	                buildings.add(new BuildingTemplate("", zone, buildingType,
 	                        buildingType, bounds));
 	
 	            }

@@ -119,7 +119,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	/** The designated zone where this building is located at. */
 	protected int zone;
 	/** Unique template id assigned for the settlement template of this building belong. */
-	protected int templateID;
+	protected String templateID;
 	/** The base level for this building. -1 for in-ground, 0 for above-ground. */
 	protected int baseLevel;
 
@@ -232,7 +232,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * @param manager      the building's building manager.
 	 * @throws BuildingException if building can not be created.
 	 */
-	public Building(int id, int zone, String buildingType, String name, BoundedObject bounds, BuildingManager manager) {
+	public Building(String id, int zone, String buildingType, String name, BoundedObject bounds, BuildingManager manager) {
 		super(name, manager.getSettlement().getCoordinates());
 
 		this.templateID = id;
@@ -1356,7 +1356,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 *
 	 * @return id.
 	 */
-	public int getTemplateID() {
+	public String getTemplateID() {
 		return templateID;
 	}
 
@@ -1375,7 +1375,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 *
 	 * @param id.
 	 */
-	public void setTemplateID(int id) {
+	public void setTemplateID(String id) {
 		templateID = id;
 	}
 

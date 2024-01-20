@@ -23,23 +23,24 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private int bid;
 	private int zone;
-	private int eVAAttachedBuildingID;
-	private BoundedObject bounds;
-
+	
+	private String eVAAttachedStreetNum;
+	private String streetNum;
 	private String buildingType;
 	private String buildingName;
+
+	private BoundedObject bounds;
 
 	private List<BuildingConnectionTemplate> connectionList;
 
 	/*
 	 * * BuildingTemplate Constructor.
 	 */
-	public BuildingTemplate(int bid, int zone, String buildingType, String buildingName,
+	public BuildingTemplate(String id, int zone, String buildingType, String buildingName,
 			BoundedObject bounds) {
 
-		this.bid = bid;
+		this.streetNum = id;
 		this.zone = zone;
 		this.buildingType = buildingType;
 		this.buildingName = buildingName;
@@ -48,12 +49,12 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	}
 
 	/**
-	 * Gets the building ID.
+	 * Gets the building street num.
 	 * 
 	 * @return id.
 	 */
-	public int getID() {
-		return bid;
+	public String getID() {
+		return streetNum;
 	}
 
 
@@ -108,7 +109,7 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	 * @param id        the unique id of the building being connected to.
 	 * @param location the location (local to the building) (meters).
 	 */
-	public void addBuildingConnection(int id, LocalPosition location) {
+	public void addBuildingConnection(String id, LocalPosition location) {
 		BuildingConnectionTemplate template = new BuildingConnectionTemplate(id, location);
 		if (!connectionList.contains(template)) {
 			connectionList.add(template);
@@ -123,7 +124,7 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	 * @param id        the unique id of the building being connected to.
 	 * @param hatchFace the facing of the hatch.
 	 */
-	public void addBuildingConnection(int id, String hatchFace) {
+	public void addBuildingConnection(String id, String hatchFace) {
 		BuildingConnectionTemplate template = new BuildingConnectionTemplate(id, hatchFace);
 		if (!connectionList.contains(template)) {
 			connectionList.add(template);
@@ -132,12 +133,12 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 		}
 	}
 	
-	public void addEVAAttachedBuildingID(int id) {
-		eVAAttachedBuildingID = id;
+	public void addEVAAttachedBuildingID(String id) {
+		eVAAttachedStreetNum = id;
 	}
 	
-	public int getEVAAttachedBuildingID() {
-		return eVAAttachedBuildingID;
+	public String getEVAAttachedBuildingID() {
+		return eVAAttachedStreetNum;
 	}
 	
 	/**
@@ -153,8 +154,11 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	 * Compares to another building template.
 	 */
 	public int compareTo(BuildingTemplate o) {
-		int compareId = ((BuildingTemplate) o).bid;
-		return this.bid - compareId;
+		String compareId = ((BuildingTemplate) o).streetNum;
+		if (this.streetNum.equalsIgnoreCase(compareId)) 
+			return 0;
+		else
+			return -1;
 	}
 	
 	/**
@@ -166,7 +170,7 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 		private static final long serialVersionUID = 1L;
 
 		// Data members
-		private int id;
+		private String id;
 		private String hatchFace;
 		private LocalPosition location;
 
@@ -177,7 +181,7 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 		 * @param xLocation the x axis location (local to the building) (meters).
 		 * @param yLocation the y axis location (local to the building) (meters).
 		 */
-		private BuildingConnectionTemplate(int id, LocalPosition loc) {
+		private BuildingConnectionTemplate(String id, LocalPosition loc) {
 			this.id = id;
 			this.location = loc;
 		}
@@ -188,13 +192,13 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 		 * @param id        the unique id of the building being connected to.
 		 * @param hatchFace the face of the hatch .
 		 */
-		private BuildingConnectionTemplate(int id, String hatchFace) {
+		private BuildingConnectionTemplate(String id, String hatchFace) {
 			this.id = id;
 			this.hatchFace = hatchFace;
 		}
 
 
-		public int getID() {
+		public String getID() {
 			return id;
 		}
 

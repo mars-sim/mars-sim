@@ -303,13 +303,13 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	 * @param templateElement
 	 * @param settlementTemplate
 	 * @param settlementTemplateName
-	 * @param existingIDs
+	 * @param existingStreetIDs
 	 * @param typeNumMap
 	 */
 	private void parseBuildingORConnectorList(Element templateElement, SettlementTemplate settlementTemplate, 
 			String elementName,
 			String settlementTemplateName, 
-			Set<Integer> existingIDs, 
+			Set<String> existingStreetIDs, 
 			Map<String, Integer> buildingTypeNumMap) {
 		
 		List<Element> buildingNodes = templateElement.getChildren(elementName);
@@ -318,18 +318,18 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			BoundedObject bounds = ConfigHelper.parseBoundedObject(buildingElement);
 
 			// Track the id
-			int id = -1;
+			String id = "";
 
 			if (buildingElement.getAttribute(ID) != null) {
-				id = Integer.parseInt(buildingElement.getAttributeValue(ID));
+				id = buildingElement.getAttributeValue(ID);
 			}
 
-			if (existingIDs.contains(id)) {
+			if (existingStreetIDs.contains(id)) {
 				throw new IllegalStateException(
 						"Error in SettlementConfig: the id " + id + " in settlement template "
 								+ settlementTemplateName + " is not unique.");
-			} else if (id != -1) {
-				existingIDs.add(id);
+			} else if (!id.equalsIgnoreCase("")) {
+				existingStreetIDs.add(id);
 			}
 			
 			// Assume the zone as 0
@@ -367,14 +367,14 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			if (connectionListElement != null) {
 				List<Element> connectionNodes = connectionListElement.getChildren(CONNECTION);
 				for (Element connectionElement : connectionNodes) {
-					int connectionID = Integer.parseInt(connectionElement.getAttributeValue(ID));
+					String connectionID = connectionElement.getAttributeValue(ID);
 
 					if (buildingType.equalsIgnoreCase(EVA_AIRLOCK)) {
 						buildingTemplate.addEVAAttachedBuildingID(connectionID);
 					}
 					
 					// Check that connection ID is not the same as the building ID.
-					if (connectionID == id) {
+					if (connectionID.equalsIgnoreCase(id)) {
 						throw new IllegalStateException(
 								"Connection ID cannot be the same as id for this building/connector " 
 								+ buildingType
@@ -465,7 +465,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				defaultNumOfRobots);
 
 
-		Set<Integer> existingBuildingIDs = new HashSet<>();		
+		Set<String> existingBuildingIDs = new HashSet<>();		
 		Map<String, Integer> buildingTypeNumMap = new HashMap<>();
 		
 		// Process a list of buildings
@@ -476,7 +476,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				buildingTypeNumMap);
 		
 		// Process a list of connectors
-		Set<Integer> existingConnectorIDs = new HashSet<>();
+		Set<String> existingConnectorIDs = new HashSet<>();
 		parseBuildingORConnectorList(templateElement, settlementTemplate, 
 				CONNECTOR,
 				settlementTemplateName, 

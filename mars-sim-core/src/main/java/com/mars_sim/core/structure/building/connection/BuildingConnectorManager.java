@@ -96,7 +96,7 @@ public class BuildingConnectorManager implements Serializable {
 		Iterator<BuildingTemplate> i = buildingTemplates.iterator();
 		while (i.hasNext()) {
 			BuildingTemplate buildingTemplate = i.next();
-			int buildingID = buildingTemplate.getID();
+			String buildingID = buildingTemplate.getID();
 			Building building = buildingManager.getBuildingByTemplateID(buildingID);
 			if (building == null) {
 				throw new IllegalStateException(
@@ -108,7 +108,7 @@ public class BuildingConnectorManager implements Serializable {
 			Iterator<BuildingConnectionTemplate> j = buildingTemplate.getBuildingConnectionTemplates().iterator();
 			while (j.hasNext()) {
 				BuildingConnectionTemplate connectionTemplate = j.next();
-				int connectionID = connectionTemplate.getID();
+				String connectionID = connectionTemplate.getID();
 				Building connectionBuilding = buildingManager.getBuildingByTemplateID(connectionID);
 				if (connectionBuilding == null) {
 					throw new IllegalStateException(
@@ -349,7 +349,8 @@ public class BuildingConnectorManager implements Serializable {
 						+ "  validPartialConnectors: " + validPartialConnectors.size()
 //						+ "  " + partialConnector.building.getBuildingType() 
 						+ "  regarding " + partialConnector.building.getName()
-						+ " in " + settlement.getName() + ".");
+						+ " (templateID: " + ((Building)partialConnector.building).getTemplateID() 
+						+ ") in " + settlement.getName() + ".");
 			}
 		}
 	}
@@ -963,9 +964,11 @@ public class BuildingConnectorManager implements Serializable {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 		// Data members.
-		private Building building;
-		private LocalPosition pos;
 		private double facing;
+
+		private LocalPosition pos;
+
+		private Building building;
 		private Building connectToBuilding;
 
 		/**
