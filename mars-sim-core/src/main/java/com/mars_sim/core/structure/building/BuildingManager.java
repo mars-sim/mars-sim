@@ -145,7 +145,6 @@ public class BuildingManager implements Serializable {
 	private Set<Building> farmsNeedingWorkCache = new UnitSet<>();
 	
 	private static SimulationConfig simulationConfig;
-	private static HistoricalEventManager eventManager;
 	private static MasterClock masterClock;
 	private static UnitManager unitManager;
 
@@ -3136,15 +3135,6 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets an instance of the historical event manager.
-	 *
-	 * @return
-	 */
-	public HistoricalEventManager getEventManager() {
-		return eventManager;
-	}
-
-	/**
 	 * Gets a set of garages for the settlement.
 	 *
 	 * @return
@@ -3160,10 +3150,9 @@ public class BuildingManager implements Serializable {
 	 * @param {{@link MarsClock}
 	 */
 	public static void initializeInstances(SimulationConfig sc, MasterClock c0,
-			HistoricalEventManager e, UnitManager u) {
+			UnitManager u) {
 		simulationConfig = sc;
 		masterClock = c0;
-		eventManager = e;
 		unitManager = u;
 	}
 

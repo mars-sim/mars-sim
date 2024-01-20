@@ -6,17 +6,19 @@
  */
 package com.mars_sim.core.structure;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.mars_sim.core.parameter.ParameterCategory;
+import com.mars_sim.core.parameter.ParameterValueType;
 
 /**
  * Defines the parameters values that are applicable to the behaviour of a Settlement.
  */
 public class SettlementParameters extends ParameterCategory {
 
-    public static final ParameterCategory INSTANCE = new SettlementParameters();
+    public static final SettlementParameters INSTANCE = new SettlementParameters();
+    public static final String MAX_EVA = "max_eva";
     
     private SettlementParameters() {
         super("CONFIGURATION");
@@ -27,6 +29,8 @@ public class SettlementParameters extends ParameterCategory {
      */
     @Override
     protected Map<String, ParameterSpec> calculateSpecs() {
-        return Collections.emptyMap();
+        Map<String, ParameterSpec> results = new HashMap<>();
+        results.put(MAX_EVA, new ParameterSpec(MAX_EVA, "Max EVA", ParameterValueType.INTEGER));
+        return results;
     }
 }

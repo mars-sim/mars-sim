@@ -406,7 +406,7 @@ public class Simulation implements ClockListener, Serializable {
 		ResourceProcess.initializeInstances(masterClock);
 
 		eventManager = new HistoricalEventManager(masterClock);
-		BuildingManager.initializeInstances(simulationConfig, masterClock, eventManager, unitManager);
+		BuildingManager.initializeInstances(simulationConfig, masterClock, unitManager);
 
 		AbstractMission.initializeInstances(this, eventManager, unitManager,
 			surfaceFeatures, missionManager, simulationConfig.getPersonConfig());
@@ -565,7 +565,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize Unit related class
 		SalvageValues.initializeInstances(unitManager, masterClock);
 		
-		BuildingManager.initializeInstances(simulationConfig, masterClock, eventManager, unitManager);
+		BuildingManager.initializeInstances(simulationConfig, masterClock, unitManager);
 
 		
 		doneInitializing = true;
@@ -708,7 +708,7 @@ public class Simulation implements ClockListener, Serializable {
 		HealthProblem.initializeInstances(medicalManager, eventManager);
 
 		// Re-initialize Structure related class
-		BuildingManager.initializeInstances(simulationConfig, masterClock, eventManager, unitManager);
+		BuildingManager.initializeInstances(simulationConfig, masterClock, unitManager);
 	
 		// Start a chain of calls to set instances
 		// Warning: must call this at the end of this method

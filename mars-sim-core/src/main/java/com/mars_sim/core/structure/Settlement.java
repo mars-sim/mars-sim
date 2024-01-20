@@ -211,6 +211,8 @@ public class Settlement extends Structure implements Temporal,
 	private static final double MAX_MISSION_SCORE = 1000D;
 	/** Normal air pressure [in kPa]. */
 	private static final double NORMAL_AIR_PRESSURE = 34D;
+	/** Maximum percentage of citizens that are EVA'ing. */
+	private static final double EVA_PERCENTAGE = 0.25;
 
 	/** The settlement water consumption */
 	private static double waterConsumptionRate;
@@ -749,19 +751,6 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the number of citizens doing EVA outside.
-	 * 
-	 * @return
-	 */
-	public Long getNumOutsideEVA() {
-		return citizens.stream()
-				.filter(p -> !p.isDeclaredDead()
-						&& (p.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY
-						|| p.getLocationStateType() == LocationStateType.MARS_SURFACE))
-				.collect(Collectors.counting());
-	}
-
-	/**
 	 * Gets the robot capacity of the settlement
 	 *
 	 * @return the robot capacity
@@ -978,9 +967,7 @@ public class Settlement extends Structure implements Temporal,
 			logger.info(this, "On Sol 1, " + firstSite.getFormattedString() 
 						+ " was the very first exploration site chosen to be analyzed and explored.");
 			
-			checkMineralMapImprovement();
-			
-			setAppointedTask(pulse.getMarsTime());
+			checkMineralMapImprovement();			
 		}
 		
 		int sol = pulse.getMarsTime().getMissionSol();
@@ -1020,8 +1007,6 @@ public class Settlement extends Structure implements Temporal,
 			// Perform the end of day tasks
 			performEndOfDayTasks(pulse.getMarsTime());	
 
-			setAppointedTask(pulse.getMarsTime());
-
 			int range = (int) getVehicleWithMinimalRange().getRange();
 			
 			int skill = 0;
@@ -1054,44 +1039,6 @@ public class Settlement extends Structure implements Temporal,
 		trackByMSol(pulse);
 
 		return true;
-	}
-
-	/**
-	 * Sets up the daily appointed task of doing EVA.
-	 * 
-	 * @param currentTime
-	 */
-	private void setAppointedTask(MarsTime currentTime) {
-		int numAirlocks = getAirlockNum();
-		// Note: leave 1 chamber open
-		int numPerAirlock = 3; 
-		int count = 0; 
-		double multiplier = 0.1 + numAirlocks / numPerAirlock;	
-		for (Person p: citizens) {
-			double deltaTime = AIRLOCK_OPERATION_OFFSET * Math.floor(count * multiplier);
-
-			int startTimeEVA = (int)deltaTime +  WAIT_FOR_SUNLIGHT_DELAY + (int)(surfaceFeatures.getOrbitInfo().getSunTimes(location))[0];
-			int futureTime = startTimeEVA - currentTime.getMillisolInt();
-			if (futureTime < 0) {
-				futureTime += 1000;
-			}
-			MarsTime mTime = currentTime.addTime(futureTime);
-
-			// On Duty if less than 75% of the shift completed
-			boolean isOnDuty = (p.getShiftSlot().getShift().getShiftCompleted(mTime.getMillisolInt()) < 0.30D);
-			
-			// Select only personnel on duty and without a mission
-			if (isOnDuty && p.getMission() == null) {
-				count++;
-
-				FactoryMetaTask mt = (FactoryMetaTask) MetaTaskUtil.getMetaTask(DigLocalRegolith.SIMPLE_NAME);
-				ScheduledEventHandler appointment = new PersonFutureTask(p, mt);
-
-				// Gets the number of digits in millisol time 
-				futureEvents.addEvent(mTime, appointment);
-
-			}
-		}
 	}
 	
 	/**
@@ -1933,9 +1880,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return true if added successfully
 	 */
 	public boolean containsPerson(Person p) {
-		if (indoorPeopleMap.contains(p))
-			return true;
-		return false;
+		return indoorPeopleMap.contains(p);
 	}
 
 	/**
@@ -2006,6 +1951,9 @@ public class Settlement extends Structure implements Temporal,
 			setMissionLimit(MissionType.TRAVEL_TO_SETTLEMENT.name(), 0, 20);
 			setMissionLimit(MissionType.DELIVERY.name(), 0, 6);
 
+			// EVA capacity
+			int evaCapacity = (int)Math.ceil(numCitizens * EVA_PERCENTAGE);
+			preferences.putValue(SettlementParameters.INSTANCE, SettlementParameters.MAX_EVA, evaCapacity);
 
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
 			return true;
@@ -2101,10 +2049,7 @@ public class Settlement extends Structure implements Temporal,
 		if (robotsWithin.contains(r)) {
 			return true;
 		}
-		if (robotsWithin.add(r)) {
-			return true;
-		}
-		return false;
+		return robotsWithin.add(r);
 	}
 
 	/**
@@ -2116,10 +2061,7 @@ public class Settlement extends Structure implements Temporal,
 		if (!robotsWithin.contains(r)) {
 			return true;
 		}
-		if (robotsWithin.remove(r)) {
-			return true;
-		}
-		return false;
+		return robotsWithin.remove(r);
 	}
 
 	/**
@@ -2150,10 +2092,7 @@ public class Settlement extends Structure implements Temporal,
 	public boolean removeParkedVehicle(Vehicle vehicle) {
 		if (!parkedVehicles.contains(vehicle))
 			return true;
-		if (parkedVehicles.remove(vehicle)) {
-			return true;
-		}
-		return false;
+		return parkedVehicles.remove(vehicle);
 	}
 
 	/**
@@ -2163,10 +2102,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return
 	 */
 	public boolean containsParkedVehicle(Vehicle vehicle) {
-		if (parkedVehicles.contains(vehicle)) {
-			return true;
-		}
-		return false;
+		return parkedVehicles.contains(vehicle);
 	}
 
 	/**
@@ -2717,7 +2653,6 @@ public class Settlement extends Structure implements Temporal,
 		double requiredWater = waterConsumptionRate * getNumCitizens() * 90;
 
 		int newRatio = Math.max(1, (int)((requiredWater + reserveWater) / storedWater));
-//		logger.info(this, 20_000L, "Calculated Water Ratio: " + newRatio);		
 		if (newRatio < 1)
 			newRatio = 1;
 		else if (newRatio > 1)
@@ -2913,12 +2848,6 @@ public class Settlement extends Structure implements Temporal,
 			result = 0;
 		if (result > MAX_PROB)
 			result = MAX_PROB;
-		
-//		logger.info(this, 30_000L, "regolithDemand: " + regolithDemand
-//						+ "   cementDemand: " + cementDemand
-//						+ "   concreteDemand: " + concreteDemand
-//						+ "   sandDemand: " + sandDemand
-//						+ "   regolith Prob value: " + result);
 		return result;
 	}
 

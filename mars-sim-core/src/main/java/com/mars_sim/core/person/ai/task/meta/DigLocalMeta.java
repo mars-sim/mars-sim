@@ -6,6 +6,8 @@
  */
 package com.mars_sim.core.person.ai.task.meta;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
@@ -16,20 +18,52 @@ import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.task.DigLocal;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Walk;
-import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
-import com.mars_sim.core.person.ai.task.util.TaskJob;
+import com.mars_sim.core.person.ai.task.util.MetaTask;
+import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
+import com.mars_sim.core.person.ai.task.util.SettlementTask;
+import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
+import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.SettlementParameters;
 import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * Meta task for the DigLocal task.
  */
-public abstract class DigLocalMeta extends FactoryMetaTask {
+public abstract class DigLocalMeta extends MetaTask
+    implements SettlementMetaTask
+ {
+    /**
+     * This is a Settlement task to perform a digging job.
+     */
+    private static class DigLocalTaskJob extends SettlementTask {
+		
+		private static final long serialVersionUID = 1L;
 
+        public DigLocalTaskJob(DigLocalMeta owner, RatingScore score, int total) {
+            super(owner, owner.getName(), null, score);
+            setDemand(total);
+        }
 
+        @Override
+        public Task createTask(Person person) {
+            return  ((DigLocalMeta)getMeta()).createTask(person);
+        }
+
+        @Override
+        public Task createTask(Robot robot) {
+            throw new UnsupportedOperationException("Robots cannot dig");
+        }
+    }
+
+    // This defines the maximum shift completed for a person to start a dig task.
+    // Anything above this value will not be considered for digging.
+    private static final double MAX_SHIFT_PERC_FOR_DIG = 0.66D;
 	private static final int MAX_BASE = 1000;
-	
+
+	private static final SettlementParameters SETTLE_CAT = SettlementParameters.INSTANCE;
+
 	private EquipmentType containerType;
 
     protected DigLocalMeta(String name, EquipmentType containerType) {
@@ -41,68 +75,102 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
 	}
 
     /**
-     * Computes the probability of doing this task.
+     * Computes the probability of doing this task for a Settlement
      * 
      * @param resourceId The id of the resource being dug
      * @param settlement
-     * @param person
      * @param collectionProbability
      * @return
      */
-    protected List<TaskJob> getTaskJobs(int resourceId, Settlement settlement,
-                            Person person, double collectionProbability) {
+    protected List<SettlementTask> getSettlementTaskJobs(int resourceId, Settlement settlement,
+                            double collectionProbability) {
 
+        // Check preconditions
+        // - an airlock is available for egress
+        // - at least one EVA suit at settlement.
+        // - at least one empty bag at settlement.
+    	if ((collectionProbability == 0.0)
+            || (settlement.getNumEVASuit() == 0)
+            || (settlement.findNumContainersOfType(containerType) == 0)) {                
+    		return Collections.emptyList();
+        }
+
+        double base = RandomUtil.getRandomDouble(collectionProbability / 10, collectionProbability);
+        if (base <= 0) {
+            return Collections.emptyList();
+        }
+        else if (base > MAX_BASE) {
+        	base = MAX_BASE;
+        }
+ 
+        // Determine the base score
+        RatingScore result = new RatingScore(base);
+
+        // Effect of the ratio of # indoor people vs. those outside already doing EVA 
+        int maxEVA = settlement.getPreferences().getIntValue(SETTLE_CAT, SettlementParameters.MAX_EVA,
+                                                    1);
+        maxEVA -= EVAOperation.getActivePersons(settlement);
+        if (maxEVA <= 0) {
+            return Collections.emptyList();
+        }
+
+        // Effect of the amount of sunlight that influences the probability of starting this task
+        double sunlight = surfaceFeatures.getSunlightRatio(settlement.getCoordinates());
+
+        // The higher the sunlight (0 to 1, 1 being the highest) 
+        result.addModifier("sunlight", Math.max(.001, sunlight));
+
+        List<SettlementTask> resultList = new ArrayList<>();
+        resultList.add(new DigLocalTaskJob(this, result, maxEVA));
+        return resultList;
+    }
+
+    /**
+     * Assess a Person for a specific SettlementTask of this type.
+     * 
+     * @param t The Settlement task being evaluated
+     * @param p Person in question
+     * @return A new rating score applying the Person's modifiers
+     */
+    @Override
+    public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
         // Check preconditions
         // - an airlock is available for egress
         // - person is qualified for digging local
         // - person is physically fit for heavy EVA tasks
-        // - at least one EVA suit at settlement.
-        // - at least one empty bag at settlement.
-    	if ((collectionProbability == 0.0)
-            || !Walk.anyAirlocksForIngressEgress(person, false)
-            || !DigLocal.canDigLocal(person)
-            || !EVAOperation.isEVAFit(person)
-            || (settlement.getNumEVASuit() == 0)
-            || (settlement.findNumContainersOfType(containerType) == 0)) {                
-    		return EMPTY_TASKLIST;
+    	if (!Walk.anyAirlocksForIngressEgress(p, false)
+        || !DigLocal.canDigLocal(p)
+        || !EVAOperation.isEVAFit(p)) {
+            return RatingScore.ZERO_RATING;
         }
 
-        double base = RandomUtil.getRandomDouble(collectionProbability / 10, collectionProbability);
-        
-        if (base > MAX_BASE)
-        	base = MAX_BASE;
-        RatingScore result = new RatingScore(base);
- 
         // Probability affected by the person's stress and fatigue.
-        PhysicalCondition condition = person.getPhysicalCondition();
-        
+        PhysicalCondition condition = p.getPhysicalCondition();
+
         double stress = condition.getStress();
         double fatigue = condition.getFatigue();
         double hunger = condition.getHunger();
-        double exerciseMillisols = person.getCircadianClock().getTodayExerciseTime();
+        double exerciseMillisols = p.getCircadianClock().getTodayExerciseTime();
         
+        var result = new RatingScore(t.getScore());
+    
         // Add a negative base to model Person fitness
         result.addBase("fitness", -(stress * 2 + fatigue/2 + hunger/2 + exerciseMillisols));
-        
-        if (result.getScore() <= 0)
-        	return EMPTY_TASKLIST;
-    
-        // Effect of the ratio of # indoor people vs. those outside already doing EVA 
-        result.addModifier("eva",
-                1.0D - ((double)settlement.getNumOutsideEVA() / settlement.getNumCitizens()));
+
+        result = assessPersonSuitability(result, p);
 
         // Encourage to get this task done early in a work shift
-        result.addModifier("shift", getShiftModifier(person));
+        result.addModifier("shift", getShiftModifier(p));
 
-        // Effect of the amount of sunlight that influences the probability of starting this task
-        double sunlight = surfaceFeatures.getSunlightRatio(settlement.getCoordinates());
-        // The higher the sunlight (0 to 1, 1 being the highest) 
-        result.addModifier("sunlight", Math.max(.001, sunlight));
-
-        result = assessPersonSuitability(result, person);
-
-        return createTaskJobs(result);
+        return result;
     }
+
+    /**
+     * Creates a specific Task of the appropriate digging activity.
+     * @param person
+     * @return
+     */
+    protected abstract Task createTask(Person person);
 
     /**
      * Get a modifier based on the Shift start time. This is based on how far through the shift a person is;
@@ -112,7 +180,7 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
         double completed = person.getShiftSlot().getShift().getShiftCompleted(getMarsTime().getMillisolInt());
 
         // Do not start in the last 30% of a shift
-        if (completed > 0.66D) {
+        if (completed > MAX_SHIFT_PERC_FOR_DIG) {
             return 0D;
         }
         return 1D - completed;

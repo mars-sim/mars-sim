@@ -6,13 +6,14 @@
  */
 package com.mars_sim.core.person.ai.task.meta;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.DigLocalIce;
+import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
@@ -36,30 +37,24 @@ public class DigLocalIceMeta extends DigLocalMeta {
 	}
 
     @Override
-    public Task constructInstance(Person person) {
+    protected Task createTask(Person person) {
         return new DigLocalIce(person);
     }
 
-    /**
-     * Assess a Person's suitability to dig ice locally. Depends on many factors.
-     * @param person Being assessed.
-     * @return List of potential TaskJobs
+        /**
+     * Assess what digging tasks can be done at a Settlement
+     * @param settlement The focus of the search
      */
     @Override
-    public List<TaskJob> getTaskJobs(Person person) {
-
-        Settlement settlement = person.getSettlement();
+    public List<SettlementTask> getSettlementTasks(Settlement settlement) {
     	
         // Check if settlement has DIG_LOCAL_REGOLITH override flag set.
-        if ((settlement == null) 
-            || !person.isInSettlement()
-            || settlement.getProcessOverride(OverrideType.DIG_LOCAL_ICE)
+        if (settlement.getProcessOverride(OverrideType.DIG_LOCAL_ICE)
             || (settlement.getAmountResourceRemainingCapacity(ResourceUtil.iceID) < THRESHOLD_AMOUNT)) {
-        	return EMPTY_TASKLIST;
+        	return Collections.emptyList();
         }
     	
-    	return getTaskJobs(ResourceUtil.iceID, settlement, 
-    			person, settlement.getIceCollectionRate() * settlement.getIceProbabilityValue());
-
+    	return getSettlementTaskJobs(ResourceUtil.iceID, settlement, 
+            settlement.getIceCollectionRate() * settlement.getIceProbabilityValue());
     }
 }
