@@ -37,7 +37,7 @@
         </connection-list>
     </building>
 
-    <building id="204" type="Storage Hab" xloc="-100.0" yloc="-31.5" facing="0.0">
+    <building id="204" type="Medical Hab" xloc="-100.0" yloc="-31.5" facing="0.0">
         <connection-list>
             <connection id="203" hatch-facing="north" />     
             <connection id="205" hatch-facing="south" />  
@@ -52,13 +52,13 @@
         </connection-list>
     </building>
     
-    <building id="206" type="Medical Hab" xloc="-100.0" yloc="-45.5" facing="0.0">
+    <building id="206" type="Machinery Hab" xloc="-100.0" yloc="-45.5" facing="0.0">
         <connection-list>
             <connection id="205" hatch-facing="north" />          
         </connection-list>
     </building>
 
-   <!-- This EVA Airlock is attached to the Storage hab -->
+   <!-- This EVA Airlock is attached to the Medical hab -->
     <building id="207" type="EVA Airlock" xloc="-92.5" yloc="-31.5" facing="0.0">
         <connection-list>
             <connection id="204" hatch-facing="east" />
@@ -151,9 +151,23 @@
     <building id="312" type="Residential Quarters" xloc="-183.5" yloc="0" facing="270.0">
         <connection-list>
             <connection id="311" hatch-facing="west" />
+            <connection id="313" hatch-facing="east" />
         </connection-list>
     </building>
  
+    <building id="313" type="Hallway" length="4.0" xloc="-190.0" yloc="0" facing="270.0">
+        <connection-list>
+           <connection id="312" hatch-facing="west" />
+           <connection id="314" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="314" type="Storage Hab" xloc="-197.0" yloc="0" facing="270.0">
+        <connection-list>
+            <connection id="313" hatch-facing="west" />
+        </connection-list>
+    </building>
+    
     <!-- EAST WING EXTENSION -->
     <!-- Connect this hallway to north of Algae Pond 12 -->
     <building id="304A" type="Hallway" length="4.0" xloc="-131.5" yloc="5.5" facing="0.0">
@@ -212,12 +226,12 @@
     
     <building id="106" type="Workshop" xloc="-55.5" yloc="0" facing="270.0">
         <connection-list>
-            <connection id="106" hatch-facing="west" />
+            <connection id="107" hatch-facing="west" />
             <connection id="105" hatch-facing="east" />          
         </connection-list>
     </building>
     
-    <building id="106" type="Hallway" length="4.0" xloc="-49.0" yloc="0" facing="270.0">
+    <building id="107" type="Hallway" length="4.0" xloc="-49.0" yloc="0" facing="270.0">
         <connection-list>
             <connection id="108" hatch-facing="west" />
             <connection id="106" hatch-facing="east" />
@@ -227,7 +241,7 @@
     <building id="108" type="Server Farm" xloc="-42.5" yloc="0"  facing="0">
         <connection-list>
             <connection id="109" hatch-facing="west" />
-            <connection id="106" hatch-facing="east" />  
+            <connection id="107" hatch-facing="east" />  
         </connection-list>
     </building>
     
@@ -245,11 +259,26 @@
         </connection-list>
     </building>
     
-    <building id="111" type="EVA Airlock" xloc="-22" yloc="0" facing="0.0">
+    <building id="111" type="Hallway" length="4.0" xloc="-23.0" yloc="0" facing="270.0">
         <connection-list>
-            <connection id="110" hatch-facing="east" />
+           <connection id="112" hatch-facing="west" />
+           <connection id="110" hatch-facing="east" />
         </connection-list>
     </building>
+    
+    <building id="112" type="Storage Hab" xloc="-16.0" yloc="0" facing="270.0">
+        <connection-list>
+            <connection id="111" hatch-facing="east" />
+            <connection id="113" hatch-facing="west" />
+        </connection-list>
+    </building>
+    
+    <building id="113" type="EVA Airlock" xloc="-8.0" yloc="0" facing="0.0">
+        <connection-list>
+            <connection id="112" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
     
     <!-- WEST WING NORTH EXTENSION -->
     <!-- This hallway connects the laboratory to the garage -->
@@ -278,7 +307,7 @@
     </building>
 
     <!-- This hallway is between the EVA Airlock and the Astronomy Observatory -->
-    <building id="1002" zone="1" type="Hallway" length="4.0" xloc="-150.0" yloc="75.5" facing="0.0">
+    <building id="1002" zone="1" type="Hallway" length="4.0" xloc="-150.0" yloc="74.5" facing="0.0">
         <connection-list>
             <connection id="1001" hatch-facing="north" />
             <connection id="1003" hatch-facing="south" />
