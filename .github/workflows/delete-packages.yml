@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/delete-package-versions@v4
       with: 
-        package-name: 'mars-sim'
+        package-name: 'mars-sim/mars-sim'
         package-type: 'container'
         min-versions-to-keep: 10
         delete-only-untagged-versions: 'true'
