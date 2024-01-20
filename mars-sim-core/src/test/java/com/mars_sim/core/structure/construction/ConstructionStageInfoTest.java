@@ -36,19 +36,19 @@ public class ConstructionStageInfoTest extends TestCase {
         super.setUp();
         SimulationConfig.instance().loadConfig();
 
-        Map<Integer, Integer> parts = new HashMap<Integer, Integer>(1);
+        Map<Integer, Integer> parts = new HashMap<>(1);
         GoodType type = GoodType.CONSTRUCTION;
         Part p = ItemResourceUtil.createItemResource("test part", 1, "test resource description", type, 1D, 1);
         parts.put(p.getID(), 1);
 
-        Map<Integer, Double> resources = new HashMap<Integer, Double>(1);
+        Map<Integer, Double> resources = new HashMap<>(1);
 
         AmountResource ar = ResourceUtil.sandAR;
         resources.put(ar.getID(), 1D);
 
         List<ConstructionVehicleType> vehicles =
-            new ArrayList<ConstructionVehicleType>(1);
-        List<Integer> attachments = new ArrayList<Integer>(1);
+            new ArrayList<>(1);
+        List<Integer> attachments = new ArrayList<>(1);
         GoodType aType = GoodType.VEHICLE;
         
         Part atth = ItemResourceUtil.createItemResource("attachment part", 2, "test resource description", aType, 1D, 1);
@@ -57,7 +57,8 @@ public class ConstructionStageInfoTest extends TestCase {
         vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class,
                 attachments));
 
-        info = new ConstructionStageInfo("test stage", ConstructionStageInfo.FOUNDATION, 10D, 10D, false, 0,
+        info = new ConstructionStageInfo("test stage", ConstructionStageInfo.FOUNDATION, 10D, 10D, 
+        		"length", false, 0,
                 false, false, 10000D, 1, null, parts, resources, vehicles);
     }
 

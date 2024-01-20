@@ -791,7 +791,7 @@ class ConstructionProjectPanel extends WizardPanel {
                         int numVehiclesRequired = info.getVehicles().size();
                         int numVehiclesAvailable = settlement.findNumVehiclesOfType(VehicleType.LUV);
                         materialsList.add(new ConstructionMaterial(
-                                "light utility vehicle", numVehiclesRequired,
+                                "Light Utility Vehicle", numVehiclesRequired,
                                 numVehiclesAvailable, true));
                     }
                     catch (Exception e) {

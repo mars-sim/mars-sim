@@ -23,6 +23,9 @@ import com.mars_sim.core.structure.Settlement;
  * The factory class for bin containers.
  */
 public final class BinFactory {
+
+	// default logger.
+	// May bring back private static final SimLogger logger = SimLogger.getLogger(BinFactory.class.getName())
 	
 	private static final String CRATE = "make crate";
 	private static final String BASKET = "make basket";

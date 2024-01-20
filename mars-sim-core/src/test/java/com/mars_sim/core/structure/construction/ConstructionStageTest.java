@@ -40,21 +40,21 @@ public class ConstructionStageTest extends TestCase {
         Simulation.instance().testRun();
 
         Part smallHammer = (Part) ItemResourceUtil.findItemResource(SMALL_HAMMER);
-        Map<Integer, Integer> parts = new HashMap<Integer, Integer>(1);
+        Map<Integer, Integer> parts = new HashMap<>(1);
         parts.put(smallHammer.getID(), 1);
 
-        Map<Integer, Double> resources = new HashMap<Integer, Double>(1);
+        Map<Integer, Double> resources = new HashMap<>(1);
         resources.put(ResourceUtil.methaneAR.getID(), 1D);
 
         List<ConstructionVehicleType> vehicles =
-            new ArrayList<ConstructionVehicleType>(1);
-        List<Integer> attachments = new ArrayList<Integer>(1);
+            new ArrayList<>(1);
+        List<Integer> attachments = new ArrayList<>(1);
         attachments.add(new Part("attachment part", 2, "test resource description", GoodType.UTILITY, 1D, 1).getID());
         vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class,
                 attachments));
 
         foundationInfo = new ConstructionStageInfo("test foundation info",
-                ConstructionStageInfo.FOUNDATION, 10D, 10D, false, 0, false, false, 10000D, 0, null,
+                ConstructionStageInfo.FOUNDATION, 10D, 10D, "length", false, 0, false, false, 10000D, 0, null,
                 parts, resources, vehicles);
     }
 

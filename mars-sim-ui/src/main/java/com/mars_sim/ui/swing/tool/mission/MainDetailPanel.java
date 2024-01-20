@@ -96,7 +96,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	private static final String EMPTY = Msg.getString("MainDetailPanel.empty"); //$NON-NLS-1$
 
 	private static final int MAX_LENGTH = 48;
-	private static final int HEIGHT_1 = 150;
+	private static final int HEIGHT_1 = 125;
 	
 	// Private members
 	private JLabel vehicleStatusLabel;
@@ -304,7 +304,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		Border blackline = StyleManager.createLabelBorder("Phase Log");
 		logPane.setBorder(blackline);
 		logPane.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		logPane.setPreferredSize(new Dimension(100, HEIGHT_1));
+		logPane.setPreferredSize(new Dimension(-1, HEIGHT_1));
 
 		// Create scroll panel for member list.
 		JScrollPane logScrollPane = new JScrollPane();

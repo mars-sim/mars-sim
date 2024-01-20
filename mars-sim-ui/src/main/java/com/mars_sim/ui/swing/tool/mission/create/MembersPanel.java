@@ -382,7 +382,7 @@ implements ActionListener {
 					else if (column == 3) {
 						Mission mission = person.getMind().getMission();
 						if (mission != null) result = mission.getName();
-						else result = "none";
+						else result = "None";
 					}
 					else if (column == 4) 
 						result = (int) (person.getPerformanceRating() * 100D) + "%";
@@ -510,7 +510,7 @@ implements ActionListener {
 					else if (column == 3) {
 						Mission mission = person.getMind().getMission();
 						if (mission != null) result = mission.getName();
-						else result = "none";
+						else result = "None";
 					}						
 					else if (column == 4) 
 						result = (int) (person.getPerformanceRating() * 100D) + "%";

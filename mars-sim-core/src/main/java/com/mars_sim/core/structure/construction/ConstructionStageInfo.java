@@ -36,6 +36,7 @@ public class ConstructionStageInfo implements Serializable {
     
     private String name;
     private String type;
+    private String alignment;
     private String prerequisiteStage;
     
     private Map<Integer, Integer> parts;
@@ -61,6 +62,7 @@ public class ConstructionStageInfo implements Serializable {
      * @param vehicles list of construction vehicles required.
      */
     ConstructionStageInfo(String name, String type, double width, double length,
+    		String alignment,
     		boolean unsetDimensions, int baseLevel, boolean constructable,
     		boolean salvagable, double workTime, int architectConstructionSkill,
     		String prerequisiteStage, Map<Integer, Integer> parts, Map<Integer,
@@ -70,6 +72,7 @@ public class ConstructionStageInfo implements Serializable {
         this.type = type;
         this.width = width;
         this.length = length;
+        this.alignment = alignment;
         this.unsetDimensions = unsetDimensions;
         this.constructable = constructable;
         this.salvagable = salvagable;
@@ -116,7 +119,16 @@ public class ConstructionStageInfo implements Serializable {
     public double getLength() {
         return length;
     }
-
+	
+    /**
+     * Gets the north-south alignment info.
+     * 
+     * @return
+     */
+	public String getAlignment() {
+		return alignment;
+	}
+	
     /**
      * Checks if the stage dimensions are initially unset.
      * 
