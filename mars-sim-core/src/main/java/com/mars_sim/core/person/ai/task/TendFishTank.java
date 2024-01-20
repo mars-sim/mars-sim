@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.person.ai.task;
 
-import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -224,7 +223,7 @@ public class TendFishTank extends Task {
 		else {
 			fishingTime += time;
 			if (fishingTime > MAX_FISHING) {
-				logger.log(building, worker, Level.INFO, 0, "Giving up on fishing.", null);
+				logger.info(worker, "Giving up on fishing.");
 				endTask();
 			}
 		}
@@ -285,7 +284,6 @@ public class TendFishTank extends Task {
 			return time - (usedTime / mod);
 		}
 		else if (tendTime > MAX_TEND) {
-//			logger.log(building, worker, Level.INFO, 0, "Ended tending the fish tank.", null);
 			endTask();
 		}
 		tendTime += time;
@@ -338,7 +336,7 @@ public class TendFishTank extends Task {
 	 */
 	private void printDescription(String text) {
 		setDescription(text);
-		logger.log(fishTank.getBuilding(), worker, Level.FINE, 30_000L, text + ".");
+		logger.fine(worker, 30_000L, text + ".");
 	}
 	
 	/**

@@ -291,7 +291,7 @@ public class RepairInsideMalfunction extends Task implements Repair {
 
 					}
 					else {
-						logger.warning(worker, "Can not walk inside " + building.getNickName());
+						logger.warning(worker, "Can not walk inside " + building.getName());
 						endTask();
 						return;
 					}

@@ -98,6 +98,15 @@ public class Colonist implements Serializable, Entity, SkillOwner {
 		}
 	}
 	
+//	@Override
+//	public boolean timePassing(ClockPulse pulse) {
+//		if (c instanceof ColonistResearcher r) {
+//			r.timePassing(pulse);
+//		} else if (c instanceof Specialist r) {
+//			r.timePassing(pulse);
+//		}
+//	}
+	
 	public double getTotalSkillExperience() {
 		return skillManager.getTotalSkillExperiences();
 	}
@@ -113,12 +122,25 @@ public class Colonist implements Serializable, Entity, SkillOwner {
 		return name;
 	}
 	
+	/**
+	 * Context of a colonist is always their parent Colony.
+	 */
+	@Override
+	public String getContext() {
+		return colony.getName();
+	}
+
 	public Colony getColony() {
 		return colony;
+	}
+
+	public void setColony(Colony object) {
+		colony = object;
 	}
 
 	@Override
 	public double getPerformanceRating() {
 		return performance;
 	}
+
 }

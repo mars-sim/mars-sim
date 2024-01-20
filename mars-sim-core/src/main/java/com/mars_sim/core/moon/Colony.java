@@ -7,26 +7,23 @@
 
 package com.mars_sim.core.moon;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.mars_sim.core.Simulation;
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.authority.Nation;
 import com.mars_sim.core.authority.Organization;
-import com.mars_sim.core.logging.Loggable;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.moon.project.ColonistEngineer;
-import com.mars_sim.core.moon.project.ColonistResearcher;
+import com.mars_sim.core.moon.project.ColonySpecialist;
+import com.mars_sim.core.moon.project.ColonyResearcher;
 import com.mars_sim.core.moon.project.EngineeringProject;
 import com.mars_sim.core.moon.project.ResearchProject;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.mapdata.location.Coordinates;
 
-public class Colony implements Serializable, Temporal, Loggable, Comparable<Colony> {
+public class Colony implements Temporal, Entity, Comparable<Colony> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -40,27 +37,25 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	
 	/** The settlement's ReportingAuthority instance. */
 	private Authority sponsor;
-
-	private Coordinates location;
 	
 	private Population population;
-	
-	private Simulation sim;
-	
+		
 	private Nation nation;
 	
 	private Zone researchZone;
 	
 	private Zone developmentZone;
+
+	private Coordinates location;
 	
 	private Set<Zone> zones = new HashSet<>();
 	/** A set of research projects this colony's researchers engage in. */
 	private Set<ResearchProject> researchProjects = new HashSet<>();
 	/** A set of engineering projects this colony's engineers engage in. */
 	private Set<EngineeringProject> engineeringProjects = new HashSet<>();
-	
-	
-	public Colony(int id, String name, Authority sponsor, Coordinates location) {
+
+		
+	public Colony(int id, String name, Authority sponsor, Coordinates location, boolean scratch) {
 		this.id = id;
 		this.name = name;
 		this.sponsor = sponsor;
@@ -70,7 +65,7 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 
 		for (ZoneType type: ZoneType.values()) {
 			
-			Zone zone = new Zone(type, this);
+			Zone zone = new Zone(type, this, scratch);
 			if (type == ZoneType.RESEARCH) {
 				researchZone = zone;
 			}
@@ -92,11 +87,11 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	 * @param researcher
 	 * @return
 	 */
-	public ResearchProject getOneResearchProject(ColonistResearcher researcher) {
+	public ResearchProject getOneResearchProject(ColonyResearcher researcher) {
 		for (ResearchProject p: researchProjects) {
 			if (!p.getLead().equals(researcher)) {
-				Set<ColonistResearcher> participants = p.getParticipants();
-				for (ColonistResearcher r: participants) {
+				Set<ColonyResearcher> participants = p.getParticipants();
+				for (ColonyResearcher r: participants) {
 					if (!r.equals(researcher)) {
 						return p;
 					}
@@ -112,11 +107,11 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	 * @param Engineer
 	 * @return
 	 */
-	public EngineeringProject getOneEngineeringProject(ColonistEngineer engineer) {
+	public EngineeringProject getOneEngineeringProject(ColonySpecialist engineer) {
 		for (EngineeringProject p: engineeringProjects) {
 			if (!p.getLead().equals(engineer)) {
-				Set<ColonistEngineer> participants = p.getParticipants();
-				for (ColonistEngineer r: participants) {
+				Set<ColonySpecialist> participants = p.getParticipants();
+				for (ColonySpecialist r: participants) {
 					if (!r.equals(engineer)) {
 						return p;
 					}
@@ -346,6 +341,10 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 		return sponsor;
 	}
 
+	public Coordinates getCoordinates() {
+		return location;
+	}
+	
 	/**
 	 * Compares this object with the specified object for order.
 	 *
@@ -364,18 +363,10 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 	}
 
 	@Override
-	public Coordinates getCoordinates() {
-		return location;
+	public String getContext() {
+		return "Colony";
 	}
 
-	@Override
-	public Unit getContainerUnit() {
-		if (sim == null) {
-			sim = Simulation.instance();
-		}
-		return sim.getUnitManager().getMoon();
-	}
-	
 	/**
 	 * Prepares for deletion.
 	 */
@@ -383,11 +374,11 @@ public class Colony implements Serializable, Temporal, Loggable, Comparable<Colo
 		sponsor = null;
 		location = null;
 		population = null;
-		sim = null;
 		nation = null; 
 		zones.clear();
 		zones = null;
 	}
+
 }
 
 

@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
 
 import javax.xml.XMLConstants;
 
@@ -266,7 +265,7 @@ public class SimulationConfig implements Serializable {
 
 			loadDefaultConfiguration();
 		} catch (RuntimeException | JDOMException | IOException rte) {
-          	logger.log  (Level.SEVERE, "Cannot load default config : " + rte.getMessage(), rte);
+          	logger.severe("Cannot load default config : " + rte.getMessage(), rte);
 			throw new IllegalStateException("Cannot load the configurations", rte);
 		}
 	}
@@ -309,7 +308,7 @@ public class SimulationConfig implements Serializable {
 			try {
 				FileUtils.forceDelete(xmlLoc);
 			} catch (IOException e) {
-	          	logger.log(Level.SEVERE, "Cannot access xml folder: " + e.getMessage());
+	          	logger.severe( "Cannot access xml folder: " + e.getMessage());
 			}
 		}
 
@@ -333,9 +332,9 @@ public class SimulationConfig implements Serializable {
 				    	sameBuild = buildText.equals(Simulation.BUILD);
 				    }
 				} catch (FileNotFoundException e) {
-		          	logger.log(Level.SEVERE, "Cannot find version.txt : " + e.getMessage());
+		          	logger.severe( "Cannot find version.txt : " + e.getMessage());
 				} catch (IOException e) {
-		          	logger.log(Level.SEVERE, "Cannot access version.txt : " + e.getMessage());
+		          	logger.severe( "Cannot access version.txt : " + e.getMessage());
 				}
 			}
 		}
@@ -356,7 +355,7 @@ public class SimulationConfig implements Serializable {
 				try {
 					FileUtils.copyDirectory(xmlLoc, getBackupDir(), true);
 				} catch (IOException e) {
-		          	logger.log(Level.SEVERE, "Issues with build folder or backup folder: " + e.getMessage());
+		          	logger.severe( "Issues with build folder or backup folder: " + e.getMessage());
 				}
 		}
 
@@ -374,7 +373,7 @@ public class SimulationConfig implements Serializable {
 				Files.write(versionPath, lines, StandardCharsets.UTF_8);
 				logger.config("A new version.txt file was just created.");
 			} catch (IOException e) {
-	          	logger.log(Level.SEVERE, "Cannot write lines when creating version.txt" + e.getMessage());
+	          	logger.severe( "Cannot write lines when creating version.txt" + e.getMessage());
 			}
 		}
 
@@ -385,7 +384,7 @@ public class SimulationConfig implements Serializable {
 				Files.write(versionPath, lines, StandardCharsets.UTF_8);
 				logger.config("A new version.txt file was just created.");
 			} catch (IOException e) {
-	          	logger.log(Level.SEVERE, "Cannot write lines when creating version.txt" + e.getMessage());
+	          	logger.severe( "Cannot write lines when creating version.txt" + e.getMessage());
 			}
 		}
 		if (!exceptionLoc.exists()) {
@@ -395,7 +394,7 @@ public class SimulationConfig implements Serializable {
 				Files.write(exceptionPath, lines, StandardCharsets.UTF_8);
 				logger.config("A new exception.txt file was just created.");
 			} catch (IOException e) {
-	          	logger.log(Level.SEVERE, "Cannot write lines when creating exception.txt" + e.getMessage());
+	          	logger.severe( "Cannot write lines when creating exception.txt" + e.getMessage());
 			}
 		}
 	}
@@ -844,7 +843,7 @@ public class SimulationConfig implements Serializable {
 	        }
 		}
 		catch (IOException e) {
-			logger.log(Level.SEVERE, "Problem getting bundled XML " + e.getMessage(), e);
+			logger.severe("Problem getting bundled XML " + e.getMessage(), e);
 		}
         return existingFile;
 	}

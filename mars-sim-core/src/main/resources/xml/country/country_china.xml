@@ -350,108 +350,72 @@
     </first-name-list>
     
     <last-name-list>
-        <last-name value="Yee" />
-        <last-name value="Toy" />
-        <last-name value="Pun" />
-        <last-name value="Tang" />
-        <last-name value="Tien" />
-        
-        <last-name value="Chang" />
-        <last-name value="Fung" />
-        <last-name value="Hui" />
-        <last-name value="Tse" />
-        <last-name value="Law" />
-        
-        <last-name value="Ye" />
-        <last-name value="Ting" />
-        <last-name value="Sum" />
-        <last-name value="So" />
-        <last-name value="Yip" />
 
-        <last-name value="Wong" />
-        <last-name value="Chan" />
-        <last-name value="Lee" />
-        <last-name value="Tan" />
+   <!-- https://mynameguide.com/taiwanese-last-names.html -->
+        
+        <last-name value="Chien" />
+        <last-name value="Fong" />
+        <last-name value="Hsin" />
+        <last-name value="Hwang" />
+        <last-name value="Ke" />
 
-        <!-- https://en.wikipedia.org/wiki/List_of_common_Chinese_surnames -->
-        <last-name value="Wang" />
-        <last-name value="Li" />
-        <last-name value="Zhang" />
+        <last-name value="Kuo" />
+        <last-name value="Shieh" />
+        <last-name value="Lilu" />
+        <last-name value="Shih" />
+        <last-name value="Tae" />
+          
+        <last-name value="Tiao" />
+        <last-name value="Tsai" />
+        <last-name value="Tseng" />
+        <last-name value="Yueh" />
         <last-name value="Liu" />
-        <last-name value="Chen" />
-
-        <last-name value="Yang" />
-        <last-name value="Huang" />
-        <last-name value="Zhao" />
-        <last-name value="Wu" />
-        <last-name value="Zhou" />
-
-        <last-name value="Xu" />
-        <last-name value="Sun" />
-        <last-name value="Ma" />
-        <last-name value="Zhu" />
-        <last-name value="Hu" />
-
-        <last-name value="Guo" />
-        <last-name value="He" />
-        <last-name value="Gao" />
+        
+        <!-- https://www.quora.com/What-are-the-most-common-Taiwanese-surnames -->
+        
         <last-name value="Lin" />
-        <last-name value="Luo" />
-
-        <last-name value="Zheng" />
-        <last-name value="Liang" />
-        <last-name value="Xie" />
-        <last-name value="Song" />
-        <last-name value="Tang" />
-
-        <last-name value="Xu" />
-        <last-name value="Han" />
-        <last-name value="Feng" />
-        <last-name value="Deng" />
-        <last-name value="Cao" />
-
-        <last-name value="Peng" />
-        <last-name value="Zeng" />
-        <last-name value="Xiao" />
-        <last-name value="Tian" />
-        <last-name value="Dong" />
-
-        <last-name value="Yuan" />
-        <last-name value="Pan" />
-        <last-name value="Yu" />
-        <last-name value="Jiang" />
-        <last-name value="Cai" />
-
-        <last-name value="Yu" />
-        <last-name value="Tu" />
-        <last-name value="Yeh" />
-        <last-name value="Cheng" />
-        <last-name value="Su" />
-
-        <last-name value="Wei" />
+        <last-name value="Hong" />
         <last-name value="Lu" />
-        <last-name value="Ding" />
-        <last-name value="Ren" />
+        <last-name value="Hsu" />
+        <last-name value="Chen" />
+        
+        <last-name value="Lim" />
+        <last-name value="Chang" />
+        <last-name value="Huang" />
+        <last-name value="Chang" />
+        <last-name value="Li" />
+        
+        <last-name value="Lee" />
+        <last-name value="Wang" />
+        <last-name value="Wong" />
+        <last-name value="Wu" />
+        <last-name value="Yang" />
+        
+        <!-- https://uniquelastnames.com/taiwanese-last-names/ -->
+
+        <last-name value="Chiang" />
+        <last-name value="Chu" />
+        <last-name value="Chiu" />
+        <last-name value="Chang" />
+        <last-name value="Fan" />
+        
+        <last-name value="Ho" />
+        <last-name value="Hsuan" />
+        <last-name value="Hsiao" />
+        <last-name value="Kuang" />
+        <last-name value="Ku" />    
+
+        <last-name value="Liao" />
+        <last-name value="Lai" />
+        <last-name value="Peng" />
+        <last-name value="Sung" />
         <last-name value="Shen" />
         
-        <!-- Miscs. -->
-        <last-name value="Chin" />
-        <last-name value="Vong" />
-        <last-name value="Chu" />
-        <last-name value="Eng" />
-        <last-name value="Gong" />
-        
-        <last-name value="Yeoh" />
-        <last-name value="Wan" />
-        <last-name value="Yin" />
-        <last-name value="Lui" />       
-        <last-name value="Shi" />            
- 
-        <last-name value="Mao" />       
-        <last-name value="Hao" />  
-        <last-name value="Kwong" />       
-        <last-name value="Kung" />  
-        <last-name value="Shao" />        
-               
+        <last-name value="Shao" />
+        <last-name value="Sung" />
+        <last-name value="Su" />
+        <last-name value="Tu" />
+        <last-name value="Ting" />
+                       
     </last-name-list>
 </country>

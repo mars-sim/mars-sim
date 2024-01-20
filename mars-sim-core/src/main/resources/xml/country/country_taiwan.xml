@@ -1,0 +1,246 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+        name="Taiwan">
+        
+     <!-- https://www.investopedia.com/terms/f/four-asian-tigers.asp -->
+    <economics-data>
+		 <GDP value="32,756"/>
+		 <PPP value="69,150"/>
+		 <population value="23.937"/>
+		 <GDP-growth value="2.1"/>
+	</economics-data> 
+		
+    <!-- Taken from https://www.worlddata.info/average-bodyheight.php -->
+    <characteristics average-male-height="173" average-female-height="160"
+	            average-male-weight="75.0" average-female-weight="60.9"/>
+    <first-name-list>
+        <!-- Derived from 
+			https://kidadl.com/baby-names/inspiration/top-taiwanese-names-for-your-baby-that-youll-love -->
+        <first-name value="Chai-Hao" gender="male" />
+        <first-name value="Cheng-Hen" gender="male" />
+        <first-name value="Chen-Tao" gender="male" />
+        <first-name value="He-Huang" gender="male" />
+
+        <first-name value="Li-Jing" gender="male" />
+        <first-name value="Pin-Lin" gender="male" />
+        <first-name value="Tsung-Han" gender="male" />
+        <first-name value="Wei-Yin" gender="male" />
+        <first-name value="Yan-Ting" gender="male" />
+
+        <first-name value="Dao-Ming" gender="male" />
+        <first-name value="Kai" gender="male" />
+        <first-name value="Ti-Sai" gender="male" />
+        <first-name value="Yi-Chun" gender="male" />
+        <first-name value="Yi-Hsuan" gender="male" />
+
+        <first-name value="Yu-Ting" gender="male" />
+        <first-name value="Chih-Cheng" gender="male" />
+        <first-name value="Chih-Ming" gender="male" />
+        <first-name value="Chun-Chieh" gender="male" />
+        <first-name value="Dao-Yu" gender="male" />
+
+        <first-name value="Lei-Wei" gender="male" />
+        <first-name value="Li-Jie" gender="male" />
+        <first-name value="Li-Qiang" gender="male" />
+        <first-name value="Xiu-Ying" gender="male" />
+        <first-name value="Yung-Shu" gender="male" />
+        
+        <first-name value="Zhang-Wei" gender="male" />
+        <first-name value="Zheng-Zong" gender="male" /> 
+        <first-name value="Guang" gender="male" />
+        <first-name value="Heping" gender="male" />
+        <first-name value="Lujing" gender="male" />
+               
+        <first-name value="Qian" gender="male" />
+        <first-name value="Quingda" gender="male" />
+        <first-name value="Shizi" gender="male" />
+        <first-name value="Shouxi" gender="male" />
+        <first-name value="Yayang" gender="male" />
+        
+        <first-name value="Tiankong" gender="male" />
+        <first-name value="Xin" gender="male" />
+        <first-name value="Zhanshi" gender="male" />
+        <first-name value="Zhenzheng" gender="male" />
+        <first-name value="Ming-En" gender="male" />
+        
+       <!-- Derived from https://yen.com.gh/115826-taiwan-female-names-meanings.html -->
+
+        <first-name value="Ah Lam" gender="female" />
+        <first-name value="Akemi" gender="female" />
+        <first-name value="Akina" gender="female" />
+        <first-name value="Annya" gender="female" />
+        <first-name value="Ayako" gender="female" />
+
+        <first-name value="Ayame" gender="female" />
+        <first-name value="Bo" gender="female" />
+        <first-name value="Bai" gender="female" />
+        <first-name value="Bao" gender="female" />
+        <first-name value="Chun" gender="female" />
+
+        <first-name value="Diu" gender="female" />
+        <first-name value="Daruma" gender="female" />
+        <first-name value="Ezume" gender="female" />
+        <first-name value="Eiko" gender="female" />
+        <first-name value="Eshima" gender="female" />
+    
+    
+        <first-name value="Emiyo" gender="female" />
+        <first-name value="Ena" gender="female" />
+        <first-name value="Fen" gender="female" />
+        <first-name value="Genji" gender="female" />
+        <first-name value="Gin" gender="female" />
+
+        <first-name value="Guan-Yin" gender="female" />
+        <first-name value="Hanako" gender="female" />
+        <first-name value="Hana" gender="female" />
+        <first-name value="Hama" gender="female" />
+        <first-name value="Hachi" gender="female" />
+
+        <first-name value="Hayami" gender="female" />
+        <first-name value="Harumi" gender="female" />
+        <first-name value="Haru" gender="female" />
+        <first-name value="Hanan" gender="female" />
+        <first-name value="Hanami" gender="female" />
+
+        <first-name value="Hsiai-Han" gender="female" />
+        <first-name value="Hoshi" gender="female" />
+        <first-name value="Hisa" gender="female" />
+        <first-name value="Hiromi" gender="female" />
+        <first-name value="Heiwa" gender="female" />
+
+        <first-name value="Hui-Fang" gender="female" />
+        <first-name value="Ishi" gender="female" />
+        <first-name value="Jia" gender="female" />
+        <first-name value="Ju" gender="female" />
+        <first-name value="Jun" gender="female" />
+
+        <first-name value="Jui Hui" gender="female" />
+        <first-name value="Jui-Feng" gender="female" />
+        <first-name value="Jumiya" gender="female" />
+        <first-name value="Jumiya" gender="female" />
+        <first-name value="Kaili" gender="female" />
+        
+        <first-name value="Kei" gender="female" />
+        <first-name value="Kiaria" gender="female" />
+        <first-name value="Kibo" gender="female" />
+        <first-name value="Kiku" gender="female" />
+        <first-name value="Kimi" gender="female" />
+
+        <first-name value="Koko" gender="female" />
+        <first-name value="Leiko" gender="female" />
+        <first-name value="Majime" gender="female" />
+        <first-name value="Manami" gender="female" />
+        <first-name value="Mariko" gender="female" />
+		
+    </first-name-list>
+    
+    <last-name-list>
+		<!-- https://imagerestorationcenter.com/the-most-common-last-names-in-taiwan/
+		-->
+		
+        <last-name value="Chen" />
+        <last-name value="Lin" />
+        <last-name value="Huang" />
+        <last-name value="Chang" />
+        <last-name value="Li" />
+        
+        <last-name value="Wang" />
+        <last-name value="Wu" />
+        <last-name value="Liu" />
+        
+        <last-name value="Tsai" />
+        <last-name value="Yang" />
+        
+        <last-name value="Ye" />
+        <last-name value="Ting" />
+        <last-name value="Sum" />
+        <last-name value="So" />
+        <last-name value="Yip" />
+
+        <last-name value="Wong" />
+        <last-name value="Chan" />
+        <last-name value="Lee" />
+        <last-name value="Tan" />
+
+        <!-- https://en.wikipedia.org/wiki/List_of_common_Chinese_surnames -->
+        <last-name value="Wang" />
+        <last-name value="Li" />
+        <last-name value="Zhang" />
+        <last-name value="Liu" />
+        <last-name value="Chen" />
+
+        <last-name value="Yang" />
+        <last-name value="Huang" />
+        <last-name value="Zhao" />
+        <last-name value="Wu" />
+        <last-name value="Zhou" />
+
+        <last-name value="Xu" />
+        <last-name value="Sun" />
+        <last-name value="Ma" />
+        <last-name value="Zhu" />
+        <last-name value="Hu" />
+
+        <last-name value="Guo" />
+        <last-name value="He" />
+        <last-name value="Gao" />
+        <last-name value="Lin" />
+        <last-name value="Luo" />
+
+        <last-name value="Zheng" />
+        <last-name value="Liang" />
+        <last-name value="Xie" />
+        <last-name value="Song" />
+        <last-name value="Tang" />
+
+        <last-name value="Xu" />
+        <last-name value="Han" />
+        <last-name value="Feng" />
+        <last-name value="Deng" />
+        <last-name value="Cao" />
+
+        <last-name value="Peng" />
+        <last-name value="Zeng" />
+        <last-name value="Xiao" />
+        <last-name value="Tian" />
+        <last-name value="Dong" />
+
+        <last-name value="Yuan" />
+        <last-name value="Pan" />
+        <last-name value="Yu" />
+        <last-name value="Jiang" />
+        <last-name value="Cai" />
+
+        <last-name value="Yu" />
+        <last-name value="Tu" />
+        <last-name value="Yeh" />
+        <last-name value="Cheng" />
+        <last-name value="Su" />
+
+        <last-name value="Wei" />
+        <last-name value="Lu" />
+        <last-name value="Ding" />
+        <last-name value="Ren" />
+        <last-name value="Shen" />
+        
+        <!-- Miscs. -->
+        <last-name value="Chin" />
+        <last-name value="Vong" />
+        <last-name value="Chu" />
+        <last-name value="Eng" />
+        <last-name value="Gong" />
+        
+        <last-name value="Yeoh" />
+        <last-name value="Wan" />
+        <last-name value="Yin" />
+        <last-name value="Lui" />       
+        <last-name value="Shi" />            
+ 
+        <last-name value="Mao" />       
+        <last-name value="Hao" />  
+        <last-name value="Kwong" />       
+        <last-name value="Kung" />  
+        <last-name value="Shao" />        
+               
+    </last-name-list>
+</country>

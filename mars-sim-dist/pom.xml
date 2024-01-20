@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+	<artifactId>mars-sim</artifactId>
+	<groupId>com.mars-sim</groupId>
+	<version>3.7.1</version>
+  </parent>
+  <artifactId>mars-sim-dist</artifactId>
+  <name>mars-sim-dist</name>
+  <packaging>pom</packaging>
+  <properties>
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <!-- NOTE: These dependency declarations are only required to sort this project to the 
+       end of the line in the multimodule build. 
+  -->
+  <dependencies>
+	<dependency>
+		<groupId>com.mars-sim</groupId>
+		<artifactId>mars-sim-main</artifactId>
+		<version>${project.version}</version>
+	</dependency>
+			<dependency>
+			<groupId>com.mars-sim</groupId>
+			<artifactId>mars-sim-headless</artifactId>
+			<version>${project.version}</version>
+		</dependency>	
+  </dependencies>
+ 
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>distro-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>assembly.xml</descriptor>
+              </descriptors>
+			  
+			  <!-- Control the final name of the generated file. -->
+			  <finalName>mars-sim-${project.version}</finalName>
+			  <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

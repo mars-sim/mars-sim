@@ -451,7 +451,7 @@ public class TabPanelAirComposition extends TabPanel {
 
 			// CO2, H2O, N2, O2, Others (Ar2, He, CH4...)
 			if (column == 0) {
-				return b.getNickName() + " ";
+				return b.getName() + " ";
 			}
 			else if (column == 1) {
 				return getSubtotal(b);

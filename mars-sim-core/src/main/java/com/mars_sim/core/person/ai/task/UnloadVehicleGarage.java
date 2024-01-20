@@ -176,8 +176,8 @@ public class UnloadVehicleGarage extends Task {
 				if (!vehicle.getName().contains("Mock")) {
 					// Note: In maven test, the name of the vehicle is "Mock Vehicle"
 					// test if it's NOT under maven test
-					logger.log(worker, Level.INFO, 10_000, "Unloaded "
-										+ equipment.getNickName() + " from " + vehicle.getName() + ".");
+					logger.info(worker, 10_000, "Unloaded "
+										+ equipment.getName() + " from " + vehicle.getName() + ".");
 				}
 			}
 		}

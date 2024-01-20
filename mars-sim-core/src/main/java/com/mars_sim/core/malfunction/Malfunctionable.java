@@ -10,14 +10,13 @@ import java.util.Collection;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.UnitType;
-import com.mars_sim.core.logging.Loggable;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
 
 /**
  * The Malfunctionable interface represents a Unit that can have malfunctions.
  */
-public interface Malfunctionable extends Entity, Loggable {
+public interface Malfunctionable extends Entity {
 
 	/**
 	 * Gets the entity's malfunction manager.

@@ -495,7 +495,7 @@ public class Fishery extends Function {
 		int rand = RandomUtil.getRandomInt(fish.size());
 		if (rand > idealFish) {
 			// Catch one
-			logger.log(building, fisher, Level.INFO, 0, "One fish caught. Stock:" + fish.size(), null);
+			logger.info(fisher, "One fish caught. Stock:" + fish.size());
 			Herbivore removed = fish.remove(1);
 			
 			// Fish stored as KG, 90% is useful

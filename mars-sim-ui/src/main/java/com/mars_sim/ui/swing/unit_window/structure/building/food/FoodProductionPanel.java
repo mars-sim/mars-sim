@@ -94,8 +94,8 @@ public class FoodProductionPanel extends JPanel {
 
 		if (showBuilding) {
 			// Prepare building name label.
-			// 2014-11-19 Changed from getName() to getNickName()
-			String buildingName = process.getKitchen().getBuilding().getNickName();
+			// 2014-11-19 Changed from getName() to getName()
+			String buildingName = process.getKitchen().getBuilding().getName();
 			JLabel buildingNameLabel = new JLabel(buildingName, JLabel.CENTER);
 			add(buildingNameLabel);
 		}
@@ -177,9 +177,9 @@ public class FoodProductionPanel extends JPanel {
 
 		result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;Process : ").append(info.getName())
 				.append("<br>");
-		// 2014-11-19 Changed from getName() to getNickName()
+		// 2014-11-19 Changed from getName() to getName()
 		// if (building != null) result.append("&emsp;&emsp;&emsp;&emsp;Building:
-		// ").append(building.getNickName()).append("<br>");
+		// ").append(building.getName()).append("<br>");
 		result.append("&emsp;&emsp;&emsp;&nbsp;Labor Req : ").append(info.getWorkTimeRequired())
 				.append(" millisols<br>");
 		result.append("&emsp;&emsp;&emsp;&nbsp;&nbsp;Time Req : ").append(info.getProcessTimeRequired())

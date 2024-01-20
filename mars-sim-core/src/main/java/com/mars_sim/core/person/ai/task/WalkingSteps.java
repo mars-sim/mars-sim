@@ -13,9 +13,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
-import com.mars_sim.core.logging.Loggable;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.AirlockType;
@@ -167,7 +167,7 @@ implements Serializable {
             Building building = person.getBuildingLocation();
 
             if (building == null) {
-            	logger.log(person, Level.WARNING, 4000,
+            	logger.warning(person,  4000,
                         "Inside the settlement but not in a building.");
             	return null;
             }
@@ -202,7 +202,7 @@ implements Serializable {
 
         else {
 
-        	logger.log(person, Level.WARNING, 4000,
+        	logger.warning(person,  4000,
         			"Can not identify parent container.");
         }
 
@@ -236,7 +236,7 @@ implements Serializable {
             result.building = building;
 
             if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(robot.getPosition(), building)) {
-            	logger.log(robot, Level.SEVERE, 5000,
+            	logger.severe(robot, 5000,
             			"Invalid Robot start location at " + robot.getPosition()
                         + ", not within " + building + " @ "
                         + LocalAreaUtil.getDescription(building));
@@ -244,7 +244,7 @@ implements Serializable {
         }
 
         else {
-        	logger.log(robot, Level.SEVERE, 5000,
+        	logger.severe(robot, 5000,
         			"Invalid location situation for walking task.");
         }
 
@@ -273,11 +273,11 @@ implements Serializable {
             result.building = building;
 
             if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(pos, building)) {
-                Loggable walker = person;
+                Worker walker = person;
                 if (walker == null) {
                     walker = robot;
                 }
-            	logger.log(walker, Level.SEVERE, 60_000,
+            	logger.severe(walker, 60_000,
             				"Invalid destination " +
             				pos + " not within building " + building + " @ "
                             + LocalAreaUtil.getDescription(building));
@@ -290,7 +290,7 @@ implements Serializable {
 	            result.rover = rover;
 
 	            if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(pos, rover)) {
-	            	logger.log(person, Level.SEVERE, 5000,
+	            	logger.severe(person, 5000,
 	            			"Invalid destination " +
 	                        pos + " not within rover " + rover + " @ "
                             + LocalAreaUtil.getDescription(rover));
@@ -525,14 +525,14 @@ implements Serializable {
             if (airlock == null) {
                 canWalkAllSteps = false;
                 if (person != null) {
-        			logger.log(person, Level.WARNING, 10_000,
+        			logger.warning(person, 10_000,
         					"No walkable airlock from building interior to building interior in "
-        					+ person.getBuildingLocation().getNickName() + ".");
+        					+ person.getBuildingLocation().getName() + ".");
                 }
                 else {
-                	logger.log(robot, Level.WARNING, 10_000,
+                	logger.warning(robot, 10_000,
                 			"No walkable airlock from building interior to building interior in "
-                			+ robot.getBuildingLocation().getNickName() + ".");
+                			+ robot.getBuildingLocation().getName() + ".");
                 }
                 return;
             }
@@ -608,18 +608,18 @@ implements Serializable {
         else {
             // Find closest walkable airlock (for egress) to destination rover.
             Airlock airlock = settlement.getClosestWalkableAvailableAirlock(initialBuilding,
-                    destinationWalkState.loc);//, false);
+                    destinationWalkState.loc);
             if (airlock == null) {
                 canWalkAllSteps = false;
                 if (person != null) {
-                	logger.log(person, Level.WARNING, 10_000,
+                	logger.warning(person, 10_000,
                 		"No walkable airlock from building interior to rover interior in "
-                		+ person.getBuildingLocation().getNickName());
+                		+ person.getBuildingLocation().getName());
                 }
                 else {
-                	logger.log(robot, Level.WARNING, 10_000,
+                	logger.warning(robot, 10_000,
                 		"No walkable airlock from building interior to rover interior in "
-                    	+ robot.getBuildingLocation().getNickName());
+                    	+ robot.getBuildingLocation().getName());
                 }
                return;
             }
@@ -654,19 +654,19 @@ implements Serializable {
 
         // Find closest walkable airlock (for egress) to destination.
         Airlock airlock = settlement.getClosestWalkableAvailableAirlock(initialBuilding,
-                destinationWalkState.loc);//, false);
+                destinationWalkState.loc);
         if (airlock == null) {
             canWalkAllSteps = false;
             if (person != null) {
-            	logger.log(person, Level.WARNING, 10_000,
+            	logger.warning(person, 10_000,
             		"No walkable airlock from "
-            		+ person.getBuildingLocation().getNickName() 
+            		+ person.getBuildingLocation().getName() 
             		+ " to outside.");
             }
             else {
-            	logger.log(robot, Level.WARNING, 10_000,
+            	logger.warning(robot, 10_000,
             		"No walkable airlock from "
-                    + robot.getBuildingLocation().getNickName() 
+                    + robot.getBuildingLocation().getName() 
                     + " to outside.") ;
             }
            return;
@@ -1137,14 +1137,14 @@ implements Serializable {
                     canWalkAllSteps = false;
 
                     if (person != null) {
-                    	logger.log(person, Level.WARNING, 10_000,
+                    	logger.warning(person,  10_000,
                     			"No walkable airlock from airlock exterior to building interior in "
-                        		+ person.getBuildingLocation().getNickName());
+                        		+ person.getBuildingLocation().getName());
                     }
                     else if (robot != null) {
-                    	logger.log(robot, Level.WARNING, 10_000,
+                    	logger.warning(robot, 10_000,
                     			"No walkable airlock from airlock exterior to building interior in "
-                        		+ robot.getBuildingLocation().getNickName());
+                        		+ robot.getBuildingLocation().getName());
                     }
 
                     return;
@@ -1177,10 +1177,10 @@ implements Serializable {
                 canWalkAllSteps = false;
 
                 if (person != null)
-                	logger.log(person, Level.WARNING, 10_000,
+                	logger.warning(person,  10_000,
                 			"No walkable airlock from rover airlock exterior to building interior.");
                 else if (robot != null)
-                	logger.log(robot, Level.WARNING, 10_000,
+                	logger.warning(robot, 10_000,
                 			"No walkable airlock from rover airlock exterior to building interior.");
 
             }
@@ -1242,14 +1242,14 @@ implements Serializable {
                 canWalkAllSteps = false;
 
                 if (person != null) {
-                	logger.log(person, Level.WARNING, 10_000,
+                	logger.warning(person,  10_000,
                 			"No walkable airlock from airlock exterior to rover in garage in "
-                			+ person.getBuildingLocation().getNickName());
+                			+ person.getBuildingLocation().getName());
                 }
                 else {
-                	logger.log(robot, Level.WARNING, 10_000,
+                	logger.warning(robot, 10_000,
                 			"No walkable airlock from airlock exterior to rover in garage in "
-                			+ robot.getBuildingLocation().getNickName());
+                			+ robot.getBuildingLocation().getName());
                 }
 
             }
@@ -1359,9 +1359,9 @@ implements Serializable {
 
             // Cannot walk to destination building.
             canWalkAllSteps = false;
-//        	logger.log(person, Level.WARNING, 10_000,
+//        	logger.warning(person,  10_000,
 //        			"No walkable airlock from outside to building interior in "
-//            		 + destinationBuilding.getNickName());
+//            		 + destinationBuilding.getName());
         }
     }
 
@@ -1403,14 +1403,14 @@ implements Serializable {
                 canWalkAllSteps = false;
 
                 if (person != null) {
-                	logger.log(person, Level.WARNING, 10_000,
+                	logger.warning(person,  10_000,
                 			"No find walkable airlock from outside to rover in garage in "
-                    		+ person.getBuildingLocation().getNickName());
+                    		+ person.getBuildingLocation().getName());
                 }
                 else {
-                	logger.log(robot, Level.WARNING, 10_000,
+                	logger.warning(robot, 10_000,
                 			"No walkable airlock from outside to rover in garage in "
-                    		+ robot.getBuildingLocation().getNickName());
+                    		+ robot.getBuildingLocation().getName());
                 }
             }
         }
@@ -1586,10 +1586,10 @@ implements Serializable {
 				route.append(" loc=").append(step.loc);
 			}
 			if (step.building != null) {
-				route.append(" building=").append(step.building.getNickName()).append(',');
+				route.append(" building=").append(step.building.getName()).append(',');
 			}
 			if (step.rover != null) {
-				route.append(" rover=").append(step.rover.getNickName()).append(',');
+				route.append(" rover=").append(step.rover.getName()).append(',');
 			}
 			if (step.airlock != null) {
 				route.append(" airlock=").append(step.airlock.getEntityName()).append(',');

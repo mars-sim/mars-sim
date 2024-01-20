@@ -14,7 +14,6 @@ import java.util.Set;
 import com.mars_sim.core.environment.Weather;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.location.LocationTag;
-import com.mars_sim.core.logging.Loggable;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.structure.Settlement;
@@ -29,7 +28,7 @@ import com.mars_sim.mapdata.location.Coordinates;
  * Units include people, vehicles and settlements. This class provides data
  * members and methods common to all units.
  */
-public abstract class Unit implements Loggable, UnitIdentifer, Comparable<Unit> {
+public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -53,9 +52,7 @@ public abstract class Unit implements Loggable, UnitIdentifer, Comparable<Unit> 
 	/** The last pulse applied. */
 	private long lastPulse = 0;
 	
-	/** TODO Unit name needs to be internationalized. */
 	private String name;
-	/** TODO Unit description needs to be internationalized. */
 	private String description;
 	/** Commander's notes on this unit. */
 	private String notes = "";
@@ -254,14 +251,31 @@ public abstract class Unit implements Loggable, UnitIdentifer, Comparable<Unit> 
 	}
 
 	/**
-	 * Gets the unit's nickname.
-	 *
-	 * @return the unit's nickname
+	 * This method assumes the Unit could be movable and change container. It identifies the
+	 * approoriate container and use that.
+	 * Ideally this methd should be moved to a new subclass called 'MovableUnit' that
+	 * encapsulates some positioning methods that are not applicable to Structures.
 	 */
-	public String getNickName() {
-		return name;  // This method should be dropped and getName used everywhere
+	public String getContext() {
+		if (isInSettlement()) {
+			var b = getBuildingLocation();
+			if (b != null) {
+				return b.getChildContext();
+			}
+			else {
+				return getAssociatedSettlement().getName();
+			}
+		}
+		else if (isInVehicle()) {
+			return getVehicle().getChildContext();
+		}
+		else if (isOutside()) {
+			return getCoordinates().getFormattedString();
+		}
+		else {
+			return getContainerUnit().getName();
+		}
 	}
-
 	/**
 	 * Gets the unit's shortened name.
 	 *

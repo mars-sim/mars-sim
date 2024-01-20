@@ -9,7 +9,6 @@ package com.mars_sim.ui.swing.tool.monitor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.tool.NumberRenderer;
 
 /**
@@ -22,12 +21,11 @@ public class FoodInventoryTab extends TableTab {
 	/**
 	 * constructor.
 	 *
-	 * @param selectedSettlement
 	 * @param window {@link MonitorWindow} the containing window.
 	 */
-	public FoodInventoryTab(Settlement selectedSettlement, final MonitorWindow window) {
+	public FoodInventoryTab(final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new FoodInventoryTableModel(selectedSettlement), true, false, FOOD_ICON);
+		super(window, new FoodInventoryTableModel(), true, false, FOOD_ICON);
 	
 		TableColumnModel m = table.getColumnModel();
 		for (int i= FoodInventoryTableModel.NUM_INITIAL_COLUMNS; i < m.getColumnCount(); i++) {

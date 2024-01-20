@@ -32,28 +32,28 @@ public class ResearchProject implements Serializable {
 	
 	private ScienceType science;
 	/** The lead researcher. */
-	private ColonistResearcher lead;
+	private ColonyResearcher lead;
 	
 	/** Major topics covered by this research. */
 	private List<String> topics;
 	/** A set of participating researcher. */
-	private Set<ColonistResearcher> participants = new HashSet<>();
+	private Set<ColonyResearcher> participants = new HashSet<>();
 	
-	ResearchProject(ColonistResearcher lead, String name, ScienceType science) {
+	ResearchProject(ColonyResearcher lead, String name, ScienceType science) {
 		this.lead = lead;
 		this.name = name;
 		this.science = science;
 	}
 	
-	public void addParticipant(ColonistResearcher participant) {
+	public void addParticipant(ColonyResearcher participant) {
 		participants.add(participant);
 	}
 	
-	public ColonistResearcher getLead() {
+	public ColonyResearcher getLead() {
 		return lead;
 	}
 	
-	public Set<ColonistResearcher> getParticipants() {
+	public Set<ColonyResearcher> getParticipants() {
 		return participants;
 	}
 	
@@ -88,7 +88,7 @@ public class ResearchProject implements Serializable {
 	public double getAverageResearchActiveness() {
 		int num = 1;
 		double sum = lead.getActiveness() * 2;
-		for (ColonistResearcher r: participants) {
+		for (ColonyResearcher r: participants) {
 			num++;
 			sum += r.getActiveness();
 		}

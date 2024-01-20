@@ -59,8 +59,8 @@ public class EVASuitUtil {
 //						+ " to " + (Unit)housing + ".");
 			}
 			else {
-				logger.log((Unit)housing, person, Level.WARNING, 4_000,
-						"Could not transfer " + suit + " from " + person + " to " + (Unit)housing + ".");
+				logger.warning(person, 4_000,
+						"Could not transfer " + suit + " from " + person + " to " + ((Unit)housing).getName() + ".");
 			}
 		}
 		
@@ -145,7 +145,7 @@ public class EVASuitUtil {
 				hasEnoughResources = hasEnoughResourcesForSuit(owner, suit);
 
 			} catch (Exception ex) {
-				logger.log(p, Level.SEVERE, 50_000,
+				logger.severe(p, 50_000,
 						"Could not find enough resources for " + suit.getName() + ".", ex);
 			}
 			
@@ -228,8 +228,8 @@ public class EVASuitUtil {
 
 		// it's okay even if there's not enough water
 		if (!hasEnoughWater)
-			logger.log(((Settlement) owner), Level.WARNING, 20_000, 
-					"No enough water to feed " + suit.getNickName() 
+			logger.warning(((Settlement) owner), 20_000, 
+					"No enough water to feed " + suit.getName() 
 					+ " but can still use the EVA Suit.");
 
 		return hasEnoughOxygen;

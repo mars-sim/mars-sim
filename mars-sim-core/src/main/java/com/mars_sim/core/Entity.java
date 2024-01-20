@@ -14,10 +14,19 @@ import java.io.Serializable;
  */
 public interface Entity extends Serializable {
 	
+    public static final String ENTITY_SEPERATOR = " - ";
+
     /**
      * Gets the name of the entity.
      * 
      * @return
      */
     String getName();
+
+    /**
+     * Get the context of the entity in terms of a textual description.
+
+     * @return This may be null if a top level entity.
+     */
+    String getContext();
 }

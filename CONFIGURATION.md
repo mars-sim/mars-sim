@@ -89,6 +89,7 @@ will look like this `20231103T073311`.
 | country_spain.xml | Define settler's names for the country of Spain |
 | country_sweden.xml | Define settler's names for the country of Sweden |
 | country_switzerland.xml | Define settler's names for the country of Switzerland |
+| country_taiwan.xml   | Define settler's names for the country of Taiwan |
 | country_united_arab_emirates.xml | Define settler's names for the UAE |
 | country_united_kingdom.xml | Define settler's names for the country of the UK |
 | country_united_states.xml | Define settler's names for the country of the USA |
@@ -99,7 +100,7 @@ will look like this `20231103T073311`.
 | scenario_default.xml | Define the default settlement scenario |
 | scenario_single_settlement.xml | Define the single settlement scenario |
 | scenario.xsd | Define the xsd scheme for scenario-related xmls |
-| 30 settlement xml templates | Define the building placements for a settlement phase |
+| settlement_phase_{$xxx}.xml | Define the building placements for a settlement template phase |
 | settlement.xsd | Define the xsd scheme for all settlement template xmls |
 | building_packages.xml | Define building packages for use in settlement templates |
 | buildings.xml | Define building placement for use in settlement templates |

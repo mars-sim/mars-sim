@@ -23,7 +23,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.authority.Authority;
@@ -515,7 +514,7 @@ public class UnitManager implements Serializable, Temporal {
 		}
 		if ((currentSettlement != null) && !currentSettlement.equals(owningSettlement)) {
 			// Log an error but don't throw an exception; use a temp exception to get a stack trace
-			logger.log(Level.SEVERE, operation + " is executed by "
+			logger.severe(operation + " is executed by "
 					+ currentSettlement.getName() + " but owner is " + owningSettlement.getName(),
 					new IllegalStateException(operation));
 		}
@@ -542,7 +541,7 @@ public class UnitManager implements Serializable, Temporal {
 		}
 		catch (ExecutionException ee) {
 			// Problem running the pulse
-			logger.log(Level.SEVERE, "Problem running the pulse : ", ee);
+			logger.severe("Problem running the pulse : ", ee);
 		}
 		catch (InterruptedException ie) {
 			// Program probably exiting
@@ -909,7 +908,7 @@ public class UnitManager implements Serializable, Temporal {
 			catch (RuntimeException rte) {
 				String msg = "Problem with pulse on " + settlement.getName()
         					  + ": " + rte.getMessage();
-	            logger.log(Level.SEVERE, msg, rte);
+	            logger.severe(msg, rte);
 	            return msg;
 			}
 			return settlement.getName() + " completed pulse #" + currentPulse.getId();

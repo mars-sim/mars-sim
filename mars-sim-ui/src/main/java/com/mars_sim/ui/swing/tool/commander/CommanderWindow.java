@@ -114,6 +114,7 @@ public class CommanderWindow extends ToolWindow {
 	private Map<Colony, Integer> bedCaches = new HashMap<>();
 	private Map<Colony, Integer> touristCaches = new HashMap<>();
 	private Map<Colony, Integer> residentCaches = new HashMap<>();
+	private Map<Colony, Integer> engineerCaches = new HashMap<>();
 	private Map<Colony, Integer> researcherCaches = new HashMap<>();
 	private Map<Colony, Integer> numResearchCaches = new HashMap<>();
 	private Map<Colony, Integer> numDevelopmentCaches = new HashMap<>();
@@ -139,6 +140,7 @@ public class CommanderWindow extends ToolWindow {
 	private Map<Colony, Double> touristRateCaches = new HashMap<>();
 	private Map<Colony, Double> residentRateCaches = new HashMap<>();
 	private Map<Colony, Double> researcherRateCaches = new HashMap<>();
+	private Map<Colony, Double> engineerRateCaches = new HashMap<>();
 	
 	private JTabbedPane tabPane;
 	/** Person Combo box */	
@@ -175,6 +177,8 @@ public class CommanderWindow extends ToolWindow {
 	private Map<Colony, JLabel> touristLabels = new HashMap<>();
 	private Map<Colony, JLabel> residentLabels = new HashMap<>();
 	private Map<Colony, JLabel> researcherLabels = new HashMap<>();
+	private Map<Colony, JLabel> engineerLabels = new HashMap<>();
+	
 	private Map<Colony, JLabel> totalAreaLabels = new HashMap<>();
 	private Map<Colony, JLabel> areaPerPersonLabels = new HashMap<>();
 	
@@ -389,7 +393,7 @@ public class CommanderWindow extends ToolWindow {
 				
 				JPanel infoPanel = new JPanel(new BorderLayout(10, 10));
 				
-				AttributePanel labelGrid = new AttributePanel(3, 3);
+				AttributePanel labelGrid = new AttributePanel(3, 2);
 				labelGrid.setBorder(new EmptyBorder(5, 5, 5, 5));
 				infoPanel.add(labelGrid, BorderLayout.NORTH);
 				
@@ -426,24 +430,17 @@ public class CommanderWindow extends ToolWindow {
 				areaPerPersonCaches.put(c, areaPerPersonCache);
 				JLabel areaPerPersonLabel = labelGrid.addRow("Area Per Person", Math.round(areaPerPersonCache * 10.0)/10.0 + " SM");
 				areaPerPersonLabels.put(c, areaPerPersonLabel);
-				
-				int bedCache = c.getPopulation().getNumBed();
-				bedCaches.put(c, bedCache);
-				double bedRateCache = c.getPopulation().getGrowthNumBed();
-				bedRateCaches.put(c, bedRateCache);
-				String bedRateCacheString = bedCache + " (" + Math.round(bedRateCache * 10.0)/10.0 + ")";
-				JLabel bedLabel = labelGrid.addRow("# of Beds", bedRateCacheString + "");
-				bedLabels.put(c, bedLabel);
+			
 				
 				// FUTURE: will model and derive birth rate
-				labelGrid.addRow("Birth Rate", "0.0");
+//				labelGrid.addRow("Birth Rate", "0.0");
 				
 				/////////////////////////////////////////////////////////////
 				
 				JPanel popPanel = new JPanel(new BorderLayout(10, 10));
 				infoPanel.add(popPanel, BorderLayout.CENTER);
 				
-				AttributePanel popGrid = new AttributePanel(2, 2);
+				AttributePanel popGrid = new AttributePanel(3, 2);
 				popPanel.add(popGrid, BorderLayout.NORTH);
 				popGrid.setBorder(BorderFactory.createTitledBorder(" Population Types"));
 				
@@ -455,7 +452,18 @@ public class CommanderWindow extends ToolWindow {
 				JLabel popLabel = popGrid.addRow("Total Population", popRateCacheString + "");
 				popLabels.put(c, popLabel);
 				
-				//////////////////////////////////////////////////////
+				/////////////////////////
+				
+				int bedCache = c.getPopulation().getNumBed();
+				bedCaches.put(c, bedCache);
+				double bedRateCache = c.getPopulation().getGrowthNumBed();
+				bedRateCaches.put(c, bedRateCache);
+				String bedRateCacheString = bedCache + " (" + Math.round(bedRateCache * 10.0)/10.0 + ")";
+				JLabel bedLabel = popGrid.addRow("# of Beds", bedRateCacheString + "");
+				bedLabels.put(c, bedLabel);
+				
+				
+				/////////////////////////////
 				
 				// Update the area per person label right away
 				areaPerPersonCache = Math.round(totalAreaCache / popCache * 10.0)/10.0;
@@ -475,7 +483,7 @@ public class CommanderWindow extends ToolWindow {
 				
 				int residentCache = c.getPopulation().getNumResidents();
 				residentCaches.put(c, residentCache);
-				double residentRateCache = c.getPopulation().getGrowthTourists();
+				double residentRateCache = c.getPopulation().getGrowthResidents();
 				residentRateCaches.put(c, residentRateCache);
 				String residentRateCacheString = residentCache + " (" + Math.round(residentRateCache * 10.0)/10.0 + ")";
 				JLabel residentLabel = popGrid.addRow("# of Residents", residentRateCacheString + "");
@@ -483,11 +491,19 @@ public class CommanderWindow extends ToolWindow {
 				
 				int researcherCache = c.getPopulation().getNumResearchers();
 				researcherCaches.put(c, researcherCache);
-				double researcherRateCache = c.getPopulation().getGrowthTourists();
+				double researcherRateCache = c.getPopulation().getGrowthResearchers();
 				researcherRateCaches.put(c, researcherRateCache);
 				String researcherRateCacheString = researcherCache + " (" + Math.round(researcherRateCache * 10.0)/10.0 + ")";
 				JLabel researcherLabel = popGrid.addRow("# of Researchers", researcherRateCacheString + "");
 				researcherLabels.put(c, researcherLabel);
+				
+				int engineerCache = c.getPopulation().getNumEngineers();
+				engineerCaches.put(c, engineerCache);
+				double engineerRateCache = c.getPopulation().getGrowthEngineers();
+				engineerRateCaches.put(c, engineerRateCache);
+				String engineerRateCacheString = engineerCache + " (" + Math.round(engineerRateCache * 10.0)/10.0 + ")";
+				JLabel engineerLabel = popGrid.addRow("# of Engineers", engineerRateCacheString + "");
+				engineerLabels.put(c, engineerLabel);
 				
 				AttributePanel rdGrid = new AttributePanel(4, 2);
 				popPanel.add(rdGrid, BorderLayout.CENTER);
@@ -613,6 +629,16 @@ public class CommanderWindow extends ToolWindow {
 					researcherLabels.get(c).setText(researcherRateCacheString);
 				}
 				
+				int newEngineer = c.getPopulation().getNumEngineers();
+				double newEngineerRate = c.getPopulation().getGrowthEngineers();
+				if (engineerCaches.get(c) != newEngineer
+					 || engineerRateCaches.get(c) != newEngineerRate) {
+					engineerCaches.put(c, newEngineer);
+					engineerRateCaches.put(c, newEngineerRate);
+					String engineerRateCacheString = newEngineer + " (" + Math.round(newEngineerRate * 10.0)/10.0 + ")";
+					engineerLabels.get(c).setText(engineerRateCacheString);
+				}
+				
 				double newResearchValue = c.getTotalResearchValue();
 				if (researchValueCaches.get(c) != newResearchValue) {
 					researchValueCaches.put(c, newResearchValue);
@@ -734,9 +760,7 @@ public class CommanderWindow extends ToolWindow {
 			currentArea = farm.getDesignatedCropArea();
 		}
 		spinnerModel.setValue(currentArea);
-		
-		logger.info(settlement, bldg, "Current Growing Area per Crop (in SM): " + currentArea + ".");
-		
+				
 		areaSpinner = new JSpinner(spinnerModel);
 		spinnerPanel.add(areaSpinner, BorderLayout.CENTER);
 		spinnerPanel.setToolTipText("Change the growing area for each crop in a selected farm");
@@ -748,7 +772,7 @@ public class CommanderWindow extends ToolWindow {
 			if (!greenhouseBldgs.isEmpty()) {
 				for (Building b: greenhouseBldgs) {
 					b.getFarming().setDesignatedCropArea(newArea);
-					logger.info(settlement, b, newArea + " SM.");
+					logger.info(b, newArea + " SM.");
 				}
 			}
 		});

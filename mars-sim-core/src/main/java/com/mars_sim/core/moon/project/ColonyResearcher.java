@@ -1,13 +1,12 @@
 /*
  * Mars Simulation Project
- * ColonistResearcher.java
+ * ColonyResearcher.java
  * @date 2022-10-05
  * @author Manny Kung
  */
 
 package com.mars_sim.core.moon.project;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -21,10 +20,9 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.tools.util.RandomUtil;
 
-public class ColonistResearcher extends Colonist implements Researcher, Serializable, Temporal {
+public class ColonyResearcher extends Colonist implements Researcher, Temporal {
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -35,15 +33,11 @@ public class ColonistResearcher extends Colonist implements Researcher, Serializ
 	private int numResearch = 0;
 
 	private double activeness = 10;
-	
-	private String name;
-	
+		
 	protected ScienceType mainScienceType;
 	
 	/** The person's current scientific study. */
 	private ScientificStudy study;
-	
-	private Colony colony;
 
 	/** The researcher's skill manager. */
 	private SkillManager skillManager;
@@ -55,10 +49,8 @@ public class ColonistResearcher extends Colonist implements Researcher, Serializ
 	/** A set of research projects this researcher engage in. */
 	private Set<ResearchProject> researchProjects = new HashSet<>();
 	
-	public ColonistResearcher(String name, Colony colony) {
+	public ColonyResearcher(String name, Colony colony) {
 		super(name, colony);
-		this.name = name;
-		this.colony = colony;
 
 		// Determine the main science type
 		mainScienceType = ScienceType.getRandomScienceType();
@@ -70,7 +62,7 @@ public class ColonistResearcher extends Colonist implements Researcher, Serializ
 	public void createProject() {
 		numResearch++;
 		ResearchProject proj = new ResearchProject(this, mainScienceType.getName() + numResearch, mainScienceType);
-		colony.addResearchProject(proj);
+		getColony().addResearchProject(proj);
 		researchProjects.add(proj);
 	}
 	
@@ -78,7 +70,7 @@ public class ColonistResearcher extends Colonist implements Researcher, Serializ
 	 * Joins a research project.
 	 */
 	public void joinProject() {
-		ResearchProject proj = colony.getOneResearchProject(this);
+		ResearchProject proj = getColony().getOneResearchProject(this);
 		if (proj != null && proj.canAddParticipants()) {
 			numResearch++;
 			proj.addParticipant(this);
@@ -90,6 +82,8 @@ public class ColonistResearcher extends Colonist implements Researcher, Serializ
 	public boolean timePassing(ClockPulse pulse) {
 		int num = researchProjects.size();
 
+		var colony = getColony();
+		
 		int numResearchers = colony.getPopulation().getNumResearchers();
 		
 		int numResearchProjects = colony.getNumResearchProjects();
@@ -118,7 +112,6 @@ public class ColonistResearcher extends Colonist implements Researcher, Serializ
 		if (pulse.isNewHalfSol()) {
 			// Update the experience once every half sol
 			double experience = getTotalSkillExperience();
-//			logger.info(colony.getName() + " - " + name + " exp: " + Math.round(experience * 100.0)/100.0);
 
 			double timeValue = pulse.getElapsed() / 100;
 			double expertiseValue = Math.log10(1 + experience) * activeness / (1 + num);
@@ -142,7 +135,7 @@ public class ColonistResearcher extends Colonist implements Researcher, Serializ
 	}
 
 	private double getResearchArea() {
-		return colony.getResearchArea();
+		return getColony().getResearchArea();
 	}
 	
 	
@@ -157,10 +150,6 @@ public class ColonistResearcher extends Colonist implements Researcher, Serializ
 	
 	public double getActiveness() {
 		return activeness;
-	}
-	
-	public void setColony(Colony newColony) {
-		colony = newColony;
 	}
 	
 	protected ScienceType getMainScienceType() {
@@ -263,12 +252,4 @@ public class ColonistResearcher extends Colonist implements Researcher, Serializ
 	public SkillManager getSkillManager() {
 		return skillManager;
 	}
-
-	public Coordinates getCoordinates() {
-		if (colony != null) {
-			return colony.getCoordinates();
-		}
-		return null;
-	}
-
 }

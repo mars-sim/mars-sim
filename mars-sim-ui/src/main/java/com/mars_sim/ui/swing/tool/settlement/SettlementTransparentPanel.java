@@ -408,7 +408,7 @@ public class SettlementTransparentPanel extends JComponent {
     	Collection<Settlement> list = unitManager.getSettlements();
     	int max = 12;
     	for (Settlement s: list) {
-    		int size = s.getNickName().length();
+    		int size = s.getName().length();
     		if (max < size)
     			max = size;
     	}

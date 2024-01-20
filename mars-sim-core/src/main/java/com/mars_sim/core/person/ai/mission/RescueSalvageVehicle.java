@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.events.HistoricalEvent;
@@ -268,7 +267,7 @@ public class RescueSalvageVehicle extends RoverMission {
 	 */
 	private void rendezvousPhase(Worker member) {
 
-		logger.log(getVehicle(), member, Level.INFO, 5000, "Has arrived to rendezvous with " + vehicleTarget.getName() + ".", null);
+		logger.info(member, 5000, "Has arrived to rendezvous with " + vehicleTarget.getName() + ".");
 
 		// If rescuing vehicle crew, load rescue life support resources into vehicle (if
 		// possible).

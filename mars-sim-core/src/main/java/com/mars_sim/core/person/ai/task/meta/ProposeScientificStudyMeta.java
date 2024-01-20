@@ -9,8 +9,6 @@ package com.mars_sim.core.person.ai.task.meta;
 import java.util.List;
 import java.util.Set;
 
-import com.mars_sim.core.authority.PreferenceCategory;
-import com.mars_sim.core.authority.PreferenceKey;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -113,8 +111,8 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 		}
 
 		RatingScore result = new RatingScore(base);
-		result.addModifier(SCIENCE_MODIFIER, settlement.getPreferenceModifier(
-								new PreferenceKey(PreferenceCategory.SCIENCE, science.name())));
+		result.addModifier(SCIENCE_MODIFIER, settlement.getPreferences()
+								.getDoubleValue(ScienceParameters.INSTANCE, science.name(), 1D));
 		// Crowding modifier
 		if (person.isInSettlement()) {
 			Building b = BuildingManager.getAvailableBuilding(study, person);

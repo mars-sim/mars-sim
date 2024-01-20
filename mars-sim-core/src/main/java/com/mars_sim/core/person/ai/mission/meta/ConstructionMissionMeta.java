@@ -107,8 +107,6 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 			}
 			
 			missionProbability = new RatingScore(BASE_SCORE);
-			missionProbability.addModifier(SETTLEMENT_POPULATION,
-								getSettlementPopModifier(settlement, 4)*2);
 
 			double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);
 			double existingSiteProfit = values.getAllConstructionSitesProfit(constructionSkill);

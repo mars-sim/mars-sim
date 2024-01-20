@@ -20,7 +20,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.logging.Level;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mars_sim.core.Simulation;
@@ -778,7 +777,7 @@ public class MasterClock implements Serializable {
 					listener.clockPulse(activePulse);
 				}
 				catch (Exception e) {
-					logger.log(Level.SEVERE, "Can't send out clock pulse: ", e);
+					logger.severe( "Can't send out clock pulse: ", e);
 				}
 			}
 			return "done";
@@ -881,16 +880,16 @@ public class MasterClock implements Serializable {
 			// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
 			result.get();
 		} catch (ExecutionException ee) {
-			logger.log(Level.SEVERE, "ExecutionException. Problem with clock listener tasks: ", ee);
+			logger.severe( "ExecutionException. Problem with clock listener tasks: ", ee);
 		} catch (RejectedExecutionException ree) {
 			// Application shutting down
 			Thread.currentThread().interrupt();
 			// Executor is shutdown and cannot complete queued tasks
-			logger.log(Level.SEVERE, "RejectedExecutionException. Problem with clock listener tasks: ", ree);
+			logger.severe( "RejectedExecutionException. Problem with clock listener tasks: ", ree);
 		} catch (InterruptedException ie) {
 			// Program closing down
 			Thread.currentThread().interrupt();
-			logger.log(Level.SEVERE, "InterruptedException. Problem with clock listener tasks: ", ie);
+			logger.severe( "InterruptedException. Problem with clock listener tasks: ", ie);
 		}
 	}
 

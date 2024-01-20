@@ -74,7 +74,7 @@ public class LocationTag implements LocationState, Serializable {
 			if (LocationStateType.INSIDE_SETTLEMENT == p.getLocationStateType()) {
 				Building bb = p.getBuildingLocation();
 				if (bb != null) {
-					return bb.getNickName();
+					return bb.getName();
 				}
 				return p.getCoordinates().getFormattedString();
 			}
@@ -222,14 +222,14 @@ public class LocationTag implements LocationState, Serializable {
 
 			if (LocationStateType.INSIDE_SETTLEMENT == p.getLocationStateType()) {
 				if (p.getBuildingLocation() != null) {
-					return p.getBuildingLocation().getNickName();
+					return p.getBuildingLocation().getName();
 				}
 
 				return UNKNOWN;
 			}
 
 			if (LocationStateType.INSIDE_VEHICLE == p.getLocationStateType()) {
-				return p.getVehicle().getNickName();
+				return p.getVehicle().getName();
 			}
 
 			Settlement settlement = findSettlementVicinity();
@@ -248,13 +248,13 @@ public class LocationTag implements LocationState, Serializable {
 		else if (r != null) {
 			if (LocationStateType.INSIDE_SETTLEMENT == r.getLocationStateType()) {
 				if (r.getBuildingLocation() != null) {
-					return r.getBuildingLocation().getNickName();
+					return r.getBuildingLocation().getName();
 				}
 				return UNKNOWN;
 			}
 
 			if (LocationStateType.INSIDE_VEHICLE == r.getLocationStateType()) {
-				return r.getVehicle().getNickName();
+				return r.getVehicle().getName();
 			}
 
 			if (r.isRightOutsideSettlement())
@@ -281,7 +281,7 @@ public class LocationTag implements LocationState, Serializable {
 		else if (v != null) {
 			if (LocationStateType.INSIDE_SETTLEMENT == v.getLocationStateType()) {
 				if (v.getBuildingLocation() != null) {
-					return v.getBuildingLocation().getNickName();
+					return v.getBuildingLocation().getName();
 				}
 
 				return UNKNOWN;

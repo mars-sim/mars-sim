@@ -983,7 +983,7 @@ public class AlgaeFarming extends Function {
 		double harvestedWetBiomass = RandomUtil.getRandomDouble(.9, 1.1)
 				* EXPECTED_YIELD_RATE * waterMass * workTime / 1000;
 		
-		logger.log(building, worker, Level.INFO, 5000, "harvestedWetBiomass: " 
+		logger.info(worker, 5000, "harvestedWetBiomass: " 
 				+ Math.round(harvestedWetBiomass * 100.0)/100.0 
 				+ " kg algae. Pond stock: " +  Math.round(currentAlgae * 100.0)/100.0);
 		
@@ -1022,7 +1022,7 @@ public class AlgaeFarming extends Function {
 		// Record the harvest amount
 		addResourceLog(spirulinaExtracted, HARVESTED_ALGAE_ID);
 
-		logger.log(building, worker, Level.INFO, 5000, "spirulinaExtracted: " 
+		logger.info(worker, 5000, "spirulinaExtracted: " 
 				+ Math.round(spirulinaExtracted * 100.0)/100.0 
 				+ " kg algae.");
 		

@@ -136,7 +136,7 @@ public class ManufactureGood extends Task {
 	 */
 	private void setupWorkshop(Building manufactureBuilding) {
 		setDescription(Msg.getString("Task.description.manufactureGood.building",
-					manufactureBuilding.getNickName())); //$NON-NLS-1$
+					manufactureBuilding.getName())); //$NON-NLS-1$
 		workshop = manufactureBuilding.getManufacture();
 
 		// Walk to manufacturing building.

@@ -75,7 +75,7 @@ public class PilotDrone extends OperateVehicle {
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
 		addPhase(AVOID_COLLISION);
 
-		logger.log(flyer, person, Level.INFO, 20_000, "Took control of the drone.");
+		logger.info(person, 20_000, "Took control of the drone " + flyer.getName());
 	}
 
 	public PilotDrone(Robot robot, Flyer flyer, Coordinates destination, MarsTime startTripTime,
@@ -88,7 +88,7 @@ public class PilotDrone extends OperateVehicle {
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
 		addPhase(AVOID_COLLISION);
 
-		logger.log(flyer, robot, Level.INFO, 20_000, "Took control of the drone.");
+		logger.info(robot, 20_000, "Took control of the drone " + flyer.getName());
 	}
 
 	/**
@@ -147,7 +147,6 @@ public class PilotDrone extends OperateVehicle {
 		time = super.performMappedPhase(time);
 
 		if (getPhase() == null) {
-//			throw new IllegalArgumentException("Task phase is null");
 			logger.log(worker, Level.INFO, 10_000, "Had an unknown phase when piloting");
 			// If it called endTask() in OperateVehicle, then Task is no longer available
 			// WARNING: do NOT call endTask() here or it will end up calling endTask() 
@@ -159,17 +158,6 @@ public class PilotDrone extends OperateVehicle {
 		} else {
 			return time;
 		}
-	}
-
-	/**
-	 * Move the vehicle in its direction at its speed for the amount of time given.
-	 * Stop if reached destination.
-	 * 
-	 * @param time the amount of time (ms) to drive.
-	 * @return the amount of time (ms) left over after driving (if any)
-	 */
-	protected double mobilizeVehicle(double time) {
-		return super.mobilizeVehicle(time);
 	}
 
 	/**
@@ -305,6 +293,7 @@ public class PilotDrone extends OperateVehicle {
 
 	@Override
 	protected void updateVehicleElevationAltitude() {
+		// Not needed for some reason !!
 	}
 	
 	/**
@@ -338,10 +327,6 @@ public class PilotDrone extends OperateVehicle {
 		
 		double elev = climbE + oldGroundE;
 		((Flyer) getVehicle()).setElevation(elev);
-		
-//		logger.log(getVehicle(), person, Level.INFO, 20_000, 
-//				"Old Elevation: " + Math.round(oldGroundE * 100.00)/100.00 + " km."
-//				+ "   New Elevation: " + Math.round(elev * 100.00)/100.00 + " km.");
 	}
 
 	/**
@@ -349,6 +334,7 @@ public class PilotDrone extends OperateVehicle {
 	 * 
 	 * @param time the amount of time vehicle is driven (millisols)
 	 */
+	@Override
 	protected void checkForAccident(double time) {
 	}
 
@@ -357,6 +343,7 @@ public class PilotDrone extends OperateVehicle {
 	 * 
 	 * @param time the amount of time (ms) the person performed this task.
 	 */
+	@Override
 	protected void addExperience(double time) {
 		// Add experience points for driver's 'Driving' skill.
 		// Add one point for every 100 millisols.
@@ -376,6 +363,7 @@ public class PilotDrone extends OperateVehicle {
 	/**
 	 * Stop the vehicle
 	 */
+	@Override
 	protected void clearDown() {
 		if (getVehicle() != null) {
 		    // Need to set the vehicle operator to null before clearing the driving task 

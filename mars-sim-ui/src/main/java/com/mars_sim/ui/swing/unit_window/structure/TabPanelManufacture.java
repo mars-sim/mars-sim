@@ -218,7 +218,7 @@ public class TabPanelManufacture extends TabPanel {
 						}
 					}
 				} catch (Exception e) {
-					logger.log(Level.SEVERE, Msg.getString("TabPanelManufacture.log.newProcessButton"), e); //$NON-NLS-1$
+					logger.severe(Msg.getString("TabPanelManufacture.log.newProcessButton"), e); //$NON-NLS-1$
 				}
 			}
 		});

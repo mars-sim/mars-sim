@@ -163,8 +163,9 @@
 		<template name="Phase 2-SX"/>
 		<template name="Phase 2-US"/>
 		
-		<!-- 6 Phase 3 templates -->	
+		<!-- 7 Phase 3 templates -->	
 		<template name="Phase 3-CN"/>
+		<template name="Phase 3-ISRA"/>
 		<template name="Phase 3-IN"/>
 		<template name="Phase 3-MS"/>
 			

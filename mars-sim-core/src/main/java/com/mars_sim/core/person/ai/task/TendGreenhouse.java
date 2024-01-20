@@ -6,8 +6,6 @@
  */
 package com.mars_sim.core.person.ai.task;
 
-import java.util.logging.Level;
-
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -223,7 +221,7 @@ public class TendGreenhouse extends Task {
 	 */
 	private void printDescription(String text) {
 		setDescription(text);
-		logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000L, text + ".");
+		logger.info(worker, 30_000L, text + ".");
 	}
 	
 	/**
@@ -422,7 +420,7 @@ public class TendGreenhouse extends Task {
 			goal = greenhouse.chooseCrop2Extract(Farming.STANDARD_AMOUNT_TISSUE_CULTURE);
 			if (goal != null) {
 				greenhouse.getResearch().addToIncubator(goal, Farming.STANDARD_AMOUNT_TISSUE_CULTURE);	
-				logger.log(greenhouse.getBuilding(), worker, Level.INFO, 20_000, 
+				logger.info(worker, 20_000, 
 						"Sampled " + goal + ADDED_TO_INCUBATOR);
 			}
 			else {
@@ -446,7 +444,7 @@ public class TendGreenhouse extends Task {
 
 			greenhouse.getResearch().increaseEntropy(time * Research.ENTROPY_FACTOR);
 			
-			logger.log(greenhouse.getBuilding(), worker, Level.INFO, 0, DONE_GROWING + goal + TISSUES_IN_LAB);
+			logger.info(worker, DONE_GROWING + goal + TISSUES_IN_LAB);
 					
 			// Reset goal to null
 			goal = null;
@@ -570,9 +568,8 @@ public class TendGreenhouse extends Task {
 				if (name != null) {
 					setDescription(SAMPLE_DETAIL + " " + Farming.TISSUE);
 	
-					logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000,
-							"Sampling " + name
-							+ " in a botany lab.");
+					logger.info(worker, 30_000,
+							"Sampling " + name + " in a botany lab.");
 					
 					double mod = 0;
 					// Determine amount of effective work time based on "Botany" skill

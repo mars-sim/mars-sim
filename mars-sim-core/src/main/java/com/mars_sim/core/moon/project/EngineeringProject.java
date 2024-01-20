@@ -32,28 +32,28 @@ public class EngineeringProject implements Serializable {
 	
 	private ScienceType science;
 	/** The lead engineer. */
-	private ColonistEngineer lead;
+	private ColonySpecialist lead;
 	
 	/** Major topics covered by this engineering project. */
 	private List<String> topics;
 	/** A set of participating engineer. */
-	private Set<ColonistEngineer> participants = new HashSet<>();
+	private Set<ColonySpecialist> participants = new HashSet<>();
 	
-	EngineeringProject(ColonistEngineer lead, String name, ScienceType science) {
+	EngineeringProject(ColonySpecialist lead, String name, ScienceType science) {
 		this.lead = lead;
 		this.name = name;
 		this.science = science;
 	}
 	
-	public void addParticipant(ColonistEngineer participant) {
+	public void addParticipant(ColonySpecialist participant) {
 		participants.add(participant);
 	}
 	
-	public ColonistEngineer getLead() {
+	public ColonySpecialist getLead() {
 		return lead;
 	}
 	
-	public Set<ColonistEngineer> getParticipants() {
+	public Set<ColonySpecialist> getParticipants() {
 		return participants;
 	}
 	
@@ -88,7 +88,7 @@ public class EngineeringProject implements Serializable {
 	public double getAverageDevelopmentActiveness() {
 		int num = 1;
 		double sum = lead.getActiveness() * 2;
-		for (ColonistEngineer r: participants) {
+		for (ColonySpecialist r: participants) {
 			num++;
 			sum += r.getActiveness();
 		}

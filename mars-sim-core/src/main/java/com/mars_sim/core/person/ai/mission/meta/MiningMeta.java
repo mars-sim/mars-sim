@@ -79,8 +79,6 @@ public class MiningMeta extends AbstractMetaMission {
 	            	return RatingScore.ZERO_RATING;
 
 				missionProbability = new RatingScore(1D);
-				missionProbability.addModifier(SETTLEMENT_POPULATION, 
-									getSettlementPopModifier(settlement, 4));
 	
 				// Get available rover.
 				Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);

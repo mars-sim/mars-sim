@@ -303,4 +303,15 @@ public class EmotionManager implements Serializable {
 	public int getDimension() {
 		return EMOTIONAL_AXES.length;
 	}
+	
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	public void destroy() {
+		person = null;
+		eVector  = null;
+		iVector  = null;
+		oVector  = null;
+		pc = null;
+	}
 }

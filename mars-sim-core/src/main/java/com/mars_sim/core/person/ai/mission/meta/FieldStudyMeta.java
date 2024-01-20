@@ -82,9 +82,6 @@ public class FieldStudyMeta extends AbstractMetaMission {
 			missionProbability.addBase(STUDY_BASE, newBase);
 		}
 
-		missionProbability.addModifier(SETTLEMENT_POPULATION,
-						getSettlementPopModifier(settlement, 4));
-
 		// Crowding modifier
 		int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
 		if (crowding > 0) missionProbability.addModifier(OVER_CROWDING, crowding + 1D);

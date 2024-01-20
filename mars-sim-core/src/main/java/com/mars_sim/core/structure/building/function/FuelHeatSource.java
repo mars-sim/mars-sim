@@ -230,9 +230,9 @@ public class FuelHeatSource extends HeatSource {
 			toggleRunningWorkTime = toggleRunningWorkTime - TOGGLE_RUNNING_WORK_TIME_REQUIRED;
 			toggle = !toggle;
 			if (toggle)
-				logger.info(building.getNickName() + "- " + Msg.getString("FuelHeatSource.log.turnedOn", getType().getName())); //$NON-NLS-1$
+				logger.info(building, Msg.getString("FuelHeatSource.log.turnedOn", getType().getName())); //$NON-NLS-1$
 			else
-				logger.info(building.getNickName() + "- " + Msg.getString("FuelHeatSource.log.turnedOff", getType().getName())); //$NON-NLS-1$
+				logger.info(building, Msg.getString("FuelHeatSource.log.turnedOff", getType().getName())); //$NON-NLS-1$
 		}
 	}
 

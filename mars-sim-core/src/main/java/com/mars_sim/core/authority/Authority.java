@@ -6,13 +6,12 @@
  */
 package com.mars_sim.core.authority;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.configuration.UserConfigurable;
+import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.NationSpecConfig;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.tools.util.RandomUtil;
@@ -21,7 +20,7 @@ import com.mars_sim.tools.util.RandomUtil;
  * Represents a sponsor that owns units such as people, settlement, lunar colonies, etc..
  */
 public class Authority
-implements UserConfigurable, Serializable {
+implements Entity, UserConfigurable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -126,10 +125,20 @@ implements UserConfigurable, Serializable {
 	}
 
 	/**
+	 * The context of the Authority is null as it is a top-level entity.
+	 * @return Returns null.
+	 */
+	@Override
+	public String getContext() {
+		return null;
+	}
+
+	/**
 	 * Gets the full name of the authority.
 	 * 
 	 * @return
 	 */
+	@Override
 	public String getDescription() {
 		return fullName;
 	}
@@ -154,10 +163,7 @@ implements UserConfigurable, Serializable {
 	 * @return
 	 */
 	public boolean isOneCountry() {
-		if (countries.size() == 1)
-			return true;
-		else
-			return false;
+		return (countries.size() == 1);
 	}
 	
 	/**
@@ -261,14 +267,9 @@ implements UserConfigurable, Serializable {
 	/** 
 	 * Gets the predefined Preferences for this authority based on the Agenda/Objectives assigned.
 	*/
-    public Map<PreferenceKey, Double> getPreferences() {
-        Map<PreferenceKey, Double> result = new HashMap<>();
-		for (MissionCapability subAgenda : missionAgenda.getCapabilities()) {
-			// Merge the various capabilities into one taking the largest
-			Map<PreferenceKey, Double> subs = subAgenda.getPreferences();
-			subs.forEach((k,v) -> result.merge(k, v, (v1,v2) ->
-									Math.max(v1.doubleValue(), v2.doubleValue())));
-		}
-		return result;
+    public ParameterManager getPreferences() {
+		// Construct preferences as a combination of the capabilities
+		return new ParameterManager(missionAgenda.getCapabilities().stream()
+								.map(m -> m.getPreferences()).toList());
     }
 }

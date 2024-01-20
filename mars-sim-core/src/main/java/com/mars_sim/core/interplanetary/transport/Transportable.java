@@ -75,6 +75,15 @@ public abstract class Transportable
 	 */
 	public abstract String getSettlementName();
 
+	
+	/**
+	 * The context of a Transport mission is the parent Settlement
+	 */
+	@Override
+	public String getContext() {
+		return getSettlementName();
+	}
+	
 	/**
 	 * Gets the arrival date at the destination.
 	 * 

@@ -6,10 +6,8 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.food.Food;
 import com.mars_sim.core.food.FoodUtil;
 import com.mars_sim.core.goods.Good;
@@ -22,29 +20,32 @@ import com.mars_sim.tools.Msg;
  * This class model how food data is organized and displayed
  * within the Monitor Window for a settlement.
  */
-public class FoodInventoryTableModel extends EntityTableModel<Food>
-implements UnitListener {
-	
-	protected static final int NUM_INITIAL_COLUMNS = 2;
+public class FoodInventoryTableModel extends CategoryTableModel<Food>
+ {
+
 	protected static final int NUM_DATA_COL = 7;
 
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
 
-	private static final int DEMAND_COL = 2;
-	private static final int SUPPLY_COL = 3;
-	static final int MASS_COL = 4;
-	private static final int LOCAL_VP_COL = 5;
-	private static final int NATIONAL_VP_COL = 6;
-	static final int COST_COL = 7;
-	static final int PRICE_COL = 8;
+	private static final int FOOD_COL = 0;
+	private static final int TYPE_COL = FOOD_COL+1;
+	private static final int SETTLEMENT_COL = TYPE_COL+1;
+	protected static final int NUM_INITIAL_COLUMNS = SETTLEMENT_COL+1;
 
-	
+	private static final int DEMAND_COL = SETTLEMENT_COL+1;
+	private static final int SUPPLY_COL = DEMAND_COL+1;
+	static final int MASS_COL = SUPPLY_COL+1;
+	private static final int LOCAL_VP_COL = MASS_COL+1;
+	private static final int NATIONAL_VP_COL = LOCAL_VP_COL+1;
+	static final int COST_COL = NATIONAL_VP_COL+1;
+	static final int PRICE_COL = COST_COL+1;
 	static {
 		COLUMNS = new ColumnSpec[NUM_INITIAL_COLUMNS + NUM_DATA_COL];
 
-		COLUMNS[0] = new ColumnSpec("Food", String.class);
-		COLUMNS[1] =  new ColumnSpec("Type", String.class);
+		COLUMNS[FOOD_COL] = new ColumnSpec("Food", String.class);
+		COLUMNS[TYPE_COL] =  new ColumnSpec("Type", String.class);
+		COLUMNS[SETTLEMENT_COL] =  new ColumnSpec("Settlement", String.class);
 
 		COLUMNS[DEMAND_COL] = new ColumnSpec("Demand", Double.class);
 		COLUMNS[SUPPLY_COL] = new ColumnSpec("Supply", Double.class);
@@ -55,19 +56,15 @@ implements UnitListener {
 		COLUMNS[PRICE_COL] = new ColumnSpec("Price [$]", Double.class);
 	}
 
-	private Settlement selectedSettlement;
-	private boolean monitorSettlement = false;
-
 	/**
 	 * Constructor.
 	 */
-	public FoodInventoryTableModel(Settlement selectedSettlement) {
+	public FoodInventoryTableModel() {
 		super(Msg.getString("FoodInventoryTableModel.tabName"), "FoodInventoryTabModel.foodCounting",
-					COLUMNS);
+					COLUMNS, FoodUtil.getFoodList());
 		
 		setCachedColumns(DEMAND_COL, PRICE_COL);
-
-		setSettlementFilter(selectedSettlement);
+		setSettlementColumn(SETTLEMENT_COL);
 	}
 
 	/**
@@ -77,22 +74,28 @@ implements UnitListener {
 	 */
 	@Override
 	public void unitUpdate(UnitEvent event) {
-		Unit unit = (Unit) event.getSource();
 		UnitEventType eventType = event.getType();
 		if ((eventType == UnitEventType.FOOD_EVENT)
-					&& (event.getTarget() instanceof Food f) && unit.equals(selectedSettlement)) {
+					&& (event.getTarget() instanceof Food f) 
+					&& (event.getSource() instanceof Settlement s)) {
+			CategoryKey<Food> row = new CategoryKey<>(s, f);
 			// Update the whole row
-			entityValueUpdated(f, DEMAND_COL, PRICE_COL);
+			entityValueUpdated(row, DEMAND_COL, PRICE_COL);
 		}
 	}
 
 	@Override
-	protected Object getEntityValue(Food selectedFood, int columnIndex) {
+	protected Object getEntityValue(CategoryKey<Food> selectedRow, int columnIndex) {
+		Food selectedFood = selectedRow.getCategory();
+		Settlement selectedSettlement = selectedRow.getSettlement();
+
 		switch(columnIndex) {
-			case 0:
+			case FOOD_COL:
 				return selectedFood.getName();
-			case 1:
+			case TYPE_COL:
 				return selectedFood.getType();
+			case SETTLEMENT_COL:
+				return selectedSettlement.getName();
 			
 			case DEMAND_COL:
 				return selectedSettlement.getGoodsManager().getDemandValueWithID(selectedFood.getID());
@@ -139,57 +142,6 @@ implements UnitListener {
     	}
     	
     	return null;
-    }
-    
-	/**
-	 * Set whether the changes to the Entities should be monitor for change. Set up the 
-	 * Unitlisteners for the selected Settlement where Food comes from for the table.
-	 * @param activate 
-	 */
-    public void setMonitorEntites(boolean activate) {
-		if (activate != monitorSettlement) {
-			if (activate) {
-				selectedSettlement.addUnitListener(this);
-			}
-			else {
-				selectedSettlement.removeUnitListener(this);
-			}
-			monitorSettlement = activate;
-		}
-	}
-
-	/**
-	 * Prepares the model for deletion.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		// Remove as listener for all settlements.
-		selectedSettlement.removeUnitListener(this);
-	}
-
-	/**
-	 * Set the Settlement filter
-	 * @param filter Settlement
-	 */
-    public boolean setSettlementFilter(Settlement filter) {
-		if (selectedSettlement != null) {
-			selectedSettlement.removeUnitListener(this);
-		}
-
-		// Initialize settlements.
-		selectedSettlement = filter;	
-
-		// Initialize goods list.
-		resetEntities(FoodUtil.getFoodList());
-			
-		// Add table as listener to each settlement.
-		if (monitorSettlement) {
-			selectedSettlement.addUnitListener(this);
-		}
-
-		return true;
     }
 }
 

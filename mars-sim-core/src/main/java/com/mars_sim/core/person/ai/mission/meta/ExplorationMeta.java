@@ -73,12 +73,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 				}
 
 				missionProbability = new RatingScore(1);
-				missionProbability.addModifier(SETTLEMENT_POPULATION,
-									getSettlementPopModifier(settlement, 8));
-				if (missionProbability.getScore() == 0) {
-	    			return RatingScore.ZERO_RATING;
-	    		}
-
+				
 				// Get available rover.
 				Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
 				if (rover != null) {

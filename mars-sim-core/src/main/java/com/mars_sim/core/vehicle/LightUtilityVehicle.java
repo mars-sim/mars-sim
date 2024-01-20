@@ -204,11 +204,6 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	}
 
 	@Override
-	public String getNickName() {
-		return getName();
-	}
-
-	@Override
 	public Vehicle getVehicle() {
 		if (getContainerUnit() instanceof Vehicle)
 			return (Vehicle) getContainerUnit();

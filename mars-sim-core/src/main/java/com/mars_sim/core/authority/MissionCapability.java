@@ -7,7 +7,8 @@
 package com.mars_sim.core.authority;
 
 import java.io.Serializable;
-import java.util.Map;
+
+import com.mars_sim.core.parameter.ParameterManager;
 
 /**
  * This class represents a demonstration capability to develop.
@@ -17,22 +18,18 @@ public class MissionCapability implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private String description;
-	private Map<PreferenceKey, Double> preferences;
+	private ParameterManager preferences;
 
-	public MissionCapability(String description, Map<PreferenceKey, Double> preferences) {
+	public MissionCapability(String description, ParameterManager preferences2) {
 		super();
 		this.description = description;
-		this.preferences = preferences;
+		this.preferences = preferences2;
 	}
 	
 	public String getDescription() {
 		return description;
 	}
-	
-	public String getHyphenatedDescription() {
-		return "- " + description;
-	}
-	
+
 	public String toString() {
 		return description;
 	}
@@ -42,7 +39,7 @@ public class MissionCapability implements Serializable {
 	 * 
 	 * @return
 	 */
-    public Map<PreferenceKey, Double> getPreferences() {
+    public ParameterManager getPreferences() {
         return preferences;
     }
 }

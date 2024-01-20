@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.equipment.EquipmentOwner;
@@ -148,7 +147,7 @@ public class ExitAirlock extends Task {
 
 		setPhase(REQUEST_EGRESS);
 
-		logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
+		logger.fine(person, 4_000,
 				"Starting the EVA egress in " + airlock.getEntityName() + ".");
 	}
 
@@ -287,20 +286,18 @@ public class ExitAirlock extends Task {
 		if (newZone == AirlockZone.ZONE_2) {	
 			// Check if the person can walk to one of the 4 EVA chambers
 			boolean canWalk = walkToEVASpot(b, newPos);
-			
-			logger.log(b, person, Level.FINE, 4000, "canWalk: " + canWalk + ".");
-			
+						
 			if (canWalk) {
 				// Convert the local activity spot to the settlement reference coordinate
 				// Set the person's new position
 				person.setPosition(newPos);
 				
-				logger.log(b, person, Level.FINE, 4000, "Arrived at "
+				logger.log(person, Level.FINE, 4000, "Arrived at "
 						+ newPos.getShortFormat() + " in " + newZone + ".");
 				return true;
 			}
 			else {
-				logger.log(b, person, Level.FINE, 4000, "Could not enter the chamber in airlock zone " 
+				logger.log(person, Level.FINE, 4000, "Could not enter the chamber in airlock zone " 
 						+ newZone + ".");
 				return false;
 			}
@@ -310,7 +307,7 @@ public class ExitAirlock extends Task {
 			// Set the person's new position
 			person.setPosition(newPos);
 			
-			logger.log(b, person, Level.FINE, 4000, "Arrived at "
+			logger.fine(person, 4000, "Arrived at "
 					+ newPos.getShortFormat() + " in " + newZone + ".");
 			return true;
 		}
@@ -414,7 +411,7 @@ public class ExitAirlock extends Task {
 		
 		clearDown();
 		
-		logger.log((Unit)airlock.getEntity(), person, Level.INFO, 16_000, reason);
+		logger.info(person, 16_000, reason);
 
 		// Note: For person in a vehicle with high fatigue or hunger,
 		// need to call clearAllTasks() to cause a person to quit the task
@@ -507,23 +504,14 @@ public class ExitAirlock extends Task {
 	 * @return the remaining time
 	 */
 	private double requestEgress(double time) {
-		
-		Unit unit = (Unit)airlock.getEntity();
-		
+				
 		// Accumulate work for this task phase
 		accumulatedTime += time;
 
 		boolean canProceed = false;
 		
-		logger.log(unit, person, Level.FINE, 4_000,
-				"Requesting EVA egress in " + airlock.getEntity().toString() + ".");
-		
-		// If the airlock mode is ingress, will need to wait until its done
-//		if (!airlock.isEmpty() && airlock.getAirlockMode() == AirlockMode.INGRESS) {
-//			walkAway(person, NOT_IN_RIGHT_AIRLOCK_MODE 
-//					+ " Current task: " + person.getTaskDescription() + ".");
-//			return time;
-//		}
+		logger.fine(person, 4_000,
+				"Requesting EVA egress in " + airlock.getEntityName() + ".");
 		
 		// If a person is in a vehicle, not needed of checking for reservation
 		if (inSettlement && !airlock.addReservation(person.getIdentifier())) {
@@ -594,8 +582,8 @@ public class ExitAirlock extends Task {
 			
 			else if (airlock.isEmpty()) {
 				// If the airlock is empty, it means no one is using it
-				logger.log(unit, person, Level.FINE, 60_000,
-						"No one is at " + airlock.getEntity().toString() + ".");
+				logger.fine(person, 60_000,
+						"No one is at " + airlock.getEntityName() + ".");
 				// Go to the next phase in order for the inner door to be unlocked.
 				// After the pressurization has finished, it should be open.
 				canProceed = true;
@@ -622,9 +610,9 @@ public class ExitAirlock extends Task {
 				// If airlock has already been pressurized,
 				// then it's ready for entry
 
-				logger.log(unit, person, Level.FINE, 4_000,
+				logger.fine(person, 4_000,
 						"Chamber already pressurized for entry in "
-								+ airlock.getEntity().toString() + ".");
+								+ airlock.getEntityName() + ".");
 
 				// Skip PRESSURIZE_CHAMBER phase and go to the ENTER_AIRLOCK phase
 				setPhase(STEP_THRU_INNER_DOOR);
@@ -637,7 +625,7 @@ public class ExitAirlock extends Task {
 					// Command the airlock state to be transitioned to "pressurized"
 					airlock.setTransitioning(true);
 					
-					logger.log(unit, person, Level.FINE, 4_000, "Ready to pressurize the chamber.");
+					logger.fine(person, 4_000, "Ready to pressurize the chamber.");
 
 					if (!airlock.isPressurized() || !airlock.isPressurizing()) {
 						// Get ready for pressurization
@@ -685,9 +673,9 @@ public class ExitAirlock extends Task {
 		
 		if (airlock.isPressurized() && !airlock.isInnerDoorLocked()) {
 
-			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
+			logger.fine(person, 4_000,
 					"The chamber already pressurized in "
-				+ airlock.getEntity().toString() + ".");
+				+ airlock.getEntityName() + ".");
 
 			canProceed = true;
 		}
@@ -712,12 +700,6 @@ public class ExitAirlock extends Task {
 			addExperience(time);
 	
 			setPhase(STEP_THRU_INNER_DOOR);
-				
-//			AirlockMode airlockMode = airlock.getAirlockMode();
-//			
-//			if (airlockMode != AirlockMode.EGRESS
-//				&& (airlock.isEmpty() || airlockMode != AirlockMode.INGRESS))
-//					airlock.setAirlockMode(AirlockMode.EGRESS);
 			
 			if (airlock.isEmpty())
 				airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
@@ -820,7 +802,7 @@ public class ExitAirlock extends Task {
 			if (inSettlement)
 				airlock.removeReservation(person.getIdentifier());
 
-			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
+			logger.fine(person, 4_000,
 					"Just entered through the inner door into "
 					+ airlock.getEntity().toString() + ".");
 
@@ -874,8 +856,8 @@ public class ExitAirlock extends Task {
 			return time * .75;
 		}
 
-		logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
-				"Can't walk to a chamber in " + airlock.getEntity().toString() + ".");
+		logger.fine(person, 4_000,
+				"Can't walk to a chamber in " + airlock.getEntityName() + ".");
 
 		if (inSettlement) {
 
@@ -914,8 +896,8 @@ public class ExitAirlock extends Task {
 			}
 
 			if (airlock.isPressurized()) {
-				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
-						"Chamber already pressurized for entry in " + airlock.getEntity().toString() + ".");
+				logger.fine(person, 4_000,
+						"Chamber already pressurized for entry in " + airlock.getEntityName() + ".");
 
 		 		// Reset the suit donning time
 				remainingDonningTime = SUIT_DONNING_TIME + RandomUtil.getRandomInt(-5, 5);
@@ -980,8 +962,9 @@ public class ExitAirlock extends Task {
 			suit = EVASuitUtil.findEVASuitWithResources(housing, person);
 	
 			if (suit == null) {
-				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
-						"Could not find a working EVA suit in " + DON_EVA_SUIT + " .");
+				logger.warning(person, 4_000,
+						"Could not find a working EVA suit during " + DON_EVA_SUIT + " in "
+						+ airlock.getEntityName());
 
 				// Q: why would a person be allowed to initiate this task in the first place 
 				//    if there is no known working EVA suit ? Unless there is a sync issue 
@@ -1005,8 +988,6 @@ public class ExitAirlock extends Task {
 				// 3. Set the person as the owner
 				suit.setRegisteredOwner(person);
 							
-				// 4. Print log
-//				logger.log((Unit)airlock.getEntity(), person, Level.INFO, 4_000, "Just donned " + suit.getName() + ".");
 				// 5. Loads the resources into the EVA suit
 				if (suit.loadResources(housing) < 0.9D) {
 					logger.warning(suit, "Not fully loaded.");
@@ -1015,8 +996,8 @@ public class ExitAirlock extends Task {
 				remainingDonningTime -= time;
 			}
 			else {
-				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
-						"Could not transfer " + suit + ".");
+				logger.warning(person, 4_000,
+						"Could not take transfer of " + suit.getName() + ".");
 				
 				walkAway(person, "Could not transfer EVA suit.");
 				
@@ -1075,8 +1056,7 @@ public class ExitAirlock extends Task {
 		pc.reduceRemainingPrebreathingTime(time);
 
 		if (pc.isDonePrebreathing()) {
-			logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
-					"Done pre-breathing.");
+			logger.fine(person,  4_000, "Done pre-breathing.");
 			
 			canProceed = true;
 		}
@@ -1096,8 +1076,8 @@ public class ExitAirlock extends Task {
 			}
 
 			if (airlock.isDepressurized()) {
-				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
-						"Chamber already depressurized for exit in " + airlock.getEntity().toString() + ".");
+				logger.fine(person, 4_000,
+						"Chamber already depressurized for exit in " + airlock.getEntityName() + ".");
 
 				setPhase(LEAVE_AIRLOCK);
 			}
@@ -1188,7 +1168,7 @@ public class ExitAirlock extends Task {
 					// while the airlock is still being pressurized 
 					walkAway(p, "Haven't donned EVA Suit.");
 					
-					logger.log((Unit)airlock.getEntity(), p, Level.WARNING, 4_000,
+					logger.warning(p, 4_000,
 							"Can't egree. Airlock about to be depressurized. Not enough time to don EVA suit.");
 				}
 			}
@@ -1196,9 +1176,9 @@ public class ExitAirlock extends Task {
 		
 		else if (airlock.isDepressurized()) {
 
-			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
+			logger.fine(person, 4_000,
 					"Chamber already depressurized for exit in "
-				+ airlock.getEntity().toString() + ".");
+				+ airlock.getEntityName() + ".");
 
 			if (!inSettlement || transitionTo(AirlockZone.ZONE_3)) {
 				// If in vehicle, it doesn't need to transition to zone 3
@@ -1275,24 +1255,24 @@ public class ExitAirlock extends Task {
 					// Add experience
 			 		addExperience(time);
 		
-					logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
-							"Leaving " + airlock.getEntity().toString() + ".");
+					logger.fine(person, 4_000,
+							"Leaving " + airlock.getEntityName() + ".");
 		
 					// This completes EVA egress from the airlock
 					// End ExitAirlock task
 					completeAirlockTask();
 				}
 				else {
-					logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
-							"Can't vacate zone 4 at" + airlock.getEntity().toString() + ".");
+					logger.fine(person, 4_000,
+							"Can't vacate zone 4 at" + airlock.getEntityName() + ".");
 				}
 			}
 			else {
 				// Add experience
 		 		addExperience(time);
 	
-				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
-						"Leaving " + airlock.getEntity().toString() + ".");
+				logger.fine(person, 4_000,
+						"Leaving " + airlock.getEntityName() + ".");
 	
 				// This completes EVA egress from the airlock
 				// End ExitAirlock task
@@ -1335,7 +1315,7 @@ public class ExitAirlock extends Task {
 			// May need to relocate the following code to a proper place
 			
 			// Prevent the logger statement below from being repeated multiple times
-			logger.log((Unit)airlock.getEntity(), person, Level.INFO, 4_000,
+			logger.info(person, 4_000,
 					"Could not exit the airlock from " + airlock.getEntityName()
 					+ " due to crippling performance rating of " + person.getPerformanceRating() + ".");
 
@@ -1358,7 +1338,7 @@ public class ExitAirlock extends Task {
 				}
 
 			} catch (Exception e) {
-				logger.log((Unit)airlock.getEntity(), person, Level.SEVERE, 4_000, "Could not get new action: ", e);
+				logger.severe(person, "Could not get new action: ", e);
 			}
 
 			return false;
@@ -1366,9 +1346,6 @@ public class ExitAirlock extends Task {
 
 		// Check if person is outside.
 		if (person.isOutside()) {
-			logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
-					"Already outside. No need to exit " + airlock.getEntityName() + ".");
-
 			return false;
 		}
 
@@ -1384,7 +1361,7 @@ public class ExitAirlock extends Task {
 			}
 			
 			// EVA suit is not available.
-			logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
+			logger.warning(person, 4_000,
 					"Could not find a working EVA suit for egress in the settlement.");
 			// Add to the counter
 			airlock.addCheckEVASuit();
@@ -1417,7 +1394,7 @@ public class ExitAirlock extends Task {
 			}
 			
 			// EVA suit is not available.
-			logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
+			logger.warning(person, 4_000,
 					"Could not find a working EVA suit for egress in the rover.");
 
 			Mission m = person.getMind().getMission();
@@ -1452,11 +1429,11 @@ public class ExitAirlock extends Task {
 			airlock.releaseOperatorID(id);
 					
 			if (inSettlement) {
-				logger.log(((Building) (airlock.getEntity())), person, Level.FINE, 4_000,
+				logger.fine(person, 4_000,
 						"Concluded the building airlock operator task.");
 			}
 			else {
-				logger.log(person.getVehicle(), person, Level.FINE, 4_000,
+				logger.fine(person,  4_000,
 						"Concluded the vehicle airlock operator task.");
 			}
 			
@@ -1481,6 +1458,7 @@ public class ExitAirlock extends Task {
 		return false;
 	}
 	
+	@Override
 	public void destroy() {
 		airlock = null;
 		super.destroy();

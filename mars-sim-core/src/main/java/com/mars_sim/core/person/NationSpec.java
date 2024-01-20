@@ -97,7 +97,8 @@ public class NationSpec implements UserConfigurable {
 	}
 
 	/**
-	 * Get the popultion characterisitcs of this nation.
+	 * Gets the population characteristics of this nation.
+	 * 
 	 * @return
 	 */
 	public PopulationCharacteristics getPopulation() {

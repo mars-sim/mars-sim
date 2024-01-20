@@ -9,7 +9,6 @@ package com.mars_sim.ui.swing.tool.monitor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.tool.NumberRenderer;
 
 /**
@@ -26,9 +25,9 @@ public class TradeTab extends TableTab {
 	 * @param selectedSettlement
 	 * @param window {@link MonitorWindow} the containing window.
 	 */
-	public TradeTab(Settlement selectedSettlement, final MonitorWindow window) {
+	public TradeTab(final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new TradeTableModel(selectedSettlement), true, false, TRADE_ICON);
+		super(window, new TradeTableModel(), true, false, TRADE_ICON);
 
 		TableColumnModel m = table.getColumnModel();
 		for(int i = TradeTableModel.NUM_INITIAL_COLUMNS; i < m.getColumnCount(); i++) {

@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import com.mars_sim.core.data.SolSingleMetricDataLogger;
 import com.mars_sim.core.logging.SimLogger;
@@ -379,12 +378,12 @@ implements Lab {
 				String tissueName = cropName + Farming.TISSUE;
 				int tissueID = ResourceUtil.findIDbyAmountResourceName(tissueName);
 				building.getFarming().store(Farming.LOW_AMOUNT_TISSUE_CULTURE, tissueID, "Farming::growCropTissue");
-				logger.log(building, worker, Level.INFO, 10_000,  
+				logger.info(worker,  10_000,  
 						"Harvested 0.5 kg " + tissueName + " in Botany lab.");
 				return true;
 			}
 		}
-		logger.log(building, worker, Level.INFO, 10_000,  
+		logger.info(worker, 10_000,  
 				"Not ready to harvest/extract any crop tissues yet in Botany lab.");
 		return false;
     }

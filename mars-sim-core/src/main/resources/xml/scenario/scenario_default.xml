@@ -21,7 +21,7 @@
 			<location longitude="134.67 E" latitude="22.67 N" />
 		</settlement>
 
-		<settlement name="Hong Tian" template="Phase 3-CN" persons="16" robots="8" sponsor="CNSA">
+		<settlement name="Hong Tian" template="Phase 3-CN" persons="16" robots="8" sponsor="ISRA">
 			<location longitude="50.0 W" latitude="20.0 N" />
 		</settlement>
 		

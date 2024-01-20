@@ -413,8 +413,8 @@ public class BuildingManager implements Serializable {
 	 */
 	public void addToBuildingTypeIDMap(Building b) {
 		String buildingType = b.getBuildingType();
-		String n = b.getNickName();
-		int new_id = Integer.parseInt(b.getNickName().substring(n.lastIndexOf(" ") + 1, n.length()));
+		String n = b.getName();
+		int new_id = Integer.parseInt(b.getName().substring(n.lastIndexOf(" ") + 1, n.length()));
 
 		if (buildingTypeIDMap == null)
 			createBuildingTypeIDMap();
@@ -1253,31 +1253,31 @@ public class BuildingManager implements Serializable {
 			if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
 				
 				if (garage.containsFlyer((Flyer)vehicle)) {
-					logger.log(settlement, vehicle, Level.INFO, 60_000,
-							"Already inside " + garage.getBuilding().getNickName() + ".");
+					logger.info(vehicle, 60_000,
+							"Already inside " + garage.getBuilding().getName() + ".");
 
 					return garageBuilding;
 				}
 				else if ((garage.getFlyerCapacity() > 0)
 							&& garage.addFlyer((Flyer)vehicle)) {
 
-					logger.log(settlement, (Flyer)vehicle, Level.INFO, 60_000,
- 							   "Just stowed inside " + garage.getBuilding().getNickName() + ".");
+					logger.info(vehicle, 60_000,
+ 							   "Just stowed inside " + garage.getBuilding().getName() + ".");
 					return garageBuilding;
 				}
 			}
 			else {
 				if (garage.containsVehicle(vehicle)) {
-					logger.log(settlement, vehicle, Level.INFO, 60_000,
-							"Already inside " + garage.getBuilding().getNickName() + ".");
+					logger.info(vehicle, 60_000,
+							"Already inside " + garage.getBuilding().getName() + ".");
 
 					return garageBuilding;
 				}
 				else if ((garage.getAvailableCapacity() > 0)
 							&& garage.addVehicle(vehicle)) {
 
-					logger.log(settlement, vehicle, Level.INFO, 60_000,
- 							   "Just stowed inside " + garage.getBuilding().getNickName() + ".");
+					logger.info(vehicle, 60_000,
+ 							   "Just stowed inside " + garage.getBuilding().getName() + ".");
 					return garageBuilding;
 				}
 			}
@@ -1627,12 +1627,12 @@ public class BuildingManager implements Serializable {
 				}
 
 			} catch (Exception e) {
-				logger.log(building, worker, Level.SEVERE, SimLogger.DEFAULT_SEVERE_TIME, "Could not be added", e);
+				logger.severe(worker, "Could not be added to " + building.getName(), e);
 			}
 		}
 
 		else
-			logger.log(worker, Level.SEVERE, 2000, "The building is null.");
+			logger.severe(worker, 2000, "The building is null.");
 	}
 
 	/**
@@ -1702,7 +1702,7 @@ public class BuildingManager implements Serializable {
 			}
 
 		} catch (Exception e) {
-			logger.log(building, person, Level.SEVERE, 2000, "Could not be added.", e);
+			logger.severe(person, 2000, "Could not be added to " + building.getName(), e);
 		}
 		
 		return result;
@@ -1779,7 +1779,7 @@ public class BuildingManager implements Serializable {
 			}	
 		
 		} catch (Exception e) {
-			logger.log(building, robot, Level.SEVERE, 2000, "Could not be added.", e);
+			logger.severe(robot, 2000, "Could not be added to " + building.getName(), e);
 		}
 		
 		return result;
@@ -1802,11 +1802,11 @@ public class BuildingManager implements Serializable {
 					person.setCurrentBuilding(null);
 				}
 			} catch (Exception e) {
-				logger.log(building, person, Level.SEVERE, 2000, 
-						"could not be removed", e);
+				logger.severe(person, 2000, "Could not be removed from " + building.getName(), e);
+
 			}
 		} else {
-			logger.log(person, Level.SEVERE, 2000, "Building is null.");
+			logger.severe(person, 2000, "Building is null.");
 		}
 	}
 
@@ -1827,11 +1827,10 @@ public class BuildingManager implements Serializable {
 				
 				robot.setCurrentBuilding(null);
 			} catch (Exception e) {
-				logger.log(building, robot, Level.SEVERE, 2000,
-						   " could not be removed", e);
+				logger.severe(robot, 2000, "Could not be removed from " + building.getName(), e);
 			}
 		} else {
-			logger.log(robot, Level.SEVERE, 2000, "building is null.");
+			logger.severe(robot, 2000, "building is null.");
 		}
 	}
 
@@ -2159,8 +2158,8 @@ public class BuildingManager implements Serializable {
 		
 		for (Building b : buildings) {
 			String buildingType = b.getBuildingType();
-			String n = b.getNickName();
-			int newID = Integer.parseInt(b.getNickName().substring(n.lastIndexOf(" ") + 1, n.length()));
+			String n = b.getName();
+			int newID = Integer.parseInt(b.getName().substring(n.lastIndexOf(" ") + 1, n.length()));
 
 			if (buildingTypeIDMap.containsKey(buildingType)) {
 				int oldID = buildingTypeIDMap.get(buildingType);
@@ -2780,7 +2779,7 @@ public class BuildingManager implements Serializable {
 		Building eVAAttachedBuilding = null;
 		
 		for (BuildingTemplate bt: templates) {
-			if (bt.getBuildingName().equalsIgnoreCase(evaBuilding.getNickName())) {
+			if (bt.getBuildingName().equalsIgnoreCase(evaBuilding.getName())) {
 				idEVAAttachedBuilding = bt.getEVAAttachedBuildingID();
 			}
 		}
@@ -2792,7 +2791,7 @@ public class BuildingManager implements Serializable {
 		}
 		
 		for (Building b: buildings) {
-			if (b.getNickName().equalsIgnoreCase(nickName)) {
+			if (b.getName().equalsIgnoreCase(nickName)) {
 				eVAAttachedBuilding = b;
 			}
 		}

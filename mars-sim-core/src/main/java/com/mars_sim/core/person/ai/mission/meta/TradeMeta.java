@@ -8,7 +8,6 @@ package com.mars_sim.core.person.ai.mission.meta;
 
 import java.util.Set;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.Deal;
 import com.mars_sim.core.goods.GoodsManager;
@@ -18,7 +17,6 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.mission.Trade;
-import com.mars_sim.core.person.ai.mission.MissionUtil;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
@@ -103,27 +101,11 @@ public class TradeMeta extends AbstractMetaMission {
 			return RatingScore.ZERO_RATING;
 		}	
 
-		int numEmbarked = MissionUtil.numEmbarkingMissions(settlement);
-		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(MissionType.TRADE, settlement);
-
-   		// Check for # of embarking missions.
-		if (Math.max(1, settlement.getNumCitizens() / 4.0) < numEmbarked + numThisMission) {
-			return RatingScore.ZERO_RATING;
-		}			
-		else if (numThisMission > 1)
-			return RatingScore.ZERO_RATING;	
-
 		double tradeProfit = deal.getProfit();
 
 		// Trade value modifier.
 		RatingScore missionProbability = new RatingScore(tradeProfit / 1000D * gManager.getTradeFactor());
 		missionProbability.applyRange(0, Trade.MAX_STARTING_PROBABILITY);
-
-
-		int f1 = 2*numEmbarked + 1;
-		int f2 = 2*numThisMission + 1;
-		
-		missionProbability.addModifier("missionratio", settlement.getNumCitizens() / f1 / f2 / 2D);
 		
 		// Crowding modifier.
 		int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();

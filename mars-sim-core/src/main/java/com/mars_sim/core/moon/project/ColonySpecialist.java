@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * ColonistEngineer.java
+ * Specialist.java
  * @date 2023-12-15
  * @author Manny Kung
  */
@@ -16,10 +16,9 @@ import com.mars_sim.core.moon.Colony;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.tools.util.RandomUtil;
 
-public class ColonistEngineer extends Colonist implements Serializable, Temporal {
+public class ColonySpecialist extends Colonist implements Serializable, Temporal {
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -31,21 +30,18 @@ public class ColonistEngineer extends Colonist implements Serializable, Temporal
 	
 	private double activeness = 10;
 	
-	private String name;
-	
-	protected ScienceType mainEngineering;
+	protected ScienceType scienceType;
 	
 	private Colony colony;
 	
-	/** A set of research projects this researcher engage in. */
-	private Set<EngineeringProject> engineeringProjects = new HashSet<>();
+	/** A set of projects this specialist engages in. */
+	private Set<EngineeringProject> projects = new HashSet<>();
 	
-	public ColonistEngineer(String name, Colony colony) {
+	public ColonySpecialist(String name, Colony colony) {
 		super(name, colony);
-		this.name = name;
 		this.colony = colony;
 		
-		mainEngineering = ScienceType.getRandomEngineeringSubject();
+		scienceType = ScienceType.getRandomEngineeringSubject();
 	}
     
 	/**
@@ -53,9 +49,9 @@ public class ColonistEngineer extends Colonist implements Serializable, Temporal
 	 */
 	public void createProject() {
 		numDevelopment++;
-		EngineeringProject proj = new EngineeringProject(this, mainEngineering.getName() + numDevelopment, mainEngineering);
+		EngineeringProject proj = new EngineeringProject(this, scienceType.getName() + numDevelopment, scienceType);
 		colony.addEngineeringProject(proj);
-		engineeringProjects.add(proj);
+		projects.add(proj);
 	}
 	
 	/**
@@ -66,13 +62,27 @@ public class ColonistEngineer extends Colonist implements Serializable, Temporal
 		if (proj != null && proj.canAddParticipants()) {
 			numDevelopment++;
 			proj.addParticipant(this);
-			engineeringProjects.add(proj);
+			projects.add(proj);
 		}
 	}
 	
+	public double calculatMotivation(ClockPulse pulse) {
+		int num = projects.size();
+
+		int numEngineers = colony.getPopulation().getNumEngineers();
+		
+		int numEngineeringProjects = colony.getNumDevelopmentProjects();
+		
+		double aveProjPerEngineer = 1.0 * numEngineeringProjects / (.5 + numEngineers);
+		
+		return RandomUtil.getRandomDouble(pulse.getElapsed() / (1 + num));
+
+	}
+	
+	
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		int num = engineeringProjects.size();
+		int num = projects.size();
 
 		int numEngineers = colony.getPopulation().getNumEngineers();
 		
@@ -109,7 +119,7 @@ public class ColonistEngineer extends Colonist implements Serializable, Temporal
 			double resourceValue = getDevelopmentArea() / numEngineeringProjects;
 			double compositeValue = timeValue * expertiseValue * resourceValue; 
 					
-			for (EngineeringProject p: engineeringProjects) {
+			for (EngineeringProject p: projects) {
 				if (p.getLead().equals(this)) {
 					double value = RandomUtil.getRandomDouble(compositeValue);
 					p.addDevelopmentValue(value);
@@ -146,13 +156,5 @@ public class ColonistEngineer extends Colonist implements Serializable, Temporal
 	
 	public void setColony(Colony newColony) {
 		colony = newColony;
-	}
-
-
-	public Coordinates getCoordinates() {
-		if (colony != null) {
-			return colony.getCoordinates();
-		}
-		return null;
 	}
 }

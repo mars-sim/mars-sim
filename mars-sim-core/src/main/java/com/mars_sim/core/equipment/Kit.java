@@ -143,11 +143,6 @@ public class Kit extends Equipment
 		return this.kitName.equalsIgnoreCase(obj.getKitName())
 			&& this.getIdentifier() == obj.getIdentifier();
 	}
-	
-	@Override
-	public String getNickName() {
-		return getName();
-	}
 
 	@Override
 	public void destroy() {

@@ -207,7 +207,7 @@ public class ToggleFuelPowerSource extends EVAOperation {
         else {
             logger.log(person, Level.WARNING, 3_000,
             		"Unable to walk to power building " +
-                    powerBuilding.getNickName() + ".");
+                    powerBuilding.getName() + ".");
             endTask();
         }
     }
@@ -333,7 +333,7 @@ public class ToggleFuelPowerSource extends EVAOperation {
 
         logger.log(person, Level.INFO, 30_000L,
 				"Turning " + toggle + " " + powerSource.getType()
-                + " in " + building.getNickName() + ".");
+                + " in " + building.getName() + ".");
 
         // Check if an accident happens during toggle power source.
         checkForAccident(time);

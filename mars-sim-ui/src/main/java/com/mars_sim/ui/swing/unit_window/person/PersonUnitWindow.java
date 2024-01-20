@@ -70,7 +70,7 @@ public class PersonUnitWindow extends UnitWindow {
 	 */
 	public PersonUnitWindow(MainDesktopPane desktop, Person person) {
 		// Use UnitWindow constructor
-		super(desktop, person, person.getNickName(), true);
+		super(desktop, person, person.getName(), true);
 		this.person = person;
 	
 		// Create status panel

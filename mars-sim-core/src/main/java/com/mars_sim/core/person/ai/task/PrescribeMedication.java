@@ -267,12 +267,12 @@ public class PrescribeMedication extends Task {
                 	if (!worker.equals(patient)) {
                 		phrase = phrase.append("Prescribing ").append(medication.getName())
                 			.append(" to ").append(patient.getName()).append(" in ")
-                			.append(patient.getBuildingLocation().getNickName())
+                			.append(patient.getBuildingLocation().getName())
                 			.append("."); 
                 	}
                 	else {
                 		phrase = phrase.append("Self-prescribing ").append(medication.getName())
-                    			.append(" in ").append(person.getBuildingLocation().getNickName())
+                    			.append(" in ").append(person.getBuildingLocation().getName())
                     			.append("."); 
                 	}
             		logger.log(worker, Level.INFO, 5000, phrase.toString());

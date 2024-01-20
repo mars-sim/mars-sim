@@ -29,36 +29,42 @@ public class Zone implements Serializable, Temporal {
 	
 	private Colony colony;
 
-	public Zone(ZoneType type, Colony colony) {
+	public Zone(ZoneType type, Colony colony, boolean scratch) {
 		this.type = type;
 		this.colony = colony;
 
+		double factor = RandomUtil.getRandomDouble(.05, .1);
+
+		if (!scratch) {
+			factor = 1;
+		}
+
 		if (ZoneType.BUSINESS == type)
-			area = RandomUtil.getRandomDouble(25, 50);
+			area = factor * RandomUtil.getRandomDouble(25, 50);
 		else if (ZoneType.COMMAND_CONTROL == type)
-			area = RandomUtil.getRandomDouble(50, 100);
+			area = factor * RandomUtil.getRandomDouble(50, 100);
 		else if (ZoneType.COMMUNICATION == type)
-			area = RandomUtil.getRandomDouble(50, 100);
+			area = factor * RandomUtil.getRandomDouble(50, 100);
 		else if (ZoneType.CONSTRUCTION == type)	
-			area = RandomUtil.getRandomDouble(50, 200);
+			area = factor * RandomUtil.getRandomDouble(50, 200);
 		else if (ZoneType.EDUCATION == type)	
-			area = RandomUtil.getRandomDouble(10, 30);
+			area = factor * RandomUtil.getRandomDouble(10, 30);
 		else if (ZoneType.ENGINEERING == type)	
-			area = RandomUtil.getRandomDouble(50, 150);
+			area = factor * RandomUtil.getRandomDouble(50, 150);
 		else if (ZoneType.INDUSTRIAL == type)	
-			area = RandomUtil.getRandomDouble(150, 200);
+			area = factor * RandomUtil.getRandomDouble(150, 200);
 		else if (ZoneType.LIFE_SUPPORT == type)	
-			area = RandomUtil.getRandomDouble(100, 150);
+			area = factor * RandomUtil.getRandomDouble(100, 150);
 		else if (ZoneType.OPERATION == type)	
-			area = RandomUtil.getRandomDouble(100, 150);
+			area = factor * RandomUtil.getRandomDouble(100, 150);
 		else if (ZoneType.RECREATION == type)	
-			area = RandomUtil.getRandomDouble(50, 100);
+			area = factor * RandomUtil.getRandomDouble(50, 100);
 		else if (ZoneType.RESEARCH == type)	
-			area = RandomUtil.getRandomDouble(50, 100);
+			area = factor * RandomUtil.getRandomDouble(50, 100);
 		else if (ZoneType.RESOURCE == type)	
-			area = RandomUtil.getRandomDouble(150, 200);
+			area = factor * RandomUtil.getRandomDouble(150, 200);
 		else if (ZoneType.TRANSPORTATION == type)	
-			area = RandomUtil.getRandomDouble(50, 100);
+			area = factor * RandomUtil.getRandomDouble(50, 100);
 		
 		growthRate = RandomUtil.getRandomDouble(0, 2);
 	}

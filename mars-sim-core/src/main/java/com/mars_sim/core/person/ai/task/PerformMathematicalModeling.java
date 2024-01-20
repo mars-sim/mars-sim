@@ -312,7 +312,7 @@ implements ResearchScientificStudy {
             }
         }
         catch (Exception e) {
-        	logger.log(person, Level.SEVERE, 10_000, "Couldn't be added to a lab. ", e);
+        	logger.severe(person,  10_000, "Couldn't be added to a lab. ", e);
         }
     }
 

@@ -1,0 +1,18 @@
+name: Remove Untagged Packages
+
+on:
+  workflow_dispatch:
+
+jobs:
+  # Push image to GitHub Packages.
+  # See also https://docs.docker.com/docker-hub/builds/
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/delete-package-versions@v4
+      with: 
+        package-name: 'mars-sim/mars-sim'
+        package-type: 'container'
+        min-versions-to-keep: 10
+        delete-only-untagged-versions: 'true'

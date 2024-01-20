@@ -534,7 +534,7 @@ public abstract class DigLocal extends EVAOperation {
 		// Transfer the container back to the settlement
 		boolean success = container.transfer(settlement);
 		if (!success)
-			logger.warning(settlement, person, "Unable to transfer " + containerType.getName() + " back.");
+			logger.warning(person, "Unable to transfer " + containerType.getName() + " back.");
 
 		double amount = container.getAmountResourceStored(resourceID);
 		if (amount > 0) {

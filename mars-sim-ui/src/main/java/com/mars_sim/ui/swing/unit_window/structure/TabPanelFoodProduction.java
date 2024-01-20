@@ -193,7 +193,7 @@ public class TabPanelFoodProduction extends TabPanel {
 						}
 					}
 				} catch (Exception e) {
-					logger.log(Level.SEVERE, Msg.getString("TabPanelFoodProduction.log.newProcessButton"), e); //$NON-NLS-1$
+					logger.severe(Msg.getString("TabPanelFoodProduction.log.newProcessButton"), e); //$NON-NLS-1$
 				}
 			}
 		});
