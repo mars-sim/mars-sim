@@ -78,7 +78,7 @@ public class BuildingPackageConfig implements Serializable {
                 String buildingType = buildingElement.getAttributeValue(TYPE);
                 BoundedObject bounds = ConfigHelper.parseBoundedObject(buildingElement);
  
-                buildingPackage.addTemplate(new BuildingTemplate(-1, 1, buildingType,
+                buildingPackage.addTemplate(new BuildingTemplate("", 1, buildingType,
                         buildingType, bounds));
 			}
 			// Add buildingPackage to newList.

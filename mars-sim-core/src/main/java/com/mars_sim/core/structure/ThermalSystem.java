@@ -14,7 +14,6 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.HeatSourceType;
 import com.mars_sim.core.structure.building.function.ThermalGeneration;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;

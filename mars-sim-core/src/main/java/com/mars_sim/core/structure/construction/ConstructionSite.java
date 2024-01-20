@@ -393,7 +393,7 @@ implements  LocalBoundedObject {
         
         int zone = 0;
         
-        Building newBuilding = new Building(id, zone, buildingType, uniqueName,
+        Building newBuilding = new Building("" + id, zone, buildingType, uniqueName,
         		new BoundedObject(position, width, length, facing),
                 settlement.getBuildingManager());
         

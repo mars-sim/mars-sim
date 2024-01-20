@@ -559,7 +559,7 @@ public class BuildingManager implements Serializable {
 	 * @param id the template ID .
 	 * @return building or null if none found.
 	 */
-	public Building getBuildingByTemplateID(int id) {
+	public Building getBuildingByTemplateID(String id) {
 		// Use Java 8 stream
 		// Note: stream won't pass junit test.
 //		return buildings
@@ -573,7 +573,7 @@ public class BuildingManager implements Serializable {
 		Iterator<Building> i = buildings.iterator();
 		while (i.hasNext()) {
 			Building b = i.next();
-			if (b.getTemplateID() == id) {
+			if (b.getTemplateID().equalsIgnoreCase(id)) {
 				result = b;
 			}
 		}
@@ -2136,16 +2136,16 @@ public class BuildingManager implements Serializable {
 	 * @return template ID (starting from 0).
 	 */
 	public int getNextTemplateID() {
-
-		int largestID = 0;
-		for (Building building : buildings) {
-			int id = building.getTemplateID();
-			if (id > largestID) {
-				largestID = id;
-			}
-		}
-
-		return largestID + 1;
+		return buildings.size();
+//		int largestID = 0;
+//		for (Building building : buildings) {
+//			int id = building.getTemplateID();
+//			if (id > largestID) {
+//				largestID = id;
+//			}
+//		}
+//
+//		return largestID + 1;
 	}
 
 	/**
@@ -2774,7 +2774,7 @@ public class BuildingManager implements Serializable {
 				.getSettlementConfiguration().getItem(getSettlement().getTemplate());
 		List<BuildingTemplate> templates = settlementTemplate.getBuildings();
 
-		int idEVAAttachedBuilding = -1;
+		String idEVAAttachedBuilding = "";
 		String nickName = null;
 		Building eVAAttachedBuilding = null;
 		
@@ -2785,7 +2785,7 @@ public class BuildingManager implements Serializable {
 		}
 		
 		for (BuildingTemplate bt: templates) {
-			if (bt.getID() == idEVAAttachedBuilding) {
+			if (bt.getID().equalsIgnoreCase(idEVAAttachedBuilding)) {
 				nickName = bt.getBuildingName();
 			}
 		}
