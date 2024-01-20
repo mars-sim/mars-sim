@@ -184,6 +184,11 @@ public class BuildingSpec {
 		return width;
 	}
 	
+    /**
+     * Gets the north-south alignment info.
+     * 
+     * @return
+     */
 	public String getAlignment() {
 		return alignment;
 	}

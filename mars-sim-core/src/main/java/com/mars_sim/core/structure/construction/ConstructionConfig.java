@@ -42,6 +42,7 @@ public class ConstructionConfig implements Serializable {
     private static final String NAME = "name";
     private static final String WIDTH = "width";
     private static final String LENGTH = "length";
+	private static final String N_S_ALIGNMENT = "north-south-alignment";    
     private static final String BASE_LEVEL = "base-level";
     private static final String CONSTRUCTABLE = "constructable";
     private static final String SALVAGABLE = "salvagable";
@@ -170,6 +171,8 @@ public class ConstructionConfig implements Serializable {
                 String lengthStr = stageInfoElement.getAttributeValue(LENGTH);
                 double length = Double.parseDouble(lengthStr);
 
+        		String alignment = stageInfoElement.getAttributeValue(N_S_ALIGNMENT);
+        		
                 boolean unsetDimensions = (width == -1D) || (length == -1D);
 
                 String baseLevelStr = stageInfoElement.getAttributeValue(BASE_LEVEL);
@@ -250,7 +253,7 @@ public class ConstructionConfig implements Serializable {
                 }
 
                 ConstructionStageInfo stageInfo = new ConstructionStageInfo(name, stageType, width, length,
-                        unsetDimensions, baseLevel, constructable, salvagable, workTime, skillRequired,
+                		alignment, unsetDimensions, baseLevel, constructable, salvagable, workTime, skillRequired,
                         prerequisiteStage, parts, resources, vehicles);
                 stageInfoList.add(stageInfo);
             }

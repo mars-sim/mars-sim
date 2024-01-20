@@ -37,6 +37,9 @@ public class Battery implements Serializable {
     private static final String KWH = " kWH  ";
     private static final String KW = " kW  ";
     
+	/** The max ampere hour of the battery in Ah. */	
+	private final double maxAmpHour;
+	
     // Data members
     /** Is the unit operational ? */
     private boolean operable;
@@ -64,18 +67,16 @@ public class Battery implements Serializable {
 	private double maxCapacity;
 	/** The current ampere hour of the battery in Ah. */	
 	private double ampHour;
-	/** The max ampere hour of the battery in Ah. */	
-	private final double maxAmpHour;
 
-	
 	private Unit unit;
 	
     /**
      * Constructor.
      * 
      * @param unit The unit requiring a battery.
-     * 
-     */
+	 * @param numModule
+	 * @param energyPerModule
+	 */
     public Battery(Unit unit, int numModule, double energyPerModule) {
     	this.unit = unit;
         performance = 1.0D;
@@ -110,8 +111,8 @@ public class Battery implements Serializable {
     public boolean timePassing(double time) {
 
         // Consume a minute amount of energy even if a unit does not perform any tasks
-        if (!isCharging)
-        	; 
+//        if (!isCharging)
+//        	; 
 
         return operable;
     }

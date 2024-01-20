@@ -12,7 +12,6 @@ import java.util.Set;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.goods.GoodType;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.resource.AmountResource;
@@ -25,8 +24,7 @@ import com.mars_sim.core.structure.Settlement;
 public final class BinFactory {
 
 	// default logger.
-	private static final SimLogger logger = SimLogger.getLogger(BinFactory.class.getName());
-
+	// May bring back private static final SimLogger logger = SimLogger.getLogger(BinFactory.class.getName())
 	
 	private static final String crate = "make crate";
 	private static final String basket = "make basket";
