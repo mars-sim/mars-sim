@@ -39,12 +39,12 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 	private static final TaskPhase FIELD_WORK = new TaskPhase(Msg.getString("Task.phase.fieldWork.meteorology")); //$NON-NLS-1$
 
 	// Static members
-	private static final double AVERAGE_ROCKS_COLLECTED_SITE = 40 + RandomUtil.getRandomDouble(20);
-	public static final double AVERAGE_ROCKS_MASS = .5D + RandomUtil.getRandomDouble(.5);
+	private static final double AVERAGE_ROCK_COLLECTED_SITE = 40 + RandomUtil.getRandomDouble(20);
+	public static final double AVERAGE_ROCK_MASS = .5D + RandomUtil.getRandomDouble(.5);
 
 	// Data members
 	private double totalCollected = 0;
-	private double numSamplesCollected = AVERAGE_ROCKS_COLLECTED_SITE / AVERAGE_ROCKS_MASS;
+	private double numSamplesCollected = AVERAGE_ROCK_COLLECTED_SITE / AVERAGE_ROCK_MASS;
 	private double chance = numSamplesCollected / MeteorologyFieldStudy.FIELD_SITE_TIME;
 
 	/**
@@ -75,7 +75,7 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 		boolean completed = false;
 		
 		// Collect rock samples.
-		if (totalCollected < AVERAGE_ROCKS_COLLECTED_SITE)
+		if (totalCollected < AVERAGE_ROCK_COLLECTED_SITE)
 			collectRocks(time);
 		else {
 			checkLocation("Rocks colelcted exceeded set average.");
@@ -92,25 +92,32 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 	 * @throws Exception if error collecting rocks.
 	 */
 	private void collectRocks(double time) {
-		if (hasSpecimenContainer()) {
+		if (hasSpecimenContainer()) {			
+
 			double probability = chance * time;
 			logger.info(person, 10_000, "collectRock::probability: " + probability);
 			
-			if (RandomUtil.getRandomDouble(1.0D) <= chance * time) {
-				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
-				int rockId = box.getResource();
-				if (rockId == -1) {
-					// Box is empty so choose at random
-					int randomNum = RandomUtil.getRandomInt(((ResourceUtil.rockIDs).length) - 1);
-					rockId = ResourceUtil.rockIDs[randomNum];
-					logger.info(person, 10_000, "collectRocks - Type of Rock collected: " + ResourceUtil.ROCKS[randomNum]);
-				}	
+			if (RandomUtil.getRandomDouble(1.0D) <= probability) {
+				// Box is empty so choose at random
+				int randomNum = RandomUtil.getRandomInt(((ResourceUtil.rockIDs).length) - 1);
+				int rockId = ResourceUtil.rockIDs[randomNum];
+				// Question: should we use ROCK_SAMPLES_ID instead of rockId ?
 				
-				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCKS_MASS / 2D, AVERAGE_ROCKS_MASS * 2D);
-				double cap = box.getAmountResourceRemainingCapacity(rockId);
-				if (mass <= cap) {
-					double excess = box.storeAmountResource(rockId, mass);
-					totalCollected += mass - excess;
+				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
+				
+				if (box != null) {
+					logger.info(person, 10_000, "Type of rocks collected: " + ResourceUtil.ROCKS[randomNum] + ".");
+	
+					double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_MASS / 2D, AVERAGE_ROCK_MASS * 2D);
+					double cap = box.getAmountResourceRemainingCapacity(rockId);
+					if (mass <= cap) {
+						double excess = box.storeAmountResource(rockId, mass);
+						totalCollected += mass - excess;
+					}
+				}
+				else {
+					logger.info(person, 10_000, "No specimen box is available for " + ResourceUtil.ROCKS[randomNum] + ".");
+					endTask();
 				}
 			}
 		}
