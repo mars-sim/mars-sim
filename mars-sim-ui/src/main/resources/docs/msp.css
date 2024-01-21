@@ -46,12 +46,12 @@ a:hover {
 	color: brown;
 	} 
 body {
-	text-indent: 2em;
 	background-color: #DDD3D3;
 	color: #000;
 	font-family: Segoe UI;
 	font-size: 16pt;
-	margin-left: 6px;
+	margin-left: 10px;
+	text-indent: .5em;
 	}
 h5 {
 	font-size: 18pt;
@@ -61,7 +61,8 @@ h5 {
 h4 {
 	font-size: 20pt;
 	line-height: 1.1em;
-	margin-left: 18px;
+	margin-left: 10px;
+	text-indent: .5em;
 	}
 h3 {
 	font-size: 22pt;
@@ -96,6 +97,7 @@ p {
 ul {
   	list-style-type: none;
   	margin-left: 20px;
+  	text-indent: .5em;
   /* Use padding to move list item from left to right */
   /* padding-left: .1em; */
 }
