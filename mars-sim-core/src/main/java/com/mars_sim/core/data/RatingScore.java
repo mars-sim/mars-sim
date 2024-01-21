@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.mars_sim.tools.Msg;
-
 /**
  * A class to represent a score Rating. Consists of a base value and a set
  * of modifiers that are applied to create a final score.
@@ -22,11 +20,6 @@ import com.mars_sim.tools.Msg;
 public class RatingScore implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
-	/**
-     * Prefix to the key in the message bundle
-     */
-    private static final String RATING_KEY = "RatingScore.";
 
     private static final DecimalFormat SCORE_FORMAT = new DecimalFormat("0.###");
 
@@ -195,33 +188,6 @@ public class RatingScore implements Serializable {
                                 .map(entry -> entry.getKey() + ": " + SCORE_FORMAT.format(entry.getValue()))
                                 .collect(Collectors.joining(", ")));
         output.append(")");
-        return output.toString();
-    }
-
-    /**
-     * Produces a structure output of this rating. This s not ideal being in this class.
-     * 
-     * @return HTML formatted string localised.
-     */
-    public String getHTMLOutput() {
-        
-        StringBuilder output = new StringBuilder();
-        output.append("<html>");
-        output.append("<b>Score: ").append(SCORE_FORMAT.format(score)).append("</b><br>");
-
-        output.append(bases.entrySet().stream()
-                                .map(entry -> "  " + Msg.getString(RATING_KEY + entry.getKey())
-                                                    + ": " + SCORE_FORMAT.format(entry.getValue()))
-                                .collect(Collectors.joining("<br>")));
-
-        if (!modifiers.isEmpty()) {
-            output.append("<br>");
-        }
-        output.append(modifiers.entrySet().stream()
-                                .map(entry -> "  " + Msg.getString(RATING_KEY + entry.getKey())
-                                                    + ": x" + SCORE_FORMAT.format(entry.getValue()))
-                                .collect(Collectors.joining("<br>")));
-        output.append("</html>");
         return output.toString();
     }
 }

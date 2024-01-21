@@ -21,6 +21,7 @@ import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.tools.Msg;
+import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
 
 /**
  * This class models how SettlementTasks are organized and displayed
@@ -195,7 +196,12 @@ public class BacklogTableModel extends AbstractMonitorModel
 		if ((columnIndex == SCORE_COL) && (rowIndex < tasks.size())) {
 			SettlementTask selectedTask = tasks.get(rowIndex).task;
 
-			result = selectedTask.getScore().getHTMLOutput();
+			StringBuilder builder = new StringBuilder();
+			builder.append("<html><b>Task:").append(selectedTask.getName()).append("</b><br>");
+			builder.append(RatingScoreRenderer.getHTMLFragment(selectedTask.getScore()));
+			builder.append("</html>");
+
+			result = builder.toString();
 		}
         return result;
     }

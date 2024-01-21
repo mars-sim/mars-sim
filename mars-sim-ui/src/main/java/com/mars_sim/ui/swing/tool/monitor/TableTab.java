@@ -73,8 +73,14 @@ abstract class TableTab extends MonitorTab {
             @Override
             public String getToolTipText(MouseEvent e) {
                 java.awt.Point p = e.getPoint();
-                int rowIndex = rowAtPoint(p);
+
+				// Column accounts for reordering/hidden columns
                 int colIndex = columnAtPoint(p);
+				TableColumn col = table.getColumnModel().getColumn(colIndex);
+				colIndex = col.getModelIndex();
+
+				// Row accounts for sorting	
+				int rowIndex = rowAtPoint(p);
 				var sorter = getRowSorter();
 				if (sorter != null) {
 					rowIndex = sorter.convertRowIndexToModel(rowIndex);
