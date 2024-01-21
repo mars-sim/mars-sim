@@ -44,7 +44,6 @@ import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.equipment.ItemHolder;
 import com.mars_sim.core.equipment.ResourceHolder;
-import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.goods.CreditManager;
 import com.mars_sim.core.goods.GoodsManager;
@@ -67,10 +66,7 @@ import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.shift.ShiftManager;
 import com.mars_sim.core.person.ai.shift.ShiftPattern;
-import com.mars_sim.core.person.ai.task.DigLocalRegolith;
 import com.mars_sim.core.person.ai.task.Walk;
-import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
-import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.SettlementTaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.RadiationExposure;
@@ -123,8 +119,6 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Shared preference key for Mission limits
 	 */
-	private static final int WAIT_FOR_SUNLIGHT_DELAY = 40;
-	private static final int AIRLOCK_OPERATION_OFFSET = 40;
 	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
 	public static final int CHECK_RESOURCES = 30;
@@ -254,8 +248,6 @@ public class Settlement extends Structure implements Temporal,
 	/** The background map image id used by this settlement. */
 	private int mapImageID;
 	
-//	private long tLast;
-	
 	/** The average regolith collection rate nearby. */
 	private double regolithCollectionRate = RandomUtil.getRandomDouble(4, 8);
 	/** The average ice collection rate of the water ice nearby. */
@@ -330,9 +322,6 @@ public class Settlement extends Structure implements Temporal,
 	private SolMetricDataLogger<Integer> dailyResourceOutput;
 	/** The settlement's daily labor hours output. */
 	private SolMetricDataLogger<Integer> dailyLaborTime;
-
-	/** The object that keeps track of wheelbarrows. */
-//	private StorableItem wheelbarrows;
 	
 	/** The settlement's achievement in scientific fields. */
 	private EnumMap<ScienceType, Double> scientificAchievement;
