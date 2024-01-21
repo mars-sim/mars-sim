@@ -46,7 +46,7 @@ public class SVGLoader {
 	 */
 	public static GraphicsNode getSVGImage(String prefix, String name) {
 		if (svgCache == null) 
-			svgCache = new HashMap<String, GraphicsNode>();
+			svgCache = new HashMap<>();
 
 		GraphicsNode found = svgCache.get(name);
 		
