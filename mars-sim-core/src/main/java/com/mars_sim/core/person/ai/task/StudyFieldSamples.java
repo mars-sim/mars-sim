@@ -87,6 +87,12 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 		// Use Task constructor. Skill determined on the science
 		super(NAME, person, true, false, STRESS_MODIFIER, null, 10D, 20D + RandomUtil.getRandomDouble(20D));
 		
+		if (person.isOutside()) {
+			logger.log(person, Level.WARNING, 0, "Still Outside.");
+			endTask();
+			return;
+		}
+		
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		
 		// Determine study.
@@ -106,23 +112,14 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 				} else {
 					logger.log(person, Level.WARNING, 0, "No lab was available.");
 					endTask();
-					return;
 				}
 			} else {
 				logger.log(person, Level.WARNING, 0, "The science subject could not be determined.");
 				endTask();
-				return;
 			}
 		} else {
 			logger.log(person, Level.WARNING, 0, "The scientific study could not be determined.");
 			endTask();
-			return;
-		}
-
-		// Check if person is in a moving rover.
-		if (Vehicle.inMovingRover(person)) {
-			endTask();
-			return;
 		}
 	}
 
@@ -227,7 +224,13 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 
 		if (person.isInSettlement()) {
 			result = getSettlementLab(person, science);
-		} else if (person.isInVehicle()) {
+		} 
+		else if (person.isInVehicle()) {	
+			// Check if person is in a moving rover.
+			if (Vehicle.inMovingRover(person)) {
+				return result;
+			}
+			
 			result = getVehicleLab(person.getVehicle(), science);
 		}
 
@@ -314,17 +317,15 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 	private static Lab getVehicleLab(Vehicle vehicle, ScienceType science) {
 
 		Lab result = null;
-
-		if (vehicle instanceof Rover) {
-			Rover rover = (Rover) vehicle;
-			if (rover.hasLab()) {
+		
+		if (vehicle instanceof Rover rover
+			&& rover.hasLab()) {
 				Lab lab = rover.getLab();
 				boolean availableSpace = (lab.getResearcherNum() < lab.getLaboratorySize());
 				boolean speciality = lab.hasSpecialty(science);
 				boolean malfunction = (rover.getMalfunctionManager().hasMalfunction());
 				if (availableSpace && speciality && !malfunction)
 					result = lab;
-			}
 		}
 
 		return result;
@@ -443,9 +444,9 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 			if (container.getUnitType() != UnitType.MARS) {
 				double mostStored = 0D;
 	            int bestID = 0;
-	            if (container instanceof ResourceHolder) {
+	            if (container instanceof ResourceHolder rh) {
 	            	for (int i: ResourceUtil.rockIDs) {
-		            	double stored = ((ResourceHolder)container).getAmountResourceStored(i);
+		            	double stored = rh.getAmountResourceStored(i);
 		            	if (mostStored < stored) {
 		            		mostStored = stored;
 		            		bestID = i;
@@ -454,16 +455,16 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 		            if (mostStored < SAMPLE_MASS) {
 		            	endTask();
 	                }
-	            }
-				
-				double fieldSampleMass = RandomUtil.getRandomDouble(SAMPLE_MASS/20.0, SAMPLE_MASS/10.0);
-				if (mostStored >= fieldSampleMass) {
-					if (fieldSampleMass > mostStored) {
-						fieldSampleMass = mostStored;
+
+					double fieldSampleMass = RandomUtil.getRandomDouble(SAMPLE_MASS/20.0, SAMPLE_MASS/10.0);
+					if (mostStored >= fieldSampleMass) {
+						if (fieldSampleMass > mostStored) {
+							fieldSampleMass = mostStored;
+						}
+						rh.retrieveAmountResource(bestID, fieldSampleMass);
+						// Record the amount of rock samples being studied
+						person.getAssociatedSettlement().addResourceCollected(bestID, fieldSampleMass);
 					}
-					((ResourceHolder)container).retrieveAmountResource(bestID, fieldSampleMass);
-					// Record the amount of rock samples being studied
-					person.getAssociatedSettlement().addResourceCollected(bestID, fieldSampleMass);
 				}
 			}
 		}
