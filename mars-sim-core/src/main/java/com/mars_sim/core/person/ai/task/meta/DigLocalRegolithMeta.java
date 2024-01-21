@@ -23,11 +23,7 @@ import com.mars_sim.tools.Msg;
  * Meta task for the DigLocalRegolith task.
  */
 public class DigLocalRegolithMeta extends DigLocalMeta {
-    
-	// May add back private static SimLogger logger = SimLogger.getLogger(DigLocalRegolithMeta.class.getName())
-	
-	private static final int THRESHOLD_AMOUNT = 50;
-	
+    		
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.digLocalRegolith"); //$NON-NLS-1$
@@ -49,8 +45,7 @@ public class DigLocalRegolithMeta extends DigLocalMeta {
     public List<SettlementTask> getSettlementTasks(Settlement settlement) {
     	
         // Check if settlement has DIG_LOCAL_REGOLITH override flag set.
-        if (settlement.getProcessOverride(OverrideType.DIG_LOCAL_REGOLITH)
-            || (settlement.getAmountResourceRemainingCapacity(ResourceUtil.regolithID) < THRESHOLD_AMOUNT)) {
+        if (settlement.getProcessOverride(OverrideType.DIG_LOCAL_REGOLITH)) {
         	return Collections.emptyList();
         }
     	

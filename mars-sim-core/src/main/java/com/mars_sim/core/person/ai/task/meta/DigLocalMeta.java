@@ -44,6 +44,7 @@ public abstract class DigLocalMeta extends MetaTask
         public DigLocalTaskJob(DigLocalMeta owner, RatingScore score, int total) {
             super(owner, owner.getName(), null, score);
             setDemand(total);
+            setEVA(true); // Enable the EVA based assessments
         }
 
         @Override
@@ -106,7 +107,7 @@ public abstract class DigLocalMeta extends MetaTask
         // Determine the base score
         RatingScore result = new RatingScore(base);
 
-        // Effect of the ratio of # indoor people vs. those outside already doing EVA 
+        // Calculate the capacity for more EVAs
         int maxEVA = settlement.getPreferences().getIntValue(SETTLE_CAT, SettlementParameters.MAX_EVA,
                                                     1);
         maxEVA -= EVAOperation.getActivePersons(settlement);
@@ -114,11 +115,11 @@ public abstract class DigLocalMeta extends MetaTask
             return Collections.emptyList();
         }
 
-        // Effect of the amount of sunlight that influences the probability of starting this task
-        double sunlight = surfaceFeatures.getSunlightRatio(settlement.getCoordinates());
-
-        // The higher the sunlight (0 to 1, 1 being the highest) 
-        result.addModifier("sunlight", Math.max(.001, sunlight));
+        // Should use the demand & resources stored to influence the score. 50% capacity is
+        // the unmodified baseline
+        var capacity = (settlement.getAmountResourceRemainingCapacity(resourceId)
+                                    / settlement.getAmountResourceCapacity(resourceId)) + 0.5D;
+        result.addModifier("capacity", capacity);
 
         List<SettlementTask> resultList = new ArrayList<>();
         resultList.add(new DigLocalTaskJob(this, result, maxEVA));
