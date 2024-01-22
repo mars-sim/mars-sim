@@ -34,6 +34,7 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.tools.Msg;
+import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
 
 /**
  * The PersonTableModel that maintains a list of Person objects. By defaults the
@@ -412,7 +413,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 			if (p != null) {
 				// If the Person is dead, there is no Task Manager
 				var score = p.getMind().getTaskManager().getScore();
-				result = (score != null ? score.getHTMLOutput() : null);
+				result = (score != null ? "<html>" + RatingScoreRenderer.getHTMLFragment(score) + "</html>"
+								: null);
 			}
 		}
         return result;

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,6 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.MeteoriteImpactProperty;
-import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.goods.PartGood;
@@ -145,7 +145,6 @@ public class BuildingManager implements Serializable {
 	private Set<Building> farmsNeedingWorkCache = new UnitSet<>();
 	
 	private static SimulationConfig simulationConfig;
-	private static HistoricalEventManager eventManager;
 	private static MasterClock masterClock;
 	private static UnitManager unitManager;
 
@@ -1078,12 +1077,9 @@ public class BuildingManager implements Serializable {
 			logger.warning(person, "No habitable buildings available in zone 0.");
 			return;
 		}
-		
-		boolean found = false;
-		
+				
 		for (Building building: bldgSet) {
-			if (!found && building != null
-					&& building.getCategory() != BuildingCategory.HALLWAY
+			if (building.getCategory() != BuildingCategory.HALLWAY
 					&& building.getCategory() != BuildingCategory.EVA_AIRLOCK) {
 				
 				// Add the person to the life support
@@ -1099,9 +1095,7 @@ public class BuildingManager implements Serializable {
 			}
 		}
 
-		if (!found) {
-			logger.warning(person, "No habitable buildings with life support available in zone 0.");
-		}
+		logger.warning(person, "No habitable buildings with life support available in zone 0.");
 	}
 
 	
@@ -1163,8 +1157,6 @@ public class BuildingManager implements Serializable {
 				// Do not add robot to hallway and tunnel
 				if (category != BuildingCategory.HALLWAY) {
 					destination = bldg;
-					logger.config(robot, "Initially placed in " + destination.getName() 
-						+ "'s " + functionType.getName() + ".");
 					canAdd = addRobotToActivitySpot(robot, destination, functionType);
 				}
 			}
@@ -1175,7 +1167,6 @@ public class BuildingManager implements Serializable {
 			if (!canAdd && bldg.getZone() == 0
 					&& bldg.getFunction(FunctionType.ROBOTIC_STATION).hasEmptyActivitySpot()) {
 				destination = bldg;
-				logger.config(robot, "Initially placed in " + destination.getName() + "'s robotic station.");
 				canAdd = addRobotToActivitySpot(robot, destination, FunctionType.ROBOTIC_STATION);
 			}
 		}	
@@ -1187,8 +1178,6 @@ public class BuildingManager implements Serializable {
 						&& function.hasEmptyActivitySpot()) {
 					destination = bldg;
 		
-					logger.config(robot, "Initially placed in " + destination.getName() 
-						+ "'s " + function.getFunctionType().getName() + ".");
 					canAdd = addRobotToActivitySpot(robot, destination, function.getFunctionType());
 				}
 			}
@@ -1404,7 +1393,7 @@ public class BuildingManager implements Serializable {
 		}
 		
 		if (worker.isInVehicleInGarage()) {
-			return ((Vehicle)worker.getVehicle()).getGarage();
+			return worker.getVehicle().getGarage();
 		}
 		
 		return null;
@@ -1523,7 +1512,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public static Set<Building> getChattyBuildings(Set<Building> buildingList) {
 
-		Set<Building> result = new UnitSet<>();
+		Set<Building> result = new HashSet<>();
 		for (Building building : buildingList) {
 			int numPeople = 0;
 			for (Person occupant : building.getLifeSupport().getOccupants()) {
@@ -1604,30 +1593,25 @@ public class BuildingManager implements Serializable {
 	public static void setToBuilding(Worker worker, Building building) {
 
 		if (building != null) {
-			try {
-				if (worker instanceof Person person) {
-					LifeSupport lifeSupport = building.getLifeSupport();
+			if (worker instanceof Person person) {
+				LifeSupport lifeSupport = building.getLifeSupport();
 
-					if (!lifeSupport.containsOccupant(person)) {
-						lifeSupport.addPerson(person);
+				if (!lifeSupport.containsOccupant(person)) {
+					lifeSupport.addPerson(person);
 
-						person.setCurrentBuilding(building);
-					}
+					person.setCurrentBuilding(building);
 				}
+			}
 
-				else {
-					Robot robot = (Robot) worker;
-					RoboticStation roboticStation = building.getRoboticStation();
+			else {
+				Robot robot = (Robot) worker;
+				RoboticStation roboticStation = building.getRoboticStation();
 
-					if (roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
-						roboticStation.addRobot(robot);
-						
-						robot.setCurrentBuilding(building);
-					}
+				if (roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
+					roboticStation.addRobot(robot);
+					
+					robot.setCurrentBuilding(building);
 				}
-
-			} catch (Exception e) {
-				logger.severe(worker, "Could not be added to " + building.getName(), e);
 			}
 		}
 
@@ -2137,15 +2121,6 @@ public class BuildingManager implements Serializable {
 	 */
 	public int getNextTemplateID() {
 		return buildings.size();
-//		int largestID = 0;
-//		for (Building building : buildings) {
-//			int id = building.getTemplateID();
-//			if (id > largestID) {
-//				largestID = id;
-//			}
-//		}
-//
-//		return largestID + 1;
 	}
 
 	/**
@@ -2902,11 +2877,9 @@ public class BuildingManager implements Serializable {
 			
 				if (!partsMaint.isEmpty()) {
 					Map<Integer, Integer> partsMaintEntry = partsMaint.get(entity);
-//					logger.info(entity, 30_000L, "partsMaintEntry: " + partsMaintEntry);
 					if (partsMaintEntry == null || partsMaintEntry.isEmpty()) {
 						// Post it
 						partsMaint.put(entity, parts);
-//						logger.info(entity, 30_000L, parts + " was posted in partsMaint.");
 						for (int id: parts.keySet()) {							
 							int num = parts.get(id);		
 							Good good = GoodsUtil.getGood(id);						
@@ -2921,7 +2894,6 @@ public class BuildingManager implements Serializable {
 					else {
 						// Post it
 						partsMaint.put(entity, parts);
-//						logger.info(entity, 30_000L, parts + " was posted in partsMaint.");
 						for (int id: parts.keySet()) {							
 							int num = parts.get(id);		
 							Good good = GoodsUtil.getGood(id);						
@@ -3136,15 +3108,6 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets an instance of the historical event manager.
-	 *
-	 * @return
-	 */
-	public HistoricalEventManager getEventManager() {
-		return eventManager;
-	}
-
-	/**
 	 * Gets a set of garages for the settlement.
 	 *
 	 * @return
@@ -3160,10 +3123,9 @@ public class BuildingManager implements Serializable {
 	 * @param {{@link MarsClock}
 	 */
 	public static void initializeInstances(SimulationConfig sc, MasterClock c0,
-			HistoricalEventManager e, UnitManager u) {
+			UnitManager u) {
 		simulationConfig = sc;
 		masterClock = c0;
-		eventManager = e;
 		unitManager = u;
 	}
 

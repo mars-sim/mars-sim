@@ -94,7 +94,7 @@ public abstract class SettlementTask extends AbstractTaskJob {
      * 
      * @return
      */
-    SettlementMetaTask getMeta() {
+    public SettlementMetaTask getMeta() {
         return metaTask;
     }
 

@@ -45,6 +45,7 @@ import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.monitor.PersonTableModel;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
 
 /**
  * The TabPanelActivity is a tab panel for a person's current tasks and
@@ -195,10 +196,11 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 		Mission mission = worker.getMission();
 
-		String prefix = "";
+		boolean addLine = false;
+		StringBuilder prefix = new StringBuilder();
 		StringBuilder newTaskText = new StringBuilder();
 		for (Task t : taskManager.getTaskStack()) {
-			if (prefix.length() > 0) {
+			if (addLine) {
 				newTaskText.append("\n");
 			}
 			newTaskText.append(prefix);
@@ -207,7 +209,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				newTaskText.append(phase.getName()).append(" - ");
 			}
 			newTaskText.append(t.getDescription());
-			prefix = prefix + "-";
+			prefix.append('-');
+			addLine = true;
 		}
 		String newContent = newTaskText.toString();
 		if (!newContent.equals(taskStack.getText())) {
@@ -232,7 +235,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		RatingScore score = taskManager.getScore();
 		if (score != null) {
 			scoreLabel = StyleManager.DECIMAL_PLACES2.format(score.getScore());
-			scoreTooltip = score.getHTMLOutput();
+			scoreTooltip = "<html>" + RatingScoreRenderer.getHTMLFragment(score) + "</html>";
+
 		}
 
 		updateLabel(scoreTextArea, scoreLabel);
@@ -308,7 +312,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		public String getScoreText(int rowIndex, int colIndex) {
 			if ((colIndex == 0) && (rowIndex < tasks.size())) {
 				var t = tasks.get(rowIndex);
-				return t.getScore().getHTMLOutput();
+				return "<html>" + RatingScoreRenderer.getHTMLFragment(t.getScore()) + "</html>";
+
 			}
 			return null;
 		}

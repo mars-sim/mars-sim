@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Unit;
@@ -232,7 +233,6 @@ public abstract class EVAOperation extends Task {
 	protected double performMappedPhase(double time) {
 		if (person.isOutside()) {
 			if (person.isSuperUnFit()) {
-//				setPhase(WALK_BACK_INSIDE);
 				walkBackInsidePhase(time);
 			}
 			else
@@ -265,7 +265,6 @@ public abstract class EVAOperation extends Task {
                 addSubTask(walkingTask);
             }
             else {
-//				logger.severe(person, 30_000, "Cannot walk to outside site.");
                 endTask();
             }
         }
@@ -463,20 +462,6 @@ public abstract class EVAOperation extends Task {
 
 		// This is equivalent of a 1% sun ratio as below
 		return (sunlight >= minEVASunlight && !inDarkPolarRegion);
-
-		// This is the old logic used originally in EVAOperation
-		// if (surfaceFeatures.inDarkPolarRegion(person.getCoordinates())) {
-		// 	return false;
-		// }
-
-		// // if it's at night
-		// // Note: sunlight ratio cannot be smaller than zero.
-		// if (surfaceFeatures.getSunlightRatio(person.getCoordinates()) < .01) {
-		// 	return false;
-		// }
-
-		// // if the sunlight is getting less
-        // return surfaceFeatures.getTrend(person.getCoordinates()) < 0;
 	}
 
 	/**
@@ -893,5 +878,16 @@ public abstract class EVAOperation extends Task {
 		outsideSkill = null;
 		
 		super.destroy();
+	}
+
+	/**
+	 * Get the number of Persons doing EVAOperations in a Settlement
+	 * @param settlement
+	 * @return
+	 */
+    public static int getActivePersons(Settlement settlement) {
+		return settlement.getAllAssociatedPeople().stream()
+							.filter(p -> p.getTaskManager().getTask() instanceof EVAOperation)
+							.collect(Collectors.counting()).intValue();
 	}
 }
