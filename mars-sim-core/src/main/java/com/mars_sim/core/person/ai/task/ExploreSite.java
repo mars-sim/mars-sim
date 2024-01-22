@@ -45,15 +45,13 @@ public class ExploreSite extends EVAOperation {
 	/** The average labor time it takes to find the resource. */
 	public static final double LABOR_TIME = 50D;
 
-	private static final double AVERAGE_ROCK_SAMPLES_COLLECTED_SITE = 40 + RandomUtil.getRandomDouble(20);
-	public static final double AVERAGE_ROCK_SAMPLE_MASS = 5 + RandomUtil.getRandomDouble(5);
+	private static final double AVERAGE_ROCK_COLLECTED_SITE = 40 + RandomUtil.getRandomDouble(20);
+	public static final double AVERAGE_ROCK_MASS = 5 + RandomUtil.getRandomDouble(5);
 	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5 + RandomUtil.getRandomDouble(5);
-
-	private static final int ROCK_SAMPLES_ID = ResourceUtil.rockSamplesID;
 
 	// Data members
 	private double totalCollected = 0;
-	private double numSamplesCollected = AVERAGE_ROCK_SAMPLES_COLLECTED_SITE / AVERAGE_ROCK_SAMPLE_MASS;
+	private double numSamplesCollected = AVERAGE_ROCK_COLLECTED_SITE / AVERAGE_ROCK_MASS;
 	
 	// Future: should keep track of the actual total exploring site time and use it below.
 	// The longer it stays, the more samples are collected and better the mining estimation
@@ -179,7 +177,7 @@ public class ExploreSite extends EVAOperation {
 		// Add to the cumulative combined site time
 		((Exploration)person.getMission()).addSiteTime(time);
 		
-		if (totalCollected >= AVERAGE_ROCK_SAMPLES_COLLECTED_SITE) {
+		if (totalCollected >= AVERAGE_ROCK_COLLECTED_SITE) {
 			checkLocation("Rock samples collected exceeded set average.");
 			return time;
 		}
@@ -231,7 +229,8 @@ public class ExploreSite extends EVAOperation {
 					* (getEffectiveSkillLevel() + person.getSkillManager().getSkillLevel(SkillType.PROSPECTING)) / 2D;
 			if (probability > .9)
 				probability = .9;
-
+			logger.info(person, 10_000, "collectRock::probability: " + probability);
+			
 			if (RandomUtil.getRandomDouble(1.0D) <= probability) {
 				// Box is empty so choose at random
 				int randomNum = RandomUtil.getRandomInt(((ResourceUtil.rockIDs).length) - 1);
@@ -243,7 +242,7 @@ public class ExploreSite extends EVAOperation {
 				if (box != null) {
 					logger.info(person, 10_000, "Type of rocks collected: " + ResourceUtil.ROCKS[randomNum] + ".");
 	
-					double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS / 2D, AVERAGE_ROCK_SAMPLE_MASS * 2D);
+					double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_MASS / 2D, AVERAGE_ROCK_MASS * 2D);
 					double cap = box.getAmountResourceRemainingCapacity(rockId);
 					if (mass <= cap) {
 						double excess = box.storeAmountResource(rockId, mass);
