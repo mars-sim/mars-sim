@@ -219,7 +219,7 @@ public class CalendarProgram{
 	}
 	static class btnNext_Action implements ActionListener{
 		public void actionPerformed (ActionEvent e){
-			if (currentMonth == 11){ //Foward one year
+			if (currentMonth == 11){ //Forward one year
 				currentMonth = 0;
 				currentYear += 1;
 			}

@@ -94,19 +94,14 @@ public class Heating implements Serializable {
 	 * The U-value in [Watts/m^2/°K] is the thermal transmittance (reciprocal of R-value)
 	 * Note that Heat Loss = (1/R-value)(surface area)(∆T) 
 	 */
-	private static double uValue = 0.1;
-
-	/**  R-value is a measure of thermal resistance, or ability of heat to transfer from hot to cold, through materials such as insulation */
-	// R_value = 30;
-	
-    private static double uValueAreaCrackLength, uValueAreaCrackLengthAirlock;
-    
+	private static final double uValue = 0.1;
+ 
     // Note : U_value will be converted to metric units in W/m²K. 
     // see at https://www.thenbs.com/knowledge/what-is-a-u-value-heat-loss-thermal-mass-and-online-calculators-explained
     
-    private static double qHFactor = 21.4D/10;///2.23694; // 1 m per sec = 2.23694 miles per hours
+    private static final double Q_HF_FACTOR = 21.4D/10;///2.23694; // 1 m per sec = 2.23694 miles per hours
     
-    private static double airChangePerHr = .5;
+    private static final double AIR_CHANGE_PER_HR = .5;
     
     // Molar mass of CO2 = 44.0095 g/mol
     // average density of air : 0.020 kg/m3
@@ -115,19 +110,23 @@ public class Heating implements Serializable {
 	// 1 cubic feet of air has a total weight of 38.76 g
     // n_air = 1D;
     // n_sum = n_CO2 + n_air;
-    
- 	private static final int PER_UPDATE = 20;
  	
 	/** Specific heat capacity (C_p) of air at 300K [kJ/kg/K] */	 
 	private static final double SPECIFIC_HEAT_CAP_AIR_300K = 1.005; 
 	/** Specific heat capacity (C_p) of water at 20 deg cel or 300K [kJ/kg/K] */	 
 	private static final double SPECIFIC_HEAT_CAP_WATER_300K = 4.184;
-	
 	/** Density of dry breathable air [kg/m3] */	
-	private static final double dryAirDensity = 1.275D; //
+	private static final double DRY_AIR_DENSITY = 1.275D; //
 	/** Factor for calculating airlock heat loss during EVA egress */
-	private static final double energyFactorEVA = SPECIFIC_HEAT_CAP_AIR_300K * BuildingAirlock.AIRLOCK_VOLUME_IN_CM * dryAirDensity /1000; 
+	private static final double ENERGY_FACTOR_EVA = SPECIFIC_HEAT_CAP_AIR_300K * BuildingAirlock.AIRLOCK_VOLUME_IN_CM * DRY_AIR_DENSITY /1000; 
 	
+ 	private static final int PER_UPDATE = 5;
+ 	
+	/**  R-value is a measure of thermal resistance, or ability of heat to transfer from hot to cold, through materials such as insulation */
+	// R_value = 30;
+	
+    private static double uValueAreaCrackLength, uValueAreaCrackLengthAirlock;
+   
 	/** is this building a greenhouse */
 	private boolean isGreenhouse = false;
 	/** is this building a hallway or tunnel */
@@ -256,9 +255,9 @@ public class Heating implements Serializable {
 		
 		uValueAreaCeilingFloor = uValue * floorArea;
 		// assuming airChangePerHr = .5 and q_H = 21.4;
-		uValueAreaCrackLength = 0.244 * .075 * airChangePerHr * qHFactor * (4 * (.5 + .5) );
+		uValueAreaCrackLength = 0.244 * .075 * AIR_CHANGE_PER_HR * Q_HF_FACTOR * (4 * (.5 + .5) );
 		// assuming four windows
-		uValueAreaCrackLengthAirlock = 0.244 * .075 * airChangePerHr * qHFactor * (2 * (2 + 6) + 4 * (.5 + .5) );
+		uValueAreaCrackLengthAirlock = 0.244 * .075 * AIR_CHANGE_PER_HR * Q_HF_FACTOR * (2 * (2 + 6) + 4 * (.5 + .5) );
 		//assuming two EVA airlock
 		
 		tPreset = building.getPresetTemperature();
@@ -466,7 +465,7 @@ public class Heating implements Serializable {
 		// the energy loss due to gushing out the warm settlement air when airlock is open to the cold Martian air
 		
 		if (num > 0 && hasHeatDumpViaAirlockOuterDoor) {
-			heatAirlock = energyFactorEVA * (DEFAULT_ROOM_TEMPERATURE - outTCelsius) * num ;
+			heatAirlock = ENERGY_FACTOR_EVA * (DEFAULT_ROOM_TEMPERATURE - outTCelsius) * num ;
 			// flag that this calculation is done till the next time when the airlock is depressurized.
 			hasHeatDumpViaAirlockOuterDoor = false;
 		}
@@ -590,7 +589,7 @@ public class Heating implements Serializable {
 		
 		double airHeatCap = heatCapAirMoisture * airMass;
 
-		double airkW = airHeatCap * millisols * timeSlice;
+		double airkW = airHeatCap * millisols * timeSlice / 3600;
 
 		double dTCelcius = 0;
 		
@@ -616,7 +615,9 @@ public class Heating implements Serializable {
 	
 			double convFactor2 = timeSlice / waterHeatCap; 
 			
-			double waterkW = waterHeatCap * millisols * timeSlice ;
+			// 3600 kJ = 1 kWh
+			// q = 1 kg * 4.18 J / g / C * delta temperature 
+			double waterkW = waterHeatCap * millisols * timeSlice / 3600 ;
 			// Assuming the floor area affects the energy that the water can hold 
 
 			double deltaWaterHeat = computeHeatSink(deltaAirHeat, waterkW, 1, millisols);
