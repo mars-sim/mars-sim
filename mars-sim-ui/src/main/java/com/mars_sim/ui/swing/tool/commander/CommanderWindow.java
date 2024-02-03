@@ -402,35 +402,37 @@ public class CommanderWindow extends ToolWindow {
 				// Name the tab
 				tabbedPane.addTab(name, infoPanel);
 	
+				// Get the base name
 				labelGrid.addRow("Base Name", name);
-				
-				List<String> countryList = c.getAuthority().getCountries();
-				
-//				String countryCode = "";
+	
+				// Get the coordinates
+				labelGrid.addRow("Coordinates", c.getCoordinates().getFormattedString());
+
+				// Get the country name
+				List<String> countryList = c.getAuthority().getCountries();				
 				String countryName = "Multi-National";
 				if (countryList.size() == 1) {
 					countryName = c.getAuthority().getCountries().get(0);
 //					countryCode = FlagString.getEmoji(countryName);
 				}
-				labelGrid.addLabels("Country", countryName, "");
-				
-				String sponsorName = c.getAuthority().getName();
-				labelGrid.addRow("Sponsor", sponsorName);
-				
-				labelGrid.addRow("Coordinates", c.getCoordinates().getFormattedString());
-							
+				labelGrid.addRow("Country", countryName);
+
+				// Get the total area
 				double totalAreaCache = c.getTotalArea();	
 				totalAreaCaches.put(c, totalAreaCache);
 				JLabel totalAreaLabel = labelGrid.addRow("Total Area", Math.round(totalAreaCache * 10.0)/10.0 + " SM");
 				totalAreaLabels.put(c, totalAreaLabel);
 				
-				// Temporary set popCache to 1
+				// Get the sponsor name
+				String sponsorName = c.getAuthority().getName();
+				labelGrid.addRow("Sponsor", sponsorName);
+
+				// Get the area of person estimate
 				int popCache = 1;
 				double areaPerPersonCache = totalAreaCache / popCache;
 				areaPerPersonCaches.put(c, areaPerPersonCache);
 				JLabel areaPerPersonLabel = labelGrid.addRow("Area Per Person", Math.round(areaPerPersonCache * 10.0)/10.0 + " SM");
 				areaPerPersonLabels.put(c, areaPerPersonLabel);
-			
 				
 				// FUTURE: will model and derive birth rate
 //				labelGrid.addRow("Birth Rate", "0.0");

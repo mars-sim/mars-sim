@@ -903,9 +903,7 @@ public class Weather implements Serializable, Temporal {
 		dustStorms.add(ds);
 		s.setDustStorm(ds);
 		newStormID++;
-
-		logger.info(s, "New dust storm " + ds.getName() + " of type " + stormType.getName());
-		
+//		logger.info(s, ds.getName() + " (type " + stormType.getName() + ") was on the radar.");
 		return ds;
 	}
 
@@ -927,8 +925,8 @@ public class Weather implements Serializable, Temporal {
 		
 				if (ds.getSize() != 0) {
 					Settlement s = ds.getSettlement();
-					String msg = "DustStorm " + ds.getName()
-						+ " sized " + ds.getSize() + " with wind speed "
+					String msg = ds.getName()
+						+ " (size " + ds.getSize() + " with wind speed "
 						+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.";
 					s.setDustStormMsg(msg);
 					logger.info(s, msg);
