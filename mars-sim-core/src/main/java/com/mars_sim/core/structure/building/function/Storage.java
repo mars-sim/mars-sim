@@ -32,8 +32,6 @@ public class Storage extends Function {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Storage.class.getName());
 	
-	private static final double LEAST_AMOUNT = 0.00001;
-	
 	/** The capacities of each resource. */
 	private Map<Integer, Double> resourceCapacities;
 
@@ -158,9 +156,6 @@ public class Storage extends Function {
 		removeStorageCapacity();
 	}
 
-	/**
-	 * Removes all resources.
-	 */
 	public void removeResources() {
 		// Remove excess amount resources that can no longer be stored.
 		Iterator<Integer> i = resourceCapacities.keySet().iterator();
@@ -177,9 +172,6 @@ public class Storage extends Function {
 		}
 	}
 
-	/**
-	 * Removes the storage capacities.
-	 */
 	public void removeStorageCapacity() {
 		// Remove storage capacity from settlement.
 		Iterator<Integer> j = resourceCapacities.keySet().iterator();
@@ -192,7 +184,7 @@ public class Storage extends Function {
 
 	@Override
 	public double getMaintenanceTime() {
-		return resourceCapacities.size() * 2.0;
+		return resourceCapacities.size() * 2;
 	}
 
 	/**
@@ -260,7 +252,7 @@ public class Storage extends Function {
 	 *
 	 * @param requestedAmount
 	 * @param id
-	 * @param rh
+	 * @param inv
 	 * @param isRetrieving
 	 * @return true if the 'full' amount can be retrieved.
 	 */
@@ -270,17 +262,20 @@ public class Storage extends Function {
 			try {
 				double amountStored = rh.getAmountResourceStored(id);
 
-				if (amountStored < LEAST_AMOUNT) {
-					// do nothing
+				if (amountStored < 0.00001) {
+					result = false;
+
 				} else if (amountStored < amount) {
 					amount = amountStored;
 					if (isRetrieving) {
 						rh.retrieveAmountResource(id, amount);
 					}
-					logger.log(rh.getHolder(), Level.WARNING, 30_000,
+					logger.warning(rh.getHolder(), 30_000,
 							"Ran out of "
 							+ ResourceUtil.findAmountResourceName(id) + "."
 							);
+					result = false;
+
 				} else {
 					if (isRetrieving) {
 						rh.retrieveAmountResource(id, amount);
@@ -288,12 +283,13 @@ public class Storage extends Function {
 					result = true;
 				}
 			} catch (Exception e) {
-				logger.log(rh.getHolder(), Level.SEVERE, 10_000,
-						"Issues with Storage.retrieveAnResource() on "
+				logger.severe(rh.getHolder(),10_000,
+						"Issues with retrieveAnResource(ar) on "
 						+ ResourceUtil.findAmountResourceName(id) + " : " + e.getMessage(), e);
 			}
 		} else {
-			logger.log(rh.getHolder(), Level.SEVERE, 10_000,
+			result = false;
+			logger.severe(rh.getHolder(), 10_000,
 					"Attempting to retrieve non-positive amount of "
 					+ ResourceUtil.findAmountResourceName(id));
 		}
