@@ -94,8 +94,9 @@ public class EarthReturn extends Function {
 
 	@Override
 	public double getMaintenanceTime() {
-		return crewCapacity * 2;
-//		return crewCapacity * spec.getBuildingSpec().getResourceProcess().size();
+		return crewCapacity * 2.0;
+		// Need to investigate why spec.getBuildingSpec() is null at startup
+		// Should use return crewCapacity * spec.getBuildingSpec().getResourceProcess().size()
 	}
 
 }
