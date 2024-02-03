@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Weather.java
- * @date 2023-08-27
+ * @date 2024-02-03
  * @author Scott Davis
  * @author Hartmut Prochaska
  */
@@ -36,34 +36,34 @@ public class Weather implements Serializable, Temporal {
 	private static final SimLogger logger = SimLogger.getLogger(Weather.class.getName());
 
 	// Non-static data
-	// Weather metrics update frequency
-	private static final int PRESSURE_REFRESH = 4;
-	private static final int TEMPERATURE_REFRESH = 2;
-	private static final int WINDSPEED_REFRESH = 5;
-	private static final int DATA_SAMPLING = 4;
-	private static final int DUST_STORM_REFRESH = 20;
-	private static final int MAX_RECORDED_DAYS = 2;
-	
+	private final int MAX_RECORDED_DAYS = 2;
 	/** The maximum initial windspeed of a new location. */
-	private static final double MAX_INITIAL_WINDSPEED = 20;
+	private final double MAX_INITIAL_WINDSPEED = 20;
 	/** The maximum initial windspeed of a new location. */
-	private static final double AVERAGE_WINDSPEED = 15;
+	private final double AVERAGE_WINDSPEED = 15;
 	/** The effect of sunlight on the surface temperatures on Mars. */
-	private static final double LIGHT_EFFECT = 1.2;
+	private final double LIGHT_EFFECT = 1.2;
 	/** Extreme cold surface temperatures on Mars at deg Kelvin [or at -153.17 C]. */
-	private static final double EXTREME_COLD = 120D; 
+	private final double EXTREME_COLD = 120D; 
 	/** Viking 1's latitude. */
-	private static final double VIKING_LATITUDE = 22.48D;
-	private static final double VIKING_DT = Math.round((28D - 15D *
+	private final double VIKING_LATITUDE = 22.48D;
+	private final double VIKING_DT = Math.round((28D - 15D *
 			Math.sin(2 * Math.PI / 180D * VIKING_LATITUDE + Math.PI / 2D) - 13D) * 100.0) / 100.00;
 	
-	public static final double PARTIAL_PRESSURE_CARBON_DIOXIDE_MARS = 0.57D; // in kPa
-	public static final double PARTIAL_PRESSURE_CARBON_DIOXIDE_EARTH = 0.035D; // in kPa
+	public final double PARTIAL_PRESSURE_CARBON_DIOXIDE_MARS = 0.57D; // in kPa
+	public final double PARTIAL_PRESSURE_CARBON_DIOXIDE_EARTH = 0.035D; // in kPa
 	
 	/** Under Earth's atmosphere, at 25 C, 50% relative humidity, in kPa. */
-	public static final double PARTIAL_PRESSURE_WATER_VAPOR_ROOM_CONDITION = 1.6D; 
+	public final double PARTIAL_PRESSURE_WATER_VAPOR_ROOM_CONDITION = 1.6D; 
 
-	private static final double DX = 255D * Math.PI / 180D - Math.PI;
+	// Weather metrics update frequency
+	private final int PRESSURE_REFRESH = 4;
+	private final int TEMPERATURE_REFRESH = 2;
+	private final int WINDSPEED_REFRESH = 5;
+	private final int DATA_SAMPLING = 4;
+	private final int DUST_STORM_REFRESH = 20;
+
+	private final double DX = 255D * Math.PI / 180D - Math.PI;
 	
 	// Opportunity Rover landed at coordinates 1.95 degrees south, 354.47 degrees
 	// east.
@@ -74,7 +74,7 @@ public class Weather implements Serializable, Temporal {
 	// longitude.
 	// From the chart, it has an average of 25 C temperature variation on the
 	// maximum and minimum temperature curves
-	private static final double TEMPERATURE_DELTA_PER_DEG_LAT = 17 / 12.62;
+	private final double TEMPERATURE_DELTA_PER_DEG_LAT = 17 / 12.62;
 	
 	private int newStormID = 1;
 
@@ -103,12 +103,6 @@ public class Weather implements Serializable, Temporal {
 	private MasterClock clock;
 	private SurfaceFeatures surfaceFeatures;
 	
-	/**
-	 * Constructor.
-	 * 
-	 * @param clock
-	 * @param orbitInfo
-	 */
 	public Weather(MasterClock clock, OrbitInfo orbitInfo) {
 		weatherDataMap = new HashMap<>();
 		sunDataMap = new HashMap<>();
@@ -125,11 +119,6 @@ public class Weather implements Serializable, Temporal {
 		this.clock = clock;
 	}
 
-	/**
-	 * Sets the surface features instance.
-	 * 
-	 * @param sf
-	 */
 	void setSurfaceFeatures(SurfaceFeatures sf) {
 		surfaceFeatures = sf;
 	}
@@ -307,7 +296,6 @@ public class Weather implements Serializable, Temporal {
 	/**
 	 * Gets the wind speed at a given location.
 	 * 
-	 * @param location
 	 * @return wind speed in m/s.
 	 */
 	public double getWindSpeed(Coordinates location) {
@@ -317,7 +305,6 @@ public class Weather implements Serializable, Temporal {
 	/**
 	 * Gets the wind direction at a given location.
 	 * 
-	 * @param location
 	 * @return wind direction in degree.
 	 */
 	public int getWindDirection(Coordinates location) {
@@ -327,7 +314,6 @@ public class Weather implements Serializable, Temporal {
 	/**
 	 * Computes the wind direction at a given location.
 	 * 
-	 * @param location
 	 * @return wind direction in degree.
 	 */
 	public int computeWindDirection(Coordinates location) {
@@ -360,7 +346,6 @@ public class Weather implements Serializable, Temporal {
 	/**
 	 * Computes the air pressure at a given location.
 	 * 
-	 * @param location
 	 * @return air pressure in Pa.
 	 */
 	public double getAirPressure(Coordinates location) {
@@ -378,7 +363,6 @@ public class Weather implements Serializable, Temporal {
 	/**
 	 * Gets the cached air pressure at a given location.
 	 * 
-	 * @param location
 	 * @return air pressure in kPa.
 	 */
 	public double getCachedAirPressure(Coordinates location) {
@@ -451,7 +435,6 @@ public class Weather implements Serializable, Temporal {
 	/**
 	 * Gets the temperature at a given location.
 	 * 
-	 * @param location
 	 * @return temperature in deg Celsius.
 	 */
 	public double getTemperature(Coordinates location) {
@@ -514,7 +497,6 @@ public class Weather implements Serializable, Temporal {
 	/**
 	 * Calculates the surface temperature at a given location.
 	 * 
-	 * @param location
 	 * @return temperature in Celsius.
 	 */
 	public double calculateTemperature(Coordinates location) {
@@ -693,7 +675,7 @@ public class Weather implements Serializable, Temporal {
 	/**
 	 * Time passing in the simulation.
 	 * 
-	 * @param pulse
+	 * @param time time in millisols
 	 * @throws Exception if error during time.
 	 */
 	public boolean timePassing(ClockPulse pulse) {
@@ -885,7 +867,7 @@ public class Weather implements Serializable, Temporal {
 	 * Checks if a dust devil is formed for each settlement.
 	 * 
 	 * @param probability
-	 * @param ls
+	 * @param L_s_int
 	 */
 	private void createDustDevils(double probability, double ls) {
 		// TODO this needs fixing
@@ -921,9 +903,7 @@ public class Weather implements Serializable, Temporal {
 		dustStorms.add(ds);
 		s.setDustStorm(ds);
 		newStormID++;
-
-		logger.info(s, "New dust storm " + ds.getName() + " of type " + stormType.getName());
-		
+//		logger.info(s, ds.getName() + " (type " + stormType.getName() + ") was on the radar.");
 		return ds;
 	}
 
@@ -945,8 +925,8 @@ public class Weather implements Serializable, Temporal {
 		
 				if (ds.getSize() != 0) {
 					Settlement s = ds.getSettlement();
-					String msg = "DustStorm " + ds.getName()
-						+ " sized " + ds.getSize() + " with wind speed "
+					String msg = ds.getName()
+						+ " (size " + ds.getSize() + " with wind speed "
 						+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.";
 					s.setDustStormMsg(msg);
 					logger.info(s, msg);
