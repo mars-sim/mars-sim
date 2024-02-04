@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class ChatCommand implements Comparable<ChatCommand> {
+public abstract class ChatCommand {
 
 	public static final String COMMAND_GROUP = "Common";
 
@@ -179,14 +179,6 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 
 	protected void addRequiredRole(ConversationRole newRole) {
 		roles.add(newRole);
-	}
-
-	/**
-	 * Sorts on keyword.
-	 */
-	@Override
-	public int compareTo(ChatCommand other) {
-		return longCommand.compareTo(other.getLongCommand());
 	}
 
 	@Override

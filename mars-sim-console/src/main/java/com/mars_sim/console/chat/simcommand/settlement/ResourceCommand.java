@@ -22,7 +22,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.WaterUseType;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.LivingAccommodation;
 import com.mars_sim.core.structure.building.function.ResourceProcess;
 import com.mars_sim.core.structure.building.function.ResourceProcessing;
 import com.mars_sim.core.structure.building.function.farming.Farming;
@@ -163,22 +162,17 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		
 		
 		double net = 0;
-		double greenhouseUsage = 0;
-		
-		// Prints greenhouse usage
-		for (Building b : farms) {
-			Farming f = b.getFarming();
-			greenhouseUsage += f.getDailyAverageWaterUsage();
-		}
+		double greenhouseUsage = farms.stream()
+							.mapToDouble(b -> b.getFarming().getDailyAverageWaterUsage())
+							.sum();
 		response.appendTableRow("Greenhouse", Math.round(greenhouseUsage * 100.0) / 100.0);
 		net = net + greenhouseUsage;
 
 		// Prints consumption
-		double consumption = 0;
 		List<Person> ppl = new ArrayList<>(settlement.getAllAssociatedPeople());
-		for (Person p : ppl) {
-			consumption += p.getPhysicalCondition().getDailyFoodUsage(3);
-		}
+		double consumption = ppl.stream()
+								.mapToDouble(p -> p.getPhysicalCondition().getDailyFoodUsage(3))
+								.sum();
 		response.appendTableRow("People", Math.round(consumption * 100.0) / 100.0);
 		net = net + consumption;
 
@@ -191,11 +185,9 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		// Prints living usage
 		List<Building> quarters = settlement.getBuildingManager()
 				.getBuildings(FunctionType.LIVING_ACCOMMODATION);
-		double livingUsage = 0;
-		for (Building b : quarters) {
-			LivingAccommodation la = b.getLivingAccommodation();
-			livingUsage += la.getDailyAverageWaterUsage();
-		}		
+		double livingUsage = quarters.stream()
+					.mapToDouble(b -> b.getLivingAccommodation().getDailyAverageWaterUsage())
+					.sum();		
 		response.appendTableRow("Accommodation", Math.round(livingUsage * 100.0) / 100.0);
 		net = net + livingUsage;
 
@@ -211,10 +203,10 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		for (Building b : bldgs) {
 			ResourceProcessing rp = b.getResourceProcessing();
 			List<ResourceProcess> processes = rp.getProcesses();
-			for (ResourceProcess p : processes) {
-				if (p.isProcessRunning())
-					output += p.getBaseFullOutputRate(id);
-			}
+			output += processes.stream()
+							.filter(ResourceProcess::isProcessRunning)
+							.mapToDouble(p -> p.getBaseFullOutputRate(id))
+							.sum();
 		}
 		// convert from 'per millisol' to 'per sol'
 		output = output * 1_000;
@@ -225,10 +217,10 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		// Prints output from waste processing
 		double output2 = 0;
 		for (Building b : settlement.getBuildingManager().getBuildings(FunctionType.WASTE_PROCESSING)) {
-			for (ResourceProcess p : b.getWasteProcessing().getProcesses()) {
-				if (p.isProcessRunning())
-					output2 += p.getBaseFullOutputRate(id);
-			}
+				output2 += b.getWasteProcessing().getProcesses().stream()
+									.filter(ResourceProcess::isProcessRunning)
+									.mapToDouble(p -> p.getBaseFullOutputRate(id))
+									.sum();
 		}
 		// convert from 'per millisol' to 'per sol'
 		output2 = output2 * 1_000;

@@ -26,7 +26,6 @@ public class DateCommand extends ChatCommand {
 	
 	public static final DateTimeFormatter DATE_TIME_FORMATTER = 
 			DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss.SSS");
-//			DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
 
 	private DateCommand() {
 		super(TopLevel.SIMULATION_GROUP, "d", "date", "What is the date?");
@@ -51,8 +50,8 @@ public class DateCommand extends ChatCommand {
 		if (context.getRoles().contains(ConversationRole.ADMIN)) {
 			// For Admin user display details about the simulation engine
 			responseText.appendBlankLine();
-			responseText.appendLabelledDigit("Last Pulse execution (msec)", (int) clock.getExecutionTime());
-			responseText.appendLabelledDigit("Last sleep time (msec)", (int) clock.getSleepTime());
+			responseText.appendLabelledDigit("Last Pulse execution (msec)", clock.getExecutionTime());
+			responseText.appendLabelledDigit("Last sleep time (msec)", clock.getSleepTime());
 			responseText.appendLabelledDigit("Pulse count", (int) clock.getTotalPulses());
 		}
 

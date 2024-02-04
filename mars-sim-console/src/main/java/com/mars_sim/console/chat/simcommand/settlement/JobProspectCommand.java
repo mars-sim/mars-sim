@@ -26,15 +26,8 @@ import com.mars_sim.core.structure.Settlement;
  */
 public class JobProspectCommand extends AbstractSettlementCommand {
 
-	private static final class JobProspect implements Comparable<JobProspect> {
-		Person person;
-		double prospect;
-		
-		public JobProspect(Person person, double prospect) {
-			super();
-			this.person = person;
-			this.prospect = prospect;
-		}
+	private static record JobProspect (Person person, double prospect)
+			implements Comparable<JobProspect> {
 
 		@Override
 		public int compareTo(JobProspect o) {
@@ -83,7 +76,7 @@ public class JobProspectCommand extends AbstractSettlementCommand {
 			
 			List<JobProspect> prospects = settlement.getAllAssociatedPeople().stream()
 					.map(p -> new JobProspect(p, JobUtil.getJobProspect(p, job, settlement, true)))
-					.sorted((p1, p2) -> p1.compareTo(p2))
+					.sorted(Comparable::compareTo)
 					.collect(Collectors.toList());
 			
 			response.appendTableHeading(job.getName() + " Job Prospect", CommandHelper.PERSON_WIDTH,

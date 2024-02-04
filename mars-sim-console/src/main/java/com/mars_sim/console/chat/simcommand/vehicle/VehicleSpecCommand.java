@@ -31,7 +31,6 @@ public class VehicleSpecCommand extends ChatCommand {
 	public static final ChatCommand SPEC = new VehicleSpecCommand();
 	private static final String KM_PER_KG_FORMAT = "%.2f km/kg";
 	private static final String WH_PER_KM_FORMAT = "%.2f Wh/km";
-	private static final String KWH_FORMAT = "%.2f kWh";
 	private static final String M_PER_S_FORMAT = "%.2f m/s^2";
 	
 	private VehicleSpecCommand() {
@@ -63,7 +62,7 @@ public class VehicleSpecCommand extends ChatCommand {
 		buffer.appendLabeledString("# of Battery Modules", source.getBatteryModule() + "");
 
 		int fuelTypeID = source.getFuelTypeID();
-		String fuelTypeStr = "None";
+		String fuelTypeStr;
 		if (fuelTypeID < 0) {
 			fuelTypeStr = source.getFuelTypeStr();
 		}
@@ -74,10 +73,10 @@ public class VehicleSpecCommand extends ChatCommand {
 		buffer.appendLabeledString("Fuel Type", fuelTypeStr);
 		buffer.appendLabeledString("# of Fuel Cell Stacks", source.getFuellCellStack() + "");
 		buffer.appendLabeledString("Fuel Capacity", String.format(CommandHelper.KG_FORMAT, source.getFuelCapacity()));
-		buffer.appendLabeledString("Energy Capacity", String.format(KWH_FORMAT, source.getEnergyCapacity()));		
-		buffer.appendLabeledString("Drivetrain Energy", String.format(KWH_FORMAT, source.getDrivetrainEnergy()));
+		buffer.appendLabeledString("Energy Capacity", String.format(CommandHelper.KWH_FORMAT, source.getEnergyCapacity()));		
+		buffer.appendLabeledString("Drivetrain Energy", String.format(CommandHelper.KWH_FORMAT, source.getDrivetrainEnergy()));
 		buffer.appendLabeledString("Base Acceleration", String.format(M_PER_S_FORMAT, source.getAccel()));
-		buffer.appendLabeledString("averagePower", String.format("%.2f kW", source.getAveragePower()));
+		buffer.appendLabeledString("averagePower", String.format(CommandHelper.KW_FORMAT, source.getAveragePower()));
 		buffer.appendLabeledString("Base Range", String.format(CommandHelper.KM_FORMAT, source.getBaseRange()));
 	
 		if (source instanceof GroundVehicle) {
@@ -123,7 +122,7 @@ public class VehicleSpecCommand extends ChatCommand {
 				buffer.appendLabelledDigit("Lab Size", lab.getLaboratorySize());
 	
 				ScienceType[] types = lab.getTechSpecialties();
-				StringBuffer names = new StringBuffer();
+				var names = new StringBuilder();
 				String prefix = "";
 				for (ScienceType t : types) {
 					names.append(prefix);

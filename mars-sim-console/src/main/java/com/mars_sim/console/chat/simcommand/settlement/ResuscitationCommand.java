@@ -59,20 +59,16 @@ public class ResuscitationCommand extends AbstractSettlementCommand {
 			return false;
 		}
 
-		String theName = deadNames.get(choice);
-		Person theOne = null;
-		
+		String theName = deadNames.get(choice);		
 		for (Person p: persons) {
 			if (p.getName().equalsIgnoreCase(theName)) {
-				theOne = p;
-				break;
+				p.getPhysicalCondition().reviveToLife();
+		
+				context.println(theName + " was just being revived and under recovery.");
+				return true;	
 			}
 		}
 		
-		theOne.getPhysicalCondition().reviveToLife();
-		
-		context.println(theName + " was just being revived and under recovery.");
-		
-		return true;
+		return false;
 	}
 }

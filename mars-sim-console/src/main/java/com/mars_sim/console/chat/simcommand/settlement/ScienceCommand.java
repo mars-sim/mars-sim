@@ -9,6 +9,7 @@ package com.mars_sim.console.chat.simcommand.settlement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.mars_sim.console.chat.ChatCommand;
@@ -27,14 +28,13 @@ public class ScienceCommand extends AbstractSettlementCommand {
 						"Collab : # of Ongoing Collaborative Research",
 						"Achiev : the settlement's achievement score on completed studies");
 
-	private static final class ScienceScore {
-		ScienceType type;
-		double total;
-		
-		public ScienceScore(ScienceType scienceType, double subtotal) {
-			this.type = scienceType;
-			this.total = subtotal;
-		}		
+	private static record ScienceScore (ScienceType scienceType, double subtotal)
+			implements Comparable<ScienceScore> {
+
+		@Override
+		public int compareTo(ScienceScore o) {
+			return Double.compare(subtotal, o.subtotal);
+		}
 	}
 	
 	private ScienceCommand() {
@@ -60,13 +60,13 @@ public class ScienceCommand extends AbstractSettlementCommand {
 			list.add(new ScienceScore(scienceType, subtotal));
 		}
 
-		list.sort((ScienceScore d1, ScienceScore d2) -> (d1.total < d2.total ? 1 : (d1.total == d2.total ? 0 : -1)));
+		Collections.sort(list);
 		response.appendTableHeading("Rank", 5, "Score", "Science", 14, "Succ", "Fail", "Canx",
 				                    "Prim", "Collab", "Achiev");
 
 		int rank = 1;
 		for (ScienceScore item : list) {
-			ScienceType t = item.type;
+			ScienceType t = item.scienceType();
 			String n = t.getName();
 
 			// 0 = succeed 	
@@ -76,7 +76,7 @@ public class ScienceCommand extends AbstractSettlementCommand {
 			// 4 = oCol
 			int[] counts = scientificManager.getNumScienceStudy(settlement, t);
 			double achieve = Math.round(10.0 *settlement.getScientificAchievement(t))/10.0;
-			response.appendTableRow("#" + rank++, item.total, n, counts[0], counts[1], counts[2],
+			response.appendTableRow("#" + rank++, item.subtotal, n, counts[0], counts[1], counts[2],
 									counts[3], counts[4], achieve); 
 		}
 
