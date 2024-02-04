@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Relation.java
- * @date 2023-11-14
+ * @date 2024-02-03
  * @author Manny Kung
  */
 package com.mars_sim.core.person.ai.social;
@@ -12,30 +12,42 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.tools.util.RandomUtil;
 
 /**
- * The Relation class models the relational connection of a person toward others.
+ * The Relation class models the relationship between two units.
  */
 public class Relation implements Serializable {
 
 	/**
-	 * Details of a specific relationship to a Person
+	 * Details of a specific relationship between two units
 	 */
-	public record Opinion(double respect, double care, double trust) implements Serializable {
+	public record Opinion(double d0, double d1, double d2) implements Serializable {
 		public double getAverage() {
-			return (trust + care + respect)/3D;
+			return (d2 + d1 + d0)/3D;
 		}
 	};
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	// Note: For Person:
+	// d0 : d0
+	// d1 : d1
+	// d2 : d2
+
+	// Note: For Settlement:
+	// d0 : diplomatic
+	// d1 : economic
+	// d2 : socio-cultural
+
 	public static final Opinion EMPTY_OPINION = new Opinion(50, 50, 50);
 	
-	/** The person's opinion of another person. */
+	/** A unit's opinion of another unit. */
 	private Map<Integer, Opinion> opinionMap = new HashMap<>();
 	
 	/** The Unit Manager instance. */
@@ -44,74 +56,75 @@ public class Relation implements Serializable {
 	/**
 	 * Constructor.
 	 * 
-	 * @param person
+	 * @param unit
 	 */
-	public Relation(Person person)  {
+	public Relation(Unit unit)  {
 	}
 	
 	/**
-	 * Gets the opinion regarding a person.
+	 * Gets the opinion regarding a unit.
 	 * 
-	 * @param p Person to get an opinion on
+	 * @param p Unit to get an opinion on
 	 * @return
 	 */
-	public Opinion getOpinion(Person p) {
+	public Opinion getOpinion(Unit p) {
 		if (opinionMap.containsKey(p.getIdentifier())) {
 			return opinionMap.get(p.getIdentifier());
 		}
 		return null;
-//		return opinionMap.getOrDefault(p.getIdentifier(), EMPTY_OPINION);
+//		Future: Need to determine how to handle this 
+		// return opinionMap.getOrDefault(p.getIdentifier(), EMPTY_OPINION);
 	}
 	
 	/**
-	 * Sets a random opinion regarding a person.
+	 * Sets a random opinion regarding a unit.
 	 * 
-	 * @param p
+	 * @param u
 	 * @param opinion
 	 */
-	void setRandomOpinion(Person p, double opinion) {
+	void setRandomOpinion(Unit u, double opinion) {
 		double score = opinion;
 
-		double care = 0;
-		double trust = 0;
-		double respect = 0;
+		double d1 = 0;
+		double d2 = 0;
+		double d0 = 0;
 		
-		int personID = p.getIdentifier();
-		Opinion found = opinionMap.get(personID);
+		int id = u.getIdentifier();
+		Opinion found = opinionMap.get(id);
 		
 		if (found == null) {
-			respect = RandomUtil.getRandomDouble(score/1.5, score * 1.5);
-			care = RandomUtil.getRandomDouble(respect/1.5, respect * 1.5);			
-			trust = RandomUtil.getRandomDouble(care/1.5, care * 1.5);
+			d0 = RandomUtil.getRandomDouble(score/1.5, score * 1.5);
+			d1 = RandomUtil.getRandomDouble(d0/1.5, d0 * 1.5);			
+			d2 = RandomUtil.getRandomDouble(d1/1.5, d1 * 1.5);
 
-			// Gauge the difference between respect and trust
-			double d = respect - trust;
+			// Gauge the difference between d0 and d2
+			double d = d0 - d2;
 			if (d >= 20 || d >= -20) {
-				respect = respect - d/4;
-				trust = trust + d/4;
+				d0 = d0 - d/4;
+				d2 = d2 + d/4;
 			}
 
-			// Gauge the difference between care and trust
-			d = care - trust;
+			// Gauge the difference between d1 and d2
+			d = d1 - d2;
 			if (d >= 15 || d >= -15) {
-				care = care - d/4;
-				trust = trust + d/4;
+				d1 = d1 - d/4;
+				d2 = d2 + d/4;
 			}
 			
-			// Gauge the difference between care and respect
-			d = care - respect;
+			// Gauge the difference between d1 and d0
+			d = d1 - d0;
 			if (d >= 10 || d >= -10) {
-				care = care - d/4;
-				respect = respect + d/4;
+				d1 = d1 - d/4;
+				d0 = d0 + d/4;
 			}
 			
-			trust = limit(trust);
-			respect = limit(respect);
-			care = limit(care);
+			d2 = limit(d2);
+			d0 = limit(d0);
+			d1 = limit(d1);
 		}
 
-		found = new Opinion(respect, care, trust);
-		opinionMap.put(personID, found);
+		found = new Opinion(d0, d1, d2);
+		opinionMap.put(id, found);
 	}
 	
 	/**
@@ -129,34 +142,34 @@ public class Relation implements Serializable {
 	}
 	
 	/**
-	 * Changes the opinion regarding a person.
+	 * Changes the opinion regarding a unit.
 	 * 
-	 * @param p
+	 * @param u
 	 * @param mod
 	 */
-	void changeOpinion(Person p, double mod) {
+	void changeOpinion(Unit u, double mod) {
 		
-		int personID = p.getIdentifier();
-		Opinion found = opinionMap.get(personID);
+		int id = u.getIdentifier();
+		Opinion found = opinionMap.get(id);
 		
-		double care = found.care;
-		double trust = found.trust;
-		double respect = found.respect;
+		double d1 = found.d1;
+		double d2 = found.d2;
+		double d0 = found.d0;
 		int rand = RandomUtil.getRandomInt(6);
 		if (rand == 0) {
-			// Less likely to change the trust than care and respect
-			trust += mod;
+			// Less likely to change the d2 than d1 and d0
+			d2 += mod;
 		}
 		else if (rand == 1 || rand == 2) {
-			care += mod;
+			d1 += mod;
 		}
 		else { // 3, 4, 5, 6
-			// Most likely to change the respect than care and trust
-			respect += mod;
+			// Most likely to change the d0 than d1 and d2
+			d0 += mod;
 		}
 		
-		found = new Opinion(respect, care, trust);
-		opinionMap.put(personID, found);
+		found = new Opinion(d0, d1, d2);
+		opinionMap.put(id, found);
 	}
 	
 	/**
@@ -171,6 +184,19 @@ public class Relation implements Serializable {
 				.collect(Collectors.toUnmodifiableSet());
 	}
 
+	/**
+	 * Gets all the settlement that a settlement knows.
+	 * 
+	 * @param settlement the settlement
+	 * @return a list of the people the person knows.
+	 */
+	Set<Settlement> getAllKnownPeople(Settlement settlement) {
+		return opinionMap.keySet().stream()
+				.map(id -> unitManager.getSettlementByID(id))
+				.collect(Collectors.toUnmodifiableSet());
+	}
+
+	
 	/**
 	 * Initializes instances.
 	 * 

@@ -187,15 +187,15 @@ implements ListSelectionListener {
 				return p;
 			else if (column == 2) {
 				Opinion opinion = person.getRelation().getOpinion(p);
-				return " " + (int)Math.round(opinion.respect()) + " ";
+				return " " + (int)Math.round(opinion.d0()) + " ";
 			}
 			else if (column == 3) {
 				Opinion opinion = person.getRelation().getOpinion(p);
-				return " " + (int)Math.round(opinion.care()) + " ";
+				return " " + (int)Math.round(opinion.d1()) + " ";
 			}
 			else if (column == 4) {
 				Opinion opinion = person.getRelation().getOpinion(p);
-				return " " + (int)Math.round(opinion.trust()) + " ";
+				return " " + (int)Math.round(opinion.d2()) + " ";
 			}
 			else if (column == 5) {
 				Opinion opinion = person.getRelation().getOpinion(p);
