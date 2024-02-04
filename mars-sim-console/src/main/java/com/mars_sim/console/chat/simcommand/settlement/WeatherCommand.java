@@ -7,7 +7,6 @@
 
 package com.mars_sim.console.chat.simcommand.settlement;
 
-import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,14 +23,12 @@ import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.Weather;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.mapdata.location.Coordinates;
-import com.mars_sim.tools.Msg;
 
 public class WeatherCommand extends AbstractSettlementCommand {
 	public static final ChatCommand WEATHER = new WeatherCommand();
 
-	static DecimalFormat fmt2 = new DecimalFormat("#0.00");
-
-	private String DEG = Msg.getString("direction.degreeSign");
+	private static final String AIR_DENSITY = "%.2f g/m\u00B3";
+	private static final String SOLAR_IRR =  "%.2f W/m\u00B2";
 	
 	private WeatherCommand() {
 		super("w", "weather", "Settlement weather");
@@ -56,34 +53,28 @@ public class WeatherCommand extends AbstractSettlementCommand {
 		response.appendLabeledString("Location", location.toString());
 
 		double t = weather.getTemperature(location);
-		String tt = fmt2.format(t) + DEG; //$NON-NLS-1$
-		response.appendLabeledString("Outside temperature", tt);
+		response.appendLabeledString("Outside temperature", String.format(CommandHelper.CELSIUS_FORMAT, t));
 
 		double p = weather.getAirPressure(location);
-		String pp = fmt2.format(p) + " " + Msg.getString("pressure.unit.kPa"); //$NON-NLS-1$
-		response.appendLabeledString("Air Pressure", pp);
+		response.appendLabeledString("Air Pressure", String.format(CommandHelper.KPA_FORMAT, p));
 
 		double ad = weather.getAirDensity(location);
-		String aad = fmt2.format(ad) + " " + Msg.getString("airDensity.unit.gperm3"); //$NON-NLS-1$
-		response.appendLabeledString("Air Density", aad);
+		response.appendLabeledString("Air Density", String.format(AIR_DENSITY, ad));
 
 		response.appendLabeledString("Wind Speed", String.format(CommandHelper.MS_FORMAT,
 						 weather.getWindSpeed(location)));
 
 		double wd = weather.getWindDirection(location);
-		String wwd = fmt2.format(wd) + DEG; //$NON-NLS-1$
-		response.appendLabeledString("Wind Direction", wwd);
+		response.appendLabeledString("Wind Direction", String.format(CommandHelper.DEG_FORMAT, wd));
 
 		double od = surfaceFeatures.getOpticalDepth(location);
-		response.appendLabeledString("Optical Depth", fmt2.format(od));
+		response.appendLabeledString("Optical Depth", String.format(CommandHelper.DOUBLE_FORMAT, od));
 			
 		double sda = orbitInfo.getSolarDeclinationAngleInDeg();
-		String ssda = fmt2.format(sda) + DEG; //$NON-NLS-1$
-		response.appendLabeledString("Solar Declination Angle", ssda);
+		response.appendLabeledString("Solar Declination Angle", String.format(CommandHelper.DEG_FORMAT, sda));
 
 		double si = surfaceFeatures.getSolarIrradiance(location);
-		String ssi = fmt2.format(si) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$
-		response.appendLabeledString("Solar Irradiance", ssi);
+		response.appendLabeledString("Solar Irradiance", String.format(SOLAR_IRR, si));
 		
 		DustStorm ds = settlement.getDustStorm();
 		if (ds != null) {

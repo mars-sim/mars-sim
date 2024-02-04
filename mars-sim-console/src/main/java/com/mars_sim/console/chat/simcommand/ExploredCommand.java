@@ -90,11 +90,11 @@ public class ExploredCommand extends ChatCommand {
 		Set<ExploredLocation> locations = surface.getAllRegionOfInterestLocations();
 			
 		// Filter the list if in a Settlement
-		if (context.getCurrentCommand() instanceof ConnectedUnitCommand) {
+		if (context.getCurrentCommand() instanceof ConnectedUnitCommand cuc) {
 			Settlement filter = null;
-			Unit source = ((ConnectedUnitCommand)context.getCurrentCommand()).getUnit();
-			if (source instanceof Settlement) {
-				filter = (Settlement) source;
+			Unit source = cuc.getUnit();
+			if (source instanceof Settlement s) {
+				filter = s;
 			}
 			else {
 				filter = source.getAssociatedSettlement();
@@ -116,7 +116,7 @@ public class ExploredCommand extends ChatCommand {
 			if (!s.getEstimatedMineralConcentrations().isEmpty()) {
 				// Create summary of minerals
 				Optional<Entry<String, Double>> highest = s.getEstimatedMineralConcentrations().entrySet().stream()
-									.max(Comparator.comparing(v -> v.getValue()));
+									.max(Comparator.comparing(Entry::getValue));
 				if (highest.isPresent())
 					mineral = String.format("%s - %.2f", highest.get().getKey(), highest.get().getValue());
 				else {

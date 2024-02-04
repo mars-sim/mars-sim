@@ -49,7 +49,7 @@ public class SSHChannel implements UserChannel, Command {
                 callback.onExit(-1, e.getMessage());
                 return;
             }
-            LOGGER.info("Conversation ended" + conv);
+            LOGGER.info("Conversation ended " + conv);
 	        callback.onExit(0);
 	    }
 	}
@@ -211,9 +211,6 @@ public class SSHChannel implements UserChannel, Command {
 			if (ch[0] == '\t') {
 				key = "tab";
 			}
-//			else if (ch[0] == ) {
-//				key = "escape";
-//			}
 		}
 		else if (size == 3) {
 			if ((ch[0] == 27) && (ch[1] == 91) && (ch[2] == 65)) {

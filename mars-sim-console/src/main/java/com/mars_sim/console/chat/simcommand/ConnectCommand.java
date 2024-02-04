@@ -56,7 +56,6 @@ public class ConnectCommand extends ChatCommand {
 			context.println("Connecting to " + input + "...");
 	
 			UnitManager um = context.getSim().getUnitManager();
-			InteractiveChatCommand newCommand = null;
 			
 			// Find unit by full equals match on name
 			final String name = input;
@@ -68,7 +67,8 @@ public class ConnectCommand extends ChatCommand {
 			}
 			else {
 				InteractiveChatCommand parent = null;
-				if (context.getCurrentCommand() instanceof ConnectedUnitCommand) {
+				boolean alreadyConnected = context.getCurrentCommand() instanceof ConnectedUnitCommand;
+				if (alreadyConnected) {
 					// So user is reconnecting without disconnecting via bye command.
 					// Find the next leve up
 					List<InteractiveChatCommand> layers = context.getCommandStack();
@@ -86,29 +86,22 @@ public class ConnectCommand extends ChatCommand {
 				}
 
 				Unit match = matched.get(0);
-				
-				if (match.getUnitType() == UnitType.PERSON) {
-					newCommand = new PersonChat((Person) match, parent);
-				}
-				else if (match.getUnitType() == UnitType.ROBOT) {
-					newCommand = new RobotChat((Robot) match, parent);
-				}
-				else if (match.getUnitType() == UnitType.VEHICLE) {
-					newCommand = new VehicleChat((Vehicle) match, parent);
-				}
-				else if (match.getUnitType() == UnitType.SETTLEMENT) {
-					newCommand = new SettlementChat((Settlement) match, parent);
+				InteractiveChatCommand newCommand = switch(match.getUnitType()) {
+					case PERSON -> new PersonChat((Person) match, parent);
+					case ROBOT -> new RobotChat((Robot) match, parent);
+					case VEHICLE -> new VehicleChat((Vehicle) match, parent);
+					case SETTLEMENT -> new SettlementChat((Settlement) match, parent);
+					default -> null;	
+				};
+
+				// If the current chat is an Unit then don't remember it
+				if (newCommand != null) {
+					context.setCurrentCommand(newCommand, !alreadyConnected);
+					result = true;
 				}
 				else {
 					context.println("Sorry I don't know how to connect " + name);
 				}
-			}
-			
-			// If the current chat is an Unit then don't remember it
-			if (newCommand != null) {
-				boolean alreadyConnected = (context.getCurrentCommand() instanceof ConnectedUnitCommand);
-				context.setCurrentCommand(newCommand, !alreadyConnected);
-				result = true;
 			}
 		}
 		return result;

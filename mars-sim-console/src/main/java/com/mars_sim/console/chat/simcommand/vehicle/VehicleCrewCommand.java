@@ -52,11 +52,11 @@ public class VehicleCrewCommand extends ChatCommand {
 		if (m != null) {
 			Collection<Worker> members = m.getMembers();
 			people = members.stream()
-							.filter(mp -> mp instanceof Person)
+							.filter(Person.class::isInstance)
 							.map(p -> (Person) p)
 							.collect(Collectors.toList());
 			robots = members.stream()
-					.filter(mr -> mr instanceof Robot)
+					.filter(Robot.class::isInstance)
 					.map(r -> (Robot) r)
 					.collect(Collectors.toList());
 		}

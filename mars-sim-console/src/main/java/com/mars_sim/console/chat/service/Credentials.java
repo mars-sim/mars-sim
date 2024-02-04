@@ -16,6 +16,8 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Basic serializable credentials store
@@ -23,6 +25,7 @@ import java.util.Map;
 public class Credentials implements Serializable{
 
 	private static final long serialVersionUID = 1L;
+	private static final Logger logger = Logger.getLogger(Credentials.class.getName());
 
 	// The default admin user name
 	public static final String ADMIN = "admin";
@@ -63,7 +66,7 @@ public class Credentials implements Serializable{
 			ObjectOutputStream outStream = new ObjectOutputStream(output);		
 			outStream.writeObject(this);	
 		} catch (IOException e) {
-			System.out.println("Error setting up output stream for writing object: " + e);
+			logger.log(Level.SEVERE, "Error setting up output stream for writing object: ", e);
 			return false;
 		}
 		return true;
@@ -89,7 +92,7 @@ public class Credentials implements Serializable{
 			cred.backingFile = source;
 			return cred;
 		} catch (ClassNotFoundException e) {
-			System.out.println("Error loading credentials: " + e);
+			logger.log(Level.SEVERE, "Error loading credentials", e);
 		}
 		return null;
 	}

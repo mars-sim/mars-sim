@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.console.chat.Conversation;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.Malfunction.Repairer;
@@ -77,6 +78,10 @@ public class CommandHelper {
 	public static final String KMPH_FORMAT = "%.2f km/h";
 	public static final String MS_FORMAT = "%.2f m/s";
     public static final String MONEY_FORMAT = "$%,.2f";
+	public static final String DEG_FORMAT = "%.2f\u00B0";
+	public static final String KPA_FORMAT = "%.2f kPa";
+	public static final String CELSIUS_FORMAT = "%.2f C\u00B0";
+
 	private static final String DUE_FORMAT = "%d:%03d";
 
 	
@@ -280,8 +285,7 @@ public class CommandHelper {
 		double trav = 0;
 		Vehicle v = null;
 		
-		if (mission instanceof VehicleMission) {
-			VehicleMission vm = (VehicleMission) mission;
+		if (mission instanceof VehicleMission vm) {
 			v = vm.getVehicle();
 			dist = vm.getDistanceProposed();
 			trav = vm.getTotalDistanceTravelled();
@@ -321,7 +325,7 @@ public class CommandHelper {
 			response.appendLabeledString("Phase", mission.getPhaseDescription());
 			response.appendLabeledString("Phase Started", mission.getPhaseStartTime().getTruncatedDateTimeStamp());
 		
-			List<String> names = plist.stream().map(p -> p.getName()).sorted().collect(Collectors.toList());
+			List<String> names = plist.stream().map(Entity::getName).sorted().toList();
 			response.appendNumberedList("Members", names);
 		
 			// Travel mission has a route
@@ -541,7 +545,8 @@ public class CommandHelper {
 		// Works as PROCESS_WIDTh is very large
 		int width = PROCESS_WIDTH - processType.length();
 		StringBuilder firstColumn = new StringBuilder();
-		firstColumn.append(String.format("%-" + width + "s", bName));
+		String format = "%-" + width + "s"; 
+		firstColumn.append(String.format(format, bName));
 		firstColumn.append(processType);
 
 	    List<ResourceProcess> processes = new ArrayList<>(processor.getProcesses());

@@ -97,7 +97,7 @@ public class TradeCommand extends AbstractSettlementCommand {
 										drone.getBaseRange()));
 		}
 
-		Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, true);
+		Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, true);
 		if (rover != null) {
 			response.appendLabeledString("Rover Range", String.format(CommandHelper.KM_FORMAT,
 										rover.getRange()));

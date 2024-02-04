@@ -65,16 +65,6 @@ public class StructuredResponse {
 	}
 
 	/**
-	 * Adds a string value to the output with a label.
-	 * 
-	 * @param label
-	 * @param value
-	 */
-	public void appendString(String label, String value) {
-		buffer.append(String.format("", label, value));
-	}
-	
-	/**
 	 * Adds a string value to the output with a label one column away from the left margin.
 	 * 
 	 * @param label
@@ -165,9 +155,8 @@ public class StructuredResponse {
 			String column = (String) headings[i];
 			int w = column.length();
 			// If the next arg is an int then it's width
-			if (((i + 1) < headings.length) && (headings[i+1] instanceof Integer)) {
+			if (((i + 1) < headings.length) && (headings[i+1] instanceof Integer hWidth)) {
 				i++;
-				int hWidth = (int) headings[i];
 				
 				// hWidth could be negative if left aligned but need absolute width
 				if (w < Math.abs(hWidth)) {
@@ -290,7 +279,7 @@ public class StructuredResponse {
 		SplitString result = null;
 		int w = Math.abs(width);
 
-		if (wrapTableCells & source.length() > w) {
+		if (wrapTableCells && source.length() > w) {
 			int splitIdx = w;
 
 			var match = SPLIT_CHARS.matcher(source);

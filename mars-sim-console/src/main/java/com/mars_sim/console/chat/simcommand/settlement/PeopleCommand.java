@@ -63,14 +63,16 @@ public class PeopleCommand extends AbstractSettlementCommand {
 									"Mission", "EVA",
 									"Dead", 6);
 		for (Person person : everyone) {
+			String status = (deceasedP.contains(person) ? "Yes" : "No");
+			if (buriedP.contains(person)) {
+				status = "Buried";
+			}
 			response.appendTableRow(person.getName(),
 									citizens.contains(person),
 									(indoorP.contains(person) ? person.getBuildingLocation().getName() : "No"),
 									(person.getMission() != null),
 									eva.contains(person),
-									(buriedP.contains(person) ? "Buried"
-											: (deceasedP.contains(person) ?
-													"Yes" : "No"))
+									status
 									);
 		}
 		

@@ -134,7 +134,11 @@ public abstract class ProcessSpec implements Serializable {
 	 * @return rate in kg/millisol.
 	 */
 	public double getBaseOutputRate(Integer resource) {
-		return baseOutputRates.get(resource);
+		var value = baseOutputRates.get(resource);
+		if (value != null) {
+			return value.doubleValue();
+		}
+		return 0D;
 	}
 
 	/**

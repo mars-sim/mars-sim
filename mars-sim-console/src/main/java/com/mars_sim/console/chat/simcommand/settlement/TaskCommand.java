@@ -40,8 +40,9 @@ public class TaskCommand extends AbstractSettlementCommand {
 		StructuredResponse response = new StructuredResponse();
 		
 		response.appendText("(A). Settlers");
-		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, "People", -CommandHelper.PERSON_WIDTH,
-									"Shift");
+		response.appendTableHeading(true,"Task", CommandHelper.TASK_WIDTH, 
+					"People", -CommandHelper.PERSON_WIDTH,
+									"Shift", -15);
 
 		Map<String, List<Person>> map = settlement.getAllAssociatedPeople().stream()
 				.collect(Collectors.groupingBy(Person::getTaskDescription));
@@ -66,19 +67,16 @@ public class TaskCommand extends AbstractSettlementCommand {
 
 		response.appendBlankLine();
 		response.appendText("(B). Bots");
-		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, "Bots", -CommandHelper.BOT_WIDTH);
+		response.appendTableHeading(true, "Task", CommandHelper.TASK_WIDTH, 
+			"Bots", -CommandHelper.BOT_WIDTH);
 
 		Map<String, List<Robot>> botMap = settlement.getAllAssociatedRobots().stream()
 				.collect(Collectors.groupingBy(Robot::getTaskDescription));
 
 		for (Map.Entry<String, List<Robot>> entry : botMap.entrySet()) {
-			String task = entry.getKey();
+			String tableGroup = entry.getKey();
 			List<Robot> plist = entry.getValue();
-			String tableGroup = task;
-			if ((task != null) && !task.equals("")) {
-				tableGroup = task;
-			}
-			else {
+			if ((tableGroup == null) || tableGroup.equals("")) {
 				tableGroup = "None";
 			}
 

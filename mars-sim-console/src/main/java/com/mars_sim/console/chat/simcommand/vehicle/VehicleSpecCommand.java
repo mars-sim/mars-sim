@@ -63,7 +63,7 @@ public class VehicleSpecCommand extends ChatCommand {
 		buffer.appendLabeledString("# of Battery Modules", source.getBatteryModule() + "");
 
 		int fuelTypeID = source.getFuelTypeID();
-		String fuelTypeStr = "None";
+		String fuelTypeStr;
 		if (fuelTypeID < 0) {
 			fuelTypeStr = source.getFuelTypeStr();
 		}
@@ -123,7 +123,7 @@ public class VehicleSpecCommand extends ChatCommand {
 				buffer.appendLabelledDigit("Lab Size", lab.getLaboratorySize());
 	
 				ScienceType[] types = lab.getTechSpecialties();
-				StringBuffer names = new StringBuffer();
+				var names = new StringBuilder();
 				String prefix = "";
 				for (ScienceType t : types) {
 					names.append(prefix);

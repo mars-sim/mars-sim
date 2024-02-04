@@ -30,7 +30,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
@@ -40,7 +39,6 @@ import org.beryx.textio.jline.JLineTextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
 
 import com.mars_sim.core.GameManager;
-import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
@@ -67,11 +65,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 	private int width;
 	private int height;
 
-//	private final WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
-
 	private JFrame frame = getFrame();
-
-	private JPanel panel;
 	
     private final JPopupMenu popup = new JPopupMenu();
 
@@ -109,16 +103,6 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
         addAction("ctrl V", "Paste", textPane::paste);
         MouseListener popupListener = new PopupListener(popup);
         textPane.addMouseListener(popupListener);
-
-		panel = new JPanel() {
-			@Override
-			public Dimension getPreferredSize() {
-				return new Dimension(this.getWidth(), this.getHeight());
-			}
-		};
-    	// Set up the glassy wait layer for pausing
-//    	frame.add(new JLayer<>(panel, layerUI));
-
     	frame.toBack();
     	
     	frame.setAlwaysOnTop(false);
@@ -308,20 +292,15 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
         menu.add(menuItem);
 
         menuBar.add(menu);
-        
-//        getTextPane().setComponentPopupMenu(menu);
-		
+        		
         frame.setJMenuBar(menuBar);
 
         frame.setVisible(true);
-		// Start the wait layer
-//		layerUI.start();
     }
 
     private boolean addAction(String keyStroke, String menuText, Runnable action) {
         KeyStroke ks = KeyStroke.getKeyStroke(keyStroke);
         if(ks == null) {
-            logger.warning("Invalid keyStroke: " + keyStroke);
             return false;
         }
         JMenuItem menuItem = new JMenuItem(menuText);
@@ -341,41 +320,15 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
     }
 
 	public void changeTitle(boolean isPaused) {
-		if (GameManager.getGameMode() == GameMode.COMMAND) {
-			if (isPaused) {
-				setPaneTitle(Simulation.TITLE + "  -  Command Mode" + "  -  [ P A U S E ]");
-			} else {
-				setPaneTitle(Simulation.TITLE + "  -  Command Mode");
-			}
-		} else if (GameManager.getGameMode() == GameMode.SANDBOX) {
-			if (isPaused) {
-				setPaneTitle(Simulation.TITLE + "  -  Sandbox Mode" + "  -  [ P A U S E ]");
-			} else {
-				setPaneTitle(Simulation.TITLE + "  -  Sandbox Mode");
-			}
-		} else if (GameManager.getGameMode() == GameMode.SPONSOR) {
-			if (isPaused) {
-				setPaneTitle(Simulation.TITLE + "  -  Sponsor Mode" + "  -  [ P A U S E ]");
-			} else {
-				setPaneTitle(Simulation.TITLE + "  -  Sponsor Mode");
-			}
-		} else if (GameManager.getGameMode() == GameMode.SOCIETY) {
-			if (isPaused) {
-				setPaneTitle(Simulation.TITLE + "  -  Society Mode" + "  -  [ P A U S E ]");
-			} else {
-				setPaneTitle(Simulation.TITLE + "  -  Society Mode");
-			}
-		}
+		String mode = switch (GameManager.getGameMode()) {
+			case COMMAND -> "Command Mode";
+			case SANDBOX -> "Sandbox Mode";
+			case SPONSOR -> "Sponsor Mode";
+			case SOCIETY -> "Society Mode";
+		};
+
+		setPaneTitle(Simulation.TITLE + "  -  " + mode + (isPaused ? "  -  [ P A U S E ]" : ""));
 	}
-
-//	public void startLayer() {
-//        changeTitle(false);
-//		layerUI.start();
-//	}
-
-//	public void stopLayer() {
-//		layerUI.stop();
-//	}
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {

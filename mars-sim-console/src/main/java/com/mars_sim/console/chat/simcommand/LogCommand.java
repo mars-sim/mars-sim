@@ -20,7 +20,7 @@ import com.mars_sim.console.chat.ConversationRole;
 
 public class LogCommand extends ChatCommand {
 	private static final String ALL_CHOICE = "All";
-	public final static ChatCommand LOG = new LogCommand();
+	public static final ChatCommand LOG = new LogCommand();
 	
 	private LogCommand() {
 		super(TopLevel.SIMULATION_GROUP, "lo", "log", "Change the simulation logging");
