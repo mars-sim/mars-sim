@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
@@ -56,40 +55,58 @@ public class Relation implements Serializable {
 	/**
 	 * Constructor.
 	 * 
-	 * @param unit
+	 * @param appraiser
 	 */
-	public Relation(Unit unit)  {
+	public Relation(Appraiser appraiser)  {
 	}
 	
 	/**
 	 * Gets the opinion regarding a unit.
 	 * 
-	 * @param p Unit to get an opinion on
+	 * @param appraiser
 	 * @return
 	 */
-	public Opinion getOpinion(Unit p) {
-		if (opinionMap.containsKey(p.getIdentifier())) {
-			return opinionMap.get(p.getIdentifier());
+	public Opinion getOpinion(Appraiser appraised) {
+		if (appraised instanceof Person p) {
+			if (opinionMap.containsKey(p.getIdentifier())) {
+				return opinionMap.get(p.getIdentifier());
+			}
+		}
+		else if (appraised instanceof Settlement s) {
+			if (opinionMap.containsKey(s.getIdentifier())) {
+				return opinionMap.get(s.getIdentifier());
+			}
 		}
 		return null;
-//		Future: Need to determine how to handle this 
+//		Future: Need to determine how best to handle null opinion 
 		// return opinionMap.getOrDefault(p.getIdentifier(), EMPTY_OPINION);
 	}
 	
 	/**
 	 * Sets a random opinion regarding a unit.
 	 * 
-	 * @param u
+	 * @param appraised
 	 * @param opinion
 	 */
-	void setRandomOpinion(Unit u, double opinion) {
+	void setRandomOpinion(Appraiser appraised, double opinion) {
 		double score = opinion;
 
 		double d1 = 0;
 		double d2 = 0;
 		double d0 = 0;
 		
-		int id = u.getIdentifier();
+		int id = -1;
+		
+		if (appraised instanceof Person p) {
+			id = p.getIdentifier();
+		}
+		else if (appraised instanceof Settlement s) {
+			id = s.getIdentifier();
+		}
+		
+		if (id == -1)
+			return;
+		
 		Opinion found = opinionMap.get(id);
 		
 		if (found == null) {
@@ -147,9 +164,19 @@ public class Relation implements Serializable {
 	 * @param u
 	 * @param mod
 	 */
-	void changeOpinion(Unit u, double mod) {
+	void changeOpinion(Appraiser appraised, double mod) {
+		int id = -1;
 		
-		int id = u.getIdentifier();
+		if (appraised instanceof Person p) {
+			id = p.getIdentifier();
+		}
+		else if (appraised instanceof Settlement s) {
+			id = s.getIdentifier();
+		}
+		
+		if (id == -1)
+			return;
+		
 		Opinion found = opinionMap.get(id);
 		
 		double d1 = found.d1;
@@ -173,10 +200,10 @@ public class Relation implements Serializable {
 	}
 	
 	/**
-	 * Gets all the people that a person knows (has met).
+	 * Gets all people known.
 	 * 
 	 * @param person the person
-	 * @return a list of the people the person knows.
+	 * @return a list of people
 	 */
 	Set<Person> getAllKnownPeople(Person person) {
 		return opinionMap.keySet().stream()
@@ -185,12 +212,12 @@ public class Relation implements Serializable {
 	}
 
 	/**
-	 * Gets all the settlement that a settlement knows.
+	 * Gets all settlements known.
 	 * 
 	 * @param settlement the settlement
-	 * @return a list of the people the person knows.
+	 * @return a list of settlement
 	 */
-	Set<Settlement> getAllKnownPeople(Settlement settlement) {
+	Set<Settlement> getAllKnownSettlement(Settlement settlement) {
 		return opinionMap.keySet().stream()
 				.map(id -> unitManager.getSettlementByID(id))
 				.collect(Collectors.toUnmodifiableSet());

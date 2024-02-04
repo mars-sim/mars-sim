@@ -66,6 +66,7 @@ import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.shift.ShiftManager;
 import com.mars_sim.core.person.ai.shift.ShiftPattern;
+import com.mars_sim.core.person.ai.social.Appraiser;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.util.SettlementTaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -100,7 +101,7 @@ import com.mars_sim.tools.util.RandomUtil;
  * contains information related to the state of the settlement.
  */
 public class Settlement extends Structure implements Temporal,
-	LifeSupportInterface, Objective, EquipmentOwner, ItemHolder, BinHolder {
+	LifeSupportInterface, Objective, EquipmentOwner, ItemHolder, BinHolder, Appraiser {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

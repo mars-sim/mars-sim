@@ -59,6 +59,7 @@ import com.mars_sim.core.person.ai.role.Role;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.shift.ShiftSlot;
 import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
+import com.mars_sim.core.person.ai.social.Appraiser;
 import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.meta.WorkoutMeta;
@@ -90,7 +91,7 @@ import com.mars_sim.tools.util.RandomUtil;
  * The Person class represents a person on Mars. It keeps track of everything
  * related to that person and provides information about him/her.
  */
-public class Person extends Unit implements Worker, Temporal, Researcher {
+public class Person extends Unit implements Worker, Temporal, Researcher, Appraiser {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
