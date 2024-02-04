@@ -17,7 +17,6 @@ import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.time.MarsTime;
 
 /**
  * Shows the status of WasteProcessing in a Settlement
@@ -34,9 +33,6 @@ public class WasteProcessCommand extends AbstractSettlementCommand {
 	@Override
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
-
-		MarsTime clock = context.getSim().getMasterClock().getMarsTime();
-		int missionMilliSol = (clock.getMissionSol() * 1000) + clock.getMillisolInt();
 		
 		// Loop buildings that do processing
 		List<Building> processors = new ArrayList<>(
@@ -44,7 +40,7 @@ public class WasteProcessCommand extends AbstractSettlementCommand {
 		Collections.sort(processors);
 
 		for(Building building : processors) {
-			CommandHelper.outputProcesses(response, "Waste process", missionMilliSol, building.getName(),
+			CommandHelper.outputProcesses(response, "Waste process", building.getName(),
 											building.getWasteProcessing());
 		}
 

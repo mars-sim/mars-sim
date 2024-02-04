@@ -9,11 +9,12 @@ package com.mars_sim.console.chat;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,7 +36,7 @@ public class Conversation implements UserOutbound {
 	private List<String> inputHistory;
 	private int historyIdx = 0;
 	
-	private Stack<InteractiveChatCommand> previous;
+	private Deque<InteractiveChatCommand> previous;
 	private InteractiveChatCommand current;
 	private CancellableCommand activeCommand;
 	private UserChannel comms;
@@ -62,7 +63,7 @@ public class Conversation implements UserOutbound {
         this.active = true;
         this.comms = comms;
         this.roles = roles;
-        this.previous = new Stack<>();
+        this.previous = new ArrayDeque<>();
         this.inputHistory = new ArrayList<>();
         
         this.sim = sim;
@@ -74,11 +75,13 @@ public class Conversation implements UserOutbound {
 	}
 	
 	/**
-	 * Gets the list of stacked commands in the current conversation. It does not include
-	 * the current command; only those stacked.
+	 * Return the parent command of the current one; which is the last in the Deck
 	 */
-	public List<InteractiveChatCommand> getCommandStack() {
-		return previous;
+	public InteractiveChatCommand getParentCommand() {
+		if (!previous.isEmpty()) {
+			return previous.getLast();
+		}
+		return null;
 	}
 	
 	public InteractiveChatCommand getCurrentCommand() {
@@ -96,7 +99,6 @@ public class Conversation implements UserOutbound {
 			previous.push(this.current);
 		}
 		this.current = newCommand;
-		LOGGER.fine("Current chat set to " + current);
 	}
 	
     public void setCompleted() {
@@ -141,9 +143,6 @@ public class Conversation implements UserOutbound {
 	        	
 	        	// Always set the history pointer to the most recent command
         		historyIdx = inputHistory.size();
-
-	        	// Execute and trap exception to not break conversation
-	        	LOGGER.fine("Entered " + input);
   
         		current.execute(this, input);
         	}
@@ -166,7 +165,6 @@ public class Conversation implements UserOutbound {
 	 */
 	public void resetCommand() {
 		current = previous.pop();
-		LOGGER.fine("Current chat popped to " + current);
 	}
 
 	public String getInput(String prompt) {

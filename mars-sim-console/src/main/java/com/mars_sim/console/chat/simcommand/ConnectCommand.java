@@ -20,7 +20,6 @@ import com.mars_sim.console.chat.simcommand.settlement.SettlementChat;
 import com.mars_sim.console.chat.simcommand.vehicle.VehicleChat;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
@@ -71,13 +70,10 @@ public class ConnectCommand extends ChatCommand {
 				if (alreadyConnected) {
 					// So user is reconnecting without disconnecting via bye command.
 					// Find the next leve up
-					List<InteractiveChatCommand> layers = context.getCommandStack();
-					if (layers.isEmpty()) {
+					parent = context.getParentCommand();
+					if (parent == null) {
 						// Hmm what to do. Doesn;t work
 						context.println("Seem to be no parent top level command");
-					}
-					else {
-						parent = layers.get(0);
 					}
 				}
 				else {

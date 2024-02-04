@@ -13,9 +13,6 @@ import com.mars_sim.core.robot.SystemCondition;
  */
 public class SystemCommand extends AbstractUnitCommand {
 
-    private static final String KWH_FORMAT = "%.1f kWh";
-    private static final String KW_FORMAT = "%,.1f kW";
-
     public static final SystemCommand SYSTEM = new SystemCommand();
 
     private SystemCommand() {
@@ -41,9 +38,9 @@ public class SystemCommand extends AbstractUnitCommand {
                                                                                         sc.getLowPowerPercent()));
         response.appendLabeledString("Recommended Charging Threshold", String.format(CommandHelper.PERC_FORMAT,
                                                                                         sc.getRecommendedThreshold()));
-        response.appendLabeledString("Battery Capacity", String.format(KWH_FORMAT, sc.getBatteryCapacity()));   
+        response.appendLabeledString("Battery Capacity", String.format(CommandHelper.KWH_FORMAT, sc.getBatteryCapacity()));   
         response.appendLabeledString("Charging", sc.isCharging() ? "Yes" : "No");
-        response.appendLabeledString("Standby Power", String.format(KW_FORMAT, sc.getStandbyPowerConsumption()));                                                                                                                                                             
+        response.appendLabeledString("Standby Power", String.format(CommandHelper.KW_FORMAT, sc.getStandbyPowerConsumption()));                                                                                                                                                             
 
         if (robot.getOccupiedStation() != null) {
             response.appendLabeledString("Occupied Station", robot.getOccupiedStation().getBuilding().getName());

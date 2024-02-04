@@ -71,6 +71,7 @@ public class CommandHelper {
 	public static final String DOUBLE_FORMAT = "%.2f";
 	public static final String KG_FORMAT = "%.2f kg";
 	public static final String KM_FORMAT = "%.2f km";
+	public static final String KW_FORMAT = "%,.2f kW";
 	public static final String KWH_FORMAT = "%.2f kWh";
 	public static final String PERC_FORMAT = "%.0f%%";
 	public static final String PERC1_FORMAT = "%.1f%%";
@@ -534,11 +535,10 @@ public class CommandHelper {
 	 * 
 	 * @param response Output destination
 	 * @param processType The name of the process type column
-	 * @param currentMSol The current mars time
 	 * @param bName The hosting Building name
 	 * @param processor Host of the processes
 	 */
-	public static void outputProcesses(StructuredResponse response, String processType, int currentMSol, String bName,
+	public static void outputProcesses(StructuredResponse response, String processType, String bName,
 										ResourceProcessor processor) {
 
 		// Build table label by placing the building name before the process type

@@ -92,7 +92,7 @@ public class HelpCommand extends ChatCommand {
 
 	private static void outputGroup(Conversation context, String group, List<ChatCommand> subs, boolean useTwoColumns) {
 		context.println("Group : " + group);
-		Collections.sort(subs);
+		Collections.sort(subs, (c1, c2) -> c1.getShortCommand().compareTo(c2.getShortCommand()));
 
 		if (useTwoColumns) {
 			// Two column and short format
