@@ -112,6 +112,9 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 		}
 	}
 
+	/**
+	 * Gets the identifier of this unit.
+	 */
 	public final int getIdentifier() {
 		return identifier;
 	}
@@ -252,9 +255,9 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 
 	/**
 	 * This method assumes the Unit could be movable and change container. It identifies the
-	 * approoriate container and use that.
-	 * Ideally this methd should be moved to a new subclass called 'MovableUnit' that
-	 * encapsulates some positioning methods that are not applicable to Structures.
+	 * appropriate container it can use. Ideally this method should be moved to a 
+	 * new subclass called 'MovableUnit' that encapsulates some positioning methods 
+	 * not applicable to Structures.
 	 */
 	public String getContext() {
 		if (isInSettlement()) {

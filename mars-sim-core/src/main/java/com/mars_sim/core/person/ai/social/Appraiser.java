@@ -6,9 +6,15 @@
  */
 package com.mars_sim.core.person.ai.social;
 
+import com.mars_sim.core.Entity;
+
 /**
  * This interface allows a subject to give opinion on another subject
  */
-public interface Appraiser {
+public interface Appraiser extends Entity {
 
+	/**
+	 * Gets the identifier of this unit.
+	 */
+	int getIdentifier();
 }

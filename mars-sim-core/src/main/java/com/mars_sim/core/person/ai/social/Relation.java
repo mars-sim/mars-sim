@@ -67,15 +67,8 @@ public class Relation implements Serializable {
 	 * @return
 	 */
 	public Opinion getOpinion(Appraiser appraised) {
-		if (appraised instanceof Person p) {
-			if (opinionMap.containsKey(p.getIdentifier())) {
-				return opinionMap.get(p.getIdentifier());
-			}
-		}
-		else if (appraised instanceof Settlement s) {
-			if (opinionMap.containsKey(s.getIdentifier())) {
-				return opinionMap.get(s.getIdentifier());
-			}
+		if (opinionMap.containsKey(appraised.getIdentifier())) {
+			return opinionMap.get(appraised.getIdentifier());
 		}
 		return null;
 //		Future: Need to determine how best to handle null opinion 
@@ -95,17 +88,7 @@ public class Relation implements Serializable {
 		double d2 = 0;
 		double d0 = 0;
 		
-		int id = -1;
-		
-		if (appraised instanceof Person p) {
-			id = p.getIdentifier();
-		}
-		else if (appraised instanceof Settlement s) {
-			id = s.getIdentifier();
-		}
-		
-		if (id == -1)
-			return;
+		int id = appraised.getIdentifier();
 		
 		Opinion found = opinionMap.get(id);
 		
@@ -165,17 +148,7 @@ public class Relation implements Serializable {
 	 * @param mod
 	 */
 	void changeOpinion(Appraiser appraised, double mod) {
-		int id = -1;
-		
-		if (appraised instanceof Person p) {
-			id = p.getIdentifier();
-		}
-		else if (appraised instanceof Settlement s) {
-			id = s.getIdentifier();
-		}
-		
-		if (id == -1)
-			return;
+		int id = appraised.getIdentifier();
 		
 		Opinion found = opinionMap.get(id);
 		
