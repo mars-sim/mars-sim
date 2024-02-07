@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * EngineeringProject.java
+ * SpecialistProject.java
  * @date 2023-12-15
  * @author Manny Kung
  */
@@ -16,11 +16,11 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.tools.util.RandomUtil;
 
-public class EngineeringProject implements Serializable {
+public class SpecialistProject implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final SimLogger logger = SimLogger.getLogger(EngineeringProject.class.getName());
+	public static final SimLogger logger = SimLogger.getLogger(SpecialistProject.class.getName());
 
 	private final int maxNumParticipants = RandomUtil.getRandomInt(3, 10);
 	
@@ -31,15 +31,15 @@ public class EngineeringProject implements Serializable {
 	private String name;
 	
 	private ScienceType science;
-	/** The lead engineer. */
+	/** The lead specialist. */
 	private ColonySpecialist lead;
 	
-	/** Major topics covered by this engineering project. */
+	/** Major topics covered by this special project. */
 	private List<String> topics;
-	/** A set of participating engineer. */
+	/** A set of participating specialist. */
 	private Set<ColonySpecialist> participants = new HashSet<>();
 	
-	EngineeringProject(ColonySpecialist lead, String name, ScienceType science) {
+	SpecialistProject(ColonySpecialist lead, String name, ScienceType science) {
 		this.lead = lead;
 		this.name = name;
 		this.science = science;

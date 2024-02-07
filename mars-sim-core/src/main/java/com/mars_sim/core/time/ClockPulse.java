@@ -6,12 +6,10 @@
  */
 package com.mars_sim.core.time;
 
-import com.mars_sim.core.logging.SimLogger;
-
 public class ClockPulse {
 	
 	/** Initialized logger. */
-	private static final SimLogger logger = SimLogger.getLogger(ClockPulse.class.getName());
+	// may add back private static final SimLogger logger = SimLogger.getLogger(ClockPulse.class.getName())
 	
 	private boolean newSol;
 	private boolean newHalfSol;
@@ -144,8 +142,7 @@ public class ClockPulse {
 		boolean isNewSol = (lastSol != currentSol);
 		// Updates lastSol
 		if (isNewSol) {
-//			logger.info(
-//					"newSol: " + newSol 
+//			logger.info("newSol: " + newSol 
 //					+ "  isNewSol: " + isNewSol 
 //					+ "  lastSol: " + lastSol 
 //					+ "  currentSol: " + currentSol);
@@ -155,8 +152,7 @@ public class ClockPulse {
 		boolean isNewHalfSol = isNewSol || (lastMillisol <= 500 && currentMillisol > 500);	
 
 		if (isNewHalfSol) {
-//			logger.info(
-//					"newHalfSol: " + newHalfSol 
+//			logger.info("newHalfSol: " + newHalfSol 
 //					+ "  isNewHalfSol: " + isNewHalfSol 
 //					+ "  lastMillisol: " + lastMillisol 
 //					+ "  currentMillisol: " + currentMillisol);
@@ -174,8 +170,7 @@ public class ClockPulse {
 		}
 		////////////////////////////////////////////////////////////////////////////////////
 		// Do NOT delete the following logger. For future debugging when changes are made //		
-//		logger.info(
-//				"newSol: " + newSol 
+//		logger.info("newSol: " + newSol 
 //				+ "  newHalfSol: " + newHalfSol 
 //				+ "  isNewSol: " + isNewSol 
 //				+ "  lastSol: " + lastSol 

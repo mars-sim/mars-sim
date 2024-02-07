@@ -17,7 +17,7 @@ import com.mars_sim.core.authority.Organization;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.moon.project.ColonySpecialist;
 import com.mars_sim.core.moon.project.ColonyResearcher;
-import com.mars_sim.core.moon.project.EngineeringProject;
+import com.mars_sim.core.moon.project.SpecialistProject;
 import com.mars_sim.core.moon.project.ResearchProject;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
@@ -52,7 +52,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	/** A set of research projects this colony's researchers engage in. */
 	private Set<ResearchProject> researchProjects = new HashSet<>();
 	/** A set of engineering projects this colony's engineers engage in. */
-	private Set<EngineeringProject> engineeringProjects = new HashSet<>();
+	private Set<SpecialistProject> engineeringProjects = new HashSet<>();
 
 		
 	public Colony(int id, String name, Authority sponsor, Coordinates location, boolean scratch) {
@@ -107,8 +107,8 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	 * @param Engineer
 	 * @return
 	 */
-	public EngineeringProject getOneEngineeringProject(ColonySpecialist engineer) {
-		for (EngineeringProject p: engineeringProjects) {
+	public SpecialistProject getOneEngineeringProject(ColonySpecialist engineer) {
+		for (SpecialistProject p: engineeringProjects) {
 			if (!p.getLead().equals(engineer)) {
 				Set<ColonySpecialist> participants = p.getParticipants();
 				for (ColonySpecialist r: participants) {
@@ -135,7 +135,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	 * 
 	 * @param ep
 	 */
-	public void addEngineeringProject(EngineeringProject ep) {
+	public void addEngineeringProject(SpecialistProject ep) {
 		engineeringProjects.add(ep);
 	}
 	
@@ -284,7 +284,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 
 	public double getTotalDevelopmentValue() {
 		double sum = 0;
-		for (EngineeringProject rp: engineeringProjects) {
+		for (SpecialistProject rp: engineeringProjects) {
 			sum += rp.getDevelopmentValue();
 		}
 		return sum;
@@ -315,7 +315,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	public double getAverageDevelopmentActiveness() {
 		double num = 0;
 		double sum = 0;
-		for (EngineeringProject rp: engineeringProjects) {
+		for (SpecialistProject rp: engineeringProjects) {
 			num++;
 			sum += rp.getAverageDevelopmentActiveness();
 		}

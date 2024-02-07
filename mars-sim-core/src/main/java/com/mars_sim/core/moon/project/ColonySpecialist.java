@@ -35,7 +35,7 @@ public class ColonySpecialist extends Colonist implements Serializable, Temporal
 	private Colony colony;
 	
 	/** A set of projects this specialist engages in. */
-	private Set<EngineeringProject> projects = new HashSet<>();
+	private Set<SpecialistProject> projects = new HashSet<>();
 	
 	public ColonySpecialist(String name, Colony colony) {
 		super(name, colony);
@@ -49,7 +49,7 @@ public class ColonySpecialist extends Colonist implements Serializable, Temporal
 	 */
 	public void createProject() {
 		numDevelopment++;
-		EngineeringProject proj = new EngineeringProject(this, scienceType.getName() + numDevelopment, scienceType);
+		SpecialistProject proj = new SpecialistProject(this, scienceType.getName() + numDevelopment, scienceType);
 		colony.addEngineeringProject(proj);
 		projects.add(proj);
 	}
@@ -58,7 +58,7 @@ public class ColonySpecialist extends Colonist implements Serializable, Temporal
 	 * Joins an engineering project.
 	 */
 	public void joinProject() {
-		EngineeringProject proj = colony.getOneEngineeringProject(this);
+		SpecialistProject proj = colony.getOneEngineeringProject(this);
 		if (proj != null && proj.canAddParticipants()) {
 			numDevelopment++;
 			proj.addParticipant(this);
@@ -66,31 +66,19 @@ public class ColonySpecialist extends Colonist implements Serializable, Temporal
 		}
 	}
 	
-	public double calculatMotivation(ClockPulse pulse) {
-		int num = projects.size();
-
-		int numEngineers = colony.getPopulation().getNumEngineers();
-		
-		int numEngineeringProjects = colony.getNumDevelopmentProjects();
-		
-		double aveProjPerEngineer = 1.0 * numEngineeringProjects / (.5 + numEngineers);
-		
-		return RandomUtil.getRandomDouble(pulse.getElapsed() / (1 + num));
-
-	}
-	
-	
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		int num = projects.size();
 
+		double time = pulse.getElapsed();
+				
 		int numEngineers = colony.getPopulation().getNumEngineers();
 		
 		int numEngineeringProjects = colony.getNumDevelopmentProjects();
 		
 		double aveProjPerEngineer = 1.0 * numEngineeringProjects / (.5 + numEngineers);
 		
-		double motivation = RandomUtil.getRandomDouble(pulse.getElapsed() / (1 + num));
+		double motivation = RandomUtil.getRandomDouble(time / (1 + num));
 		
 		addActiveness(motivation);
 		
@@ -114,12 +102,12 @@ public class ColonySpecialist extends Colonist implements Serializable, Temporal
 			double experience = getTotalSkillExperience();
 //			logger.info(colony.getName() + " - " + name + " exp: " + Math.round(experience * 100.0)/100.0);
 
-			double timeValue = pulse.getElapsed() / 100;
+			double timeValue = time / 100;
 			double expertiseValue = Math.log10(1 + experience) * activeness / (1 + num);
 			double resourceValue = getDevelopmentArea() / numEngineeringProjects;
 			double compositeValue = timeValue * expertiseValue * resourceValue; 
 					
-			for (EngineeringProject p: projects) {
+			for (SpecialistProject p: projects) {
 				if (p.getLead().equals(this)) {
 					double value = RandomUtil.getRandomDouble(compositeValue);
 					p.addDevelopmentValue(value);

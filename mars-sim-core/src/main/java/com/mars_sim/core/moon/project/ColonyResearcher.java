@@ -81,7 +81,9 @@ public class ColonyResearcher extends Colonist implements Researcher, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		int num = researchProjects.size();
-
+		
+		double time = pulse.getElapsed();
+		
 		var colony = getColony();
 		
 		int numResearchers = colony.getPopulation().getNumResearchers();
@@ -90,7 +92,7 @@ public class ColonyResearcher extends Colonist implements Researcher, Temporal {
 		
 		double aveProjPerResearcher = 1.0 * numResearchProjects / (.5 + numResearchers);
 		
-		double motivation = RandomUtil.getRandomDouble(pulse.getElapsed() / (1 + num));
+		double motivation = RandomUtil.getRandomDouble(time / (1 + num));
 		
 		addActiveness(motivation);
 		
@@ -113,7 +115,7 @@ public class ColonyResearcher extends Colonist implements Researcher, Temporal {
 			// Update the experience once every half sol
 			double experience = getTotalSkillExperience();
 
-			double timeValue = pulse.getElapsed() / 100;
+			double timeValue = time / 100;
 			double expertiseValue = Math.log10(1 + experience) * activeness / (1 + num);
 			double resourceValue = getResearchArea() / numResearchProjects;
 			double compositeValue = timeValue * expertiseValue * resourceValue; 
