@@ -114,8 +114,6 @@ public class Settlement extends Structure implements Temporal,
 	
 	private static final String IMMINENT = " be imminent.";
 	private static final String DETECTOR = "The radiation detector just forecasted a ";
-	private static final String TRADING_OUTPOST = "Trading Outpost";
-	private static final String MINING_OUTPOST = "Mining Outpost";
 	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
 
 	/**
@@ -559,12 +557,10 @@ public class Settlement extends Structure implements Temporal,
 		chainOfCommand = new ChainOfCommand(this);
 
 		// Set objective()
-		if (template.equals(TRADING_OUTPOST))
-			setObjective(ObjectiveType.TRADE_CENTER, 2);
-		else if (template.equals(MINING_OUTPOST))
-			setObjective(ObjectiveType.MANUFACTURING_DEPOT, 2);
-		else
-			setObjective(ObjectiveType.CROP_FARM, 2);
+		ObjectiveType oType = sTemplate.getObjective();
+		if (oType != null) {
+			setObjective(oType, 2);
+		}
 
 		// initialize the missionScores list
 		missionScores = new ArrayList<>();

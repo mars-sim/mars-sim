@@ -47,63 +47,64 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final Logger logger = Logger.getLogger(SettlementConfig.class.getName());
 
 	// Element names
-	private final String BUILDING_PACKAGE = "building-package";
-	private final String BUILDING = "building";
-	private final String CONNECTOR = "connector";
-	private final String STANDALONE = "standalone";
+	private static final String BUILDING_PACKAGE = "building-package";
+	private static final String BUILDING = "building";
+	private static final String CONNECTOR = "connector";
+	private static final String STANDALONE = "standalone";
 	
-	private final String ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN = "rover-life-support-range-error-margin";
-	private final String ROVER_FUEL_RANGE_ERROR_MARGIN = "rover-fuel-range-error-margin";
-	private final String MISSION_CONTROL = "mission-control";
-	private final String LIFE_SUPPORT_REQUIREMENTS = "life-support-requirements";
-	private final String TOTAL_PRESSURE = "total-pressure";
-	private final String PARTIAL_PRESSURE_OF_O2 = "partial-pressure-of-oxygen"; 
-	private final String PARTIAL_PRESSURE_OF_N2 = "partial-pressure-of-nitrogen";
-	private final String PARTIAL_PRESSURE_OF_CO2 = "partial-pressure-of-carbon-dioxide"; 
-	private final String TEMPERATURE = "temperature";
-	private final String RELATIVE_HUMIDITY = "relative-humidity"; 
-	private final String VENTILATION = "ventilation";
-	private final String LOW = "low";
-	private final String HIGH = "high";
-	private final String SETTLEMENT_TEMPLATE_LIST = "settlement-template-list";
-	private final String TEMPLATE = "template";
-	private final String NAME = "name";
-	private final String DESCRIPTION = "description";
-	private final String DEFAULT_POPULATION = "default-population";
-	private final String DEFAULT_NUM_ROBOTS = "number-of-robots";
+	private static final String ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN = "rover-life-support-range-error-margin";
+	private static final String ROVER_FUEL_RANGE_ERROR_MARGIN = "rover-fuel-range-error-margin";
+	private static final String MISSION_CONTROL = "mission-control";
+	private static final String LIFE_SUPPORT_REQUIREMENTS = "life-support-requirements";
+	private static final String TOTAL_PRESSURE = "total-pressure";
+	private static final String PARTIAL_PRESSURE_OF_O2 = "partial-pressure-of-oxygen"; 
+	private static final String PARTIAL_PRESSURE_OF_N2 = "partial-pressure-of-nitrogen";
+	private static final String PARTIAL_PRESSURE_OF_CO2 = "partial-pressure-of-carbon-dioxide"; 
+	private static final String TEMPERATURE = "temperature";
+	private static final String RELATIVE_HUMIDITY = "relative-humidity"; 
+	private static final String VENTILATION = "ventilation";
+	private static final String LOW = "low";
+	private static final String HIGH = "high";
+	private static final String SETTLEMENT_TEMPLATE_LIST = "settlement-template-list";
+	private static final String TEMPLATE = "template";
+	private static final String NAME = "name";
+	private static final String DESCRIPTION = "description";
+	private static final String DEFAULT_POPULATION = "default-population";
+	private static final String DEFAULT_NUM_ROBOTS = "number-of-robots";
+	private static final String OBJECTIVE = "objective";
 
-	private final String ID = "id";
-	private final String HATCH_FACE = "hatch-facing";
-	private final String ZONE = "zone";
-	private final String TYPE = "type";
-	private final String CONNECTION_LIST = "connection-list";
-	private final String CONNECTION = "connection";
-	private final String NUMBER = "number";
-	private final String VEHICLE = "vehicle";
-	private final String EQUIPMENT = "equipment";
-	private final String BIN = "bin";	
-	private final String VALUE = "value";
-	private final String SPONSOR = "sponsor";
-	private final String RESUPPLY = "resupply";
-	private final String RESUPPLY_MISSION = "resupply-mission";
-	private final String FIRST_ARRIVAL_TIME = "first-arrival-time";
-	private final String RESOURCE = "resource";
-	private final String AMOUNT = "amount";
-	private final String PART = "part";
-	private final String PART_PACKAGE = "part-package";
+	private static final String ID = "id";
+	private static final String HATCH_FACE = "hatch-facing";
+	private static final String ZONE = "zone";
+	private static final String TYPE = "type";
+	private static final String CONNECTION_LIST = "connection-list";
+	private static final String CONNECTION = "connection";
+	private static final String NUMBER = "number";
+	private static final String VEHICLE = "vehicle";
+	private static final String EQUIPMENT = "equipment";
+	private static final String BIN = "bin";	
+	private static final String VALUE = "value";
+	private static final String SPONSOR = "sponsor";
+	private static final String RESUPPLY = "resupply";
+	private static final String RESUPPLY_MISSION = "resupply-mission";
+	private static final String FIRST_ARRIVAL_TIME = "first-arrival-time";
+	private static final String RESOURCE = "resource";
+	private static final String AMOUNT = "amount";
+	private static final String PART = "part";
+	private static final String PART_PACKAGE = "part-package";
 	
-	private final String EVA_AIRLOCK = "EVA Airlock";
+	private static final String EVA_AIRLOCK = "EVA Airlock";
 
-	private final String SHIFT_PATTERN = "shift-pattern";
-	private final String SHIFT_PATTERNS = "shifts";
-	private final String SHIFT_SPEC = "shift";
-	private final String SHIFT_START = "start";
-	private final String SHIFT_END = "end";
-	private final String SHIFT_PERC = "pop-percentage";
-	private final String LEAVE_PERC = "leave-perc";
-	private final String ROTATION_SOLS = "rotation-sols";
-	private final String MODEL = "model";
-	private final String ROBOT = "robot";
+	private static final String SHIFT_PATTERN = "shift-pattern";
+	private static final String SHIFT_PATTERNS = "shifts";
+	private static final String SHIFT_SPEC = "shift";
+	private static final String SHIFT_START = "start";
+	private static final String SHIFT_END = "end";
+	private static final String SHIFT_PERC = "pop-percentage";
+	private static final String LEAVE_PERC = "leave-perc";
+	private static final String ROTATION_SOLS = "rotation-sols";
+	private static final String MODEL = "model";
+	private static final String ROBOT = "robot";
 
 	/** These must be present in the settlements.xml */
 	public static final String STANDARD_4_SHIFT = "Standard 4 Shift";
@@ -111,9 +112,10 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	public static final String STANDARD_2_SHIFT = "Standard 2 Shift";
 	public static final String LONG_3_SHIFT = "Long 3 Shift";
 	public static final String SKELETON_NIGHT_SHIFT = "Skeleton Night Shift";
+
 	
-	private final String FREQUENCY = "frequency-sols";
-	private final String MANIFEST_NAME = "manifest-name";
+	private static final String FREQUENCY = "frequency-sols";
+	private static final String MANIFEST_NAME = "manifest-name";
 
 	private double[] roverValues = new double[] { 0, 0 };
 	private double[][] lifeSupportValues = new double[2][7];
@@ -463,6 +465,13 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				pattern,
 				defaultPopulation,
 				defaultNumOfRobots);
+
+		// Check the objective
+		String objectiveText = templateElement.getAttributeValue(OBJECTIVE);
+		if (objectiveText != null) {
+			var oType = ObjectiveType.valueOf(ConfigHelper.convertToEnumName(objectiveText));
+			settlementTemplate.setObjective(oType);
+		}
 
 
 		Set<String> existingBuildingIDs = new HashSet<>();		

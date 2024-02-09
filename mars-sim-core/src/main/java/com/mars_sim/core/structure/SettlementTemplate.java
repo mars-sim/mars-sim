@@ -54,6 +54,8 @@ public class SettlementTemplate implements Serializable, UserConfigurable, Settl
 
 	private List<RobotTemplate> robots;
 
+	private ObjectiveType objective;
+
 
 	/**
 	 * Constructor. Called by SettlementConfig.java
@@ -326,4 +328,16 @@ public class SettlementTemplate implements Serializable, UserConfigurable, Settl
 	public List<ResupplySchedule> getResupplyMissionTemplates() {
 		return Collections.unmodifiableList(resupplies);
 	}
+
+	void setObjective(ObjectiveType objective) {
+		this.objective = objective;
+	}
+	
+	/**
+	 * Get the optional objective type for this settlement.
+	 * @return
+	 */
+    public ObjectiveType getObjective() {
+        return objective;
+    }
 }
