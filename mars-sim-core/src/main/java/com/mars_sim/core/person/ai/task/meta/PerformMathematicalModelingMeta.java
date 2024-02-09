@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.task.meta;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -111,8 +112,7 @@ public class PerformMathematicalModelingMeta extends FactoryMetaTask {
          
         var score = new RatingScore(result);
         score = assessPersonSuitability(score, person);
-    	score.addModifier(GOODS_MODIFIER, person.getAssociatedSettlement().getGoodsManager().getResearchFactor());
-        
+        score = applyCommerceFactor(score, person.getAssociatedSettlement(), CommerceType.RESEARCH);
         return createTaskJobs(score);
     }
 }

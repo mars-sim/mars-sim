@@ -60,6 +60,14 @@ public class GoodsManager implements Serializable {
 		
 	}
 
+	/**
+	 * Types of commerce factor
+	 */
+	public enum CommerceType {
+		TRANSPORT, TOURISM, CROP, MANUFACTURING, RESEARCH, TRADE, BUILDING
+ 	}
+
+
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
 
@@ -94,14 +102,6 @@ public class GoodsManager implements Serializable {
 	
 	private static final double MAX_FINAL_VP = 5_000D;
 
-	private static final double CROPFARM_BASE = 1;
-	private static final double MANU_BASE = 1;
-	private static final double RESEARCH_BASE = 1.5;
-	private static final double TRANSPORT_BASE = 1;
-	private static final double TRADE_BASE = 1;
-	private static final double TOURISM_BASE = 1;
-	private static final double BUILDERS_BASE = 1;
-
 	/** VP probability modifier. */
 	public static final double ICE_VALUE_MODIFIER = 5D;
 
@@ -116,20 +116,17 @@ public class GoodsManager implements Serializable {
 	public static final double OXYGEN_VALUE_MODIFIER = .02D;
 	public static final double METHANE_VALUE_MODIFIER = .5D;
 
+	// Fixed weights to apply to updates to commerce factors.
+	private static final Map<CommerceType, Double> FACTOR_WEIGHTS = Map.of(CommerceType.RESEARCH, 1.5D);
+
 	// Data members
 	private double repairMod = BASE_REPAIR_PART;
 	private double maintenanceMod = BASE_MAINT_PART;
 	private double eVASuitMod = BASE_EVA_SUIT;
 
 	private boolean initialized = false;
-	// Add modifiers due to Settlement Development Objectives
-	private double cropFarmFactor = 1;
-	private double manufactureFactor = 1;
-	private double researchFactor = 1;
-	private double transportFactor = 1;
-	private double tradeFactor = 1;
-	private double tourismFactor = 1;
-	private double buildersFactor = 1;
+	
+	private Map<CommerceType, Double> factors = new EnumMap<>(CommerceType.class);
 
 	private Map<Integer, Double> goodsValues = new HashMap<>();
 	private Map<Integer, Double> tradeCache = new HashMap<>();
@@ -391,60 +388,26 @@ public class GoodsManager implements Serializable {
 		return value;
 	}
 
-	public void setCropFarmFactor(double value) {
-		cropFarmFactor = value * CROPFARM_BASE;
+	/**
+	 * Update a value for a Commerce factor.
+	 * @param type Commerce type being changed
+	 * @param value New value
+	 */
+	public void setCommerceFactor(CommerceType type, double value) {
+		// apply any weighting
+		value *= FACTOR_WEIGHTS.getOrDefault(type, 1D);
+		factors.put(type, value);
 	}
 
-	public void setManufacturingFactor(double value) {
-		manufactureFactor = value * MANU_BASE;
+	public double getCommerceFactor(CommerceType type) {
+		return factors.getOrDefault(type, 1D);
 	}
 
-	public void setTransportationFactor(double value) {
-		transportFactor = value * TRANSPORT_BASE;
-	}
-
-	public void setResearchFactor(double value) {
-		researchFactor = value * RESEARCH_BASE;
-	}
-
-	public void setTradeFactor(double value) {
-		tradeFactor = value * TRADE_BASE;
-	}
-
-	public void setTourismFactor(double value) {
-		tourismFactor = value * TOURISM_BASE;
-	}
-
-	public void setBuildersFactor(double value) {
-		buildersFactor = value * BUILDERS_BASE;
-	}
-
-	public double getBuildersFactor() {
-		return buildersFactor;
-	}
-
-	public double getCropFarmFactor() {
-		return cropFarmFactor;
-	}
-
-	public double getManufacturingFactor() {
-		return manufactureFactor;
-	}
-
-	public double getTransportationFactor() {
-		return transportFactor;
-	}
-
-	public double getResearchFactor() {
-		return researchFactor;
-	}
-
-	public double getTradeFactor() {
-		return tradeFactor;
-	}
-
-	public double getTourismFactor() {
-		return tourismFactor;
+	/**
+	 * Reset all commerce factors back to 1.
+	 */
+	public void resetCommerceFactors() {
+		factors.clear();
 	}
 
 	/**

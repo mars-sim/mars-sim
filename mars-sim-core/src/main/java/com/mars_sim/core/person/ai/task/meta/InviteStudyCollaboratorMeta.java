@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.task.meta;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -100,8 +101,7 @@ public class InviteStudyCollaboratorMeta extends FactoryMetaTask {
         if (science == ScienceType.getJobScience(job)) {
             result.addModifier(SCIENCE_MODIFIER, 2D);
         }
-        result.addModifier(GOODS_MODIFIER, person.getAssociatedSettlement().getGoodsManager().getResearchFactor());
-
+        result = applyCommerceFactor(result, person.getAssociatedSettlement(), CommerceType.RESEARCH);
         result = assessPersonSuitability(result, person);
 
         return createTaskJobs(result);

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.goods.GoodsManager;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -120,9 +120,6 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
     public List<SettlementTask> getSettlementTasks(Settlement settlement) {
         List<SettlementTask> tasks = new ArrayList<>();
 
-        GoodsManager gm = settlement.getGoodsManager();
-        double goodsFactor = gm.getCropFarmFactor();
-
         for (Building b : settlement.getBuildingManager().getFarmsNeedingWork()) {
             Farming farm = b.getFarming();
 
@@ -132,7 +129,7 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
                     (200 - farm.getCleaningScore() - farm.getInspectionScore())/10);
  
             // Settlement factors
-            score.addModifier(GOODS_MODIFIER, goodsFactor);
+            score = applyCommerceFactor(score, settlement, CommerceType.CROP);
 
             if (score.getScore() > 0) {
                 int workTask = farm.getNumNeedTending() / 2; // Each farmer can do 2 crop per visit

@@ -9,12 +9,14 @@ package com.mars_sim.core.person.ai.mission.meta;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 
@@ -77,6 +79,22 @@ public class AbstractMetaMission implements MetaMission {
 	@Override
 	public double getProbability(Robot robot) {
 		return 0;
+	}
+
+	/**
+	 * Apply a modifier that is an average of two Commerce factors of a Settlement
+	 * @param score Source score
+	 * @param s Settlement in question
+	 * @param type1 Type 1
+	 * @param type2 Type 2
+	 * @return
+	 */
+	protected static RatingScore applyCommerceAverage(RatingScore score, Settlement s,
+										CommerceType type1, CommerceType type2) {
+		var gMgr = s.getGoodsManager();
+		score.addModifier(GOODS, (gMgr.getCommerceFactor(type1)
+							+ gMgr.getCommerceFactor(type2))/1.5);
+		return score;
 	}
 
 	/**

@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.goods.GoodsManager;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
@@ -25,6 +26,7 @@ import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.ObjectiveType;
+import com.mars_sim.core.structure.ObjectiveUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
@@ -198,7 +200,7 @@ public class ReviewMissionPlan extends Task {
 					return 0;
 				}
 			}
-		} // if (status != null && status == PlanType.PENDING)
+		}
 		
         return 0;
 	}
@@ -230,42 +232,15 @@ public class ReviewMissionPlan extends Task {
 		ObjectiveType objective = reviewerSettlement.getObjective();
 		Set<ObjectiveType> satisfiedObjectives = m.getObjectiveSatisified();
 		if (satisfiedObjectives.contains(objective)) {
-			switch (objective) {
-			case BUILDERS_HAVEN:
-				obj += 5D * goodsManager.getBuildersFactor(); 
-				break;
-				
-			case CROP_FARM:
-				obj += 5D * goodsManager.getCropFarmFactor();
-				break;
-			
-			case TOURISM:
-				obj += 5D * goodsManager.getTourismFactor();
-				break;
-			
-			case TRADE_CENTER:
-				obj += 5D * goodsManager.getTradeFactor();
-				break;
-			
-			case TRANSPORTATION_HUB:
-				obj += 5D * goodsManager.getTransportationFactor();
-				break;
-			
-			case MANUFACTURING_DEPOT:
-				obj += 5D * goodsManager.getManufacturingFactor();
-				break;
-			default:
-				break;
+			CommerceType cFactor = ObjectiveUtil.toCommerce(objective);
+			if (cFactor != null) {
+				obj += 5D * goodsManager.getCommerceFactor(cFactor);
 			}
 		}
 
 		// 5. emergency
 		int emer = 0;
-		// if ((mt == MissionType.EMERGENCY_SUPPLY)
-		// 		|| (mt == MissionType.RESCUE_SALVAGE_VEHICLE)) {
-		// 	emer = 50;
-		// }	
-		
+	
 		// 6. Site Value
 		double siteValue = 0;
 		if (m instanceof SiteMission sm) {

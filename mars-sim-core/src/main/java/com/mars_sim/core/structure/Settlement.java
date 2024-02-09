@@ -48,6 +48,7 @@ import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.goods.CreditManager;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsUtil;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.parameter.ParameterManager;
@@ -101,7 +102,7 @@ import com.mars_sim.tools.util.RandomUtil;
  * contains information related to the state of the settlement.
  */
 public class Settlement extends Structure implements Temporal,
-	LifeSupportInterface, Objective, EquipmentOwner, ItemHolder, BinHolder, Appraiser {
+	LifeSupportInterface, EquipmentOwner, ItemHolder, BinHolder, Appraiser {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -2669,36 +2670,11 @@ public class Settlement extends Structure implements Temporal,
 		double lvl = 1.25 * level;
 
 		// reset all to 1
-		goodsManager.setCropFarmFactor(1);
-		goodsManager.setManufacturingFactor(1);
-		goodsManager.setResearchFactor(1);
-		goodsManager.setTransportationFactor(1);
-		goodsManager.setTradeFactor(1);
-
-		if (objectiveType == ObjectiveType.CROP_FARM) {
-			goodsManager.setCropFarmFactor(lvl);
+		goodsManager.resetCommerceFactors();
+		CommerceType cType = ObjectiveUtil.toCommerce(objectiveType);
+		if (cType != null) {
+			goodsManager.setCommerceFactor(cType, lvl);
 		}
-
-		else if (objectiveType == ObjectiveType.MANUFACTURING_DEPOT) {
-			goodsManager.setManufacturingFactor(lvl);
-		}
-
-		else if (objectiveType == ObjectiveType.RESEARCH_CAMPUS) {
-			goodsManager.setResearchFactor(lvl);
-		}
-
-		else if (objectiveType == ObjectiveType.TRANSPORTATION_HUB) {
-			goodsManager.setTransportationFactor(lvl);
-		}
-
-		else if (objectiveType == ObjectiveType.TRADE_CENTER) {
-			goodsManager.setTradeFactor(lvl);
-		}
-
-		else if (objectiveType == ObjectiveType.TOURISM) {
-			goodsManager.setTourismFactor(lvl);
-		}
-
 	}
 
 	/**
@@ -2708,23 +2684,11 @@ public class Settlement extends Structure implements Temporal,
 	 * @return the level
 	 */
 	public double getObjectiveLevel(ObjectiveType objectiveType) {
-
-		switch(objectiveType) {
-			case CROP_FARM:
-				return goodsManager.getCropFarmFactor();
-			case MANUFACTURING_DEPOT:
-				return goodsManager.getManufacturingFactor();
-			case RESEARCH_CAMPUS:
-				return goodsManager.getResearchFactor();
-			case TRANSPORTATION_HUB:
-				return goodsManager.getTransportationFactor();
-			case TRADE_CENTER:
-				return goodsManager.getTradeFactor();
-			case TOURISM:
-				return goodsManager.getTourismFactor();
-			default:
-				return -1;
+		CommerceType cType = ObjectiveUtil.toCommerce(objectiveType);
+		if (cType == null) {
+			return -1;
 		}
+		return goodsManager.getCommerceFactor(cType);
 	}
 
 	/**
@@ -2734,36 +2698,6 @@ public class Settlement extends Structure implements Temporal,
 		return objectiveType;
 	}
 
-	/**
-	 * Gets the building type related to the settlement objective.
-	 *
-	 * @return
-	 */
-	public String getObjectiveBuildingType() {
-
-		// TODO: check if a particular building has existed, if yes, build the next
-		// relevant building
-		
-		if (objectiveType == ObjectiveType.CROP_FARM)
-			return "Inflatable Greenhouse";
-		// alternatives : "Fish Farm", "Large Greenhouse", "Inground Greenhouse"
-		else if (objectiveType == ObjectiveType.MANUFACTURING_DEPOT)
-			return "Workshop"; 
-		// alternatives : "Manufacturing Shed", MD1, MD4
-		else if (objectiveType == ObjectiveType.RESEARCH_CAMPUS)
-			return "Laboratory"; 
-		// alternatives : "Mining Lab", "Astronomy Observatory"
-		else if (objectiveType == ObjectiveType.TRANSPORTATION_HUB)
-			return "Garage";
-		// alternatives :"Loading Dock Garage";
-		else if (objectiveType == ObjectiveType.TRADE_CENTER)
-			return "Garage"; 
-		// alternatives : "Storage Shed", Future: "Markets" 
-		else if (objectiveType == ObjectiveType.TOURISM)
-			return "Residential Quarters";
-		else
-			return null;
-	}
 
 	/**
 	 * Gets the total area of Crops in this Settlement.
@@ -4078,8 +4012,6 @@ public class Settlement extends Structure implements Temporal,
 			creditManager = null;
 		}
 		
-		template = null;
-
 		scientificAchievement = null;
 	}
 }

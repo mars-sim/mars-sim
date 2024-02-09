@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillManager;
@@ -170,7 +171,7 @@ public class ManufactureGoodMeta extends MetaTask
                 // Create a task for this building
                 if (minSkill < MAX_SKILL) {
                     RatingScore score = new RatingScore(200);
-                    score.addModifier(GOODS_MODIFIER, settlement.getGoodsManager().getManufacturingFactor());
+		            score = applyCommerceFactor(score, settlement, CommerceType.MANUFACTURING);
 
                     score.addBase(SKILL_MODIFIER, 1D + (maxSkill * 0.05D));
                     result.add(new ManufactureGoodJob(this, potentialBuilding, minSkill, score));

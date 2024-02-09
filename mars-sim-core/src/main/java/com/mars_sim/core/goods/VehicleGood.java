@@ -15,6 +15,7 @@ import java.util.Set;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureProcessItem;
 import com.mars_sim.core.manufacture.ManufactureUtil;
@@ -264,7 +265,7 @@ class VehicleGood extends Good {
 		    case DELIVERY_DRONE -> DRONE_VEHICLE_FACTOR;
 		    case LUV -> LUV_VEHICLE_FACTOR;
         };
-		return demand * (.5 + owner.getTransportationFactor()) * typeModifier;
+		return demand * (.5 + owner.getCommerceFactor(CommerceType.TRADE)) * typeModifier;
 	}
 
 	/**
@@ -419,7 +420,6 @@ class VehicleGood extends Good {
 		
 		case EMERGENCY_SUPPLY:
             return 1D; // Simplify code as a temp measure
-			//return Math.max(unitManager.getSettlementNum() - 1D, 0);
 		}
 
 		return 0;

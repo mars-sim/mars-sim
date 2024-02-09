@@ -10,11 +10,13 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.mission.TravelToSettlement;
+import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -57,7 +59,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
     		
 	        // Job modifier.
     		missionProbability.addModifier(LEADER, getLeaderSuitability(person));
-    	    missionProbability.addModifier(GOODS, settlement.getGoodsManager().getTourismFactor());
+            missionProbability = MetaTask.applyCommerceFactor(missionProbability, settlement, CommerceType.TOURISM);
 			
 			// if introvert, score  0 to  50 --> -2 to 0
 			// if extrovert, score 50 to 100 -->  0 to 2

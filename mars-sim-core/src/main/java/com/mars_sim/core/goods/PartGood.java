@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.food.FoodProductionProcessItem;
 import com.mars_sim.core.food.FoodProductionUtil;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureProcessItem;
@@ -575,6 +576,7 @@ public class PartGood extends Good {
 			// Obtain the value of this resource
 			double totalInputsValue = (outputsValue - powerValue);
 
+			CommerceType cType = null;
 			GoodType type = part.getGoodType();
 			switch(settlement.getObjective()) {
 				case BUILDERS_HAVEN: {
@@ -585,37 +587,39 @@ public class PartGood extends Good {
 					|| GoodType.ELECTRICAL == type
 					|| GoodType.METALLIC == type
 					|| GoodType.ATTACHMENT == type) {
-						totalInputsValue *= owner.getBuildersFactor();
+						cType = CommerceType.BUILDING;
 					}
 				} break;
 
 				case CROP_FARM: {
 					if (GoodType.KITCHEN == type) {
-						totalInputsValue *= owner.getCropFarmFactor();
+						cType = CommerceType.CROP;
 					}
 				} break;
 
 				case MANUFACTURING_DEPOT:
-					totalInputsValue *= owner.getManufacturingFactor();
+					cType = CommerceType.MANUFACTURING;
 				break;
 
 				case RESEARCH_CAMPUS: {
 					if (GoodType.INSTRUMENT == type
 					|| GoodType.ELECTRICAL == type
 					|| GoodType.ELECTRONIC == type) {
-						totalInputsValue *= owner.getResearchFactor();
+						cType = CommerceType.RESEARCH;
+
 					}
 				} break;
 
 				case TRADE_CENTER: {
 					if (type == GoodType.VEHICLE) {
-						totalInputsValue *= owner.getTradeFactor();
+						cType = CommerceType.TRADE;
 					}
 				} break;
 
 				case TRANSPORTATION_HUB: {
 					if (type == GoodType.VEHICLE) {
-						totalInputsValue *= owner.getTransportationFactor();
+						cType = CommerceType.TRANSPORT;
+
 					}
 				} break;
 
@@ -624,9 +628,13 @@ public class PartGood extends Good {
 							|| GoodType.VEHICLE_HEAVY == type
 							|| GoodType.VEHICLE == type
 							|| GoodType.GEMSTONE == type) {
-						totalInputsValue *= owner.getTourismFactor();
+						cType = CommerceType.TOURISM;
 					}
 				} break;
+			}
+
+			if (cType != null) {
+				totalInputsValue *= owner.getCommerceFactor(cType);
 			}
 
 			// Modify by other factors
@@ -768,7 +776,7 @@ public class PartGood extends Good {
 	private double getVehiclePartDemand(GoodsManager owner) {
 		GoodType type = getGoodType();
 		if (type == GoodType.VEHICLE) {
-			return (1 + owner.getTourismFactor()/30.0) * VEHICLE_PART_DEMAND;
+			return (1 + owner.getCommerceFactor(CommerceType.TOURISM)/30.0) * VEHICLE_PART_DEMAND;
 		}
 		return 0;
 	}
@@ -850,8 +858,9 @@ public class PartGood extends Good {
 			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsTime.HOURS_PER_MILLISOL;
 			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
-			double totalInputsValue = (outputsValue - powerValue) * owner.getTradeFactor() * owner.getCropFarmFactor()
-					* GoodsManager.FOOD_PRODUCTION_INPUT_FACTOR;
+			double totalInputsValue = (outputsValue - powerValue) * owner.getCommerceFactor(CommerceType.TRADE)
+										* owner.getCommerceFactor(CommerceType.CROP)
+										* GoodsManager.FOOD_PRODUCTION_INPUT_FACTOR;
 			if (totalInputsValue > 0D) {
 				double partNum = partInput.getAmount();
 				demand = totalInputsValue * (partNum / totalInputNum);
@@ -919,11 +928,6 @@ public class PartGood extends Good {
 			
 			// Recalculate settlement good value for this part.
 			owner.determineGoodValue(GoodsUtil.getGood(part.getID()));
-			
-//			finalDemand = owner.getDemandValue(this);
-//			
-//			logger.info(owner.getSettlement(), 30_000L, "Stabilizing demand for " 
-//					+ part.getName() + "  Proposed demand: " + Math.round(finalDemand * 10.0)/10.0 + ".");
 		}
 		else {
 			// previousTotalDemand is already large enough and
@@ -939,41 +943,4 @@ public class PartGood extends Good {
 					);
 		}	
 	}
-	
-	
-//    /**
-//	 * Determines the number demand for all parts at the settlement.
-//	 *
-//	 * @return map of parts and their demand.
-//	 */
-//	 private void determineRepairPartsDemand() {
-//	 	Map<Good, Double> partsProbDemand = new HashMap<>();
-//	 	// Get all malfunctionables associated with settlement.
-//	 	Iterator<Malfunctionable> i = MalfunctionFactory.getAssociatedMalfunctionables(settlement).iterator();
-//	 	while (i.hasNext()) {
-//	 		Malfunctionable entity = i.next();
-//	 		// Determine wear condition modifier.
-//	 		double wearModifier = (entity.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-//	 		// Estimate repair parts needed per orbit for entity.
-//	 		sumPartsDemand(partsProbDemand, getEstimatedOrbitRepairParts(entity), wearModifier);
-//	 		// Add outstanding repair parts required.
-//	 		sumPartsDemand(partsProbDemand, getOutstandingRepairParts(entity), MALFUNCTION_REPAIR_COEF);
-//	 		// Estimate maintenance parts needed per orbit for entity.
-//	 		sumPartsDemand(partsProbDemand, getEstimatedOrbitMaintenanceParts(entity), wearModifier);
-//	 		// Add outstanding maintenance parts required.
-//	 		sumPartsDemand(partsProbDemand, getOutstandingMaintenanceParts(entity), MAINTENANCE_REPAIR_COEF);
-//	 	}
-//	 	
-//	 	// Add demand for vehicle attachment parts.
-//	 	sumPartsDemand(partsProbDemand, getVehicleAttachmentParts(), 1D);
-//	 	
-//	 	// Store in parts demand cache.
-//	 	for(Entry<Good, Double> entry : partsProbDemand.entrySet()) {
-//	 		Good part = entry.getKey();
-//	 		if (getDemandValue(part) < 1)
-//	 			setDemandValue(part, 1.0);
-//	 		else
-//	 			setDemandValue(part, entry.getValue());
-//	 	}
-//	 }
 }

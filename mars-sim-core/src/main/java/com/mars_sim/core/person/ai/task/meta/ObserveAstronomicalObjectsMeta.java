@@ -7,12 +7,12 @@
 package com.mars_sim.core.person.ai.task.meta;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -85,8 +85,7 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
             for (ScientificStudy s : getAstroStudies(target)) {
             	// Suitable study so create tasks for each Observatory
                 RatingScore score = new RatingScore(100);
-                score.addModifier(GOODS_MODIFIER, (target.getGoodsManager().getTourismFactor()
-                            + target.getGoodsManager().getResearchFactor())/1.5D);
+                score = applyCommerceFactor(score, target, CommerceType.TOURISM);
                 result.add(new AstronomicalTaskJob(this, s, score));
             }      
         }
@@ -181,8 +180,6 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
 		BuildingManager manager = target.getBuildingManager();
 		Set<Building> observatoryBuildings = manager.getBuildingSet(FunctionType.ASTRONOMICAL_OBSERVATION);
 		observatoryBuildings = BuildingManager.getNonMalfunctioningBuildings(observatoryBuildings);
-//		observatoryBuildings = getObservatoriesWithAvailableSpace(observatoryBuildings);
-//		observatoryBuildings =  BuildingManager.getLeastCrowdedBuildings(observatoryBuildings);
 
 		if (observatoryBuildings == null || observatoryBuildings.isEmpty()) {
 			return null;
@@ -193,26 +190,6 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
 			return null;
 		}
 		return selected.getAstronomicalObservation();
-	}
-
-    /**
-	 * Gets a list of observatory buildings with available research space from a
-	 * list of observatory buildings.
-	 * 
-	 * @param buildingList list of buildings with astronomical observation function.
-	 * @return observatory buildings with available observatory space.
-	 */
-	private static Set<Building> getObservatoriesWithAvailableSpace(Set<Building> buildings) {
-		Set<Building> result = new HashSet<>();
-
-		for(Building building : buildings) {
-			AstronomicalObservation observatory = building.getAstronomicalObservation();
-			if (observatory.getObserverNum() < observatory.getObservatoryCapacity()) {
-				result.add(building);
-			}
-		}
-
-		return result;
 	}
 
     public static void initialiseInstances(ScientificStudyManager scientificStudyManager) {

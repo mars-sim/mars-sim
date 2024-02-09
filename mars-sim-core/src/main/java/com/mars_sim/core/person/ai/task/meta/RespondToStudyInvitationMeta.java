@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -77,8 +78,7 @@ public class RespondToStudyInvitationMeta extends FactoryMetaTask {
         assessBuildingSuitability(result, adminBuilding, person);
         assessPersonSuitability(result, person);        
 
-        result.addModifier(GOODS_MODIFIER,
-                    person.getAssociatedSettlement().getGoodsManager().getResearchFactor());
+        result = applyCommerceFactor(result, person.getAssociatedSettlement(), CommerceType.RESEARCH);
 
         return createTaskJobs(result);
     }

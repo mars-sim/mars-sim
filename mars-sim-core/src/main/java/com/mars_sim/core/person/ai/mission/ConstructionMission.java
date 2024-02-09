@@ -33,6 +33,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
+import com.mars_sim.core.structure.ObjectiveUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingConfig;
@@ -148,8 +149,6 @@ public class ConstructionMission extends AbstractMission
 			int constructionSkill = 1;
 			if (startingMember.getUnitType() == UnitType.PERSON) {
 				Person person = (Person) startingMember;
-				// logger.info("The starting member is " + person);
-				// person.setMission(this);
 				constructionSkill += person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 				person.getMind().setMission(this);
 			}
@@ -1045,7 +1044,7 @@ public class ConstructionMission extends AbstractMission
 
 		Settlement s = site.getSettlement();
 		// Use settlement's objective to determine the desired building type
-		String buildingType = s.getObjectiveBuildingType();
+		String buildingType = ObjectiveUtil.getBuildingType(s.getObjective());
 		
 		logger.info(s, "Applying building type '" + buildingType + "' as reference for '" + site + "'.");
 		
