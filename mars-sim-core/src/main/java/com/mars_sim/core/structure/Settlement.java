@@ -2685,87 +2685,12 @@ public class Settlement extends Structure implements Temporal,
 		if (result < 0)
 			result = 0;
 		
-//		logger.info(this, 30_000L, "iceDemand: " + iceDemand
-//				+ "   waterDemand: " + waterDemand
-//				+ "   ice Prob value: " + result
-//				);
-		
 		if (result > MAX_PROB)
 			result = MAX_PROB;
 		
 		return result;
 	}
 
-// 	/**
-// 	 * Checks the demand for a gas.
-// 	 *
-// 	 * @param gasName
-// 	 * @param gasID
-// 	 * @param gasReserve
-// 	 * @param gasMax
-// 	 */
-// 	private void checkResourceDemand(String gasName, int gasID, int gasReserve, int gasMax, double time) {
-// 		double result = 0;
-
-// 		int pop = numCitizens;
-		
-// 		double demand = goodsManager.getDemandValueWithID(gasID);
-// 		if (demand > gasMax)
-// 			demand = gasMax;
-// 		if (demand < 1)
-// 			demand = 1;
-		
-// 		// Compare the available amount of oxygen
-// 		double supply = goodsManager.getSupplyValue(gasID);
-
-// 		double reserve = getAmountResourceStored(gasID);
-	
-// 		if (reserve + supply * pop > (gasReserve * 2 + demand) * pop) {
-// //			logger.info(this, "Case 1.");
-// 			// change nothing
-// 			return;
-// 		}
-		
-// 		else if (reserve + supply * pop > (gasReserve + demand) * pop) {
-// //			logger.info(this, "Case 2.");
-// 			result = (gasReserve + demand - supply) * pop - reserve;
-// 		}
-
-// 		else if (.5 * (reserve + supply * pop) > (gasReserve + demand) * pop) {
-// //			logger.info(this, "Case 3.");
-// 			result = (gasReserve + demand - 0.5 * supply) * pop - .5 * reserve;
-// 		}
-
-// 		else {
-// //			logger.info(this, "Case 4.");
-// 			result = (gasReserve + demand - 0.5 * supply) * pop - .5 * reserve;
-// 		}
-		
-// 		if (result < 0)
-// 			result = 0;
-				
-// 		if (result > gasMax)
-// 			result = gasMax;
-
-// 		double delta = result - demand;
-
-// 		if (delta > CHECK_RESOURCES) {
-			
-// 			// Limit each increase to a value only to avoid an abrupt rise or drop in demand 
-// 			delta = time * CHECK_RESOURCES;
-			
-// 			logger.info(this, 60_000L, 
-// 					"Previous demand for " + gasName + ": " + Math.round(demand * 10.0)/10.0 
-// 					+ "  Supply: " + Math.round(supply * 10.0)/10.0 
-// 					+ "  Reserve: " + Math.round(reserve * 10.0)/10.0		
-// 					+ "  Delta: " + Math.round(delta * 10.0)/10.0
-// 					+ "  New Demand: " + Math.round((demand + delta) * 10.0)/10.0 + ".");
-			
-// 			// Inject a sudden change of demand
-// 			goodsManager.setDemandValue(GoodsUtil.getGood(gasID), (demand + delta));
-// 		}
-// 	}
-	
 	/**
 	 * Checks if the last 20 mission scores are above the threshold.
 	 *

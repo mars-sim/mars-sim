@@ -44,7 +44,7 @@ import com.mars_sim.mapdata.location.LocalPosition;
  */
 public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate> {
 
-	public record ResourceLimits(int reserve, int max) {};
+	public record ResourceLimits(int reserve, int max) {}
 
 	private static final Logger logger = Logger.getLogger(SettlementConfig.class.getName());
 
