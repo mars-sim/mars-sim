@@ -1,6 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE settlement-configuration [
-	<!ELEMENT settlement-configuration (mission-control, life-support-requirements, shifts, settlement-template-list)>
+	<!ELEMENT settlement-configuration (mission-control, life-support-requirements,
+						essential-resources, shifts, settlement-template-list)>
 
 	<!ELEMENT mission-control (rover-life-support-range-error-margin, rover-fuel-range-error-margin)>
 	<!ELEMENT rover-life-support-range-error-margin EMPTY>
@@ -32,6 +33,12 @@
 	<!ELEMENT ventilation EMPTY>
 	<!ATTLIST ventilation low CDATA #REQUIRED>
 	<!ATTLIST ventilation high CDATA #REQUIRED>
+
+	<!ELEMENT essential-resources (resources*)>
+	<!ELEMENT resource EMPTY>
+	<!ATTLIST resource name CDATA #REQUIRED>
+	<!ATTLIST resource reserve CDATA #REQUIRED>
+	<!ATTLIST resource max CDATA #REQUIRED>
 
 	<!ELEMENT shifts (shift-pattern*)>
 	<!ELEMENT shift-pattern (shift*)>
@@ -97,6 +104,16 @@
 		<ventilation low="0.076" high="0.203" />
 
 	</life-support-requirements>
+
+	<!-- Define the limits for essential resources per Person-->
+	<essential-resources>
+		<resource name="Oxygen" reserve="400" max="10000" />
+		<resource name="Methane" reserve="400" max="10000" />
+		<resource name="Water" reserve="400" max="10000" />
+		<resource name="Hydrogen" reserve="400" max="10000" />
+		<resource name="Nitrogen" reserve="100" max="5000" />
+		<resource name="Carbon Dioxide" reserve="50" max="2000" />
+	</essential-resources>
 
 	<!-- The Standard patterns are the default and but always be present. 
 		The others can be added/deleted -->

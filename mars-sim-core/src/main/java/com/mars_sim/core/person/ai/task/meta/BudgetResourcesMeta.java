@@ -28,7 +28,6 @@ import com.mars_sim.tools.Msg;
  */
 public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask {
 	/** default logger. */
-	// May add back private static SimLogger logger = SimLogger.getLogger(BudgetResourcesMeta.class.getName());
 
 	/**
      * Represents a Job to review a specific mission plan
@@ -108,15 +107,9 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 		RatingScore score = new RatingScore();  
 		int levelDiff = 0;
 		
-		boolean canReview = settlement.canReviewWaterRatio();
-		
-		boolean changed = settlement.isWaterRatioChanged();
-		
-		if (canReview) {
-			
-			changed = settlement.isWaterRatioChanged();
+		if (settlement.canReviewWaterRatio()) {
+			boolean changed = settlement.isWaterRatioChanged();
 			if (changed) {
-				
 				levelDiff = settlement.getWaterRatioDiff();
 				if (levelDiff > 0) { 
 					score.addBase("water.level", levelDiff * BASE_SCORE); 
@@ -124,7 +117,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 			}
 		}
 		
-		int numResource = settlement.findNumResourceReviewDue();
+		int numResource = settlement.getGoodsManager().getResourceReviewDue();
 		if (numResource > 0) { 
 			score.addBase("resource", numResource * BASE_SCORE); 
 		}

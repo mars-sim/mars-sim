@@ -100,7 +100,6 @@ public class BudgetResources extends Task {
 					office.addStaff();
 					// Walk to the office building.
 					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
-//					building = officeBuilding;
 				}
 			}
 
@@ -109,7 +108,6 @@ public class BudgetResources extends Task {
 				if (managementBuilding != null) {
 					// Walk to the management building.
 					walkToTaskSpecificActivitySpotInBuilding(managementBuilding, FunctionType.MANAGEMENT, true);
-//					building = managementBuilding;
 				}
 				else {	
 					Building dining = BuildingManager.getAvailableDiningBuilding(person, false);
@@ -117,7 +115,6 @@ public class BudgetResources extends Task {
 					if (dining != null) {
 						// Walk to the dining building.
 						walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
-//						building = dining;
 					}
 				}
 			}
@@ -148,15 +145,9 @@ public class BudgetResources extends Task {
 	
 	
 	private boolean budgetSettlementResource() {
-
-		settlementResource = person.getAssociatedSettlement().findResourceReview();
-		
+		settlementResource = person.getAssociatedSettlement().getGoodsManager().reserveResourceReview();
 		if (settlementResource != -1) {
-			
 			taskNum = 1;
-			
-			person.getAssociatedSettlement().lockResourceReview(settlementResource);
-
 			return true;
 		}
 		
@@ -219,24 +210,28 @@ public class BudgetResources extends Task {
 	private double reviewingPhase(double time) {
 			
 		if (getTimeCompleted() > .9 * getDuration()) {
-		
-			if (taskNum == 0) {
-				LivingAccommodation quarters = building.getLivingAccommodation();	
-				// Calculate the new water ration level
-				double[] data = quarters.calculateWaterLevel(time);
-				
-				logger.log(worker, Level.INFO, 0, "Reviewing " + building.getName()
-					+ "'s water ration level.  water: " + Math.round(data[0]*10.0)/10.0
-						+ "  Waste water: " + Math.round(data[1]*10.0)/10.0);
-			}
-			else if (taskNum == 1) {
-				person.getAssociatedSettlement().reviewResource(settlementResource, time);
-			}
-			else if (taskNum == 2) {
-				if (person.getAssociatedSettlement().isWaterRatioChanged()) {
-					// Make the new water ratio the same as the cache
-					person.getAssociatedSettlement().setWaterRatio();
-				}
+			switch(taskNum) {
+				case 0: {
+					LivingAccommodation quarters = building.getLivingAccommodation();	
+					// Calculate the new water ration level
+					double[] data = quarters.calculateWaterLevel(time);
+					
+					logger.log(worker, Level.INFO, 0, "Reviewing " + building.getName()
+						+ "'s water ration level.  water: " + Math.round(data[0]*10.0)/10.0
+							+ "  Waste water: " + Math.round(data[1]*10.0)/10.0);
+				} break;
+				case 1: {
+					person.getAssociatedSettlement().getGoodsManager().checkResourceDemand(settlementResource, time);
+				} break;
+				case 2: {
+					if (person.getAssociatedSettlement().isWaterRatioChanged()) {
+						// Make the new water ratio the same as the cache
+						person.getAssociatedSettlement().setWaterRatio();
+					}
+				} break;
+				default:
+					logger.warning(person, "Cannot process taskNum " + taskNum);
+					endTask();
 			}
 
 			// Add experience

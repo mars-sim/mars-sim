@@ -47,7 +47,6 @@ import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.goods.CreditManager;
 import com.mars_sim.core.goods.GoodsManager;
-import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
@@ -121,7 +120,6 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
-	public static final int CHECK_RESOURCES = 30;
 	public static final int MAX_NUM_SOLS = 3;
 	public static final int MAX_SOLS_DAILY_OUTPUT = 14;
 	public static final int SUPPLY_DEMAND_REFRESH = 7;
@@ -138,17 +136,7 @@ public class Settlement extends Structure implements Temporal,
 	private static final int REGOLITH_MAX = 4000;
 	private static final int ICE_MAX = 4000;
 	private static final int WATER_MAX = 10_000;
-	private static final int OXYGEN_MAX = 10_000;
-	private static final int METHANE_MAX = 10_000;
-	private static final int HYDROGEN_MAX = 10_000;
-	private static final int N2_MAX = 5_000;
-	private static final int CO2_MAX = 2_000;
-	
-	private static final int MIN_OXYGEN_RESERVE = 400; // per person
-	private static final int MIN_METHANE_RESERVE = 400; // per person
-	private static final int MIN_HYDROGEN_RESERVE = 400; // per person
-	private static final int MIN_N2_RESERVE = 100; // per person
-	private static final int MIN_CO2_RESERVE = 50; // per person
+
 	private static final int MIN_WATER_RESERVE = 400; // per person
 	private static final int MIN_ICE_RESERVE = 400; // per person
 	
@@ -157,7 +145,6 @@ public class Settlement extends Structure implements Temporal,
 	private static final int METHANE_ID = ResourceUtil.methaneID;
 	private static final int METHANOL_ID = ResourceUtil.methanolID;
 	private static final int CO2_ID = ResourceUtil.co2ID;
-	private static final int NITROGEN_ID = ResourceUtil.nitrogenID;
 	
 	private static final int WATER_ID = ResourceUtil.waterID;
 	private static final int ICE_ID = ResourceUtil.iceID;
@@ -221,8 +208,6 @@ public class Settlement extends Structure implements Temporal,
 	private boolean hasDesignatedCommander = false;
 	/** The flag to see if a water ration review is due. */
 	private boolean waterRatioReviewFlag = false;
-	/** The flag to see if a resource review is due. */
-	private boolean[] resourceReviewFlag = new boolean[6];
 	
 	/** The water ratio of the settlement. The higher the more urgent for water resource. */
 	private int waterRatioCache = 1;
@@ -977,12 +962,6 @@ public class Settlement extends Structure implements Temporal,
 
 		
 		if (pulse.isNewHalfSol()) {
-			// Reset all resource review flags to allow for next review
-			int size = resourceReviewFlag.length;
-			for (int i=0; i<size; i++) {
-				unlockResourceReview(i);
-			}
-			
 			// Reset the flag for water ratio review
 			setReviewWaterRatio(false);
 		}
@@ -1097,24 +1076,11 @@ public class Settlement extends Structure implements Temporal,
 			// Computes the average air pressure & temperature of the life support system.
 			computeEnvironmentalAverages();
 			
-//			double time = pulse.getElapsed();
-			
-			int remainder = 0; // msol % CHECK_RESOURCES;
-//			if (remainder == 1) {
-//				// Check on demand and supply and amount of water, oxygen and methane
-//				checkResourceDemand("Oxygen", OXYGEN_ID, MIN_OXYGEN_RESERVE, OXYGEN_MAX, time);
-//				checkResourceDemand("Methane", METHANE_ID, MIN_METHANE_RESERVE, METHANE_MAX, time);
-//				checkResourceDemand("Hydrogen", HYDROGEN_ID, MIN_HYDROGEN_RESERVE, HYDROGEN_MAX, time);
-//				checkResourceDemand("Nitrogen", NITROGEN_ID, MIN_N2_RESERVE, N2_MAX, time);
-//				checkResourceDemand("Carbon Dioxide", CO2_ID, MIN_CO2_RESERVE, CO2_MAX, time);
-//				checkResourceDemand("Water", WATER_ID, MIN_WATER_RESERVE, WATER_MAX, time);
-//			}
-			
 			// Tag available airlocks into two categories
 			checkAvailableAirlocks();
 
 			// Check if good need updating
-			remainder = msol % UPDATE_GOODS_PERIOD;
+			int remainder = msol % UPDATE_GOODS_PERIOD;
 			if (remainder == templateID) {
 				// Update the goods value gradually with the use of buffers
 				goodsManager.updateGoodValues();
@@ -1702,8 +1668,6 @@ public class Settlement extends Structure implements Temporal,
 			Airlock airlock = nextBuilding.getEVA().getAirlock();
 			
 			boolean chamberFull = airlock.areAll4ChambersFull();
-//			boolean reservationFull = airlock.isReservationFull();
-
 			// Select airlock that fulfill either conditions:
 			// 1. Chambers are NOT full
 			// 2. Chambers are full but the reservation is NOT full
@@ -2549,86 +2513,6 @@ public class Settlement extends Structure implements Temporal,
 	}
 	
 	/**
-	 * Locks the flag for reviewing a resource. Won't be able to review until it's unlocked.
-	 * 
-	 * @param value
-	 */
-	public void lockResourceReview(int i) {
-		resourceReviewFlag[i] = false;
-	}
-	
-	/**
-	 * Unlocks the flag for reviewing a resource. Open for review until it's locked.
-	 * 
-	 * @param value
-	 */
-	public void unlockResourceReview(int i) {
-		resourceReviewFlag[i] = true;
-	}
-	
-	/**
-	 * Returns if a resource has been reviewed.
-	 * 
-	 * @return
-	 */
-	public boolean canReviewResource(int i) {
-		return resourceReviewFlag[i];
-	}
-	
-	/**
-	 * Finds the number of resources that's due for review.
-	 * 
-	 * @return
-	 */
-	public int findNumResourceReviewDue() {
-		int count = 0;
-		for (boolean value : resourceReviewFlag) {
-			if (value)
-				count++;
-		}
-		return count;
-	}
-	
-	/**
-	 * Finds a resource that's due for review.
-	 * 
-	 * @return
-	 */
-	public int findResourceReview() {
-		for (int i = 0; i < resourceReviewFlag.length; i++) {
-			if (canReviewResource(i))
-				return i;
-		}
-		return -1;
-	}
-	
-	
-	/**
-	 * Reviews a resource.
-	 * 
-	 * @param i
-	 * @param time
-	 */
-	public void reviewResource(int i, double time) {
-		switch (i) {
-        case 0:
-        	checkResourceDemand("Oxygen", OXYGEN_ID, MIN_OXYGEN_RESERVE, OXYGEN_MAX, time);
-		case 1:
-			checkResourceDemand("Methane", METHANE_ID, MIN_METHANE_RESERVE, METHANE_MAX, time);
-		case 2:
-			checkResourceDemand("Water", WATER_ID, MIN_WATER_RESERVE, WATER_MAX, time);
-		case 3:
-			checkResourceDemand("Hydrogen", HYDROGEN_ID, MIN_HYDROGEN_RESERVE, HYDROGEN_MAX, time);
-		case 4:
-			checkResourceDemand("Nitrogen", NITROGEN_ID, MIN_N2_RESERVE, N2_MAX, time);
-		case 5:	
-			checkResourceDemand("Carbon Dioxide", CO2_ID, MIN_CO2_RESERVE, CO2_MAX, time);
-		default:
-			//
-        }
-	}
-	
-	/**
 	 * Computes the water ratio at the settlement.
 	 *
 	 * @return level of water ration.
@@ -2838,75 +2722,75 @@ public class Settlement extends Structure implements Temporal,
 		return result;
 	}
 
-	/**
-	 * Checks the demand for a gas.
-	 *
-	 * @param gasName
-	 * @param gasID
-	 * @param gasReserve
-	 * @param gasMax
-	 */
-	private void checkResourceDemand(String gasName, int gasID, int gasReserve, int gasMax, double time) {
-		double result = 0;
+// 	/**
+// 	 * Checks the demand for a gas.
+// 	 *
+// 	 * @param gasName
+// 	 * @param gasID
+// 	 * @param gasReserve
+// 	 * @param gasMax
+// 	 */
+// 	private void checkResourceDemand(String gasName, int gasID, int gasReserve, int gasMax, double time) {
+// 		double result = 0;
 
-		int pop = numCitizens;
+// 		int pop = numCitizens;
 		
-		double demand = goodsManager.getDemandValueWithID(gasID);
-		if (demand > gasMax)
-			demand = gasMax;
-		if (demand < 1)
-			demand = 1;
+// 		double demand = goodsManager.getDemandValueWithID(gasID);
+// 		if (demand > gasMax)
+// 			demand = gasMax;
+// 		if (demand < 1)
+// 			demand = 1;
 		
-		// Compare the available amount of oxygen
-		double supply = goodsManager.getSupplyValue(gasID);
+// 		// Compare the available amount of oxygen
+// 		double supply = goodsManager.getSupplyValue(gasID);
 
-		double reserve = getAmountResourceStored(gasID);
+// 		double reserve = getAmountResourceStored(gasID);
 	
-		if (reserve + supply * pop > (gasReserve * 2 + demand) * pop) {
-//			logger.info(this, "Case 1.");
-			// change nothing
-			return;
-		}
+// 		if (reserve + supply * pop > (gasReserve * 2 + demand) * pop) {
+// //			logger.info(this, "Case 1.");
+// 			// change nothing
+// 			return;
+// 		}
 		
-		else if (reserve + supply * pop > (gasReserve + demand) * pop) {
-//			logger.info(this, "Case 2.");
-			result = (gasReserve + demand - supply) * pop - reserve;
-		}
+// 		else if (reserve + supply * pop > (gasReserve + demand) * pop) {
+// //			logger.info(this, "Case 2.");
+// 			result = (gasReserve + demand - supply) * pop - reserve;
+// 		}
 
-		else if (.5 * (reserve + supply * pop) > (gasReserve + demand) * pop) {
-//			logger.info(this, "Case 3.");
-			result = (gasReserve + demand - 0.5 * supply) * pop - .5 * reserve;
-		}
+// 		else if (.5 * (reserve + supply * pop) > (gasReserve + demand) * pop) {
+// //			logger.info(this, "Case 3.");
+// 			result = (gasReserve + demand - 0.5 * supply) * pop - .5 * reserve;
+// 		}
 
-		else {
-//			logger.info(this, "Case 4.");
-			result = (gasReserve + demand - 0.5 * supply) * pop - .5 * reserve;
-		}
+// 		else {
+// //			logger.info(this, "Case 4.");
+// 			result = (gasReserve + demand - 0.5 * supply) * pop - .5 * reserve;
+// 		}
 		
-		if (result < 0)
-			result = 0;
+// 		if (result < 0)
+// 			result = 0;
 				
-		if (result > gasMax)
-			result = gasMax;
+// 		if (result > gasMax)
+// 			result = gasMax;
 
-		double delta = result - demand;
+// 		double delta = result - demand;
 
-		if (delta > CHECK_RESOURCES) {
+// 		if (delta > CHECK_RESOURCES) {
 			
-			// Limit each increase to a value only to avoid an abrupt rise or drop in demand 
-			delta = time * CHECK_RESOURCES;
+// 			// Limit each increase to a value only to avoid an abrupt rise or drop in demand 
+// 			delta = time * CHECK_RESOURCES;
 			
-			logger.info(this, 60_000L, 
-					"Previous demand for " + gasName + ": " + Math.round(demand * 10.0)/10.0 
-					+ "  Supply: " + Math.round(supply * 10.0)/10.0 
-					+ "  Reserve: " + Math.round(reserve * 10.0)/10.0		
-					+ "  Delta: " + Math.round(delta * 10.0)/10.0
-					+ "  New Demand: " + Math.round((demand + delta) * 10.0)/10.0 + ".");
+// 			logger.info(this, 60_000L, 
+// 					"Previous demand for " + gasName + ": " + Math.round(demand * 10.0)/10.0 
+// 					+ "  Supply: " + Math.round(supply * 10.0)/10.0 
+// 					+ "  Reserve: " + Math.round(reserve * 10.0)/10.0		
+// 					+ "  Delta: " + Math.round(delta * 10.0)/10.0
+// 					+ "  New Demand: " + Math.round((demand + delta) * 10.0)/10.0 + ".");
 			
-			// Inject a sudden change of demand
-			goodsManager.setDemandValue(GoodsUtil.getGood(gasID), (demand + delta));
-		}
-	}
+// 			// Inject a sudden change of demand
+// 			goodsManager.setDemandValue(GoodsUtil.getGood(gasID), (demand + delta));
+// 		}
+// 	}
 	
 	/**
 	 * Checks if the last 20 mission scores are above the threshold.

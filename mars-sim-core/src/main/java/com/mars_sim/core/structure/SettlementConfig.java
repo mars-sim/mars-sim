@@ -44,6 +44,8 @@ import com.mars_sim.mapdata.location.LocalPosition;
  */
 public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate> {
 
+	public record ResourceLimits(int reserve, int max) {};
+
 	private static final Logger logger = Logger.getLogger(SettlementConfig.class.getName());
 
 	// Element names
@@ -117,6 +119,10 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String FREQUENCY = "frequency-sols";
 	private static final String MANIFEST_NAME = "manifest-name";
 
+	private static final String ESSENTIAL_RESOURCES = "essential-resources";
+	private static final String RESERVE = "reserve";
+	private static final String MAX = "max";
+	
 	private double[] roverValues = new double[] { 0, 0 };
 	private double[][] lifeSupportValues = new double[2][7];
 
@@ -129,6 +135,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	
 	private Map<String, ShiftPattern> shiftDefinitions = new HashMap<>();
 
+	private Map<Integer, ResourceLimits> resLimits = new HashMap<>();
 
 	/**
 	 * Constructor.
@@ -151,12 +158,34 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		Element root = settlementDoc.getRootElement();
 		loadMissionControl(root.getChild(MISSION_CONTROL));
 		loadLifeSupportRequirements(root.getChild(LIFE_SUPPORT_REQUIREMENTS));
+		loadResourceLimits(root.getChild(ESSENTIAL_RESOURCES));
 		loadShiftPatterns(root.getChild(SHIFT_PATTERNS));
 		String [] defaults = loadSettlementTemplates(settlementDoc);
 
 		loadDefaults(defaults);
 
 		loadUserDefined();
+	}
+
+	private void loadResourceLimits(Element limits) {
+		
+		List<Element> resources = limits.getChildren(RESOURCE);
+		for(Element node : resources) {
+			String resName = node.getAttributeValue(NAME);
+			int resId = ResourceUtil.findIDbyAmountResourceName(resName);
+			if (resId <= 0) {
+				throw new IllegalArgumentException("Cannot find essential resource called " + resName);
+			}
+
+			int reserve = Integer.parseInt(node.getAttributeValue(RESERVE));
+			int max = Integer.parseInt(node.getAttributeValue(MAX));
+
+			resLimits.put(resId, new ResourceLimits(reserve, max));
+		}
+	}
+
+	public Map<Integer,ResourceLimits> getEssentialResources() {
+		return resLimits;
 	}
 
 	public double[] getRoverValues() {
@@ -194,6 +223,11 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		}
 	}
 
+	/**
+	 * Find a shift pattern by name.
+	 * @param name
+	 * @return
+	 */
 	public ShiftPattern getShiftPattern(String name) {
 		ShiftPattern pattern = shiftDefinitions.get(name.toLowerCase());
 		if (pattern == null) {
@@ -335,11 +369,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			}
 			
 			// Assume the zone as 0
-			int zone = 0;
-			
-			if (buildingElement.getAttribute(ZONE) != null) {
-				zone = Integer.parseInt(buildingElement.getAttributeValue(ZONE));
-			}
+			int zone = ConfigHelper.getOptionalAttributeInt(buildingElement, ZONE, 0);
 			
 			// Get the building type
 			String buildingType = buildingElement.getAttributeValue(TYPE);
@@ -392,17 +422,6 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 					else {
 						buildingTemplate.addBuildingConnection(connectionID, hatchFace);
 					}
-				
-					// Will complete the codes for deriving the xloc and yloc for this connector if not given
-					
-//					double shortestLineFacingDegrees = LocalAreaUtil.getDirection(shortestLine.getP1(), shortestLine.getP2());
-//					Point2D p1 = adjustConnectorEndPoint(shortestLine.getP1(), shortestLineFacingDegrees, firstBuilding, width);
-//					Point2D p2 = adjustConnectorEndPoint(shortestLine.getP2(), shortestLineFacingDegrees, secondBuilding,
-//							width);
-//					double centerX = (p1.getX() + p2.getX()) / 2D;
-//					double centerY = (p1.getY() + p2.getY()) / 2D;
-//					double newLength = p1.distance(p2);
-					
 				}
 			}
 		}
@@ -414,7 +433,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	 * @param buildingType
 	 * @return type ID (starting from 1, not zero)
 	 */
-	public int getNextBuildingTypeID(String buildingType, Map<String, Integer> buildingTypeIDMap) {
+	private int getNextBuildingTypeID(String buildingType, Map<String, Integer> buildingTypeIDMap) {
 		int last = 1;
 		if (buildingTypeIDMap.containsKey(buildingType)) {
 			last = buildingTypeIDMap.get(buildingType);

@@ -8,7 +8,6 @@ package com.mars_sim.core.goods;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -17,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitManager;
@@ -26,15 +26,17 @@ import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.SettlementConfig.ResourceLimits;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.mapdata.location.Coordinates;
+import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A manager for computing the values of goods at a settlement.
  */
-public class GoodsManager implements Serializable {
+public class GoodsManager implements Entity {
 
 	private class FutureHandler implements ScheduledEventHandler {
 
@@ -73,6 +75,8 @@ public class GoodsManager implements Serializable {
 
 	/** Initialized logger. */
 	private static SimLogger logger = SimLogger.getLogger(GoodsManager.class.getName());
+
+	private static final int CHECK_RESOURCES = 30;
 
 	// Number modifiers for outstanding repair and maintenance parts and EVA parts.
 	private static final int BASE_REPAIR_PART = 150;
@@ -142,11 +146,15 @@ public class GoodsManager implements Serializable {
 	private transient Map<Good, ShoppingItem> buyList =  Collections.emptyMap();
 	private transient Map<Good, ShoppingItem> sellList = Collections.emptyMap();
 
+	private Set<Integer> reviewedEssentials = new HashSet<>();
+
 	private Settlement settlement;
 
 	private transient Map<MissionType, Deal> deals = new EnumMap<>(MissionType.class);
 
 	private static UnitManager unitManager;
+
+	private static Map<Integer, ResourceLimits> resLimits;
 
 	/**
 	 * Constructor.
@@ -206,6 +214,8 @@ public class GoodsManager implements Serializable {
 	 * Updates the good values for all good.
 	 */
 	public void updateGoodValues() {
+		reviewedEssentials.clear();
+
  		// Update the goods value gradually with the use of buffers
 		for(Good g: GoodsUtil.getGoodsList()) {
 			determineGoodValue(g);
@@ -493,7 +503,7 @@ public class GoodsManager implements Serializable {
 		eVASuitMod = computeModifier(BASE_EVA_SUIT, level);
 	}
 
-	private double computeModifier(int baseValue, int level) {
+	private static double computeModifier(int baseValue, int level) {
 		double mod = 0;
 		if (level == 1) {
 			mod = baseValue;
@@ -665,6 +675,117 @@ public class GoodsManager implements Serializable {
 	}
 	
 	/**
+	 * How many resources need reviewing?
+	 * @return
+	 */
+	public int getResourceReviewDue() {
+		return getResourceForReview().size();
+	}
+	
+	private Set<Integer> getResourceForReview() {
+		Set<Integer> unreviewed = new HashSet<>(resLimits.keySet());
+		unreviewed.removeAll(reviewedEssentials);
+
+		return unreviewed;
+	}
+
+	/**
+	 * Reserve an essential resoruce for a review
+	 * @return Selected resource
+	 */
+    public int reserveResourceReview() {
+		var unreviewed = getResourceForReview();
+
+		// Everything has been reviewed
+		if (unreviewed.isEmpty()) {
+			return -1;
+		}
+
+		// Pick one an random and add to the reviewed set
+		int selected = RandomUtil.getARandSet(unreviewed);
+		reviewedEssentials.add(selected);
+		return selected;
+    }
+
+	/**
+	 * Checks the demand for a gas.
+	 *
+	 * @param gasID
+	 */
+	public void checkResourceDemand(int gasID, double time) {
+		double result = 0;
+
+		var limits = resLimits.get(gasID);
+		if (limits == null) {
+			throw new IllegalArgumentException("Resource is not essential " + gasID);
+		}
+		int gasReserve = limits.reserve();
+		int gasMax = limits.max();
+		int pop = settlement.getNumCitizens();
+		
+		double demand = getDemandValueWithID(gasID);
+		if (demand > gasMax)
+			demand = gasMax;
+		if (demand < 1)
+			demand = 1;
+		
+		// Compare the available amount of oxygen
+		double supply = getSupplyValue(gasID);
+
+		double reserve = settlement.getAmountResourceStored(gasID);
+	
+		if (reserve + supply * pop > (gasReserve * 2 + demand) * pop) {
+			return;
+		}
+		
+		else if (reserve + supply * pop > (gasReserve + demand) * pop) {
+			result = (gasReserve + demand - supply) * pop - reserve;
+		}
+
+		else if (.5 * (reserve + supply * pop) > (gasReserve + demand) * pop) {
+			result = (gasReserve + demand - 0.5 * supply) * pop - .5 * reserve;
+		}
+
+		else {
+			result = (gasReserve + demand - 0.5 * supply) * pop - .5 * reserve;
+		}
+		
+		if (result < 0)
+			result = 0;
+				
+		if (result > gasMax)
+			result = gasMax;
+
+		double delta = result - demand;
+		if (delta > CHECK_RESOURCES) {
+			
+			// Limit each increase to a value only to avoid an abrupt rise or drop in demand 
+			delta = time * CHECK_RESOURCES;
+			String gasName = ResourceUtil.findAmountResourceName(gasID);
+			logger.info(this, 60_000L, 
+					"Previous demand for " + gasName + ": " + Math.round(demand * 10.0)/10.0 
+					+ "  Supply: " + Math.round(supply * 10.0)/10.0 
+					+ "  Reserve: " + Math.round(reserve * 10.0)/10.0		
+					+ "  Delta: " + Math.round(delta * 10.0)/10.0
+					+ "  New Demand: " + Math.round((demand + delta) * 10.0)/10.0 + ".");
+			
+			// Inject a sudden change of demand
+			setDemandValue(GoodsUtil.getGood(gasID), (demand + delta));
+		}
+	}
+	
+	
+	@Override
+	public String getName() {
+		return settlement.getName();
+	}
+
+	@Override
+	public String getContext() {
+		return settlement.getContext();
+	}
+
+	/**
 	 * Reloads instances after loading from a saved sim.
 	 *
 	 * @param s  {@link SimulationConfg}
@@ -675,6 +796,7 @@ public class GoodsManager implements Serializable {
 		unitManager = u;
 		Good.initializeInstances(sc, m);
 		CommerceUtil.initializeInstances(m, u);
+		resLimits = sc.getSettlementConfiguration().getEssentialResources();
 	}
 	
 	/**
