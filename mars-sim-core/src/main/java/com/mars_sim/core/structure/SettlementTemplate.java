@@ -54,8 +54,7 @@ public class SettlementTemplate implements Serializable, UserConfigurable, Settl
 
 	private List<RobotTemplate> robots;
 
-	private ObjectiveType objective;
-
+	private ObjectiveType objective = ObjectiveType.CROP_FARM;
 
 	/**
 	 * Constructor. Called by SettlementConfig.java

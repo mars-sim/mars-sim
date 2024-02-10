@@ -118,14 +118,10 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Shared preference key for Mission limits
 	 */
-	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
-	public static final int CHECK_MISSION = 20; // once every 10 millisols
-	public static final int MAX_NUM_SOLS = 3;
-	public static final int MAX_SOLS_DAILY_OUTPUT = 14;
-	public static final int SUPPLY_DEMAND_REFRESH = 7;
+	private static final int CHECK_MISSION = 20; // once every 10 millisols
+	private static final int MAX_NUM_SOLS = 3;
 	private static final int RESOURCE_UPDATE_FREQ = 30;
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
-	public static final int NUM_CRITICAL_RESOURCES = 10;
 	private static final int RESOURCE_STAT_SOLS = 12;
 	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
 
@@ -218,8 +214,6 @@ public class Settlement extends Structure implements Temporal,
 	private int initialPopulation;
 	/** The number of robots at the start of the settlement. */
 	private int initialNumOfRobots;
-	/** The template ID of the settlement. */
-	private int templateID;
 	/** The cache for the mission sol. */
 	private int solCache = 0;
 	/** Numbers of citizens of this settlement. */
@@ -359,12 +353,11 @@ public class Settlement extends Structure implements Temporal,
 	 * @param id
 	 * @param location
 	 */
-	public Settlement(String name, int id, Coordinates location) {
+	public Settlement(String name, Coordinates location) {
 		// Use Structure constructor.
 		super(name, location);
 
 		this.settlementCode = createCode(name);
-		this.templateID = id;
 		this.location = location;
 
 		
@@ -386,7 +379,7 @@ public class Settlement extends Structure implements Temporal,
 
 		// Mock use the default shifts
 		ShiftPattern shifts = settlementConfig.getShiftPattern(SettlementConfig.STANDARD_3_SHIFT);
-		shiftManager = new ShiftManager(this, shifts, 0,
+		shiftManager = new ShiftManager(this, shifts,
 										masterClock.getMarsTime().getMillisolInt());
 	}
 
@@ -396,20 +389,18 @@ public class Settlement extends Structure implements Temporal,
 	 * settlement.
 	 *
 	 * @param name
-	 * @param id
 	 * @param template
 	 * @param sponsor
 	 * @param location
 	 * @param populationNumber
 	 * @param initialNumOfRobots
 	 */
-	private Settlement(String name, int id, String template, Authority sponsor, Coordinates location, int populationNumber,
+	private Settlement(String name, String template, Authority sponsor, Coordinates location, int populationNumber,
 			int initialNumOfRobots) {
 		// Use Structure constructor
 		super(name, location);
 
 		this.settlementCode = createCode(name);
-		this.templateID = id;
 		this.location = location;
 		this.template = template;
 		this.initialNumOfRobots = initialNumOfRobots;
@@ -426,7 +417,7 @@ public class Settlement extends Structure implements Temporal,
 		robotsWithin = new UnitSet<>();
 		allowTradeMissionSettlements = new HashMap<>();
 		
-		logger.info(name + " (" + settlementCode + ")" + "  templateID: " + templateID + " " );
+		logger.info(name + " (" + settlementCode + ")");
 		
 		preferences.resetValues(sponsor.getPreferences());
 
@@ -452,9 +443,9 @@ public class Settlement extends Structure implements Temporal,
 	 * @param initialNumOfRobots
 	 * @return
 	 */
-	public static Settlement createNewSettlement(String name, int id, String template, Authority sponsor,
+	public static Settlement createNewSettlement(String name, String template, Authority sponsor,
 			Coordinates location, int populationNumber, int initialNumOfRobots) {
-		return new Settlement(name, id, template, sponsor, location, populationNumber, initialNumOfRobots);
+		return new Settlement(name, template, sponsor, location, populationNumber, initialNumOfRobots);
 	}
 
 	/**
@@ -506,22 +497,15 @@ public class Settlement extends Structure implements Temporal,
 		// Initialize schedule event manager
 		futureEvents = new ScheduledEventManager(masterClock);
 
-		// Get the rotation about the planet and convert that to a fraction of the Sol.
-		double fraction = getCoordinates().getTheta()/(Math.PI * 2D); 
-		if (fraction == 1D) {
-			// Gone round the planet
-			fraction = 0D;
-		}
-		int sunRiseOffSet = (int) (100 * fraction) * 10; // Do the offset in units of 10
 
 		shiftManager = new ShiftManager(this, sTemplate.getShiftDefinition(),
-										sunRiseOffSet, masterClock.getMarsTime().getMillisolInt());
+										 masterClock.getMarsTime().getMillisolInt());
 
 		// Initialize Credit Manager.
 		creditManager = new CreditManager(this);
 		
 		// Initialize goods manager.
-		goodsManager = new GoodsManager(this, sunRiseOffSet);
+		goodsManager = new GoodsManager(this);
 
 		// Initialize construction manager.
 		constructionManager = new ConstructionManager(this);
@@ -542,10 +526,7 @@ public class Settlement extends Structure implements Temporal,
 		chainOfCommand = new ChainOfCommand(this);
 
 		// Set objective()
-		ObjectiveType oType = sTemplate.getObjective();
-		if (oType != null) {
-			setObjective(oType, 2);
-		}
+		setObjective(sTemplate.getObjective(), 2);
 
 		// initialize the missionScores list
 		missionScores = new ArrayList<>();
@@ -1079,14 +1060,7 @@ public class Settlement extends Structure implements Temporal,
 			// Tag available airlocks into two categories
 			checkAvailableAirlocks();
 
-			// Check if good need updating
-			int remainder = msol % UPDATE_GOODS_PERIOD;
-			if (remainder == templateID) {
-				// Update the goods value gradually with the use of buffers
-				goodsManager.updateGoodValues();
-			}
-
-			remainder = msol % CHECK_MISSION;
+			int remainder = msol % CHECK_MISSION;
 			if (remainder == 1) {
 				// Reset the mission probability back to 1
 				mineralValue = -1;

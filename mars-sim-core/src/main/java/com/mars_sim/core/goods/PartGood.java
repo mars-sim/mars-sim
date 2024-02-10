@@ -63,6 +63,8 @@ public class PartGood extends Good {
 		
 	private static final int VEHICLE_PART_COST = 3;
 	private static final int EVA_PARTS_VALUE = 20;
+	private static final double CONSTRUCTING_INPUT_FACTOR = 2D;
+	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .1;
 	
 	private static final double DRILL_DEMAND  = .5;
 	private static final double BOTTLE_DEMAND = .02;
@@ -253,7 +255,7 @@ public class PartGood extends Good {
 			// Add food production demand.
 			+ getPartFoodProductionDemand(owner, settlement, part)
 			// Add construction demand.
-			+ getPartConstructionDemand(owner, settlement)
+			+ getPartConstructionDemand(settlement)
 			// Add construction site demand.
 			+ getPartConstructionSiteDemand(settlement)
 			// Calculate individual EVA suit-related part demand.
@@ -265,7 +267,7 @@ public class PartGood extends Good {
 			// Calculate vehicle part demand.
 			+ getVehiclePartDemand(owner)
 			// Calculate battery cell part demand.
-			+ geFuelCellDemand(owner)
+			+ geFuelCellDemand()
 			// Calculate maintenance part demand.
 			+ getMaintenancePartsDemand(settlement, part);
 		
@@ -329,7 +331,6 @@ public class PartGood extends Good {
 	 * Limits the demand for a particular raw material part.
 	 *
 	 * @param part   the part.
-	 * TODO Replace this with value off Part class which comes form the XML file
 	 */
 	private static double calculateFlattenRawPartDemand(Part part) {
 		double demand = ITEM_DEMAND; 
@@ -384,69 +385,59 @@ public class PartGood extends Good {
 		if (name.contains("pipe"))
 			return 1;
 		
-		if (name.contains("valve"))
+		if (name.contains("valve") || name.contains(HEAT_PROBE))
 			return .05;
 
 		if (name.contains("plastic"))
 			return 1.1;
 		
-		if (name.contains("tank"))
+		if (name.contains("tank") || name.contains("duct") || name.contains("gasket"))
 			return .1;
-		
-		if (name.contains(HEAT_PROBE))
-			return .05;
 
 		if (name.contains(BOTTLE))
 			return BOTTLE_DEMAND;
-
-		if (name.contains("duct"))
-			return .1;
-
-		if (name.contains("gasket"))
-			return .1;
 		
-		GoodType type = part.getGoodType();
-
-		if (type == GoodType.ELECTRICAL) {
-			if (name.contains("light")
-				|| name.contains("resistor")
-				|| name.contains("capacitor")
-				|| name.contains("diode")) {
-				return 5;
+		switch(part.getGoodType()) {
+			case ELECTRICAL: {
+				if (name.contains("light")
+					|| name.contains("resistor")
+					|| name.contains("capacitor")
+					|| name.contains("diode")) {
+					return 5;
+				}
+				else if (name.equalsIgnoreCase("steel wire"))
+					return 7;
+				
+				return ELECTRICAL_DEMAND;
 			}
-			else if (name.equalsIgnoreCase("steel wire"))
-				return 7;
+
+			case INSTRUMENT:
+				return INSTRUMENT_DEMAND;
+
+			case METALLIC:
+				return METALLIC_DEMAND;
+		
+			case UTILITY:
+				if (name.contains(FIBERGLASS)) {
+					return FIBERGLASS_DEMAND;
+				}
+				return UTILITY_DEMAND;
+		
+			case TOOL:
+				if (name.contains(DRILL)) {
+					return DRILL_DEMAND;
+				}
+				return TOOL_DEMAND;
+
+			case CONSTRUCTION:
+				return CONSTRUCTION_DEMAND;
+
+			case EVA:
+				return EVA_PART_DEMAND;
 			
-			return ELECTRICAL_DEMAND;
+			default:
+				return 1;
 		}
-
-		if (type == GoodType.INSTRUMENT)
-			return INSTRUMENT_DEMAND;
-
-		if (type == GoodType.METALLIC)
-			return METALLIC_DEMAND;
-		
-		if (type == GoodType.UTILITY) {
-			if (name.contains(FIBERGLASS)) {
-				return FIBERGLASS_DEMAND;
-			}
-			return UTILITY_DEMAND;
-		}
-		
-		if (type == GoodType.TOOL) {
-			if (name.contains(DRILL)) {
-				return DRILL_DEMAND;
-			}
-			return TOOL_DEMAND;
-		}
-
-		if (type == GoodType.CONSTRUCTION)
-			return CONSTRUCTION_DEMAND;
-
-		if (type == GoodType.EVA)
-			return EVA_PART_DEMAND;
-
-		return 1;
 	}
 
     /**
@@ -655,7 +646,7 @@ public class PartGood extends Good {
 	 * @param part the part.
 	 * @return demand (# of parts).
 	 */
-	private double getPartConstructionDemand(GoodsManager owner, Settlement settlement) {
+	private double getPartConstructionDemand(Settlement settlement) {
 		double demand = 0D;
 
 		ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
@@ -706,7 +697,7 @@ public class PartGood extends Good {
 				totalNumber += parts.get(j.next());
 
 			if (totalNumber > 0) {
-				double totalInputsValue = stageValue * GoodsManager.CONSTRUCTING_INPUT_FACTOR;
+				double totalInputsValue = stageValue * CONSTRUCTING_INPUT_FACTOR;
 				demand = totalInputsValue * (partNumber / totalNumber);
 			}
 		}
@@ -787,12 +778,12 @@ public class PartGood extends Good {
 	 * @param owner
 	 * @return
 	 */
-	private double geFuelCellDemand(GoodsManager owner) {
+	private double geFuelCellDemand() {
 		String name = getName().toLowerCase();
-		if (name.contains("fuel cell")) {
+		if (name.contains(FUEL_CELL)) {
 			return FC_COST;
 		}
-		if (name.contains("stack")) {
+		if (name.contains(STACK)) {
 			return FC_STACK_COST;
 		}
 		return 0;
@@ -860,7 +851,7 @@ public class PartGood extends Good {
 
 			double totalInputsValue = (outputsValue - powerValue) * owner.getCommerceFactor(CommerceType.TRADE)
 										* owner.getCommerceFactor(CommerceType.CROP)
-										* GoodsManager.FOOD_PRODUCTION_INPUT_FACTOR;
+										* FOOD_PRODUCTION_INPUT_FACTOR;
 			if (totalInputsValue > 0D) {
 				double partNum = partInput.getAmount();
 				demand = totalInputsValue * (partNum / totalInputNum);
@@ -909,7 +900,8 @@ public class PartGood extends Good {
 		double diff = previousTotalDemand - newAddedTotalDemand;
 		
 		double finalDemand = (previousTotalDemand + newAddedTotalDemand) / (previousNum + needNum);
-		
+		String reason = "No change for ";
+
 		if (diff < 0) {
 			if (finalDemand < previousDemand) {
 				finalDemand = previousDemand + newAddedDemand;
@@ -917,30 +909,19 @@ public class PartGood extends Good {
 			
 			owner.setDemandValue(this, finalDemand);
 			
-			logger.info(owner.getSettlement(), 30_000L, "Injecting demand for " 
-					+ part.getName()
-					+ "  Previous demand: "
-					+ Math.round(previousDemand * 10.0)/10.0 
-					+ " (Quantity: " + previousNum + ")"
-					+ "  Proposed demand: " + Math.round(finalDemand * 10.0)/10.0 
-					+ " (Quantity: " + needNum + ")"
-					);
-			
+			reason = "Injecting demand for ";
 			// Recalculate settlement good value for this part.
 			owner.determineGoodValue(GoodsUtil.getGood(part.getID()));
 		}
-		else {
-			// previousTotalDemand is already large enough and
-			// there should be no need to inject more good demand
-			
-			logger.info(owner.getSettlement(), 30_000L, "No change for "
-					+ part.getName()
-					+ "  Previous demand: "
-					+ Math.round(previousDemand * 10.0)/10.0 
-					+ " (Quantity: " + previousNum + "}"
-					+ "  Proposed demand: " + Math.round(finalDemand * 10.0)/10.0 
-					+ " (Quantity: " + needNum + "}"
-					);
-		}	
+
+		// Output a detailed message	
+		logger.info(owner.getSettlement(), 30_000L, reason
+				+ part.getName()
+				+ "  Previous demand: "
+				+ Math.round(previousDemand * 10.0)/10.0 
+				+ " (Quantity: " + previousNum + "}"
+				+ "  Proposed demand: " + Math.round(finalDemand * 10.0)/10.0 
+				+ " (Quantity: " + needNum + "}"
+				);	
 	}
 }

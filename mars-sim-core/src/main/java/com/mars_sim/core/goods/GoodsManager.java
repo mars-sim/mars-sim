@@ -8,6 +8,7 @@ package com.mars_sim.core.goods;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -16,10 +17,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.mission.MissionManager;
@@ -36,10 +37,38 @@ import com.mars_sim.tools.util.RandomUtil;
 /**
  * A manager for computing the values of goods at a settlement.
  */
-public class GoodsManager implements Entity {
+public class GoodsManager implements Serializable {
 
-	private class FutureHandler implements ScheduledEventHandler {
+	/**
+	 * Schedued event handler for update Goods Values
+	 */
+	private class GoodsUpdater implements ScheduledEventHandler {
+		private static final long serialVersionUID = 1L;
+		private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
 
+		@Override
+		public String getEventDescription() {
+			return "Refresh Goods Values";
+		}
+
+		/**
+		 * Time to updated Goods
+		 * 
+		 * @param now Current time not used.
+		 */
+		@Override
+		public int execute(MarsTime now) {
+			updateGoodValues();
+			return UPDATE_GOODS_PERIOD;
+		}	
+	}
+
+	/**
+	 * Scheduled event handler for refreshing the shopping lists
+	 */
+	private class TradeListUpdater implements ScheduledEventHandler {
+		// Duration that buying & selling list are valid
+		private static final int LIST_VALIDITY = 500;
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -58,8 +87,7 @@ public class GoodsManager implements Entity {
 			calculateBuyList();
 			calculateSellList();
 			return LIST_VALIDITY;
-		}
-		
+		}	
 	}
 
 	/**
@@ -83,14 +111,6 @@ public class GoodsManager implements Entity {
 	private static final int BASE_MAINT_PART = 15;
 	private static final int BASE_EVA_SUIT = 1;
 
-	// Duration that buying & selling list are valid
-    private static final int LIST_VALIDITY = 500;
-
-	static final double MANUFACTURING_INPUT_FACTOR = 2D;
-	static final double CONSTRUCTING_INPUT_FACTOR = 2D;
-
-	static final double FOOD_PRODUCTION_INPUT_FACTOR = .1;
-
 	private static final double MIN_SUPPLY = 0.01;
 	private static final double MIN_DEMAND = 0.01;
 	
@@ -105,20 +125,6 @@ public class GoodsManager implements Entity {
 	private static final double PERCENT_81 = .81;
 	
 	private static final double MAX_FINAL_VP = 5_000D;
-
-	/** VP probability modifier. */
-	public static final double ICE_VALUE_MODIFIER = 5D;
-
-	public static final double SOIL_VALUE_MODIFIER = .5;
-	public static final double REGOLITH_VALUE_MODIFIER = 25D;
-	public static final double SAND_VALUE_MODIFIER = 5D;
-	public static final double CONCRETE_VALUE_MODIFIER = .5D;
-	public static final double ROCK_MODIFIER = 0.99D;
-	public static final double METEORITE_MODIFIER = 1.05;
-	public static final double SALT_VALUE_MODIFIER = .2;
-
-	public static final double OXYGEN_VALUE_MODIFIER = .02D;
-	public static final double METHANE_VALUE_MODIFIER = .5D;
 
 	// Fixed weights to apply to updates to commerce factors.
 	private static final Map<CommerceType, Double> FACTOR_WEIGHTS = Map.of(CommerceType.RESEARCH, 1.5D);
@@ -160,13 +166,17 @@ public class GoodsManager implements Entity {
 	 * Constructor.
 	 *
 	 * @param settlement the settlement this manager is for.
-	 * @param sunRiseOffSet Offset to sunrise
 	 */
-	public GoodsManager(Settlement settlement, int sunRiseOffSet) {
+	public GoodsManager(Settlement settlement) {
 		this.settlement = settlement;
-		// Schedule an event to recalculate shopping lists just after sunrise
-		settlement.getFutureManager().addEvent(sunRiseOffSet + 10, new FutureHandler());
+
+		int sunRiseOffSet = MarsSurface.getTimeOffset(settlement.getCoordinates());
 		
+		// Schedule an event to recalculate shopping lists just after sunrise
+		settlement.getFutureManager().addEvent(sunRiseOffSet + 10, new TradeListUpdater());
+		
+		// Future event to update Goods values; randomise first triger
+		settlement.getFutureManager().addEvent(RandomUtil.getRandomInt(1, 50), new GoodsUpdater());
 		populateGoodsValues();
 	}
 
@@ -762,7 +772,7 @@ public class GoodsManager implements Entity {
 			// Limit each increase to a value only to avoid an abrupt rise or drop in demand 
 			delta = time * CHECK_RESOURCES;
 			String gasName = ResourceUtil.findAmountResourceName(gasID);
-			logger.info(this, 60_000L, 
+			logger.info(settlement, 60_000L, 
 					"Previous demand for " + gasName + ": " + Math.round(demand * 10.0)/10.0 
 					+ "  Supply: " + Math.round(supply * 10.0)/10.0 
 					+ "  Reserve: " + Math.round(reserve * 10.0)/10.0		
@@ -772,17 +782,6 @@ public class GoodsManager implements Entity {
 			// Inject a sudden change of demand
 			setDemandValue(GoodsUtil.getGood(gasID), (demand + delta));
 		}
-	}
-	
-	
-	@Override
-	public String getName() {
-		return settlement.getName();
-	}
-
-	@Override
-	public String getContext() {
-		return settlement.getContext();
 	}
 
 	/**

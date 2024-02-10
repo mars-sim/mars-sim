@@ -10,7 +10,7 @@ public class GoodsManagerTest extends AbstractMarsSimUnitTest {
 
     public void testResetCommerceFactor() {
         var s = buildSettlement();
-        var gm = new GoodsManager(s, 0);
+        var gm = new GoodsManager(s);
 
         double newValue = 1.5D;
         gm.setCommerceFactor(CommerceType.BUILDING, newValue);
@@ -26,7 +26,7 @@ public class GoodsManagerTest extends AbstractMarsSimUnitTest {
         buildPerson("P1", s);
         buildPerson("P2", s);
 
-        var gm = new GoodsManager(s, 0);
+        var gm = new GoodsManager(s);
 
         var ess = simConfig.getSettlementConfiguration().getEssentialResources();
 
