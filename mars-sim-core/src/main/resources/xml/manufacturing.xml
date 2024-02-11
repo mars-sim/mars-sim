@@ -1120,7 +1120,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required=".1">
 		<inputs>
 			<resource name="Polycarbonate Resin" amount=".2" />
-			<part name="glass sheet" number="1" />
+			<resource name="glass" amount="3" />
 		</inputs>
 		<outputs>
 			<part name="helmet visor" number="13" />
@@ -1355,26 +1355,34 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Manufacture rover windshield" tech="3" skill="2" work-time="50" process-time="200"
+	<process name="Manufacture rover windshield" tech="3" skill="2" work-time="100" process-time="150"
 			power-required=".1">
+	<description> The rover windshield use a double stack of aerogel tiles between two layers 
+		of glass for insulation. </description>
 		<inputs>
-			<part name="glass sheet" number="2" />
+			<part name="aerogel tile" number="8" />	
+			<part name="steel ingot" number="1" />			
+			<part name="glass sheet" number="2" />		
 		</inputs>
 		<outputs>
-			<part name="rover windshield" number="1" />
+			<part name="rover windshield" number="2" />
 		</outputs>
 	</process>
 
-	<process name="Manufacture rover window" tech="3" skill="2" work-time="100" process-time="150"
+	<process name="Manufacture window" tech="3" skill="2" work-time="100" process-time="150"
 			power-required=".1">
+	<description> Each window panel use a double stack of aerogel tiles between two layers 
+		of glass for trapping heat. </description>
 		<inputs>
-			<part name="glass sheet" number="2" />
+			<part name="aerogel tile" number="8" />
+			<part name="steel ingot" number="1" />			
+			<part name="glass sheet" number="1" />		
 		</inputs>
 		<outputs>
-			<part name="rover window" number="2" />
+			<part name="window" number="2" />
 		</outputs>
 	</process>
-
+	
 	<process name="Make winch" tech="1" skill="1" work-time="40" process-time="80"
 			power-required=".1">
 		<inputs>
@@ -1677,8 +1685,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Assemble Delivery Drone" tech="3" skill="3" work-time="750" process-time="750"
 			power-required="2.0">
 		<inputs>
-			<resource name="acetylene" amount="2.0" />
-			<part name="aerogel tile" number="2" />				
+			<resource name="acetylene" amount="2.0" />			
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 			<part name="optical lens" number="2" />
@@ -1710,7 +1717,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="acetylene" amount="1.0" />
 			<resource name="polystyrene" amount="5" />	
-			<part name="aerogel tile" number="4" />
+			<part name="aerogel tile" number="20" />
 			<part name="utility vehicle control panel" number="1" />		
 			<part name="vehicle frame small" number="2" />
 			<part name="vehicle chassis panel" number="3" />
@@ -1744,12 +1751,12 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="acetylene" amount="2.0" />		
 			<resource name="polystyrene" amount="15" />			
-			<part name="aerogel tile" number="8" />					
+			<part name="aerogel tile" number="80" />					
 			<part name="rover control panel" number="1" />			
 			<part name="vehicle frame large" number="3" />
 			<part name="vehicle chassis panel" number="6" />
 			<part name="rover windshield" number="2" />
-			<part name="rover window" number="4" />
+			<part name="window" number="2" />
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
 			<part name="motor large" number="3" />			
@@ -1784,12 +1791,12 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="acetylene" amount="3.0" />		
 			<resource name="polystyrene" amount="20" />	
-			<part name="aerogel tile" number="12" />
+			<part name="aerogel tile" number="120" />
 			<part name="rover control panel" number="1" />			
 			<part name="vehicle frame large" number="5" />
 			<part name="vehicle chassis panel" number="10" />
-			<part name="rover windshield" number="3" />
-			<part name="rover window" number="8" />
+			<part name="rover windshield" number="1" />
+			<part name="window" number="5" />
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
 			<part name="motor large" number="4" />			
@@ -1823,12 +1830,12 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="acetylene" amount="3.0" />
 			<resource name="polystyrene" amount="30" />	
-			<part name="aerogel tile" number="12" />
+			<part name="aerogel tile" number="120" />
 			<part name="rover control panel" number="1" />
 			<part name="vehicle frame large" number="5" />
 			<part name="vehicle chassis panel" number="12" />
-			<part name="rover windshield" number="3" />
-			<part name="rover window" number="8" />
+			<part name="rover windshield" number="1" />
+			<part name="window" number="2" />
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
 			<part name="motor large" number="5" />			
@@ -2713,7 +2720,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture optical cable" tech="2" skill="2" work-time="200" process-time="200"
 			power-required="0.5">
 		<inputs>
-			<part name="glass sheet" number="1" />
+			<resource name="glass" amount="1" />
 		</inputs>
 		<outputs>
 			<part name="optical cable" number="20" />
@@ -2724,12 +2731,12 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture helium neon laser" tech="3" skill="4" work-time="400" process-time="600"
 			power-required="2.0">
 		<inputs>
+			<resource name="glass" amount="1" />
 			<part name="semiconductor wafer" number="1" />
 			<part name="steel sheet" number="1" />
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="1" />
 			<part name="light emitting diode kit" number="5" />
-			<part name="glass sheet" number="1" />
 			<part name="optical lens" number="10" />
 			<part name="optical prism" number="10" />
 			<part name="plastic sheet" number="1" />
@@ -2894,13 +2901,15 @@ Note: 1 kg of H2 is 14.13 liter
 	<!-- Produces polycarbonate roofing. -->
 	<process name="Manufacture polycarbonate roofing" tech="3" skill="2" work-time="100" process-time="200"
 			power-required="1.0">
-		<description>
+		<description> Assume each roofing tile is 2m x 2m
 			Asahi/Chi Mei produces DPC (polycarbonate) from DMC which is produced via
 			methanolysis of ethylene carbonate. Ethylene carbonate is produced by the
-			reaction between ethylene oxide and carbon dioxide.
+			reaction between ethylene oxide and carbon dioxide. Sandwiched inside are 
+			double stacks of aerogel tiles.
 		</description>
 		<inputs>
 			<resource name="Polycarbonate Resin" amount="3.5" />
+			<part name="aerogel tile" number="8" />
 		</inputs>
 		<outputs>
 			<part name="polycarbonate roofing" number="3" />
@@ -3099,13 +3108,12 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2017-09-11 Added manufacture logic board -->
-	<process name="Manufacture logic board" tech="3" skill="2" work-time="200" process-time="300"
+	<process name="Manufacture logic board" tech="3" skill="2" work-time="400" process-time="300"
 			power-required="3">
 		<inputs>
 			<resource name="copper" amount="0.2" />
 			<resource name="iron" amount="0.2" />
 			<resource name="Aluminum" amount="0.1" />
-			<part name="glass sheet" number="1" />
 			<part name="plastic sheet" number="1" />
 			<part name="resistor" number="40" />
 			<part name="capacitor" number="20" />
@@ -3113,7 +3121,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="semiconductor wafer" number="1" />
 		</inputs>
 		<outputs>
-			<part name="logic board" number="80" />
+			<part name="logic board" number="4" />
 		</outputs>
 	</process>
 
@@ -3165,17 +3173,29 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<!-- Make aerogel tile" as rooftop tiles that could allow sunlight to penetrate and would trap heat. -->
-	<process name="Supercritical CO2 drying of aerogel tile" tech="2" skill="3" work-time="50" process-time="100"
+	<process name="Make aerogel tile" tech="3" skill="3" work-time="50" process-time="100"
 			power-required="1">
-		<description>Extracting the liquid from silica gel to create a thin, 2 to 3 cm (.8 to 1.2 inch) 
-			layer of aerogel by means of supercritical CO2 drying</description>			
+		<description>Aerogel is a porous, translucent material that could allow sunlight 
+			to penetrate and be trapped, thus acting as a better insulator and having stronger 
+			tensile strengthe fiberglass composite. It's made by extracting liquid from silica gel to 
+			create a thin, 2-to-3 cm layer of aerogel via supercritical CO2 drying. Doping it 
+			with crossliking agents provide improved mechanical properties.  See aerogel.org/?p=1058. 
+			
+			The empiral formula of aerogel is simply SiO2. 
+			SiO2: 60 g/mol, CO2: 44 g/mol, Si: 28 g/mol, O: 32 g/mol
+			
+			The silica solidifies into three-dimensional, intertwined clusters that make up only 
+			3% of the volume. Conduction through the solid is therefore very low. The remaining 
+			97% of the volume is composed of air in extremely small nanopores. The air has little 
+			room to move, inhibiting both convection and gas-phase conduction.
+			 </description>			
 		<inputs>
-			<resource name="silica" amount="5" />		
-			<resource name="carbon dioxide" amount="5" />	
+			<resource name="silica" amount="6" />		
+			<resource name="carbon dioxide" amount="4.4" />
+			<resource name="polystryrene" amount=".5" />				
 		</inputs>
 		<outputs>
-			<part name="aerogel tile" number="10" />
+			<part name="aerogel tile" number="20" />
 		</outputs>
 	</process>
 
@@ -3183,7 +3203,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required=".1">
 		<inputs>
 			<resource name="polystyrene" amount="9" />
-			<resource name="Aluminum" amount=".5" />			
+			<resource name="Aluminum" amount=".5" />
 		</inputs>
 		<outputs>
 			<part name="insulation board" number="10" />
@@ -3322,8 +3342,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="biosensor" number="6" />		
 	</salvage>
 
-	<salvage item-name="Delivery Drone" type="vehicle" tech="2" skill="2" work-time="600">
-		<part-salvage name="aerogel tile" number="2" />				
+	<salvage item-name="Delivery Drone" type="vehicle" tech="2" skill="2" work-time="600">			
 		<part-salvage name="navigation circuit board" number="1" />
 		<part-salvage name="communications circuit board" number="1" />
 		<part-salvage name="optical lens" number="2" />
@@ -3370,7 +3389,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="vehicle frame large" number="1" />
 		<part-salvage name="vehicle chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
-		<part-salvage name="rover window" number="5" />
+		<part-salvage name="window" number="2" />
 		<part-salvage name="winch" number="1" />
 		<part-salvage name="rover generator" number="1" />
 		<part-salvage name="methanol fuel cell stack" number="4" />		
@@ -3403,7 +3422,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="vehicle frame large" number="1" />
 		<part-salvage name="vehicle chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
-		<part-salvage name="rover window" number="5" />
+		<part-salvage name="window" number="4" />
 		<part-salvage name="winch" number="1" />
 		<part-salvage name="rover generator" number="1" />
 		<part-salvage name="methanol fuel cell stack" number="5" />
@@ -3436,7 +3455,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="vehicle frame large" number="1" />
 		<part-salvage name="vehicle chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
-		<part-salvage name="rover window" number="5" />
+		<part-salvage name="window" number="2" />
 		<part-salvage name="winch" number="1" />
 		<part-salvage name="rover generator" number="1" />
 		<part-salvage name="methanol fuel cell stack" number="6" />

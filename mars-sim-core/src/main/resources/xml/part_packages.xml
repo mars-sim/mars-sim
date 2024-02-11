@@ -104,7 +104,7 @@
 		<part type="fuel pump" number="2" />
 		<part type="oxygen pump" number="2" />
 		<part type="rover windshield" number="2" />
-		<part type="rover window" number="4" />
+		<part type="window" number="4" />
 		<part type="winch" number="2" />
 		<part type="motor small" number="2" />
 		<part type="motor large" number="4" />
@@ -221,7 +221,7 @@
 		<part type="fuel pump" number="2" />
 		<part type="oxygen pump" number="2" />
 		<part type="rover windshield" number="2" />
-		<part type="rover window" number="4" />
+		<part type="window" number="4" />
 		<part type="winch" number="2" />
 		<part type="motor small" number="2" />
 		<part type="motor large" number="4" />
@@ -340,7 +340,7 @@
 		<part type="fuel pump" number="6" />
 		<part type="oxygen pump" number="4" />
 		<part type="rover windshield" number="4" />
-		<part type="rover window" number="8" />
+		<part type="window" number="8" />
 		<part type="winch" number="4" />
 		<part type="motor small" number="3" />
 		<part type="motor large" number="6" />
@@ -459,7 +459,7 @@
 		<part type="fuel pump" number="10" />
 		<part type="oxygen pump" number="8" />
 		<part type="rover windshield" number="8" />
-		<part type="rover window" number="12" />
+		<part type="window" number="12" />
 		<part type="winch" number="8" />
 		<part type="motor small" number="6" />
 		<part type="motor large" number="12" />
