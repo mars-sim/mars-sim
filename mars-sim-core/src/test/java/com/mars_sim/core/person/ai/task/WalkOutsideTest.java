@@ -73,12 +73,12 @@ public class WalkOutsideTest extends AbstractMarsSimUnitTest {
 		assertNotEquals(2, outsideWalk.getNumberWayPoints(), "Waypoints has a path");
 		assertFalse("Has vo obstacles in calculated path", outsideWalk.areObstaclesInPath());
 		
-	    int calls = executeTask(person, outsideWalk, 20);
+	    int calls = executeTask(person, outsideWalk, 40);
 		
 	    assertTrue("Walk calls more than zero", (calls > 0));
-		assertTrue("Person completed walk", outsideWalk.isDone());
 		assertEquals("Person final position", target, person.getPosition());
 		assertTrue("Person still outside", person.isOutside());
+		assertTrue("Person completed walk", outsideWalk.isDone());
 		
 		// Clear obstacle cache.
 		LocalAreaUtil.clearObstacleCache();

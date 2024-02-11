@@ -14,7 +14,7 @@
   <files>
 	<!-- Get the 2 executable JAR files -->
     <file>
-      <source>${basedir}/../mars-sim-main/target/mars-sim-swing-${project.version}.jar</source>
+      <source>${basedir}/../mars-sim-ui/target/mars-sim-swing-${project.version}.jar</source>
       <outputDirectory>lib</outputDirectory>
 	  <destName>mars-sim-swing.jar</destName>
     </file>
