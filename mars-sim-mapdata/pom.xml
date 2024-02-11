@@ -19,19 +19,11 @@
 			<artifactId>mars-sim-tools</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<!-- https://github.com/sesuncedu/xz -->	
 		<dependency>
 			<groupId>org.tukaani</groupId>
 			<artifactId>xz</artifactId>
 			<version>1.9</version>
 		</dependency>
-		<!--
-		<dependency>
-		    <groupId>me.lemire.integercompression</groupId>
-		    <artifactId>JavaFastPFOR</artifactId>
-		    <version>0.1.12</version>
-		</dependency>
-		-->
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
