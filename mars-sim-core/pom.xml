@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>mars-sim</artifactId>
 		<groupId>com.mars-sim</groupId>
-		<version>3.7.1</version>
+		<version>3.8.0-pre</version>
 	</parent>
 	<artifactId>mars-sim-core</artifactId>
 	<name>mars-sim-core</name>
@@ -20,25 +20,9 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.jetbrains.kotlin</groupId>
-			<artifactId>kotlin-stdlib</artifactId>
-			<version>${kotlin.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jetbrains.kotlin</groupId>
-			<artifactId>kotlin-stdlib-common</artifactId>
-			<version>${kotlin.version}</version>
-		</dependency>
-		<dependency>
 		    <groupId>commons-cli</groupId>
 		    <artifactId>commons-cli</artifactId>
 		    <version>${commons-cli.version}</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/commons-collections/commons-collections -->
-		<dependency>
-		    <groupId>commons-collections</groupId>
-		    <artifactId>commons-collections</artifactId>
-		    <version>3.2.2</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.jdom</groupId>
@@ -65,24 +49,10 @@
 		    <artifactId>commons-math3</artifactId>
 		    <version>${commons-math3.version}</version>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-		     For getting rid of the statement : SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder"
-		     See https://stackoverflow.com/questions/7421612/slf4j-failed-to-load-class-org-slf4j-impl-staticloggerbinder#9919375
-		-->
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple : 14 KB -->
-		<!--  TextIO needs version 1.8 -->
 		<dependency>
 		    <groupId>org.slf4j</groupId>
 		    <artifactId>slf4j-simple</artifactId>
 		    <version>${slf4j.version}</version>
-		</dependency>
-
-		<!-- https://github.com/cbeust/jcommander -->
-		<dependency>
-			<groupId>com.beust</groupId>
-			<artifactId>jcommander</artifactId>
-			<version>1.82</version>
 		</dependency>
 	</dependencies>
 
@@ -119,71 +89,6 @@
                       <includeOnlyProperty>^git.dirty$</includeOnlyProperty>
                     </includeOnlyProperties>
 			    </configuration>
-			</plugin>
-       		<plugin>
-       		<!-- see intro at https://www.baeldung.com/kotlin/maven-java-project -->
-				<groupId>org.jetbrains.kotlin</groupId>
-				<artifactId>kotlin-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>compile</id>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-						<configuration>
-							<sourceDirs>
-								<sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
-								<sourceDir>${project.basedir}/src/main/java</sourceDir>
-								<sourceDir>${project.basedir}/src/main/resources</sourceDir>
-							</sourceDirs>
-						</configuration>
-					</execution>
-					<execution>
-	                    <id>test-compile</id>
-	                    <goals>
-	                        <goal>test-compile</goal>
-	                    </goals>
-	                    <configuration>
-	                        <sourceDirs>
-	                            <source>${project.basedir/mars-sim-core}/src/test/java</source>
-	                            <source>${project.basedir/mars-sim-core}/src/test/kotlin</source>
-	                            <source>${project.basedir/mars-sim-core}/src/test/resources</source>
-	                        </sourceDirs>
-	                    </configuration>
-	                </execution>
-				</executions>
-				<dependencies>
-					<!-- https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-stdlib-common
-					<dependency>
-					    <groupId>org.jetbrains.kotlin</groupId>
-					    <artifactId>kotlin-stdlib-common</artifactId>
-					    <version>${kotlin.version}</version>
-					</dependency-->
-					<dependency>
-						<groupId>org.jetbrains.kotlin</groupId>
-						<artifactId>kotlin-stdlib</artifactId>
-						<version>${kotlin.version}</version>
-					</dependency>
-					<!-- https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-compiler -->
-					<dependency>
-					    <groupId>org.jetbrains.kotlin</groupId>
-					    <artifactId>kotlin-compiler</artifactId>
-					    <version>${kotlin.version}</version>
-					</dependency>
-					<!-- https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-scripting-compiler -->
-					<dependency>
-					    <groupId>org.jetbrains.kotlin</groupId>
-					    <artifactId>kotlin-scripting-compiler</artifactId>
-					    <version>${kotlin.version}</version>
-					</dependency>
-				</dependencies>
-				<!--dependencies>
-					<dependency>
-						<groupId>org.jetbrains.kotlin</groupId>
-						<artifactId>kotlin-maven-allopen</artifactId>
-						<version>${kotlin.version}</version>
-					</dependency>
-				</dependencies-->
 			</plugin>
         </plugins>
     </build>

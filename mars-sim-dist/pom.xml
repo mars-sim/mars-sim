@@ -6,7 +6,7 @@
   <parent>
 	<artifactId>mars-sim</artifactId>
 	<groupId>com.mars-sim</groupId>
-	<version>3.7.1</version>
+	<version>3.8.0-pre</version>
   </parent>
   <artifactId>mars-sim-dist</artifactId>
   <name>mars-sim-dist</name>
@@ -18,12 +18,12 @@
        end of the line in the multimodule build. 
   -->
   <dependencies>
-	<dependency>
-		<groupId>com.mars-sim</groupId>
-		<artifactId>mars-sim-main</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-			<dependency>
+		<dependency>
+			<groupId>com.mars-sim</groupId>
+			<artifactId>mars-sim-main</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.mars-sim</groupId>
 			<artifactId>mars-sim-headless</artifactId>
 			<version>${project.version}</version>

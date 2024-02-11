@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>mars-sim</artifactId>
 		<groupId>com.mars-sim</groupId>
-		<version>3.7.1</version>
+		<version>3.8.0-pre</version>
 	</parent>
 	<artifactId>mars-sim-main</artifactId>
 	<name>mars-sim-main</name>

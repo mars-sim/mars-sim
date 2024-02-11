@@ -6,19 +6,18 @@
 	<parent>
 		<groupId>com.mars-sim</groupId>
 		<artifactId>mars-sim</artifactId>
-		<version>3.7.1</version>
+		<version>3.8.0-pre</version>
 	</parent>
 	<artifactId>mars-sim-ui</artifactId>
 	<name>mars-sim-ui</name>
+	<properties>
+		<flatlaf.version>3.2.5</flatlaf.version>
+		<jfreechart.version>1.5.4</jfreechart.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>com.mars-sim</groupId>
 			<artifactId>mars-sim-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.mars-sim</groupId>
-			<artifactId>mars-sim-tools</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -32,55 +31,16 @@
 			<version>${project.version}</version>
 		</dependency>
 
-		<!-- dependency>
-		    <groupId>net.fellbaum</groupId>
-		    <artifactId>jemoji</artifactId>
-		    <version>1.3.2</version>
-		</dependency-->
-
-		<!--dependency>
-			<groupId>com.vdurmont</groupId>
-			<artifactId>emoji-java</artifactId>
-			<version>5.1.1</version>
-		</dependency-->
-
-		<!-- https://mvnrepository.com/artifact/org.netbeans.swing.outline/outline 
-		<dependency>
-		    <groupId>org.netbeans.swing.outline</groupId>
-		    <artifactId>outline</artifactId>
-		    <version>6.9.1</version>
-		</dependency-->
-		
- 		<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart : 1.5MB -->
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
-			<version>1.5.4</version>
+			<version>${jfreechart.version}</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.jfree/org.jfree.chart3d -->
-		<dependency>
-		    <groupId>org.jfree</groupId>
-		    <artifactId>org.jfree.chart3d</artifactId>
-		    <version>2.1.0</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.bidib.jbidib.eu.hansolo/SteelSeries -->
 		<dependency>
 		    <groupId>org.bidib.jbidib.eu.hansolo</groupId>
 		    <artifactId>SteelSeries</artifactId>
 		    <version>3.9.31.2</version>
-		</dependency>
-
-		<!-- trident animation library is required by steelseries.extras in mars-sim-ui
-		     https://search.maven.org/artifact/org.pushing-pixels/radiance-trident
-		     https://mvnrepository.com/artifact/org.pushing-pixels/radiance-trident/1.0.2 : 78KB
-		     https://github.com/kirill-grouchnikov/radiance/blob/master/docs/trident/trident.md 79KB -->
-		<!-- Note: steelseries requires 1.0.2. 2.0.1 does NOT work.  -->
-		<dependency>
-		  <groupId>org.pushing-pixels</groupId>
-		  <artifactId>radiance-trident</artifactId>
-		  <version>4.5.0</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-transcoder/ : 126 KB
@@ -93,19 +53,6 @@
 			<artifactId>batik-transcoder</artifactId>
 			<version>1.17</version>
 		</dependency>
-
-		<!-- https://github.com/haraldk/TwelveMonkeys 
-	    <dependency>
-	        <groupId>com.twelvemonkeys.imageio</groupId>
-	        <artifactId>imageio-jpeg</artifactId>
-	        <version>3.9.4</version>
-	    </dependency>
-	    <dependency>
-	        <groupId>com.twelvemonkeys.imageio</groupId>
-	        <artifactId>imageio-tiff</artifactId>
-	        <version>3.9.4</version>
-	    </dependency>
-     	-->
      
 		<!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/jorbis : 97 KB -->
 		<!-- https://www.jcraft.com/jorbis/  -->
@@ -121,48 +68,26 @@
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>flatlaf-swingx</artifactId>
-			<version>3.2.5</version>
+			<version>${flatlaf.version}</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>flatlaf-extras</artifactId>
-			<version>3.2.5</version>
+			<version>${flatlaf.version}</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>flatlaf</artifactId>
-			<version>3.2.5</version>
+			<version>${flatlaf.version}</version>
 		</dependency>
 
 		<!-- Note: flatlaf-jide-oss requires com.formdev's jide-oss 3.7.12 below -->
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>flatlaf-jide-oss</artifactId>
-			<version>3.2.5</version>
+			<version>${flatlaf.version}</version>
 		</dependency>
-		
-		<!-- https://github.com/jidesoft/jide-oss/issues/48 for user's build info 
-		     https://search.maven.org/artifact/com.formdev/jide-oss -->
-		<dependency>
-			<groupId>com.formdev</groupId>
-			<artifactId>jide-oss</artifactId>
-			<version>3.7.14</version>
-		</dependency>
-
   </dependencies>
-
-	<repositories>
-	    <repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
-	    </repository>
-	    
-	    <repository>
-		    <id>icm</id>
-		    <url>https://maven.icm.edu.pl/artifactory/repo/</url>
-	    </repository>
-	</repositories>
-
 </project>
