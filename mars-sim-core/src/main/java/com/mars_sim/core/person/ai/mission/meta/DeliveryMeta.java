@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.mission.meta;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.Deal;
 import com.mars_sim.core.goods.GoodsManager;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Delivery;
@@ -16,6 +17,7 @@ import com.mars_sim.core.person.ai.mission.DroneMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.role.RoleType;
+import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Drone;
 
@@ -110,7 +112,8 @@ public class DeliveryMeta extends AbstractMetaMission {
 		double deliveryProfit = deal.getProfit() * VALUE;
 
 		// Delivery value modifier.
-		RatingScore missionProbability = new RatingScore(deliveryProfit / DIVISOR * gManager.getTradeFactor());
+		RatingScore missionProbability = new RatingScore(deliveryProfit / DIVISOR);
+		missionProbability = MetaTask.applyCommerceFactor(missionProbability, settlement, CommerceType.TRADE);
 		missionProbability.applyRange(0, Delivery.MAX_STARTING_PROBABILITY);
 		
 		// Crowding modifier.

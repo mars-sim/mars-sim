@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.logging.SimLogger;
@@ -72,15 +73,14 @@ public class ShiftManager implements Serializable {
      * 
      * @param settlement Owning Settlement
      * @param shiftDefinition Definition of the shift pattern
-     * @param sunRiseOffset Offset to Sunrise at this location
      * @param mSol Current millisol
      */
-    public ShiftManager(Settlement settlement, ShiftPattern shiftDefinition, int sunriseOffset, int mSol) {
+    public ShiftManager(Settlement settlement, ShiftPattern shiftDefinition, int mSol) {
         this.name = shiftDefinition.getName();
         this.settlement = settlement;
         this.leavePercentage = shiftDefinition.getLeavePercentage();
         this.rotationSols = shiftDefinition.getRotationSols();
-        this.offset = sunriseOffset;
+        this.offset = MarsSurface.getTimeOffset(settlement.getCoordinates());
 
         // Create future event to rotate shifts
         ScheduledEventManager futures = settlement.getFutureManager();
@@ -166,7 +166,7 @@ public class ShiftManager implements Serializable {
                     .collect(Collectors.toList());
 
         // Select someone to change Shift
-        int maxOnLeave = Math.max(1, (int)(potentials.size() * leavePercentage)/100);
+        int maxOnLeave = Math.max(1, (potentials.size() * leavePercentage)/100);
         int changedCount = 0;
         while (!potentials.isEmpty() && (changedCount < maxOnLeave)) {
             int idx = RandomUtil.getRandomInt(potentials.size()-1);

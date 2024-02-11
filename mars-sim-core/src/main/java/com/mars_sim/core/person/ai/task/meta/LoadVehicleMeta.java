@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -147,8 +148,7 @@ public class LoadVehicleMeta extends MetaTask
             return null; // Should not happen
 
         RatingScore score = new RatingScore(GARAGE_DEFAULT_SCORE);
-        score.addModifier(GOODS_MODIFIER, settlement.getGoodsManager().getTransportationFactor());
-        
+        score = applyCommerceFactor(score, settlement, CommerceType.TRANSPORT);
         boolean inGarageAlready = settlement.getBuildingManager().isInGarage(vehicle);
         if (insideOnlyTasks || inGarageAlready) {
             if (inGarageAlready) {

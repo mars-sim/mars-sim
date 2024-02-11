@@ -10,6 +10,7 @@ import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Exploration;
@@ -83,8 +84,8 @@ public class ExplorationMeta extends AbstractMetaMission {
 
 				// Job modifier.
 				missionProbability.addModifier(LEADER, getLeaderSuitability(person));
-				missionProbability.addModifier(GOODS, (settlement.getGoodsManager().getTourismFactor()
-	               		 + settlement.getGoodsManager().getResearchFactor())/2);
+				missionProbability = applyCommerceAverage(missionProbability, settlement, CommerceType.TOURISM,
+													CommerceType.RESEARCH);
 
 
 				// if introvert, score  0 to  50 --> -2 to 0

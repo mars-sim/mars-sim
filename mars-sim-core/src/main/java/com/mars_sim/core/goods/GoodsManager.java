@@ -20,24 +20,55 @@ import java.util.Set;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.SettlementConfig.ResourceLimits;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.mapdata.location.Coordinates;
+import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A manager for computing the values of goods at a settlement.
  */
 public class GoodsManager implements Serializable {
 
-	private class FutureHandler implements ScheduledEventHandler {
+	/**
+	 * Schedued event handler for update Goods Values
+	 */
+	private class GoodsUpdater implements ScheduledEventHandler {
+		private static final long serialVersionUID = 1L;
+		private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
 
+		@Override
+		public String getEventDescription() {
+			return "Refresh Goods Values";
+		}
+
+		/**
+		 * Time to updated Goods
+		 * 
+		 * @param now Current time not used.
+		 */
+		@Override
+		public int execute(MarsTime now) {
+			updateGoodValues();
+			return UPDATE_GOODS_PERIOD;
+		}	
+	}
+
+	/**
+	 * Scheduled event handler for refreshing the shopping lists
+	 */
+	private class TradeListUpdater implements ScheduledEventHandler {
+		// Duration that buying & selling list are valid
+		private static final int LIST_VALIDITY = 500;
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -56,9 +87,16 @@ public class GoodsManager implements Serializable {
 			calculateBuyList();
 			calculateSellList();
 			return LIST_VALIDITY;
-		}
-		
+		}	
 	}
+
+	/**
+	 * Types of commerce factor
+	 */
+	public enum CommerceType {
+		TRANSPORT, TOURISM, CROP, MANUFACTURING, RESEARCH, TRADE, BUILDING
+ 	}
+
 
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
@@ -66,18 +104,12 @@ public class GoodsManager implements Serializable {
 	/** Initialized logger. */
 	private static SimLogger logger = SimLogger.getLogger(GoodsManager.class.getName());
 
+	private static final int CHECK_RESOURCES = 30;
+
 	// Number modifiers for outstanding repair and maintenance parts and EVA parts.
 	private static final int BASE_REPAIR_PART = 150;
 	private static final int BASE_MAINT_PART = 15;
 	private static final int BASE_EVA_SUIT = 1;
-
-	// Duration that buying & selling list are valid
-    private static final int LIST_VALIDITY = 500;
-
-	static final double MANUFACTURING_INPUT_FACTOR = 2D;
-	static final double CONSTRUCTING_INPUT_FACTOR = 2D;
-
-	static final double FOOD_PRODUCTION_INPUT_FACTOR = .1;
 
 	private static final double MIN_SUPPLY = 0.01;
 	private static final double MIN_DEMAND = 0.01;
@@ -94,27 +126,8 @@ public class GoodsManager implements Serializable {
 	
 	private static final double MAX_FINAL_VP = 5_000D;
 
-	private static final double CROPFARM_BASE = 1;
-	private static final double MANU_BASE = 1;
-	private static final double RESEARCH_BASE = 1.5;
-	private static final double TRANSPORT_BASE = 1;
-	private static final double TRADE_BASE = 1;
-	private static final double TOURISM_BASE = 1;
-	private static final double BUILDERS_BASE = 1;
-
-	/** VP probability modifier. */
-	public static final double ICE_VALUE_MODIFIER = 5D;
-
-	public static final double SOIL_VALUE_MODIFIER = .5;
-	public static final double REGOLITH_VALUE_MODIFIER = 25D;
-	public static final double SAND_VALUE_MODIFIER = 5D;
-	public static final double CONCRETE_VALUE_MODIFIER = .5D;
-	public static final double ROCK_MODIFIER = 0.99D;
-	public static final double METEORITE_MODIFIER = 1.05;
-	public static final double SALT_VALUE_MODIFIER = .2;
-
-	public static final double OXYGEN_VALUE_MODIFIER = .02D;
-	public static final double METHANE_VALUE_MODIFIER = .5D;
+	// Fixed weights to apply to updates to commerce factors.
+	private static final Map<CommerceType, Double> FACTOR_WEIGHTS = Map.of(CommerceType.RESEARCH, 1.5D);
 
 	// Data members
 	private double repairMod = BASE_REPAIR_PART;
@@ -122,14 +135,8 @@ public class GoodsManager implements Serializable {
 	private double eVASuitMod = BASE_EVA_SUIT;
 
 	private boolean initialized = false;
-	// Add modifiers due to Settlement Development Objectives
-	private double cropFarmFactor = 1;
-	private double manufactureFactor = 1;
-	private double researchFactor = 1;
-	private double transportFactor = 1;
-	private double tradeFactor = 1;
-	private double tourismFactor = 1;
-	private double buildersFactor = 1;
+	
+	private Map<CommerceType, Double> factors = new EnumMap<>(CommerceType.class);
 
 	private Map<Integer, Double> goodsValues = new HashMap<>();
 	private Map<Integer, Double> tradeCache = new HashMap<>();
@@ -145,23 +152,31 @@ public class GoodsManager implements Serializable {
 	private transient Map<Good, ShoppingItem> buyList =  Collections.emptyMap();
 	private transient Map<Good, ShoppingItem> sellList = Collections.emptyMap();
 
+	private Set<Integer> reviewedEssentials = new HashSet<>();
+
 	private Settlement settlement;
 
 	private transient Map<MissionType, Deal> deals = new EnumMap<>(MissionType.class);
 
 	private static UnitManager unitManager;
 
+	private static Map<Integer, ResourceLimits> resLimits;
+
 	/**
 	 * Constructor.
 	 *
 	 * @param settlement the settlement this manager is for.
-	 * @param sunRiseOffSet Offset to sunrise
 	 */
-	public GoodsManager(Settlement settlement, int sunRiseOffSet) {
+	public GoodsManager(Settlement settlement) {
 		this.settlement = settlement;
-		// Schedule an event to recalculate shopping lists just after sunrise
-		settlement.getFutureManager().addEvent(sunRiseOffSet + 10, new FutureHandler());
+
+		int sunRiseOffSet = MarsSurface.getTimeOffset(settlement.getCoordinates());
 		
+		// Schedule an event to recalculate shopping lists just after sunrise
+		settlement.getFutureManager().addEvent(sunRiseOffSet + 10, new TradeListUpdater());
+		
+		// Future event to update Goods values; randomise first triger
+		settlement.getFutureManager().addEvent(RandomUtil.getRandomInt(1, 50), new GoodsUpdater());
 		populateGoodsValues();
 	}
 
@@ -209,6 +224,8 @@ public class GoodsManager implements Serializable {
 	 * Updates the good values for all good.
 	 */
 	public void updateGoodValues() {
+		reviewedEssentials.clear();
+
  		// Update the goods value gradually with the use of buffers
 		for(Good g: GoodsUtil.getGoodsList()) {
 			determineGoodValue(g);
@@ -391,60 +408,26 @@ public class GoodsManager implements Serializable {
 		return value;
 	}
 
-	public void setCropFarmFactor(double value) {
-		cropFarmFactor = value * CROPFARM_BASE;
+	/**
+	 * Update a value for a Commerce factor.
+	 * @param type Commerce type being changed
+	 * @param value New value
+	 */
+	public void setCommerceFactor(CommerceType type, double value) {
+		// apply any weighting
+		value *= FACTOR_WEIGHTS.getOrDefault(type, 1D);
+		factors.put(type, value);
 	}
 
-	public void setManufacturingFactor(double value) {
-		manufactureFactor = value * MANU_BASE;
+	public double getCommerceFactor(CommerceType type) {
+		return factors.getOrDefault(type, 1D);
 	}
 
-	public void setTransportationFactor(double value) {
-		transportFactor = value * TRANSPORT_BASE;
-	}
-
-	public void setResearchFactor(double value) {
-		researchFactor = value * RESEARCH_BASE;
-	}
-
-	public void setTradeFactor(double value) {
-		tradeFactor = value * TRADE_BASE;
-	}
-
-	public void setTourismFactor(double value) {
-		tourismFactor = value * TOURISM_BASE;
-	}
-
-	public void setBuildersFactor(double value) {
-		buildersFactor = value * BUILDERS_BASE;
-	}
-
-	public double getBuildersFactor() {
-		return buildersFactor;
-	}
-
-	public double getCropFarmFactor() {
-		return cropFarmFactor;
-	}
-
-	public double getManufacturingFactor() {
-		return manufactureFactor;
-	}
-
-	public double getTransportationFactor() {
-		return transportFactor;
-	}
-
-	public double getResearchFactor() {
-		return researchFactor;
-	}
-
-	public double getTradeFactor() {
-		return tradeFactor;
-	}
-
-	public double getTourismFactor() {
-		return tourismFactor;
+	/**
+	 * Reset all commerce factors back to 1.
+	 */
+	public void resetCommerceFactors() {
+		factors.clear();
 	}
 
 	/**
@@ -530,7 +513,7 @@ public class GoodsManager implements Serializable {
 		eVASuitMod = computeModifier(BASE_EVA_SUIT, level);
 	}
 
-	private double computeModifier(int baseValue, int level) {
+	private static double computeModifier(int baseValue, int level) {
 		double mod = 0;
 		if (level == 1) {
 			mod = baseValue;
@@ -702,6 +685,106 @@ public class GoodsManager implements Serializable {
 	}
 	
 	/**
+	 * How many resources need reviewing?
+	 * @return
+	 */
+	public int getResourceReviewDue() {
+		return getResourceForReview().size();
+	}
+	
+	private Set<Integer> getResourceForReview() {
+		Set<Integer> unreviewed = new HashSet<>(resLimits.keySet());
+		unreviewed.removeAll(reviewedEssentials);
+
+		return unreviewed;
+	}
+
+	/**
+	 * Reserve an essential resoruce for a review
+	 * @return Selected resource
+	 */
+    public int reserveResourceReview() {
+		var unreviewed = getResourceForReview();
+
+		// Everything has been reviewed
+		if (unreviewed.isEmpty()) {
+			return -1;
+		}
+
+		// Pick one an random and add to the reviewed set
+		int selected = RandomUtil.getARandSet(unreviewed);
+		reviewedEssentials.add(selected);
+		return selected;
+    }
+
+	/**
+	 * Checks the demand for a gas.
+	 *
+	 * @param gasID
+	 */
+	public void checkResourceDemand(int gasID, double time) {
+		double result = 0;
+
+		var limits = resLimits.get(gasID);
+		if (limits == null) {
+			throw new IllegalArgumentException("Resource is not essential " + gasID);
+		}
+		int gasReserve = limits.reserve();
+		int gasMax = limits.max();
+		int pop = settlement.getNumCitizens();
+		
+		double demand = getDemandValueWithID(gasID);
+		if (demand > gasMax)
+			demand = gasMax;
+		if (demand < 1)
+			demand = 1;
+		
+		// Compare the available amount of oxygen
+		double supply = getSupplyValue(gasID);
+
+		double reserve = settlement.getAmountResourceStored(gasID);
+	
+		if (reserve + supply * pop > (gasReserve * 2 + demand) * pop) {
+			return;
+		}
+		
+		else if (reserve + supply * pop > (gasReserve + demand) * pop) {
+			result = (gasReserve + demand - supply) * pop - reserve;
+		}
+
+		else if (.5 * (reserve + supply * pop) > (gasReserve + demand) * pop) {
+			result = (gasReserve + demand - 0.5 * supply) * pop - .5 * reserve;
+		}
+
+		else {
+			result = (gasReserve + demand - 0.5 * supply) * pop - .5 * reserve;
+		}
+		
+		if (result < 0)
+			result = 0;
+				
+		if (result > gasMax)
+			result = gasMax;
+
+		double delta = result - demand;
+		if (delta > CHECK_RESOURCES) {
+			
+			// Limit each increase to a value only to avoid an abrupt rise or drop in demand 
+			delta = time * CHECK_RESOURCES;
+			String gasName = ResourceUtil.findAmountResourceName(gasID);
+			logger.info(settlement, 60_000L, 
+					"Previous demand for " + gasName + ": " + Math.round(demand * 10.0)/10.0 
+					+ "  Supply: " + Math.round(supply * 10.0)/10.0 
+					+ "  Reserve: " + Math.round(reserve * 10.0)/10.0		
+					+ "  Delta: " + Math.round(delta * 10.0)/10.0
+					+ "  New Demand: " + Math.round((demand + delta) * 10.0)/10.0 + ".");
+			
+			// Inject a sudden change of demand
+			setDemandValue(GoodsUtil.getGood(gasID), (demand + delta));
+		}
+	}
+
+	/**
 	 * Reloads instances after loading from a saved sim.
 	 *
 	 * @param s  {@link SimulationConfg}
@@ -712,6 +795,7 @@ public class GoodsManager implements Serializable {
 		unitManager = u;
 		Good.initializeInstances(sc, m);
 		CommerceUtil.initializeInstances(m, u);
+		resLimits = sc.getSettlementConfiguration().getEssentialResources();
 	}
 	
 	/**

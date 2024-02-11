@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -92,8 +93,7 @@ public class PerformLaboratoryResearchMeta extends FactoryMetaTask {
             return EMPTY_TASKLIST;
 
         var result = new RatingScore(base);
-        result.addModifier(GOODS_MODIFIER,
-                person.getAssociatedSettlement().getGoodsManager().getResearchFactor());
+        result = applyCommerceFactor(result, person.getAssociatedSettlement(), CommerceType.RESEARCH);
         result = assessPersonSuitability(result, person);
         return createTaskJobs(result);
     }

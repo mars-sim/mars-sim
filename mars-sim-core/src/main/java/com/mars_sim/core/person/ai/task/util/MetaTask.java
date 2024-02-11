@@ -15,12 +15,14 @@ import java.util.Set;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.environment.SurfaceFeatures;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.robot.RobotType;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
@@ -49,7 +51,7 @@ public abstract class MetaTask {
 	// Common modifier names for RatingScore
 	private static final String EVA_MODIFIER = "eva";
 	protected static final String GARAGED_MODIFIER = "garaged";
-	protected static final String GOODS_MODIFIER = "goods";
+	private static final String GOODS_MODIFIER = "goods";
 	protected static final String FAV_MODIFIER = "favourite";
 	private static final String JOB_MODIFIER = "job";
 	protected static final String PERSON_MODIFIER = "person";
@@ -277,6 +279,18 @@ public abstract class MetaTask {
         Collections.addAll(this.preferredRobots, rt);
 	}
 	
+	/**
+	 * Apply a Good modifier to a score based on a Commerce type
+	 * @param score Score to be modified
+	 * @param s Settlement of goods
+	 * @param cType Commerce type
+	 * @return Modified score
+	 */
+	public static RatingScore applyCommerceFactor(RatingScore score, Settlement s, CommerceType cType) {
+        score.addModifier(GOODS_MODIFIER, s.getGoodsManager().getCommerceFactor(cType));
+		return score;
+	}
+
 	/**
      * Gets the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
      * 

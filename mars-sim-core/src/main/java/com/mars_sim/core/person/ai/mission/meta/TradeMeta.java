@@ -11,6 +11,7 @@ import java.util.Set;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.Deal;
 import com.mars_sim.core.goods.GoodsManager;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -18,6 +19,7 @@ import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.mission.Trade;
 import com.mars_sim.core.person.ai.role.RoleType;
+import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
 
@@ -25,9 +27,6 @@ import com.mars_sim.core.vehicle.Rover;
  * A meta mission for the Trade mission.
  */
 public class TradeMeta extends AbstractMetaMission {
-
-	/** default logger. */
-//	private static SimLogger logger = SimLogger.getLogger(TradeMeta.class.getName());
 	
 	/** Starting sol for this mission to commence. */
 	public static final int MIN_STARTING_SOL = 4;
@@ -104,7 +103,8 @@ public class TradeMeta extends AbstractMetaMission {
 		double tradeProfit = deal.getProfit();
 
 		// Trade value modifier.
-		RatingScore missionProbability = new RatingScore(tradeProfit / 1000D * gManager.getTradeFactor());
+		RatingScore missionProbability = new RatingScore(tradeProfit / 1000D);
+		missionProbability = MetaTask.applyCommerceFactor(missionProbability, settlement, CommerceType.TRADE);
 		missionProbability.applyRange(0, Trade.MAX_STARTING_PROBABILITY);
 		
 		// Crowding modifier.

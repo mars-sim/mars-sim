@@ -13,6 +13,7 @@ import java.util.Set;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.data.UnitSet;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -161,7 +162,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
         if (remaining > 0D) {
             RatingScore score = new RatingScore(BASE_SCORE);
             score.addBase("vehicle", (100D * remaining)/vehicle.getCargoCapacity());
-            score.addModifier(GOODS_MODIFIER, settlement.getGoodsManager().getTransportationFactor());
+            score = applyCommerceFactor(score, settlement, CommerceType.TRANSPORT);
 
             boolean inGarageAlready = settlement.getBuildingManager().isInGarage(vehicle);
             if (insideOnlyTasks || inGarageAlready) {

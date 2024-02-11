@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.task.meta;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.SkillManager;
@@ -102,7 +103,7 @@ public class ProduceFoodMeta extends FactoryMetaTask {
         // FoodProduction good value modifier.
         result.addModifier("production",
                 ProduceFood.getHighestFoodProductionProcessValue(person, foodProductionBuilding));
-        result.addModifier(GOODS_MODIFIER, person.getSettlement().getGoodsManager().getCropFarmFactor());
+        result = applyCommerceFactor(result, person.getSettlement(), CommerceType.CROP);
 
     	result = assessPersonSuitability(result, person);
 
@@ -118,12 +119,11 @@ public class ProduceFoodMeta extends FactoryMetaTask {
 	public double getProbability(Robot robot) {
 
         double result = 0D;
-
-        if (robot.isInSettlement()) {
-
-            // If settlement has foodProduction override, no new
-            // foodProduction processes can be created.
-            if (!robot.getSettlement().getProcessOverride(OverrideType.FOOD_PRODUCTION)) {
+      
+        // If settlement has foodProduction override, no new
+        // foodProduction processes can be created.
+        if (robot.isInSettlement()
+                && !robot.getSettlement().getProcessOverride(OverrideType.FOOD_PRODUCTION)) {
 
                 // See if there is an available foodProduction building.
                 Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(robot);
@@ -147,7 +147,6 @@ public class ProduceFoodMeta extends FactoryMetaTask {
                     result *= robot.getPerformanceRating();
 
                 }
-            }
         }
 
         return result;

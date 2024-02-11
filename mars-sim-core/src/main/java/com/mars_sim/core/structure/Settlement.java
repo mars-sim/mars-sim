@@ -47,7 +47,7 @@ import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.goods.CreditManager;
 import com.mars_sim.core.goods.GoodsManager;
-import com.mars_sim.core.goods.GoodsUtil;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.parameter.ParameterManager;
@@ -101,7 +101,7 @@ import com.mars_sim.tools.util.RandomUtil;
  * contains information related to the state of the settlement.
  */
 public class Settlement extends Structure implements Temporal,
-	LifeSupportInterface, Objective, EquipmentOwner, ItemHolder, BinHolder, Appraiser {
+	LifeSupportInterface, EquipmentOwner, ItemHolder, BinHolder, Appraiser {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -113,22 +113,15 @@ public class Settlement extends Structure implements Temporal,
 	
 	private static final String IMMINENT = " be imminent.";
 	private static final String DETECTOR = "The radiation detector just forecasted a ";
-	private static final String TRADING_OUTPOST = "Trading Outpost";
-	private static final String MINING_OUTPOST = "Mining Outpost";
 	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
 
 	/**
 	 * Shared preference key for Mission limits
 	 */
-	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
-	public static final int CHECK_MISSION = 20; // once every 10 millisols
-	public static final int CHECK_RESOURCES = 30;
-	public static final int MAX_NUM_SOLS = 3;
-	public static final int MAX_SOLS_DAILY_OUTPUT = 14;
-	public static final int SUPPLY_DEMAND_REFRESH = 7;
+	private static final int CHECK_MISSION = 20; // once every 10 millisols
+	private static final int MAX_NUM_SOLS = 3;
 	private static final int RESOURCE_UPDATE_FREQ = 30;
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
-	public static final int NUM_CRITICAL_RESOURCES = 10;
 	private static final int RESOURCE_STAT_SOLS = 12;
 	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
 
@@ -139,17 +132,7 @@ public class Settlement extends Structure implements Temporal,
 	private static final int REGOLITH_MAX = 4000;
 	private static final int ICE_MAX = 4000;
 	private static final int WATER_MAX = 10_000;
-	private static final int OXYGEN_MAX = 10_000;
-	private static final int METHANE_MAX = 10_000;
-	private static final int HYDROGEN_MAX = 10_000;
-	private static final int N2_MAX = 5_000;
-	private static final int CO2_MAX = 2_000;
-	
-	private static final int MIN_OXYGEN_RESERVE = 400; // per person
-	private static final int MIN_METHANE_RESERVE = 400; // per person
-	private static final int MIN_HYDROGEN_RESERVE = 400; // per person
-	private static final int MIN_N2_RESERVE = 100; // per person
-	private static final int MIN_CO2_RESERVE = 50; // per person
+
 	private static final int MIN_WATER_RESERVE = 400; // per person
 	private static final int MIN_ICE_RESERVE = 400; // per person
 	
@@ -158,7 +141,6 @@ public class Settlement extends Structure implements Temporal,
 	private static final int METHANE_ID = ResourceUtil.methaneID;
 	private static final int METHANOL_ID = ResourceUtil.methanolID;
 	private static final int CO2_ID = ResourceUtil.co2ID;
-	private static final int NITROGEN_ID = ResourceUtil.nitrogenID;
 	
 	private static final int WATER_ID = ResourceUtil.waterID;
 	private static final int ICE_ID = ResourceUtil.iceID;
@@ -222,8 +204,6 @@ public class Settlement extends Structure implements Temporal,
 	private boolean hasDesignatedCommander = false;
 	/** The flag to see if a water ration review is due. */
 	private boolean waterRatioReviewFlag = false;
-	/** The flag to see if a resource review is due. */
-	private boolean[] resourceReviewFlag = new boolean[6];
 	
 	/** The water ratio of the settlement. The higher the more urgent for water resource. */
 	private int waterRatioCache = 1;
@@ -234,8 +214,6 @@ public class Settlement extends Structure implements Temporal,
 	private int initialPopulation;
 	/** The number of robots at the start of the settlement. */
 	private int initialNumOfRobots;
-	/** The template ID of the settlement. */
-	private int templateID;
 	/** The cache for the mission sol. */
 	private int solCache = 0;
 	/** Numbers of citizens of this settlement. */
@@ -375,12 +353,11 @@ public class Settlement extends Structure implements Temporal,
 	 * @param id
 	 * @param location
 	 */
-	public Settlement(String name, int id, Coordinates location) {
+	public Settlement(String name, Coordinates location) {
 		// Use Structure constructor.
 		super(name, location);
 
 		this.settlementCode = createCode(name);
-		this.templateID = id;
 		this.location = location;
 
 		
@@ -402,7 +379,7 @@ public class Settlement extends Structure implements Temporal,
 
 		// Mock use the default shifts
 		ShiftPattern shifts = settlementConfig.getShiftPattern(SettlementConfig.STANDARD_3_SHIFT);
-		shiftManager = new ShiftManager(this, shifts, 0,
+		shiftManager = new ShiftManager(this, shifts,
 										masterClock.getMarsTime().getMillisolInt());
 	}
 
@@ -412,20 +389,18 @@ public class Settlement extends Structure implements Temporal,
 	 * settlement.
 	 *
 	 * @param name
-	 * @param id
 	 * @param template
 	 * @param sponsor
 	 * @param location
 	 * @param populationNumber
 	 * @param initialNumOfRobots
 	 */
-	private Settlement(String name, int id, String template, Authority sponsor, Coordinates location, int populationNumber,
+	private Settlement(String name, String template, Authority sponsor, Coordinates location, int populationNumber,
 			int initialNumOfRobots) {
 		// Use Structure constructor
 		super(name, location);
 
 		this.settlementCode = createCode(name);
-		this.templateID = id;
 		this.location = location;
 		this.template = template;
 		this.initialNumOfRobots = initialNumOfRobots;
@@ -442,7 +417,7 @@ public class Settlement extends Structure implements Temporal,
 		robotsWithin = new UnitSet<>();
 		allowTradeMissionSettlements = new HashMap<>();
 		
-		logger.info(name + " (" + settlementCode + ")" + "  templateID: " + templateID + " " );
+		logger.info(name + " (" + settlementCode + ")");
 		
 		preferences.resetValues(sponsor.getPreferences());
 
@@ -468,9 +443,9 @@ public class Settlement extends Structure implements Temporal,
 	 * @param initialNumOfRobots
 	 * @return
 	 */
-	public static Settlement createNewSettlement(String name, int id, String template, Authority sponsor,
+	public static Settlement createNewSettlement(String name, String template, Authority sponsor,
 			Coordinates location, int populationNumber, int initialNumOfRobots) {
-		return new Settlement(name, id, template, sponsor, location, populationNumber, initialNumOfRobots);
+		return new Settlement(name, template, sponsor, location, populationNumber, initialNumOfRobots);
 	}
 
 	/**
@@ -522,22 +497,15 @@ public class Settlement extends Structure implements Temporal,
 		// Initialize schedule event manager
 		futureEvents = new ScheduledEventManager(masterClock);
 
-		// Get the rotation about the planet and convert that to a fraction of the Sol.
-		double fraction = getCoordinates().getTheta()/(Math.PI * 2D); 
-		if (fraction == 1D) {
-			// Gone round the planet
-			fraction = 0D;
-		}
-		int sunRiseOffSet = (int) (100 * fraction) * 10; // Do the offset in units of 10
 
 		shiftManager = new ShiftManager(this, sTemplate.getShiftDefinition(),
-										sunRiseOffSet, masterClock.getMarsTime().getMillisolInt());
+										 masterClock.getMarsTime().getMillisolInt());
 
 		// Initialize Credit Manager.
 		creditManager = new CreditManager(this);
 		
 		// Initialize goods manager.
-		goodsManager = new GoodsManager(this, sunRiseOffSet);
+		goodsManager = new GoodsManager(this);
 
 		// Initialize construction manager.
 		constructionManager = new ConstructionManager(this);
@@ -558,12 +526,7 @@ public class Settlement extends Structure implements Temporal,
 		chainOfCommand = new ChainOfCommand(this);
 
 		// Set objective()
-		if (template.equals(TRADING_OUTPOST))
-			setObjective(ObjectiveType.TRADE_CENTER, 2);
-		else if (template.equals(MINING_OUTPOST))
-			setObjective(ObjectiveType.MANUFACTURING_DEPOT, 2);
-		else
-			setObjective(ObjectiveType.CROP_FARM, 2);
+		setObjective(sTemplate.getObjective(), 2);
 
 		// initialize the missionScores list
 		missionScores = new ArrayList<>();
@@ -980,12 +943,6 @@ public class Settlement extends Structure implements Temporal,
 
 		
 		if (pulse.isNewHalfSol()) {
-			// Reset all resource review flags to allow for next review
-			int size = resourceReviewFlag.length;
-			for (int i=0; i<size; i++) {
-				unlockResourceReview(i);
-			}
-			
 			// Reset the flag for water ratio review
 			setReviewWaterRatio(false);
 		}
@@ -1100,30 +1057,10 @@ public class Settlement extends Structure implements Temporal,
 			// Computes the average air pressure & temperature of the life support system.
 			computeEnvironmentalAverages();
 			
-//			double time = pulse.getElapsed();
-			
-			int remainder = 0; // msol % CHECK_RESOURCES;
-//			if (remainder == 1) {
-//				// Check on demand and supply and amount of water, oxygen and methane
-//				checkResourceDemand("Oxygen", OXYGEN_ID, MIN_OXYGEN_RESERVE, OXYGEN_MAX, time);
-//				checkResourceDemand("Methane", METHANE_ID, MIN_METHANE_RESERVE, METHANE_MAX, time);
-//				checkResourceDemand("Hydrogen", HYDROGEN_ID, MIN_HYDROGEN_RESERVE, HYDROGEN_MAX, time);
-//				checkResourceDemand("Nitrogen", NITROGEN_ID, MIN_N2_RESERVE, N2_MAX, time);
-//				checkResourceDemand("Carbon Dioxide", CO2_ID, MIN_CO2_RESERVE, CO2_MAX, time);
-//				checkResourceDemand("Water", WATER_ID, MIN_WATER_RESERVE, WATER_MAX, time);
-//			}
-			
 			// Tag available airlocks into two categories
 			checkAvailableAirlocks();
 
-			// Check if good need updating
-			remainder = msol % UPDATE_GOODS_PERIOD;
-			if (remainder == templateID) {
-				// Update the goods value gradually with the use of buffers
-				goodsManager.updateGoodValues();
-			}
-
-			remainder = msol % CHECK_MISSION;
+			int remainder = msol % CHECK_MISSION;
 			if (remainder == 1) {
 				// Reset the mission probability back to 1
 				mineralValue = -1;
@@ -1705,8 +1642,6 @@ public class Settlement extends Structure implements Temporal,
 			Airlock airlock = nextBuilding.getEVA().getAirlock();
 			
 			boolean chamberFull = airlock.areAll4ChambersFull();
-//			boolean reservationFull = airlock.isReservationFull();
-
 			// Select airlock that fulfill either conditions:
 			// 1. Chambers are NOT full
 			// 2. Chambers are full but the reservation is NOT full
@@ -2552,86 +2487,6 @@ public class Settlement extends Structure implements Temporal,
 	}
 	
 	/**
-	 * Locks the flag for reviewing a resource. Won't be able to review until it's unlocked.
-	 * 
-	 * @param value
-	 */
-	public void lockResourceReview(int i) {
-		resourceReviewFlag[i] = false;
-	}
-	
-	/**
-	 * Unlocks the flag for reviewing a resource. Open for review until it's locked.
-	 * 
-	 * @param value
-	 */
-	public void unlockResourceReview(int i) {
-		resourceReviewFlag[i] = true;
-	}
-	
-	/**
-	 * Returns if a resource has been reviewed.
-	 * 
-	 * @return
-	 */
-	public boolean canReviewResource(int i) {
-		return resourceReviewFlag[i];
-	}
-	
-	/**
-	 * Finds the number of resources that's due for review.
-	 * 
-	 * @return
-	 */
-	public int findNumResourceReviewDue() {
-		int count = 0;
-		for (boolean value : resourceReviewFlag) {
-			if (value)
-				count++;
-		}
-		return count;
-	}
-	
-	/**
-	 * Finds a resource that's due for review.
-	 * 
-	 * @return
-	 */
-	public int findResourceReview() {
-		for (int i = 0; i < resourceReviewFlag.length; i++) {
-			if (canReviewResource(i))
-				return i;
-		}
-		return -1;
-	}
-	
-	
-	/**
-	 * Reviews a resource.
-	 * 
-	 * @param i
-	 * @param time
-	 */
-	public void reviewResource(int i, double time) {
-		switch (i) {
-        case 0:
-        	checkResourceDemand("Oxygen", OXYGEN_ID, MIN_OXYGEN_RESERVE, OXYGEN_MAX, time);
-		case 1:
-			checkResourceDemand("Methane", METHANE_ID, MIN_METHANE_RESERVE, METHANE_MAX, time);
-		case 2:
-			checkResourceDemand("Water", WATER_ID, MIN_WATER_RESERVE, WATER_MAX, time);
-		case 3:
-			checkResourceDemand("Hydrogen", HYDROGEN_ID, MIN_HYDROGEN_RESERVE, HYDROGEN_MAX, time);
-		case 4:
-			checkResourceDemand("Nitrogen", NITROGEN_ID, MIN_N2_RESERVE, N2_MAX, time);
-		case 5:	
-			checkResourceDemand("Carbon Dioxide", CO2_ID, MIN_CO2_RESERVE, CO2_MAX, time);
-		default:
-			//
-        }
-	}
-	
-	/**
 	 * Computes the water ratio at the settlement.
 	 *
 	 * @return level of water ration.
@@ -2669,36 +2524,11 @@ public class Settlement extends Structure implements Temporal,
 		double lvl = 1.25 * level;
 
 		// reset all to 1
-		goodsManager.setCropFarmFactor(1);
-		goodsManager.setManufacturingFactor(1);
-		goodsManager.setResearchFactor(1);
-		goodsManager.setTransportationFactor(1);
-		goodsManager.setTradeFactor(1);
-
-		if (objectiveType == ObjectiveType.CROP_FARM) {
-			goodsManager.setCropFarmFactor(lvl);
+		goodsManager.resetCommerceFactors();
+		CommerceType cType = ObjectiveUtil.toCommerce(objectiveType);
+		if (cType != null) {
+			goodsManager.setCommerceFactor(cType, lvl);
 		}
-
-		else if (objectiveType == ObjectiveType.MANUFACTURING_DEPOT) {
-			goodsManager.setManufacturingFactor(lvl);
-		}
-
-		else if (objectiveType == ObjectiveType.RESEARCH_CAMPUS) {
-			goodsManager.setResearchFactor(lvl);
-		}
-
-		else if (objectiveType == ObjectiveType.TRANSPORTATION_HUB) {
-			goodsManager.setTransportationFactor(lvl);
-		}
-
-		else if (objectiveType == ObjectiveType.TRADE_CENTER) {
-			goodsManager.setTradeFactor(lvl);
-		}
-
-		else if (objectiveType == ObjectiveType.TOURISM) {
-			goodsManager.setTourismFactor(lvl);
-		}
-
 	}
 
 	/**
@@ -2708,23 +2538,11 @@ public class Settlement extends Structure implements Temporal,
 	 * @return the level
 	 */
 	public double getObjectiveLevel(ObjectiveType objectiveType) {
-
-		switch(objectiveType) {
-			case CROP_FARM:
-				return goodsManager.getCropFarmFactor();
-			case MANUFACTURING_DEPOT:
-				return goodsManager.getManufacturingFactor();
-			case RESEARCH_CAMPUS:
-				return goodsManager.getResearchFactor();
-			case TRANSPORTATION_HUB:
-				return goodsManager.getTransportationFactor();
-			case TRADE_CENTER:
-				return goodsManager.getTradeFactor();
-			case TOURISM:
-				return goodsManager.getTourismFactor();
-			default:
-				return -1;
+		CommerceType cType = ObjectiveUtil.toCommerce(objectiveType);
+		if (cType == null) {
+			return -1;
 		}
+		return goodsManager.getCommerceFactor(cType);
 	}
 
 	/**
@@ -2734,36 +2552,6 @@ public class Settlement extends Structure implements Temporal,
 		return objectiveType;
 	}
 
-	/**
-	 * Gets the building type related to the settlement objective.
-	 *
-	 * @return
-	 */
-	public String getObjectiveBuildingType() {
-
-		// TODO: check if a particular building has existed, if yes, build the next
-		// relevant building
-		
-		if (objectiveType == ObjectiveType.CROP_FARM)
-			return "Inflatable Greenhouse";
-		// alternatives : "Fish Farm", "Large Greenhouse", "Inground Greenhouse"
-		else if (objectiveType == ObjectiveType.MANUFACTURING_DEPOT)
-			return "Workshop"; 
-		// alternatives : "Manufacturing Shed", MD1, MD4
-		else if (objectiveType == ObjectiveType.RESEARCH_CAMPUS)
-			return "Laboratory"; 
-		// alternatives : "Mining Lab", "Astronomy Observatory"
-		else if (objectiveType == ObjectiveType.TRANSPORTATION_HUB)
-			return "Garage";
-		// alternatives :"Loading Dock Garage";
-		else if (objectiveType == ObjectiveType.TRADE_CENTER)
-			return "Garage"; 
-		// alternatives : "Storage Shed", Future: "Markets" 
-		else if (objectiveType == ObjectiveType.TOURISM)
-			return "Residential Quarters";
-		else
-			return null;
-	}
 
 	/**
 	 * Gets the total area of Crops in this Settlement.
@@ -2897,87 +2685,12 @@ public class Settlement extends Structure implements Temporal,
 		if (result < 0)
 			result = 0;
 		
-//		logger.info(this, 30_000L, "iceDemand: " + iceDemand
-//				+ "   waterDemand: " + waterDemand
-//				+ "   ice Prob value: " + result
-//				);
-		
 		if (result > MAX_PROB)
 			result = MAX_PROB;
 		
 		return result;
 	}
 
-	/**
-	 * Checks the demand for a gas.
-	 *
-	 * @param gasName
-	 * @param gasID
-	 * @param gasReserve
-	 * @param gasMax
-	 */
-	private void checkResourceDemand(String gasName, int gasID, int gasReserve, int gasMax, double time) {
-		double result = 0;
-
-		int pop = numCitizens;
-		
-		double demand = goodsManager.getDemandValueWithID(gasID);
-		if (demand > gasMax)
-			demand = gasMax;
-		if (demand < 1)
-			demand = 1;
-		
-		// Compare the available amount of oxygen
-		double supply = goodsManager.getSupplyValue(gasID);
-
-		double reserve = getAmountResourceStored(gasID);
-	
-		if (reserve + supply * pop > (gasReserve * 2 + demand) * pop) {
-//			logger.info(this, "Case 1.");
-			// change nothing
-			return;
-		}
-		
-		else if (reserve + supply * pop > (gasReserve + demand) * pop) {
-//			logger.info(this, "Case 2.");
-			result = (gasReserve + demand - supply) * pop - reserve;
-		}
-
-		else if (.5 * (reserve + supply * pop) > (gasReserve + demand) * pop) {
-//			logger.info(this, "Case 3.");
-			result = (gasReserve + demand - 0.5 * supply) * pop - .5 * reserve;
-		}
-
-		else {
-//			logger.info(this, "Case 4.");
-			result = (gasReserve + demand - 0.5 * supply) * pop - .5 * reserve;
-		}
-		
-		if (result < 0)
-			result = 0;
-				
-		if (result > gasMax)
-			result = gasMax;
-
-		double delta = result - demand;
-
-		if (delta > CHECK_RESOURCES) {
-			
-			// Limit each increase to a value only to avoid an abrupt rise or drop in demand 
-			delta = time * CHECK_RESOURCES;
-			
-			logger.info(this, 60_000L, 
-					"Previous demand for " + gasName + ": " + Math.round(demand * 10.0)/10.0 
-					+ "  Supply: " + Math.round(supply * 10.0)/10.0 
-					+ "  Reserve: " + Math.round(reserve * 10.0)/10.0		
-					+ "  Delta: " + Math.round(delta * 10.0)/10.0
-					+ "  New Demand: " + Math.round((demand + delta) * 10.0)/10.0 + ".");
-			
-			// Inject a sudden change of demand
-			goodsManager.setDemandValue(GoodsUtil.getGood(gasID), (demand + delta));
-		}
-	}
-	
 	/**
 	 * Checks if the last 20 mission scores are above the threshold.
 	 *
@@ -4078,8 +3791,6 @@ public class Settlement extends Structure implements Temporal,
 			creditManager = null;
 		}
 		
-		template = null;
-
 		scientificAchievement = null;
 	}
 }

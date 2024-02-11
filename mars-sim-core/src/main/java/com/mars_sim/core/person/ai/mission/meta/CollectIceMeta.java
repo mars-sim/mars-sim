@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.mission.meta;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.CollectIce;
@@ -69,7 +70,8 @@ public class CollectIceMeta extends AbstractMetaMission {
 	    		missionProbability.addModifier(LEADER, getLeaderSuitability(person));
 
 				// If this town has a crop farm objective, divided by bonus
-				missionProbability.addModifier(GOODS, Math.min(1, settlement.getGoodsManager().getCropFarmFactor()/2));
+				missionProbability.addModifier(GOODS, Math.min(1,
+							settlement.getGoodsManager().getCommerceFactor(CommerceType.CROP)/2));
 
 				// if introvert, score  0 to  50 --> -2 to 0
 				// if extrovert, score 50 to 100 -->  0 to 2

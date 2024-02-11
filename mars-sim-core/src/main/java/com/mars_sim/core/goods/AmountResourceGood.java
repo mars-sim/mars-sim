@@ -18,6 +18,7 @@ import com.mars_sim.core.food.FoodProductionProcess;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.food.FoodProductionProcessItem;
 import com.mars_sim.core.food.FoodProductionUtil;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureProcessItem;
@@ -771,7 +772,8 @@ class AmountResourceGood extends Good {
 			// Obtain the value of this resource
 			double totalInputsValue = (outputsValue - powerValue);
 
-			int resource = getID();
+			int resourceID = getID();
+			CommerceType cType = null;
 			GoodType type = getGoodType();
 			switch(settlement.getObjective()) {
 				case BUILDERS_HAVEN: { 
@@ -779,7 +781,7 @@ class AmountResourceGood extends Good {
 					|| GoodType.MINERAL == type
 					|| GoodType.ORE == type
 					|| GoodType.UTILITY == type) {
-						totalInputsValue *= owner.getBuildersFactor();
+						cType = CommerceType.BUILDING;
 					}
 				} break;
 
@@ -787,12 +789,12 @@ class AmountResourceGood extends Good {
 					if (GoodType.CROP == type
 					|| GoodType.DERIVED == type
 					|| GoodType.SOY_BASED == type) {
-						totalInputsValue *= owner.getCropFarmFactor();
+						cType = CommerceType.CROP;
 					}
 				} break;
 
 				case MANUFACTURING_DEPOT: 
-					totalInputsValue *= owner.getManufacturingFactor();
+					cType = CommerceType.MANUFACTURING;
 				break;
 
 				case RESEARCH_CAMPUS: { 
@@ -800,24 +802,27 @@ class AmountResourceGood extends Good {
 					|| GoodType.ORGANISM == type
 					|| GoodType.CHEMICAL == type
 					|| GoodType.ROCK == type) {
-						totalInputsValue *= owner.getResearchFactor();
+						cType = CommerceType.RESEARCH;
 					}
 				} break;
 
 				case TRADE_CENTER:
-						totalInputsValue *= owner.getTradeFactor();
+					cType = CommerceType.TRADE;
 				break;
 
 				case TRANSPORTATION_HUB: {
-					if (resource == ResourceUtil.methaneID
-					|| resource == ResourceUtil.methanolID
-					|| resource == ResourceUtil.hydrogenID) {
-						totalInputsValue *= owner.getTransportationFactor();
+					if (resourceID == ResourceUtil.methaneID
+					|| resourceID == ResourceUtil.methanolID
+					|| resourceID == ResourceUtil.hydrogenID) {
+						cType = CommerceType.TRANSPORT;
 					}
 				} break;
 
 				default:
 					break;
+			}
+			if (cType != null) {
+				totalInputsValue *= owner.getCommerceFactor(cType);
 			}
 
 			// Modify by other factors
@@ -865,8 +870,9 @@ class AmountResourceGood extends Good {
 			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsTime.HOURS_PER_MILLISOL;
 			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
-			double totalInputsValue = (outputsValue - powerValue) * owner.getTradeFactor() * owner.getCropFarmFactor()
-					* FOOD_PRODUCTION_INPUT_FACTOR;
+			double totalInputsValue = (outputsValue - powerValue) * owner.getCommerceFactor(CommerceType.TRADE)
+											* owner.getCommerceFactor(CommerceType.CROP)
+											* FOOD_PRODUCTION_INPUT_FACTOR;
 
 			if (totalItems > 0D) {
 				demand = (1D / totalItems) * totalInputsValue;
@@ -1096,7 +1102,7 @@ class AmountResourceGood extends Good {
 		// Determine demand for resource at each farming building at settlement.
 		for(Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.FARMING)) {
 			Farming farm = b.getFarming();
-			demand += getFarmingResourceDemand(farm) * owner.getCropFarmFactor() * FARMING_FACTOR;
+			demand += getFarmingResourceDemand(farm) * owner.getCommerceFactor(CommerceType.CROP) * FARMING_FACTOR;
 		}
 
 		return demand;
@@ -1205,7 +1211,7 @@ class AmountResourceGood extends Good {
 		}
 			
 		double demand = 0D;
-		double cropFarmFactor = owner.getCropFarmFactor();
+		double cropFarmFactor = owner.getCommerceFactor(CommerceType.CROP);
 		double factor = .01 * cropFarmFactor;
 		
 		for (Ingredient it : ingredients) {		
@@ -1301,7 +1307,7 @@ class AmountResourceGood extends Good {
 				amountNeededSol = METHANE_VALUE_MODIFIER;
 			}
 			
-			return numPeople * amountNeededSol * owner.getTradeFactor() * LIFE_SUPPORT_FACTOR;
+			return numPeople * amountNeededSol * owner.getCommerceFactor(CommerceType.TRADE)  * LIFE_SUPPORT_FACTOR;
 		}
 		else
 			return 0;
@@ -1484,7 +1490,7 @@ class AmountResourceGood extends Good {
 			double amountNeededSol = personConfig.getWaterUsageRate();
 			int numPeople = settlement.getNumCitizens();
 			demand = numPeople * amountNeededSol *  WATER_VALUE_MODIFIER 
-					* owner.getTradeFactor() * (1 + waterRationLevel);
+					* owner.getCommerceFactor(CommerceType.TRADE)  * (1 + waterRationLevel);
 		}
 
 		return demand;
@@ -1568,26 +1574,26 @@ class AmountResourceGood extends Good {
 	 */
 	private double getVehicleFuelDemand(GoodsManager owner, Settlement settlement) {
 		double demand = 0D;
+		double transFactor = owner.getCommerceFactor(CommerceType.TRANSPORT) * VEHICLE_FUEL_FACTOR; 
 		if (getID() == ResourceUtil.methanolID) {
 			for(Vehicle v: settlement.getAllAssociatedVehicles()) {
 				double fuelDemand = v.getAmountResourceCapacity(getID());
-				demand += fuelDemand * owner.getTransportationFactor() * VEHICLE_FUEL_FACTOR * METHANOL_VALUE_MODIFIER;
+				demand += fuelDemand * transFactor * METHANOL_VALUE_MODIFIER;
 			}
 		}
 		
 		else if (getID() == ResourceUtil.methaneID) {
 			for(Vehicle v: settlement.getAllAssociatedVehicles()) {
 				double fuelDemand = v.getAmountResourceCapacity(getID());
-				demand += fuelDemand * owner.getTransportationFactor() * VEHICLE_FUEL_FACTOR * METHANE_VALUE_MODIFIER;
+				demand += fuelDemand * transFactor * METHANE_VALUE_MODIFIER;
 			}
 		}
 
 		else if (getID() == ResourceUtil.hydrogenID) {
-			demand +=  owner.getTransportationFactor() * VEHICLE_FUEL_FACTOR * HYDROGEN_VALUE_MODIFIER;
+			demand +=  transFactor * HYDROGEN_VALUE_MODIFIER;
 		}
 		
 
 		return demand;
 	}
-
 }

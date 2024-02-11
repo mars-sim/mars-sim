@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.task.meta;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillManager;
@@ -90,8 +91,7 @@ public class ManufactureConstructionMaterialsMeta extends FactoryMetaTask {
         score.addModifier("production",
                 ManufactureConstructionMaterials.getHighestManufacturingProcessValue(person,
                     manufacturingBuilding)/1000D);
-            
-        score.addModifier(GOODS_MODIFIER, person.getSettlement().getGoodsManager().getManufacturingFactor());
+        score = applyCommerceFactor(score, person.getSettlement(), CommerceType.MANUFACTURING);   
         score = assessPersonSuitability(score, person);
 
         return createTaskJobs(score);
