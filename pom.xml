@@ -73,7 +73,6 @@
 			<modules>
 				<module>mars-sim-tools</module>
 				<module>mars-sim-mapdata</module>
-				<module>mars-sim-main</module>
 				<module>mars-sim-headless</module>
 				<module>mars-sim-console</module>
 				<module>mars-sim-core</module>
@@ -148,7 +147,6 @@
 	<modules>
     	<module>mars-sim-tools</module>
 		<module>mars-sim-mapdata</module>
-		<module>mars-sim-main</module>
 		<module>mars-sim-headless</module>
 		<module>mars-sim-console</module>
 		<module>mars-sim-core</module>

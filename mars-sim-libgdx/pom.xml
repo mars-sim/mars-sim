@@ -14,7 +14,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.mars-sim</groupId>
-			<artifactId>mars-sim-main</artifactId>
+			<artifactId>mars-sim-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		

@@ -13,6 +13,10 @@
 	<properties>
 		<flatlaf.version>3.2.5</flatlaf.version>
 		<jfreechart.version>1.5.4</jfreechart.version>
+		<jide-oss.version>3.7.14</jide-oss.version>
+
+		<mainClass>com.mars_sim.main.MarsProject</mainClass>
+		<target.name>mars-sim-swing-${project.version}</target.name>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -22,9 +26,9 @@
 		</dependency>
 		<dependency>
 			<groupId>com.mars-sim</groupId>
-			<artifactId>mars-sim-console</artifactId>
+			<artifactId>mars-sim-headless</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency>	
 		<dependency>
 			<groupId>com.mars-sim</groupId>
 			<artifactId>mars-sim-mapdata</artifactId>
@@ -42,23 +46,11 @@
 		    <artifactId>SteelSeries</artifactId>
 		    <version>3.9.31.2</version>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-transcoder/ : 126 KB
-			 1.9 has java.lang.NoClassDefFoundError: org/apache/batik/i18n/Localizable, which is caused by a bug with Apache FOP
-			 see https://stackoverflow.com/questions/43371411/apache-fop-2-2-migration-error-classnotfoundexception-org-apache-batik-i18n-l
-			 if using 1.8 or 1.9, import org.apache.batik.anim.dom.SAXSVGDocumentFactory
-			 if using 1.7, import org.apache.batik.dom.svg.SAXSVGDocumentFactory -->
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-transcoder</artifactId>
 			<version>1.17</version>
 		</dependency>
-     
-		<!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/jorbis : 97 KB -->
-		<!-- https://www.jcraft.com/jorbis/  -->
-		<!-- May consider the following two other sound APIs :			 
-			 https://github.com/Trilarion/java-vorbis-support
-			 https://github.com/Gagravarr/VorbisJava -->
 		<dependency>
 		    <groupId>com.googlecode.soundlibs</groupId>
 		    <artifactId>jorbis</artifactId>
@@ -70,24 +62,62 @@
 			<artifactId>flatlaf-swingx</artifactId>
 			<version>${flatlaf.version}</version>
 		</dependency>
-		
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>flatlaf-extras</artifactId>
 			<version>${flatlaf.version}</version>
 		</dependency>
-		
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>flatlaf</artifactId>
 			<version>${flatlaf.version}</version>
 		</dependency>
-
-		<!-- Note: flatlaf-jide-oss requires com.formdev's jide-oss 3.7.12 below -->
+		<!-- Note: flatlaf-jide-oss requires com.formdev's jide-oss-->
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>flatlaf-jide-oss</artifactId>
 			<version>${flatlaf.version}</version>
 		</dependency>
-  </dependencies>
+		<dependency>
+			<groupId>com.formdev</groupId>
+			<artifactId>jide-oss</artifactId>
+			<version>${jide-oss.version}</version>
+		</dependency>
+	</dependencies>
+  	<build>
+		<plugins>
+			<!-- Build the executable JAR file -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.6.0</version>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>						
+							<mainClass>${mainClass}</mainClass>
+						</manifest>
+						<manifestEntries>
+						    <Multi-Release>true</Multi-Release>
+						</manifestEntries>						
+					</archive>
+					<!-- Control the final name of the generated file -->
+					<finalName>${target.name}</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
+						<phase>package</phase> <!-- append to the packaging phase. -->
+						<goals>
+							<goal>single</goal> <!-- goals == mojos -->
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
