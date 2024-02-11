@@ -255,8 +255,8 @@
 	<!-- 1m x 1m square of thin plastic sheet -->
 	<part name="Plastic Sheet" type="utility" mass=".1" />
 
-	<!-- 1m x 1m x 1cm square of glass  -->
-	<part name="Glass Sheet" type="utility" mass="26.0" />
+	<!-- 1m x 1m x .5cm square of glass  -->
+	<part name="Glass Sheet" type="utility" mass="27.56" />
 
 	<part name="Garment" type="utility" mass="0.5" >
 		<description>a standard set of clothing for indoor use.</description>
@@ -407,12 +407,14 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Rover Window" type="vehicle" mass="25.0" >
+	<part name="Window" type="construction" mass="25.0" >
 		<maintenance-entity-list>
-			<entity name="rover" probability=".5" max-number="5" />
+			<entity name="rover" probability=".5" max-number="1" />
+			<entity name="life support" probability=".5" max-number="1" />				
+			<entity name="farming" probability=".5" max-number="1" />			
 		</maintenance-entity-list>
 	</part>
-
+	
 	<part name="Rover Generator" type="vehicle" mass="80.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
@@ -837,8 +839,8 @@
 
 	<part name="Flexible hose" type="utility" mass=".1"/>
 
-	<part name="Polycarbonate roofing" type="utility" mass="1">
-		<description>highly transparent, "bullet-resistant" plastic cladding
+	<part name="Polycarbonate roofing" type="construction" mass="1">
+		<description>Assume 2m x 2m, highly transparent, "bullet-resistant" plastic cladding
 			roofing for greenhouses</description>
 		<maintenance-entity-list>
 			<entity name="farming" probability="2" max-number="2" />
@@ -1110,8 +1112,9 @@
 		<description>a LED outdoor weather-proof, adjustable flood light with tripod stand</description>
 	</part>
 
-	<part name="Aerogel tile" type="construction" mass="0.5">
-		<description>Excellent for transparent insulation, a silica aerogel tile contain nanoscale networks of interconnecting silica clusters, 
+	<part name="Aerogel tile" type="construction" mass="0.3">
+		<description>Assume each tile is about 1m x 1m. Excellent for transparent insulation, 
+		a silica aerogel tile contain nanoscale networks of interconnecting silica clusters, 
 		contain over 97% air by volume and have some of the lowest measured thermal conductivities of 
 		any known material (of 0.02 W/m/K at 1 bar pressure or 0.01 W/m/K at Martian atmospheric 
 		pressure). Routinely employed in many engineering applications, including 
@@ -1121,10 +1124,11 @@
 	</part>
 	
 	<part name="Insulation board" type="construction" mass="1">
-		<description>Extruded polystyrene (XPS) and expanded polystyrene insulation (EPS) contain millions of 
-		air pockets trapped within the foam. Because the polystyrene itself is also highly resistant to heat, 
-		the result is a great thermal insulator which can give excellent R-ratings. In addition to this, 
-		XPS is often lined with aluminium foil </description>
+		<description>Assume each tile is about 1m x 1m. Each board comprises extruded polystyrene (XPS) 
+		and expanded polystyrene insulation (EPS) that contain millions of air pockets trapped 
+		within the foam. Because the polystyrene itself is also highly resistant to heat, 
+		the result is a great thermal insulator which can give excellent R-ratings. 
+		XPS is often lined with aluminium foil. </description>
 	</part>
 
 	<part name="biosensor" type="electronic" mass="0.1">

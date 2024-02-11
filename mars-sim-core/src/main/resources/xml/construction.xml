@@ -515,6 +515,7 @@
 		<building name="Wind Turbine" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="Steel Frame Tower" >
+			<part name="aerogel tile" number="10" />		 
 			<part name="wind turbine blade" number="4" />
 			<part name="turbine generator" number="1" />
 			<part name="power cable" number="6" />
@@ -528,6 +529,7 @@
 		<building name="Solar Photovoltaic Array" width="5.0" length="10.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" frame="Array Frame" >
+			<part name="aerogel tile" number="16" />
 			<part name="solar panel" number="6" />
 			<part name="power cable" number="2" />
 			<part name="stepper motor small" number="2" />
@@ -542,6 +544,7 @@
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="Array Frame" >
 			<resource name="water" amount="200.0" />
+			<part name="aerogel tile" number="32" />
 			<part name="solar parabolic mirror" number="3" />
 			<part name="power cable" number="2" />
 			<part name="glass tube" number="6" />
@@ -560,6 +563,7 @@
 		<building name="Methane Power Generator" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="Small Steel Frame" >
+			<part name="aerogel tile" number="65" />		 
 			<part name="methane fuel cell stack" number="4" />
 			<part name="valve" number="6" />
 			<part name="gasket" number="6" />
@@ -577,60 +581,70 @@
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
+			<part name="aerogel tile" number="32" />			
 		</building>
 
 		<building name="Cement Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
+			<part name="aerogel tile" number="20" />
 		</building>
 
 		<building name="Metal Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
+			<part name="aerogel tile" number="32" />
 		</building>
 
 		<building name="Lime Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
+			<part name="aerogel tile" number="32" />
 		</building>
 
 		<building name="Carbon Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
+			<part name="aerogel tile" number="32" />
 		</building>
 
 		<building name="Regolith Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
+			<part name="aerogel tile" number="32" />
 		</building>
 
 		<building name="Sand Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
+			<part name="aerogel tile" number="32" />
 		</building>
 
 		<building name="Fuel Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
+			<part name="aerogel tile" number="32" />
 		</building>
 		
 		<building name="Ice Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
+			<part name="aerogel tile" number="32" />
 		</building>
 
 		<building name="Manufacturing Shed" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
 		 salvagable="true" work-time="0.5" skill-required="3" frame="Small Brick Shed Frame" >
 			<resource name="concrete" amount="75.0" />
+			<part name="aerogel tile" number="90" />
 			<part name="steel pipe" number="3" />
 			<part name="plastic pipe" number="10" />
 			<part name="valve" number="10" />
@@ -653,7 +667,9 @@
 		 north-south-alignment="length" base-level="-1" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="Small Brick Shed Frame" >
 		 	<resource name="cement" amount="75.0" />
-		 	<resource name="concrete" amount="57.0" />				
+		 	<resource name="concrete" amount="57.0" />
+			<part name="aerogel tile" number="90" />
+			<part name="window" number="2" />				
 			<part name="steel pipe" number="3" />
 			<part name="plastic pipe" number="4" />
 			<part name="valve" number="5" />
@@ -673,6 +689,7 @@
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="Small Steel Frame" >
 			<resource name="nickel" amount="1.0" />
+			<part name="aerogel tile" number="90" />
 			<part name="valve" number="18" />
 			<part name="gasket" number="6" />
 			<part name="motor small" number="6" />
@@ -688,6 +705,7 @@
 		<building name="Medium Battery Array" width="5.0" length="10.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" frame="Array Frame" >
+			<part name="aerogel tile" number="90" />
 			<part name="battery module" number="20" />
 			<part name="fiberglass cloth" number="10" />
 			<part name="power cable" number="2" />
@@ -705,7 +723,8 @@
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
-			<part name="aerogel tile" number="6" />			
+			<part name="aerogel tile" number="164" />
+			<part name="window" number="4" />
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="plastic sheet" number="5" />
@@ -727,7 +746,8 @@
 			<resource name="polyester resin" amount="5.0" />
 			<resource name="styrene" amount="3.0" />
 			<resource name="polyethylene" amount="20.0" />
-			<part name="aerogel tile" number="6" />			
+			<part name="aerogel tile" number="164" />
+			<part name="window" number="4" />
 			<part name="steel sheet" number="20" />
 			<part name="aluminum sheet" number="15" />
 			<part name="plastic sheet" number="20" />
@@ -747,7 +767,8 @@
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
-			<part name="aerogel tile" number="6" />			
+			<part name="aerogel tile" number="164" />
+			<part name="window" number="4" />
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="plastic sheet" number="5" />
@@ -766,7 +787,8 @@
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
-			<part name="aerogel tile" number="6" />			
+			<part name="aerogel tile" number="164" />
+			<part name="window" number="4" />
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="plastic sheet" number="5" />
@@ -785,6 +807,8 @@
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
+			<part name="aerogel tile" number="164" />
+			<part name="window" number="4" />
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="plastic sheet" number="5" />
@@ -803,6 +827,8 @@
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
+			<part name="aerogel tile" number="164" />
+			<part name="window" number="4" />
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="plastic sheet" number="5" />
@@ -821,7 +847,9 @@
 			<resource name="polyester resin" amount="5.0" />
 			<resource name="styrene" amount="1.0" />
 			<resource name="polyethylene" amount="10.0" />
-			<part name="aerogel tile" number="20" />			
+			<part name="aerogel tile" number="114" />
+			<part name="window" number="6" />	
+			<part name="polycarbonate roofing" number="12" />
 			<part name="aluminum sheet" number="3" />
 			<part name="plastic sheet" number="10" />
 			<part name="fiberglass" number="5" />
@@ -836,6 +864,7 @@
 		<building name="Atmospheric Processor" width="8.0" length="11.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="5" frame="Atmospheric Processor Frame" >
+			<part name="aerogel tile" number="252" />
 			<part name="steel sheet" number="40" />
 			<part name="aluminum sheet" number="20" />
 			<part name="fiberglass" number="20" />
@@ -855,7 +884,7 @@
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
-			<part name="aerogel tile" number="6" />			
+			<part name="aerogel tile" number="190" />		
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="plastic sheet" number="10" />
@@ -874,7 +903,7 @@
 			<resource name="polyester resin" amount="5.0" />
 			<resource name="styrene" amount="5.0" />
 			<resource name="polyethylene" amount="10.0" />
-			<part name="aerogel tile" number="6" />
+			<part name="aerogel tile" number="190" />
 			<part name="steel sheet" number="2" />
 			<part name="aluminum sheet" number="2" />
 			<part name="fiberglass" number="5" />
@@ -890,6 +919,7 @@
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
+			<part name="aerogel tile" number="190" />
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="plastic sheet" number="10" />
@@ -908,7 +938,7 @@
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
-			<part name="aerogel tile" number="6" />			
+			<part name="aerogel tile" number="190" />		
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="plastic sheet" number="10" />
@@ -927,7 +957,7 @@
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
-			<part name="aerogel tile" number="6" />			
+			<part name="aerogel tile" number="190" />			
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="plastic sheet" number="10" />
@@ -946,7 +976,9 @@
 			<resource name="polyester resin" amount="15.0" />
 			<resource name="styrene" amount="3.0" />
 			<resource name="polyethylene" amount="30.0" />
-			<part name="aerogel tile" number="40" />			
+			<part name="aerogel tile" number="336" />
+			<part name="window" number="8" />	
+			<part name="polycarbonate roofing" number="54" />						
 			<part name="aluminum sheet" number="9" />
 			<part name="plastic sheet" number="30" />
 			<part name="fiberglass" number="15" />
@@ -982,6 +1014,7 @@
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
+			<part name="aerogel tile" number="190" />
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="plastic sheet" number="10" />
@@ -1001,7 +1034,7 @@
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
-			<part name="aerogel tile" number="10" />			
+			<part name="aerogel tile" number="486" />			
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="fiberglass" number="5" />
