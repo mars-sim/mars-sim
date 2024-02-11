@@ -244,24 +244,33 @@ Note: 1 kg of H2 is 14.13 liter
 			work-time="25"
 			process-time="250"
 			power-required="0.2">
+		<description> A. 3 main macronutrients (NPK):
+						Nitrogen (N): leaf growth; 
+						Phosphorus (P): development of roots, flowers, seeds, fruit;
+						Potassium (K): strong stem growth, movement of water in plants, promotion of flowering and fruiting;
+					  B. 3 secondary macronutrients: 
+					    calcium (Ca), magnesium (Mg), and sulfur (S);
+					  C. Micronutrients: 
+					    copper (Cu), iron (Fe), manganese (Mn), molybdenum (Mo), zinc (Zn), boron (B). 
+					  D. Of occasional significance are silicon (Si), cobalt (Co), and vanadium (V).
+		</description> 	
 		<inputs>
 		<!-- TODO:
 		1. Chemists may tweak the input amount and the yield
 		2. Arbitrary figures are used. Need research
 		See https://www.extension.purdue.edu/extmedia/ay/ay-204.html
 		-->
-			<resource name="methane" amount="1" />
-			<resource name="hydrogen" amount="0.5" />
-			<resource name="nitrate" amount="0.5" />
-			<resource name="nitrite" amount="0.5" />
-			<resource name="ammonia" amount="2" />
+			<resource name="nitrate" name1="nitrite" amount="0.5" />
 			<resource name="potassium" amount="0.5" />
 			<resource name="phosphorus" amount="0.5" />
-			<resource name="zinc" amount="0.02" />
+			<resource name="Nitrosomonas SPP" name1="Nitrospira SPP" name2="Rhizobia" amount=".05" />
+
 			<resource name="calcium" amount="0.02" />
-			<resource name="sulfur" amount="0.02" />
 			<resource name="magnesium" amount="0.02" />
-			<resource name="iron powder" amount="0.02" />
+			<resource name="sulfur" amount="0.02" />
+			
+			<resource name="zinc" name1="iron powder" name2="copper" amount="0.02" />
+			<resource name="ammonia" name1="methane" name2="hydrogen" amount="1" />
 		</inputs>
 		<outputs>
 			<resource name="Fertilizer" amount="6.0" />
