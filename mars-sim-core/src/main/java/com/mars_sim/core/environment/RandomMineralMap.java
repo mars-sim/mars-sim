@@ -244,7 +244,8 @@ public class RandomMineralMap implements MineralMap {
 			
 			for (int x = 0; x < concentrationNumber; x++) {
 				
-				remainingConc = createMinerals(remainingConc, location, x, concentrationNumber, conc, mineralType.name);
+				remainingConc = createMinerals(remainingConc, location, x, 
+						concentrationNumber, conc, mineralType.name);
 				
 //				logger.info(location +  " # of Local Mineral Locations: " + allMineralsByLocation.get(location).size());
 			}
@@ -355,7 +356,7 @@ public class RandomMineralMap implements MineralMap {
 	}
 	
 	/**
-	 * Gets all of the mineral concentrations at a given location.
+	 * Gets some of the mineral concentrations at a given location.
 	 * 
 	 * @param mineralsDisplaySet 	a set of mineral strings.
 	 * @param aLocation  a coordinate
@@ -379,13 +380,13 @@ public class RandomMineralMap implements MineralMap {
 		while (i.hasNext()) {
 			Coordinates c = i.next();
 	
-			double concentrationPhi = c.getPhi();
-			double concentrationTheta = c.getTheta();
-			double phiDiff = Math.abs(aLocation.getPhi() - concentrationPhi);
-			double thetaDiff = Math.abs(aLocation.getTheta() - concentrationTheta);
+			double phi = c.getPhi();
+			double theta = c.getTheta();
+			double phiDiff = Math.abs(aLocation.getPhi() - phi);
+			double thetaDiff = Math.abs(aLocation.getTheta() - theta);
 
 			// Only take in what's within a certain boundary
-			if (concentrationPhi > LIMIT && concentrationPhi < Math.PI - LIMIT
+			if (phi > LIMIT && phi < Math.PI - LIMIT
 				&& phiDiff < angle && thetaDiff < angle) {
 				
 				Map<String, Integer> map = allMineralsByLoc.get(c);
@@ -572,25 +573,14 @@ public class RandomMineralMap implements MineralMap {
 		}
 		
 		Map<Coordinates, Double> weightedMap = new HashMap<>();
-		
-//		Coordinates closestC = null;
-//		double shortestD = range;
-		
+	
 		for (Coordinates c : locales) {
 			double distance = Coordinates.computeDistance(startingLocation, c);
 
 			// Fill up the weight map
 			weightedMap.put(c, (range - distance) / range);
-			
-//			if (distance < shortestD) {
-//				shortestD = distance;
-//				closestC = c;
-//			}
 		}
-		
-//		logger.info(CollectionUtils.findSettlement(startingLocation), 30_000L, 
-//				"Nearest mineral site: " + closestC + " (" + Math.round(shortestD * 10.0)/10.0 + " km).");
-		
+	
 		// Choose one with weighted randomness 
 		chosen = RandomUtil.getWeightedRandomObject(weightedMap);
 		double chosenDist = weightedMap.get(chosen);
@@ -603,8 +593,9 @@ public class RandomMineralMap implements MineralMap {
 
 	@Override
 	public void destroy() {
-//		mineralConcentrations = null;
+		allMineralsByLoc.clear();
 		allMineralsByLoc = null;
-		mineralMapConfig = null;
+		allLocations.clear();
+		allLocations = null;
 	}
 }

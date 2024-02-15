@@ -127,6 +127,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 				
 				for (int y = 0; y < Map.MAP_BOX_HEIGHT; y = y + 2) {
 						
+					// Do NOT delete the following blocks of codes
 //					if (mapCenterCache == null || rho != rhoCache || numMineralsCache != numMinerals) {
 //						redo = true;
 //					}
@@ -140,6 +141,9 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 						hasMinerals = true;
 //					}
 					
+					// Do NOT delete the following blocks of codes						
+					// Would save a lot of CPU util if one is able to put mineralArrayCache to work	
+						
 //					else {
 //						
 //						if (mapCenterCache != null && mineralArrayCache != null && rho == rhoCache && (deltaX > 0 || deltaY > 0)) {
@@ -254,8 +258,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 		
 		// Draw the mineral concentration image
 		g2d.drawImage(mineralImage, 0, 0, displayComponent);
-		
-		
+			
 		// Do not call dispose
 //		g2d.dispose();
 	}

@@ -47,7 +47,7 @@ public class ColonyResearcher extends Colonist implements Researcher, Temporal {
 	/** The person's list of collaborative scientific studies. */
 	private Set<ScientificStudy> collabStudies;
 	/** A set of research projects this researcher engage in. */
-	private Set<ResearchProject> researchProjects = new HashSet<>();
+	private Set<ResearchProject> projects = new HashSet<>();
 	
 	public ColonyResearcher(String name, Colony colony) {
 		super(name, colony);
@@ -63,7 +63,7 @@ public class ColonyResearcher extends Colonist implements Researcher, Temporal {
 		numResearch++;
 		ResearchProject proj = new ResearchProject(this, mainScienceType.getName() + numResearch, mainScienceType);
 		getColony().addResearchProject(proj);
-		researchProjects.add(proj);
+		projects.add(proj);
 	}
 	
 	/**
@@ -74,13 +74,13 @@ public class ColonyResearcher extends Colonist implements Researcher, Temporal {
 		if (proj != null && proj.canAddParticipants()) {
 			numResearch++;
 			proj.addParticipant(this);
-			researchProjects.add(proj);
+			projects.add(proj);
 		}
 	}
 	
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		int num = researchProjects.size();
+		int num = projects.size();
 		
 		double time = pulse.getElapsed();
 		
@@ -120,7 +120,7 @@ public class ColonyResearcher extends Colonist implements Researcher, Temporal {
 			double resourceValue = getResearchArea() / numResearchProjects;
 			double compositeValue = timeValue * expertiseValue * resourceValue; 
 					
-			for (ResearchProject p: researchProjects) {
+			for (ResearchProject p: projects) {
 				if (p.getLead().equals(this)) {
 					double value = RandomUtil.getRandomDouble(compositeValue);
 					p.addResearchValue(value);

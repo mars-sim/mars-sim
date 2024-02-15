@@ -35,7 +35,7 @@ public class ColonySpecialist extends Colonist implements Serializable, Temporal
 	private Colony colony;
 	
 	/** A set of projects this specialist engages in. */
-	private Set<SpecialistProject> projects = new HashSet<>();
+	private Set<DevelopmentProject> projects = new HashSet<>();
 	
 	public ColonySpecialist(String name, Colony colony) {
 		super(name, colony);
@@ -49,7 +49,7 @@ public class ColonySpecialist extends Colonist implements Serializable, Temporal
 	 */
 	public void createProject() {
 		numDevelopment++;
-		SpecialistProject proj = new SpecialistProject(this, scienceType.getName() + numDevelopment, scienceType);
+		DevelopmentProject proj = new DevelopmentProject(this, scienceType.getName() + numDevelopment, scienceType);
 		colony.addEngineeringProject(proj);
 		projects.add(proj);
 	}
@@ -58,7 +58,7 @@ public class ColonySpecialist extends Colonist implements Serializable, Temporal
 	 * Joins an engineering project.
 	 */
 	public void joinProject() {
-		SpecialistProject proj = colony.getOneEngineeringProject(this);
+		DevelopmentProject proj = colony.getOneEngineeringProject(this);
 		if (proj != null && proj.canAddParticipants()) {
 			numDevelopment++;
 			proj.addParticipant(this);
@@ -107,7 +107,7 @@ public class ColonySpecialist extends Colonist implements Serializable, Temporal
 			double resourceValue = getDevelopmentArea() / numEngineeringProjects;
 			double compositeValue = timeValue * expertiseValue * resourceValue; 
 					
-			for (SpecialistProject p: projects) {
+			for (DevelopmentProject p: projects) {
 				if (p.getLead().equals(this)) {
 					double value = RandomUtil.getRandomDouble(compositeValue);
 					p.addDevelopmentValue(value);

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * ResearchProject.java
- * @date 2023-12-13
+ * DevelopmentProject.java
+ * @date 2023-12-15
  * @author Manny Kung
  */
 package com.mars_sim.core.moon.project;
@@ -12,12 +12,12 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.moon.Colonist;
 import com.mars_sim.core.science.ScienceType;
 
-public class ResearchProject extends LunarProject implements Serializable {
+public class DevelopmentProject extends LunarProject implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final SimLogger logger = SimLogger.getLogger(ResearchProject.class.getName());
-	
+	public static final SimLogger logger = SimLogger.getLogger(DevelopmentProject.class.getName());
+
 	/**
 	 * Constructor.
 	 * 
@@ -25,24 +25,24 @@ public class ResearchProject extends LunarProject implements Serializable {
 	 * @param name
 	 * @param science
 	 */
-	ResearchProject(Colonist lead, String name, ScienceType science) {
+	DevelopmentProject(ColonySpecialist lead, String name, ScienceType science) {
 		super(lead, name, science);
 	}
 	
-	public void addResearchValue(double value) {
+	public void addDevelopmentValue(double value) {
 		addValue(value);
 	}
 	
-	public double getResearchValue() {
+	public double getDevelopmentValue() {
 		return getValue();
 	}
 	
-	public double getAverageResearchActiveness() {
+	public double getAverageDevelopmentActiveness() {
 		int num = 1;
-		double sum = ((ColonyResearcher)getLead()).getActiveness() * 2;
+		double sum = ((ColonySpecialist)getLead()).getActiveness() * 2;
 		for (Colonist c: getParticipants()) {
 			num++;
-			sum += ((ColonyResearcher)c).getActiveness();
+			sum += ((ColonySpecialist)c).getActiveness();
 		}
 		return sum / num;
 	}

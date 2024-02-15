@@ -17,7 +17,7 @@ import com.mars_sim.core.authority.Organization;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.moon.project.ColonySpecialist;
 import com.mars_sim.core.moon.project.ColonyResearcher;
-import com.mars_sim.core.moon.project.SpecialistProject;
+import com.mars_sim.core.moon.project.DevelopmentProject;
 import com.mars_sim.core.moon.project.ResearchProject;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
@@ -52,7 +52,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	/** A set of research projects this colony's researchers engage in. */
 	private Set<ResearchProject> researchProjects = new HashSet<>();
 	/** A set of engineering projects this colony's engineers engage in. */
-	private Set<SpecialistProject> engineeringProjects = new HashSet<>();
+	private Set<DevelopmentProject> engineeringProjects = new HashSet<>();
 
 		
 	public Colony(int id, String name, Authority sponsor, Coordinates location, boolean scratch) {
@@ -90,9 +90,9 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	public ResearchProject getOneResearchProject(ColonyResearcher researcher) {
 		for (ResearchProject p: researchProjects) {
 			if (!p.getLead().equals(researcher)) {
-				Set<ColonyResearcher> participants = p.getParticipants();
-				for (ColonyResearcher r: participants) {
-					if (!r.equals(researcher)) {
+				Set<Colonist> participants = p.getParticipants();
+				for (Colonist c: participants) {
+					if (!c.equals(researcher)) {
 						return p;
 					}
 				}
@@ -107,12 +107,12 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	 * @param Engineer
 	 * @return
 	 */
-	public SpecialistProject getOneEngineeringProject(ColonySpecialist engineer) {
-		for (SpecialistProject p: engineeringProjects) {
+	public DevelopmentProject getOneEngineeringProject(ColonySpecialist engineer) {
+		for (DevelopmentProject p: engineeringProjects) {
 			if (!p.getLead().equals(engineer)) {
-				Set<ColonySpecialist> participants = p.getParticipants();
-				for (ColonySpecialist r: participants) {
-					if (!r.equals(engineer)) {
+				Set<Colonist> participants = p.getParticipants();
+				for (Colonist c: participants) {
+					if (!c.equals(engineer)) {
 						return p;
 					}
 				}
@@ -135,7 +135,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	 * 
 	 * @param ep
 	 */
-	public void addEngineeringProject(SpecialistProject ep) {
+	public void addEngineeringProject(DevelopmentProject ep) {
 		engineeringProjects.add(ep);
 	}
 	
@@ -284,7 +284,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 
 	public double getTotalDevelopmentValue() {
 		double sum = 0;
-		for (SpecialistProject rp: engineeringProjects) {
+		for (DevelopmentProject rp: engineeringProjects) {
 			sum += rp.getDevelopmentValue();
 		}
 		return sum;
@@ -315,7 +315,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	public double getAverageDevelopmentActiveness() {
 		double num = 0;
 		double sum = 0;
-		for (SpecialistProject rp: engineeringProjects) {
+		for (DevelopmentProject rp: engineeringProjects) {
 			num++;
 			sum += rp.getAverageDevelopmentActiveness();
 		}
