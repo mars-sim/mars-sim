@@ -435,10 +435,9 @@ inside `PATH` variable and remove all other folders referencing other java versi
 interfere with the correct version of Java that you would like to use.
 
 > [!WARNING]
-> If `C:\ProgramData\Oracle\Java\javapath` is encountered in `Path` variable, then Windows 
-will look for a particular version of jre/jdk in the designated folder and load the Java 
-executable there. Make sure the shortcut in the designated folder points to a valid 
-Java executable. 
+> If the designated folder `C:\ProgramData\Oracle\Java\javapath` is before other folders 
+in `Path` variable, then Windows will first look for a jre/jdk in this folder. Most of the time,
+a shortcut that will point to a Java executable in another folder is in this folder.
 
 5. To test the version of Java that your machine is using, type "java -version"
 in a command prompt window.
