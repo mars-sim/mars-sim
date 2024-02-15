@@ -18,17 +18,17 @@ tolerate a range of values. However, they are not all
 created equal to have the same degree of user customization. 
 
 Do file a [ticket](https://github.com/mars-sim/mars-sim/issues) or 
-open up a [discussion](https://github.com/mars-sim/mars-sim/discussions) 
-with us on any ideas or questions you have in mind.
+open up a topic of [discussion](https://github.com/mars-sim/mars-sim/discussions) 
+with us on any ideas you may have in mind.
 
 
 ### Utility Tool
 
 In order to manipulate these xml files inside the jar file, 
 we recommend installing the [7-Zip File Manager](https://www.7-zip.org/)
-that allows users to manipulate files located insides a jar file 
-on the fly without having to manually compressing, uncompressing,
- copying and deleting files.
+that allows users to manipulate files located inside a jar file 
+on the fly without having to manually compressing, uncompressing, 
+copying and deleting files.
 
 
 ### Location
