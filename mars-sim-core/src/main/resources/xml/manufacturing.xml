@@ -3201,7 +3201,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="silica" amount="6" />		
 			<resource name="carbon dioxide" amount="4.4" />
-			<resource name="polystryrene" amount=".5" />				
+			<resource name="polystyrene" amount=".5" />				
 		</inputs>
 		<outputs>
 			<part name="aerogel tile" number="20" />
