@@ -120,6 +120,48 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 		}	
 	}
 	
+	
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
+		
+		if (startup && pulse.isNewMSol()) {
+			startup = false;
+			initPop();
+		}
+		
+		getOrganization().timePassing(pulse);
+		
+		population.timePassing(pulse);
+		
+		for (LunarActivity a: activities) {
+			a.timePassing(pulse);
+		}
+		
+		for (Zone z: zones) {
+			z.timePassing(pulse);
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Returns the research demand.
+	 * 
+	 * @return
+	 */
+	public double getResearchDemand() {
+		return res.getDemand();
+	}
+	
+	/**
+	 * Returns the development demand.
+	 * 
+	 * @return
+	 */
+	public double getDevelopmentDemand() {
+		return dev.getDemand();
+	}
+	
 	/**
 	 * Gets one researcher project that this researcher may join in.
 	 * 
@@ -259,30 +301,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	public Organization getOrganization() {
 		return sponsor.getOrganization();
 	}
-	
-	@Override
-	public boolean timePassing(ClockPulse pulse) {
-		
-		if (startup && pulse.isNewMSol()) {
-			startup = false;
-			initPop();
-		}
-		
-		getOrganization().timePassing(pulse);
-		
-		population.timePassing(pulse);
-		
-		for (LunarActivity a: activities) {
-			a.timePassing(pulse);
-		}
-		
-		for (Zone z: zones) {
-			z.timePassing(pulse);
-		}
-		
-		return true;
-	}
-	
+
 	/**
 	 * Gets the population.
 	 * 

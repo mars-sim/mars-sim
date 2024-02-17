@@ -662,15 +662,6 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the current number of people who are inside the settlement.
-	 *
-	 * @return the number indoor
-	 */
-	public int getIndoorPeopleCount() {
-		return indoorPeople.size();
-	}
-
-	/**
 	 * Ends all the indoor tasks people are doing.
 	 */
 	public void endAllIndoorTasks() {
@@ -679,15 +670,6 @@ public class Settlement extends Structure implements Temporal,
 						+  p.getPosition() + ".");
 			p.getMind().getTaskManager().clearAllTasks("Stop indoor tasks");
 		}
-	}
-
-	/**
-	 * Gets a collection of the people who are currently inside the settlement.
-	 *
-	 * @return Collection of people within
-	 */
-	public Collection<Person> getIndoorPeople() {
-		return indoorPeople;
 	}
 
 	/**
@@ -1842,6 +1824,24 @@ public class Settlement extends Structure implements Temporal,
 		return false;
 	}
 
+	/**
+	 * Gets a collection of the people who are currently inside the settlement.
+	 *
+	 * @return Collection of people within
+	 */
+	public Collection<Person> getIndoorPeople() {
+		return indoorPeople;
+	}
+
+	/**
+	 * Gets the current number of people who are inside the settlement.
+	 *
+	 * @return the number indoor
+	 */
+	public int getIndoorPeopleCount() {
+		return indoorPeople.size();
+	}
+			
 	/**
 	 * Assigns a person to be a legal citizen of this settlement.
 	 *

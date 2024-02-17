@@ -122,6 +122,9 @@ public class CommanderWindow extends ToolWindow {
 	private Map<Colony, Double> researchValueCaches = new HashMap<>();
 	private Map<Colony, Double> developmentValueCaches = new HashMap<>();
 	
+	private Map<Colony, Double> researchDemandCaches = new HashMap<>();
+	private Map<Colony, Double> developmentDemandCaches = new HashMap<>();
+	
 	private Map<Colony, Double> activenessResearchCaches = new HashMap<>();
 	private Map<Colony, Double> activenessDevelopmentCaches = new HashMap<>();
 	
@@ -184,6 +187,10 @@ public class CommanderWindow extends ToolWindow {
 	
 	private Map<Colony, JLabel> researchValueLabels = new HashMap<>();
 	private Map<Colony, JLabel> developmentValueLabels = new HashMap<>();
+	
+	private Map<Colony, JLabel> researchDemandLabels = new HashMap<>();
+	private Map<Colony, JLabel> developmentDemandLabels = new HashMap<>();
+	
 	
 	private Map<Colony, JLabel> numResearchLabels = new HashMap<>();
 	private Map<Colony, JLabel> numDevelopmentLabels = new HashMap<>();
@@ -507,9 +514,25 @@ public class CommanderWindow extends ToolWindow {
 				JLabel engineerLabel = popGrid.addRow("# of Engineers", engineerRateCacheString + "");
 				engineerLabels.put(c, engineerLabel);
 				
-				AttributePanel rdGrid = new AttributePanel(4, 2);
+				////////// Show Statistics on Research and Development //////////
+				
+				AttributePanel rdGrid = new AttributePanel(5, 2);
 				popPanel.add(rdGrid, BorderLayout.CENTER);
 				rdGrid.setBorder(BorderFactory.createTitledBorder(" Research and Development"));
+				
+				double researchDemandCache = c.getResearchDemand();
+				researchDemandCaches.put(c, researchDemandCache);
+				String researchDemandCacheString = Math.round(researchDemandCache * 100.0)/100.0
+						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+				JLabel researchDemandLabel = rdGrid.addRow("Research Demand", researchDemandCacheString + "");
+				researchDemandLabels.put(c, researchDemandLabel);
+				
+				double developmentDemandCache = c.getDevelopmentDemand();
+				developmentDemandCaches.put(c, developmentDemandCache);
+				String developmentDemandCacheString = Math.round(developmentDemandCache * 100.0)/100.0
+						+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+				JLabel developmentDemandLabel = rdGrid.addRow("Development Demand", developmentDemandCacheString + "");
+				developmentDemandLabels.put(c, developmentDemandLabel);
 				
 				double researchValueCache = c.getTotalResearchValue();
 				researchValueCaches.put(c, researchValueCache);
@@ -641,12 +664,28 @@ public class CommanderWindow extends ToolWindow {
 					engineerLabels.get(c).setText(engineerRateCacheString);
 				}
 				
+				double newResearchDemand = c.getResearchDemand();
+				if (researchDemandCaches.get(c) != newResearchDemand) {
+					researchDemandCaches.put(c, newResearchDemand);
+					String researchDemandCacheString = Math.round(newResearchDemand * 100.0)/100.0 
+							+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+					researchDemandLabels.get(c).setText(researchDemandCacheString);
+				}
+				
 				double newResearchValue = c.getTotalResearchValue();
 				if (researchValueCaches.get(c) != newResearchValue) {
 					researchValueCaches.put(c, newResearchValue);
 					String researchValueCacheString = Math.round(newResearchValue * 100.0)/100.0 
 							+ " (" + Math.round(0 * 10.0)/10.0 + ")";
 					researchValueLabels.get(c).setText(researchValueCacheString);
+				}
+				
+				double newDevelopmentDemand = c.getDevelopmentDemand();
+				if (developmentDemandCaches.get(c) != newDevelopmentDemand) {
+					developmentDemandCaches.put(c, newDevelopmentDemand);
+					String developmentDemandCacheString = Math.round(newDevelopmentDemand * 100.0)/100.0 
+							+ " (" + Math.round(0 * 10.0)/10.0 + ")";
+					developmentDemandLabels.get(c).setText(developmentDemandCacheString);
 				}
 				
 				double newDevelopmentValue = c.getTotalDevelopmentValue();

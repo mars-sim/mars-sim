@@ -108,14 +108,14 @@ public class Population implements Serializable, Temporal {
 				numResidents = 0;
 			
 			// Recalculate researchers growth rate
-			growthRateResearchers += RandomUtil.getRandomDouble(-.125, .2);		
+			growthRateResearchers += RandomUtil.getRandomDouble(-.125, .2) + colony.getResearchDemand();		
 			// Recalculate researchers	
 			numResearchers += growthRateResearchers;
 			if (numResearchers < 0)
 				numResearchers = 0;
 			
 			// Recalculate engineers growth rate
-			growthRateEngineers += RandomUtil.getRandomDouble(-.125, .2);		
+			growthRateEngineers += RandomUtil.getRandomDouble(-.125, .2) + colony.getDevelopmentDemand();		
 			// Recalculate engineers	
 			numEngineers += growthRateEngineers;
 			if (numEngineers < 0)

@@ -18,13 +18,16 @@ import com.mars_sim.core.moon.project.DevelopmentProject;
 import com.mars_sim.core.moon.project.ResearchProject;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.tools.util.RandomUtil;
 
 public class LunarActivity implements Temporal, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	public static final SimLogger logger = SimLogger.getLogger(LunarActivity.class.getName());
-
+	/** The demand factor for this activity (between -1 and 1). */
+	private double demand = RandomUtil.getRandomDouble(0, .25);
+	
 	private LunarActivityType type;
 	
 	private Colony colony;
@@ -39,7 +42,33 @@ public class LunarActivity implements Temporal, Serializable {
 		this.colony = colony;
 	}
 
-
+	/**
+	 * Returns the colony.
+	 * 
+	 * @return
+	 */
+	public Colony getColony() {
+		return colony;
+	}
+	
+	/**
+	 * Returns the LunarActivityType.
+	 * 
+	 * @return
+	 */
+	public LunarActivityType getLunarActivityType() {
+		return type;
+	}
+	
+	/**
+	 * Returns the demand.
+	 * 
+	 * @return
+	 */
+	public double getDemand() {
+		return demand;
+	}
+	
 	/**
 	 * Gets one researcher project that this researcher may join in.
 	 * 
@@ -152,8 +181,15 @@ public class LunarActivity implements Temporal, Serializable {
 	
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		// TODO Auto-generated method stub
-		return false;
+		
+		demand = demand + RandomUtil.getRandomDouble(-.002, .002);
+		
+		if (demand > 1)
+			demand = 1;
+		else if (demand < -1)
+			demand = -1;
+		
+		return true;
 	}
 	
 	
