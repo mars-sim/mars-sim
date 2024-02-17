@@ -2827,8 +2827,8 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public String getObjectiveBuildingType() {
 
-		// TODO: check if a particular building has existed, if yes, build the next
-		// relevant building
+		// Future: check if a particular building exists, 
+		// If not, consider alternative buildings
 		
 		if (objectiveType == ObjectiveType.CROP_FARM)
 			return "Inflatable Greenhouse";
