@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.moon.project;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +17,7 @@ import com.mars_sim.core.moon.Colonist;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.tools.util.RandomUtil;
 
-public class LunarProject {
+public class LunarProject implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
