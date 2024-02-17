@@ -60,6 +60,13 @@ public class GoodsManager implements Serializable {
 		
 	}
 
+	/**
+	 * Types of commerce factor
+	 */
+	public enum CommerceType {
+		TRANSPORT, TOURISM, CROP, MANUFACTURING, RESEARCH, TRADE, BUILDING
+ 	}
+	
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
 

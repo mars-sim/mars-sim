@@ -2156,7 +2156,7 @@ public class Settlement extends Structure implements Temporal,
 	public boolean containsParkedVehicle(Vehicle vehicle) {
 		return parkedVehicles.contains(vehicle);
 	}
-	
+
 	/**
 	 * Returns a set of parked vehicles.
 	 * 
@@ -2165,7 +2165,7 @@ public class Settlement extends Structure implements Temporal,
 	public Set<Vehicle> parkedVehicles() {
 		return parkedVehicles;
 	}
-
+	
 	/**
 	 * Adds a vehicle into ownership.
 	 *
@@ -2810,37 +2810,6 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public ObjectiveType getObjective() {
 		return objectiveType;
-	}
-
-	/**
-	 * Gets the building type related to the settlement objective.
-	 *
-	 * @return
-	 */
-	public String getObjectiveBuildingType() {
-
-		// Future: check if a particular building exists, 
-		// If not, consider alternative buildings
-		
-		if (objectiveType == ObjectiveType.CROP_FARM)
-			return "Inflatable Greenhouse";
-		// alternatives : "Fish Farm", "Large Greenhouse", "Inground Greenhouse"
-		else if (objectiveType == ObjectiveType.MANUFACTURING_DEPOT)
-			return "Workshop"; 
-		// alternatives : "Manufacturing Shed", MD1, MD4
-		else if (objectiveType == ObjectiveType.RESEARCH_CAMPUS)
-			return "Laboratory"; 
-		// alternatives : "Mining Lab", "Astronomy Observatory"
-		else if (objectiveType == ObjectiveType.TRANSPORTATION_HUB)
-			return "Garage";
-		// alternatives :"Loading Dock Garage";
-		else if (objectiveType == ObjectiveType.TRADE_CENTER)
-			return "Garage"; 
-		// alternatives : "Storage Shed", Future: "Markets" 
-		else if (objectiveType == ObjectiveType.TOURISM)
-			return "Residential Quarters";
-		else
-			return null;
 	}
 
 	/**
