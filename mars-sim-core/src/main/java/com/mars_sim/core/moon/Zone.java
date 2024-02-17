@@ -29,13 +29,20 @@ public class Zone implements Serializable, Temporal {
 	
 	private Colony colony;
 
-	public Zone(ZoneType type, Colony colony, boolean scratch) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param type
+	 * @param colony
+	 * @param startup Is it at the startup of the simulation ?
+	 */
+	public Zone(ZoneType type, Colony colony, boolean startup) {
 		this.type = type;
 		this.colony = colony;
 
 		double factor = RandomUtil.getRandomDouble(.05, .1);
 
-		if (!scratch) {
+		if (startup) {
 			factor = 1;
 		}
 

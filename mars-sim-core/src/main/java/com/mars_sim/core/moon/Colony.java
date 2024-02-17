@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Colony.java
- * @date 2023-09-25
+ * @date 2024-02-17
  * @author Manny Kung
  */
 
@@ -15,8 +15,8 @@ import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.authority.Nation;
 import com.mars_sim.core.authority.Organization;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.moon.project.ColonySpecialist;
 import com.mars_sim.core.moon.project.ColonyResearcher;
+import com.mars_sim.core.moon.project.ColonySpecialist;
 import com.mars_sim.core.moon.project.DevelopmentProject;
 import com.mars_sim.core.moon.project.ResearchProject;
 import com.mars_sim.core.time.ClockPulse;
@@ -41,21 +41,32 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	private Population population;
 		
 	private Nation nation;
-	
-	private Zone researchZone;
-	
-	private Zone developmentZone;
 
 	private Coordinates location;
-	
-	private Set<Zone> zones = new HashSet<>();
-	/** A set of research projects this colony's researchers engage in. */
-	private Set<ResearchProject> researchProjects = new HashSet<>();
-	/** A set of engineering projects this colony's engineers engage in. */
-	private Set<DevelopmentProject> engineeringProjects = new HashSet<>();
 
-		
-	public Colony(int id, String name, Authority sponsor, Coordinates location, boolean scratch) {
+	private LunarActivity dev;
+	private LunarActivity eco;
+	private LunarActivity ind;
+	private LunarActivity res;
+			
+	private Zone researchZone;
+	private Zone developmentZone;
+	
+	private Set<LunarActivity> activities = new HashSet<>();
+	/** A set of research projects this colony's researchers engage in. */
+	private Set<Zone> zones = new HashSet<>();
+
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param id
+	 * @param name
+	 * @param sponsor
+	 * @param location
+	 * @param startup Is it at the startup of the simulation
+	 */
+	public Colony(int id, String name, Authority sponsor, Coordinates location, boolean startup) {
 		this.id = id;
 		this.name = name;
 		this.sponsor = sponsor;
@@ -63,9 +74,41 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 		
 		population = new Population(this);
 
+		initActivity();
+
+		initZone(startup);
+	}
+	
+	/**
+	 * Initializes population instance.
+	 */
+	public void initPop() {
+		population.init();
+	}
+	
+	/**
+	 * Initializes activities.
+	 */
+	public void initActivity() {
+		dev = new LunarActivity(LunarActivityType.DEVELOPMENT, this);
+		activities.add(dev);
+		eco = new LunarActivity(LunarActivityType.ECONOMIC, this);
+		activities.add(eco);
+		ind = new LunarActivity(LunarActivityType.INDUSTRIAL, this);
+		activities.add(ind);
+		res = new LunarActivity(LunarActivityType.RESEARCH, this);
+		activities.add(res);
+	}
+	
+	/**
+	 * Initializes zones.
+	 * 
+	 * @param startup Is it at the startup of the simulation
+	 */
+	public void initZone(boolean startup) {
 		for (ZoneType type: ZoneType.values()) {
 			
-			Zone zone = new Zone(type, this, scratch);
+			Zone zone = new Zone(type, this, startup);
 			if (type == ZoneType.RESEARCH) {
 				researchZone = zone;
 			}
@@ -74,11 +117,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 			}
 			
 			addZone(zone);
-		}
-	}
-	
-	public void init() {
-		population.init();
+		}	
 	}
 	
 	/**
@@ -88,17 +127,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	 * @return
 	 */
 	public ResearchProject getOneResearchProject(ColonyResearcher researcher) {
-		for (ResearchProject p: researchProjects) {
-			if (!p.getLead().equals(researcher)) {
-				Set<Colonist> participants = p.getParticipants();
-				for (Colonist c: participants) {
-					if (!c.equals(researcher)) {
-						return p;
-					}
-				}
-			}
-		}
-		return null;
+		return res.getOneResearchProject(researcher);
 	}
 	
 	/**
@@ -108,17 +137,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	 * @return
 	 */
 	public DevelopmentProject getOneEngineeringProject(ColonySpecialist engineer) {
-		for (DevelopmentProject p: engineeringProjects) {
-			if (!p.getLead().equals(engineer)) {
-				Set<Colonist> participants = p.getParticipants();
-				for (Colonist c: participants) {
-					if (!c.equals(engineer)) {
-						return p;
-					}
-				}
-			}
-		}
-		return null;
+		return dev.getOneEngineeringProject(engineer);
 	}
 	
 	/**
@@ -127,7 +146,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	 * @param rp
 	 */
 	public void addResearchProject(ResearchProject rp) {
-		researchProjects.add(rp);
+		res.addResearchProject(rp);
 	}
  	
 	/**
@@ -136,7 +155,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	 * @param ep
 	 */
 	public void addEngineeringProject(DevelopmentProject ep) {
-		engineeringProjects.add(ep);
+		dev.addEngineeringProject(ep);
 	}
 	
 	/**
@@ -202,7 +221,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	 * @return
 	 */
 	public double getResearchAreaGrowthRate() {
-		return getResearchZone().getGrowthRate();
+		return researchZone.getGrowthRate();
 	}	
 	
 	/**
@@ -229,7 +248,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	 * @return
 	 */
 	public double getDevelopmentAreaGrowthRate() {
-		return getDevelopmentZone().getGrowthRate();
+		return developmentZone.getGrowthRate();
 	}
 
 	/**
@@ -246,12 +265,16 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 		
 		if (startup && pulse.isNewMSol()) {
 			startup = false;
-			init();
+			initPop();
 		}
 		
 		getOrganization().timePassing(pulse);
 		
 		population.timePassing(pulse);
+		
+		for (LunarActivity a: activities) {
+			a.timePassing(pulse);
+		}
 		
 		for (Zone z: zones) {
 			z.timePassing(pulse);
@@ -282,56 +305,28 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 		return sum;
 	}
 
-	public double getTotalDevelopmentValue() {
-		double sum = 0;
-		for (DevelopmentProject rp: engineeringProjects) {
-			sum += rp.getDevelopmentValue();
-		}
-		return sum;
-	}
-	
 	public double getTotalResearchValue() {
-		double sum = 0;
-		for (ResearchProject rp: researchProjects) {
-			sum += rp.getResearchValue();
-		}
-		return sum;
+		return res.getTotalResearchValue();
+	}
+
+	public double getTotalDevelopmentValue() {
+		return dev.getTotalDevelopmentValue();
 	}
 	
 	public double getAverageResearchActiveness() {
-		double num = 0;
-		double sum = 0;
-		for (ResearchProject rp: researchProjects) {
-			num++;
-			sum += rp.getAverageResearchActiveness();
-		}
-		
-		if (num == 0)
-			return 0;
-		
-		return sum / num;
+		return res.getAverageResearchActiveness();
 	}
 	
 	public double getAverageDevelopmentActiveness() {
-		double num = 0;
-		double sum = 0;
-		for (DevelopmentProject rp: engineeringProjects) {
-			num++;
-			sum += rp.getAverageDevelopmentActiveness();
-		}
-		
-		if (num == 0)
-			return 0;
-		
-		return sum / num;
+		return dev.getAverageDevelopmentActiveness();
 	}
 	
 	public int getNumResearchProjects() {
-		return researchProjects.size();
+		return res.getNumResearchProjects();
 	}
 	
 	public int getNumDevelopmentProjects() {
-		return engineeringProjects.size();
+		return dev.getNumDevelopmentProjects();
 	}
 	
 	/**
@@ -377,6 +372,14 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 		nation = null; 
 		zones.clear();
 		zones = null;
+		dev = null;
+		eco = null;
+		ind = null;
+		res = null;
+		researchZone = null;
+		developmentZone = null;
+		activities.clear();
+		activities = null;
 	}
 
 }

@@ -47,6 +47,11 @@ public class Population implements Serializable, Temporal {
 	
 	private Set<Colonist> colonists = new HashSet<>();
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param colony
+	 */
 	public Population(Colony colony) {
 		this.colony = colony;
 		

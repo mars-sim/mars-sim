@@ -9,6 +9,7 @@ package com.mars_sim.core.moon;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,17 +43,19 @@ public class LunarColonyManager implements Serializable, Temporal {
 	private static List<Coordinates> coords = new ArrayList<>();
 	
 	static {
-		initialColonyNames.put("Kennedy", "NASA");
-		initialColonyNames.put("Kararmin", "ISRA");
-		initialColonyNames.put("Yue De", "CNSA");
-		initialColonyNames.put("Barmingrad", "RKA");
-				
+//		initialColonyNames.put("Kennedy", "NASA");
+//		initialColonyNames.put("Kararmin", "ISRA");
+//		initialColonyNames.put("Yue De", "CNSA");
+//		initialColonyNames.put("Barmingrad", "RKA");
+		initialColonyNames.put("LunarOne", "SPACEX");
+		
 		colonyNames.put("Kennedy", "NASA");
 		colonyNames.put("Kararmin", "ILRA");
 		colonyNames.put("Yue De", "CNSA");
 		colonyNames.put("Barmingrad", "RKA");
+		colonyNames.put("LunarOne", "SPACEX");
 		
-		colonyNames.put("Borington", "SpaceX");
+		colonyNames.put("Borington", "SPACEX");
 		colonyNames.put("Peary", "MS");
 		
 		colonyNames.put("Selene", "ESA"); // Mahina
@@ -121,24 +124,25 @@ public class LunarColonyManager implements Serializable, Temporal {
 	 */
 	public void addInitColonies() {
 		// Assume this colony has existed for a while
-		addColony(false);
+		addColony(true);
 	}
 	
 	/**
 	 * Adds a colony.
 	 * 
-	 * @param fromScratch Is it a brand new colony ?
+	 * @param startup  Is it at the startup of the simulation ?
 	 */
-	private void addColony(boolean fromScratch) {
-		String aName = getNewColonyName(fromScratch);
+	private void addColony(boolean startup) {
+		String aName = getNewColonyName(startup);
 		if (aName == null)
 			return;
 				
+		// Proceed to creating a new colony
 		Coordinates co = getNewCoord();
 		if (co == null)
 			return;
 		
-		Colony colony = new Colony(colonies.size(), aName, raFactory.getItem(colonyNames.get(aName)), co, fromScratch);
+		Colony colony = new Colony(colonies.size(), aName, raFactory.getItem(colonyNames.get(aName)), co, startup);
 		
 		logger.config("The lunar colony " + aName + " was founded and sponsored by " + colonyNames.get(aName) + ".");
 		
@@ -148,36 +152,41 @@ public class LunarColonyManager implements Serializable, Temporal {
 	/**
 	 * Gets a new colony name.
 	 * 
-	 * @param fromScratch Is it a brand new colony ?
+	 * @param startup  Is it at the startup of the simulation ?
 	 * @return
 	 */
-	private String getNewColonyName(boolean fromScratch) {
+	private String getNewColonyName(boolean startup) {
 
 		Set<String> namesInUse = new HashSet<>();
+		List<String> newNames = null;
+		
 		for (Colony c: colonies) {
 			namesInUse.add(c.getName());
 		}
 		
-		if (fromScratch) {
-			// Brand new colonies
-			for (String n: colonyNames.keySet()) {
-				if (!namesInUse.contains(n)) {
-					return n;
-				}
-			}
+		if (startup) {
+			newNames = new ArrayList<>(initialColonyNames.keySet());
 		}
 		else {
-			// Existing colonies
-			for (String n: initialColonyNames.keySet()) {
-				if (!namesInUse.contains(n)) {
-					return n;
-				}
-			}
+			newNames = new ArrayList<>(colonyNames.keySet());
 		}
 		
+		Collections.shuffle(newNames);
+		
+		for (String n: newNames) {
+			if (!namesInUse.contains(n)) {
+				return n;
+			}
+		}
+
 		return null;
 	}
 	
+	/**
+	 * Gets a new coordinate.
+	 * 
+	 * @return
+	 */
 	private Coordinates getNewCoord() {
 
 		Set<Coordinates> inUse = new HashSet<>();
@@ -194,11 +203,11 @@ public class LunarColonyManager implements Serializable, Temporal {
 		return null;
 	}
 	
-	public void init() {
-		for (Colony c: colonies) {
-			c.init();
-		}
-	}
+//	public void init() {
+//		for (Colony c: colonies) {
+//			c.initPop();
+//		}
+//	}
 	
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
@@ -208,9 +217,8 @@ public class LunarColonyManager implements Serializable, Temporal {
 		if (pulse.isNewHalfSol()) {
 			int rand = RandomUtil.getRandomInt(50);
 			if (rand == 1) {
-				addColony(true);
+				addColony(false);
 			}
-			
 		}
 		
 		for (Colony c: colonies) {
