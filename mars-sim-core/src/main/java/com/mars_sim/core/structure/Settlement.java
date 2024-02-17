@@ -2162,12 +2162,14 @@ public class Settlement extends Structure implements Temporal,
 	 * @return
 	 */
 	public boolean containsParkedVehicle(Vehicle vehicle) {
-		if (parkedVehicles.contains(vehicle)) {
-			return true;
-		}
-		return false;
+		return parkedVehicles.contains(vehicle);
 	}
 	
+	/**
+	 * Returns a set of parked vehicles.
+	 * 
+	 * @return
+	 */
 	public Set<Vehicle> parkedVehicles() {
 		return parkedVehicles;
 	}
