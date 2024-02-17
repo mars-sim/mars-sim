@@ -1841,7 +1841,7 @@ public class Settlement extends Structure implements Temporal,
 	public int getIndoorPeopleCount() {
 		return indoorPeople.size();
 	}
-			
+
 	/**
 	 * Assigns a person to be a legal citizen of this settlement.
 	 *
@@ -2560,7 +2560,6 @@ public class Settlement extends Structure implements Temporal,
 	public ObjectiveType getObjective() {
 		return objectiveType;
 	}
-
 
 	/**
 	 * Gets the total area of Crops in this Settlement.

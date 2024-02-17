@@ -97,7 +97,6 @@ public class GoodsManager implements Serializable {
 		TRANSPORT, TOURISM, CROP, MANUFACTURING, RESEARCH, TRADE, BUILDING
  	}
 
-
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
 
