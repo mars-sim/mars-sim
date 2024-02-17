@@ -1766,6 +1766,7 @@ public class Settlement extends Structure implements Temporal,
 				.collect(Collectors.toList());
 	}
 
+
 	/**
 	 * Returns a collection of deceased people who may or may NOT have been buried
 	 * outside this settlement
