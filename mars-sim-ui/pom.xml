@@ -29,11 +29,6 @@
 			<artifactId>mars-sim-headless</artifactId>
 			<version>${project.version}</version>
 		</dependency>	
-		<dependency>
-			<groupId>com.mars-sim</groupId>
-			<artifactId>mars-sim-mapdata</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.jfree</groupId>

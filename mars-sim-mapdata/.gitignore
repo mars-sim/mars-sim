@@ -1,9 +1,0 @@
-/target/
-.classpath
-.project
-/.settings/**
-.idea
-.prefs
-/src/main/resources/SurfaceMarsMap.dat
-/src/main/resources/TopoMarsMap.dat
-/mars-sim-mapdata.iml
