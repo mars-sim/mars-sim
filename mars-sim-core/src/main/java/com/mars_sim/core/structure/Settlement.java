@@ -1916,6 +1916,7 @@ public class Settlement extends Structure implements Temporal,
 				.collect(Collectors.toList());
 	}
 
+
 	/**
 	 * Returns a collection of deceased people who may or may NOT have been buried
 	 * outside this settlement
@@ -1991,7 +1992,7 @@ public class Settlement extends Structure implements Temporal,
 	public int getIndoorPeopleCount() {
 		return indoorPeople.size();
 	}
-
+	
 	/**
 	 * Assigns a person to be a legal citizen of this settlement.
 	 *
@@ -2100,10 +2101,7 @@ public class Settlement extends Structure implements Temporal,
 		if (robotsWithin.contains(r)) {
 			return true;
 		}
-		if (robotsWithin.add(r)) {
-			return true;
-		}
-		return false;
+		return robotsWithin.add(r);
 	}
 
 	/**
@@ -2115,10 +2113,7 @@ public class Settlement extends Structure implements Temporal,
 		if (!robotsWithin.contains(r)) {
 			return true;
 		}
-		if (robotsWithin.remove(r)) {
-			return true;
-		}
-		return false;
+		return robotsWithin.remove(r);
 	}
 
 	/**
@@ -2149,10 +2144,7 @@ public class Settlement extends Structure implements Temporal,
 	public boolean removeParkedVehicle(Vehicle vehicle) {
 		if (!parkedVehicles.contains(vehicle))
 			return true;
-		if (parkedVehicles.remove(vehicle)) {
-			return true;
-		}
-		return false;
+		return parkedVehicles.remove(vehicle);
 	}
 
 	/**
