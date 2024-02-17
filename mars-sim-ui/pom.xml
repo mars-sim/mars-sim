@@ -15,7 +15,7 @@
 		<jfreechart.version>1.5.4</jfreechart.version>
 		<jide-oss.version>3.7.14</jide-oss.version>
 
-		<mainClass>com.mars_sim.main.MarsProject</mainClass>
+		<mainClass>com.mars_sim.ui.main.MarsProject</mainClass>
 		<target.name>mars-sim-swing-${project.version}</target.name>
 	</properties>
 	<dependencies>
