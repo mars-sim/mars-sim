@@ -9,7 +9,6 @@ package com.mars_sim.ui.swing.tool.settlement;
 import java.awt.Color;
 import java.util.Collection;
 
-import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;

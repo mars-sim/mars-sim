@@ -1937,9 +1937,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return true if added successfully
 	 */
 	public boolean containsPerson(Person p) {
-		if (indoorPeople.contains(p))
-			return true;
-		return false;
+		return indoorPeople.contains(p);
 	}
 
 	/**

@@ -14,7 +14,6 @@ import java.awt.image.BufferedImage;
 
 import org.apache.batik.gvt.GraphicsNode;
 
-import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.LoadingController;
