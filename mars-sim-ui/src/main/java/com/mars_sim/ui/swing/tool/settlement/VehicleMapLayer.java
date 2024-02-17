@@ -14,7 +14,6 @@ import java.awt.image.BufferedImage;
 
 import org.apache.batik.gvt.GraphicsNode;
 
-import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.LoadingController;
@@ -57,8 +56,8 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 		// Draw all vehicles.
 		// Draw all parked vehicles at this settlement location
-		for(Vehicle v : CollectionUtils.getVehiclesInSettlementVicinity(settlement)) {
-			drawVehicle(v,mapPanel.isShowVehicleLabels(), viewpoint);
+		for (Vehicle v : settlement.parkedVehicles()) { // CollectionUtils.getVehiclesInSettlementVicinity(settlement)) {
+			drawVehicle(v, mapPanel.isShowVehicleLabels(), viewpoint);
 		}
 
 		// Restore original graphic transforms.
