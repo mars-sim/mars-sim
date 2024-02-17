@@ -1,0 +1,49 @@
+{{<help-layout}}
+  {{$body}}
+    <h2>{{vehicle.name}}</h2>
+    <p>{{vehicle.description}}</p>
+    <h3>Basic Attributes</h3>
+    <table>
+      <tr><td>Base Speed</td><td>{{vehicle.baseSpeed}}</td></tr>
+      <tr><td>Crew Size</td><td>{{vehicle.crewSize}}</td></tr>
+      <tr><td>Empty Mass</td><td>{{vehicle.emptymass}}</td></tr>
+      <tr><td>Width</td><td>{{vehicle.width}}</td></tr>
+      <tr><td>Length</td><td>{{vehicle.length}}</td></tr>
+      <tr><td>Fuel Efficiency</td><td>{{vehicle.drivetrainEfficiency}}</td></tr>
+      {{#vehicle.hasLab}}
+      <tr><td>Lab Tech Level</td><td>{{vehicle.labTechLevel}}</td></tr>
+      <tr><td>Lab Specialties</td><td>{{vehicle.labTechSpecialties}}</td></tr>
+      {{/vehicle.hasLab}}
+      {{#vehicle.hasSickbay}}
+      <tr><td>Sickbay Tech Level</td><td>{{vehicle.sickBayTechLevel}}</td></tr>
+      <tr><td>Sickbay Beds</td><td>{{vehicle.sickbayBeds}}</td></tr>
+      {{/vehicle.hasSickbay}}
+      <tr><td>Attachment Slots</td><td>{{vehicle.attachmentSlots}}</td></tr>
+    </table>
+
+    {{#vehicle.hasPartAttachments}}
+    <h3>Attachments</h3>
+      <ol>
+    {{#vehicle.attachableParts}}
+      <li><a href="{{partfolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></li>
+    {{/vehicle.attachableParts}}
+      </ol>
+    {{/vehicle.hasPartAttachments}}
+    <h3>Storage Capacity</h3>
+    <table>
+    {{#cargo}}
+      <tr>
+        <td><a href="{{resourcefolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></td>
+        <td>{{value}}</td>
+      </tr>
+    {{/cargo}}
+    </table>
+    </br>
+    <a href="vehicle-list.html">Back to Vehicle list</a>
+  {{/body}}
+{{/help-layout}}
+
+<!--
+
+					helpFileTableRow(content,new String[] {"Attachment Slots",Integer.toString(v.getAttachmentSlots())});
+-->

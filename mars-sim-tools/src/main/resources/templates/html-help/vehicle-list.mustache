@@ -1,0 +1,11 @@
+{{<help-layout}}
+  {{$body}}
+    <h2>Vehicles</h2>
+    <p>Types of Vehicles Featured for Mars Surface Operations:</p>
+    <ol>
+    {{#vehicles}}
+      <li><a href="{{vehiclefolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></li>
+    {{/vehicles}}
+    </ol>
+  {{/body}}
+{{/help-layout}}
