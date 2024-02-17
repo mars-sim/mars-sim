@@ -1992,7 +1992,7 @@ public class Settlement extends Structure implements Temporal,
 	public int getIndoorPeopleCount() {
 		return indoorPeople.size();
 	}
-	
+
 	/**
 	 * Assigns a person to be a legal citizen of this settlement.
 	 *
