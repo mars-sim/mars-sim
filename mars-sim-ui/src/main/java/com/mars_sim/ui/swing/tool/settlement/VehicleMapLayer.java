@@ -57,8 +57,8 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 		// Draw all vehicles.
 		// Draw all parked vehicles at this settlement location
-		for(Vehicle v : CollectionUtils.getVehiclesInSettlementVicinity(settlement)) {
-			drawVehicle(v,mapPanel.isShowVehicleLabels(), viewpoint);
+		for (Vehicle v : settlement.parkedVehicles()) { // CollectionUtils.getVehiclesInSettlementVicinity(settlement)) {
+			drawVehicle(v, mapPanel.isShowVehicleLabels(), viewpoint);
 		}
 
 		// Restore original graphic transforms.

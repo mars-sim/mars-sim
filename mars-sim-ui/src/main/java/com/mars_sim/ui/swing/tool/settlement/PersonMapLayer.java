@@ -39,7 +39,7 @@ public class PersonMapLayer extends WorkerMapLayer<Person> {
 	
 	@Override
 	public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
-		Collection<Person> people = CollectionUtils.getPeopleInSettlementVicinity(settlement);		
+		Collection<Person> people = settlement.getIndoorPeople();		
 		Person selectedPerson = mapPanel.getSelectedPerson();
 
 		drawWorkers(people, selectedPerson, mapPanel.isShowPersonLabels(), viewpoint);

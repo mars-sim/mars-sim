@@ -362,7 +362,7 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement's list of parked vehicles. */
 	private Set<Vehicle> parkedVehicles;
 	/** The list of people currently within the settlement. */
-	private Set<Person> indoorPeopleMap;
+	private Set<Person> indoorPeople;
 	/** The settlement's list of robots within. */
 	private Set<Robot> robotsWithin;
 	/** The settlement's preference map. */
@@ -411,7 +411,7 @@ public class Settlement extends Structure implements Temporal,
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
 		parkedVehicles = new UnitSet<>();
-		indoorPeopleMap = new UnitSet<>();
+		indoorPeople = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 
 		final double GEN_MAX = 1_000_000;
@@ -461,7 +461,7 @@ public class Settlement extends Structure implements Temporal,
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
 		parkedVehicles = new UnitSet<>();
-		indoorPeopleMap = new UnitSet<>();
+		indoorPeople = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 		allowTradeMissionSettlements = new HashMap<>();
 		
@@ -718,15 +718,6 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the current number of people who are inside the settlement.
-	 *
-	 * @return the number indoor
-	 */
-	public int getIndoorPeopleCount() {
-		return indoorPeopleMap.size();
-	}
-
-	/**
 	 * Ends all the indoor tasks people are doing.
 	 */
 	public void endAllIndoorTasks() {
@@ -736,15 +727,6 @@ public class Settlement extends Structure implements Temporal,
 						+  p.getPosition() + ".", null);
 			p.getMind().getTaskManager().clearAllTasks("Stop indoor tasks");
 		}
-	}
-
-	/**
-	 * Gets a collection of the people who are currently inside the settlement.
-	 *
-	 * @return Collection of people within
-	 */
-	public Collection<Person> getIndoorPeople() {
-		return indoorPeopleMap;
 	}
 
 	/**
@@ -1955,7 +1937,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return true if added successfully
 	 */
 	public boolean containsPerson(Person p) {
-		if (indoorPeopleMap.contains(p))
+		if (indoorPeople.contains(p))
 			return true;
 		return false;
 	}
@@ -1968,10 +1950,10 @@ public class Settlement extends Structure implements Temporal,
 	 * @return true if added successfully
 	 */
 	public boolean addToIndoor(Person p) {
-		if (indoorPeopleMap.contains(p)) {
+		if (indoorPeople.contains(p)) {
 			return true;
 		}
-		if (indoorPeopleMap.add(p)) {
+		if (indoorPeople.add(p)) {
 			p.setContainerUnit(this);
 			return true;
 		}
@@ -1986,12 +1968,30 @@ public class Settlement extends Structure implements Temporal,
 	 * @return true if removed successfully
 	 */
 	public boolean removePeopleWithin(Person p) {
-		if (!indoorPeopleMap.contains(p))
+		if (!indoorPeople.contains(p))
 			return true;
-		if (indoorPeopleMap.remove(p)) {
+		if (indoorPeople.remove(p)) {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Gets a collection of the people who are currently inside the settlement.
+	 *
+	 * @return Collection of people within
+	 */
+	public Collection<Person> getIndoorPeople() {
+		return indoorPeople;
+	}
+
+	/**
+	 * Gets the current number of people who are inside the settlement.
+	 *
+	 * @return the number indoor
+	 */
+	public int getIndoorPeopleCount() {
+		return indoorPeople.size();
 	}
 
 	/**
@@ -2168,6 +2168,10 @@ public class Settlement extends Structure implements Temporal,
 			return true;
 		}
 		return false;
+	}
+	
+	public Set<Vehicle> parkedVehicles() {
+		return parkedVehicles;
 	}
 
 	/**
@@ -4141,11 +4145,11 @@ public class Settlement extends Structure implements Temporal,
 		citizens.clear();
 		citizens = null;
 		
-		for (Person p: indoorPeopleMap) {
+		for (Person p: indoorPeople) {
 			p.destroy();
 		}
-		indoorPeopleMap.clear();
-		indoorPeopleMap = null;
+		indoorPeople.clear();
+		indoorPeople = null;
 		
 		for (Robot r: ownedRobots) {
 			r.destroy();
