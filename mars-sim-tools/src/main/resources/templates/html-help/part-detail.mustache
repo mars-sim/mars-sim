@@ -1,0 +1,13 @@
+{{<help-layout}}
+  {{$body}}
+    <h2>{{part.name}}</h2>
+    <p>Desc: {{part.description}}</p>
+    <p>Mass: {{part.massPerItem}} kg</p>
+    <p>Type: {{part.goodType.getName}}</p>
+    
+    {{>process-flow}}
+
+    </br>
+    <a href="index.html">Back to Part list</a>
+  {{/body}}
+{{/help-layout}}

@@ -1,0 +1,14 @@
+{{<help-layout}}
+  {{$body}}
+    <h2>{{resource.name}}</h2>
+    <p>Desc: {{resource.description}}</p>
+    <p>Edible: {{resource.isEdible}}</p>
+    <p>Type: {{resource.goodType.getName}}</p>
+    <p>Form: {{resource.phase.getName}}</p>
+    
+    {{>process-flow}}
+
+    </br>
+    <a href="index.html">Back to Resource list</a>
+  {{/body}}
+{{/help-layout}}

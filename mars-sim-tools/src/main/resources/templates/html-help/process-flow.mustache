@@ -1,0 +1,16 @@
+    {{#hasOutputProcesses}}
+    <h3>Made by Manufacturing Process</h3>
+    <ul>
+    {{#outputProcesses}}
+      <li><a href="{{processfolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></li>
+    {{/outputProcesses}}
+    </ul>
+    {{/hasOutputProcesses}}
+    {{#hasInputProcesses}}
+    <h3>Used by Manufacturing Process</h3>
+    <ul>
+    {{#inputProcesses}}
+      <li><a href="{{processfolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></li>
+    {{/inputProcesses}}
+    </ul>
+    {{/hasInputProcesses}}
