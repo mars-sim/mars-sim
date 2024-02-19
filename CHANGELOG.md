@@ -36,6 +36,33 @@ GitHub: https://github.com/mars-sim/mars-sim
 
 ------------------------------------------|---------------------
 
+## Version 3.7.2 (Sun 18 Feb 2024)
+
+### A. CORE ENGINE IMPROVEMENTS :
+<OL>
+  <LI>Amount Resource: rework fertilizer composition to make use of bacteria.</LI>
+  <LI>Construction: revise frame and foundation template.</LI>
+  <LI>Dust Storm: refines log and show occurrences in settlement banner.</LI>
+  <LI>Part: rework use of aerogel tiles for construction mission.</LI>
+  <LI>Resource: remove mortar in ResourceUtil.</LI>
+</OL>
+  
+### B. UI IMPROVEMENT :
+<OL>
+  <LI>Construction: add new col "Available Material" during construction mission.</LI>
+  <LI>Settlement: correct building overlapping in Hub Base template.</LI>
+</OL>  
+
+### C. FIXES :
+<OL>
+  <LI>Airlock: add missing airlock to trading outpost and mining outpost template.</LI>
+  <LI>Building: add checking for building collision at startup.</LI>
+  <LI>Greenhouse: correct experience point calculation when tending crops.</LI>
+  <LI>Heating: revise air and water heat sink buffer.</LI>
+  <LI>Power: add missing power set in settlement templates.</LI>
+</OL>
+
+------------------------------------------|---------------------
 
 ## Version 3.7.1 (Wed 17 Jan 2024)
 
