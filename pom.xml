@@ -7,13 +7,13 @@
 	<groupId>com.mars-sim</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
-	<version>3.7.1</version>
+	<version>3.7.2</version>
 	<name>mars-sim</name>
 	<url>https://github.com/mars-sim/mars-sim</url>
 	<inceptionYear>2009</inceptionYear>
 	<properties>
 		<release>17</release>
-		<project.version>3.7.1</project.version>
+		<project.version>3.7.2</project.version>
 		<fxgl.version>11.17</fxgl.version>
 		<junit-jupiter.version>5.10.0</junit-jupiter.version>
         <!-- optional : if we want to use a junit4 specific version -->
@@ -138,9 +138,9 @@
 		<module>mars-sim-console</module>
 		<module>mars-sim-core</module>
 		<module>mars-sim-ui</module>
-    	<module>mars-sim-base</module>
-		<module>mars-sim-fxgl</module>
-    	<module>mars-sim-libgdx</module>
+    	<!--module>mars-sim-base</module-->
+		<!--module>mars-sim-fxgl</module-->
+    	<!--module>mars-sim-libgdx</module-->
 	</modules>
   
 	<!-- ************************************************************************************************* -->
