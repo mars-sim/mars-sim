@@ -1,6 +1,6 @@
     {{#hasOutputProcesses}}
     <h3>Made by Manufacturing Process</h3>
-    <ul>
+    <ul id="creators">
     {{#outputProcesses}}
       <li><a href="{{processfolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></li>
     {{/outputProcesses}}
@@ -8,7 +8,7 @@
     {{/hasOutputProcesses}}
     {{#hasInputProcesses}}
     <h3>Used by Manufacturing Process</h3>
-    <ul>
+    <ul id="consumers">
     {{#inputProcesses}}
       <li><a href="{{processfolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></li>
     {{/inputProcesses}}

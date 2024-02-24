@@ -1191,45 +1191,6 @@
 		</outputs>
 	</process>
 		
-	<process name="Make Blueberry Muffin"
-		tech="2" skill="2" work-time="50" process-time="100"
-			power-required="0.2">
-		<description>Mix flour, sugar, salt, baking powder, sugarcane juice, and
-			blueberry and bake in preheated oven at 200 deg C. </description>
-		<inputs>
-			<resource name="Blueberry" amount="0.2" />
-			<resource name="Sugar" amount="0.2" />
-			<resource name="table salt" amount="0.1" />
-			<resource name="Water" amount="2.0" />
-			<resource name="Sugarcane Juice" amount="0.1" />
-			<resource name="Baking Powder" amount="0.1" />
-			<resource name="Wheat Flour" amount="1.5" />
-		</inputs>
-		<outputs>
-			<resource name="Blueberry Muffin" amount="2.0" />
-		</outputs>
-	</process>
-
-	<process name="Make Okara Blueberry Muffin"
-		tech="2" skill="2" work-time="50" process-time="100"
-			power-required="0.2">
-		<description>Mix flour, sugar, salt, baking powder, sugarcane juice, and
-			blueberry and bake in preheated oven at 200 deg C. </description>
-		<inputs>
-			<resource name="Blueberry" amount="0.2" />
-			<resource name="Sugar" amount="0.15" />
-			<resource name="table salt" amount="0.1" />
-			<resource name="Water" amount="2.0" />
-			<resource name="Sugarcane Juice" amount="0.1" />
-			<resource name="Baking Powder" amount="0.1" />
-			<resource name="Wheat Flour" amount="1.3" />
-			<resource name="Okara" amount="0.35" />
-		</inputs>
-		<outputs>
-			<resource name="Blueberry Muffin" amount="2.1" />
-		</outputs>
-	</process>
-		
 	<process name="Make Cranberry Juice from Cranberry"
 		tech="1" skill="2" work-time="50" process-time="100"
 			power-required="0.3">

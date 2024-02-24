@@ -1,0 +1,20 @@
+{{<help-layout}}
+  {{$body}}
+    <h2>Manufacturing Process - {{process.name}}</h2>
+    {{#process.description}}
+    <h3>Description</h3>
+    <p>{{process.description}}</p>
+    {{/process.description}}
+    <h3>Characteristics</h3>
+    <table id="characteristics">
+    <tr><td>Skill Level:</td><td>{{process.skillLevelRequired}}</td></tr>
+    <tr><td>Tech Level:</td><td>{{process.techLevelRequired}}</td></tr>
+    <tr><td>Process Time:</td><td>{{process.processTimeRequired}} millisols</td></tr>
+    <tr><td>Work Level:</td><td>{{process.workTimeRequired}} millisols</td></tr>
+    <tr><td>Power Required:</td><td>{{process.powerRequired}} kW/hr</td></tr>
+    </table>
+    {{>process-inout}}
+    </br>
+    <a href="index.html">Back to Process list</a>
+  {{/body}}
+{{/help-layout}}

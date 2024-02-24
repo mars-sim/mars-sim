@@ -12,11 +12,11 @@ package com.mars_sim.core.resource;
  */
 public enum ItemType {
 
-	AMOUNT_RESOURCE		("resource"),
-	BIN					("bin"),
-	EQUIPMENT			("equipment"),
-	PART				("part"),
-	VEHICLE				("vehicle"),
+	AMOUNT_RESOURCE		("Resource"),
+	BIN					("Bin"),
+	EQUIPMENT			("Equipment"),
+	PART				("Part"),
+	VEHICLE				("Vehicle"),
 	;
 
 	private String name;	
