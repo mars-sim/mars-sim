@@ -1,0 +1,22 @@
+{{<help-layout}}
+  {{$body}}
+    <h2 id="top">{{title}}</h2>
+    <p>{{description}}</p>
+    <div>
+    {{#groups}}
+      <a style="display: inline;" href="#{{id}}">{{name}}</a>
+    {{/groups}}
+    </div>
+    {{#groups}}
+      <h3 id="{{id}}">{{name}}</h3>
+      <ul>
+      {{#items}}
+        <li><a href="{{typefolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></li>
+      {{/items}}
+      </ul>
+      <a href="#top">Back to the top</a>
+    {{/groups}}
+    </br>
+    <a href="../../concepts.html">Back to Concepts</a>
+  {{/body}}
+{{/help-layout}}

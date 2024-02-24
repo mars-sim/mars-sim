@@ -25,7 +25,6 @@ import com.mars_sim.core.malfunction.MalfunctionMeta.EffortSpec;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
-import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.building.function.FunctionType;
@@ -173,16 +172,8 @@ public class MalfunctionConfig {
 					double changeRate = Double.parseDouble(effectElement.getAttributeValue(CHANGE_RATE));
 
 					if (type.equals("life-support")) {
-
-//                            	if (resourceName.equals("Air Pressure"))
-//                            		; // TODO: change the air pressure
-//                            	else if (resourceName.equals("Temperature"))
-//                            		; // TODO: change the temperature
-//                            	else {
-//                            	}
-
 						lifeSupportEffects.put(resourceName, changeRate);
-					} else if (type.equals(ItemType.AMOUNT_RESOURCE.getName())) {
+					} else if (type.equals("resource")) {
 						AmountResource resource = ResourceUtil.findAmountResource(resourceName);
 						if (resource == null)
 							logger.warning(resourceName

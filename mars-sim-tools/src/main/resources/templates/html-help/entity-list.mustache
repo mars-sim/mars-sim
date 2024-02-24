@@ -1,0 +1,13 @@
+{{<help-layout}}
+  {{$body}}
+    <h2>{{title}}</h2>
+    <p>{{description}}</p>
+    <ul>
+    {{#entities}}
+      <li><a href="{{typefolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></li>
+    {{/entities}}
+    </ul>
+    </br>
+    <a href="../../concepts.html">Back to Concepts</a>
+  {{/body}}
+{{/help-layout}}

@@ -1,0 +1,36 @@
+{{<help-layout}}
+  {{$body}}
+    <h2> Resource - {{resource.name}}</h2>
+    {{#resource.description}}
+    <h3>Description</h3>
+    <p>{{resource.description}}</p>
+    {{/resource.description}}
+    <h3>Characteristics</h3>
+    <table id="characteristics">
+    <tr><td>Edible:</td><td>{{resource.isEdible}}</td></tr>
+    <tr><td>Type:</td><td>{{resource.goodType.getName}}</td></tr>
+    <tr><td>Form:</td><td>{{resource.phase.getName}}</td></tr>
+    </table>
+    {{>process-flow}}
+
+    {{#hasFoodOutput}}
+    <h3>Made by Food Process</h3>
+    <ul id="foodcreators">
+    {{#foodOutput}}
+      <li><a href="{{foodfolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></li>
+    {{/foodOutput}}
+    </ul>
+    {{/hasFoodOutput}}
+    {{#hasFoodInput}}
+    <h3>Used by Food Process</h3>
+    <ul id="foodconsumers">
+    {{#foodInput}}
+      <li><a href="{{foodfolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></li>
+    {{/foodInput}}
+    </ul>
+    {{/hasFoodInput}}
+
+    </br>
+    <a href="index.html">Back to Resource list</a>
+  {{/body}}
+{{/help-layout}}

@@ -1,0 +1,23 @@
+<h3>{{inputsTitle}}</h3>
+<table id="inputs">
+    {{#inputs}}
+    <tr><td>
+    {{#typefolder}}
+        <a href="{{typefolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a>
+    {{/typefolder}}
+    {{^typefolder}}
+        {{name}}
+    {{/typefolder}}
+    </td>
+    <td>{{type}}</td>
+    <td>{{amount}}</td>
+    </tr>
+    {{/inputs}}
+</table>
+<h3>{{outputsTitle}}</h3>
+<table id="outputs">
+    {{#outputs}}
+    <tr><td><a href="{{typefolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></td>
+    <td>{{amount}}</td></tr>
+    {{/outputs}}
+</table>
