@@ -276,7 +276,7 @@ public class HelpGenerator {
 		// This will be expaned to support other template sets
 		var gen = new HelpGenerator(config, "html-help", "html");
 		try {
-			File output = new File("target/help-files");
+			File output = new File(args[0]);
 			gen.generateAll(output);
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "Problem generating files", e);

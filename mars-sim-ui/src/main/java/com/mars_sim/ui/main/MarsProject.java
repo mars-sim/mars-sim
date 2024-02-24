@@ -38,7 +38,6 @@ import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.person.Crew;
 import com.mars_sim.tools.Msg;
-import com.mars_sim.ui.swing.helpGenerator.HelpGenerator;
 import com.mars_sim.ui.swing.MainWindow;
 import com.mars_sim.ui.swing.configeditor.SimulationConfigEditor;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
@@ -55,7 +54,6 @@ public class MarsProject {
 	private static final String NOAUDIO = "noaudio";
 	private static final String NOGUI = "nogui";
 	private static final String DISPLAY_HELP = "help";
-	private static final String GENERATE_HELP = "html";
 	private static final String NEW = "new";
 	private static final String CLEANUI = "cleanui";
 	private static final String SANDBOX = "sandbox";
@@ -245,8 +243,6 @@ public class MarsProject {
 				.desc("Start in Sandbox Mode").build());
 		options.addOption(Option.builder(NEW)
 				.desc("Enable quick start").build());
-		options.addOption(Option.builder(GENERATE_HELP)
-				.desc("Generate HTML help").build());
 		options.addOption(Option.builder(SITE_EDITOR)
 				.desc("Start the Scenario Editor").build());
 		options.addOption(Option.builder(PROFILE)
@@ -297,9 +293,6 @@ public class MarsProject {
 			}
 			if (line.hasOption(SITE_EDITOR)) {
 				useSiteEditor = true;
-			}
-			if (line.hasOption(GENERATE_HELP)) {
-				generateHelp();
 			}
 			if (line.hasOption(PROFILE)) {
 				useProfile = true;
@@ -375,24 +368,6 @@ public class MarsProject {
 		logger.config("Select '1. Command Mode'");
 		logger.config("Select '5. Set up a new commander profile'");
 		logger.config("When done, select '6. Load an exiting commander profile'");
-	}
-	
-	/**
-	 * Generates the html help files
-	 */
-	private void generateHelp() {
-		logger.config("Generating help files in headless mode in " + Simulation.OS + ".");
-
-		try {
-			simulationConfig.loadConfig();
-			// this will generate html files for in-game help
-			HelpGenerator.generateHtmlHelpFiles();
-			logger.config("Done creating help files.");
-			System.exit(1);
-
-		} catch (Exception e) {
-			exitWithError("Could not generate help files ", e);
-		}
 	}
 
 	/**
