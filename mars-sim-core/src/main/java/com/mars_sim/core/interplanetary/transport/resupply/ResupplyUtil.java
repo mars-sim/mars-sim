@@ -21,15 +21,10 @@ import com.mars_sim.core.time.MarsTime;
  * Future: may reference the calculation of transit time at http://www.jpl.nasa.gov/edu/teach/activity/lets-go-to-mars-calculating-launch-windows/
  */
 public final class ResupplyUtil {
-
-
-    public static int MAX_NUM_SOLS_PLANNED = 2007; // 669 * 3 = 2007
 	
     // Average transit time for resupply missions from Earth to Mars [in sols]
     private static int averageTransitTime = SimulationConfig.instance().getAverageTransitTime();
 
-
-    
 	/**
 	 * Private constructor for utility class.
 	 */

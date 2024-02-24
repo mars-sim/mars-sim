@@ -72,6 +72,10 @@ public class ResupplySchedule implements Serializable {
      * @return
      */
     public int getActiveMissions() {
+        if (frequency <= 0) {
+            // This is a one off so only schedule a single instance
+            return 1;
+        }
         return  Math.floorDiv(ResupplyUtil.getAverageTransitTime(), frequency) + 1;
     }
 }
