@@ -21,6 +21,8 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.checkerframework.checker.units.qual.t;
+
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.mars_sim.core.SimulationConfig;
@@ -49,7 +51,7 @@ public class HelpGenerator {
 		return (obj-> generateFileName((String) obj));
 	}
 
-	private String outputDir;
+	//private String outputDir;
     private String fileSuffix;
 	private DefaultMustacheFactory mf;
 	private String templateDir;
@@ -60,8 +62,7 @@ public class HelpGenerator {
 	private SimulationConfig config;
 
 
-    HelpGenerator(SimulationConfig config, String outputDir, String templateSet, String fileSuffix) {
-        this.outputDir = outputDir + "/";
+    HelpGenerator(SimulationConfig config, String templateSet, String fileSuffix) {
         this.fileSuffix = "." + fileSuffix;
 		this.templateDir = TEMPLATES_DIR + templateSet + "/";
 		this.config = config;
@@ -114,24 +115,47 @@ public class HelpGenerator {
 	 * @param title Page title
 	 * @param description Description of the page
 	 * @param entities List of entities
-	 * @param targetDir Target directory for the index file
+	 * @param typeFolder Folder for this type
+	 * @param outputDir Target root folder for the file
 	 * 
 	 */
-	 void createIndex(String title, String description,
-			List<? extends Object> entities, String targetDir)
+	 void createFlatIndex(String title, String description,
+			List<? extends Object> entities, String typeFolder, File outputDir) 
 		throws IOException {
 		var scope = createScopeMap(title);
 		scope.put("description", description);
 		scope.put("entities", entities);
-		scope.put("typefolder", "../" + targetDir + "/");
-
-		File outDir = new File(outputDir + targetDir);
-		outDir.mkdir();
+		scope.put("typefolder", "../" + typeFolder + "/");
 
 		logger.info("Generating index file for " + title);
-		File indexFile = new File(outDir, generateFileName("index"));
+		File indexFile = new File(outputDir, generateFileName("index"));
 		try (FileOutputStream dest = new FileOutputStream(indexFile)) {
 			generateContent("entity-list", scope, dest);
+		}
+	}
+
+	/**
+	 * Create an index page for a set of named entities that are grouped. This will use the 
+	 * 'entity-grouped' template.
+	 * @param title Page title
+	 * @param description Description of the page
+	 * @param groups List of groups
+	 * @param typeFolder Folder for this type
+	 * @param outputDir Target root folder for the file
+	 * 
+	 */
+	 void createGroupedIndex(String title, String description,
+			List<?> groups,  String typeFolder, File outputDir) 
+		throws IOException {
+		var scope = createScopeMap(title);
+		scope.put("description", description);
+		scope.put("groups", groups);
+		scope.put("typefolder", "../" + typeFolder + "/");
+
+		logger.info("Generating grouped index file for " + title);
+		File indexFile = new File(outputDir, generateFileName("index"));
+		try (FileOutputStream dest = new FileOutputStream(indexFile)) {
+			generateContent("entity-grouped", scope, dest);
 		}
 	}
 
@@ -179,24 +203,32 @@ public class HelpGenerator {
 
 	/**
 	 * Generate all configurations.
-	 * @param config
+	 * @param outputDir Root location for generated files
 	 * @throws IOException
 	 */
-	private void generateAll() throws IOException {
-		VehicleGenerator vg = new VehicleGenerator(this);
-		vg.generateAll();
+	public void generateAll(File outputDir) throws IOException {
+		List<TypeGenerator<? extends Object>> gens = new ArrayList<>();
 
-		var pg = new ProcessGenerator(this);
-		pg.generateAll();
+		gens.add(new FoodGenerator(this));
+		gens.add(new PartGenerator(this));
+		gens.add(new ProcessGenerator(this));
+		gens.add(new ResourceGenerator(this));
+		gens.add(new VehicleGenerator(this));
 
-		var ptg = new PartGenerator(this);
-		ptg.generateAll();
 
-		var rg = new ResourceGenerator(this);
-		rg.generateAll();
+		// Generate all subtype
+		for(var g : gens) {
+			g.generateAll(outputDir);
+		}
 
-		var fg = new FoodGenerator(this);
-		fg.generateAll();
+		Map<String,Object> topScope = createScopeMap("Configurations");
+		topScope.put("generators", gens);
+
+		// Generate configuration overview page
+		try (FileOutputStream topIndex = new FileOutputStream(new File(outputDir,
+														generateFileName("index")))) {
+			generateContent("top-list", topScope, topIndex);
+		}
 	}
 
     public SimulationConfig getConfig() {
@@ -211,18 +243,9 @@ public class HelpGenerator {
 	 * @return
 	 */
 	Mustache getTemplate(String template) {
-		Mustache m = templates.get(template);
-		if (m == null) {
-			m = mf.compile(templateDir + template + ".mustache");
-			templates.put(template, m);
-		}
-
-		 return m;
+		return templates.computeIfAbsent(template,
+				t -> mf.compile(templateDir + t + ".mustache"));
 	}
-
-    public String getOutputDir() {
-		return outputDir;
-    }
 
 	/**
 	 * Creates a final output by applying a template to a scope.
@@ -251,9 +274,10 @@ public class HelpGenerator {
 		config.loadConfig();
 
 		// This will be expaned to support other template sets
-		var gen = new HelpGenerator(config, "target/help-files", "html-help", "html");
+		var gen = new HelpGenerator(config, "html-help", "html");
 		try {
-			gen.generateAll();
+			File output = new File("target/help-files");
+			gen.generateAll(output);
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "Problem generating files", e);
 		}

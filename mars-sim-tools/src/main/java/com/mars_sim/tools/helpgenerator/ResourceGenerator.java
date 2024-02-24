@@ -30,6 +30,9 @@ public class ResourceGenerator extends TypeGenerator<AmountResource> {
     protected ResourceGenerator(HelpGenerator parent) {
         super(parent, TYPE_NAME, "Resources",
         "Resources that can be stored and used for manufacturing and cooking.");
+
+        // Groups according to Resource Phase
+        setGrouper(r-> r.getPhase().getName());
     }
 
     private static FoodUse buildEmptyFoodUse() {

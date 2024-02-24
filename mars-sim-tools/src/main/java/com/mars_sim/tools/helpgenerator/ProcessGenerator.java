@@ -24,6 +24,9 @@ class ProcessGenerator extends TypeGenerator<ManufactureProcessInfo> {
     ProcessGenerator(HelpGenerator parent) {
         super(parent, TYPE_NAME, "Manufacturing Processes",
                         "Manufacturing Processes that consume resoruce to create new resources.");
+
+        // Groups according to first letter of name
+        setGrouper(r-> r.getName().substring(0, 1).toUpperCase());
     }
 
     /**

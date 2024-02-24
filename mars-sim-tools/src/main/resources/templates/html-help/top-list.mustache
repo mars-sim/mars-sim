@@ -1,0 +1,11 @@
+{{<help-layout}}
+  {{$body}}
+    <h2>{{title}}</h2>
+    <p>List of documented configurations.</p>
+    <ul>
+    {{#generators}}
+      <li><a href="{{typeName}}/index.html">{{title}}</a> - {{description}}</li>
+    {{/generators}}
+    </ul>
+  {{/body}}
+{{/help-layout}}

@@ -12,8 +12,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
+import com.mars_sim.tools.helpgenerator.GenericsGrouper.NamedGroup;
 import com.mars_sim.tools.helpgenerator.HelpGenerator.ProcessItem;
 
 /**
@@ -26,6 +28,9 @@ public abstract class TypeGenerator<T> {
     private String typeName;
     private String title;
     private String description;
+
+    // Used to group entities for grouped index
+    private Function<T,String> grouper;
 
     /**
      * Create an instance.
@@ -40,6 +45,26 @@ public abstract class TypeGenerator<T> {
         this.title = title;
         this.description = description;
     }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Define an grouper to create a groupe index page.
+     * @param grouper
+     */
+    protected void setGrouper(Function<T,String> grouper) {
+        this.grouper = grouper;
+    }
     
     protected HelpGenerator getParent() {
         return parent;
@@ -51,24 +76,31 @@ public abstract class TypeGenerator<T> {
      * @param targetDir Target folder for output
      * @throws IOException
      */
-	protected void createIndex(List<T> entities, String targetDir)
+	private void createIndex(List<T> entities, File targetDir)
 		throws IOException {
-            parent.createIndex(title, description, entities, targetDir);
+        if (grouper == null) {
+            parent.createFlatIndex(title, description, entities, typeName, targetDir);
+        }
+        else {
+            List<NamedGroup<T>> groups = GenericsGrouper.getGroups(entities, grouper);
+            parent.createGroupedIndex(title, description, groups, typeName, targetDir);
+        }
 	}
 
     /**
-	 * Generate the files for all the entities of this type includign an index.
+	 * Generate the files for all the entities of this type including an index.
+     * @param outputDir The top levle folder of generated files
 	 * @throws IOException
 	 */
-	public void generateAll() throws IOException {
+	public void generateAll(File outputDir) throws IOException {
 
-		File targetDir = new File(parent.getOutputDir() + typeName);
+		File targetDir = new File(outputDir, typeName);
 		targetDir.mkdirs();
 
 		List<T> vTypes = getEntities(); 
 	
 		// Create vehicle index
-		createIndex(vTypes, typeName);
+		createIndex(vTypes, targetDir);
 
 		// Individual vehicle pages
 		logger.info("Generating details files");

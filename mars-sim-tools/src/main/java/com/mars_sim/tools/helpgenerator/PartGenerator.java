@@ -22,6 +22,10 @@ class PartGenerator extends TypeGenerator<Part> {
 
     protected PartGenerator(HelpGenerator parent) {
         super(parent, TYPE_NAME, "Parts", "Parts used for repairs and processes");
+
+        
+        // Groups by part type
+        setGrouper(r-> r.getGoodType().getName());
     }
 
     /**

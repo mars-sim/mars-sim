@@ -1,11 +1,17 @@
 package com.mars_sim.tools.helpgenerator;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
@@ -19,9 +25,7 @@ public class HelpGeneratorTest {
         var config = SimulationConfig.instance();
         config.loadConfig();
 
-        // Tmp dir is never used
-        var tempDir = System.getProperty("java.io.tmpdir");
-        return new HelpGenerator(config, tempDir, "html-help", "html");
+        return new HelpGenerator(config, "html-help", "html");
     }
 
     private <T> Document createDoc(TypeGenerator<T> gen, T entity) throws IOException {
@@ -89,5 +93,34 @@ public class HelpGeneratorTest {
         assertNotNull("Consumer section", content.getElementById("consumers"));
         assertNotNull("Creator section", content.getElementById("creators"));
         assertNotNull("Characteristics section", content.getElementById("characteristics"));
+    }
+
+    @Test public void testFullGeneration() throws IOException {
+        var context = createGenerator();
+
+        File output = Files.createTempDirectory("generator").toFile();
+        try {
+            context.generateAll(output);
+
+            File[] created = output.listFiles();
+
+            // Matches number of type generators plus 1 for index
+            assertEquals("Top level content", 6, created.length);
+            for(File f : created) {
+                if (f.isFile()) {
+                    // Must be index
+                    assertEquals("Top Index file", "index.html", f.getName());
+                    assertTrue("Index has content", f.length() > 10);
+                }
+                else {
+                    // Directory
+                    assertTrue("Type contents " + f.getName(), f.listFiles().length > 1);
+                }
+            }
+        }
+        finally {
+            // Clean up
+            FileUtils.deleteDirectory(output);
+        }
     }
 }
