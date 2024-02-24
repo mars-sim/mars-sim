@@ -21,8 +21,6 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.checkerframework.checker.units.qual.t;
-
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.mars_sim.core.SimulationConfig;
@@ -31,6 +29,9 @@ import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.resource.ItemType;
 
 public class HelpGenerator {
+
+	// Name of the index file for lists of entities
+	private static final String INDEX = "index";
 
 	// POJO for a named value pair
 	public record ValuePair(String name, double value) {}
@@ -50,9 +51,8 @@ public class HelpGenerator {
 	public Function<Object, Object> getFilename() {
 		return (obj-> generateFileName((String) obj));
 	}
-
-	//private String outputDir;
-    private String fileSuffix;
+	
+	private String fileSuffix;
 	private DefaultMustacheFactory mf;
 	private String templateDir;
 	private Map<String,Mustache> templates = new HashMap<>();
@@ -128,7 +128,7 @@ public class HelpGenerator {
 		scope.put("typefolder", "../" + typeFolder + "/");
 
 		logger.info("Generating index file for " + title);
-		File indexFile = new File(outputDir, generateFileName("index"));
+		File indexFile = new File(outputDir, generateFileName(INDEX));
 		try (FileOutputStream dest = new FileOutputStream(indexFile)) {
 			generateContent("entity-list", scope, dest);
 		}
@@ -153,7 +153,7 @@ public class HelpGenerator {
 		scope.put("typefolder", "../" + typeFolder + "/");
 
 		logger.info("Generating grouped index file for " + title);
-		File indexFile = new File(outputDir, generateFileName("index"));
+		File indexFile = new File(outputDir, generateFileName(INDEX));
 		try (FileOutputStream dest = new FileOutputStream(indexFile)) {
 			generateContent("entity-grouped", scope, dest);
 		}
@@ -226,7 +226,7 @@ public class HelpGenerator {
 
 		// Generate configuration overview page
 		try (FileOutputStream topIndex = new FileOutputStream(new File(outputDir,
-														generateFileName("index")))) {
+														generateFileName(INDEX)))) {
 			generateContent("top-list", topScope, topIndex);
 		}
 	}

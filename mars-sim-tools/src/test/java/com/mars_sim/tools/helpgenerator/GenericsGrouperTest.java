@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-public class GenericsGrouperTest {
+class GenericsGrouperTest {
 
     private record Item(String name, String description) {}
 
