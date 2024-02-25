@@ -271,28 +271,6 @@
 	<!-- Resupply mission from Earth. -->
 	<!-- name: the unique name of the resupply mission. -->
 	<resupply name="Resupply for Phase 1" person="4">
-
-		<!-- A new building for the settlement. -->
-		<!-- type: the type of building (see buildings.xml) -->
-		<!-- xloc the preferred East/West placement position of the building in meters from the settlement center.
-		     (positive:West, negative:East) -->
-		<!-- yloc the preferred North/South placement position of the building in meters from the settlement center.
-		     (positive:North, negative:South) -->
-		<!-- The facing of the building in degrees clockwise from North. -->
-		<building type="Lander Hab" xloc="0.0" yloc="13.0" facing="0.0" />
-		
-		<building type="Inflatable Greenhouse" xloc="-12.0" yloc="13.0" facing="270.0" />
-
-		<building type="MD1 Nuclear Reactor" xloc="60.0" yloc="-80.0" facing="0.0" />
-
-		<building type="ERV-A" xloc="120.0" yloc="-15.0" facing="0.0" />
-		<building type="ERV-B" xloc="120.0" yloc="25.0" facing="0.0" />
-		<building type="ERV-C" xloc="120.0" yloc="65.0" facing="0.0" />
-								
-		<building type="Hallway" length="4.0" xloc="0.0" yloc="6.5" facing="0.0" />
-		<building type="Hallway" length="3.0" xloc="-6.0" yloc="13.0" facing="270.0" />
-
-		<building type="Large Sabatier Processor" xloc="0.0" yloc="-45.0" facing="90.0" />
 			
 		<!-- New equipment -->
 		<!-- type: the type of equipment. -->
@@ -322,21 +300,6 @@
 	</resupply>
 
 	<resupply name="Resupply for Phase 2" person="4">
-		<building type="Lander Hab" xloc="0.0" yloc="26.0" facing="0.0" />
-		<building type="Inflatable Greenhouse" xloc="-12.0" yloc="26.0" facing="270.0" />
-	
-		<building type="MD4 Nuclear Reactor" xloc="100.0" yloc="-100" facing="0.0" />
-		
-		<building type="ERV-A" xloc="160.0" yloc="-15.0" facing="0.0" />
-		<building type="ERV-B" xloc="160.0" yloc="25.0" facing="0.0" />
-		<building type="ERV-C" xloc="160.0" yloc="65.0" facing="0.0" />
-								
-		<building type="Hallway" length="4.0" xloc="0.0" yloc="19.5" facing="0.0" />
-		<building type="Hallway" length="3.0" xloc="-6.0" yloc="26.0" facing="270.0" />
-		
-		<building type="Atmospheric Processor" xloc="20" yloc="-50.0" facing="90.0" />
-		
-		<building type="Large Sabatier Processor" xloc="0.0" yloc="-50.0" facing="90.0" />
 					
 		<vehicle type="Explorer Rover" number="1" />
 		<vehicle type="Transport Rover" number="1" />
@@ -364,49 +327,6 @@
 	</resupply>
 
 	<resupply name="Resupply for Phase 3" person="4">
-
-		<building zone ="1" type="Astronomy Observatory" xloc="-55.0" yloc="-20.05" facing="90.0" />
-		
-		<building type="MD4 Nuclear Reactor" xloc="120.0" yloc="-100" facing="0.0" />
-
-		<building type="ERV-A" xloc="200.0" yloc="-15.0" facing="0.0" />
-		<building type="ERV-B" xloc="200.0" yloc="25.0" facing="0.0" />
-		<building type="ERV-C" xloc="200.0" yloc="65.0" facing="0.0" />		
-									
-		<building type="Atmospheric Processor" xloc="20" yloc="-60.0" facing="90.0" />												
-		<building type="Atmospheric Processor" xloc="20" yloc="-70.0" facing="90.0" />
-		<building type="Atmospheric Processor" xloc="20" yloc="-80.0" facing="90.0" />
-		<building type="Atmospheric Processor" xloc="20" yloc="-90.0" facing="90.0" />
-		<building type="Atmospheric Processor" xloc="20" yloc="-100.0" facing="90.0" />
-						
-		<building type="Large Sabatier Processor" xloc="-30.0" yloc="-20.0" facing="90.0" />
-
-		<building type="Command and Control" xloc="0.0" yloc="38" facing="270.0" />
-		<building type="Lounge" xloc="-11.0" yloc="38" facing="270.0" />
-		<building type="Residential Quarters" xloc="-22.0" yloc="38" facing="270.0" />
-		<building type="Infirmary" xloc="-33.0" yloc="38" facing="270.0" />
-		<building type="Laboratory" xloc="-44.0" yloc="38" facing="270.0" />
-		<building type="Workshop" xloc="-55.0" yloc="38" facing="270.0" />
-		
-		<building type="Garage" xloc="-55.0" yloc="53.5" facing="0.0" />
-		
-		<building type="Large Greenhouse" xloc="-44.0" yloc="21.0" facing="0.0" />
-
-		<building type="Hallway" length="4.0" xloc="0.0" yloc="32.5" facing="0.0" />
-		<building type="Hallway" length="2.0" xloc="-5.5" yloc="38" facing="270.0" />
-
-		<building type="Hallway" length="2.0" xloc="-16.5" yloc="38" facing="270.0" />
-		<building type="Hallway" length="2.0" xloc="-27.5" yloc="38" facing="270.0" />
-		<building type="Hallway" length="2.0" xloc="-38.5" yloc="38" facing="270.0" />
-		<building type="Hallway" length="2.0" xloc="-49.5" yloc="38" facing="270.0" />
-		<building type="Hallway" length="4.0" xloc="-44.0" yloc="32.0" facing="0.0" />
-
-<!-- 		<building type="Hallway" length="5.0" xloc="-55.0" yloc="43.5" facing="0.0" /> -->
-		<building type="Hallway" length="4.0" xloc="-55.0" yloc="43.5" facing="0.0" />
-
-		<building type="Large Sabatier Processor" xloc="0.0" yloc="-55.0" facing="90.0" />
-		<building type="Large Sabatier Processor" xloc="0.0" yloc="-60.0" facing="90.0" />
-		<building type="Large Sabatier Processor" xloc="0.0" yloc="-65.0" facing="90.0" />	
 			
 		<vehicle type="Long Range Explorer" number="2" />
 		<vehicle type="Transport Rover" number="2" />

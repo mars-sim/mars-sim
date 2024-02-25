@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Vector;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.BoxLayout;
@@ -48,8 +47,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.text.Document;
@@ -87,11 +84,12 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	private static final int MAX_FUTURE_ORBITS = 10;
 	private static final int MAX_IMMIGRANTS = 48;
 	private static final int MAX_BOTS = 48;
+    private static final int MAX_NUM_SOLS_PLANNED = 2007; // 669 * 3 = 2007
 
 	// Data members
-	private int num = 0;
-	private String errorString = new String();
-	private boolean validation_result = true;
+	private int missionNum = 0;
+	private String errorString = "";
+	private boolean validationResult = true;
 	private Number[] quantity = new Number[100000];
 	
 	private JComboBox<Settlement> destinationCB;
@@ -111,7 +109,8 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	private JSpinner botsCB;
 
 	private JSpinner immigrantsCB;
-	private JComboBox<String> monthCB, orbitCB;
+	private JComboBox<String> monthCB;
+	private JComboBox<String> orbitCB;
 	private SupplyTableModel supplyTableModel;
 	private JTable supplyTable;
 	private JButton removeSupplyButton;
@@ -150,15 +149,12 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 		// Create destination combo box.
 		UnitManager unitManager = resupplyWindow.getDesktop().getSimulation().getUnitManager();
-		Vector<Settlement> settlements = new Vector<>(
-				unitManager.getSettlements());
+		List<Settlement> settlements = new ArrayList<>(unitManager.getSettlements());
 		Collections.sort(settlements);
-		destinationCB = new JComboBox<>(settlements);
+		destinationCB = new JComboBox<>(settlements.toArray(new Settlement[0]));
 		if (resupply != null) {
 			destinationCB.setSelectedItem(resupply.getSettlement());
-		} else {
-			// this.settlement = (Settlement) destinationCB.getSelectedItem();
-		}
+		} 
 		destinationPane.add(destinationCB);
 
 		// Create arrival date pane.
@@ -177,12 +173,10 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		arrivalDateRB = new JRadioButton();
 		dateTypeRBGroup.add(arrivalDateRB);
 		arrivalDateRB.setSelected(true);
-		arrivalDateRB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				JRadioButton rb = (JRadioButton) evt.getSource();
-				setEnableArrivalDatePane(rb.isSelected());
-				setEnableTimeUntilArrivalPane(!rb.isSelected());
-			}
+		arrivalDateRB.addActionListener(evt -> {
+			JRadioButton rb = (JRadioButton) evt.getSource();
+			setEnableArrivalDatePane(rb.isSelected());
+			setEnableTimeUntilArrivalPane(!rb.isSelected());
 		});
 		arrivalDateSelectionPane.add(arrivalDateRB);
 
@@ -266,17 +260,15 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		solsUntilArrivalRB = new JRadioButton();
 		solsUntilArrivalRB.setSelected(false);
 		dateTypeRBGroup.add(solsUntilArrivalRB);
-		solsUntilArrivalRB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				JRadioButton rb = (JRadioButton) evt.getSource();
-				setEnableTimeUntilArrivalPane(rb.isSelected());
-				setEnableArrivalDatePane(!rb.isSelected());
-				// Remove error string
-				errorString = null;
-				errorLabel.setText(errorString);
-				// Reenable Commit/Create button
-				enableButton(true);
-			}
+		solsUntilArrivalRB.addActionListener(evt -> {
+			JRadioButton rb = (JRadioButton) evt.getSource();
+			setEnableTimeUntilArrivalPane(rb.isSelected());
+			setEnableArrivalDatePane(!rb.isSelected());
+			// Remove error string
+			errorString = null;
+			errorLabel.setText(errorString);
+			// Reenable Commit/Create button
+			enableButton(true);
 		});
 		solsUntilArrivalPane.add(solsUntilArrivalRB);
 
@@ -291,7 +283,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		int solsDiff = (int) Math.round((resupplyTime.getTimeDiff(current) / 1000D));
 		int transit = ResupplyUtil.getAverageTransitTime();
 
-		SpinnerModel model = new SpinnerNumberModel(solsDiff, 0, transit + ResupplyUtil.MAX_NUM_SOLS_PLANNED, 1);
+		SpinnerModel model = new SpinnerNumberModel(solsDiff, 0, transit + MAX_NUM_SOLS_PLANNED, 1);
 		solsUntilCB = new JSpinner(model);
 		solsUntilCB.setEnabled(false);
 		solsUntilCB.setValue(solsDiff);
@@ -309,7 +301,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		arrivalDatePane.add(errorPane);
 
 		// Create error label
-		errorLabel = new JLabel(new String());
+		errorLabel = new JLabel("");
 		errorLabel.setForeground(Color.RED);
 		errorPane.add(errorLabel);
 
@@ -374,13 +366,11 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		supplyTable.getColumnModel().getColumn(1).setCellEditor(new TypeCellEditor());
 		supplyTable.getColumnModel().getColumn(2).setMaxWidth(100);
 		supplyTable.getColumnModel().getColumn(2).setCellEditor(new QuantityCellEditor());
-		supplyTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent evt) {
-				if (!evt.getValueIsAdjusting()) {
-					// If rows are selected, enable remove supply button.
-					boolean hasSelection = supplyTable.getSelectedRow() > -1;
-					removeSupplyButton.setEnabled(hasSelection);
-				}
+		supplyTable.getSelectionModel().addListSelectionListener(evt -> {
+			if (!evt.getValueIsAdjusting()) {
+				// If rows are selected, enable remove supply button.
+				boolean hasSelection = supplyTable.getSelectedRow() > -1;
+				removeSupplyButton.setEnabled(hasSelection);
 			}
 		});
 
@@ -527,7 +517,6 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 				// Update supply type cell in row if category has changed.
 				String defaultType = SupplyTableModel.getCategoryTypeMap().get(category).get(0);
-				// supplyTable.setValueAt(Conversion.capitalize(defaultType), editingRow, 1);
 				supplyTable.setValueAt(defaultType, editingRow, 1);
 			}
 		}
@@ -638,11 +627,11 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		Settlement destination = (Settlement) destinationCB.getSelectedItem();
 		MarsTime arrivalDate = getArrivalDate();
 
-		if (!validation_result)
+		if (!validationResult)
 			return false;
 
 		else if (arrivalDate != null) {
-			String name = "Template " + num++;
+			String name = "Template " + missionNum++;
 			Resupply newResupply = new Resupply(name, arrivalDate, destination);
 			modifyResupplyMission(newResupply, arrivalDate);
 			Simulation.instance().getTransportManager().addNewTransportItem(newResupply);
@@ -664,7 +653,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		// Set arrival date.
 		MarsTime arrivalDate = getArrivalDate();
 
-		if (!validation_result) {
+		if (!validationResult) {
 			return false;
 		} else {
 			modifyResupplyMission(resupplyMission, arrivalDate);
@@ -708,8 +697,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 			List<BuildingTemplate> newBuildings = new ArrayList<>();
 			for(SupplyItem item : supplyItems) {
 				if (SupplyTableModel.BUILDING.equals(item.category.trim())) {
-					int num = item.number.intValue();
-					for (int x = 0; x < num; x++) {
+					for (int x = 0; x < item.number.intValue(); x++) {
 						String type = item.type.trim();
 						// NOTE: The parameters does NOT mater right now. When a building arrive,
 						// the parameters for each building's template will be re-assembled
@@ -732,39 +720,27 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 				case SupplyTableModel.VEHICLE: {
 					String type = item.type.trim();
 					int num = item.number.intValue();
-					if (newVehicles.containsKey(type)) {
-						num += newVehicles.get(type);
-					}
-					newVehicles.put(type, num);
+					newVehicles.merge(type, num, Integer::sum);
 				} break;
 				
 				case SupplyTableModel.EQUIPMENT: {
-						String type = item.type.trim();
-						int num = item.number.intValue();
-						if (newEquipment.containsKey(type)) {
-							num += newEquipment.get(type);
-						}
-						newEquipment.put(type, num);
-					} break;
+					String type = item.type.trim();
+					int num = item.number.intValue();
+					newEquipment.merge(type, num, Integer::sum);
+				} break;
 
 				case SupplyTableModel.RESOURCE: {
 						String type = item.type.trim();
 						AmountResource resource = ResourceUtil.findAmountResource(type);
 						double amount = item.number.doubleValue();
-						if (newResources.containsKey(resource)) {
-							amount += newResources.get(resource);
-						}
-						newResources.put(resource, amount);
+						newResources.merge(resource, amount, Double::sum);
 					} break;
 
 				case SupplyTableModel.PART: {
 						String type = item.type.trim();
 						Part part = (Part) ItemResourceUtil.findItemResource(type);
 						int num = item.number.intValue();
-						if (newParts.containsKey(part)) {
-							num += newParts.get(part);
-						}
-						newParts.put(part, num);
+						newParts.merge(part, num, Integer::sum);
 					} break;
 				
 				default:
@@ -788,22 +764,13 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 		// Create map of resupply mission's buildings and numbers.
 		Map<String, Integer> oldBuildings = new HashMap<>();
-		Iterator<BuildingTemplate> i = newBuildings.iterator();
-		while (i.hasNext()) {
-			BuildingTemplate template = i.next();
+		for(BuildingTemplate template : newBuildings) {
 			String type = template.getBuildingType();
-			if (oldBuildings.containsKey(type)) {
-				int num = oldBuildings.get(type);
-				oldBuildings.put(type, num + 1);
-			} else {
-				oldBuildings.put(type, 1);
-			}
+			oldBuildings.merge(type, 1, Integer::sum);
 		}
 
 		// Go through every building row in the supply table.
-		Iterator<SupplyItem> j = supplyItems.iterator();
-		while (j.hasNext()) {
-			SupplyItem item = j.next();
+		for(SupplyItem item : supplyItems) {
 			if (SupplyTableModel.BUILDING.equals(item.category.trim())) {
 				int num = item.number.intValue();
 				String type = item.type.trim();
@@ -859,10 +826,9 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 			Iterator<SupplyItem> l = supplyItems.iterator();
 			while (l.hasNext() && !exists) {
 				SupplyItem item = l.next();
-				if (SupplyTableModel.BUILDING.equals(item.category.trim())) {
-					if (type.equals(item.type.trim())) {
-						exists = true;
-					}
+				if (SupplyTableModel.BUILDING.equals(item.category.trim())
+						&& type.equals(item.type.trim())) {
+					exists = true;
 				}
 			}
 
@@ -910,14 +876,14 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 					errorLabel.setText(errorString);
 					logger.severe(errorString);
 					enableButton(false);
-					validation_result = false;
+					validationResult = false;
 				}
 			} catch (NumberFormatException e) {
 				String msg = "Can't create marsCurrentTime: " + e.getMessage(); 
 				logger.severe(msg);
 				errorLabel.setText(msg);
 				enableButton(false);
-				validation_result = false;
+				validationResult = false;
 			}
 		}
 
@@ -938,29 +904,22 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 		MarsTime arrivalTime = null;
 		try {
-			boolean good = true;
+			// Remove error string
+			errorLabel.setText(errorString);
+			// Reenable Commit/Create button
+			enableButton(true);
+			
+			validationResult = true;
 
-			if (good) {
-				
-				// Remove error string
-				errorString = null;
-				errorLabel.setText(errorString);
-				// Reenable Commit/Create button
-				enableButton(true);
-				
-				validation_result = true;
-
-				arrivalTime = master.getMarsTime();
-				if (inputSol == 0)
-					arrivalTime = arrivalTime.addTime(arrivalTime.getMillisol());
-				else
-					arrivalTime = arrivalTime.addTime(inputSol * 1000D);
-			}
-
+			arrivalTime = master.getMarsTime();
+			if (inputSol == 0)
+				arrivalTime = arrivalTime.addTime(arrivalTime.getMillisol());
+			else
+				arrivalTime = arrivalTime.addTime(inputSol * 1000D);
 		} catch (NumberFormatException e) {
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidSols"); //$NON-NLS-1$
 			errorLabel.setText(errorString);
-			validation_result = false;
+			validationResult = false;
 			enableButton(false);
 			logger.severe("Invalid entry for Sols: " + e.getMessage());
 		}
@@ -994,7 +953,8 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		Objects.requireNonNull(text);
 		Objects.requireNonNull(changeListener);
 		DocumentListener dl = new DocumentListener() {
-			private int lastChange = 0, lastNotifiedChange = 0;
+			private int lastChange = 0;
+			private int lastNotifiedChange = 0;
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
