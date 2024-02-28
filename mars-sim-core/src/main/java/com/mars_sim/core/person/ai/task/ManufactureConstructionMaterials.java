@@ -17,7 +17,6 @@ import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
-import com.mars_sim.core.manufacture.ManufactureProcessItem;
 import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillManager;
@@ -25,6 +24,7 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -350,9 +350,9 @@ public class ManufactureConstructionMaterials extends Task {
 		
 		List<Integer> constructionParts = constructionConfig.determineConstructionParts();
 		
-		Iterator<ManufactureProcessItem> i = info.getOutputList().iterator();
+		Iterator<ProcessItem> i = info.getOutputList().iterator();
 		while (!result && i.hasNext()) {
-			ManufactureProcessItem item = i.next();
+			var item = i.next();
 			if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 				int resource = ResourceUtil.findIDbyAmountResourceName(item.getName());
 				if (constructionResources.contains(resource)) {

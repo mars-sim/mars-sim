@@ -12,7 +12,7 @@ import java.util.List;
 
 import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.food.FoodProductionProcessItem;
-import com.mars_sim.tools.helpgenerator.HelpGenerator.ProcessItem;
+import com.mars_sim.tools.helpgenerator.HelpGenerator.ProcessItemSummary;
 
 /**
  * Generates help content for Food Production processes
@@ -44,7 +44,7 @@ class FoodGenerator extends TypeGenerator<FoodProductionProcessInfo> {
         generator.generateContent("food-detail", vScope, output);
     }
 
-    static List<ProcessItem> getProcessItemsFromFood(List<FoodProductionProcessItem> items) {
+    static List<ProcessItemSummary> getProcessItemsFromFood(List<FoodProductionProcessItem> items) {
 		return items.stream()
 					.sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
 					.map(v -> HelpGenerator.toProcessItem(v.getName(), v.getType(), v.getAmount()))

@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.SimulationConfig;
@@ -28,6 +27,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
@@ -41,7 +41,6 @@ import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.Manufacture;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.VehicleConfig;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -61,8 +60,6 @@ public final class ManufactureUtil {
 	
 	private static final SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static final ManufactureConfig manufactureConfig = simulationConfig.getManufactureConfiguration();
-	private static final VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-
 	
 	
 	/** constructor. */
@@ -76,19 +73,6 @@ public final class ManufactureUtil {
 	 */
 	public static List<ManufactureProcessInfo> getAllManufactureProcesses() {
 		return manufactureConfig.getManufactureProcessList();
-	}
-
-	/**
-	 * Gives back an alphabetically ordered map of all manufacturing processes.
-	 *
-	 * @return {@link TreeMap}<{@link String},{@link ManufactureProcessInfo}>
-	 */
-	public static TreeMap<String, ManufactureProcessInfo> getAllManufactureProcessesMap() {
-		TreeMap<String, ManufactureProcessInfo> map = new TreeMap<>();
-		for (ManufactureProcessInfo item : getAllManufactureProcesses()) {
-			map.put(item.getName(), item);
-		}
-		return map;
 	}
 
 	/**
@@ -116,25 +100,6 @@ public final class ManufactureUtil {
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
 			for (String n : process.getOutputNames()) {
-				if (name.equalsIgnoreCase(n))
-					result.add(process);
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Gets manufacturing processes with given input.
-	 *
-	 * @param name {@link String} desired input
-	 * @return {@link List}<{@link ManufactureProcessItem}> list of processes
-	 */
-	public static List<ManufactureProcessInfo> getManufactureProcessesWithGivenInput(String name) {
-		List<ManufactureProcessInfo> result = new ArrayList<>();
-		Iterator<ManufactureProcessInfo> i = getAllManufactureProcesses().iterator();
-		while (i.hasNext()) {
-			ManufactureProcessInfo process = i.next();
-			for (String n : process.getInputNames()) {
 				if (name.equalsIgnoreCase(n))
 					result.add(process);
 			}
@@ -197,14 +162,14 @@ public final class ManufactureUtil {
 		int effortLevel = process.getEffortLevel();
 		
 		double inputsValue = 0D;
-		Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
-		while (i.hasNext())
-			inputsValue += getManufactureProcessItemValue(i.next(), settlement, false);
+		for(var i : process.getInputList()) {
+			inputsValue += getManufactureProcessItemValue(i, settlement, false);
+		}
 
 		double outputsValue = 0D;
-		Iterator<ManufactureProcessItem> j = process.getOutputList().iterator();
-		while (j.hasNext())
-			outputsValue += getManufactureProcessItemValue(j.next(), settlement, true);
+		for(var j : process.getOutputList()) {
+			outputsValue += getManufactureProcessItemValue(j, settlement, true);
+		}
 
 		// Get power value.
 		double processTimeRequired = process.getProcessTimeRequired();
@@ -225,14 +190,7 @@ public final class ManufactureUtil {
 		double rand1 = RandomUtil.getRandomDouble(.75, 1.25);
 		outputsValue = Math.round(rand1 * (OUTPUT_VALUE + outputsValue) * effortLevel * 10.0)/10.0;
 		
-		double score = Math.round((outputsValue - inputsValue - timeValue - powerValue) * 10.0)/10.0;
-		
-//		logger.info(settlement + " - " + process + "  outputsValue: " + outputsValue 
-//				+ "  inputsValue: " + inputsValue
-//				+ "  powerValue: " + Math.round(powerValue * 100.0)/100.0
-//				+ "  timeValue: " + Math.round(timeValue * 100.0)/100.0
-//				+ "  score: " + score);
-		return score;
+		return Math.round((outputsValue - inputsValue - timeValue - powerValue) * 10.0)/10.0;
 	}
 
 	/**
@@ -304,7 +262,7 @@ public final class ManufactureUtil {
 	 * @return good value.
 	 * @throws Exception if error getting good value.
 	 */
-	public static double getManufactureProcessItemValue(ManufactureProcessItem item, Settlement settlement,
+	public static double getManufactureProcessItemValue(ProcessItem item, Settlement settlement,
 			boolean isOutput) {
 		double result = 0D;
 
@@ -426,9 +384,9 @@ public final class ManufactureUtil {
 	private static boolean areProcessInputsAvailable(ManufactureProcessInfo process, Settlement settlement) {
 		boolean result = true;
 
-		Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
+		Iterator<ProcessItem> i = process.getInputList().iterator();
 		while (result && i.hasNext()) {
-			ManufactureProcessItem item = i.next();
+			ProcessItem item = i.next();
 			if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 				result = (settlement.getAmountResourceStored(id) >= item.getAmount());
@@ -454,9 +412,7 @@ public final class ManufactureUtil {
      */
 	private static final boolean canProcessOutputsBeStored(ManufactureProcessInfo process, Settlement settlement) {
 
-		Iterator<ManufactureProcessItem> j = process.getOutputList().iterator();
-		while (j.hasNext()) {
-			ManufactureProcessItem item = j.next();
+		for(var item : process.getOutputList()) {
 			if (ItemType.AMOUNT_RESOURCE == item.getType()) {
 				// TODO: is there a way to reduce excessive calling of getAmountResourceRemainingCapacity ?
 				double capacity = settlement.getAmountResourceRemainingCapacity(ResourceUtil.findIDbyAmountResourceName(item.getName()));
@@ -529,34 +485,6 @@ public final class ManufactureUtil {
 		return highestTechLevel;
 	}
 
-
-	/**
-	 * Gets the mass for a manufacturing process item.
-	 *
-	 * @param item the manufacturing process item.
-	 * @return mass (kg).
-	 * @throws Exception if error determining the mass.
-	 */
-	public static double getMass(ManufactureProcessItem item) {
-		double mass = 0D;
-
-		if (ItemType.AMOUNT_RESOURCE == item.getType()) {
-			mass = item.getAmount();
-		} else if (ItemType.PART == item.getType()) {
-			mass = item.getAmount() * ItemResourceUtil.findItemResource(item.getName()).getMassPerItem();
-		} else if (ItemType.EQUIPMENT == item.getType()) {
-			double equipmentMass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName()));
-			mass = item.getAmount() * equipmentMass;
-		} else if (ItemType.BIN == item.getType()) {
-			double binMass = BinFactory.getBinMass(BinType.convertName2Enum(item.getName()));
-			mass = item.getAmount() * binMass;
-		} else if (ItemType.VEHICLE == item.getType()) {
-			mass = item.getAmount() * vehicleConfig.getVehicleSpec(item.getName()).getEmptyMass();
-		}
-
-		return mass;
-	}
-
 	/**
 	 * Finds an available unit to salvage of the type needed by a salvage process.
 	 *
@@ -591,11 +519,6 @@ public final class ManufactureUtil {
 			EquipmentType eType = EquipmentType.convertName2Enum(info.getItemName());
 			salvagableUnits = settlement.getContainerSet(eType);
 		} 
-		
-//		else if (info.getType().equalsIgnoreCase("bin")) {
-//			BinType type = BinType.convertName2Enum(info.getItemName());
-//			salvagableUnits = settlement.getBinTypeSet(type);
-//		}
 
 		// Make sure container unit is settlement.
 		Iterator<? extends Unit> i = salvagableUnits.iterator();
@@ -603,13 +526,6 @@ public final class ManufactureUtil {
 			if (i.next().getContainerUnit() != settlement)
 				i.remove();
 		}
-
-		// Make sure unit's inventory is empty.
-//		Iterator<? extends Unit> j = salvagableUnits.iterator();
-//		while (j.hasNext()) {
-//			if (!j.next().getInventory().isEmpty(false))
-//				j.remove();
-//		}
 
 		// If malfunctionable, find most worn unit.
 		if (salvagableUnits.size() > 0) {

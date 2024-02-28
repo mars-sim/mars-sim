@@ -20,7 +20,6 @@ import com.mars_sim.core.food.FoodProductionProcessItem;
 import com.mars_sim.core.food.FoodProductionUtil;
 import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
-import com.mars_sim.core.manufacture.ManufactureProcessItem;
 import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
@@ -248,9 +247,9 @@ public abstract class Good implements Serializable, Comparable<Good> {
 
 			for (ManufactureProcessInfo i: manufactureProcessInfos) {
 
-				List<ManufactureProcessItem> items = i.getManufactureProcessItem(name);
+				var items = i.getOutputItemsByName(name);
 
-				for (ManufactureProcessItem j: items) {
+				for (var j: items) {
 					String goodName = j.getName();
 					if (goodName.equalsIgnoreCase(name)) {
 						goodAmount0Out += j.getAmount();
@@ -403,10 +402,8 @@ public abstract class Good implements Serializable, Comparable<Good> {
 		for(Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE)) {
 			// Go through each ongoing active manufacturing process.
 			for(ManufactureProcess process : b.getManufacture().getProcesses()) {
-				for(ManufactureProcessItem item : process.getInfo().getOutputList()) {
-					if (item.getName().equalsIgnoreCase(name)) {
-						result += item.getAmount();
-					}
+				for(var item : process.getInfo().getOutputItemsByName(name)) {
+					result += item.getAmount();
 				}
 			}
 		}

@@ -17,8 +17,8 @@ import com.mars_sim.core.food.FoodProductionUtil;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
-import com.mars_sim.core.manufacture.ManufactureProcessItem;
 import com.mars_sim.core.manufacture.ManufactureUtil;
+import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
@@ -539,10 +539,8 @@ public class PartGood extends Good {
 		double demand = 0D;
 		double totalInputNum = 0D;
 
-		ManufactureProcessItem partInput = null;
-		Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
-		while (i.hasNext()) {
-			ManufactureProcessItem item = i.next();
+		ProcessItem partInput = null;
+		for(var item : process.getInputList()) {
 			if (part.getName().equalsIgnoreCase(item.getName())) {
 				partInput = item;
 			}
@@ -552,9 +550,7 @@ public class PartGood extends Good {
 		if (partInput != null) {
 
 			double outputsValue = 0D;
-			Iterator<ManufactureProcessItem> j = process.getOutputList().iterator();
-			while (j.hasNext()) {
-				ManufactureProcessItem item = j.next();
+			for(var item : process.getOutputList()) {
 				if (!process.getInputList().contains(item)) {
 					outputsValue += ManufactureUtil.getManufactureProcessItemValue(item, settlement, true);
 				}

@@ -129,7 +129,5 @@ public class ManufactureProcess implements Serializable {
 	 */
 	public void destroy() {
 		workshop = null;
-		info.destroy();
-		info = null;
 	}
 }

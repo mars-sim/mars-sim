@@ -8,31 +8,26 @@
 package com.mars_sim.core.manufacture;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Map;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.equipment.BinType;
 import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.resource.AmountResource;
+import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
-import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 
 public class ManufactureConfig {
 
-	private static final Logger logger = Logger.getLogger(ManufactureConfig.class.getName());
-
-	// Element names
-	private static final int MAX_NUM_INPUT_RESOURCES = 5;
-	
+	// Element names	
 	private static final String PROCESS = "process";
 	private static final String NAME = "name";	
 	private static final String TECH = "tech";
@@ -54,6 +49,10 @@ public class ManufactureConfig {
 	private static final String ITEM_NAME = "item-name";
 	private static final String TYPE = "type";
 	private static final String PART_SALVAGE = "part-salvage";
+
+	public static final String ALT_PREFIX = " Alt #";
+
+	private static final String ALTERNATIVE = "alternative";
 
 	private List<ManufactureProcessInfo> processList;
 	private List<SalvageProcessInfo> salvageList;
@@ -95,124 +94,74 @@ public class ManufactureConfig {
 		List<ManufactureProcessInfo> newList = new ArrayList<>();
 		
 		Element root = manufactureDoc.getRootElement();
-		List<Element> processNodes = root.getChildren(PROCESS);
-
-		for (Element processElement : processNodes) {
+		for (Element processElement : root.getChildren(PROCESS)) {
 
 			// Create a map that stores the resource to be swapped out with an alternate resource
-			Map<String, String> alternateResourceMap = new HashMap<>();
+			Map<ProcessItem, String> alternateResourceMap = new HashMap<>();
 			
-			ManufactureProcessInfo process = new ManufactureProcessInfo();
-
-			String name = "";
 			String description = "";
 
-			name = processElement.getAttributeValue(NAME);
-			
-			process.setName(name);
-			process.setTechLevelRequired(Integer.parseInt(processElement.getAttributeValue(TECH)));
-			process.setSkillLevelRequired(Integer.parseInt(processElement.getAttributeValue(SKILL)));
-			process.setWorkTimeRequired(Double.parseDouble(processElement.getAttributeValue(WORK_TIME)));
-			process.setProcessTimeRequired(Double.parseDouble(processElement.getAttributeValue(PROCESS_TIME)));
-			process.setPowerRequired(Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED)));
+			String name = processElement.getAttributeValue(NAME);
+			int techLevel = ConfigHelper.getAttributeInt(processElement, TECH);
+			int skillLevel = ConfigHelper.getAttributeInt(processElement, SKILL);
+			double workTime = ConfigHelper.getAttributeDouble(processElement, WORK_TIME);
+			double processTime = ConfigHelper.getAttributeDouble(processElement, PROCESS_TIME);
+			double power = ConfigHelper.getAttributeDouble(processElement, POWER_REQUIRED);
+			int effort = 2;
 
 			Element descriptElem = processElement.getChild(DESCRIPTION);
 			if (descriptElem != null) {
 				description = descriptElem.getText();
 			}
-			process.setDescription(description);
 
 			Element inputs = processElement.getChild(INPUTS);
-			
-			List<ManufactureProcessItem> inputList = new ArrayList<>();
-			
-			process.setInputList(inputList);
-
-			parseInputResources(inputList, inputs.getChildren(RESOURCE), alternateResourceMap);
-			parseParts(inputList, inputs.getChildren(PART));
-			parseEquipment(inputList, inputs.getChildren(EQUIPMENT));
-			parseBins(inputList, inputs.getChildren(BIN));
-			parseVehicles(inputList, inputs.getChildren(VEHICLE));
+			List<ProcessItem> inputList = new ArrayList<>();
+			inputList.addAll(parseInputResources(inputs.getChildren(RESOURCE), alternateResourceMap));
+			inputList.addAll(parseProcessItems(ItemType.PART, inputs.getChildren(PART)));
+			inputList.addAll(parseProcessItems(ItemType.EQUIPMENT, inputs.getChildren(EQUIPMENT)));
+			inputList.addAll(parseProcessItems(ItemType.BIN, inputs.getChildren(BIN)));
+			inputList.addAll(parseProcessItems(ItemType.VEHICLE, inputs.getChildren(VEHICLE)));
 
 			Element outputs = processElement.getChild(OUTPUTS);
-			
-			List<ManufactureProcessItem> outputList = new ArrayList<>();
-			
-			process.setOutputList(outputList);
-
-			parseOutputResources(outputList, outputs.getChildren(RESOURCE));
-			parseParts(outputList, outputs.getChildren(PART));
-			parseEquipment(outputList, outputs.getChildren(EQUIPMENT));
-			parseBins(outputList, outputs.getChildren(BIN));
-			parseVehicles(outputList, outputs.getChildren(VEHICLE));
+			List<ProcessItem> outputList = new ArrayList<>();
+			outputList.addAll(parseProcessItems(ItemType.AMOUNT_RESOURCE, outputs.getChildren(RESOURCE)));
+			outputList.addAll(parseProcessItems(ItemType.PART, outputs.getChildren(PART)));
+			outputList.addAll(parseProcessItems(ItemType.EQUIPMENT, outputs.getChildren(EQUIPMENT)));
+			outputList.addAll(parseProcessItems(ItemType.BIN, outputs.getChildren(BIN)));
+			outputList.addAll(parseProcessItems(ItemType.VEHICLE, outputs.getChildren(VEHICLE)));
 
 			// Add process to newList.
+			ManufactureProcessInfo process = new ManufactureProcessInfo(name, description,
+						techLevel, skillLevel, workTime, processTime, power,
+						inputList, outputList, effort);
 			newList.add(process);
 		
 			if (!alternateResourceMap.isEmpty()) {
 				// Create a list for the original resources from alternateResourceMap
-				List<String> originalResourceList = new ArrayList<>(alternateResourceMap.values());
-				// Create a list for the alternate resources from alternateResourceMap
-				List<String> altResourceList = new ArrayList<>(alternateResourceMap.keySet());
-				
 				String processName = process.getName();
-		
-//				System.out.println("processName: " + processName);
-				
-//				System.out.println("alternateResourceMap: " + alternateResourceMap);
-				
-				int size = altResourceList.size();
-				
-				for (int i = 0; i < size; i++) {
-					
-					// Use copy constructor to create a new instance
-					ManufactureProcessInfo altProcess = new ManufactureProcessInfo(process);
-
-					String altProcessName = processName + " " + (i + 1);
-							
-					String originalResource = originalResourceList.get(i);
-					String altResource = altResourceList.get(i);
-
-					// Rename the original process name by appending it with a numeral
-					altProcess.setName(altProcessName);
+				int i = 1;
+				for(var entry : alternateResourceMap.entrySet()) {
+					String originalResource = entry.getValue();
 
 					// Create a brand new list
-					List<ManufactureProcessItem> newInputItems = new ArrayList<>();
-					
-					for (ManufactureProcessItem item: inputList) {
-						
-						String resName = item.getName();								
-						double amount = item.getAmount();				
-						ItemType type = item.getType();
-					
-						ManufactureProcessItem newItem = new ManufactureProcessItem();
-						
+					List<ProcessItem> newInputItems = new ArrayList<>();
+					for (var item: inputList) {
+						String resName = item.getName();														
 						if (resName.equalsIgnoreCase(originalResource)) {
-							AmountResource resource = ResourceUtil.findAmountResource(resName);
-							if (resource != null) {
-								// Replace with the alternate resource name
-								newItem.setName(altResource);
-							}
-							else {
-//								System.out.println("resName: " + resName + "  originalResource: " + originalResource + "  inputList: " + inputList);
-								newItem.setName(resName);
-							}
+							item = entry.getKey();
 						}
-						else {
-							newItem.setName(resName);
-						}
-						
-						newItem.setAmount(amount);						
-						newItem.setType(type);
-		
-						newInputItems.add(newItem);					
+						newInputItems.add(item);	
 					}
 					
 					// Write the modified input resource list onto the new list
-					altProcess.setInputList(newInputItems);
-					
+					String altProcessName = processName + ALT_PREFIX + i++;
+
 					// Add process to newList.
-					newList.add(altProcess);
+					newList.add(new ManufactureProcessInfo(altProcessName, process.getDescription(),
+										process.getTechLevelRequired(), process.getSkillLevelRequired(),
+										process.getWorkTimeRequired(), process.getProcessTimeRequired(),
+										process.getPowerRequired(), newInputItems,
+										process.getOutputList(), process.getEffortLevel()));
 				}
 			}
 		}
@@ -224,168 +173,75 @@ public class ManufactureConfig {
 	/**
 	 * Parses the input amount resource elements in a node list.
 	 * 
-	 * @param list          the list to store the resources in.
 	 * @param resourceNodes the node list.
 	 * @param alternateResourceMap the map that stores the resource to be swapped out with an alternate resource
 	 * @throws Exception if error parsing resources.
 	 */
-	private static void parseInputResources(List<ManufactureProcessItem> list, List<Element> resourceNodes, 
-			Map<String, String> alternateResourceMap) {
-		
+	private static List<ProcessItem> parseInputResources(List<Element> resourceNodes, 
+			Map<ProcessItem, String> alternateResourceMap) {
+		List<ProcessItem> list = new ArrayList<>();
+
 		for (Element resourceElement : resourceNodes) {
-			
-			ManufactureProcessItem resourceItem = new ManufactureProcessItem();
-			resourceItem.setType(ItemType.AMOUNT_RESOURCE);
-			String originalResourceName = "";
-			
-			for (int i = 0; i < MAX_NUM_INPUT_RESOURCES; i++) {
-				String num = "";
-				if (i == 0)
-					num = "";
-				else 
-					num = i + "";
-				String resourceXMLName = resourceElement.getAttributeValue(NAME + num);
-				
-				if (resourceXMLName != null) {
-				
-					if (i == 0) {
-						originalResourceName = resourceXMLName;
-					}
-				
-					// Checks if resourceName exists at all
-					AmountResource resource = ResourceUtil.findAmountResource(resourceXMLName);
-					if (resource == null)
-						logger.severe(resourceXMLName + " shows up in manufacturing.xml but doesn't exist in resources.xml.");
-					else {
-						if (i == 0) {
-							resourceItem.setName(resourceXMLName);						
-							resourceItem.setAmount(Double.parseDouble(resourceElement.getAttributeValue(AMOUNT)));
-							list.add(resourceItem);
-						}
-						else {
-							alternateResourceMap.put(resourceXMLName, originalResourceName);
-//							System.out.println(alternateResourceMap.size() + "  originalResourceName: " + originalResourceName
-//									+ "  ->  resourceXMLName: " + resourceXMLName);
-						}
-					}
-				}
-			}
+			ProcessItem primaryItem = parseProcessItem(resourceElement, ItemType.AMOUNT_RESOURCE);
+			list.add(primaryItem);
+
+			var alternatives = resourceElement.getChildren(ALTERNATIVE);
+			if (!alternatives.isEmpty()) {
+				var altItems = parseProcessItems(ItemType.AMOUNT_RESOURCE, alternatives);
+				altItems.forEach(i -> alternateResourceMap.put(i, primaryItem.getName()));
+			}		
 		}
+
+		return list;
+	}
+
+	private static void checkItemName(String name, ItemType type) {
+		switch(type) {
+			case AMOUNT_RESOURCE:
+				if (ResourceUtil.findAmountResource(name) == null) {
+					throw new IllegalArgumentException(name + " shows up in manufacturing.xml is not a known Resource");
+				}
+				break;
+			case PART:
+				if (ItemResourceUtil.findItemResource(name) == null) {
+					throw new IllegalArgumentException(name + " shows up in manufacturing.xml is not a known Part");	
+				}
+				break;
+			case BIN:
+				if (BinType.valueOf(ConfigHelper.convertToEnumName(name)) == null) {
+					throw new IllegalArgumentException(name + " shows up in manufacturing.xml is not a known Bin");	
+				}
+				break;
+			case EQUIPMENT:
+				if (EquipmentType.valueOf(ConfigHelper.convertToEnumName(name)) == null) {
+					throw new IllegalArgumentException(name + " shows up in manufacturing.xml is not a known Equipment");	
+				}
+				break;
+			case VEHICLE:
+			default:
+		}
+	}
+
+	private static ProcessItem parseProcessItem(Element resourceElement, ItemType type) {
+		String name = resourceElement.getAttributeValue(NAME);
+		checkItemName(name, type);
+
+		String sizeAttr = (type == ItemType.AMOUNT_RESOURCE ? AMOUNT : NUMBER);
+		double amount = ConfigHelper.getAttributeDouble(resourceElement, sizeAttr);
+		return new ProcessItem(name, type, amount);
 	}
 
 	/**
 	 * Parses the output amount resource elements in a node list.
 	 * 
-	 * @param list          the list to store the resources in.
 	 * @param resourceNodes the node list.
+	 * @return 
 	 * @throws Exception if error parsing resources.
 	 */
-	private static void parseOutputResources(List<ManufactureProcessItem> list, List<Element> resourceNodes) {
-
-		for (Element resourceElement : resourceNodes) {
-			
-			ManufactureProcessItem resourceItem = new ManufactureProcessItem();
-			resourceItem.setType(ItemType.AMOUNT_RESOURCE);
-			
-			String resourceName = resourceElement.getAttributeValue(NAME);
-			
-			if (resourceName != null) {
-				AmountResource resource = ResourceUtil.findAmountResource(resourceName);
-				if (resource == null)
-					logger.severe(resourceName + " shows up in manufacturing.xml but doesn't exist in resources.xml.");
-				else {		
-					resourceItem.setName(resourceName);
-					resourceItem.setAmount(Double.parseDouble(resourceElement.getAttributeValue(AMOUNT)));
-					list.add(resourceItem);
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Parses the part elements in a node list.
-	 * 
-	 * @param list      the list to store the parts in.
-	 * @param partNodes the node list.
-	 * @throws Exception if error parsing parts.
-	 */
-	private static void parseParts(List<ManufactureProcessItem> list, List<Element> partNodes) {
-		for (Element partElement : partNodes) {
-			ManufactureProcessItem partItem = new ManufactureProcessItem();
-			partItem.setType(ItemType.PART);
-
-			String partName = partElement.getAttributeValue(NAME);
-			Part part = (Part) ItemResourceUtil.findItemResource(partName);
-
-			if (part == null)
-				logger.severe(partName + " shows up in manufacturing.xml but doesn't exist in parts.xml.");
-			else {
-				partItem.setName(partName);
-				partItem.setAmount(Integer.parseInt(partElement.getAttributeValue(NUMBER)));
-				list.add(partItem);
-			}
-		}
-	}
-
-	/**
-	 * Parses the equipment elements in a node list.
-	 * 
-	 * @param list           the list to store the equipment in.
-	 * @param equipmentNodes the node list.
-	 * @throws Exception if error parsing equipment.
-	 */
-	private static void parseEquipment(List<ManufactureProcessItem> list, List<Element> equipmentNodes) {
-		for (Element equipmentElement : equipmentNodes) {
-			ManufactureProcessItem equipmentItem = new ManufactureProcessItem();
-			equipmentItem.setType(ItemType.EQUIPMENT);
-			String equipmentName = equipmentElement.getAttributeValue(NAME);
-
-			EquipmentType eType = EquipmentType.valueOf(ConfigHelper.convertToEnumName(equipmentName));
-			if (eType != null) {
-				equipmentItem.setName(equipmentName);
-				equipmentItem.setAmount(Integer.parseInt(equipmentElement.getAttributeValue(NUMBER)));
-				list.add(equipmentItem);
-			}
-		}
-	}
-
-	/**
-	 * Parses the bin elements in a node list.
-	 * 
-	 * @param list           the list to store the bin in.
-	 * @param binNodes the node list.
-	 * @throws Exception if error parsing bin.
-	 */
-	private static void parseBins(List<ManufactureProcessItem> list, List<Element> binNodes) {
-		for (Element binElement : binNodes) {
-			ManufactureProcessItem binItem = new ManufactureProcessItem();
-			binItem.setType(ItemType.BIN);
-			String binName = binElement.getAttributeValue(NAME);
-
-			BinType type = BinType.valueOf(ConfigHelper.convertToEnumName(binName));
-			if (type != null) {
-				binItem.setName(binName);
-				binItem.setAmount(Integer.parseInt(binElement.getAttributeValue(NUMBER)));
-				list.add(binItem);
-			}
-		}
-	}
-	
-	/**
-	 * Parses the vehicle elements in a node list.
-	 * 
-	 * @param list         the list to store the vehicles in.
-	 * @param vehicleNodes the node list.
-	 * @throws Exception if error parsing vehicles.
-	 */
-	private static void parseVehicles(List<ManufactureProcessItem> list, List<Element> vehicleNodes) {
-		for (Element vehicleElement : vehicleNodes) {
-			ManufactureProcessItem vehicleItem = new ManufactureProcessItem();
-			vehicleItem.setType(ItemType.VEHICLE);
-			vehicleItem.setName(vehicleElement.getAttributeValue(NAME));
-			vehicleItem.setAmount(Integer.parseInt(vehicleElement.getAttributeValue(NUMBER)));
-			list.add(vehicleItem);
-		}
+	private static List<ProcessItem> parseProcessItems(ItemType type, List<Element> resourceNodes) {
+		return resourceNodes.stream()
+					.map(i -> parseProcessItem(i, type))
+					.toList();
 	}
 
 	/**
@@ -423,9 +279,9 @@ public class ManufactureConfig {
 			
 			salvage.setItemName(itemName);
 			salvage.setType(salvageElement.getAttributeValue(TYPE));
-			salvage.setTechLevelRequired(Integer.parseInt(salvageElement.getAttributeValue(TECH)));
-			salvage.setSkillLevelRequired(Integer.parseInt(salvageElement.getAttributeValue(SKILL)));
-			salvage.setWorkTimeRequired(Double.parseDouble(salvageElement.getAttributeValue(WORK_TIME)));
+			salvage.setTechLevelRequired(ConfigHelper.getAttributeInt(salvageElement, TECH));
+			salvage.setSkillLevelRequired(ConfigHelper.getAttributeInt(salvageElement, SKILL));
+			salvage.setWorkTimeRequired(ConfigHelper.getAttributeDouble(salvageElement, WORK_TIME));
 
 			List<Element> partSalvageNodes = salvageElement.getChildren(PART_SALVAGE);
 			List<PartSalvage> partSalvageList = new ArrayList<>();

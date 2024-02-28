@@ -11,7 +11,6 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.JButton;
@@ -21,7 +20,7 @@ import javax.swing.JProgressBar;
 
 import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
-import com.mars_sim.core.manufacture.ManufactureProcessItem;
+import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -175,10 +174,8 @@ public class ManufacturePanel extends JPanel {
 
     	// Add process inputs.
     	result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;Inputs : ");
-    	Iterator<ManufactureProcessItem> i = info.getInputList().iterator();
-    	int ii = 0;
-    	while (i.hasNext()) {
-    		ManufactureProcessItem item = i.next();
+        int ii = 0;
+    	for(var item : info.getInputList()) {
     		// Capitalize process names
             if (ii == 0) result.append(getItemAmountString(item)).append(" ").append(item.getName()).append("<br>");
             else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(item.getName()).append("<br>");
@@ -187,10 +184,8 @@ public class ManufacturePanel extends JPanel {
 
     	// Add process outputs.
     	result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;Outputs : ");
-    	Iterator<ManufactureProcessItem> j = info.getOutputList().iterator();
-    	int jj = 0;
-    	while (j.hasNext()) {
-    		ManufactureProcessItem item = j.next();
+        int jj = 0;
+    	for(var item : info.getOutputList()) {
     		//  Capitalize process names
             if (jj == 0) result.append(getItemAmountString(item)).append(" ").append(item.getName()).append("<br>");
             else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(item.getName()).append("<br>");
@@ -208,7 +203,7 @@ public class ManufacturePanel extends JPanel {
      * @param item the manufacture process item.
      * @return amount string.
      */
-    private static String getItemAmountString(ManufactureProcessItem item) {
+    private static String getItemAmountString(ProcessItem item) {
     	if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 			return item.getAmount() + " kg";
     	}

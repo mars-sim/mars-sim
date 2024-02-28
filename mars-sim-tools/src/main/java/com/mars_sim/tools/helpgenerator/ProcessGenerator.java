@@ -11,8 +11,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
-import com.mars_sim.core.manufacture.ManufactureProcessItem;
-import com.mars_sim.tools.helpgenerator.HelpGenerator.ProcessItem;
+import com.mars_sim.tools.helpgenerator.HelpGenerator.ProcessItemSummary;
 
 /**
  * Help file generator for manufacturing processes.
@@ -47,8 +46,8 @@ class ProcessGenerator extends TypeGenerator<ManufactureProcessInfo> {
         generator.generateContent("process-detail", pScope, output);
     }
 
-    private static List<ProcessItem> getProcessItems(List<ManufactureProcessItem> items) {
-		return items.stream()
+    private static List<ProcessItemSummary> getProcessItems(List<com.mars_sim.core.process.ProcessItem> list) {
+		return list.stream()
 					.sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
 					.map(v -> HelpGenerator.toProcessItem(v.getName(), v.getType(), v.getAmount()))
 					.toList();

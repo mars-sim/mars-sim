@@ -16,7 +16,7 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 
 import com.mars_sim.tools.helpgenerator.GenericsGrouper.NamedGroup;
-import com.mars_sim.tools.helpgenerator.HelpGenerator.ProcessItem;
+import com.mars_sim.tools.helpgenerator.HelpGenerator.ProcessItemSummary;
 
 /**
  * This is an abstract generator for a configuration type. It provides generic methods.
@@ -129,8 +129,8 @@ public abstract class TypeGenerator<T> {
 	 * @param outputs
 	 */
 	protected void addProcessInputOutput(Map<String, Object> scope,
-			String inputTitle, List<ProcessItem> inputs,
-			String outputTitle, List<ProcessItem> outputs) {
+			String inputTitle, List<ProcessItemSummary> inputs,
+			String outputTitle, List<ProcessItemSummary> outputs) {
 
 		scope.put("inputs", inputs);
 		scope.put("inputsTitle", inputTitle);

@@ -17,7 +17,6 @@ import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
-import com.mars_sim.core.manufacture.ManufactureProcessItem;
 import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
@@ -200,9 +199,8 @@ class VehicleGood extends Good {
 		Iterator<ManufactureProcessInfo> ii = manufactureProcessInfos.iterator();
 		while (ii.hasNext()) {
 			ManufactureProcessInfo process = ii.next();
-			List<ManufactureProcessItem> itemList = process.getInputList();
 
-			for (ManufactureProcessItem pi : itemList) {
+			for (var pi : process.getInputList()) {
 				String iName = pi.getName();
 				int id = GoodsUtil.getGoodID(iName);
 				double value = owner.getGoodValuePoint(id);

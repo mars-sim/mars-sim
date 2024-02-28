@@ -11,13 +11,12 @@
 	<!ELEMENT description (#PCDATA)>
 	<!ELEMENT inputs (resource*, part*)>
 	<!ELEMENT outputs (resource*, part*, equipment*, bin*, vehicle*)>
-	<!ELEMENT resource EMPTY>
+	<!ELEMENT resource (alternative*)>
 	<!ATTLIST resource name CDATA #REQUIRED>
-	<!ATTLIST resource name1 CDATA #IMPLIED>
-	<!ATTLIST resource name2 CDATA #IMPLIED>
-	<!ATTLIST resource name3 CDATA #IMPLIED>	
-	<!ATTLIST resource name4 CDATA #IMPLIED>
 	<!ATTLIST resource amount CDATA #REQUIRED>
+	<!ELEMENT alternative EMPTY>
+	<!ATTLIST alternative name CDATA #REQUIRED>
+	<!ATTLIST alternative amount CDATA #REQUIRED>
 	<!ELEMENT part EMPTY>
 	<!ATTLIST part name CDATA #REQUIRED>
 	<!ATTLIST part number CDATA #REQUIRED>
@@ -77,7 +76,6 @@ http://canada.marssociety.org/winnipeg/soil.html
 			<resource name="rock salt" amount="7.5" />
 		</inputs>
 		<outputs>
-			<!--TODO: need research to determine the average amount-->
 			<resource name="table salt" amount="2.0" />
 			<resource name="calcium" amount="0.5" />
 			<resource name="magnesium" amount="0.5" />
@@ -161,8 +159,6 @@ http://canada.marssociety.org/winnipeg/soil.html
 		CHEMICALS USED IN PULP &PAPER MANUFACTURING AND COATING
 		Over 3000 different types of chemicals "can be used" in papermaking, in practice only about 200 individual chemicals
 		 are typically used, each satisfying a specific need.
-TODO 1: need to check the amount needed
-TODO 2: need to recruit chemist to monitor the process
 		 -->
 	<process name="Make bleaching chemical for paper making"
 			tech="2" skill="1"
@@ -203,9 +199,7 @@ TODO 2: need to recruit chemist to monitor the process
 
 <!-- https://en.wiki2.org/wiki/Electrochlorination
 		NaCl + H2O + ENERGY → NaOCl + H2 energy is added to sodium chloride (table salt) in water, resulting in sodium hypochlorite and hydrogen gas.
-TODO: need to recruit chemist to monitor the process
 Note: 1 kg of H2 is 14.13 liter
-
 -->
 	<process name="Make sodium hypochlorite for bleaching and sanitation"
 			tech="2" skill="1"
@@ -255,22 +249,27 @@ Note: 1 kg of H2 is 14.13 liter
 					  D. Of occasional significance are silicon (Si), cobalt (Co), and vanadium (V).
 		</description> 	
 		<inputs>
-		<!-- TODO:
-		1. Chemists may tweak the input amount and the yield
-		2. Arbitrary figures are used. Need research
-		See https://www.extension.purdue.edu/extmedia/ay/ay-204.html
-		-->
-			<resource name="nitrate" name1="nitrite" amount="0.5" />
+			<resource name="Nitrate" amount="0.5" >
+				<alternative name="Nitrite" amount="0.5" />
+			</resource>
 			<resource name="potassium" amount="0.5" />
 			<resource name="phosphorus" amount="0.5" />
-			<resource name="Nitrosomonas SPP" name1="Nitrospira SPP" name2="Rhizobia" amount=".05" />
-
+			<resource name="Nitrosomonas SPP" amount=".05">
+				<alternative name="Nitrospira SPP" amount=".05" />
+				<alternative name="Rhizobia" amount=".05" />
+			</resource>
 			<resource name="calcium" amount="0.02" />
 			<resource name="magnesium" amount="0.02" />
 			<resource name="sulfur" amount="0.02" />
 			
-			<resource name="zinc" name1="iron powder" name2="copper" amount="0.02" />
-			<resource name="ammonia" name1="methane" name2="hydrogen" amount="1" />
+			<resource name="zinc" amount="0.02">
+				<alternative name="iron powder" amount="0.02" />
+				<alternative name="copper" amount="0.02" />
+			</resource>
+			<resource name="ammonia" amount="1">
+				<alternative name="methane" amount="1" />
+				<alternative name="hydrogen" amount="1" />
+			</resource>
 		</inputs>
 		<outputs>
 			<resource name="Fertilizer" amount="6.0" />
@@ -321,26 +320,6 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 	
-<!--	DISABLE THIS PROCESS AND USE IRON POWDER INSTEAD OF IRON
-        ALSO IRON POWDER IS PRODUCED IN TWO PROCESSES ALREADY
-	<process name="extract iron from iron oxide"
-			tech="2" skill="2"
-			work-time="100"
-			process-time="300"
-			power-required="3.0">
-		<inputs>
-			<resource name="Iron Oxide" amount="5.0" />
-			<resource name="Carbon" amount="5.0" />
-		</inputs>
-		<outputs>
-			<resource name="Iron" amount="7.0" />
-			<resource name="Carbon Monoxide" amount="3.0" />
-		</outputs>
-	</process>
-	 TODO: Need to find the real molecular mass of the initial and resulting product
-			Fe2O3 + 3C → 2Fe + 3CO
--->
-
 	<process name="Do carbon monoxide iron reduction"
 			tech="1" skill="1"
 			work-time="50"
@@ -603,7 +582,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make satellite dish" tech="2" skill="3" work-time="200" process-time="200"
 			power-required="0.4">
 		<inputs>
-			<resource name="Polyester Resin" name1="polycarbonate resin" amount=".5" />
+			<resource name="Polyester Resin" amount=".5">
+				<alternative name="polycarbonate resin" amount=".5" />
+			</resource>
 			<resource name="styrene" amount=".5" />
 			<part name="fiberglass" number="1" />		
 			<part name="aluminum sheet" number="1" />
@@ -619,7 +600,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make plastic barrel" tech="1" skill="1" work-time="10" process-time="10"
 			power-required="0.1">
 		<inputs>
-			<resource name="Polyethylene" name1="Polypropylene" amount="7.8" />
+			<resource name="Polyethylene" amount="7.8">
+				<alternative name="Polypropylene" amount="7.8" />
+			</resource>
 		</inputs>
 		<outputs>
 			<equipment name="barrel" number="6" />
@@ -639,7 +622,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make pot" tech="1" skill="1" work-time="10" process-time="10"
 			power-required=".1">
 		<inputs>
-			<resource name="Polyethylene" name1="Polypropylene" amount="7.8" />
+			<resource name="Polyethylene" amount="7.8">
+				<alternative name="Polypropylene" amount="7.8" />
+			</resource>
 		</inputs>
 		<outputs>
 			<bin name="pot" number="8" />
@@ -649,7 +634,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make basket" tech="1" skill="1" work-time="10" process-time="10"
 			power-required=".1">
 		<inputs>
-			<resource name="Polyethylene" name1="Polypropylene" amount="7.8" />
+			<resource name="Polyethylene" amount="7.8"> 
+				<alternative name="Polypropylene" amount="7.8" />
+			</resource>
 		</inputs>
 		<outputs>
 			<bin name="basket" number="12" />
@@ -659,7 +646,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make crate" tech="1" skill="1" work-time="10" process-time="10"
 			power-required=".1">
 		<inputs>
-			<resource name="Polyethylene" name1="Polypropylene" amount="7.8" />
+			<resource name="Polyethylene" amount="7.8">
+				<alternative name="Polypropylene" amount="7.8" />
+			</resource>
 		</inputs>
 		<outputs>
 			<bin name="crate" number="6" />
@@ -669,7 +658,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make plastic specimen box" tech="1" skill="1" work-time="10" process-time="10"
 			power-required=".1">
 		<inputs>
-			<resource name="Polyethylene" name1="Polypropylene" amount="7.8" />
+			<resource name="Polyethylene" amount="7.8">
+				<alternative name="Polypropylene" amount="7.8" />
+			</resource>
 		</inputs>
 		<outputs>
 			<equipment name="specimen box" number="12" />
@@ -707,7 +698,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make radio antenna" tech="2" skill="2" work-time="100" process-time="100"
 			power-required=".3">
 		<inputs>
-			<resource name="Polyester Resin" name1="polycarbonate resin" amount=".5" />
+			<resource name="Polyester Resin" amount=".5">
+				<alternative name="Polycarbonate Resin" amount=".5" />
+			</resource>
 			<resource name="styrene" amount=".5" />
 			<part name="fiberglass" number="1" />
 			<part name="aluminum sheet" number="1" />
@@ -738,7 +731,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make plastic pipe" tech="1" skill="1" work-time="100" process-time="400"
 			power-required=".1">
 		<inputs>
-			<resource name="Polyethylene" name1="Polypropylene" amount="10.0" />
+			<resource name="Polyethylene" amount="10.0">
+				<alternative name="Polypropylene" amount="10.0" />
+			</resource>
 		</inputs>
 		<outputs>
 			<part name="plastic pipe" number="10" />
@@ -904,7 +899,9 @@ Note: 1 kg of H2 is 14.13 liter
 		</description>
 		<inputs>
 			<resource name="Polyester Resin" amount="1.0" />
-			<resource name="Polyethylene" name1="Polypropylene" amount="1.0" />
+			<resource name="Polyethylene" amount="1.0">
+				<alternative name="Polypropylene" amount="1.0" />
+			</resource>
 		</inputs>
 		<outputs>
 			<resource name="Mylar" amount="2.0" />
@@ -930,7 +927,10 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make plastic bottle" tech="1" skill="1" work-time="20" process-time="100"
 			power-required=".1">
 		<inputs>
-			<resource name="Polyethylene" name1="Polypropylene" name2="bisphenol-a" amount="1.0" />
+			<resource name="Polyethylene" amount="1.0">
+			 	<alternative name="Polypropylene" amount="1.0"/>
+				<alternative name="bisphenol-a" amount="1.0"/>
+			</resource>
 		</inputs>
 		<outputs>
 			<part name="Plastic Bottle" number="10" />
@@ -1079,7 +1079,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make Garment" tech="2" skill="1" work-time="50" process-time="100"
 			power-required=".2">
 		<inputs>
-			<resource name="Cane Fiber" name1="Polyester Fiber" amount="0.2" />
+			<resource name="Cane Fiber" amount="0.2">
+				<alternative name="Polyester Fiber" amount="0.2" />
+			</resource>
 			<resource name="polyurethane" amount="0.1" />
 			<resource name="Polyester Resin" amount="1.0" />
 		</inputs>
@@ -1095,10 +1097,15 @@ Note: 1 kg of H2 is 14.13 liter
 			See technical papers at https://www.science.gov/topicpages/v/ventilation+garment+lcvg
 		</description>
 		<inputs>
-			<resource name="Cane Fiber" name1="Polyester Fiber" amount="0.5" />
+			<resource name="Cane Fiber" amount="0.5">
+				<alternative name="Polyester Fiber" amount="0.5" />
+			</resource>
 			<resource name="Thermoplastic Elastomer" amount="0.4" />
 			<resource name="Polypropylene" amount="0.1" />
-			<resource name="Nylon" name1="Kevlar" name2="Fiber Cloth" amount="0.2" />
+			<resource name="Nylon" amount="0.2">
+				<alternative name="Kevlar" amount="0.2"/>
+				<alternative name="Fiber Cloth" amount="0.2"/>
+			</resource>
 			<resource name="Paraffin Composites" amount="0.15" />
 			<part name="plastic tubing" number="3" />
 		</inputs>
@@ -1111,8 +1118,12 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make eva helmet" tech="2" skill="2" work-time="100" process-time="300"
 			power-required=".2">
 		<inputs>
-			<resource name="Cane Fiber" name1="Polyester Fiber" amount="0.2" />
-			<resource name="Polyethylene" name1="Polypropylene" amount="0.5" />
+			<resource name="Cane Fiber" amount="0.2">
+				<alternative name="Polyester Fiber" amount="0.2" />
+			</resource>
+			<resource name="Polyethylene" amount="0.5">
+				<alternative name="Polypropylene" amount="0.5" />
+			</resource>
 			<resource name="Polycarbonate Resin" amount="0.5" />
 			<resource name="Aluminized Mylar" amount="0.25" />
 			<part name="plastic tubing" number="2" />
@@ -1139,10 +1150,16 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make pressure suit" tech="2" skill="2" work-time="100" process-time="100"
 			power-required=".2">
 		<inputs>
-			<resource name="Polyethylene" name1="Polypropylene" amount="0.2" />
-			<resource name="Cane Fiber" name1="Polyester Fiber" amount="0.3" />
+			<resource name="Polyethylene" amount="0.2">
+				<alternative name="Polypropylene" amount="0.2" />
+			</resource>
+			<resource name="Cane Fiber" amount="0.3">
+				<alternative name="Polyester Fiber" amount="0.3" />
+			</resource>
 			<resource name="Silicone Elastomer" amount="1.0" />
-			<resource name="Polyester Resin" name1="Polycarbonate Resin" amount="0.5" />
+			<resource name="Polyester Resin" amount="0.5">
+				<alternative name="Polycarbonate Resin" amount="0.5" />
+			</resource>
 			<part name="plastic tubing" number="3" />
 						
 		</inputs>
@@ -1154,7 +1171,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make coveralls" tech="2" skill="2" work-time="200" process-time="50"
 			power-required=".2">
 		<inputs>
-			<resource name="Cane Fiber" name1="Polyester Fiber" amount="0.2" />
+			<resource name="Cane Fiber" amount="0.2">
+				<alternative name="Polyester Fiber" amount="0.2" />
+			</resource>
 			<resource name="polyurethane" amount="0.1" />
 			<resource name="Aluminized Mylar" amount="1.0" />			
 			<part name="fiberglass cloth" number="4" />
@@ -1167,7 +1186,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make eva gloves" tech="3" skill="3" work-time="200" process-time="50"
 			power-required=".1">
 		<inputs>
-			<resource name="Cane Fiber" name1="Polyester Fiber" amount="0.1" />
+			<resource name="Cane Fiber" amount="0.1">
+				<alternative name="Polyester Fiber" amount="0.1" />
+			</resource>
 			<resource name="polyurethane" amount="0.05" />
 			<part name="fiberglass cloth" number="1" />
 			<part name="fiberglass" number="1" />
@@ -1180,7 +1201,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make eva boots" tech="3" skill="3" work-time="200" process-time="50"
 			power-required=".1">
 		<inputs>
-			<resource name="Cane Fiber" name1="Polyester Fiber" amount="0.4" />
+			<resource name="Cane Fiber" amount="0.4">
+				<alternative name="Polyester Fiber" amount="0.4" />
+			</resource>
 			<resource name="polyurethane" amount="0.1" />
 			<part name="steel ingot" number="1" />
 			<part name="fiberglass cloth" number="1" />
@@ -1194,7 +1217,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make eva pads" tech="3" skill="3" work-time="200" process-time="50"
 			power-required=".7">
 		<inputs>
-			<resource name="Cane Fiber" name1="Polyester Fiber" amount="0.1" />
+			<resource name="Cane Fiber" amount="0.1">
+				<alternative name="Polyester Fiber" amount="0.1" />
+			</resource>
 			<resource name="polyurethane" amount="0.05" />
 			<part name="steel ingot" number="1" />
 			<part name="fiberglass" number="1" />
@@ -1208,8 +1233,12 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required=".5">
 		<description>Polyethylene box with steel frame and fiberglass cloth straps.</description>
 		<inputs>
-			<resource name="Polyethylene" name1="Polypropylene" amount="5.0" />
-			<resource name="Cane Fiber" name1="Polyester Fiber" amount="0.5" />
+			<resource name="Polyethylene" amount="5.0">
+				<alternative name="Polypropylene" amount="5.0" />
+			</resource>
+			<resource name="Cane Fiber" amount="0.5">
+				<alternative name="Polyester Fiber" amount="0.5" />
+			</resource>
 			<part name="steel ingot" number="1" />
 			<part name="fiberglass cloth" number="1" />
 			<part name="electrical wire" number="2" />
@@ -1229,7 +1258,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make eva antenna" tech="2" skill="2" work-time="100" process-time="50"
 			power-required=".3">
 		<inputs>
-			<resource name="Polyester Resin" name1="Polycarbonate Resin" amount=".5" />
+			<resource name="Polyester Resin" amount=".5">
+				<alternative name="Polycarbonate Resin" amount=".5" />
+			</resource>
 			<resource name="styrene" amount=".5" />
 			<part name="fiberglass" number="1" />
 			<part name="aluminum sheet" number="1" />
@@ -1295,7 +1326,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make work gloves" tech="1" skill="1" work-time="50" process-time="50"
 			power-required=".05">
 		<inputs>
-			<resource name="Cane Fiber" name1="Polyester Fiber" amount="0.1" />
+			<resource name="Cane Fiber" amount="0.1">
+				<alternative name="Polyester Fiber" amount="0.1" />
+			</resource>
 			<part name="fiberglass cloth" number="1" />
 			<part name="fiberglass" number="1" />
 		</inputs>
@@ -1354,7 +1387,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture vehicle chassis panel" tech="2" skill="3" work-time="100" process-time="100"
 			power-required=".1">
 		<inputs>
-			<resource name="Polyester Resin" name1="Polycarbonate Resin" amount="5.0" />
+			<resource name="Polyester Resin" amount="5.0">
+				<alternative name="Polycarbonate Resin" amount="5.0" />
+			</resource>
 			<resource name="polystyrene" amount="5" />
 			<resource name="styrene" amount="5.0" />
 			<part name="fiberglass" number="5" />
@@ -1529,8 +1564,12 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture rover control panel" tech="2" skill="3" work-time="200" process-time="200"
 			power-required="1.0">
 		<inputs>
-			<resource name="Polyethylene" name1="Polypropylene" amount="3.0" />
-			<resource name="Polyester Resin" name1="Polycarbonate Resin" amount="5.0" />
+			<resource name="Polyethylene" amount="3.0">
+				<alternative name="Polypropylene" amount="3.0" />
+			</resource>
+			<resource name="Polyester Resin" amount="5.0">
+				<alternative name="Polycarbonate Resin" amount="5.0" />
+			</resource>
 			<resource name="polystyrene" amount="10.0" />			
 			<resource name="styrene" amount="2.0" />
 			<part name="fiberglass" number="5" />
@@ -1548,8 +1587,12 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture utility vehicle control panel" tech="3" skill="3" work-time="200" process-time="200"
 			power-required="1.0">
 		<inputs>
-			<resource name="Polyethylene" name1="Polypropylene" amount=".5" />
-			<resource name="Polyester Resin" name1="Polycarbonate Resin" amount="2.0" />
+			<resource name="Polyethylene" amount=".5">
+				<alternative name="Polypropylene" amount=".5" />
+			</resource>
+			<resource name="Polyester Resin" amount="2.0">
+				<alternative name="Polycarbonate Resin" amount="2.0" />
+			</resource>
 			<resource name="polystyrene" amount="1.0" />
 			<resource name="styrene" amount="1.0" />
 			<part name="fiberglass" number="5" />
@@ -2124,7 +2167,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Fabricate turbine blade" tech="2" skill="3" work-time="200" process-time="200"
 			power-required="1.0">
 		<inputs>
-			<resource name="Polyester Resin" name1="Polycarbonate Resin" amount=".5" />
+			<resource name="Polyester Resin" amount=".5">
+				<alternative name="Polycarbonate Resin" amount=".5" />
+			</resource>
 			<resource name="styrene" amount=".5" />
 			<part name="fiberglass" number="1" />
 		</inputs>
@@ -2233,7 +2278,9 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="nickel" amount="2" />
 			<resource name="lithium" amount=".4" />			
 			<resource name="potash lye" amount="10.0" />
-			<resource name="Polyethylene" name1="Polypropylene" amount="5.0" />
+			<resource name="Polyethylene" amount="5.0" >
+				<alternative name="Polypropylene" amount="5.0" />
+			</resource>
 			<part name="iron sheet" number="2" />
 			<part name="logic board" number="2" />
 			<part name="wire connector" number="2" />
@@ -2253,7 +2300,9 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="nickel" amount="3.0" />
 			<resource name="potash lye" amount="7.0" />
-			<resource name="Polyethylene" name1="Polypropylene" amount="4.0" />
+			<resource name="Polyethylene" amount="4.0">
+				<alternative name="Polypropylene" amount="4.0" />
+			</resource>
 			<part name="iron sheet" number="1" />
 			<part name="logic board" number="1" />
 			<part name="wire connector" number="6" />
@@ -2470,7 +2519,6 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="plastic sheet" number="1" />
 			<part name="microcontroller" number="1" />
 			<part name="transformer" number="1" />
-<!--		<part name="magnetron tube" number="1" /> 		-->
 			<part name="power transistor" number="1" />
 			<part name="logic board" number="1" />
 		</inputs>
@@ -2609,7 +2657,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make biosensor" tech="3" skill="3" work-time="80" process-time="20"
 			power-required=".01">
 		<inputs>
-			<resource name="Cane Fiber" name1="Polyester Fiber" amount="0.1" />
+			<resource name="Cane Fiber" amount="0.1">
+				<alternative name="Polyester Fiber" amount="0.1" />
+			</resource>
 			<part name="CMOS sensor" number="1" />
 			<part name="logic board" number="1" />
 			<part name="electrical wire" number="3" />			
@@ -3225,7 +3275,9 @@ Note: 1 kg of H2 is 14.13 liter
 			form-stable solid-liquid phase change material (PCM) for thermal energy storage 
 			purposes such as in EVA suit's liquid cooling garment. </description>		 
 		<inputs>
-			<resource name="Polyethylene" name1="Polypropylene" amount="7.8" />
+			<resource name="Polyethylene" amount="7.8">
+				<alternative name="Polypropylene" amount="7.8" />
+			</resource>
 		</inputs>
 		<outputs>
 			<resource name="Paraffin Composites" amount="6" />
@@ -3239,7 +3291,7 @@ Note: 1 kg of H2 is 14.13 liter
 			https://www.elastomer.kuraray.com/blog/what-is-tpe/#processing
 		</description>		 
 		<inputs>
-			<resource name="Carbon" name1="Corn" name2="Sugarcane" amount="7.8" />
+			<resource name="Carbon" amount="7.8"/>
 		</inputs>
 		<outputs>
 			<resource name="Thermoplastic Elastomer" amount="6" />
@@ -3268,7 +3320,9 @@ Note: 1 kg of H2 is 14.13 liter
 			branch circuits from overloads and short circuits. 
 		</description>		 
 		<inputs>
-			<resource name="Polycarbonate Resin" name1="Styrene" amount="1"/>
+			<resource name="Polycarbonate Resin" amount="1">
+				<alternative name="Styrene" amount="1"/>
+			</resource>
 			<part name="Steel Sheet" number="1"/>
 			<part name="Electrical Wire" number="6"/>
 			<part name="Power Cable" number="2"/>
@@ -3290,7 +3344,9 @@ Note: 1 kg of H2 is 14.13 liter
 			to it.
 		</description>		 
 		<inputs>
-			<resource name="Polycarbonate Resin" name1="Styrene" amount=".2"/>
+			<resource name="Polycarbonate Resin" amount=".2">
+				<alternative name="Styrene" amount=".2"/>
+			</resource>
 			<part name="Electrical Wire" number="2"/>
 			<part name="Metal Oxide Varistor" number="4"/>
 		</inputs>
@@ -3308,7 +3364,9 @@ Note: 1 kg of H2 is 14.13 liter
 		</description>		 
 		<inputs>
 			<resource name="Sand" amount=".25"/>
-			<resource name="Polycarbonate Resin" name1="Styrene" amount=".05"/>
+			<resource name="Polycarbonate Resin" amount=".05">
+				<alternative name="Styrene" amount=".05"/>
+			</resource>
 			<part name="Electrical Wire" number="1"/>	
 		</inputs>
 		<outputs>

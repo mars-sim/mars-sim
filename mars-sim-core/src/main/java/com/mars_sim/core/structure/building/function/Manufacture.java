@@ -25,7 +25,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
-import com.mars_sim.core.manufacture.ManufactureProcessItem;
 import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.manufacture.PartSalvage;
 import com.mars_sim.core.manufacture.Salvagable;
@@ -266,7 +265,7 @@ public class Manufacture extends Function {
 		processes.add(process);
 
 		// Consume inputs.
-		for (ManufactureProcessItem item : process.getInfo().getInputList()) {
+		for (var item : process.getInfo().getInputList()) {
 			if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 				building.getSettlement().retrieveAmountResource(id, item.getAmount());
@@ -468,9 +467,7 @@ public class Manufacture extends Function {
 
 		if (!premature) {
 			// Produce outputs.
-			Iterator<ManufactureProcessItem> j = process.getInfo().getOutputList().iterator();
-			while (j.hasNext()) {
-				ManufactureProcessItem item = j.next();
+			for(var item : process.getInfo().getOutputList()) {
 				if (ManufactureUtil.getManufactureProcessItemValue(item, settlement, true) > 0D) {
 					if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 						// Produce amount resources.
@@ -556,9 +553,7 @@ public class Manufacture extends Function {
 
 			// Premature end of process. Return all input materials.
 			// Note: should some resources be consumed and irreversible ?
-			Iterator<ManufactureProcessItem> j = process.getInfo().getInputList().iterator();
-			while (j.hasNext()) {
-				ManufactureProcessItem item = j.next();
+			for(var item : process.getInfo().getInputList()) {
 				if (ManufactureUtil.getManufactureProcessItemValue(item, settlement, false) > 0D) {
 					if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 						// Produce amount resources.

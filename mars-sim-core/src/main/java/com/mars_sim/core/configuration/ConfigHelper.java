@@ -106,7 +106,17 @@ public class ConfigHelper {
 		return result;
 	}
 
-		
+	/**
+	 * A generic extract to get an Attribute as int value.
+	 * 
+	 * @param sourceElement The XML Element to extract Attribute from
+	 * @param attrName Attribute name to look for
+	 * @return The Attribute value converted to an int OR the default
+	 */
+    public static int getAttributeInt(Element sourceElement, String attrName) {
+		return Integer.parseInt(sourceElement.getAttributeValue(attrName));
+    }
+
 	/**
 	 * A generic extract to get an optional Attribute as double value.
 	 * 
@@ -123,6 +133,17 @@ public class ConfigHelper {
 		}
 		return result;
 	}
+
+	/**
+	 * A generic extract to get an Attribute as double value.
+	 * 
+	 * @param sourceElement The XML Element to extract Attribute from
+	 * @param attrName Attribute name to look for
+	 * @return The Attribute value converted to an int OR the default
+	 */
+    public static double getAttributeDouble(Element sourceElement, String attrName) {
+		return Double.parseDouble(sourceElement.getAttributeValue(attrName));
+    }
 
 	/**
 	 * A generic extract to get an optional Attribute as bool value.

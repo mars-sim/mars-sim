@@ -21,9 +21,9 @@ import com.mars_sim.core.food.FoodProductionUtil;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
-import com.mars_sim.core.manufacture.ManufactureProcessItem;
 import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -746,8 +746,8 @@ class AmountResourceGood extends Good {
 		double demand = 0D;
 		String r = getAmountResource().getName().toLowerCase();
 
-		ManufactureProcessItem resourceInput = null;
-		for(ManufactureProcessItem item : process.getInputList()) {
+		ProcessItem resourceInput = null;
+		for(var item : process.getInputList()) {
 			if ((ItemType.AMOUNT_RESOURCE == item.getType()) && r.equals(item.getName())) {
 				resourceInput = item;
 				break;
@@ -756,12 +756,12 @@ class AmountResourceGood extends Good {
 
 		if (resourceInput != null) {
 			double outputsValue = 0D;
-			for(ManufactureProcessItem j : process.getOutputList()) {
+			for(var j : process.getOutputList()) {
 				outputsValue += ManufactureUtil.getManufactureProcessItemValue(j, settlement, true);
 			}
 
 			double totalItems = 0D;
-			for(ManufactureProcessItem k : process.getInputList()) {
+			for(var k : process.getInputList()) {
 				totalItems += k.getAmount();
 			}
 

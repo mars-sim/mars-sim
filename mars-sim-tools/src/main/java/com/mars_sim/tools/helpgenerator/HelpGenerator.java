@@ -39,7 +39,7 @@ public class HelpGenerator {
 	// Represents where a Resource is used in a manufacturing process
 	record ResourceUse(List<ManufactureProcessInfo> asInput, List<ManufactureProcessInfo> asOutput) {}
 
-	record ProcessItem(String name, String type, String typefolder, double amount) {}
+	record ProcessItemSummary(String name, String type, String typefolder, double amount) {}
 
 	private static Logger logger = Logger.getLogger(HelpGenerator.class.getName());
 	private static final String TEMPLATES_DIR = "templates/";
@@ -190,7 +190,7 @@ public class HelpGenerator {
 	 * @param amount
 	 * @return
 	 */
-	static ProcessItem toProcessItem(String name, ItemType type, double amount) {
+	static ProcessItemSummary toProcessItem(String name, ItemType type, double amount) {
 		String typeFolder = switch(type) {
 			case AMOUNT_RESOURCE -> ResourceGenerator.TYPE_NAME;
 			case BIN -> null;
@@ -198,7 +198,7 @@ public class HelpGenerator {
 			case PART -> PartGenerator.TYPE_NAME;
 			case VEHICLE -> VehicleGenerator.TYPE_NAME;
 		};
-		return new ProcessItem(name, type.getName(), "../" + typeFolder + "/", amount);
+		return new ProcessItemSummary(name, type.getName(), "../" + typeFolder + "/", amount);
 	}
 
 	/**
