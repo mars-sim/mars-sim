@@ -47,6 +47,8 @@ import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.structure.ManufacturePanel;
 import com.mars_sim.ui.swing.unit_window.structure.SalvagePanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.ProcessInfoRenderer;
+
 
 
 /**
@@ -413,7 +415,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 				if (processName.length() > processStringWidth)
 					processName = processName.substring(0, processStringWidth) + "...";
 				((JLabel) result).setText(processName);
-				((JComponent) result).setToolTipText(ManufacturePanel.getToolTipString(mpinfo, null));
+				((JComponent) result).setToolTipText(ProcessInfoRenderer.getToolTipString(mpinfo));
 			} else if (value instanceof SalvageProcessInfo spinfo) {
 				// Capitalized processName
 				String processName = spinfo.getName();

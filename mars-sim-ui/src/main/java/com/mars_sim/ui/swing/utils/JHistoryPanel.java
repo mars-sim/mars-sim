@@ -8,6 +8,7 @@ package com.mars_sim.ui.swing.utils;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
@@ -15,8 +16,10 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.RowSorter;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.History.HistoryItem;
@@ -49,21 +52,21 @@ public abstract class JHistoryPanel<T> extends JPanel {
 
 		@Override
 		public int getColumnCount() {
-			return 1 + columnNames.length;
+			return 1 + columns.length;
 		}
 
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			if (columnIndex == 0)
 				return String.class;
-			return columnTypes[columnIndex-1];
+			return columns[columnIndex-1].type();
 		}
 
 		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0)
 				return Msg.getString("TabPanelLog.column.time"); //$NON-NLS-1$
-			return columnNames[columnIndex-1];
+			return columns[columnIndex-1].name();
 		}
 
 		@Override
@@ -84,13 +87,16 @@ public abstract class JHistoryPanel<T> extends JPanel {
 			lastSize = items.size();
 			fireTableDataChanged();
 		}
+
+		T getRow(int rowIndex) {
+			return items.get(rowIndex).getWhat();
+		}
 	}
 
 	private History<T> source;
-	private String[] columnNames;
-	private Class<?>[] columnTypes;
+	private ColumnSpec[] columns;
 	private MarsTime lastTime = null;
-	private int lastSize = -1;
+	private int lastSize = 0;
 
 	private ItemModel itemModel;
 	private JComboBox<MarsDate> solBox;
@@ -99,18 +105,12 @@ public abstract class JHistoryPanel<T> extends JPanel {
     /**
      * This creqtes a panel to display a history details.
      * @param source The source of the History details
-     * @param columnNames Name of the extra columns from the Item type
-     * @param columnTypes Types of the extra column from the Item type
+     * @param columns Details of the extra columns from the Item type
      */
-	protected JHistoryPanel(History<T> source, String[] columnNames, Class<?>[] columnTypes) {
+	protected JHistoryPanel(History<T> source, ColumnSpec[] columns) {
 		super(new BorderLayout());
 		this.source = source;
-		this.columnNames = columnNames;
-		this.columnTypes = columnTypes;
-
-		if (columnNames.length != columnTypes.length) {
-			throw new IllegalArgumentException("The column names and types to not match");
-		}
+		this.columns = columns;
 
 		solModel = new DefaultComboBoxModel<>();
 		solBox = new JComboBox<>(solModel);
@@ -120,20 +120,37 @@ public abstract class JHistoryPanel<T> extends JPanel {
 		add(solPanel, BorderLayout.NORTH);
 		itemModel = new ItemModel();
 
-		// Create attribute scroll panel
-		JScrollPane scrollPanel = new JScrollPane();
-		this.add(scrollPanel, BorderLayout.CENTER);
-
 		// Create schedule table
-		JTable table = new JTable(itemModel);
+		JTable table = new JTable(itemModel) {
+			@Override
+            public String getToolTipText(MouseEvent e) {
+                java.awt.Point p = e.getPoint();
+                int rowIndex = rowAtPoint(p);
+				RowSorter<? extends TableModel> sorter = getRowSorter();
+				if (sorter != null) {
+					rowIndex = sorter.convertRowIndexToModel(rowIndex);
+				}	
+
+				@SuppressWarnings("unchecked")
+				ItemModel model = (ItemModel) getModel();
+				if ((rowIndex < 0) || (rowIndex >= model.getRowCount())) {
+					return "";
+				}
+				return getTooltipFrom(model.getRow(rowIndex));
+            }
+		};
 		TableColumn timeColumn = table.getColumnModel().getColumn(0);
 		timeColumn.setMinWidth(TIME_WIDTH);
 		timeColumn.setPreferredWidth(TIME_WIDTH);
 
 		table.setRowSelectionAllowed(true);
 
+		// Create attribute scroll panel
+		var scrollPanel = new JScrollPane();
 		scrollPanel.setViewportView(table);
 
+		add(scrollPanel, BorderLayout.CENTER);
+		
 		solBox.addActionListener(e -> itemModel.reload());
 	}
 
@@ -143,6 +160,9 @@ public abstract class JHistoryPanel<T> extends JPanel {
      */
 	public void refresh() {
 		List<HistoryItem<T>> newItems = source.getChanges();
+		if (newItems.isEmpty()) {
+			return;
+		}
 
 		// Reload the list if the composition has changed. Either a change of size
 		// or the timestamp of 1st item has changed
@@ -180,4 +200,13 @@ public abstract class JHistoryPanel<T> extends JPanel {
      * @return
      */
 	protected abstract Object getValueFrom(T value, int columnIndex);
+
+	/**
+     * This method may be overriden to extract a tooltip for the selected item
+     * @param value Value to be rendered as tooltip
+     * @return
+     */
+	protected String getTooltipFrom(T value) {
+		return null;
+	}
 }

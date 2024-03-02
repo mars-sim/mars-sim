@@ -14,6 +14,7 @@ import java.util.Set;
 
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 /**
  * A table model that displays a list of categories in a table. The categories are

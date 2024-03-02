@@ -14,6 +14,7 @@ import com.mars_sim.core.UnitType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.tools.Msg;
+import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 /**
  * The BuildingTableModel maintains a list of Building objects. By defaults the source

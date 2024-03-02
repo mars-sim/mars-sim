@@ -9,22 +9,18 @@ package com.mars_sim.ui.swing.unit_window.structure;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
 
 import com.mars_sim.core.manufacture.ManufactureProcess;
-import com.mars_sim.core.manufacture.ManufactureProcessInfo;
-import com.mars_sim.core.process.ProcessItem;
-import com.mars_sim.core.resource.ItemType;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.utils.ProcessInfoRenderer;
 
 /**
  * A panel showing information about a manufacturing process.
@@ -64,14 +60,8 @@ public class ManufacturePanel extends JPanel {
         // Prepare cancel button.
         JButton cancelButton = new JButton(ImageLoader.getIconByName("action/cancel"));
         cancelButton.setMargin(new Insets(0, 0, 0, 0));
-        cancelButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent event) {
-//        		try {
-        			getManufactureProcess().getWorkshop().endManufacturingProcess(getManufactureProcess(), true);
-//        		}
-//        		catch (BuildingException e) {}
-	        }
-        });
+        cancelButton.addActionListener(event ->
+                    getManufactureProcess().getWorkshop().endManufacturingProcess(getManufactureProcess(), true));
         cancelButton.setToolTipText("Cancel manufacturing process");
         namePane.add(cancelButton);
 
@@ -83,13 +73,13 @@ public class ManufacturePanel extends JPanel {
         }
         if (name.length() > processStringWidth) name = name.substring(0, processStringWidth) + "...";
 		// Capitalize process names
-        JLabel nameLabel = new JLabel(name, JLabel.CENTER);
+        JLabel nameLabel = new JLabel(name, SwingConstants.CENTER);
         namePane.add(nameLabel);
 
         if (showBuilding) {
         	// Prepare building name label.
         	String buildingName = process.getWorkshop().getBuilding().getName();
-        	JLabel buildingNameLabel = new JLabel(buildingName, JLabel.CENTER);
+        	JLabel buildingNameLabel = new JLabel(buildingName, SwingConstants.CENTER);
         	add(buildingNameLabel);
         }
 
@@ -98,7 +88,7 @@ public class ManufacturePanel extends JPanel {
         add(workPane);
 
         // Prepare work label.
-        JLabel workLabel = new JLabel("Work: ", JLabel.LEFT);
+        JLabel workLabel = new JLabel("Work: ", SwingConstants.LEFT);
         workPane.add(workLabel);
 
         // Prepare work progress bar.
@@ -112,7 +102,7 @@ public class ManufacturePanel extends JPanel {
         add(timePane);
 
         // Prepare time label.
-        JLabel timeLabel = new JLabel("Time: ", JLabel.LEFT);
+        JLabel timeLabel = new JLabel("Time: ", SwingConstants.LEFT);
         timePane.add(timeLabel);
 
         // Prepare time progress bar.
@@ -125,7 +115,7 @@ public class ManufacturePanel extends JPanel {
         update();
 
         // Add tooltip.
-        setToolTipText(getToolTipString(process.getInfo(), process.getWorkshop().getBuilding()));
+        setToolTipText(ProcessInfoRenderer.getToolTipString(process.getInfo()));
 	}
 
     /**
@@ -156,60 +146,6 @@ public class ManufacturePanel extends JPanel {
     	return process;
     }
 
-    /**
-     * Gets a tool tip string for a manufacturing process.
-     * 
-     * @param info the manufacture process info.
-     * @param building the manufacturing building (or null if none).
-     */
-    public static String getToolTipString(ManufactureProcessInfo info, Building building) {
-        StringBuilder result = new StringBuilder("<html>");
-
-        result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;Process : ").append(info.getName()).append("<br>");
-        result.append("&emsp;&emsp;&emsp;&nbsp;Labor Req : ").append(info.getWorkTimeRequired()).append(" millisols<br>");
-        result.append("&emsp;&emsp;&emsp;&nbsp;&nbsp;Time Req : ").append(info.getProcessTimeRequired()).append(" millisols<br>");
-        result.append("&emsp;&emsp;&emsp;Power Req : ").append(info.getPowerRequired()).append(" kW<br>");
-        result.append("&emsp;&nbsp;Bldg Tech Req : Level ").append(info.getTechLevelRequired()).append("<br>");
-        result.append("&nbsp;Mat Sci Skill Req : Level ").append(info.getSkillLevelRequired()).append("<br>");
-
-    	// Add process inputs.
-    	result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;Inputs : ");
-        int ii = 0;
-    	for(var item : info.getInputList()) {
-    		// Capitalize process names
-            if (ii == 0) result.append(getItemAmountString(item)).append(" ").append(item.getName()).append("<br>");
-            else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(item.getName()).append("<br>");
-            ii++;
-    	}
-
-    	// Add process outputs.
-    	result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;Outputs : ");
-        int jj = 0;
-    	for(var item : info.getOutputList()) {
-    		//  Capitalize process names
-            if (jj == 0) result.append(getItemAmountString(item)).append(" ").append(item.getName()).append("<br>");
-            else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(item.getName()).append("<br>");
-            jj++;
-    	}
-
-    	result.append("</html>");
-
-    	return result.toString();
-    }
-
-    /**
-     * Gets a string representing an manufacture process item amount.
-     * 
-     * @param item the manufacture process item.
-     * @return amount string.
-     */
-    private static String getItemAmountString(ProcessItem item) {
-    	if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-			return item.getAmount() + " kg";
-    	}
-		else return Integer.toString((int) item.getAmount());
-    }
-    
 	/**
 	 * Prepare object for garbage collection.
 	 */
