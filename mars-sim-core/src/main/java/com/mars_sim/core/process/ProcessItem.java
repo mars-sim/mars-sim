@@ -4,7 +4,6 @@
  * @date 2024-02-25
  * @author Barry Evans
  */
-
 package com.mars_sim.core.process;
 
 import java.io.Serializable;
@@ -57,7 +56,7 @@ public class ProcessItem implements Serializable {
             ProcessItem item = (ProcessItem) object;
             result = (name.equals(item.getName())
                     && type.equals(item.getType())
-                    && (amount != item.getAmount()));
+                    && (amount == item.getAmount()));
         }
 
         return result;

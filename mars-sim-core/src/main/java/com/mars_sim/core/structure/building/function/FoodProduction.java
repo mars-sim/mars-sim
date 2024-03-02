@@ -16,11 +16,11 @@ import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.food.FoodProductionProcess;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
-import com.mars_sim.core.food.FoodProductionProcessItem;
 import com.mars_sim.core.food.FoodProductionUtil;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
@@ -241,7 +241,7 @@ public class FoodProduction extends Function {
 		processes.add(process);
 
 		// Consume inputs.
-		for (FoodProductionProcessItem item : process.getInfo().getInputList()) {
+		for (ProcessItem item : process.getInfo().getInputList()) {
 			if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 				getBuilding().getSettlement().retrieveAmountResource(id, item.getAmount());
@@ -353,10 +353,10 @@ public class FoodProduction extends Function {
 	
 		if (!premature) {
 			// Produce outputs.
-			Iterator<FoodProductionProcessItem> j = process.getInfo().getOutputList().iterator();
+			Iterator<ProcessItem> j = process.getInfo().getOutputList().iterator();
 			while (j.hasNext()) {
-				FoodProductionProcessItem item = j.next();
-				if (FoodProductionUtil.getFoodProductionProcessItemValue(item, settlement, true) > 0D) {
+				ProcessItem item = j.next();
+				if (FoodProductionUtil.getProcessItemValue(item, settlement, true) > 0D) {
 					if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 						// Produce amount resources.
 						int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
@@ -408,10 +408,10 @@ public class FoodProduction extends Function {
 		else {
 
 			// Premature end of process. Return all input materials.
-			Iterator<FoodProductionProcessItem> j = process.getInfo().getInputList().iterator();
+			Iterator<ProcessItem> j = process.getInfo().getInputList().iterator();
 			while (j.hasNext()) {
-				FoodProductionProcessItem item = j.next();
-				if (FoodProductionUtil.getFoodProductionProcessItemValue(item, settlement, false) > 0D) {
+				ProcessItem item = j.next();
+				if (FoodProductionUtil.getProcessItemValue(item, settlement, false) > 0D) {
 					if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 						// Produce amount resources.
 						int id = ResourceUtil.findIDbyAmountResourceName(item.getName());

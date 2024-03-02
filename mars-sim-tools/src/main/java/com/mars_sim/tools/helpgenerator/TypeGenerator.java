@@ -32,6 +32,13 @@ public abstract class TypeGenerator<T> {
     // Used to group entities for grouped index
     private Function<T,String> grouper;
 
+    protected static List<ProcessItemSummary> getProcessItems(List<com.mars_sim.core.process.ProcessItem> list) {
+		return list.stream()
+					.sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
+					.map(v -> HelpGenerator.toProcessItem(v.getName(), v.getType(), v.getAmount()))
+					.toList();
+	}
+
     /**
      * Create an instance.
      * @param parent The parent generator to provide context.

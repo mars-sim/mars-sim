@@ -11,8 +11,6 @@ import java.io.OutputStream;
 import java.util.List;
 
 import com.mars_sim.core.food.FoodProductionProcessInfo;
-import com.mars_sim.core.food.FoodProductionProcessItem;
-import com.mars_sim.tools.helpgenerator.HelpGenerator.ProcessItemSummary;
 
 /**
  * Generates help content for Food Production processes
@@ -38,18 +36,12 @@ class FoodGenerator extends TypeGenerator<FoodProductionProcessInfo> {
         var vScope = generator.createScopeMap("Food " + v.getName());
         vScope.put("food", v);
 
-        addProcessInputOutput(vScope, "Ingredients", getProcessItemsFromFood(v.getInputList()),
-                              "Outcomes", getProcessItemsFromFood(v.getOutputList()));
+        addProcessInputOutput(vScope,
+                "Ingredients", getProcessItems(v.getInputList()),
+                "Outcomes", getProcessItems(v.getOutputList()));
 
         generator.generateContent("food-detail", vScope, output);
     }
-
-    static List<ProcessItemSummary> getProcessItemsFromFood(List<FoodProductionProcessItem> items) {
-		return items.stream()
-					.sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
-					.map(v -> HelpGenerator.toProcessItem(v.getName(), v.getType(), v.getAmount()))
-					.toList();
-	}
 
     /**
      * Get a list of all configured food processes

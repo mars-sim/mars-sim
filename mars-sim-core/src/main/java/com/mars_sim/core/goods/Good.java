@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
-import com.mars_sim.core.food.FoodProductionProcessItem;
 import com.mars_sim.core.food.FoodProductionUtil;
 import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
@@ -25,6 +24,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
+import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.structure.Settlement;
@@ -306,8 +306,8 @@ public abstract class Good implements Serializable, Comparable<Good> {
 			int numProcesses = foodProductionProcessInfos.size();
 
 			for (FoodProductionProcessInfo i: foodProductionProcessInfos) {
-				List<FoodProductionProcessItem> items = i.getFoodProductionProcessItem(name);
-				for (FoodProductionProcessItem j: items) {
+				List<ProcessItem> items = i.getOutputItemsByName(name);
+				for (ProcessItem j: items) {
 					String goodName = j.getName();
 					if (goodName.equalsIgnoreCase(name)) {
 						goodAmount1Out += j.getAmount();

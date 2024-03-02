@@ -7,8 +7,6 @@
 
 package com.mars_sim.core.manufacture;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.process.ProcessInfo;

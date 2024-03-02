@@ -21,7 +21,7 @@ import javax.swing.JProgressBar;
 
 import com.mars_sim.core.food.FoodProductionProcess;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
-import com.mars_sim.core.food.FoodProductionProcessItem;
+import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -178,8 +178,7 @@ public class FoodProductionPanel extends JPanel {
 		result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;Process : ").append(info.getName())
 				.append("<br>");
 		// 2014-11-19 Changed from getName() to getName()
-		// if (building != null) result.append("&emsp;&emsp;&emsp;&emsp;Building:
-		// ").append(building.getName()).append("<br>");
+
 		result.append("&emsp;&emsp;&emsp;&nbsp;Labor Req : ").append(info.getWorkTimeRequired())
 				.append(" millisols<br>");
 		result.append("&emsp;&emsp;&emsp;&nbsp;&nbsp;Time Req : ").append(info.getProcessTimeRequired())
@@ -190,10 +189,10 @@ public class FoodProductionPanel extends JPanel {
 
 		// Add process inputs.
 		result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;Inputs : ");
-		Iterator<FoodProductionProcessItem> i = info.getInputList().iterator();
+		Iterator<ProcessItem> i = info.getInputList().iterator();
 		int ii = 0;
 		while (i.hasNext()) {
-			FoodProductionProcessItem item = i.next();
+			ProcessItem item = i.next();
 			// 2014-11-19 Capitalized process names
 			if (ii == 0)
 				result.append(getItemAmountString(item)).append(" ").append(item.getName())
@@ -207,10 +206,10 @@ public class FoodProductionPanel extends JPanel {
 
 		// Add process outputs.
 		result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;Outputs : ");
-		Iterator<FoodProductionProcessItem> j = info.getOutputList().iterator();
+		Iterator<ProcessItem> j = info.getOutputList().iterator();
 		int jj = 0;
 		while (j.hasNext()) {
-			FoodProductionProcessItem item = j.next();
+			ProcessItem item = j.next();
 			// 2014-11-19 Capitalized process names
 			if (jj == 0)
 				result.append(getItemAmountString(item)).append(" ").append(item.getName())
@@ -233,7 +232,7 @@ public class FoodProductionPanel extends JPanel {
 	 * @param item the foodProduction process item.
 	 * @return amount string.
 	 */
-	private static String getItemAmountString(FoodProductionProcessItem item) {
+	private static String getItemAmountString(ProcessItem item) {
 		if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 			return item.getAmount() + " kg";
 		} else
