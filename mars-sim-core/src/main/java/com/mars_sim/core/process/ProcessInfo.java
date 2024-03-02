@@ -4,7 +4,6 @@
  * @date 2024-02-25
  * @author Barry Evans
  */
-
 package com.mars_sim.core.process;
 
 import java.io.Serializable;

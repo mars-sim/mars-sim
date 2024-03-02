@@ -12,6 +12,7 @@ import com.mars_sim.core.resource.ItemType;
 
 /**
  * A Process input or output item.
+ * Ideally this shoudl be a simple 'record' but big impact with teh method name change.
  */
 public class ProcessItem implements Serializable {
 

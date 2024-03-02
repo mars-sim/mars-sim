@@ -27,6 +27,7 @@ import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.authority.Authority;
+import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.DustStorm;
@@ -71,6 +72,8 @@ import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.util.SettlementTaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.RadiationExposure;
+import com.mars_sim.core.process.CompletedProcess;
+import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
@@ -334,6 +337,7 @@ public class Settlement extends Structure implements Temporal,
 	private ParameterManager preferences = new ParameterManager();
 	/** A set of nearby mineral locations. */
 	private Set<Coordinates> nearbyMineralLocations = new HashSet<>();
+	private History<CompletedProcess> processHistory = new History<>(40);
 	
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
@@ -2797,6 +2801,22 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
+	 * Record a process completing
+	 * @param name Name of the process
+	 * @param type Type of process
+	 * @param locn When it was compelted
+	 * @param products The outputs produced
+	 */
+    public void recordProcess(ProcessInfo process, String type, Building locn) {
+        var ph = new CompletedProcess(process, type, locn.getName());
+		processHistory.add(ph);
+    }
+	
+	public History<CompletedProcess> getProcessHistory() {
+		return processHistory;
+	}
+	
+	/**
 	 * Records the daily output.
 	 *
 	 * @param resource the resource id of the good
@@ -3802,4 +3822,5 @@ public class Settlement extends Structure implements Temporal,
 		
 		scientificAchievement = null;
 	}
+
 }
