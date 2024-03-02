@@ -63,7 +63,7 @@ public class SalvageProcess implements Serializable {
         workTimeRemaining -= workTime;
         
         // Add skill for work time for average skill level.
-        averageSkillLevel += workTime / info.getWorkTimeRequired() * (double) skill;
+        averageSkillLevel += workTime / info.getWorkTimeRequired() * skill;
     }
     
     @Override
@@ -101,7 +101,6 @@ public class SalvageProcess implements Serializable {
      */
     public void destroy() {
         workshop = null;
-        info.destroy();
         info = null;
         salvagedUnit = null;
     }

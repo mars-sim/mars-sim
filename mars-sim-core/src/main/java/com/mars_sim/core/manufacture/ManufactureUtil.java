@@ -63,7 +63,9 @@ public final class ManufactureUtil {
 	
 	
 	/** constructor. */
-	public ManufactureUtil() {}
+	public ManufactureUtil() {
+		// Static helper class
+	}
 
 	/**
 	 * Gets all manufacturing processes.
@@ -216,12 +218,12 @@ public final class ManufactureUtil {
 			}
 
 			// Determine salvaged good value.
-			double salvagedGoodValue = 0D;
+			double salvagedGoodValue;
 			Good salvagedGood = null;
-			if (salvagedUnit instanceof Equipment) {
-				salvagedGood = GoodsUtil.getEquipmentGood(((Equipment) salvagedUnit).getEquipmentType());
-			} else if (salvagedUnit instanceof Vehicle) {
-				salvagedGood = GoodsUtil.getVehicleGood(salvagedUnit.getDescription());
+			if (salvagedUnit instanceof Equipment e) {
+				salvagedGood = GoodsUtil.getEquipmentGood(e.getEquipmentType());
+			} else if (salvagedUnit instanceof Vehicle v) {
+				salvagedGood = GoodsUtil.getVehicleGood(v.getVehicleType());
 			}
 
 			if (salvagedGood != null)
@@ -233,17 +235,15 @@ public final class ManufactureUtil {
 
 			// Determine total estimated parts salvaged good value.
 			double totalPartsGoodValue = 0D;
-			Iterator<PartSalvage> i = process.getPartSalvageList().iterator();
-			while (i.hasNext()) {
-				PartSalvage partSalvage = i.next();
+			for(var partSalvage : process.getOutputList()) {
 				Good partGood = GoodsUtil.getGood(ItemResourceUtil.findItemResource(partSalvage.getName()).getID());
-				double partValue = goodsManager.getGoodValuePoint(partGood.getID()) * partSalvage.getNumber();
+				double partValue = goodsManager.getGoodValuePoint(partGood.getID()) * partSalvage.getAmount();
 				totalPartsGoodValue += partValue;
 			}
 
 			// Modify total parts good value by item wear and salvager skill.
 			int skill = salvager.getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-			double valueModifier = .25D + (wearConditionModifier * .25D) + ((double) skill * .05D);
+			double valueModifier = .25D + (wearConditionModifier * .25D) + (skill * .05D);
 			totalPartsGoodValue *= valueModifier;
 
 			// Determine process value.
@@ -264,7 +264,7 @@ public final class ManufactureUtil {
 	 */
 	public static double getManufactureProcessItemValue(ProcessItem item, Settlement settlement,
 			boolean isOutput) {
-		double result = 0D;
+		double result;
 
 		GoodsManager manager = settlement.getGoodsManager();
 
@@ -414,7 +414,6 @@ public final class ManufactureUtil {
 
 		for(var item : process.getOutputList()) {
 			if (ItemType.AMOUNT_RESOURCE == item.getType()) {
-				// TODO: is there a way to reduce excessive calling of getAmountResourceRemainingCapacity ?
 				double capacity = settlement.getAmountResourceRemainingCapacity(ResourceUtil.findIDbyAmountResourceName(item.getName()));
 				if (item.getAmount() > capacity)
 					return false;
@@ -443,8 +442,6 @@ public final class ManufactureUtil {
 					return false;
 			}
 			
-			// else if (ItemType.VEHICLE == item.getType()) // Vehicles are stored outside a settlement.
-
 			else
 				logger.severe(settlement, "ManufactureUtil.addProcess(): output: " +
 					item.getType() + " not a valid type.");
@@ -497,7 +494,7 @@ public final class ManufactureUtil {
 		Unit result = null;
 		Collection<? extends Unit> salvagableUnits = new ArrayList<>();
 
-		if (info.getType().equalsIgnoreCase("vehicle")) {
+		if (info.getType() == ItemType.VEHICLE) {
 			if (LightUtilityVehicle.NAME.equalsIgnoreCase(info.getItemName())) {
 				salvagableUnits = settlement.getVehicleTypeList(VehicleType.LUV);
 			} else {
@@ -515,7 +512,7 @@ public final class ManufactureUtil {
 			}
 		} 
 		
-		else if (info.getType().equalsIgnoreCase("equipment")) {
+		else if (info.getType() == ItemType.EQUIPMENT) {
 			EquipmentType eType = EquipmentType.convertName2Enum(info.getItemName());
 			salvagableUnits = settlement.getContainerSet(eType);
 		} 
@@ -528,7 +525,7 @@ public final class ManufactureUtil {
 		}
 
 		// If malfunctionable, find most worn unit.
-		if (salvagableUnits.size() > 0) {
+		if (!salvagableUnits.isEmpty()) {
 			Unit firstUnit = (Unit) salvagableUnits.toArray()[0];
 			if (firstUnit instanceof Malfunctionable) {
 				Unit mostWorn = null;

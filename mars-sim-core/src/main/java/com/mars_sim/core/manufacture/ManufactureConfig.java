@@ -10,7 +10,6 @@ package com.mars_sim.core.manufacture;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +18,7 @@ import org.jdom2.Element;
 
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.process.ProcessItem;
+import com.mars_sim.core.process.ProcessItemFactory;
 import com.mars_sim.core.resource.ItemType;
 
 public class ManufactureConfig {
@@ -36,7 +36,6 @@ public class ManufactureConfig {
 	private static final String OUTPUTS = "outputs";
 	private static final String RESOURCE = "resource";
 	private static final String PART = "part";
-	private static final String NUMBER = "number";
 	private static final String EQUIPMENT = "equipment";
 	private static final String BIN = "bin";
 	private static final String VEHICLE = "vehicle";
@@ -179,36 +178,20 @@ public class ManufactureConfig {
 		List<Element> salvageNodes = root.getChildren(SALVAGE);
 		List<SalvageProcessInfo> newList = new ArrayList<>();
 		
-		Iterator<Element> i = salvageNodes.iterator();
-		while (i.hasNext()) {
-			Element salvageElement = i.next();
-			SalvageProcessInfo salvage = new SalvageProcessInfo();
-			String itemName = "";
-			itemName = salvageElement.getAttributeValue(ITEM_NAME);
-			
-			salvage.setItemName(itemName);
-			salvage.setType(salvageElement.getAttributeValue(TYPE));
-			salvage.setTechLevelRequired(ConfigHelper.getAttributeInt(salvageElement, TECH));
-			salvage.setSkillLevelRequired(ConfigHelper.getAttributeInt(salvageElement, SKILL));
-			salvage.setWorkTimeRequired(ConfigHelper.getAttributeDouble(salvageElement, WORK_TIME));
+		for(var salvageElement : salvageNodes) {
+			String itemName = salvageElement.getAttributeValue(ITEM_NAME);
+			ItemType itemT = ItemType.valueOf(ConfigHelper.convertToEnumName(
+									salvageElement.getAttributeValue(TYPE)));
+			ProcessItem salvaged = ProcessItemFactory.createByName(itemName, itemT, 1);
+
+			int techLevel = ConfigHelper.getAttributeInt(salvageElement, TECH);
+			int skill = ConfigHelper.getAttributeInt(salvageElement, SKILL);
+			double workTime = ConfigHelper.getAttributeDouble(salvageElement, WORK_TIME);
 
 			List<Element> partSalvageNodes = salvageElement.getChildren(PART_SALVAGE);
-			List<PartSalvage> partSalvageList = new ArrayList<>();
-			salvage.setPartSalvageList(partSalvageList);
+			var outputs = ConfigHelper.parseProcessItems(ItemType.PART, partSalvageNodes);
 
-			Iterator<Element> j = partSalvageNodes.iterator();
-			while (j.hasNext()) {
-				Element partSalvageElement = j.next();
-				PartSalvage part = new PartSalvage();
-				
-				partSalvageList.add(part);
-
-				part.setName(partSalvageElement.getAttributeValue(NAME));
-				part.setNumber(Integer.parseInt(partSalvageElement.getAttributeValue(NUMBER)));
-			}
-
-			// Add salvage to newList.
-			newList.add(salvage);
+			newList.add(new SalvageProcessInfo(salvaged, null, techLevel, skill, workTime, outputs));
 		}
 
 		// Assign the newList now built

@@ -27,7 +27,6 @@ import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureUtil;
-import com.mars_sim.core.manufacture.PartSalvage;
 import com.mars_sim.core.manufacture.Salvagable;
 import com.mars_sim.core.manufacture.SalvageProcess;
 import com.mars_sim.core.person.Person;
@@ -643,15 +642,12 @@ public class Manufacture extends Function {
 			salvageChance += process.getAverageSkillLevel() * 5D;
 
 			// Salvage parts.
-			List<PartSalvage> partsToSalvage = process.getInfo().getPartSalvageList();
-			Iterator<PartSalvage> i = partsToSalvage.iterator();
-			while (i.hasNext()) {
-				PartSalvage partSalvage = i.next();
+			for(var partSalvage : process.getInfo().getOutputList()) {
 				Part part = (Part) ItemResourceUtil.findItemResource(partSalvage.getName());
 				int id = part.getID();
 
 				int totalNumber = 0;
-				for (int x = 0; x < partSalvage.getNumber(); x++) {
+				for (int x = 0; x < (int)partSalvage.getAmount(); x++) {
 					if (RandomUtil.lessThanRandPercent(salvageChance))
 						totalNumber++;
 				}
@@ -666,13 +662,15 @@ public class Manufacture extends Function {
 
 					Good good = GoodsUtil.getGood(part.getName());
 					if (good == null) {
-						logger.severe(part.getName() + " is not a good.");
+						logger.severe(getBuilding(), part.getName() + " is not a good.");
 					}
 					else
 						// Recalculate settlement good value for salvaged part.
 						settlement.getGoodsManager().determineGoodValue(good);
 				}
 			}
+
+			settlement.recordProcess(process.getInfo(), "Salvage", building);
 		}
 
 		// Finish the salvage.
