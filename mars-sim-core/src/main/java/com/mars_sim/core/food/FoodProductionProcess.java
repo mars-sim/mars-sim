@@ -130,7 +130,6 @@ public class FoodProductionProcess implements Serializable {
 	 */
 	public void destroy() {
 		kitchen = null;
-		info.destroy();
 		info = null;
 	}
 }

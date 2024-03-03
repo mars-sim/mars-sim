@@ -31,6 +31,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.ColumnSpec;
 import com.mars_sim.ui.swing.utils.JHistoryPanel;
 
 /**
@@ -253,14 +254,14 @@ public class TabPanelSchedule extends TabPanel {
 	 * Internal class used as model for the attribute table.
 	 */
 	private class ActivityPanel extends JHistoryPanel<OneActivity> {
-		private final static String[] NAMES = {Msg.getString("TabPanelSchedule.column.description"),
-		 										Msg.getString("TabPanelSchedule.column.phase"),
-												Msg.getString("TabPanelSchedule.column.missionName")};
-		private final static Class<?>[] TYPES = {String.class, String.class, String.class};
-
+		private static final ColumnSpec[] COLUMNS = {
+								new ColumnSpec(Msg.getString("TabPanelSchedule.column.description"), String.class),
+								new ColumnSpec(Msg.getString("TabPanelSchedule.column.phase"), String.class),
+								new ColumnSpec(Msg.getString("TabPanelSchedule.column.missionName"), String.class)
+										};
 
 		ActivityPanel(History<OneActivity> source) {
-			super(source, NAMES, TYPES);
+			super(source, COLUMNS);
 		}
 
 		@Override

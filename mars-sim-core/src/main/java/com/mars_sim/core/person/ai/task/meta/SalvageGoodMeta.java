@@ -52,7 +52,7 @@ public class SalvageGoodMeta extends FactoryMetaTask {
         // salvage processes can be created.
         if (!person.isInSettlement()
             || !person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
-            || !person.getSettlement().getProcessOverride(OverrideType.SALVAGE)) {
+            || person.getSettlement().getProcessOverride(OverrideType.SALVAGE)) {
                 return EMPTY_TASKLIST;
         }
         

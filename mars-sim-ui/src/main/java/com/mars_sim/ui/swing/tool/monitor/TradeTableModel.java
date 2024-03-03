@@ -23,6 +23,7 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.tools.Msg;
+import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 
 public class TradeTableModel extends CategoryTableModel<Good> {

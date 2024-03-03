@@ -68,8 +68,7 @@ public class SettlementUnitWindow extends UnitWindow {
 		// Use UnitWindow constructor
 		super(desktop, unit, unit.getName(), false);
 
-		Settlement settlement = (Settlement) unit;
-		this.settlement = settlement;
+		this.settlement = (Settlement) unit;
 
 		// Create status panel
 		statusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
@@ -108,8 +107,8 @@ public class SettlementUnitWindow extends UnitWindow {
 		nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		nameLabel.setAlignmentY(Component.TOP_ALIGNMENT);
 		nameLabel.setFont(font);
-		nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
-		nameLabel.setHorizontalTextPosition(JLabel.CENTER);
+		nameLabel.setVerticalTextPosition(SwingConstants.BOTTOM);
+		nameLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 
 		statusPanel.add(namePane, BorderLayout.WEST);
 		
@@ -182,17 +181,6 @@ public class SettlementUnitWindow extends UnitWindow {
 		countryLabel.setText(TWO_SPACES + countryName + SIX_SPACES);
 		templateLabel.setText(TWO_SPACES + settlement.getTemplate() + SIX_SPACES);
 		
-//		// Add space agency label and logo
-//		JLabel agencyLabel = getAgencyLabel();
-//		
-//		JPanel agencyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-//		agencyPanel.setSize(new Dimension(-1, UnitWindow.STATUS_HEIGHT - 5));
-//		agencyPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-//		agencyPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
-//		agencyPanel.add(agencyLabel);
-//
-//		statusPanel.add(agencyPanel, BorderLayout.EAST);
-		
 	}
 	
 		
@@ -237,6 +225,7 @@ public class SettlementUnitWindow extends UnitWindow {
 		addTabPanel(new TabPanelOrganization(settlement, desktop));
 
 		addTabPanel(new TabPanelPowerGrid(settlement, desktop));
+		addTabPanel(new TabPanelProcess(settlement, desktop));
 
 		addTabPanel(new TabPanelResourceProcesses(settlement, desktop));
 
@@ -282,6 +271,7 @@ public class SettlementUnitWindow extends UnitWindow {
 	/**
 	 * Prepares unit window for deletion.
 	 */
+	@Override
 	public void destroy() {		
 		popLabel = null;
 		vehLabel = null;

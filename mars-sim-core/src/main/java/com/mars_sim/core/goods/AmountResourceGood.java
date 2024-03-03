@@ -16,14 +16,13 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.food.FoodProductionProcess;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
-import com.mars_sim.core.food.FoodProductionProcessItem;
 import com.mars_sim.core.food.FoodProductionUtil;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
-import com.mars_sim.core.manufacture.ManufactureProcessItem;
 import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -61,7 +60,6 @@ class AmountResourceGood extends Good {
 	private static final String NACO3 = "Sodium Carbonate";
 	private static final String IRON_POWDER = "Iron Powder";
 	
-	// TODO, move these to the AmountResource class via XML config
 	private static final double INITIAL_AMOUNT_DEMAND = 0;
 	private static final double INITIAL_AMOUNT_SUPPLY = 0;
 
@@ -175,7 +173,6 @@ class AmountResourceGood extends Good {
 	
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .1;
-	private static final double RESOURCE_PROCESSING_INPUT_FACTOR = .5;
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 1000D;
 	private static final double CONSTRUCTING_INPUT_FACTOR = 2D;
 
@@ -281,9 +278,6 @@ class AmountResourceGood extends Good {
             result += ELEMENT_COST;
         else if (type == GoodType.CHEMICAL)
             result += CHEMICAL_COST;
-//        else
-//            result += STANDARD_AMOUNT_VALUE ;
-  
         else if (ar.getID() == ResourceUtil.methaneID)
             result += CH4_COST;
         else if (ar.getID() == ResourceUtil.methanolID)
@@ -318,7 +312,7 @@ class AmountResourceGood extends Good {
 		for(Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.FOOD_PRODUCTION)) {
 			// Go through each ongoing food production process.
 			for(FoodProductionProcess process : b.getFoodProduction().getProcesses()) {
-				for(FoodProductionProcessItem item : process.getInfo().getOutputList()) {
+				for(ProcessItem item : process.getInfo().getOutputList()) {
 					if (item.getName().equalsIgnoreCase(getName())) {
 						result += item.getAmount();
 					}
@@ -746,8 +740,8 @@ class AmountResourceGood extends Good {
 		double demand = 0D;
 		String r = getAmountResource().getName().toLowerCase();
 
-		ManufactureProcessItem resourceInput = null;
-		for(ManufactureProcessItem item : process.getInputList()) {
+		ProcessItem resourceInput = null;
+		for(var item : process.getInputList()) {
 			if ((ItemType.AMOUNT_RESOURCE == item.getType()) && r.equals(item.getName())) {
 				resourceInput = item;
 				break;
@@ -756,12 +750,12 @@ class AmountResourceGood extends Good {
 
 		if (resourceInput != null) {
 			double outputsValue = 0D;
-			for(ManufactureProcessItem j : process.getOutputList()) {
+			for(var j : process.getOutputList()) {
 				outputsValue += ManufactureUtil.getManufactureProcessItemValue(j, settlement, true);
 			}
 
 			double totalItems = 0D;
-			for(ManufactureProcessItem k : process.getInputList()) {
+			for(var k : process.getInputList()) {
 				totalItems += k.getAmount();
 			}
 
@@ -846,8 +840,8 @@ class AmountResourceGood extends Good {
 		double demand = 0D;
 		String name = getAmountResource().getName();
 
-		FoodProductionProcessItem resourceInput = null;
-		for(FoodProductionProcessItem i : process.getInputList()) {
+		ProcessItem resourceInput = null;
+		for(ProcessItem i : process.getInputList()) {
 			if ((ItemType.AMOUNT_RESOURCE == i.getType())
 					&& name.equalsIgnoreCase(i.getName())) {
 				resourceInput = i;
@@ -857,12 +851,12 @@ class AmountResourceGood extends Good {
 
 		if (resourceInput != null) {
 			double outputsValue = 0D;
-			for(FoodProductionProcessItem j : process.getOutputList()) {
-				outputsValue += FoodProductionUtil.getFoodProductionProcessItemValue(j, settlement, true);
+			for(ProcessItem j : process.getOutputList()) {
+				outputsValue += FoodProductionUtil.getProcessItemValue(j, settlement, true);
 			}
 
 			double totalItems = 0D;
-			for(FoodProductionProcessItem k : process.getInputList()) {
+			for(ProcessItem k : process.getInputList()) {
 				totalItems += k.getAmount();
 			}
 

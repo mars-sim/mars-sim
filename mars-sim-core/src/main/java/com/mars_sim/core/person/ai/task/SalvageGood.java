@@ -133,7 +133,7 @@ public class SalvageGood extends Task {
 			workTime /= 2;
 		}
 		else {
-			workTime += workTime * (.2D * (double) skill);
+			workTime += workTime * (.2D * skill);
 		}
 
 		// Apply work time to salvage process.
@@ -235,7 +235,7 @@ public class SalvageGood extends Task {
 		}
 
 		// If no building with processes requiring work, return original list.
-		if (result.size() == 0) {
+		if (result.isEmpty()) {
 			result = buildingList;
 		}
 
@@ -350,7 +350,7 @@ public class SalvageGood extends Task {
 		Iterator<SalvageProcess> i = manufactureBuilding.getSalvageProcesses().iterator();
 		while (i.hasNext()) {
 			SalvageProcess process = i.next();
-			if (process.getInfo().getItemName().equals(processInfo.getItemName())) {
+			if (process.getInfo().equals(processInfo)) {
 				result = true;
 			}
 		}
@@ -369,10 +369,10 @@ public class SalvageGood extends Task {
 
 		Iterator<SalvageProcess> i = workshop.getSalvageProcesses().iterator();
 		while (i.hasNext() && (result == null)) {
-			SalvageProcess process = i.next();
-			if ((process.getInfo().getSkillLevelRequired() <= skillLevel) &&
-					(process.getWorkTimeRemaining() > 0D)) {
-				result = process;
+			SalvageProcess p = i.next();
+			if ((p.getInfo().getSkillLevelRequired() <= skillLevel) &&
+					(p.getWorkTimeRemaining() > 0D)) {
+				result = p;
 			}
 		}
 
@@ -426,10 +426,10 @@ public class SalvageGood extends Task {
 	 * @return salvage process or null if none determined.
 	 */
 	private SalvageProcess determineSalvageProcess() {
-		SalvageProcess process = getRunningSalvageProcess();
-		if (process == null) {
-			process = createNewSalvageProcess();
+		SalvageProcess p = getRunningSalvageProcess();
+		if (p == null) {
+			p = createNewSalvageProcess();
 		}
-		return process;
+		return p;
 	}
 }

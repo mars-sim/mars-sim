@@ -11,13 +11,12 @@
 	<!ELEMENT description (#PCDATA)>
 	<!ELEMENT inputs (part*, resource*)>
 	<!ELEMENT outputs (part*, resource*, equipment*)>
-	<!ELEMENT resource EMPTY>
+	<!ELEMENT resource (alternative*)>
 	<!ATTLIST resource name CDATA #REQUIRED>
-	<!ATTLIST resource name1 CDATA #IMPLIED>
-	<!ATTLIST resource name2 CDATA #IMPLIED>
-	<!ATTLIST resource name3 CDATA #IMPLIED>	
-	<!ATTLIST resource name4 CDATA #IMPLIED>	
 	<!ATTLIST resource amount CDATA #REQUIRED>
+	<!ELEMENT alternative EMPTY>
+	<!ATTLIST alternative name CDATA #REQUIRED>
+	<!ATTLIST alternative amount CDATA #REQUIRED>
 	<!ELEMENT part EMPTY>
 	<!ATTLIST part name CDATA #REQUIRED>
 	<!ATTLIST part number CDATA #REQUIRED>
@@ -45,8 +44,12 @@
 		<inputs>
 			<!-- amount - The amount of the resource in kilograms. -->
 			<part name="refrigerator" number="1" />
-			<resource name="Cabbage" name1="Carrot" name2="Leaves" name3="Swiss Chard" name4="Potato" 
-			amount="3.0" />
+			<resource name="Cabbage" amount="3.0">
+				<alternative name="Carrot" amount="5.0" />		
+				<alternative name="Leaves" amount="8.0" />
+				<alternative name="Swiss Chard" amount="3.0" />
+				<alternative name="Potato" amount="3.0" />
+			</resource>
 		</inputs>
 
 		<!-- List of outputs from the process (parts, resources, equipment). -->
@@ -80,9 +83,16 @@
 			power-required="0.1">
 		<description>Make granola bar using puffed quinoa/rice/wheat, honey/sugarcane, nuts and dried fruits.</description>
 		<inputs>
-			<resource name="Quinoa" name1="Rice" name2="Wheat" amount="4.0" />
-			<resource name="Strawberry" name1="Blueberry" amount="0.5" />
-			<resource name="Honey" name1="Sugarcane Juice" amount="0.5" />
+			<resource name="Quinoa" amount="4.0">
+				<alternative name="Rice" amount="4.0" />
+				<alternative name="Wheat" amount="4.0" />
+			</resource>
+			<resource name="Strawberry" amount="0.5">
+				<alternative name="Blueberry" amount="0.5" />
+			</resource>
+			<resource name="Honey"  amount="0.5">
+				<alternative name="Sugarcane Juice" amount="0.5" />
+			</resource>
 			<resource name="Peanut" amount="1.0" />
 		</inputs>
 		<outputs>
@@ -97,10 +107,17 @@
 			power-required="0.1">
 		<description>Make protein bars using puffed quinoa/rice/wheat, honey/sugarcane juice, nuts and dried fruits.</description>
 		<inputs>
-			<resource name="Quinoa" name1="Rice" name2="Wheat" amount="2.0" />
+			<resource name="Quinoa" amount="2.0">
+				<alternative name="Rice" amount="2.0" />
+				<alternative name="Wheat" amount="2.0" />
+			</resource>
 			<resource name="Okara" amount="2.0" />
-			<resource name="Strawberry" name1="Blueberry" amount="0.5" />
-			<resource name="Honey" name1="Sugarcane Juice" amount="0.5" />
+			<resource name="Strawberry" amount="0.5">
+				<alternative name="Blueberry" amount="0.5" />
+			</resource>
+			<resource name="Honey" amount="0.5">
+				<alternative name="Sugarcane Juice" amount="0.5" />
+			</resource>
 			<resource name="Peanut" amount="1.0" />
 		</inputs>
 		<outputs>
@@ -116,7 +133,10 @@
 		<description>Cut potatoes and make French Fries.</description>
 		<inputs>
 			<resource name="Potato" amount="10.0" />
-			<resource name="Peanut Oil" name1="Soybean Oil" amount="1.0" />
+			<resource name="Peanut Oil" amount="1.0">
+				<alternative name="Soybean Oil" amount="1.0" />
+			</resource>
+
 		</inputs>
 		<outputs>
 			<resource name="French Fries" amount="10.0" />
@@ -262,29 +282,6 @@
 		</outputs>
 	</process>
 	
-	<process name="Make Peanut Butter from Peanuts"
-		tech="1" skill="0" work-time="50" process-time="50"
-			power-required="0.2">
-
-		<description>Ground peanuts, mix with oil, pour the mixture into food processor.
-		Blend until smooth.</description>
-
-		<inputs>
-			<part name="blender" number="1" />
-			<!--
-			TODO: add cocoa powder, cinnamon or other spice
-			/>-->
-			<resource name="Peanut" amount="3.0" />
-			<resource name="Peanut Oil" amount="0.5" />
-			<resource name="table salt" amount="0.1" />
-			<resource name="Soy Protein" amount="0.1" />
-		</inputs>
-		<outputs>
-			<part name="blender" number="1" />
-			<resource name="Peanut Butter" amount="3.5" />
-		</outputs>
-	</process>
-
 	<process name="Bake White Bread from Soy Flour"
 		tech="1" skill="1" work-time="50" process-time="200"
 			power-required="1.0">
@@ -958,7 +955,6 @@
 		<description> Mix flour with water and knead to form dough. Heat paste into flat sheet.
 		 cut sheet into different thickness.  </description>
 		<inputs>
-			<!-- <equipment name="pasta machine" number="1" /> -->
 			<resource name="Wheat Flour" amount="1.0" />
 			<resource name="Water" amount="1" />
 			<resource name="Baking Powder" amount="0.02" />
@@ -976,7 +972,6 @@
 		<description> Mix flour with water and knead to form dough. Heat paste into flat sheet.
 		 cut sheet into different thickness.</description>
 		<inputs>
-			<!-- <equipment name="pasta machine" number="1" /> -->
 			<resource name="Rice Flour" amount="1.0" />
 			<resource name="Water" amount="1" />
 			<resource name="Baking Powder" amount="0.02" />
@@ -1128,7 +1123,9 @@
 			power-required="0.5">
 		<description>Fiber cloth Weaving </description>
 		<inputs>
-			<resource name="Cane Fiber" name1="Soy Fiber" amount="2" />
+			<resource name="Cane Fiber" amount="2">
+				<alternative name="Soy Fiber" amount="2" />
+			</resource>
 		</inputs>
 		<outputs>
 			<resource name="Fiber Cloth" amount="2" />

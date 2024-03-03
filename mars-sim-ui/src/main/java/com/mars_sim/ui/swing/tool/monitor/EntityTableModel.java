@@ -16,6 +16,8 @@ import java.util.Set;
 
 import javax.swing.SwingUtilities;
 
+import com.mars_sim.ui.swing.utils.ColumnSpec;
+
 /**
  * This provides a table model implementation that allows each row to be mapped to
  * a single SImualtion entity. The properties of the entity are mapped into columns

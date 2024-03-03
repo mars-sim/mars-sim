@@ -4,7 +4,6 @@
  * @date 2023-07-09
  * @author Manny Kung
  */
-
 package com.mars_sim.core.tool;
 
 import java.util.Arrays;
@@ -84,7 +83,7 @@ public class MathUtils {
 		return vector;
 	}
 	
-	public static void sortStringBubble(String x[]){
+	public static void sortStringBubble(String[] x){
 		int j;
 		boolean flag = true;  // will determine when the sort is finished
 		String temp;
@@ -102,5 +101,23 @@ public class MathUtils {
 				} 
 			} 
 		} 
+    }
+
+	/**
+	 * Adjust a value so it is between a low & high value
+	 * @param value
+	 * @param low
+	 * @param high
+	 * @return
+	 */
+    public static double between(double value, double low, double high) {
+		if (value < low) {
+			value = low;
+		}
+
+		if (value > high) {
+			value = high;
+		}
+		return value;
     } 
 }

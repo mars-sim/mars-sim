@@ -6,11 +6,10 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
-import java.io.Serializable;
-
 import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.tools.Msg;
+import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 /**
  * Default implementation of the MonitorModel
@@ -18,11 +17,6 @@ import com.mars_sim.tools.Msg;
 @SuppressWarnings("serial")
 public abstract class AbstractMonitorModel extends AbstractTableModel
         implements MonitorModel {
-
-    /**
-     * Helper class to define the specification of a column.
-     */
-    protected record ColumnSpec (String name, Class<?> type) implements Serializable {}
 
     private String name;
     private String countingMsgKey;
@@ -73,7 +67,7 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		if ((columnIndex >= 0) && (columnIndex < columns.length)) {
-			return columns[columnIndex].type;
+			return columns[columnIndex].type();
 		}
 		return Object.class;
 	}
@@ -87,7 +81,7 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
 	@Override
 	public String getColumnName(int columnIndex) {
 		if ((columnIndex >= 0) && (columnIndex < columns.length)) {
-			return columns[columnIndex].name;
+			return columns[columnIndex].name();
 		}
 		return "Unknown";
 	}

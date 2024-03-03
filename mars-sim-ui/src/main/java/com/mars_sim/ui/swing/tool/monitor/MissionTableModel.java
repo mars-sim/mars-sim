@@ -30,6 +30,7 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
+import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 /**
  * This class model how mission data is organized and displayed

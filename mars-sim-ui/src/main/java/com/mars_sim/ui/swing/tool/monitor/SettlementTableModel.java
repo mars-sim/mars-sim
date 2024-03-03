@@ -21,6 +21,7 @@ import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 /**
  * The SettlementTableModel that maintains a list of Settlement objects. It maps

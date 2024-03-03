@@ -15,6 +15,7 @@ import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.tools.Msg;
+import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 /**
  * This class model how food data is organized and displayed

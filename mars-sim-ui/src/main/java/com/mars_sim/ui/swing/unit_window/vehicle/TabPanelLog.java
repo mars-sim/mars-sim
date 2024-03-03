@@ -23,6 +23,7 @@ import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.ColumnSpec;
 import com.mars_sim.ui.swing.utils.JHistoryPanel;
 
 
@@ -90,12 +91,10 @@ public class TabPanelLog extends TabPanel {
 	 * Internal class used as model for the attribute table.
 	 */
 	private class LogPanel extends JHistoryPanel<Set<StatusType>> {
-		private final static String[] NAMES = {"Status"};
-		private final static Class<?>[] TYPES = {String.class};
-
+		private static final ColumnSpec[] COLUMNS = {new ColumnSpec("Status", String.class)};
 
 		LogPanel(History<Set<StatusType>> source) {
-			super(source, NAMES, TYPES);
+			super(source, COLUMNS);
 		}
 
 		@Override

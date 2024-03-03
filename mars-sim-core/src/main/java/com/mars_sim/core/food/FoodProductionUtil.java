@@ -10,6 +10,7 @@ package com.mars_sim.core.food;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,7 @@ import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
@@ -62,8 +64,8 @@ public final class FoodProductionUtil {
 	 *
 	 * @return {@link TreeMap}<{@link String},{@link FoodProductionProcessInfo}>
 	 */
-	public static TreeMap<String, FoodProductionProcessInfo> getAllFoodProductionProcessesMap() {
-		TreeMap<String, FoodProductionProcessInfo> map = new TreeMap<>();
+	public static SortedMap<String, FoodProductionProcessInfo> getAllFoodProductionProcessesMap() {
+		SortedMap<String, FoodProductionProcessInfo> map = new TreeMap<>();
 		for (FoodProductionProcessInfo item : getAllFoodProductionProcesses()) {
 			map.put(item.getName(), item);
 		}
@@ -87,7 +89,7 @@ public final class FoodProductionUtil {
 	 * Gets food production processes with given output.
 	 *
 	 * @param item {@link String} name of desired output
-	 * @return {@link List}<{@link FoodProductionProcessItem}> list of processes
+	 * @return {@link List}<{@link ProcessItem}> list of processes
 	 */
 	public static List<FoodProductionProcessInfo> getFoodProductionProcessesWithGivenOutput(String name) {
 		List<FoodProductionProcessInfo> result = new ArrayList<>();
@@ -106,7 +108,7 @@ public final class FoodProductionUtil {
 	 * Gets food production processes with given input.
 	 *
 	 * @param name {@link String} desired input
-	 * @return {@link List}<{@link FoodProductionProcessItem}> list of processes
+	 * @return {@link List}<{@link ProcessItem}> list of processes
 	 */
 	public static List<FoodProductionProcessInfo> getFoodProductionProcessesWithGivenInput(String name) {
 		List<FoodProductionProcessInfo> result = new ArrayList<>();
@@ -148,14 +150,14 @@ public final class FoodProductionUtil {
 	public static double getFoodProductionProcessValue(FoodProductionProcessInfo process, Settlement settlement) {
 
 		double inputsValue = 0D;
-		Iterator<FoodProductionProcessItem> i = process.getInputList().iterator();
+		Iterator<ProcessItem> i = process.getInputList().iterator();
 		while (i.hasNext())
-			inputsValue += getFoodProductionProcessItemValue(i.next(), settlement, false);
+			inputsValue += getProcessItemValue(i.next(), settlement, false);
 
 		double outputsValue = 0D;
-		Iterator<FoodProductionProcessItem> j = process.getOutputList().iterator();
+		Iterator<ProcessItem> j = process.getOutputList().iterator();
 		while (j.hasNext())
-			outputsValue += getFoodProductionProcessItemValue(j.next(), settlement, true);
+			outputsValue += getProcessItemValue(j.next(), settlement, true);
 
 		// Subtract power value.
 		double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsTime.HOURS_PER_MILLISOL;
@@ -173,9 +175,9 @@ public final class FoodProductionUtil {
 	 * @return good value.
 	 * @throws Exception if error getting good value.
 	 */
-	public static double getFoodProductionProcessItemValue(FoodProductionProcessItem item, Settlement settlement,
+	public static double getProcessItemValue(ProcessItem item, Settlement settlement,
 			boolean isOutput) {
-		double result = 0D;
+		double result;
 
 		GoodsManager manager = settlement.getGoodsManager();
 
@@ -233,7 +235,7 @@ public final class FoodProductionUtil {
 		}
 
 		// Check to see if room for process output items at settlement.
-		if (!canProcessOutputsBeStored(process, settlement)) {
+		else if (!canProcessOutputsBeStored(process, settlement)) {
 			return false;
 		}
 
@@ -251,9 +253,9 @@ public final class FoodProductionUtil {
 	private static boolean areProcessInputsAvailable(FoodProductionProcessInfo process, Settlement settlement) {
 		boolean result = true;
 
-		Iterator<FoodProductionProcessItem> i = process.getInputList().iterator();
+		Iterator<ProcessItem> i = process.getInputList().iterator();
 		while (result && i.hasNext()) {
-			FoodProductionProcessItem item = i.next();
+			ProcessItem item = i.next();
 			if (ItemType.AMOUNT_RESOURCE == item.getType()) {
 				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 				result = (settlement.getAmountResourceStored(id) >= item.getAmount());
@@ -278,9 +280,9 @@ public final class FoodProductionUtil {
      */
 	private static final boolean canProcessOutputsBeStored(FoodProductionProcessInfo process, Settlement settlement) {
 
-		Iterator<FoodProductionProcessItem> j = process.getOutputList().iterator();
+		Iterator<ProcessItem> j = process.getOutputList().iterator();
 		while (j.hasNext()) {
-			FoodProductionProcessItem item = j.next();
+			ProcessItem item = j.next();
 			if (ItemType.AMOUNT_RESOURCE == item.getType()) {
 				double capacity = settlement.getAmountResourceRemainingCapacity(ResourceUtil.findIDbyAmountResourceName(item.getName()));
 				if (item.getAmount() > capacity)
@@ -355,7 +357,7 @@ public final class FoodProductionUtil {
 	 * @return good
 	 * @throws Exception if error determining good.
 	 */
-	public static Good getGood(FoodProductionProcessItem item) {
+	public static Good getGood(ProcessItem item) {
 		Good result = null;
 		if (ItemType.AMOUNT_RESOURCE == item.getType()) {
 			result = GoodsUtil.getGood(ResourceUtil.findAmountResource(item.getName()).getID());
@@ -377,7 +379,7 @@ public final class FoodProductionUtil {
 	 * @return mass (kg).
 	 * @throws Exception if error determining the mass.
 	 */
-	public static double getMass(FoodProductionProcessItem item) {
+	public static double getMass(ProcessItem item) {
 		double mass = 0D;
 
 		if (ItemType.AMOUNT_RESOURCE == item.getType()) {

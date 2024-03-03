@@ -6,7 +6,6 @@
  */
 package com.mars_sim.ui.swing.unit_window.structure;
 
-import com.mars_sim.core.manufacture.PartSalvage;
 import com.mars_sim.core.manufacture.SalvageProcess;
 import com.mars_sim.core.manufacture.SalvageProcessInfo;
 import com.mars_sim.core.structure.building.Building;
@@ -15,9 +14,6 @@ import com.mars_sim.ui.swing.MarsPanelBorder;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Iterator;
 
 /**
  * A panel displaying information about a salvage process.
@@ -56,14 +52,8 @@ public class SalvagePanel extends JPanel {
         // Prepare cancel button.
         JButton cancelButton = new JButton(ImageLoader.getIconByName("action/cancel"));
         cancelButton.setMargin(new Insets(0, 0, 0, 0));
-        cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-//                try {
-                    getSalvageProcess().getWorkshop().endSalvageProcess(getSalvageProcess(), true);
-//                }
-//                catch (BuildingException e) {}
-            }
-        });
+        cancelButton.addActionListener(event ->
+                        getSalvageProcess().getWorkshop().endSalvageProcess(getSalvageProcess(), true));
         cancelButton.setToolTipText("Cancel salvage process");
         namePane.add(cancelButton);
         
@@ -74,13 +64,13 @@ public class SalvagePanel extends JPanel {
             name = " " + firstLetter + name.substring(1);
         }
         if (name.length() > processStringWidth) name = name.substring(0, processStringWidth) + "...";
-        JLabel nameLabel = new JLabel(name, JLabel.CENTER);
+        JLabel nameLabel = new JLabel(name, SwingConstants.CENTER);
         namePane.add(nameLabel);
 
         if (showBuilding) {
             // Prepare building name label.
             String buildingName = process.getWorkshop().getBuilding().getBuildingType();
-            JLabel buildingNameLabel = new JLabel(buildingName, JLabel.CENTER);
+            JLabel buildingNameLabel = new JLabel(buildingName, SwingConstants.CENTER);
             add(buildingNameLabel);
         }
         
@@ -89,7 +79,7 @@ public class SalvagePanel extends JPanel {
         add(workPane);
         
         // Prepare work label.
-        JLabel workLabel = new JLabel("Work: ", JLabel.LEFT);
+        JLabel workLabel = new JLabel("Work: ", SwingConstants.LEFT);
         workPane.add(workLabel);
         
         // Prepare work progress bar.
@@ -149,10 +139,8 @@ public class SalvagePanel extends JPanel {
         
         // Add process outputs.
         result.append("Possible Parts Returned:<br>");
-        Iterator<PartSalvage> j = processInfo.getPartSalvageList().iterator();
-        while (j.hasNext()) {
-            PartSalvage partSalvage = j.next();
-            result.append("&nbsp;&nbsp;").append(partSalvage.getName()).append(": ").append(partSalvage.getNumber()).append("<br>");
+        for(var partSalvage : processInfo.getOutputList()) {
+            result.append("&nbsp;&nbsp;").append(partSalvage.getName()).append(": ").append(partSalvage.getAmount()).append("<br>");
         }
         
         result.append("</html>");

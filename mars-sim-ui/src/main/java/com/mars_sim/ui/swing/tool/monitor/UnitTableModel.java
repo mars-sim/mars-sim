@@ -13,6 +13,7 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitManagerEvent;
 import com.mars_sim.core.UnitManagerListener;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 /**
  * The UnitTableModel that maintains a table model of Units objects. It is only

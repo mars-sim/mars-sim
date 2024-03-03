@@ -14,13 +14,13 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentFactory;
+import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.food.FoodProductionProcess;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
-import com.mars_sim.core.food.FoodProductionProcessItem;
 import com.mars_sim.core.food.FoodProductionUtil;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
@@ -30,6 +30,7 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.FunctionSpec;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.tool.MathUtils;
 
 /**
  * A building function for food production.
@@ -44,7 +45,8 @@ public class FoodProduction extends Function {
 
 	private static final int SKILL_GAP = 1;
 
-	private static final int printerID = ItemResourceUtil.printerID;
+	// Why are we usign printer to do cooking ?
+	private static final int PRINTER_ID = ItemResourceUtil.printerID;
 
 	private static final double PROCESS_MAX_VALUE = 100D;
 
@@ -86,16 +88,15 @@ public class FoodProduction extends Function {
 	 */
 	public static double getFunctionValue(String buildingType, boolean newBuilding, Settlement settlement) {
 
-		double result = 0D;
+		double result;
 
 		FunctionSpec spec = buildingConfig.getFunctionSpec(buildingType, FunctionType.FOOD_PRODUCTION);
 
 		int buildingTech = spec.getTechLevel();
 
-		double demand = 0D;
-		for(Person p : settlement.getAllAssociatedPeople()) {
-			demand += p.getSkillManager().getSkillLevel(SkillType.COOKING);
-		}
+		double demand = settlement.getAllAssociatedPeople().stream()
+						.mapToInt(p -> p.getSkillManager().getSkillLevel(SkillType.COOKING))
+						.sum();
 
 		double supply = 0D;
 		int highestExistingTechLevel = 0;
@@ -132,14 +133,7 @@ public class FoodProduction extends Function {
 			}
 			double bestBuildingProcessValue = getBestFoodProductionProcessValue(buildingTech, settlement);
 			double processValueDiff = bestBuildingProcessValue - bestExistingProcessValue;
-
-			if (processValueDiff < 0D) {
-				processValueDiff = 0D;
-			}
-
-			if (processValueDiff > PROCESS_MAX_VALUE) {
-				processValueDiff = PROCESS_MAX_VALUE;
-			}
+			processValueDiff = MathUtils.between(processValueDiff, 0, PROCESS_MAX_VALUE);
 
 			result += processValueDiff;
 		}
@@ -223,14 +217,14 @@ public class FoodProduction extends Function {
 		}
 
 		if (getCurrentTotalProcesses() > numPrintersInUse) {
-			logger.info(getBuilding().getSettlement(), 20_000,
+			logger.info(getBuilding(), 20_000,
 					getBuilding()
 					+ ": " + getCurrentTotalProcesses() + " concurrent processes.");
-			logger.info(getBuilding().getSettlement(), 20_000,
+			logger.info(getBuilding(), 20_000,
 					getBuilding()
 					+ ": " + numPrintersInUse + " 3D-printer(s) installed for use."
 					+ "");
-			logger.info(getBuilding().getSettlement(), 20_000,
+			logger.info(getBuilding(), 20_000,
 					getBuilding()
 					+ ": " + (numMaxConcurrentProcesses-numPrintersInUse)
 					+ " 3D-printer slot(s) available."
@@ -241,22 +235,22 @@ public class FoodProduction extends Function {
 		processes.add(process);
 
 		// Consume inputs.
-		for (FoodProductionProcessItem item : process.getInfo().getInputList()) {
+		for (ProcessItem item : process.getInfo().getInputList()) {
 			if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
-				getBuilding().getSettlement().retrieveAmountResource(id, item.getAmount());
+				getBuilding().retrieveAmountResource(id, item.getAmount());
 			} else if (ItemType.PART.equals(item.getType())) {
 				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-				getBuilding().getSettlement().retrieveItemResource(id, (int) item.getAmount());
+				getBuilding().retrieveItemResource(id, (int) item.getAmount());
 			} else
-				logger.log(getBuilding().getSettlement(), Level.SEVERE, 20_000,
+				logger.log(getBuilding(), Level.SEVERE, 20_000,
 					getBuilding()
 					+ " food production process input: " + item.getType() + " not a valid type.");
 			
 		}
 
 		// Log food production process starting.
-		logger.log(getBuilding().getSettlement(), Level.FINEST, 20_000,
+		logger.log(getBuilding(), Level.FINEST, 20_000,
 				getBuilding()
 				+ " starting food production process: " + process.getInfo().getName());	
 	}
@@ -275,14 +269,7 @@ public class FoodProduction extends Function {
 
 	@Override
 	public double getPoweredDownPowerRequired() {
-		double result = 0D;
-		Iterator<FoodProductionProcess> i = processes.iterator();
-		while (i.hasNext()) {
-			FoodProductionProcess process = i.next();
-			if (process.getProcessTimeRemaining() > 0D)
-				result += process.getInfo().getPowerRequired();
-		}
-		return result;
+		return getFullPowerRequired();
 	}
 
 	@Override
@@ -291,7 +278,7 @@ public class FoodProduction extends Function {
 		if (valid) {
 			if (pulse.isNewSol()) {
 				// Check once a sol only
-				checkPrinters(pulse);
+				checkPrinters();
 			}
 
 			List<FoodProductionProcess> finishedProcesses = new ArrayList<>();
@@ -341,6 +328,112 @@ public class FoodProduction extends Function {
 		return result;
 	}
 
+	private void despositOutputs(FoodProductionProcess process) {
+		Settlement settlement = building.getSettlement();
+
+		// Produce outputs.
+		for(var item : process.getInfo().getOutputList()) {
+			if (FoodProductionUtil.getProcessItemValue(item, settlement, true) > 0D) {
+				int outputId = -1;
+				double outputAmount = item.getAmount();
+				switch(item.getType()) {
+					case AMOUNT_RESOURCE: {
+						// Produce amount resources.
+						outputId = ResourceUtil.findIDbyAmountResourceName(item.getName());
+						double capacity = settlement.getAmountResourceRemainingCapacity(outputId);
+						if (outputAmount> capacity) {
+							double overAmount = item.getAmount() - capacity;
+							logger.severe(getBuilding(), "Not enough storage capacity to store " + overAmount + " of " + item.getName()
+									+ " from " + process.getInfo().getName());
+							outputAmount = capacity;
+						}
+						settlement.storeAmountResource(outputId, outputAmount);
+
+						// Record the food produced
+						settlement.addOutput(outputId, outputAmount, process.getTotalWorkTime());
+					} break;
+
+					case PART: {
+						// Produce parts.
+						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
+						outputId = part.getID();
+						int num = (int)outputAmount;
+						double mass = num * part.getMassPerItem();
+						double capacity = settlement.getCargoCapacity();
+						if (mass <= capacity) {
+							settlement.storeItemResource(outputId, num);
+						}
+					} break;
+
+					case EQUIPMENT: {
+						// Produce equipment.
+						var equipmentType = EquipmentType.convertName2Enum(item.getName());
+						int number = (int) outputAmount;
+						for (int x = 0; x < number; x++) {
+							EquipmentFactory.createEquipment(equipmentType, settlement);
+						}
+					} break;
+
+					case BIN:
+					case VEHICLE: {
+						throw new IllegalArgumentException("Cannot create " + item.getType()
+										+ " from Food Process");
+					}
+				}
+			}
+		}
+
+		// Record process finish
+		settlement.recordProcess(process.getInfo(), "Food", building);
+	}
+
+	private void returnInputs(FoodProductionProcess process) {
+		var settlement = getBuilding().getAssociatedSettlement();
+
+		// Premature end of process. Return all input materials.
+		Iterator<ProcessItem> j = process.getInfo().getInputList().iterator();
+		while (j.hasNext()) {
+			ProcessItem item = j.next();
+			if (FoodProductionUtil.getProcessItemValue(item, settlement, false) > 0D) {
+				if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
+					// Produce amount resources.
+					int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
+					double amount = item.getAmount();
+					double capacity = settlement.getAmountResourceRemainingCapacity(id);
+					if (item.getAmount() > capacity) {
+						double overAmount = item.getAmount() - capacity;
+						logger.severe("Not enough storage capacity to store " + overAmount + " of " + item.getName()
+								+ " from " + process.getInfo().getName() + " at " + settlement.getName());
+						amount = capacity;
+					}
+					settlement.storeAmountResource(id, amount);
+					
+				} else if (ItemType.PART.equals(item.getType())) {
+					// Produce parts.
+					Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
+					int id = part.getID();
+					double mass = item.getAmount() * part.getMassPerItem();
+					double capacity = settlement.getCargoCapacity();
+					if (mass <= capacity) {
+						settlement.storeItemResource(id, (int) item.getAmount());
+					}
+				} else if (ItemType.EQUIPMENT.equals(item.getType())) {
+					// Produce equipment.
+					String equipmentType = item.getName();
+					int number = (int) item.getAmount();
+					for (int x = 0; x < number; x++) {
+						Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
+								settlement);
+						unitManager.addUnit(equipment);
+					}
+				}
+				else
+					throw new IllegalStateException(
+							"FoodProduction.addProcess(): output: invalid type:" + item.getType());
+			}
+		}
+	}
+
 	/**
 	 * Ends a food production process.
 	 * 
@@ -349,114 +442,20 @@ public class FoodProduction extends Function {
 	 * @throws BuildingException if error ending process.
 	 */
 	public void endFoodProductionProcess(FoodProductionProcess process, boolean premature) {
-		Settlement settlement = building.getSettlement();
 	
 		if (!premature) {
 			// Produce outputs.
-			Iterator<FoodProductionProcessItem> j = process.getInfo().getOutputList().iterator();
-			while (j.hasNext()) {
-				FoodProductionProcessItem item = j.next();
-				if (FoodProductionUtil.getFoodProductionProcessItemValue(item, settlement, true) > 0D) {
-					if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-						// Produce amount resources.
-						int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
-						double amount = item.getAmount();
-						double capacity = settlement.getAmountResourceRemainingCapacity(id);
-						if (item.getAmount() > capacity) {
-							double overAmount = item.getAmount() - capacity;
-							logger.fine("Not enough storage capacity to store " + overAmount + " of " + item.getName()
-									+ " from " + process.getInfo().getName() + " at " + settlement.getName());
-							amount = capacity;
-						}
-						settlement.storeAmountResource(id, amount);
-						// Add to the daily output
-						settlement.addOutput(id, amount, process.getTotalWorkTime());
-					} 
-					
-					else if (ItemType.PART.equals(item.getType())) {
-						// Produce parts.
-						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
-						int id = part.getID();
-						int num = (int) item.getAmount();
-						double mass = num * part.getMassPerItem();
-						double capacity = settlement.getCargoCapacity();
-						if (mass <= capacity) {
-							settlement.storeItemResource(id, num);
-							// Add to the daily output
-							settlement.addOutput(id, num, process.getTotalWorkTime());
-						}
-					} 
-					
-					else if (ItemType.EQUIPMENT.equals(item.getType())) {
-						// Produce equipment.
-						String equipmentType = item.getName();
-						int number = (int) item.getAmount();
-						for (int x = 0; x < number; x++) {
-							Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
-									settlement);
-							// Add to the daily output
-							settlement.addOutput(equipment.getIdentifier(), number, process.getTotalWorkTime());
-						}
-					}
-					else
-						throw new IllegalStateException(
-								"FoodProduction.addProcess(): output: invalid type:" + item.getType());
-				}
-			}
-		} 
-		
+			despositOutputs(process);
+		}
 		else {
-
-			// Premature end of process. Return all input materials.
-			Iterator<FoodProductionProcessItem> j = process.getInfo().getInputList().iterator();
-			while (j.hasNext()) {
-				FoodProductionProcessItem item = j.next();
-				if (FoodProductionUtil.getFoodProductionProcessItemValue(item, settlement, false) > 0D) {
-					if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-						// Produce amount resources.
-						int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
-						double amount = item.getAmount();
-						double capacity = settlement.getAmountResourceRemainingCapacity(id);
-						if (item.getAmount() > capacity) {
-							double overAmount = item.getAmount() - capacity;
-							logger.severe("Not enough storage capacity to store " + overAmount + " of " + item.getName()
-									+ " from " + process.getInfo().getName() + " at " + settlement.getName());
-							amount = capacity;
-						}
-						settlement.storeAmountResource(id, amount);
-						
-					} else if (ItemType.PART.equals(item.getType())) {
-						// Produce parts.
-						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
-						int id = part.getID();
-						double mass = item.getAmount() * part.getMassPerItem();
-						double capacity = settlement.getCargoCapacity();
-						if (mass <= capacity) {
-							settlement.storeItemResource(id, (int) item.getAmount());
-						}
-					} else if (ItemType.EQUIPMENT.equals(item.getType())) {
-						// Produce equipment.
-						String equipmentType = item.getName();
-						int number = (int) item.getAmount();
-						for (int x = 0; x < number; x++) {
-							Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
-									settlement);
-							unitManager.addUnit(equipment);
-						}
-					}
-					else
-						throw new IllegalStateException(
-								"FoodProduction.addProcess(): output: invalid type:" + item.getType());
-				}
-			}
+			returnInputs(process);
 		}
 
 		processes.remove(process);
 		
 		// Log process ending.
-		logger.log(getBuilding().getSettlement(), Level.FINEST, 20_000,
-				getBuilding() + " ending food production process: "
-				+ process.getInfo().getName());
+		logger.log(getBuilding(), Level.FINEST, 20_000,
+				"Ending food production process: " + process.getInfo().getName());
 	}
 
 	@Override
@@ -475,20 +474,20 @@ public class FoodProduction extends Function {
 	 * processes
 	 * @param pulse
 	 */
-	public void checkPrinters(ClockPulse pulse) {
+	private void checkPrinters() {
 		// Gets the available number of printers in storage
-		int numAvailable = building.getSettlement().getItemResourceStored(printerID);
+		int numAvailable = building.getSettlement().getItemResourceStored(PRINTER_ID);
 
 		// Malfunction of a 3D-printer should trigger this
 		// NOTE: it's reasonable to create a settler's task to install 
 		// a 3-D printer manually over a period of time
 		if (numPrintersInUse < numMaxConcurrentProcesses) {
 			int deficit = numMaxConcurrentProcesses - numPrintersInUse;
-			logger.info(getBuilding().getSettlement(), 20_000,
+			logger.info(getBuilding(), 20_000,
 					getBuilding() + " - "
 					+ numAvailable
 					+ " 3D-printer(s) in storage.");
-			logger.info(getBuilding().getSettlement(), 20_000,
+			logger.info(getBuilding(), 20_000,
 					getBuilding() + " - "
 					+ numPrintersInUse
 					+ " 3D-printer(s) in use.");
@@ -498,14 +497,14 @@ public class FoodProduction extends Function {
 				for (int i=0; i<size; i++) {
 					numPrintersInUse++;
 					numAvailable--;
-					int lacking = building.getSettlement().retrieveItemResource(printerID, 1);
+					int lacking = building.getSettlement().retrieveItemResource(PRINTER_ID, 1);
 					if (lacking > 0) {
-						logger.info(getBuilding().getSettlement(), 20_000,
+						logger.info(getBuilding(), 20_000,
 								"No 3D-printer available for " + getBuilding() + ".");
 					}
 				}
 
-				logger.info(getBuilding().getSettlement(), 20_000,
+				logger.info(getBuilding(), 20_000,
 						getBuilding() + " - "
 						+ size
 						+ " 3D-printer(s) just installed.");

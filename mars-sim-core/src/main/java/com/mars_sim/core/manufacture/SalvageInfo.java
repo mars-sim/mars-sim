@@ -46,7 +46,7 @@ public class SalvageInfo implements Serializable {
         this.settlementID = settlementID;
         this.startTime = startTime;
         finishTime = null;
-        partsSalvaged = new HashMap<>(processInfo.getPartSalvageList().size());
+        partsSalvaged = new HashMap<>();
     }
     
     /**
@@ -111,11 +111,9 @@ public class SalvageInfo implements Serializable {
      */
     public void destroy() {
         item = null;
-        processInfo.destroy();
         processInfo = null;
         startTime = null;
         finishTime = null;
-        partsSalvaged.clear();
         partsSalvaged = null;
     }
 }
