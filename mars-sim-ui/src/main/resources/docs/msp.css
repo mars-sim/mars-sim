@@ -110,3 +110,29 @@ ol {
 /* counter-reset: item; */
 	margin-left: 22px;
 }
+/**
+ * Style for generated tables
+ */
+ a.backlink {
+	font-size: smaller;
+	font-style: italic;
+  }
+.characteristics {
+	margin-left: auto;
+	margin-right: auto;
+	/** First column different style */
+	tr td:nth-child(1) {
+    	font-weight:bold;
+    	text-align:right;
+	}
+	th {
+		text-align:left;
+	}
+}
+.details {
+	margin-left: auto;
+	margin-right: auto;
+}
+.detailsSection{
+	text-align: center;
+}

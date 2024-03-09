@@ -24,7 +24,7 @@ public class BuildingGenerator extends TypeGenerator<BuildingSpec>{
                 "Building Specifications available for bases");
 
         // Groups by category
-        setGrouper(r-> r.getCategory().getName());
+        setGrouper("Category", r-> r.getCategory().getName());
     }
     
     /**

@@ -31,7 +31,7 @@ public class ResourceGenerator extends TypeGenerator<AmountResource> {
         "Resources that can be stored and used for manufacturing and cooking.");
 
         // Groups according to Resource Phase
-        setGrouper(r-> r.getPhase().getName());
+        setGrouper("Phase", r-> r.getPhase().getName());
     }
 
     /**

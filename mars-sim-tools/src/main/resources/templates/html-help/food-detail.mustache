@@ -5,16 +5,18 @@
     <h3>Description</h3>
     <p>{{food.description}}</p>
     {{/food.description}}
-    <h3>Characteristics</h3>
-    <table id="characteristics">
-    <tr><td>Skill Level:</td><td>{{food.skillLevelRequired}}</td></tr>
-    <tr><td>Tech Level:</td><td>{{food.techLevelRequired}}</td></tr>
-    <tr><td>Process Time:</td><td>{{food.processTimeRequired}} millisols</td></tr>
-    <tr><td>Work Level:</td><td>{{food.workTimeRequired}} millisols</td></tr>
-    <tr><td>Power Required:</td><td>{{food.powerRequired}} kW/hr</td></tr>
-    </table>
+    <div id="characteristics">
+      <h3>Characteristics</h3>
+      <table class="characteristics">
+        <tr><td>Skill Level:</td><td>{{food.skillLevelRequired}}</td></tr>
+        <tr><td>Tech Level:</td><td>{{food.techLevelRequired}}</td></tr>
+        <tr><td>Process Time:</td><td>{{food.processTimeRequired}} millisols</td></tr>
+        <tr><td>Work Level:</td><td>{{food.workTimeRequired}} millisols</td></tr>
+        <tr><td>Power Required:</td><td>{{food.powerRequired}} kW/hr</td></tr>
+      </table>
+    </div>
     {{>process-inout}}
     </br>
-    <a href="index.html">Back to Food Recipes</a>
+    <a class="backlink" href="index.html">Back to Food Recipes</a>
   {{/body}}
 {{/help-layout}}

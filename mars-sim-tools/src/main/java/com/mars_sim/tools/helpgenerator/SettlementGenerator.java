@@ -27,7 +27,7 @@ public class SettlementGenerator extends TypeGenerator<SettlementTemplate> {
                 "Settlement templates that can be used in a Scenario");
         
         // Group by sponsor
-        setGrouper(t -> t.getSponsor());
+        setGrouper("Sponsor", t -> t.getSponsor());
     }
 
     /**

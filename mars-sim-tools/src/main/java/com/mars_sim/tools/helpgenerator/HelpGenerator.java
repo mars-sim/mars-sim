@@ -142,17 +142,20 @@ public class HelpGenerator {
 	 * 'entity-grouped' template.
 	 * @param title Page title
 	 * @param description Description of the page
+	 * @param groupName Name of the groups
 	 * @param groups List of groups
 	 * @param typeFolder Folder for this type
 	 * @param outputDir Target root folder for the file
 	 * 
 	 */
 	 void createGroupedIndex(String title, String description,
-			List<?> groups,  String typeFolder, File outputDir) 
+			String groupName, List<?> groups,  String typeFolder, File outputDir) 
 		throws IOException {
 		var scope = createScopeMap(title);
 		scope.put("description", description);
 		scope.put("groups", groups);
+		scope.put("groupname", groupName);
+
 		scope.put("typefolder", "../" + typeFolder + "/");
 
 		logger.info("Generating grouped index file for " + title);

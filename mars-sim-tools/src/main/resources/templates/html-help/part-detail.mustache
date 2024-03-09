@@ -5,14 +5,16 @@
     <h3>Description</h3>
     <p>{{part.description}}</p>
     {{/part.description}}   
-    <h3>Characteristics</h3>
-    <table>
-      <tr><td>Mass:</td><td>{{part.massPerItem}} kg</td></tr>
-      <tr><td>Type:</td><td>{{part.goodType.getName}}</td></tr>
-    </table>
+    <div id="characteristics">
+      <h3>Characteristics</h3>
+      <table class="characteristics">
+        <tr><td>Mass:</td><td>{{part.massPerItem}} kg</td></tr>
+        <tr><td>Type:</td><td>{{part.goodType.getName}}</td></tr>
+      </table>
+    </div>
     {{>process-flow}}
 
     </br>
-    <a href="index.html">Back to Part list</a>
+    <a class="backlink" href="index.html">Back to Part list</a>
   {{/body}}
 {{/help-layout}}

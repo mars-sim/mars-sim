@@ -2,7 +2,8 @@
   {{$body}}
     <h2 id="top">{{title}}</h2>
     <p>{{description}}</p>
-    <div>
+    <div id="groups">
+    <p>Grouped by {{groupname}}.</p>
     {{#groups}}
       <a style="display: inline;" href="#{{id}}">{{name}}</a>
     {{/groups}}
@@ -14,9 +15,9 @@
         <li><a href="{{typefolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></li>
       {{/items}}
       </ul>
-      <a href="#top">Back to the top</a>
+      <a class="backlink" href="#top">Back to the top</a>
     {{/groups}}
     </br>
-    <a href="../../concepts.html">Back to Concepts</a>
+    <a class="backlink" href="../index.html">Back to Concepts</a>
   {{/body}}
 {{/help-layout}}

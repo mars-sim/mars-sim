@@ -25,7 +25,7 @@ class PartGenerator extends TypeGenerator<Part> {
 
         
         // Groups by part type
-        setGrouper(r-> r.getGoodType().getName());
+        setGrouper("Good Type", r-> r.getGoodType().getName());
     }
 
     /**

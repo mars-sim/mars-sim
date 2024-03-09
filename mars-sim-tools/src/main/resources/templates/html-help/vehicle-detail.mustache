@@ -3,42 +3,49 @@
     <h2>Vehicle - {{vehicle.name}}</h2>
     <h3>Description</h3>
     <p>{{vehicle.description}}</p>
-    <h3>Characteristics</h3>
-    <table id="characteristics">
-      <tr><td>Base Speed:</td><td>{{vehicle.baseSpeed}} kmph</td></tr>
-      <tr><td>Crew Size:</td><td>{{vehicle.crewSize}}</td></tr>
-      <tr><td>Empty Mass:</td><td>{{vehicle.emptymass}} kg</td></tr>
-      <tr><td>Width:</td><td>{{vehicle.width}}</td></tr>
-      <tr><td>Length:</td><td>{{vehicle.length}}</td></tr>
-      <tr><td>Fuel Efficiency:</td><td>{{vehicle.drivetrainEfficiency}}</td></tr>
-      {{#vehicle.hasLab}}
-      <tr><td>Lab Tech Level:</td><td>{{vehicle.labTechLevel}}</td></tr>
-      <tr><td>Lab Specialties:</td><td>{{vehicle.labTechSpecialties}}</td></tr>
-      {{/vehicle.hasLab}}
-      {{#vehicle.hasSickbay}}
-      <tr><td>Sickbay Tech Level:</td><td>{{vehicle.sickBayTechLevel}}</td></tr>
-      <tr><td>Sickbay Beds:</td><td>{{vehicle.sickbayBeds}}</td></tr>
-      {{/vehicle.hasSickbay}}
-      <tr><td>Attachment Slots:</td><td>{{vehicle.attachmentSlots}}</td></tr>
-    </table>
+    <div id="characteristics">
+      <h3>Characteristics</h3>
+      <table class="characteristics">
+        <tr><td>Base Speed:</td><td>{{vehicle.baseSpeed}} kmph</td></tr>
+        <tr><td>Crew Size:</td><td>{{vehicle.crewSize}}</td></tr>
+        <tr><td>Empty Mass:</td><td>{{vehicle.emptymass}} kg</td></tr>
+        <tr><td>Width:</td><td>{{vehicle.width}}</td></tr>
+        <tr><td>Length:</td><td>{{vehicle.length}}</td></tr>
+        <tr><td>Fuel Efficiency:</td><td>{{vehicle.drivetrainEfficiency}}</td></tr>
+        {{#vehicle.hasLab}}
+        <tr><td>Lab Tech Level:</td><td>{{vehicle.labTechLevel}}</td></tr>
+        <tr><td>Lab Specialties:</td><td>{{vehicle.labTechSpecialties}}</td></tr>
+        {{/vehicle.hasLab}}
+        {{#vehicle.hasSickbay}}
+        <tr><td>Sickbay Tech Level:</td><td>{{vehicle.sickBayTechLevel}}</td></tr>
+        <tr><td>Sickbay Beds:</td><td>{{vehicle.sickbayBeds}}</td></tr>
+        {{/vehicle.hasSickbay}}
+        <tr><td>Attachment Slots:</td><td>{{vehicle.attachmentSlots}}</td></tr>
+      </table>
+    </div>
 
     {{#vehicle.hasPartAttachments}}
-    <h3>Attachments</h3>
-      <ol>
+    <div id="attachments">
+      <h3>Attachments</h3>
+      <table class="details">
       {{#vehicle.attachableParts}}
-        <li><a href="{{partfolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></li>
+        <tr><td>><a href="{{partfolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></td></tr>
       {{/vehicle.attachableParts}}
-      </ol>
+      </table>
+    </div>
     {{/vehicle.hasPartAttachments}}
-    <h3>Storage Capacity</h3>
-    <table id="cargo">
-      {{#cargo}}
-        <tr>
-          <td><a href="{{resourcefolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></td>
-          <td>{{value}}</td>
-        </tr>
-      {{/cargo}}
-    </table>
+
+    <div id="cargo">
+      <h3>Storage Capacity</h3>
+      <table class="details">
+        {{#cargo}}
+          <tr>
+            <td><a href="{{resourcefolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></td>
+            <td>{{value}}</td>
+          </tr>
+        {{/cargo}}
+      </table>
+    </div>
     </br>
     <a href="index.html">Back to Vehicle list</a>
   {{/body}}

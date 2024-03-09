@@ -38,6 +38,8 @@ public abstract class TypeGenerator<T> {
     // Used to group entities for grouped index
     private Function<T,String> grouper;
 
+    private String groupName;
+
     /**
      * Converts a set of Process inputs/outputs to a generic item quantity
      */
@@ -88,7 +90,8 @@ public abstract class TypeGenerator<T> {
      * Define an grouper to create a groupe index page.
      * @param grouper
      */
-    protected void setGrouper(Function<T,String> grouper) {
+    protected void setGrouper(String name, Function<T,String> grouper) {
+        this.groupName = name;
         this.grouper = grouper;
     }
     
@@ -109,7 +112,7 @@ public abstract class TypeGenerator<T> {
         }
         else {
             List<NamedGroup<T>> groups = GenericsGrouper.getGroups(entities, grouper);
-            parent.createGroupedIndex(title, description, groups, typeName, targetDir);
+            parent.createGroupedIndex(title, description, groupName, groups, typeName, targetDir);
         }
 	}
 
