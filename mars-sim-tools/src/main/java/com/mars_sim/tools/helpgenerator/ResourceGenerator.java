@@ -8,14 +8,13 @@ package com.mars_sim.tools.helpgenerator;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.tools.helpgenerator.HelpGenerator.ResourceUse;
 
 /**
  * Generates help output for any Amount Resource entity
@@ -23,9 +22,9 @@ import com.mars_sim.core.resource.ResourceUtil;
 public class ResourceGenerator extends TypeGenerator<AmountResource> {
 
     // Represents where a Resource is used in a Food process
-	private record FoodUse(List<FoodProductionProcessInfo> asInput, List<FoodProductionProcessInfo> asOutput) {}
     public static final String TYPE_NAME = "resource";
-    private Map<String, FoodUse> foodProductionUse;
+
+    private Map<String, ResourceUse> foodProductionUse;
 
     protected ResourceGenerator(HelpGenerator parent) {
         super(parent, TYPE_NAME, "Resources",
@@ -35,25 +34,21 @@ public class ResourceGenerator extends TypeGenerator<AmountResource> {
         setGrouper(r-> r.getPhase().getName());
     }
 
-    private static FoodUse buildEmptyFoodUse() {
-		return new FoodUse(new ArrayList<>(), new ArrayList<>());
-	}
-
     /**
 	 * Get the usage of a Resource by it's name. This will return where is an inout or output
 	 * to a process.
 	 */
-	private FoodUse getFoodUsageByName(String name) {
+	private ResourceUse getFoodUsageByName(String name) {
 		if (foodProductionUse == null) {
 			foodProductionUse = new HashMap<>();
 			for (var m: getParent().getConfig().getFoodProductionConfiguration().getFoodProductionProcessList()) {
 				for (var r: m.getInputNames()) {
 					foodProductionUse.computeIfAbsent(r.toLowerCase(),
-                                k -> buildEmptyFoodUse()).asInput().add(m);
+                                k -> HelpGenerator.buildEmptyResourceUse()).asInput().add(m);
 				}
 				for (var r: m.getOutputNames()) {
 					foodProductionUse.computeIfAbsent(r.toLowerCase(),
-                                k-> buildEmptyFoodUse()).asOutput().add(m);
+                                k-> HelpGenerator.buildEmptyResourceUse()).asOutput().add(m);
 				}
 			}
 		}
@@ -78,12 +73,12 @@ public class ResourceGenerator extends TypeGenerator<AmountResource> {
 
         // Add food production
         var foodUse = getFoodUsageByName(r.getName());
-        if (foodUse != null) {
-            scope.put("hasFoodInput", !foodUse.asInput().isEmpty());
-            scope.put("hasFoodOutput", !foodUse.asOutput().isEmpty());
-            scope.put("foodInput", foodUse.asInput());
-            scope.put("foodOutput", foodUse.asOutput());
+        if (foodUse == null) {
+            foodUse = EMPTY_USE;
         }
+        scope.put("foodInput", foodUse.asInput());
+        scope.put("foodOutput", foodUse.asOutput());
+        
         generator.generateContent("resource-detail", scope, output);
     }
 

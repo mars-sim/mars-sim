@@ -25,7 +25,7 @@ import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Version;
-import com.mars_sim.core.manufacture.ManufactureProcessInfo;
+import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.resource.ItemType;
 
 public class HelpGenerator {
@@ -36,10 +36,11 @@ public class HelpGenerator {
 	// POJO for a named value pair
 	public record ValuePair(String name, double value) {}
 
-	// Represents where a Resource is used in a manufacturing process
-	record ResourceUse(List<ManufactureProcessInfo> asInput, List<ManufactureProcessInfo> asOutput) {}
+	// Represents where a Resource is used in a process
+	record ResourceUse(List<ProcessInfo> asInput, List<ProcessInfo> asOutput) {}
 
-	record ProcessItemSummary(String name, String type, String typefolder, double amount) {}
+	// A quantity of an item 
+	record ItemQuantity(String name, String type, String typefolder, String amount) {}
 
 	private static Logger logger = Logger.getLogger(HelpGenerator.class.getName());
 	private static final String TEMPLATES_DIR = "templates/";
@@ -80,6 +81,8 @@ public class HelpGenerator {
 		this.baseScope.put("resourcefolder", "../" + ResourceGenerator.TYPE_NAME + "/");
 		this.baseScope.put("processfolder", "../" + ProcessGenerator.TYPE_NAME + "/");
 		this.baseScope.put("foodfolder", "../" + FoodGenerator.TYPE_NAME + "/");
+		this.baseScope.put("buildingfolder", "../" + BuildingGenerator.TYPE_NAME + "/");
+
 
 		// Add a lambda so a entity name can be converted into aa valid filename
 		this.baseScope.put("filename", getFilename());
@@ -159,7 +162,7 @@ public class HelpGenerator {
 		}
 	}
 
-	private static ResourceUse buildEmptyResourceUse() {
+	static ResourceUse buildEmptyResourceUse() {
 		return new ResourceUse(new ArrayList<>(), new ArrayList<>());
 	}
 
@@ -190,7 +193,7 @@ public class HelpGenerator {
 	 * @param amount
 	 * @return
 	 */
-	static ProcessItemSummary toProcessItem(String name, ItemType type, double amount) {
+	static ItemQuantity createItemQuantity(String name, ItemType type, double amount) {
 		String typeFolder = switch(type) {
 			case AMOUNT_RESOURCE -> ResourceGenerator.TYPE_NAME;
 			case BIN -> null;
@@ -198,7 +201,10 @@ public class HelpGenerator {
 			case PART -> PartGenerator.TYPE_NAME;
 			case VEHICLE -> VehicleGenerator.TYPE_NAME;
 		};
-		return new ProcessItemSummary(name, type.getName(), "../" + typeFolder + "/", amount);
+
+		String amountTxt = (type == ItemType.AMOUNT_RESOURCE ? amount + " kg"
+													: Integer.toString((int) amount));
+		return new ItemQuantity(name, type.getName(), "../" + typeFolder + "/", amountTxt);
 	}
 
 	/**
@@ -214,7 +220,8 @@ public class HelpGenerator {
 		gens.add(new ProcessGenerator(this));
 		gens.add(new ResourceGenerator(this));
 		gens.add(new VehicleGenerator(this));
-
+		gens.add(new BuildingGenerator(this));
+		gens.add(new SettlementGenerator(this));
 
 		// Generate all subtype
 		for(var g : gens) {

@@ -15,14 +15,20 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
+import com.mars_sim.core.process.ProcessItem;
+import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.tools.helpgenerator.GenericsGrouper.NamedGroup;
-import com.mars_sim.tools.helpgenerator.HelpGenerator.ProcessItemSummary;
+import com.mars_sim.tools.helpgenerator.HelpGenerator.ItemQuantity;
+import com.mars_sim.tools.helpgenerator.HelpGenerator.ResourceUse;
 
 /**
  * This is an abstract generator for a configuration type. It provides generic methods.
  */
 public abstract class TypeGenerator<T> {
     private static Logger logger = Logger.getLogger(TypeGenerator.class.getName());
+
+    // CReate an empty reosurce use
+    protected static final ResourceUse EMPTY_USE = HelpGenerator.buildEmptyResourceUse();
 
     private HelpGenerator parent;
     private String typeName;
@@ -32,10 +38,23 @@ public abstract class TypeGenerator<T> {
     // Used to group entities for grouped index
     private Function<T,String> grouper;
 
-    protected static List<ProcessItemSummary> getProcessItems(List<com.mars_sim.core.process.ProcessItem> list) {
+    /**
+     * Converts a set of Process inputs/outputs to a generic item quantity
+     */
+    protected static List<ItemQuantity> toQuantityItems(List<ProcessItem> list) {
 		return list.stream()
 					.sorted((o1, o2)->o1.getName().compareTo(o2.getName()))
-					.map(v -> HelpGenerator.toProcessItem(v.getName(), v.getType(), v.getAmount()))
+					.map(v -> HelpGenerator.createItemQuantity(v.getName(), v.getType(), v.getAmount()))
+					.toList();
+	}
+
+    
+    /**
+     * Converts a set of resource value pairs of a specific type to a generic item quantity
+     */
+    protected static List<ItemQuantity> toQuantityItems(Map<String,Integer> items, ItemType type) {
+		return items.entrySet().stream()
+					.map(v -> HelpGenerator.createItemQuantity(v.getKey(), type, v.getValue()))
 					.toList();
 	}
 
@@ -136,8 +155,8 @@ public abstract class TypeGenerator<T> {
 	 * @param outputs
 	 */
 	protected void addProcessInputOutput(Map<String, Object> scope,
-			String inputTitle, List<ProcessItemSummary> inputs,
-			String outputTitle, List<ProcessItemSummary> outputs) {
+			String inputTitle, List<ItemQuantity> inputs,
+			String outputTitle, List<ItemQuantity> outputs) {
 
 		scope.put("inputs", inputs);
 		scope.put("inputsTitle", inputTitle);
@@ -154,12 +173,11 @@ public abstract class TypeGenerator<T> {
     protected void addProcessFlows(String resourceName, Map<String, Object> scope) {
 		var resourceUsed = getParent().getResourceUsageByName(resourceName);
 
-		if (resourceUsed != null) {
-			scope.put("inputProcesses", resourceUsed.asInput());
-			scope.put("hasInputProcesses", !resourceUsed.asInput().isEmpty());
-			scope.put("outputProcesses", resourceUsed.asOutput());
-			scope.put("hasOutputProcesses", !resourceUsed.asOutput().isEmpty());
-		}
+		if (resourceUsed == null) {
+            resourceUsed = EMPTY_USE;
+        }
+        scope.put("inputProcesses", resourceUsed.asInput());
+        scope.put("outputProcesses", resourceUsed.asOutput());	
     }
 
     /**

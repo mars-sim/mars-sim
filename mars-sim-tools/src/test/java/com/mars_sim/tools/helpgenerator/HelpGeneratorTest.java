@@ -94,6 +94,38 @@ public class HelpGeneratorTest {
         assertNotNull("Characteristics section", content.getElementById("characteristics"));
     }
 
+    @Test
+    public void testSettlementHelp() throws IOException {
+        var context = createGenerator();
+        
+        // Has both inputs and outputs
+        var spec = context.getConfig().getSettlementConfiguration().getItem("Alpha Base");
+
+        var vg = new SettlementGenerator(context);
+        var content = createDoc(vg, spec);
+
+        assertContent(content, "characteristics");
+        assertContent(content, "equipment");
+        assertContent(content, "resources");
+        assertContent(content, "missions");
+        assertContent(content, "buildings");
+        assertContent(content, "vehicles");
+
+    }
+
+    /**
+     * Search for a tag with an id. The tag should be present and have at least one child.
+     * The tag should be a <div>
+     * @param doc
+     * @param id
+     */
+    private void assertContent(Document doc, String id) {
+        var node = doc.getElementById(id);
+        assertNotNull("'" + id + "' section", node);
+        assertTrue("'" + id + "' has content", node.childNodeSize() > 0);
+        assertTrue("'" + id + "' has a <div>", node.tagName().equals("div"));
+    }
+
     @Test public void testFullGeneration() throws IOException {
         var context = createGenerator();
 
@@ -104,7 +136,7 @@ public class HelpGeneratorTest {
             File[] created = output.listFiles();
 
             // Matches number of type generators plus 1 for index
-            assertEquals("Top level content", 6, created.length);
+            assertEquals("Top level content", 8, created.length);
             for(File f : created) {
                 if (f.isFile()) {
                     // Must be index

@@ -37,8 +37,8 @@ class FoodGenerator extends TypeGenerator<FoodProductionProcessInfo> {
         vScope.put("food", v);
 
         addProcessInputOutput(vScope,
-                "Ingredients", getProcessItems(v.getInputList()),
-                "Outcomes", getProcessItems(v.getOutputList()));
+                "Ingredients", toQuantityItems(v.getInputList()),
+                "Outcomes", toQuantityItems(v.getOutputList()));
 
         generator.generateContent("food-detail", vScope, output);
     }

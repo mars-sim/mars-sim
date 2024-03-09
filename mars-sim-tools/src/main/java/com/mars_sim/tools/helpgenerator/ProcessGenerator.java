@@ -39,8 +39,8 @@ class ProcessGenerator extends TypeGenerator<ManufactureProcessInfo> {
 
 		var pScope = generator.createScopeMap("Process " + p.getName());
 		pScope.put(TYPE_NAME, p);
-		addProcessInputOutput(pScope, "Inputs", getProcessItems(p.getInputList()),
-									"Products", getProcessItems(p.getOutputList()));
+		addProcessInputOutput(pScope, "Inputs", toQuantityItems(p.getInputList()),
+									"Products", toQuantityItems(p.getOutputList()));
 
         generator.generateContent("process-detail", pScope, output);
     }
