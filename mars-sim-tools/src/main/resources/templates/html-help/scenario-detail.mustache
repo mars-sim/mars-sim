@@ -1,0 +1,67 @@
+{{<help-layout}}
+  {{$body}}
+    <h3>Description</h3>
+    <p>{{scenario.description}}</p>
+
+    <div id="settlements">
+      <h3>Settlements</h3>
+      <table class="details">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Sponsor</th>
+            <th>Template</th>
+            <th>Persons</th>
+            <th>Robots</th>
+            <th>Location</th>
+            <th>Crew</th>
+          </tr>
+        </thead>
+      {{#scenario.settlements}}
+        <tr>
+          <td>{{name}}</td>
+          <td>{{sponsor}}</td>
+          <td><a href="{{settlementfolder}}{{#filename}}{{settlementTemplate}}{{/filename}}">{{settlementTemplate}}</a></td>
+          <td>{{populationNumber}}</td>
+          <td>{{numOfRobots}}</td>
+          <td>{{location.formattedString}}</td>
+          <td><a href="{{crewfolder}}{{#filename}}{{crew}}{{/filename}}">{{crew}}</a></td>
+        </tr>
+      {{/scenario.settlements}}
+      </table>
+    </div>
+
+    {{^scenario.arrivals.isEmpty}}
+    <div id="arriving">
+      <h3>New Settlements</h3>
+      <table class="details">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Sponsor</th>
+            <th>Template</th>
+            <th>Persons</th>
+            <th>Robots</th>
+            <th>Arrival (sols)</th>
+            <th>Location</th>
+          </tr>
+        </thead>
+      {{#scenario.arrivals}}
+        <tr>
+          <td>{{name}}</td>
+          <td>{{sponsorCode}}</td>
+          <td><a href="{{settlementfolder}}{{#filename}}{{template}}{{/filename}}">{{template}}</a></td>
+          <td>{{populationNum}}</td>
+          <td>{{numOfRobots}}</td>
+          <td>{{arrivalSols}}</td>
+          <td>{{landingLocation.formattedString}}</td>
+        </tr>
+      {{/scenario.arrivals}}
+      </table>
+    </div>
+    {{/scenario.arrivals.isEmpty}}
+
+    </br>
+    <a href="index.html">Back to Scenarios list</a>
+  {{/body}}
+{{/help-layout}}

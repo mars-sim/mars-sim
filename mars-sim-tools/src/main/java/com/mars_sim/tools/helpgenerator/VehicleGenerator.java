@@ -45,7 +45,7 @@ public class VehicleGenerator extends TypeGenerator<VehicleSpec> {
         var generator = getParent();
 
 		// Individual vehicle pages
-	    var vScope = generator.createScopeMap("Vehicle " + v.getName());
+	    var vScope = generator.createScopeMap("Vehicle - " + v.getName());
 		vScope.put(TYPE_NAME, v);
 
         // Convert capacity to a list that contains the resource name

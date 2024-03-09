@@ -1,0 +1,83 @@
+{{^buildings.isEmpty}}
+<div id="buildings">
+    <h3>Buildings</h3>
+    <table class="details">
+        <thead>
+            <tr>
+            <th>Name</th>
+            <th>Building Spec</th>
+            </tr>
+        </thead>
+        {{#buildings}}
+        <tr>
+        <td>{{buildingName}}</td>
+        <td><a href="{{buildingfolder}}{{#filename}}{{buildingType}}{{/filename}}">{{buildingType}}</a></td>
+        </tr>
+        {{/buildings}}
+    </table>
+</div>
+{{/buildings.isEmpty}}
+
+{{^resources.isEmpty}}
+<div id="resources">
+    <h3>Resources</h3>
+    <table class="details">
+        <thead>
+            <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Quantity</th>
+            </tr>
+        </thead>
+        {{#resources}}
+        <tr><td>
+        {{#typefolder}}
+            <a href="{{typefolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a>
+        {{/typefolder}}
+        {{^typefolder}}
+            {{name}}
+        {{/typefolder}}
+        </td>
+        <td>{{type}}</td>
+        <td>{{amount}}</td>
+        </tr>
+        {{/resources}}
+    </table>
+</div>
+{{/resources.isEmpty}}
+
+{{^equipment.isEmpty}}
+<div id="equipment">
+    <h3>Equipment</h3>
+    <table class="details">
+        <thead>
+            <tr>
+            <th>Name</th>
+            <th>Quantity</th>
+            </tr>
+        </thead>
+        {{#equipment}}
+        <tr><td><a href="{{typefolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></td>
+        <td>{{amount}}</td></tr>
+        {{/equipment}}
+    </table>
+</div>
+{{/equipment.isEmpty}}
+
+{{^vehicles.isEmpty}}
+<div id="vehicles">
+    <h3>Vehicles</h3>
+    <table class="details">
+        <thead>
+            <tr>
+            <th>Vehicle Spec</th>
+            <th>Quantity</th>
+            </tr>
+        </thead>
+        {{#vehicles}}
+        <tr><td><a href="{{typefolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></td>
+        <td>{{amount}}</td></tr>
+        {{/vehicles}}
+    </table>
+</div>
+{{/vehicles.isEmpty}}

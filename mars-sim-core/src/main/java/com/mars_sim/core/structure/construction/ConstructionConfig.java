@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -104,13 +105,6 @@ public class ConstructionConfig implements Serializable {
         else
         	stageInfo = new ArrayList<>(stageInfo);
 
-//        Collections.sort(stageInfo, new Comparator<ConstructionStageInfo>() {
-//            @Override
-//            public int compare(ConstructionStageInfo c2, ConstructionStageInfo c1) {
-//                return c2.getName().compareTo(c1.getName());
-//            }
-//        });
-
         return stageInfo;
     }
 
@@ -150,17 +144,10 @@ public class ConstructionConfig implements Serializable {
                 name = stageInfoElement.getAttributeValue(NAME);
 
                 if (stageInfoList == buildingStageInfoList) {
-	                boolean invalid_name = true;
 
-	                Set<String> types = SimulationConfig.instance().getBuildingConfiguration().getBuildingTypes();
-
-	                for (String s : types) {
-	                	if (s.toLowerCase().equals(name.toLowerCase())) {
-	                		invalid_name = false;
-	                		break;
-	                	}
-	                }
-	                if (invalid_name)
+	                Set<String> types = SimulationConfig.instance().getBuildingConfiguration().getBuildingTypes().stream()
+                                            .map(b -> b.getName().toLowerCase()).collect(Collectors.toSet());
+	                if (!types.contains(name.toLowerCase()))
 	                	throw new IllegalStateException("ConstructionConfig : '" + name +
 	                			"' in constructions.xml does not match to any building types in buildings.xml.");
                 }

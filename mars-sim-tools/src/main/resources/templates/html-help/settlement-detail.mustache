@@ -1,0 +1,66 @@
+{{<help-layout}}
+  {{$body}}
+    <h3>Description</h3>
+    <p>{{settlement.description}}</p>
+    <div id="characteristics">
+      <h3>Characteristics</h3>
+      <table class="characteristics">
+        <tr><td>Objective:</td><td>{{settlement.objective.getName}}</td></tr>
+        <tr><td>Shift Pattern:</td><td>{{settlement.shiftPattern.name}}</td></tr>
+        <tr><td>Default People #:</td><td>{{settlement.defaultPopulation}}</td></tr>
+        <tr><td>Default Robot #:</td><td>{{settlement.defaultNumOfRobots}}</td></tr>
+        <tr><td>Sponsor:</td><td>{{settlement.sponsor}}</td></tr>
+      </table>
+    </div>
+
+    {{>settlement-supplies}}   
+
+    {{^settlement.predefinedRobots.isEmpty}}
+    <div id="robots">
+      <h3>Robots</h3>
+      <table class="details">
+        <thead>
+          <tr>
+          <th>Name</th>
+          <th>Robot type</th>
+          <th>Model</th>
+          </tr>
+        </thead>
+      {{#settlement.predefinedRobots}}
+        <tr>
+          <td>{{name}}</td>
+          <td>{{type}}</td>
+          <td>{{model}}</td>
+        </tr>
+      {{/settlement.predefinedRobots}}
+      </table>
+    </div>
+    {{/settlement.predefinedRobots.isEmpty}}
+
+    {{^settlement.resupplyMissionTemplates.isEmpty}}
+    <div id="missions">
+      <h3>Supply Missions</h3>
+      <table class="details">
+        <thead>
+          <tr>
+          <th>Name</th>
+          <th>1st Arrival</th>
+          <th>Supply Plan</th>
+          <th>Frequency (sols)</th>
+          </tr>
+        </thead>
+      {{#settlement.resupplyMissionTemplates}}
+        <tr>
+          <td>{{name}}</td>
+          <td>{{firstArrival}}</td>
+          <td>{{manifest.name}}</td>
+          <td>{{frequency}}</td>
+        </tr>
+      {{/settlement.resupplyMissionTemplates}}
+      </table>
+    </div>
+    {{/settlement.resupplyMissionTemplates.isEmpty}}
+    </br>
+    <a class="backlink" href="index.html">Back to Settlement list</a>
+  {{/body}}
+{{/help-layout}}

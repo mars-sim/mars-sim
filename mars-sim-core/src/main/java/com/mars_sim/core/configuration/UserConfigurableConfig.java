@@ -13,14 +13,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
@@ -40,6 +43,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.SimulationFiles;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.tool.Conversion;
 import org.xml.sax.SAXException;
 
@@ -50,11 +54,11 @@ import org.xml.sax.SAXException;
 public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(UserConfigurableConfig.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(UserConfigurableConfig.class.getName());
 
-	private final String BACKUP = ".bak";
+	private static final String BACKUP = ".bak";
 
-	public final String XML_EXTENSION = ".xml";
+	public static final String XML_EXTENSION = ".xml";
 	
 	private static Namespace xsiNameSpace;
 
@@ -326,10 +330,9 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 			fmt.setFormat(Format.getPrettyFormat());
 
 			try (FileOutputStream stream = new FileOutputStream(itemFile);
-					OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8")) {
+					OutputStreamWriter writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8)) {
 				fmt.output(outputDoc, writer);
 				logger.config("New " + itemFile.getName() + " created and saved.");
-				stream.close();
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, "Cannot create " + itemFile.getName() + e.getMessage());
 			}
@@ -344,6 +347,16 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 			xsiNameSpace = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 		}
 		return xsiNameSpace;
+	}
+
+	/**
+	 * Get the known items in this config. Must load all entites as this class uses lazy loading
+	 */
+	public Collection<T> getKnownItems() {
+		Set<String> keys = new HashSet<>(knownItems.keySet());
+		keys.forEach(this::getItem); // Force load all items
+
+		return knownItems.values();
 	}
 
 	/**
@@ -374,5 +387,5 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 * @see #createItemDoc(UserConfigurable)
 	 * @return
 	 */
-	abstract protected T parseItemXML(Document doc, boolean predefined);
+	protected abstract T parseItemXML(Document doc, boolean predefined);
 }

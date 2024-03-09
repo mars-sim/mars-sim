@@ -25,7 +25,7 @@ class PartGenerator extends TypeGenerator<Part> {
 
         
         // Groups by part type
-        setGrouper(r-> r.getGoodType().getName());
+        setGrouper("Good Type", r-> r.getGoodType().getName());
     }
 
     /**
@@ -38,7 +38,7 @@ class PartGenerator extends TypeGenerator<Part> {
     public void generateEntity(Part p, OutputStream output) throws IOException {
         var generator = getParent();
 
-        var pScope = generator.createScopeMap(p.getName());
+        var pScope = generator.createScopeMap("Part - " +p.getName());
         pScope.put("part", p);
         addProcessFlows(p.getName(), pScope);
 

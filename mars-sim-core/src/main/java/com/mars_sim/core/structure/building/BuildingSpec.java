@@ -144,7 +144,7 @@ public class BuildingSpec {
 		return baseLevel;
 	}
 	
-	public String getBuildingType() {
+	public String getName() {
 		return buildingType;
 	}
 

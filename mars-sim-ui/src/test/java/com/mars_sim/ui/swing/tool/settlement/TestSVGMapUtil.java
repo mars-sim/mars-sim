@@ -31,11 +31,9 @@ public class TestSVGMapUtil extends TestCase {
     public void testGetBuildingSVG() {
         
         // Check that all configured building names are mapped to a SVG image.
-        Iterator<String> i = SimulationConfig.instance().getBuildingConfiguration().getBuildingTypes().iterator();
-        while (i.hasNext()) {
-            String buildingName = i.next();
-            GraphicsNode svg = SVGMapUtil.getBuildingSVG(buildingName);
-            assertNotNull(buildingName + " is not mapped to a SVG image.", svg);
+        for(var bs : SimulationConfig.instance().getBuildingConfiguration().getBuildingTypes()) {
+            GraphicsNode svg = SVGMapUtil.getBuildingSVG(bs.getName());
+            assertNotNull(bs.getName() + " is not mapped to a SVG image.", svg);
         }
     }
     

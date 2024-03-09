@@ -20,7 +20,7 @@ class FoodGenerator extends TypeGenerator<FoodProductionProcessInfo> {
     static final String TYPE_NAME = "food";
 
     FoodGenerator(HelpGenerator parent) {
-        super(parent, TYPE_NAME, "Food Recipes", "List of Recipes to create Food");
+        super(parent, TYPE_NAME, "Food Recipes", "Recipes (Food Process) to create Food");
     }
 
     /**
@@ -33,12 +33,12 @@ class FoodGenerator extends TypeGenerator<FoodProductionProcessInfo> {
     public void generateEntity(FoodProductionProcessInfo v, OutputStream output) throws IOException {
         var generator = getParent();
 
-        var vScope = generator.createScopeMap("Food " + v.getName());
+        var vScope = generator.createScopeMap("Food - " + v.getName());
         vScope.put("food", v);
 
         addProcessInputOutput(vScope,
-                "Ingredients", getProcessItems(v.getInputList()),
-                "Outcomes", getProcessItems(v.getOutputList()));
+                "Ingredients", toQuantityItems(v.getInputList()),
+                "Outcomes", toQuantityItems(v.getOutputList()));
 
         generator.generateContent("food-detail", vScope, output);
     }

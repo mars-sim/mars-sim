@@ -1,16 +1,20 @@
-    {{#hasOutputProcesses}}
-    <h3>Made by Manufacturing Process</h3>
-    <ul id="creators">
-    {{#outputProcesses}}
-      <li><a href="{{processfolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></li>
-    {{/outputProcesses}}
-    </ul>
-    {{/hasOutputProcesses}}
-    {{#hasInputProcesses}}
-    <h3>Used by Manufacturing Process</h3>
-    <ul id="consumers">
-    {{#inputProcesses}}
-      <li><a href="{{processfolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></li>
-    {{/inputProcesses}}
-    </ul>
-    {{/hasInputProcesses}}
+{{^outputProcesses.isEmpty}}
+<div id="creators" class="detailsSection">
+  <h3>Made by Manufacturing Process</h3>
+  <ul>
+  {{#outputProcesses}}
+    <li><a href="{{processfolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></li>
+  {{/outputProcesses}}
+  </ul>
+</div>
+{{/outputProcesses.isEmpty}}
+{{^inputProcesses.isEmpty}}
+<div id="consumers">
+  <h3>Used by Manufacturing Process</h3>
+  <ul>
+  {{#inputProcesses}}
+    <li><a href="{{processfolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></li>
+  {{/inputProcesses}}
+  </ul>
+</div>
+{{/inputProcesses.isEmpty}}

@@ -24,7 +24,7 @@ class ProcessGenerator extends TypeGenerator<ManufactureProcessInfo> {
                         "Manufacturing Processes that consume resoruce to create new resources.");
 
         // Groups according to first letter of name
-        setGrouper(r-> r.getName().substring(0, 1).toUpperCase());
+        setGrouper("Name", r-> r.getName().substring(0, 1).toUpperCase());
     }
 
     /**
@@ -37,10 +37,10 @@ class ProcessGenerator extends TypeGenerator<ManufactureProcessInfo> {
     public void generateEntity(ManufactureProcessInfo p, OutputStream output) throws IOException {
         var generator = getParent();
 
-		var pScope = generator.createScopeMap("Process " + p.getName());
+		var pScope = generator.createScopeMap("Process - " + p.getName());
 		pScope.put(TYPE_NAME, p);
-		addProcessInputOutput(pScope, "Inputs", getProcessItems(p.getInputList()),
-									"Products", getProcessItems(p.getOutputList()));
+		addProcessInputOutput(pScope, "Inputs", toQuantityItems(p.getInputList()),
+									"Products", toQuantityItems(p.getOutputList()));
 
         generator.generateContent("process-detail", pScope, output);
     }
