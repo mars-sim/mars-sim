@@ -3,85 +3,92 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8">
-		<title>Mars Simulation Project - Vehicle Long Range Explorer</title>
+		<title>Mars Simulation Project - Vehicle - Long Range Explorer</title>
 		<link rel="stylesheet" href="../../../msp.css">
 	</head>
 	<body>
-    <h2>Vehicle - Long Range Explorer</h2>
+	    <h2 id="top" class="pageTitle">Vehicle - Long Range Explorer</h2>
+
     <h3>Description</h3>
     <p>A rover for collecting rock samples from remote sites and ice prospecting for long range.</p>
-    <h3>Characteristics</h3>
-    <table id="characteristics">
-      <tr><td>Base Speed:</td><td>30.0 kmph</td></tr>
-      <tr><td>Crew Size:</td><td>4</td></tr>
-      <tr><td>Empty Mass:</td><td> kg</td></tr>
-      <tr><td>Width:</td><td>3.5</td></tr>
-      <tr><td>Length:</td><td>8.0</td></tr>
-      <tr><td>Fuel Efficiency:</td><td>0.85</td></tr>
-      <tr><td>Lab Tech Level:</td><td>1</td></tr>
-      <tr><td>Lab Specialties:</td><td>[AREOLOGY, CHEMISTRY]</td></tr>
-      <tr><td>Sickbay Tech Level:</td><td></td></tr>
-      <tr><td>Sickbay Beds:</td><td>1</td></tr>
-      <tr><td>Attachment Slots:</td><td>0</td></tr>
-    </table>
+    <div id="characteristics">
+      <h3>Characteristics</h3>
+      <table class="characteristics">
+        <tr><td>Base Speed:</td><td>30.0 kmph</td></tr>
+        <tr><td>Crew Size:</td><td>4</td></tr>
+        <tr><td>Empty Mass:</td><td> kg</td></tr>
+        <tr><td>Width:</td><td>3.5</td></tr>
+        <tr><td>Length:</td><td>8.0</td></tr>
+        <tr><td>Fuel Efficiency:</td><td>0.85</td></tr>
+        <tr><td>Lab Tech Level:</td><td>1</td></tr>
+        <tr><td>Lab Specialties:</td><td>[AREOLOGY, CHEMISTRY]</td></tr>
+        <tr><td>Sickbay Tech Level:</td><td></td></tr>
+        <tr><td>Sickbay Beds:</td><td>1</td></tr>
+        <tr><td>Attachment Slots:</td><td>0</td></tr>
+      </table>
+    </div>
 
-    <h3>Storage Capacity</h3>
-    <table id="cargo">
-        <tr>
-          <td><a href="../resource/toxic-waste.html">Toxic waste</a></td>
-          <td>4.0</td>
-        </tr>
-        <tr>
-          <td><a href="../resource/grey-water.html">Grey water</a></td>
-          <td>40.0</td>
-        </tr>
-        <tr>
-          <td><a href="../resource/black-water.html">Black water</a></td>
-          <td>10.0</td>
-        </tr>
-        <tr>
-          <td><a href="../resource/food.html">Food</a></td>
-          <td>100.0</td>
-        </tr>
-        <tr>
-          <td><a href="../resource/water.html">Water</a></td>
-          <td>200.0</td>
-        </tr>
-        <tr>
-          <td><a href="../resource/oxygen.html">Oxygen</a></td>
-          <td>100.0</td>
-        </tr>
-        <tr>
-          <td><a href="../resource/carbon-dioxide.html">Carbon Dioxide</a></td>
-          <td>2.0</td>
-        </tr>
-        <tr>
-          <td><a href="../resource/ice.html">Ice</a></td>
-          <td>400.0</td>
-        </tr>
-        <tr>
-          <td><a href="../resource/methanol.html">Methanol</a></td>
-          <td>50.0</td>
-        </tr>
-        <tr>
-          <td><a href="../resource/nitrogen.html">Nitrogen</a></td>
-          <td>2.0</td>
-        </tr>
-        <tr>
-          <td><a href="../resource/rock-samples.html">Rock samples</a></td>
-          <td>400.0</td>
-        </tr>
-        <tr>
-          <td><a href="../resource/food-waste.html">Food waste</a></td>
-          <td>8.0</td>
-        </tr>
-        <tr>
-          <td><a href="../resource/solid-waste.html">Solid waste</a></td>
-          <td>40.0</td>
-        </tr>
-    </table>
+
+    <div id="cargo" class="detailsSection">
+      <h3>Storage Capacity</h3>
+      <table class="details">
+          <tr>
+            <td><a href="../resource/toxic-waste.html">Toxic waste</a></td>
+            <td>4.0</td>
+          </tr>
+          <tr>
+            <td><a href="../resource/grey-water.html">Grey water</a></td>
+            <td>40.0</td>
+          </tr>
+          <tr>
+            <td><a href="../resource/black-water.html">Black water</a></td>
+            <td>10.0</td>
+          </tr>
+          <tr>
+            <td><a href="../resource/food.html">Food</a></td>
+            <td>100.0</td>
+          </tr>
+          <tr>
+            <td><a href="../resource/water.html">Water</a></td>
+            <td>200.0</td>
+          </tr>
+          <tr>
+            <td><a href="../resource/oxygen.html">Oxygen</a></td>
+            <td>100.0</td>
+          </tr>
+          <tr>
+            <td><a href="../resource/carbon-dioxide.html">Carbon Dioxide</a></td>
+            <td>2.0</td>
+          </tr>
+          <tr>
+            <td><a href="../resource/ice.html">Ice</a></td>
+            <td>400.0</td>
+          </tr>
+          <tr>
+            <td><a href="../resource/methanol.html">Methanol</a></td>
+            <td>50.0</td>
+          </tr>
+          <tr>
+            <td><a href="../resource/nitrogen.html">Nitrogen</a></td>
+            <td>2.0</td>
+          </tr>
+          <tr>
+            <td><a href="../resource/rock-samples.html">Rock samples</a></td>
+            <td>400.0</td>
+          </tr>
+          <tr>
+            <td><a href="../resource/food-waste.html">Food waste</a></td>
+            <td>8.0</td>
+          </tr>
+          <tr>
+            <td><a href="../resource/solid-waste.html">Solid waste</a></td>
+            <td>40.0</td>
+          </tr>
+      </table>
+    </div>
     </br>
     <a href="index.html">Back to Vehicle list</a>
+	<a class="backlink" href="../../concepts.html">Back to Concepts</a>
 	</body>
-  <footer><small>Version: pre-3.8.0 Generated on: 2024-02-24T12:12:47.8397297</small></footer>
+  <footer><small>Version: pre-3.8.0 Generated on: 2024-03-09T19:54:47.6753306</small></footer>
 </html>
