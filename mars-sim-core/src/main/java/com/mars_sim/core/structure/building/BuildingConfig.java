@@ -7,6 +7,7 @@
 package com.mars_sim.core.structure.building;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -95,12 +96,12 @@ public class BuildingConfig {
 	private static final String POWER_GENERATION = "power-generation";
 	private static final String POWER_SOURCE = "power-source";
 	private static final String POWER = "power";
+	private static final Set<String> DEFAULT_SOURCE_ATTR = Set.of(TYPE, MODULES, CONVERSION, PERCENT_LOADING);
 
 	private static final String POSITION = "-position";
 
 	private Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
 
-	private Set<String> buildingTypes = new HashSet<>();
 	private Set<FunctionType> activityFunctions  = new HashSet<>();
 	
 	/**
@@ -117,8 +118,6 @@ public class BuildingConfig {
 			String key = generateSpecKey(buildingType);
 			buildSpecMap.put(key, parseBuilding(buildingType, buildingElement, resProcConfig));
 		}
-
-		buildingTypes = buildSpecMap.values().stream().map(BuildingSpec::getBuildingType).collect(Collectors.toSet());
 	}
 
 	/**
@@ -126,8 +125,8 @@ public class BuildingConfig {
 	 *
 	 * @return set of building types.
 	 */
-	public Set<String> getBuildingTypes() {
-		return buildingTypes;
+	public Collection<BuildingSpec> getBuildingTypes() {
+		return buildSpecMap.values();
 	}
 
 	/**
@@ -371,29 +370,16 @@ public class BuildingConfig {
 		List<SourceSpec> sourceList = new ArrayList<>();
 		for (Element sourceElement : list) {
 			Properties attrs = new Properties();
-			String type = null;
-			double unitCapacity = 0D;
-			int numModules = 1;
-			double stirlingConversion = 100;
-			double percentLoadCapacity = 100;
+			String type = sourceElement.getAttributeValue(TYPE);
+			double unitCapacity = ConfigHelper.getOptionalAttributeDouble(sourceElement, unitName, 0);
+			int numModules = ConfigHelper.getOptionalAttributeInt(sourceElement, MODULES, 1);
+			double stirlingConversion =  ConfigHelper.getOptionalAttributeDouble(sourceElement, CONVERSION, 100D);
+			double percentLoadCapacity = ConfigHelper.getOptionalAttributeDouble(sourceElement, PERCENT_LOADING, 100D);
 			
+			// Add optional attributes.
 			for(Attribute attr : sourceElement.getAttributes()) {
-				if (attr.getName().equals(TYPE)) {
-					type = attr.getValue();
-				}
-				else if (attr.getName().equals(MODULES)) {
-					numModules = Integer.parseInt(attr.getValue());
-				}
-				else if (attr.getName().equals(unitName)) {
-					unitCapacity = Double.parseDouble(attr.getValue());
-				}
-				else if (attr.getName().equals(CONVERSION)) {
-					stirlingConversion = Double.parseDouble(attr.getValue());
-				}
-				else if (attr.getName().equals(PERCENT_LOADING)) {
-					percentLoadCapacity = Double.parseDouble(attr.getValue());
-				}
-				else {
+				String attrName = attr.getName();
+				if (!DEFAULT_SOURCE_ATTR.contains(attrName) && !attrName.equals(unitName)) {
 					attrs.put(attr.getName(), attr.getValue());
 				}
 			}

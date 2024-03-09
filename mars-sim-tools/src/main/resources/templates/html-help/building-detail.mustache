@@ -1,0 +1,51 @@
+{{<help-layout}}
+  {{$body}}
+    <h2>Building - {{building.name}}</h2>
+    <h3>Description</h3>
+    <p>{{building.description}}</p>
+    <div id="characteristics">
+      <h3>Characteristics</h3>
+      <table>
+        <tr><td>Category:</td><td>{{building.category.getName}}</td></tr>
+        <tr><td>Construction:</td><td>{{building.construction}}</td></tr>
+        <tr><td>Size:</td><td>{{building.width}} x {{building.length}} m</td></tr>
+        <tr><td>Level:</td><td>{{building.baseLevel}}</td></tr>
+        <tr><td>Maintenance Period:</td><td>{{building.maintenanceTime}}</td></tr>
+        <tr><td>Power Demands:</td><td>{{building.basePowerRequirement}} kW</td></tr>
+        <tr><td>Offline Power Demands:</td><td>{{building.basePowerDownPowerRequirement}} kW</td></tr>
+      </table>
+    </div>
+
+    <h3>Functions</h3>
+      <ul>
+      {{#building.functionSupported}}
+        <li>{{name}}</li>
+      {{/building.functionSupported}}
+      </ul>
+
+    {{^building.powerSource.isEmpty}}
+    <div id="powersources">
+      <h3>Power Sources</h3>
+      <ul>
+      {{#building.powerSource}}
+        <li>{{type}}</li>
+      {{/building.powerSource}}
+      </ul>
+    </div>
+    {{/building.powerSource.isEmpty}}
+
+    {{^building.heatSource.isEmpty}}
+    <div id="heatsources">
+      <h3>Heating Sources</h3>
+      <ul>
+      {{#building.heatSource}}
+        <li>{{type}}</li>
+      {{/building.heatSource}}
+      </ul>
+    </div>
+    {{/building.heatSource.isEmpty}}
+
+    </br>
+    <a href="index.html">Back to Building list</a>
+  {{/body}}
+{{/help-layout}}

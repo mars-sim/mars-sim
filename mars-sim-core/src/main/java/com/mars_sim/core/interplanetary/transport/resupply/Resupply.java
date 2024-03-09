@@ -572,10 +572,10 @@ public class Resupply extends Transportable implements SettlementSupplies {
 				
 				int zone = 0;
 				
-				String uniqueName = buildingManager.getUniqueName(spec.getBuildingType());
+				String uniqueName = buildingManager.getUniqueName(spec.getName());
 				// Note : ask for user to define the location for the new building as well
 				newPosition = new BuildingTemplate(buildingID, zone,
-						spec.getBuildingType(), uniqueName, new BoundedObject(0,  0, width, length, 0));
+						spec.getName(), uniqueName, new BoundedObject(0,  0, width, length, 0));
 
 				logger.config("Case 5: " + POSITIONING + uniqueName + " at (0, 0)");
 				return newPosition;
@@ -597,7 +597,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 
 		// Put this non-habitable building next to the same building type.
 		List<Building> sameTypeBuildings = settlement.getBuildingManager()
-				.getBuildingsOfSameType(buildingSpec.getBuildingType());
+				.getBuildingsOfSameType(buildingSpec.getName());
 		
 		BuildingCategory buildingCategory = buildingSpec.getCategory();
 		
@@ -905,13 +905,13 @@ public class Resupply extends Transportable implements SettlementSupplies {
 			
 				int zone = 0;
 				
-				String uniqueName = buildingManager.getUniqueName(spec.getBuildingType());
+				String uniqueName = buildingManager.getUniqueName(spec.getName());
 
 				logger.config(POSITIONING + "at (" + Math.round(rectCenterX * 10D) / 10D + ", "
 						+ Math.round(rectCenterY * 10D) / 10D + ") at " + Math.round(rectRotation) + " deg");
 
 				newPosition = new BuildingTemplate(buildingID, zone,
-						spec.getBuildingType(), uniqueName, position);
+						spec.getName(), uniqueName, position);
 				break;
 			}
 		}
@@ -1000,9 +1000,9 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		
 			int zone = 0;
 			
-			String uniqueName = buildingManager.getUniqueName(spec.getBuildingType());
+			String uniqueName = buildingManager.getUniqueName(spec.getName());
 
-			newPosition = new BuildingTemplate(buildingID, zone, spec.getBuildingType(), uniqueName, 
+			newPosition = new BuildingTemplate(buildingID, zone, spec.getName(), uniqueName, 
 					new BoundedObject(centerX, centerY, width, newLength, facingDegrees));
 		}
 

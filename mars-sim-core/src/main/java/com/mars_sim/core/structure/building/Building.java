@@ -297,10 +297,10 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		malfunctionManager.addScopeString(SystemType.BUILDING.getName());
 		
 		// Add building type to the standard scope
-		SimulationConfig.instance().getPartConfiguration().addScopes(buildingSpec.getBuildingType());
+		SimulationConfig.instance().getPartConfiguration().addScopes(buildingSpec.getName());
 		
 		// Add building type to malfunction manager.
-		malfunctionManager.addScopeString(buildingSpec.getBuildingType());
+		malfunctionManager.addScopeString(buildingSpec.getName());
 			
 		// Add each function to the malfunction scope.
 		for (Function sfunction : functions) {

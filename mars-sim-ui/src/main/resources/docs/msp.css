@@ -32,7 +32,10 @@ ul.navbar a {
   padding: 5em;
   width: 65%;
 }
-
+a.backlink {
+  font-size: smaller;
+  font-style: italic;
+}
 a:link {
 	color: blue;
 	}

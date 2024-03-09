@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -26,10 +24,10 @@ import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.building.BuildingConfig;
+import com.mars_sim.core.structure.building.BuildingSpec;
 import com.mars_sim.core.structure.building.BuildingTemplate;
 import com.mars_sim.core.vehicle.VehicleConfig;
 
-/** TODO externalize strings */
 @SuppressWarnings("serial")
 public class SupplyTableModel
 extends AbstractTableModel {
@@ -37,11 +35,11 @@ extends AbstractTableModel {
  	private static SimLogger logger = SimLogger.getLogger(SupplyTableModel.class.getName());
 
 	// Supply categories.
-	public final static String BUILDING = "Building";
-	public final static String VEHICLE = "Vehicle";
-	public final static String EQUIPMENT = "Equipment";
-	public final static String RESOURCE = "Resource";
-	public final static String PART = "Part";
+	public static final String BUILDING = "Building";
+	public static final String VEHICLE = "Vehicle";
+	public static final String EQUIPMENT = "Equipment";
+	public static final String RESOURCE = "Resource";
+	public static final String PART = "Part";
 
 	private static List<String> categoryList;
 	private static Map<String, List<String>> categoryTypeMap;
@@ -285,18 +283,17 @@ extends AbstractTableModel {
 	 }
 
 	 public static List<String> getSortedBuildingTypes() {
-		 Set<String> buildingTypes = buildingConfig.getBuildingTypes();
-		 List<String> sortedBuildingTypes = new ArrayList<>(buildingTypes);
-		 Collections.sort(sortedBuildingTypes);
-		 return sortedBuildingTypes;
+		return buildingConfig.getBuildingTypes().stream()
+					.map(BuildingSpec::getName)
+					.sorted()
+					.toList();
 	 }
 
 	 public static List<String> getSortedVehicleTypes() {
-		 List<String> sortedVehicleTypes = vehicleConfig.getVehicleSpecs().stream()
+		 return vehicleConfig.getVehicleSpecs().stream()
 		 							.map(v -> v.getName())
-									.collect(Collectors.toList());
-		 Collections.sort(sortedVehicleTypes);
-		 return sortedVehicleTypes;
+									.sorted()
+									.toList();
 	 }
 
 	 /**
@@ -320,7 +317,7 @@ extends AbstractTableModel {
 			 List<String> sortedEquipmentTypes = Arrays.stream(EquipmentType.values())
 					 						.map(EquipmentType::name)
 					 						.sorted()
-					 						.collect(Collectors.toList());
+					 						.toList();
 			 categoryTypeMap.put(EQUIPMENT, sortedEquipmentTypes);
 
 			 // Create resource type list.

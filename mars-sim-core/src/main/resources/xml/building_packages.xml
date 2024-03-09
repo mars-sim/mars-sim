@@ -332,7 +332,11 @@
 	    <standalone type="MD4 Nuclear Reactor" xloc="220.0" yloc="0" facing="90.0" />
 	    <standalone type="MD4 Nuclear Reactor" xloc="220.0" yloc="30" facing="90.0" />
 	</building-package>
-	
+
+	<building-package name="Kilo Set 1 - 1x1" >
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="0" facing="0.0" />
+	</building-package>
+
 	<building-package name="Kilo Set 1 - 1x2" >
 	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="0" facing="0.0" />
 	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="-5" facing="0.0" />	    
