@@ -23,7 +23,7 @@ public class SettlementGenerator extends TypeGenerator<SettlementTemplate> {
     public static final String TYPE_NAME = "settlement";
 
     protected SettlementGenerator(HelpGenerator parent) {
-        super(parent, TYPE_NAME, "Settlement Template",
+        super(parent, TYPE_NAME, "Settlement Templates",
                 "Settlement templates that can be used in a Scenario");
         
         // Group by sponsor
@@ -53,7 +53,7 @@ public class SettlementGenerator extends TypeGenerator<SettlementTemplate> {
         var generator = getParent();
 
 		// Individual  pages
-	    var vScope = generator.createScopeMap("Settlement " + v.getName());
+	    var vScope = generator.createScopeMap("Settlement Template - " + v.getName());
 		vScope.put(TYPE_NAME, v);
         addSettlementSupplies(vScope, v); // Uses the settlement supplies template
 

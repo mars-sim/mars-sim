@@ -16,6 +16,7 @@ import org.jsoup.nodes.Document;
 import org.junit.Test;
 
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.configuration.ScenarioConfig;
 import com.mars_sim.core.resource.ResourceUtil;
 
 public class HelpGeneratorTest {
@@ -45,9 +46,8 @@ public class HelpGeneratorTest {
         var vg = new VehicleGenerator(context);
         var content = createDoc(vg, spec);
 
-        var cargo = content.getElementById("cargo");
-        assertNotNull("Cargo section", cargo);
-        assertNotNull("Characteristics section", content.getElementById("characteristics"));
+        assertContent(content, "characteristics");
+        assertContent(content, "cargo");
     }
 
     @Test
@@ -59,9 +59,9 @@ public class HelpGeneratorTest {
         var vg = new ProcessGenerator(context);
         var content = createDoc(vg, spec);
 
-        assertNotNull("Input section", content.getElementById("inputs"));
-        assertNotNull("Output section", content.getElementById("outputs"));
-        assertNotNull("Characteristics section", content.getElementById("characteristics"));
+        assertContent(content, "characteristics");
+        assertContent(content, "inputs");
+        assertContent(content, "outputs");
     }
 
     @Test
@@ -73,9 +73,23 @@ public class HelpGeneratorTest {
         var vg = new FoodGenerator(context);
         var content = createDoc(vg, spec);
 
-        assertNotNull("Input section", content.getElementById("inputs"));
-        assertNotNull("Output section", content.getElementById("outputs"));
-        assertNotNull("Characteristics section", content.getElementById("characteristics"));
+        assertContent(content, "characteristics");
+        assertContent(content, "inputs");
+        assertContent(content, "outputs");
+    }
+
+    @Test
+    public void testScenarioHelp() throws IOException {
+        var context = createGenerator();
+        
+        // Has both inputs and outputs
+        var spec = (new ScenarioConfig()).getItem("Default");
+
+        var vg = new ScenarioGenerator(context);
+        var content = createDoc(vg, spec);
+
+        assertContent(content, "settlements");
+        assertContent(content, "arriving");
     }
 
     
@@ -89,9 +103,9 @@ public class HelpGeneratorTest {
         var vg = new ResourceGenerator(context);
         var content = createDoc(vg, spec);
 
-        assertNotNull("Consumer section", content.getElementById("consumers"));
-        assertNotNull("Creator section", content.getElementById("creators"));
-        assertNotNull("Characteristics section", content.getElementById("characteristics"));
+        assertContent(content, "consumers");
+        assertContent(content, "creators");
+        assertContent(content, "characteristics");
     }
 
     @Test
@@ -110,7 +124,6 @@ public class HelpGeneratorTest {
         assertContent(content, "missions");
         assertContent(content, "buildings");
         assertContent(content, "vehicles");
-
     }
 
     /**
@@ -123,7 +136,7 @@ public class HelpGeneratorTest {
         var node = doc.getElementById(id);
         assertNotNull("'" + id + "' section", node);
         assertTrue("'" + id + "' has content", node.childNodeSize() > 0);
-        assertTrue("'" + id + "' has a <div>", node.tagName().equals("div"));
+        assertEquals("'" + id + "' has a <div>", "div", node.tagName());
     }
 
     @Test public void testFullGeneration() throws IOException {
@@ -136,7 +149,7 @@ public class HelpGeneratorTest {
             File[] created = output.listFiles();
 
             // Matches number of type generators plus 1 for index
-            assertEquals("Top level content", 8, created.length);
+            assertEquals("Top level content", 10, created.length);
             for(File f : created) {
                 if (f.isFile()) {
                     // Must be index

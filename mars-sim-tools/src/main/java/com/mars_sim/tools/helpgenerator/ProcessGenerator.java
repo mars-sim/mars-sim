@@ -37,7 +37,7 @@ class ProcessGenerator extends TypeGenerator<ManufactureProcessInfo> {
     public void generateEntity(ManufactureProcessInfo p, OutputStream output) throws IOException {
         var generator = getParent();
 
-		var pScope = generator.createScopeMap("Process " + p.getName());
+		var pScope = generator.createScopeMap("Process - " + p.getName());
 		pScope.put(TYPE_NAME, p);
 		addProcessInputOutput(pScope, "Inputs", toQuantityItems(p.getInputList()),
 									"Products", toQuantityItems(p.getOutputList()));

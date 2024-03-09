@@ -1,6 +1,5 @@
 {{<help-layout}}
   {{$body}}
-    <h2>Vehicle - {{vehicle.name}}</h2>
     <h3>Description</h3>
     <p>{{vehicle.description}}</p>
     <div id="characteristics">
@@ -25,17 +24,17 @@
     </div>
 
     {{#vehicle.hasPartAttachments}}
-    <div id="attachments">
+    <div id="attachments" class="detailsSection">
       <h3>Attachments</h3>
       <table class="details">
       {{#vehicle.attachableParts}}
-        <tr><td>><a href="{{partfolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></td></tr>
+        <tr><td><a href="{{partfolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a></td></tr>
       {{/vehicle.attachableParts}}
       </table>
     </div>
     {{/vehicle.hasPartAttachments}}
 
-    <div id="cargo">
+    <div id="cargo" class="detailsSection">
       <h3>Storage Capacity</h3>
       <table class="details">
         {{#cargo}}

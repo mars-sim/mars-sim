@@ -32,10 +32,6 @@ ul.navbar a {
   padding: 5em;
   width: 65%;
 }
-a.backlink {
-  font-size: smaller;
-  font-style: italic;
-}
 a:link {
 	color: blue;
 	}
@@ -110,10 +106,11 @@ ol {
 /* counter-reset: item; */
 	margin-left: 22px;
 }
+
 /**
  * Style for generated tables
  */
- a.backlink {
+a.backlink {
 	font-size: smaller;
 	font-style: italic;
   }
@@ -125,9 +122,6 @@ ol {
     	font-weight:bold;
     	text-align:right;
 	}
-	th {
-		text-align:left;
-	}
 }
 .details {
 	margin-left: auto;
@@ -136,6 +130,22 @@ ol {
 .details th {
 	text-align:left;
 }
+.details td, .details th {
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+/**
+.details td, .details th, .details table {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+*/
 .detailsSection{
 	text-align: center;
+}
+.pageTitle {
+	border-bottom:1px solid #000;
+	padding-bottom:3px;
 }

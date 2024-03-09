@@ -1,6 +1,5 @@
 {{<help-layout}}
   {{$body}}
-    <h2>Settlement - {{settlement.name}}</h2>
     <h3>Description</h3>
     <p>{{settlement.description}}</p>
     <div id="characteristics">
@@ -16,7 +15,7 @@
 
     {{>settlement-supplies}}   
 
-    {{^settlement.predefinedRobots}}
+    {{^settlement.predefinedRobots.isEmpty}}
     <div id="robots">
       <h3>Robots</h3>
       <table class="details">
@@ -36,7 +35,7 @@
       {{/settlement.predefinedRobots}}
       </table>
     </div>
-    {{/settlement.predefinedRobots}}
+    {{/settlement.predefinedRobots.isEmpty}}
 
     {{^settlement.resupplyMissionTemplates.isEmpty}}
     <div id="missions">

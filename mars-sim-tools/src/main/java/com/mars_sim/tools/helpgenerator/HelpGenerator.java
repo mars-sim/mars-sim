@@ -44,6 +44,7 @@ public class HelpGenerator {
 
 	private static Logger logger = Logger.getLogger(HelpGenerator.class.getName());
 	private static final String TEMPLATES_DIR = "templates/";
+	private static final String TITLE_PREFIX = "List of ";
 
 	/**
 	 * Function that converts a string into a valid file name
@@ -82,6 +83,8 @@ public class HelpGenerator {
 		this.baseScope.put("processfolder", "../" + ProcessGenerator.TYPE_NAME + "/");
 		this.baseScope.put("foodfolder", "../" + FoodGenerator.TYPE_NAME + "/");
 		this.baseScope.put("buildingfolder", "../" + BuildingGenerator.TYPE_NAME + "/");
+		this.baseScope.put("crewfolder", "../" + CrewGenerator.TYPE_NAME + "/");
+		this.baseScope.put("settlementfolder", "../" + SettlementGenerator.TYPE_NAME + "/");
 
 
 		// Add a lambda so a entity name can be converted into aa valid filename
@@ -125,7 +128,7 @@ public class HelpGenerator {
 	 void createFlatIndex(String title, String description,
 			List<? extends Object> entities, String typeFolder, File outputDir) 
 		throws IOException {
-		var scope = createScopeMap(title);
+		var scope = createScopeMap(TITLE_PREFIX + title);
 		scope.put("description", description);
 		scope.put("entities", entities);
 		scope.put("typefolder", "../" + typeFolder + "/");
@@ -151,7 +154,7 @@ public class HelpGenerator {
 	 void createGroupedIndex(String title, String description,
 			String groupName, List<?> groups,  String typeFolder, File outputDir) 
 		throws IOException {
-		var scope = createScopeMap(title);
+		var scope = createScopeMap(TITLE_PREFIX + title);
 		scope.put("description", description);
 		scope.put("groups", groups);
 		scope.put("groupname", groupName);
@@ -225,6 +228,9 @@ public class HelpGenerator {
 		gens.add(new VehicleGenerator(this));
 		gens.add(new BuildingGenerator(this));
 		gens.add(new SettlementGenerator(this));
+		gens.add(new CrewGenerator(this));
+		gens.add(new ScenarioGenerator(this));
+
 
 		// Generate all subtype
 		for(var g : gens) {

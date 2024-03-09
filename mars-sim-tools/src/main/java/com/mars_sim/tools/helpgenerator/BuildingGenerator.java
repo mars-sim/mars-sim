@@ -47,7 +47,7 @@ public class BuildingGenerator extends TypeGenerator<BuildingSpec>{
         var generator = getParent();
 
 		// Individual vehicle pages
-	    var vScope = generator.createScopeMap("Building " + v.getName());
+	    var vScope = generator.createScopeMap("Building - " + v.getName());
 		vScope.put(TYPE_NAME, v);
 
 

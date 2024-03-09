@@ -1,0 +1,35 @@
+{{<help-layout}}
+  {{$body}}
+    <h3>Description</h3>
+    <p>{{crew.description}}</p>
+
+    <div id="members">
+      <h3>Members</h3>
+      <table class="details">
+        <thead>
+          <tr>
+          <th>Name</th>
+          <th>Gender</th>
+          <th>Age</th>
+          <th>Job</th>
+          <th>Country</th>
+          <th>Sponsor</th>
+          </tr>
+        </thead>
+      {{#crew.team}}
+        <tr>
+          <td>{{name}}</td>
+          <td>{{gender.getName}}</td>
+          <td>{{age}}</td>
+          <td>{{job}}</td>
+          <td>{{country}}</td>
+          <td>{{sponsor}}</td>
+        </tr>
+      {{/crew.team}}
+      </table>
+    </div>
+
+    </br>
+    <a class="backlink" href="index.html">Back to Crew list</a>
+  {{/body}}
+{{/help-layout}}
