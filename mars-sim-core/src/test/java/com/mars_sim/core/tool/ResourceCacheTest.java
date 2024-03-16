@@ -46,7 +46,7 @@ class ResourceCacheTest {
     }
 
     @Test
-    void testExtractOverwrite() throws IOException {
+    void testExtractOverwrite() throws IOException, InterruptedException {
         File output = Files.createTempDirectory("cache").toFile();
         try {
             // Write different content to file first
@@ -57,6 +57,9 @@ class ResourceCacheTest {
             long origSize = destFile.length();
             long origTime = destFile.lastModified();
 
+            // Add a pause to ensure file time change
+            Thread.sleep(1000);
+            
             // Extract to overwrite exisitng file
             var cache = new ResourceCache(output, true);
             var extracted = cache.extractContent(TEST_RESOURCE, DEST_NAME);

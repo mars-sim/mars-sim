@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
@@ -25,9 +26,13 @@ import com.mars_sim.core.tool.ResourceCache;
  */
 public final class HelpLibrary {
 
-    static final String GENERATED_DIR = "generated";
-    private static final String INDEX_FILE = "userguide.html";
+    // The default starting page for the help
+    public static final String STARTING_PAGE = "userguide.html";
+
     static final String VERSION_FILE = "generated_version.props";
+    static final String GENERATED_DIR = "generated";
+
+    private ResourceCache cache;
 
     /**
      * Create the libary of help files in a directory.
@@ -36,7 +41,7 @@ public final class HelpLibrary {
      * @return The main entry poitn to the library.
      * @throws IOException 
      */
-    public static File createLibrary(SimulationConfig config, File location)
+    public HelpLibrary(SimulationConfig config, File location)
                 throws IOException {
         
         location.mkdirs();
@@ -65,7 +70,6 @@ public final class HelpLibrary {
                 SimulationRuntime.VERSION.store(sink);
             }
         }
-        return new File(location, INDEX_FILE);
     }
 
     /**
@@ -76,9 +80,9 @@ public final class HelpLibrary {
      * @param outputDir Destination directory.
      * @throws IOException
      */
-    private static void extractResourceFiles(String resourcePath, File outputDir)
+    private void extractResourceFiles(String resourcePath, File outputDir)
                     throws  IOException {
-        ResourceCache cache = new ResourceCache(outputDir, true);
+        cache = new ResourceCache(outputDir, true);
 
         ClassLoader classLoader = HelpLibrary.class.getClassLoader();
         var resolver = new PathMatchingResourcePatternResolver(classLoader);
@@ -98,13 +102,26 @@ public final class HelpLibrary {
     }
 
     /**
+     * Get the URI of a help page
+     * @param name This is shortern name; if null then the default page is returned
+     * @return
+     */
+    public URI getPage(String name) {
+        if (name == null) {
+            name = STARTING_PAGE;
+        }
+        var physicalHTML = new File(cache.getLocation(), name);
+        return physicalHTML.toURI();
+    }
+
+    /**
      * Create the default help library
      * @param config
      * @return
      * @throws IOException
      */
-    public static File createDefault(SimulationConfig config) throws IOException {
+    public static HelpLibrary createDefault(SimulationConfig config) throws IOException {
         File helpDir = new File(SimulationRuntime.getDataDir(), "help");
-        return createLibrary(config, helpDir);
+        return new HelpLibrary(config, helpDir);
     }
 }

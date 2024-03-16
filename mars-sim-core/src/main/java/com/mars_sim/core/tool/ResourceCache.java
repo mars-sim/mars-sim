@@ -130,4 +130,12 @@ public class ResourceCache {
 
         return backup;
     }
+
+    /**
+     * Get the directory controlled by this cache
+     * @return
+     */
+    public File getLocation() {
+        return location;
+    }
 }

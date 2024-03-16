@@ -8,6 +8,7 @@ package com.mars_sim.ui.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -22,6 +23,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -52,7 +54,9 @@ import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.tools.Msg;
+import com.mars_sim.tools.helpgenerator.HelpLibrary;
 import com.mars_sim.ui.swing.tool.JStatusBar;
+import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.utils.JMemoryMeter;
 
 /**
@@ -83,6 +87,7 @@ public class MainWindow
 	private static final String SHOW_UNIT_BAR = "show-unit-bar";
 	private static final String SHOW_TOOL_BAR = "show-tool-bar";
 	private static final String MAIN_PROPS = "main-window";
+	private static final String EXTERNAL_BROWSER = "use-external";
 
 	/** The main window frame. */
 	private static JFrame frame;
@@ -105,7 +110,6 @@ public class MainWindow
 
 	/** WebSwitch for the control of play or pause the simulation */
 	private JToggleButton pauseSwitch;
-//	private JCheckBox blockingSwitch;
 
 	private Dimension selectedSize;
 
@@ -113,6 +117,10 @@ public class MainWindow
 	private MasterClock masterClock;
 
 	private JMemoryMeter memoryBar;
+
+	private HelpLibrary helpLibrary;
+
+	private boolean useExternalBrowser;
 
 	/**
 	 * Constructor 1.
@@ -175,7 +183,6 @@ public class MainWindow
 
 		// Set the UI configuration
 		boolean useDefault = configs.useUIDefault();
-//		logger.config("useDefault is: " + useDefault);
 
 		if (useDefault) {
 			logger.config("Will calculate screen size for default display instead.");
@@ -270,7 +277,6 @@ public class MainWindow
 	 */
 	private Dimension calculatedScreenSize(int screenWidth, int screenHeight, boolean useDefault) {
 		logger.config("Current screen size is " + screenWidth + " x " + screenHeight);
-//		logger.config("useDefault is: " + useDefault);
 
 		Dimension frameSize = null;
 		if (useDefault) {
@@ -294,9 +300,6 @@ public class MainWindow
 					logger.warning("Selected screen size cannot be larger than physical screen size.");
 					frameSize = null;
 				}
-				// else {
-				// // proceed to the next
-				// }
 			}
 
 			if (frameSize == null) {
@@ -397,6 +400,8 @@ public class MainWindow
 		Properties props = configs.getPropSet(MAIN_PROPS);
 		unitToolbar.setVisible(UIConfig.extractBoolean(props, SHOW_UNIT_BAR, false));
 		toolToolbar.setVisible(UIConfig.extractBoolean(props, SHOW_TOOL_BAR, true));
+		useExternalBrowser = UIConfig.extractBoolean(props, EXTERNAL_BROWSER, false);
+
 
 		// Prepare menu
 		MainWindowMenu mainWindowMenu = new MainWindowMenu(this, desktop);
@@ -411,10 +416,6 @@ public class MainWindow
 
 		// Create speed buttons
 		createSpeedButtons(statusBar);
-
-		// Create overlay button
-//		blockingSwitch = createOverlayCheckBox();
-//		statusBar.addLeftComponent(blockingSwitch, false);
 
 		// Create memory bar
 		memoryBar = new JMemoryMeter();
@@ -719,6 +720,8 @@ public class MainWindow
 		Properties desktopProps = new Properties();
 		desktopProps.setProperty(SHOW_TOOL_BAR, Boolean.toString(toolToolbar.isVisible()));
 		desktopProps.setProperty(SHOW_UNIT_BAR, Boolean.toString(unitToolbar.isVisible()));
+		desktopProps.setProperty(EXTERNAL_BROWSER, Boolean.toString(useExternalBrowser));
+
 		result.put(MAIN_PROPS, desktopProps);
 		return result;
 	}
@@ -751,12 +754,54 @@ public class MainWindow
 		if (isPaused != pauseSwitch.isSelected()) {
 			pauseSwitch.setSelected(isPaused);
 		}
-//		displayOverlay();
 	}
 
 	public static void setInteractiveTerm(InteractiveTerm i) {
 		interactiveTerm = i;
 	}
+
+	/**
+	 * Use the external browser for help
+	 * @param selected
+	 */
+	public void setExternalBrowser(boolean selected) {
+		useExternalBrowser = selected;
+	}
+
+	public boolean getUseExternalBrowser() {
+		return useExternalBrowser;
+	}
+
+	/**
+	 * Get the help library
+	 * @param helpPage
+	 */
+	public HelpLibrary getHelp() {
+		return helpLibrary;
+	}
+
+	/**
+	 * Display a helppage
+	 * @param helpPage
+	 */
+	public void showHelp(String helpPage) {
+		try {
+			if (helpLibrary == null) {
+				helpLibrary = HelpLibrary.createDefault(sim.getConfig());
+			}
+
+			var  helpURI = helpLibrary.getPage(helpPage);	
+			if (useExternalBrowser) {
+				Desktop.getDesktop().browse(helpURI);
+			}
+			else {
+				GuideWindow ourGuide = (GuideWindow) desktop.openToolWindow(GuideWindow.NAME);
+				ourGuide.displayURI(helpURI);
+			}
+		} catch (IOException e) {
+			logger.log(Level.WARNING, "Problem showing help page", e);
+		}
+    }
 
 	/**
 	 * Prepares the panel for deletion.

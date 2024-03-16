@@ -14,9 +14,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -50,9 +49,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	public static final String WIKI_ICON = "action/wiki";
 	public static final String WIKI_URL = Msg.getString("GuideWindow.githubwiki.url"); //$NON-NLS-1$
 	public static final String WIKI_TEXT = Msg.getString("GuideWindow.githubwiki.title"); //$NON-NLS-1$
-    
-//	private JButton link;
-	
+    	
 	private JLabel urlLabel;
 	
 	/** Data members. */
@@ -60,8 +57,6 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	private HTMLContentPane htmlPane;
 	/** The view port for the text pane. */
 	private JViewport viewPort;
-	/** The guide window URL. */
-	private URL guideURL;
 	
 	private Icon homeIcon = ImageLoader.getIconByName(HOME_ICON);
 	private Icon wikiIcon = ImageLoader.getIconByName(WIKI_ICON);
@@ -79,19 +74,10 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	 */
 	public GuideWindow(MainDesktopPane desktop) {
 		super(NAME, desktop);
-
-
-		try {
-			guideURL = HelpLibrary.createDefault(desktop.getSimulation().getConfig()).toURI().toURL();
-		} catch (IOException e) {
-			
-		}
-
 		
-		// May use EventQueue.invokeLater()
        	init();            
 	}
-	
+
 	public void init() {
 			
 		homeButton.setToolTipText(Msg.getString("GuideWindow.tooltip.home")); //$NON-NLS-1$
@@ -124,8 +110,6 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		JPanel linkPanel = new JPanel(new FlowLayout(2, 2, FlowLayout.LEFT));
 		topPanel.add(linkPanel, BorderLayout.EAST);
 		
-//		link = new JButton(WIKI_TEXT);
-//		link.setAlignmentY(1f);
 		wikiButton.setToolTipText("Open mars-sim wiki in GitHub");
 		linkPanel.add(wikiButton);
 		wikiButton.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
@@ -135,7 +119,6 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
 		htmlPane = new HTMLContentPane();
 		htmlPane.addHyperlinkListener(this);
-		htmlPane.goToURL(guideURL);
 		htmlPane.setContentType("text/html");
 		htmlPane.setBackground(Color.lightGray);
 		htmlPane.setBorder(new EmptyBorder(2, 2, 2, 2));
@@ -161,8 +144,15 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		
 		// Pack window.
 		// WARNING: using pack() here will shrink the window to one line tall in swing mode
+		displayHelpByName(Msg.getString("doc.whatsnew"));
+	}
 
-		setURLString(Msg.getString("doc.whatsnew")); //$NON-NLS-1$
+	/**
+	 * Take the logical name and uses the HelpLibrary to convert it to a URI
+	 * @param name
+	 */
+	private void displayHelpByName(String name) {
+		displayURI(desktop.getMainWindow().getHelp().getPage(name)); 
 	}
 
     /**
@@ -176,8 +166,6 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
         urlLabel.setForeground(Color.DARK_GRAY);
 		statusBar.addLeftComponent(urlLabel, false);
 
-//		statusBar.addRightCorner();
-
         return statusBar;
     }
     
@@ -188,9 +176,14 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	/**
 	 * Set a URL String for display.
 	 */
-	public void setURLString(String fileloc) {
-		if (htmlPane != null)
-			htmlPane.goToURL(getClass().getResource(fileloc));
+	public void displayURI(URI pageAddress) {
+		if (pageAddress != null) {
+			try {
+				htmlPane.goToURL(pageAddress.toURL());
+			} catch (MalformedURLException e) {
+				// SHoud never reach this
+			}
+		}
 	}
 
 	/** Implementing ActionListener method. */
@@ -198,7 +191,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	public void actionPerformed(ActionEvent event) {
 		Object source = event.getSource();
 		if (source == this.homeButton) {
-			htmlPane.goToURL(guideURL);
+			displayHelpByName(HelpLibrary.STARTING_PAGE);
 			updateButtons();
 		} else if (source == this.backButton) {
 			htmlPane.back();
@@ -243,7 +236,6 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	public void destroy() {
 		htmlPane = null;
 		viewPort = null;
-		guideURL = null;
 		homeButton = null;
 		backButton = null;
 		forwardButton = null;

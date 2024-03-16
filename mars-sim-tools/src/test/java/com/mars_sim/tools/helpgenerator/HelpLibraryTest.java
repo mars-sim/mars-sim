@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import com.mars_sim.core.SimulationConfig;
 
 class HelpLibraryTest {
+
     @Test
     void testCreateLibrary() throws IOException {
 		// Load config files
@@ -25,7 +26,8 @@ class HelpLibraryTest {
             var partDetails = HelpLibrary.class.getResourceAsStream("/templates/html-help/part-detail.mustache");
             assertNotNull("Parts details can be found", partDetails);
 
-            var entryPoint = HelpLibrary.createLibrary(config, output);
+            var library = new HelpLibrary(config, output);
+            var entryPoint = library.getPage(HelpLibrary.STARTING_PAGE);
 
             assertNotNull("Help starting file", entryPoint);
         }
@@ -43,21 +45,21 @@ class HelpLibraryTest {
 
         File output = Files.createTempDirectory("generator").toFile();
         try {
-            HelpLibrary.createLibrary(config, output);
+            new HelpLibrary(config, output);
 
             File generatedDir = new File(output, HelpLibrary.GENERATED_DIR);
             FileUtils.deleteDirectory(generatedDir);
             assertTrue("Generated reomved", !generatedDir.exists());
 
             // Check library is not recreated when version is the same
-            HelpLibrary.createLibrary(config, output);
+            new HelpLibrary(config, output);
             assertTrue("Generated not recreated", !generatedDir.exists());
 
             // Change version file
             try(FileWriter version = new FileWriter(new File(output, HelpLibrary.VERSION_FILE))) {
                 version.write("#Any old rubbish");
             }
-            HelpLibrary.createLibrary(config, output);
+            new HelpLibrary(config, output);
             assertTrue("Generated recreated", generatedDir.exists());
 
         }

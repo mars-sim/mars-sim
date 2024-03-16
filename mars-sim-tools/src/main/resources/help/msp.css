@@ -32,10 +32,6 @@ ul.navbar a {
   padding: 5em;
   width: 65%;
 }
-a.backlink {
-  font-size: smaller;
-  font-style: italic;
-}
 a:link {
 	color: blue;
 	}
@@ -103,8 +99,6 @@ ul {
   	text-indent: .5em;
   /* Use padding to move list item from left to right */
   /* padding-left: .1em; */
-}
-ul.a {
 }
 ol { 
 /* counter-reset: item; */

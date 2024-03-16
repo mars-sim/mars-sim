@@ -296,7 +296,6 @@ public class MainDesktopPane extends JDesktopPane
 		getToolWindow(TimeWindow.NAME, true);
 		getToolWindow(SettlementWindow.NAME, true);
 		getToolWindow(ScienceWindow.NAME, true);
-		getToolWindow(GuideWindow.NAME, true);
 		getToolWindow(MonitorWindow.NAME, true);
 		getToolWindow(MissionWindow.NAME, true);
 		getToolWindow(ResupplyWindow.NAME, true);
@@ -751,7 +750,7 @@ public class MainDesktopPane extends JDesktopPane
 			}
 
 			else {
-				openToolWindow(GuideWindow.NAME);
+				openToolWindow(MonitorWindow.NAME);
 			}
 		}
 	}

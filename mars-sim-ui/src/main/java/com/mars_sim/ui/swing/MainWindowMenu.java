@@ -58,6 +58,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	private static final String LAF = "laf";
 	private static final String UNIT_TOOLBAR = "unitbar";
 	private static final String TOOL_TOOLBAR = "toolbar";
+	private static final String EXTERNAL_BROWSER = "browser";
 	private static final String EFFECT_UP = "effectUp";
 	private static final String EFFECT_DOWN = "effectdown";
 	private static final String EFFECT_MUTE = "effectmute";
@@ -74,9 +75,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	private JCheckBoxMenuItem showUnitBarItem;
 	/** Tool Bar menu item. */
 	private JCheckBoxMenuItem showToolBarItem;
+	/** Tool Bar menu item. */
+	private JCheckBoxMenuItem useExternalBrowser;
 
-	// Notification Menu
-//	private NotificationMenu notificationMenu;
 
 	/** Music mute menu item. */
 	private JCheckBoxMenuItem musicMuteItem;
@@ -158,6 +159,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 											  TOOL_TOOLBAR, "mainMenu.tooltip.toolbar"	,
 										      KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyEvent.CTRL_DOWN_MASK, false));
 		settingsMenu.add(showToolBarItem);	
+		useExternalBrowser = createCheckMenuItem("Use Desktop Browser", null,
+					EXTERNAL_BROWSER, "mainMenu.tooltip.toolbar"	, null);
+		settingsMenu.add(useExternalBrowser);	
 		settingsMenu.add(new JSeparator());
 
 		// Create submenu for LAF
@@ -327,6 +331,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			case TOOL_TOOLBAR:
 				desktop.getMainWindow().getToolToolBar().setVisible(selectedItem.isSelected());
 				break;
+			case EXTERNAL_BROWSER:
+				desktop.getMainWindow().setExternalBrowser(selectedItem.isSelected());
+				break;
 			case MUSIC_UP: {
 				int newVolume = musicVolumeSlider.getValue() + 1;
 				if (newVolume <= 10) {
@@ -405,8 +412,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		}
 
 		if (newGuideURL != null) {
-			GuideWindow ourGuide = (GuideWindow) desktop.openToolWindow(GuideWindow.NAME);
-			ourGuide.setURLString(newGuideURL); //$NON-NLS-1$
+			mainWindow.showHelp(newGuideURL);
 		}
 	}
 
@@ -423,6 +429,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	
 		showUnitBarItem.setSelected(desktop.getMainWindow().getUnitToolBar().isVisible());
 		showToolBarItem.setSelected(desktop.getMainWindow().getToolToolBar().isVisible());
+		useExternalBrowser.setSelected(desktop.getMainWindow().getUseExternalBrowser());
 
 		if (soundPlayer != null) {
 			musicVolumeSlider.setValue((int) Math.round(soundPlayer.getMusicVolume() * 10));
