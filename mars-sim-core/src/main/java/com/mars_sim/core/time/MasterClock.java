@@ -155,24 +155,23 @@ public class MasterClock implements Serializable {
 	/** The thread for running the game loop. */
 	private ClockThreadTask clockThreadTask;
 
-	private SimulationConfig simulationConfig = SimulationConfig.instance();
-
 	/**
 	 * Constructor. 
 	 *
+	 * @param config The configuratino that cotnrols default clock settings
 	 * @param userTimeRatio the time ratio defined by user
 	 * @throws Exception if clock could not be constructed.
 	 */
-	public MasterClock(int userTimeRatio) {
+	public MasterClock(SimulationConfig config, int userTimeRatio) {
 	
 		// Create a martian clock
-		marsTime = MarsTimeFormat.fromDateString(simulationConfig.getMarsStartDateTime());
+		marsTime = MarsTimeFormat.fromDateString(config.getMarsStartDateTime());
 
 		// Save a copy of the initial mars time
 		initialMarsTime = marsTime;
 
 		// Create an Earth clock
-		earthTime = simulationConfig.getEarthStartDate();
+		earthTime = config.getEarthStartDate();
 
 		// Create an Uptime Timer
 		uptimer = new UpTimer();
@@ -204,18 +203,18 @@ public class MasterClock implements Serializable {
 			}	
 		}
 		else {
-			desiredTR = (int)simulationConfig.getTimeRatio();
+			desiredTR = (int)config.getTimeRatio();
 		}
 
 		actualTR = desiredTR;
 		
-		minMilliSolPerPulse = simulationConfig.getMinSimulatedPulse();
-		maxMilliSolPerPulse = simulationConfig.getMaxSimulatedPulse();
+		minMilliSolPerPulse = config.getMinSimulatedPulse();
+		maxMilliSolPerPulse = config.getMaxSimulatedPulse();
 		
 		// Set the optimal width of a pulse
 		initReferencePulse();
 		
-		maxWaitTimeBetweenPulses = simulationConfig.getDefaultPulsePeriod();
+		maxWaitTimeBetweenPulses = config.getDefaultPulsePeriod();
 
 		// Check pulse width
 //		adjustOptPulseWidth();
@@ -504,7 +503,7 @@ public class MasterClock implements Serializable {
 				nextPulseTime = optMilliSolPerPulse;
 				// Reset realElaspedMilliSec back to its default time ratio
 				realElapsedMillisec = (long) (nextPulseTime * MILLISECONDS_PER_MILLISOL 
-						/ simulationConfig.getTimeRatio());
+						/ desiredTR);
 				// Reset the elapsed clock to ignore this pulse
 				logger.warning(10_000, "Elapsed real time is " + realElapsedMillisec 
 						+ " ms, longer than the max time " + MAX_ELAPSED + " ms.");				
@@ -1039,7 +1038,7 @@ public class MasterClock implements Serializable {
 	 */
 	private void startClockListenerExecutor() {
 		if (listenerExecutor == null) {
-			int num = Math.min(1, Simulation.NUM_CORES - simulationConfig.getUnusedCores());
+			int num = Math.min(1, Simulation.NUM_CORES - SimulationConfig.instance().getUnusedCores());
 			if (num <= 0) num = 1;
 			logger.config("Setting up " + num + " thread(s) for clock listener.");
 			listenerExecutor = Executors.newFixedThreadPool(num,

@@ -6,25 +6,10 @@
  */
 package com.mars_sim.core;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectStreamException;
-import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.xml.XMLConstants;
 
@@ -58,7 +43,7 @@ import com.mars_sim.core.structure.building.function.cooking.MealConfig;
 import com.mars_sim.core.structure.building.function.farming.CropConfig;
 import com.mars_sim.core.structure.construction.ConstructionConfig;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.core.tool.Hash;
+import com.mars_sim.core.tool.ResourceCache;
 import com.mars_sim.core.vehicle.VehicleConfig;
 import com.mars_sim.mapdata.common.FileLocator;
 
@@ -67,18 +52,9 @@ import com.mars_sim.mapdata.common.FileLocator;
  * simulation configuration. Provides access to other simulation subset
  * configuration classes.
  */
-public class SimulationConfig implements Serializable {
-
-	private static final long serialVersionUID = -5348007442971644450L;
+public class SimulationConfig {
 
 	private static final SimLogger logger = SimLogger.getLogger(SimulationConfig.class.getName());
-
-	private static final int BACKUP_FOLDER_COUNT = 5;
-
-	/** The version.txt denotes the xml build version. */
-	private static final String VERSION_FILE = "version.txt";
-	/** The exception.txt denotes any user modified xml to be included to bypass the checksum. */
-	private static final String EXCEPTION_FILE = "exception.txt";
 
 	private static final String XML_FOLDER = "xml";
 	private static final String XML_EXTENSION = ".xml";
@@ -128,8 +104,8 @@ public class SimulationConfig implements Serializable {
 	private static final String EVA_LIGHT = "min-eva-light";
 	private static final String CONTENT_URL = "content-url";
 
-	private transient String marsStartDate = null;
-	private transient String earthStartDate = null;
+	private String marsStartDate = null;
+	private String earthStartDate = null;
 
 	private double accuracyBias = 0;
 	private double maxSimulatedPulse = 0;
@@ -141,7 +117,7 @@ public class SimulationConfig implements Serializable {
 	private int numberOfAutoSaves = 0;
 	private int averageTransitTime = 0;
 	private int unusedCores = 0;	
-	private transient boolean loaded = false;
+	private boolean loaded = false;
 	
 	/*
 	 * -----------------------------------------------------------------------------
@@ -150,35 +126,33 @@ public class SimulationConfig implements Serializable {
 	 */
 
 	// Subset configuration classes
-	private transient PartConfig partConfig;
-	private transient PartPackageConfig partPackageConfig;
-	private transient AmountResourceConfig resourceConfig;
-	private transient PersonConfig personConfig;
-	private transient MedicalConfig medicalConfig;
-	private transient LandmarkConfig landmarkConfig;
-	private transient MineralMapConfig mineralMapConfig;
-	private transient MalfunctionConfig malfunctionConfig;
-	private transient CropConfig cropConfig;
-	private transient VehicleConfig vehicleConfig;
-	private transient BuildingConfig buildingConfig;
-	private transient SettlementConfig settlementConfig;
-	private transient ManufactureConfig manufactureConfig;
-	private transient ResupplyConfig resupplyConfig;
-	private transient ConstructionConfig constructionConfig;
+	private PartConfig partConfig;
+	private PartPackageConfig partPackageConfig;
+	private AmountResourceConfig resourceConfig;
+	private PersonConfig personConfig;
+	private MedicalConfig medicalConfig;
+	private LandmarkConfig landmarkConfig;
+	private MineralMapConfig mineralMapConfig;
+	private MalfunctionConfig malfunctionConfig;
+	private CropConfig cropConfig;
+	private VehicleConfig vehicleConfig;
+	private BuildingConfig buildingConfig;
+	private SettlementConfig settlementConfig;
+	private ManufactureConfig manufactureConfig;
+	private ResupplyConfig resupplyConfig;
+	private ConstructionConfig constructionConfig;
 
-	private transient FoodProductionConfig foodProductionConfig;
-	private transient MealConfig mealConfig;
-	private transient RobotConfig robotConfig;
-	private transient QuotationConfig quotationConfig;
-	private transient ScienceConfig scienceConfig;
+	private FoodProductionConfig foodProductionConfig;
+	private MealConfig mealConfig;
+	private RobotConfig robotConfig;
+	private QuotationConfig quotationConfig;
+	private ScienceConfig scienceConfig;
 
-	private transient List<String> excludedList;
-
-	private transient AuthorityFactory raFactory;
+	private AuthorityFactory raFactory;
 
 	private double minEVALight;
 
-	private File backupLocation;
+	private ResourceCache cachedResources;
 
 	/*
 	 * -----------------------------------------------------------------------------
@@ -187,17 +161,8 @@ public class SimulationConfig implements Serializable {
 	 */
 
 	/** hidden constructor. */
-	private SimulationConfig() {
-	}
-
-	/**
-	 * Prevents the singleton pattern from being destroyed at the time of
-	 * serialization
-	 *
-	 * @return SimulationConfig instance
-	 */
-	protected Object readResolve() throws ObjectStreamException {
-		return instance();
+	private SimulationConfig(String xmlLoc) {
+		cachedResources = new ResourceCache(new File(xmlLoc), true);
 	}
 
 	/**
@@ -208,7 +173,7 @@ public class SimulationConfig implements Serializable {
 	 * keyword needed (which slows down the VM)
 	 */
 	private static class SingletonHelper {
-		private static final SimulationConfig INSTANCE = new SimulationConfig();
+		private static final SimulationConfig INSTANCE = new SimulationConfig(SimulationFiles.getXMLDir());
 	}
 
 	/**
@@ -233,6 +198,13 @@ public class SimulationConfig implements Serializable {
 		loaded = true;
 		
 		try {
+			// Remove legacy backupDIR
+			var backupDir = new File(SimulationFiles.getBackupDir());
+			if (backupDir.exists()) {
+				logger.info("Deleting legacy backup directory");
+				FileUtils.deleteDirectory(backupDir); 
+			}
+
 			// Load simulation document
 			Document simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
 
@@ -261,7 +233,6 @@ public class SimulationConfig implements Serializable {
 			// LOad MIssion Types
 			Element missionConfig = root.getChild(MISSION_CONFIGURATION);
 			minEVALight = loadDoubleValue(missionConfig, EVA_LIGHT, 0D, 1000D);
-			checkXMLFileVersion();
 
 			loadDefaultConfiguration();
 		} catch (RuntimeException | JDOMException | IOException rte) {
@@ -278,125 +249,6 @@ public class SimulationConfig implements Serializable {
 	 */
 	public void reloadConfig() {
 		loadConfig();
-	}
-
-	/**
-	 * Checks if the xml files are of the same version of the core engine.
-	 */
-	private void checkXMLFileVersion() {
-		boolean sameBuild = false;
-
-        File xmlLoc = new File(SimulationFiles.getXMLDir());
-		File versionLoc = new File(SimulationFiles.getXMLDir() + File.separator + VERSION_FILE);
-		File exceptionLoc = new File(SimulationFiles.getXMLDir() + File.separator + EXCEPTION_FILE);
-
-        FileSystem fileSys = FileSystems.getDefault();
-		Path xmlPath = fileSys.getPath(xmlLoc.getPath());
-        Path versionPath = fileSys.getPath(versionLoc.getPath());
-        Path exceptionPath = fileSys.getPath(exceptionLoc.getPath());
-
-		// Query if the xml folder exists in user home directory
-		// Query if the xml version matches
-		// If not, copy all xml over
-
-        boolean xmlDirExist = xmlPath.toFile().exists();
-
-		// Note: if "xml" exits as a file, delete it
-		if (xmlDirExist && xmlLoc.isFile()) {
-			logger.config("'" + xmlLoc +  "'"
-					+ " is a folder and NOT supposed to exist as a file. Deleting it.");
-			try {
-				FileUtils.forceDelete(xmlLoc);
-			} catch (IOException e) {
-	          	logger.severe( "Cannot access xml folder: " + e.getMessage());
-			}
-		}
-
-		// Check again xmlDirExist
-		xmlDirExist = xmlLoc.exists();
-
-		boolean versionFileExist = versionLoc.exists();
-
-		boolean xmlDirDeleted = false;
-
-		String buildText = "";
-
-		// if the "xml" directory exists, back up everything inside and clean the directory
-		if (xmlDirExist && xmlLoc.isDirectory()) {
-			logger.config("The xml folder already existed.");
-
-			if (versionFileExist) {
-				try (BufferedReader buffer = new BufferedReader(new FileReader(versionLoc))) {
-				    if ((buildText = buffer.readLine()) != null) {
-				    	// If the version.txt's build version tag is the same as the core engine's
-				    	sameBuild = buildText.equals(Simulation.BUILD);
-				    }
-				} catch (FileNotFoundException e) {
-		          	logger.severe( "Cannot find version.txt : " + e.getMessage());
-				} catch (IOException e) {
-		          	logger.severe( "Cannot access version.txt : " + e.getMessage());
-				}
-			}
-		}
-
-		if (!xmlDirExist)
-			logger.config("The xml folder does not exist in user home.");
-		else if (!versionFileExist)
-			logger.config("The version.txt does not exist.");
-		else if (sameBuild)
-			logger.config("The version.txt has the same build " + buildText
-					+ " as the core engine's.");
-		else {
-			logger.config("The version.txt is invalid.");
-		}
-
-		if (xmlDirExist
-			&& (!versionFileExist || buildText == null || buildText.equals("") || !sameBuild)) {
-				try {
-					FileUtils.copyDirectory(xmlLoc, getBackupDir(), true);
-				} catch (IOException e) {
-		          	logger.severe( "Issues with build folder or backup folder: " + e.getMessage());
-				}
-		}
-
-		xmlDirExist = xmlLoc.exists();
-
-		// if the "xml" folder does NOT exist
-		if (!xmlLoc.exists() || xmlDirDeleted) {
-			// Create the xml folder
-			versionLoc.getParentFile().mkdirs();
-			logger.config("A new xml folder was just created.");
-
-			List<String> lines = Arrays.asList(Simulation.BUILD);
-			try {
-				// Create the version.txt file
-				Files.write(versionPath, lines, StandardCharsets.UTF_8);
-				logger.config("A new version.txt file was just created.");
-			} catch (IOException e) {
-	          	logger.severe( "Cannot write lines when creating version.txt" + e.getMessage());
-			}
-		}
-
-		if (!sameBuild) {
-			List<String> lines = Arrays.asList(Simulation.BUILD);
-			try {
-				// Create the version.txt file
-				Files.write(versionPath, lines, StandardCharsets.UTF_8);
-				logger.config("A new version.txt file was just created.");
-			} catch (IOException e) {
-	          	logger.severe( "Cannot write lines when creating version.txt" + e.getMessage());
-			}
-		}
-		if (!exceptionLoc.exists()) {
-			List<String> lines = new CopyOnWriteArrayList<>();
-			try {
-				// Create the exception.txt file
-				Files.write(exceptionPath, lines, StandardCharsets.UTF_8);
-				logger.config("A new exception.txt file was just created.");
-			} catch (IOException e) {
-	          	logger.severe( "Cannot write lines when creating exception.txt" + e.getMessage());
-			}
-		}
 	}
 
 	/**
@@ -793,114 +645,15 @@ public class SimulationConfig implements Serializable {
 			filename = filename + XML_EXTENSION;
 		}
 		
-		// Check existing file and get checksum
-		File existingFile = new File(SimulationFiles.getXMLDir(), filename);
-		String existingChecksum = null;
-		if (existingFile.exists()) {
-			try {
-				existingChecksum = Hash.MD5.getChecksumString(existingFile);
-			} catch (IOException e) {
-				logger.severe("Cannot calculate checksum for " + existingFile, e);
-			}
-		}
-
-		// Check bundled file
-		String resourceName = "/" + XML_FOLDER + "/" + filename;
-		try (InputStream stream = SimulationConfig.class.getResourceAsStream(resourceName)) {
-			if (stream == null) {
-				logger.severe("Cannot find the bundled XML " + resourceName);
-				return null;
-			}
-			String resourceChecksum = null;
-
-			// Checksum the bundled resoruce from a new stream
-			try (InputStream checkStream = SimulationConfig.class.getResourceAsStream(resourceName)) {
-				resourceChecksum = Hash.MD5.getChecksumString(checkStream);
-			}
-
-			// Compare checksums
-			if (existingChecksum == null || !existingChecksum.equals(resourceChecksum)) {
-				// Take a new copy
-				if (!excludeXMLFile(filename)) {
-					logger.config(existingFile.getName() + ": " + "Old MD5: "+ existingChecksum + "  New MD5: "+ resourceChecksum);
-
-					// Take backup
-					if (existingFile.exists()) {
-						File dir = getBackupDir();
-
-						// Backup this old (checksum failed) xml file
-						FileUtils.copyFileToDirectory(existingFile, dir, true);
-						FileUtils.deleteQuietly(existingFile);
-					}
-
-					// Copy the xml files from within the jar to user home's xml directory
-					FileUtils.copyToFile(stream, existingFile);
-				}
-				else {
-					// The xml file is found
-					logger.config(filename + " was found being referenced inside exception.txt, thus bypassing its checksum.");
-				}
-	        }
+		try {
+			String resourceName = "/" + XML_FOLDER + "/" + filename;
+			return cachedResources.extractContent(resourceName, filename);
 		}
 		catch (IOException e) {
 			logger.severe("Problem getting bundled XML " + e.getMessage(), e);
 		}
-        return existingFile;
+        return null;
 	}
-
-	/**
-	 * Get the most appropriate backup directory
-	 */
-	private File getBackupDir() {
-		if (backupLocation == null) {
-			String s0 = SimulationFiles.getBackupDir();
-
-			// Get timestamp in UTC
-			String timestamp = LocalDateTime.now().toString().replace(":", "").replace("-", "");
-			int lastIndxDot = timestamp.lastIndexOf('.');
-			timestamp = timestamp.substring(0, lastIndxDot);
-			String s1 = s0 + File.separator + timestamp;
-
-			logger.config("New config backup directory " + s1);
-
-			backupLocation = new File(s1.trim());
-			backupLocation.mkdirs();
-
-			// Delete old folders
-			SimulationFiles.purgeOldFiles(SimulationFiles.getBackupDir(), BACKUP_FOLDER_COUNT, null);
-		}
-		return backupLocation;
-	}
-
-	/**
-	 * Checks if this bundled XML file is excluded from the automatic extraction.
-	 * 
-	 * @param filename
-	 * @return
-	 */
-	private boolean excludeXMLFile(String filename) {
-		if (excludedList == null) {
-			excludedList = new ArrayList<>();
-
-			File exceptionFile = new File(SimulationFiles.getXMLDir() + File.separator
-					+ EXCEPTION_FILE);
-			if (exceptionFile.exists()) {
-				// Read the exception.txt file to see if it mentions this particular xml file
-				try (BufferedReader buffer = new BufferedReader(new FileReader(exceptionFile))) {
-					String nextLine = buffer.readLine();
-					// Support commenting out lines
-					if (nextLine != null && !nextLine.startsWith("#")) {
-						excludedList.add(nextLine);
-					}
-				} catch (IOException e) {
-					logger.warning("Problem loading the exception file " + e.getMessage());
-				}
-			}
-		}
-
-		return excludedList.contains(filename);
-	}
-
 
 	/**
 	 * Parses an XML file into a DOM document.

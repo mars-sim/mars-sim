@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
@@ -210,7 +209,7 @@ public class Simulation implements ClockListener, Serializable {
 	/** Manages transportation of settlements and resupplies from Earth. */
 	private TransportManager transportManager;
 	/** The SimulationConfig instance. */
-	private SimulationConfig simulationConfig;
+	private transient SimulationConfig simulationConfig;
 
 	private transient SaveType savePending = null;
 	private transient File savePendingFile = null;
@@ -307,7 +306,7 @@ public class Simulation implements ClockListener, Serializable {
 	public void runSocietySim() {
 		
 		// Create marsClock instance
-		masterClock = new MasterClock(256);
+		masterClock = new MasterClock(simulationConfig, 256);
 		
 		// Create lunar world instance
 		lunarWorld = new LunarWorld(); 
@@ -337,7 +336,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Should this method call the initialiseTransient method ?
 
 		// Create marsClock instance
-		masterClock = new MasterClock(256);
+		masterClock = new MasterClock(simulationConfig, 256);
 
 		// Set instances for logging
 		SimuLoggingFormatter.initializeInstances(masterClock);
@@ -431,7 +430,7 @@ public class Simulation implements ClockListener, Serializable {
 		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
 		
 		// Clock is always first
-		masterClock = new MasterClock(timeRatio);
+		masterClock = new MasterClock(simulationConfig, timeRatio);
 
 		// Set log data
 		DataLogger.changeTime(masterClock.getMarsTime());
@@ -583,7 +582,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Gets config file instances
 		simulationConfig = SimulationConfig.instance();
 		// Clock is always first
-		masterClock = new MasterClock(userTimeRatio);
+		masterClock = new MasterClock(simulationConfig, userTimeRatio);
 		// Initialize UnitManager instance
 		unitManager = new UnitManager();
 		// Initialize MissionManager instance
@@ -594,12 +593,13 @@ public class Simulation implements ClockListener, Serializable {
 	/**
 	 *  Re-initializes instances after loading from a saved sim.
 	 */
-	private void reinitializeInstances() {		
+	private void reinitializeInstances() {	
+		simulationConfig = SimulationConfig.instance();
+	
 		// Re-initialize the resources for the saved sim
 		ResourceUtil.getInstance().initializeInstances();
 
 		// Gets config file instances
-		simulationConfig = SimulationConfig.instance();
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
 		PersonConfig pc = simulationConfig.getPersonConfig();
 		CropConfig cc = simulationConfig.getCropConfiguration();
@@ -1105,36 +1105,18 @@ public class Simulation implements ClockListener, Serializable {
 			logger.config("Done saving. The simulation resumes.");
 			success = true;
 
-		} catch (NotSerializableException e) {
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with NotSerializableException when saving " + file + " : " + e.getMessage());
-
-		} catch (ObjectStreamException e) {
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with ObjectStreamException when saving " + file + " : " + e.getMessage());
-
 		} catch (IOException e0) {
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": " + Msg.getString("Simulation.log.saveError"), e0); //$NON-NLS-1$
+			logger.log(Level.SEVERE, "Problem saving simulation", e0); 
 
 			if ((type == SaveType.AUTOSAVE_AS_DEFAULT || type == SaveType.SAVE_DEFAULT) 
 				&& file.exists() && !file.isDirectory()) {
 				// Backup the existing default.sim
 				Files.move(destPath, srcPath, StandardCopyOption.REPLACE_EXISTING);
 			}
-
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": " + Msg.getString("Simulation.log.saveError"), e); //$NON-NLS-1$
-
-			if ((type == SaveType.AUTOSAVE_AS_DEFAULT || type == SaveType.SAVE_DEFAULT)
-				&& file.exists() && !file.isDirectory()) {
-				// backup the existing default.sim
-				Files.move(destPath, srcPath, StandardCopyOption.REPLACE_EXISTING);
-			}
 		}
-
 		finally {
-
 			if (oos != null)
 				oos.close();
-
 			justSaved = true;
 		}
 
@@ -1150,7 +1132,6 @@ public class Simulation implements ClockListener, Serializable {
       	StringBuilder sb = new StringBuilder();
 
 		List<Serializable> list = Arrays.asList(
-				SimulationConfig.instance(),
 				ResourceUtil.getInstance(),
 				malfunctionFactory,
 				orbitInfo,
