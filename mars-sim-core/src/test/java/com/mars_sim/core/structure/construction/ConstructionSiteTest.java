@@ -12,24 +12,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.goods.GoodType;
+import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
-
-import junit.framework.TestCase;
 
 /**
  * Unit test for the ConstructionSite class.
  */
-public class ConstructionSiteTest extends TestCase {
+public class ConstructionSiteTest extends AbstractMarsSimUnitTest {
 
     // Data members
     ConstructionSite site = null;
@@ -38,19 +33,15 @@ public class ConstructionSiteTest extends TestCase {
     ConstructionStage buildingStage = null;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() {
         super.setUp();
-
-        SimulationConfig.instance().loadConfig();
-        Simulation.instance().testRun();
         
-        Settlement settlement = new MockSettlement();
+        Settlement settlement = buildSettlement();
         site = new ConstructionSite(settlement);
 
         Map<Integer, Integer> parts = new HashMap<>(1);
-        GoodType type = GoodType.CONSTRUCTION;
         
-        Part ir = ItemResourceUtil.createItemResource("test part", 1, "test part description", type, 1D, 1);
+        Part ir = ItemResourceUtil.findItemResource(ItemResourceUtil.pneumaticDrillID);
         parts.put(ir.getID(), 1);
 
         Map<Integer, Double> resources = new HashMap<>(1);
@@ -60,14 +51,11 @@ public class ConstructionSiteTest extends TestCase {
 
         List<ConstructionVehicleType> vehicles =
             new ArrayList<>(1);
-        List<Integer> attachments = new ArrayList<>(1);
-        GoodType aType = GoodType.VEHICLE;
-        
-        ItemResource atth = ItemResourceUtil.createItemResource("attachment part", 2, "test attachment description", aType, 1D, 1);
+        List<Integer> attachments = new ArrayList<>(1);        
+        ItemResource atth = ItemResourceUtil.findItemResource(ItemResourceUtil.pneumaticDrillID);
         parts.put(atth.getID(), 1);
 
         attachments.add(atth.getID());
-
 
         vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class,
                 attachments));
@@ -94,7 +82,6 @@ public class ConstructionSiteTest extends TestCase {
      */
     public void testIsAllConstructionComplete() {
 
-        try {
             site.addNewStage(foundationStage);
             foundationStage.addWorkTime(10000D);
             assertTrue(foundationStage.isComplete());
@@ -108,10 +95,6 @@ public class ConstructionSiteTest extends TestCase {
             assertTrue(buildingStage.isComplete());
 
             assertTrue(site.isAllConstructionComplete());
-        }
-        catch (Exception e) {
-            fail(e.getMessage());
-        }
     }
 
     /*
@@ -135,19 +118,14 @@ public class ConstructionSiteTest extends TestCase {
     public void testGetCurrentConstructionStage() {
         assertNull(site.getCurrentConstructionStage());
 
-        try {
-            site.addNewStage(foundationStage);
-            assertEquals(foundationStage, site.getCurrentConstructionStage());
+        site.addNewStage(foundationStage);
+        assertEquals(foundationStage, site.getCurrentConstructionStage());
 
-            site.addNewStage(frameStage);
-            assertEquals(frameStage, site.getCurrentConstructionStage());
+        site.addNewStage(frameStage);
+        assertEquals(frameStage, site.getCurrentConstructionStage());
 
-            site.addNewStage(buildingStage);
-            assertEquals(buildingStage, site.getCurrentConstructionStage());
-        }
-        catch (Exception e) {
-            fail(e.getMessage());
-        }
+        site.addNewStage(buildingStage);
+        assertEquals(buildingStage, site.getCurrentConstructionStage());
     }
 
     /*
@@ -157,19 +135,14 @@ public class ConstructionSiteTest extends TestCase {
     public void testGetNextStageType() {
         assertEquals(ConstructionStageInfo.FOUNDATION, site.getNextStageType());
 
-        try {
-            site.addNewStage(foundationStage);
-            assertEquals(ConstructionStageInfo.FRAME, site.getNextStageType());
+        site.addNewStage(foundationStage);
+        assertEquals(ConstructionStageInfo.FRAME, site.getNextStageType());
 
-            site.addNewStage(frameStage);
-            assertEquals(ConstructionStageInfo.BUILDING, site.getNextStageType());
+        site.addNewStage(frameStage);
+        assertEquals(ConstructionStageInfo.BUILDING, site.getNextStageType());
 
-            site.addNewStage(buildingStage);
-            assertNull(site.getNextStageType());
-        }
-        catch (Exception e) {
-            fail(e.getMessage());
-        }
+        site.addNewStage(buildingStage);
+        assertNull(site.getNextStageType());
     }
 
     /*
@@ -177,18 +150,13 @@ public class ConstructionSiteTest extends TestCase {
      * ConstructionSite.addNewStage(ConstructionStage)'
      */
     public void testAddNewStage() {
-        try {
-            site.addNewStage(foundationStage);
-            assertEquals(foundationStage, site.getCurrentConstructionStage());
+        site.addNewStage(foundationStage);
+        assertEquals(foundationStage, site.getCurrentConstructionStage());
 
-            site.addNewStage(frameStage);
-            assertEquals(frameStage, site.getCurrentConstructionStage());
+        site.addNewStage(frameStage);
+        assertEquals(frameStage, site.getCurrentConstructionStage());
 
-            site.addNewStage(buildingStage);
-            assertEquals(buildingStage, site.getCurrentConstructionStage());
-        }
-        catch (Exception e) {
-            fail(e.getMessage());
-        }
+        site.addNewStage(buildingStage);
+        assertEquals(buildingStage, site.getCurrentConstructionStage());
     }
 }
