@@ -122,17 +122,17 @@ public abstract class TypeGenerator<T> {
 	 * @throws IOException
 	 */
 	public void generateAll(File outputDir) throws IOException {
+		logger.info("Generating files for " + typeName);
 
 		File targetDir = new File(outputDir, typeName);
 		targetDir.mkdirs();
 
 		List<T> vTypes = getEntities(); 
 	
-		// Create vehicle index
+		// Create index
 		createIndex(vTypes, targetDir);
 
-		// Individual vehicle pages
-		logger.info("Generating details files");
+		// Individual entity pages
 		for(T v : vTypes) {
             File targetFile = new File(targetDir, parent.generateFileName(getEntityName(v)));
             try(FileOutputStream dest = new FileOutputStream(targetFile)) {

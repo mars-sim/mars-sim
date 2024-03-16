@@ -1358,6 +1358,10 @@ public class Simulation implements ClockListener, Serializable {
 		return masterClock;
 	}
 
+	public SimulationConfig getConfig() {
+		return simulationConfig;
+	}
+	
 	/**
 	 * Sets if simulation was loaded with GUI.
 	 *

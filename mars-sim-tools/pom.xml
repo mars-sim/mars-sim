@@ -15,6 +15,13 @@
 			<artifactId>mars-sim-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
+    <!-- Used for the PathMatchingResourcePatternResolver class-->
+    <dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-core</artifactId>
+    <version>LATEST</version>
+    </dependency>
     <dependency>
       <groupId>com.github.spullara.mustache.java</groupId>
       <artifactId>compiler</artifactId>

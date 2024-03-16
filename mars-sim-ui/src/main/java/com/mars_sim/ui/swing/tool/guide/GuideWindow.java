@@ -14,6 +14,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.Icon;
@@ -27,6 +29,7 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 import com.mars_sim.tools.Msg;
+import com.mars_sim.tools.helpgenerator.HelpLibrary;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.tool.JStatusBar;
@@ -77,7 +80,13 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	public GuideWindow(MainDesktopPane desktop) {
 		super(NAME, desktop);
 
-		guideURL = getClass().getResource(Msg.getString("doc.guide")); //$NON-NLS-1$
+
+		try {
+			guideURL = HelpLibrary.createDefault(desktop.getSimulation().getConfig()).toURI().toURL();
+		} catch (IOException e) {
+			
+		}
+
 		
 		// May use EventQueue.invokeLater()
        	init();            

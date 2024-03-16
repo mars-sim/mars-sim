@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.Version;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.resource.ItemType;
 
@@ -72,7 +72,7 @@ public class HelpGenerator {
 		this.mf = new DefaultMustacheFactory();
 
 		this.baseScope = new HashMap<>();
-		this.baseScope.put("version", Version.getVersion());
+		this.baseScope.put("version", SimulationRuntime.VERSION.getVersion());
 		this.baseScope.put("generatedOn",
 						DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now()));
 		
@@ -133,7 +133,6 @@ public class HelpGenerator {
 		scope.put("entities", entities);
 		scope.put("typefolder", "../" + typeFolder + "/");
 
-		logger.info("Generating index file for " + title);
 		File indexFile = new File(outputDir, generateFileName(INDEX));
 		try (FileOutputStream dest = new FileOutputStream(indexFile)) {
 			generateContent("entity-list", scope, dest);
@@ -161,7 +160,6 @@ public class HelpGenerator {
 
 		scope.put("typefolder", "../" + typeFolder + "/");
 
-		logger.info("Generating grouped index file for " + title);
 		File indexFile = new File(outputDir, generateFileName(INDEX));
 		try (FileOutputStream dest = new FileOutputStream(indexFile)) {
 			generateContent("entity-grouped", scope, dest);
@@ -280,6 +278,14 @@ public class HelpGenerator {
 	}
 
 	/**
+	 * Get a generator that which create HTML Inline helppages
+	 * @param source 
+	 */
+	public static HelpGenerator createHTMLInline(SimulationConfig source) {
+		return new HelpGenerator(source, "html-help", "html");
+	}
+
+	/**
 	 * The main starting method for generating html files.
 	 *
 	 * @param args the command line arguments
@@ -289,8 +295,8 @@ public class HelpGenerator {
 		var config = SimulationConfig.instance();
 		config.loadConfig();
 
-		// This will be expaned to support other template sets
-		var gen = new HelpGenerator(config, "html-help", "html");
+		var gen = createHTMLInline(config);
+
 		try {
 			File output = new File(args[0]);
 			gen.generateAll(output);

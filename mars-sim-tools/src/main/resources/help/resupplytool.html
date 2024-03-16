@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>Mars Simulation Project - Resupply Tool</TITLE>
+<LINK rel="stylesheet" href="msp.css">
+</HEAD>
+<BODY>
+<H2 class="pageTitle">Resupply Tool</H2>
+<P>The Resupply Tool displays information about incoming and arrived resupply missions from Earth, and allows you to modify 
+resupply missions or create new ones.  It also displays new settlements arriving (or arrived) from Earth and provides for 
+creating and editing of arriving settlements.</P>
+<P>The Incoming Transport Items list shows all incoming resupply missions and settlements that have not arrived from Earth yet.  
+The destination settlement name and arrival time are shown for each item.  Selecting an item on the list will display the its 
+details in the information panel.</P>
+<P>The Arrived Transport Items list shows all resupply missions and settlements that have already arrived from Earth.  The 
+destination settlement name and arrival time are shown for each item.  Selecting an item on the list will display the mission's 
+details in the information panel.</P>
+<P>The information panel on the right side shows information about the selected resupply mission or arriving settlement.</P>
+<P><B>Resupply Mission</B> - The top panel shows the mission's destination settlement, its current state ("planned", "in transit", 
+"delivered", or "canceled"), its arrival date, the time until arrival, and the number of immigrants arriving with the supplies.</P> 
+<P>The Supplies panel shows tables of all buildings, vehicles, equipment, resources, and parts that are included in the resupply 
+mission.  The supply tables include the supply type and the number.  The resource supply table shows the amount of each resource 
+in kilograms.</P>
+<P><B>Arriving Settlement</B> – The information panel shows the arriving settlement's name, state, layout template, number of 
+immigrants, arrival date, time until arrival, and location.</P>
+<P>The buttons at the bottom of the resupply tool include:</P>
+<UL>
+<LI>New - Opens a dialog to create a new resupply mission or arriving settlement.</LI>
+<LI>Modify - Opens a dialog to modify the selected resupply mission or arriving settlement.  This is only available for incoming 
+resupply missions and arriving settlements, not ones that have already arrived at their destinations.</LI>
+<LI>Cancels the selected resupply mission or arriving settlements.  This is only available for incoming resupply missions and 
+arriving settlements, not ones that have already arrived at their destinations.</LI>
+</UL>
+<hr>
+<P>The "Modify Transport Item" dialog appears when you press the "Modify" button at the 
+bottom of the resupply tool.</P>
+<P>The Destination combo box allows you to select a destination settlement that the mission will arrive at.</P>
+<P>The Arrival Date panel allows you to select when the resupply mission is targeted to arrive.  The Arrival Date radio button allows you
+to select the arrival date from a list of Sol, Month, and Orbit combo boxes.  The Sols Until Arrival radio button allows you to enter the
+number of Sols until the mission arrives.</P>
+<P>The Number of Immigrants text field lets you enter the number of new people arriving from Earth with the resupply mission.</P>
+<P>The Supplies panel contains a table of all supplies in the mission.  The table shows the category, type, and number/amount of each
+supply.  The Add button at the bottom will add a new supply item to the table.  The Remove button will remove a selected supply item
+from the table.  Any of the table fields can be edited to change a supply items values.</P>
+<P>The Modify button at the bottom of the dialog will commit the modifications to the transport item and close the dialog.</P>
+<P>The Cancel button at the bottom of the dialog will cancel the modifications to the transport item and close the dialog.</P>
+<hr>
+<P>The "New Transport Item" dialog appears when you press the "New" button at the 
+bottom of the resupply tool.</P>
+<P>This dialog includes a combo box the allows you to select either a "New Resupply Mission" or "New Arriving Settlement" and populates 
+the dialog with the selected option.</P>
+<P>The "New Resupply Mission" option of the "New Transport Item" dialog provides input fields for creating a new resupply mission to an 
+existing settlement.</P>
+<P>The Destination combo box allows you to select a destination settlement that the mission will arrive at.</P>
+<P>The Arrival Date panel allows you to select when the resupply mission is targeted to arrive.  The Arrival Date radio button allows you
+to select the arrival date from a list of Sol, Month, and Orbit combo boxes.  The Sols Until Arrival radio button allows you to enter the
+number of Sols until the mission arrives.</P>
+<P>The Number of Immigrants text field lets you enter the number of new people arriving from Earth with the resupply mission.</P>
+<P>The Supplies panel contains a table of all supplies in the mission.  The table shows the category, type, and number/amount of each
+supply.  The Add button at the bottom will add a new supply item to the table.  The Remove button will remove a selected supply item
+from the table.  Any of the table fields can be edited to change a supply items values.</P>
+<P>The Create button at the bottom of the dialog will create the new resupply mission and close the dialog.</P>
+<P>The Cancel button at the bottom of the dialog will cancel the new resupply mission and close the dialog.</P>
+<hr>
+<P>The "New Arriving Settlement" option of the "New Transport Item" dialog provides input fields for creating a new arriving settlement.</P>
+<P>The Settlement Name text field allows you to enter the new settlement's name.</P>
+<P>The Layout Template combo box lets you select the layout template for the new settlement from a list of available settlement templates.</P>
+<P>The Population Number text field allows you to enter the starting population of the new settlement.  When a new layout template is selected, 
+the population number is updated to the appropriate number for that layout template.</P>
+<P>The Arrival Date panel allows you to select when the new settlement is targeted to arrive.  The Arrival Date radio button allows you
+to select the arrival date from a list of Sol, Month, and Orbit combo boxes.  The Sols Until Arrival radio button allows you to enter the
+number of Sols until the settlement arrives.</P>
+<P>The Landing Location panel lets you enter the latitude and longitude location that the new settlement will arrive at.</P>
+<P>The Create button at the bottom of the dialog will create the new arriving settlement and close the dialog.</P>
+<P>The Cancel button at the bottom of the dialog will cancel the new arriving settlement and close the dialog.</P>
+<hr>
+</BODY>
+</HTML>
