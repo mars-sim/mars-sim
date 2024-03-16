@@ -132,35 +132,16 @@ public class Simulation implements ClockListener, Serializable {
 		AUTOSAVE;
 	};
 
-	/** # of thread(s). */
-	public static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
 	/** The current year. */
 	public static final String YEAR = "2023";
 	/** The dashes. */
 	public final String DASHES = " ---------------------------------------------------------";
-	/** OS string. */
-	public static final String OS = System.getProperty("os.name"); // e.g. 'linux', 'mac os x'
-	/** Version string. */
-	public static final String VERSION = Version.getVersion();
-	/** Build string. */
-	public static final String BUILD = Version.getBuild();
-	/** Java version string. */
-	private static final String JAVA_TAG = System.getProperty("java.version");
-	/** Java version string. */
-	public static final String JAVA_VERSION = "Java " + (JAVA_TAG.contains("(") ?
-			JAVA_TAG.substring(0, JAVA_TAG.indexOf("(") - 1) : JAVA_TAG);
-	/** OS architecture string. */
-	private static final String OS_ARCH = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
+
 	/** Default save filename. */
 	public static final  String SAVE_FILE = Msg.getString("Simulation.saveFile"); //$NON-NLS-1$
 	/** Default save filename extension. */
 	public static final String SAVE_FILE_EXTENSION = Msg.getString("Simulation.saveFile.extension"); //$NON-NLS-1$
-	/** Default ch2 save filename. */
-	public static final String CH2_SAVE_FILE = SAVE_FILE + ".ch2";
 
-	public static final String TITLE = Msg.getString("Simulation.title", VERSION + " - Build " + BUILD
-			+ " - " + OS_ARCH + " " + JAVA_VERSION + " - " + NUM_CORES
-			+ ((NUM_CORES == 1) ? " Core" : " Cores")); // $NON-NLS-1$
 
 	/** true if displaying graphic user interface. */
 	private transient boolean useGUI = true;
@@ -297,7 +278,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Preserve the build version tag for future build
 		// comparison when loading a saved sim
-		unitManager.setOriginalBuild(Simulation.BUILD);
+		unitManager.setOriginalBuild(SimulationRuntime.VERSION.getDescription());
 		
 		// Set this flag to false
 		isUpdating = false;
@@ -753,7 +734,7 @@ public class Simulation implements ClockListener, Serializable {
 		Simulation sim = instance();
 		if (f == null) {
 			// Try the default file path if file is null.
-			f = new File(SimulationFiles.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
+			f = new File(SimulationRuntime.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
 		}
 
 		logger.config("The file to be loaded is " + f);
@@ -873,7 +854,7 @@ public class Simulation implements ClockListener, Serializable {
 		deserialize(file);
 
 		// Get the current build
-		String currentBuild = Simulation.BUILD;
+		String currentBuild = SimulationRuntime.VERSION.getDescription();
 		// Load the previous saved sim's build
 		String loadBuild = unitManager.getOriginalBuild();
 		
@@ -894,12 +875,12 @@ public class Simulation implements ClockListener, Serializable {
 		logger.config("         Martian Time Stamp : " + masterClock.getMarsTime().getDateTimeStamp());
 
 		logger.config(DASHES);
-		if (Simulation.BUILD.equals(loadBuild)) {
+		if (currentBuild.equals(loadBuild)) {
 			logger.config(" Note : The core engine uses the same build as the saved sim.");
 		} else {
 			logger.config(" Note : The core engine does not use the same build as the saved sim.");
 			logger.warning("Will attempt to load a simulation made in older build " + loadBuild
-				+ " under a newer core engine build " + Simulation.BUILD + ".");
+				+ " under a newer core engine build " + currentBuild + ".");
 		}
 
 		initialSimulationCreated = true;
@@ -945,13 +926,13 @@ public class Simulation implements ClockListener, Serializable {
 		switch(type) {
 			case AUTOSAVE_AS_DEFAULT:
 			case SAVE_DEFAULT:
-				file = new File(SimulationFiles.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
+				file = new File(SimulationRuntime.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
 	
 				if (file.exists() && !file.isDirectory()) {
 					FileSystem fileSys = FileSystems.getDefault();
 					
 					// Create the backup file for storing the previous version of default.sim
-					File backupFile = new File(SimulationFiles.getSaveDir(), "previous" + SAVE_FILE_EXTENSION);
+					File backupFile = new File(SimulationRuntime.getSaveDir(), "previous" + SAVE_FILE_EXTENSION);
 
 					destPath = fileSys.getPath(backupFile.getPath());
 					srcPath = fileSys.getPath(file.getPath());
@@ -980,9 +961,9 @@ public class Simulation implements ClockListener, Serializable {
 			case AUTOSAVE:
 				int missionSol = masterClock.getMarsTime().getMissionSol();
 				String saveTime = new SystemDateTime().getDateTimeStr();
-				String autosaveFilename = saveTime + "_sol" + missionSol + "_r" + BUILD
+				String autosaveFilename = saveTime + "_sol" + missionSol + "_r" + SimulationRuntime.VERSION.getShortVersion()
 						+ SAVE_FILE_EXTENSION;
-				file = new File(SimulationFiles.getAutoSaveDir(), autosaveFilename);
+				file = new File(SimulationRuntime.getAutoSaveDir(), autosaveFilename);
 				logger.config("Autosaving the simulation as " + autosaveFilename + ".");
 				
 				// NOTE: Should purge old auto saved files
@@ -1028,7 +1009,7 @@ public class Simulation implements ClockListener, Serializable {
 
 			if (sucessful && (type == SaveType.AUTOSAVE)) {
 				// Purge old auto backups
-				SimulationFiles.purgeOldFiles( SimulationFiles.getAutoSaveDir(),
+				SimulationRuntime.purgeOldFiles( SimulationRuntime.getAutoSaveDir(),
 											   simulationConfig.getNumberAutoSaves(), SAVE_FILE_EXTENSION);
 			}
 		}

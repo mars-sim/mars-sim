@@ -104,6 +104,9 @@ public class SimulationConfig {
 	private static final String EVA_LIGHT = "min-eva-light";
 	private static final String CONTENT_URL = "content-url";
 
+	private static final String OLD_BACKUP = "backup";
+
+
 	private String marsStartDate = null;
 	private String earthStartDate = null;
 
@@ -173,7 +176,7 @@ public class SimulationConfig {
 	 * keyword needed (which slows down the VM)
 	 */
 	private static class SingletonHelper {
-		private static final SimulationConfig INSTANCE = new SimulationConfig(SimulationFiles.getXMLDir());
+		private static final SimulationConfig INSTANCE = new SimulationConfig(SimulationRuntime.getXMLDir());
 	}
 
 	/**
@@ -199,7 +202,7 @@ public class SimulationConfig {
 		
 		try {
 			// Remove legacy backupDIR
-			var backupDir = new File(SimulationFiles.getBackupDir());
+			var backupDir = new File(SimulationRuntime.getDataDir(), OLD_BACKUP);
 			if (backupDir.exists()) {
 				logger.info("Deleting legacy backup directory");
 				FileUtils.deleteDirectory(backupDir); 

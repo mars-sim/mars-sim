@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.SimulationFiles;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.logging.SimLogger;
 
 /**
@@ -73,7 +73,7 @@ public class RatingLog {
 
         // Decide on action
         if (!modules.isEmpty() && (diagnosticFile == null)) {
-            String filename = SimulationFiles.getLogDir() + "/ratings-log.jsonl";
+            String filename = SimulationRuntime.getLogDir() + "/ratings-log.jsonl";
             logger.info("Ratings log file = " + filename);
             diagnosticFile  = new PrintWriter(filename);
         }

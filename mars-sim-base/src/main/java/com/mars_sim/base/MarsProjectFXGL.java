@@ -30,6 +30,7 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.localization.Language;
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.fxgl.MarsWorld;
 import com.mars_sim.ui.swing.MainWindow;
 
@@ -48,7 +49,7 @@ public class MarsProjectFXGL extends GameApplication {
 
 	private static final String LOGGING_PROPERTIES = "/logging.properties";
 
-	private static final String CH2_SAVE_FILE = Simulation.CH2_SAVE_FILE;
+	private static final String CH2_SAVE_FILE = Simulation.SAVE_FILE + ".ch2";
 	        
 	private MarsWorld first = new MarsWorld();
 
@@ -185,11 +186,11 @@ public class MarsProjectFXGL extends GameApplication {
         // Question: How compatible are linux and macos with opengl ?
         // System.setProperty("sun.java2d.opengl", "true");
 		
-        if (!Simulation.OS.contains("linux")) {
+        if (!SimulationRuntime.OS.contains("linux")) {
             System.setProperty("sun.java2d.ddforcevram", "true");
         }
         
-        logger.config("Starting " + Simulation.TITLE);
+        logger.config("Starting " + SimulationRuntime.TITLE);
         
 		// starting the simulation
 		new MarsProjectFXGL().parseArgs(args);

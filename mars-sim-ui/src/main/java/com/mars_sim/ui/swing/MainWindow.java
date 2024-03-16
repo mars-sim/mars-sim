@@ -45,7 +45,7 @@ import com.mars_sim.console.InteractiveTerm;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationFiles;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.SimulationListener;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.time.ClockListener;
@@ -539,7 +539,7 @@ public class MainWindow
 	public void saveSimulation(boolean defaultFile) {
 		File fileLocn = null;
 		if (!defaultFile) {
-			JFileChooser chooser = new JFileChooser(SimulationFiles.getSaveDir());
+			JFileChooser chooser = new JFileChooser(SimulationRuntime.getSaveDir());
 			chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //$NON-NLS-1$
 			if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
 				fileLocn = chooser.getSelectedFile();
@@ -678,31 +678,13 @@ public class MainWindow
 	 * @param isPaused
 	 */
 	private void changeTitle(boolean isPaused) {
-		if (GameManager.getGameMode() == GameMode.COMMAND) {
-			if (isPaused) {
-				frame.setTitle(Simulation.TITLE + "  -  Command Mode" + "  -  [ P A U S E ]");
-			} else {
-				frame.setTitle(Simulation.TITLE + "  -  Command Mode");
-			}
-		} else if (GameManager.getGameMode() == GameMode.SANDBOX) {
-			if (isPaused) {
-				frame.setTitle(Simulation.TITLE + "  -  Sandbox Mode" + "  -  [ P A U S E ]");
-			} else {
-				frame.setTitle(Simulation.TITLE + "  -  Sandbox Mode");
-			}
-		} else if (GameManager.getGameMode() == GameMode.SPONSOR) {
-			if (isPaused) {
-				frame.setTitle(Simulation.TITLE + "  -  Sponsor Mode" + "  -  [ P A U S E ]");
-			} else {
-				frame.setTitle(Simulation.TITLE + "  -  Sponsor Mode");
-			}
-		} else if (GameManager.getGameMode() == GameMode.SOCIETY) {
-			if (isPaused) {
-				frame.setTitle(Simulation.TITLE + "  -  Society Mode" + "  -  [ P A U S E ]");
-			} else {
-				frame.setTitle(Simulation.TITLE + "  -  Society Mode");
-			}
-		}
+		String suffix = switch (GameManager.getGameMode()) {
+			case COMMAND -> "Command Mode";
+			case SANDBOX -> "Sandbox Mode";
+			case SPONSOR -> "Sponsor Mode";
+			case SOCIETY ->  "Society Mode";	
+		};
+		frame.setTitle(SimulationRuntime.TITLE + " -   " + suffix + (isPaused ? "  -  [ P A U S E ]" : ""));
 	}
 
 	/**

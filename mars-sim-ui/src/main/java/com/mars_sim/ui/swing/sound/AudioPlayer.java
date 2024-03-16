@@ -17,7 +17,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
-import com.mars_sim.core.SimulationFiles;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.tools.Msg;
@@ -34,7 +34,7 @@ public class AudioPlayer {
 	private static SimLogger logger = SimLogger.getLogger(AudioPlayer.class.getName());
 
 	/** music files directory. */
-	public static final String MUSIC_DIR = SimulationFiles.getDataDir() +
+	public static final String MUSIC_DIR = SimulationRuntime.getDataDir() +
 			File.separator + Msg.getString("Simulation.musicFolder"); //$NON-NLS-1$
 	
 	public static final double DEFAULT_VOL = .5;

@@ -142,7 +142,7 @@ public class SimulationBuilder {
 			this.simFile = new File(filename);
 		}
 		else {
-			this.simFile = new File(SimulationFiles.getSaveDir(),
+			this.simFile = new File(SimulationRuntime.getSaveDir(),
 									filename);
 		}
 	}
@@ -228,7 +228,7 @@ public class SimulationBuilder {
 			setLongitude(line.getOptionValue(LONGITUDE_ARG));
 		}
 		if (line.hasOption(DATADIR_ARG)) {
-			SimulationFiles.setDataDir(line.getOptionValue(DATADIR_ARG));
+			SimulationRuntime.setDataDir(line.getOptionValue(DATADIR_ARG));
 		}
 		if (line.hasOption(BASEURL_ARG)) {
 			FileLocator.setBaseURL(line.getOptionValue(BASEURL_ARG));

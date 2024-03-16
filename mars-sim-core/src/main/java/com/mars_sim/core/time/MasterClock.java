@@ -22,8 +22,8 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.task.util.Task;
 
@@ -239,13 +239,13 @@ public class MasterClock implements Serializable {
 	 */
 	public void initReferencePulse() {
 		
-		int cores = Simulation.NUM_CORES;
+		int cores = SimulationRuntime.NUM_CORES;
 		
 		if (clockExecutor != null) {
 			cores = ((ThreadPoolExecutor)clockExecutor).getActiveCount();
 		}
 		
-		cpuFactor = Math.sqrt(cores + Simulation.NUM_CORES) * 2;
+		cpuFactor = Math.sqrt(cores + SimulationRuntime.NUM_CORES) * 2;
 				
 		// Re-evaluate the optimal width of a pulse
 		computeReferencePulse();
@@ -1038,7 +1038,7 @@ public class MasterClock implements Serializable {
 	 */
 	private void startClockListenerExecutor() {
 		if (listenerExecutor == null) {
-			int num = Math.min(1, Simulation.NUM_CORES - SimulationConfig.instance().getUnusedCores());
+			int num = Math.min(1, SimulationRuntime.NUM_CORES - SimulationConfig.instance().getUnusedCores());
 			if (num <= 0) num = 1;
 			logger.config("Setting up " + num + " thread(s) for clock listener.");
 			listenerExecutor = Executors.newFixedThreadPool(num,

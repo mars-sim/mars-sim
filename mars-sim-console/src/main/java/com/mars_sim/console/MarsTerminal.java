@@ -40,6 +40,7 @@ import org.beryx.textio.swing.SwingTextTerminal;
 
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
@@ -54,7 +55,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 	private static final String MARS_SIM =
 			  "      Mars Simulation Project\n"
     		+ "                   "
-			+ Simulation.VERSION
+			+ SimulationRuntime.VERSION
 			+ "\n"
     		+ "                   "
 			+ Simulation.YEAR;
@@ -186,7 +187,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 
         frame.setResizable(true);
         
-		setPaneTitle(Simulation.TITLE);
+		setPaneTitle(SimulationRuntime.TITLE);
 
         setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
@@ -327,7 +328,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 			case SOCIETY -> "Society Mode";
 		};
 
-		setPaneTitle(Simulation.TITLE + "  -  " + mode + (isPaused ? "  -  [ P A U S E ]" : ""));
+		setPaneTitle(SimulationRuntime.TITLE + "  -  " + mode + (isPaused ? "  -  [ P A U S E ]" : ""));
 	}
 
 	@Override

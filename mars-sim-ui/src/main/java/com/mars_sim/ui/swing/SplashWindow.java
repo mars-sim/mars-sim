@@ -20,7 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
-import com.mars_sim.core.Simulation;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -36,8 +36,8 @@ public class SplashWindow extends JComponent {
 
 	// Constant data member
 	private static final String SPLASH_FOLDER = "splash/";
-	private static final String VERSION_STRING = Simulation.VERSION;
-	private static final String BUILD_STRING = "Build " + Simulation.BUILD;
+	private static final String VERSION_STRING = SimulationRuntime.VERSION.getVersion();
+	private static final String BUILD_STRING = "Build " + SimulationRuntime.VERSION.getBuild();
 	private static final String MSP_STRING = Msg.getString("SplashWindow.title"); //$NON-NLS-1$
 	private static final String[] AUTHOR_STRING = {
 			"A picture from NASA Ames Research Center. 2005", 

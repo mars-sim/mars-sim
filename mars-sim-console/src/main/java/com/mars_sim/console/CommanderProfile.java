@@ -27,7 +27,7 @@ import org.beryx.textio.ReadHandlerData;
 import org.beryx.textio.ReadInterruptionStrategy;
 import org.beryx.textio.TextIO;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.SimulationFiles;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.person.Commander;
 import com.mars_sim.core.person.NationSpecConfig;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -404,14 +404,14 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 	}
 
 	private static void storeProperties(Properties p) throws IOException {
-        try (FileOutputStream fr = new FileOutputStream(SimulationFiles.getSaveDir() + "/" + FILENAME + EXT)) {
+        try (FileOutputStream fr = new FileOutputStream(SimulationRuntime.getSaveDir() + "/" + FILENAME + EXT)) {
 	        p.store(fr, "Commander's Profile");
 	        logger.config("Commander's profile saved");
         }
     }
 
     public static boolean loadProfile() throws IOException {
-		File f = new File(SimulationFiles.getSaveDir(), FILENAME + EXT);
+		File f = new File(SimulationRuntime.getSaveDir(), FILENAME + EXT);
 
 		if (f.exists() && f.canRead()) {
 
