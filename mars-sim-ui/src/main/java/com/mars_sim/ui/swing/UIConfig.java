@@ -33,7 +33,7 @@ import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import com.mars_sim.core.SimulationFiles;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
 
@@ -105,14 +105,14 @@ public class UIConfig {
 	 * Loads and parses the XML save file.
 	 */
 	public void parseFile() {
-		File configFile = new File(SimulationFiles.getSaveDir(), FILE_NAME);
+		File configFile = new File(SimulationRuntime.getSaveDir(), FILE_NAME);
 		if (configFile.exists()) {
 
 		    SAXBuilder builder = new SAXBuilder();
 		    builder.setProperty(ACCESS_EXTERNAL_DTD, "");
 		    builder.setProperty(ACCESS_EXTERNAL_SCHEMA, "");
 		    try  {
-		    	Document configDoc = builder.build(new File(SimulationFiles.getSaveDir(), FILE_NAME));
+		    	Document configDoc = builder.build(new File(SimulationRuntime.getSaveDir(), FILE_NAME));
 		    	Element root = configDoc.getRootElement();
 
 				// Main proprerties
@@ -191,12 +191,12 @@ public class UIConfig {
 	public void saveFile(MainWindow mainWindow) {
 		MainDesktopPane desktop = mainWindow.getDesktop();
 
-		File configFile = new File(SimulationFiles.getSaveDir(), FILE_NAME);
+		File configFile = new File(SimulationRuntime.getSaveDir(), FILE_NAME);
 
 		// Create save directory if it doesn't exist.
 		if (!configFile.getParentFile().exists()) {
 			configFile.getParentFile().mkdirs();
-			logger.config(SimulationFiles.getSaveDir() + " created successfully");
+			logger.config(SimulationRuntime.getSaveDir() + " created successfully");
 		}
 
 		else {
@@ -267,7 +267,7 @@ public class UIConfig {
 
 		// Load the DTD scheme from the ui_settings.dtd file
 		try (
-			OutputStream out = new FileOutputStream(new File(SimulationFiles.getSaveDir(), FILE_NAME));
+			OutputStream out = new FileOutputStream(new File(SimulationRuntime.getSaveDir(), FILE_NAME));
 			OutputStream stream = new FileOutputStream(configFile)) {
 
 			XMLOutputter fmt = new XMLOutputter();

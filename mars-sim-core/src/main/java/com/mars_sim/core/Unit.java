@@ -86,7 +86,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	public static void setDiagnostics(boolean diagnostics) throws FileNotFoundException {
 		if (diagnostics) {
 			if (diagnosticFile == null) {
-				String filename = SimulationFiles.getLogDir() + "/unit-create.txt";
+				String filename = SimulationRuntime.getLogDir() + "/unit-create.txt";
 				diagnosticFile = new PrintWriter(filename);
 				logger.config("Diagnostics enabled to " + filename);
 			}

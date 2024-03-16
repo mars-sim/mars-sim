@@ -42,7 +42,7 @@ import org.jdom2.input.sax.XMLReaders;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.SimulationFiles;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.tool.Conversion;
 import org.xml.sax.SAXException;
@@ -100,7 +100,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 */
 	protected void loadUserDefined() {
 		// Scan saved items folder
-		File configDir = new File(SimulationFiles.getUserConfigDir());
+		File configDir = new File(SimulationRuntime.getUserConfigDir());
 		String[] found = configDir.list();
 		if (found != null) {
 			for (String userFile : configDir.list()) {
@@ -147,7 +147,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 				// Should we load the XSD schema just once and have the Schema a field.
 				SchemaFactory schemafac = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 				Schema schema = schemafac
-						.newSchema(new File(SimulationFiles.getXMLDir() + File.separator + itemPrefix, xsdName));
+						.newSchema(new File(SimulationRuntime.getXMLDir() + File.separator + itemPrefix, xsdName));
 				XMLReaderJDOMFactory factory = new XMLReaderSchemaFactory(schema);
 				builder = new SAXBuilder(factory);
 				builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
@@ -204,7 +204,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		knownItems.remove(name);
 
 		String filename = getItemFilename(name);
-		File oldFile = new File(SimulationFiles.getUserConfigDir(), filename);
+		File oldFile = new File(SimulationRuntime.getUserConfigDir(), filename);
 		if (oldFile.delete()) {
 			logger.config("Deleted file " + oldFile.getAbsolutePath());
 		}
@@ -244,13 +244,13 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		String path = "";
 
 		if (bundled) { // For bundled
-			path = SimulationFiles.getXMLDir() + File.separator + itemPrefix;
+			path = SimulationRuntime.getXMLDir() + File.separator + itemPrefix;
 
 			// Bundled XML files need to be copied out of the CONF sub folder.
 			// Must use the '/' for paths in the classpath.
 			SimulationConfig.instance().getBundledXML(itemPrefix + "/" + filename);
 		} else { // for user
-			path = SimulationFiles.getUserConfigDir();
+			path = SimulationRuntime.getUserConfigDir();
 		}
 
 		File f = new File(path, filename);
@@ -274,7 +274,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 * @param item The details to save
 	 */
 	public void saveItem(T item) {
-		String storagePath = SimulationFiles.getUserConfigDir();
+		String storagePath = SimulationRuntime.getUserConfigDir();
 
 		String filename = getItemFilename(item.getName());
 		File itemFile = new File(storagePath, filename);

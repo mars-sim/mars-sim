@@ -33,7 +33,7 @@ import com.mars_sim.console.InteractiveTerm;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationBuilder;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.SimulationFiles;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.person.Crew;
@@ -85,7 +85,7 @@ public class MarsProject {
 	 * Constructor
 	 */
 	public MarsProject() {
-		logger.config("Starting " + Simulation.TITLE);
+		logger.config("Starting " + SimulationRuntime.TITLE);
 		// Set the InteractionTerm instance
 		MainWindow.setInteractiveTerm(interactiveTerm);
 	}
@@ -254,7 +254,7 @@ public class MarsProject {
 		DefaultParser commandline = new DefaultParser();
 		try {
 			Properties defaults = new Properties();
-			File defaultFile = new File(SimulationFiles.getDataDir(), "default.props");
+			File defaultFile = new File(SimulationRuntime.getDataDir(), "default.props");
 			if (defaultFile.exists()) {
 				try (InputStream defaultInput = new FileInputStream(defaultFile)) {
 					defaults.load(defaultInput);
@@ -349,7 +349,7 @@ public class MarsProject {
 	 */
 	private static String selectSimFile() {
 
-		JFileChooser chooser = new JFileChooser(SimulationFiles.getSaveDir());
+		JFileChooser chooser = new JFileChooser(SimulationRuntime.getSaveDir());
 		chooser.setDialogTitle(Msg.getString("MainWindow.dialogLoadSavedSim")); // $NON-NLS-1$
 		if (chooser.showOpenDialog(interactiveTerm.getTerminal().getFrame()) == JFileChooser.APPROVE_OPTION) {
 			return chooser.getSelectedFile().getAbsolutePath();

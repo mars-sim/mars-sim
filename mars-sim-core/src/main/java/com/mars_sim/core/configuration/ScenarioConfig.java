@@ -22,7 +22,7 @@ import java.util.zip.ZipOutputStream;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
-import com.mars_sim.core.SimulationFiles;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.person.Crew;
@@ -171,7 +171,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			 				   UserConfigurableConfig<Crew> crewFactory)
 			 	throws IOException {
 		List<String> manifest = new ArrayList<>();
-		String targetDirectory = SimulationFiles.getUserConfigDir();
+		String targetDirectory = SimulationRuntime.getUserConfigDir();
 		
 	    ZipInputStream zis = new ZipInputStream(contents);
 	    ZipEntry zipEntry = zis.getNextEntry();

@@ -13,32 +13,27 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.goods.GoodType;
+import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 
-import junit.framework.TestCase;
-
 /**
  * Unit test for the ConstructionStageInfo class.
  */
-public class ConstructionStageInfoTest extends TestCase {
+public class ConstructionStageInfoTest extends AbstractMarsSimUnitTest {
 
     // Data members
     private ConstructionStageInfo info;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() {
         super.setUp();
-        SimulationConfig.instance().loadConfig();
 
         Map<Integer, Integer> parts = new HashMap<>(1);
-        GoodType type = GoodType.CONSTRUCTION;
-        Part p = ItemResourceUtil.createItemResource("test part", 1, "test resource description", type, 1D, 1);
+        Part p = ItemResourceUtil.findItemResource(ItemResourceUtil.backhoeID);
         parts.put(p.getID(), 1);
 
         Map<Integer, Double> resources = new HashMap<>(1);
@@ -49,9 +44,8 @@ public class ConstructionStageInfoTest extends TestCase {
         List<ConstructionVehicleType> vehicles =
             new ArrayList<>(1);
         List<Integer> attachments = new ArrayList<>(1);
-        GoodType aType = GoodType.VEHICLE;
         
-        Part atth = ItemResourceUtil.createItemResource("attachment part", 2, "test resource description", aType, 1D, 1);
+        Part atth = ItemResourceUtil.findItemResource(ItemResourceUtil.pneumaticDrillID);
         attachments.add(atth.getID());
 
         vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class,
@@ -90,8 +84,7 @@ public class ConstructionStageInfoTest extends TestCase {
         while (i.hasNext()) {
         	Integer id = i.next();
         	Part part = ItemResourceUtil.findItemResource(id);
-            assertEquals("test part", part.getName());
-            assertEquals(1D, part.getMassPerItem());
+            assertEquals(ItemResourceUtil.backhoeID, part.getID());
             assertEquals(1, (int) parts.get(id));
         }
     }

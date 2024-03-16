@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>Mars Simulation Project - Create Mission Wizard</TITLE>
+<LINK rel="stylesheet" href="msp.css">
+</HEAD>
+<BODY>
+
+<H2 class="pageTitle">Create Mission Wizard</H2>
+<P>The create new mission wizard allows you to create new missions.</P>
+<P><B>First Panel</B></P>
+<P>The first panel allows you to select the type of mission from the following options:</P>
+<UL>
+  <LI>Travel To Settlement - A rover mission to travel from one settlement to another.</LI>
+  <LI>Exploration - A rover mission to travel to and explore one or more sites and collect rock samples.</LI>
+  <LI>Ice Prospecting - A rover mission to travel to a site and collect permafrost ice.</LI>
+  <LI>Regolith Prospecting - A rover mission to travel to a site and collect mineral-rich regolith.</LI>
+  <LI>Areology Study Field Mission - A rover mission to study a field site for areology research on a specific scientific study.</LI>
+  <LI>Biology Study Field Mission - A rover mission to study a field site for biology research on a specific scientific study.</LI>
+  <LI>Rescue/Salvage Vehicle - A rover mission to rescue or salvage a vehicle with its emergency beacon activated.</LI>
+  <LI>Trade - A rover mission to travel to a nearby settlement and trade goods.</LI>
+  <LI>Mining - A rover mission to mine at a nearby explored site.</LI>
+  <LI>Building Construction - A mission to construct a building stage.</LI>
+  <LI>Building Salvage - A mission to salvage a building stage.</LI>
+</UL>
+<P>The mission description defaults to the selected mission type, but can be edited by you.</P>
+<P><B>Select Starting Settlement Panel</B></P>
+<P>The select starting settlement panel allows you to select a starting settlement for the mission from a list of all the 
+  settlements in the simulation.  Settlement rows with one or more red cells cannot be selected as starting settlements.</P>
+<P><B>Select Rover Panel</B></P>
+<P>The select rover panel allows you to select a rover for the mission from a list of rovers at the starting 
+  settlement.  Rover rows with one or more red cells cannot be selected for the mission.</P>
+<P><B>Select Members Panel</B></P>
+<P>The select members panel allows you to select a group of members participating in the mission from a list of 
+  people at the starting settlement.</P>
+<P>One or more people can be selected from the Available People list and added to the
+  Mission Members list by clicking the Add Members button.  Any people rows in the Available People list with red cells
+  cannot be added to the mission.</P>
+<P>Remaining rover capacity is displayed above the Mission Members list.  This capacity limits the number of available people
+  who can be added to the mission.</P>
+<P>One or more people in the Mission Members can be selected and removed as members by clicking the Remove Members button.</P>
+<P><B>Select Destination Settlement Panel</B></P>
+<P>The select destination settlement panel is the final panel when creating a Travel to Settlement mission or a Trade mission.  
+  It allows you to select a destination settlement for the mission.</P>
+<P>You can select a destination settlement from the list of settlements that are ordered by distance from the mission's 
+  starting settlement.  Settlement rows with red cells cannot be selected as destination settlements.</P>
+<P>If no settlements are selectable as a destination, you may wish to go back and select if different starting settlement
+  or a mission rover with greater range.</P>
+<P><B>Choose The Exploration Sites Panel</B></P>
+<P>The choose exploration sites panel is the final panel when creating an Exploration mission.  It allows you to choose one
+  or more exploration sites for the mission.</P>
+<P>You can click on the blue navpoint flag at an exploration site and drag it to move the location of the site.  A green ellipse
+  shows the range boundary of where the navpoint can be dragged.</P>
+<P>The Add Site button will add a new exploration site to the mission at a default location.  The new site will be added to the list of
+  exploration sites and a blue navpoint flag will be added to the map.</P>
+<P>Additional exploration sites can be removed from the exploration site list with the Remove button.</P>
+<P>Mineral concentrations are displayed as colored patches on the map.  The mineral legend below the map shows what color represents 
+which mineral.</P>
+<P><B>Choose Prospecting Sites Panel</B></P>
+<P>The choose prospecting sites panel is the final panel when creating an Ice Prospecting mission or a Regolith Prospecting mission.  
+  It allows you to choose an ice prospecting site for the mission.</P>
+<P>An ice prospecting site is created at a default location.  You can click on the blue navpoint flag and drag it to move the location
+  of the site.  A green circle shows the range boundary of where the navpoint can be dragged.</P>
+<P><B>Select Rover to Rescue/Salvage Panel</B></P>
+<P>The select rover to rescue/salvage panel is the final panel when creating a Rescue/Salvage Vehicle mission.  It allows you
+  to select a rover to be rescued/salvaged for the mission.</P>
+<P>You can select the rover from the list of rovers in the simulation that have their emergency beacons activated.  Rover rows with
+  red cells cannot be selected.</P>
+<P>If there are no rescue/salvage rovers available, you may wish to go back and select a different starting settlement or a mission 
+  rover with greater range.  If there are no rescue/salvage rovers at all in the simulation, you may wish to end a nearby mission in
+  the <A HREF="missiontool.html">Mission Tool</a> so that it is rescuable.</P>
+<P><B>Select Good Amounts to be Sold</B></P>
+<P>The select goods to sell panel lets you determine what trade goods to sell to the destination settlement.</P>
+<P>You can select the trade good from the list of available goods on the left, type the number of goods in the center text field, and click
+  the right button to add a number of goods to the sell list.  You can also select a trade good from the sell list to remove a number of them
+  from the sell list.</P>
+<P>Red text will display at the bottom of the panel if there is an error in the trade goods you selected.</P>
+<P><B>Select Good Amounts to be Bought</B></P>
+<P>The select goods to buy panel lets you determine what trade goods to buy from the destination settlement.</P>
+<P>You can select the trade good from the list of available goods on the left, type the number of goods in the center text field, and click
+  the right button to add a number of goods to the buy list.  You can also select a trade good from the buy list to remove a number of them
+  from the buy list.</P>
+<P>Red text will display at the bottom of the panel if there is an error in the trade goods you selected.</P>
+<P><B>Select a Light Utility Vehicle for the Mission Panel</B></P>
+<P>The select a light utility vehicle panel allows you to select a light utility for missions that require one from a list of vehicles at 
+the starting settlement.  Vehicle rows with one or more red cells cannot be selected for the mission.</P>
+<P><B>Select Explored Site to Mine Panel</B></P>
+<P>The select explore site to mine panel is the final panel when creating a Mining mission.  It allows you to choose an explored site near the 
+starting settlement to mine.</P>
+<P>You can select one of the explored sites (marked by yellow flags) within the rover's range (indicated by the green circle).  When an 
+explored site is selected, information about the site is displayed on the right, including its coordinate location and the estimated
+mineral concentrations at the site.</P>
+<P>Mineral concentrations are displayed as colored patches on the map.  The mineral legend below the map shows what color represents 
+which mineral.</P>
+<P><B>Select a Construction Project</B></P>
+<P>The select a construction project panel is the used for building construction missions and allows you to select a building construction stage
+project for the mission.</P>
+<P>The "Select Construction Site" list at the top left allows you to select either a new or an existing construction site at the settlement.  A
+construction site that is already being worked on is marked red and cannot be selected.</P>
+<P>The "Select Construction Project" list in the top right allows you to select a construction project for the site.  Selecting a project will
+provide a tool tip showing all next possible stages for the selected stage.</P>
+<P>The "Construction Materials Required" list at the bottom shows all resources, parts and vehicles required for the construction project.  If the
+settlement doesn't have enough of a construction material, it will show up as a red and the project cannot be selected.</P>
+<P><B>Select A Salvage Project</B></P>
+<P>The select a salvage project panel is the used for building salvage missions and allows you to select a building or a building construction stage
+to use as the salvage project for the mission.</P>
+<P>The "Buildings and Construction Sites" list at the left allows you to select either a building or an existing construction site at the settlement.  A
+construction site that is already being worked on is marked red and cannot be selected.</P>
+<P>The "Estimated Salvaged Parts" list at the right shows the parts that are estimated to be salvaged from the stage when it is completed.</P>
+<P><B>Select a Scientific Study</B></P>
+<P>The select a scientific study panel allows the user to select a scientific study for a research mission from a list of all the 
+ongoing studies in the simulation.  Studies need to be in the research phase and have a researcher in the specified scientific field of the mission
+to be selectable.  Scientific studies with one or more red cells cannot be selected.</P>
+<P><B>Select a Lead Researcher</B></P>
+<P>The select a lead researcher panel allows the user to select a lead researcher for the mission from a list of all researchers collaborating on the
+scientific study.  Selectable lead researchers must collaborating in the field of science related to the mission and must not be already on a mission.
+Researchers in the table with one or more red cells cannot be selected.</P>
+<P><B>Choose a Field Research Site</B></P>
+<P>The choose field research site panel is the final panel when creating an areology or biology field research mission.  It allows the user to choose 
+a field research site for the mission.</P>
+<P>An field research site is created at a default location.  The user can click on the blue navpoint flag and drag it to move the location
+of the site.  A green circle shows the range boundary of where the navpoint can be dragged.</P>
+<hr>
+
+</BODY>
+</HTML>

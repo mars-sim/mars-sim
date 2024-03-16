@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
@@ -133,35 +132,16 @@ public class Simulation implements ClockListener, Serializable {
 		AUTOSAVE;
 	};
 
-	/** # of thread(s). */
-	public static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
 	/** The current year. */
 	public static final String YEAR = "2023";
 	/** The dashes. */
 	public final String DASHES = " ---------------------------------------------------------";
-	/** OS string. */
-	public static final String OS = System.getProperty("os.name"); // e.g. 'linux', 'mac os x'
-	/** Version string. */
-	public static final String VERSION = Version.getVersion();
-	/** Build string. */
-	public static final String BUILD = Version.getBuild();
-	/** Java version string. */
-	private static final String JAVA_TAG = System.getProperty("java.version");
-	/** Java version string. */
-	public static final String JAVA_VERSION = "Java " + (JAVA_TAG.contains("(") ?
-			JAVA_TAG.substring(0, JAVA_TAG.indexOf("(") - 1) : JAVA_TAG);
-	/** OS architecture string. */
-	private static final String OS_ARCH = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
+
 	/** Default save filename. */
 	public static final  String SAVE_FILE = Msg.getString("Simulation.saveFile"); //$NON-NLS-1$
 	/** Default save filename extension. */
 	public static final String SAVE_FILE_EXTENSION = Msg.getString("Simulation.saveFile.extension"); //$NON-NLS-1$
-	/** Default ch2 save filename. */
-	public static final String CH2_SAVE_FILE = SAVE_FILE + ".ch2";
 
-	public static final String TITLE = Msg.getString("Simulation.title", VERSION + " - Build " + BUILD
-			+ " - " + OS_ARCH + " " + JAVA_VERSION + " - " + NUM_CORES
-			+ ((NUM_CORES == 1) ? " Core" : " Cores")); // $NON-NLS-1$
 
 	/** true if displaying graphic user interface. */
 	private transient boolean useGUI = true;
@@ -210,7 +190,7 @@ public class Simulation implements ClockListener, Serializable {
 	/** Manages transportation of settlements and resupplies from Earth. */
 	private TransportManager transportManager;
 	/** The SimulationConfig instance. */
-	private SimulationConfig simulationConfig;
+	private transient SimulationConfig simulationConfig;
 
 	private transient SaveType savePending = null;
 	private transient File savePendingFile = null;
@@ -298,7 +278,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Preserve the build version tag for future build
 		// comparison when loading a saved sim
-		unitManager.setOriginalBuild(Simulation.BUILD);
+		unitManager.setOriginalBuild(SimulationRuntime.VERSION.getDescription());
 		
 		// Set this flag to false
 		isUpdating = false;
@@ -307,7 +287,7 @@ public class Simulation implements ClockListener, Serializable {
 	public void runSocietySim() {
 		
 		// Create marsClock instance
-		masterClock = new MasterClock(256);
+		masterClock = new MasterClock(simulationConfig, 256);
 		
 		// Create lunar world instance
 		lunarWorld = new LunarWorld(); 
@@ -337,7 +317,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Should this method call the initialiseTransient method ?
 
 		// Create marsClock instance
-		masterClock = new MasterClock(256);
+		masterClock = new MasterClock(simulationConfig, 256);
 
 		// Set instances for logging
 		SimuLoggingFormatter.initializeInstances(masterClock);
@@ -431,7 +411,7 @@ public class Simulation implements ClockListener, Serializable {
 		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
 		
 		// Clock is always first
-		masterClock = new MasterClock(timeRatio);
+		masterClock = new MasterClock(simulationConfig, timeRatio);
 
 		// Set log data
 		DataLogger.changeTime(masterClock.getMarsTime());
@@ -583,7 +563,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Gets config file instances
 		simulationConfig = SimulationConfig.instance();
 		// Clock is always first
-		masterClock = new MasterClock(userTimeRatio);
+		masterClock = new MasterClock(simulationConfig, userTimeRatio);
 		// Initialize UnitManager instance
 		unitManager = new UnitManager();
 		// Initialize MissionManager instance
@@ -594,12 +574,13 @@ public class Simulation implements ClockListener, Serializable {
 	/**
 	 *  Re-initializes instances after loading from a saved sim.
 	 */
-	private void reinitializeInstances() {		
+	private void reinitializeInstances() {	
+		simulationConfig = SimulationConfig.instance();
+	
 		// Re-initialize the resources for the saved sim
 		ResourceUtil.getInstance().initializeInstances();
 
 		// Gets config file instances
-		simulationConfig = SimulationConfig.instance();
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
 		PersonConfig pc = simulationConfig.getPersonConfig();
 		CropConfig cc = simulationConfig.getCropConfiguration();
@@ -753,7 +734,7 @@ public class Simulation implements ClockListener, Serializable {
 		Simulation sim = instance();
 		if (f == null) {
 			// Try the default file path if file is null.
-			f = new File(SimulationFiles.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
+			f = new File(SimulationRuntime.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
 		}
 
 		logger.config("The file to be loaded is " + f);
@@ -873,7 +854,7 @@ public class Simulation implements ClockListener, Serializable {
 		deserialize(file);
 
 		// Get the current build
-		String currentBuild = Simulation.BUILD;
+		String currentBuild = SimulationRuntime.VERSION.getDescription();
 		// Load the previous saved sim's build
 		String loadBuild = unitManager.getOriginalBuild();
 		
@@ -894,12 +875,12 @@ public class Simulation implements ClockListener, Serializable {
 		logger.config("         Martian Time Stamp : " + masterClock.getMarsTime().getDateTimeStamp());
 
 		logger.config(DASHES);
-		if (Simulation.BUILD.equals(loadBuild)) {
+		if (currentBuild.equals(loadBuild)) {
 			logger.config(" Note : The core engine uses the same build as the saved sim.");
 		} else {
 			logger.config(" Note : The core engine does not use the same build as the saved sim.");
 			logger.warning("Will attempt to load a simulation made in older build " + loadBuild
-				+ " under a newer core engine build " + Simulation.BUILD + ".");
+				+ " under a newer core engine build " + currentBuild + ".");
 		}
 
 		initialSimulationCreated = true;
@@ -945,13 +926,13 @@ public class Simulation implements ClockListener, Serializable {
 		switch(type) {
 			case AUTOSAVE_AS_DEFAULT:
 			case SAVE_DEFAULT:
-				file = new File(SimulationFiles.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
+				file = new File(SimulationRuntime.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
 	
 				if (file.exists() && !file.isDirectory()) {
 					FileSystem fileSys = FileSystems.getDefault();
 					
 					// Create the backup file for storing the previous version of default.sim
-					File backupFile = new File(SimulationFiles.getSaveDir(), "previous" + SAVE_FILE_EXTENSION);
+					File backupFile = new File(SimulationRuntime.getSaveDir(), "previous" + SAVE_FILE_EXTENSION);
 
 					destPath = fileSys.getPath(backupFile.getPath());
 					srcPath = fileSys.getPath(file.getPath());
@@ -980,9 +961,9 @@ public class Simulation implements ClockListener, Serializable {
 			case AUTOSAVE:
 				int missionSol = masterClock.getMarsTime().getMissionSol();
 				String saveTime = new SystemDateTime().getDateTimeStr();
-				String autosaveFilename = saveTime + "_sol" + missionSol + "_r" + BUILD
+				String autosaveFilename = saveTime + "_sol" + missionSol + "_r" + SimulationRuntime.VERSION.getShortVersion()
 						+ SAVE_FILE_EXTENSION;
-				file = new File(SimulationFiles.getAutoSaveDir(), autosaveFilename);
+				file = new File(SimulationRuntime.getAutoSaveDir(), autosaveFilename);
 				logger.config("Autosaving the simulation as " + autosaveFilename + ".");
 				
 				// NOTE: Should purge old auto saved files
@@ -1028,7 +1009,7 @@ public class Simulation implements ClockListener, Serializable {
 
 			if (sucessful && (type == SaveType.AUTOSAVE)) {
 				// Purge old auto backups
-				SimulationFiles.purgeOldFiles( SimulationFiles.getAutoSaveDir(),
+				SimulationRuntime.purgeOldFiles( SimulationRuntime.getAutoSaveDir(),
 											   simulationConfig.getNumberAutoSaves(), SAVE_FILE_EXTENSION);
 			}
 		}
@@ -1105,36 +1086,18 @@ public class Simulation implements ClockListener, Serializable {
 			logger.config("Done saving. The simulation resumes.");
 			success = true;
 
-		} catch (NotSerializableException e) {
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with NotSerializableException when saving " + file + " : " + e.getMessage());
-
-		} catch (ObjectStreamException e) {
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with ObjectStreamException when saving " + file + " : " + e.getMessage());
-
 		} catch (IOException e0) {
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": " + Msg.getString("Simulation.log.saveError"), e0); //$NON-NLS-1$
+			logger.log(Level.SEVERE, "Problem saving simulation", e0); 
 
 			if ((type == SaveType.AUTOSAVE_AS_DEFAULT || type == SaveType.SAVE_DEFAULT) 
 				&& file.exists() && !file.isDirectory()) {
 				// Backup the existing default.sim
 				Files.move(destPath, srcPath, StandardCopyOption.REPLACE_EXISTING);
 			}
-
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": " + Msg.getString("Simulation.log.saveError"), e); //$NON-NLS-1$
-
-			if ((type == SaveType.AUTOSAVE_AS_DEFAULT || type == SaveType.SAVE_DEFAULT)
-				&& file.exists() && !file.isDirectory()) {
-				// backup the existing default.sim
-				Files.move(destPath, srcPath, StandardCopyOption.REPLACE_EXISTING);
-			}
 		}
-
 		finally {
-
 			if (oos != null)
 				oos.close();
-
 			justSaved = true;
 		}
 
@@ -1150,7 +1113,6 @@ public class Simulation implements ClockListener, Serializable {
       	StringBuilder sb = new StringBuilder();
 
 		List<Serializable> list = Arrays.asList(
-				SimulationConfig.instance(),
 				ResourceUtil.getInstance(),
 				malfunctionFactory,
 				orbitInfo,
@@ -1396,6 +1358,10 @@ public class Simulation implements ClockListener, Serializable {
 		return masterClock;
 	}
 
+	public SimulationConfig getConfig() {
+		return simulationConfig;
+	}
+	
 	/**
 	 * Sets if simulation was loaded with GUI.
 	 *

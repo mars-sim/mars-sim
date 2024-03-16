@@ -22,8 +22,8 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.task.util.Task;
 
@@ -155,24 +155,23 @@ public class MasterClock implements Serializable {
 	/** The thread for running the game loop. */
 	private ClockThreadTask clockThreadTask;
 
-	private SimulationConfig simulationConfig = SimulationConfig.instance();
-
 	/**
 	 * Constructor. 
 	 *
+	 * @param config The configuratino that cotnrols default clock settings
 	 * @param userTimeRatio the time ratio defined by user
 	 * @throws Exception if clock could not be constructed.
 	 */
-	public MasterClock(int userTimeRatio) {
+	public MasterClock(SimulationConfig config, int userTimeRatio) {
 	
 		// Create a martian clock
-		marsTime = MarsTimeFormat.fromDateString(simulationConfig.getMarsStartDateTime());
+		marsTime = MarsTimeFormat.fromDateString(config.getMarsStartDateTime());
 
 		// Save a copy of the initial mars time
 		initialMarsTime = marsTime;
 
 		// Create an Earth clock
-		earthTime = simulationConfig.getEarthStartDate();
+		earthTime = config.getEarthStartDate();
 
 		// Create an Uptime Timer
 		uptimer = new UpTimer();
@@ -204,18 +203,18 @@ public class MasterClock implements Serializable {
 			}	
 		}
 		else {
-			desiredTR = (int)simulationConfig.getTimeRatio();
+			desiredTR = (int)config.getTimeRatio();
 		}
 
 		actualTR = desiredTR;
 		
-		minMilliSolPerPulse = simulationConfig.getMinSimulatedPulse();
-		maxMilliSolPerPulse = simulationConfig.getMaxSimulatedPulse();
+		minMilliSolPerPulse = config.getMinSimulatedPulse();
+		maxMilliSolPerPulse = config.getMaxSimulatedPulse();
 		
 		// Set the optimal width of a pulse
 		initReferencePulse();
 		
-		maxWaitTimeBetweenPulses = simulationConfig.getDefaultPulsePeriod();
+		maxWaitTimeBetweenPulses = config.getDefaultPulsePeriod();
 
 		// Check pulse width
 //		adjustOptPulseWidth();
@@ -240,13 +239,13 @@ public class MasterClock implements Serializable {
 	 */
 	public void initReferencePulse() {
 		
-		int cores = Simulation.NUM_CORES;
+		int cores = SimulationRuntime.NUM_CORES;
 		
 		if (clockExecutor != null) {
 			cores = ((ThreadPoolExecutor)clockExecutor).getActiveCount();
 		}
 		
-		cpuFactor = Math.sqrt(cores + Simulation.NUM_CORES) * 2;
+		cpuFactor = Math.sqrt(cores + SimulationRuntime.NUM_CORES) * 2;
 				
 		// Re-evaluate the optimal width of a pulse
 		computeReferencePulse();
@@ -504,7 +503,7 @@ public class MasterClock implements Serializable {
 				nextPulseTime = optMilliSolPerPulse;
 				// Reset realElaspedMilliSec back to its default time ratio
 				realElapsedMillisec = (long) (nextPulseTime * MILLISECONDS_PER_MILLISOL 
-						/ simulationConfig.getTimeRatio());
+						/ desiredTR);
 				// Reset the elapsed clock to ignore this pulse
 				logger.warning(10_000, "Elapsed real time is " + realElapsedMillisec 
 						+ " ms, longer than the max time " + MAX_ELAPSED + " ms.");				
@@ -864,8 +863,9 @@ public class MasterClock implements Serializable {
 		// Execute all listener concurrently and wait for all to complete before advancing
 		// Ensure that Settlements stay synch'ed and some don't get ahead of others as tasks queue
 		// May use parallelStream() after it's proven to be safe
-		Collections.synchronizedSet(new HashSet<>(clockListenerTasks)).stream().forEach(this::executeClockListenerTask);
-//		clockListenerTasks.stream().forEach(this::executeClockListenerTask);
+		if (clockListenerTasks != null) {
+			Collections.synchronizedSet(new HashSet<>(clockListenerTasks)).stream().forEach(this::executeClockListenerTask);
+		}
 	}
 
 	/**
@@ -1039,7 +1039,7 @@ public class MasterClock implements Serializable {
 	 */
 	private void startClockListenerExecutor() {
 		if (listenerExecutor == null) {
-			int num = Math.min(1, Simulation.NUM_CORES - simulationConfig.getUnusedCores());
+			int num = Math.min(1, SimulationRuntime.NUM_CORES - SimulationConfig.instance().getUnusedCores());
 			if (num <= 0) num = 1;
 			logger.config("Setting up " + num + " thread(s) for clock listener.");
 			listenerExecutor = Executors.newFixedThreadPool(num,

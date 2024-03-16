@@ -63,6 +63,8 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 
 	private static final DateTimeFormatter SHORT_TIMESTAMP_FORMATTER = 
 			DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss");
+
+	private static final String DISPLAY_HELP = "display-help";
 	
 	/** Main window that contains this toolbar. */
 	private MainWindow parentMainWindow;
@@ -147,7 +149,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addSeparator(new Dimension(20, 20));
 
 		// Add guide button
-		addToolButton(GuideWindow.NAME, "View the Help tool", GuideWindow.HELP_ICON);
+		addToolButton(DISPLAY_HELP, "View the Help tool", GuideWindow.HELP_ICON);
 	}
 
 	private void addToolButton(String toolName, String tooltip, String iconKey) {
@@ -244,6 +246,11 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 				JDialog popOver = SwingHelper.createPoupWindow(calendarPane, -1, -1, -75, 20);
 				popOver.setVisible(true);
 				break;
+			
+			case DISPLAY_HELP:
+				parentMainWindow.showHelp(null); // Default help page
+				break;
+
 			default:
 				parentMainWindow.getDesktop().openToolWindow(event.getActionCommand());
 				break;

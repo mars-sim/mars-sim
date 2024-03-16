@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>Mars Simulation Project - What's New</TITLE>
+<LINK rel="stylesheet" href="msp.css">
+</HEAD>
+<BODY>
+<H2 class="pageTitle"> What's New </H2>
+
+<H3> Version 3.8.0  (___ __ Feb 2024)</H3>
+
+<H4>A. CORE ENGINE IMPROVEMENTS :</H4>
+<OL>
+  <LI>Agency: add a new multi-national alliance and the Taiwan nation state.</LI>
+  <LI>GitHub: make use of Gitflow and GitHub Action for building binary releases.</LI>
+  <LI>Goods Manager: Reworking of the relationship with Objectives.</LI>
+  <LI>Preferences: Preference management is structured into categories.</LI>
+  <LI>Settlement Template: Optionally the default Objective can be defined.</LI>
+  <LI>Process Definitions: Standard approach to defining the processes for Salvage, Food Production and Manufacturing.</LI>
+</OL>
+  
+<H4>B. UI IMPROVEMENT :</H4>
+<OL>
+  <LI>Monitor Tool: Filtering supports selection of a Reporting Authority as well as Settlement.</LI>
+  <LI>Settlement: Number of active Missions controlled by the Preference panel.</LI>
+  <LI>Settlement: New Process history tab that shows all completed Processes.</LI>
+
+</OL>  
+
+<H4>C. FIXES :</H4>
+<OL>
+   <LI>Salvage Process: Correct problem when scoring the salvage of a Vehicle</LI>
+</OL>
+
+<br>
+
+
+<H3> Version 3.7.2  (Sun 18 Feb 2024)</H3>
+
+<H4>A. CORE ENGINE IMPROVEMENTS :</H4>
+<OL>
+  <LI>Amount Resource: rework fertilizer composition to make use of bacteria.</LI>
+  <LI>Construction: revise frame and foundation template.</LI>
+  <LI>Dust Storm: refines log and show occurrences in settlement banner.</LI>
+  <LI>Part: rework use of aerogel tiles for construction mission.</LI>
+  <LI>Resource: remove mortar in ResourceUtil.</LI>
+</OL>
+  
+<H4>B. UI IMPROVEMENT :</H4>
+<OL>
+  <LI>Construction: add new col "Available Material" during construction mission.</LI>
+  <LI>Settlement: correct building overlapping in Hub Base template.</LI>
+</OL>  
+
+<H4>C. FIXES :</H4>
+<OL>
+  <LI>Airlock: add missing airlock to trading outpost and mining outpost template.</LI>
+  <LI>Building: add checking for building collision at startup.</LI>
+  <LI>Greenhouse: correct experience point calculation when tending crops.</LI>
+  <LI>Heating: revise air and water heat sink buffer.</LI>
+  <LI>Power: add missing power set in settlement templates.</LI>
+</OL>
+
+<br>
+
+<H3> Version 3.7.1 (Wed 17 Jan 2024) </H3>
+
+<H4>A. CORE ENGINE IMPROVEMENTS :</H4>
+<OL>
+  <LI>Building Alignment: add north-south alignment attribute to each building.</LI> 
+  <LI>Building Package: add standalone building sets for faster settlement template creation.</LI>  
+  <LI>Building: add new Syngas Plant building for synthesizing methanol for vehicles.</LI>
+  <LI>Task: add checking for water level change and resource demand in Budget Resource Task.</LI>
+  <LI>Threading: quit clock thread while loop when paused to save CPU cycles.</LI>      
+  <LI>Walking: simplify colision-related methods.</LI>    
+  <LI>Weather: rework refresh timing with 5 weather params.</LI> 
+</OL>
+  
+<H4>B. UI IMPROVEMENT :</H4>
+<OL>
+  <LI>Airlock: fix failing to ingress.</LI>
+  <LI>Dust Storm: show dust storm status in settlement map banner.</LI>
+  <LI>ERVs: relocate ERV closer to (0,0) and align next to habs.</LI>  
+  <LI>Layout: rework activity spots and add a lab room in Medical Hab.</LI>
+  <LI>Location Tab: show settlement or vehicle vicinity.</LI>
+</OL>  
+
+<H4>C. FIXES :</H4>
+<OL>
+  <LI>Airlock: avoid getting stuck in pre-breathing phase when a person is too exhausted.</LI>
+  <LI>Goods: ensure no same goods be selected in the buying and selling list.</LI>
+  <LI>Heating: prevent temperature instability and correct air heat ink.</LI>
+  <LI>Heat/Power Generation: correct calculation with methane fuel spent and its power output.</LI>
+  <LI>Maintenance: correct computing maintenance meta tasks and work time.</LI>
+  <LI>Sleep: ensure settler can get some sleep in astronomy observatory.</LI>
+  <LI>Time: limit to certain iterations in A* pathfinding algorithm when walking outside.</LI>
+</OL>
+
+<br>
+
+<H3> Version 3.7.0 (Thu 28 Dec 2023) </H3>
+
+<H4>A. CORE ENGINE IMPROVEMENTS :</H4>
+<OL>
+  <LI>Activity Spot: spots represent names & reservable spot where Tasks can be completed.</LI>
+  <LI>Algae Pond: add building, function, tasks for growing spirulina. </LI>
+  <LI>Corporation: add Blue Origin as the 3rd corporation. </LI>
+  <LI>Country: add UAE and Saudi Arabia. </LI>  
+  <LI>Economy: add GDP and PPP to xml for each country. </LI>
+  <LI>Group id: rename to com.mars-sim and com.mars_sim in package name. </LI>
+  <LI>Macro Simulation: simulate lunar colonies with influx of researchers and engineers. </LI>
+  <LI>Maven: change all maven package names to start with `com.mars-sim`. </LI>  
+  <LI>Person: add average weight & height characteristics per country. </LI>
+  <LI>Rating: implement rating score for Settlement, Person & Robot Tasks and hold the composite parts of the overall score. </LI>
+  <LI>Sponsor: add sponsor mode for players to choose in console menu. </LI>
+  <LI>UnitTests: add more Unit Tests. </LI>
+</OL>
+  
+<H4>B. UI IMPROVEMENT :</H4>
+<OL>
+  <LI>Monitor Tool: optimize Monitor Model.</LI>
+  <LI>Diplomatic: add diplomatic channel in Command Dashboard for viewing live statistics in Lunar Colonies.</LI> 
+  <LI>Orbit Viewer: zoom in between Mars and Earth's orbit.</LI>
+  <LI>Settlement Map: Reworking fo the map layer logic. Activity Spots are now visible on the map.</LI>
+  <LI>Person Monitor Tool: add tooltip to Task column showing Score breakdown. On Duty indicator on Shift column.</LI>
+  <LI>Robot/Person Activity Panel: redesigned to show the stack of Tasks and alternative Tasks not choosen. Tooltip shows Rating breakdown.</LI>
+</OL>  
+
+<H4>C. FIXES :</H4>
+<OL>
+	<LI>Airlock: avoid getting stuck in pre-breathing phase when a person is too exhausted.</LI>
+	<LI>Conversation: allow settlers to chat with others as a subtask.</LI>
+	<LI>Mars Navigator: ensure each map type remember its previous choice of resolution.</LI>
+	<LI>Mission Table: fix problem with invalid column. </LI>
+	<LI>Sleep: ensure correct building when assigning a bed.</LI>
+</OL>
+
+<br>
+
+<H3> Version 3.6.2 (Mon, 18 Sep 2023) </H3>
+<H4> A. CORE ENGINE IMPROVEMENTS :</H4>
+<OL>
+  <LI>Crop: allow changing growing area per crop in Farming.</LI>
+  <LI>Log: remove excessive CPU loads in generating log statements in PowerGrid and ThermalSystem.</LI>
+  <LI>Pending Task: optimize the use of pending task vs. assigning/replacing task directly.</LI> 
+  <LI>Time Ratio: optimize how time ratio increase/decrease can dynamically affect pulse width and TPS in MasterClock.</LI> 
+</OL>
+
+<H4> B. UI IMPROVEMENT :</H4>
+<OL>
+  <LI>Crop: use spinner to change growing area for each farm in Agriculture tab in Dashboard.</LI>
+  <LI>Task: display subTask2 and subTaskPhase2 in Activity Tab.</LI>
+</OL> 
+
+<H4> C. FIXES :</H4>
+<OL>
+  <LI>Computing: rework work time related to consuming computing resources when analyzing map data.</LI>
+  <LI>Digging Local: correct not being able to start digging ice and regolith on its own.</LI> 
+  <LI>Disembarking: optimize and correct how a crew member disembarks vehicle from garage.</LI> 
+  <LI>Equipment: correct transferring container back to settlement after digging regolith/ice.</LI> 
+  <LI>Exploration: end EVA if site is not determined.</LI> 
+  <LI>Food Production: correct potato typo.</LI>
+  <LI>Map: correct magnification and zooming issues.</LI>
+  <LI>Settlement: select correctly whether settlers and vehicles are in settlement or its vicinity in Settlement Map.</LI>
+  <LI>Weather: Correct weather param concurrency during reload.</LI>
+</OL>
+
+<br>
+
+<H3> Version 3.6.1 build 0ac7103 (25 Aug 2023) </H3>
+<H4>A. FIXES :</H4>
+<OL>
+  <LI>Mineral Map: Avoid NPE after a reload by serializing a list of mineral types 
+    - <a href="https://github.com/mars-sim/mars-sim/issues/1005">#1005</a></LI>
+</OL>
+
+<br>
+
+<P>Back to <a href="userguide.html">User Guide</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Go to <a href="version_history.html">Version History</a></P>
+
+</BODY>
+</HTML>

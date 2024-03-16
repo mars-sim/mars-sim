@@ -27,7 +27,7 @@ import com.mars_sim.console.chat.service.Credentials;
 import com.mars_sim.console.chat.service.RemoteChatService;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationBuilder;
-import com.mars_sim.core.SimulationFiles;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.tool.RandomStringUtils;
 
 /**
@@ -59,7 +59,7 @@ public class MarsProjectHeadless {
 	 * @param args command line arguments.
 	 */
 	public MarsProjectHeadless(String[] args) {
-		logger.config("Starting " + Simulation.TITLE);
+		logger.config("Starting " + SimulationRuntime.TITLE);
 		logger.config("List of input args : " + Arrays.toString(args));
 
 		// Initialize the simulation.
@@ -187,7 +187,7 @@ public class MarsProjectHeadless {
 	 */
 	private void startRemoteConsole(int serverPort, boolean changePassword) {
 		try {
-			File serviceDataDir = new File(SimulationFiles.getDataDir() , SERVICE_DIR);
+			File serviceDataDir = new File(SimulationRuntime.getDataDir() , SERVICE_DIR);
 			if (!serviceDataDir.exists()) {
 				logger.info("Build " + serviceDataDir);
 				serviceDataDir.mkdirs();
@@ -237,7 +237,7 @@ public class MarsProjectHeadless {
 
 		Logger.getLogger("").setLevel(Level.ALL);
 
-		new File(SimulationFiles.getLogDir()).mkdirs();
+		new File(SimulationRuntime.getLogDir()).mkdirs();
 
 		try {
 			LogManager.getLogManager()
