@@ -85,7 +85,6 @@ import com.mars_sim.core.structure.building.function.farming.Fishery;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.mapdata.location.BoundedObject;
-import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.mapdata.location.LocalBoundedObject;
 import com.mars_sim.mapdata.location.LocalPosition;
 import com.mars_sim.tools.util.RandomUtil;
@@ -118,27 +117,24 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	boolean inTransportMode = true;
 	
 	/** The designated zone where this building is located at. */
-	protected int zone;
+	private int zone;
 	/** Unique template id assigned for the settlement template of this building belong. */
-	protected String templateID;
+	private String templateID;
 	/** The base level for this building. -1 for in-ground, 0 for above-ground. */
-	protected int baseLevel;
+	private int baseLevel;
 
 	/** Default : 22.5 deg celsius. */
 	private double presetTemperature = 0;//22.5D;
-	protected double width;
-	protected double length;
-	protected double floorArea;
-	protected double zLoc;
-	protected double facing;
-	protected double basePowerRequirement;
-	protected double basePowerDownPowerRequirement;
-	protected double powerNeededForEVAHeater;
-
-//	private long tLast;
+	private double width;
+	private double length;
+	private double floorArea;
+	private double facing;
+	private double basePowerRequirement;
+	private double basePowerDownPowerRequirement;
+	private double powerNeededForEVAHeater;
 	
 	/** Type of building. */
-	protected String buildingType;
+	private String buildingType;
 	/** Description for this building. */
 	private String description;
 
@@ -183,42 +179,65 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	private VehicleMaintenance vehicleMaintenance;
 	private WasteProcessing wasteProcessing;
 
-	protected PowerMode powerModeCache;
-	protected HeatMode heatModeCache;
+	private PowerMode powerModeCache;
+	private HeatMode heatModeCache;
 	private BuildingCategory category;
 	private ConstructionType constructionType;
 	
-	protected LocalPosition loc;
+	private LocalPosition loc;
 	
 	/** A list of functions of this building. */
-	protected List<Function> functions;
-	
-	/** A list of all activity spots of this building. */
-	protected List<LocalPosition> activitySpots;
+	private List<Function> functions = new ArrayList<>();
 	
 	private static HistoricalEventManager eventManager;
-	private static BuildingConfig buildingConfig;
 
 	/**
-	 * Constructor 1 : Constructs a Building object. 
-	 * Called by MockBuilding and addBuilding().
+	 * Factory method to create from a building template
 	 *
 	 * @param template the building template.
-	 * @param manager  the building's building manager.
-	 * @throws BuildingException if building can not be created.
+	 * @param owner The owning Settlement
 	 */
-	public Building(BuildingTemplate template, BuildingManager manager) {
-		this(template.getID(), template.getZone(), template.getBuildingType(), template.getBuildingName(), template.getBounds(), manager);
+	public static Building createBuilding(BuildingTemplate template, Settlement owner) {
+		var spec = BuildingManager.getBuildingConfig().getBuildingSpec(template.getBuildingType());
 
-		buildingType = template.getBuildingType();
-		settlement = manager.getSettlement();
-		settlementID = settlement.getIdentifier();
+		return new Building(owner, template.getID(), template.getZone(), template.getBuildingName(),
+							template.getBounds(), spec);
+	}
 
-		// NOTE: needed for setting inhabitable id
-		// Question: why is the following needed ?
-		if (!isInhabitable()) {
-			// Set the instance of life support
-			lifeSupport = (LifeSupport) getFunction(FunctionType.LIFE_SUPPORT);
+	
+	/**
+	 * Constructs with the mandatory properties. 
+	 *
+	 * @param id           the building's unique ID number.
+	 * @param buildingType the building Type.
+	 * @param name         the building's name.
+	 * @param bounds       the physical position of this Building
+	 */
+	public Building(Settlement owner, String id, int zone, String name,
+					BoundedObject bounds, String buildingType, BuildingCategory category) {
+		super(name, owner.getCoordinates());
+
+		this.templateID = id;
+		this.zone = zone;
+		this.buildingType = buildingType;
+		this.category = category;
+
+
+		this.settlement = owner;
+		this.settlementID = settlement.getIdentifier();
+		setContainerID(settlementID);
+
+		this.loc = bounds.getPosition();
+		this.facing = bounds.getFacing();
+		this.width = bounds.getWidth();
+		this.length = bounds.getLength();
+		
+		powerModeCache = PowerMode.FULL_POWER;
+		heatModeCache = HeatMode.THREE_EIGHTH_HEAT;
+
+		floorArea = length * width;
+		if (floorArea <= 0) {
+			throw new IllegalArgumentException("Floor area cannot be -ve w=" + width + ", l=" + length);
 		}
 	}
 
@@ -233,47 +252,17 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * @param manager      the building's building manager.
 	 * @throws BuildingException if building can not be created.
 	 */
-	public Building(String id, int zone, String buildingType, String name, BoundedObject bounds, BuildingManager manager) {
-		super(name, manager.getSettlement().getCoordinates());
-
-		this.templateID = id;
-		this.zone = zone;
-		this.buildingType = buildingType;
-
-		this.settlement = manager.getSettlement();
-		this.settlementID = settlement.getIdentifier();
-		setContainerID(settlementID);
-
-		this.loc = bounds.getPosition();
-		this.facing = bounds.getFacing();
-		
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-		
-		BuildingSpec buildingSpec = buildingConfig.getBuildingSpec(buildingType);
+	public Building(Settlement owner, String id, int zone, String name, BoundedObject bounds,
+						BuildingSpec buildingSpec) {
+		this(owner, id, zone, name, buildingSpec.getValidBounds(bounds), buildingSpec.getName(), buildingSpec.getCategory());
 
 		constructionType = buildingSpec.getConstruction();
-		powerModeCache = PowerMode.FULL_POWER;
-		heatModeCache = HeatMode.THREE_EIGHTH_HEAT;
-		width = buildingSpec.getWidth();
-		if (width < 0) {
-			width = bounds.getWidth();
-		}
-		length = buildingSpec.getLength();
-		if (length < 0) {
-			length = bounds.getLength();
-		}
-
-		floorArea = length * width;
-		if (floorArea <= 0) {
-			throw new IllegalArgumentException("Floor area cannot be -ve w=" + width + ", l=" + length);
-		}
 
 		// Sets the base mass
 		setBaseMass(buildingSpec.getBaseMass());
 
 		baseLevel = buildingSpec.getBaseLevel();
 		description = buildingSpec.getDescription();
-		this.category = buildingSpec.getCategory();
 
 		// Get base power requirements.
 		basePowerRequirement = buildingSpec.getBasePowerRequirement();
@@ -281,14 +270,14 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		// Set room temperature
 		presetTemperature = buildingSpec.getPresetTemperature();
-
-		// Get the building's functions
-		functions = buildFunctions(buildingSpec);
 		
 		// Determine total maintenance time.
 		double totalMaintenanceTime = buildingSpec.getMaintenanceTime();
-		for (Function mfunction : functions) {
-			totalMaintenanceTime += mfunction.getMaintenanceTime();
+		for (FunctionType supported : buildingSpec.getFunctionSupported()) {
+			FunctionSpec fSpec = buildingSpec.getFunctionSpec(supported);
+
+			var mFunction = addFunction(fSpec);
+			totalMaintenanceTime += mFunction.getMaintenanceTime();
 		}
 
 		// Set up malfunction manager.
@@ -310,36 +299,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			}
 		}
 
-		// Compute maintenance needed parts prior to starting
-//		malfunctionManager.determineNewMaintenanceParts();
-		
 		// If no life support then no internal repairs
 		malfunctionManager.setSupportInsideRepair(hasFunction(FunctionType.LIFE_SUPPORT));
-	}
-
-
-	/**
-	 * Constructor 3 : (for use by Mock Building in Unit testing).
-	 *
-	 * @return manager
-	 */
-	protected Building(BuildingManager manager, String name) {
-//		super("Mock Building", new Coordinates(0D, 0D));
-		super(name, new Coordinates(0D, 0D));
-
-		if (manager != null) {
-			this.settlement = manager.getSettlement();
-			this.settlementID = settlement.getIdentifier();
-		}
-	}
-
-	/**
-	 * Constructor 4 : (for use by Unit testing).
-	 *
-	 * @return manager
-	 */
-	protected Building() {
-		super("Mock Building", new Coordinates(0D, 0D));
 	}
 
 
@@ -593,9 +554,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		if (rec != null && rec.hasEmptyActivitySpot()) {
 			return rec;
 		}
-				
-//		Collections.shuffle(functions);
-				
+								
 		for (Function f : functions) {
 			if (f.getFunctionType() != FunctionType.EVA 
 				&& f.hasEmptyActivitySpot())
@@ -646,139 +605,44 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * @return list of building .
 	 * @throws Exception if error in functions.
 	 */
-	private List<Function> buildFunctions(BuildingSpec spec) {
-		List<Function> buildingFunctions = new ArrayList<>();
+	public Function addFunction(FunctionSpec fSpec) {
+		var f =  switch (fSpec.getType()) {
+			case ADMINISTRATION -> new Administration(this, fSpec);
+			case ALGAE_FARMING -> new AlgaeFarming(this, fSpec);				
+			case ASTRONOMICAL_OBSERVATION -> new AstronomicalObservation(this, fSpec);
+			case BUILDING_CONNECTION -> new BuildingConnection(this, fSpec);
+			case COMMUNICATION -> new Communication(this, fSpec);
+			case COMPUTATION -> new Computation(this, fSpec);
+			case COOKING -> new Cooking(this, fSpec);
+			case DINING -> new Dining(this, fSpec);
+			case EARTH_RETURN -> new EarthReturn(this, fSpec);
+			case EVA -> new EVA(this, fSpec);
+			case EXERCISE -> new Exercise(this, fSpec);
+			case FARMING -> new Farming(this, fSpec);
+			case FISHERY -> new Fishery(this, fSpec);
+			case FOOD_PRODUCTION -> new FoodProduction(this, fSpec);
+			case VEHICLE_MAINTENANCE -> new VehicleGarage(this, fSpec);
+			case LIFE_SUPPORT -> new LifeSupport(this, fSpec);
+			case LIVING_ACCOMMODATION -> new LivingAccommodation(this, fSpec);
+			case MANAGEMENT -> new Management(this, fSpec);
+			case MANUFACTURE -> new Manufacture(this, fSpec);
+			case MEDICAL_CARE -> new MedicalCare(this, fSpec);
+			case POWER_GENERATION -> new PowerGeneration(this, fSpec);
+			case POWER_STORAGE -> new PowerStorage(this, fSpec);
+			case PREPARING_DESSERT -> new PreparingDessert(this, fSpec);				
+			case RECREATION -> new Recreation(this, fSpec);
+			case RESEARCH -> new Research(this, fSpec);
+			case RESOURCE_PROCESSING -> new ResourceProcessing(this, fSpec);
+			case ROBOTIC_STATION -> new RoboticStation(this, fSpec);
+			case STORAGE -> new Storage(this, fSpec);
+			case THERMAL_GENERATION -> new ThermalGeneration(this, fSpec);
+			case WASTE_PROCESSING -> new WasteProcessing(this, fSpec);
+			default ->
+				throw new IllegalArgumentException("Do not know how to build Function " + fSpec.getType());
+			};
 
-		for (FunctionType supported : spec.getFunctionSupported()) {
-			FunctionSpec fSpec = spec.getFunctionSpec(supported);
-			fSpec.setBuildingSpec(spec);
-			switch (supported) {
-
-			case ADMINISTRATION:
-				buildingFunctions.add(new Administration(this, fSpec));
-				break;
-
-			case ALGAE_FARMING:
-				buildingFunctions.add(new AlgaeFarming(this, fSpec));
-				break;
-				
-			case ASTRONOMICAL_OBSERVATION:
-				buildingFunctions.add(new AstronomicalObservation(this, fSpec));
-				break;
-
-			case BUILDING_CONNECTION:
-				buildingFunctions.add(new BuildingConnection(this, fSpec));
-				break;
-
-			case COMMUNICATION:
-				buildingFunctions.add(new Communication(this, fSpec));
-				break;
-
-			case COMPUTATION:
-				buildingFunctions.add(new Computation(this, fSpec));
-				break;
-
-			case COOKING:
-				buildingFunctions.add(new Cooking(this, fSpec));
-				break;
-
-			case DINING:
-				buildingFunctions.add(new Dining(this, fSpec));
-				break;
-
-			case EARTH_RETURN:
-				buildingFunctions.add(new EarthReturn(this, fSpec));
-				break;
-
-			case EVA:
-				buildingFunctions.add(new EVA(this, fSpec));
-				break;
-
-			case EXERCISE:
-				buildingFunctions.add(new Exercise(this, fSpec));
-				break;
-
-			case FARMING:
-				buildingFunctions.add(new Farming(this, fSpec));
-				break;
-
-			case FISHERY:
-				buildingFunctions.add(new Fishery(this, fSpec));
-				break;
-
-			case FOOD_PRODUCTION:
-				buildingFunctions.add(new FoodProduction(this, fSpec));
-				break;
-
-			case VEHICLE_MAINTENANCE:
-				buildingFunctions.add(new VehicleGarage(this, fSpec));
-				break;
-
-			case LIFE_SUPPORT:
-				buildingFunctions.add(new LifeSupport(this, fSpec));
-				break;
-
-			case LIVING_ACCOMMODATION:
-				buildingFunctions.add(new LivingAccommodation(this, fSpec));
-				break;
-
-			case MANAGEMENT:
-				buildingFunctions.add(new Management(this, fSpec));
-				break;
-
-			case MANUFACTURE:
-				buildingFunctions.add(new Manufacture(this, fSpec));
-				break;
-
-			case MEDICAL_CARE:
-				buildingFunctions.add(new MedicalCare(this, fSpec));
-				break;
-
-			case POWER_GENERATION:
-				buildingFunctions.add(new PowerGeneration(this, fSpec));
-				break;
-
-			case POWER_STORAGE:
-				buildingFunctions.add(new PowerStorage(this, fSpec));
-				break;
-
-			case PREPARING_DESSERT:
-				buildingFunctions.add(new PreparingDessert(this, fSpec));
-				break;
-				
-			case RECREATION:
-				buildingFunctions.add(new Recreation(this, fSpec));
-				break;
-
-			case RESEARCH:
-				buildingFunctions.add(new Research(this, fSpec));
-				break;
-
-			case RESOURCE_PROCESSING:
-				buildingFunctions.add(new ResourceProcessing(this, fSpec));
-				break;
-
-			case ROBOTIC_STATION:
-				buildingFunctions.add(new RoboticStation(this, fSpec));
-				break;
-
-			case STORAGE:
-				buildingFunctions.add(new Storage(this, fSpec));
-				break;
-
-			case THERMAL_GENERATION:
-				buildingFunctions.add(new ThermalGeneration(this, fSpec));
-				break;
-
-			case WASTE_PROCESSING:
-				buildingFunctions.add(new WasteProcessing(this, fSpec));
-				break;
-
-			default:
-				throw new IllegalArgumentException("Do not know how to build Function " + supported);
-			}
-		}
-		return buildingFunctions;
+		functions.add(f);
+		return f;
 	}
 
 	/**
@@ -991,29 +855,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			heating = furnace.getHeating();
 		heating.dumpExcessHeat(heatGenerated);
 	}
-	
-//	/**
-//	 * Sets the required power for heating.
-//	 *
-//	 * @param powerReq
-//	 */
-//	public void setPowerRequiredForHeating(double powerReq) {
-//		if (heating == null)
-//			heating = furnace.getHeating();
-//		heating.setPowerRequired(powerReq);
-//	}
-
-//	/**
-//	 * Gets the heat the building requires for power-down mode.
-//	 *
-//	 * @return heat in kJ/s.
-//	 */
-//	public double getPoweredDownHeatRequired() {
-//		double result = 0;
-//		if (furnace != null && heating != null)
-//			result = heating.getPoweredDownHeatRequired();
-//		return result;
-//	}
 
 	/**
 	 * Gets the building's power mode.
@@ -1636,7 +1477,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * @return
 	 */
 	public boolean isInhabitable() {
-		return buildingConfig.getBuildingSpec(buildingType).isInhabitable();
+		return getLifeSupport() == null;
 	}
 	
 	@Override
@@ -1646,13 +1487,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 	public void reinit() {
 		settlement = unitManager.getSettlementByID(settlementID);
-
-		if (buildingConfig == null)
-			buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-		// Get the building's functions
-		if (functions == null) {
-			functions = buildFunctions(buildingConfig.getBuildingSpec(buildingType));
-		}
 	}
 	
 	/**

@@ -825,7 +825,7 @@ public class ConstructionMission extends AbstractMission
 
 			if (site.isAllConstructionComplete()) {
 				// Construct building if all 3 stages of the site construction have been complete.
-				Building building = site.createBuilding(((Unit)settlement).getIdentifier());
+				Building building = site.createBuilding(settlement);
 				manager.removeConstructionSite(site);
 				settlement.fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_BUILDING_EVENT, building);
 				logger.info(settlement, "New building '" + site.getBuildingName() + "' constructed.");

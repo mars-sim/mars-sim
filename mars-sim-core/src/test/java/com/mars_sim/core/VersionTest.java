@@ -9,14 +9,14 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-public class VersionTest {
+class VersionTest {
     @Test
     void testSaveAndReload() throws IOException {
         Version orig = new Version("A", "B", true);
         byte[] content;
         try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             orig.store(output);
-            output.close();;
+            output.close();
             content = output.toByteArray();
         }
 

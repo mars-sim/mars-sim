@@ -1,6 +1,8 @@
 package com.mars_sim.core.structure.building.connection;
 
+import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.building.MockBuilding;
+import com.mars_sim.mapdata.location.BoundedObject;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 import junit.framework.TestCase;
@@ -10,12 +12,14 @@ public class HatchTest extends TestCase {
 	
     private static final LocalPosition BUILDING_POSITION = new LocalPosition(0D, 0D);
     private static final LocalPosition HATCH_POSITION = new LocalPosition(5D, 12D);
+    private static final BoundedObject BUILDING_POSN = new BoundedObject(0, 0, 10, 10, 0);
 
 
 	public void testConstructor() {
         
-        MockBuilding building1 = new MockBuilding();
-        MockBuilding building2 = new MockBuilding();
+        MockSettlement settlement = new MockSettlement();
+        MockBuilding building1 = new MockBuilding(settlement, 1, BUILDING_POSN);
+        MockBuilding building2 = new MockBuilding(settlement, 2, BUILDING_POSN);
         BuildingConnector connector = new BuildingConnector(building1, 
                 BUILDING_POSITION, 0D, building2, BUILDING_POSITION, 0D);
         
@@ -31,9 +35,9 @@ public class HatchTest extends TestCase {
     }
     
     public void testSetLocation() {
-        
-        MockBuilding building1 = new MockBuilding();
-        MockBuilding building2 = new MockBuilding();
+        MockSettlement settlement = new MockSettlement();
+        MockBuilding building1 = new MockBuilding(settlement, 1, BUILDING_POSN);
+        MockBuilding building2 = new MockBuilding(settlement, 2, BUILDING_POSN);
         BuildingConnector connector = new BuildingConnector(building1, 
         		BUILDING_POSITION, 0D, building2, BUILDING_POSITION, 0D);
         
@@ -45,8 +49,9 @@ public class HatchTest extends TestCase {
     
     public void testEquals() {
         
-        MockBuilding building1 = new MockBuilding();
-        MockBuilding building2 = new MockBuilding();
+        MockSettlement settlement = new MockSettlement();
+        MockBuilding building1 = new MockBuilding(settlement, 1, BUILDING_POSN);
+        MockBuilding building2 = new MockBuilding(settlement, 2, BUILDING_POSN);
         BuildingConnector connector = new BuildingConnector(building1, 
         		BUILDING_POSITION, 0D, building2, BUILDING_POSITION, 0D);
         
