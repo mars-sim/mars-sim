@@ -25,6 +25,7 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.data.History;
@@ -226,7 +227,7 @@ public class Settlement extends Structure implements Temporal,
 	/** Numbers of vehicles owned by this settlement. */
 	private int numOwnedVehicles;
 	/** The composite value of the minerals nearby. */
-	public int mineralValue = -1;
+	private int mineralValue = -1;
 	/** The background map image id used by this settlement. */
 	private int mapImageID;
 	
@@ -235,7 +236,7 @@ public class Settlement extends Structure implements Temporal,
 	/** The average ice collection rate of the water ice nearby. */
 	private double iceCollectionRate = RandomUtil.getRandomDouble(0.2, 1);
 	/** The rate [kg per millisol] of filtering grey water for irrigating the crop. */
-	public double greyWaterFilteringRate = 1;
+	private double greyWaterFilteringRate = 1;
 	/** The currently minimum passing score for mission approval. */
 	private double minimumPassingScore = INITIAL_MISSION_PASSING_SCORE;
 	/** The settlement's current indoor temperature. */
@@ -243,9 +244,9 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement's current indoor pressure [in kPa], not Pascal. */
 	private double currentPressure = NORMAL_AIR_PRESSURE;
 	/** The settlement's current meal replenishment rate. */
-	public double mealsReplenishmentRate = 0.3;
+	private double mealsReplenishmentRate = 0.3;
 	/** The settlement's current dessert replenishment rate. */
-	public double dessertsReplenishmentRate = 0.4;
+	private double dessertsReplenishmentRate = 0.4;
 	/** The settlement's current probability value for ice. */
 	private double iceProbabilityValue = 400D;
 	/** The settlement's current probability value for regolith. */
@@ -256,7 +257,7 @@ public class Settlement extends Structure implements Temporal,
 	private double cropArea = -1;
 
 	/** The settlement terrain profile. */
-	public double[] terrainProfile = new double[2];
+	private double[] terrainProfile = new double[2];
 	/** The settlement template name. */
 	private String stormMsg;
 	/** The settlement template name. */
@@ -543,6 +544,8 @@ public class Settlement extends Structure implements Temporal,
 		// Create the daily labor hours map
 		dailyLaborTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 
+		// TODO add a hardcode GroupActivity
+		new GroupActivity(GroupActivity.TEAM_MEETING, this, masterClock.getMarsTime());
 	}
 
 	/**
@@ -2997,32 +3000,6 @@ public class Settlement extends Structure implements Temporal,
 		range = Math.min(range, limit);
 		
 		Coordinates chosen = null;
-		
-		// Remove coordinates that have been explored or staked by other settlements
-		
-//		Set<Coordinates> surfaceFeaturesSet = surfaceFeatures.getDeclaredCoordinates(false);
-		
-		// Create a set
-//		Set<Coordinates> intersection = new HashSet<>(nearbyMineralLocations);
-		
-//		logger.info(this, "1. surfaceFeatures sets:" + surfaceFeaturesSet.size()
-//					+ "  nearbyMineralLocations sets:" + nearbyMineralLocations.size()
-//					+ "  intersection sets:" + intersection.size());
-
-		// Execute to create the union of the two sets
-//		intersection.retainAll(surfaceFeaturesSet);
-		
-//		logger.info(this, "2. surfaceFeatures sets:" + surfaceFeaturesSet.size()
-//					+ "  nearbyMineralLocations sets:" + nearbyMineralLocations.size()
-//					+ "  intersection sets:" + intersection.size());
-		
-		// Remove the union
-//		nearbyMineralLocations.removeAll(intersection);
-		
-//		logger.info(this, "3. surfaceFeatures sets:" + surfaceFeaturesSet.size()
-//					+ "  nearbyMineralLocations sets:" + nearbyMineralLocations.size()
-//					+ "  intersection sets:" + intersection.size());
-		
 		if (nearbyMineralLocations.isEmpty()) {
 			logger.info(this, "nearbyMineralLocations is empty.");
 			return null;
@@ -3084,10 +3061,6 @@ public class Settlement extends Structure implements Temporal,
 			el = surfaceFeatures.declareRegionOfInterest(siteLocation,
 					skill, this);
 		}
-
-//		if (el != null)
-//			// remove this coordinate from nearbyMineralLocations
-//			nearbyMineralLocations.remove(siteLocation);
 		
 		return el;
 	}
