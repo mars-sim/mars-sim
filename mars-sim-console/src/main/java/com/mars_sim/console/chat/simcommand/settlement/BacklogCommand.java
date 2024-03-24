@@ -38,7 +38,7 @@ class BacklogCommand extends AbstractSettlementCommand {
         List<SettlementTask> tasks = stm.getAvailableTasks();
         if (tasks != null) {
             response.appendTableHeading(true, "Tasks", 35, "Subject", CommandHelper.BUILIDNG_WIDTH,
-                            "#", 3, "Score", -30);
+                            "#", 3, "Scope", 8, "Score", -30);
             for(SettlementTask t : tasks) {
                 String subjectName = null;
                 Entity subject = t.getFocus();
@@ -46,7 +46,7 @@ class BacklogCommand extends AbstractSettlementCommand {
                     subjectName = subject.getName();
                 }
                 response.appendTableRow(t.getShortName(), subjectName,
-                                t.getDemand(),
+                                t.getDemand(), t.getScope().toString(),
                                 t.getScore().getOutput());
             }
         }

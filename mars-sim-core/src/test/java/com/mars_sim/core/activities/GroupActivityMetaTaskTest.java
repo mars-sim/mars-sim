@@ -2,13 +2,15 @@ package com.mars_sim.core.activities;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
 
-    private final static GroupActivityInfo ONE = new GroupActivityInfo("One", 800, 10, 50, 0, 1D, 100, BuildingCategory.LIVING);
+    private final static GroupActivityInfo ONE = new GroupActivityInfo("One", 800, 10, 50, 0, 1D, 100,
+                        TaskScope.NONWORK_HOUR, BuildingCategory.LIVING);
 
     public void testGetSettlementTasks() {
         var s = buildSettlement();
@@ -41,6 +43,10 @@ public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
         assertEquals("One task for Pending state", 1, tasks.size());
         assertEquals("Demand Pending state", (int)(s.getNumCitizens() * ONE.percentagePop()), tasks.get(0).getDemand());
         
+        // Check tasks are for Any hour
+        var anyHour = tasks.stream().filter(h -> h.getScope() == ONE.scope()).toList();
+        assertEquals("All Task are Any Hour", tasks.size(), anyHour.size());
+
         // Advance activity to active
         time = time.addTime(ga.getDefinition().waitDuration());
         ga.execute(time);

@@ -7,6 +7,7 @@ import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.activities.GroupActivity.ActivityState;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.events.ScheduledEventManager.ScheduledEvent;
+import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.time.MarsTime;
@@ -15,8 +16,10 @@ import com.mars_sim.mapdata.location.LocalPosition;
 
 public class GroupActivityTest extends AbstractMarsSimUnitTest {
 
-    private final static GroupActivityInfo REPEATING = new GroupActivityInfo("Repeat", 250, 10, 50, 2, 0.5D, 100, BuildingCategory.LIVING);
-    private final static GroupActivityInfo ONE = new GroupActivityInfo("One", 800, 10, 50, 0, 0.5D, 100, BuildingCategory.LIVING);
+    private final static GroupActivityInfo REPEATING = new GroupActivityInfo("Repeat", 250, 10, 50, 2, 0.5D, 100,
+                                                            TaskScope.ANY_HOUR, BuildingCategory.LIVING);
+    private final static GroupActivityInfo ONE = new GroupActivityInfo("One", 800, 10, 50, 0, 0.5D, 100,
+                                                            TaskScope.NONWORK_HOUR, BuildingCategory.LIVING);
 
     public void testOneOffCycle() {
         var s = buildSettlement();
@@ -28,7 +31,7 @@ public class GroupActivityTest extends AbstractMarsSimUnitTest {
         assertEquals("Scheduled actvity", ActivityState.SCHEDULED, ga.getState());
 
         // Advance to pending
-        t = t.addTime(ONE.scheduledStart());
+        t = t.addTime(ONE.startTime());
         int advance = ga.execute(t);
         assertEquals("Pending actvity", ActivityState.PENDING, ga.getState());
         assertEquals("Wait duration", ONE.waitDuration(), advance);
@@ -60,7 +63,7 @@ public class GroupActivityTest extends AbstractMarsSimUnitTest {
         var ga = new GroupActivity(REPEATING, s, t);
 
         // Advance to pending
-        t = t.addTime(REPEATING.scheduledStart());
+        t = t.addTime(REPEATING.startTime());
         int advance = ga.execute(t);
         assertEquals("Pending actvity", ActivityState.PENDING, ga.getState());
         assertEquals("Wait duration", REPEATING.waitDuration(), advance);
@@ -103,7 +106,7 @@ public class GroupActivityTest extends AbstractMarsSimUnitTest {
                                     .toList();
         assertEquals("Expected events - " + message, 1, matched.size());
         var event = matched.get(0);
-        assertEquals("Scheduled start of event - "+ message, (info.scheduledStart() + offset) % 1000,
+        assertEquals("Scheduled start of event - "+ message, (info.startTime() + offset) % 1000,
                                 event.getWhen().getMillisolInt());
         double toEvent = event.getWhen().getTimeDiff(t);
         assertTrue("Scheduled start in future - " + message, toEvent >= 0D);

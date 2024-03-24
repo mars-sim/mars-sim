@@ -544,7 +544,7 @@ public class Settlement extends Structure implements Temporal,
 		// Create the daily labor hours map
 		dailyLaborTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 
-		// TODO add a hardcode GroupActivity
+		// add a hardcode GroupActivity
 		new GroupActivity(GroupActivity.TEAM_MEETING, this, masterClock.getMarsTime());
 	}
 

@@ -8,12 +8,23 @@ package com.mars_sim.core.activities;
 
 import java.io.Serializable;
 
+import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.structure.building.BuildingCategory;
 
 /**
- * Respresents the definition of a group activity that involves many Persons in a single Settlement.
+ * Represents the definition of a group activity that involves many Persons in a single Settlement.
+ * @param name The name of the group activity
+ * @param startTime Start time in a sol for the activity
+ * @param waitDuration Time spent that Person can wait before the activity starts
+ * @param activtyDuratino Duratino of the actual activity
+ * @param solFrequency Often does this activity report; negative mean never
+ * @param percentagePop What percentage of the settlement population can join
+ * @param scope The scope of on/off duty worker
+ * @param place The category of a meeting place to host the Activity
+ * 
  */
-public record GroupActivityInfo(String name, int scheduledStart, int waitDuration,
+public record GroupActivityInfo(String name, int startTime, int waitDuration,
                                 int activityDuration, int solFrequency,
-                                double percentagePop, int score, BuildingCategory place)
+                                double percentagePop, int score, TaskScope scope,
+                                BuildingCategory place)
             implements Serializable {}

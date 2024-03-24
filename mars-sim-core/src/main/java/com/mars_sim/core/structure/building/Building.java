@@ -405,7 +405,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return earthReturn;
 	}
 
-
 	public FoodProduction getFoodProduction() {
 		if (foodFactory == null)
 			foodFactory = (FoodProduction) getFunction(FunctionType.FOOD_PRODUCTION);
@@ -598,7 +597,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		return null;
 	}
-	
+		
 	/**
 	 * Determines the building functions.
 	 *

@@ -22,7 +22,6 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.Structure;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.structure.building.BuildingConfig;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.vehicle.GroundVehicle;
@@ -91,7 +90,7 @@ implements  LocalBoundedObject {
 
     private MissionPhase phase;
 
-    private BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+    private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
     
     /**
      * Constructor.

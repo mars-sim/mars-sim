@@ -32,6 +32,7 @@ public class GroupActivityMetaTask extends MetaTask implements SettlementMetaTas
             super(parent, activity.getDefinition().name(), activity.getMeetingPlace(), score);
             this.activity = activity;
             setDemand(attendees);
+            setScope(activity.getDefinition().scope());
         }
 
         @Override

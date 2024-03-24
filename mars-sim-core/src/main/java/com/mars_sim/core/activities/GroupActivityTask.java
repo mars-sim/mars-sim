@@ -24,22 +24,22 @@ public class GroupActivityTask extends Task {
     private GroupActivity activity;
     private ActivityState currentState;
 
+    /**
+     * Create a Task to participate in a Group Activity.
+     * @param activity Activity to participate in.
+     * @param person Worker taking part
+     */
     public GroupActivityTask(GroupActivity activity, Person person) {
         super(activity.getName(), person, false, false, 0D, activity.getTotalDuration());
         this.activity = activity;
 
-        // TODO
-        // Check is in Settlement
-        // Add 2 phases
-        // Set the pahase according to the activity state
         this.currentState = activity.getState();
 
         // Walk to meeting place
         if (!person.getBuildingLocation().equals(activity.getMeetingPlace())) {
             walkToRandomLocInBuilding(activity.getMeetingPlace(), true);
         }
-
-        
+ 
 		// Initialize phase
 		addPhase(WAITING);
         addPhase(ACTIVE);

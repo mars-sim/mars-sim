@@ -8,6 +8,7 @@ package com.mars_sim.core.activities;
 
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.events.ScheduledEventHandler;
+import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingCategory;
@@ -20,9 +21,9 @@ import com.mars_sim.core.time.MarsTime;
  */
 public class GroupActivity implements ScheduledEventHandler {
 
-    // TODO Temporary static activity definition
+    // Temporary static activity definition
     public static final GroupActivityInfo TEAM_MEETING = new GroupActivityInfo("Team Meeting", 400, 5,
-                                             50, 2, 0.5D, 500, BuildingCategory.COMMAND);
+                                             50, 2, 0.5D, 500, TaskScope.ANY_HOUR, BuildingCategory.COMMAND);
 
 
     public enum ActivityState {
@@ -54,7 +55,7 @@ public class GroupActivity implements ScheduledEventHandler {
         // Calculate the duration to the next scheduled start of this activity
         // But adjust to the local time zone
         int offset = MarsSurface.getTimeOffset(owner.getCoordinates());
-        int standardStartTime = (definition.scheduledStart() + offset) % 1000;
+        int standardStartTime = (definition.startTime() + offset) % 1000;
 
         // mSols to the schedued start
         int toEvent = standardStartTime - now.getMillisolInt();
@@ -176,7 +177,7 @@ public class GroupActivity implements ScheduledEventHandler {
      * Get the total time this activity could take. Is the wait & actvity duration.
      * @return
      */
-    public double getTotalDuration() {
+    public int getTotalDuration() {
         return definition.waitDuration() + definition.activityDuration();
     }
 }
