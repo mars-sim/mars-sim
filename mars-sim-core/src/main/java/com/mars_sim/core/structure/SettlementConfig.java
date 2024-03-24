@@ -111,14 +111,6 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String ROTATION_SOLS = "rotation-sols";
 	private static final String MODEL = "model";
 	private static final String ROBOT = "robot";
-
-	/** These must be present in the settlements.xml */
-	public static final String STANDARD_4_SHIFT = "Standard 4 Shift";
-	public static final String STANDARD_3_SHIFT = "Standard 3 Shift";
-	public static final String STANDARD_2_SHIFT = "Standard 2 Shift";
-	public static final String LONG_3_SHIFT = "Long 3 Shift";
-	public static final String SKELETON_NIGHT_SHIFT = "Skeleton Night Shift";
-
 	
 	private static final String FREQUENCY = "frequency-sols";
 	private static final String MANIFEST_NAME = "manifest-name";
@@ -128,7 +120,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String MAX = "max";
 
 	private static final String ACTIVITIES = "activities";
-	private static final String ACTIVITY_RULESET = "activity-ruleset";
+	private static final String ACTIVITY_RULESET = "activity-schedule";
 	private static final String MIN_POP = "minPopulation";
 	private static final String REPEATING_ACTIVITY = "repeating-activity";
 	private static final String START_TIME = "startTime";
@@ -140,19 +132,18 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String POPULATION = "population";
 	private static final String ACTIVITY_FREQ = "frequency";
 	private static final String FIRST_SOL = "firstSol";
+
+	private static final String ACTIVITY_SCHEDULE = "activitySchedule";
 	
 
 	private double[] roverValues = new double[] { 0, 0 };
 	private double[][] lifeSupportValues = new double[2][7];
 
-	// Data members
-	private String defaultShift;
-
 	private PartPackageConfig partPackageConfig;	
 	private BuildingPackageConfig buildingPackageConfig;
 	private ResupplyConfig resupplyConfig;
 	
-	private Map<String, ShiftPattern> shiftDefinitions = new HashMap<>();
+	private List<ShiftPattern> shiftDefinitions = new ArrayList<>();
 
 	private Map<Integer, ResourceLimits> resLimits = new HashMap<>();
 
@@ -244,16 +235,29 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	}
 
 	/**
+	 * Find a activity schedule by name
+	 * @param name 
+	 * @return Selected; coud be null
+	 */
+	public GroupActivitySchedule getActivityByName(String name) {
+		var found = rulesets.stream().filter(a -> name.equalsIgnoreCase(a.name())).findFirst();
+		if (found.isPresent()) {
+			return found.get();
+		}
+		throw new IllegalArgumentException("Cannot find a Activity Scheduled called " + name);
+	}
+
+	/**
 	 * Find a activity rules set which has the highest minPopulation than this population
 	 * size can cover
 	 * @param popSize
-	 * @return Selected; coud be null
+	 * @return Selected; could be null
 	 */
 	public GroupActivitySchedule getActivityByPopulation(int popSize) {
 		// Rulesets are order in terms of decreasing population sp find first that is smaller than 
 		// target population
 		for(var a : rulesets) {
-			if ((a.minPop() < popSize) && (a.minPop() > 0)) {
+			if ((a.minPop() <= popSize) && (a.minPop() > 0)) {
 				return a;
 			}
 		}
@@ -298,13 +302,12 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 
 			int rotSol = ConfigHelper.getOptionalAttributeInt(node, ROTATION_SOLS, 10);
 			int leave = ConfigHelper.getOptionalAttributeInt(node, LEAVE_PERC, 10);
+			int minPop = ConfigHelper.getOptionalAttributeInt(node, MIN_POP, -1);
+
 			List<ShiftSpec> shiftSpecs = new ArrayList<>();
 			List<Element> specNodes = node.getChildren(SHIFT_SPEC);
 			for(Element spec : specNodes) {
 				String sname = spec.getAttributeValue(NAME);
-				if (defaultShift == null) {
-					defaultShift = sname;
-				}
 				int start = Integer.parseInt(spec.getAttributeValue(SHIFT_START));
 				int end = Integer.parseInt(spec.getAttributeValue(SHIFT_END));
 				int population = Integer.parseInt(spec.getAttributeValue(SHIFT_PERC));
@@ -312,8 +315,11 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				shiftSpecs.add(new ShiftSpec(sname, start, end, population));
 			}
 
-			shiftDefinitions.put(name.toLowerCase(), new ShiftPattern(name, shiftSpecs, rotSol, leave));
+			shiftDefinitions.add(new ShiftPattern(name, shiftSpecs, rotSol, leave, minPop));
 		}
+
+		// Order rulles sets in increasing minimum population
+		shiftDefinitions.sort(Comparator.comparingInt(ShiftPattern::getMinPopulation).reversed());
 	}
 
 	/**
@@ -321,13 +327,29 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	 * @param name
 	 * @return
 	 */
-	public ShiftPattern getShiftPattern(String name) {
-		ShiftPattern pattern = shiftDefinitions.get(name.toLowerCase());
-		if (pattern == null) {
-			throw new IllegalArgumentException("No shift pattern called " + name);
+	public ShiftPattern getShiftByName(String name) {
+		var found = shiftDefinitions.stream().filter(a -> name.equalsIgnoreCase(a.getName())).findFirst();
+		if (found.isPresent()) {
+			return found.get();
 		}
+		throw new IllegalArgumentException("No shift pattern called " + name);
+	}
 
-		return pattern;
+	/**
+	 * Find a shift pattern  which has the highest minPopulation than this population
+	 * size can cover
+	 * @param popSize
+	 * @return Selected; could be null
+	 */
+	public ShiftPattern getShiftByPopulation(int popSize) {
+		// Pattern are order in terms of decreasing population sp find first that is smaller than 
+		// target population
+		for(var a : shiftDefinitions) {
+			if ((a.getMinPopulation() <= popSize) && (a.getMinPopulation() > 0)) {
+				return a;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -551,24 +573,24 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		int defaultNumOfRobots = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_NUM_ROBOTS));
 
 		// Look up the shift pattern
+		ShiftPattern pattern = null;
 		String shiftPattern = templateElement.getAttributeValue(SHIFT_PATTERN);
 		if (shiftPattern == null) {
-			if (defaultPopulation >= 12) {
-				shiftPattern = LONG_3_SHIFT;
-			}
-			else if (defaultPopulation >= 24) {
-				shiftPattern = STANDARD_3_SHIFT;
-			}
-			else if (defaultPopulation >= 36) {
-				shiftPattern = STANDARD_4_SHIFT;
-			}	
-			else {
-				shiftPattern = STANDARD_2_SHIFT;
-			}
+			pattern = getShiftByPopulation(defaultPopulation);
 		}
-		ShiftPattern pattern = getShiftPattern(shiftPattern);
+		else {
+			pattern = getShiftByName(shiftPattern);
+		}
 
-		GroupActivitySchedule activitySchedule = getActivityByPopulation(defaultPopulation);
+		GroupActivitySchedule activitySchedule = null;
+		String scheduleName = templateElement.getAttributeValue(ACTIVITY_SCHEDULE);
+		if (scheduleName != null) {
+			activitySchedule = getActivityByName(scheduleName);
+		}
+		else {
+			activitySchedule = getActivityByPopulation(defaultPopulation);
+		}
+
 		// Add templateID
 		SettlementTemplate settlementTemplate = new SettlementTemplate(
 				settlementTemplateName,

@@ -39,7 +39,7 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
             startTime = endTime;
         }
 
-        ShiftPattern sp = new ShiftPattern("Test", specs, 20, 0);
+        ShiftPattern sp = new ShiftPattern("Test", specs, 20, 0, -1);
 
         return new ShiftManager(owner, sp, 0);
     }
