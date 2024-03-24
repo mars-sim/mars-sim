@@ -8,6 +8,7 @@ package com.mars_sim.core.person.ai.task.util;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 
 /**
  * This represents a TaskJob created by a SettlementMetaTask. 
@@ -23,6 +24,7 @@ public abstract class SettlementTask extends AbstractTaskJob {
     private Entity focus;
     private String shortName;
     private boolean needsEVA = false;
+    private TaskScope scope = TaskScope.WORK_HOUR;
 
     /**
      * Creates an abstract Settlement task for the backlog that relates to an Entity within a Settlement
@@ -61,6 +63,22 @@ public abstract class SettlementTask extends AbstractTaskJob {
         needsEVA = eva;
     }
     
+        
+    /**
+     * Overrie the default scope
+     * @param newScope
+     */
+    protected void setScope(TaskScope newScope) {
+        scope = newScope;
+    }
+
+    /**
+     * What is the scope of working hours for this Task.
+     */
+    public TaskScope getScope() {
+        return scope;
+    }
+
     /**
      * Sets a specific level of demand for this job.
      * 

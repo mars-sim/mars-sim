@@ -6,8 +6,10 @@ import org.junit.Before;
 
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.structure.building.MockBuilding;
 import com.mars_sim.core.structure.building.function.Function;
+import com.mars_sim.mapdata.location.BoundedObject;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 import junit.framework.TestCase;
@@ -235,11 +237,8 @@ public class TestLocalAreaUtil extends TestCase {
         
         Settlement settlement = new MockSettlement();
  
-        MockBuilding mb0 = new MockBuilding(settlement.getBuildingManager(), "Mock B0");
-        mb0.setWidth(10D);
-        mb0.setLength(10D);
-        mb0.setLocation(0D, 0D);
-        mb0.setFacing(0D);
+        var bounds = new BoundedObject(0D, 0D, 10, 10, 0);
+        MockBuilding mb0 = new MockBuilding(settlement, "Mock B0", 1, bounds, "Mock", BuildingCategory.COMMAND);
         
         assertTrue(LocalAreaUtil.isPositionWithinLocalBoundedObject(new LocalPosition(0D, 0D), mb0));
         assertTrue(LocalAreaUtil.isPositionWithinLocalBoundedObject(new LocalPosition(4.99D, 4.99D), mb0));
@@ -261,8 +260,9 @@ public class TestLocalAreaUtil extends TestCase {
         assertFalse(LocalAreaUtil.isPositionWithinLocalBoundedObject(new LocalPosition(0D, -5.01D), mb0));
         
         // Rotate building 45 degrees.
-        mb0.setFacing(45D);
-        
+        bounds = new BoundedObject(0D, 0D, 10, 10, 45D);
+        mb0 = new MockBuilding(settlement, "Mock B0", 1, bounds, "Mock", BuildingCategory.COMMAND);
+                
         assertTrue(LocalAreaUtil.isPositionWithinLocalBoundedObject(new LocalPosition(0D, 0D), mb0));
         assertFalse(LocalAreaUtil.isPositionWithinLocalBoundedObject(new LocalPosition(4.99D, 4.99D), mb0));
         assertFalse(LocalAreaUtil.isPositionWithinLocalBoundedObject(new LocalPosition(-4.99D, 4.99D), mb0));

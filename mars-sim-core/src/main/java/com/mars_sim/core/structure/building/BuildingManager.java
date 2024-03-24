@@ -452,7 +452,7 @@ public class BuildingManager implements Serializable {
 	 *                                  connections.
 	 */
 	public void addBuilding(BuildingTemplate template, boolean createBuildingConnections) {
-		addBuilding(new Building(template, this), template, createBuildingConnections);
+		addBuilding(Building.createBuilding(template, settlement), template, createBuildingConnections);
 	}
 
 	/**
@@ -3129,6 +3129,10 @@ public class BuildingManager implements Serializable {
 		unitManager = u;
 	}
 
+	static BuildingConfig getBuildingConfig() {
+		return simulationConfig.getBuildingConfiguration();
+	}
+	
 	/**
 	 * Reconstructs the building lists after loading from a saved sim.
 	 */

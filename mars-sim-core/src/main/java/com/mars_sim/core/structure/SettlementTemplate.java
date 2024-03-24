@@ -56,16 +56,21 @@ public class SettlementTemplate implements Serializable, UserConfigurable, Settl
 
 	private ObjectiveType objective = ObjectiveType.CROP_FARM;
 
+	private GroupActivitySchedule activitySchedule;
+
 	/**
 	 * Constructor. Called by SettlementConfig.java
 	 * 
 	 * @param name
+	 * @param activitySchedule 
 	 * @param pattern
 	 * @param defaultPopulation
 	 * @param defaultNumOfRobots
 	 */
 	public SettlementTemplate(String name, String desription, boolean bundled,
-								String sponsor, ShiftPattern shiftDefn, int defaultPopulation, int defaultNumOfRobots) {
+								String sponsor, ShiftPattern shiftDefn,
+								GroupActivitySchedule activitySchedule,
+								int defaultPopulation, int defaultNumOfRobots) {
 		this.name = name;
 		this.description = desription;
 		this.bundled = bundled;
@@ -73,6 +78,7 @@ public class SettlementTemplate implements Serializable, UserConfigurable, Settl
 		this.defaultPopulation = defaultPopulation;
 		this.defaultNumOfRobots = defaultNumOfRobots;
 		this.shiftDefn = shiftDefn;
+		this.activitySchedule = activitySchedule;
 
 		buildings = new ArrayList<>();
 		vehicles = new HashMap<>();
@@ -130,6 +136,15 @@ public class SettlementTemplate implements Serializable, UserConfigurable, Settl
 		return shiftDefn;
 	}
 	
+	/**
+	 * Gets the Activity scheduled for this settlement.
+	 * 
+	 * @return ShiftPattern
+	 */
+	public GroupActivitySchedule getActivitySchedule() {
+		return activitySchedule;
+	}
+
 	/**
 	 * Gets the default robot capacity of the template.
 	 * 

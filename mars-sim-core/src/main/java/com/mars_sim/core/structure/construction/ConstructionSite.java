@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
@@ -21,6 +22,7 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.Structure;
 import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.structure.building.BuildingConfig;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.mapdata.location.BoundedObject;
@@ -87,6 +89,8 @@ implements  LocalBoundedObject {
     private ConstructionStageInfo stageInfo;
 
     private MissionPhase phase;
+
+    private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
     
     /**
      * Constructor.
@@ -382,20 +386,19 @@ implements  LocalBoundedObject {
      * @return newly constructed building.
      * @throws Exception if error constructing building.
      */
-    public Building createBuilding(int settlementID) {
+    public Building createBuilding(Settlement settlement2) {
         if (buildingStage == null) throw new IllegalStateException("Building stage doesn't exist");
 
-        Settlement settlement = unitManager.getSettlementByID(settlementID);
         BuildingManager manager = settlement.getBuildingManager();
         int id = manager.getNextTemplateID();
         String buildingType = buildingStage.getInfo().getName();
         String uniqueName = manager.getUniqueName(buildingType);
         
         int zone = 0;
-        
-        Building newBuilding = new Building("" + id, zone, buildingType, uniqueName,
-        		new BoundedObject(position, width, length, facing),
-                settlement.getBuildingManager());
+        var spec = buildingConfig.getBuildingSpec(buildingType);
+
+        Building newBuilding = new Building(settlement, Integer.toString(id), zone, uniqueName,
+        		new BoundedObject(position, width, length, facing), spec);
         
         manager.addBuilding(newBuilding, true);
 

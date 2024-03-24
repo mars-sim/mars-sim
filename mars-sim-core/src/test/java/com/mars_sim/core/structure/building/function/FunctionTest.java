@@ -21,6 +21,7 @@ public class FunctionTest extends AbstractMarsSimUnitTest {
         var home = buildSettlement("Test");
         var building = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
         var b = building.getRecreation();
+        assertNotNull("Builidng has Recreation", b);
 
         var spots = b.getActivitySpots();
         assertFalse("Has Activity spots", spots.isEmpty());

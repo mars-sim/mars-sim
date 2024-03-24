@@ -185,7 +185,7 @@ public class BuildingConfig {
 				}
 			}
 			
-			FunctionSpec fspec = new FunctionSpec(props, spots);
+			FunctionSpec fspec = new FunctionSpec(function, props, spots);
 
 			supportedFunctions.put(function, fspec);
 		}

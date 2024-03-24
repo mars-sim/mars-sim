@@ -17,11 +17,8 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -30,7 +27,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -92,7 +88,7 @@ public class MainWindow
 	/** The main window frame. */
 	private static JFrame frame;
 
-	private UIConfig configs;
+	private transient UIConfig configs;
 
 	private static SplashWindow splashWindow;
 
@@ -118,7 +114,7 @@ public class MainWindow
 
 	private JMemoryMeter memoryBar;
 
-	private HelpLibrary helpLibrary;
+	private transient HelpLibrary helpLibrary;
 
 	private boolean useExternalBrowser;
 
@@ -165,7 +161,7 @@ public class MainWindow
 			logger.log(Level.CONFIG, "Detecting only one screen.");
 			logger.config("1 screen detected.");
 		} else if (gs.length == 0) {
-			throw new RuntimeException("No Screens Found.");
+			throw new IllegalStateException("No Screens Found.");
 			// NOTE: what about the future server version of mars-sim in which no screen is
 			// needed.
 		} else {
@@ -342,16 +338,13 @@ public class MainWindow
 			}
 		});
 
-		frame.addWindowStateListener(new WindowStateListener() {
-			public void windowStateChanged(WindowEvent e) {
-				int state = e.getNewState();
-				isIconified = (state == Frame.ICONIFIED);
-				if (state == Frame.MAXIMIZED_HORIZ
-						|| state == Frame.MAXIMIZED_VERT)
-					// frame.update(getGraphics());
-					logger.log(Level.CONFIG, "MainWindow set to maximum."); //$NON-NLS-1$
-				repaint();
-			}
+		frame.addWindowStateListener(e -> {
+			int state = e.getNewState();
+			isIconified = (state == Frame.ICONIFIED);
+			if (state == Frame.MAXIMIZED_HORIZ
+					|| state == Frame.MAXIMIZED_VERT)
+				logger.log(Level.CONFIG, "MainWindow set to maximum."); //$NON-NLS-1$
+			repaint();
 		});
 
 		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -382,12 +375,7 @@ public class MainWindow
 		JPanel bottomPane = new JPanel(new BorderLayout());
 
 		// Prepare unit toolbar
-		unitToolbar = new UnitToolBar(this) {
-			@Override
-			protected JButton createActionComponent(Action a) {
-				return super.createActionComponent(a);
-			}
-		};
+		unitToolbar = new UnitToolBar(this);
 
 		unitToolbar.setBorder(new MarsPanelBorder());
 		// Remove the toolbar border, to blend into figure contents
@@ -428,31 +416,6 @@ public class MainWindow
 		masterClock.addClockListener(this, 1000L);
 	}
 
-//	private JCheckBox createOverlayCheckBox() {
-//		JCheckBox checkBox = new JCheckBox("Pause Overlay On/Off", true);
-//		checkBox.setToolTipText("Turn on/off pause overlay in desktop");
-//
-//		checkBox.addItemListener(e -> displayOverlay());
-//
-//		return checkBox;
-//	}
-
-//	private void displayOverlay() {
-		//boolean isPaused = pauseSwitch.isSelected();
-		//boolean isBlocking = blockingSwitch.isSelected();
-
-		// Need to display the blocking image on the content pane
-		// if (isPaused && isBlocking) {
-		// // Checkbox has been selected
-		// layeredContent.add(blockingImage, 2);
-		// } else {
-		// // Checkbox has been unselected
-		// if (blockingImage.isShowing()) {
-		// layeredContent.remove(blockingImage);
-		// }
-		// };
-//	}
-
 	private void createPauseSwitch() {
 		pauseSwitch = new JToggleButton(PAUSE_ICON);
 		pauseSwitch.setToolTipText("Pause or Resume the Simulation");
@@ -481,12 +444,10 @@ public class MainWindow
 		decreaseSpeed.setIcon(DECREASE_ICON);
 		decreaseSpeed.setToolTipText("Decrease the sim speed (aka time ratio)");
 		
-		decreaseSpeed.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!masterClock.isPaused()) {
-					masterClock.decreaseSpeed();
-				}
-			};
+		decreaseSpeed.addActionListener(e -> {
+			if (!masterClock.isPaused()) {
+				masterClock.decreaseSpeed();
+			}
 		});
 		
 		// Create pause switch
@@ -496,12 +457,10 @@ public class MainWindow
 		increaseSpeed.setIcon(INCREASE_ICON);
 		increaseSpeed.setToolTipText("Increase the sim speed (aka time ratio)");
 
-		increaseSpeed.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!masterClock.isPaused()) {
-					masterClock.increaseSpeed();
-				}
-			};
+		increaseSpeed.addActionListener(e -> {
+			if (!masterClock.isPaused()) {
+				masterClock.increaseSpeed();
+			}
 		});
 		
 		// Add the increase speed button

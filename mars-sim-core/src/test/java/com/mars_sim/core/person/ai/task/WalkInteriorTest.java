@@ -36,7 +36,7 @@ public class WalkInteriorTest extends AbstractMarsSimUnitTest {
         Settlement settlement = buildSettlement();
         BuildingManager buildingManager = settlement.getBuildingManager();
 
-        Building b1 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        Building b1 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
 
 		Person person = buildPerson("Walker", settlement);
 		person.setPosition(LocalPosition.DEFAULT_POSITION);
@@ -64,7 +64,7 @@ public class WalkInteriorTest extends AbstractMarsSimUnitTest {
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
 
 
-        Building b1 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        Building b1 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
         Building b2 = buildBuilding(buildingManager, new LocalPosition(-6D, 0D), 270D, 1);
         Building b3 = buildBuilding(buildingManager, new LocalPosition(-12D, 0D), 270D, 2);
         Building b4 = buildBuilding(buildingManager, new LocalPosition(-18D, 0D), 270D, 3);
@@ -98,7 +98,7 @@ public class WalkInteriorTest extends AbstractMarsSimUnitTest {
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
 
 
-        Building b3 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        Building b3 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
         Building b4 = buildBuilding(buildingManager, new LocalPosition(-6D, 0D), 270D, 2);
         Building b5 = buildBuilding(buildingManager, new LocalPosition(-12D, 0D), 270D, 1);
 

@@ -1,93 +1,38 @@
 package com.mars_sim.core.structure.building;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import com.mars_sim.core.malfunction.MalfunctionManager;
-import com.mars_sim.core.structure.building.function.Function;
-import com.mars_sim.core.structure.building.function.LifeSupport;
-import com.mars_sim.mapdata.location.LocalPosition;
+import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.building.function.FunctionType;
+import com.mars_sim.mapdata.location.BoundedObject;
 
 @SuppressWarnings("serial")
 public class MockBuilding extends Building {
 
 	/* default logger. */
-//	private static final Logger logger = Logger.getLogger(Building.class.getName());
 	private static FunctionSpec lifeSupportSpec = null;
 	
 	private static FunctionSpec getLifeSupportSpec() {
 		if (lifeSupportSpec == null) {
 			
-			lifeSupportSpec = new FunctionSpec(Map.of(BuildingConfig.POWER_REQUIRED, 1D,
+			lifeSupportSpec = new FunctionSpec(FunctionType.LIFE_SUPPORT, Map.of(BuildingConfig.POWER_REQUIRED, 1D,
 													  FunctionSpec.CAPACITY, 10),
 														null);
 		}
 		return lifeSupportSpec;
 	}
 
-    public MockBuilding() {
-    	super();
-    }
     
-    public MockBuilding(BuildingManager manager, String name)  {
-		super(manager, name);
-		buildingType = "Mock Type";
-
-		if (manager == null) {
-			throw new IllegalArgumentException("Bulding manager can not be null");
-		}
-		manager.addMockBuilding(this);
+    public MockBuilding(Settlement owner, String name, int id, BoundedObject bounds, String buildingType, BuildingCategory cat)  {
+		super(owner, Integer.toString(id), 1, "Mock Building " + id, bounds, buildingType, cat);
 
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
-		functions = new ArrayList<>();
-		functions.add(new LifeSupport(this, getLifeSupportSpec()));
-	}
-    
-	public MockBuilding(BuildingTemplate template, BuildingManager manager)  {
-		super(template, manager);
-		buildingType = "Mock Type";
-		changeName("Mock Building");
-		
-		unitManager.addUnit(this);
-
-		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
-		functions = new ArrayList<>();
-		functions.add(new LifeSupport(this, getLifeSupportSpec()));
+		addFunction(getLifeSupportSpec());
 	}
 
-	public void setTemplateID(String id) {
-		this.templateID = id;
-	}
-
-	public void setBuildingType(String type) {
-	    this.buildingType = type;
-	}
-
-	public void setLocation(LocalPosition loc) {
-		this.loc = loc;
-	}
-	
-	public void setZLocation(double zLoc) {
-	    this.zLoc = zLoc;
-	}
-	
-	public void setWidth(double width) {
-	    this.width = width;
-	}
-
-	public void setLength(double length) {
-	    this.length = length;
-	}
-
-	public void setFacing(double facing) {
-	    this.facing = facing;
-	}
-
-	public void addFunction(Function function) {
-	    functions.add(function);
-	}
-	
-	public void setLocation(double x, double y) {
-		loc = new LocalPosition(x, y);	
+	public MockBuilding(Settlement owner, int id, BoundedObject bounds) {
+		super(owner, Integer.toString(id), 1, "Mock Building " + id, bounds, "Mock", BuildingCategory.LIVING);
 	}
 }
+

@@ -14,6 +14,7 @@ import java.util.Set;
 
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.building.function.FunctionType;
+import com.mars_sim.mapdata.location.BoundedObject;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
@@ -289,4 +290,21 @@ public class BuildingSpec {
 	void setFlyerParking(Set<LocalPosition> droneParking) {
 		this.flyerParking = Collections.unmodifiableSet(droneParking);
 	}
+
+	/**
+	 * Combines a custom bounds definitino with what is validate for this building
+	 * @param bounds Request bounds
+	 * @return Combined valid bounds
+	 */
+    public BoundedObject getValidBounds(BoundedObject bounds) {
+		var newWidth = width;
+		if (newWidth < 0) {
+			newWidth = bounds.getWidth();
+		}
+		var newLength = length;
+		if (newLength < 0) {
+			newLength = bounds.getLength();
+		}
+        return new BoundedObject(bounds.getPosition(), newWidth, newLength, bounds.getFacing());
+    }
 }

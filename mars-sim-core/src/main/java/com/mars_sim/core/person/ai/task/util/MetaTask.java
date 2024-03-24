@@ -44,7 +44,7 @@ public abstract class MetaTask {
 	/**
 	 *  Defines the scope of this Task.
 	 */
-	protected enum TaskScope {
+	public enum TaskScope {
 		ANY_HOUR, WORK_HOUR, NONWORK_HOUR
 	}
 	

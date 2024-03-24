@@ -1,6 +1,8 @@
 package com.mars_sim.core.structure.building.connection;
 
+import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.building.MockBuilding;
+import com.mars_sim.mapdata.location.BoundedObject;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 import junit.framework.TestCase;
@@ -13,17 +15,10 @@ public class BuildingConnectorTest extends TestCase {
 
 	public void testNonSplitBuildingConnector() {
         
-        MockBuilding building1 = new MockBuilding();
-        building1.setWidth(10D);
-        building1.setLength(10D);
-        building1.setLocation(0D, 0D);
-        building1.setFacing(0D);
-        
-        MockBuilding building2 = new MockBuilding();
-        building2.setWidth(10D);
-        building2.setLength(10D);
-        building2.setLocation(0D, 0D);
-        building2.setFacing(0D);
+        MockSettlement settlement = new MockSettlement();
+        MockBuilding building1 = new MockBuilding(settlement, 1, new BoundedObject(0D, 0D, 10D, 10D, 0D));
+        MockBuilding building2 = new MockBuilding(settlement, 2, new BoundedObject(0D, 0D, 10D, 10D, 0D));
+
         
         BuildingConnector connector = new BuildingConnector(building1, 
                 BUILDING_POSITION, 0D, building2, BUILDING2_POSITION, 180D);
@@ -58,18 +53,10 @@ public class BuildingConnectorTest extends TestCase {
     
     public void testSplitBuildingConnector() {
         
-        MockBuilding building1 = new MockBuilding();
-        building1.setWidth(10D);
-        building1.setLength(10D);
-        building1.setLocation(0D, 0D);
-        building1.setFacing(0D);
-        
-        MockBuilding building2 = new MockBuilding();
-        building2.setWidth(10D);
-        building2.setLength(10D);
-        building2.setLocation(0D, 12D);
-        building2.setFacing(0D);
-        
+        MockSettlement settlement = new MockSettlement();
+        MockBuilding building1 = new MockBuilding(settlement, 1, new BoundedObject(0D, 0D, 10D, 10D, 0D));
+        MockBuilding building2 = new MockBuilding(settlement, 2, new BoundedObject(0D, 12D, 10D, 10D, 0D));
+
         BuildingConnector connector = new BuildingConnector(building1, 
                 BUILDING2_POSITION, 0D, building2, BUILDING3_POSITION, 180D);
         assertNotNull(connector);

@@ -15,6 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.activities.GroupActivityMetaTask;
 import com.mars_sim.core.person.ai.task.meta.AnalyzeMapDataMeta;
 import com.mars_sim.core.person.ai.task.meta.AssistScientificStudyResearcherMeta;
 import com.mars_sim.core.person.ai.task.meta.BudgetResourcesMeta;
@@ -140,6 +141,8 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new ExamineBodyMeta());
 		converseMeta = new ConverseMeta();
 		allMetaTasks.add(converseMeta);
+		allMetaTasks.add(new GroupActivityMetaTask());
+
 		allMetaTasks.add(new InviteStudyCollaboratorMeta());
 		
 		allMetaTasks.add(new ListenToMusicMeta());

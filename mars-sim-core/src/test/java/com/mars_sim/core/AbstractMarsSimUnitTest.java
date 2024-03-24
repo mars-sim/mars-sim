@@ -18,17 +18,16 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.MockBuilding;
-import com.mars_sim.core.structure.building.function.EVA;
 import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.LivingAccommodation;
-import com.mars_sim.core.structure.building.function.Recreation;
 import com.mars_sim.core.structure.building.function.VehicleGarage;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.mapdata.location.BoundedObject;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 import junit.framework.TestCase;
@@ -90,29 +89,30 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 
 	protected VehicleGarage buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 	
-		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
-	
-		// TODO this should be built off a FunctionSpec
-	    LocalPosition parkingLocation = LocalPosition.DEFAULT_POSITION;
-	    VehicleGarage garage = new VehicleGarage(building0,
-	            new LocalPosition[] { parkingLocation });
-	    building0.addFunction(garage);
+		// Garage has to have a valid bulding type
+		MockBuilding building0 = buildBuilding(buildingManager, "Garage", BuildingCategory.VEHICLE,
+									pos, facing, id);
+
+		var spec = simConfig.getBuildingConfiguration().getFunctionSpec(building0.getBuildingType(),
+																FunctionType.VEHICLE_MAINTENANCE);
+	    building0.addFunction(spec);
+
 
 		buildingManager.addNewBuildingtoBFMap(building0);
 	    
-	    return garage;
+	    return building0.getVehicleParking();
 	}
 
 	protected MockBuilding buildBuilding(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+		return buildBuilding(buildingManager, "Mock", BuildingCategory.COMMAND, pos, facing, id);
+	}
+
+	protected MockBuilding buildBuilding(BuildingManager buildingManager, String type, BuildingCategory cat, LocalPosition pos, double facing, int id) {
+
 		String name = "B" + id;
-		
-	    MockBuilding building0 = new MockBuilding(buildingManager, name);
-	    building0.setTemplateID("" + id);
-	    building0.setName(name);
-	    building0.setWidth(BUILDING_WIDTH);
-	    building0.setLength(BUILDING_LENGTH);
-	    building0.setLocation(pos);
-	    building0.setFacing(facing);
+		var building0 = new MockBuilding(buildingManager.getSettlement(), name, id,
+										new BoundedObject(pos, BUILDING_WIDTH, BUILDING_LENGTH, facing),
+										type, cat);
 	    buildingManager.addMockBuilding(building0);	
 	    
 	    unitManager.addUnit(building0);
@@ -123,9 +123,9 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	protected Building buildRecreation(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
 
-		var spec = simConfig.getBuildingConfiguration().getFunctionSpec("Lander Hab", FunctionType.LIVING_ACCOMMODATION);
+		var spec = simConfig.getBuildingConfiguration().getFunctionSpec("Lander Hab", FunctionType.RECREATION);
 
-	    building0.addFunction(new Recreation(building0, spec));
+	    building0.addFunction(spec);
 	    return building0;
 	}
 
@@ -133,16 +133,20 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
 
 		var evaSpec = simConfig.getBuildingConfiguration().getFunctionSpec("EVA Airlock", FunctionType.EVA);
-	    building0.addFunction(new EVA(building0, evaSpec));
+	    building0.addFunction(evaSpec);
+		
+		var spec = simConfig.getBuildingConfiguration().getFunctionSpec("Lander Hab", FunctionType.LIVING_ACCOMMODATION);
+	    building0.addFunction(spec);
 	    return building0;
 	}
 
 	protected Building buildAccommodation(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
-		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
+		MockBuilding building0 = buildBuilding(buildingManager, "Lander Hab", BuildingCategory.LIVING,  pos, facing, id);
+
 		// Need to rework to allow maven to test this
 		var quartersSpec = simConfig.getBuildingConfiguration().getFunctionSpec("Residential Quarters", FunctionType.LIVING_ACCOMMODATION);
 
-	    building0.addFunction(new LivingAccommodation(building0, quartersSpec));
+	    building0.addFunction(quartersSpec);
 	    return building0;
 	}
 	

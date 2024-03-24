@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
@@ -25,7 +26,7 @@ public class FunctionSpec {
 	// Name of the standard tech level property
 	private static final String TECH_LEVEL = "tech-level";
 
-	private BuildingSpec buildingSpec;
+	private FunctionType type;
 	private Map<String, Object> props;
 	private Set<NamedPosition> spots;
 
@@ -35,8 +36,9 @@ public class FunctionSpec {
 	 * @param props
 	 * @param spots
 	 */
-	public FunctionSpec(Map<String, Object> props, Set<NamedPosition> spots) {
+	public FunctionSpec(FunctionType type, Map<String, Object> props, Set<NamedPosition> spots) {
 		this.props = props;
+		this.type = type;
 		if (spots == null) {
 			this.spots = Collections.emptySet();
 		} else {
@@ -44,6 +46,10 @@ public class FunctionSpec {
 		}
 	}
 
+	public FunctionType getType() {
+		return type;
+	}
+	
 	public Set<NamedPosition> getActivitySpots() {
 		return spots;
 	}
@@ -140,23 +146,4 @@ public class FunctionSpec {
 		}
 		return Boolean.parseBoolean((String) value);
     }
-
-	/**
-	 * Sets the building specs instance.
-	 * 
-	 * @param spec
-	 */
-	public void setBuildingSpec(BuildingSpec spec) {
-		buildingSpec = spec;
-	}
-
-	/**
-	 * Gets the building specs instance.
-	 * 
-	 * @param spec
-	 */
-	public BuildingSpec getBuildingSpec() {
-		return buildingSpec;
-	}
-
 }
