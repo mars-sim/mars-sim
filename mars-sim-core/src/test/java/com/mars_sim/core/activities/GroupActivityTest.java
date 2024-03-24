@@ -16,9 +16,9 @@ import com.mars_sim.mapdata.location.LocalPosition;
 
 public class GroupActivityTest extends AbstractMarsSimUnitTest {
 
-    private final static GroupActivityInfo REPEATING = new GroupActivityInfo("Repeat", 250, 10, 50, 2, 0.5D, 100,
+    private final static GroupActivityInfo REPEATING = new GroupActivityInfo("Repeat", 250, 0, 10, 50, 2, 0.5D, 100,
                                                             TaskScope.ANY_HOUR, BuildingCategory.LIVING);
-    private final static GroupActivityInfo ONE = new GroupActivityInfo("One", 800, 10, 50, 0, 0.5D, 100,
+    private final static GroupActivityInfo ONE = new GroupActivityInfo("One", 800, 1, 10, 50, 0, 0.5D, 100,
                                                             TaskScope.NONWORK_HOUR, BuildingCategory.LIVING);
 
     public void testOneOffCycle() {
@@ -29,6 +29,7 @@ public class GroupActivityTest extends AbstractMarsSimUnitTest {
 
         var ga = new GroupActivity(ONE, s, t);
         assertEquals("Scheduled actvity", ActivityState.SCHEDULED, ga.getState());
+        assertEquals("First meeting", t.addTime(ONE.startTime() + (1000 * ONE.firstSol())), ga.getStartTime());
 
         // Advance to pending
         t = t.addTime(ONE.startTime());
@@ -110,6 +111,7 @@ public class GroupActivityTest extends AbstractMarsSimUnitTest {
                                 event.getWhen().getMillisolInt());
         double toEvent = event.getWhen().getTimeDiff(t);
         assertTrue("Scheduled start in future - " + message, toEvent >= 0D);
-        assertTrue("Scheduled start within 1 sol - " + message, toEvent < 1000D);
+        assertTrue("Scheduled start within target sols - " + message, toEvent <
+                                                ((info.firstSol() + 1) * 1000D));
     }
 }

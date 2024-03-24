@@ -8,10 +8,8 @@ package com.mars_sim.core.activities;
 
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.events.ScheduledEventHandler;
-import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.time.MarsTime;
 
 /**
@@ -20,12 +18,9 @@ import com.mars_sim.core.time.MarsTime;
  * The activity can be reused or be a one off; defined bu the associated definition.
  */
 public class GroupActivity implements ScheduledEventHandler {
-
-    // Temporary static activity definition
-    public static final GroupActivityInfo TEAM_MEETING = new GroupActivityInfo("Team Meeting", 400, 5,
-                                             50, 2, 0.5D, 500, TaskScope.ANY_HOUR, BuildingCategory.COMMAND);
-
-
+    /**
+     * The State that a Group Activity transitions
+     */
     public enum ActivityState {
         SCHEDULED, PENDING, ACTIVE, DONE, UNSCHEDULED;
     }
@@ -34,6 +29,7 @@ public class GroupActivity implements ScheduledEventHandler {
     private ActivityState state = ActivityState.UNSCHEDULED;
     private Building meetingPlace;
     private Settlement owner;
+    private MarsTime startTime;
 
     /**
      * Create an activity for a specific Settlement. This will schedule the initial ScheduledEvent to
@@ -64,8 +60,12 @@ public class GroupActivity implements ScheduledEventHandler {
             toEvent = 1000 + toEvent;
         } 
 
+        // Add in the first sol
+        toEvent += definition.firstSol() * 1000;
+        
         state = ActivityState.SCHEDULED;
-        owner.getFutureManager().addEvent(now.addTime(toEvent), this);
+        startTime = now.addTime(toEvent);
+        owner.getFutureManager().addEvent(startTime, this);
     }
 
     /**
@@ -103,7 +103,9 @@ public class GroupActivity implements ScheduledEventHandler {
                 int freq = definition.solFrequency();
                 if (freq > 0) {
                     state = ActivityState.SCHEDULED;
-                    return 1000 * freq;
+                    int elapsed = 1000 * freq;
+                    startTime = currentTime.addTime(elapsed);
+                    return elapsed;
                 }
                 else {
                     state = ActivityState.DONE;
@@ -179,5 +181,13 @@ public class GroupActivity implements ScheduledEventHandler {
      */
     public int getTotalDuration() {
         return definition.waitDuration() + definition.activityDuration();
+    }
+
+    /**
+     * Start time of the next scheduled start
+     * @return
+     */
+    public MarsTime getStartTime() {
+        return startTime;
     }
 }

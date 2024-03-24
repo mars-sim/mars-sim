@@ -1,5 +1,6 @@
 package com.mars_sim.core.structure;
 
+
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 
 public class SettlementConfigTest extends AbstractMarsSimUnitTest {
@@ -19,7 +20,7 @@ public class SettlementConfigTest extends AbstractMarsSimUnitTest {
         assertNotNull("Settlement template " + ALPHA_BASE, config.getItem(ALPHA_BASE));
     }
 
-    public void testGetShiftPattern() {
+    public void testDefaultShiftPattern() {
         var config = simConfig.getSettlementConfiguration();
 
         // Check standard shifts
@@ -32,5 +33,21 @@ public class SettlementConfigTest extends AbstractMarsSimUnitTest {
         var shift = config.getShiftPattern(name);
         assertNotNull("Shift pattern " + name, shift);
         assertEquals("Shift size for " + name, shifts, shift.getShifts().size());
+    }
+
+    public void testGetActivityByPopulation() {
+        var config = simConfig.getSettlementConfiguration();
+    
+        var large = config.getActivityByPopulation(30);
+        assertTrue("Large ruleset has smaller min pop", 30 > large.minPop());
+        assertEquals("Activity Ruleset for large", "Large Settlement", large.name());
+
+
+        var small = config.getActivityByPopulation(8);
+        assertTrue("Large ruleset has medium min pop", 8 > small.minPop());
+        assertEquals("Activity Ruleset for small", "Small Settlement", small.name());
+
+        var verysmall = config.getActivityByPopulation(4);
+        assertNull("No activities for vry small population", verysmall);
     }
 }

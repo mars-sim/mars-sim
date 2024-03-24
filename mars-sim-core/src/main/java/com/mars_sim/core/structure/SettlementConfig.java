@@ -7,6 +7,7 @@
 package com.mars_sim.core.structure;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import java.util.logging.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
+import com.mars_sim.core.activities.GroupActivityInfo;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig;
@@ -25,6 +27,7 @@ import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig.Supply
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplySchedule;
 import com.mars_sim.core.person.ai.shift.ShiftPattern;
 import com.mars_sim.core.person.ai.shift.ShiftSpec;
+import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
@@ -32,6 +35,7 @@ import com.mars_sim.core.resource.PartPackageConfig;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.RobotTemplate;
 import com.mars_sim.core.robot.RobotType;
+import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.structure.building.BuildingPackageConfig;
 import com.mars_sim.core.structure.building.BuildingTemplate;
 import com.mars_sim.core.structure.building.BuildingTemplate.BuildingConnectionTemplate;
@@ -122,7 +126,22 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String ESSENTIAL_RESOURCES = "essential-resources";
 	private static final String RESERVE = "reserve";
 	private static final String MAX = "max";
+
+	private static final String ACTIVITIES = "activities";
+	private static final String ACTIVITY_RULESET = "activity-ruleset";
+	private static final String MIN_POP = "minPopulation";
+	private static final String REPEATING_ACTIVITY = "repeating-activity";
+	private static final String START_TIME = "startTime";
+	private static final String DURATION = "duration";
+	private static final String WAIT_DURATION = "waitDuration";
+	private static final String SCOPE = "scope";
+	private static final String LOCATION = "location";
+	private static final String SPECIAL_ACTIVITY = "special-activity";
+	private static final String POPULATION = "population";
+	private static final String ACTIVITY_FREQ = "frequency";
+	private static final String FIRST_SOL = "firstSol";
 	
+
 	private double[] roverValues = new double[] { 0, 0 };
 	private double[][] lifeSupportValues = new double[2][7];
 
@@ -136,6 +155,8 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private Map<String, ShiftPattern> shiftDefinitions = new HashMap<>();
 
 	private Map<Integer, ResourceLimits> resLimits = new HashMap<>();
+
+	private List<GroupActivitySchedule> rulesets = new ArrayList<>();
 
 	/**
 	 * Constructor.
@@ -160,11 +181,83 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		loadLifeSupportRequirements(root.getChild(LIFE_SUPPORT_REQUIREMENTS));
 		loadResourceLimits(root.getChild(ESSENTIAL_RESOURCES));
 		loadShiftPatterns(root.getChild(SHIFT_PATTERNS));
+		loadActivityRules(root.getChild(ACTIVITIES));
+
 		String [] defaults = loadSettlementTemplates(settlementDoc);
 
 		loadDefaults(defaults);
 
 		loadUserDefined();
+	}
+
+	private void loadActivityRules(Element activities) {
+		for(Element node : activities.getChildren(ACTIVITY_RULESET)) {
+			String name = node.getAttributeValue(NAME);
+			int pop = ConfigHelper.getOptionalAttributeInt(node, MIN_POP, -1);
+
+			// Load the specials; only 1 per type
+			Map<GroupActivityType,GroupActivityInfo> specials = new HashMap<>();
+			for(Element ra : node.getChildren(SPECIAL_ACTIVITY)) {
+				var sp = parseGroupActivity(ra);
+				GroupActivityType type = GroupActivityType.valueOf(
+							ConfigHelper.convertToEnumName(ra.getAttributeValue(TYPE)));
+				if (specials.containsKey(type)) {
+					throw new IllegalStateException("There is already a meeting defined for type :" + type);
+				}
+				specials.put(type, sp);
+			}
+
+			// Load repeating meetigns
+			List<GroupActivityInfo> meetings = new ArrayList<>();
+			for(Element ra : node.getChildren(REPEATING_ACTIVITY)) {
+				meetings.add(parseGroupActivity(ra));
+			}
+
+			rulesets.add(new GroupActivitySchedule(name, pop, specials, meetings));
+		}
+
+		// Order rulles sets in increasing minimum population
+		rulesets.sort(Comparator.comparingInt(GroupActivitySchedule::minPop).reversed());
+	}
+
+	/**
+	 * Convert a XML element into a GroupActivityInfo
+	 * @param ra
+	 * @return
+	 */
+	private static GroupActivityInfo parseGroupActivity(Element ra) {
+		String name = ra.getAttributeValue(NAME);
+		int startTime = ConfigHelper.getAttributeInt(ra, START_TIME);
+		int firstSol = ConfigHelper.getOptionalAttributeInt(ra, FIRST_SOL, 0);
+		int freq = ConfigHelper.getOptionalAttributeInt(ra, ACTIVITY_FREQ, -1);
+		int wait = ConfigHelper.getAttributeInt(ra, WAIT_DURATION);
+		int duration = ConfigHelper.getAttributeInt(ra, DURATION);
+		double pop = ConfigHelper.getAttributeDouble(ra, POPULATION);
+		TaskScope scope = TaskScope.valueOf(ConfigHelper.convertToEnumName(ra.getAttributeValue(SCOPE)));
+		String locationText = ra.getAttributeValue(LOCATION);
+		BuildingCategory meetingPlace = BuildingCategory.LIVING;
+		if (locationText != null) {
+			meetingPlace = BuildingCategory.valueOf(ConfigHelper.convertToEnumName(locationText));
+		}
+
+		return new GroupActivityInfo(name, startTime, firstSol, wait, duration, freq, pop, duration, scope, meetingPlace);
+	}
+
+	/**
+	 * Find a activity rules set which has the highest minPopulation than this population
+	 * size can cover
+	 * @param popSize
+	 * @return Selected; coud be null
+	 */
+	public GroupActivitySchedule getActivityByPopulation(int popSize) {
+		// Rulesets are order in terms of decreasing population sp find first that is smaller than 
+		// target population
+		for(var a : rulesets) {
+			if ((a.minPop() < popSize) && (a.minPop() > 0)) {
+				return a;
+			}
+		}
+		return null;
 	}
 
 	private void loadResourceLimits(Element limits) {
@@ -475,6 +568,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		}
 		ShiftPattern pattern = getShiftPattern(shiftPattern);
 
+		GroupActivitySchedule activitySchedule = getActivityByPopulation(defaultPopulation);
 		// Add templateID
 		SettlementTemplate settlementTemplate = new SettlementTemplate(
 				settlementTemplateName,
@@ -482,6 +576,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				predefined,
 				sponsor,
 				pattern,
+				activitySchedule,
 				defaultPopulation,
 				defaultNumOfRobots);
 
