@@ -8,6 +8,8 @@ import com.mars_sim.core.activities.GroupActivity.ActivityState;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.events.ScheduledEventManager.ScheduledEvent;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
+import com.mars_sim.core.structure.GroupActivityType;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.time.MarsTime;
@@ -95,23 +97,73 @@ public class GroupActivityTest extends AbstractMarsSimUnitTest {
 
     }
 
-    private void testStartEvent(String message, GroupActivityInfo info, MarsTime t, Coordinates locn) {
+    private void testStartEvent(String message, GroupActivityInfo info, MarsTime now, Coordinates locn) {
         var s = buildSettlement();
         s.setCoordinates(locn); // THis will mov ethe local timezine by 250
-        var offset = MarsSurface.getTimeOffset(locn);
 
-        new GroupActivity(info, s, t);
+        new GroupActivity(info, s, now);
+        testFutureEvent(message, s, info, now, 1, (int)((info.firstSol() + 1) * 1000D));
+    }
+
+    private GroupActivity testFutureEvent(String message, Settlement s, GroupActivityInfo info,
+                                MarsTime now, int minDuration, int maxDuration) {
+        var offset = MarsSurface.getTimeOffset(s.getCoordinates());
+
         var fm = s.getFutureManager();
         List<ScheduledEvent> matched = fm.getEvents().stream()
                                     .filter(ev -> ev.getHandler() instanceof GroupActivity)
+                                    .filter(ga -> ((GroupActivity)ga.getHandler()).getDefinition().equals(info))
                                     .toList();
         assertEquals("Expected events - " + message, 1, matched.size());
         var event = matched.get(0);
         assertEquals("Scheduled start of event - "+ message, (info.startTime() + offset) % 1000,
                                 event.getWhen().getMillisolInt());
-        double toEvent = event.getWhen().getTimeDiff(t);
-        assertTrue("Scheduled start in future - " + message, toEvent >= 0D);
-        assertTrue("Scheduled start within target sols - " + message, toEvent <
-                                                ((info.firstSol() + 1) * 1000D));
+        int toEvent = (int) event.getWhen().getTimeDiff(now);
+        assertGreaterThan("Scheduled start more than minimum duation - " + message, minDuration, toEvent);
+        assertLessThan("Scheduled start less than max duration - " + message, maxDuration, toEvent);
+
+        return (GroupActivity)matched.get(0).getHandler();
+    }
+
+    public void testCreateSpecialActivity() {
+        var s = buildSettlement();
+        var now = sim.getMasterClock().getMarsTime();
+
+        // Need to check the template
+        var sConfig = simConfig.getSettlementConfiguration();
+        var template = sConfig.getItem(s.getTemplate());
+        var schedued = sConfig.getActivityByPopulation(template.getDefaultPopulation());
+        var expected = schedued.specials().get(GroupActivityType.ANNOUNCEMENT);
+        assertNotNull("Mock settlement supports Announcements", expected);
+
+        var ga = GroupActivity.createPersonActivity("Promotion", GroupActivityType.ANNOUNCEMENT, s, null, 4,
+                                now);
+
+        assertNotNull("Announcement activity created", ga);
+        assertNull("Announcement no instigator", ga.getInstigator());
+        assertEquals("Announcement definition", expected, ga.getDefinition());
+
+        // Check the time
+        testFutureEvent("Announcement event", s, ga.getDefinition(), now, 4000, 5000);
+    }
+
+    public void testCreatePersonBirthday() {
+        var s = buildSettlement();
+        var p = buildPerson("Birthday", s);
+        var now = sim.getMasterClock().getMarsTime();
+
+        // Need to check the template
+        var sConfig = simConfig.getSettlementConfiguration();
+        var template = sConfig.getItem(s.getTemplate());
+        var schedued = sConfig.getActivityByPopulation(template.getDefaultPopulation());
+        var birthday = schedued.specials().get(GroupActivityType.BIRTHDAY);
+  
+        // Check the time of the party is within an earth year
+        var ga = testFutureEvent("Birthday event", s, birthday, now,
+                            1, (int)(MarsTime.SOLS_PER_EARTHDAY*365*1000));
+
+        assertEquals("Birthday for person", p, ga.getInstigator());
+        assertEquals("Birth definition", birthday, ga.getDefinition());
+
     }
 }

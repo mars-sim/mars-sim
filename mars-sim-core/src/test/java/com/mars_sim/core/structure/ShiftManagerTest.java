@@ -115,17 +115,17 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
         Settlement settlement = buildSettlement();
         ScheduledEventManager futures = settlement.getFutureManager();
         ShiftManager sm = settlement.getShiftManager();
+        var leavePerctage = sm.getMaxOnLeave();
+        assertTrue("Shiftmanger has leave allowance", leavePerctage > 0);
 
-        int personCount = 20;
+        // Add enough people to get someone on leave
+        int personCount = (100/leavePerctage) + 2;  // Add 2 to make sure no rounding problem
         Map<ShiftSlot,Shift> origAllocation = new HashMap<>();
         for(int i = 0; i < personCount; i++) {
             Person p = buildPerson("Slot #" + i, settlement);
             ShiftSlot ss = p.getShiftSlot();
             origAllocation.put(ss, ss.getShift());
         }
-
-        assertTrue("Shiftmanger has leave allowance", sm.getMaxOnLeave() > 0);
-
 
         // Check shifts don;t change
         MarsTime now = sim.getMasterClock().getMarsTime().addTime((sm.getRotationSols() * 1000) - 1);
@@ -147,9 +147,6 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
             ShiftSlot ss = e.getKey();
             boolean changed = !ss.getShift().equals(e.getValue());
             if (changed) {
-                System.out.println(ss + " was " + ss.getShift().getName()
-                            + " changed from " + e.getValue().getName());
-
                 changedShifts++;
                 assertEquals("Person changing shift status", WorkStatus.ON_LEAVE, ss.getStatus());
                 onLeave.add(ss);
@@ -159,6 +156,7 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
             }
         }
 
+        assertTrue("At least one is on leave", !onLeave.isEmpty());
         assertEquals("Report changed shift and actuals", onLeave.size(), changedShifts);
         assertEquals("On leave against target", (sm.getMaxOnLeave() * personCount)/100, onLeave.size());
 

@@ -54,6 +54,19 @@ public class ConfigHelper {
 	}
 
 	/**
+	 * Get an enum from a text value. The value is first converted into a valid format.
+	 * This involves changing to upper case and replacing ' ' & '-' with a '_'.
+	 * 
+	 * @param enumClass The Class of the associated Enum range
+	 * @param text
+	 * @return
+	 */
+	public static <E extends Enum<E>> E getEnum(Class<E> enumClass, String text) {
+		var name = convertToEnumName(text);
+		return E.valueOf(enumClass, name);
+	}
+
+	/**
 	 * Parses an element that conforms to the Bounded Object pattern of x,y,w,h,f.
 	 * 
 	 * @param element

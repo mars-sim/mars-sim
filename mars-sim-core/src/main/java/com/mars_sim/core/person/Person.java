@@ -9,8 +9,6 @@ package com.mars_sim.core.person;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +29,7 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.environment.MarsSurface;
@@ -73,12 +72,14 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.Researcher;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.structure.GroupActivityType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Rover;
@@ -247,14 +248,22 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 		settlement.addACitizen(this);
 		// Set the container unit
 		setContainerUnit(settlement);
-
-		// WARNING: setAssociatedSettlement(settlement) may cause suffocation 
-		// Reloading from a saved sim
 		
 		// Add to a random building
 		BuildingManager.landOnRandomBuilding(this, getAssociatedSettlement());
-		// Set up the time stamp for the person
-		calculateBirthDate(masterClock.getEarthTime(), age);
+
+		// Calculate next birthday and scheduled a party in terms of futrue Mars sols
+		var currentEarthTime = masterClock.getEarthTime();
+		calculateBirthDate(currentEarthTime, age);
+
+		var nextBirthday = LocalDate.of(currentEarthTime.getYear() + 1,
+								birthDate.getMonth(), birthDate.getDayOfMonth());
+		var earthDays = ChronoUnit.DAYS.between(currentEarthTime.toLocalDate(), nextBirthday) % 365;
+		GroupActivity.createPersonActivity("Birthday Party", GroupActivityType.BIRTHDAY, settlement,
+						this, 
+						(int)((earthDays * MarsTime.MILLISOLS_PER_EARTHDAY)/1000D),
+						masterClock.getMarsTime());
+
 		// Create favorites
 		favorite = new Favorite(this);
 		// Create preferences
@@ -840,8 +849,8 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 	 *
 	 * @return the person's birth date
 	 */
-	public String getBirthDate() {
-		return birthDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT));
+	public LocalDate getBirthDate() {
+		return birthDate;
 	}
 
 	/**

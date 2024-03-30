@@ -6,8 +6,11 @@
  */
 package com.mars_sim.core.activities;
 
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.events.ScheduledEventHandler;
+import com.mars_sim.core.person.Person;
+import com.mars_sim.core.structure.GroupActivityType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.time.MarsTime;
@@ -30,6 +33,8 @@ public class GroupActivity implements ScheduledEventHandler {
     private Building meetingPlace;
     private Settlement owner;
     private MarsTime startTime;
+    private Person instigator;
+    private String name;
 
     /**
      * Create an activity for a specific Settlement. This will schedule the initial ScheduledEvent to
@@ -43,11 +48,32 @@ public class GroupActivity implements ScheduledEventHandler {
     public GroupActivity(GroupActivityInfo definition, Settlement owner, MarsTime now) {
         this.definition = definition;
         this.owner = owner;
+        this.name = definition.name();
 
-        attachToSettlement(now);
+        attachToSettlement(now, definition.firstSol());
     }
 
-    private void attachToSettlement(MarsTime now) {    
+    /**
+     * Create an activity for a specific person is the instigator.
+     * @param name Special name of the activity
+     * @param owner Owning Settlement
+     * @param definition
+     * @param instigator
+     * @param now
+     */
+    private GroupActivity(String name, GroupActivityInfo definition, Settlement owner, Person instigator,
+                            MarsTime now, int startSol) {
+        this.instigator = instigator;
+        this.definition = definition;
+        this.owner = owner;
+        this.name = name  +  (instigator != null ? " (" + instigator.getName() + ")"
+                                                : "");
+
+        attachToSettlement(now, startSol);
+    }
+
+
+    private void attachToSettlement(MarsTime now, int delayedSol) {    
         // Calculate the duration to the next scheduled start of this activity
         // But adjust to the local time zone
         int offset = MarsSurface.getTimeOffset(owner.getCoordinates());
@@ -61,7 +87,7 @@ public class GroupActivity implements ScheduledEventHandler {
         } 
 
         // Add in the first sol
-        toEvent += definition.firstSol() * 1000;
+        toEvent += delayedSol * 1000;
         
         state = ActivityState.SCHEDULED;
         startTime = now.addTime(toEvent);
@@ -147,6 +173,10 @@ public class GroupActivity implements ScheduledEventHandler {
         return definition;
     }   
     
+    public Person getInstigator() {
+        return instigator;
+    }
+
     /**
      * Is this activity active, i.e can Persons join it.
      * @return
@@ -172,7 +202,7 @@ public class GroupActivity implements ScheduledEventHandler {
     }
 
     public String getName() {
-        return definition.name();
+        return name;
     }
 
     /**
@@ -189,5 +219,30 @@ public class GroupActivity implements ScheduledEventHandler {
      */
     public MarsTime getStartTime() {
         return startTime;
+    }
+
+    /**
+     * THis helper method creates a person orientated activity in the future.
+     * @param name Name of the activity
+     * @param type Type of Person activity to request
+     * @param host Settlement hosting activity
+     * @param person Instigator of the activity; optional
+     * @param now  Currnet mars time
+     * @param dueInSols When is the event due in Sols
+     */
+    public static GroupActivity createPersonActivity(String name, GroupActivityType type,
+                                    Settlement host, Person person, int dueInSol, MarsTime now) {
+        
+        // First check that the request activity type is define for the settlement
+        var template = SimulationConfig.instance().getSettlementConfiguration().getItem(host.getTemplate());
+        var schedule = template.getActivitySchedule();
+        var activityInfo = schedule.specials().get(type);
+        if (activityInfo == null) {
+            // Not supported for this settlement 
+            return null;
+        }
+        
+        // Add event to the Settlment
+        return new GroupActivity(name, activityInfo, host, person, now, dueInSol);
     }
 }

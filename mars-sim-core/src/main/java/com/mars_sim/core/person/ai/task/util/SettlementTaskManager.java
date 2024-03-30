@@ -25,7 +25,7 @@ import com.mars_sim.core.structure.Settlement;
 public class SettlementTaskManager implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-    private static final Set<TaskScope> ON_DUTY_SCOPES = Set.of(TaskScope.ANY_HOUR, TaskScope.WORK_HOUR);;
+    private static final Set<TaskScope> ON_DUTY_SCOPES = Set.of(TaskScope.ANY_HOUR, TaskScope.WORK_HOUR);
     private static final Set<TaskScope> OFF_DUTY_SCOPES = Set.of(TaskScope.ANY_HOUR, TaskScope.NONWORK_HOUR);
 	
     /**

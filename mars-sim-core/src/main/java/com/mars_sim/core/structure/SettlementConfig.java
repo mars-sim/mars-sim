@@ -8,6 +8,7 @@ package com.mars_sim.core.structure;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -120,20 +121,20 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String MAX = "max";
 
 	private static final String ACTIVITIES = "activities";
-	private static final String ACTIVITY_RULESET = "activity-schedule";
+	private static final String SCHEDULE = "schedule";
 	private static final String MIN_POP = "minPopulation";
-	private static final String REPEATING_ACTIVITY = "repeating-activity";
+	private static final String MEETING = "meeting";
+	private static final String ACTIVITY = "activity";
 	private static final String START_TIME = "startTime";
 	private static final String DURATION = "duration";
 	private static final String WAIT_DURATION = "waitDuration";
 	private static final String SCOPE = "scope";
 	private static final String LOCATION = "location";
-	private static final String SPECIAL_ACTIVITY = "special-activity";
 	private static final String POPULATION = "population";
 	private static final String ACTIVITY_FREQ = "frequency";
 	private static final String FIRST_SOL = "firstSol";
-
 	private static final String ACTIVITY_SCHEDULE = "activitySchedule";
+	private static final String GROUP_ACTIVITIES = "group-activities";
 	
 
 	private double[] roverValues = new double[] { 0, 0 };
@@ -172,7 +173,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		loadLifeSupportRequirements(root.getChild(LIFE_SUPPORT_REQUIREMENTS));
 		loadResourceLimits(root.getChild(ESSENTIAL_RESOURCES));
 		loadShiftPatterns(root.getChild(SHIFT_PATTERNS));
-		loadActivityRules(root.getChild(ACTIVITIES));
+		loadGroupActivity(root.getChild(GROUP_ACTIVITIES));
 
 		String [] defaults = loadSettlementTemplates(settlementDoc);
 
@@ -181,34 +182,53 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		loadUserDefined();
 	}
 
-	private void loadActivityRules(Element activities) {
-		for(Element node : activities.getChildren(ACTIVITY_RULESET)) {
+	private void loadGroupActivity(Element groupActivities) {
+		Map<String,GroupActivityInfo> activityPool = loadActivityPool(groupActivities.getChild(ACTIVITIES));
+		
+		for(Element node : groupActivities.getChildren(SCHEDULE)) {
 			String name = node.getAttributeValue(NAME);
 			int pop = ConfigHelper.getOptionalAttributeInt(node, MIN_POP, -1);
 
 			// Load the specials; only 1 per type
-			Map<GroupActivityType,GroupActivityInfo> specials = new HashMap<>();
-			for(Element ra : node.getChildren(SPECIAL_ACTIVITY)) {
-				var sp = parseGroupActivity(ra);
-				GroupActivityType type = GroupActivityType.valueOf(
-							ConfigHelper.convertToEnumName(ra.getAttributeValue(TYPE)));
-				if (specials.containsKey(type)) {
-					throw new IllegalStateException("There is already a meeting defined for type :" + type);
-				}
-				specials.put(type, sp);
-			}
-
-			// Load repeating meetigns
 			List<GroupActivityInfo> meetings = new ArrayList<>();
-			for(Element ra : node.getChildren(REPEATING_ACTIVITY)) {
-				meetings.add(parseGroupActivity(ra));
-			}
+			Map<GroupActivityType,GroupActivityInfo> specials = new EnumMap<>(GroupActivityType.class);
+			for(Element ra : node.getChildren(MEETING)) {
+				String meetingName = ra.getAttributeValue(NAME);
+				var ga = activityPool.get(meetingName);
+				if (ga == null) {
+					throw new IllegalArgumentException("No Activity called " + name);
+				}
 
+				// Is it a special meeting
+				String meetingType = ra.getAttributeValue(TYPE);
+				if (meetingType != null) {
+					GroupActivityType type = ConfigHelper.getEnum(GroupActivityType.class,
+																meetingType);
+					if (specials.containsKey(type)) {
+						throw new IllegalStateException("There is already a meeting defined for type :" + type);
+					}
+					specials.put(type, ga);
+				}
+				else {
+					meetings.add(ga);
+				}
+			}
 			rulesets.add(new GroupActivitySchedule(name, pop, specials, meetings));
 		}
 
 		// Order rulles sets in increasing minimum population
 		rulesets.sort(Comparator.comparingInt(GroupActivitySchedule::minPop).reversed());
+	}
+
+	private Map<String, GroupActivityInfo> loadActivityPool(Element activityPool) {
+		Map<String, GroupActivityInfo> pool = new HashMap<>();
+
+		// Load pool of reusable activity meetings
+		for(Element ra : activityPool.getChildren(ACTIVITY)) {
+			var act = parseGroupActivity(ra);
+			pool.put(act.name(), act);
+		}
+		return pool;
 	}
 
 	/**
@@ -224,11 +244,11 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		int wait = ConfigHelper.getAttributeInt(ra, WAIT_DURATION);
 		int duration = ConfigHelper.getAttributeInt(ra, DURATION);
 		double pop = ConfigHelper.getAttributeDouble(ra, POPULATION);
-		TaskScope scope = TaskScope.valueOf(ConfigHelper.convertToEnumName(ra.getAttributeValue(SCOPE)));
+		TaskScope scope = ConfigHelper.getEnum(TaskScope.class, ra.getAttributeValue(SCOPE));
 		String locationText = ra.getAttributeValue(LOCATION);
 		BuildingCategory meetingPlace = BuildingCategory.LIVING;
 		if (locationText != null) {
-			meetingPlace = BuildingCategory.valueOf(ConfigHelper.convertToEnumName(locationText));
+			meetingPlace = ConfigHelper.getEnum(BuildingCategory.class, locationText);
 		}
 
 		return new GroupActivityInfo(name, startTime, firstSol, wait, duration, freq, pop, duration, scope, meetingPlace);
@@ -605,7 +625,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		// Check the objective
 		String objectiveText = templateElement.getAttributeValue(OBJECTIVE);
 		if (objectiveText != null) {
-			var oType = ObjectiveType.valueOf(ConfigHelper.convertToEnumName(objectiveText));
+			var oType = ConfigHelper.getEnum(ObjectiveType.class, objectiveText);
 			settlementTemplate.setObjective(oType);
 		}
 
@@ -670,7 +690,8 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		// Load robots
 		List<Element> robotNodes = templateElement.getChildren(ROBOT);
 		for (Element robotElement : robotNodes) {
-			RobotType rType = RobotType.valueOf(ConfigHelper.convertToEnumName(robotElement.getAttributeValue(TYPE)));
+			RobotType rType = ConfigHelper.getEnum(RobotType.class, 
+													robotElement.getAttributeValue(TYPE));
 			String name = robotElement.getAttributeValue(NAME);
 			String model = robotElement.getAttributeValue(MODEL);
 			settlementTemplate.addRobot(new RobotTemplate(name, rType, model));

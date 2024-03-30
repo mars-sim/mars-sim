@@ -3800,5 +3800,4 @@ public class Settlement extends Structure implements Temporal,
 		
 		scientificAchievement = null;
 	}
-
 }

@@ -9,10 +9,13 @@ package com.mars_sim.core.person.ai.role;
 import java.io.Serializable;
 import java.util.List;
 
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.History.HistoryItem;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.structure.GroupActivityType;
 
 public class Role implements Serializable {
 
@@ -66,11 +69,13 @@ public class Role implements Serializable {
 		}
 
 		if (newType != oldType) {
+			var home = person.getAssociatedSettlement();
+
 			// Note : if this is a leadership role, only one person should occupy this position 
 			List<Person> predecessors = null;
 			if (newType.isChief() || newType.isCouncil()) {
 				// Find a list of predecessors who are occupying this role
-				predecessors = person.getAssociatedSettlement().getChainOfCommand().findPeopleWithRole(newType);
+				predecessors = home.getChainOfCommand().findPeopleWithRole(newType);
 				if (!predecessors.isEmpty()) {
 					// Predecessors to seek for a new role to fill
 					predecessors.get(0).getRole().obtainNewRole();
@@ -85,10 +90,17 @@ public class Role implements Serializable {
 			roleHistory.add(roleType);
 			
 			// Save the role in the settlement Registry
-			person.getAssociatedSettlement().getChainOfCommand().registerRole(roleType);
+			home.getChainOfCommand().registerRole(roleType);
 
 			// Records the role change and fire unit update
 			person.fireUnitUpdate(UnitEventType.ROLE_EVENT, roleType);
+
+			// For Council members being changed have a meeting
+			if (roleType.isCouncil() && !predecessors.isEmpty()) {
+				GroupActivity.createPersonActivity("Council Announcement for " + roleType.getName(),
+									GroupActivityType.ANNOUNCEMENT, home, person, 0, 
+									Simulation.instance().getMasterClock().getMarsTime());
+			}
 		}
 	}
 

@@ -225,4 +225,23 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 		sim.getMasterClock().setMarsTime(marsTime);
         return new ClockPulse(pulseID++, 1D, marsTime, null, newSol, newHalfSol, true);
     }
+
+	/**
+	 * Better Assert method 
+	 */
+	public static void assertGreaterThan(String message, int minValue, int actual) {
+		if (actual < minValue) {
+			fail(message + " ==> " +
+					"Expected: a value greater than <" + minValue + ">\n" +
+					"Actual was <" + actual + ">");
+		}
+	}
+
+	public static void assertLessThan(String message, int maxValue, int actual) {
+		if (actual > maxValue) {
+			fail(message + " ==> " +
+					"Expected: a value less than <" + maxValue + ">\n" +
+					"Actual was <" + actual + ">");
+		}
+	}
 }

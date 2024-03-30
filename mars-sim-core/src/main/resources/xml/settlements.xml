@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE settlement-configuration [
 	<!ELEMENT settlement-configuration (mission-control, life-support-requirements,
-						essential-resources, shifts, activities, settlement-template-list)>
+						essential-resources, shifts, group-activities, settlement-template-list)>
 
 	<!ELEMENT mission-control (rover-life-support-range-error-margin, rover-fuel-range-error-margin)>
 	<!ELEMENT rover-life-support-range-error-margin EMPTY>
@@ -52,30 +52,28 @@
 	<!ATTLIST shift end CDATA #REQUIRED>
 	<!ATTLIST shift pop-percentage CDATA #REQUIRED>
 
-	<!ELEMENT activities (activity-schedule*)>
-	<!ELEMENT activity-schedule (special-activity*, repeating-activity*)>
-	<!ATTLIST activity-schedule name CDATA #REQUIRED>
-	<!ATTLIST activity-schedule minPopulation CDATA #IMPLIED>
+	<!ELEMENT grouo-activities (activities, schedule*)>
 
-	<!ELEMENT special-activity EMPTY>
-	<!ATTLIST special-activity name CDATA #REQUIRED>
-	<!ATTLIST special-activity type CDATA #REQUIRED>
-	<!ATTLIST special-activity startTime CDATA #REQUIRED>
-	<!ATTLIST special-activity population CDATA #REQUIRED>
-	<!ATTLIST special-activity waitDuration CDATA #REQUIRED>
-	<!ATTLIST special-activity duration CDATA #REQUIRED>
-	<!ATTLIST special-activity scope CDATA #REQUIRED>
-	<!ATTLIST special-activity location CDATA #IMPLIED>
+	<!ELEMENT activities (activity*)>
+	<!ELEMENT activity EMPTY>
+	<!ATTLIST activity name CDATA #REQUIRED>
+	<!ATTLIST activity type CDATA #IMPLIED>
+	<!ATTLIST activity startTime CDATA #REQUIRED>
+	<!ATTLIST activity frequency CDATA #IMPLIED>
+	<!ATTLIST activity firstSol CDATA #IMPLIED>
+	<!ATTLIST activity population CDATA #REQUIRED>
+	<!ATTLIST activity waitDuration CDATA #REQUIRED>
+	<!ATTLIST activity duration CDATA #REQUIRED>
+	<!ATTLIST activity scope CDATA #REQUIRED>
+	<!ATTLIST activity location CDATA #IMPLIED>
+	
+	<!ELEMENT schedule (meeting*)>
+	<!ATTLIST schedule name CDATA #REQUIRED>
+	<!ATTLIST schedule minPopulation CDATA #IMPLIED>
 
-	<!ELEMENT repeating-activity EMPTY>
-	<!ATTLIST repeating-activity name CDATA #REQUIRED>
-	<!ATTLIST repeating-activity startTime CDATA #REQUIRED>
-	<!ATTLIST repeating-activity frequency CDATA #REQUIRED>
-	<!ATTLIST repeating-activity population CDATA #REQUIRED>
-	<!ATTLIST repeating-activity waitDuration CDATA #REQUIRED>
-	<!ATTLIST repeating-activity duration CDATA #REQUIRED>
-	<!ATTLIST repeating-activity scope CDATA #REQUIRED>
-	<!ATTLIST repeating-activity location CDATA #IMPLIED>
+	<!ELEMENT meeting EMPTY>
+	<!ATTLIST meeting name CDATA #REQUIRED>
+	<!ATTLIST meeting type CDATA #IMPLIED>
 
 	<!ELEMENT settlement-template-list (template*)>
 	<!ELEMENT template EMPTY>
@@ -170,26 +168,38 @@
 	</shifts>
 
 	<!-- Activities are alway scheduled for LIVING by default-->
-	<activities>
+	<group-activities>
+		<activities>
+			<!-- 355 sols is the equivalent of 365 days-->
+			<activity name="Birthday Celebration" startTime="700" frequency="355"
+						population="0.3" waitDuration="20" duration="100" scope="NONWORK_HOUR"/>
+			<!-- One off Announcement to base-->
+			<activity name="Announcement" startTime="400" 
+						population="0.9" waitDuration="20" duration="100" scope="ANY_HOUR"/>
+
+			<activity name="Team Meeting" startTime="500" frequency="6"
+						population="0.7" waitDuration="20" duration="100" scope="ANY_HOUR"/>
+			<activity name="Movie Night" startTime="700" firstSol="4" frequency="20"
+						population="0.3" waitDuration="20" duration="150" scope="NONWORK_HOUR"/>
+			<activity name="Safety Training" startTime="400" firstSol="7" frequency="20"
+						population="0.3" waitDuration="20" duration="10" scope="WORK_HOUR"/>
+		</activities>
+
 		<!-- Activities for a small settlement is just essential meetings -->
-		<activity-schedule name="Small Settlement" minPopulation="6">
-			<repeating-activity name="Team Meeting" startTime="500" frequency="6"
-						population="0.7" waitDuration="20" duration="100"
-						scope="ANY_HOUR"/>
-		</activity-schedule>
+		<schedule name="Small Settlement" minPopulation="6">
+			<rmeeting name="Team Meeting"/>
+		</schedule>
 
 		<!-- Activities for a large settlement include a social life and regular meetings-->
-		<activity-schedule name="Large Settlement" minPopulation="15">
-			<special-activity type="BIRTHDAY" name="Birthday Celebration" startTime="700"
-						population="0.3" waitDuration="20" duration="100" scope="NONWORK_HOUR"/>
-			<repeating-activity name="Team Meeting" startTime="500" frequency="6"
-						population="0.7" waitDuration="20" duration="100" scope="ANY_HOUR"/>
-			<repeating-activity name="Movie Night" startTime="700" firstSol="4" frequency="20"
-						population="0.3" waitDuration="20" duration="150" scope="NONWORK_HOUR"/>
-			<repeating-activity name="Safety Training" startTime="400" firstSol="7" frequency="20"
-						population="0.3" waitDuration="20" duration="10" scope="WORK_HOUR"/>
-		</activity-schedule>
-	</activities>
+		<schedule name="Large Settlement" minPopulation="15">
+			<meeting type="BIRTHDAY" name="Birthday Celebration"/>
+			<meeting type="Announcement" name="Announcement"/>
+
+			<meeting name="Team Meeting"/>
+			<meeting name="Movie Night"/>
+			<meeting name="Safety Training"/>
+		</schedule>
+	</group-activities>
 
 	<settlement-template-list>
 		<!-- Settlement template for the Zubrin Mars Direct mission plan. -->
