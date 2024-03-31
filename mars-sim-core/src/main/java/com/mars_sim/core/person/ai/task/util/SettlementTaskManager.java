@@ -9,10 +9,12 @@ package com.mars_sim.core.person.ai.task.util;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 
@@ -23,6 +25,8 @@ import com.mars_sim.core.structure.Settlement;
 public class SettlementTaskManager implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+    private static final Set<TaskScope> ON_DUTY_SCOPES = Set.of(TaskScope.ANY_HOUR, TaskScope.WORK_HOUR);
+    private static final Set<TaskScope> OFF_DUTY_SCOPES = Set.of(TaskScope.ANY_HOUR, TaskScope.NONWORK_HOUR);
 	
     /**
      * Acts as a proxy to a SettlementTask. The proxy ensures that the root Task which is shared
@@ -32,7 +36,6 @@ public class SettlementTaskManager implements Serializable {
     class SettlementTaskProxy extends AbstractTaskJob  {
 
 		private static final long serialVersionUID = 1L;
-		
         private SettlementTask source;
         private SettlementTaskManager manager;
 
@@ -90,12 +93,21 @@ public class SettlementTaskManager implements Serializable {
     }
 
     /**
+     * Get the MetaTasks that can be used for these Settlement manager.
+     * By default this is the global list from MetaTaskUtil
+     * @return
+     */
+    protected List<SettlementMetaTask> getMetaTasks() {
+        return MetaTaskUtil.getSettlementMetaTasks();
+    }
+
+    /**
      * Gets the current cached Settlement Tasks. If there is no cache or marked as refresh then a list is created.
      */
     private List<SettlementTask> getTasks() {
         if (refreshTasks || (tasks == null)) {
             tasks = new ArrayList<>();
-            for(SettlementMetaTask mt : MetaTaskUtil.getSettlementMetaTasks()) {
+            for(SettlementMetaTask mt : getMetaTasks()) {
                 tasks.addAll(mt.getSettlementTasks(owner));
             }
             refreshTasks = false;
@@ -149,12 +161,21 @@ public class SettlementTaskManager implements Serializable {
      * @see SettlementMetaTask#assessPersonSuitability(SettlementTask, Person)
      */
     public List<TaskJob> getTasks(Person p) {
+        Set<TaskScope> acceptable = switch(p.getShiftSlot().getStatus()) {
+            case OFF_DUTY, ON_LEAVE -> OFF_DUTY_SCOPES;
+            case ON_CALL, ON_DUTY -> ON_DUTY_SCOPES;
+        };
+
         List<TaskJob> result = new ArrayList<>();
         for(SettlementTask st : getTasks()) {
-            SettlementMetaTask mt = st.getMeta();
-            RatingScore score = mt.assessPersonSuitability(st, p);
-            if (score.getScore() > 0) {
-                result.add(new SettlementTaskProxy(this, st, score));
+            // Check scope first to avoid scoring
+            var scope = st.getScope();
+            if (acceptable.contains(scope)) {
+                SettlementMetaTask mt = st.getMeta();
+                RatingScore score = mt.assessPersonSuitability(st, p);
+                if (score.getScore() > 0) {
+                    result.add(new SettlementTaskProxy(this, st, score));
+                }
             }
         }
         return result;

@@ -7,6 +7,8 @@
 package com.mars_sim.core.structure;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,6 +20,7 @@ import java.util.logging.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
+import com.mars_sim.core.activities.GroupActivityInfo;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig;
@@ -25,6 +28,7 @@ import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig.Supply
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplySchedule;
 import com.mars_sim.core.person.ai.shift.ShiftPattern;
 import com.mars_sim.core.person.ai.shift.ShiftSpec;
+import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
@@ -32,6 +36,7 @@ import com.mars_sim.core.resource.PartPackageConfig;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.RobotTemplate;
 import com.mars_sim.core.robot.RobotType;
+import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.structure.building.BuildingPackageConfig;
 import com.mars_sim.core.structure.building.BuildingTemplate;
 import com.mars_sim.core.structure.building.BuildingTemplate.BuildingConnectionTemplate;
@@ -107,14 +112,6 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String ROTATION_SOLS = "rotation-sols";
 	private static final String MODEL = "model";
 	private static final String ROBOT = "robot";
-
-	/** These must be present in the settlements.xml */
-	public static final String STANDARD_4_SHIFT = "Standard 4 Shift";
-	public static final String STANDARD_3_SHIFT = "Standard 3 Shift";
-	public static final String STANDARD_2_SHIFT = "Standard 2 Shift";
-	public static final String LONG_3_SHIFT = "Long 3 Shift";
-	public static final String SKELETON_NIGHT_SHIFT = "Skeleton Night Shift";
-
 	
 	private static final String FREQUENCY = "frequency-sols";
 	private static final String MANIFEST_NAME = "manifest-name";
@@ -122,20 +119,37 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String ESSENTIAL_RESOURCES = "essential-resources";
 	private static final String RESERVE = "reserve";
 	private static final String MAX = "max";
+
+	private static final String ACTIVITIES = "activities";
+	private static final String SCHEDULE = "schedule";
+	private static final String MIN_POP = "minPopulation";
+	private static final String MEETING = "meeting";
+	private static final String ACTIVITY = "activity";
+	private static final String START_TIME = "startTime";
+	private static final String SCORE = "score";
+	private static final String DURATION = "duration";
+	private static final String WAIT_DURATION = "waitDuration";
+	private static final String SCOPE = "scope";
+	private static final String LOCATION = "location";
+	private static final String POPULATION = "population";
+	private static final String ACTIVITY_FREQ = "frequency";
+	private static final String FIRST_SOL = "firstSol";
+	private static final String ACTIVITY_SCHEDULE = "activitySchedule";
+	private static final String GROUP_ACTIVITIES = "group-activities";
 	
+
 	private double[] roverValues = new double[] { 0, 0 };
 	private double[][] lifeSupportValues = new double[2][7];
-
-	// Data members
-	private String defaultShift;
 
 	private PartPackageConfig partPackageConfig;	
 	private BuildingPackageConfig buildingPackageConfig;
 	private ResupplyConfig resupplyConfig;
 	
-	private Map<String, ShiftPattern> shiftDefinitions = new HashMap<>();
+	private List<ShiftPattern> shiftDefinitions = new ArrayList<>();
 
 	private Map<Integer, ResourceLimits> resLimits = new HashMap<>();
+
+	private List<GroupActivitySchedule> rulesets = new ArrayList<>();
 
 	/**
 	 * Constructor.
@@ -160,11 +174,116 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		loadLifeSupportRequirements(root.getChild(LIFE_SUPPORT_REQUIREMENTS));
 		loadResourceLimits(root.getChild(ESSENTIAL_RESOURCES));
 		loadShiftPatterns(root.getChild(SHIFT_PATTERNS));
+		loadGroupActivity(root.getChild(GROUP_ACTIVITIES));
+
 		String [] defaults = loadSettlementTemplates(settlementDoc);
 
 		loadDefaults(defaults);
 
 		loadUserDefined();
+	}
+
+	private void loadGroupActivity(Element groupActivities) {
+		Map<String,GroupActivityInfo> activityPool = loadActivityPool(groupActivities.getChild(ACTIVITIES));
+		
+		for(Element node : groupActivities.getChildren(SCHEDULE)) {
+			String name = node.getAttributeValue(NAME);
+			int pop = ConfigHelper.getOptionalAttributeInt(node, MIN_POP, -1);
+
+			// Load the specials; only 1 per type
+			List<GroupActivityInfo> meetings = new ArrayList<>();
+			Map<GroupActivityType,GroupActivityInfo> specials = new EnumMap<>(GroupActivityType.class);
+			for(Element ra : node.getChildren(MEETING)) {
+				String meetingName = ra.getAttributeValue(NAME);
+				var ga = activityPool.get(meetingName);
+				if (ga == null) {
+					throw new IllegalArgumentException("No Activity called " + name);
+				}
+
+				// Is it a special meeting
+				String meetingType = ra.getAttributeValue(TYPE);
+				if (meetingType != null) {
+					GroupActivityType type = ConfigHelper.getEnum(GroupActivityType.class,
+																meetingType);
+					if (specials.containsKey(type)) {
+						throw new IllegalStateException("There is already a meeting defined for type :" + type);
+					}
+					specials.put(type, ga);
+				}
+				else {
+					meetings.add(ga);
+				}
+			}
+			rulesets.add(new GroupActivitySchedule(name, pop, specials, meetings));
+		}
+
+		// Order rulles sets in increasing minimum population
+		rulesets.sort(Comparator.comparingInt(GroupActivitySchedule::minPop).reversed());
+	}
+
+	private Map<String, GroupActivityInfo> loadActivityPool(Element activityPool) {
+		Map<String, GroupActivityInfo> pool = new HashMap<>();
+
+		// Load pool of reusable activity meetings
+		for(Element ra : activityPool.getChildren(ACTIVITY)) {
+			var act = parseGroupActivity(ra);
+			pool.put(act.name(), act);
+		}
+		return pool;
+	}
+
+	/**
+	 * Convert a XML element into a GroupActivityInfo
+	 * @param ra
+	 * @return
+	 */
+	private static GroupActivityInfo parseGroupActivity(Element ra) {
+		String name = ra.getAttributeValue(NAME);
+		int startTime = ConfigHelper.getAttributeInt(ra, START_TIME);
+		int firstSol = ConfigHelper.getOptionalAttributeInt(ra, FIRST_SOL, 0);
+		int freq = ConfigHelper.getOptionalAttributeInt(ra, ACTIVITY_FREQ, -1);
+		int score = ConfigHelper.getOptionalAttributeInt(ra, SCORE, -1);
+		int wait = ConfigHelper.getAttributeInt(ra, WAIT_DURATION);
+		int duration = ConfigHelper.getAttributeInt(ra, DURATION);
+		double pop = ConfigHelper.getAttributeDouble(ra, POPULATION);
+		TaskScope scope = ConfigHelper.getEnum(TaskScope.class, ra.getAttributeValue(SCOPE));
+		String locationText = ra.getAttributeValue(LOCATION);
+		BuildingCategory meetingPlace = BuildingCategory.LIVING;
+		if (locationText != null) {
+			meetingPlace = ConfigHelper.getEnum(BuildingCategory.class, locationText);
+		}
+
+		return new GroupActivityInfo(name, startTime, firstSol, wait, duration, freq, pop, score, scope, meetingPlace);
+	}
+
+	/**
+	 * Find a activity schedule by name
+	 * @param name 
+	 * @return Selected; coud be null
+	 */
+	public GroupActivitySchedule getActivityByName(String name) {
+		var found = rulesets.stream().filter(a -> name.equalsIgnoreCase(a.name())).findFirst();
+		if (found.isPresent()) {
+			return found.get();
+		}
+		throw new IllegalArgumentException("Cannot find a Activity Scheduled called " + name);
+	}
+
+	/**
+	 * Find a activity rules set which has the highest minPopulation than this population
+	 * size can cover
+	 * @param popSize
+	 * @return Selected; could be null
+	 */
+	public GroupActivitySchedule getActivityByPopulation(int popSize) {
+		// Rulesets are order in terms of decreasing population sp find first that is smaller than 
+		// target population
+		for(var a : rulesets) {
+			if ((a.minPop() <= popSize) && (a.minPop() > 0)) {
+				return a;
+			}
+		}
+		return null;
 	}
 
 	private void loadResourceLimits(Element limits) {
@@ -205,13 +324,12 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 
 			int rotSol = ConfigHelper.getOptionalAttributeInt(node, ROTATION_SOLS, 10);
 			int leave = ConfigHelper.getOptionalAttributeInt(node, LEAVE_PERC, 10);
+			int minPop = ConfigHelper.getOptionalAttributeInt(node, MIN_POP, -1);
+
 			List<ShiftSpec> shiftSpecs = new ArrayList<>();
 			List<Element> specNodes = node.getChildren(SHIFT_SPEC);
 			for(Element spec : specNodes) {
 				String sname = spec.getAttributeValue(NAME);
-				if (defaultShift == null) {
-					defaultShift = sname;
-				}
 				int start = Integer.parseInt(spec.getAttributeValue(SHIFT_START));
 				int end = Integer.parseInt(spec.getAttributeValue(SHIFT_END));
 				int population = Integer.parseInt(spec.getAttributeValue(SHIFT_PERC));
@@ -219,8 +337,11 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				shiftSpecs.add(new ShiftSpec(sname, start, end, population));
 			}
 
-			shiftDefinitions.put(name.toLowerCase(), new ShiftPattern(name, shiftSpecs, rotSol, leave));
+			shiftDefinitions.add(new ShiftPattern(name, shiftSpecs, rotSol, leave, minPop));
 		}
+
+		// Order rulles sets in increasing minimum population
+		shiftDefinitions.sort(Comparator.comparingInt(ShiftPattern::getMinPopulation).reversed());
 	}
 
 	/**
@@ -228,13 +349,29 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	 * @param name
 	 * @return
 	 */
-	public ShiftPattern getShiftPattern(String name) {
-		ShiftPattern pattern = shiftDefinitions.get(name.toLowerCase());
-		if (pattern == null) {
-			throw new IllegalArgumentException("No shift pattern called " + name);
+	public ShiftPattern getShiftByName(String name) {
+		var found = shiftDefinitions.stream().filter(a -> name.equalsIgnoreCase(a.getName())).findFirst();
+		if (found.isPresent()) {
+			return found.get();
 		}
+		throw new IllegalArgumentException("No shift pattern called " + name);
+	}
 
-		return pattern;
+	/**
+	 * Find a shift pattern  which has the highest minPopulation than this population
+	 * size can cover
+	 * @param popSize
+	 * @return Selected; could be null
+	 */
+	public ShiftPattern getShiftByPopulation(int popSize) {
+		// Pattern are order in terms of decreasing population sp find first that is smaller than 
+		// target population
+		for(var a : shiftDefinitions) {
+			if ((a.getMinPopulation() <= popSize) && (a.getMinPopulation() > 0)) {
+				return a;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -458,22 +595,23 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		int defaultNumOfRobots = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_NUM_ROBOTS));
 
 		// Look up the shift pattern
+		ShiftPattern pattern = null;
 		String shiftPattern = templateElement.getAttributeValue(SHIFT_PATTERN);
 		if (shiftPattern == null) {
-			if (defaultPopulation >= 12) {
-				shiftPattern = LONG_3_SHIFT;
-			}
-			else if (defaultPopulation >= 24) {
-				shiftPattern = STANDARD_3_SHIFT;
-			}
-			else if (defaultPopulation >= 36) {
-				shiftPattern = STANDARD_4_SHIFT;
-			}	
-			else {
-				shiftPattern = STANDARD_2_SHIFT;
-			}
+			pattern = getShiftByPopulation(defaultPopulation);
 		}
-		ShiftPattern pattern = getShiftPattern(shiftPattern);
+		else {
+			pattern = getShiftByName(shiftPattern);
+		}
+
+		GroupActivitySchedule activitySchedule = null;
+		String scheduleName = templateElement.getAttributeValue(ACTIVITY_SCHEDULE);
+		if (scheduleName != null) {
+			activitySchedule = getActivityByName(scheduleName);
+		}
+		else {
+			activitySchedule = getActivityByPopulation(defaultPopulation);
+		}
 
 		// Add templateID
 		SettlementTemplate settlementTemplate = new SettlementTemplate(
@@ -482,13 +620,14 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				predefined,
 				sponsor,
 				pattern,
+				activitySchedule,
 				defaultPopulation,
 				defaultNumOfRobots);
 
 		// Check the objective
 		String objectiveText = templateElement.getAttributeValue(OBJECTIVE);
 		if (objectiveText != null) {
-			var oType = ObjectiveType.valueOf(ConfigHelper.convertToEnumName(objectiveText));
+			var oType = ConfigHelper.getEnum(ObjectiveType.class, objectiveText);
 			settlementTemplate.setObjective(oType);
 		}
 
@@ -553,7 +692,8 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		// Load robots
 		List<Element> robotNodes = templateElement.getChildren(ROBOT);
 		for (Element robotElement : robotNodes) {
-			RobotType rType = RobotType.valueOf(ConfigHelper.convertToEnumName(robotElement.getAttributeValue(TYPE)));
+			RobotType rType = ConfigHelper.getEnum(RobotType.class, 
+													robotElement.getAttributeValue(TYPE));
 			String name = robotElement.getAttributeValue(NAME);
 			String model = robotElement.getAttributeValue(MODEL);
 			settlementTemplate.addRobot(new RobotTemplate(name, rType, model));

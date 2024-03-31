@@ -15,6 +15,7 @@ public enum BuildingCategory {
     MEDICAL,
     ERV,
     FARMING, 
+    ASTRONOMY,
     LABORATORY, 
     LIVING,
     PROCESSING,

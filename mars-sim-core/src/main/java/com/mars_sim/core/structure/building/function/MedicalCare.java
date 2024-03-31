@@ -49,10 +49,10 @@ public class MedicalCare extends Function implements MedicalAid {
 
 		int techLevel = spec.getTechLevel();
 		
-		Set<LocalPosition> bedSet = spec.getBuildingSpec().getBeds();
+		// THis is not good. all details should be in the FunctionSpec
+		Set<LocalPosition> bedSet = buildingConfig.getBuildingSpec(building.getBuildingType()).getBeds();
 
 		// NOTE: distinguish between activity spots and bed locations
-		
 		medicalStation = new MedicalStation(building.getName(), techLevel, bedSet.size());
 		
 		medicalStation.setSickBeds(bedSet);

@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE settlement-configuration [
 	<!ELEMENT settlement-configuration (mission-control, life-support-requirements,
-						essential-resources, shifts, settlement-template-list)>
+						essential-resources, shifts, group-activities, settlement-template-list)>
 
 	<!ELEMENT mission-control (rover-life-support-range-error-margin, rover-fuel-range-error-margin)>
 	<!ELEMENT rover-life-support-range-error-margin EMPTY>
@@ -51,6 +51,30 @@
 	<!ATTLIST shift start CDATA #REQUIRED>
 	<!ATTLIST shift end CDATA #REQUIRED>
 	<!ATTLIST shift pop-percentage CDATA #REQUIRED>
+
+	<!ELEMENT grouo-activities (activities, schedule*)>
+
+	<!ELEMENT activities (activity*)>
+	<!ELEMENT activity EMPTY>
+	<!ATTLIST activity name CDATA #REQUIRED>
+	<!ATTLIST activity type CDATA #IMPLIED>
+	<!ATTLIST activity startTime CDATA #REQUIRED>
+	<!ATTLIST activity frequency CDATA #IMPLIED>
+	<!ATTLIST activity firstSol CDATA #IMPLIED>
+	<!ATTLIST activity score CDATA #IMPLIED>
+	<!ATTLIST activity population CDATA #REQUIRED>
+	<!ATTLIST activity waitDuration CDATA #REQUIRED>
+	<!ATTLIST activity duration CDATA #REQUIRED>
+	<!ATTLIST activity scope CDATA #REQUIRED>
+	<!ATTLIST activity location CDATA #IMPLIED>
+	
+	<!ELEMENT schedule (meeting*)>
+	<!ATTLIST schedule name CDATA #REQUIRED>
+	<!ATTLIST schedule minPopulation CDATA #IMPLIED>
+
+	<!ELEMENT meeting EMPTY>
+	<!ATTLIST meeting name CDATA #REQUIRED>
+	<!ATTLIST meeting type CDATA #IMPLIED>
 
 	<!ELEMENT settlement-template-list (template*)>
 	<!ELEMENT template EMPTY>
@@ -118,18 +142,18 @@
 	<!-- The Standard patterns are the default and but always be present. 
 		The others can be added/deleted -->
 	<shifts>
-		<shift-pattern name="Standard 4 Shift" rotation-sols="2">
+		<shift-pattern name="Standard 4 Shift" rotation-sols="2" minPopulation="36">
 			<shift name="A" start="0" end="250" pop-percentage ="30"/>
 			<shift name="B" start="250" end="500" pop-percentage ="30"/>
 			<shift name="C" start="500" end="750" pop-percentage ="30"/>
 			<shift name="Night" start="750" end="0" pop-percentage ="10"/>
 		</shift-pattern>
-		<shift-pattern name="Standard 3 Shift" rotation-sols="2">
+		<shift-pattern name="Standard 3 Shift" rotation-sols="2" minPopulation="24">
 			<shift name="A" start="200" end="550" pop-percentage ="40"/>
 			<shift name="B" start="550" end="900" pop-percentage ="40"/>
 			<shift name="Night" start="900" end="200" pop-percentage ="20"/>
 		</shift-pattern>
-		<shift-pattern name="Standard 2 Shift" leave-perc="3" rotation-sols="4">
+		<shift-pattern name="Standard 2 Shift" leave-perc="3" rotation-sols="4" minPopulation="1">
 			<shift name="Day" start="200" end="700" pop-percentage ="50"/>
 			<shift name="Night" start="700" end="200" pop-percentage ="50"/>
 		</shift-pattern>
@@ -137,12 +161,55 @@
 			<shift name="Day" start="500" end="930" pop-percentage ="90"/>
 			<shift name="Night" start="900" end="530" pop-percentage ="10"/>
 		</shift-pattern>
-		<shift-pattern name="Long 3 Shift" rotation-sols="4">
+		<shift-pattern name="Long 3 Shift" rotation-sols="4" minPopulation="12">
 			<shift name="A" start="200" end="600" pop-percentage ="40"/>
 			<shift name="B" start="500" end="900" pop-percentage ="40"/>
 			<shift name="Night" start="900" end="200" pop-percentage ="20"/>
 		</shift-pattern>
 	</shifts>
+
+	<!-- Activities are alway scheduled for LIVING by default-->
+	<group-activities>
+		<activities>
+			<!-- 355 sols is the equivalent of 365 days-->
+			<activity name="Birthday Celebration" startTime="700" frequency="355" score="200"
+						population="0.3" waitDuration="20" duration="100" scope="NONWORK_HOUR"/>
+
+			<!-- One off Announcement to base-->
+			<activity name="Announcement" startTime="400" score="600"
+						population="0.9" waitDuration="20" duration="100" scope="ANY_HOUR"/>
+
+			<!-- Sky watching party starts 2nd sol into Settlement and evey 10 sols-->
+			<activity name="Night Sky Party" startTime="850" firstSol="2" score="400" frequency="10"
+						population="0.2" waitDuration="80" duration="150" scope="NONWORK_HOUR"
+						location="ASTRONOMY"/>
+
+			<activity name="Team Meeting" startTime="500" frequency="6" score="500"
+						population="0.7" waitDuration="20" duration="100" scope="ANY_HOUR"/>
+			<activity name="Movie Night" startTime="700" firstSol="4" frequency="20" score="200"
+						population="0.3" waitDuration="20" duration="150" scope="NONWORK_HOUR"/>
+			<activity name="Safety Training" startTime="400" firstSol="7" frequency="20" score="400"
+						population="0.3" waitDuration="20" duration="10" scope="WORK_HOUR"/>
+		</activities>
+
+		<!-- Activities for a small settlement is just essential meetings -->
+		<schedule name="Small Settlement" minPopulation="6">
+			<rmeeting name="Team Meeting"/>
+		</schedule>
+
+		<!-- Activities for a large settlement include a social life and regular meetings-->
+		<schedule name="Large Settlement" minPopulation="15">
+			<meeting type="BIRTHDAY" name="Birthday Celebration"/>
+			<meeting type="Announcement" name="Announcement"/>
+
+			<meeting name="Team Meeting"/>
+			<meeting name="Movie Night"/>
+			<meeting name="Safety Training"/>
+
+			<!-- This needs an obseratory but will be cancelled when one not available-->
+			<meeting name="Night Sky Party"/>
+		</schedule>
+	</group-activities>
 
 	<settlement-template-list>
 		<!-- Settlement template for the Zubrin Mars Direct mission plan. -->

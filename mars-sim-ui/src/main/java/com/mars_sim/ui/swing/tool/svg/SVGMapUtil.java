@@ -40,22 +40,11 @@ public final class SVGMapUtil {
         svgMapProperties = new Properties();
 
         URL resource = SVGLoader.class.getResource(fileName);
-        InputStream inputStream = null;
-        try {
-            inputStream = resource.openStream();
+        try (InputStream inputStream = resource.openStream();) {
             svgMapProperties.load(inputStream);
         }
         catch (IOException e) {
             logger.log(Level.SEVERE, "Problem reading SVG properties file", e);
-        }
-        finally {
-            try {
-            	if (inputStream != null)
-            		inputStream.close();
-            }
-            catch (IOException e) {
-                // Do not report exception in finally
-            }
         }
     }
 

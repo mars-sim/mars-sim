@@ -145,26 +145,18 @@ public class RandomMineralMap implements MineralMap {
 					
 			// Get the new remainingConc by multiplying it with concentrationNumber; 
 			double remainingConc = 1.0 * conc * concentrationNumber;
-			
-//				logger.info("regionArray size: " + length
-//						+ "  concentrationNumber: " + concentrationNumber
-//						+ "  remainingConc: " + remainingConc);
 		
 			for (int x = 0; x < concentrationNumber; x++) {
 
 				remainingConc = createMinerals(remainingConc, 
 						regionArray[RandomUtil.getRandomInt(length - 1)], x, concentrationNumber, conc, mineralType.name);
-				
-//				logger.info("  x: " + x + "  remainingConc: " + remainingConc);
-				
+								
 				if (remainingConc <= 0.0) 
 					break;
 			}
 				
 			
 		} // end of iterating MineralType
-
-		logger.info("# of Global Mineral Locations: " + allMineralsByLoc.size());
 	}
 
 	/**
@@ -245,9 +237,7 @@ public class RandomMineralMap implements MineralMap {
 			for (int x = 0; x < concentrationNumber; x++) {
 				
 				remainingConc = createMinerals(remainingConc, location, x, 
-						concentrationNumber, conc, mineralType.name);
-				
-//				logger.info(location +  " # of Local Mineral Locations: " + allMineralsByLocation.get(location).size());
+						concentrationNumber, conc, mineralType.name);				
 			}
 		}
 		
@@ -303,7 +293,6 @@ public class RandomMineralMap implements MineralMap {
 	 */
 	private Set<Coordinates> getTopoRegionSet(String imageMapName) {
 		Set<Coordinates> result = new HashSet<>(3000);
-//		[landrus, 26.11.09]: don't use the system classloader in a webstart env.
 		URL imageMapURL = getClass().getResource(IMAGES_FOLDER + imageMapName);
 		ImageIcon mapIcon = new ImageIcon(imageMapURL);
 		Image mapImage = mapIcon.getImage();
@@ -411,17 +400,6 @@ public class RandomMineralMap implements MineralMap {
 						effect = (1D - (distance / fuzzyRange)) * conc;				
 					
 					if (effect > 0D) {
-						
-//						if (angleCache != angle) {
-//							angleCache = angle;
-//							logger.info("mag: " + Math.round(mag* 1000.0)/1000.0 
-//									+ "  angle: "+ Math.round(angle * 1000.0)/1000.0
-//									+ "  distance: " + Math.round(distance * 1000.0)/1000.0
-//									+ "  conc: " + Math.round(conc * 1000.0)/1000.0
-//									+ "  ratio: " + Math.round(distance / fuzzyRange * 1000.0)/1000.0
-//									+ "  fuzzyRange: " + Math.round(fuzzyRange * 1000.0)/1000.0
-//									+ "  effect: " + Math.round(effect * 1000.0)/1000.0) ;
-//						}
 						
 						if (emptyMap) {
 							newMap = new HashMap<>();

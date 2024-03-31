@@ -9,10 +9,13 @@ package com.mars_sim.core;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.commons.io.FileUtils;
 
 import com.mars_sim.mapdata.common.FileLocator;
 import com.mars_sim.tools.Msg;
@@ -128,30 +131,16 @@ public class SimulationRuntime {
 			File child = files[i];
 
 			try {
-				if ((child.isDirectory() && !deleteDirectory(child)) 
-						|| !files[i].delete())
-					System.err.println("Failed to delete old file " + child);
+				if (child.isDirectory()) {
+					FileUtils.deleteDirectory(child);
+				}
+				else {
+					Files.delete(child.toPath());
+				}
 			}
 			catch(Exception e) {
-				// Pretty fatal
-				System.err.println("Failed to remove old file " + child);
+				logger.log(Level.WARNING, "Failed to remove old file " + child, e);
 			}
 		}
     }
-
-	/*
-	* Deletes a non empty directory.
-	*/
-	private static boolean deleteDirectory(File dir) {
-		File[] children = dir.listFiles();
-		for (File child : children) {
-			if (child.isDirectory() && !deleteDirectory(child)) {
-				return false;
-			}
-			if (!child.delete()) {
-				return false;
-			}
-		}
-		return true;
-	}
 }

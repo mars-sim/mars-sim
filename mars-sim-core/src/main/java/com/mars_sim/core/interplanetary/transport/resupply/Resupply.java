@@ -22,12 +22,14 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig.SupplyManifest;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.Part;
+import com.mars_sim.core.structure.GroupActivityType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementBuilder;
 import com.mars_sim.core.structure.SettlementSupplies;
@@ -169,6 +171,13 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		
 		// Deliver the rest of the supplies and add people.
 		deliverOthers(sim, sc);
+
+		// If there are new immigrients then have a welcome meeting
+		if (newImmigrantNum > 0) {
+			GroupActivity.createPersonActivity("Welcome new arrivals of " + getName(),
+									GroupActivityType.ANNOUNCEMENT, settlement, null, 1, 
+									sim.getMasterClock().getMarsTime());
+		}
 
 		// If a schedule then create the next one
 		if (template.getFrequency() > 0) {

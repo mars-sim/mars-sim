@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.tools.util.RandomUtil;
 
 /**
@@ -45,6 +46,8 @@ public class Relation implements Serializable {
 	// d2 : socio-cultural
 
 	public static final Opinion EMPTY_OPINION = new Opinion(50, 50, 50);
+
+	public static final double MAX_OPINION = 100D;
 	
 	/** A unit's opinion of another unit. */
 	private Map<Integer, Opinion> opinionMap = new HashMap<>();
@@ -118,27 +121,13 @@ public class Relation implements Serializable {
 				d0 = d0 + d/4;
 			}
 			
-			d2 = limit(d2);
-			d0 = limit(d0);
-			d1 = limit(d1);
+			d0 = MathUtils.between(d0, 0, MAX_OPINION);
+			d1 = MathUtils.between(d1, 0, MAX_OPINION);
+			d2 = MathUtils.between(d2, 0, MAX_OPINION);
 		}
 
 		found = new Opinion(d0, d1, d2);
 		opinionMap.put(id, found);
-	}
-	
-	/**
-	 * Places a limit over a value.
-	 * 
-	 * @param value
-	 * @return
-	 */
-	private double limit(double value) {
-		if (value < 0)
-			value = 0;
-		else if (value > 100)
-			value = 100;
-		return value;
 	}
 	
 	/**

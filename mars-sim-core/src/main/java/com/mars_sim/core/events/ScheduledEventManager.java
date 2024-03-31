@@ -44,6 +44,14 @@ public class ScheduledEventManager implements Serializable, Temporal {
         }
         
         /**
+         * Get the handler waiting for this scheduled event to occur.
+         * @return
+         */
+        public ScheduledEventHandler getHandler() {
+            return handler;
+        }
+
+        /**
          * Gets the description of the target handler.
          */
         public String getDescription() {

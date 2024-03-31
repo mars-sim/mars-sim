@@ -18,12 +18,14 @@ public class ShiftPattern {
     private String name;
     private int rotationSols;
     private int leavePerc;
+    private int minPopulation;
 
-    public ShiftPattern(String name, List<ShiftSpec> shifts, int rotationSols, int leavePerc) {
+    public ShiftPattern(String name, List<ShiftSpec> shifts, int rotationSols, int leavePerc, int minPop) {
         this.name = name;
         this.shifts = shifts;
         this.rotationSols = rotationSols;
         this.leavePerc = leavePerc;
+        this.minPopulation = minPop;
     }
 
     public List<ShiftSpec> getShifts() {
@@ -40,6 +42,14 @@ public class ShiftPattern {
 
     public int getRotationSols() {
         return rotationSols;
+    }
+
+    /**
+     * Get teh adivsed minum population for this shift pattern
+     * @return
+     */
+    public int getMinPopulation() {
+        return minPopulation;
     }
 
 }

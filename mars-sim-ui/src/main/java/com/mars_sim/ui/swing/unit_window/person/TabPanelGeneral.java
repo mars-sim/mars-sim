@@ -7,6 +7,8 @@
 package com.mars_sim.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -32,11 +34,8 @@ public class TabPanelGeneral extends TabPanel {
 	/** The Person instance. */
 	private Person person;
 	
-	private JLabel birthDateTF;
 	private JLabel storedMassLabel;
-	
-	private String birthDate;
-	
+		
 	/**
 	 * Constructor.
 	 * 
@@ -68,12 +67,13 @@ public class TabPanelGeneral extends TabPanel {
 		infoPanel.addTextField(Msg.getString("TabPanelGeneral.gender"), gender,null);
 		
 		// Prepare birthdate and age textfield
-		birthDate = person.getBirthDate();
+		var birthDate = person.getBirthDate();
+
 		String birthTxt = Msg.getString(
 			TAB_BIRTH_DATE_AGE,
-			birthDate,
+			birthDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
 			Integer.toString(person.getAge())); //$NON-NLS-1$
-		birthDateTF = infoPanel.addTextField(Msg.getString("TabPanelGeneral.birthDate"), birthTxt, null);
+		infoPanel.addTextField(Msg.getString("TabPanelGeneral.birthDate"), birthTxt, null);
 		
 		// Prepare country of origin textfield
 		String country = person.getCountry();
@@ -122,18 +122,6 @@ public class TabPanelGeneral extends TabPanel {
 	 */
 	@Override
 	public void update() {
-		
-		String newBD = person.getBirthDate();
-		
-		if (!newBD.equalsIgnoreCase(birthDate)) {
-			// Update the age
-			String birthdate = Msg.getString(
-				TAB_BIRTH_DATE_AGE,
-				newBD,
-				Integer.toString(person.getAge())); 
-					
-			birthDateTF.setText(birthdate); 
-		}
 		
 		// Prepare total mass label
 		storedMassLabel.setText(StyleManager.DECIMAL_KG.format(person.getStoredMass()));
