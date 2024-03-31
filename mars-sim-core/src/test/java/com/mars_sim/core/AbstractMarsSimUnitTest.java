@@ -229,7 +229,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	/**
 	 * Better Assert method 
 	 */
-	public static void assertGreaterThan(String message, int minValue, int actual) {
+	public static void assertGreaterThan(String message, double minValue, double actual) {
 		if (actual < minValue) {
 			fail(message + " ==> " +
 					"Expected: a value greater than <" + minValue + ">\n" +

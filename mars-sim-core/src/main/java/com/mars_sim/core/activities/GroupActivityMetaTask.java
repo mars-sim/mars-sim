@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
@@ -40,9 +41,13 @@ public class GroupActivityMetaTask extends MetaTask implements SettlementMetaTas
             return new GroupActivityTask(activity, person);
         }
 
+        public GroupActivity getActivity() {
+            return activity;
+        }
     }
 
     private static final String NAME = "GroupActivity";
+    private static final RatingScore INSTIGATOR_SCORE = new RatingScore(9000D);
 
     public GroupActivityMetaTask() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
@@ -71,4 +76,35 @@ public class GroupActivityMetaTask extends MetaTask implements SettlementMetaTas
          return results;
     }
 
+    /**
+     * Score the task based on the relationshio with the instigator, if there is one.
+     * If the person is the instigator then give a high score.
+     * 
+     * @param t Group activity task being evaluated
+     * @param p Person evaluating the Task
+     */
+    @Override
+    public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore result = super.assessPersonSuitability(t, p);
+
+        // Should always be true
+        if ((result.getScore() > 0) && (t instanceof GroupActivitySettlementTask gst)) {
+            Person instigator = gst.getActivity().getInstigator();
+            if (instigator != null) {
+                if (instigator.equals(p)) {
+                    return INSTIGATOR_SCORE;
+                }
+                
+                // Use the opinion of the instigator to score
+                var opinion = p.getRelation().getOpinion(instigator);
+                if (opinion != null) {
+                    var modifier = 1 + (opinion.getAverage()/Relation.MAX_OPINION);
+                    result = new RatingScore(result);
+                    result.addModifier("person", modifier);
+                }
+            }
+        }
+
+        return result;
+    }
 }

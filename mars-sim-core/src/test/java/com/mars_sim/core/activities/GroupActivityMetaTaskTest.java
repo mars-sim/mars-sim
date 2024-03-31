@@ -2,7 +2,10 @@ package com.mars_sim.core.activities;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.person.ai.social.RelationshipType;
+import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
+import com.mars_sim.core.structure.GroupActivityType;
 import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.mapdata.location.LocalPosition;
@@ -59,5 +62,46 @@ public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
         ga.execute(time);
         tasks = mt.getSettlementTasks(s);
         assertTrue("No tasks after activity complete", tasks.isEmpty());
+    }
+
+    public void testPersonSuitability() {
+        var s = buildSettlement();
+        buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH, 0);
+
+        // Create a friendship group
+        var i = buildPerson("instigator", s);
+        var f = buildPerson("friend", s);
+        RelationshipUtil.changeOpinion(f, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, 2D);
+
+        var e = buildPerson("enermy", s);
+        RelationshipUtil.changeOpinion(e, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, -2D);
+        assertGreaterThan("Friend is more popular than enermy",
+                                    e.getRelation().getOpinion(i).getAverage(),
+                                    f.getRelation().getOpinion(i).getAverage());
+
+
+        // Create an activity and 
+        var now = sim.getMasterClock().getMarsTime();
+        var ga = GroupActivity.createPersonActivity("Promotion", GroupActivityType.ANNOUNCEMENT, s,
+                                                i, 0, now);
+
+        // Move the activity on to the started state so it generates MetaTasks                                        
+        var time = ga.getStartTime();
+        ga.execute(time);
+        var mt = new GroupActivityMetaTask();
+        var tasks = mt.getSettlementTasks(s);
+        var selected = tasks.get(0);
+
+        // Evulate the Task for each person
+        var iScore = mt.assessPersonSuitability(selected, i);
+        var fScore = mt.assessPersonSuitability(selected, f);
+        var eScore = mt.assessPersonSuitability(selected, e);
+
+        // Check friend has a better score
+        assertGreaterThan("Friend better score than enermy", eScore.getScore(), fScore.getScore());
+        
+        // Check instigator has a very high score
+        assertGreaterThan("Insitigator score", 900D, iScore.getScore());
+
     }
 }
