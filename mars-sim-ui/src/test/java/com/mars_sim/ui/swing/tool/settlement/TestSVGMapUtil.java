@@ -20,9 +20,12 @@ import junit.framework.TestCase;
  */
 public class TestSVGMapUtil extends TestCase {
 
+    private SimulationConfig config;
+
     @Override
     public void setUp() throws Exception {
-    	SimulationConfig.instance().loadConfig();
+    	config = SimulationConfig.instance();
+        config.loadConfig();
     }
 
     /**
@@ -31,7 +34,7 @@ public class TestSVGMapUtil extends TestCase {
     public void testGetBuildingSVG() {
         
         // Check that all configured building names are mapped to a SVG image.
-        for(var bs : SimulationConfig.instance().getBuildingConfiguration().getBuildingTypes()) {
+        for(var bs : config.getBuildingConfiguration().getBuildingTypes()) {
             GraphicsNode svg = SVGMapUtil.getBuildingSVG(bs.getName());
             assertNotNull(bs.getName() + " is not mapped to a SVG image.", svg);
         }
@@ -43,11 +46,11 @@ public class TestSVGMapUtil extends TestCase {
     public void testGetConstructionSiteSVG() {
         
         // Check that all construction stage names are mapped to a SVG image.
-        ConstructionConfig config = SimulationConfig.instance().getConstructionConfiguration();
+        ConstructionConfig cConfig = config.getConstructionConfiguration();
         List<ConstructionStageInfo> constructionStages = new ArrayList<ConstructionStageInfo>();
-        constructionStages.addAll(config.getConstructionStageInfoList(ConstructionStageInfo.FOUNDATION));
-        constructionStages.addAll(config.getConstructionStageInfoList(ConstructionStageInfo.FRAME));
-        constructionStages.addAll(config.getConstructionStageInfoList(ConstructionStageInfo.BUILDING));
+        constructionStages.addAll(cConfig.getConstructionStageInfoList(ConstructionStageInfo.FOUNDATION));
+        constructionStages.addAll(cConfig.getConstructionStageInfoList(ConstructionStageInfo.FRAME));
+        constructionStages.addAll(cConfig.getConstructionStageInfoList(ConstructionStageInfo.BUILDING));
         
         Iterator<ConstructionStageInfo> i = constructionStages.iterator();
         while (i.hasNext()) {
@@ -64,7 +67,7 @@ public class TestSVGMapUtil extends TestCase {
     public void testGetVehicleSVG() {
         
         // Check that all vehicle types are mapped to a SVG image.
-        for(VehicleSpec vs :  SimulationConfig.instance().getVehicleConfiguration().getVehicleSpecs()) {
+        for(VehicleSpec vs :  config.getVehicleConfiguration().getVehicleSpecs()) {
             String vehicleType = vs.getBaseImage();
             GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicleType);
             assertNotNull(vehicleType + " is not mapped to a SVG image.", svg);
@@ -77,7 +80,7 @@ public class TestSVGMapUtil extends TestCase {
     public void testGetMaintenanceOverlaySVG() {
         
         // Check that all vehicle types have a maintenance overlay mapped to a SVG image.
-        for(VehicleSpec vs :  SimulationConfig.instance().getVehicleConfiguration().getVehicleSpecs()) {
+        for(VehicleSpec vs :  config.getVehicleConfiguration().getVehicleSpecs()) {
             VehicleType type = vs.getType();
             GraphicsNode svg = SVGMapUtil.getMaintenanceOverlaySVG(type.name());
             assertNotNull(type + " does not have a maintenance overlay mapped to a SVG image.", svg);
@@ -90,7 +93,7 @@ public class TestSVGMapUtil extends TestCase {
     public void testGetLoadingOverlaySVG() {
         
         // Check that all vehicle types have a loading overlay mapped to a SVG image.
-        for(VehicleSpec vs :  SimulationConfig.instance().getVehicleConfiguration().getVehicleSpecs()) {
+        for(VehicleSpec vs :  config.getVehicleConfiguration().getVehicleSpecs()) {
             VehicleType type = vs.getType();
             if (type != VehicleType.LUV) {
                 GraphicsNode svg = SVGMapUtil.getLoadingOverlaySVG(type.name());
@@ -105,7 +108,7 @@ public class TestSVGMapUtil extends TestCase {
     public void testGetAttachmentPartSVG() {
         
         // Check that all vehicle attachment parts are mapped to a SVG image.
-        Iterator<Part> i = SimulationConfig.instance().getVehicleConfiguration().
+        Iterator<Part> i = config.getVehicleConfiguration().
                 getVehicleSpec("Light Utility Vehicle").getAttachableParts().iterator();
         while (i.hasNext()) {
             Part attachmentPart = i.next();

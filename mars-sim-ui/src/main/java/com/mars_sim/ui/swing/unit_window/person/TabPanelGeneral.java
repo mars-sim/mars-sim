@@ -34,7 +34,6 @@ public class TabPanelGeneral extends TabPanel {
 	/** The Person instance. */
 	private Person person;
 	
-	private JLabel birthDateTF;
 	private JLabel storedMassLabel;
 		
 	/**
@@ -74,7 +73,7 @@ public class TabPanelGeneral extends TabPanel {
 			TAB_BIRTH_DATE_AGE,
 			birthDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
 			Integer.toString(person.getAge())); //$NON-NLS-1$
-		birthDateTF = infoPanel.addTextField(Msg.getString("TabPanelGeneral.birthDate"), birthTxt, null);
+		infoPanel.addTextField(Msg.getString("TabPanelGeneral.birthDate"), birthTxt, null);
 		
 		// Prepare country of origin textfield
 		String country = person.getCountry();

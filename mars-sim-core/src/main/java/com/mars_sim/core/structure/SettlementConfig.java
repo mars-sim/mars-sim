@@ -126,6 +126,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String MEETING = "meeting";
 	private static final String ACTIVITY = "activity";
 	private static final String START_TIME = "startTime";
+	private static final String SCORE = "score";
 	private static final String DURATION = "duration";
 	private static final String WAIT_DURATION = "waitDuration";
 	private static final String SCOPE = "scope";
@@ -241,6 +242,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		int startTime = ConfigHelper.getAttributeInt(ra, START_TIME);
 		int firstSol = ConfigHelper.getOptionalAttributeInt(ra, FIRST_SOL, 0);
 		int freq = ConfigHelper.getOptionalAttributeInt(ra, ACTIVITY_FREQ, -1);
+		int score = ConfigHelper.getOptionalAttributeInt(ra, SCORE, -1);
 		int wait = ConfigHelper.getAttributeInt(ra, WAIT_DURATION);
 		int duration = ConfigHelper.getAttributeInt(ra, DURATION);
 		double pop = ConfigHelper.getAttributeDouble(ra, POPULATION);
@@ -251,7 +253,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			meetingPlace = ConfigHelper.getEnum(BuildingCategory.class, locationText);
 		}
 
-		return new GroupActivityInfo(name, startTime, firstSol, wait, duration, freq, pop, duration, scope, meetingPlace);
+		return new GroupActivityInfo(name, startTime, firstSol, wait, duration, freq, pop, score, scope, meetingPlace);
 	}
 
 	/**

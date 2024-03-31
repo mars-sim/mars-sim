@@ -256,13 +256,6 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 		var currentEarthTime = masterClock.getEarthTime();
 		calculateBirthDate(currentEarthTime, age);
 
-		var nextBirthday = LocalDate.of(currentEarthTime.getYear() + 1,
-								birthDate.getMonth(), birthDate.getDayOfMonth());
-		var earthDays = ChronoUnit.DAYS.between(currentEarthTime.toLocalDate(), nextBirthday) % 365;
-		GroupActivity.createPersonActivity("Birthday Party", GroupActivityType.BIRTHDAY, settlement,
-						this, 
-						(int)((earthDays * MarsTime.MILLISOLS_PER_EARTHDAY)/1000D),
-						masterClock.getMarsTime());
 
 		// Create favorites
 		favorite = new Favorite(this);
@@ -518,6 +511,22 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 		// Calculate the year
 		// Set the age
 		age = updateAge(earthLocalTime);
+
+		// Calculate next birthday
+		int day = birthDate.getDayOfMonth();
+		int month = birthDate.getMonthValue();
+		if (birthDate.isLeapYear() && (day == 29) &&(month == 2)) {
+			// Leap year and 29th of February
+			day = 28;
+		}
+		var nextBirthday = LocalDate.of(earthLocalTime.getYear() + 1, month, day);
+
+		// Create a future activity so many earth days in the future
+		var earthDays = ChronoUnit.DAYS.between(earthLocalTime.toLocalDate(), nextBirthday) % 365;
+		GroupActivity.createPersonActivity("Birthday Party", GroupActivityType.BIRTHDAY,
+									getAssociatedSettlement(), this, 
+									(int)((earthDays * MarsTime.MILLISOLS_PER_EARTHDAY)/1000D),
+									masterClock.getMarsTime());
 	}
 
 	/**

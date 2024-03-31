@@ -61,6 +61,7 @@
 	<!ATTLIST activity startTime CDATA #REQUIRED>
 	<!ATTLIST activity frequency CDATA #IMPLIED>
 	<!ATTLIST activity firstSol CDATA #IMPLIED>
+	<!ATTLIST activity score CDATA #IMPLIED>
 	<!ATTLIST activity population CDATA #REQUIRED>
 	<!ATTLIST activity waitDuration CDATA #REQUIRED>
 	<!ATTLIST activity duration CDATA #REQUIRED>
@@ -171,17 +172,17 @@
 	<group-activities>
 		<activities>
 			<!-- 355 sols is the equivalent of 365 days-->
-			<activity name="Birthday Celebration" startTime="700" frequency="355"
+			<activity name="Birthday Celebration" startTime="700" frequency="355" score="200"
 						population="0.3" waitDuration="20" duration="100" scope="NONWORK_HOUR"/>
 			<!-- One off Announcement to base-->
-			<activity name="Announcement" startTime="400" 
+			<activity name="Announcement" startTime="400" score="600"
 						population="0.9" waitDuration="20" duration="100" scope="ANY_HOUR"/>
-
-			<activity name="Team Meeting" startTime="500" frequency="6"
+						
+			<activity name="Team Meeting" startTime="500" frequency="6" score="500"
 						population="0.7" waitDuration="20" duration="100" scope="ANY_HOUR"/>
-			<activity name="Movie Night" startTime="700" firstSol="4" frequency="20"
+			<activity name="Movie Night" startTime="700" firstSol="4" frequency="20" score="200"
 						population="0.3" waitDuration="20" duration="150" scope="NONWORK_HOUR"/>
-			<activity name="Safety Training" startTime="400" firstSol="7" frequency="20"
+			<activity name="Safety Training" startTime="400" firstSol="7" frequency="20" score="400"
 						population="0.3" waitDuration="20" duration="10" scope="WORK_HOUR"/>
 		</activities>
 

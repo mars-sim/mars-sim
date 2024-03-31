@@ -7,6 +7,7 @@
 package com.mars_sim.core.person.ai.role;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 import com.mars_sim.core.Simulation;
@@ -72,7 +73,7 @@ public class Role implements Serializable {
 			var home = person.getAssociatedSettlement();
 
 			// Note : if this is a leadership role, only one person should occupy this position 
-			List<Person> predecessors = null;
+			List<Person> predecessors = Collections.emptyList();
 			if (newType.isChief() || newType.isCouncil()) {
 				// Find a list of predecessors who are occupying this role
 				predecessors = home.getChainOfCommand().findPeopleWithRole(newType);

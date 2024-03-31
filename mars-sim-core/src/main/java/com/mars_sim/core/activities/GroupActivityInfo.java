@@ -20,6 +20,7 @@ import com.mars_sim.core.structure.building.BuildingCategory;
  * @param activtyDuratino Duratino of the actual activity
  * @param solFrequency Often does this activity report; negative mean never
  * @param percentagePop What percentage of the settlement population can join
+ * @param score The score of the activity
  * @param scope The scope of on/off duty worker
  * @param place The category of a meeting place to host the Activity
  * 
