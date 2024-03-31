@@ -2,6 +2,7 @@ package com.mars_sim.core.activities;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.social.RelationshipType;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
@@ -74,7 +75,8 @@ public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
         RelationshipUtil.changeOpinion(e, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, 1D);
         var eOpinion = e.getRelation().getOpinion(i).getAverage();
         var f = buildPerson("friend", s);
-        RelationshipUtil.changeOpinion(f, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, eOpinion + 10D);
+        RelationshipUtil.changeOpinion(f, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, eOpinion
+                                                                + Relation.MAX_OPINION);
 
         assertGreaterThan("Friend is more popular than enermy",
                                     e.getRelation().getOpinion(i).getAverage(),
