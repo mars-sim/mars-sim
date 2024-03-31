@@ -25,7 +25,7 @@ public class GroupActivity implements ScheduledEventHandler {
      * The State that a Group Activity transitions
      */
     public enum ActivityState {
-        SCHEDULED, PENDING, ACTIVE, DONE, UNSCHEDULED;
+        SCHEDULED, PENDING, ACTIVE, DONE, UNSCHEDULED, CANCELLED;
     }
 
     private GroupActivityInfo definition;
@@ -101,6 +101,7 @@ public class GroupActivity implements ScheduledEventHandler {
     public String getEventDescription() {
         return getName() + " - " + switch(state) {
             case ACTIVE -> "end";
+            case CANCELLED -> "cancelled";
             case DONE -> "done";
             case PENDING -> "starting";
             case SCHEDULED -> "scheduled start";
@@ -120,8 +121,9 @@ public class GroupActivity implements ScheduledEventHandler {
                     return definition.waitDuration();
                 }
                 else {
-                    // Reschedule
-                    return 1000;
+                    // Cancel it
+                    state = ActivityState.CANCELLED;
+                    return -1;
                 }
             case ACTIVE:
                 // Activity has completed, so rescheduled in the future
@@ -173,6 +175,10 @@ public class GroupActivity implements ScheduledEventHandler {
         return definition;
     }   
     
+    /**
+     * Person who insitgates the meeting, could be null
+     * @return Meeting Instigator
+     */
     public Person getInstigator() {
         return instigator;
     }

@@ -14,7 +14,7 @@ public enum FunctionType {
 
     ADMINISTRATION              (BuildingCategory.COMMAND, Msg.getString("FunctionType.administration")), //$NON-NLS=1$
 	ALGAE_FARMING				(BuildingCategory.FARMING, Msg.getString("FunctionType.algaeFarming")), //$NON-NLS-1$
-    ASTRONOMICAL_OBSERVATION	(BuildingCategory.LABORATORY, Msg.getString("FunctionType.astronomicalObservations")), //$NON-NLS-1$
+    ASTRONOMICAL_OBSERVATION	(BuildingCategory.ASTRONOMY, Msg.getString("FunctionType.astronomicalObservations")), //$NON-NLS-1$
 	BUILDING_CONNECTION			(BuildingCategory.HALLWAY, Msg.getString("FunctionType.buildingConnection")), //$NON-NLS-1$
 	COMMUNICATION				(BuildingCategory.COMMAND,Msg.getString("FunctionType.communication")), //$NON-NLS-1$
 	COMPUTATION					(BuildingCategory.LABORATORY, Msg.getString("FunctionType.computation")), //$NON-NLS-1$

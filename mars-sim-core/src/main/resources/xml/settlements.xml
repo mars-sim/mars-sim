@@ -174,10 +174,16 @@
 			<!-- 355 sols is the equivalent of 365 days-->
 			<activity name="Birthday Celebration" startTime="700" frequency="355" score="200"
 						population="0.3" waitDuration="20" duration="100" scope="NONWORK_HOUR"/>
+
 			<!-- One off Announcement to base-->
 			<activity name="Announcement" startTime="400" score="600"
 						population="0.9" waitDuration="20" duration="100" scope="ANY_HOUR"/>
-						
+
+			<!-- Sky watching party starts 2nd sol into Settlement and evey 10 sols-->
+			<activity name="Night Sky Party" startTime="850" firstSol="2" score="400" frequency="10"
+						population="0.2" waitDuration="80" duration="150" scope="NONWORK_HOUR"
+						location="ASTRONOMY"/>
+
 			<activity name="Team Meeting" startTime="500" frequency="6" score="500"
 						population="0.7" waitDuration="20" duration="100" scope="ANY_HOUR"/>
 			<activity name="Movie Night" startTime="700" firstSol="4" frequency="20" score="200"
@@ -199,6 +205,9 @@
 			<meeting name="Team Meeting"/>
 			<meeting name="Movie Night"/>
 			<meeting name="Safety Training"/>
+
+			<!-- This needs an obseratory but will be cancelled when one not available-->
+			<meeting name="Night Sky Party"/>
 		</schedule>
 	</group-activities>
 
