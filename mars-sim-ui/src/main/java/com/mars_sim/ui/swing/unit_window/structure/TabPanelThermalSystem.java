@@ -7,7 +7,6 @@
 package com.mars_sim.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,12 +18,11 @@ import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.structure.Settlement;
@@ -40,17 +38,15 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.UnitModel;
-import com.mars_sim.ui.swing.utils.UnitTableLauncher;
 
 /**
  * This is a tab panel for settlement's Thermal System .
  */
 @SuppressWarnings("serial")
-public class TabPanelThermalSystem
-extends TabPanel {
+public class TabPanelThermalSystem extends TabPanelTable {
 
 	// default logger.
 	
@@ -65,10 +61,6 @@ extends TabPanel {
 	private double powerGenCache;
 	private double eheatCache;
 	private double epowerCache;
-
-	private JTable heatTable ;
-
-	private JScrollPane heatScrollPane;
 	
 	private JCheckBox checkbox;
 
@@ -104,17 +96,16 @@ extends TabPanel {
 		);
 		settlement = unit;
 	}
+
 	
 	@Override
-	protected void buildUI(JPanel content) {
-		
+	protected JPanel createInfoPanel() {
 		manager = settlement.getBuildingManager();
 		thermalSystem = settlement.getThermalSystem();
 		buildings = manager.getBuildingsWithThermal();
 
 		JPanel topContentPanel = new JPanel();
 		topContentPanel.setLayout(new BoxLayout(topContentPanel, BoxLayout.Y_AXIS));
-		content.add(topContentPanel, BorderLayout.NORTH);
 		
 		// Prepare heat info panel.
 		AttributePanel heatInfoPanel = new AttributePanel(5);
@@ -164,23 +155,19 @@ extends TabPanel {
 		checkbox.setSelected(false);
 		checkboxPane.add(checkbox);
 		
-		// Create scroll panel for the outer table panel.
-		heatScrollPane = new JScrollPane();
-		// increase vertical mousewheel scrolling speed for this one
-		heatScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		heatScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		content.add(heatScrollPane,BorderLayout.CENTER);
-		
+		return topContentPanel;
+	}
+
+	@Override
+	protected TableModel createModel() {
 		// Prepare thermal control table model.
 		heatTableModel = new HeatTableModel(settlement);
-		
-		// Prepare thermal control table.
-		heatTable = new JTable(heatTableModel);
-		// Call up the building window when clicking on a row on the table
-		heatTable.addMouseListener(new UnitTableLauncher(getDesktop()));
-		
-		heatTable.setRowSelectionAllowed(true);
-		TableColumnModel heatColumns = heatTable.getColumnModel();
+		return heatTableModel;
+	}
+
+	@Override
+	protected void setColumnDetails(TableColumnModel heatColumns) {
+
 		heatColumns.getColumn(0).setPreferredWidth(10);
 		heatColumns.getColumn(1).setPreferredWidth(130);
 		heatColumns.getColumn(2).setPreferredWidth(30);
@@ -194,15 +181,6 @@ extends TabPanel {
 		heatColumns.getColumn(3).setCellRenderer(renderer);
 		heatColumns.getColumn(4).setCellRenderer(renderer);
 		heatColumns.getColumn(5).setCellRenderer(renderer);
-		
-		// Resizable automatically when its Panel resizes
-		heatTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		heatTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-
-		// Add sorting
-		heatTable.setAutoCreateRowSorter(true);
-
-		heatScrollPane.setViewportView(heatTable);
 	}
 
 	/**
@@ -430,8 +408,6 @@ extends TabPanel {
 		}
 
 		public void update() {
-			heatScrollPane.validate();
-
 			fireTableDataChanged();
 		}
 
@@ -448,8 +424,6 @@ extends TabPanel {
 	public void destroy() {
 		super.destroy();
 		
-		heatTable = null;
-		heatScrollPane = null;	
 		checkbox = null;
 		heatGenTF = null;
 		powerGenTF = null;

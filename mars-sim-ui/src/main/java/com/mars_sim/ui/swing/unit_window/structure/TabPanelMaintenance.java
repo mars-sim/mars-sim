@@ -6,18 +6,12 @@
  */
 package com.mars_sim.ui.swing.unit_window.structure;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.malfunction.MalfunctionManager;
@@ -26,26 +20,20 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 import com.mars_sim.ui.swing.utils.PercentageCellRenderer;
 import com.mars_sim.ui.swing.utils.UnitModel;
-import com.mars_sim.ui.swing.utils.UnitTableLauncher;
 
 /**
  * The TabPanelMaintenance is a tab panel for settlement's building maintenance.
  */
 @SuppressWarnings("serial")
-public class TabPanelMaintenance extends TabPanel {
+public class TabPanelMaintenance extends TabPanelTable {
 
 	private static final String SPANNER_ICON = "maintenance";
 
 	private BuildingMaintModel tableModel;
 	
-	protected String[] columnToolTips = {
-		    "The Building name", 
-		    "The Building Wear and Tear Condition",
-		    "The # of Sols since last Inspection",
-		    "The Percentage of Completion of Current Inspection"};
 		
 	/**
 	 * Constructor.
@@ -61,33 +49,13 @@ public class TabPanelMaintenance extends TabPanel {
 	}
 
 	@Override
-	protected void buildUI(JPanel content) {
-		
-		JScrollPane maintPane = new JScrollPane();
-		maintPane.setPreferredSize(new Dimension(160, 80));
-		content.add(maintPane, BorderLayout.CENTER);
+	protected TableModel createModel() {
+		return tableModel;
+	}
+	
 
-		// Create the parts table
-		JTable table = new JTable(tableModel) {
-		    //Implement table header tool tips.
-		    protected JTableHeader createDefaultTableHeader() {
-		        return new JTableHeader(columnModel) {
-		            public String getToolTipText(MouseEvent e) {
-		                java.awt.Point p = e.getPoint();
-		                int index = columnModel.getColumnIndexAtX(p.x);
-		                int realIndex = 
-		                        columnModel.getColumn(index).getModelIndex();
-		                return columnToolTips[realIndex];
-		            }
-		        };
-		    }
-		};
-		
-		table.setRowSelectionAllowed(true);
-		table.addMouseListener(new UnitTableLauncher(getDesktop()));
-		table.setAutoCreateRowSorter(true);
-
-		TableColumnModel tc = table.getColumnModel();
+	@Override
+	protected void setColumnDetails(TableColumnModel tc) {
 		tc.getColumn(0).setPreferredWidth(120);
 		tc.getColumn(1).setPreferredWidth(60);
 		tc.getColumn(1).setCellRenderer(new PercentageCellRenderer(false));
@@ -95,7 +63,6 @@ public class TabPanelMaintenance extends TabPanel {
 		tc.getColumn(2).setPreferredWidth(60);
 		tc.getColumn(3).setCellRenderer(new PercentageCellRenderer(false));
 		tc.getColumn(3).setPreferredWidth(60);
-		maintPane.setViewportView(table);
 	}
 
 	/**

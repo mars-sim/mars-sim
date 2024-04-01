@@ -6,15 +6,13 @@
  */
 package com.mars_sim.ui.swing.unit_window.structure;
 
-import java.awt.Dimension;
 import java.util.List;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.goods.Good;
@@ -25,15 +23,14 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 
 @SuppressWarnings("serial")
-public class TabPanelGoods extends TabPanel {
+public class TabPanelGoods extends TabPanelTable {
 
 	private static final String GOOD_ICON = "trade";
 	
 	// Data members
-	private JTable goodsTable;
 	private GoodsTableModel goodsTableModel;
 
 	/**
@@ -51,41 +48,30 @@ public class TabPanelGoods extends TabPanel {
 		);
 	}
 	
+	/**
+	 * Create a table model for the Goods
+	 */
 	@Override
-	protected void buildUI(JPanel content) {
-		
- 		// Create scroll panel for the outer table panel.
-		JScrollPane goodsScrollPane = new JScrollPane();
-		goodsScrollPane.setPreferredSize(new Dimension(250, 300));
-		// increase vertical mousewheel scrolling speed for this one
-		goodsScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		content.add(goodsScrollPane);
-
-		// Prepare goods table model.
+	protected TableModel createModel() {
 		goodsTableModel = new GoodsTableModel(((Settlement) getUnit()).getGoodsManager());
-
-		// Prepare goods table.
-		goodsTable = new JTable(goodsTableModel);
-		goodsScrollPane.setViewportView(goodsTable);
-		goodsTable.setRowSelectionAllowed(true);
+		return goodsTableModel;
+	}
+	
+	/**
+	 * Set the width and default rendering
+	 * @param columnModel Columns to be configured
+	 */
+	@Override
+	protected void setColumnDetails(TableColumnModel columnModel) {
+				
+		columnModel.getColumn(0).setPreferredWidth(140);
+		columnModel.getColumn(1).setPreferredWidth(80);
 		
-		// Override default cell renderer for formatting double values.
-		goodsTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
-		
-		goodsTable.getColumnModel().getColumn(0).setPreferredWidth(140);
-		goodsTable.getColumnModel().getColumn(1).setPreferredWidth(80);
-		
-		// Added the two methods below to make all heatTable columns
-		// Resizable automatically when its Panel resizes
-		goodsTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-
 		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
-		goodsTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-
-		// Added sorting
-		goodsTable.setAutoCreateRowSorter(true);
+		columnModel.getColumn(0).setCellRenderer(renderer);
+		columnModel.getColumn(1).setCellRenderer(new NumberCellRenderer(2, true));
 	}
 
 	/**
@@ -99,11 +85,9 @@ public class TabPanelGoods extends TabPanel {
 	/**
 	 * Internal class used as model for the power table.
 	 */
-	private static class GoodsTableModel
-	extends AbstractTableModel {
+	private static class GoodsTableModel extends AbstractTableModel {
 
 		/** default serial id. */
-//		private static final long serialVersionUID = 1L;
 		// Data members
 		GoodsManager manager;
 		List<?> goods;
@@ -169,7 +153,6 @@ public class TabPanelGoods extends TabPanel {
 	public void destroy() {
 		super.destroy();
 		
-		goodsTable = null;
 		goodsTableModel = null;
 	}
 }
