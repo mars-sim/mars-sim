@@ -6,16 +6,14 @@
  */
 package com.mars_sim.ui.swing.unit_window.person;
 
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
@@ -25,21 +23,18 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 
 /**
  * The TabPanelAttribute is a tab panel for the natural attributes of a person.
  */
 @SuppressWarnings("serial")
-public class TabPanelAttribute
-extends TabPanel {
+public class TabPanelAttribute extends TabPanelTable {
 	
 	private static final String ATTRIBUTE_ICON = "attribute"; //$NON-NLS-1$
 	
 	private AttributeTableModel attributeTableModel;
 	
-	private JTable attributeTable;
-
 	/**
 	 * Constructor 1.
 	 * @param person {@link Person} the person.
@@ -71,34 +66,23 @@ extends TabPanel {
 	}
 
 	@Override
-	protected void buildUI(JPanel content) {
-
-		// Create attribute scroll panel
-		JScrollPane attributeScrollPanel = new JScrollPane();
-		content.add(attributeScrollPanel);
-
+	protected TableModel createModel() {
 		// Create attribute table model
 		attributeTableModel = new AttributeTableModel((Worker) getUnit());
-		
-		// Create attribute table
-		attributeTable = new JTable(attributeTableModel); //new JTable(attributeTableModel);//
-		attributeTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
-		attributeTable.getColumnModel().getColumn(0).setPreferredWidth(100);
-		attributeTable.getColumnModel().getColumn(1).setPreferredWidth(70);
-		attributeTable.setRowSelectionAllowed(true);
-		
-		attributeScrollPanel.setViewportView(attributeTable);
-
-		attributeTable.setAutoCreateRowSorter(true);
+		return attributeTableModel;
+	}
+	
+	@Override
+	protected void setColumnDetails(TableColumnModel columnModel) {
+		columnModel.getColumn(0).setPreferredWidth(100);
+		columnModel.getColumn(1).setPreferredWidth(70);
  
 		// Align the content to the center of the cell
         // Note: DefaultTableCellRenderer does NOT work well with nimrod
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.LEFT);
-		attributeTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		attributeTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
-
-        update();
+		columnModel.getColumn(0).setCellRenderer(renderer);
+		columnModel.getColumn(1).setCellRenderer(renderer);
 	}
 
 	/**
@@ -112,7 +96,6 @@ extends TabPanel {
 	@Override
 	public void destroy() {
 		attributeTableModel = null;
-		attributeTable = null;
 	}
 }
 

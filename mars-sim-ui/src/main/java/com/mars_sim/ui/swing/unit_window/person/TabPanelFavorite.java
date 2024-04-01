@@ -6,19 +6,15 @@
  */
 package com.mars_sim.ui.swing.unit_window.person;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.Favorite;
@@ -27,21 +23,17 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;
-import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
  * The TabPanelFavorite is a tab panel for general information about a person.
  */
 @SuppressWarnings("serial")
-public class TabPanelFavorite
-extends TabPanel {
+public class TabPanelFavorite extends TabPanelTable {
 
 	private static final String FAV_ICON = "favourite"; //$NON-NLS-1$
 	
-	/** The Preference Table. */	
-	private JTable table;
 	/** The Preference Table Model. */	
 	private PreferenceTableModel tableModel;
 	/** The Person instance. */
@@ -65,14 +57,9 @@ extends TabPanel {
 	}
 
 	@Override
-	protected void buildUI(JPanel content) {
-		JPanel topPanel = new JPanel(new BorderLayout(5, 5));
-		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-		content.add(topPanel, BorderLayout.NORTH);
-		
+	protected JPanel createInfoPanel() {
 		// Prepare SpringLayout for info panel.
 		AttributePanel infoPanel = new AttributePanel(4);
-		topPanel.add(infoPanel, BorderLayout.NORTH);
 
 		Favorite fav = person.getFavorite();
 		infoPanel.addTextField(Msg.getString("TabPanelFavorite.mainDish"), fav.getFavoriteMainDish(), null);
@@ -80,43 +67,20 @@ extends TabPanel {
 		infoPanel.addTextField(Msg.getString("TabPanelFavorite.dessert"), Conversion.capitalize(fav.getFavoriteDessert()), null);
 		infoPanel.addTextField(Msg.getString("TabPanelFavorite.activity"), fav.getFavoriteActivity().getName(), null);
 
-		// Create label panel.
-		JPanel labelPanel = new JPanel(new BorderLayout(5, 5));
-		content.add(labelPanel, BorderLayout.CENTER);
-		
-		// Create preference title label
-		JLabel preferenceLabel = new JLabel(Msg.getString("TabPanelFavorite.preferenceTable.title"), JLabel.CENTER); //$NON-NLS-1$
-		StyleManager.applySubHeading(preferenceLabel);
-		labelPanel.add(preferenceLabel, BorderLayout.NORTH);
-		
-		// Create scroll panel
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
-		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		labelPanel.add(scrollPane, BorderLayout.CENTER);
-		
-		// Create skill table
+		return infoPanel;
+	}
+
+	@Override
+	protected TableModel createModel() {
 		tableModel = new PreferenceTableModel(person);
-		table = new JTable(tableModel);
-
-		// Align the preference score to the center of the cell
-		// DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		// renderer.setHorizontalAlignment(SwingConstants.LEFT);
-		// table.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		// renderer = new DefaultTableCellRenderer();
-		// renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		// table.getColumnModel().getColumn(1).setCellRenderer(renderer);
-
-		table.setPreferredScrollableViewportSize(new Dimension(225, 200));
-		table.getColumnModel().getColumn(0).setPreferredWidth(150);
-		table.getColumnModel().getColumn(1).setPreferredWidth(30);
-		table.setRowSelectionAllowed(true);
-		table.setDefaultRenderer(Integer.class, new NumberCellRenderer());
-
-		// Added sorting
-		table.setAutoCreateRowSorter(true);
-
-		scrollPane.setViewportView(table);
+		return tableModel;
+	}
+	
+	@Override
+	protected void setColumnDetails(TableColumnModel model) {
+		model.getColumn(0).setPreferredWidth(150);
+		model.getColumn(1).setPreferredWidth(30);
+		model.getColumn(1).setCellRenderer(new NumberCellRenderer());
 	}
 
 	/**

@@ -6,37 +6,33 @@
  */
 package com.mars_sim.ui.swing.unit_window.person;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.social.Relation.Opinion;
+import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.unit_window.TabPanelTable;
+import com.mars_sim.ui.swing.utils.UnitModel;
 
 /**
  * A tab panel displaying a person's social relationships.
  */
 @SuppressWarnings("serial")
-public class TabPanelSocial
-extends TabPanel
+public class TabPanelSocial extends TabPanelTable
 implements ListSelectionListener {
 
 	private static final String SOCIAL_ICON = "social";
@@ -44,10 +40,8 @@ implements ListSelectionListener {
 	/** The Person instance. */
 	private Person person = null;
 	
-	private JTable relationshipTable;
 	private RelationshipTableModel relationshipTableModel;
 
-	private Collection<Person> knownPeople;
 	
 	/**
 	 * Constructor.
@@ -64,62 +58,37 @@ implements ListSelectionListener {
 			person, desktop
 		);
 		this.person = person;
+
+		setHeaderToolTips(null);
 	}
 	
 	@Override
-	protected void buildUI(JPanel content) {
-
-		// Create relationship scroll panel
-		JScrollPane relationshipScrollPanel = new JScrollPane();
-		content.add(relationshipScrollPanel, BorderLayout.CENTER);
-
+	protected TableModel createModel() {
 		// Create relationship table model
 		relationshipTableModel = new RelationshipTableModel(person);
+		return relationshipTableModel;
+	}
 
-		// Create relationship table
-		relationshipTable = new JTable(relationshipTableModel);
-		relationshipTable.setPreferredScrollableViewportSize(new Dimension(400, 100));
-		relationshipTable.getColumnModel().getColumn(0).setPreferredWidth(90);
-		relationshipTable.getColumnModel().getColumn(1).setPreferredWidth(90);
-		relationshipTable.getColumnModel().getColumn(2).setPreferredWidth(30);
-		relationshipTable.getColumnModel().getColumn(3).setPreferredWidth(30);
-		relationshipTable.getColumnModel().getColumn(4).setPreferredWidth(30);
-		relationshipTable.getColumnModel().getColumn(5).setPreferredWidth(50);
-		relationshipTable.setRowSelectionAllowed(true);
-		relationshipTable.getTableHeader().setToolTipText("Each Ssore (Respect, Care, or Trust) is between 0 and 100");
-		
-		// Add a mouse listener to hear for double-clicking a person (rather than single click using valueChanged()
-		relationshipTable.addMouseListener(new MouseAdapter() {
-		    public void mousePressed(MouseEvent me) {
-		    	JTable table =(JTable) me.getSource();
-		        Point p = me.getPoint();
-		        int row = table.rowAtPoint(p);
-		        int col = table.columnAtPoint(p);
-		        if (me.getClickCount() == 2) {
-		            if (row > 0 && col > 0) {
-		    			Person selectedPerson = (Person) relationshipTable.getValueAt(row, 1);  			
-		    			if (selectedPerson != null) getDesktop().showDetails(selectedPerson);
-		    	    }
-		        }
-		    }
-		});
-		
-		relationshipScrollPanel.setViewportView(relationshipTable);
+	@Override
+	protected void setColumnDetails(TableColumnModel columnModel) {
+		columnModel.getColumn(0).setPreferredWidth(90);
+		columnModel.getColumn(1).setPreferredWidth(90);
+		columnModel.getColumn(2).setPreferredWidth(30);
+		columnModel.getColumn(3).setPreferredWidth(30);
+		columnModel.getColumn(4).setPreferredWidth(30);
+		columnModel.getColumn(5).setPreferredWidth(50);
 
 		// Align the content to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.LEFT);
-		relationshipTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		relationshipTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		columnModel.getColumn(0).setCellRenderer(renderer);
+		columnModel.getColumn(1).setCellRenderer(renderer);
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
-		relationshipTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
-		relationshipTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
-		relationshipTable.getColumnModel().getColumn(4).setCellRenderer(renderer);
+		columnModel.getColumn(2).setCellRenderer(renderer);
+		columnModel.getColumn(3).setCellRenderer(renderer);
+		columnModel.getColumn(4).setCellRenderer(renderer);
 		renderer.setHorizontalAlignment(SwingConstants.LEFT);
-		relationshipTable.getColumnModel().getColumn(5).setCellRenderer(renderer);
-		
-		// Added sorting
-		relationshipTable.setAutoCreateRowSorter(true); // in conflict with valueChanged(), throw exception if clicking on a person
+		columnModel.getColumn(5).setCellRenderer(renderer);
 	}
 
 	/**
@@ -141,13 +110,15 @@ implements ListSelectionListener {
 	/**
 	 * Internal class used as model for the relationship table.
 	 */
-	private class RelationshipTableModel extends AbstractTableModel {
+	private class RelationshipTableModel extends AbstractTableModel
+			implements UnitModel {
 
-		private Person person;
+		private Person person;	
+		private List<Person> knownPeople;
 
 		private RelationshipTableModel(Person person) {
 			this.person = person;
-			knownPeople = RelationshipUtil.getAllKnownPeople(person);
+			knownPeople = new ArrayList<>(RelationshipUtil.getAllKnownPeople(person));
 		}
 
 		public int getRowCount() {
@@ -180,7 +151,7 @@ implements ListSelectionListener {
 		}
 
 		public Object getValueAt(int row, int column) {
-			Person p = (Person)knownPeople.toArray()[row];
+			Person p = knownPeople.get(row);
 			if (column == 0) 
 				return p.getAssociatedSettlement();		
 			else if (column == 1) 
@@ -206,18 +177,24 @@ implements ListSelectionListener {
 		}
 
 		public void update() {
-			Collection<Person> newKnownPeople = RelationshipUtil.getAllKnownPeople(person);
+			List<Person> newKnownPeople = new ArrayList<>(RelationshipUtil.getAllKnownPeople(person));
 			if (!knownPeople.equals(newKnownPeople)) {
 				knownPeople = newKnownPeople;
-				//fireTableDataChanged();
+				fireTableDataChanged();
 			}
-			//else fireTableDataChanged();
+			else {
+				fireTableRowsUpdated(0, knownPeople.size()-1);
+			}
 			
-			fireTableDataChanged();
 		}
 
 		private String getRelationshipString(double opinion) {
 			return Conversion.capitalize(RelationshipUtil.describeRelationship(opinion));
+		}
+
+		@Override
+		public Unit getAssociatedUnit(int row) {
+			return knownPeople.get(row);
 		}
 	}
 }
