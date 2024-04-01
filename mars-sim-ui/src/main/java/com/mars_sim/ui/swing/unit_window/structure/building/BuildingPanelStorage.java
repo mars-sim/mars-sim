@@ -6,8 +6,6 @@
  */
 package com.mars_sim.ui.swing.unit_window.structure.building;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,10 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -26,7 +23,8 @@ import com.mars_sim.core.structure.building.function.Storage;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.NumberCellRenderer;
+import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 
 
 /**
@@ -34,7 +32,7 @@ import com.mars_sim.ui.swing.StyleManager;
  * the storage capacity of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelStorage extends BuildingFunctionPanel {
+public class BuildingPanelStorage extends TabPanelTable {
 
 	private static final String STORE_ICON = "stock";
 
@@ -75,9 +73,8 @@ public class BuildingPanelStorage extends BuildingFunctionPanel {
 		}
 
 		public Class<?> getColumnClass(int column) {
-//			return String.class;
 			if (column == 0) return String.class;
-			else return Integer.class;
+			else return Double.class;
 		}
 
 		public String getColumnName(int column) {
@@ -100,13 +97,13 @@ public class BuildingPanelStorage extends BuildingFunctionPanel {
 				return nameList.get(row);
 			}
 			else if (column == 1) {
-				return StyleManager.DECIMAL_PLACES1.format(available.get(nameList.get(row)));
+				return available.get(nameList.get(row));
 			}
 			else if (column == 2) {
-				return StyleManager.DECIMAL_PLACES0.format(buildingStorage.get(nameList.get(row)));
+				return buildingStorage.get(nameList.get(row));
 			}
 			else {
-				return StyleManager.DECIMAL_PLACES0.format(settlementStorage.get(nameList.get(row)));
+				return settlementStorage.get(nameList.get(row));
 			}
 		}
 
@@ -127,33 +124,29 @@ public class BuildingPanelStorage extends BuildingFunctionPanel {
 		super(
 			Msg.getString("BuildingPanelStorage.tabTitle"), 
 			ImageLoader.getIconByName(STORE_ICON),
-			storage.getBuilding(), 
+			Msg.getString("BuildingPanelStorage.tabTitle"), 
 			desktop
 		);
 		
 		this.storage = storage;
 	}
 	
+	@Override
+	protected void setColumnDetails(TableColumnModel columnModel) {
+		var r = new NumberCellRenderer(0);
+		columnModel.getColumn(1).setCellRenderer(r);
+		columnModel.getColumn(2).setCellRenderer(r);
+
+		columnModel.getColumn(3).setCellRenderer(new NumberCellRenderer(0));
+	}
+
 	/**
 	 * Builds the UI.
 	 */
 	@Override
-	protected void buildUI(JPanel center) {
-
-		// Create scroll panel for storage table
-		JScrollPane scrollPanel = new JScrollPane();
-		scrollPanel.setPreferredSize(new Dimension(160, 120));
-		center.add(scrollPanel, BorderLayout.CENTER);
-	    scrollPanel.getViewport().setOpaque(false);
-	    scrollPanel.setOpaque(false);
+	protected TableModel createModel() {
 
 		// Prepare medical table model
-		StorageTableModel model = new StorageTableModel(storage);
-
-		// Prepare medical table
-		JTable storageTable = new JTable(model);
-		storageTable.setCellSelectionEnabled(false);
-		storageTable.setAutoCreateRowSorter(true);
-		scrollPanel.setViewportView(storageTable);
+		return new StorageTableModel(storage);
 	}
 }

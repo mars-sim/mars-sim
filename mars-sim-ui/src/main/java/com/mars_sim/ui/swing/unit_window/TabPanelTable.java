@@ -59,8 +59,8 @@ public abstract class TabPanelTable extends TabPanel {
 		}
 	}
 
-	private JScrollPane scrollPane;
 	private String[] headerTooltips;
+	private String tableTitle;
 	
 	/**
 	 * Constructor.
@@ -73,14 +73,6 @@ public abstract class TabPanelTable extends TabPanel {
 	protected TabPanelTable(String tabTitle, Icon tabIcon, String tabToolTip, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(tabTitle, tabIcon, tabToolTip, desktop);
-	}
-	
-	/**
-	 * Add some tooltips to the tabe header
-	 * @param tooltips
-	 */
-	protected void setHeaderToolTips(String [] tooltips) {
-		headerTooltips = tooltips;
 	}
 
 	/**
@@ -96,6 +88,26 @@ public abstract class TabPanelTable extends TabPanel {
 		super(tabTitle, tabIcon, tabToolTip, unit, desktop);
 	}
 
+		/**
+	 * Add some tooltips to the tabe header
+	 * @param tooltips
+	 */
+	protected void setHeaderToolTips(String [] tooltips) {
+		headerTooltips = tooltips;
+	}
+
+	/**
+	 * Add a title to the table
+	 * @param title
+	 */
+	protected void setTableTitle(String title) {
+		tableTitle = title;
+	}
+
+	/**
+	 * Called by Unit window framework, invoked subclass for the info panel and creates a table
+	 * itself.
+	 */
 	@Override
 	protected void buildUI(JPanel content) {
 		
@@ -106,7 +118,11 @@ public abstract class TabPanelTable extends TabPanel {
 		}
 
 		// Create scroll panel for the outer table panel.
-		scrollPane = new JScrollPane();
+		var scrollPane = new JScrollPane();
+		if (tableTitle != null) {
+			addBorder(scrollPane, tableTitle);
+		}
+
 		// increase vertical mousewheel scrolling speed for this one
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
