@@ -1,6 +1,6 @@
 # Only a packing stage. JAR must be available
 # Package stage
-FROM amazoncorretto:21
+FROM amazoncorretto:22
 WORKDIR /app
 
 # Copy the MVN generated JAR into a standard name in the image
