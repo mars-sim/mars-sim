@@ -57,6 +57,7 @@ public class TabPanelGroupActivity extends TabPanelTable {
 	 * 
 	 * @return Table model.
 	 */
+	@Override
 	protected TableModel createModel() {
 		tableModel = new TableModel(settlement);
 
@@ -91,14 +92,17 @@ public class TabPanelGroupActivity extends TabPanelTable {
 			}
 		}
 
+		@Override
 		public int getRowCount() {
 			return activities.size();
 		}
 
+		@Override
 		public int getColumnCount() {
 			return 4;
 		}
 		
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			if (columnIndex == 2) {
 				return MarsTime.class;
@@ -106,6 +110,7 @@ public class TabPanelGroupActivity extends TabPanelTable {
 			return String.class;
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
 			return switch(columnIndex) {
 				case 0 -> "Name";
@@ -116,6 +121,7 @@ public class TabPanelGroupActivity extends TabPanelTable {
 			};
 		}
 
+		@Override
 		public Object getValueAt(int row, int column) {
 			var ga = activities.get(row);
 			return switch(column) {

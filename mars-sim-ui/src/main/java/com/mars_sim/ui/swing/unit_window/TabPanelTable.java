@@ -14,6 +14,7 @@ import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -31,30 +32,28 @@ public abstract class TabPanelTable extends TabPanel {
 	
 	// implementation code to set a tooltip text to each column of JTableHeader
 	private static class ToolTipHeader extends JTableHeader {
-		String[] toolTips;
+		private String[] toolTips;
 		
-		public ToolTipHeader(TableColumnModel model) {
+		public ToolTipHeader(TableColumnModel model, String[] toolTips) {
 			super(model);
+			this.toolTips = toolTips;
 		}
 		
+		@Override
 		public String getToolTipText(MouseEvent e) {
+			String retStr = null;
 			int col = columnAtPoint(e.getPoint());
 			int modelCol = getTable().convertColumnIndexToModel(col);
-			String retStr;
-			try {
+			if (modelCol < toolTips.length) {
 				retStr = toolTips[modelCol];
-			} catch (NullPointerException ex) {
-				retStr = "";
-			} catch (ArrayIndexOutOfBoundsException ex) {
-				retStr = "";
 			}
-			if (retStr.length() < 1) {
+			if ((retStr == null) || (retStr.length() < 1)) {
 				retStr = super.getToolTipText(e);
 			}
 			return retStr;
 		}
 		
-		public void setToolTipStrings(String[] toolTips) {
+		public void setToolTipStrings() {
 			this.toolTips = toolTips;
 		}
 	}
@@ -125,7 +124,7 @@ public abstract class TabPanelTable extends TabPanel {
 
 		// increase vertical mousewheel scrolling speed for this one
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		content.add(scrollPane,BorderLayout.CENTER);
 		
 		// Prepare table model.
@@ -145,8 +144,7 @@ public abstract class TabPanelTable extends TabPanel {
 				
 		// Set up tooltips for the column headers
 		if (headerTooltips != null) {
-			ToolTipHeader tooltipHeader = new ToolTipHeader(tc);
-			tooltipHeader.setToolTipStrings(headerTooltips);
+			ToolTipHeader tooltipHeader = new ToolTipHeader(tc, headerTooltips);
 			table.setTableHeader(tooltipHeader);
 		}
 
