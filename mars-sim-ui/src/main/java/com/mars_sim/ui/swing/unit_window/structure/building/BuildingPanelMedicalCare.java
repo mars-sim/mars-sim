@@ -6,21 +6,20 @@
  */
 package com.mars_sim.ui.swing.unit_window.structure.building;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.structure.building.function.MedicalCare;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.UnitModel;
 
 
 /**
@@ -28,8 +27,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  * the medical info of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelMedicalCare
-extends BuildingFunctionPanel {
+public class BuildingPanelMedicalCare extends TabPanelTable {
 
 	private static final String MEDICAL_ICON = "medical";
 
@@ -56,7 +54,7 @@ extends BuildingFunctionPanel {
 		super(
 			Msg.getString("BuildingPanelMedicalCare.title"), 
 			ImageLoader.getIconByName(MEDICAL_ICON),
-			medical.getBuilding(), 
+			Msg.getString("BuildingPanelMedicalCare.title"), 
 			desktop
 		);
 
@@ -68,11 +66,10 @@ extends BuildingFunctionPanel {
 	 * Build the UI
 	 */
 	@Override
-	protected void buildUI(JPanel center) {
+	protected JPanel createInfoPanel() {
 
 		// Create label panel
 		AttributePanel labelPanel = new AttributePanel(2);
-		center.add(labelPanel, BorderLayout.NORTH);
 		
 		// Create sick bed label
 		labelPanel.addTextField(Msg.getString("BuildingPanelMedicalCare.numberOfsickBeds"),
@@ -82,21 +79,14 @@ extends BuildingFunctionPanel {
 		physicianCache = medical.getPhysicianNum();
 		physicianLabel = labelPanel.addTextField(Msg.getString("BuildingPanelMedicalCare.numberOfPhysicians"),
 									  Integer.toString(physicianCache), null);
+		return labelPanel;
+	}
 
-		// Create scroll panel for medical table
-		JScrollPane scrollPanel = new JScrollPane();
-		scrollPanel.setPreferredSize(new Dimension(160, 80));
-		center.add(scrollPanel, BorderLayout.CENTER);
-	    scrollPanel.getViewport().setOpaque(false);
-	    scrollPanel.setOpaque(false);
-
+	@Override
+	protected TableModel createModel() {
 		// Prepare medical table model
 		medicalTableModel = new MedicalTableModel(medical);
-
-		// Prepare medical table
-		JTable medicalTable = new JTable(medicalTableModel);
-		medicalTable.setCellSelectionEnabled(false);
-		scrollPanel.setViewportView(medicalTable);
+		return medicalTableModel;
 	}
 
 	/**
@@ -118,7 +108,8 @@ extends BuildingFunctionPanel {
 	/**
 	 * Internal class used as model for the medical table.
 	 */
-	private static class MedicalTableModel extends AbstractTableModel {
+	private static class MedicalTableModel extends AbstractTableModel
+				implements UnitModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -166,6 +157,12 @@ extends BuildingFunctionPanel {
 				healthProblems = medical.getProblemsBeingTreated();
 
 			fireTableDataChanged();
+		}
+
+		@Override
+		public Unit getAssociatedUnit(int row) {
+			HealthProblem problem = (HealthProblem) healthProblems.get(row);
+			return problem.getSufferer();
 		}
 	}
 }

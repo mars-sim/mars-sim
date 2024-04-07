@@ -45,9 +45,7 @@ public class SettlementUnitWindow extends UnitWindow {
 	private static final String SPONSOR = "sponsor";
 	private static final String TEMPLATE = "template";
 
-	private static final String ONE_SPACE = " ";
-	private static final String TWO_SPACES = "  ";
-	private static final String SIX_SPACES = "      ";
+	private static final String X_OF_Y = "%d / %d";
 	
 	private JLabel popLabel;
 	private JLabel vehLabel;
@@ -91,9 +89,8 @@ public class SettlementUnitWindow extends UnitWindow {
 
 		// Create name label
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-		String name = SIX_SPACES + unit.getShortenedName() + SIX_SPACES;
 
-		JLabel nameLabel = new JLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
+		JLabel nameLabel = new JLabel(unit.getShortenedName() , displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
 		nameLabel.setMinimumSize(new Dimension(120, UnitWindow.STATUS_HEIGHT));
 		
 		JPanel namePane = new JPanel(new BorderLayout(0, 0));
@@ -128,10 +125,10 @@ public class SettlementUnitWindow extends UnitWindow {
 		vehIconLabel.setToolTipText("# of vehicles : (in settlement / total)");
 		setImage(VEHICLE, vehIconLabel);
 
-		JPanel countryPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		JPanel popPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		JPanel templatePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		JPanel vehPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		JPanel countryPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		JPanel popPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		JPanel templatePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		JPanel vehPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
 		countryLabel = new JLabel();
 		countryLabel.setFont(font);
@@ -178,8 +175,8 @@ public class SettlementUnitWindow extends UnitWindow {
 		if (list.size() == 1)
 			countryName = settlement.getReportingAuthority().getCountries().get(0);
 		
-		countryLabel.setText(TWO_SPACES + countryName + SIX_SPACES);
-		templateLabel.setText(TWO_SPACES + settlement.getTemplate() + SIX_SPACES);
+		countryLabel.setText(countryName);
+		templateLabel.setText(settlement.getTemplate());
 		
 	}
 	
@@ -201,6 +198,7 @@ public class SettlementUnitWindow extends UnitWindow {
 		addTabPanel(new TabPanelCredit(settlement, desktop));
 
 		addTabPanel(new TabPanelFoodProduction(settlement, desktop));
+		addTabPanel(new TabPanelGroupActivity(settlement, desktop));
 
 		addTabPanel(new TabPanelGoods(settlement, desktop));
 
@@ -262,10 +260,10 @@ public class SettlementUnitWindow extends UnitWindow {
 	 * Updates the status of the settlement
 	 */
 	public void statusUpdate() {
-		popLabel.setText(TWO_SPACES + settlement.getIndoorPeopleCount() 
-				+ ONE_SPACE + "/" + ONE_SPACE + settlement.getNumCitizens());
-		vehLabel.setText(TWO_SPACES + settlement.getNumParkedVehicles() 
-				+ ONE_SPACE + "/" + ONE_SPACE + settlement.getOwnedVehicleNum());
+		popLabel.setText(String.format(X_OF_Y, settlement.getIndoorPeopleCount(),
+										settlement.getNumCitizens()));
+		vehLabel.setText(String.format(X_OF_Y, settlement.getNumParkedVehicles(),
+										settlement.getOwnedVehicleNum()));
 	}
 	
 	/**

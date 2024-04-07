@@ -6,15 +6,10 @@
  */
 package com.mars_sim.ui.swing.unit_window.structure;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.util.List;
 
-import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -28,17 +23,15 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.UnitModel;
-import com.mars_sim.ui.swing.utils.UnitTableLauncher;
 
 /**
  * This is a tab panel for settlement's computing capability.
  */
 @SuppressWarnings("serial")
-public class TabPanelComputing
-extends TabPanel {
+public class TabPanelComputing extends TabPanelTable {
 
 	// default logger.
 
@@ -52,17 +45,10 @@ extends TabPanel {
 	
 	/** The Settlement instance. */
 	private Settlement settlement;
-
-	/** Table model for heat info. */
-	private TableModel tableModel;
-	
-	private JTable table;
-			
-	private JScrollPane scrollPane;
 	
 	private BuildingManager manager;
 
-	private List<Building> buildings;
+	private TableModel tableModel;
 	
 	/**
 	 * Constructor.
@@ -79,22 +65,13 @@ extends TabPanel {
 			desktop
 		);
 		settlement = unit;
+		manager = settlement.getBuildingManager();
 	}
 	
 	@Override
-	protected void buildUI(JPanel content) {
-		
-		manager = settlement.getBuildingManager();
-
-		buildings = manager.getComputingBuildings();
-
-		JPanel topContentPanel = new JPanel();
-		topContentPanel.setLayout(new BoxLayout(topContentPanel, BoxLayout.Y_AXIS));
-		content.add(topContentPanel, BorderLayout.NORTH);
-		
+	protected JPanel createInfoPanel() {
 		// Prepare heat info panel.
 		AttributePanel springPanel = new AttributePanel(4);
-		content.add(springPanel, BorderLayout.NORTH);
 
 		// Total Power Demand
 		double powerDemand = manager.getTotalComputingPowerDemand();
@@ -121,23 +98,26 @@ extends TabPanel {
 		entropyLabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.entropy"),
 	 			Math.round(entropy * 1_000.0)/1_000.0 + "", Msg.getString("BuildingPanelComputation.entropy.tooltip"));	
 		
-		// Create scroll panel for the outer table panel.
-		scrollPane = new JScrollPane();
-		// increase vertical mousewheel scrolling speed for this one
-		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		content.add(scrollPane,BorderLayout.CENTER);
-		
-		// Prepare table model.
+		return springPanel;
+	}
+	
+	/**
+	 * Create a table model that shows the comuting details of the Buildings
+	 * in the settlement.
+	 * 
+	 * @return Table model.
+	 */
+	protected TableModel createModel() {
 		tableModel = new TableModel(settlement);
-		
-		// Prepare table.
-		table = new JTable(tableModel);
-		// Call up the building window when clicking on a row on the table
-		table.addMouseListener(new UnitTableLauncher(getDesktop()));
-		
-		table.setRowSelectionAllowed(true);
-		TableColumnModel columns = table.getColumnModel();
+
+		return tableModel;
+	}
+
+	/**
+	 * Set some coumn widths and renderers
+	 */
+	@Override
+	protected void setColumnDetails(TableColumnModel columns) {
 		columns.getColumn(0).setPreferredWidth(120);
 		columns.getColumn(1).setPreferredWidth(30);
 		columns.getColumn(2).setPreferredWidth(30);
@@ -146,19 +126,9 @@ extends TabPanel {
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
-//		heatColumns.getColumn(1).setCellRenderer(renderer);
 		columns.getColumn(2).setCellRenderer(renderer);
 		columns.getColumn(3).setCellRenderer(renderer);
 		columns.getColumn(4).setCellRenderer(renderer);
-		
-		// Resizable automatically when its Panel resizes
-		table.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-
-		// Add sorting
-		table.setAutoCreateRowSorter(true);
-
-		scrollPane.setViewportView(table);
 	}
 
 	/**
@@ -193,7 +163,6 @@ extends TabPanel {
 		if (!entropyLabel.getText().equalsIgnoreCase(entropy))
 			entropyLabel.setText(entropy);
 		
-		
 		// Update  table.
 		tableModel.update();
 	}
@@ -207,7 +176,10 @@ extends TabPanel {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
+		private List<Building> buildings;
+
 		private TableModel(Settlement settlement) {
+			buildings = manager.getComputingBuildings();
 		}
 
 		public int getRowCount() {
@@ -266,8 +238,6 @@ extends TabPanel {
 		}
 
 		public void update() {
-			scrollPane.validate();
-
 			fireTableDataChanged();
 		}
 

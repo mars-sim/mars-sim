@@ -6,19 +6,16 @@
  */
 package com.mars_sim.ui.swing.unit_window.structure;
 
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Simulation;
@@ -35,20 +32,16 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 import com.mars_sim.ui.swing.utils.UnitModel;
-import com.mars_sim.ui.swing.utils.UnitTableLauncher;
 
 @SuppressWarnings("serial")
-public class TabPanelCredit
-extends TabPanel {
+public class TabPanelCredit extends TabPanelTable {
 	
 	private static final String CREDIT_ICON = "credit";
 
 	/** The Settlement instance. */
 	private Settlement settlement;
-
-	private JTable creditTable;
 
 	private CreditTableModel creditTableModel;
 
@@ -71,43 +64,27 @@ extends TabPanel {
 	}
 
 	@Override
-	protected void buildUI(JPanel content) {
-
-		// Create scroll panel for the outer table panel.
-		JScrollPane creditScrollPanel = new JScrollPane();
-		creditScrollPanel.setPreferredSize(new Dimension(280, 280));
-		content.add(creditScrollPanel);
-
+	protected TableModel createModel() {
 		// Prepare credit table model.
 		creditTableModel = new CreditTableModel(settlement);
+		return creditTableModel;
+	}
 
-		// Prepare credit table.
-		creditTable = new JTable(creditTableModel);
-		creditScrollPanel.setViewportView(creditTable);
-		creditTable.setRowSelectionAllowed(true);
-		creditTable.addMouseListener(new UnitTableLauncher(getDesktop()));
+	@Override
+	protected void setColumnDetails(TableColumnModel columnModel) {
 
-		creditTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
-		TableColumnModel columnModel = creditTable.getColumnModel();
 		columnModel.getColumn(0).setPreferredWidth(100);
 		columnModel.getColumn(1).setPreferredWidth(120);
 		columnModel.getColumn(2).setPreferredWidth(50);
 
-		// Resizable automatically when its Panel resizes
-		creditTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-
-		// Add sorting
-		creditTable.setAutoCreateRowSorter(true);
 
 		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
 		columnModel.getColumn(0).setCellRenderer(renderer);
 		columnModel.getColumn(2).setCellRenderer(renderer);
-
-		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-		centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-		columnModel.getColumn(1).setCellRenderer(centerRenderer);
+		columnModel.getColumn(1).setCellRenderer(
+						new NumberCellRenderer(2, true));
 	}
 
 	/**

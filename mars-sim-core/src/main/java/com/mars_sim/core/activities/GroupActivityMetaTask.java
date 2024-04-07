@@ -60,11 +60,7 @@ public class GroupActivityMetaTask extends MetaTask implements SettlementMetaTas
      */
     @Override
     public List<SettlementTask> getSettlementTasks(Settlement settlement) {
-       var active = settlement.getFutureManager().getEvents().stream()
-                .filter(e -> e.getHandler() instanceof GroupActivity)
-                .map(e -> (GroupActivity)e.getHandler())
-                .filter(GroupActivity::isActive)
-                .toList();
+        var active = settlement.getGroupActivities(true);
         
          List<SettlementTask> results = new ArrayList<>();
          for(var a : active) {

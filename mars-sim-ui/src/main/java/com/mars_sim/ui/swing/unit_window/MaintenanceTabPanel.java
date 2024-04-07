@@ -8,20 +8,17 @@ package com.mars_sim.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.malfunction.MalfunctionManager;
@@ -41,12 +38,12 @@ import com.mars_sim.ui.swing.utils.PercentageCellRenderer;
  * The MaintenanceTabPanel is a tab panel for maintenance information.
  */
 @SuppressWarnings("serial")
-public class MaintenanceTabPanel extends TabPanel {
+public class MaintenanceTabPanel extends TabPanelTable {
     private static final String SPANNER_ICON = "maintenance";
 	private static final String REPAIR_PARTS_NEEDED = "Parts Needed: ";
 	private static final String AGO = " ago";
 
-	protected String[] columnToolTips = {
+	private static final String[] COLUMN_TOOL_TIPS = {
 		    "The Part name", 
 		    "The System Function",
 		    "The # of Parts",
@@ -88,17 +85,24 @@ public class MaintenanceTabPanel extends TabPanel {
 		manager = malfunctionable.getMalfunctionManager();
 
         tableModel = new PartTableModel(manager);
+
+		setHeaderToolTips(COLUMN_TOOL_TIPS);
+		setTableTitle(Msg.getString("MaintenanceTabPanel.tableBorder"));
 	}
-	
+
+	@Override
+	protected TableModel createModel() {
+		return tableModel;
+	}
+
 	/**
 	 * Builds the UI.
 	 */
 	@Override
-	protected void buildUI(JPanel center) {
+	protected JPanel createInfoPanel() {
 	
 		JPanel topPanel = new JPanel(new BorderLayout());
-		center.add(topPanel, BorderLayout.NORTH);
-		
+
 		AttributePanel labelPanel = new AttributePanel(6, 1);
 		topPanel.add(labelPanel, BorderLayout.NORTH);
 		
@@ -122,7 +126,6 @@ public class MaintenanceTabPanel extends TabPanel {
 		currentInspection.setToolTipText(Msg.getString("MaintenanceTabPanel.current.toolTip"));
 		labelPanel.addLabelledItem(Msg.getString("MaintenanceTabPanel.currentInspection"), currentInspection);
 
-		
 		partsLabel = labelPanel.addTextField(Msg.getString("MaintenanceTabPanel.partsNeeded"), "", null);
 		
 		topPanel.add(new JPanel(), BorderLayout.CENTER);
@@ -133,32 +136,13 @@ public class MaintenanceTabPanel extends TabPanel {
 		malPLabel = dataPanel.addTextField(Msg.getString("MaintenanceTabPanel.malfunctionProbaility"), "", null);	
 		maintPLabel = dataPanel.addTextField(Msg.getString("MaintenanceTabPanel.maintenanceProbaility"), "", null);
 		
-		
-		// Create the parts panel
-		JScrollPane partsPane = new JScrollPane();
-		partsPane.setPreferredSize(new Dimension(160, 80));
-		center.add(partsPane, BorderLayout.CENTER);
-		addBorder(partsPane, Msg.getString("MaintenanceTabPanel.tableBorder"));
+		return topPanel;
+	}
 
-		// Create the parts table
-		JTable table = new JTable(tableModel){
-		    //Implement table header tool tips.
-		    protected JTableHeader createDefaultTableHeader() {
-		        return new JTableHeader(columnModel) {
-		            public String getToolTipText(MouseEvent e) {
-		                java.awt.Point p = e.getPoint();
-		                int index = columnModel.getColumnIndexAtX(p.x);
-		                int realIndex = 
-		                        columnModel.getColumn(index).getModelIndex();
-		                return columnToolTips[realIndex];
-		            }
-		        };
-		    }
-		};
-		table.setRowSelectionAllowed(true);
-		partsPane.setViewportView(table);
 
-		TableColumnModel columnModel = table.getColumnModel();
+	@Override
+	protected void setColumnDetails(TableColumnModel columnModel) {
+
         columnModel.getColumn(0).setPreferredWidth(140);
         columnModel.getColumn(1).setPreferredWidth(140);
 		columnModel.getColumn(2).setPreferredWidth(25);
@@ -166,12 +150,6 @@ public class MaintenanceTabPanel extends TabPanel {
 		
 		// Add percentage format
 		columnModel.getColumn(3).setCellRenderer(new PercentageCellRenderer(false));
-
-		// Add sorting
-		table.setAutoCreateRowSorter(true);
-
-        // Set up values
-        update();
 	}
 
 	/**
@@ -208,7 +186,7 @@ public class MaintenanceTabPanel extends TabPanel {
 		if (parts != null)
 			size = parts.size();
 		else
-			parts = new HashMap<>();
+			parts = Collections.emptyMap();
 		
 		// Update parts label.
 		partsLabel.setText(Integer.toString(size));

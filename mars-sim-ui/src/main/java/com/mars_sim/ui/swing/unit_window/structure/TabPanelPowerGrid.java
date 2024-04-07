@@ -7,11 +7,9 @@
 package com.mars_sim.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,13 +19,11 @@ import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.structure.PowerGrid;
@@ -43,23 +39,22 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.UnitModel;
-import com.mars_sim.ui.swing.utils.UnitTableLauncher;
 
 
 /**
  * This is a tab panel for a settlement's power grid information.
  */
 @SuppressWarnings("serial")
-public class TabPanelPowerGrid extends TabPanel {
+public class TabPanelPowerGrid extends TabPanelTable {
 
 	private static final String POWER_ICON = "power";
 	
 	private static final String PERCENT_PER_SOL = " % per sol";
 	private static final String PERCENT = " %";
-	private static final String[] toolTips = {"Power Status", "Building Name",
+	private static final String[] TOOLTIPS = {"Power Status", "Building Name",
 			"kW Power Generated","kWh Energy Stored in Battery"};
 	
 	// Data Members
@@ -85,14 +80,10 @@ public class TabPanelPowerGrid extends TabPanel {
 	
 	/** The Settlement instance. */
 	private Settlement settlement;
-	
-	private JTable powerTable;
 
 	private JLabel solarCellEfficiencyTF;
 	private JLabel percentPowerLabel;
 	private JLabel percentEnergyLabel;
-	
-	private JScrollPane powerScrollPane;
 
 	private JRadioButton r0;
 	private JRadioButton r1;
@@ -125,17 +116,18 @@ public class TabPanelPowerGrid extends TabPanel {
 			desktop
 		);
 		settlement = unit;
+
+		setHeaderToolTips(TOOLTIPS);
 	}
 	
 	@Override
-	protected void buildUI(JPanel content) {
+	protected JPanel createInfoPanel() {
 		powerGrid = settlement.getPowerGrid();
 		manager = settlement.getBuildingManager();
 		buildings = manager.getBuildingsF1NoF2F3(
 				FunctionType.POWER_GENERATION, FunctionType.LIFE_SUPPORT, FunctionType.RESOURCE_PROCESSING);
 
 		JPanel topContentPanel = new JPanel(new BorderLayout());
-		content.add(topContentPanel, BorderLayout.NORTH);
 
 		// Prepare spring layout power info panel.
 		AttributePanel powerInfoPanel = new AttributePanel(4);
@@ -207,25 +199,19 @@ public class TabPanelPowerGrid extends TabPanel {
 		r2.addActionListener(actionListener);
 		r3.addActionListener(actionListener);
 		
+		return topContentPanel;
+	}
 
-		// Create scroll panel for the outer table panel.
-		powerScrollPane = new JScrollPane();
-		// powerScrollPane.setPreferredSize(new Dimension(257, 230));
-		// increase vertical mousewheel scrolling speed for this one
-		powerScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		powerScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		content.add(powerScrollPane, BorderLayout.CENTER);
-
+	@Override
+	protected TableModel createModel() {
 		// Prepare power table model.
 		powerTableModel = new PowerTableModel(settlement);
+		return powerTableModel;
+	}
 
-		// Prepare power table.
-		powerTable = new JTable(powerTableModel);
-		// Call up the building window when clicking on a row on the table
-		powerTable.addMouseListener(new UnitTableLauncher(getDesktop()));
+	@Override
+	protected void setColumnDetails(TableColumnModel powerColumns) {
 
-		powerTable.setRowSelectionAllowed(true);
-		TableColumnModel powerColumns = powerTable.getColumnModel();
 		powerColumns.getColumn(0).setPreferredWidth(10);
 		powerColumns.getColumn(1).setPreferredWidth(100);
 		powerColumns.getColumn(2).setPreferredWidth(50);
@@ -234,22 +220,9 @@ public class TabPanelPowerGrid extends TabPanel {
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
-//		powerColumns.getColumn(1).setCellRenderer(renderer);
 		powerColumns.getColumn(2).setCellRenderer(renderer);
 		powerColumns.getColumn(3).setCellRenderer(renderer);
 		powerColumns.getColumn(4).setCellRenderer(renderer);
-		
-		// Set up tooltips for the column headers
-		ToolTipHeader tooltipHeader = new ToolTipHeader(powerTable.getColumnModel());
-	    tooltipHeader.setToolTipStrings(toolTips);
-	    powerTable.setTableHeader(tooltipHeader);
-			
-		// Resizable automatically when its Panel resizes
-		powerTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		// powerTable.setAutoResizeMode(WebTable.AUTO_RESIZE_ALL_COLUMNS);
-		powerTable.setAutoCreateRowSorter(true);
-
-		powerScrollPane.setViewportView(powerTable);
 	}
 
 
@@ -485,7 +458,6 @@ public class TabPanelPowerGrid extends TabPanel {
 			List<Building> tempBuildings = getBuildings();
 			if (!tempBuildings.equals(buildings)) {
 				buildings = tempBuildings;
-				powerScrollPane.validate();
 			}
 
 			fireTableDataChanged();
@@ -504,9 +476,7 @@ public class TabPanelPowerGrid extends TabPanel {
 	public void destroy() {
 		super.destroy();
 		
-		powerTable = null;
 		solarCellEfficiencyTF = null;
-		powerScrollPane = null;
 
 		r0 = null;
 		r1 = null;
@@ -518,36 +488,6 @@ public class TabPanelPowerGrid extends TabPanel {
 		manager = null;
 		powerSources = null;
 		buildings = null;
-	}
-	
-	// implementation code to set a tooltip text to each column of JTableHeader
-	class ToolTipHeader extends JTableHeader {
-		String[] toolTips;
-		
-		public ToolTipHeader(TableColumnModel model) {
-			super(model);
-		}
-		
-		public String getToolTipText(MouseEvent e) {
-			int col = columnAtPoint(e.getPoint());
-			int modelCol = getTable().convertColumnIndexToModel(col);
-			String retStr;
-			try {
-				retStr = toolTips[modelCol];
-			} catch (NullPointerException ex) {
-				retStr = "";
-			} catch (ArrayIndexOutOfBoundsException ex) {
-				retStr = "";
-			}
-			if (retStr.length() < 1) {
-				retStr = super.getToolTipText(e);
-			}
-			return retStr;
-		}
-		
-		public void setToolTipStrings(String[] toolTips) {
-			this.toolTips = toolTips;
-		}
 	}
 }
 

@@ -8,7 +8,6 @@ package com.mars_sim.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +17,10 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.parameter.ParameterCategory;
@@ -39,9 +37,9 @@ import com.mars_sim.core.structure.SettlementParameters;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 
-public class TabPanelPreferences extends TabPanel {
+public class TabPanelPreferences extends TabPanelTable {
 
 	/**
 	 * Represents a renderable version for a Parameter Key with a displayable label.
@@ -79,7 +77,7 @@ public class TabPanelPreferences extends TabPanel {
 	 * @param unit {@link Unit} the unit to display.
 	 * @param desktop {@link MainDesktopPane} the main desktop.
 	 */
-	public TabPanelPreferences(Unit unit, MainDesktopPane desktop) {
+	public TabPanelPreferences(Settlement unit, MainDesktopPane desktop) {
 		// Use TabPanel constructor.
 		super(
 			null,
@@ -87,39 +85,16 @@ public class TabPanelPreferences extends TabPanel {
 			"Preferences", //$NON-NLS-1$
 			unit, desktop
 		);
+		mgr = unit.getPreferences();
+
 	}
 	
+	/**
+	 * Info panel contains the controls to add/modifiy preferences
+	 */
 	@Override
-	protected void buildUI(JPanel content) {
-
+	protected JPanel createInfoPanel() {
 		JPanel topPanel = new JPanel(new BorderLayout());
-		content.add(topPanel);
-
- 		// Create scroll panel for the outer table panel.
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setPreferredSize(new Dimension(250, 250));
-		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		topPanel.add(scrollPane, BorderLayout.CENTER);
-
-		// Prepare goods table model.
-		mgr = ((Settlement) getUnit()).getPreferences();
-		tableModel = new PreferenceTableModel(mgr);
-
-		// Prepare goods table.
-		JTable table = new JTable(tableModel);
-		scrollPane.setViewportView(table);
-		
-		// Override default cell renderer for formatting double values.
-		TableColumnModel cModel = table.getColumnModel();
-		cModel.getColumn(0).setPreferredWidth(30);
-		cModel.getColumn(2).setPreferredWidth(20);
-
-		// Add the two methods below to make all columns
-		// Resizable automatically when its Panel resizes
-		table.setPreferredScrollableViewportSize(new Dimension(225, -1));
-
-		// Add sorting
-		table.setAutoCreateRowSorter(true);
 
 		// Create editor control
 		JPanel newPanel = new JPanel();
@@ -145,6 +120,25 @@ public class TabPanelPreferences extends TabPanel {
 
 		// Load up combo
 		populateNameCombo();
+
+		return topPanel;
+	}
+
+	@Override
+	protected TableModel createModel() {
+		// Prepare goods table model.
+		tableModel = new PreferenceTableModel(mgr);
+		return tableModel;
+	}
+	
+	/**
+	 * Set the width of the preference columns
+	 */
+	@Override
+	protected void setColumnDetails(TableColumnModel cModel) {
+		// Override default cell renderer for formatting double values.
+		cModel.getColumn(0).setPreferredWidth(30);
+		cModel.getColumn(2).setPreferredWidth(20);
 	}
 
 	/**

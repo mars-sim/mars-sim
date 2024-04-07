@@ -3800,4 +3800,16 @@ public class Settlement extends Structure implements Temporal,
 		
 		scientificAchievement = null;
 	}
+
+	/**
+	 * Get the GroupActivity instanes associated with a Settlement
+	 * @param justActive Filter to only return active meetings
+	 */
+    public List<GroupActivity> getGroupActivities(boolean justActive) {
+       return getFutureManager().getEvents().stream()
+                .filter(e -> e.getHandler() instanceof GroupActivity)
+                .map(e -> (GroupActivity)e.getHandler())
+                .filter(e -> (!justActive || e.isActive()))
+                .toList();
+    }
 }

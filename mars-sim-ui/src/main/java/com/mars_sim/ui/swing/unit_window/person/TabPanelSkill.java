@@ -6,13 +6,11 @@
  */
 package com.mars_sim.ui.swing.unit_window.person;
 
-import java.awt.Dimension;
 import java.util.List;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.person.ai.Skill;
@@ -22,18 +20,16 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 
 /**
  * The SkillTabPanel is a tab panel for the skills of a person or robot.
  */
 @SuppressWarnings("serial")
-public class TabPanelSkill
-extends TabPanel {
+public class TabPanelSkill extends TabPanelTable {
 
 	private static final String SKILL_ICON = "skill"; //$NON-NLS-1$
 	
-	private JTable skillTable ;
 	private SkillTableModel skillTableModel;
 
 	/**
@@ -56,27 +52,22 @@ extends TabPanel {
 	}
 
 	@Override
-	protected void buildUI(JPanel content) {
+	protected TableModel createModel() {
+		return skillTableModel;
+	}
 
-		// Create skill scroll panel
-		JScrollPane skillScrollPanel = new JScrollPane();
-		content.add(skillScrollPanel);
+	@Override
+	protected void setColumnDetails(TableColumnModel columnModel) {
+		columnModel.getColumn(0).setPreferredWidth(110);
+		columnModel.getColumn(1).setPreferredWidth(50);
+		columnModel.getColumn(2).setPreferredWidth(60);
+		columnModel.getColumn(3).setPreferredWidth(100);
 
-		// Create skill table
-		skillTable = new JTable(skillTableModel);
-		skillTable.setPreferredScrollableViewportSize(new Dimension(250, 100));
-		skillTable.getColumnModel().getColumn(0).setPreferredWidth(110);
-		skillTable.getColumnModel().getColumn(1).setPreferredWidth(50);
-		skillTable.getColumnModel().getColumn(2).setPreferredWidth(60);
-		skillTable.getColumnModel().getColumn(3).setPreferredWidth(100);
-		skillTable.setRowSelectionAllowed(true);
-		skillTable.setDefaultRenderer(Integer.class, new NumberCellRenderer(0));
-		skillTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
-		
-		skillScrollPanel.setViewportView(skillTable);
+		columnModel.getColumn(1).setCellRenderer(new NumberCellRenderer(0));
 
-		// Added sorting
-		skillTable.setAutoCreateRowSorter(true);
+		var r = new NumberCellRenderer(2);
+		columnModel.getColumn(2).setCellRenderer(r);
+		columnModel.getColumn(3).setCellRenderer(r);
 	}
 
 	/**
@@ -84,9 +75,7 @@ extends TabPanel {
 	 */
 	@Override
 	public void update() {		
-		if (skillTable != null) {
-			skillTableModel.update();
-		}
+		skillTableModel.update();
 	}
 
 	/**
