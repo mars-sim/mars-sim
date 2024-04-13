@@ -71,9 +71,6 @@ public class BotMind implements Serializable, Temporal {
 		// 		 and the entire cycle, is repeated.
 		//
 		// Reference : https://en.wikipedia.org/wiki/Sense_Plan_Act
-
-//		// Create CoreMind
-//		coreMind = new CoreMind();
 		
 		// Construct a task manager
 		botTaskManager = new BotTaskManager(this);
@@ -87,10 +84,8 @@ public class BotMind implements Serializable, Temporal {
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		if (botTaskManager != null) {
-			// Decides what tasks to inject time
-			if (pulse.getElapsed() > 0)
-				moderateTime(pulse.getElapsed());
+		if ((botTaskManager != null) && (pulse.getElapsed() > 0)) {
+			moderateTime(pulse.getElapsed());
 		}
 
 		return true;
@@ -103,8 +98,6 @@ public class BotMind implements Serializable, Temporal {
 	 * @throws Exception if error during action.
 	 */
 	private void moderateTime(double time) {
-//		// Call takeAction to perform a task and consume the pulse time.
-//		takeAction(time);
 		double remainingTime = time;
 		double deltaTime = Task.getStandardPulseTime();
 		while (remainingTime > 0 && deltaTime > 0) {
@@ -138,18 +131,13 @@ public class BotMind implements Serializable, Temporal {
 				task = "None";
 			logger.log(robot, Level.WARNING, 30_000L, "Battery almost depleted and must be recharged."
 					+ " Current task: " + task + ".");
-//			botTaskManager.endCurrentTask();
-//			return;
 		}
 			
 		if (botTaskManager.hasActiveTask()) {			
 			// Call executeTask
-			double remainingTime = botTaskManager.executeTask(pulseTime, robot.getPerformanceRating());
+			double remainingTime = botTaskManager.executeTask(pulseTime);
 			
 			if (remainingTime == pulseTime) {
-				// Reduce the time by standardPulseTime
-				remainingTime = pulseTime - Task.standardPulseTime;
-				
 				// Do not call takeAction
 				return;
 			}
@@ -188,7 +176,6 @@ public class BotMind implements Serializable, Temporal {
 		}
 		
 		if (!hasTask) { 
-			// Note: may use if (robot.getRobotType() == RobotType.DELIVERYBOT) for testing
 			// don't have an active mission
 			botTaskManager.startNewTask();
 		}
@@ -280,10 +267,6 @@ public class BotMind implements Serializable, Temporal {
 	 * @return true for active mission
 	 */
 	public boolean hasAMission() {
-        //			// has a mission but need to determine if this mission is active or not
-        //			if (mission.isApproved()
-        //				|| (mission.getPlan() != null
-        //					&& mission.getPlan().getStatus() != PlanType.NOT_APPROVED))
         return mission != null;
     }
 	

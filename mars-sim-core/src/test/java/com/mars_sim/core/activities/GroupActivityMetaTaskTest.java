@@ -14,7 +14,7 @@ import com.mars_sim.mapdata.location.LocalPosition;
 public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
 
     private final static GroupActivityInfo ONE = new GroupActivityInfo("One", 800, 0, 10, 50, 0, 1D, 100,
-                        TaskScope.NONWORK_HOUR, BuildingCategory.LIVING);
+                        TaskScope.NONWORK_HOUR, BuildingCategory.LIVING, GroupActivityInfo.DEFAULT_IMPACT);
 
     public void testGetSettlementTasks() {
         var s = buildSettlement();

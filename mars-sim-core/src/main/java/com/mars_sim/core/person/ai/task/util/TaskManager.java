@@ -44,7 +44,7 @@ public abstract class TaskManager implements Serializable {
 	/**The worker **/
 	protected transient Unit worker;
 	/** The current task the worker is doing. */
-	protected Task currentTask;
+	private Task currentTask;
 	private RatingScore currentScore;
 
 	/** The last task the person was doing. */
@@ -242,7 +242,7 @@ public abstract class TaskManager implements Serializable {
 		
 		Task subTask1 = currentTask.getSubTask();
 		
-		if (currentTask != null && subTask1 != null) {
+		if (subTask1 != null) {
 			
 			Task subTask2 = subTask1.getSubTask();
 			
@@ -487,6 +487,23 @@ public abstract class TaskManager implements Serializable {
 	protected abstract String getDiagnosticsModule();
 
 	/**
+	 * Performs the current task for a given amount of time.
+	 *
+	 * @param time       amount of time to perform the action
+	 * @return remaining time.
+	 */
+	public double executeTask(double time) {
+		double remainingTime = 0D;
+		
+		if (currentTask != null) {
+			remainingTime = currentTask.performTask(time);
+		}
+
+		return remainingTime;
+
+	}
+
+	/**
 	 * Checks to see if it's okay to replace a task.
 	 * 
 	 * @param newTask the task to be executed
@@ -621,10 +638,6 @@ public abstract class TaskManager implements Serializable {
 		// Add it
 		if (addTask) {
 			addTask = pendingTasks.add(new PendingTask(master.getMarsTime(), task));
-//			if (addTask) 
-//				logger.info(worker, 20_000L, "Successfully added pending task '" + task.getName() + "'.");
-//			else
-//				logger.info(worker, 20_000L, "Failed to add pending task '" + task.getName() + "'.");
 		}
 		return addTask;
 	}
@@ -650,10 +663,7 @@ public abstract class TaskManager implements Serializable {
 	 * @return
 	 */
 	public boolean hasSameTask(String task) {
-		if (getTaskName().equalsIgnoreCase(task))
-			return true;
-		
-		return false;
+		return getTaskName().equalsIgnoreCase(task);
 	}
 	
 	/**

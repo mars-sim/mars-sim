@@ -6,8 +6,6 @@
  */
 package com.mars_sim.core.person.ai.task;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -100,7 +98,6 @@ public class ToggleFuelPowerSource extends EVAOperation {
         }
 
         isInhabitable = !building.hasFunction(FunctionType.LIFE_SUPPORT);
-
         // If habitable building, send person there.
         if (!isInhabitable) {
             
@@ -120,6 +117,8 @@ public class ToggleFuelPowerSource extends EVAOperation {
         }
 
         else {
+            addAdditionSkill(SkillType.EVA_OPERATIONS);
+
             // Looks for management function for toggling power source.
             checkManagement();
         }
@@ -239,15 +238,6 @@ public class ToggleFuelPowerSource extends EVAOperation {
         }
     }
 
-    @Override
-    public List<SkillType> getAssociatedSkills() {
-        List<SkillType> result = new ArrayList<>(2);
-        result.add(SkillType.MECHANICS);
-        if (isInhabitable) {
-            result.add(SkillType.EVA_OPERATIONS);
-        }
-        return result;
-    }
 
     @Override
     public int getEffectiveSkillLevel() {

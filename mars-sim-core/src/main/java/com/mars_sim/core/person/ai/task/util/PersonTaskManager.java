@@ -72,67 +72,6 @@ public class PersonTaskManager extends TaskManager {
 	}
 
 	/**
-	 * Reduces the person's caloric energy over time.
-	 *
-	 * @param time the passing time (
-	 */
-	private void reduceEnergy(double time) {
-		person.getPhysicalCondition().reduceEnergy(time);
-	}
-
-	/**
-	 * Performs the current task for a given amount of time.
-	 *
-	 * @param time       amount of time to perform the action
-	 * @param efficiency The performance rating of person performance task.
-	 * @return remaining time.
-	 * @throws Exception if error in performing task.
-	 */
-	public double executeTask(double time, double efficiency) {
-		double remainingTime = 0D;
-		
-		if (currentTask != null) {
-			
-			boolean effort = currentTask.isEffortDriven();
-
-			try {
-				remainingTime = currentTask.performTask(time);
-
-			} catch (Exception e) {
-				logger.severe(person, "Trouble calling performTask(): ", e);
-				return remainingTime;
-			}
-
-			if (effort) {
-				
-				if (efficiency <= 0D)
-					efficiency = 0D;
-				// For effort driven task, reduce the effective time based on efficiency.
-				time *= efficiency;
-				// Calculate the energy time
-				double energyTime = time - remainingTime;
-				
-				// Double energy expenditure if performing effort-driven task.
-				if (energyTime > 0D) {
-	
-					if (person.isOutside()) {
-						// Take more energy to be in EVA doing work
-						// Future: should also consider skill level and strength and body weight
-						reduceEnergy(energyTime * 1.25);
-					} else {
-						// Expend nominal energy based on activity.
-						reduceEnergy(energyTime);
-					}
-				}
-			}
-		}
-
-		return remainingTime;
-
-	}
-
-
-	/**
 	 * Calculates and caches the probabilities. This will NOT use the cache but 
 	 * assumes the callers know when a cache can be used or not used.
 	 * 

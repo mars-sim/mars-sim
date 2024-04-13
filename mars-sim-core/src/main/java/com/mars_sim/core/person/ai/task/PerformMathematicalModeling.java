@@ -18,6 +18,7 @@ import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.science.ScienceType;
@@ -50,9 +51,10 @@ implements ResearchScientificStudy {
 
     private static final String NO_LAB_SLOT = "No lab slot available.";
     
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = .2D;
-
+    private static final ExperienceImpact IMPACT = new ExperienceImpact(20D,
+                        NaturalAttributeType.ACADEMIC_APTITUDE, false, 0.2D,
+                        Set.of(SkillType.MATHEMATICS));
+    
     /** Task phases. */
     private static final TaskPhase MODELING = new TaskPhase(Msg.getString(
             "Task.phase.modeling")); //$NON-NLS-1$
@@ -81,14 +83,12 @@ implements ResearchScientificStudy {
      */
     public PerformMathematicalModeling(Person person) {
         // Use task constructor.
-        super(NAME, person, false, false, STRESS_MODIFIER,
-        		SkillType.MATHEMATICS, 20D, 10D + RandomUtil.getRandomDouble(10D));
+        super(NAME, person, false, IMPACT,
+                            10D + RandomUtil.getRandomDouble(10D));
         
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
 		computingNeeded = TOTAL_COMPUTING_NEEDED;
         
-        setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-
         // Determine study.
         study = determineStudy();
         if (study != null) {
@@ -104,13 +104,11 @@ implements ResearchScientificStudy {
             else {
             	logger.log(person, Level.WARNING, 5000, NO_LAB_SLOT);
             	endTask();
-            	return;
             }
         }
         
         else {
         	endTask();
-        	return;
         }
     }
 
@@ -165,7 +163,7 @@ implements ResearchScientificStudy {
         }
 
         // Randomly select study.
-        if (possibleStudies.size() > 0) {
+        if (!possibleStudies.isEmpty()) {
             int selected = RandomUtil.getRandomInt(possibleStudies.size() - 1);
             result = possibleStudies.get(selected);
         }
@@ -341,7 +339,6 @@ implements ResearchScientificStudy {
 
         // If research assistant, modify by assistant's effective skill.
         if (hasResearchAssistant()) {
-            //SkillManager manager = researchAssistant.getSkillManager();
             int assistantSkill = researchAssistant.getSkillManager().getEffectiveSkillLevel(SkillType.MATHEMATICS);
             if (mathematicsSkill > 0) {
                 modelingTime *= 1D + ((double) assistantSkill / (double) mathematicsSkill);
@@ -448,14 +445,11 @@ implements ResearchScientificStudy {
 
     @Override
     protected void clearDown() {
-        // Remove person from lab so others can use it.
-        try {
-            if (lab != null) {
-                lab.removeResearcher();
-                lab = null;
-            }
+        if (lab != null) {
+            lab.removeResearcher();
+            lab = null;
         }
-        catch(Exception e) {}
+        super.clearDown();
     }
 
     @Override

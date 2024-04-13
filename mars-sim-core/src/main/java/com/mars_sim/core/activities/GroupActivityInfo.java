@@ -7,7 +7,11 @@
 package com.mars_sim.core.activities;
 
 import java.io.Serializable;
+import java.util.Set;
 
+import com.mars_sim.core.person.ai.NaturalAttributeType;
+import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.structure.building.BuildingCategory;
 
@@ -23,10 +27,18 @@ import com.mars_sim.core.structure.building.BuildingCategory;
  * @param score The score of the activity
  * @param scope The scope of on/off duty worker
  * @param place The category of a meeting place to host the Activity
+ * @param impact What impact does this activity have on the Worker attending
  * 
  */
 public record GroupActivityInfo(String name, int startTime, int firstSol,
                                 int waitDuration, int activityDuration, int solFrequency,
                                 double percentagePop, int score, TaskScope scope,
-                                BuildingCategory place)
-            implements Serializable {}
+                                BuildingCategory place, ExperienceImpact impact)
+            implements Serializable {
+
+    
+    public static final ExperienceImpact DEFAULT_IMPACT = new ExperienceImpact(0.1D,
+                NaturalAttributeType.CONVERSATION,false,  0D,
+                Set.of(SkillType.MANAGEMENT));
+
+}

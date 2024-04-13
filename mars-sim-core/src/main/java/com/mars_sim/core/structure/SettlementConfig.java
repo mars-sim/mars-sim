@@ -253,7 +253,8 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			meetingPlace = ConfigHelper.getEnum(BuildingCategory.class, locationText);
 		}
 
-		return new GroupActivityInfo(name, startTime, firstSol, wait, duration, freq, pop, score, scope, meetingPlace);
+		return new GroupActivityInfo(name, startTime, firstSol, wait, duration, freq, pop, score, scope,
+										meetingPlace, GroupActivityInfo.DEFAULT_IMPACT);
 	}
 
 	/**

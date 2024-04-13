@@ -19,8 +19,10 @@ import com.mars_sim.core.manufacture.ManufactureProcess;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -53,9 +55,10 @@ public class ManufactureConstructionMaterials extends Task {
 	/** Task phases. */
 	private static final TaskPhase MANUFACTURE = new TaskPhase(Msg.getString("Task.phase.manufacture")); //$NON-NLS-1$
 
-	// Static members
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .1D;
+	/** Impact doing this Task */
+	private static final ExperienceImpact IMPACT = new ExperienceImpact(50D,
+										NaturalAttributeType.EXPERIENCE_APTITUDE, false, .1D,
+										Set.of(SkillType.CONSTRUCTION, SkillType.MATERIALS_SCIENCE));
 
 	// Data members
 	/** The manufacturing workshop the person is using. */
@@ -67,8 +70,7 @@ public class ManufactureConstructionMaterials extends Task {
 	 * @param person the person to perform the task
 	 */
 	public ManufactureConstructionMaterials(Person person) {
-		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MATERIALS_SCIENCE, 50D, 25);
-		addAdditionSkill(SkillType.CONSTRUCTION);
+		super(NAME, person, true, IMPACT, 25);
 
 		// Initialize data members
 		if (person.getSettlement() != null) {
@@ -99,8 +101,7 @@ public class ManufactureConstructionMaterials extends Task {
 	 * @param person the person to perform the task
 	 */
 	public ManufactureConstructionMaterials(Robot robot) {
-		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MATERIALS_SCIENCE, 50D, 10D + RandomUtil.getRandomDouble(50D));
-		addAdditionSkill(SkillType.CONSTRUCTION);
+		super(NAME, robot, true, IMPACT, 10D + RandomUtil.getRandomDouble(50D));
 		
 		// Initialize data members
 		if (robot.getSettlement() != null) {

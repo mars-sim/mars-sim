@@ -10,6 +10,7 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.structure.GroupActivityType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -220,6 +221,13 @@ public class GroupActivity implements ScheduledEventHandler {
     }
 
     /**
+     * Get the definition of the impact on a Worker attending this activity
+     */
+    public ExperienceImpact getImpact() {
+        return definition.impact();
+    }
+
+    /**
      * Start time of the next scheduled start
      * @return
      */
@@ -254,4 +262,5 @@ public class GroupActivity implements ScheduledEventHandler {
         // Add event to the Settlment
         return new GroupActivity(name, activityInfo, host, person, now, dueInSol);
     }
+
 }

@@ -22,8 +22,10 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.SkillWeight;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
@@ -60,9 +62,12 @@ public class ProduceFood extends Task {
     private static final TaskPhase PRODUCE_FOOD = new TaskPhase(Msg.getString(
             "Task.phase.produceFood")); //$NON-NLS-1$
 
-	// Static members
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .2D;
+	
+	/** Impact doing this Task */
+	private static final ExperienceImpact IMPACT = new ExperienceImpact(100D,
+										Set.of(new SkillWeight(SkillType.COOKING, 5),
+											   new SkillWeight(SkillType.MATERIALS_SCIENCE, 2)),
+										NaturalAttributeType.EXPERIENCE_APTITUDE, false, .2D);
 
 	// Data members
 	/** The food production foodFactory the person is using. */
@@ -74,8 +79,7 @@ public class ProduceFood extends Task {
 	 * @param person the person to perform the task
 	 */
 	public ProduceFood(Person person) {
-		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MATERIALS_SCIENCE, 100D, 25);
-		addAdditionSkill(SkillType.COOKING);
+		super(NAME, person, true, IMPACT, 25);
 
 		// Initialize data members
 		if (person.isInSettlement()) {
@@ -106,9 +110,8 @@ public class ProduceFood extends Task {
 	}
 
 	public ProduceFood(Robot robot) {
-		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MATERIALS_SCIENCE, 100D,
+		super(NAME, robot, true, IMPACT,
 				10D + RandomUtil.getRandomDouble(50D));
-		addAdditionSkill(SkillType.COOKING);
 
 		// Initialize data members
 		if (robot.isInSettlement()) {
@@ -145,7 +148,7 @@ public class ProduceFood extends Task {
 
 			Iterator<Building> j = settlement.getBuildingManager().getBuildingSet(FunctionType.FOOD_PRODUCTION).iterator();
 			while (j.hasNext()) {
-				Building building = (Building) j.next();
+				Building building = j.next();
 				FoodProduction foodProductionFunction = building.getFoodProduction();
 				Set<FoodProductionProcess> processes = ConcurrentHashMap.newKeySet();
 				processes.addAll(foodProductionFunction.getProcesses());
@@ -329,7 +332,7 @@ public class ProduceFood extends Task {
 		}
 
 		// If no building with processes requiring work, return original list.
-		if (result.size() == 0) {
+		if (result.isEmpty()) {
 			result = buildingList;
 		}
 
@@ -445,32 +448,6 @@ public class ProduceFood extends Task {
 
 	}
 
-
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to "Materials Science" skill
-		// (1 base experience point per 100 millisols of work)
-		// Experience points adjusted by person's "Experience Aptitude"
-		// attribute.
-		double newPoints = time / 100D;
-		int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-		newPoints *= getTeachingExperienceModifier();
-        worker.getSkillManager().addExperience(
-                SkillType.COOKING, newPoints * 5 / 7D, time);
-        worker.getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE,
-                newPoints *2 / 7D, time);
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-        double result = 0;
-		result += worker.getSkillManager().getEffectiveSkillLevel(SkillType.COOKING) * 5;
-		result += worker.getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
-
-        return (int) Math.round(result / 7D);
-	}
-
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
@@ -522,7 +499,7 @@ public class ProduceFood extends Task {
 			workTime /= 2;
 		}
 		else {
-			workTime += workTime * (.2D * (double) skill);
+			workTime += workTime * (.2D * skill);
 		}
 		
 		FoodProductionProcess process = null;

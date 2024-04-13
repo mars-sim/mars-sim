@@ -19,9 +19,11 @@ import com.mars_sim.mapdata.location.LocalPosition;
 public class GroupActivityTest extends AbstractMarsSimUnitTest {
 
     private final static GroupActivityInfo REPEATING = new GroupActivityInfo("Repeat", 250, 0, 10, 50, 2, 0.5D, 100,
-                                                            TaskScope.ANY_HOUR, BuildingCategory.LIVING);
+                                                            TaskScope.ANY_HOUR, BuildingCategory.LIVING,
+                                                            GroupActivityInfo.DEFAULT_IMPACT);
     private final static GroupActivityInfo ONE = new GroupActivityInfo("One", 800, 1, 10, 50, 0, 0.5D, 100,
-                                                            TaskScope.NONWORK_HOUR, BuildingCategory.LIVING);
+                                                            TaskScope.NONWORK_HOUR, BuildingCategory.LIVING,
+                                                            GroupActivityInfo.DEFAULT_IMPACT);
 
     public void testOneOffCycle() {
         var s = buildSettlement();

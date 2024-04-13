@@ -56,8 +56,6 @@ public class BotTaskManager extends TaskManager {
 	// Data members
 	/** The mind of the robot. */
 	private BotMind botMind;
-	/** The work power demand of the robot. Will move to xml once stable. */
-	private double workPower = .2;
 	
 	/** The robot instance. */
 	private transient Robot robot = null;
@@ -88,68 +86,6 @@ public class BotTaskManager extends TaskManager {
 	protected Task createTask(TaskJob selectedWork) {
 		return selectedWork.createTask(robot);
 	}
-	
-
-	/**
-	 * Reduce the robot's energy for executing a task.
-	 * 
-	 * @param time the passing time (
-	 */
-    private void reduceEnergy(double time) {
-    	robot.consumeEnergy(time * MarsTime.HOURS_PER_MILLISOL * workPower);
-    }
-
-	/**
-	 * Performs the current task for a given amount of time.
-	 * 
-	 * @param time amount of time to perform the action
-	 * @param efficiency The performance rating of person performance task.
-	 * @return remaining time.
-	 * @throws Exception if error in performing task.
-	 */
-	public double executeTask(double time, double efficiency) {
-		double remainingTime = 0D;
-		
-		if (currentTask != null) {
-
-			if (efficiency < 0D) {
-				efficiency = 0D;
-			}
-
-			if (currentTask.isEffortDriven()) {
-				// For physical effort driven task, reduce the effective time based on efficiency.
-				time *= efficiency;
-			}
-
-			try {
-				
-				// Receive StackOverflowError
-				remainingTime = currentTask.performTask(time);
-
-			} catch (Exception e) {
-				logger.severe(robot, "currentTask: " + currentTask.getDescription()
-						+ " - Trouble calling performTask(): ", e);
-				return remainingTime;
-			}
-			
-			// Calculate the energy time
-		    double energyTime = time - remainingTime;
-		    
-		    // Double energy expenditure if performing effort-driven task.
-		    if (currentTask.isEffortDriven()) {
-		        energyTime *= 2D;
-		    }
-
-		    // Checks if the robot is charging
-		    if (energyTime > 0D && !robot.getSystemCondition().isCharging()) {
-		    	// Expend energy based on activity.
-		    	reduceEnergy(energyTime);
-		    }
-		}
-
-		return remainingTime;
-
-	}
 
 	/**
 	 * Build the assignments of RobotType to MetaTasks. This takes any Meta type and
@@ -166,9 +102,8 @@ public class BotTaskManager extends TaskManager {
 					anyRobot.add(mt);
 				}
 				else {
-					for(RobotType rt : possibleRobots) {
-						newTaskMap.computeIfAbsent(rt, k -> new ArrayList<>()).add(mt);
-					}
+					possibleRobots.forEach(rt ->
+								newTaskMap.computeIfAbsent(rt, k -> new ArrayList<>()).add(mt));
 				}
 			}
 

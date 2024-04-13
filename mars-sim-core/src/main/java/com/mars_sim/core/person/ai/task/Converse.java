@@ -20,6 +20,7 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.social.RelationshipType;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
@@ -60,11 +61,13 @@ public class Converse extends Task {
     
     private static final String RESPONDING_TO = 
     		Msg.getString("Task.description.converse.responding.detail"); //$NON-NLS-1$
+    	
+	/** Impact doing this Task */
+	private static final ExperienceImpact INSTIGATOR_IMPACT = new ExperienceImpact(50D,
+										NaturalAttributeType.CONVERSATION, false, -0.3,
+										Set.of(SkillType.PSYCHOLOGY, SkillType.REPORTING));
     
-    // Static members
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -.3D;
-    
+
     private Location initiatorLocation = null;
 
 	/** The id of the target person (either the invitee or the initiator). */
@@ -82,6 +85,7 @@ public class Converse extends Task {
         SAME_SETTLEMENT,
         SAME_VEHICLE;
     	
+		@Override
     	public String toString(){
             switch(this) {
                 case ANOTHER_BUILDING:
@@ -113,17 +117,14 @@ public class Converse extends Task {
      */
     public Converse(Person person) {
         // Use Task constructor.
-        super(NAME, person, true, false, 
-        		STRESS_MODIFIER - RandomUtil.getRandomDouble(.2),
+        super(NAME, person, true,
+        		INSTIGATOR_IMPACT,
         		Math.max(1,
         		 1 + RandomUtil.getRandomDouble(person.getNaturalAttributeManager()
         				 .getAttribute(NaturalAttributeType.CONVERSATION))/20
         		 + RandomUtil.getRandomDouble(person.getPreference()
         				 .getPreferenceScore(MetaTaskUtil.getConverseMeta())/3.0))
         		);
-
-    	addAdditionSkill(SkillType.PSYCHOLOGY);
-    	addAdditionSkill(SkillType.REPORTING);
     	
     	findInvitee();
         
@@ -173,8 +174,8 @@ public class Converse extends Task {
      */
     public Converse(Person invitee, Person initiator) {
         // Use Task constructor.
-        super(NAME, invitee, true, false, 
-        		STRESS_MODIFIER - RandomUtil.getRandomDouble(.2),
+        super(NAME, invitee, true, 
+				INSTIGATOR_IMPACT,
         		RandomUtil.getRandomDouble(initiator.getTaskManager().getTask().getTimeLeft())
         		);
     	
@@ -232,7 +233,7 @@ public class Converse extends Task {
         double variance = (1 + person.getSkillManager()
         		.getSkillLevel(SkillType.PSYCHOLOGY)) * 2.5 
         		+ person.getNaturalAttributeManager()
-       				 .getAttribute(NaturalAttributeType.CONVERSATION) / 20;
+       				 .getAttribute(NaturalAttributeType.CONVERSATION) / 20D;
 	
     	for (int i= 0; i<size; i++) {
     		double score = RelationshipUtil.getOpinionOfPerson(person, list.get(i));
@@ -274,7 +275,6 @@ public class Converse extends Task {
         	// Gets a list of busy people in the same building
             candidates = getChattingPeople(person, false, true, true);
         	pool.addAll(candidates);
-        	initiatorLocation = Location.SAME_BUILDING;
         }
         
         if (pool.isEmpty()) {
@@ -292,7 +292,6 @@ public class Converse extends Task {
                 	// Gets a list of busy people in the same dining building
                     candidates = getChattingPeople(person, false, true, true);
                 	pool.addAll(candidates);
-                	initiatorLocation = Location.SAME_DINING;
                 }
             }
         }
@@ -310,9 +309,7 @@ public class Converse extends Task {
         	pool.addAll(candidates);
         	initiatorLocation = Location.SAME_SETTLEMENT;
         }
-        
-        // TODO: find someone who's inside a vehicle or in a different building
-        
+                
         if (pool.isEmpty()) {
         	// Gets a list of idle people from other settlements
             candidates = getChattingPeople(person, true, false, false);
@@ -379,7 +376,6 @@ public class Converse extends Task {
         	logger.info(person, "Unable to find anyone to chat with in " + v);
         	return null;
         }
-        // TODO: find someone who's inside other vehicles
 
         int num = pool.size();
         List<Person> list = new ArrayList<>();
@@ -561,6 +557,7 @@ public class Converse extends Task {
     /**
 	 * Reinitializes instances and reloads the target of the conversation.
 	 */
+	@Override
 	public void reinit() {
 		super.reinit();
 
@@ -651,7 +648,9 @@ public class Converse extends Task {
 		}
 	}
 	
+	@Override
 	public void destroy() {
+		super.destroy();
 		initiatorLocation = null; 
 	}
 }

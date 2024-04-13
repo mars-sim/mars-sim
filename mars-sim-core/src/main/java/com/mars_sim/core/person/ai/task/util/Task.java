@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.task.util;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -30,7 +31,6 @@ import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
-import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionManager;
@@ -95,14 +95,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected double phaseTimeRequired;
 	/** Amount of time completed on the current phase (in millisols) */
 	protected double phaseTimeCompleted;
-	/** Stress modified by person performing task per millisol. */
-	protected double stressModifier;
+
 	/** The time duration (in millisols) of the task. */
 	private double duration;
 	/** The current amount of time spent on the task (in millisols). */
 	private double timeCompleted;
-	/** Ratio of work time to experience */
-	private double experienceRatio;
 	
 	/** The id of the person/robot. */
 	protected Integer id;
@@ -133,11 +130,20 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	/** A collection of the task's phases. */
 	private Collection<TaskPhase> phases;
-	/** A list of the skill types. */
-	private List<SkillType> neededSkills = null;
 
+	// This 4 fields can be removed once ExperiecneImpact is passed in constructor
+	/** Ratio of work time to experience */
+	private double experienceRatio;
+	/** Stress modified by person performing task per millisol. */
+	protected double stressModifier;
+	/** A list of the skill types. */
+	private Set<SkillType> neededSkills = new HashSet<>();
 	/** What natural attribute influences experience points */
 	private NaturalAttributeType experienceAttribute = NaturalAttributeType.EXPERIENCE_APTITUDE;
+
+	private int effectiveSkillLevel;
+
+	private ExperienceImpact impact;
 
 	/** The static instance of the master clock */
 	protected static MasterClock masterClock;
@@ -192,7 +198,28 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Constructs a Task object. It has no fixed duration.
+	 * Constructs a Task object that has an impact on the worker
+	 * 
+	 * @param name            the name of the task
+	 * @param worker          the worker performing the task
+	 * @param createEvents    Does this task create events?
+	 * @param impact		  Impact on worker doing this Task
+	 * @param duration        Fixed duration task
+	 */
+	protected Task(String name, Worker worker, boolean createEvents, 
+					ExperienceImpact impact, double duration) {
+		this.name = name;
+		this.createEvents = createEvents;
+		this.duration = duration;
+		this.hasDuration = duration > 0D;
+		this.impact = impact;
+
+		init(worker);
+	}
+
+	
+	/**
+	 * Constructs a Task object.
 	 * 
 	 * @param name            the name of the task
 	 * @param worker          the worker performing the task
@@ -216,6 +243,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			addAdditionSkill(primarySkill);
 		}
 
+		init(worker);
+	}
+
+	private void init(Worker worker) { 
 		if (worker == null) {
 			throw new IllegalArgumentException("Worker can not be null");
 		}
@@ -278,9 +309,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	protected void addAdditionSkill(SkillType newSkill) {
-		if (neededSkills == null) {
-			neededSkills = new ArrayList<>();
-		}
 		neededSkills.add(newSkill);
 	}
 
@@ -326,11 +354,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			// Set phase to null
 			setPhase(null);
 			// Set description to blank
-			setDescription("");
-			// End subtask2
-//			endSubTask2();			
-			// End subtask
-//			endSubTask();
+			setDescription("");		
 			// Fires task end event
 			eventTarget.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
 			// Create ending task historical event if needed.
@@ -368,7 +392,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return Effort driven.
 	 */
 	public boolean isEffortDriven() {
-		return effortDriven;
+		return getImpact().isEffortAffected();
 	}
 
 	/**
@@ -647,11 +671,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				} else {
 					timeLeft = executeMappedPhase(timeLeft, time);
 				}
-
-				if (time - timeLeft > time / 8D) // or SMALL_AMOUNT_OF_TIME
-					// Modify stress performing task.
-					modifyStress(time - timeLeft);
-
 			}
 
 			else {
@@ -746,27 +765,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		return name.compareTo(other.name);
 	}
 
-	/**
-	 * Modifies stress from performing task for given time.
-	 * 
-	 * @param time the time performing the task.
-	 */
-	private void modifyStress(double time) {
-
-		double stress = stressModifier;
-
-		if (stress != 0D) {
-			// Reduce stress modifier for person's skill related to the task.
-			int skill = getEffectiveSkillLevel();
-			stress -= (stress * skill * SKILL_STRESS_MODIFIER);
-
-			if (stress != 0D) {
-				double deltaStress = stress * time;
-				person.getPhysicalCondition().addStress(deltaStress);
-			}
-		}
-	}
-
+	
 	/**
 	 * Sets the task's stress modifier. Stress modifier can be positive (increase in
 	 * stress) or negative (decrease in stress).
@@ -818,19 +817,26 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return effective skill level
 	 */
 	public int getEffectiveSkillLevel() {
-		int result = 0;
-		if (neededSkills != null && worker != null) {
-			SkillManager manager = worker.getSkillManager();
-			for (SkillType skillType : neededSkills) {
-				result += manager.getEffectiveSkillLevel(skillType);
-			}
+		// This can be dropped once ExpereicneImpact is defiend in constructor
+		getImpact();
 
-			// Take the average
-			result = result / neededSkills.size();
+		return effectiveSkillLevel;
+	} 
+
+	/**
+	 * This get the relevant Impact assessment of doing this Task. It is a temp. measure
+	 * as eventually the impact will come via the constructor.
+	 * @return Impact assessment of doing this Task
+	 */
+	private ExperienceImpact getImpact() {
+		if (impact == null) {
+			impact = new ExperienceImpact(experienceRatio, experienceAttribute,
+									effortDriven, stressModifier, neededSkills);
+			effectiveSkillLevel = impact.getEffectiveSkillLevel(worker);
 		}
 
-		return result;
-	}
+		return impact;
+	} 
 
 	/**
 	 * Gets a list of the skills associated with this task. May be empty list if no
@@ -838,8 +844,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @return list of skills
 	 */
-	public List<SkillType> getAssociatedSkills() {
-		return neededSkills;
+	public Set<SkillType> getAssociatedSkills() {
+		return getImpact().getImpactedSkills();
 	}
 
 	/**
@@ -941,21 +947,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param time the amount of time (ms) the person performed this task.
 	 */
 	protected void addExperience(double time) {
-		if (neededSkills != null) {
-			// Add experience to "Primary skill" skill
-			// (1 base experience point per X millisols of work)
-			// Experience points adjusted by worker natural attribute.
-			double newPoints = time / experienceRatio;
-			int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(experienceAttribute);
-
-			newPoints += newPoints * (experienceAptitude - 50D) / 100D;
-			newPoints *= getTeachingExperienceModifier();
-
-			SkillManager sm = worker.getSkillManager();
-			int size = neededSkills.size();
-			for (SkillType skillType : neededSkills) {
-				sm.addExperience(skillType, newPoints/size, time/size);
-			}
+		if (time > 0) {
+			getImpact().apply(worker, time,  effectiveSkillLevel * SKILL_STRESS_MODIFIER,
+							getTeachingExperienceModifier());
 		}
 	}
 

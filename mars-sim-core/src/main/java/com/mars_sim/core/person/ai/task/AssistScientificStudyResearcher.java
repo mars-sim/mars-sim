@@ -128,7 +128,7 @@ public class AssistScientificStudyResearcher extends Task {
 		Person result = null;
 
 		Collection<Person> researchers = getBestResearchers(person);
-		if (researchers.size() > 0) {
+		if (!researchers.isEmpty()) {
 			int rand = RandomUtil.getRandomInt(researchers.size() - 1);
 			result = (Person) researchers.toArray()[rand];
 		}
@@ -320,12 +320,6 @@ public class AssistScientificStudyResearcher extends Task {
         computingNeeded = person.getAssociatedSettlement().getBuildingManager().
             	accessNode(person, computingNeeded, time, seed, 
             			msol, getDuration(), NAME);
-        
-		// Check if researcher is in a different location situation than the assistant.
-        // Remotely assisting a researcher is allowed
-//		if (!researcher.getLocationSituation().equals(person.getLocationSituation())) {
-//			endTask();
-//		}
 
 		// Add experience
 		addExperience(time);
