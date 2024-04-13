@@ -10,10 +10,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.MasterClock;
 
 /**
  * A class that keeps track of all scientific studies in the simulation.
@@ -35,15 +35,16 @@ public class ScientificStudyManager
 	/** The list of scientific study. */
 	private List<ScientificStudy> studies = new ArrayList<>();
 
+	private MasterClock masterClock;
 	
 	/**
 	 * Constructor.
 	 */
-	public ScientificStudyManager() {
+	public ScientificStudyManager(MasterClock masterClock) {
 		// Initialize data members
 		identifier = 1;
 		solCache = 1;
-		// Methods are threadsafe
+		this.masterClock = masterClock;
 	}
 
 	/**
@@ -67,7 +68,7 @@ public class ScientificStudyManager
 		// Gets the scientific study string. Must be synchronised to prevent duplicate identifiers 
 		// being assigned via different threads
 		synchronized (studies) {
-			int missionSol = Simulation.instance().getMasterClock().getMarsTime().getMissionSol();
+			int missionSol = masterClock.getMarsTime().getMissionSol();
 			int id = 1;
 			if (solCache != missionSol) {
 				solCache = missionSol;

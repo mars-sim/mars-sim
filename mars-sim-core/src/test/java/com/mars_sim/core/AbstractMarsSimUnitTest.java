@@ -37,7 +37,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	protected static final double BUILDING_LENGTH = 9D;
 	protected static final double BUILDING_WIDTH = 9D;
 
-	private static final double MSOLS_PER_EXECUTE = 0.1D;
+	protected static final double MSOLS_PER_EXECUTE = 0.1D;
 	
 	protected UnitManager unitManager;
 	protected MarsSurface surface;
@@ -117,6 +117,15 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	    
 	    unitManager.addUnit(building0);
 	
+	    return building0;
+	}
+
+	protected Building buildResearch(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+		MockBuilding building0 = buildBuilding(buildingManager, "Lander Hab", BuildingCategory.LABORATORY,  pos, facing, id);
+
+		var spec = simConfig.getBuildingConfiguration().getFunctionSpec("Lander Hab", FunctionType.RESEARCH);
+
+	    building0.addFunction(spec);
 	    return building0;
 	}
 

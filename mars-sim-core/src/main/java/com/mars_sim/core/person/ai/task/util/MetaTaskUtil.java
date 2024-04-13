@@ -42,7 +42,7 @@ import com.mars_sim.core.person.ai.task.meta.MeetTogetherMeta;
 import com.mars_sim.core.person.ai.task.meta.ObserveAstronomicalObjectsMeta;
 import com.mars_sim.core.person.ai.task.meta.OptimizeSystemMeta;
 import com.mars_sim.core.person.ai.task.meta.PeerReviewStudyPaperMeta;
-import com.mars_sim.core.person.ai.task.meta.PerformLaboratoryResearchMeta;
+import com.mars_sim.core.science.task.PerformLaboratoryResearchMeta;
 import com.mars_sim.core.person.ai.task.meta.PerformMathematicalModelingMeta;
 import com.mars_sim.core.person.ai.task.meta.PlanMissionMeta;
 import com.mars_sim.core.person.ai.task.meta.PlayHoloGameMeta;
