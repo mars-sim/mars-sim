@@ -7,15 +7,22 @@
 package com.mars_sim.core.configuration;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jdom2.Element;
 
 import com.mars_sim.core.person.PopulationCharacteristics;
+import com.mars_sim.core.person.ai.NaturalAttributeType;
+import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.SkillWeight;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.process.ProcessItemFactory;
 import com.mars_sim.core.resource.ItemType;
+import com.mars_sim.core.time.EventSchedule;
 import com.mars_sim.mapdata.location.BoundedObject;
 import com.mars_sim.mapdata.location.LocalPosition;
 
@@ -37,6 +44,18 @@ public class ConfigHelper {
 	private static final String NUMBER = "number";	
 	private static final String AMOUNT = "amount";
 	private static final String ALTERNATIVE = "alternative";
+
+	public static final String CALENDAR_START_TIME = "eventTime";
+    public static final String CALENDAR_FREQUENCY = "frequency";
+    public static final String CALENDAR_FIRST_SOL = "firstSol";
+
+	private static final String IMPACT_STRESS = "stress";
+	private static final String IMPACT_EFFORT = "effort";
+	private static final String IMPACT_SKILLS = "skills";
+	private static final String IMPACT_EXPERIENCE = "experienceRatio";
+	private static final String IMPACT_ATTR = "experienceAttr";
+	private static final String IMPACT_WEIGHT = "weight";
+	private static final String IMPACT_SKILL = "skill";
 
 	private ConfigHelper() {
 		// static utility class
@@ -285,4 +304,50 @@ public class ConfigHelper {
 
 		return results;
 	}
+
+    /**
+     * Parses an XMLElement to create an event calendar.
+	 * 
+	 * @param source A element describing an EventCalendar
+     */
+    public static EventSchedule parseEventCalendar(Element source) {
+    	int startTime = getOptionalAttributeInt(source, CALENDAR_START_TIME, 500);
+    	int firstSol = getOptionalAttributeInt(source, CALENDAR_FIRST_SOL, 0);
+    	int freq = getOptionalAttributeInt(source, CALENDAR_FREQUENCY, -1);
+    
+    	return new EventSchedule(firstSol, freq, startTime);
+    }
+
+	/**
+	 * Parse an XML Element to create an ExperienceImpact
+	 * @param impactEl
+	 * @return
+	 */
+    public static ExperienceImpact parseImpact(Element impactEl) {
+        double stress = getAttributeDouble(impactEl, IMPACT_STRESS);
+		boolean effortDriven = getOptionalAttributeBool(impactEl, IMPACT_EFFORT, false);
+
+		double experience = 0D;
+		NaturalAttributeType expAttribute = NaturalAttributeType.EXPERIENCE_APTITUDE;
+		Set<SkillWeight> skills = new HashSet<>();
+		Element skillsEL = impactEl.getChild(IMPACT_SKILLS);
+		if (skillsEL != null) {
+			experience = getAttributeDouble(skillsEL, IMPACT_EXPERIENCE);
+
+			// Experience attribute is optional
+			var attrName = skillsEL.getAttributeValue(IMPACT_ATTR);
+			if (attrName != null) {
+				expAttribute = getEnum(NaturalAttributeType.class, attrName);
+			}
+
+			// Get skill weights
+			for(var sw : skillsEL.getChildren(IMPACT_SKILL)) {
+				SkillType type = getEnum(SkillType.class, sw.getAttributeValue(NAME));
+				int weight = getOptionalAttributeInt(skillsEL, IMPACT_WEIGHT, 1);
+				skills.add(new SkillWeight(type, weight));
+			}
+		}
+
+		return new ExperienceImpact(experience, skills, expAttribute, effortDriven, stress);
+    }
 }

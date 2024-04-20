@@ -412,8 +412,8 @@
     <part-package name="package 4" number="1" />
 
     <resupply>
-       	<resupply-mission name="Food Delivery" manifest-name="Food Resupply 1"
-            first-arrival-time="30"
-            frequency-sols="62" /> 
+       	<resupply-mission name="Food Delivery" manifest-name="Food Resupply 1">
+            <schedule firstSol="30" frequency="62" />
+        </resupply-mission>
     </resupply>     
 </template>

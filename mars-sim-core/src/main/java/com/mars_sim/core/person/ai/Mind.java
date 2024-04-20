@@ -72,12 +72,6 @@ public class Mind implements Serializable, Temporal {
 	
 	private static MissionManager missionManager;
 
-//	static {
-//		Simulation sim = Simulation.instance();
-//		// Load the mission manager
-//		missionManager = sim.getMissionManager();
-//	}
-
 	/**
 	 * Constructor 1.
 	 *
@@ -112,10 +106,8 @@ public class Mind implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		double time = pulse.getElapsed();
-		if (taskManager != null) {
-			// Decides what tasks to inject time
-			if (pulse.getElapsed() > 0)
-				moderateTime(time);
+		if ((taskManager != null) && (pulse.getElapsed() > 0)) {
+			moderateTime(time);
 		}
 
 		if (pulse.isNewMSol()) {
@@ -170,8 +162,6 @@ public class Mind implements Serializable, Temporal {
 	 * @throws Exception if error during action.
 	 */
 	private void moderateTime(double time) {
-//		// Call takeAction to perform a task and consume the pulse time.
-//		takeAction(time);
 		double remainingTime = time;
 		double deltaTime = Task.getStandardPulseTime();
 		while (remainingTime > 0 && deltaTime > 0) {
@@ -205,7 +195,7 @@ public class Mind implements Serializable, Temporal {
 			// Perform a task if the person has one, or determine a new task/mission.
 			if (taskManager.hasActiveTask()) {
 				// Call executeTask
-				double remainingTime = taskManager.executeTask(pulseTime, person.getPerformanceRating());
+				double remainingTime = taskManager.executeTask(pulseTime);
 
 				// A task is return a bad remaining time.
 				// Cause of Issue#290
@@ -318,8 +308,6 @@ public class Mind implements Serializable, Temporal {
 	 */
 	public boolean canStartNewMission() {
 		boolean hasAMission = hasAMission();
-//		if (hasAMission)
-//			logger.info(person + " had the " + mission + " mission");;
 
 		boolean hasActiveMission = hasActiveMission();
 
@@ -387,10 +375,6 @@ public class Mind implements Serializable, Temporal {
 	 * @return true for active mission
 	 */
 	public boolean hasAMission() {
-        //			// has a mission but need to determine if this mission is active or not
-        //			if (mission.isApproved()
-        //				|| (mission.getPlan() != null
-        //					&& mission.getPlan().getStatus() != PlanType.NOT_APPROVED))
         return mission != null;
     }
 
@@ -580,7 +564,5 @@ public class Mind implements Serializable, Temporal {
 		trait = null;
 		relation.destroy();
 		relation = null;
-		missionManager.destroy();
-		missionManager = null;
 	}
 }

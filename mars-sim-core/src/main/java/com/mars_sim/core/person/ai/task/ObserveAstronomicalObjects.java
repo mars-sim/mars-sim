@@ -7,6 +7,7 @@
 
 package com.mars_sim.core.person.ai.task;
 
+import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
@@ -15,6 +16,7 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.meta.ObserveAstronomicalObjectsMeta;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.science.ScienceType;
@@ -39,8 +41,10 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.observeAstronomicalObjects"); //$NON-NLS-1$
 
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -.2D;
+	/** The stress modified per millisol. */	    
+    private static final ExperienceImpact IMPACT = new ExperienceImpact(25D,
+										NaturalAttributeType.ACADEMIC_APTITUDE, false, -0.2D,
+										Set.of(SkillType.ASTRONOMY));
 
 	/** Task phases. */
 	private static final TaskPhase OBSERVING = new TaskPhase(Msg.getString("Task.phase.observing")); //$NON-NLS-1$
@@ -69,14 +73,12 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	 */
 	public ObserveAstronomicalObjects(Person person, ScientificStudy study) {
 		// Use task constructor.
-		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.ASTRONOMY, 25D,
-			  100D + RandomUtil.getRandomDouble(100D));
+		super(NAME, person, false, IMPACT,
+			  			100D + RandomUtil.getRandomDouble(100D));
 		
 		initialComputingNeeded = getDuration() * SEED;
 		computingNeeded = initialComputingNeeded;
-		
-		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-		
+				
 		observatory = ObserveAstronomicalObjectsMeta.determineObservatory(person.getAssociatedSettlement());
 		
 		this.study = study;

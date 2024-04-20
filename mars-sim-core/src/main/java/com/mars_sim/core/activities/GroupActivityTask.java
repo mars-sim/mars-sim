@@ -18,8 +18,8 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
  */
 public class GroupActivityTask extends Task {
 
-    private static final TaskPhase WAITING = new TaskPhase("Waiting"); 
-    private static final TaskPhase ACTIVE = new TaskPhase("Active"); 
+    public static final TaskPhase WAITING = new TaskPhase("Waiting"); 
+    public static final TaskPhase ACTIVE = new TaskPhase("Active"); 
 
     private GroupActivity activity;
     private ActivityState currentState;
@@ -30,13 +30,14 @@ public class GroupActivityTask extends Task {
      * @param person Worker taking part
      */
     public GroupActivityTask(GroupActivity activity, Person person) {
-        super(activity.getName(), person, false, false, 0D, activity.getTotalDuration());
+        super(activity.getName(), person, false, activity.getImpact(), activity.getTotalDuration());
         this.activity = activity;
 
         this.currentState = activity.getState();
 
         // Walk to meeting place
-        if (!person.getBuildingLocation().equals(activity.getMeetingPlace())) {
+        var b = person.getBuildingLocation();
+        if ((b == null) || !b.equals(activity.getMeetingPlace())) {
             walkToRandomLocInBuilding(activity.getMeetingPlace(), true);
         }
  
@@ -68,6 +69,8 @@ public class GroupActivityTask extends Task {
             currentState = ActivityState.ACTIVE;
             setPhase(toPhase(activity));
         }
+
+        addExperience(time);
         return 0D;
     }
 

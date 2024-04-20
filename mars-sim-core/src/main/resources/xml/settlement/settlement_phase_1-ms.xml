@@ -103,10 +103,11 @@
 
     <!-- The resupply missions from Earth scheduled for this type of settlement. -->
     <resupply>
-        <resupply-mission name="Food Delivery" manifest-name="Food Resupply 1"
-            first-arrival-time="2"
-            frequency-sols="80" /> 
-        <resupply-mission name="Phase 1 Delivery" manifest-name="Resupply for Phase 1"
-            first-arrival-time="668"/>
+        <resupply-mission name="Food Delivery" manifest-name="Food Resupply 1">
+            <schedule firstSol="2" frequency="80" />
+        </resupply-mission>
+        <resupply-mission name="Phase 1 Delivery" manifest-name="Resupply for Phase 1">
+            <schedule firstSol="668" />
+        </resupply-mission>
     </resupply>
 </template>

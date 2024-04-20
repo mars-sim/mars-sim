@@ -201,7 +201,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 		
 		int callsLeft = maxCalls;
 		while ((callsLeft > 0) && !task.isDone()) {
-			tm.executeTask(MSOLS_PER_EXECUTE, 1D);
+			tm.executeTask(MSOLS_PER_EXECUTE);
 			callsLeft--;
 		}
 		

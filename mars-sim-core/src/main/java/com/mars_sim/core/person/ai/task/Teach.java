@@ -120,7 +120,7 @@ public class Teach extends Task {
 				
 				}
 								
-				List<SkillType> taughtSkills = candidateTask.getAssociatedSkills();
+				Set<SkillType> taughtSkills = candidateTask.getAssociatedSkills();
 		        if (taughtSkills == null) {
 		        	logger.severe(worker, 20_000L, "No taught skills found.");
 		        	continue;
@@ -238,7 +238,7 @@ public class Teach extends Task {
         	return;
         }
 
-        List<SkillType> taughtSkills = teachingTask.getAssociatedSkills();
+        Set<SkillType> taughtSkills = teachingTask.getAssociatedSkills();
         if (taughtSkills == null) {
         	logger.severe(worker, 20_000L, "No taught skills found.");
         	return;

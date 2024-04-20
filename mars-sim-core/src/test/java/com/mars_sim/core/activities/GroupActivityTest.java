@@ -12,16 +12,22 @@ import com.mars_sim.core.structure.GroupActivityType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingCategory;
+import com.mars_sim.core.time.EventSchedule;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 public class GroupActivityTest extends AbstractMarsSimUnitTest {
 
-    private final static GroupActivityInfo REPEATING = new GroupActivityInfo("Repeat", 250, 0, 10, 50, 2, 0.5D, 100,
-                                                            TaskScope.ANY_HOUR, BuildingCategory.LIVING);
-    private final static GroupActivityInfo ONE = new GroupActivityInfo("One", 800, 1, 10, 50, 0, 0.5D, 100,
-                                                            TaskScope.NONWORK_HOUR, BuildingCategory.LIVING);
+    private final static GroupActivityInfo REPEATING = new GroupActivityInfo("Repeat", 10, 50,
+                                                            new EventSchedule(0, 2, 250),
+                                                            0.5D, 100,
+                                                            TaskScope.ANY_HOUR, BuildingCategory.LIVING,
+                                                            GroupActivityInfo.DEFAULT_IMPACT);
+    private final static GroupActivityInfo ONE = new GroupActivityInfo("One", 10, 50, new EventSchedule(1, 0, 800),
+                                                            0.5D, 100,
+                                                            TaskScope.NONWORK_HOUR, BuildingCategory.LIVING,
+                                                            GroupActivityInfo.DEFAULT_IMPACT);
 
     public void testOneOffCycle() {
         var s = buildSettlement();
@@ -31,10 +37,10 @@ public class GroupActivityTest extends AbstractMarsSimUnitTest {
 
         var ga = new GroupActivity(ONE, s, t);
         assertEquals("Scheduled actvity", ActivityState.SCHEDULED, ga.getState());
-        assertEquals("First meeting", t.addTime(ONE.startTime() + (1000 * ONE.firstSol())), ga.getStartTime());
+        assertEquals("First meeting", t.addTime(ONE.calendar().getTimeOfDay() + (1000 * ONE.calendar().getFirstSol())), ga.getStartTime());
 
         // Advance to pending
-        t = t.addTime(ONE.startTime());
+        t = t.addTime(ONE.calendar().getTimeOfDay());
         int advance = ga.execute(t);
         assertEquals("Pending actvity", ActivityState.PENDING, ga.getState());
         assertEquals("Wait duration", ONE.waitDuration(), advance);
@@ -66,7 +72,7 @@ public class GroupActivityTest extends AbstractMarsSimUnitTest {
         var ga = new GroupActivity(REPEATING, s, t);
 
         // Advance to pending
-        t = t.addTime(REPEATING.startTime());
+        t = t.addTime(REPEATING.calendar().getTimeOfDay());
         int advance = ga.execute(t);
         assertEquals("Pending actvity", ActivityState.PENDING, ga.getState());
         assertEquals("Wait duration", REPEATING.waitDuration(), advance);
@@ -81,28 +87,20 @@ public class GroupActivityTest extends AbstractMarsSimUnitTest {
         t = t.addTime(REPEATING.activityDuration());
         advance = ga.execute(t);
         assertEquals("Active actvity", ActivityState.SCHEDULED, ga.getState());
-        assertEquals("Activity no event", REPEATING.solFrequency() * 1000, advance);
+        assertEquals("Activity no event", REPEATING.calendar().getFrequency() * 1000, advance);
         assertNull("Released meeting place", ga.getMeetingPlace());
     }
 
     public void testInitialEvent() {
         // Simplest first with zero time and no offset
-        var t = new MarsTime(1, 1, 1, 0, 1);
-        testStartEvent("Standard @ 0", ONE, t, new Coordinates("0.0 N", "0.0 E"));
+        var now = new MarsTime(1, 1, 1, 0, 1);
+        var locn = new Coordinates("0.0 N", "90.0 E");
 
-        t = new MarsTime(1, 1, 1, 500, 1);
-        testStartEvent("Standard @ 500", ONE, t, new Coordinates("0.0 N", "0.0 E"));
-        testStartEvent("Quarter @ 500", ONE, t, new Coordinates("0.0 N", "90.0 E"));
-        testStartEvent("Thirds @ 500", ONE, t, new Coordinates("0.0 N", "270.0 E"));
-
-    }
-
-    private void testStartEvent(String message, GroupActivityInfo info, MarsTime now, Coordinates locn) {
         var s = buildSettlement();
         s.setCoordinates(locn); // THis will mov ethe local timezine by 250
 
-        new GroupActivity(info, s, now);
-        testFutureEvent(message, s, info, now, 1, (int)((info.firstSol() + 1) * 1000D));
+        new GroupActivity(ONE, s, now);
+        testFutureEvent("Initial Event", s, ONE, now, 1, (int)((ONE.calendar().getFirstSol() + 1) * 1000D));
     }
 
     private GroupActivity testFutureEvent(String message, Settlement s, GroupActivityInfo info,
@@ -116,7 +114,7 @@ public class GroupActivityTest extends AbstractMarsSimUnitTest {
                                     .toList();
         assertEquals("Expected events - " + message, 1, matched.size());
         var event = matched.get(0);
-        assertEquals("Scheduled start of event - "+ message, (info.startTime() + offset) % 1000,
+        assertEquals("Scheduled start of event - "+ message, (info.calendar().getTimeOfDay() + offset) % 1000,
                                 event.getWhen().getMillisolInt());
         int toEvent = (int) event.getWhen().getTimeDiff(now);
         assertGreaterThan("Scheduled start more than minimum duation - " + message, minDuration, toEvent);

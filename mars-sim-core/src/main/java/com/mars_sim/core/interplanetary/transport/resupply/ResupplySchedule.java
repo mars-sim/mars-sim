@@ -9,6 +9,7 @@ package com.mars_sim.core.interplanetary.transport.resupply;
 import java.io.Serializable;
 
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig.SupplyManifest;
+import com.mars_sim.core.time.EventSchedule;
 
 /**
  * A template for resupply mission information.
@@ -19,9 +20,8 @@ public class ResupplySchedule implements Serializable {
 
     // Data members
     private String name;
-    private double arrivalTime;
     private SupplyManifest supplies;
-    private int frequency;
+    private EventSchedule schedule;
 
     
     /**
@@ -29,11 +29,10 @@ public class ResupplySchedule implements Serializable {
      * @param maximum
      * @param frequency
      */
-    public ResupplySchedule(String name, double arrivalTime, SupplyManifest supplies, int frequency) {
+    public ResupplySchedule(String name, EventSchedule schedule, SupplyManifest supplies) {
         this.name = name;
-        this.arrivalTime = arrivalTime;
+        this.schedule = schedule;
         this.supplies = supplies;
-        this.frequency = frequency;
     }
 
     /**
@@ -45,11 +44,11 @@ public class ResupplySchedule implements Serializable {
     }
 
     /**
-     * Gets the arrival time from the start of the simulation.
+     * Gets the schedule for this resupluy
      * @return arrival time (Sols).
      */
-    public double getFirstArrival() {
-        return arrivalTime;
+    public EventSchedule getSchedule() {
+        return schedule;
     }
 
     /**
@@ -60,18 +59,11 @@ public class ResupplySchedule implements Serializable {
     }
 
     /**
-     * The Sols between each arrival on this schedule.
-     * @return Value of -1 means there is no repeating delivery
-     */
-    public int getFrequency() {
-        return frequency;
-    }
-
-    /**
      * The number of resupply missions that are active with this schedule.
      * @return
      */
     public int getActiveMissions() {
+        int frequency = schedule.getFrequency();
         if (frequency <= 0) {
             // This is a one off so only schedule a single instance
             return 1;

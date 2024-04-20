@@ -28,6 +28,7 @@ import com.mars_sim.core.interplanetary.transport.resupply.ResupplyConfig.Supply
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplySchedule;
 import com.mars_sim.core.person.ai.shift.ShiftPattern;
 import com.mars_sim.core.person.ai.shift.ShiftSpec;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
@@ -94,7 +95,6 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String SPONSOR = "sponsor";
 	private static final String RESUPPLY = "resupply";
 	private static final String RESUPPLY_MISSION = "resupply-mission";
-	private static final String FIRST_ARRIVAL_TIME = "first-arrival-time";
 	private static final String RESOURCE = "resource";
 	private static final String AMOUNT = "amount";
 	private static final String PART = "part";
@@ -113,7 +113,6 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String MODEL = "model";
 	private static final String ROBOT = "robot";
 	
-	private static final String FREQUENCY = "frequency-sols";
 	private static final String MANIFEST_NAME = "manifest-name";
 
 	private static final String ESSENTIAL_RESOURCES = "essential-resources";
@@ -125,17 +124,16 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String MIN_POP = "minPopulation";
 	private static final String MEETING = "meeting";
 	private static final String ACTIVITY = "activity";
-	private static final String START_TIME = "startTime";
 	private static final String SCORE = "score";
 	private static final String DURATION = "duration";
 	private static final String WAIT_DURATION = "waitDuration";
 	private static final String SCOPE = "scope";
 	private static final String LOCATION = "location";
 	private static final String POPULATION = "population";
-	private static final String ACTIVITY_FREQ = "frequency";
-	private static final String FIRST_SOL = "firstSol";
-	private static final String ACTIVITY_SCHEDULE = "activitySchedule";
+	private static final String IMPACT = "impact";
+	private static final String ACTIVITY_SCHEDULE = "activity-schedule";
 	private static final String GROUP_ACTIVITIES = "group-activities";
+	private static final String CALENDAR = "calendar";
 	
 
 	private double[] roverValues = new double[] { 0, 0 };
@@ -239,9 +237,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	 */
 	private static GroupActivityInfo parseGroupActivity(Element ra) {
 		String name = ra.getAttributeValue(NAME);
-		int startTime = ConfigHelper.getAttributeInt(ra, START_TIME);
-		int firstSol = ConfigHelper.getOptionalAttributeInt(ra, FIRST_SOL, 0);
-		int freq = ConfigHelper.getOptionalAttributeInt(ra, ACTIVITY_FREQ, -1);
+
 		int score = ConfigHelper.getOptionalAttributeInt(ra, SCORE, -1);
 		int wait = ConfigHelper.getAttributeInt(ra, WAIT_DURATION);
 		int duration = ConfigHelper.getAttributeInt(ra, DURATION);
@@ -253,7 +249,14 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			meetingPlace = ConfigHelper.getEnum(BuildingCategory.class, locationText);
 		}
 
-		return new GroupActivityInfo(name, startTime, firstSol, wait, duration, freq, pop, score, scope, meetingPlace);
+		ExperienceImpact impact = GroupActivityInfo.DEFAULT_IMPACT;
+		Element impactEl = ra.getChild(IMPACT);
+		if (impactEl != null) {
+			impact = ConfigHelper.parseImpact(impactEl);
+		}
+		var eventCal = ConfigHelper.parseEventCalendar(ra.getChild(CALENDAR));
+		return new GroupActivityInfo(name, wait, duration, eventCal, pop, score, scope,
+										meetingPlace, impact);
 	}
 
 	/**
@@ -794,11 +797,9 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				String resupplyName = resupplyMissionElement.getAttributeValue(NAME);
 				String manifestName = resupplyMissionElement.getAttributeValue(MANIFEST_NAME);
 				SupplyManifest manifest = resupplyConfig.getSupplyManifest(manifestName);
-				double arrivalTime = ConfigHelper.getOptionalAttributeDouble(resupplyMissionElement, FIRST_ARRIVAL_TIME, 0.1);
-				int frequency = ConfigHelper.getOptionalAttributeInt(resupplyMissionElement,
-												FREQUENCY, -1);			
-				ResupplySchedule resupplyMissionTemplate = new ResupplySchedule(resupplyName,
-						arrivalTime, manifest, frequency);
+
+				var schedule = ConfigHelper.parseEventCalendar(resupplyMissionElement.getChild(SCHEDULE));		
+				ResupplySchedule resupplyMissionTemplate = new ResupplySchedule(resupplyName, schedule, manifest);
 				settlementTemplate.addResupplyMissionTemplate(resupplyMissionTemplate);
 			}
 		}

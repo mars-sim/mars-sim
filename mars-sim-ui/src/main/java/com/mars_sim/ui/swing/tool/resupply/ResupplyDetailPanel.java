@@ -126,7 +126,7 @@ public class ResupplyDetailPanel extends JPanel {
 	private void updateResupplyInfo() {
 		ResupplySchedule schedule = resupply.getTemplate();
 		templateLabel.setText((schedule != null ? schedule.getName()
-											+ " (every " + schedule.getFrequency() + " sols)" : ""));
+											+ " (every " + schedule.getSchedule().getFrequency() + " sols)" : ""));
 		destinationValueLabel.setText(resupply.getSettlement().getName());
 		stateValueLabel.setText(resupply.getTransitState().getName());
 		launchDateValueLabel.setText(resupply.getLaunchDate().getTruncatedDateTimeStamp());
