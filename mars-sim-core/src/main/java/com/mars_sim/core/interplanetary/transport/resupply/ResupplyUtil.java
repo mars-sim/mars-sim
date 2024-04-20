@@ -12,6 +12,7 @@ import java.util.List;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementConfig;
 import com.mars_sim.core.time.MarsTime;
@@ -43,7 +44,7 @@ public final class ResupplyUtil {
 	public static List<Resupply> loadInitialResupplyMissions(Simulation sim) {
 		MarsTime currentTime = sim.getMasterClock().getMarsTime();
 		UnitManager unitManager = sim.getUnitManager();
-		SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
+		SettlementConfig settlementConfig = sim.getConfig().getSettlementConfiguration();
 
 		List<Resupply> resupplies = new ArrayList<>();
 			
@@ -52,14 +53,17 @@ public final class ResupplyUtil {
 
 			// For each Settlement get the resupply scheduled defined by the SettlementTemplate
 			for(ResupplySchedule template : settlementConfig.getItem(templateName).getResupplyMissionTemplates()) {
-				MarsTime arrivalDate = currentTime.addTime(template.getFirstArrival() * 1000D);
+				var schedule = template.getSchedule();
+				// Get the local time at teh Settlemnt when this will arrive
+				MarsTime arrivalDate = schedule.getFirstEvent(currentTime,
+						MarsSurface.getTimeOffset(settlement.getCoordinates()));
 
 				// If the frequency is less than transport time also add the next ones
 				for(int cycle = 0; cycle < template.getActiveMissions(); cycle++) {
 					Resupply resupply = new Resupply(template, cycle+1, arrivalDate, settlement);
 					resupplies.add(resupply);
 
-					arrivalDate = arrivalDate.addTime(template.getFrequency() * 1000D);
+					arrivalDate = arrivalDate.addTime(schedule.getFrequency() * 1000D);
 				}
 			}
 		}

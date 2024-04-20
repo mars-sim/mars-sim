@@ -113,12 +113,22 @@
         </xs:complexType>
     </xs:element>
 
+    <!-- This should be a common xsd -->
+    <xs:element name="schedule">
+        <xs:complexType>
+            <xs:attribute name="firstSol" type="xs:string" use="optional"/>
+            <xs:attribute name="eventTime" type="xs:string"/>
+            <xs:attribute name="frequency" type="xs:decimal" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="resupply-mission">
         <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="schedule"/>
+            </xs:sequence>
             <xs:attribute name="name" type="xs:string"/>
             <xs:attribute name="manifest-name" type="xs:string"/>
-            <xs:attribute name="first-arrival-time" type="xs:string"/>
-            <xs:attribute name="frequency-sols" type="xs:decimal" use="optional"/>
         </xs:complexType>
     </xs:element>
 

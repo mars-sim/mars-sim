@@ -180,9 +180,10 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		}
 
 		// If a schedule then create the next one
-		if (template.getFrequency() > 0) {
+		int frequency = template.getSchedule().getFrequency();
+		if (frequency > 0) {
 			// Scheduled the follow on
-			MarsTime newArrival = getArrivalDate().addTime(template.getActiveMissions() * template.getFrequency() * 1000.0);
+			MarsTime newArrival = getArrivalDate().addTime(template.getActiveMissions() * frequency * 1000.0);
 			Resupply followOn = new Resupply(this.getTemplate(), cycle + template.getActiveMissions(),
 												newArrival, settlement);
 			tm.addNewTransportItem(followOn);

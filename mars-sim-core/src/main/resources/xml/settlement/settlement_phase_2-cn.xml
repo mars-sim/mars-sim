@@ -146,10 +146,11 @@
     <part-package name="package 2" number="1" />
    	
     <resupply>
-       	<resupply-mission name="Quarterly Delivery" manifest-name="Standard Resupply 1"
-            first-arrival-time="1"
-            frequency-sols="150" /> 
-        <resupply-mission name="Annual Delivery" manifest-name="Resupply for Phase 2"
-            first-arrival-time="668"/>
+       	<resupply-mission name="Quarterly Delivery" manifest-name="Standard Resupply 1">
+            <schedule firstSol="1" frequency="150" />
+        </resupply-mission>
+        <resupply-mission name="Annual Delivery" manifest-name="Resupply for Phase 2">
+                <schedule firstSol="668" />
+        </resupply-mission>
     </resupply>
 </template>
