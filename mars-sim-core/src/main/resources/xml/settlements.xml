@@ -55,12 +55,9 @@
 	<!ELEMENT grouo-activities (activities, schedule*)>
 
 	<!ELEMENT activities (activity*)>
-	<!ELEMENT activity EMPTY>
+	<!ELEMENT activity (calendar)>
 	<!ATTLIST activity name CDATA #REQUIRED>
 	<!ATTLIST activity type CDATA #IMPLIED>
-	<!ATTLIST activity startTime CDATA #REQUIRED>
-	<!ATTLIST activity frequency CDATA #IMPLIED>
-	<!ATTLIST activity firstSol CDATA #IMPLIED>
 	<!ATTLIST activity score CDATA #IMPLIED>
 	<!ATTLIST activity population CDATA #REQUIRED>
 	<!ATTLIST activity waitDuration CDATA #REQUIRED>
@@ -68,6 +65,11 @@
 	<!ATTLIST activity scope CDATA #REQUIRED>
 	<!ATTLIST activity location CDATA #IMPLIED>
 	
+	<!ELEMENT calendar EMPTY>
+	<!ATTLIST calendar eventTime CDATA #REQUIRED>
+	<!ATTLIST calendar frequency CDATA #IMPLIED>
+	<!ATTLIST calendar firstSol CDATA #IMPLIED>
+
 	<!ELEMENT schedule (meeting*)>
 	<!ATTLIST schedule name CDATA #REQUIRED>
 	<!ATTLIST schedule minPopulation CDATA #IMPLIED>
@@ -172,29 +174,46 @@
 	<group-activities>
 		<activities>
 			<!-- 355 sols is the equivalent of 365 days-->
-			<activity name="Birthday Celebration" startTime="700" frequency="355" score="200"
-						population="0.3" waitDuration="20" duration="100" scope="NONWORK_HOUR"/>
+			<activity name="Birthday Celebration"  score="200"
+						population="0.3" waitDuration="20" duration="100" scope="NONWORK_HOUR">
+				<calendar eventTime="700" frequency="355"/>
+			</activity>
 
 			<!-- One off Announcement to base-->
-			<activity name="Announcement" startTime="400" score="600"
-						population="0.9" waitDuration="20" duration="100" scope="ANY_HOUR"/>
+			<activity name="Announcement" score="600"
+						population="0.9" waitDuration="20" duration="100" scope="ANY_HOUR">
+				<calendar eventTime="400" />
+			</activity>
 
 			<!-- Sky watching party starts 2nd sol into Settlement and evey 10 sols-->
-			<activity name="Night Sky Party" startTime="850" firstSol="2" score="400" frequency="10"
-						population="0.2" waitDuration="80" duration="150" scope="NONWORK_HOUR"
-						location="ASTRONOMY"/>
+			<activity name="Night Sky Party" score="400" population="0.2" waitDuration="80"
+						duration="150" scope="NONWORK_HOUR" location="ASTRONOMY">
+				<calendar eventTime="850" firstSol="2" frequency="10"/>
+				<impact effort="false" stress="-0.1">
+					<skills experienceRatio="10">
+						<skill name="ASTRONOMY"/>
+					</skills>
+				</impact>
+			</activity>
 
-			<activity name="Team Meeting" startTime="500" frequency="6" score="500"
-						population="0.7" waitDuration="20" duration="100" scope="ANY_HOUR"/>
-			<activity name="Movie Night" startTime="700" firstSol="4" frequency="20" score="200"
-						population="0.3" waitDuration="20" duration="150" scope="NONWORK_HOUR"/>
-			<activity name="Safety Training" startTime="400" firstSol="7" frequency="20" score="400"
-						population="0.3" waitDuration="20" duration="10" scope="WORK_HOUR"/>
+			<activity name="Team Meeting" score="500" population="0.7" waitDuration="20"
+						duration="100" scope="ANY_HOUR">
+				<calendar eventTime="500" frequency="6"/>
+			</activity>
+			<activity name="Movie Night" score="200" population="0.3" waitDuration="20"
+						duration="150" scope="NONWORK_HOUR">
+				<calendar eventTime="700" firstSol="4" frequency="20" />
+				<impact effort="false" stress="-1"/>
+			</activity>
+			<activity name="Safety Training"  score="400" population="0.3" waitDuration="20"
+						duration="10" scope="WORK_HOUR">
+				<calendar eventTime="400" firstSol="7" frequency="20"/>
+			</activity>
 		</activities>
 
 		<!-- Activities for a small settlement is just essential meetings -->
 		<schedule name="Small Settlement" minPopulation="6">
-			<rmeeting name="Team Meeting"/>
+			<meeting name="Team Meeting"/>
 		</schedule>
 
 		<!-- Activities for a large settlement include a social life and regular meetings-->

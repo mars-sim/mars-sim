@@ -10,6 +10,7 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.structure.building.BuildingCategory;
+import com.mars_sim.core.time.EventSchedule;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.mapdata.location.LocalPosition;
 
@@ -24,12 +25,13 @@ public class GroupActivityTaskTest extends AbstractMarsSimUnitTest {
 
         var t = new MarsTime(1, 1, 1, 0, 1);
 
-        var info = new GroupActivityInfo("One", 800, 0, 10, 50, 0, 1D, 100,
+        var calendar = new EventSchedule(0, 0, 800);
+        var info = new GroupActivityInfo("One", 10, 50, calendar, 1D, 100,
         TaskScope.NONWORK_HOUR, BuildingCategory.LIVING, GroupActivityInfo.DEFAULT_IMPACT);
 
-        // Build activity and move onto waitign phase
+        // Build activity and move onto waiting phase
         var ga = new GroupActivity(info, s, t);
-        t = t.addTime(info.startTime());
+        t = t.addTime(calendar.getTimeOfDay());
         ga.execute(t);
 
         // Assign person to Task

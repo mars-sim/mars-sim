@@ -14,6 +14,7 @@ import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.structure.GroupActivityType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.time.EventSchedule;
 import com.mars_sim.core.time.MarsTime;
 
 /**
@@ -51,7 +52,7 @@ public class GroupActivity implements ScheduledEventHandler {
         this.owner = owner;
         this.name = definition.name();
 
-        attachToSettlement(now, definition.firstSol());
+        attachToSettlement(now, definition.calendar());
     }
 
     /**
@@ -70,28 +71,22 @@ public class GroupActivity implements ScheduledEventHandler {
         this.name = name  +  (instigator != null ? " (" + instigator.getName() + ")"
                                                 : "");
 
-        attachToSettlement(now, startSol);
+        attachToSettlement(now, definition.calendar().adjustStartSol(startSol));
     }
 
-
-    private void attachToSettlement(MarsTime now, int delayedSol) {    
+    /**
+     * Attach to a Settlement based on the current time and a calendar. Start time is adjusted
+     * for the position of the settlement around the planet/
+     * @param now Time now
+     * @param calendar 
+     */
+    private void attachToSettlement(MarsTime now, EventSchedule calendar) {    
         // Calculate the duration to the next scheduled start of this activity
         // But adjust to the local time zone
         int offset = MarsSurface.getTimeOffset(owner.getCoordinates());
-        int standardStartTime = (definition.startTime() + offset) % 1000;
-
-        // mSols to the schedued start
-        int toEvent = standardStartTime - now.getMillisolInt();
-        if (toEvent < 0) {
-            // Passed today
-            toEvent = 1000 + toEvent;
-        } 
-
-        // Add in the first sol
-        toEvent += delayedSol * 1000;
         
         state = ActivityState.SCHEDULED;
-        startTime = now.addTime(toEvent);
+        startTime = calendar.getFirstEvent(now, offset);
         owner.getFutureManager().addEvent(startTime, this);
     }
 
@@ -129,7 +124,7 @@ public class GroupActivity implements ScheduledEventHandler {
             case ACTIVE:
                 // Activity has completed, so rescheduled in the future
                 meetingPlace = null;
-                int freq = definition.solFrequency();
+                int freq = definition.calendar().getFrequency();
                 if (freq > 0) {
                     state = ActivityState.SCHEDULED;
                     int elapsed = 1000 * freq;

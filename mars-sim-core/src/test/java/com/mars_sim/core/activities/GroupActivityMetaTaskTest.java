@@ -8,13 +8,15 @@ import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.structure.GroupActivityType;
 import com.mars_sim.core.structure.building.BuildingCategory;
+import com.mars_sim.core.time.EventSchedule;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
 
-    private final static GroupActivityInfo ONE = new GroupActivityInfo("One", 800, 0, 10, 50, 0, 1D, 100,
-                        TaskScope.NONWORK_HOUR, BuildingCategory.LIVING, GroupActivityInfo.DEFAULT_IMPACT);
+    private final static GroupActivityInfo ONE = new GroupActivityInfo("One", 10, 50,
+                                new EventSchedule(0, 0, 800), 1D, 100,
+                                TaskScope.NONWORK_HOUR, BuildingCategory.LIVING, GroupActivityInfo.DEFAULT_IMPACT);
 
     public void testGetSettlementTasks() {
         var s = buildSettlement();
