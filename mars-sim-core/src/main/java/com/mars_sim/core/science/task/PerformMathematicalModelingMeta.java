@@ -4,7 +4,7 @@
  * @Date 2021-12-20
  * @author Scott Davis
  */
-package com.mars_sim.core.person.ai.task.meta;
+package com.mars_sim.core.science.task;
 
 import java.util.List;
 
@@ -14,7 +14,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.role.RoleType;
-import com.mars_sim.core.person.ai.task.PerformMathematicalModeling;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
@@ -48,7 +47,7 @@ public class PerformMathematicalModelingMeta extends FactoryMetaTask {
 
     @Override
     public Task constructInstance(Person person) {
-        return new PerformMathematicalModeling(person);
+        return PerformMathematicalModeling.createTask(person);
     }
 
     @Override
@@ -69,11 +68,11 @@ public class PerformMathematicalModelingMeta extends FactoryMetaTask {
         if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
             && !primaryStudy.isPrimaryResearchCompleted()
             && ScienceType.MATHEMATICS == primaryStudy.getScience()) {
-            Lab lab = PerformMathematicalModeling.getLocalLab(person);
+            Lab lab = LabTask.getLocalLab(person, ScienceType.MATHEMATICS);
             if (lab != null) {
                 double primaryResult = 50D;
                 // Get lab building crowding modifier.
-                primaryResult *= PerformMathematicalModeling.getLabCrowdingModifier(person, lab);
+                primaryResult *= LabTask.getLabCrowdingModifier(person, lab);
                 if (primaryStudy.getScience() != jobScience) {
                     primaryResult /= 2D;
                 }
@@ -94,11 +93,11 @@ public class PerformMathematicalModelingMeta extends FactoryMetaTask {
                     && !collabStudy.isCollaborativeResearchCompleted(person)) {
                 ScienceType collabScience = collabStudy.getContribution(person);
                 if (ScienceType.MATHEMATICS == collabScience) {
-                    Lab lab = PerformMathematicalModeling.getLocalLab(person);
+                    Lab lab = LabTask.getLocalLab(person, ScienceType.MATHEMATICS);
                     if (lab != null) {
                         double collabResult = 25D;
                         // Get lab building crowding modifier.
-                        collabResult *= PerformMathematicalModeling.getLabCrowdingModifier(person, lab);
+                        collabResult *= LabTask.getLabCrowdingModifier(person, lab);
                         // If researcher's current job isn't related to study science, divide by two.
                         if (collabScience != jobScience) {
                             collabResult /= 2D;

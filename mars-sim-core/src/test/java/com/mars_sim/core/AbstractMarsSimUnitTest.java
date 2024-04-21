@@ -164,7 +164,11 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	}
 
 	protected Settlement buildSettlement(String name) {
-		Settlement settlement = new MockSettlement(name);
+		return buildSettlement(name, false);
+	}
+
+	protected Settlement buildSettlement(String name, boolean needGoods) {
+		Settlement settlement = new MockSettlement(name, needGoods);
 		unitManager.addUnit(settlement);
 
 		return settlement;
@@ -239,7 +243,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	 * Better Assert method 
 	 */
 	public static void assertGreaterThan(String message, double minValue, double actual) {
-		if (actual < minValue) {
+		if (actual <= minValue) {
 			fail(message + " ==> " +
 					"Expected: a value greater than <" + minValue + ">\n" +
 					"Actual was <" + actual + ">");

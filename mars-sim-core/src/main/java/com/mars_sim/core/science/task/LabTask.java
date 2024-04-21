@@ -53,6 +53,12 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
                     TaskPhase researchPhase, String descriptionKey) {
         super(name, person, false, impact, duration);
 		
+		if (person.isOutside()) {
+			logger.warning(person, "Still Outside.");
+			endTask();
+			return;
+		}
+
         this.computingSeed = RandomUtil.getRandomDouble(.03, 0.1);
 		this.computingNeeded = duration * computingSeed;
 		this.researchAssistant = null;
@@ -87,8 +93,6 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 		}
     }
 
-    
-	
 	/**
 	 * Adds a person to a lab.
 	 * 
@@ -180,8 +184,6 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 		else
 			return pickALab(person, labs4);
 	}
-
-    
 
 	/**
 	 * Pick a lab by weighted probability.
@@ -377,6 +379,12 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
             return time;
 		}
 
+		// Do any special research activity
+		executeResearchActivity(time);
+		if (isDone()) {
+			return 0D;
+		}
+
 		// Add research work time to study.
 		double researchTime = getEffectiveResearchTime(time);
 		boolean isPrimary = study.getPrimaryResearcher().equals(person);
@@ -401,6 +409,14 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 		return remainingTime;
 	}
 
+	/**
+	 * Do any special research activity in the lab. Default is nothing
+	 * but should be overriden for subtasks if needed.
+	 * @param time Time spent doing the lab research
+	 */
+	protected void executeResearchActivity(double time) {
+		// By default there is nothing to do
+	}
 
 	@Override
 	public ScienceType getResearchScience() {

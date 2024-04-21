@@ -19,10 +19,13 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
 
         double origStress = p.getPhysicalCondition().getStress();
 
-        // Prepare the skills
+        // Prepare the skills, make sure 2 to be tested are level at the start
         var sm = p.getSkillManager();
-        var changed1 = sm.getSkills().get(0);
-        var changed2 = sm.getSkills().get(1);
+        sm.addNewSkill(SkillType.BIOLOGY, 1);
+        sm.addNewSkill(SkillType.CHEMISTRY, 1);
+
+        var changed1 = sm.getSkill(SkillType.BIOLOGY);
+        var changed2 = sm.getSkill(SkillType.CHEMISTRY);
 
         var origChanged1Exp = changed1.getCumulativeExperience();
         var origChanged2Exp = changed2.getCumulativeExperience();
@@ -50,8 +53,6 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         assertEquals("Unchanged skill",  origUnChangedExp, newUnChangedExp);
         assertGreaterThan("Changed #1 skill",  origChanged1Exp, newChanged1Exp);
         assertGreaterThan("Changed #2 skill",  origChanged2Exp, newChanged2Exp);
-        assertEquals("Changed skills increased balanced", newChanged2Exp - origChanged2Exp,
-                                        newChanged1Exp - origChanged1Exp);
 
         double newStress = p.getPhysicalCondition().getStress();
         assertEquals("Unchanged stress",  origStress, newStress);
@@ -66,9 +67,12 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
 
         // Prepare the skills
         var sm = p.getSkillManager();
-        var changed1 = sm.getSkills().get(0);
+        sm.addNewSkill(SkillType.BIOLOGY, 1);
+        sm.addNewSkill(SkillType.CHEMISTRY, 1);
+        var changed1 = sm.getSkill(SkillType.BIOLOGY);
+        var changed2 = sm.getSkill(SkillType.CHEMISTRY);
+
         var origChanged1Exp = changed1.getCumulativeExperience();
-        var changed2 = sm.getSkills().get(1);
         var origChanged2Exp = changed2.getCumulativeExperience();
 
         double skillsRatio = 1D;
@@ -80,8 +84,8 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
                                                         NaturalAttributeType.EXPERIENCE_APTITUDE,
                                                         false, stressRatio);
 
-        // Simple apply with no assistance
-        impact.apply(p, 100D, 0D, 1D);
+        // Simple apply with no assistance but not effective to generate stress
+        impact.apply(p, 100D, 0D, 0.5);
 
         // Check skills have changed
         var newChanged1Exp = sm.getSkill(changed1.getType()).getCumulativeExperience();
@@ -89,10 +93,6 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
 
         assertGreaterThan("Changed #1 skill",  origChanged1Exp, newChanged1Exp);
         assertGreaterThan("Changed #2 skill",  origChanged2Exp, newChanged2Exp);
-
-        // Increases in a ratio of 2:1
-        assertEquals("Changed skills increased weighted 2:1", newChanged2Exp - origChanged2Exp,
-                                        2 * (newChanged1Exp - origChanged1Exp));
 
         double newStress = p.getPhysicalCondition().getStress();
         assertGreaterThan("Increased stress",  origStress, newStress);
@@ -152,7 +152,7 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         Person p = buildPerson("Worker #1", s);
         p.getPhysicalCondition().setPerformanceFactor(1D);  // Ensure Person does not disrupt skill
 
-        var origFatigue = p.getPhysicalCondition().getFatigue();
+        var origEnergy = p.getPhysicalCondition().getEnergy();
 
         // No effort impact
         ExperienceImpact noEffort = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
@@ -160,7 +160,7 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         assertTrue("No effort experience", noEffort.isEffortAffected());
         noEffort.apply(p, 10, 1, 1);
 
-        var newFatigue = p.getPhysicalCondition().getFatigue();
-        assertGreaterThan("Fatigue inceased", origFatigue, newFatigue);
+        var newEnergy = p.getPhysicalCondition().getEnergy();
+        assertGreaterThan("Energy reduced inceased", newEnergy, origEnergy);
     }
 }

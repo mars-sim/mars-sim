@@ -2,6 +2,7 @@ package com.mars_sim.core.structure;
 
 import java.util.ArrayList;
 
+import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.connection.BuildingConnectorManager;
 import com.mars_sim.core.structure.construction.ConstructionManager;
@@ -17,10 +18,10 @@ public class MockSettlement extends Settlement {
 	public static final String SETTLEMENT_TEMPLATE = "Alpha Base";
 
 	public MockSettlement()  {
-		this(DEFAULT_NAME);
+		this(DEFAULT_NAME, false);
 	}
 
-	public MockSettlement(String name) {
+	public MockSettlement(String name, boolean needGoods) {
 		// Use Settlement constructor.
 		super(name, new Coordinates(Math.PI / 2D, 0));
 	
@@ -40,6 +41,9 @@ public class MockSettlement extends Settlement {
 
         // Initialize power grid
         powerGrid = new PowerGrid(this);
+
+		if (needGoods)
+			goodsManager = new GoodsManager(this);
 	}	
 
 	@Override
