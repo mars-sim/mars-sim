@@ -2,39 +2,28 @@ package com.mars_sim.core.science.task;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
-import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.mapdata.location.LocalPosition;
+import com.mars_sim.core.structure.Settlement;
 
 public class LabTaskTest extends AbstractMarsSimUnitTest {
-    private ScientificStudy buildStudy(ScienceType science) {
-        // Build a settlemtn with a lab and put a Person in it
-        var s = buildSettlement("Study", true);
-        var l = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
-        var p = buildPerson("Researcher", s);
-        BuildingManager.addPersonToActivitySpot(p, l, FunctionType.RESEARCH);
 
-        // Build a study
-        var study = sim.getScientificStudyManager().createScientificStudy(p, science, 10);
-        assertEquals("Person assigned Study", study, p.getStudy());
-
-        // COmplete Proposal
-        study.addProposalWorkTime(study.getTotalProposalWorkTimeRequired() + 10D);
-        study.timePassing(createPulse(sim.getMasterClock().getMarsTime(), false, false));
+    static ScientificStudy buildStudyToResearchPhase(Settlement s, MarsSimContext context,
+                                ScienceType science, JobType researchJob) {
+        var study = InviteStudyCollaboratorTest.buildStudyToInvitePhase(s, context, science, researchJob);
 
         // No collabarators so advance further
-        study.timePassing(createPulse(sim.getMasterClock().getMarsTime(), false, false));
+        study.timePassing(context.createPulse(context.getSim().getMasterClock().getMarsTime(), false, false));
         assertEquals("Study start phase", ScientificStudy.RESEARCH_PHASE, study.getPhase());
         return study;
     }
 
     public void testStudyFieldSamples() {
-        var study = buildStudy(ScienceType.CHEMISTRY);
+        var s = buildSettlement("Study", true);
+        var study = buildStudyToResearchPhase(s, this, ScienceType.CHEMISTRY, JobType.BOTANIST);
         var p = study.getPrimaryResearcher();
-        var s = p.getAssociatedSettlement();
 
         // Add some rocks to test
         int rockId = ResourceUtil.rockIDs[0];
@@ -47,7 +36,7 @@ public class LabTaskTest extends AbstractMarsSimUnitTest {
 
         // Do all the required research
         var origResearchCompleted = study.getPrimaryResearchWorkTimeCompleted();
-        executeTask(p, task, (int)(study.getTotalPrimaryResearchWorkTimeRequired() * 1.1/MSOLS_PER_EXECUTE));
+        executeTaskForDuration(p, task, study.getTotalPrimaryResearchWorkTimeRequired());
         assertTrue("Lab task is done", task.isDone());
         var newResearchCompleted = study.getPrimaryResearchWorkTimeCompleted();
         assertGreaterThan("Primary research advanced", origResearchCompleted, newResearchCompleted);
@@ -57,7 +46,8 @@ public class LabTaskTest extends AbstractMarsSimUnitTest {
     }
 
     public void testPerformLabResearch() {
-        var study = buildStudy(ScienceType.BIOLOGY);
+        var s = buildSettlement("Study", true);
+        var study = buildStudyToResearchPhase(s, this, ScienceType.BIOLOGY, JobType.BOTANIST);
         var p = study.getPrimaryResearcher();
 
         var task  = PerformLaboratoryResearch.createTask(p);
@@ -67,14 +57,16 @@ public class LabTaskTest extends AbstractMarsSimUnitTest {
 
         // Do all the required research
         var origResearchCompleted = study.getPrimaryResearchWorkTimeCompleted();
-        executeTask(p, task, (int)(study.getTotalPrimaryResearchWorkTimeRequired() * 1.1/MSOLS_PER_EXECUTE));
+        executeTaskForDuration(p, task, study.getTotalPrimaryResearchWorkTimeRequired());
         assertTrue("Lab task is done", task.isDone());
         var newResearchCompleted = study.getPrimaryResearchWorkTimeCompleted();
         assertGreaterThan("Primary research advanced", origResearchCompleted, newResearchCompleted);
     }
 
     public void testMathModelling() {
-        var study = buildStudy(ScienceType.MATHEMATICS);
+        var s = buildSettlement("Study", true);
+
+        var study = buildStudyToResearchPhase(s, this, ScienceType.MATHEMATICS, JobType.BOTANIST);
         var p = study.getPrimaryResearcher();
 
         var task  = PerformMathematicalModeling.createTask(p);
@@ -84,14 +76,16 @@ public class LabTaskTest extends AbstractMarsSimUnitTest {
 
         // Do all the required research
         var origResearchCompleted = study.getPrimaryResearchWorkTimeCompleted();
-        executeTask(p, task, (int)(study.getTotalPrimaryResearchWorkTimeRequired() * 1.1/MSOLS_PER_EXECUTE));
+        executeTaskForDuration(p, task, study.getTotalPrimaryResearchWorkTimeRequired());
         assertTrue("Lab task is done", task.isDone());
         var newResearchCompleted = study.getPrimaryResearchWorkTimeCompleted();
         assertGreaterThan("Primary research advanced", origResearchCompleted, newResearchCompleted);
     }
 
     public void testLabMetaTask() {
-        var study = buildStudy(ScienceType.BIOLOGY);
+        var s = buildSettlement("Study", true);
+
+        var study = buildStudyToResearchPhase(s, this, ScienceType.BIOLOGY, JobType.BOTANIST);
         var p = study.getPrimaryResearcher();
 
         var lmt = new PerformLaboratoryResearchMeta();
@@ -99,19 +93,23 @@ public class LabTaskTest extends AbstractMarsSimUnitTest {
     }
 
     public void testStudyFieldMetaTask() {
-        var study = buildStudy(ScienceType.CHEMISTRY);
+        var s = buildSettlement("Study", true);
+
+        var study = buildStudyToResearchPhase(s, this, ScienceType.CHEMISTRY, JobType.BOTANIST);
         var p = study.getPrimaryResearcher();
 
         // Add some rocks to test
         int rockId = ResourceUtil.rockIDs[0];
-        p.getAssociatedSettlement().storeAmountResource(rockId, 100D);
+        s.storeAmountResource(rockId, 100D);
 
         var mmt = new StudyFieldSamplesMeta();
         assertFalse("Found tasks for Study Field meta tasks", mmt.getTaskJobs(p).isEmpty());
     }
     
     public void testMathMetaTask() {
-        var study = buildStudy(ScienceType.MATHEMATICS);
+        var s = buildSettlement("Study", true);
+
+        var study = buildStudyToResearchPhase(s, this, ScienceType.MATHEMATICS, JobType.BOTANIST);
         var p = study.getPrimaryResearcher();
 
         var mmt = new PerformMathematicalModelingMeta();

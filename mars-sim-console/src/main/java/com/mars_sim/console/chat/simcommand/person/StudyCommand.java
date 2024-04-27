@@ -15,8 +15,8 @@ import com.mars_sim.console.chat.ConversationRole;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.task.ProposeScientificStudy;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.task.ProposeScientificStudy;
 
 /** 
  * Displays any active Scientific Studies for this Person

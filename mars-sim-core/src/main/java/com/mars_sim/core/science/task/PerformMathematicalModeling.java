@@ -6,8 +6,6 @@
  */
 package com.mars_sim.core.science.task;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.person.Person;
@@ -40,6 +38,8 @@ public class PerformMathematicalModeling extends LabTask {
     private static final TaskPhase MODELING = new TaskPhase(Msg.getString(
             "Task.phase.modeling")); //$NON-NLS-1$
 
+    static final Set<ScienceType> MODELLING_SCIENCE = Set.of(ScienceType.MATHEMATICS);
+
 	/**
 	 * Create a Task to perform lab research. This will select the most appropirate Scientific Study for the Person
 	 * and create an appropriate Task.
@@ -47,7 +47,7 @@ public class PerformMathematicalModeling extends LabTask {
 	 * @return
 	 */
 	public static PerformMathematicalModeling createTask(Person person) {
-		var study = determineStudy(person);
+		var study = determineStudy(person, MODELLING_SCIENCE);
 		if ((study != null) && (study.getContribution(person) != null)) {
 			return new PerformMathematicalModeling(person, study, IMPACT);
 		}
@@ -66,38 +66,4 @@ public class PerformMathematicalModeling extends LabTask {
 		MODELING, "performMathematicalModeling");
 
 	}
-
-	/**
-	 * Determines the scientific study that will be researched.
-	 * 
-	 * @return study or null if none available.
-	 */
-	private static ScientificStudy determineStudy(Person person) {
-        List<ScientificStudy> possibleStudies = new ArrayList<>();
-
-        // Add primary study if mathematics and in research phase.
-         ScientificStudy primaryStudy = person.getStudy();
-        if (primaryStudy != null
-            && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) 
-            && !primaryStudy.isPrimaryResearchCompleted() 
-            && ScienceType.MATHEMATICS == primaryStudy.getScience()) {
-        	// Primary study added twice to double chance of random selection.
-        	possibleStudies.add(primaryStudy);
-        	possibleStudies.add(primaryStudy);
-        }
-
-        // Add all collaborative studies with mathematics and in research phase.
-        for (ScientificStudy collabStudy : person.getCollabStudies()) {
-            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) &&
-                    !collabStudy.isCollaborativeResearchCompleted(person)) {
-                ScienceType collabScience = collabStudy.getContribution(person);
-                if (ScienceType.MATHEMATICS == collabScience) {
-                    possibleStudies.add(collabStudy);
-                }
-            }
-        }
-
-        // Randomly select study.
-        return RandomUtil.getRandomElement(possibleStudies);
-    }
 }

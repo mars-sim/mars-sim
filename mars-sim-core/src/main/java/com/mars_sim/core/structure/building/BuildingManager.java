@@ -45,7 +45,6 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
-import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementTemplate;
 import com.mars_sim.core.structure.building.connection.BuildingConnector;
@@ -671,16 +670,16 @@ public class BuildingManager implements Serializable {
 	 * @param person the person
 	 * @return available building or null if none.
 	 */
-	public static Building getAvailableBuilding(ScientificStudy study, Person person) {
+	public static Building getAvailableBuilding(ScienceType sType, Person person) {
 		Building b = person.getBuildingLocation();
 
 		// If this person is located in the settlement
 		if (person.isInSettlement()) {
 			Set<Building> buildings = null;
 
-			if (study != null) {
+			if (sType != null) {
 				buildings = person.getSettlement().getBuildingManager()
-						.getBuildingsWithScienceType(person, study.getScience());
+						.getBuildingsWithScienceType(person, sType);
 			}
 
 			if (buildings == null || buildings.isEmpty()) {

@@ -20,8 +20,8 @@ import com.mars_sim.core.data.RatingLog;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.task.RespondToStudyInvitation;
 import com.mars_sim.core.person.ai.task.Walk;
+import com.mars_sim.core.science.task.RespondToStudyInvitation;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
@@ -364,10 +364,8 @@ public abstract class TaskManager implements Serializable {
 	
 	    Task task = currentTask;
 	    while ((task != null) && !result) {
-	        if (task instanceof Walk walkTask) {
-	            if (walkTask.isWalkingThroughVehicle(vehicle)) {
-	                result = true;
-	            }
+	        if ((task instanceof Walk walkTask) && walkTask.isWalkingThroughVehicle(vehicle)) {
+	            result = true;
 	        }
 	        task = task.getSubTask();
 	    }
@@ -387,10 +385,8 @@ public abstract class TaskManager implements Serializable {
 	
 		Task task = currentTask;
 		while ((task != null) && !result) {
-			if (task instanceof Walk walkTask) {
-				if (walkTask.isWalkingThroughBuilding(building)) {
-					result = true;
-				}
+			if ((task instanceof Walk walkTask) && walkTask.isWalkingThroughBuilding(building)) {
+				result = true;
 			}
 			task = task.getSubTask();
 		}
@@ -418,7 +414,7 @@ public abstract class TaskManager implements Serializable {
 			else if (newTask.isDone()) {
 				logger.warning(worker, "Pending '" + job.getName() + "' was no longer possible.");				
 			}
-			// TODO Potential here to loose started Task if new pending matches the existing
+			// Potential here to loose started Task if new pending matches the existing
 			// check should be done against the TaskJob and delay the Task creation untilt eh name check
 			else if ((currentTask == null) || !hasSameTask(newTask.getName())) {		
 				// Note: this is the only eligible condition for replacing the

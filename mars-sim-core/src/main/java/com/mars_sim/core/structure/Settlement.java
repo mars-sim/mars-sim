@@ -386,6 +386,9 @@ public class Settlement extends Structure implements Temporal,
 		ShiftPattern shifts = settlementConfig.getShiftByPopulation(10);
 		shiftManager = new ShiftManager(this, shifts,
 										masterClock.getMarsTime().getMillisolInt());
+
+		// Initialize scientific achievement.
+		scientificAchievement = new EnumMap<>(ScienceType.class);
 	}
 
 	/**

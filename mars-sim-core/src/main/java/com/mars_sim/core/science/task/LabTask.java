@@ -6,7 +6,9 @@
  */
 package com.mars_sim.core.science.task;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -92,6 +94,40 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 			endTask();
 		}
     }
+
+		/**
+	 * Determines the scientific study that will be researched.
+	 * 
+	 * @return study or null if none available.
+	 */
+	protected static ScientificStudy determineStudy(Person person, Set<ScienceType> target) {
+		List<ScientificStudy> possibleStudies = new ArrayList<>();
+
+		// Add primary study if appropriate science and in research phase.
+		ScientificStudy primaryStudy = person.getStudy();
+		if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
+					&& !primaryStudy.isPrimaryResearchCompleted()
+					&& target.contains(primaryStudy.getScience())) {
+			// Primary study added twice to double chance of random selection.
+			possibleStudies.add(primaryStudy);
+			possibleStudies.add(primaryStudy);
+		}
+
+		// Add all collaborative studies with appropriate sciences and in research
+		// phase.
+		for(ScientificStudy collabStudy : person.getCollabStudies()) {
+			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
+					&& !collabStudy.isCollaborativeResearchCompleted(person)) {
+				ScienceType collabScience = collabStudy.getContribution(person);
+				if (target.contains(collabScience)) {
+					possibleStudies.add(collabStudy);
+				}
+			}
+		}
+
+		// Randomly select study.
+		return RandomUtil.getRandomElement(possibleStudies);
+	}
 
 	/**
 	 * Adds a person to a lab.

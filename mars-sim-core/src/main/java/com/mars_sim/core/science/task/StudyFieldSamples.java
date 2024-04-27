@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.science.task;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -62,7 +61,7 @@ public class StudyFieldSamples extends LabTask {
 	 * @return
 	 */
 	public static StudyFieldSamples createTask(Person person) {
-		var study = determineStudy(person);
+		var study = determineStudy(person, FIELD_SCIENCES);
 		if ((study != null) && (study.getContribution(person) != null)) {
 			// Found a suitable study
 			var impact = new ExperienceImpact(10D, NaturalAttributeType.ACADEMIC_APTITUDE,
@@ -84,40 +83,6 @@ public class StudyFieldSamples extends LabTask {
 		super(NAME, person, study, impact, 10D + RandomUtil.getRandomDouble(50D),
 		STUDYING_SAMPLES, "Task.description.studyFieldSamples");
 
-	}
-
-	/**
-	 * Determines the scientific study that will be researched.
-	 * 
-	 * @return study or null if none available.
-	 */
-	private static ScientificStudy determineStudy(Person person) {
-		List<ScientificStudy> possibleStudies = new ArrayList<>();
-
-		// Add primary study if appropriate science and in research phase.
-		ScientificStudy primaryStudy = person.getStudy();
-		if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
-					&& !primaryStudy.isPrimaryResearchCompleted()
-					&& FIELD_SCIENCES.contains(primaryStudy.getScience())) {
-			// Primary study added twice to double chance of random selection.
-			possibleStudies.add(primaryStudy);
-			possibleStudies.add(primaryStudy);
-		}
-
-		// Add all collaborative studies with appropriate sciences and in research
-		// phase.
-		for(ScientificStudy collabStudy : person.getCollabStudies()) {
-			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
-					&& !collabStudy.isCollaborativeResearchCompleted(person)) {
-				ScienceType collabScience = collabStudy.getContribution(person);
-				if (FIELD_SCIENCES.contains(collabScience)) {
-					possibleStudies.add(collabStudy);
-				}
-			}
-		}
-
-		// Randomly select study.
-		return RandomUtil.getRandomElement(possibleStudies);
 	}
 
 	/**
