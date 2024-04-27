@@ -19,6 +19,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.vehicle.Rover;
@@ -153,7 +154,7 @@ public class ProposeScientificStudy extends Task {
 	private double proposingPhase(double time) {
 		double remainingTime = 0;
 		
-		if (!study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
+		if (study.getPhase() != StudyStatus.PROPOSAL_PHASE) {
 			endTask();
 			return time;
 		}

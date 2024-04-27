@@ -6,6 +6,7 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Settlement;
 
 public class LabTaskTest extends AbstractMarsSimUnitTest {
@@ -16,7 +17,7 @@ public class LabTaskTest extends AbstractMarsSimUnitTest {
 
         // No collabarators so advance further
         study.timePassing(context.createPulse(context.getSim().getMasterClock().getMarsTime(), false, false));
-        assertEquals("Study start phase", ScientificStudy.RESEARCH_PHASE, study.getPhase());
+        assertEquals("Study start phase", StudyStatus.RESEARCH_PHASE, study.getPhase());
         return study;
     }
 

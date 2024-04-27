@@ -21,6 +21,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
@@ -172,7 +173,7 @@ public class PeerReviewStudyPaper extends Task {
         // Get all studies in the peer review phase.
         for(ScientificStudy study : scientificStudyManager.getAllStudies(false)) {
             // Check that person isn't a researcher in the study.
-            if (ScientificStudy.PEER_REVIEW_PHASE.equals(study.getPhase())
+            if ((StudyStatus.PEER_REVIEW_PHASE == study.getPhase())
                     && !person.equals(study.getPrimaryResearcher())
                     && !study.getCollaborativeResearchers().contains(person)) {
 

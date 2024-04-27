@@ -19,6 +19,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.vehicle.Rover;
@@ -139,7 +140,7 @@ extends Task {
 
         // Add primary study if in paper phase.
         ScientificStudy primaryStudy = person.getStudy();
-        if ((primaryStudy != null) && ScientificStudy.PAPER_PHASE.equals(primaryStudy.getPhase()) &&
+        if ((primaryStudy != null) && (StudyStatus.PAPER_PHASE == primaryStudy.getPhase()) &&
                     !primaryStudy.isPrimaryPaperCompleted()) {
             // Primary study added twice to double chance of random selection.
             possibleStudies.add(primaryStudy);
@@ -148,7 +149,7 @@ extends Task {
 
         // Add all collaborative studies in research phase.
         for(ScientificStudy collabStudy : person.getCollabStudies()) {
-            if (ScientificStudy.PAPER_PHASE.equals(collabStudy.getPhase()) &&
+            if ((StudyStatus.PAPER_PHASE == collabStudy.getPhase()) &&
                     !collabStudy.isCollaborativePaperCompleted(person))
                 possibleStudies.add(collabStudy);
         }

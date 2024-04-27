@@ -47,7 +47,7 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 			String priPhase = "";
 			if (ss != null) {
 				priName = ss.getScience().getName();
-				priPhase = ss.getPhase();
+				priPhase = ss.getPhase().getName();
 			}
 			response.appendLabeledString("Ongoing Primary Study", priName + " - " + priPhase);
 
@@ -57,7 +57,7 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 				response.appendTableHeading("Collaborative Study", 22, "Phase");
 				for (ScientificStudy item : cols) {
 					String secName = item.getScience().getName();
-					String secPhase = item.getPhase();
+					String secPhase = item.getPhase().getName();
 					response.appendTableRow(secName, secPhase);
 				}
 			}

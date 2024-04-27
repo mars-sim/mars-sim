@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.ScientificStudyFieldWork;
@@ -20,6 +19,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.mapdata.location.Coordinates;
@@ -38,9 +38,6 @@ public abstract class FieldStudyMission extends EVAMission {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(FieldStudyMission.class.getName());
-	
 	/** Mission phase. */
 	public static final MissionPhase RESEARCH_SITE = new MissionPhase("Mission.phase.researchingFieldSite");
 	private static final MissionStatus NO_ONGOING_SCIENTIFIC_STUDY = new MissionStatus("Mission.status.noStudy");
@@ -184,13 +181,12 @@ public abstract class FieldStudyMission extends EVAMission {
 		// Add primary study if in research phase.
 		ScientificStudy primaryStudy = researcher.getStudy();
 		if (primaryStudy != null) {
-			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
-					&& !primaryStudy.isPrimaryResearchCompleted()) {
-				if (science == primaryStudy.getScience()) {
-					// Primary study added twice to double chance of random selection.
-					possibleStudies.add(primaryStudy);
-					possibleStudies.add(primaryStudy);
-				}
+			if ((StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase())
+					&& !primaryStudy.isPrimaryResearchCompleted()
+					&& (science == primaryStudy.getScience())) {
+				// Primary study added twice to double chance of random selection.
+				possibleStudies.add(primaryStudy);
+				possibleStudies.add(primaryStudy);
 			}
 		}
 
@@ -198,7 +194,7 @@ public abstract class FieldStudyMission extends EVAMission {
 		Iterator<ScientificStudy> i = researcher.getCollabStudies().iterator();
 		while (i.hasNext()) {
 			ScientificStudy collabStudy = i.next();
-			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
+			if (StudyStatus.RESEARCH_PHASE.equals(collabStudy.getPhase())
 					&& !collabStudy.isCollaborativeResearchCompleted(researcher)) {
 				if (science == collabStudy.getContribution(researcher)) {
 					possibleStudies.add(collabStudy);

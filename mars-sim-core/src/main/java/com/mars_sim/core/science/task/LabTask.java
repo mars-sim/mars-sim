@@ -22,6 +22,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Lab;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
@@ -105,7 +106,7 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 
 		// Add primary study if appropriate science and in research phase.
 		ScientificStudy primaryStudy = person.getStudy();
-		if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
+		if ((primaryStudy != null) && StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase()
 					&& !primaryStudy.isPrimaryResearchCompleted()
 					&& target.contains(primaryStudy.getScience())) {
 			// Primary study added twice to double chance of random selection.
@@ -116,7 +117,7 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 		// Add all collaborative studies with appropriate sciences and in research
 		// phase.
 		for(ScientificStudy collabStudy : person.getCollabStudies()) {
-			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
+			if (StudyStatus.RESEARCH_PHASE == collabStudy.getPhase()
 					&& !collabStudy.isCollaborativeResearchCompleted(person)) {
 				ScienceType collabScience = collabStudy.getContribution(person);
 				if (target.contains(collabScience)) {

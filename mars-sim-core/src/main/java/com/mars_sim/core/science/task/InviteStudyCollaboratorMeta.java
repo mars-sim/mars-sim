@@ -22,6 +22,7 @@ import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyUtil;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
@@ -69,7 +70,7 @@ public class InviteStudyCollaboratorMeta extends FactoryMetaTask {
         // Check if study is in invitation phase.
         ScientificStudy study = person.getStudy();
         if ((study == null)
-                || !study.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
+                || (study.getPhase() != StudyStatus.INVITATION_PHASE)) {
             return EMPTY_TASKLIST;
         }
 

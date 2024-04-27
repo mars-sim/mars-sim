@@ -4,6 +4,7 @@ import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
@@ -38,7 +39,7 @@ public class InviteStudyCollaboratorTest extends AbstractMarsSimUnitTest {
         // COmplete Proposal
         study.addProposalWorkTime(study.getTotalProposalWorkTimeRequired() + 10D);
         study.timePassing(context.createPulse(context.getSim().getMasterClock().getMarsTime(), false, false));
-        assertEquals("Study start phase", ScientificStudy.INVITATION_PHASE, study.getPhase());
+        assertEquals("Study start phase", StudyStatus.INVITATION_PHASE, study.getPhase());
 
         return study;
     }
@@ -84,7 +85,7 @@ public class InviteStudyCollaboratorTest extends AbstractMarsSimUnitTest {
         // Advance Study and retest
         study.addProposalWorkTime(study.getTotalProposalWorkTimeRequired());
         study.timePassing(createPulse(0, 0, false, false));
-        assertEquals("Study advanced to invitation phase", ScientificStudy.INVITATION_PHASE,
+        assertEquals("Study advanced to invitation phase", StudyStatus.INVITATION_PHASE,
                             study.getPhase());
         
         // Create invite task

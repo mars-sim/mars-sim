@@ -149,7 +149,7 @@ public class ScientificStudyManager
 	public List<ScientificStudy> getOpenInvitationStudies(Person collaborativeResearcher) {
 		synchronized (studies) {
 			return studies.stream()
-						.filter(s -> (s.getPhase().equals(ScientificStudy.INVITATION_PHASE)
+						.filter(s -> (s.getPhase().equals(StudyStatus.INVITATION_PHASE)
 								&& s.getInvitedResearchers().contains(collaborativeResearcher)
 								&& !s.hasInvitedResearcherResponded(collaborativeResearcher)))
 						.toList();	
@@ -197,22 +197,22 @@ public class ScientificStudyManager
 
 	private static double getPhaseScore(ScientificStudy ss) {
 		return switch (ss.getPhase()) {
-			case ScientificStudy.PROPOSAL_PHASE -> .5;
-			case ScientificStudy.INVITATION_PHASE -> 1.0;
-			case ScientificStudy.RESEARCH_PHASE -> 1.5;
-			case ScientificStudy.PAPER_PHASE -> 2.0;
-			case ScientificStudy.PEER_REVIEW_PHASE -> 2.5;
+			case PROPOSAL_PHASE -> .5;
+			case INVITATION_PHASE -> 1.0;
+			case RESEARCH_PHASE -> 1.5;
+			case PAPER_PHASE -> 2.0;
+			case PEER_REVIEW_PHASE -> 2.5;
 			default -> 0;
 		};
 	}
 	
 	private static int getPhaseType(ScientificStudy ss) {
 		return switch(ss.getPhase()) {
-			case ScientificStudy.PROPOSAL_PHASE -> 0;
-			case ScientificStudy.INVITATION_PHASE -> 1;
-			case ScientificStudy.RESEARCH_PHASE -> 2;
-			case ScientificStudy.PAPER_PHASE -> 3;
-			case ScientificStudy.PEER_REVIEW_PHASE -> 4;
+			case PROPOSAL_PHASE -> 0;
+			case INVITATION_PHASE -> 1;
+			case RESEARCH_PHASE -> 2;
+			case PAPER_PHASE -> 3;
+			case PEER_REVIEW_PHASE -> 4;
 			default -> 5;
 		};
 	}
@@ -235,7 +235,7 @@ public class ScientificStudyManager
 		for(ScientificStudy study : getAllStudies(s)) {
 			if (allSubject || (type == study.getScience())) {
 				// Study need counting
-				if (study.getPhase().equals(ScientificStudy.COMPLETE_PHASE)) {
+				if (study.getPhase() == StudyStatus.COMPLETE_PHASE) {
 					// Score on the completion state
 					switch(study.getCompletionState()) {
 						case ScientificStudy.CANCELED:
@@ -295,7 +295,7 @@ public class ScientificStudyManager
 		for(ScientificStudy study : getAllStudies(s)) {
 			if (allSubject || (type == study.getScience())) {
 				// Study need counting
-				if (study.getPhase().equals(ScientificStudy.COMPLETE_PHASE)) {
+				if (study.getPhase().equals(StudyStatus.COMPLETE_PHASE)) {
 					// Score on the completion state
 					switch(study.getCompletionState()) {
 					case ScientificStudy.CANCELED:

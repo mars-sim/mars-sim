@@ -4,6 +4,7 @@ import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
@@ -39,7 +40,7 @@ public class PeerReviewStudyPaperTest extends AbstractMarsSimUnitTest {
         study.addPrimaryPaperWorkTime(elapsed);
         var now = getSim().getMasterClock().getMarsTime().addTime(elapsed);
         study.timePassing(createPulse(now, false, false));
-        assertEquals("Study advanced to review phase", ScientificStudy.PEER_REVIEW_PHASE,
+        assertEquals("Study advanced to review phase", StudyStatus.PEER_REVIEW_PHASE,
                             study.getPhase());
         return study;
     }

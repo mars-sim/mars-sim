@@ -5,6 +5,7 @@ import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Settlement;
 
 public class CompileScientificStudyResultsTest extends AbstractMarsSimUnitTest {
@@ -21,7 +22,7 @@ public class CompileScientificStudyResultsTest extends AbstractMarsSimUnitTest {
         study.addPrimaryResearchWorkTime(elapsed);
         var now = context.getSim().getMasterClock().getMarsTime().addTime(elapsed);
         study.timePassing(context.createPulse(now, false, false));
-        assertEquals("Study advanced to paper phase", ScientificStudy.PAPER_PHASE,
+        assertEquals("Study advanced to paper phase", StudyStatus.PAPER_PHASE,
                             study.getPhase());
         return study;
     }

@@ -22,6 +22,7 @@ import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyManager;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.tools.Msg;
 
 /**
@@ -73,7 +74,7 @@ public class PeerReviewStudyPaperMeta extends FactoryMetaTask {
 	    for(ScientificStudy study : sm.getAllStudies(false)) {
 			// Study needs peer review phase and person cannot be contributing
 			// plus Person must have a job that is suitable for the Study subject
-	        if (ScientificStudy.PEER_REVIEW_PHASE.equals(study.getPhase())
+	        if (StudyStatus.PEER_REVIEW_PHASE == study.getPhase()
 	        	&& !person.equals(study.getPrimaryResearcher())
 				&& !study.getCollaborativeResearchers().contains(person)
 				&& (study.getScience() == jobScience)) {

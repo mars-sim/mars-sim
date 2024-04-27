@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
@@ -58,14 +57,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(ScientificStudy.class.getName());
-
-	// Study Phases
-	public static final String PROPOSAL_PHASE = "Study Proposal";
-	public static final String INVITATION_PHASE = "Collaborator Invitation";
-	public static final String RESEARCH_PHASE = "Research";
-	public static final String PAPER_PHASE = "Writing Paper";
-	public static final String PEER_REVIEW_PHASE = "Peer Review";
-	public static final String COMPLETE_PHASE = "Completed";
 	
 	// Completion States
 	public static final String SUCCESSFUL_COMPLETION = "Successful Completion";
@@ -103,7 +94,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	/** The primary researcher */
 	private Person primaryResearcher;
 	
-	private String phase;
+	private StudyStatus phase;
 	private String completionState;
 	private String name;
 	private ScienceType science;
@@ -143,7 +134,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		this.science = science;
 		this.difficultyLevel = difficultyLevel;
 
-		phase = PROPOSAL_PHASE;
+		phase = StudyStatus.PROPOSAL_PHASE;
 		
 		// Gets the average number from scientific_study.json
 		int aveNum = scienceConfig.getAveNumCollaborators();
@@ -234,7 +225,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * 
 	 * @return phase
 	 */
-	public String getPhase() {
+	public StudyStatus getPhase() {
 		return phase;
 	}
 
@@ -243,7 +234,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * 
 	 * @param phase the phase.
 	 */
-	private void setPhase(String phase) {
+	private void setPhase(StudyStatus phase) {
 		this.phase = phase;
 
 		// Fire scientific study update event.
@@ -804,7 +795,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * @param completionState the state of completion.
 	 */
 	private void setCompleted(String completionState) {
-		this.phase = COMPLETE_PHASE;
+		this.phase = StudyStatus.COMPLETE_PHASE;
 		this.completionState = completionState;
 		primaryResearcher.setStudy(null);
 
@@ -822,7 +813,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * @return true if completed.
 	 */
 	public boolean isCompleted() {
-		return phase.equals(COMPLETE_PHASE);
+		return phase == StudyStatus.COMPLETE_PHASE;
 	}
 
 	/**
@@ -1076,11 +1067,8 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 			if (proposalWorkTime >= baseProposalTime) {
 				logger.info(this,
 					"Finished writing proposal. Starting to invite collaborative researchers.");
-				// Picks research topics 
-				if (scienceConfig == null)
-					scienceConfig = SimulationConfig.instance().getScienceConfig();
 				topics.add(scienceConfig.getATopic(science));
-				setPhase(INVITATION_PHASE);
+				setPhase(StudyStatus.INVITATION_PHASE);
 			}
 			break;
 		
@@ -1101,13 +1089,13 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 				logger.info("Ended the invitation phase with "
 					+ collaborators.size() 
 					+ " collaborative researchers. Started the research work phase.");
-				setPhase(RESEARCH_PHASE);
+				setPhase(StudyStatus.RESEARCH_PHASE);
 			}
 			break;
 			
 		case RESEARCH_PHASE:
 			if (isAllResearchCompleted()) {
-				setPhase(PAPER_PHASE);
+				setPhase(StudyStatus.PAPER_PHASE);
 				logger.info(this, "Finished the research work. Starting to compile data results.");
 			}
 			else {
@@ -1143,7 +1131,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 			
 		case PAPER_PHASE:
 			if (isAllPaperWritingCompleted()) {
-				setPhase(PEER_REVIEW_PHASE);
+				setPhase(StudyStatus.PEER_REVIEW_PHASE);
 				startingPeerReview(); 
 				logger.info(this, "Done compiling data results. Starting to do a peer review.");
 			}

@@ -21,6 +21,7 @@ import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Lab;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
@@ -65,7 +66,7 @@ public class PerformMathematicalModelingMeta extends FactoryMetaTask {
         var jobScience = TaskUtil.getPersonJobScience(person);
 
         // Add probability for researcher's primary study (if any).
-        if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
+        if ((StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase())
             && !primaryStudy.isPrimaryResearchCompleted()
             && ScienceType.MATHEMATICS == primaryStudy.getScience()) {
             Lab lab = LabTask.getLocalLab(person, ScienceType.MATHEMATICS);
@@ -89,7 +90,7 @@ public class PerformMathematicalModelingMeta extends FactoryMetaTask {
 
 	    // Add probability for each study researcher is collaborating on.
 	    for(ScientificStudy collabStudy : person.getCollabStudies()) {
-            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
+            if ((StudyStatus.RESEARCH_PHASE == collabStudy.getPhase())
                     && !collabStudy.isCollaborativeResearchCompleted(person)) {
                 ScienceType collabScience = collabStudy.getContribution(person);
                 if (ScienceType.MATHEMATICS == collabScience) {

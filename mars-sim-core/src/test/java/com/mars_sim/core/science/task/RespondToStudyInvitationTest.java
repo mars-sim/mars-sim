@@ -5,6 +5,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
 
@@ -37,7 +38,7 @@ public class RespondToStudyInvitationTest extends AbstractMarsSimUnitTest {
         study.addInvitedResearcher(c);
         study.addProposalWorkTime(study.getTotalProposalWorkTimeRequired());
         study.timePassing(createPulse(0, 0, false, false));
-        assertEquals("Study advanced to invitation phase", ScientificStudy.INVITATION_PHASE,
+        assertEquals("Study advanced to invitation phase", StudyStatus.INVITATION_PHASE,
                             study.getPhase());
         return study;
     }

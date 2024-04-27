@@ -18,6 +18,7 @@ import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
 
@@ -65,7 +66,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 
 			// Add probability for researcher's primary study (if any).
 			ScientificStudy primaryStudy = person.getStudy();
-			if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
+			if ((primaryStudy != null) && (StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase())
 					&& !primaryStudy.isPrimaryResearchCompleted()
 					&& (science == primaryStudy.getScience())) {
 				newBase += WEIGHT;
@@ -73,7 +74,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 
 			// Add probability for each study researcher is collaborating on.
 			for(ScientificStudy collabStudy : person.getCollabStudies()) {
-				if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
+				if (StudyStatus.RESEARCH_PHASE.equals(collabStudy.getPhase())
 						&& !collabStudy.isCollaborativeResearchCompleted(person)
 						&& (science == collabStudy.getContribution(person))) {
 					newBase += WEIGHT/2D;

@@ -24,6 +24,7 @@ import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
@@ -98,7 +99,7 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 		}
 
 		// Check if assigned study is in proposal phase.
-		else if (study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
+		else if (study.getPhase() == StudyStatus.PROPOSAL_PHASE) {
 			// Once a person starts a study in the proposal phase,
 			// there's a greater chance to continue on the proposal so give a high base score
 			base = switch(roleType) {
