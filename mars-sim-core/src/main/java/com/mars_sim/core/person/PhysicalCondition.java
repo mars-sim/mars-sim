@@ -1514,31 +1514,18 @@ public class PhysicalCondition implements Serializable {
 
 		// Create the death details
 		deathDetails = new DeathInfo(person, problem, reason, lastWord, master.getMarsTime());
+
+		// Backup the role type
+		deathDetails.setRoleType(person.getRole().getType());
+
 		// Declare the person dead
 		person.setDeclaredDead();
-
 		
 	    // Create medical event for performing an post-mortem exam
 	    MedicalEvent event = new MedicalEvent(person, problem, EventType.MEDICAL_DEATH);
 	    // Register event
 	    Task.registerNewEvent(event);
 	    
-				
-		// Deregister the person's quarters
-		person.deregisterBed();
-		// Set work shift to OFF
-		person.getShiftSlot().getShift().leaveShift();
-		// Backup the role type
-		deathDetails.setRoleType(person.getRole().getType());
-		// Relinquish his role
-		person.getRole().relinquishOldRoleType();
-		// Re-elect any vacated top leaders or chiefs role
-		person.getAssociatedSettlement().getChainOfCommand().reelectLeadership(deathDetails.getRoleType());
-
-		// Remove the person from the airlock's record
-		person.getAssociatedSettlement().removeAirlockRecord(person);
-		// Set the mind of the person to inactive
-		person.getMind().setInactive();
 		// Add the person's death info to the postmortem exam waiting list
 		// Note: what if a person died in a settlement outside of home town ?
 		medicalManager.addPostmortemExam(person.getAssociatedSettlement(), deathDetails);

@@ -14,7 +14,8 @@ import com.mars_sim.tools.Msg;
 public enum StudyStatus {
     PROPOSAL_PHASE, INVITATION_PHASE,
     RESEARCH_PHASE, PAPER_PHASE,
-    PEER_REVIEW_PHASE, COMPLETE_PHASE;
+    PEER_REVIEW_PHASE, CANCELLED,
+    SUCCESSFUL_COMPLETION , FAILED_COMPLETION;
 	
 	private String name;
 
@@ -29,5 +30,16 @@ public enum StudyStatus {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Is the specified status an end/completed status?
+     * @param status
+     * @return
+     */
+    public static boolean isCompleted(StudyStatus status) {
+        return ((status == StudyStatus.CANCELLED)
+            || (status == StudyStatus.SUCCESSFUL_COMPLETION)
+            || (status == StudyStatus.FAILED_COMPLETION));
     }
 }

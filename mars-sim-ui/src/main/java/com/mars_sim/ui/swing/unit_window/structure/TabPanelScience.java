@@ -308,8 +308,7 @@ extends TabPanel {
 				else if (columnIndex == 2) 
 					result = study.getDifficultyLevel() + "";
 				else if (columnIndex == 3) {
-					if (study.isCompleted()) result = study.getCompletionState();
-					else result = study.getPhase().getName();
+					result = study.getPhase().getName();
 				}
 				else {
 					String researcherN = "";	

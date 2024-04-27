@@ -158,14 +158,11 @@ extends JPanel {
 	 * @return the phase string.
 	 */
 	private static String getPhaseString(ScientificStudy study) {
-		String result = ""; //$NON-NLS-1$
-
 		if (study != null) {
-			if (!study.isCompleted()) result = study.getPhase().getName();
-			else result = study.getCompletionState();
+			return study.getPhase().getName();
 		}
 
-		return result;
+		return "";
 	}
 
 	private static class ResearchTableModel extends AbstractTableModel implements UnitModel {

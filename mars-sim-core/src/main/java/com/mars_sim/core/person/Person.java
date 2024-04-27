@@ -72,6 +72,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.Researcher;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.GroupActivityType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -630,6 +631,27 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 		declaredDead = true;
 		// Set description
 		setDescription("Dead");
+
+		// Deregister the person's quarters
+		deregisterBed();
+		// Set work shift to OFF
+		shiftSlot.getShift().leaveShift();
+
+		// Relinquish his role
+		var roleType = role.getType();
+		role.relinquishOldRoleType();
+		getAssociatedSettlement().getChainOfCommand().reelectLeadership(roleType);
+
+		// Remove the person from the airlock's record
+		getAssociatedSettlement().removeAirlockRecord(this);
+		// Set the mind of the person to inactive
+		mind.setInactive();
+
+		if (study != null) {
+			study.setCompleted(StudyStatus.CANCELLED, getName() + " primary researcher dead");
+			study = null;
+		}
+
 		// Throw unit event
 		fireUnitUpdate(UnitEventType.DEATH_EVENT);
 	}

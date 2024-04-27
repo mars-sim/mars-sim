@@ -235,27 +235,23 @@ public class ScientificStudyManager
 		for(ScientificStudy study : getAllStudies(s)) {
 			if (allSubject || (type == study.getScience())) {
 				// Study need counting
-				if (study.getPhase() == StudyStatus.COMPLETE_PHASE) {
-					// Score on the completion state
-					switch(study.getCompletionState()) {
-						case ScientificStudy.CANCELED:
-							score += canceled;
-							break;
+				// Score on the completion state
+				switch(study.getPhase()) {
+					case CANCELLED:
+						score += canceled;
+						break;
+					
+					case FAILED_COMPLETION:
+						score += failed;
+						break;
 						
-						case ScientificStudy.FAILED_COMPLETION:
-							score += failed;
-							break;
-							
-						case ScientificStudy.SUCCESSFUL_COMPLETION:
-							score += succeed;
-							break;
-						default:				
-							break;
-					}
-				}
-				else {
-					// On going as primary reasearcher
-					score += getPhaseScore(study);
+					case SUCCESSFUL_COMPLETION:
+						score += succeed;
+						break;
+					default:				
+						score += getPhaseScore(study);
+						break;
+
 				}
 			}
 		}
@@ -295,30 +291,24 @@ public class ScientificStudyManager
 		for(ScientificStudy study : getAllStudies(s)) {
 			if (allSubject || (type == study.getScience())) {
 				// Study need counting
-				if (study.getPhase().equals(StudyStatus.COMPLETE_PHASE)) {
-					// Score on the completion state
-					switch(study.getCompletionState()) {
-					case ScientificStudy.CANCELED:
+				// Score on the completion state
+				switch(study.getPhase()) {
+					case CANCELLED:
 						array[2]++; 
 						break;
 					
-					case ScientificStudy.FAILED_COMPLETION:
+					case FAILED_COMPLETION:
 						array[1]++; 
 						break;
 						
-					case ScientificStudy.SUCCESSFUL_COMPLETION:
+					case SUCCESSFUL_COMPLETION:
 						array[0]++;
 						break;
 					
 					default:
+						array[3]++;
 						break;
 					}				
-					break;
-				}
-				else {
-					// On going as primary reasearcher
-					array[3]++;
-				}
 			}
 		}
 		

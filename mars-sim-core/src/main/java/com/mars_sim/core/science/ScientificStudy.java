@@ -57,11 +57,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(ScientificStudy.class.getName());
-	
-	// Completion States
-	public static final String SUCCESSFUL_COMPLETION = "Successful Completion";
-	public static final String FAILED_COMPLETION = "Failed Completion";
-	public static final String CANCELED = "Canceled";
 
 	// Data members
 	/** The assigned study number. */
@@ -95,7 +90,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	private Person primaryResearcher;
 	
 	private StudyStatus phase;
-	private String completionState;
 	private String name;
 	private ScienceType science;
 
@@ -172,7 +166,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		primaryStats = new CollaboratorStats(science);
 		proposalWorkTime = 0D;
 		peerReviewStartTime = null;
-		completionState = null;
 		listeners = new ArrayList<>();
 		topics = new ArrayList<>();
 	}
@@ -326,7 +319,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 */
 	private static Set<Person> getPersons(Set<Integer> ids) {
 		UnitManager um = getUnitManager();
-		return ids.stream().map(i -> um.getPersonByID(i)).collect(Collectors.toSet());
+		return ids.stream().map(um::getPersonByID).collect(Collectors.toSet());
 	}
 	
 	/**
@@ -416,9 +409,9 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 */
 	public boolean hasInvitedResearcherResponded(Person researcher) {
 		boolean result = false;
-		int id = researcher.getIdentifier();
-		if (invitedResearchers.containsKey(id))
-			result = invitedResearchers.get(id);
+		int resId = researcher.getIdentifier();
+		if (invitedResearchers.containsKey(resId))
+			result = invitedResearchers.get(resId);
 		return result;
 	}
 
@@ -793,10 +786,16 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * Sets the study as completed.
 	 * 
 	 * @param completionState the state of completion.
+	 * @param reason Reason for completed
 	 */
-	private void setCompleted(String completionState) {
-		this.phase = StudyStatus.COMPLETE_PHASE;
-		this.completionState = completionState;
+	public void setCompleted(StudyStatus completionState, String reason) {
+		if (!StudyStatus.isCompleted(completionState)) {
+			throw new IllegalArgumentException("State cannot be used to complete Study:" + completionState.name());
+		}
+
+		logger.info(this, "Completed:" + completionState.getName() + ", reason:" + reason);
+
+		this.phase = completionState;
 		primaryResearcher.setStudy(null);
 
 		for(Person p : getCollaborativeResearchers()) {
@@ -813,19 +812,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * @return true if completed.
 	 */
 	public boolean isCompleted() {
-		return phase == StudyStatus.COMPLETE_PHASE;
-	}
-
-	/**
-	 * Gets the study's completion state.
-	 * 
-	 * @return completion state or null if not completed.
-	 */
-	public String getCompletionState() {
-		if (isCompleted())
-			return completionState;
-		else
-			return null;
+		return StudyStatus.isCompleted(phase);
 	}
 
 	/**
@@ -1038,7 +1025,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		invitedResearchers.clear();
 		invitedResearchers = null;
 		peerReviewStartTime = null;
-		completionState = null;
 		if (listeners != null) {
 			listeners.clear();
 		}
@@ -1051,13 +1037,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 
-		// Check if primary researcher has died.
-		if (primaryResearcher.getPhysicalCondition().isDead()) {
-			setCompleted(ScientificStudy.CANCELED);
-			logger.info(this, "Canceled/abandoned due to " 
-							+ primaryResearcher.getName() + " death.");
-		}
-		
 		// Check if collaborators have died. Remove dead & inactive collaborators
 		cleanDeadCollaborators();
 
@@ -1106,8 +1085,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 					MarsTime lastPrimaryWork = getLastPrimaryResearchWorkTime();
 					if ((lastPrimaryWork != null) && now.getTimeDiff(
 							lastPrimaryWork) > getPrimaryWorkDownTimeAllowed()) {
-						setCompleted(CANCELED);
-						logger.info(this, "Abandoned due to lack of participation from primary researcher.");
+						setCompleted(StudyStatus.CANCELLED, "Abandoned due to lack of participation from primary researcher.");
 					}
 				}
 
@@ -1141,15 +1119,13 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 			if (isPeerReviewTimeFinished()) {
 				// Determine results of peer review.
 				if (determinePeerReviewResults()) {
-					setCompleted(SUCCESSFUL_COMPLETION);
+					setCompleted(StudyStatus.SUCCESSFUL_COMPLETION, "Completed a peer review.");
 
 					// Provide scientific achievement to primary and collaborative researchers.
 					provideCompletionAchievements();
-					logger.info(this, "Completed a peer review.");
 				}
 				else {
-					setCompleted(ScientificStudy.FAILED_COMPLETION);
-					logger.info(this, "Failed to complete a peer review.");
+					setCompleted(StudyStatus.FAILED_COMPLETION, "Failed to complete a peer review.");
 				}
 			}
 			break;
