@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.task.meta;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
@@ -20,7 +21,8 @@ import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.tools.Msg;
 
 /**
@@ -122,7 +124,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 			score.addBase("resource", numResource * BASE_SCORE); 
 		}
 		
-		int numAcc = BuildingManager.getNumAccommodationNeedingReview(settlement);
+		int numAcc = getAccommodationNeedingWaterReview(settlement, -1).size();
 
 		if (numAcc > 0) {
 			score.addBase("waste.water", numAcc * BASE_SCORE);             
@@ -136,4 +138,23 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 			return tasks;
 		}
     }
+
+		
+	/**
+	 * Gets a number of living accommodations that need waste water review.
+	 *
+	 * @param settlement
+	 * @return the number
+	 */
+	public static List<Building> getAccommodationNeedingWaterReview(Settlement settlement,
+				int targetZone) {
+		return settlement.getBuildingManager().getBuildings(FunctionType.LIVING_ACCOMMODATION)
+					.stream()
+					.filter(b -> (targetZone < 0) || (b.getZone() == targetZone))
+					.filter(b -> !b.getMalfunctionManager().hasMalfunction()
+							// True if this quarter needs a review
+							&& b.getLivingAccommodation().canReviewWaterRatio())
+					.collect(Collectors.toList());
+	}
+	
 }

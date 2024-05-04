@@ -10,6 +10,7 @@ package com.mars_sim.core.person.ai.task;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.equipment.Container;
@@ -22,12 +23,13 @@ import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingCategory;
-import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.mapdata.location.LocalBoundedObject;
 import com.mars_sim.mapdata.location.LocalPosition;
 import com.mars_sim.tools.Msg;
@@ -210,7 +212,6 @@ public abstract class DigLocal extends EVAOperation {
 	 */
     private double walkToBin(double time) {
 		if (dropOffLoc == null) {
-    		// TODO: walk to next to a workshop or manufacturing shed or lander hab
 			logger.severe(person, "No location for storage bin.");
 			endTask();
 			return 0;
@@ -465,6 +466,25 @@ public abstract class DigLocal extends EVAOperation {
         return collectionPhase;
     }
     
+	
+	/**
+	 * Finds a map of buildings having storage functions that can or cannot 
+	 * hold resources being collected.
+	 * 
+	 * @param worker
+	 * @param resourceID
+	 * @return
+	 */
+	private static Map<Boolean, List<Building>> findStorageBuildings(Worker worker, int resourceID) {
+		// Find any Storage function that can hold the resource being collected but
+		// group by Buildings that are categorised as Storage
+		return worker.getSettlement().getBuildingManager()
+			.getBuildings(FunctionType.STORAGE).stream()
+			.filter(b -> b.getStorage().getResourceStorageCapacity().containsKey(resourceID))
+			.collect(Collectors.groupingBy(x -> (x.getCategory() == BuildingCategory.STORAGE)));
+	}
+	
+	
     /**
      * Determines location for dropping off the resource.
      * 
@@ -473,9 +493,7 @@ public abstract class DigLocal extends EVAOperation {
     private LocalPosition determineBinLocation() {
 		// Find any Storage function that can hold the resource being collected but
 		// group by Buildings that are categorised as Storage
-		Map<Boolean, List<Building>> binMap = BuildingManager
-				.findStorageBuildings(worker, resourceID, 
-				BuildingCategory.STORAGE);
+		Map<Boolean, List<Building>> binMap = findStorageBuildings(worker, resourceID);
 		
 		// Preference is Storage buildings
 		List<Building> binList = binMap.get(true);
@@ -494,7 +512,6 @@ public abstract class DigLocal extends EVAOperation {
         // If no proper bin is found, set the bin 
         // dropoff location next to the airlock 
 		b = (Building)(airlock.getEntity());
-		// or Use settlement.getBuildingManager().getRandomAirlockBuilding();
         
 		LocalPosition p = LocalAreaUtil.getCollisionFreeRandomPosition(b, worker.getCoordinates(), 10);
 		if (p == null) {

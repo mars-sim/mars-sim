@@ -6,12 +6,15 @@
  */
 package com.mars_sim.core.person.ai.task;
 
+import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.meta.BudgetResourcesMeta;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.building.Building;
@@ -43,11 +46,10 @@ public class BudgetResources extends Task {
 	private static final TaskPhase APPROVING = new TaskPhase(
 			Msg.getString("Task.phase.budgetResources.approving")); //$NON-NLS-1$
 
-	// Static members
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -.1D;
-	
+	// Static members	
 	private static final int STANDARD_DURATION = 40;
+	private static final ExperienceImpact IMPACT = new ExperienceImpact(25D, NaturalAttributeType.EXPERIENCE_APTITUDE,
+									false, -0.1D, Set.of(SkillType.MANAGEMENT));
 	
 	// Data members
 	/** The administration building the person is using. */
@@ -67,8 +69,7 @@ public class BudgetResources extends Task {
 	 */
 	public BudgetResources(Person person) {
 		// Use Task constructor.
-		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.MANAGEMENT,
-				RandomUtil.getRandomInt(20, 30), STANDARD_DURATION);
+		super(NAME, person, false, IMPACT, STANDARD_DURATION);
 				
 		if (person.isInSettlement()) {
 		
@@ -173,7 +174,10 @@ public class BudgetResources extends Task {
 
 	private boolean budgetAccommodationWater() {
 		// Pick a building that needs review
-		building = BuildingManager.getLivingAccommodationNeedingReview(person);
+		var locn = person.getBuildingLocation();
+		int zone = (locn == null ? -1 : locn.getZone());
+		var found = BudgetResourcesMeta.getAccommodationNeedingWaterReview(person.getAssociatedSettlement(), zone);
+		building = RandomUtil.getRandomElement(found);
 					
 		if (building != null) {
 			

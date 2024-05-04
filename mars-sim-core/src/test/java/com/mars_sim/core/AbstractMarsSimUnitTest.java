@@ -103,7 +103,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	    building0.addFunction(spec);
 
 
-		buildingManager.addNewBuildingtoBFMap(building0);
+		buildingManager.refreshFunctionMapForBuilding(building0);
 	    
 	    return building0.getVehicleParking();
 	}

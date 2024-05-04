@@ -28,17 +28,11 @@ public class ComputingJobTest extends AbstractMarsSimUnitTest {
     private Building buildCompute(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		MockBuilding building0 = buildBuilding(buildingManager, "Lander Hab", BuildingCategory.LABORATORY,  pos, facing, id);
 
-<<<<<<< Updated upstream
 		var spec = simConfig.getBuildingConfiguration().getFunctionSpec("Server Farm", FunctionType.COMPUTATION);
 
 	    building0.addFunction(spec);
 
         buildingManager.addMockBuilding(building0);
-=======
-		var spec = simConfig.getBuildingConfiguration().getFunctionSpec("Lander Hab", FunctionType.COMPUTATION);
-
-	    building0.addFunction(spec);
->>>>>>> Stashed changes
 	    return building0;
 	}
 

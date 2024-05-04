@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -236,7 +235,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 						FunctionType.POWER_GENERATION, FunctionType.LIFE_SUPPORT, FunctionType.RESOURCE_PROCESSING);
 			}
 			else if (button == r1) {
-				buildings = manager.getBuildingsWithPowerGeneration();
+				buildings = getBuildingsWithPowerGeneration();
 			}
 			else if (button == r2) {
 				buildings = manager.getBuildingsNoF1F2(FunctionType.POWER_GENERATION, FunctionType.THERMAL_GENERATION);
@@ -259,19 +258,22 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		return buildings;
 	}
 
+	/**
+	 * Gets a list of settlement's buildings with power generation function.
+	 *
+	 * @return list of buildings
+	 */
+	private List<Building> getBuildingsWithPowerGeneration() {
+		return manager.getBuildings(FunctionType.POWER_GENERATION);
+	}
+
 	public double getAverageEfficiency() {
 		double eff = 0;
 		int i = 0;
-		Iterator<Building> iPower = manager.getBuildingsWithPowerGeneration().iterator();
-		while (iPower.hasNext()) {
-			Building building = iPower.next();
-			powerSources = building.getPowerGeneration().getPowerSources();
-			Iterator<PowerSource> j = powerSources.iterator();
-			while (j.hasNext()) {
-				PowerSource powerSource = j.next();
-				if (powerSource instanceof SolarPowerSource) {
+		for(Building building : getBuildingsWithPowerGeneration()) {
+			for(PowerSource powerSource : building.getPowerGeneration().getPowerSources()) {
+				if (powerSource instanceof SolarPowerSource solarPowerSource) {
 					i++;
-					SolarPowerSource solarPowerSource = (SolarPowerSource) powerSource;
 					eff += solarPowerSource.getEfficiency();
 				}
 			}
@@ -299,7 +301,6 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		if (powerGeneratedCache != gen || powerUsedCache != req) {
 			powerGeneratedCache = gen;
 			powerUsedCache = req;
-//			double powerAverage = .5 * (gen + req);
 			percentPower = Math.round(powerUsedCache / powerGeneratedCache * 1000.0)/10.0;
 
 			String s = percentPower + " % (" + StyleManager.DECIMAL_KW.format(powerUsedCache) 
@@ -364,6 +365,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 			return 5;
 		}
 
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0)
@@ -379,6 +381,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 			return dataType;
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0)
 				return Msg.getString("TabPanelPowerGrid.column.s"); //$NON-NLS-1$
@@ -392,6 +395,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 				return Msg.getString("TabPanelPowerGrid.column.stored"); //$NON-NLS-1$
 		}
 
+		@Override
 		public Object getValueAt(int row, int column) {
 
 			Building building = buildings.get(row);

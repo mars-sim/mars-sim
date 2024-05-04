@@ -103,7 +103,7 @@ public class MalfunctionCreateCommand extends AbstractUnitCommand {
 			}
 			else if (source instanceof Settlement settlement) {
 				// Offer the user a list of buildings		
-				List <Building> buildings = settlement.getBuildingManager().getBuildings();
+				List <Building> buildings = new ArrayList<>(settlement.getBuildingManager().getBuildingSet());
 				owner = pickSelection(context, "building in " + settlement.getName(), buildings);
 			}
 			else {

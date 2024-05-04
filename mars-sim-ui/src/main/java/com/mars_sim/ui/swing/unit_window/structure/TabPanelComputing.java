@@ -19,6 +19,7 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -179,7 +180,7 @@ public class TabPanelComputing extends TabPanelTable {
 		private List<Building> buildings;
 
 		private TableModel(Settlement settlement) {
-			buildings = manager.getComputingBuildings();
+			buildings = manager.getBuildings(FunctionType.COMPUTATION);
 		}
 
 		public int getRowCount() {
@@ -190,6 +191,7 @@ public class TabPanelComputing extends TabPanelTable {
 			return 5;
 		}
 		
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = Building.class;
@@ -200,6 +202,7 @@ public class TabPanelComputing extends TabPanelTable {
 			return dataType;
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return Msg.getString("TabPanelThermalSystem.column.building"); //$NON-NLS-1$
 			else if (columnIndex == 1) return "Power Demand"; //$NON-NLS-1$
