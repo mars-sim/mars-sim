@@ -137,7 +137,7 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         var origFatigue = p.getPhysicalCondition().getFatigue();
 
         // No effort impact
-        ExperienceImpact noEffort = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
+        ExperienceImpact noEffort = new ExperienceImpact(0, null,
                                           false, 0, Collections.emptySet());
         assertFalse("No effort experience", noEffort.isEffortAffected());
         noEffort.apply(p, 10, 1, 1);

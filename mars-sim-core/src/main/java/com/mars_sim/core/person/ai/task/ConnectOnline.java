@@ -6,15 +6,18 @@
  */
 package com.mars_sim.core.person.ai.task;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Connection;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.ComputingJob;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.tools.Msg;
@@ -37,19 +40,11 @@ public class ConnectOnline extends Task {
 	private static final TaskPhase CONNECTING_ONLINE = new TaskPhase(Msg.getString("Task.phase.connectingOnline")); //$NON-NLS-1$
 
 	// Static members
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -.5D;
+	private static final ExperienceImpact IMPACT = new ExperienceImpact(1D, null, false, -0.5, Collections.emptySet());
+	
+	private Connection connection;
 
-	// Data members
-	private boolean proceed = false;
-    /** Computing Units needed per millisol. */		
-	private double computingNeeded;
-	/** The seed value. */
-    private final double seed = RandomUtil.getRandomDouble(.005, 0.025);
-    
-	private final double TOTAL_COMPUTING_NEEDED;
-
-	private final Connection connection = person.getPreference().getRandomConnection();
+	private ComputingJob compute;
 	
 	/**
 	 * Constructor. This is an effort-driven task.
@@ -58,11 +53,10 @@ public class ConnectOnline extends Task {
 	 */
 	public ConnectOnline(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, RandomUtil.getRandomDouble(5, 25));
+		super(NAME, person, false, IMPACT, RandomUtil.getRandomDouble(5, 25));
 
-		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
-		computingNeeded = TOTAL_COMPUTING_NEEDED;
-		
+		connection = person.getPreference().getRandomConnection();
+
 		if (person.isInSettlement()) {
 			// set the boolean to true so that it won't be done again today			
 			List<FunctionType> types = List.of(FunctionType.COMMUNICATION, 
@@ -71,49 +65,47 @@ public class ConnectOnline extends Task {
 											FunctionType.RECREATION,
 											FunctionType.DINING);
 			
-			Building bldg = null;
-			int size = types.size();
-			
-			for (int i = 0; i < size; i++) {
+			Building selected = null;			
+			for (var type : types) {
 				// Find a facility.
-				bldg = BuildingManager.getAvailableFunctionTypeBuilding(person, types.get(i));
+				var bldg = BuildingManager.getAvailableFunctionTypeBuilding(person, type);
 				if (bldg != null) {
 					// Walk to the facility
-					walkToTaskSpecificActivitySpotInBuilding(bldg, types.get(i), false);
-					proceed = true;
+					walkToTaskSpecificActivitySpotInBuilding(bldg, type, false);
+					selected = bldg;
 					break;
 				} 
 			}
 			
-			if (!proceed || bldg == null) {
-				// Go back to his bed
+			// Go back to his bed
+			if (selected == null) {
 				if (person.hasBed()) {
 					// Walk to the bed
-					walkToBed(person, true);	
-					proceed = true;
+					walkToBed(person, true);
 				}
+				else {
+					endTask();
+					return;
+				}	
 			}
 		}
-		
-		else if (person.isInVehicle()) {
-			if (person.getVehicle() instanceof Rover r) {
-				// Walk to the passenger spot
-				walkToPassengerActivitySpotInRover(r, true);
-				proceed = true;
-			}
-		}
-		
-		// Note: this task can be done in principle anywhere using tablets and handheld device
-		// but preferably it will look for a suitable location first
-		if (proceed) {
-			setDescription(connection.getName());
-			// Initialize phase
-			addPhase(CONNECTING_ONLINE);
-			setPhase(CONNECTING_ONLINE);
+		else if (person.isInVehicle() && (person.getVehicle() instanceof Rover r)) {
+			// Walk to the passenger spot
+			walkToPassengerActivitySpotInRover(r, true);
 		}
 		else {
 			endTask();
+			return;
 		}
+
+		compute = new ComputingJob(person.getAssociatedSettlement(), getDuration(), NAME);
+		
+		// Note: this task can be done in principle anywhere using tablets and handheld device
+		// but preferably it will look for a suitable location first
+		setDescription(connection.getName());
+		// Initialize phase
+		addPhase(CONNECTING_ONLINE);
+		setPhase(CONNECTING_ONLINE);
 	}
 
 	@Override
@@ -136,20 +128,16 @@ public class ConnectOnline extends Task {
 	private double connectingEarth(double time) {
 		double remainingTime = 0;
 		
-		if (isDone() || getTimeCompleted() + time > getDuration() || computingNeeded <= 0) {
+		if (isDone() || getTimeCompleted() + time > getDuration() || compute.isCompleted()) {
         	// this task has ended
 	  		logger.fine(person, 30_000L, NAME + " - " 
-    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
+    				+ Math.round(compute.getConsumed() * 100.0)/100.0 
     				+ " CUs Used.");
 			endTask();
 			return time;
 		}
 		
-		int msol = getMarsTime().getMillisolInt(); 
-              
-        computingNeeded = person.getAssociatedSettlement().getBuildingManager().
-            	accessNode(person, computingNeeded, time, seed, 
-            			msol, getDuration(), NAME);
+		compute.consumeProcessing(time, getMarsTime());
 
         // Add experience
         addExperience(time);

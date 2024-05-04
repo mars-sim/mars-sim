@@ -24,6 +24,7 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.ComputingJob;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.tools.Msg;
@@ -48,13 +49,7 @@ public class PeerReviewStudyPaper extends Task {
     private static final TaskPhase REVIEW = new TaskPhase(Msg.getString(
             "Task.phase.review")); //$NON-NLS-1$
     
-	// Data members.
-    /** Computing Units needed per millisol. */		
-	private double computingNeeded;
-	/** The seed value. */
-    private double seed = RandomUtil.getRandomDouble(.005, 0.025);
-	/** The total computing resources needed for this task. */
-	private final double TOTAL_COMPUTING_NEEDED;
+    private ComputingJob compute;
 	
 	/** The scientific study to review. */
 	private ScientificStudy study;
@@ -90,8 +85,7 @@ public class PeerReviewStudyPaper extends Task {
         super(NAME, person, false, impact, 50D + RandomUtil.getRandomDouble(20D));
         this.study = study;
 
-		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
-		computingNeeded = TOTAL_COMPUTING_NEEDED;
+		compute = new ComputingJob(person.getAssociatedSettlement(), getDuration(), NAME);
 		
         // Determine study to review.
         setDescription(Msg.getString("Task.description.peerReviewStudyPaper.detail",
@@ -224,24 +218,12 @@ public class PeerReviewStudyPaper extends Task {
 		}
 
         // Check if peer review phase in study is completed.
-		if (study.isCompleted() || isDone() || getTimeCompleted() + time > getDuration() || computingNeeded <= 0) {
-			logger.log(worker, Level.INFO, 0, "Just spent "
-					+ (int)study.getPeerReviewTimeCompleted()
-					+ " msols to finish peer reviewing a paper "
-					+ " for " + study.getName() + ".");
-			// this task has ended
-	  		logger.info(person, 0, NAME + " - " 
-    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
-    				+ " CUs Used.");
+		if (study.isCompleted() || isDone() || getTimeCompleted() + time > getDuration() || compute.isCompleted()) {
 			endTask();
 			return time;
 		}
 		
-		int msol = getMarsTime().getMillisolInt(); 
-              
-        computingNeeded = person.getAssociatedSettlement().getBuildingManager().
-            	accessNode(person, computingNeeded, time, seed, 
-            			msol, getDuration(), NAME);
+        compute.consumeProcessing(time, getMarsTime());
 
         // Add experience
         addExperience(time);

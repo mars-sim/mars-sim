@@ -22,6 +22,7 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.ComputingJob;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
@@ -46,16 +47,11 @@ extends Task {
     private static final TaskPhase COMPILING_PHASE = new TaskPhase(Msg.getString(
             "Task.phase.compilingPhase")); //$NON-NLS-1$
 
-    // Data members
-    /** Computing Units needed per millisol. */		
-	private double computingNeeded;
-	/** The seed value. */
-    private double seed = RandomUtil.getRandomDouble(.05, 0.15);
 
-	private final double TOTAL_COMPUTING_NEEDED;
 	
     /** The scientific study to compile. */
     private ScientificStudy study;
+    private ComputingJob compute;
     
     
 	/**
@@ -87,13 +83,7 @@ extends Task {
         // Use task constructor. Skill determined by Study
         super(NAME, person, false, impact, RandomUtil.getRandomDouble(20, 50));
         
-		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
-		computingNeeded = TOTAL_COMPUTING_NEEDED;
-		
-		logger.log(person, Level.INFO, 10_000, "Requested computing resources: " 
-		 		+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 + " CUs for "
-		 		+ NAME + ".");
-		 		
+        this.compute = new ComputingJob(person.getAssociatedSettlement(), getDuration(), NAME);
 
         // Determine study.
         this.study = study;
@@ -226,26 +216,19 @@ extends Task {
 			return time;
 		}
 
-		if (isDone() || getTimeCompleted() + time > getDuration() || computingNeeded <= 0) {
+		if (isDone() || getTimeCompleted() + time > getDuration() || compute.isCompleted()) {
         	// this task has ended
-    		logger.info(person, 30_000L, NAME + " - " 
-    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
-    				+ " CUs Used.");
         	endTask();
             return time;
         }
 
-        int msol = getMarsTime().getMillisolInt();
-       
-        computingNeeded = person.getAssociatedSettlement().getBuildingManager().
-            	accessNode(person, computingNeeded, time, seed, 
-            			msol, getDuration(), NAME);
+        compute.consumeProcessing(time, getMarsTime());
 
         // Add paper work time to study.
         double compilingTime = getEffectiveCompilationTime(time);
         if (study.getPrimaryResearcher().equals(person)) {
             study.addPrimaryPaperWorkTime(compilingTime);
-            if (study.isPrimaryPaperCompleted() && computingNeeded <= 0) {
+            if (study.isPrimaryPaperCompleted() && compute.getNeeded() <= 0) {
     			logger.log(worker, Level.INFO, 0, "Spent "
     					+ Math.round(study.getPrimaryPaperWorkTimeCompleted() *10.0)/10.0
     					+ " millisols in compiling data for primary research study "
@@ -255,7 +238,7 @@ extends Task {
         }
         else {
             study.addCollaborativePaperWorkTime(person, compilingTime);
-            if (study.isCollaborativePaperCompleted(person) && computingNeeded <= 0) {
+            if (study.isCollaborativePaperCompleted(person) && compute.getNeeded() <= 0) {
     			logger.log(worker, Level.INFO, 0, "Spent "
     					+ Math.round(study.getCollaborativePaperWorkTimeCompleted(person) *10.0)/10.0
     					+ " millisols in performing lab experiments for collaborative research study "

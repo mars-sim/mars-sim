@@ -26,6 +26,7 @@ import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Lab;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.ComputingJob;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.Research;
 import com.mars_sim.core.vehicle.Rover;
@@ -46,8 +47,7 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 	private Malfunctionable malfunctions;
 	private Person researchAssistant;
 
-    private double computingSeed;
-    private double computingNeeded;
+    private ComputingJob compute;
 
     private TaskPhase researchPhase;
 
@@ -62,8 +62,6 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 			return;
 		}
 
-        this.computingSeed = RandomUtil.getRandomDouble(.03, 0.1);
-		this.computingNeeded = duration * computingSeed;
 		this.researchAssistant = null;
         this.researchPhase = researchPhase;
         this.study = study;
@@ -93,7 +91,10 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 		// Check if person is in a moving rover.
 		if (Vehicle.inMovingRover(person)) {
 			endTask();
+			return;
 		}
+
+		this.compute = new ComputingJob(person.getAssociatedSettlement(), getDuration(), name);
     }
 
 		/**
@@ -399,16 +400,12 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
             return time;
 		}
 
-		if (isDone() || getTimeCompleted() + time > getDuration() || computingNeeded <= 0) {
+		if (isDone() || getTimeCompleted() + time > getDuration() || compute.isCompleted()) {
 			endTask();
 			return time;
 		}
 		
-		int msol = getMarsTime().getMillisolInt(); 
-              
-        computingNeeded = person.getAssociatedSettlement().getBuildingManager().
-            	accessNode(person, computingNeeded, time, computingSeed, 
-            			msol, getDuration(), getName());
+		compute.consumeProcessing(time, getMarsTime());
 		
 		// Check if person is in a moving rover.
 		if (Vehicle.inMovingRover(person)) {

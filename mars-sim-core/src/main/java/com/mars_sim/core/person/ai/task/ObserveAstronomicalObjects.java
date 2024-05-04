@@ -24,6 +24,7 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.task.ResearchScientificStudy;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.function.AstronomicalObservation;
+import com.mars_sim.core.structure.building.function.ComputingJob;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
@@ -50,14 +51,9 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	/** Task phases. */
 	private static final TaskPhase OBSERVING = new TaskPhase(Msg.getString("Task.phase.observing")); //$NON-NLS-1$
 
-	private static final double SEED = RandomUtil.getRandomDouble(.05, 0.25);
-
 	// Data members.
 	/** True if person is active observer. */
 	private boolean isActiveObserver = false;
-	/** Computing Units needed per millisol. */		
-	private double computingNeeded;
-	private double initialComputingNeeded;
     	
 	/** The scientific study the person is researching for. */
 	private ScientificStudy study;
@@ -65,6 +61,8 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	private AstronomicalObservation observatory;
 	/** The research assistant. */
 	private Person researchAssistant;
+
+	private ComputingJob compute;
 	
 	/**
 	 * Constructor.
@@ -76,10 +74,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		// Use task constructor.
 		super(NAME, person, false, IMPACT,
 			  			100D + RandomUtil.getRandomDouble(100D));
-		
-		initialComputingNeeded = getDuration() * SEED;
-		computingNeeded = initialComputingNeeded;
-				
+						
 		observatory = ObserveAstronomicalObjectsMeta.determineObservatory(person.getAssociatedSettlement());
 		
 		this.study = study;
@@ -92,6 +87,8 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 				endTask();
 				return;
 			}
+			
+			compute = new ComputingJob(person.getAssociatedSettlement(), getDuration(), NAME);
 			isActiveObserver = true;
 			
 			// Initialize phase
@@ -137,7 +134,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 
 		if (isDone()) {
     		logger.info(person, 30_000L, NAME + " - " 
-    				+ Math.round((initialComputingNeeded - computingNeeded) * 100.0)/100.0 
+    				+ Math.round((compute.getConsumed()) * 100.0)/100.0 
     				+ " CUs Used.");
 			endTask();
 			return time;
@@ -153,20 +150,16 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 			endTask();
 		}
 
-		if (isDone() || ((getTimeCompleted() + time) > getDuration()) || computingNeeded <= 0) {
+		if (isDone() || ((getTimeCompleted() + time) > getDuration()) || compute.isCompleted()) {
         	// this task has ended
 	  		logger.info(person, 30_000L, NAME + " - " 
-    				+ Math.round((initialComputingNeeded - computingNeeded) * 100.0)/100.0 
+    				+ Math.round(compute.getConsumed() * 100.0)/100.0 
     				+ " CUs Used.");
 			endTask();
 			return time;
 		}
 		
-		int msol = getMarsTime().getMillisolInt(); 
-              
-        computingNeeded = person.getAssociatedSettlement().getBuildingManager().
-            	accessNode(person, computingNeeded, time, SEED, 
-            			msol, getDuration(), NAME);
+		compute.consumeProcessing(time, getMarsTime());
         
 		// Add research work time to study.
 		double observingTime = getEffectiveObservingTime(time);		
