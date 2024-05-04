@@ -90,7 +90,7 @@ public class ExperienceImpact implements Serializable {
      */
     public void apply(Worker worker, double duration, double assistance, double effectiveness) {
         // Update skills
-        if (skillWeights.isEmpty()) {
+        if (!skillWeights.isEmpty()) {
             double newPoints = (duration / skillRatio) * (1 + assistance);
 
             // Add experience to "Primary skill" skill

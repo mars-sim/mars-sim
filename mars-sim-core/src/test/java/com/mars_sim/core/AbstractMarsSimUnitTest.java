@@ -15,6 +15,7 @@ import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.science.task.MarsSimContext;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -32,7 +33,8 @@ import com.mars_sim.mapdata.location.LocalPosition;
 
 import junit.framework.TestCase;
 
-public abstract class AbstractMarsSimUnitTest extends TestCase {
+public abstract class AbstractMarsSimUnitTest extends TestCase
+			implements MarsSimContext {
 
 	protected static final double BUILDING_LENGTH = 9D;
 	protected static final double BUILDING_WIDTH = 9D;
@@ -76,6 +78,9 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	    surface = unitManager.getMarsSurface();		
 	}
 
+	public Simulation getSim() {
+		return sim;
+	}
 	
 	protected Rover buildRover(Settlement settlement, String name, LocalPosition parked) {
 	    Rover rover1 = new Rover(name, simConfig.getVehicleConfiguration().getVehicleSpec("explorer rover"),
@@ -98,7 +103,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	    building0.addFunction(spec);
 
 
-		buildingManager.addNewBuildingtoBFMap(building0);
+		buildingManager.refreshFunctionMapForBuilding(building0);
 	    
 	    return building0.getVehicleParking();
 	}
@@ -117,6 +122,15 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	    
 	    unitManager.addUnit(building0);
 	
+	    return building0;
+	}
+
+	public Building buildResearch(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+		MockBuilding building0 = buildBuilding(buildingManager, "Lander Hab", BuildingCategory.LABORATORY,  pos, facing, id);
+
+		var spec = simConfig.getBuildingConfiguration().getFunctionSpec("Lander Hab", FunctionType.RESEARCH);
+
+	    building0.addFunction(spec);
 	    return building0;
 	}
 
@@ -155,13 +169,17 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	}
 
 	protected Settlement buildSettlement(String name) {
-		Settlement settlement = new MockSettlement(name);
+		return buildSettlement(name, false);
+	}
+
+	protected Settlement buildSettlement(String name, boolean needGoods) {
+		Settlement settlement = new MockSettlement(name, needGoods);
 		unitManager.addUnit(settlement);
 
 		return settlement;
 	}
 
-	protected Person buildPerson(String name, Settlement settlement) {
+	public Person buildPerson(String name, Settlement settlement) {
 		Person person = Person.create(name, settlement, GenderType.MALE)
 				.build();
 		person.setJob(JobType.ENGINEER, "Test");
@@ -185,6 +203,19 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 
 		Settlement destination = buildSettlement();
 		return new TravelToSettlement(members, destination, rover);
+	}
+
+	/**
+	 * Executes a Task for a duration or until it completes.
+	 * 
+	 * @param person
+	 * @param task
+	 * @param duration
+	 * @return The number of calls taken
+	 */
+	protected double executeTaskForDuration(Person person, Task task, double duration) {
+		int maxCalls = (int)(duration/MSOLS_PER_EXECUTE) + 1;
+		return executeTask(person, task, maxCalls) * MSOLS_PER_EXECUTE;
 	}
 
 	/**
@@ -221,7 +252,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 		return createPulse(marsTime, newSol, newHalfSol);
 	}
 
-	protected ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol) {
+	public ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol) {
 		sim.getMasterClock().setMarsTime(marsTime);
         return new ClockPulse(pulseID++, 1D, marsTime, null, newSol, newHalfSol, true);
     }
@@ -230,7 +261,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	 * Better Assert method 
 	 */
 	public static void assertGreaterThan(String message, double minValue, double actual) {
-		if (actual < minValue) {
+		if (actual <= minValue) {
 			fail(message + " ==> " +
 					"Expected: a value greater than <" + minValue + ">\n" +
 					"Actual was <" + actual + ">");

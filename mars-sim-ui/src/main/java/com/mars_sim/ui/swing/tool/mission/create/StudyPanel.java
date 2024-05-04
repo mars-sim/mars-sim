@@ -20,8 +20,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -30,7 +28,7 @@ import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyManager;
-import com.mars_sim.core.tool.Conversion;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 
 /**
@@ -40,8 +38,8 @@ import com.mars_sim.ui.swing.MarsPanelBorder;
 public class StudyPanel extends WizardPanel {
 
 	// The wizard panel name.
-	private final static String NAME = "Scientific Study";
-	private final static String CANT = "Note : not valid for this mission";
+	private static final String NAME = "Scientific Study";
+	private static final String CANT = "Note : not valid for this mission";
 
 	// Data members.
 	private StudyTableModel studyTableModel;
@@ -89,6 +87,7 @@ public class StudyPanel extends WizardPanel {
 			/** default serial id. */
 			private static final long serialVersionUID = 1L;
 
+			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 					boolean hasFocus, int row, int column) {
 				super.setBackground(null);
@@ -103,18 +102,16 @@ public class StudyPanel extends WizardPanel {
 		});
 		studyTable.setRowSelectionAllowed(true);
 		studyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		studyTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				if (e.getValueIsAdjusting()) {
-					int index = studyTable.getSelectedRow();
-					if (index > -1) {
-						if (studyTableModel.isFailureRow(index)) {
-							errorMessageLabel.setText(CANT);
-							getWizard().setButtons(false);
-						} else {
-							errorMessageLabel.setText(" ");
-							getWizard().setButtons(true);
-						}
+		studyTable.getSelectionModel().addListSelectionListener(e -> {
+			if (e.getValueIsAdjusting()) {
+				int index = studyTable.getSelectedRow();
+				if (index > -1) {
+					if (studyTableModel.isFailureRow(index)) {
+						errorMessageLabel.setText(CANT);
+						getWizard().setButtons(false);
+					} else {
+						errorMessageLabel.setText(" ");
+						getWizard().setButtons(true);
 					}
 				}
 			}
@@ -221,6 +218,7 @@ public class StudyPanel extends WizardPanel {
 		 * @param columnIndex the column index.
 		 * @return column name.
 		 */
+		@Override
 		public String getColumnName(int columnIndex) {
 			String result = null;
 			if (columnIndex == 0)
@@ -243,17 +241,14 @@ public class StudyPanel extends WizardPanel {
 			Object result = null;
 
 			if (row < studies.size()) {
-				try {
-					ScientificStudy study = studies.get(row);
+				ScientificStudy study = studies.get(row);
 
-					if (column == 0)
-						result = Conversion.capitalize(study.toString());
-					else if (column == 1)
-						result = Conversion.capitalize(study.getPhase());
-					else if (column == 2)
-						result = getScienceResearcherNum(study);
-				} catch (Exception e) {
-				}
+				if (column == 0)
+					result = study.getName();
+				else if (column == 1)
+					result = study.getPhase();
+				else if (column == 2)
+					result = getScienceResearcherNum(study);
 			}
 
 			return result;
@@ -295,15 +290,11 @@ public class StudyPanel extends WizardPanel {
 			boolean result = false;
 			ScientificStudy study = studies.get(row);
 
-			try {
-				if (column == 1) {
-					if (!ScientificStudy.RESEARCH_PHASE.equals(study.getPhase()))
-						result = true;
-				} else if (column == 2) {
-					if (getScienceResearcherNum(study) == 0)
-						result = true;
-				}
-			} catch (Exception e) {
+			if (column == 1) {
+				if (StudyStatus.RESEARCH_PHASE != study.getPhase())
+					result = true;
+			} else if ((column == 2) && (getScienceResearcherNum(study) == 0)) {
+					result = true;
 			}
 
 			return result;

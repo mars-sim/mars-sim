@@ -4,7 +4,7 @@
  * @Date 2021-10-05
  * @author Scott Davis
  */
-package com.mars_sim.core.person.ai.task.meta;
+package com.mars_sim.core.science.task;
 
 import java.util.HashSet;
 import java.util.List;
@@ -16,13 +16,13 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.role.RoleType;
-import com.mars_sim.core.person.ai.task.PerformLaboratoryResearch;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Lab;
 import com.mars_sim.tools.Msg;
 
@@ -53,7 +53,7 @@ public class PerformLaboratoryResearchMeta extends FactoryMetaTask {
 
     @Override
     public Task constructInstance(Person person) {
-        return new PerformLaboratoryResearch(person);
+        return PerformLaboratoryResearch.createTask(person);
     }
 
     /**
@@ -74,14 +74,14 @@ public class PerformLaboratoryResearchMeta extends FactoryMetaTask {
 
         // Add probability for researcher's primary study (if any).
         double base = 0D;
-        if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
+        if ((StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase())
                 && !primaryStudy.isPrimaryResearchCompleted()) {
             base += getStudyScore(person, 50D, primaryStudy.getScience());
         }
 
 	    // Add probability for each study researcher is collaborating on.
 	    for(ScientificStudy collabStudy : person.getCollabStudies()) {
-            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
+            if ((StudyStatus.RESEARCH_PHASE == collabStudy.getPhase())
                     && !collabStudy.isCollaborativeResearchCompleted(person)) {
                 ScienceType collabScience = collabStudy.getContribution(person);
 
@@ -106,12 +106,12 @@ public class PerformLaboratoryResearchMeta extends FactoryMetaTask {
      */
     private double getStudyScore(Person person, double base, ScienceType science) {
         double score = 0D;
-        Lab lab = PerformLaboratoryResearch.getLocalLab(person, science);
+        Lab lab = LabTask.getLocalLab(person, science);
         if (lab != null) {
             score = base;
 
             // Get lab building crowding modifier.
-            score *= PerformLaboratoryResearch.getLabCrowdingModifier(person, lab);
+            score *= LabTask.getLabCrowdingModifier(person, lab);
 
             // If researcher's current job isn't related to study science, divide by two.
             JobType job = person.getMind().getJob();

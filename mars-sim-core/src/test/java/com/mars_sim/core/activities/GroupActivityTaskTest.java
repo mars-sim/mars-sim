@@ -34,10 +34,14 @@ public class GroupActivityTaskTest extends AbstractMarsSimUnitTest {
         t = t.addTime(calendar.getTimeOfDay());
         ga.execute(t);
 
+        SkillType testedSkill = SkillType.MANAGEMENT;
+
         // Assign person to Task
         Person p = buildPerson("Worker", s);
         p.getPhysicalCondition().setPerformanceFactor(1);
         p.setCurrentBuilding(accom); // Put person in correct buildign to avoid walking sub task
+        p.getSkillManager().addNewSkill(testedSkill, 1);
+
         var task = new GroupActivityTask(ga, p);
 
         assertFalse("Activity not done after start", task.isDone());
@@ -48,20 +52,20 @@ public class GroupActivityTaskTest extends AbstractMarsSimUnitTest {
         ga.execute(t);
 
         // Person takes part
-        double origSkill = p.getSkillManager().getCumulativeExperience(SkillType.MANAGEMENT);
+        double origSkill = p.getSkillManager().getCumulativeExperience(testedSkill);
         double returnedTime = task.performTask(info.activityDuration()/3);
-        assertFalse("Activity no done", task.isDone());
+        assertFalse("Activity not done", task.isDone());
         assertEquals("Activity active phase", GroupActivityTask.ACTIVE, task.getPhase());
-        double newSkill = p.getSkillManager().getCumulativeExperience(SkillType.MANAGEMENT);
-        origSkill = newSkill;
+        double newSkill = p.getSkillManager().getCumulativeExperience(testedSkill);
         assertGreaterThan("Skill has increased", origSkill, newSkill);
+        origSkill = newSkill;
         assertEquals("Activity consumed all time", 0D, returnedTime);
 
         // Second execute
         returnedTime = task.performTask(info.activityDuration()/3);
         assertFalse("Activity no done 2nd", task.isDone());
         assertEquals("Activity active phase 2nd", GroupActivityTask.ACTIVE, task.getPhase());
-        newSkill = p.getSkillManager().getCumulativeExperience(SkillType.MANAGEMENT);
+        newSkill = p.getSkillManager().getCumulativeExperience(testedSkill);
         assertGreaterThan("Skill has increased 2nd", origSkill, newSkill);
         assertEquals("Activity consumed all time 2nd", 0D, returnedTime);
 

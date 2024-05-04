@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
@@ -59,19 +58,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(ScientificStudy.class.getName());
 
-	// Study Phases
-	public static final String PROPOSAL_PHASE = "Study Proposal";
-	public static final String INVITATION_PHASE = "Collaborator Invitation";
-	public static final String RESEARCH_PHASE = "Research";
-	public static final String PAPER_PHASE = "Writing Paper";
-	public static final String PEER_REVIEW_PHASE = "Peer Review";
-	public static final String COMPLETE_PHASE = "Completed";
-	
-	// Completion States
-	public static final String SUCCESSFUL_COMPLETION = "Successful Completion";
-	public static final String FAILED_COMPLETION = "Failed Completion";
-	public static final String CANCELED = "Canceled";
-
 	// Data members
 	/** The assigned study number. */
 	private int id;	
@@ -103,8 +89,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	/** The primary researcher */
 	private Person primaryResearcher;
 	
-	private String phase;
-	private String completionState;
+	private StudyStatus phase;
 	private String name;
 	private ScienceType science;
 
@@ -143,7 +128,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		this.science = science;
 		this.difficultyLevel = difficultyLevel;
 
-		phase = PROPOSAL_PHASE;
+		phase = StudyStatus.PROPOSAL_PHASE;
 		
 		// Gets the average number from scientific_study.json
 		int aveNum = scienceConfig.getAveNumCollaborators();
@@ -181,7 +166,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		primaryStats = new CollaboratorStats(science);
 		proposalWorkTime = 0D;
 		peerReviewStartTime = null;
-		completionState = null;
 		listeners = new ArrayList<>();
 		topics = new ArrayList<>();
 	}
@@ -234,7 +218,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * 
 	 * @return phase
 	 */
-	public String getPhase() {
+	public StudyStatus getPhase() {
 		return phase;
 	}
 
@@ -243,7 +227,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * 
 	 * @param phase the phase.
 	 */
-	private void setPhase(String phase) {
+	private void setPhase(StudyStatus phase) {
 		this.phase = phase;
 
 		// Fire scientific study update event.
@@ -335,7 +319,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 */
 	private static Set<Person> getPersons(Set<Integer> ids) {
 		UnitManager um = getUnitManager();
-		return ids.stream().map(i -> um.getPersonByID(i)).collect(Collectors.toSet());
+		return ids.stream().map(um::getPersonByID).collect(Collectors.toSet());
 	}
 	
 	/**
@@ -425,9 +409,9 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 */
 	public boolean hasInvitedResearcherResponded(Person researcher) {
 		boolean result = false;
-		int id = researcher.getIdentifier();
-		if (invitedResearchers.containsKey(id))
-			result = invitedResearchers.get(id);
+		int resId = researcher.getIdentifier();
+		if (invitedResearchers.containsKey(resId))
+			result = invitedResearchers.get(resId);
 		return result;
 	}
 
@@ -802,10 +786,16 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * Sets the study as completed.
 	 * 
 	 * @param completionState the state of completion.
+	 * @param reason Reason for completed
 	 */
-	private void setCompleted(String completionState) {
-		this.phase = COMPLETE_PHASE;
-		this.completionState = completionState;
+	public void setCompleted(StudyStatus completionState, String reason) {
+		if (!StudyStatus.isCompleted(completionState)) {
+			throw new IllegalArgumentException("State cannot be used to complete Study:" + completionState.name());
+		}
+
+		logger.info(this, "Completed:" + completionState.getName() + ", reason:" + reason);
+
+		this.phase = completionState;
 		primaryResearcher.setStudy(null);
 
 		for(Person p : getCollaborativeResearchers()) {
@@ -822,19 +812,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * @return true if completed.
 	 */
 	public boolean isCompleted() {
-		return phase.equals(COMPLETE_PHASE);
-	}
-
-	/**
-	 * Gets the study's completion state.
-	 * 
-	 * @return completion state or null if not completed.
-	 */
-	public String getCompletionState() {
-		if (isCompleted())
-			return completionState;
-		else
-			return null;
+		return StudyStatus.isCompleted(phase);
 	}
 
 	/**
@@ -1047,7 +1025,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		invitedResearchers.clear();
 		invitedResearchers = null;
 		peerReviewStartTime = null;
-		completionState = null;
 		if (listeners != null) {
 			listeners.clear();
 		}
@@ -1060,13 +1037,6 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 
-		// Check if primary researcher has died.
-		if (primaryResearcher.getPhysicalCondition().isDead()) {
-			setCompleted(ScientificStudy.CANCELED);
-			logger.info(this, "Canceled/abandoned due to " 
-							+ primaryResearcher.getName() + " death.");
-		}
-		
 		// Check if collaborators have died. Remove dead & inactive collaborators
 		cleanDeadCollaborators();
 
@@ -1076,11 +1046,8 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 			if (proposalWorkTime >= baseProposalTime) {
 				logger.info(this,
 					"Finished writing proposal. Starting to invite collaborative researchers.");
-				// Picks research topics 
-				if (scienceConfig == null)
-					scienceConfig = SimulationConfig.instance().getScienceConfig();
 				topics.add(scienceConfig.getATopic(science));
-				setPhase(INVITATION_PHASE);
+				setPhase(StudyStatus.INVITATION_PHASE);
 			}
 			break;
 		
@@ -1101,13 +1068,13 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 				logger.info("Ended the invitation phase with "
 					+ collaborators.size() 
 					+ " collaborative researchers. Started the research work phase.");
-				setPhase(RESEARCH_PHASE);
+				setPhase(StudyStatus.RESEARCH_PHASE);
 			}
 			break;
 			
 		case RESEARCH_PHASE:
 			if (isAllResearchCompleted()) {
-				setPhase(PAPER_PHASE);
+				setPhase(StudyStatus.PAPER_PHASE);
 				logger.info(this, "Finished the research work. Starting to compile data results.");
 			}
 			else {
@@ -1118,8 +1085,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 					MarsTime lastPrimaryWork = getLastPrimaryResearchWorkTime();
 					if ((lastPrimaryWork != null) && now.getTimeDiff(
 							lastPrimaryWork) > getPrimaryWorkDownTimeAllowed()) {
-						setCompleted(CANCELED);
-						logger.info(this, "Abandoned due to lack of participation from primary researcher.");
+						setCompleted(StudyStatus.CANCELLED, "Abandoned due to lack of participation from primary researcher.");
 					}
 				}
 
@@ -1143,7 +1109,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 			
 		case PAPER_PHASE:
 			if (isAllPaperWritingCompleted()) {
-				setPhase(PEER_REVIEW_PHASE);
+				setPhase(StudyStatus.PEER_REVIEW_PHASE);
 				startingPeerReview(); 
 				logger.info(this, "Done compiling data results. Starting to do a peer review.");
 			}
@@ -1153,15 +1119,13 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 			if (isPeerReviewTimeFinished()) {
 				// Determine results of peer review.
 				if (determinePeerReviewResults()) {
-					setCompleted(SUCCESSFUL_COMPLETION);
+					setCompleted(StudyStatus.SUCCESSFUL_COMPLETION, "Completed a peer review.");
 
 					// Provide scientific achievement to primary and collaborative researchers.
 					provideCompletionAchievements();
-					logger.info(this, "Completed a peer review.");
 				}
 				else {
-					setCompleted(ScientificStudy.FAILED_COMPLETION);
-					logger.info(this, "Failed to complete a peer review.");
+					setCompleted(StudyStatus.FAILED_COMPLETION, "Failed to complete a peer review.");
 				}
 			}
 			break;

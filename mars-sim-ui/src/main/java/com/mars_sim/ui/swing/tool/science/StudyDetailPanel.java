@@ -19,12 +19,14 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.StyleManager;
@@ -61,7 +63,7 @@ extends JPanel {
 		setLayout(new BorderLayout());
 		setPreferredSize(new Dimension(425, -1));
 
-		JLabel titleLabel = new JLabel(Msg.getString("StudyDetailPanel.details"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel titleLabel = new JLabel(Msg.getString("StudyDetailPanel.details"), SwingConstants.CENTER); //$NON-NLS-1$
 		StyleManager.applySubHeading(titleLabel);
 		add(titleLabel, BorderLayout.NORTH);
 
@@ -156,21 +158,18 @@ extends JPanel {
 	 * @return the phase string.
 	 */
 	private static String getPhaseString(ScientificStudy study) {
-		String result = ""; //$NON-NLS-1$
-
 		if (study != null) {
-			if (!study.isCompleted()) result = study.getPhase();
-			else result = study.getCompletionState();
+			return study.getPhase().getName();
 		}
 
-		return result;
+		return "";
 	}
 
 	private static class ResearchTableModel extends AbstractTableModel implements UnitModel {
 
-		public final static int NAME = 0;
-		public final static int CONTRIBUTION = 1;
-		public final static int WORK = 2;
+		public static final int NAME = 0;
+		public static final int CONTRIBUTION = 1;
+		public static final int WORK = 2;
 
 		private List<Person> researchers = new ArrayList<>();
 		private ScientificStudy study;
@@ -228,11 +227,11 @@ extends JPanel {
 				case NAME: return p.getName();
 				case CONTRIBUTION: return (isPrimary ? "" : study.getContribution(p).getName());
 				case WORK: {
-					if (study.getPhase().equals(ScientificStudy.PAPER_PHASE)) {
+					if (study.getPhase() == StudyStatus.PAPER_PHASE) {
 						return (isPrimary ? study.getPrimaryPaperWorkTimeCompleted() 
 											: study.getCollaborativePaperWorkTimeCompleted(p));
 					}
-					else if (study.getPhase().equals(ScientificStudy.RESEARCH_PHASE)) {
+					else if (study.getPhase() == StudyStatus.RESEARCH_PHASE) {
 						return (isPrimary ? study.getPrimaryResearchWorkTimeCompleted() 
 											: study.getCollaborativeResearchWorkTimeCompleted(p));
 					}

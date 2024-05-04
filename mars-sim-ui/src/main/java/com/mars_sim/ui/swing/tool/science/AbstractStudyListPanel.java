@@ -16,13 +16,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.StyleManager;
 
 /**
@@ -43,22 +44,35 @@ public abstract class AbstractStudyListPanel extends JPanel {
 	/**
 	 * The study table model inner class.
      */
-	private static class StudyTableModel
-		extends AbstractTableModel {
+	private static class StudyTableModel extends AbstractTableModel {
 	
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
+		private static final int NAME_COLUMN = 0;
+		private static final int SCIENCE_COLUMN = NAME_COLUMN + 1;
+		private static final int PHASE_COLUMN = SCIENCE_COLUMN + 1;
+		private static final int PERC_COLUMN = PHASE_COLUMN + 1;
+		private static final int RESEARCHER_COLUMN = PERC_COLUMN + 1;
+		private static final int SETTLEMENT_COLUMN = RESEARCHER_COLUMN + 1;
+		private static final int NUM_COLUMN = SETTLEMENT_COLUMN + 1;
+
+		private String[] names = new String[NUM_COLUMN];
+
 		// Data members
 		private List<ScientificStudy> studies;
-		private String msgTag;
 
 		/**
 		 * Constructor.
 		 */
 		private StudyTableModel(String msgTag, List<ScientificStudy> initialStudies) {
 			this.studies = initialStudies;
-			this.msgTag = msgTag;
+			names[NAME_COLUMN] = "Name";
+			names[SCIENCE_COLUMN] = Msg.getString(msgTag + ".column.study"); 
+			names[PERC_COLUMN] = "%";
+			names[PHASE_COLUMN] =  Msg.getString(msgTag + ".column.phase"); //$NON-NLS-1$
+			names[RESEARCHER_COLUMN] =  Msg.getString(msgTag + ".column.researcher"); //$NON-NLS-1$
+			names[SETTLEMENT_COLUMN] =  Msg.getString(msgTag + ".column.settlement"); //$NON-NLS-1
 		}
 
 		/**
@@ -67,26 +81,14 @@ public abstract class AbstractStudyListPanel extends JPanel {
 		 * @return the number of columns in the model
 		 */
 		public int getColumnCount() {
-			return 6;
+			return NUM_COLUMN;
 		}
 
 		@Override
 		public String getColumnName(int column) {
-			String result = ""; //$NON-NLS-1$
-			if (column == 0) 
-				result = Msg.getString(msgTag + ".column.id"); //$NON-NLS-1$
-			else if (column == 1) 
-				result = Msg.getString(msgTag + ".column.study"); //$NON-NLS-1$
-			else if (column == 2) 
-				result = Msg.getString(msgTag + ".column.level"); //$NON-NLS-1$
-			else if (column == 3) 
-				result = Msg.getString(msgTag + ".column.phase"); //$NON-NLS-1$
-			else if (column == 4)
-				result = Msg.getString(msgTag + ".column.researcher"); //$NON-NLS-1$
-			else if (column == 5)
-				result = Msg.getString(msgTag + ".column.settlement"); //$NON-NLS-1$
-			return result;
+			return names[column];
 		}
+
 
 		/**
 		 * Returns the number of rows in the model. A JTable uses this method to determine 
@@ -105,33 +107,29 @@ public abstract class AbstractStudyListPanel extends JPanel {
 		 * @return the value Object at the specified cell
 		 */
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			String result = ""; //$NON-NLS-1$
 			if ((rowIndex >= 0) && (rowIndex < studies.size())) {
 				ScientificStudy study = studies.get(rowIndex);
-				String researcherN = "";	
-				String settlementN = "";
-				if (study.getPrimaryResearcher() != null) {
-					researcherN = study.getPrimaryResearcher().getName();
-					
-					if (study.getPrimarySettlement() != null) {
-						settlementN = study.getPrimarySettlement().getName();
-					}
-				}
 
-				if (columnIndex == 0) 
-					result = study.getID() + "";
-				else if (columnIndex == 1) 
-					result = study.getScience().getName();
-				else if (columnIndex == 2) 
-					result = study.getDifficultyLevel() + "";
-				else if (columnIndex == 3) 
-					result = study.getPhase();
-				else if (columnIndex == 4)
-					result = researcherN;
-				else if (columnIndex == 5)
-					result = settlementN;
+				switch(columnIndex) {
+					case NAME_COLUMN:
+						return study.getName();
+					case SETTLEMENT_COLUMN:
+						var s = study.getPrimarySettlement();
+						return (s != null ? s.getName() : null);
+					case SCIENCE_COLUMN:
+						return study.getScience().getName();
+					case RESEARCHER_COLUMN:
+						var p  = study.getPrimaryResearcher();
+						return (p != null ? p.getName() : null);
+					case PHASE_COLUMN:
+						return study.getPhase().getName();
+					case PERC_COLUMN:
+						return study.getPhaseProgress() * 100;
+					default:
+						return null;
+				}
 			}
-			return result;
+			return null;
 		}
 
 		/**
@@ -169,6 +167,14 @@ public abstract class AbstractStudyListPanel extends JPanel {
 
 			return result;
 		}
+
+		@Override
+		public Class<?> getColumnClass(int columnIndex) {
+			if (columnIndex == PERC_COLUMN) {
+				return Double.class;
+			}
+			return String.class;
+		}
 	}
 
 	/**
@@ -178,21 +184,21 @@ public abstract class AbstractStudyListPanel extends JPanel {
 	 * @param scienceWindow
 	 * @param msgTag
 	 */
-	public AbstractStudyListPanel(ScienceWindow scienceWindow, String msgTag) {
+	protected AbstractStudyListPanel(ScienceWindow scienceWindow, String msgTag) {
 		super();
 		this.scienceWindow = scienceWindow;
 
 		setLayout(new BorderLayout());
 
 		// Create title label.
-		JLabel titleLabel = new JLabel(Msg.getString(msgTag + ".title"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel titleLabel = new JLabel(Msg.getString(msgTag + ".title"), SwingConstants.CENTER); //$NON-NLS-1$
 		StyleManager.applySubHeading(titleLabel);
 		add(titleLabel, BorderLayout.NORTH);
 
 		// Create list scroll pane.
 		listScrollPane = new JScrollPane();
 		listScrollPane.setBorder(new MarsPanelBorder());
-		listScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		listScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		add(listScrollPane, BorderLayout.CENTER);
 
 		// Create study table model.
@@ -204,25 +210,24 @@ public abstract class AbstractStudyListPanel extends JPanel {
 		studyTable.setCellSelectionEnabled(false);
 		studyTable.setRowSelectionAllowed(true);
 		studyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		studyTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent event) {
-				if (event.getValueIsAdjusting()) {
-					int tableRow = studyTable.getSelectedRow();
-					if (tableRow >= 0) {
-						int modelRow = studyTable.convertRowIndexToModel(studyTable.getSelectedRow());
-						ScientificStudy selectedStudy = studyTableModel.getStudy(modelRow);
-						if (selectedStudy != null) setSelectedScientificStudy(selectedStudy);
-					}
+		studyTable.getSelectionModel().addListSelectionListener(event -> {
+			if (event.getValueIsAdjusting()) {
+				int tableRow = studyTable.getSelectedRow();
+				if (tableRow >= 0) {
+					int modelRow = studyTable.convertRowIndexToModel(studyTable.getSelectedRow());
+					ScientificStudy selectedStudy = studyTableModel.getStudy(modelRow);
+					if (selectedStudy != null) setSelectedScientificStudy(selectedStudy);
 				}
 			}
 		});
-		studyTable.getColumnModel().getColumn(0).setPreferredWidth(5);
-		studyTable.getColumnModel().getColumn(1).setPreferredWidth(40);
-		studyTable.getColumnModel().getColumn(2).setPreferredWidth(5);
-		studyTable.getColumnModel().getColumn(3).setPreferredWidth(80);
-		studyTable.getColumnModel().getColumn(4).setPreferredWidth(80);
-		studyTable.getColumnModel().getColumn(5).setPreferredWidth(80);
-		
+		studyTable.getColumnModel().getColumn(StudyTableModel.NAME_COLUMN).setPreferredWidth(65);
+		studyTable.getColumnModel().getColumn(StudyTableModel.SCIENCE_COLUMN).setPreferredWidth(50);
+		studyTable.getColumnModel().getColumn(StudyTableModel.PERC_COLUMN).setPreferredWidth(5);
+		studyTable.getColumnModel().getColumn(StudyTableModel.PHASE_COLUMN).setPreferredWidth(70);
+		studyTable.getColumnModel().getColumn(StudyTableModel.RESEARCHER_COLUMN).setPreferredWidth(80);
+		studyTable.getColumnModel().getColumn(StudyTableModel.SETTLEMENT_COLUMN).setPreferredWidth(80);
+		studyTable.getColumnModel().getColumn(StudyTableModel.PERC_COLUMN).setCellRenderer(new NumberCellRenderer(0));
+
 		studyTable.setAutoCreateRowSorter(true);
 				
 		listScrollPane.setViewportView(studyTable);

@@ -11,10 +11,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -642,72 +640,6 @@ public class ChainOfCommand implements Serializable {
 		}
 	}
 
-	public static Set<JobType> getJobsFromRole(RoleType roleType) {
-		Set<JobType> jobTypes = new HashSet<>();
-
-		switch(roleType) {
-			case AGRICULTURE_SPECIALIST:
-				jobTypes = Set.of(
-					JobType.BOTANIST,
-					JobType.BIOLOGIST,
-					JobType.CHEMIST,
-					JobType.CHEF,
-					JobType.TRADER
-					);
-			break;
-
-			case COMPUTING_SPECIALIST:
-				jobTypes = Set.of(
-					JobType.ASTRONOMER,
-					JobType.COMPUTER_SCIENTIST,
-					JobType.CHEMIST,
-					JobType.MATHEMATICIAN,
-					JobType.PHYSICIST
-					);
-			break;
-			
-			// Will continue to work out the rest of the cases
-			
-			default:
-				throw new IllegalStateException("Cannot process " + roleType);
-		}
-
-		return jobTypes;
-	}
-	
-			
-	public static Set<RoleType> getRolesFromJob(JobType jobType) {
-		Set<RoleType> roleTypes = new HashSet<>();
-		
-		switch(jobType) {
-			case ARCHITECT:
-				roleTypes = Set.of(
-						RoleType.COMPUTING_SPECIALIST,
-						RoleType.ENGINEERING_SPECIALIST,
-						RoleType.MISSION_SPECIALIST,
-						RoleType.RESOURCE_SPECIALIST,
-						RoleType.SAFETY_SPECIALIST
-						);
-				break;
-
-			case AREOLOGIST:
-				roleTypes = Set.of(
-						RoleType.MISSION_SPECIALIST,
-						RoleType.RESOURCE_SPECIALIST,
-						RoleType.SAFETY_SPECIALIST,
-						RoleType.SCIENCE_SPECIALIST						
-						);
-				break;		
-				
-				// Will continue to work out the rest of the cases
-
-		default:
-			throw new IllegalStateException("Cannot process " + jobType);
-		}
-		
-		return roleTypes;
-	}
-	
 	/**
 	 * Finds a list of people with a particular role.
 	 *

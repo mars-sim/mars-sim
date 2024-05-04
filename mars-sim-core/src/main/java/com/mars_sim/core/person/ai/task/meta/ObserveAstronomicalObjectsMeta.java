@@ -26,6 +26,7 @@ import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyManager;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
@@ -102,11 +103,11 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
 	 */
 	public List<ScientificStudy> getAstroStudies(Settlement settlement) {
 		return ssm.getAllStudies(settlement).stream().filter(s -> 
-				(ScientificStudy.RESEARCH_PHASE.equals(s.getPhase())
+				(StudyStatus.RESEARCH_PHASE == s.getPhase())
 	            && ((ScienceType.ASTRONOMY == s.getScience())
-	                || s.getCollaborationScience().contains(ScienceType.ASTRONOMY)))
-						&& (s.getPrimarySettlement() != null 
-						&& s.getPrimarySettlement().equals(settlement)))
+	                || s.getCollaborationScience().contains(ScienceType.ASTRONOMY))
+						&& (s.getPrimarySettlement() != null) 
+						&& s.getPrimarySettlement().equals(settlement))
 				.collect(Collectors.toList());		
 	}
 	

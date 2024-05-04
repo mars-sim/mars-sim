@@ -6,18 +6,16 @@
  */
 package com.mars_sim.tools.util;
 
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.mars_sim.tools.Msg;
 
-
-// Note : may consider using it.unimi.dsi.util.XorShift1024StarRandom;
 
 /**
  * The RandomUtil class is a library of various random-related methods.
@@ -42,15 +40,6 @@ public final class RandomUtil {
 	// See Mersenne Twister in JAVA 
 	// at http://www.math.sci.hiroshima-u.ac.jp/m-mat/MT/VERSIONS/JAVA/java.html
 	
-	
-//	private static final SecureRandom sr = new SecureRandom();
-	// Note : if okay to block the thread during re-seeding,
-	// may use SecureRandom sr = SecureRandom.getInstanceStrong()
-
-//	public static String getAlgorithm() {
-//		return sr.getAlgorithm();
-//	}
-
 	private static final Random random = ThreadLocalRandom.current();
 
 	private RandomUtil() {}
@@ -75,12 +64,18 @@ public final class RandomUtil {
 				.orElse(null);
 	}
     
-    public static <E> Optional<E> getRandomElement(Collection<E> collection) {
-        return collection
-                .stream()
-//                .skip(ThreadLocalRandom.current().nextInt(collection.size()))
-                .skip(getRandomInt(collection.size()))
-                .findAny();
+	/**
+	 * Get a random element from a List.
+	 * @param <E> The element in the lsit
+	 * @param collection
+	 * @return Element selected at random or a null if the lsit is empty
+	 */
+    public static <E> E getRandomElement(List<E> collection) {
+		if (!collection.isEmpty()) {
+			int selected = RandomUtil.getRandomInt(collection.size() - 1);
+			return collection.get(selected);
+		}
+		return null;
     }
     
 	/**
@@ -303,7 +298,7 @@ public final class RandomUtil {
 	 */
 	public static <T extends Object> T getWeightedRandomObject(Map<T, Double> weightedMap) {
 		if (weightedMap == null) {
-			throw new IllegalArgumentException(Msg.getString("RandomUtil.log.weightMapIsNull")); //$NON-NLS-1$
+			throw new IllegalArgumentException("Weighted map argumetn cannot be null");
 		}
 
 		T result = null;
@@ -324,16 +319,14 @@ public final class RandomUtil {
 
 		// Adjust the weight to make all of them positive
 		if (negativeWeight < 0) {
-			for (T entry : weightedMap.keySet()) {
-				weightedMap.put(entry, weightedMap.get(entry) - negativeWeight);
-			}
-			
+			var negWeight = negativeWeight;
+			weightedMap.entrySet().forEach(entry ->
+							weightedMap.put(entry.getKey(), entry.getValue() - negWeight));
 			totalWeight = 0;
 			
 			// Recompute the total weight
-			Iterator<Double> k = weightedMap.values().iterator();
-			while (k.hasNext()) {
-				totalWeight += k.next();
+			for(var k : weightedMap.values()) {
+				totalWeight += k;
 			}
 		}
 		
@@ -341,13 +334,11 @@ public final class RandomUtil {
 		double randWeight = getRandomDouble(totalWeight);
 		
 		// Determine which object the weight applies to.
-		Iterator<T> j = weightedMap.keySet().iterator();
-		while (j.hasNext()) {
-			T key = j.next();
-			double weight = weightedMap.get(key);
+		for(var e2 : weightedMap.entrySet()) {
+			double weight = e2.getValue();
 			if (weight >= 0D) {
 				if (randWeight <= weight) {
-					result = key;
+					result = e2.getKey();
 					break;
 				} else
 					randWeight -= weight;

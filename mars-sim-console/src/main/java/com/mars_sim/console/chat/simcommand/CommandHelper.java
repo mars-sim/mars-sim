@@ -36,6 +36,7 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.building.function.ResourceProcess;
 import com.mars_sim.core.structure.building.function.ResourceProcessor;
@@ -125,18 +126,18 @@ public class CommandHelper {
 		response.appendHeading(study.getName());
 		response.appendLabeledString("Science", study.getScience().getName());
 		response.appendLabeledString("Lead", study.getPrimaryResearcher().getName());
-		response.appendLabeledString("Phase", study.getPhase());
+		response.appendLabeledString("Phase", study.getPhase().getName());
 		response.appendLabelledDigit("Level", study.getDifficultyLevel());
 
 		
 		switch(study.getPhase()) {
-		case ScientificStudy.PROPOSAL_PHASE:
+		case PROPOSAL_PHASE:
 			response.appendLabeledString("Completed",
 					String.format(PERC_FORMAT, (100D * study.getProposalWorkTimeCompleted())
 							/ study.getTotalProposalWorkTimeRequired()));
 			break;
 			
-		case ScientificStudy.INVITATION_PHASE:
+		case INVITATION_PHASE:
 			response.appendLabelledDigit("Max Collaborators", study.getMaxCollaborators());
 			response.appendTableHeading("Invitee", CommandHelper.PERSON_WIDTH, "Responded", "Accepted");
 			
@@ -148,12 +149,12 @@ public class CommandHelper {
 			}
 			break;
 		
-		case ScientificStudy.PAPER_PHASE:
-		case ScientificStudy.RESEARCH_PHASE:
+		case PAPER_PHASE:
+		case RESEARCH_PHASE:
 			displayCollaborators(response, study);			
 			break;
 			
-		case ScientificStudy.PEER_REVIEW_PHASE:
+		case PEER_REVIEW_PHASE:
 			// Safe to cast because value will always be 100 or less
 			response.appendLabeledString("Completed", String.format(PERC_FORMAT,
 											(100D * study.getPeerReviewTimeCompleted())
@@ -176,7 +177,7 @@ public class CommandHelper {
 		double colabExpected;
 		double primeExpected;
 		
-		if (study.getPhase().equals(ScientificStudy.PAPER_PHASE)) {
+		if (study.getPhase().equals(StudyStatus.PAPER_PHASE)) {
 			paper = true;
 			colabExpected = study.getTotalCollaborativePaperWorkTimeRequired();
 			primeExpected = study.getTotalPrimaryPaperWorkTimeRequired();

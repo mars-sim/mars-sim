@@ -53,7 +53,7 @@ public class Computation extends Function {
 	/** The combined power demand for each running CU [in kW/CU]. */
 	private double combinedkW;
 	/** The power demand for each non-load CU [in kW/CU] - Assume 10% of full load. */
-	private double NON_LOAD_KW;
+	private double nonLoadkW;
 	/** The schedule demand [in CUs] for the current mission sol. */
 	private Map<Integer, Double> todayDemand;
 
@@ -77,7 +77,7 @@ public class Computation extends Function {
 		
 		combinedkW = coolingDemand + powerDemand;
 		// Assume 10% of full load
-		NON_LOAD_KW = 0.1 * combinedkW;
+		nonLoadkW = 0.1 * combinedkW;
 		
 		todayDemand = new HashMap<>();
 	}
@@ -156,7 +156,7 @@ public class Computation extends Function {
 	 * 
 	 * @return
 	 */
-	public double getCoolingDemand() {;
+	public double getCoolingDemand() {
 		return coolingDemand;
 	}
 
@@ -404,12 +404,6 @@ public class Computation extends Function {
 	 */
 	public void increaseEntropy(double value) {
 		entropy += value;
-		
-		if (entropy > maxEntropy) {
-			// Future: This should trigger a system crash and will need longer time to reconfigure
-			
-//			entropy = maxEntropy;
-		}
 	}
 	
 	/**
@@ -451,7 +445,7 @@ public class Computation extends Function {
 		double nonLoad = currentCU;
 		// Note: Should entropy also increase the power required to run the node ?
 		// When entropy is negative, it should reduce or save power
-		return (load + NON_LOAD_KW * nonLoad) * combinedkW;
+		return (load + nonLoadkW * nonLoad) * combinedkW;
 	}
 	
 	@Override

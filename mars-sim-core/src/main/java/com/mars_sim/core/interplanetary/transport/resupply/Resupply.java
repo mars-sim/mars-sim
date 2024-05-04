@@ -277,7 +277,8 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		}
 
 		if (bt != null) {
-			settlement.getBuildingManager().addBuilding(bt, true);
+			settlement.getBuildingManager().addBuilding(
+					Building.createBuilding(bt, settlement), bt, true);
 		}
 	}
 

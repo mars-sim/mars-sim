@@ -4,7 +4,7 @@
  * @date 2023-04-15
  * @author Scott Davis
  */
-package com.mars_sim.core.person.ai.task.meta;
+package com.mars_sim.core.science.task;
 
 import java.util.List;
 
@@ -15,7 +15,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.role.RoleType;
-import com.mars_sim.core.person.ai.task.StudyFieldSamples;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
@@ -24,6 +23,7 @@ import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Lab;
 import com.mars_sim.tools.Msg;
 
@@ -49,7 +49,7 @@ public class StudyFieldSamplesMeta extends FactoryMetaTask {
     
     @Override
     public Task constructInstance(Person person) {
-        return new StudyFieldSamples(person);
+        return StudyFieldSamples.createTask(person);
     }
 
     @Override
@@ -77,20 +77,19 @@ public class StudyFieldSamplesMeta extends FactoryMetaTask {
 		double result = mostStored/10.0;
   
 		// Create list of possible sciences for studying field samples.
-		List<ScienceType> fieldSciences = StudyFieldSamples.getFieldSciences();
 		var jobScience = TaskUtil.getPersonJobScience(person);
 
 		// Add probability for researcher's primary study (if any).
 		ScientificStudy primaryStudy = person.getStudy();
-		if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
+		if ((primaryStudy != null) && (StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase())
 			&& !primaryStudy.isPrimaryResearchCompleted()
-			&& fieldSciences.contains(primaryStudy.getScience())) {
-			Lab lab = StudyFieldSamples.getLocalLab(person, primaryStudy.getScience());
+			&& StudyFieldSamples.FIELD_SCIENCES.contains(primaryStudy.getScience())) {
+			Lab lab = LabTask.getLocalLab(person, primaryStudy.getScience());
 			if (lab != null) {
 				double primaryResult = 50D;
 
 				// Get lab building crowding modifier.
-				primaryResult *= StudyFieldSamples.getLabCrowdingModifier(person, lab);
+				primaryResult *= LabTask.getLabCrowdingModifier(person, lab);
 				if (primaryStudy.getScience() != jobScience) {
 					primaryResult /= 2D;
 				}
@@ -101,16 +100,16 @@ public class StudyFieldSamplesMeta extends FactoryMetaTask {
 	
 	    // Add probability for each study researcher is collaborating on.
 	    for(ScientificStudy collabStudy : person.getCollabStudies()) {
-	        if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
+	        if ((StudyStatus.RESEARCH_PHASE == collabStudy.getPhase())
 	            && !collabStudy.isCollaborativeResearchCompleted(person)) {
 	            ScienceType collabScience = collabStudy.getContribution(person);
-	            if (fieldSciences.contains(collabScience)) {
-					Lab lab = StudyFieldSamples.getLocalLab(person, collabScience);
+	            if (StudyFieldSamples.FIELD_SCIENCES.contains(collabScience)) {
+					Lab lab = LabTask.getLocalLab(person, collabScience);
 					if (lab != null) {
 						double collabResult = 25D;
 
 						// Get lab building crowding modifier.
-						collabResult *= StudyFieldSamples.getLabCrowdingModifier(person, lab);
+						collabResult *= LabTask.getLabCrowdingModifier(person, lab);
 
 						if (collabScience != jobScience) {
 							collabResult /= 2D;

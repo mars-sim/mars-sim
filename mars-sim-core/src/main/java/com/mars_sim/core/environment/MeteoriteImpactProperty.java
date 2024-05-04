@@ -9,7 +9,6 @@ package com.mars_sim.core.environment;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -59,14 +58,18 @@ public class MeteoriteImpactProperty implements Serializable {
 	private final double IMPACT_VELOCITY = RandomUtil.getRandomDouble(.25, 1); 
 
 	private double impVelCache = IMPACT_VELOCITY;
+
+	private double totalMassPerSqkm;
+
+	private double wallPenetrationThickness;
+
+	private double probabilityOfImpactPerSQMPerSol;
 	
 	/**
 	 * Calculates the meteorite impact probability for the whole settlement once a
 	 * sol
-	 * 
-	 * @param BuildingManager
 	 */
-	public void calculateMeteoriteProbability(BuildingManager buildingManager) {
+	public void calculateMeteoriteProbability() {
 		
 		// Compute the incoming meteorite unique profile with an arbitrary degree of randomness 
 		// for each settlement locale.
@@ -112,35 +115,13 @@ public class MeteoriteImpactProperty implements Serializable {
 		// g. # of meteorites per year per meter
 		// per 10^6 sq km, need to convert to per sq meter by dividing 10^12
 		double numMeteoritesPerYearPerMeter = Math.pow(10, logN - 12D); // = epsilon
-		
-//		logger.info(buildingManager.getSettlement(), "# of Meteorites per year per meter: " 
-////				+ Math.round(numMeteoritesPerYearPerMeter*100_000.0)/100_000.0 
-//				+ numMeteoritesPerYearPerMeter
-//				+ ".");
-
-		double totalMassPerSqkm = massPerMeteorite * numMeteoritesPerYearPerMeter * 1_000_000;
-		
-		// Save it in the BuildingManager for all buildings in this settlement to apply
-		// this value of mass for this sol
-		buildingManager.setDebrisMass(totalMassPerSqkm);
-		
-//		logger.info(buildingManager.getSettlement(), "Anticipating meteorite fragments with a total mass of " 
-//						+ totalMassPerSqkm
-////						+ Math.round(totalMassPerSqkm*100_000.0)/100_000.0 
-//						+ " kg impacting the Mars surface.");
+		totalMassPerSqkm = massPerMeteorite * numMeteoritesPerYearPerMeter * 1_000_000;
 		
 		// h. probability of impact per square meter per year
 		double probabilityOfImpactPerSQMPerYear = Math.exp(-numMeteoritesPerYearPerMeter);
 
 		// i. probability of impact per square meter per sol
-		double probabilityOfImpactPerSQMPerSol = probabilityOfImpactPerSQMPerYear / MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
-
-//		logger.info(buildingManager.getSettlement(), "Probability of Impact per square meters per sol: " 
-//						+ Math.round(probabilityOfImpactPerSQMPerSol*100_000.0)/100_000.0 + ".");
-
-		// Save it in the BuildingManager for all buildings in this settlement to apply
-		// this probability value for this sol
-		buildingManager.setProbabilityOfImpactPerSQMPerSol(probabilityOfImpactPerSQMPerSol);
+		probabilityOfImpactPerSQMPerSol = probabilityOfImpactPerSQMPerYear / MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
 		// Part II
 		// Assuming size and impact speed of the meteorites are homogeneous,
@@ -148,12 +129,32 @@ public class MeteoriteImpactProperty implements Serializable {
 		double penetrationThicknessOnAL = 1.09 * Math.pow(massPerMeteorite * impVel, 1 / 3D);
 
 		// FUTURE: does it account for all angles of penetration on average ?
+		wallPenetrationThickness = 1.5 * penetrationThicknessOnAL;
+	}
 
-		double wallPenetrationThicknessAL = 1.5 * penetrationThicknessOnAL;
-		
-		// Save it in the BuildingManager for all buildings in this settlement
-		buildingManager.setWallPenetration(wallPenetrationThicknessAL);
+	/**
+	 * How much debris is created per sq KM when a metorite hits
+	 * @return
+	 */
+	public double getDebrisMass() {
+		return totalMassPerSqkm;
+	}
 
-		// logger.info("penetrationThicknessOnAL : " + penetrationThicknessOnAL);
+	/**
+	 * How deep does meteorite pentration through a Building wall
+	 * @return
+	 */
+	public double getWallPenetration() {
+		return wallPenetrationThickness;
+	}
+
+	/**
+	 * Gets the probability of impact per square meter per sol. 
+	 * Called by each building once a sol to see if an impact is imminent.
+	 * 
+	 * @return
+	 */
+	public double getProbabilityOfImpactPerSQMPerSol() {
+		return probabilityOfImpactPerSQMPerSol;
 	}
 }

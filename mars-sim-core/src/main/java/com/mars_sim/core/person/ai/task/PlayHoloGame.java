@@ -6,13 +6,17 @@
  */
 package com.mars_sim.core.person.ai.task;
 
+import java.util.Collections;
+
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.ComputingJob;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.tools.Msg;
@@ -37,17 +41,11 @@ public class PlayHoloGame extends Task {
 	private static final TaskPhase PLAYING_A_HOLO_GAME = new TaskPhase(Msg.getString("Task.phase.playHoloGame")); //$NON-NLS-1$
 
 	private static final TaskPhase SETTING_UP_SCENES = new TaskPhase(Msg.getString("Task.phase.settingUpScenes")); //$NON-NLS-1$
-    		
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -.3D;
+	private static final ExperienceImpact IMPACT = new ExperienceImpact(1D, null, false, -0.3, Collections.emptySet());
 	
 	// Data members
     /** Computing Units needed per millisol. */		
-	private double computingNeeded;
-	/** The seed value. */
-    private double seed = RandomUtil.getRandomDouble(.005, 0.05);
-	
-	private final double TOTAL_COMPUTING_NEEDED;
+	private ComputingJob compute;
 	
 	/**
 	 * Constructor.
@@ -55,10 +53,7 @@ public class PlayHoloGame extends Task {
 	 * @param person the person to perform the task
 	 */
 	public PlayHoloGame(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, RandomUtil.getRandomInt(10, 20));
-		
-		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
-		computingNeeded = TOTAL_COMPUTING_NEEDED;
+		super(NAME, person, false, IMPACT, RandomUtil.getRandomInt(10, 20));
 		
 		// If during person's work shift, only relax for short period.
 		boolean isShiftHour = person.isOnDuty();
@@ -68,49 +63,34 @@ public class PlayHoloGame extends Task {
 
 		if (person.isInSettlement()) {
 			// If person is in a settlement, try to find a place to relax.
-			boolean walkSite = false;
-			int rand = RandomUtil.getRandomInt(3);
-			
-			if (rand == 0) {
-				// if rec building is not available, go to a gym
-				Building gym = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.EXERCISE);
-				if (gym != null) {
-					walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
-					walkSite = true;
-				}
+			FunctionType target = (RandomUtil.getRandomInt(3) == 0 ? FunctionType.EXERCISE
+												: FunctionType.RECREATION);
+			Building rec = BuildingManager.getAvailableFunctionTypeBuilding(person, target);
+			if (rec != null) {
+				walkToActivitySpotInBuilding(rec, target, true);
 			}
 			
-			else if (rand == 1 || rand == 2) {
-				Building rec = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
-				if (rec != null) {
-					walkToActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
-					walkSite = true;
-				}
+			// Still not got a destination, go back to bed
+			else if (person.hasBed()) {
+				// Walk to the bed
+				walkToBed(person, true);
 			}
-			
-			// Still not got a destination
-			if (!walkSite) {
-				// Go back to his bed
-				if (person.hasBed()) {
-					// Walk to the bed
-					walkToBed(person, true);
-					walkSite = true;
-				}
-				else 
-					// Walk to random location.
-					walkToRandomLocation(true);
-			}
+			else 
+				// Walk to random location.
+				walkToRandomLocation(true);
 		}
 		else {
 			// If person is in rover, walk to passenger activity spot.
-			if (person.getVehicle() instanceof Rover) {
-				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
+			if (person.getVehicle() instanceof Rover r) {
+				walkToPassengerActivitySpotInRover(r, true);
 			}
 			else {
 				// Walk to random location.
 				walkToRandomLocation(true);
 			}
 		}
+
+		compute = new ComputingJob(person.getAssociatedSettlement(), getDuration(), NAME);
 
 		// Initialize phase
 		addPhase(SETTING_UP_SCENES);
@@ -159,22 +139,10 @@ public class PlayHoloGame extends Task {
 		
 		if (!person.getPhysicalCondition().isNominallyFit()) {
 			endTask();
+			return 0;
 		}
 		
-		if (isDone() || getTimeCompleted() + time > getDuration() || computingNeeded <= 0) {
-        	// this task has ended
-	  		logger.fine(person, 30_000L, NAME + " - " 
-    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
-    				+ " CUs Used.");
-			endTask();
-			return time;
-		}
-		
-		int msol = getMarsTime().getMillisolInt(); 
-              
-        computingNeeded = person.getAssociatedSettlement().getBuildingManager().
-            	accessNode(person, computingNeeded, time, seed, 
-            			msol, getDuration(), NAME);
+		compute.consumeProcessing(time, getMarsTime());
 
         // Add experience
         addExperience(time);

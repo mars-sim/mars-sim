@@ -1039,10 +1039,11 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	private void checkForMeteoriteImpact(ClockPulse pulse) {
 		// Reset the impact time
 		int moment_of_impact = 0;
+		var meteorite = getBuildingManager().getMeteorite();
 
 		// if assuming a gauissan profile, p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// Note: Will have 70% of values will fall between mean +/- standardDeviation, i.e., within one std deviation
-		double probability = floorArea * getBuildingManager().getProbabilityOfImpactPerSQMPerSol();
+		double probability = floorArea * meteorite.getProbabilityOfImpactPerSQMPerSol();
 		// Probability is in percentage unit between 0% and 100%
 		if (probability > 0 && RandomUtil.getRandomDouble(100D) <= probability) {
 			isImpactImminent = true;
@@ -1072,7 +1073,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			isImpactImminent = false;
 			
 			// Find the length this meteorite can penetrate
-			double penetratedLength = getBuildingManager().getWallPenetration();
+			double penetratedLength = meteorite.getWallPenetration();
 
 			double wallThick = getWallThickness();
 			
@@ -1102,10 +1103,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 					true, this);
 
 			logger.log(this, Level.INFO, 0, mal.getName() + " registered.");
-//					logger.log(this, Level.INFO, 0, "EventType: " + mal.getMalfunctionMeta().getName() + ".");
 			
 			String victimNames = null;
-//					String task = "N/A";
 
 			// check if someone under this roof may have seen/affected by the impact
 			for (Person person : getInhabitants()) {
@@ -1134,10 +1133,10 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 					mal.setTraumatized(victimNames);
 
 					// Store the meteorite fragment in the settlement
-					settlement.storeAmountResource(ResourceUtil.meteoriteID, floorArea * getBuildingManager().getDebrisMass());
+					settlement.storeAmountResource(ResourceUtil.meteoriteID, floorArea * meteorite.getDebrisMass());
 
-					logger.info(this, "Found " + Math.round(getBuildingManager().getDebrisMass() * 100.0)/100.0
-							+ " kg of meteorite fragments in " + getName() + ".");
+					logger.info(this, "Found " + Math.round(meteorite.getDebrisMass() * 100.0)/100.0
+							+ " kg of meteorite fragments");
 
 					if (pc.getStress() > 50)
 						logger.warning(this, victimNames + " was traumatized by the meteorite impact");

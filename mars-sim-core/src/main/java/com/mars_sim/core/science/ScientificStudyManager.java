@@ -10,10 +10,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.MasterClock;
 
 /**
  * A class that keeps track of all scientific studies in the simulation.
@@ -35,15 +35,16 @@ public class ScientificStudyManager
 	/** The list of scientific study. */
 	private List<ScientificStudy> studies = new ArrayList<>();
 
+	private MasterClock masterClock;
 	
 	/**
 	 * Constructor.
 	 */
-	public ScientificStudyManager() {
+	public ScientificStudyManager(MasterClock masterClock) {
 		// Initialize data members
 		identifier = 1;
 		solCache = 1;
-		// Methods are threadsafe
+		this.masterClock = masterClock;
 	}
 
 	/**
@@ -67,7 +68,7 @@ public class ScientificStudyManager
 		// Gets the scientific study string. Must be synchronised to prevent duplicate identifiers 
 		// being assigned via different threads
 		synchronized (studies) {
-			int missionSol = Simulation.instance().getMasterClock().getMarsTime().getMissionSol();
+			int missionSol = masterClock.getMarsTime().getMissionSol();
 			int id = 1;
 			if (solCache != missionSol) {
 				solCache = missionSol;
@@ -148,7 +149,7 @@ public class ScientificStudyManager
 	public List<ScientificStudy> getOpenInvitationStudies(Person collaborativeResearcher) {
 		synchronized (studies) {
 			return studies.stream()
-						.filter(s -> (s.getPhase().equals(ScientificStudy.INVITATION_PHASE)
+						.filter(s -> (s.getPhase().equals(StudyStatus.INVITATION_PHASE)
 								&& s.getInvitedResearchers().contains(collaborativeResearcher)
 								&& !s.hasInvitedResearcherResponded(collaborativeResearcher)))
 						.toList();	
@@ -196,22 +197,22 @@ public class ScientificStudyManager
 
 	private static double getPhaseScore(ScientificStudy ss) {
 		return switch (ss.getPhase()) {
-			case ScientificStudy.PROPOSAL_PHASE -> .5;
-			case ScientificStudy.INVITATION_PHASE -> 1.0;
-			case ScientificStudy.RESEARCH_PHASE -> 1.5;
-			case ScientificStudy.PAPER_PHASE -> 2.0;
-			case ScientificStudy.PEER_REVIEW_PHASE -> 2.5;
+			case PROPOSAL_PHASE -> .5;
+			case INVITATION_PHASE -> 1.0;
+			case RESEARCH_PHASE -> 1.5;
+			case PAPER_PHASE -> 2.0;
+			case PEER_REVIEW_PHASE -> 2.5;
 			default -> 0;
 		};
 	}
 	
 	private static int getPhaseType(ScientificStudy ss) {
 		return switch(ss.getPhase()) {
-			case ScientificStudy.PROPOSAL_PHASE -> 0;
-			case ScientificStudy.INVITATION_PHASE -> 1;
-			case ScientificStudy.RESEARCH_PHASE -> 2;
-			case ScientificStudy.PAPER_PHASE -> 3;
-			case ScientificStudy.PEER_REVIEW_PHASE -> 4;
+			case PROPOSAL_PHASE -> 0;
+			case INVITATION_PHASE -> 1;
+			case RESEARCH_PHASE -> 2;
+			case PAPER_PHASE -> 3;
+			case PEER_REVIEW_PHASE -> 4;
 			default -> 5;
 		};
 	}
@@ -234,27 +235,23 @@ public class ScientificStudyManager
 		for(ScientificStudy study : getAllStudies(s)) {
 			if (allSubject || (type == study.getScience())) {
 				// Study need counting
-				if (study.getPhase().equals(ScientificStudy.COMPLETE_PHASE)) {
-					// Score on the completion state
-					switch(study.getCompletionState()) {
-						case ScientificStudy.CANCELED:
-							score += canceled;
-							break;
+				// Score on the completion state
+				switch(study.getPhase()) {
+					case CANCELLED:
+						score += canceled;
+						break;
+					
+					case FAILED_COMPLETION:
+						score += failed;
+						break;
 						
-						case ScientificStudy.FAILED_COMPLETION:
-							score += failed;
-							break;
-							
-						case ScientificStudy.SUCCESSFUL_COMPLETION:
-							score += succeed;
-							break;
-						default:				
-							break;
-					}
-				}
-				else {
-					// On going as primary reasearcher
-					score += getPhaseScore(study);
+					case SUCCESSFUL_COMPLETION:
+						score += succeed;
+						break;
+					default:				
+						score += getPhaseScore(study);
+						break;
+
 				}
 			}
 		}
@@ -294,30 +291,24 @@ public class ScientificStudyManager
 		for(ScientificStudy study : getAllStudies(s)) {
 			if (allSubject || (type == study.getScience())) {
 				// Study need counting
-				if (study.getPhase().equals(ScientificStudy.COMPLETE_PHASE)) {
-					// Score on the completion state
-					switch(study.getCompletionState()) {
-					case ScientificStudy.CANCELED:
+				// Score on the completion state
+				switch(study.getPhase()) {
+					case CANCELLED:
 						array[2]++; 
 						break;
 					
-					case ScientificStudy.FAILED_COMPLETION:
+					case FAILED_COMPLETION:
 						array[1]++; 
 						break;
 						
-					case ScientificStudy.SUCCESSFUL_COMPLETION:
+					case SUCCESSFUL_COMPLETION:
 						array[0]++;
 						break;
 					
 					default:
+						array[3]++;
 						break;
 					}				
-					break;
-				}
-				else {
-					// On going as primary reasearcher
-					array[3]++;
-				}
 			}
 		}
 		
