@@ -174,8 +174,11 @@ public class RadiationExposure implements Serializable, Temporal {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(RadiationExposure.class.getName());
 
+	// See https://www.youtube.com/watch?v=ApYGMzPgzuo for explanation of SPE and GCR
+	
 	/** The time interval that a person checks for radiation exposure. */
 	public static final int RADIATION_CHECK_FREQ = 50; // in millisols
+	
 	/** The chance modifier for SEP. Can be twice as much probability of occurrence (an arbitrary value for now). */
 	public static final double SEP_CHANCE_SWING = 2D;
 	/** The chance modifier for GCR. Can be 3x as much probability of occurrence (an arbitrary value for now). */
@@ -196,12 +199,20 @@ public class RadiationExposure implements Serializable, Temporal {
 	 * <br>Source : http://www.mars-one.com/faq/health-and-ethics/how-much-radiation-will-the-settlers-be-exposed-to. 
 	 */
 	public static final double SEP_CHANCE_PER_SOL = 2.5/1000; 
-	/** THe Baseline radiation cumulativeDoses per sol [in mSv] arbitrary. */
+	
+	/** The Baseline radiation cumulativeDoses per sol [in mSv] arbitrary. */
 	public static final double BASELINE_RAD_PER_SOL = .1;
 
 	/** The average GCR cumulativeDoses equivalent rate [mSv] on the Mars, based on DAT. Note: based on Ref_A's DAT data, the average GCR cumulativeDoses equivalent rate on the Mars surface is 0.64 ± 0.12 mSv/day. The cumulativeDoses equivalent is 50 μSv. */
 	public static final double GCR_RAD_PER_SOL = .64;
-	/** THe GCR cumulativeDoses modifier[in mSv], based on DAT value. */
+	
+	/**
+	 * The GCR cumulativeDoses modifier[in mSv], based on DAT value. 
+	 * <br>It ranges from 100 MeV to 3 EeV
+	 * <br>At 99.99999% speed of light
+	 * <br>Needs active shielding
+	 * 
+	 */
 	public static final double GCR_RAD_SWING = .12;
 
 	/**
@@ -213,6 +224,7 @@ public class RadiationExposure implements Serializable, Temporal {
 	/** 
 	 * The SEP cumulativeDoses modifier [mSv], assuming 3 orders of magnitude (arbitrary) 
 	 * <br>	The orders of magnitude are written in powers of 10.
+	 * <br> It ranges from 1 MeV to 100 MeV
 	 * <br> e.g. the order of magnitude of 1500 is 3, since 1500 may be written as 1.5 × 10^3.
 	 * <br> e.g. the order of magnitude of 1000 is 3, since 1500 may be written as 1.0 × 10^3.
 	 */

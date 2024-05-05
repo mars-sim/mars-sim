@@ -306,13 +306,12 @@ public class MalfunctionTabPanel extends TabPanel {
 		else {
 			offset = 1;
 		}
-		columnModel.getColumn(NAME).setPreferredWidth(90);
+		columnModel.getColumn(NAME).setPreferredWidth(80);
         columnModel.getColumn(EVA_WORK - offset).setPreferredWidth(25);
         columnModel.getColumn(INSIDE_WORK - offset).setPreferredWidth(25);
-        columnModel.getColumn(COMPLETED - offset).setPreferredWidth(40);
-        columnModel.getColumn(COMPLETED- offset).setMaxWidth(PercentageCellRenderer.DEFAULT_WIDTH);
-        
-		columnModel.getColumn(COMPLETED- offset).setCellRenderer(new PercentageCellRenderer(true));
+        columnModel.getColumn(COMPLETED - offset).setPreferredWidth(50);
+        columnModel.getColumn(COMPLETED - offset).setMaxWidth(PercentageCellRenderer.DEFAULT_WIDTH);
+		columnModel.getColumn(COMPLETED - offset).setCellRenderer(new PercentageCellRenderer(true));
         center.add(scrollPanel, BorderLayout.CENTER);
 	}
 

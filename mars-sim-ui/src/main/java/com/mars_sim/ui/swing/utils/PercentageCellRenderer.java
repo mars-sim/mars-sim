@@ -24,7 +24,7 @@ public class PercentageCellRenderer extends DefaultTableCellRenderer {
     /**
      * The default width for a cell using this renderer
      */
-    public static int DEFAULT_WIDTH = 40;
+    public static int DEFAULT_WIDTH = 50;
 
     private DecimalFormat format;
 
