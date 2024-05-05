@@ -76,6 +76,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 	public UnloadVehicleEVA(Person person, Vehicle vehicle) {
 		// Use EVAOperation constructor.
 		super(NAME, person, true, RandomUtil.getRandomDouble(25D) + 10D, null);
+		setMinimumSunlight(LightLevel.NONE);
 
 		setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 		this.vehicle = vehicle;
@@ -145,7 +146,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 			return time;
 		}
 		
-		if (checkReadiness(time, true) > 0)
+		if (checkReadiness(time) > 0)
 			return time;
 
 		// Check if the vehicle is in a garage

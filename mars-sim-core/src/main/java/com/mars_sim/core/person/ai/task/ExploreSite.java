@@ -49,14 +49,12 @@ public class ExploreSite extends EVAOperation {
 	public static final double AVERAGE_ROCK_MASS = 5 + RandomUtil.getRandomDouble(5);
 	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5 + RandomUtil.getRandomDouble(5);
 
+    public static final LightLevel LIGHT_LEVEL = LightLevel.LOW;
+
 	// Data members
 	private double totalCollected = 0;
 	private double numSamplesCollected = AVERAGE_ROCK_COLLECTED_SITE / AVERAGE_ROCK_MASS;
 	
-	// Future: should keep track of the actual total exploring site time and use it below.
-	// The longer it stays, the more samples are collected and better the mining estimation
-	private double chance = 0.5;
-
 	private double skill;
 	
 	private ExploredLocation site;
@@ -75,6 +73,7 @@ public class ExploreSite extends EVAOperation {
 		super(NAME, person, true, LABOR_TIME + RandomUtil.getRandomDouble(-5D, 5D), SkillType.AREOLOGY);
 
 		addAdditionSkill(SkillType.PROSPECTING);
+		setMinimumSunlight(LIGHT_LEVEL);
 		
 		// Initialize data members.
 		this.site = site;
@@ -171,7 +170,7 @@ public class ExploreSite extends EVAOperation {
 	private double exploringPhase(double time) {
 		double remainingTime = 0;
 		
-		if (checkReadiness(time, false) > 0)
+		if (checkReadiness(time) > 0)
 			return time;
 
 		// Add to the cumulative combined site time
@@ -220,6 +219,7 @@ public class ExploreSite extends EVAOperation {
 	 * @throws Exception if error collecting rock samples.
 	 */
 	private void collectRocks(double time) {
+  double chance = 0.5;
 		if (hasSpecimenContainer()) {
 			
 			double siteTime = ((Exploration)person.getMission()).getSiteTime();

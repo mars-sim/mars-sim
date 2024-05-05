@@ -96,7 +96,8 @@ public abstract class DigLocal extends EVAOperation {
         super(name, person, false, duration, SkillType.AREOLOGY);
 
         addAdditionSkill(SkillType.PROSPECTING);
-        
+		setMinimumSunlight(LightLevel.NONE);
+
         this.containerType = containerType;
         this.resourceID = resourceID;
         this.resourceName = ResourceUtil.findAmountResourceName(resourceID);
@@ -305,7 +306,7 @@ public abstract class DigLocal extends EVAOperation {
     	// Get a container
         Container container = person.findContainer(containerType, false, resourceID);
        
-		if (checkReadiness(time, false) > 0) {
+		if (checkReadiness(time) > 0) {
 			if (!((Equipment)container).isEmpty(false)) {
 				// Has resources in container
 				setPhase(WALK_TO_BIN);

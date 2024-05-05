@@ -96,8 +96,7 @@ public abstract class CollectResourcesMission extends EVAMission
 			EquipmentType containerID, int containerNum, int numSites, boolean needsReview) {
 
 		// Use RoverMission constructor
-		super(missionType, startingPerson, null, COLLECT_RESOURCES);
-		setIgnoreSunlight(true);
+		super(missionType, startingPerson, null, COLLECT_RESOURCES, CollectResources.LIGHT_LEVEL);
 
 		// Problem starting mission
 		if (isDone()) {
@@ -209,8 +208,7 @@ public abstract class CollectResourcesMission extends EVAMission
 			int containerNum, Rover rover, List<Coordinates> collectionSites) {
 
 		// Use RoverMission constructor
-		super(missionType, (Worker) members.toArray()[0], rover, COLLECT_RESOURCES);
-		setIgnoreSunlight(true);
+		super(missionType, (Worker) members.toArray()[0], rover, COLLECT_RESOURCES, CollectResources.LIGHT_LEVEL);
 
 		this.resourceID = resourceID;
 		double containerCap = ContainerUtil.getContainerCapacity(containerID);
@@ -329,7 +327,7 @@ public abstract class CollectResourcesMission extends EVAMission
 
 		// If person can collect resources, start him/her on that task.
 		if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {
-			EVAOperation collectResources = new CollectResources("Collecting Resources", person,
+			EVAOperation collectResources = new CollectResources(person,
 					getRover(), resourceID, rate,
 					siteResourceGoal - siteCollectedSoFar, rover.getAmountResourceStored(resourceID),
 					containerID);

@@ -32,10 +32,8 @@ import com.mars_sim.core.person.health.Complaint;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.vehicle.Airlockable;
@@ -52,6 +50,12 @@ import com.mars_sim.tools.util.RandomUtil;
  * activity.
  */
 public abstract class EVAOperation extends Task {
+	/**
+	 * Defines the level of light needed for an EVA
+	 */
+	public enum LightLevel {
+		NONE, LOW, HIGH
+	}
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -72,9 +76,6 @@ public abstract class EVAOperation extends Task {
 	/** The base chance of an accident per millisol. */
 	public static final double BASE_ACCIDENT_CHANCE = .01;
 
-	/** Minimum sunlight for EVA is 1% of max sunlight */
-	private static double minEVASunlight = SurfaceFeatures.MAX_SOLAR_IRRADIANCE * 0.01;
-
 	// Data members
 	/** Flag for ending EVA operation externally. */
 	private boolean endEVA;
@@ -89,16 +90,21 @@ public abstract class EVAOperation extends Task {
 
 	private SkillType outsideSkill;
 
+	private LightLevel minEVASunlight;
+
 	/**
 	 * Constructor.
 	 *
 	 * @param name   the name of the task
 	 * @param person the person to perform the task
+	 * @param 
 	 */
-	protected EVAOperation(String name, Person person, boolean hasSiteDuration, double siteDuration, SkillType outsideSkill) {
+	protected EVAOperation(String name, Person person, boolean hasSiteDuration,
+							double siteDuration, SkillType outsideSkill) {
 		super(name, person, true, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
 
 		// Initialize data members
+		this.minEVASunlight = LightLevel.LOW;
 		this.hasSiteDuration = hasSiteDuration;
 		this.siteDuration = siteDuration;
 		this.outsideSkill = outsideSkill;
@@ -159,23 +165,27 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Constructor 2.
-	 * 
-	 * @param name
-	 * @param robot
-	 * @param hasSiteDuration
-	 * @param siteDuration
-	 * @param outsideSkill
+	 * Set the minimum sunlight for this EVA operation
+	 * @param minSunlight
 	 */
-	protected EVAOperation(String name, Robot robot, boolean hasSiteDuration, double siteDuration, SkillType outsideSkill) {
-		super(name, robot, true, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
+	protected void setMinimumSunlight(LightLevel minSunlight) {
+		minEVASunlight = minSunlight;
+	}
 
-		this.hasSiteDuration = hasSiteDuration;
-		this.siteDuration = siteDuration;
-		this.outsideSkill = outsideSkill;
-		if (outsideSkill != null) {
-			addAdditionSkill(outsideSkill);
-		}
+	/**
+	 * Is the sunlight at a location above a minimum level
+	 * @param locn
+	 * @param level
+	 * @return
+	 */
+	public static boolean isSunlightAboveLevel(Coordinates locn, LightLevel level) {
+		double solar = switch(level) {
+			case NONE -> 0D;
+			case LOW -> 0.1D * SurfaceFeatures.MAX_SOLAR_IRRADIANCE;
+			case HIGH -> 0.5D * SurfaceFeatures.MAX_SOLAR_IRRADIANCE;
+		};
+
+		return getSolarIrradiance(locn) >= solar;
 	}
 
 	/**
@@ -233,7 +243,7 @@ public abstract class EVAOperation extends Task {
 	protected double performMappedPhase(double time) {
 		if (person.isOutside()) {
 			if (person.isSuperUnFit()) {
-				walkBackInsidePhase(time);
+				walkBackInsidePhase();
 			}
 			else
 				person.addEVATime(getTaskSimpleName(), time);
@@ -242,9 +252,9 @@ public abstract class EVAOperation extends Task {
 		if (getPhase() == null) {
 			throw new IllegalArgumentException("EVAOoperation's task phase is null");
 		} else if (WALK_TO_OUTSIDE_SITE.equals(getPhase())) {
-			return walkToOutsideSitePhase(time);
+			return walkToOutsideSitePhase();
 		} else if (WALK_BACK_INSIDE.equals(getPhase())) {
-			return walkBackInsidePhase(time);
+			return walkBackInsidePhase();
 		}
 
 		return time;
@@ -253,10 +263,9 @@ public abstract class EVAOperation extends Task {
 	/**
 	 * Performs the walk to outside site phase.
 	 *
-	 * @param time the time to perform the phase.
 	 * @return remaining time after performing the phase.
 	 */
-	private double walkToOutsideSitePhase(double time) {
+	private double walkToOutsideSitePhase() {
 	    // If not at field work site location, create walk outside subtask.
         if (person.isInside()) {
         	// A person is walking toward an airlock or inside an airlock
@@ -288,10 +297,9 @@ public abstract class EVAOperation extends Task {
 	/**
 	 * Performs the walk back inside phase.
 	 *
-	 * @param time the time to perform the phase.
 	 * @return remaining time after performing the phase.
 	 */
-	private double walkBackInsidePhase(double time) {
+	private double walkBackInsidePhase() {
 
 		if (person.isOutside()) {
 
@@ -300,19 +308,12 @@ public abstract class EVAOperation extends Task {
 				Settlement s = unitManager.findSettlement(person.getCoordinates());
 				if (s != null) {
 					interiorObject = (LocalBoundedObject)(s.getClosestIngressAirlock(person)).getEntity();
-					if (interiorObject instanceof Building b)
-						logger.log(person, Level.INFO, 30_000,
-							"Found " + b.getName()
-							+ " to enter.");
 				}
 				else {
 					// near a vehicle
 					Rover r = (Rover)person.getVehicle();
 					if (r != null) {
 						interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
-						logger.log(person, Level.INFO, 30_000,
-								"Found " + ((Airlock)interiorObject).getEntityName()
-								+ " to enter.");
 					}
 				}
 			}
@@ -339,18 +340,6 @@ public abstract class EVAOperation extends Task {
 			// If not at return inside location, create walk inside subtask.
 			// If not inside, create walk inside subtask.
 			if (interiorObject != null && returnInsideLoc != null && !person.getPosition().isClose(returnInsideLoc)) {
-				String name = "";
-				if (interiorObject instanceof Building b) {
-					name = b.getName();
-				}
-				else if (interiorObject instanceof Vehicle v) {
-					name = v.getName();
-				}
-
-				logger.log(person, Level.FINE, 4_000,
-							"Near " +  name
-							+ " at (" + returnInsideLoc
-							+ "). Attempting to enter the airlock.");
 
 				Walk walkingTask = Walk.createWalkingTask(person, returnInsideLoc, interiorObject);
 				if (walkingTask != null) {
@@ -385,10 +374,9 @@ public abstract class EVAOperation extends Task {
 	 * Checks if situation requires the EVA operation to end prematurely and the
 	 * person should return to the airlock.
 	 * 
-	 * @param checkLight
 	 * @return true if EVA operation should end
 	 */
-	protected boolean shouldEndEVAOperation(boolean checkLight) {
+	protected boolean shouldEndEVAOperation() {
 
 		boolean result = false;
 
@@ -397,13 +385,7 @@ public abstract class EVAOperation extends Task {
 			return true;
 
 		// Check for sunlight
-		if (checkLight && isGettingDark(person)) {
-			// Added to show issue #509
-			logger.warning(worker, 10_000L, "Ended '" + getName() + "': becoming too dark.");
-			return true;
-		}
-		
-		if (checkLight && getSolarIrradiance(person.getCoordinates()) <= minEVASunlight) {
+		if (!isSunlightAboveLevel(person.getCoordinates(), minEVASunlight)) {
 			logger.warning(worker, 10_000L, "Ended '" + getName() + "': too dark already.");
 			return true;
 		}
@@ -419,7 +401,6 @@ public abstract class EVAOperation extends Task {
         // Checks if the person is physically drained
 		if (isExhausted(person))
 			return true;
-
 
 		return result;
 	}
@@ -441,36 +422,18 @@ public abstract class EVAOperation extends Task {
 	 * @param locn
 	 * @return
 	 */
-	public static double getSolarIrradiance(Coordinates locn) {
+	protected static double getSolarIrradiance(Coordinates locn) {
 		return surfaceFeatures.getSolarIrradiance(locn);
 	}
 	
-	/**
-	 * Is there enough sunlight for an EVA ?
-	 * 
-	 * @return
-	 */
-	public static boolean isEnoughSunlightForEVA(Coordinates locn) {
-		if (minEVASunlight == 0D) {
-			// Don't bother calculating sunlight; EVA valid in whatever conditions
-			return true;
-		}
-
-		// This logic comes from EVAMission originally
-		boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(locn);
-		double sunlight = surfaceFeatures.getSolarIrradiance(locn);
-
-		// This is equivalent of a 1% sun ratio as below
-		return (sunlight >= minEVASunlight && !inDarkPolarRegion);
-	}
-
+	
 	/**
 	 * Checks if this EVA operation is ready for prime time.
 	 * 
 	 * @param time
 	 * @return
 	 */
-	public double checkReadiness(double time, boolean checkSunlight) {
+	public double checkReadiness(double time) {
 		// Task duration has expired
 		if (isDone()) {
 			checkLocation("Task duration ended.");
@@ -483,7 +446,7 @@ public abstract class EVAOperation extends Task {
 		}
 		
         // Check if there is a reason to cut short and return.
-		if (checkSunlight && shouldEndEVAOperation(checkSunlight)) {
+		if (shouldEndEVAOperation()) {
 			checkLocation("No sunlight.");
 			return time;
 		}
@@ -857,16 +820,6 @@ public abstract class EVAOperation extends Task {
 		registerNewEvent(rescueEvent);
 	}
 
-	/**
-	 * Sets the minimum sunlight for any EVA operations.
-	 * 
-	 * @param minimum
-	 */
-	public static void setMinSunlight(double minimum) {
-		logger.config("Minimum sunlight for EVA = " + minimum);
-		minEVASunlight = minimum;
-	}
-	
 	/**
 	 * Prepares object for garbage collection.
 	 */

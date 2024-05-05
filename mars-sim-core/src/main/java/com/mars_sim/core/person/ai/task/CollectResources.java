@@ -42,6 +42,8 @@ public class CollectResources extends EVAOperation {
 	/** Task phases. */
 	private static final TaskPhase COLLECT_RESOURCES = new TaskPhase(Msg.getString("Task.phase.collectResources")); //$NON-NLS-1$
 
+    public static final LightLevel LIGHT_LEVEL = LightLevel.NONE;
+
 	// Data members
 	/** Rover used. */
 	protected Rover rover;
@@ -62,7 +64,6 @@ public class CollectResources extends EVAOperation {
 	/**
 	 * Constructor.
 	 *
-	 * @param taskName        The name of the task.
 	 * @param person          The person performing the task.
 	 * @param rover           The rover used in the task.
 	 * @param resourceType    The resource type to collect.
@@ -72,14 +73,16 @@ public class CollectResources extends EVAOperation {
 	 *                        cargo.
 	 * @param containerType   the type of container to use to collect resource.
 	 */
-	public CollectResources(String taskName, Person person, Rover rover, Integer resourceType, double collectionRate,
+	public CollectResources(Person person, Rover rover, Integer resourceType, double collectionRate,
 			double targettedAmount, double startingCargo, EquipmentType containerType) {
 
 		// Use EVAOperation parent constructor.
-		super(taskName, person, true, LABOR_TIME + RandomUtil.getRandomDouble(-10D, 10D),
-				SkillType.AREOLOGY);
+		super("Collecting Resources", person, true,
+					LABOR_TIME + RandomUtil.getRandomDouble(-10D, 10D),
+					SkillType.AREOLOGY);
 
 		addAdditionSkill(SkillType.PROSPECTING);
+		setMinimumSunlight(LIGHT_LEVEL);
 		
 		if (person.isSuperUnFit()) {
 			checkLocation("Super unfit.");
@@ -135,6 +138,7 @@ public class CollectResources extends EVAOperation {
 	 * @param time the amount of time the phase is to be performed.
 	 * @return the remaining time after the phase has been performed.
 	 */
+	@Override
 	protected double performMappedPhase(double time) {
 
 		time = super.performMappedPhase(time);
@@ -183,7 +187,7 @@ public class CollectResources extends EVAOperation {
 	 */
 	private double collectResources(double time) {
 		
-		if (checkReadiness(time, false) > 0)
+		if (checkReadiness(time) > 0)
 			return time;
 
 		// Collect resources.

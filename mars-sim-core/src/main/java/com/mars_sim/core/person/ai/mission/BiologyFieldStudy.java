@@ -10,11 +10,11 @@ import java.util.Collection;
 import java.util.Set;
 
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.task.BiologyStudyFieldWork;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.task.ScientificStudyFieldWork;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.mapdata.location.Coordinates;
@@ -62,7 +62,8 @@ public class BiologyFieldStudy extends FieldStudyMission {
 
 	@Override
 	protected Task createFieldStudyTask(Person person, Person leadResearcher, ScientificStudy study, Rover vehicle) {
-		return new BiologyStudyFieldWork(person, leadResearcher, study, vehicle);
+		return ScientificStudyFieldWork.createFieldStudy(ScienceType.BIOLOGY, person, leadResearcher,
+														study, vehicle);
 	}
 
 	@Override

@@ -416,13 +416,6 @@ public class MissionManager implements Serializable {
 	}
 
 	/**
-	 * Sets up any Mission configurations.
-	 */
-	public void initializeInstances(SimulationConfig simulationConfig) {
-		EVAOperation.setMinSunlight(simulationConfig.getMinEVALight());
-	}
-	
-	/**
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {

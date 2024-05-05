@@ -25,9 +25,6 @@ public class LoadVehicleEVA extends EVAOperation {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-//	private static SimLogger logger = SimLogger.getLogger(LoadVehicleEVA.class.getName());
-
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.loadVehicleEVA"); //$NON-NLS-1$
 
@@ -64,6 +61,7 @@ public class LoadVehicleEVA extends EVAOperation {
 		super(NAME, person, true, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
 
 		this.vehicleMission = mission;
+		setMinimumSunlight(LightLevel.NONE);
 		
 		if (person.isSuperUnFit()) {
 			checkLocation("Super unfit.");
@@ -135,7 +133,7 @@ public class LoadVehicleEVA extends EVAOperation {
 			return time;
 		}
 		
-		if (checkReadiness(time, false) > 0) {
+		if (checkReadiness(time) > 0) {
 			return time;
 		}
 		

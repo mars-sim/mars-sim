@@ -14,16 +14,22 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.environment.ExploredLocation;
+import com.mars_sim.core.equipment.Container;
+import com.mars_sim.core.equipment.ContainerUtil;
+import com.mars_sim.core.equipment.EVASuit;
+import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.CollectMinedMinerals;
+import com.mars_sim.core.person.ai.task.ExitAirlock;
 import com.mars_sim.core.person.ai.task.MineSite;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
@@ -97,8 +103,7 @@ public class Mining extends EVAMission
 	public Mining(Person startingPerson, boolean needsReview) {
 
 		// Use RoverMission constructor.
-		super(MissionType.MINING, startingPerson, null, MINING_SITE);
-		setIgnoreSunlight(true);
+		super(MissionType.MINING, startingPerson, null, MINING_SITE, MineSite.LIGHT_LEVEL);
 
 		if (!isDone()) {
 			// Initialize data members.
@@ -159,8 +164,7 @@ public class Mining extends EVAMission
 			Rover rover, LightUtilityVehicle luv) {
 
 		// Use RoverMission constructor.,  
-		super(MissionType.MINING, (Worker) members.toArray()[0], rover, MINING_SITE);
-		setIgnoreSunlight(true);
+		super(MissionType.MINING, (Worker) members.toArray()[0], rover, MINING_SITE, MineSite.LIGHT_LEVEL);
 
 		// Initialize data members.
 		this.miningSite = miningSite;
@@ -403,12 +407,65 @@ public class Mining extends EVAMission
 		while (i.hasNext()) {
 			AmountResource resource = i.next();
 			if ((detectedMinerals.get(resource) >= MINIMUM_COLLECT_AMOUNT)
-					&& CollectMinedMinerals.canCollectMinerals(member, getRover(), resource)) {
+					&& canCollectMinerals(member, getRover(), resource)) {
 				result = true;
 			}
 		}
 
 		return result;
+	}
+
+	/**
+	 * Checks if a person can perform a CollectMinedMinerals task.
+	 * 
+	 * @param member      the member to perform the task
+	 * @param rover       the rover the person will EVA from
+	 * @param mineralType the resource to collect.
+	 * @return true if person can perform the task.
+	 */
+	private  boolean canCollectMinerals(Worker member, Rover rover, AmountResource mineralType) {
+		if (member instanceof Robot) {
+			return false;
+		}
+		var person = (Person) member;
+
+		// Check if person can exit the rover.
+		if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
+			return false;
+
+		if (!isEnoughSunlightForEVA()) {
+			return false;
+		}
+		
+		// Check if person's medical condition will not allow task.
+		if (person.getPerformanceRating() < .2D)
+			return false;
+
+		if (person.isSuperUnFit())
+			return false;
+		
+		// Checks if available bags with remaining capacity for resource.
+		Container bag = ContainerUtil.findLeastFullContainer(rover,
+															EquipmentType.LARGE_BAG,
+															mineralType.getID());
+		boolean bagAvailable = (bag != null);
+
+		// Check if bag and full EVA suit can be carried by person or is too heavy.
+		double carryMass = 0D;
+		if (bag != null) {
+			carryMass += bag.getBaseMass();
+		}
+
+		EVASuit suit = EVASuitUtil.findRegisteredOrGoodEVASuit(person);
+		if (suit != null) {
+			carryMass += suit.getMass();
+			carryMass += suit.getAmountResourceRemainingCapacity(ResourceUtil.oxygenID);
+			carryMass += suit.getAmountResourceRemainingCapacity(ResourceUtil.waterID);
+		}
+		double carryCapacity = person.getCarryingCapacity();
+		boolean canCarryEquipment = (carryCapacity >= carryMass);
+
+		return (bagAvailable && canCarryEquipment);
 	}
 
 	/**
@@ -425,7 +482,7 @@ public class Mining extends EVAMission
 		while (i.hasNext()) {
 			AmountResource resource = i.next();
 			if ((detectedMinerals.get(resource) >= MINIMUM_COLLECT_AMOUNT)
-					&& CollectMinedMinerals.canCollectMinerals(person, getRover(), resource)) {
+					&& canCollectMinerals(person, getRover(), resource)) {
 				double amount = detectedMinerals.get(resource);
 				if (amount > largestAmount) {
 					result = resource;

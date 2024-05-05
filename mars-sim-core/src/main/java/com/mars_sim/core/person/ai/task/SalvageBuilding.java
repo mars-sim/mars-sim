@@ -57,8 +57,6 @@ public class SalvageBuilding extends EVAOperation {
 
 	private List<GroundVehicle> vehicles;
 
-
-
 	/**
      * Constructor.
      * @param person the person performing the task.
@@ -67,6 +65,7 @@ public class SalvageBuilding extends EVAOperation {
         // Use EVAOperation parent constructor.
         super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.CONSTRUCTION);
 
+        setMinimumSunlight(LightLevel.HIGH);
 		if (person.isSuperUnFit()) {
 			checkLocation("Super unfit.");
 			return;
@@ -206,8 +205,8 @@ public class SalvageBuilding extends EVAOperation {
     }
 
     @Override
-    protected boolean shouldEndEVAOperation(boolean checkLight) {
-        boolean result = super.shouldEndEVAOperation(checkLight);
+    protected boolean shouldEndEVAOperation() {
+        boolean result = super.shouldEndEVAOperation();
 
         // If operating LUV, check if LUV has malfunction.
         if (operatingLUV && luv.getMalfunctionManager().hasMalfunction())
@@ -244,7 +243,7 @@ public class SalvageBuilding extends EVAOperation {
 	
 		// Note: need to call addTimeOnSite() ahead of checkReadiness() since
 		// checkReadiness's addTimeOnSite() lacks the details of handling LUV
-		if (checkReadiness(time, true) > 0)
+		if (checkReadiness(time) > 0)
 			return time;
 		
         // Operate light utility vehicle if no one else is operating it.

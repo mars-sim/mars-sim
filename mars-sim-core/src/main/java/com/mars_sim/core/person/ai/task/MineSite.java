@@ -54,6 +54,9 @@ public class MineSite extends EVAOperation {
 	/** The base chance of an accident while operating LUV per millisol. */
 	public static final double BASE_LUV_ACCIDENT_CHANCE = .001;
 
+	/** Level of light needed for mining */
+	public static final LightLevel LIGHT_LEVEL = LightLevel.LOW;
+
 	// Data members
 	private Coordinates site;
 	private LightUtilityVehicle luv;
@@ -66,18 +69,20 @@ public class MineSite extends EVAOperation {
 	 * @param site   the explored site to mine.
 	 * @param rover  the rover used for the EVA operation.
 	 * @param luv    the light utility vehicle used for mining.
+	 * @param d 
 	 */
 	public MineSite(Person person, Coordinates site, Rover rover, LightUtilityVehicle luv) {
 
 		// Use EVAOperation parent constructor.
 		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.PROSPECTING);
+		setMinimumSunlight(MineSite.LIGHT_LEVEL);
 
 		// Initialize data members.
 		this.site = site;
 		this.luv = luv;
 		operatingLUV = false;
 
-		if (shouldEndEVAOperation(false)) {
+		if (shouldEndEVAOperation()) {
 			checkLocation("EVA ended.");
         	return;
         }
@@ -109,11 +114,8 @@ public class MineSite extends EVAOperation {
 			if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
 				return false;
 
-//			if (EVAOperation.isGettingDark(person))
-//				return false;
-
 			// Check if person's medical condition will not allow task.
-            return !(person.getPerformanceRating() < .2D);
+            return (person.getPerformanceRating() >= .2D);
 		}
 
 		return true;
@@ -169,7 +171,7 @@ public class MineSite extends EVAOperation {
 	
 		// Note: need to call addTimeOnSite() ahead of checkReadiness() since
 		// checkReadiness's addTimeOnSite() lacks the details of handling LUV
-		if (checkReadiness(time, true) > 0)
+		if (checkReadiness(time) > 0)
 			return time;
 		
 		// Operate light utility vehicle if no one else is operating it.
@@ -215,12 +217,8 @@ public class MineSite extends EVAOperation {
 		Iterator<String> i = minerals.keySet().iterator();
 		while (i.hasNext()) {
 			String mineralName = i.next();
-			double amountExcavated = 0D;
-			if (operatingLUV) {
-				amountExcavated = LUV_EXCAVATION_RATE * time;
-			} else {
-				amountExcavated = HAND_EXCAVATION_RATE * time;
-			}
+			double amountExcavated = (operatingLUV ? LUV_EXCAVATION_RATE 
+									: HAND_EXCAVATION_RATE) * time;
 			double mineralConcentration = minerals.get(mineralName);
 			
 			logger.info(person, 20_000L, "conc: " + mineralConcentration);
@@ -243,7 +241,7 @@ public class MineSite extends EVAOperation {
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
 		if (getOutsideSitePhase().equals(getPhase()) && operatingLUV) {
 			int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-			double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+			double experienceAptitudeModifier = ((experienceAptitude) - 50D) / 100D;
 			double drivingExperience = time / 10D;
 			drivingExperience += drivingExperience * experienceAptitudeModifier;
 			worker.getSkillManager().addExperience(SkillType.PILOTING, drivingExperience, time);
@@ -264,8 +262,8 @@ public class MineSite extends EVAOperation {
 	}
 
 	@Override
-	protected boolean shouldEndEVAOperation(boolean checkLight) {
-		boolean result = super.shouldEndEVAOperation(checkLight);
+	protected boolean shouldEndEVAOperation() {
+		boolean result = super.shouldEndEVAOperation();
 
 		// If operating LUV, check if LUV has malfunction.
 		if (operatingLUV && luv.getMalfunctionManager().hasMalfunction()) {

@@ -60,7 +60,8 @@ public class MaintainEVAVehicle extends EVAOperation {
 			checkLocation("Not nominally fit.");
         	return;
 		}
-		
+        setMinimumSunlight(LightLevel.NONE);
+
      	settlement = unitManager.findSettlement(person.getCoordinates());
      	if (settlement == null) {
         	return;
@@ -68,11 +69,6 @@ public class MaintainEVAVehicle extends EVAOperation {
      	
         // Choose an available needy ground vehicle.
         vehicle = target;
-//        if (vehicle.isReservedForMaintenance()) {
-//            clearTask(vehicle.getName() + " already reserved for EVA maintenance.");
-//            checkLocation("Vehicle reserved for maintenance.");
-//            return;
-//        }
 
         // Add the rover to a garage if possible.
         if (settlement.getBuildingManager().addToGarage(vehicle)) {
@@ -137,7 +133,7 @@ public class MaintainEVAVehicle extends EVAOperation {
 			return time;
 		}		
 	   	
-		if (checkReadiness(time, true) > 0)
+		if (checkReadiness(time) > 0)
 			return time;
 			
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {

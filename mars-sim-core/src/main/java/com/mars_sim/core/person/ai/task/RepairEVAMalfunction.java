@@ -52,6 +52,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 
 	public RepairEVAMalfunction(Person person, Malfunctionable entity, Malfunction malfunction) {
 		super(NAME, person, true, 25, SkillType.MECHANICS);
+		setMinimumSunlight(LightLevel.NONE);
 
 		if (!person.isNominallyFit()) {
 			checkLocation("Not nominally fit.");
@@ -116,7 +117,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 	private double repairMalfunctionPhase(double time) {
 		double remainingTime = 0;
 		
-		if (checkReadiness(time, false) > 0) {
+		if (checkReadiness(time) > 0) {
 			return time;
 		}
 		
