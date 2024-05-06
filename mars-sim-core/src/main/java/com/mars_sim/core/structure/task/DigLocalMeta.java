@@ -4,7 +4,7 @@
  * @date 2023-06-08
  * @author Barry Evans
  */
-package com.mars_sim.core.person.ai.task.meta;
+package com.mars_sim.core.structure.task;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,7 +15,6 @@ import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
-import com.mars_sim.core.person.ai.task.DigLocal;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.util.MetaTask;

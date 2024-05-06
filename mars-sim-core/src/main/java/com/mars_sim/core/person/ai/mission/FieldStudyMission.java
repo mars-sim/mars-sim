@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.Task;

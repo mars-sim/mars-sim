@@ -20,6 +20,8 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.task.LoadVehicleEVA;
+import com.mars_sim.core.vehicle.task.UnloadVehicleEVA;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 /**

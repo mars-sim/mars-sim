@@ -5,7 +5,7 @@
  * @author Scott Davis
  */
 
-package com.mars_sim.core.person.ai.task;
+package com.mars_sim.core.structure.task;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +22,9 @@ import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.EVAOperation;
+import com.mars_sim.core.person.ai.task.WalkOutside;
+import com.mars_sim.core.person.ai.task.EVAOperation.LightLevel;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
