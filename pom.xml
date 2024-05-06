@@ -30,7 +30,7 @@
 		<commons-io.version>2.15.1</commons-io.version>
 		<commons-lang3.version>3.14.0</commons-lang3.version>
 		<commons-math3.version>3.6.1</commons-math3.version>	
-		<jacoco.version>0.8.11</jacoco.version>
+		<jacoco.version>0.8.12</jacoco.version>
   		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
   		<sonar.java.source>17</sonar.java.source>
 	</properties>
