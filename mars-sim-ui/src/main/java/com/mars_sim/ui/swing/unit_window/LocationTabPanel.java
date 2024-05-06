@@ -558,6 +558,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			String n = container != null ? container.getName() : "";
 			containerLabel.setText(n);
 		}
+		else
+			containerLabel.setText("");
 
 //		Settlement settlement = unit.getSettlement();
 //		if (settlementCache != settlement) {
@@ -566,12 +568,15 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 //			settlementLabel.setText(n);
 //		}
 		
+		// If this unit is inside a building
 		Building building = unit.getBuildingLocation();
 		if (buildingCache != building) {
 			buildingCache = building;
 			String n = building != null ? building.getName() : "";
 			buildingLabel.setText(n);
 		}
+		else
+			buildingLabel.setText("");
 
 		LocationStateType locationStateType = unit.getLocationStateType();
 		if (locationStateTypeCache != locationStateType) {
@@ -580,37 +585,27 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			locationStateLabel.setText(Conversion.capitalize0(n));
 		}
 		
+		// If this unit is near a settlement
 		if (locationStateType == LocationStateType.SETTLEMENT_VICINITY) {
 			vicinityUnit = unit.getLocationTag().findSettlementVicinity();
 			if (vicinityUnit != null) {
 				vicinityLabel.setText(vicinityUnit.getName());
 			}
-			
-//			Unit vCache = unit.getLocationTag().findSettlementVicinity();
-////			if (vicinityUnit != null && !vicinityUnit.equals(vCache)) {
-//				vicinityUnit = vCache;
-//				String name = "";
-//				if (vicinityUnit instanceof Settlement s) {
-//					name = s.getName();
-//				}
-//				vicinityLabel.setText(name);
-////			}
+			else
+				vicinityLabel.setText("");
 		}
+		
+		// If this unit (including a settlement) is on Mars surface
 		else if (locationStateType == LocationStateType.MARS_SURFACE) {
-			vicinityUnit = unit.getLocationTag().findVehicleVicinity();
-			if (vicinityUnit != null) {
-				vicinityLabel.setText(vicinityUnit.getName());
+			// Check if this is a vehicle
+			if (unit instanceof Vehicle) {
+				vicinityUnit = unit.getLocationTag().findVehicleVicinity();
+				if (vicinityUnit != null) {
+					vicinityLabel.setText(vicinityUnit.getName());
+				}
+				else
+					vicinityLabel.setText("");
 			}
-			
-//			Unit vCache = unit.getLocationTag().findVehicleVicinity();
-////			if (vicinityUnit != null && !vicinityUnit.equals(vCache)) {
-//				vicinityUnit = vCache;
-//				String name = "";
-//				if (vicinityUnit instanceof Vehicle v) {
-//					name = v.getName();
-//				}
-//				vicinityLabel.setText(name);
-////			}
 		}
 		else {
 			vicinityLabel.setText("");
@@ -619,6 +614,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	
 	/**
 	 * Updates the activity spot.
+	 * 
+	 * @param unit
 	 */
 	private void updateActivitySpot(Unit unit) {
 		String n5 = "";
@@ -634,7 +631,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	}
 	
 	/**
-	 * Tracks the location of a person, bot, vehicle, or equipment
+	 * Tracks the location of a person, bot, vehicle, or equipment.
+	 * 
+	 * @param unit
 	 */
 	private void updateLocationBanner(Unit unit) {
 
