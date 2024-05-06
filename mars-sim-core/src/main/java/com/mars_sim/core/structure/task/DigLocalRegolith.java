@@ -9,6 +9,7 @@ package com.mars_sim.core.structure.task;
 
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.tools.Msg;
@@ -32,7 +33,8 @@ extends DigLocal {
 
     /** Task phases. */
     private static final TaskPhase COLLECT_REGOLITH = new TaskPhase(Msg.getString(
-            "Task.phase.collectRegolith")); //$NON-NLS-1$
+            "Task.phase.collectRegolith"),
+			createPhaseImpact(SkillType.PROSPECTING, SkillType.AREOLOGY));
 
 	/**
 	 * Constructor 1.
@@ -43,21 +45,6 @@ extends DigLocal {
         // Use EVAOperation constructor.
         super(NAME, COLLECT_REGOLITH, ResourceUtil.regolithID, 
         	  EquipmentType.WHEELBARROW, person, 150);
-        if (!isDone()) {
-        	setCollectionRate(person.getAssociatedSettlement().getRegolithCollectionRate());
-        }
-    }
-	
-	/**
-	 * Constructor 2.
-	 * 
-	 * @param person the person performing the task.
-	 * @param duration
-	 */
-	public DigLocalRegolith(Person person, int duration) {
-        // Use EVAOperation constructor.
-        super(NAME, COLLECT_REGOLITH, ResourceUtil.regolithID, 
-        	  EquipmentType.WHEELBARROW, person, duration);
         if (!isDone()) {
         	setCollectionRate(person.getAssociatedSettlement().getRegolithCollectionRate());
         }

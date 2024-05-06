@@ -17,14 +17,26 @@ public final class TaskPhase implements Serializable {
     private static final long serialVersionUID = 1L;
 
     // The phase name.
-    private String name = "";
+    private String name;
+
+    private ExperienceImpact impact;
 
     /**
      * Constructor
      * @param the phase name.
      */
     public TaskPhase(String name) {
+        this(name, null);
+    }
+
+    /**
+     * Constructor
+     * @param name the phase name.
+     * @param impact This phase as a specific impct on the Worker
+     */
+    public TaskPhase(String name, ExperienceImpact impact) {
         this.name = name;
+        this.impact = impact;
     }
 
     /**
@@ -33,6 +45,14 @@ public final class TaskPhase implements Serializable {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Does this phase has a specific impact on the Worker
+     * @return May return null if no specific impact
+     */
+    public ExperienceImpact getImpact() {
+        return impact;
     }
 
     @Override

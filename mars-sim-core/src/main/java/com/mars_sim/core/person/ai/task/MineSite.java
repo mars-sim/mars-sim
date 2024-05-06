@@ -44,7 +44,9 @@ public class MineSite extends EVAOperation {
 	static final String SIMPLE_NAME = MineSite.class.getSimpleName();
 	
 	/** Task phases. */
-	private static final TaskPhase MINING = new TaskPhase(Msg.getString("Task.phase.mining")); //$NON-NLS-1$
+	private static final TaskPhase MINING = new TaskPhase(Msg.getString("Task.phase.mining"),
+					createPhaseImpact(SkillType.PROSPECTING));
+
 
 	/** Excavation rates (kg/millisol). */
 	private static final double HAND_EXCAVATION_RATE = .1D;
@@ -74,8 +76,8 @@ public class MineSite extends EVAOperation {
 	public MineSite(Person person, Coordinates site, Rover rover, LightUtilityVehicle luv) {
 
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.PROSPECTING);
-		setMinimumSunlight(MineSite.LIGHT_LEVEL);
+		super(NAME, person, RandomUtil.getRandomDouble(50D) + 10D, MINING);
+		setMinimumSunlight(LIGHT_LEVEL);
 
 		// Initialize data members.
 		this.site = site;
@@ -94,9 +96,6 @@ public class MineSite extends EVAOperation {
 
 		// Determine location for mining site.
 		setRandomOutsideLocation(rover);
-
-		// Add task phase
-		addPhase(MINING);
 	}
 
 	/**
@@ -119,11 +118,6 @@ public class MineSite extends EVAOperation {
 		}
 
 		return true;
-	}
-
-	@Override
-	protected TaskPhase getOutsideSitePhase() {
-		return MINING;
 	}
 
 	@Override
@@ -239,7 +233,7 @@ public class MineSite extends EVAOperation {
 		// skill.
 		// 1 base experience point per 10 millisols of mining time spent.
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		if (getOutsideSitePhase().equals(getPhase()) && operatingLUV) {
+		if (MINING.equals(getPhase()) && operatingLUV) {
 			int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 			double experienceAptitudeModifier = ((experienceAptitude) - 50D) / 100D;
 			double drivingExperience = time / 10D;

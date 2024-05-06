@@ -9,6 +9,7 @@ package com.mars_sim.core.structure.task;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.EquipmentType;
@@ -109,7 +110,7 @@ public abstract class DigLocalMeta extends MetaTask
         // Calculate the capacity for more EVAs
         int maxEVA = settlement.getPreferences().getIntValue(SETTLE_CAT, SettlementParameters.MAX_EVA,
                                                     1);
-        maxEVA -= EVAOperation.getActivePersons(settlement);
+        maxEVA -= getActiveEVAPersons(settlement);
         if (maxEVA <= 0) {
             return Collections.emptyList();
         }
@@ -124,6 +125,18 @@ public abstract class DigLocalMeta extends MetaTask
         resultList.add(new DigLocalTaskJob(this, result, maxEVA));
         return resultList;
     }
+
+    
+	/**
+	 * Get the number of Persons doing EVAOperations in a Settlement
+	 * @param settlement
+	 * @return
+	 */
+    private static int getActiveEVAPersons(Settlement settlement) {
+		return settlement.getAllAssociatedPeople().stream()
+							.filter(p -> p.getTaskManager().getTask() instanceof EVAOperation)
+							.collect(Collectors.counting()).intValue();
+	}
 
     /**
      * Assess a Person for a specific SettlementTask of this type.

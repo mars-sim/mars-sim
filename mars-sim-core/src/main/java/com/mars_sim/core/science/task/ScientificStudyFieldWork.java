@@ -10,6 +10,7 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.ExitAirlock;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
@@ -32,9 +33,11 @@ public  class ScientificStudyFieldWork extends EVAOperation {
 	private static final SimLogger logger = SimLogger.getLogger(ScientificStudyFieldWork.class.getName());
 
     private static final String BIOLOGY_NAME = Msg.getString("Task.description.biologyFieldWork"); //$NON-NLS-1$
-    private static final TaskPhase BIOLOGY_WORK = new TaskPhase(Msg.getString("Task.phase.fieldWork.biology")); //$NON-NLS-1$
+    private static final TaskPhase BIOLOGY_WORK = new TaskPhase(Msg.getString("Task.phase.fieldWork.biology"),
+							createPhaseImpact(SkillType.BIOLOGY)); //$NON-NLS-1$
 	private static final String AREOLOGY_NAME = Msg.getString("Task.description.areologyFieldWork"); //$NON-NLS-1$
-	private static final TaskPhase AREOLOGY_WORK = new TaskPhase(Msg.getString("Task.phase.fieldWork.areology"));
+	private static final TaskPhase AREOLOGY_WORK = new TaskPhase(Msg.getString("Task.phase.fieldWork.areology"),
+							createPhaseImpact(SkillType.AREOLOGY));
 	public static final LightLevel LIGHT_LEVEL = LightLevel.LOW;
 
 	// Data members
@@ -55,8 +58,7 @@ public  class ScientificStudyFieldWork extends EVAOperation {
 									   ScientificStudy study, Rover rover) {
 
 		// Use EVAOperation parent constructor.
-		super(name, person, true, RandomUtil.getRandomDouble(50D) + 10D, 
-			  study.getScience().getSkill());
+		super(name, person, RandomUtil.getRandomDouble(50D) + 10D, fieldwork);
 		
 		setMinimumSunlight(LIGHT_LEVEL);
 
@@ -70,7 +72,6 @@ public  class ScientificStudyFieldWork extends EVAOperation {
 
 		// Add task phases
 		this.fieldWork = fieldwork;
-		addPhase(fieldWork);
 	}
 
 	public static ScientificStudyFieldWork createFieldStudy(ScienceType science, Person person, Person leadResearcher,
@@ -122,11 +123,6 @@ public  class ScientificStudyFieldWork extends EVAOperation {
 		}
 
 		return true;
-	}
-
-	@Override
-	protected TaskPhase getOutsideSitePhase() {
-		return fieldWork;
 	}
 
 	@Override

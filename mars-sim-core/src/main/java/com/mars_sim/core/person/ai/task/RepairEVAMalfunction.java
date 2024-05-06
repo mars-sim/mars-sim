@@ -36,7 +36,8 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 	private static final String NAME = Msg.getString("Task.description.repairEVAMalfunction"); //$NON-NLS-1$
 
 	/** Task phases. */
-	private static final TaskPhase REPAIRING = new TaskPhase(Msg.getString("Task.phase.repairing")); //$NON-NLS-1$
+	private static final TaskPhase REPAIRING = new TaskPhase(Msg.getString("Task.phase.repairing"),
+														createPhaseImpact(SkillType.MECHANICS));
 
 	private static final String WORK_FORMAT = " (%.1f millisols spent).";
 	
@@ -51,7 +52,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 	private EquipmentOwner partStore;
 
 	public RepairEVAMalfunction(Person person, Malfunctionable entity, Malfunction malfunction) {
-		super(NAME, person, true, 25, SkillType.MECHANICS);
+		super(NAME, person, 25, REPAIRING);
 		setMinimumSunlight(LightLevel.NONE);
 
 		if (!person.isNominallyFit()) {
@@ -82,15 +83,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 			setPhase(WALK_TO_OUTSIDE_SITE);
 
 			RepairHelper.prepareRepair(malfunction, person, MalfunctionRepairWork.EVA, entity);
-
-			// Initialize phase
-			addPhase(REPAIRING);
 		}
-	}
-
-	@Override
-	protected TaskPhase getOutsideSitePhase() {
-		return REPAIRING;
 	}
 
 	@Override
@@ -187,5 +180,6 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 		if (malfunction != null) {
 			malfunction.leaveWork(MalfunctionRepairWork.EVA, worker.getName());
 		}
+		super.clearDown();
 	}
 }

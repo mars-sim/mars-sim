@@ -12,6 +12,7 @@ import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.MeteorologyFieldStudy;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -36,7 +37,8 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 	private static final String NAME = Msg.getString("Task.description.meteorologyFieldWork"); //$NON-NLS-1$
 
 	/** Task phases. */
-	private static final TaskPhase FIELD_WORK = new TaskPhase(Msg.getString("Task.phase.fieldWork.meteorology")); //$NON-NLS-1$
+	private static final TaskPhase FIELD_WORK = new TaskPhase(Msg.getString("Task.phase.fieldWork.meteorology"),
+						createPhaseImpact(SkillType.METEOROLOGY));
 
 	// Static members
 	private static final double AVERAGE_ROCK_COLLECTED_SITE = 40 + RandomUtil.getRandomDouble(20);

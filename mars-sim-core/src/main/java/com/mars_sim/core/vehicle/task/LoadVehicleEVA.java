@@ -12,7 +12,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.LoadingController;
-import com.mars_sim.core.person.ai.task.EVAOperation.LightLevel;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -61,7 +60,7 @@ public class LoadVehicleEVA extends EVAOperation {
 	 */
 	public LoadVehicleEVA(Person person, VehicleMission mission) {
 		// Use Task constructor.
-		super(NAME, person, true, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
+		super(NAME, person, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), LOADING);
 
 		this.vehicleMission = mission;
 		setMinimumSunlight(LightLevel.NONE);
@@ -100,9 +99,6 @@ public class LoadVehicleEVA extends EVAOperation {
 		
 		// Determine location for loading.
 		setOutsideLocation(vehicle);
-
-		// Initialize task phase
-		addPhase(LOADING);
 	}
 
 	@Override
@@ -170,11 +166,5 @@ public class LoadVehicleEVA extends EVAOperation {
 	 */
 	public Vehicle getVehicle() {
 		return vehicle;
-	}
-
-
-	@Override
-	protected TaskPhase getOutsideSitePhase() {
-		return LOADING;
 	}
 }

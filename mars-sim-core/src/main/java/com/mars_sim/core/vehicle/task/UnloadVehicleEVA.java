@@ -20,7 +20,6 @@ import com.mars_sim.core.person.ai.task.CollectMinedMinerals;
 import com.mars_sim.core.person.ai.task.CollectResources;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.UnloadVehicleGarage;
-import com.mars_sim.core.person.ai.task.EVAOperation.LightLevel;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
@@ -80,7 +79,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 	 */
 	public UnloadVehicleEVA(Person person, Vehicle vehicle) {
 		// Use EVAOperation constructor.
-		super(NAME, person, true, RandomUtil.getRandomDouble(25D) + 10D, null);
+		super(NAME, person, RandomUtil.getRandomDouble(25D) + 10D, UNLOADING);
 		setMinimumSunlight(LightLevel.NONE);
 
 		setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
@@ -109,9 +108,6 @@ public class UnloadVehicleEVA extends EVAOperation {
 			endTask();
 			return;
 		}
-		
-		// Initialize phase
-		addPhase(UNLOADING);
 
 		logger.log(person, Level.FINE, 20_000, "Going to unload "  + vehicle.getName() + ".");
 
@@ -332,13 +328,6 @@ public class UnloadVehicleEVA extends EVAOperation {
 	 */
 	public Vehicle getVehicle() {
 		return vehicle;
-	}
-
-
-
-	@Override
-	protected TaskPhase getOutsideSitePhase() {
-		return UNLOADING;
 	}
 
 	/**

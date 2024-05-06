@@ -40,7 +40,8 @@ public class CollectResources extends EVAOperation {
 	public static final double LABOR_TIME = 50D;
 
 	/** Task phases. */
-	private static final TaskPhase COLLECT_RESOURCES = new TaskPhase(Msg.getString("Task.phase.collectResources")); //$NON-NLS-1$
+	private static final TaskPhase COLLECT_RESOURCES = new TaskPhase(Msg.getString("Task.phase.collectResources"),
+						createPhaseImpact(SkillType.AREOLOGY, SkillType.PROSPECTING));
 
     public static final LightLevel LIGHT_LEVEL = LightLevel.NONE;
 
@@ -77,11 +78,9 @@ public class CollectResources extends EVAOperation {
 			double targettedAmount, double startingCargo, EquipmentType containerType) {
 
 		// Use EVAOperation parent constructor.
-		super("Collecting Resources", person, true,
-					LABOR_TIME + RandomUtil.getRandomDouble(-10D, 10D),
-					SkillType.AREOLOGY);
+		super("Collecting Resources", person,
+					LABOR_TIME + RandomUtil.getRandomDouble(-10D, 10D), COLLECT_RESOURCES);
 
-		addAdditionSkill(SkillType.PROSPECTING);
 		setMinimumSunlight(LIGHT_LEVEL);
 		
 		if (person.isSuperUnFit()) {
@@ -121,15 +120,6 @@ public class CollectResources extends EVAOperation {
 		
 		compositeRate  = collectionRate * ((.5 * agility + strength) / 150D) 
 				* (.5 * (eva + prospecting) + .2) ;
-
-		// Add task phases
-		addPhase(COLLECT_RESOURCES);
-	}
-
-
-	@Override
-	protected TaskPhase getOutsideSitePhase() {
-		return COLLECT_RESOURCES;
 	}
 
 	/**
@@ -317,5 +307,7 @@ public class CollectResources extends EVAOperation {
 			// Task may end early before a Rover is selected
 			returnEquipmentToVehicle(rover);
 		}
+
+		super.clearDown();
 	}
 }

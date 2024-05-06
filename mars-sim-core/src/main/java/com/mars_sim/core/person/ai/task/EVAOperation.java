@@ -8,9 +8,10 @@ package com.mars_sim.core.person.ai.task;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Unit;
@@ -21,10 +22,10 @@ import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.MissionHistoricalEvent;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -63,6 +64,9 @@ public abstract class EVAOperation extends Task {
 	/** default serial id. */
 	private static SimLogger logger = SimLogger.getLogger(EVAOperation.class.getName());
 
+	// Expereince impact when not doing the on site activity
+	private static final ExperienceImpact IMPACT = createPhaseImpact();
+	
 	/** Task phases. */
 	protected static final TaskPhase WALK_TO_OUTSIDE_SITE = new TaskPhase(
 			Msg.getString("Task.phase.walkToOutsideSite")); //$NON-NLS-1$
@@ -71,47 +75,36 @@ public abstract class EVAOperation extends Task {
 
 
 	// Static members
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .05;
 	/** The base chance of an accident per millisol. */
 	public static final double BASE_ACCIDENT_CHANCE = .01;
 
 	// Data members
-	/** Flag for ending EVA operation externally. */
 	private boolean endEVA;
-	private boolean hasSiteDuration;
-
-	private double siteDuration;
-	private double timeOnSite;
+	private double timeOnSiteRemaining;
 	private LocalPosition outsideSitePos;
 
 	private LocalBoundedObject interiorObject;
 	private LocalPosition returnInsideLoc;
 
-	private SkillType outsideSkill;
-
 	private LightLevel minEVASunlight;
+
+	private TaskPhase outsidePhase;
 
 	/**
 	 * Constructor.
 	 *
 	 * @param name   the name of the task
 	 * @param person the person to perform the task
-	 * @param 
+	 * @param siteDuration How long is the onsite work; zero means there is not a fixed duration
+	 * @param onSitePhase The TaskPhase for the actual onsite work
 	 */
-	protected EVAOperation(String name, Person person, boolean hasSiteDuration,
-							double siteDuration, SkillType outsideSkill) {
-		super(name, person, true, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
+	protected EVAOperation(String name, Person person, double siteDuration, TaskPhase onSitePhase) {
+		super(name, person, true, IMPACT, 0D);
 
 		// Initialize data members
 		this.minEVASunlight = LightLevel.LOW;
-		this.hasSiteDuration = hasSiteDuration;
-		this.siteDuration = siteDuration;
-		this.outsideSkill = outsideSkill;
-		if (outsideSkill != null) {
-			addAdditionSkill(outsideSkill);
-		}
-		timeOnSite = 0D;
+		this.timeOnSiteRemaining = (siteDuration > 0 ? siteDuration : 1000D);
+		this.outsidePhase = onSitePhase;
 
 		// Check if person is in a settlement or a rover.
 		if (person.isInSettlement()) {
@@ -120,12 +113,7 @@ public abstract class EVAOperation extends Task {
 				logger.warning(person, "Supposed to be inside a building but interiorObject is null.");
 				endTask();
 			}
-
 			else {
-				// Add task phases.
-				addPhase(WALK_TO_OUTSIDE_SITE);
-				addPhase(WALK_BACK_INSIDE);
-
 				// Set initial phase.
 				setPhase(WALK_TO_OUTSIDE_SITE);
 			}
@@ -139,10 +127,6 @@ public abstract class EVAOperation extends Task {
 			}
 
 			else {
-				// Add task phases.
-				addPhase(WALK_TO_OUTSIDE_SITE);
-				addPhase(WALK_BACK_INSIDE);
-
 				// Set initial phase.
 				setPhase(WALK_TO_OUTSIDE_SITE);
 			}
@@ -155,13 +139,24 @@ public abstract class EVAOperation extends Task {
 			if (interiorObject == null) {
 				logger.warning(person, "Supposed to be in a vehicle but interiorObject is null.");
 			}
-			// Add task phases.
-			addPhase(WALK_TO_OUTSIDE_SITE);
-			addPhase(WALK_BACK_INSIDE);
 
 			// Set initial phase.
 			setPhase(WALK_TO_OUTSIDE_SITE);
 		}
+	}
+
+	/**
+	 * Helper method to create an impact that is specific for a TaskPhase
+	 */
+	protected static ExperienceImpact createPhaseImpact(SkillType... extraSkills) {
+		Set<SkillType> skills = new HashSet<>();
+		skills.add(SkillType.EVA_OPERATIONS);
+		for(var s : extraSkills) {
+			skills.add(s);
+		}
+		return new ExperienceImpact(100D, NaturalAttributeType.EXPERIENCE_APTITUDE, true, 0.05D, 
+					skills);
+
 	}
 
 	/**
@@ -211,24 +206,9 @@ public abstract class EVAOperation extends Task {
 	 * @return true if site phase should end.
 	 */
 	protected boolean addTimeOnSite(double time) {
-
-		boolean result = false;
-
-		timeOnSite += time;
-
-		if (hasSiteDuration && (timeOnSite >= siteDuration)) {
-			result = true;
-		}
-
-		return result;
+		timeOnSiteRemaining -= time;
+		return (timeOnSiteRemaining <= 0);
 	}
-
-	/**
-	 * Gets the outside site phase.
-	 *
-	 * @return task phase.
-	 */
-	protected abstract TaskPhase getOutsideSitePhase();
 
 	/**
 	 * Sets the outside side local location.
@@ -261,6 +241,16 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
+	 * Gets a list of the skills associated with the outside phase of the EVA.
+	 * 
+	 * @return list of skills
+	 */
+	@Override
+	public Set<SkillType> getAssociatedSkills() {
+		return outsidePhase.getImpact().getImpactedSkills();
+	}
+
+	/**
 	 * Performs the walk to outside site phase.
 	 *
 	 * @return remaining time after performing the phase.
@@ -287,7 +277,7 @@ public abstract class EVAOperation extends Task {
         	}
         	else {
                 // Set to collectionPhase
-        		setPhase(getOutsideSitePhase());
+        		setPhase(outsidePhase);
         	}
         }
 
@@ -592,49 +582,14 @@ public abstract class EVAOperation extends Task {
 	} 
 	
 	/**
-	 * Adds experience for this EVA task. The EVA_OPERATIONS skill is updated.
-	 * 
-	 * If the {@link #getPhase()} matches the value of {@link #getOutsideSitePhase()} then experience is also added
-	 * to the outsideSkill property defined for this task.
-	 * If the phase is not outside; then only EVA_OPERATIONS is updated.
-	 * 
-	 * @param time
-	 */
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to "EVA Operations" skill.
-		// (1 base experience point per 100 millisols of time spent)
-		double evaExperience = time / 100D;
-
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		NaturalAttributeManager nManager = worker.getNaturalAttributeManager();
-		int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		double experienceAptitudeModifier = (experienceAptitude - 50D) / 100D;
-		evaExperience += evaExperience * experienceAptitudeModifier;
-		evaExperience *= getTeachingExperienceModifier();
-		worker.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-
-		// If phase is outside, add experience to outside skill.
-		if (getOutsideSitePhase().equals(getPhase()) && (outsideSkill != null)) {
-			// 1 base experience point per 10 millisols of collection time spent.
-			// Experience points adjusted by person's "Experience Aptitude" attribute.
-			double outsideExperience = time / 10D;
-			outsideExperience += outsideExperience * experienceAptitudeModifier;
-			worker.getSkillManager().addExperience(outsideSkill, outsideExperience, time);
-		}
-	}
-
-	/**
 	 * Checks for accident with EVA suit.
 	 *
 	 * @param time the amount of time on EVA (in millisols)
 	 */
 	protected void checkForAccident(double time) {
-
 		if (person != null) {
 			EVASuit suit = person.getSuit();
 			if (suit != null) {
-
 				// EVA operations skill modification.
 				int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 				checkForAccident(suit, time, BASE_ACCIDENT_CHANCE, skill, "EVA operation at " + person.getCoordinates().toString());
@@ -828,19 +783,7 @@ public abstract class EVAOperation extends Task {
 		outsideSitePos = null;
 		interiorObject = null;
 		returnInsideLoc = null;
-		outsideSkill = null;
 		
 		super.destroy();
-	}
-
-	/**
-	 * Get the number of Persons doing EVAOperations in a Settlement
-	 * @param settlement
-	 * @return
-	 */
-    public static int getActivePersons(Settlement settlement) {
-		return settlement.getAllAssociatedPeople().stream()
-							.filter(p -> p.getTaskManager().getTask() instanceof EVAOperation)
-							.collect(Collectors.counting()).intValue();
 	}
 }

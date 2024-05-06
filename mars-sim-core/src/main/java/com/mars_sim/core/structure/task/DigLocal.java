@@ -24,7 +24,6 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.WalkOutside;
-import com.mars_sim.core.person.ai.task.EVAOperation.LightLevel;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -96,9 +95,8 @@ public abstract class DigLocal extends EVAOperation {
 	protected DigLocal(String name, TaskPhase collectionPhase, int resourceID,
 					EquipmentType containerType, Person person, int duration) {
         // Use EVAOperation constructor.
-        super(name, person, false, duration, SkillType.AREOLOGY);
+        super(name, person, duration, collectionPhase);
 
-        addAdditionSkill(SkillType.PROSPECTING);
 		setMinimumSunlight(LightLevel.NONE);
 
         this.containerType = containerType;
@@ -149,10 +147,6 @@ public abstract class DigLocal extends EVAOperation {
 	        	return;
 	        }
         }
-        
-       	// Add task phases
-    	addPhase(collectionPhase);
-    	addPhase(DROP_OFF_RESOURCE);
 
         setPhase(WALK_TO_OUTSIDE_SITE);
     }
@@ -465,12 +459,6 @@ public abstract class DigLocal extends EVAOperation {
         return container;
     }
 
-    @Override
-    protected TaskPhase getOutsideSitePhase() {
-        return collectionPhase;
-    }
-    
-	
 	/**
 	 * Finds a map of buildings having storage functions that can or cannot 
 	 * hold resources being collected.
@@ -569,6 +557,8 @@ public abstract class DigLocal extends EVAOperation {
 	
 		// Assign thermal bottle
 		person.assignThermalBottle();
+
+		super.clearDown();
     }
     
 	/**

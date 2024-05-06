@@ -39,7 +39,8 @@ public class ExploreSite extends EVAOperation {
 	private static final String NAME = Msg.getString("Task.description.exploreSite"); //$NON-NLS-1$
 
 	/** Task phases. */
-	private static final TaskPhase EXPLORING = new TaskPhase(Msg.getString("Task.phase.exploring")); //$NON-NLS-1$
+	private static final TaskPhase EXPLORING = new TaskPhase(Msg.getString("Task.phase.exploring"),
+									createPhaseImpact(SkillType.AREOLOGY, SkillType.PROSPECTING));
 
 	// Static members
 	/** The average labor time it takes to find the resource. */
@@ -55,8 +56,6 @@ public class ExploreSite extends EVAOperation {
 	private double totalCollected = 0;
 	private double numSamplesCollected = AVERAGE_ROCK_COLLECTED_SITE / AVERAGE_ROCK_MASS;
 	
-	private double skill;
-	
 	private ExploredLocation site;
 	private Rover rover;
 
@@ -70,9 +69,8 @@ public class ExploreSite extends EVAOperation {
 	 */
 	public ExploreSite(Person person, ExploredLocation site, Rover rover) {
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, LABOR_TIME + RandomUtil.getRandomDouble(-5D, 5D), SkillType.AREOLOGY);
+		super(NAME, person, LABOR_TIME + RandomUtil.getRandomDouble(-5D, 5D), EXPLORING);
 
-		addAdditionSkill(SkillType.PROSPECTING);
 		setMinimumSunlight(LIGHT_LEVEL);
 		
 		// Initialize data members.
@@ -92,12 +90,7 @@ public class ExploreSite extends EVAOperation {
 						"No more specimen box for collecting rock samples.");
 				endTask();
 			}
-		}
-		
-		skill = (getEffectiveSkillLevel() + person.getSkillManager().getSkillLevel(SkillType.PROSPECTING)) / 2D;
-
-		// Add task phase
-		addPhase(EXPLORING);
+		}		
 	}
 	
 	
@@ -142,11 +135,6 @@ public class ExploreSite extends EVAOperation {
 	}
 
 	@Override
-	protected TaskPhase getOutsideSitePhase() {
-		return EXPLORING;
-	}
-
-	@Override
 	protected double performMappedPhase(double time) {
 
 		time = super.performMappedPhase(time);
@@ -181,11 +169,11 @@ public class ExploreSite extends EVAOperation {
 			return time;
 		}
 
+		int skill = getEffectiveSkillLevel();
 		int rand = RandomUtil.getRandomInt(5);
-
 		if (rand == 0) {
 			// Improve mineral concentration estimates.
-			improveMineralConcentrationEstimates(time);
+			improveMineralConcentrationEstimates(time, skill);
 		}
 		else if (rand == 1){
 			// Collect rocks.
@@ -262,7 +250,7 @@ public class ExploreSite extends EVAOperation {
 	 *
 	 * @param time the amount of time available (millisols).
 	 */
-	private void improveMineralConcentrationEstimates(double time) {
+	private void improveMineralConcentrationEstimates(double time, int skill) {
 
 		double siteTime = ((Exploration)person.getMission()).getSiteTime();
 			
@@ -315,14 +303,7 @@ public class ExploreSite extends EVAOperation {
 				estimate += rand;
 			else
 				estimate -= rand;
-			
-//			logger.info("Improving " + mineralType 
-//					+ " estimation - rand: " + Math.round(rand * 100.0)/100.0
-//					+ "   conc: " + Math.round(conc * 100.0)/100.0
-//					+ "   estimate: " + Math.round(estimate * 100.0)/100.0	
-//					+ "   diff: " + Math.round(diff * 100.0)/100.0
-//					);
-			
+
 			estimatedMineralConcentrations.put(mineralType, estimate);
 		}
 		

@@ -44,7 +44,8 @@ public class ConstructBuilding extends EVAOperation {
 	private static final String NAME = Msg.getString("Task.description.constructBuilding"); //$NON-NLS-1$
 
 	/** Task phases. */
-	private static final TaskPhase CONSTRUCTION = new TaskPhase(Msg.getString("Task.phase.construction")); //$NON-NLS-1$
+	private static final TaskPhase CONSTRUCTION = new TaskPhase(Msg.getString("Task.phase.construction"),
+							createPhaseImpact(SkillType.CONSTRUCTION));
 
 	// The base chance of an accident while operating LUV per millisol.
 	public static final double BASE_LUV_ACCIDENT_CHANCE = .001;
@@ -67,7 +68,7 @@ public class ConstructBuilding extends EVAOperation {
 	 */
 	public ConstructBuilding(Person person) {
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, RandomUtil.getRandomDouble(10) + 150D, SkillType.CONSTRUCTION);
+		super(NAME, person, RandomUtil.getRandomDouble(10) + 150D, CONSTRUCTION);
 
 		if (person.isSuperUnFit()) {
 			checkLocation("Super unfit.");
@@ -86,9 +87,6 @@ public class ConstructBuilding extends EVAOperation {
 			// Determine location for construction site.
 			LocalPosition constructionSiteLoc = determineConstructionLocation();
 			setOutsideSiteLocation(constructionSiteLoc);
-
-			// Add task phase
-			addPhase(CONSTRUCTION);
 		}
 
 		else {
@@ -107,7 +105,7 @@ public class ConstructBuilding extends EVAOperation {
 	public ConstructBuilding(Person person, ConstructionStage stage, ConstructionSite site,
 			List<GroundVehicle> vehicles) {
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, RandomUtil.getRandomDouble(5D) + 100D, SkillType.CONSTRUCTION);
+		super(NAME, person, RandomUtil.getRandomDouble(5D) + 100D, CONSTRUCTION);
 
 		// Initialize data members.
 		this.stage = stage;
@@ -122,9 +120,6 @@ public class ConstructBuilding extends EVAOperation {
 		// Determine location for construction site.
 		LocalPosition constructionSiteLoc = determineConstructionLocation();
 		setOutsideSiteLocation(constructionSiteLoc);
-
-		// Add task phase
-		addPhase(CONSTRUCTION);
 	}
 
 	/**
@@ -200,11 +195,6 @@ public class ConstructBuilding extends EVAOperation {
 	 */
 	private LocalPosition determineConstructionLocation() {
 		return LocalAreaUtil.getRandomLocalPos(site);
-	}
-
-	@Override
-	protected TaskPhase getOutsideSitePhase() {
-		return CONSTRUCTION;
 	}
 
 	@Override

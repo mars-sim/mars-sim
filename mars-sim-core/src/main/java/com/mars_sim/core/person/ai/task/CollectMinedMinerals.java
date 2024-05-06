@@ -40,7 +40,8 @@ public class CollectMinedMinerals extends EVAOperation {
 	static final String SIMPLE_NAME = CollectMinedMinerals.class.getSimpleName();
 	
 	/** Task phases. */
-	private static final TaskPhase COLLECT_MINERALS = new TaskPhase(Msg.getString("Task.phase.collectMinerals")); //$NON-NLS-1$
+	private static final TaskPhase COLLECT_MINERALS = new TaskPhase(Msg.getString("Task.phase.collectMinerals"),
+															createPhaseImpact(SkillType.AREOLOGY, SkillType.PROSPECTING));
 
 	/** Rate of mineral collection (kg/millisol). */
 	private static final double MINERAL_SELECTION_RATE = .2;
@@ -62,10 +63,7 @@ public class CollectMinedMinerals extends EVAOperation {
 	public CollectMinedMinerals(Person person, Rover rover, AmountResource mineralType) {
 
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, LABOR_TIME + RandomUtil.getRandomDouble(-5, 5),
-					SkillType.AREOLOGY);
-		
-		addAdditionSkill(SkillType.PROSPECTING);
+		super(NAME, person, LABOR_TIME + RandomUtil.getRandomDouble(-5, 5), COLLECT_MINERALS);
 		setMinimumSunlight(MineSite.LIGHT_LEVEL);
 	       
 		// Initialize data members.
@@ -86,9 +84,6 @@ public class CollectMinedMinerals extends EVAOperation {
 				endTask();
 			}
 		}
-
-		// Add task phases
-		addPhase(COLLECT_MINERALS);
 	}
 
 	/**
@@ -117,11 +112,6 @@ public class CollectMinedMinerals extends EVAOperation {
 			}
 		}
 		return false;
-	}
-
-	@Override
-	protected TaskPhase getOutsideSitePhase() {
-		return COLLECT_MINERALS;
 	}
 
 	@Override

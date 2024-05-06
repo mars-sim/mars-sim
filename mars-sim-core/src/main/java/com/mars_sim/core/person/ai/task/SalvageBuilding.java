@@ -43,7 +43,7 @@ public class SalvageBuilding extends EVAOperation {
 
     /** Task phases. */
     private static final TaskPhase SALVAGE = new TaskPhase(Msg.getString(
-            "Task.phase.salvage")); //$NON-NLS-1$
+            "Task.phase.salvage"), createPhaseImpact(SkillType.CONSTRUCTION));
 
 	/** The base chance of an accident while operating LUV per millisol. */
 	public static final double BASE_LUV_ACCIDENT_CHANCE = .001;
@@ -63,9 +63,8 @@ public class SalvageBuilding extends EVAOperation {
      */
     public SalvageBuilding(Person person, SalvageMission mission) {
         // Use EVAOperation parent constructor.
-        super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.CONSTRUCTION);
+        super(NAME, person, RandomUtil.getRandomDouble(50D) + 10D, SALVAGE);
 
-        setMinimumSunlight(LightLevel.HIGH);
 		if (person.isSuperUnFit()) {
 			checkLocation("Super unfit.");
 			return;
@@ -81,14 +80,7 @@ public class SalvageBuilding extends EVAOperation {
         this.site = mission.getConstructionSite();
         this.vehicles = mission.getConstructionVehicles();
 
-        // Determine location for salvage site.
-        LocalPosition salvageSiteLoc = determineSalvageLocation();
-        setOutsideSiteLocation(salvageSiteLoc);
-
-        // Add task phase
-        addPhase(SALVAGE);
-
-        logger.fine(person, "Started the SalvageBuilding task.");
+        init();
     }
 
 	/**
@@ -100,7 +92,7 @@ public class SalvageBuilding extends EVAOperation {
 	public SalvageBuilding(Person person, ConstructionStage stage,
 			ConstructionSite site, List<GroundVehicle> vehicles) {
 		// Use EVAOperation parent constructor.
-        super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.CONSTRUCTION);
+        super(NAME, person, RandomUtil.getRandomDouble(50D) + 10D, SALVAGE);
 
         // Initialize data members.
         this.stage = stage;
@@ -108,18 +100,14 @@ public class SalvageBuilding extends EVAOperation {
         this.vehicles = vehicles;
 
         init();
-
-        logger.fine(person, "Started the SalvageBuilding task.");
     }
 
 	private void init() {
+        setMinimumSunlight(LightLevel.HIGH);
 
         // Determine location for salvage site.
         LocalPosition salvageSiteLoc = determineSalvageLocation();
         setOutsideSiteLocation(salvageSiteLoc);
-
-        // Add task phase
-        addPhase(SALVAGE);
 	}
 
     /**
@@ -161,20 +149,15 @@ public class SalvageBuilding extends EVAOperation {
         // If person is driving the light utility vehicle, add experience to driving skill.
         // 1 base experience point per 10 millisols of mining time spent.
         // Experience points adjusted by person's "Experience Aptitude" attribute.
-        if (getOutsideSitePhase().equals(getPhase()) && operatingLUV) {
+        if (SALVAGE.equals(getPhase()) && operatingLUV) {
             int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 
+            // Experience should be calculated from teh operating LUV method
             double experienceAptitudeModifier = ((experienceAptitude) - 50D) / 100D;
             double drivingExperience = time / 10D;
             drivingExperience += drivingExperience * experienceAptitudeModifier;
             worker.getSkillManager().addExperience(SkillType.PILOTING, drivingExperience, time);
         }
-    }
-
-
-    @Override
-    protected TaskPhase getOutsideSitePhase() {
-        return SALVAGE;
     }
 
     @Override

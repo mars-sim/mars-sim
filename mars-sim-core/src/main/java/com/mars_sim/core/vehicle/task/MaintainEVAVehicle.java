@@ -13,7 +13,6 @@ import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
-import com.mars_sim.core.person.ai.task.EVAOperation.LightLevel;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.StatusType;
@@ -41,7 +40,7 @@ public class MaintainEVAVehicle extends EVAOperation {
     
     /** Task phases. */
     private static final TaskPhase MAINTAIN_VEHICLE = new TaskPhase(Msg.getString(
-            "Task.phase.maintainVehicle")); //$NON-NLS-1$
+            "Task.phase.maintainVehicle"), createPhaseImpact(SkillType.MECHANICS));
 
     // Data members.
     /** Vehicle to be maintained. */
@@ -56,7 +55,7 @@ public class MaintainEVAVehicle extends EVAOperation {
      * @param target
      */
     public MaintainEVAVehicle(Person person, Vehicle target) {
-        super(NAME, person, true, 25, SkillType.MECHANICS);
+        super(NAME, person, 25, MAINTAIN_VEHICLE);
 
 		if (!person.isNominallyFit()) {
 			checkLocation("Not nominally fit.");
@@ -88,17 +87,6 @@ public class MaintainEVAVehicle extends EVAOperation {
 		
         // Determine location for maintenance.
         setOutsideLocation(vehicle);
-        
-        // Initialize phase.
-        addPhase(MAINTAIN_VEHICLE);
-
-        logger.fine(person.getName() + " started maintainEVAVehicle task.");
-    }
-
-
-    @Override
-    protected TaskPhase getOutsideSitePhase() {
-        return MAINTAIN_VEHICLE;
     }
 
     @Override
