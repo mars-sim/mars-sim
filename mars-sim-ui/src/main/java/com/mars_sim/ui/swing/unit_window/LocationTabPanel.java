@@ -558,15 +558,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			String n = container != null ? container.getName() : "";
 			containerLabel.setText(n);
 		}
-		else
-			containerLabel.setText("");
-
-//		Settlement settlement = unit.getSettlement();
-//		if (settlementCache != settlement) {
-//			settlementCache = settlement;
-//			String n = settlement != null ? settlement.getName() : "";
-//			settlementLabel.setText(n);
-//		}
 		
 		// If this unit is inside a building
 		Building building = unit.getBuildingLocation();
