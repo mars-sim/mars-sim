@@ -4,7 +4,7 @@
  * @date 2022-09-20
  * @author Scott Davis
  */
-package com.mars_sim.core.structure.task;
+package com.mars_sim.core.vehicle.task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,6 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.VehicleMaintenance;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.task.MaintainEVAVehicle;
 import com.mars_sim.tools.Msg;
 
 /**

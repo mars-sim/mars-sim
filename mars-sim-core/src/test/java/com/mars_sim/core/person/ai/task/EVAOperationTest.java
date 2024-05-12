@@ -2,11 +2,70 @@ package com.mars_sim.core.person.ai.task;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.equipment.EVASuit;
+import com.mars_sim.core.equipment.Equipment;
+import com.mars_sim.core.equipment.EquipmentFactory;
+import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation.LightLevel;
+import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
+import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.science.task.MarsSimContext;
+import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.EVA;
+import com.mars_sim.core.structure.building.function.FunctionType;
+import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.mapdata.location.Coordinates;
+import com.mars_sim.mapdata.location.LocalPosition;
 
 public class EVAOperationTest extends AbstractMarsSimUnitTest{
 
+    private static final int MAX_EVA_CALLS = 1500;
+
+    /**
+     * Helper method to advance an EVAOperation through to the Onsite phase
+     * @param context The context to create any entities
+     * @param eva The building to use as EVA
+     * @param task The EVA operation task to advance
+     * @return Calls needed.
+     */
+    public static int executeEVAExit(MarsSimContext context, EVA eva, EVAOperation task) {
+        var person = (Person)task.getWorker();
+		PersonTaskManager tm = person.getMind().getTaskManager();
+		tm.replaceTask(task);
+		
+        var onSite = task.getOutsidePhase();
+		int callsUsed = 0;
+        MarsTime now = context.getSim().getMasterClock().getMarsTime();
+		while ((callsUsed < MAX_EVA_CALLS) && !task.isDone() && !onSite.equals(task.getPhase())) {
+			tm.executeTask(MSOLS_PER_EXECUTE);
+            now = now.addTime(MSOLS_PER_EXECUTE);
+
+            // Due to a mis design in teh Airlock code; the operator is elected via a pulse instead of
+            // propactively in the pre-breathe phase
+            var pulse = context.createPulse(now, false, false);
+            eva.timePassing(pulse);
+
+			callsUsed++;
+		}
+		
+		return callsUsed;
+	}
+
+    /**
+     * Prepare context for a person to do an EVA. Create the EVA in teh settlemetn and put the Person
+     * within the Building. Creates an EVASuit and loads it with required resources.
+     */
+    public static EVA prepareForEva(MarsSimContext context, Person p) {
+        var s = p.getAssociatedSettlement();
+        var b = context.buildEVA(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        BuildingManager.addPersonToActivitySpot(p, b, FunctionType.EVA);
+        Equipment e = EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, s);
+        e.storeAmountResource(ResourceUtil.oxygenID, EVASuit.OXYGEN_CAPACITY);
+        e.storeAmountResource(ResourceUtil.waterID, EVASuit.WATER_CAPACITY);
+
+        return b.getEVA();
+    }
     /**
      * This test does not attempt to check the solar irradiance logic just the light levels.
      */

@@ -6,15 +6,12 @@
  */
 package com.mars_sim.core.vehicle.task;
 
-import com.mars_sim.core.Unit;
-import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
@@ -45,8 +42,6 @@ public class MaintainEVAVehicle extends EVAOperation {
     // Data members.
     /** Vehicle to be maintained. */
     private Vehicle vehicle;
-    /** The settlement where the maintenance takes place. */  
-    private Settlement settlement;
 
     /**
      * Constructor.
@@ -55,7 +50,7 @@ public class MaintainEVAVehicle extends EVAOperation {
      * @param target
      */
     public MaintainEVAVehicle(Person person, Vehicle target) {
-        super(NAME, person, 25, MAINTAIN_VEHICLE);
+        super(NAME, person, 100, MAINTAIN_VEHICLE);
 
 		if (!person.isNominallyFit()) {
 			checkLocation("Not nominally fit.");
@@ -63,10 +58,7 @@ public class MaintainEVAVehicle extends EVAOperation {
 		}
         setMinimumSunlight(LightLevel.NONE);
 
-     	settlement = unitManager.findSettlement(person.getCoordinates());
-     	if (settlement == null) {
-        	return;
-     	}
+     	var settlement = person.getAssociatedSettlement();
      	
         // Choose an available needy ground vehicle.
         vehicle = target;
@@ -110,19 +102,8 @@ public class MaintainEVAVehicle extends EVAOperation {
      * @param time the time to perform this phase (in millisols)
      * @return the time remaining after performing this phase (in millisols)
      */
-    private double maintainVehiclePhase(double time) {
-    	double remainingTime = 0;
-				
-		if (settlement == null) {
-			checkLocation("Settlement is null.");
-			return time;
-		}
-
-		if (vehicle == null) {
-			checkLocation("Vehicle is null.");
-			return time;
-		}		
-	   	
+    private double maintainVehiclePhase(double time) {        
+        var settlement = vehicle.getAssociatedSettlement();
 		if (checkReadiness(time) > 0)
 			return time;
 			
@@ -141,6 +122,8 @@ public class MaintainEVAVehicle extends EVAOperation {
 		}
 		
 		if (finishedMaintenance) {
+            vehicle.setReservedForMaintenance(false);
+            vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
 			checkLocation("Maintenance finished.");
 			return time;
 		}
@@ -153,13 +136,10 @@ public class MaintainEVAVehicle extends EVAOperation {
 
 		// Note: if parts don't exist, it simply means that one can still do the 
 		// inspection portion of the maintenance with no need of replacing any parts
-		boolean partsPosted = manager.hasMaintenancePartsInStorage(vehicle.getAssociatedSettlement());
+		boolean partsPosted = manager.hasMaintenancePartsInStorage(settlement);
 		
 		if (partsPosted) {
-			Unit containerUnit = vehicle.getAssociatedSettlement();
-
-			int shortfall = manager.transferMaintenanceParts((EquipmentOwner) containerUnit);
-			
+			int shortfall = manager.transferMaintenanceParts(settlement);
 			if (shortfall == -1) {
 				logger.warning(worker, 30_000L, "No spare parts available for maintenance on " 
 						+ vehicle + ".");
@@ -167,7 +147,7 @@ public class MaintainEVAVehicle extends EVAOperation {
 		}
 
         // Add work to the maintenance
-        manager.addInspectionMaintWorkTime(time);
+        manager.addInspectionMaintWorkTime(workTime);
 
         // Add experience points
         addExperience(time);
@@ -175,21 +155,8 @@ public class MaintainEVAVehicle extends EVAOperation {
         // Check if an accident happens during maintenance.
         checkForAccident(time);
 
-        return remainingTime;
+        return 0;
     }
-
-
-    /**
-     * Release the vehicle
-     */
-	@Override
-	protected void clearDown() {
-        if (vehicle != null) {
-        	vehicle.setReservedForMaintenance(false);
-            vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
-        }
-		super.clearDown();
-	}
 	
     @Override
     protected void checkForAccident(double time) {

@@ -43,7 +43,7 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
                                             false, stressRatio, skills);
 
         // Simple apply with no assistance
-        impact.apply(p, 100D, 0D, 1D);
+        impact.apply(p, 100D, 1D, 1D);
 
         // Check skills have changed
         var newChanged1Exp = sm.getSkill(changed1.getType()).getCumulativeExperience();
@@ -85,7 +85,7 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
                                                         false, stressRatio);
 
         // Simple apply with no assistance but not effective to generate stress
-        impact.apply(p, 100D, 0D, 0.5);
+        impact.apply(p, 100D, 1D, 0.5);
 
         // Check skills have changed
         var newChanged1Exp = sm.getSkill(changed1.getType()).getCumulativeExperience();

@@ -2297,49 +2297,13 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
-	 * Gets the building that owns (is attached to) the EVA Airlock.
-	 * 
-	 * @param evaBuilding
-	 * @return
-	 */
-	private Building getEVAAttachedBuilding(Building evaBuilding) {
-		SettlementTemplate settlementTemplate = simulationConfig
-				.getSettlementConfiguration().getItem(getSettlement().getTemplate());
-		List<BuildingTemplate> templates = settlementTemplate.getBuildings();
-
-		String idEVAAttachedBuilding = "";
-		String nickName = null;
-		Building eVAAttachedBuilding = null;
-		
-		for (BuildingTemplate bt: templates) {
-			if (bt.getBuildingName().equalsIgnoreCase(evaBuilding.getName())) {
-				idEVAAttachedBuilding = bt.getEVAAttachedBuildingID();
-			}
-		}
-		
-		for (BuildingTemplate bt: templates) {
-			if (bt.getID().equalsIgnoreCase(idEVAAttachedBuilding)) {
-				nickName = bt.getBuildingName();
-			}
-		}
-		
-		for (Building b: buildings) {
-			if (b.getName().equalsIgnoreCase(nickName)) {
-				eVAAttachedBuilding = b;
-			}
-		}
-		
-		return eVAAttachedBuilding;
-	}
-	
-	/**
 	 * Is the astronomy observatory the owner of this EVA Airlock ?
 	 * 
 	 * @param airlockBuilding
 	 * @return
 	 */
 	public boolean isObservatoryAttached(Building airlockBuilding) {
-		if (getEVAAttachedBuilding(airlockBuilding).hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION))
+		if (airlockBuilding.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION))
 			return true;
 
  		for (Building bb : createAdjacentBuildings(airlockBuilding)) {

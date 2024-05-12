@@ -537,29 +537,30 @@ public abstract class TaskManager implements Serializable {
 	 * @param newTask
 	 */
 	public void replaceTask(Task newTask) {
-		if (newTask != null) {
-			
-			// Backup the current task as last task
-			if (currentTask != null)
-				lastTask = currentTask;
-			
-			// Inform that the current task will be terminated
-			if (hasActiveTask()) {
-				String des = currentTask.getDescription();
-				
-				currentTask.endTask();
-				
-				logger.info(worker, 20_000, "Quit '" + des + "' to start the new task of '"
-							+ newTask.getName() + "'.");
-			}
-			
-			// Make the new task as the current task
-			currentTask = newTask;
-			currentScore = null;
-			
-			// Send out the task event
-			worker.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
+		if ((newTask == null) || newTask.equals(currentTask)) {
+			return;
 		}
+			
+		// Backup the current task as last task
+		if (currentTask != null)
+			lastTask = currentTask;
+		
+		// Inform that the current task will be terminated
+		if (hasActiveTask()) {
+			String des = currentTask.getDescription();
+			
+			currentTask.endTask();
+			
+			logger.info(worker, 20_000, "Quit '" + des + "' to start the new task of '"
+						+ newTask.getName() + "'.");
+		}
+		
+		// Make the new task as the current task
+		currentTask = newTask;
+		currentScore = null;
+		
+		// Send out the task event
+		worker.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
 	}
 	
 	/**

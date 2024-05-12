@@ -39,7 +39,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	protected static final double BUILDING_LENGTH = 9D;
 	protected static final double BUILDING_WIDTH = 9D;
 
-	private static final double MSOLS_PER_EXECUTE = 0.1D;
+	protected static final double MSOLS_PER_EXECUTE = 0.1D;
 	
 	protected UnitManager unitManager;
 	protected MarsSurface surface;
@@ -143,7 +143,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	    return building0;
 	}
 
-	protected Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+	@Override
+	public Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
 
 		var evaSpec = simConfig.getBuildingConfiguration().getFunctionSpec("EVA Airlock", FunctionType.EVA);
@@ -181,9 +182,13 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 
 	public Person buildPerson(String name, Settlement settlement) {
+		return buildPerson(name, settlement, JobType.ENGINEER);
+	}
+
+	public Person buildPerson(String name, Settlement settlement, JobType job) {
 		Person person = Person.create(name, settlement, GenderType.MALE)
 				.build();
-		person.setJob(JobType.ENGINEER, "Test");
+		person.setJob(job, "Test");
 		
 		unitManager.addUnit(person);
 		return person;
@@ -261,6 +266,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		
 		return maxCalls - callsLeft;
 	}
+
 	/**
      * Creates a Clock pulse that just contains a MarsClock at a specific time.
      * 

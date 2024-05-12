@@ -78,8 +78,8 @@ import com.mars_sim.core.science.task.StudyFieldSamplesMeta;
 import com.mars_sim.core.structure.task.BudgetResourcesMeta;
 import com.mars_sim.core.structure.task.DigLocalIceMeta;
 import com.mars_sim.core.structure.task.DigLocalRegolithMeta;
-import com.mars_sim.core.structure.task.MaintainVehicleMeta;
 import com.mars_sim.core.vehicle.task.LoadVehicleMeta;
+import com.mars_sim.core.vehicle.task.MaintainVehicleMeta;
 import com.mars_sim.core.vehicle.task.UnloadVehicleMeta;
 
 /**

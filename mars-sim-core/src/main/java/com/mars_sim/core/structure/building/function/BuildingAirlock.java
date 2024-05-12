@@ -44,7 +44,7 @@ public class BuildingAirlock extends Airlock {
 	/** Assume an uniform height of 2 meters in all airlocks. */
 	public static final double HEIGHT = 2; 
 	/** The volume of an airlock [in cubic meters]. */
-	public static final double AIRLOCK_VOLUME_IN_CM = 12D; //3 * 2 * 2;
+	public static final double AIRLOCK_VOLUME_IN_CM = 12D;
 	/** The volume of an airlock [in liter]. */	
 	private static final double AIRLOCK_VOLUME_IN_LITER = AIRLOCK_VOLUME_IN_CM * 1000D; // 12 m^3
 
@@ -211,7 +211,10 @@ public class BuildingAirlock extends Airlock {
 			Settlement settlement = building.getSettlement();
 
             // Upon depressurization, there is heat loss to the Martian air in Heating class
-  			building.getThermalGeneration().getHeating().flagHeatLostViaAirlockOuterDoor(true);
+  			var heating = building.getThermalGeneration();
+			if (heating != null) {
+				heating.getHeating().flagHeatLostViaAirlockOuterDoor(true);
+			}
 
             // 5.0. Recapture air from the airlock before depressurizing it
 			building.getLifeSupport().getAir().releaseOrRecaptureAir(AIRLOCK_VOLUME_IN_LITER, false, building);
@@ -449,22 +452,17 @@ public class BuildingAirlock extends Airlock {
 	public boolean isInZone(Person p, AirlockZone zone) {
     	if (zone == AirlockZone.ZONE_0) {
     		LocalPosition p0 = getOldPos(outsideInteriorDoorMap, p.getIdentifier());
-    		if (p0 == null)
-    			return false;
-    		return true;
+			return (p0 != null);
     	}
 
     	else if (zone == AirlockZone.ZONE_1) {
     		LocalPosition p0 = getOldPos(insideInteriorDoorMap, p.getIdentifier());
-    		if (p0 == null)
-    			return false;
-    		return true;
+			return (p0 != null);
     	}
 
     	else if (zone == AirlockZone.ZONE_2) {
     		for (var i: eva.getActivitySpots()) {
     			if (!i.isEmpty() && i.getID() == p.getIdentifier()) {
-//    	    		logger.fine(p, 30_000L, "possessed " + p.getActivitySpot().getSpotDescription() + " in zone 2."); 
     				return true;
     			}
     		}
@@ -474,16 +472,12 @@ public class BuildingAirlock extends Airlock {
 
     	else if (zone == AirlockZone.ZONE_3) {
     		LocalPosition p0 = getOldPos(insideExteriorDoorMap, p.getIdentifier());
-    		if (p0 == null)
-    			return false;
-    		return true;
+    		return (p0 != null);
     	}
 
     	else if (zone == AirlockZone.ZONE_4) {
     		LocalPosition p0 = getOldPos(outsideExteriorDoorMap, p.getIdentifier());
-    		if (p0 == null)
-    			return false;
-    		return true;
+			return (p0 != null);
     	}
 
 		return false;
@@ -801,23 +795,19 @@ public class BuildingAirlock extends Airlock {
 		return false;
 	}
 	
+	@Override
 	public void destroy() {
 	    building = null;
-//	    airlockInsidePos = null;
 	    airlockInteriorPos = null;
 	    airlockExteriorPos = null;
-
-	    outsideInteriorDoorMap.clear();
-	    outsideExteriorDoorMap.clear();
-
-	    insideInteriorDoorMap.clear();
-	    insideExteriorDoorMap.clear();
 
 	    outsideInteriorDoorMap = null;
 	    outsideExteriorDoorMap = null;
 
 	    insideInteriorDoorMap = null;
 	    insideExteriorDoorMap = null;
+
+		super.destroy();
 	}
 
 }

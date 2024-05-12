@@ -145,6 +145,14 @@ public abstract class EVAOperation extends Task {
 		}
 	}
 
+	/** 
+	 * What phase is executed when the Person is onsite?
+	 * @return onsite phase
+	 */
+	public TaskPhase getOutsidePhase() {
+		return outsidePhase;
+	}
+
 	/**
 	 * Helper method to create an impact that is specific for a TaskPhase
 	 */
