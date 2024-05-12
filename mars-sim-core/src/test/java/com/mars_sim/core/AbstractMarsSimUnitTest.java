@@ -161,6 +161,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		var quartersSpec = simConfig.getBuildingConfiguration().getFunctionSpec("Residential Quarters", FunctionType.LIVING_ACCOMMODATION);
 
 	    building0.addFunction(quartersSpec);
+		buildingManager.refreshFunctionMapForBuilding(building0);
 	    return building0;
 	}
 	
@@ -240,6 +241,27 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 
 	/**
+	 * Executes a Task for a number of steps or phase changes
+	 * 
+	 * @param person
+	 * @param task
+	 * @param maxSteps
+	 * @return The number of calls taken
+	 */
+	protected int executeTaskUntilPhase(Person person, Task task, int maxCalls) {
+		PersonTaskManager tm = person.getMind().getTaskManager();
+		tm.replaceTask(task);
+		
+		var phase = task.getPhase();
+		int callsLeft = maxCalls;
+		while ((callsLeft > 0) && !task.isDone() && phase.equals(task.getPhase())) {
+			tm.executeTask(MSOLS_PER_EXECUTE);
+			callsLeft--;
+		}
+		
+		return maxCalls - callsLeft;
+	}
+	/**
      * Creates a Clock pulse that just contains a MarsClock at a specific time.
      * 
      * @param missionSol Sol in the current mission
@@ -253,8 +275,9 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 
 	public ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol) {
-		sim.getMasterClock().setMarsTime(marsTime);
-        return new ClockPulse(pulseID++, 1D, marsTime, null, newSol, newHalfSol, true);
+		var master = sim.getMasterClock();
+		master.setMarsTime(marsTime);
+        return new ClockPulse(pulseID++, 1D, marsTime, master, newSol, newHalfSol, true);
     }
 
 	/**

@@ -7,9 +7,7 @@
 package com.mars_sim.core.structure.task;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
@@ -22,6 +20,7 @@ import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
+import com.mars_sim.core.structure.task.BudgetResources.ReviewGoal;
 import com.mars_sim.tools.Msg;
 
 /**
@@ -33,25 +32,40 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 	/**
      * Represents a Job to review a specific mission plan
      */
-    private static class BudgetResourcesJob extends SettlementTask {
+    static class BudgetResourcesJob extends SettlementTask {
 
 		private static final long serialVersionUID = 1L;
+		private ReviewGoal goal;
 
-        public BudgetResourcesJob(SettlementMetaTask owner, RatingScore score) {
-			super(owner, "Budget Resources", null, score);
+        public BudgetResourcesJob(SettlementMetaTask owner, RatingScore score, int demand, ReviewGoal goal) {
+			super(owner, getGoalName(goal), null, score);
+			setDemand(demand);
+			this.goal = goal;
         }
 
-        @Override
+        private static String getGoalName(ReviewGoal goal2) {
+			return switch(goal2) {
+				case ACCOM_WATER -> "Budget Accomodation Water";
+				case RESOURCE -> "Budget Essential Resources";
+				case SETTLEMENT_WATER -> "Budget Settlement Water";
+			};
+		}
+
+		@Override
         public Task createTask(Person person) {
-            return new BudgetResources(person);
+            return new BudgetResources(person, goal);
         }
+
+		public ReviewGoal getGoal() {
+			return goal;
+		}
     }
 
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.budgetResources"); //$NON-NLS-1$
         
-    private static final double BASE_SCORE = 20.0;
+    private static final double BASE_SCORE = 75.0;
 
     public BudgetResourcesMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -105,37 +119,28 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask> tasks = new ArrayList<>();
 
-		RatingScore score = new RatingScore();  
-		int levelDiff = 0;
-		
 		if (settlement.canReviewWaterRatio()) {
-			boolean changed = settlement.isWaterRatioChanged();
-			if (changed) {
-				levelDiff = settlement.getWaterRatioDiff();
-				if (levelDiff > 0) { 
-					score.addBase("water.level", levelDiff * BASE_SCORE); 
-				}
+			int levelDiff = settlement.getWaterRatioDiff();
+			if (levelDiff > 0) {
+				RatingScore score = new RatingScore("water.level", levelDiff * BASE_SCORE);
+				tasks.add(new BudgetResourcesJob(this, score, 1, ReviewGoal.SETTLEMENT_WATER));
 			}
 		}
 		
 		int numResource = settlement.getGoodsManager().getResourceReviewDue();
 		if (numResource > 0) { 
-			score.addBase("resource", numResource * BASE_SCORE); 
+			RatingScore score = new RatingScore("resource", BASE_SCORE); 
+			tasks.add(new BudgetResourcesJob(this, score, numResource, ReviewGoal.RESOURCE));
 		}
 		
 		int numAcc = getAccommodationNeedingWaterReview(settlement, -1).size();
-
 		if (numAcc > 0) {
-			score.addBase("waste.water", numAcc * BASE_SCORE);             
+			RatingScore score = new RatingScore("waste.water", BASE_SCORE);  
+			tasks.add(new BudgetResourcesJob(this, score, numAcc, ReviewGoal.ACCOM_WATER));
+           
 		}
-		
-		if (levelDiff == 0 && numResource == 0 && numAcc == 0) {
-			return Collections.emptyList();
-		}
-		else {
-			tasks.add(new BudgetResourcesJob(this, score));
-			return tasks;
-		}
+
+		return tasks;
     }
 
 		
@@ -147,13 +152,13 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 	 */
 	public static List<Building> getAccommodationNeedingWaterReview(Settlement settlement,
 				int targetZone) {
-		return settlement.getBuildingManager().getBuildings(FunctionType.LIVING_ACCOMMODATION)
+		return settlement.getBuildingManager().getBuildingSet(FunctionType.LIVING_ACCOMMODATION)
 					.stream()
 					.filter(b -> (targetZone < 0) || (b.getZone() == targetZone))
 					.filter(b -> !b.getMalfunctionManager().hasMalfunction()
 							// True if this quarter needs a review
 							&& b.getLivingAccommodation().canReviewWaterRatio())
-					.collect(Collectors.toList());
+					.toList();
 	}
 	
 }

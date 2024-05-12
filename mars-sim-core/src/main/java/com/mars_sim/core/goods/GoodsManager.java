@@ -91,6 +91,31 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
+	 * Scheduled event handler for triggering the next reviewof essential resources
+	 */
+	private class ResourcesReset implements ScheduledEventHandler {
+		// Duration to between reviewing essential resources
+		private static final int REVIEW_PERIOD = 2000;
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public String getEventDescription() {
+			return "Start review period of essential resources";
+		}
+
+		/**
+		 * Reset teh review
+		 * 
+		 * @param now Current time not used.
+		 */
+		@Override
+		public int execute(MarsTime now) {
+			resetEssentialsReview();
+			return REVIEW_PERIOD;
+		}	
+	}
+
+	/**
 	 * Types of commerce factor
 	 */
 	public enum CommerceType {
@@ -169,14 +194,17 @@ public class GoodsManager implements Serializable {
 	public GoodsManager(Settlement settlement) {
 		this.settlement = settlement;
 
-		int sunRiseOffSet = MarsSurface.getTimeOffset(settlement.getCoordinates());
+		int startOfDayOffset = MarsSurface.getTimeOffset(settlement.getCoordinates());
 		
-		// Schedule an event to recalculate shopping lists just after sunrise
-		settlement.getFutureManager().addEvent(sunRiseOffSet + 10, new TradeListUpdater());
+		// Schedule an event to recalculate shopping lists just after start fo day
+		settlement.getFutureManager().addEvent(startOfDayOffset + 10, new TradeListUpdater());
 		
 		// Future event to update Goods values; randomise first triger
 		settlement.getFutureManager().addEvent(RandomUtil.getRandomInt(1, 50), new GoodsUpdater());
 		populateGoodsValues();
+
+		// Schedule reseting the first review cycle during early morning
+		settlement.getFutureManager().addEvent(startOfDayOffset + 15, new ResourcesReset());
 	}
 
 	/**
@@ -223,7 +251,6 @@ public class GoodsManager implements Serializable {
 	 * Updates the good values for all good.
 	 */
 	public void updateGoodValues() {
-		reviewedEssentials.clear();
 
  		// Update the goods value gradually with the use of buffers
 		for(Good g: GoodsUtil.getGoodsList()) {
@@ -684,11 +711,18 @@ public class GoodsManager implements Serializable {
 	}
 	
 	/**
+	 * Reset the reviews essential resources
+	 */
+	public void resetEssentialsReview() {
+		reviewedEssentials.clear();
+	}
+
+	/**
 	 * How many resources need reviewing?
 	 * @return
 	 */
 	public int getResourceReviewDue() {
-		return getResourceForReview().size();
+		return resLimits.size() - reviewedEssentials.size();
 	}
 	
 	private Set<Integer> getResourceForReview() {

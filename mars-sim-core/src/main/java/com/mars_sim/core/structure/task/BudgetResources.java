@@ -16,6 +16,7 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.Administration;
@@ -30,6 +31,10 @@ import com.mars_sim.tools.util.RandomUtil;
  */
 public class BudgetResources extends Task {
 
+	public static final double REVIEW_PERC = .9;
+
+	public enum ReviewGoal {RESOURCE, SETTLEMENT_WATER, ACCOM_WATER}
+	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
@@ -47,8 +52,19 @@ public class BudgetResources extends Task {
 
 	// Static members	
 	private static final int STANDARD_DURATION = 40;
+
+	// Experience modifier is based on a mixture of abilities
 	private static final ExperienceImpact IMPACT = new ExperienceImpact(25D, NaturalAttributeType.EXPERIENCE_APTITUDE,
-									false, -0.1D, Set.of(SkillType.MANAGEMENT));
+									false, -0.1D, Set.of(SkillType.MANAGEMENT)) {
+										@Override
+										protected double getExperienceModifier(Worker worker) {
+											int disciplineAptitude = worker.getNaturalAttributeManager().getAttribute(
+												NaturalAttributeType.DISCIPLINE);
+											int leadershipAptitude = worker.getNaturalAttributeManager().getAttribute(
+												NaturalAttributeType.LEADERSHIP);
+											return (disciplineAptitude + leadershipAptitude - 100D) / 100D;
+										}
+									};
 	
 	// Data members
 	/** The administration building the person is using. */
@@ -56,7 +72,7 @@ public class BudgetResources extends Task {
 	
 	private Building building;
 	
-	private int taskNum;
+	private ReviewGoal taskNum;
 	
 	private int settlementResource;
 
@@ -64,26 +80,17 @@ public class BudgetResources extends Task {
 	 * Constructor. This is an effort-driven task.
 	 * 
 	 * @param person the person performing the task.
-	 * @param target Mission planning to review
+	 * @param goal Optional defintionof the goal
 	 */
-	public BudgetResources(Person person) {
+	public BudgetResources(Person person, ReviewGoal goal) {
 		// Use Task constructor.
 		super(NAME, person, false, IMPACT, STANDARD_DURATION);
 				
 		if (person.isInSettlement()) {
 		
-			boolean result = selectTask(0);
-			
-			if (!result) {
-				result = selectTask(1);
-			}
-			
-			if (!result) {
-				result = selectTask(2);
-			}
-			
-			if (!result) {
+			if (!selectTask(goal)) {
 				endTask();
+				return;
 			}
 			
 			int skill = getEffectiveSkillLevel();
@@ -124,30 +131,30 @@ public class BudgetResources extends Task {
 		}
 
 		// Initialize phase
-		addPhase(REVIEWING);
-		addPhase(APPROVING);
-		
 		setPhase(REVIEWING);
 	}
 
-	private boolean selectTask(int i) {
-		if (i == 0) {
-			return budgetSettlementResource();
+	private boolean selectTask(ReviewGoal goal) {
+		switch(goal) {
+			case ACCOM_WATER:
+				return budgetAccommodationWater();
+			case RESOURCE:
+				return budgetSettlementResource();
+			case SETTLEMENT_WATER:
+				return budgetSettlementWater();
+			default:
+				// Evaluate all 3 one by one
+				return (budgetSettlementResource()
+				|| budgetSettlementWater()
+				|| budgetAccommodationWater());
 		}
-		else if (i == 1) {
-			return budgetSettlementWater();
-		}
-		else if (i == 2) {
-			return budgetAccommodationWater();
-		}
-		return false;
 	}
 	
 	
 	private boolean budgetSettlementResource() {
 		settlementResource = person.getAssociatedSettlement().getGoodsManager().reserveResourceReview();
 		if (settlementResource != -1) {
-			taskNum = 1;
+			taskNum = ReviewGoal.RESOURCE;
 			return true;
 		}
 		
@@ -159,7 +166,7 @@ public class BudgetResources extends Task {
 		int levelDiff = person.getAssociatedSettlement().getWaterRatioDiff();
 		if (levelDiff > 0) {
 			
-			taskNum = 2;
+			taskNum = ReviewGoal.SETTLEMENT_WATER;
 			
 			// Set the flag to false for future review
 			person.getAssociatedSettlement().setReviewWaterRatio(false);
@@ -180,7 +187,7 @@ public class BudgetResources extends Task {
 					
 		if (building != null) {
 			
-			taskNum = 0;
+			taskNum = ReviewGoal.ACCOM_WATER;
 			// Inform others that this quarters' water ratio review flag is locked
 			// and not available for review
 			building.getLivingAccommodation().lockWaterRatioReview();
@@ -212,9 +219,9 @@ public class BudgetResources extends Task {
 	 */
 	private double reviewingPhase(double time) {
 			
-		if (getTimeCompleted() > .9 * getDuration()) {
+		if (getTimeCompleted() > REVIEW_PERC * getDuration()) {
 			switch(taskNum) {
-				case 0: {
+				case ACCOM_WATER: {
 					LivingAccommodation quarters = building.getLivingAccommodation();	
 					// Calculate the new water ration level
 					double[] data = quarters.calculateWaterLevel(time);
@@ -223,18 +230,15 @@ public class BudgetResources extends Task {
 						+ "'s water ration level.  water: " + Math.round(data[0]*10.0)/10.0
 							+ "  Waste water: " + Math.round(data[1]*10.0)/10.0);
 				} break;
-				case 1: {
+				case RESOURCE: {
 					person.getAssociatedSettlement().getGoodsManager().checkResourceDemand(settlementResource, time);
 				} break;
-				case 2: {
+				case SETTLEMENT_WATER: {
 					if (person.getAssociatedSettlement().isWaterRatioChanged()) {
 						// Make the new water ratio the same as the cache
 						person.getAssociatedSettlement().setWaterRatio();
 					}
 				} break;
-				default:
-					logger.warning(person, "Cannot process taskNum " + taskNum);
-					endTask();
 			}
 
 			// Add experience
@@ -256,20 +260,22 @@ public class BudgetResources extends Task {
 	 */
 	private double approvingPhase(double time) {
 			
-		if (taskNum == 0) {
-			LivingAccommodation quarters = building.getLivingAccommodation();	
-			
-			// Use water and produce waste water
-			quarters.generateWaste(time);
-			
-			logger.info(worker, 0, "New water waste measures approved for " 
-					+ building.getName() + ".");
-		}
-		else if (taskNum == 1) {
-			logger.info(worker, 0, "New resource demand measures approved.");
-		}
-		else if (taskNum == 2) {
-			logger.info(worker, 0, "New water ratio measures approved.");
+		switch(taskNum) {
+			case ACCOM_WATER:
+				LivingAccommodation quarters = building.getLivingAccommodation();	
+				
+				// Use water and produce waste water
+				quarters.generateWaste(time);
+				
+				logger.info(worker, 0, "New water waste measures approved for " 
+						+ building.getName() + ".");
+				break;
+			case RESOURCE:
+				logger.info(worker, 0, "New resource demand measures approved.");
+				break;
+			case SETTLEMENT_WATER:
+				logger.info(worker, 0, "New water ratio measures approved.");
+				break;
 		}
 			
 		// Add experience
@@ -279,18 +285,6 @@ public class BudgetResources extends Task {
 		endTask();
 		
 		return 0;
-	}
-
-	@Override
-	protected void addExperience(double time) {
-        double newPoints = time / 20D;
-        int disciplineAptitude = worker.getNaturalAttributeManager().getAttribute(
-                NaturalAttributeType.DISCIPLINE);
-        int leadershipAptitude = worker.getNaturalAttributeManager().getAttribute(
-                NaturalAttributeType.LEADERSHIP);
-        newPoints += newPoints * (disciplineAptitude + leadershipAptitude - 100D) / 100D;
-        newPoints *= getTeachingExperienceModifier();
-        worker.getSkillManager().addExperience(SkillType.MANAGEMENT, newPoints, time);
 	}
 
 	/**

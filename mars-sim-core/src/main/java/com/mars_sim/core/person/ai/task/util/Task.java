@@ -807,7 +807,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return Impact assessment of doing this Task
 	 */
 	private ExperienceImpact getImpact() {
-		var result = getPhase().getImpact();
+		var result = (phase != null ? phase.getImpact() : null);
 		if (result == null) {
 			// This is only needed until all subclasses define an Impac tint eh constructor
 			if (impact == null) {
@@ -933,8 +933,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected void addExperience(double time) {
 		if (time > 0) {
-			getImpact().apply(worker, time,  effectiveSkillLevel * SKILL_STRESS_MODIFIER,
-							getTeachingExperienceModifier());
+			getImpact().apply(worker, time,  getTeachingExperienceModifier(),
+							effectiveSkillLevel * SKILL_STRESS_MODIFIER	);
 		}
 	}
 
