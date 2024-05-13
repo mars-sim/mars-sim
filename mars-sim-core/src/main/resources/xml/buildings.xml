@@ -1267,37 +1267,37 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
 				<!-- 5 processes for breaking down regolith -->		
-				<process-engine name="convert regolith to ores with sand" number-modules="20"/>
-				<process-engine name="extract nitrogen compounds from regolith" number-modules="10"/>
-				<process-engine name="process regolith-B rich in poly-hydrated sulfate" number-modules="10"/> 
-				<process-engine name="process regolith-C rich in phyllo-silicate" number-modules="10"/>
-				<process-engine name="process regolith-D rich in basaltic" number-modules="10"/>
+				<process-engine name="convert regolith to ores with sand" number-modules="25"/>
+				<process-engine name="extract nitrogen compounds from regolith" number-modules="15"/>
+				<process-engine name="process regolith-B rich in poly-hydrated sulfate" number-modules="15"/> 
+				<process-engine name="process regolith-C rich in phyllo-silicate" number-modules="15"/>
+				<process-engine name="process regolith-D rich in basaltic" number-modules="15"/>
 				
 				<!-- 10 processes for breaking down minerals -->
-				<process-engine name="do chalcopyrite smelting" number-modules="3"/>
+				<process-engine name="do chalcopyrite smelting" number-modules="5"/>
 				<!-- https://geologyscience.com/minerals/goethite/ -->
-				<process-engine name="do goethite smelting" number-modules="3"/>				
+				<process-engine name="do goethite smelting" number-modules="5"/>				
 				<!-- https://geologyscience.com/minerals/hematite/ -->
-				<process-engine name="do hematite smelting" number-modules="3"/>
-				<process-engine name="do kamacite smelting" number-modules="3"/> 
-				<process-engine name="do magnesite smelting" number-modules="3"/>								
-				<process-engine name="do magnetite smelting" number-modules="3"/>
-				<process-engine name="do malachite smelting" number-modules="3"/>				
-				<process-engine name="do olivine smelting" number-modules="3"/>				
-				<process-engine name="do taenite smelting" number-modules="3"/>
-				<process-engine name="do sylvite smelting" number-modules="3"/>
+				<process-engine name="do hematite smelting" number-modules="5"/>
+				<process-engine name="do kamacite smelting" number-modules="5"/> 
+				<process-engine name="do magnesite smelting" number-modules="5"/>								
+				<process-engine name="do magnetite smelting" number-modules="5"/>
+				<process-engine name="do malachite smelting" number-modules="5"/>				
+				<process-engine name="do olivine smelting" number-modules="5"/>				
+				<process-engine name="do taenite smelting" number-modules="5"/>
+				<process-engine name="do sylvite smelting" number-modules="5"/>
 								
 				<!-- 9 processes for extracting ore deposits -->
-				<process-engine name="extract minerals from basaltic deposits" number-modules="3"/>
-				<process-engine name="extract minerals from smectite deposits" number-modules="3"/>
-				<process-engine name="extract minerals from allophane deposits" number-modules="3"/>
-				<process-engine name="extract minerals from akaganeite deposits" number-modules="3"/> 
-				<process-engine name="extract minerals from bassanite deposits" number-modules="3"/> 
-				<process-engine name="extract minerals from sand" number-modules="5"/>
-				<process-engine name="reduce gypsum to calcium carbonate with carbon" number-modules="3"/>
-				<process-engine name="reduce gypsum to calcium carbonate with carbon monoxide" number-modules="3"/>
-				<process-engine name="reduce gypsum to calcium carbonate with hydrogen" number-modules="3"/>
-				<process-engine name="Make gypsum plaster via calcination" number-modules="3"/>							
+				<process-engine name="extract minerals from basaltic deposits" number-modules="5"/>
+				<process-engine name="extract minerals from smectite deposits" number-modules="5"/>
+				<process-engine name="extract minerals from allophane deposits" number-modules="5"/>
+				<process-engine name="extract minerals from akaganeite deposits" number-modules="5"/> 
+				<process-engine name="extract minerals from bassanite deposits" number-modules="5"/> 
+				<process-engine name="extract minerals from sand" number-modules="10"/>
+				<process-engine name="reduce gypsum to calcium carbonate with carbon" number-modules="5"/>
+				<process-engine name="reduce gypsum to calcium carbonate with carbon monoxide" number-modules="5"/>
+				<process-engine name="reduce gypsum to calcium carbonate with hydrogen" number-modules="5"/>
+				<process-engine name="Make gypsum plaster via calcination" number-modules="5"/>							
 			</resource-processing>
 
 			<storage capacity="300000">
