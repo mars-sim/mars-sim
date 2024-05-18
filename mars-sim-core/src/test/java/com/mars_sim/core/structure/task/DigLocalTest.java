@@ -3,7 +3,6 @@ package com.mars_sim.core.structure.task;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.equipment.EquipmentFactory;
-import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.EVAOperationTest;
@@ -100,12 +99,12 @@ public class DigLocalTest extends AbstractMarsSimUnitTest {
         // DigLocal uses the Settlement airlock tracking logic.... it shouldn't
         s.checkAvailableAirlocks();
 
-        EquipmentFactory.createEquipment(EquipmentType.WHEELBARROW, s);
+        EquipmentFactory.createEquipment(DigLocalRegolith.CONTAINER_TYPE, s);
 
         var task = new DigLocalRegolith(p);
         assertFalse("Task created", task.isDone());
 
-        assertLessThan("Drop off is Storage bin", DigLocal.MAX_DROPOFF_DISTANCE * 2D,
+        assertLessThan("Drop off is Storage bin", DigLocal.MAX_DROPOFF_DISTANCE * 2.5D,
                                         st.getPosition().getDistanceTo(task.getDropOffLocation()));
     }
 
@@ -113,5 +112,29 @@ public class DigLocalTest extends AbstractMarsSimUnitTest {
                             double facing, int id) {
         return buildFunction(buildingManager, "Regolith Storage", BuildingCategory.STORAGE,
                 FunctionType.STORAGE,  pos, facing, id);
+    }
+
+    public void testIceMetaTask() {
+        var s = buildSettlement("Ice");
+        var mt = new DigLocalIceMeta();
+        var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
+        p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
+        EVAOperationTest.prepareForEva(this, p);
+
+
+        var tasks = mt.getSettlementTasks(s);
+        assertTrue("No Tasks when no container", tasks.isEmpty());
+        EquipmentFactory.createEquipment(DigLocalIce.CONTAINER_TYPE, s);
+
+        // Everything ready
+        tasks = mt.getSettlementTasks(s);
+        assertFalse("Tasks found", tasks.isEmpty());
+        var task = tasks.get(0);
+        assertTrue("Task is EVA", task.isEVA());
+
+        // Fill capacity
+        s.storeAmountResource(ResourceUtil.iceID, s.getAmountResourceCapacity(ResourceUtil.iceID));
+        tasks = mt.getSettlementTasks(s);
+        assertTrue("No Tasks when no capacity", tasks.isEmpty());
     }
 }

@@ -64,6 +64,7 @@ public abstract class DigLocalMeta extends MetaTask
 	private static final int MAX_BASE = 1000;
 
 	private static final SettlementParameters SETTLE_CAT = SettlementParameters.INSTANCE;
+    private static final double MIN_CAPACITY = 0.25D; // Minumum capcity to trigger digging
 
 	private EquipmentType containerType;
 
@@ -118,8 +119,11 @@ public abstract class DigLocalMeta extends MetaTask
         // Should use the demand & resources stored to influence the score. 50% capacity is
         // the unmodified baseline
         var capacity = (settlement.getAmountResourceRemainingCapacity(resourceId)
-                                    / settlement.getAmountResourceCapacity(resourceId)) + 0.5D;
-        result.addModifier("capacity", capacity);
+                                    / settlement.getAmountResourceCapacity(resourceId));
+        if (capacity <= MIN_CAPACITY) {
+            return Collections.emptyList();
+        }
+        result.addModifier("capacity", 1 + (capacity - MIN_CAPACITY));
 
         List<SettlementTask> resultList = new ArrayList<>();
         resultList.add(new DigLocalTaskJob(this, result, maxEVA));
