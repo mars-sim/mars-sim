@@ -44,7 +44,6 @@ import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.SettlementTemplate;
 import com.mars_sim.core.structure.building.connection.BuildingConnector;
 import com.mars_sim.core.structure.building.connection.BuildingConnectorManager;
 import com.mars_sim.core.structure.building.connection.InsideBuildingPath;
@@ -1281,52 +1280,6 @@ public class BuildingManager implements Serializable {
 	public static Set<Building> getNonMalfunctioningBuildings(Set<Building> buildingList) {
 		return buildingList.stream().filter(b -> !b.getMalfunctionManager().hasMalfunction())
 				.collect(Collectors.toSet());
-	}
-
-	/**
-	 * Gets a list of buildings that have a valid interior walking path from the
-	 * person's current building.
-	 *
-	 * @param person       the person.
-	 * @param buildingList initial list of buildings.
-	 * @return list of buildings with valid walking path.
-	 */
-	public static Set<Building> getWalkableBuildings(Worker worker, Set<Building> buildingList) {
-		Set<Building> result = new UnitSet<>();
-
-		if (worker instanceof Person person) {
-			Building currentBuilding = BuildingManager.getBuilding(person);
-			BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
-
-			if (currentBuilding != null) {
-				
-				for (Building building : buildingList) {
-					InsideBuildingPath validPath = connectorManager.determineShortestPath(currentBuilding,
-							currentBuilding.getPosition(), building, building.getPosition());
-
-					if (validPath != null) {
-						result.add(building);
-					}
-				}
-			}
-		} else {
-			Robot robot = (Robot) worker;
-			Building currentBuilding = BuildingManager.getBuilding(robot);
-			BuildingConnectorManager connectorManager = robot.getSettlement().getBuildingConnectorManager();
-
-			if (currentBuilding != null) {
-				
-				for (Building building : buildingList) {
-					InsideBuildingPath validPath = connectorManager.determineShortestPath(currentBuilding,
-							currentBuilding.getPosition(), building, building.getPosition());
-
-					if (validPath != null) {
-						result.add(building);
-					}
-				}
-			}
-		}
-		return result;
 	}
 
 	/**

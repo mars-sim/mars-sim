@@ -7,6 +7,7 @@
 package com.mars_sim.core.person.ai.task;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -68,7 +69,7 @@ public abstract class EVAOperation extends Task {
 	private static final ExperienceImpact IMPACT = createPhaseImpact();
 	
 	/** Task phases. */
-	protected static final TaskPhase WALK_TO_OUTSIDE_SITE = new TaskPhase(
+	public static final TaskPhase WALK_TO_OUTSIDE_SITE = new TaskPhase(
 			Msg.getString("Task.phase.walkToOutsideSite")); //$NON-NLS-1$
 	protected static final TaskPhase WALK_BACK_INSIDE = new TaskPhase(
 			Msg.getString("Task.phase.walkBackInside")); //$NON-NLS-1$
@@ -159,9 +160,7 @@ public abstract class EVAOperation extends Task {
 	protected static ExperienceImpact createPhaseImpact(SkillType... extraSkills) {
 		Set<SkillType> skills = new HashSet<>();
 		skills.add(SkillType.EVA_OPERATIONS);
-		for(var s : extraSkills) {
-			skills.add(s);
-		}
+		skills.addAll(Arrays.asList(extraSkills));
 		return new ExperienceImpact(100D, NaturalAttributeType.EXPERIENCE_APTITUDE, true, 0.05D, 
 					skills);
 
@@ -255,7 +254,11 @@ public abstract class EVAOperation extends Task {
 	 */
 	@Override
 	public Set<SkillType> getAssociatedSkills() {
-		return outsidePhase.getImpact().getImpactedSkills();
+		var i = outsidePhase.getImpact();
+		if (i != null) {
+			return	i.getImpactedSkills();
+		}
+		return super.getAssociatedSkills();
 	}
 
 	/**
@@ -445,7 +448,7 @@ public abstract class EVAOperation extends Task {
 		
         // Check if there is a reason to cut short and return.
 		if (shouldEndEVAOperation()) {
-			checkLocation("No sunlight.");
+			checkLocation("End EVA early");
 			return time;
 		}
 

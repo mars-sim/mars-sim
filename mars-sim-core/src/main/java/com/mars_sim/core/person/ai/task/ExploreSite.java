@@ -128,7 +128,7 @@ public class ExploreSite extends EVAOperation {
 				return false;
 
 			// Check if person's medical condition will not allow task.
-            return !(person.getPerformanceRating() < .2D);
+            return (person.getPerformanceRating() >= .2D);
 		}
 
 		return true;
@@ -207,11 +207,10 @@ public class ExploreSite extends EVAOperation {
 	 * @throws Exception if error collecting rock samples.
 	 */
 	private void collectRocks(double time) {
-  double chance = 0.5;
 		if (hasSpecimenContainer()) {
 			
 			double siteTime = ((Exploration)person.getMission()).getSiteTime();
-			chance = numSamplesCollected * siteTime / 8000.0;
+			double chance = numSamplesCollected * siteTime / 8000.0;
 			
 			double probability = (1 + site.getNumEstimationImprovement()) * chance * time 
 					* (getEffectiveSkillLevel() + person.getSkillManager().getSkillLevel(SkillType.PROSPECTING)) / 2D;
@@ -285,9 +284,10 @@ public class ExploreSite extends EVAOperation {
 		MineralMap mineralMap = surfaceFeatures.getMineralMap();
 		Map<String, Double> estimatedMineralConcentrations = site.getEstimatedMineralConcentrations();
 
-		for (String mineralType : estimatedMineralConcentrations.keySet()) {
+		for (var entry : estimatedMineralConcentrations.entrySet()) {
+			var mineralType = entry.getKey();
 			double conc = mineralMap.getMineralConcentration(mineralType, site.getLocation());			
-			double estimate = estimatedMineralConcentrations.get(mineralType);
+			double estimate = entry.getValue();
 			double diff = Math.abs(conc - estimate);
 			
 			double certainty = site.getDegreeCertainty(mineralType);
@@ -297,11 +297,9 @@ public class ExploreSite extends EVAOperation {
 			double rand = RandomUtil.getRandomDouble(1D * skill * imp / 50 * variance);
 			if (rand > diff * 1.25)
 				rand = diff * 1.25;
-			if (estimate == conc)
-				;// do nothing;
-			else if (estimate < conc)
+			if (estimate < conc)
 				estimate += rand;
-			else
+			else if (estimate > conc)
 				estimate -= rand;
 
 			estimatedMineralConcentrations.put(mineralType, estimate);
@@ -328,8 +326,6 @@ public class ExploreSite extends EVAOperation {
 	private boolean takeSpecimenContainer() {
 		
 		Container container = rover.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
-//		Container container = ContainerUtil.findLeastFullContainer(rover, EquipmentType.SPECIMEN_BOX, ROCK_SAMPLES_ID);
-
 		if (container != null) {
 			return container.transfer(person);
 		}
@@ -345,5 +341,6 @@ public class ExploreSite extends EVAOperation {
 			// Task may end early before a Rover is selected
 			returnEquipmentToVehicle(rover);
 		}
+		super.clearDown();
 	}
 }

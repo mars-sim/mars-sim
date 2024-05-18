@@ -141,7 +141,7 @@ public final class SettlementBuilder {
 		outputTimecheck(settlement, watch, "Create People");
 		
 		// Manually add job positions
-		settlement.tuneJobDeficit();
+		JobUtil.tuneJobDeficit(settlement);
 		outputTimecheck(settlement, watch, "Tune Job");
 
 		// Create pre-configured robots as stated in Settlement template

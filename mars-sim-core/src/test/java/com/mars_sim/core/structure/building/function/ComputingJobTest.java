@@ -5,7 +5,6 @@ import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.MockBuilding;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 public class ComputingJobTest extends AbstractMarsSimUnitTest {
@@ -26,14 +25,8 @@ public class ComputingJobTest extends AbstractMarsSimUnitTest {
     }
 
     private Building buildCompute(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
-		MockBuilding building0 = buildBuilding(buildingManager, "Lander Hab", BuildingCategory.LABORATORY,  pos, facing, id);
-
-		var spec = simConfig.getBuildingConfiguration().getFunctionSpec("Server Farm", FunctionType.COMPUTATION);
-
-	    building0.addFunction(spec);
-
-        buildingManager.addMockBuilding(building0);
-	    return building0;
+        return buildFunction(buildingManager, "Server Farm", BuildingCategory.LABORATORY,
+                        FunctionType.COMPUTATION,  pos, facing, id);
 	}
 
     public void testCompute() {

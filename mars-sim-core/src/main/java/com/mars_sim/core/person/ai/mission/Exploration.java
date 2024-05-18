@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.environment.ExploredLocation;
-import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;

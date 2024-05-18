@@ -9,7 +9,6 @@ package com.mars_sim.core.structure.task;
 import java.util.Collections;
 import java.util.List;
 
-import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -30,7 +29,7 @@ public class DigLocalIceMeta extends DigLocalMeta {
 
     
     public DigLocalIceMeta() {
-		super(NAME, EquipmentType.BAG);
+		super(NAME, DigLocalIce.CONTAINER_TYPE);
 	}
 
     @Override

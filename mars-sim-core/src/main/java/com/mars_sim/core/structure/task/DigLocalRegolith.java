@@ -26,13 +26,14 @@ extends DigLocal {
 
 	/** Simple Task name */
 	public static final String SIMPLE_NAME = DigLocalRegolith.class.getSimpleName();
+	static final EquipmentType CONTAINER_TYPE = EquipmentType.WHEELBARROW;
 	
 	/** Task name */
     public static final String NAME = Msg.getString(
             "Task.description.digLocalRegolith"); //$NON-NLS-1$
 
     /** Task phases. */
-    private static final TaskPhase COLLECT_REGOLITH = new TaskPhase(Msg.getString(
+    static final TaskPhase COLLECT_REGOLITH = new TaskPhase(Msg.getString(
             "Task.phase.collectRegolith"),
 			createPhaseImpact(SkillType.PROSPECTING, SkillType.AREOLOGY));
 
@@ -41,10 +42,10 @@ extends DigLocal {
 	 * 
 	 * @param person the person performing the task.
 	 */
-	public DigLocalRegolith(Person person) {
+	DigLocalRegolith(Person person) {
         // Use EVAOperation constructor.
         super(NAME, COLLECT_REGOLITH, ResourceUtil.regolithID, 
-        	  EquipmentType.WHEELBARROW, person, 150);
+        	  CONTAINER_TYPE, person, 150);
         if (!isDone()) {
         	setCollectionRate(person.getAssociatedSettlement().getRegolithCollectionRate());
         }

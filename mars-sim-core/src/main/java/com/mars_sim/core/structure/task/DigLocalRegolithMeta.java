@@ -9,7 +9,6 @@ package com.mars_sim.core.structure.task;
 import java.util.Collections;
 import java.util.List;
 
-import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -28,7 +27,7 @@ public class DigLocalRegolithMeta extends DigLocalMeta {
             "Task.description.digLocalRegolith"); //$NON-NLS-1$
     
     public DigLocalRegolithMeta() {
-		super(NAME, EquipmentType.BAG);
+		super(NAME, DigLocalRegolith.CONTAINER_TYPE);
 	}
 
     @Override

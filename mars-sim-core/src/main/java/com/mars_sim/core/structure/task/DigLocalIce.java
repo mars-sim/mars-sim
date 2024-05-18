@@ -26,9 +26,11 @@ extends DigLocal {
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.digLocalIce"); //$NON-NLS-1$
+	
+	static final EquipmentType CONTAINER_TYPE = EquipmentType.BAG;
 
     /** Task phases. */
-    private static final TaskPhase COLLECT_ICE = new TaskPhase(Msg.getString(
+    static final TaskPhase COLLECT_ICE = new TaskPhase(Msg.getString(
             "Task.phase.collectIce"), createPhaseImpact(SkillType.PROSPECTING, SkillType.AREOLOGY));
 
 
@@ -40,7 +42,7 @@ extends DigLocal {
 	 */
 	public DigLocalIce(Person person) {
         // Use EVAOperation constructor.
-        super(NAME, COLLECT_ICE, ResourceUtil.iceID, EquipmentType.BAG, person, 150); 
+        super(NAME, COLLECT_ICE, ResourceUtil.iceID, CONTAINER_TYPE, person, 150); 
         if (!isDone()) {
         	setCollectionRate(person.getAssociatedSettlement().getIceCollectionRate());
         }

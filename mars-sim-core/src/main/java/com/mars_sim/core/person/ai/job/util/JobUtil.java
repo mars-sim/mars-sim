@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.Architect;
 import com.mars_sim.core.person.ai.job.Areologist;
@@ -44,6 +43,7 @@ import com.mars_sim.core.robot.ai.job.Makerbot;
 import com.mars_sim.core.robot.ai.job.Medicbot;
 import com.mars_sim.core.robot.ai.job.Repairbot;
 import com.mars_sim.core.robot.ai.job.RobotJob;
+import com.mars_sim.core.structure.ChainOfCommand;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -274,9 +274,7 @@ public final class JobUtil {
 	 * @param isHomeSettlement is this the person's home settlement?
 	 * @return job prospect value (0.0 min)
 	 */
-	public static double getJobProspect(Unit unit, JobType job, Settlement settlement, boolean isHomeSettlement) {
-		Person person = (Person) unit;
-
+	public static double getJobProspect(Person person, JobType job, Settlement settlement, boolean isHomeSettlement) {
 		Job jobSpec = jobSpecs.get(job);
 		double jobCapability = jobSpec.getCapability(person);
 		
@@ -315,12 +313,68 @@ public final class JobUtil {
 	 * @return number
 	 */
 	public static int numJobs(JobType job, Settlement settlement) {
-		int num = 0;
-		for (Person p : settlement.getAllAssociatedPeople()) {
-			if (p.getMind().getJob() == job) {
-				num++;
+		return (int) settlement.getAllAssociatedPeople().stream()
+					.filter(p -> p.getMind().getJob() == job)
+					.count();
+	}
+
+	/**
+	 * Assigns the best candidate to a job position.
+	 * 
+	 * @param settlement
+	 * @param job
+	 */
+	private static void assignBestCandidate(Settlement settlement, JobType job) {
+		Person p0 = findBestFit(settlement, job);
+		// Designate a specific job to a person
+		if (p0 != null) {
+			p0.getMind().assignJob(job, true, JobUtil.SETTLEMENT, AssignmentType.APPROVED, JobUtil.SETTLEMENT);
+		}
+	}
+
+	/**
+	 * Tunes up the settlement with unique job position.
+	 */
+	public static void tuneJobDeficit(Settlement settlement) {
+		int numEngs = numJobs(JobType.ENGINEER, settlement);
+		int numTechs = numJobs(JobType.TECHNICIAN, settlement);
+
+		if ((numEngs == 0) || (numTechs == 0)) {
+			Person bestEng = findBestFit(settlement, JobType.ENGINEER);
+			Person bestTech = findBestFit(settlement, JobType.TECHNICIAN);
+
+			// Make sure the best person is not the only one in the other Job
+			if ((bestEng != null) && bestEng.equals(bestTech)) {
+				// Can only do one so job
+				if (numEngs == 0) {
+					// Keep the bestEng find
+					bestTech = null;
+				}
+				else {
+					// Keep best tech Loose the eng
+					bestEng = null;
+				}
+			}
+			if ((numEngs == 0) && (bestEng != null)) {
+				bestEng.getMind().assignJob(JobType.ENGINEER, true,
+						JobUtil.SETTLEMENT,
+						AssignmentType.APPROVED,
+						JobUtil.SETTLEMENT);
+			}
+			if ((numTechs == 0) && (bestTech != null)) {
+				bestTech.getMind().assignJob(JobType.TECHNICIAN, true,
+						JobUtil.SETTLEMENT,
+						AssignmentType.APPROVED,
+						JobUtil.SETTLEMENT);
 			}
 		}
-		return num;
+
+
+		if (settlement.getNumCitizens() > ChainOfCommand.POPULATION_WITH_CHIEFS) {
+			int numWeatherman = numJobs(JobType.METEOROLOGIST, settlement);
+			if (numWeatherman == 0) {
+				assignBestCandidate(settlement, JobType.METEOROLOGIST);
+			}
+		}
 	}
 }

@@ -88,17 +88,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 
 	protected VehicleGarage buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
-	
-		// Garage has to have a valid bulding type
-		MockBuilding building0 = buildBuilding(buildingManager, "Garage", BuildingCategory.VEHICLE,
-									pos, facing, id);
-
-		var spec = simConfig.getBuildingConfiguration().getFunctionSpec(building0.getBuildingType(),
-																FunctionType.VEHICLE_MAINTENANCE);
-	    building0.addFunction(spec);
-
-
-		buildingManager.refreshFunctionMapForBuilding(building0);
+		var building0 = buildFunction(buildingManager, "Garage", BuildingCategory.VEHICLE,
+									FunctionType.VEHICLE_MAINTENANCE,  pos, facing, id);
 	    
 	    return building0.getVehicleParking();
 	}
@@ -107,7 +98,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		return buildBuilding(buildingManager, "Mock", BuildingCategory.COMMAND, pos, facing, id);
 	}
 
-	protected MockBuilding buildBuilding(BuildingManager buildingManager, String type, BuildingCategory cat, LocalPosition pos, double facing, int id) {
+	private MockBuilding buildBuilding(BuildingManager buildingManager, String type, BuildingCategory cat, LocalPosition pos, double facing, int id) {
 
 		String name = "B" + id;
 		var building0 = new MockBuilding(buildingManager.getSettlement(), name, id,
@@ -120,30 +111,32 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	    return building0;
 	}
 
-	public Building buildResearch(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
-		MockBuilding building0 = buildBuilding(buildingManager, "Lander Hab", BuildingCategory.LABORATORY,  pos, facing, id);
+	protected Building buildFunction(BuildingManager buildingManager, String type, BuildingCategory cat,
+							FunctionType fType, LocalPosition pos, double facing, int id) {
+		MockBuilding building0 = buildBuilding(buildingManager, type, cat,  pos, facing, id);
 
-		var spec = simConfig.getBuildingConfiguration().getFunctionSpec("Lander Hab", FunctionType.RESEARCH);
+		var spec = simConfig.getBuildingConfiguration().getFunctionSpec(type, fType);
 
 	    building0.addFunction(spec);
+		buildingManager.refreshFunctionMapForBuilding(building0);
+
 	    return building0;
 	}
 
+	public Building buildResearch(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+		return buildFunction(buildingManager, "Lander Hab", BuildingCategory.LABORATORY,
+							FunctionType.RESEARCH,  pos, facing, id);
+	}
+
 	protected Building buildRecreation(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
-		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
-
-		var spec = simConfig.getBuildingConfiguration().getFunctionSpec("Lander Hab", FunctionType.RECREATION);
-
-	    building0.addFunction(spec);
-	    return building0;
+		return buildFunction(buildingManager, "Lander Hab", BuildingCategory.LIVING,
+								FunctionType.RECREATION,  pos, facing, id);
 	}
 
 	@Override
 	public Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
-		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
-
-		var evaSpec = simConfig.getBuildingConfiguration().getFunctionSpec("EVA Airlock", FunctionType.EVA);
-	    building0.addFunction(evaSpec);
+		var building0 = buildFunction(buildingManager, "EVA Airlock", BuildingCategory.EVA_AIRLOCK,
+						FunctionType.EVA,  pos, facing, id);
 		
 		var spec = simConfig.getBuildingConfiguration().getFunctionSpec("Lander Hab", FunctionType.LIVING_ACCOMMODATION);
 	    building0.addFunction(spec);
@@ -151,14 +144,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 
 	protected Building buildAccommodation(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
-		MockBuilding building0 = buildBuilding(buildingManager, "Lander Hab", BuildingCategory.LIVING,  pos, facing, id);
-
-		// Need to rework to allow maven to test this
-		var quartersSpec = simConfig.getBuildingConfiguration().getFunctionSpec("Residential Quarters", FunctionType.LIVING_ACCOMMODATION);
-
-	    building0.addFunction(quartersSpec);
-		buildingManager.refreshFunctionMapForBuilding(building0);
-	    return building0;
+		return buildFunction(buildingManager, "Residential Quarters", BuildingCategory.LIVING,
+					FunctionType.LIVING_ACCOMMODATION,  pos, facing, id);
 	}
 	
 	protected Settlement buildSettlement() {
@@ -276,7 +263,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		}
 	}
 
-	public static void assertLessThan(String message, int maxValue, int actual) {
+	public static void assertLessThan(String message, double maxValue, double actual) {
 		if (actual > maxValue) {
 			fail(message + " ==> " +
 					"Expected: a value less than <" + maxValue + ">\n" +
