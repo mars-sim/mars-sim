@@ -1,8 +1,6 @@
 package com.mars_sim.core;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.junit.Before;
 
@@ -10,11 +8,8 @@ import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.ai.mission.TravelToSettlement;
-import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
 import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.science.task.MarsSimContext;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
@@ -194,22 +189,6 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		return person;
 	}
 
-	/**
-	 * Builds a pseudo vehicle mission that can be used in tests.
-	 */
-	protected VehicleMission buildMission(Settlement starting, Person leader) {
-		// Need a vehicle
-		Rover rover = buildRover(starting, "loader", null);
-
-		Building garage = buildBuilding(starting.getBuildingManager(), new LocalPosition(0,0), 0D, 1);
-		BuildingManager.addPersonToActivitySpot(leader, garage, FunctionType.VEHICLE_MAINTENANCE);
-
-		List<Worker> members = new ArrayList<>();
-		members.add(leader);
-
-		Settlement destination = buildSettlement();
-		return new TravelToSettlement(members, destination, rover);
-	}
 
 	/**
 	 * Executes a Task for a duration or until it completes.

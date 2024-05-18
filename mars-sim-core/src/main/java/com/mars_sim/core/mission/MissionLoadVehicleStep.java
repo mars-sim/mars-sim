@@ -108,7 +108,7 @@ public class MissionLoadVehicleStep extends MissionStep {
             if (inGarage) {
                 return new LoadVehicleGarage(p, target);
             }
-            return new LoadVehicleEVA(p, target);
+            return new LoadVehicleEVA(p, target.getLoadingPlan());
         }
         else if ((worker instanceof Robot r) && inGarage) {
             return new LoadVehicleGarage(r, target);

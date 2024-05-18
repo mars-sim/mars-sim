@@ -18,6 +18,12 @@ import com.mars_sim.core.robot.Robot;
 public interface Crewable {
 
 	/**
+	 * Get the name
+	 * @return
+	 */
+	public String getName();
+	
+	/**
 	 * Gets the number of crewmembers the vehicle can carry.
 	 * 
 	 * @return capacity

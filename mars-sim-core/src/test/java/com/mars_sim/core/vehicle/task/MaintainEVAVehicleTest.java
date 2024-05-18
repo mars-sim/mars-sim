@@ -29,7 +29,7 @@ public class MaintainEVAVehicleTest extends AbstractMarsSimUnitTest {
         assertTrue("Vehicle status is Maintenance", v.haveStatusType(StatusType.MAINTENANCE));
 
         // Move onsite
-        EVAOperationTest.executeEVAExit(this, eva, task);
+        EVAOperationTest.executeEVAWalk(this, eva, task);
 
         // Do maintenance and advance to return
         executeTaskUntilPhase(p, task, 1000);
@@ -39,6 +39,10 @@ public class MaintainEVAVehicleTest extends AbstractMarsSimUnitTest {
         assertFalse("Vehicle not reserved", v.isReservedForMaintenance());
         assertFalse("Vehicle status out of Maintenance", v.haveStatusType(StatusType.MAINTENANCE));
         assertEquals("Vehicle maintenance time reset", 0D, mm.getEffectiveTimeSinceLastMaintenance());
+    
+        // Return to base
+        EVAOperationTest.executeEVAWalk(this, eva, task);
+        assertTrue("Task completed", task.isDone()); 
     }
 
     public void testMetaTask() {

@@ -23,13 +23,13 @@ public class EVAOperationTest extends AbstractMarsSimUnitTest{
     private static final int MAX_EVA_CALLS = 1500;
 
     /**
-     * Helper method to advance an EVAOperation through to the Onsite phase
+     * Helper method to advance an EVAOperation through an EVA
      * @param context The context to create any entities
      * @param eva The building to use as EVA
      * @param task The EVA operation task to advance
      * @return Calls needed.
      */
-    public static int executeEVAExit(MarsSimContext context, EVA eva, EVAOperation task) {
+    public static int executeEVAWalk(MarsSimContext context, EVA eva, EVAOperation task) {
         var person = (Person)task.getWorker();
 		PersonTaskManager tm = person.getMind().getTaskManager();
 		tm.replaceTask(task);

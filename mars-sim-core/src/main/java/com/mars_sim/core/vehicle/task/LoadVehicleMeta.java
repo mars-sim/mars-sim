@@ -57,7 +57,7 @@ public class LoadVehicleMeta extends MetaTask
             if (!person.isInSettlement())
             	return null;
             if (isEVA()) {
-                return new LoadVehicleEVA(person, getMission());
+                return new LoadVehicleEVA(person, getMission().getLoadingPlan());
             }
             return new LoadVehicleGarage(person, getMission());
         }

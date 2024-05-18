@@ -9,7 +9,6 @@ package com.mars_sim.core.vehicle.task;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.LoadingController;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
@@ -42,8 +41,6 @@ public class LoadVehicleEVA extends EVAOperation {
 	private Vehicle vehicle;
 	/** The person's settlement instance. */
 	private Settlement settlement;
-	/** The vehicle mission instance. */
-	private VehicleMission vehicleMission;
 
 	private LoadingController loadingPlan;
 
@@ -52,17 +49,12 @@ public class LoadVehicleEVA extends EVAOperation {
 	 * Constructor
 	 * 
 	 * @param person            the person performing the task.
-	 * @param vehicle           the vehicle to be loaded.
-	 * @param requiredResources a map of required resources to be loaded.
-	 * @param optionalResources a map of optional resources to be loaded.
-	 * @param requiredEquipment a map of required equipment to be loaded.
-	 * @param optionalEquipment a map of optional equipment to be loaded.
+	 * @param loadingPlan Plan to execute the load
 	 */
-	public LoadVehicleEVA(Person person, VehicleMission mission) {
+	public LoadVehicleEVA(Person person, LoadingController loadingPlan) {
 		// Use Task constructor.
 		super(NAME, person, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), LOADING);
 
-		this.vehicleMission = mission;
 		setMinimumSunlight(LightLevel.NONE);
 		
 		if (person.isSuperUnFit()) {
@@ -78,8 +70,9 @@ public class LoadVehicleEVA extends EVAOperation {
 			endTask();
 			return;
 		}
-		
-		vehicle = vehicleMission.getVehicle();
+
+		this.loadingPlan = loadingPlan;		
+		vehicle = loadingPlan.getVehicle();
 		if (vehicle == null) {
 			// Mission must be done
 			checkLocation("Vehicle is null.");
@@ -95,7 +88,6 @@ public class LoadVehicleEVA extends EVAOperation {
 			return;
 		}
 
-		loadingPlan = vehicleMission.getLoadingPlan();
 		
 		// Determine location for loading.
 		setOutsideLocation(vehicle);

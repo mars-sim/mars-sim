@@ -6,27 +6,17 @@
  */
 package com.mars_sim.core.vehicle.task;
 
-import java.util.Iterator;
-import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
-import com.mars_sim.core.person.ai.task.CollectMinedMinerals;
-import com.mars_sim.core.person.ai.task.CollectResources;
 import com.mars_sim.core.person.ai.task.EVAOperation;
-import com.mars_sim.core.person.ai.task.UnloadVehicleGarage;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.resource.ItemResourceUtil;
-import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Towing;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -43,14 +33,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(UnloadVehicleEVA.class.getName());
-	
-	private static final int ICE_ID = ResourceUtil.iceID;
-	private static final int REGOLITH_ID = ResourceUtil.regolithID;
-	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	private static final int WATER_ID = ResourceUtil.waterID;
-	private static final int FOOD_ID = ResourceUtil.foodID;
-	private static final int METHANOL_ID = ResourceUtil.methanolID;
+	static SimLogger logger = SimLogger.getLogger(UnloadVehicleEVA.class.getName());
 	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.unloadVehicleEVA"); //$NON-NLS-1$
@@ -69,7 +52,6 @@ public class UnloadVehicleEVA extends EVAOperation {
 	private Vehicle vehicle;
 	/** The settlement the person is unloading to. */
 	private Settlement settlement;
-
 
 	/**
 	 * Constructor
@@ -110,7 +92,6 @@ public class UnloadVehicleEVA extends EVAOperation {
 		}
 
 		logger.log(person, Level.FINE, 20_000, "Going to unload "  + vehicle.getName() + ".");
-
 	}
 
 	@Override
@@ -137,16 +118,6 @@ public class UnloadVehicleEVA extends EVAOperation {
 	protected double unloadingPhase(double time) {		
 		double remainingTime = 0;
 		
-		if (settlement == null) {
-			checkLocation("Settlement is null.");
-			return time;
-		}
-
-		if (vehicle == null) {
-			checkLocation("Vehicle is null.");
-			return time;
-		}
-		
 		if (checkReadiness(time) > 0)
 			return time;
 
@@ -161,158 +132,34 @@ public class UnloadVehicleEVA extends EVAOperation {
 		double strengthModifier = .1D + (strength * .018D);
 		double amountUnloading = UNLOAD_RATE * strengthModifier * time / 4D;
 
-		// Unload equipment.
-		if (amountUnloading > 0D) {
-			Set<Equipment> surplus = new UnitSet<>();
-			for(Equipment equipment : vehicle.getSuitSet()) {
-				boolean doUnload = true;
-				
-				if (vehicle instanceof Crewable crew) {
-					int numSuit = vehicle.findNumEVASuits();
-					int numCrew = crew.getCrewNum();
-					// Note: Ensure each crew member in the vehicle has an EVA suit to wear
-					doUnload = (numSuit > numCrew);
-				}
-
-				// Add the equipment to the surplus
-				if (doUnload) {
-					surplus.add(equipment);
-					amountUnloading -= equipment.getMass();
-					if (amountUnloading < 0) {
-						break;
-					}
-				}
-			}
-
-			// Unload the surplus
-			for(Equipment extra : surplus) {
-				// Unload inventories of equipment (if possible)
-				UnloadVehicleGarage.unloadEquipmentInventory(extra, settlement);
-				extra.transfer(settlement);		
-				
-				logger.info(vehicle, 10_000, "Surplus unloaded " + extra.getName());
-			}
+		// Unload EVA Suits
+		if ((amountUnloading > 0) && (vehicle instanceof Crewable crew)) {
+			amountUnloading = UnloadHelper.unloadEVASuits(vehicle, settlement, amountUnloading, crew.getCrewNum());
 		}
 
-		double totalAmount = 0;
-		// Unload amount resources.
-		Iterator<Integer> i = vehicle.getAmountResourceIDs().iterator();
-		while (i.hasNext() && (amountUnloading > 0D)) {
-			int id = i.next();
-			double amount = vehicle.getAmountResourceStored(id);
-			if (amount > amountUnloading) {
-				amount = amountUnloading;
-			}
-			double capacity = settlement.getAmountResourceRemainingCapacity(id);
-			if (capacity < amount) {
-				amount = capacity;
-				amountUnloading = 0D;
-			}
-			
-			// Transfer the amount resource from vehicle to settlement
-			vehicle.retrieveAmountResource(id, amount);
-			settlement.storeAmountResource(id, amount);
-			
-			if (id != WATER_ID && id != METHANOL_ID 
-					&& id != FOOD_ID && id != OXYGEN_ID) {
-				double laborTime = 0;
-				if (id == ICE_ID || id == REGOLITH_ID)
-					laborTime = CollectResources.LABOR_TIME;
-				else
-					laborTime = CollectMinedMinerals.LABOR_TIME;
-
-				// Add to the daily output
-				settlement.addOutput(id, amount, laborTime);
-			}
-
-			amountUnloading -= amount;
-			
-			if (totalAmount > 0) {
-					logger.log(worker, Level.INFO, 10_000, "Just unloaded " 
-							+ Math.round(amount*100.0)/100.0 + " kg of resources from " + vehicle.getName() + ".");
-			}
-			
-			totalAmount += amount;
-		}
-		
-		int totalItems = 0;
-		// Unload item resources.
-		if (amountUnloading > 0D) {
-			Iterator<Integer> j = vehicle.getItemResourceIDs().iterator();
-			while (j.hasNext() && (amountUnloading > 0D)) {
-				int id = j.next();
-				Part part = ItemResourceUtil.findItemResource(id);
-				double mass = part.getMassPerItem();
-				int num = vehicle.getItemResourceStored(id);
-				if ((num * mass) > amountUnloading) {
-					num = (int) Math.round(amountUnloading / mass);
-					if (num == 0) {
-						num = 1;
-					}
-				}
-				vehicle.retrieveItemResource(id, num);
-				settlement.storeItemResource(id, num);
-				amountUnloading -= (num * mass);
-				
-				totalItems += num;
-			}
-			
-			if (totalItems > 0) {
-				logger.log(worker, Level.INFO, 10_000, "Just unloaded a total of "
-						+ totalItems + " items from " + vehicle.getName() + ".");
-			}
-			
+		// Unload resources.
+		if (amountUnloading > 0) {
+			UnloadHelper.unloadInventory(vehicle, settlement, amountUnloading);
 			person.getPhysicalCondition().stressMuscle(time/2);
 		}
 
 		// Unload towed vehicles.
 		if (vehicle instanceof Towing towingVehicle) {
-			Vehicle towedVehicle = towingVehicle.getTowedVehicle();
-			if (towedVehicle != null) {
-				towingVehicle.setTowedVehicle(null);
-				towedVehicle.setTowingVehicle(null);
-				if (!settlement.containsParkedVehicle(towedVehicle)) {
-					settlement.addParkedVehicle(towedVehicle);
-					towedVehicle.findNewParkingLoc();
-					
-					person.getPhysicalCondition().stressMuscle(time/2);
-				}
-			}
+			UnloadHelper.releaseTowedVehicle(towingVehicle, settlement);
 		}
 
 		// Retrieve, examine and bury any dead bodies
-		if (this instanceof Crewable crewable) {
-			for (Person p : crewable.getCrew()) {
-				if (p.isDeclaredDead()) {
-						
-					if (p.transfer(settlement)) {
-					
-						BuildingManager.addToMedicalBuilding(p, settlement);			
-						
-						p.setAssociatedSettlement(settlement.getIdentifier());
-						
-						logger.info(worker, "successfully retrieved the dead body of " + p + " from " + vehicle.getName());
-					}
-					else {
-						logger.warning(worker, "failed to retrieve the dead body of " + p + " from " + vehicle.getName());
-					}
-				}
-			}
+		if (vehicle instanceof Crewable crewable) {
+			UnloadHelper.unloadDeceased(crewable, settlement);
 		}
+				
+        // Add experience points
+        addExperience(time);
 
 		if (isFullyUnloaded(vehicle)) {
-			if (totalAmount > 0) {
-				logger.log(worker, Level.INFO, 10_000, 
-						"Just unloaded a total of " + Math.round(totalAmount*100.0)/100.0 
-						+ " kg of resources from " + vehicle.getName() + ".");
-			}
-			
 			checkLocation("Vehicle already fully unloaded.");
 	        return remainingTime;
 		}
-		
-        // Add experience points
-        addExperience(time);
 
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
@@ -320,7 +167,6 @@ public class UnloadVehicleEVA extends EVAOperation {
 		return remainingTime;
 	}
 	
-
 	/**
 	 * Gets the vehicle being unloaded.
 	 * 

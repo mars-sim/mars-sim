@@ -640,7 +640,10 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 		// Relinquish his role
 		var roleType = role.getType();
 		role.relinquishOldRoleType();
-		getAssociatedSettlement().getChainOfCommand().reelectLeadership(roleType);
+		var chain = getAssociatedSettlement().getChainOfCommand();
+		if (chain != null) {
+			chain.reelectLeadership(roleType);
+		}
 
 		// Remove the person from the airlock's record
 		getAssociatedSettlement().removeAirlockRecord(this);
