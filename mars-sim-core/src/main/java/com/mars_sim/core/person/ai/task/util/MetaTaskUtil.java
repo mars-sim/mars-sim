@@ -45,7 +45,6 @@ import com.mars_sim.core.person.ai.task.meta.RepairMalfunctionMeta;
 import com.mars_sim.core.person.ai.task.meta.ReportMissionControlMeta;
 import com.mars_sim.core.person.ai.task.meta.RequestMedicalTreatmentMeta;
 import com.mars_sim.core.person.ai.task.meta.RestingMedicalRecoveryMeta;
-import com.mars_sim.core.person.ai.task.meta.ReturnLightUtilityVehicleMeta;
 import com.mars_sim.core.person.ai.task.meta.ReviewJobReassignmentMeta;
 import com.mars_sim.core.person.ai.task.meta.ReviewMissionPlanMeta;
 import com.mars_sim.core.person.ai.task.meta.SalvageBuildingMeta;
@@ -80,6 +79,7 @@ import com.mars_sim.core.structure.task.DigLocalIceMeta;
 import com.mars_sim.core.structure.task.DigLocalRegolithMeta;
 import com.mars_sim.core.vehicle.task.LoadVehicleMeta;
 import com.mars_sim.core.vehicle.task.MaintainVehicleMeta;
+import com.mars_sim.core.vehicle.task.ReturnLightUtilityVehicleMeta;
 import com.mars_sim.core.vehicle.task.UnloadVehicleMeta;
 
 /**

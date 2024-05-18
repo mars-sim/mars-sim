@@ -10,7 +10,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
-import com.mars_sim.core.person.ai.task.DriveGroundVehicle;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
@@ -20,6 +19,7 @@ import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleController;
+import com.mars_sim.core.vehicle.task.DriveGroundVehicle;
 import com.mars_sim.mapdata.location.Coordinates;
 
 /**

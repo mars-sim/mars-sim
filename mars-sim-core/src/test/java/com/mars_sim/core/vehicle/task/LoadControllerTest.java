@@ -5,7 +5,7 @@
  * @author Scott Davis
  */
 
-package com.mars_sim.core.person.ai.task;
+package com.mars_sim.core.vehicle.task;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,7 +52,7 @@ extends TestCase {
 	private Integer fireExtinguisherID;
 
 	@Override
-    public void setUp() throws Exception {
+    public void setUp() {
 
         SimulationConfig config = SimulationConfig.instance();
 		config.loadConfig();
@@ -85,7 +85,7 @@ extends TestCase {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
-	public void testBackgroundLoading() throws Exception {
+	public void testBackgroundLoading() {
 		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
 		requiredResourcesMap.put(ResourceUtil.oxygenID, 20D);
 		requiredResourcesMap.put(ResourceUtil.methanolID, 10D);
@@ -110,7 +110,7 @@ extends TestCase {
 	/*
 	 * Test method loading Equipment
 	 */
-	public void testLoadRequiredEquipment() throws Exception {
+	public void testLoadRequiredEquipment() {
 		Map<Integer, Integer> requiredEquipMap = new HashMap<>();
 		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.BARREL), 10);
 		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5);
@@ -124,7 +124,7 @@ extends TestCase {
 	/*
 	 * Test method loading Equipment
 	 */
-	public void testLoadOptionalEquipment() throws Exception {
+	public void testLoadOptionalEquipment() {
 		Map<Integer, Integer> requiredEquipMap = new HashMap<>();
 		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.BARREL), 10);
 		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5);
@@ -140,7 +140,7 @@ extends TestCase {
 	/*
 	 * Test method loading Equipment
 	 */
-	public void testLoadMissingOptionalEquipment() throws Exception {
+	public void testLoadMissingOptionalEquipment() {
 		Map<Integer, Integer> requiredEquipMap = new HashMap<>();
 		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.BARREL), 10);
 		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5);
@@ -175,7 +175,7 @@ extends TestCase {
 	/*
 	 * Test method loading Resource Items
 	 */
-	public void testLoadRequiredItemResources() throws Exception {
+	public void testLoadRequiredItemResources() {
 		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
 		requiredResourcesMap.put(fireExtinguisherID, 1);
 		requiredResourcesMap.put(smallHammerID, 2);
@@ -188,7 +188,7 @@ extends TestCase {
 	/*
 	 * Test method loading Resource Items
 	 */
-	public void testLoadOptionalItemResources() throws Exception {
+	public void testLoadOptionalItemResources() {
 		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
 		requiredResourcesMap.put(fireExtinguisherID, 1);
 		requiredResourcesMap.put(smallHammerID, 2);
@@ -204,7 +204,7 @@ extends TestCase {
 	/*
 	 * Load with optional resource present
 	 */
-	public void testLoadMissingOptionalItemResources() throws Exception {
+	public void testLoadMissingOptionalItemResources() {
 		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
 		requiredResourcesMap.put(fireExtinguisherID, 1);
 		requiredResourcesMap.put(smallHammerID, 2);
@@ -220,7 +220,7 @@ extends TestCase {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
-	public void testLoadRequiredAmountResources() throws Exception {
+	public void testLoadRequiredAmountResources() {
 		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
 		requiredResourcesMap.put(ResourceUtil.foodID, 30D);
 		requiredResourcesMap.put(ResourceUtil.waterID, 10D);
@@ -234,7 +234,7 @@ extends TestCase {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
-	public void testLoadFailedAmountResources() throws Exception {
+	public void testLoadFailedAmountResources() {
 		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
 		// Add 2000kg food to the manifest
 		requiredResourcesMap.put(ResourceUtil.foodID, 50D);
@@ -261,7 +261,7 @@ extends TestCase {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
-	public void testLoadOptionalAmountResources() throws Exception {
+	public void testLoadOptionalAmountResources() {
 		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
 		requiredResourcesMap.put(ResourceUtil.foodID, 20D);
 		requiredResourcesMap.put(ResourceUtil.waterID, 10D);
@@ -277,7 +277,7 @@ extends TestCase {
 	/*
 	 * Load with optional resource present
 	 */
-	public void testLoadMissingOptionalAmountResources() throws Exception {
+	public void testLoadMissingOptionalAmountResources() {
 		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
 		requiredResourcesMap.put(ResourceUtil.foodID, 100D);
 
@@ -292,7 +292,7 @@ extends TestCase {
 	/*
 	 * Test method loading Equipment
 	 */
-	public void testLoadFull() throws Exception {
+	public void testLoadFull() {
 		Map<Integer, Integer> requiredEquipMap = new HashMap<>();
 		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.BARREL), 5);
 		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5);
@@ -539,8 +539,6 @@ extends TestCase {
 			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 				// Add extra to the stored to give a tolerance
 				double amount = resource.getValue().doubleValue() + EXTRA_RESOURCE;
-				// Add extra to the capacity
-//				target.addAmountResourceTypeCapacity(key, amount + EXTRA_RESOURCE);
 				target.storeAmountResource(key, amount);
 			}
 			else {

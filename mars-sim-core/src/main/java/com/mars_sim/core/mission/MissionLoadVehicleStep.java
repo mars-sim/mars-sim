@@ -9,8 +9,6 @@ package com.mars_sim.core.mission;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
-import com.mars_sim.core.person.ai.task.LoadVehicleGarage;
-import com.mars_sim.core.person.ai.task.LoadingController;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
@@ -18,6 +16,8 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.task.LoadVehicleEVA;
+import com.mars_sim.core.vehicle.task.LoadVehicleGarage;
+import com.mars_sim.core.vehicle.task.LoadingController;
 import com.mars_sim.tools.util.RandomUtil;
 
 /**

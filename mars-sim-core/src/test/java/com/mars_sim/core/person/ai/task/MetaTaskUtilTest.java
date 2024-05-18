@@ -19,7 +19,6 @@ import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
@@ -44,19 +43,12 @@ extends AbstractMarsSimUnitTest {
 
 	}
 
-	public void testEatDrink() throws Exception {
+	public void testEatDrink()  {
 		EatDrink eatDrink = new EatDrink(person);
 		assertMetaTask(eatDrink, "Eating");
 	}
 
-	public void testUnloadVehicleGarage() throws Exception {
-		Vehicle vehicle = buildRover(settlement, "loader", null);
-
-		UnloadVehicleGarage evaLoad = new UnloadVehicleGarage(person, vehicle);
-		assertMetaTask(evaLoad, "Unloading Vehicle");
-	}
-
-	public void testRepairInside() throws Exception {
+	public void testRepairInside()  {
 		Building garage = buildBuilding(settlement.getBuildingManager(), POS, 0D, 1);
 		Malfunction m = createMalfunction(garage, person, MalfunctionRepairWork.INSIDE);
 
@@ -64,7 +56,7 @@ extends AbstractMarsSimUnitTest {
 		assertMetaTask(evaLoad, "Repairing Malfunction");
 	}
 
-	public void testRepairEVA() throws Exception {
+	public void testRepairEVA()  {
 		Building garage = buildBuilding(settlement.getBuildingManager(), POS, 0D, 1);
 
 		Malfunction m = createMalfunction(garage, person, MalfunctionRepairWork.EVA);
@@ -74,7 +66,6 @@ extends AbstractMarsSimUnitTest {
 
 	private Malfunction createMalfunction(Building b, Person p, MalfunctionRepairWork work) {
 		MalfunctionManager mm = b.getMalfunctionManager(); 
-//		mm.getMaintenanceParts();
 		for(MalfunctionMeta mMeta : simConfig.getMalfunctionConfiguration().getMalfunctionList()) {
 			EffortSpec w = mMeta.getRepairEffort().get(work);
 			if ((w != null) && (w.getWorkTime() > 0D)) {
@@ -85,17 +76,15 @@ extends AbstractMarsSimUnitTest {
 		return null;
 	}
 
-	public void testMaintainBuilding() throws Exception {
+	public void testMaintainBuilding()  {
 		Building garage = buildBuilding(settlement.getBuildingManager(), POS, 0D, 1);
-//		garage.getMalfunctionManager().getMaintenanceParts();
 
 		MaintainBuilding evaLoad = new MaintainBuilding(person, garage);
 		assertMetaTask(evaLoad, "Maintaining Building");
 	}
 
-	public void testMaintainEVABuilding() throws Exception {
+	public void testMaintainEVABuilding()  {
 		Building garage = buildBuilding(settlement.getBuildingManager(), POS, 0D, 1);
-//		garage.getMalfunctionManager().getMaintenanceParts();
 
 		MaintainBuildingEVA evaLoad = new MaintainBuildingEVA(person, garage);
 		assertMetaTask(evaLoad, "Maintaining Building");

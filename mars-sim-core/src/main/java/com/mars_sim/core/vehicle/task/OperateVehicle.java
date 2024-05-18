@@ -4,7 +4,7 @@
  * @date 2023-04-18
  * @author Scott Davis
  */
-package com.mars_sim.core.person.ai.task;
+package com.mars_sim.core.vehicle.task;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -327,12 +327,6 @@ public abstract class OperateVehicle extends Task {
         		
         // Mobilize vehicle
         double mobilizedTime = mobilizeVehicle(time);
-//        double timeUsed = time - mobilizedTime;
-//		logger.log(vehicle, Level.CONFIG, 20_000, 
-//				"time: " +  Math.round(time * 1000.0)/1000.0 + " millisols"
-//				+ "  mobilizedTime: " +  Math.round(mobilizedTime * 1000.0)/1000.0 + " millisols"
-//				+ "  timeUsed: " +  Math.round(timeUsed * 1000.0)/1000.0 + " millisols"
-//				);
 
         // Add experience to the operator
         addExperience(mobilizedTime);
@@ -440,10 +434,7 @@ public abstract class OperateVehicle extends Task {
         	// Note: Need to consider the case in which VehicleMission's determineEmergencyDestination() causes the 
         	// the vehicle to switch the destination to a settlement when this settlement is within a very short
         	// distance away.
-        	
-        	// Sets final speed to zero and use regen braking to recharge the battery.
-//        	vehicle.getController().adjustSpeed(hrsTime, dist, 0, remainingFuel, remainingOxidizer);
-   
+        	   
         	// Stop the vehicle
         	haltVehicle();
        
@@ -470,7 +461,7 @@ public abstract class OperateVehicle extends Task {
 	 * @return remaining hours
 	 */
 	private double moveVehicle(double hrsTime, double dist2Dest, double remainingFuel, double remainingOxidizer) {
-		double remainingHrs = hrsTime;
+		double remainingHrs;
     	// Gets initial speed in kph
     	double uKPH = vehicle.getSpeed(); 
     	// Gets initial speed in m/s
@@ -509,8 +500,6 @@ public abstract class OperateVehicle extends Task {
     	
       	// If staying at the same speed
     	double dist2Cover = vKPHProposed * hrsTime * KPH_CONV;
-    	
-//    	double newDistToCover = uMS * hrsTime * KPH_CONV;
     	
     	// Note that Case I: Arrived at destination in mobilizeVehicle()
     	
@@ -862,11 +851,14 @@ public abstract class OperateVehicle extends Task {
     /**
      * Stops the vehicle and removes operator.
      */
+	@Override
     protected void clearDown() {
     	if (vehicle != null) {
     		vehicle.setSpeed(0D);
     		// Need to set the vehicle operator to null before clearing the driving task 
         	vehicle.setOperator(null);
     	}
+
+		super.clearDown();
     }
 }

@@ -15,7 +15,6 @@ import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.task.OperateVehicle;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -23,6 +22,7 @@ import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.task.OperateVehicle;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 /**

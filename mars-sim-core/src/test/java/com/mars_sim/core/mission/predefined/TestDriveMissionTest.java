@@ -14,12 +14,12 @@ import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.mission.MissionProject;
 import com.mars_sim.core.mission.MissionVehicleProject;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.task.LoadingController;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.task.LoadingController;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 public class TestDriveMissionTest extends AbstractMarsSimUnitTest {

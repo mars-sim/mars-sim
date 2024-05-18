@@ -10,7 +10,6 @@ package com.mars_sim.core.vehicle.task;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
-import com.mars_sim.core.person.ai.task.LoadingController;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;

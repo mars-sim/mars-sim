@@ -15,11 +15,11 @@ import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
-import com.mars_sim.core.person.ai.task.LoadingController;
 import com.mars_sim.core.project.ProjectStep;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.task.LoadingController;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -117,7 +117,7 @@ public class MissionVehicleProject extends MissionProject
      * @return Return -1 if not suitable at all
      */
     private int scoreVehicle(Vehicle v) {
-        // TODO needs better choosing based on capabilities and range
+        // needs better choosing based on capabilities and range
         return switch(v.getVehicleType()) {
             case CARGO_ROVER, EXPLORER_ROVER, TRANSPORT_ROVER -> 1;
             case LUV, DELIVERY_DRONE -> -1;
@@ -204,7 +204,6 @@ public class MissionVehicleProject extends MissionProject
 
     @Override
     public void getHelp(MissionStatus status) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getHelp'");
     }
 
@@ -221,7 +220,7 @@ public class MissionVehicleProject extends MissionProject
     @Override
     protected void setSteps(List<MissionStep> plan) {
         route = plan.stream()
-                        .filter(sc -> sc instanceof MissionTravelStep)
+                        .filter(MissionTravelStep.class::isInstance)
                         .map (sc -> ((MissionTravelStep) sc).getDestination())
                         .toList();
         proposedDistance = route.stream()

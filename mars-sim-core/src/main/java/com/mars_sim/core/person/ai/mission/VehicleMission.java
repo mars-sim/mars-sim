@@ -8,10 +8,10 @@ package com.mars_sim.core.person.ai.mission;
 
 import java.util.List;
 
-import com.mars_sim.core.person.ai.task.LoadingController;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.task.LoadingController;
 
 public interface VehicleMission extends Mission {
 

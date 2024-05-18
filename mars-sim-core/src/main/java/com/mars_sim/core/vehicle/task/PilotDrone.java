@@ -4,7 +4,7 @@
  * @date 2022-06-17
  * @author Manny
  */
-package com.mars_sim.core.person.ai.task;
+package com.mars_sim.core.vehicle.task;
 
 import java.util.logging.Level;
 
@@ -46,9 +46,9 @@ public class PilotDrone extends OperateVehicle {
 	private static final double CU_PER_KM = .05;
 	
 	// Side directions.
-	private final static int NONE = 0;
-	private final static int LEFT = 1;
-	private final static int RIGHT = 2;
+	private static final int NONE = 0;
+	private static final int LEFT = 1;
+	private static final int RIGHT = 2;
 
 	// Data members
 	private int sideDirection = NONE;
@@ -142,6 +142,7 @@ public class PilotDrone extends OperateVehicle {
 	 * @param time the amount of time the phase is to be performed.
 	 * @return the remaining time after the phase has been performed.
 	 */
+	@Override
 	protected double performMappedPhase(double time) {
 
 		time = super.performMappedPhase(time);
@@ -166,9 +167,7 @@ public class PilotDrone extends OperateVehicle {
 	 * @param time the amount of time to perform the task (in millisols)
 	 * @return time remaining after performing phase (in millisols)
 	 */
-	private double obstaclePhase(double time) {
-		double timeUsed = 0D;
-		
+	private double obstaclePhase(double time) {		
 		Flyer flyer = (Flyer) getVehicle();
 
 		// Get the direction to the destination.
@@ -183,7 +182,7 @@ public class PilotDrone extends OperateVehicle {
 			// Update vehicle elevation.
 			updateVehicleElevationAltitude(true, time);
 			
-			setPhase(PilotDrone.MOBILIZE);
+			setPhase(MOBILIZE);
 			sideDirection = NONE;
 			return time;
 		}
@@ -207,7 +206,7 @@ public class PilotDrone extends OperateVehicle {
 		flyer.setSpeed(testSpeed(flyer.getDirection()));
 
 		// Drive in the direction
-		timeUsed = time - mobilizeVehicle(time);
+		double timeUsed = time - mobilizeVehicle(time);
 		
 		int msol = getMarsTime().getMillisolInt();       
         boolean successful = false; 
@@ -336,6 +335,7 @@ public class PilotDrone extends OperateVehicle {
 	 */
 	@Override
 	protected void checkForAccident(double time) {
+		// Drones do not have accidents
 	}
 
 	/**
@@ -351,23 +351,12 @@ public class PilotDrone extends OperateVehicle {
 		int experienceAptitude = worker.getNaturalAttributeManager()
 					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 
-		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+		newPoints += newPoints * (experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 		double phaseModifier = 1D;
 		if (AVOID_COLLISION.equals(getPhase()))
 			phaseModifier = 4D;
 		newPoints *= phaseModifier;
 		worker.getSkillManager().addExperience(SkillType.PILOTING, newPoints, time);
-	}
-
-	/**
-	 * Stop the vehicle
-	 */
-	@Override
-	protected void clearDown() {
-		if (getVehicle() != null) {
-		    // Need to set the vehicle operator to null before clearing the driving task 
-	        getVehicle().setOperator(null);
-		}
 	}
 }

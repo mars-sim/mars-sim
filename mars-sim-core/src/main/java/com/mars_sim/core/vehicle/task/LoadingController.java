@@ -4,7 +4,7 @@
  * @date 2021-10-21
  * @author Barry Evans
  */
-package com.mars_sim.core.person.ai.task;
+package com.mars_sim.core.vehicle.task;
 
 import java.io.Serializable;
 import java.util.ArrayList;
