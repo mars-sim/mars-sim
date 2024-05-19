@@ -13,7 +13,9 @@ import java.util.logging.Level;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.ai.mission.VehicleMission;
+import com.mars_sim.core.person.ai.NaturalAttributeType;
+import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -48,16 +50,14 @@ public class LoadVehicleGarage extends Task {
 	/** Task phases. */
 	private static final TaskPhase LOADING = new TaskPhase(Msg.getString("Task.phase.loading")); //$NON-NLS-1$
 
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .1D;
+	private static final ExperienceImpact IMPACT = new ExperienceImpact(0.1D, NaturalAttributeType.EXPERIENCE_APTITUDE,
+							 true, 0.1D, SkillType.MECHANICS);
 
 	// Data members
 	/** The vehicle that needs to be loaded. */
 	private Vehicle vehicle;
 	/** The person's settlement. */
 	private Settlement settlement;
-	/** The vehicle mission instance. */
-	private VehicleMission vehicleMission;
 
 	private LoadingController loadController;
 	
@@ -65,13 +65,12 @@ public class LoadVehicleGarage extends Task {
 	 * Constructor.
 	 * 
 	 * @param person            the person performing the task.
-	 * @param mission           the vehicle to be loaded.
+	 * @param loadingController           the vehicle to be loaded.
 	 */
-	public LoadVehicleGarage(Worker worker, VehicleMission mission) {
+	public LoadVehicleGarage(Worker worker, LoadingController loadingController) {
 		// Use Task constructor.
-		super(NAME, worker, true, false, STRESS_MODIFIER,
-				RandomUtil.getRandomDouble(50D) + 10D);
-		this.vehicleMission = mission;
+		super(NAME, worker, false, IMPACT,
+					RandomUtil.getRandomDouble(50D) + 10D);
 
 		settlement = worker.getSettlement();
 		if (settlement == null) {
@@ -79,16 +78,8 @@ public class LoadVehicleGarage extends Task {
 			return;
 		}
 
-		vehicle = vehicleMission.getVehicle();
-		if (vehicle == null) {
-			clearTask("Mission has no vehicle.");
-			return;
-		}
-		loadController = vehicleMission.getLoadingPlan();
-		if (loadController == null) {
-			clearTask("Vehicle has no loading plan.");
-			return;
-		}
+		vehicle = loadingController.getVehicle();
+		this.loadController = loadingController;
  
 		// Rover may already be in the Garage
 		Building garage = vehicle.getGarage();
@@ -110,7 +101,6 @@ public class LoadVehicleGarage extends Task {
 		
 		
 		// Initialize task phase
-		addPhase(LOADING);
 		setPhase(LOADING);
 	}
 
@@ -148,13 +138,7 @@ public class LoadVehicleGarage extends Task {
 	 */
 	private double loadingPhase(double time) {
 	
-		// NOTE: if a person is not at a settlement or near its vicinity, 
-		// then the settlement instance is set to null. 
-    	boolean abortLoad = (settlement == null);
-    	abortLoad |= (person != null && !person.getMind().hasActiveMission());
-    	abortLoad |= !settlement.getBuildingManager().isInGarage(vehicle);
-        
-    	if (abortLoad) {
+    	if (!settlement.getBuildingManager().isInGarage(vehicle)) {
     		endTask();
 			return time;
 		}

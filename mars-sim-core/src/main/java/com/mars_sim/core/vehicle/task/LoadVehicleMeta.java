@@ -57,7 +57,7 @@ public class LoadVehicleMeta extends MetaTask
             if (isEVA()) {
                 return new LoadVehicleEVA(person, getMission().getLoadingPlan());
             }
-            return new LoadVehicleGarage(person, getMission());
+            return new LoadVehicleGarage(person, getMission().getLoadingPlan());
         }
 
         @Override
@@ -66,7 +66,7 @@ public class LoadVehicleMeta extends MetaTask
 				// Should not happen
 				throw new IllegalStateException("Robots can not do EVA load vehicle");
 			}
-            return new LoadVehicleGarage(robot, getMission());
+            return new LoadVehicleGarage(robot, getMission().getLoadingPlan());
         }
     }
 
