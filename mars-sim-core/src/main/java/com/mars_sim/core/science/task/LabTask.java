@@ -75,7 +75,6 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 				addPersonToLab(person);
 
 				// Initialize phase
-				addPhase(researchPhase);
 				setPhase(researchPhase);
 			} else {
 				logger.severe(person, "lab could not be determined.");

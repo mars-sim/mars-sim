@@ -55,7 +55,7 @@ public class RespondToStudyInvitation extends Task {
 
 	private static final ExperienceImpact IMPACT = new ExperienceImpact(25D,
 						NaturalAttributeType.ACADEMIC_APTITUDE, false, 0D,
-						Set.of(SkillType.ORGANISATION));
+						SkillType.ORGANISATION);
 
 	/** The scientific study. */
 	private ScientificStudy study;
@@ -103,7 +103,6 @@ public class RespondToStudyInvitation extends Task {
 		}
 
 		// Initialize phase
-		addPhase(RESPONDING_INVITATION);
 		setPhase(RESPONDING_INVITATION);
 	}
 

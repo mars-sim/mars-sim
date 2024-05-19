@@ -67,7 +67,7 @@ public class PeerReviewStudyPaper extends Task {
 			// Found a suitable study
 			var impact = new ExperienceImpact(25D, NaturalAttributeType.ACADEMIC_APTITUDE,
 										false, 0.2D,
-							Set.of(study.getScience().getSkill()));
+							            study.getScience().getSkill());
 			return new PeerReviewStudyPaper(person, study, impact);
 		}
 

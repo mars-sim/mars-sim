@@ -8,7 +8,6 @@ package com.mars_sim.core.science.task;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
@@ -68,7 +67,7 @@ extends Task {
 
 		// Found a suitable study
 		var impact = new ExperienceImpact(25D, NaturalAttributeType.ACADEMIC_APTITUDE,
-		false, 0.2D, Set.of(study.getScience().getSkill()));
+		false, 0.2D, study.getScience().getSkill());
 
 		return new CompileScientificStudyResults(p, study, impact);
 	}
@@ -116,7 +115,6 @@ extends Task {
         }
 
         // Initialize phase
-        addPhase(COMPILING_PHASE);
         setPhase(COMPILING_PHASE);
     }
 

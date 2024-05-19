@@ -9,7 +9,6 @@ package com.mars_sim.core.science.task;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -63,7 +62,7 @@ public class InviteStudyCollaborator extends Task {
 
     private static final ExperienceImpact IMPACT = new ExperienceImpact(25D,
                                         NaturalAttributeType.ACADEMIC_APTITUDE, false,
-                                        0D, Set.of(SkillType.ORGANISATION));
+                                        0D, SkillType.ORGANISATION);
     
     /**
      * Constructor.
@@ -116,7 +115,6 @@ public class InviteStudyCollaborator extends Task {
         }
 
         // Initialize phase
-        addPhase(WRITING_INVITATION);
         setPhase(WRITING_INVITATION);
     }
 

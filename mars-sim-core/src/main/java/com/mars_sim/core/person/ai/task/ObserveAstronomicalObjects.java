@@ -7,7 +7,6 @@
 
 package com.mars_sim.core.person.ai.task;
 
-import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
@@ -46,7 +45,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	/** The stress modified per millisol. */	    
     private static final ExperienceImpact IMPACT = new ExperienceImpact(25D,
 										NaturalAttributeType.ACADEMIC_APTITUDE, false, -0.2D,
-										Set.of(SkillType.ASTRONOMY));
+										SkillType.ASTRONOMY);
 
 	/** Task phases. */
 	private static final TaskPhase OBSERVING = new TaskPhase(Msg.getString("Task.phase.observing")); //$NON-NLS-1$
@@ -92,7 +91,6 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 			isActiveObserver = true;
 			
 			// Initialize phase
-			addPhase(OBSERVING);
 			setPhase(OBSERVING);
 		}
 		else {

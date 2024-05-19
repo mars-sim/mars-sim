@@ -50,7 +50,7 @@ public class ToggleFuelPowerSource extends Task {
     private static final ExperienceImpact IMPACT = new ExperienceImpact(100D,
                                                         NaturalAttributeType.EXPERIENCE_APTITUDE,
                                                         true, 0.05,
-                                                        Set.of(SkillType.MECHANICS));
+                                                        SkillType.MECHANICS);
 
     // Data members
     /** True if power source is to be turned on, false if turned off. */

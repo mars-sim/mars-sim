@@ -66,7 +66,7 @@ public class StudyFieldSamples extends LabTask {
 			// Found a suitable study
 			var impact = new ExperienceImpact(10D, NaturalAttributeType.ACADEMIC_APTITUDE,
 										false, 0.1D,
-							Set.of(study.getContribution(person).getSkill()));
+										study.getContribution(person).getSkill());
 			return new StudyFieldSamples(person, study, impact);
 		}
 
