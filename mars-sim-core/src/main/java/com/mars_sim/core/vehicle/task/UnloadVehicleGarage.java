@@ -6,27 +6,17 @@
  */
 package com.mars_sim.core.vehicle.task;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 
-import com.mars_sim.core.equipment.Equipment;
-import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
-import com.mars_sim.core.person.ai.task.CollectMinedMinerals;
-import com.mars_sim.core.person.ai.task.CollectResources;
+import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.resource.ItemResourceUtil;
-import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Towing;
@@ -46,27 +36,17 @@ public class UnloadVehicleGarage extends Task {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(UnloadVehicleGarage.class.getName());
 
-	private static final int ICE_ID = ResourceUtil.iceID;
-	private static final int REGOLITH_ID = ResourceUtil.regolithID;
-	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	private static final int WATER_ID = ResourceUtil.waterID;
-	private static final int FOOD_ID = ResourceUtil.foodID;
-	private static final int METHANOL_ID = ResourceUtil.methanolID;
-
-	/** Task name */
-//	private static final String NAME = Msg.getString("Task.description.unloadVehicleGarage"); //$NON-NLS-1$
-	
 	/** Task phases. */
 	private static final TaskPhase UNLOADING = new TaskPhase(Msg.getString("Task.phase.unloading")); //$NON-NLS-1$
 
+	private static final ExperienceImpact IMPACT = new ExperienceImpact(0.1D, NaturalAttributeType.EXPERIENCE_APTITUDE,
+										true, 0.01D, SkillType.MECHANICS);
+	
 	/**
 	 * The amount of resources (kg) one person of average strength can unload per
 	 * millisol.
 	 */
 	private static final double UNLOAD_RATE = 20D;
-
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .1D;
 
 	// Data members
 	/** The vehicle that needs to be unloaded. */
@@ -82,7 +62,7 @@ public class UnloadVehicleGarage extends Task {
 	 */
 	public UnloadVehicleGarage(Worker worker, Vehicle vehicle) {
 		// Use Task constructor.
-		super("Unloading vehicle", worker, true, false, STRESS_MODIFIER,
+		super("Unloading vehicle", worker, false, IMPACT,
 					RandomUtil.getRandomDouble(40D) + 10D);
 
 		if (worker.isOutside()) {
@@ -114,7 +94,6 @@ public class UnloadVehicleGarage extends Task {
 		setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 
 		// Initialize phase
-		addPhase(UNLOADING);
 		setPhase(UNLOADING);
 	}
 	
@@ -147,190 +126,43 @@ public class UnloadVehicleGarage extends Task {
 	 * @return the amount of time (millisol) after performing the phase.
 	 */
 	protected double unloadingPhase(double time) {
-		int strength = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
-
-		double strengthModifier = .1D + (strength * .018D);
-		double amountUnloading = UNLOAD_RATE * strengthModifier * time;
-
-		if (settlement == null) {
-			endTask();
-			return 0D;
-		}
-
 		if (!settlement.getBuildingManager().addToGarage(vehicle)) {
 			logger.warning(vehicle, "Not in a garage");
         	endTask();
-			return 0;
 		}
+		else {
+			int strength = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
 
-		// Unload equipment.
-		if (amountUnloading > 0D) {
-			// Take own copy as the equipment list changes as we remove items. ??
-			List<Equipment> held = new ArrayList<>(vehicle.getEquipmentSet());
-			Iterator<Equipment> k = held.iterator();
-			while (k.hasNext() && (amountUnloading > 0D)) {
-				Equipment equipment = k.next();
-				// Unload inventories of equipment (if possible)
-				unloadEquipmentInventory(equipment, settlement);
-				equipment.transfer(settlement);
-				amountUnloading -= equipment.getMass();
+			double strengthModifier = .1D + (strength * .018D);
+			double amountUnloading = UNLOAD_RATE * strengthModifier * time;
 
-				if (!vehicle.getName().contains("Mock")) {
-					// Note: In maven test, the name of the vehicle is "Mock Vehicle"
-					// test if it's NOT under maven test
-					logger.info(worker, 10_000, "Unloaded "
-										+ equipment.getName() + " from " + vehicle.getName() + ".");
-				}
+			// Unload EVA Suits
+			if (amountUnloading > 0) {
+				amountUnloading = UnloadHelper.unloadEVASuits(vehicle, settlement, amountUnloading, 0);
 			}
-		}
-
-		double totalAmount = 0;
-		// Unload amount resources.
-		Iterator<Integer> i = vehicle.getAmountResourceIDs().iterator();
-		while (i.hasNext() && (amountUnloading > 0D)) {
-			int id = i.next();;
-			double amount = vehicle.getAmountResourceStored(id);
-			if (amount > amountUnloading)
-				amount = amountUnloading;
-			double capacity = settlement.getAmountResourceRemainingCapacity(id);
-			if (capacity < amount) {
-				amount = capacity;
-				amountUnloading = 0D;
-			}
-			try {
-				vehicle.retrieveAmountResource(id, amount);
-				settlement.storeAmountResource(id, amount);
-
-				if (id != WATER_ID && id != METHANOL_ID
-						&& id != FOOD_ID && id != OXYGEN_ID) {
-					double laborTime = 0;
-					if (id == ICE_ID || id == REGOLITH_ID)
-						laborTime = CollectResources.LABOR_TIME;
-					else
-						laborTime = CollectMinedMinerals.LABOR_TIME;
-
-					// Add to the daily output
-					settlement.addOutput(id, amount, laborTime);
-				}
-
-			} catch (Exception e) {
-				logger.log(worker, Level.WARNING, 3_000,  "Could NOT unload the resources." + e);
-			}
-			amountUnloading -= amount;
-
-			if (totalAmount > 0 && !vehicle.getName().contains("Mock")) {
-				// Note: In maven test, the name of the vehicle is "Mock Vehicle"
-				// test if it's NOT under maven test
-
-				logger.log(worker, Level.INFO, 10_000, "Just unloaded "
-						+ Math.round(amount * 100.0) / 100.0 + " kg of resources from "
-						+ vehicle.getName() + ".");
+		
+			// Unload resources.
+			if (amountUnloading > 0) {
+				UnloadHelper.unloadInventory(vehicle, settlement, amountUnloading);
+				person.getPhysicalCondition().stressMuscle(time/2);
 			}
 
-			totalAmount += amount;
-		}
-
-		int totalItems = 0;
-		// Unload item resources.
-		if (amountUnloading > 0D) {
-			Iterator<Integer> j = vehicle.getItemResourceIDs().iterator();
-			while (j.hasNext() && (amountUnloading > 0D)) {
-				int id = j.next();
-				Part part = (Part)(ItemResourceUtil.findItemResource(id));
-				double mass = part.getMassPerItem();
-				int num = vehicle.getItemResourceStored(id);
-				if ((num * mass) > amountUnloading) {
-					num = (int) Math.round(amountUnloading / mass);
-					if (num == 0) {
-						num = 1;
-					}
-				}
-				vehicle.retrieveItemResource(id, num);
-				settlement.storeItemResource(id, num);
-				amountUnloading -= (num * mass);
+			// Unload towed vehicles.
+			if (vehicle instanceof Towing towingVehicle) {
+				UnloadHelper.releaseTowedVehicle(towingVehicle, settlement);
+			}
+		
+			// Retrieve, examine and bury any dead bodies
+			if (vehicle instanceof Crewable crewable) {
+				UnloadHelper.unloadDeceased(crewable, settlement);
 			}
 
-			if (totalItems > 0) {
-				logger.log(worker, Level.INFO, 10_000,"Just unloaded a total of "
-									+ totalItems + " items from " + vehicle.getName() + ".");
+			if (isFullyUnloaded(vehicle)) {
+				endTask();
 			}
 		}
-
-		// Unload towed vehicles.
-		if (vehicle instanceof Towing) {
-			Towing towingVehicle = (Towing) vehicle;
-			Vehicle towedVehicle = towingVehicle.getTowedVehicle();
-			if (towedVehicle != null) {
-				towingVehicle.setTowedVehicle(null);
-				towedVehicle.setTowingVehicle(null);
-				if (!settlement.containsParkedVehicle(towedVehicle)) {
-					settlement.addParkedVehicle(towedVehicle);
-					towedVehicle.findNewParkingLoc();
-				}
-			}
-		}
-
-		// Retrieve, exam and bury any dead bodies
-		if (this instanceof Crewable) {
-			Crewable crewable = (Crewable) this;
-			for (Person p : crewable.getCrew()) {
-				if (p.isDeclaredDead()) {
-
-					if (p.transfer(settlement)) {
-
-						BuildingManager.addToMedicalBuilding(p, settlement);
-
-						p.setAssociatedSettlement(settlement.getIdentifier());
-
-						logger.info(worker, "successfully retrieved the dead body of " + p + " from " + vehicle.getName());
-					}
-					else {
-						logger.warning(worker, "failed to retrieve the dead body of " + p + " from " + vehicle.getName());
-					}
-				}
-			}
-		}
-
-		if (isFullyUnloaded(vehicle)) {
-			if (totalAmount > 0 && !vehicle.getName().contains("Mock")) {
-				// Note: In maven test, the name of the vehicle is "Mock Vehicle"
-				// test if it's NOT under maven test
-
-				logger.log(worker, Level.INFO, 10_000, "Unloaded a total of "
-					+ Math.round(totalAmount * 100.0) / 100.0 + " kg of resources from "
-						+ vehicle.getName() + ".");
-			}
-			endTask();
-		}
-
 		return 0D;
 	}
-
-	/**
-	 * Unload the inventory from a piece of equipment.
-	 *
-	 * @param equipment the equipment.
-	 */
-	public static void unloadEquipmentInventory(Equipment equipment, Settlement settlement) {
-
-		// Note: only unloading amount resources at the moment.
-		if (equipment instanceof ResourceHolder) {
-			ResourceHolder rh = (ResourceHolder) equipment;
-			for(int resource : rh.getAmountResourceIDs()) {
-				double amount = rh.getAmountResourceStored(resource);
-				double capacity = settlement.getAmountResourceRemainingCapacity(resource);
-				if (amount > capacity) {
-					amount = capacity;
-				}
-				try {
-					rh.retrieveAmountResource(resource, amount);
-					settlement.storeAmountResource(resource, amount);
-				} catch (Exception e) {
-				}
-			}
-		}
-	}
-
 
 	/**
 	 * Returns true if the vehicle is fully unloaded.
@@ -338,7 +170,7 @@ public class UnloadVehicleGarage extends Task {
 	 * @param vehicle Vehicle to check.
 	 * @return is vehicle fully unloaded?
 	 */
-	static private boolean isFullyUnloaded(Vehicle vehicle) {
+	private static final boolean isFullyUnloaded(Vehicle vehicle) {
 		return (vehicle.getStoredMass() == 0D);
 	}
 }

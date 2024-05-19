@@ -6,14 +6,15 @@
  */
 package com.mars_sim.core.vehicle.task;
 
-import java.util.Iterator;
 import java.util.logging.Level;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
+import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -48,9 +49,8 @@ public class MaintainGarageVehicle extends Task {
 	/** Task phases. */
 	private static final TaskPhase MAINTAIN_VEHICLE = new TaskPhase(Msg.getString("Task.phase.maintainVehicle")); //$NON-NLS-1$
 
-	// Static members
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .1D;
+	private static final ExperienceImpact IMPACT = new ExperienceImpact(10D, NaturalAttributeType.EXPERIENCE_APTITUDE,
+										true, 0.1D, SkillType.MECHANICS);
 
 	// Data members
 	/** The maintenance garage. */
@@ -65,7 +65,7 @@ public class MaintainGarageVehicle extends Task {
 	 * @param person the person to perform the task
 	 */
 	public MaintainGarageVehicle(Worker unit, Vehicle target) {
-		super(NAME, unit, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D);
+		super(NAME, unit,  false, IMPACT, 100D);
 
 		// Choose an available needy ground vehicle.
 		vehicle = target;
@@ -97,31 +97,27 @@ public class MaintainGarageVehicle extends Task {
 				return;
 			}
 			
-			Iterator<Building> j = settlement.getBuildingManager()
-					.getBuildingSet(FunctionType.VEHICLE_MAINTENANCE).iterator();
-			while (j.hasNext() && (garage == null)) {
-				Building garageBuilding = j.next();
+
+			for(var garageBuilding : settlement.getBuildingManager().getBuildingSet(FunctionType.VEHICLE_MAINTENANCE)) {
 				VehicleMaintenance garageTemp = garageBuilding.getVehicleMaintenance();
 					
 				if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
 					if (garageTemp.getFlyerCapacity() > 0) {
 						garage = garageTemp;
 						garage.addFlyer((Flyer)vehicle);
-
-						// Walk to garage.
-						walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.VEHICLE_MAINTENANCE, false);
-						break;
 					}							
 				}
 				else {
 					if (garageTemp.getAvailableCapacity() > 0) {
 						garage = garageTemp;
 						garage.addVehicle(vehicle);
-
-						// Walk to garage.
-						walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.VEHICLE_MAINTENANCE, false);
-						break;
 					}
+				}
+
+				if (garage != null) {	
+					// Walk to garage.
+					walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.VEHICLE_MAINTENANCE, false);
+					break;
 				}
 			}
 		}
@@ -129,12 +125,12 @@ public class MaintainGarageVehicle extends Task {
 		// End task if vehicle or garage not available.
 		if (garage == null) {
 			clearTask(vehicle.getName() + " No available garage for maintenance.");
+			return;
 		}
 
 		logger.log(worker, Level.FINER, 0, "Starting maintainGarageVehicle task on " + vehicle.getName());
 	
 		// Initialize phase
-		addPhase(MAINTAIN_VEHICLE);
 		setPhase(MAINTAIN_VEHICLE);
 	}
 
@@ -240,13 +236,9 @@ public class MaintainGarageVehicle extends Task {
 
 			// Terminated early befor ethe Garage was selected ?
 			if (garage != null) {
-				if (vehicle instanceof Crewable) {
-					Crewable crewableVehicle = (Crewable) vehicle;
-					if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
-						garage.removeVehicle(vehicle, false);
-					}
-					else
-						garage.removeVehicle(vehicle, true);
+				if (vehicle instanceof Crewable crewableVehicle) {
+					boolean transCrew = (crewableVehicle.getCrewNum() > 0 || crewableVehicle.getRobotCrewNum() > 0);
+					garage.removeVehicle(vehicle, transCrew);
 				} else {
 					if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
 						garage.removeFlyer((Flyer)vehicle);

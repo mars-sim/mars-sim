@@ -6,10 +6,13 @@
  */
 package com.mars_sim.core.vehicle.task;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.equipment.EVASuit;
+import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.CollectMinedMinerals;
@@ -27,6 +30,15 @@ import com.mars_sim.core.vehicle.Vehicle;
  * Helper class to handle unloading various activities of unloading a vehicle
  */
 public final class UnloadHelper {
+	
+	/**
+	 * Resources that are excluded from the Output reporting
+	 */
+    static final Set<Integer> EXCLUDE_OUTPUTS = Set.of(ResourceUtil.waterID,
+					ResourceUtil.methanolID,
+					ResourceUtil.foodID,
+					ResourceUtil.oxygenID);
+
     private UnloadHelper() {
         // Stop instantiation
     }
@@ -186,6 +198,32 @@ public final class UnloadHelper {
         }
 	}
 
+	/**
+     * Unload any Equipment from a Vehicle to a Settlement
+     * @param source Vehicle being unloaded
+     * @param dest Destination for any Items
+     * @param amountUnloading Maximum amount to unloaded
+     * @return Amount not used
+     */
+	private static double unloadEquipment(Vehicle source, Settlement dest, double amountUnloading) {
+		// Unload equipment.
+		// Take own copy as the equipment list changes as we remove items. ??
+		List<Equipment> held = new ArrayList<>(source.getEquipmentSet());
+		for(Equipment equipment : held) {
+			if (equipment instanceof ResourceHolder rh) {
+				// Unload inventories of equipment (if possible)
+				unloadResourcesHolder(rh, dest);
+			}
+			equipment.transfer(dest);
+			amountUnloading -= equipment.getMass();
+			if (amountUnloading <= 0) {
+    			return 0;
+    		}
+		}
+
+		return amountUnloading;
+	}
+
     /**
      * Unload inventory from a Vehicle to a Settlement
      * @param source Vehicle being unloaded
@@ -197,14 +235,12 @@ public final class UnloadHelper {
 		amountUnloading = unloadItems(vehicle, settlement, amountUnloading);
 		if (amountUnloading > 0) {
 			amountUnloading = unloadResources(vehicle, settlement, amountUnloading);
+			if (amountUnloading > 0) {
+				amountUnloading = unloadEquipment(vehicle, settlement, amountUnloading);
+			}
         }
 
         return amountUnloading;
     }
-
-    static final Set<Integer> EXCLUDE_OUTPUTS = Set.of(ResourceUtil.waterID,
-    ResourceUtil.methanolID,
-    ResourceUtil.foodID,
-    ResourceUtil.oxygenID);
 
 }

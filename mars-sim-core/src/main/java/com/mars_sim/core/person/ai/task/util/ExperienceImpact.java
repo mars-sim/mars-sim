@@ -39,6 +39,21 @@ public class ExperienceImpact implements Serializable {
     private Set<SkillType> skills;
     private boolean effortDriven;
 
+    
+    /**
+     * Cut down cosntructor using a single skill.
+     * @param skillRatio Ratio to use when updating skills
+     * @param skill Set of skills requried/improved for this activity; evenly weighted
+     * @param effortDriven This activity requires effort
+     * @param stressModifier Modifer value for how stressful the activity is
+     * @param experienceAttribute Natural attribute used to assess how much the worker can learn
+     */
+    public ExperienceImpact(double skillRatio, NaturalAttributeType experienceAttribute,
+                            boolean effortDriven, double stressModifier, SkillType skill) {
+        Set<SkillWeight> sw = Set.of(new SkillWeight(skill, 1));
+        init(skillRatio, sw, experienceAttribute, effortDriven,  stressModifier);
+    }
+
     /**
      * Cut down cosntructor where Skills are evenly weighted and expereicne is influenced on
      * EXPERIENCE_APTITUDE.

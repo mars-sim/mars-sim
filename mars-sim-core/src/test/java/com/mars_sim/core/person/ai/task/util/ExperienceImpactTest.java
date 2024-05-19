@@ -59,6 +59,46 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
 
     }
 
+    public void testApplySingleSkill() {
+        Settlement s = buildSettlement();
+        Person p = buildPerson("Worker #1", s);
+
+        double origStress = p.getPhysicalCondition().getStress();
+
+        // Prepare the skills, make sure 2 to be tested are level at the start
+        var sm = p.getSkillManager();
+        sm.addNewSkill(SkillType.BIOLOGY, 1);
+
+        var changed1 = sm.getSkill(SkillType.BIOLOGY);
+
+        var origChanged1Exp = changed1.getCumulativeExperience();
+
+        var unchanged = sm.getSkills().get(2);
+        var origUnChangedExp = unchanged.getCumulativeExperience();
+
+
+        double skillsRatio = 1D;
+        double stressRatio = 0D;  // No stress doing this
+
+        ExperienceImpact impact = new ExperienceImpact(skillsRatio,
+                                            NaturalAttributeType.EXPERIENCE_APTITUDE,
+                                            false, stressRatio, SkillType.BIOLOGY);
+
+        // Simple apply with no assistance
+        impact.apply(p, 100D, 1D, 1D);
+
+        // Check skills have changed
+        var newChanged1Exp = sm.getSkill(changed1.getType()).getCumulativeExperience();
+        var newUnChangedExp = sm.getSkill(unchanged.getType()).getCumulativeExperience();
+
+        assertEquals("Unchanged skill",  origUnChangedExp, newUnChangedExp);
+        assertGreaterThan("Changed #1 skill",  origChanged1Exp, newChanged1Exp);
+
+        double newStress = p.getPhysicalCondition().getStress();
+        assertEquals("Unchanged stress",  origStress, newStress);
+
+    }
+
     public void testApplyUnbalancedSkill() {
         Settlement s = buildSettlement();
         Person p = buildPerson("Worker #1", s);
