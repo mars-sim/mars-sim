@@ -4,7 +4,7 @@
  * @date 2022-09-24
  * @author Scott Davis
  */
-package com.mars_sim.core.person.ai.task.meta;
+package com.mars_sim.core.vehicle.task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,6 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
-import com.mars_sim.core.person.ai.task.UnloadVehicleEVA;
 import com.mars_sim.core.person.ai.task.UnloadVehicleGarage;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;

@@ -39,7 +39,8 @@ public class ExploreSite extends EVAOperation {
 	private static final String NAME = Msg.getString("Task.description.exploreSite"); //$NON-NLS-1$
 
 	/** Task phases. */
-	private static final TaskPhase EXPLORING = new TaskPhase(Msg.getString("Task.phase.exploring")); //$NON-NLS-1$
+	private static final TaskPhase EXPLORING = new TaskPhase(Msg.getString("Task.phase.exploring"),
+									createPhaseImpact(SkillType.AREOLOGY, SkillType.PROSPECTING));
 
 	// Static members
 	/** The average labor time it takes to find the resource. */
@@ -49,15 +50,11 @@ public class ExploreSite extends EVAOperation {
 	public static final double AVERAGE_ROCK_MASS = 5 + RandomUtil.getRandomDouble(5);
 	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5 + RandomUtil.getRandomDouble(5);
 
+    public static final LightLevel LIGHT_LEVEL = LightLevel.LOW;
+
 	// Data members
 	private double totalCollected = 0;
 	private double numSamplesCollected = AVERAGE_ROCK_COLLECTED_SITE / AVERAGE_ROCK_MASS;
-	
-	// Future: should keep track of the actual total exploring site time and use it below.
-	// The longer it stays, the more samples are collected and better the mining estimation
-	private double chance = 0.5;
-
-	private double skill;
 	
 	private ExploredLocation site;
 	private Rover rover;
@@ -72,9 +69,9 @@ public class ExploreSite extends EVAOperation {
 	 */
 	public ExploreSite(Person person, ExploredLocation site, Rover rover) {
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, LABOR_TIME + RandomUtil.getRandomDouble(-5D, 5D), SkillType.AREOLOGY);
+		super(NAME, person, LABOR_TIME + RandomUtil.getRandomDouble(-5D, 5D), EXPLORING);
 
-		addAdditionSkill(SkillType.PROSPECTING);
+		setMinimumSunlight(LIGHT_LEVEL);
 		
 		// Initialize data members.
 		this.site = site;
@@ -93,12 +90,7 @@ public class ExploreSite extends EVAOperation {
 						"No more specimen box for collecting rock samples.");
 				endTask();
 			}
-		}
-		
-		skill = (getEffectiveSkillLevel() + person.getSkillManager().getSkillLevel(SkillType.PROSPECTING)) / 2D;
-
-		// Add task phase
-		addPhase(EXPLORING);
+		}		
 	}
 	
 	
@@ -136,15 +128,10 @@ public class ExploreSite extends EVAOperation {
 				return false;
 
 			// Check if person's medical condition will not allow task.
-            return !(person.getPerformanceRating() < .2D);
+            return (person.getPerformanceRating() >= .2D);
 		}
 
 		return true;
-	}
-
-	@Override
-	protected TaskPhase getOutsideSitePhase() {
-		return EXPLORING;
 	}
 
 	@Override
@@ -171,7 +158,7 @@ public class ExploreSite extends EVAOperation {
 	private double exploringPhase(double time) {
 		double remainingTime = 0;
 		
-		if (checkReadiness(time, false) > 0)
+		if (checkReadiness(time) > 0)
 			return time;
 
 		// Add to the cumulative combined site time
@@ -182,11 +169,11 @@ public class ExploreSite extends EVAOperation {
 			return time;
 		}
 
+		int skill = getEffectiveSkillLevel();
 		int rand = RandomUtil.getRandomInt(5);
-
 		if (rand == 0) {
 			// Improve mineral concentration estimates.
-			improveMineralConcentrationEstimates(time);
+			improveMineralConcentrationEstimates(time, skill);
 		}
 		else if (rand == 1){
 			// Collect rocks.
@@ -223,7 +210,7 @@ public class ExploreSite extends EVAOperation {
 		if (hasSpecimenContainer()) {
 			
 			double siteTime = ((Exploration)person.getMission()).getSiteTime();
-			chance = numSamplesCollected * siteTime / 8000.0;
+			double chance = numSamplesCollected * siteTime / 8000.0;
 			
 			double probability = (1 + site.getNumEstimationImprovement()) * chance * time 
 					* (getEffectiveSkillLevel() + person.getSkillManager().getSkillLevel(SkillType.PROSPECTING)) / 2D;
@@ -262,7 +249,7 @@ public class ExploreSite extends EVAOperation {
 	 *
 	 * @param time the amount of time available (millisols).
 	 */
-	private void improveMineralConcentrationEstimates(double time) {
+	private void improveMineralConcentrationEstimates(double time, int skill) {
 
 		double siteTime = ((Exploration)person.getMission()).getSiteTime();
 			
@@ -297,9 +284,10 @@ public class ExploreSite extends EVAOperation {
 		MineralMap mineralMap = surfaceFeatures.getMineralMap();
 		Map<String, Double> estimatedMineralConcentrations = site.getEstimatedMineralConcentrations();
 
-		for (String mineralType : estimatedMineralConcentrations.keySet()) {
+		for (var entry : estimatedMineralConcentrations.entrySet()) {
+			var mineralType = entry.getKey();
 			double conc = mineralMap.getMineralConcentration(mineralType, site.getLocation());			
-			double estimate = estimatedMineralConcentrations.get(mineralType);
+			double estimate = entry.getValue();
 			double diff = Math.abs(conc - estimate);
 			
 			double certainty = site.getDegreeCertainty(mineralType);
@@ -309,20 +297,11 @@ public class ExploreSite extends EVAOperation {
 			double rand = RandomUtil.getRandomDouble(1D * skill * imp / 50 * variance);
 			if (rand > diff * 1.25)
 				rand = diff * 1.25;
-			if (estimate == conc)
-				;// do nothing;
-			else if (estimate < conc)
+			if (estimate < conc)
 				estimate += rand;
-			else
+			else if (estimate > conc)
 				estimate -= rand;
-			
-//			logger.info("Improving " + mineralType 
-//					+ " estimation - rand: " + Math.round(rand * 100.0)/100.0
-//					+ "   conc: " + Math.round(conc * 100.0)/100.0
-//					+ "   estimate: " + Math.round(estimate * 100.0)/100.0	
-//					+ "   diff: " + Math.round(diff * 100.0)/100.0
-//					);
-			
+
 			estimatedMineralConcentrations.put(mineralType, estimate);
 		}
 		
@@ -347,8 +326,6 @@ public class ExploreSite extends EVAOperation {
 	private boolean takeSpecimenContainer() {
 		
 		Container container = rover.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
-//		Container container = ContainerUtil.findLeastFullContainer(rover, EquipmentType.SPECIMEN_BOX, ROCK_SAMPLES_ID);
-
 		if (container != null) {
 			return container.transfer(person);
 		}
@@ -364,5 +341,6 @@ public class ExploreSite extends EVAOperation {
 			// Task may end early before a Rover is selected
 			returnEquipmentToVehicle(rover);
 		}
+		super.clearDown();
 	}
 }

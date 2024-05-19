@@ -44,7 +44,6 @@ import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.SettlementTemplate;
 import com.mars_sim.core.structure.building.connection.BuildingConnector;
 import com.mars_sim.core.structure.building.connection.BuildingConnectorManager;
 import com.mars_sim.core.structure.building.connection.InsideBuildingPath;
@@ -1284,52 +1283,6 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets a list of buildings that have a valid interior walking path from the
-	 * person's current building.
-	 *
-	 * @param person       the person.
-	 * @param buildingList initial list of buildings.
-	 * @return list of buildings with valid walking path.
-	 */
-	public static Set<Building> getWalkableBuildings(Worker worker, Set<Building> buildingList) {
-		Set<Building> result = new UnitSet<>();
-
-		if (worker instanceof Person person) {
-			Building currentBuilding = BuildingManager.getBuilding(person);
-			BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
-
-			if (currentBuilding != null) {
-				
-				for (Building building : buildingList) {
-					InsideBuildingPath validPath = connectorManager.determineShortestPath(currentBuilding,
-							currentBuilding.getPosition(), building, building.getPosition());
-
-					if (validPath != null) {
-						result.add(building);
-					}
-				}
-			}
-		} else {
-			Robot robot = (Robot) worker;
-			Building currentBuilding = BuildingManager.getBuilding(robot);
-			BuildingConnectorManager connectorManager = robot.getSettlement().getBuildingConnectorManager();
-
-			if (currentBuilding != null) {
-				
-				for (Building building : buildingList) {
-					InsideBuildingPath validPath = connectorManager.determineShortestPath(currentBuilding,
-							currentBuilding.getPosition(), building, building.getPosition());
-
-					if (validPath != null) {
-						result.add(building);
-					}
-				}
-			}
-		}
-		return result;
-	}
-
-	/**
 	 * Sets the building of a worker and add to life support or robotic station.
 	 *
 	 * @param worker   the worker to add.
@@ -2297,49 +2250,13 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
-	 * Gets the building that owns (is attached to) the EVA Airlock.
-	 * 
-	 * @param evaBuilding
-	 * @return
-	 */
-	private Building getEVAAttachedBuilding(Building evaBuilding) {
-		SettlementTemplate settlementTemplate = simulationConfig
-				.getSettlementConfiguration().getItem(getSettlement().getTemplate());
-		List<BuildingTemplate> templates = settlementTemplate.getBuildings();
-
-		String idEVAAttachedBuilding = "";
-		String nickName = null;
-		Building eVAAttachedBuilding = null;
-		
-		for (BuildingTemplate bt: templates) {
-			if (bt.getBuildingName().equalsIgnoreCase(evaBuilding.getName())) {
-				idEVAAttachedBuilding = bt.getEVAAttachedBuildingID();
-			}
-		}
-		
-		for (BuildingTemplate bt: templates) {
-			if (bt.getID().equalsIgnoreCase(idEVAAttachedBuilding)) {
-				nickName = bt.getBuildingName();
-			}
-		}
-		
-		for (Building b: buildings) {
-			if (b.getName().equalsIgnoreCase(nickName)) {
-				eVAAttachedBuilding = b;
-			}
-		}
-		
-		return eVAAttachedBuilding;
-	}
-	
-	/**
 	 * Is the astronomy observatory the owner of this EVA Airlock ?
 	 * 
 	 * @param airlockBuilding
 	 * @return
 	 */
 	public boolean isObservatoryAttached(Building airlockBuilding) {
-		if (getEVAAttachedBuilding(airlockBuilding).hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION))
+		if (airlockBuilding.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION))
 			return true;
 
  		for (Building bb : createAdjacentBuildings(airlockBuilding)) {

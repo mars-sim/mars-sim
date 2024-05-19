@@ -15,6 +15,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
+import com.mars_sim.core.person.ai.task.EVAOperation.LightLevel;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.time.MarsTime;
@@ -40,16 +41,15 @@ abstract class EVAMission extends RoverMission {
     private boolean activeEVA = true;
 	private int containerID;
 	private int containerNum;
-
-	// Does these EVA work in the dark?
-	private boolean ignoreSunlight;
+	private LightLevel minSunlight;
 
     protected EVAMission(MissionType missionType, 
             Worker startingPerson, Rover rover,
-            MissionPhase evaPhase) {
+            MissionPhase evaPhase, LightLevel minSunlight) {
         super(missionType, startingPerson, rover);
         
         this.evaPhase = evaPhase;
+		this.minSunlight = minSunlight;
 
 		// Check suit although these may be claimed before loading
 		int suits = MissionUtil.getNumberAvailableEVASuitsAtSettlement(getStartingSettlement());
@@ -57,10 +57,6 @@ abstract class EVAMission extends RoverMission {
 			endMission(EVA_SUIT_CANNOT_BE_LOADED);
 		}
     }
-
-	protected void setIgnoreSunlight(boolean newIgnore) {
-		ignoreSunlight = newIgnore;
-	}
     
 	@Override
 	protected boolean determineNewPhase() {
@@ -117,9 +113,9 @@ abstract class EVAMission extends RoverMission {
 		return result;
 	}
 
-		/**
+	/**
 	 * Check that if the sunlight is suitable to continue
-	 * @param member
+	 * @param member Member triggering the waiting
 	 */
 	private void performWaitForSunlight(Worker member) {
 		if (isEnoughSunlightForEVA()) {
@@ -139,7 +135,16 @@ abstract class EVAMission extends RoverMission {
 	 * @return
 	 */
 	protected boolean isEnoughSunlightForEVA() {
-		return ignoreSunlight || EVAOperation.isEnoughSunlightForEVA(getCurrentMissionLocation());
+		var locn = getCurrentMissionLocation();
+
+		if (minSunlight == LightLevel.NONE) {
+			// Don't bother calculating sunlight; EVA valid in whatever conditions
+			return true;
+		}
+
+		// This is equivalent of a 1% sun ratio as below
+		return (EVAOperation.isSunlightAboveLevel(locn, minSunlight)
+					&& !surfaceFeatures.inDarkPolarRegion(locn));
 	}
 
 	/**
@@ -331,7 +336,7 @@ abstract class EVAMission extends RoverMission {
 	 *
 	 * @return number of sites.
 	 */
-	public final int getNumEVASitesVisited() {
+	private final int getNumEVASitesVisited() {
 		int result = getCurrentNavpointIndex();
 		if (result == (getNavpoints().size() - 1))
 			result -= 1;

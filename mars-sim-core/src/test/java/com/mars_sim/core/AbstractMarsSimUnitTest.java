@@ -1,8 +1,6 @@
 package com.mars_sim.core;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.junit.Before;
 
@@ -10,11 +8,8 @@ import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.ai.mission.TravelToSettlement;
-import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
 import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.science.task.MarsSimContext;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
@@ -39,7 +34,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	protected static final double BUILDING_LENGTH = 9D;
 	protected static final double BUILDING_WIDTH = 9D;
 
-	private static final double MSOLS_PER_EXECUTE = 0.1D;
+	protected static final double MSOLS_PER_EXECUTE = 0.1D;
 	
 	protected UnitManager unitManager;
 	protected MarsSurface surface;
@@ -93,17 +88,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 
 	protected VehicleGarage buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
-	
-		// Garage has to have a valid bulding type
-		MockBuilding building0 = buildBuilding(buildingManager, "Garage", BuildingCategory.VEHICLE,
-									pos, facing, id);
-
-		var spec = simConfig.getBuildingConfiguration().getFunctionSpec(building0.getBuildingType(),
-																FunctionType.VEHICLE_MAINTENANCE);
-	    building0.addFunction(spec);
-
-
-		buildingManager.refreshFunctionMapForBuilding(building0);
+		var building0 = buildFunction(buildingManager, "Garage", BuildingCategory.VEHICLE,
+									FunctionType.VEHICLE_MAINTENANCE,  pos, facing, id);
 	    
 	    return building0.getVehicleParking();
 	}
@@ -112,7 +98,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		return buildBuilding(buildingManager, "Mock", BuildingCategory.COMMAND, pos, facing, id);
 	}
 
-	protected MockBuilding buildBuilding(BuildingManager buildingManager, String type, BuildingCategory cat, LocalPosition pos, double facing, int id) {
+	private MockBuilding buildBuilding(BuildingManager buildingManager, String type, BuildingCategory cat, LocalPosition pos, double facing, int id) {
 
 		String name = "B" + id;
 		var building0 = new MockBuilding(buildingManager.getSettlement(), name, id,
@@ -125,29 +111,32 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	    return building0;
 	}
 
-	public Building buildResearch(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
-		MockBuilding building0 = buildBuilding(buildingManager, "Lander Hab", BuildingCategory.LABORATORY,  pos, facing, id);
+	protected Building buildFunction(BuildingManager buildingManager, String type, BuildingCategory cat,
+							FunctionType fType, LocalPosition pos, double facing, int id) {
+		MockBuilding building0 = buildBuilding(buildingManager, type, cat,  pos, facing, id);
 
-		var spec = simConfig.getBuildingConfiguration().getFunctionSpec("Lander Hab", FunctionType.RESEARCH);
+		var spec = simConfig.getBuildingConfiguration().getFunctionSpec(type, fType);
 
 	    building0.addFunction(spec);
+		buildingManager.refreshFunctionMapForBuilding(building0);
+
 	    return building0;
+	}
+
+	public Building buildResearch(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+		return buildFunction(buildingManager, "Lander Hab", BuildingCategory.LABORATORY,
+							FunctionType.RESEARCH,  pos, facing, id);
 	}
 
 	protected Building buildRecreation(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
-		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
-
-		var spec = simConfig.getBuildingConfiguration().getFunctionSpec("Lander Hab", FunctionType.RECREATION);
-
-	    building0.addFunction(spec);
-	    return building0;
+		return buildFunction(buildingManager, "Lander Hab", BuildingCategory.LIVING,
+								FunctionType.RECREATION,  pos, facing, id);
 	}
 
-	protected Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
-		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
-
-		var evaSpec = simConfig.getBuildingConfiguration().getFunctionSpec("EVA Airlock", FunctionType.EVA);
-	    building0.addFunction(evaSpec);
+	@Override
+	public Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+		var building0 = buildFunction(buildingManager, "EVA Airlock", BuildingCategory.EVA_AIRLOCK,
+						FunctionType.EVA,  pos, facing, id);
 		
 		var spec = simConfig.getBuildingConfiguration().getFunctionSpec("Lander Hab", FunctionType.LIVING_ACCOMMODATION);
 	    building0.addFunction(spec);
@@ -155,13 +144,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 
 	protected Building buildAccommodation(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
-		MockBuilding building0 = buildBuilding(buildingManager, "Lander Hab", BuildingCategory.LIVING,  pos, facing, id);
-
-		// Need to rework to allow maven to test this
-		var quartersSpec = simConfig.getBuildingConfiguration().getFunctionSpec("Residential Quarters", FunctionType.LIVING_ACCOMMODATION);
-
-	    building0.addFunction(quartersSpec);
-	    return building0;
+		return buildFunction(buildingManager, "Residential Quarters", BuildingCategory.LIVING,
+					FunctionType.LIVING_ACCOMMODATION,  pos, facing, id);
 	}
 	
 	protected Settlement buildSettlement() {
@@ -180,30 +164,18 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 
 	public Person buildPerson(String name, Settlement settlement) {
+		return buildPerson(name, settlement, JobType.ENGINEER);
+	}
+
+	public Person buildPerson(String name, Settlement settlement, JobType job) {
 		Person person = Person.create(name, settlement, GenderType.MALE)
 				.build();
-		person.setJob(JobType.ENGINEER, "Test");
+		person.setJob(job, "Test");
 		
 		unitManager.addUnit(person);
 		return person;
 	}
 
-	/**
-	 * Builds a pseudo vehicle mission that can be used in tests.
-	 */
-	protected VehicleMission buildMission(Settlement starting, Person leader) {
-		// Need a vehicle
-		Rover rover = buildRover(starting, "loader", null);
-
-		Building garage = buildBuilding(starting.getBuildingManager(), new LocalPosition(0,0), 0D, 1);
-		BuildingManager.addPersonToActivitySpot(leader, garage, FunctionType.VEHICLE_MAINTENANCE);
-
-		List<Worker> members = new ArrayList<>();
-		members.add(leader);
-
-		Settlement destination = buildSettlement();
-		return new TravelToSettlement(members, destination, rover);
-	}
 
 	/**
 	 * Executes a Task for a duration or until it completes.
@@ -240,6 +212,28 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 
 	/**
+	 * Executes a Task for a number of steps or phase changes
+	 * 
+	 * @param person
+	 * @param task
+	 * @param maxSteps
+	 * @return The number of calls taken
+	 */
+	protected int executeTaskUntilPhase(Person person, Task task, int maxCalls) {
+		PersonTaskManager tm = person.getMind().getTaskManager();
+		tm.replaceTask(task);
+		
+		var phase = task.getPhase();
+		int callsLeft = maxCalls;
+		while ((callsLeft > 0) && !task.isDone() && phase.equals(task.getPhase())) {
+			tm.executeTask(MSOLS_PER_EXECUTE);
+			callsLeft--;
+		}
+		
+		return maxCalls - callsLeft;
+	}
+
+	/**
      * Creates a Clock pulse that just contains a MarsClock at a specific time.
      * 
      * @param missionSol Sol in the current mission
@@ -253,8 +247,9 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 
 	public ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol) {
-		sim.getMasterClock().setMarsTime(marsTime);
-        return new ClockPulse(pulseID++, 1D, marsTime, null, newSol, newHalfSol, true);
+		var master = sim.getMasterClock();
+		master.setMarsTime(marsTime);
+        return new ClockPulse(pulseID++, 1D, marsTime, master, newSol, newHalfSol, true);
     }
 
 	/**
@@ -268,7 +263,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		}
 	}
 
-	public static void assertLessThan(String message, int maxValue, int actual) {
+	public static void assertLessThan(String message, double maxValue, double actual) {
 		if (actual > maxValue) {
 			fail(message + " ==> " +
 					"Expected: a value less than <" + maxValue + ">\n" +

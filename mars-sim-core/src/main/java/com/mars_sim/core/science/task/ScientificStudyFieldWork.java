@@ -4,28 +4,41 @@
  * @date 2023-09-17
  * @author Barry Evans
  */
-package com.mars_sim.core.person.ai.task;
+package com.mars_sim.core.science.task;
 
 import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.EVAOperation;
+import com.mars_sim.core.person.ai.task.ExitAirlock;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A task for the EVA operation of performing field work at a research
  * site for a scientific study.
  */
-public abstract class ScientificStudyFieldWork extends EVAOperation {
+public  class ScientificStudyFieldWork extends EVAOperation {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(ScientificStudyFieldWork.class.getName());
+
+    private static final String BIOLOGY_NAME = Msg.getString("Task.description.biologyFieldWork"); //$NON-NLS-1$
+    private static final TaskPhase BIOLOGY_WORK = new TaskPhase(Msg.getString("Task.phase.fieldWork.biology"),
+							createPhaseImpact(SkillType.BIOLOGY)); //$NON-NLS-1$
+	private static final String AREOLOGY_NAME = Msg.getString("Task.description.areologyFieldWork"); //$NON-NLS-1$
+	private static final TaskPhase AREOLOGY_WORK = new TaskPhase(Msg.getString("Task.phase.fieldWork.areology"),
+							createPhaseImpact(SkillType.AREOLOGY));
+	public static final LightLevel LIGHT_LEVEL = LightLevel.LOW;
 
 	// Data members
 	private Person leadResearcher;
@@ -45,8 +58,9 @@ public abstract class ScientificStudyFieldWork extends EVAOperation {
 									   ScientificStudy study, Rover rover) {
 
 		// Use EVAOperation parent constructor.
-		super(name, person, true, RandomUtil.getRandomDouble(50D) + 10D, 
-			  study.getScience().getSkill());
+		super(name, person, RandomUtil.getRandomDouble(50D) + 10D, fieldwork);
+		
+		setMinimumSunlight(LIGHT_LEVEL);
 
 		// Initialize data members.
 		this.leadResearcher = leadResearcher;
@@ -58,9 +72,29 @@ public abstract class ScientificStudyFieldWork extends EVAOperation {
 
 		// Add task phases
 		this.fieldWork = fieldwork;
-		addPhase(fieldWork);
 	}
 
+	public static ScientificStudyFieldWork createFieldStudy(ScienceType science, Person person, Person leadResearcher,
+									ScientificStudy study, Rover rover) {
+		String name;
+		TaskPhase fieldwork;
+
+		switch(science) {
+			case BIOLOGY:
+				name = BIOLOGY_NAME;
+				fieldwork = BIOLOGY_WORK;
+				break;
+			case AREOLOGY:
+				name = AREOLOGY_NAME;
+				fieldwork = AREOLOGY_WORK;
+				break;
+			
+			default:
+				throw new IllegalArgumentException("Science type can not have field study " + science.getName());
+		}
+		return new ScientificStudyFieldWork(name, fieldwork, person, leadResearcher, study, rover);
+	}
+	
 	/**
 	 * Checks if a person can research a site.
 	 * 
@@ -92,11 +126,6 @@ public abstract class ScientificStudyFieldWork extends EVAOperation {
 	}
 
 	@Override
-	protected TaskPhase getOutsideSitePhase() {
-		return fieldWork;
-	}
-
-	@Override
 	protected double performMappedPhase(double time) {
 
 		time = super.performMappedPhase(time);
@@ -119,7 +148,7 @@ public abstract class ScientificStudyFieldWork extends EVAOperation {
 	private double fieldWorkPhase(double time) {
 		double remainingTime = 0;
 		
-		if (checkReadiness(time, false) > 0) {
+		if (checkReadiness(time) > 0) {
 			return time;
 		}	
 		

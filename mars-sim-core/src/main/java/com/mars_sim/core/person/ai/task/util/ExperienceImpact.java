@@ -91,13 +91,15 @@ public class ExperienceImpact implements Serializable {
     public void apply(Worker worker, double duration, double assistance, double effectiveness) {
         // Update skills
         if (!skillWeights.isEmpty()) {
-            double newPoints = (duration / skillRatio) * (1 + assistance);
+            // Points calculated
+            // 1) By the duration divided by the skill ratio
+            // 2) Multiplied by any assitence, e.g. teaching
+            double newPoints = (duration / skillRatio) * assistance;
 
-            // Add experience to "Primary skill" skill
-            // (1 base experience point per X millisols of work)
-            // Experience points adjusted by worker natural attribute.
-            int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(experienceInfluence);
-            newPoints *= 1D + ((experienceAptitude - 50D) / 100D);
+            // 3) Natural ability to handle the experience
+            newPoints *= getExperienceModifier(worker);
+
+            // 4) Pro-rate the new points according to the individual skill weights
 			SkillManager sm = worker.getSkillManager();
 			for (var skillType : skillWeights) {
 				sm.addExperience(skillType.skill(), (newPoints * skillType.weight())/totalSkillWeight,
@@ -114,6 +116,17 @@ public class ExperienceImpact implements Serializable {
         else if (worker instanceof Robot r) {
             applyRobotBenfits(r, duration);
         }
+    }
+
+    /**
+     * Return the experience modifer for this Worker to learn from this experience
+     * @param worker
+     * @return Should return a positive value
+     */
+    protected double getExperienceModifier(Worker worker) {
+        // Experience points adjusted by worker natural attribute.
+        int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(experienceInfluence);
+        return 1D + ((experienceAptitude - 50D) / 100D);
     }
 
     // Calculate the energy time

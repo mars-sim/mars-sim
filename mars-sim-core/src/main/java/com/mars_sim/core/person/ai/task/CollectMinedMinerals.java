@@ -11,17 +11,13 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.ContainerUtil;
-import com.mars_sim.core.equipment.EVASuit;
-import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.AmountResource;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
@@ -44,7 +40,8 @@ public class CollectMinedMinerals extends EVAOperation {
 	static final String SIMPLE_NAME = CollectMinedMinerals.class.getSimpleName();
 	
 	/** Task phases. */
-	private static final TaskPhase COLLECT_MINERALS = new TaskPhase(Msg.getString("Task.phase.collectMinerals")); //$NON-NLS-1$
+	private static final TaskPhase COLLECT_MINERALS = new TaskPhase(Msg.getString("Task.phase.collectMinerals"),
+															createPhaseImpact(SkillType.AREOLOGY, SkillType.PROSPECTING));
 
 	/** Rate of mineral collection (kg/millisol). */
 	private static final double MINERAL_SELECTION_RATE = .2;
@@ -66,10 +63,8 @@ public class CollectMinedMinerals extends EVAOperation {
 	public CollectMinedMinerals(Person person, Rover rover, AmountResource mineralType) {
 
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, LABOR_TIME + RandomUtil.getRandomDouble(-5, 5),
-					SkillType.AREOLOGY);
-		
-		addAdditionSkill(SkillType.PROSPECTING);
+		super(NAME, person, LABOR_TIME + RandomUtil.getRandomDouble(-5, 5), COLLECT_MINERALS);
+		setMinimumSunlight(MineSite.LIGHT_LEVEL);
 	       
 		// Initialize data members.
 		this.rover = rover;
@@ -89,9 +84,6 @@ public class CollectMinedMinerals extends EVAOperation {
 				endTask();
 			}
 		}
-
-		// Add task phases
-		addPhase(COLLECT_MINERALS);
 	}
 
 	/**
@@ -123,11 +115,6 @@ public class CollectMinedMinerals extends EVAOperation {
 	}
 
 	@Override
-	protected TaskPhase getOutsideSitePhase() {
-		return COLLECT_MINERALS;
-	}
-
-	@Override
 	protected double performMappedPhase(double time) {
 
 		time = super.performMappedPhase(time);
@@ -150,7 +137,7 @@ public class CollectMinedMinerals extends EVAOperation {
 	 */
 	private double collectMineralsPhase(double time) {
 
-		if (checkReadiness(time, false) > 0) {
+		if (checkReadiness(time) > 0) {
 			return time;
 		}
 		
@@ -163,19 +150,6 @@ public class CollectMinedMinerals extends EVAOperation {
 		
 		double mineralsExcavated = mining.getMineralExcavationAmount(mineralType);
 		double remainingPersonCapacity = 0;
-
-//		double roverRemainingCap = rover.getAmountResourceRemainingCapacity(mineralType.getID());
-//		
-//		double weight = 0;
-//		if (person != null)
-//			weight = person.getMass();
-//		else if (robot != null)
-//			weight = robot.getMass();
-//		
-//		if (roverRemainingCap < weight + 5) {
-//			checkLocation();
-//			return time;
-//		}
 			
 		remainingPersonCapacity = worker.getRemainingCargoCapacity();
 
@@ -227,66 +201,7 @@ public class CollectMinedMinerals extends EVAOperation {
 			// Task may end early before a Rover is selected
 			returnEquipmentToVehicle(rover);
 		}
-	}
 
-	/**
-	 * Checks if a person can perform a CollectMinedMinerals task.
-	 * 
-	 * @param member      the member to perform the task
-	 * @param rover       the rover the person will EVA from
-	 * @param mineralType the resource to collect.
-	 * @return true if person can perform the task.
-	 */
-	public static boolean canCollectMinerals(Worker member, Rover rover, AmountResource mineralType) {
-
-		boolean result = false;
-
-		if (member instanceof Person) {
-			Person person = (Person) member;
-
-			// Check if person can exit the rover.
-			if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
-				return false;
-
-//			if (EVAOperation.isGettingDark(person)) {
-//				return false;
-//			}
-
-			if (!isEnoughSunlightForEVA(person.getCoordinates())) {
-				return false;
-			}
-			
-			// Check if person's medical condition will not allow task.
-			if (person.getPerformanceRating() < .2D)
-				return false;
-
-			if (person.isSuperUnFit())
-				return false;
-			
-			// Checks if available bags with remaining capacity for resource.
-			Container bag = ContainerUtil.findLeastFullContainer(rover,
-																EquipmentType.LARGE_BAG,
-																mineralType.getID());
-			boolean bagAvailable = (bag != null);
-
-			// Check if bag and full EVA suit can be carried by person or is too heavy.
-			double carryMass = 0D;
-			if (bag != null) {
-				carryMass += bag.getBaseMass();
-			}
-
-			EVASuit suit = EVASuitUtil.findRegisteredOrGoodEVASuit(person);
-			if (suit != null) {
-				carryMass += suit.getMass();
-				carryMass += suit.getAmountResourceRemainingCapacity(ResourceUtil.oxygenID);
-				carryMass += suit.getAmountResourceRemainingCapacity(ResourceUtil.waterID);
-			}
-			double carryCapacity = person.getCarryingCapacity();
-			boolean canCarryEquipment = (carryCapacity >= carryMass);
-
-			result = (bagAvailable && canCarryEquipment);
-		}
-
-		return result;
+		super.clearDown();
 	}
 }

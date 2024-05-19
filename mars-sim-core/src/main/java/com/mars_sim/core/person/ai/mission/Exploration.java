@@ -65,6 +65,8 @@ public class Exploration extends EVAMission
 	/** Amount of time to explore a site. */
 	private static final double STANDARD_TIME_PER_SITE = 250.0;
 	
+	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TOURISM, ObjectiveType.TRANSPORTATION_HUB);
+	
 	/** Number of collection sites. */
 	private int numSites;
 	
@@ -72,8 +74,6 @@ public class Exploration extends EVAMission
 	 * The cumulative and combined site time for all members who will explore the site
 	 */
 	private double siteTime;
-	
-	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TOURISM, ObjectiveType.TRANSPORTATION_HUB);
 
 	// Data members
 	/** Map of exploration sites and their completion. */
@@ -93,8 +93,7 @@ public class Exploration extends EVAMission
 
 		// Use RoverMission constructor.
 		super(MISSION_TYPE, startingPerson, null,
-				EXPLORE_SITE);
-		setIgnoreSunlight(true);
+				EXPLORE_SITE, ExploreSite.LIGHT_LEVEL);
 		
 		Settlement s = getStartingSettlement();
 
@@ -148,10 +147,8 @@ public class Exploration extends EVAMission
 
 		// Use RoverMission constructor.
 		super(MISSION_TYPE,(Worker) members.toArray()[0], rover,
-				EXPLORE_SITE);
-		
-		setIgnoreSunlight(true);
-		
+				EXPLORE_SITE, ExploreSite.LIGHT_LEVEL);
+				
 		Person person = (Person)members.toArray()[0];
 		
 		int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);		
@@ -452,7 +449,6 @@ public class Exploration extends EVAMission
 
 			double orderedSitesTotalDistance = getTotalDistance(startingLocation, orderedSites);
 
-			sites = unorderedSites;
 			if (orderedSitesTotalDistance < unorderedSitesTotalDistance) {
 				sites = orderedSites;
 			} else {

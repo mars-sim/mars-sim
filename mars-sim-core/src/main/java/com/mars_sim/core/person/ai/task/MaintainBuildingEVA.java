@@ -42,7 +42,7 @@ extends EVAOperation {
 
     /** Task phases. */
     private static final TaskPhase MAINTAIN = new TaskPhase(Msg.getString(
-            "Task.phase.maintain")); //$NON-NLS-1$
+            "Task.phase.maintain"), createPhaseImpact(SkillType.MECHANICS));
 
     
 	// Data members
@@ -56,7 +56,7 @@ extends EVAOperation {
 	 * @param person the person to perform the task
 	 */
 	public MaintainBuildingEVA(Person person, Building target) {
-		super(NAME, person, true, RandomUtil.getRandomDouble(90, 100), SkillType.MECHANICS);
+		super(NAME, person, RandomUtil.getRandomDouble(90, 100), MAINTAIN);
 
 		if (!person.isNominallyFit()) {
 			checkLocation("Not nominally fit.");
@@ -88,17 +88,7 @@ extends EVAOperation {
         
 	    // Determine location for maintenance.
         setOutsideLocation((LocalBoundedObject) entity);
-
-		// Initialize phase
-		addPhase(MAINTAIN);
-
-		logger.fine(person, "Starting " + getDescription());
 	}
-
-    @Override
-    protected TaskPhase getOutsideSitePhase() {
-        return MAINTAIN;
-    }
 
     @Override
     protected double performMappedPhase(double time) {
@@ -125,7 +115,7 @@ extends EVAOperation {
 	 */
 	private double maintenancePhase(double time) {
 		
-		if (checkReadiness(time, true) > 0)
+		if (checkReadiness(time) > 0)
 			return time;
 		
 		MalfunctionManager manager = entity.getMalfunctionManager();
@@ -153,10 +143,6 @@ extends EVAOperation {
 		if (mechanicSkill > 1) {
 		    workTime += workTime * (.4D * mechanicSkill);
 		}	
-		
-//		String des = DETAIL + entity.getName();
-//		setDescription(des);
-//		logger.info(worker, 4_000, des + ".");
 			
 		// Note: if parts don't exist, it simply means that one can still do the 
 		// inspection portion of the maintenance with no need of replacing any parts

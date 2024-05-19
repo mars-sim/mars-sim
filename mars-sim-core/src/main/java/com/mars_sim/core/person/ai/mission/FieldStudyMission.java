@@ -8,18 +8,17 @@ package com.mars_sim.core.person.ai.mission;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.ai.task.ScientificStudyFieldWork;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
+import com.mars_sim.core.science.task.ScientificStudyFieldWork;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.mapdata.location.Coordinates;
@@ -43,7 +42,6 @@ public abstract class FieldStudyMission extends EVAMission {
 	private static final MissionStatus NO_ONGOING_SCIENTIFIC_STUDY = new MissionStatus("Mission.status.noStudy");
 
 	private static final int MIN_MEMEBRS = 2;
-
 	
 	// Data members
 	/** The field site location. */
@@ -66,7 +64,7 @@ public abstract class FieldStudyMission extends EVAMission {
 								ScienceType science, double fieldSiteTime, boolean needsReview) {
 
 		// Use RoverMission constructor.
-		super(missionType, startingPerson, null, RESEARCH_SITE);
+		super(missionType, startingPerson, null, RESEARCH_SITE, ScientificStudyFieldWork.LIGHT_LEVEL);
 
 		this.science = science;
 		this.fieldSiteTime = fieldSiteTime;
@@ -122,7 +120,7 @@ public abstract class FieldStudyMission extends EVAMission {
 			Coordinates fieldSite) {
 
 		// Use RoverMission constructor.
-		super(missionType, leadResearcher, rover, RESEARCH_SITE);
+		super(missionType, leadResearcher, rover, RESEARCH_SITE, ScientificStudyFieldWork.LIGHT_LEVEL);
 
 		this.study = study;
 		this.science = study.getScience();
@@ -174,41 +172,29 @@ public abstract class FieldStudyMission extends EVAMission {
 	 * @return scientific study or null if none determined.
 	 */
 	public static ScientificStudy determineStudy(ScienceType science, Person researcher) {
-		ScientificStudy result = null;
-
 		List<ScientificStudy> possibleStudies = new ArrayList<>();
 
 		// Add primary study if in research phase.
 		ScientificStudy primaryStudy = researcher.getStudy();
-		if (primaryStudy != null) {
-			if ((StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase())
-					&& !primaryStudy.isPrimaryResearchCompleted()
-					&& (science == primaryStudy.getScience())) {
-				// Primary study added twice to double chance of random selection.
-				possibleStudies.add(primaryStudy);
-				possibleStudies.add(primaryStudy);
-			}
+		if ((primaryStudy != null) && (StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase())
+				&& !primaryStudy.isPrimaryResearchCompleted()
+				&& (science == primaryStudy.getScience())) {
+			// Primary study added twice to double chance of random selection.
+			possibleStudies.add(primaryStudy);
+			possibleStudies.add(primaryStudy);
 		}
 
 		// Add all collaborative studies in research phase.
-		Iterator<ScientificStudy> i = researcher.getCollabStudies().iterator();
-		while (i.hasNext()) {
-			ScientificStudy collabStudy = i.next();
+		for( ScientificStudy collabStudy : researcher.getCollabStudies()) {
 			if (StudyStatus.RESEARCH_PHASE.equals(collabStudy.getPhase())
-					&& !collabStudy.isCollaborativeResearchCompleted(researcher)) {
-				if (science == collabStudy.getContribution(researcher)) {
-					possibleStudies.add(collabStudy);
-				}
+					&& !collabStudy.isCollaborativeResearchCompleted(researcher)
+					&& (science == collabStudy.getContribution(researcher))) {
+				possibleStudies.add(collabStudy);
 			}
 		}
 
 		// Randomly select study.
-		if (possibleStudies.size() > 0) {
-			int selected = RandomUtil.getRandomInt(possibleStudies.size() - 1);
-			result = possibleStudies.get(selected);
-		}
-
-		return result;
+		return RandomUtil.getRandomElement(possibleStudies);
 	}
 
 	/**

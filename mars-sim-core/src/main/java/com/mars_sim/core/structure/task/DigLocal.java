@@ -5,8 +5,9 @@
  * @author Scott Davis
  */
 
-package com.mars_sim.core.person.ai.task;
+package com.mars_sim.core.structure.task;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -22,6 +23,8 @@ import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.EVAOperation;
+import com.mars_sim.core.person.ai.task.WalkOutside;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -47,7 +50,8 @@ public abstract class DigLocal extends EVAOperation {
 	private static SimLogger logger = SimLogger.getLogger(DigLocal.class.getName());
 	/** The extended amount of millisols for dropping off resources. */
 	public static final int EXTENDED_TIME = 5;
-	
+
+	public static final int MAX_DROPOFF_DISTANCE = 10;
 	public static final int MAX_DIGGING_DISTANCE = 100;
 	
 	public static final double SMALL_AMOUNT = 0.001;
@@ -56,9 +60,9 @@ public abstract class DigLocal extends EVAOperation {
 
 	public static final String WALK = "walk";
 	
-	private static final TaskPhase DROP_OFF_RESOURCE = new TaskPhase(
+	static final TaskPhase DROP_OFF_RESOURCE = new TaskPhase(
 												Msg.getString("Task.phase.dropOffResource")); //$NON-NLS-1$
-	private static final TaskPhase WALK_TO_BIN = new TaskPhase(
+	static final TaskPhase WALK_TO_BIN = new TaskPhase(
 												Msg.getString("Task.phase.walkToBin")); //$NON-NLS-1$
 
 	// Resource being collected
@@ -93,10 +97,10 @@ public abstract class DigLocal extends EVAOperation {
 	protected DigLocal(String name, TaskPhase collectionPhase, int resourceID,
 					EquipmentType containerType, Person person, int duration) {
         // Use EVAOperation constructor.
-        super(name, person, false, duration, SkillType.AREOLOGY);
+        super(name, person, duration, collectionPhase);
 
-        addAdditionSkill(SkillType.PROSPECTING);
-        
+		setMinimumSunlight(LightLevel.NONE);
+
         this.containerType = containerType;
         this.resourceID = resourceID;
         this.resourceName = ResourceUtil.findAmountResourceName(resourceID);
@@ -145,22 +149,15 @@ public abstract class DigLocal extends EVAOperation {
 	        	return;
 	        }
         }
-        
-       	// Add task phases
-    	addPhase(collectionPhase);
-    	addPhase(DROP_OFF_RESOURCE);
 
         setPhase(WALK_TO_OUTSIDE_SITE);
     }
 	
-
 	/**
-	 * Gets the settlement where digging is taking place.
-	 * 
-	 * @return
+	 * Where will any resources be dropped off on the surface
 	 */
-	protected Settlement getSettlement() {
-		return settlement;
+	LocalPosition getDropOffLocation() {
+		return dropOffLoc;
 	}
 
 	/**
@@ -184,6 +181,7 @@ public abstract class DigLocal extends EVAOperation {
      * @param time the amount of time the phase is to be performed.
      * @return the remaining time after the phase has been performed.
      */
+	@Override
     protected double performMappedPhase(double time) {
 
         time = super.performMappedPhase(time);
@@ -195,7 +193,7 @@ public abstract class DigLocal extends EVAOperation {
 	            time = collectResource(time);
 	        }
 			else if (WALK_TO_BIN.equals(getPhase())) {
-				time = walkToBin(time);
+				time = walkToBin();
 			}
 	        else if (DROP_OFF_RESOURCE.equals(getPhase())) {
 	            time = dropOffResource(time);
@@ -207,16 +205,9 @@ public abstract class DigLocal extends EVAOperation {
 	/**
 	 * Walks to a storage bin by adding a walking sub task. 
 	 * 
-	 * @param time
 	 * @return
 	 */
-    private double walkToBin(double time) {
-		if (dropOffLoc == null) {
-			logger.severe(person, "No location for storage bin.");
-			endTask();
-			return 0;
-		}
-		
+    private double walkToBin() {
     	// Go to the drop off location
         if (person.isOutside()) {
         	
@@ -305,7 +296,7 @@ public abstract class DigLocal extends EVAOperation {
     	// Get a container
         Container container = person.findContainer(containerType, false, resourceID);
        
-		if (checkReadiness(time, false) > 0) {
+		if (checkReadiness(time) > 0) {
 			if (!((Equipment)container).isEmpty(false)) {
 				// Has resources in container
 				setPhase(WALK_TO_BIN);
@@ -340,9 +331,7 @@ public abstract class DigLocal extends EVAOperation {
 
         if (collected > SMALL_AMOUNT) {
         	double excess = container.storeAmountResource(resourceID, collected);
-        	if (excess > 0) {
-    			finishedCollecting = true;
-            }
+        	finishedCollecting = (excess > 0);
 	     	collectionLimit += collected - excess;
 	     	
 	     	person.getPhysicalCondition().stressMuscle(time);
@@ -356,10 +345,8 @@ public abstract class DigLocal extends EVAOperation {
     		}
         }
 
-        if (!finishedCollecting) {
-        	// Can not physically carry any more
-	        finishedCollecting = (person.getRemainingCarryingCapacity() <= 0);
-		}
+		// Can not physically carry any more
+		finishedCollecting = finishedCollecting || (person.getRemainingCarryingCapacity() <= 0);
 
         PhysicalCondition condition = person.getPhysicalCondition();
         double strengthMod = condition.getStrengthMod();
@@ -461,12 +448,6 @@ public abstract class DigLocal extends EVAOperation {
         return container;
     }
 
-    @Override
-    protected TaskPhase getOutsideSitePhase() {
-        return collectionPhase;
-    }
-    
-	
 	/**
 	 * Finds a map of buildings having storage functions that can or cannot 
 	 * hold resources being collected.
@@ -479,7 +460,7 @@ public abstract class DigLocal extends EVAOperation {
 		// Find any Storage function that can hold the resource being collected but
 		// group by Buildings that are categorised as Storage
 		return worker.getSettlement().getBuildingManager()
-			.getBuildings(FunctionType.STORAGE).stream()
+			.getBuildingSet(FunctionType.STORAGE).stream()
 			.filter(b -> b.getStorage().getResourceStorageCapacity().containsKey(resourceID))
 			.collect(Collectors.groupingBy(x -> (x.getCategory() == BuildingCategory.STORAGE)));
 	}
@@ -496,24 +477,18 @@ public abstract class DigLocal extends EVAOperation {
 		Map<Boolean, List<Building>> binMap = findStorageBuildings(worker, resourceID);
 		
 		// Preference is Storage buildings
-		List<Building> binList = binMap.get(true);
+		List<Building> binList = binMap.computeIfAbsent(true, (v -> Collections.emptyList()));
 		if (binList.isEmpty()) {
-			binList = binMap.get(false);
-			if (binList.isEmpty()) {
-				return null;
-			}
+			binList = binMap.computeIfAbsent(false, (v -> Collections.emptyList()));
 		}
-		int rand = RandomUtil.getRandomInt(binList.size() - 1);
-        Building b = binList.get(rand); 
-		if (b != null) {
-			return LocalAreaUtil.getCollisionFreeRandomPosition(b, worker.getCoordinates(), 1);
+        Building b = RandomUtil.getRandomElement(binList);
+		if (b == null) {
+			// If no proper bin is found, set the bin 
+			// dropoff location next to the airlock 
+			b = (Building)(airlock.getEntity());
 		}
 
-        // If no proper bin is found, set the bin 
-        // dropoff location next to the airlock 
-		b = (Building)(airlock.getEntity());
-        
-		LocalPosition p = LocalAreaUtil.getCollisionFreeRandomPosition(b, worker.getCoordinates(), 10);
+		LocalPosition p = LocalAreaUtil.getCollisionFreeRandomPosition(b, worker.getCoordinates(), MAX_DROPOFF_DISTANCE);
 		if (p == null) {
 			abortEVA("No suitable drop-off location near " + b + ".");
 		}
@@ -565,6 +540,8 @@ public abstract class DigLocal extends EVAOperation {
 	
 		// Assign thermal bottle
 		person.assignThermalBottle();
+
+		super.clearDown();
     }
     
 	/**

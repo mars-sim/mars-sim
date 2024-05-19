@@ -58,8 +58,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.AssignmentType;
-import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.mission.MissionLimitParameters;
@@ -300,11 +298,11 @@ public class Settlement extends Structure implements Temporal,
 	private ObjectiveType objectiveType;
 
 	/** The settlement's water consumption in kitchen when preparing/cleaning meal and dessert. */
-	private SolMetricDataLogger<WaterUseType> waterConsumption;
+	private SolMetricDataLogger<WaterUseType> waterConsumption = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 	/** The settlement's daily output (resources produced). */
-	private SolMetricDataLogger<Integer> dailyResourceOutput;
+	private SolMetricDataLogger<Integer> dailyResourceOutput = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 	/** The settlement's daily labor hours output. */
-	private SolMetricDataLogger<Integer> dailyLaborTime;
+	private SolMetricDataLogger<Integer> dailyLaborTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 	
 	/** The settlement's achievement in scientific fields. */
 	private EnumMap<ScienceType, Double> scientificAchievement;
@@ -539,13 +537,6 @@ public class Settlement extends Structure implements Temporal,
 		// initialize the missionScores list
 		missionScores = new ArrayList<>();
 		missionScores.add(INITIAL_MISSION_PASSING_SCORE);
-
-		// Create the water consumption map
-		waterConsumption = new SolMetricDataLogger<>(MAX_NUM_SOLS);
-		// Create the daily output map
-		dailyResourceOutput = new SolMetricDataLogger<>(MAX_NUM_SOLS);
-		// Create the daily labor hours map
-		dailyLaborTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 
 		// Create meetings
 		var meetings = sTemplate.getActivitySchedule();
@@ -1236,7 +1227,7 @@ public class Settlement extends Structure implements Temporal,
 
 		Walk.removeAllReservations(buildingManager);
 
-		tuneJobDeficit();
+		JobUtil.tuneJobDeficit(this);
 
 		refreshResourceStat();
 
@@ -1493,13 +1484,10 @@ public class Settlement extends Structure implements Temporal,
 			Building building = unitManager.getBuildingByID(i.next());
 			Airlock airlock = building.getEVA().getAirlock();
 			boolean chamberFull = airlock.areAll4ChambersFull();
-//			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
 
 			// Select airlock that fulfill either conditions:
 			// 1. Chambers are NOT full
 			// 2. Chambers are full but the reservation is NOT full
-//			if ((!chamberFull || !reservationFull)
-					
 			if (buildingConnectorManager.hasValidPath(currentBuilding, building)) {
 				if (result == null) {
 					result = airlock;
@@ -1584,8 +1572,6 @@ public class Settlement extends Structure implements Temporal,
 			Airlock airlock = nextBuilding.getEVA().getAirlock();		
 			boolean chamberFull = airlock.areAll4ChambersFull();
 			
-//			boolean reservationFull = airlock.isReservationFull();
-
 			// Select airlock that fulfill either conditions:
 			// 1. Chambers are NOT full
 			// 2. Chambers are full but the reservation is NOT full
@@ -1753,23 +1739,6 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets all people within this settlement or in vicinity of this settlement, 
-	 * even if they are out on missions.
-	 *
-	 * @return collection of people.
-	 */
-	public Collection<Person> getPeopleInVicinity() {
-		return citizens.stream()
-				.filter(p -> !p.getPhysicalCondition().isDead() 
-					&& (p.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT
-					|| p.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY
-					|| (p.getLocationStateType() == LocationStateType.INSIDE_VEHICLE
-						&& (p.getVehicle().getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY
-						|| p.getVehicle().getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT))))
-				.collect(Collectors.toList());
-	}
-	
-	/**
 	 * Returns a collection of people buried outside this settlement.
 	 *
 	 * @return {@link Collection<Person>}
@@ -1780,7 +1749,6 @@ public class Settlement extends Structure implements Temporal,
 				.filter(p -> p.getBuriedSettlement() == this)
 				.collect(Collectors.toList());
 	}
-
 
 	/**
 	 * Returns a collection of deceased people who may or may NOT have been buried
@@ -2862,66 +2830,7 @@ public class Settlement extends Structure implements Temporal,
 		return waterConsumption.getDailyAverage(type);
 	}
 
-	/**
-	 * Assigns the best candidate to a job position.
-	 * 
-	 * @param settlement
-	 * @param job
-	 */
-	private static void assignBestCandidate(Settlement settlement, JobType job) {
-		Person p0 = JobUtil.findBestFit(settlement, job);
-		// Designate a specific job to a person
-		if (p0 != null) {
-			p0.getMind().assignJob(job, true, JobUtil.SETTLEMENT, AssignmentType.APPROVED, JobUtil.SETTLEMENT);
-		}
-	}
-
-	/**
-	 * Tunes up the settlement with unique job position.
-	 */
-	public void tuneJobDeficit() {
-		int numEngs = JobUtil.numJobs(JobType.ENGINEER, this);
-		int numTechs = JobUtil.numJobs(JobType.TECHNICIAN, this);
-
-		if ((numEngs == 0) || (numTechs == 0)) {
-			Person bestEng = JobUtil.findBestFit(this, JobType.ENGINEER);
-			Person bestTech = JobUtil.findBestFit(this, JobType.TECHNICIAN);
-
-			// Make sure the best person is not the only one in the other Job
-			if ((bestEng != null) && bestEng.equals(bestTech)) {
-				// Can only do one so job
-				if (numEngs == 0) {
-					// Keep the bestEng find
-					bestTech = null;
-				}
-				else if (numTechs == 0) {
-					// Keep best tech Loose the eng
-					bestEng = null;
-				}
-			}
-			if ((numEngs == 0) && (bestEng != null)) {
-				bestEng.getMind().assignJob(JobType.ENGINEER, true,
-						JobUtil.SETTLEMENT,
-						AssignmentType.APPROVED,
-						JobUtil.SETTLEMENT);
-			}
-			if ((numTechs == 0) && (bestTech != null)) {
-				bestTech.getMind().assignJob(JobType.TECHNICIAN, true,
-						JobUtil.SETTLEMENT,
-						AssignmentType.APPROVED,
-						JobUtil.SETTLEMENT);
-			}
-		}
-
-
-		if (this.getNumCitizens() > ChainOfCommand.POPULATION_WITH_CHIEFS) {
-			int numWeatherman = JobUtil.numJobs(JobType.METEOROLOGIST, this);
-			if (numWeatherman == 0) {
-				assignBestCandidate(this, JobType.METEOROLOGIST);
-			}
-		}
-	}
-
+	
 	public void setMissionDisable(MissionType mission, boolean disable) {
 		preferences.putValue(MissionWeightParameters.INSTANCE, mission.name(), (disable ? 0D : 1D));
 	}

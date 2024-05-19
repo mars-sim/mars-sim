@@ -4,7 +4,7 @@
  * @date 2023-09-02
  * @author Scott Davis
  */
-package com.mars_sim.core.person.ai.task.meta;
+package com.mars_sim.core.vehicle.task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,6 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
-import com.mars_sim.core.person.ai.task.LoadVehicleEVA;
 import com.mars_sim.core.person.ai.task.LoadVehicleGarage;
 import com.mars_sim.core.person.ai.task.LoadingController;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
@@ -58,7 +57,7 @@ public class LoadVehicleMeta extends MetaTask
             if (!person.isInSettlement())
             	return null;
             if (isEVA()) {
-                return new LoadVehicleEVA(person, getMission());
+                return new LoadVehicleEVA(person, getMission().getLoadingPlan());
             }
             return new LoadVehicleGarage(person, getMission());
         }

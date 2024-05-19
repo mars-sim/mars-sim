@@ -358,7 +358,6 @@ public class Simulation implements ClockListener, Serializable {
 		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager);
 		
 		missionManager = new MissionManager();
-		missionManager.initializeInstances(simulationConfig);
 		
 		medicalManager = new MedicalManager();
 		medicalManager.initializeInstances(mc);
@@ -440,7 +439,6 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Initialize MissionManager instance
 		missionManager = new MissionManager();
-		missionManager.initializeInstances(simulationConfig);
 
 		medicalManager = new MedicalManager();
 		medicalManager.initializeInstances(mc);
@@ -571,7 +569,6 @@ public class Simulation implements ClockListener, Serializable {
 		unitManager = new UnitManager();
 		// Initialize MissionManager instance
 		missionManager = new MissionManager();
-		missionManager.initializeInstances(simulationConfig);
 	}
 	
 	/**
@@ -594,9 +591,6 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Set instances for logging
 		SimuLoggingFormatter.initializeInstances(masterClock);
-		
-		// Reload mission configs
-		missionManager.initializeInstances(simulationConfig);
 		
 		// Re-initialize medical manager
 		medicalManager.initializeInstances(mc);

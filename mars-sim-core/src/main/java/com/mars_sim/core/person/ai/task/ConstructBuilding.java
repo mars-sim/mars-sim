@@ -44,7 +44,8 @@ public class ConstructBuilding extends EVAOperation {
 	private static final String NAME = Msg.getString("Task.description.constructBuilding"); //$NON-NLS-1$
 
 	/** Task phases. */
-	private static final TaskPhase CONSTRUCTION = new TaskPhase(Msg.getString("Task.phase.construction")); //$NON-NLS-1$
+	private static final TaskPhase CONSTRUCTION = new TaskPhase(Msg.getString("Task.phase.construction"),
+							createPhaseImpact(SkillType.CONSTRUCTION));
 
 	// The base chance of an accident while operating LUV per millisol.
 	public static final double BASE_LUV_ACCIDENT_CHANCE = .001;
@@ -67,7 +68,7 @@ public class ConstructBuilding extends EVAOperation {
 	 */
 	public ConstructBuilding(Person person) {
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, RandomUtil.getRandomDouble(10) + 150D, SkillType.CONSTRUCTION);
+		super(NAME, person, RandomUtil.getRandomDouble(10) + 150D, CONSTRUCTION);
 
 		if (person.isSuperUnFit()) {
 			checkLocation("Super unfit.");
@@ -86,9 +87,6 @@ public class ConstructBuilding extends EVAOperation {
 			// Determine location for construction site.
 			LocalPosition constructionSiteLoc = determineConstructionLocation();
 			setOutsideSiteLocation(constructionSiteLoc);
-
-			// Add task phase
-			addPhase(CONSTRUCTION);
 		}
 
 		else {
@@ -107,7 +105,7 @@ public class ConstructBuilding extends EVAOperation {
 	public ConstructBuilding(Person person, ConstructionStage stage, ConstructionSite site,
 			List<GroundVehicle> vehicles) {
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, RandomUtil.getRandomDouble(5D) + 100D, SkillType.CONSTRUCTION);
+		super(NAME, person, RandomUtil.getRandomDouble(5D) + 100D, CONSTRUCTION);
 
 		// Initialize data members.
 		this.stage = stage;
@@ -122,9 +120,6 @@ public class ConstructBuilding extends EVAOperation {
 		// Determine location for construction site.
 		LocalPosition constructionSiteLoc = determineConstructionLocation();
 		setOutsideSiteLocation(constructionSiteLoc);
-
-		// Add task phase
-		addPhase(CONSTRUCTION);
 	}
 
 	/**
@@ -166,16 +161,9 @@ public class ConstructBuilding extends EVAOperation {
 	 */
 	public static ConstructionMission getMissionNeedingAssistance(Person person) {
 
-		ConstructionMission result = null;
-
 		List<ConstructionMission> constructionMissions = getAllMissionsNeedingAssistance(person.getAssociatedSettlement());
 
-		if (constructionMissions.size() > 0) {
-			int index = RandomUtil.getRandomInt(constructionMissions.size() - 1);
-			result = (ConstructionMission) constructionMissions.get(index);
-		}
-
-		return result;
+		return RandomUtil.getRandomElement(constructionMissions);
 	}
 
 	/**
@@ -191,7 +179,7 @@ public class ConstructBuilding extends EVAOperation {
 
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
-			Mission mission = (Mission) i.next();
+			Mission mission = i.next();
 			if (mission instanceof ConstructionMission bcMission) {
 				result.add(bcMission);
 			}
@@ -207,11 +195,6 @@ public class ConstructBuilding extends EVAOperation {
 	 */
 	private LocalPosition determineConstructionLocation() {
 		return LocalAreaUtil.getRandomLocalPos(site);
-	}
-
-	@Override
-	protected TaskPhase getOutsideSitePhase() {
-		return CONSTRUCTION;
 	}
 
 	@Override
@@ -237,7 +220,7 @@ public class ConstructBuilding extends EVAOperation {
 	 */
 	private double constructionPhase(double time) {
 
-		if (checkReadiness(time, true) > 0)
+		if (checkReadiness(time) > 0)
 			return time;
 		
 		// Operate light utility vehicle if no one else is operating it.
@@ -298,23 +281,20 @@ public class ConstructBuilding extends EVAOperation {
 		Iterator<GroundVehicle> i = vehicles.iterator();
 		while (i.hasNext() && (luv == null)) {
 			GroundVehicle vehicle = i.next();
-			if (!vehicle.getMalfunctionManager().hasMalfunction()) {
-				if (vehicle instanceof LightUtilityVehicle) {
-					LightUtilityVehicle tempLuv = (LightUtilityVehicle) vehicle;
-					if (tempLuv.getOperator() == null) {
-						tempLuv.addPerson(person);
-						tempLuv.setOperator(person);
+			if (!vehicle.getMalfunctionManager().hasMalfunction()
+				&& (vehicle instanceof LightUtilityVehicle tempLuv)
+				&& (tempLuv.getOperator() == null)) {
+					tempLuv.addPerson(person);
+					tempLuv.setOperator(person);
 
-						luv = tempLuv;
-						operatingLUV = true;
+					luv = tempLuv;
+					operatingLUV = true;
 
-						// Place light utility vehicles at random location in construction site.
-						LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
-						luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
+					// Place light utility vehicles at random location in construction site.
+					LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
+					luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
 
-						break;
-					}
-				}
+					break;
 			}
 		}
 	}
@@ -341,13 +321,14 @@ public class ConstructBuilding extends EVAOperation {
 		if ((CONSTRUCTION.equals(getPhase())) && operatingLUV) {
 			int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 
-			double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+			double experienceAptitudeModifier = (experienceAptitude - 50D) / 100D;
 			double drivingExperience = time / 10D;
 			drivingExperience += drivingExperience * experienceAptitudeModifier;
 			worker.getSkillManager().addExperience(SkillType.PILOTING, drivingExperience, time);
 		}
 	}
 
+	@Override
 	protected void checkForAccident(double time) {
 		super.checkForAccident(time);
 
@@ -360,8 +341,8 @@ public class ConstructBuilding extends EVAOperation {
 	}
 
 	@Override
-	protected boolean shouldEndEVAOperation(boolean checkLight) {
-		boolean result = super.shouldEndEVAOperation(checkLight);
+	protected boolean shouldEndEVAOperation() {
+		boolean result = super.shouldEndEVAOperation();
 
 		// If operating LUV, check if LUV has malfunction.
 		if (operatingLUV && luv.getMalfunctionManager().hasMalfunction()) {
@@ -380,6 +361,7 @@ public class ConstructBuilding extends EVAOperation {
 		return stage;
 	}
 
+	@Override
 	public void destroy() {
 		stage = null;
 		site = null;
@@ -387,5 +369,7 @@ public class ConstructBuilding extends EVAOperation {
 		
 		vehicles.clear();
 		vehicles = null;
+
+		super.destroy();
 	}
 }

@@ -18,6 +18,8 @@ public interface MarsSimContext {
 
     Building buildResearch(BuildingManager buildingManager, LocalPosition position, double facing, int i);
 
+    Building buildEVA(BuildingManager buildingManager, LocalPosition position, double facing, int id);
+
     Simulation getSim();
 
     ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol);

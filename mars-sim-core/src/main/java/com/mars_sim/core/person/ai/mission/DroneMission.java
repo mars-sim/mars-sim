@@ -16,7 +16,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.OperateVehicle;
 import com.mars_sim.core.person.ai.task.PilotDrone;
-import com.mars_sim.core.person.ai.task.UnloadVehicleEVA;
 import com.mars_sim.core.person.ai.task.UnloadVehicleGarage;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -27,6 +26,7 @@ import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.task.UnloadVehicleEVA;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
 

@@ -4,18 +4,18 @@
  * @date 2023-06-08
  * @author Barry Evans
  */
-package com.mars_sim.core.person.ai.task.meta;
+package com.mars_sim.core.structure.task;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
-import com.mars_sim.core.person.ai.task.DigLocal;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
@@ -64,6 +64,7 @@ public abstract class DigLocalMeta extends MetaTask
 	private static final int MAX_BASE = 1000;
 
 	private static final SettlementParameters SETTLE_CAT = SettlementParameters.INSTANCE;
+    private static final double MIN_CAPACITY = 0.25D; // Minumum capcity to trigger digging
 
 	private EquipmentType containerType;
 
@@ -110,7 +111,7 @@ public abstract class DigLocalMeta extends MetaTask
         // Calculate the capacity for more EVAs
         int maxEVA = settlement.getPreferences().getIntValue(SETTLE_CAT, SettlementParameters.MAX_EVA,
                                                     1);
-        maxEVA -= EVAOperation.getActivePersons(settlement);
+        maxEVA -= getActiveEVAPersons(settlement);
         if (maxEVA <= 0) {
             return Collections.emptyList();
         }
@@ -118,13 +119,28 @@ public abstract class DigLocalMeta extends MetaTask
         // Should use the demand & resources stored to influence the score. 50% capacity is
         // the unmodified baseline
         var capacity = (settlement.getAmountResourceRemainingCapacity(resourceId)
-                                    / settlement.getAmountResourceCapacity(resourceId)) + 0.5D;
-        result.addModifier("capacity", capacity);
+                                    / settlement.getAmountResourceCapacity(resourceId));
+        if (capacity <= MIN_CAPACITY) {
+            return Collections.emptyList();
+        }
+        result.addModifier("capacity", 1 + (capacity - MIN_CAPACITY));
 
         List<SettlementTask> resultList = new ArrayList<>();
         resultList.add(new DigLocalTaskJob(this, result, maxEVA));
         return resultList;
     }
+
+    
+	/**
+	 * Get the number of Persons doing EVAOperations in a Settlement
+	 * @param settlement
+	 * @return
+	 */
+    private static int getActiveEVAPersons(Settlement settlement) {
+		return settlement.getAllAssociatedPeople().stream()
+							.filter(p -> p.getTaskManager().getTask() instanceof EVAOperation)
+							.collect(Collectors.counting()).intValue();
+	}
 
     /**
      * Assess a Person for a specific SettlementTask of this type.

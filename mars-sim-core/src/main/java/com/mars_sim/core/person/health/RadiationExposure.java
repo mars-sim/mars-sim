@@ -466,8 +466,7 @@ public class RadiationExposure implements Serializable, Temporal {
 	 */
 	public boolean isRadiationDetected(double time) {
 		// Check every RADIATION_CHECK_FREQ (in millisols)
-		if (masterClock.getClockPulse().isNewMSol() 
-			&& masterClock.getMarsTime().getMillisolInt() 
+		if (masterClock.getMarsTime().getMillisolInt() 
 				% RadiationExposure.RADIATION_CHECK_FREQ == RadiationExposure.RADIATION_CHECK_FREQ - 1) {
 
 			RadiationType radiationType = null;

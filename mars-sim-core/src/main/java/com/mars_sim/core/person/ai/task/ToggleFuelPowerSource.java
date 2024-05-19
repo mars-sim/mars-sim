@@ -14,10 +14,10 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
-import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
+import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FuelPowerSource;
@@ -30,7 +30,7 @@ import com.mars_sim.tools.util.RandomUtil;
  * The ToggleFuelPowerSource class is an EVA task for toggling a particular
  * fuel power source building on or off.
  */
-public class ToggleFuelPowerSource extends EVAOperation {
+public class ToggleFuelPowerSource extends Task {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -46,10 +46,13 @@ public class ToggleFuelPowerSource extends EVAOperation {
     /** Task phases. */
     private static final TaskPhase TOGGLE_POWER_SOURCE = new TaskPhase(Msg.getString(
             "Task.phase.togglePowerSource")); //$NON-NLS-1$
+    
+    private static final ExperienceImpact IMPACT = new ExperienceImpact(100D,
+                                                        NaturalAttributeType.EXPERIENCE_APTITUDE,
+                                                        true, 0.05,
+                                                        Set.of(SkillType.MECHANICS));
 
     // Data members
-	/** True if the building with the fuel power source is inhabitable. */
-    private boolean isInhabitable;
     /** True if power source is to be turned on, false if turned off. */
     private boolean toggleOn;
 
@@ -67,7 +70,7 @@ public class ToggleFuelPowerSource extends EVAOperation {
      * @throws Exception if error constructing the task.
      */
     public ToggleFuelPowerSource(Person person, Building building, FuelPowerSource powerSource) {
-        super(NAME_ON, person, false, 0D, SkillType.MECHANICS);
+        super(NAME_ON, person, true, IMPACT, 0D);
 
         this.building = building;
         this.powerSource = powerSource;
@@ -79,15 +82,13 @@ public class ToggleFuelPowerSource extends EVAOperation {
 
         boolean isSunSetting = orbitInfo.isSunSetting(
                 person.getSettlement().getCoordinates(), true);
-
-        double sunlight = getSolarIrradiance(person.getSettlement().getCoordinates());
         
-        if ((isSunSetting && isOn)
-            // if it's sunsetting and sky is dark or getting dark, 
+        if (isSunSetting && isOn) {
+            // if it's sunsetting and sky is dark  
             // should let the fuel power source STAY ON 
             // throughout the night since solar panels are not supplying power.
-            || (sunlight <= 0 && isOn)) {
-                endTask();
+            endTask();
+            return;
         }
             
         toggleOn = !isOn;
@@ -97,7 +98,7 @@ public class ToggleFuelPowerSource extends EVAOperation {
             setDescription(NAME_OFF);
         }
 
-        isInhabitable = !building.hasFunction(FunctionType.LIFE_SUPPORT);
+        var isInhabitable = !building.hasFunction(FunctionType.LIFE_SUPPORT);
         // If habitable building, send person there.
         if (!isInhabitable) {
             
@@ -115,16 +116,13 @@ public class ToggleFuelPowerSource extends EVAOperation {
                 checkManagement();
             }
         }
-
         else {
-            addAdditionSkill(SkillType.EVA_OPERATIONS);
 
             // Looks for management function for toggling power source.
             checkManagement();
         }
-
-        addPhase(TOGGLE_POWER_SOURCE);
         setPhase(TOGGLE_POWER_SOURCE);
+
     }
 
 	/**
@@ -212,55 +210,7 @@ public class ToggleFuelPowerSource extends EVAOperation {
     }
 
     @Override
-    protected void addExperience(double time) {
-
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-        double experienceAptitudeModifier = ((experienceAptitude) - 50D) / 100D;
-
-        if (isInhabitable) {
-            // Add experience to "EVA Operations" skill.
-            // (1 base experience point per 100 millisols of time spent)
-            double evaExperience = time / 100D;
-            evaExperience += evaExperience * experienceAptitudeModifier;
-            evaExperience *= getTeachingExperienceModifier();
-            person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-        }
-
-        // If phase is toggle power source, add experience to mechanics skill.
-        if (TOGGLE_POWER_SOURCE.equals(getPhase())) {
-            // 1 base experience point per 100 millisols of time spent.
-            // Experience points adjusted by person's "Experience Aptitude" attribute.
-            double mechanicsExperience = time / 100D;
-            mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-            person.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
-        }
-    }
-
-
-    @Override
-    public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getSkillManager();
-        int evaOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-        int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
-        if (isInhabitable) {
-            return (int) Math.round((evaOperationsSkill + mechanicsSkill) / 2D);
-        }
-        else {
-            return (mechanicsSkill);
-        }
-    }
-
-    @Override
-    protected TaskPhase getOutsideSitePhase() {
-        return TOGGLE_POWER_SOURCE;
-    }
-
-    @Override
     protected double performMappedPhase(double time) {
-
-        time = super.performMappedPhase(time);
         if (!isDone()) {
 	        if (getPhase() == null) {
 	            throw new IllegalArgumentException("Task phase is null");
@@ -280,25 +230,14 @@ public class ToggleFuelPowerSource extends EVAOperation {
      */
     private double togglePowerSourcePhase(double time) {
   
-		if (person.isUnFit()) {
-			checkLocation("Unfit.");
-			return time;
-		}
-		
-        // If person is incapacitated, end task.
-        if (person.getPerformanceRating() == 0D) {
-        	checkLocation("Zero performance.");
+		if (person.isUnFit() || (person.getPerformanceRating() == 0D)) {
+            endTask();
         	return time;
         }
 
         // Check if toggle has already been completed.
         if (powerSource.isToggleON() == toggleOn) {
-            checkLocation(building.getName() + "'s power source already toggled on.");
-            return time;
-        }
-
-        if (isDone()) {
-			endTask();
+            endTask();
             return time;
         }
 
@@ -325,31 +264,9 @@ public class ToggleFuelPowerSource extends EVAOperation {
 				"Turning " + toggle + " " + powerSource.getType()
                 + " in " + building.getName() + ".");
 
-        // Check if an accident happens during toggle power source.
-        checkForAccident(time);
-
         return 0;
     }
 
-
-    /**
-     * Checks for accident with entity during toggle resource phase.
-     *
-     * @param time the amount of time (in millisols)
-     */
-    @Override
-    protected void checkForAccident(double time) {
-
-        // Use EVAOperation checkForAccident() method.
-        if (isInhabitable) {
-            super.checkForAccident(time);
-        }
-
-        // Mechanic skill modification.
-        int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-        checkForAccident(building, time, .005D, skill, powerSource.toString());
-    }
-    
     /**
      * Gets the building.
      * 

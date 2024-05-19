@@ -8,7 +8,6 @@ package com.mars_sim.core.person.ai.task.util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -128,22 +127,20 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** The phase of this task. */
 	private TaskPhase phase;
 
-	/** A collection of the task's phases. */
-	private Collection<TaskPhase> phases;
-
 	// This 4 fields can be removed once ExperiecneImpact is passed in constructor
 	/** Ratio of work time to experience */
 	private double experienceRatio;
 	/** Stress modified by person performing task per millisol. */
 	protected double stressModifier;
-	/** A list of the skill types. */
-	private Set<SkillType> neededSkills = new HashSet<>();
+
 	/** What natural attribute influences experience points */
 	private NaturalAttributeType experienceAttribute = NaturalAttributeType.EXPERIENCE_APTITUDE;
 
 	private int effectiveSkillLevel;
 
 	private ExperienceImpact impact;
+
+	private SkillType primarySkill;
 
 	/** The static instance of the master clock */
 	protected static MasterClock masterClock;
@@ -238,10 +235,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		this.stressModifier = stressModifier;
 		this.experienceRatio = experienceRatio;
 		this.hasDuration = false;
-
-		if (primarySkill != null) {
-			addAdditionSkill(primarySkill);
-		}
+		this.primarySkill = primarySkill;
 
 		init(worker);
 	}
@@ -268,11 +262,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		setDescription(name);
 		
 		done = false;
-
 		timeCompleted = 0D;
-
 		phase = null;
-		phases = new ArrayList<>();
 
 		// For sub task
 		if (subTask != null) {
@@ -306,10 +297,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected void setExperienceAttribute(NaturalAttributeType experienceAttribute) {
 		this.experienceAttribute = experienceAttribute;
-	}
-
-	protected void addAdditionSkill(SkillType newSkill) {
-		neededSkills.add(newSkill);
 	}
 
 	private void endSubTask() {
@@ -530,11 +517,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		phase = newPhase;
 	
 		// Method is called via endTask with a null phase
-		if (newPhase != null && phases != null 
-			&& !phases.isEmpty() && phases.contains(newPhase)) {
-
-			// Note: need to avoid java.lang.StackOverflowError when calling
-			// PersonTableModel.unitUpdate()
+		// TaskPhase should have isRecordable method to stop recording of minor phases
+		if (newPhase != null) {
 			eventTarget.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
 		}
 		
@@ -560,11 +544,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param newPhase the new phase to add.
 	 */
 	protected void addPhase(TaskPhase newPhase) {
-		if (newPhase == null) {
-			throw new IllegalArgumentException("newPhase is null");
-		} else if ((phases != null && (phases.isEmpty() || !phases.contains(newPhase)))) {
-			phases.add(newPhase);
-		}
+		// This is redundant and should be deprecated
 	}
 
 	/**
@@ -817,10 +797,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return effective skill level
 	 */
 	public int getEffectiveSkillLevel() {
-		// This can be dropped once ExpereicneImpact is defiend in constructor
-		getImpact();
-
-		return effectiveSkillLevel;
+		// This can be dropped once ExpereicneImpact is defined in constructor
+		return getImpact().getEffectiveSkillLevel(worker);
 	} 
 
 	/**
@@ -829,13 +807,20 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return Impact assessment of doing this Task
 	 */
 	private ExperienceImpact getImpact() {
-		if (impact == null) {
-			impact = new ExperienceImpact(experienceRatio, experienceAttribute,
-									effortDriven, stressModifier, neededSkills);
-			effectiveSkillLevel = impact.getEffectiveSkillLevel(worker);
+		var result = (phase != null ? phase.getImpact() : null);
+		if (result == null) {
+			// This is only needed until all subclasses define an Impac tint eh constructor
+			if (impact == null) {
+				Set<SkillType> skills = new HashSet<>();
+				if (primarySkill != null) {
+					skills.add(primarySkill);
+				}
+				impact = new ExperienceImpact(experienceRatio, experienceAttribute,
+										effortDriven, stressModifier, skills);
+			}
+			result = impact;
 		}
-
-		return impact;
+		return result;
 	} 
 
 	/**
@@ -948,8 +933,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected void addExperience(double time) {
 		if (time > 0) {
-			getImpact().apply(worker, time,  effectiveSkillLevel * SKILL_STRESS_MODIFIER,
-							getTeachingExperienceModifier());
+			getImpact().apply(worker, time,  getTeachingExperienceModifier(),
+							effectiveSkillLevel * SKILL_STRESS_MODIFIER	);
 		}
 	}
 
@@ -1589,10 +1574,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		subTask.destroy();
 		subTask = null;
 		phase = null;
-		phases.clear();
-		phases = null;
-		neededSkills.clear();
-		neededSkills = null;
 		experienceAttribute = null;
 	}
 }

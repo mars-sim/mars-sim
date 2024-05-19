@@ -348,7 +348,7 @@ public class LoadingController implements Serializable {
 		}
 		else if (!mandatory && usedSupply) {
 			logger.info(vehicle, loader + " optional amount " + resourceName
-						+ ", " + amountNeeded + " not loaded ");
+						+ ", not loaded=" + amountNeeded);
 			manifest.remove(resource);
 		}
 		else {
@@ -572,6 +572,14 @@ public class LoadingController implements Serializable {
 	public Settlement getSettlement() {
 		return settlement;
 	}
+
+	/**
+	 * The vehicle that is the target of this loading plan
+	 * @return
+	 */
+    public Vehicle getVehicle() {
+		return vehicle;
+    }
 
 	/**
 	 * Dumps a description of the contents into a String representation.
