@@ -148,14 +148,13 @@ public class DustStorm implements Serializable {
 		// around faster than 30 meters per second
 		switch (type) {
 		case DUST_DEVIL:
-			int up = RandomUtil.getRandomInt(0, 5);
-			int down = RandomUtil.getRandomInt(0, 5);
+			int change = RandomUtil.getRandomInt(-1, 1);
 			int s = size;
 
-			newSize = s + up - down;
+			newSize = s + change;
 
 			// arbitrary speed determination
-			newSpeed = 8 + .4 * newSize;
+			newSpeed = 8 + .5 * newSize;
 			break;
 		
 
