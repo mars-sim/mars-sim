@@ -58,7 +58,7 @@ public class ManufactureConstructionMaterials extends Task {
 	/** Impact doing this Task */
 	private static final ExperienceImpact IMPACT = new ExperienceImpact(50D,
 										NaturalAttributeType.EXPERIENCE_APTITUDE, false, .1D,
-										Set.of(SkillType.CONSTRUCTION, SkillType.MATERIALS_SCIENCE));
+										SkillType.CONSTRUCTION, SkillType.MATERIALS_SCIENCE);
 
 	// Data members
 	/** The manufacturing workshop the person is using. */
@@ -91,7 +91,6 @@ public class ManufactureConstructionMaterials extends Task {
 		}
 
 		// Initialize phase
-		addPhase(MANUFACTURE);
 		setPhase(MANUFACTURE);
 	}
 
@@ -122,7 +121,6 @@ public class ManufactureConstructionMaterials extends Task {
 		}
 
 		// Initialize phase
-		addPhase(MANUFACTURE);
 		setPhase(MANUFACTURE);
 	}
 

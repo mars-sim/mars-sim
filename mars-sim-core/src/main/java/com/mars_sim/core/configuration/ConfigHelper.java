@@ -348,6 +348,6 @@ public class ConfigHelper {
 			}
 		}
 
-		return new ExperienceImpact(experience, skills, expAttribute, effortDriven, stress);
+		return new ExperienceImpact(experience, expAttribute, effortDriven, stress, skills);
     }
 }

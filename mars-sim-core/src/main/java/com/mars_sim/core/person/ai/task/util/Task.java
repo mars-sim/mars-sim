@@ -8,7 +8,6 @@ package com.mars_sim.core.person.ai.task.util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -128,19 +127,15 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private TaskPhase phase;
 
 	// This 4 fields can be removed once ExperiecneImpact is passed in constructor
-	/** Ratio of work time to experience */
 	private double experienceRatio;
-	/** Stress modified by person performing task per millisol. */
 	protected double stressModifier;
-
-	/** What natural attribute influences experience points */
 	private NaturalAttributeType experienceAttribute = NaturalAttributeType.EXPERIENCE_APTITUDE;
+	private SkillType primarySkill;
 
+	// Impact of doing this Task
+	private ExperienceImpact impact;
 	private int effectiveSkillLevel;
 
-	private ExperienceImpact impact;
-
-	private SkillType primarySkill;
 
 	/** The static instance of the master clock */
 	protected static MasterClock masterClock;
@@ -801,12 +796,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (result == null) {
 			// This is only needed until all subclasses define an Impac tint eh constructor
 			if (impact == null) {
-				Set<SkillType> skills = new HashSet<>();
-				if (primarySkill != null) {
-					skills.add(primarySkill);
-				}
 				impact = new ExperienceImpact(experienceRatio, experienceAttribute,
-										effortDriven, stressModifier, skills);
+										effortDriven, stressModifier, primarySkill);
 			}
 			result = impact;
 		}

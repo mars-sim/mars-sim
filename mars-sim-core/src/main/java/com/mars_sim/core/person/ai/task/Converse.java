@@ -65,7 +65,7 @@ public class Converse extends Task {
 	/** Impact doing this Task */
 	private static final ExperienceImpact INSTIGATOR_IMPACT = new ExperienceImpact(50D,
 										NaturalAttributeType.CONVERSATION, false, -0.3,
-										Set.of(SkillType.PSYCHOLOGY, SkillType.REPORTING));
+										SkillType.PSYCHOLOGY, SkillType.REPORTING);
     
 
     private Location initiatorLocation = null;
@@ -130,7 +130,6 @@ public class Converse extends Task {
         
         if (getTarget() != null) {
             // Initialize phase
-            addPhase(CONVERSING);
             setPhase(CONVERSING);
     	}
     	else {
@@ -182,7 +181,6 @@ public class Converse extends Task {
     	setTarget(initiator, true);
     	
     	// Initialize phase
-        addPhase(RESPONDING);
         setPhase(RESPONDING);
     }
     
