@@ -289,16 +289,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		this(name, worker, effort, createEvents, stressModifier, null, 0D, duration);
 	}
 
-	/**
-	 * Sets the Natural attribute that influences experience points. By default this
-	 * is EXPERIENCE_APTITUDE
-	 * 
-	 * @param experienceAttribute the NaturalAttributeType enum
-	 */
-	protected void setExperienceAttribute(NaturalAttributeType experienceAttribute) {
-		this.experienceAttribute = experienceAttribute;
-	}
-
 	private void endSubTask() {
 		// For sub task
 		if (subTask != null) {

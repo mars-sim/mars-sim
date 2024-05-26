@@ -129,7 +129,7 @@ public class ExperienceImpact implements Serializable {
             applyPersonBenfits(p, duration, effectiveness);
         }
         else if (worker instanceof Robot r) {
-            applyRobotBenfits(r, duration);
+            applyRobotBenefits(r, duration);
         }
     }
 
@@ -145,7 +145,7 @@ public class ExperienceImpact implements Serializable {
     }
 
     // Calculate the energy time
-    private void applyRobotBenfits(Robot r, double duration) {
+    private void applyRobotBenefits(Robot r, double duration) {
         double energyTime = duration;
 		    
         // Double energy expenditure if performing effort-driven task.
@@ -157,7 +157,6 @@ public class ExperienceImpact implements Serializable {
         if (energyTime > 0D && !r.getSystemCondition().isCharging()) {
             // Expend energy based on activity.
             r.consumeEnergy(energyTime * MarsTime.HOURS_PER_MILLISOL * ROBOT_WORK_POWER);
-
         }
     }
     
@@ -225,5 +224,14 @@ public class ExperienceImpact implements Serializable {
      */
     public boolean isEffortAffected() {
         return effortDriven;
+    }
+
+    /**
+     * Create a new varient of this Experience but with a different 
+     * @param newSkillsRatio The new skill ratio
+     * @return
+     */
+    public ExperienceImpact changeSkillsRatio(double newSkillsRatio) {
+        return new ExperienceImpact(newSkillsRatio, skillWeights, experienceInfluence, effortDriven, newSkillsRatio);
     }
 }

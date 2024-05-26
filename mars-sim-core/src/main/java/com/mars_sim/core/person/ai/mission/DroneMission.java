@@ -140,45 +140,25 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	@Override
 	protected OperateVehicle createOperateVehicleTask(Worker member, TaskPhase lastOperateVehicleTaskPhase) {
 		OperateVehicle result = null;
-		if (member instanceof Person person) {
-			
-			Drone d = getDrone();
-			// Note : should it check for fatigue
-			if (!d.haveStatusType(StatusType.OUT_OF_FUEL)) {
-				if (lastOperateVehicleTaskPhase != null) {
-					result = new PilotDrone(person, getDrone(), getNextNavpoint().getLocation(),
-							getCurrentLegStartingTime(), getCurrentLegDistance(), lastOperateVehicleTaskPhase);
-				} else {
-					result = new PilotDrone(person, getDrone(), getNextNavpoint().getLocation(),
-							getCurrentLegStartingTime(), getCurrentLegDistance());
-				}
-			}
-			else {
-				logger.warning(d, 10_000L, "Out of fuel. Quit assigning the driving task.");
+		
+		if ((member instanceof Robot robot) 
+				&& !robot.getSystemCondition().isBatteryAbove(10)) {
 				return null;
-			}
 		}
 		
-		else if (member instanceof Robot robot) {
-
-			if (!robot.getSystemCondition().isBatteryAbove(10)) {
-				return null;
+		Drone d = getDrone();
+		if (!d.haveStatusType(StatusType.OUT_OF_FUEL)) {
+			if (lastOperateVehicleTaskPhase != null) {
+				result = new PilotDrone(member, getDrone(), getNextNavpoint().getLocation(),
+						getCurrentLegStartingTime(), getCurrentLegDistance(), lastOperateVehicleTaskPhase);
+			} else {
+				result = new PilotDrone(member, getDrone(), getNextNavpoint().getLocation(),
+						getCurrentLegStartingTime(), getCurrentLegDistance());
 			}
-			
-			Drone d = getDrone();
-			if (!d.haveStatusType(StatusType.OUT_OF_FUEL)) {
-				if (lastOperateVehicleTaskPhase != null) {
-					result = new PilotDrone(robot, getDrone(), getNextNavpoint().getLocation(),
-							getCurrentLegStartingTime(), getCurrentLegDistance(), lastOperateVehicleTaskPhase);
-				} else {
-					result = new PilotDrone(robot, getDrone(), getNextNavpoint().getLocation(),
-							getCurrentLegStartingTime(), getCurrentLegDistance());
-				}
-			}
-			else {
-				logger.warning(d, 10_000L, "Out of fuel. Quit assigning the driving task.");
-				return null;
-			}
+		}
+		else {
+			logger.warning(d, 10_000L, "Out of fuel. Quit assigning the driving task.");
+			return null;
 		}
 
 		return result;
@@ -216,10 +196,6 @@ public abstract class DroneMission extends AbstractVehicleMission {
 
 			// Set the members' work shift to on-call to get ready. No deadline
 			callMembersToMission(0);
-
-			// Put the rover outside.
-			// Note: calling removeFromGarage has already been included in Vehicle::transfer() below
-//			BuildingManager.removeFromGarage(v);
 			
 			// Record the start mass right before departing the settlement
 			recordStartMass();
@@ -269,7 +245,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 			}
 
 			// Add vehicle to a garage if available.
-			boolean inAGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
+			disembarkSettlement.getBuildingManager().addToGarage(v);
 
 			// Unload drone if necessary.
 			boolean droneUnloaded = drone.getStoredMass() == 0D;
@@ -318,11 +294,6 @@ public abstract class DroneMission extends AbstractVehicleMission {
 		} else if (!EVAOperation.isGettingDark(person) && person.isNominallyFit()) {
 			assignTask(person, new UnloadVehicleEVA(person, drone));
 		}
-		
-//		TaskJob job =  UnloadVehicleMeta.createUnloadJob(person.getAssociatedSettlement(), drone);
-//		if (job != null) {
-//			result = person.getMind().getTaskManager().addPendingTask(job, false);
-//		}	
 
 		return result;
 	}

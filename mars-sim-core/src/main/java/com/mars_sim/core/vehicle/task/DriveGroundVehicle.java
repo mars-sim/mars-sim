@@ -11,11 +11,8 @@ import java.util.logging.Level;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
-import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.NaturalAttributeType;
-import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.building.function.Computation;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.GroundVehicle;
@@ -40,7 +37,8 @@ public class DriveGroundVehicle extends OperateVehicle {
 	private static final String NAME = Msg.getString("Task.description.driveGroundVehicle"); //$NON-NLS-1$
 
 	/** Task phases. */
-	private static final TaskPhase AVOID_OBSTACLE = new TaskPhase(Msg.getString("Task.phase.avoidObstacle")); //$NON-NLS-1$
+	private static final TaskPhase AVOID_OBSTACLE = new TaskPhase(Msg.getString("Task.phase.avoidObstacle"),
+																	IMPACT.changeSkillsRatio(0.2D));
 	private static final TaskPhase WINCH_VEHICLE = new TaskPhase(Msg.getString("Task.phase.winchVehicle")); //$NON-NLS-1$
 
 	// Side directions.
@@ -53,109 +51,47 @@ public class DriveGroundVehicle extends OperateVehicle {
 	
 	// Data members
 	private int sideDirection = NONE;
-    /** Computing Units used per millisol. */		
-	private double computingUsed = 0;
 	
 	/**
 	 * Default Constructor for a person operator.
 	 * 
-	 * @param person            the person to perform the task
+	 * @param driver            the worker driving
 	 * @param vehicle           the vehicle to be driven
 	 * @param destination       location to be driven to
 	 * @param startTripTime     the starting time of the trip
 	 * @param startTripDistance the starting distance to destination for the trip
 	 */
-	public DriveGroundVehicle(Person person, GroundVehicle vehicle, Coordinates destination, MarsTime startTripTime,
+	public DriveGroundVehicle(Worker driver, GroundVehicle vehicle, Coordinates destination, MarsTime startTripTime,
 			double startTripDistance) {
-
-		// Use OperateVehicle constructor
-		super(NAME, person, vehicle, destination, startTripTime, startTripDistance, (300D + RandomUtil.getRandomDouble(20D)));
-		
-		// Set initial parameters
-		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$
-		addPhase(AVOID_OBSTACLE);
-		addPhase(WINCH_VEHICLE);
-
-		logger.log(person, Level.INFO, 20_000, "Took the wheel of the rover.");
+		this(driver, vehicle, destination, startTripTime, startTripDistance, null);
 	}
 
-	/**
-	 * Default Constructor for a robot operator.
-	 * 
-	 * @param robot
-	 * @param vehicle
-	 * @param destination
-	 * @param startTripTime
-	 * @param startTripDistance
-	 */
-	public DriveGroundVehicle(Robot robot, GroundVehicle vehicle, Coordinates destination, MarsTime startTripTime,
-			double startTripDistance) {
-
-		// Use OperateVehicle constructor
-		super(NAME, robot, vehicle, destination, startTripTime, startTripDistance, (300D + RandomUtil.getRandomDouble(20D)));
-		
-		// Set initial parameters
-		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$
-		addPhase(AVOID_OBSTACLE);
-		addPhase(WINCH_VEHICLE);
-
-		logger.log(robot, Level.INFO, 20_000, "Took the wheel of the rover.");
-	}
-
+	
 	/**
 	 * Constructs this task for a person with a given starting phase.
 	 * 
-	 * @param person            the person to perform the task
+	 * @param driver            the worker driving
 	 * @param vehicle           the vehicle to be driven
 	 * @param destination       location to be driven to
 	 * @param startTripTime     the starting time of the trip
 	 * @param startTripDistance the starting distance to destination for the trip
 	 * @param startingPhase     the starting phase for the task
 	 */
-	public DriveGroundVehicle(Person person, GroundVehicle vehicle, Coordinates destination, MarsTime startTripTime,
+	public DriveGroundVehicle(Worker driver, GroundVehicle vehicle, Coordinates destination, MarsTime startTripTime,
 			double startTripDistance, TaskPhase startingPhase) {
 
 		// Use OperateVehicle constructor
-		super(NAME, person, vehicle, destination, startTripTime, startTripDistance, (100D + RandomUtil.getRandomDouble(20D)));
+		super(NAME, driver, vehicle, destination, startTripTime, startTripDistance, (100D + RandomUtil.getRandomDouble(20D)));
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$
-		addPhase(AVOID_OBSTACLE);
-		addPhase(WINCH_VEHICLE);
 		if (startingPhase != null)
 			setPhase(startingPhase);
 
-		logger.log(person, Level.INFO, 20_000, "Took the wheel of rover at the starting phase of '"
-					+ startingPhase + "'.");
-
-	}
-
-	/**
-	 * Constructs this task for a robot with a given starting phase.
-	 * 
-	 * @param robot
-	 * @param vehicle
-	 * @param destination
-	 * @param startTripTime
-	 * @param startTripDistance
-	 * @param startingPhase
-	 */
-	public DriveGroundVehicle(Robot robot, GroundVehicle vehicle, Coordinates destination, MarsTime startTripTime,
-			double startTripDistance, TaskPhase startingPhase) {
-
-		// Use OperateVehicle constructor
-		super(NAME, robot, vehicle, destination, startTripTime, startTripDistance, (100D + RandomUtil.getRandomDouble(20D)));
-		
-		// Set initial parameters
-		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$
-		addPhase(AVOID_OBSTACLE);
-		addPhase(WINCH_VEHICLE);
-		if (startingPhase != null)
-			setPhase(startingPhase);
-
-		logger.log(robot, Level.INFO, 20_000, "Took the wheel of rover at the starting phase of '"
+		logger.log(driver, Level.INFO, 20_000, "Took the wheel of rover at the starting phase of '"
 					+ startingPhase + "'.");
 	}
+
 
 	/**
 	 * Performs the method mapped to the task's current phase.
@@ -256,7 +192,6 @@ public class DriveGroundVehicle extends OperateVehicle {
 		double timeUsed = time - mobilizeVehicle(time);
 
 		int msol = getMarsTime().getMillisolInt();       
-        boolean successful = false; 
         
         double lastDistance = vehicle.getLastDistanceTravelled();
         double workPerMillisol = lastDistance * CU_PER_KM * time;
@@ -264,15 +199,7 @@ public class DriveGroundVehicle extends OperateVehicle {
     	// Submit his request for computing resources
     	Computation center = person.getAssociatedSettlement().getBuildingManager().getMostFreeComputingNode(workPerMillisol, msol + 1, msol + 2);
     	if (center != null)
-    		successful = center.scheduleTask(workPerMillisol, msol + 1, msol + 2);
-    	if (successful) {
-    		computingUsed += timeUsed;
-      	}
-    	else {
-    		logger.info(person, 30_000L, "No computing resources available for " 
-    			+ Msg.getString("Task.description.driveGroundVehicle.detail", // $NON-NLS-1$
-    				vehicle.getName()) + ".");
-    	}
+    		center.scheduleTask(workPerMillisol, msol + 1, msol + 2);
     	
 		// Check for accident.
 		if (!isDone())
@@ -436,29 +363,6 @@ public class DriveGroundVehicle extends OperateVehicle {
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
 			malfunctionManager.createASeriesOfMalfunctions(vehicle.getName(), (Unit)worker);
 		}
-	}
-
-
-	/**
-	 * Adds experience to the person's skills used in this task.
-	 * 
-	 * @param time the amount of time (ms) the person performed this task.
-	 */
-	@Override
-	protected void addExperience(double time) {
-		// Add experience points for driver's 'Driving' skill.
-		// Add one point for every 100 millisols.
-		double newPoints = time / 100D;
-		int experienceAptitude = worker.getNaturalAttributeManager()
-					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-
-		newPoints += newPoints * (1.0 * experienceAptitude - 50D) / 100D;
-		newPoints *= getTeachingExperienceModifier();
-		double phaseModifier = 1D;
-		if (AVOID_OBSTACLE.equals(getPhase()))
-			phaseModifier = 4D;
-		newPoints *= phaseModifier;
-		worker.getSkillManager().addExperience(SkillType.PILOTING, newPoints, time);
 	}
 
 	/**
