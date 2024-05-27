@@ -75,7 +75,7 @@ public class AssistScientificStudyResearcher extends Task {
             return null;
 		}
 		var impact = new ExperienceImpact(50D, NaturalAttributeType.ACADEMIC_APTITUDE,
-		false, 0.2D, Set.of(study.getResearchScience().getSkill()));
+		false, 0.2D, study.getResearchScience().getSkill());
 
 		return new AssistScientificStudyResearcher(p, study, impact);
 	}
@@ -114,7 +114,6 @@ public class AssistScientificStudyResearcher extends Task {
 		}
 
 		// Initialize phase
-		addPhase(ASSISTING);
 		setPhase(ASSISTING);
 	}
 

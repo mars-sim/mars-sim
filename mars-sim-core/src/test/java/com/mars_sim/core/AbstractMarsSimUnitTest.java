@@ -164,15 +164,24 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 
 	public Person buildPerson(String name, Settlement settlement) {
-		return buildPerson(name, settlement, JobType.ENGINEER);
+		return buildPerson(name, settlement, JobType.ENGINEER, null, null);
 	}
 
 	public Person buildPerson(String name, Settlement settlement, JobType job) {
+		return buildPerson(name, settlement, job, null, null);
+	}
+
+	public Person buildPerson(String name, Settlement settlement, JobType job,
+					Building place, FunctionType activity) {
 		Person person = Person.create(name, settlement, GenderType.MALE)
 				.build();
 		person.setJob(job, "Test");
 		
 		unitManager.addUnit(person);
+
+		if (place != null) {
+			BuildingManager.addPersonToActivitySpot(person, place, activity);
+		}
 		return person;
 	}
 
@@ -264,7 +273,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 
 	public static void assertLessThan(String message, double maxValue, double actual) {
-		if (actual > maxValue) {
+		if (actual >= maxValue) {
 			fail(message + " ==> " +
 					"Expected: a value less than <" + maxValue + ">\n" +
 					"Actual was <" + actual + ">");

@@ -4,7 +4,7 @@
  * @date 2023-04-18
  * @author Scott Davis
  */
-package com.mars_sim.core.person.ai.task;
+package com.mars_sim.core.vehicle.task;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -14,12 +14,14 @@ import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
@@ -31,6 +33,7 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.mapdata.location.Coordinates;
@@ -53,19 +56,10 @@ public abstract class OperateVehicle extends Task {
     /** Task phases. */
     protected static final TaskPhase MOBILIZE = new TaskPhase(Msg.getString(
             "Task.phase.mobilize")); //$NON-NLS-1$
-    
-    /** Need to provide oxygen as fuel oxidizer for the fuel cells. */
- 	public static final int OXYGEN_ID = ResourceUtil.oxygenID;
-     /** The fuel cells will generate 2.25 kg of water per 1 kg of methane being used. */
- 	public static final int WATER_ID = ResourceUtil.waterID;
  	
  	private static final double THRESHOLD_SUNLIGHT = 60;
  	private static final double MAX_PERCENT_SPEED = 30;
  	
-	/** The ratio of time per experience points. */
-	private static final double EXP = .2D;
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .2D;
 	/** The speed at which the obstacle / winching phase commence. */
 	protected static final double LOW_SPEED = .05;
 	/** Conversion factor : 1 m/s = 3.6 km/h (or kph) */
@@ -99,22 +93,25 @@ public abstract class OperateVehicle extends Task {
 	/** The malfunctionManager of this vehicle. */
 	private MalfunctionManager malfunctionManager;
 	
+	protected static final ExperienceImpact IMPACT = new ExperienceImpact(2D, NaturalAttributeType.EXPERIENCE_APTITUDE,
+								false, 0.2D, SkillType.PILOTING);
+
 	/**
 	 * Constructor for a human pilot.
 	 * 
 	 * @param name the name of the particular task.
-	 * @param person the person performing the task.
+	 * @param operator the Worker performing the task.
 	 * @param vehicle the vehicle to operate.
 	 * @param destination the location of destination of the trip.
 	 * @param startTripTime the time/date the trip is starting.
 	 * @param startTripDistance the distance (km) to the destination at the start of the trip.
 	 * @param duration the time duration (millisols) of the task (or 0 if none).
 	 */
-	public OperateVehicle(String name, Person person, Vehicle vehicle, Coordinates destination, 
+	protected OperateVehicle(String name, Worker operator, Vehicle vehicle, Coordinates destination, 
 			MarsTime startTripTime, double startTripDistance, double duration) {
 		
 		// Use Task constructor
-		super(name, person, true, false, STRESS_MODIFIER, SkillType.PILOTING, EXP, duration);
+		super(name, operator, false, IMPACT, duration);
 		
 		// Initialize data members.
 		this.vehicle = vehicle;
@@ -143,96 +140,22 @@ public abstract class OperateVehicle extends Task {
 
 		// Check if there is a driver assigned to this vehicle.
 		if (vo == null) 
-			vehicle.setOperator(person);
+			vehicle.setOperator(operator);
 			
-		else if (!person.getName().equals(vo.getName())) {
+		else if (!operator.equals(vo)) {
         	// Remove the task from the last driver
 	        clearDrivingTask(vo);
 	        // Replace the driver
-			vehicle.setOperator(person);
+			vehicle.setOperator(operator);
 		}
 		
 		// Walk to operation activity spot in vehicle.
 		if (vehicle instanceof Rover rover) {
-		    walkToOperatorActivitySpotInRover(rover, false);
+			walkToActivitySpotInRover(rover, rover.getOperatorActivitySpots(), false);
 		}
-		
-		addPhase(MOBILIZE);
 		
 		// Set initial phase
 		setPhase(MOBILIZE);
-	}
-	
-	/**
-	 * Constructor for a robot pilot.
-	 * 
-	 * @param name
-	 * @param robot
-	 * @param vehicle
-	 * @param destination
-	 * @param startTripTime
-	 * @param startTripDistance
-	 * @param duration
-	 */
-	public OperateVehicle(String name, Robot robot, Vehicle vehicle, Coordinates destination, 
-			MarsTime startTripTime, double startTripDistance, double duration) {
-		
-		// Use Task constructor
-		super(name, robot, true, false, STRESS_MODIFIER, SkillType.PILOTING, EXP, duration);
-		
-		// Initialize data members.
-		this.vehicle = vehicle;
-		this.destination = destination;
-		this.startTripTime = startTripTime;
-		this.startTripDistance = startTripDistance;
-		
-        fuelTypeID = vehicle.getFuelTypeID();
-        
-		// Check for valid parameters.
-		if (destination == null) {
-		    throw new IllegalArgumentException("destination is null");
-		}
-		if (startTripTime == null) {
-		    throw new IllegalArgumentException("startTripTime is null");
-		}
-		if (startTripDistance < 0D) {
-		    throw new IllegalArgumentException("startTripDistance is < 0");
-		}
-		
-		malfunctionManager = vehicle.getMalfunctionManager();
-		// Select the vehicle operator
-		Worker vo = vehicle.getOperator();
-	
-		// Check if there is a driver assigned to this vehicle.
-		if (vo == null) 
-			vehicle.setOperator(robot);
-		
-		else if (!robot.equals(vo)) {
-        	// Remove the task from the last driver
-	        clearDrivingTask(vo);
-	        // Replace the driver
-			vehicle.setOperator(robot);
-		}
-		
-		// Walk to operation activity spot in vehicle.
-		if (vehicle instanceof Rover rover) {
-		    walkToOperatorActivitySpotInRover(rover, false);
-		}
-		
-		addPhase(MOBILIZE);
-		
-		// Set initial phase
-		setPhase(MOBILIZE);
-	}    
-
-	/**
-	 * Walks to an activity spot in the rover.
-	 * 
-	 * @param rover
-	 * @param allowFail
-	 */
-	private void walkToOperatorActivitySpotInRover(Rover rover, boolean allowFail) {
-		walkToActivitySpotInRover(rover, rover.getOperatorActivitySpots(), allowFail);
 	}
 	
     @Override
@@ -327,12 +250,6 @@ public abstract class OperateVehicle extends Task {
         		
         // Mobilize vehicle
         double mobilizedTime = mobilizeVehicle(time);
-//        double timeUsed = time - mobilizedTime;
-//		logger.log(vehicle, Level.CONFIG, 20_000, 
-//				"time: " +  Math.round(time * 1000.0)/1000.0 + " millisols"
-//				+ "  mobilizedTime: " +  Math.round(mobilizedTime * 1000.0)/1000.0 + " millisols"
-//				+ "  timeUsed: " +  Math.round(timeUsed * 1000.0)/1000.0 + " millisols"
-//				);
 
         // Add experience to the operator
         addExperience(mobilizedTime);
@@ -357,11 +274,10 @@ public abstract class OperateVehicle extends Task {
 	 */
 	private void turnOnBeacon(int resource) {
 		vehicle.setSpeed(0D);
-        MissionStatus status = MissionStatus.createResourceStatus(resource);
         	
-    	if (!vehicle.isBeaconOn()) {
-    		Mission m = vehicle.getMission();
-    		((VehicleMission)m).getHelp(status);
+    	if (!vehicle.isBeaconOn() && (vehicle instanceof VehicleMission vm)) {
+			MissionStatus status = MissionStatus.createResourceStatus(resource);
+			vm.getHelp(status);
     	}
 	}
 	
@@ -376,7 +292,7 @@ public abstract class OperateVehicle extends Task {
 
         if (worker.getUnitType() == UnitType.ROBOT
         	&& ((Robot)worker).getSystemCondition().isLowPower()) {
-        	logger.log((Robot)worker, Level.WARNING, 20_000,
+        	logger.log(worker, Level.WARNING, 20_000,
         			". Can't pilot " + getVehicle() + ".");
 	        endTask();
 	        return time;
@@ -402,17 +318,19 @@ public abstract class OperateVehicle extends Task {
 						"Case A: Out of fuel. Cannot drive.");
 	    		// Turn on emergency beacon
 		    	turnOnBeacon(fuelTypeID);
+				vehicle.addSecondaryStatus(StatusType.OUT_OF_FUEL);
 	        	endTask();
 	        	return time;
 	    	}
 	
-	        remainingOxidizer = vehicle.getAmountResourceStored(OXYGEN_ID);
+	        remainingOxidizer = vehicle.getAmountResourceStored(ResourceUtil.oxygenID);
 	
 	    	if (remainingOxidizer < LEAST_AMOUNT * RATIO_OXIDIZER_FUEL) {
 	    		logger.log(vehicle, Level.SEVERE, 20_000L, 
 						"Case B: Out of fuel oxidizer. Cannot drive.");
 	    		// Turn on emergency beacon
-		    	turnOnBeacon(OXYGEN_ID);
+		    	turnOnBeacon(ResourceUtil.oxygenID);
+				vehicle.addSecondaryStatus(StatusType.OUT_OF_FUEL);
 	        	endTask();
 	        	return time;
 	        }
@@ -440,10 +358,7 @@ public abstract class OperateVehicle extends Task {
         	// Note: Need to consider the case in which VehicleMission's determineEmergencyDestination() causes the 
         	// the vehicle to switch the destination to a settlement when this settlement is within a very short
         	// distance away.
-        	
-        	// Sets final speed to zero and use regen braking to recharge the battery.
-//        	vehicle.getController().adjustSpeed(hrsTime, dist, 0, remainingFuel, remainingOxidizer);
-   
+        	   
         	// Stop the vehicle
         	haltVehicle();
        
@@ -470,7 +385,7 @@ public abstract class OperateVehicle extends Task {
 	 * @return remaining hours
 	 */
 	private double moveVehicle(double hrsTime, double dist2Dest, double remainingFuel, double remainingOxidizer) {
-		double remainingHrs = hrsTime;
+		double remainingHrs;
     	// Gets initial speed in kph
     	double uKPH = vehicle.getSpeed(); 
     	// Gets initial speed in m/s
@@ -509,8 +424,6 @@ public abstract class OperateVehicle extends Task {
     	
       	// If staying at the same speed
     	double dist2Cover = vKPHProposed * hrsTime * KPH_CONV;
-    	
-//    	double newDistToCover = uMS * hrsTime * KPH_CONV;
     	
     	// Note that Case I: Arrived at destination in mobilizeVehicle()
     	
@@ -666,59 +579,46 @@ public abstract class OperateVehicle extends Task {
 	 * @return speed modifier (0D - 1D)
 	 */
 	protected double getTerrainModifier(Direction direction) {
-		double angleModifier = 0;
-		double result = 0;
-		
-		if (vehicle instanceof Rover) {
-			
-			GroundVehicle vehicle = (GroundVehicle) getVehicle();
+		double angleModifier;
+		double terrainGrade;
+		if (vehicle instanceof GroundVehicle gvehicle) {			
 			// Get vehicle's terrain handling capability.
-			double handling = vehicle.getTerrainHandlingCapability();
-		
+			double handling = gvehicle.getTerrainHandlingCapability();
+	
 			// Determine modifier.
 			angleModifier = handling - 10 + getEffectiveSkillLevel()/2D;
-		
-			if (angleModifier < 0D)
-				angleModifier = Math.abs(1D / angleModifier);
-			else if (angleModifier == 0D) {
-				// Will produce a divide by zero otherwise
-				angleModifier = 1D;
-			}
-		
-			double tempAngle = Math.abs(vehicle.getTerrainGrade(direction) / angleModifier);
-			if (tempAngle > HALF_PI)
-				tempAngle = HALF_PI;
-		
-			result = Math.cos(tempAngle);
+			terrainGrade = gvehicle.getTerrainGrade(direction);
 		}
 		
-		else {
-			
-			Flyer vehicle = (Flyer) getVehicle();
+		else if (vehicle instanceof Flyer fvehicle) {
 			// Determine modifier.
 			angleModifier = getEffectiveSkillLevel()/2D - 5;
-		
-			if (angleModifier < 0D)
-				angleModifier = Math.abs(1D / angleModifier);
-			else if (angleModifier == 0D) {
-				// Will produce a divide by zero otherwise
-				angleModifier = 1D;
-			}
-		
-			double tempAngle = Math.abs(vehicle.getTerrainGrade(direction) / angleModifier);
-			if (tempAngle > HALF_PI)
-				tempAngle = HALF_PI;
-
-			result = Math.cos(tempAngle);
+			terrainGrade = fvehicle.getTerrainGrade(direction);
 		}
-		
-		return result;
+		else {
+			// THis will only happen if a new Vehicle subtype is created
+			// Thi can be convert to a typed switch in Java 21
+			throw new IllegalStateException("Cannot operate vehicle of type " + vehicle);
+		}
+
+		if (angleModifier < 0D)
+			angleModifier = Math.abs(1D / angleModifier);
+		else if (angleModifier == 0D) {
+			// Will produce a divide by zero otherwise
+			angleModifier = 1D;
+		}
+	
+		double tempAngle = Math.abs(terrainGrade / angleModifier);
+		if (tempAngle > HALF_PI)
+			tempAngle = HALF_PI;
+
+		return Math.cos(tempAngle);
 	}
 	
     /**
      * Tests the speed.
      * 
-     * @param direction
+     * @param direction Direction may be used by overriding version
      * @return
      */
     protected double testSpeed(Direction direction) {
@@ -862,11 +762,14 @@ public abstract class OperateVehicle extends Task {
     /**
      * Stops the vehicle and removes operator.
      */
+	@Override
     protected void clearDown() {
     	if (vehicle != null) {
     		vehicle.setSpeed(0D);
     		// Need to set the vehicle operator to null before clearing the driving task 
         	vehicle.setOperator(null);
     	}
+
+		super.clearDown();
     }
 }

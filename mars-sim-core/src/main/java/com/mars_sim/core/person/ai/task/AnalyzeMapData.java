@@ -48,7 +48,7 @@ public class AnalyzeMapData extends Task {
 	private static final ExperienceImpact IMPACT = new ExperienceImpact(.25D,
 														NaturalAttributeType.EXPERIENCE_APTITUDE,
 														 false, 0.01,
-														 Set.of(SkillType.COMPUTING));
+														 SkillType.COMPUTING);
 
     // Data members.
     /** Computing Units needed per millisol. */		

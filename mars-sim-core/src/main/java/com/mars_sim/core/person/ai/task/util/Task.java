@@ -8,7 +8,6 @@ package com.mars_sim.core.person.ai.task.util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -128,19 +127,15 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private TaskPhase phase;
 
 	// This 4 fields can be removed once ExperiecneImpact is passed in constructor
-	/** Ratio of work time to experience */
 	private double experienceRatio;
-	/** Stress modified by person performing task per millisol. */
 	protected double stressModifier;
-
-	/** What natural attribute influences experience points */
 	private NaturalAttributeType experienceAttribute = NaturalAttributeType.EXPERIENCE_APTITUDE;
+	private SkillType primarySkill;
 
+	// Impact of doing this Task
+	private ExperienceImpact impact;
 	private int effectiveSkillLevel;
 
-	private ExperienceImpact impact;
-
-	private SkillType primarySkill;
 
 	/** The static instance of the master clock */
 	protected static MasterClock masterClock;
@@ -287,16 +282,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier,
 			double duration) {
 		this(name, worker, effort, createEvents, stressModifier, null, 0D, duration);
-	}
-
-	/**
-	 * Sets the Natural attribute that influences experience points. By default this
-	 * is EXPERIENCE_APTITUDE
-	 * 
-	 * @param experienceAttribute the NaturalAttributeType enum
-	 */
-	protected void setExperienceAttribute(NaturalAttributeType experienceAttribute) {
-		this.experienceAttribute = experienceAttribute;
 	}
 
 	private void endSubTask() {
@@ -811,12 +796,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (result == null) {
 			// This is only needed until all subclasses define an Impac tint eh constructor
 			if (impact == null) {
-				Set<SkillType> skills = new HashSet<>();
-				if (primarySkill != null) {
-					skills.add(primarySkill);
-				}
 				impact = new ExperienceImpact(experienceRatio, experienceAttribute,
-										effortDriven, stressModifier, skills);
+										effortDriven, stressModifier, primarySkill);
 			}
 			result = impact;
 		}
@@ -1077,7 +1058,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		person.setActivitySpot(bed);
 
 		if (myLoc.equals(bed.getAllocated().getPos())) {
-//			logger.info(person, 10_000L, "Already in my own bed.");
 			return canWalk;
 		}
 	
@@ -1445,7 +1425,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		LocalPosition myLoc = worker.getPosition();
 
 		if (myLoc.equals(sLoc)) {
-//			logger.info(worker, 10_000L, "Already at " + sLoc + ".");
 			return true;
 		}
 		

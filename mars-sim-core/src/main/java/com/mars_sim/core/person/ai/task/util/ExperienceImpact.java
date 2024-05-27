@@ -7,6 +7,7 @@
 package com.mars_sim.core.person.ai.task.util;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,39 +40,46 @@ public class ExperienceImpact implements Serializable {
     private Set<SkillType> skills;
     private boolean effortDriven;
 
+    
     /**
-     * Cut down cosntructor where Skills are evenly weighted and expereicne is influenced on
-     * EXPERIENCE_APTITUDE.
+     * Cut down cosntructor using a varargs of skills.
      * @param skillRatio Ratio to use when updating skills
-     * @param skills Set of skills requried/improved for this activity; evenly weighted
      * @param effortDriven This activity requires effort
      * @param stressModifier Modifer value for how stressful the activity is
      * @param experienceAttribute Natural attribute used to assess how much the worker can learn
+     * @param skills Skill required/improved for this activity; evenly weighted
      */
     public ExperienceImpact(double skillRatio, NaturalAttributeType experienceAttribute,
-                            boolean effortDriven, double stressModifier,  Set<SkillType> skills) {
-        var sw = skills.stream().map(s -> new SkillWeight(s, 1)).collect(Collectors.toSet());
-        init(skillRatio, sw, experienceAttribute, effortDriven,  stressModifier);
+                            boolean effortDriven, double stressModifier, SkillType... skills) {
+        this(skillRatio, experienceAttribute, effortDriven, stressModifier, toSkillWeights(skills));
+    }
+
+    /**
+     * Convert a collection of SkillType to an evenly balanced SkillWeights
+     * @param skills
+     * @return
+     */
+    public static Set<SkillWeight> toSkillWeights(SkillType[] skills) {
+        Set<SkillWeight> sw = new HashSet<>();
+        for(var s : skills) {
+            if (s != null) {
+                sw.add(new SkillWeight(s, 1));
+            }
+        }
+        return sw;
     }
 
     /**
      * Fully qualified contrsuctor allowing full definition of the impact.
      * @param skillRatio Ratio to use when updating skills
-     * @param skillWeights The Skills affected by this experience with assoicated weights
      * @param stressModifier Used to changed stress coupled with the effectiveness of Worker
      * @param effortDriven This activity requires effort
      * @param experienceAttribute Natural attribute used to assess how much the worker can learn
+     * @param skillWeights The Skills affected by this experience with assoicated weights
      */
-    public ExperienceImpact(double skillRatio, Set<SkillWeight> skillWeights,
-            NaturalAttributeType experienceAttribute, boolean effortDriven, double stressModifier) {
-        init(skillRatio, skillWeights, experienceAttribute, effortDriven, stressModifier);
-    }
-
-    /**
-     * Does the real work of creting the instance
-     */
-     private void init(double skillRatio, Set<SkillWeight> skillWeights,
-                    NaturalAttributeType experienceAttribute, boolean effortDriven, double stressModifier) {
+    public ExperienceImpact(double skillRatio, NaturalAttributeType experienceAttribute,
+                            boolean effortDriven, double stressModifier,
+                            Set<SkillWeight> skillWeights) {
         this.skillRatio = skillRatio;
         this.skillWeights = skillWeights;
         this.experienceInfluence = experienceAttribute;
@@ -114,7 +122,7 @@ public class ExperienceImpact implements Serializable {
             applyPersonBenfits(p, duration, effectiveness);
         }
         else if (worker instanceof Robot r) {
-            applyRobotBenfits(r, duration);
+            applyRobotBenefits(r, duration);
         }
     }
 
@@ -130,7 +138,7 @@ public class ExperienceImpact implements Serializable {
     }
 
     // Calculate the energy time
-    private void applyRobotBenfits(Robot r, double duration) {
+    private void applyRobotBenefits(Robot r, double duration) {
         double energyTime = duration;
 		    
         // Double energy expenditure if performing effort-driven task.
@@ -142,7 +150,6 @@ public class ExperienceImpact implements Serializable {
         if (energyTime > 0D && !r.getSystemCondition().isCharging()) {
             // Expend energy based on activity.
             r.consumeEnergy(energyTime * MarsTime.HOURS_PER_MILLISOL * ROBOT_WORK_POWER);
-
         }
     }
     
@@ -210,5 +217,14 @@ public class ExperienceImpact implements Serializable {
      */
     public boolean isEffortAffected() {
         return effortDriven;
+    }
+
+    /**
+     * Create a new varient of this Experience but with a different 
+     * @param newSkillsRatio The new skill ratio
+     * @return
+     */
+    public ExperienceImpact changeSkillsRatio(double newSkillsRatio) {
+        return new ExperienceImpact(newSkillsRatio, experienceInfluence, effortDriven, newSkillsRatio, skillWeights);
     }
 }

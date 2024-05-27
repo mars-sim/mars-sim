@@ -53,7 +53,7 @@ public class PerformLaboratoryResearch extends LabTask {
 			// Found a suitable study
 			var impact = new ExperienceImpact(25D, NaturalAttributeType.ACADEMIC_APTITUDE,
 										false, 0.2D,
-							Set.of(study.getContribution(person).getSkill()));
+										study.getContribution(person).getSkill());
 			return new PerformLaboratoryResearch(person, study, impact);
 		}
 

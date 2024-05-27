@@ -65,9 +65,9 @@ public class ProduceFood extends Task {
 	
 	/** Impact doing this Task */
 	private static final ExperienceImpact IMPACT = new ExperienceImpact(100D,
+										NaturalAttributeType.EXPERIENCE_APTITUDE, false, .2D,
 										Set.of(new SkillWeight(SkillType.COOKING, 5),
-											   new SkillWeight(SkillType.MATERIALS_SCIENCE, 2)),
-										NaturalAttributeType.EXPERIENCE_APTITUDE, false, .2D);
+											   new SkillWeight(SkillType.MATERIALS_SCIENCE, 2)));
 
 	// Data members
 	/** The food production foodFactory the person is using. */
@@ -95,7 +95,6 @@ public class ProduceFood extends Task {
 														 FunctionType.FOOD_PRODUCTION, false);
 		
 				// Initialize phase
-				addPhase(PRODUCE_FOOD);
 				setPhase(PRODUCE_FOOD);
 				
 			}
@@ -126,7 +125,6 @@ public class ProduceFood extends Task {
 														FunctionType.FOOD_PRODUCTION, false);
 		
 				// Initialize phase
-				addPhase(PRODUCE_FOOD);
 				setPhase(PRODUCE_FOOD);
 			}
 			else {

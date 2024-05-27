@@ -28,9 +28,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
-import com.mars_sim.core.person.ai.task.DriveGroundVehicle;
 import com.mars_sim.core.person.ai.task.EVAOperation;
-import com.mars_sim.core.person.ai.task.OperateVehicle;
 import com.mars_sim.core.person.ai.task.RequestMedicalTreatment;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.WalkingSteps;
@@ -46,6 +44,8 @@ import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
+import com.mars_sim.core.vehicle.task.DriveGroundVehicle;
+import com.mars_sim.core.vehicle.task.OperateVehicle;
 import com.mars_sim.core.vehicle.task.UnloadVehicleEVA;
 import com.mars_sim.core.vehicle.task.UnloadVehicleMeta;
 import com.mars_sim.mapdata.location.LocalPosition;
@@ -216,6 +216,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 * @return true if vehicle is usable.
 	 * @throws MissionException if problem determining if vehicle is usable.
 	 */
+	@Override
 	protected boolean isUsableVehicle(Vehicle newVehicle) {
 		boolean usable = super.isUsableVehicle(newVehicle);
 		if (!(newVehicle instanceof Rover))
@@ -346,10 +347,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				
 				// Check to ensure it meets the baseline # of EVA suits
 				meetBaselineNumEVASuits(settlement, v);
-				
-				// Put the rover outside.
-				// Note: calling removeFromGarage has already been included in Vehicle::transfer() below
-//				BuildingManager.removeFromGarage(v);
 			}
 
 			// Record the start mass right before departing the settlement
@@ -463,9 +460,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (!justArrived) {
 			// Execute this only once upon arrival
 			justArrived = true;
-			
-			// TODO: should make this an actual task to be taken by a settler in Command & Control
-			// to coordinate with disengaging the towing and towed vehicle
 			
 			if (v1 == null && v2 == null) {
 				registerVehicle(v0, disembarkSettlement);
@@ -589,7 +583,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		logger.info(v, 10_000, "Disembarked at " + disembarkSettlement.getName()
 					+ " triggered by " + member.getName() +  ".");
 		
-//		Person p = (Person)member; 	
 		Rover rover = (Rover) v;
 		Set<Person> crew = new UnitSet<>();
 		crew.addAll(rover.getCrew());
@@ -669,12 +662,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		
 		// Unload rover if necessary.
 		boolean roverUnloaded = UnloadVehicleEVA.isFullyUnloaded(rover);
-		if (!roverUnloaded) {
-			// Note : Set random chance of having person unloading resources,
-			// thus allowing person to do other urgent things
-			if (RandomUtil.lessThanRandPercent(50)) {
-				unloadCargo(member, rover);
-			}
+		// Note : Set random chance of having person unloading resources,
+		// thus allowing person to do other urgent things
+		if (!roverUnloaded && RandomUtil.lessThanRandPercent(50)) {
+			unloadCargo(member, rover);
 		}
 		
         // Check the crew again since it's possible that in the same frame, 
@@ -707,10 +698,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 */
 	private boolean unloadCargo(Worker worker, Rover rover) {
 
-//		Mission m = worker.getMission();
-//		if (m != null && !m.equals(this))
-//			return;
-
 		TaskJob job = UnloadVehicleMeta.createUnloadJob(worker.getAssociatedSettlement(), rover);
 		boolean assigned = false;
         if (job != null) {
@@ -739,7 +726,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 */
 	private void walkToAirlock(Rover rover, Person person, Settlement disembarkSettlement) {
 
-//		if (person.isOutside()) {
 			// Get random airlock building at settlement.
 			Building destinationBuilding = disembarkSettlement.getBuildingManager().getRandomAirlockBuilding();
 
@@ -789,7 +775,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			else {
 				logger.severe(person, 20_000L, "No airlock found at " + disembarkSettlement);
 			}
-//		}
 	}
 
 	/**
@@ -858,10 +843,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		// Check if everyone is unfit
 		for (Worker w: getMembers()) {
 			if (!w.equals(member) && w instanceof Person p) {
-				if (p.isSuperUnFit()) {
-					areAllOthersUnfit = areAllOthersUnfit && true;
-				}
-				else {
+				if (!p.isSuperUnFit()) {
 					areAllOthersUnfit = false;
 				}
 			}

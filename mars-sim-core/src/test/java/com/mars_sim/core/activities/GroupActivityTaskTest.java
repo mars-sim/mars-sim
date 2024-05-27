@@ -1,8 +1,5 @@
 package com.mars_sim.core.activities;
 
-
-import java.util.Set;
-
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -17,7 +14,7 @@ import com.mars_sim.mapdata.location.LocalPosition;
 public class GroupActivityTaskTest extends AbstractMarsSimUnitTest {
     public final static ExperienceImpact IMPACT = new ExperienceImpact(1D,
                     NaturalAttributeType.CONVERSATION, false, 0D,
-                    Set.of(SkillType.MANAGEMENT));
+                    SkillType.MANAGEMENT);
 
     public void testPerformMappedPhase() {
         var s = buildSettlement();

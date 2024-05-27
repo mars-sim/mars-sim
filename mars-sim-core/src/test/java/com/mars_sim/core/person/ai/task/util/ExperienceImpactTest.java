@@ -1,7 +1,6 @@
 package com.mars_sim.core.person.ai.task.util;
 
 
-import java.util.Collections;
 import java.util.Set;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
@@ -35,12 +34,12 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
 
 
         double skillsRatio = 1D;
-        Set<SkillType> skills = Set.of(changed1.getType(), changed2.getType());
         double stressRatio = 0D;  // No stress doing this
 
         ExperienceImpact impact = new ExperienceImpact(skillsRatio,
                                             NaturalAttributeType.EXPERIENCE_APTITUDE,
-                                            false, stressRatio, skills);
+                                            false, stressRatio,
+                                            changed1.getType(), changed2.getType());
 
         // Simple apply with no assistance
         impact.apply(p, 100D, 1D, 1D);
@@ -53,6 +52,46 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         assertEquals("Unchanged skill",  origUnChangedExp, newUnChangedExp);
         assertGreaterThan("Changed #1 skill",  origChanged1Exp, newChanged1Exp);
         assertGreaterThan("Changed #2 skill",  origChanged2Exp, newChanged2Exp);
+
+        double newStress = p.getPhysicalCondition().getStress();
+        assertEquals("Unchanged stress",  origStress, newStress);
+
+    }
+
+    public void testApplySingleSkill() {
+        Settlement s = buildSettlement();
+        Person p = buildPerson("Worker #1", s);
+
+        double origStress = p.getPhysicalCondition().getStress();
+
+        // Prepare the skills, make sure 2 to be tested are level at the start
+        var sm = p.getSkillManager();
+        sm.addNewSkill(SkillType.BIOLOGY, 1);
+
+        var changed1 = sm.getSkill(SkillType.BIOLOGY);
+
+        var origChanged1Exp = changed1.getCumulativeExperience();
+
+        var unchanged = sm.getSkills().get(2);
+        var origUnChangedExp = unchanged.getCumulativeExperience();
+
+
+        double skillsRatio = 1D;
+        double stressRatio = 0D;  // No stress doing this
+
+        ExperienceImpact impact = new ExperienceImpact(skillsRatio,
+                                            NaturalAttributeType.EXPERIENCE_APTITUDE,
+                                            false, stressRatio, SkillType.BIOLOGY);
+
+        // Simple apply with no assistance
+        impact.apply(p, 100D, 1D, 1D);
+
+        // Check skills have changed
+        var newChanged1Exp = sm.getSkill(changed1.getType()).getCumulativeExperience();
+        var newUnChangedExp = sm.getSkill(unchanged.getType()).getCumulativeExperience();
+
+        assertEquals("Unchanged skill",  origUnChangedExp, newUnChangedExp);
+        assertGreaterThan("Changed #1 skill",  origChanged1Exp, newChanged1Exp);
 
         double newStress = p.getPhysicalCondition().getStress();
         assertEquals("Unchanged stress",  origStress, newStress);
@@ -80,9 +119,8 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         Set<SkillWeight> skills = Set.of(new SkillWeight(changed1.getType(), 2),
                                         new SkillWeight(changed2.getType(), 1));
         double stressRatio = 1D; // It is stressful
-        ExperienceImpact impact = new ExperienceImpact(skillsRatio, skills,
-                                                        NaturalAttributeType.EXPERIENCE_APTITUDE,
-                                                        false, stressRatio);
+        ExperienceImpact impact = new ExperienceImpact(skillsRatio, NaturalAttributeType.EXPERIENCE_APTITUDE,
+                                                        false, stressRatio, skills);
 
         // Simple apply with no assistance but not effective to generate stress
         impact.apply(p, 100D, 1D, 0.5);
@@ -115,16 +153,16 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
 
         // Balanced
         ExperienceImpact balanced = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
-                                          false, 0, Set.of(selected1.getType(), selected2.getType()));
+                                          false, 0,
+                                          selected1.getType(), selected2.getType());
         var skill = balanced.getEffectiveSkillLevel(p);
         assertEquals("Balanced skill", (skill1 + skill2)/2, skill);
 
         // Balanced
         Set<SkillWeight> skills = Set.of(new SkillWeight(selected1.getType(), 2),
                                         new SkillWeight(selected2.getType(), 1));
-        ExperienceImpact unbalanced = new ExperienceImpact(0, skills,
-                                                        NaturalAttributeType.EXPERIENCE_APTITUDE,
-                                                        false, 0);
+        ExperienceImpact unbalanced = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
+                                                        false, 0, skills);
         skill = unbalanced.getEffectiveSkillLevel(p);
         assertEquals("Unalanced skill", ((skill1*2) + skill2)/3, skill);
     }
@@ -138,7 +176,7 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
 
         // No effort impact
         ExperienceImpact noEffort = new ExperienceImpact(0, null,
-                                          false, 0, Collections.emptySet());
+                                          false, 0);
         assertFalse("No effort experience", noEffort.isEffortAffected());
         noEffort.apply(p, 10, 1, 1);
 
@@ -156,7 +194,7 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
 
         // No effort impact
         ExperienceImpact noEffort = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
-                                          true, 0, Collections.emptySet());
+                                          true, 0);
         assertTrue("No effort experience", noEffort.isEffortAffected());
         noEffort.apply(p, 10, 1, 1);
 

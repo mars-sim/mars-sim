@@ -32,7 +32,7 @@ public class PerformMathematicalModeling extends LabTask {
     
     private static final ExperienceImpact IMPACT = new ExperienceImpact(20D,
                         NaturalAttributeType.ACADEMIC_APTITUDE, false, 0.2D,
-                        Set.of(SkillType.MATHEMATICS));
+                        SkillType.MATHEMATICS);
     
     /** Task phases. */
     private static final TaskPhase MODELING = new TaskPhase(Msg.getString(

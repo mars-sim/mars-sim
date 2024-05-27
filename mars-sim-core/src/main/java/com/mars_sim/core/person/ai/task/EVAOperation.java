@@ -7,9 +7,7 @@
 package com.mars_sim.core.person.ai.task;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -27,6 +25,7 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.MissionHistoricalEvent;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.SkillWeight;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -158,9 +157,8 @@ public abstract class EVAOperation extends Task {
 	 * Helper method to create an impact that is specific for a TaskPhase
 	 */
 	protected static ExperienceImpact createPhaseImpact(SkillType... extraSkills) {
-		Set<SkillType> skills = new HashSet<>();
-		skills.add(SkillType.EVA_OPERATIONS);
-		skills.addAll(Arrays.asList(extraSkills));
+		Set<SkillWeight> skills = ExperienceImpact.toSkillWeights(extraSkills);
+		skills.add(new SkillWeight(SkillType.EVA_OPERATIONS, 1));
 		return new ExperienceImpact(100D, NaturalAttributeType.EXPERIENCE_APTITUDE, true, 0.05D, 
 					skills);
 

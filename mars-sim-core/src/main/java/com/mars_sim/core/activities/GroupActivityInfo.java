@@ -7,7 +7,6 @@
 package com.mars_sim.core.activities;
 
 import java.io.Serializable;
-import java.util.Set;
 
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
@@ -38,6 +37,6 @@ public record GroupActivityInfo(String name, int waitDuration, int activityDurat
     
     public static final ExperienceImpact DEFAULT_IMPACT = new ExperienceImpact(0.1D,
                 NaturalAttributeType.CONVERSATION,false,  0D,
-                Set.of(SkillType.MANAGEMENT));
+                SkillType.MANAGEMENT);
 
 }

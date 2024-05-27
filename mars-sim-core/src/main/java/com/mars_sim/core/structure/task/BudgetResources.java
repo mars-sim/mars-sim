@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.structure.task;
 
-import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
@@ -55,7 +54,7 @@ public class BudgetResources extends Task {
 
 	// Experience modifier is based on a mixture of abilities
 	private static final ExperienceImpact IMPACT = new ExperienceImpact(25D, NaturalAttributeType.EXPERIENCE_APTITUDE,
-									false, -0.1D, Set.of(SkillType.MANAGEMENT)) {
+									false, -0.1D, SkillType.MANAGEMENT) {
 										@Override
 										protected double getExperienceModifier(Worker worker) {
 											int disciplineAptitude = worker.getNaturalAttributeManager().getAttribute(
