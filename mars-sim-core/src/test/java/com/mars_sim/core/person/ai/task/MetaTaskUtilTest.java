@@ -19,6 +19,8 @@ import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.structure.building.task.MaintainBuilding;
+import com.mars_sim.core.structure.building.task.MaintainBuildingEVA;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 /**

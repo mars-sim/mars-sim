@@ -36,6 +36,7 @@ import com.mars_sim.core.structure.building.function.cooking.CookedMeal;
 import com.mars_sim.core.structure.building.function.cooking.Cooking;
 import com.mars_sim.core.structure.building.function.cooking.PreparedDessert;
 import com.mars_sim.core.structure.building.function.cooking.PreparingDessert;
+import com.mars_sim.core.structure.building.function.task.CookMeal;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.mapdata.location.LocalPosition;
 import com.mars_sim.tools.Msg;

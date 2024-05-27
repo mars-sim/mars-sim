@@ -4,7 +4,7 @@
  * @date 2022-08-01
  * @author Scott Davis
  */
-package com.mars_sim.core.person.ai.task.meta;
+package com.mars_sim.core.structure.building.function.task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.role.RoleType;
-import com.mars_sim.core.person.ai.task.TendGreenhouse;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;

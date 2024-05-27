@@ -36,6 +36,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.task.CookMeal;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.vehicle.Airlockable;
 import com.mars_sim.core.vehicle.Rover;

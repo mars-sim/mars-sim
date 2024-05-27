@@ -18,7 +18,6 @@ import com.mars_sim.core.manufacture.Salvagable;
 import com.mars_sim.core.manufacture.SalvageInfo;
 import com.mars_sim.core.manufacture.SalvageProcessInfo;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.task.MaintainBuilding;
 import com.mars_sim.core.person.ai.task.Repair;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -26,6 +25,7 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.Indoor;
+import com.mars_sim.core.structure.building.task.MaintainBuilding;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**

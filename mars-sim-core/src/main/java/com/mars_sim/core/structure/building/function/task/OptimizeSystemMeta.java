@@ -4,7 +4,7 @@
  * @date 2023-11-30
  * @author Manny Kung
  */
-package com.mars_sim.core.person.ai.task.meta;
+package com.mars_sim.core.structure.building.function.task;
 
 import java.util.List;
 
@@ -16,7 +16,6 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.role.RoleType;
-import com.mars_sim.core.person.ai.task.OptimizeSystem;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;

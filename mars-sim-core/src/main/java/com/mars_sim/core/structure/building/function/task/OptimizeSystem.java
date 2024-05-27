@@ -4,7 +4,7 @@
  * @date 2022-08-01
  * @author Manny Kung
  */
-package com.mars_sim.core.person.ai.task;
+package com.mars_sim.core.structure.building.function.task;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;

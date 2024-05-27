@@ -1,10 +1,10 @@
 /*
  * Mars Simulation Project
- * TendFishTankMeta.java
- * @date 2023-12-07
- * @author Barry Evans
+ * TendAlgaePondMeta.java
+ * @date 2023-09-19
+ * @author Manny Kung
  */
-package com.mars_sim.core.person.ai.task.meta;
+package com.mars_sim.core.structure.building.function.task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.role.RoleType;
-import com.mars_sim.core.person.ai.task.TendFishTank;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
@@ -26,46 +25,46 @@ import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.farming.Fishery;
+import com.mars_sim.core.structure.building.function.farming.AlgaeFarming;
 import com.mars_sim.tools.Msg;
 
 /**
- * Meta task for the Tend Fish Tank task.
+ * Meta task for tending algae pond.
  */
-public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
+public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
 
-	private static final int BASE_SCORE = 50;
-	
     /**
-     * Represents a Job needed in a Fishery
+     * Represents the job needed in an algae pond.
      */
-    private static class FishTaskJob extends SettlementTask {
+    private static class AlgaeTaskJob extends SettlementTask {
 
 		private static final long serialVersionUID = 1L;
+	
+        private AlgaeFarming pond;
 
-        private Fishery tank;
-
-        public FishTaskJob(SettlementMetaTask owner, Fishery tank, RatingScore score) {
-            super(owner, "Tend Fish Tank", tank.getBuilding(), score);
-            this.tank = tank;
+        public AlgaeTaskJob(SettlementMetaTask owner, AlgaeFarming pond, RatingScore score) {
+            super(owner, "Tend Algae Pond", pond.getBuilding(), score);
+            this.pond = pond;
         }
 
         @Override
         public Task createTask(Person person) {
-            return new TendFishTank(person, tank);
+            return new TendAlgaePond(person, pond);
         }
 
         @Override
         public Task createTask(Robot robot) {
-            return new TendFishTank(robot, tank);
+            return new TendAlgaePond(robot, pond);
         }
     }
 
+	private static final int BASE_SCORE = 50;
+	
     /** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.tendFishTank"); //$NON-NLS-1$
+            "Task.description.tendAlgaePond"); //$NON-NLS-1$
 	
-    public TendFishTankMeta() {
+    public TendAlgaePondMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.TENDING_FARM);
 		setPreferredJob(JobType.BOTANIST, JobType.BIOLOGIST, JobType.CHEMIST);
@@ -92,7 +91,7 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
             }
             
             // Crowding modifier.
-            Building b = ((FishTaskJob)t).tank.getBuilding();
+            Building b = ((AlgaeTaskJob)t).pond.getBuilding();
             assessBuildingSuitability(factor, b, p);
 		}
 		return factor;
@@ -110,7 +109,7 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
 
     /**
      * Scans the settlement tanks for any that need tending. 
-     * Creates one task per applicable Fishery function.
+     * Creates one task per applicable AlgaeFarming function.
      * 
      * @param settlement Source to scan
      * @return List of applicable tasks
@@ -119,20 +118,27 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
     public List<SettlementTask> getSettlementTasks(Settlement settlement) {
         List<SettlementTask> tasks = new ArrayList<>();
 
-        for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.FISHERY)) {
-            Fishery fishTank = building.getFishery();
+        for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.ALGAE_FARMING)) {
+            AlgaeFarming pond = building.getAlgae();
             
             RatingScore result = new RatingScore("base", BASE_SCORE);
-            
-            result.addBase("maintenance", 
-            		2 * (200 - fishTank.getCleaningScore() - fishTank.getInspectionScore()));
 
-            result.addBase("surplus", Math.abs(fishTank.getSurplusStock()));
+            result.addBase("maintenance", 
+            		2 * (200 - pond.getCleaningScore() - pond.getInspectionScore()));
+    
+            double ratio = pond.getSurplusRatio();
+            result.addBase("surplus", ratio * 50);
             
-            result.addBase("fish.weeds", fishTank.getWeedDemand() * 15);
+            double foodDemand = pond.getNutrientDemand();     
+            result.addBase("nutrient.demand", foodDemand * 200);
             
+            double nutrientRatio = pond.getCurrentNutrientRatio();
+            double defaultNRatio = AlgaeFarming.NUTRIENT_RATIO;
+  
+            result.addBase("nutrient.ratio", defaultNRatio / nutrientRatio * 50);
+      
             if (result.getScore() > 0) {
-                tasks.add(new FishTaskJob(this, fishTank, result));
+                tasks.add(new AlgaeTaskJob(this, pond, result));
             }
         }
 

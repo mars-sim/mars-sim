@@ -1,10 +1,10 @@
 /*
  * Mars Simulation Project
- * TendAlgaePond.java
+ * TendFishTank.java
  * @date 2023-12-07
- * @author Manny
+ * @author Barry Evans
  */
-package com.mars_sim.core.person.ai.task;
+package com.mars_sim.core.structure.building.function.task;
 
 
 import com.mars_sim.core.logging.SimLogger;
@@ -15,29 +15,24 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.farming.AlgaeFarming;
+import com.mars_sim.core.structure.building.function.farming.Fishery;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
 
 /**
- * The TendAlgaePond class is a task for tending algae pond in a
+ * The TendFishTank class is a task for tending the fishery in a
  * settlement. This is an effort driven task.
  */
-public class TendAlgaePond extends Task {
+public class TendFishTank extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(TendAlgaePond.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(TendFishTank.class.getName());
 
 	/** Task name */
-	private static final String NAME = Msg.getString("Task.description.tendAlgaePond"); //$NON-NLS-1$
-	
-	private static final String INSPECT_DETAIL = Msg.getString("Task.description.tendGreenhouse.inspect.detail");
-	
-	private static final String CLEAN_DETAIL = Msg.getString("Task.description.tendGreenhouse.clean.detail");
-	
+	private static final String NAME = Msg.getString("Task.description.tendFishTank"); //$NON-NLS-1$
 	/** Task phases. */
 	private static final TaskPhase TENDING = new TaskPhase(Msg.getString("Task.phase.tending")); //$NON-NLS-1$
 	/** Task phases. */
@@ -45,10 +40,10 @@ public class TendAlgaePond extends Task {
 	/** Task phases. */
 	private static final TaskPhase CLEANING = new TaskPhase(Msg.getString("Task.phase.cleaning")); //$NON-NLS-1$
 	/** Task phases. */
-	private static final TaskPhase HARVESTING = new TaskPhase(Msg.getString("Task.phase.harvesting")); //$NON-NLS-1$	
+	private static final TaskPhase CATCHING = new TaskPhase(Msg.getString("Task.phase.catching")); //$NON-NLS-1$	
 
 	// Limit the maximum time spent on a phase
-	private static final double MAX_HARVESTING = 100D;
+	private static final double MAX_FISHING = 100D;
 	private static final double MAX_TEND = 100D;
 	
 	// Static members
@@ -56,19 +51,15 @@ public class TendAlgaePond extends Task {
 	private static final double STRESS_MODIFIER = -1.1D;
 
 	// Data members
-	private double harvestingTime = 0D;
-	
-	private double totalHarvested;
-	
+	private double fishingTime = 0D;
 	private double tendTime = 0D;
-	
 	/** The goal of the task at hand. */
 	private String cleanGoal;
 	/** The goal of the task at hand. */
 	private String inspectGoal;
-	/** The algae pond the person is tending. */
-	private AlgaeFarming pond;
-	/** The building where the algae pond is. */	
+	/** The fish tank the person is tending. */
+	private Fishery fishTank;
+	/** The building where the fish tank is. */	
 	private Building building;
 	
 	/**
@@ -76,7 +67,7 @@ public class TendAlgaePond extends Task {
 	 * 
 	 * @param person the person performing the task.
 	 */
-	public TendAlgaePond(Person person, AlgaeFarming pond) {
+	public TendFishTank(Person person, Fishery fishTank) {
 		// Use Task constructor
 		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.BIOLOGY, 100D);
 
@@ -85,32 +76,30 @@ public class TendAlgaePond extends Task {
 			return;
 		}
 
-		// Get available pond if any.
-		this.pond = pond;
-		this.building = pond.getBuilding();
+		// Get available fish tank if any.
+		this.fishTank = fishTank;
+		this.building = fishTank.getBuilding();
 
-		// Walk to algae pond.
-		walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.ALGAE_FARMING, false);	
+		// Walk to fish tank.
+		walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.FISHERY, false);	
 
 		int rand = RandomUtil.getRandomInt(6);
 		
-		double surplus = pond.getSurplusRatio();
+		double surplus = fishTank.getSurplusStock();
 		
-		// If it hasn't tended the algae for over 500 millisols, do it now
-		if (pond.getNutrientDemand() > 1) {
+		// If it hasn't tended the fish for over 500 millisols, do it now
+		if (fishTank.getWeedDemand() > 0) {
 			setPhase(TENDING);
 			addPhase(TENDING);
 			addPhase(INSPECTING);
 			addPhase(CLEANING);
 		}
-		// If surplus is less than or equal to 0.5, do NOT harvest
+		// If surplus is less than zero, do NOT catch any fish
 		// Note: may offer exception in future
-		else if ((rand == 0 && surplus > 0.5) 
-				// If the mass of algae exceeds the ideal mass, harvest it now
-				|| surplus > 1) {
-			// Harvest
-			setPhase(HARVESTING);
-			addPhase(HARVESTING);
+		else if (rand == 0 && surplus > 0) {
+			// Do fishing
+			setPhase(CATCHING);
+			addPhase(CATCHING);
 		}
 		else if (rand == 1 || rand == 2) {
 			setPhase(CLEANING);
@@ -133,7 +122,7 @@ public class TendAlgaePond extends Task {
 	 * 
 	 * @param robot the robot performing the task.
 	 */
-	public TendAlgaePond(Robot robot, AlgaeFarming pond) {
+	public TendFishTank(Robot robot, Fishery fishTank) {
 		// Use Task constructor
 		super(NAME, robot, false, false, 0, SkillType.BIOLOGY, 50D);
 
@@ -143,15 +132,15 @@ public class TendAlgaePond extends Task {
 			return;
 		}
 
-		// Get available greenhouse if any.
-		this.pond = pond;
-		this.building = pond.getBuilding();
+		// Get available fish tank if any.
+		this.fishTank = fishTank;
+		this.building = fishTank.getBuilding();
 
-		// Walk to the pond.
-		walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.ALGAE_FARMING, false);
+		// Walk to fish tank.
+		walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.FISHERY, false);
 		
 		// Initialize phase
-		// Robots don't harvest algae
+		// Robots don't catch fish
 		setPhase(TENDING);
 		addPhase(TENDING);
 		addPhase(INSPECTING);
@@ -168,8 +157,8 @@ public class TendAlgaePond extends Task {
 			return inspectingPhase(time);
 		} else if (CLEANING.equals(getPhase())) {
 			return cleaningPhase(time);
-		} else if (HARVESTING.equals(getPhase())) {
-			return harvestingPhase(time);
+		} else if (CATCHING.equals(getPhase())) {
+			return catchingPhase(time);
 		} else {
 			return time;
 		}
@@ -181,7 +170,7 @@ public class TendAlgaePond extends Task {
 	 * @param time the amount of time (millisols) to perform the phase.
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
-	private double harvestingPhase(double time) {
+	private double catchingPhase(double time) {
 
 		double workTime = time;
 
@@ -216,39 +205,29 @@ public class TendAlgaePond extends Task {
 
 		workTime *= mod;
 
-		double algaeMass = pond.harvestAlgae(worker, workTime);
-		if (algaeMass == 0.0) {
-			// if algaeMass is zero, none can be harvested
-//			logger.log(building, worker, Level.INFO, 0, "Total kg algae harvested: " 
-//					+ Math.round(totalHarvested * 100.0)/100.0 , null);
-			endTask();
-			
-			// Calculate used time 
-			double usedTime = workTime;
-			return time - (usedTime / mod);
-		}
-		
-		totalHarvested += algaeMass;
-		
+		double remainingTime = fishTank.catchFish(worker, workTime);
+
 		// Add experience
 		addExperience(time);
 
 		// Check for accident
 		checkForAccident(building, time, 0.003);
 
-		harvestingTime += time;
-		
-		if (harvestingTime > MAX_HARVESTING) {
-			
-			logger.info(worker, "Total kg algae harvested: " 
-					+ Math.round(totalHarvested * 100.0)/100.0 );
+		if ((remainingTime > 0) || (fishTank.getSurplusStock() == 0)) {
 			endTask();
-			
-			// Calculate used time 
-			double usedTime = workTime;
+
+			// Scale it back to the. Calculate used time 
+			double usedTime = workTime - remainingTime;
 			return time - (usedTime / mod);
 		}
-
+		else {
+			fishingTime += time;
+			if (fishingTime > MAX_FISHING) {
+				logger.info(worker, "Giving up on fishing.");
+				endTask();
+			}
+		}
+		
 		return 0;
 	}
 	
@@ -285,7 +264,7 @@ public class TendAlgaePond extends Task {
 
 		workTime *= mod;
 
-		double remainingTime = pond.tending(workTime);
+		double remainingTime = fishTank.tendWeeds(workTime);
 
 		// Add experience
 		addExperience(time);
@@ -299,13 +278,12 @@ public class TendAlgaePond extends Task {
 				setPhase(INSPECTING);
 			else
 				setPhase(CLEANING);
-			
+
 			// Scale it back to the. Calculate used time 
 			double usedTime = workTime - remainingTime;
 			return time - (usedTime / mod);
 		}
 		else if (tendTime > MAX_TEND) {
-//			logger.log(building, worker, Level.INFO, 0, "Ended tending the algae pond.", null);
 			endTask();
 		}
 		tendTime += time;
@@ -321,11 +299,12 @@ public class TendAlgaePond extends Task {
 	 */
 	private double inspectingPhase(double time) {
 		if (inspectGoal == null) {
-			inspectGoal = pond.getUninspected();
+			inspectGoal = fishTank.getUninspected();
 		}
 
 		if (inspectGoal != null) {
-			printDescription(INSPECT_DETAIL + inspectGoal.toLowerCase());
+			printDescription(Msg.getString("Task.description.tendFishTank.inspect.detail", 
+					inspectGoal.toLowerCase()));
 
 			double mod = 0;
 			// Determine amount of effective work time based on "Botany" skill
@@ -341,7 +320,7 @@ public class TendAlgaePond extends Task {
 			addExperience(workTime);
 			
 			if (getDuration() <= (getTimeCompleted() + time)) {
-				pond.markInspected(inspectGoal, workTime);
+				fishTank.markInspected(inspectGoal, workTime);
 				endTask();
 			}
 		}
@@ -369,11 +348,12 @@ public class TendAlgaePond extends Task {
 	private double cleaningPhase(double time) {
 
 		if (cleanGoal == null) {
-			cleanGoal = pond.getUncleaned();
+			cleanGoal = fishTank.getUncleaned();
 		}
 		
 		if (cleanGoal != null) {
-			printDescription(CLEAN_DETAIL + cleanGoal.toLowerCase());
+			printDescription(Msg.getString("Task.description.tendFishTank.clean.detail", 
+					cleanGoal.toLowerCase()));
 				
 			double mod = 0;
 			// Determine amount of effective work time based on "Botany" skill
@@ -389,7 +369,7 @@ public class TendAlgaePond extends Task {
 			addExperience(workTime);
 			
 			if (getDuration() <= (getTimeCompleted() + time)) {
-				pond.markCleaned(cleanGoal, workTime);
+				fishTank.markCleaned(cleanGoal, workTime);
 				endTask();
 			}
 		}
