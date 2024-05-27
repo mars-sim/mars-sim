@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.structure.building.task;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.SimLogger;
@@ -16,7 +15,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.mapdata.location.LocalBoundedObject;
 import com.mars_sim.tools.Msg;
@@ -42,14 +40,13 @@ extends EVAOperation {
     		"Task.description.maintainBuildingEVA.detail") + " "; //$NON-NLS-1$
 
     /** Task phases. */
-    private static final TaskPhase MAINTAIN = new TaskPhase(Msg.getString(
+    static final TaskPhase MAINTAIN = new TaskPhase(Msg.getString(
             "Task.phase.maintain"), createPhaseImpact(SkillType.MECHANICS));
 
     
 	// Data members
 	/** Entity to be maintained. */
 	private Malfunctionable entity;
-	private Settlement settlement;
 
 	/**
 	 * Constructor.
@@ -63,29 +60,13 @@ extends EVAOperation {
 			checkLocation("Not nominally fit.");
         	return;
 		}
-		
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
-		
-      	settlement = unitManager.findSettlement(person.getCoordinates());
-        if (settlement == null) {
-        	checkLocation("Person not in settlement.");
-        	return;
-        }
         
 		// Check suitability
 		entity = target;
-		MalfunctionManager manager = target.getMalfunctionManager();
-		
-		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-		if (effectiveTime < 10D) {
-			clearTask("Maintenance already done.");
-			return;
-		}
 
 		String des = DETAIL + entity.getName();
 		setDescription(des);
-		logger.info(person, 4_000, des + ".");
+		logger.info(person, 4_000, des);
         
 	    // Determine location for maintenance.
         setOutsideLocation((LocalBoundedObject) entity);
@@ -126,13 +107,6 @@ extends EVAOperation {
 			checkLocation("Building had malfunction. Quit maintenance.");
 			return time;
 		}
-		
-		boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() < 1000D);
-
-		if (finishedMaintenance) {
-			checkLocation("Maintenance finished.");
-			return time;
-		}
 
 		// Determine effective work time based on "Mechanic" skill.
 		double workTime = time;
@@ -161,7 +135,9 @@ extends EVAOperation {
 		}
 
         // Add work to the maintenance
-		manager.addInspectionMaintWorkTime(workTime);
+		if (!manager.addInspectionMaintWorkTime(workTime)) {
+			endTask();
+		}
 		
         // Add experience points
         addExperience(time);
@@ -170,16 +146,5 @@ extends EVAOperation {
 		checkForAccident(entity, time, 0.01);
 		
 		return 0;
-	}
-	
-
-	@Override
-	protected void checkForAccident(double time) {
-
-		// Use EVAOperation checkForAccident() method.
-		super.checkForAccident(time);
-
-		int skill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-		checkForAccident(entity, time, 0.005D, skill, entity.getName());
 	}
 }

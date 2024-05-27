@@ -34,6 +34,9 @@ import com.mars_sim.tools.util.RandomUtil;
  */
 public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask {
 		
+	// Minimum %age of the inspection window to trigger maintenance
+	public static final double INSPECTION_PERCENTAGE = 0.25;
+
 	/**
      * Represents a Job needed for internal maintenance on a Building
      */
@@ -145,7 +148,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 		
 		// About a quarter of time into the next inspection/maintenance that will be due,
 		// One can begin to do a little bit of inspection whenever possible
-		if ((hasNoMalfunction && effectiveTime >= window * 0.25 * RandomUtil.getRandomDouble(0.5, 2))
+		if ((hasNoMalfunction && effectiveTime >= window * INSPECTION_PERCENTAGE * RandomUtil.getRandomDouble(1, 2))
 			// if needed parts have been posted, hurry up to swap out the parts without waiting for 
 			// the standard inspection/maintenance due
 			|| hasPartsInStore) {

@@ -11,11 +11,12 @@ import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
-import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
@@ -39,11 +40,12 @@ public class MaintainBuilding extends Task  {
     		"Task.description.maintainBuilding.detail") + " "; //$NON-NLS-1$
     
 	/** Task phases. */
-	private static final TaskPhase MAINTAIN = new TaskPhase(Msg.getString("Task.phase.maintain")); //$NON-NLS-1$
+	static final TaskPhase MAINTAIN = new TaskPhase(Msg.getString("Task.phase.maintain")); //$NON-NLS-1$
 
 	// Static members
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .1D;
+	private static final ExperienceImpact IMPACT = new ExperienceImpact(100,
+												NaturalAttributeType.EXPERIENCE_APTITUDE, true,
+												0.1D, SkillType.MECHANICS);
 
 	// Data members
 	/** Entity to be maintained. */
@@ -52,65 +54,26 @@ public class MaintainBuilding extends Task  {
 	/**
 	 * Constructor.
 	 *
-	 * @param person the person to perform the task
+	 * @param engineer the Worker to perform the task
 	 */
-	public MaintainBuilding(Person person, Building entity) {
-		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D,
-				RandomUtil.getRandomDouble(5, 20));
+	public MaintainBuilding(Worker engineer, Building entity) {
+		super(NAME, engineer, false, IMPACT, RandomUtil.getRandomDouble(20, 80));
 
-		if (person.isOutside()) {
+		if (engineer.isOutside()) {
 			endTask();
 			return;
 		}
 
-		init(entity);
-	}
-
-	public MaintainBuilding(Robot robot, Building entity) {
-		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D,
-				RandomUtil.getRandomDouble(10, 40));
-
-		if (robot.isOutside()) {
-			endTask();
-			return;
-		}
-
-		init(entity);
-	}
-
-	/**
-	 * Sets up the maintenance activity.
-	 * 
-	 * @param entity Target for work.
-	 */
-	private void init(Building building) {
-		this.entity = building;
-
-		MalfunctionManager manager = building.getMalfunctionManager();
-		
-		// Note 2: if parts don't exist, it simply means that one can still do the 
-		// inspection portion of the maintenance with no need of replacing any parts
-		
-//		if (!manager.hasMaintenancePartsInStorage(worker.getSettlement())) {		
-//			clearTask("No parts");
-//			return;
-//		}
-		
-		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-		if (effectiveTime < 10D) {
-			clearTask("Maintenance already done");
-			return;
-		}
+		this.entity = entity;		
 
 		String des = DETAIL + entity.getName();
 		setDescription(des);
-		logger.info(worker, 30_000, des + ".");
+		logger.info(worker, 30_000, des);
 		
 		// Walk to random location in building.
-		walkToRandomLocInBuilding(building, false);
+		walkToRandomLocInBuilding(entity, false);
 
 		// Initialize phase.
-		addPhase(MAINTAIN);
 		setPhase(MAINTAIN);
 	}
 
@@ -131,9 +94,7 @@ public class MaintainBuilding extends Task  {
 	 * @param time the amount of time (millisols) to perform the phase.
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
-	private double maintainPhase(double time) {
-    	double remainingTime = 0;
-    	
+	private double maintainPhase(double time) {    	
 		// If worker is incapacitated, end task.
 		if (worker.getPerformanceRating() <= .1) {
 			endTask();
@@ -146,11 +107,6 @@ public class MaintainBuilding extends Task  {
 		if (manager.hasMalfunction()) {
 			endTask();
 			return time * .75;
-		}
-
-		if (isDone()) {
-			endTask();
-			return time;
 		}
 
 		// Determine effective work time based on "Mechanic" skill.
@@ -179,7 +135,10 @@ public class MaintainBuilding extends Task  {
 		}
 
 		// Add work to the maintenance
-		manager.addInspectionMaintWorkTime(workTime);
+		if (!manager.addInspectionMaintWorkTime(workTime)) {
+			// No more maintenance is needed
+			endTask();
+		}
 
 		// Add experience points
 		addExperience(time);
@@ -187,7 +146,7 @@ public class MaintainBuilding extends Task  {
 		// Check if an accident happens during maintenance.
 		checkForAccident(entity, time, 0.005);
 
-		return remainingTime;
+		return 0D;
 	}
 
 	/**

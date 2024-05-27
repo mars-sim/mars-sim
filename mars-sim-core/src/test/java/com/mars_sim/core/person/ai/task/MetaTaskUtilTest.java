@@ -19,8 +19,6 @@ import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.task.MaintainBuilding;
-import com.mars_sim.core.structure.building.task.MaintainBuildingEVA;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
@@ -77,21 +75,6 @@ extends AbstractMarsSimUnitTest {
 
 		return null;
 	}
-
-	public void testMaintainBuilding()  {
-		Building garage = buildBuilding(settlement.getBuildingManager(), POS, 0D, 1);
-
-		MaintainBuilding evaLoad = new MaintainBuilding(person, garage);
-		assertMetaTask(evaLoad, "Maintaining Building");
-	}
-
-	public void testMaintainEVABuilding()  {
-		Building garage = buildBuilding(settlement.getBuildingManager(), POS, 0D, 1);
-
-		MaintainBuildingEVA evaLoad = new MaintainBuildingEVA(person, garage);
-		assertMetaTask(evaLoad, "Maintaining Building");
-	}
-
 
 	/**
 	 * Finds the associated MetatTask from a specific Task and make sure it is the

@@ -24,16 +24,16 @@ public class ComputingJobTest extends AbstractMarsSimUnitTest {
         assertEquals("Computing needed is correct", job.getCUPerMSol() * DURATION, job.getNeeded());
     }
 
-    private Building buildCompute(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+    private Building buildCompute(BuildingManager buildingManager) {
         return buildFunction(buildingManager, "Server Farm", BuildingCategory.LABORATORY,
-                        FunctionType.COMPUTATION,  pos, facing, id);
+                        FunctionType.COMPUTATION,  LocalPosition.DEFAULT_POSITION, 0D, true);
 	}
 
     public void testCompute() {
         var s = buildSettlement("Compute");
 
         // Research has compute
-        buildCompute(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        buildCompute(s.getBuildingManager());
 
         var job = new ComputingJob(s, DURATION, "Purpose");  
 
