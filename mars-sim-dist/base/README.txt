@@ -4,10 +4,10 @@ It also provides 2 variants of the mars-sim application.
 2. Console based engine that is accessed via SSH
 
 Start commands are:
-* bin/mars-sim-swing 		- Linux start script for the Swing varient
-* bin/mars-sim-swing.cmd 	- Window start script for the Swing varient
-* bin/mars-sim-console 		- Linux start script for the Console headless varient
-* bin/mars-sim-console.cmd 	- Window start script for the Console headless varient
+* bin/mars-sim-swing 		- Linux start script for the Swing variant
+* bin/mars-sim-swing.cmd 	- Window start script for the Swing variant
+* bin/mars-sim-console 		- Linux start script for the Console headless variant
+* bin/mars-sim-console.cmd 	- Window start script for the Console headless variant
 
 The mars-sim application requires Java 17 or higher to be installed. 
 See https://jdk.java.net/java-se-ri/17
@@ -18,7 +18,7 @@ Common command line arguments are:
  -crew <true|false>                  Enable or disable use of the crews
  -datadir <path to data directory>   Path to the data directory for
                                      simulation files (defaults to user.home)
- -diags <<module>,<module>.....>     Enable diagnositics modules
+ -diags <<module>,<module>.....>     Enable diagnostics modules
  -help                               Display help options
  -lat <latitude>                     Set the latitude of the new template Settlement
  -load <path to simulation file>     Load the a previously saved sim. No argument open file
