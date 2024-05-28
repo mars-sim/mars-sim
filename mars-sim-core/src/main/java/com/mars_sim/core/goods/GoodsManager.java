@@ -40,7 +40,7 @@ import com.mars_sim.tools.util.RandomUtil;
 public class GoodsManager implements Serializable {
 
 	/**
-	 * Schedued event handler for update Goods Values
+	 * Scheduled event handler for update Goods Values
 	 */
 	private class GoodsUpdater implements ScheduledEventHandler {
 		private static final long serialVersionUID = 1L;
@@ -104,7 +104,7 @@ public class GoodsManager implements Serializable {
 		}
 
 		/**
-		 * Reset teh review
+		 * Reset the review.
 		 * 
 		 * @param now Current time not used.
 		 */
@@ -435,7 +435,8 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Update a value for a Commerce factor.
+	 * Updates a value for a Commerce factor.
+	 * 
 	 * @param type Commerce type being changed
 	 * @param value New value
 	 */
@@ -450,7 +451,7 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Reset all commerce factors back to 1.
+	 * Resets all commerce factors back to 1.
 	 */
 	public void resetCommerceFactors() {
 		factors.clear();
@@ -711,7 +712,7 @@ public class GoodsManager implements Serializable {
 	}
 	
 	/**
-	 * Reset the reviews essential resources
+	 * Reset the reviews essential resources.
 	 */
 	public void resetEssentialsReview() {
 		reviewedEssentials.clear();
@@ -719,6 +720,7 @@ public class GoodsManager implements Serializable {
 
 	/**
 	 * How many resources need reviewing?
+	 * 
 	 * @return
 	 */
 	public int getResourceReviewDue() {
@@ -733,7 +735,8 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Reserve an essential resoruce for a review
+	 * Reserves an essential resource for a review.
+	 * 
 	 * @return Selected resource
 	 */
     public int reserveResourceReview() {

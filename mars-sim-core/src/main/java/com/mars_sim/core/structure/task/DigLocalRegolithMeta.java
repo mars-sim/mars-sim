@@ -36,7 +36,8 @@ public class DigLocalRegolithMeta extends DigLocalMeta {
     }
 
     /**
-     * Assess what digging tasks can be done at a Settlement
+     * Assesses what digging tasks can be done at a Settlement.
+     * 
      * @param settlement The focus of the search
      */
     @Override
