@@ -6,7 +6,7 @@
    height="1000"
    id="svg2480"
    sodipodi:version="0.32"
-   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
    sodipodi:docname="erv-c_const.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.1"
@@ -24,11 +24,11 @@
        inkscape:collect="always"
        id="linearGradient8954">
       <stop
-         style="stop-color:#008000;stop-opacity:1;"
+         style="stop-color:#effd21;stop-opacity:1;"
          offset="0"
          id="stop8950" />
       <stop
-         style="stop-color:#008000;stop-opacity:0;"
+         style="stop-color:#e9fd23;stop-opacity:0;"
          offset="1"
          id="stop8952" />
     </linearGradient>
@@ -36,11 +36,11 @@
        inkscape:collect="always"
        id="linearGradient8946">
       <stop
-         style="stop-color:#000600;stop-opacity:1;"
+         style="stop-color:#fffa16;stop-opacity:1;"
          offset="0"
          id="stop8942" />
       <stop
-         style="stop-color:#008000;stop-opacity:0;"
+         style="stop-color:#faeb1e;stop-opacity:0;"
          offset="1"
          id="stop8944" />
     </linearGradient>
@@ -60,7 +60,7 @@
        inkscape:collect="always"
        id="linearGradient928">
       <stop
-         style="stop-color:#2c5437;stop-opacity:1;"
+         style="stop-color:#fbf937;stop-opacity:1;"
          offset="0"
          id="stop924" />
       <stop
@@ -447,18 +447,18 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.86399515"
-     inkscape:cx="191.552"
-     inkscape:cy="504.63246"
+     inkscape:zoom="0.61093683"
+     inkscape:cx="522.14891"
+     inkscape:cy="421.48384"
      inkscape:current-layer="layer2"
      showgrid="true"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
-     inkscape:window-width="1920"
-     inkscape:window-height="1057"
-     inkscape:window-x="1912"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1"
+     inkscape:window-width="1450"
+     inkscape:window-height="1051"
+     inkscape:window-x="16"
+     inkscape:window-y="1"
+     inkscape:window-maximized="0"
      showborder="true"
      inkscape:snap-global="false"
      inkscape:pagecheckerboard="0"
@@ -470,7 +470,12 @@
        empspacing="5"
        visible="true"
        enabled="true"
-       snapvisiblegridlinesonly="true" />
+       snapvisiblegridlinesonly="true"
+       originx="0"
+       originy="0"
+       spacingy="1"
+       spacingx="1"
+       units="px" />
   </sodipodi:namedview>
   <metadata
      id="metadata2485">
@@ -680,7 +685,7 @@
        d="M 640.94271,641.88781 353.79503,354.74017"
        style="fill:none;stroke:#64c8c8;stroke-width:8.30433;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     <circle
-       style="fill:#007327;fill-opacity:1;fill-rule:evenodd;stroke:url(#meshgradient1100);stroke-width:8.30433;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:#faf827;fill-opacity:1;fill-rule:evenodd;stroke:url(#meshgradient1100);stroke-width:8.30433;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="path3713"
        cx="499.77176"
        cy="501.91833"

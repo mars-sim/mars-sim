@@ -577,18 +577,46 @@
 			</vehicle>
 		</building>
 
+		<building name="Cement Storage" width="2.0" length="3.0"
+		 north-south-alignment="length" base-level="0" constructable="true"
+		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
+			<resource name="concrete" amount="60.0" />
+			<part name="aerogel tile" number="20" />
+		</building>
+	
+		<building name="Chemical Storage" width="2.0" length="3.0"
+		 north-south-alignment="length" base-level="0" constructable="true"
+		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
+			<resource name="concrete" amount="60.0" />
+			<part name="aerogel tile" number="32" />
+		</building>
+			
 		<building name="Concrete Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
 			<part name="aerogel tile" number="32" />			
 		</building>
-
-		<building name="Cement Storage" width="2.0" length="3.0"
+		
+		<building name="Fuel Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
-			<part name="aerogel tile" number="20" />
+			<part name="aerogel tile" number="32" />
+		</building>
+
+		<building name="Gas Storage" width="2.0" length="3.0"
+		 north-south-alignment="length" base-level="0" constructable="true"
+		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
+			<resource name="concrete" amount="60.0" />
+			<part name="aerogel tile" number="32" />
+		</building>
+		
+		<building name="Ice Storage" width="2.0" length="3.0"
+		 north-south-alignment="length" base-level="0" constructable="true"
+		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
+			<resource name="concrete" amount="60.0" />
+			<part name="aerogel tile" number="32" />
 		</building>
 
 		<building name="Metal Storage" width="2.0" length="3.0"
@@ -605,7 +633,7 @@
 			<part name="aerogel tile" number="32" />
 		</building>
 
-		<building name="Carbon Storage" width="2.0" length="3.0"
+		<building name="Ore Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
@@ -620,20 +648,6 @@
 		</building>
 
 		<building name="Sand Storage" width="2.0" length="3.0"
-		 north-south-alignment="length" base-level="0" constructable="true"
-		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
-			<resource name="concrete" amount="60.0" />
-			<part name="aerogel tile" number="32" />
-		</building>
-
-		<building name="Fuel Storage" width="2.0" length="3.0"
-		 north-south-alignment="length" base-level="0" constructable="true"
-		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
-			<resource name="concrete" amount="60.0" />
-			<part name="aerogel tile" number="32" />
-		</building>
-		
-		<building name="Ice Storage" width="2.0" length="3.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time=".25" skill-required="1" frame="Brick Bin Frame" >
 			<resource name="concrete" amount="60.0" />
