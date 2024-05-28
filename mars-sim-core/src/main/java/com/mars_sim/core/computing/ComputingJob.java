@@ -4,13 +4,14 @@
  * @date 2024-05-04
  * @author Barry Evans
  */
-package com.mars_sim.core.structure.building.function;
+package com.mars_sim.core.computing;
 
 import java.io.Serializable;
 import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.building.function.Computation;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -18,7 +19,10 @@ import com.mars_sim.tools.util.RandomUtil;
  * This class represents a job that uses computing resources to deliver an outcome.
  */
 public class ComputingJob implements Serializable {
-    private static SimLogger logger = SimLogger.getLogger(ComputingJob.class.getName());
+	
+    private static final long serialVersionUID = 1L;
+
+	private static SimLogger logger = SimLogger.getLogger(ComputingJob.class.getName());
 
     private Settlement host;
     private double initDemand;
@@ -30,9 +34,10 @@ public class ComputingJob implements Serializable {
     private boolean scheduled = false;
 
     /**
-     * Create a computing job to run at a Settlement for a maximum duration.
+     * Constructor. Creates a computing job to run at a Settlement for a maximum duration.
+     * 
      * @param host Where the computing job will run
-     * @param duration Duratino the computing job runs
+     * @param duration Duration the computing job runs
      * @param purpose The purpose of the job
      */
     public ComputingJob(Settlement host, double duration, String purpose) {
@@ -44,7 +49,7 @@ public class ComputingJob implements Serializable {
         this.purpose = purpose;
         		
 		logger.log(host, Level.INFO, 10_000, "Requested computing resources: " 
-		 		+ computingNeeded + " CUs for "
+		 		+ Math.round(computingNeeded * 100.0)/100.0 + " CUs for "
 		 		+ purpose + ".");
     }
 
@@ -79,7 +84,8 @@ public class ComputingJob implements Serializable {
 	}
 
     /**
-     * How much computing is needed
+     * Gets how much computing is needed.
+     * 
      * @return
      */
     public double getNeeded() {
@@ -87,7 +93,8 @@ public class ComputingJob implements Serializable {
     }
 
     /**
-     * Has all the computing demand been completed
+     * Has all the computing demand been completed.
+     * 
      * @return
      */
     public boolean isCompleted() {
@@ -95,7 +102,8 @@ public class ComputingJob implements Serializable {
     }
 
     /**
-     * How many CU re consumed per mSol by this job.
+     * Gets how many CU consumed per mSol by this job.
+     * 
      * @return
      */
     public double getCUPerMSol() {
@@ -103,7 +111,8 @@ public class ComputingJob implements Serializable {
     }
 
     /**
-     * How much has been consumed so far
+     * Gets how much has been consumed so far.
+     * 
      * @return
      */
     public double getConsumed() {
