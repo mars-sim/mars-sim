@@ -1,5 +1,5 @@
 The distribution supports both Windows and Linux.
-It also provides 2 varients of the mars-sim application.
+It also provides 2 variants of the mars-sim application.
 1. Swing based UI
 2. Console based engine that is accessed via SSH
 
@@ -32,7 +32,7 @@ Common command line arguments are:
  -timeratio <Ratio (power of 2)>     Define the time ratio of the
                                      simulation
 
-Swing varient arguments
+Swing variant arguments
  -cleanui                            Disable loading stored UI configurations
  -noaudio                            Disable the audio
  -nogui                              Disable the main UI
@@ -40,7 +40,7 @@ Swing varient arguments
  -sandbox                            Start in Sandbox Mode
  -site                               Start the Scenario Editor
  
-Console varient arguments
+Console variant arguments
  -noremote                           Do not start a remote console service
  -remote <port number>               Run the remote console service [default]
  -resetadmin                         Reset the internal admin password

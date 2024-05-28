@@ -146,7 +146,7 @@ public class UnloadVehicleGarage extends Task {
 			if (amountUnloading > 0) {
 				UnloadHelper.unloadInventory(vehicle, settlement, amountUnloading);
 				if (worker instanceof Person)
-					person.getPhysicalCondition().stressMuscle(time/2);
+					((Person)worker).getPhysicalCondition().stressMuscle(time/2);
 			}
 
 			// Unload towed vehicles.

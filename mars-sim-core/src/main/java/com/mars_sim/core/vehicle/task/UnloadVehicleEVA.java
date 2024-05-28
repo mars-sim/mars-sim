@@ -140,7 +140,8 @@ public class UnloadVehicleEVA extends EVAOperation {
 		// Unload resources.
 		if (amountUnloading > 0) {
 			UnloadHelper.unloadInventory(vehicle, settlement, amountUnloading);
-			person.getPhysicalCondition().stressMuscle(time/2);
+			if (worker instanceof Person)
+				((Person)worker).getPhysicalCondition().stressMuscle(time/2);
 		}
 
 		// Unload towed vehicles.
