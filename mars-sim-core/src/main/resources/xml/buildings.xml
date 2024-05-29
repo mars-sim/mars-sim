@@ -365,7 +365,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<process-engine name="Atmospheric processing"/>
 				<process-engine name="Methanol Synthesis"/>
-				<process-engine name="Melt Ice" number-modules="3" />
+				<process-engine name="Melt Ice" number-modules="12" />
 				<process-engine name="Filter Brine Water" number-modules="3" />
 			
 				<!-- Activity spot for toggling resource process on and off. -->
@@ -1434,8 +1434,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Melt Ice" number-modules="6"/>	
-				<process-engine name="Filter Brine Water" number-modules="6"/>						
+				<process-engine name="Melt Ice" number-modules="24"/>	
+				<process-engine name="Filter Brine Water" number-modules="9"/>						
 			</resource-processing>
 			
 			<storage capacity="300000">
@@ -1455,9 +1455,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="carbon dioxide" amount="100.0" />
 
 				<!-- Produced on Mars -->
-				<resource-initial resource="oxygen" amount="80.0" />
-				<resource-initial resource="hydrogen" amount="30.0" />
-				<resource-initial resource="water" amount="90.0" />
+				<resource-initial resource="oxygen" amount="8000.0" />
+				<resource-initial resource="hydrogen" amount="3000.0" />
+				<resource-initial resource="water" amount="9500.0" />
 			</storage>
 
 			<waste-processing power-down-level="0.0">
@@ -3278,7 +3278,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<process-engine name="Atmospheric processing"/>
 				<process-engine name="Methanol Synthesis"/>
-				<process-engine name="Melt Ice" number-modules="3" />
+				<process-engine name="Melt Ice" number-modules="12" />
 				<process-engine name="Filter Brine Water" number-modules="3" />
 								
 				<activity>

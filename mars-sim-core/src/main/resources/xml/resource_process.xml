@@ -173,8 +173,7 @@
 		<input resource="methane" rate="3.2"  />
 		<input resource="oxygen" rate="3.2"  />
 		
-		<output resource="methanol" rate="5.888"  />
-		<output resource="methane" rate="0.512"  />
+		<output resource="methanol" rate="6.4"  />
 	</process>
 
 
@@ -227,7 +226,7 @@
 		5. https://www.researchgate.net/publication/265608781_Decoupled_catalytic_hydrogen_evolution_from_a_molecular_metal_oxide_redox_mediator_in_water_splitting
 		
 	</description> 
-		<input resource="brine water" rate="72"  />
+		<input resource="water" rate="72"  />
 		
 		<output resource="hydrogen" rate="8"  />
 		<output resource="oxygen" rate="64"  />

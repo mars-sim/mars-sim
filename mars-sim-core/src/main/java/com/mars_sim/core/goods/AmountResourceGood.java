@@ -109,12 +109,14 @@ class AmountResourceGood extends Good {
 	private static final double ROCK_SALT_VALUE_MODIFIER = 1;
 	private static final double EPSOM_SALT_VALUE_MODIFIER = .1;
 	
-	private static final double OXYGEN_VALUE_MODIFIER = .02;
+	private static final double OXYGEN_VALUE_MODIFIER = .1;
 	private static final double FOOD_VALUE_MODIFIER = .1;
 	
-	private static final double METHANE_VALUE_MODIFIER = .45;
-	private static final double HYDROGEN_VALUE_MODIFIER = .15;
-	private static final double METHANOL_VALUE_MODIFIER = .35;
+	private static final double METHANE_VALUE_MODIFIER = .55;
+	private static final double HYDROGEN_VALUE_MODIFIER = .25;
+	private static final double METHANOL_VALUE_MODIFIER = .15;
+	
+	private static final double CO2_VALUE_MODIFIER = .0075;
 
 	private static final double LIFE_SUPPORT_FACTOR = .005;
 	private static final double VEHICLE_FUEL_FACTOR = 1;
@@ -148,7 +150,7 @@ class AmountResourceGood extends Good {
 	private static final double ROCK_DEMAND_FACTOR = 1;
 	private static final double GEMSTONE_DEMAND_FACTOR = 3;
 
-	private static final double WASTE_DEMAND_FACTOR = .25;
+	private static final double WASTE_DEMAND_FACTOR = .15;
 	private static final double UTILITY_DEMAND_FACTOR = 10;
 	private static final double INSTRUMENT_DEMAND_FACTOR = 5;
 
@@ -1298,9 +1300,11 @@ class AmountResourceGood extends Good {
 				amountNeededSol = personConfig.getFoodConsumptionRate() * FOOD_VALUE_MODIFIER;
 			} else if (resource == ResourceUtil.methaneID) {
 				// Methane is fuel for heating and is an arguably life support resource
-				amountNeededSol = METHANE_VALUE_MODIFIER;
+				amountNeededSol = 20 * METHANE_VALUE_MODIFIER;
+			} else if (resource == ResourceUtil.co2ID) {
+				amountNeededSol = CO2_VALUE_MODIFIER;
 			}
-			
+		
 			return numPeople * amountNeededSol * owner.getCommerceFactor(CommerceType.TRADE)  * LIFE_SUPPORT_FACTOR;
 		}
 		else

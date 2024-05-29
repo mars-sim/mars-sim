@@ -259,7 +259,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				}
 
 				else if (sel) {
-					score *= .15 * methanolVP / methaneVP / oxygenVP;
+					score *= .05 * methanolVP / methaneVP / oxygenVP;
 				}
 				
 				else if (olefin) {
