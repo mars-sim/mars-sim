@@ -387,7 +387,7 @@
 	</process>
 
 
-	<process name="Extract nitrogen compounds from regolith" power-required="0.01" >
+	<process name="Extract Nitrogen Compounds from Regolith" power-required="0.01" >
 		<description> 
 			According to https://newatlas.com/nitrates-nitrogen-mars-curiosity-nasa/36700/, 
 			Nitrates are widespread on Mars with concentrations of 1,100 parts per million at the drill sites.
@@ -408,7 +408,7 @@
 	</process>
 
 
-	<process name="Process regolith-B rich in poly-hydrated sulfate"
+	<process name="Process Regolith-B rich in Poly-Hydrated Sulfate"
 		power-required="0.03" >
 		<description>
 			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
@@ -428,7 +428,7 @@
 			<output resource="sand" rate="20.0"  />
 	</process>
 
-	<process name="Process Regolith-C rich in phyllo-silicate" power-required="0.03" >
+	<process name="Process Regolith-C rich in Phyllo-Silicate" power-required="0.03" >
 		<description>
 			This is Case C (Deposit Type : Clay) in NASA Mars ISRU Water Study,
 					40% smectite;
@@ -446,7 +446,7 @@
 	</process>
 
 
-	<process name="Process Regolith-D rich in basaltic" power-required="0.03" >
+	<process name="Process Regolith-D rich in Basaltic" power-required="0.03" >
 		<description>
 			This is Case D (Deposit Type : typical regolith) in NASA Mars ISRU Water Study,
 					23.5% basaltic;
@@ -471,7 +471,7 @@
 	</process>
 
 	<!-- https://geologyscience.com/minerals/hematite/ -->
-	<process name="Do hematite smelting" power-required="1.3" >
+	<process name="Do Hematite smelting" power-required="1.3" >
 		<input resource="hematite" rate="25.0"  />
 		<input resource="carbon monoxide" rate=".5"  />
 		
@@ -481,7 +481,7 @@
 		<output resource="carbon dioxide" rate=".5"  />
 	</process>
 
-	<process name="Do magnetite smelting" power-required="1.3" >
+	<process name="Do Magnetite smelting" power-required="1.3" >
 			<input resource="magnetite" rate="25.0"  />
 			<input resource="carbon monoxide" rate=".5"  />
 			
@@ -493,7 +493,7 @@
 	</process>
 
 	<!-- https://geologyscience.com/minerals/goethite/ -->
-	<process name="Do goethite smelting" power-required="1.3" >
+	<process name="Do Goethite smelting" power-required="1.3" >
 			<input resource="goethite" rate="50.0"  />
 			<input resource="carbon monoxide" rate=".5"  />
 			
@@ -504,7 +504,7 @@
 			<output resource="carbon dioxide" rate="1.0"  />
 	</process>
 
-	<process name="Do olivine smelting" power-required="1.3" >
+	<process name="Do Olivine smelting" power-required="1.3" >
 			<input resource="olivine" rate="50.0"  />
 			<input resource="carbon monoxide" rate="32.5"  />
 			
@@ -514,7 +514,7 @@
 			<output resource="carbon dioxide" rate="51.2"  />
 	</process>
 
-	<process name="Do magnesite smelting" power-required="1.3" >
+	<process name="Do Magnesite smelting" power-required="1.3" >
 			<input resource="magnesite" rate="50.0"  />
 			<input resource="carbon monoxide" rate="16.6"  />
 			
@@ -561,7 +561,7 @@
 			<output resource="chlorine" rate="23.8"  />
 	</process>
 
-	<process name="Extract minerals from basaltic deposits" power-required="0.1" >
+	<process name="Extract minerals from Basaltic deposits" power-required="0.1" >
 		<description>
 			http://www.psrd.hawaii.edu/May09/Mars.Basaltic.Crust.html
 		</description>
@@ -578,7 +578,7 @@
 			<output resource="brine water" rate="10.0"  />
 	</process>
 
-	<process name="Extract minerals from smectite deposits" power-required="0.1" >
+	<process name="Extract minerals from Smectite deposits" power-required="0.1" >
 			<input resource="smectite" rate="50.0"  />
 			
 			<output resource="aluminum oxide" rate="9.0"  />
@@ -594,7 +594,7 @@
 			<output resource="brine water" rate="2.0"  />
 	</process>
 
-	<process name="Extract minerals from allophane deposits" power-required="0.2" >
+	<process name="Extract minerals from Allophane deposits" power-required="0.2" >
 			<input resource="allophane" rate="50.0"  />
 			
 			<output resource="aluminum oxide" rate="30.0"  />
@@ -605,7 +605,7 @@
 
 	<!-- http://www.handbookofmineralogy.org/pdfs/akaganeite.pdf 
 		https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2018JE005630 -->
-	<process name="Extract minerals from akaganeite deposits" power-required="0.1" >
+	<process name="Extract minerals from Akaganeite deposits" power-required="0.1" >
 			<input resource="akaganeite" rate="50.0"  />
 			
 			<output resource="iron oxide" rate="29.0"  />
@@ -616,7 +616,7 @@
 			<output resource="brine water" rate="1.0"  />
 	</process>
 			
-	<process name="Extract minerals from bassanite deposits" power-required="0.1" >
+	<process name="Extract minerals from Bassanite deposits" power-required="0.1" >
 		<input resource="bassanite" rate="50.0"  />
 		<input resource="water" rate="5.0"  />
 				
@@ -625,7 +625,7 @@
 		<output resource="brine water" rate="5.0"  />
 	</process>
 		
-	<process name="Extract minerals from sand" power-required="0.2" >
+	<process name="Extract minerals from Sand" power-required="0.2" >
 		<description>Typically, manufactured glass contains around 15% sodium oxide, 70% silica
 			(silicon dioxide) and 9% lime (calcium oxide). The sodium carbonate "soda"
 			serves as a flux to lower the temperature at which the silica melts.
@@ -650,7 +650,7 @@
 	<!-- CaSO4*2H2O (gypsum) + 2C -> CaS + 2CO2 + 2H2O -->
 	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
 	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
-	<process name="Reduce gypsum to calcium carbonate with carbon" power-required="0.3" >
+	<process name="Reduce Gypsum to Calcium Carbonate with Carbon" power-required="0.3" >
 		<description>
 			Reducing gypsum to calcium carbonate using carbon. Gypsum on earth has up to 8.6 % water. Wrapping two processes below:
 			CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O (gypsum) + 2C -> CaS + 2CO&lt;sub&gt;2&lt;/sub&gt; + 2H&lt;sub&gt;2&lt;/sub&gt;O
@@ -666,7 +666,7 @@
 		<output resource="brine water" rate="5.2"  />
 	</process>
 
-	<process name="Reduce gypsum to calcium carbonate with carbon monoxide" power-required="0.3" >
+	<process name="Reduce Gypsum to Calcium carbonate with Carbon Monoxide" power-required="0.3" >
 		<description>
 			Process for reducing gypsum to calcium carbonate using carbon monoxide.
 			Wrapping two processes:
@@ -684,7 +684,7 @@
 	</process>
 
 
-	<process name="Reduce gypsum to calcium carbonate with hydrogen" power-required="0.3" >
+	<process name="Reduce Gypsum to Calcium Carbonate with Hydrogen" power-required="0.3" >
 		<description>
 			Process for reducing gypsum to calcium carbonate using hydrogen.
 			Wrapping two processes:
@@ -701,7 +701,7 @@
 		<output resource="brine water" rate="26.0"  />
 	</process>
 			
-	<process name="Make gypsum plaster via calcination" power-required="0.02" >
+	<process name="Make Gypsum Plaster via Calcination" power-required="0.02" >
 		<description>
 			Calcination is a controlled heating process for making gypsum plaster.
 			The core ingredient of gypsum plaster is gypsum rock–hydrous calcium sulfate, 

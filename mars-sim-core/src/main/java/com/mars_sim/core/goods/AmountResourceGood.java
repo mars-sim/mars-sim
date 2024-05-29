@@ -112,9 +112,9 @@ class AmountResourceGood extends Good {
 	private static final double OXYGEN_VALUE_MODIFIER = .02;
 	private static final double FOOD_VALUE_MODIFIER = .1;
 	
-	private static final double METHANE_VALUE_MODIFIER = .15;
+	private static final double METHANE_VALUE_MODIFIER = .45;
 	private static final double HYDROGEN_VALUE_MODIFIER = .5;
-	private static final double METHANOL_VALUE_MODIFIER = .1;
+	private static final double METHANOL_VALUE_MODIFIER = .35;
 
 	private static final double LIFE_SUPPORT_FACTOR = .005;
 	private static final double VEHICLE_FUEL_FACTOR = 1;

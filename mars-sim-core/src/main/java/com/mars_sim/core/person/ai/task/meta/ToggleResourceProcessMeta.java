@@ -247,7 +247,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				}
 
 				else if (ppa) {
-					score *= .5 * hydrogenVP / methaneVP;
+					score *= .25 * hydrogenVP / methaneVP;
 				}
 
 				else if (cfr) {
@@ -255,7 +255,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				}
 
 				else if (sab) {
-					score *= .75 * waterVP * methaneVP / hydrogenVP;
+					score *= 1.5 * waterVP * methaneVP / hydrogenVP;
 				}
 
 				else if (sel) {
