@@ -89,21 +89,23 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 
 	protected VehicleGarage buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		var building0 = buildFunction(buildingManager, "Garage", BuildingCategory.VEHICLE,
-									FunctionType.VEHICLE_MAINTENANCE,  pos, facing, id);
+									FunctionType.VEHICLE_MAINTENANCE,  pos, facing, true);
 	    
 	    return building0.getVehicleParking();
 	}
 
 	protected MockBuilding buildBuilding(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
-		return buildBuilding(buildingManager, "Mock", BuildingCategory.COMMAND, pos, facing, id);
+		return buildBuilding(buildingManager, "Mock", BuildingCategory.COMMAND, pos, facing, true);
 	}
 
-	private MockBuilding buildBuilding(BuildingManager buildingManager, String type, BuildingCategory cat, LocalPosition pos, double facing, int id) {
+	private MockBuilding buildBuilding(BuildingManager buildingManager, String type, BuildingCategory cat,
+								LocalPosition pos, double facing, boolean lifeSupport) {
 
+		int id = buildingManager.getNumBuildings();
 		String name = "B" + id;
 		var building0 = new MockBuilding(buildingManager.getSettlement(), name, id,
 										new BoundedObject(pos, BUILDING_WIDTH, BUILDING_LENGTH, facing),
-										type, cat);
+										type, cat, lifeSupport);
 	    buildingManager.addMockBuilding(building0);	
 	    
 	    unitManager.addUnit(building0);
@@ -112,8 +114,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 
 	protected Building buildFunction(BuildingManager buildingManager, String type, BuildingCategory cat,
-							FunctionType fType, LocalPosition pos, double facing, int id) {
-		MockBuilding building0 = buildBuilding(buildingManager, type, cat,  pos, facing, id);
+							FunctionType fType, LocalPosition pos, double facing, boolean lifesupport) {
+		MockBuilding building0 = buildBuilding(buildingManager, type, cat,  pos, facing, lifesupport);
 
 		var spec = simConfig.getBuildingConfiguration().getFunctionSpec(type, fType);
 
@@ -125,18 +127,18 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 
 	public Building buildResearch(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		return buildFunction(buildingManager, "Lander Hab", BuildingCategory.LABORATORY,
-							FunctionType.RESEARCH,  pos, facing, id);
+							FunctionType.RESEARCH,  pos, facing, true);
 	}
 
 	protected Building buildRecreation(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		return buildFunction(buildingManager, "Lander Hab", BuildingCategory.LIVING,
-								FunctionType.RECREATION,  pos, facing, id);
+								FunctionType.RECREATION,  pos, facing, true);
 	}
 
 	@Override
 	public Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		var building0 = buildFunction(buildingManager, "EVA Airlock", BuildingCategory.EVA_AIRLOCK,
-						FunctionType.EVA,  pos, facing, id);
+						FunctionType.EVA,  pos, facing, true);
 		
 		var spec = simConfig.getBuildingConfiguration().getFunctionSpec("Lander Hab", FunctionType.LIVING_ACCOMMODATION);
 	    building0.addFunction(spec);
@@ -145,7 +147,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 
 	protected Building buildAccommodation(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		return buildFunction(buildingManager, "Residential Quarters", BuildingCategory.LIVING,
-					FunctionType.LIVING_ACCOMMODATION,  pos, facing, id);
+					FunctionType.LIVING_ACCOMMODATION,  pos, facing, true);
 	}
 	
 	protected Settlement buildSettlement() {
@@ -235,6 +237,27 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		var phase = task.getPhase();
 		int callsLeft = maxCalls;
 		while ((callsLeft > 0) && !task.isDone() && phase.equals(task.getPhase())) {
+			tm.executeTask(MSOLS_PER_EXECUTE);
+			callsLeft--;
+		}
+		
+		return maxCalls - callsLeft;
+	}
+
+	/**
+	 * Executes a Task for a number of steps or subtask is Done
+	 * 
+	 * @param person
+	 * @param task
+	 * @param maxSteps
+	 * @return The number of calls taken
+	 */
+	protected int executeTaskUntilSubTask(Person person, Task task, int maxCalls) {
+		PersonTaskManager tm = person.getMind().getTaskManager();
+		tm.replaceTask(task);
+		
+		int callsLeft = maxCalls;
+		while ((callsLeft > 0) && !task.isDone() && !task.getSubTask().isDone()) {
 			tm.executeTask(MSOLS_PER_EXECUTE);
 			callsLeft--;
 		}

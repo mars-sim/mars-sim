@@ -90,7 +90,7 @@ public class DigLocalTest extends AbstractMarsSimUnitTest {
 
     public void testCreateTaskWithBin() {
         var s = buildSettlement("Dig base");
-        var st = buildRegolithStorage(s.getBuildingManager(), new LocalPosition(100D, 100D), 0D, 2);
+        var st = buildRegolithStorage(s.getBuildingManager(), new LocalPosition(100D, 100D), 0D);
 
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
@@ -109,9 +109,9 @@ public class DigLocalTest extends AbstractMarsSimUnitTest {
     }
 
     private Building buildRegolithStorage(BuildingManager buildingManager, LocalPosition pos,
-                            double facing, int id) {
+                            double facing) {
         return buildFunction(buildingManager, "Regolith Storage", BuildingCategory.STORAGE,
-                FunctionType.STORAGE,  pos, facing, id);
+                FunctionType.STORAGE,  pos, facing, true);
     }
 
     public void testIceMetaTask() {

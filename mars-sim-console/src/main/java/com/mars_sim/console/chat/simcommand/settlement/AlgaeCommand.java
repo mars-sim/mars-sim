@@ -45,14 +45,14 @@ public class AlgaeCommand extends AbstractSettlementCommand {
 									.collect(Collectors.toList());
 		// Display each farm separately
 		for (AlgaeFarming farm : farms) {			
-
+			var housekeeping = farm.getHousekeeping();
 			response.appendTableRow(farm.getBuilding().getName(),
 									farm.getTankSize(),
 									farm.getCurrentAlgae(),
 									farm.getSurplusRatio(),
 									farm.getNutrientDemand(),
-									farm.getInspectionScore(),
-									farm.getCleaningScore());
+									housekeeping.getAverageInspectionScore(),
+									housekeeping.getAverageInspectionScore());
 		}
 		context.println(response.getOutput());
 		return true;

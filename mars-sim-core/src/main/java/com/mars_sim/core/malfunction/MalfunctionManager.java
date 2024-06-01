@@ -110,8 +110,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/** Initial estimate for malfunctions per orbit for an entity. */
 	private static final double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 100;
-	/** Initial estimate for maintenances per orbit for an entity. */
-	private static final double ESTIMATED_MAINTENANCES_PER_ORBIT = 2000;
 	/** Factor for chance of malfunction by time since last maintenance. */
 	private static final double MAINTENANCE_FACTOR = 10;
 	/** Factor for chance of malfunction due to wear condition. */
@@ -1034,11 +1032,21 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
+	 * How many maintenances have been performed
+	 * @return
+	 */
+	public int getNumberOfMaintenances() {
+		return numberMaintenances;
+	}
+
+	/**
 	 * Adds work time to inspection and maintenance.
 	 *
 	 * @param time (in millisols)
+	 * @return Is more maintenance needed?
 	 */
-	public void addInspectionMaintWorkTime(double time) {
+	public boolean addInspectionMaintWorkTime(double time) {
+		boolean needsMore = true;
 		inspectionTimeCompleted += time;
 		// Check if work if done
 		if (inspectionTimeCompleted >= baseMaintWorkTime) {
@@ -1059,7 +1067,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 			// Note: it would deteriorate over time and won't get back to baseWearLifeTime but it can improve somewhat
 			if (currentWearLifeTime > baseWearLifeTime - cumulativeTime * uncertainty)
 				currentWearLifeTime = baseWearLifeTime - cumulativeTime * uncertainty;
+			
+			needsMore = false;
 		}
+
+		return needsMore;
 	}
 
 	/**
@@ -1324,17 +1336,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the repair part probabilities for maintenance.
-	 *
-	 * @return maps of parts and probable number of parts in case of maintenance.
-	 * @throws Exception if error finding probabilities.
-	 */
-	public Map<Integer, Double> getMaintenancePartProbabilities() {
-		return MalfunctionFactory.getMaintenancePartProbabilities(scopes);
-	}
-
-
-	/**
 	 * Gets the estimated number of malfunctions this entity will have in one
 	 * Martian orbit.
 	 *
@@ -1362,24 +1363,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static double getElapsedOrbits() {
 		double totalTimeMillisols = masterClock.getMarsTime().getTimeDiff(masterClock.getInitialMarsTime());
 		return totalTimeMillisols / 1000D / MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
-	}
-
-	/**
-	 * Gets the estimated number of periodic maintenances this entity will have in
-	 * one Martian orbit.
-	 *
-	 * @return number of maintenances.
-	 */
-	public double getEstimatedNumberOfMaintenancesPerOrbit() {
-		double avgMaintenancesPerOrbit = 0D;
-		double totalTimeOrbits = getElapsedOrbits();
-		if (totalTimeOrbits < 1D) {
-			avgMaintenancesPerOrbit = (numberMaintenances + ESTIMATED_MAINTENANCES_PER_ORBIT) / 2D;
-		} else {
-			avgMaintenancesPerOrbit = (1 + numberMaintenances) / totalTimeOrbits;
-		}
-		logger.info(entity, 20_000L, "avgMaintenancesPerOrbit: " + Math.round(avgMaintenancesPerOrbit * 100.0)/100.0);
-		return avgMaintenancesPerOrbit;
 	}
 
 	/**

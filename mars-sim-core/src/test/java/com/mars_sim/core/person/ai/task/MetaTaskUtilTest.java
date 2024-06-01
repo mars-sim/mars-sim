@@ -76,21 +76,6 @@ extends AbstractMarsSimUnitTest {
 		return null;
 	}
 
-	public void testMaintainBuilding()  {
-		Building garage = buildBuilding(settlement.getBuildingManager(), POS, 0D, 1);
-
-		MaintainBuilding evaLoad = new MaintainBuilding(person, garage);
-		assertMetaTask(evaLoad, "Maintaining Building");
-	}
-
-	public void testMaintainEVABuilding()  {
-		Building garage = buildBuilding(settlement.getBuildingManager(), POS, 0D, 1);
-
-		MaintainBuildingEVA evaLoad = new MaintainBuildingEVA(person, garage);
-		assertMetaTask(evaLoad, "Maintaining Building");
-	}
-
-
 	/**
 	 * Finds the associated MetatTask from a specific Task and make sure it is the
 	 * expected one.

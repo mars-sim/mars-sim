@@ -21,7 +21,6 @@ import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.food.FoodType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.task.TendGreenhouse;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.AmountResource;
@@ -37,6 +36,7 @@ import com.mars_sim.core.structure.building.function.HouseKeeping;
 import com.mars_sim.core.structure.building.function.LifeSupport;
 import com.mars_sim.core.structure.building.function.PowerMode;
 import com.mars_sim.core.structure.building.function.Research;
+import com.mars_sim.core.structure.building.function.task.TendGreenhouse;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.tools.util.RandomUtil;
@@ -158,7 +158,6 @@ public class Farming extends Function {
 		cropListInQueue = new ArrayList<>();
 		cropList = new ArrayList<>();
 		cropHistory = new HashMap<>();
-//		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
 		cropUsage = new HashMap<>();
 		
 		defaultCropNum = spec.getIntegerProperty(CROPS);
@@ -368,7 +367,6 @@ public class Farming extends Function {
 				if (last2CT != null && lastCT != null && last2CT.equals(lastCT)) {
 					// Note : since the highestCrop has already been chosen previously,
 					// should not choose the same crop type again
-					// compareVP = false;
 					chosen = no2Crop;
 				}
 
@@ -384,7 +382,6 @@ public class Farming extends Function {
 				if (last2CT != null && lastCT != null && last2CT.equals(lastCT)) {
 					// since the secondCrop has already been chosen twice,
 					// should not choose the same crop type again
-					// compareVP = false;
 					chosen = no1Crop;
 				}
 
@@ -408,7 +405,6 @@ public class Farming extends Function {
 			// compare secondVP with highestVP
 			// if their VP are within 15%, toss a dice
 			// if they are further apart, should pick highestCrop
-			// if ((highestVP - secondVP) < .15 * secondVP)
 			if ((no2CropVP / no1CropVP) > .85) {
 				int rand = RandomUtil.getRandomInt(0, 1);
 				if (rand == 0)
@@ -463,8 +459,6 @@ public class Farming extends Function {
 		// accounting for the Edible Biomass of a crop
 		// edibleBiomass is in [ gram / m^2 / day ]
 		double edibleBiomass = cropSpec.getEdibleBiomass();
-		// growing-time is in millisol vs. growingDay is in sol
-		// double growingDay = cropType.getGrowingTime() / 1000D ;
 		double cropArea = 0;
 		
 		if (remainingArea == 0)
@@ -489,8 +483,6 @@ public class Farming extends Function {
 
 		// Note edible-biomass is [ gram / m^2 / day ]
 		double dailyMaxHarvest = edibleBiomass / 1000D * cropArea;
-//		 logger.info("max possible daily harvest on " + cropType.getName() + " : " +
-//		 Math.round(dailyMaxHarvest*100.0)/100.0 + " kg per sol");
 
 		double percentAvailable = 0;
 
@@ -504,10 +496,8 @@ public class Farming extends Function {
 
 		}
 
-		Crop crop = new Crop(identifer++, cropSpec, cropArea, dailyMaxHarvest,
+		return new Crop(identifer++, cropSpec, cropArea, dailyMaxHarvest,
 				this, isStartup, percentAvailable);
-
-		return crop;
 	}
 
 	/**
@@ -621,7 +611,6 @@ public class Farming extends Function {
 	 * @param cropType
 	 */
 	public void deleteACropFromQueue(int index, String n) {
-		// cropListInQueue.remove(index);
 		// Safer removal than cropListInQueue.remove(index)
 		int size = cropListInQueue.size();
 		if (size > 0) {
@@ -654,7 +643,7 @@ public class Farming extends Function {
 	 */
 	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
-		double result = 0D;
+		double result;
 
 		// Demand is farming area (m^2) needed to produce food for settlement
 		// population.
@@ -807,8 +796,6 @@ public class Farming extends Function {
 		if (valid) {
 			// check for the passing of each day
 			if (pulse.isNewSol()) {
-
-//				currentSol = pulse.getMarsTime().getMissionSol();
 				
 				// Gradually reduce aspect score by default
 				for (Aspect aspect: attributes.keySet()) {
@@ -864,18 +851,11 @@ public class Farming extends Function {
 					remainingArea = remainingArea + crop.getGrowingArea();
 					
 					toRemove.add(crop);
-//					numCrops2Plant++;
 				}
 			}
 
 			int size = cropList.size();
 			numCrops2Plant = defaultCropNum - size;
-	
-//			logger.info(building, 10_000L,
-//					"  defaultCropNum: " + defaultCropNum
-//					+ "   size: " + size
-//					+ "   numCrops2Plant: " + numCrops2Plant
-//					+ "   remainingGrowingArea: " + remainingGrowingArea);
 			
 			// Remove finished crops
 			cropList.removeAll(toRemove);
@@ -1008,10 +988,8 @@ public class Farming extends Function {
 
 		double aveGrowingTime = cropConfig.getAverageCropGrowingTime();
 		double solsInOrbit = MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
-		double aveGrowingCyclesPerOrbit = solsInOrbit * 1000D / aveGrowingTime; // e.g. 668 sols * 1000 / 50,000
+		return solsInOrbit * 1000D / aveGrowingTime; // e.g. 668 sols * 1000 / 50,000
 																				// millisols
-
-		return aveGrowingCyclesPerOrbit;
 	}
 
 	/**
@@ -1047,9 +1025,6 @@ public class Farming extends Function {
 					hasEmptySpace = lab1.checkAvailability();
 					if (hasEmptySpace) {
 						hasEmptySpace = lab1.addResearcher();
-						// Note: compute research points to determine if it can be carried out.
-						// int points += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) /
-						// 2D;
 					}
 				}
 			}
@@ -1093,29 +1068,10 @@ public class Farming extends Function {
 		return cropList;
 	}
 
-	public String getUninspected() {
-		return houseKeeping.getLeastInspected();
-	}
-
-	public String getUncleaned() {
-		return houseKeeping.getLeastCleaned();
-	}
-
-	public double getInspectionScore() {
-		return houseKeeping.getAverageInspectionScore();
-	}
 	
-	public double getCleaningScore() {
-		return houseKeeping.getAverageCleaningScore();
-	}
-	
-	public void markInspected(String s, double value) {
-		houseKeeping.inspected(s, value);
-	}
-
-	public void markCleaned(String s, double value) {
-		houseKeeping.cleaned(s, value);
-	}
+    public HouseKeeping getHousekeeping() {
+        return houseKeeping;
+    }
 
 	/**
 	 * Records the average resource usage of a resource on a crop.
@@ -1230,7 +1186,7 @@ public class Farming extends Function {
 	 * @return
 	 */
 	public double getCumulativeWorkTime() {
-		return cumulativeWorkTime;
+		return cumulativeWorkTime + houseKeeping.getCumulativeWorkTime();
 	}
 	
 	/**

@@ -15,7 +15,6 @@ import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
-import com.mars_sim.core.person.ai.task.CookMeal;
 import com.mars_sim.core.person.ai.task.EatDrink;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -25,6 +24,7 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.cooking.Cooking;
 import com.mars_sim.core.structure.building.function.cooking.PreparingDessert;
+import com.mars_sim.core.structure.building.function.task.CookMeal;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
 
