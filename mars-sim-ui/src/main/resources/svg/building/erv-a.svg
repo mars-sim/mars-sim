@@ -6,8 +6,8 @@
    height="1000"
    id="svg2480"
    sodipodi:version="0.32"
-   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
-   sodipodi:docname="erv_base.svg"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   sodipodi:docname="erv-c.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.1"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -72,11 +72,11 @@
        inkscape:collect="always"
        id="linearGradient979">
       <stop
-         style="stop-color:#214478;stop-opacity:1;"
+         style="stop-color:#357821;stop-opacity:1;"
          offset="0"
          id="stop975" />
       <stop
-         style="stop-color:#214478;stop-opacity:0;"
+         style="stop-color:#214e2d;stop-opacity:0;"
          offset="1"
          id="stop977" />
     </linearGradient>
@@ -84,11 +84,11 @@
        inkscape:collect="always"
        id="linearGradient943">
       <stop
-         style="stop-color:#214478;stop-opacity:1;"
+         style="stop-color:#3f6621;stop-opacity:1;"
          offset="0"
          id="stop939" />
       <stop
-         style="stop-color:#214478;stop-opacity:0;"
+         style="stop-color:#216b23;stop-opacity:0;"
          offset="1"
          id="stop941" />
     </linearGradient>
@@ -96,11 +96,11 @@
        inkscape:collect="always"
        id="linearGradient936">
       <stop
-         style="stop-color:#5f8dd3;stop-opacity:1;"
+         style="stop-color:#7eb13b;stop-opacity:1;"
          offset="0"
          id="stop932" />
       <stop
-         style="stop-color:#5f8dd3;stop-opacity:0;"
+         style="stop-color:#74cf70;stop-opacity:0;"
          offset="1"
          id="stop934" />
     </linearGradient>
@@ -483,21 +483,23 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.61093684"
-     inkscape:cx="502.50694"
-     inkscape:cy="593.35103"
+     inkscape:cx="208.69588"
+     inkscape:cy="594.16944"
      inkscape:current-layer="layer2"
      showgrid="true"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
-     inkscape:window-width="1487"
-     inkscape:window-height="1041"
-     inkscape:window-x="2784"
-     inkscape:window-y="0"
-     inkscape:window-maximized="0"
+     inkscape:window-width="1920"
+     inkscape:window-height="1057"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
      showborder="true"
      inkscape:snap-global="false"
      inkscape:pagecheckerboard="0"
-     width="100.6px">
+     width="100.6px"
+     inkscape:showpageshadow="0"
+     inkscape:deskcolor="#d1d1d1">
     <inkscape:grid
        type="xygrid"
        id="grid2852"

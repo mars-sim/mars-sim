@@ -74,11 +74,9 @@ public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
         // Create a friendship group where friend has a better opniino of the instigator thn the enemy
         var i = buildPerson("instigator", s);
         var e = buildPerson("enermy", s);
-        RelationshipUtil.changeOpinion(e, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, 1D);
-        var eOpinion = e.getRelation().getOpinion(i).getAverage();
+        RelationshipUtil.changeOpinion(e, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, -Relation.MAX_OPINION);
         var f = buildPerson("friend", s);
-        RelationshipUtil.changeOpinion(f, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, eOpinion
-                                                                + Relation.MAX_OPINION);
+        RelationshipUtil.changeOpinion(f, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, Relation.MAX_OPINION);
 
         assertGreaterThan("Friend is more popular than enermy",
                                     e.getRelation().getOpinion(i).getAverage(),

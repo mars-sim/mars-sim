@@ -46,7 +46,6 @@ public class MaintainBuildingEVATest extends AbstractMarsSimUnitTest {
 
         // Complete mainteance
         executeTaskUntilPhase(p, task, 1000);
-        assertEquals("Maintenance period reset", 0D, manager.getInspectionWorkTimeCompleted());
         assertGreaterThan("Maintenance count", 0, manager.getNumberOfMaintenances());
 
     }

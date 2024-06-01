@@ -9,6 +9,7 @@ package com.mars_sim.core.vehicle.task;
 import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
@@ -144,7 +145,8 @@ public class UnloadVehicleGarage extends Task {
 			// Unload resources.
 			if (amountUnloading > 0) {
 				UnloadHelper.unloadInventory(vehicle, settlement, amountUnloading);
-				person.getPhysicalCondition().stressMuscle(time/2);
+				if (worker instanceof Person)
+					((Person)worker).getPhysicalCondition().stressMuscle(time/2);
 			}
 
 			// Unload towed vehicles.

@@ -6,7 +6,7 @@
    height="1000"
    id="svg2480"
    sodipodi:version="0.32"
-   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
    sodipodi:docname="erv-c_frame_const.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.1"
@@ -24,11 +24,11 @@
        inkscape:collect="always"
        id="linearGradient7409">
       <stop
-         style="stop-color:#008000;stop-opacity:1;"
+         style="stop-color:#effd21;stop-opacity:1;"
          offset="0"
          id="stop7405" />
       <stop
-         style="stop-color:#008000;stop-opacity:0;"
+         style="stop-color:#e9fd00;stop-opacity:0;"
          offset="1"
          id="stop7407" />
     </linearGradient>
@@ -262,17 +262,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.86399515"
-     inkscape:cx="287.03865"
-     inkscape:cy="511.57695"
+     inkscape:zoom="0.61093683"
+     inkscape:cx="629.3613"
+     inkscape:cy="474.68083"
      inkscape:current-layer="layer2"
      showgrid="true"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
-     inkscape:window-width="1920"
-     inkscape:window-height="1041"
-     inkscape:window-x="1920"
-     inkscape:window-y="0"
+     inkscape:window-width="1465"
+     inkscape:window-height="922"
+     inkscape:window-x="6"
+     inkscape:window-y="60"
      inkscape:window-maximized="0"
      showborder="true"
      inkscape:snap-global="false"
@@ -288,7 +288,12 @@
        empspacing="5"
        visible="true"
        enabled="true"
-       snapvisiblegridlinesonly="true" />
+       snapvisiblegridlinesonly="true"
+       originx="0"
+       originy="0"
+       spacingy="1"
+       spacingx="1"
+       units="px" />
   </sodipodi:namedview>
   <metadata
      id="metadata2485">

@@ -7,7 +7,7 @@
    id="svg2480"
    sodipodi:version="0.32"
    inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
-   sodipodi:docname="erv-b_const.svg"
+   sodipodi:docname="erv-c_const.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.1"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -20,6 +20,30 @@
    xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs2482">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient8954">
+      <stop
+         style="stop-color:#008000;stop-opacity:1;"
+         offset="0"
+         id="stop8950" />
+      <stop
+         style="stop-color:#008000;stop-opacity:0;"
+         offset="1"
+         id="stop8952" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient8946">
+      <stop
+         style="stop-color:#000600;stop-opacity:1;"
+         offset="0"
+         id="stop8942" />
+      <stop
+         style="stop-color:#008000;stop-opacity:0;"
+         offset="1"
+         id="stop8944" />
+    </linearGradient>
     <linearGradient
        inkscape:collect="always"
        id="linearGradient1032">
@@ -36,7 +60,7 @@
        inkscape:collect="always"
        id="linearGradient928">
       <stop
-         style="stop-color:#2c2137;stop-opacity:1;"
+         style="stop-color:#2c5437;stop-opacity:1;"
          offset="0"
          id="stop924" />
       <stop
@@ -396,35 +420,25 @@
         </meshpatch>
       </meshrow>
     </meshgradient>
-    <meshgradient
+    <radialGradient
        inkscape:collect="always"
-       id="meshgradient12156"
-       gradientUnits="userSpaceOnUse"
-       x="203.60729"
-       y="209.06432">
-      <meshrow
-         id="meshrow12158">
-        <meshpatch
-           id="meshpatch12160">
-          <stop
-             path="c 160.499,-160.721  420.721,-160.721  581.218,0"
-             style="stop-color:#ffffff;stop-opacity:1"
-             id="stop12162" />
-          <stop
-             path="c 160.499,160.721  160.499,421.302  0,582.021"
-             style="stop-color:#0055d4;stop-opacity:1"
-             id="stop12164" />
-          <stop
-             path="c -160.499,160.721  -420.721,160.721  -581.218,0"
-             style="stop-color:#ffffff;stop-opacity:1"
-             id="stop12166" />
-          <stop
-             path="c -160.499,-160.721  -160.499,-421.302  -2.27374e-13,-582.021"
-             style="stop-color:#0055d4;stop-opacity:1"
-             id="stop12168" />
-        </meshpatch>
-      </meshrow>
-    </meshgradient>
+       xlink:href="#linearGradient8946"
+       id="radialGradient8948"
+       cx="497.36887"
+       cy="497.11258"
+       fx="497.36887"
+       fy="497.11258"
+       r="299.95813"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient8954"
+       id="linearGradient8956"
+       x1="81.776088"
+       y1="500.07664"
+       x2="906.63991"
+       y2="500.07664"
+       gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -434,7 +448,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.86399515"
-     inkscape:cx="284.14511"
+     inkscape:cx="191.552"
      inkscape:cy="504.63246"
      inkscape:current-layer="layer2"
      showgrid="true"
@@ -630,11 +644,11 @@
        cy="499.82339"
        r="292.15308" />
     <path
-       style="fill:url(#meshgradient12156);fill-opacity:1;stroke:#3f3f44;stroke-width:2.87109;stroke-opacity:1"
+       style="fill:url(#linearGradient8956);fill-opacity:1;stroke:#3f3f44;stroke-width:2.871;stroke-opacity:1;stroke-dasharray:none"
        d="M 469.22181,910.7573 C 353.81278,901.12244 256.08549,852.98514 184.29018,770.40924 136.15187,715.04257 105.52715,652.9547 89.955663,579.15745 81.751242,540.27462 80.918112,467.88143 88.217468,428.12074 124.21983,232.01035 295.51345,88.523405 493.62616,88.523405 c 141.17038,0 270.74949,71.976435 349.3645,194.059095 46.04638,71.50624 69.85801,174.16011 60.01178,258.71557 -17.37847,149.23928 -105.44448,271.39784 -240.20041,333.18807 -56.7135,26.00509 -136.80192,41.01129 -193.58022,36.27116 z m 89.98862,-121.8855 c 90.56221,-18.45215 165.68748,-76.52671 205.8718,-159.14639 17.03153,-35.01712 24.6524,-61.93882 28.64538,-101.19328 6.89351,-67.76932 -9.96222,-135.2594 -48.14777,-192.78291 -102.01966,-153.68455 -320.7825,-176.08597 -451.64746,-46.24894 -47.48056,47.1076 -73.43362,96.08926 -84.48174,159.44383 -27.90305,160.00799 78.36605,312.69638 237.76175,341.61815 32.30301,5.86127 78.34514,5.16633 111.99804,-1.69046 z"
        id="path3769" />
     <circle
-       style="fill:#aaccff;fill-opacity:1;fill-rule:evenodd;stroke:url(#radialGradient1034);stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:url(#radialGradient8948);fill-opacity:1;fill-rule:evenodd;stroke:url(#radialGradient1034);stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="path3687"
        cx="497.36887"
        cy="497.11258"
@@ -646,7 +660,7 @@
        cy="497.11258"
        r="206.64839" />
     <path
-       style="fill:none;stroke:#64c8c8;stroke-width:8.30433;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#008a27;stroke:#64c8c8;stroke-width:8.30433;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
        d="M 497.36888,295.26995 V 701.35806"
        id="path3705"
        sodipodi:nodetypes="cc" />
@@ -666,7 +680,7 @@
        d="M 640.94271,641.88781 353.79503,354.74017"
        style="fill:none;stroke:#64c8c8;stroke-width:8.30433;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     <circle
-       style="fill:#5f8dd3;fill-opacity:1;fill-rule:evenodd;stroke:url(#meshgradient1100);stroke-width:8.30433;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:#007327;fill-opacity:1;fill-rule:evenodd;stroke:url(#meshgradient1100);stroke-width:8.30433;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="path3713"
        cx="499.77176"
        cy="501.91833"
