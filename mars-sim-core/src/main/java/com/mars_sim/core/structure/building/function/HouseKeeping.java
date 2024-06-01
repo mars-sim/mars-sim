@@ -24,6 +24,8 @@ public class HouseKeeping implements Serializable {
 	private Map<String, Double> inspectionMap;
 	// The map of each system that needs inspection and its cleanliness score
 	private Map<String, Double> cleaningMap;
+
+	private double cumulativeWorkTime = 0D;
 	
 	/**
 	 * Constructor.
@@ -79,7 +81,7 @@ public class HouseKeeping implements Serializable {
 	 * 
 	 * @return
 	 */
-	public String getLeast(Map<String, Double> map) {
+	private static String getLeast(Map<String, Double> map) {
 		// In future, each person can become the knowledge expert on a particular system
 		// and may be more proficient on one system over another
 		Entry<String, Double> least = null;
@@ -88,7 +90,7 @@ public class HouseKeeping implements Serializable {
 				least = s;
 		    }
 		}
-		return least.getKey();
+		return (least != null ? least.getKey() : null);
 	}
 
 	/**
@@ -97,7 +99,8 @@ public class HouseKeeping implements Serializable {
 	 * @param s
 	 */
 	public void inspected(String s, double value) {
-		inspectionMap.put(s, inspectionMap.get(s) + value);
+		inspectionMap.merge(s, value, Double::sum);
+		cumulativeWorkTime += value;
 	}
 
 	/**
@@ -106,7 +109,15 @@ public class HouseKeeping implements Serializable {
 	 * @param s
 	 */
 	public void cleaned(String s, double value) {
-		cleaningMap.put(s, cleaningMap.get(s) + value);
+		cleaningMap.merge(s, value, Double::sum);
+		cumulativeWorkTime += value;
 	}
 
+	/**
+	 * How much time has been spend working of this entity
+	 * @return
+	 */
+    public double getCumulativeWorkTime() {
+        return cumulativeWorkTime;
+    }
 }

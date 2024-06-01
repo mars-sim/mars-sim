@@ -45,14 +45,14 @@ public class FishCommand extends AbstractSettlementCommand {
 									.collect(Collectors.toList());
 		// Display each farm separately
 		for (Fishery tank : tanks) {			
-
+			var keeping = tank.getHousekeeping();
 			response.appendTableRow(tank.getBuilding().getName(),
 									tank.getTankSize(),
 									tank.getNumFish(),
 									tank.getSurplusStock(),
 									tank.getWeedDemand(),
-									tank.getInspectionScore(),
-									tank.getCleaningScore());
+									keeping.getAverageInspectionScore(),
+									keeping.getAverageCleaningScore());
 		}
 		context.println(response.getOutput());
 		return true;

@@ -49,12 +49,12 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
 
         @Override
         public Task createTask(Person person) {
-            return new TendGreenhouse(person, farm);
+            return new TendGreenhouse(person, farm, TendGreenhouse.selectActivity(farm));
         }
 
         @Override
         public Task createTask(Robot robot) {
-            return new TendGreenhouse(robot, farm);
+            return new TendGreenhouse(robot, farm, TendGreenhouse.selectActivity(farm));
         }
     }
 
@@ -124,8 +124,9 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
 
             RatingScore score = new RatingScore(farm.getTendingScore());
 
+            var keeping = farm.getHousekeeping();
             score.addBase("maintenance", 
-                    (200 - farm.getCleaningScore() - farm.getInspectionScore())/10);
+                    (200 - keeping.getAverageCleaningScore() - keeping.getAverageInspectionScore())/10);
  
             // Settlement factors
             score = applyCommerceFactor(score, settlement, CommerceType.CROP);

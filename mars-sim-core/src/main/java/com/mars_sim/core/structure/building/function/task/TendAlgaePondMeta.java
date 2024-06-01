@@ -49,12 +49,12 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
 
         @Override
         public Task createTask(Person person) {
-            return new TendAlgaePond(person, pond);
+            return new TendAlgaePond(person, pond, TendAlgaePond.selectActivity(pond, true));
         }
 
         @Override
         public Task createTask(Robot robot) {
-            return new TendAlgaePond(robot, pond);
+            return new TendAlgaePond(robot, pond, TendAlgaePond.selectActivity(pond, false));
         }
     }
 
@@ -123,8 +123,9 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
             
             RatingScore result = new RatingScore("base", BASE_SCORE);
 
+            var keeping = pond.getHousekeeping();
             result.addBase("maintenance", 
-            		2 * (200 - pond.getCleaningScore() - pond.getInspectionScore()));
+            		2 * (200 - keeping.getAverageCleaningScore() - keeping.getAverageInspectionScore()));
     
             double ratio = pond.getSurplusRatio();
             result.addBase("surplus", ratio * 50);

@@ -51,12 +51,12 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
 
         @Override
         public Task createTask(Person person) {
-            return new TendFishTank(person, tank);
+            return new TendFishTank(person, tank, TendFishTank.selectActivity(tank, true));
         }
 
         @Override
         public Task createTask(Robot robot) {
-            return new TendFishTank(robot, tank);
+            return new TendFishTank(robot, tank, TendFishTank.selectActivity(tank, false));
         }
     }
 
@@ -123,8 +123,9 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
             
             RatingScore result = new RatingScore("base", BASE_SCORE);
             
+            var keeping = fishTank.getHousekeeping();
             result.addBase("maintenance", 
-            		2 * (200 - fishTank.getCleaningScore() - fishTank.getInspectionScore()));
+            		2 * (200 - keeping.getAverageCleaningScore() - keeping.getAverageInspectionScore()));
 
             result.addBase("surplus", Math.abs(fishTank.getSurplusStock()));
             

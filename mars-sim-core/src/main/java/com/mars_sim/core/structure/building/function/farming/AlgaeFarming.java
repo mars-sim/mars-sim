@@ -40,8 +40,6 @@ public class AlgaeFarming extends Function {
 	private static final String [] INSPECTION_LIST = Fishery.INSPECTION_LIST;
 	private static final String [] CLEANING_LIST = Fishery.CLEANING_LIST;
 	
-	/** The average water needed [in kg]. */
-//	private static double averageWaterNeeded;
 	/** The average O2 needed [in kg]. */
 	private static double averageOxygenNeeded;
 	/** The average CO2 needed [in kg]. */
@@ -56,18 +54,13 @@ public class AlgaeFarming extends Function {
 	public static final int PRODUCED_ALGAE_ID = HARVESTED_ALGAE_ID + 1; // id: 362
 	
 	private static final int LIGHT_FACTOR = 0;
-//	private static final int FERTILIZER_FACTOR = 1;
 	private static final int TEMPERATURE_FACTOR = 2;	
-//	private static final int WATER_FACTOR = 3;
 	private static final int O2_FACTOR = 4;
 	private static final int CO2_FACTOR = 5;
 	
-	// Initial amount of water [in liters] per kg algae
-//	private static final int INITIAL_WATER_NEED_PER_KG_ALGAE = 333; 
 	/** The food nutrient demand of algae. **/
 	private static final int NUTRIENT_DEMAND = 250;
 	private static final double GAS_MODIFIER = 1.5;
-//	private static final double WATER_MODIFIER = 1.1;
 	private static final double TUNING_FACTOR = 3.5;
 	
 // When grown in darkness or light intensity below 1000 lux, the algal cultures 
@@ -174,11 +167,8 @@ public class AlgaeFarming extends Function {
 	// Note: 1 CM = 1000 L
 	
 	// The expected biomass yield in an open pond system [kg/L/millisols]
-	private static final double EXPECTED_YIELD_RATE = .01134; 
-	/** The amount of algae per harvest. **/
-//	private static final double KG_PER_HARVEST_PER_MILLISOL = .05;
-
-	// Note: 1000 L = 1 m^3; 10000 L = 10 m^3 or 10 CM;
+	private static final double EXPECTED_YIELD_RATE = .01134;
+	// Note: 1000 L = 1 m^3; 10000 L = 10 m^3 or 10 CM
 	// Assuming 0.5 m deep with room utilization 40 %
 	// 6 m * 9 m * 40% * 0.5 m = 10.8 m^3
 	/** The size of tank [in liters]. **/
@@ -195,8 +185,6 @@ public class AlgaeFarming extends Function {
 	
 	/** The amount iteration for growing new spirulina. */
 	private double birthIterationCache;
-	/** The total mass in the tank. */
-//	private double totalMass;
 	/** Maximum amount of algae. */
 	private double maxAlgae;
 	/** Current amount of algae. */
@@ -236,8 +224,6 @@ public class AlgaeFarming extends Function {
 	/** The resource logs for growing algae in this facility [kg/sol]. */
 	private SolMetricDataLogger<Integer> resourceLog = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 	
-	private static CropConfig cropConfig;
-	
 	/**
 	 * Constructor.
 	 * 
@@ -248,13 +234,6 @@ public class AlgaeFarming extends Function {
 	public AlgaeFarming(Building building, FunctionSpec spec) {
 		// Use Function constructor.
 		super(FunctionType.ALGAE_FARMING, spec, building);
-	
-//		averageWaterNeeded = cropConfig.getWaterConsumptionRate();
-		averageOxygenNeeded = cropConfig.getOxygenConsumptionRate();
-		averageCarbonDioxideNeeded = cropConfig.getCarbonDioxideConsumptionRate();
-		wattToPhotonConversionRatio = cropConfig.getWattToPhotonConversionRatio();
-		// Note: conversionFactor is 51.45578648029399;
-		conversionFactor = 1000D * wattToPhotonConversionRatio / MarsTime.SECONDS_PER_MILLISOL;
 		
 		houseKeeping = new HouseKeeping(CLEANING_LIST, INSPECTION_LIST);
 
@@ -262,7 +241,7 @@ public class AlgaeFarming extends Function {
 		tankDepth = spec.getDepth();
 		
 		// Calculate the tank size in Liter 
-		// Note:  1000 L = 1 m^3; 10000 L = 10 m^3;
+		// Note:  1000 L = 1 m^3; 10000 L = 10 m^3
 		tankSize = tankArea * tankDepth * 1000;
 		// Calculate max algae based on tank size
 		maxAlgae = tankSize * ALGAE_TO_WATER_RATIO;
@@ -272,10 +251,6 @@ public class AlgaeFarming extends Function {
 		currentAlgae = RandomUtil.getRandomDouble(idealAlgae * 0.05, idealAlgae * 0.15);
 		// The amount of water in kg
 		waterMass = tankSize * currentAlgae / maxAlgae;
-		
-		// Retrieve water to create pond
-		// Note that 1 L of water is 1 kg
-//		building.getSettlement().retrieveAmountResource(ResourceUtil.waterID, waterMass);
 		
 	    double initalFood = currentAlgae * NUTRIENT_RATIO;
 	    
@@ -361,7 +336,7 @@ public class AlgaeFarming extends Function {
 	 * @return
 	 */
 	public double getCumulativeWorkTime() {
-		return cumulativeWorkTime;
+		return cumulativeWorkTime + houseKeeping.getCumulativeWorkTime();
 	}
 	
 	/**
@@ -369,7 +344,7 @@ public class AlgaeFarming extends Function {
 	 * 
 	 * @return
 	 */
-	public void addCumulativeWorkTime(double value) {
+	private void addCumulativeWorkTime(double value) {
 		cumulativeWorkTime += value;
 	}
 	
@@ -381,7 +356,7 @@ public class AlgaeFarming extends Function {
 	 * @Note negative usage amount means generation
 	 * @param id The resource id
 	 */
-	public void addResourceLog(double amount, int id) {
+	private void addResourceLog(double amount, int id) {
 		resourceLog.increaseDataPoint(id, amount);
 	}
 	
@@ -668,19 +643,23 @@ public class AlgaeFarming extends Function {
 		   if (birthIterationCache > 1) {
 			   double newAlgae = birthIterationCache;
 			   birthIterationCache = birthIterationCache - newAlgae;
-			   currentAlgae += newAlgae;
-		   
-			   // Record the freshly produced spirulina
-			   addResourceLog(newAlgae, PRODUCED_ALGAE_ID);
-			   
-			   // Compute the amount of fresh water to be replenished at the inlet
-			   double freshWater = newAlgae / ALGAE_TO_WATER_RATIO * RandomUtil.getRandomDouble(.9, 1.1);
-			   // Consume fresh water
-			   retrieveWater(freshWater, ResourceUtil.waterID);
-			   // Add fresh water to the existing tank water
-			   waterMass += freshWater;
+			   addAlgae(newAlgae);
 		   }
 		}
+	}
+
+	public void addAlgae(double newAlgae) {
+		currentAlgae += newAlgae;
+		   
+		// Record the freshly produced spirulina
+		addResourceLog(newAlgae, PRODUCED_ALGAE_ID);
+		
+		// Compute the amount of fresh water to be replenished at the inlet
+		double freshWater = newAlgae / ALGAE_TO_WATER_RATIO * RandomUtil.getRandomDouble(.9, 1.1);
+		// Consume fresh water
+		retrieveWater(freshWater, ResourceUtil.waterID);
+		// Add fresh water to the existing tank water
+		waterMass += freshWater;
 	}
 
 	/**
@@ -689,13 +668,12 @@ public class AlgaeFarming extends Function {
 	 * @param pulse
 	 * @return
 	 */
-	public boolean resetEndOfSol(ClockPulse pulse) {
+	private boolean resetEndOfSol(ClockPulse pulse) {
 		if (pulse.isNewSol()) {
 
 			// Note: is it better off doing the actualHarvest computation once a day or
 			// every time
 			// Reset the daily work counter currentPhaseWorkCompleted back to zero
-			// currentPhaseWorkCompleted = 0D;
 			cumulativeDailyPAR = 0;
 			
 			return true;
@@ -742,7 +720,7 @@ public class AlgaeFarming extends Function {
 		// Calculate instantaneous PAR from solar irradiance
 		double uPAR = wattToPhotonConversionRatio * solarIrradiance;
 		// [umol /m^2 /s] = [u mol /m^2 /s /(Wm^-2)] * [Wm^-2]
-		double PARInterval = uPAR / 1_000_000D * time * MarsTime.SECONDS_PER_MILLISOL; // in mol / m^2 within this
+		double parInterval = uPAR / 1_000_000D * time * MarsTime.SECONDS_PER_MILLISOL; // in mol / m^2 within this
 
 		double dailyPARRequired = dailyPAR;
 		// period of time
@@ -750,8 +728,6 @@ public class AlgaeFarming extends Function {
 		// 1 u = 1 micro = 1/1_000_000
 		// Note : daily-PAR has the unit of [mol /m^2 /day]
 		// Gauge if there is enough sunlight
-//		double progress = cumulativeDailyPAR / dailyPARRequired; // [max is 1]
-//		double clock = time / 1000D; // [max is 1]
 
 		// When enough PAR have been administered to the crop, HPS_LAMP will turn off.
 		
@@ -763,60 +739,54 @@ public class AlgaeFarming extends Function {
 		
 		// Reduce the frequent toggling on and off of lamp and to check on
 		// the time of day to anticipate the need of sunlight.
-//		double millisols = pulse.getMarsTime().getMillisol();
-//		if (0.5 * progress < clock && millisols <= 333 || 0.7 * progress < clock 
-//				&& millisols > 333 && millisols <= 666
-//				|| progress < clock && millisols > 666) {
-			// Future: also compare also how much more sunlight will still be available
-			if (uPAR > 40) { // if sunlight is available
-				turnOffLighting();
-				cumulativeDailyPAR = cumulativeDailyPAR + PARInterval;
-				// Gets the effectivePAR
-				effectivePAR = PARInterval;
-			}
+		// Future: also compare also how much more sunlight will still be available
+		if (uPAR > 40) { // if sunlight is available
+			turnOffLighting();
+			cumulativeDailyPAR = cumulativeDailyPAR + parInterval;
+			// Gets the effectivePAR
+			effectivePAR = parInterval;
+		}
 
-			else { // if no sunlight, turn on artificial lighting
-					// double conversionFactor = 1000D * wattToPhotonConversionRatio /
-					// MarsTime.SECONDS_IN_MILLISOL ;
-					// DLI is Daily Light Integral is the unit for for cumulative light -- the
-					// accumulation of all the PAR received during a day.
-				double DLI = dailyPARRequired - cumulativeDailyPAR; // [in mol / m^2 / day]
-				double deltaPAROutstanding = DLI * (time / 1000D) * tankArea;
-				// in mol needed at this delta time [mol] = [mol /m^2 /day] * [millisol] /
-				// [millisols /day] * m^2
-				double deltakW = deltaPAROutstanding / time / conversionFactor;
-				// [kW] = [mol] / [u mol /m^2 /s /(Wm^-2)] / [millisols] / [s /millisols] = [W
-				// /u] * u * k/10e-3 = [kW]; since 1 u = 10e-6
-				
-				// Future: Typically, 5 lamps per square meter for a level of ~1000 mol/ m^2 /s
-				// Added PHYSIOLOGICAL_LIMIT sets a realistic limit for tuning how
-				// much PAR a food crop can absorb per frame.
-				
-				// Note 1 : PHYSIOLOGICAL_LIMIT minimize too many lights turned on and off too
-				// frequently
-				
-				// Note 2 : It serves to smooth out the instantaneous power demand over a period
-				// of time
-				
-				// each HPS_LAMP lamp supplies 400W has only 40% visible radiation efficiency
-				int numLamp = (int) (Math.ceil(
-						deltakW / KW_PER_HPS / VISIBLE_RADIATION_HPS / (1 - BALLAST_LOSS_HPS) * PHYSIOLOGICAL_LIMIT));
-				// Future: should also allow the use of LED_KIT for lighting
-				// For converting lumens to PAR/PPF, see
-				// http://www.thctalk.com/cannabis-forum/showthread.php?55580-Converting-lumens-to-PAR-PPF
-				// Note: do NOT include any losses below
-				double supplykW = numLamp * KW_PER_HPS * VISIBLE_RADIATION_HPS * (1 - BALLAST_LOSS_HPS)
-						/ PHYSIOLOGICAL_LIMIT;
-				turnOnLighting(supplykW);
-				double deltaPARSupplied = supplykW * time * conversionFactor / tankArea; // in mol / m2
-				// [ mol / m^2] = [kW] * [u mol /m^2 /s /(Wm^-2)] * [millisols] * [s /millisols]
-				// / [m^2] = k u mol / W / m^2 * (10e-3 / u / k) = [mol / m^-2]
-				cumulativeDailyPAR = cumulativeDailyPAR + deltaPARSupplied + PARInterval;
-				// [mol /m^2 /d]
+		else { // if no sunlight, turn on artificial lighting
+				// DLI is Daily Light Integral is the unit for for cumulative light -- the
+				// accumulation of all the PAR received during a day.
+			double dli = dailyPARRequired - cumulativeDailyPAR; // [in mol / m^2 / day]
+			double deltaPAROutstanding = dli * (time / 1000D) * tankArea;
+			// in mol needed at this delta time [mol] = [mol /m^2 /day] * [millisol] /
+			// [millisols /day] * m^2
+			double deltakW = deltaPAROutstanding / time / conversionFactor;
+			// [kW] = [mol] / [u mol /m^2 /s /(Wm^-2)] / [millisols] / [s /millisols] = [W
+			// /u] * u * k/10e-3 = [kW]; since 1 u = 10e-6
+			
+			// Future: Typically, 5 lamps per square meter for a level of ~1000 mol/ m^2 /s
+			// Added PHYSIOLOGICAL_LIMIT sets a realistic limit for tuning how
+			// much PAR a food crop can absorb per frame.
+			
+			// Note 1 : PHYSIOLOGICAL_LIMIT minimize too many lights turned on and off too
+			// frequently
+			
+			// Note 2 : It serves to smooth out the instantaneous power demand over a period
+			// of time
+			
+			// each HPS_LAMP lamp supplies 400W has only 40% visible radiation efficiency
+			int numLamp = (int) (Math.ceil(
+					deltakW / KW_PER_HPS / VISIBLE_RADIATION_HPS / (1 - BALLAST_LOSS_HPS) * PHYSIOLOGICAL_LIMIT));
+			// Future: should also allow the use of LED_KIT for lighting
+			// For converting lumens to PAR/PPF, see
+			// http://www.thctalk.com/cannabis-forum/showthread.php?55580-Converting-lumens-to-PAR-PPF
+			// Note: do NOT include any losses below
+			double supplykW = numLamp * KW_PER_HPS * VISIBLE_RADIATION_HPS * (1 - BALLAST_LOSS_HPS)
+					/ PHYSIOLOGICAL_LIMIT;
+			turnOnLighting(supplykW);
+			double deltaPARSupplied = supplykW * time * conversionFactor / tankArea; // in mol / m2
+			// [ mol / m^2] = [kW] * [u mol /m^2 /s /(Wm^-2)] * [millisols] * [s /millisols]
+			// / [m^2] = k u mol / W / m^2 * (10e-3 / u / k) = [mol / m^-2]
+			cumulativeDailyPAR = cumulativeDailyPAR + deltaPARSupplied + parInterval;
+			// [mol /m^2 /d]
 
-				// Gets the effectivePAR
-				effectivePAR = deltaPARSupplied + PARInterval;
-			}
+			// Gets the effectivePAR
+			effectivePAR = deltaPARSupplied + parInterval;
+		}
 
 		// check for the passing of each day
 		int newSol = pulse.getMarsTime().getMissionSol();
@@ -864,34 +834,8 @@ public class AlgaeFarming extends Function {
 		return currentAlgae * .25D;
 	}
 
-	public String getUninspected() {
-		return houseKeeping.getLeastInspected();
-	}
-
-	public String getUncleaned() {
-		return houseKeeping.getLeastCleaned();
-	}
-
-	public double getInspectionScore() {
-		return houseKeeping.getAverageInspectionScore();
-	}
-	
-	public double getCleaningScore() {
-		return houseKeeping.getAverageCleaningScore();
-	}
-	
-	public void markInspected(String s, double value) {
-		// Record the work time
-		addCumulativeWorkTime(value);
-		
-		houseKeeping.inspected(s, value);
-	}
-
-	public void markCleaned(String s, double value) {
-		// Record the work time
-		addCumulativeWorkTime(value);
-		
-		houseKeeping.cleaned(s, value);
+    public HouseKeeping getHousekeeping() {
+        return houseKeeping;
 	}
 	
 	public double getCurrentAlgae() {
@@ -1014,9 +958,6 @@ public class AlgaeFarming extends Function {
 		store(foodWaste, ResourceUtil.foodWasteID, "AlgaeFarming::foodWaste");
 		
 		storeGreyWater(greyWaterWaste, GREY_WATER_ID);
-
-		// Record the grey water amount
-		addResourceLog(greyWaterWaste, GREY_WATER_ID);
 		
 		store(spirulinaExtracted, HARVESTED_ALGAE_ID, "AlgaeFarming::harvestAlgae");
 		// Record the harvest amount
@@ -1047,20 +988,25 @@ public class AlgaeFarming extends Function {
 	/**
 	 * Reloads instances after loading from a saved sim.
 	 * 
-	 * @param cropConfig2
+	 * @param cropConfig
 	 *
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void initializeInstances(CropConfig cropConfig2) {
-		cropConfig = cropConfig2;
+	public static void initializeInstances(CropConfig cropConfig) {
+		averageOxygenNeeded = cropConfig.getOxygenConsumptionRate();
+		averageCarbonDioxideNeeded = cropConfig.getCarbonDioxideConsumptionRate();
+		wattToPhotonConversionRatio = cropConfig.getWattToPhotonConversionRatio();
+		conversionFactor = 1000D * wattToPhotonConversionRatio / MarsTime.SECONDS_PER_MILLISOL;
 	}
 	
 	/**
 	 * Prepares object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
 		resourceLog = null;
 		houseKeeping = null;
+		super.destroy();
 	}
 }

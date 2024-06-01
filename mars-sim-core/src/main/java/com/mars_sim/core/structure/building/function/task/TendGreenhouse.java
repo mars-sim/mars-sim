@@ -8,11 +8,11 @@ package com.mars_sim.core.structure.building.function.task;
 
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.Research;
@@ -26,7 +26,7 @@ import com.mars_sim.tools.util.RandomUtil;
  * The TendGreenhouse class is a task for tending the greenhouse in a
  * settlement. This is an effort driven task.
  */
-public class TendGreenhouse extends Task {
+public class TendGreenhouse extends TendHousekeeping {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -36,12 +36,10 @@ public class TendGreenhouse extends Task {
 
 	/** static members */
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -1.1D;
 	private static final double CROP_RESILIENCY = Crop.CROP_RESILIENCY;
 	
 	private static final String NAME = Msg.getString("Task.description.tendGreenhouse"); //$NON-NLS-1$
 	
-	private static final String GROW = Msg.getString("Task.description.tendGreenhouse.grow"); //$NON-NLS-1$
 	private static final String GROWING_DETAIL = Msg.getString("Task.description.tendGreenhouse.grow.detail"); //$NON-NLS-1$
 	private static final String DONE_GROWING = "Done with growing ";
 
@@ -50,32 +48,24 @@ public class TendGreenhouse extends Task {
 	
 	private static final String TEND = Msg.getString("Task.description.tendGreenhouse.tend"); //$NON-NLS-1$
 	private static final String DONE_TENDING = Msg.getString("Task.description.tendGreenhouse.tend.done"); //$NON-NLS-1$
-	
-	private static final String TRANSFER = Msg.getString("Task.description.tendGreenhouse.transfer"); //$NON-NLS-1$
-	
-	private static final String INSPECT_DETAIL = Msg.getString("Task.description.tendGreenhouse.inspect.detail");
-	private static final String DONE_INSPECTION = Msg.getString("Task.description.tendGreenhouse.inspect.done");
-	
-	private static final String CLEAN_DETAIL = Msg.getString("Task.description.tendGreenhouse.clean.detail");
-	private static final String DONE_CLEANING = Msg.getString("Task.description.tendGreenhouse.clean.done");
-	
+		
 	private static final String SAMPLE = Msg.getString("Task.description.tendGreenhouse.sample");
 	private static final String SAMPLE_DETAIL = Msg.getString("Task.description.tendGreenhouse.sample.detail");
 
 	
-	private static final String ADDED_TO_INCUBATOR = " and added to incubator for growing tissues.";
-
 	private static final String TISSUES_IN_LAB = " tissues in botany lab.";
 
 	
 	/** Task phases. */
-	private static final TaskPhase TENDING = new TaskPhase(Msg.getString("Task.phase.tending")); //$NON-NLS-1$
-	private static final TaskPhase INSPECTING = new TaskPhase(Msg.getString("Task.phase.inspecting")); //$NON-NLS-1$
-	private static final TaskPhase CLEANING = new TaskPhase(Msg.getString("Task.phase.cleaning")); //$NON-NLS-1$
-	private static final TaskPhase SAMPLING = new TaskPhase(Msg.getString("Task.phase.sampling")); //$NON-NLS-1$
-	private static final TaskPhase TRANSFERRING_SEEDLING = new TaskPhase(Msg.getString("Task.phase.transferring")); //$NON-NLS-1$
-	private static final TaskPhase GROWING_TISSUE = new TaskPhase(Msg.getString("Task.phase.growingTissue")); //$NON-NLS-1$
+	static final TaskPhase TENDING = new TaskPhase(Msg.getString("Task.phase.tending")); //$NON-NLS-1$
+	static final TaskPhase SAMPLING = new TaskPhase(Msg.getString("Task.phase.sampling")); //$NON-NLS-1$
+	static final TaskPhase TRANSFERRING_SEEDLING = new TaskPhase(Msg.getString("Task.phase.transferring")); //$NON-NLS-1$
+	static final TaskPhase GROWING_TISSUE = new TaskPhase(Msg.getString("Task.phase.growingTissue")); //$NON-NLS-1$
 	
+	private static final ExperienceImpact IMPACT = new ExperienceImpact(100D,
+												NaturalAttributeType.EXPERIENCE_APTITUDE, true,
+												-1.1D, SkillType.BOTANY);
+
 	// Data members
 	/** The goal of the task at hand. */
 	private String goal;
@@ -83,8 +73,6 @@ public class TendGreenhouse extends Task {
 	private String previousCropName;
 	/** The greenhouse the person is tending. */
 	private Farming greenhouse;
-	/** The task accepted for the duration. */
-	private TaskPhase acceptedTask;
 	/** The crop to be worked on. */
 	private Crop needyCrop;
 	/** The crop spec to be selected to plant. */
@@ -96,11 +84,11 @@ public class TendGreenhouse extends Task {
 	 * @param person the person performing the task.
 	 * @param farm Farm needing tender
 	 */
-	public TendGreenhouse(Person person, Farming greenhouse) {
+	public TendGreenhouse(Worker farmer, Farming greenhouse, TaskPhase activity) {
 		// Use Task constructor
-		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.BOTANY, 100D, RandomUtil.getRandomDouble(10, 50));
+		super(NAME, farmer, greenhouse.getHousekeeping(), IMPACT, RandomUtil.getRandomDouble(10, 50));
 
-		if (person.isOutside()) {
+		if (farmer.isOutside()) {
 			endTask();
 			return;
 		}
@@ -110,60 +98,18 @@ public class TendGreenhouse extends Task {
 
 		// Walk to greenhouse.
 		walkToTaskSpecificActivitySpotInBuilding(greenhouse.getBuilding(), FunctionType.FARMING, false);
+
+		setPhase(activity);
+	}
+
 	
-		// Plant a crop or tending a crop
-		selectTask();
-	}
-
-	/**
-	 * Constructor 2.
-	 *
-	 * @param robot the robot performing the task.
-	 */
-	public TendGreenhouse(Robot robot, Farming greenhouse) {
-		// Use Task constructor
-		super(NAME, robot, true, false, 0, SkillType.BOTANY, 100D, 50D);
-
-		// Initialize data members
-		if (robot.isOutside()) {
-			endTask();
-			return;
-		}
-
-		this.greenhouse = greenhouse;
-
-		// Checks quickly to see if a needy crop is available	
-		needyCrop = greenhouse.getNeedyCrop();
-		
-		if (needyCrop != null) {
-			previousCropName = needyCrop.getCropName();
-			// Walk to greenhouse.
-			walkToTaskSpecificActivitySpotInBuilding(greenhouse.getBuilding(), FunctionType.FARMING, false);
-				
-			acceptedTask = TENDING;
-
-			addPhase(TENDING);
-			setPhase(TENDING);
-		}
-		else {
-			acceptedTask = CLEANING;
-		}
-		
-		// Initialize phase
-		addPhase(acceptedTask);
-		setPhase(acceptedTask);
-	}
-
 	@Override
 	protected double performMappedPhase(double time) {
-		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
+		time = super.performMappedPhase(time);
+		if (time == 0) {
+			return 0D;
 		} else if (TENDING.equals(getPhase())) {
 			return tendingPhase(time);
-		} else if (INSPECTING.equals(getPhase())) {
-			return inspectingPhase(time);
-		} else if (CLEANING.equals(getPhase())) {
-			return cleaningPhase(time);
 		} else if (SAMPLING.equals(getPhase())) {
 			return samplingPhase(time);
 		} else if (TRANSFERRING_SEEDLING.equals(getPhase())) {
@@ -178,9 +124,9 @@ public class TendGreenhouse extends Task {
 	/**
 	 * Selects a suitable task for the greenhouse.
 	 */
-	private void selectTask() {
+	static TaskPhase selectActivity(Farming greenhouse) {
 		if (greenhouse.getNumCrops2Plant() > 0) {
-			acceptedTask = TRANSFERRING_SEEDLING;
+			return TRANSFERRING_SEEDLING;
 		}
 		else {	
 			// Choose the activity from the base 4 non-crop tasks then 2 slots per needy crop.
@@ -188,53 +134,29 @@ public class TendGreenhouse extends Task {
 			int rand = RandomUtil.getRandomInt(probability);
 
 			if (rand == 0)
-				acceptedTask = INSPECTING;
+				return INSPECTING;
 			else if (rand == 1)
-				acceptedTask = CLEANING;
+				return CLEANING;
 			else if (rand == 2)
-				acceptedTask = SAMPLING;
+				return SAMPLING;
 			else if (rand == 3)
-				acceptedTask = GROWING_TISSUE;
+				return GROWING_TISSUE;
 			else {
-				needyCrop = greenhouse.getNeedyCrop();
-				if (needyCrop == null) {
+				if (greenhouse.getNeedyCrop() == null) {
 					// Hmm shouldn't happen
-					acceptedTask = INSPECTING;
+					return INSPECTING;
 				}
 				else {
-					previousCropName = needyCrop.getCropName();
-					acceptedTask = TENDING;
+					return TENDING;
 				}
 			}
 		}
-			
-		addPhase(acceptedTask);
-		setPhase(acceptedTask);
-	}
-	
-	/**
-	 * Sets the description and print the log.
-	 * 
-	 * @param text
-	 */
-	private void printDescription(String text) {
-		setDescription(text);
-		logger.info(worker, 30_000L, text + ".");
-	}
-	
-	/**
-	 * Sets the task description for tending a specific crop for the person.
-	 * 
-	 * @param needyCrop
-	 */
-	public void setCropDescription() {
-		setDescription(TEND + " " + previousCropName, false);
 	}
 
 	/**
 	 * Sets the task description of being done with tending crops.
 	 */
-	public void setDescriptionCropDone() {
+	private void setDescriptionCropDone() {
 		setDescription(DONE_TENDING + " " + previousCropName, false);
 	}
 	
@@ -318,7 +240,8 @@ public class TendGreenhouse extends Task {
 		double usedTime = workTime - remain;
 		
 		if (usedTime > 0) {
-			setCropDescription();
+			setDescription(TEND + " " + previousCropName, false);
+
 
 			if (remain > 0) {
 				// Divided by mod to get back any leftover real time
@@ -365,31 +288,29 @@ public class TendGreenhouse extends Task {
 			cropSpec = greenhouse.selectSeedling();
 			
 			if (cropSpec != null) {
-				printDescription(DONE_SEEDING + " " + cropSpec.getName());
+				updateDescription(DONE_SEEDING + " " + cropSpec.getName());
 			}
 			else {
 				// Find another task
-				selectTask();
+				endTask();
 				
 				return time / 2.0;
 			}
 			
-			printDescription(TRANSFER);
-
 			addExperience(workTime);
 	
 		}
 		
 		else if (greenhouse.getNumCrops2Plant() > 0 && getDuration() <= (getTimeCompleted() + time)) {
 			greenhouse.plantSeedling(cropSpec, getTimeCompleted() + time, worker);
-			printDescription(SEED + " " + cropSpec + ".");
+			updateDescription(SEED + " " + cropSpec + ".");
 				
 			addExperience(workTime);
 		}
 		
 		else {
 			// Find another task
-			selectTask();
+			endTask();
 		}
 		
 		return 0;
@@ -402,8 +323,6 @@ public class TendGreenhouse extends Task {
 	 * @return
 	 */
 	private double growingTissue(double time) {
-
-		printDescription(GROW);
 		
 		// Check if the lab is available
 		if (!greenhouse.checkBotanyLab())  {
@@ -414,23 +333,17 @@ public class TendGreenhouse extends Task {
 			goal = greenhouse.chooseCrop2Extract(Farming.STANDARD_AMOUNT_TISSUE_CULTURE);
 			if (goal != null) {
 				greenhouse.getResearch().addToIncubator(goal, Farming.STANDARD_AMOUNT_TISSUE_CULTURE);	
-				logger.info(worker, 20_000, 
-						"Sampled " + goal + ADDED_TO_INCUBATOR);
+				updateDescription(GROWING_DETAIL + " " + goal.toLowerCase() + " for " + Math.round(time * 100.0)/100.0 + " msol");
 			}
 			else {
 				// Can't find any matured crop to sample
-//				logger.log(greenhouse.getBuilding(), worker, Level.INFO, 20_000, 
-//						"Can't find matured crops to sample in botany lab.");
-				// Find another task
-				selectTask();
-				
+				endTask();
 				return time / 2.0;
 			}
 		}
 			
-		printDescription(GROWING_DETAIL + " " + goal.toLowerCase() + " for " + Math.round(time * 100.0)/100.0 + " msol");
 
-		createExperienceFromSkill(time);
+		addExperience(time);
 
 		if (getDuration() <= (getTimeCompleted() + time)) {		
 
@@ -450,89 +363,6 @@ public class TendGreenhouse extends Task {
 	}
 
 	/**
-	 * Creates experiences based on time and skill.
-	 * 
-	 * @param time
-	 */
-	private double createExperienceFromSkill(double time) {
-		double mod = 1;
-		// Determine amount of effective work time based on "Botany" skill
-		int greenhouseSkill = getEffectiveSkillLevel();
-		if (greenhouseSkill <= 0) {
-			mod *= RandomUtil.getRandomDouble(.5, 1.0);
-		} else {
-			mod *= RandomUtil.getRandomDouble(.5, 1.0) * greenhouseSkill * 1.2;
-		}
-
-		double workTime = time * mod;
-		
-		addExperience(workTime);
-		
-		return workTime;
-	}
-	
-	/**
-	 * Performs the inspecting phase.
-	 *
-	 * @param time the amount of time (millisols) to perform the phase.
-	 * @return the amount of time (millisols) left over after performing the phase.
-	 */
-	private double inspectingPhase(double time) {
-	
-		if (goal == null) {
-			goal = greenhouse.getUninspected();
-		}
-
-		if (goal != null) {
-			double workTime = createExperienceFromSkill(time);
-			
-			if (getDuration() <= (getTimeCompleted() + time)) {
-				greenhouse.markInspected(goal, workTime);
-				printDescription(DONE_INSPECTION + " " + goal.toLowerCase() + " (" + Math.round(time * 100.0)/100.0 + " msol)");
-				endTask();
-			}
-			else {
-				printDescription(INSPECT_DETAIL + " " + goal.toLowerCase() + " for " + Math.round(time * 100.0)/100.0 + " msol");
-			}
-		}
-		else
-			endTask();
-
-		return 0;
-	}
-
-	/**
-	 * Performs the cleaning phase.
-	 *
-	 * @param time the amount of time (millisols) to perform the phase.
-	 * @return the amount of time (millisols) left over after performing the phase.
-	 */
-	private double cleaningPhase(double time) {
-	
-		if (goal == null) {
-			goal = greenhouse.getUncleaned();
-		}
-		
-		if (goal != null) {
-			
-			double workTime = createExperienceFromSkill(time);
-			
-			if (getDuration() <= (getTimeCompleted() + time)) {
-				greenhouse.markCleaned(goal, workTime);				
-				printDescription(DONE_CLEANING + " " + goal.toLowerCase() + " (" + Math.round(time * 100.0)/100.0 + " msol)");
-				endTask();
-			}
-			else {
-				printDescription(CLEAN_DETAIL + " " + goal.toLowerCase() + " for " + Math.round(time * 100.0)/100.0 + " msol");
-			}
-		}
-		else
-			endTask();
-			
-		return 0;
-	}
-
-	/**
 	 * Performs the sampling phase in the botany lab
 	 *
 	 * @param time the amount of time (millisols) to perform the phase.
@@ -540,7 +370,7 @@ public class TendGreenhouse extends Task {
 	 */
 	private double samplingPhase(double time) {
 
-		printDescription(SAMPLE);
+		updateDescription(SAMPLE);
 				
 		CropSpec type = null;
 
@@ -577,14 +407,10 @@ public class TendGreenhouse extends Task {
 	
 					double workTime = time * mod;
 					
-					printDescription(SAMPLE_DETAIL + " " + Farming.TISSUE + " for " + Math.round(time * 100.0)/100.0 + " msol");
+					updateDescription(SAMPLE_DETAIL + " " + Farming.TISSUE + " for " + Math.round(time * 100.0)/100.0 + " msol");
 			
 					addExperience(workTime);
 				}
-			}
-			
-			if (getDuration() <= (getTimeCompleted() + time)) {
-				endTask();
 			}
 		}
 

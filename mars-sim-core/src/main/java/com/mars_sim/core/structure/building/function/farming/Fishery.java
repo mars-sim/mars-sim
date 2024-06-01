@@ -113,10 +113,6 @@ public class Fishery extends Function {
 	private double tendertime;
 	/** How old is the weed since the last tendering. */
 	private double weedAge = 0;
-	/** The area of tank [in m^2]. */
-	private double tankArea;
-	/** The depth of tank [in m]. */
-	private double tankDepth;
 	/** The amount of water [in m]. */
 	private double waterMass;
 	
@@ -148,10 +144,6 @@ public class Fishery extends Function {
 		// Calculate the tank size via config
 		tankSize = spec.getCapacity();
 		
-		// Retrieve water to create pond
-		// Note that 1 L of water is 1 kg
-//		building.getSettlement().retrieveAmountResource(ResourceUtil.waterID, tankSize);
-		
 		// Calculate fish & weeds by tank size
 		maxFish = (int)((tankSize * FISHSIZE_LITRE)/FISH_LENGTH);
 		
@@ -160,7 +152,7 @@ public class Fishery extends Function {
 		// For now, fishToWaterMassRatio is 0.0146
 		fishToWaterMassRatio = 1.0 * idealFish / tankSize; 
 
-	    int numFish = (int)RandomUtil.getRandomDouble(idealFish * 0.05, idealFish * 0.15);
+	    int numFish = (int)RandomUtil.getRandomDouble(idealFish * 0.5, idealFish * 0.75);
 
 	    int numWeeds = numFish * 10;
 	    
@@ -187,7 +179,7 @@ public class Fishery extends Function {
 	    }
 	    
 	    // The amount of water in kg
-	 	waterMass = tankSize * fish.size() / maxFish;
+	 	waterMass = tankSize * ((double)fish.size() / maxFish);
 	    
 	    logger.log(building, Level.CONFIG, 0, "# of fish: " + numFish + "  # of weeds: " + numWeeds + ".");
 	}
@@ -306,34 +298,28 @@ public class Fishery extends Function {
 		   birthIterationCache += BIRTH_RATE * time * fish.size() * health
 				   * (1 + .01 * RandomUtil.getRandomInt(-15, 15));
 		   if (birthIterationCache > 1) {
-			   int newFish = (int)birthIterationCache;
-			   birthIterationCache = birthIterationCache - newFish;
-			   for (i = 0; i < newFish; i++) {
-//			       fish.add(new Herbivore(FISH_WEIGHT, 0, FISH_WEIGHT * FRACTION));	
-				   // Assume the beginning weight of a baby fish is 1/30 of an adult fish
-				   double weight = RandomUtil.getRandomDouble(FISH_WEIGHT / 30 *.75, FISH_WEIGHT / 30 * 1.25);
-				   double eatingRate = RandomUtil.getRandomDouble(weight * FRACTION *.75, weight * FRACTION * 1.25);
-				   fish.add(new Herbivore(weight,  
-			    		   RandomUtil.getRandomDouble(FISH_RATE *.75, FISH_RATE * 1.25), 
-			    		   eatingRate));
-			       
-			       logger.info("A fish was given birth in " + building + ".");
-			       
-			       // Record the new fish
-				   addResourceLog(1, ResourceUtil.fishMeatID);
-				   
-				   // Compute the amount of fresh water to be added for the new fish
-				   double freshWater = FISH_WEIGHT/20 / fishToWaterMassRatio;
-				   // Consume fresh water
-				   retrieveWater(freshWater, ResourceUtil.waterID);
-				   // Add fresh water to the existing tank water
-				   waterMass += freshWater;
-			   }
+				int newFish = (int)birthIterationCache;
+				birthIterationCache = birthIterationCache - newFish;
+				addFish(newFish);
 		   }
 	   }	   
 	}
-	
-	
+
+    public void addFish(int numFish) {
+		for (int i = 0; i < numFish; i++) {
+			// Assume the beginning weight of a baby fish is 1/30 of an adult fish
+			double weight = RandomUtil.getRandomDouble(FISH_WEIGHT / 30 *.75, FISH_WEIGHT / 30 * 1.25);
+			double eatingRate = RandomUtil.getRandomDouble(weight * FRACTION *.75, weight * FRACTION * 1.25);
+			fish.add(new Herbivore(weight,  
+					RandomUtil.getRandomDouble(FISH_RATE *.75, FISH_RATE * 1.25), 
+					eatingRate));
+		}
+
+		logger.info(building, "New fish added:" + numFish);
+			
+		// Record the new fish
+		addResourceLog(numFish, ResourceUtil.fishMeatID);
+    }
 	
 	/**
 	* Calculates the total mass of a collection of Organism.
@@ -386,35 +372,9 @@ public class Fishery extends Function {
 		return fish.size() * .075;
 	}
 
-	public String getUninspected() {
-		return houseKeeping.getLeastInspected();
-	}
-
-	public String getUncleaned() {
-		return houseKeeping.getLeastCleaned();
-	}
-
-	public double getInspectionScore() {
-		return houseKeeping.getAverageInspectionScore();
-	}
-	
-	public double getCleaningScore() {
-		return houseKeeping.getAverageCleaningScore();
-	}
-	
-	public void markInspected(String s, double value) {
-		// Record the work time
-		addCumulativeWorkTime(value);
-		
-		houseKeeping.inspected(s, value);
-	}
-
-	public void markCleaned(String s, double value) {
-		// Record the work time
-		addCumulativeWorkTime(value);
-		
-		houseKeeping.cleaned(s, value);
-	}
+    public HouseKeeping getHousekeeping() {
+        return houseKeeping;
+    }
 
 	public int getNumFish() {
 		return fish.size();
@@ -469,7 +429,7 @@ public class Fishery extends Function {
 
 		if (tendertime < 0) {
 			surplus = Math.abs(tendertime);
-			tendertime = weeds.size() / fish.size() * TIME_PER_WEED;
+			tendertime = ((double)weeds.size() / fish.size()) * TIME_PER_WEED;
 			logger.log(building, Level.INFO, 10_000L, 
 					"Weeds fully tended for " 
 						+ Math.round(tendertime * 100.0)/100.0 + " millisols.");
@@ -507,10 +467,6 @@ public class Fishery extends Function {
 		return 0;
 	}
 
-//	private double getGasThreshold() {
-//		return (waterMass + fish.size() * FISH_WEIGHT + getWeedMass()) / 100; 
-//	}
-
 	public double getWaterMass() {
 		return waterMass;
 	}
@@ -530,7 +486,7 @@ public class Fishery extends Function {
 	 * @return
 	 */
 	public double getCumulativeWorkTime() {
-		return cumulativeWorkTime;
+		return cumulativeWorkTime + houseKeeping.getCumulativeWorkTime();
 	}
 	
 	/**
@@ -582,8 +538,10 @@ public class Fishery extends Function {
 	/**
 	 * Prepares object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
 		resourceLog = null;
 		houseKeeping = null;
+		super.destroy();
 	}
 }
