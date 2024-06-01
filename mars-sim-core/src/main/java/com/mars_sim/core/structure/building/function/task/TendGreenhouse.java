@@ -106,8 +106,8 @@ public class TendGreenhouse extends TendHousekeeping {
 	@Override
 	protected double performMappedPhase(double time) {
 		time = super.performMappedPhase(time);
-		if (time == 0) {
-			return 0D;
+		if (isDone()) {
+			return time;
 		} else if (TENDING.equals(getPhase())) {
 			return tendingPhase(time);
 		} else if (SAMPLING.equals(getPhase())) {

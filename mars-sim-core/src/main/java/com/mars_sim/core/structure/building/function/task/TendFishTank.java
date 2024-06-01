@@ -114,10 +114,9 @@ public class TendFishTank extends TendHousekeeping {
 	@Override
 	protected double performMappedPhase(double time) {
 		time = super.performMappedPhase(time);
-		if (time == 0) {
-			return 0;
-		}
-		if (TENDING.equals(getPhase())) {
+		if (isDone()) {
+			return time;
+		} else if (TENDING.equals(getPhase())) {
 			return tendingPhase(time);
 		} else if (CATCHING.equals(getPhase())) {
 			return catchingPhase(time);

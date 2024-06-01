@@ -21,7 +21,7 @@ public class MaintainBuildingEVATest extends AbstractMarsSimUnitTest {
         clock.setMarsTime(clock.getMarsTime().addTime(500D));
 
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
-        p.getSkillManager().addNewSkill(SkillType.AREOLOGY, 10); // Skilled
+        p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
         var eva = EVAOperationTest.prepareForEva(this, p);
         
         // DigLocal uses the Settlement airlock tracking logic.... it shouldn't
@@ -42,7 +42,7 @@ public class MaintainBuildingEVATest extends AbstractMarsSimUnitTest {
 
         // Do maintenance
         executeTaskUntilPhase(p, task, 1);
-        assertGreaterThan("Maintenance completed", 0D, manager.getInspectionWorkTimeCompleted());
+        assertGreaterThan("Maintenance started", 0D, manager.getInspectionWorkTimeCompleted());
 
         // Complete mainteance
         executeTaskUntilPhase(p, task, 1000);
