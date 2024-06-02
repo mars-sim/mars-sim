@@ -15,6 +15,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.vehicle.Crewable;
@@ -39,7 +40,8 @@ public class UnloadVehicleEVA extends EVAOperation {
 	private static final String NAME = Msg.getString("Task.description.unloadVehicleEVA"); //$NON-NLS-1$
 	
 	/** Task phases. */
-	private static final TaskPhase UNLOADING = new TaskPhase(Msg.getString("Task.phase.unloading")); //$NON-NLS-1$
+	private static final TaskPhase UNLOADING = new TaskPhase(Msg.getString("Task.phase.unloading"),
+					createPhaseImpact(PhysicalEffort.HIGH)); //$NON-NLS-1$
 
 	/**
 	 * The amount of resources (kg) one person of average strength can unload per
@@ -140,8 +142,6 @@ public class UnloadVehicleEVA extends EVAOperation {
 		// Unload resources.
 		if (amountUnloading > 0) {
 			UnloadHelper.unloadInventory(vehicle, settlement, amountUnloading);
-			if (worker instanceof Person)
-				((Person)worker).getPhysicalCondition().stressMuscle(time/2);
 		}
 
 		// Unload towed vehicles.

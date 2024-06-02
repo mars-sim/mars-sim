@@ -19,6 +19,7 @@ import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -51,7 +52,7 @@ public class LoadVehicleGarage extends Task {
 	private static final TaskPhase LOADING = new TaskPhase(Msg.getString("Task.phase.loading")); //$NON-NLS-1$
 
 	private static final ExperienceImpact IMPACT = new ExperienceImpact(0.1D, NaturalAttributeType.EXPERIENCE_APTITUDE,
-							 true, 0.1D, SkillType.MECHANICS);
+							 PhysicalEffort.HIGH, 0.1D, SkillType.MECHANICS);
 
 	// Data members
 	/** The vehicle that needs to be loaded. */
