@@ -2658,12 +2658,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<storage capacity="20000">
-				<resource-storage resource="oxygen" capacity="6000.0" />
-				<resource-storage resource="hydrogen" capacity="6000.0" />
-				<resource-storage resource="nitrogen" capacity="3000.0" />
-				<resource-storage resource="argon" capacity="3000.0" />
-				<resource-storage resource="carbon dioxide" capacity="1000.0" />
-				<resource-storage resource="carbon monoxide" capacity="1000.0" />
+				<resource-storage resource="Oxygen" capacity="6000.0" />
+				<resource-storage resource="Hydrogen" capacity="6000.0" />
+				<resource-storage resource="Nitrogen" capacity="3000.0" />			
+				<resource-storage resource="Argon" capacity="3000.0" />
+				<resource-storage resource="Carbon Dioxide" capacity="1000.0" />
+				<resource-storage resource="Carbon Monoxide" capacity="1000.0" />
 			</storage>
 		</functions>
 	</building>

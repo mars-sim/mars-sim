@@ -321,14 +321,13 @@ public class ManufactureConstructionMaterials extends Task {
 				.getManufactureProcessesForTechSkillLevel(techLevel, skillLevel).iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
-			if (ManufactureUtil.canProcessBeStarted(process, manufacturingFunction)
-					|| isProcessRunning(process, manufacturingFunction)) {
-				if (producesConstructionMaterials(process)) {
-					Settlement settlement = manufacturingBuilding.getSettlement();
-					double processValue = ManufactureUtil.getManufactureProcessValue(process, settlement);
-					if (processValue > highestProcessValue) {
-						highestProcessValue = processValue;
-					}
+			if ((ManufactureUtil.canProcessBeStarted(process, manufacturingFunction)
+				|| isProcessRunning(process, manufacturingFunction)) 
+				&& producesConstructionMaterials(process)) {
+				Settlement settlement = manufacturingBuilding.getSettlement();
+				double processValue = ManufactureUtil.getManufactureProcessValue(process, settlement);
+				if (processValue > highestProcessValue) {
+					highestProcessValue = processValue;
 				}
 			}
 		}
@@ -435,9 +434,11 @@ public class ManufactureConstructionMaterials extends Task {
 				}
 			}
 
-			if (process == null)
+			if (process == null) {
 				// Prints description
 				setDescription(Msg.getString("Task.description.manufactureConstructionMaterials.checking")); //$NON-NLS-1$
+			
+			}
 		}
 
 		// Add experience

@@ -237,6 +237,10 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				boolean cfr = name.contains(ResourceProcessing.CFR);
 				boolean ogs = name.contains(ResourceProcessing.OGS);
 
+				// Notes : 
+				// The higher the score, the harder the process executes
+				// The lower the score, the easier the process execute
+
 				if (reg) {
 					score *= 0.5 * goodsManager.getDemandValueWithID(ResourceUtil.regolithID) * (1 + regStored);
 				}
@@ -246,7 +250,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				}
 
 				else if (ppa) {
-					score *= .25 * hydrogenVP / methaneVP;
+					score *= .95 * hydrogenVP / methaneVP;
 				}
 
 				else if (cfr) {
@@ -254,7 +258,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				}
 
 				else if (sab) {
-					score *= 1.5 * waterVP * methaneVP / hydrogenVP;
+					score *= 0.5 * waterVP * methaneVP / hydrogenVP;
 				}
 
 				else if (sel) {
