@@ -45,7 +45,6 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.connection.BuildingConnector;
 import com.mars_sim.core.structure.building.connection.BuildingConnectorManager;
-import com.mars_sim.core.structure.building.connection.InsideBuildingPath;
 import com.mars_sim.core.structure.building.function.Administration;
 import com.mars_sim.core.structure.building.function.AstronomicalObservation;
 import com.mars_sim.core.structure.building.function.BuildingConnection;

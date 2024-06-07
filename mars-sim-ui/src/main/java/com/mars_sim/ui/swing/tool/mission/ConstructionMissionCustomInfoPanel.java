@@ -235,14 +235,14 @@ implements ConstructionListener {
         processPanel.setToolTipText(getToolTipString());
     }
 
-    /**
-     * Gets the main desktop.
-     * 
-     * @return desktop.
-     */
-    private MainDesktopPane getDesktop() {
-        return desktop;
-    }
+//    /**
+//     * Gets the main desktop.
+//     * 
+//     * @return desktop.
+//     */
+//    private MainDesktopPane getDesktop() {
+//        return desktop;
+//    }
 
     /**
      * Gets a tool tip string for the panel.

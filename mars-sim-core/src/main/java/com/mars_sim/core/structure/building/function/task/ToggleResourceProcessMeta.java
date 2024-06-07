@@ -35,13 +35,26 @@ import com.mars_sim.tools.util.RandomUtil;
  * Meta task for the ToggleResourceProcess task.
  */
 public class ToggleResourceProcessMeta extends MetaTask implements SettlementMetaTask {
+	
+	private double hydrogenVP = 0;
+	private double methaneVP = 0;
+	private double methanolVP = 0;
+	private double waterVP = 0;
+	private double oxygenVP = 0;
+	private double regolithDemand = 0;
+	private double iceDemand = 0;
+	private double ethyleneDemand = 0;
+	private double prophyleneDemand = 0;
+	private double regStored = 0;
+	private double iceStored = 0;
+	
 	/**
 	 * Represents a job to toggle a Resource process in a building.
 	 */
     private static class ToggleProcessJob extends SettlementTask {
 		
 		private static final long serialVersionUID = 1L;
-
+		
 		private ResourceProcess process;
 
         public ToggleProcessJob(SettlementMetaTask mt, Building processBuilding, ResourceProcess process,
@@ -126,6 +139,22 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		int rand = RandomUtil.getRandomInt(3);
 		
 		if (rand <= 2 && !settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS)) {
+			
+			GoodsManager goodsManager = settlement.getGoodsManager();
+			
+			// Recompute VPs
+			hydrogenVP = goodsManager.getGoodValuePoint(ResourceUtil.hydrogenID);
+			methaneVP = goodsManager.getGoodValuePoint(ResourceUtil.methaneID);
+			methanolVP = goodsManager.getGoodValuePoint(ResourceUtil.methanolID);
+			waterVP = goodsManager.getGoodValuePoint(ResourceUtil.waterID);
+			oxygenVP = goodsManager.getGoodValuePoint(ResourceUtil.oxygenID);
+			regolithDemand = goodsManager.getDemandValueWithID(ResourceUtil.regolithID);
+			iceDemand = goodsManager.getDemandValueWithID(ResourceUtil.iceID);
+			ethyleneDemand = goodsManager.getDemandValueWithID(ResourceUtil.ethyleneID); 
+			prophyleneDemand =  goodsManager.getDemandValueWithID(ResourceUtil.prophyleneID);		
+			regStored = settlement.getAmountResourceStored(ResourceUtil.regolithID);
+			iceStored = settlement.getAmountResourceStored(ResourceUtil.iceID);
+			
 			// Get the most suitable process per Building; not each process as too many will be created
 			for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.RESOURCE_PROCESSING)) {
 				// In this building, select the best resource to compete
@@ -163,15 +192,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		double lowest = 0;
 
 		Settlement settlement = building.getSettlement();
-		GoodsManager goodsManager = settlement.getGoodsManager();
-		double regStored = settlement.getAmountResourceStored(ResourceUtil.regolithID);
-		double iceStored = settlement.getAmountResourceStored(ResourceUtil.iceID);
 
-		double hydrogenVP = goodsManager.getGoodValuePoint(ResourceUtil.hydrogenID);
-		double methaneVP = goodsManager.getGoodValuePoint(ResourceUtil.methaneID);
-		double methanolVP = goodsManager.getGoodValuePoint(ResourceUtil.methanolID);
-		double waterVP = goodsManager.getGoodValuePoint(ResourceUtil.waterID);
-		double oxygenVP = goodsManager.getGoodValuePoint(ResourceUtil.oxygenID);
 
 		for (ResourceProcess process : processes) {
 			if (process.isToggleAvailable() && !process.isFlagged()) {
@@ -180,6 +201,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// Check if settlement is missing one or more of the output resources.
 				// Will multiply by 10 internally within computeResourcesValue() in
 				// ToggleResourceProcess
+				
 				if (process.isEmptyOutputs(settlement)) {
 					// will push for toggling on this process to produce more output resources
 					if (process.isProcessRunning()) {
@@ -211,12 +233,12 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				}
 
 				else if (score < 0 && process.isProcessRunning()) {
-					// need to shut it down
+					// want to shut it down
 					score *= URGENT_FACTOR;
 				}
 
 				else if (score > 0 && !process.isProcessRunning()) {
-					// need to turn it on
+					// want to turn it on
 					score *= DOUBLE_URGENT_FACTOR;
 				}
 
@@ -224,55 +246,13 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					// let it continue not running. No need to turn it on.
 					continue;
 				}
-
-				// This is bad and the logic is very fragile being based on the Process Name !!
+				
+				// FUTURE: will need to use less fragile method 
+				// (other than using process name string)
+				
 				String name = process.getProcessName().toLowerCase();
 
-				boolean sel = name.contains(ResourceProcessing.SELECTIVE);
-				boolean olefin = name.contains(ResourceProcessing.OLEFIN);
-				boolean sab = name.contains(ResourceProcessing.SABATIER);
-				boolean reg = name.contains(ResourceProcessing.REGOLITH);
-				boolean ice = name.equalsIgnoreCase(ResourceProcessing.ICE);
-				boolean ppa = name.contains(ResourceProcessing.PPA);
-				boolean cfr = name.contains(ResourceProcessing.CFR);
-				boolean ogs = name.contains(ResourceProcessing.OGS);
-
-				// Notes : 
-				// The higher the score, the harder the process executes
-				// The lower the score, the easier the process execute
-
-				if (reg) {
-					score *= 0.5 * goodsManager.getDemandValueWithID(ResourceUtil.regolithID) * (1 + regStored);
-				}
-
-				else if (ice) {
-					score *= goodsManager.getDemandValueWithID(ResourceUtil.iceID) * (1 + iceStored);
-				}
-
-				else if (ppa) {
-					score *= .95 * hydrogenVP / methaneVP;
-				}
-
-				else if (cfr) {
-					score *= .75 * waterVP / hydrogenVP;
-				}
-
-				else if (sab) {
-					score *= 0.5 * waterVP * methaneVP / hydrogenVP;
-				}
-
-				else if (sel) {
-					score *= .05 * methanolVP / methaneVP / oxygenVP;
-				}
-				
-				else if (olefin) {
-					score *= goodsManager.getDemandValueWithID(ResourceUtil.ethyleneID) 
-							* goodsManager.getDemandValueWithID(ResourceUtil.prophyleneID) / methanolVP;
-				}
-				
-				else if (ogs) {
-					score *= hydrogenVP * oxygenVP / waterVP;
-				}
+				score = computeScore(name);
 
 				if (score >= highest) {
 					highest = score;
@@ -303,6 +283,57 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		return null;
 	}
 
+	private double computeScore(String name) {
+		double score = 0;
+
+		boolean oxi = name.contains(ResourceProcessing.OXIDATION);
+		boolean olefin = name.contains(ResourceProcessing.OLEFIN);
+		boolean sab = name.contains(ResourceProcessing.SABATIER);
+		boolean reg = name.contains(ResourceProcessing.REGOLITH);
+		boolean ice = name.equalsIgnoreCase(ResourceProcessing.ICE);
+		boolean ppa = name.contains(ResourceProcessing.PPA);
+		boolean cfr = name.contains(ResourceProcessing.CFR);
+		boolean ogs = name.contains(ResourceProcessing.OGS);
+
+		// Notes : 
+		// The higher the score, the harder the process executes
+		// The lower the score, the easier the process execute
+
+		if (reg) {
+			score *= 0.5 * regolithDemand * (1 + regStored);
+		}
+
+		else if (ice) {
+			score *= iceDemand * (1 + iceStored);
+		}
+
+		else if (ppa) {
+			score *= .95 * hydrogenVP / methaneVP;
+		}
+
+		else if (cfr) {
+			score *= .75 * waterVP / hydrogenVP;
+		}
+
+		else if (sab) {
+			score *= 0.5 * waterVP * methaneVP / hydrogenVP;
+		}
+
+		else if (oxi) {
+			score *= 0.75 * methanolVP / methaneVP / oxygenVP;
+		}
+		
+		else if (olefin) {
+			score *= 0.5 * ethyleneDemand * prophyleneDemand / methanolVP;
+		}
+		
+		else if (ogs) {
+			score *= hydrogenVP * oxygenVP / waterVP;
+		}
+		
+		return score;
+	}
+	
 	/**
 	 * Selects a waste process (from a building) based on its input resource score.
 	 *

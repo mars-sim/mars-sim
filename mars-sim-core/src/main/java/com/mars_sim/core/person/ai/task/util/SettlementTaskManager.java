@@ -107,7 +107,7 @@ public class SettlementTaskManager implements Serializable {
     private List<SettlementTask> getTasks() {
         if (refreshTasks || (tasks == null)) {
             tasks = new ArrayList<>();
-            for(SettlementMetaTask mt : getMetaTasks()) {
+            for (SettlementMetaTask mt : getMetaTasks()) {
                 tasks.addAll(mt.getSettlementTasks(owner));
             }
             refreshTasks = false;

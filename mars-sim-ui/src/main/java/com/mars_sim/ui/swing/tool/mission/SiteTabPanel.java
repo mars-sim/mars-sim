@@ -322,14 +322,14 @@ public class SiteTabPanel extends JPanel implements MissionListener, UnitListene
 		desktop = null;
 	}
 	
-	/**
-	 * Gets the main desktop.
-	 *
-	 * @return desktop.
-	 */
-	private MainDesktopPane getDesktop() {
-		return desktop;
-	}
+//	/**
+//	 * Gets the main desktop.
+//	 *
+//	 * @return desktop.
+//	 */
+//	private MainDesktopPane getDesktop() {
+//		return desktop;
+//	}
 
 	private class MissionEventUpdater implements Runnable {
 

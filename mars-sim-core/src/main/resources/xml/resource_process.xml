@@ -922,13 +922,26 @@
 	</process>
 	
 	<process name="Methanol-to-olefin (MTO) process" power-required=".5" >
-		<description> 99.8 % conversion of methanol (CH3OH) 
-			MTO base case mass distribution : produce 39% prophylene, 41% ethylene,
+		<description> The chemical formula of Methanol-to-olefin (MTO) process is 
+			not a single chemical formula.
+			
+			Overall reaction can be represented as:
+			
+			1. Ethylene production
+			CH3OH  → C2H4 + 4H2O 
+			(need to balance it)
+			2. Propylene production
+			CH3OH → 2C3H6 + 6H2O 
+			(need to balance it)
+						
+			One MTO base case mass distribution produces 39% prophylene, 41% ethylene,
 			14% ethane, 5% tailgas  
 			
 		</description>	
 		<input resource="methanol" rate="10"  />
 		
+		<output resource="ethane" rate="1.4"  />
+		<output resource="water" rate="0.5"  />
 		<output resource="ethylene" rate="4.1"  />
 		<output resource="prophylene" rate="3.9"  />
 	</process>
