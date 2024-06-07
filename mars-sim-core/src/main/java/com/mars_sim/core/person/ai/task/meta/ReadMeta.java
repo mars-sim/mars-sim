@@ -38,7 +38,7 @@ public class ReadMeta extends FactoryMetaTask {
     
     @Override
     public Task constructInstance(Person person) {
-        return new Read(person);
+        return Read.createTask(person);
     }
 
     @Override

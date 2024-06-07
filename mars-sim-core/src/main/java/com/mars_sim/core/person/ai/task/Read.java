@@ -6,14 +6,14 @@
  */
 package com.mars_sim.core.person.ai.task;
 
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.task.meta.ReadMeta;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
@@ -29,106 +29,100 @@ public class Read extends Task {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
-    /** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(Read.class.getName());
-
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.read"); //$NON-NLS-1$
 
 	/** Task phases. */
 	private static final TaskPhase READING = new TaskPhase(Msg.getString("Task.phase.reading")); //$NON-NLS-1$
 
-	// Static members
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -.1D;
-	
-	/** The selected skill type for this reading session. */
+	private static final FunctionType[] LOCATIONS_WIDE = {FunctionType.DINING, FunctionType.RECREATION};
+	private static final FunctionType[] LOCATIONS_SMALL = {FunctionType.RECREATION};
+	private static final FunctionType[] LOCATIONS_EMPTY = {};
+
 	private SkillType selectedSkill;
 	
+	/**
+	 * Factory method to create a Read task for a Person. This will select a Skill to read about.
+	 * @param p
+	 * @return
+	 */
+	public static Read createTask(Person p) {
+		var selected = p.getSkillManager().getARandomSkillType();
+		return new Read(p, selected);
+	}
+
 	/**
 	 * Constructor. This is an effort-driven task.
 	 *
 	 * @param person the person performing the task.
 	 */
-	public Read(Person person) {
+	private Read(Person person, SkillType reading) {
 		// Use Task constructor. Skill is set later
-		super(NAME, person, true, false, STRESS_MODIFIER, RandomUtil.getRandomInt(5, 20));
-
-		if (person.isInside()) {
-
-			int score = person.getPreference().getPreferenceScore(new ReadMeta());
-			// Modify the duration based on the preference score
-			setDuration(Math.max(5, score + getDuration()));
-			// Factor in a person's preference for the new stress modifier
-			setStressModifier(-score / 20D + STRESS_MODIFIER);
-
-			if (person.isInSettlement()) {
-
-				int rand = RandomUtil.getRandomInt(2);
-
-				if (rand == 0) {
-					// Find a dining place
-					Building dining = BuildingManager.getAvailableDiningBuilding(person, false);
-					if (dining != null) {
-						walkToActivitySpotInBuilding(dining, FunctionType.DINING, true);
-					}
-					else {
-						Building rec = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
-						if (rec != null) {
-							// Walk to recreation building.
-						    walkToTaskSpecificActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
-						}
-						else {
-		    				// Go back to his bed
-							goToQuarters();
-						}
-					}
-				}
-
-				else if (rand == 1) {
-					Building rec = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
-					if (rec != null) {
-						walkToActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
-					}
-					else {
-	    				// Go back to his bed
-						goToQuarters();
-					}
-				}
-
-				else {
-    				// Go back to his bed
-					goToQuarters();
-				}
-			}
-
-			else if (person.isInVehicle()) {
-				// If person is in rover, walk to passenger activity spot.
-				if (person.getVehicle() instanceof Rover rover) {
-					walkToPassengerActivitySpotInRover(rover, true);
-				} else {
-					// Walk to random location.
-					walkToRandomLocation(true);
-				}
-			}
-
-			// Initialize phase
-			addPhase(READING);
-			setPhase(READING);
-			
-		} else {
-			endTask();
-		}
-	}
-
-	private void goToQuarters() {
-		// Go back to his bed
-		if (person.hasBed()) {
-			// Walk to the bed
-			walkToBed(person, true);
-		}
-	}
+		super(NAME, person, false, createImpact(reading), RandomUtil.getRandomInt(10, 40));
+		this.selectedSkill = reading;
 		
+		setDescription(Msg.getString("Task.description.read.detail", reading.getName()));
+
+		if (!person.isInside()) {
+			endTask();
+			return;
+		}
+
+		if (person.isInSettlement()) {
+			boolean walkDone = false;
+			int rand = RandomUtil.getRandomInt(2);
+			FunctionType [] locations = switch(rand) {
+				case 0 -> LOCATIONS_WIDE;
+				case 1 -> LOCATIONS_SMALL;
+				default -> LOCATIONS_EMPTY;
+			};
+
+			// Choose a building in order
+			for(var ft : locations) {
+				Building b = BuildingManager.getAvailableFunctionTypeBuilding(person, ft);
+				if (b != null) {
+					walkDone = walkToActivitySpotInBuilding(b, ft, true);
+					if (walkDone) {
+						break;
+					}
+				}
+			}
+
+			if (!walkDone) {
+				// Go back to his bed
+				walkToBed(person, true);
+			}
+		}
+
+		else if (person.isInVehicle()) {
+			// If person is in rover, walk to passenger activity spot.
+			if (person.getVehicle() instanceof Rover rover) {
+				walkToPassengerActivitySpotInRover(rover, true);
+			} else {
+				// Walk to random location.
+				walkToRandomLocation(true);
+			}
+		}
+
+		// Initialize phase
+		setPhase(READING);
+	}
+	
+	/**
+	 * Create a custom impact for leaning a certain skill. This has a fixed effective skill
+	 * because the skill level of the target skill cannot influence the ability to learn.
+	 */
+	private static ExperienceImpact createImpact(SkillType reading) {
+		return new ExperienceImpact(0.5D,
+						NaturalAttributeType.ACADEMIC_APTITUDE, PhysicalEffort.NONE,
+						-0.1D, reading) {
+							@Override
+							public int getEffectiveSkillLevel(Worker w) {
+								return 2;
+							}
+						};
+	}
+
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
@@ -147,42 +141,18 @@ public class Read extends Task {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double reading(double time) {
-		double remainingTime = 0;
-		
-		if ((getTimeCompleted() + time > getDuration()) || isDone()) {
-	        String s = Msg.getString("Task.description.read.detail", selectedSkill.getName()); //$NON-NLS-1$
-	        setDescription(s);
-	        logger.fine(person, 4_000, "Done " + s.toLowerCase() + ".");
-			endTask();
-			return time;
-		}
-
-    	// Pick one skill randomly to improve upon
-        if (selectedSkill == null) {
-        	selectedSkill = person.getSkillManager().getARandomSkillType();
-        
-        	// Future: get this person's most favorite topics
-	        String s = Msg.getString("Task.description.read.detail", selectedSkill.getName()); //$NON-NLS-1$
-	    	// Display reading on a particular subject (skill type)
-			setDescription(s);	
-	        logger.fine(person, 4_000, "Started " + s.toLowerCase() + ".");
-        }
 
 		// Reading serves to improve skill
 		addExperience(time);
 		
-		return remainingTime;
+		return 0D;
 	}
-	
-	@Override
-	protected void addExperience(double time) {
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int aptitude = nManager.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
-		double learned = 2 * time * (aptitude / 100D) * RandomUtil.getRandomDouble(1);
-
-		person.getSkillManager().addExperience(selectedSkill, learned, time);
-
+	/**
+	 * Waht skill is being read
+	 * @return Selected skill
+	 */
+	public SkillType getReading() {
+		return selectedSkill;
 	}
 }
