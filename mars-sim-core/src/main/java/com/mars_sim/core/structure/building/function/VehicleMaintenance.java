@@ -348,6 +348,9 @@ public abstract class VehicleMaintenance extends Function {
 	 */
 	public void handleParking(Vehicle vehicle) {
 		
+		// FUTURE: should be done in a task to relocate the vehicle by either a person
+		// or by AI that costs a minute amount of CUs.
+		
 		if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
 			FlyerLocation loc = getFlyerParkedLocation((Flyer)vehicle);
 			if (loc != null) {
@@ -423,11 +426,11 @@ public abstract class VehicleMaintenance extends Function {
 					if (vehicle instanceof Crewable crewableVehicle) {
 						if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
 							i.remove();
-							handleParking(vehicle);
+							// handleParking(vehicle);
 						}
 					} else {
 						i.remove();
-						handleParking(vehicle);
+						// handleParking(vehicle);
 					}
 				}
 			}

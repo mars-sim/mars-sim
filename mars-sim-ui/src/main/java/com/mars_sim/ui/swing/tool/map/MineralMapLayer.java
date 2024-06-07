@@ -127,17 +127,14 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 				
 				for (int y = 0; y < Map.MAP_BOX_HEIGHT; y = y + 2) {
 						
-					// Do NOT delete the following blocks of codes
+					// Do NOT delete the following line of codes
 //					if (mapCenterCache == null || rho != rhoCache || numMineralsCache != numMinerals) {
-//						redo = true;
-//					}
 					
-					java.util.Map<String, Double> mineralConcentrations = null;
-					
-//					if (redo) {
-						mineralConcentrations = mineralMap
-								.getSomeMineralConcentrations(mineralsDisplaySet, 
-										mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho), mag);
+						java.util.Map<String, Double> mineralConcentrations = 
+							mineralMap.getSomeMineralConcentrations(
+										mineralsDisplaySet, 
+										mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho), 
+										mag);
 						hasMinerals = true;
 //					}
 					
