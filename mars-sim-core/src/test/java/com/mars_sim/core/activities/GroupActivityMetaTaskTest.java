@@ -71,19 +71,19 @@ public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
         var s = buildSettlement();
         buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH, 0);
 
-        // Create a friendship group where friend has a better opniino of the instigator thn the enemy
+        // Create a friendship group where friend has a better opinion of the instigator and the enemy
         var i = buildPerson("instigator", s);
-        var e = buildPerson("enermy", s);
+        var e = buildPerson("enemy", s);
         RelationshipUtil.changeOpinion(e, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, -Relation.MAX_OPINION);
         var f = buildPerson("friend", s);
         RelationshipUtil.changeOpinion(f, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, Relation.MAX_OPINION);
 
-        assertGreaterThan("Friend is more popular than enermy",
+        assertGreaterThan("Friend is more popular than enemy",
                                     e.getRelation().getOpinion(i).getAverage(),
                                     f.getRelation().getOpinion(i).getAverage());
 
 
-        // Create an activity and 
+        // Create an activity  
         var now = sim.getMasterClock().getMarsTime();
         var ga = GroupActivity.createPersonActivity("Promotion", GroupActivityType.ANNOUNCEMENT, s,
                                                 i, 0, now);
@@ -95,13 +95,13 @@ public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
         var tasks = mt.getSettlementTasks(s);
         var selected = tasks.get(0);
 
-        // Evulate the Task for each person
+        // Evaluate the Task for each person
         var iScore = mt.assessPersonSuitability(selected, i);
         var fScore = mt.assessPersonSuitability(selected, f);
         var eScore = mt.assessPersonSuitability(selected, e);
 
         // Check friend has a better score
-        assertGreaterThan("Friend better score than enermy", eScore.getScore(), fScore.getScore());
+        assertGreaterThan("Friend better score than enemy", eScore.getScore(), fScore.getScore());
         
         // Check instigator has a very high score
         assertGreaterThan("Insitigator score", 900D, iScore.getScore());

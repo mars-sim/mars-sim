@@ -1677,7 +1677,6 @@ public abstract class Vehicle extends Unit
 			int rand = RandomUtil.getRandomInt(total);
 
 			if (rand != 0) {
-
 				// Try parking near the eva for short walk
 				if (rand < evas.size()) {
 					Building eva = evas.get(rand);
@@ -1685,20 +1684,28 @@ public abstract class Vehicle extends Unit
 				}
 
 				else {
-					// Try parking near a garage
-					
+					// Try parking near a garage					
 					Building garage = BuildingManager.getAGarage(getSettlement());
+					if (garage != null) {
+						centerLoc = garage.getPosition();
+					}
+				}
+			}
+			else {
+				// Try parking near a garage					
+				Building garage = BuildingManager.getAGarage(getSettlement());
+				if (garage != null) {
 					centerLoc = garage.getPosition();
 				}
 			}
 
 			// Place the vehicle starting from the settlement center (0,0).
 
-			int oX = 15;
-			int oY = 0;
+			int oX = 10;
+			int oY = 10;
 			double newFacing = 0D;
 			LocalPosition newLoc = null;
-			int step = 10;
+			int step = 2;
 			boolean foundGoodLocation = false;
 
 			boolean isSmallVehicle = getVehicleType() == VehicleType.DELIVERY_DRONE
@@ -1708,33 +1715,41 @@ public abstract class Vehicle extends Unit
 			if (isSmallVehicle)
 				d = VEHICLE_CLEARANCE_1;
 			
-			double w = getWidth() * d;
-			double l = getLength() * d;
+			// Note: enlarge (times 1.25) the dimension of a vehicle to avoid getting 
+			// trapped within those enclosed space surrounded by buildings or hallways.
+			
+			double w = getWidth() * d * 1.25;
+			double l = getLength() * d * 1.25;
+			
+			// Note: May need a more permanent solution by figuring out how to detect those enclosed space
+			
+			int count = 0;
 			
 			// Try iteratively outward from 10m to 500m distance range.
-			for (int x = oX; (x < 500) && !foundGoodLocation; x+=step) {
+			for (int x = oX; (x < 2000) && !foundGoodLocation; x+=step) {
 				// Try random locations at each distance range.
-				for (int y = oY; (y < step) && !foundGoodLocation; y++) {
-					double distance = RandomUtil.getRandomDouble(step) + x;
+				for (int y = oY; (y < 2000) && !foundGoodLocation; y++) {
+					double distance = Math.max(y, RandomUtil.getRandomDouble(-x, x) + y);
 					double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
 					
 					newLoc = centerLoc.getPosition(distance, radianDirection);
 					newFacing = RandomUtil.getRandomDouble(360D);
 
 					// Check if new vehicle location collides with anything.
+					
+					// Note: excessive calling increase CPU Util
 					foundGoodLocation = LocalAreaUtil.isObjectCollisionFree(this, w, l,
 									newLoc.getX(), newLoc.getY(), 
 									newFacing, getCoordinates());
 					
-					// Enlarge the collision surface of a vehicle to avoid getting trapped within those enclosed space 
-					// surrounded by buildings or hallways.
-					
-					// This is just a temporary solution to stop the vehicle from acquiring a parking between buildings.
-					// May need a more permanent solution by figuring out how to detect those enclosed space
+					count++;
 				}
 			}
 
-			setParkedLocation(newLoc, newFacing);
+			if (foundGoodLocation) {
+				setParkedLocation(newLoc, newFacing);
+				logger.info(this, "New parking loc found (iteration: " + count + ").");
+			}
 		}
 	}
 	

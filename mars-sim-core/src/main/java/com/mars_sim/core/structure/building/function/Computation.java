@@ -197,7 +197,7 @@ public class Computation extends Function {
 			}
 			double available = peakCU - existing - needed;
 			if (available < 0) {
-				logger.info(getBuilding(), 30_000L, "scheduleTask::available: " + available);
+				logger.info(getBuilding(), 30_000L, "scheduleTask::available: " + Math.round(available * 100.0)/100.0);
 				// Need to make sure each msol has enough resources
 				return false;
 			}
@@ -247,7 +247,7 @@ public class Computation extends Function {
 			available = peakCU - existing - needed;
 		}
 		if (available < 0) {
-			logger.info(getBuilding(), 30_000L, "canScheduleTask::available: " + available);
+			logger.info(getBuilding(), 30_000L, "canScheduleTask::available: " + Math.round(available * 100.0)/100.0);
 			return false;
 		}
 		
@@ -279,7 +279,7 @@ public class Computation extends Function {
 			}
 			double available = peakCU - existing - needed;
 			if (available < 0) {
-				logger.info(getBuilding(), 30_000L, "evaluateScheduleTask::available: " + available);
+				logger.info(getBuilding(), 30_000L, "evaluateScheduleTask::available: " + Math.round(available * 100.0)/100.0);
 				return 0;
 			}
 			

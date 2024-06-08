@@ -367,7 +367,7 @@ public abstract class VehicleMaintenance extends Function {
 		vehicle.setPrimaryStatus(StatusType.PARKED);
 		// Update the vehicle's location state type
 		vehicle.updateLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
-
+		// Find a new parking location
 		vehicle.findNewParkingLoc();
 	}
 	
@@ -426,11 +426,11 @@ public abstract class VehicleMaintenance extends Function {
 					if (vehicle instanceof Crewable crewableVehicle) {
 						if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
 							i.remove();
-							// handleParking(vehicle);
+							 handleParking(vehicle);
 						}
 					} else {
 						i.remove();
-						// handleParking(vehicle);
+						 handleParking(vehicle);
 					}
 				}
 			}
