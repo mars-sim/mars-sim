@@ -248,7 +248,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 		// Add this person as a citizen
 		settlement.addACitizen(this);
 		// Set the container unit
-		setContainerUnit(settlement);
+//		setContainerUnit(settlement);
 		
 		// Add to a random building
 		BuildingManager.landOnRandomBuilding(this, getAssociatedSettlement());

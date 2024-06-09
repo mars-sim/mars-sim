@@ -19,15 +19,18 @@ public class ResourceProcessing extends ResourceProcessor {
 	
 	private static final long serialVersionUID = 1L;
 
-	// These are a very fragile implementation
+	// Note: will need to come up with a less fragile implementation
+	// since it relies on the name of a resource process (in resource_process.xml) 
+	
 	public static final String OLEFIN = "MTO";
 	public static final String OXIDATION = "Selective Partial Oxidation";
 	public static final String SABATIER = "sabatier";
-	public static final String REGOLITH = "regolith"; // Do not use "convert regolith to ores with sand"
 	public static final String ICE = "Melt Ice";
 	public static final String PPA = "PPA";
 	public static final String CFR = "CFR";
 	public static final String OGS = "OGS";
+	// Note: The following will encompass all the regolith-related resource processes 
+	public static final String REGOLITH = "regolith"; 
 	
 	/**
 	 * Constructor.

@@ -249,6 +249,7 @@ public final class SettlementBuilder {
 									location, populationNumber,
 									initialNumOfRobots);
 		settlement.initialize();
+		
 		unitManager.addUnit(settlement);
 
 		return settlement;
@@ -343,12 +344,14 @@ public final class SettlementBuilder {
 
 		RobotJob robotJob = JobUtil.getRobotJob(spec.getRobotType());
 		robot.getBotMind().setRobotJob(robotJob, true);
+		
+        // Call addOwnedRobot prior to addUnit
+		settlement.addOwnedRobot(robot);
 
 		unitManager.addUnit(robot);
 
-		settlement.addOwnedRobot(robot);
 		// Set the container unit
-		robot.setContainerUnit(settlement);
+//		robot.setContainerUnit(settlement);
 	}
 
 	/**
@@ -373,7 +376,7 @@ public final class SettlementBuilder {
 	}
 
 	/**
-	 * Create initial parts for a settlement.
+	 * Creates initial parts for a settlement.
 	 * 
 	 * @param template
 	 * @param settlement
@@ -433,11 +436,13 @@ public final class SettlementBuilder {
 					.setCountry(spec)
 					.build();
 
-			unitManager.addUnit(person);
-
+	        // Call addACitizen prior to addUnit
 			settlement.addACitizen(person);
+
+			unitManager.addUnit(person);
+			
 			// Set the container unit
-			person.setContainerUnit(settlement);
+//			person.setContainerUnit(settlement);
 			// Set up preference
 			person.getPreference().initializePreference();
 			// Assign a job
@@ -547,11 +552,12 @@ public final class SettlementBuilder {
 						.setPersonality(bigFiveMap, mbti)
 						.build();
 
-				unitManager.addUnit(person);
-
+		        // Call addACitizen prior to addUnit
 				settlement.addACitizen(person);
+
+				unitManager.addUnit(person);
 				// Set the container unit
-				person.setContainerUnit(settlement);
+//				person.setContainerUnit(settlement);
 
 				// Set the person as a preconfigured crew member
 				Map<String, Integer> relMap = m.getRelationshipMap();

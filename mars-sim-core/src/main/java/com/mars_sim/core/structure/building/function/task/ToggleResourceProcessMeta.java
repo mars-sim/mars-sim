@@ -303,7 +303,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		if (reg) {
 			double regolithDemand = goodsManager.getDemandValueWithID(ResourceUtil.regolithID);
 			double regStored = settlement.getAmountResourceStored(ResourceUtil.regolithID);
-			score *= 0.5 * regolithDemand * (1 + regStored);
+			score *= 0.25 * regolithDemand * (1 + regStored);
 		}
 
 		else if (ice) {
