@@ -3,8 +3,6 @@ package com.mars_sim.core.person.health.task;
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.ai.task.SelfTreatHealthProblem;
-import com.mars_sim.core.person.ai.task.meta.SelfTreatHealthProblemMeta;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
