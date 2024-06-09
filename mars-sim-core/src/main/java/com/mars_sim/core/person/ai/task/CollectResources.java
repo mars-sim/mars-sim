@@ -41,8 +41,9 @@ public class CollectResources extends EVAOperation {
 	public static final double LABOR_TIME = 50D;
 
 	/** Task phases. */
-	private static final TaskPhase COLLECT_RESOURCES = new TaskPhase(Msg.getString("Task.phase.collectResources"),
-						createPhaseImpact(PhysicalEffort.HIGH, SkillType.AREOLOGY, SkillType.PROSPECTING));
+	private static final TaskPhase COLLECT_RESOURCES = 
+			new TaskPhase(Msg.getString("Task.phase.collectResources"), //$NON-NLS-1$
+					createPhaseImpact(PhysicalEffort.HIGH, SkillType.AREOLOGY, SkillType.PROSPECTING));
 
     public static final LightLevel LIGHT_LEVEL = LightLevel.NONE;
 

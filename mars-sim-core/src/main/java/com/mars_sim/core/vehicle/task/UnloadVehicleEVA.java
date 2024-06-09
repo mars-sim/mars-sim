@@ -40,8 +40,9 @@ public class UnloadVehicleEVA extends EVAOperation {
 	private static final String NAME = Msg.getString("Task.description.unloadVehicleEVA"); //$NON-NLS-1$
 	
 	/** Task phases. */
-	private static final TaskPhase UNLOADING = new TaskPhase(Msg.getString("Task.phase.unloading"),
-					createPhaseImpact(PhysicalEffort.HIGH)); //$NON-NLS-1$
+	private static final TaskPhase UNLOADING = 
+			new TaskPhase(Msg.getString("Task.phase.unloading"), //$NON-NLS-1$
+					createPhaseImpact(PhysicalEffort.HIGH)); 
 
 	/**
 	 * The amount of resources (kg) one person of average strength can unload per

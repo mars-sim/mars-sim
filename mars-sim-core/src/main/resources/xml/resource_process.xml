@@ -367,7 +367,7 @@
 	</process>
 
 
-	<process name="Convert regolith to ores with sand" power-required="0.2" >
+	<process name="Convert Regolith to Ores with Sand" power-required="0.2" >
 		<description> A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
 		analogue regolith and analyzed by ion chromatography. The MARE contained (mg/L) 
 		Nitrogen-containing species NO3- has 773 and NO2- has 6.9 

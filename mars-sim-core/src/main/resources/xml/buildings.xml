@@ -1211,7 +1211,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="4"/>
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="3"/>
-				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="2"/>
+				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="6"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="6"/>
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="2"/>			
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="6"/>					
@@ -1262,37 +1262,37 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
 				<!-- 5 processes for breaking down regolith -->		
-				<process-engine name="convert regolith to ores with sand" number-modules="25"/>
-				<process-engine name="extract nitrogen compounds from regolith" number-modules="15"/>
-				<process-engine name="process regolith-B rich in poly-hydrated sulfate" number-modules="15"/> 
-				<process-engine name="process regolith-C rich in phyllo-silicate" number-modules="15"/>
-				<process-engine name="process regolith-D rich in basaltic" number-modules="15"/>
+				<process-engine name="Convert Regolith to Ores with Sand" number-modules="30"/>
+				<process-engine name="Extract Nitrogen Compounds from Regolith" number-modules="15"/>
+				<process-engine name="Process Regolith-B rich in Poly-Hydrated Sulfate" number-modules="15"/> 
+				<process-engine name="Process Regolith-C rich in Phyllo-Silicate" number-modules="15"/>
+				<process-engine name="Process Regolith-D rich in Basaltic" number-modules="15"/>
 				
 				<!-- 10 processes for breaking down minerals -->
-				<process-engine name="do chalcopyrite smelting" number-modules="5"/>
+				<process-engine name="Do Chalcopyrite Smelting" number-modules="5"/>
 				<!-- https://geologyscience.com/minerals/goethite/ -->
-				<process-engine name="do goethite smelting" number-modules="5"/>				
+				<process-engine name="Do Goethite Smelting" number-modules="5"/>				
 				<!-- https://geologyscience.com/minerals/hematite/ -->
-				<process-engine name="do hematite smelting" number-modules="5"/>
-				<process-engine name="do kamacite smelting" number-modules="5"/> 
-				<process-engine name="do magnesite smelting" number-modules="5"/>								
-				<process-engine name="do magnetite smelting" number-modules="5"/>
-				<process-engine name="do malachite smelting" number-modules="5"/>				
-				<process-engine name="do olivine smelting" number-modules="5"/>				
-				<process-engine name="do taenite smelting" number-modules="5"/>
-				<process-engine name="do sylvite smelting" number-modules="5"/>
+				<process-engine name="Do Hematite Smelting" number-modules="5"/>
+				<process-engine name="Do Kamacite Smelting" number-modules="5"/> 
+				<process-engine name="Do Magnesite Smelting" number-modules="5"/>								
+				<process-engine name="Do Magnetite Smelting" number-modules="5"/>
+				<process-engine name="Do Malachite Smelting" number-modules="5"/>				
+				<process-engine name="Do Olivine Smelting" number-modules="5"/>				
+				<process-engine name="Do Taenite Smelting" number-modules="5"/>
+				<process-engine name="Do Sylvite Smelting" number-modules="5"/>
 								
 				<!-- 9 processes for extracting ore deposits -->
-				<process-engine name="extract minerals from basaltic deposits" number-modules="5"/>
-				<process-engine name="extract minerals from smectite deposits" number-modules="5"/>
-				<process-engine name="extract minerals from allophane deposits" number-modules="5"/>
-				<process-engine name="extract minerals from akaganeite deposits" number-modules="5"/> 
-				<process-engine name="extract minerals from bassanite deposits" number-modules="5"/> 
-				<process-engine name="extract minerals from sand" number-modules="10"/>
-				<process-engine name="reduce gypsum to calcium carbonate with carbon" number-modules="5"/>
-				<process-engine name="reduce gypsum to calcium carbonate with carbon monoxide" number-modules="5"/>
-				<process-engine name="reduce gypsum to calcium carbonate with hydrogen" number-modules="5"/>
-				<process-engine name="Make gypsum plaster via calcination" number-modules="5"/>							
+				<process-engine name="Extract Minerals from Basaltic deposits" number-modules="5"/>
+				<process-engine name="Extract Minerals from Smectite deposits" number-modules="5"/>
+				<process-engine name="Extract Minerals from Allophane deposits" number-modules="5"/>
+				<process-engine name="Extract Minerals from Akaganeite deposits" number-modules="5"/> 
+				<process-engine name="Extract Minerals from Bassanite deposits" number-modules="5"/> 
+				<process-engine name="Extract Minerals from Sand" number-modules="10"/>
+				<process-engine name="Reduce Gypsum to Calcium Carbonate with Carbon" number-modules="5"/>
+				<process-engine name="Reduce Gypsum to Calcium Carbonate with Carbon Monoxide" number-modules="5"/>
+				<process-engine name="Reduce Gypsum to Calcium Carbonate with Hydrogen" number-modules="5"/>
+				<process-engine name="Make Gypsum Plaster via Calcination" number-modules="5"/>							
 			</resource-processing>
 
 			<storage capacity="300000">
@@ -1351,19 +1351,19 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">
 					
 				<!-- 3 silicon/chemical processes -->
-				<process-engine name="make quartz from silica" number-modules="2"/>
-				<process-engine name="make soda from sodium oxide" number-modules="3"/>
-				<process-engine name="bake calcium carbonate to lime"/> 	
+				<process-engine name="Make Quartz from Silica" number-modules="2"/>
+				<process-engine name="Make Soda from Sodium Oxide" number-modules="3"/>
+				<process-engine name="Bake Calcium Carbonate to Lime"/> 	
 					
 				<!-- 4 types of cement/concrete -->			
-				<process-engine name="make cement" number-modules="5"/>
-				<process-engine name="mix concrete 1" number-modules="5"/>
-				<process-engine name="mix concrete 2" number-modules="5"/>				
-				<process-engine name="mix sulfur concrete" number-modules="5"/>
-				<process-engine name="mix limecrete 1" number-modules="5"/>
-				<process-engine name="mix limecrete 2" number-modules="5"/>				
-				<process-engine name="make magnesium-based concrete 1" number-modules="2"/>
-				<process-engine name="make magnesium-based concrete 2" number-modules="2"/>
+				<process-engine name="Make Cement" number-modules="5"/>
+				<process-engine name="Mix Concrete 1" number-modules="5"/>
+				<process-engine name="Mix Concrete 2" number-modules="5"/>				
+				<process-engine name="Mix Sulfur Concrete" number-modules="5"/>
+				<process-engine name="Mix Limecrete 1" number-modules="5"/>
+				<process-engine name="Mix Limecrete 2" number-modules="5"/>				
+				<process-engine name="Make Magnesium-based Concrete 1" number-modules="2"/>
+				<process-engine name="Make Magnesium-based Concrete 2" number-modules="2"/>
 								
 				<!-- 6 industrial chemical ingredients -->	
 				<process-engine name="Produce Ethylene" number-modules="2"/>
@@ -1371,7 +1371,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Produce Styrene from Ethylene" number-modules="5"/>
 				<process-engine name="Produce Polystyrene from Styrene" number-modules="10"/>
 				<process-engine name="Produce Polypropylene from Prophylene" number-modules="10"/>
-				<process-engine name="Methanol-to-olefin (MTO) process" number-modules="10"/>
+				<process-engine name="Methanol-to-Olefin (MTO) process" number-modules="10"/>
 									
 			</resource-processing>
 
@@ -1583,7 +1583,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Atmospheric processing" number-modules="4"/>
 				
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="3"/>				
-				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="2"/>
+				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="6"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="8"/>
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="6"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="8"/>

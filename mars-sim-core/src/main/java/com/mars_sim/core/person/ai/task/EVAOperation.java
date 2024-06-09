@@ -66,7 +66,7 @@ public abstract class EVAOperation extends Task {
 	/** default serial id. */
 	private static SimLogger logger = SimLogger.getLogger(EVAOperation.class.getName());
 
-	// Expereince impact when not doing the on site activity
+	// Experience impact when not doing the on site activity
 	private static final ExperienceImpact IMPACT = createPhaseImpact();
 	
 	/** Task phases. */
@@ -149,6 +149,7 @@ public abstract class EVAOperation extends Task {
 
 	/** 
 	 * What phase is executed when the Person is onsite?
+	 * 
 	 * @return onsite phase
 	 */
 	public TaskPhase getOutsidePhase() {
@@ -156,7 +157,7 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Helper method to create an impact that is specific for a TaskPhase
+	 * Helper method to create an impact specific for a TaskPhase.
 	 */
 	protected static ExperienceImpact createPhaseImpact(SkillType... extraSkills) {
 		Set<SkillWeight> skills = ExperienceImpact.toSkillWeights(extraSkills);
@@ -164,6 +165,10 @@ public abstract class EVAOperation extends Task {
 		return new ExperienceImpact(100D, NaturalAttributeType.EXPERIENCE_APTITUDE, true, 0.05D, 
 					skills);
 	}
+	
+	/**
+	 * Helper method to create an impact specific for a TaskPhase.
+	 */
 	protected static ExperienceImpact createPhaseImpact(PhysicalEffort effort, SkillType... extraSkills) {
 		Set<SkillWeight> skills = ExperienceImpact.toSkillWeights(extraSkills);
 		skills.add(new SkillWeight(SkillType.EVA_OPERATIONS, 1));
@@ -172,7 +177,8 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Set the minimum sunlight for this EVA operation
+	 * Sets the minimum sunlight for this EVA operation.
+	 * 
 	 * @param minSunlight
 	 */
 	protected void setMinimumSunlight(LightLevel minSunlight) {
@@ -180,7 +186,8 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Is the sunlight at a location above a minimum level
+	 * Is the sunlight at a location above a minimum level?
+	 * 
 	 * @param locn
 	 * @param level
 	 * @return
@@ -196,7 +203,8 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Is this Task interruptable? EVAs can not be interrupted.
+	 * Is this Task interruptible? EVAs can not be interrupted.
+	 * 
 	 * @return Returns false by default
 	 */
 	@Override

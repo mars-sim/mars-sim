@@ -24,13 +24,13 @@ public class ResourceProcessing extends ResourceProcessor {
 	
 	public static final String OLEFIN = "MTO";
 	public static final String OXIDATION = "Selective Partial Oxidation";
-	public static final String SABATIER = "sabatier";
+	public static final String SABATIER = "Sabatier";
 	public static final String ICE = "Melt Ice";
 	public static final String PPA = "PPA";
 	public static final String CFR = "CFR";
 	public static final String OGS = "OGS";
 	// Note: The following will encompass all the regolith-related resource processes 
-	public static final String REGOLITH = "regolith"; 
+	public static final String REGOLITH = "Regolith"; 
 	
 	/**
 	 * Constructor.

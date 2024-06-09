@@ -93,6 +93,10 @@ class AmountResourceGood extends Good {
 	private static final double ELEMENT_COST = 0.5;
 	private static final double LIFE_SUPPORT_COST = .5;
 
+	
+	// flatten multipliers
+	private static final double OLIVINE_MULTIPLIER = .05;
+	
 	// modifiers
     private static final double ICE_VALUE_MODIFIER = .1;
 	private static final double WATER_VALUE_MODIFIER = .07;
@@ -101,11 +105,13 @@ class AmountResourceGood extends Good {
 	private static final double SOIL_VALUE_MODIFIER = .05;
 	private static final double SAND_VALUE_MODIFIER = .03;
 	private static final double ORES_VALUE_MODIFIER = .05;
+	
 	private static final double CONCRETE_VALUE_MODIFIER = .7;
 	private static final double CEMENT_VALUE_MODIFIER = 2;
 	private static final double MINERAL_VALUE_MODIFIER = .02;
 	private static final double ROCK_VALUE_MODIFIER = .02;
 	private static final double METEORITE_MODIFIER = 100;
+	
 	private static final double ROCK_SALT_VALUE_MODIFIER = 1;
 	private static final double EPSOM_SALT_VALUE_MODIFIER = .1;
 	
@@ -139,14 +145,15 @@ class AmountResourceGood extends Good {
 	private static final double REGOLITH_TYPE_DEMAND_FACTOR = 1.2;
 	private static final double REGOLITH_DEMAND_FACTOR = .1;
 	private static final double REGOLITH_DEMAND_FACTOR_1 = 10;
-	private static final double REGOLITH_DEMAND_FACTOR_2 = .15;
+	private static final double REGOLITH_DEMAND_FACTOR_2 = 10;
+		
 	private static final double ORE_DEMAND_FACTOR = .15;
 	private static final double MINERAL_DEMAND_FACTOR = .15;
 	
 	// Demand factor based on good type
 	private static final double CHEMICAL_DEMAND_FACTOR = 3;
 	private static final double COMPOUND_DEMAND_FACTOR = 2;
-	private static final double ELEMENT_DEMAND_FACTOR = 3;
+	private static final double ELEMENT_DEMAND_FACTOR = 2;
 	private static final double ROCK_DEMAND_FACTOR = 1;
 	private static final double GEMSTONE_DEMAND_FACTOR = 3;
 
@@ -162,7 +169,7 @@ class AmountResourceGood extends Good {
 	private static final double DERIVED_DEMAND_FACTOR = .5;
 	private static final double TISSUE_DEMAND_FACTOR = 1.1;
 	
-	private static final double METHANOL_DEMAND_FACTOR = 1;
+	private static final double METHANOL_DEMAND_FACTOR = .5;
 	private static final double METHANE_DEMAND_FACTOR = .1;
 	private static final double SAND_DEMAND_FACTOR = .07;
 	private static final double ICE_DEMAND_FACTOR = .05;
@@ -555,6 +562,9 @@ class AmountResourceGood extends Good {
 			demand = MINERAL_DEMAND_FACTOR;
 			if (mod != 0)
 				return demand *= mod;
+			if (ar.getID() == ResourceUtil.olivineID)
+				demand *= OLIVINE_MULTIPLIER;
+			
 			break;
 	
 		case ORE:
@@ -1352,6 +1362,7 @@ class AmountResourceGood extends Good {
 			return demand * (.2 * regolithDemand + .7 * sandDemand) 
 						/ (1 + sandDemand) * SAND_VALUE_MODIFIER;
 		}
+        
         else {
 			double regolithDemand = owner.getDemandValueWithID(ResourceUtil.regolithID);
 			double sandDemand = owner.getDemandValueWithID(ResourceUtil.sandID);
