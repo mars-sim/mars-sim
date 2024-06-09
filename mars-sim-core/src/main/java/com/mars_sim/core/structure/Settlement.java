@@ -1848,6 +1848,9 @@ public class Settlement extends Structure implements Temporal,
 			// Add this person indoor map of the settlement
 			addToIndoor(p);
 			
+			// Add to a random building
+			BuildingManager.landOnRandomBuilding(p, getAssociatedSettlement());
+			
 			// Assign a permanent bed reservation if possible
 			LivingAccommodation.allocateBed(this, p, true);
 

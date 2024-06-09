@@ -218,7 +218,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 	 * @param settlement {@link Settlement} the settlement the person is at
 	 * @param gender     the person's gender
 	 * @param age		 Uhe person's age, can be optional of -1
-	 * @param ethnicity Optional parameter of the ethnicity influences phyical characteristics
+	 * @param ethnicity Optional parameter of the ethnicity influences physical characteristics
 	 * @param initialAttrs 
 	 * @param personAttrs Persons attributes.
 	 */
@@ -249,11 +249,8 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 		settlement.addACitizen(this);
 		// Set the container unit
 //		setContainerUnit(settlement);
-		
-		// Add to a random building
-		BuildingManager.landOnRandomBuilding(this, getAssociatedSettlement());
 
-		// Calculate next birthday and scheduled a party in terms of futrue Mars sols
+		// Calculate next birthday and scheduled a party in terms of future Mars sols
 		var currentEarthTime = masterClock.getEarthTime();
 		calculateBirthDate(currentEarthTime, age);
 
