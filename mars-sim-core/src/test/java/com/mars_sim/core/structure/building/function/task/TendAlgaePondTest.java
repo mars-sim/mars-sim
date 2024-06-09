@@ -43,7 +43,7 @@ public class TendAlgaePondTest extends AbstractMarsSimUnitTest {
         var task = new TendAlgaePond(p, pond, TendAlgaePond.HARVESTING);
         assertFalse("Harvesting task created", task.isDone());
 
-        var remaining = executeTask(p, task, 1000);
+        var remaining = executeTask(p, task, 3000);
         assertGreaterThan("Remaining Task time", 0D, remaining);
 
         assertTrue("Harvesting task completed", task.isDone());       

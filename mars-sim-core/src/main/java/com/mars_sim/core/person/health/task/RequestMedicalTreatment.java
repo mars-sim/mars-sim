@@ -1,0 +1,368 @@
+/**
+ * Mars Simulation Project
+ * RequestMedicalTreatment.java
+ * @date 2021-12-22
+ * @author Scott Davis
+ */
+package com.mars_sim.core.person.health.task;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.person.health.HealthProblem;
+import com.mars_sim.core.person.health.MedicalAid;
+import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.structure.building.function.FunctionType;
+import com.mars_sim.core.structure.building.function.MedicalCare;
+import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.SickBay;
+import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.VehicleType;
+import com.mars_sim.tools.Msg;
+import com.mars_sim.tools.util.RandomUtil;
+
+/**
+ * A task for requesting and awaiting medical treatment at a medical station.
+ */
+public class RequestMedicalTreatment extends Task {
+
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+
+    // Static members
+    
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = .3D;
+
+    /** default logger. */
+    // For Future Use: private static final Logger logger = Logger.getLogger(RequestMedicalTreatment.class.getName())
+
+	/** Simple Task name */
+	public static final String SIMPLE_NAME = RequestMedicalTreatment.class.getSimpleName();
+	
+    /** Task name */
+    public static final String NAME = Msg.getString(
+            "Task.description.requestMedicalTreatment"); //$NON-NLS-1$
+
+    /** Task phases. */
+    private static final TaskPhase WAITING_FOR_TREATMENT = new TaskPhase(Msg.getString(
+            "Task.phase.waitingForMedicalTreatment")); //$NON-NLS-1$
+    private static final TaskPhase TREATMENT = new TaskPhase(Msg.getString(
+            "Task.phase.receivingMedicalTreatment")); //$NON-NLS-1$
+
+    /** Maximum waiting duration in millisols. */
+    private static final double MAX_WAITING_DURATION = 200D;
+
+    // Data members.
+    private double waitingDuration;
+    
+    private MedicalAid medicalAid;
+
+    /**
+     * Constructor.
+     * 
+     * @param person the person to perform the task
+     */
+    public RequestMedicalTreatment(Person person) {
+        super(NAME, person, false, false, STRESS_MODIFIER, 10D);
+	     
+        if (person.getPhysicalCondition().getProblems().isEmpty())
+        	endTask();
+        		
+        // Choose available medical aid for treatment.
+        medicalAid = determineMedicalAid();
+
+        if (medicalAid != null) {
+
+            if (medicalAid instanceof MedicalCare) {
+                // Walk to medical care building.
+                MedicalCare medicalCare = (MedicalCare) medicalAid;
+                // Walk to medical care building.
+                Building b = medicalCare.getBuilding();
+                if (b != null)
+                	walkToActivitySpotInBuilding(b, FunctionType.MEDICAL_CARE, false);
+            }
+            else if (medicalAid instanceof SickBay) {
+                // Walk to medical activity spot in rover.
+                Vehicle vehicle = ((SickBay) medicalAid).getVehicle();
+                if (VehicleType.isRover(vehicle.getVehicleType())) {
+                    // Walk to rover sick bay activity spot.
+                    walkToSickBayActivitySpotInRover((Rover) vehicle, false);
+                }
+            }
+        }
+        
+        else {
+            //logger.severe("Medical aid could not be determined.");
+            endTask();
+        }
+
+        // Initialize phase.
+        addPhase(WAITING_FOR_TREATMENT);
+        addPhase(TREATMENT);
+        setPhase(WAITING_FOR_TREATMENT);
+    }
+
+    @Override
+    protected double performMappedPhase(double time) {
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (WAITING_FOR_TREATMENT.equals(getPhase())) {
+            return waitingForTreatmentPhase(time);
+        }
+        else if (TREATMENT.equals(getPhase())) {
+            return treatmentPhase(time);
+        }
+        else {
+            return time;
+        }
+    }
+
+    /**
+     * Determines a medical aid to wait for treatment at.
+     * @return medical aid.
+     */
+    private MedicalAid determineMedicalAid() {
+
+        MedicalAid result = null;
+
+        if (person.isInSettlement()) {
+            result = determineMedicalAidAtSettlement();
+        }
+        else if (person.isInVehicle()) {
+            result = determineMedicalAidInVehicle();
+        }
+
+        return result;
+    }
+
+    /**
+     * Determines a medical aid at a settlement.
+     * @return medical aid.
+     */
+    private MedicalAid determineMedicalAidAtSettlement() {
+
+        MedicalAid result = null;
+
+        List<MedicalAid> goodMedicalAids = new ArrayList<>();
+
+        // Check all medical care buildings.
+        Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildingSet(
+                FunctionType.MEDICAL_CARE).iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+
+            // Check if building currently has a malfunction.
+            boolean malfunction = building.getMalfunctionManager().hasMalfunction();
+
+            // Check if enough beds for patient.
+            MedicalCare medicalCare = building.getMedical();
+            int numPatients = medicalCare.getPatientNum();
+            int numBeds = medicalCare.getSickBedNum();
+            if ((numPatients < numBeds) && !malfunction) {
+                // Check if medical aid can treat any health problems.
+                boolean canTreatProblems = false;
+                Iterator<HealthProblem> j = person.getPhysicalCondition().getProblems().iterator();
+                while (j.hasNext()) {
+                    HealthProblem problem = j.next();
+                    if (problem.isDegrading() && medicalCare.canTreatProblem(problem)) {
+                        canTreatProblems = true;
+                    }
+                }
+
+                if (canTreatProblems) {
+                    goodMedicalAids.add(medicalCare);
+                }
+            }
+        }
+
+        // Randomly select an valid medical care building.
+        if (!goodMedicalAids.isEmpty()) {
+            int index = RandomUtil.getRandomInt(goodMedicalAids.size() - 1);
+            result = goodMedicalAids.get(index);
+        }
+
+        return result;
+    }
+
+    public int getNumHealthProblem() {
+        int numProblem = 0;
+        Iterator<HealthProblem> i = person.getPhysicalCondition().getProblems().iterator();
+        while (i.hasNext()) {
+            HealthProblem problem = i.next();
+            if (problem.getRecovering() && problem.requiresBedRest()) {
+            	numProblem++;
+            }
+        }
+        return numProblem;
+    }
+    
+    /**
+     * Determines a medical aid in a vehicle.
+     * @return medical aid.
+     */
+    private MedicalAid determineMedicalAidInVehicle() {
+
+        MedicalAid result = null;
+
+        if (VehicleType.isRover(person.getVehicle().getVehicleType())) {
+            Rover rover = (Rover) person.getVehicle();
+            if (rover.hasSickBay()) {
+                SickBay sickBay = rover.getSickBay();
+                int numPatients = sickBay.getPatientNum();
+                int numBeds = sickBay.getSickBedNum();
+                if (numPatients < numBeds) {
+                    boolean canTreatProblems = false;
+                    Iterator<HealthProblem> j = person.getPhysicalCondition().getProblems().iterator();
+                    while (j.hasNext()) {
+                        HealthProblem problem = j.next();
+                        if (problem.isDegrading() && sickBay.canTreatProblem(problem)) {
+                            canTreatProblems = true;
+                        }
+                    }
+
+                    if (canTreatProblems) {
+                        result = sickBay;
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Performs the waiting for treatment phase of the task.
+     * @param time the amount of time (millisol) to perform the phase.
+     * @return the amount of time (millisol) left over after performing the phase.
+     */
+    private double waitingForTreatmentPhase(double time) {
+
+        double remainingTime = 0D;
+
+        // Check if any health problems are currently being treated.
+        boolean underTreatment = false;
+        Iterator<HealthProblem> i = person.getPhysicalCondition().getProblems().iterator();
+        while (i.hasNext()) {
+            HealthProblem problem = i.next();
+            if (medicalAid.getProblemsBeingTreated().contains(problem)) {
+                underTreatment = true;
+            }
+        }
+
+        if (underTreatment) {
+            setPhase(TREATMENT);
+            remainingTime = time;
+        }
+        else {
+
+            // Check if health problems are awaiting treatment.
+            Iterator<HealthProblem> j = person.getPhysicalCondition().getProblems().iterator();
+            while (j.hasNext()) {
+                HealthProblem problem = j.next();
+                if (!medicalAid.getProblemsAwaitingTreatment().contains(problem)) {
+                    if (medicalAid.canTreatProblem(problem)) {
+                        // Request treatment for health problem.
+                        medicalAid.requestTreatment(problem);
+                    }
+                }
+            }
+
+            waitingDuration += time;
+            if (waitingDuration >= MAX_WAITING_DURATION) {
+                // End task if longer than maximum waiting duration.
+                remainingTime = waitingDuration - MAX_WAITING_DURATION;
+                endTask();
+            }
+        }
+
+        return remainingTime;
+    }
+
+    /**
+     * Performs the treatment phase of the task.
+     * @param time the amount of time (millisol) to perform the phase.
+     * @return the amount of time (millisol) left over after performing the phase.
+     */
+    private double treatmentPhase(double time) {
+
+        double remainingTime = 0D;
+
+        // Check if any health problems are currently being treated.
+        boolean underTreatment = false;
+        Iterator<HealthProblem> i = person.getPhysicalCondition().getProblems().iterator();
+        while (i.hasNext()) {
+            HealthProblem problem = i.next();
+            if (medicalAid.getProblemsBeingTreated().contains(problem)) {
+                underTreatment = true;
+            }
+        }
+
+        if (!underTreatment) {
+
+            // Check if person still has health problems needing treatment.
+            boolean treatableProblems = false;
+            Iterator<HealthProblem> j = person.getPhysicalCondition().getProblems().iterator();
+            while (j.hasNext()) {
+                HealthProblem problem = j.next();
+                if (medicalAid.getProblemsAwaitingTreatment().contains(problem)) {
+                    treatableProblems = true;
+                }
+            }
+
+            if (treatableProblems) {
+                // If any remaining treatable problems, wait for treatment.
+                setPhase(WAITING_FOR_TREATMENT);
+                waitingDuration = 0D;
+                remainingTime = time;
+            }
+            else {
+                endTask();
+            }
+        }
+
+        return remainingTime;
+    }
+
+	/**
+	 * Gets the medical aid the person is using for this task.
+	 * 
+	 * @return medical aid or null.
+	 */
+	public MedicalAid getMedicalAid() {
+		return medicalAid;
+	}
+	
+	/**
+	 * Stop using the associated medical aid
+	 */
+    @Override
+    protected void clearDown() {
+        // Remove person from medical aid.
+        if (medicalAid != null) {
+
+            // Cancel any treatment requests of the person.
+            Iterator<HealthProblem> i = medicalAid.getProblemsAwaitingTreatment().iterator();
+            while (i.hasNext()) {
+                HealthProblem problem = i.next();
+                if (problem.getSufferer().equals(person)) {
+                    medicalAid.cancelRequestTreatment(problem);
+                }
+            }
+
+            // Stop any treatment of health problems of the person.
+            Iterator<HealthProblem> j = medicalAid.getProblemsBeingTreated().iterator();
+            while (j.hasNext()) {
+                HealthProblem problem = j.next();
+                if (problem.getSufferer().equals(person)) {
+                    medicalAid.stopTreatment(problem);
+                }
+            }
+        }
+    }
+}
