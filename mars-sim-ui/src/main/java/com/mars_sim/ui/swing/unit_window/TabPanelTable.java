@@ -53,9 +53,9 @@ public abstract class TabPanelTable extends TabPanel {
 			return retStr;
 		}
 		
-		public void setToolTipStrings() {
-			this.toolTips = toolTips;
-		}
+//		public void setToolTipStrings() {
+//			this.toolTips = toolTips;
+//		}
 	}
 
 	private String[] headerTooltips;
