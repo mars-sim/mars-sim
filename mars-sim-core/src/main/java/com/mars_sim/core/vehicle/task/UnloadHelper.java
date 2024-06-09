@@ -27,7 +27,7 @@ import com.mars_sim.core.vehicle.Towing;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
- * Helper class to handle unloading various activities of unloading a vehicle
+ * Helper class to handle unloading various activities of unloading a vehicle.
  */
 public final class UnloadHelper {
 	
@@ -44,7 +44,8 @@ public final class UnloadHelper {
     }
 
     /**
-     * Unload an dead bodies from the Crewable vehicle
+     * Unloads an dead bodies from the Crewable vehicle.
+     * 
      * @param crewable
      * @param dest
      */
@@ -65,9 +66,10 @@ public final class UnloadHelper {
     }
 
     /**
-     * Release any towed vehcile back to the settlement
-     * @param towingVehicle Vehcile towing something
-     * @param dest Place to transfer to
+     * Releases any towed vehicle back to the settlement.
+     * 
+     * @param towingVehicle Vehicle towing something
+     * @param dest Destination to transfer to
      */
     static void releaseTowedVehicle(Towing towingVehicle, Settlement dest) {
     	Vehicle towedVehicle = towingVehicle.getTowedVehicle();
@@ -82,7 +84,8 @@ public final class UnloadHelper {
     }
 
     /**
-     * Unload any itemas from a Vehicle to a Settlement
+     * Unloads any items from a Vehicle to a Settlement.
+     * 
      * @param source Vehicle being unloaded
      * @param dest Destination for any Items
      * @param amountUnloading Maximum amount to unloaded
@@ -111,7 +114,8 @@ public final class UnloadHelper {
     }
 
     /**
-     * Unload any resources from a Vehicle to a Settlement
+     * Unloads any resources from a Vehicle to a Settlement.
+     * 
      * @param source Vehicle being unloaded
      * @param dest Destination for any Resources
      * @param amountUnloading Maximum amount to unloaded
@@ -148,7 +152,8 @@ public final class UnloadHelper {
     }
 
     /**
-     * Unload any EVASuit from a Vehicle to a Settlement
+     * Unloads any EVASuit from a Vehicle to a Settlement.
+     * 
      * @param source Vehicle being unloaded
      * @param dest Destination for any Items
      * @param amountUnloading Maximum amount to unloaded
@@ -180,7 +185,7 @@ public final class UnloadHelper {
     }
 
     /**
-	 * Unload the inventory from a piece of equipment.
+	 * Unloads the inventory from a piece of equipment.
 	 *
 	 * @param equipment the equipment.
 	 */
@@ -199,7 +204,8 @@ public final class UnloadHelper {
 	}
 
 	/**
-     * Unload any Equipment from a Vehicle to a Settlement
+     * Unloads any Equipment from a Vehicle to a Settlement.
+     * 
      * @param source Vehicle being unloaded
      * @param dest Destination for any Items
      * @param amountUnloading Maximum amount to unloaded
@@ -225,7 +231,8 @@ public final class UnloadHelper {
 	}
 
     /**
-     * Unload inventory from a Vehicle to a Settlement
+     * Unloads inventory from a Vehicle to a Settlement.
+     * 
      * @param source Vehicle being unloaded
      * @param dest Destination for any Resources
      * @param amountUnloading Maximum amount to unloaded

@@ -388,7 +388,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	}
 
 	/**
-	 * Unload any towed vehicles.
+	 * Unloads any towed vehicles.
 	 */
 	private void unloadTowedVehicle() {
 		Vehicle towed = getRover().getTowedVehicle();
@@ -402,7 +402,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	}
 
 	/**
-	 * Load the towed vehicle is not already loaded.
+	 * Loads the towed vehicle is not already loaded.
 	 */
 	private void loadTowedVehicle() {
 		if (!isDone() && (getRover().getTowedVehicle() == null)) {

@@ -227,7 +227,7 @@ public class BudgetResources extends Task {
 					
 					logger.log(worker, Level.INFO, 0, "Reviewing " + building.getName()
 						+ "'s water ration level.  water: " + Math.round(data[0]*10.0)/10.0
-							+ "  Waste water: " + Math.round(data[1]*10.0)/10.0);
+							+ "  Waste water: " + Math.round(data[1]*10.0)/10.0 + ".");
 				} break;
 				case RESOURCE: {
 					person.getAssociatedSettlement().getGoodsManager().checkResourceDemand(settlementResource, time);
@@ -255,7 +255,7 @@ public class BudgetResources extends Task {
 	 * Performs the finished phase.
 	 * 
 	 * @param time the amount of time (millisols) to perform the phase.
-	 * @return th)e amount of time (millisols) left over after performing the phase.
+	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double approvingPhase(double time) {
 			

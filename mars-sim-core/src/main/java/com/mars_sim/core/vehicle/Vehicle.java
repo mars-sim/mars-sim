@@ -1729,7 +1729,7 @@ public abstract class Vehicle extends Unit
 			for (int x = oX; (x < 2000) && !foundGoodLocation; x+=step) {
 				// Try random locations at each distance range.
 				for (int y = oY; (y < 2000) && !foundGoodLocation; y++) {
-					double distance = Math.max(y, RandomUtil.getRandomDouble(-x, x) + y);
+					double distance = Math.max(y, RandomUtil.getRandomDouble(-.5*x, x) + y);
 					double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
 					
 					newLoc = centerLoc.getPosition(distance, radianDirection);

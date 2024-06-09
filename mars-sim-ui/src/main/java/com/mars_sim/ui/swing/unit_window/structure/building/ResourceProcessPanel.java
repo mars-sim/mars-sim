@@ -58,9 +58,9 @@ public class ResourceProcessPanel extends JPanel {
 	private static final String NOTE = "&emsp;<i>Note:  * denotes an ambient resource</i>";
 
     /**
-     * Private table model to manage the Resource Processes. It  c an act it 2 modes
+     * Private table model to manage the Resource Processes. 
      * - Single building mode
-     * - Multipel builbing mode
+     * - Multiple building mode
      */
 	private static class ResourceProcessTableModel extends AbstractTableModel
                 implements UnitModel {
@@ -79,7 +79,7 @@ public class ResourceProcessPanel extends JPanel {
 		}
 
         public ResourceProcessTableModel(Map<Building, List<ResourceProcess>> buildingProcs) {
-            // Unpacke map into a single list
+            // Unpack map into a single list
             buildings = new ArrayList<>();
             for(Entry<Building, List<ResourceProcess>> entry : buildingProcs.entrySet()) {
                 for(ResourceProcess p : entry.getValue()) {
@@ -151,7 +151,8 @@ public class ResourceProcessPanel extends JPanel {
 		}
 
         /**
-         * This maps the column index into the logicla property
+         * Maps the column index into the logical property.
+         * 
          * @param column
          * @return
          */
@@ -170,14 +171,15 @@ public class ResourceProcessPanel extends JPanel {
         }
 
         /**
-         * Get the associated process object
+         * Gets the associated process object.
          */
         ResourceProcess getProcess(int rowIndex) {
             return processes.get(rowIndex);
         }
 
         /**
-         * Get the building hosting a process
+         * Gets the building hosting a process.
+         * 
          * @param rowIndex
          * @return
          */
@@ -195,7 +197,7 @@ public class ResourceProcessPanel extends JPanel {
 	}
 
     /**
-     * Render a booena value displaying Green/Red dots
+     * Renders a boolean value displaying Green/Red dots.
      */
     private static class RunningCellRenderer extends DefaultTableCellRenderer {
 
@@ -216,7 +218,7 @@ public class ResourceProcessPanel extends JPanel {
     }
 
     /**
-     * Allows a cell to be editted
+     * Allows a cell to be edited.
      */
     private static class RunningCellEditor extends DefaultCellEditor {
 
@@ -256,7 +258,7 @@ public class ResourceProcessPanel extends JPanel {
     private ResourceProcessTableModel model;
 
     /**
-     * Create a resource panel for a single Build
+     * Creates a resource panel for a single Build.
      */
     public ResourceProcessPanel(Building building, List<ResourceProcess> source) {
         
@@ -266,7 +268,8 @@ public class ResourceProcessPanel extends JPanel {
     }
 
     /**
-     * Create a resource panel that encompasses multiple Buildings each with dedciated Resoruce Processes.
+     * Creates a resource panel that encompasses multiple Buildings each with dedicated Resource Processes.
+     * 
      * @param processes Map.
      */
     public ResourceProcessPanel(Map<Building, List<ResourceProcess>> processes, MainDesktopPane desktop) {
@@ -274,7 +277,7 @@ public class ResourceProcessPanel extends JPanel {
 
         JTable table = buildUI();
 
-        // In the multi-building mode add a mouse listner to open Details window
+        // In the multi-building mode add a mouse listener to open Details window
         table.addMouseListener(new UnitTableLauncher(desktop));
     }
 
@@ -286,7 +289,7 @@ public class ResourceProcessPanel extends JPanel {
 
 
 		JTable pTable = new JTable(model) {
-            //Implement table cell tool tips.           
+            // Implement table cell tool tips.           
             public String getToolTipText(MouseEvent e) {
                 Point p = e.getPoint();
                 int rowIndex = rowAtPoint(p);
@@ -324,7 +327,7 @@ public class ResourceProcessPanel extends JPanel {
     }
 
     /**
-     * Update the status of any resource processes
+     * Updates the status of any resource processes.
      */
     public void update() {
         model.fireTableDataChanged();

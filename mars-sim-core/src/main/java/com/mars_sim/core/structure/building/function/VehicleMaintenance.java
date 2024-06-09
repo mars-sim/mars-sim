@@ -417,23 +417,26 @@ public abstract class VehicleMaintenance extends Function {
 		boolean valid = isValid(pulse);
 		if (valid) {
 			// Check to see if any vehicles are in the garage that don't need to be.
-			Iterator<Vehicle> i = vehicles.iterator();
-			while (i.hasNext()) {
-				Vehicle vehicle = i.next();
-				// Do not touch any reserved vehicle since they need garage 
-				// for maintenance or for preparing for mission
-				if (!vehicle.isReserved()) {
-					if (vehicle instanceof Crewable crewableVehicle) {
-						if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
-							i.remove();
-							 handleParking(vehicle);
-						}
-					} else {
-						i.remove();
-						 handleParking(vehicle);
-					}
-				}
-			}
+//			Iterator<Vehicle> i = vehicles.iterator();
+//			while (i.hasNext()) {
+//				Vehicle vehicle = i.next();
+//				// Do not touch any reserved vehicle since they need garage 
+//				// for maintenance or for preparing for mission
+//				if (!vehicle.isReserved()
+//						|| !vehicle.isReservedForMaintenance()) {
+//					if (vehicle instanceof Crewable crewableVehicle) {
+//						if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
+//							i.remove();
+//							handleParking(vehicle);
+//						}
+//						// else do not remove
+//					} else {
+//						// For LUV, always remove
+//						i.remove();
+//						handleParking(vehicle);
+//					}
+//				}
+//			}
 		}
 		return valid;
 	}

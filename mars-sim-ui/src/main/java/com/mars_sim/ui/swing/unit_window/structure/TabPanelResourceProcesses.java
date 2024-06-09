@@ -52,7 +52,6 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 	
 	private JComboBox<String> levelComboBox;
 
-
 	private int level;
 
 	private ResourceProcessPanel processPanel;
@@ -148,6 +147,7 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 	public void update() {
 		processPanel.update();
 	}
+	
 	/**
 	 * Sets the settlement resource process override flag.
 	 * 

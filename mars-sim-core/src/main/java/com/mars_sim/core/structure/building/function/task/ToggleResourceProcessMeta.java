@@ -181,19 +181,19 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 		for (ResourceProcess process : processes) {
 			if (process.isToggleAvailable() && !process.isFlagged()) {
-				double score = computeResourceScore(settlement, process);
-
+				double score = computeBasicScore(settlement, process);
+				
 				if (isWaste) {
 					for (int res: process.getInputResources()) {
 						double amount = settlement.getAmountResourceStored(res);
 						if (amount > 0) {
-							score = Math.abs(score) * amount;
+							score += Math.abs(score) * amount;
 						}
 					}
 				}
 				
 				// Check if settlement is missing one or more of the output resources.
-				if (process.isEmptyOutputs(settlement)) {
+				if (process.isOutputsEmpty(settlement)) {
 					// will push for toggling on this process to produce more output resources
 					if (process.isProcessRunning()) {
 						// no need to change it
@@ -244,7 +244,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					
 					String name = process.getProcessName().toLowerCase();
 					
-					score = computeScore(name, settlement);
+					score = modifyScore(settlement, name, score);
 				}
 				
 				if (score >= highest) {
@@ -277,14 +277,13 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	}
 
 	/**
-	 * Computes the current score.
+	 * Modifies the score for certain resource processes.
 	 * 
 	 * @param name
 	 * @param settlement
 	 * @return
 	 */
-	private double computeScore(String name, Settlement settlement) {
-		double score = 0;
+	private double modifyScore(Settlement settlement, String name, double score) {
 
 		boolean oxi = name.contains(ResourceProcessing.OXIDATION);
 		boolean olefin = name.contains(ResourceProcessing.OLEFIN);
@@ -297,9 +296,9 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 		GoodsManager goodsManager = settlement.getGoodsManager();
 		
-		// Notes : 
-		// The higher the score, the harder the process executes
-		// The lower the score, the easier the process execute
+		// Need to check why the followings : 
+		// The higher the score, the harder the process turns on
+		// The lower the score, the easier the process turns on
 
 		if (reg) {
 			double regolithDemand = goodsManager.getDemandValueWithID(ResourceUtil.regolithID);
@@ -365,7 +364,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	 * @return the resource score (0 = no need to change); positive number -> demand
 	 *         to toggle on; negative number -> demand to toggle off
 	 */
-	private static double computeResourceScore(Settlement settlement, ResourceProcess process) {
+	private static double computeBasicScore(Settlement settlement, ResourceProcess process) {
 		double inputValue = process.getResourcesValue(settlement, true);
 		double outputValue = process.getResourcesValue(settlement, false);
 		double score = outputValue - inputValue;

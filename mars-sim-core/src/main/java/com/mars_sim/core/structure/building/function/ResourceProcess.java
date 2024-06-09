@@ -468,7 +468,7 @@ public class ResourceProcess implements Serializable {
 	 * @param settlement the settlement the resource is at.
 	 * @return true if any output resources are empty.
 	 */
-	public boolean isEmptyOutputs(Settlement settlement) {
+	public boolean isOutputsEmpty(Settlement settlement) {
 
 		for(int resource : getOutputResources()) {
 			double stored = settlement.getAmountResourceStored(resource);
