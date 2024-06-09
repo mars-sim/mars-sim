@@ -8,7 +8,6 @@ package com.mars_sim.core.person;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
@@ -326,7 +325,7 @@ public class PhysicalCondition implements Serializable {
 		
 							// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// bodyMassDeviation average around 0.7 to 1.3
-		bodyMassDeviation = bodyMassDeviation * RandomUtil.computeGaussianWithLimit(1, .5, .2);;
+		bodyMassDeviation = bodyMassDeviation * RandomUtil.computeGaussianWithLimit(1, .5, .2);
 
 		// Assume a person drinks 10 times a day, each time ~375 mL
 		waterConsumedPerSol = h20Consumption * bodyMassDeviation ;
@@ -561,9 +560,7 @@ public class PhysicalCondition implements Serializable {
 		// Generates any random illnesses.
 		if (!restingTask) {
 			List<Complaint> randomAilments = checkForRandomAilments(pulse);
-			if (randomAilments.size() > 0) {
-				illnessEvent = true;
-			}
+			illnessEvent = !randomAilments.isEmpty();
 		}
 
 		if (illnessEvent) {
@@ -1587,7 +1584,7 @@ public class PhysicalCondition implements Serializable {
 	/**
 	 * Returns a collection of known medical problems.
 	 */
-	public Collection<HealthProblem> getProblems() {
+	public List<HealthProblem> getProblems() {
 		return problems;
 	}
 
@@ -2168,11 +2165,8 @@ public class PhysicalCondition implements Serializable {
 		Double d = consumption.getDataPoint(2);
 		if (d != null)
 			dessertEaten = d.doubleValue();
-		if (foodEaten + mealEaten + dessertEaten >= foodConsumption * 1.5
-				&& hunger < HUNGER_THRESHOLD)
-			return true;
-
-		return false;
+		return (foodEaten + mealEaten + dessertEaten >= foodConsumption * 1.5
+				&& hunger < HUNGER_THRESHOLD);
 	}
 	
 	/**
@@ -2182,13 +2176,8 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public boolean drinkEnoughWater() {
 		Double w = consumption.getDataPoint(3);
-		if (w != null) {
-			if (w.doubleValue() >= h20Consumption * 1.5
-					&& thirst < THIRST_THRESHOLD)
-				return true;
-		}
-
-		return false;
+		return ((w != null) && (w.doubleValue() >= h20Consumption * 1.5
+					&& thirst < THIRST_THRESHOLD));
 	}
 	
 	/**
@@ -2203,8 +2192,6 @@ public class PhysicalCondition implements Serializable {
 	 * @param type
 	 */
 	public void recordFoodConsumption(double amount, int type) {
-//		if (type == 0)
-//			logger.info(person, "Eaten " + Math.round(amount * 1000D)/1000D + " kg preserved food.");
 		consumption.increaseDataPoint(type, amount);
 	}
 	

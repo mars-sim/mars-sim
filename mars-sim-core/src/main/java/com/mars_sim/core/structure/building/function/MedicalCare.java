@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.task.TreatMedicalPatient;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalAid;
 import com.mars_sim.core.person.health.MedicalStation;
 import com.mars_sim.core.person.health.Treatment;
 import com.mars_sim.core.person.health.task.RequestMedicalTreatment;
+import com.mars_sim.core.person.health.task.TreatMedicalPatient;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;

@@ -78,7 +78,7 @@ public class BuildingConfig {
 	private static final String PERCENT_LOADING = "percent-loading";
 
 	private static final String MEDICAL_CARE = "medical-care";
-	private static final String BEDS = "beds";
+	private static final String BEDS = "bed";
 	private static final String VEHICLE_MAINTENANCE = "vehicle-maintenance";
 	private static final String PARKING_LOCATION = "parking-location";
 	private static final String FLYER_LOCATION = "flyer-location";
