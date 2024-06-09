@@ -332,9 +332,7 @@ public abstract class DigLocal extends EVAOperation {
         if (collected > SMALL_AMOUNT) {
         	double excess = container.storeAmountResource(resourceID, collected);
         	finishedCollecting = (excess > 0);
-	     	collectionLimit += collected - excess;
-	     	
-	     	person.getPhysicalCondition().stressMuscle(time);
+	     	collectionLimit += collected - excess;	     	
         }
 
         if (!finishedCollecting) {

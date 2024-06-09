@@ -7,6 +7,7 @@ import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.SkillWeight;
 import com.mars_sim.core.structure.Settlement;
 
@@ -176,16 +177,15 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
 
         // No effort impact
         ExperienceImpact noEffort = new ExperienceImpact(0, null,
-                                          false, 0);
+                                          PhysicalEffort.NONE, 0);
         assertFalse("No effort experience", noEffort.isEffortAffected());
         noEffort.apply(p, 10, 1, 1);
 
         var newFatigue = p.getPhysicalCondition().getFatigue();
         assertEquals("Fatigue unchanged", origFatigue, newFatigue);
     }
-
     
-    public void testPersonEffort() {
+    public void testPersonLowEffort() {
         Settlement s = buildSettlement();
         Person p = buildPerson("Worker #1", s);
         p.getPhysicalCondition().setPerformanceFactor(1D);  // Ensure Person does not disrupt skill
@@ -194,11 +194,43 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
 
         // No effort impact
         ExperienceImpact noEffort = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
-                                          true, 0);
+                                          PhysicalEffort.LOW, 0);
         assertTrue("No effort experience", noEffort.isEffortAffected());
         noEffort.apply(p, 10, 1, 1);
 
         var newEnergy = p.getPhysicalCondition().getEnergy();
         assertGreaterThan("Energy reduced inceased", newEnergy, origEnergy);
     }
+
+    public void testPersonHighEffort() {
+        Settlement s = buildSettlement();
+        Person p = buildPerson("Worker #1", s);
+        var cond = p.getPhysicalCondition();
+        cond.setPerformanceFactor(1D);  // Ensure Person does not disrupt skill
+
+        var origEnergy = cond.getEnergy();
+        var origSoreness = cond.getMuscleSoreness();
+        var origHealth = cond.getMuscleHealth();
+
+        // No effort impact
+        ExperienceImpact noEffort = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
+                                          PhysicalEffort.HIGH, 0);
+        assertTrue("No effort experience", noEffort.isEffortAffected());
+        noEffort.apply(p, 10, 1, 1);
+
+        assertLessThan("Energy reduced", origEnergy, cond.getEnergy());
+        assertGreaterThan("Muscle soreness inceased", origSoreness, cond.getMuscleSoreness());
+        assertLessThan("Muscle health decreased", origHealth, cond.getMuscleHealth());
+    }
+
+    public void testConstructors() {
+        ExperienceImpact effort = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
+                true, 0);
+        assertTrue("Effort required", effort.isEffortAffected());
+
+        ExperienceImpact noEffort = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
+            false, 0);
+        assertFalse("No effort required", noEffort.isEffortAffected());
+    }
+
 }

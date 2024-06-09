@@ -19,6 +19,7 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.tools.Msg;
@@ -41,7 +42,7 @@ public class CollectResources extends EVAOperation {
 
 	/** Task phases. */
 	private static final TaskPhase COLLECT_RESOURCES = new TaskPhase(Msg.getString("Task.phase.collectResources"),
-						createPhaseImpact(SkillType.AREOLOGY, SkillType.PROSPECTING));
+						createPhaseImpact(PhysicalEffort.HIGH, SkillType.AREOLOGY, SkillType.PROSPECTING));
 
     public static final LightLevel LIGHT_LEVEL = LightLevel.NONE;
 
@@ -220,7 +221,6 @@ public class CollectResources extends EVAOperation {
 		// Collect resources
 		if (samplesCollected <= sampleLimit) {
 			container.storeAmountResource(resourceType, samplesCollected);
-			person.getPhysicalCondition().stressMuscle(time);
 			double result = time - (samplesCollected / collectionRate);
 			if (result < 0)
 				return 0;
@@ -229,7 +229,6 @@ public class CollectResources extends EVAOperation {
 		} else {
 			if (sampleLimit > 0) {
 				container.storeAmountResource(resourceType, sampleLimit);
-				person.getPhysicalCondition().stressMuscle(time);
 				double result = time - (sampleLimit / collectionRate);
 				if (result < 0)
 					return 0;

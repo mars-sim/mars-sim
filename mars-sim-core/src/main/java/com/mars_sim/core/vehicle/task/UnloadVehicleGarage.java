@@ -9,13 +9,13 @@ package com.mars_sim.core.vehicle.task;
 import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
@@ -41,7 +41,7 @@ public class UnloadVehicleGarage extends Task {
 	private static final TaskPhase UNLOADING = new TaskPhase(Msg.getString("Task.phase.unloading")); //$NON-NLS-1$
 
 	private static final ExperienceImpact IMPACT = new ExperienceImpact(0.1D, NaturalAttributeType.EXPERIENCE_APTITUDE,
-										true, 0.01D, SkillType.MECHANICS);
+										PhysicalEffort.HIGH, 0.01D, SkillType.MECHANICS);
 	
 	/**
 	 * The amount of resources (kg) one person of average strength can unload per
@@ -145,8 +145,6 @@ public class UnloadVehicleGarage extends Task {
 			// Unload resources.
 			if (amountUnloading > 0) {
 				UnloadHelper.unloadInventory(vehicle, settlement, amountUnloading);
-				if (worker instanceof Person)
-					((Person)worker).getPhysicalCondition().stressMuscle(time/2);
 			}
 
 			// Unload towed vehicles.

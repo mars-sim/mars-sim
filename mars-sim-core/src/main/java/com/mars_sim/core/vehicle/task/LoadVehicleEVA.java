@@ -10,6 +10,7 @@ package com.mars_sim.core.vehicle.task;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -32,7 +33,8 @@ public class LoadVehicleEVA extends EVAOperation {
 	public static final String SIMPLE_NAME = LoadVehicleEVA.class.getSimpleName();
 	
 	/** Task phases. */
-	private static final TaskPhase LOADING = new TaskPhase(Msg.getString("Task.phase.loading")); //$NON-NLS-1$
+	private static final TaskPhase LOADING = new TaskPhase(Msg.getString("Task.phase.loading"),
+											createPhaseImpact(PhysicalEffort.HIGH));
 
 
 	// Data members
@@ -138,8 +140,6 @@ public class LoadVehicleEVA extends EVAOperation {
 			checkLocation("Loading plan fully executed.");
 			return time;
 		}
-			
-		person.getPhysicalCondition().stressMuscle(time);
 
         // Add experience points
         addExperience(time);

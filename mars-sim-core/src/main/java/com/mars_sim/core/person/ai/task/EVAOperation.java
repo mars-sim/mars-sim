@@ -25,6 +25,7 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.MissionHistoricalEvent;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.SkillWeight;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
@@ -162,7 +163,12 @@ public abstract class EVAOperation extends Task {
 		skills.add(new SkillWeight(SkillType.EVA_OPERATIONS, 1));
 		return new ExperienceImpact(100D, NaturalAttributeType.EXPERIENCE_APTITUDE, true, 0.05D, 
 					skills);
-
+	}
+	protected static ExperienceImpact createPhaseImpact(PhysicalEffort effort, SkillType... extraSkills) {
+		Set<SkillWeight> skills = ExperienceImpact.toSkillWeights(extraSkills);
+		skills.add(new SkillWeight(SkillType.EVA_OPERATIONS, 1));
+		return new ExperienceImpact(100D, NaturalAttributeType.EXPERIENCE_APTITUDE, effort, 0.05D, 
+					skills);
 	}
 
 	/**

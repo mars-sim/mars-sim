@@ -32,15 +32,32 @@ public class ExperienceImpact implements Serializable {
      */
     public record SkillWeight(SkillType skill, int weight) implements Serializable {}
 
+    /**
+     * Range of physical effort
+     */
+    public enum PhysicalEffort {NONE, LOW, HIGH}
+
     private double skillRatio;
     private Set<SkillWeight> skillWeights;
     private NaturalAttributeType experienceInfluence;
     private double stressModifier;
     private double totalSkillWeight;
     private Set<SkillType> skills;
-    private boolean effortDriven;
+    private PhysicalEffort effortDriven;
 
-    
+    /**
+     * Cut down cosntructor using a varargs of skills.
+     * @param skillRatio Ratio to use when updating skills
+     * @param effortDriven This activity requires effort
+     * @param stressModifier Modifer value for how stressful the activity is
+     * @param experienceAttribute Natural attribute used to assess how much the worker can learn
+     * @param skills Skill required/improved for this activity; evenly weighted
+     */
+    public ExperienceImpact(double skillRatio, NaturalAttributeType experienceAttribute,
+                            PhysicalEffort effortDriven, double stressModifier, SkillType... skills) {
+        this(skillRatio, experienceAttribute, effortDriven, stressModifier, toSkillWeights(skills));
+    }
+
     /**
      * Cut down cosntructor using a varargs of skills.
      * @param skillRatio Ratio to use when updating skills
@@ -51,7 +68,8 @@ public class ExperienceImpact implements Serializable {
      */
     public ExperienceImpact(double skillRatio, NaturalAttributeType experienceAttribute,
                             boolean effortDriven, double stressModifier, SkillType... skills) {
-        this(skillRatio, experienceAttribute, effortDriven, stressModifier, toSkillWeights(skills));
+        this(skillRatio, experienceAttribute, (effortDriven ? PhysicalEffort.LOW : PhysicalEffort.NONE),
+                        stressModifier, toSkillWeights(skills));
     }
 
     /**
@@ -79,6 +97,21 @@ public class ExperienceImpact implements Serializable {
      */
     public ExperienceImpact(double skillRatio, NaturalAttributeType experienceAttribute,
                             boolean effortDriven, double stressModifier,
+                            Set<SkillWeight> skillWeights) {
+        this(skillRatio, experienceAttribute, (effortDriven ? PhysicalEffort.LOW : PhysicalEffort.NONE),
+                stressModifier, skillWeights);
+    }
+
+    /**
+     * Fully qualified contrsuctor allowing full definition of the impact.
+     * @param skillRatio Ratio to use when updating skills
+     * @param stressModifier Used to changed stress coupled with the effectiveness of Worker
+     * @param effortDriven This activity requires effort
+     * @param experienceAttribute Natural attribute used to assess how much the worker can learn
+     * @param skillWeights The Skills affected by this experience with assoicated weights
+     */
+    public ExperienceImpact(double skillRatio, NaturalAttributeType experienceAttribute,
+                            PhysicalEffort effortDriven, double stressModifier,
                             Set<SkillWeight> skillWeights) {
         this.skillRatio = skillRatio;
         this.skillWeights = skillWeights;
@@ -142,7 +175,7 @@ public class ExperienceImpact implements Serializable {
         double energyTime = duration;
 		    
         // Double energy expenditure if performing effort-driven task.
-        if (effortDriven) {
+        if (effortDriven != PhysicalEffort.NONE) {
             energyTime *= 2D;
         }
 
@@ -172,7 +205,7 @@ public class ExperienceImpact implements Serializable {
         // need to modify happiness & other emotions
 
         // Check effort
-        if (effortDriven) {
+        if (effortDriven != PhysicalEffort.NONE) {
             double energyTime = duration * p.getPerformanceRating();
     
             // Double energy expenditure if performing effort-driven task.
@@ -185,7 +218,11 @@ public class ExperienceImpact implements Serializable {
                 }
                 p.getPhysicalCondition().reduceEnergy(energyTime);
             }
-        }
+
+            if (effortDriven == PhysicalEffort.HIGH) {
+                p.getPhysicalCondition().stressMuscle(duration);
+            }
+         }
     }
 
 	/**
@@ -216,7 +253,7 @@ public class ExperienceImpact implements Serializable {
      * Does this experience require effort and impact energy/fatigue?
      */
     public boolean isEffortAffected() {
-        return effortDriven;
+        return effortDriven != PhysicalEffort.NONE;
     }
 
     /**

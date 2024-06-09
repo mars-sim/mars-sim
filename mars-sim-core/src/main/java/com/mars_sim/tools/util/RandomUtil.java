@@ -56,8 +56,10 @@ public final class RandomUtil {
 	 * @return
 	 */
 	public static <E> E getARandSet(Set<E> set) {
+		if (set.isEmpty()) {
+			return null;
+		}
 		return set.stream()
-//				.skip(new Random().nextInt(set.size() - 1))
 				.skip(getRandomInt(set.size() - 1))
 				.findFirst()
 				.orElse(null);
@@ -123,16 +125,6 @@ public final class RandomUtil {
 		if (ceiling < base)
 			throw new IllegalArgumentException(Msg.getString("RandomUtil.log.ceilingMustGreaterBase")); //$NON-NLS-1$
 		return random.nextInt(ceiling - base + 1) + base;
-	}
-
-	/**
-	 * Returns a random double number from 0 to 1.0.
-	 *
-	 * @param ceiling the maximum number result
-	 * @return the random number
-	 */
-	public static double getRandomDouble() {
-		return random.nextDouble();
 	}
 
 	/**
