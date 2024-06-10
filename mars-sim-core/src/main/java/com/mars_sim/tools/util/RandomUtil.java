@@ -66,7 +66,8 @@ public final class RandomUtil {
 	}
     
 	/**
-	 * Get a random element from a List.
+	 * Gets a random element from a List.
+	 * 
 	 * @param <E> The element in the lsit
 	 * @param collection
 	 * @return Element selected at random or a null if the lsit is empty

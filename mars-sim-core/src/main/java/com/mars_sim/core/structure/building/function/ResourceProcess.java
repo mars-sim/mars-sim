@@ -49,6 +49,8 @@ public class ResourceProcess implements Serializable {
 
 	private double toggleRunningWorkTime;
 
+	private double score;
+	
 	private String name;
 
 	private int[] timeLimit = new int[] {1, 0};
@@ -156,7 +158,15 @@ public class ResourceProcess implements Serializable {
 		else
 			return 0;
 	}
-			
+		
+	public double getScore() {
+		return score;
+	}
+	
+	public void setScore(double score) {
+		this.score = score;
+	}
+	
 	/**
 	 * Gets the set of input resources.
 	 *

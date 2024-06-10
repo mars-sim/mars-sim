@@ -67,7 +67,8 @@ public class ResourceProcessPanel extends JPanel {
 		private static final int RUNNING_STATE = 0;
         private static final int PROCESS_NAME = 1;
         private static final int BUILDING_NAME = 2;
-
+        private static final int SCORE = 3;
+        
         private List<ResourceProcess> processes = new ArrayList<>();
 
         private Building mainBuilding;
@@ -97,9 +98,9 @@ public class ResourceProcessPanel extends JPanel {
         @Override
 		public int getColumnCount() {
             if (buildings == null)
-			    return 2;
+			    return 3;
             else
-                return 3;
+                return 4;
 		}
 
         @Override
@@ -114,6 +115,7 @@ public class ResourceProcessPanel extends JPanel {
                 case RUNNING_STATE: return Boolean.class;
                 case PROCESS_NAME: return String.class;
                 case BUILDING_NAME: return String.class;
+                case SCORE: return Double.class;
                 default:
                     throw new IllegalArgumentException("Column unknown " + columnIndex);
             }
@@ -126,6 +128,7 @@ public class ResourceProcessPanel extends JPanel {
                 case RUNNING_STATE: return "Active";
                 case PROCESS_NAME: return "Process";
                 case BUILDING_NAME: return "Building";
+                case SCORE: return "Score";
                 default:
                     throw new IllegalArgumentException("Column unknown " + columnIndex);
             }
@@ -145,6 +148,7 @@ public class ResourceProcessPanel extends JPanel {
                 case RUNNING_STATE: return p.isProcessRunning();
                 case PROCESS_NAME: return p.getProcessName();
                 case BUILDING_NAME: return buildings.get(row);
+                case SCORE: return Math.round(p.getScore() * 100.0)/100.0;
                 default:
                     throw new IllegalArgumentException("Column unknown " + column);
             }
@@ -166,6 +170,7 @@ public class ResourceProcessPanel extends JPanel {
                         return BUILDING_NAME;
                 }
                 case 2: return PROCESS_NAME;
+                case 3: return SCORE;
                 default: return -1;
             }
         }
@@ -319,7 +324,8 @@ public class ResourceProcessPanel extends JPanel {
         columnModel.getColumn(0).setCellRenderer(new RunningCellRenderer());
         columnModel.getColumn(0).setCellEditor(new RunningCellEditor());
         columnModel.getColumn(0).setMaxWidth(50);
-
+        columnModel.getColumn(3).setMaxWidth(60);
+        
         setLayout(new BorderLayout());
         add(scrollPanel, BorderLayout.CENTER);
 

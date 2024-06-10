@@ -31,6 +31,7 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 	
 	/**
 	 * Constructor.
+	 * 
 	 * @param processor the waste processing building this panel is for.
 	 * @param desktop The main desktop.
 	 */
@@ -49,7 +50,7 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 	}
 	
 	/**
-	 * Build the UI
+	 * Builds the UI.
 	 */
 	@Override
 	protected void buildUI(JPanel center) {

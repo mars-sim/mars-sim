@@ -89,8 +89,8 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	
 	private static final double RESOURCE_URGENT = 2;
 	private static final double RESOURCE_DOUBLE_URGENT = 4;
-	private static final double WASTE_URGENT = 10;
-	private static final double WASTE_DOUBLE_URGENT = 20;
+	private static final double WASTE_URGENT = 30;
+	private static final double WASTE_DOUBLE_URGENT = 60;
 	
     public ToggleResourceProcessMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
@@ -181,22 +181,40 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 		for (ResourceProcess process : processes) {
 			if (process.isToggleAvailable() && !process.isFlagged()) {
-				double score = computeBasicScore(settlement, process);
+				double score = 0;
+				// if score is positive, toggle on 
+				// if score is negative, toggle off
 				
 				if (isWaste) {
 					for (int res: process.getInputResources()) {
 						double amount = settlement.getAmountResourceStored(res);
 						if (amount > 0) {
-							score += Math.abs(score) * amount;
+							score += amount;
 						}
 					}
+				} 
+				else {
+					score = computeBasicScore(settlement, process);	
+					
+					// FUTURE: will need to use less fragile method 
+					// (other than using process name string)	
+					String name = process.getProcessName().toLowerCase();
+					
+					score = modifyScore(settlement, name, score);
 				}
+				
+				if (score > 10_000)
+					score = 10_000;
+				else if (score < -10_000)
+					score = -10_000;
+				
+				process.setScore(score);
 				
 				// Check if settlement is missing one or more of the output resources.
 				if (process.isOutputsEmpty(settlement)) {
 					// will push for toggling on this process to produce more output resources
 					if (process.isProcessRunning()) {
-						// no need to change it
+						// Skip this process. No need to turn it on.
 						continue;
 					} else {
 						// will need to push for toggling on this process since output resource is zero
@@ -207,19 +225,20 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// NOTE: Need to detect if the output resource is dwindling
 
 				// Check if settlement is missing one or more of the input resources.
-				if (!process.isInputsPresent(settlement)) { 
+				else if (!process.isInputsPresent(settlement)) { 
 					if (process.isProcessRunning()) {
-						// will need to push for toggling off this process since input resource is
+						// will need to push for toggling off this process 
+						// since input resource is
 						// insufficient
 						score *= rate0;
 					} else {
-						// no need to turn it on
+						// Skip this process. no need to turn it on.
 						continue;
 					}
 				}
 
 				if (score > 0 && process.isProcessRunning()) {
-					// let it continue running. No need to turn it off.
+					// Skip this process. No need to turn it off.
 					continue;
 				}
 
@@ -234,18 +253,12 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				}
 
 				else if (score < 0 && !process.isProcessRunning()) {
-					// let it continue not running. No need to turn it on.
+					// // Skip this process. no need to turn it on.
 					continue;
 				}
 				
-				if (!isWaste) {
-					// FUTURE: will need to use less fragile method 
-					// (other than using process name string)
-					
-					String name = process.getProcessName().toLowerCase();
-					
-					score = modifyScore(settlement, name, score);
-				}
+				// Note: May switch to using probability map such as 
+				// RandomUtil.getWeightedRandomObject
 				
 				if (score >= highest) {
 					highest = score;
@@ -309,7 +322,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		else if (ice) {
 			double iceDemand = goodsManager.getDemandValueWithID(ResourceUtil.iceID);
 			double iceStored = settlement.getAmountResourceStored(ResourceUtil.iceID);
-			score *= iceDemand * (1 + iceStored);
+			score *= .5 * iceDemand * (1 + iceStored);
 		}
 
 		else if (ppa) {
@@ -361,15 +374,14 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	 *
 	 * @param settlement the settlement the resource process is at.
 	 * @param process    the resource process.
-	 * @return the resource score (0 = no need to change); positive number -> demand
-	 *         to toggle on; negative number -> demand to toggle off
+	 * @return the resource score; 
+	 * 		if positive, toggle on; if negative, toggle off
 	 */
 	private static double computeBasicScore(Settlement settlement, ResourceProcess process) {
 		double inputValue = process.getResourcesValue(settlement, true);
 		double outputValue = process.getResourcesValue(settlement, false);
 		double score = outputValue - inputValue;
 
-		// Score is influence if a Toggle is active but no one working. Finish Toggles that have started
 		double[] toggleTime = process.getToggleSwitchDuration();
 		if ((toggleTime[0] > 0) && !process.isFlagged()) {
 			score = score + (100D * ((toggleTime[1] - toggleTime[0])/toggleTime[1]));
