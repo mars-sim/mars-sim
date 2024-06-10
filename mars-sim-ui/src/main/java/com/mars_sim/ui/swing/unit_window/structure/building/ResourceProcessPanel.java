@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ResourceProcessPanel.java
- * @date 2023-02-20
+ * @date 2024-06-09
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.unit_window.structure.building;

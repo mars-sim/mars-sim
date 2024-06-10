@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ResourceProcess.java
- * @date 2022-07-30
+ * @date 2024-06-09
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.function;

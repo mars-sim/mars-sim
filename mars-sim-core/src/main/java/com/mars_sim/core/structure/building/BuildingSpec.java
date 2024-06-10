@@ -292,7 +292,8 @@ public class BuildingSpec {
 	}
 
 	/**
-	 * Combines a custom bounds definitino with what is validate for this building
+	 * Combines a custom bounds definition with what is validate for this building.
+	 * 
 	 * @param bounds Request bounds
 	 * @return Combined valid bounds
 	 */

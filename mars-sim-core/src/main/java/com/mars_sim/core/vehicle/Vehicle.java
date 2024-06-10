@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Vehicle.java
- * @date 2023-06-10
+ * @date 2024-06-09
  * @author Scott Davis
  */
 package com.mars_sim.core.vehicle;
@@ -604,7 +604,8 @@ public abstract class Vehicle extends Unit
 
 		Settlement settlement = getSettlement();
 		if (settlement != null) {
-			for (Building garageBuilding : settlement.getBuildingManager().getBuildingSet(FunctionType.VEHICLE_MAINTENANCE)) {
+			for (Building garageBuilding : settlement.getBuildingManager()
+					.getBuildingSet(FunctionType.VEHICLE_MAINTENANCE)) {
 				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
 				if (garage != null) {
 					if (this instanceof Flyer flyer && garage.containsFlyer(flyer)) {
@@ -1669,7 +1670,8 @@ public abstract class Vehicle extends Unit
 
 			int weight = 2;
 
-			List<Building> evas = settlement.getBuildingManager().getBuildingsOfSameCategory(BuildingCategory.EVA_AIRLOCK);
+			List<Building> evas = settlement.getBuildingManager()
+					.getBuildingsOfSameCategory(BuildingCategory.EVA_AIRLOCK);
 			int numGarages = settlement.getBuildingManager().getGarages().size();
 			int total = (int)(evas.size() + numGarages * weight - 1);
 			if (total < 0)

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Settlement.java
- * @date 2023-06-30
+ * @date 2024-06-09
  * @author Scott Davis
  */
 
@@ -2061,8 +2061,8 @@ public class Settlement extends Structure implements Temporal,
 		if (ownedVehicles.add(vehicle)) {
 			// Set this settlement as the container unit
 			vehicle.setContainerUnit(this);
-			// Note: call setCoordinates won't help
-//			vehicle.setCoordinates(getCoordinates());
+			// Set vehicle's coordinates to that of settlement
+			vehicle.setCoordinates(getCoordinates());
 			// Call findNewParkingLoc to get a non-collided x and y coordinates
 			vehicle.findNewParkingLoc();
 			// Update the numOwnedVehicles
