@@ -411,34 +411,7 @@ public class ManufactureConstructionMaterials extends Task {
 
 		// Apply work time to manufacturing processes.
 		while ((workTime > 0D) && !isDone()) {
-			ManufactureProcess process = getRunningManufactureProcess();
-			if (process != null) {
-				double remainingWorkTime = process.getWorkTimeRemaining();
-				double providedWorkTime = workTime;
-				if (providedWorkTime > remainingWorkTime) {
-					providedWorkTime = remainingWorkTime;
-				}
-				process.addWorkTime(providedWorkTime);
-				workTime -= providedWorkTime;
-
-				if ((process.getWorkTimeRemaining() <= 0D) && (process.getProcessTimeRemaining() <= 0D)) {
-					workshop.endManufacturingProcess(process, false);
-				}
-			} 
-			else {
-				if (!worker.getSettlement().getProcessOverride(OverrideType.MANUFACTURE))
-					process = createNewManufactureProcess();
-				
-				if (process == null) {
-					endTask();
-				}
-			}
-
-			if (process == null) {
-				// Prints description
-				setDescription(Msg.getString("Task.description.manufactureConstructionMaterials.checking")); //$NON-NLS-1$
-			
-			}
+			manufacture(workTime);
 		}
 
 		// Add experience
@@ -450,6 +423,43 @@ public class ManufactureConstructionMaterials extends Task {
 		return 0D;
 	}
 
+	/**
+	 * Executes the manufacture process.
+	 * 
+	 * @param workTime
+	 */
+	private void manufacture(double workTime) {
+		ManufactureProcess process = getRunningManufactureProcess();
+		if (process != null) {
+			double remainingWorkTime = process.getWorkTimeRemaining();
+			double providedWorkTime = workTime;
+			if (providedWorkTime > remainingWorkTime) {
+				providedWorkTime = remainingWorkTime;
+			}
+			process.addWorkTime(providedWorkTime);
+			workTime -= providedWorkTime;
+
+			if ((process.getWorkTimeRemaining() <= 0D) && (process.getProcessTimeRemaining() <= 0D)) {
+				workshop.endManufacturingProcess(process, false);
+			}
+		} 
+		else {
+			if (!worker.getSettlement().getProcessOverride(OverrideType.MANUFACTURE))
+				process = createNewManufactureProcess();
+			
+			if (process == null) {
+				endTask();
+			}
+		}
+
+		if (process == null) {
+			// Prints description
+			setDescription(Msg.getString("Task.description.manufactureConstructionMaterials.checking")); //$NON-NLS-1$
+		}
+	}
+	
+	
+	
 	/**
 	 * Gets an available running manufacturing process.
 	 * 
