@@ -54,7 +54,7 @@ extends JPanel {
 	private JProgressBar progress;
 	
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	StudyDetailPanel(ScienceWindow scienceWindow) {
 		// Use JPanel constructor.
@@ -118,7 +118,8 @@ extends JPanel {
 	}
 
 	/**
-	 * Display information about a scientific study.
+	 * Displays information about a scientific study.
+	 * 
 	 * @param study the scientific study.
 	 */
 	boolean displayScientificStudy(ScientificStudy study) {
@@ -153,7 +154,8 @@ extends JPanel {
 
 
 	/**
-	 * Get the phase string for a scientific study.
+	 * Gets the phase string for a scientific study.
+	 * 
 	 * @param study the scientific study.
 	 * @return the phase string.
 	 */
@@ -218,7 +220,7 @@ extends JPanel {
 			Person p = researchers.get(row);
 			boolean isPrimary = (p.equals(study.getPrimaryResearcher()));
 
-			// Safetly check
+			// Safety check
 			if (!isPrimary && !study.getCollaborativeResearchers().contains(p)) {
 				return null;
 			}
@@ -256,7 +258,7 @@ extends JPanel {
 				}
 			}
 
-			// Remove any colloborators no longer taking part
+			// Remove any collaborators no longer taking part
 			Person lead = study.getPrimaryResearcher();
 			List<Person> oldResearchers = new ArrayList<>();
 			for(Person r : researchers) {

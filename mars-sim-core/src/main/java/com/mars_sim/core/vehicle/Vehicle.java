@@ -503,7 +503,7 @@ public abstract class Vehicle extends Unit
 	 * @return yes if it has it
 	 */
 	public boolean haveStatusType(StatusType status) {
-        return statusTypes.contains(status);
+        return (primaryStatus == status) || statusTypes.contains(status);
     }
 
 	/**
@@ -1355,10 +1355,15 @@ public abstract class Vehicle extends Unit
 			setReservedForMaintenance(false);
 			removeSecondaryStatus(StatusType.MAINTENANCE);
 		}
-		else if (!haveStatusType(StatusType.GARAGED)) { 
+		
+		if (!haveStatusType(StatusType.GARAGED)) { 
 			// Not under maintenance and not in garage
 			// Note: during maintenance, it doesn't need to be checking for malfunction.
 			malfunctionManager.timePassing(pulse);
+
+			if (isInAGarage()) {
+				BuildingManager.removeFromGarage(this);
+			}
 		}
 
 		if (haveStatusType(StatusType.MALFUNCTION)

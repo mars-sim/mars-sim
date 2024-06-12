@@ -72,26 +72,28 @@
 ]>
 
 <!--
-1. Pressurized Rover Airlocks
+1. SAE Technical Paper on Pressurized Rover Airlocks. 30th International Conference on Environmental Systems Toulouse, France July 10-13, 2000. 
 http://www.astrotecture.com/EVA_Systems_files/SAE-2000-01-2389.pdf
 
-2. NASA Space Exploration Vehicle Concept
-http://www.nasa.gov/pdf/464826main_SEV_Concept_FactSheet.pdf
+2. NASA Space Exploration Vehicle (SEV) Concept.  
+https://en.wikipedia.org/wiki/Space_Exploration_Vehicle
 
-3. Surface Mobility Technology Development: Pressurized Mars Rovers
-http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.121.575&rep=rep1&type=pdf
+3. Planetary Rover Developments Supporting Mars Exploration, Sample Return and Future Human-Robotic Colonization. 
+https://www.researchgate.net/publication/225874289_Planetary_Rover_Developments_Supporting_Mars_Exploration_Sample_Return_and_Future_Human-Robotic_Colonization
 
-4. For methane gas,
-Specific energy is 55.5	MJ/kg, or 15,416 Wh/kg, or 15.416kWh/kg
-Energy density is 0.0364 MJ/L, 36.4 kJ/L or 10 Wh/L
+4. Utilization of Methane as Fuel. 
+Specific energy is 55.5	MJ/kg, or 15,416 Wh/kg, or 15.416kWh/kg.
+Energy density is 0.0364 MJ/L, 36.4 kJ/L or 10 Wh/L.
 Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 
-5. Assume Solid Oxide Fuel Cell (SOFC) has 57% efficiency.
+5. New small solid oxide fuel cell reaches record efficiency.
+As of 2012, Solid Oxide Fuel Cell (SOFC) reached 57% efficiency. 
 https://www.sciencedaily.com/releases/2012/05/120531165720.htm
 
-6. According to Zubrin, it is estimated that a 1 tonne pressurized ground rover would require about 0.5 kg of
+6. Mars Direct: A Simple, Robust, and Cost Effective Architecture for the Space Exploration Initiative.
+According to Zubrin, it is estimated that a 1 tonne pressurized ground rover would require about 0.5 kg of
 methanol/oxygen bipropellant to travel 1 km. Thus a 800 km round trip excursion would consume about 400 kg of
-propellant.
+propellant. 
 http://www.marspapers.org/paper/Zubrin_1991.pdf
 -->
 
