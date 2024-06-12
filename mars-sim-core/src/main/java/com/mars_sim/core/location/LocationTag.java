@@ -163,8 +163,6 @@ public class LocationTag implements LocationState, Serializable {
 		else if (v != null) {
 			if (LocationStateType.INSIDE_SETTLEMENT == v.getLocationStateType())
 				return v.getSettlement().getName();
-			if (LocationStateType.SETTLEMENT_VICINITY == v.getLocationStateType())
-				return findSettlementVicinity().getName() + VICINITY;
 			if (LocationStateType.MARS_SURFACE == v.getLocationStateType()) {
 				Settlement s = findSettlementVicinity();
 				if (s != null)
@@ -172,6 +170,15 @@ public class LocationTag implements LocationState, Serializable {
 				Vehicle v = findVehicleVicinity();
 				if (v != null)
 					return v.getName() + VICINITY;
+				
+				return MARS_SURFACE;
+			}
+			if (LocationStateType.SETTLEMENT_VICINITY == v.getLocationStateType()) {
+				Settlement s = findSettlementVicinity();
+				if (s != null)
+					return findSettlementVicinity().getName() + VICINITY;
+				else
+					return MARS_SURFACE;			
 			}
 		}
 

@@ -262,7 +262,7 @@ public abstract class VehicleMaintenance extends Function {
 			if (transferCrew)
 				relocateCrew(vehicle);
 			 
-			handleParking(vehicle);
+			parkInVicinity(vehicle);
 
 			logger.fine(vehicle, "Removed from " + building.getName() + " in " + building.getSettlement() + ".");
 			
@@ -287,7 +287,7 @@ public abstract class VehicleMaintenance extends Function {
 		// Note: Check if using Collection.remove() below is safe
 		if (flyers.remove(flyer)) {
 			 
-			handleParking(flyer);
+			parkInVicinity(flyer);
 
 			logger.fine(flyer, "Removed from " + building.getName() + " in " + building.getSettlement() + ".");
 			
@@ -342,11 +342,11 @@ public abstract class VehicleMaintenance extends Function {
 	
 	
 	/**
-	 * Handles the parking situation of the vehicle upon being removed from garage.
+	 * Parks the vehicle in settlement vicinity upon being removed from garage.
 	 * 
 	 * @param vehicle
 	 */
-	public void handleParking(Vehicle vehicle) {
+	public void parkInVicinity(Vehicle vehicle) {
 		
 		// FUTURE: should be done in a task to relocate the vehicle by either a person
 		// or by AI that costs a minute amount of CUs.

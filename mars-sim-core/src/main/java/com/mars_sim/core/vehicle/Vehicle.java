@@ -2227,16 +2227,19 @@ public abstract class Vehicle extends Unit
 //			}
 			
 			// 2. Set new LocationStateType
-			// 2a. If the previous cu is a settlement
-			//     and this vehicle's new cu is mars surface,
+			// 2a. If the old cu is a settlement
+			//     and the new cu is mars surface,
 			//     then location state is within settlement vicinity
 			if (cu != null 
 				&& (cu.getUnitType() == UnitType.SETTLEMENT
-				|| cu.getUnitType() == UnitType.BUILDING)
-					&& newContainer.getUnitType() == UnitType.MARS) {
-						currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+					|| cu.getUnitType() == UnitType.BUILDING)
+				&& newContainer.getUnitType() == UnitType.MARS) {
+					setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
 			}	
 			else {
+				// 2b. If old cu is null (parking within settlement vicinity
+				//     and the new cu is mars surface,
+				//     then new location state is mars surface
 				updateVehicleState(newContainer);
 			}
 			
@@ -2263,11 +2266,11 @@ public abstract class Vehicle extends Unit
 	 */
 	public void updateVehicleState(Unit newContainer) {
 		if (newContainer == null) {
-			currentStateType = LocationStateType.UNKNOWN;
+			setLocationStateType(LocationStateType.UNKNOWN);
 			return;
 		}
 
-		currentStateType = getNewLocationState(newContainer);
+		setLocationStateType(getNewLocationState(newContainer));
 	}
 
 	/**
