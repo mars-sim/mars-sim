@@ -70,7 +70,7 @@ extends BuildingFunctionPanel {
 	}
 	
 	/**
-	 * Build the UI
+	 * Builds the UI.
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
@@ -99,7 +99,7 @@ extends BuildingFunctionPanel {
 	}
 
 	/**
-	 * Update this panel with latest Heat Mode status and amount of heat produced
+	 * Updates this panel with latest Heat Mode status and amount of heat produced.
 	 */
 	@Override
 	public void update() {	

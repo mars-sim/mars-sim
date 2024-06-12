@@ -202,7 +202,7 @@ extends WizardPanel {
 			units.clear();
 			Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
 			Collection<Vehicle> vehicles = CollectionUtils.sortByName(
-					startingSettlement.getParkedVehicles());
+					startingSettlement.getParkedGaragedVehicles());
 			Iterator<Vehicle> i = vehicles.iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();

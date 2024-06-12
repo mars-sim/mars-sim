@@ -393,7 +393,7 @@ public final class CommerceUtil {
 			case VEHICLE:
 				int count = 0;
 				VehicleType vehicleType = VehicleType.convertNameToVehicleType(good.getName());
-				Iterator<Unit> i = settlement.getVehicleTypeList(vehicleType).iterator();
+				Iterator<Unit> i = settlement.getVehicleTypeUnit(vehicleType).iterator();
 				while (i.hasNext()) {
 					Vehicle vehicle = (Vehicle) i.next();
 					boolean isEmpty = vehicle.isEmpty();

@@ -62,7 +62,7 @@ public class TabPanelVehicles extends TabPanel {
 		parkedVehicles = new UnitListPanel<>(desktop) {
 			@Override
 			protected Collection<Vehicle> getData() {
-				return settlement.getParkedVehicles();
+				return settlement.getParkedGaragedVehicles();
 			}
 		};
 		addBorder(parkedVehicles, Msg.getString("TabPanelVehicles.parked.vehicles"));

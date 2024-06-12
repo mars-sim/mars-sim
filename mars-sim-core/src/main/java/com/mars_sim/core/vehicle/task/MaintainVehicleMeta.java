@@ -121,7 +121,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 	 */
 	private static List<Vehicle> getAllVehicleCandidates(Settlement home, boolean mustBeOutside) {
 		// Vehicle must not be reserved for Mission nor maintenance
-		return home.getParkedVehicles().stream()
+		return home.getParkedGaragedVehicles().stream()
 			.filter(v -> (!v.isReserved()
 						&& (!mustBeOutside || !v.isInAGarage())))
 			.collect(Collectors.toList());

@@ -561,7 +561,7 @@ public class ConstructionMission extends AbstractMission
 	public static boolean isLUVAvailable(Settlement settlement) {
 		boolean result = false;
 
-		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+		Iterator<Vehicle> i = settlement.getParkedGaragedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
 
@@ -916,7 +916,7 @@ public class ConstructionMission extends AbstractMission
 	private LightUtilityVehicle reserveLightUtilityVehicle() {
 		LightUtilityVehicle result = null;
 
-		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+		Iterator<Vehicle> i = settlement.getParkedGaragedVehicles().iterator();
 		while (i.hasNext() && (result == null)) {
 			Vehicle vehicle = i.next();
 
@@ -927,7 +927,7 @@ public class ConstructionMission extends AbstractMission
 					result = luvTemp;
 					luvTemp.setReservedForMission(true);
 
-					if (!settlement.removeParkedVehicle(luvTemp)) {
+					if (!settlement.removeVicinityParkedVehicle(luvTemp)) {
 						endMissionProblem(luvTemp, "Can not remove parked vehicle");
 					}
 				}

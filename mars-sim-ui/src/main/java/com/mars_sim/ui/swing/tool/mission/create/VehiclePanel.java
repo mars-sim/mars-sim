@@ -261,7 +261,7 @@ class VehiclePanel extends WizardPanel {
 		void updateTable() {
 			units.clear();
 			Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
-			Collection<Vehicle> vehicles = CollectionUtils.sortByName(startingSettlement.getParkedVehicles());
+			Collection<Vehicle> vehicles = CollectionUtils.sortByName(startingSettlement.getParkedGaragedVehicles());
 			Iterator<Vehicle> i = vehicles.iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();

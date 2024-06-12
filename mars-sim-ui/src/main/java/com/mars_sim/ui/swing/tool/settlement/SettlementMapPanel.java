@@ -743,7 +743,7 @@ public class SettlementMapPanel extends JPanel {
 
 		Vehicle selectedVehicle = null;
 
-		Iterator<Vehicle> j = settlement.parkedVehicles().iterator(); // CollectionUtils.getVehiclesInSettlementVicinity(settlement).iterator();
+		Iterator<Vehicle> j = settlement.getParkedGaragedVehicles().iterator(); // CollectionUtils.getVehiclesInSettlementVicinity(settlement).iterator();
 		while (j.hasNext()) {
 			Vehicle vehicle = j.next();
 			double width = vehicle.getWidth(); // width is on y-axis ?
@@ -782,7 +782,7 @@ public class SettlementMapPanel extends JPanel {
 
 		Vehicle selectedVehicle = null;
 
-		Iterator<Vehicle> j = settlement.parkedVehicles().iterator(); // CollectionUtils.getVehiclesInSettlementVicinity(settlement).iterator();
+		Iterator<Vehicle> j = settlement.getParkedGaragedVehicles().iterator(); // CollectionUtils.getVehiclesInSettlementVicinity(settlement).iterator();
 		while (j.hasNext()) {
 			Vehicle vehicle = j.next();
 			double width = vehicle.getWidth(); // width is on y-axis ?

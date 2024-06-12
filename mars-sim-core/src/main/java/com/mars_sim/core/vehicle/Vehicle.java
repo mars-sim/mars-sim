@@ -2333,7 +2333,7 @@ public abstract class Vehicle extends Unit
 			return true;
 
 		if (getContainerUnit().getUnitType() == UnitType.SETTLEMENT
-				&& ((Settlement)(getContainerUnit())).containsParkedVehicle((Vehicle)this)) {
+				&& ((Settlement)(getContainerUnit())).containsVicinityParkedVehicle((Vehicle)this)) {
 			return true;
 		}
 
@@ -2359,7 +2359,7 @@ public abstract class Vehicle extends Unit
 		}
 		else if (cu.getUnitType() == UnitType.SETTLEMENT) {
 			Settlement currentBase = (Settlement)cu;
-			transferred = currentBase.removeParkedVehicle(this);
+			transferred = currentBase.removeVicinityParkedVehicle(this);
 			leaving = true;
 			// Q: do we need to set the coordinate to the settlement one last time prior to leaving
 //			setCoordinates(currentBase.getCoordinates());
@@ -2371,7 +2371,7 @@ public abstract class Vehicle extends Unit
 				leaving = leaving && true;
 			}
 			else if (cu.getUnitType() == UnitType.SETTLEMENT) {
-				transferred = ((Settlement)destination).addParkedVehicle(this);
+				transferred = ((Settlement)destination).addVicinityVehicle(this);
 			}
 
 			if (!transferred) {

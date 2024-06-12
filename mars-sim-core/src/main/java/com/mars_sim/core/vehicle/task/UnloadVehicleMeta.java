@@ -131,7 +131,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
         }
 
         // Check non-mission vehicles
-        for (Vehicle vehicle : settlement.getParkedVehicles()) {
+        for (Vehicle vehicle : settlement.getParkedGaragedVehicles()) {
 			if (!vehicle.isReserved() && !assessed.contains(vehicle)) {
                 SettlementTask job = scoreVehicle(settlement, vehicle, insideTasks, this);
                 if (job != null) {

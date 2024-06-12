@@ -124,7 +124,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	@Override
 	protected Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
 		Collection<Vehicle> result = new ArrayList<>();
-		Collection<Vehicle> list = settlement.getParkedVehicles();
+		Collection<Vehicle> list = settlement.getParkedGaragedVehicles();
 		if (list.isEmpty())
 			return result;
 		for (Vehicle v : list) {
@@ -184,7 +184,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 		boolean result = false;
 
-		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+		Iterator<Vehicle> i = settlement.getParkedGaragedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
 
@@ -1016,7 +1016,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 */
 	public static boolean hasBackupRover(Settlement settlement) {
 		int availableVehicleNum = 0;
-		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+		Iterator<Vehicle> i = settlement.getParkedGaragedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
 			if ((vehicle instanceof Rover) && !vehicle.isReservedForMission())

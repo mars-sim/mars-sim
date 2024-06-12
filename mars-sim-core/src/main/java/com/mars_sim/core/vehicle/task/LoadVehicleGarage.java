@@ -175,10 +175,10 @@ public class LoadVehicleGarage extends Task {
 
 		boolean roverInSettlement = false;
 		// Check defensively to make sure the vehicle is NOT parked in the settlement vicinity
-		if (settlement.containsParkedVehicle(vehicle)) {
+		if (settlement.containsVicinityParkedVehicle(vehicle)) {
 			roverInSettlement = true;
 			// Ensure that this vehicle is inside a garage when running this LoadVehicleGarage task
-			settlement.removeParkedVehicle(vehicle);
+			settlement.removeVicinityParkedVehicle(vehicle);
 		}
 
 		// Check if there are enough resources at the settlement.
@@ -235,7 +235,7 @@ public class LoadVehicleGarage extends Task {
 		}
 
 		if (roverInSettlement)
-			settlement.addParkedVehicle(vehicle);
+			settlement.addVicinityVehicle(vehicle);
 
 		return true;
 	}

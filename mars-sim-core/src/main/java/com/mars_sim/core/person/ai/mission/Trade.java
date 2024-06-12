@@ -246,7 +246,7 @@ public class Trade extends RoverMission implements CommerceMission {
 		// If rover is not parked at settlement, park it.
 		if ((v != null) && (v.getSettlement() == null)) {
 
-			tradingSettlement.addParkedVehicle(v);
+			tradingSettlement.addVicinityVehicle(v);
 
 			// Add vehicle to a garage if available.
 			if (!tradingSettlement.getBuildingManager().addToGarage(v)) {
@@ -396,7 +396,7 @@ public class Trade extends RoverMission implements CommerceMission {
 			towed.setReservedForMission(false);
 			getRover().setTowedVehicle(null);
 			towed.setTowingVehicle(null);
-			tradingSettlement.addParkedVehicle(towed);
+			tradingSettlement.addVicinityVehicle(towed);
 			towed.findNewParkingLoc();
 		}
 	}
@@ -413,7 +413,7 @@ public class Trade extends RoverMission implements CommerceMission {
 					buyVehicle.setReservedForMission(true);
 					getRover().setTowedVehicle(buyVehicle);
 					buyVehicle.setTowingVehicle(getRover());
-					tradingSettlement.removeParkedVehicle(buyVehicle);
+					tradingSettlement.removeVicinityParkedVehicle(buyVehicle);
 				} else {
 					logger.warning(getRover(), "Selling vehicle (" + vehicleType + ") is not available (Trade).");
 					endMission(SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
@@ -511,7 +511,7 @@ public class Trade extends RoverMission implements CommerceMission {
 					sellVehicle.setReservedForMission(true);
 					getRover().setTowedVehicle(sellVehicle);
 					sellVehicle.setTowingVehicle(getRover());
-					getStartingSettlement().removeParkedVehicle(sellVehicle);
+					getStartingSettlement().removeVicinityParkedVehicle(sellVehicle);
 				} else {
 					logger.warning(getRover(), "Selling vehicle (" + vehicleType + ") is not available (Trade).");
 					endMission(SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
@@ -594,7 +594,7 @@ public class Trade extends RoverMission implements CommerceMission {
 				settlement = getStartingSettlement();
 			}
 
-			Iterator<Vehicle> j = settlement.getParkedVehicles().iterator();
+			Iterator<Vehicle> j = settlement.getParkedGaragedVehicles().iterator();
 			while (j.hasNext()) {
 				Vehicle vehicle = j.next();
 				boolean isEmpty = vehicle.isEmpty();

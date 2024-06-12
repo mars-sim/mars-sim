@@ -246,7 +246,7 @@ class ConstructionVehiclePanel extends WizardPanel {
             units.clear();
             Settlement settlement = getWizard().getMissionData().getConstructionSettlement();
             Collection<Vehicle> vehicles = CollectionUtils.sortByName(
-                    settlement.getParkedVehicles());
+                    settlement.getParkedGaragedVehicles());
             Iterator<Vehicle> i = vehicles.iterator();
             while (i.hasNext()) {
                 Vehicle vehicle = i.next();

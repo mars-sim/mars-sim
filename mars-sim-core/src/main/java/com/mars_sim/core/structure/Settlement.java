@@ -327,7 +327,7 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement's list of owned vehicles. */
 	private Set<Vehicle> ownedVehicles;
 	/** The settlement's list of parked vehicles. */
-	private Set<Vehicle> parkedVehicles;
+	private Set<Vehicle> vicinityParkedVehicles;
 	/** The list of people currently within the settlement. */
 	private Set<Person> indoorPeople;
 	/** The settlement's list of robots within. */
@@ -367,7 +367,7 @@ public class Settlement extends Structure implements Temporal,
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
-		parkedVehicles = new UnitSet<>();
+		vicinityParkedVehicles = new UnitSet<>();
 		indoorPeople = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 
@@ -418,7 +418,7 @@ public class Settlement extends Structure implements Temporal,
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
-		parkedVehicles = new UnitSet<>();
+		vicinityParkedVehicles = new UnitSet<>();
 		indoorPeople = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 		allowTradeMissionSettlements = new HashMap<>();
@@ -1998,16 +1998,16 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Adds a parked vehicle.
+	 * Adds a vicinity parked vehicle.
 	 *
 	 * @param vehicle
-	 * @param true if the parked vehicle can be added
+	 * @param true if the vicinity parked vehicle can be added
 	 */
-	public boolean addParkedVehicle(Vehicle vehicle) {
-		if (parkedVehicles.contains(vehicle)) {
+	public boolean addVicinityVehicle(Vehicle vehicle) {
+		if (vicinityParkedVehicles.contains(vehicle)) {
 			return true;
 		}
-		if (parkedVehicles.add(vehicle)) {
+		if (vicinityParkedVehicles.add(vehicle)) {
 			// Directly update the location state type
 			vehicle.updateLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
 			// Set this settlement as the container unit
@@ -2019,34 +2019,25 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Removes a parked vehicle.
+	 * Removes a vicinity parked vehicle.
 	 *
 	 * @param vehicle
-	 * @param true if the parked vehicle can be removed
+	 * @param true if the vicinity parked vehicle can be removed
 	 */
-	public boolean removeParkedVehicle(Vehicle vehicle) {
-		if (!parkedVehicles.contains(vehicle))
+	public boolean removeVicinityParkedVehicle(Vehicle vehicle) {
+		if (!vicinityParkedVehicles.contains(vehicle))
 			return true;
-		return parkedVehicles.remove(vehicle);
+		return vicinityParkedVehicles.remove(vehicle);
 	}
 
 	/**
-	 * Does it have this vehicle parked at the settlement ?
+	 * Does it have this vicinity vehicle parked at the settlement ?
 	 *
 	 * @param vehicle
 	 * @return
 	 */
-	public boolean containsParkedVehicle(Vehicle vehicle) {
-		return parkedVehicles.contains(vehicle);
-	}
-
-	/**
-	 * Returns a set of parked vehicles.
-	 * 
-	 * @return
-	 */
-	public Set<Vehicle> parkedVehicles() {
-		return parkedVehicles;
+	public boolean containsVicinityParkedVehicle(Vehicle vehicle) {
+		return vicinityParkedVehicles.contains(vehicle);
 	}
 	
 	/**
@@ -2068,7 +2059,7 @@ public class Settlement extends Structure implements Temporal,
 			// Update the numOwnedVehicles
 			numOwnedVehicles = ownedVehicles.size();
 			// Add this vehicle as parked
-			addParkedVehicle(vehicle);
+			addVicinityVehicle(vehicle);
 			
 			return true;
 		}
@@ -2227,9 +2218,9 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Gets a collection of drones parked or garaged at the settlement.
 	 *
-	 * @return Collection of parked drones
+	 * @return Collection of parked or garaged drones
 	 */
-	public Collection<Drone> getParkedDrones() {
+	public Collection<Drone> getParkedGaragedDrones() {
 		return ownedVehicles.stream()
 				.filter(v -> v.getVehicleType() == VehicleType.DELIVERY_DRONE)
 				.filter(v -> this.equals(v.getSettlement()))
@@ -2240,9 +2231,9 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Gets the number of drones parked or garaged at the settlement.
 	 *
-	 * @return parked drones number
+	 * @return parked or garaged drones number
 	 */
-	public int getNumParkedDrones() {
+	public int getNumParkedGaragedDrones() {
 		return Math.toIntExact(ownedVehicles
 				.stream()
 				.filter(v -> v.getVehicleType() == VehicleType.DELIVERY_DRONE)
@@ -2251,11 +2242,11 @@ public class Settlement extends Structure implements Temporal,
 	}
 	
 	/**
-	 * Gets a collection of drones parked or garaged at the settlement.
+	 * Gets a collection of vehicles parked or garaged at the settlement.
 	 *
-	 * @return Collection of parked drones
+	 * @return Collection of Unit
 	 */
-	public Collection<Unit> getVehicleTypeList(VehicleType vehicleType) {
+	public Collection<Unit> getVehicleTypeUnit(VehicleType vehicleType) {
 		return ownedVehicles.stream()
 				.filter(v -> v.getVehicleType() == vehicleType)
 				.map(Unit.class::cast)
@@ -2291,9 +2282,9 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Gets a collection of vehicles parked or garaged at the settlement.
 	 *
-	 * @return Collection of parked vehicles
+	 * @return Collection of parked or garaged vehicles
 	 */
-	public Collection<Vehicle> getParkedVehicles() {
+	public Collection<Vehicle> getParkedGaragedVehicles() {
 		// Get all Vehicles that are back home
 		return 	ownedVehicles.stream()
 					.filter(v -> this.equals(v.getSettlement()))
@@ -3705,11 +3696,11 @@ public class Settlement extends Structure implements Temporal,
 		ownedVehicles.clear();
 		ownedVehicles = null;
 		
-		for (Vehicle v: parkedVehicles) {
+		for (Vehicle v: vicinityParkedVehicles) {
 			v.destroy();
 		}
-		parkedVehicles.clear();
-		parkedVehicles = null;
+		vicinityParkedVehicles.clear();
+		vicinityParkedVehicles = null;
 		
 	
 		if (buildingManager != null) {

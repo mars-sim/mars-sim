@@ -100,32 +100,33 @@
 	</building-package>
 	
 	<building-package name="ERV Set 1" >
+	    <standalone type="ERV-I" xloc="36.0" yloc="13.0" facing="0.0" />
+	    <standalone type="ERV-A" xloc="36.0" yloc="26.0" facing="0.0" />
+	    <standalone type="ERV-B" xloc="36.0" yloc="39.0" facing="0.0" />
+	    <standalone type="ERV-C" xloc="36.0" yloc="52.0" facing="0.0" />
+	</building-package>
+	
+	<building-package name="ERV Set 2" >
 	    <standalone type="ERV-I" xloc="18.0" yloc="13.0" facing="0.0" />
 	    <standalone type="ERV-A" xloc="18.0" yloc="26.0" facing="0.0" />
 	    <standalone type="ERV-B" xloc="18.0" yloc="39.0" facing="0.0" />
 	    <standalone type="ERV-C" xloc="18.0" yloc="52.0" facing="0.0" />
 	</building-package>
 	
-	<building-package name="ERV Set 2" >
-	    <standalone type="ERV-I" xloc="36.0" yloc="13.0" facing="0.0" />
-	    <standalone type="ERV-A" xloc="36.0" yloc="26.0" facing="0.0" />
-	    <standalone type="ERV-B" xloc="36.0" yloc="39.0" facing="0.0" />
-	    <standalone type="ERV-C" xloc="36.0" yloc="52.0" facing="0.0" />
-	</building-package>
-
 	<building-package name="ERV Set 3" >
-	    <standalone type="ERV-I" xloc="18.0" yloc="65.0" facing="0.0" />
-	    <standalone type="ERV-A" xloc="18.0" yloc="78.0" facing="0.0" />
-	    <standalone type="ERV-B" xloc="18.0" yloc="91.0" facing="0.0" />
-	    <standalone type="ERV-C" xloc="18.0" yloc="104.0" facing="0.0" />
-	</building-package>
-	
-	<building-package name="ERV Set 4" >
 	    <standalone type="ERV-I" xloc="36.0" yloc="65.0" facing="0.0" />
 	    <standalone type="ERV-A" xloc="36.0" yloc="78.0" facing="0.0" />
 	    <standalone type="ERV-B" xloc="36.0" yloc="91.0" facing="0.0" />
 	    <standalone type="ERV-C" xloc="36.0" yloc="104.0" facing="0.0" />
 	</building-package>
+	
+	<building-package name="ERV Set 4" >
+	    <standalone type="ERV-I" xloc="18.0" yloc="65.0" facing="0.0" />
+	    <standalone type="ERV-A" xloc="18.0" yloc="78.0" facing="0.0" />
+	    <standalone type="ERV-B" xloc="18.0" yloc="91.0" facing="0.0" />
+	    <standalone type="ERV-C" xloc="18.0" yloc="104.0" facing="0.0" />
+	</building-package>
+
 		
 
 	<building-package name="Air Set 1 - 1x1" >

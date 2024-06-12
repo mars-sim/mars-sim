@@ -259,7 +259,7 @@ public class SalvageMission extends AbstractMission
 			GroundVehicle vehicle = j.next();
 			vehicle.setReservedForMission(true);
 			// Record the name of this vehicle in Mission
-			if (!settlement.removeParkedVehicle(vehicle)) {
+			if (!settlement.removeVicinityParkedVehicle(vehicle)) {
 				endMissionProblem(vehicle, "Can not remove parked vehicle");
 			}
 		}
@@ -459,7 +459,7 @@ public class SalvageMission extends AbstractMission
 	public static boolean isLUVAvailable(Settlement settlement) {
 		boolean result = false;
 
-		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+		Iterator<Vehicle> i = settlement.getParkedGaragedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
 
@@ -541,7 +541,7 @@ public class SalvageMission extends AbstractMission
 	private LightUtilityVehicle reserveLightUtilityVehicle() {
 		LightUtilityVehicle result = null;
 
-		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+		Iterator<Vehicle> i = settlement.getParkedGaragedVehicles().iterator();
 		while (i.hasNext() && (result == null)) {
 			Vehicle vehicle = i.next();
 
@@ -556,7 +556,7 @@ public class SalvageMission extends AbstractMission
 					LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(constructionSite);
 					luvTemp.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
 
-					if (!settlement.removeParkedVehicle(luvTemp)) {
+					if (!settlement.removeVicinityParkedVehicle(luvTemp)) {
 						endMissionProblem(luvTemp, "Can not remove parked vehicle");
 					}
 				}
@@ -580,7 +580,7 @@ public class SalvageMission extends AbstractMission
 				}
 
 				// Store construction vehicle in settlement.
-				settlement.addParkedVehicle(vehicle);
+				settlement.addVicinityVehicle(vehicle);
 				vehicle.findNewParkingLoc();
 
 				// Store all construction vehicle attachments in settlement.
