@@ -260,6 +260,11 @@ public class Converse extends Task {
         }
     }
 
+    /**
+     * Selects a person to chat in settlement.
+     * 
+     * @return
+     */
     public Person selectFromSettlement() {
     	Person invitee = null;
         Set<Person> pool = new UnitSet<>();
@@ -350,6 +355,11 @@ public class Converse extends Task {
     	return invitee;
     }
 
+    /**
+     * Selects a person to chat in vehicle.
+     *  
+     * @return
+     */
     public Person selectFromVehicle() {
     	Person invitee = null;
 
@@ -363,7 +373,13 @@ public class Converse extends Task {
 		initiatorLocation = Location.SAME_VEHICLE;
 
         if (pool.isEmpty()) {
- 
+        	// Gets a list of busy people in different bldg but the same settlement
+            candidates = getChattingPeople(person, false, false, true);
+        	pool.addAll(candidates);
+        	initiatorLocation = Location.SAME_SETTLEMENT;
+        }
+        
+        if (pool.isEmpty()) {
             Collection<Person> talkingSameSettlement = getChattingPeople(person, false, false, true);
         	pool.addAll(talkingSameSettlement);
         	initiatorLocation = Location.ANOTHER_SETTLEMENT;
@@ -371,7 +387,7 @@ public class Converse extends Task {
 
         if (pool.isEmpty()) {
         	initiatorLocation = Location.NONE;
-        	logger.info(person, "Unable to find anyone to chat with in " + v);
+        	logger.info(person, 30_000, "Unable to find anyone to chat with in " + v + ".");
         	return null;
         }
 
@@ -396,6 +412,11 @@ public class Converse extends Task {
     	return invitee;
     }
 
+    /**
+     * Selects a person to chat during EVA.
+     * 
+     * @return
+     */
     public Person selectforEVA() {
     	Person invitee = null;
 
@@ -552,6 +573,7 @@ public class Converse extends Task {
     	
     	setDescription(s);
     }
+    
     /**
 	 * Reinitializes instances and reloads the target of the conversation.
 	 */

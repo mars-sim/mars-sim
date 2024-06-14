@@ -7,7 +7,9 @@
 package com.mars_sim.core.structure.building.function.task;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.GoodsManager;
@@ -179,8 +181,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 		Settlement settlement = building.getSettlement();
 
+		Map<ResourceProcess, Double> resourceProcessMap = new HashMap<>();
+		
 		for (ResourceProcess process : processes) {
 			if (process.isToggleAvailable() && !process.isFlagged()) {
+								
 				double score = 0;
 				// if score is positive, toggle on 
 				// if score is negative, toggle off
@@ -207,9 +212,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					score = 10_000;
 				else if (score < -10_000)
 					score = -10_000;
-				
-				process.setScore(score);
-				
+					
 				// Check if settlement is missing one or more of the output resources.
 				if (process.isOutputsEmpty(settlement)) {
 					// will push for toggling on this process to produce more output resources
@@ -257,32 +260,40 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					continue;
 				}
 				
-				// Note: May switch to using probability map such as 
-				// RandomUtil.getWeightedRandomObject
+				// Save the score for that process for displaying its value
+				process.setScore(score);
 				
-				if (score >= highest) {
-					highest = score;
-					mostPosProcess = process;
-				} else if (score <= lowest) {
-					lowest = score;
-					mostNegProcess = process;
-				}
+				// Save the process and its score into the resource process map
+				resourceProcessMap.put(process, Math.abs(score));
+
+//				if (score >= highest) {
+//					highest = score;
+//					mostPosProcess = process;
+//				} else if (score <= lowest) {
+//					lowest = score;
+//					mostNegProcess = process;
+//				}
 			}
 		}
 
+		
 		// Decide whether to create a TaskJob
-		ResourceProcess bestProcess = null;
-		double bestScore = 0;
-		if ((mostPosProcess != null) && (highest >= Math.abs(lowest))) {
-			bestProcess = mostPosProcess;
-			bestScore = highest;
-		}
-		else if (mostNegProcess != null) {
-			bestProcess = mostNegProcess;
-			bestScore = -lowest;
-		}
+//		ResourceProcess bestProcess = null;
+//		double bestScore = 0;
+//		if ((mostPosProcess != null) && (highest >= Math.abs(lowest))) {
+//			bestProcess = mostPosProcess;
+//			bestScore = highest;
+//		}
+//		else if (mostNegProcess != null) {
+//			bestProcess = mostNegProcess;
+//			bestScore = -lowest;
+//		}
 
+		// Use probability map to obtain the process
+		ResourceProcess bestProcess = RandomUtil.getWeightedRandomObject(resourceProcessMap);
+		
 		if (bestProcess != null) {
+			double bestScore = resourceProcessMap.get(bestProcess);
 			return new ToggleProcessJob(this, building, bestProcess, new RatingScore(bestScore));
 		}
 
