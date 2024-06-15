@@ -51,7 +51,7 @@ public class TextIOChannel implements UserChannel {
 	@Override
 	public String getInput(String prompt) {
 		if (reader == null) {
-			reader = textIO.newStringInputReader();
+			reader = textIO.newStringInputReader().withMinLength(0);
 		}
 		return reader.read(prompt);
 	}

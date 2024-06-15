@@ -128,23 +128,25 @@ public class Conversation implements UserOutbound {
 	        	// Get input
 				String prompt = current.getPrompt(this) + " > ";
 	        	String input = getInput(prompt);
-	        	options = null; // Remove any auto complete options once user executes
-	        	
-	        	// Update history
-	        	boolean addToHistory = true; 
-	        	if (!inputHistory.isEmpty()) {
-	        		// Do not accept repeated commands
-	        		String lastCommand = inputHistory.get(inputHistory.size() - 1);
-	        		addToHistory = !input.equals(lastCommand);
-	        	}
-	        	if (addToHistory) {
-	        		inputHistory.add(input);
-	        	}
-	        	
-	        	// Always set the history pointer to the most recent command
-        		historyIdx = inputHistory.size();
-  
-        		current.execute(this, input);
+	        	if (input.length() > 0) {
+					options = null; // Remove any auto complete options once user executes
+					
+					// Update history
+					boolean addToHistory = true; 
+					if (!inputHistory.isEmpty()) {
+						// Do not accept repeated commands
+						String lastCommand = inputHistory.get(inputHistory.size() - 1);
+						addToHistory = !input.equals(lastCommand);
+					}
+					if (addToHistory) {
+						inputHistory.add(input);
+					}
+					
+					// Always set the history pointer to the most recent command
+					historyIdx = inputHistory.size();
+	
+					current.execute(this, input);
+				}
         	}
         	catch (RuntimeException rte) {
         		LOGGER.log(Level.SEVERE, "Problem executing command ", rte);

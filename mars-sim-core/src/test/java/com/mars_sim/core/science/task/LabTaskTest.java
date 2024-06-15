@@ -8,6 +8,7 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.building.function.FunctionType;
 
 public class LabTaskTest extends AbstractMarsSimUnitTest {
 
@@ -46,7 +47,7 @@ public class LabTaskTest extends AbstractMarsSimUnitTest {
         assertGreaterThan("Collected samples", 0D, s.getResourceCollected(rockId));
     }
 
-    public void testPerformLabResearch() {
+    public void testPerformPrimaryLabResearch() {
         var s = buildSettlement("Study", true);
         var study = buildStudyToResearchPhase(s, this, ScienceType.BIOLOGY, JobType.BOTANIST);
         var p = study.getPrimaryResearcher();
@@ -62,6 +63,26 @@ public class LabTaskTest extends AbstractMarsSimUnitTest {
         assertTrue("Lab task is done", task.isDone());
         var newResearchCompleted = study.getPrimaryResearchWorkTimeCompleted();
         assertGreaterThan("Primary research advanced", origResearchCompleted, newResearchCompleted);
+    }
+
+    public void testPerformCollabLabResearch() {
+        var s = buildSettlement("Study", true);
+        var study = buildStudyToResearchPhase(s, this, ScienceType.BIOLOGY, JobType.BIOLOGIST);
+        var prim = study.getPrimaryResearcher();
+        var collab = buildPerson("Collab", s, JobType.BIOLOGIST, prim.getBuildingLocation(), FunctionType.RESEARCH);   
+        study.addCollaborativeResearcher(collab, ScienceType.BIOLOGY);
+
+        var task  = PerformLaboratoryResearch.createTask(collab);
+        assertNotNull("Task created", task);
+        assertEquals("Task assigned Study", study, task.getStudy());
+        assertNotNull("Task assigned Lab", task.getLaboratory());
+
+        // Do all the required research
+        var origResearchCompleted = study.getCollaborativeResearchWorkTimeCompleted(collab);
+        executeTaskForDuration(collab, task, study.getTotalCollaborativeResearchWorkTimeRequired());
+        assertTrue("Lab task is done", task.isDone());
+        var newResearchCompleted = study.getCollaborativeResearchWorkTimeCompleted(collab);
+        assertGreaterThan("Collaborative research advanced", origResearchCompleted, newResearchCompleted);
     }
 
     public void testMathModelling() {
