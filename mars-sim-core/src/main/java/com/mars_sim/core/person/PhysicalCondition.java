@@ -1303,22 +1303,28 @@ public class PhysicalCondition implements Serializable {
 	 * Adds a new medical complaint to the person.
 	 *
 	 * @param complaint the new medical complaint
+	 * @return 
 	 */
-	public void addMedicalComplaint(Complaint c) {
-		if (!hasComplaint(c)) {
-			ComplaintType type = c.getType();
-			// Create a new health problem
-			HealthProblem newProblem = new HealthProblem(type, person);
-			problems.add(newProblem);
-
-			// Record this complaint type
-			int freq = 0;
-			if (healthLog.get(type) != null)
-				freq = healthLog.get(type);
-			healthLog.put(type, freq + 1);
-			logger.log(person, Level.INFO, 1_000L, "Suffered from " + type.getName() + ".");
-			recalculatePerformance();
+	public HealthProblem addMedicalComplaint(Complaint c) {
+		for (HealthProblem problem : problems) {
+			if (problem.getType() == c.getType()) {
+				return problem;
+			}
 		}
+
+		ComplaintType type = c.getType();
+		// Create a new health problem
+		HealthProblem newProblem = new HealthProblem(type, person);
+		problems.add(newProblem);
+
+		// Record this complaint type
+		int freq = 0;
+		if (healthLog.get(type) != null)
+			freq = healthLog.get(type);
+		healthLog.put(type, freq + 1);
+		logger.log(person, Level.INFO, 1_000L, "Suffered from " + type.getName() + ".");
+		recalculatePerformance();
+		return newProblem;
 	}
 
 

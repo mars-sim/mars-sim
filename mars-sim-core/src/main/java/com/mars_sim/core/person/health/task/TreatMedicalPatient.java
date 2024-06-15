@@ -6,22 +6,16 @@
  */
 package com.mars_sim.core.person.health.task;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.Map;
 
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.malfunction.Malfunctionable;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.person.ai.task.util.TaskEvent;
-import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalAid;
-import com.mars_sim.core.person.health.Treatment;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.MedicalCare;
@@ -35,7 +29,7 @@ import com.mars_sim.tools.util.RandomUtil;
  * A task for performing a medical treatment on a patient at a medical station.
  * This task is not for performing a medical treatment on one's self.
  */
-public class TreatMedicalPatient extends Task {
+public class TreatMedicalPatient extends TreatHealthProblem {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -47,336 +41,117 @@ public class TreatMedicalPatient extends Task {
     private static final String NAME = Msg.getString(
             "Task.description.treatMedicalPatient"); //$NON-NLS-1$
 
-    /** Task phases. */
-    private static final TaskPhase TREATMENT = new TaskPhase(Msg.getString(
-            "Task.phase.treatingMedicalPatient")); //$NON-NLS-1$
+    /**
+     * Create a task for a Doctor to provide Treatment to someone suffering from a Health Problem.
+     * @param doctor
+     * @return
+     */
+    static TreatMedicalPatient createTask(Person doctor) {
+        Map<HealthProblem,MedicalAid> problems;
+        if (doctor.isInSettlement()) {
+            problems = findSettlementHealthProblems(doctor.getSettlement());
+        }
+        else if (doctor.isInVehicle()) {
+            problems = findVehicleHealthProblems(doctor.getVehicle());
+        }
+        else {
+            logger.warning(doctor, "Cannot determine the Medical station");
+            return null;
+        }
 
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = 1D;
+        // Filter problem to this that this doctor can handle
+        var treatable = MedicalHelper.getTreatableHealthProblems(doctor, problems.keySet(), false);
 
-    // Data members.
-    private double duration;
-    private double treatmentTime;
-    
-    private MedicalAid medicalAid;
-    private Person patient;
-    private HealthProblem healthProblem;
+        var healthProblem = RandomUtil.getARandSet(treatable);
+        if (healthProblem == null) {
+            logger.warning(doctor, "Cannot find a sutiable patient to treat");
+            return null;
+        }
+
+        return new TreatMedicalPatient(doctor, problems.get(healthProblem), healthProblem);
+    }
+
+    /**
+     * Find any problem that needs to be treated by a doctor
+     * @param v Vehicle to check
+     * @return
+     */
+    static Map<HealthProblem, MedicalAid> findVehicleHealthProblems(Vehicle v) {
+        if (v instanceof Rover r) {
+            SickBay sb = r.getSickBay();
+            Map<HealthProblem,MedicalAid> results = new HashMap<>();
+
+            getProblemsNeedingTreatment(sb).forEach(h -> results.put(h, sb));
+            return results;
+
+        }
+        return Collections.emptyMap();
+    }
+
+    /**
+     * Find any problem that needs to be treated by a doctor
+     * @param settlement Settlement to check
+     * @return
+     */
+    static Map<HealthProblem,MedicalAid>  findSettlementHealthProblems(Settlement settlement) {
+        Map<HealthProblem,MedicalAid> results = new HashMap<>();
+        // Check all medical care buildings.
+        for(Building building : settlement.getBuildingManager().getBuildingSet(
+                        FunctionType.MEDICAL_CARE)) {
+
+            // Check if building currently has a malfunction.
+            boolean malfunction = building.getMalfunctionManager().hasMalfunction();
+
+            // Check if enough beds for patient.
+            MedicalCare medicalCare = building.getMedical();
+
+            if (!malfunction) {
+                getProblemsNeedingTreatment(medicalCare).forEach(h -> results.put(h, medicalCare));
+            }
+        }
+
+        return results;
+    }
+
+    /**
+     * Get all the Healthproblem that are waiting treatment by a doctor
+     * @param aid Statino to scan
+     */
+    private static List<HealthProblem> getProblemsNeedingTreatment(MedicalAid aid) {
+        return aid.getProblemsAwaitingTreatment().stream()
+                    .filter(hp -> !hp.getComplaint().getRecoveryTreatment().getSelfAdminister())
+                    .toList();
+    }
 
     /**
      * Constructor.
-     * 
-     * @param person the person to perform the task
+     * @param healer the person to perform the task
+     * @param station Place traetment is waiting
+     * @param problem Problem being treated
      */
-    public TreatMedicalPatient(Person person) {
-        super(NAME, person, true, true, STRESS_MODIFIER, SkillType.MEDICINE, 25D);
+    private TreatMedicalPatient(Person healer, MedicalAid station, HealthProblem problem) {
+        super(NAME, healer, station, problem);
 
-        treatmentTime = 0D;
+        var aid = station;
 
-        // Choose available medical aid for treatment.
-        medicalAid = determineMedicalAid(person);
+        // Walk to medical aid.
+        if (aid instanceof MedicalCare medicalCare) {     
+            // Walk to medical care building.
+            walkToTaskSpecificActivitySpotInBuilding(medicalCare.getBuilding(), FunctionType.MEDICAL_CARE, false);
+        }
+        else if (aid instanceof SickBay sb) {
+            // Walk to medical activity spot in rover.
+            Vehicle vehicle = sb.getVehicle();
+            if (vehicle instanceof Rover r) {
 
-        if (medicalAid != null) {
-
-            // Determine patient and health problem to treat.
-            healthProblem = determineHealthProblemToTreat(medicalAid);
-            if (healthProblem != null) {
-
-                patient = healthProblem.getSufferer();
-
-                // Get the person's medical skill.
-                int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
-
-                // Determine medical treatment.
-                Treatment treatment = healthProblem.getComplaint().getRecoveryTreatment();
-                if (treatment != null) {
-                    duration = treatment.getAdjustedDuration(skill);
-                    setStressModifier(STRESS_MODIFIER * treatment.getSkill());
-                }
-                else {
-                    logger.severe(person, healthProblem + " does not have treatment.");
-                    endTask();
-                }
-            }
-            else {
-                logger.severe(person, "Could not find a treatable health problem at " + medicalAid);
-                endTask();
-            }
-
-            // Walk to medical aid.
-            if (medicalAid instanceof MedicalCare) {
-                // Walk to medical care building.
-                MedicalCare medicalCare = (MedicalCare) medicalAid;
-
-                // Walk to medical care building.
-                walkToTaskSpecificActivitySpotInBuilding(medicalCare.getBuilding(), FunctionType.MEDICAL_CARE, false);
-            }
-            else if (medicalAid instanceof SickBay) {
-                // Walk to medical activity spot in rover.
-                Vehicle vehicle = ((SickBay) medicalAid).getVehicle();
-                if (vehicle instanceof Rover) {
-
-                    // Walk to rover sick bay activity spot.
-                    walkToSickBayActivitySpotInRover((Rover) vehicle, false);
-                }
+                // Walk to rover sick bay activity spot.
+                walkToSickBayActivitySpotInRover(r, false);
             }
         }
         else {
             logger.severe(person, "Medical aid could not be determined.");
             endTask();
         }
-
-        // Initialize phase.
-        addPhase(TREATMENT);
-        setPhase(TREATMENT);
     }
 
-    /**
-     * Determines a local medical aid to use.
-     * @return medical aid or null if none found.
-     */
-    private MedicalAid determineMedicalAid(Person doctor) {
-
-        MedicalAid result = null;
-
-        if (doctor.isInSettlement()) {
-            result = determineMedicalAidAtSettlement();
-        }
-        else if (doctor.isInVehicle()) {
-            result = determineMedicalAidInVehicle();
-        }
-
-        return result;
-    }
-
-    /**
-     * Determines a medical aid at a settlement to use.
-     * 
-     * @return medical aid or null if none found.
-     */
-    private MedicalAid determineMedicalAidAtSettlement() {
-
-        MedicalAid result = null;
-
-        List<MedicalAid> goodMedicalAids = new ArrayList<>();
-
-        // Check all medical care buildings.
-        Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildingSet(
-                FunctionType.MEDICAL_CARE).iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-
-            // Check if building currently has a malfunction.
-            boolean malfunction = building.getMalfunctionManager().hasMalfunction();
-
-            if (!malfunction) {
-
-                // Check if there are any treatable medical problems at building.
-                MedicalCare medicalCare = building.getMedical();
-                if (hasTreatableHealthProblems(medicalCare)) {
-                    goodMedicalAids.add(medicalCare);
-                }
-            }
-        }
-
-        // Randomly select an valid medical care building.
-        if (goodMedicalAids.size() > 0) {
-            int index = RandomUtil.getRandomInt(goodMedicalAids.size() - 1);
-            result = goodMedicalAids.get(index);
-        }
-
-        return result;
-    }
-
-    /**
-     * Determines a medical aid in a vehicle to use.
-     * @return medical aid or null if none found.
-     */
-    private MedicalAid determineMedicalAidInVehicle() {
-
-        MedicalAid result = null;
-
-        if (person.getVehicle() instanceof Rover) {
-            Rover rover = (Rover) person.getVehicle();
-            if (rover.hasSickBay()) {
-                SickBay sickBay = rover.getSickBay();
-                if (hasTreatableHealthProblems(sickBay)) {
-                    result = sickBay;
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Checks if a medical has health problems that the person can treat.
-     * @param aid the medical aid.
-     * @return true if treatable medical problems.
-     */
-    private boolean hasTreatableHealthProblems(MedicalAid aid) {
-
-        boolean result = false;
-
-        // Get the person's medical skill.
-        int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
-
-        // Check if there are any treatable health problems awaiting treatment.
-        Iterator<HealthProblem> j = aid.getProblemsAwaitingTreatment().iterator();
-        while (j.hasNext() && !result) {
-            HealthProblem problem = j.next();
-            Treatment treatment = problem.getComplaint().getRecoveryTreatment();
-            if (treatment != null) {
-                int requiredSkill = treatment.getSkill();
-                if (skill >= requiredSkill) {
-                    result = true;
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Determines a health problem to treat.
-     * @param medicalAid the medical aid.
-     * @return health problem or null if none found.
-     */
-    private HealthProblem determineHealthProblemToTreat(MedicalAid medicalAid) {
-
-        HealthProblem result = null;
-
-        // Get the person's medical skill.
-        int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
-
-        // Determine health problems that person can treat.
-        List<HealthProblem> treatableHealthProblems = new ArrayList<HealthProblem>();
-        Iterator<HealthProblem> i = medicalAid.getProblemsAwaitingTreatment().iterator();
-        while (i.hasNext()) {
-            HealthProblem problem = i.next();
-            Treatment treatment = problem.getComplaint().getRecoveryTreatment();
-            if (treatment != null) {
-                int requiredSkill = treatment.getSkill();
-                if (skill >= requiredSkill) {
-                    treatableHealthProblems.add(problem);
-                }
-            }
-        }
-
-        if (treatableHealthProblems.size() > 0) {
-
-            // Get random health problem from treatable list.
-            int index = RandomUtil.getRandomInt(treatableHealthProblems.size() - 1);
-            result = treatableHealthProblems.get(index);
-        }
-
-        return result;
-    }
-
-    @Override
-    protected double performMappedPhase(double time) {
-        if (getPhase() == null) {
-            throw new IllegalArgumentException("Task phase is null");
-        }
-        else if (TREATMENT.equals(getPhase())) {
-            return treatmentPhase(time);
-        }
-        else {
-            return time;
-        }
-    }
-
-    /**
-     * Performs the treatment phase of the task.
-     * @param time the amount of time (millisol) to perform the phase.
-     * @return the amount of time (millisol) left over after performing the phase.
-     */
-    private double treatmentPhase(double time) {
-
-        double timeLeft = 0D;
-        Malfunctionable entity = getMalfunctionable();
-        
-        // If medical aid has malfunction, end task.
-        if (entity.getMalfunctionManager().hasMalfunction()) {
-            endTask();
-        }
-
-        if (isDone()) {
-			endTask();
-            return time;
-        }
-
-        // Start treatment if not already started.
-        if (healthProblem.getAwaitingTreatment()) {
-
-            medicalAid.startTreatment(healthProblem, duration);
-    		logger.log(worker, Level.INFO, 0, "Treating " + patient + " for " + healthProblem.getComplaint().getType().getName() + ".");
-    		
-            // Create starting task event if needed.
-            if (getCreateEvents()) {
-                TaskEvent startingEvent = new TaskEvent(person, // unit
-                		this,  // task
-                		healthProblem.getSufferer(), // source
-                		EventType.TASK_START,  // event type
-                		NAME // description
-                ); 
-                registerNewEvent(startingEvent);
-            }
-        }
-
-        // Check for accident in medical aid.
-        checkForAccident(entity, time, 0.005);
-
-        treatmentTime += time;
-        if (treatmentTime >= duration) {
-            healthProblem.startRecovery();
-            timeLeft = treatmentTime - duration;
-            endTask();
-        }
-
-        // Add experience.
-        addExperience(time);
-
-        return timeLeft;
-    }
-
-    /**
-     * Gets the malfunctionable associated with the medical aid.
-     * @return the associated Malfunctionable
-     */
-    private Malfunctionable getMalfunctionable() {
-        Malfunctionable result = null;
-
-        if (medicalAid instanceof SickBay) {
-            result = ((SickBay) medicalAid).getVehicle();
-        }
-        else if (medicalAid instanceof MedicalCare) {
-            result = ((MedicalCare) medicalAid).getBuilding();
-        }
-        else {
-            result = (Malfunctionable) medicalAid;
-        }
-
-        return result;
-    }
-
- 
-	/**
-	 * Gets the medical aid the person is using for this task.
-	 * 
-	 * @return medical aid or null.
-	 */
-	public MedicalAid getMedicalAid() {
-		return medicalAid;
-	}
-	
-	/**
-	 * Stop the treatment
-	 */
-    @Override
-    protected void clearDown() {
-        // Stop treatment.
-        if (medicalAid != null && medicalAid.getProblemsBeingTreated().contains(healthProblem)) {
-            medicalAid.stopTreatment(healthProblem);
-        }
-    }
 }

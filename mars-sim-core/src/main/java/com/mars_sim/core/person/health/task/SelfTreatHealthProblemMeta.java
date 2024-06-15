@@ -44,9 +44,11 @@ public class SelfTreatHealthProblemMeta extends FactoryMetaTask {
 
         double result = 0D;
 
+        
         if (person.isInside()) {
 	        // Check if person has health problems that can be self-treated.
-        	var problems = SelfTreatHealthProblem.getSelfTreatableHealthProblems(person);
+        	var problems = MedicalHelper.getTreatableHealthProblems(person, person.getPhysicalCondition().getProblems(),
+                                                        true);
 
 	        boolean hasSelfTreatableProblems = !problems.isEmpty();
 
@@ -84,11 +86,11 @@ public class SelfTreatHealthProblemMeta extends FactoryMetaTask {
         boolean result = false;
 
         if (person.isInSettlement()) {
-            result = SelfTreatHealthProblem.determineMedicalAidAtSettlement(person.getSettlement(),
+            result = MedicalHelper.determineMedicalAidAtSettlement(person.getSettlement(),
                                             problems) != null;
         }
         else if (person.isInVehicle() && (person.getVehicle() instanceof Rover r)) {
-            result = SelfTreatHealthProblem.determineMedicalAidInRover(r, problems) != null;
+            result = MedicalHelper.determineMedicalAidInRover(r, problems) != null;
         }
 
         return result;

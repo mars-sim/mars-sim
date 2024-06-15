@@ -154,15 +154,23 @@ public abstract class TreatHealthProblem extends Task {
         return result;
     }
 
-    
+    /**
+     * Where is this treatment taking place
+     */
+    public MedicalAid getMedicalAid() {
+        return medicalAid;
+    }
+
     /**
      * Stop mediical treatment
      */
     @Override
     protected void clearDown() {
         // Stop treatment.
-        if (medicalAid.getProblemsBeingTreated().contains(healthProblem)) {
+        if ((medicalAid != null) && medicalAid.getProblemsBeingTreated().contains(healthProblem)) {
             medicalAid.stopTreatment(healthProblem);
         }
+
+        super.clearDown();
     }
 }

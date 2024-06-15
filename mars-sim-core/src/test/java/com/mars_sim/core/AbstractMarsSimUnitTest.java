@@ -113,7 +113,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	    return building0;
 	}
 
-	protected Building buildFunction(BuildingManager buildingManager, String type, BuildingCategory cat,
+	@Override
+	public Building buildFunction(BuildingManager buildingManager, String type, BuildingCategory cat,
 							FunctionType fType, LocalPosition pos, double facing, boolean lifesupport) {
 		MockBuilding building0 = buildBuilding(buildingManager, type, cat,  pos, facing, lifesupport);
 
@@ -257,7 +258,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		tm.replaceTask(task);
 		
 		int callsLeft = maxCalls;
-		while ((callsLeft > 0) && !task.isDone() && !task.getSubTask().isDone()) {
+		while ((callsLeft > 0) && !task.isDone() && (task.getSubTask() != null) && !task.getSubTask().isDone()) {
 			tm.executeTask(MSOLS_PER_EXECUTE);
 			callsLeft--;
 		}
