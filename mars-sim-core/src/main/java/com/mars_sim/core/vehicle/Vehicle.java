@@ -117,6 +117,8 @@ public abstract class Vehicle extends Unit
 	private boolean isSalvaged;
 	/** True if vehicle is charging. */
 	private boolean isCharging;
+	/** True if vehicle is ready to be drawn on the map. */
+	private boolean isReady = false;
 	
 	/** Vehicle's associated Settlement. */
 	private int associatedSettlementID;
@@ -280,8 +282,17 @@ public abstract class Vehicle extends Unit
 
 		// Initialize passenger activity spots.
 		passengerActivitySpots = spec.getPassengerActivitySpots();
+		
+		isReady = true;
 	}
 
+	/**
+	 * Is the vehicle ready to be drawn on the settlement map ?
+	 */
+	public boolean isReady() {
+		return isReady;
+	}
+	
 	/**
 	 * Sets the scope string.
 	 */
