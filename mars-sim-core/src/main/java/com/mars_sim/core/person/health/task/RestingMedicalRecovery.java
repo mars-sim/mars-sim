@@ -16,6 +16,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.health.HealthProblem;
+import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.person.health.MedicalAid;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
@@ -79,9 +80,6 @@ public class RestingMedicalRecovery extends Task {
                 Building b = medicalCare.getBuilding();
                 if (b != null)
                 	walkToActivitySpotInBuilding(b, FunctionType.MEDICAL_CARE, false);
-                //else
-                //	endTask();
-                
             }
             else if (medicalAid instanceof SickBay) {
                 // Walk to medical activity spot in rover.
@@ -128,8 +126,6 @@ public class RestingMedicalRecovery extends Task {
      */
     private MedicalAid determineMedicalAidAtSettlement() {
 
-        MedicalAid result = null;
-
         List<MedicalAid> goodMedicalAids = new ArrayList<>();
 
         // Check all medical care buildings.
@@ -151,12 +147,7 @@ public class RestingMedicalRecovery extends Task {
         }
 
         // Randomly select an valid medical care building.
-        if (goodMedicalAids.size() > 0) {
-            int index = RandomUtil.getRandomInt(goodMedicalAids.size() - 1);
-            result = goodMedicalAids.get(index);
-        }
-
-        return result;
+        return RandomUtil.getRandomElement(goodMedicalAids);
     }
 
     /**
@@ -167,8 +158,7 @@ public class RestingMedicalRecovery extends Task {
 
         MedicalAid result = null;
 
-        if (person.getVehicle() instanceof Rover) {
-            Rover rover = (Rover) person.getVehicle();
+        if (person.getVehicle() instanceof Rover rover) {
             if (rover.hasSickBay()) {
                 SickBay sickBay = rover.getSickBay();
                 int numPatients = sickBay.getPatientNum();
@@ -223,15 +213,11 @@ public class RestingMedicalRecovery extends Task {
 
         // Add bed rest to all health problems that require it.
         boolean remainingBedRest = false;
-        Iterator<HealthProblem> i = person.getPhysicalCondition().getProblems().iterator();
-        while (i.hasNext()) {
-            HealthProblem problem = i.next();
-            if (problem.getRecovering() && problem.requiresBedRest()) {
+        for(HealthProblem problem : person.getPhysicalCondition().getProblems()) {
+            if ((problem.getState() == HealthProblemState.RECOVERING) && problem.requiresBedRest()) {
                 problem.addBedRestRecoveryTime(time);
     			logger.log(worker, Level.FINE, 20_000, "Was taking a medical leave and resting");	
-                if (!problem.isCured()) {
-                    remainingBedRest = true;
-                }
+                remainingBedRest = true;
             }
         }
 

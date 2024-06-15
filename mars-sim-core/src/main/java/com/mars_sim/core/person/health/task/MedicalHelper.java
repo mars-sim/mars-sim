@@ -14,6 +14,7 @@ import java.util.Set;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.health.HealthProblem;
+import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.person.health.MedicalAid;
 import com.mars_sim.core.person.health.Treatment;
 import com.mars_sim.core.structure.Settlement;
@@ -92,7 +93,7 @@ public final class MedicalHelper {
         int skill = healer.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
     
         for(HealthProblem problem  : problems) {
-            if (problem.isDegrading()) {
+            if (problem.getState() == HealthProblemState.DEGRADING) {
                 Treatment treatment = problem.getComplaint().getRecoveryTreatment();
                 if ((treatment != null) && (treatment.getSelfAdminister() == selfHeal)) {
                     int requiredSkill = treatment.getSkill();

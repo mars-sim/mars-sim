@@ -29,6 +29,7 @@ import com.mars_sim.core.person.health.Complaint;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.person.health.HealthProblem;
+import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.person.health.HealthRiskType;
 import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.person.health.MedicalManager;
@@ -511,7 +512,7 @@ public class PhysicalCondition implements Serializable {
 
 				// After sleeping sufficiently, the high fatigue collapse should no longer exist.
 
-				if (problem.isCured() || (nextComplaintPhase != null)) {
+				if ((problem.getState() == HealthProblemState.CURED) || (nextComplaintPhase != null)) {
 
 					ComplaintType type = problem.getType();
 
@@ -993,7 +994,6 @@ public class PhysicalCondition implements Serializable {
 			else if (hunger < HUNGER_THRESHOLD * 2 || kJoules > ENERGY_THRESHOLD * 2) {
 
 				starved.startRecovery();
-				String status = starved.getStateString();
 				// Set to not starving
 				isStarving = false;
 
@@ -1001,11 +1001,11 @@ public class PhysicalCondition implements Serializable {
 						 + "  Hunger: " + (int)hunger
 						 + ";  kJ: " + Math.round(kJoules*10.0)/10.0
 						 + ";  isStarving: " + isStarving
-						 + ";  Status: " + status);
+						 + ";  Status: " + starved.getState());
 			}
 			
 			else if (hunger >= MAX_HUNGER) {
-				starved.setState(HealthProblem.DEAD);
+				starved.setState(HealthProblemState.DEAD);
 				recordDead(starved, false, STANDARD_QUOTE_1);
 			}
 		}
@@ -1045,17 +1045,16 @@ public class PhysicalCondition implements Serializable {
 			else if (thirst < THIRST_THRESHOLD * 2) {
 
 				dehydrated.startRecovery();
-				String status  = dehydrated.getStateString();
 				// Set dehydrated to false
 				isDehydrated = false;
 
 				logger.log(person, Level.INFO, 20_000, "Recovering from dehydration. "
 						 + "  Thirst: " + (int)thirst
 						 + ";  isDehydrated: " + isDehydrated
-						 + ";  Status: " + status);
+						 + ";  Status: " + dehydrated.getState());
 			}
 			else if (thirst >= MAX_THIRST) {
-				dehydrated.setState(HealthProblem.DEAD);
+				dehydrated.setState(HealthProblemState.DEAD);
 				recordDead(dehydrated, false, STANDARD_QUOTE_0);
 			}
 		}
@@ -1124,17 +1123,14 @@ public class PhysicalCondition implements Serializable {
 				if (radiationPoisoned == null)
 					radiationPoisoned = getProblemByType(ComplaintType.RADIATION_SICKNESS);
 
-				String status = "Unknown";
 				if (radiationPoisoned != null) {
 					radiationPoisoned.startRecovery();
-					status  = radiationPoisoned.getStateString();
 					// Set to not starving
 					isRadiationPoisoned = false;
 				}
 
 				logger.log(person, Level.INFO, 20_000, "Taking anti-rad meds and recovering from radiation poisoning. "
-						 + ";  isRadiationPoisoned: " + radiationPoisoned
-						 + ";  Status: " + status);
+						 + ";  isRadiationPoisoned: " + radiationPoisoned);
 			}
 		}
 
@@ -1511,7 +1507,7 @@ public class PhysicalCondition implements Serializable {
 		}
 
 		// Set the state of the health problem to DEAD
-		problem.setState(HealthProblem.DEAD);
+		problem.setState(HealthProblemState.DEAD);
 		// Set mostSeriousProblem to this problem
 		this.mostSeriousProblem = problem;
 

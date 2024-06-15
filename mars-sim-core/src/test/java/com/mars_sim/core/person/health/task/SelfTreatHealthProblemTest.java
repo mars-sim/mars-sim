@@ -5,6 +5,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.HealthProblem;
+import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.science.task.MarsSimContext;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -40,7 +41,7 @@ public class SelfTreatHealthProblemTest extends AbstractMarsSimUnitTest {
         var pc = p.getPhysicalCondition();
         assertEquals("Single health problem", 1, pc.getProblems().size());
         assertTrue("Complaint is in persons problems", pc.getProblems().contains(hp));
-        assertTrue("Complaint in degrading", hp.getAwaitingTreatment());
+        assertEquals("Complaint in degrading", HealthProblemState.DEGRADING, hp.getState());
 
         var task = SelfTreatHealthProblem.createTask(p);
         assertFalse("Task created", task.isDone());
@@ -59,7 +60,7 @@ public class SelfTreatHealthProblemTest extends AbstractMarsSimUnitTest {
         assertTrue("Task completed", task.isDone());
         assertEquals("Complaints remaining", 1, pc.getProblems().size());
 
-        assertTrue("Complaint in recovery", hp.getRecovering());
+        assertEquals("Complaint in recovery", HealthProblemState.RECOVERING, hp.getState());
         assertFalse("Health problem removed from Medical care", sb.getMedical().getProblemsBeingTreated().contains(hp));
 
     }

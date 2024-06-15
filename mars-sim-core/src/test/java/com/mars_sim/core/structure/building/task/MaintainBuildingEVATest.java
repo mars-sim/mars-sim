@@ -40,12 +40,12 @@ public class MaintainBuildingEVATest extends AbstractMarsSimUnitTest {
         EVAOperationTest.executeEVAWalk(this, eva, task);
         assertEquals("EVA walk completed", MaintainBuildingEVA.MAINTAIN, task.getPhase());
 
-        // Do maintenance
+        // Start maintenance
         executeTaskUntilPhase(p, task, 1);
         assertGreaterThan("Maintenance started", 0D, manager.getInspectionWorkTimeCompleted());
 
         // Complete mainteance
-        executeTaskUntilPhase(p, task, 1000);
+        executeTaskForDuration(p, task, manager.getBaseMaintenanceWorkTime() * 1.1);
         assertGreaterThan("Maintenance count", 0, manager.getNumberOfMaintenances());
 
     }

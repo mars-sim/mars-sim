@@ -4,6 +4,7 @@ import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.health.ComplaintType;
+import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.structure.building.function.FunctionType;
 
 public class TreatMedicalPatientTest extends AbstractMarsSimUnitTest {
@@ -36,7 +37,7 @@ public class TreatMedicalPatientTest extends AbstractMarsSimUnitTest {
         assertTrue("Task completed", task.isDone());
         assertEquals("Complaints remaining", 1, patient.getPhysicalCondition().getProblems().size());
 
-        assertTrue("Complaint in recovery", hp.getRecovering());
+        assertEquals("Complaint in recovery", HealthProblemState.RECOVERING, hp.getState());
         assertFalse("Health problem removed from Medical care", sb.getMedical().getProblemsBeingTreated().contains(hp));
 
     }

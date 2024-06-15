@@ -15,6 +15,7 @@ import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.health.HealthProblem;
+import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.MedicalCare;
@@ -51,8 +52,9 @@ public class RestingMedicalRecoveryMeta extends FactoryMetaTask {
         // Check if person has a health problem that requires bed rest for recovery.
         boolean bedRestNeeded = false;
         for( HealthProblem problem : person.getPhysicalCondition().getProblems()) {
-            if (problem.getRecovering() && problem.requiresBedRest()) {
+            if ((problem.getState() == HealthProblemState.RECOVERING) && problem.requiresBedRest()) {
                 bedRestNeeded = true;
+                break;
             }
         }
 
