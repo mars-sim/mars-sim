@@ -21,8 +21,8 @@ import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.utils.UnitModel;
-import com.mars_sim.ui.swing.utils.UnitTableLauncher;
+import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.EntityLauncher;
 
 /**
  * This is a tab panel for display a table and a information panel
@@ -52,10 +52,6 @@ public abstract class TabPanelTable extends TabPanel {
 			}
 			return retStr;
 		}
-		
-//		public void setToolTipStrings() {
-//			this.toolTips = toolTips;
-//		}
 	}
 
 	private String[] headerTooltips;
@@ -132,9 +128,9 @@ public abstract class TabPanelTable extends TabPanel {
 		
 		// Prepare table.
 		var table = new JTable(tableModel);
-		if (tableModel instanceof UnitModel) {
+		if (tableModel instanceof EntityModel) {
 			// Call up the window when clicking on a row on the table
-			table.addMouseListener(new UnitTableLauncher(getDesktop()));
+			EntityLauncher.attach(table, getDesktop());
 		}
 		
 		table.setRowSelectionAllowed(true);

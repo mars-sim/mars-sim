@@ -17,7 +17,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.social.Relation.Opinion;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
@@ -26,7 +26,7 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.TabPanelTable;
-import com.mars_sim.ui.swing.utils.UnitModel;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * A tab panel displaying a person's social relationships.
@@ -111,7 +111,7 @@ implements ListSelectionListener {
 	 * Internal class used as model for the relationship table.
 	 */
 	private class RelationshipTableModel extends AbstractTableModel
-			implements UnitModel {
+			implements EntityModel {
 
 		private Person person;	
 		private List<Person> knownPeople;
@@ -193,7 +193,7 @@ implements ListSelectionListener {
 		}
 
 		@Override
-		public Unit getAssociatedUnit(int row) {
+		public Entity getAssociatedEntity(int row) {
 			return knownPeople.get(row);
 		}
 	}

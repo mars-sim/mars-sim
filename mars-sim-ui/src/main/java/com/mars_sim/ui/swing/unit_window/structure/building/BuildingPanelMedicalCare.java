@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.structure.building.function.MedicalCare;
 import com.mars_sim.tools.Msg;
@@ -19,7 +19,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.UnitModel;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 
 /**
@@ -109,13 +109,13 @@ public class BuildingPanelMedicalCare extends TabPanelTable {
 	 * Internal class used as model for the medical table.
 	 */
 	private static class MedicalTableModel extends AbstractTableModel
-				implements UnitModel {
+				implements EntityModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
 		private MedicalCare medical;
-		private java.util.List<?> healthProblems;
+		private java.util.List<HealthProblem> healthProblems;
 
 		private MedicalTableModel(MedicalCare medical) {
 			this.medical = medical;
@@ -130,6 +130,7 @@ public class BuildingPanelMedicalCare extends TabPanelTable {
 			return 2;
 		}
 
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = String.class;
@@ -137,6 +138,7 @@ public class BuildingPanelMedicalCare extends TabPanelTable {
 			return dataType;
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return "Patient";
 			else if (columnIndex == 1) return "Condition";
@@ -145,7 +147,7 @@ public class BuildingPanelMedicalCare extends TabPanelTable {
 
 		public Object getValueAt(int row, int column) {
 
-			HealthProblem problem = (HealthProblem) healthProblems.get(row);
+			HealthProblem problem = healthProblems.get(row);
 
 			if (column == 0) return problem.getSufferer().getName();
 			else if (column == 1) return problem.toString();
@@ -160,8 +162,8 @@ public class BuildingPanelMedicalCare extends TabPanelTable {
 		}
 
 		@Override
-		public Unit getAssociatedUnit(int row) {
-			HealthProblem problem = (HealthProblem) healthProblems.get(row);
+		public Entity getAssociatedEntity(int row) {
+			HealthProblem problem = healthProblems.get(row);
 			return problem.getSufferer();
 		}
 	}

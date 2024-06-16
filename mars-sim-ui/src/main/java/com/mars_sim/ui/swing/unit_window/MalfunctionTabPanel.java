@@ -21,6 +21,7 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionRepairWork;
@@ -32,8 +33,8 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.utils.PercentageCellRenderer;
-import com.mars_sim.ui.swing.utils.UnitModel;
-import com.mars_sim.ui.swing.utils.UnitTableLauncher;
+import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.EntityLauncher;
 
 
 /**
@@ -69,7 +70,7 @@ public class MalfunctionTabPanel extends TabPanel {
      * - Multiple building mode
      */
 	private static class MalfunctionTableModel extends AbstractTableModel
-                implements UnitModel {
+                implements EntityModel {
 
         private List<Malfunction> malfunctions;
 
@@ -162,8 +163,8 @@ public class MalfunctionTabPanel extends TabPanel {
         }
 
         @Override
-        public Unit getAssociatedUnit(int row) {
-            return (Unit)malfunctions.get(row).getSource();
+        public Entity getAssociatedEntity(int row) {
+            return malfunctions.get(row).getSource();
         }
 
 		public void update(List<Malfunction> newMalfunctions) {
@@ -300,7 +301,7 @@ public class MalfunctionTabPanel extends TabPanel {
 
 		int offset = 0;
 		if (showSource) {
-			mTable.addMouseListener(new UnitTableLauncher(getDesktop()));
+			EntityLauncher.attach(mTable, getDesktop());
 			columnModel.getColumn(SOURCE).setPreferredWidth(100);
 		}
 		else {

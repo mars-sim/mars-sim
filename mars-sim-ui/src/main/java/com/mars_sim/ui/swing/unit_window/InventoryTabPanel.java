@@ -24,6 +24,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.Equipment;
@@ -40,8 +41,8 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;
-import com.mars_sim.ui.swing.utils.UnitModel;
-import com.mars_sim.ui.swing.utils.UnitTableLauncher;
+import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.EntityLauncher;
 
 
 /**
@@ -182,7 +183,7 @@ public class InventoryTabPanel extends TabPanel {
 			equipmentColumns.getColumn(3).setCellRenderer(renderer2);
 	
 			// Add a mouse listener to hear for double-clicking a person (rather than single click using valueChanged()
-	        equipmentTable.addMouseListener(new UnitTableLauncher(getDesktop()));
+	        EntityLauncher.attach(equipmentTable, getDesktop());
         }
     }
 	
@@ -374,7 +375,7 @@ public class InventoryTabPanel extends TabPanel {
 	 * Internal class used as model for the equipment table.
 	 */
 	public class EquipmentTableModel extends AbstractTableModel
-				implements UnitModel {
+				implements EntityModel {
 
 		private List<Equipment> equipmentList = new ArrayList<>();
 
@@ -410,6 +411,7 @@ public class InventoryTabPanel extends TabPanel {
 			return 4;
 		}
 
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = String.class;
@@ -419,6 +421,7 @@ public class InventoryTabPanel extends TabPanel {
 			return dataType;
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return Msg.getString("InventoryTabPanel.Equipment.header.type"); //$NON-NLS-1$
 			else if (columnIndex == 1) return Msg.getString("InventoryTabPanel.Equipment.header.mass"); //$NON-NLS-1$
@@ -427,6 +430,7 @@ public class InventoryTabPanel extends TabPanel {
 			else return "unknown";
 		}
 
+		@Override
 		public Object getValueAt(int row, int column) {
 			if (equipmentList != null && row >= 0 && row < equipmentList.size()) {
 				Equipment e = equipmentList.get(row);
@@ -438,6 +442,7 @@ public class InventoryTabPanel extends TabPanel {
 						return (owner != null ? owner.getName() : null);
 					}
 					case 3: return getContent(e);
+					default: return null;
 				}
 			}
 			return "unknown";
@@ -456,7 +461,7 @@ public class InventoryTabPanel extends TabPanel {
 		}
 
 		@Override
-		public Unit getAssociatedUnit(int row) {
+		public Entity getAssociatedEntity(int row) {
 			return equipmentList.get(row);
 		}
 	}

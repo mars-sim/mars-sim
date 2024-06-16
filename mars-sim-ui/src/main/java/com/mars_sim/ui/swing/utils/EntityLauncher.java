@@ -13,6 +13,7 @@ import javax.swing.RowSorter;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.table.TableModel;
 
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.ui.swing.MainDesktopPane;
 
 /**
@@ -20,17 +21,37 @@ import com.mars_sim.ui.swing.MainDesktopPane;
  * is launched. The JTable has to be using a UnitTable model that allows the associated Unit
  * of the selected Row.
  * 
- * @see UnitModel
+ * @see EntityModel
  */
-public class UnitTableLauncher extends MouseInputAdapter {
+public class EntityLauncher extends MouseInputAdapter {
+
+    private static final String TOOLTIP = "Double click to view details.";
+    private static SimLogger logger = SimLogger.getLogger(EntityLauncher.class.getName());
+
+    /**
+     * Attached the launcher to a JTable
+     * @param table Table to monitor for double clicks
+     * @param desktop Parent desktop to handle view requests
+     */
+    public static void attach(JTable table, MainDesktopPane desktop) {
+        if (table.getModel() instanceof EntityModel) {
+            table.addMouseListener(new EntityLauncher(desktop));
+            table.setToolTipText(TOOLTIP);
+        }
+        else {
+            logger.warning("Table " + table.toString() + " does not use an EntityModel");
+        }
+    }
+
     private MainDesktopPane desktop;
+
 
     /**
      * Creates a launcher that will create a UnitDetail window.
      * 
      * @param desktop
      */
-    public UnitTableLauncher(MainDesktopPane desktop) {
+    private EntityLauncher(MainDesktopPane desktop) {
         this.desktop = desktop;
     }
 
@@ -49,9 +70,9 @@ public class UnitTableLauncher extends MouseInputAdapter {
             RowSorter<? extends TableModel> sorter = table.getRowSorter();
             if (sorter != null && r >= 0) {
                 r = sorter.convertRowIndexToModel(r);
-                UnitModel model = (UnitModel)table.getModel();
-                desktop.showDetails(model.getAssociatedUnit(r));
             }
+            EntityModel model = (EntityModel)table.getModel();
+            desktop.showDetails(model.getAssociatedEntity(r));
         }
     }
 }
