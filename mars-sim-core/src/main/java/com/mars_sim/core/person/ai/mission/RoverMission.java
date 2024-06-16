@@ -323,24 +323,25 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				}
 			}
 
-			// Note: If the leader is ejected, then the mission should be cancelled
-			
-			// 
-			if (!ejectedMembers.contains(getStartingPerson())) {
-				// Still enough members ? If so eject late arrivals
-				if ((getMembers().size() - ejectedMembers.size()) >= 2) {
-					for (Person ej : ejectedMembers) {
-						logger.info(ej, "Missed the departure and evicted from '" + getName() + "'.");
-						removeMember(ej);
-						addMissionLog(ej.getName() + " evicted");
-					}
-					canDepart = true;
+			// Still enough members ? If so eject late arrivals
+			if ((getMembers().size() - ejectedMembers.size()) >= 2) {
+				for (Person ej : ejectedMembers) {
+					logger.info(ej, "Missed the departure and evicted from '" + getName() + "'.");
+					removeMember(ej);
+					addMissionLog(ej.getName() + " evicted");
 				}
 			}
-//			else {
-				// Too many generated
-				// logger.info(member, "Leader " + getStartingPerson().getName() + " still not boarded for mission " + getName());
-//			}
+			
+			// If the leader is not ejected, then the mission can be proceeded
+			if (!ejectedMembers.contains(getStartingPerson())) {
+				canDepart = true;
+			}
+			else {
+				// If the leader is ejected, then the mission must be cancelled
+				logger.info(member, "Mission Lead " + getStartingPerson().getName() 
+						+ " evicted from '" + getName() + "' and mission cancelled.");
+				endMission(MISSION_LEAD_NO_SHOW);
+			}
 		}
 
 		if (canDepart) {
