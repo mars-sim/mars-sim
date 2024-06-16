@@ -169,8 +169,7 @@ extends TabPanel {
 		missionButton.setMargin(new Insets(2, 2, 2, 2));
 		missionButton.setToolTipText(Msg.getString("TabPanelMission.tooltip.mission")); //$NON-NLS-1$
 		missionButton.addActionListener(e -> {
-				Vehicle vehicle = (Vehicle) unit;
-				Mission m = vehicle.getMission();
+				Mission m = ((Vehicle) unit).getMission();
 				if (m != null) {
 					getDesktop().showDetails(m);
 				}
@@ -183,8 +182,7 @@ extends TabPanel {
 		monitorButton.setMargin(new Insets(2, 2, 2, 2));
 		monitorButton.setToolTipText(Msg.getString("TabPanelMission.tooltip.monitor")); //$NON-NLS-1$
 		monitorButton.addActionListener(e -> {
-				Vehicle vehicle = (Vehicle) unit;
-				Mission m = vehicle.getMission();
+				Mission m = ((Vehicle) unit).getMission();
 				if (m != null) {
 					try {
 						getDesktop().addModel(new PersonTableModel(m));

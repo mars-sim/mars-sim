@@ -22,7 +22,7 @@ public class EntityListLauncher extends MouseInputAdapter {
     private MainDesktopPane desktop;
 
     /**
-     * Create a luancher that will create a UnitDetails window.
+     * Create a launcher that will create a UnitDetails window.
      * 
      * @param desktop
      */

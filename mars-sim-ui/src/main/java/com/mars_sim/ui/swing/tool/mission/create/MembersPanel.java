@@ -37,7 +37,6 @@ import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.MarsPanelBorder;
-
 /**
  * A wizard panel for selecting settlers.
  */
@@ -62,8 +61,6 @@ implements ActionListener {
 	private JButton addButton;
 	private JButton removeButton;
 	
-
-
 	/**
 	 * Constructor.
 	 * 
@@ -151,7 +148,7 @@ implements ActionListener {
 					}
 				}
 				);
-		// call it a click to add button when user double clicks the table
+
 		peopleTable.addMouseListener(
 				new MouseListener() {
 					public void mouseReleased(MouseEvent e) {}
@@ -160,7 +157,16 @@ implements ActionListener {
 					public void mouseEntered(MouseEvent e) {}
 					public void mouseClicked(MouseEvent e) {
 						if (e.getClickCount() == 2 && !e.isConsumed()) {
-							addButtonClicked();
+							// Q: What is calling addButtonClicked for ?
+							//addButtonClicked();
+							int[] selectedRows = peopleTable.getSelectedRows();
+							if (selectedRows.length > 0) {
+								for (int selectedRow : selectedRows)  {
+									Person person = (Person) peopleTableModel.getUnit(selectedRow);
+									getDesktop().showDetails(person);
+									break;
+								}
+							}
 						}
 					}
 				}

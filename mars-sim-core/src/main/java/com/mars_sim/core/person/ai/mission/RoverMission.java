@@ -83,7 +83,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	private static final double EXTRA_EVA_SUIT_FACTOR = .2;
 
 	/* How long do Worker have to complete departure */
-	private static final int DEPARTURE_DURATION = 150;
+	private static final int DEPARTURE_DURATION = 330;
 	private static final int DEPARTURE_PREPARATION = 15;
 
 	private boolean justArrived;
@@ -313,7 +313,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		boolean canDepart = isEveryoneInRover();
 			
 		if (!canDepart && (getPhaseDuration() > DEPARTURE_DURATION)) {
-			// Find who has not boarded
+			// Find who has not boarded after the duration is over
 			List<Person> ejectedMembers = new ArrayList<>();
 			Rover r = getRover();
 			for (Worker m : getMembers()) {
@@ -323,12 +323,14 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				}
 			}
 
-			// Must have the leader
+			// Note: If the leader is ejected, then the mission should be cancelled
+			
+			// 
 			if (!ejectedMembers.contains(getStartingPerson())) {
 				// Still enough members ? If so eject late arrivals
 				if ((getMembers().size() - ejectedMembers.size()) >= 2) {
 					for (Person ej : ejectedMembers) {
-						logger.info(ej, "Ejected from mission " + getName() + " missed the departure.");
+						logger.info(ej, "Missed the departure and evicted from '" + getName() + "'.");
 						removeMember(ej);
 						addMissionLog(ej.getName() + " evicted");
 					}

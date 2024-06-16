@@ -106,7 +106,7 @@ abstract class TableTab extends MonitorTab {
 			}
 		});
 
-		// Allow orderring
+		// Allow ordering
 		TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
 		table.setRowSorter(sorter);
 		sorter.setSortsOnUpdates(true);
