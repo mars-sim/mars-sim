@@ -29,6 +29,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -43,8 +44,8 @@ import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.UnitModel;
-import com.mars_sim.ui.swing.utils.UnitTableLauncher;
+import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.EntityLauncher;
 
 /**
  * This is a tab panel for displaying the composition of air of each inhabitable building in a settlement.
@@ -200,14 +201,13 @@ public class TabPanelAirComposition extends TabPanel {
  
 		// Create scroll panel for the outer table panel.
 		scrollPane = new JScrollPane();
-		// scrollPane.setPreferredSize(new Dimension(257, 230));
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		content.add(scrollPane,BorderLayout.CENTER);
 
 		tableModel = new TableModel(settlement);
 		table = new JTable(tableModel);
-		table.addMouseListener(new UnitTableLauncher(getDesktop()));
+		EntityLauncher.attach(table, getDesktop());
 
 		table.setRowSelectionAllowed(true);
 		TableColumnModel tableColumnModel = table.getColumnModel();
@@ -381,7 +381,7 @@ public class TabPanelAirComposition extends TabPanel {
 	 * Internal class used as model for the table.
 	 */
 	private class TableModel extends AbstractTableModel 
-				implements UnitModel {
+				implements EntityModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -501,7 +501,7 @@ public class TabPanelAirComposition extends TabPanel {
 		}
 
 		@Override
-		public Unit getAssociatedUnit(int row) {
+		public Entity getAssociatedEntity(int row) {
 			return buildings.get(row);
 		}
 	}

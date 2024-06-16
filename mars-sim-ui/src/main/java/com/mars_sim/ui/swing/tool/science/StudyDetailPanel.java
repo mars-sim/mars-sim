@@ -23,7 +23,7 @@ import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
@@ -31,8 +31,8 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.UnitModel;
-import com.mars_sim.ui.swing.utils.UnitTableLauncher;
+import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.EntityLauncher;
 
 /**
  * A panel showing details of a selected scientific study.
@@ -93,7 +93,7 @@ extends JPanel {
 		// Create schedule table
 		researcherModel = new ResearchTableModel();
 		JTable table = new JTable(researcherModel);
-		table.addMouseListener(new UnitTableLauncher(scienceWindow.getDesktop()));
+		EntityLauncher.attach(table,scienceWindow.getDesktop());
 		table.setAutoCreateRowSorter(true);
 		scrollPanel.setViewportView(table);
 
@@ -167,7 +167,7 @@ extends JPanel {
 		return "";
 	}
 
-	private static class ResearchTableModel extends AbstractTableModel implements UnitModel {
+	private static class ResearchTableModel extends AbstractTableModel implements EntityModel {
 
 		public static final int NAME = 0;
 		public static final int CONTRIBUTION = 1;
@@ -281,7 +281,7 @@ extends JPanel {
 		}
 
 		@Override
-		public Unit getAssociatedUnit(int row) {
+		public Entity getAssociatedEntity(int row) {
 			return researchers.get(row);
 		}
 	}

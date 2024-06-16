@@ -44,6 +44,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
@@ -83,8 +84,8 @@ import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.UnitModel;
-import com.mars_sim.ui.swing.utils.UnitTableLauncher;
+import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.EntityLauncher;
 
 /**
  * The tab panel for showing mission details.
@@ -353,7 +354,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			memberTable.getColumnModel().getColumn(1).setPreferredWidth(150);
 			memberTable.setRowSelectionAllowed(true);
 			memberTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			memberTable.addMouseListener(new UnitTableLauncher(desktop));
+			EntityLauncher.attach(memberTable, desktop);
 			memberScrollPane.setViewportView(memberTable);
 		}
 		
@@ -1003,7 +1004,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	/**
 	 * Table model for mission members.
 	 */
-	private class MemberTableModel extends AbstractTableModel implements UnitListener, UnitModel {
+	private class MemberTableModel extends AbstractTableModel implements UnitListener, EntityModel {
 
 		// Private members.
 		private Mission mission;
@@ -1041,6 +1042,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 * @param columnIndex the column's index.
 		 * @return the column name.
 		 */
+		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0)
 				return Msg.getString("MainDetailPanel.column.name"); //$NON-NLS-1$
@@ -1057,6 +1059,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 * @param column the table column.
 		 * @return the value.
 		 */
+		@Override
 		public Object getValueAt(int row, int column) {
 			if (row < members.size()) {
 				Worker member = members.get(row);
@@ -1192,8 +1195,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		}
 
 		@Override
-		public Unit getAssociatedUnit(int row) {
-			return (Unit) members.get(row);
+		public Entity getAssociatedEntity(int row) {
+			return members.get(row);
 
 		}
 	}

@@ -21,7 +21,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.UnitTableLauncher;
+import com.mars_sim.ui.swing.utils.EntityLauncher;
 
 
 /**
@@ -105,7 +105,7 @@ public class BuildingPanelAccommodation extends BuildingFunctionPanel {
 		JTable table = new JTable(bedTableModel);
 		table.setCellSelectionEnabled(false);
 		table.setRowSelectionAllowed(true);
-		table.addMouseListener(new UnitTableLauncher(getDesktop()));
+		EntityLauncher.attach(table, getDesktop());
 
 		scrollPanel.setViewportView(table);
 	}

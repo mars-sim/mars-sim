@@ -13,6 +13,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.structure.Settlement;
@@ -22,7 +23,7 @@ import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 import com.mars_sim.ui.swing.utils.PercentageCellRenderer;
-import com.mars_sim.ui.swing.utils.UnitModel;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * The TabPanelMaintenance is a tab panel for settlement's building maintenance.
@@ -74,7 +75,7 @@ public class TabPanelMaintenance extends TabPanelTable {
 	}
 
 	private static class BuildingMaintModel extends AbstractTableModel
-			implements UnitModel {
+			implements EntityModel {
 
 		List<Building> buildings;
 
@@ -150,7 +151,7 @@ public class TabPanelMaintenance extends TabPanelTable {
 		}
 
 		@Override
-		public Unit getAssociatedUnit(int row) {
+		public Entity getAssociatedEntity(int row) {
 			return buildings.get(row);
 		}
 	}

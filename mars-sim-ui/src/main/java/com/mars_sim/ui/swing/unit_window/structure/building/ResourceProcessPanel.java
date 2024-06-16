@@ -26,7 +26,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.ResourceProcess;
@@ -35,8 +35,8 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.utils.JProcessButton;
-import com.mars_sim.ui.swing.utils.UnitModel;
-import com.mars_sim.ui.swing.utils.UnitTableLauncher;
+import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.EntityLauncher;
 
 /**
  * Creates a JPanel that will render a list of ResourceProcesses in a JTable.
@@ -63,7 +63,7 @@ public class ResourceProcessPanel extends JPanel {
      * - Multiple building mode
      */
 	private static class ResourceProcessTableModel extends AbstractTableModel
-                implements UnitModel {
+                implements EntityModel {
 		private static final int RUNNING_STATE = 0;
         private static final int PROCESS_NAME = 1;
         private static final int BUILDING_NAME = 2;
@@ -196,7 +196,7 @@ public class ResourceProcessPanel extends JPanel {
         }
 
         @Override
-        public Unit getAssociatedUnit(int row) {
+        public Entity getAssociatedEntity(int row) {
             return getBuilding(row);
         }
 	}
@@ -283,7 +283,7 @@ public class ResourceProcessPanel extends JPanel {
         JTable table = buildUI();
 
         // In the multi-building mode add a mouse listener to open Details window
-        table.addMouseListener(new UnitTableLauncher(desktop));
+        EntityLauncher.attach(table, desktop);
     }
 
     private JTable buildUI() {

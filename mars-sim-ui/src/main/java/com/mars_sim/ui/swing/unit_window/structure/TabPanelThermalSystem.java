@@ -24,7 +24,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.ThermalSystem;
 import com.mars_sim.core.structure.building.Building;
@@ -40,7 +40,7 @@ import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.UnitModel;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * This is a tab panel for settlement's Thermal System .
@@ -292,7 +292,7 @@ public class TabPanelThermalSystem extends TabPanelTable {
 	 * Internal class used as model for the thermal control table.
 	 */
 	private class HeatTableModel extends AbstractTableModel
-		implements UnitModel {
+		implements EntityModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -318,22 +318,26 @@ public class TabPanelThermalSystem extends TabPanelTable {
 			return 6;
 		}
 		
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) dataType = Icon.class;
-			else if (columnIndex == 1) dataType = Building.class;
-			else if (columnIndex > 1) dataType = Double.class;
-			return dataType;
+			return switch(columnIndex) {
+				case 0 -> Icon.class;
+				case 1 -> Building.class;
+				default -> Double.class;
+			};
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return Msg.getString("TabPanelThermalSystem.column.s"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("TabPanelThermalSystem.column.building"); //$NON-NLS-1$
-			else if (columnIndex == 2) return Msg.getString("TabPanelThermalSystem.column.temperature"); //$NON-NLS-1$
-			else if (columnIndex == 3) return Msg.getString("TabPanelThermalSystem.column.generated"); //$NON-NLS-1$
-			else if (columnIndex == 4) return Msg.getString("TabPanelThermalSystem.column.powerReq"); //$NON-NLS-1$
-			else if (columnIndex == 5) return Msg.getString("TabPanelThermalSystem.column.capacity"); //$NON-NLS-1$
-			else return null;
+			return switch(columnIndex) {
+				case 0 -> Msg.getString("TabPanelThermalSystem.column.s"); //$NON-NLS-1$
+				case 1 -> Msg.getString("TabPanelThermalSystem.column.building"); //$NON-NLS-1$
+				case 2 -> Msg.getString("TabPanelThermalSystem.column.temperature"); //$NON-NLS-1$
+				case 3 -> Msg.getString("TabPanelThermalSystem.column.generated"); //$NON-NLS-1$
+				case 4 -> Msg.getString("TabPanelThermalSystem.column.powerReq"); //$NON-NLS-1$
+				case 5 -> Msg.getString("TabPanelThermalSystem.column.capacity"); //$NON-NLS-1$
+				default -> null;
+			};
 		}
 
 		public Object getValueAt(int row, int column) {
@@ -372,7 +376,6 @@ public class TabPanelThermalSystem extends TabPanelTable {
 				else if (column == 1)
 					return buildings.get(row);
 				else if (column == 2)
-					// return temperature of the building;
 					return  Math.round(building.getCurrentTemperature()*10.0)/10.0;
 				else if (column == 3) {
 					if (heatMode == HeatMode.HEAT_OFF) {
@@ -412,7 +415,7 @@ public class TabPanelThermalSystem extends TabPanelTable {
 		}
 
 		@Override
-		public Unit getAssociatedUnit(int row) {
+		public Entity getAssociatedEntity(int row) {
 			return buildings.get(row);
 		}
 	}
