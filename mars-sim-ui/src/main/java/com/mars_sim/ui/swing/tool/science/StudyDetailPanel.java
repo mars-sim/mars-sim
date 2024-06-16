@@ -227,7 +227,8 @@ extends JPanel {
 
 			switch(column) {
 				case NAME: return p.getName();
-				case CONTRIBUTION: return (isPrimary ? "" : study.getContribution(p).getName());
+				case CONTRIBUTION: return (isPrimary ? study.getScience().getName()
+									: study.getContribution(p).getName());
 				case WORK: {
 					if (study.getPhase() == StudyStatus.PAPER_PHASE) {
 						return (isPrimary ? study.getPrimaryPaperWorkTimeCompleted() 

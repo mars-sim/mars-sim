@@ -8,21 +8,18 @@ package com.mars_sim.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.util.List;
 
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
@@ -32,8 +29,10 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.tool.science.ScienceWindow;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.EntityLauncher;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 
 /**
@@ -49,14 +48,16 @@ public class TabPanelScienceStudy extends TabPanel {
 
 	private JTable studyTable;
 	
-
-	private JButton scienceToolButton;
 	private JLabel totalAchievementLabel;
 
 	private StudyTableModel studyTableModel;
 	private AchievementTableModel achievementTableModel;
 
 	private ScientificStudyManager scienceManager;
+
+	private JLabel primaryCompletedLabel;
+
+	private JLabel collabCompletedLabel;
 
 	/**
 	 * Constructor.
@@ -86,12 +87,8 @@ public class TabPanelScienceStudy extends TabPanel {
 
 		// Create the studies panel.
 		JPanel studiesPane = new JPanel(new BorderLayout());
+		studiesPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TabPanelScience.scientificStudies")));
 		mainPane.add(studiesPane);
-
-		// Create the studies label.
-		JLabel studiesLabel = new JLabel(Msg.getString("TabPanelScience.scientificStudies"), SwingConstants.CENTER); //$NON-NLS-1$
-		StyleManager.applySubHeading(studiesLabel);
-		studiesPane.add(studiesLabel, BorderLayout.NORTH);
 
 		// Create the study scroll panel.
 		JScrollPane studyScrollPane = new JScrollPane();
@@ -105,44 +102,25 @@ public class TabPanelScienceStudy extends TabPanel {
 		studyTable.setRowSelectionAllowed(true);
 		studyTable.setDefaultRenderer(Double.class, new NumberCellRenderer(1));
 		studyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		studyTable.getSelectionModel().addListSelectionListener(event -> {
-			if (event.getValueIsAdjusting() && (studyTable.getSelectedRow() >= 0)) {
-				setEnabledScienceToolButton(true);
-			}
-		});
 		studyScrollPane.setViewportView(studyTable);
 
 		studyTable.setAutoCreateRowSorter(true);
-
-		// Create the button panel.
-		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		studiesPane.add(buttonPane, BorderLayout.SOUTH);
-
-		// Create the science tool button.
-		scienceToolButton = new JButton(ImageLoader.getIconByName(ScienceWindow.ICON)); //$NON-NLS-1$
-		scienceToolButton.setEnabled(false);
-		scienceToolButton.setMargin(new Insets(1, 1, 1, 1));
-		scienceToolButton.setToolTipText(Msg.getString("TabPanelScience.tooltip.science"));
-		scienceToolButton.addActionListener(arg0 -> displayStudyInScienceTool());
-		buttonPane.add(scienceToolButton);
+		EntityLauncher.attach(studyTable, getDesktop());
 
 		// Create the achievement panel.
 		JPanel achievementPane = new JPanel(new BorderLayout());
+		achievementPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TabPanelScience.scientificAchievement")));
 		mainPane.add(achievementPane);
 
-		// Create achievement label panel.
-		JPanel achievementLabelPane = new JPanel(new GridLayout(2, 1, 0, 0));
+		AttributePanel achievementLabelPane = new AttributePanel(3);
 		achievementPane.add(achievementLabelPane, BorderLayout.NORTH);
 
-		// Create the achievement label.
-		JLabel achievementLabel = new JLabel(Msg.getString("TabPanelScience.scientificAchievement"), SwingConstants.CENTER); //$NON-NLS-1$
-		StyleManager.applySubHeading(achievementLabel);
-		achievementLabelPane.add(achievementLabel);
-
-		String totalAchievementString = StyleManager.DECIMAL_PLACES1.format(person.getTotalScientificAchievement());
-		totalAchievementLabel = new JLabel(
-				Msg.getString("TabPanelScience.totalAchievementCredit", totalAchievementString), SwingConstants.CENTER); //$NON-NLS-1$
-		achievementLabelPane.add(totalAchievementLabel);
+		totalAchievementLabel = achievementLabelPane.addTextField(Msg.getString("TabPanelScience.totalAchievementCredit"), //$NON-NLS-1$
+						"", null);
+		primaryCompletedLabel = achievementLabelPane.addTextField(Msg.getString("TabPanelScience.numPrimary"), //$NON-NLS-1$
+						"", null);
+		collabCompletedLabel = achievementLabelPane.addTextField(Msg.getString("TabPanelScience.numCollab"), //$NON-NLS-1$
+						"", null);
 
 		// Create the achievement scroll panel.
 		JScrollPane achievementScrollPane = new JScrollPane();
@@ -150,7 +128,7 @@ public class TabPanelScienceStudy extends TabPanel {
 		achievementPane.add(achievementScrollPane, BorderLayout.CENTER);
 
 		// Create the achievement table.
-		achievementTableModel = new AchievementTableModel(person, scienceManager);
+		achievementTableModel = new AchievementTableModel(person);
 		achievementTable = new JTable(achievementTableModel);
 		achievementTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		achievementTable.setRowSelectionAllowed(true);
@@ -159,7 +137,6 @@ public class TabPanelScienceStudy extends TabPanel {
 		achievementScrollPane.setViewportView(achievementTable);
 
 		achievementTable.setAutoCreateRowSorter(true);
-
 	}
 
 	@Override
@@ -185,33 +162,16 @@ public class TabPanelScienceStudy extends TabPanel {
 
 		// Update total achievement label.
 		String totalAchievementString = StyleManager.DECIMAL_PLACES1.format(person.getTotalScientificAchievement());
-		totalAchievementLabel.setText(Msg.getString("TabPanelScience.totalAchievementCredit", totalAchievementString)); //$NON-NLS-1$
-	}
-
-	/**
-	 * Sets if the science tool button is enabled or not.
-	 * 
-	 * @param enabled true if button enabled.
-	 */
-	private void setEnabledScienceToolButton(boolean enabled) {
-		scienceToolButton.setEnabled(enabled);
-	}
-
-	/**
-	 * Displays the scientific study selected in the table in the science tool.
-	 */
-	private void displayStudyInScienceTool() {
-		int selectedStudyIndex = studyTable.getSelectedRow();
-		if (selectedStudyIndex >= 0) {
-			ScientificStudy selectedStudy = studyTableModel.getStudy(selectedStudyIndex);
-			getDesktop().showDetails(selectedStudy);
-		}
+		totalAchievementLabel.setText(totalAchievementString); //$NON-NLS-1$
+		primaryCompletedLabel.setText(Integer.toString(scienceManager.getNumCompletedPrimaryStudies(person)));
+		collabCompletedLabel.setText(Integer.toString(scienceManager.getNumCompletedCollaborativeStudies(person)));
 	}
 
 	/**
 	 * Inner class for study table model.
 	 */
-	private static class StudyTableModel extends AbstractTableModel {
+	private static class StudyTableModel extends AbstractTableModel 
+		implements EntityModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -294,36 +254,38 @@ public class TabPanelScienceStudy extends TabPanel {
 		 * @return the value Object at the specified cell.
 		 */
 		public Object getValueAt(int rowIndex, int columnIndex) {
+			ScientificStudy study = getStudy(rowIndex);
+			if (study == null) {
+				return null;
+			}
+
 			Object result = null;
-			if ((rowIndex >= 0) && (rowIndex < studies.size())) {
-				ScientificStudy study = studies.get(rowIndex);
-				switch (columnIndex) {
-					case NAME_COL:
-						result = study.getName();
-						break;
-					case ROLE_COL:
-						if (person.equals(study.getPrimaryResearcher()))
-							result = Msg.getString("TabPanelScience.primary"); //$NON-NLS-1$
-						else if (study.getCollaborativeResearchers().contains(person))
-							result = Msg.getString("TabPanelScience.collaborator"); //$NON-NLS-1$
-						break;
-					case PHASE_COL:
-						result = study.getPhase().getName();
-						break;
-					case RESEARCH_COL:
-						if (study.getPrimaryResearcher().equals(person))
-							result = study.getPrimaryResearchWorkTimeCompleted();
-						else if (study.getCollaborativeResearchers().contains(person))
-							result = study.getCollaborativeResearchWorkTimeCompleted(person);
-						break;
-					case PAPER_COL:
-						if (study.getPrimaryResearcher().equals(person))
-							result = study.getPrimaryPaperWorkTimeCompleted();
-						else if (study.getCollaborativeResearchers().contains(person))
-							result = study.getCollaborativePaperWorkTimeCompleted(person);
-						break;
-					default:
-				}
+			switch (columnIndex) {
+				case NAME_COL:
+					result = study.getName();
+					break;
+				case ROLE_COL:
+					if (person.equals(study.getPrimaryResearcher()))
+						result = Msg.getString("TabPanelScience.primary"); //$NON-NLS-1$
+					else if (study.getCollaborativeResearchers().contains(person))
+						result = Msg.getString("TabPanelScience.collaborator"); //$NON-NLS-1$
+					break;
+				case PHASE_COL:
+					result = study.getPhase().getName();
+					break;
+				case RESEARCH_COL:
+					if (study.getPrimaryResearcher().equals(person))
+						result = study.getPrimaryResearchWorkTimeCompleted();
+					else if (study.getCollaborativeResearchers().contains(person))
+						result = study.getCollaborativeResearchWorkTimeCompleted(person);
+					break;
+				case PAPER_COL:
+					if (study.getPrimaryResearcher().equals(person))
+						result = study.getPrimaryPaperWorkTimeCompleted();
+					else if (study.getCollaborativeResearchers().contains(person))
+						result = study.getCollaborativePaperWorkTimeCompleted(person);
+					break;
+				default:
 			}
 			return result;
 		}
@@ -363,6 +325,11 @@ public class TabPanelScienceStudy extends TabPanel {
 				result = studies.indexOf(study);
 			return result;
 		}
+
+		@Override
+		public Entity getAssociatedEntity(int row) {
+			return getStudy(row);
+		}
 	}
 
 	/**
@@ -376,14 +343,12 @@ public class TabPanelScienceStudy extends TabPanel {
 		// Data members.
 		private Person person;
 		private ScienceType[] sciences;
-		private ScientificStudyManager manager;
 
-		private AchievementTableModel(Person person, ScientificStudyManager manager) {
+		private AchievementTableModel(Person person) {
 			// Use AbstractTableModel constructor.
 			super();
 
 			this.person = person;
-			this.manager = manager;
 			sciences = ScienceType.values();
 		}
 
@@ -393,7 +358,7 @@ public class TabPanelScienceStudy extends TabPanel {
 		 * @return the number of columns in the model.
 		 */
 		public int getColumnCount() {
-			return 4;
+			return 2;
 		}
 
 		@Override
@@ -401,10 +366,6 @@ public class TabPanelScienceStudy extends TabPanel {
 			if (columnIndex == 0)
 				return Msg.getString("TabPanelScience.column.science"); //$NON-NLS-1$
 			else if (columnIndex == 1)
-				return Msg.getString("TabPanelScience.column.numPrimary"); //$NON-NLS-1$
-			else if (columnIndex == 2)
-				return Msg.getString("TabPanelScience.column.numCollab"); //$NON-NLS-1$
-			else if (columnIndex == 3)
 				return Msg.getString("TabPanelScience.column.achievementCredit"); //$NON-NLS-1$
 			else
 				return null;
@@ -422,10 +383,6 @@ public class TabPanelScienceStudy extends TabPanel {
 			if (columnIndex == 0)
 				dataType = String.class;
 			else if (columnIndex == 1)
-				dataType = Integer.class;
-			else if (columnIndex == 2)
-				dataType = Integer.class;
-			else if (columnIndex == 3)
 				dataType = Double.class;
 			return dataType;
 		}
@@ -452,11 +409,7 @@ public class TabPanelScienceStudy extends TabPanel {
 				ScienceType science = sciences[rowIndex];
 				if (columnIndex == 0)
 					result = science.getName();
-				else if (columnIndex == 1)
-					result = manager.getNumCompletedPrimaryStudies(person);
-				else if (columnIndex == 2)
-					result = manager.getNumCompletedCollaborativeStudies(person);
-				else if (columnIndex == 3) {
+				else if (columnIndex == 1) {
 					result = person.getScientificAchievement(science);
 				}
 			}

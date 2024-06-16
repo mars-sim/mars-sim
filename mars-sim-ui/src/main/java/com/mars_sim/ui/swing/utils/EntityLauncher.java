@@ -70,9 +70,9 @@ public class EntityLauncher extends MouseInputAdapter {
             RowSorter<? extends TableModel> sorter = table.getRowSorter();
             if (sorter != null && r >= 0) {
                 r = sorter.convertRowIndexToModel(r);
-                EntityModel model = (EntityModel)table.getModel();
-                desktop.showDetails(model.getAssociatedEntity(r));
             }
+            EntityModel model = (EntityModel)table.getModel();
+            desktop.showDetails(model.getAssociatedEntity(r));
         }
     }
 }
