@@ -30,6 +30,7 @@ import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
 
@@ -107,21 +108,22 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask> tasks = new ArrayList<>();
 
-		boolean insideTasks = MaintainVehicleMeta.getGarageSpaces(settlement) > 0;
-
         Set<Vehicle> assessed = new UnitSet<>();
         
         // Check Vehicle Missions first
 		for (Mission mission : missionManager.getMissions()) {
 			if ((mission instanceof VehicleMission vehicleMission) && !mission.isDone()) {
 				if (vehicleMission.isVehicleUnloadableHere(settlement)) {
-                    Vehicle v = vehicleMission.getVehicle();
-                    if (v != null) {
+                    Vehicle vehicle = vehicleMission.getVehicle();
+                    if (vehicle != null) {
                         // Not sure why vehicle could be null but it does happen. Race condition of vehicle
                         // being released before the mission is completed?
-                        assessed.add(v);
+                        assessed.add(vehicle);
 
-                        SettlementTask job = scoreVehicle(settlement, v, insideTasks, this);
+        				boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
+        						vehicleMission.getAssociatedSettlement(), vehicle instanceof Rover);
+        						
+                        SettlementTask job = scoreVehicle(settlement, vehicle, garageTask, this);
                         if (job != null) {
                             tasks.add(job);
                         }
@@ -133,7 +135,12 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
         // Check non-mission vehicles
         for (Vehicle vehicle : settlement.getParkedGaragedVehicles()) {
 			if (!vehicle.isReserved() && !assessed.contains(vehicle)) {
-                SettlementTask job = scoreVehicle(settlement, vehicle, insideTasks, this);
+				
+   				boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
+   						vehicle.getAssociatedSettlement(), vehicle instanceof Rover);
+						
+                SettlementTask job = scoreVehicle(settlement, vehicle, garageTask, this);
+
                 if (job != null) {
                     tasks.add(job);
                 }

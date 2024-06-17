@@ -90,7 +90,7 @@ public class LoadVehicleGarage extends Task {
 		
 			// End task if vehicle or garage not available
 			if (garage == null) {
-				clearTask("Cannot put in garage.");
+				clearTask("Garage not available for " + vehicle.getName() + ".");
 				return;
 			}
 		}

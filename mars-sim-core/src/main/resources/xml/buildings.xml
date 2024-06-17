@@ -2261,16 +2261,23 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		        	<parking-location xloc="-2.60" yloc="2.0" />
 		        </parking>
 				<flyerParking>
-		        	<flyer-location xloc="2.60" yloc="-3.3" />
-		        	<flyer-location xloc="-2.60" yloc="-3.3" />
+		        	<flyer-location xloc="2.25" yloc="-5.5" />
+		        	<flyer-location xloc="-2.25" yloc="-5.5" />
 		        </flyerParking>		        
 		        <activity>
-					<activity-spot xloc="1.75" yloc="-3.5" />
-					<activity-spot xloc="0.0" yloc="-3.5" />
-					<activity-spot xloc="-1.75" yloc="-3.5" />
-					<activity-spot xloc="0.0" yloc="-2.0" />
-					<activity-spot xloc=".75" yloc="1.0" />
-					<activity-spot xloc="-.75" yloc="1.0" />
+					<activity-spot xloc="3.25" yloc="-3" />		        
+					<activity-spot xloc="1.5" yloc="-3" />
+					<activity-spot xloc="-1.5" yloc="-3" />
+					<activity-spot xloc="-3.25" yloc="-3" />
+								
+					<activity-spot xloc="0.6" yloc="-1" />
+					<activity-spot xloc="-0.6" yloc="-1" />
+					<activity-spot xloc="0.6" yloc="1" />
+					<activity-spot xloc="-0.6" yloc="1" />
+					<activity-spot xloc="0.6" yloc="3" />
+					<activity-spot xloc="-0.6" yloc="3" />
+					<activity-spot xloc="0.6" yloc="5" />
+					<activity-spot xloc="-0.6" yloc="5" />					
 				</activity>
 			</vehicle-maintenance>
 			<life-support capacity="8" power-required="0.4" />
@@ -2282,8 +2289,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="60" discharge-rate="1.25"/>
 			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="-5.8" yloc="3.5" />
-					<activity-spot xloc="5.8" yloc="3.5" />
+					<activity-spot xloc="0.6" yloc="-5.5" />
+					<activity-spot xloc="-0.6" yloc="-5.5" />
 				</activity>
 			</robotic-station>
 			<storage capacity="20000">
@@ -3455,8 +3462,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Storage Shed -->
 
-	<building type="Loading Dock Garage" width="15.0" length="18.0" north-south-alignment="length" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="300" room-temperature="22.5" base-mass="10000">
+	<building type="Loading Dock Garage" width="15.0" length="18.0" 
+		north-south-alignment="length" base-level="-1" wear-lifetime="3340000" 
+			maintenance-time="300" room-temperature="22.5" base-mass="10000">
 		<description> The Loading Dock Garage is an enclosed maintenance facility
 			featuring a brick loading dock for easy access. It hosts equipment for
 			building, repairing and modifying rovers and vehicles.
@@ -3466,20 +3474,25 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<vehicle-maintenance>
 				<parking>
-                	<parking-location xloc="4.5" yloc="-3.2" />
-                	<parking-location xloc="-4.5" yloc="-3.2" />
+                	<parking-location xloc="4.5" yloc="-1" />
+                	<parking-location xloc="-4.5" yloc="-1" />
                 </parking>
 				<flyerParking>
-		        	<flyer-location xloc="4.5" yloc="4.0" />
-		        	<flyer-location xloc="-4.5" yloc="4.0" />
+		        	<flyer-location xloc="4.5" yloc="-6.25" />
+		        	<flyer-location xloc="-4.5" yloc="-6.25" />
 		        </flyerParking>	                
                 <activity>
-					<activity-spot xloc="-.5" yloc="-2.25" />
-					<activity-spot xloc="2.25" yloc="-3.25" />
-					<activity-spot xloc="0" yloc="-1.25" />
-					<activity-spot xloc="-1.125" yloc="0" />
-					<activity-spot xloc="-2.25" yloc="-4.75" />
-					<activity-spot xloc="1.0" yloc="-6.25" />
+					<activity-spot xloc="1.5" yloc="3" />
+					<activity-spot xloc="1.5" yloc="1" />
+					<activity-spot xloc="1.5" yloc="-1" />
+					<activity-spot xloc="1.5" yloc="-3" />			
+					<activity-spot xloc="3.0" yloc="-4.5" />
+					
+					<activity-spot xloc="-1.5" yloc="3" />
+					<activity-spot xloc="-1.5" yloc="1" />
+					<activity-spot xloc="-1.5" yloc="-1" />
+					<activity-spot xloc="-1.5" yloc="-3" />
+					<activity-spot xloc="-3.0" yloc="-4.5" />
 				</activity>
 			</vehicle-maintenance>
 			<life-support capacity="16" power-required="0.8" />
@@ -3491,8 +3504,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="40" discharge-rate="1.25"/>
 			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="-2.25" yloc="-5.5" />
-					<activity-spot xloc="2.5" yloc="-5.5" />
+					<activity-spot xloc="-1" yloc="-7.0" />
+					<activity-spot xloc="1" yloc="-7.0" />
 				</activity>
 			</robotic-station>
 			<storage capacity="30000">

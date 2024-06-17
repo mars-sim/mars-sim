@@ -65,7 +65,8 @@ public abstract class SettlementTask extends AbstractTaskJob {
     
         
     /**
-     * Overrie the default scope
+     * Overrides the default scope.
+     * 
      * @param newScope
      */
     protected void setScope(TaskScope newScope) {
@@ -73,7 +74,7 @@ public abstract class SettlementTask extends AbstractTaskJob {
     }
 
     /**
-     * What is the scope of working hours for this Task.
+     * Gets the scope of the working hours for this Task.
      */
     public TaskScope getScope() {
         return scope;
@@ -98,7 +99,7 @@ public abstract class SettlementTask extends AbstractTaskJob {
     }
 
     /**
-     * This task has been used by a Worker so decrease the demand. 
+     * Decreases the demand as this task has been used by a worker. 
      * 
      * @return True if no more demand is needed.
      */

@@ -25,6 +25,7 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.VehicleMaintenance;
 import com.mars_sim.core.structure.building.task.MaintainBuildingMeta;
+import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
 
@@ -97,14 +98,16 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask> tasks = new ArrayList<>();
 
-		boolean insideTasks = getGarageSpaces(settlement) > 0;
-
 		for (Vehicle vehicle : getAllVehicleCandidates(settlement, false)) {
 			RatingScore score = MaintainBuildingMeta.scoreMaintenance(vehicle);
 
 			// Vehicle in need of maintenance
 			if (score.getScore() > 0) {
-				tasks.add(new VehicleMaintenanceJob(this, vehicle, !insideTasks, score));
+				
+				boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
+						vehicle.getAssociatedSettlement(), vehicle instanceof Rover);
+				
+				tasks.add(new VehicleMaintenanceJob(this, vehicle, !garageTask, score));
 			}
 		}
 
@@ -128,16 +131,43 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 	}
 
 	/**
+	 *Checks if a garages space is available in a Settlement.
+	 * 
+	 * @param settlement Location to check.
+	 */
+	public static boolean hasGarageSpaces(Settlement settlement, boolean isRover) {
+
+		for (Building j : settlement.getBuildingManager().getBuildingSet(
+				FunctionType.VEHICLE_MAINTENANCE)) {
+			VehicleMaintenance garage = j.getVehicleParking();
+			
+			boolean hasSpace = false;
+			if (isRover)
+				hasSpace = garage.getAvailableCapacity() > 0;
+			else
+				hasSpace = garage.getAvailableFlyerCapacity() > 0;
+				
+			if (hasSpace)
+				return true;
+		}
+		return false;
+	}
+	
+	/**
 	 * Counts the number of available garages spaces in a Settlement.
 	 * 
 	 * @param settlement Location to check.
 	 */
-	public static int getGarageSpaces(Settlement settlement) {
+	public static int getGarageSpaces(Settlement settlement, boolean isRover) {
 		int garageSpaces = 0;
-		for(Building j : settlement.getBuildingManager().getBuildingSet(FunctionType.VEHICLE_MAINTENANCE)) {
+		for(Building j : settlement.getBuildingManager().getBuildingSet(
+				FunctionType.VEHICLE_MAINTENANCE)) {
 			VehicleMaintenance garage = j.getVehicleParking();
 			
-			garageSpaces += (garage.getAvailableCapacity() + garage.getAvailableFlyerCapacity());
+			if (isRover)
+				garageSpaces += garage.getAvailableCapacity();
+			else
+				garageSpaces += garage.getAvailableFlyerCapacity();
 		}
 		return garageSpaces;
 	}
