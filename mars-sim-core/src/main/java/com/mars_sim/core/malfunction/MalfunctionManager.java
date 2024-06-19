@@ -938,7 +938,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 		int nervousness = SCORE_DEFAULT;
 		if (actor instanceof Person) {
 			Person p = (Person) actor;
-			nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
+			nervousness = p.getMind().getTraitManager()
+					.getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
 		}
 		determineNumOfMalfunctions(location, nervousness, actor);
 	}

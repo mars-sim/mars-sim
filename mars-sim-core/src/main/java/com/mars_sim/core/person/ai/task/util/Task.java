@@ -787,14 +787,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	} 
 
 	/**
-	 * This get the relevant Impact assessment of doing this Task. It is a temp. measure
+	 * This gets the relevant Impact assessment of doing this Task. It is a temp. measure
 	 * as eventually the impact will come via the constructor.
 	 * @return Impact assessment of doing this Task
 	 */
 	private ExperienceImpact getImpact() {
 		var result = (phase != null ? phase.getImpact() : null);
 		if (result == null) {
-			// This is only needed until all subclasses define an Impac tint eh constructor
+			// This is only needed until all subclasses define an Impact in the constructor
 			if (impact == null) {
 				impact = new ExperienceImpact(experienceRatio, experienceAttribute,
 										effortDriven, stressModifier, primarySkill);

@@ -51,7 +51,8 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_WH_KM = new DecimalFormat("#,##0.00 Wh/km");
     public static final DecimalFormat DECIMAL_WH_KG = new DecimalFormat("#,##0.00 Wh/kg");
     public static final DecimalFormat DECIMAL_M_S2 = new DecimalFormat("#,##0.00 m/s2");
-    public static final DecimalFormat DECIMAL_M_S = new DecimalFormat("#,##0.00 m/s");   
+    public static final DecimalFormat DECIMAL_M_S = new DecimalFormat("#,##0.00 m/s"); 
+    public static final DecimalFormat DECIMAL_KJ = new DecimalFormat("#,##0.0 kJ");
     public static final DecimalFormat DECIMAL_KM = new DecimalFormat("#,##0.00 km");
     public static final DecimalFormat DECIMAL_KMH = new DecimalFormat("##0.00 km/h");
     public static final DecimalFormat DECIMAL_KG = new DecimalFormat("#,##0.0 kg");

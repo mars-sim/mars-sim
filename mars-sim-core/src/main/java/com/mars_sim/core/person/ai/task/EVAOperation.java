@@ -461,7 +461,7 @@ public abstract class EVAOperation extends Task {
 		
         // Check if there is a reason to cut short and return.
 		if (shouldEndEVAOperation()) {
-			checkLocation("End EVA early");
+			checkLocation("End EVA early.");
 			return time;
 		}
 

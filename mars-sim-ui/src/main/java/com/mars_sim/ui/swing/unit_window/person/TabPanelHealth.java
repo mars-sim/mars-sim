@@ -71,6 +71,8 @@ extends TabPanel {
 		    " Standard Dose Limit [mSv] on Eye - 30-Day:  500;  Annual: 2000;  Career: 3000",
 		    " Standard Dose Limit [mSv] on Skin - 30-Day: 1000;  Annual: 4000;  Career: 6000"};
 
+	private static final String KJ = " kJ";
+	
 	private int fatigueCache;
 	private int thirstCache;
 	private int hungerCache;
@@ -81,6 +83,17 @@ extends TabPanel {
 	private int leptinTCache;
 	private int ghrelinCache;
 	private int ghrelinTCache;
+	
+	private int maxDailyEnergy;
+	
+	private double muscleTor;
+	private double muscleHealth;
+	private double muscleSoreness;
+	
+	private double appetite;
+
+	private double bodyMassDev;
+	
 	
 	private JLabel thirstLabel;
 	private JLabel fatigueLabel;
@@ -94,6 +107,14 @@ extends TabPanel {
 	private JLabel leptinTLabel;
 	private JLabel ghrelinTLabel;
 
+	private JLabel muscleTorLabel;
+	private JLabel muscleHealthLabel;
+	private JLabel muscleSorenessLabel;
+	
+	private JLabel appetiteLabel;
+	private JLabel maxDailyEnergyLabel;
+	private JLabel bodyMassDevLabel;
+	
 	/** The sleep hour text field. */	
 	private JLabel sleepTF;
 	private JLabel bedTF;
@@ -145,41 +166,74 @@ extends TabPanel {
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
 
 		// Prepare condition panel
-		AttributePanel conditionPanel = new AttributePanel(5, 2);
+		AttributePanel conditionPanel = new AttributePanel(8, 2);
 		northPanel.add(conditionPanel);
 		
 		fatigueCache = (int)condition.getFatigue();
 		fatigueLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.fatigue"),
 										DECIMAL_MSOLS.format(fatigueCache), null);
-		thirstCache = (int)condition.getThirst();
-		thirstLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.thirst"),
-										DECIMAL_MSOLS.format(thirstCache), null);
+		
+		maxDailyEnergy = (int)(condition.getPersonalMaxDailyEnergy());
+		maxDailyEnergyLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.maxDailyEnergy"),
+										maxDailyEnergy + KJ);
+						
 		hungerCache = (int)condition.getHunger();
 		hungerLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.hunger"),
 										DECIMAL_MSOLS.format(thirstCache), null);
+		
 		energyCache = (int)condition.getEnergy();
 		energyLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.energy"),
 										StyleManager.DECIMAL_PLACES0.format(energyCache) + " kJ", null);
-		stressCache = (int)condition.getStress();	
-		stressLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.stress"),
-										StyleManager.DECIMAL_PERC.format(stressCache), null);
+				
+		thirstCache = (int)condition.getThirst();
+		thirstLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.thirst"),
+										DECIMAL_MSOLS.format(thirstCache), null);
+		
+		appetite = Math.round(condition.getAppetite()*10.0)/10.0;
+		appetiteLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.appetite"),
+				StyleManager.DECIMAL_PLACES1.format(appetite));
+		
 		performanceCache = (int)(person.getPerformanceRating() * 100);
 		performanceLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.performance"),
-										StyleManager.DECIMAL_PERC.format(performanceCache), null);
+					StyleManager.DECIMAL_PERC.format(performanceCache), null);
+		
+		muscleHealth = Math.round(condition.getMuscleHealth()*10.0)/10.0;
+		muscleHealthLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.muscle.health"),
+				StyleManager.DECIMAL_PLACES1.format(muscleHealth));	
+
+		stressCache = (int)condition.getStress();	
+		stressLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.stress"),
+				StyleManager.DECIMAL_PERC.format(stressCache), null);
+		
+		muscleTor = Math.round(condition.getMusclePainTolerance()*10.0)/10.0;
+		muscleTorLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.muscle.tolerance"),
+				StyleManager.DECIMAL_PLACES1.format(muscleTor));	
+		
+		bodyMassDev = Math.round(condition.getPersonalMaxDailyEnergy()*10.0)/10.0;
+		bodyMassDevLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.bodyMassDev"),
+				StyleManager.DECIMAL_PLACES1.format(bodyMassDev));
+		
+		muscleSoreness = Math.round(condition.getMuscleSoreness()*10.0)/10.0;
+		muscleSorenessLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.muscle.soreness"),
+				StyleManager.DECIMAL_PLACES1.format(muscleSoreness));
+	
 		leptinCache = (int)(circadianClock.getLeptin());
 		leptinLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.leptin"),
 										DECIMAL_MSOLS.format(leptinCache), null);
+		
 		ghrelinCache = (int)(circadianClock.getGhrelin());
 		ghrelinLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.ghrelin"),
 										DECIMAL_MSOLS.format(ghrelinCache), null);		
+		
 		leptinTCache = (int)(circadianClock.getLeptinT());
 		leptinTLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.leptin.threshold"),
 										DECIMAL_MSOLS.format(leptinTCache), null);	
+		
 		ghrelinTCache = (int)(circadianClock.getGhrelinT());
 		ghrelinTLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.ghrelin.threshold"),
 										DECIMAL_MSOLS.format(ghrelinTCache), null);	
 		
-
+		
 		// Prepare SpringLayout for info panel.
 		JPanel springPanel = new JPanel(new SpringLayout());
 		northPanel.add(springPanel);
@@ -521,7 +575,7 @@ extends TabPanel {
 		int newEnergy = (int)condition.getEnergy();
 		if (energyCache != newEnergy) {
 			energyCache = newEnergy;
-			energyLabel.setText(StyleManager.DECIMAL_PLACES0.format(energyCache) + " kJ");
+			energyLabel.setText(energyCache + KJ);
 		}
 
 		// Update stress if necessary.
@@ -566,6 +620,42 @@ extends TabPanel {
 			ghrelinTLabel.setText(DECIMAL_MSOLS.format(newGT));
 		}
 
+		double muscleTor0 = Math.round(condition.getMusclePainTolerance()*10.0)/10.0;
+		if (muscleTor != muscleTor0) {
+			muscleTor = muscleTor0;
+			muscleTorLabel.setText(StyleManager.DECIMAL_PLACES1.format(muscleTor0));
+		}
+		
+		double muscleHealth0 = Math.round(condition.getMuscleHealth()*10.0)/10.0;
+		if (muscleHealth != muscleHealth0) {
+			muscleHealth = muscleHealth0;
+			muscleHealthLabel.setText(StyleManager.DECIMAL_PLACES1.format(muscleHealth0));
+		}
+		
+		double muscleSoreness0 = Math.round(condition.getMuscleSoreness()*10.0)/10.0;
+		if (muscleSoreness != muscleSoreness0) {
+			muscleSoreness = muscleSoreness0;
+			muscleHealthLabel.setText(StyleManager.DECIMAL_PLACES1.format(muscleSoreness0));
+		}
+
+		double appetite0 = Math.round(condition.getAppetite()*10.0)/10.0;
+		if (appetite != appetite0) {
+			appetite = appetite0;
+			appetiteLabel.setText(StyleManager.DECIMAL_PLACES1.format(appetite0));
+		}
+		
+		int maxDailyEnergy0 = (int)(condition.getPersonalMaxDailyEnergy());
+		if (maxDailyEnergy != maxDailyEnergy0) {
+			maxDailyEnergy = maxDailyEnergy0;
+			maxDailyEnergyLabel.setText(maxDailyEnergy0 + KJ);
+		}
+
+		double bodyMassDev0 = Math.round(condition.getBodyMassDeviation()*10.0)/10.0;
+		if (bodyMassDev != bodyMassDev0) {
+			bodyMassDev = bodyMassDev0;
+			bodyMassDevLabel.setText(StyleManager.DECIMAL_PLACES1.format(bodyMassDev0));
+		}
+		
 		// Update sleep time TF
 		StringBuilder text = updateSleepTime();
 
