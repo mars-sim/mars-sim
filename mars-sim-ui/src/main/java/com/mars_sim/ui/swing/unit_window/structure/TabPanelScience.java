@@ -135,7 +135,7 @@ extends TabPanel {
 		scienceToolButton = new JButton(ImageLoader.getIconByName(ScienceWindow.ICON)); //$NON-NLS-1$
 		scienceToolButton.setEnabled(false);
 		scienceToolButton.setMargin(new Insets(1, 1, 1, 1));
-		scienceToolButton.setToolTipText(Msg.getString("TabPanelScience.tooltip.science")); //$NON-NLS-1$
+		scienceToolButton.setToolTipText(Msg.getString("TabPanelScience.button.science")); //$NON-NLS-1$
 		scienceToolButton.addActionListener(arg0 -> displayStudyInScienceTool());
 		buttonPane.add(scienceToolButton);
 

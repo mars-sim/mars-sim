@@ -11,6 +11,7 @@ import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,7 +30,10 @@ import javax.swing.table.TableColumnModel;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.ResourceProcess;
+import com.mars_sim.core.structure.building.function.ResourceProcessing;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -65,31 +69,45 @@ public class ResourceProcessPanel extends JPanel {
 	private static class ResourceProcessTableModel extends AbstractTableModel
                 implements EntityModel {
 		private static final int RUNNING_STATE = 0;
-        private static final int PROCESS_NAME = 1;
-        private static final int BUILDING_NAME = 2;
+        private static final int BUILDING_NAME = 1;		
+        private static final int PROCESS_NAME = 2;
         private static final int SCORE = 3;
+        
+        private Building mainBuilding;
         
         private List<ResourceProcess> processes = new ArrayList<>();
 
-        private Building mainBuilding;
         private List<Building> buildings;
 
+        /**
+         * Constructor 1 : for one single building.
+         * 
+         * @param building
+         * @param source
+         */
 		public ResourceProcessTableModel(Building building, List<ResourceProcess> source) {
 			processes = new ArrayList<>(source);
             mainBuilding = building;
 		}
 
+		/**
+		 * Constructor 2 : for the whole settlement.
+		 * 
+		 * @param buildingProcs
+		 */
         public ResourceProcessTableModel(Map<Building, List<ResourceProcess>> buildingProcs) {
             // Unpack map into a single list
             buildings = new ArrayList<>();
-            for(Entry<Building, List<ResourceProcess>> entry : buildingProcs.entrySet()) {
-                for(ResourceProcess p : entry.getValue()) {
+            for (Entry<Building, List<ResourceProcess>> entry : buildingProcs.entrySet()) {
+                for (ResourceProcess p : entry.getValue()) {
                     processes.add(p);
-                    buildings.add(entry.getKey());
+                    Building building = entry.getKey();
+                    if (building != null)
+                    	buildings.add(building);
                 }
             }
         }
-
+        
         @Override
 		public int getRowCount() {
 			return processes.size();
@@ -97,10 +115,7 @@ public class ResourceProcessPanel extends JPanel {
 
         @Override
 		public int getColumnCount() {
-            if (buildings == null)
-			    return 3;
-            else
-                return 4;
+        	return 4;
 		}
 
         @Override
@@ -113,8 +128,8 @@ public class ResourceProcessPanel extends JPanel {
             int realColumn = getPropFromColumn(columnIndex);
             switch(realColumn) {
                 case RUNNING_STATE: return Boolean.class;
-                case PROCESS_NAME: return String.class;
                 case BUILDING_NAME: return String.class;
+                case PROCESS_NAME: return String.class;                
                 case SCORE: return Double.class;
                 default:
                     throw new IllegalArgumentException("Column unknown " + columnIndex);
@@ -126,8 +141,8 @@ public class ResourceProcessPanel extends JPanel {
             int realColumn = getPropFromColumn(columnIndex);
             switch(realColumn) {
                 case RUNNING_STATE: return "Active";
-                case PROCESS_NAME: return "Process";
                 case BUILDING_NAME: return "Building";
+                case PROCESS_NAME: return "Process";
                 case SCORE: return "Score";
                 default:
                     throw new IllegalArgumentException("Column unknown " + columnIndex);
@@ -146,8 +161,8 @@ public class ResourceProcessPanel extends JPanel {
             int realColumn = getPropFromColumn(column);
             switch(realColumn) {
                 case RUNNING_STATE: return p.isProcessRunning();
+                case BUILDING_NAME: return getBuilding(row);                
                 case PROCESS_NAME: return p.getProcessName();
-                case BUILDING_NAME: return buildings.get(row);
                 case SCORE: return Math.round(p.getScore() * 100.0)/100.0;
                 default:
                     throw new IllegalArgumentException("Column unknown " + column);
@@ -163,12 +178,7 @@ public class ResourceProcessPanel extends JPanel {
         private int getPropFromColumn(int column) {
             switch(column) {
                 case 0: return RUNNING_STATE;
-                case 1: {
-                    if (buildings == null)
-                        return PROCESS_NAME;
-                    else
-                        return BUILDING_NAME;
-                }
+                case 1: return BUILDING_NAME;
                 case 2: return PROCESS_NAME;
                 case 3: return SCORE;
                 default: return -1;
@@ -191,8 +201,8 @@ public class ResourceProcessPanel extends JPanel {
         Building getBuilding(int rowIndex) {
             if (buildings == null) 
                 return mainBuilding;
-            else
-                return buildings.get(rowIndex);
+            
+            return buildings.get(rowIndex);
         }
 
         @Override
@@ -260,14 +270,14 @@ public class ResourceProcessPanel extends JPanel {
 
     }
 
-    private ResourceProcessTableModel model;
+    private ResourceProcessTableModel resourceProcessTableModel;
 
     /**
      * Creates a resource panel for a single Build.
      */
     public ResourceProcessPanel(Building building, List<ResourceProcess> source) {
         
-        model = new ResourceProcessTableModel(building, source);
+        resourceProcessTableModel = new ResourceProcessTableModel(building, source);
 
         buildUI();
     }
@@ -278,7 +288,8 @@ public class ResourceProcessPanel extends JPanel {
      * @param processes Map.
      */
     public ResourceProcessPanel(Map<Building, List<ResourceProcess>> processes, MainDesktopPane desktop) {
-        model = new ResourceProcessTableModel(processes);
+       
+    	resourceProcessTableModel = new ResourceProcessTableModel(processes);
 
         JTable table = buildUI();
 
@@ -292,8 +303,7 @@ public class ResourceProcessPanel extends JPanel {
 	    scrollPanel.getViewport().setOpaque(false);
 	    scrollPanel.setOpaque(false);
 
-
-		JTable pTable = new JTable(model) {
+		JTable pTable = new JTable(resourceProcessTableModel) {
             // Implement table cell tool tips.           
             public String getToolTipText(MouseEvent e) {
                 Point p = e.getPoint();
@@ -308,11 +318,12 @@ public class ResourceProcessPanel extends JPanel {
                     return Msg.getString("ResourceProcessPanel.tooltip.toggling");
                 }
                 // Only display tooltip in last column
-                if ((colIndex-1) != model.getColumnCount()) {
+                if ((colIndex-1) != resourceProcessTableModel.getColumnCount()) {
                     return null;
                 }
 
-                return generateToolTip(model.getProcess(rowIndex), model.getBuilding(rowIndex));
+                return generateToolTip(resourceProcessTableModel.getProcess(rowIndex),
+                		resourceProcessTableModel.getBuilding(rowIndex));
             }
         };
 
@@ -323,8 +334,10 @@ public class ResourceProcessPanel extends JPanel {
         TableColumnModel columnModel = pTable.getColumnModel();
         columnModel.getColumn(0).setCellRenderer(new RunningCellRenderer());
         columnModel.getColumn(0).setCellEditor(new RunningCellEditor());
-        columnModel.getColumn(0).setMaxWidth(50);
-        columnModel.getColumn(3).setMaxWidth(60);
+        columnModel.getColumn(0).setPreferredWidth(50);
+        columnModel.getColumn(1).setPreferredWidth(140);
+        columnModel.getColumn(2).setPreferredWidth(200);
+        columnModel.getColumn(3).setPreferredWidth(50);
         
         setLayout(new BorderLayout());
         add(scrollPanel, BorderLayout.CENTER);
@@ -336,7 +349,7 @@ public class ResourceProcessPanel extends JPanel {
      * Updates the status of any resource processes.
      */
     public void update() {
-        model.fireTableDataChanged();
+        resourceProcessTableModel.fireTableDataChanged();
     }
     
     private String generateToolTip(ResourceProcess process, Building building) {
