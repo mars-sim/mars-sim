@@ -54,9 +54,6 @@ import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitManagerEvent;
 import com.mars_sim.core.UnitManagerListener;
@@ -1066,7 +1063,7 @@ public class SettlementTransparentPanel extends JComponent {
 	 * Inner class combo box model for settlements.
 	 */
 	private class SettlementComboBoxModel extends DefaultComboBoxModel<Settlement>
-		implements UnitManagerListener, UnitListener {
+		implements UnitManagerListener {
 
 		/**
 		 * Constructor.
@@ -1078,23 +1075,12 @@ public class SettlementTransparentPanel extends JComponent {
 			updateSettlements();
 			// Add this as a unit manager listener.
 			unitManager.addUnitManagerListener(UnitType.SETTLEMENT, this);
-
-			// Add addUnitListener
-			Collection<Settlement> settlements = unitManager.getSettlements();
-			List<Settlement> settlementList = new ArrayList<>(settlements);
-			Collections.sort(settlementList);
-			Iterator<Settlement> i = settlementList.iterator();
-			while (i.hasNext()) {
-				i.next().addUnitListener(this);
-			}
 		}
 
 		/**
 		 * Update the list of settlements.
 		 */
 		private void updateSettlements() {
-			// Clear all elements
-			removeAllElements();
 
 			List<Settlement> settlements;
 
@@ -1119,31 +1105,19 @@ public class SettlementTransparentPanel extends JComponent {
 		@Override
 		public void unitManagerUpdate(UnitManagerEvent event) {
 			if (event.getUnit().getUnitType() == UnitType.SETTLEMENT) {
-				updateSettlements();
-			}
-		}
+				Settlement newSettlement = (Settlement) event.getUnit();
 
-		@Override
-		public void unitUpdate(UnitEvent event) {
-			// Note: Easily 100+ UnitEvent calls every second
-			UnitEventType eventType = event.getType();
-			if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
-				Object target = event.getTarget();
-				Building building = (Building) target; // overwrite the dummy building object made by the constructor
-				BuildingManager mgr = building.getBuildingManager();
-				Settlement s = mgr.getSettlement();
-				mapPanel.setSettlement(s);
-				// Updated ComboBox
-				settlementListBox.setSelectedItem(s);
-			}
+				// Find the best place
+				for(int i = 0; i < getSize(); i++) {
+					var existing = getElementAt(i);
+					if (existing.getName().compareTo(newSettlement.getName()) > 0) {
+						insertElementAt(newSettlement, i);
+						return;
+					}
+				}
 
-			else if (eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT) {
-				// Update the number of citizens
-				Settlement s = (Settlement) settlementListBox.getSelectedItem();
-				// Set the selected settlement in SettlementMapPanel
-				mapPanel.setSettlement(s);
-				// Set the population label in the status bar
-				mapPanel.getSettlementWindow().setPop(s.getNumCitizens());
+				// Add at the end
+				addElement(newSettlement);
 			}
 		}
 
@@ -1152,12 +1126,6 @@ public class SettlementTransparentPanel extends JComponent {
 		 */
 		public void destroy() {
 			unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, this);
-			Collection<Settlement> settlements = unitManager.getSettlements();
-			List<Settlement> settlementList = new ArrayList<>(settlements);
-			Iterator<Settlement> i = settlementList.iterator();
-			while (i.hasNext()) {
-				i.next().removeUnitListener(this);
-			}
 		}
 	}
 
