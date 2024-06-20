@@ -5,11 +5,11 @@ Project: https://mars-sim.com
 GitHub: https://github.com/mars-sim/mars-sim  
 
 ------------------------------------------|---------------------
-## Version 3.8.0 (__ __ May 2024)
+## Version 3.8.0 (__ __ Jun 2024)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
-  <LI>Agency: add a new multi-national alliance and the Taiwan nation state.</LI>
+  <LI>Agency: add a Chinese-led multi-national alliance and Taiwan nation state.</LI>
   <LI>GitHub: make use of Gitflow and GitHub Action for building binary releases.</LI>
   <LI>Goods Manager: Reworking of the relationship with Objectives.</LI>
   <LI>Preferences: Preference management is structured into categories.</LI>

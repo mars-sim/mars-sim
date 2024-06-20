@@ -356,8 +356,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 								   when building is in 'power down' mode. -->
 
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Sabatier RWGS Reactor" number-modules="4"/>
-				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="3"/>				
+				<process-engine name="Sabatier RWGS Reactor" number-modules="6"/>
+				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="2"/>				
 				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="2"/>	
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>		
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="2"/>
@@ -1209,8 +1209,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
-				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="3"/>
+				<process-engine name="Sabatier RWGS Reactor" number-modules="12"/>
+				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="2"/>
 				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="6"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="6"/>
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="2"/>			
@@ -2736,7 +2736,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Sabatier RWGS Reactor" number-modules="16"/>
+				<process-engine name="Sabatier RWGS Reactor" number-modules="18"/>
 			</resource-processing>
 			<storage capacity="30000">
 				<resource-storage resource="carbon dioxide" capacity="5000" />
@@ -3276,8 +3276,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Sabatier RWGS Reactor" number-modules="4" />
-				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="3"/>				
+				<process-engine name="Sabatier RWGS Reactor" number-modules="6" />
+				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="2"/>				
 				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="2" />
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="2" />
