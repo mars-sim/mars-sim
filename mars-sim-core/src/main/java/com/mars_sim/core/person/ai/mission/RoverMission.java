@@ -83,7 +83,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	private static final double EXTRA_EVA_SUIT_FACTOR = .2;
 
 	/* How long do Worker have to complete departure */
-	private static final int DEPARTURE_DURATION = 330;
+	private static final int DEPARTURE_DURATION = 250;
 	private static final int DEPARTURE_PREPARATION = 15;
 
 	private boolean justArrived;
@@ -375,7 +375,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			callMembersToMission((DEPARTURE_DURATION - DEPARTURE_PREPARATION));
 			
 			if (member instanceof Person person) {
-				// If person is not aboard the rover, board the rover and be ready to depart.
+				// If person has not aboard the rover, board the rover and be ready to depart.
 				if (!getRover().isCrewmember(person)) {
 
 					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, v);

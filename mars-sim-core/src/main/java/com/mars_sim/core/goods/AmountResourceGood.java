@@ -118,7 +118,7 @@ class AmountResourceGood extends Good {
 	private static final double OXYGEN_VALUE_MODIFIER = .1;
 	private static final double FOOD_VALUE_MODIFIER = .1;
 	
-	private static final double METHANE_VALUE_MODIFIER = .55;
+	private static final double METHANE_VALUE_MODIFIER = 5;
 	private static final double HYDROGEN_VALUE_MODIFIER = .25;
 	private static final double METHANOL_VALUE_MODIFIER = .15;
 	
@@ -170,10 +170,11 @@ class AmountResourceGood extends Good {
 	private static final double TISSUE_DEMAND_FACTOR = 1.1;
 	
 	private static final double METHANOL_DEMAND_FACTOR = .5;
-	private static final double METHANE_DEMAND_FACTOR = .1;
+	private static final double METHANE_DEMAND_FACTOR = 2;
 	private static final double SAND_DEMAND_FACTOR = .07;
 	private static final double ICE_DEMAND_FACTOR = .05;
 	private static final double CO_DEMAND_FACTOR = .05;
+	private static final double CO2_DEMAND_FACTOR = .01;
 	
 	private static final double NACO3_DEMAND_FACTOR = .01;
 	private static final double IRON_POWDER_FACTOR = .01;
@@ -505,6 +506,8 @@ class AmountResourceGood extends Good {
 				demand *= ICE_DEMAND_FACTOR;
 			else if (ar.getID() == ResourceUtil.coID)
 				demand *= CO_DEMAND_FACTOR;
+			else if (ar.getID() == ResourceUtil.co2ID)
+				demand *= CO2_DEMAND_FACTOR;
 			else if (ar.getID() == ResourceUtil.methaneID)
 				demand *= METHANE_DEMAND_FACTOR;
 			else if (ar.getID() == ResourceUtil.methanolID)
@@ -1134,7 +1137,7 @@ class AmountResourceGood extends Good {
 			demand = cropConfig.getWaterConsumptionRate() * factor;
 		} else if (resource == ResourceUtil.co2ID) {
 			// Average co2 consumption rate of crops per orbit using total growing area.
-			demand = cropConfig.getCarbonDioxideConsumptionRate() * factor;
+			demand = cropConfig.getCarbonDioxideConsumptionRate() * factor * CO2_VALUE_MODIFIER;
 		} else if (resource == ResourceUtil.oxygenID) {
 			// Average oxygen consumption rate of crops per orbit using total growing area.
 			demand = cropConfig.getOxygenConsumptionRate() * factor;
@@ -1310,7 +1313,7 @@ class AmountResourceGood extends Good {
 				amountNeededSol = personConfig.getFoodConsumptionRate() * FOOD_VALUE_MODIFIER;
 			} else if (resource == ResourceUtil.methaneID) {
 				// Methane is fuel for heating and is an arguably life support resource
-				amountNeededSol = 20 * METHANE_VALUE_MODIFIER;
+				amountNeededSol = METHANE_VALUE_MODIFIER;
 			} else if (resource == ResourceUtil.co2ID) {
 				amountNeededSol = CO2_VALUE_MODIFIER;
 			}
