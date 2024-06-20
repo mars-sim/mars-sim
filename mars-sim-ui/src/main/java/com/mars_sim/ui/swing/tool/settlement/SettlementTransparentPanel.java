@@ -1078,7 +1078,7 @@ public class SettlementTransparentPanel extends JComponent {
 		}
 
 		/**
-		 * Update the list of settlements.
+		 * Updates a list of settlements.
 		 */
 		private void updateSettlements() {
 
