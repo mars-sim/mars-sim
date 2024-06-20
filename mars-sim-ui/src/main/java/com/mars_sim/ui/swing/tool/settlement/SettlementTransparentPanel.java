@@ -1090,7 +1090,7 @@ public class SettlementTransparentPanel extends JComponent {
 		}
 
 		/**
-		 * Update the list of settlements.
+		 * Updates a list of settlements.
 		 */
 		private void updateSettlements() {
 			// Clear all elements
@@ -1127,21 +1127,22 @@ public class SettlementTransparentPanel extends JComponent {
 		public void unitUpdate(UnitEvent event) {
 			// Note: Easily 100+ UnitEvent calls every second
 			UnitEventType eventType = event.getType();
-			if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
-				Object target = event.getTarget();
-				Building building = (Building) target; // overwrite the dummy building object made by the constructor
-				BuildingManager mgr = building.getBuildingManager();
-				Settlement s = mgr.getSettlement();
-				mapPanel.setSettlement(s);
-				// Updated ComboBox
-				settlementListBox.setSelectedItem(s);
-			}
+//			if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
+//				Object target = event.getTarget();
+//				Building building = (Building) target; // overwrite the dummy building object made by the constructor
+//				BuildingManager mgr = building.getBuildingManager();
+//				Settlement s = mgr.getSettlement();
+//				mapPanel.setSettlement(s);
+//				// Updated ComboBox
+//				settlementListBox.setSelectedItem(s);
+//			}
 
-			else if (eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT) {
+			if (eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT
+				|| eventType == UnitEventType.ADD_ASSOCIATED_PERSON_EVENT) {
 				// Update the number of citizens
 				Settlement s = (Settlement) settlementListBox.getSelectedItem();
 				// Set the selected settlement in SettlementMapPanel
-				mapPanel.setSettlement(s);
+//				mapPanel.setSettlement(s);
 				// Set the population label in the status bar
 				mapPanel.getSettlementWindow().setPop(s.getNumCitizens());
 			}
