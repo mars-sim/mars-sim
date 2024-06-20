@@ -174,10 +174,10 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	private SettlementTask selectMostPosNegProcess(Building building, 
 			List<ResourceProcess> processes, boolean isWaste, 
 			double rate0, double rate1) {
-		ResourceProcess mostPosProcess = null;
-		ResourceProcess mostNegProcess = null;
-		double highest = 0;
-		double lowest = 0;
+//		ResourceProcess mostPosProcess = null;
+//		ResourceProcess mostNegProcess = null;
+//		double highest = 0;
+//		double lowest = 0;
 
 		Settlement settlement = building.getSettlement();
 
@@ -208,11 +208,15 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					score = modifyScore(settlement, name, score);
 				}
 				
-				if (score > 10_000)
-					score = 10_000;
-				else if (score < -10_000)
-					score = -10_000;
+				// Limit the score so that all processes have the chance to be picked
+				if (score > 5_000)
+					score = 5_000;
+				else if (score < -5_000)
+					score = -5_000;
 					
+				// Save the score for that process for displaying its value
+				process.setScore(score);
+				
 				// Check if settlement is missing one or more of the output resources.
 				if (process.isOutputsEmpty(settlement)) {
 					// will push for toggling on this process to produce more output resources
@@ -260,9 +264,6 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					continue;
 				}
 				
-				// Save the score for that process for displaying its value
-				process.setScore(score);
-				
 				// Save the process and its score into the resource process map
 				resourceProcessMap.put(process, Math.abs(score));
 
@@ -309,71 +310,72 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	 */
 	private double modifyScore(Settlement settlement, String name, double score) {
 
+		// Selective Partial Oxidation of Methane to Methanol
 		boolean oxi = name.contains(ResourceProcessing.OXIDATION);
+		// "Methanol-to-olefin (MTO) process"
 		boolean olefin = name.contains(ResourceProcessing.OLEFIN);
+		// "Sabatier RWGS Reactor"
 		boolean sab = name.contains(ResourceProcessing.SABATIER);
 		boolean reg = name.contains(ResourceProcessing.REGOLITH);
 		boolean ice = name.equalsIgnoreCase(ResourceProcessing.ICE);
+		// Plasma Pyrolysis Assembly (PPA) Reactor
 		boolean ppa = name.contains(ResourceProcessing.PPA);
+		// Carbon Formation Reactor (CFR). Input: O2; Output: H2O
 		boolean cfr = name.contains(ResourceProcessing.CFR);
 		boolean ogs = name.contains(ResourceProcessing.OGS);
 
 		GoodsManager goodsManager = settlement.getGoodsManager();
-		
-		// Need to check why the followings : 
-		// The higher the score, the harder the process turns on
-		// The lower the score, the easier the process turns on
 
 		if (reg) {
 			double regolithDemand = goodsManager.getDemandValueWithID(ResourceUtil.regolithID);
 			double regStored = settlement.getAmountResourceStored(ResourceUtil.regolithID);
-			score *= 0.25 * regolithDemand * (1 + regStored);
+			score *= 10000.0 / regolithDemand * (1 + regStored);
 		}
 
 		else if (ice) {
 			double iceDemand = goodsManager.getDemandValueWithID(ResourceUtil.iceID);
 			double iceStored = settlement.getAmountResourceStored(ResourceUtil.iceID);
-			score *= 0.5 * iceDemand * (1 + iceStored);
+			score *= 10000.0 / iceDemand * (1 + iceStored);
 		}
 
 		else if (ppa) {
-			double hydrogenVP = goodsManager.getGoodValuePoint(ResourceUtil.hydrogenID);
-			double methaneVP = goodsManager.getGoodValuePoint(ResourceUtil.methaneID);
-			score *= 0.005 * hydrogenVP / methaneVP;
+			double hydrogenDemand = goodsManager.getDemandValueWithID(ResourceUtil.hydrogenID);
+			double methaneDemand = goodsManager.getDemandValueWithID(ResourceUtil.methaneID);
+			score *= 0.1 * hydrogenDemand / methaneDemand;
 		}
 
 		else if (cfr) {
-			double hydrogenVP = goodsManager.getGoodValuePoint(ResourceUtil.hydrogenID);
-			double waterVP = goodsManager.getGoodValuePoint(ResourceUtil.waterID);
-			score *= 0.75 * waterVP / hydrogenVP;
+			double hydrogenDemand = goodsManager.getDemandValueWithID(ResourceUtil.hydrogenID);
+			double waterDemand = goodsManager.getDemandValueWithID(ResourceUtil.waterID);
+			score *= 2.5 * waterDemand / hydrogenDemand;
 		}
 
 		else if (sab) {
-			double hydrogenVP = goodsManager.getGoodValuePoint(ResourceUtil.hydrogenID);
-			double methaneVP = goodsManager.getGoodValuePoint(ResourceUtil.methaneID);
-			double waterVP = goodsManager.getGoodValuePoint(ResourceUtil.waterID);
-			score *= 1000.0 * waterVP * methaneVP / hydrogenVP;
+			double hydrogenDemand = goodsManager.getDemandValueWithID(ResourceUtil.hydrogenID);
+			double methaneDemand = goodsManager.getDemandValueWithID(ResourceUtil.methaneID);
+			double waterDemand = goodsManager.getDemandValueWithID(ResourceUtil.waterID);
+			score *= 5.0 * waterDemand * methaneDemand / hydrogenDemand;
 		}
 
 		else if (oxi) {
-			double oxygenVP = goodsManager.getGoodValuePoint(ResourceUtil.oxygenID);
-			double methanolVP = goodsManager.getGoodValuePoint(ResourceUtil.methanolID);
-			double methaneVP = goodsManager.getGoodValuePoint(ResourceUtil.methaneID);
-			score *= 0.75 * methanolVP / methaneVP / oxygenVP;
+			double oxygenDemand = goodsManager.getDemandValueWithID(ResourceUtil.oxygenID);
+			double methanolDemand = goodsManager.getDemandValueWithID(ResourceUtil.methanolID);
+			double methaneDemand = goodsManager.getDemandValueWithID(ResourceUtil.methaneID);
+			score *= 0.1 * methanolDemand / methaneDemand / oxygenDemand;
 		}
 		
 		else if (olefin) {
 			double ethyleneDemand = goodsManager.getDemandValueWithID(ResourceUtil.ethyleneID); 
 			double prophyleneDemand =  goodsManager.getDemandValueWithID(ResourceUtil.prophyleneID);
-			double methanolVP = goodsManager.getGoodValuePoint(ResourceUtil.methanolID);
-			score *= 0.5 * ethyleneDemand * prophyleneDemand / methanolVP;
+			double methanolDemand = goodsManager.getDemandValueWithID(ResourceUtil.methanolID);
+			score *= 0.5 * ethyleneDemand * prophyleneDemand / methanolDemand;
 		}
 		
 		else if (ogs) {
-			double hydrogenVP = goodsManager.getGoodValuePoint(ResourceUtil.hydrogenID);
-			double oxygenVP = goodsManager.getGoodValuePoint(ResourceUtil.oxygenID);
-			double waterVP = goodsManager.getGoodValuePoint(ResourceUtil.waterID);
-			score *= hydrogenVP * oxygenVP / waterVP;
+			double hydrogenDemand = goodsManager.getDemandValueWithID(ResourceUtil.hydrogenID);
+			double oxygenDemand = goodsManager.getDemandValueWithID(ResourceUtil.oxygenID);
+			double waterDemand = goodsManager.getDemandValueWithID(ResourceUtil.waterID);
+			score *= hydrogenDemand * oxygenDemand / waterDemand;
 		}
 		
 		return score;

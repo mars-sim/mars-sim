@@ -177,6 +177,7 @@ class AmountResourceGood extends Good {
 	private static final double CO_DEMAND_FACTOR = .05;
 	private static final double CO2_DEMAND_FACTOR = .01;
 	private static final double HYDROGEN_DEMAND_FACTOR = .02;
+	private static final double ACETYLENE_DEMAND_FACTOR = 20;
 
 	
 	private static final double NACO3_DEMAND_FACTOR = .01;
@@ -503,7 +504,10 @@ class AmountResourceGood extends Good {
 			demand = COMPOUND_DEMAND_FACTOR;
 			if (mod != 0)
 				return demand *= mod;
-			if (ar.getID() == ResourceUtil.sandID)
+				
+			if (ar.getID() == ResourceUtil.acetyleneID)
+				demand *= ACETYLENE_DEMAND_FACTOR;
+			else if (ar.getID() == ResourceUtil.sandID)
 				demand *= SAND_DEMAND_FACTOR;
 			else if (ar.getID() == ResourceUtil.iceID)
 				demand *= ICE_DEMAND_FACTOR;
@@ -515,6 +519,8 @@ class AmountResourceGood extends Good {
 				demand *= METHANE_DEMAND_FACTOR;
 			else if (ar.getID() == ResourceUtil.methanolID)
 				demand *= METHANOL_DEMAND_FACTOR;
+			
+			
 			
 			String name = ar.getName();
 			
