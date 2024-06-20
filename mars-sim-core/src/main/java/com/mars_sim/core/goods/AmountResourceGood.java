@@ -118,8 +118,8 @@ class AmountResourceGood extends Good {
 	private static final double OXYGEN_VALUE_MODIFIER = .1;
 	private static final double FOOD_VALUE_MODIFIER = .1;
 	
-	private static final double METHANE_VALUE_MODIFIER = 5;
-	private static final double HYDROGEN_VALUE_MODIFIER = .25;
+	private static final double METHANE_VALUE_MODIFIER = 3;
+	private static final double HYDROGEN_VALUE_MODIFIER = .01;
 	private static final double METHANOL_VALUE_MODIFIER = .15;
 	
 	private static final double CO2_VALUE_MODIFIER = .0075;
@@ -157,6 +157,7 @@ class AmountResourceGood extends Good {
 	private static final double ROCK_DEMAND_FACTOR = 1;
 	private static final double GEMSTONE_DEMAND_FACTOR = 3;
 
+	
 	private static final double WASTE_DEMAND_FACTOR = .15;
 	private static final double UTILITY_DEMAND_FACTOR = 10;
 	private static final double INSTRUMENT_DEMAND_FACTOR = 5;
@@ -170,11 +171,13 @@ class AmountResourceGood extends Good {
 	private static final double TISSUE_DEMAND_FACTOR = 1.1;
 	
 	private static final double METHANOL_DEMAND_FACTOR = .5;
-	private static final double METHANE_DEMAND_FACTOR = 2;
+	private static final double METHANE_DEMAND_FACTOR = .1;
 	private static final double SAND_DEMAND_FACTOR = .07;
 	private static final double ICE_DEMAND_FACTOR = .05;
 	private static final double CO_DEMAND_FACTOR = .05;
 	private static final double CO2_DEMAND_FACTOR = .01;
+	private static final double HYDROGEN_DEMAND_FACTOR = .02;
+
 	
 	private static final double NACO3_DEMAND_FACTOR = .01;
 	private static final double IRON_POWDER_FACTOR = .01;
@@ -535,9 +538,12 @@ class AmountResourceGood extends Good {
 			demand = ELEMENT_DEMAND_FACTOR;
 			if (mod != 0)
 				return demand *= mod;
+
+			if (ar.getID() == ResourceUtil.hydrogenID)
+				demand *= HYDROGEN_DEMAND_FACTOR;
 			
 			name = ar.getName();
-			
+		
 			if (name.equalsIgnoreCase(IRON_POWDER)) 
 				demand *= IRON_POWDER_FACTOR;
 			

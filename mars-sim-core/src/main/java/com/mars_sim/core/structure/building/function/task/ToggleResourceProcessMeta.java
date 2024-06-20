@@ -333,26 +333,26 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		else if (ice) {
 			double iceDemand = goodsManager.getDemandValueWithID(ResourceUtil.iceID);
 			double iceStored = settlement.getAmountResourceStored(ResourceUtil.iceID);
-			score *= .5 * iceDemand * (1 + iceStored);
+			score *= 0.5 * iceDemand * (1 + iceStored);
 		}
 
 		else if (ppa) {
 			double hydrogenVP = goodsManager.getGoodValuePoint(ResourceUtil.hydrogenID);
 			double methaneVP = goodsManager.getGoodValuePoint(ResourceUtil.methaneID);
-			score *= .95 * hydrogenVP / methaneVP;
+			score *= 0.5 * hydrogenVP / methaneVP;
 		}
 
 		else if (cfr) {
 			double hydrogenVP = goodsManager.getGoodValuePoint(ResourceUtil.hydrogenID);
 			double waterVP = goodsManager.getGoodValuePoint(ResourceUtil.waterID);
-			score *= .75 * waterVP / hydrogenVP;
+			score *= 0.75 * waterVP / hydrogenVP;
 		}
 
 		else if (sab) {
 			double hydrogenVP = goodsManager.getGoodValuePoint(ResourceUtil.hydrogenID);
 			double methaneVP = goodsManager.getGoodValuePoint(ResourceUtil.methaneID);
 			double waterVP = goodsManager.getGoodValuePoint(ResourceUtil.waterID);
-			score *= 0.5 * waterVP * methaneVP / hydrogenVP;
+			score *= 2.0 * waterVP * methaneVP / hydrogenVP;
 		}
 
 		else if (oxi) {
