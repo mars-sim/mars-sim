@@ -358,15 +358,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>				
-				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="2"/>	
+				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="4"/>	
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>		
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="2"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="4"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="4"/>
 				
 				<process-engine name="Atmospheric processing"/>
 				<process-engine name="Methanol Synthesis"/>
-				<process-engine name="Melt Ice" number-modules="12" />
-				<process-engine name="Filter Brine Water" number-modules="6" />
+				<process-engine name="Melt Ice" number-modules="16" />
+				<process-engine name="Filter Brine Water" number-modules="8" />
 			
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
@@ -1211,9 +1211,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="16"/>
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="8"/>
-				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="6"/>
+				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="12"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="6"/>
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="2"/>			
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="8"/>			
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="6"/>					
 			</resource-processing>
 
@@ -1437,8 +1437,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Melt Ice" number-modules="24"/>	
-				<process-engine name="Filter Brine Water" number-modules="18"/>						
+				<process-engine name="Melt Ice" number-modules="30"/>	
+				<process-engine name="Filter Brine Water" number-modules="20"/>						
 			</resource-processing>
 			
 			<storage capacity="300000">
@@ -1586,9 +1586,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Atmospheric processing" number-modules="4"/>
 				
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="3"/>				
-				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="6"/>
+				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="8"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="8"/>
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="6"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="16"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="8"/>
 			</resource-processing>
 
@@ -3279,17 +3279,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Sabatier RWGS Reactor" number-modules="8" />
+				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>				
-				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="2" />
+				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="4"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="2" />
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="4"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="4"/>
 				
 				<process-engine name="Atmospheric processing"/>
 				<process-engine name="Methanol Synthesis"/>
-				<process-engine name="Melt Ice" number-modules="12" />
-				<process-engine name="Filter Brine Water" number-modules="6" />
+				<process-engine name="Melt Ice" number-modules="16" />
+				<process-engine name="Filter Brine Water" number-modules="8" />
 								
 				<activity>
 					<activity-spot xloc="-2.6" yloc="-2.13" />

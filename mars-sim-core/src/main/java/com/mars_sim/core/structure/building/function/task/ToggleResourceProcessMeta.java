@@ -339,7 +339,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		else if (ppa) {
 			double hydrogenVP = goodsManager.getGoodValuePoint(ResourceUtil.hydrogenID);
 			double methaneVP = goodsManager.getGoodValuePoint(ResourceUtil.methaneID);
-			score *= 0.5 * hydrogenVP / methaneVP;
+			score *= 0.005 * hydrogenVP / methaneVP;
 		}
 
 		else if (cfr) {
@@ -352,7 +352,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			double hydrogenVP = goodsManager.getGoodValuePoint(ResourceUtil.hydrogenID);
 			double methaneVP = goodsManager.getGoodValuePoint(ResourceUtil.methaneID);
 			double waterVP = goodsManager.getGoodValuePoint(ResourceUtil.waterID);
-			score *= 2.0 * waterVP * methaneVP / hydrogenVP;
+			score *= 1000.0 * waterVP * methaneVP / hydrogenVP;
 		}
 
 		else if (oxi) {
