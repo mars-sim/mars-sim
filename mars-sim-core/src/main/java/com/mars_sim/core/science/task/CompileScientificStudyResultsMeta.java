@@ -66,14 +66,16 @@ public class CompileScientificStudyResultsMeta extends FactoryMetaTask {
 
         // Add probability for researcher's primary study (if any).
         double base = 0D;
+        ScienceType targetScience = null;
         ScientificStudy primaryStudy = person.getStudy();
         if ((primaryStudy != null)
             && StudyStatus.PAPER_PHASE == primaryStudy.getPhase()
             && !primaryStudy.isPrimaryPaperCompleted()) {
             double primaryResult = 50D;
 
+            targetScience = primaryStudy.getScience();
             // If researcher's current job isn't related to study science, divide by two.
-            if ((jobScience != null) && (primaryStudy.getScience() != jobScience)) {
+            if ((jobScience != null) && (targetScience != jobScience)) {
                 primaryResult /= 2D;
             }
 
@@ -85,6 +87,9 @@ public class CompileScientificStudyResultsMeta extends FactoryMetaTask {
             if (StudyStatus.PAPER_PHASE.equals(collabStudy.getPhase())
                     && !collabStudy.isCollaborativePaperCompleted(person)) {
                 ScienceType collabScience = collabStudy.getContribution(person);
+                if (targetScience == null) {
+                    targetScience = collabScience;
+                }
 
                 double collabResult = 25D;
 
@@ -102,7 +107,7 @@ public class CompileScientificStudyResultsMeta extends FactoryMetaTask {
         }
 
 	    RatingScore result = new RatingScore(base);
-        Building b = BuildingManager.getAvailableBuilding(primaryStudy.getScience(), person);
+        Building b = BuildingManager.getAvailableBuilding(targetScience, person);
         result = assessBuildingSuitability(result, b, person);
         result = applyCommerceFactor(result, person.getAssociatedSettlement(), CommerceType.RESEARCH);
         result = assessPersonSuitability(result, person);

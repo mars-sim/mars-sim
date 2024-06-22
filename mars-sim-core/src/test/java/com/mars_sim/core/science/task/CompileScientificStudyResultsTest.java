@@ -43,10 +43,22 @@ public class CompileScientificStudyResultsTest extends AbstractMarsSimUnitTest {
 
     }
 
-    public void testMetaTask() {
+    public void testMetaTaskAsPrimary() {
         var s = buildSettlement("Research", true);
         var study = buildStudyToPaperPhase(s, this, ScienceType.BIOLOGY, JobType.BIOLOGIST);
         var p = study.getPrimaryResearcher();
+
+        var mt = new CompileScientificStudyResultsMeta();
+        var tasks = mt.getTaskJobs(p);
+
+        assertFalse("Tasks found for researcher", tasks.isEmpty());
+    }
+
+    public void testMetaTaskAsCollab() {
+        var s = buildSettlement("Research", true);
+        var study = buildStudyToPaperPhase(s, this, ScienceType.BIOLOGY, JobType.BIOLOGIST);
+        var p = buildPerson("Collab", s);
+        study.addCollaborativeResearcher(p, study.getScience());
 
         var mt = new CompileScientificStudyResultsMeta();
         var tasks = mt.getTaskJobs(p);
