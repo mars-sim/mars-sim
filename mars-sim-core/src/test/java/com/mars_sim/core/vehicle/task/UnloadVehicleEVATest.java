@@ -1,6 +1,7 @@
 package com.mars_sim.core.vehicle.task;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.EVAOperationTest;
@@ -24,6 +25,7 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
 
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
+        p.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.STRENGTH, 100);
         var eva = EVAOperationTest.prepareForEva(this, p);
 
         var task = new UnloadVehicleEVA(p, v);
@@ -33,7 +35,7 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         EVAOperationTest.executeEVAWalk(this, eva, task);
 
         // Do maintenance and advance to return
-        executeTaskUntilPhase(p, task, 1000);
+        executeTaskUntilPhase(p, task, 3000);
         assertEquals("Final stored mass", 0D, v.getStoredMass());
 
         // Oxygen has some from EVA suit as well

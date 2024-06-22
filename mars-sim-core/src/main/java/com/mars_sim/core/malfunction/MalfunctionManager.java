@@ -179,7 +179,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private Map<Integer, Integer> partsNeededForMaintenance;
 
 	private boolean supportInsideRepair = true;
-	
+
+	private static boolean noFailures = false;
 	private static MasterClock masterClock;
 	private static MedicalManager medic;
 	private static MalfunctionFactory factory;
@@ -372,8 +373,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		// Clones a malfunction and determines repair parts
 		MalfunctionMeta malfunction = factory.pickAMalfunction(scopes);
 		if (malfunction != null) {
-			triggerMalfunction(malfunction, true, actor);
-			result = true;
+			result = (triggerMalfunction(malfunction, true, actor) != null);
 		}
 
 		return result;
@@ -387,6 +387,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param actor
 	 */
 	public Malfunction triggerMalfunction(MalfunctionMeta m, boolean registerEvent, Unit actor) {
+		if (noFailures) {
+			return null;
+		}
 		Malfunction malfunction = new Malfunction(this, factory.getNewIncidentNum(), m, supportInsideRepair);
 
 		malfunctions.add(malfunction);
@@ -401,9 +404,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 		if (malfunction.getRepairParts().isEmpty()) { 
 			logger.info(actor, 0, malfunction.getName() + " triggered repair work but with no repair parts needed.");	
 		}
-//		else if (m.getName().equalsIgnoreCase(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) { 
-//			logger.info(actor, "'" + malfunction.getName() + "' needs no repair parts.");	
-//		}
 		
 		else {
 			calculateNewReliability(malfunction);
@@ -1401,10 +1401,13 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * Gets the multiplying modifier for the chance of an accident due to the
 	 * malfunctionable entity's wear condition. From 0 to 1
 	 *
-	 * @return accident modifier.
+	 * @return accident modifier. 0 means no change whilst 1 means full chance
 	 */
 	public double getAccidentModifier() {
-		return (100D - currentWearCondPercent) / 100D * WEAR_ACCIDENT_FACTOR;
+		if (noFailures) {
+			return 0D;
+		}
+		return ((100D - currentWearCondPercent) / 100D) * WEAR_ACCIDENT_FACTOR;
 	}
 
 	/**
@@ -1422,6 +1425,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 		medic = mm;
 		eventManager = em;
 		partConfig = pc;
+	}
+
+	/**
+	 * Set the global flag to stop any failures or accidents
+	 */
+	public static void setNoFailures(boolean newFlag) {
+		noFailures = newFlag;
+		logger.info("No failures flag set to " + noFailures);
 	}
 
 	/**
