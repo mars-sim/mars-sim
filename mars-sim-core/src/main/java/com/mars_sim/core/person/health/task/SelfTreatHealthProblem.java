@@ -13,11 +13,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalAid;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.MedicalCare;
-import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.SickBay;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
 
 /**
@@ -49,15 +44,7 @@ public class SelfTreatHealthProblem extends TreatHealthProblem {
             return null;
         }
 
-        MedicalAid aid = null;
-        // Choose available medical aid for treatment.
-        if (p.isInSettlement()) {
-            aid = MedicalHelper.determineMedicalAidAtSettlement(p.getAssociatedSettlement(), curable);
-        }
-        else if (p.isInVehicle() && (p.getVehicle() instanceof Rover r)) {
-            aid = MedicalHelper.determineMedicalAidInRover(r, curable);
-        }
-        
+        MedicalAid aid =  MedicalHelper.determineMedicalAid(p, curable);
         if (aid == null) {
             logger.warning(p, "Location does not allow self-treatment of health problem.");
             return null;
@@ -88,24 +75,7 @@ public class SelfTreatHealthProblem extends TreatHealthProblem {
             aid.requestTreatment(problem);
         }
 
-        // Walk to medical aid.
-        if (aid instanceof MedicalCare medicalCare) {     
-            // Walk to medical care building.
-            walkToTaskSpecificActivitySpotInBuilding(medicalCare.getBuilding(), FunctionType.MEDICAL_CARE, false);
-        }
-        else if (aid instanceof SickBay sb) {
-            // Walk to medical activity spot in rover.
-            Vehicle vehicle = sb.getVehicle();
-            if (vehicle instanceof Rover r) {
-
-                // Walk to rover sick bay activity spot.
-                walkToSickBayActivitySpotInRover(r, false);
-            }
-        }
-        else {
-            logger.severe(person, "Medical aid could not be determined.");
-            endTask();
-        }
+        walkToMedicalAid(true);
     }
 
     /**

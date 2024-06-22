@@ -12,23 +12,15 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
-import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalAid;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.MedicalCare;
-import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.SickBay;
-import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.tools.Msg;
 
 /**
  * A task for requesting and awaiting medical treatment at a medical station.
  */
-public class RequestMedicalTreatment extends Task {
+public class RequestMedicalTreatment extends MedicalAidTask {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -54,52 +46,35 @@ public class RequestMedicalTreatment extends Task {
 
     // Data members.
     private double waitingDuration;
-    private MedicalAid medicalAid;
     private boolean requested;
 
-    /**
-     * Constructor.
-     * 
-     * @param person the person to perform the task
-     */
-    public RequestMedicalTreatment(Person person) {
-        super(NAME, person, false, IMPACT, 0);
-	     
+    static RequestMedicalTreatment createTask(Person patient) {
         // Get problems that need help
-        var curable = getRequestableTreatment(person);
+        var curable = getRequestableTreatment(patient);
         if (curable.isEmpty()) {
-        	endTask();
-            return;
+            return null;
         }
         		
         // Choose available medical aid for treatment.
-        if (person.isInSettlement()) {
-            medicalAid = MedicalHelper.determineMedicalAidAtSettlement(person.getAssociatedSettlement(), curable);
-        }
-        else if (person.isInVehicle() && (person.getVehicle() instanceof Rover r)) {
-            medicalAid = MedicalHelper.determineMedicalAidInRover(r, curable);
+        var medicalAid = MedicalHelper.determineMedicalAid(patient, curable);
+        if (medicalAid == null) {
+            return null;
         }
 
-        if (medicalAid != null) {
-            if (medicalAid instanceof MedicalCare medicalCare) {
-                // Walk to medical care building.
-                Building b = medicalCare.getBuilding();
-                if (b != null)
-                	walkToActivitySpotInBuilding(b, FunctionType.MEDICAL_CARE, false);
-            }
-            else if (medicalAid instanceof SickBay sb) {
-                // Walk to medical activity spot in rover.
-                Vehicle vehicle = sb.getVehicle();
-                if (VehicleType.isRover(vehicle.getVehicleType())) {
-                    // Walk to rover sick bay activity spot.
-                    walkToSickBayActivitySpotInRover((Rover) vehicle, false);
-                }
-            }
-        }
-        
-        else {
-            endTask();
-        }
+        return new RequestMedicalTreatment(patient, medicalAid);
+    }
+
+    /**
+     * Create a task where a patient requests medical treatment at a medical aid.
+     * 
+     * @param patient the person to perform the task
+     * @param aid Where will teh treatment be done
+     * 
+     */
+    private RequestMedicalTreatment(Person patient, MedicalAid aid) {
+        super(NAME, patient, aid, IMPACT, 0);
+	    
+        walkToMedicalAid(true);
 
         // Initialize phase.
         setPhase(WAITING_FOR_TREATMENT);
@@ -141,9 +116,10 @@ public class RequestMedicalTreatment extends Task {
     private double waitingForTreatmentPhase(double time) {
 
         double remainingTime = 0D;
+        var medicalAid = getMedicalAid();
 
         // Check if any health problems are currently being treated.
-        if (underTreatment()) {
+        if (underTreatment(medicalAid)) {
             setPhase(TREATMENT);
             remainingTime = time;
         }
@@ -175,9 +151,9 @@ public class RequestMedicalTreatment extends Task {
         return remainingTime;
     }
 
-    private boolean underTreatment() {
+    private boolean underTreatment(MedicalAid aid) {
         for(HealthProblem problem : person.getPhysicalCondition().getProblems()) {
-            if (medicalAid.getProblemsBeingTreated().contains(problem)) {
+            if (aid.getProblemsBeingTreated().contains(problem)) {
                 return true;
             }
         }
@@ -192,9 +168,10 @@ public class RequestMedicalTreatment extends Task {
     private double treatmentPhase(double time) {
 
         double remainingTime = 0D;
+        var medicalAid = getMedicalAid();
 
         // Check if any health problems are currently being treated.
-        if (!underTreatment()) {
+        if (!underTreatment(medicalAid)) {
 
             // Check if person still has health problems needing treatment.
             boolean treatableProblems = person.getPhysicalCondition().getProblems().stream()
@@ -213,13 +190,4 @@ public class RequestMedicalTreatment extends Task {
 
         return remainingTime;
     }
-
-	/**
-	 * Gets the medical aid the person is using for this task.
-	 * 
-	 * @return medical aid or null.
-	 */
-	public MedicalAid getMedicalAid() {
-		return medicalAid;
-	}
 }

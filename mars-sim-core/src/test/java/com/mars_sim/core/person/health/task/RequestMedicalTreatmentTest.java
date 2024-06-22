@@ -16,7 +16,7 @@ public class RequestMedicalTreatmentTest extends AbstractMarsSimUnitTest {
         var hp = SelfTreatHealthProblemTest.addComplaint(this, patient, ComplaintType.APPENDICITIS);
         var recoveryTime = hp.getComplaint().getRecoveryTreatment().getDuration();
 
-        var task = new RequestMedicalTreatment(patient);
+        var task = RequestMedicalTreatment.createTask(patient);
         assertFalse("Task created", task.isDone());
      
         // Do the walk; then first step of treatment

@@ -142,6 +142,14 @@ public class HealthProblem implements Serializable {
 	}
 
 	/**
+	 * What is the current recovery period
+	 * @return
+	 */
+	public double getRemainingRecovery() {
+		return duration - timePassed;
+	}
+
+	/**
 	 * Checks if the recovery requires bed rest.
 	 * 
 	 * @return true if requires bed rest.

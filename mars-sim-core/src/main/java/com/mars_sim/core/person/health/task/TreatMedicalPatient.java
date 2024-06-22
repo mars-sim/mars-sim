@@ -132,26 +132,7 @@ public class TreatMedicalPatient extends TreatHealthProblem {
     private TreatMedicalPatient(Person healer, MedicalAid station, HealthProblem problem) {
         super(NAME, healer, station, problem);
 
-        var aid = station;
-
         // Walk to medical aid.
-        if (aid instanceof MedicalCare medicalCare) {     
-            // Walk to medical care building.
-            walkToTaskSpecificActivitySpotInBuilding(medicalCare.getBuilding(), FunctionType.MEDICAL_CARE, false);
-        }
-        else if (aid instanceof SickBay sb) {
-            // Walk to medical activity spot in rover.
-            Vehicle vehicle = sb.getVehicle();
-            if (vehicle instanceof Rover r) {
-
-                // Walk to rover sick bay activity spot.
-                walkToSickBayActivitySpotInRover(r, false);
-            }
-        }
-        else {
-            logger.severe(person, "Medical aid could not be determined.");
-            endTask();
-        }
+        walkToMedicalAid(false);
     }
-
 }

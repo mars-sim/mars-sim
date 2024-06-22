@@ -126,15 +126,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** The phase of this task. */
 	private TaskPhase phase;
 
-	// This 4 fields can be removed once ExperiecneImpact is passed in constructor
-	private double experienceRatio;
-	protected double stressModifier;
-	private NaturalAttributeType experienceAttribute = NaturalAttributeType.EXPERIENCE_APTITUDE;
-	private SkillType primarySkill;
-
 	// Impact of doing this Task
 	private ExperienceImpact impact;
-	private int effectiveSkillLevel;
 
 
 	/** The static instance of the master clock */
@@ -227,10 +220,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		this.name = name;
 		this.effortDriven = effort;
 		this.createEvents = createEvents;
-		this.stressModifier = stressModifier;
-		this.experienceRatio = experienceRatio;
+		this.impact = new ExperienceImpact(experienceRatio, NaturalAttributeType.EXPERIENCE_APTITUDE, effort, stressModifier, primarySkill);
 		this.hasDuration = false;
-		this.primarySkill = primarySkill;
 
 		init(worker);
 	}
@@ -730,17 +721,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		return name.compareTo(other.name);
 	}
 
-	
-	/**
-	 * Sets the task's stress modifier. Stress modifier can be positive (increase in
-	 * stress) or negative (decrease in stress).
-	 * 
-	 * @param newStressModifier stress modification per millisol.
-	 */
-	protected void setStressModifier(double newStressModifier) {
-		this.stressModifier = newStressModifier;
-	}
-
 	/**
 	 * Gets the probability modifier for a task if person needs to go to a new
 	 * building.
@@ -794,11 +774,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private ExperienceImpact getImpact() {
 		var result = (phase != null ? phase.getImpact() : null);
 		if (result == null) {
-			// This is only needed until all subclasses define an Impac tint eh constructor
-			if (impact == null) {
-				impact = new ExperienceImpact(experienceRatio, experienceAttribute,
-										effortDriven, stressModifier, primarySkill);
-			}
 			result = impact;
 		}
 		return result;
@@ -914,8 +889,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected void addExperience(double time) {
 		if (time > 0) {
-			getImpact().apply(worker, time,  getTeachingExperienceModifier(),
-							effectiveSkillLevel * SKILL_STRESS_MODIFIER	);
+			var i = getImpact();
+			i.apply(worker, time,  getTeachingExperienceModifier(),
+							i.getEffectiveSkillLevel(worker) * SKILL_STRESS_MODIFIER);
 		}
 	}
 
@@ -1553,7 +1529,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		subTask.destroy();
 		subTask = null;
 		phase = null;
-		experienceAttribute = null;
 	}
 }
 

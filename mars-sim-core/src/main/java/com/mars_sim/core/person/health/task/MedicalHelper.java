@@ -33,13 +33,29 @@ public final class MedicalHelper {
     private MedicalHelper() {}
 
     /**
+     * Determine which MedicalAid a person can use to handle a set of problems
+     * @param p Person looking for aid
+     * @param curable What are the problem to cure; if empty then any problem
+     */
+    static MedicalAid determineMedicalAid(Person p, Set<HealthProblem> curable) {
+        // Choose available medical aid for treatment.
+        if (p.isInSettlement()) {
+            return determineMedicalAidAtSettlement(p.getAssociatedSettlement(), curable);
+        }
+        else if (p.isInVehicle() && (p.getVehicle() instanceof Rover r)) {
+            return determineMedicalAidInRover(r, curable);
+        }
+        return null;
+    }
+
+    /**
      * Determine a medical aid at a settlement to use for self-treating a health problem.
      * 
      * @param settlement Place to search
      * @param curable 
      * @return medical aid or null if none found.
      */
-    static MedicalAid determineMedicalAidAtSettlement(Settlement settlement, Set<HealthProblem> curable) {
+    private static MedicalAid determineMedicalAidAtSettlement(Settlement settlement, Set<HealthProblem> curable) {
     
         Set<MedicalAid> goodMedicalAids = new HashSet<>();
     
@@ -74,8 +90,9 @@ public final class MedicalHelper {
             return false;
         }
     
-        // Check if any of person's self-treatable health problems can be treated in building.
-        return curable.stream()
+        // Check if any of the health problems can be treated in building.
+        // Or if no problem; then anything
+        return curable.isEmpty() || curable.stream()
                         .anyMatch(medicalCare::canTreatProblem);
     }
 
@@ -114,7 +131,7 @@ public final class MedicalHelper {
      * @param curable Set of problem being cured
      * @return medical aid or null if none found.
      */
-    public static MedicalAid determineMedicalAidInRover(Rover v, Set<HealthProblem> curable) {
+    private static MedicalAid determineMedicalAidInRover(Rover v, Set<HealthProblem> curable) {
     
         MedicalAid result = null;
     

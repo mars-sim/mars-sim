@@ -15,7 +15,6 @@ import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.health.HealthProblem;
-import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.tools.Msg;
 
 /**
@@ -82,17 +81,6 @@ public class SelfTreatHealthProblemMeta extends FactoryMetaTask {
      * @return true if available medical aids.
      */
     private boolean hasAvailableMedicalAids(Person person, Set<HealthProblem> problems) {
-
-        boolean result = false;
-
-        if (person.isInSettlement()) {
-            result = MedicalHelper.determineMedicalAidAtSettlement(person.getSettlement(),
-                                            problems) != null;
-        }
-        else if (person.isInVehicle() && (person.getVehicle() instanceof Rover r)) {
-            result = MedicalHelper.determineMedicalAidInRover(r, problems) != null;
-        }
-
-        return result;
+        return MedicalHelper.determineMedicalAid(person, problems) != null;
     }
 }

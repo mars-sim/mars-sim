@@ -46,7 +46,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 
         @Override
         public Task createTask(Person person) {
-            return new ExamineBody(person, patient);
+            return ExamineBody.createTask(person, patient);
         }
     }
 

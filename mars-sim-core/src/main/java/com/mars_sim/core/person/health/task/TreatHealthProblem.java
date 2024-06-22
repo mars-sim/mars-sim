@@ -9,27 +9,23 @@ package com.mars_sim.core.person.health.task;
 import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
-import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskEvent;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalAid;
 import com.mars_sim.core.person.health.Treatment;
-import com.mars_sim.core.structure.building.function.MedicalCare;
-import com.mars_sim.core.vehicle.SickBay;
 import com.mars_sim.tools.Msg;
 
 /**
  * A task for performing a medical treatment at a medical station.
  */
-public abstract class TreatHealthProblem extends Task {
+public abstract class TreatHealthProblem extends MedicalAidTask {
 
     private static SimLogger logger = SimLogger.getLogger(TreatHealthProblem.class.getName());
 
@@ -41,14 +37,12 @@ public abstract class TreatHealthProblem extends Task {
                             NaturalAttributeType.EXPERIENCE_APTITUDE, PhysicalEffort.NONE,
                             0.1D, SkillType.MEDICINE);
 
-    private MedicalAid medicalAid;
     private HealthProblem healthProblem;
     private double treatmentDuration;
 
     protected TreatHealthProblem(String name, Worker doctor, MedicalAid hospital, HealthProblem condition) {
-        super(name, doctor, true, IMPACT, 0D);
+        super(name, doctor, hospital, IMPACT, 0D);
         
-        medicalAid = hospital;
         healthProblem = condition;
 
         // Get the person's medical skill.
@@ -89,8 +83,10 @@ public abstract class TreatHealthProblem extends Task {
      */
     private double treatmentPhase(double time) {
 
+        var mal = getMalfunctionable();
+
         // If medical aid has malfunction, end task.
-        if (getMalfunctionable().getMalfunctionManager().hasMalfunction()) {
+        if (mal.getMalfunctionManager().hasMalfunction()) {
             endTask();
             return time;
         }
@@ -98,8 +94,9 @@ public abstract class TreatHealthProblem extends Task {
         double timeLeft = 0D;
 
         // Start treatment if not already started.
-        if (!medicalAid.getProblemsBeingTreated().contains(healthProblem)) {
-            medicalAid.startTreatment(healthProblem, treatmentDuration);
+        var aid = getMedicalAid();
+        if (!aid.getProblemsBeingTreated().contains(healthProblem)) {
+            aid.startTreatment(healthProblem, treatmentDuration);
 
         	logger.log(person, Level.INFO, 0, "Treating " + healthProblem.getSufferer().getName()
         			+ " for " + healthProblem.getComplaint().getType().getName());
@@ -117,7 +114,7 @@ public abstract class TreatHealthProblem extends Task {
         }
 
         // Check for accident in medical aid.
-        checkForAccident(getMalfunctionable(), time, 0.005);
+        checkForAccident(mal, time, 0.005);
 
         treatmentDuration -= time;
         if (treatmentDuration <= 0) {
@@ -133,42 +130,14 @@ public abstract class TreatHealthProblem extends Task {
     }
 
     /**
-     * Gets the malfunctionable associated with the medical aid.
-     * @return the associated Malfunctionable
-     */
-    private Malfunctionable getMalfunctionable() {
-        Malfunctionable result = null;
-
-        if (medicalAid instanceof SickBay bay) {
-            result = bay.getVehicle();
-        }
-        else if (medicalAid instanceof MedicalCare care) {
-            result = care.getBuilding();
-        }
-        else if (medicalAid instanceof Malfunctionable mal) {
-            result = mal;
-        }
-        else {
-            throw new IllegalArgumentException(medicalAid + " is not associated to a Malfunctionable");
-        }
-        return result;
-    }
-
-    /**
-     * Where is this treatment taking place
-     */
-    public MedicalAid getMedicalAid() {
-        return medicalAid;
-    }
-
-    /**
      * Stop mediical treatment
      */
     @Override
     protected void clearDown() {
         // Stop treatment.
-        if ((medicalAid != null) && medicalAid.getProblemsBeingTreated().contains(healthProblem)) {
-            medicalAid.stopTreatment(healthProblem);
+        var aid = getMedicalAid();
+        if ((aid != null) && aid.getProblemsBeingTreated().contains(healthProblem)) {
+            aid.stopTreatment(healthProblem);
         }
 
         super.clearDown();

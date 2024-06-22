@@ -15,7 +15,6 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.person.health.MedicalAid;
-import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.tools.Msg;
 
 /**
@@ -38,7 +37,7 @@ public class RequestMedicalTreatmentMeta extends FactoryMetaTask {
 
     @Override
     public Task constructInstance(Person person) {
-        return new RequestMedicalTreatment(person);
+        return RequestMedicalTreatment.createTask(person);
     }
 
     @Override
@@ -55,14 +54,7 @@ public class RequestMedicalTreatmentMeta extends FactoryMetaTask {
             return EMPTY_TASKLIST;
         }
       
-        MedicalAid medicalAid = null;
-        // Choose available medical aid for treatment.
-        if (person.isInSettlement()) {
-            medicalAid = MedicalHelper.determineMedicalAidAtSettlement(person.getAssociatedSettlement(), curable);
-        }
-        else if (person.isInVehicle() && (person.getVehicle() instanceof Rover r)) {
-            medicalAid = MedicalHelper.determineMedicalAidInRover(r, curable);
-        }
+        MedicalAid medicalAid = MedicalHelper.determineMedicalAid(person, curable);
         if (medicalAid == null) {
             return EMPTY_TASKLIST;
         }

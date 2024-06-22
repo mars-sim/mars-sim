@@ -6,32 +6,26 @@
  */
 package com.mars_sim.core.person.health.task;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Collections;
+import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.NaturalAttributeType;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.person.health.MedicalAid;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.MedicalCare;
-import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.SickBay;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * A task for resting at a medical station bed to recover from a health problem
  * which requires bed rest.
  */
-public class RestingMedicalRecovery extends Task {
+public class RestingMedicalRecovery extends MedicalAidTask {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -50,126 +44,41 @@ public class RestingMedicalRecovery extends Task {
     /** Maximum resting duration (millisols) */
     private static final double RESTING_DURATION = 300D;
 
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -2D;
+    
+    private static final ExperienceImpact IMPACT = new ExperienceImpact(10D, NaturalAttributeType.EXPERIENCE_APTITUDE,
+                                                false, -2);
 
     // Data members
-    private MedicalAid medicalAid;
     private double restingTime;
+
+    /**
+     * Create a resting recovery task for a person
+     * @param tired Person needing recovery rest
+     */
+    static RestingMedicalRecovery createTask(Person tired) {
+		MedicalAid aid = MedicalHelper.determineMedicalAid(tired, Collections.emptySet());
+
+		if (aid == null) {
+			logger.warning(tired, "Could not find medical aid for recovery");
+		}
+		return new RestingMedicalRecovery(tired, aid);
+	}
 
     /**
      * Constructor.
      * @param person the person to perform the task
+     * @param aid 
      */
-    public RestingMedicalRecovery(Person person) {
-        super(NAME, person, false, false, STRESS_MODIFIER, null, 10D);
+    private RestingMedicalRecovery(Person person, MedicalAid aid) {
+        super(NAME, person, aid, IMPACT, 0D);
 
         // Initialize data members.
         restingTime = 0D;
 
-        // Choose available medical aid to rest at.
-        medicalAid = determineMedicalAid();
-
-        if (medicalAid != null) {
-
-            if (medicalAid instanceof MedicalCare) {
-                // Walk to medical care building.
-                MedicalCare medicalCare = (MedicalCare) medicalAid;
-
-                // Walk to medical care building.
-                Building b = medicalCare.getBuilding();
-                if (b != null)
-                	walkToActivitySpotInBuilding(b, FunctionType.MEDICAL_CARE, false);
-            }
-            else if (medicalAid instanceof SickBay) {
-                // Walk to medical activity spot in rover.
-                Vehicle vehicle = ((SickBay) medicalAid).getVehicle();
-                if (vehicle instanceof Rover) {
-
-                    // Walk to rover sick bay activity spot.
-                    walkToSickBayActivitySpotInRover((Rover) vehicle, false);
-                }
-            }
-        }
-        else {
-      		logger.severe(worker, "Can't find any medical aid.");
-      		
-            endTask();
-        }
+        walkToMedicalAid(true);        
 
         // Initialize phase.
-        addPhase(RESTING);
         setPhase(RESTING);
-    }
-
-    /**
-     * Determines a medical aid to rest at.
-     * @return medical aid or null if none found.
-     */
-    private MedicalAid determineMedicalAid() {
-
-        MedicalAid result = null;
-
-        if (person.isInSettlement()) {
-            result = determineMedicalAidAtSettlement();
-        }
-        else if (person.isInVehicle()) {
-            result = determineMedicalAidInVehicle();
-        }
-
-        return result;
-    }
-
-    /**
-     * Determines a medical aid at a settlement.
-     * @return medical aid.
-     */
-    private MedicalAid determineMedicalAidAtSettlement() {
-
-        List<MedicalAid> goodMedicalAids = new ArrayList<>();
-
-        // Check all medical care buildings.
-        Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildingSet(
-                FunctionType.MEDICAL_CARE).iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-
-            // Check if building currently has a malfunction.
-            boolean malfunction = building.getMalfunctionManager().hasMalfunction();
-
-            // Check if enough beds for patient.
-            MedicalCare medicalCare = building.getMedical();
-            int numPatients = medicalCare.getPatientNum();
-            int numBeds = medicalCare.getSickBedNum();
-            if ((numPatients < numBeds) && !malfunction) {
-                goodMedicalAids.add(medicalCare);
-            }
-        }
-
-        // Randomly select an valid medical care building.
-        return RandomUtil.getRandomElement(goodMedicalAids);
-    }
-
-    /**
-     * Determines a medical aid in a vehicle.
-     * @return medical aid.
-     */
-    private MedicalAid determineMedicalAidInVehicle() {
-
-        MedicalAid result = null;
-
-        if (person.getVehicle() instanceof Rover rover) {
-            if (rover.hasSickBay()) {
-                SickBay sickBay = rover.getSickBay();
-                int numPatients = sickBay.getPatientNum();
-                int numBeds = sickBay.getSickBedNum();
-                if (numPatients < numBeds) {
-                    result = sickBay;
-                }
-            }
-        }
-
-        return result;
     }
 
     @Override
@@ -193,10 +102,10 @@ public class RestingMedicalRecovery extends Task {
     private double restingPhase(double time) {
 
         double remainingTime = 0D;
-
+        var aid = getMedicalAid();
         // Add person to medical aid resting recovery people if not already on it.
-        if (!medicalAid.getRestingRecoveryPeople().contains(person)) {
-            medicalAid.startRestingRecovery(person);
+        if (!aid.getRestingRecoveryPeople().contains(person)) {
+            aid.startRestingRecovery(person);
         }
 
         // Check if exceeding maximum bed rest duration.
@@ -212,17 +121,14 @@ public class RestingMedicalRecovery extends Task {
         }
 
         // Add bed rest to all health problems that require it.
-        boolean remainingBedRest = false;
-        for(HealthProblem problem : person.getPhysicalCondition().getProblems()) {
-            if ((problem.getState() == HealthProblemState.RECOVERING) && problem.requiresBedRest()) {
-                problem.addBedRestRecoveryTime(time);
-    			logger.log(worker, Level.FINE, 20_000, "Was taking a medical leave and resting");	
-                remainingBedRest = true;
-            }
+        Set<HealthProblem> resting = getRestingProblems(person);
+        for(HealthProblem problem : resting) {
+            problem.addBedRestRecoveryTime(time);
+    		logger.log(worker, Level.FINE, 20_000, "Was taking a medical leave and resting");	
         }
 
         // If person has no more health problems requiring bed rest, end task.
-        if (!remainingBedRest) {
+        if (resting.isEmpty()) {
 			logger.log(worker, Level.FINE, 0, "Ended the medical leave.");
             endTask();
         }
@@ -244,12 +150,23 @@ public class RestingMedicalRecovery extends Task {
     @Override
     protected void clearDown() {
         // Remove person from medical aid.
-        if (medicalAid != null) {
-
-            // Stop resting recovery for person at medical aid.
-            if (medicalAid.getRestingRecoveryPeople().contains(person)) {
-                medicalAid.stopRestingRecovery(person);
-            }
+        var aid = getMedicalAid();
+        if ((aid != null) && aid.getRestingRecoveryPeople().contains(person)) {
+            aid.stopRestingRecovery(person);
         }
+
+        super.clearDown();
+    }
+
+    /**
+     * Get any active health problems that need bed rest
+     * @param person
+     * @return
+     */
+    static Set<HealthProblem> getRestingProblems(Person person) {
+        return person.getPhysicalCondition().getProblems().stream()
+                            .filter(p -> (p.getState() == HealthProblemState.RECOVERING)
+                                            && p.requiresBedRest())
+                            .collect(Collectors.toSet());
     }
 }

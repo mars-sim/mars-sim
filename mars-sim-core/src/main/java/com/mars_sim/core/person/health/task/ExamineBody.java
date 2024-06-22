@@ -6,29 +6,20 @@
  */
 package com.mars_sim.core.person.health.task;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Collections;
 import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalAid;
 import com.mars_sim.core.person.health.MedicalEvent;
-import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.MedicalCare;
-import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.SickBay;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -36,7 +27,7 @@ import com.mars_sim.tools.util.RandomUtil;
  * A task for performing a physical exam over a patient or a postmortem exam on
  * a deceased person at a medical station.
  */
-public class ExamineBody extends Task {
+public class ExamineBody extends MedicalAidTask {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -49,46 +40,44 @@ public class ExamineBody extends Task {
 
 	/** Task phases. */
 	private static final TaskPhase EXAMINING = new TaskPhase(Msg.getString("Task.phase.examineBody.examining")); //$NON-NLS-1$
+	static final TaskPhase RECORDING = new TaskPhase(Msg.getString("Task.phase.examineBody.recording")); //$NON-NLS-1$
 
-	private static final TaskPhase RECORDING = new TaskPhase(Msg.getString("Task.phase.examineBody.recording")); //$NON-NLS-1$
-
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = 1D;
+    private static final ExperienceImpact IMPACT = new ExperienceImpact(10D, NaturalAttributeType.EXPERIENCE_APTITUDE,
+                                                false, 1.5,
+												SkillType.MEDICINE);
 
 	// Data members.
 	private DeathInfo deathInfo;
-	private MedicalAid medicalAid;
 	private Person patient;
-
-	private Malfunctionable malfunctionable;
 	
+	static ExamineBody createTask(Person examiner, DeathInfo body) {
+		MedicalAid aid = MedicalHelper.determineMedicalAid(examiner, Collections.emptySet());
+
+		if (aid == null) {
+			logger.warning(examiner, "Could not find medical aid to examine " + body.getPerson().getName());
+		}
+		return new ExamineBody(examiner, body, aid);
+	}
+
 	/**
 	 * Constructor.
 	 * 
-	 * @param person the person to perform the task
+	 * @param examiner the person to perform the task
 	 * @param body Body to examin
 	 */
-	public ExamineBody(Person person, DeathInfo body) {
-		super(NAME, person, true, true, STRESS_MODIFIER, SkillType.MEDICINE, 25D);
+	private ExamineBody(Person examiner, DeathInfo body, MedicalAid aid) {
+		super(NAME, examiner, aid, IMPACT, 0D);
 
-		if (!person.isInSettlement()) {
+		if (!examiner.isInSettlement()) {
 			endTask();
 			return;
 		}
 		
 		// Probability affected by the person's stress and fatigue.
-        if (!person.getPhysicalCondition().isFitByLevel(1000, 50, 500)) {
+        if (!examiner.getPhysicalCondition().isFitByLevel(1000, 50, 500)) {
         	endTask();
         	return;
         }
-		// Choose available medical aid for treatment.
-		medicalAid = determineMedicalAid();
-
-		if (medicalAid == null) {
-			logger.severe(person, "Medical Aid could not be determined.");
-			endTask();	
-			return;
-		}
 
 		// Determine patient and health problem to treat.
 		deathInfo = body;
@@ -99,121 +88,27 @@ public class ExamineBody extends Task {
 		patient = deathInfo.getPerson();
 
 		// Get the person's medical skill.
-		double skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+		double skill = examiner.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 		if (skill == 0)
 			skill = .5;
 		// Get the person's emotion stability
-		int stab = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
+		int stab = examiner.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
 		// Get the person's stress resilience						
-		int resilient = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
+		int resilient = examiner.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
 		
 		// Note: Need to refine in determining how long the exam would take. 
 		// Depends on the cause of death ?
-		double durationExam = 150 + STRESS_MODIFIER * (200 - stab - resilient) / 5D / skill 
+		double durationExam = 150 +  (200 - stab - resilient) / 5D / skill 
 				+ 2 * RandomUtil.getRandomInt(5);
 		
 		deathInfo.setEstTimeExam(durationExam);
 
 		// Walk to medical aid.
-		if (medicalAid instanceof MedicalCare medicalCare) {
-			Building hospital = medicalCare.getBuilding();
-			malfunctionable = hospital;
-			
-			// Walk to medical care building.
-			walkToTaskSpecificActivitySpotInBuilding(hospital, FunctionType.MEDICAL_CARE, false);
-			
-		} else if (medicalAid instanceof SickBay bay) {
-			// Walk to medical activity spot in rover.
-			Vehicle vehicle = bay.getVehicle();
-			malfunctionable = vehicle;
-			if (vehicle instanceof Rover rover) {
-				// Walk to rover sick bay activity spot.
-				walkToSickBayActivitySpotInRover(rover, false);
-			}
-		}
-		else {
-			logger.severe(person, "Could not understand MedicalAid " + medicalAid);
-			endTask();
-			return;
-		}
+		walkToMedicalAid(false);
 
 		// Initialize phase.
-		addPhase(EXAMINING);
-		addPhase(RECORDING);
 		setPhase(EXAMINING);
 	}
-
-	/**
-	 * Determines a local medical aid to use.
-	 * 
-	 * @return medical aid or null if none found.
-	 */
-	private MedicalAid determineMedicalAid() {
-
-		MedicalAid result = null;
-
-		if (person.isInSettlement()) {
-			result = determineMedicalAidAtSettlement();
-		} else if (person.isInVehicle()) {
-			result = determineMedicalAidInVehicle();
-		}
-
-		return result;
-	}
-
-	/**
-	 * Determines a medical aid at a settlement to use.
-	 * 
-	 * @return medical aid or null if none found.
-	 */
-	private MedicalAid determineMedicalAidAtSettlement() {
-
-		MedicalAid result = null;
-
-		List<MedicalAid> goodMedicalAids = new ArrayList<>();
-
-		// Check all medical care buildings.
-		Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.MEDICAL_CARE)
-				.iterator();
-		while (i.hasNext()) {
-			// Check if there are any treatable medical problems at building.
-			MedicalCare medicalCare = i.next().getMedical();
-			if (medicalCare.hasEmptyBeds()) {
-				goodMedicalAids.add(medicalCare);
-			}
-		}
-
-		// Randomly select an valid medical care building.
-		if (goodMedicalAids.size() > 0) {
-			int index = RandomUtil.getRandomInt(goodMedicalAids.size() - 1);
-			result = goodMedicalAids.get(index);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Determines a medical aid in a vehicle to use.
-	 * 
-	 * @return medical aid or null if none found.
-	 */
-	private MedicalAid determineMedicalAidInVehicle() {
-
-		MedicalAid result = null;
-
-		if (person.getVehicle() instanceof Rover) {
-			Rover rover = (Rover) person.getVehicle();
-			if (rover.hasSickBay()) {
-				SickBay sickBay = rover.getSickBay();
-				if (sickBay.hasEmptyBeds()) {
-					result = sickBay;
-				}
-			}
-		}
-
-		return result;
-	}
-
 
 	@Override
 	protected double performMappedPhase(double time) {
@@ -237,9 +132,12 @@ public class ExamineBody extends Task {
 	private double examiningPhase(double time) {
 		double remainingTime = 0;
 
+		var mal = getMalfunctionable();
+
 		// If medical aid has malfunction, end task.
-		if (malfunctionable.getMalfunctionManager().hasMalfunction()) {
+		if (mal.getMalfunctionManager().hasMalfunction()) {
 			endTask();
+			return 0;
 		}
 		
 		// Retrieves the time spent on examining the body
@@ -256,7 +154,7 @@ public class ExamineBody extends Task {
 			deathInfo.setExamDone(true);
 			
 			// Check for accident in medical aid.
-			checkForAccident(malfunctionable, timeExam, 0.002);
+			checkForAccident(mal, timeExam, 0.002);
 	
 			// Add experience.
 			addExperience(timeExam);
@@ -270,14 +168,8 @@ public class ExamineBody extends Task {
 			double skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 			if (skill == 0)
 				skill = .5;
-			// Get the person's emotion stability
-			int stab = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
 			// Add exam time as modified by skill
 			deathInfo.addTimeExam(time * ( 1 + skill / 4D));
-			
-			double stress = STRESS_MODIFIER * (1-stab) / 5D / skill + RandomUtil.getRandomInt(3);
-		
-			setStressModifier(stress);
 		}
 		
 		return remainingTime;
@@ -292,10 +184,12 @@ public class ExamineBody extends Task {
 	private double recordingPhase(double time) {
 
 		double timeLeft = 0D;
+		var mal = getMalfunctionable();
 
 		// If medical aid has malfunction, end task.
-		if (malfunctionable.getMalfunctionManager().hasMalfunction()) {
+		if (mal.getMalfunctionManager().hasMalfunction()) {
 			endTask();
+			return 0;
 		}
 
 		// Record the cause
@@ -307,7 +201,7 @@ public class ExamineBody extends Task {
 		getSimulation().getMedicalManager().addDeathRegistry(person.getSettlement(), deathInfo);
 				
 		// Check for accident in medical aid.
-		checkForAccident(malfunctionable, time, 0.003);
+		checkForAccident(mal, time, 0.003);
 
 		// Add experience.
 		addExperience(time);
@@ -323,7 +217,7 @@ public class ExamineBody extends Task {
 	 * 
 	 * @param problem
 	 */
-	public void retrieveBody() {
+	private void retrieveBody() {
 		deathInfo.setBodyRetrieved(true);
 	}
 
@@ -332,7 +226,7 @@ public class ExamineBody extends Task {
 	 * 
 	 * @param problem
 	 */
-	public void recordCause(HealthProblem problem) {
+	private void recordCause(HealthProblem problem) {
 		String cause = deathInfo.getCause();
 		String problemStr = problem.toString();
 		
