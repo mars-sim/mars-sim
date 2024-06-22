@@ -359,7 +359,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>				
 				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="4"/>	
-				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>		
+				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>	
+				<process-engine name="Produce Acetylene with chloride melts and metal carbides" number-modules="4"/>	
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="4"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="4"/>
 				
@@ -1212,7 +1213,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Sabatier RWGS Reactor" number-modules="16"/>
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="8"/>
 				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="12"/>
-				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="6"/>
+				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="12"/>
+				<process-engine name="Produce Acetylene with chloride melts and metal carbides" number-modules="12"/>
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="8"/>			
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="6"/>					
 			</resource-processing>
@@ -1584,10 +1586,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Atmospheric processing" number-modules="4"/>
-				
+				<process-engine name="Produce Acetylene with chloride melts and metal carbides" number-modules="8"/>			
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="3"/>				
 				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="8"/>
-				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="8"/>
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="16"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="8"/>
 			</resource-processing>
@@ -3283,6 +3284,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>				
 				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="4"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>
+				<process-engine name="Produce Acetylene with chloride melts and metal carbides" number-modules="4"/>
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="4"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="4"/>
 				
