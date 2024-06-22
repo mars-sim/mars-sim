@@ -9,7 +9,6 @@ import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.structure.GroupActivityType;
 import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.time.EventSchedule;
-import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
@@ -25,7 +24,7 @@ public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
 
         buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH, 0);
 
-        var t = new MarsTime(1, 1, 1, 0, 1);
+        var t = getSim().getMasterClock().getMarsTime();
         var ga = new GroupActivity(ONE, s, t);
 
         // Find a meeting as the test case
