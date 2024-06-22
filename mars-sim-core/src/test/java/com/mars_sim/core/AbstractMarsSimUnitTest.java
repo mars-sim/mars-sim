@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.junit.Before;
 
 import com.mars_sim.core.environment.MarsSurface;
+import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -59,6 +60,9 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	    
 	    sim = Simulation.instance();
 	    sim.testRun();
+
+		// No random failures or accidents during normal unit tests
+		MalfunctionManager.setNoFailures(true); 
 	    
 	    // Clear out existing settlements in simulation.
 	    unitManager = sim.getUnitManager();
