@@ -5,8 +5,10 @@ import java.util.Iterator;
 import org.junit.Before;
 
 import com.mars_sim.core.environment.MarsSurface;
+import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -58,6 +60,9 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	    
 	    sim = Simulation.instance();
 	    sim.testRun();
+
+		// No random failures or accidents during normal unit tests
+		MalfunctionManager.setNoFailures(true); 
 	    
 	    // Clear out existing settlements in simulation.
 	    unitManager = sim.getUnitManager();
@@ -179,6 +184,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		Person person = Person.create(name, settlement, GenderType.MALE)
 				.build();
 		person.setJob(job, "Test");
+		person.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE, 100);
 		
 		unitManager.addUnit(person);
 

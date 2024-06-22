@@ -46,10 +46,11 @@ public class ExperienceImpact implements Serializable {
     private PhysicalEffort effortDriven;
 
     /**
-     * Cut down cosntructor using a varargs of skills.
+     * Cuts down constructor using a varargs of skills.
+     * 
      * @param skillRatio Ratio to use when updating skills
      * @param effortDriven This activity requires effort
-     * @param stressModifier Modifer value for how stressful the activity is
+     * @param stressModifier Modifier value for how stressful the activity is
      * @param experienceAttribute Natural attribute used to assess how much the worker can learn
      * @param skills Skill required/improved for this activity; evenly weighted
      */
@@ -59,10 +60,11 @@ public class ExperienceImpact implements Serializable {
     }
 
     /**
-     * Cut down cosntructor using a varargs of skills.
+     * Cuts down constructor using a varargs of skills.
+     * 
      * @param skillRatio Ratio to use when updating skills
      * @param effortDriven This activity requires effort
-     * @param stressModifier Modifer value for how stressful the activity is
+     * @param stressModifier Modifier value for how stressful the activity is
      * @param experienceAttribute Natural attribute used to assess how much the worker can learn
      * @param skills Skill required/improved for this activity; evenly weighted
      */
@@ -73,7 +75,8 @@ public class ExperienceImpact implements Serializable {
     }
 
     /**
-     * Convert a collection of SkillType to an evenly balanced SkillWeights
+     * Converts a collection of SkillType to an evenly balanced SkillWeights.
+     * 
      * @param skills
      * @return
      */
@@ -88,12 +91,13 @@ public class ExperienceImpact implements Serializable {
     }
 
     /**
-     * Fully qualified contrsuctor allowing full definition of the impact.
+     * Fully qualified constructor allowing full definition of the impact.
+     * 
      * @param skillRatio Ratio to use when updating skills
      * @param stressModifier Used to changed stress coupled with the effectiveness of Worker
      * @param effortDriven This activity requires effort
      * @param experienceAttribute Natural attribute used to assess how much the worker can learn
-     * @param skillWeights The Skills affected by this experience with assoicated weights
+     * @param skillWeights The Skills affected by this experience with associated weights
      */
     public ExperienceImpact(double skillRatio, NaturalAttributeType experienceAttribute,
                             boolean effortDriven, double stressModifier,
@@ -103,7 +107,8 @@ public class ExperienceImpact implements Serializable {
     }
 
     /**
-     * Fully qualified contrsuctor allowing full definition of the impact.
+     * Fully qualified constructor allowing full definition of the impact.
+     * 
      * @param skillRatio Ratio to use when updating skills
      * @param stressModifier Used to changed stress coupled with the effectiveness of Worker
      * @param effortDriven This activity requires effort
@@ -123,7 +128,8 @@ public class ExperienceImpact implements Serializable {
     }
 
     /**
-     * Apply impacts to a worker for a given duration
+     * Applies impacts to a worker for a given duration.
+     * 
      * @param worker Worker in question
      * @param duration Duration they did the activity
      * @param assistance Further percentage modifier to reflect local circumstances of assistance
@@ -160,7 +166,8 @@ public class ExperienceImpact implements Serializable {
     }
 
     /**
-     * Return the experience modifer for this Worker to learn from this experience
+     * Returns the experience modifier for this Worker to learn from this experience.
+     * 
      * @param worker
      * @return Should return a positive value
      */
@@ -170,7 +177,12 @@ public class ExperienceImpact implements Serializable {
         return 1D + ((experienceAptitude - 50D) / 100D);
     }
 
-    // Calculate the energy time
+    /**
+     * Applies the energy time to a robot.
+     * 
+     * @param r
+     * @param duration
+     */
     private void applyRobotBenefits(Robot r, double duration) {
         double energyTime = duration;
 		    
@@ -187,6 +199,7 @@ public class ExperienceImpact implements Serializable {
     }
     
     /**
+     * Applies the stress to a person.
      * 
      * @param p
      * @param duration
@@ -213,9 +226,32 @@ public class ExperienceImpact implements Serializable {
 
                 if (p.isOutside()) {
                     // Take more energy to be in EVA doing work
-                    // Future: should also consider skill level and strength and body weight
-                    energyTime = energyTime * 1.25;
+                    
+                	// Consider skill level 
+                	double skill = p.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+            		if (skill == 0)
+            			skill = .5;
+                	
+                	// Consider the strength, resilience, endurance, agility
+		  			int strength = p.getNaturalAttributeManager()
+							.getAttribute(NaturalAttributeType.STRENGTH);
+		  			int resilience = p.getNaturalAttributeManager()
+							.getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
+		  			int endurance = p.getNaturalAttributeManager()
+							.getAttribute(NaturalAttributeType.ENDURANCE);
+		  			int agility = p.getNaturalAttributeManager()
+							.getAttribute(NaturalAttributeType.AGILITY);
+		  			
+		  			double modifier = 1 + .25/skill 
+		  					 + (400 - 1.5 * strength 
+		  							- 1.25 * endurance 
+		  							- 0.75 * agility
+		  							- 0.5 * resilience
+		  							) / 800D; 
+		  			
+                	energyTime = energyTime * modifier;
                 }
+                
                 p.getPhysicalCondition().reduceEnergy(energyTime);
             }
 

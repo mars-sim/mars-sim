@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleMaintenance.java
- * @date 2022-09-21
+ * @date 2024-06-09
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.function;
@@ -132,7 +132,7 @@ public abstract class VehicleMaintenance extends Function {
 		// Check if flyer cannot be added to building.
 		if (flyers.contains(flyer)) {
 			logger.log(flyer, Level.INFO, 1000, 
-				"Already garaged in " + building + ".");
+				"Flyer already garaged in " + building + ".");
 			 return false;
 		}
 		
@@ -144,7 +144,7 @@ public abstract class VehicleMaintenance extends Function {
 
 		if (flyers.add(flyer)) {
 			
-			// Put vehicle in assigned parking location within building.
+			// Put flyer in assigned parking location within building.
 			FlyerLocation location = getEmptyFlyerLocation();
 			LocalPosition newLoc;
 			
@@ -152,15 +152,16 @@ public abstract class VehicleMaintenance extends Function {
 				newLoc = LocalAreaUtil.convert2SettlementPos(location.getPosition(), getBuilding());
 				location.parkFlyer(flyer);
 				
-				// change the vehicle status
+				// change the flyer status
 				flyer.setPrimaryStatus(StatusType.GARAGED);
-				// Update the vehicle's location state type
+				// Update the flyer's location state type
 				flyer.updateLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
 				
 				double newFacing = getBuilding().getFacing();
 				flyer.setFlyerLocation(newLoc, newFacing);
 		
-				logger.fine(flyer, "Added to " + building.getName() + " in " + building.getSettlement() + ".");
+				logger.fine(flyer, "Added to " + building.getName() 
+					+ " in " + building.getSettlement() + ".");
 				
 				return true;
 			}
@@ -181,7 +182,7 @@ public abstract class VehicleMaintenance extends Function {
 		// Check if vehicle cannot be added to building.
 		if (vehicles.contains(vehicle)) {
 			logger.log(vehicle, Level.INFO, 1000, 
-				"Already garaged in " + building + ".");
+				"Ground vehicle already garaged in " + building + ".");
 			 return false;
 		}
 		
@@ -210,33 +211,9 @@ public abstract class VehicleMaintenance extends Function {
 				double newFacing = getBuilding().getFacing();
 				vehicle.setParkedLocation(newLoc, newFacing);
 		
-				logger.fine(vehicle, "Added to " + building.getName() + " in " + building.getSettlement() + ".");
-				
-//				Settlement settlement = building.getSettlement();
-//
-//				Rover rover = ((Rover) vehicle);
-//				Set<Person> crew = new UnitSet<>(rover.getCrew());
-//				
-//				if (crew != null && !crew.isEmpty()) {
-//					for (Person p: crew) {
-//						if (p.transfer(settlement)) {
-//							// Manually remove the person from the rover
-//							rover.removePerson(p);
-//							// Add this person to the building
-//							BuildingManager.addPersonOrRobotToBuilding(p, getBuilding());
-//							
-//							logger.info(p, "Done transferring to " + settlement.getName() + " in " + this + ".");
-//						}
-//						else {
-//							logger.info(p, "Unable to transfer to " + settlement.getName() + " in " + this + ".");
-//							// Rescue the person
-//							p.rescueOperation(rover, settlement);						
-//							// Manually remove the person from the rover
-//							rover.removePerson(p);
-//						}
-//					}
-//				}
-				
+				logger.fine(vehicle, "Added to " + building.getName() 
+					+ " in " + building.getSettlement() + ".");
+
 				return true;
 			}
 		}
@@ -262,9 +239,10 @@ public abstract class VehicleMaintenance extends Function {
 			if (transferCrew)
 				relocateCrew(vehicle);
 			 
-			handleParking(vehicle);
+			parkInVicinity(vehicle);
 
-			logger.fine(vehicle, "Removed from " + building.getName() + " in " + building.getSettlement() + ".");
+			logger.fine(vehicle, "Removed from " + building.getName() 
+				+ " in " + building.getSettlement() + ".");
 			
 			return true;
 		}
@@ -287,9 +265,10 @@ public abstract class VehicleMaintenance extends Function {
 		// Note: Check if using Collection.remove() below is safe
 		if (flyers.remove(flyer)) {
 			 
-			handleParking(flyer);
+			parkInVicinity(flyer);
 
-			logger.fine(flyer, "Removed from " + building.getName() + " in " + building.getSettlement() + ".");
+			logger.fine(flyer, "Removed from " + building.getName() 
+				+ " in " + building.getSettlement() + ".");
 			
 			return true;
 		}
@@ -342,11 +321,14 @@ public abstract class VehicleMaintenance extends Function {
 	
 	
 	/**
-	 * Handles the parking situation of the vehicle upon being removed from garage.
+	 * Parks the vehicle in settlement vicinity upon being removed from garage.
 	 * 
 	 * @param vehicle
 	 */
-	public void handleParking(Vehicle vehicle) {
+	public void parkInVicinity(Vehicle vehicle) {
+		
+		// FUTURE: should be done in a task to relocate the vehicle by either a person
+		// or by AI that costs a minute amount of CUs.
 		
 		if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
 			FlyerLocation loc = getFlyerParkedLocation((Flyer)vehicle);
@@ -364,7 +346,7 @@ public abstract class VehicleMaintenance extends Function {
 		vehicle.setPrimaryStatus(StatusType.PARKED);
 		// Update the vehicle's location state type
 		vehicle.updateLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
-
+		// Find a new parking location
 		vehicle.findNewParkingLoc();
 	}
 	
@@ -414,23 +396,26 @@ public abstract class VehicleMaintenance extends Function {
 		boolean valid = isValid(pulse);
 		if (valid) {
 			// Check to see if any vehicles are in the garage that don't need to be.
-			Iterator<Vehicle> i = vehicles.iterator();
-			while (i.hasNext()) {
-				Vehicle vehicle = i.next();
-				// Do not touch any reserved vehicle since they need garage 
-				// for maintenance or for preparing for mission
-				if (!vehicle.isReserved()) {
-					if (vehicle instanceof Crewable crewableVehicle) {
-						if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
-							i.remove();
-							handleParking(vehicle);
-						}
-					} else {
-						i.remove();
-						handleParking(vehicle);
-					}
-				}
-			}
+//			Iterator<Vehicle> i = vehicles.iterator();
+//			while (i.hasNext()) {
+//				Vehicle vehicle = i.next();
+//				// Do not touch any reserved vehicle since they need garage 
+//				// for maintenance or for preparing for mission
+//				if (!vehicle.isReserved()
+//						|| !vehicle.isReservedForMaintenance()) {
+//					if (vehicle instanceof Crewable crewableVehicle) {
+//						if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
+//							i.remove();
+//							handleParking(vehicle);
+//						}
+//						// else do not remove
+//					} else {
+//						// For LUV, always remove
+//						i.remove();
+//						handleParking(vehicle);
+//					}
+//				}
+//			}
 		}
 		return valid;
 	}
@@ -511,7 +496,7 @@ public abstract class VehicleMaintenance extends Function {
 		}
 
 		// Randomize empty parking locations and select one.
-		if (emptyLocations.size() > 0) {
+		if (!emptyLocations.isEmpty()) {
 			Collections.shuffle(emptyLocations);
 			result = emptyLocations.get(0);
 		}
@@ -538,7 +523,7 @@ public abstract class VehicleMaintenance extends Function {
 		}
 
 		// Randomize empty parking locations and select one.
-		if (emptyLocations.size() > 0) {
+		if (!emptyLocations.isEmpty()) {
 			Collections.shuffle(emptyLocations);
 			result = emptyLocations.get(0);
 		}

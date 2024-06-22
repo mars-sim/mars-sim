@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Vehicle.java
- * @date 2023-06-10
+ * @date 2024-06-09
  * @author Scott Davis
  */
 package com.mars_sim.core.vehicle;
@@ -117,6 +117,8 @@ public abstract class Vehicle extends Unit
 	private boolean isSalvaged;
 	/** True if vehicle is charging. */
 	private boolean isCharging;
+	/** True if vehicle is ready to be drawn on the map. */
+	private boolean isReady = false;
 	
 	/** Vehicle's associated Settlement. */
 	private int associatedSettlementID;
@@ -280,8 +282,17 @@ public abstract class Vehicle extends Unit
 
 		// Initialize passenger activity spots.
 		passengerActivitySpots = spec.getPassengerActivitySpots();
+		
+		isReady = true;
 	}
 
+	/**
+	 * Is the vehicle ready to be drawn on the settlement map ?
+	 */
+	public boolean isReady() {
+		return isReady;
+	}
+	
 	/**
 	 * Sets the scope string.
 	 */
@@ -503,7 +514,7 @@ public abstract class Vehicle extends Unit
 	 * @return yes if it has it
 	 */
 	public boolean haveStatusType(StatusType status) {
-        return statusTypes.contains(status);
+        return (primaryStatus == status) || statusTypes.contains(status);
     }
 
 	/**
@@ -604,7 +615,8 @@ public abstract class Vehicle extends Unit
 
 		Settlement settlement = getSettlement();
 		if (settlement != null) {
-			for (Building garageBuilding : settlement.getBuildingManager().getBuildingSet(FunctionType.VEHICLE_MAINTENANCE)) {
+			for (Building garageBuilding : settlement.getBuildingManager()
+					.getBuildingSet(FunctionType.VEHICLE_MAINTENANCE)) {
 				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
 				if (garage != null) {
 					if (this instanceof Flyer flyer && garage.containsFlyer(flyer)) {
@@ -1354,10 +1366,15 @@ public abstract class Vehicle extends Unit
 			setReservedForMaintenance(false);
 			removeSecondaryStatus(StatusType.MAINTENANCE);
 		}
-		else if (!haveStatusType(StatusType.GARAGED)) { 
+		
+		if (!haveStatusType(StatusType.GARAGED)) { 
 			// Not under maintenance and not in garage
 			// Note: during maintenance, it doesn't need to be checking for malfunction.
 			malfunctionManager.timePassing(pulse);
+
+			if (isInAGarage()) {
+				BuildingManager.removeFromGarage(this);
+			}
 		}
 
 		if (haveStatusType(StatusType.MALFUNCTION)
@@ -1669,7 +1686,8 @@ public abstract class Vehicle extends Unit
 
 			int weight = 2;
 
-			List<Building> evas = settlement.getBuildingManager().getBuildingsOfSameCategory(BuildingCategory.EVA_AIRLOCK);
+			List<Building> evas = settlement.getBuildingManager()
+					.getBuildingsOfSameCategory(BuildingCategory.EVA_AIRLOCK);
 			int numGarages = settlement.getBuildingManager().getGarages().size();
 			int total = (int)(evas.size() + numGarages * weight - 1);
 			if (total < 0)
@@ -1677,7 +1695,6 @@ public abstract class Vehicle extends Unit
 			int rand = RandomUtil.getRandomInt(total);
 
 			if (rand != 0) {
-
 				// Try parking near the eva for short walk
 				if (rand < evas.size()) {
 					Building eva = evas.get(rand);
@@ -1685,20 +1702,28 @@ public abstract class Vehicle extends Unit
 				}
 
 				else {
-					// Try parking near a garage
-					
+					// Try parking near a garage					
 					Building garage = BuildingManager.getAGarage(getSettlement());
+					if (garage != null) {
+						centerLoc = garage.getPosition();
+					}
+				}
+			}
+			else {
+				// Try parking near a garage					
+				Building garage = BuildingManager.getAGarage(getSettlement());
+				if (garage != null) {
 					centerLoc = garage.getPosition();
 				}
 			}
 
 			// Place the vehicle starting from the settlement center (0,0).
 
-			int oX = 15;
-			int oY = 0;
+			int oX = 10;
+			int oY = 10;
 			double newFacing = 0D;
 			LocalPosition newLoc = null;
-			int step = 10;
+			int step = 2;
 			boolean foundGoodLocation = false;
 
 			boolean isSmallVehicle = getVehicleType() == VehicleType.DELIVERY_DRONE
@@ -1708,33 +1733,41 @@ public abstract class Vehicle extends Unit
 			if (isSmallVehicle)
 				d = VEHICLE_CLEARANCE_1;
 			
-			double w = getWidth() * d;
-			double l = getLength() * d;
+			// Note: enlarge (times 1.25) the dimension of a vehicle to avoid getting 
+			// trapped within those enclosed space surrounded by buildings or hallways.
+			
+			double w = getWidth() * d * 1.25;
+			double l = getLength() * d * 1.25;
+			
+			// Note: May need a more permanent solution by figuring out how to detect those enclosed space
+			
+			int count = 0;
 			
 			// Try iteratively outward from 10m to 500m distance range.
-			for (int x = oX; (x < 500) && !foundGoodLocation; x+=step) {
+			for (int x = oX; (x < 2000) && !foundGoodLocation; x+=step) {
 				// Try random locations at each distance range.
-				for (int y = oY; (y < step) && !foundGoodLocation; y++) {
-					double distance = RandomUtil.getRandomDouble(step) + x;
+				for (int y = oY; (y < 2000) && !foundGoodLocation; y++) {
+					double distance = Math.max(y, RandomUtil.getRandomDouble(-.5*x, x) + y);
 					double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
 					
 					newLoc = centerLoc.getPosition(distance, radianDirection);
 					newFacing = RandomUtil.getRandomDouble(360D);
 
 					// Check if new vehicle location collides with anything.
+					
+					// Note: excessive calling increase CPU Util
 					foundGoodLocation = LocalAreaUtil.isObjectCollisionFree(this, w, l,
 									newLoc.getX(), newLoc.getY(), 
 									newFacing, getCoordinates());
 					
-					// Enlarge the collision surface of a vehicle to avoid getting trapped within those enclosed space 
-					// surrounded by buildings or hallways.
-					
-					// This is just a temporary solution to stop the vehicle from acquiring a parking between buildings.
-					// May need a more permanent solution by figuring out how to detect those enclosed space
+					count++;
 				}
 			}
 
-			setParkedLocation(newLoc, newFacing);
+			if (foundGoodLocation) {
+				setParkedLocation(newLoc, newFacing);
+				logger.info(this, "New parking loc found (iteration: " + count + ").");
+			}
 		}
 	}
 	
@@ -2205,16 +2238,19 @@ public abstract class Vehicle extends Unit
 //			}
 			
 			// 2. Set new LocationStateType
-			// 2a. If the previous cu is a settlement
-			//     and this vehicle's new cu is mars surface,
+			// 2a. If the old cu is a settlement
+			//     and the new cu is mars surface,
 			//     then location state is within settlement vicinity
 			if (cu != null 
 				&& (cu.getUnitType() == UnitType.SETTLEMENT
-				|| cu.getUnitType() == UnitType.BUILDING)
-					&& newContainer.getUnitType() == UnitType.MARS) {
-						currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+					|| cu.getUnitType() == UnitType.BUILDING)
+				&& newContainer.getUnitType() == UnitType.MARS) {
+					setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
 			}	
 			else {
+				// 2b. If old cu is null (parking within settlement vicinity
+				//     and the new cu is mars surface,
+				//     then new location state is mars surface
 				updateVehicleState(newContainer);
 			}
 			
@@ -2241,11 +2277,11 @@ public abstract class Vehicle extends Unit
 	 */
 	public void updateVehicleState(Unit newContainer) {
 		if (newContainer == null) {
-			currentStateType = LocationStateType.UNKNOWN;
+			setLocationStateType(LocationStateType.UNKNOWN);
 			return;
 		}
 
-		currentStateType = getNewLocationState(newContainer);
+		setLocationStateType(getNewLocationState(newContainer));
 	}
 
 	/**
@@ -2311,7 +2347,7 @@ public abstract class Vehicle extends Unit
 			return true;
 
 		if (getContainerUnit().getUnitType() == UnitType.SETTLEMENT
-				&& ((Settlement)(getContainerUnit())).containsParkedVehicle((Vehicle)this)) {
+				&& ((Settlement)(getContainerUnit())).containsVicinityParkedVehicle((Vehicle)this)) {
 			return true;
 		}
 
@@ -2337,7 +2373,7 @@ public abstract class Vehicle extends Unit
 		}
 		else if (cu.getUnitType() == UnitType.SETTLEMENT) {
 			Settlement currentBase = (Settlement)cu;
-			transferred = currentBase.removeParkedVehicle(this);
+			transferred = currentBase.removeVicinityParkedVehicle(this);
 			leaving = true;
 			// Q: do we need to set the coordinate to the settlement one last time prior to leaving
 //			setCoordinates(currentBase.getCoordinates());
@@ -2349,7 +2385,7 @@ public abstract class Vehicle extends Unit
 				leaving = leaving && true;
 			}
 			else if (cu.getUnitType() == UnitType.SETTLEMENT) {
-				transferred = ((Settlement)destination).addParkedVehicle(this);
+				transferred = ((Settlement)destination).addVicinityVehicle(this);
 			}
 
 			if (!transferred) {

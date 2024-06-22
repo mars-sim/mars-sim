@@ -12,16 +12,16 @@ import java.util.Set;
 
 import javax.swing.table.AbstractTableModel;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.structure.building.function.ActivitySpot;
-import com.mars_sim.ui.swing.utils.UnitModel;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * Is a table model for a collection of activity spots. Renders the name, position and assignment.
  * Can also be used to launcher the entity launcher.
  */
-public class ActivitySpotModel extends AbstractTableModel implements UnitModel {
+public class ActivitySpotModel extends AbstractTableModel implements EntityModel {
 
     private static final int NAME_COL = 0;
     private static final int POS_COL = 1;
@@ -55,7 +55,7 @@ public class ActivitySpotModel extends AbstractTableModel implements UnitModel {
             case POS_COL: result = sp.getPos().getShortFormat(); 
                         break;
             case WORK_COL: {
-                Unit u = getAssociatedUnit(rowIndex);
+                Entity u = getAssociatedEntity(rowIndex);
                 if (u != null) {
                     result = u.getName();
                 }
@@ -83,7 +83,7 @@ public class ActivitySpotModel extends AbstractTableModel implements UnitModel {
     }
 
     @Override
-    public Unit getAssociatedUnit(int row) {
+    public Entity getAssociatedEntity(int row) {
         ActivitySpot sp = spots.get(row);
         int id = sp.getID();
         if (id >= 0) {

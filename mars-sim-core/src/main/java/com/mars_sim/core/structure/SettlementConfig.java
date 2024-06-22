@@ -231,7 +231,8 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	}
 
 	/**
-	 * Convert a XML element into a GroupActivityInfo
+	 * Converts a XML element into a GroupActivityInfo.
+	 * 
 	 * @param ra
 	 * @return
 	 */
@@ -260,9 +261,10 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	}
 
 	/**
-	 * Find a activity schedule by name
+	 * Finds a activity schedule by name.
+	 * 
 	 * @param name 
-	 * @return Selected; coud be null
+	 * @return Selected; could be null
 	 */
 	public GroupActivitySchedule getActivityByName(String name) {
 		var found = rulesets.stream().filter(a -> name.equalsIgnoreCase(a.name())).findFirst();
@@ -273,13 +275,14 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	}
 
 	/**
-	 * Find a activity rules set which has the highest minPopulation than this population
-	 * size can cover
+	 * Finds a activity rules set which has the highest minPopulation than this population
+	 * size can cover.
+	 * 
 	 * @param popSize
 	 * @return Selected; could be null
 	 */
 	public GroupActivitySchedule getActivityByPopulation(int popSize) {
-		// Rulesets are order in terms of decreasing population sp find first that is smaller than 
+		// Rule sets are ordered in terms of decreasing population to find first that is smaller than 
 		// target population
 		for(var a : rulesets) {
 			if ((a.minPop() <= popSize) && (a.minPop() > 0)) {
@@ -343,12 +346,13 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			shiftDefinitions.add(new ShiftPattern(name, shiftSpecs, rotSol, leave, minPop));
 		}
 
-		// Order rulles sets in increasing minimum population
+		// Order rules sets in increasing minimum population
 		shiftDefinitions.sort(Comparator.comparingInt(ShiftPattern::getMinPopulation).reversed());
 	}
 
 	/**
-	 * Find a shift pattern by name.
+	 * Finds a shift pattern by name.
+	 * 
 	 * @param name
 	 * @return
 	 */
@@ -361,8 +365,9 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	}
 
 	/**
-	 * Find a shift pattern  which has the highest minPopulation than this population
-	 * size can cover
+	 * Finds a shift pattern  which has the highest minPopulation than this population
+	 * size can cover.
+	 * 
 	 * @param popSize
 	 * @return Selected; could be null
 	 */

@@ -5,18 +5,22 @@ Project: https://mars-sim.com
 GitHub: https://github.com/mars-sim/mars-sim  
 
 ------------------------------------------|---------------------
-## Version 3.8.0 (__ __ May 2024)
+## Version 3.8.0 (__ __ Jun 2024)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
-  <LI>Agency: add a new multi-national alliance and the Taiwan nation state.</LI>
+  <LI>Agency: add "International Space Research Alliance" (ISRA), a Chinese-led 
+  	  multi-national alliance and Taiwan nation state.</LI>
+  <LI>Country: add Taiwan as nation state.</LI>  	  
   <LI>GitHub: make use of Gitflow and GitHub Action for building binary releases.</LI>
   <LI>Goods Manager: Reworking of the relationship with Objectives.</LI>
-  <LI>Preferences: Preference management is structured into categories.</LI>
-  <LI>Settlement Template: Optionally the default Objective can be defined.</LI>
-  <LI>Process Definitions: Standard approach to defining the processes for Salvage, Food Production and Manufacturing.</LI>
-  <LI>Settlement Tasks: Can be selected by On duty & Off duty Persons.</LI>
-  <LI>Group Activity: Group activities are automatically scheduled for a Settlement. This can include Birthday parties, Council Announcements, Team Meetings etc.</LI>
+  <LI>Group Activity: add group activities for a settlement. e.g. birthday parties, 
+  	  council announcements, team meetings etc.</LI>
+  <LI>Preferences: manage preference by categories.</LI>
+  <LI>Process Definitions: standardize approach in defining processes such as salvage, 
+      food production and manufacturing.</LI>
+  <LI>Settlement Tasks: tasks can be selected by On duty & Off duty persons.</LI>
+  <LI>Settlement Template: may define default objective optionally.</LI>
 </OL>
   
 ### B. UI IMPROVEMENT :
@@ -25,7 +29,6 @@ GitHub: https://github.com/mars-sim/mars-sim
   <LI>Settlement: Number of active Missions controlled by the Preference panel.</LI>
   <LI>Settlement: New Process history tab that shows all completed Processes.</LI>
   <LI>Monitor Tool: Backlog show the work scope of tasks.</LI>
-
 </OL>  
 
 ### C. FIXES :

@@ -83,7 +83,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	private static final double EXTRA_EVA_SUIT_FACTOR = .2;
 
 	/* How long do Worker have to complete departure */
-	private static final int DEPARTURE_DURATION = 150;
+	private static final int DEPARTURE_DURATION = 250;
 	private static final int DEPARTURE_PREPARATION = 15;
 
 	private boolean justArrived;
@@ -124,7 +124,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	@Override
 	protected Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
 		Collection<Vehicle> result = new ArrayList<>();
-		Collection<Vehicle> list = settlement.getParkedVehicles();
+		Collection<Vehicle> list = settlement.getParkedGaragedVehicles();
 		if (list.isEmpty())
 			return result;
 		for (Vehicle v : list) {
@@ -184,7 +184,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 		boolean result = false;
 
-		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+		Iterator<Vehicle> i = settlement.getParkedGaragedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
 
@@ -313,7 +313,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		boolean canDepart = isEveryoneInRover();
 			
 		if (!canDepart && (getPhaseDuration() > DEPARTURE_DURATION)) {
-			// Find who has not boarded
+			// Find who has not boarded after the duration is over
 			List<Person> ejectedMembers = new ArrayList<>();
 			Rover r = getRover();
 			for (Worker m : getMembers()) {
@@ -323,22 +323,25 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				}
 			}
 
-			// Must have the leader
-			if (!ejectedMembers.contains(getStartingPerson())) {
-				// Still enough members ? If so eject late arrivals
-				if ((getMembers().size() - ejectedMembers.size()) >= 2) {
-					for (Person ej : ejectedMembers) {
-						logger.info(ej, "Ejected from mission " + getName() + " missed the departure.");
-						removeMember(ej);
-						addMissionLog(ej.getName() + " evicted");
-					}
-					canDepart = true;
+			// Still enough members ? If so eject late arrivals
+			if ((getMembers().size() - ejectedMembers.size()) >= 2) {
+				for (Person ej : ejectedMembers) {
+					logger.info(ej, "Missed the departure and evicted from '" + getName() + "'.");
+					removeMember(ej);
+					addMissionLog(ej.getName() + " evicted");
 				}
 			}
-//			else {
-				// Too many generated
-				// logger.info(member, "Leader " + getStartingPerson().getName() + " still not boarded for mission " + getName());
-//			}
+			
+			// If the leader is not ejected, then the mission can be proceeded
+			if (!ejectedMembers.contains(getStartingPerson())) {
+				canDepart = true;
+			}
+			else {
+				// If the leader is ejected, then the mission must be cancelled
+				logger.info(member, "Mission Lead " + getStartingPerson().getName() 
+						+ " evicted from '" + getName() + "' and mission cancelled.");
+				endMission(MISSION_LEAD_NO_SHOW);
+			}
 		}
 
 		if (canDepart) {
@@ -372,7 +375,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			callMembersToMission((DEPARTURE_DURATION - DEPARTURE_PREPARATION));
 			
 			if (member instanceof Person person) {
-				// If person is not aboard the rover, board the rover and be ready to depart.
+				// If person has not aboard the rover, board the rover and be ready to depart.
 				if (!getRover().isCrewmember(person)) {
 
 					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, v);
@@ -1016,7 +1019,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 */
 	public static boolean hasBackupRover(Settlement settlement) {
 		int availableVehicleNum = 0;
-		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+		Iterator<Vehicle> i = settlement.getParkedGaragedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
 			if ((vehicle instanceof Rover) && !vehicle.isReservedForMission())

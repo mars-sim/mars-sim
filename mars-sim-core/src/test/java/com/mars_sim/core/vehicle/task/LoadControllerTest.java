@@ -62,17 +62,25 @@ extends TestCase {
 
 		// Create test settlement.
 		settlement = new MockSettlement();
+		
 		unitManager.addUnit(settlement);
 
 		vehicle = new Rover("Test Cargo Rover",
 							config.getVehicleConfiguration().getVehicleSpec("cargo rover"), settlement);
+		
+		// Call addOwnedVehicle prior to addUnit
 		settlement.addOwnedVehicle(vehicle);
+		
 		unitManager.addUnit(vehicle);
 
 		person = Person.create("Jim Loader", settlement, GenderType.MALE).build();
+		
 		settlement.addACitizen(person);
+		
+//		unitManager.addUnit(vehicle);
+		
 		// Set the container unit
-		person.setContainerUnit(settlement);
+//		person.setContainerUnit(settlement);
 
 		// Make the person strong to get loading quicker
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeType.STRENGTH, 40);

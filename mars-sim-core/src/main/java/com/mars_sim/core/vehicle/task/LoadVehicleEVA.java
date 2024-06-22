@@ -33,8 +33,9 @@ public class LoadVehicleEVA extends EVAOperation {
 	public static final String SIMPLE_NAME = LoadVehicleEVA.class.getSimpleName();
 	
 	/** Task phases. */
-	private static final TaskPhase LOADING = new TaskPhase(Msg.getString("Task.phase.loading"),
-											createPhaseImpact(PhysicalEffort.HIGH));
+	private static final TaskPhase LOADING = 
+			new TaskPhase(Msg.getString("Task.phase.loading"), //$NON-NLS-1$
+					createPhaseImpact(PhysicalEffort.HIGH));
 
 
 	// Data members

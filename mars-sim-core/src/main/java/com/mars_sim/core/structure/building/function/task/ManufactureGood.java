@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ManufactureGood.java
- * @date 2021-12-22
+ * @date 2024-06-09
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.function.task;
@@ -389,36 +389,7 @@ public class ManufactureGood extends Task {
 
 		// Apply work time to manufacturing processes.
 		while ((workTime > 0D) && !isDone()) {
-			ManufactureProcess process = getRunningManufactureProcess();
-			if (process != null) {
-				double remainingWorkTime = process.getWorkTimeRemaining();
-				double providedWorkTime = workTime;
-				if (providedWorkTime > remainingWorkTime) {
-					providedWorkTime = remainingWorkTime;
-				}
-				process.addWorkTime(providedWorkTime);
-				workTime -= providedWorkTime;
-
-				if ((process.getWorkTimeRemaining() <= 0D) && (process.getProcessTimeRemaining() <= 0D)) {
-					workshop.endManufacturingProcess(process, false);
-				}
-			}
-			
-			else {
-				if (!worker.getSettlement().getProcessOverride(OverrideType.MANUFACTURE))
-					process = createNewManufactureProcess();
-				
-				if (process == null) {
-					endTask();
-				}
-			}
-
-			if (process != null)
-				// Prints description
-				setDescription(Conversion.capitalize(process.toString())); // $NON-NLS-1$
-			else
-				setDescription(Msg.getString("Task.description.manufactureGood.inspecting")); //$NON-NLS-1$
-
+			manufacture(workTime);
 		}
 
 		// Add experience
@@ -427,10 +398,46 @@ public class ManufactureGood extends Task {
 		// Check for accident in workshop.
 		checkForAccident(entity, time, 0.004);
 
-		
 		return 0D;
 	}
 
+	/**
+	 * Executes the manufacture process.
+	 * 
+	 * @param workTime
+	 */
+	private void manufacture(double workTime) {
+		ManufactureProcess process = getRunningManufactureProcess();
+		if (process != null) {
+			double remainingWorkTime = process.getWorkTimeRemaining();
+			double providedWorkTime = workTime;
+			if (providedWorkTime > remainingWorkTime) {
+				providedWorkTime = remainingWorkTime;
+			}
+			process.addWorkTime(providedWorkTime);
+			workTime -= providedWorkTime;
+
+			if ((process.getWorkTimeRemaining() <= 0D) && (process.getProcessTimeRemaining() <= 0D)) {
+				workshop.endManufacturingProcess(process, false);
+			}
+		}
+		
+		else {
+			if (!worker.getSettlement().getProcessOverride(OverrideType.MANUFACTURE))
+				process = createNewManufactureProcess();
+			
+			if (process == null) {
+				endTask();
+			}
+		}
+
+		if (process != null)
+			// Prints description
+			setDescription(Conversion.capitalize(process.toString())); 
+		else
+			setDescription(Msg.getString("Task.description.manufactureGood.inspecting")); //$NON-NLS-1$
+	}
+	
 	/**
 	 * Gets an available running manufacturing process.
 	 * 

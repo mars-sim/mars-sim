@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ResourceProcess.java
- * @date 2022-07-30
+ * @date 2024-06-09
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.function;
@@ -49,6 +49,8 @@ public class ResourceProcess implements Serializable {
 
 	private double toggleRunningWorkTime;
 
+	private double score;
+	
 	private String name;
 
 	private int[] timeLimit = new int[] {1, 0};
@@ -156,7 +158,15 @@ public class ResourceProcess implements Serializable {
 		else
 			return 0;
 	}
-			
+		
+	public double getScore() {
+		return score;
+	}
+	
+	public void setScore(double score) {
+		this.score = score;
+	}
+	
 	/**
 	 * Gets the set of input resources.
 	 *
@@ -468,7 +478,7 @@ public class ResourceProcess implements Serializable {
 	 * @param settlement the settlement the resource is at.
 	 * @return true if any output resources are empty.
 	 */
-	public boolean isEmptyOutputs(Settlement settlement) {
+	public boolean isOutputsEmpty(Settlement settlement) {
 
 		for(int resource : getOutputResources()) {
 			double stored = settlement.getAmountResourceStored(resource);

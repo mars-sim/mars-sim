@@ -27,7 +27,7 @@ import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitListener;
@@ -47,8 +47,8 @@ import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.monitor.PersonTableModel;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.UnitModel;
-import com.mars_sim.ui.swing.utils.UnitTableLauncher;
+import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.EntityLauncher;
 
 /**
  * The TabPanelCrew is a tab panel for a vehicle's crew information.
@@ -150,7 +150,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		memberScrollPane.setViewportView(memberTable);
 
 		// Call it a click to display details button when user double clicks the table
-		memberTable.addMouseListener(new UnitTableLauncher(getDesktop()));
+		EntityLauncher.attach(memberTable, getDesktop());
 
 		update();
 	}
@@ -207,7 +207,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 	/**
 	 * Table model for mission members.
 	 */
-	private class MemberTableModel extends AbstractTableModel implements UnitListener, UnitModel {
+	private class MemberTableModel extends AbstractTableModel implements UnitListener, EntityModel {
 
 		// Private members.
 		private Mission mission;
@@ -381,8 +381,8 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		}
 
 		@Override
-		public Unit getAssociatedUnit(int row) {
-			return (Unit) members.get(row);
+		public Entity getAssociatedEntity(int row) {
+			return members.get(row);
 		}
 	}
 }

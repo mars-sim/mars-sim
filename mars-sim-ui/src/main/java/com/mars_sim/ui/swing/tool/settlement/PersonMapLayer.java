@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.tool.settlement;
 import java.awt.Color;
 import java.util.Collection;
 
+import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
@@ -38,7 +39,7 @@ public class PersonMapLayer extends WorkerMapLayer<Person> {
 	
 	@Override
 	public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
-		Collection<Person> people = settlement.getIndoorPeople();		
+		Collection<Person> people = CollectionUtils.getPeopleInSettlementVicinity(settlement);		
 		Person selectedPerson = mapPanel.getSelectedPerson();
 
 		drawWorkers(people, selectedPerson, mapPanel.isShowPersonLabels(), viewpoint);

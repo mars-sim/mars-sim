@@ -24,7 +24,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.structure.PowerGrid;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -40,7 +40,7 @@ import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.UnitModel;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 
 /**
@@ -340,7 +340,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 	 * Internal class used as model for the power table.
 	 */
 	private class PowerTableModel extends AbstractTableModel
-				implements UnitModel  {
+				implements EntityModel  {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -468,7 +468,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		}
 
 		@Override
-		public Unit getAssociatedUnit(int row) {
+		public Entity getAssociatedEntity(int row) {
 			return buildings.get(row);
 		}
 	}

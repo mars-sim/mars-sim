@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnloadVehicleMeta.java
- * @date 2022-09-24
+ * @date 2024-06-17
  * @author Scott Davis
  */
 package com.mars_sim.core.vehicle.task;
@@ -30,6 +30,7 @@ import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
 
@@ -71,6 +72,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
             return new UnloadVehicleGarage(robot, getVehicle());
         }
     }
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.unloadVehicle"); //$NON-NLS-1$
@@ -88,7 +90,8 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
 	}
 
     /**
-     * For a robot can not do EVA tasks so will return a zero factor in this case.
+     * Assesses the suitability of the Robot for this task. 
+     * Notes that it can not do EVA tasks and will return a zero factor.
      * 
 	 * @param t Task being scored
 	 * @param r Robot requesting work.
@@ -107,33 +110,38 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask> tasks = new ArrayList<>();
 
-		boolean insideTasks = MaintainVehicleMeta.getGarageSpaces(settlement) > 0;
-
         Set<Vehicle> assessed = new UnitSet<>();
         
         // Check Vehicle Missions first
 		for (Mission mission : missionManager.getMissions()) {
-			if ((mission instanceof VehicleMission vehicleMission) && !mission.isDone()) {
-				if (vehicleMission.isVehicleUnloadableHere(settlement)) {
-                    Vehicle v = vehicleMission.getVehicle();
-                    if (v != null) {
-                        // Not sure why vehicle could be null but it does happen. Race condition of vehicle
-                        // being released before the mission is completed?
-                        assessed.add(v);
+			if ((mission instanceof VehicleMission vehicleMission) && !mission.isDone()
+				&& vehicleMission.isVehicleUnloadableHere(settlement)) {
+                Vehicle vehicle = vehicleMission.getVehicle();
+                if (vehicle != null) {
+                    // Not sure why vehicle could be null but it does happen. Race condition of vehicle
+                    // being released before the mission is completed?
+                    assessed.add(vehicle);
 
-                        SettlementTask job = scoreVehicle(settlement, v, insideTasks, this);
-                        if (job != null) {
-                            tasks.add(job);
-                        }
+    				boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
+    						vehicleMission.getAssociatedSettlement(), vehicle instanceof Rover);
+    						
+                    SettlementTask job = scoreVehicle(settlement, vehicle, garageTask, this);
+                    if (job != null) {
+                        tasks.add(job);
                     }
                 }
             }
         }
 
         // Check non-mission vehicles
-        for (Vehicle vehicle : settlement.getParkedVehicles()) {
+        for (Vehicle vehicle : settlement.getParkedGaragedVehicles()) {
 			if (!vehicle.isReserved() && !assessed.contains(vehicle)) {
-                SettlementTask job = scoreVehicle(settlement, vehicle, insideTasks, this);
+				
+   				boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
+   						vehicle.getAssociatedSettlement(), vehicle instanceof Rover);
+						
+                SettlementTask job = scoreVehicle(settlement, vehicle, garageTask, this);
+
                 if (job != null) {
                     tasks.add(job);
                 }
@@ -142,8 +150,6 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
         return tasks;
     }
 
-	
-	
     /**
      * Scores a vehicle for it's suitability to be unloaded.
      * 

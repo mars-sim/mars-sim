@@ -53,6 +53,7 @@ public class ResourceUtil implements Serializable {
 	public static final String HYDROGEN = "hydrogen";
 	public static final String METHANE = "methane";
 	public static final String METHANOL = "methanol";
+	public static final String ACETYLENE = "acetylene";
 	
 	public static final String SOIL = "soil";
 	public static final String ICE = "ice";
@@ -62,6 +63,7 @@ public class ResourceUtil implements Serializable {
 	public static final String REGOLITH_B = "regolith-b";
 	public static final String REGOLITH_C = "regolith-c";
 	public static final String REGOLITH_D = "regolith-d";
+	public static final String OLIVINE = "olivine";
 
 	public static final String ROCK_SAMPLES = "rock samples";
 	public static final String CONCRETE = "concrete";
@@ -159,6 +161,7 @@ public class ResourceUtil implements Serializable {
 	public static int methaneID;
 	public static int methanolID;
 	public static int coID;
+	public static int acetyleneID;
 	
 	public static int chlorineID;
 	public static int ethyleneID;
@@ -170,6 +173,7 @@ public class ResourceUtil implements Serializable {
 	public static int regolithBID;
 	public static int regolithCID;
 	public static int regolithDID;
+	public static int olivineID;
 
 	public static int soilID;
 	public static int sandID;
@@ -410,7 +414,8 @@ public class ResourceUtil implements Serializable {
 		co2ID = findIDbyAmountResourceName(CO2);
 		argonID = findIDbyAmountResourceName(ARGON);
 		coID = findIDbyAmountResourceName(CO); 
-
+		
+		acetyleneID = findIDbyAmountResourceName(ACETYLENE);
 		hydrogenID = findIDbyAmountResourceName(HYDROGEN); 
 		methaneID = findIDbyAmountResourceName(METHANE);
 		methanolID = findIDbyAmountResourceName(METHANOL);
@@ -492,6 +497,8 @@ public class ResourceUtil implements Serializable {
 				regolithCID,
 				regolithDID};
 
+		olivineID = findIDbyAmountResourceName(OLIVINE);
+		
 		fishMeatID = findIDbyAmountResourceName(FISH_MEAT);
 		spirulinaID = findIDbyAmountResourceName(SPIRULINA);
 				

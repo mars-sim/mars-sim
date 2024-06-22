@@ -272,7 +272,7 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
         for(int i = firstCol; i<= lastCol; i++) {
             if (cachedColumns.contains(i)) {
                 // Recalculate cached value in this Thread to avoid problem
-                // with calculating dervied values in teh UI Thread
+                // with calculating derived values in the UI Thread
                 Object newValue = getEntityValue(entity, i);
                 Object cachedValue = getCacheValue(entity, i);
                 if ((cachedValue == null) || !cachedValue.equals(newValue)) {
@@ -280,7 +280,7 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
                 }
             }
 
-            // Fire the cell update in the bacground thread
+            // Fire the cell update in the background thread
             SwingUtilities.invokeLater(new TableCellUpdater(rowIndex, i));
         }
     }

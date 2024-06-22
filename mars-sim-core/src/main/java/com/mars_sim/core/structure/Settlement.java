@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Settlement.java
- * @date 2023-06-30
+ * @date 2024-06-09
  * @author Scott Davis
  */
 
@@ -327,7 +327,7 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement's list of owned vehicles. */
 	private Set<Vehicle> ownedVehicles;
 	/** The settlement's list of parked vehicles. */
-	private Set<Vehicle> parkedVehicles;
+	private Set<Vehicle> vicinityParkedVehicles;
 	/** The list of people currently within the settlement. */
 	private Set<Person> indoorPeople;
 	/** The settlement's list of robots within. */
@@ -367,7 +367,7 @@ public class Settlement extends Structure implements Temporal,
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
-		parkedVehicles = new UnitSet<>();
+		vicinityParkedVehicles = new UnitSet<>();
 		indoorPeople = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 
@@ -418,7 +418,7 @@ public class Settlement extends Structure implements Temporal,
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
-		parkedVehicles = new UnitSet<>();
+		vicinityParkedVehicles = new UnitSet<>();
 		indoorPeople = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 		allowTradeMissionSettlements = new HashMap<>();
@@ -1786,7 +1786,9 @@ public class Settlement extends Structure implements Temporal,
 			return true;
 		}
 		if (indoorPeople.add(p)) {
+			// Set the container unit
 			p.setContainerUnit(this);
+			
 			return true;
 		}
 		return false;
@@ -1836,11 +1838,19 @@ public class Settlement extends Structure implements Temporal,
 		if (citizens.contains(p))
 			return true;
 		if (citizens.add(p)) {
-			// Add this person indoor map
+
+			// Set x and y coordinates first prior to adding the person 
+			p.setCoordinates(getCoordinates());
+			
+			// Set this settlement as the container unit
+			p.setContainerUnit(this);
+			
+			// Add this person indoor map of the settlement
 			addToIndoor(p);
 			
-			p.setCoordinates(getCoordinates());
-
+			// Add to a random building
+			BuildingManager.landOnRandomBuilding(p, getAssociatedSettlement());
+			
 			// Assign a permanent bed reservation if possible
 			LivingAccommodation.allocateBed(this, p, true);
 
@@ -1864,7 +1874,9 @@ public class Settlement extends Structure implements Temporal,
 			int evaCapacity = (int)Math.ceil(numCitizens * EVA_PERCENTAGE);
 			preferences.putValue(SettlementParameters.INSTANCE, SettlementParameters.MAX_EVA, evaCapacity);
 
+			// Fire unit update
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
+			
 			return true;
 		}
 		return false;
@@ -1890,10 +1902,13 @@ public class Settlement extends Structure implements Temporal,
 		if (!citizens.contains(p))
 			return true;
 		if (citizens.remove(p)) {
+			
 			removePeopleWithin(p);
 			// Update the numCtizens
 			numCitizens = citizens.size();
+			// Fire unit update
 			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
+			
 			return true;
 		}
 		return false;
@@ -1923,11 +1938,17 @@ public class Settlement extends Structure implements Temporal,
 		if (ownedRobots.contains(r))
 			return true;
 		if (ownedRobots.add(r)) {
-			addRobotsWithin(r);
+			// Set x and y coordinates first prior to adding the robot 
 			r.setCoordinates(getCoordinates());
-			r.setContainerUnit(this);
-			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
+			// Set the container unit
+			r.setContainerUnit(this);	
+			// Add the robot to the settlement
+			addRobotsWithin(r);
+			// Update the numOwnedBots
 			numOwnedBots = ownedRobots.size();
+			// Fire unit update
+			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
+
 			return true;
 		}
 		return false;
@@ -1942,8 +1963,11 @@ public class Settlement extends Structure implements Temporal,
 		if (!ownedRobots.contains(r))
 			return true;
 		if (ownedRobots.remove(r)) {
-			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, this);
+			// Update the numOwnedBots
 			numOwnedBots = ownedRobots.size();
+			// Fire unit update
+			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, this);
+			
 			return true;
 		}
 		return false;
@@ -1974,53 +1998,46 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Adds a parked vehicle.
+	 * Adds a vicinity parked vehicle.
 	 *
 	 * @param vehicle
-	 * @param true if the parked vehicle can be added
+	 * @param true if the vicinity parked vehicle can be added
 	 */
-	public boolean addParkedVehicle(Vehicle vehicle) {
-		if (parkedVehicles.contains(vehicle)) {
+	public boolean addVicinityVehicle(Vehicle vehicle) {
+		if (vicinityParkedVehicles.contains(vehicle)) {
 			return true;
 		}
-		if (parkedVehicles.add(vehicle)) {
+		if (vicinityParkedVehicles.add(vehicle)) {
 			// Directly update the location state type
 			vehicle.updateLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
+			// Set this settlement as the container unit
 			vehicle.setContainerUnit(this);
+			
 			return true;
 		}
 		return false;
 	}
 
 	/**
-	 * Removes a parked vehicle.
+	 * Removes a vicinity parked vehicle.
 	 *
 	 * @param vehicle
-	 * @param true if the parked vehicle can be removed
+	 * @param true if the vicinity parked vehicle can be removed
 	 */
-	public boolean removeParkedVehicle(Vehicle vehicle) {
-		if (!parkedVehicles.contains(vehicle))
+	public boolean removeVicinityParkedVehicle(Vehicle vehicle) {
+		if (!vicinityParkedVehicles.contains(vehicle))
 			return true;
-		return parkedVehicles.remove(vehicle);
+		return vicinityParkedVehicles.remove(vehicle);
 	}
 
 	/**
-	 * Does it have this vehicle parked at the settlement ?
+	 * Does it have this vicinity vehicle parked at the settlement ?
 	 *
 	 * @param vehicle
 	 * @return
 	 */
-	public boolean containsParkedVehicle(Vehicle vehicle) {
-		return parkedVehicles.contains(vehicle);
-	}
-
-	/**
-	 * Returns a set of parked vehicles.
-	 * 
-	 * @return
-	 */
-	public Set<Vehicle> parkedVehicles() {
-		return parkedVehicles;
+	public boolean containsVicinityParkedVehicle(Vehicle vehicle) {
+		return vicinityParkedVehicles.contains(vehicle);
 	}
 	
 	/**
@@ -2033,10 +2050,17 @@ public class Settlement extends Structure implements Temporal,
 		if (ownedVehicles.contains(vehicle))
 			return true;
 		if (ownedVehicles.add(vehicle)) {
-			addParkedVehicle(vehicle);
-			vehicle.setCoordinates(getCoordinates());
+			// Set this settlement as the container unit
 			vehicle.setContainerUnit(this);
+			// Set vehicle's coordinates to that of settlement
+			vehicle.setCoordinates(getCoordinates());
+			// Call findNewParkingLoc to get a non-collided x and y coordinates
+			vehicle.findNewParkingLoc();
+			// Update the numOwnedVehicles
 			numOwnedVehicles = ownedVehicles.size();
+			// Add this vehicle as parked
+			addVicinityVehicle(vehicle);
+			
 			return true;
 		}
 		return false;
@@ -2194,9 +2218,9 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Gets a collection of drones parked or garaged at the settlement.
 	 *
-	 * @return Collection of parked drones
+	 * @return Collection of parked or garaged drones
 	 */
-	public Collection<Drone> getParkedDrones() {
+	public Collection<Drone> getParkedGaragedDrones() {
 		return ownedVehicles.stream()
 				.filter(v -> v.getVehicleType() == VehicleType.DELIVERY_DRONE)
 				.filter(v -> this.equals(v.getSettlement()))
@@ -2207,9 +2231,9 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Gets the number of drones parked or garaged at the settlement.
 	 *
-	 * @return parked drones number
+	 * @return parked or garaged drones number
 	 */
-	public int getNumParkedDrones() {
+	public int getNumParkedGaragedDrones() {
 		return Math.toIntExact(ownedVehicles
 				.stream()
 				.filter(v -> v.getVehicleType() == VehicleType.DELIVERY_DRONE)
@@ -2218,11 +2242,11 @@ public class Settlement extends Structure implements Temporal,
 	}
 	
 	/**
-	 * Gets a collection of drones parked or garaged at the settlement.
+	 * Gets a collection of vehicles parked or garaged at the settlement.
 	 *
-	 * @return Collection of parked drones
+	 * @return Collection of Unit
 	 */
-	public Collection<Unit> getVehicleTypeList(VehicleType vehicleType) {
+	public Collection<Unit> getVehicleTypeUnit(VehicleType vehicleType) {
 		return ownedVehicles.stream()
 				.filter(v -> v.getVehicleType() == vehicleType)
 				.map(Unit.class::cast)
@@ -2258,9 +2282,9 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Gets a collection of vehicles parked or garaged at the settlement.
 	 *
-	 * @return Collection of parked vehicles
+	 * @return Collection of parked or garaged vehicles
 	 */
-	public Collection<Vehicle> getParkedVehicles() {
+	public Collection<Vehicle> getParkedGaragedVehicles() {
 		// Get all Vehicles that are back home
 		return 	ownedVehicles.stream()
 					.filter(v -> this.equals(v.getSettlement()))
@@ -3672,11 +3696,11 @@ public class Settlement extends Structure implements Temporal,
 		ownedVehicles.clear();
 		ownedVehicles = null;
 		
-		for (Vehicle v: parkedVehicles) {
+		for (Vehicle v: vicinityParkedVehicles) {
 			v.destroy();
 		}
-		parkedVehicles.clear();
-		parkedVehicles = null;
+		vicinityParkedVehicles.clear();
+		vicinityParkedVehicles = null;
 		
 	
 		if (buildingManager != null) {

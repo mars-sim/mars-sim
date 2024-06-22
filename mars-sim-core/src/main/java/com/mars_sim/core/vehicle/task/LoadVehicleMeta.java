@@ -23,11 +23,12 @@ import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
-import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
+import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
 
@@ -41,8 +42,11 @@ public class LoadVehicleMeta extends MetaTask
 
 		private static final long serialVersionUID = 1L;
 
+		private VehicleMission vehicleMission;
+		
         private LoadJob(SettlementMetaTask owner, VehicleMission target, boolean eva, RatingScore score) {
             super(owner, "Load " + (eva ? "via EVA " : ""), target, score);
+            vehicleMission = target;
             setEVA(eva);
         }
 
@@ -57,7 +61,20 @@ public class LoadVehicleMeta extends MetaTask
             if (isEVA()) {
                 return new LoadVehicleEVA(person, getMission().getLoadingPlan());
             }
-            return new LoadVehicleGarage(person, getMission().getLoadingPlan());
+	
+    		Vehicle vehicle = vehicleMission.getVehicle();
+
+    		boolean hasGarage = vehicle.isInAGarage(); 
+    		if (hasGarage)
+    			return new LoadVehicleGarage(person, getMission().getLoadingPlan());
+    			
+    		boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
+    				vehicle.getAssociatedSettlement(), vehicle instanceof Rover);
+            
+    		if (garageTask)
+    			return new LoadVehicleGarage(person, getMission().getLoadingPlan());
+			
+    		return new LoadVehicleEVA(person, getMission().getLoadingPlan());
         }
 
         @Override
@@ -108,8 +125,6 @@ public class LoadVehicleMeta extends MetaTask
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask> tasks = new ArrayList<>();
 
-		boolean insideTasks = MaintainVehicleMeta.getGarageSpaces(settlement) > 0;
-
         // Find all Vehicle missions with an active loading plan
 		for (Mission mission : missionManager.getMissions()) {
 			if (mission instanceof VehicleMission vehicleMission) {
@@ -117,7 +132,11 @@ public class LoadVehicleMeta extends MetaTask
 
 				// Must have a local Loading Plan that is not complete
 				if ((plan != null) && plan.getSettlement().equals(settlement) && !plan.isCompleted()) {
-                    SettlementTask job = createLoadJob(vehicleMission, settlement, insideTasks, this);
+					
+					boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
+							vehicleMission.getAssociatedSettlement(), vehicleMission.getVehicle() instanceof Rover);
+							
+                    SettlementTask job = createLoadJob(vehicleMission, settlement, garageTask, this);
                     if (job != null) {
                         tasks.add(job);
                     }

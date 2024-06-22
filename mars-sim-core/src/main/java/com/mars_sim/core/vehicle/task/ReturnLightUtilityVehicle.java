@@ -160,7 +160,7 @@ public class ReturnLightUtilityVehicle extends Task {
 			}
 			else if (returnContainer.getUnitType() == UnitType.SETTLEMENT) {
 				s = (Settlement)returnContainer;
-				done = s.addParkedVehicle(r);
+				done = s.addVicinityVehicle(r);
 //				luv.findNewParkingLoc();
 				// Unload any attachment parts or inventory from light utility vehicle.
 				unloadLUVInventory(s);

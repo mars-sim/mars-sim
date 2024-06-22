@@ -8,6 +8,7 @@ package com.mars_sim.core.vehicle;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import com.mars_sim.core.person.Person;
@@ -37,7 +38,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	private int slotNumber = 0;
 	
 	/** A collections of attachment parts */
-	private Collection<Part> attachments = null;
+	private Collection<Part> attachments = Collections.emptyList();
 	/** The occupants. */
 	private List<Person> occupants = new ArrayList<>();
 	/** The robot occupants. */

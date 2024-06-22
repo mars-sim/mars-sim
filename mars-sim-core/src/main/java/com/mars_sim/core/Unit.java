@@ -228,8 +228,12 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 			}
 			lastPulse = newPulse;
 		} else {
-			// Seen already
-			logger.severe(getName() + " rejected pulse #" + newPulse + ", last pulse was " + lastPulse);
+			if (newPulse == lastPulse) {
+				// This is a newly added unit such as person/vehicle/robot in a resupply transport.
+				return true;
+			}
+			else
+				logger.severe(getName() + " rejected pulse #" + newPulse + ", last pulse was " + lastPulse);
 		}
 		return result;
 	}

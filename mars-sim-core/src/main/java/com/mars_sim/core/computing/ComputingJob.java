@@ -70,7 +70,8 @@ public class ComputingJob implements Serializable {
     			    .getMostFreeComputingNode(initDemand, startMSol, endMSol);
             scheduled = (center != null) && center.scheduleTask(initDemand, startMSol, endMSol);
             if (!scheduled) {
-    		    logger.info(host, 30_000L, "No computing resources available for " + purpose);
+    		    logger.info(host, 30_000L, "No computing resources available for " 
+    		    	+ purpose + ".");
             }
         }
 

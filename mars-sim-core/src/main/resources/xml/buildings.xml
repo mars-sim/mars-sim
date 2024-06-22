@@ -356,17 +356,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 								   when building is in 'power down' mode. -->
 
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Sabatier RWGS Reactor" number-modules="4"/>
-				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="3"/>				
-				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="2"/>	
-				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>		
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="2"/>
+				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
+				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>				
+				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="4"/>	
+				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>	
+				<process-engine name="Produce Acetylene with chloride melts and metal carbides" number-modules="4"/>	
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="4"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="4"/>
 				
 				<process-engine name="Atmospheric processing"/>
 				<process-engine name="Methanol Synthesis"/>
-				<process-engine name="Melt Ice" number-modules="12" />
-				<process-engine name="Filter Brine Water" number-modules="3" />
+				<process-engine name="Melt Ice" number-modules="16" />
+				<process-engine name="Filter Brine Water" number-modules="8" />
 			
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
@@ -1209,11 +1210,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Sabatier RWGS Reactor" number-modules="4"/>
-				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="3"/>
-				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="2"/>
-				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="6"/>
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="2"/>			
+				<process-engine name="Sabatier RWGS Reactor" number-modules="16"/>
+				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="8"/>
+				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="12"/>
+				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="12"/>
+				<process-engine name="Produce Acetylene with chloride melts and metal carbides" number-modules="12"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="8"/>			
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="6"/>					
 			</resource-processing>
 
@@ -1262,37 +1264,40 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
 				<!-- 5 processes for breaking down regolith -->		
-				<process-engine name="convert regolith to ores with sand" number-modules="25"/>
-				<process-engine name="extract nitrogen compounds from regolith" number-modules="15"/>
-				<process-engine name="process regolith-B rich in poly-hydrated sulfate" number-modules="15"/> 
-				<process-engine name="process regolith-C rich in phyllo-silicate" number-modules="15"/>
-				<process-engine name="process regolith-D rich in basaltic" number-modules="15"/>
+				<process-engine name="Convert Regolith to Ores with Sand" number-modules="30"/>
+				<process-engine name="Extract Nitrogen Compounds from Regolith" number-modules="15"/>
+				<process-engine name="Process Regolith-B rich in Poly-Hydrated Sulfate" number-modules="15"/> 
+				<process-engine name="Process Regolith-C rich in Phyllo-Silicate" number-modules="15"/>
+				<process-engine name="Process Regolith-D rich in Basaltic" number-modules="15"/>
 				
 				<!-- 10 processes for breaking down minerals -->
-				<process-engine name="do chalcopyrite smelting" number-modules="5"/>
+				<process-engine name="Do Chalcopyrite Smelting" number-modules="5"/>
 				<!-- https://geologyscience.com/minerals/goethite/ -->
-				<process-engine name="do goethite smelting" number-modules="5"/>				
+				<process-engine name="Do Goethite Smelting" number-modules="5"/>				
 				<!-- https://geologyscience.com/minerals/hematite/ -->
-				<process-engine name="do hematite smelting" number-modules="5"/>
-				<process-engine name="do kamacite smelting" number-modules="5"/> 
-				<process-engine name="do magnesite smelting" number-modules="5"/>								
-				<process-engine name="do magnetite smelting" number-modules="5"/>
-				<process-engine name="do malachite smelting" number-modules="5"/>				
-				<process-engine name="do olivine smelting" number-modules="5"/>				
-				<process-engine name="do taenite smelting" number-modules="5"/>
-				<process-engine name="do sylvite smelting" number-modules="5"/>
+				<process-engine name="Do Hematite Smelting" number-modules="5"/>
+				<process-engine name="Do Kamacite Smelting" number-modules="5"/> 
+				<process-engine name="Do Magnesite Smelting" number-modules="5"/>								
+				<process-engine name="Do Magnetite Smelting" number-modules="5"/>
+				<process-engine name="Do Malachite Smelting" number-modules="5"/>				
+				<process-engine name="Do Olivine Smelting" number-modules="5"/>				
+				<process-engine name="Do Taenite Smelting" number-modules="5"/>
+				<process-engine name="Do Sylvite Smelting" number-modules="5"/>
 								
 				<!-- 9 processes for extracting ore deposits -->
-				<process-engine name="extract minerals from basaltic deposits" number-modules="5"/>
-				<process-engine name="extract minerals from smectite deposits" number-modules="5"/>
-				<process-engine name="extract minerals from allophane deposits" number-modules="5"/>
-				<process-engine name="extract minerals from akaganeite deposits" number-modules="5"/> 
-				<process-engine name="extract minerals from bassanite deposits" number-modules="5"/> 
-				<process-engine name="extract minerals from sand" number-modules="10"/>
-				<process-engine name="reduce gypsum to calcium carbonate with carbon" number-modules="5"/>
-				<process-engine name="reduce gypsum to calcium carbonate with carbon monoxide" number-modules="5"/>
-				<process-engine name="reduce gypsum to calcium carbonate with hydrogen" number-modules="5"/>
-				<process-engine name="Make gypsum plaster via calcination" number-modules="5"/>							
+				<process-engine name="Extract Minerals from Sand" number-modules="30"/>
+				
+				<process-engine name="Extract Minerals from Basaltic deposits" number-modules="5"/>
+				<process-engine name="Extract Minerals from Smectite deposits" number-modules="5"/>
+				<process-engine name="Extract Minerals from Allophane deposits" number-modules="5"/>
+				<process-engine name="Extract Minerals from Akaganeite deposits" number-modules="5"/> 
+				<process-engine name="Extract Minerals from Bassanite deposits" number-modules="5"/> 
+
+				<process-engine name="Reduce Gypsum to Calcium Carbonate with Carbon" number-modules="5"/>
+				<process-engine name="Reduce Gypsum to Calcium Carbonate with Carbon Monoxide" number-modules="5"/>
+				<process-engine name="Reduce Gypsum to Calcium Carbonate with Hydrogen" number-modules="5"/>
+				
+				<process-engine name="Make Gypsum Plaster via Calcination" number-modules="5"/>							
 			</resource-processing>
 
 			<storage capacity="300000">
@@ -1351,19 +1356,19 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">
 					
 				<!-- 3 silicon/chemical processes -->
-				<process-engine name="make quartz from silica" number-modules="2"/>
-				<process-engine name="make soda from sodium oxide" number-modules="3"/>
-				<process-engine name="bake calcium carbonate to lime"/> 	
+				<process-engine name="Make Quartz from Silica" number-modules="2"/>
+				<process-engine name="Make Soda from Sodium Oxide" number-modules="3"/>
+				<process-engine name="Bake Calcium Carbonate to Lime"/> 	
 					
 				<!-- 4 types of cement/concrete -->			
-				<process-engine name="make cement" number-modules="5"/>
-				<process-engine name="mix concrete 1" number-modules="5"/>
-				<process-engine name="mix concrete 2" number-modules="5"/>				
-				<process-engine name="mix sulfur concrete" number-modules="5"/>
-				<process-engine name="mix limecrete 1" number-modules="5"/>
-				<process-engine name="mix limecrete 2" number-modules="5"/>				
-				<process-engine name="make magnesium-based concrete 1" number-modules="2"/>
-				<process-engine name="make magnesium-based concrete 2" number-modules="2"/>
+				<process-engine name="Make Cement" number-modules="5"/>
+				<process-engine name="Mix Concrete 1" number-modules="5"/>
+				<process-engine name="Mix Concrete 2" number-modules="5"/>				
+				<process-engine name="Mix Sulfur Concrete" number-modules="5"/>
+				<process-engine name="Mix Limecrete 1" number-modules="5"/>
+				<process-engine name="Mix Limecrete 2" number-modules="5"/>				
+				<process-engine name="Make Magnesium-based Concrete 1" number-modules="2"/>
+				<process-engine name="Make Magnesium-based Concrete 2" number-modules="2"/>
 								
 				<!-- 6 industrial chemical ingredients -->	
 				<process-engine name="Produce Ethylene" number-modules="2"/>
@@ -1371,7 +1376,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Produce Styrene from Ethylene" number-modules="5"/>
 				<process-engine name="Produce Polystyrene from Styrene" number-modules="10"/>
 				<process-engine name="Produce Polypropylene from Prophylene" number-modules="10"/>
-				<process-engine name="Methanol-to-olefin (MTO) process" number-modules="10"/>
+				<process-engine name="Methanol-to-Olefin (MTO) process" number-modules="10"/>
 									
 			</resource-processing>
 
@@ -1434,8 +1439,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Melt Ice" number-modules="24"/>	
-				<process-engine name="Filter Brine Water" number-modules="9"/>						
+				<process-engine name="Melt Ice" number-modules="30"/>	
+				<process-engine name="Filter Brine Water" number-modules="20"/>						
 			</resource-processing>
 			
 			<storage capacity="300000">
@@ -1581,11 +1586,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Atmospheric processing" number-modules="4"/>
-				
+				<process-engine name="Produce Acetylene with chloride melts and metal carbides" number-modules="8"/>			
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="3"/>				
-				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="2"/>
-				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="8"/>
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="6"/>
+				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="8"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="16"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="8"/>
 			</resource-processing>
 
@@ -2261,16 +2265,23 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		        	<parking-location xloc="-2.60" yloc="2.0" />
 		        </parking>
 				<flyerParking>
-		        	<flyer-location xloc="2.60" yloc="-3.3" />
-		        	<flyer-location xloc="-2.60" yloc="-3.3" />
+		        	<flyer-location xloc="2.25" yloc="-5.5" />
+		        	<flyer-location xloc="-2.25" yloc="-5.5" />
 		        </flyerParking>		        
 		        <activity>
-					<activity-spot xloc="1.75" yloc="-3.5" />
-					<activity-spot xloc="0.0" yloc="-3.5" />
-					<activity-spot xloc="-1.75" yloc="-3.5" />
-					<activity-spot xloc="0.0" yloc="-2.0" />
-					<activity-spot xloc=".75" yloc="1.0" />
-					<activity-spot xloc="-.75" yloc="1.0" />
+					<activity-spot xloc="3.25" yloc="-3" />		        
+					<activity-spot xloc="1.5" yloc="-3" />
+					<activity-spot xloc="-1.5" yloc="-3" />
+					<activity-spot xloc="-3.25" yloc="-3" />
+								
+					<activity-spot xloc="0.6" yloc="-1" />
+					<activity-spot xloc="-0.6" yloc="-1" />
+					<activity-spot xloc="0.6" yloc="1" />
+					<activity-spot xloc="-0.6" yloc="1" />
+					<activity-spot xloc="0.6" yloc="3" />
+					<activity-spot xloc="-0.6" yloc="3" />
+					<activity-spot xloc="0.6" yloc="5" />
+					<activity-spot xloc="-0.6" yloc="5" />					
 				</activity>
 			</vehicle-maintenance>
 			<life-support capacity="8" power-required="0.4" />
@@ -2282,8 +2293,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="60" discharge-rate="1.25"/>
 			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="-5.8" yloc="3.5" />
-					<activity-spot xloc="5.8" yloc="3.5" />
+					<activity-spot xloc="0.6" yloc="-5.5" />
+					<activity-spot xloc="-0.6" yloc="-5.5" />
 				</activity>
 			</robotic-station>
 			<storage capacity="20000">
@@ -2658,12 +2669,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<storage capacity="20000">
-				<resource-storage resource="oxygen" capacity="6000.0" />
-				<resource-storage resource="hydrogen" capacity="6000.0" />
-				<resource-storage resource="nitrogen" capacity="3000.0" />
-				<resource-storage resource="argon" capacity="3000.0" />
-				<resource-storage resource="carbon dioxide" capacity="1000.0" />
-				<resource-storage resource="carbon monoxide" capacity="1000.0" />
+				<resource-storage resource="Oxygen" capacity="6000.0" />
+				<resource-storage resource="Hydrogen" capacity="6000.0" />
+				<resource-storage resource="Nitrogen" capacity="3000.0" />			
+				<resource-storage resource="Argon" capacity="3000.0" />
+				<resource-storage resource="Carbon Dioxide" capacity="1000.0" />
+				<resource-storage resource="Carbon Monoxide" capacity="1000.0" />
 			</storage>
 		</functions>
 	</building>
@@ -2729,7 +2740,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Sabatier RWGS Reactor" number-modules="12"/>
+				<process-engine name="Sabatier RWGS Reactor" number-modules="36"/>
 			</resource-processing>
 			<storage capacity="30000">
 				<resource-storage resource="carbon dioxide" capacity="5000" />
@@ -3269,17 +3280,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Sabatier RWGS Reactor" number-modules="4" />
-				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="3"/>				
-				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="2" />
+				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
+				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>				
+				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="4"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="2" />
+				<process-engine name="Produce Acetylene with chloride melts and metal carbides" number-modules="4"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="4"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="4"/>
 				
 				<process-engine name="Atmospheric processing"/>
 				<process-engine name="Methanol Synthesis"/>
-				<process-engine name="Melt Ice" number-modules="12" />
-				<process-engine name="Filter Brine Water" number-modules="3" />
+				<process-engine name="Melt Ice" number-modules="16" />
+				<process-engine name="Filter Brine Water" number-modules="8" />
 								
 				<activity>
 					<activity-spot xloc="-2.6" yloc="-2.13" />
@@ -3455,8 +3467,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Storage Shed -->
 
-	<building type="Loading Dock Garage" width="15.0" length="18.0" north-south-alignment="length" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="300" room-temperature="22.5" base-mass="10000">
+	<building type="Loading Dock Garage" width="15.0" length="18.0" 
+		north-south-alignment="length" base-level="-1" wear-lifetime="3340000" 
+			maintenance-time="300" room-temperature="22.5" base-mass="10000">
 		<description> The Loading Dock Garage is an enclosed maintenance facility
 			featuring a brick loading dock for easy access. It hosts equipment for
 			building, repairing and modifying rovers and vehicles.
@@ -3466,20 +3479,25 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<vehicle-maintenance>
 				<parking>
-                	<parking-location xloc="4.5" yloc="-3.2" />
-                	<parking-location xloc="-4.5" yloc="-3.2" />
+                	<parking-location xloc="4.5" yloc="-1" />
+                	<parking-location xloc="-4.5" yloc="-1" />
                 </parking>
 				<flyerParking>
-		        	<flyer-location xloc="4.5" yloc="4.0" />
-		        	<flyer-location xloc="-4.5" yloc="4.0" />
+		        	<flyer-location xloc="4.5" yloc="-6.25" />
+		        	<flyer-location xloc="-4.5" yloc="-6.25" />
 		        </flyerParking>	                
                 <activity>
-					<activity-spot xloc="-.5" yloc="-2.25" />
-					<activity-spot xloc="2.25" yloc="-3.25" />
-					<activity-spot xloc="0" yloc="-1.25" />
-					<activity-spot xloc="-1.125" yloc="0" />
-					<activity-spot xloc="-2.25" yloc="-4.75" />
-					<activity-spot xloc="1.0" yloc="-6.25" />
+					<activity-spot xloc="1.5" yloc="3" />
+					<activity-spot xloc="1.5" yloc="1" />
+					<activity-spot xloc="1.5" yloc="-1" />
+					<activity-spot xloc="1.5" yloc="-3" />			
+					<activity-spot xloc="3.0" yloc="-4.5" />
+					
+					<activity-spot xloc="-1.5" yloc="3" />
+					<activity-spot xloc="-1.5" yloc="1" />
+					<activity-spot xloc="-1.5" yloc="-1" />
+					<activity-spot xloc="-1.5" yloc="-3" />
+					<activity-spot xloc="-3.0" yloc="-4.5" />
 				</activity>
 			</vehicle-maintenance>
 			<life-support capacity="16" power-required="0.8" />
@@ -3491,8 +3509,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="40" discharge-rate="1.25"/>
 			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="-2.25" yloc="-5.5" />
-					<activity-spot xloc="2.5" yloc="-5.5" />
+					<activity-spot xloc="-1" yloc="-7.0" />
+					<activity-spot xloc="1" yloc="-7.0" />
 				</activity>
 			</robotic-station>
 			<storage capacity="30000">

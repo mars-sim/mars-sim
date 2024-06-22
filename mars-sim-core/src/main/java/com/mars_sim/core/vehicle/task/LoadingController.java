@@ -183,9 +183,9 @@ public class LoadingController implements Serializable {
 		// Temporarily remove rover from settlement so that inventory doesn't get mixed
 		// in.
 		boolean vehicleInSettlement = false;
-		if (settlement.containsParkedVehicle(vehicle)) {
+		if (settlement.containsVicinityParkedVehicle(vehicle)) {
 			vehicleInSettlement = true;
-			settlement.removeParkedVehicle(vehicle);
+			settlement.removeVicinityParkedVehicle(vehicle);
 		}
 
 		// Load equipment
@@ -210,7 +210,7 @@ public class LoadingController implements Serializable {
 
 		// Put rover back into settlement.
 		if (vehicleInSettlement) {
-			settlement.addParkedVehicle(vehicle);
+			settlement.addVicinityVehicle(vehicle);
 		}
 
 		// Should the load stop for this worker? Either fully loaded or did not

@@ -80,7 +80,7 @@ public class FunctionTest extends AbstractMarsSimUnitTest {
 
         Person p = buildPerson("Worker", home);
 
-        var spot = new ActivitySpot("Spot", LocalPosition.DEFAULT_POSITION);
+        var spot = new ActivitySpot("S", LocalPosition.DEFAULT_POSITION);
         var allocated = spot.claim(p, true, null);
 
         assertTrue("Activity spot allocated", !spot.isEmpty());

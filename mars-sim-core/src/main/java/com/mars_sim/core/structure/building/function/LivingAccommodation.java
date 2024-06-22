@@ -389,7 +389,7 @@ public class LivingAccommodation extends Function {
 
 		logger.config(p, "Cannot find a bed.");
 
-		// Pick a random bed in the guesthouse; unlikely to arrive here
+		// Pick a random bed in the guest house; unlikely to arrive here
 		return RandomUtil.getARandSet(guestHouse.getActivitySpots()).claim(p, false,
 									  guestHouse.getBuilding());
 	}

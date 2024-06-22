@@ -2,6 +2,7 @@ package com.mars_sim.core.activities;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.social.RelationshipType;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
@@ -9,7 +10,6 @@ import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.structure.GroupActivityType;
 import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.time.EventSchedule;
-import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
@@ -25,7 +25,7 @@ public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
 
         buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH, 0);
 
-        var t = new MarsTime(1, 1, 1, 0, 1);
+        var t = getSim().getMasterClock().getMarsTime();
         var ga = new GroupActivity(ONE, s, t);
 
         // Find a meeting as the test case
@@ -71,19 +71,25 @@ public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
         var s = buildSettlement();
         buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH, 0);
 
-        // Create a friendship group where friend has a better opniino of the instigator thn the enemy
+        // Create a friendship group where friend has a better opinion of the instigator and the enemy
         var i = buildPerson("instigator", s);
-        var e = buildPerson("enermy", s);
-        RelationshipUtil.changeOpinion(e, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, -Relation.MAX_OPINION);
-        var f = buildPerson("friend", s);
-        RelationshipUtil.changeOpinion(f, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, Relation.MAX_OPINION);
+        var p1 = buildPerson("p1", s);
+        RelationshipUtil.changeOpinion(p1, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, Relation.MAX_OPINION);
+        var p2 = buildPerson("p2", s);
+        RelationshipUtil.changeOpinion(p2, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, 0);
+        Person e;
+        Person f;
+        if (p1.getRelation().getOpinion(i).getAverage() < 
+                                    p2.getRelation().getOpinion(i).getAverage()) {
+            e = p1;
+            f = p2;
+        }
+        else {
+            e = p2;
+            f = p1;
+        }
 
-        assertGreaterThan("Friend is more popular than enermy",
-                                    e.getRelation().getOpinion(i).getAverage(),
-                                    f.getRelation().getOpinion(i).getAverage());
-
-
-        // Create an activity and 
+        // Create an activity  
         var now = sim.getMasterClock().getMarsTime();
         var ga = GroupActivity.createPersonActivity("Promotion", GroupActivityType.ANNOUNCEMENT, s,
                                                 i, 0, now);
@@ -95,13 +101,13 @@ public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
         var tasks = mt.getSettlementTasks(s);
         var selected = tasks.get(0);
 
-        // Evulate the Task for each person
+        // Evaluate the Task for each person
         var iScore = mt.assessPersonSuitability(selected, i);
         var fScore = mt.assessPersonSuitability(selected, f);
         var eScore = mt.assessPersonSuitability(selected, e);
 
         // Check friend has a better score
-        assertGreaterThan("Friend better score than enermy", eScore.getScore(), fScore.getScore());
+        assertGreaterThan("Friend better score than enemy", eScore.getScore(), fScore.getScore());
         
         // Check instigator has a very high score
         assertGreaterThan("Insitigator score", 900D, iScore.getScore());

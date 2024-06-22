@@ -9,7 +9,7 @@ package com.mars_sim.core.person;
 import com.mars_sim.tools.util.RandomUtil;
 
 /**
- * This represents the characteriss of a specific populaton.
+ * This represents the characteristic of a specific population.
  */
 public class PopulationCharacteristics{
     

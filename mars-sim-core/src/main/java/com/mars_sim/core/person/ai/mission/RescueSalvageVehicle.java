@@ -643,7 +643,7 @@ public class RescueSalvageVehicle extends RoverMission {
 				double settlementDistance = settlement.getCoordinates().getDistance(thisVehicle.getCoordinates());
 				if (settlementDistance < distance) {
 					if (settlement.getIndoorPeopleCount() >= MIN_GOING_MEMBERS) {
-						Iterator<Vehicle> iV = settlement.getParkedVehicles().iterator();
+						Iterator<Vehicle> iV = settlement.getParkedGaragedVehicles().iterator();
 						while (iV.hasNext() && result) {
 							Vehicle vehicle = iV.next();
 							if (vehicle instanceof Rover) {

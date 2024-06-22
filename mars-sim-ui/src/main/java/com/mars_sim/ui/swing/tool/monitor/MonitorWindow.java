@@ -15,6 +15,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -352,6 +354,8 @@ public class MonitorWindow extends ToolWindow
 			authorities.computeIfAbsent(ra, k -> new HashSet<>()).add(s);
 		}	
 		choices.addAll(authorities.keySet());
+
+		Collections.sort(choices, Comparator.comparing(Entity::getName));
 		return choices;
 	}
 
@@ -400,6 +404,7 @@ public class MonitorWindow extends ToolWindow
 			// Replace this
 			newDescription = newSelection.stream()
 								.map(Settlement::getName)
+								.sorted()
 								.collect(Collectors.joining (", "));
 
 		}

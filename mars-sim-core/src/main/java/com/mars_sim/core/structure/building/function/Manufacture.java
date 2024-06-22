@@ -309,7 +309,7 @@ public class Manufacture extends Function {
 				building.getSettlement().removeEquipment((Equipment)salvagedUnit);
 			} else if (salvagedUnit.getUnitType() == UnitType.VEHICLE) {
 				building.getSettlement().removeOwnedVehicle((Vehicle)salvagedUnit);
-				building.getSettlement().removeParkedVehicle((Vehicle)salvagedUnit);
+				building.getSettlement().removeVicinityParkedVehicle((Vehicle)salvagedUnit);
 			} else if (salvagedUnit.getUnitType() == UnitType.ROBOT) {
 				building.getSettlement().removeOwnedRobot((Robot)salvagedUnit);
 			}

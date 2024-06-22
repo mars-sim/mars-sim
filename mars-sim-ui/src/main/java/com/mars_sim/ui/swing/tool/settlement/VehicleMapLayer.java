@@ -56,8 +56,9 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 		// Draw all vehicles.
 		// Draw all parked vehicles at this settlement location
-		for (Vehicle v : settlement.parkedVehicles()) {
-			drawVehicle(v, mapPanel.isShowVehicleLabels(), viewpoint);
+		for (Vehicle v : settlement.getParkedGaragedVehicles()) {
+			if (v.isReady())
+				drawVehicle(v, mapPanel.isShowVehicleLabels(), viewpoint);
 		}
 
 		// Restore original graphic transforms.
@@ -75,6 +76,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 		// Use SVG image for vehicle if available.
 		GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
 		if (svg != null) {
+			
 			// Draw base SVG image for vehicle.
 			drawStructure(vehicle, svg, null, null, viewpoint);
 
@@ -116,6 +118,8 @@ public class VehicleMapLayer extends AbstractMapLayer {
 		// Check if vehicle is reserved for maintenance.
 
         // Check if vehicle has malfunction.
+		// Note: a newly arrived vehicle may not have MalfunctionManager fully set up yet and 
+		// MalfunctionManager will be unavailable and NPE
 		if (vehicle.getMalfunctionManager().hasMalfunction()) {
 			result = true;
 		}

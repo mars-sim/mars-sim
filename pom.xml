@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<!-- ************************************************************************************************* -->
 	<!-- * General Section * -->
 	<!-- ************************************************************************************************* -->
@@ -25,7 +26,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<libgdx.version>1.12.1</libgdx.version>
 		<lwjgl.version>3.2.3</lwjgl.version>
-		<slf4j.version>2.0.9</slf4j.version>
+		<slf4j.version>2.0.13</slf4j.version>
 		<commons-cli.version>1.8.0</commons-cli.version>
 		<commons-io.version>2.16.1</commons-io.version>
 		<commons-lang3.version>3.14.0</commons-lang3.version>

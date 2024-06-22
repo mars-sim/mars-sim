@@ -85,7 +85,7 @@ public class MissionVehicleProject extends MissionProject
 	 * @return The selected bets vehicle; null if none found
 	 */
 	private final Vehicle findBestVehicle(Settlement base) {
-		Collection<Vehicle> vList = base.getParkedVehicles();
+		Collection<Vehicle> vList = base.getParkedGaragedVehicles();
 		List<Vehicle> bestVehicles = new ArrayList<>();
         int bestScore = 0;
 

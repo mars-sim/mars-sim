@@ -121,7 +121,8 @@ public class TransportManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Fire an event concerning a transport item
+	 * Fires an event concerning a transport item.
+	 * 
 	 * @param transportItem
 	 * @param action
 	 * @param reason
@@ -134,7 +135,7 @@ public class TransportManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Reset links to the managers classes after a reload. This also reinit's the TransportItems
+	 * Resets links to the managers classes after a reload. This also reinit's the TransportItems
 	 */
 	public void reinitalizeInstances(Simulation sim) {
 		this.eventManager = sim.getEventManager();

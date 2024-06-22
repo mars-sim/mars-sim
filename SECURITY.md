@@ -14,6 +14,7 @@ There is no known security issues in the last few versions of mars-sim.
 
 | Version | Supported          |
 | ------- | ------------------ |
+| 3.7.2   | :white_check_mark: |
 | 3.7.1   | :white_check_mark: |
 | 3.7.0   | :white_check_mark: |
 | 3.6.2   | :white_check_mark: |

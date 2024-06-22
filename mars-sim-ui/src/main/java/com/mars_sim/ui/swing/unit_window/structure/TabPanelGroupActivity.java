@@ -10,14 +10,14 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.unit_window.TabPanelTable;
-import com.mars_sim.ui.swing.utils.UnitModel;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * This is a tab panel for settlement's computing capability.
@@ -77,7 +77,7 @@ public class TabPanelGroupActivity extends TabPanelTable {
 	/**
 	 * Internal class used as model for the table.
 	 */
-	private class TableModel extends AbstractTableModel implements UnitModel {
+	private class TableModel extends AbstractTableModel implements EntityModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -151,7 +151,7 @@ public class TabPanelGroupActivity extends TabPanelTable {
 		}
 
 		@Override
-		public Unit getAssociatedUnit(int row) {
+		public Entity getAssociatedEntity(int row) {
 			return activities.get(row).getMeetingPlace();
 		}
 	}

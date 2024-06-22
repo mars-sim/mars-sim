@@ -36,7 +36,7 @@ public  class ScientificStudyFieldWork extends EVAOperation {
     private static final TaskPhase BIOLOGY_WORK = new TaskPhase(Msg.getString("Task.phase.fieldWork.biology"),
 							createPhaseImpact(SkillType.BIOLOGY)); //$NON-NLS-1$
 	private static final String AREOLOGY_NAME = Msg.getString("Task.description.areologyFieldWork"); //$NON-NLS-1$
-	private static final TaskPhase AREOLOGY_WORK = new TaskPhase(Msg.getString("Task.phase.fieldWork.areology"),
+	private static final TaskPhase AREOLOGY_WORK = new TaskPhase(Msg.getString("Task.phase.fieldWork.areology"), //$NON-NLS-1$
 							createPhaseImpact(SkillType.AREOLOGY));
 	public static final LightLevel LIGHT_LEVEL = LightLevel.LOW;
 

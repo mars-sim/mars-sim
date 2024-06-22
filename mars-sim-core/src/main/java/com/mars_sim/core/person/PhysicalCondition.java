@@ -98,8 +98,8 @@ public class PhysicalCondition implements Serializable {
 	private static final double MAX_DAILY_ENERGY_INTAKE = 10100D;
 	/** The average kJ of a 1kg food. Assume each meal has 0.1550 kg and has 2525 kJ. */
 	public static final double FOOD_COMPOSITION_ENERGY_RATIO = 16290.323;
-	// public static int MAX_KJ = 16290; // 1kg of food has ~16290 kJ (see notes on
-	// people.xml under <food-consumption-rate value="0.62" />)
+	// Note: 1kg of food has ~16290 kJ 
+	// See notes on people.xml under <food-consumption-rate value="0.62" />
 	public static final double ENERGY_FACTOR = 15D;
 	/** The maximum air pressure a person can live without harm in kPa. (somewhat arbitrary). */
 	public static final double MAXIMUM_AIR_PRESSURE = 68D; // Assume 68 kPa time dependent
@@ -231,10 +231,14 @@ public class PhysicalCondition implements Serializable {
 	private double remainingPrebreathingTime = STANDARD_PREBREATHING_TIME + RandomUtil.getRandomInt(-5, 5);
 
 	private double starvationStartTime;
-	private double dehydrationStartTime;
 	
-	private double personalMaxEnergy;
+	private double dehydrationStartTime;
+	/** Person's max daily energy in kJ */
+	private double personalMaxDailyEnergy = MAX_DAILY_ENERGY_INTAKE;
+	/** Person's Body Mass Deviation */
 	private double bodyMassDeviation;
+	/** Person's Body Mass Index (BMI) */
+	private double bmi;
 	
 	/**  The amount of water this person would consume each time (assuming drinking water 10 times a day). */
 	private double waterConsumedPerServing;
@@ -309,24 +313,27 @@ public class PhysicalCondition implements Serializable {
 		agility = naturalAttributeManager.getAttribute(NaturalAttributeType.AGILITY);
 
 		// Computes the adjustment from a person's natural attributes
-		double compositeScore = (endurance + strength + agility) / 300D;
+		double compositeScore = (1.5*endurance + .75*strength + .75*agility) / 300D;
 
 		// Note: may incorporate real world parameters such as areal density in g cm−2,
 		// T-score and Z-score (see https://en.wikipedia.org/wiki/Bone_density)
 		musclePainTolerance = RandomUtil.getRandomInt(-10, 10) + compositeScore; // pain tolerance
 		muscleHealth = 50D; // muscle health index; 50 being the average
-		muscleSoreness = RandomUtil.getRandomRegressionInteger(100); // muscle soreness
+		muscleSoreness = RandomUtil.getRandomRegressionInteger(20); // muscle soreness
 
-		personalMaxEnergy = MAX_DAILY_ENERGY_INTAKE;
-		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
+		personalMaxDailyEnergy = MAX_DAILY_ENERGY_INTAKE;
 
-		bodyMassDeviation = Math.sqrt((person.getBaseMass()
-							/ personConfig.getDefaultPhysicalChars().getAverageWeight())
-							* (person.getHeight() / personConfig.getDefaultPhysicalChars().getAverageHeight()));
+		double height = person.getHeight();
+		double heightSquared = height*height/100/100;
+		double defaultHeight = personConfig.getDefaultPhysicalChars().getAverageHeight();
+		double mass = person.getBaseMass();
+		double defaultMass = personConfig.getDefaultPhysicalChars().getAverageWeight();
 		
-							// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
+		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// bodyMassDeviation average around 0.7 to 1.3
-		bodyMassDeviation = bodyMassDeviation * RandomUtil.computeGaussianWithLimit(1, .5, .2);
+		bodyMassDeviation = Math.sqrt(mass/defaultMass*height/defaultHeight) 
+				* RandomUtil.computeGaussianWithLimit(1, .5, .2);						
+		bmi = mass/heightSquared;
 
 		// Assume a person drinks 10 times a day, each time ~375 mL
 		waterConsumedPerSol = h20Consumption * bodyMassDeviation ;
@@ -394,21 +401,52 @@ public class PhysicalCondition implements Serializable {
 	private void initialize() {
 		// Set up the initial values for each physical health index
 		initializeHealthIndices();
-		
-		// Modify personalMaxEnergy at the start of the sim
-		int d1 = 2 * (35 - person.getAge());
-		// Assume that after age 35, metabolism slows down
-		double d2 = person.getBaseMass() - personConfig.getDefaultPhysicalChars().getAverageWeight();
-		double preference = person.getPreference().getPreferenceScore(eatMealMeta) * 10D;
-
-		// Update the personal max energy and appetite based on one's age and weight
-		personalMaxEnergy = personalMaxEnergy + 50 * (d1 + d2 + preference);
-		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
-		
+		// Derive personal max energy
+		updateMaxEnergy();
+		// Derive the personal appetite
+		updateAppetite();
 		// Set up the initial values for health risks
 		initializeHealthRisks();
 	}
 
+	/**
+	 * Updates the personal max energy.
+	 */
+	private void updateMaxEnergy() {
+		// Assume that after age 35, metabolism slows down
+		int ageFactor = 35 - person.getAge();
+		// Get mass factor 
+		double massFactor = person.getBaseMass() - personConfig.getDefaultPhysicalChars().getAverageWeight();
+		// Get eating pref 
+		double eatingPref = person.getPreference().getPreferenceScore(eatMealMeta) * 10D;
+		// Derive the personal max energy
+		personalMaxDailyEnergy = personalMaxDailyEnergy + 2 * ageFactor + 10 * (massFactor + eatingPref);
+	}
+	
+	/**
+	 * Updates the personal appetite.
+	 */
+	private void updateAppetite() {
+		// Derive the appetite
+		appetite = personalMaxDailyEnergy / MAX_DAILY_ENERGY_INTAKE;
+	}
+	
+	/**
+	 * Gets the personal max daily energy.
+	 */
+	public double getPersonalMaxDailyEnergy() {
+		return personalMaxDailyEnergy;
+	}
+	
+	/**
+	 * Gets the personal appetite.
+	 * 
+	 * @return
+	 */
+	public double getAppetite() {
+		return appetite;
+	}
+	
 	/**
 	 * The Physical condition should be updated to reflect a passing of time. This
 	 * method has to check the recover or degradation of any current illness. The
@@ -426,15 +464,22 @@ public class PhysicalCondition implements Serializable {
 
 			// Check once a day only
 			if (pulse.isNewSol()) {
-				// reduce the muscle soreness
-				recoverFromSoreness(1);
+
 				// Update the entropy in muscles
 				entropy(time * -20);
 			}
 			
 			// Check once per msol (millisol integer)
 			if (pulse.isNewMSol()) {
-
+				// reduce the muscle soreness
+				recoverFromSoreness(1);
+				// Update thirst
+				increaseThirst(bodyMassDeviation * .75);
+				// Update fatigue
+				increaseFatigue(1);
+				// Update hunger
+				increaseHunger(bodyMassDeviation * .75);
+				
 				// Calculate performance and most mostSeriousProblem illness.
 				recalculatePerformance();
 				// Check radiation 
@@ -476,12 +521,7 @@ public class PhysicalCondition implements Serializable {
 			checkLifeSupport(time, currentO2Consumption, support);
 			// Update the existing health problems
 			checkHealth(pulse);
-			// Update thirst
-			increaseThirst(time * bodyMassDeviation * .75);
-			// Update fatigue
-			increaseFatigue(time);
-			// Update hunger
-			increaseHunger(time * bodyMassDeviation * .75);
+			
 			// Update energy via PersonTaskManager's executeTask()
 			// since it can discern if it's a resting task or a labor-intensive (effort-driven) task
 		}
@@ -661,7 +701,7 @@ public class PhysicalCondition implements Serializable {
 
 		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
 	}
-
+	
 	/**
 	 * Adds to the person's energy intake by eating.
 	 *
@@ -669,41 +709,33 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void addEnergy(double foodAmount) {
 		// 1 calorie = 4.1858 kJ
-		// Should vary MAX_KJ according to the individual's physical profile strength,
-		// endurance, etc..
-		// FOOD_COMPOSITION_ENERGY_RATIO = 16290
-		
-		// Note: 1kg of food has ~16290 kJ 
-		// See notes on people.xml under <food-consumption-rate value="0.62" />
-		
-		// Each meal (.155 kg = .62/4) has an average of 2525 kJ
 
-		// Note: changing this to a more linear addition of energy.
-		// We may want to change it back to exponential. - Scott
+		// Each meal (0.155 kg = 0.62 kg daily / a total of 4 meals) has an average of 2525 kJ
 
+		// Note: FOOD_COMPOSITION_ENERGY_RATIO = 16290
 		double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO / appetite / ENERGY_FACTOR;
 
 		if (hunger <= 0)
-			kJoules = personalMaxEnergy;
-		else if (kJoules > 19_000D) {
+			kJoules = personalMaxDailyEnergy;
+		else if (kJoules > 19_000) {
 			kJoules += xdelta * .035;
-		} else if (kJoules > 17_000D) {
+		} else if (kJoules > 17_000) {
 			kJoules += xdelta * .06;
-		} else if (kJoules > 15_000D) {
+		} else if (kJoules > 15_000) {
 			kJoules += xdelta * .15;
-		} else if (kJoules > 13_000D) {
+		} else if (kJoules > 13_000) {
 			kJoules += xdelta * .2;
-		} else if (kJoules > 11_000D) {
+		} else if (kJoules > 11_000) {
 			kJoules += xdelta * .25;
-		} else if (kJoules > 9_000D) {
+		} else if (kJoules > 9_000) {
 			kJoules += xdelta * .3;
-		} else if (kJoules > 7_000D) {
+		} else if (kJoules > 7_000) {
 			kJoules += xdelta * .45;
-		} else if (kJoules > 5_000D) {
+		} else if (kJoules > 5_000) {
 			kJoules += xdelta * .55;
-		} else if (kJoules > 4_000D) {
+		} else if (kJoules > 4_000) {
 			kJoules += xdelta * .65;
-		} else if (kJoules > 3_000D) {
+		} else if (kJoules > 3_000) {
 			kJoules += xdelta * .75;			
 		} else if (kJoules > ENERGY_THRESHOLD) {
 			kJoules += xdelta * .85;	
@@ -718,8 +750,8 @@ public class PhysicalCondition implements Serializable {
 
 		circadian.eatFood(xdelta / 1000D);
 
-		if (kJoules > personalMaxEnergy * 1.25) {
-			kJoules = personalMaxEnergy * 1.25;
+		if (kJoules > personalMaxDailyEnergy * 1.25) {
+			kJoules = personalMaxDailyEnergy * 1.25;
 		}
 		
 		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
@@ -1985,6 +2017,10 @@ public class PhysicalCondition implements Serializable {
 		return bodyMassDeviation;
 	}
 
+	public double getBodyMassIndex() {
+		return bmi;
+	}
+	
 	public boolean isStressedOut() {
 		return isStressedOut;
 	}
@@ -2005,13 +2041,13 @@ public class PhysicalCondition implements Serializable {
 	/**
 	 * Stress out the musculoskeletal systems.
 	 * 
-	 * @param time
+	 * @param duration
 	 */
-	public void stressMuscle(double time) {
-		muscleHealth -= .01 * time; // musculoskeletal health
+	public void stressMuscle(double duration) {
+		muscleHealth -= .01 * duration; // musculoskeletal health
 		if (muscleHealth < 0)
 			muscleHealth = 0;
-		muscleSoreness += .005 * time; // musculoskeletal soreness
+		muscleSoreness += .005 * duration; // musculoskeletal soreness
 		if (muscleSoreness > 100)
 			muscleSoreness = 100;
 	}
@@ -2021,10 +2057,10 @@ public class PhysicalCondition implements Serializable {
 	 * 
 	 * @param time
 	 */
-	public void exerciseMuscle(double time) {
-		musclePainTolerance += .001 * time; // musculoskeletal pain tolerance
-		muscleHealth += .01 * time; // musculoskeletal health
-		muscleSoreness -= .001 * time; // musculoskeletal soreness
+	public void exerciseMuscle(double duration) {
+		musclePainTolerance += .001 * duration; // musculoskeletal pain tolerance
+		muscleHealth += .01 * duration; // musculoskeletal health
+		muscleSoreness -= .001 * duration; // musculoskeletal soreness
 		if (musclePainTolerance > 100)
 			musclePainTolerance = 100;
 		if (muscleHealth > 100)
@@ -2032,7 +2068,7 @@ public class PhysicalCondition implements Serializable {
 		if (muscleSoreness < 0)
 			muscleSoreness = 0;
 		// Increase thirst
-		increaseThirst(-time/4.5); 
+		increaseThirst(-duration/4.5); 
 	}
 
 	/**
@@ -2073,7 +2109,7 @@ public class PhysicalCondition implements Serializable {
 	public void recoverFromSoreness(double value) {
 		// Reduce the muscle soreness by 1 point at the end of the day
 		double soreness = muscleSoreness;
-		soreness = soreness - value * 0.01;
+		soreness = soreness - value;
 		if (soreness < 0)
 			soreness = 0;
 		else if (soreness > 100)

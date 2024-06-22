@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ManufactureConstructionMaterials.java
- * @date 2022-08-10
+ * @date 2024-06-09
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.function.task;
@@ -321,14 +321,13 @@ public class ManufactureConstructionMaterials extends Task {
 				.getManufactureProcessesForTechSkillLevel(techLevel, skillLevel).iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
-			if (ManufactureUtil.canProcessBeStarted(process, manufacturingFunction)
-					|| isProcessRunning(process, manufacturingFunction)) {
-				if (producesConstructionMaterials(process)) {
-					Settlement settlement = manufacturingBuilding.getSettlement();
-					double processValue = ManufactureUtil.getManufactureProcessValue(process, settlement);
-					if (processValue > highestProcessValue) {
-						highestProcessValue = processValue;
-					}
+			if ((ManufactureUtil.canProcessBeStarted(process, manufacturingFunction)
+				|| isProcessRunning(process, manufacturingFunction)) 
+				&& producesConstructionMaterials(process)) {
+				Settlement settlement = manufacturingBuilding.getSettlement();
+				double processValue = ManufactureUtil.getManufactureProcessValue(process, settlement);
+				if (processValue > highestProcessValue) {
+					highestProcessValue = processValue;
 				}
 			}
 		}
@@ -412,32 +411,7 @@ public class ManufactureConstructionMaterials extends Task {
 
 		// Apply work time to manufacturing processes.
 		while ((workTime > 0D) && !isDone()) {
-			ManufactureProcess process = getRunningManufactureProcess();
-			if (process != null) {
-				double remainingWorkTime = process.getWorkTimeRemaining();
-				double providedWorkTime = workTime;
-				if (providedWorkTime > remainingWorkTime) {
-					providedWorkTime = remainingWorkTime;
-				}
-				process.addWorkTime(providedWorkTime);
-				workTime -= providedWorkTime;
-
-				if ((process.getWorkTimeRemaining() <= 0D) && (process.getProcessTimeRemaining() <= 0D)) {
-					workshop.endManufacturingProcess(process, false);
-				}
-			} 
-			else {
-				if (!worker.getSettlement().getProcessOverride(OverrideType.MANUFACTURE))
-					process = createNewManufactureProcess();
-				
-				if (process == null) {
-					endTask();
-				}
-			}
-
-			if (process == null)
-				// Prints description
-				setDescription(Msg.getString("Task.description.manufactureConstructionMaterials.checking")); //$NON-NLS-1$
+			manufacture(workTime);
 		}
 
 		// Add experience
@@ -449,6 +423,43 @@ public class ManufactureConstructionMaterials extends Task {
 		return 0D;
 	}
 
+	/**
+	 * Executes the manufacture process.
+	 * 
+	 * @param workTime
+	 */
+	private void manufacture(double workTime) {
+		ManufactureProcess process = getRunningManufactureProcess();
+		if (process != null) {
+			double remainingWorkTime = process.getWorkTimeRemaining();
+			double providedWorkTime = workTime;
+			if (providedWorkTime > remainingWorkTime) {
+				providedWorkTime = remainingWorkTime;
+			}
+			process.addWorkTime(providedWorkTime);
+			workTime -= providedWorkTime;
+
+			if ((process.getWorkTimeRemaining() <= 0D) && (process.getProcessTimeRemaining() <= 0D)) {
+				workshop.endManufacturingProcess(process, false);
+			}
+		} 
+		else {
+			if (!worker.getSettlement().getProcessOverride(OverrideType.MANUFACTURE))
+				process = createNewManufactureProcess();
+			
+			if (process == null) {
+				endTask();
+			}
+		}
+
+		if (process == null) {
+			// Prints description
+			setDescription(Msg.getString("Task.description.manufactureConstructionMaterials.checking")); //$NON-NLS-1$
+		}
+	}
+	
+	
+	
 	/**
 	 * Gets an available running manufacturing process.
 	 * 

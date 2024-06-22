@@ -52,7 +52,6 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 	
 	private JComboBox<String> levelComboBox;
 
-
 	private int level;
 
 	private ResourceProcessPanel processPanel;
@@ -79,13 +78,13 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 	@Override
 	protected void buildUI(JPanel content) {
 		BuildingManager mgr = settlement.getBuildingManager();
-		Map<Building,List<ResourceProcess>> processes = new HashMap<>();
-		for(Building building : mgr.getBuildings(FunctionType.RESOURCE_PROCESSING)) {
+		Map<Building, List<ResourceProcess>> processes = new HashMap<>();
+		for (Building building : mgr.getBuildings(FunctionType.RESOURCE_PROCESSING)) {
 			ResourceProcessing processing = building.getResourceProcessing();
 			processes.put(building, processing.getProcesses());
 		}
 
-		// Prepare process list panel.n
+		// Prepare process list panel
 		processPanel = new ResourceProcessPanel(processes, getDesktop());
 		processPanel.setPreferredSize(new Dimension(160, 120));
 		content.add(processPanel, BorderLayout.CENTER);
@@ -148,6 +147,7 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 	public void update() {
 		processPanel.update();
 	}
+	
 	/**
 	 * Sets the settlement resource process override flag.
 	 * 

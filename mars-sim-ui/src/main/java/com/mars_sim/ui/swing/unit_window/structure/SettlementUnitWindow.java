@@ -198,6 +198,7 @@ public class SettlementUnitWindow extends UnitWindow {
 		addTabPanel(new TabPanelCredit(settlement, desktop));
 
 		addTabPanel(new TabPanelFoodProduction(settlement, desktop));
+		
 		addTabPanel(new TabPanelGroupActivity(settlement, desktop));
 
 		addTabPanel(new TabPanelGoods(settlement, desktop));
@@ -223,6 +224,7 @@ public class SettlementUnitWindow extends UnitWindow {
 		addTabPanel(new TabPanelOrganization(settlement, desktop));
 
 		addTabPanel(new TabPanelPowerGrid(settlement, desktop));
+		
 		addTabPanel(new TabPanelProcess(settlement, desktop));
 
 		addTabPanel(new TabPanelResourceProcesses(settlement, desktop));
@@ -257,7 +259,7 @@ public class SettlementUnitWindow extends UnitWindow {
 	}
 
 	/*
-	 * Updates the status of the settlement
+	 * Updates the status of the settlement.
 	 */
 	public void statusUpdate() {
 		popLabel.setText(String.format(X_OF_Y, settlement.getIndoorPeopleCount(),
@@ -275,9 +277,7 @@ public class SettlementUnitWindow extends UnitWindow {
 		vehLabel = null;
 		countryLabel = null;
 		templateLabel = null;
-		
-		statusPanel = null;
-			
+		statusPanel = null;		
 		settlement = null;
 	}
 }

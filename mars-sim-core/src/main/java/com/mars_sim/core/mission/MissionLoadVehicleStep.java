@@ -26,7 +26,8 @@ import com.mars_sim.tools.util.RandomUtil;
  */
 public class MissionLoadVehicleStep extends MissionStep {
 
-    private static final MissionStatus CANNOT_LOAD_RESOURCES = new MissionStatus("Mission.status.loadResources");
+    private static final long serialVersionUID = 1L;
+	private static final MissionStatus CANNOT_LOAD_RESOURCES = new MissionStatus("Mission.status.loadResources");
     private LoadingController loadingPlan;
 
     /**
@@ -37,9 +38,10 @@ public class MissionLoadVehicleStep extends MissionStep {
     }
 
     /**
-     * Execute the vehicle loading step. This will create a Loading controller on the first
+     * Executes the vehicle loading step. This will create a Loading controller on the first
      * call ready for later use.
-     * @param worker The worker attemting to execute the loading
+     * 
+     * @param worker The worker attempting to execute the loading
      */
     @Override
     protected boolean execute(Worker worker) {
@@ -86,7 +88,8 @@ public class MissionLoadVehicleStep extends MissionStep {
     }
 
     /**
-     * Get the loading plan associetd with the step.
+     * Gets the loading plan associated with the step.
+     * 
      * @return
      */
     public LoadingController getLoadingPlan() {
@@ -94,7 +97,8 @@ public class MissionLoadVehicleStep extends MissionStep {
     }
 
     /**
-     * Create the most suitable Load Vehicle task if possible
+     * Creates the most suitable Load Vehicle task if possible.
+     * 
      * @param worker
      * @param vehicle
      * @return

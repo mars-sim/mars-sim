@@ -496,10 +496,10 @@ public final class ManufactureUtil {
 
 		if (info.getType() == ItemType.VEHICLE) {
 			if (LightUtilityVehicle.NAME.equalsIgnoreCase(info.getItemName())) {
-				salvagableUnits = settlement.getVehicleTypeList(VehicleType.LUV);
+				salvagableUnits = settlement.getVehicleTypeUnit(VehicleType.LUV);
 			} else {
 				VehicleType type = VehicleType.convertNameToVehicleType(info.getItemName());
-				salvagableUnits = settlement.getVehicleTypeList(type);
+				salvagableUnits = settlement.getVehicleTypeUnit(type);
 			}
 
 			// Remove any reserved vehicles.

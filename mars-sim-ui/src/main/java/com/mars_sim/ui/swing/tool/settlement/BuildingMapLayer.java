@@ -37,7 +37,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
 	private static final String HATCH = "hatch";
 	
     // Static members
-    private static final Font SPOT_FONT = new Font("Arial", Font.PLAIN, 8); 
+    private static final Font SPOT_FONT = new Font("Arial", Font.PLAIN, 6); 
     private static final Color BLDG_COLOR = Color.GREEN;
     
     private static final Color BLDG_SELECTED_COLOR = Color.WHITE;//new Color(119, 85, 0); // dark orange
@@ -146,18 +146,19 @@ public class BuildingMapLayer extends AbstractMapLayer {
     }
 
     /**
-     * Draw the activity spots of a building
+     * Draws the activity spots of a building.
+     * 
      * @param building
      * @param showSpots
      */
-    private void drawSpots(Building building,Set<FunctionType> showSpots, MapViewPoint viewpoint) {
+    private void drawSpots(Building building, Set<FunctionType> showSpots, MapViewPoint viewpoint) {
         for(Function f : building.getFunctions()) {
             if (showSpots.contains(f.getFunctionType())) {
                 for(ActivitySpot spot : f.getActivitySpots()) {
                     drawOval(spot.getPos(), SPOT_COLOR, viewpoint);
                     
                     drawRightLabel(false, spot.getName(), spot.getPos(), SPOT_COLOR,
-                            SPOT_FONT, 5f, 0f, viewpoint);
+                            SPOT_FONT, 1.5f, 0f, viewpoint);
                 }
             }
         }
@@ -213,7 +214,8 @@ public class BuildingMapLayer extends AbstractMapLayer {
     }
 
     /**
-     * Draw a Hatch on the map
+     * Draws a Hatch on the map.
+     * 
      * @param hatch The Hatch to draw
      */
     private void drawHatch(Hatch hatch, MapViewPoint viewpoint) {

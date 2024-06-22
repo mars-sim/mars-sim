@@ -1,13 +1,14 @@
 /*
  * Mars Simulation Project
  * BuildingPanelPower.java
- * @date 2023-06-18
+ * @date 2024-06-12
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -46,10 +47,10 @@ extends BuildingFunctionPanel {
 	private double maxPowerCache;
 	
 	private JLabel modeLabel;
-	private JLabel maxPowerLabel;
-	private JLabel producedLabel;
 	private JLabel usedLabel;
+	private JLabel producedLabel;
 
+	private JLabel maxPowerLabel;
 	private JLabel loadCapacityLabel;
 	
 	/** The power status cache. */
@@ -84,49 +85,70 @@ extends BuildingFunctionPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 		
-		AttributePanel springPanel = new AttributePanel(isProducer ? 5 : 3);
-		center.add(springPanel, BorderLayout.NORTH);
+		JPanel panel = new JPanel(new BorderLayout(5, 10));
+		AttributePanel springPanel = new AttributePanel(3);
+		center.add(panel, BorderLayout.NORTH);
+		panel.add(springPanel, BorderLayout.NORTH);
 		
 		// Prepare power status label.
 		powerStatusCache = building.getPowerMode();
-		modeLabel = springPanel.addTextField(Msg.getString("BuildingPanelPower.powerStatus"),
-				                powerStatusCache.getName(), null);
 		
-		// If power producer, prepare power producer label.
-		if (isProducer) {
-			powerCache = generator.getGeneratedPower();
-			producedLabel = springPanel.addTextField(Msg.getString("BuildingPanelPower.powerProduced"),
-									  StyleManager.DECIMAL_KW.format(powerCache), null);
-			Iterator<PowerSource> iP = generator.getPowerSources().iterator();
-			while (iP.hasNext()) {
-				PowerSource powerSource = iP.next();
-
-				maxPowerCache = powerSource.getMaxPower();
-				maxPowerLabel = springPanel.addTextField(Msg.getString("BuildingPanelPower.maxPower"),
-						StyleManager.DECIMAL_KW.format(maxPowerCache), null);	
-				
-				if (powerSource.getType() == PowerSourceType.FISSION_POWER
-						|| powerSource.getType() == PowerSourceType.THERMIONIC_NUCLEAR_POWER) {
-							
-					double loadCapacity = ((FissionPowerSource)powerSource).getCurrentLoadCapacity();
-					loadCapacityLabel = springPanel.addTextField(Msg.getString("BuildingPanelPower.loadCapacity"),
-							Math.round(loadCapacity *10.0)/10.0 + " %", null);
-					break;
-				}
-			}
-		}
-
 		modeLabel = springPanel.addTextField(Msg.getString("BuildingPanelPower.powerStatus"),
-                powerStatusCache.getName(), null);
+					powerStatusCache.getName(), null);
 		
 		// Prepare power used label.
 		if (powerStatusCache == PowerMode.FULL_POWER) 
 			usedCache = building.getFullPowerRequired();
 		else if (powerStatusCache == PowerMode.POWER_DOWN) 
 			usedCache = building.getPoweredDownPowerRequired();
-		else usedCache = 0D;
-		usedLabel = springPanel.addTextField(Msg.getString("BuildingPanelPower.powerUsed"),
-										StyleManager.DECIMAL_KW.format(usedCache), null);
+		else 
+			usedCache = 0D;
+		
+		usedLabel = springPanel.addRow(Msg.getString("BuildingPanelPower.powerUsed"),
+										StyleManager.DECIMAL_KW.format(usedCache));
+
+		// If power producer, prepare power producer label.
+		if (isProducer) {
+			powerCache = generator.getGeneratedPower();
+			
+			producedLabel = springPanel.addRow(Msg.getString("BuildingPanelPower.powerProduced"),
+									  StyleManager.DECIMAL_KW.format(powerCache));
+			
+			List<PowerSource> sources = generator.getPowerSources();
+			int num = sources.size();
+			
+			AttributePanel sPanel = new AttributePanel(num * 3);
+
+			panel.add(sPanel, BorderLayout.CENTER);
+			
+			int count = 0;
+			Iterator<PowerSource> iP = sources.iterator();
+			while (iP.hasNext()) {
+				count++;
+				PowerSource powerSource = iP.next();
+
+				sPanel.addRow(Msg.getString("BuildingPanelPower.powerType") 
+						+ " " + count,
+						powerSource.getType().getName());	
+
+				maxPowerCache = powerSource.getMaxPower();
+				maxPowerLabel = sPanel.addRow(Msg.getString("BuildingPanelPower.maxPower"),
+						StyleManager.DECIMAL_KW.format(maxPowerCache));	
+				
+				if (powerSource.getType() == PowerSourceType.FISSION_POWER
+						|| powerSource.getType() == PowerSourceType.THERMIONIC_NUCLEAR_POWER) {
+							
+					double loadCapacity = ((FissionPowerSource)powerSource).getCurrentLoadCapacity();
+					loadCapacityLabel = sPanel.addRow(Msg.getString("BuildingPanelPower.loadCapacity"),
+							Math.round(loadCapacity *10.0)/10.0 + " %");
+					break;
+				}
+				else {
+					loadCapacityLabel = sPanel.addRow(Msg.getString("BuildingPanelPower.loadCapacity"),
+							"None");
+				}
+			}
+		}
 	}
 
 	/**
@@ -142,26 +164,6 @@ extends BuildingFunctionPanel {
 			modeLabel.setText(mode.getName()); //$NON-NLS-1$
 		}
 
-		// Update power production if necessary.
-		if (isProducer) {
-			double power = generator.getGeneratedPower();
-			if (powerCache != power) {
-				powerCache = power;
-				producedLabel.setText(StyleManager.DECIMAL_KW.format(power)); //$NON-NLS-1$
-			}
-			
-			Iterator<PowerSource> iP = generator.getPowerSources().iterator();
-			while (iP.hasNext()) {
-				PowerSource powerSource = iP.next();
-
-				if (powerSource.getType() == PowerSourceType.FISSION_POWER
-						|| powerSource.getType() == PowerSourceType.THERMIONIC_NUCLEAR_POWER) {
-					
-					double loadCapacity = ((FissionPowerSource)powerSource).getCurrentLoadCapacity();
-					loadCapacityLabel.setText(Math.round(loadCapacity *10.0)/10.0 + " %");
-				}
-			}
-		}
 
 		// Update power used if necessary.
 		double usedPower = 0D;
@@ -174,6 +176,30 @@ extends BuildingFunctionPanel {
 			usedCache = usedPower;
 			usedLabel.setText(StyleManager.DECIMAL_KW.format(usedPower)); //$NON-NLS-1$
 		}
+		
+		// Update power production if necessary.
+		if (isProducer) {
+			double power = generator.getGeneratedPower();
+			if (powerCache != power) {
+				powerCache = power;
+				producedLabel.setText(StyleManager.DECIMAL_KW.format(power));
+			}
+			
+			Iterator<PowerSource> iP = generator.getPowerSources().iterator();
+			while (iP.hasNext()) {
+				PowerSource powerSource = iP.next();
+
+				maxPowerCache = powerSource.getMaxPower();
+				maxPowerLabel.setText(StyleManager.DECIMAL_KW.format(maxPowerCache));
+				
+				if (powerSource.getType() == PowerSourceType.FISSION_POWER
+						|| powerSource.getType() == PowerSourceType.THERMIONIC_NUCLEAR_POWER) {
+					
+					double loadCapacity = ((FissionPowerSource)powerSource).getCurrentLoadCapacity();
+					loadCapacityLabel.setText(Math.round(loadCapacity *10.0)/10.0 + " %");
+				}
+			}
+		}
 	}
 	
 	/**
@@ -184,6 +210,7 @@ extends BuildingFunctionPanel {
 		super.destroy();
 		modeLabel = null;
 		producedLabel = null;
+		maxPowerLabel = null;
 		usedLabel = null;
 		powerStatusCache = null;
 		generator = null;

@@ -183,7 +183,7 @@ public class EmergencySupply extends RoverMission {
 
 			case VEHICLE:
 				String vehicleType = good.getName();
-				Iterator<Vehicle> h = getStartingSettlement().getParkedVehicles().iterator();
+				Iterator<Vehicle> h = getStartingSettlement().getParkedGaragedVehicles().iterator();
 				while (h.hasNext()) {
 					Vehicle vehicle = h.next();
 					if (vehicleType.equalsIgnoreCase(vehicle.getDescription())) {
@@ -275,7 +275,7 @@ public class EmergencySupply extends RoverMission {
 				emergencyVehicle.setReservedForMission(true);
 				getRover().setTowedVehicle(emergencyVehicle);
 				emergencyVehicle.setTowingVehicle(getRover());
-				getStartingSettlement().removeParkedVehicle(emergencyVehicle);
+				getStartingSettlement().removeVicinityParkedVehicle(emergencyVehicle);
 			}
 		}
 	}
@@ -309,7 +309,7 @@ public class EmergencySupply extends RoverMission {
 		// If rover is not parked at settlement, park it.
 		if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
 
-			emergencySettlement.addParkedVehicle(getVehicle());
+			emergencySettlement.addVicinityVehicle(getVehicle());
 
 			// Add vehicle to a garage if available.
 			if (!emergencySettlement.getBuildingManager().addToGarage(getVehicle())) {
@@ -365,7 +365,7 @@ public class EmergencySupply extends RoverMission {
 			emergencyVehicle.setReservedForMission(false);
 			getRover().setTowedVehicle(null);
 			emergencyVehicle.setTowingVehicle(null);
-			emergencySettlement.addParkedVehicle(emergencyVehicle);
+			emergencySettlement.addVicinityVehicle(emergencyVehicle);
 			emergencyVehicle.findNewParkingLoc();
 		}
 

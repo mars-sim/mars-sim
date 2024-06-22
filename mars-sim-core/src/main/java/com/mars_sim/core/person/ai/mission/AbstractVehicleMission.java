@@ -104,6 +104,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final MissionStatus VEHICLE_UNDER_MAINTENANCE = new MissionStatus("Mission.status.vehicleMaintenance");
 	protected static final MissionStatus CANNOT_LOAD_RESOURCES = new MissionStatus("Mission.status.loadResources");
 	private static final MissionStatus UNREPAIRABLE_MALFUNCTION = new MissionStatus("Mission.status.unrepairable");
+	protected static final MissionStatus MISSION_LEAD_NO_SHOW = new MissionStatus("Mission.status.leaderNoShow");
 
 	// Static members
 	private static final Integer wheelID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.ROVER_WHEEL);

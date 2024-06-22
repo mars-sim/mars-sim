@@ -93,6 +93,10 @@ class AmountResourceGood extends Good {
 	private static final double ELEMENT_COST = 0.5;
 	private static final double LIFE_SUPPORT_COST = .5;
 
+	
+	// flatten multipliers
+	private static final double OLIVINE_MULTIPLIER = .05;
+	
 	// modifiers
     private static final double ICE_VALUE_MODIFIER = .1;
 	private static final double WATER_VALUE_MODIFIER = .07;
@@ -101,19 +105,21 @@ class AmountResourceGood extends Good {
 	private static final double SOIL_VALUE_MODIFIER = .05;
 	private static final double SAND_VALUE_MODIFIER = .03;
 	private static final double ORES_VALUE_MODIFIER = .05;
+	
 	private static final double CONCRETE_VALUE_MODIFIER = .7;
 	private static final double CEMENT_VALUE_MODIFIER = 2;
 	private static final double MINERAL_VALUE_MODIFIER = .02;
 	private static final double ROCK_VALUE_MODIFIER = .02;
 	private static final double METEORITE_MODIFIER = 100;
+	
 	private static final double ROCK_SALT_VALUE_MODIFIER = 1;
 	private static final double EPSOM_SALT_VALUE_MODIFIER = .1;
 	
 	private static final double OXYGEN_VALUE_MODIFIER = .1;
 	private static final double FOOD_VALUE_MODIFIER = .1;
 	
-	private static final double METHANE_VALUE_MODIFIER = .55;
-	private static final double HYDROGEN_VALUE_MODIFIER = .25;
+	private static final double METHANE_VALUE_MODIFIER = 3;
+	private static final double HYDROGEN_VALUE_MODIFIER = .01;
 	private static final double METHANOL_VALUE_MODIFIER = .15;
 	
 	private static final double CO2_VALUE_MODIFIER = .0075;
@@ -139,17 +145,19 @@ class AmountResourceGood extends Good {
 	private static final double REGOLITH_TYPE_DEMAND_FACTOR = 1.2;
 	private static final double REGOLITH_DEMAND_FACTOR = .1;
 	private static final double REGOLITH_DEMAND_FACTOR_1 = 10;
-	private static final double REGOLITH_DEMAND_FACTOR_2 = .15;
+	private static final double REGOLITH_DEMAND_FACTOR_2 = 10;
+		
 	private static final double ORE_DEMAND_FACTOR = .15;
 	private static final double MINERAL_DEMAND_FACTOR = .15;
 	
 	// Demand factor based on good type
 	private static final double CHEMICAL_DEMAND_FACTOR = 3;
 	private static final double COMPOUND_DEMAND_FACTOR = 2;
-	private static final double ELEMENT_DEMAND_FACTOR = 3;
+	private static final double ELEMENT_DEMAND_FACTOR = 2;
 	private static final double ROCK_DEMAND_FACTOR = 1;
 	private static final double GEMSTONE_DEMAND_FACTOR = 3;
 
+	
 	private static final double WASTE_DEMAND_FACTOR = .15;
 	private static final double UTILITY_DEMAND_FACTOR = 10;
 	private static final double INSTRUMENT_DEMAND_FACTOR = 5;
@@ -162,11 +170,15 @@ class AmountResourceGood extends Good {
 	private static final double DERIVED_DEMAND_FACTOR = .5;
 	private static final double TISSUE_DEMAND_FACTOR = 1.1;
 	
-	private static final double METHANOL_DEMAND_FACTOR = 1;
+	private static final double METHANOL_DEMAND_FACTOR = .5;
 	private static final double METHANE_DEMAND_FACTOR = .1;
 	private static final double SAND_DEMAND_FACTOR = .07;
 	private static final double ICE_DEMAND_FACTOR = .05;
 	private static final double CO_DEMAND_FACTOR = .05;
+	private static final double CO2_DEMAND_FACTOR = .01;
+	private static final double HYDROGEN_DEMAND_FACTOR = .02;
+	private static final double ACETYLENE_DEMAND_FACTOR = 20;
+
 	
 	private static final double NACO3_DEMAND_FACTOR = .01;
 	private static final double IRON_POWDER_FACTOR = .01;
@@ -492,16 +504,23 @@ class AmountResourceGood extends Good {
 			demand = COMPOUND_DEMAND_FACTOR;
 			if (mod != 0)
 				return demand *= mod;
-			if (ar.getID() == ResourceUtil.sandID)
+				
+			if (ar.getID() == ResourceUtil.acetyleneID)
+				demand *= ACETYLENE_DEMAND_FACTOR;
+			else if (ar.getID() == ResourceUtil.sandID)
 				demand *= SAND_DEMAND_FACTOR;
 			else if (ar.getID() == ResourceUtil.iceID)
 				demand *= ICE_DEMAND_FACTOR;
 			else if (ar.getID() == ResourceUtil.coID)
 				demand *= CO_DEMAND_FACTOR;
+			else if (ar.getID() == ResourceUtil.co2ID)
+				demand *= CO2_DEMAND_FACTOR;
 			else if (ar.getID() == ResourceUtil.methaneID)
 				demand *= METHANE_DEMAND_FACTOR;
 			else if (ar.getID() == ResourceUtil.methanolID)
 				demand *= METHANOL_DEMAND_FACTOR;
+			
+			
 			
 			String name = ar.getName();
 			
@@ -525,9 +544,12 @@ class AmountResourceGood extends Good {
 			demand = ELEMENT_DEMAND_FACTOR;
 			if (mod != 0)
 				return demand *= mod;
+
+			if (ar.getID() == ResourceUtil.hydrogenID)
+				demand *= HYDROGEN_DEMAND_FACTOR;
 			
 			name = ar.getName();
-			
+		
 			if (name.equalsIgnoreCase(IRON_POWDER)) 
 				demand *= IRON_POWDER_FACTOR;
 			
@@ -555,6 +577,9 @@ class AmountResourceGood extends Good {
 			demand = MINERAL_DEMAND_FACTOR;
 			if (mod != 0)
 				return demand *= mod;
+			if (ar.getID() == ResourceUtil.olivineID)
+				demand *= OLIVINE_MULTIPLIER;
+			
 			break;
 	
 		case ORE:
@@ -1124,7 +1149,7 @@ class AmountResourceGood extends Good {
 			demand = cropConfig.getWaterConsumptionRate() * factor;
 		} else if (resource == ResourceUtil.co2ID) {
 			// Average co2 consumption rate of crops per orbit using total growing area.
-			demand = cropConfig.getCarbonDioxideConsumptionRate() * factor;
+			demand = cropConfig.getCarbonDioxideConsumptionRate() * factor * CO2_VALUE_MODIFIER;
 		} else if (resource == ResourceUtil.oxygenID) {
 			// Average oxygen consumption rate of crops per orbit using total growing area.
 			demand = cropConfig.getOxygenConsumptionRate() * factor;
@@ -1300,7 +1325,7 @@ class AmountResourceGood extends Good {
 				amountNeededSol = personConfig.getFoodConsumptionRate() * FOOD_VALUE_MODIFIER;
 			} else if (resource == ResourceUtil.methaneID) {
 				// Methane is fuel for heating and is an arguably life support resource
-				amountNeededSol = 20 * METHANE_VALUE_MODIFIER;
+				amountNeededSol = METHANE_VALUE_MODIFIER;
 			} else if (resource == ResourceUtil.co2ID) {
 				amountNeededSol = CO2_VALUE_MODIFIER;
 			}
@@ -1352,6 +1377,7 @@ class AmountResourceGood extends Good {
 			return demand * (.2 * regolithDemand + .7 * sandDemand) 
 						/ (1 + sandDemand) * SAND_VALUE_MODIFIER;
 		}
+        
         else {
 			double regolithDemand = owner.getDemandValueWithID(ResourceUtil.regolithID);
 			double sandDemand = owner.getDemandValueWithID(ResourceUtil.sandID);

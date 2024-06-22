@@ -767,13 +767,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	} 
 
 	/**
-	 * This get the relevant Impact assessment of doing this Task. It is a temp. measure
+	 * This gets the relevant Impact assessment of doing this Task. It is a temp. measure
 	 * as eventually the impact will come via the constructor.
 	 * @return Impact assessment of doing this Task
 	 */
 	private ExperienceImpact getImpact() {
 		var result = (phase != null ? phase.getImpact() : null);
 		if (result == null) {
+			// Use default impact
 			result = impact;
 		}
 		return result;

@@ -234,7 +234,7 @@ public class MaintainGarageVehicle extends Task {
 			vehicle.setReservedForMaintenance(false);
 	        vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
 
-			// Terminated early befor ethe Garage was selected ?
+			// Terminated early before the Garage was selected ?
 			if (garage != null) {
 				if (vehicle instanceof Crewable crewableVehicle) {
 					boolean transCrew = (crewableVehicle.getCrewNum() > 0 || crewableVehicle.getRobotCrewNum() > 0);

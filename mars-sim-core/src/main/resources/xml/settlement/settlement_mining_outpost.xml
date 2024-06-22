@@ -134,7 +134,8 @@
 
 
     <!-- Building Packages -->
-    <building-package name="Storage Set 1 - 3x3"/>
+    <building-package name="Storage Set 1"/>   
+   	<building-package name="ERV Set 1"/>
  	<building-package name="Air Set 2 - 1x2"/>
     <building-package name="Sabatier Set 1 - 1x2"/>
 	<building-package name="Syngas Set 1 - 1x1"/>

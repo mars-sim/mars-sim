@@ -276,7 +276,8 @@ public class BuildingConfig {
 	}
 	
 	/**
-	 * Get the spot name that is best associated with a certain FunctionType.
+	 * Gets the spot name that is best associated with a certain FunctionType.
+	 * 
 	 * @param function
 	 * @return
 	 */
@@ -289,8 +290,8 @@ public class BuildingConfig {
 			case MEDICAL_CARE -> "Sickbay";
 			case RECREATION -> "Chair";
 			case RESEARCH -> "Bench";
-			case ROBOTIC_STATION -> "Charge Point";
-			default -> "Spot";
+			case ROBOTIC_STATION -> "Charge Pt";
+			default -> "S";
 		};
 	}
 

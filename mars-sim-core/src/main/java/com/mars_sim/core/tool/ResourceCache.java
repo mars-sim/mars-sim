@@ -67,17 +67,18 @@ public class ResourceCache {
             }
         }
         else {
-            try(PrintWriter writer = new PrintWriter(exceptionFile)) {
+            exceptionFile.getParentFile().mkdirs();
+            try (PrintWriter writer = new PrintWriter(exceptionFile)) {
                 writer.println(EXCEPTION_CONTENT);
             }
             catch(FileNotFoundException e) {
-                logger.log(Level.WARNING, "Cannot create the new exception file", e);
+                logger.warning("Cannot create the new default exception file " + e.getMessage());
             }
         }
     }
 
     /**
-     * Extract a resource from teh classpath to a local file. If the file already exists,
+     * Extract a resource from the classpath to a local file. If the file already exists,
      * it will not be overwritten unless there is a checksum difference.
      * Checksum check can be bypassed on a per file basis via use of the exception file.
      * @param resourceName Name of resoruce to find.

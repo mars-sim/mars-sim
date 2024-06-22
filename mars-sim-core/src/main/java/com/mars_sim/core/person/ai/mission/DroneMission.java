@@ -70,7 +70,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	@Override
 	protected Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
 		Collection<Vehicle> result = new ArrayList<>();
-		Collection<Drone> list = settlement.getParkedDrones();
+		Collection<Drone> list = settlement.getParkedGaragedDrones();
 		if (list.isEmpty())
 			return result;
 		for (Drone v : list) {
@@ -96,7 +96,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 		Drone bestDrone = null;
 		double bestRange = 0D;
 
-		for(Drone drone : settlement.getParkedDrones()) {
+		for(Drone drone : settlement.getParkedGaragedDrones()) {
 
 			boolean usable = !drone.isReservedForMission();
             usable = usable && (allowMaintReserved || !drone.isReserved());

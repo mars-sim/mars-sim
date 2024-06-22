@@ -199,8 +199,8 @@ public abstract class UnitWindow extends ModalInternalFrame
 		// Update each of the tab panels.
 		for (TabPanel tabPanel : tabPanels) {
 			if (tabPanel.isVisible() && tabPanel.isShowing() && tabPanel.isUIDone()) { 
-				// Instead of using SwingUtilities.invokeLater, 
-				// calling directly removes the change of ConcurrentMidifications
+				// Instead of using SwingUtilities.invokeLater,
+				// calling directly removes the change of ConcurrentModifications
 				tabPanel.update();
 			}
 		}

@@ -227,11 +227,17 @@ public class EVASuitUtil {
 		boolean hasEnoughWater = (availableWater >= neededWater);
 
 		// it's okay even if there's not enough water
-		if (!hasEnoughWater)
-			logger.warning(((Settlement) owner), 20_000, 
+		if (!hasEnoughWater) {
+			if (owner instanceof Settlement settlement)
+				logger.warning(settlement, 20_000, 
 					"No enough water to feed " + suit.getName() 
 					+ " but can still use the EVA Suit.");
-
+			else if (owner instanceof Rover rover)
+				logger.warning(rover, 20_000, 
+					"No enough water to feed " + suit.getName() 
+					+ " but can still use the EVA Suit.");
+		}
+			
 		return hasEnoughOxygen;
 	}
 

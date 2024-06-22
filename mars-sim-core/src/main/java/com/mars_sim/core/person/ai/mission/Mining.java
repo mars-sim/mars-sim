@@ -212,7 +212,7 @@ public class Mining extends EVAMission
 	public static boolean isLUVAvailable(Settlement settlement) {
 		boolean result = false;
 
-		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+		Iterator<Vehicle> i = settlement.getParkedGaragedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
 			if (vehicle.getVehicleType() == VehicleType.LUV) {
@@ -270,7 +270,7 @@ public class Mining extends EVAMission
 
 			getRover().setTowedVehicle(luv);
 			luv.setTowingVehicle(getRover());
-			settlement.removeParkedVehicle(luv);
+			settlement.removeVicinityParkedVehicle(luv);
 
 			if (!settlement.hasItemResource(ItemResourceUtil.pneumaticDrillID)
 					|| !settlement.hasItemResource(ItemResourceUtil.backhoeID)) {
@@ -307,7 +307,7 @@ public class Mining extends EVAMission
 			
 			getRover().setTowedVehicle(null);
 			luv.setTowingVehicle(null);
-			settlement.removeParkedVehicle(luv);
+			settlement.removeVicinityParkedVehicle(luv);
 			luv.findNewParkingLoc();
 
 			// Unload attachment parts.
@@ -643,7 +643,7 @@ public class Mining extends EVAMission
 	 * @return reserved light utility vehicle or null if none.
 	 */
 	private LightUtilityVehicle reserveLightUtilityVehicle() {
-		for(Vehicle vehicle : getStartingSettlement().getParkedVehicles()) {
+		for(Vehicle vehicle : getStartingSettlement().getParkedGaragedVehicles()) {
 			if (vehicle.getVehicleType() == VehicleType.LUV) {
 				LightUtilityVehicle luvTemp = (LightUtilityVehicle) vehicle;
 				if (((luvTemp.getPrimaryStatus() == StatusType.PARKED) || (luvTemp.getPrimaryStatus() == StatusType.GARAGED))

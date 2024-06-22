@@ -38,15 +38,25 @@
 	<resource name="Hydrogen" type="element" phase="gas" demand=".15" />
 	
 	<resource name="Methane" type="compound" phase="gas" demand=".15" />
-	<resource name="Methanol" type="compound" phase="liquid">Methanol CH3OH can be used as a fuel source, solvent, pesticide, or 
-	 a chemical feedstock for production of a range of important industrial chemicals such as polyester. 
-	 It appears as a colorless fairly volatile liquid with a faintly sweet pungent odor like that of ethyl alcohol. </resource>
+	<resource name="Methanol" type="compound" phase="liquid">Methanol CH3OH
+	  can be used as a fuel source, solvent, pesticide, or 
+	  a chemical feedstock for production of a range of important industrial
+	  chemicals such as polyester. It appears as a colorless fairly volatile 
+	  liquid with a faintly sweet pungent odor like that of ethyl alcohol. 
+	  </resource>
 	 
 	<resource name="Nitrogen" type="element" phase="gas"> N2 is an odorless gas </resource>
 	<resource name="Argon" type="element" phase="gas"/>
 	
 	<resource name="Carbon Monoxide" type="compound" phase="gas" demand=".05" />
 	<resource name="Chlorine" type="element" phase="gas"/>
+	<resource name="Ethane" type="compound" phase="gas"> Ethane is a naturally
+		occurring organic chemical compound with chemical formula C2H6. 
+		and has a molecular mass of 30.07 g/mol. At standard temperature 
+		and pressure, ethane is a colorless, odorless gas. It can be used as
+		a fuel for power generation in power plants or used as a feedstock for
+		the production of ethylene.
+	</resource>		
 	<resource name="Ethylene" type="compound" phase="gas" demand=".1" />
 	<resource name="Acetylene" type="compound" phase="gas" demand=".01" >Acetylene is a colorless gas that has a strong 
 	 garlic-like odor. When combined with oxygen, it becomes very hot and is classified as the hottest fuel gas. 
@@ -598,7 +608,17 @@
 		the fabric's surfaces closet to the skin.
 	</resource>	
 		
-			 		 
+	<resource name="Zeolite" type="compound" phase="solid"> Zeolites are naturally occurring 
+		or synthetic microporous powder-like minerals with unique properties, making them valuable 
+		in various industrial applications from refining to chemical production, 
+		and from off-gas purification to odor removal. It reduces harmful emissions.
+		
+		A crystalline material made of silicon, oxygen, and aluminum, Zeolite has have 
+		the general formula Mn+1/n(AlO2)･(SiO2)x･yH2O and 
+		its unique pore structures can selectively adsorb desired or 
+		undesired molecules and make it a perfect basis for catalytically active metals.
+	</resource>
+				 		 
 <!-- Mineral concentrations.
 
     Using instruments on the Mars Reconnaissance Orbiter they found the minerals
@@ -612,11 +632,12 @@
 	contain the minerals chromite, magnetite, and ilmenite.
 
     see https://en.wikipedia.org/wiki/Ore_resources_on_Mars
-    -->
+-->
 
-    <!-- Compare with NASA MGS/TES Mineral Maps at http://www.mars.asu.edu/data/
+<!-- Compare with NASA MGS/TES Mineral Maps at http://www.mars.asu.edu/data/
     May add Plagioclase, Feldspar, High-Ca Pyroxene, Low-Ca Pyroxene, Quartz,
-    Amphibole, Silicates, etc. -->
+    Amphibole, Silicates, etc. 
+-->
 
 	<resource name="Chalcopyrite" type="mineral" phase="solid">A copper iron sulfide (CuFeS2) mineral that
 	 crystallizes in the tetragonal system.</resource>
@@ -746,10 +767,11 @@
 		from the air and convert it into ammonia, a form of nitrogen that plants can use.
 		In return, legumes feed the bacteria a steady diet of plant sugars.
 	 </resource>
-    <!--
+	 
+<!--
     http://en.wiki2.org/wiki/Sewage_treatment : Nitrification itself is a two-step aerobic process, each step facilitated by a different type of bacteria. The oxidation of ammonia (NH3) to nitrite (NO2−) is most often facilitated by Nitrosomonas spp. ("nitroso" referring to the formation of a nitroso functional group). Nitrite oxidation to nitrate (NO3−), though traditionally believed to be facilitated by Nitrobacter spp. (nitro referring the formation of a nitro functional group), is now known to be facilitated in the environment almost exclusively by Nitrospira spp.
 	http://www.the-compost-gardener.com/nitrogen-fixing-bacteria.html
-	-->
+-->
 
 <!-- Misc. -->
 	<resource name="Glass" type="gemstone" phase="solid" demand="2" >For making vessels</resource>
