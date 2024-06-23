@@ -632,6 +632,30 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
+	 * Adds the vehicle to a garage.
+	 *
+	 * @return true if successful.
+	 */
+	public boolean addToAGarage() {
+
+		Settlement settlement = getSettlement();
+		if (settlement != null) {
+			for (Building garageBuilding : settlement.getBuildingManager()
+					.getBuildingSet(FunctionType.VEHICLE_MAINTENANCE)) {
+				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
+				if (garage != null) {
+					if (this instanceof Flyer flyer && !garage.containsFlyer(flyer)) {
+						return settlement.getBuildingManager().addToGarageBuilding(this) != null;
+					}
+					else if (!garage.containsVehicle(this)) {
+						return settlement.getBuildingManager().addToGarageBuilding(this) != null;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	/**
 	 * Records the status in the vehicle log.
 	 */
 	private void writeLog() {
@@ -1351,6 +1375,13 @@ public abstract class Vehicle extends Unit
 			addToTrail(getCoordinates());
 		}
 
+		else if (primaryStatus == StatusType.PARKED) {				
+			// If the vehicle is reserved and is not in a garage, add to  garage
+			if (isReserved() && !isInAGarage()) {
+				addToAGarage();
+			}
+		}
+
 		// If it's back at a settlement and is NOT in a garage
 		else if (!haveStatusType(StatusType.MAINTENANCE)
 				&& !haveStatusType(StatusType.GARAGED)) {
@@ -1358,6 +1389,13 @@ public abstract class Vehicle extends Unit
 			// Assume the wear and tear factor is 75% less when not operating 
 			if (rand == 3)
 				malfunctionManager.activeTimePassing(pulse);
+		}
+		
+		else {
+			// If the vehicle is not reserved and is in a garage, remove from garage
+			if (!isReserved() && isInAGarage()) {
+				BuildingManager.removeFromGarage(this);
+			}
 		}
 
 		// Make sure reservedForMaintenance is false if vehicle needs no maintenance.
@@ -1371,10 +1409,6 @@ public abstract class Vehicle extends Unit
 			// Not under maintenance and not in garage
 			// Note: during maintenance, it doesn't need to be checking for malfunction.
 			malfunctionManager.timePassing(pulse);
-
-			if (isInAGarage()) {
-				BuildingManager.removeFromGarage(this);
-			}
 		}
 
 		if (haveStatusType(StatusType.MALFUNCTION)
@@ -1385,6 +1419,17 @@ public abstract class Vehicle extends Unit
 
 		// Check once per msol (millisol integer)
 		if (pulse.isNewMSol()) {
+			
+			// If the vehicle is not reserved and is in a garage, remove from garage
+			if (!isReserved() && isInAGarage()) {
+				BuildingManager.removeFromGarage(this);
+			}
+			
+			// If the vehicle is reserved and is not in a garage, add to  garage
+			else if (isReserved() && !isInAGarage()) {
+				addToAGarage();
+			}
+			
 			
 			// Sample a data point every SAMPLE_FREQ (in msols)
 			int msol = pulse.getMarsTime().getMillisolInt();

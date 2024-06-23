@@ -73,10 +73,10 @@ public class ThermalGeneration extends Function {
 				break;
 				
 			case FUEL_HEATING:
-				boolean toggleStafe = Boolean.parseBoolean(sourceSpec.getAttribute(SourceSpec.TOGGLE));
+				boolean toggle = Boolean.parseBoolean(sourceSpec.getAttribute(SourceSpec.TOGGLE));
 				String fuelType = sourceSpec.getAttribute(SourceSpec.FUEL_TYPE);
 				double consumptionSpeed = Double.parseDouble(sourceSpec.getAttribute(SourceSpec.CONSUMPTION_RATE));
-				heatSource = new FuelHeatSource(building, heat, toggleStafe, fuelType, consumptionSpeed);
+				heatSource = new FuelHeatSource(building, heat, toggle, fuelType, consumptionSpeed);
 				break;
 				
 			default:
