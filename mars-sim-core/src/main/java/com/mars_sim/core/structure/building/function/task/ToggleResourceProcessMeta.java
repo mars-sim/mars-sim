@@ -248,8 +248,6 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			// Note: May multiply the score by a factor to boost the chance
 			
 			if (score > 100 || RandomUtil.getRandomDouble(100) < score) {
-				System.out.println(settlement.getName() + " " 
-					+ selectedProcess.getProcessName() + ": " + score);
 				return new ToggleProcessJob(this, building, selectedProcess, new RatingScore(score));
 			}
 		}
@@ -321,7 +319,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			else if (score < 0 && !process.isProcessRunning()) {
 				// // Skip this process. no need to turn it on.
 				return;
-			}			
+			}
+			
+			if (score > 1) {
+				score = Math.round(score * 10.0)/10.0;
+			}
 		}
 		
 		// Save the process and its score into the resource process map
