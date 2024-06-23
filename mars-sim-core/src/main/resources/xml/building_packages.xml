@@ -144,6 +144,10 @@
 	    <standalone type="Atmospheric Processor" xloc="10.0" yloc="-30.0" facing="90.0" /> 
 	</building-package>
 
+	<building-package name="Air Set 2 - 1x1" >
+	    <standalone type="Atmospheric Processor" xloc="-30.0" yloc="-10.0" facing="90.0" />    
+	</building-package>
+	
 	<building-package name="Air Set 2 - 1x2" >
 	    <standalone type="Atmospheric Processor" xloc="-30.0" yloc="-10.0" facing="90.0" />
 	    <standalone type="Atmospheric Processor" xloc="-30.0" yloc="-20.0" facing="90.0" />    
