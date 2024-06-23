@@ -355,17 +355,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- power-down-level: the efficiency of the resource processes
 								   when building is in 'power down' mode. -->
 
+			<!-- "Lander Hab" -->
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
+				<process-engine name="Sabatier RWGS Reactor" number-modules="16"/>
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>				
 				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="4"/>	
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>	
-				<process-engine name="Produce Acetylene with chloride melts and metal carbides" number-modules="4"/>	
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="4"/>
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="4"/>
+				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="12"/>	
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="32"/>
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="8"/>
 				
-				<process-engine name="Atmospheric processing"/>
-				<process-engine name="Methanol Synthesis"/>
+				<process-engine name="Atmospheric processing" number-modules="4"/>
+				<process-engine name="Methanol Synthesis" number-modules="4"/>
 				<process-engine name="Melt Ice" number-modules="16" />
 				<process-engine name="Filter Brine Water" number-modules="8" />
 			
@@ -735,8 +736,21 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 
-			<resource-processing power-down-level="0.0">
-				<process-engine name="Atmospheric processing" number-modules="2"/>
+			<!-- "Central Hub A" -->
+			<resource-processing power-down-level="0.0">			
+				<process-engine name="Sabatier RWGS Reactor" number-modules="48"/>
+				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="12"/>				
+				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="12"/>	
+				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="12"/>	
+				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="36"/>	
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="64"/>
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="48"/>
+				
+				<process-engine name="Atmospheric processing" number-modules="12"/>
+				<process-engine name="Methanol Synthesis" number-modules="12"/>
+				<process-engine name="Melt Ice" number-modules="48" />
+				<process-engine name="Filter Brine Water" number-modules="24" />
+						
 				<activity>
 					<activity-spot xloc="7.27" yloc="4.54" />
 					<activity-spot xloc="6.94" yloc="5.11" />
@@ -851,7 +865,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Atmospheric processing" number-modules="2"/>
+				<process-engine name="Atmospheric processing" number-modules="8"/>
 				<activity>
 					<activity-spot xloc="-1.47" yloc="3.68" />
 				</activity>
@@ -996,7 +1010,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Atmospheric processing" number-modules="4"/>
+				<process-engine name="Atmospheric processing" number-modules="8"/>
 				<activity>
 					<activity-spot xloc="-4.5" yloc="8.25" />
 				</activity>
@@ -1209,14 +1223,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
+			
+			 <!-- "ERV-A" -->
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Sabatier RWGS Reactor" number-modules="16"/>
+				<process-engine name="Sabatier RWGS Reactor" number-modules="32"/>
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="8"/>
 				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="12"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="12"/>
-				<process-engine name="Produce Acetylene with chloride melts and metal carbides" number-modules="12"/>
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="8"/>			
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="6"/>					
+				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="24"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="64"/>			
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="48"/>					
 			</resource-processing>
 
 			<storage capacity="300000">
@@ -1264,7 +1280,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
 				<!-- 5 processes for breaking down regolith -->		
-				<process-engine name="Convert Regolith to Ores with Sand" number-modules="30"/>
+				<process-engine name="Convert Regolith to Ores with Sand" number-modules="40"/>
 				<process-engine name="Extract Nitrogen Compounds from Regolith" number-modules="15"/>
 				<process-engine name="Process Regolith-B rich in Poly-Hydrated Sulfate" number-modules="15"/> 
 				<process-engine name="Process Regolith-C rich in Phyllo-Silicate" number-modules="15"/>
@@ -1285,7 +1301,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Do Sylvite Smelting" number-modules="5"/>
 								
 				<!-- 9 processes for extracting ore deposits -->
-				<process-engine name="Extract Minerals from Sand" number-modules="30"/>
+				<process-engine name="Extract Minerals from Sand" number-modules="40"/>
 				
 				<process-engine name="Extract Minerals from Basaltic deposits" number-modules="5"/>
 				<process-engine name="Extract Minerals from Smectite deposits" number-modules="5"/>
@@ -1584,14 +1600,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			
+			<!-- "Atmospheric Processor" -->
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Atmospheric processing" number-modules="4"/>
-				<process-engine name="Produce Acetylene with chloride melts and metal carbides" number-modules="8"/>			
+				<process-engine name="Atmospheric processing" number-modules="16"/>
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="3"/>				
 				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="8"/>
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="16"/>
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="8"/>
-			</resource-processing>
+				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="24"/>				
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="48"/>
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="36"/>
+			</resource-processing> 
 
 			<storage capacity="100000">
 				<resource-storage resource="hydrogen" capacity="20000.0" />
@@ -2740,7 +2757,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Sabatier RWGS Reactor" number-modules="36"/>
+				<process-engine name="Sabatier RWGS Reactor" number-modules="64"/>
 			</resource-processing>
 			<storage capacity="30000">
 				<resource-storage resource="carbon dioxide" capacity="5000" />
@@ -3149,8 +3166,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="2.0" />
 				<heat-source type="Electric Heating" capacity="2.0" />
-				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="16" capacity="2.0"/>
+				<!--heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	consumption-rate="16" capacity="2.0"/-->
 			</thermal-generation>
 		</functions>
 	</building>
@@ -3279,17 +3296,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 
+			<!-- "Outpost Hub" -->
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
+				<process-engine name="Sabatier RWGS Reactor" number-modules="16"/>
 				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>				
 				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="4"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>
-				<process-engine name="Produce Acetylene with chloride melts and metal carbides" number-modules="4"/>
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="4"/>
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="4"/>
+				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="12"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="32"/>
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="8"/>
 				
-				<process-engine name="Atmospheric processing"/>
-				<process-engine name="Methanol Synthesis"/>
+				<process-engine name="Atmospheric processing" number-modules="4"/>
+				<process-engine name="Methanol Synthesis" number-modules="4"/>
 				<process-engine name="Melt Ice" number-modules="16" />
 				<process-engine name="Filter Brine Water" number-modules="8" />
 								
@@ -3617,7 +3635,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Atmospheric processing" number-modules="2"/>
+				<process-engine name="Atmospheric processing" number-modules="4"/>
 				<activity>
 					<activity-spot xloc="2.0" yloc="4.5" />
 				</activity>
@@ -3683,8 +3701,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="2.0" />
 				<heat-source type="Electric Heating" capacity="2.0" />
-				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="16" capacity="2.0"/>
+				<!--heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	consumption-rate="16" capacity="2.0"/-->
 			</thermal-generation>
 		</functions>
 	</building>

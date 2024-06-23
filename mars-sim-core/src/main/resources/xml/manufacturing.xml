@@ -61,7 +61,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 	calcium sulfate, potassium chloride, magnesium bromide, and calcium carbonate.
 -->
 	<!-- Purify Rock Salt to Food Grade Table Salt -->
-	<process name="Purify rock salt into table/epsom salt and other compounds"
+	<process name="Purify rock salt into compounds"
 	tech="1" skill="1" work-time="10.0" process-time="10"
 			power-required=".4">
 		<description> http://www.madehow.com/Volume-2/Salt.html
@@ -76,14 +76,16 @@ http://canada.marssociety.org/winnipeg/soil.html
 			<resource name="rock salt" amount="7.5" />
 		</inputs>
 		<outputs>
-			<resource name="table salt" amount="2.0" />
+			<resource name="table salt" amount="1.5" />
 			<resource name="calcium" amount="0.5" />
 			<resource name="magnesium" amount="0.5" />
 			<resource name="potassium" amount="0.5" />
 			<resource name="calcium carbonate" amount="1.0" />
 			<resource name="sodium carbonate" amount="1.0" />
-			<resource name="epsom salt" amount="2.0" />
-			<!--Epsom Salt is Magnesium Sulfate-->
+			<resource name="calcium sulfate" amount="0.5" />
+			<!--Epsom Salt is Magnesium Sulfate-->			
+			<resource name="epsom salt" amount="0.5" />
+			<resource name="perchlorate" amount="1.5" />
 		</outputs>
 	</process>
 

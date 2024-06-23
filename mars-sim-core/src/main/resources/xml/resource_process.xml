@@ -71,23 +71,14 @@
 		to produce 1 kg of propellant per sol, per Zurin's paper on
 		"Integrated Mars In-Situ Propellant Production System.
 
-		We assume a system that's 4 times more efficient in producing
-		CH4 below
-
-		CO2 : 39.6 kg/sol
-		4H2 : 3.6 kg/sol
-		CH4 : 4.8 kg/sol
-		2CO : 16.8 g/mol
-		4H2O : 21.6 kg/sol
-	
 	</description>
-	<!-- rate: the input/output resource rate [in kg/sol] -->
-		<input resource="carbon dioxide" rate="39.6" ambient="true" />
-		<input resource="hydrogen" rate="3.6"  />
+	<!-- "Sabatier RWGS Reactor"'s rate: the input/output resource rate [in kg/sol] -->
+		<input resource="carbon dioxide" rate="396" ambient="true" />
+		<input resource="hydrogen" rate="36"  />
 		
-		<output resource="methane" rate="4.8"  />
-		<output resource="carbon monoxide" rate="16.8"  />
-		<output resource="water" rate="21.6"  />
+		<output resource="methane" rate="48"  />
+		<output resource="carbon monoxide" rate="168" />
+		<output resource="water" rate="216"  />
 	</process>
 
 		
@@ -134,7 +125,7 @@
 		<output resource="carbon dioxide" rate="44.0" waste="false" />
 		<output resource="water" rate="18.0"  />
 		<output resource="carbon" rate="24.0"  />
-	</process>
+	</process> <!-- "Carbon Formation Reactor (CFR)" -->
 	
 	<process name="Plasma Pyrolysis Assembly (PPA) Reactor" power-required="0.05" >
 		<description>
@@ -154,9 +145,9 @@
 		
 		<output resource="acetylene" rate="6.0"  />
 		<output resource="hydrogen" rate="26.0"  />
-	</process>
+	</process> <!-- "Plasma Pyrolysis Assembly (PPA) Reactor" -->
 
-	<process name="Produce Acetylene with chloride melts and metal carbides" power-required="0.05" >
+	<process name="Produce Oxygen and Acetylene with Chloride and Carbides" power-required="0.05" >
 		<description>
 			This reaction produces acetylene utilizing the electrochemical reduction
 			of CO2 by high-temperature molten salts, namely chloride melts. 
@@ -183,7 +174,11 @@
 				
 		<output resource="acetylene" rate="26.0"  />
 		<output resource="oxygen" rate="80.0"  />
-	</process>
+	</process> <!--"Produce Oxygen and Acetylene with Chloride and Carbides"-->
+	
+	<!-- Convert C2H6 to C2H4 and H2 using CO2 as mild oxidation agent 
+	https://www.sciencedirect.com/science/article/abs/pii/S0360319920335904
+	-->
 	
 	<process name="Selective Partial Oxidation of Methane to Methanol" power-required="0.05" >
 		<description>
@@ -191,18 +186,15 @@
 		Catalyst : Colloidal Au-Pd nanop-articles (3-5nm)
 		
 		Au-Pd catalysts form Methyl radicals, which break the C-H bond, leading to 
-		successful methanol production. 
-		
-		High selectivity of 92% 
+		successful methanol production. High selectivity of 92% 
 		
 		2 Ch4 + O2 -> 2 CH3OH
 		32g ,  32 g , 64 g (or 58.88 at 92%)
-		
 		</description> 
-		<input resource="methane" rate="3.2"  />
-		<input resource="oxygen" rate="3.2"  />
+		<input resource="methane" rate="32"  />
+		<input resource="oxygen" rate="32"  />
 		
-		<output resource="methanol" rate="6.4"  />
+		<output resource="methanol" rate="64"  />
 	</process>
 
 
@@ -223,7 +215,7 @@
 		react with carbon dioxide removed from the cabin atmosphere
 		to produce water and methane.
 	
-		Oxygen Generator Assembly (OGA) uses 1312 W of power.
+		It uses 1312 W of power.
 	
 		Available water electrolysis units using solid polymer
 		electrolytes are highly efficient (>90%) and extremely rugged,
@@ -255,11 +247,11 @@
 		5. https://www.researchgate.net/publication/265608781_Decoupled_catalytic_hydrogen_evolution_from_a_molecular_metal_oxide_redox_mediator_in_water_splitting
 		
 	</description> 
-		<input resource="water" rate="72"  />
+		<input resource="water" rate="180"  />
 		
-		<output resource="hydrogen" rate="8"  />
-		<output resource="oxygen" rate="64"  />
-	</process>
+		<output resource="hydrogen" rate="20"  />
+		<output resource="oxygen" rate="160"  />
+	</process> <!-- Oxygen Generator System (OGS) -->
 	
 	<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.1" defaultOn="true">
 		<description> 
@@ -276,11 +268,11 @@
 			
 			See https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
 		</description>
-		<input resource="carbon dioxide" rate="35.2" ambient="true" />
+		<input resource="carbon dioxide" rate="70.4" ambient="true" />
 		
-		<output resource="carbon monoxide" rate="11.2"  />
-		<output resource="oxygen" rate="12.8"  />
-	</process>
+		<output resource="carbon monoxide" rate="22.4"  />
+		<output resource="oxygen" rate="25.6"  />
+	</process> <!-- "Low Temperature Plasma CO2 Decomposition" -->
 	
 	     
 	<process name="Atmospheric Processing" power-required="0.04" >
@@ -308,7 +300,8 @@
 		<output resource="water" rate="0.03"  />
 		<output resource="carbon monoxide" rate=".058"  />
 		<output resource="carbon dioxide" rate="95.111"  />
-	</process>
+	</process> <!-- "Atmospheric Processing" -->
+	
 
 
 	<process name="Methanol Synthesis" power-required="2" >
@@ -331,7 +324,7 @@
 		
 		<output resource="water" rate="18.0"  />
 		<output resource="methanol" rate="32.0"  />
-	</process>
+	</process> <!-- "Methanol Synthesis" -->
 
 
 	<process name="Melt Ice" power-required="0.3125" >
@@ -361,9 +354,14 @@
 			See "Water and Brines on Mars: Current Evidence and 
 			Implications for MSL", 2013	
 												
-			Future: if using vacuum chamber, microwaving, or field effects, 
-			electrocatalysis, or other techniques, one may reduce power usage of 
+			Note: 
+			1. May consider using vacuum chamber, microwaving, or field effects, 
+			electrocatalysis, etc.  to reduce power usage of 
 			ice melting by ~10-fold.	
+			2. Exposing ice sunlight is the most economic way of melting ice.
+			3. Ice melts when outside temperature is above zero deg Celsius  
+
+			
 		</description>
 		<input resource="ice" rate="80.0"  />
 		
@@ -775,6 +773,10 @@
 		<output resource="cement" rate="50.0"  />
 	</process>
 
+<!-- 
+	https://marspedia.org/Concrete
+-->
+
 	<process name="Mix concrete 1" power-required="0.2" >
 		<description>
 	     Use cement as binder to make concrete
@@ -901,16 +903,22 @@
 	
 	<process name="Produce Ethylene" power-required="0.05" >
 		<description>
-			2CO + 4H&lt;sub&gt;2&lt;/sub&gt; -> C&lt;sub&gt;2&lt;/sub&gt;H&lt;sub&gt;4&lt;/sub&gt; (ethylene) + 2H&lt;sub&gt;2&lt;/sub&gt;O
+			See https://www.sciencedaily.com/releases/2020/09/200917084058.htm
+			
+			2CO2 + 6H2 → C2H4 + 4H2O
+			2*(12+32) , 12 , 24+4 , 18*4
+			88 , 12 , 28 , 72
+			
 			Requires iron catalyst.
+			
 		</description>
-		<input resource="carbon dioxide" rate="100.0" ambient="true" />
-		<input resource="hydrogen" rate="15.0"   />
-		<input resource="iron powder" rate="0.05"   />
+		<input resource="carbon dioxide" rate="88.0" ambient="true" />
+		<input resource="hydrogen" rate="12.0"   />
+		<input resource="iron powder" rate="0.04"   />
 		
-		<output resource="ethylene" rate="50.0"   />
-		<output resource="water" rate="64.2"  />
-		<output resource="iron powder" rate="0.05"  />
+		<output resource="ethylene" rate="28.0"   />
+		<output resource="water" rate="72.0"  />
+		<output resource="iron powder" rate="0.03"  />
 	</process>
 
 	<process name="Produce Polyethylene from Ethylene" power-required="0.01" >

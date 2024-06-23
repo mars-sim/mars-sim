@@ -341,7 +341,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		else if (ppa) {
 			double hydrogenDemand = goodsManager.getDemandValueWithID(ResourceUtil.hydrogenID);
 			double methaneDemand = goodsManager.getDemandValueWithID(ResourceUtil.methaneID);
-			score *= 0.1 * hydrogenDemand / methaneDemand;
+			score *= 0.01 * hydrogenDemand / methaneDemand;
 		}
 
 		else if (cfr) {
@@ -361,7 +361,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			double oxygenDemand = goodsManager.getDemandValueWithID(ResourceUtil.oxygenID);
 			double methanolDemand = goodsManager.getDemandValueWithID(ResourceUtil.methanolID);
 			double methaneDemand = goodsManager.getDemandValueWithID(ResourceUtil.methaneID);
-			score *= 0.1 * methanolDemand / methaneDemand / oxygenDemand;
+			score *= 0.01 * methanolDemand / methaneDemand / oxygenDemand;
 		}
 		
 		else if (olefin) {
@@ -394,12 +394,13 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		double inputValue = process.getResourcesValue(settlement, true);
 		double outputValue = process.getResourcesValue(settlement, false);
 		double score = outputValue - inputValue;
-
+		int modules = process.getNumModules();
+		
 		double[] toggleTime = process.getToggleSwitchDuration();
 		if ((toggleTime[0] > 0) && !process.isFlagged()) {
 			score = score + (100D * ((toggleTime[1] - toggleTime[0])/toggleTime[1]));
 		}
-		return score / 4;
+		return score / 4 / modules;
 	}
 
 }
