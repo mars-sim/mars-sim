@@ -8,9 +8,9 @@ package com.mars_sim.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.util.ArrayList;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -22,7 +22,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionRepairWork;
 import com.mars_sim.core.malfunction.Malfunctionable;
@@ -32,9 +31,9 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.utils.PercentageCellRenderer;
-import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
+import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.PercentageCellRenderer;
 
 
 /**

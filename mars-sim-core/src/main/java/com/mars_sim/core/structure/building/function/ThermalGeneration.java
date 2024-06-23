@@ -69,7 +69,7 @@ public class ThermalGeneration extends Function {
 				break;
 
 			case SOLAR_HEATING:
-				heatSource = new SolarHeatSource(building, heat * areaFactor);
+				heatSource = new SolarHeatingSource(building, heat * areaFactor);
 				break;
 				
 			case FUEL_HEATING:
@@ -206,12 +206,12 @@ public class ThermalGeneration extends Function {
 			// Calculate the unused
 			double sparePercentage = 100 - heatMode.getPercentage();
 			for (HeatSource heatSource : heatSources) {
-			    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
+			    if (heatSource.getType() == HeatSourceType.SOLAR_HEATING) {
 			    	heatSource.setPercentagePower(sparePercentage);
 			    	result += heatSource.getCurrentPower(getBuilding());
 			    }
 			   
-			    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
+			    else if (heatSource.getType() == HeatSourceType.FUEL_HEATING) {
 			    	 // if there's not enough electrical power
 				    if (!sufficientPower) {
 				    	heatSource.setPercentagePower(sparePercentage);

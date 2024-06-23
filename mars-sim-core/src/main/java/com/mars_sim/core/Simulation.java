@@ -76,7 +76,7 @@ import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.Heating;
 import com.mars_sim.core.structure.building.function.PowerSource;
 import com.mars_sim.core.structure.building.function.ResourceProcess;
-import com.mars_sim.core.structure.building.function.SolarHeatSource;
+import com.mars_sim.core.structure.building.function.SolarHeatingSource;
 import com.mars_sim.core.structure.building.function.farming.AlgaeFarming;
 import com.mars_sim.core.structure.building.function.farming.Crop;
 import com.mars_sim.core.structure.building.function.farming.CropConfig;
@@ -504,7 +504,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		PowerSource.initializeInstances(surfaceFeatures, orbitInfo, weather);
 		
-		SolarHeatSource.initializeInstances(surfaceFeatures);
+		SolarHeatingSource.initializeInstances(surfaceFeatures);
 		// Re-initialize Building function related class
 		Function.initializeInstances(bc, masterClock, pc, cc, surfaceFeatures,
 								     weather, unitManager);
@@ -638,7 +638,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		PowerSource.initializeInstances(surfaceFeatures, orbitInfo, weather);
 		
-		SolarHeatSource.initializeInstances(surfaceFeatures);
+		SolarHeatingSource.initializeInstances(surfaceFeatures);
 		// Re-initialize Building function related class
 		Function.initializeInstances(bc, masterClock, pc, cc, surfaceFeatures, weather, unitManager);
 		

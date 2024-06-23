@@ -32,7 +32,7 @@ import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.ElectricHeatSource;
 import com.mars_sim.core.structure.building.function.HeatMode;
 import com.mars_sim.core.structure.building.function.HeatSource;
-import com.mars_sim.core.structure.building.function.SolarHeatSource;
+import com.mars_sim.core.structure.building.function.SolarHeatingSource;
 import com.mars_sim.core.structure.building.function.ThermalGeneration;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -134,7 +134,7 @@ public class TabPanelThermalSystem extends TabPanelTable {
 									Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency.tooltip")); //$NON-NLS-1$		
 
 		// Prepare degradation rate label.
-		double degradRate = SolarHeatSource.DEGRADATION_RATE_PER_SOL;
+		double degradRate = SolarHeatingSource.DEGRADATION_RATE_PER_SOL;
 		heatInfoPanel.addTextField(Msg.getString("TabPanelThermalSystem.degradRate"),
 									StyleManager.DECIMAL_PERC.format(degradRate*100D),
 									Msg.getString("TabPanelThermalSystem.degradRate.tooltip")); //$NON-NLS-1$	
@@ -206,10 +206,10 @@ public class TabPanelThermalSystem extends TabPanelTable {
 			Iterator<HeatSource> j = heatSources.iterator();
 			while (j.hasNext()) {
 				HeatSource heatSource = j.next();
-				if (heatSource instanceof SolarHeatSource) {
+				if (heatSource instanceof SolarHeatingSource) {
 					i++;
-					SolarHeatSource solarHeatSource = (SolarHeatSource) heatSource;
-					eff_solar_heat += solarHeatSource.getEfficiencySolarHeat();
+					SolarHeatingSource solarHeatSource = (SolarHeatingSource) heatSource;
+					eff_solar_heat += solarHeatSource.getEfficiencyHeat();
 				}
 			}
 		}

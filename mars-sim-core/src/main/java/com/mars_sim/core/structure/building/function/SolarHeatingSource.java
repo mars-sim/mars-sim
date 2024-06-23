@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SolarHeatSource.java
- * @date 2022-06-24
+ * @date 2024-06-22
  * @author Manny Kung
  */
 package com.mars_sim.core.structure.building.function;
@@ -11,9 +11,10 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 
 /**
- * This class accounts for the effect of temperature via passive solar water heating or passive solar heat collector system.
+ * This class accounts for the effect of temperature via 
+ * passive solar water heating or passive solar heat collector system.
  */
-public class SolarHeatSource extends HeatSource {
+public class SolarHeatingSource extends HeatSource {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -21,17 +22,19 @@ public class SolarHeatSource extends HeatSource {
 	// Tentatively set to 0.14% or (.0014) efficiency degradation per sol as reported by NASA MER
 	public static final double DEGRADATION_RATE_PER_SOL = .0014;
 	
-	private double efficiencySolar2Heat = .68;
+	private double efficiencyHeat = .68;
 	
-	private double efficiencySolar2Electricity = .55;
+	private double efficiencyElectric = .55;
 
 	private Building building;
 	
 	/**
 	 * Constructor.
+	 * 
+	 * @building the building source
 	 * @param maxHeat the maximum generated power.
 	 */
-	public SolarHeatSource(Building building, double maxHeat) {
+	public SolarHeatingSource(Building building, double maxHeat) {
 		// Call HeatSource constructor.
 		super(HeatSourceType.SOLAR_HEATING, maxHeat);
 		this.building = building;
@@ -41,20 +44,20 @@ public class SolarHeatSource extends HeatSource {
 		return surface.getSolarIrradiance(building.getCoordinates()) / 1000D;
 	}
 
-	public double getEfficiencySolarHeat() {
-		return efficiencySolar2Heat;
+	public double getEfficiencyHeat() {
+		return efficiencyHeat;
 	}
 
-	public double getEfficiencyElectricHeat() {
-		return efficiencySolar2Electricity;
+	public double getEfficiencyElectric() {
+		return efficiencyElectric;
 	}
 
 	public void setEfficiencyToHeat(double value) {
-		efficiencySolar2Heat = value;
+		efficiencyHeat = value;
 	}
 
 	public void setEfficiencyToElectricity(double value) {
-		efficiencySolar2Electricity = value;
+		efficiencyElectric = value;
 	}
 
 	@Override
@@ -66,7 +69,8 @@ public class SolarHeatSource extends HeatSource {
 
 	@Override
 	public double getCurrentPower(Building building) {
-        return getCurrentHeat(building);
+		// Future: How to switch from heating mode to electrical mode ?
+        return 0;
     }
 	
 	@Override
@@ -80,7 +84,7 @@ public class SolarHeatSource extends HeatSource {
 	}
 	
 	/**
-	 * Reloads instances after loading from a saved sim
+	 * Reloads instances after loading from a saved sim.
 	 * 
 	 * @param {@link SurfaceFeatures}
 	 */
