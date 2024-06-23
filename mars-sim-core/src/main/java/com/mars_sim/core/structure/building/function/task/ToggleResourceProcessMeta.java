@@ -46,7 +46,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		private static final long serialVersionUID = 1L;
 		
 		private ResourceProcess process;
-
+		
         public ToggleProcessJob(SettlementMetaTask mt, Building processBuilding, ResourceProcess process,
 						RatingScore score) {
 			super(mt, "Toggle " + process.getProcessName(), processBuilding, score);
@@ -89,10 +89,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
 	
-	private static final double RESOURCE_URGENT = 2;
-	private static final double RESOURCE_DOUBLE_URGENT = 4;
-	private static final double WASTE_URGENT = 30;
-	private static final double WASTE_DOUBLE_URGENT = 60;
+	private static final double RESOURCE_RATE_0 = 10;
+	private static final double RESOURCE_RATE_1 = 30;
+	private static final double WASTE_RATE_0 = 10;
+	private static final double WASTE_RATE_1 = 30;
+	private static final double MAX_SCORE = 5_000;
 	
     public ToggleResourceProcessMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
@@ -136,7 +137,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 						selectMostPosNegProcess(building, 
 								building.getResourceProcessing().getProcesses(), 
 								false, 
-								RESOURCE_URGENT, RESOURCE_DOUBLE_URGENT);
+								RESOURCE_RATE_0, RESOURCE_RATE_1);
 				if (entry != null) {
 					tasks.add(entry);
 				}
@@ -151,7 +152,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 						selectMostPosNegProcess(building, 
 								building.getWasteProcessing().getProcesses(), 
 								true, 
-								WASTE_URGENT, WASTE_DOUBLE_URGENT);
+								WASTE_RATE_0, WASTE_RATE_1);
 				if (entry != null) {
 					tasks.add(entry);
 				}
@@ -174,18 +175,25 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	private SettlementTask selectMostPosNegProcess(Building building, 
 			List<ResourceProcess> processes, boolean isWaste, 
 			double rate0, double rate1) {
-//		ResourceProcess mostPosProcess = null;
-//		ResourceProcess mostNegProcess = null;
-//		double highest = 0;
-//		double lowest = 0;
+
+		// Track a resource process having a positive or negative score 
+		boolean scorePositive = false;
+
+		int flip = RandomUtil.getRandomInt(1);
+		if (flip == 0) {
+			scorePositive = true;
+		}
 
 		Settlement settlement = building.getSettlement();
 
 		Map<ResourceProcess, Double> resourceProcessMap = new HashMap<>();
 		
 		for (ResourceProcess process : processes) {
-			if (process.isToggleAvailable() && !process.isFlagged()) {
+			if (process.canToggle() && !process.isFlagged()) {
 								
+				// For each iteration, give the processes with a positive score
+				// versus a negative score a chance to run
+	
 				double score = 0;
 				// if score is positive, toggle on 
 				// if score is negative, toggle off
@@ -207,100 +215,122 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					
 					score = modifyScore(settlement, name, score);
 				}
-				
+								
 				// Limit the score so that all processes have the chance to be picked
-				if (score > 5_000)
-					score = 5_000;
-				else if (score < -5_000)
-					score = -5_000;
-					
-				// Save the score for that process for displaying its value
-				process.setScore(score);
+				if (score > MAX_SCORE)
+					score = MAX_SCORE;
+				else if (score < -MAX_SCORE)
+					score = -MAX_SCORE;
 				
-				// Check if settlement is missing one or more of the output resources.
-				if (process.isOutputsEmpty(settlement)) {
-					// will push for toggling on this process to produce more output resources
-					if (process.isProcessRunning()) {
-						// Skip this process. No need to turn it on.
-						continue;
-					} else {
-						// will need to push for toggling on this process since output resource is zero
-						score *= rate0;
-					}
-				}
-
-				// NOTE: Need to detect if the output resource is dwindling
-
-				// Check if settlement is missing one or more of the input resources.
-				else if (!process.isInputsPresent(settlement)) { 
-					if (process.isProcessRunning()) {
-						// will need to push for toggling off this process 
-						// since input resource is
-						// insufficient
-						score *= rate0;
-					} else {
-						// Skip this process. no need to turn it on.
-						continue;
-					}
-				}
-
-				if (score > 0 && process.isProcessRunning()) {
-					// Skip this process. No need to turn it off.
-					continue;
-				}
-
-				else if (score < 0 && process.isProcessRunning()) {
-					// want to shut it down
-					score *= rate0;
-				}
-
-				else if (score > 0 && !process.isProcessRunning()) {
-					// want to turn it on
-					score *= rate1;
-				}
-
-				else if (score < 0 && !process.isProcessRunning()) {
-					// // Skip this process. no need to turn it on.
-					continue;
-				}
+				// Note : Since scorePositive is 50% positive and 50% negative, it will 
+				// give equal chance of picking a process with a positive versus 
+				// negative score
 				
-				// Save the process and its score into the resource process map
-				resourceProcessMap.put(process, Math.abs(score));
-
-//				if (score >= highest) {
-//					highest = score;
-//					mostPosProcess = process;
-//				} else if (score <= lowest) {
-//					lowest = score;
-//					mostNegProcess = process;
-//				}
+			
+				if ((score > 0 && scorePositive)
+					|| (score < 0 && !scorePositive)) {
+						parseProcess(resourceProcessMap, settlement, process, 
+							rate0, rate1, score);
+				}
 			}
 		}
 
-		
-		// Decide whether to create a TaskJob
-//		ResourceProcess bestProcess = null;
-//		double bestScore = 0;
-//		if ((mostPosProcess != null) && (highest >= Math.abs(lowest))) {
-//			bestProcess = mostPosProcess;
-//			bestScore = highest;
-//		}
-//		else if (mostNegProcess != null) {
-//			bestProcess = mostNegProcess;
-//			bestScore = -lowest;
-//		}
-
 		// Use probability map to obtain the process
-		ResourceProcess bestProcess = RandomUtil.getWeightedRandomObject(resourceProcessMap);
+		ResourceProcess selectedProcess = RandomUtil.getWeightedRandomObject(resourceProcessMap);
 		
-		if (bestProcess != null) {
-			double bestScore = resourceProcessMap.get(bestProcess);
-			return new ToggleProcessJob(this, building, bestProcess, new RatingScore(bestScore));
+		if (selectedProcess != null) {
+			double score = resourceProcessMap.get(selectedProcess);
+			// Note: For processes having very low score, it will still be selected if 
+			// all other processes are having very low score at the same time.
+			// Therefore, the second selection process is needed to filter out 
+			// and avoid picking a process having a score of, say, 0.5.
+			
+			// Note: May multiply the score by a factor to boost the chance
+			
+			if (score > 100 || RandomUtil.getRandomDouble(100) < score) {
+				System.out.println(settlement.getName() + " " 
+					+ selectedProcess.getProcessName() + ": " + score);
+				return new ToggleProcessJob(this, building, selectedProcess, new RatingScore(score));
+			}
 		}
 
 		return null;
 	}
 
+	/**
+	 * Derives the score for a resource process.
+	 * 
+	 * @param resourceProcessMap
+	 * @param process
+	 * @param score
+	 */
+	private void parseProcess(Map<ResourceProcess, Double> resourceProcessMap, 
+			Settlement settlement, ResourceProcess process, 
+			double rate0, double rate1, double score) {
+			
+		// Save the score for that process for displaying its value
+		process.setScore(score);
+		
+		// Check if settlement is missing one or more of the output resources.
+		if (process.isOutputsEmpty(settlement)) {
+			// will push for toggling on this process to produce more output resources
+			if (process.isProcessRunning()) {
+				// Note: how to speed up the process to produce more outputs
+				// Skip this process. no need to turn it off.
+				return;
+			} else {
+				// will need to push for toggling on this process since output resource is zero
+				score = MAX_SCORE;
+			}
+		}
+
+		// NOTE: Need to detect if the output resource is dwindling
+
+		// Check if settlement is missing one or more of the input resources.
+		else if (!process.isInputsPresent(settlement)) { 
+			if (process.isProcessRunning()) {
+				// will need to push for toggling off this process 
+				// since input resource is insufficient
+				score = MAX_SCORE;
+			} else {
+				// Skip this process. no need to turn it on.
+				return;
+			}
+		}
+
+		else {	
+			// if output score is greater than the input score
+			if (score > 0 && process.isProcessRunning()) {
+				// Skip this process. No need to turn it off.
+				return;
+			}
+	
+			// if output score is smaller than the input score
+			else if (score < 0 && process.isProcessRunning()) {
+				// want to shut it down
+				score *= rate0;
+			}
+	
+			// if output score is greater than the input score
+			else if (score > 0 && !process.isProcessRunning()) {
+				// want to turn it on
+				score *= rate1;
+			}
+	
+			// if output score is smaller than the input score
+			else if (score < 0 && !process.isProcessRunning()) {
+				// // Skip this process. no need to turn it on.
+				return;
+			}			
+		}
+		
+		// Save the process and its score into the resource process map
+		if (score > 0)
+			resourceProcessMap.put(process, score);
+		else if (score < 0)
+			resourceProcessMap.put(process, -score);
+	}
+	
 	/**
 	 * Modifies the score for certain resource processes.
 	 * 

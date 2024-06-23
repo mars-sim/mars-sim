@@ -557,7 +557,7 @@ public class CommandHelper {
 					"Active", "Level", "Toggle");
 		for(ResourceProcess p : processes) {
 			String nextToggle = null;
-			if (p.isToggleAvailable()) {
+			if (p.canToggle()) {
 				// Toggling is available
 				double[] toggleTime = p.getToggleSwitchDuration();
 				if (toggleTime[0] == 0D) {

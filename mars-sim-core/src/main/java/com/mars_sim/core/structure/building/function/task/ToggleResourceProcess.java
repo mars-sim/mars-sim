@@ -71,7 +71,7 @@ public class ToggleResourceProcess extends Task {
 			clearTask("Process toggle already active with someone else.");
 			return;
 		}
-		else if (!process.isToggleAvailable()) {
+		else if (!process.canToggle()) {
 			clearTask("Process already completed toggled.");
 			return;
 		}

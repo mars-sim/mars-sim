@@ -387,11 +387,11 @@ public class ResourceProcess implements Serializable {
 	}
 
 	/**
-	 * Checks if it has exceeded the time limit.
+	 * Checks if the process has exceeded the time limit.
 	 *
 	 * @return
 	 */
-	public boolean isToggleAvailable() {
+	public boolean canToggle() {
 		MarsTime now = clock.getMarsTime();
 		int sol = now.getMissionSol();
 		int millisol = now.getMillisolInt();
