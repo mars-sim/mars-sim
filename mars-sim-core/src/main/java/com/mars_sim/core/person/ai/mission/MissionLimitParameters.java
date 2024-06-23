@@ -17,7 +17,9 @@ import com.mars_sim.core.parameter.ParameterValueType;
  */
 public class MissionLimitParameters extends ParameterCategory {
 
-    public static final ParameterCategory INSTANCE = new MissionLimitParameters();
+    private static final long serialVersionUID = 1L;
+
+	public static final ParameterCategory INSTANCE = new MissionLimitParameters();
 
     /** The total number of missions allowed. */
     public static final String TOTAL_MISSIONS = "total";

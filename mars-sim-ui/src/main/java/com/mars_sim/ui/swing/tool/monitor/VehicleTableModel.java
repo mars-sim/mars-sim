@@ -37,6 +37,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  * The VehicleTableModel that maintains a list of Vehicle objects.
  * It maps key attributes of the Vehicle into Columns.
  */
+@SuppressWarnings("serial")
 public class VehicleTableModel extends UnitTableModel<Vehicle> {
 
 	private static final String ON = "On";

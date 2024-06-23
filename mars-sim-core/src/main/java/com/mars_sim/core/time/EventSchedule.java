@@ -13,7 +13,8 @@ import java.io.Serializable;
  * It can cover one off events or repeating events.
  */
 public class EventSchedule implements Serializable {
-    private int firstSol;
+    private static final long serialVersionUID = 1L;
+	private int firstSol;
     private int frequency;
     private int timeOfDay;
 

@@ -8,7 +8,8 @@ import junit.framework.TestCase;
 
 
 public class ProjectTest extends TestCase {
-    static final class TestStep extends ProjectStep {
+    @SuppressWarnings("serial")
+	static final class TestStep extends ProjectStep {
 
         int expectedCount = 0;
         int startCount = 0;

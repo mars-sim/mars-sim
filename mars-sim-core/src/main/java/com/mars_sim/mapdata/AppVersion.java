@@ -78,6 +78,7 @@ public class AppVersion {
 	}
 	
   
+	@SuppressWarnings("resource")
 	private static void decompressMapData(String xzFilename) throws IOException {
       
 		String datFilename = xzFilename.replace(".xz", ".dat");

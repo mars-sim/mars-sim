@@ -20,6 +20,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  * The BuildingTableModel maintains a list of Building objects. By defaults the source
  * of the list is the Unit Manager. 
  */
+@SuppressWarnings("serial")
 public class BuildingTableModel extends UnitTableModel<Building> {
 
 	// Column indexes

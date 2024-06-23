@@ -27,7 +27,9 @@ import com.mars_sim.mapdata.location.Coordinates;
  */
 public class MissionTravelStep extends MissionStep {
 
-    private static final SimLogger logger = SimLogger.getLogger(MissionTravelStep.class.getName());
+    private static final long serialVersionUID = 1L;
+
+	private static final SimLogger logger = SimLogger.getLogger(MissionTravelStep.class.getName());
 
     private static final double SMALL_DISTANCE = 0.1D;
     private NavPoint destination;

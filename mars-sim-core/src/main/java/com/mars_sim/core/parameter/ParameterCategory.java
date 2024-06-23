@@ -20,7 +20,9 @@ import com.mars_sim.tools.Msg;
  */
 public class ParameterCategory implements Serializable {
 
-    /**
+    private static final long serialVersionUID = 1L;
+
+	/**
      * Define of a single Parameter value.
      */
     public record ParameterSpec(String id, String displayName, ParameterValueType type) {}

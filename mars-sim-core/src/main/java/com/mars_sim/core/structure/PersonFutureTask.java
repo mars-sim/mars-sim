@@ -22,7 +22,9 @@ import com.mars_sim.core.time.MarsTime;
  */
 public class PersonFutureTask implements ScheduledEventHandler{
 
-    private static SimLogger logger = SimLogger.getLogger(PersonFutureTask.class.getName());
+    private static final long serialVersionUID = 1L;
+
+	private static SimLogger logger = SimLogger.getLogger(PersonFutureTask.class.getName());
 
     private transient TaskFactory factory;
     private String mtID;

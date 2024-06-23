@@ -23,7 +23,9 @@ import com.mars_sim.core.time.MarsTime;
  * The activity can be reused or be a one off; defined bu the associated definition.
  */
 public class GroupActivity implements ScheduledEventHandler {
-    /**
+    private static final long serialVersionUID = 1L;
+
+	/**
      * The State that a Group Activity transitions
      */
     public enum ActivityState {

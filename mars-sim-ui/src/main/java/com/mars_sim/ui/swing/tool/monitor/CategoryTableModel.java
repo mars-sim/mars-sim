@@ -21,6 +21,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  * entities that are independent of a Settlement. This model creates one row per Category per Settlement.
  * The row has a unique key as CategoryKey.
  */
+@SuppressWarnings("serial")
 public abstract class CategoryTableModel<T> extends EntityTableModel<CategoryKey<T>>
             implements UnitListener {
 

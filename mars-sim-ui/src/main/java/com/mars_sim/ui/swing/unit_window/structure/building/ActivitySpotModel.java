@@ -23,7 +23,8 @@ import com.mars_sim.ui.swing.utils.EntityModel;
  */
 public class ActivitySpotModel extends AbstractTableModel implements EntityModel {
 
-    private static final int NAME_COL = 0;
+    private static final long serialVersionUID = 1L;
+	private static final int NAME_COL = 0;
     private static final int POS_COL = 1;
     private static final int WORK_COL = 2;
     

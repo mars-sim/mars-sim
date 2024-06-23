@@ -15,7 +15,8 @@ import com.mars_sim.core.project.Stage;
  */
 class MissionCloseStep extends MissionStep {
 
-    private static final SimLogger logger = SimLogger.getLogger(MissionCloseStep.class.getName());
+    private static final long serialVersionUID = 1L;
+	private static final SimLogger logger = SimLogger.getLogger(MissionCloseStep.class.getName());
 
     public MissionCloseStep(MissionProject project) {
         super(project, Stage.CLOSEDOWN, "Closedown");

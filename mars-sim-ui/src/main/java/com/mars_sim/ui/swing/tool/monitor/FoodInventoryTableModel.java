@@ -21,8 +21,9 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  * This class model how food data is organized and displayed
  * within the Monitor Window for a settlement.
  */
-public class FoodInventoryTableModel extends CategoryTableModel<Food>
- {
+public class FoodInventoryTableModel extends CategoryTableModel<Food> {
+
+	private static final long serialVersionUID = 1L;
 
 	protected static final int NUM_DATA_COL = 7;
 

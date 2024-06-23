@@ -25,7 +25,8 @@ public class ParameterCategoryTest extends TestCase {
     private static final String DISPLAY_PREFIX = "Display_";
     private static final String ID_PREFIX = "key_";
 
-    class TestCategory extends ParameterCategory {
+    @SuppressWarnings("serial")
+	class TestCategory extends ParameterCategory {
 
         public TestCategory() {
             super(CAT_NAME);

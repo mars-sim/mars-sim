@@ -193,11 +193,12 @@ public class SettlementSuppliesPanel {
     }
 
     /**
-     * Table model to provide the Map data in a read ony model. To provide correct sort
-     * the modle derviis the Class type of teh value coumn from the first item.
+     * Table model to provide the Map data in a read only model. 
+     * Sort the model and derive the Class type of the value column from the first item.
      */
     private static class SuppliesTableModel extends DefaultTableModel {
-        private Class<? extends Number> valueType = null;
+        private static final long serialVersionUID = 1L;
+		private Class<? extends Number> valueType = null;
 
         SuppliesTableModel(Map<String, ? extends Number> data, String itemName, String valueName) {
             super();

@@ -22,6 +22,7 @@ import com.mars_sim.mapdata.location.Direction;
 /**
  * This is a Mission that executes a test drive/driver training mission.
  */
+@SuppressWarnings("serial")
 public class TestDriveMission extends MissionVehicleProject{
 
     // Distance in the test drive before turning round

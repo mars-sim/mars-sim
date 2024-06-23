@@ -12,7 +12,8 @@ import com.mars_sim.core.structure.Settlement;
 
 public class SettlementTaskManagerTest extends AbstractMarsSimUnitTest {
     // Test settlement task that just record tinme
-    private static class TestTask extends SettlementTask {
+    @SuppressWarnings("serial")
+	private static class TestTask extends SettlementTask {
         private static final RatingScore DEFAULT_SCORE = new RatingScore(10);
 
         private static int counter = 0;
@@ -85,7 +86,9 @@ public class SettlementTaskManagerTest extends AbstractMarsSimUnitTest {
      */
     private SettlementTaskManager buildManager(Settlement s, List<SettlementMetaTask> tasks) {
         return new SettlementTaskManager(s) {
-            @Override
+            private static final long serialVersionUID = 1L;
+
+			@Override
             protected List<SettlementMetaTask> getMetaTasks() {
                 return tasks;
             }

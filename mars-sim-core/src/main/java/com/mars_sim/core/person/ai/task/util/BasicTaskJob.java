@@ -16,7 +16,8 @@ import com.mars_sim.core.robot.Robot;
  */
 public class BasicTaskJob extends AbstractTaskJob {
 
-    // MetaTask cannot be serialised
+    private static final long serialVersionUID = 1L;
+	// MetaTask cannot be serialised
     private transient TaskFactory mt;
     private String mtID;
 

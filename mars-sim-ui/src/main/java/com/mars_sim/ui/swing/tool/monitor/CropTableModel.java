@@ -27,6 +27,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
 /**
  * The CropTableModel keeps track of the quantity of the growing crops in each greenhouse by categories.
  */
+@SuppressWarnings("serial")
 public class CropTableModel extends UnitTableModel<Building> {
 
 	// Column indexes

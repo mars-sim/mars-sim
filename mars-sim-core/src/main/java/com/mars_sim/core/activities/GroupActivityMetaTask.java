@@ -26,7 +26,8 @@ public class GroupActivityMetaTask extends MetaTask implements SettlementMetaTas
 
     private class GroupActivitySettlementTask extends SettlementTask {
 
-        private GroupActivity activity;
+        private static final long serialVersionUID = 1L;
+		private GroupActivity activity;
 
         protected GroupActivitySettlementTask(SettlementMetaTask parent, GroupActivity activity,
                                     RatingScore score, int attendees) {

@@ -17,7 +17,8 @@ import com.mars_sim.core.parameter.ParameterValueType;
  */
 public class SettlementParameters extends ParameterCategory {
 
-    public static final SettlementParameters INSTANCE = new SettlementParameters();
+    private static final long serialVersionUID = 1L;
+	public static final SettlementParameters INSTANCE = new SettlementParameters();
     public static final String MAX_EVA = "max_eva";
     
     private SettlementParameters() {

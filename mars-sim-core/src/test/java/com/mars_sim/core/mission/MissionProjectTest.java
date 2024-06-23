@@ -26,7 +26,8 @@ public class MissionProjectTest extends AbstractMarsSimUnitTest {
     private static final double OXYGEN_VALUE = 10D;
     private static final double FOOD_VALUE = 22D;
 
-    class TestStep extends MissionStep {
+    @SuppressWarnings("serial")
+	class TestStep extends MissionStep {
 
         private double oxygen;
         private double food;
@@ -57,7 +58,8 @@ public class MissionProjectTest extends AbstractMarsSimUnitTest {
         }
     }
 
-    class TestMission extends MissionProject {
+    @SuppressWarnings("serial")
+	class TestMission extends MissionProject {
 
         public TestMission(String name, Person leader, int numSteps) {
             super(name, MissionType.AREOLOGY, 1, 1, 1, leader);

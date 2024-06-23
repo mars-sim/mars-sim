@@ -79,6 +79,7 @@ public class DecompressXZ {
     }
     
   
+	@SuppressWarnings("resource")
 	private void decompressMapData(String xz, boolean isStandalone) throws IOException {
       
 	    String xzFilename = xz;//xz.substring(1, xz.length());

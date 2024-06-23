@@ -18,7 +18,8 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
  */
 public class GroupActivityTask extends Task {
 
-    public static final TaskPhase WAITING = new TaskPhase("Waiting"); 
+    private static final long serialVersionUID = 1L;
+	public static final TaskPhase WAITING = new TaskPhase("Waiting"); 
     public static final TaskPhase ACTIVE = new TaskPhase("Active"); 
 
     private GroupActivity activity;

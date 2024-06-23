@@ -17,7 +17,8 @@ import com.mars_sim.core.parameter.ParameterValueType;
  */
 public class TaskParameters extends ParameterCategory{
 
-    public static final ParameterCategory INSTANCE = new TaskParameters();
+    private static final long serialVersionUID = 1L;
+	public static final ParameterCategory INSTANCE = new TaskParameters();
 
     private TaskParameters() {
         super("TASK_WEIGHT");

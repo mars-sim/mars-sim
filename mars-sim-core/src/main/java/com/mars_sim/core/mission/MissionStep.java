@@ -26,6 +26,8 @@ import com.mars_sim.core.vehicle.Vehicle;
  * May also override the start & complete methods to implement any startup or cleardown logic.
  */
 public abstract class MissionStep extends ProjectStep {
+	private static final long serialVersionUID = 1L;
+
 	private static final SimLogger logger = SimLogger.getLogger(MissionStep.class.getName());
 
     private static UnitManager unitManager;

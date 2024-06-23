@@ -18,7 +18,8 @@ import com.mars_sim.core.parameter.ParameterValueType;
  */
 public class ProcessParameters extends ParameterCategory {
 
-    public static final ParameterCategory INSTANCE = new ProcessParameters();
+    private static final long serialVersionUID = 1L;
+	public static final ParameterCategory INSTANCE = new ProcessParameters();
 
     
     private ProcessParameters() {

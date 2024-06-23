@@ -109,13 +109,19 @@ public class Read extends Task {
 	}
 	
 	/**
-	 * Create a custom impact for leaning a certain skill. This has a fixed effective skill
+	 * Creates a custom impact for leaning a certain skill. This has a fixed effective skill
 	 * because the skill level of the target skill cannot influence the ability to learn.
+	 * 
+	 * @param reading
+	 * @return
 	 */
 	private static ExperienceImpact createImpact(SkillType reading) {
 		return new ExperienceImpact(0.5D,
 						NaturalAttributeType.ACADEMIC_APTITUDE, PhysicalEffort.NONE,
 						-0.1D, reading) {
+
+							private static final long serialVersionUID = 1L;
+
 							@Override
 							public int getEffectiveSkillLevel(Worker w) {
 								return 2;

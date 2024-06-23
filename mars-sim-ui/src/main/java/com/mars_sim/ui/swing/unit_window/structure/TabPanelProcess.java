@@ -24,6 +24,7 @@ import com.mars_sim.ui.swing.utils.ProcessInfoRenderer;
 /**
  * Tab panel showing the process history of a settlement
  */
+@SuppressWarnings("serial")
 public class TabPanelProcess extends TabPanel {
 	private static final String ID_ICON = "time"; //$NON-NLS-1$
 
@@ -67,6 +68,7 @@ public class TabPanelProcess extends TabPanel {
     /**
 	 * Internal class used as model for the attribute table.
 	 */
+    @SuppressWarnings("serial")
 	private class HistoryPanel extends JHistoryPanel<CompletedProcess> {
 		private static final ColumnSpec[] COLUMNS = {
                         new ColumnSpec("Process", String.class),

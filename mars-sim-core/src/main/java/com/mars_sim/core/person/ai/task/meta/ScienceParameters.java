@@ -19,7 +19,8 @@ import com.mars_sim.core.science.ScienceType;
  */
 public class ScienceParameters extends ParameterCategory {
 
-    public static final ParameterCategory INSTANCE = new ScienceParameters();
+    private static final long serialVersionUID = 1L;
+	public static final ParameterCategory INSTANCE = new ScienceParameters();
 
     private ScienceParameters() {
         super("SCIENCE");

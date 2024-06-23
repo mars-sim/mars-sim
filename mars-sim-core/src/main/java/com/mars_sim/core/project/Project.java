@@ -17,7 +17,9 @@ import com.mars_sim.core.person.ai.task.util.Worker;
  * Represents a project that has a number of steps
  */
 public class Project implements Serializable {
-    private static final SimLogger logger = SimLogger.getLogger(Project.class.getName());
+    private static final long serialVersionUID = 1L;
+
+	private static final SimLogger logger = SimLogger.getLogger(Project.class.getName());
 
     private String name;
     private List<ProjectStep> steps = new ArrayList<>();

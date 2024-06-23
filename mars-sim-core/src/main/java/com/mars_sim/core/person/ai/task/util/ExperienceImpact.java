@@ -24,7 +24,8 @@ import com.mars_sim.core.time.MarsTime;
  */
 public class ExperienceImpact implements Serializable {
     
-    // Taken from BotTaskManager; should be driven by RobotType
+    private static final long serialVersionUID = 1L;
+	// Taken from BotTaskManager; should be driven by RobotType
     private static final double ROBOT_WORK_POWER = 0.2D;
 
     /**

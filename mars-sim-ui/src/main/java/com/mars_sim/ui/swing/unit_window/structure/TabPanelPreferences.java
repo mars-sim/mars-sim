@@ -39,6 +39,7 @@ import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 
+@SuppressWarnings("serial")
 public class TabPanelPreferences extends TabPanelTable {
 
 	/**
@@ -179,6 +180,7 @@ public class TabPanelPreferences extends TabPanelTable {
 	private static class PreferenceTableModel
 				extends AbstractTableModel {
 
+		private static final long serialVersionUID = 1L;
 		private transient List<RenderableKey> items;
 		private transient ParameterManager target;
 
@@ -277,6 +279,8 @@ public class TabPanelPreferences extends TabPanelTable {
 	 * Renderer for preference category items
 	 */
 	private static class ParameterCategoryRenderer extends BasicComboBoxRenderer {
+		private static final long serialVersionUID = 5196005571089330950L;
+
 		@Override
 		public Component getListCellRendererComponent(JList list, Object value,
 					int index, boolean isSelected, boolean cellHasFocus) {

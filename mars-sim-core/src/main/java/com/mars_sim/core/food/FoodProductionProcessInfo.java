@@ -17,6 +17,8 @@ import com.mars_sim.core.process.ProcessItem;
  */
 public class FoodProductionProcessInfo extends ProcessInfo {
 
+	private static final long serialVersionUID = 1L;
+
 	public FoodProductionProcessInfo(String name, String description, int techLevelRequired, int skillLevelRequired,
 			double workTimeRequired, double processTimeRequired, double powerRequired, List<ProcessItem> inputList,
 			List<ProcessItem> outputList) {

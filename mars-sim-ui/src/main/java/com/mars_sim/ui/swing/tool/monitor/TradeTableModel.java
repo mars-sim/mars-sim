@@ -26,6 +26,7 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 
+@SuppressWarnings("serial")
 public class TradeTableModel extends CategoryTableModel<Good> {
 
 	/** Names of Columns. */

@@ -24,7 +24,8 @@ import org.tukaani.xz.*;
  * reads from standard input.
  */
 class XZDecDemo {
-    public static void main(String[] args) {
+    @SuppressWarnings("resource")
+	public static void main(String[] args) {
         byte[] buf = new byte[8192];
         String name = null;
 

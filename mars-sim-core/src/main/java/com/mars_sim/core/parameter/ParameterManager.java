@@ -18,7 +18,9 @@ import java.util.Map;
  */
 public class ParameterManager implements Serializable {
     
-    /**
+    private static final long serialVersionUID = 1L;
+
+	/**
      * The key used for Parameters
      */
     public record ParameterKey(ParameterCategory category, String id)

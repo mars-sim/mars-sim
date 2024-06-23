@@ -32,6 +32,7 @@ import com.mars_sim.tools.Msg;
  * The panel provides a filters based on teh Mars Sol according to the items in
  * the history.
  */
+@SuppressWarnings("serial")
 public abstract class JHistoryPanel<T> extends JPanel {
     /**
 	 *
@@ -41,6 +42,7 @@ public abstract class JHistoryPanel<T> extends JPanel {
 	/**
      * Table model that holds the items in the history
      */
+	@SuppressWarnings("serial")
 	private class ItemModel extends AbstractTableModel {
 
 		private List<HistoryItem<T>> items;
@@ -121,6 +123,7 @@ public abstract class JHistoryPanel<T> extends JPanel {
 		itemModel = new ItemModel();
 
 		// Create schedule table
+		@SuppressWarnings("serial")
 		JTable table = new JTable(itemModel) {
 			@Override
             public String getToolTipText(MouseEvent e) {

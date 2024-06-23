@@ -44,7 +44,9 @@ public abstract class MissionProject implements Mission {
      * Controller of mission flow. Monitors the start & stop callbacks
      */
     private final class MissionController extends Project {
-        private MissionController(String name) {
+        private static final long serialVersionUID = 1L;
+
+		private MissionController(String name) {
             super(name);
         }
 

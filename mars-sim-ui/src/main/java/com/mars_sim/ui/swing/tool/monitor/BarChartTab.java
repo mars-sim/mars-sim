@@ -40,7 +40,7 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.AbstractSeriesDataset;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
-
+@SuppressWarnings("serial")
 class BarChartTab extends MonitorTab {
 
 	/** Maximum label length. */

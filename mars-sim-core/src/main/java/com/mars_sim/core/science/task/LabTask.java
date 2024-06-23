@@ -40,7 +40,9 @@ import com.mars_sim.tools.util.RandomUtil;
  */
 public abstract class LabTask extends Task implements ResearchScientificStudy {
 
-    private static SimLogger logger = SimLogger.getLogger(LabTask.class.getName());
+    private static final long serialVersionUID = 1L;
+
+	private static SimLogger logger = SimLogger.getLogger(LabTask.class.getName());
 
     private Lab lab;
 	private ScientificStudy study;

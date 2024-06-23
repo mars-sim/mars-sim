@@ -15,7 +15,8 @@ import com.mars_sim.core.person.ai.task.util.Worker;
  */
 public abstract class ProjectStep implements Serializable {
 
-    private Project parent;
+    private static final long serialVersionUID = 1L;
+	private Project parent;
     private Stage stage;
     private String description;
     private boolean completed = false;;

@@ -29,7 +29,8 @@ import com.mars_sim.tools.util.RandomUtil;
  */
 public class MissionDisembarkStep extends MissionStep {
 
-    private static final SimLogger logger = SimLogger.getLogger(MissionDisembarkStep.class.getName());
+    private static final long serialVersionUID = 1L;
+	private static final SimLogger logger = SimLogger.getLogger(MissionDisembarkStep.class.getName());
 
     /**
      * @param parent Parent mission

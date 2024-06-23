@@ -16,6 +16,10 @@ import com.mars_sim.core.resource.ItemType;
  * Information about a type of salvage.
  */
 public class SalvageProcessInfo extends ProcessInfo {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ProcessItem salvaged;
 
 	public SalvageProcessInfo(ProcessItem salvaged, String description, int techLevelRequired, int skillLevelRequired,
