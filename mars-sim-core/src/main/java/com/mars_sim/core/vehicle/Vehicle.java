@@ -91,14 +91,14 @@ public abstract class Vehicle extends Unit
 	private static final int MAX_NUM_SOLS = 14;
 	
 	/** The error margin for determining vehicle range. (Actual distance / Safe distance). */
-	private static double fuel_range_error_margin;
-	private static double life_support_range_error_margin;
+	private static double fuelRangeErrorMargin;
+	private static double lifeSupportRangeErrorMargin;
 
 	private static final String IMMINENT = " be imminent.";
 	private static final String DETECTOR = "The radiation detector just forecasted a ";
 
 	/** The types of status types that make a vehicle unavailable for us. */
-	private static final List<StatusType> badStatus = Arrays.asList(
+	private static final List<StatusType> UNAVAILABLE_STATUS = Arrays.asList(
 			StatusType.MAINTENANCE,
 			StatusType.TOWED,
 			StatusType.MOVING,
@@ -203,9 +203,9 @@ public abstract class Vehicle extends Unit
 	private MSolDataLogger<Integer> roadPowerHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
 	
 	static {
-		life_support_range_error_margin = simulationConfig.getSettlementConfiguration()
+		lifeSupportRangeErrorMargin = simulationConfig.getSettlementConfiguration()
 				.getRoverValues()[0];
-		fuel_range_error_margin = simulationConfig.getSettlementConfiguration().getRoverValues()[1];
+		fuelRangeErrorMargin = simulationConfig.getSettlementConfiguration().getRoverValues()[1];
 	}
 
 	/**
@@ -523,7 +523,7 @@ public abstract class Vehicle extends Unit
 	 * @return yes if it has anyone of the bad status types
 	 */
 	public boolean isVehicleReady() {
-	    for (StatusType st : badStatus) {
+	    for (StatusType st : UNAVAILABLE_STATUS) {
 			if (statusTypes.contains(st))
 				return false;
 	    }
@@ -637,24 +637,9 @@ public abstract class Vehicle extends Unit
 	 * @return true if successful.
 	 */
 	public boolean addToAGarage() {
-
-		Settlement settlement = getSettlement();
-		if (settlement != null) {
-			for (Building garageBuilding : settlement.getBuildingManager()
-					.getBuildingSet(FunctionType.VEHICLE_MAINTENANCE)) {
-				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-				if (garage != null) {
-					if (this instanceof Flyer flyer && !garage.containsFlyer(flyer)) {
-						return settlement.getBuildingManager().addToGarageBuilding(this) != null;
-					}
-					else if (!garage.containsVehicle(this)) {
-						return settlement.getBuildingManager().addToGarageBuilding(this) != null;
-					}
-				}
-			}
-		}
-		return false;
+		return getSettlement().getBuildingManager().addToGarageBuilding(this) != null;
 	}
+	
 	/**
 	 * Records the status in the vehicle log.
 	 */
@@ -1368,60 +1353,66 @@ public abstract class Vehicle extends Unit
 			chargeVehicle(pulse, settlement);
 		}
 		
-		if (primaryStatus == StatusType.MOVING) {
+		// If it's outside and moving
+		else if (primaryStatus == StatusType.MOVING) {
 			// Assume the wear and tear factor is at 100% by being used in a mission
 			malfunctionManager.activeTimePassing(pulse);
 			// Add the location to the trail if outside on a mission
 			addToTrail(getCoordinates());
 		}
 
+		// Regardless being outside or inside settlement,
+		// if it's malfunction (outside or inside settlement) 
+		// whether it's in a garage or not
 		else if (haveStatusType(StatusType.MALFUNCTION)
 				&& malfunctionManager.getMalfunctions().size() == 0) {
-					removeSecondaryStatus(StatusType.MALFUNCTION);
-			}
-		
-		// If it's back at a settlement and is NOT in a garage
-		else if (!haveStatusType(StatusType.MAINTENANCE)
-				&& !haveStatusType(StatusType.GARAGED)) {
-			int rand = RandomUtil.getRandomInt(3);
-			// Assume the wear and tear factor is 75% less when not operating 
-			if (rand == 3)
-				malfunctionManager.activeTimePassing(pulse);
+			// Remove the malfunction status
+			removeSecondaryStatus(StatusType.MALFUNCTION);
 		}
-
-		// Make sure reservedForMaintenance is false if vehicle needs no maintenance.
+		
+		// Regardless being outside or inside settlement,
+		// if it's still reportedly under maintenance
+		// but maintenance just got done	
 		else if (haveStatusType(StatusType.MAINTENANCE) 
 			&& malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) {
+			// Make sure reservedForMaintenance is false since vehicle now needs no maintenance.
 			setReservedForMaintenance(false);
+			// Remove the malfunction status
 			removeSecondaryStatus(StatusType.MAINTENANCE);
+			// If the vehicle is in a garage, remove from garage
+			BuildingManager.removeFromGarage(this);
 		}
 		
-		else if (!haveStatusType(StatusType.GARAGED)) { 
-			// Not under maintenance and not in garage
-			// Note: during maintenance, it doesn't need to be checking for malfunction.
-			malfunctionManager.timePassing(pulse);
-		}	
+		// Regardless being outside or inside settlement,
+		// NOT under maintenance
+		else {
+			
+			if (!haveStatusType(StatusType.GARAGED)) {
+				int rand = RandomUtil.getRandomInt(3);
+				// Assume the wear and tear factor is 75% less when not operating 
+				if (rand == 3)
+					malfunctionManager.activeTimePassing(pulse);
+			}
+			
+			else {
+				// Note: during maintenance, it doesn't need to be checking for malfunction.
+				malfunctionManager.timePassing(pulse);
+			}
+			
+		}
 
 		// Check once per msol (millisol integer)
 		if (pulse.isNewMSol()) {
 			
-			if (primaryStatus == StatusType.PARKED) {				
-				// If the vehicle is reserved and is not in a garage, add to  garage
-				if (isReserved() && !isInAGarage()) {
-					addToAGarage();
-				}
-			}
+//			if (primaryStatus == StatusType.PARKED && isReserved()){
+//				// If the vehicle is reserved and is not in a garage, add to  garage
+//				addToAGarage();
+//			}
 			
-			// If the vehicle is not reserved and is in a garage, remove from garage
-			if (!isReserved() && isInAGarage()) {
-				BuildingManager.removeFromGarage(this);
-			}
-			
-			// If the vehicle is reserved and is not in a garage, add to  garage
-			else if (isReserved() && !isInAGarage()) {
-				addToAGarage();
-			}
-			
+//			if (primaryStatus == StatusType.GARAGED && !isReserved()) {
+//				// If the vehicle is not reserved and is in a garage, remove from garage
+//				BuildingManager.removeFromGarage(this);
+//			}
 			
 			// Sample a data point every SAMPLE_FREQ (in msols)
 			int msol = pulse.getMarsTime().getMillisolInt();
@@ -1716,36 +1707,28 @@ public abstract class Vehicle extends Unit
 		Settlement settlement = getSettlement();
 		if (settlement == null) {
 			logger.severe(this, "Not found to be parked in a settlement.");
+			return;
 		}
 
-		else {
-			LocalPosition centerLoc = LocalPosition.DEFAULT_POSITION;
+		LocalPosition centerLoc = LocalPosition.DEFAULT_POSITION;
 
-			int weight = 2;
+		int weight = 2;
 
-			List<Building> evas = settlement.getBuildingManager()
-					.getBuildingsOfSameCategory(BuildingCategory.EVA_AIRLOCK);
-			int numGarages = settlement.getBuildingManager().getGarages().size();
-			int total = (int)(evas.size() + numGarages * weight - 1);
-			if (total < 0)
-				total = 0;
-			int rand = RandomUtil.getRandomInt(total);
+		List<Building> evas = settlement.getBuildingManager()
+				.getBuildingsOfSameCategory(BuildingCategory.EVA_AIRLOCK);
+		int numGarages = settlement.getBuildingManager().getGarages().size();
+		int total = (int)(evas.size() + numGarages * weight - 1);
+		if (total < 0)
+			total = 0;
+		int rand = RandomUtil.getRandomInt(total);
 
-			if (rand != 0) {
-				// Try parking near the eva for short walk
-				if (rand < evas.size()) {
-					Building eva = evas.get(rand);
-					centerLoc = eva.getPosition();
-				}
-
-				else {
-					// Try parking near a garage					
-					Building garage = BuildingManager.getAGarage(getSettlement());
-					if (garage != null) {
-						centerLoc = garage.getPosition();
-					}
-				}
+		if (rand != 0) {
+			// Try parking near the eva for short walk
+			if (rand < evas.size()) {
+				Building eva = evas.get(rand);
+				centerLoc = eva.getPosition();
 			}
+
 			else {
 				// Try parking near a garage					
 				Building garage = BuildingManager.getAGarage(getSettlement());
@@ -1753,58 +1736,69 @@ public abstract class Vehicle extends Unit
 					centerLoc = garage.getPosition();
 				}
 			}
-
-			// Place the vehicle starting from the settlement center (0,0).
-
-			int oX = 10;
-			int oY = 10;
-			double newFacing = 0D;
-			LocalPosition newLoc = null;
-			int step = 2;
-			boolean foundGoodLocation = false;
-
-			boolean isSmallVehicle = getVehicleType() == VehicleType.DELIVERY_DRONE
-					|| getVehicleType() == VehicleType.LUV;
-
-			double d = VEHICLE_CLEARANCE_0;
-			if (isSmallVehicle)
-				d = VEHICLE_CLEARANCE_1;
-			
-			// Note: enlarge (times 1.25) the dimension of a vehicle to avoid getting 
-			// trapped within those enclosed space surrounded by buildings or hallways.
-			
-			double w = getWidth() * d * 1.25;
-			double l = getLength() * d * 1.25;
-			
-			// Note: May need a more permanent solution by figuring out how to detect those enclosed space
-			
-			int count = 0;
-			
-			// Try iteratively outward from 10m to 500m distance range.
-			for (int x = oX; (x < 2000) && !foundGoodLocation; x+=step) {
-				// Try random locations at each distance range.
-				for (int y = oY; (y < 2000) && !foundGoodLocation; y++) {
-					double distance = Math.max(y, RandomUtil.getRandomDouble(-.5*x, x) + y);
-					double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
-					
-					newLoc = centerLoc.getPosition(distance, radianDirection);
-					newFacing = RandomUtil.getRandomDouble(360D);
-
-					// Check if new vehicle location collides with anything.
-					
-					// Note: excessive calling increase CPU Util
-					foundGoodLocation = LocalAreaUtil.isObjectCollisionFree(this, w, l,
-									newLoc.getX(), newLoc.getY(), 
-									newFacing, getCoordinates());
-					
-					count++;
-				}
+		}
+		else {
+			// Try parking near a garage
+			// Get a nearby garage (but doesn't go in)
+			Building garage = BuildingManager.getAGarage(getSettlement());
+			if (garage != null) {
+				centerLoc = garage.getPosition();
 			}
+		}
 
-			if (foundGoodLocation) {
-				setParkedLocation(newLoc, newFacing);
-				logger.info(this, "New parking loc found (iteration: " + count + ").");
+		// Place the vehicle starting from the settlement center (0,0).
+
+		int oX = 10;
+		int oY = 10;
+		double newFacing = 0D;
+		LocalPosition newLoc = null;
+		int step = 2;
+		boolean foundGoodLocation = false;
+
+		boolean isSmallVehicle = getVehicleType() == VehicleType.DELIVERY_DRONE
+				|| getVehicleType() == VehicleType.LUV;
+
+		double d = VEHICLE_CLEARANCE_0;
+		if (isSmallVehicle)
+			d = VEHICLE_CLEARANCE_1;
+		
+		// Note: enlarge (times 1.25) the dimension of a vehicle to avoid getting 
+		// trapped within those enclosed space surrounded by buildings or hallways.
+		
+		double w = getWidth() * d * 1.25;
+		double l = getLength() * d * 1.25;
+		
+		// Note: May need a more permanent solution by figuring out how to detect those enclosed space
+		
+		int count = 0;
+		
+		// Try iteratively outward from 10m to 500m distance range.
+		for (int x = oX; (x < 2000) && !foundGoodLocation; x+=step) {
+			// Try random locations at each distance range.
+			for (int y = oY; (y < 2000) && !foundGoodLocation; y++) {
+				double distance = Math.max(y, RandomUtil.getRandomDouble(-.5*x, x) + y);
+				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
+				
+				newLoc = centerLoc.getPosition(distance, radianDirection);
+				newFacing = RandomUtil.getRandomDouble(360D);
+
+				// Check if new vehicle location collides with anything.
+				
+				// Note: excessive calling increase CPU Util
+				foundGoodLocation = LocalAreaUtil.isObjectCollisionFree(this, w, l,
+								newLoc.getX(), newLoc.getY(), 
+								newFacing, getCoordinates());
+				
+				count++;
 			}
+		}
+
+		if (foundGoodLocation) {
+			setParkedLocation(newLoc, newFacing);
+			logger.info(this, "Found new parking location on iteration: " + count + ".");
+		}
+		else {
+			logger.info(this, "Parking location not found.");
 		}
 	}
 	
@@ -1812,20 +1806,19 @@ public abstract class Vehicle extends Unit
 	 * Relocates a vehicle. 
 	 */
 	public void relocateVehicle() {
-		if (isInAGarage()) {
-			BuildingManager.removeFromGarage(this);
-		}
-		else {
-			findNewParkingLoc();
-		}
+		// Remove the vehicle from a garage if it's inside
+		BuildingManager.removeFromGarage(this);
+		// Note: No need to call below separately to find a new outside location for parking
+		// Calling removeFromGarage above will take care of finding new parking loc
+		// findNewParkingLoc();
 	}
 
 	public static double getFuelRangeErrorMargin() {
-		return fuel_range_error_margin;
+		return fuelRangeErrorMargin;
 	}
 
 	public static double getLifeSupportRangeErrorMargin() {
-		return life_support_range_error_margin;
+		return lifeSupportRangeErrorMargin;
 	}
 
 	public int getAssociatedSettlementID() {

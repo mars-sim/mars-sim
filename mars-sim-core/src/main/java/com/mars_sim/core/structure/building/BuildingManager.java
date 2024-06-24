@@ -1038,10 +1038,10 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Removes a vehicle from garage.
+	 * Removes a vehicle from garage and transfers to a new parking location.
 	 *
 	 * @param vehicle
-	 * @return
+	 * @return true if the vehicle is inside a garage and can be removed
 	 */
 	public static boolean removeFromGarage(Vehicle vehicle) {
 		// If the vehicle is in a garage, put the vehicle outside.

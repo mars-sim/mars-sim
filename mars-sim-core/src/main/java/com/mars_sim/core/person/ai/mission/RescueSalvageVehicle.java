@@ -23,6 +23,7 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
@@ -199,6 +200,8 @@ public class RescueSalvageVehicle extends RoverMission {
 		if (newVehicle.isReservedForMaintenance()) {
 			newVehicle.setReservedForMaintenance(false);
 			newVehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
+			// If the vehicle is in a garage, remove from garage
+			BuildingManager.removeFromGarage(newVehicle);
 		}
 	}
 
