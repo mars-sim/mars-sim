@@ -1375,13 +1375,11 @@ public abstract class Vehicle extends Unit
 			addToTrail(getCoordinates());
 		}
 
-		else if (primaryStatus == StatusType.PARKED) {				
-			// If the vehicle is reserved and is not in a garage, add to  garage
-			if (isReserved() && !isInAGarage()) {
-				addToAGarage();
+		else if (haveStatusType(StatusType.MALFUNCTION)
+				&& malfunctionManager.getMalfunctions().size() == 0) {
+					removeSecondaryStatus(StatusType.MALFUNCTION);
 			}
-		}
-
+		
 		// If it's back at a settlement and is NOT in a garage
 		else if (!haveStatusType(StatusType.MAINTENANCE)
 				&& !haveStatusType(StatusType.GARAGED)) {
@@ -1390,35 +1388,29 @@ public abstract class Vehicle extends Unit
 			if (rand == 3)
 				malfunctionManager.activeTimePassing(pulse);
 		}
-		
-		else {
-			// If the vehicle is not reserved and is in a garage, remove from garage
-			if (!isReserved() && isInAGarage()) {
-				BuildingManager.removeFromGarage(this);
-			}
-		}
 
 		// Make sure reservedForMaintenance is false if vehicle needs no maintenance.
-		if (haveStatusType(StatusType.MAINTENANCE) 
+		else if (haveStatusType(StatusType.MAINTENANCE) 
 			&& malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) {
 			setReservedForMaintenance(false);
 			removeSecondaryStatus(StatusType.MAINTENANCE);
 		}
 		
-		if (!haveStatusType(StatusType.GARAGED)) { 
+		else if (!haveStatusType(StatusType.GARAGED)) { 
 			// Not under maintenance and not in garage
 			// Note: during maintenance, it doesn't need to be checking for malfunction.
 			malfunctionManager.timePassing(pulse);
-		}
-
-		if (haveStatusType(StatusType.MALFUNCTION)
-			&& malfunctionManager.getMalfunctions().size() == 0) {
-				removeSecondaryStatus(StatusType.MALFUNCTION);
-		}
-		
+		}	
 
 		// Check once per msol (millisol integer)
 		if (pulse.isNewMSol()) {
+			
+			if (primaryStatus == StatusType.PARKED) {				
+				// If the vehicle is reserved and is not in a garage, add to  garage
+				if (isReserved() && !isInAGarage()) {
+					addToAGarage();
+				}
+			}
 			
 			// If the vehicle is not reserved and is in a garage, remove from garage
 			if (!isReserved() && isInAGarage()) {
