@@ -87,18 +87,14 @@ public class Relation implements Serializable {
 	void setRandomOpinion(Appraiser appraised, double opinion) {
 		double score = opinion;
 
-		double d1 = 0;
-		double d2 = 0;
-		double d0 = 0;
-		
 		int id = appraised.getIdentifier();
 		
 		Opinion found = opinionMap.get(id);
 		
 		if (found == null) {
-			d0 = RandomUtil.getRandomDouble(score/1.5, score * 1.5);
-			d1 = RandomUtil.getRandomDouble(d0/1.5, d0 * 1.5);			
-			d2 = RandomUtil.getRandomDouble(d1/1.5, d1 * 1.5);
+			double d0 = RandomUtil.getRandomDouble(score/1.5, score * 1.5);
+			double d1 = RandomUtil.getRandomDouble(d0/1.5, d0 * 1.5);			
+			double d2 = RandomUtil.getRandomDouble(d1/1.5, d1 * 1.5);
 
 			// Gauge the difference between d0 and d2
 			double d = d0 - d2;
@@ -124,10 +120,10 @@ public class Relation implements Serializable {
 			d0 = MathUtils.between(d0, 0, MAX_OPINION);
 			d1 = MathUtils.between(d1, 0, MAX_OPINION);
 			d2 = MathUtils.between(d2, 0, MAX_OPINION);
+			
+			found = new Opinion(d0, d1, d2);
+			opinionMap.put(id, found);
 		}
-
-		found = new Opinion(d0, d1, d2);
-		opinionMap.put(id, found);
 	}
 	
 	/**
@@ -141,6 +137,13 @@ public class Relation implements Serializable {
 		
 		Opinion found = opinionMap.get(id);
 		
+		if (found == null) {
+			// Randomly set the opinion map
+			setRandomOpinion(appraised, 0);
+			
+			found = opinionMap.get(id);
+		}
+
 		double d1 = found.d1;
 		double d2 = found.d2;
 		double d0 = found.d0;
