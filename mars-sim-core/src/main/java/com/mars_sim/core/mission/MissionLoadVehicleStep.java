@@ -104,7 +104,7 @@ public class MissionLoadVehicleStep extends MissionStep {
      * @return
      */
     private Task createLoadTask(Worker worker, Vehicle vehicle) {
-        boolean inGarage = vehicle.isInAGarage();
+        boolean inGarage = vehicle.isInGarage();
         VehicleMission target = (VehicleMission) getMission();
         if (worker.isInSettlement())
         	return null;

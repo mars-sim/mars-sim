@@ -261,7 +261,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 * @return true if rover is in a garage.
 	 */
 	protected boolean isInAGarage() {
-		return getVehicle().isInAGarage();
+		return getVehicle().isInGarage();
 	}
 
 
@@ -346,7 +346,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 		if (canDepart) {
 			// If the rover is in a garage
-			if (v.isInAGarage()) {
+			if (v.isInGarage()) {
 				
 				// Check to ensure it meets the baseline # of EVA suits
 				meetBaselineNumEVASuits(settlement, v);

@@ -267,7 +267,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		
 		// Vehicle going into a garage
 		settlement.getBuildingManager().addToGarageBuilding(vehicle);
-		assertTrue("Vehicle has entered a garage", vehicle.isInAGarage());
+		assertTrue("Vehicle has entered a garage", vehicle.isInGarage());
 		assertInsideSettlement("Vehicle still in a settlement", vehicle, settlement);
 
 		assertEquals("vehicle location state type is INSIDE_SETTLEMENT", LocationStateType.INSIDE_SETTLEMENT, vehicle.getLocationStateType());
@@ -278,7 +278,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
         BuildingManager.removeFromGarage(vehicle);
 		assertEquals("Person's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, person.getLocationStateType());
 		
-		assertFalse("Vehicle has left garage", vehicle.isInAGarage());
+		assertFalse("Vehicle has left garage", vehicle.isInGarage());
 
 //		assertNull("Person in a vehicle. Vehicle is not in settlement", person.getSettlement());
 		

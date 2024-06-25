@@ -687,7 +687,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 		Unit cu = getContainerUnit();
 		if (cu.getUnitType() == UnitType.VEHICLE) {
 			// still inside the garage
-			return ((Vehicle)cu).isInAGarage();
+			return ((Vehicle)cu).isInGarage();
 		}
 		return false;
 	}

@@ -994,7 +994,7 @@ public class BuildingManager implements Serializable {
 	 * @param settlement the settlement to find a building.
 	 * @throws BuildingException if vehicle cannot be added to any building.
 	 *
-	 * @return the garage building the garage
+	 * @return the garage building already in or just added
 	 */
 	public Building addToGarageBuilding(Vehicle vehicle) {
 
@@ -1007,7 +1007,7 @@ public class BuildingManager implements Serializable {
 		// if no garage buildings are present in this settlement
 		if (garages.isEmpty()) {
 			// The vehicle may already be PARKED ?
-			vehicle.setPrimaryStatus(StatusType.PARKED);
+//			vehicle.setPrimaryStatus(StatusType.PARKED);
 			return null;
 		}
 
@@ -1018,31 +1018,61 @@ public class BuildingManager implements Serializable {
 				
 				if (garage.containsFlyer((Flyer)vehicle)) {
 					logger.info(vehicle, 60_000,
-							"Already inside " + garage.getBuilding().getName() + ".");
+							"Already inside " + garageBuilding.getName() + ".");
 
 					return garageBuilding;
 				}
-				else if ((garage.getFlyerCapacity() > 0)
+				else { 
+					boolean vacated = false;
+					
+					if (garage.getAvailableFlyerCapacity() == 0) {
+						// Try removing a non-reserved drone inside a garage		
+						for (Flyer flyer: garage.getFlyers()) {
+							if (!vacated && !flyer.isReserved() && flyer.getMission() != null) {
+								if (garage.removeFlyer(flyer)) {
+									vacated = true;
+								}
+							}
+						}
+					}
+					
+					if (garage.getAvailableFlyerCapacity() > 0 
 							&& garage.addFlyer((Flyer)vehicle)) {
 
-					logger.info(vehicle, 60_000,
- 							   "Just stowed inside " + garage.getBuilding().getName() + ".");
-					return garageBuilding;
+						logger.info(vehicle, 60_000,
+ 							   "Just stowed inside " + garageBuilding.getName() + ".");
+						return garageBuilding;
+					}
 				}
 			}
 			else {
 				if (garage.containsVehicle(vehicle)) {
 					logger.info(vehicle, 60_000,
-							"Already inside " + garage.getBuilding().getName() + ".");
+							"Already inside " + garageBuilding.getName() + ".");
 
 					return garageBuilding;
 				}
-				else if ((garage.getAvailableCapacity() > 0)
-							&& garage.addVehicle(vehicle)) {
+				else { 
+					boolean vacated = false;
+					
+					if (garage.getAvailableCapacity() == 0) {
+						// Try removing a non-reserved vehicle inside a garage		
+						for (Vehicle v: garage.getVehicles()) {
+							if (!vacated && !v.isReserved() && v.getMission() != null) {
+								if (garage.removeVehicle(v, true)) {
+									vacated = true;
+								}
+							}
+						}
+					}
+					
+					if ((garage.getAvailableCapacity() > 0)
+						&& garage.addVehicle(vehicle)) {
 
-					logger.info(vehicle, 60_000,
- 							   "Just stowed inside " + garage.getBuilding().getName() + ".");
-					return garageBuilding;
+						logger.info(vehicle, 60_000,
+ 							   "Just stowed inside " + garageBuilding.getName() + ".");
+						return garageBuilding;
+					}
 				}
 			}
 		}
@@ -1109,10 +1139,9 @@ public class BuildingManager implements Serializable {
 					return false;
 				}
 				
-				if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
-					if (garage.containsFlyer((Flyer)vehicle)) {
-						return true;
-					}
+				if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE
+					&& garage.containsFlyer((Flyer)vehicle)) {
+					return true;
 				}
 				else if (garage.containsVehicle(vehicle)) {
 					return true;

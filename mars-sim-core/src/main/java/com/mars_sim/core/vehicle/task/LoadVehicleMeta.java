@@ -64,7 +64,7 @@ public class LoadVehicleMeta extends MetaTask
 	
     		Vehicle vehicle = vehicleMission.getVehicle();
 
-    		boolean hasGarage = vehicle.isInAGarage(); 
+    		boolean hasGarage = vehicle.isInGarage(); 
     		if (hasGarage)
     			return new LoadVehicleGarage(person, getMission().getLoadingPlan());
     			

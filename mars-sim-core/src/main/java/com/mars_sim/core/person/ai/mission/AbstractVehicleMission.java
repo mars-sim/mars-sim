@@ -690,7 +690,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		                // Task may be rejected because of the Worker's profile
 		                assignTask(p, task);
 		            }
-		            else if (member instanceof Robot r && v.isInAGarage()) {
+		            else if (member instanceof Robot r && v.isInGarage()) {
 		                task = job.createTask(r);
 		                // Task may be rejected because of the Worker's profile
 		                assignTask(r, task);

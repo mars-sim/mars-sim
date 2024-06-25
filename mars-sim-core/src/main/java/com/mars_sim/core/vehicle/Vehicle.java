@@ -611,22 +611,11 @@ public abstract class Vehicle extends Unit
 	 *
 	 * @return true if vehicle is in a garage.
 	 */
-	public boolean isInAGarage() {
+	public boolean isInGarage() {
 
 		Settlement settlement = getSettlement();
 		if (settlement != null) {
-			for (Building garageBuilding : settlement.getBuildingManager()
-					.getBuildingSet(FunctionType.VEHICLE_MAINTENANCE)) {
-				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-				if (garage != null) {
-					if (this instanceof Flyer flyer && garage.containsFlyer(flyer)) {
-						return true;
-					}
-					else if (garage.containsVehicle(this)) {
-						return true;
-					}
-				}
-			}
+			return getSettlement().getBuildingManager().isInGarage(this);
 		}
 		return false;
 	}
@@ -1308,20 +1297,21 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Gets the garage building that the vehicle is at.
 	 *
-	 * @return {@link Vehicle}
+	 * @return {@link Building}
 	 */
 	public Building getGarage() {
 		Settlement settlement = getSettlement();
-		if (settlement != null) {
-			for (Building garageBuilding : settlement.getBuildingManager().getGarages()) {
-				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-				if (garage != null) {
-					if (this instanceof Flyer flyer && garage.containsFlyer(flyer)) {
-						return garageBuilding;
-					}
-					else if (garage.containsVehicle(this)) {
-						return garageBuilding;
-					}
+		if (settlement == null)
+			return null;
+		
+		for (Building garageBuilding : settlement.getBuildingManager().getGarages()) {
+			VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
+			if (garage != null) {
+				if (this instanceof Flyer flyer && garage.containsFlyer(flyer)) {
+					return garageBuilding;
+				}
+				else if (garage.containsVehicle(this)) {
+					return garageBuilding;
 				}
 			}
 		}
@@ -2332,7 +2322,7 @@ public abstract class Vehicle extends Unit
 	private LocationStateType getNewLocationState(Unit newContainer) {
 
 		if (newContainer.getUnitType() == UnitType.SETTLEMENT) {
-			if (isInAGarage()) {
+			if (isInGarage()) {
 				return LocationStateType.INSIDE_SETTLEMENT;
 			}
 			else
@@ -2423,7 +2413,7 @@ public abstract class Vehicle extends Unit
 				// NOTE: need to revert back the storage action
 			}
 			else {
-				if (leaving && isInAGarage()) {
+				if (leaving && isInGarage()) {
 					BuildingManager.removeFromGarage(this);
 				}
 				
