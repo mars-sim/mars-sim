@@ -709,6 +709,21 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
+	 * Gets the buildings in the settlement with a given building category and in zone 0.
+	 *
+	 * @param category the building type.
+	 * @return list of buildings.
+	 */
+	public List<Building> getBuildingsOfSameCategoryNZone0(BuildingCategory category) {
+		// Called by Resupply.java and BuildingConstructionMission.java
+		// for putting new building next to the same building "type".
+		return buildings.stream()
+				.filter(b -> b.getCategory() == category
+						&& b.getZone() == 0)
+				.collect(Collectors.toList());
+	}
+	
+	/**
 	 * Gets the buildings in the settlement with a given building type.
 	 *
 	 * @param buildingType the building type.
@@ -983,12 +998,10 @@ public class BuildingManager implements Serializable {
 	 */
 	public Building addToGarageBuilding(Vehicle vehicle) {
 
-		if (vehicle.isBeingTowed())
+		if (vehicle.isBeingTowed() 
+			|| (VehicleType.isRover(vehicle.getVehicleType())
+					&& ((Rover)vehicle).isTowingAVehicle())) {
 			return null;
-
-		if (VehicleType.isRover(vehicle.getVehicleType())
-			&& ((Rover)vehicle).isTowingAVehicle()) {
-				return null;
 		}
 
 		// if no garage buildings are present in this settlement

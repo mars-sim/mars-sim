@@ -1524,14 +1524,14 @@ public abstract class Vehicle extends Unit
 			Task task = person.getMind().getTaskManager().getTask();
 
 			// Add all people maintaining this vehicle.
-			if (task instanceof MaintainBuilding t
-				&& this.equals(t.getEntity())) {
+			if (task instanceof MaintainBuilding mb
+				&& this.equals(mb.getEntity())) {
 				people.add(person);
 			}
 
 			// Add all people repairing this vehicle.
-			if (task instanceof Repair t
-				&& this.equals(t.getEntity())) {
+			if (task instanceof Repair r
+				&& this.equals(r.getEntity())) {
 				people.add(person);
 			}
 		}
@@ -1577,15 +1577,15 @@ public abstract class Vehicle extends Unit
 			Task task = robot.getBotMind().getBotTaskManager().getTask();
 
 			// Add all robots maintaining this vehicle.
-			if (task instanceof MaintainBuilding t) {
-				if (t.getEntity() == this) {
+			if (task instanceof MaintainBuilding mb) {
+				if (mb.getEntity() == this) {
 					robots.add(robot);
 				}
 			}
 
 			// Add all robots repairing this vehicle.
-			if (task instanceof Repair t) {
-				if (t.getEntity() == this) {
+			if (task instanceof Repair r) {
+				if (r.getEntity() == this) {
 					robots.add(robot);
 				}
 			}
@@ -1715,8 +1715,8 @@ public abstract class Vehicle extends Unit
 		int weight = 2;
 
 		List<Building> evas = settlement.getBuildingManager()
-				.getBuildingsOfSameCategory(BuildingCategory.EVA_AIRLOCK);
-		int numGarages = settlement.getBuildingManager().getGarages().size();
+				.getBuildingsOfSameCategoryNZone0(BuildingCategory.EVA_AIRLOCK);
+?		int numGarages = settlement.getBuildingManager().getGarages().size();
 		int total = (int)(evas.size() + numGarages * weight - 1);
 		if (total < 0)
 			total = 0;

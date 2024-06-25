@@ -7,6 +7,9 @@
 
 package com.mars_sim.core.vehicle;
 
+/**
+ * The interface for a towing vehicle. It has a towed vehicle.
+ */
 public interface Towing {
 
 	/**

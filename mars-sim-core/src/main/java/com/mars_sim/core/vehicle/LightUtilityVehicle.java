@@ -140,7 +140,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	}
 
 	/**
-	 * Adds a person as crewmember
+	 * Adds a person as crewmember.
 	 * 
 	 * @param person
 	 * @param true if the person can be added
@@ -150,7 +150,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	}
 	
 	/**
-	 * Removes a person as crewmember
+	 * Removes a person as crewmember.
 	 * 
 	 * @param person
 	 * @param true if the person can be removed
@@ -162,7 +162,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	}
 	
 	/**
-	 * Adds a robot as crewmember
+	 * Adds a robot as crewmember.
 	 * 
 	 * @param robot
 	 * @param true if the robot can be added
@@ -175,7 +175,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	}
 	
 	/**
-	 * Removes a robot as crewmember
+	 * Removes a robot as crewmember.
 	 * 
 	 * @param robot
 	 * @param true if the robot can be removed
@@ -206,8 +206,8 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 
 	@Override
 	public Vehicle getVehicle() {
-		if (getContainerUnit() instanceof Vehicle)
-			return (Vehicle) getContainerUnit();
+		if (getContainerUnit() instanceof Vehicle luv)
+			return (Vehicle) luv;
 		return null;
 	}
 	 
