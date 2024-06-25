@@ -75,7 +75,7 @@ import com.mars_sim.tools.util.RandomUtil;
  */
 public abstract class Vehicle extends Unit
 		implements Malfunctionable, Salvagable, Temporal, Indoor,
-		LocalBoundedObject, EquipmentOwner, ItemHolder {
+		LocalBoundedObject, EquipmentOwner, ItemHolder, Towed {
 
 	private static final long serialVersionUID = 1L;
 

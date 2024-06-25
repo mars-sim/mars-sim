@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * NavigationTabPanel.java
- * @date 2022-07-09
+ * TabPanelTow.java
+ * @date 2024-07-24
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.vehicle;
@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Towing;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
@@ -38,7 +39,6 @@ public class TabPanelTow extends TabPanel {
 	private JPanel towedLabelPanel;
 	private JLabel towedTextLabel;
 	private JButton towedButton;
-
 	
 	/** The Vehicle instance. */
 	private Vehicle vehicle;
@@ -91,33 +91,36 @@ public class TabPanelTow extends TabPanel {
 			}
 			else addTowingTextLabel();
 		}
-
-		// Create towed label panel.
-		towedLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		mainPane.add(towedLabelPanel);
-
-		// Create towed label.
-		JLabel towedLabel = new JLabel(Msg.getString("TabPanelTow.towedBy"), JLabel.CENTER); //$NON-NLS-1$
-		towedLabel.setFont(StyleManager.getLabelFont());
-		towedLabelPanel.add(towedLabel);
-
-		// Create the towed button.
-		towedButton = new JButton();
-		towedButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				getDesktop().showDetails(vehicle.getTowingVehicle());
-			}
-		});
-
-		// Create towed text label.
-		towedTextLabel = new JLabel(Msg.getString("TabPanelTow.none"), JLabel.LEFT); //$NON-NLS-1$
 		
-		// Add the towed button or towed text label depending on the situation.
-		if (vehicle.getTowingVehicle() != null) {
-			towedButton.setText(vehicle.getTowingVehicle().getName());
-			addTowedButton();
+		else if (vehicle.haveStatusType(StatusType.TOWED)) {
+			
+			// Create towed label panel.
+			towedLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+			mainPane.add(towedLabelPanel);
+
+			// Create towed label.
+			JLabel towedLabel = new JLabel(Msg.getString("TabPanelTow.towedBy"), JLabel.CENTER); //$NON-NLS-1$
+			towedLabel.setFont(StyleManager.getLabelFont());
+			towedLabelPanel.add(towedLabel);
+
+			// Create the towed button.
+			towedButton = new JButton();
+			towedButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent event) {
+					getDesktop().showDetails(vehicle.getTowingVehicle());
+				}
+			});
+
+			// Create towed text label.
+			towedTextLabel = new JLabel(Msg.getString("TabPanelTow.none"), JLabel.LEFT); //$NON-NLS-1$
+			
+			// Add the towed button or towed text label depending on the situation.
+			if (vehicle.getTowingVehicle() != null) {
+				towedButton.setText(vehicle.getTowingVehicle().getName());
+				addTowedButton();
+			}
+			else addTowedTextLabel();
 		}
-		else addTowedTextLabel();
 	}
 
 	/**
@@ -187,6 +190,7 @@ public class TabPanelTow extends TabPanel {
 	 */
 	@Override
 	public void update() {
+		
 		if (vehicle instanceof Towing) {
 			// Update towing button or towing text label as necessary.
 			Vehicle towedVehicle = ((Towing) vehicle).getTowedVehicle();
@@ -196,14 +200,16 @@ public class TabPanelTow extends TabPanel {
 			}
 			else addTowingTextLabel();
 		}
-
-		// Update towed button or towed text label as necessary.
-		Vehicle towingVehicle = vehicle.getTowingVehicle();
-		if (towingVehicle != null) {
-			towedButton.setText(towingVehicle.getName());
-			addTowedButton();
+		
+		else if (vehicle.haveStatusType(StatusType.TOWED)) {
+			// Update towed button or towed text label as necessary.
+			Vehicle towingVehicle = vehicle.getTowingVehicle();
+			if (towingVehicle != null) {
+				towedButton.setText(towingVehicle.getName());
+				addTowedButton();
+			}
+			else addTowedTextLabel();
 		}
-		else addTowedTextLabel();
 	}
 	
 	@Override

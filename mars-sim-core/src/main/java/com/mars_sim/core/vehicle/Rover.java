@@ -44,7 +44,8 @@ import com.mars_sim.tools.Msg;
  * The Rover class represents the rover type of ground vehicle. It contains
  * information about the rover.
  */
-public class Rover extends GroundVehicle implements Crewable, LifeSupportInterface, Airlockable, Medical, Towing {
+public class Rover extends GroundVehicle implements Crewable, 
+	LifeSupportInterface, Airlockable, Medical, Towing {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
