@@ -321,7 +321,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				return;
 			}
 			
-			if (score > 1) {
+			if (score > 1 || score < -1) {
 				score = Math.round(score * 10.0)/10.0;
 			}
 		}
@@ -370,11 +370,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			score *= 10000.0 / iceDemand * (1 + iceStored);
 		}
 
-		else if (ppa) {
-			double hydrogenDemand = goodsManager.getDemandValueWithID(ResourceUtil.hydrogenID);
-			double methaneDemand = goodsManager.getDemandValueWithID(ResourceUtil.methaneID);
-			score *= 0.01 * hydrogenDemand / methaneDemand;
-		}
+//		else if (ppa) {
+//			double hydrogenDemand = goodsManager.getDemandValueWithID(ResourceUtil.hydrogenID);
+//			double methaneDemand = goodsManager.getDemandValueWithID(ResourceUtil.methaneID);
+//			score *= 0.01 * hydrogenDemand / methaneDemand;
+//		}
 
 		else if (cfr) {
 			double hydrogenDemand = goodsManager.getDemandValueWithID(ResourceUtil.hydrogenID);
@@ -386,7 +386,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			double hydrogenDemand = goodsManager.getDemandValueWithID(ResourceUtil.hydrogenID);
 			double methaneDemand = goodsManager.getDemandValueWithID(ResourceUtil.methaneID);
 			double waterDemand = goodsManager.getDemandValueWithID(ResourceUtil.waterID);
-			score *= 5.0 * waterDemand * methaneDemand / hydrogenDemand;
+			score *= 500.0 * waterDemand * methaneDemand / hydrogenDemand;
 		}
 
 		else if (oxi) {
