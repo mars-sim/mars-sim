@@ -1430,11 +1430,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		
 		Walk walkingTask = null;
 		
-		if (person != null) {
+		if (worker instanceof Person person) {
 			walkingTask = Walk.createWalkingTask(person, sLoc, interiorObject);
 		}
 		else {
-			walkingTask = Walk.createWalkingTask(robot, sLoc, interiorObject);
+			walkingTask = Walk.createWalkingTask((Robot)(worker), sLoc, interiorObject);
 		}
 		
 		if (walkingTask != null) {

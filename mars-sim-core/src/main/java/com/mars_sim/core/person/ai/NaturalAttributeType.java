@@ -56,13 +56,13 @@ public enum NaturalAttributeType {
 
 	private String name;
 
-	/** hidden constructor. */
+	/** Hidden constructor. */
 	private NaturalAttributeType(String name) {
 		this.name = name;
 	}
 
 	/**
-	 * gives an internationalized string for display in user interface.
+	 * Gives an internationalized string for display in user interface.
 	 * 
 	 * @return {@link String}
 	 */

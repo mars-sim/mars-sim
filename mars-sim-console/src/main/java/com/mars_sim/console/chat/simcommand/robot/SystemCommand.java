@@ -35,7 +35,7 @@ public class SystemCommand extends AbstractUnitCommand {
         response.appendLabeledString("Battery Power", String.format(CommandHelper.PERC_FORMAT,
                                                                                         sc.getBatteryState()));
         response.appendLabeledString("Low Power Threshold", String.format(CommandHelper.PERC_FORMAT,
-                                                                                        sc.getLowPowerPercent()));
+                                                                                        sc.getLowPowerModePercent()));
         response.appendLabeledString("Recommended Charging Threshold", String.format(CommandHelper.PERC_FORMAT,
                                                                                         sc.getRecommendedThreshold()));
         response.appendLabeledString("Battery Capacity", String.format(CommandHelper.KWH_FORMAT, sc.getBatteryCapacity()));   

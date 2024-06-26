@@ -2195,21 +2195,33 @@ public class BuildingManager implements Serializable {
 		
 		return result;
 	}
-
+		
 	/**
-	 * Gets an available building with a particular function.
+	 * Gets an available building with a particular function in the same zone. 
 	 *
 	 * @param person the person looking for a facility.
 	 * @return an available space or null if none found.
 	 */
-	public static Building getAvailableFunctionTypeBuilding(Person person, FunctionType functionType) {
-	
+	public static Building getAvailableFunctionTypeBuilding(
+			Person person, FunctionType functionType) {
+		return getAvailableFunctionBuilding(person, functionType, true);
+	}
+
+	/**
+	 * Gets an available building with a particular function in a particular zone. 
+	 *
+	 * @param person the person looking for a facility.
+	 * @return an available space or null if none found.
+	 */
+	public static Building getAvailableFunctionBuilding(
+			Person person, FunctionType functionType, boolean sameZone) {
+		
 		// If person is in a settlement, try to find a building of functionType
 		if (person.isInSettlement()) {
 			
 			Set<Building> bldgs0 = null;
 					
-			if (person.getBuildingLocation() != null) {
+			if (sameZone && person.getBuildingLocation() != null) {
 				bldgs0 = person.getSettlement().getBuildingManager().getBuildings(functionType)
 						.stream()
 						.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
@@ -2235,7 +2247,8 @@ public class BuildingManager implements Serializable {
 		
 		return null;
 	}
-
+	
+		
 	/**
 	 * Gets an available kitchen for a worker.
 	 * 

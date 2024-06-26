@@ -28,7 +28,7 @@ public class RobotSpec implements Serializable {
 
 	private double rate;
 	private double standbyPower;
-	private double lowPowerMode;
+	private double lowPowerModePercent;
 	private double maxCapacity;
 
 	private int height;
@@ -43,7 +43,7 @@ public class RobotSpec implements Serializable {
 		this.attributeMap = attributeMap;
 		this.skillMap = skillMap;
 		this.standbyPower = standbyPower;
-		this.lowPowerMode = lowPowerMode;
+		this.lowPowerModePercent = lowPowerMode;
 		this.rate = rate;
 		this.maxCapacity = maxCapacity;
 		this.height = height;
@@ -83,12 +83,12 @@ public class RobotSpec implements Serializable {
 	}
 
 	/**
-	 * Gets the percentage that triggers the low power mode enabled for this robot model.
+	 * Gets the percentage that triggers the low power mode for this robot model.
 	 * 
 	 * @return
 	 */
 	public double getLowPowerModePercent() {
-		return lowPowerMode;
+		return lowPowerModePercent;
 	}
 
 	/**
@@ -109,6 +109,11 @@ public class RobotSpec implements Serializable {
 		return skillMap;
 	}
 
+	/**
+	 * Gets the maximum battery capacity of this robot.
+	 * 
+	 * @return
+	 */
     public double getMaxCapacity() {
         return maxCapacity;
     }

@@ -67,9 +67,10 @@ public class ChargeMeta extends FactoryMetaTask {
         	else if (sc.isLowPower()) {
         		result += (LEVEL_UPPER_LIMIT - batteryLevel) * CHANCE_0;
         	}
+        	// Checks if the battery is below the threshold level for charging
         	else if (batteryLevel <= sc.getRecommendedThreshold()) {
     			double rand = RandomUtil.getRandomDouble(batteryLevel);
-    			if (rand < sc.getLowPowerPercent())
+    			if (rand < sc.getLowPowerModePercent())
     				// At max, ~20% chance it will need to charge 
     				result += (LEVEL_UPPER_LIMIT - batteryLevel) * CHANCE_1;
 //    			else

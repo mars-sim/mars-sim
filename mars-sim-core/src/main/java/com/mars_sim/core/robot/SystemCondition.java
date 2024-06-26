@@ -33,7 +33,7 @@ public class SystemCondition implements Serializable {
     /** Is the robot operational ? */
     private boolean operable;
     /** Is the robot at low power mode ? */  
-    private boolean isLowPower;
+//    private boolean isLowPower;
     /** Is the robot charging ? */  
     private boolean isCharging;
     /** Is the robot on power save mode ? */  
@@ -48,7 +48,7 @@ public class SystemCondition implements Serializable {
     /** Performance factor. */
     private double performance;
 	/** The percentage that triggers low power warning. */
-    private double lowPowerPercent;
+    private double lowPowerModePercent;
 	/** The current energy of the robot in kWh. */
 	private double currentEnergy;
 	/** The maximum capacity of the battery in kWh. */	
@@ -66,11 +66,11 @@ public class SystemCondition implements Serializable {
         performance = 1.0D;
         operable = true;
 
-        lowPowerPercent = spec.getLowPowerModePercent();
+        lowPowerModePercent = spec.getLowPowerModePercent();
         standbykW = spec.getStandbyPowerConsumption();
         powerSavekW = POWER_SAVE_CONSUMPTION * standbykW; 
         maxCapacity = spec.getMaxCapacity();
-        currentEnergy = RandomUtil.getRandomDouble(maxCapacity * (lowPowerPercent/100 * 2), maxCapacity);
+        currentEnergy = RandomUtil.getRandomDouble(maxCapacity * (lowPowerModePercent/100 * 2), maxCapacity);
     }
 
     /**
@@ -137,14 +137,27 @@ public class SystemCondition implements Serializable {
 		return currentEnergy;
 	}
 	
-	public double getLowPowerPercent() {
-		return lowPowerPercent;
+	/** 
+	 * Gets the percentage that triggers the low power mode for this robot model.
+	 */
+	public double getLowPowerModePercent() {
+		return lowPowerModePercent;
 	}
 	
+	/**
+	 * Is this robot charging ?
+	 * 
+	 * @return
+	 */
 	public boolean isCharging() {
 		return isCharging;
 	}
 	
+	/**
+	 * Sets the robot charging status.
+	 * 
+	 * @param value
+	 */
 	public void setCharging(boolean value) {
 		isCharging = value;
 	}
@@ -219,7 +232,7 @@ public class SystemCondition implements Serializable {
      * @return
      */
     public boolean isLowPower() {
-    	return getBatteryState() < lowPowerPercent;
+    	return getBatteryState() < lowPowerModePercent;
     }
     
     /**
