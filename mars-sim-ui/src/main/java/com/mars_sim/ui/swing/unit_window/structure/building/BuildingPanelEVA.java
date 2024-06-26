@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanelEVA.java
- * @date 2023-11-11
+ * @date 2024-06-24
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.unit_window.structure.building;
@@ -13,6 +13,7 @@ import java.awt.GridLayout;
 import java.util.Collection;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -116,75 +117,11 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	protected void buildUI(JPanel content) {
 		MainDesktopPane desktop = getDesktop();
 		
-		// Create label panel
-		JPanel topPanel = new JPanel(new BorderLayout());
-		content.add(topPanel, BorderLayout.NORTH);
-
-		AttributePanel labelGrid = new AttributePanel(6, 2);
-		topPanel.add(labelGrid, BorderLayout.NORTH);
-		
-
-		if (eva.getAirlock().isInnerDoorLocked())
-			innerDoorStateCache = LOCKED;
-		else {
-			innerDoorStateCache = UNLOCKED;
-		}
-		// Create innerDoorStateLabel
-		innerDoorStateLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.innerDoor.state"),
-										   innerDoorStateCache, null);
-
-		// Create innerDoorLabel
-		innerDoorLabel = labelGrid.addTextField(Msg.getString("BuildingPanelEVA.innerDoor.number"),
-									  Integer.toString(eva.getNumAwaitingInnerDoor()), null);
-
-
-		if (eva.getAirlock().isOuterDoorLocked())
-			outerDoorStateCache = LOCKED;
-		else {
-			outerDoorStateCache = UNLOCKED;
-		}
-		// Create outerDoorStateLabel
-		outerDoorStateLabel = labelGrid.addTextField(Msg.getString("BuildingPanelEVA.outerDoor.state"),
-										   outerDoorStateCache, null);
-	
-		// Create outerDoorLabel
-		outerDoorLabel = labelGrid.addTextField(Msg.getString("BuildingPanelEVA.outerDoor.number"),
-									  Integer.toString(eva.getNumAwaitingOuterDoor()), null);
-
-		// Create airlockModeLabel
-		airlockModeCache = buildingAirlock.getAirlockMode();
-		
-		airlockModeLabel = labelGrid.addTextField(Msg.getString("BuildingPanelEVA.airlock.mode"),
-				airlockModeCache.getName(), null);
-
-		// Create occupiedLabel
-		occupiedLabel = labelGrid.addTextField(Msg.getString("BuildingPanelEVA.occupied"),
-									 Integer.toString(eva.getNumInChamber()), null);
-
-		// Create airlockStateLabel
-		airlockStateLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.airlock.state"),
-								buildingAirlock.getState().toString(), null);
-
-		// Create emptyLabel
-		emptyLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.empty"),
-								  Integer.toString(eva.getNumEmptied()), null);
-		
-		// Create transitionLabel
-		transitionLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.airlock.transition"),
-				Conversion.capitalize0(Boolean.toString(buildingAirlock.isTransitioning())), null);
-
-		// Create cycleTimeLabel
-		cycleTimeLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.airlock.cycleTime"),
-					StyleManager.DECIMAL_PLACES1.format(buildingAirlock.getRemainingCycleTime()), null);
-
-		// Create OperatorLabel
-		operatorLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.operator"),
-									 eva.getOperatorName(), null);
-
-		// Create activationLabel
-		activationLabel = labelGrid.addTextField( Msg.getString("BuildingPanelEVA.airlock.activation"),
-				Conversion.capitalize0(Boolean.toString(buildingAirlock.isActivated())), null);
-
+		// Create top panel
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
+        content.add(topPanel, BorderLayout.CENTER);
+ 
 		JPanel wikiPanel = new JPanel(new FlowLayout());
 		Icon wikiIcon = ImageLoader.getIconByName(GuideWindow.WIKI_ICON);
 		JButton wikiButton = new JButton(wikiIcon);
@@ -193,16 +130,80 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 //		wikiButton.setAlignmentY(.5f);
 		wikiButton.setToolTipText("Open Airlock Wiki in GitHub");
 		wikiButton.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
-		topPanel.add(wikiPanel, BorderLayout.SOUTH);
+		content.add(wikiPanel, BorderLayout.NORTH);
+		
+		AttributePanel westGrid = new AttributePanel(6, 1, 2, 2);
+		topPanel.add(westGrid);
+        
+		AttributePanel eastGrid = new AttributePanel(6, 1, 2, 2);
+		topPanel.add(eastGrid);	
+		
+		if (eva.getAirlock().isInnerDoorLocked())
+			innerDoorStateCache = LOCKED;
+		else {
+			innerDoorStateCache = UNLOCKED;
+		}
+		// Create innerDoorStateLabel
+		innerDoorStateLabel = eastGrid.addRow( Msg.getString("BuildingPanelEVA.innerDoor.state"),
+										   innerDoorStateCache);
+
+		// Create innerDoorLabel
+		innerDoorLabel = westGrid.addRow(Msg.getString("BuildingPanelEVA.innerDoor.number"),
+									  Integer.toString(eva.getNumAwaitingInnerDoor()));
+
+
+		if (eva.getAirlock().isOuterDoorLocked())
+			outerDoorStateCache = LOCKED;
+		else {
+			outerDoorStateCache = UNLOCKED;
+		}
+		// Create outerDoorStateLabel
+		outerDoorStateLabel = eastGrid.addRow(Msg.getString("BuildingPanelEVA.outerDoor.state"),
+										   outerDoorStateCache);
+	
+		// Create outerDoorLabel
+		outerDoorLabel = westGrid.addRow(Msg.getString("BuildingPanelEVA.outerDoor.number"),
+									  Integer.toString(eva.getNumAwaitingOuterDoor()));
+
+		// Create airlockModeLabel
+		airlockModeCache = buildingAirlock.getAirlockMode();
+		
+		airlockModeLabel = eastGrid.addRow(Msg.getString("BuildingPanelEVA.airlock.mode"),
+				airlockModeCache.getName());
+
+		// Create occupiedLabel
+		occupiedLabel = westGrid.addRow(Msg.getString("BuildingPanelEVA.occupied"),
+									 Integer.toString(eva.getNumInChamber()));
+
+		// Create airlockStateLabel
+		airlockStateLabel = eastGrid.addRow( Msg.getString("BuildingPanelEVA.airlock.state"),
+								buildingAirlock.getState().toString());
+
+		// Create emptyLabel
+		emptyLabel = westGrid.addRow( Msg.getString("BuildingPanelEVA.empty"),
+								  Integer.toString(eva.getNumEmptied()));
+		
+		// Create transitionLabel
+		transitionLabel = eastGrid.addRow( Msg.getString("BuildingPanelEVA.airlock.transition"),
+				Conversion.capitalize0(Boolean.toString(buildingAirlock.isTransitioning())));
+
+		// Create cycleTimeLabel
+		cycleTimeLabel = westGrid.addRow( Msg.getString("BuildingPanelEVA.airlock.cycleTime"),
+					StyleManager.DECIMAL_PLACES1.format(buildingAirlock.getRemainingCycleTime()));
+
+		// Create OperatorLabel
+		operatorLabel = eastGrid.addRow( Msg.getString("BuildingPanelEVA.operator"),
+									 eva.getOperatorName());
+
+		// Create activationLabel
+		activationLabel = westGrid.addRow( Msg.getString("BuildingPanelEVA.airlock.activation"),
+				Conversion.capitalize0(Boolean.toString(buildingAirlock.isActivated())));
 		
 		// Create gridPanel
 		JPanel gridPanel = new JPanel(new GridLayout(2, 2));
 		Border margin = new EmptyBorder(2, 2, 2, 2);
 		gridPanel.setBorder(margin);
-//		int width = UnitWindow.WIDTH - 40;
-//		int halfWidth = width/2;
-//		listPanel.setSize(new Dimension(width, -1));
-		content.add(gridPanel, BorderLayout.CENTER);
+		content.add(gridPanel, BorderLayout.SOUTH);
 		
 		// Create outside list panel
 		JPanel outsidePanel = new JPanel(new BorderLayout());

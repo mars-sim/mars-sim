@@ -119,11 +119,9 @@ public abstract class TabPanel extends JScrollPane {
 		topContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
 		viewPanel.add(topContentPanel, BorderLayout.NORTH);
 
-		Border margin = new EmptyBorder(5,5,5,5);
-		
 		// Create center content panel
 		centerContentPanel = new JPanel(new BorderLayout(0, 10));
-		centerContentPanel.setBorder(margin);
+		centerContentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		viewPanel.add(centerContentPanel, BorderLayout.CENTER);
 	}
 
@@ -165,6 +163,17 @@ public abstract class TabPanel extends JScrollPane {
 	 */
 	protected void addBorder(JComponent panel, String title) {
 		panel.setBorder(StyleManager.createLabelBorder(title));
+	}
+	
+	/**
+	 * Adds a standard titled border.
+	 * 
+	 * @param panel
+	 * @param title The title to display
+	 */
+	protected void addBorder(JComponent panel, String title, String tooltip) {
+		panel.setBorder(StyleManager.createLabelBorder(title));
+		panel.setToolTipText(tooltip);
 	}
 	
 	/**

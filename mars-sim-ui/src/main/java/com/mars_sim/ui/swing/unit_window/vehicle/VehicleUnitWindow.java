@@ -67,7 +67,8 @@ public class VehicleUnitWindow extends UnitWindow {
 		addTabPanel(new NavigationTabPanel(vehicle, desktop));
 		addTabPanel(new TabPanelMission(vehicle, desktop));	
 		addTabPanel(new NotesTabPanel(vehicle, desktop));
-
+		addTabPanel(new TabPanelSpecs(vehicle, desktop));
+				
 		salvaged = vehicle.isSalvaged();
 		if (salvaged)
 			addTabPanel(new SalvageTabPanel(vehicle, desktop));
@@ -77,7 +78,7 @@ public class VehicleUnitWindow extends UnitWindow {
 		sortTabPanels();
 
 		// Add general tab panel as the first tab
-		addFirstPanel(new TabPanelGeneral(vehicle, desktop));
+//		addFirstPanel
 		
 		// Add to tab panels. 
 		addTabIconPanels();

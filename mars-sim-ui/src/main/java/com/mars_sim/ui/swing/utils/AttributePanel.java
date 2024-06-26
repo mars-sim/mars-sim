@@ -31,6 +31,10 @@ public class AttributePanel extends JPanel {
         super(new GridLayout(rows, 2*cols, 3, 3));
     }
 
+    public AttributePanel(int rows, int cols, int hgap, int vgap) {
+        super(new GridLayout(rows, 2*cols, hgap, vgap));
+    }
+    
 	/**
 	 * Adds a field with labels to a panel. The layout should be a spring layout.
 	 * 
@@ -94,7 +98,7 @@ public class AttributePanel extends JPanel {
 	 * @param content Content showing the value
 	 */
 	public void addLabelledItem(String titleLabel, JComponent content) {
-        if ((titleLabel != null) && !titleLabel.endsWith(":")) {
+        if ((titleLabel != null) && !titleLabel.endsWith(": ")) {
             titleLabel = titleLabel + " :";
         }
         JLabel title = new JLabel(titleLabel, SwingConstants.RIGHT);

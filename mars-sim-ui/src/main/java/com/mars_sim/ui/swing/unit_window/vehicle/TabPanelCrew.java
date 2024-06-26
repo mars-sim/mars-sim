@@ -83,7 +83,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 	public TabPanelCrew(Vehicle vehicle, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			null,
+			Msg.getString("TabPanelCrew.title"), //$NON-NLS-1$
 			ImageLoader.getIconByName(CREW_ICON),
 			Msg.getString("TabPanelCrew.tooltip"), //$NON-NLS-1$
 			vehicle, desktop

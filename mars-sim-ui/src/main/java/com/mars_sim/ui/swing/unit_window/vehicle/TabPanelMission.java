@@ -97,17 +97,23 @@ extends TabPanel {
 		topContentPanel.add(missionTopPanel, BorderLayout.NORTH);
 
 		// Prepare mission panel
-		JPanel missionPanel = new JPanel(new BorderLayout(0, 0));
-		missionPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
-		missionTopPanel.add(missionPanel);
+		JPanel missionNamePanel = new JPanel(new BorderLayout(0, 0));
+		missionNamePanel.setBorder(new EmptyBorder(15, 15, 15, 15));
+		missionTopPanel.add(missionNamePanel);
 
-		// Prepare mission text area
+		JLabel missionNameLabel = new JLabel(
+				Msg.getString("TabPanelMission.missionPhase"), SwingConstants.CENTER); //$NON-NLS-1$
+		StyleManager.applySubHeading(missionNameLabel);
+		missionNamePanel.add(missionNameLabel, BorderLayout.NORTH);
+
+		
+		// Prepare mission name area
 		if (mission != null) missionCache = mission.getName();
 		missionTextArea = new JTextArea(2, 20);
 		if (missionCache != null) missionTextArea.setText(missionCache);
 		missionTextArea.setLineWrap(true);
 		missionTextArea.setEditable(false);
-		missionPanel.add(new JScrollPane(missionTextArea), BorderLayout.NORTH);
+		missionNamePanel.add(new JScrollPane(missionTextArea), BorderLayout.CENTER);
 
 		// Prepare mission phase panel
 		JPanel missionPhasePanel = new JPanel(new BorderLayout(0, 0));
@@ -116,6 +122,7 @@ extends TabPanel {
 
 		// Prepare mission phase label
 		JLabel missionPhaseLabel = new JLabel(Msg.getString("TabPanelMission.missionPhase"), SwingConstants.CENTER); //$NON-NLS-1$
+		StyleManager.applySubHeading(missionPhaseLabel);
 		missionPhasePanel.add(missionPhaseLabel, BorderLayout.NORTH);
 		missionTopPanel.add(missionPhasePanel);
 		

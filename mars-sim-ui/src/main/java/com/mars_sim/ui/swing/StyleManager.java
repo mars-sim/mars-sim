@@ -398,6 +398,20 @@ public class StyleManager {
     }
 
     /**
+     * Creates a Titled border that uses the Label font.
+     * 
+     * @param title
+     * @return
+     */
+    public static Border createLabelBorder(String title, String tooltip) {
+    	return BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION,
+                                                        TitledBorder.DEFAULT_POSITION,
+                                                        labelFont, (Color)null);
+    }
+    
+    
+    
+    /**
      * Gets the Bold default font.
      * 
      * @return

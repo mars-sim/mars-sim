@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * TabPanelGeneral.java
- * @date 2023-06-06
+ * TabPanelSpecs.java
+ * @date 2024-06-24
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.unit_window.vehicle;
@@ -25,10 +25,10 @@ import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
- * This tab shows the general details of the Vehicle type.
+ * This tab shows the specs of the vehicle.
  */
 @SuppressWarnings("serial")
-public class TabPanelGeneral extends TabPanel {
+public class TabPanelSpecs extends TabPanel {
 
 	private static final String ID_ICON = "info";
 	
@@ -37,11 +37,11 @@ public class TabPanelGeneral extends TabPanel {
 	/**
 	 * Constructor.
 	 */
-	public TabPanelGeneral(Vehicle v, MainDesktopPane desktop) {
+	public TabPanelSpecs(Vehicle v, MainDesktopPane desktop) {
 		super(
-			Msg.getString("BuildingPanelGeneral.title"),
+			Msg.getString("TabPanelSpecs.title"),
 			ImageLoader.getIconByName(ID_ICON), 
-			Msg.getString("BuildingPanelGeneral.title"),
+			Msg.getString("TabPanelSpecs.tooltip"),
 			v, desktop);
 		this.v = v;
 	}
@@ -76,11 +76,6 @@ public class TabPanelGeneral extends TabPanel {
 		center.add(specsPanel, BorderLayout.CENTER);
 		
 		// Prepare spring layout info panel.
-//		AttributePanel typePanel = new AttributePanel(1);
-//		specsPanel.add(typePanel, BorderLayout.NORTH);
-//		
-//		typePanel.addTextField( "Type", v.getVehicleType().getName(), null);
-
 		AttributePanel labelGrid = new AttributePanel(17, 2);
 		specsPanel.add(labelGrid, BorderLayout.CENTER);
 		
