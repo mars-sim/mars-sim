@@ -9,7 +9,7 @@ package com.mars_sim.core.person.ai.social;
 import com.mars_sim.core.Entity;
 
 /**
- * This interface allows a subject to give opinion on another subject
+ * This interface allows a subject to give opinion on another subject.
  */
 public interface Appraiser extends Entity {
 

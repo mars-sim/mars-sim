@@ -147,6 +147,7 @@ public class Charge extends Task {
 		boolean toCharge = false;
 		
 		SystemCondition sc = robot.getSystemCondition();
+		double batteryLevel = sc.getBatteryState();
 		
 		if (getDuration() == DURATION) {
 			// When this phase is being called for the first time
@@ -154,7 +155,7 @@ public class Charge extends Task {
 		}
 		
 		else {
-			double batteryLevel = sc.getBatteryState();
+			
 			double threshold = sc.getRecommendedThreshold();
 			double lowPower = sc.getLowPowerModePercent();
 //			double timeLeft = getTimeLeft();
@@ -188,8 +189,6 @@ public class Charge extends Task {
 		}
 
 		if (toCharge) {
-			
-			double batteryLevel = sc.getBatteryState();
 			
 			// Switch to charging
 			sc.setCharging(true);
@@ -248,9 +247,8 @@ public class Charge extends Task {
 		}
 		
 		else {
-			logger.fine(robot, "Quit charging.");
-			
-			endCharging();
+			// Reset the duration
+			setDuration(LEVEL_UPPER_LIMIT - batteryLevel);
 			
 			return 0;
 		}

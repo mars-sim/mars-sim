@@ -36,9 +36,9 @@ public class Relation implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Note: For Person:
-	// d0 : d0
-	// d1 : d1
-	// d2 : d2
+	// d0 : e.g. respect
+	// d1 : e.g. care
+	// d2 : e.g. trust
 
 	// Note: For Settlement:
 	// d0 : diplomatic
