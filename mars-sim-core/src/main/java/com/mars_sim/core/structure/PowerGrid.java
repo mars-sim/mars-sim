@@ -234,7 +234,7 @@ public class PowerGrid implements Serializable, Temporal {
 			handleExcessPower(pulse.getElapsed());
 		}
 		else {
-			generateMorePower(pulse.getElapsed());
+			generateMorePower(pulse.getElapsed(), neededPower);
 		}
 
 		// Update the total power storage capacity in the grid.
@@ -313,8 +313,7 @@ public class PowerGrid implements Serializable, Temporal {
 	 * 
 	 * @param time
 	 */
-	private void generateMorePower(double time) {
-		double neededPower = powerRequired * ROLLING_FACTOR - powerGenerated;
+	private void generateMorePower(double time, double neededPower) {
 
 		// insufficient power produced, need to pull energy from batteries to meet the
 		// demand

@@ -53,6 +53,10 @@ public class TabPanelPowerGrid extends TabPanelTable {
 	
 	private static final String PERCENT_PER_SOL = " % per sol";
 	private static final String PERCENT = " %";
+	private static final String SLASH = " / ";
+	private static final String OPEN_PARA = " (";
+	private static final String CLOSE_PARA = ")";
+	
 	private static final String[] TOOLTIPS = {"Power Status", "Building Name",
 			"kW Power Generated","kWh Energy Stored in Battery"};
 	
@@ -62,27 +66,27 @@ public class TabPanelPowerGrid extends TabPanelTable {
 	
 	// Data cache
 	/** The total power generated cache. */
-	private double powerGeneratedCache;
+	private double powerGenCache;
 	/** The total power used cache. */
-	private double powerUsedCache;
+	private double powerLoadCache;
 	/** The total power storage capacity cache. */
-	private double energyStorageCapacityCache;
+	private double energyCapacityCache;
 	/** The total power stored cache. */
 	private double energyStoredCache;
 	/** The total solar cell efficiency cache. */
 	private double solarCellEfficiencyCache;
 	
-	private double percentPower;
+	private double percentPowerUsage;
 
-	private double percentEnergy;
+	private double percentEnergyUsage;
 
 	
 	/** The Settlement instance. */
 	private Settlement settlement;
 
 	private JLabel solarCellEfficiencyTF;
-	private JLabel percentPowerLabel;
-	private JLabel percentEnergyLabel;
+	private JLabel percentPowerUsageLabel;
+	private JLabel percentEnergyUsageLabel;
 
 	private JRadioButton r0;
 	private JRadioButton r1;
@@ -133,33 +137,35 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		topContentPanel.add(powerInfoPanel);
 
 		// Prepare power generated tf.
-		powerGeneratedCache = powerGrid.getGeneratedPower();
+		powerGenCache = powerGrid.getGeneratedPower();
 		// Prepare power used tf.
-		powerUsedCache = powerGrid.getRequiredPower();
+		powerLoadCache = powerGrid.getRequiredPower();
 		// Prepare the power usage percent
-		percentPower = Math.round(powerGeneratedCache/powerUsedCache * 1000.0)/10.0;
+		percentPowerUsage = Math.round(powerGenCache/powerLoadCache * 1000.0)/10.0;
 		
-		percentPowerLabel = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.powerUsage"),
-				percentPower + PERCENT + " (" + StyleManager.DECIMAL_KW.format(powerUsedCache) 
-				+ " / " + StyleManager.DECIMAL_KW.format(powerGeneratedCache) + ")",
+		percentPowerUsageLabel = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.powerUsage"),
+				StyleManager.DECIMAL_PERC1.format(percentPowerUsage) + OPEN_PARA 
+				+ StyleManager.DECIMAL_KW.format(powerLoadCache) 
+				+ SLASH + StyleManager.DECIMAL_KW.format(powerGenCache) + OPEN_PARA,
 				Msg.getString("TabPanelPowerGrid.powerUsage.tooltip"));
 		
 		// Prepare power storage capacity tf.
-		energyStorageCapacityCache = powerGrid.getStoredEnergyCapacity();
+		energyCapacityCache = powerGrid.getStoredEnergyCapacity();
 		// Prepare power stored tf.
 		energyStoredCache = powerGrid.getStoredEnergy();
 		// Prepare the energy usage percent
-		percentEnergy = Math.round(energyStoredCache/energyStorageCapacityCache * 1000.0)/10.0;
+		percentEnergyUsage = Math.round(energyStoredCache/energyCapacityCache * 1000.0)/10.0;
 
-		percentEnergyLabel = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.energyUsage"),
-				percentEnergy + PERCENT + " (" + StyleManager.DECIMAL_KWH.format(energyStoredCache) 
-				+ " / " + StyleManager.DECIMAL_KWH.format(energyStorageCapacityCache) + ")",
+		percentEnergyUsageLabel = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.energyUsage"),
+				StyleManager.DECIMAL_PERC1.format(percentEnergyUsage) + OPEN_PARA 
+				+ StyleManager.DECIMAL_KWH.format(energyStoredCache) 
+				+ SLASH + StyleManager.DECIMAL_KWH.format(energyCapacityCache) + OPEN_PARA,
 				Msg.getString("TabPanelPowerGrid.energyUsage.tooltip"));
 		
 		// Create solar cell eff tf
 		solarCellEfficiencyCache = getAverageEfficiency();
 		solarCellEfficiencyTF = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.solarPowerEfficiency"),
-											 StyleManager.DECIMAL_PLACES2.format(solarCellEfficiencyCache * 100D) + PERCENT,
+											 StyleManager.DECIMAL_PERC1.format(solarCellEfficiencyCache * 100D),
 											 Msg.getString("TabPanelPowerGrid.solarPowerEfficiency.tooltip"));
 
 		// Create degradation rate tf.
@@ -298,15 +304,16 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		// Update power used TF.
 		double req = powerGrid.getRequiredPower();
 
-		if (powerGeneratedCache != gen || powerUsedCache != req) {
-			powerGeneratedCache = gen;
-			powerUsedCache = req;
-			percentPower = Math.round(powerUsedCache / powerGeneratedCache * 1000.0)/10.0;
+		if (powerGenCache != gen || powerLoadCache != req) {
+			powerGenCache = gen;
+			powerLoadCache = req;
+			percentPowerUsage = Math.round(powerLoadCache / powerGenCache * 1000.0)/10.0;
 
-			String s = percentPower + " % (" + StyleManager.DECIMAL_KW.format(powerUsedCache) 
-					+ " / " + StyleManager.DECIMAL_KW.format(powerGeneratedCache) + ")";
+			String s = StyleManager.DECIMAL_PERC1.format(percentPowerUsage) + OPEN_PARA 
+					+ StyleManager.DECIMAL_KW.format(powerLoadCache) 
+					+ SLASH + StyleManager.DECIMAL_KW.format(powerGenCache) + CLOSE_PARA;
 			
-			percentPowerLabel.setText(s);		
+			percentPowerUsageLabel.setText(s);		
 		}
 		
 		// Update power storage capacity TF.
@@ -314,15 +321,16 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		// Update power stored TF.
 		double store = powerGrid.getStoredEnergy();
 		
-		if (energyStorageCapacityCache != cap || energyStoredCache != store) {
-			energyStorageCapacityCache = cap;
+		if (energyCapacityCache != cap || energyStoredCache != store) {
+			energyCapacityCache = cap;
 			energyStoredCache = store;
-			percentEnergy = Math.round(energyStoredCache / energyStorageCapacityCache * 1000.0)/10.0;
+			percentEnergyUsage = Math.round(energyStoredCache / energyCapacityCache * 1000.0)/10.0;
 					
-			String s = percentEnergy + " % (" + StyleManager.DECIMAL_KWH.format(energyStoredCache) 
-			+ " / " + StyleManager.DECIMAL_KWH.format(energyStorageCapacityCache) + ")";
+			String s = StyleManager.DECIMAL_PERC1.format(percentEnergyUsage) + OPEN_PARA 
+					+ StyleManager.DECIMAL_KWH.format(energyStoredCache) 
+					+ SLASH + StyleManager.DECIMAL_KWH.format(energyCapacityCache) + CLOSE_PARA;
 			
-			percentEnergyLabel.setText(s);
+			percentEnergyUsageLabel.setText(s);
 		}
 
 
@@ -330,7 +338,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		double eff = getAverageEfficiency();
 		if (solarCellEfficiencyCache != eff) {
 			solarCellEfficiencyCache = eff;
-			solarCellEfficiencyTF.setText(StyleManager.DECIMAL_PLACES2.format(eff * 100D) + PERCENT);
+			solarCellEfficiencyTF.setText(StyleManager.DECIMAL_PERC1.format(eff * 100D));
 		}
 		// Update power table.
 		powerTableModel.update();
