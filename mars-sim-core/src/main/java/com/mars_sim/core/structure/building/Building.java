@@ -129,8 +129,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	private double length;
 	private double floorArea;
 	private double facing;
-	private double basePowerRequirement;
-	private double basePowerDownPowerRequirement;
+	private double baseFullPowerRequirement;
+	private double baseLowPowerRequirement;
 	private double powerNeededForEVAHeater;
 	
 	/** Type of building. */
@@ -265,8 +265,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		description = buildingSpec.getDescription();
 
 		// Get base power requirements.
-		basePowerRequirement = buildingSpec.getBasePowerRequirement();
-		basePowerDownPowerRequirement = buildingSpec.getBasePowerDownPowerRequirement();
+		baseFullPowerRequirement = buildingSpec.getBasePowerRequirement();
+		baseLowPowerRequirement = buildingSpec.getBasePowerDownPowerRequirement();
 
 		// Set room temperature
 		presetTemperature = buildingSpec.getPresetTemperature();
@@ -767,12 +767,12 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Gets the power this building currently requires for full-power mode.
+	 * Gets the power requirement for full-power mode.
 	 *
 	 * @return power in kW.
 	 */
 	public double getFullPowerRequired() {
-		double result = basePowerRequirement;
+		double result = baseFullPowerRequirement;
 
 		// Determine power required for each function.
 		for (Function function : functions) {
@@ -789,12 +789,12 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Gets the power the building requires for power-down mode.
+	 * Gets the power requirement for low-power mode.
 	 *
 	 * @return power in kW.
 	 */
-	public double getPoweredDownPowerRequired() {
-		double result = basePowerDownPowerRequirement;
+	public double getLowPowerRequired() {
+		double result = baseLowPowerRequirement;
 
 		// Determine power required for each function.
 		for (Function function : functions) {

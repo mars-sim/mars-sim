@@ -20,6 +20,7 @@ extends TableTab {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param model the table model.
 	 * @param mandatory Is this table view mandatory.
 	 */
@@ -34,8 +35,9 @@ extends TableTab {
 	}
 
 	/**
-	 * Get the Coordinates of the selectd Unit
-	 * @return Cooridnates, maybe null
+	 * Gets the coordinates of the selected unit.
+	 * 
+	 * @return Coordinates, maybe null
 	 */
 	@Override
     public Coordinates getSelectedCoordinates() {

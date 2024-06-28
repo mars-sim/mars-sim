@@ -412,7 +412,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 			if (column == 0) {
 				if (powerMode == PowerMode.FULL_POWER) {
 					return dotGreen;
-				} else if (powerMode == PowerMode.POWER_DOWN) {
+				} else if (powerMode == PowerMode.LOW_POWER) {
 					return dotYellow;
 				} else if (powerMode == PowerMode.POWER_UP) {
 					return dotGreen;
@@ -447,8 +447,8 @@ public class TabPanelPowerGrid extends TabPanelTable {
 				double used = 0D;
 				if (powerMode == PowerMode.FULL_POWER)
 					used = building.getFullPowerRequired();
-				else if (powerMode == PowerMode.POWER_DOWN)
-					used = building.getPoweredDownPowerRequired();
+				else if (powerMode == PowerMode.LOW_POWER)
+					used = building.getLowPowerRequired();
 				return Math.round(used * 100.0) / 100.0;
 			} 
 			

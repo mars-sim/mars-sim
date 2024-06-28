@@ -42,6 +42,7 @@ import com.mars_sim.ui.swing.utils.MarsTimeCellRenderer;
 abstract class TableTab extends MonitorTab {
 
 	protected static final NumberCellRenderer DIGIT0_RENDERER = new NumberCellRenderer(0, true);
+	protected static final NumberCellRenderer DIGIT1_RENDERER = new NumberCellRenderer(1, true);
 	protected static final NumberCellRenderer DIGIT2_RENDERER = new NumberCellRenderer(2, true);
 	protected static final NumberCellRenderer DIGIT3_RENDERER = new NumberCellRenderer(3, true);
 	protected static final MarsTimeCellRenderer TIME_RENDERER = new MarsTimeCellRenderer();
@@ -60,7 +61,7 @@ abstract class TableTab extends MonitorTab {
 	 * @param model           The model of Units to display.
 	 * @param mandatory       Is this table view mandatory.
 	 * @param singleSelection Does this table only allow single selection?
-	 * @param iconname        Name of the icon; @see {@link ImageLoader#getIconByName(String)}
+	 * @param icon name        Name of the icon; @see {@link ImageLoader#getIconByName(String)}
 	 */
 	protected TableTab(final MonitorWindow window, final MonitorModel model, boolean mandatory, boolean singleSelection,
 			String iconname) {
@@ -91,7 +92,7 @@ abstract class TableTab extends MonitorTab {
 		};
 
 		// Set default renderers
-		this.table.setDefaultRenderer(Double.class, DIGIT2_RENDERER);
+		this.table.setDefaultRenderer(Double.class, DIGIT1_RENDERER);
 		this.table.setDefaultRenderer(Number.class, DIGIT2_RENDERER);
 		this.table.setDefaultRenderer(Integer.class, DIGIT0_RENDERER);
 		this.table.setDefaultRenderer(MarsTime.class, TIME_RENDERER);

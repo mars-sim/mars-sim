@@ -818,7 +818,7 @@ public class Farming extends Function {
 			double productionLevel = 0D;
 			if (building.getPowerMode() == PowerMode.FULL_POWER)
 				productionLevel = 1D;
-			else if (building.getPowerMode() == PowerMode.POWER_DOWN)
+			else if (building.getPowerMode() == PowerMode.LOW_POWER)
 				productionLevel = .5D;
 
 			double solarIrradiance = surface.getSolarIrradiance(building.getSettlement().getCoordinates());

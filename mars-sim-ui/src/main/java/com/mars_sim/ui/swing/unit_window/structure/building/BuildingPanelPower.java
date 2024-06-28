@@ -108,8 +108,8 @@ extends BuildingFunctionPanel {
 		// Prepare power used label.
 		if (powerStatusCache == PowerMode.FULL_POWER) 
 			totalUsedCache = building.getFullPowerRequired();
-		else if (powerStatusCache == PowerMode.POWER_DOWN) 
-			totalUsedCache = building.getPoweredDownPowerRequired();
+		else if (powerStatusCache == PowerMode.LOW_POWER) 
+			totalUsedCache = building.getLowPowerRequired();
 		else 
 			totalUsedCache = 0D;
 		
@@ -196,8 +196,8 @@ extends BuildingFunctionPanel {
 		double totalUsed = 0D;
 		if (powerStatusCache == PowerMode.FULL_POWER) 
 			totalUsed = building.getFullPowerRequired();
-		else if (powerStatusCache == PowerMode.POWER_DOWN) 
-			totalUsed = building.getPoweredDownPowerRequired();
+		else if (powerStatusCache == PowerMode.LOW_POWER) 
+			totalUsed = building.getLowPowerRequired();
 		
 		if (totalUsedCache != totalUsed) {
 			totalUsedCache = totalUsed;
