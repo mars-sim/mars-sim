@@ -2398,7 +2398,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Workshop -->
 
 
-	<building type="Methane Power Generator" width="5.0" length="5.0" north-south-alignment="length" base-level="0"
+	<building type="Methane Power Generator" width="5.0" length="5.0" north-south-alignment="length" 
+			base-level="0"
 			wear-lifetime="3340000" maintenance-time="500" room-temperature= "0" base-mass="500">
 		<description>This 30 kW Methane Power generator uses methane gas for generating
 			electricity.

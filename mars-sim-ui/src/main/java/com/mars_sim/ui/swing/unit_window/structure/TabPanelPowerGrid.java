@@ -52,7 +52,6 @@ public class TabPanelPowerGrid extends TabPanelTable {
 	private static final String POWER_ICON = "power";
 	
 	private static final String PERCENT_PER_SOL = " % per sol";
-	private static final String PERCENT = " %";
 	private static final String SLASH = " / ";
 	private static final String OPEN_PARA = " (";
 	private static final String CLOSE_PARA = ")";
@@ -414,8 +413,6 @@ public class TabPanelPowerGrid extends TabPanelTable {
 					return dotGreen;
 				} else if (powerMode == PowerMode.LOW_POWER) {
 					return dotYellow;
-				} else if (powerMode == PowerMode.POWER_UP) {
-					return dotGreen;
 				} else if (powerMode == PowerMode.NO_POWER) {
 					return dotRed;
 				} else

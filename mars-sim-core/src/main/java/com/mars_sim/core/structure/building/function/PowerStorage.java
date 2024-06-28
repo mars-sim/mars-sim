@@ -71,13 +71,20 @@ public class PowerStorage extends Function {
 	private double rTotal;  
 	
 	/**The maximum continuous discharge rate (within the safety limit) of this battery. */
-	private double maxCRating = 2D;
+	private double maxCRating = 4D;
 	// The capacity of a battery is generally rated and labeled at 3C rate(3C current) 
 	// It means a fully charged battery with a capacity of 100Ah should be able to provide 
 	// 3*100Amps current for one third hours. 
 	// That same 100Ah battery being discharged at a C-rate of 1C will provide 100Amps 
 	// for one hours, and if discharged at 0.5C rate it provide 50Amps for 2 hours.
 	
+	/** 
+	 * The rating [in ampere-hour (Ah)] of the battery in terms of its charging/discharging ability at 
+	 * a particular C-rating. An amp is a measure of electrical current. The hour 
+	 * indicates the length of time that the battery can supply this current.
+	 * e.g. a 2.2Ah battery can supply 2.2 amps for an hour
+	 */
+	private double ampHours;
 	
 	/** The health of the battery. */
 	private double health = 1D; 	
@@ -92,13 +99,7 @@ public class PowerStorage extends Function {
 	 */
 	private double kWhStored;
 
-	/** 
-	 * The rating [in ampere-hour (Ah)] of the battery in terms of its charging/discharging ability at 
-	 * a particular C-rating. An amp is a measure of electrical current. The hour 
-	 * indicates the length of time that the battery can supply this current.
-	 * e.g. a 2.2Ah battery can supply 2.2 amps for an hour
-	 */
-	private double ampHours;	
+	
 	
 	/*
 	 * The Terminal voltage is between the battery terminals with load applied. 
@@ -121,24 +122,23 @@ public class PowerStorage extends Function {
 		maxCapNameplate = spec.getCapacity();		
 		currentMaxCap = maxCapNameplate;
 		numModules = (int)(Math.ceil(currentMaxCap/2));
-		rTotal = Math.round(rCell * numModules * CELLS_PER_MODULE * 1000.0)/1000.0;
-		ampHours = Math.round(1000D * currentMaxCap/SECONDARY_LINE_VOLTAGE * 1000.0)/1000.0;
+		rTotal = rCell * numModules * CELLS_PER_MODULE;
+		ampHours = 1000D * currentMaxCap/SECONDARY_LINE_VOLTAGE;
 		maxCRating = spec.getDoubleProperty(DISCHARGE_RATE);	
 		// At the start of sim, set to a random value		
-		kWhStored = Math.round(.5 * maxCapNameplate 
-				+ RandomUtil.getRandomDouble(.5 * maxCapNameplate) * 1000.0)/1000.0;	
+		kWhStored = maxCapNameplate * (.5 + RandomUtil.getRandomDouble(.5));	
 		
 		// Update battery voltage
 		updateVoltage();
 		
-		logger.info(building, "maxCapNameplate: " + maxCapNameplate 
-							+ "  numModules: " + numModules
-							+ "  rCell: " + rCell
-							+ "  rTotal: " + rTotal
-							+ "  ampHours: " + ampHours
-							+ "  maxCRating: " + maxCRating
-							+ "  Vt: " + terminalVoltage							
-							+ "  kWhStored: " + kWhStored);
+//		logger.info(building, "maxCapNameplate: " + maxCapNameplate 
+//							+ "  numModules: " + numModules
+//							+ "  rCell: " + rCell
+//							+ "  rTotal: " + rTotal
+//							+ "  ampHours: " + ampHours
+//							+ "  maxCRating: " + maxCRating
+//							+ "  Vt: " + terminalVoltage							
+//							+ "  kWhStored: " + kWhStored);
 	}
 
 	/**
@@ -177,7 +177,7 @@ public class PowerStorage extends Function {
 	}
 
 	/**
-	 * Computes the available stored energy to be discharged.
+	 * Computes how much stored energy can be delivered when discharging.
 	 * 
 	 * @param needed  energy
 	 * @param rLoad  the load resistance of the external circuit (power grid, vehicle, robot) 
@@ -185,41 +185,57 @@ public class PowerStorage extends Function {
 	 * @return energy available to be delivered
 	 */
 	public double computeAvailableEnergy(double needed, double rLoad, double time) {
-		double possible = 0;
+		if (needed <= 0)
+			return 0;
+		
 		double stored = getkWattHourStored();
-
+		double maxCap = getCurrentMaxCapacity();
+		
 		if (stored <= 0)
 			return 0;
 
-		if (needed <= 0)
-			return stored;
+		double vTerminal = getTerminalVoltage();
+		// Assume the internal resistance of the battery is constant
+		double rInt = getTotalResistance();
+		// Assume max stateOfCharge is 1
+		double stateOfCharge = stored / maxCap;
+		// Use fudge_factor to improve the power delivery but decreases 
+		// as the battery is getting depleted
+		double fudgeFactor = 5 * stateOfCharge;
+		// The output voltage
+		double vOut = vTerminal * rLoad / (rLoad + rInt);
 
-		double voltage = getTerminalVoltage();
-		// assume the internal resistance of the battery is constant
-		double resistence = getTotalResistance();
-		double max = getCurrentMaxCapacity();
-		double stateOfCharge = stored / max;
-		// use fudge_factor to dampen the power delivery when the battery is getting
-		// depleted
-		double fudgeFactor = 20 * stateOfCharge;
-		double outputVoltage = voltage * rLoad / (rLoad + resistence);
-
-		if (outputVoltage <= 0)
+		if (vOut <= 0)
 			return 0;
 
-		double ampPerHr = getAmpHourRating();
-		double hr = time * HOURS_PER_MILLISOL;
-		// Note: Set max charging rate as 3C as Tesla runs its batteries up to 4C
-		// charging rate
-		// see https://teslamotorsclub.com/tmc/threads/limits-of-model-s-charging.36185/
+		double ampHr = getAmpHourRating();
+//		double hr = time * HOURS_PER_MILLISOL;	
+		
+		// Use Peukert's Law for lithium ion battery to dampen the power delivery when 
+		// battery is getting depleted
+		// Set k to 1.10
+		double ampHrRating = ampHr; // * Math.pow(hr, -1.1);
 
+		// The capacity of a battery is generally rated and labeled at 3C rate(3C current) 
+		// It means a fully charged battery with a capacity of 100Ah should be able to provide 
+		// 3*100Amps current for one third hours. 
+		// That same 100Ah battery being discharged at a C-rate of 1C will provide 100Amps 
+		// for one hours, and if discharged at 0.5C rate it provide 50Amps for 2 hours.
+		
 		double cRating = getMaxCRating();
-		double ampere = cRating * ampPerHr;
-		possible = ampere / 1000D * outputVoltage * hr * fudgeFactor;
+		double nowAmpHr = cRating * ampHrRating * fudgeFactor * stateOfCharge;
+		double possiblekWh = nowAmpHr / 1000D * vOut ;
 
-		return Math.min(stored, Math.min(possible, needed));
+		double availablekWh = Math.min(stored, Math.min(possiblekWh, needed));
 
-//		logger.info(building, "kWh: " + stored + "  available: " + available + "  needed: " + needed);
+//		logger.info(building, "kWh: " + Math.round(stored * 100.0)/100.0
+//				+ "  available: " + Math.round(availablekWh * 10000.0)/10000.0 
+//				+ "  needed: " + Math.round(needed * 10000.0)/10000.0 
+//				+ "  possiblekWh: " + Math.round(possiblekWh * 10000.0)/10000.0
+//				+ "  ampHrRating: " + Math.round(ampHrRating * 100.0)/100.0
+//				+ "  nowAmpHr: " + Math.round(nowAmpHr * 100.0)/100.0);
+
+		return availablekWh;
 	}
 	
 	/**

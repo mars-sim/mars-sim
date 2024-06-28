@@ -33,13 +33,16 @@ public class FuelPowerSource extends PowerSource {
 	/** The work time (millisol) required to toggle this power source on or off. */
 	private static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 2D;
 
+	/** The fuel consumption rate [kg/millisol]. */
+	private final double MAX_RATE;
+	
 	private boolean toggle = false;
 	/** The electrical efficiency for this source. */
 	private double electricalEfficiency = .7125;
 	/** The fuel consumption rate [kg/sol]. */
 	private double rate;
 	/** The fuel consumption rate [kg/millisol]. */
-	private double mRate;
+	private double consumptionRate;
 	/** The running work time. */
 	private double toggleRunningWorkTime;
 	/** The amount of reserved fuel. */
@@ -77,7 +80,8 @@ public class FuelPowerSource extends PowerSource {
 			tankCap = maxPower / 2;
 		}
 
-		mRate = rate / 1000.0;
+		MAX_RATE = rate / 1000.0;
+		consumptionRate = MAX_RATE;
 	}
 	
 //	 Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
@@ -110,6 +114,21 @@ public class FuelPowerSource extends PowerSource {
 	}
 	
 	/**
+	 * Returns the current consumption rate.
+	 * 
+	 * @return
+	 */
+	public double computeRate() {
+		if (building.getPowerMode() == PowerMode.FULL_POWER) {
+			consumptionRate = MAX_RATE;  
+		}
+		else if (building.getPowerMode() == PowerMode.LOW_POWER) {
+			consumptionRate = MAX_RATE/2;  
+		}	
+		return consumptionRate;
+	}
+	
+	/**
 	 * Consumes the fuel.
 	 * 
 	 * @param time
@@ -120,7 +139,7 @@ public class FuelPowerSource extends PowerSource {
 		double consumed = 0;
 
 		// Use tankCap and floor area as factors to limit fuel
-		double deltaFuel = building.getFloorArea() / 5 * time * mRate;
+		double deltaFuel = building.getFloorArea() / 5 * time * computeRate();
 		double maxFuel = getMaxPower() * getMaxFuelPerMillisolPerkW();
 	
 		if (deltaFuel > maxFuel) {

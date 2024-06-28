@@ -13,8 +13,7 @@ public enum PowerMode {
 
 	FULL_POWER (Msg.getString("PowerMode.fullPower")), //$NON-NLS-1$
 	LOW_POWER (Msg.getString("PowerMode.lowPower")), //$NON-NLS-1$
-	NO_POWER (Msg.getString("PowerMode.noPower")), //$NON-NLS-1$
-	POWER_UP ("Power up");
+	NO_POWER (Msg.getString("PowerMode.noPower")); //$NON-NLS-1$
 
 	private String name;
 

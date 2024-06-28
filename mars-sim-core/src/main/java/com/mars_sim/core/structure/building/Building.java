@@ -805,14 +805,14 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Gets the building's heat mode.
+	 * Gets the building's power mode.
 	 */
 	public PowerMode getPowerMode() {
 		return powerModeCache;
 	}
 
 	/**
-	 * Sets the building's heat mode.
+	 * Sets the building's power mode.
 	 */
 	public void setPowerMode(PowerMode powerMode) {
 		this.powerModeCache = powerMode;
@@ -856,7 +856,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Gets the building's power mode.
+	 * Gets the building's heat mode.
 	 */
 	public HeatMode getHeatMode() {
 		return heatModeCache;

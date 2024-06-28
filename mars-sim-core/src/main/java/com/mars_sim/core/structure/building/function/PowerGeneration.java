@@ -75,10 +75,10 @@ public class PowerGeneration extends Function {
 					break;
 					
 				case FUEL_POWER:
-					boolean toggleStafe = Boolean.parseBoolean(sourceSpec.getAttribute(SourceSpec.TOGGLE));
+					boolean toggle = Boolean.parseBoolean(sourceSpec.getAttribute(SourceSpec.TOGGLE));
 					String fuelType = sourceSpec.getAttribute(SourceSpec.FUEL_TYPE);
 					double consumptionSpeed = Double.parseDouble(sourceSpec.getAttribute(SourceSpec.CONSUMPTION_RATE));
-					powerSource = new FuelPowerSource(building, power, toggleStafe, fuelType, consumptionSpeed);
+					powerSource = new FuelPowerSource(building, power, toggle, fuelType, consumptionSpeed);
 					break;
 					
 				case WIND_POWER:
@@ -164,7 +164,17 @@ public class PowerGeneration extends Function {
 		while (i.hasNext()) {
 			PowerSource powerSource = i.next();
 			if (powerSource instanceof FuelPowerSource source) {
-				source.setTime(time);
+				
+				PowerMode powerMode = building.getPowerMode();
+				if (powerMode == PowerMode.FULL_POWER
+						|| powerMode == PowerMode.LOW_POWER) {
+					source.toggleON();
+					source.setTime(time);
+				}
+				else {
+					source.toggleOFF();
+					source.setTime(0);
+				}	
 			}
 			
 			double p = powerSource.getCurrentPower(getBuilding());

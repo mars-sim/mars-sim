@@ -23,8 +23,8 @@ public class ThermionicNuclearPowerSource extends PowerSource
 	private static final int MIN_LOAD_CAPACITY = 5;
 	
 	private static final double MAINTENANCE_FACTOR = 2D;
-
-	private static final double PERCENT_INCREMENT = .05;
+	// Increment in percentage %
+	private static final double PERCENT_INCREMENT = 5;
 	
 	/** The number of modules. */
 	private int numModules;
