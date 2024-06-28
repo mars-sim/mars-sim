@@ -55,7 +55,6 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.Indoor;
-import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.SystemType;
 import com.mars_sim.core.structure.building.function.VehicleMaintenance;
 import com.mars_sim.core.structure.building.task.MaintainBuilding;

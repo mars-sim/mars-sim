@@ -275,9 +275,9 @@ public class Charge extends Task {
 
 		double hrs = time * MarsTime.HOURS_PER_MILLISOL;
 
-		double energy = sc.deliverEnergy(rate * hrs);
+		double energy = sc.storeEnergy(rate * hrs);
 		
-		if (energy <= 0.0001) {
+		if (energy > 0.0001) {
 			
 			endCharging();
 			

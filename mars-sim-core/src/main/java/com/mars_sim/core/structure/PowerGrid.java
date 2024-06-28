@@ -593,9 +593,8 @@ public class PowerGrid implements Serializable, Temporal {
 					stored = stored + accept;
 					// update excess energy
 					excess = excess - accept;
-
 					// update the energy stored in this battery
-					storage.setEnergyStored(stored);
+					storage.reconditionBattery(stored);
 				}
 			}
 		}
@@ -620,7 +619,7 @@ public class PowerGrid implements Serializable, Temporal {
 		else {
 			double voltage = storage.getTerminalVoltage();
 			// assume the internal resistance of the battery is constant
-			double r_int = storage.getResistance();
+			double r_int = storage.getTotalResistance();
 			double max = storage.getCurrentMaxCapacity();
 			double state_of_charge = stored / max;
 			// use fudge_factor to dampen the power delivery when the battery is getting
@@ -636,7 +635,7 @@ public class PowerGrid implements Serializable, Temporal {
 				// Note: Tesla runs its batteries up to 4C charging rate
 				// see https://teslamotorsclub.com/tmc/threads/limits-of-model-s-charging.36185/
 
-				double cRating = storage.geCRating();
+				double cRating = storage.getMaxCRating();
 				double ampere = cRating * Ah;
 				double possible = ampere / 1000D * V_out * hr * fudge_factor;
 
@@ -669,7 +668,8 @@ public class PowerGrid implements Serializable, Temporal {
 			
 			for (Building b : storages) {
 				PowerStorage storage = b.getPowerStorage();
-				totalAvailable += computeAvailableEnergyForDischarge(storage, remainingNeed - totalAvailable, time);
+				totalAvailable += storage.computeAvailableEnergy(
+						remainingNeed - totalAvailable, R_LOAD, time);
 			}
 		
 			double neededPerStorage = totalAvailable / storages.size();
@@ -681,20 +681,17 @@ public class PowerGrid implements Serializable, Temporal {
 					break;
 				}
 
-				double available = computeAvailableEnergyForDischarge(storage, RandomUtil.getRandomDouble(neededPerStorage, neededPerStorage * 2), time);
+				double available = storage.computeAvailableEnergy(
+						RandomUtil.getRandomDouble(neededPerStorage, neededPerStorage * 2), R_LOAD, time);
 				double stored = storage.getkWattHourStored();
 
 				if (available > 0) {
-
 					// update the resultant energy stored in battery
 					stored = stored - available;
-
 					// update energy needed
 					remainingNeed = remainingNeed - available;
-
 					// update the energy stored in this battery
-					storage.setEnergyStored(stored);
-
+					storage.reconditionBattery(stored);
 					// update the total retrieved energy
 					retrieved = retrieved + available;
 				}
@@ -703,47 +700,7 @@ public class PowerGrid implements Serializable, Temporal {
 		return retrieved;
 	}
 
-	/**
-	 * Computes the available stored energy to be discharged (from a battery storage system to the grid).
-	 * Called by retrieveStoredEnergy
-	 * 
-	 * @param storage PowerStorage
-	 * @param needed  energy
-	 * @param time    in millisols
-	 * @return energy to be delivered
-	 */
-	public double computeAvailableEnergyForDischarge(PowerStorage storage, double needed, double time) {
-		double possible = 0;
-		double stored = storage.getkWattHourStored();
 
-		if (stored <= 0 || needed <= 0)
-			return 0;
-
-		double voltage = storage.getTerminalVoltage();
-		// assume the internal resistance of the battery is constant
-		double resistence = storage.getResistance();
-		double max = storage.getCurrentMaxCapacity();
-		double stateOfCharge = stored / max;
-		// use fudge_factor to dampen the power delivery when the battery is getting
-		// depleted
-		double fudgeFactor = 3 * stateOfCharge;
-		double outputVoltage = voltage * R_LOAD / (R_LOAD + resistence);
-
-		if (outputVoltage <= 0)
-			return 0;
-
-		double ampPerHr = storage.getAmpHourRating();
-		double hr = time * HOURS_PER_MILLISOL;
-		// Note: Set max charging rate as 3C as Tesla runs its batteries up to 4C
-		// charging rate
-		// see https://teslamotorsclub.com/tmc/threads/limits-of-model-s-charging.36185/
-
-		double cRating = storage.geCRating();
-		double ampere = cRating * ampPerHr;
-		possible = ampere / 1000D * outputVoltage * hr * fudgeFactor;
-
-		return Math.min(stored, Math.min(possible, needed));
-	}
 
 	/**
 	 * Gets the value of electrical power at the settlement.

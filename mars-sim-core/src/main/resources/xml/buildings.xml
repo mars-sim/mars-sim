@@ -312,7 +312,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				fuel-type="methane"	consumption-rate="7.9897" />
 			</power-generation>
 
-			<!-- power storage capacity in the energy unit of kW hr. -->
+			<!-- capacity: the battery energy storage capacity in the unit of kWh. -->
+			<!-- discharge rate: The max C-rating of the battery in the unit of C. -->
 			<power-storage capacity="40" discharge-rate="1.25"/>
 
 			<!-- The building has facilities for preparing dessert. -->

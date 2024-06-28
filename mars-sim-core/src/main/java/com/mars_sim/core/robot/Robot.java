@@ -325,7 +325,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 		// If robot is dead, then skip
 		if (health != null && !health.isInoperable()) {
-			if (health.timePassing(pulse.getElapsed())) {
+			if (health.timePassing(pulse)) {
 				// Mental changes with time passing.
 				if (botMind != null)
 					botMind.timePassing(pulse);
@@ -338,7 +338,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		malfunctionManager.timePassing(pulse);
 
 		if (pulse.isNewSol()) {
-			// Check if a person's age should be updated
+			// Check if age should be updated
 			updateAge(pulse.getMasterClock().getEarthTime());
 
 		}
@@ -419,9 +419,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
      * Consumes a given amount of energy.
      * 
      * @param amount the amount of energy to consume (in kWh)
+     * @param time the duration of time
 	 */
-    public void consumeEnergy(double amount) {
-        health.consumeEnergy(amount);
+    public void consumeEnergy(double amount, double time) {
+        health.consumeEnergy(amount, time);
     }
 
 	/**
@@ -450,12 +451,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 		if (isInSettlement()) {
 			Building building = BuildingManager.getBuilding(this);
-			if (building != null) {
-				if (building.hasFunction(FunctionType.ROBOTIC_STATION)) {
-					localRobotGroup.addAll(building.getRoboticStation().getRobotOccupants());
-				}
+			if (building != null && building.hasFunction(FunctionType.ROBOTIC_STATION)) {
+				localRobotGroup.addAll(building.getRoboticStation().getRobotOccupants());
 			}
-		} else if (isInVehicle()) {
+		}
+		else if (isInVehicle()) {
 			localRobotGroup.addAll(((Crewable) getVehicle()).getRobotCrew());
 		}
 
@@ -1277,7 +1277,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * Returns the current amount of energy in kWh. 
 	 */
 	public double getcurrentEnergy() {
-		return health.getcurrentEnergy();
+		return health.getCurrentEnergy();
 	}
 	
 	public EquipmentInventory getEquipmentInventory() {

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SystemCondition.java
- * @date 2023-12-04
+ * @date 2024-06-27
  * @author Manny Kung
  */
 
@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -28,17 +29,40 @@ public class SystemCondition implements Serializable {
 
 	private static final int RECOMMENDED_LEVEL = 70;
 	private static final double POWER_SAVE_CONSUMPTION = .01;
+
+	private static final double R_LOAD = 1000D; // assume constant load resistance
+	public static final double HOURS_PER_MILLISOL = 0.0247 ; //MarsTime.SECONDS_IN_MILLISOL / 3600D;
+	public static final double SECONDARY_LINE_VOLTAGE = 240D;
+	public static final double BATTERY_MAX_VOLTAGE = 374.4D;
+	public static final double PERCENT_BATTERY_RECONDITIONING_PER_CYCLE = .1; // [in %]
+	/** 
+	 * The number of cells per module of the battery. 
+	 * Note: 3.6 V * 104 = 374.4 V 
+	 * e.g. : Tesla Model S has 104 cells per module
+	 */
+	private static final int CELLS_PER_MODULE = 104;
 	
     // Data members
     /** Is the robot operational ? */
     private boolean operable;
-    /** Is the robot at low power mode ? */  
-//    private boolean isLowPower;
     /** Is the robot charging ? */  
     private boolean isCharging;
     /** Is the robot on power save mode ? */  
     private boolean onPowerSave;
-    
+	/**
+	 * True if the battery reconditioning is prohibited.
+	 */
+	private boolean locked;
+	
+	/** The number of modules of the battery. */
+	private int numModules = 0;
+	/** The number of times the battery has been fully discharged/depleted since last reconditioning. */
+	private int timesFullyDepleted = 0;
+	
+	/** The degradation rate of the battery in % per sol. May be reduced via research. */
+	public double percentBatteryDegrade = .05;
+	/** The health of the battery. */
+	private double health = 1D; 
     /** The power consumed in the standby mode in kW. */
     private double standbykW;
     /** The power consumed in the power save mode in kW. */
@@ -49,10 +73,40 @@ public class SystemCondition implements Serializable {
     private double performance;
 	/** The percentage that triggers low power warning. */
     private double lowPowerModePercent;
-	/** The current energy of the robot in kWh. */
-	private double currentEnergy;
-	/** The maximum capacity of the battery in kWh. */	
-	private double maxCapacity;
+	/** 
+	 * The energy [in kilo Watt-hour] currently stored in the battery. 
+	 * The Watt-hour (Wh) signifies that a battery can supply an amount of power for an hour
+	 * e.g. a 60 Wh battery can power a 60 W light bulb for an hour
+	 */
+	private double kWhStored;
+	/** The maximum nameplate kWh of this battery. */	
+	public double maxCapNameplate;
+	/** The internal resistance [in ohms] in each cell. */	
+	public double rCell = 0.06; 
+
+	/**  
+	 * The total internal resistance of the battery.
+	 * rTotal = rCell * # of cells * # of modules
+	 */
+	private double rTotal;  
+	
+	/**The maximum continuous discharge rate (within the safety limit) of this battery. */
+	private double maxCRating = 2D;
+	/** The maximum energy [in kWh, not Wh] storage capacity. */
+	private double currentMaxCap; 
+	/** 
+	 * The rating [in ampere-hour or Ah]  of the battery in terms of its charging/discharging ability at 
+	 * a particular C-rating. An amp is a measure of electrical current. The hour 
+	 * indicates the length of time that the battery can supply this current.
+	 * e.g. a 2.2Ah battery can supply 2.2 amps for an hour
+	 */
+	private double ampHours;	
+	
+	/*
+	 * The Terminal voltage is between the battery terminals with load applied. 
+	 * It varies with SOC and discharge/charge current.
+	 */
+	private double terminalVoltage; 
 
     private Robot robot;
 
@@ -69,10 +123,76 @@ public class SystemCondition implements Serializable {
         lowPowerModePercent = spec.getLowPowerModePercent();
         standbykW = spec.getStandbyPowerConsumption();
         powerSavekW = POWER_SAVE_CONSUMPTION * standbykW; 
-        maxCapacity = spec.getMaxCapacity();
-        currentEnergy = RandomUtil.getRandomDouble(maxCapacity * (lowPowerModePercent/100 * 2), maxCapacity);
+        maxCapNameplate = spec.getMaxCapacity();
+        currentMaxCap = maxCapNameplate;
+        
+        numModules = (int)(Math.ceil(currentMaxCap/2));
+		rTotal = Math.round(rCell * numModules * CELLS_PER_MODULE * 1000.0)/1000.0;
+		ampHours = Math.round(1000D * currentMaxCap/SECONDARY_LINE_VOLTAGE * 1000.0)/1000.0;	
+		
+		// At the start of sim, set to a random value		
+        kWhStored = Math.round(RandomUtil.getRandomDouble(maxCapNameplate 
+        				* (lowPowerModePercent/100 * 2), maxCapNameplate) * 1000.0)/1000.0;
+    
+        updateVoltage();
+        
+		logger.info(spec.getRobotType().getName() + " - maxCapNameplate: " + maxCapNameplate 
+				+ "  numModules: " + numModules
+				+ "  rCell: " + rCell
+				+ "  rTotal: " + rTotal
+				+ "  ampHours: " + ampHours
+				+ "  maxCRating: " + maxCRating
+				+ "  Vt: " + terminalVoltage
+				+ "  kWhStored: " + kWhStored);
     }
 
+	/**
+	 * Computes the available stored energy to be discharged.
+	 * 
+	 * @param needed  energy
+	 * @param rLoad  the load resistance of the external circuit (power grid, vehicle, robot) 
+	 * @param time    in millisols
+	 * @return energy available to be delivered
+	 */
+	public double computeAvailableEnergy(double needed, double rLoad, double time) {
+					
+		double possible = 0;
+		double stored = getkWattHourStored();
+
+		if (stored <= 0)
+			return 0;
+
+		if (needed <= 0)
+			return stored;
+
+		double voltage = getTerminalVoltage();
+		// assume the internal resistance of the battery is constant
+		double resistence = getTotalResistance();
+		double max = getCurrentMaxCapacity();
+		double stateOfCharge = stored / max;
+		// use fudge_factor to dampen the power delivery when the battery is getting
+		// depleted
+		double fudgeFactor = 20 * stateOfCharge;
+		double outputVoltage = voltage * rLoad / (rLoad + resistence);
+
+		if (outputVoltage <= 0)
+			return 0;
+
+		double ampPerHr = getAmpHourRating();
+		double hr = time * HOURS_PER_MILLISOL;
+		// Note: Set max charging rate as 3C as Tesla runs its batteries up to 4C
+		// charging rate
+		// see https://teslamotorsclub.com/tmc/threads/limits-of-model-s-charging.36185/
+
+		double cRating = getMaxCRating();
+		double ampere = cRating * ampPerHr;
+		possible = ampere / 1000D * outputVoltage * hr * fudgeFactor;
+
+		return Math.min(stored, Math.min(possible, needed));
+
+//		logger.info(robot, "kWh: " + stored + "  available: " + available + "  needed: " + needed);
+	}
+	
     /**
      * This method reflects a passing of time.
      * 
@@ -80,15 +200,26 @@ public class SystemCondition implements Serializable {
      * @param support life support system.
      * @param config robot configuration.
      */
-    public boolean timePassing(double time) {
-
+    public boolean timePassing(ClockPulse pulse) {
+    	double time = pulse.getElapsed();
+    	if (time < 0.001)
+    		return false;
+    	
         // Consume a minute amount of energy even if a robot does not perform any tasks
     	if (onPowerSave) {
-    		consumeEnergy(time * MarsTime.HOURS_PER_MILLISOL * powerSavekW);
+    		consumeEnergy(time * MarsTime.HOURS_PER_MILLISOL * powerSavekW, time);
     	}
-    	else if (!isCharging)
-        	consumeEnergy(time * MarsTime.HOURS_PER_MILLISOL * standbykW);
-
+    	else if (!isCharging && !robot.getTaskManager().hasTask()) {
+        	consumeEnergy(time * MarsTime.HOURS_PER_MILLISOL * standbykW, time);	
+		}
+		
+    	if (pulse.isNewSol()) {
+	        locked = false;
+	        updateHealth();
+	    	diagnoseBattery();
+	    	updateVoltage();
+		}
+    	
         return operable;
     }
 
@@ -99,15 +230,23 @@ public class SystemCondition implements Serializable {
      * @param container unit to get power from
      * @throws Exception if error consuming power.
      */
-    public void consumeEnergy(double kWh) {
+    public void consumeEnergy(double consumekWh, double time) {
     	if (!isCharging) {
-	    	double diff = currentEnergy - kWh;
-	    	if (diff >= 0) {
-	    		currentEnergy = diff; 
-	    		robot.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
-	    	}
-	    	else
+	    	
+    		double available = computeAvailableEnergy(consumekWh, R_LOAD, time);
+//    		logger.info(robot, "kWh: " + kWhStored + "  available: " + available + "  consume: " + consumekWh );
+    		
+    		double newkWhStored = kWhStored - available;
+    		
+		    reconditionBattery(newkWhStored);
+		    
+	    	robot.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
+
+	    	updateVoltage();
+	    	
+	    	if (kWhStored <= 0) {
 	    		logger.warning(robot, 30_000L, "Out of power.");
+	    	}
     	}
     }
 
@@ -133,8 +272,8 @@ public class SystemCondition implements Serializable {
 	/** 
 	 * Returns the current amount of energy in kWh. 
 	 */
-	public double getcurrentEnergy() {
-		return currentEnergy;
+	public double getCurrentEnergy() {
+		return kWhStored;
 	}
 	
 	/** 
@@ -216,16 +355,20 @@ public class SystemCondition implements Serializable {
      * @return
      */
     public double getBatteryState() {
-    	return (currentEnergy * 100D) / maxCapacity;
+    	return (kWhStored * 100D) / currentMaxCap;
     }
     
     /**
      * Gets the maximum battery capacity in kWh.
      */
     public double getBatteryCapacity() {
-        return maxCapacity;
+        return currentMaxCap;
     }
 
+	public double getMaxCRating() {
+		return maxCRating;
+	}
+	
     /**
      * Is the robot on low power mode ?
      * 
@@ -236,23 +379,28 @@ public class SystemCondition implements Serializable {
     }
     
     /**
-     * Delivers the energy to robot's battery.
+     * Stores the energy to robot's battery.
      * 
-     * @param kWh
-     * @return the energy accepted
+     * @param storekWh
+     * @return the energy unable to accepted
      */
-    public double deliverEnergy(double kWh) {
-    	double newEnergy = currentEnergy + kWh;
-        double targetEnergy = 0.95 * maxCapacity;
-    	if (newEnergy > targetEnergy) {
-    		newEnergy = targetEnergy;
+    public double storeEnergy(double storekWh) {
+    	double newEnergy = kWhStored + storekWh;
+        double targetEnergy = currentMaxCap;
+        double unable2Accept = newEnergy - targetEnergy;
+    	if (newEnergy >= targetEnergy) {
+    		newEnergy = targetEnergy;   		
     		// Target reached and quit charging
     		isCharging = false;
     	}
-    	double diff = newEnergy - currentEnergy;
-    	currentEnergy = newEnergy;
+    	
+    	kWhStored = newEnergy;
+   	
 		robot.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
-    	return diff;
+    	
+		updateVoltage();
+		
+    	return unable2Accept;
     }
 
     /**
@@ -286,6 +434,115 @@ public class SystemCondition implements Serializable {
     	}
     }
     
+	/**
+	 * Updates the terminal voltage of the battery.
+	 */
+	private void updateVoltage() {
+    	terminalVoltage = kWhStored / ampHours * 1000D;
+    	if (terminalVoltage > BATTERY_MAX_VOLTAGE)
+    		terminalVoltage = BATTERY_MAX_VOLTAGE;
+	}
+	
+	public double getAmpHourRating() {
+		return ampHours;
+	}
+	
+	public double getTerminalVoltage() {
+		return terminalVoltage;
+	}
+	
+	/**
+	 * Diagnoses health and update the status of the battery.
+	 */
+	private void diagnoseBattery() {
+		if (health > 1)
+			health = 1;
+    	currentMaxCap = currentMaxCap * health;
+    	if (currentMaxCap > maxCapNameplate)
+    		currentMaxCap = maxCapNameplate;
+		ampHours = 1000D * currentMaxCap/SECONDARY_LINE_VOLTAGE; 
+		if (kWhStored > currentMaxCap) {
+			kWhStored = currentMaxCap;		
+		}
+	}
+	
+	/**
+	 * Updates the health of the battery.
+	 */
+	private void updateHealth() {
+    	health = health * (1 - percentBatteryDegrade/100D);		
+	}
+	
+	/**
+	 * Reconditions the battery.
+	 * 
+	 * @param kWh the new value of stored energy.
+	 */
+	public void reconditionBattery(double kWh) {
+		
+		if (!locked) {
+			
+			boolean needRecondition = false;
+			
+			if (kWh <= 0D) {
+				kWh = 0D;
+				needRecondition = true;
+		        // recondition once and lock it for the rest of the sol
+		        locked = true;
+		        timesFullyDepleted++;
+			}
+			
+			else if (kWh < currentMaxCap / 5D) {
+				
+				int rand = RandomUtil.getRandomInt((int)kWh);		
+				if (rand == 0) {
+					needRecondition = true;
+			        // recondition once and lock it for the rest of the sol
+			        locked = true;
+				}
+			}
+	
+			if (needRecondition && timesFullyDepleted > 20) {
+				needRecondition = false;
+				timesFullyDepleted = 0;
+				
+				health = health * (1 + PERCENT_BATTERY_RECONDITIONING_PER_CYCLE/100D);
+				logger.info(robot, "The battery has just been reconditioned.");
+			}
+		}
+		
+		if (kWh > currentMaxCap) {
+			kWh = currentMaxCap;			
+		}	
+	
+		kWhStored = kWh;	
+	
+//		updateVoltage();
+	}
+	
+	public double getTotalResistance() {
+		return rTotal;
+	}
+	
+	/**
+	 * Gets the current max storage capacity of the battery.
+	 * 
+	 * (Note : this accounts for the battery degradation over time)
+	 * @return capacity (kWh).
+	 */
+	public double getCurrentMaxCapacity() {
+		return currentMaxCap;
+	}
+	
+	/**
+	 * Gets the building's stored energy.
+	 * 
+	 * @return energy (kW hr).
+	 */
+	public double getkWattHourStored() {
+		return kWhStored;
+	}
+	
     /**
      * Prepares object for garbage collection.
      */

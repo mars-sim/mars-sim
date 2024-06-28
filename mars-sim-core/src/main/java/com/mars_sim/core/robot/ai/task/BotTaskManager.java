@@ -50,7 +50,7 @@ public class BotTaskManager extends TaskManager {
 	private static TaskCache powerSaveMap;
 	
 	// Mapping of RobotType to the applicable MetaTasks
-	private static Map<RobotType,List<FactoryMetaTask>> robotTasks;
+	private static Map<RobotType, List<FactoryMetaTask>> robotTasks;
 
 
 	// Data members
@@ -74,7 +74,7 @@ public class BotTaskManager extends TaskManager {
 	}
 
 	/**
-	 * The diagnostics modulename to used in any output
+	 * The diagnostics module name to used in any output
 	 * @return
 	 */
 	@Override

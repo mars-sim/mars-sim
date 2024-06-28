@@ -28,68 +28,77 @@ public class PowerStorage extends Function {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(PowerStorage.class.getName());
 
-	public static double HOURS_PER_MILLISOL = 0.0247 ; //MarsTime.SECONDS_IN_MILLISOL / 3600D;
-	
+	public static final double HOURS_PER_MILLISOL = 0.0247 ; //MarsTime.SECONDS_IN_MILLISOL / 3600D;
 	public static final double SECONDARY_LINE_VOLTAGE = 240D;
-	
-	public static final double BATTERY_MAX_VOLTAGE = 375D;
-	
+	public static final double BATTERY_MAX_VOLTAGE = 374.4D;
 	public static final double PERCENT_BATTERY_RECONDITIONING_PER_CYCLE = .1; // [in %]
-
 	/**
-	 * This is Building.xml property for the Power storage functino to control discharge
+	 * This is a building.xml property for the power storage function to control discharge.
 	 */
 	private static final String DISCHARGE_RATE = "discharge-rate";
-
-	/** The number of cells per modules of the battery. */
-	private static int cellsPerModule = 104; // 3.6 V * 104 = 374.4 V 
-	// Note : Tesla Model S has 104 cells per module
+	/** 
+	 * The number of cells per module of the battery. 
+	 * Note: 3.6 V * 104 = 374.4 V 
+	 * e.g. : Tesla Model S has 104 cells per module
+	 */
+	private static final int CELLS_PER_MODULE = 104;
 	
 	// Data members.
+	/**
+	 * True if the battery reconditioning is prohibited.
+	 */
+	private boolean locked;
+		
 	/** The number of modules of the battery. */
 	private int numModules = 0;
 	
 	/** The number of times the battery has been fully discharged/depleted since last reconditioning. */
 	private int timesFullyDepleted = 0;
 	
-	/** The degradation rate of the battery in % per sol. */
-	public double percentBatteryDegradationPerSol = .05; // [in %]
+	/** The degradation rate of the battery in % per sol. May be reduced via research. */
+	public double percentBatteryDegrade = .05;
 	
 	/** The maximum nameplate kWh of this battery. */	
-	public double max_kWh_nameplate;
+	public double maxCapNameplate;
 	
 	/** The internal resistance [in ohms] in each cell. */	
-	public double r_cell = 0.06; // [in ohms]
+	public double rCell = 0.06; 
 
-	/**  The total internal resistance of the battery. */
-	private double r_total; // R_total = R of each cell * # of cells * # of modules 
+	/**  
+	 * The total internal resistance of the battery.
+	 * rTotal = rCell * # of cells * # of modules
+	 */
+	private double rTotal;  
 	
 	/**The maximum continuous discharge rate (within the safety limit) of this battery. */
-	private double C_rating = 2D;
+	private double maxCRating = 2D;
+	// The capacity of a battery is generally rated and labeled at 3C rate(3C current) 
+	// It means a fully charged battery with a capacity of 100Ah should be able to provide 
+	// 3*100Amps current for one third hours. 
+	// That same 100Ah battery being discharged at a C-rate of 1C will provide 100Amps 
+	// for one hours, and if discharged at 0.5C rate it provide 50Amps for 2 hours.
+	
 	
 	/** The health of the battery. */
 	private double health = 1D; 	
 	
-	/** The max energy storage capacity in kWh. */
-	private double currentMaxCap; // [in kilo watt-hour, not Watt-hour]
-	
-	/** The energy last stored in the battery. */
-	private double kWhCache;
+	/** The maximum energy [in kWh, not Wh] storage capacity. */
+	private double currentMaxCap; 
 	
 	/** 
-	 * The energy currently stored in the battery 
-	 * The Watt-hour signifies that a battery can supply an amount of watts for an hour
-	 * e.g. a 60 watt-hour battery can power a 60 watt light bulb for an hour
+	 * The energy [in kilo Watt-hour] currently stored in the battery. 
+	 * The Watt-hour (Wh) signifies that a battery can supply an amount of power for an hour
+	 * e.g. a 60 Wh battery can power a 60 W light bulb for an hour
 	 */
-	private double kWhStored; // [in kilo Watt-hour] 
+	private double kWhStored;
 
 	/** 
-	 * The rating of the battery in terms of its charging/discharging ability at 
+	 * The rating [in ampere-hour (Ah)] of the battery in terms of its charging/discharging ability at 
 	 * a particular C-rating. An amp is a measure of electrical current. The hour 
 	 * indicates the length of time that the battery can supply this current.
 	 * e.g. a 2.2Ah battery can supply 2.2 amps for an hour
 	 */
-	private double ampHours; // [in ampere-hour or Ah] 	
+	private double ampHours;	
 	
 	/*
 	 * The Terminal voltage is between the battery terminals with load applied. 
@@ -97,15 +106,10 @@ public class PowerStorage extends Function {
 	 */
 	private double terminalVoltage; 
 	
-	private double time;
 	
 	/**
-	 * True if the battery reconditioning is prohibited
-	 */
-	private boolean locked;
-		
-	/**
 	 * Constructor.
+	 * 
 	 * @param building the building with the function.
 	 * @param spec Specification of Function
 	 * @throws BuildingException if error parsing configuration.
@@ -114,28 +118,32 @@ public class PowerStorage extends Function {
 		// Call Function constructor.
 		super(FunctionType.POWER_STORAGE, spec, building);
 		
-		max_kWh_nameplate = spec.getCapacity();
-		
-		currentMaxCap = max_kWh_nameplate;
-
-		numModules = (int)(currentMaxCap * .9);
-
-		r_total = r_cell * numModules * cellsPerModule;
-		
-		ampHours = 1000D * currentMaxCap/SECONDARY_LINE_VOLTAGE; 
-
-		C_rating = spec.getDoubleProperty(DISCHARGE_RATE);	
-
+		maxCapNameplate = spec.getCapacity();		
+		currentMaxCap = maxCapNameplate;
+		numModules = (int)(Math.ceil(currentMaxCap/2));
+		rTotal = Math.round(rCell * numModules * CELLS_PER_MODULE * 1000.0)/1000.0;
+		ampHours = Math.round(1000D * currentMaxCap/SECONDARY_LINE_VOLTAGE * 1000.0)/1000.0;
+		maxCRating = spec.getDoubleProperty(DISCHARGE_RATE);	
 		// At the start of sim, set to a random value		
-		kWhStored = .5 * max_kWh_nameplate + RandomUtil.getRandomDouble(.5 * max_kWh_nameplate);		
+		kWhStored = Math.round(.5 * maxCapNameplate 
+				+ RandomUtil.getRandomDouble(.5 * maxCapNameplate) * 1000.0)/1000.0;	
 		
-		// update batteryVoltage
+		// Update battery voltage
 		updateVoltage();
 		
+		logger.info(building, "maxCapNameplate: " + maxCapNameplate 
+							+ "  numModules: " + numModules
+							+ "  rCell: " + rCell
+							+ "  rTotal: " + rTotal
+							+ "  ampHours: " + ampHours
+							+ "  maxCRating: " + maxCRating
+							+ "  Vt: " + terminalVoltage							
+							+ "  kWhStored: " + kWhStored);
 	}
 
 	/**
 	 * Gets the value of the function for a named building.
+	 * 
 	 * @param type the building type.
 	 * @param newBuilding true if adding a new building.
 	 * @param settlement the settlement.
@@ -168,20 +176,62 @@ public class PowerStorage extends Function {
 		return value;
 	}
 
-
 	/**
-	 * Sets the energy stored in the building.
+	 * Computes the available stored energy to be discharged.
 	 * 
-	 * @param kWh the stored energy (kW hour).
+	 * @param needed  energy
+	 * @param rLoad  the load resistance of the external circuit (power grid, vehicle, robot) 
+	 * @param time    in millisols
+	 * @return energy available to be delivered
 	 */
-	public void setEnergyStored(double kWh) {
+	public double computeAvailableEnergy(double needed, double rLoad, double time) {
+		double possible = 0;
+		double stored = getkWattHourStored();
 
-		kWhCache = kWhStored;
-		kWhStored = kWh;	
-		
-		boolean needRecondition = false;
+		if (stored <= 0)
+			return 0;
+
+		if (needed <= 0)
+			return stored;
+
+		double voltage = getTerminalVoltage();
+		// assume the internal resistance of the battery is constant
+		double resistence = getTotalResistance();
+		double max = getCurrentMaxCapacity();
+		double stateOfCharge = stored / max;
+		// use fudge_factor to dampen the power delivery when the battery is getting
+		// depleted
+		double fudgeFactor = 20 * stateOfCharge;
+		double outputVoltage = voltage * rLoad / (rLoad + resistence);
+
+		if (outputVoltage <= 0)
+			return 0;
+
+		double ampPerHr = getAmpHourRating();
+		double hr = time * HOURS_PER_MILLISOL;
+		// Note: Set max charging rate as 3C as Tesla runs its batteries up to 4C
+		// charging rate
+		// see https://teslamotorsclub.com/tmc/threads/limits-of-model-s-charging.36185/
+
+		double cRating = getMaxCRating();
+		double ampere = cRating * ampPerHr;
+		possible = ampere / 1000D * outputVoltage * hr * fudgeFactor;
+
+		return Math.min(stored, Math.min(possible, needed));
+
+//		logger.info(building, "kWh: " + stored + "  available: " + available + "  needed: " + needed);
+	}
+	
+	/**
+	 * Reconditions the battery.
+	 * 
+	 * @param kWh the new value of stored energy.
+	 */
+	public void reconditionBattery(double kWh) {
 		
 		if (!locked) {
+			
+			boolean needRecondition = false;
 			
 			if (kWh <= 0D) {
 				kWh = 0D;
@@ -204,74 +254,60 @@ public class PowerStorage extends Function {
 			if (needRecondition && timesFullyDepleted > 20) {
 				needRecondition = false;
 				timesFullyDepleted = 0;
-				reconditionBattery();
+				
+				health = health * (1 + PERCENT_BATTERY_RECONDITIONING_PER_CYCLE/100D);
+				logger.info(building, "The battery has just been reconditioned.");
 			}
 		}
 		
 		if (kWh > currentMaxCap) {
 			kWh = currentMaxCap;			
-		}
-		
+		}	
 	
-		updateVoltage();		
-		
+		kWhStored = kWh;	
+	
+		updateVoltage();
 	}
 
-	/***
-	 * Diagnoses health and update the status of the battery
+	/**
+	 * Updates the terminal voltage of the battery.
+	 */
+	private void updateVoltage() {
+    	terminalVoltage = Math.round(kWhStored / ampHours * 1000D * 1_000)/1_000;
+    	if (terminalVoltage > BATTERY_MAX_VOLTAGE)
+    		terminalVoltage = BATTERY_MAX_VOLTAGE;
+	}
+	
+	/**
+	 * Diagnoses health and update the status of the battery.
 	 */
 	private void diagnoseBattery() {
 		if (health > 1)
 			health = 1;
     	currentMaxCap = currentMaxCap * health;
-    	if (currentMaxCap > max_kWh_nameplate)
-    		currentMaxCap = max_kWh_nameplate;
+    	if (currentMaxCap > maxCapNameplate)
+    		currentMaxCap = maxCapNameplate;
 		ampHours = 1000D * currentMaxCap/SECONDARY_LINE_VOLTAGE; 
 		if (kWhStored > currentMaxCap) {
 			kWhStored = currentMaxCap;		
-			kWhCache = kWhStored; 
 		}
 	}
 	
 	/**
-	 * Updates the terminal voltage of the battery
-	 */
-	private void updateVoltage() {
-    	terminalVoltage = kWhStored / ampHours * 1000D;
-    	if (terminalVoltage > BATTERY_MAX_VOLTAGE)
-    		terminalVoltage = BATTERY_MAX_VOLTAGE;
-	}
-	
-
-	/**
-	 * Updates the health of the battery
+	 * Updates the health of the battery.
 	 */
 	private void updateHealth() {
-    	health = health * (1 - percentBatteryDegradationPerSol/100D);		
+    	health = health * (1 - percentBatteryDegrade/100D);		
 	}
-
-	/**
-	 * Reconditions the battery
-	 */
-	private void reconditionBattery() {
-		health = health * (1 + PERCENT_BATTERY_RECONDITIONING_PER_CYCLE/100D);
-		
-		logger.info(building, "The grid battery has just been reconditioned.");
-	}
-	
 	
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
-		if (valid) {
-			this.time = pulse.getElapsed();
-	        
-	        if (pulse.isNewSol()) {
-	        	locked = false;
-	        	updateHealth();
-	    		diagnoseBattery();
-	    		updateVoltage();
-	        }
+		if (valid && pulse.isNewSol()) {
+	        locked = false;
+	        updateHealth();
+	    	diagnoseBattery();
+	    	updateVoltage();
 		}
         return valid;
 	}
@@ -288,7 +324,8 @@ public class PowerStorage extends Function {
 	}
 
 	/**
-	 * Gets the building's current max storage capacity
+	 * Gets the current max storage capacity of the battery.
+	 * 
 	 * (Note : this accounts for the battery degradation over time)
 	 * @return capacity (kWh).
 	 */
@@ -298,6 +335,7 @@ public class PowerStorage extends Function {
 
 	/**
 	 * Gets the building's stored energy.
+	 * 
 	 * @return energy (kW hr).
 	 */
 	public double getkWattHourStored() {
@@ -320,11 +358,16 @@ public class PowerStorage extends Function {
 		return health;
 	}
 	
-	public double geCRating() {
-		return C_rating;
+	public double getMaxCRating() {
+		return maxCRating;
 	}
 
-	public double getResistance() {
-		return r_total;
+	public double getTotalResistance() {
+		return rTotal;
+	}
+	
+	@Override
+	public void destroy() {
+//		super.destroy();
 	}
 }
