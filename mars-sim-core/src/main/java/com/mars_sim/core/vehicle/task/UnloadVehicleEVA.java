@@ -70,8 +70,8 @@ public class UnloadVehicleEVA extends EVAOperation {
 		setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 		this.vehicle = vehicle;
 
-		if (person.isSuperUnFit()) {
-			checkLocation("Super unfit.");
+		if (!person.isEVAFit()) {
+			checkLocation("EVA Unfit.");
         	return;
 		}
 		

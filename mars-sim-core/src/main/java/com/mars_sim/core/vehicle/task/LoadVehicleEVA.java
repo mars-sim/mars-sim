@@ -59,8 +59,8 @@ public class LoadVehicleEVA extends EVAOperation {
 
 		setMinimumSunlight(LightLevel.NONE);
 		
-		if (person.isSuperUnFit()) {
-			checkLocation("Super unfit.");
+		if (!person.isEVAFit()) {
+			checkLocation("EVA Unfit.");
         	return;
 		}
 		

@@ -242,7 +242,7 @@ public abstract class EVAOperation extends Task {
 	@Override
 	protected double performMappedPhase(double time) {
 		if (person.isOutside()) {
-			if (person.isSuperUnFit()) {
+			if (person.isSuperUnfit()) {
 				walkBackInsidePhase();
 			}
 			else
@@ -458,23 +458,22 @@ public abstract class EVAOperation extends Task {
 			checkLocation("Radiation detected.");
 			return time;
 		}
-		
+		// Check fitness
+		if (!person.isEVAFit()) {
+			abortEVA("EVA Unfit.");
+			return time;
+		}
         // Check if there is a reason to cut short and return.
 		if (shouldEndEVAOperation()) {
 			checkLocation("End EVA early.");
 			return time;
 		}
-
         // Check time on site
 		if (addTimeOnSite(time)) {
 			checkLocation("Time on site expired.");
 			return time;
 		}		
 		
-		if (person.isSuperUnFit()) {
-			abortEVA("Super unfit.");
-			return time;
-		}
 		return 0;
 	}
 	
@@ -590,7 +589,7 @@ public abstract class EVAOperation extends Task {
 	 */
 	public static boolean isExhausted(Person person) {
         return person.getPhysicalCondition().isHungry() && person.getPhysicalCondition().isThirsty()
-                && person.getPhysicalCondition().isSleepy() || person.getPhysicalCondition().isStressed();
+                && person.getPhysicalCondition().isSleepy() && person.getPhysicalCondition().isStressed();
     }
 
 	/**

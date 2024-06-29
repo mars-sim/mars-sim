@@ -89,8 +89,8 @@ public class MineSite extends EVAOperation {
         	return;
         }
 
-		if (person.isSuperUnFit()) {
-			checkLocation("Person unfit.");
+		if (!person.isEVAFit()) {
+			checkLocation("EVA Unfit.");
         	return;
 		}
 

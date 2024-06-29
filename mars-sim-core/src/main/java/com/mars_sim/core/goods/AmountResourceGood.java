@@ -115,12 +115,12 @@ class AmountResourceGood extends Good {
 	private static final double ROCK_SALT_VALUE_MODIFIER = 1;
 	private static final double EPSOM_SALT_VALUE_MODIFIER = .1;
 	
-	private static final double OXYGEN_VALUE_MODIFIER = .1;
+	private static final double OXYGEN_VALUE_MODIFIER = .075;
 	private static final double FOOD_VALUE_MODIFIER = .1;
 	
-	private static final double METHANE_VALUE_MODIFIER = .5;
-	private static final double HYDROGEN_VALUE_MODIFIER = .01;
-	private static final double METHANOL_VALUE_MODIFIER = .15;
+	private static final double METHANE_VALUE_MODIFIER = .4;
+	private static final double HYDROGEN_VALUE_MODIFIER = .005;
+	private static final double METHANOL_VALUE_MODIFIER = .05;
 	
 	private static final double CO2_VALUE_MODIFIER = .0075;
 
@@ -170,14 +170,14 @@ class AmountResourceGood extends Good {
 	private static final double DERIVED_DEMAND_FACTOR = .5;
 	private static final double TISSUE_DEMAND_FACTOR = 1.1;
 	
-	private static final double METHANOL_DEMAND_FACTOR = .25;
+	private static final double METHANOL_DEMAND_FACTOR = .15;
 	private static final double METHANE_DEMAND_FACTOR = .05;
 	private static final double SAND_DEMAND_FACTOR = .07;
 	private static final double ICE_DEMAND_FACTOR = .05;
 	private static final double CO_DEMAND_FACTOR = .05;
 	private static final double CO2_DEMAND_FACTOR = .01;
 	private static final double O2_DEMAND_FACTOR = .5;
-	private static final double HYDROGEN_DEMAND_FACTOR = .01;
+	private static final double HYDROGEN_DEMAND_FACTOR = .005;
 	private static final double ACETYLENE_DEMAND_FACTOR = 10;
 
 	
@@ -458,7 +458,7 @@ class AmountResourceGood extends Good {
 
 			totalDemand = (
 					  .9986 * previousDemand 
-					+ .0001 * projected 
+					+ .00012 * projected 
 					+ .00005 * trade); 
 		}
 

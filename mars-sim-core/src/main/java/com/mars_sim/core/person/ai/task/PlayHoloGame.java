@@ -137,7 +137,7 @@ public class PlayHoloGame extends Task {
 	private double playingPhase(double time) {
 		double remainingTime = 0;
 		
-		if (!person.getPhysicalCondition().isNominallyFit()) {
+		if (person.getPhysicalCondition().isNominallyUnfit()) {
 			endTask();
 			return 0;
 		}

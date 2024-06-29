@@ -231,7 +231,7 @@ public class ToggleFuelPowerSource extends Task {
      */
     private double togglePowerSourcePhase(double time) {
   
-		if (person.isUnFit() || (person.getPerformanceRating() == 0D)) {
+		if (!person.isNominallyFit() || (person.getPerformanceRating() == 0D)) {
             endTask();
         	return time;
         }

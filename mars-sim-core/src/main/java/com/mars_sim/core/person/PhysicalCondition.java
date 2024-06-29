@@ -1819,35 +1819,32 @@ public class PhysicalCondition implements Serializable {
 	/**
 	 * Checks if a person is super unfit.
 	 *
-	 * @return true if a person is super fit
+	 * @return
 	 */
-	public boolean isSuperUnFit() {
-        return (fatigue > 1000) || (stress > 90) || (hunger > 1000) || (thirst > 1000) || (kJoules < 2000)
-                || hasSeriousMedicalProblems();
+	public boolean isSuperUnfit() {
+        return isUnfitByLevel(900, 90, 900, 550);
     }
 	
 	/**
-	 * Checks if a person is unfit.
+	 * Checks if a person is nominally unfit.
 	 *
-	 * @return true if a person is unfit
+	 * @return
 	 */
-	public boolean isUnFit() {
-        return (fatigue > 500) || (stress > 50) || (hunger > 500) || (thirst > 500) || (kJoules < 6000)
-                || hasSeriousMedicalProblems();
+	public boolean isNominallyUnfit() {
+        return isUnfitByLevel(700, 70, 700, 450);
     }
 	
 	/**
-	 * Checks if a person is nominally fit.
-	 *
-	 * @return true if a person is nominally fit
+	 * Screens if the person is fit for EVA.
+	 * 
+	 * @return
 	 */
-	public boolean isNominallyFit() {
-        return (fatigue <= 500) && (stress <= 50) && (hunger <= 500) && (thirst <= 500) && (kJoules > 6000)
-                && !hasSeriousMedicalProblems();
-    }
+	public boolean isEVAFit() {
+        return !isUnfitByLevel(500, 50, 500, 350);
+	}
 	
 	/**
-	 * Checks fitness against some maximum levels.
+	 * Checks fitness against a certain standard.
 	 * 
 	 * @param fatMax
 	 * @param stressMax
@@ -1855,7 +1852,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean isFitByLevel(int fatMax, int stressMax, int hunMax) {
-        return isFitByLevel(fatMax, stressMax, hunMax, hunMax/2);
+        return !isUnfitByLevel(fatMax, stressMax, hunMax, hunMax/2);
 	}
 
 	/**
@@ -1867,18 +1864,10 @@ public class PhysicalCondition implements Serializable {
 	 * @param thirstMax
 	 * @return
 	 */
-	public boolean isFitByLevel(int fatMax, int stressMax, int hunMax, int thirstMax) {
-        return ((fatigue < fatMax) && (stress < stressMax)
-        		&& (hunger < hunMax) && (thirst < thirstMax));
-	}
-	
-	/**
-	 * Screens if the person is fit for an heavy duty EVA task.
-	 * 
-	 * @return
-	 */
-	public boolean isEVAFit() {
-        return isFitByLevel(350, 30, 350, 300);
+	public boolean isUnfitByLevel(int fatMax, int stressMax, int hunMax, int thirstMax) {
+        return (fatigue > fatMax || stress > stressMax
+        		|| hunger > hunMax || thirst > thirstMax
+        		|| hasSeriousMedicalProblems());
 	}
 	
 	/**
@@ -2125,7 +2114,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean isHungry() {
-		return hunger > HUNGER_THRESHOLD || kJoules < ENERGY_THRESHOLD * 2;
+		return hunger > HUNGER_THRESHOLD || kJoules < ENERGY_THRESHOLD;
 	}
 
 	/**

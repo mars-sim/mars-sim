@@ -201,7 +201,7 @@ public class Teach extends Task {
         	endTask();
     	
     	if (worker.getUnitType() == UnitType.PERSON) {
-    		if (person.isUnFit()) {
+    		if (person.isSuperUnfit()) {
     			endTask();
     		}
     		// Add relationship modifier for opinion of teacher from the student.
