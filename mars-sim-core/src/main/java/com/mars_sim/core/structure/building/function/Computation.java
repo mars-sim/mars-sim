@@ -182,10 +182,12 @@ public class Computation extends Function {
 	 * @return
 	 */
 	public boolean scheduleTask(double needed, int beginningMSol, int endMSol) {
+		double existing = 0;
+		
 		int duration = endMSol - beginningMSol;
 		if (duration < 0)
 			duration = endMSol + 1000 - beginningMSol;
-		double existing = 0;
+
 		// Test to see if the assigned duration has enough resources
 		for (int i = 0; i < duration; i++) {
 			int sol = i + beginningMSol;
@@ -195,10 +197,14 @@ public class Computation extends Function {
 			if (todayDemand.containsKey(sol)) {
 				existing = todayDemand.get(sol);
 			}
+			// Need to make sure each msol has enough resources
 			double available = peakCU - existing - needed;
 			if (available < 0) {
-				logger.info(getBuilding(), 30_000L, "scheduleTask::available: " + Math.round(available * 100.0)/100.0);
-				// Need to make sure each msol has enough resources
+				logger.info(getBuilding(), 30_000L, "peakCU: " + Math.round(peakCU * 100.0)/100.0
+						+ "  exist: " + Math.round(existing * 1000.0)/1000.0
+						+ "  need: " + Math.round(needed * 1000.0)/1000.0
+						+ "  av: " + Math.round(available * 1000.0)/1000.0);
+				
 				return false;
 			}
 		}
@@ -222,39 +228,6 @@ public class Computation extends Function {
 	}
 	
 	/**
-	 * Does this computing center have the resources to schedule for a computing task ?
-	 * 
-	 * @param needed
-	 * @param beginningMSol
-	 * @param endMSol
-	 * @return
-	 */
-	public boolean canScheduleTask(double needed, int beginningMSol, int endMSol) {
-		int duration = endMSol - beginningMSol;
-		if (duration < 0)
-			duration = endMSol + 1000 - beginningMSol;
-		double existing = 0;
-		double available = 0;
-		// Test to see if the assigned duration has enough resources
-		for (int i = 0; i < duration; i++) {
-			int sol = i + beginningMSol;
-			if (sol > 999) {
-				sol = sol - 1000;
-			}
-			if (todayDemand.containsKey(sol)) {
-				existing = todayDemand.get(sol);
-			}
-			available = peakCU - existing - needed;
-		}
-		if (available < 0) {
-			logger.info(getBuilding(), 30_000L, "canScheduleTask::available: " + Math.round(available * 100.0)/100.0);
-			return false;
-		}
-		
-		return true;
-	}
-	
-	/**
 	 * Returns the evaluation score if scheduling for a computing task for a prescribed period of time. 
 	 * 
 	 * @param needed CU(s) per millisol
@@ -263,11 +236,13 @@ public class Computation extends Function {
 	 * @return
 	 */
 	public double evaluateScheduleTask(double needed, int beginningMSol, int endMSol) {
+		double score = 0;
+		double existing = 0;
+		
 		int duration = endMSol - beginningMSol;
 		if (duration < 0)
 			duration = endMSol + 1000 - beginningMSol;
-		double score = 0;
-		double existing = 0;
+		
 		// Test to see if the assigned duration has enough resources
 		for (int i = 0; i < duration; i++) {
 			int sol = i + beginningMSol;
@@ -277,9 +252,14 @@ public class Computation extends Function {
 			if (todayDemand.containsKey(sol)) {
 				existing = todayDemand.get(sol);
 			}
+			// Need to make sure each msol has enough resources
 			double available = peakCU - existing - needed;
 			if (available < 0) {
-				logger.info(getBuilding(), 30_000L, "evaluateScheduleTask::available: " + Math.round(available * 100.0)/100.0);
+				logger.info(getBuilding(), 30_000L, "peakCU: " + Math.round(peakCU * 100.0)/100.0
+						+ "  exist: " + Math.round(existing * 1000.0)/1000.0
+						+ "  need: " + Math.round(needed * 1000.0)/1000.0
+						+ "  av: " + Math.round(available * 1000.0)/1000.0);
+				
 				return 0;
 			}
 			

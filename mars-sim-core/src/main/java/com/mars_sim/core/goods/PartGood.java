@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PartGood.java
- * @date 2022-09-25
+ * @date 2024-06-29 
  * @author Barry Evans
  */
 package com.mars_sim.core.goods;
@@ -75,6 +75,7 @@ public class PartGood extends Good {
 	private static final String ELECTRICAL_WIRE = "electrical wire";
 	private static final String POWER_CABLE = "power cable";
 	private static final String PLASTIC_PIPE = "plastic pipe";
+	private static final String WIRE_CONNECTOR = "wire connector";
 		
 	
 	private static final int VEHICLE_PART_COST = 3;
@@ -91,17 +92,17 @@ public class PartGood extends Good {
     private static final double KITCHEN_DEMAND = 1.5;
 	private static final double SCRAP_METAL_DEMAND = .01;
 	private static final double INGOT_METAL_DEMAND = .01;
-	private static final double SHEET_METAL_DEMAND = .1;
+	private static final double SHEET_METAL_DEMAND = .025;
 	private static final double TRUSS_DEMAND = .05;
 	private static final double STEEL_DEMAND = .1;
 	private static final double BRICK_DEMAND = .005;
-	private static final double ELECTRICAL_DEMAND = .5;
+	private static final double ELECTRICAL_DEMAND = .15;
 	private static final double INSTRUMENT_DEMAND = 6;
-	private static final double METALLIC_DEMAND = 1;
-	private static final double UTILITY_DEMAND = 1;
+	private static final double METALLIC_DEMAND = .25;
+	private static final double UTILITY_DEMAND = .25;
 	private static final double TOOL_DEMAND = 4;
 	private static final double CONSTRUCTION_DEMAND = 0.5;
-	private static final double GLASS_SHEET_DEMAND = .1;
+	private static final double GLASS_SHEET_DEMAND = .025;
 	private static final double GLASS_TUBE_DEMAND  = 8;
 	private static final double ITEM_DEMAND = 1;
 	private static final double PARTS_MAINTENANCE_VALUE = 1000;
@@ -325,10 +326,10 @@ public class PartGood extends Good {
 			// Allows only very small fluctuations of demand as possible
 			totalDemand = (
 					  .9985 * previousDemand 
-					+ .0001 * repair 
-					+ .0001 * average 
-					+ .0003 * projected 
-					+ .0002 * trade); 
+					+ .00005 * repair 
+					+ .00005 * average 
+					+ .0001 * projected 
+					+ .0001 * trade); 
 		}
 		
 		// Save the goods demand
@@ -416,12 +417,15 @@ public class PartGood extends Good {
 				}
 				if (name.equalsIgnoreCase(ELECTRICAL_WIRE))
 					return .05;
-				
+				if (name.equalsIgnoreCase(WIRE_CONNECTOR))
+					return .05;
 				if (name.equalsIgnoreCase(POWER_CABLE))
 					return .25;
-				
 				if (name.equalsIgnoreCase(STEEL_WIRE))
 					return .5;
+				
+				if (name.contains(WIRE))
+					return .001;
 				
 				return ELECTRICAL_DEMAND;
 			}
@@ -442,6 +446,7 @@ public class PartGood extends Good {
 				if (name.equalsIgnoreCase(PLASTIC_PIPE)) {
 					return PLASTIC_PIPE_DEMAND;
 				}				
+
 				return UTILITY_DEMAND;
 		
 			case TOOL:
@@ -462,9 +467,7 @@ public class PartGood extends Good {
 			default:
 //				return 1;
 		}
-		
-		if (name.contains(WIRE))
-			return .00025;
+
 		
 		if (name.contains(PIPE))
 			return .4;

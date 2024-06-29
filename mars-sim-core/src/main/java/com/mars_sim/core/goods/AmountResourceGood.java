@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AmountResourceGood.java
- * @date 2022-09-25
+ * @date 2024-06-29
  * @author Barry Evans
  */
 package com.mars_sim.core.goods;
@@ -458,8 +458,8 @@ class AmountResourceGood extends Good {
 
 			totalDemand = (
 					  .9986 * previousDemand 
-					+ .0004 * projected 
-					+ .0002 * trade); 
+					+ .0001 * projected 
+					+ .00005 * trade); 
 		}
 
 		// Save the goods demand

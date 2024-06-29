@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Good.java
- * @date 2022-07-22
+ * @date 2024-06-29
  * @author Scott Davis
  */
 package com.mars_sim.core.goods;
@@ -78,8 +78,8 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	/** The adjusted cost output for this good. */
 	private double adjustedCostOutput = -1;
 
-	private List<ManufactureProcessInfo> manufactureProcessInfos;
-	private List<FoodProductionProcessInfo> foodProductionProcessInfos;
+	private static List<ManufactureProcessInfo> manufactureProcessInfos;
+	private static List<FoodProductionProcessInfo> foodProductionProcessInfos;
 
 	/**
 	 * Constructor with object.

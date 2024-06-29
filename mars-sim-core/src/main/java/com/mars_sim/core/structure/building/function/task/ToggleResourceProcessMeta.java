@@ -246,6 +246,8 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			// and avoid picking a process having a score of, say, 0.5.
 			
 			// Note: May multiply the score by a factor to boost the chance
+			if (score < 1 && score > 0)
+				score = 1;
 			
 			if (score > 100 || RandomUtil.getRandomDouble(100) < score) {
 				return new ToggleProcessJob(this, building, selectedProcess, new RatingScore(score));
@@ -370,11 +372,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			score *= 10000.0 / iceDemand * (1 + iceStored);
 		}
 
-//		else if (ppa) {
-//			double hydrogenDemand = goodsManager.getDemandValueWithID(ResourceUtil.hydrogenID);
-//			double methaneDemand = goodsManager.getDemandValueWithID(ResourceUtil.methaneID);
-//			score *= 0.01 * hydrogenDemand / methaneDemand;
-//		}
+		else if (ppa) {
+			double hydrogenDemand = goodsManager.getDemandValueWithID(ResourceUtil.hydrogenID);
+			double methaneDemand = goodsManager.getDemandValueWithID(ResourceUtil.methaneID);
+			score *= 0.01 * hydrogenDemand / methaneDemand;
+		}
 
 		else if (cfr) {
 			double hydrogenDemand = goodsManager.getDemandValueWithID(ResourceUtil.hydrogenID);
@@ -386,7 +388,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			double hydrogenDemand = goodsManager.getDemandValueWithID(ResourceUtil.hydrogenID);
 			double methaneDemand = goodsManager.getDemandValueWithID(ResourceUtil.methaneID);
 			double waterDemand = goodsManager.getDemandValueWithID(ResourceUtil.waterID);
-			score *= 500.0 * waterDemand * methaneDemand / hydrogenDemand;
+			score *= 5000.0 * waterDemand * methaneDemand / hydrogenDemand;
 		}
 
 		else if (oxi) {
@@ -432,7 +434,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		if ((toggleTime[0] > 0) && !process.isFlagged()) {
 			score = score + (100D * ((toggleTime[1] - toggleTime[0])/toggleTime[1]));
 		}
-		return score / 4 / modules;
+		return score / modules;
 	}
 
 }
