@@ -264,7 +264,7 @@ public abstract class DigLocal extends EVAOperation {
         }
         else if (!person.isOnDuty()) {
 			// Duty has ended so abort digging
-			abortEVA("End of Work Shift.");
+			abortEVA("End of work shift.");
 		}
 		else {
         	// Reset this holder
