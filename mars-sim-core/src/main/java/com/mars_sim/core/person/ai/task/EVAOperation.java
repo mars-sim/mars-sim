@@ -465,8 +465,8 @@ public abstract class EVAOperation extends Task {
 			return time;
 		}
 		// Check fitness
-		if (!person.isEVAFit()) {
-			abortEVA("EVA Unfit.");
+		if (person.isSuperUnfit()) {
+			abortEVA("Super Unfit.");
 			return time;
 		}
         // Check if there is a reason to cut short and return.

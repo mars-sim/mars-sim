@@ -148,6 +148,7 @@
 	<essential-resources>
 		<resource name="Oxygen" reserve="400" max="10000" />
 		<resource name="Methane" reserve="400" max="10000" />
+		<resource name="Methanol" reserve="300" max="10000" />
 		<resource name="Water" reserve="400" max="10000" />
 		<resource name="Hydrogen" reserve="400" max="10000" />
 		<resource name="Nitrogen" reserve="100" max="5000" />
