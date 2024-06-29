@@ -15,7 +15,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,11 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -44,6 +41,7 @@ import javax.swing.event.TableModelListener;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitManagerEventType;
 import com.mars_sim.core.UnitManagerListener;
@@ -58,6 +56,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
+import com.mars_sim.ui.swing.utils.SortedComboBoxModel;
 
 /**
  * The MonitorWindow is a tool window that displays a selection of tables each
@@ -66,6 +65,20 @@ import com.mars_sim.ui.swing.tool_window.ToolWindow;
 @SuppressWarnings("serial")
 public class MonitorWindow extends ToolWindow
 			implements ConfigurableWindow, TableModelListener, ActionListener{
+
+	private static class SelectionComparator implements Comparator<Entity> {
+
+		@Override
+		public int compare(Entity o1, Entity o2) {
+			if ((o1 instanceof Settlement) && (o2 instanceof Authority)) {
+				return -1;
+			}
+			else if ((o1 instanceof Authority) && (o2 instanceof Settlement)) {
+				return 1;
+			}
+			return o1.getName().compareTo(o2.getName());
+		}
+	}
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(MonitorWindow.class.getName());
@@ -345,8 +358,6 @@ public class MonitorWindow extends ToolWindow
 			settlements = unitManager.getSettlements();
 		}
 		List<Entity> choices = new ArrayList<>(settlements);
-
-		Collections.sort(choices, Comparator.comparing(Entity::getName));
 		
 		// Create the Authority maps
 		authorities = new HashMap<>();
@@ -355,11 +366,7 @@ public class MonitorWindow extends ToolWindow
 			authorities.computeIfAbsent(ra, k -> new HashSet<>()).add(s);
 		}	
 
-		List<Entity> authorityList = new ArrayList<>(authorities.keySet());
-		
-		Collections.sort(authorityList, Comparator.comparing(Entity::getName));
-		
-		choices.addAll(authorityList);
+		choices.addAll(authorities.keySet());
 
 		return choices;
 	}
@@ -372,8 +379,7 @@ public class MonitorWindow extends ToolWindow
 	 */
 	private void buildSelectionCombo(List<Entity> choices, Entity selected) {
 
-		DefaultComboBoxModel<Entity> model = new DefaultComboBoxModel<>();
-		model.addAll(choices);
+		SortedComboBoxModel<Entity> model = new SortedComboBoxModel<>(choices, new SelectionComparator());
 		model.setSelectedItem(selected);
 		selectionCombo = new JComboBox<>(model);
 		selectionCombo.setOpaque(false);
@@ -389,10 +395,27 @@ public class MonitorWindow extends ToolWindow
 		// Listen for new Settlements
 		umListener = event -> {
 			if (event.getEventType() == UnitManagerEventType.ADD_UNIT) {
-				selectionCombo.addItem(event.getUnit());
+				addNewSettlement(event.getUnit());
 			}
 		};
 		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, umListener);
+	}
+
+	/**
+	 * New settlement so add to the selection and update the Reporting Auhority as well
+	 */
+	private void addNewSettlement(Unit unit) {
+		if (unit instanceof Settlement s) {
+			SortedComboBoxModel<Entity> ms = (SortedComboBoxModel<Entity>) selectionCombo.getModel();
+			ms.addElement(s);
+
+			var ra = s.getReportingAuthority();
+			if (!authorities.containsKey(ra)) {
+				ms.addElement(ra);
+				authorities.put(ra, new HashSet<>());
+			}
+			authorities.get(ra).add(s);
+		}
 	}
 
 	/**
