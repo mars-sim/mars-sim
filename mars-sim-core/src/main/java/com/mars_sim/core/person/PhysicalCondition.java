@@ -24,8 +24,10 @@ import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
+import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.meta.EatDrinkMeta;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.person.health.Complaint;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.DeathInfo;
@@ -40,6 +42,7 @@ import com.mars_sim.core.person.health.RadioProtectiveAgent;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -1187,125 +1190,75 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private List<Complaint> checkForRandomAilments(ClockPulse pulse) {
 		double time  = pulse.getElapsed();
+
+		PhysicalEffort taskEffort = person.getTaskManager().getTask().getEffortRequired();
 		List<Complaint> result = new ArrayList<>();
 		Collection<Complaint> list = medicalManager.getAllMedicalComplaints();
 		for (Complaint complaint : list) {
 			// Check each possible medical complaint.
 			ComplaintType ct = complaint.getType();
+			boolean noGo = hasComplaint(complaint);
 
-			boolean noGo = false;
+			if (!noGo) {
+				// If a person is performing a resting task, then it is impossible to suffer
+				// from complaint that is influenced by effort
+				noGo  = (complaint.getEffortInfluence() == PhysicalEffort.NONE)
+								&& person.isRestingTask();
+			}
 
-			if (hasComplaint(complaint)) {
+			// Can this complaint happen?
+			if (!noGo) {
+				double probability = complaint.getProbability();
+				// Check that medical complaint has a probability > zero
+				// since some complaints are secondary complaints and cannot be started
+				// by itself
+				if (probability > 0D) {
+					double taskModifier = 1;
+					double tendency = 1;
 
-				if (ct == ComplaintType.LACERATION || ct == ComplaintType.BROKEN_BONE
-						|| ct == ComplaintType.PULLED_MUSCLE_TENDON || ct == ComplaintType.RUPTURED_APPENDIX) {
-					if (person.isRestingTask()) {
-						// If a person is performing a resting task, then it is impossible to suffer
-						// from laceration.
-						noGo = true;
+					int msol = pulse.getMarsTime().getMissionSol();
+
+					if (healthLog.get(ct) != null && msol > 3)
+						tendency = 0.5 + 1.0 * healthLog.get(ct) / msol;
+					else
+						tendency = 1.0;
+					double immunity = 1.0 * endurance + strength;
+
+					if (immunity > 100)
+						tendency = .75 * tendency - .25 * immunity / 100.0;
+					else
+						tendency = .75 * tendency + .25 * (100 - immunity) / 100.0;
+
+					if ((taskEffort == PhysicalEffort.HIGH) &&
+							(PhysicalEffort.NONE != complaint.getEffortInfluence())) {
+						// High effort is based on agility.
+						taskModifier = 1.2;
+
+						if (agility > 50)
+							taskModifier = .75 * taskModifier - .25 * agility / 100.0;
+						else
+							taskModifier = .75 * taskModifier + .25 * (50 - agility) / 50.0;
 					}
-				}
-
-				// Check that person does not already have a health problem with this complaint.
-
-				// Note : the following complaints are being initiated in their own methods
-				else if (ct == ComplaintType.HIGH_FATIGUE_COLLAPSE || ct == ComplaintType.PANIC_ATTACK
-						|| ct == ComplaintType.DEPRESSION
-						// Exclude the following 6 environmentally induced complaints
-						|| ct == ComplaintType.DEHYDRATION || ct == ComplaintType.STARVATION
-						|| ct == ComplaintType.SUFFOCATION || ct == ComplaintType.FREEZING
-						|| ct == ComplaintType.HEAT_STROKE || ct == ComplaintType.DECOMPRESSION
-						//
-						|| ct == ComplaintType.RADIATION_SICKNESS
-						// not meaningful to implement suicide until emotional/mood state is in place
-						|| ct == ComplaintType.SUICIDE) {
-					noGo = true;
-				}
-
-				if (!noGo) {
-					double probability = complaint.getProbability();
-					// Check that medical complaint has a probability > zero
-					// since some complaints are secondary complaints and cannot be started
-					// by itself
-					if (probability > 0D) {
-						double taskModifier = 1;
-						double tendency = 1;
-
-						int msol = pulse.getMarsTime().getMissionSol();
-
-						if (healthLog.get(ct) != null && msol > 3)
-							tendency = 0.5 + 1.0 * healthLog.get(ct) / msol;
+					else if ((taskEffort == complaint.getEffortInfluence()) 
+									&& (taskEffort == PhysicalEffort.LOW)) {
+						if (agility > 50)
+							taskModifier = .75 * taskModifier - .25 * agility / 100.0;
 						else
-							tendency = 1.0;
-						double immunity = 1.0 * endurance + strength;
+							taskModifier = .75 * taskModifier + .25 * (50 - agility) / 50.0;
+					}
+					else if (person.getTaskManager().getTask() instanceof EVAOperation)
+						// match the uppercase EVA
+						taskModifier = 1.3;
 
-						if (immunity > 100)
-							tendency = .75 * tendency - .25 * immunity / 100.0;
-						else
-							tendency = .75 * tendency + .25 * (100 - immunity) / 100.0;
+					tendency = MathUtils.between(tendency, 0.0001, 2D);
 
-						if (tendency < 0)
-							tendency = 0.0001;
+					// Randomly determine if person suffers from ailment.
+					double rand = RandomUtil.getRandomDouble(100D);
+					double timeModifier = time / RANDOM_AILMENT_PROBABILITY_TIME;
 
-						if (tendency > 2)
-							tendency = 2;
-
-						if (ct == ComplaintType.PULLED_MUSCLE_TENDON
-								|| ct == ComplaintType.BROKEN_BONE) {
-							// Note: at the time of workout, pulled muscle can happen
-							// Note: how to make a person less prone to pulled muscle while doing other tasks
-							// if having consistent workout.
-							String taskDes = person.getTaskDescription().toLowerCase();
-							String taskPhase = person.getTaskPhase().toLowerCase();
-							if (taskPhase.contains("exercising") || taskDes.contains("yoga"))
-								taskModifier = 1.1;
-
-							else if (taskPhase.contains("loading") || taskPhase.contains("unloading")) {
-								// Doing outdoor field work increases the risk of having pulled muscle.
-								taskModifier = 1.2;
-
-								if (agility > 50)
-									taskModifier = .75 * taskModifier - .25 * agility / 100.0;
-								else
-									taskModifier = .75 * taskModifier + .25 * (50 - agility) / 50.0;
-							}
-							else if (person.getTaskDescription().contains("EVA"))
-								// match the uppercase EVA
-								taskModifier = 1.3;
-
-							else if (taskDes.contains("digging") || taskDes.contains("mining")
-									|| taskDes.contains("excavating")) {
-								taskModifier = 1.4;
-
-								int avoidAccident = strength + agility;
-								if (avoidAccident > 50)
-									taskModifier = .75 * taskModifier - .25 * avoidAccident / 100.0;
-								else
-									taskModifier = .75 * taskModifier + .25 * (100 - avoidAccident) / 100.0;
-							}
-
-						} else if (ct == ComplaintType.MINOR_BURNS// || ct == ComplaintType.MAJOR_BURNS
-								|| ct == ComplaintType.BURNS
-								|| ct == ComplaintType.LACERATION) {
-							if (agility > 50)
-								taskModifier = .75 * taskModifier - .25 * agility / 100.0;
-							else
-								taskModifier = .75 * taskModifier + .25 * (50 - agility) / 50.0;
-						}
-
-						if (taskModifier < 0)
-							taskModifier = 0.0001;
-						if (taskModifier > 2)
-							taskModifier = 2;
-
-						// Randomly determine if person suffers from ailment.
-						double rand = RandomUtil.getRandomDouble(100D);
-						double timeModifier = time / RANDOM_AILMENT_PROBABILITY_TIME;
-
-						if (rand <= probability * taskModifier * tendency * timeModifier) {
-							addMedicalComplaint(complaint);
-							result.add(complaint);
-						}
+					if (rand <= probability * taskModifier * tendency * timeModifier) {
+						addMedicalComplaint(complaint);
+						result.add(complaint);
 					}
 				}
 			}

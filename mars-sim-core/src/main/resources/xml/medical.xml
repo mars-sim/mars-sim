@@ -3,7 +3,8 @@
 	<!ELEMENT medical (medical-complaint-list, treatment-list)>
 	<!ELEMENT medical-complaint-list (medical-complaint*)>
 	<!ELEMENT medical-complaint (seriousness, degrade-time?, recovery-time, probability?, 
-	performance-percent, bed-rest-recovery, treatment-type?, degrade-complaint?)>
+				performance-percent, bed-rest-recovery, treatment-type?, degrade-complaint?,
+				effort-influence?)>
 	<!ATTLIST medical-complaint name CDATA #REQUIRED>
 	<!ELEMENT seriousness EMPTY>
 	<!ATTLIST seriousness value CDATA #REQUIRED>
@@ -33,6 +34,9 @@
 	<!ATTLIST treatment-time value CDATA #REQUIRED>
 	<!ELEMENT self-admin EMPTY>
 	<!ATTLIST self-admin value (true|false) #REQUIRED>
+	<!ELEMENT effort-influence EMPTY>
+	<!ATTLIST effort-influence value (LOW|HIGH) #REQUIRED>
+	
 ]>
 
 <medical>
@@ -163,6 +167,7 @@
 			<probability value="3.0" />
 			<performance-percent value="70.0" />
 			<bed-rest-recovery value="false" />
+			<effort-influence value="HIGH" />
 		</medical-complaint>
 
 		<!-- A cold is a minor and common medical complaint. -->
@@ -215,6 +220,7 @@
 			<bed-rest-recovery value="true" />
 			<treatment-type value="Plaster Cast" />
 			<degrade-complaint value="Gangrene" />
+			<effort-influence value="HIGH" />
 		</medical-complaint>
 
 		<!-- A laceration is a deep cut that can result in gangrene if left untreated. -->
@@ -227,14 +233,17 @@
 			<bed-rest-recovery value="false" />
 			<treatment-type value="Dressing" />
 			<degrade-complaint value="Gangrene" />
+			<effort-influence value="LOW" />
 		</medical-complaint>
 
 		<!-- Minor burns are painful but not serious and will heal in time. -->
 		<medical-complaint name="Minor Burns">
 			<seriousness value="20" />		
-			<recovery-time min="10.0" />			
+			<recovery-time min="10.0" />
+			<probability value="3.0" />
 			<performance-percent value="75.0" />
 			<bed-rest-recovery value="false" />
+			<effort-influence value="LOW" />
 		</medical-complaint>
 
 		<!-- Burns are very painful but will not cause death. -->
@@ -242,10 +251,12 @@
 		<medical-complaint name="Burns">
 			<seriousness value="50" />
 			<degrade-time value="5.0" />			
-			<recovery-time min="20.0" />			
+			<recovery-time min="20.0" />	
+			<probability value="1.0" />
 			<performance-percent value="40.0" />
 			<bed-rest-recovery value="true" />
 			<treatment-type value="Dressing" />
+			<effort-influence value="LOW" />
 		</medical-complaint>
 
 		<!-- Major burns involve 3rd-degree burns over much of the body. -->

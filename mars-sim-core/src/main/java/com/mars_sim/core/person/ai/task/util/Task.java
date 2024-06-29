@@ -34,6 +34,7 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.Walk;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.science.ScientificStudyManager;
@@ -355,8 +356,15 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return Effort driven.
 	 */
 	public boolean isEffortDriven() {
-		return getImpact().isEffortAffected();
+		return getEffortRequired() != PhysicalEffort.NONE;
 	}
+
+	/**
+	 * What effort is required for this task
+	 */
+    public PhysicalEffort getEffortRequired() {
+        return getImpact().getEffortRequired();
+    }
 
 	/**
 	 * Returns the name of the task (not its subtask).
@@ -1531,5 +1539,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		subTask = null;
 		phase = null;
 	}
+
 }
 

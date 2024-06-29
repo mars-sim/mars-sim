@@ -2,6 +2,7 @@ package com.mars_sim.core.person.health;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 
 public class MedicalConfigTest extends AbstractMarsSimUnitTest{
     public void testMinorOperationTreatment() {
@@ -71,6 +72,7 @@ public class MedicalConfigTest extends AbstractMarsSimUnitTest{
         assertEquals("Degrade period", 3000D, found.getDegradePeriod());
         assertRecoveryPeriod(found, 1, 1 * MedicalConfig.RECOVERY_SPAN);
         assertEquals("Performance impact", 0.8D, found.getPerformanceFactor());
+        assertEquals("Effort influence", PhysicalEffort.NONE, found.getEffortInfluence());
 
         assertNull("Treatment", found.getRecoveryTreatment());
         assertNull("Next complaint", found.getNextPhase());
@@ -90,9 +92,30 @@ public class MedicalConfigTest extends AbstractMarsSimUnitTest{
         assertEquals("Degrade period", 7000D, found.getDegradePeriod());
         assertRecoveryPeriod(found, 13, 15);
         assertEquals("Performance impact", 0.5D, found.getPerformanceFactor());
+        assertEquals("Effort influence", PhysicalEffort.NONE, found.getEffortInfluence());
 
         assertEquals("Treatment", "Minor Operation", found.getRecoveryTreatment().getName());
         assertEquals("Next complaint", ComplaintType.RUPTURED_APPENDIX, found.getNextPhase().getType());
+    }
+
+		
+    public void testBurnsComplaint() {
+        var c = simConfig.getMedicalConfiguration().getComplaintList();
+        assertTrue("Complaint list is not empty", !c.isEmpty());
+
+        var found = simConfig.getMedicalConfiguration().getComplaintByName(ComplaintType.BURNS);
+        assertNotNull("Found burns complaint", found);
+
+        assertFalse("Is environmental", found.isEnvironmental());
+        assertTrue("Needs bed rest", found.requiresBedRestRecovery());
+        assertEquals("Probability", 1D, found.getProbability());
+        assertEquals("Seriousness", 50, found.getSeriousness());
+        assertEquals("Degrade period", 5000D, found.getDegradePeriod());
+        assertRecoveryPeriod(found, 20, 20 * MedicalConfig.RECOVERY_SPAN);
+        assertEquals("Performance impact", 0.4D, found.getPerformanceFactor());
+        assertEquals("Effort influence", PhysicalEffort.LOW, found.getEffortInfluence());
+
+        assertEquals("Treatment", "Dressing", found.getRecoveryTreatment().getName());
     }
 
     private void assertRecoveryPeriod(Complaint c, double min, double max) {

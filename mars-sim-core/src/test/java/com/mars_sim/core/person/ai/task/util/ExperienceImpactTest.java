@@ -178,7 +178,7 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         // No effort impact
         ExperienceImpact noEffort = new ExperienceImpact(0, null,
                                           PhysicalEffort.NONE, 0);
-        assertFalse("No effort experience", noEffort.isEffortAffected());
+        assertEquals("No effort experience", PhysicalEffort.NONE, noEffort.getEffortRequired());
         noEffort.apply(p, 10, 1, 1);
 
         var newFatigue = p.getPhysicalCondition().getFatigue();
@@ -195,7 +195,7 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         // No effort impact
         ExperienceImpact noEffort = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
                                           PhysicalEffort.LOW, 0);
-        assertTrue("No effort experience", noEffort.isEffortAffected());
+        assertEquals("Low effort experience", PhysicalEffort.LOW, noEffort.getEffortRequired());
         noEffort.apply(p, 10, 1, 1);
 
         var newEnergy = p.getPhysicalCondition().getEnergy();
@@ -215,7 +215,8 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         // No effort impact
         ExperienceImpact noEffort = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
                                           PhysicalEffort.HIGH, 0);
-        assertTrue("No effort experience", noEffort.isEffortAffected());
+        assertEquals("High effort experience", PhysicalEffort.HIGH, noEffort.getEffortRequired());
+
         noEffort.apply(p, 10, 1, 1);
 
         assertLessThan("Energy reduced", origEnergy, cond.getEnergy());
@@ -226,11 +227,11 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
     public void testConstructors() {
         ExperienceImpact effort = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
                 true, 0);
-        assertTrue("Effort required", effort.isEffortAffected());
+        assertEquals("Low effort experience", PhysicalEffort.LOW, effort.getEffortRequired());
 
         ExperienceImpact noEffort = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
             false, 0);
-        assertFalse("No effort required", noEffort.isEffortAffected());
+        assertEquals("No effort experience", PhysicalEffort.NONE, noEffort.getEffortRequired());
     }
 
 }

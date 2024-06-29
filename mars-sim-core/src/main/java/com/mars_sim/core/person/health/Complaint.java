@@ -10,6 +10,7 @@ package com.mars_sim.core.person.health;
 import java.io.Serializable;
 
 import com.mars_sim.core.data.Range;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 
 /**
  * This class represents the definition of a specific Medical Complaint that can
@@ -44,6 +45,8 @@ public class Complaint implements Serializable {
 
 	private boolean environmental;
 
+	private PhysicalEffort effortInfluence;
+
 	/**
 	 * Constructor 3 : create a Medical Complaint instance from medical.xml
 	 * 
@@ -60,7 +63,7 @@ public class Complaint implements Serializable {
 	 */
 	Complaint(ComplaintType type, int seriousness, double degrade, Range recovery, double probability,
 			Treatment recoveryTreatment, Complaint degradeComplaint, double performance, boolean bedRestRecovery,
-				boolean environmental) {
+				boolean environmental, PhysicalEffort effort) {
 		this.type = type;
 		this.seriousness = seriousness;
 		this.degradePeriod = degrade;
@@ -71,6 +74,7 @@ public class Complaint implements Serializable {
 		this.recoveryTreatment = recoveryTreatment;
 		this.nextPhase = degradeComplaint;
 		this.environmental = environmental;
+		this.effortInfluence = effort;
 	}
 
 	/**
@@ -186,4 +190,12 @@ public class Complaint implements Serializable {
 	public String toString() {
 		return type.getName();
 	}
+
+	/**
+	 * Is this Complaint influenced by a level of effort?
+	 * @return
+	 */
+    public PhysicalEffort getEffortInfluence() {
+		return effortInfluence;
+    }
 }

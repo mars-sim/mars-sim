@@ -18,6 +18,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.data.Range;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 
 
 /**
@@ -48,6 +49,7 @@ public class MedicalConfig {
 	private static final String TREATMENT_TIME = "treatment-time";
 	private static final String SELF_ADMIN = "self-admin";
 	private static final String ENVIRONMENTAL = "environmental";
+	private static final String EFFORT_INFLUENCE = "effort-influence";
 	
 	private Map<ComplaintType,Complaint> complaintList = new EnumMap<>(ComplaintType.class);
 	private Map<Integer,List<Treatment>> treatmentsByTechLevel = new HashMap<>();
@@ -181,17 +183,24 @@ public class MedicalConfig {
 			Element degradeComplaintElement = medicalComplaint.getChild(DEGRADE_COMPLAINT);
 			if (degradeComplaintElement != null) {
 			    String degradeComplaintName = degradeComplaintElement.getAttributeValue(VALUE);
-				var degradeType = ComplaintType.valueOf(ConfigHelper.convertToEnumName(degradeComplaintName));
+				var degradeType = ConfigHelper.getEnum(ComplaintType.class, degradeComplaintName);
 				degradeComplaint = complaintList.get(degradeType);
 				if (degradeComplaint == null) {
 					throw new IllegalStateException("Degrade Complaint: " + degradeType + " could not be found");
 				}
 			}
 
-			ComplaintType type = ComplaintType.valueOf(ConfigHelper.convertToEnumName(complaintName));
-			Complaint complaint = new Complaint(type, seriousness, 
-			        degradeTime * 1000D, recoveryTime, probability, 
-			        treatment, degradeComplaint, performance, bedRestRecovery, environmental);
+			String effortName = getStringValue(medicalComplaint, EFFORT_INFLUENCE, false);
+			PhysicalEffort effort = PhysicalEffort.NONE;
+			if (effortName != null) {
+				effort = ConfigHelper.getEnum(PhysicalEffort.class, effortName);
+			}
+
+			ComplaintType type = ConfigHelper.getEnum(ComplaintType.class, complaintName);
+			Complaint complaint = new Complaint(type, seriousness, degradeTime * 1000D,
+											recoveryTime, probability, treatment, degradeComplaint,
+											performance, bedRestRecovery, environmental,
+											effort);
 
 			complaintList.put(type, complaint);
 		}
