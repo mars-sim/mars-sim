@@ -7,22 +7,17 @@
 package com.mars_sim.core.person.health.task;
 
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.person.health.AnxietyMedication;
-import com.mars_sim.core.person.health.RadiationExposure;
-import com.mars_sim.core.person.health.RadioProtectiveAgent;
+import com.mars_sim.core.person.ai.task.util.TaskJob;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
-import com.mars_sim.core.vehicle.Crewable;
-import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
 
 /**
@@ -33,8 +28,7 @@ public class PrescribeMedicationMeta extends FactoryMetaTask {
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.prescribeMedication"); //$NON-NLS-1$
-
-    private int numPatients;
+    private static final double PATIENT_SCORE = 100D;
     
     public PrescribeMedicationMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
@@ -54,160 +48,39 @@ public class PrescribeMedicationMeta extends FactoryMetaTask {
         return new PrescribeMedication(robot);
     }
 
+    /**
+	 * Gets the list of Medication tasks that are needed that this Person can perform
+     * all individually scored.
+	 * 
+	 * @param person the Person to perform the task.
+	 * @return List of TasksJob specifications.
+	 */
     @Override
-    public double getProbability(Person person) {
-
-        double result = 0D;
-
-        if (person.isOutside())
-        	return 0;	
-        
-        Person patient = determinePatients(person);
-        if (patient == null || numPatients == 0) {
-        	return 0;
-        }
-        	
-        JobType job = person.getMind().getJob();
-        
-        if (job == JobType.DOCTOR) {
-            result = numPatients * 300D;
-        }
-        
-        else {
-        	boolean hasDoctor = hasADoctor(patient);
-            if (hasDoctor) {
-            	return 0;
-            }
-            else {
-                result = numPatients * 150D;
-            }
-        }
-            
-        double pref = person.getPreference().getPreferenceScore(this);
-        
-        if (pref > 0)
-        	result = result * 3D;
-        
-        if (result < 0) result = 0;
-        
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        return result;
-    }
-
-    public boolean hasADoctor(Person patient) {
-    	Collection<Person> list = null;
-        if (patient.isInSettlement()) {
-            list = patient.getSettlement().getIndoorPeople();
-
-        }
-        else if (patient.isInVehicle()) {
-        	Rover rover = (Rover)patient.getContainerUnit();
-        	list = rover.getCrew();
-        	
-        }
-        
-        if (list != null) {
-	        for (Person person : list) {
-	        	JobType job = person.getMind().getJob();
-	        	if (job == JobType.DOCTOR)
-	        		return true;
-	        }
-        }
-        return false;
-    }
-    
-    @Override
-    public double getProbability(Robot robot) {
-
-        double result = 0D;
-
-        if (robot.isOutside())
-        	return 0;
-        
-        // Determine patient needing medication.
-        Person patient = determinePatients(robot);
-        if (patient == null || numPatients == 0) {
-            return 0;
-        }
-
-        else {//if (patient != null) {
-            result = numPatients * 100D;             
-        }
-
-        // Effort-driven task modifier.
-        result *= robot.getPerformanceRating();
-
-        return result;
-    }
-
-
-	public Person determinePatients(Unit doctor) {
-		Person patient = null;
-        Person p = null;
-        Robot r = null;
-        if (doctor instanceof Person)
-        	p = (Person) doctor;
-        else
-        	r = (Robot) doctor;
-        
-        // Get possible patient list.
-        // Note: Doctor can also prescribe medication for himself.
-        Collection<Person> patientList = null;
-        
-        if (p != null) {
-	        if (p.isInSettlement()) {
-	            patientList = p.getSettlement().getIndoorPeople();
-	        }
-	        else if (p.isInVehicle()) {
-	            Vehicle vehicle = p.getVehicle();
-	            if (vehicle instanceof Crewable) {
-	                Crewable crewVehicle = (Crewable) vehicle;
-	                patientList = crewVehicle.getCrew();
-	            }
-	        }
-        }
-        
-        else if (r != null) {
-	        if (r.isInSettlement()) {
-	            patientList = r.getSettlement().getIndoorPeople();
-	        }
-	        else if (r.isInVehicle()) {
-	            Vehicle vehicle = r.getVehicle();
-	            if (vehicle instanceof Crewable) {
-	                Crewable crewVehicle = (Crewable) vehicle;
-	                patientList = crewVehicle.getCrew();
-	            }
-	        }
-        }
-
-        // Determine patient.
-        if (patientList != null) {
-            Iterator<Person> i = patientList.iterator();
-            while (i.hasNext()) {
-                Person person = i.next();
-                PhysicalCondition condition = person.getPhysicalCondition();
-                RadiationExposure exposure = condition.getRadiationExposure();
-                if (!condition.isDead()) {
-                	if (condition.isStressedOut()) {
-                        // Only prescribing anti-stress medication at the moment.
-                        if (!condition.hasMedication(AnxietyMedication.NAME)) {
-                        	patient = person;
-                            numPatients++;
-                        }
-                	}
-                	else if (exposure.isSick()) {
-                        if (!condition.hasMedication(RadioProtectiveAgent.NAME)) {
-                        	patient = person;
-                        	numPatients++;
-                        }
-                	}
-                }
-            }
-        }
-
-        return patient;
+	public List<TaskJob> getTaskJobs(Person person) {
+		return createMedicationJobs(person);
 	}
 
+    /**
+	 * Gets the list of Medication tasks that are needed that this Robot can perform
+	 * 
+	 * @param robot the robot to perform the task.
+	 * @return List of TasksJob specifications.
+	 */
+    @Override
+	public List<TaskJob> getTaskJobs(Robot robot) {
+        return createMedicationJobs(robot);
+    }
+
+	private List<TaskJob> createMedicationJobs(Worker pharmacist) {
+        // Get possible patient list.
+        // Note: Doctor can also prescribe medication for himself.
+        Collection<Person> patientList = PrescribeMedication.determinePatients(pharmacist);
+
+        // Determine patient.
+        long patients = patientList.stream()
+            .filter(PrescribeMedication::needsMedication)
+            .count();
+
+        return createTaskJobs(new RatingScore(patients * PATIENT_SCORE));
+    }
 }

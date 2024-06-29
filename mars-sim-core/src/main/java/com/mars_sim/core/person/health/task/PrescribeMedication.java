@@ -7,25 +7,24 @@
 package com.mars_sim.core.person.health.task;
 
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.AnxietyMedication;
 import com.mars_sim.core.person.health.Medication;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.person.health.RadioProtectiveAgent;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.vehicle.Crewable;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -53,20 +52,20 @@ public class PrescribeMedication extends Task {
     private static final TaskPhase MEDICATING = new TaskPhase(Msg.getString(
             "Task.phase.medicating")); //$NON-NLS-1$
 
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .1D;
+    private static final ExperienceImpact IMPACT = new ExperienceImpact(10D, NaturalAttributeType.EXPERIENCE_APTITUDE,
+                                                            false, 0.1D, SkillType.MEDICINE);
 
 	// Data members.
 	private Person patient = null;
 
 	/**
-	 * Constructor 1.
+	 * A Worker wants to to issue some medication a person
 	 * 
-	 * @param person the person performing the task.
+	 * @param pharmacist the person performing the task.
 	 */
-	public PrescribeMedication(Person person) {
+	PrescribeMedication(Worker pharmacist) {
         // Use task constructor.
-        super(NAME, person, false, false, STRESS_MODIFIER, SkillType.MEDICINE, 100D, 10D);
+        super(NAME, pharmacist, false, IMPACT, 10D);
 
         // Determine patient needing medication
         patient = determinePatient(person);
@@ -75,11 +74,9 @@ public class PrescribeMedication extends Task {
             if (person.isOutside())
             	endTask();
             // If in settlement, move doctor to building patient is in.
-            else if (person.isInSettlement() && patient.getBuildingLocation() != null
-				&& person.isNominallyFit() && !person.getMind().getTaskManager().hasSameTask(RequestMedicalTreatment.NAME)) {
+            else if (person.isInSettlement() && patient.getBuildingLocation() != null) {
 
                 // Walk to patient's building.
-            	walkToActivitySpotInBuilding(person.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
             	walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
             	
     			Task currentTask = patient.getMind().getTaskManager().getTask();
@@ -96,131 +93,68 @@ public class PrescribeMedication extends Task {
         }
 
         // Initialize phase
-        addPhase(MEDICATING);
         setPhase(MEDICATING);
     }
 
-	/**
-	 * Constructor 2.
-	 * 
-	 * @param robot the robot performing the task.
-	 */
-	public PrescribeMedication(Robot robot) {
-        // Use task constructor.
-        super(NAME, robot, false, false, STRESS_MODIFIER, SkillType.MEDICINE, 100D, 10D);
+    /**
+     * Who is being treated
+     * @return
+     */
+    Person getPatient() {
+        return patient;
+    }
 
-        // Determine patient needing medication
-        patient = determinePatient(robot);
-        if (patient != null) {
-            // If in settlement, move doctor to building patient is in.
-            if (robot.isInSettlement() && patient.getBuildingLocation() != null) {
-                // Walk to patient's building.
-            	
-                // Walk to patient's building.
-            	walkToActivitySpotInBuilding(robot.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
-            	walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
-            	
-    			Task currentTask = patient.getMind().getTaskManager().getTask();
-    			if (currentTask != null && !currentTask.getName().equalsIgnoreCase(RequestMedicalTreatment.NAME)) {
-                	patient.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.SIMPLE_NAME);
-    			}
+    /**
+     * Determines source of patients
+     * 
+     * @param pharmacist the Worker prescribing the medication.
+     * @return patient if one found, null otherwise.
+     */
+    static Collection<Person> determinePatients(Worker pharmacist) {
 
-            }
-            else
-            	endTask();
-
+        // Get possible patient list.
+        // Note: Doctor can also prescribe medication for himself.
+        Collection<Person> patientList = null;
+        if (pharmacist.isInSettlement()) {
+            patientList = pharmacist.getSettlement().getIndoorPeople();
         }
         else {
-            endTask();
+            patientList = Collections.emptyList();
         }
+        return patientList;
+    }
 
-        // Initialize phase
-        addPhase(MEDICATING);
-        setPhase(MEDICATING);
+    /**
+     * Does this person need medication
+     */
+    static boolean needsMedication(Person patient) {
+        PhysicalCondition condition = patient.getPhysicalCondition();
+        RadiationExposure exposure = condition.getRadiationExposure();
+        return (!condition.isDead()
+            && ((condition.isStressedOut() && !condition.hasMedication(AnxietyMedication.NAME))
+                || (exposure.isSick() && !condition.hasMedication(RadioProtectiveAgent.NAME))));
     }
 
     /**
      * Determines if there is a patient nearby needing medication.
      * 
-     * @param doctor the doctor prescribing the medication.
+     * @param pharmacist the Worker prescribing the medication.
      * @return patient if one found, null otherwise.
      */
-    public Person determinePatient(Person doctor) {
-        Person result = null;
+    static Person determinePatient(Worker pharmacist) {
 
         // Get possible patient list.
         // Note: Doctor can also prescribe medication for himself.
-        Collection<Person> patientList = null;
-        if (doctor.isInSettlement()) {
-            patientList = doctor.getSettlement().getIndoorPeople();
-        }
-        else if (doctor.isInVehicle()) {
-            Vehicle vehicle = doctor.getVehicle();
-            if (vehicle instanceof Crewable crewVehicle) {
-                patientList = crewVehicle.getCrew();
-            }
-        }
+        Collection<Person> patientList = determinePatients(pharmacist);
 
         // Determine patient.
-        if (patientList != null) {
-            Iterator<Person> i = patientList.iterator();
-            while (i.hasNext() && (result == null)) {
-                Person person = i.next();
-                PhysicalCondition condition = person.getPhysicalCondition();
-                RadiationExposure exposure = condition.getRadiationExposure();
-                if (!condition.isDead()) {
-                	if (condition.isStressedOut()) {
-                        // Only prescribing anti-stress medication at the moment.
-                        if (!condition.hasMedication(AnxietyMedication.NAME)) {
-                            result = person;
-                        }
-                	}
-                	else if (exposure.isSick()) {
-                        if (!condition.hasMedication(RadioProtectiveAgent.NAME)) {
-                            result = person;
-                        }
-                	}
-                }
+        for(Person person : patientList) {
+            if (needsMedication(person)) {
+                return person;
             }
         }
 
-        return result;
-    }
-
-    public Person determinePatient(Robot doctor) {
-        Person result = null;
-
-        // Get possible patient list.
-        // Note: Doctor can also prescribe medication for himself.
-        Collection<Person> patientList = null;
-        if (doctor.isInSettlement()) {
-            patientList = doctor.getSettlement().getIndoorPeople();
-        }
-
-        // Determine patient.
-        if (patientList != null) {
-            Iterator<Person> i = patientList.iterator();
-            while (i.hasNext() && (result == null)) {
-                Person person = i.next();
-                PhysicalCondition condition = person.getPhysicalCondition();
-                RadiationExposure exposure = condition.getRadiationExposure();
-                if (!condition.isDead()) {
-                	if (condition.isStressedOut()) {
-                        // Only prescribing anti-stress medication at the moment.
-                        if (!condition.hasMedication(AnxietyMedication.NAME)) {
-                            result = person;
-                        }
-                	}
-                	else if (exposure.isSick()) {
-                        if (!condition.hasMedication(RadioProtectiveAgent.NAME)) {
-                            result = person;
-                        }
-                	}
-                }
-            }
-        }
-
-        return result;
+        return null;
     }
 
     /**
@@ -231,76 +165,60 @@ public class PrescribeMedication extends Task {
      */
     private double medicatingPhase(double time) {
 
+        // Add experience.
+        addExperience(time);
+
         // If duration, provide medication.
         if (getDuration() <= (getTimeCompleted() + time)) {
-            if (patient != null && patient.getSettlement() != null && patient.getBuildingLocation() != null) {
+            var patientLocn = patient.getBuildingLocation();
+            if (patientLocn != null) {
                 PhysicalCondition condition = patient.getPhysicalCondition();
 
-                boolean needMeds = false;
                 Medication medication = null;
-                
                 if (condition.isRadiationPoisoned()) {
-                
                 	medication = new RadioProtectiveAgent(patient);                    
-                    // Check if patient already has taken medication.
-                    if (!condition.hasMedication(medication.getName())) {
-                        // Medicate patient.
-                        condition.addMedication(medication);
-                        needMeds = true;              
-                    }
                 }
-                
                 else if (condition.isStressedOut()) {
-                	
-                	medication = new AnxietyMedication(patient);                	
-                    // Check if patient already has taken medication.
-                    if (!condition.hasMedication(medication.getName())) {
-                        // Medicate patient.
-                        condition.addMedication(medication);
-                        needMeds = true;            		
-                    }
+                	medication = new AnxietyMedication(patient); 
                 }
+
+                // Check if patient already has taken medication.
+                if ((medication == null) || condition.hasMedication(medication.getName())) {
+                    endTask();
+                    return 0D;
+                }
+
+                // Medicate patient.
+                condition.addMedication(medication);
+ 
+                StringBuilder phrase = new StringBuilder();
                 
-                if (needMeds) {
-                	StringBuilder phrase = new StringBuilder();
-                    
-                	if (!worker.equals(patient)) {
-                		phrase = phrase.append("Prescribing ").append(medication.getName())
-                			.append(" to ").append(patient.getName()).append(" in ")
-                			.append(patient.getBuildingLocation().getName())
-                			.append("."); 
-                	}
-                	else {
-                		phrase = phrase.append("Self-prescribing ").append(medication.getName())
-                    			.append(" in ").append(person.getBuildingLocation().getName())
-                    			.append("."); 
-                	}
-            		logger.log(worker, Level.INFO, 5000, phrase.toString());
+                if (!worker.equals(patient)) {
+                    phrase = phrase.append("Prescribing ").append(medication.getName())
+                        .append(" to ").append(patient.getName()).append(" in ")
+                        .append(patientLocn.getName())
+                        .append("."); 
                 }
+                else {
+                    phrase = phrase.append("Self-prescribing ").append(medication.getName()); 
+                }
+                logger.log(worker, Level.INFO, 5000, phrase.toString());
                 
                 produceMedicalWaste();
-
-                Building b = patient.getBuildingLocation();
-                if (b != null && b.hasFunction(FunctionType.MEDICAL_CARE))
-                	walkToActivitySpotInBuilding(b, FunctionType.MEDICAL_CARE, false);
             }
             else 
             	logger.info(patient, "Is not in a proper place to receive medication.");
         }
 
-        // Add experience.
-        addExperience(time);
-
         return 0D;
     }
 
 
-	public void produceMedicalWaste() {
+	private void produceMedicalWaste() {
 		if (!worker.isOutside()) {
             worker.storeAmountResource(ResourceUtil.toxicWasteID, AVERAGE_MEDICAL_WASTE);
         }
 	}
-
 
     @Override
     protected double performMappedPhase(double time) {

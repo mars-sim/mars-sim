@@ -1191,7 +1191,9 @@ public class PhysicalCondition implements Serializable {
 	private List<Complaint> checkForRandomAilments(ClockPulse pulse) {
 		double time  = pulse.getElapsed();
 
-		PhysicalEffort taskEffort = person.getTaskManager().getTask().getEffortRequired();
+		Task activeTask = person.getTaskManager().getTask();
+
+		PhysicalEffort taskEffort = (activeTask != null ? activeTask.getEffortRequired() : null);
 		List<Complaint> result = new ArrayList<>();
 		Collection<Complaint> list = medicalManager.getAllMedicalComplaints();
 		for (Complaint complaint : list) {

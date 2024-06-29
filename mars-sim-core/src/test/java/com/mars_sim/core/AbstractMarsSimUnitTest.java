@@ -12,6 +12,8 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.science.task.MarsSimContext;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
@@ -52,6 +54,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		super(name);
 	}
 
+	@Override
 	@Before
 	public void setUp() {
 	    // Create new simulation instance.
@@ -170,6 +173,20 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 
 		return settlement;
 	}
+
+	
+    protected Robot buildRobot(String name, Settlement s, RobotType type, Building place, FunctionType activity) {
+        var spec = simConfig.getRobotConfiguration().getRobotSpec(type, "Standard");
+        var robot = new Robot(name, s, spec);
+		s.addOwnedRobot(robot);  // This shouldnot be needed as the constructor should add the Robot
+
+        unitManager.addUnit(robot);
+
+        if (place != null) {
+            BuildingManager.addRobotToActivitySpot(robot, place, activity);
+        }
+        return robot;
+    }
 
 	public Person buildPerson(String name, Settlement settlement) {
 		return buildPerson(name, settlement, JobType.ENGINEER, null, null);
