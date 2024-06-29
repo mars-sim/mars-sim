@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelPowerGrid.java
- * @date 2023-05-23
+ * @date 2024-06-28
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.structure;
@@ -437,7 +437,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 					} catch (Exception e) {
 					}
 				}
-				return Math.round(generated * 100.0) / 100.0;
+				return Math.round(generated * 10.0) / 10.0;
 			} 
 			
 			else if (column == 3) {
@@ -446,7 +446,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 					used = building.getFullPowerRequired();
 				else if (powerMode == PowerMode.LOW_POWER)
 					used = building.getLowPowerRequired();
-				return Math.round(used * 100.0) / 100.0;
+				return Math.round(used * 10.0) / 10.0;
 			} 
 			
 			else {
@@ -454,7 +454,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 				double stored = 0;
 				if (ps != null) {
 					stored = ps.getkWattHourStored();
-					return Math.round(stored * 100.0) / 100.0;
+					return Math.round(stored * 10.0) / 10.0;
 				}
 			
 				return 0;

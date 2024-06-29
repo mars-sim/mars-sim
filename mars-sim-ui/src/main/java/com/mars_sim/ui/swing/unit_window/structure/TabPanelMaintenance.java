@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelMaintenance.java
- * @date 2023-06-15
+ * @date 2024-06-28
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.structure;
@@ -58,12 +58,12 @@ public class TabPanelMaintenance extends TabPanelTable {
 	@Override
 	protected void setColumnDetails(TableColumnModel tc) {
 		tc.getColumn(0).setPreferredWidth(120);
-		tc.getColumn(1).setPreferredWidth(60);
+		tc.getColumn(1).setPreferredWidth(55);
 		tc.getColumn(1).setCellRenderer(new PercentageCellRenderer(false));
 		tc.getColumn(2).setCellRenderer(new NumberCellRenderer(2));
-		tc.getColumn(2).setPreferredWidth(60);
+		tc.getColumn(2).setPreferredWidth(65);
 		tc.getColumn(3).setCellRenderer(new PercentageCellRenderer(false));
-		tc.getColumn(3).setPreferredWidth(60);
+		tc.getColumn(3).setPreferredWidth(55);
 	}
 
 	/**
@@ -116,7 +116,7 @@ public class TabPanelMaintenance extends TabPanelTable {
 				case 1:
 					return "Condition";
 				case 2:
-					return "Last Inspected.";
+					return "Last Ins (sols)";
 				case 3:
 					return "% Done";
 				default:

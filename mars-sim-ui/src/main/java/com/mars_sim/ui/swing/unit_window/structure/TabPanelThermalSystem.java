@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelThermalSystem.java
- * @date 2022-07-31
+ * @date 2024-06-28
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.unit_window.structure;
@@ -383,7 +383,7 @@ public class TabPanelThermalSystem extends TabPanelTable {
 					}			
 					ThermalGeneration heater = building.getThermalGeneration();
 					if (heater != null) {
-						return Math.round(heater.getGeneratedHeat()*100.0)/100.0;
+						return Math.round(heater.getGeneratedHeat()*10.0)/10.0;
 					}
 					else
 						return 0;
@@ -394,7 +394,7 @@ public class TabPanelThermalSystem extends TabPanelTable {
 					}			
 					ThermalGeneration heater = building.getThermalGeneration();
 					if (heater != null) {
-						return Math.round(heater.getFullPowerRequired()*100.0)/100.0;
+						return Math.round(heater.getFullPowerRequired()*10.0)/10.0;
 					}
 					else
 						return 0;
@@ -405,7 +405,7 @@ public class TabPanelThermalSystem extends TabPanelTable {
 						generatedCapacity = building.getThermalGeneration().getHeatGenerationCapacity();
 					}
 					catch (Exception e) {}
-					return Math.round(generatedCapacity*100.0)/100.0;
+					return Math.round(generatedCapacity*10.0)/10.0;
 				}
 			return null;
 		}

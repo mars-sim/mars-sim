@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PowerGeneration.java
- * @date 2023-06-02
+ * @date 2024-06-28
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.function;
