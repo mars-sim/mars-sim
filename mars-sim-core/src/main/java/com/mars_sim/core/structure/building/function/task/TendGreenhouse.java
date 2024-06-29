@@ -204,12 +204,12 @@ public class TendGreenhouse extends TendHousekeeping {
 		
 		if (needTending) {
 			remainingTime = tendCrop(time);
-			return remainingTime;
+			return 0;
 		}
 
 		setDescriptionCropDone();
 
-		return remainingTime;
+		return 0;
 	}
 	
 	/**
@@ -219,7 +219,7 @@ public class TendGreenhouse extends TendHousekeeping {
 	 * @return
 	 */
 	private double tendCrop(double time) {
-		double remainingTime = 0;
+
 		double workTime = time;
 		double mod = 1;
 		
@@ -242,12 +242,6 @@ public class TendGreenhouse extends TendHousekeeping {
 		if (usedTime > 0) {
 			setDescription(TEND + " " + previousCropName, false);
 
-
-			if (remain > 0) {
-				// Divided by mod to get back any leftover real time
-				remainingTime = time - usedTime;
-			}
-			
 			// Add experience
 			addExperience(time);
 	
@@ -261,7 +255,7 @@ public class TendGreenhouse extends TendHousekeeping {
 		if (!greenhouse.requiresWork(needyCrop))
 			needyCrop = null;
 		
-		return remainingTime;
+		return 0;
 	}
 	
 	/**
