@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BudgetResources.java
- * @date 2023-12-02
+ * @date 2024-06-28
  * @author Manny Kung
  */
 package com.mars_sim.core.structure.task;
@@ -54,18 +54,18 @@ public class BudgetResources extends Task {
 
 	// Experience modifier is based on a mixture of abilities
 	private static final ExperienceImpact IMPACT = new ExperienceImpact(25D, NaturalAttributeType.EXPERIENCE_APTITUDE,
-									false, -0.1D, SkillType.MANAGEMENT) {
-										private static final long serialVersionUID = 1L;
+		false, -0.1D, SkillType.MANAGEMENT) {
+			private static final long serialVersionUID = 1L;
 
-										@Override
-										protected double getExperienceModifier(Worker worker) {
-											int disciplineAptitude = worker.getNaturalAttributeManager().getAttribute(
-												NaturalAttributeType.DISCIPLINE);
-											int leadershipAptitude = worker.getNaturalAttributeManager().getAttribute(
-												NaturalAttributeType.LEADERSHIP);
-											return (disciplineAptitude + leadershipAptitude - 100D) / 100D;
-										}
-									};
+			@Override
+			protected double getExperienceModifier(Worker worker) {
+				int disciplineAptitude = worker.getNaturalAttributeManager().getAttribute(
+					NaturalAttributeType.DISCIPLINE);
+				int leadershipAptitude = worker.getNaturalAttributeManager().getAttribute(
+					NaturalAttributeType.LEADERSHIP);
+				return (disciplineAptitude + leadershipAptitude - 100D) / 100D;
+			}
+		};
 	
 	// Data members
 	/** The administration building the person is using. */
@@ -81,7 +81,7 @@ public class BudgetResources extends Task {
 	 * Constructor. This is an effort-driven task.
 	 * 
 	 * @param person the person performing the task.
-	 * @param goal Optional defintionof the goal
+	 * @param goal Optional definition of the goal
 	 */
 	public BudgetResources(Person person, ReviewGoal goal) {
 		// Use Task constructor.
@@ -135,6 +135,11 @@ public class BudgetResources extends Task {
 		setPhase(REVIEWING);
 	}
 
+	/*
+	 * Selects a task.
+	 * 
+	 * @param goal
+	 */
 	private boolean selectTask(ReviewGoal goal) {
 		switch(goal) {
 			case ACCOM_WATER:
@@ -151,7 +156,11 @@ public class BudgetResources extends Task {
 		}
 	}
 	
-	
+	/**
+	 * Budgets a settlement resource.
+	 * 
+	 * @return
+	 */
 	private boolean budgetSettlementResource() {
 		settlementResource = person.getAssociatedSettlement().getGoodsManager().reserveResourceReview();
 		if (settlementResource != -1) {
@@ -162,6 +171,11 @@ public class BudgetResources extends Task {
 		return false;
 	}
 	
+	/**
+	 * Budgets settlement water.
+	 * 
+	 * @return
+	 */
 	private boolean budgetSettlementWater() {
 
 		int levelDiff = person.getAssociatedSettlement().getWaterRatioDiff();
@@ -178,7 +192,11 @@ public class BudgetResources extends Task {
 		return false;
 	}
 	
-
+	/**
+	 * Budgets settlement water for lodging.
+	 * 
+	 * @return
+	 */
 	private boolean budgetAccommodationWater() {
 		// Pick a building that needs review
 		var locn = person.getBuildingLocation();
@@ -300,4 +318,12 @@ public class BudgetResources extends Task {
 			office.removeStaff();
 		}
 	}
+	@Override
+	public void destroy() {
+		super.destroy();
+		office = null;
+		building = null;
+		taskNum = null;
+	}
+	
 }

@@ -34,7 +34,7 @@
 	<!ATTLIST ventilation low CDATA #REQUIRED>
 	<!ATTLIST ventilation high CDATA #REQUIRED>
 
-	<!ELEMENT essential-resources (resources*)>
+	<!ELEMENT essential-resources (resource*)>
 	<!ELEMENT resource EMPTY>
 	<!ATTLIST resource name CDATA #REQUIRED>
 	<!ATTLIST resource reserve CDATA #REQUIRED>
@@ -45,6 +45,8 @@
 	<!ATTLIST shift-pattern name CDATA #REQUIRED>
 	<!ATTLIST shift-pattern rotation-sols CDATA #IMPLIED>
 	<!ATTLIST shift-pattern leave-perc CDATA #IMPLIED>
+	<!ATTLIST shift-pattern minPopulation CDATA #IMPLIED>
+	
 
 	<!ELEMENT shift EMPTY>
 	<!ATTLIST shift name CDATA #REQUIRED>
@@ -52,10 +54,11 @@
 	<!ATTLIST shift end CDATA #REQUIRED>
 	<!ATTLIST shift pop-percentage CDATA #REQUIRED>
 
-	<!ELEMENT grouo-activities (activities, schedule*)>
+	<!ELEMENT group-activities (activities, schedule*)>
 
 	<!ELEMENT activities (activity*)>
-	<!ELEMENT activity (calendar)>
+	<!ELEMENT activity (calendar, impact?, skills?)>
+	
 	<!ATTLIST activity name CDATA #REQUIRED>
 	<!ATTLIST activity type CDATA #IMPLIED>
 	<!ATTLIST activity score CDATA #IMPLIED>
@@ -64,12 +67,22 @@
 	<!ATTLIST activity duration CDATA #REQUIRED>
 	<!ATTLIST activity scope CDATA #REQUIRED>
 	<!ATTLIST activity location CDATA #IMPLIED>
-	
+			
 	<!ELEMENT calendar EMPTY>
 	<!ATTLIST calendar eventTime CDATA #REQUIRED>
 	<!ATTLIST calendar frequency CDATA #IMPLIED>
 	<!ATTLIST calendar firstSol CDATA #IMPLIED>
 
+	<!ELEMENT impact (skills?)>
+	<!ATTLIST impact effort CDATA #IMPLIED>
+	<!ATTLIST impact stress CDATA #IMPLIED>
+				
+	<!ELEMENT skills (skill)>
+	<!ATTLIST skills experienceRatio CDATA #IMPLIED>
+	
+	<!ELEMENT skill EMPTY>
+	<!ATTLIST skill name CDATA #REQUIRED>
+	
 	<!ELEMENT schedule (meeting*)>
 	<!ATTLIST schedule name CDATA #REQUIRED>
 	<!ATTLIST schedule minPopulation CDATA #IMPLIED>
