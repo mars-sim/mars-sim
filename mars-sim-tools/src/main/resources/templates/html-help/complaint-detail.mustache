@@ -1,0 +1,25 @@
+{{<help-layout}}
+  {{$body}}
+      <div id="characteristics">
+      <h3>Characteristics</h3>
+      <table class="characteristics">
+        <tr><td>Seriousness:</td><td>{{complaint.seriousness}}</td></tr>
+        <tr><td>Performance Impact:</td><td>{{complaint.performanceFactor}}</td></tr>
+        <tr><td>Probability:</td><td>{{complaint.probability}}</td></tr>
+        <tr><td>Degrade Time:</td><td>{{complaint.degradePeriod}} millisols</td></tr>
+        <tr><td>Bed Rest:</td><td>{{complaint.requiresBedRestRecovery}}</td></tr>
+        <tr><td>Recovery Period:</td><td>{{complaint.recoveryRange.min}} to {{complaint.recoveryRange.max}} sols</td></tr>
+        <tr><td>Influenced by Effort:</td><td>{{complaint.effortInfluence}}</td></tr>
+        {{#complaint.recoveryTreatment}}
+          <tr><td>Treatment:</td><td><a href="{{treatmentfolder}}{{#filename}}{{complaint.recoveryTreatment.name}}{{/filename}}">{{complaint.recoveryTreatment.name}}</a></td></tr>
+        {{/complaint.recoveryTreatment}}
+        {{#complaint.nextPhase}}
+          <tr><td>Next Phase:</td><td><a href="{{complaintfolder}}{{#filename}}{{complaint.nextPhase.name}}{{/filename}}">{{complaint.nextPhase.name}}</a></td></tr>
+        {{/complaint.nextPhase}} 
+      </table>
+    </div>
+
+    </br>
+    <a class="backlink" href="index.html">Back to Complaint list</a>
+  {{/body}}
+{{/help-layout}}

@@ -4,7 +4,9 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.structure.building.BuildingCategory;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.mapdata.location.LocalPosition;
@@ -23,5 +25,8 @@ public interface MarsSimContext {
     Simulation getSim();
 
     ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol);
+
+    Building buildFunction(BuildingManager buildingManager, String string, BuildingCategory medical,
+            FunctionType medicalCare, LocalPosition defaultPosition, double d, boolean b);
 
 }

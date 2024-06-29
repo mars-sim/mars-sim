@@ -9,6 +9,9 @@ package com.mars_sim.core.person.health;
 
 import java.io.Serializable;
 
+import com.mars_sim.core.data.Range;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
+
 /**
  * This class represents the definition of a specific Medical Complaint that can
  * effect a Person. The Complaint once effecting a Person can either result in
@@ -24,11 +27,11 @@ public class Complaint implements Serializable {
 	 * The maximum probability rating. This allows the complaint to be specified to
 	 * 1/10th of a percentage.
 	 */
-	public final static double MAXPROBABILITY = 10000D;
+	public static final double MAXPROBABILITY = 10000D;
 
 	private int seriousness; // Seriousness of this illness
 	private double degradePeriod; // Time before complaint degrades
-	private double recoveryPeriod; // Time before Person recovers
+	private Range recoveryPeriod; // Time before Person recovers
 	private double probability; // Probability of occurring
 	private double performanceFactor; // Factor effecting Person performance
 	private boolean bedRestRecovery; // Does complaint require bed rest during recovery?
@@ -39,54 +42,10 @@ public class Complaint implements Serializable {
 	private Treatment recoveryTreatment;
 	/** Next phase of this illness. */
 	private Complaint nextPhase;
-	/** Temporary next phase . */
-	private ComplaintType nextPhaseType;
 
-	/**
-	 * Constructor 1 : Create a Medical Complaint instance.
-	 *
-	 * @param type ComplaintYype.
-	 */
-	public Complaint(ComplaintType type) {
-		this.type = type;
-	}
+	private boolean environmental;
 
-	/**
-	 * Constructor 2 : Create an environmental Medical Complaint instance
-	 *
-	 * @param type              ComplaintYype.
-	 * @param seriousness       How serious is this complaint.
-	 * @param degrade           The time it takes before this complaint advances, if
-	 *                          this value is zero, then the Person can shelf heel
-	 *                          themselves. This value is in sols.
-	 * @param recovery          The time is takes for a Person to recover. If this
-	 *                          value is zero it means the complaint results in
-	 *                          death unless treated. This value is in sols.
-	 * @param probability       The probability of this illness occurring, this can
-	 *                          be between 0 and MAXPROBABILITY.
-	 * @param performance       The percentage that a Persons performance is
-	 *                          decreased.
-	 * @param bedRestRecovery   True if bed rest is required during recovery.
-	 * @param recoveryTreatment Any treatment that is needed for recovery.
-	 * @param next              The complaint that this degrades into unless
-	 *                          checked.
-	 */
-	Complaint(ComplaintType type, int seriousness, double degrade, double recovery, double probability,
-			double performance, boolean bedRestRecovery, Treatment recoveryTreatment, Complaint next) {
-		// this.name = name;
-		this.type = type;
-		this.seriousness = seriousness;
-		this.degradePeriod = degrade;
-		this.recoveryPeriod = recovery;
-		this.performanceFactor = (performance / 100D);
-		this.bedRestRecovery = bedRestRecovery;
-		this.nextPhase = next;
-		this.nextPhaseType = null;// "";
-		if (next != null)
-			this.nextPhaseType = next.type;// name;
-		this.probability = probability;
-		this.recoveryTreatment = recoveryTreatment;
-	}
+	private PhysicalEffort effortInfluence;
 
 	/**
 	 * Constructor 3 : create a Medical Complaint instance from medical.xml
@@ -97,12 +56,14 @@ public class Complaint implements Serializable {
 	 * @param recovery          recovery time
 	 * @param probability       probability of complaint
 	 * @param recoveryTreatment treatment for recovery
-	 * @param nextStr           next complaint name
+	 * @param degradeComplaint  next complaint
 	 * @param performance       performance factor
 	 * @param bedRestRecovery   True if bed rest is required during recovery.
+	 * @param environmental     Is this trigger by an environmental change
 	 */
-	Complaint(ComplaintType type, int seriousness, double degrade, double recovery, double probability,
-			Treatment recoveryTreatment, ComplaintType nextStr, double performance, boolean bedRestRecovery) {
+	Complaint(ComplaintType type, int seriousness, double degrade, Range recovery, double probability,
+			Treatment recoveryTreatment, Complaint degradeComplaint, double performance, boolean bedRestRecovery,
+				boolean environmental, PhysicalEffort effort) {
 		this.type = type;
 		this.seriousness = seriousness;
 		this.degradePeriod = degrade;
@@ -111,16 +72,9 @@ public class Complaint implements Serializable {
 		this.probability = probability;
 		this.bedRestRecovery = bedRestRecovery;
 		this.recoveryTreatment = recoveryTreatment;
-		this.nextPhaseType = nextStr;
-	}
-
-	/**
-	 * Sets the next complaint this complaint degrades to.
-	 * 
-	 * @param nextComplaint the next complaint
-	 */
-	void setNextComplaint(Complaint nextComplaint) {
-		this.nextPhase = nextComplaint;
+		this.nextPhase = degradeComplaint;
+		this.environmental = environmental;
+		this.effortInfluence = effort;
 	}
 
 	/**
@@ -132,15 +86,14 @@ public class Complaint implements Serializable {
 		return degradePeriod;
 	}
 
-//	/**
-//	 * Get the name of complaint.
-//	 * 
-//	 * @return Complaint name.
-//	 */
-	// public String getName() {
-	// return name;
-	// }
-
+	/**
+	 * Get the name of this Complaint
+	 * @return
+	 */
+	public String getName() {
+		return type.getName();
+	}
+	
 	/**
 	 * Get the type of complaint.
 	 * 
@@ -157,15 +110,6 @@ public class Complaint implements Serializable {
 	 */
 	public Complaint getNextPhase() {
 		return nextPhase;
-	}
-
-	/**
-	 * Gets the next complaintType.
-	 * 
-	 * @return complaint type
-	 */
-	ComplaintType getNextPhaseStr() {
-		return nextPhaseType;
 	}
 
 	/**
@@ -196,14 +140,22 @@ public class Complaint implements Serializable {
 	}
 
 	/**
-	 * Get the recover period.
+	 * Get the a specific recovery period; this is a random value within the range
 	 * 
 	 * @return Double value representing a duration.
 	 */
 	public double getRecoveryPeriod() {
-		return recoveryPeriod;
+		return recoveryPeriod.getRandomValue() * 1000D;
 	}
 
+	/**
+	 * Get the range of the recovery period
+	 * @return
+	 */
+	public Range getRecoveryRange() {
+		return recoveryPeriod;
+	}
+	
 	/**
 	 * Checks if recovery requires bed rest.
 	 * 
@@ -223,6 +175,14 @@ public class Complaint implements Serializable {
 	}
 
 	/**
+	 * Is this complaint triggered by environmental changes
+	 * @return
+	 */
+	public boolean isEnvironmental() {
+		return environmental;
+	}
+
+	/**
 	 * Get a string representation.
 	 * 
 	 * @return The String name of the ComplaintType.
@@ -231,11 +191,11 @@ public class Complaint implements Serializable {
 		return type.getName();
 	}
 
-	public void destroy() {
-		type = null;
-		recoveryTreatment = null;
-		nextPhase = null;
-		nextPhaseType = null;
-	}
-
+	/**
+	 * Is this Complaint influenced by a level of effort?
+	 * @return
+	 */
+    public PhysicalEffort getEffortInfluence() {
+		return effortInfluence;
+    }
 }

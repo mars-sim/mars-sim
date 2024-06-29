@@ -198,7 +198,6 @@ public class SimulationConfig {
 		if (loaded) {
 			return;
 		}
-		loaded = true;
 		
 		try {
 			// Remove legacy backupDIR
@@ -238,6 +237,9 @@ public class SimulationConfig {
 			minEVALight = loadDoubleValue(missionConfig, EVA_LIGHT, 0D, 1000D);
 
 			loadDefaultConfiguration();
+
+			loaded = true;
+
 		} catch (RuntimeException | JDOMException | IOException rte) {
           	logger.severe("Cannot load default config : " + rte.getMessage(), rte);
 			throw new IllegalStateException("Cannot load the configurations", rte);

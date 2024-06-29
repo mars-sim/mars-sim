@@ -45,10 +45,6 @@ public class PersonConfig {
 	private static final String FOOD_CONSUMPTION_RATE = "food-consumption-rate";
 	private static final String DESSERT_CONSUMPTION_RATE = "dessert-consumption-rate";
 
-	private static final String OXYGEN_DEPRIVATION_TIME = "oxygen-deprivation-time";
-	private static final String WATER_DEPRIVATION_TIME = "water-deprivation-time";
-	private static final String FOOD_DEPRIVATION_TIME = "food-deprivation-time";
-
 	private static final String DEHYDRATION_START_TIME = "dehydration-start-time";
 	private static final String STARVATION_START_TIME = "starvation-start-time";
 
@@ -57,9 +53,6 @@ public class PersonConfig {
 
 	private static final String MIN_TEMPERATURE = "min-temperature";
 	private static final String MAX_TEMPERATURE = "max-temperature";
-
-	private static final String DECOMPRESSION_TIME = "decompression-time";
-	private static final String FREEZING_TIME = "freezing-time";
 
 	private static final String STRESS_BREAKDOWN_CHANCE = "stress-breakdown-chance";
 	private static final String HIGH_FATIGUE_COLLAPSE = "high-fatigue-collapse-chance";
@@ -106,15 +99,10 @@ public class PersonConfig {
 	private Double waterConsumption;
 	private double foodConsumption;
 	private double dessertConsumption;
-	private double o2DeprivationTime;
 	private double dehyrationStartTime;
-	private double waterDeprivationTime;
-	private double foodDeprivationTime;
 	private double starvationStartTime;
-	private double decompressionTime;
 	private double minTemperature;
 	private double maxTemperature;
-	private double freezingTime;
 	private double highFatigureCollapseChance;
 	private double stressBreakdownChance;
 	private double lowO2ConsumptionRate;
@@ -159,13 +147,11 @@ public class PersonConfig {
 		lowO2ConsumptionRate = personAttributes.get(LOW_O2_RATE);
 		nominalO2ConsumptionRate = personAttributes.get(NOMINAL_O2_RATE);
 		highO2ConsumptionRate = personAttributes.get(HIGH_O2_RATE);
-		o2DeprivationTime= personAttributes.get(OXYGEN_DEPRIVATION_TIME);
 		o2pressure = personAttributes.get(MIN_O2_PARTIAL_PRESSURE);
 
 		co2Rate = personAttributes.get(CO2_EXPELLED_RATE);
 		waterConsumption = personAttributes.get(WATER_CONSUMPTION_RATE);
 		waterUsage = personAttributes.get(WATER_USAGE_RATE);
-		waterDeprivationTime = personAttributes.get(WATER_DEPRIVATION_TIME);
 		grey2BlackWaterRatio = personAttributes.get(GREY_TO_BLACK_WATER_RATIO);
 
 		minTemperature = personAttributes.get(MIN_TEMPERATURE);
@@ -175,12 +161,9 @@ public class PersonConfig {
 		dessertConsumption = personAttributes.get(DESSERT_CONSUMPTION_RATE);
 
 		dehyrationStartTime = personAttributes.get(DEHYDRATION_START_TIME);
-		foodDeprivationTime = personAttributes.get(FOOD_DEPRIVATION_TIME);
 		starvationStartTime = personAttributes.get(STARVATION_START_TIME);
 		pressure = personAttributes.get(MIN_AIR_PRESSURE);
-		decompressionTime = personAttributes.get(DECOMPRESSION_TIME);
 
-		freezingTime = personAttributes.get(FREEZING_TIME);
 		stressBreakdownChance = personAttributes.get(STRESS_BREAKDOWN_CHANCE);
 		highFatigureCollapseChance = personAttributes.get(HIGH_FATIGUE_COLLAPSE);
 
@@ -279,39 +262,12 @@ public class PersonConfig {
 	}
 
 	/**
-	 * Gets the oxygen deprivation time.
-	 * 
-	 * @return oxygen time in millisols.
-	 */
-	public double getOxygenDeprivationTime() {
-		return o2DeprivationTime;
-	}
-
-	/**
-	 * Gets the water deprivation time.
-	 * 
-	 * @return water time in sols.
-	 */
-	public double getWaterDeprivationTime() {
-		return waterDeprivationTime;
-	}
-
-	/**
 	 * Gets the dehydration start time.
 	 * 
 	 * @return dehydration time in sols.
 	 */
 	public double getDehydrationStartTime() {
 		return dehyrationStartTime;
-	}
-
-	/**
-	 * Gets the food deprivation time.
-	 * 
-	 * @return food time in sols.
-	 */
-	public double getFoodDeprivationTime() {
-		return foodDeprivationTime;
 	}
 
 	/**
@@ -342,15 +298,6 @@ public class PersonConfig {
 	}
 
 	/**
-	 * Gets the max decompression time a person can survive.
-	 * 
-	 * @return decompression time in millisols.
-	 */
-	public double getDecompressionTime() {
-		return decompressionTime;
-	}
-
-	/**
 	 * Gets the minimum temperature a person can tolerate.
 	 * 
 	 * @return temperature in celsius
@@ -366,15 +313,6 @@ public class PersonConfig {
 	 */
 	public double getMaxTemperature() {
 		return maxTemperature;
-	}
-
-	/**
-	 * Gets the time a person can survive below minimum temperature.
-	 * 
-	 * @return freezing time in millisols.
-	 */
-	public double getFreezingTime() {
-		return freezingTime;
 	}
 
 	/**

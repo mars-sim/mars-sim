@@ -1492,7 +1492,6 @@ public class Simulation implements ClockListener, Serializable {
 		}
 
 		if (medicalManager != null) {
-			medicalManager.destroy();
 			medicalManager = null;
 		}
 

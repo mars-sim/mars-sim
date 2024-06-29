@@ -64,6 +64,13 @@ public class EVAOperationTest extends AbstractMarsSimUnitTest{
         e.storeAmountResource(ResourceUtil.oxygenID, EVASuit.OXYGEN_CAPACITY);
         e.storeAmountResource(ResourceUtil.waterID, EVASuit.WATER_CAPACITY);
 
+        // Mark sure person is fit
+        var pc = p.getPhysicalCondition();
+        pc.setFatigue(0);
+        pc.setHunger(0D);
+        pc.setThirst(0);
+        pc.setStress(0);
+
         return b.getEVA();
     }
     /**

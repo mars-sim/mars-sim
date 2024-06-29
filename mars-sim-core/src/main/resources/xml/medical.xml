@@ -2,15 +2,17 @@
 <!DOCTYPE medical [
 	<!ELEMENT medical (medical-complaint-list, treatment-list)>
 	<!ELEMENT medical-complaint-list (medical-complaint*)>
-	<!ELEMENT medical-complaint (seriousness, degrade-time?, recovery-time, probability, 
-	performance-percent, bed-rest-recovery, treatment-type?, degrade-complaint?)>
+	<!ELEMENT medical-complaint (seriousness, degrade-time?, recovery-time, probability?, 
+				performance-percent, bed-rest-recovery, treatment-type?, degrade-complaint?,
+				effort-influence?)>
 	<!ATTLIST medical-complaint name CDATA #REQUIRED>
 	<!ELEMENT seriousness EMPTY>
 	<!ATTLIST seriousness value CDATA #REQUIRED>
 	<!ELEMENT degrade-time EMPTY>
 	<!ATTLIST degrade-time value CDATA #REQUIRED>
 	<!ELEMENT recovery-time EMPTY>
-	<!ATTLIST recovery-time value CDATA #REQUIRED>
+	<!ATTLIST recovery-time min CDATA #REQUIRED>
+	<!ATTLIST recovery-time max CDATA #IMPLIED>
 	<!ELEMENT probability EMPTY>
 	<!ATTLIST probability value CDATA #REQUIRED>
 	<!ELEMENT performance-percent EMPTY>
@@ -32,6 +34,9 @@
 	<!ATTLIST treatment-time value CDATA #REQUIRED>
 	<!ELEMENT self-admin EMPTY>
 	<!ATTLIST self-admin value (true|false) #REQUIRED>
+	<!ELEMENT effort-influence EMPTY>
+	<!ATTLIST effort-influence value (LOW|HIGH) #REQUIRED>
+	
 ]>
 
 <medical>
@@ -39,22 +44,31 @@
 	<!-- List of medical complaints -->
 	<medical-complaint-list>
 
-		<!-- Appendicitis is a painful infection of the appendix,
-		     which, if left untreated, can lead to a ruptured appendix.
-
-		     WARNINGT : the name of the medical-complaint must not be changed
-		-->
-		<medical-complaint name="Appendicitis">
-
+		<!-- A ruptured appendix happens when appendicitis is left untreated. -->
+		<!-- If left untreated, it will cause death. -->
+		<!-- It requires an major operation to treat it. -->
+		<medical-complaint name="Ruptured Appendix">
 			<!-- Seriousness of complaint (required) -->
 			<!-- Values: 1 (not serious) to 100 (most serious) -->
-			<seriousness value="60" />
-
+			<seriousness value="100" />
 			<!-- Degradation time to next complaint (sols) (optional) -->
-			<degrade-time value="7.0" />
-
+			<degrade-time value="2.0" />
 			<!-- Recovery time (once cured, if necessary) (sols) (required) -->
-			<recovery-time value="14.0" />
+			<recovery-time min="14.0" />
+			<!-- Percentage of person's normal performance when disabled by this illness. (required) -->
+			<!-- Values: 0.0 (bedridden) to 100.0 (normal fitness) -->
+			<performance-percent value="0.0" />
+			<!--  Does recovery require bed rest at a medical aid? -->
+			<bed-rest-recovery value="true" />
+			<!-- Treatment to cure the illness (see treatment list below). (optional) -->
+			<!-- If no treatment is listed, then illness immediately goes to recovery.  -->
+			<treatment-type value="Major Operation" />
+		</medical-complaint>
+
+		<medical-complaint name="Appendicitis">
+			<seriousness value="60" />
+			<degrade-time value="7.0" />
+			<recovery-time min="13.0" max="15.0"/>
 
 			<!-- Random probability of this complaint occurring on its own. (required)
 				if > 0, use checkForRandomAilments() in PhysicalCondition to create this ailment,
@@ -62,36 +76,74 @@
 				if = 0.0, use other means -->
 			<!-- Values: 0.0 (no chance) to 100.0 (very likely) -->
 			<probability value="0.5" />
-
-			<!-- Percentage of person's normal performance when disabled by this illness. (required) -->
-			<!-- Values: 0.0 (bedridden) to 100.0 (normal fitness) -->
 			<performance-percent value="50.0" />
-
-			<!--  Does recovery require bed rest at a medical aid? -->
 			<bed-rest-recovery value="true" />
-
-			<!-- Treatment to cure the illness (see treatment list below). (optional) -->
-			<!-- If no treatment is listed, then illness immediately goes to recovery.  -->
 			<treatment-type value="Minor Operation" />
 
 			<!-- The next complaint changed to when this complaint exceeds its degrading time. (optional) -->
 			<!-- If no degrade-complaint is listed, this complaint causes death after degrade time. -->
 			<!-- Exception: if no treatment is listed, illness does not degrade at all. -->
 			<degrade-complaint value="Ruptured Appendix" />
-
 		</medical-complaint>
 
-		<!-- A ruptured appendix happens when appendicitis is left untreated. -->
-		<!-- If left untreated, it will cause death. -->
-		<!-- It requires an major operation to treat it. -->
-		<medical-complaint name="Ruptured Appendix">
-			<seriousness value="100" />
-			<degrade-time value="2.0" />
-			<recovery-time value="14.0" />
-			<probability value="0.0" />
-			<performance-percent value="0.0" />
+		<!-- Suffocation is an environmentally triggered condition -->
+		<medical-complaint name="Suffocation">
+			<seriousness value="80" />
+			<degrade-time value="0.00338"/>
+			<recovery-time min="0.5" />
+			<performance-percent value="20.0" />
 			<bed-rest-recovery value="true" />
-			<treatment-type value="Major Operation" />
+			<environmental value="true" />
+		</medical-complaint>
+
+		<!-- Decompression is an environmentally triggered condition -->
+		<medical-complaint name="Decompression">
+			<seriousness value="70" />
+			<degrade-time value="0.0010"/>
+			<recovery-time min="0.5" />
+			<performance-percent value="30.0" />
+			<bed-rest-recovery value="true" />
+			<environmental value="true" />
+		</medical-complaint>
+
+		<!-- Heat stroke is an environmentally triggered condition -->
+		<medical-complaint name="Heat Stroke">
+			<seriousness value="40" />
+			<degrade-time value="0.2"/>
+			<recovery-time min="1" />
+			<performance-percent value="60.0" />
+			<bed-rest-recovery value="true" />
+			<environmental value="true" />
+		</medical-complaint>
+
+		<!-- Freezing is an environmentally triggered condition -->
+		<medical-complaint name="Freezing">
+			<seriousness value="50" />
+			<degrade-time value="0.250"/>
+			<recovery-time min="1" />
+			<performance-percent value="50.0" />
+			<bed-rest-recovery value="true" />
+			<environmental value="true" />
+		</medical-complaint>
+		
+		<!-- Dehydration is an environmentally triggered condition -->
+		<medical-complaint name="Dehydration">
+			<seriousness value="20" />
+			<degrade-time value="3.0"/>
+			<recovery-time min="1" />
+			<performance-percent value="80.0" />
+			<bed-rest-recovery value="true" />
+			<environmental value="true" />
+		</medical-complaint>
+
+		<!-- Starvation is an environmentally triggered condition -->
+		<medical-complaint name="Starvation">
+			<seriousness value="40" />
+			<degrade-time value="30.0"/>
+			<recovery-time min="1" />
+			<performance-percent value="60.0" />
+			<bed-rest-recovery value="false" />
+			<environmental value="true" />
 		</medical-complaint>
 
 		<!-- Meningitis is an inflammation of the membranes covering the brain and spinal cord. -->
@@ -100,7 +152,7 @@
 		<medical-complaint name="Meningitis">
 			<seriousness value="90" />
 			<degrade-time value="2.0" />
-			<recovery-time value="10.0" />
+			<recovery-time min="10.0" />
 			<probability value="0.1" />
 			<performance-percent value="0.0" />
 			<bed-rest-recovery value="true" />
@@ -111,17 +163,18 @@
 		<!-- It affects performance but does not require medical treatment. -->
 		<medical-complaint name="Pulled Muscle/Tendon">
 			<seriousness value="1" />
-			<recovery-time value="2.0" />
+			<recovery-time min="2.0" />
 			<probability value="3.0" />
 			<performance-percent value="70.0" />
 			<bed-rest-recovery value="false" />
+			<effort-influence value="HIGH" />
 		</medical-complaint>
 
 		<!-- A cold is a minor and common medical complaint. -->
 		<!-- It affects performance but does not required medical treatment. -->
 		<medical-complaint name="Cold">
 			<seriousness value="10" />
-			<recovery-time value="12.0" />
+			<recovery-time min="3.0" max="12.0" />
 			<probability value="5.0" />
 			<performance-percent value="90.0" />
 			<bed-rest-recovery value="false" />
@@ -130,7 +183,7 @@
 		<!-- A flu is more serious than a cold but has a shorter duration. -->
 		<medical-complaint name="Flu">
 			<seriousness value="20" />
-			<recovery-time value="3.0" />
+			<recovery-time min="3.0" max="5.0" />
 			<probability value="5.0" />
 			<performance-percent value="80.0" />
 			<bed-rest-recovery value="false" />
@@ -140,34 +193,10 @@
 		<medical-complaint name="Fever">
 			<seriousness value="30" />
 			<degrade-time value="3.0" />
-			<recovery-time value="1.0" />
+			<recovery-time min="1.0" max="2.0" />
 			<probability value="5.0" />
 			<performance-percent value="70.0" />
 			<bed-rest-recovery value="true" />
-		</medical-complaint>
-
-		<!-- A broken bone can result in gangrene if left untreated. -->
-		<medical-complaint name="Broken Bone">
-			<seriousness value="60" />
-			<degrade-time value="7.0" />
-			<recovery-time value="14.0" />
-			<probability value="5.0" />
-			<performance-percent value="20.0" />
-			<bed-rest-recovery value="true" />
-			<treatment-type value="Plaster Cast" />
-			<degrade-complaint value="Gangrene" />
-		</medical-complaint>
-
-		<!-- A laceration is a deep cut that can result in gangrene if left untreated. -->
-		<medical-complaint name="Laceration">
-			<seriousness value="50" />
-			<degrade-time value="7.0" />
-			<recovery-time value="2.0" />
-			<probability value="3.0" />
-			<performance-percent value="60.0" />
-			<bed-rest-recovery value="false" />
-			<treatment-type value="Dressing" />
-			<degrade-complaint value="Gangrene" />
 		</medical-complaint>
 
 		<!-- Gangrene is death and decay of body tissue due to lack of blood flow.  -->
@@ -175,20 +204,46 @@
 		<medical-complaint name="Gangrene">
 			<seriousness value="100" />
 			<degrade-time value="7.0" />
-			<recovery-time value="15.0" />
-			<probability value="0.0" />
+			<recovery-time min="15.0" />			
 			<performance-percent value="40.0" />
 			<bed-rest-recovery value="true" />
 			<treatment-type value="Antibiotics" />
 		</medical-complaint>
 
+		<!-- A broken bone can result in gangrene if left untreated. -->
+		<medical-complaint name="Broken Bone">
+			<seriousness value="60" />
+			<degrade-time value="7.0" />
+			<recovery-time min="14.0" />
+			<probability value="5.0" />
+			<performance-percent value="20.0" />
+			<bed-rest-recovery value="true" />
+			<treatment-type value="Plaster Cast" />
+			<degrade-complaint value="Gangrene" />
+			<effort-influence value="HIGH" />
+		</medical-complaint>
+
+		<!-- A laceration is a deep cut that can result in gangrene if left untreated. -->
+		<medical-complaint name="Laceration">
+			<seriousness value="50" />
+			<degrade-time value="7.0" />
+			<recovery-time min="2.0" />
+			<probability value="3.0" />
+			<performance-percent value="60.0" />
+			<bed-rest-recovery value="false" />
+			<treatment-type value="Dressing" />
+			<degrade-complaint value="Gangrene" />
+			<effort-influence value="LOW" />
+		</medical-complaint>
+
 		<!-- Minor burns are painful but not serious and will heal in time. -->
 		<medical-complaint name="Minor Burns">
 			<seriousness value="20" />		
-			<recovery-time value="10.0" />
-			<probability value="0.0" />
+			<recovery-time min="10.0" />
+			<probability value="3.0" />
 			<performance-percent value="75.0" />
 			<bed-rest-recovery value="false" />
+			<effort-influence value="LOW" />
 		</medical-complaint>
 
 		<!-- Burns are very painful but will not cause death. -->
@@ -196,11 +251,12 @@
 		<medical-complaint name="Burns">
 			<seriousness value="50" />
 			<degrade-time value="5.0" />			
-			<recovery-time value="20.0" />
-			<probability value="0.0" />
+			<recovery-time min="20.0" />	
+			<probability value="1.0" />
 			<performance-percent value="40.0" />
 			<bed-rest-recovery value="true" />
 			<treatment-type value="Dressing" />
+			<effort-influence value="LOW" />
 		</medical-complaint>
 
 		<!-- Major burns involve 3rd-degree burns over much of the body. -->
@@ -208,8 +264,7 @@
 		<medical-complaint name="Major Burns">
 			<seriousness value="100" />
 			<degrade-time value="10.0" />
-			<recovery-time value="40.0" />
-			<probability value="0.0" />
+			<recovery-time min="40.0" />			
 			<performance-percent value="10.0" />
 			<bed-rest-recovery value="true" />
 			<treatment-type value="Skin Graft" />
@@ -219,8 +274,7 @@
 		<!-- and possibly low air pressure. -->
 		<medical-complaint name="Frostnip">
 			<seriousness value="20" />
-			<recovery-time value="1.0" />
-			<probability value="0.0" />
+			<recovery-time min="1.0" />	
 			<performance-percent value="80.0" />
 			<bed-rest-recovery value="false" />
 		</medical-complaint>
@@ -231,8 +285,7 @@
 		<medical-complaint name="Frostbite">
 			<seriousness value="50" />
 			<degrade-time value="10.0" />
-			<recovery-time value="10.0" />
-			<probability value="0.0" />
+			<recovery-time min="10.0" />			
 			<performance-percent value="60.0" />
 			<bed-rest-recovery value="true" />
 			<treatment-type value="Dressing" />
@@ -246,8 +299,7 @@
 		<medical-complaint name="Panic Attack">
 			<seriousness value="30" />
 			<degrade-time value="3.0" />
-			<recovery-time value="1.0" />
-			<probability value="0.0" />
+			<recovery-time min="0.5" max="1.5" />
 			<performance-percent value="60.0" />
 			<bed-rest-recovery value="false" />
 			<treatment-type value="Anxiety Medication" />
@@ -260,8 +312,7 @@
 		<medical-complaint name="Depression">
 			<seriousness value="20" />
 			<degrade-time value="3.0" />
-			<recovery-time value="3.0" />
-			<probability value="0.0" />
+			<recovery-time min="2.0" max="5.0" />			
 			<performance-percent value="60.0" />
 			<bed-rest-recovery value="false" />
 			<treatment-type value="Anxiety Medication" />
@@ -273,8 +324,7 @@
 		<medical-complaint name="High Fatigue Collapse">
 			<seriousness value="60" />
 			<degrade-time value="1.0" />
-			<recovery-time value="3.0" />
-			<probability value="0.0" />
+			<recovery-time min="1.0" max="3.0" />			
 			<performance-percent value="20.0" />
 			<bed-rest-recovery value="true" />
 			<treatment-type value="Hospitalization" />
@@ -286,7 +336,7 @@
 		<medical-complaint name="Food Poisoning">
 			<seriousness value="55" />
 			<degrade-time value="2.0" />
-			<recovery-time value="3.0" />
+			<recovery-time min="3.0" />
 			<probability value="2.0" />
 			<performance-percent value="40.0" />
 			<bed-rest-recovery value="true" />
@@ -298,7 +348,7 @@
 		<medical-complaint name="Heartburn">
 			<seriousness value="10" />
 			<degrade-time value="3.0" />
-			<recovery-time value="0.5" />
+			<recovery-time min="0.3" max="0.7"/>
 			<probability value="5.0" />
 			<performance-percent value="90.0" />
 			<bed-rest-recovery value="false" />
@@ -312,7 +362,7 @@
 		<medical-complaint name="Hypoxemia">
 			<seriousness value="80" />
 			<degrade-time value="2.0" />
-			<recovery-time value="1.5" />
+			<recovery-time min="1.5" />
 			<probability value="0" />
 			<performance-percent value="20.0" />
 			<bed-rest-recovery value="true" />
@@ -326,7 +376,7 @@
 		<medical-complaint name="Radiation Sickness">
 			<seriousness value="30" />
 			<degrade-time value="8.0" />
-			<recovery-time value="3.0" />
+			<recovery-time min="3.0" />
 			<probability value="0" />
 			<performance-percent value="30.0" />
 			<bed-rest-recovery value="false" />
@@ -339,16 +389,11 @@
 		<medical-complaint name="Heart Attack">
 			<seriousness value="90" />
 			<degrade-time value="0.25" />
-			<recovery-time value="7.0" />
+			<recovery-time min="7.0" />
 			<probability value="0.5" />
 			<performance-percent value="1.0" />
 			<bed-rest-recovery value="true" />
 		</medical-complaint>
-<!-- Future:
-	1. Medium cut
--->
-
-
 	</medical-complaint-list>
 
 	<!-- List of medical treatments -->

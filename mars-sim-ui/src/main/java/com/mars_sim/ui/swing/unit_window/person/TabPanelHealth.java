@@ -798,10 +798,10 @@ extends TabPanel {
 			HealthProblem problem = problemsCache.get(row);
 
 			if (column == 0) {
-				return problem.getComplaint().getType().toString();
+				return problem.getComplaint().getType().getName();
 			}
 			else if (column == 1) {
-				String conditionStr = problem.getStateString();
+				String conditionStr = problem.getState().getName();
 				if (!isDead) {
 					conditionStr = Msg.getString("TabPanelHealth.healthRating", //$NON-NLS-1$
 							conditionStr, Integer.toString(problem.getHealthRating()));

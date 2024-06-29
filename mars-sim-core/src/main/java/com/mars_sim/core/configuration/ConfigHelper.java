@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.jdom2.Element;
 
+import com.mars_sim.core.data.Range;
 import com.mars_sim.core.person.PopulationCharacteristics;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
@@ -44,6 +45,9 @@ public class ConfigHelper {
 	private static final String NUMBER = "number";	
 	private static final String AMOUNT = "amount";
 	private static final String ALTERNATIVE = "alternative";
+	private static final String MAX = "max";
+	private static final String MIN = "min";
+
 
 	public static final String CALENDAR_START_TIME = "eventTime";
     public static final String CALENDAR_FREQUENCY = "frequency";
@@ -350,4 +354,19 @@ public class ConfigHelper {
 
 		return new ExperienceImpact(experience, expAttribute, effortDriven, stress, skills);
     }
+
+	/**
+	 * Parse an element that represent a Range object with a min and optional max value.
+	 * If the max vlaue is not specifd; then the min is used with a span modifier applied.
+	 * max equals min * defaultSpan
+	 * @param element
+	 * @param defaultSpan
+	 * @return
+	 */
+	public static Range parseRange(Element element, double defaultSpan) {
+		double min = getAttributeDouble(element, MIN);
+		double max = getOptionalAttributeDouble(element, MAX, min * defaultSpan);
+
+		return new Range(min, max);
+	}
 }

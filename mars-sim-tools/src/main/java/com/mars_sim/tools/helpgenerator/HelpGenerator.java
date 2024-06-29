@@ -77,20 +77,28 @@ public class HelpGenerator {
 						DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now()));
 		
 		// Locatio of other generated file; used for links
-		this.baseScope.put("vehiclefolder", "../" + VehicleGenerator.TYPE_NAME + "/");
-		this.baseScope.put("partfolder", "../" + PartGenerator.TYPE_NAME + "/");
-		this.baseScope.put("resourcefolder", "../" + ResourceGenerator.TYPE_NAME + "/");
-		this.baseScope.put("processfolder", "../" + ProcessGenerator.TYPE_NAME + "/");
-		this.baseScope.put("foodfolder", "../" + FoodGenerator.TYPE_NAME + "/");
-		this.baseScope.put("buildingfolder", "../" + BuildingGenerator.TYPE_NAME + "/");
-		this.baseScope.put("crewfolder", "../" + CrewGenerator.TYPE_NAME + "/");
-		this.baseScope.put("settlementfolder", "../" + SettlementGenerator.TYPE_NAME + "/");
-
+		addTypeFolder(VehicleGenerator.TYPE_NAME);
+		addTypeFolder(PartGenerator.TYPE_NAME);
+		addTypeFolder(ResourceGenerator.TYPE_NAME);
+		addTypeFolder(ProcessGenerator.TYPE_NAME);
+		addTypeFolder(FoodGenerator.TYPE_NAME);
+		addTypeFolder(BuildingGenerator.TYPE_NAME);
+		addTypeFolder(CrewGenerator.TYPE_NAME);
+		addTypeFolder(SettlementGenerator.TYPE_NAME);
+		addTypeFolder(ComplaintGenerator.TYPE_NAME);
+		addTypeFolder(TreatmentGenerator.TYPE_NAME);
 
 		// Add a lambda so a entity name can be converted into aa valid filename
 		this.baseScope.put("filename", getFilename());
     }
 
+	/**
+	 * Add a variable to the base scope this point to the folder for a type of documents
+	 * @param typeName
+	 */
+	private void addTypeFolder(String typeName) {
+		this.baseScope.put(typeName + "folder", "../" + typeName + "/");
+	}
 	/**
 	 * Generate a valid file name for a name of a entity
 	 * @param name Name of config item
@@ -228,6 +236,8 @@ public class HelpGenerator {
 		gens.add(new SettlementGenerator(this));
 		gens.add(new CrewGenerator(this));
 		gens.add(new ScenarioGenerator(this));
+		gens.add(new ComplaintGenerator(this));
+		gens.add(new TreatmentGenerator(this));
 
 
 		// Generate all subtype

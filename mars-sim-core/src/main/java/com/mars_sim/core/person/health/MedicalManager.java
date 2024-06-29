@@ -8,16 +8,13 @@
 package com.mars_sim.core.person.health;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.structure.Settlement;
 
 /**
@@ -31,35 +28,10 @@ public class MedicalManager implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	// private static final Logger logger = Logger.getLogger(MedicalManager.class.getName());
-
-	public final static int MINUTES_PER_DAY = 24 * 60;
-
-	/** Possible Complaints. */
-//	private static Map<ComplaintType, Complaint> complaints;// = new HashMap<ComplaintType, Complaint>();
-	/** Environmentally Related Complaints. */
-	private static Map<ComplaintType, Complaint> environmentalComplaints;
-
-	/** Treatments based on a facility's tech level. */
-	private static Map<Integer, List<Treatment>> supportedTreatments;
-
 	/** Settlement's Postmortem Exam waiting list. */
 	private Map<Integer, List<DeathInfo>> awaitingPostmortemExam;
 	/** Settlement's Death Registry. */
 	private Map<Integer, List<DeathInfo>> deathRegistry;
-
-	/** Pre-defined complaint. */
-	private static Complaint starvation;
-	/** Pre-defined complaint. */
-	private static Complaint suffocation;
-	/** Pre-defined complaint. */
-	private static Complaint dehydration;
-	/** Pre-defined complaint. */
-	private static Complaint decompression;
-	/** Pre-defined complaint. */
-	private static Complaint freezing;
-	/** Pre-defined complaint. */
-	private static Complaint heatStroke;
 
 	private static MedicalConfig medicalConfig;
 
@@ -70,82 +42,16 @@ public class MedicalManager implements Serializable {
 	 */
 	public MedicalManager() {
 		awaitingPostmortemExam = new ConcurrentHashMap<>();
-		deathRegistry = new ConcurrentHashMap<>();
-		
-		setUpEnvironmentalComplaints();
+		deathRegistry = new ConcurrentHashMap<>();		
 	}
 
-	/**
-	 * Creates the pre-defined environmental complaints using person configuration.
-	 */
-	private static void setUpEnvironmentalComplaints() {
-		environmentalComplaints = new ConcurrentHashMap<>();
-		supportedTreatments = new ConcurrentHashMap<>();
-		
-		// TODO: Why are these not created via the medical.xml and then lookup by a fixed name ?????
-		// Bad case of magic numbers.
-		// Maven test requires the full "SimulationConfig.instance()" declaration here, rather than during class declaration.
-		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig(); 
-
-		// Most serious complaint
-		suffocation = createEnvironmentComplaint(ComplaintType.SUFFOCATION, 80, personConfig.getOxygenDeprivationTime(),
-				.5, 20, true);
-
-		// Very serious complaint
-		decompression = createEnvironmentComplaint(ComplaintType.DECOMPRESSION, 70, personConfig.getDecompressionTime(),
-				.5, 30, true);
-
-		// Somewhat serious complaint
-		heatStroke = createEnvironmentComplaint(ComplaintType.HEAT_STROKE, 40, 200D, 1, 60, true);
-
-		// Serious complaint
-		freezing = createEnvironmentComplaint(ComplaintType.FREEZING, 50, personConfig.getFreezingTime(), 1, 50, false);
-
-		// degrade = (7 - 3) * 1000 millisols
-		double degrade = (personConfig.getWaterDeprivationTime() - personConfig.getDehydrationStartTime()) * 1000D;
-		dehydration = createEnvironmentComplaint(ComplaintType.DEHYDRATION, 20,
-				degrade, 1, 80,
-				false);
-
-		// degrade = (40 - 7) * 1000 millisols
-		degrade = (personConfig.getFoodDeprivationTime() - personConfig.getStarvationStartTime()) * 1000D;
-		starvation = createEnvironmentComplaint(ComplaintType.STARVATION, 40,
-				degrade, 1, 60, false);
-	}
-
-	/**
-	 * Creates an environment related Complaint. These are started by the simulation
-	 * and not via randomness. The all result in death hence have no next phase and
-	 * no recovery period, when the environment changes, the complaint is resolved.
-	 */
-
-	/**
-	 * Creates an environment related Complaint.
-	 * 
-	 * @param type
-	 * @param seriousness
-	 * @param degrade
-	 * @param recovery
-	 * @param performance
-	 * @param needBedRest
-	 * 
-	 * @return {@link Complaint}
-	 */
-	private static Complaint createEnvironmentComplaint(ComplaintType type, int seriousness, double degrade,
-			double recovery, double performance, boolean needBedRest) {
-		Complaint c = new Complaint(type, seriousness, degrade, recovery, 
-				0D, performance, needBedRest, null, null);
-
-		environmentalComplaints.put(type, c);
-		return c;
-	}
 
 	/**
 	 * Gets a list of all medical complaints.
 	 * 
 	 * @return list of complaints.
 	 */
-	public List<Complaint> getAllMedicalComplaints() {
+	public Collection<Complaint> getAllMedicalComplaints() {
 		return medicalConfig.getComplaintList();
 	}
 
@@ -157,25 +63,7 @@ public class MedicalManager implements Serializable {
 	 * @return Matched complaint, if none is found then a null.
 	 */
 	public Complaint getComplaintByName(ComplaintType type) {
-		for (Complaint c : medicalConfig.getComplaintList()) {
-			if (type == c.getType())
-				return c;
-		}
-		
-		if (environmentalComplaints.containsKey(type))
-			return environmentalComplaints.get(type);
-		
-		return null;
-	}
-
-	/**
-	 * Returns the pre-defined Medical Complaint that signifies a suffocation
-	 * complaint.
-	 * 
-	 * @return Medical complaint for shortage of oxygen.
-	 */
-	public Complaint getSuffocation() {
-		return suffocation;
+		return medicalConfig.getComplaintByName(type);
 	}
 
 	/**
@@ -187,22 +75,7 @@ public class MedicalManager implements Serializable {
 	 * @return List of Treatments
 	 */
 	public List<Treatment> getSupportedTreatments(int level) {
-		if (!supportedTreatments.isEmpty() && supportedTreatments.get(level) != null)
-			return supportedTreatments.get(level);
-		
-		List<Treatment> results = new ArrayList<>();
-		List<Treatment> list = medicalConfig.getTreatmentList() ;
-		
-		Iterator<Treatment> iter = list.iterator();
-		while (iter.hasNext()) {
-			Treatment next = iter.next();
-			if (next.getFacilityLevel() <= level)
-				results.add(next);
-		}
-		Collections.sort(results);
-		supportedTreatments.put(level, results);
-
-		return results;
+		return medicalConfig.getTreatmentsByLevel(level);
 	}
 
 	/**
@@ -212,56 +85,17 @@ public class MedicalManager implements Serializable {
 	 * @return Medical complaint for shortage of water.
 	 */
 	public Complaint getDehydration() {
-		return dehydration;
+		return getComplaintByName(ComplaintType.DEHYDRATION);
 	}
 
 	/**
 	 * Returns the pre-defined Medical Complaint that signifies a starvation
 	 * complaint.
 	 * 
-	 * @return Medical complaint for shortage of oxygen.
+	 * @return Medical complaint for shortage of food.
 	 */
 	public Complaint getStarvation() {
-		return starvation;
-	}
-
-	/**
-	 * Returns the pre-defined Medical Complaint that signifies a Decompression
-	 * complaint.
-	 * 
-	 * @return Medical complaint for decompression.
-	 */
-	public Complaint getDecompression() {
-		return decompression;
-	}
-
-	/**
-	 * Returns the pre-defined Medical Complaint that signifies a Freezing complaint.
-	 * 
-	 * @return Medical complaint for freezing.
-	 */
-	public Complaint getFreezing() {
-		return freezing;
-	}
-
-	/**
-	 * Returns the pre-defined Medical Complaint that signifies a Heat Stroke
-	 * complaint.
-	 * 
-	 * @return Medical complaint for heat stroke.
-	 */
-	public Complaint getHeatStroke() {
-		return heatStroke;
-	}
-
-	/**
-	 * Checks if a health complaint is an environmental complaint.
-	 * 
-	 * @param complaint the complaint to check.
-	 * @return true if complaint is environmental complaint.
-	 */
-	public boolean isEnvironmentalComplaint(Complaint complaint) {
-		return environmentalComplaints.containsKey(complaint.getType());
+		return getComplaintByName(ComplaintType.STARVATION);
 	}
 
 	public void addDeathRegistry(Settlement s, DeathInfo death) {
@@ -304,26 +138,8 @@ public class MedicalManager implements Serializable {
 	 * 
 	 * @throws exception if not able to initialize complaints.
 	 */
-	public void initializeInstances(MedicalConfig mc) {
-		// Maven test requires the full "SimulationConfig.instance()" declaration here, rather than during class declaration.
+	public static void initializeInstances(MedicalConfig mc) {
 		medicalConfig = mc;
-
-		setUpEnvironmentalComplaints();
 	}
-	
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	public void destroy() {
 
-		environmentalComplaints = null;
-		supportedTreatments = null;
-
-		starvation = null;
-		suffocation = null;
-		dehydration = null;
-		decompression = null;
-		freezing = null;
-		heatStroke = null;
-	}
 }

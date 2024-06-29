@@ -17,17 +17,12 @@
 	grey-to-black-water-ratio,
 	dessert-consumption-rate,
 	food-consumption-rate,
-	oxygen-deprivation-time,
-	water-deprivation-time,
 	dehydration-start-time,
-	food-deprivation-time,
 	starvation-start-time,
-	decompression-time,
 	min-air-pressure,
 	min-o2-partial-pressure,
 	min-temperature,
 	max-temperature,
-	freezing-time,
 	stress-breakdown-chance,
 	high-fatigue-collapse-chance)
 	>
@@ -62,23 +57,11 @@
 	<!ELEMENT food-consumption-rate EMPTY>
 	<!ATTLIST food-consumption-rate value CDATA #REQUIRED>
 
-	<!ELEMENT oxygen-deprivation-time EMPTY>
-	<!ATTLIST oxygen-deprivation-time value CDATA #REQUIRED>
-
-	<!ELEMENT water-deprivation-time EMPTY>
-	<!ATTLIST water-deprivation-time value CDATA #REQUIRED>
-
 	<!ELEMENT dehydration-start-time EMPTY>
 	<!ATTLIST dehydration-start-time value CDATA #REQUIRED>
 
-	<!ELEMENT food-deprivation-time EMPTY>
-	<!ATTLIST food-deprivation-time value CDATA #REQUIRED>
-
 	<!ELEMENT starvation-start-time EMPTY>
 	<!ATTLIST starvation-start-time value CDATA #REQUIRED>
-
-	<!ELEMENT decompression-time EMPTY>
-	<!ATTLIST decompression-time value CDATA #REQUIRED>
 
 	<!ELEMENT min-air-pressure EMPTY>
 	<!ATTLIST min-air-pressure value CDATA #REQUIRED>
@@ -91,9 +74,6 @@
 
 	<!ELEMENT max-temperature EMPTY>
 	<!ATTLIST max-temperature value CDATA #REQUIRED>
-
-	<!ELEMENT freezing-time EMPTY>
-	<!ATTLIST freezing-time value CDATA #REQUIRED>
 
 	<!ELEMENT stress-breakdown-chance EMPTY>
 	<!ATTLIST stress-breakdown-chance value CDATA #REQUIRED>
@@ -190,31 +170,13 @@
 		<!-- Default: 0.62 dry Weight -->
 		<food-consumption-rate value="0.62" />
 
-		<!-- Number of millisols a person can survive without oxygen -->
-		<!-- Note: 1 millisol = 88.77 seconds -->
-		<!-- Default: 3.38 -->
-		<oxygen-deprivation-time value="3.38" />
-
-		<!-- Number of sols a person can go without water before dying -->
-		<!-- Default: 7.0 -->
-		<water-deprivation-time value="7.0" />
-
 		<!-- Number of sols without water before dehydration kicks in -->
 		<!-- Default: 2.0 -->
 		<dehydration-start-time value="3.0" />
 
-		<!-- Number of sols a person can go without food before dying -->
-		<!-- Default: 40.0 -->
-		<food-deprivation-time value="40.0" />
-
 		<!-- Number of sols without food before starvation kicks in -->
 		<!-- Default: 7.0 -->
 		<starvation-start-time value="7.0" />
-
-		<!-- Number of millisols a person can survive in decompression -->
-		<!-- Note: 1 millisol = 88.77 seconds -->
-		<!-- Default: 10.0 ) -->
-		<decompression-time value="10.0" />
 
 		<!-- Minimum air pressure (kPa) a person can withstand without harm At least
 			170 mb (2.5 psi, or 17.24 kPa) without a spacesuit, Note : 1kPa = 0.1450377
@@ -238,11 +200,6 @@
 			harm -->
 		<!-- Default: 48 degrees celsius -->
 		<max-temperature value="48.0" />
-
-		<!-- Number of millisols a person can survive below minimum temperature -->
-		<!-- Note: 1 millisol = 88.77 seconds -->
-		<!-- Default: 25.0 -->
-		<freezing-time value="250.0" />
 
 		<!-- Base percent chance per millisol that a person at high stress will
 			have a panic attack or depression. -->

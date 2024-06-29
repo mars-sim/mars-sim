@@ -1,0 +1,16 @@
+{{<help-layout}}
+  {{$body}}
+      <div id="characteristics">
+      <h3>Characteristics</h3>
+      <table class="characteristics">
+        <tr><td>Medical Skill:</td><td>{{treatment.skill}}</td></tr>
+        <tr><td>Facility Tech Level:</td><td>{{treatment.facilityLevel}}</td></tr>
+        <tr><td>Duration:</td><td>{{treatment.duration}} millisols</td></tr>
+        <tr><td>Self Admin:</td><td>{{treatment.selfAdminister}}</td></tr>
+      </table>
+    </div>
+
+    </br>
+    <a class="backlink" href="index.html">Back to Treatment list</a>
+  {{/body}}
+{{/help-layout}}

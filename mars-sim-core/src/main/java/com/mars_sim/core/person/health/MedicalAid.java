@@ -7,6 +7,7 @@
 
 package com.mars_sim.core.person.health;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.mars_sim.core.person.Person;
@@ -15,7 +16,7 @@ import com.mars_sim.core.person.Person;
  * This interface defines an entity that can provide Medical Aid to an
  * injured person. It can provide different types of treatments.
  */
-public interface MedicalAid {
+public interface MedicalAid extends Serializable {
 
     /**
      * Gets the health problems awaiting treatment at the medical station.
@@ -87,4 +88,8 @@ public interface MedicalAid {
      * @param problem Health problem stopping treatment on.
      */
     public void stopTreatment(HealthProblem problem);
+
+    public int getSickBedNum();
+
+    public int getPatientNum();
 }
