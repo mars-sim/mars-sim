@@ -59,7 +59,24 @@ public class PartGood extends Good {
 	private static final String WAFER = "semiconductor wafer";
 	private static final String WIRE = "wire";
 	private static final String BATTERY = "battery";
+	private static final String AEROGEL_TILE = "aerogel tile";
+	
+	private static final String PIPE = "pipe";
+	private static final String VALVE = "valve";
+	private static final String PLASTIC = "plastic";
+	private static final String TANK = "tank";
+	private static final String DUCT = "duct";
+	private static final String GASKET = "gasket";
+	private static final String LIGHT = "light";
+	private static final String RESISTOR = "resistor";
+	private static final String CAPACITOR = "capacitor";
+	private static final String DIODE = "diode";
+	private static final String STEEL_WIRE = "steel wire";
+	private static final String ELECTRICAL_WIRE = "electrical wire";
+	private static final String POWER_CABLE = "power cable";
+	private static final String PLASTIC_PIPE = "plastic pipe";
 		
+	
 	private static final int VEHICLE_PART_COST = 3;
 	private static final int EVA_PARTS_VALUE = 20;
 	private static final double CONSTRUCTING_INPUT_FACTOR = 2D;
@@ -67,7 +84,8 @@ public class PartGood extends Good {
 	
 	private static final double DRILL_DEMAND  = .5;
 	private static final double BOTTLE_DEMAND = .02;
-	private static final double FIBERGLASS_DEMAND = .0002;
+	private static final double FIBERGLASS_DEMAND = .00005;
+	private static final double GASKET_DEMAND = .05;
 	private static final double VEHICLE_PART_DEMAND = 4;
 	private static final double EVA_PART_DEMAND = 1;
     private static final double KITCHEN_DEMAND = 1.5;
@@ -77,19 +95,21 @@ public class PartGood extends Good {
 	private static final double TRUSS_DEMAND = .05;
 	private static final double STEEL_DEMAND = .1;
 	private static final double BRICK_DEMAND = .005;
-	private static final double ELECTRICAL_DEMAND = 5;
+	private static final double ELECTRICAL_DEMAND = .5;
 	private static final double INSTRUMENT_DEMAND = 6;
-	private static final double METALLIC_DEMAND = 2;
-	private static final double UTILITY_DEMAND = 3;
+	private static final double METALLIC_DEMAND = 1;
+	private static final double UTILITY_DEMAND = 1;
 	private static final double TOOL_DEMAND = 4;
-	private static final double CONSTRUCTION_DEMAND = 2;
+	private static final double CONSTRUCTION_DEMAND = 0.5;
 	private static final double GLASS_SHEET_DEMAND = .1;
 	private static final double GLASS_TUBE_DEMAND  = 8;
 	private static final double ITEM_DEMAND = 1;
 	private static final double PARTS_MAINTENANCE_VALUE = 1000;
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 	private static final double ATTACHMENT_PARTS_DEMAND = 20;
-
+	private static final double AEROGEL_TILE_DEMAND = 0.05;
+	private static final double PLASTIC_PIPE_DEMAND = .1;
+	
 	// Cost modifiers
 	private static final double ITEM_COST = 1.1D;
 	private static final double FC_STACK_COST = 8;
@@ -295,9 +315,16 @@ public class PartGood extends Good {
 		}
 
 		else {
-			// Intentionally lose a tiny percentage (e.g. 0.0003) of its value
+			// Intentionally loses a tiny percentage (e.g. 0.0008) of its value
+			// in order to counter the tendency for all goods to increase 
+			// in value over time. 
+			
+			// Warning: a lot of Goods could easily will hit 10,000 demand
+			// if not careful.
+			
+			// Allows only very small fluctuations of demand as possible
 			totalDemand = (
-					  .9990 * previousDemand 
+					  .9985 * previousDemand 
 					+ .0001 * repair 
 					+ .0001 * average 
 					+ .0003 * projected 
@@ -378,34 +405,23 @@ public class PartGood extends Good {
 	 */
 	private static double calculateFlattenPartDemand(Part part) {
 		String name = part.getName();
-		if (name.contains(WIRE))
-			return .0005;
-		
-		if (name.contains("pipe"))
-			return 1;
-		
-		if (name.contains("valve") || name.contains(HEAT_PROBE))
-			return .05;
 
-		if (name.contains("plastic"))
-			return 1.1;
-		
-		if (name.contains("tank") || name.contains("duct") || name.contains("gasket"))
-			return .1;
-
-		if (name.contains(BOTTLE))
-			return BOTTLE_DEMAND;
-		
 		switch(part.getGoodType()) {
 			case ELECTRICAL: {
-				if (name.contains("light")
-					|| name.contains("resistor")
-					|| name.contains("capacitor")
-					|| name.contains("diode")) {
+				if (name.contains(LIGHT)
+					|| name.contains(RESISTOR)
+					|| name.contains(CAPACITOR)
+					|| name.contains(DIODE)) {
 					return 5;
 				}
-				else if (name.equalsIgnoreCase("steel wire"))
-					return 7;
+				if (name.equalsIgnoreCase(ELECTRICAL_WIRE))
+					return .05;
+				
+				if (name.equalsIgnoreCase(POWER_CABLE))
+					return .25;
+				
+				if (name.equalsIgnoreCase(STEEL_WIRE))
+					return .5;
 				
 				return ELECTRICAL_DEMAND;
 			}
@@ -420,6 +436,12 @@ public class PartGood extends Good {
 				if (name.contains(FIBERGLASS)) {
 					return FIBERGLASS_DEMAND;
 				}
+				if (name.equalsIgnoreCase(GASKET)) {
+					return GASKET_DEMAND;
+				}
+				if (name.equalsIgnoreCase(PLASTIC_PIPE)) {
+					return PLASTIC_PIPE_DEMAND;
+				}				
 				return UTILITY_DEMAND;
 		
 			case TOOL:
@@ -429,14 +451,37 @@ public class PartGood extends Good {
 				return TOOL_DEMAND;
 
 			case CONSTRUCTION:
+				if (name.equalsIgnoreCase(AEROGEL_TILE)) {
+					return AEROGEL_TILE_DEMAND;
+				}
 				return CONSTRUCTION_DEMAND;
 
 			case EVA:
 				return EVA_PART_DEMAND;
 			
 			default:
-				return 1;
+//				return 1;
 		}
+		
+		if (name.contains(WIRE))
+			return .00025;
+		
+		if (name.contains(PIPE))
+			return .4;
+		
+		if (name.contains(VALVE) || name.contains(HEAT_PROBE))
+			return .02;
+
+		if (name.contains(PLASTIC))
+			return .2;
+		
+		if (name.contains(TANK) || name.contains(DUCT))
+			return .1;
+
+		if (name.contains(BOTTLE))
+			return BOTTLE_DEMAND;
+		
+		return 1;
 	}
 
     /**

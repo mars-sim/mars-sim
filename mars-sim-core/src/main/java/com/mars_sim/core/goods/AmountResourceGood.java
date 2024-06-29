@@ -118,7 +118,7 @@ class AmountResourceGood extends Good {
 	private static final double OXYGEN_VALUE_MODIFIER = .1;
 	private static final double FOOD_VALUE_MODIFIER = .1;
 	
-	private static final double METHANE_VALUE_MODIFIER = 3;
+	private static final double METHANE_VALUE_MODIFIER = .5;
 	private static final double HYDROGEN_VALUE_MODIFIER = .01;
 	private static final double METHANOL_VALUE_MODIFIER = .15;
 	
@@ -170,14 +170,15 @@ class AmountResourceGood extends Good {
 	private static final double DERIVED_DEMAND_FACTOR = .5;
 	private static final double TISSUE_DEMAND_FACTOR = 1.1;
 	
-	private static final double METHANOL_DEMAND_FACTOR = .5;
-	private static final double METHANE_DEMAND_FACTOR = .1;
+	private static final double METHANOL_DEMAND_FACTOR = .25;
+	private static final double METHANE_DEMAND_FACTOR = .05;
 	private static final double SAND_DEMAND_FACTOR = .07;
 	private static final double ICE_DEMAND_FACTOR = .05;
 	private static final double CO_DEMAND_FACTOR = .05;
 	private static final double CO2_DEMAND_FACTOR = .01;
-	private static final double HYDROGEN_DEMAND_FACTOR = .02;
-	private static final double ACETYLENE_DEMAND_FACTOR = 20;
+	private static final double O2_DEMAND_FACTOR = .5;
+	private static final double HYDROGEN_DEMAND_FACTOR = .01;
+	private static final double ACETYLENE_DEMAND_FACTOR = 10;
 
 	
 	private static final double NACO3_DEMAND_FACTOR = .01;
@@ -446,10 +447,17 @@ class AmountResourceGood extends Good {
 					+ .3 * trade);
 		}
 		else {
-			// Intentionally loses a tiny percentage (e.g. 0.004) of its value
+			// Intentionally loses a tiny percentage (e.g. 0.0008) of its value
+			// in order to counter the tendency for all goods to increase 
+			// in value over time. 
+			
+			// Warning: a lot of Goods could easily will hit 10,000 demand
+			// if not careful.
+			
 			// Allows only very small fluctuations of demand as possible
+
 			totalDemand = (
-					  .9990 * previousDemand 
+					  .9986 * previousDemand 
 					+ .0004 * projected 
 					+ .0002 * trade); 
 		}
@@ -515,13 +523,13 @@ class AmountResourceGood extends Good {
 				demand *= CO_DEMAND_FACTOR;
 			else if (ar.getID() == ResourceUtil.co2ID)
 				demand *= CO2_DEMAND_FACTOR;
+			else if (ar.getID() == ResourceUtil.oxygenID)
+				demand *= O2_DEMAND_FACTOR;
 			else if (ar.getID() == ResourceUtil.methaneID)
 				demand *= METHANE_DEMAND_FACTOR;
 			else if (ar.getID() == ResourceUtil.methanolID)
 				demand *= METHANOL_DEMAND_FACTOR;
-			
-			
-			
+	
 			String name = ar.getName();
 			
 			if (name.equalsIgnoreCase(NACO3)) 

@@ -196,10 +196,10 @@ public class GoodsManager implements Serializable {
 
 		int startOfDayOffset = MarsSurface.getTimeOffset(settlement.getCoordinates());
 		
-		// Schedule an event to recalculate shopping lists just after start fo day
+		// Schedule an event to recalculate shopping lists just after start of day
 		settlement.getFutureManager().addEvent(startOfDayOffset + 10, new TradeListUpdater());
 		
-		// Future event to update Goods values; randomise first triger
+		// Future event to update Goods values; randomise first trigger
 		settlement.getFutureManager().addEvent(RandomUtil.getRandomInt(1, 50), new GoodsUpdater());
 		populateGoodsValues();
 
@@ -895,7 +895,7 @@ public class GoodsManager implements Serializable {
 	private void calculateSellList() {
 		
 		// This logic is a draft and need more refinement
-		Map<Good,ShoppingItem> newSell = new HashMap<>();
+		Map<Good, ShoppingItem> newSell = new HashMap<>();
 		Set<Good> excluded = new HashSet<>(GoodsManager.getUnsellableGoods());
 		excluded.addAll(buyList.keySet());   // Exclude goods that are already being bought
 
@@ -931,7 +931,7 @@ public class GoodsManager implements Serializable {
 	private void calculateBuyList() {
 
 		// This logic is a draft and need more refinement
-		Map<Good,ShoppingItem> newBuy = new HashMap<>();
+		Map<Good, ShoppingItem> newBuy = new HashMap<>();
 		Set<Good> excluded = GoodsManager.getUnsellableGoods();
 		for(Entry<Integer, Double> item : demandCache.entrySet()) {
 			Good good = GoodsUtil.getGood(item.getKey());
