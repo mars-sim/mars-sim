@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MonitorWindow.java
- * @date 2023-05-27
+ * @date 2024-06-29
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.tool.monitor;
@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
@@ -109,10 +110,10 @@ public class MonitorWindow extends ToolWindow
 	private JButton buttonFilter;
 	private JButton buttonProps;
 	
-	private JCheckBox deceasedBox; 
-
+	private JCheckBox deceasedBox;
 	/** Selection Combo box */
 	private JComboBox<Entity> selectionCombo;
+	
 	private JPanel statusPanel;
 
 	private Set<Settlement> currentSelection;
@@ -232,7 +233,6 @@ public class MonitorWindow extends ToolWindow
 		
 		newTabs.add(new FoodInventoryTab(this));
 		newTabs.add(new BacklogTab(this));
-
 		
 		newTabs.add(new TradeTab(this));
 		
@@ -242,8 +242,7 @@ public class MonitorWindow extends ToolWindow
 		newTabs.add(new MissionTab(this));
 		newTabs.add(new UnitTab(this, new VehicleTableModel(), true, VEHICLE_ICON));
 
-		// Add the enw tabs an search for default
-		for(MonitorTab m : newTabs) {
+		for (MonitorTab m : newTabs) {
 			addTab(m);
 			if (m.getName().equals(defaultTabName)) {
 				tabsSection.setSelectedComponent(m);
@@ -332,9 +331,9 @@ public class MonitorWindow extends ToolWindow
 	}
 
 	/**
-	 * Sets up a list of settlements and associated Authories
+	 * Sets up a list of settlements and associated authorities.
 	 *
-	 * @return Map of Authority to Settlements
+	 * @return Map of authority to settlements
 	 */
 	private List<Entity> setupSelectionChoices() {
 
@@ -347,21 +346,29 @@ public class MonitorWindow extends ToolWindow
 		}
 		List<Entity> choices = new ArrayList<>(settlements);
 
+		Collections.sort(choices, Comparator.comparing(Entity::getName));
+		
 		// Create the Authority maps
 		authorities = new HashMap<>();
-		for(var s : settlements) {
+		for (var s : settlements) {
 			var ra = s.getReportingAuthority();
 			authorities.computeIfAbsent(ra, k -> new HashSet<>()).add(s);
 		}	
-		choices.addAll(authorities.keySet());
 
-		Collections.sort(choices, Comparator.comparing(Entity::getName));
+		List<Entity> authorityList = new ArrayList<>(authorities.keySet());
+		
+		Collections.sort(authorityList, Comparator.comparing(Entity::getName));
+		
+		choices.addAll(authorityList);
+
 		return choices;
 	}
 
 	/**
-	 * Builds the settlement combo box that uses the settlements nd reporting authorities
-	 * @param selected 
+	 * Builds the settlement combo box that uses the settlements and reporting authorities.
+	 * 
+	 * @param choices
+	 * @param selected
 	 */
 	private void buildSelectionCombo(List<Entity> choices, Entity selected) {
 
@@ -389,7 +396,7 @@ public class MonitorWindow extends ToolWindow
 	}
 
 	/**
-	 * React to a change in the Combo selection. 
+	 * Reacts to a change in the Combo selection. 
 	 */
 	private void changeSelection(ItemEvent event) {
 		String newDescription = "";
@@ -401,7 +408,6 @@ public class MonitorWindow extends ToolWindow
 		else if (event.getItem() instanceof Authority a) {
 			newSelection = authorities.get(a);
 
-			// Replace this
 			newDescription = newSelection.stream()
 								.map(Settlement::getName)
 								.sorted()

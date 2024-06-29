@@ -56,20 +56,20 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	private static final int REGOLITHS_COL = 15;
 	private static final int SAND_COL = 16;
 	
-	private static final int ROCKS_COL = 17;
-	private static final int ORES_COL = 18;
-	private static final int MINERALS_COL = 19;
+	private static final int ORES_COL = 17;
+	private static final int MINERALS_COL = 18;
 	
-	private static final int CONCRETE_COL = 20;
-	private static final int CEMENT_COL = 21;
-	private static final int LIME_COL = 22;
+	private static final int CONCRETE_COL = 19;
+	private static final int CEMENT_COL = 20;
+	private static final int LIME_COL = 21;
+	private static final int ROCKS_COL = 22;
 	
 	private static final int COLUMNCOUNT = 23;
 	private static final ColumnSpec[] COLUMNS;
 	private static final Map<Integer,Integer> RESOURCE_TO_COL;
 	private static final int[] COL_TO_RESOURCE;
 
-	// Psuedo resource ids to cover composites
+	// Pseudo resource ids to cover composites
 	private static final int REGOLITH_ID = -1;
 	private static final int ROCK_ID = -2;
 	private static final int MINERAL_ID = -3;
