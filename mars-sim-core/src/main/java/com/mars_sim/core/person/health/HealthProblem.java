@@ -15,7 +15,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * This class represents a Health problem being suffered by a Person. The class
@@ -224,25 +223,6 @@ public class HealthProblem implements Serializable {
 		if ((state == HealthProblemState.DEGRADING) || (state == HealthProblemState.BEING_TREATED)) {
 			// If no recovery period, then it's done.
 			duration = getComplaint().getRecoveryPeriod();
-
-			// Randomized the duration and varied it according to the complaint type
-			duration = switch(type) {
-				case COLD, FEVER ->
-					duration + duration * RandomUtil.getRandomDouble(.5)
-						- duration * RandomUtil.getRandomDouble(.5);
-				case HEARTBURN, HIGH_FATIGUE_COLLAPSE, PANIC_ATTACK, DEPRESSION ->
-					duration + duration * RandomUtil.getRandomDouble(.4)
-						- duration * RandomUtil.getRandomDouble(.4);
-				case FLU ->
-					duration + duration * RandomUtil.getRandomDouble(.3)
-						- duration * RandomUtil.getRandomDouble(.3);
-				case STARVATION ->
-					duration * (1 + RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1));
-				case DEHYDRATION ->
-					duration * (1 + RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1));
-				default ->
-					duration * (1 + RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1));
-			};
 			
 			timePassed = 0D;
 
@@ -290,7 +270,7 @@ public class HealthProblem implements Serializable {
 	public Complaint timePassing(double time, PhysicalCondition condition) {
 		Complaint result = null;
 
-		if ((state == HealthProblemState.DEGRADING) && !isEnvironmentalProblem()) {
+		if ((state == HealthProblemState.DEGRADING) && !getComplaint().isEnvironmental()) {
 			// If no required treatment,
 			Treatment treatment = getComplaint().getRecoveryTreatment();
 			if (treatment == null) {
@@ -355,15 +335,6 @@ public class HealthProblem implements Serializable {
 		return "Sufferer=" + getSufferer().getName()
 				+ " Problem=" + type
 				+ " State=" + state;
-	}
-
-	/**
-	 * Checks if this problem is an environmental problem.
-	 *
-	 * @return true if environmental problem.
-	 */
-	public boolean isEnvironmentalProblem() {
-		return medicalManager.isEnvironmentalComplaint(getComplaint());
 	}
 	
 	/**

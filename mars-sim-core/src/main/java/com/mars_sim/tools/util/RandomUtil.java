@@ -148,7 +148,7 @@ public final class RandomUtil {
 		if (ceiling < base)
 			throw new IllegalArgumentException(Msg.getString("RandomUtil.log.ceilingMustGreaterBase")); //$NON-NLS-1$
 		// Note: switch from using ThreadLocalRandom.current().nextDouble(base, ceiling)
-		return random.nextDouble() * (ceiling - base) + base;
+		return (random.nextDouble() * (ceiling - base)) + base;
 	}
 
 	/**

@@ -8,6 +8,7 @@ package com.mars_sim.core.person;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1187,7 +1188,7 @@ public class PhysicalCondition implements Serializable {
 	private List<Complaint> checkForRandomAilments(ClockPulse pulse) {
 		double time  = pulse.getElapsed();
 		List<Complaint> result = new ArrayList<>();
-		List<Complaint> list = medicalManager.getAllMedicalComplaints();
+		Collection<Complaint> list = medicalManager.getAllMedicalComplaints();
 		for (Complaint complaint : list) {
 			// Check each possible medical complaint.
 			ComplaintType ct = complaint.getType();
@@ -2264,17 +2265,6 @@ public class PhysicalCondition implements Serializable {
 			consumption.increaseDataPoint(4, amount);
 	}
 	
-	/**
-	 * Gets the daily gas consumption.
-	 *
-	 * @param type the id of the resource
-	 * @return the amount of resource consumed in a day
-	 */
-	public double getGasUsage(int type) {
-		if (type == OXYGEN_ID)
-			return consumption.getDailyAverage(4);
-		return 0;
-	}
 
 	public double getMuscleSoreness() {
 		return muscleSoreness;

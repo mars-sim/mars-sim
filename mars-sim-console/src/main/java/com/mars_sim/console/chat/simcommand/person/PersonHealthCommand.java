@@ -7,6 +7,9 @@
 
 package com.mars_sim.console.chat.simcommand.person;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -150,7 +153,8 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 	private void addHealthProblem(Conversation context, PhysicalCondition pc) {
 	
 		// Choose one
-		List<Complaint> complaints = SimulationConfig.instance().getMedicalConfiguration().getComplaintList();
+		List<Complaint> complaints = new ArrayList<>(SimulationConfig.instance().getMedicalConfiguration().getComplaintList());
+		Collections.sort(complaints, Comparator.comparing(Complaint::getType));
 		List<String> problems = complaints.stream().map(c -> c.getType().getName()).collect(Collectors.toList());
 		int choice = CommandHelper.getOptionInput(context, problems, "Choose a new health complaint");
 		if (choice <= 0) {
