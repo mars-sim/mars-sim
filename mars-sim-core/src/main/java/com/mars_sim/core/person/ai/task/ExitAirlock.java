@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExitAirlock.java
- * @date 2023-11-20
+ * @date 2024-06-29
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task;
@@ -1064,11 +1064,11 @@ public class ExitAirlock extends Task {
 
 		boolean canProceed = false;
 	
-		if (isEVAUnfit()) {
+		if (isNominallyUnfit()) {
 			// Get back the garment and thermal bottle
 			EVASuitUtil.checkIn(person, airlock.getEntity(), inSettlement, true);
 			
-			walkAway(person, NOT_EVA_FIT + " to depressurize chamber.");
+			walkAway(person, NOT_NOMINALLY_FIT + " to depressurize chamber.");
 			return time * .75;
 		}
 		
