@@ -24,12 +24,15 @@ import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
+import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.meta.EatDrinkMeta;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.person.health.Complaint;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.person.health.HealthProblem;
+import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.person.health.HealthRiskType;
 import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.person.health.MedicalManager;
@@ -39,6 +42,7 @@ import com.mars_sim.core.person.health.RadioProtectiveAgent;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -332,7 +336,7 @@ public class PhysicalCondition implements Serializable {
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// bodyMassDeviation average around 0.7 to 1.3
 		bodyMassDeviation = Math.sqrt(mass/defaultMass*height/defaultHeight) 
-				* RandomUtil.computeGaussianWithLimit(1, .5, .2);;							
+				* RandomUtil.computeGaussianWithLimit(1, .5, .2);						
 		bmi = mass/heightSquared;
 
 		// Assume a person drinks 10 times a day, each time ~375 mL
@@ -552,7 +556,7 @@ public class PhysicalCondition implements Serializable {
 
 				// After sleeping sufficiently, the high fatigue collapse should no longer exist.
 
-				if (problem.isCured() || (nextComplaintPhase != null)) {
+				if ((problem.getState() == HealthProblemState.CURED) || (nextComplaintPhase != null)) {
 
 					ComplaintType type = problem.getType();
 
@@ -601,9 +605,7 @@ public class PhysicalCondition implements Serializable {
 		// Generates any random illnesses.
 		if (!restingTask) {
 			List<Complaint> randomAilments = checkForRandomAilments(pulse);
-			if (randomAilments.size() > 0) {
-				illnessEvent = true;
-			}
+			illnessEvent = !randomAilments.isEmpty();
 		}
 
 		if (illnessEvent) {
@@ -1028,7 +1030,6 @@ public class PhysicalCondition implements Serializable {
 			else if (hunger < HUNGER_THRESHOLD * 2 || kJoules > ENERGY_THRESHOLD * 2) {
 
 				starved.startRecovery();
-				String status = starved.getStateString();
 				// Set to not starving
 				isStarving = false;
 
@@ -1036,11 +1037,11 @@ public class PhysicalCondition implements Serializable {
 						 + "  Hunger: " + (int)hunger
 						 + ";  kJ: " + Math.round(kJoules*10.0)/10.0
 						 + ";  isStarving: " + isStarving
-						 + ";  Status: " + status);
+						 + ";  Status: " + starved.getState());
 			}
 			
 			else if (hunger >= MAX_HUNGER) {
-				starved.setState(HealthProblem.DEAD);
+				starved.setState(HealthProblemState.DEAD);
 				recordDead(starved, false, STANDARD_QUOTE_1);
 			}
 		}
@@ -1080,17 +1081,16 @@ public class PhysicalCondition implements Serializable {
 			else if (thirst < THIRST_THRESHOLD * 2) {
 
 				dehydrated.startRecovery();
-				String status  = dehydrated.getStateString();
 				// Set dehydrated to false
 				isDehydrated = false;
 
 				logger.log(person, Level.INFO, 20_000, "Recovering from dehydration. "
 						 + "  Thirst: " + (int)thirst
 						 + ";  isDehydrated: " + isDehydrated
-						 + ";  Status: " + status);
+						 + ";  Status: " + dehydrated.getState());
 			}
 			else if (thirst >= MAX_THIRST) {
-				dehydrated.setState(HealthProblem.DEAD);
+				dehydrated.setState(HealthProblemState.DEAD);
 				recordDead(dehydrated, false, STANDARD_QUOTE_0);
 			}
 		}
@@ -1159,17 +1159,14 @@ public class PhysicalCondition implements Serializable {
 				if (radiationPoisoned == null)
 					radiationPoisoned = getProblemByType(ComplaintType.RADIATION_SICKNESS);
 
-				String status = "Unknown";
 				if (radiationPoisoned != null) {
 					radiationPoisoned.startRecovery();
-					status  = radiationPoisoned.getStateString();
 					// Set to not starving
 					isRadiationPoisoned = false;
 				}
 
 				logger.log(person, Level.INFO, 20_000, "Taking anti-rad meds and recovering from radiation poisoning. "
-						 + ";  isRadiationPoisoned: " + radiationPoisoned
-						 + ";  Status: " + status);
+						 + ";  isRadiationPoisoned: " + radiationPoisoned);
 			}
 		}
 
@@ -1193,125 +1190,77 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private List<Complaint> checkForRandomAilments(ClockPulse pulse) {
 		double time  = pulse.getElapsed();
+
+		Task activeTask = person.getTaskManager().getTask();
+
+		PhysicalEffort taskEffort = (activeTask != null ? activeTask.getEffortRequired() : null);
 		List<Complaint> result = new ArrayList<>();
-		List<Complaint> list = medicalManager.getAllMedicalComplaints();
+		Collection<Complaint> list = medicalManager.getAllMedicalComplaints();
 		for (Complaint complaint : list) {
 			// Check each possible medical complaint.
 			ComplaintType ct = complaint.getType();
+			boolean noGo = hasComplaint(complaint);
 
-			boolean noGo = false;
+			if (!noGo) {
+				// If a person is performing a resting task, then it is impossible to suffer
+				// from complaint that is influenced by effort
+				noGo  = (complaint.getEffortInfluence() == PhysicalEffort.NONE)
+								&& person.isRestingTask();
+			}
 
-			if (hasComplaint(complaint)) {
+			// Can this complaint happen?
+			if (!noGo) {
+				double probability = complaint.getProbability();
+				// Check that medical complaint has a probability > zero
+				// since some complaints are secondary complaints and cannot be started
+				// by itself
+				if (probability > 0D) {
+					double taskModifier = 1;
+					double tendency = 1;
 
-				if (ct == ComplaintType.LACERATION || ct == ComplaintType.BROKEN_BONE
-						|| ct == ComplaintType.PULLED_MUSCLE_TENDON || ct == ComplaintType.RUPTURED_APPENDIX) {
-					if (person.isRestingTask()) {
-						// If a person is performing a resting task, then it is impossible to suffer
-						// from laceration.
-						noGo = true;
+					int msol = pulse.getMarsTime().getMissionSol();
+
+					if (healthLog.get(ct) != null && msol > 3)
+						tendency = 0.5 + 1.0 * healthLog.get(ct) / msol;
+					else
+						tendency = 1.0;
+					double immunity = 1.0 * endurance + strength;
+
+					if (immunity > 100)
+						tendency = .75 * tendency - .25 * immunity / 100.0;
+					else
+						tendency = .75 * tendency + .25 * (100 - immunity) / 100.0;
+
+					if ((taskEffort == PhysicalEffort.HIGH) &&
+							(PhysicalEffort.NONE != complaint.getEffortInfluence())) {
+						// High effort is based on agility.
+						taskModifier = 1.2;
+
+						if (agility > 50)
+							taskModifier = .75 * taskModifier - .25 * agility / 100.0;
+						else
+							taskModifier = .75 * taskModifier + .25 * (50 - agility) / 50.0;
 					}
-				}
-
-				// Check that person does not already have a health problem with this complaint.
-
-				// Note : the following complaints are being initiated in their own methods
-				else if (ct == ComplaintType.HIGH_FATIGUE_COLLAPSE || ct == ComplaintType.PANIC_ATTACK
-						|| ct == ComplaintType.DEPRESSION
-						// Exclude the following 6 environmentally induced complaints
-						|| ct == ComplaintType.DEHYDRATION || ct == ComplaintType.STARVATION
-						|| ct == ComplaintType.SUFFOCATION || ct == ComplaintType.FREEZING
-						|| ct == ComplaintType.HEAT_STROKE || ct == ComplaintType.DECOMPRESSION
-						//
-						|| ct == ComplaintType.RADIATION_SICKNESS
-						// not meaningful to implement suicide until emotional/mood state is in place
-						|| ct == ComplaintType.SUICIDE) {
-					noGo = true;
-				}
-
-				if (!noGo) {
-					double probability = complaint.getProbability();
-					// Check that medical complaint has a probability > zero
-					// since some complaints are secondary complaints and cannot be started
-					// by itself
-					if (probability > 0D) {
-						double taskModifier = 1;
-						double tendency = 1;
-
-						int msol = pulse.getMarsTime().getMissionSol();
-
-						if (healthLog.get(ct) != null && msol > 3)
-							tendency = 0.5 + 1.0 * healthLog.get(ct) / msol;
+					else if ((taskEffort == complaint.getEffortInfluence()) 
+									&& (taskEffort == PhysicalEffort.LOW)) {
+						if (agility > 50)
+							taskModifier = .75 * taskModifier - .25 * agility / 100.0;
 						else
-							tendency = 1.0;
-						double immunity = 1.0 * endurance + strength;
+							taskModifier = .75 * taskModifier + .25 * (50 - agility) / 50.0;
+					}
+					else if (person.getTaskManager().getTask() instanceof EVAOperation)
+						// match the uppercase EVA
+						taskModifier = 1.3;
 
-						if (immunity > 100)
-							tendency = .75 * tendency - .25 * immunity / 100.0;
-						else
-							tendency = .75 * tendency + .25 * (100 - immunity) / 100.0;
+					tendency = MathUtils.between(tendency, 0.0001, 2D);
 
-						if (tendency < 0)
-							tendency = 0.0001;
+					// Randomly determine if person suffers from ailment.
+					double rand = RandomUtil.getRandomDouble(100D);
+					double timeModifier = time / RANDOM_AILMENT_PROBABILITY_TIME;
 
-						if (tendency > 2)
-							tendency = 2;
-
-						if (ct == ComplaintType.PULLED_MUSCLE_TENDON
-								|| ct == ComplaintType.BROKEN_BONE) {
-							// Note: at the time of workout, pulled muscle can happen
-							// Note: how to make a person less prone to pulled muscle while doing other tasks
-							// if having consistent workout.
-							String taskDes = person.getTaskDescription().toLowerCase();
-							String taskPhase = person.getTaskPhase().toLowerCase();
-							if (taskPhase.contains("exercising") || taskDes.contains("yoga"))
-								taskModifier = 1.1;
-
-							else if (taskPhase.contains("loading") || taskPhase.contains("unloading")) {
-								// Doing outdoor field work increases the risk of having pulled muscle.
-								taskModifier = 1.2;
-
-								if (agility > 50)
-									taskModifier = .75 * taskModifier - .25 * agility / 100.0;
-								else
-									taskModifier = .75 * taskModifier + .25 * (50 - agility) / 50.0;
-							}
-							else if (person.getTaskDescription().contains("EVA"))
-								// match the uppercase EVA
-								taskModifier = 1.3;
-
-							else if (taskDes.contains("digging") || taskDes.contains("mining")
-									|| taskDes.contains("excavating")) {
-								taskModifier = 1.4;
-
-								int avoidAccident = strength + agility;
-								if (avoidAccident > 50)
-									taskModifier = .75 * taskModifier - .25 * avoidAccident / 100.0;
-								else
-									taskModifier = .75 * taskModifier + .25 * (100 - avoidAccident) / 100.0;
-							}
-
-						} else if (ct == ComplaintType.MINOR_BURNS// || ct == ComplaintType.MAJOR_BURNS
-								|| ct == ComplaintType.BURNS
-								|| ct == ComplaintType.LACERATION) {
-							if (agility > 50)
-								taskModifier = .75 * taskModifier - .25 * agility / 100.0;
-							else
-								taskModifier = .75 * taskModifier + .25 * (50 - agility) / 50.0;
-						}
-
-						if (taskModifier < 0)
-							taskModifier = 0.0001;
-						if (taskModifier > 2)
-							taskModifier = 2;
-
-						// Randomly determine if person suffers from ailment.
-						double rand = RandomUtil.getRandomDouble(100D);
-						double timeModifier = time / RANDOM_AILMENT_PROBABILITY_TIME;
-
-						if (rand <= probability * taskModifier * tendency * timeModifier) {
-							addMedicalComplaint(complaint);
-							result.add(complaint);
-						}
+					if (rand <= probability * taskModifier * tendency * timeModifier) {
+						addMedicalComplaint(complaint);
+						result.add(complaint);
 					}
 				}
 			}
@@ -1338,22 +1287,28 @@ public class PhysicalCondition implements Serializable {
 	 * Adds a new medical complaint to the person.
 	 *
 	 * @param complaint the new medical complaint
+	 * @return 
 	 */
-	public void addMedicalComplaint(Complaint c) {
-		if (!hasComplaint(c)) {
-			ComplaintType type = c.getType();
-			// Create a new health problem
-			HealthProblem newProblem = new HealthProblem(type, person);
-			problems.add(newProblem);
-
-			// Record this complaint type
-			int freq = 0;
-			if (healthLog.get(type) != null)
-				freq = healthLog.get(type);
-			healthLog.put(type, freq + 1);
-			logger.log(person, Level.INFO, 1_000L, "Suffered from " + type.getName() + ".");
-			recalculatePerformance();
+	public HealthProblem addMedicalComplaint(Complaint c) {
+		for (HealthProblem problem : problems) {
+			if (problem.getType() == c.getType()) {
+				return problem;
+			}
 		}
+
+		ComplaintType type = c.getType();
+		// Create a new health problem
+		HealthProblem newProblem = new HealthProblem(type, person);
+		problems.add(newProblem);
+
+		// Record this complaint type
+		int freq = 0;
+		if (healthLog.get(type) != null)
+			freq = healthLog.get(type);
+		healthLog.put(type, freq + 1);
+		logger.log(person, Level.INFO, 1_000L, "Suffered from " + type.getName() + ".");
+		recalculatePerformance();
+		return newProblem;
 	}
 
 
@@ -1540,7 +1495,7 @@ public class PhysicalCondition implements Serializable {
 		}
 
 		// Set the state of the health problem to DEAD
-		problem.setState(HealthProblem.DEAD);
+		problem.setState(HealthProblemState.DEAD);
 		// Set mostSeriousProblem to this problem
 		this.mostSeriousProblem = problem;
 
@@ -1619,7 +1574,7 @@ public class PhysicalCondition implements Serializable {
 	/**
 	 * Returns a collection of known medical problems.
 	 */
-	public Collection<HealthProblem> getProblems() {
+	public List<HealthProblem> getProblems() {
 		return problems;
 	}
 
@@ -1819,35 +1774,32 @@ public class PhysicalCondition implements Serializable {
 	/**
 	 * Checks if a person is super unfit.
 	 *
-	 * @return true if a person is super fit
+	 * @return
 	 */
-	public boolean isSuperUnFit() {
-        return (fatigue > 1000) || (stress > 90) || (hunger > 1000) || (thirst > 1000) || (kJoules < 2000)
-                || hasSeriousMedicalProblems();
+	public boolean isSuperUnfit() {
+        return isUnfitByLevel(900, 90, 900, 550);
     }
 	
 	/**
-	 * Checks if a person is unfit.
+	 * Checks if a person is nominally unfit.
 	 *
-	 * @return true if a person is unfit
+	 * @return
 	 */
-	public boolean isUnFit() {
-        return (fatigue > 500) || (stress > 50) || (hunger > 500) || (thirst > 500) || (kJoules < 6000)
-                || hasSeriousMedicalProblems();
+	public boolean isNominallyUnfit() {
+        return isUnfitByLevel(700, 70, 700, 450);
     }
 	
 	/**
-	 * Checks if a person is nominally fit.
-	 *
-	 * @return true if a person is nominally fit
+	 * Screens if the person is fit for EVA.
+	 * 
+	 * @return
 	 */
-	public boolean isNominallyFit() {
-        return (fatigue <= 500) && (stress <= 50) && (hunger <= 500) && (thirst <= 500) && (kJoules > 6000)
-                && !hasSeriousMedicalProblems();
-    }
+	public boolean isEVAFit() {
+        return !isUnfitByLevel(500, 50, 500, 350);
+	}
 	
 	/**
-	 * Checks fitness against some maximum levels.
+	 * Checks fitness against a certain standard.
 	 * 
 	 * @param fatMax
 	 * @param stressMax
@@ -1855,7 +1807,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean isFitByLevel(int fatMax, int stressMax, int hunMax) {
-        return isFitByLevel(fatMax, stressMax, hunMax, hunMax/2);
+        return !isUnfitByLevel(fatMax, stressMax, hunMax, hunMax/2);
 	}
 
 	/**
@@ -1867,18 +1819,10 @@ public class PhysicalCondition implements Serializable {
 	 * @param thirstMax
 	 * @return
 	 */
-	public boolean isFitByLevel(int fatMax, int stressMax, int hunMax, int thirstMax) {
-        return ((fatigue < fatMax) && (stress < stressMax)
-        		&& (hunger < hunMax) && (thirst < thirstMax));
-	}
-	
-	/**
-	 * Screens if the person is fit for an heavy duty EVA task.
-	 * 
-	 * @return
-	 */
-	public boolean isEVAFit() {
-        return isFitByLevel(350, 30, 350, 300);
+	public boolean isUnfitByLevel(int fatMax, int stressMax, int hunMax, int thirstMax) {
+        return (fatigue > fatMax || stress > stressMax
+        		|| hunger > hunMax || thirst > thirstMax
+        		|| hasSeriousMedicalProblems());
 	}
 	
 	/**
@@ -2125,7 +2069,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean isHungry() {
-		return hunger > HUNGER_THRESHOLD || kJoules < ENERGY_THRESHOLD * 2;
+		return hunger > HUNGER_THRESHOLD || kJoules < ENERGY_THRESHOLD;
 	}
 
 	/**
@@ -2204,11 +2148,8 @@ public class PhysicalCondition implements Serializable {
 		Double d = consumption.getDataPoint(2);
 		if (d != null)
 			dessertEaten = d.doubleValue();
-		if (foodEaten + mealEaten + dessertEaten >= foodConsumption * 1.5
-				&& hunger < HUNGER_THRESHOLD)
-			return true;
-
-		return false;
+		return (foodEaten + mealEaten + dessertEaten >= foodConsumption * 1.5
+				&& hunger < HUNGER_THRESHOLD);
 	}
 	
 	/**
@@ -2218,13 +2159,8 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public boolean drinkEnoughWater() {
 		Double w = consumption.getDataPoint(3);
-		if (w != null) {
-			if (w.doubleValue() >= h20Consumption * 1.5
-					&& thirst < THIRST_THRESHOLD)
-				return true;
-		}
-
-		return false;
+		return ((w != null) && (w.doubleValue() >= h20Consumption * 1.5
+					&& thirst < THIRST_THRESHOLD));
 	}
 	
 	/**
@@ -2239,8 +2175,6 @@ public class PhysicalCondition implements Serializable {
 	 * @param type
 	 */
 	public void recordFoodConsumption(double amount, int type) {
-//		if (type == 0)
-//			logger.info(person, "Eaten " + Math.round(amount * 1000D)/1000D + " kg preserved food.");
 		consumption.increaseDataPoint(type, amount);
 	}
 	
@@ -2275,17 +2209,6 @@ public class PhysicalCondition implements Serializable {
 			consumption.increaseDataPoint(4, amount);
 	}
 	
-	/**
-	 * Gets the daily gas consumption.
-	 *
-	 * @param type the id of the resource
-	 * @return the amount of resource consumed in a day
-	 */
-	public double getGasUsage(int type) {
-		if (type == OXYGEN_ID)
-			return consumption.getDailyAverage(4);
-		return 0;
-	}
 
 	public double getMuscleSoreness() {
 		return muscleSoreness;

@@ -800,7 +800,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		boolean canPerformTask = !task.isEffortDriven() 
 				|| person.getPerformanceRating() != 0D;
 		
-		if (person.isSuperUnFit())
+		if (!person.isEVAFit())
 			return false;
 
 		// If task is physical effort driven and person too ill, do not assign task.

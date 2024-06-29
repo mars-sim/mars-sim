@@ -7,7 +7,6 @@
  */
 package com.mars_sim.core.person.health;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -25,7 +24,7 @@ import com.mars_sim.mapdata.location.LocalPosition;
  * This class represents a medical station. It provides a number of treatments
  * to persons, these are defined in the Medical.xml file.
  */
-public class MedicalStation implements MedicalAid, Serializable {
+public class MedicalStation implements MedicalAid {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -52,8 +51,6 @@ public class MedicalStation implements MedicalAid, Serializable {
 	/** The set of sick beds. */
 	private Set<LocalPosition> bedSet;
 	
-	private static MedicalManager medManager;
-
 	/**
 	 * Constructor.
 	 * 
@@ -70,9 +67,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 		problemsAwaitingTreatment = new CopyOnWriteArrayList<>();
 		restingRecoveryPeople = new CopyOnWriteArrayList<>();
 
-		if (medManager == null) {
-			medManager = Simulation.instance().getMedicalManager();
-		}
+		var medManager = Simulation.instance().getMedicalManager();
 		
 		// Get all supported treatments at this medical station
 		supportedTreatments = medManager.getSupportedTreatments(level);
@@ -177,7 +172,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 		if (problem == null)
 			return false;
 		else {
-			boolean degrading = problem.isDegrading();
+			boolean degrading = problem.getState() == HealthProblemState.DEGRADING;
 
 			// Check if treatment is supported in this medical station.
 			Treatment requiredTreatment = problem.getComplaint().getRecoveryTreatment();
@@ -197,7 +192,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 	public void requestTreatment(HealthProblem problem) {
 
 		if (problem == null) {
-			throw new IllegalArgumentException("Health problem is null");
+			throw new IllegalArgumentException("Requested Health problem cannot be null");
 		}
 
 		// Check if treatment is supported here.
@@ -248,10 +243,9 @@ public class MedicalStation implements MedicalAid, Serializable {
 		if (problemsBeingTreated.contains(problem)) {
 			problem.stopTreatment();
 			problemsBeingTreated.remove(problem);
-			boolean cured = problem.isCured();
+			var state = problem.getState();
 			boolean dead = problem.getSufferer().getPhysicalCondition().isDead();
-			boolean recovering = problem.getRecovering();
-			if (!cured && !dead && !recovering) {
+			if ((state != HealthProblemState.CURED) && !dead && (state != HealthProblemState.RECOVERING)) {
 				problemsAwaitingTreatment.add(problem);
 			}
 		} else {

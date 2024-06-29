@@ -971,17 +971,8 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 	 *
 	 * @return true if a person is super fit
 	 */
-	public boolean isSuperUnFit() {
-		return condition.isSuperUnFit();
-    }
-	
-	/**
-	 * Checks if a person is unfit.
-	 *
-	 * @return true if a person is unfit
-	 */
-	public boolean isUnFit() {
-		return condition.isUnFit();
+	public boolean isSuperUnfit() {
+		return condition.isSuperUnfit();
     }
 
 	/**
@@ -999,7 +990,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 	 * @return true if a person is nominally fit
 	 */
 	public boolean isNominallyFit() {
-        return condition.isNominallyFit();
+        return !condition.isNominallyUnfit();
     }
 
 	/**

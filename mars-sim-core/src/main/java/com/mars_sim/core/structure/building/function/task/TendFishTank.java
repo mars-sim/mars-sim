@@ -229,6 +229,6 @@ public class TendFishTank extends TendHousekeeping {
 			endTask();
 		}
 		
-		return remainingTime;
+		return 0;
 	}
 }

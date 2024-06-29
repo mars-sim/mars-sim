@@ -242,7 +242,7 @@ public abstract class EVAOperation extends Task {
 	@Override
 	protected double performMappedPhase(double time) {
 		if (person.isOutside()) {
-			if (person.isSuperUnFit()) {
+			if (person.isSuperUnfit()) {
 				walkBackInsidePhase();
 			}
 			else
@@ -400,22 +400,28 @@ public abstract class EVAOperation extends Task {
 
 		// Check for sunlight
 		if (!isSunlightAboveLevel(person.getCoordinates(), minEVASunlight)) {
-			logger.warning(worker, 10_000L, "Ended '" + getName() + "': too dark already.");
+			logger.info(worker, 10_000L, "Ending '" + getName() + "': too dark already.");
 			return true;
 		}
 
 		// Check for any EVA problems.
-		if (hasEVAProblem(person))
+		if (hasEVAProblem(person)) {
+			logger.info(worker, 10_000L, "Ending '" + getName() + "': EVA problems.");
 			return true;
+		}
 
 		// Check if it is at meal time and the person is hungry
-		if (isHungryAtMealTime(person))
+		if (isHungryAtMealTime(person)) {
+			logger.info(worker, 10_000L, "Ending '" + getName() + "': At meal time.");
 			return true;
+		}
 
         // Checks if the person is physically drained
-		if (isExhausted(person))
+		if (isExhausted(person)) {
+			logger.info(worker, 10_000L, "Ending '" + getName() + "': Exhausted.");
 			return true;
-
+		}
+		
 		return result;
 	}
 
@@ -458,23 +464,22 @@ public abstract class EVAOperation extends Task {
 			checkLocation("Radiation detected.");
 			return time;
 		}
-		
-        // Check if there is a reason to cut short and return.
-		if (shouldEndEVAOperation()) {
-			checkLocation("End EVA early.");
+		// Check fitness
+		if (!person.isEVAFit()) {
+			abortEVA("EVA Unfit.");
 			return time;
 		}
-
+        // Check if there is a reason to cut short and return.
+		if (shouldEndEVAOperation()) {
+			checkLocation("EVA ended prematurely.");
+			return time;
+		}
         // Check time on site
 		if (addTimeOnSite(time)) {
 			checkLocation("Time on site expired.");
 			return time;
 		}		
 		
-		if (person.isSuperUnFit()) {
-			abortEVA("Super unfit.");
-			return time;
-		}
 		return 0;
 	}
 	
@@ -495,7 +500,7 @@ public abstract class EVAOperation extends Task {
 	 */
 	protected void abortEVA(String reason) {
 		if (reason != null) {
- 			logger.info(worker, "EVA " + getName() + " aborted: " + reason);
+ 			logger.info(worker, getName() + " aborted: " + reason);
 		}
 		
 		if (person.isOutside()) {
@@ -590,7 +595,7 @@ public abstract class EVAOperation extends Task {
 	 */
 	public static boolean isExhausted(Person person) {
         return person.getPhysicalCondition().isHungry() && person.getPhysicalCondition().isThirsty()
-                && person.getPhysicalCondition().isSleepy() || person.getPhysicalCondition().isStressed();
+                && person.getPhysicalCondition().isSleepy() && person.getPhysicalCondition().isStressed();
     }
 
 	/**

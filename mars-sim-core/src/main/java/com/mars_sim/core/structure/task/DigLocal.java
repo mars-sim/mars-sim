@@ -48,8 +48,6 @@ public abstract class DigLocal extends EVAOperation {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(DigLocal.class.getName());
-	/** The extended amount of millisols for dropping off resources. */
-	public static final int EXTENDED_TIME = 5;
 
 	public static final int MAX_DROPOFF_DISTANCE = 10;
 	public static final int MAX_DIGGING_DISTANCE = 100;
@@ -262,18 +260,11 @@ public abstract class DigLocal extends EVAOperation {
 	        	
 				// Transfer the resource out of the Container
 				unloadContainer(container, portion, time);
-	            
-	        	if (isDone() || getTimeLeft() - time < 0) {
-	    			// Need to extend the duration so as to drop off the resources
-	    			setDuration(getDuration() + EXTENDED_TIME);
-	
-	    			return remainingTime;
-	    		}
             }
         }
         else if (!person.isOnDuty()) {
 			// Duty has ended so abort digging
-			abortEVA("End of Work Shift.");
+			abortEVA("End of work shift.");
 		}
 		else {
         	// Reset this holder
@@ -369,11 +360,7 @@ public abstract class DigLocal extends EVAOperation {
 
 	    // Check for an accident during the EVA operation.
 	    checkForAccident(time);
-	    
-		if (isDone() || getTimeLeft() - time < 0) {
-			// Need to extend the duration so as to drop off the resources
-			setDuration(getDuration() + EXTENDED_TIME);
-		}
+
 		
         return 0;
     }
@@ -560,7 +547,7 @@ public abstract class DigLocal extends EVAOperation {
 		if (person.getPerformanceRating() < .2D)
 			return false;
 
-		return !person.isSuperUnFit();
+		return person.isEVAFit();
 	}
 	
 	/**

@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
@@ -49,6 +50,31 @@ public class HelpGeneratorTest {
         assertContent(content, "characteristics");
         assertContent(content, "cargo");
     }
+
+    @Test
+    public void testComplaintHelp() throws IOException {
+        var context = createGenerator();
+        var manConfig = context.getConfig().getMedicalConfiguration();
+
+        var spec = (new ArrayList<>(manConfig.getComplaintList())).get(0);
+        var vg = new ComplaintGenerator(context);
+        var content = createDoc(vg, spec);
+
+        assertContent(content, "characteristics");
+    }
+
+    @Test
+    public void testTreatmentHelp() throws IOException {
+        var context = createGenerator();
+        var manConfig = context.getConfig().getMedicalConfiguration();
+
+        var spec = (new ArrayList<>(manConfig.getTreatmentsByLevel(20))).get(0);
+        var vg = new TreatmentGenerator(context);
+        var content = createDoc(vg, spec);
+
+        assertContent(content, "characteristics");
+    }
+
 
     @Test
     public void testProcessHelp() throws IOException {
@@ -149,7 +175,7 @@ public class HelpGeneratorTest {
             File[] created = output.listFiles();
 
             // Matches number of type generators plus 1 for index
-            assertEquals("Top level content", 10, created.length);
+            assertEquals("Top level content", 12, created.length);
             for(File f : created) {
                 if (f.isFile()) {
                     // Must be index

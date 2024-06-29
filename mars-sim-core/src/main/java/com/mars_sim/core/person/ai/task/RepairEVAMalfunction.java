@@ -55,8 +55,8 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 		super(NAME, person, 25, REPAIRING);
 		setMinimumSunlight(LightLevel.NONE);
 
-		if (!person.isNominallyFit()) {
-			checkLocation("Not nominally fit.");
+		if (!person.isEVAFit()) {
+			checkLocation("EVA Unfit.");
         	return;
 		}
 

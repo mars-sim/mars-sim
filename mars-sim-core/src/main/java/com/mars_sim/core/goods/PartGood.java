@@ -328,7 +328,7 @@ public class PartGood extends Good {
 					  .9985 * previousDemand 
 					+ .00005 * repair 
 					+ .00005 * average 
-					+ .0001 * projected 
+					+ .00012 * projected 
 					+ .0001 * trade); 
 		}
 		

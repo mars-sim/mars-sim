@@ -289,8 +289,8 @@ public class ExperienceImpact implements Serializable {
     /**
      * Does this experience require effort and impact energy/fatigue?
      */
-    public boolean isEffortAffected() {
-        return effortDriven != PhysicalEffort.NONE;
+    public PhysicalEffort getEffortRequired() {
+        return effortDriven;
     }
 
     /**

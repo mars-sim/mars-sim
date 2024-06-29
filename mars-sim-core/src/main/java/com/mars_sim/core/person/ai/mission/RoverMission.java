@@ -29,13 +29,13 @@ import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.task.EVAOperation;
-import com.mars_sim.core.person.ai.task.RequestMedicalTreatment;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.WalkingSteps;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.person.health.task.RequestMedicalTreatment;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -845,16 +845,15 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		boolean areAllOthersUnfit = true;
 		// Check if everyone is unfit
 		for (Worker w: getMembers()) {
-			if (!w.equals(member) && w instanceof Person p) {
-				if (!p.isSuperUnFit()) {
+			if (!w.equals(member) && w instanceof Person p
+				&& !p.isSuperUnfit()) {
 					areAllOthersUnfit = false;
-				}
 			}
 		}
 		
 		if (member instanceof Person person) {
 			// Check for fitness
-			if (person.isSuperUnFit()) {
+			if (person.isSuperUnfit()) {
 				
 				if (areAllOthersUnfit) {
 					logger.warning(person, 10_000L, "As every is unfit to operate " + getRover() + ", " 
