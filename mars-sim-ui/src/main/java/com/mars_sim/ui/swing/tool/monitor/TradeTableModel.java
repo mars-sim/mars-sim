@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TradeTableModel.java
- * @date 2022-07-22
+ * @date 2024-06-29
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.monitor;
@@ -35,7 +35,9 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	private static final int CAT_COL = GOOD_COL+1;
 	private static final int TYPE_COL = CAT_COL+1;
 	private static final int SETTLEMENT_COL = TYPE_COL+1;
-	private static final int DEMAND_COL = SETTLEMENT_COL+1;
+	private static final int FLATTEN_COL = SETTLEMENT_COL+1;
+	private static final int PROJECTED_COL = FLATTEN_COL+1;
+	private static final int DEMAND_COL = PROJECTED_COL+1;
 	private static final int SUPPLY_COL = DEMAND_COL+1;
 	static final int QUANTITY_COL = SUPPLY_COL+1;
 	private static final int MASS_COL = QUANTITY_COL+1;
@@ -53,7 +55,8 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 		COLUMNS[CAT_COL] = new ColumnSpec ("Category", String.class);
 		COLUMNS[TYPE_COL] = new ColumnSpec ("Type", String.class);
 		COLUMNS[SETTLEMENT_COL] = new ColumnSpec("Settlement", String.class);
-
+		COLUMNS[FLATTEN_COL] = new ColumnSpec ("Flatten", Double.class);
+		COLUMNS[PROJECTED_COL] = new ColumnSpec ("Projected", Double.class);
 		COLUMNS[DEMAND_COL] = new ColumnSpec ("Demand", Double.class);
 		COLUMNS[SUPPLY_COL] = new ColumnSpec ("Supply", Double.class);
 		COLUMNS[QUANTITY_COL] = new ColumnSpec ("Quantity", Double.class);
@@ -113,6 +116,10 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 				return selectedGood.getGoodType().getName();
 			case SETTLEMENT_COL:
 				return selectedSettlement.getName();
+			case FLATTEN_COL:
+				return selectedSettlement.getGoodsManager().getFlattenDemand(selectedGood);
+			case PROJECTED_COL:
+				return selectedSettlement.getGoodsManager().getProjectedDemand(selectedGood);
 			case DEMAND_COL:
 				return selectedSettlement.getGoodsManager().getDemandValue(selectedGood);
 			case SUPPLY_COL:

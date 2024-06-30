@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EquipmentGood.java
- * @date 2023-05-16
+ * @date 2024-06-29
  * @author Barry Evans
  */
 package com.mars_sim.core.goods;
@@ -50,13 +50,59 @@ public class EquipmentGood extends Good {
 	private static final double EVA_SUIT_VALUE = 50;
 	private static final double CONTAINER_VALUE = .1;
 
+	private static final double EVA_SUIT_FLATTENING_FACTOR = 2;
+	private static final double CONTAINER_FLATTENING_FACTOR = .25;
+
+	/** The fixed flatten demand for this resource. */
+	private double flattenDemand;
+	/** The projected demand of each refresh cycle. */
+	private double projectedDemand;
+	
     private EquipmentType equipmentType;
 
+	
     EquipmentGood(EquipmentType type) {
         super(type.getName(), EquipmentType.getResourceID(type));
         this.equipmentType = type;
+        
+		// Calculate fixed values
+		flattenDemand = calculateFlattenDemand(type);
     }
 
+    /**
+	 * Calculates the flatten demand based on the equipment type.
+	 * 
+	 * @param equipmentType
+	 * @return
+	 */
+	private double calculateFlattenDemand(EquipmentType equipmentType) {
+		if (equipmentType == EquipmentType.EVA_SUIT) {
+			return EVA_SUIT_FLATTENING_FACTOR;
+        }
+		
+		return CONTAINER_FLATTENING_FACTOR; 
+	}
+				
+    /**
+     * Gets the flattened demand of an equipment.
+     * 
+     * @return
+     */
+	@Override
+    public double getFlattenDemand() {
+    	return flattenDemand;
+    }
+    
+    /**
+     * Gets the projected demand of this resource.
+     * 
+     * @return
+     */
+	@Override
+    public double getProjectedDemand() {
+    	return projectedDemand;
+    }
+	
     @Override
     public GoodCategory getCategory() {
         if (equipmentType == EquipmentType.EVA_SUIT) {
@@ -160,9 +206,15 @@ public class EquipmentGood extends Good {
 
 		double totalDemand = 0;
 		
-		// Determine average demand.
-		double average = determineEquipmentDemand(owner, settlement);
+		// Determine projected demand for this cycle
+		double projectedDemand = determineEquipmentDemand(owner, settlement);
 
+		projectedDemand = Math.min(HIGHEST_PROJECTED_VALUE, projectedDemand);
+		
+		this.projectedDemand = projectedDemand;
+		
+		double projected = projectedDemand * flattenDemand;
+				
 		double totalSupply = getAverageEquipmentSupply(settlement.findNumContainersOfType(equipmentType));
 				
 		owner.setSupplyValue(this, totalSupply);
@@ -170,11 +222,14 @@ public class EquipmentGood extends Good {
 		// This method is not using cache
 		double trade = owner.determineTradeDemand(this);
 		if (previousDemand == 0) {
-			totalDemand = .5 * average + .5 * trade;
+			totalDemand = .5 * projected 
+						+ .5 * trade;
 		}
 		else {
 			// Intentionally lose 2% of its value
-			totalDemand = .97 * previousDemand + .005 * average + .005 * trade;
+			totalDemand = .97 * previousDemand 
+						+ .005 * projected 
+						+ .005 * trade;
 		}
 				
 		owner.setDemandValue(this, totalDemand);
@@ -184,7 +239,7 @@ public class EquipmentGood extends Good {
 	 * Determines the demand for a type of equipment.
 	 *
 	 * @param settlement the location of this demand
-	 * @return demand (# of equipment).
+	 * @return demand
 	 */
 	private double determineEquipmentDemand(GoodsManager owner, Settlement settlement) {
 		double baseDemand = 1;

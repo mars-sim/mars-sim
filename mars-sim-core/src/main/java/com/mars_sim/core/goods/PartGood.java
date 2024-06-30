@@ -135,7 +135,11 @@ public class PartGood extends Good {
 																		"crane boom", "drilling rig",
 																		"pneumatic drill", "soil compactor"});
 	
+	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
+	/** The projected demand of each refresh cycle. */
+	private double projectedDemand;
+	
 	private double flattenRawDemand;
 	private double costModifier;
 
@@ -143,11 +147,120 @@ public class PartGood extends Good {
         super(p.getName(), p.getID());
 		
 		// Pre-calculate the fixed values
-		flattenDemand = calculateFlattenPartDemand(p);
+		flattenDemand = calculateFlattenDemand(p);
 		flattenRawDemand = calculateFlattenRawPartDemand(p);
 		costModifier = calculateCostModifier(p);
     }
 
+	/**
+	 * Calculates the flatten demand based on the part.
+	 * 
+	 * @param part
+	 * @return
+	 */
+	private double calculateFlattenDemand(Part part) {
+		String name = part.getName();
+
+		switch(part.getGoodType()) {
+			case ELECTRICAL: {
+				if (name.contains(LIGHT)
+					|| name.contains(RESISTOR)
+					|| name.contains(CAPACITOR)
+					|| name.contains(DIODE)) {
+					return 5;
+				}
+				if (name.equalsIgnoreCase(ELECTRICAL_WIRE))
+					return .05;
+				if (name.equalsIgnoreCase(WIRE_CONNECTOR))
+					return .05;
+				if (name.equalsIgnoreCase(POWER_CABLE))
+					return .25;
+				if (name.equalsIgnoreCase(STEEL_WIRE))
+					return .5;
+				
+				if (name.contains(WIRE))
+					return .001;
+				
+				return ELECTRICAL_DEMAND;
+			}
+
+			case INSTRUMENT:
+				return INSTRUMENT_DEMAND;
+
+			case METALLIC:
+				return METALLIC_DEMAND;
+		
+			case UTILITY:
+				if (name.contains(FIBERGLASS)) {
+					return FIBERGLASS_DEMAND;
+				}
+				if (name.equalsIgnoreCase(GASKET)) {
+					return GASKET_DEMAND;
+				}
+				if (name.equalsIgnoreCase(PLASTIC_PIPE)) {
+					return PLASTIC_PIPE_DEMAND;
+				}				
+
+				return UTILITY_DEMAND;
+		
+			case TOOL:
+				if (name.contains(DRILL)) {
+					return DRILL_DEMAND;
+				}
+				return TOOL_DEMAND;
+
+			case CONSTRUCTION:
+				if (name.equalsIgnoreCase(AEROGEL_TILE)) {
+					return AEROGEL_TILE_DEMAND;
+				}
+				return CONSTRUCTION_DEMAND;
+
+			case EVA:
+				return EVA_PART_DEMAND;
+			
+			default:
+//				return 1;
+		}
+
+		
+		if (name.contains(PIPE))
+			return .4;
+		
+		if (name.contains(VALVE) || name.contains(HEAT_PROBE))
+			return .02;
+
+		if (name.contains(PLASTIC))
+			return .2;
+		
+		if (name.contains(TANK) || name.contains(DUCT))
+			return .1;
+
+		if (name.contains(BOTTLE))
+			return BOTTLE_DEMAND;
+		
+		return 1;
+	}
+
+    /**
+     * Gets the flattened demand of this part
+     * 
+     * @return
+     */
+	@Override
+    public double getFlattenDemand() {
+    	return flattenDemand;
+    }
+    
+    /**
+     * Gets the projected demand of this resource.
+     * 
+     * @return
+     */
+	@Override
+    public double getProjectedDemand() {
+    	return projectedDemand;
+    }
+	
     private Part getPart() {
         return ItemResourceUtil.findItemResource(getID());
     }
@@ -269,7 +382,7 @@ public class PartGood extends Good {
 
 		// Get demand for a part.
 		// NOTE: the following estimates are for each orbit (Martian year) :
-		double projected = 
+		double projectedDemand = 
 			// Add manufacturing demand.					
 			getPartManufacturingDemand(owner, settlement, part)
 			// Add food production demand.
@@ -291,7 +404,11 @@ public class PartGood extends Good {
 			// Calculate maintenance part demand.
 			+ getMaintenancePartsDemand(settlement, part);
 		
-		projected = projected
+		projectedDemand = Math.min(HIGHEST_PROJECTED_VALUE, projectedDemand);
+		
+		this.projectedDemand = projectedDemand;
+		
+		double projected = projectedDemand
 			// Flatten raw part demand.
 			* flattenRawDemand
 			// Flatten certain part demand.
@@ -398,94 +515,6 @@ public class PartGood extends Good {
 		return demand;
 	}
 
-	/**
-	 * Calculates the part demand based on types.
-	 * 
-	 * @param part
-	 * @return
-	 */
-	private static double calculateFlattenPartDemand(Part part) {
-		String name = part.getName();
-
-		switch(part.getGoodType()) {
-			case ELECTRICAL: {
-				if (name.contains(LIGHT)
-					|| name.contains(RESISTOR)
-					|| name.contains(CAPACITOR)
-					|| name.contains(DIODE)) {
-					return 5;
-				}
-				if (name.equalsIgnoreCase(ELECTRICAL_WIRE))
-					return .05;
-				if (name.equalsIgnoreCase(WIRE_CONNECTOR))
-					return .05;
-				if (name.equalsIgnoreCase(POWER_CABLE))
-					return .25;
-				if (name.equalsIgnoreCase(STEEL_WIRE))
-					return .5;
-				
-				if (name.contains(WIRE))
-					return .001;
-				
-				return ELECTRICAL_DEMAND;
-			}
-
-			case INSTRUMENT:
-				return INSTRUMENT_DEMAND;
-
-			case METALLIC:
-				return METALLIC_DEMAND;
-		
-			case UTILITY:
-				if (name.contains(FIBERGLASS)) {
-					return FIBERGLASS_DEMAND;
-				}
-				if (name.equalsIgnoreCase(GASKET)) {
-					return GASKET_DEMAND;
-				}
-				if (name.equalsIgnoreCase(PLASTIC_PIPE)) {
-					return PLASTIC_PIPE_DEMAND;
-				}				
-
-				return UTILITY_DEMAND;
-		
-			case TOOL:
-				if (name.contains(DRILL)) {
-					return DRILL_DEMAND;
-				}
-				return TOOL_DEMAND;
-
-			case CONSTRUCTION:
-				if (name.equalsIgnoreCase(AEROGEL_TILE)) {
-					return AEROGEL_TILE_DEMAND;
-				}
-				return CONSTRUCTION_DEMAND;
-
-			case EVA:
-				return EVA_PART_DEMAND;
-			
-			default:
-//				return 1;
-		}
-
-		
-		if (name.contains(PIPE))
-			return .4;
-		
-		if (name.contains(VALVE) || name.contains(HEAT_PROBE))
-			return .02;
-
-		if (name.contains(PLASTIC))
-			return .2;
-		
-		if (name.contains(TANK) || name.contains(DUCT))
-			return .1;
-
-		if (name.contains(BOTTLE))
-			return BOTTLE_DEMAND;
-		
-		return 1;
-	}
 
     /**
 	 * Gets the new item demand.

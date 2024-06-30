@@ -30,6 +30,8 @@ public class ResourceProcess implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(ResourceProcess.class.getName());
 
+	private static final double MAX_VP = GoodsManager.MAX_FINAL_VP;
+	
 	private static final double SMALL_AMOUNT = 0.000001;
 	// How often should the process be checked? 
 	private static final double PROCESS_CHECK_FREQUENCY = 5D; // 200 times per sol
@@ -521,8 +523,8 @@ public class ResourceProcess implements Serializable {
 			if (input) {
 
 				double rate = getBaseSingleInputRate(resource) * 1000;
-				// Limit the vp so as to favor the production of output resources
-				double modVp = Math.max(.01, Math.min(20, vp / 10));
+				// Reduce vp so as to favor the production of output resources
+				double modVp = vp * .75;
 				// The original value without being affected by vp and supply
 				benchmarkValue += rate;
 
@@ -559,9 +561,9 @@ public class ResourceProcess implements Serializable {
 				// then it won't need to check how much it has in stock
 				// and it will not be affected by its vp and supply
 				if (isWasteOutputResource(resource)) {
-					score += rate * (1 + level) * 2;
+					score += rate * (.1 + level);
 				} else
-					score += ((rate * vp) / supply) * (1 + level) * 2;
+					score += ((rate * vp) / supply) * (.1 + level);
 			}
 		}
 

@@ -1,11 +1,14 @@
 /*
  * Mars Simulation Project
  * RobotGood.java
- * @date 2022-06-26
+ * @date 2024-06-29
  * @author Barry Evans
  */
 package com.mars_sim.core.goods;
 
+import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
@@ -21,14 +24,57 @@ class RobotGood extends Good {
     private static final double INITIAL_ROBOT_SUPPLY = 10;
 
 	private static final int ROBOT_VALUE = 200;
-
+	private static final double ROBOT_FLATTENING_FACTOR = 2;
+	
+	/** The fixed flatten demand for this resource. */
+	private double flattenDemand;
+	/** The projected demand of each refresh cycle. */
+	private double projectedDemand;
+	
     private RobotType robotType;
 
     public RobotGood(RobotType type) {
         super(type.getName(), RobotType.getResourceID(type));
         this.robotType = type;
+        
+        // Calculate fixed values
+     	flattenDemand = calculateFlattenDemand(type);
     }
 
+    /**
+	 * Calculates the flatten demand based on the equipment type.
+	 * 
+	 * @param robotType
+	 * @return
+	 */
+	private double calculateFlattenDemand(RobotType robotType) {
+//		if (robotType == RobotType.) {
+//			return _FLATTENING_FACTOR;
+//        }
+		
+		return ROBOT_FLATTENING_FACTOR; 
+	}
+	
+    /**
+     * Gets the flattened demand.
+     * 
+     * @return
+     */
+	@Override
+    public double getFlattenDemand() {
+    	return flattenDemand;
+    }
+    
+    /**
+     * Gets the projected demand of this resource.
+     * 
+     * @return
+     */
+	@Override
+    public double getProjectedDemand() {
+    	return projectedDemand;
+    }
+	
     @Override
     public GoodCategory getCategory() {
         return GoodCategory.ROBOT;
@@ -89,6 +135,121 @@ class RobotGood extends Good {
 
     @Override
     void refreshSupplyDemandValue(GoodsManager owner) {
-        // There is no logic to calculate Supply & Demand for Robots currently
+		Settlement settlement = owner.getSettlement();
+		double previousDemand = owner.getDemandValue(this);
+
+		double totalDemand = 0;
+		
+		// Determine projected demand for this cycle
+		double projectedDemand = determineRobotDemand(owner, settlement);
+
+		projectedDemand = Math.min(HIGHEST_PROJECTED_VALUE, projectedDemand);
+		
+		this.projectedDemand = projectedDemand;
+		
+		double projected = projectedDemand * flattenDemand;
+				
+		double totalSupply = getNumberForSettlement(settlement);
+				
+		owner.setSupplyValue(this, totalSupply);
+		
+		// This method is not using cache
+		double trade = owner.determineTradeDemand(this);
+		if (previousDemand == 0) {
+			totalDemand = .5 * projected 
+						+ .5 * trade;
+		}
+		else {
+			// Intentionally lose 2% of its value
+			totalDemand = .97 * previousDemand 
+						+ .005 * projected 
+						+ .005 * trade;
+		}
+				
+		owner.setDemandValue(this, totalDemand);
     }
+    
+	/**
+	 * Determines the demand for a robot type.
+	 *
+	 * @param settlement the location of this demand
+	 * @return demand
+	 */
+	private double determineRobotDemand(GoodsManager owner, Settlement settlement) {
+		double baseDemand = 1.5;
+
+		int pop = settlement.getNumCitizens();
+		
+		if (robotType == RobotType.MAKERBOT) {
+			
+			double tech = JobUtil.numJobs(JobType.TECHNICIAN, settlement);
+			
+			double engineer = JobUtil.numJobs(JobType.ENGINEER, settlement);
+			
+			double comp = JobUtil.numJobs(JobType.COMPUTER_SCIENTIST, settlement);
+			
+			double makerFactor = 1 + .65 * engineer + .25 * tech + .1 * comp;
+			
+			baseDemand += baseDemand / makerFactor * pop / 6;
+		}
+		
+		else if (robotType == RobotType.REPAIRBOT) {
+
+			double tech = JobUtil.numJobs(JobType.TECHNICIAN, settlement);
+			
+			double engineer = JobUtil.numJobs(JobType.ENGINEER, settlement);
+			
+			double repairFactor = 1 + .75 * tech + .25 * engineer;
+			
+			baseDemand += baseDemand / repairFactor * pop / 6;
+		}
+		
+		else if (robotType == RobotType.CONSTRUCTIONBOT) {
+	
+			double engineer = JobUtil.numJobs(JobType.ENGINEER, settlement);
+			
+			double comp = JobUtil.numJobs(JobType.COMPUTER_SCIENTIST, settlement);
+			
+			double architect = JobUtil.numJobs(JobType.ARCHITECT, settlement);
+		
+			double constructFactor = 1 + .60 * architect + .25 * engineer + .15 * comp;
+			baseDemand += baseDemand / constructFactor * pop / 6;
+		}
+		
+		else if (robotType == RobotType.GARDENBOT) {
+			double botanistFactor = 1 + JobUtil.numJobs(JobType.BOTANIST, settlement);
+			
+			baseDemand += baseDemand / botanistFactor * pop / 6;
+		}
+		
+		else if (robotType == RobotType.CHEFBOT) {
+			double chiefFactor = 1 + JobUtil.numJobs(JobType.CHEF, settlement);
+			
+			baseDemand += baseDemand / chiefFactor * pop / 6;
+		}
+		
+		else if (robotType == RobotType.DELIVERYBOT) {
+			double trader = JobUtil.numJobs(JobType.TRADER, settlement);
+			
+			double pilot = JobUtil.numJobs(JobType.PILOT, settlement);
+			
+			double traderFactor = 1 + .75 * trader + .25 * pilot;
+			
+			baseDemand += baseDemand / traderFactor * pop / 6;
+		}
+		
+		else if (robotType == RobotType.MEDICBOT) {
+			double doc = JobUtil.numJobs(JobType.DOCTOR, settlement);
+			
+			double psy = JobUtil.numJobs(JobType.PSYCHOLOGIST, settlement);
+			
+			double medicFactor = 1 + .75 * doc + .25 * psy;
+			
+			baseDemand += baseDemand / medicFactor * pop / 6;
+		}
+		
+		return baseDemand;
+	}
+
+		
 }

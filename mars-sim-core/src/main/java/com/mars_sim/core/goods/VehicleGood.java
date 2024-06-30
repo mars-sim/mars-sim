@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleGood.java
- * @date 2023-05-16
+ * @date 2024-06-29
  * @author Barry Evans
  */
 package com.mars_sim.core.goods;
@@ -53,7 +53,13 @@ class VehicleGood extends Good {
 	private static final int DRONE_VALUE = 50;
 
     private static final double SPEED_TO_DISTANCE = 2D / 60D / 60D / MarsTime.convertSecondsToMillisols(1D) * 1000D;
+	private static final double VEHICLE_FLATTENING_FACTOR = 2;
 
+	/** The fixed flatten demand for this resource. */
+	private double flattenDemand;
+	/** The projected demand of each refresh cycle. */
+	private double projectedDemand;
+	
 	private double theoreticalRange;
 
 	private VehicleSpec vs;
@@ -93,8 +99,45 @@ class VehicleGood extends Good {
 		}
 		
 		manufactureProcessInfos = infos;
+		
+        // Calculate fixed values
+     	flattenDemand = calculateFlattenDemand(vehicleType);
     }
 
+    /**
+	 * Calculates the flatten demand based on the vehicle type.
+	 * 
+	 * @param vehicleType
+	 * @return
+	 */
+	private double calculateFlattenDemand(VehicleType vehicleType) {
+//		if (vehicleType == VehicleType.) {
+//			return _FLATTENING_FACTOR;
+//        }
+		
+		return VEHICLE_FLATTENING_FACTOR; 
+	}
+	
+    /**
+     * Gets the flattened demand.
+     * 
+     * @return
+     */
+    @Override
+    public double getFlattenDemand() {
+    	return flattenDemand;
+    }
+    
+    /**
+     * Gets the projected demand of this resource.
+     * 
+     * @return
+     */
+	@Override
+    public double getProjectedDemand() {
+    	return projectedDemand;
+    }
+	
     @Override
     public GoodCategory getCategory() {
         return GoodCategory.VEHICLE;
@@ -164,16 +207,23 @@ class VehicleGood extends Good {
 		
 		owner.setSupplyValue(this, totalSupply);
 			
-		// Doesn't use cache value sin this method
-		double projected = determineVehicleProjectedDemand(owner, settlement);
+		double projectedDemand = determineVehicleProjectedDemand(owner, settlement);
+				
+		projectedDemand = Math.min(HIGHEST_PROJECTED_VALUE, projectedDemand);
 		
+		this.projectedDemand = projectedDemand;
+		
+		double projected = projectedDemand * flattenDemand;
+
 		double average = computeVehiclePartsCost(owner);
 		
 		double trade = determineTradeVehicleValue(owner, settlement);
 		
 		double totalDemand;
 		if (previousDemand == 0) {
-			totalDemand = .5 * average + .25 * projected + .25 * trade;
+			totalDemand = .5 * average 
+						+ .25 * projected 
+						+ .25 * trade;
 		}
 
 		else {

@@ -63,10 +63,10 @@ class AmountResourceGood extends Good {
 	private static final double INITIAL_AMOUNT_DEMAND = 0;
 	private static final double INITIAL_AMOUNT_SUPPLY = 0;
 
-	private static final double WASTE_WATER_VALUE = 1.5;
-	private static final double GREY_WATER_VALUE = 1;
-	private static final double BLACK_WATER_VALUE = .5;
-	private static final double USEFUL_WASTE_VALUE = 1.05D;
+	private static final double WASTE_WATER_VALUE_MODIFIER = 1.5;
+	private static final double GREY_WATER_VALUE_MODIFIER = 1;
+	private static final double BLACK_WATER_VALUE_MODIFIER = .5;
+	private static final double USEFUL_WASTE_VALUE_MODIFIER = 1.05D;
 
 	// Cost modifiers
 	private static final double CH4_COST = 0.3;
@@ -75,10 +75,10 @@ class AmountResourceGood extends Good {
 	private static final double CO_COST = 0.05;
     private static final double CO2_COST = 0.0000005;
 	private static final double CL_COST = 0.25;
-	private static final double ICE_COST = .5;
+	private static final double ICE_COST = 0.5;
 	private static final double FOOD_COST = 0.1;
 	private static final double DERIVED_COST = .07;
-	private static final double SOY_COST = .05;
+	private static final double SOY_COST = 0.05;
 	private static final double CROP_COST = 5;
 	private static final double ANIMAL_COST = 10;
 	private static final double ORGANISM_COST = 10;
@@ -87,48 +87,45 @@ class AmountResourceGood extends Good {
 	private static final double WASTE_COST = 0.0001;
 	private static final double OIL_COST = 0.01;
 	private static final double ROCK_COST = 5;
-	private static final double REGOLITH_COST = .02;
+	private static final double REGOLITH_COST = 0.02;
 	private static final double ORE_COST = 0.3;
 	private static final double MINERAL_COST = 0.3;
 	private static final double ELEMENT_COST = 0.5;
-	private static final double LIFE_SUPPORT_COST = .5;
+	private static final double LIFE_SUPPORT_COST = 0.5;
 
-	
-	// flatten multipliers
-	private static final double OLIVINE_MULTIPLIER = .05;
-	
+
 	// modifiers
-    private static final double ICE_VALUE_MODIFIER = .1;
-	private static final double WATER_VALUE_MODIFIER = .07;
-	private static final double BRINE_WATER_VALUE_MODIFIER  = .04;
+    private static final double ICE_VALUE_MODIFIER = 0.1;
+	private static final double WATER_VALUE_MODIFIER = 0.2;
+	private static final double BRINE_WATER_VALUE_MODIFIER  = 0.04;
 	
-	private static final double SOIL_VALUE_MODIFIER = .05;
-	private static final double SAND_VALUE_MODIFIER = .03;
-	private static final double ORES_VALUE_MODIFIER = .05;
+	private static final double SOIL_VALUE_MODIFIER = 0.05;
+	private static final double SAND_VALUE_MODIFIER = 0.03;
+	private static final double ORES_VALUE_MODIFIER = 0.05;
 	
-	private static final double CONCRETE_VALUE_MODIFIER = .7;
+	private static final double CONCRETE_VALUE_MODIFIER = 0.7;
 	private static final double CEMENT_VALUE_MODIFIER = 2;
-	private static final double MINERAL_VALUE_MODIFIER = .02;
-	private static final double ROCK_VALUE_MODIFIER = .02;
-	private static final double METEORITE_MODIFIER = 100;
+	private static final double MINERAL_VALUE_MODIFIER = 0.02;
+	private static final double ROCK_VALUE_MODIFIER = 0.02;
+	private static final double METEORITE_VALUE_MODIFIER = 100;
 	
 	private static final double ROCK_SALT_VALUE_MODIFIER = 1;
-	private static final double EPSOM_SALT_VALUE_MODIFIER = .1;
+	private static final double EPSOM_SALT_VALUE_MODIFIER = 0.1;
 	
-	private static final double OXYGEN_VALUE_MODIFIER = .075;
-	private static final double FOOD_VALUE_MODIFIER = .1;
+	private static final double FOOD_VALUE_MODIFIER = 0.1;
 	
-	private static final double METHANE_VALUE_MODIFIER = .4;
-	private static final double HYDROGEN_VALUE_MODIFIER = .005;
-	private static final double METHANOL_VALUE_MODIFIER = .05;
+	private static final double OXYGEN_VALUE_MODIFIER = 2;
+	private static final double METHANE_VALUE_MODIFIER = 0.025;
+	private static final double HYDROGEN_VALUE_MODIFIER = 0.005;
+	private static final double METHANOL_VALUE_MODIFIER = 0.5;
 	
-	private static final double CO2_VALUE_MODIFIER = .0075;
+	private static final double CO2_VALUE_MODIFIER = 0.0075;
 
 	private static final double LIFE_SUPPORT_FACTOR = .005;
 	private static final double VEHICLE_FUEL_FACTOR = 1;
 	private static final double FARMING_FACTOR = .1;
 
-	private static final double LEAVES_FACTOR = .5;
+	private static final double LEAVES_VALUE_MODIFIER = .5;
 
 	private static final double DESSERT_FACTOR = .1;
 
@@ -142,52 +139,59 @@ class AmountResourceGood extends Good {
 	private static final double INSECT_FACTOR = .075;
 	private static final double OIL_FACTOR = .05;
 	
-	private static final double REGOLITH_TYPE_DEMAND_FACTOR = 1.2;
-	private static final double REGOLITH_DEMAND_FACTOR = .1;
-	private static final double REGOLITH_DEMAND_FACTOR_1 = 10;
-	private static final double REGOLITH_DEMAND_FACTOR_2 = 10;
+	private static final double REGOLITH_TYPE_VALUE_MODIFIER = 1.2;
+	private static final double REGOLITH_VALUE_MODIFIER = .1;
+	private static final double REGOLITH_VALUE_MODIFIER_1 = 10;
+	private static final double REGOLITH_VALUE_MODIFIER_2 = 10;
 		
-	private static final double ORE_DEMAND_FACTOR = .15;
-	private static final double MINERAL_DEMAND_FACTOR = .15;
+	private static final double ORE_FLATTENING_FACTOR = .15;
+	private static final double MINERAL_FLATTENING_FACTOR = .5;
 	
-	// Demand factor based on good type
-	private static final double CHEMICAL_DEMAND_FACTOR = 3;
-	private static final double COMPOUND_DEMAND_FACTOR = 2;
-	private static final double ELEMENT_DEMAND_FACTOR = 2;
-	private static final double ROCK_DEMAND_FACTOR = 1;
-	private static final double GEMSTONE_DEMAND_FACTOR = 3;
+	// flatten multipliers
+	private static final double OLIVINE_FLATTENING_FACTOR = 2;
 
-	
-	private static final double WASTE_DEMAND_FACTOR = .15;
-	private static final double UTILITY_DEMAND_FACTOR = 10;
-	private static final double INSTRUMENT_DEMAND_FACTOR = 5;
+	private static final double CHEMICAL_FLATTENING_FACTOR = 3;
+	private static final double COMPOUND_FLATTENING_FACTOR = 2;
+	private static final double ELEMENT_FLATTENING_FACTOR = 4;
+	private static final double ROCK_FLATTENING_FACTOR = 1;
+	private static final double GEMSTONE_FLATTENING_FACTOR = 3;
 
-	private static final double INSECT_DEMAND_FACTOR = 5;
-	private static final double ORGANISM_DEMAND_FACTOR = 1;
-	private static final double SOYBASED_DEMAND_FACTOR = .5;
-	private static final double ANIMAL_DEMAND_FACTOR = 1;
-	private static final double CROP_DEMAND_FACTOR = 1;
-	private static final double DERIVED_DEMAND_FACTOR = .5;
-	private static final double TISSUE_DEMAND_FACTOR = 1.1;
+	private static final double WASTE_FLATTENING_FACTOR = 0.15;
 	
-	private static final double METHANOL_DEMAND_FACTOR = .15;
-	private static final double METHANE_DEMAND_FACTOR = .05;
-	private static final double SAND_DEMAND_FACTOR = .07;
-	private static final double ICE_DEMAND_FACTOR = .05;
-	private static final double CO_DEMAND_FACTOR = .05;
-	private static final double CO2_DEMAND_FACTOR = .01;
-	private static final double O2_DEMAND_FACTOR = .5;
-	private static final double HYDROGEN_DEMAND_FACTOR = .005;
-	private static final double ACETYLENE_DEMAND_FACTOR = 10;
+	private static final double UTILITY_FLATTENING_FACTOR = 10;
+	private static final double INSTRUMENT_FLATTENING_FACTOR = 5;
 
+	private static final double REGOLITH_FLATTENING_FACTOR = 10;
 	
-	private static final double NACO3_DEMAND_FACTOR = .01;
-	private static final double IRON_POWDER_FACTOR = .01;
+	private static final double INSECT_FLATTENING_FACTOR = 5;
+	private static final double ORGANISM_FLATTENING_FACTOR = 2;
+	private static final double SOYBASED_FLATTENING_FACTOR = 0.5;
+	private static final double ANIMAL_FLATTENING_FACTOR = 2;
+	private static final double CROP_FLATTENING_FACTOR = 2;
+	private static final double DERIVED_FLATTENING_FACTOR = 2;
+	private static final double TISSUE_FLATTENING_FACTOR = 4;
 	
-	private static final double COOKED_MEAL_INPUT_FACTOR = .05;
+	private static final double METHANOL_FLATTENING_FACTOR = 10;
+	private static final double METHANE_FLATTENING_FACTOR = 5;
+	private static final double HYDROGEN_FLATTENING_FACTOR = 4;
+	private static final double OXYGEN_FLATTENING_FACTOR = 5;	
+	
+	private static final double ACETYLENE_FLATTENING_FACTOR = 1;
+	private static final double CO_FLATTENING_FACTOR = 0.09;
+	private static final double CO2_FLATTENING_FACTOR = 0.06;
+	
+	private static final double SAND_FLATTENING_FACTOR = 0.07;
+	private static final double ICE_FLATTENING_FACTOR = 0.05;
+
+	private static final double NACO3_FLATTENING_FACTOR = 0.5;
+	private static final double IRON_POWDER_FLATTENING_FACTOR = 0.5;
+	
+	private static final double WATER_FLATTENING_FACTOR = 0.5;
+	
+	private static final double COOKED_MEAL_INPUT_FACTOR = 0.05;
 	
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
-	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .1;
+	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 0.1;
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 1000D;
 	private static final double CONSTRUCTING_INPUT_FACTOR = 2D;
 
@@ -196,8 +200,10 @@ class AmountResourceGood extends Good {
 	private static final double MAX_FOOD_PRODUCTION_DEMAND = 3000;
 
 	private static final int METEORITE_ID = ResourceUtil.findIDbyAmountResourceName("meteorite");
-
+	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
+	/** The projected demand of each refresh cycle. */
+	private double projectedDemand;
 
 	private double costModifier = -1;
 	
@@ -209,10 +215,180 @@ class AmountResourceGood extends Good {
         super(ar.getName(), ar.getID());
 
 		// Calculate fixed values
-		flattenDemand = calculateFlattenAmountDemand(ar);
+		flattenDemand = calculateFlattenDemand(ar);
 		costModifier = calculateCostModifier(ar);
     }
 
+	/**
+	 * Flattens the flatten demand based on selected resource.
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	private double calculateFlattenDemand(AmountResource ar) {
+		double dem = ar.getDemand();
+		// Note: at the start of the sim, most have zero demand. Some have non-zero demand.
+		if (dem == 0)
+			dem = .1;
+		
+		// WARNING: do NOT miss adding the break keyword at the end of each case
+		// or else the flatten amount would be invalid
+		
+		double mod = 1;
+		switch(ar.getGoodType()) {
+		
+		case ANIMAL:
+			mod = ANIMAL_FLATTENING_FACTOR;
+			
+			break;	
+
+		case CHEMICAL:
+			mod = CHEMICAL_FLATTENING_FACTOR;	
+			
+			break;
+			
+		case COMPOUND:
+			mod = COMPOUND_FLATTENING_FACTOR;
+	
+			if (ar.getID() == ResourceUtil.acetyleneID)
+				mod *= ACETYLENE_FLATTENING_FACTOR;
+			else if (ar.getID() == ResourceUtil.sandID)
+				mod *= SAND_FLATTENING_FACTOR;
+			else if (ar.getID() == ResourceUtil.iceID)
+				mod *= ICE_FLATTENING_FACTOR;
+			else if (ar.getID() == ResourceUtil.coID)
+				mod *= CO_FLATTENING_FACTOR;
+			else if (ar.getID() == ResourceUtil.co2ID)
+				mod *= CO2_FLATTENING_FACTOR;
+			else if (ar.getID() == ResourceUtil.methaneID)
+				mod *= METHANE_FLATTENING_FACTOR;
+			else if (ar.getID() == ResourceUtil.methanolID)
+				mod *= METHANOL_FLATTENING_FACTOR;
+			else if (ar.getID() == ResourceUtil.waterID)
+				mod *= WATER_FLATTENING_FACTOR;
+			
+			String name = ar.getName();
+			
+			if (name.equalsIgnoreCase(NACO3)) 
+				mod *= NACO3_FLATTENING_FACTOR;
+			
+			break;
+	
+		case CROP:
+			mod = CROP_FLATTENING_FACTOR;
+			
+			break;
+					
+		case DERIVED:
+			mod = DERIVED_FLATTENING_FACTOR;
+			
+			break;
+					
+		case ELEMENT:
+			mod = ELEMENT_FLATTENING_FACTOR;
+			
+			if (ar.getID() == ResourceUtil.hydrogenID)
+				mod *= HYDROGEN_FLATTENING_FACTOR;
+			
+			else if (ar.getID() == ResourceUtil.oxygenID)
+				mod *= OXYGEN_FLATTENING_FACTOR;
+			
+			name = ar.getName();
+		
+			if (name.equalsIgnoreCase(IRON_POWDER))
+				mod *= IRON_POWDER_FLATTENING_FACTOR;
+			
+			break;
+			
+		case GEMSTONE:
+			mod = GEMSTONE_FLATTENING_FACTOR;
+			
+			break;
+					
+		case INSECT:
+			mod = INSECT_FLATTENING_FACTOR;
+			
+			break;
+			
+		case INSTRUMENT:
+			mod = INSTRUMENT_FLATTENING_FACTOR;
+
+			break;
+			
+		case MINERAL:
+			mod = MINERAL_FLATTENING_FACTOR;
+
+			if (ar.getID() == ResourceUtil.olivineID)
+				mod *= OLIVINE_FLATTENING_FACTOR;
+			break;
+			
+		case ORE:
+			mod = ORE_FLATTENING_FACTOR;
+			
+			break;
+
+		case ORGANISM:
+			mod = ORGANISM_FLATTENING_FACTOR;
+			
+			break;
+
+		case REGOLITH:
+			mod = REGOLITH_FLATTENING_FACTOR;
+			
+			break;
+				
+		case ROCK:
+			mod = ROCK_FLATTENING_FACTOR;
+			
+			break;
+			
+		case SOY_BASED:
+			mod = SOYBASED_FLATTENING_FACTOR;
+			
+			break;
+			
+		case TISSUE:
+			mod = TISSUE_FLATTENING_FACTOR;
+			
+			break;
+	
+		case UTILITY:
+			mod = UTILITY_FLATTENING_FACTOR;
+			
+			break;
+	
+		case WASTE:
+			mod = WASTE_FLATTENING_FACTOR;
+			
+			break;
+
+		default:
+			break;
+		}
+
+		return dem *= mod;
+	}
+
+    /**
+     * Gets the flattened demand of this amount resource.
+     * 
+     * @return
+     */
+	@Override
+    public double getFlattenDemand() {
+    	return flattenDemand;
+    }
+	
+    /**
+     * Gets the projected demand of this resource.
+     * 
+     * @return
+     */
+	@Override
+    public double getProjectedDemand() {
+    	return projectedDemand;
+    }
+	
     @Override
     public GoodCategory getCategory() {
         return GoodCategory.AMOUNT_RESOURCE;
@@ -324,7 +500,7 @@ class AmountResourceGood extends Good {
 
 		// Get the amount of the resource that will be produced by ongoing food
 		// production processes.
-		for(Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.FOOD_PRODUCTION)) {
+		for (Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.FOOD_PRODUCTION)) {
 			// Go through each ongoing food production process.
 			for(FoodProductionProcess process : b.getFoodProduction().getProcesses()) {
 				for(ProcessItem item : process.getInfo().getOutputList()) {
@@ -395,7 +571,7 @@ class AmountResourceGood extends Good {
 		double totalSupply = 0;	
 
 		// Calculate projected demand
-		double projected = 
+		double projectedDemand = 
 			// Tune ice demand.
 			computeIceProjectedDemand(owner, settlement)
 			// Tune regolith projected demand.
@@ -431,7 +607,17 @@ class AmountResourceGood extends Good {
 			// Adjust the demand on minerals and ores.
 			+ getMineralDemand(owner, settlement);
 		
-		projected = projected
+//		if (getID() == ResourceUtil.hydrogenID) {
+//			System.out.println("old projected: " + Math.round(projected * 100.0)/100.0
+//					+ "  flattenDemand: " + Math.round(flattenDemand * 100.0)/100.0
+//					+ "  previousDemand: " + Math.round(previousDemand * 100.0)/100.0);
+//		}
+		
+		projectedDemand = Math.min(HIGHEST_PROJECTED_VALUE, projectedDemand);
+		
+		this.projectedDemand = projectedDemand;
+		
+		double projected = projectedDemand
 			// Flatten certain types of demand.
 			* flattenDemand
 			// Adjust the demand on various waste products with the disposal cost.
@@ -443,8 +629,9 @@ class AmountResourceGood extends Good {
 		if (previousDemand == 0) {
 			// At the start of the sim
 			totalDemand = (
-					.7 * projected 
-					+ .3 * trade);
+					.5 * projected 
+					+ .5 * trade);
+
 		}
 		else {
 			// Intentionally loses a tiny percentage (e.g. 0.0008) of its value
@@ -462,6 +649,13 @@ class AmountResourceGood extends Good {
 					+ .00005 * trade); 
 		}
 
+//		if (getID() == ResourceUtil.hydrogenID) {
+//			System.out.println("totalDemand: " + Math.round(totalDemand * 100.0)/100.0
+//					+ "  previousDemand: " + Math.round(previousDemand * 100.0)/100.0
+//					+ "  projected: " + Math.round(projected * 100.0)/100.0
+//					+ "  trade: " + Math.round(trade * 100.0)/100.0);
+//		}
+		
 		// Save the goods demand
 		owner.setDemandValue(this, totalDemand);
 		
@@ -472,6 +666,7 @@ class AmountResourceGood extends Good {
 		owner.setSupplyValue(this, totalSupply);
     }
 
+    
     /**
 	 * Gets the total supply for the amount resource.
 	 *
@@ -484,168 +679,6 @@ class AmountResourceGood extends Good {
 		return Math.sqrt(1 + supplyStored);
 	}
 
-	/**
-	 * Flattens the amount demand on certain selected resources or types of resources.
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	private static double calculateFlattenAmountDemand(AmountResource ar) {
-		double mod = ar.getDemand();
-		
-		double demand = 0;
-		switch(ar.getGoodType()) {
-		
-		case ANIMAL:
-			demand = ANIMAL_DEMAND_FACTOR;
-			if (mod != 0)
-				return demand *= mod;
-			break;	
-
-		case CHEMICAL:
-			demand = CHEMICAL_DEMAND_FACTOR;	
-			if (mod != 0)
-				return demand *= mod;
-			break;
-
-		case COMPOUND:
-			demand = COMPOUND_DEMAND_FACTOR;
-			if (mod != 0)
-				return demand *= mod;
-				
-			if (ar.getID() == ResourceUtil.acetyleneID)
-				demand *= ACETYLENE_DEMAND_FACTOR;
-			else if (ar.getID() == ResourceUtil.sandID)
-				demand *= SAND_DEMAND_FACTOR;
-			else if (ar.getID() == ResourceUtil.iceID)
-				demand *= ICE_DEMAND_FACTOR;
-			else if (ar.getID() == ResourceUtil.coID)
-				demand *= CO_DEMAND_FACTOR;
-			else if (ar.getID() == ResourceUtil.co2ID)
-				demand *= CO2_DEMAND_FACTOR;
-			else if (ar.getID() == ResourceUtil.oxygenID)
-				demand *= O2_DEMAND_FACTOR;
-			else if (ar.getID() == ResourceUtil.methaneID)
-				demand *= METHANE_DEMAND_FACTOR;
-			else if (ar.getID() == ResourceUtil.methanolID)
-				demand *= METHANOL_DEMAND_FACTOR;
-	
-			String name = ar.getName();
-			
-			if (name.equalsIgnoreCase(NACO3)) 
-				demand *= NACO3_DEMAND_FACTOR;
-			break;
-	
-		case CROP:
-			demand = CROP_DEMAND_FACTOR;
-			if (mod != 0)
-				return demand *= mod;
-			break;
-			
-		case DERIVED:
-			demand = DERIVED_DEMAND_FACTOR;
-			if (mod != 0)
-				return demand *= mod;
-			break;
-			
-		case ELEMENT:
-			demand = ELEMENT_DEMAND_FACTOR;
-			if (mod != 0)
-				return demand *= mod;
-
-			if (ar.getID() == ResourceUtil.hydrogenID)
-				demand *= HYDROGEN_DEMAND_FACTOR;
-			
-			name = ar.getName();
-		
-			if (name.equalsIgnoreCase(IRON_POWDER)) 
-				demand *= IRON_POWDER_FACTOR;
-			
-			break;
-
-		case GEMSTONE:
-			demand = GEMSTONE_DEMAND_FACTOR;
-			if (mod != 0)
-				return demand *= mod;
-			break;
-			
-		case INSECT:
-			demand = INSECT_DEMAND_FACTOR;
-			if (mod != 0)
-				return demand *= mod;
-			break;
-
-		case INSTRUMENT:
-			demand = INSTRUMENT_DEMAND_FACTOR;
-			if (mod != 0)
-				return demand *= mod;
-			break;
-			
-		case MINERAL:
-			demand = MINERAL_DEMAND_FACTOR;
-			if (mod != 0)
-				return demand *= mod;
-			if (ar.getID() == ResourceUtil.olivineID)
-				demand *= OLIVINE_MULTIPLIER;
-			
-			break;
-	
-		case ORE:
-			demand = ORE_DEMAND_FACTOR;
-			if (mod != 0)
-				return demand *= mod;
-			break;
-
-		case ORGANISM:
-			demand = ORGANISM_DEMAND_FACTOR;
-			if (mod != 0)
-				return demand *= mod;
-			break;
-			
-		case REGOLITH:
-			demand = REGOLITH_TYPE_DEMAND_FACTOR;
-			if (mod != 0)
-				return demand *= mod;
-			break;
-			
-		case ROCK:
-			demand = ROCK_DEMAND_FACTOR;
-			if (mod != 0)
-				return demand *= mod;
-			break;
-
-		case SOY_BASED:
-			demand = SOYBASED_DEMAND_FACTOR;
-			if (mod != 0)
-				return demand *= mod;
-			break;
-			
-		case TISSUE:
-			demand = TISSUE_DEMAND_FACTOR;
-			if (mod != 0)
-				return demand *= mod;
-			break;
-			
-		case UTILITY:
-			demand = UTILITY_DEMAND_FACTOR;
-			if (mod != 0)
-				return demand *= mod;
-			break;
-			
-		case WASTE:
-			demand = WASTE_DEMAND_FACTOR;
-			if (mod != 0)
-				return demand *= mod;
-			break;
-
-		default:
-			demand = 1;
-			if (mod != 0)
-				return demand *= mod;
-		}
-
-		return demand;
-	}
 
 	/**
 	 * Gets the demand for a resource from all automated resource processes at a
@@ -663,7 +696,7 @@ class AmountResourceGood extends Good {
 			demand += processDemand;
 		}
 
-		return Math.min(MAX_RESOURCE_PROCESSING_DEMAND, demand);
+		return Math.min(MAX_RESOURCE_PROCESSING_DEMAND, demand / 3);
 	}
 
 	/**
@@ -680,8 +713,7 @@ class AmountResourceGood extends Good {
 		Set<Integer> inputResources = process.getInputResources();
 		Set<Integer> outputResources = process.getOutputResources();
 
-		/*
-		For instance,		
+		/* For instance,		
 		<process name="Selective Partial Oxidation of Methane to Methanol" power-required="0.05" >
 		<input resource="methane" rate="3.2"  />
 		<input resource="oxygen" rate="3.2"  />
@@ -695,13 +727,14 @@ class AmountResourceGood extends Good {
 			for (Integer output : outputResources) {
 				double singleOutputRate = process.getBaseSingleOutputRate(output);
 				if (!process.isWasteOutputResource(resource)) {
-					outputValue += (owner.getDemandValue(GoodsUtil.getGood(output)) * singleOutputRate);
+					outputValue += (owner.getDemandValue(GoodsUtil.getGood(output)) 
+							* singleOutputRate);
 				}
 			}
 
 			double singleInputRate = process.getBaseSingleInputRate(resource);
 
-			return outputValue / singleInputRate; 
+			return outputValue / singleInputRate / 3; 
 		}
 
 		return 0;
@@ -741,7 +774,7 @@ class AmountResourceGood extends Good {
 			}
 		}
 
-		return Math.min(MAX_MANUFACTURING_DEMAND, demand);
+		return Math.min(MAX_MANUFACTURING_DEMAND, demand / 3);
 	}
 
 	/**
@@ -762,7 +795,7 @@ class AmountResourceGood extends Good {
 			}
 		}
 
-		return Math.min(MAX_FOOD_PRODUCTION_DEMAND, demand);
+		return Math.min(MAX_FOOD_PRODUCTION_DEMAND, demand / 3);
 	}
 
 	/**
@@ -840,9 +873,9 @@ class AmountResourceGood extends Good {
 				break;
 
 				case TRANSPORTATION_HUB: {
-					if (resourceID == ResourceUtil.methaneID
-					|| resourceID == ResourceUtil.methanolID
-					|| resourceID == ResourceUtil.hydrogenID) {
+					if (resourceID == ResourceUtil.methanolID) {
+//					|| resourceID == ResourceUtil.methaneID
+//					|| resourceID == ResourceUtil.hydrogenID) {
 						cType = CommerceType.TRANSPORT;
 					}
 				} break;
@@ -862,7 +895,7 @@ class AmountResourceGood extends Good {
 			}
 		}
 
-		return demand;
+		return demand / 3;
 	}
 
 	/**
@@ -1176,7 +1209,7 @@ class AmountResourceGood extends Good {
 			// Average grey water consumption rate of crops per orbit using total growing
 			// area.
 			// demand = cropConfig.getWaterConsumptionRate() * totalCropArea * solsInOrbit;
-			demand = WASTE_WATER_VALUE;
+			demand = WASTE_WATER_VALUE_MODIFIER;
 		}
 
 		return demand;
@@ -1333,12 +1366,16 @@ class AmountResourceGood extends Good {
 				amountNeededSol = personConfig.getFoodConsumptionRate() * FOOD_VALUE_MODIFIER;
 			} else if (resource == ResourceUtil.methaneID) {
 				// Methane is fuel for heating and is an arguably life support resource
-				amountNeededSol = METHANE_VALUE_MODIFIER;
+				amountNeededSol = personConfig.getWaterConsumptionRate() * METHANE_VALUE_MODIFIER;
 			} else if (resource == ResourceUtil.co2ID) {
 				amountNeededSol = CO2_VALUE_MODIFIER;
+			} else if (resource == ResourceUtil.hydrogenID) {
+				amountNeededSol = personConfig.getWaterConsumptionRate() * HYDROGEN_VALUE_MODIFIER;
 			}
+			
 		
-			return numPeople * amountNeededSol * owner.getCommerceFactor(CommerceType.TRADE)  * LIFE_SUPPORT_FACTOR;
+			return numPeople * amountNeededSol * owner.getCommerceFactor(CommerceType.TRADE)  
+					* LIFE_SUPPORT_FACTOR;
 		}
 		else
 			return 0;
@@ -1416,26 +1453,18 @@ class AmountResourceGood extends Good {
 			}
 
 			if (resource == ResourceUtil.regolithID) {
-				return demand * regolithDemand * REGOLITH_DEMAND_FACTOR;
+				return demand * regolithDemand * REGOLITH_VALUE_MODIFIER;
 			}
 			
 			else if (resource == ResourceUtil.regolithBID 
 					|| resource == ResourceUtil.regolithCID) {
-				return demand * regolithDemand * REGOLITH_DEMAND_FACTOR_1;
+				return demand * regolithDemand * REGOLITH_VALUE_MODIFIER_1;
 			}
 			
 			else if (resource == ResourceUtil.regolithDID) {
-				return demand * regolithDemand * REGOLITH_DEMAND_FACTOR_2;
+				return demand * regolithDemand * REGOLITH_VALUE_MODIFIER_2;
 			}
 			
-//			if (resource == ResourceUtil.regolithID
-//					|| resource == ResourceUtil.regolithBID 
-//					|| resource == ResourceUtil.regolithCID
-//					|| resource == ResourceUtil.regolithDID) {
-//				double regDemand = owner.getAmountDemandValue(resource);
-//				return demand * regDemand * REGOLITH_TYPE_VALUE_MODIFIER;
-//			}
-
 			// Checks if this resource is a ROCK type
 			GoodType type = getGoodType();
 			if (type != null && type == GoodType.ROCK) {
@@ -1443,7 +1472,7 @@ class AmountResourceGood extends Good {
 
 				if (resource == METEORITE_ID)
 					return demand * (.4 * regolithDemand + .5 * rockDemand) 
-							/ (1 + rockDemand) * METEORITE_MODIFIER;
+							/ (1 + rockDemand) * METEORITE_VALUE_MODIFIER;
 				else
 					return demand * (.2 * sandDemand + .7 * rockDemand) 
 							/ (1 + rockDemand) * ROCK_VALUE_MODIFIER;
@@ -1466,15 +1495,15 @@ class AmountResourceGood extends Good {
 		}
 		
 		if (resource == ResourceUtil.greyWaterID) {
-			return GREY_WATER_VALUE;
+			return GREY_WATER_VALUE_MODIFIER;
 		}
 
 		if (resource == ResourceUtil.blackWaterID) {
-			return BLACK_WATER_VALUE;
+			return BLACK_WATER_VALUE_MODIFIER;
 		}
 		
 		if (resource == ResourceUtil.leavesID) {
-			return LEAVES_FACTOR;
+			return LEAVES_VALUE_MODIFIER;
 		}
 
 		if (resource == ResourceUtil.soilID) {
@@ -1482,7 +1511,7 @@ class AmountResourceGood extends Good {
 		}
 
 		if (resource == ResourceUtil.foodWasteID) {
-			return 4 * USEFUL_WASTE_VALUE;
+			return 4 * USEFUL_WASTE_VALUE_MODIFIER;
 		}
 
 		if (resource == ResourceUtil.solidWasteID) {
@@ -1494,16 +1523,16 @@ class AmountResourceGood extends Good {
 		}
 		
 		if (resource == ResourceUtil.cropWasteID) {
-			return 4 * USEFUL_WASTE_VALUE;
+			return 4 * USEFUL_WASTE_VALUE_MODIFIER;
 		}
 
 		if (resource == ResourceUtil.compostID) {
-			return 2 * USEFUL_WASTE_VALUE;
+			return 2 * USEFUL_WASTE_VALUE_MODIFIER;
 		}
 
-		if (getGoodType() == GoodType.WASTE) {
-			return WASTE_COST;
-		}
+//		if (getGoodType() == GoodType.WASTE) {
+//			return WASTE_COST;
+//		}
 		
 		return 1;
 	}
@@ -1577,7 +1606,7 @@ class AmountResourceGood extends Good {
 			
 			// Limit the minimum value of regolith projected demand
 			demand = .1 * (cement + concrete + 4 * targetRegolith + 2 * sand + 2 * averageRegolith) 
-					* REGOLITH_TYPE_DEMAND_FACTOR;
+					* REGOLITH_TYPE_VALUE_MODIFIER;
 		}
 
 		return demand;
@@ -1617,7 +1646,7 @@ class AmountResourceGood extends Good {
 		else if (getID() == ResourceUtil.methaneID) {
 			for(Vehicle v: settlement.getAllAssociatedVehicles()) {
 				double fuelDemand = v.getAmountResourceCapacity(getID());
-				demand += fuelDemand * transFactor * METHANE_VALUE_MODIFIER;
+				demand += fuelDemand * transFactor * METHANE_VALUE_MODIFIER / 5;
 			}
 		}
 
@@ -1626,6 +1655,6 @@ class AmountResourceGood extends Good {
 		}
 		
 
-		return demand;
+		return demand / 5;
 	}
 }

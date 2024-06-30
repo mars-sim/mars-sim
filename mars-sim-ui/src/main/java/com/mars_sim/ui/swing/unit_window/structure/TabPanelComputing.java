@@ -38,7 +38,8 @@ public class TabPanelComputing extends TabPanelTable {
 
 	private static final String COMPUTING_ICON = "computing";
 	private static final String CU = " CUs";
-
+	private static final String SLASH = " / ";
+	
 	private JLabel powerDemandLabel;
 	private JLabel percentUsageLabel;
 	private JLabel cULabel;
@@ -90,7 +91,7 @@ public class TabPanelComputing extends TabPanelTable {
 		// Total CUs Available
 		double cUs = Math.round(manager.getTotalCapacityCUsComputing() * 1_000.0)/1_000.0;
 		
-		String text = cUs + " / " + peak + CU;
+		String text = cUs + SLASH + peak + CU;
 		cULabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.computingUnit"),
 				text, Msg.getString("BuildingPanelComputation.computingUnit.tooltip"));
 	
@@ -154,7 +155,7 @@ public class TabPanelComputing extends TabPanelTable {
 		// Total CUs Available
 		double cUs = Math.round(manager.getTotalCapacityCUsComputing() * 100.0)/100.0;
 		
-		String text = cUs + " / " + peak + CU;
+		String text = cUs + SLASH + peak + CU;
 		
 		if (!cULabel.getText().equalsIgnoreCase(text))
 			cULabel.setText(text);
@@ -205,7 +206,7 @@ public class TabPanelComputing extends TabPanelTable {
 		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return Msg.getString("TabPanelThermalSystem.column.building"); //$NON-NLS-1$
-			else if (columnIndex == 1) return "Power Demand"; //$NON-NLS-1$
+			else if (columnIndex == 1) return "kW Demand"; //$NON-NLS-1$
 			else if (columnIndex == 2) return "% Usage"; //$NON-NLS-1$
 			else if (columnIndex == 3) return "CUs"; //$NON-NLS-1$
 			else if (columnIndex == 4) return "Entropy"; //$NON-NLS-1$
@@ -220,18 +221,18 @@ public class TabPanelComputing extends TabPanelTable {
 			}
 			if (column == 1) {
 				// Power Demand
-				return Math.round(buildings.get(row).getComputation().getFullPowerRequired() * 100.0)/100.0;
+				return Math.round(buildings.get(row).getComputation().getFullPowerRequired() * 10.0)/10.0;
 			}
 			else if (column == 2) {
 				// Usage
-				return Math.round(buildings.get(row).getComputation().getUsagePercent() * 100.0)/100.0;
+				return Math.round(buildings.get(row).getComputation().getUsagePercent() * 10.0)/10.0;
 			}
 			else if (column == 3) {
 				// Peak
-				double peak = Math.round(buildings.get(row).getComputation().getPeakCU() * 1_000.0)/1_000.0;
+				double peak = Math.round(buildings.get(row).getComputation().getPeakCU() * 100.0)/1000.0;
 				// Current
-				double computingUnit = Math.round(buildings.get(row).getComputation().getCurrentCU() * 1_000.0)/1_000.0;
-				return computingUnit + " (" + peak + ")";
+				double computingUnit = Math.round(buildings.get(row).getComputation().getCurrentCU() * 100.0)/100.0;
+				return computingUnit + SLASH + peak;
 			}
 			else if (column == 4) {
 				// Entropy

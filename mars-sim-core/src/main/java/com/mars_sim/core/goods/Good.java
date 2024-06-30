@@ -46,6 +46,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	
 	private static final int LOWEST_VALUE_TO_DEFLATE = 1000;
 	private static final int HIGHEST_VALUE_TO_INFLATE = 1;
+	static final int HIGHEST_PROJECTED_VALUE = 100_000;
 	
 	private static final double LABOR_FACTOR = 150D ;
 	private static final double PROCESS_TIME_FACTOR = 500D;
@@ -92,6 +93,26 @@ public abstract class Good implements Serializable, Comparable<Good> {
 		this.id = id;
 	}
 
+	/**
+     * Gets the flattened demand of this resource.
+     * Note: to be overridden in subclass.
+     * 
+     * @return
+     */
+    public double getFlattenDemand() {
+		return 1;
+	}
+    
+    /**
+     * Gets the projected demand of this resource.
+     * Note: to be overridden in subclass.
+     * 
+     * @return
+     */
+    public double getProjectedDemand() {
+    	return 1;
+    }
+	
 	/**
 	 * Calculate the cost of each good
 	 */

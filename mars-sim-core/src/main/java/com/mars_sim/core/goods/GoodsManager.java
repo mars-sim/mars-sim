@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * GoodsManager.java
- * @date 2022-07-30
+ * @date 2024-06-29
  * @author Barry Evans
  */
 package com.mars_sim.core.goods;
@@ -91,7 +91,7 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Scheduled event handler for triggering the next reviewof essential resources
+	 * Scheduled event handler for triggering the next review of essential resources
 	 */
 	private class ResourcesReset implements ScheduledEventHandler {
 		// Duration to between reviewing essential resources
@@ -104,7 +104,7 @@ public class GoodsManager implements Serializable {
 		}
 
 		/**
-		 * Reset the review.
+		 * Resets the review.
 		 * 
 		 * @param now Current time not used.
 		 */
@@ -142,13 +142,12 @@ public class GoodsManager implements Serializable {
 	static final int MAX_DEMAND = 10_000;
 	
 	private static final int MAX_VP = 10_000;
+	public static final double MAX_FINAL_VP = 5_000D;
 	private static final double MIN_VP = 0.01;
 	
 	private static final double PERCENT_110 = 1.1;
 	private static final double PERCENT_90 = .9;
 	private static final double PERCENT_81 = .81;
-	
-	private static final double MAX_FINAL_VP = 5_000D;
 
 	// Fixed weights to apply to updates to commerce factors.
 	private static final Map<CommerceType, Double> FACTOR_WEIGHTS = Map.of(CommerceType.RESEARCH, 1.5D);
@@ -206,7 +205,27 @@ public class GoodsManager implements Serializable {
 		// Schedule reseting the first review cycle during early morning
 		settlement.getFutureManager().addEvent(startOfDayOffset + 15, new ResourcesReset());
 	}
-
+    
+	/**
+     * Gets the flattened demand of a good.
+     * 
+	 * @param good
+	 * @return
+	 */
+    public double getFlattenDemand(Good good) {
+		return good.getFlattenDemand();
+	}
+    
+	/**
+     * Gets the projected demand of a good.
+     * 
+	 * @param good
+	 * @return
+	 */
+    public double getProjectedDemand(Good good) {
+		return good.getProjectedDemand();
+	}
+    
 	/**
 	 * Populates the cache maps.
 	 */
@@ -253,7 +272,7 @@ public class GoodsManager implements Serializable {
 	public void updateGoodValues() {
 
  		// Update the goods value gradually with the use of buffers
-		for(Good g: GoodsUtil.getGoodsList()) {
+		for (Good g: GoodsUtil.getGoodsList()) {
 			determineGoodValue(g);
 			
 			if (initialized) {

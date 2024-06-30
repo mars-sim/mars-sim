@@ -119,7 +119,7 @@ public class SplashWindow extends JComponent {
 					g2d.drawString(MSP_STRING, (x - titleWidth)/2, 70);
 				}
 				else
-					g2d.drawString(MSP_STRING, (x - titleWidth)/2, 40);
+					g2d.drawString(MSP_STRING, (x - titleWidth)/2, 50);
 				
 			
 				if (rand == 0) {

@@ -26,7 +26,7 @@
 	<resource name="Food" type="derived" phase="solid" life-support="true" edible="true">Represents general freeze dried food.</resource>
 	<resource name="Water" type="compound" phase="liquid" life-support="true">potable water</resource>
 	<resource name="Oxygen" type="element" phase="gas" life-support="true" />
-	<resource name="Carbon Dioxide" type="compound" phase="gas" life-support="true"/>
+	<resource name="Carbon dioxide" type="compound" phase="gas" life-support="true"/>
 
 	<resource name="Ice" type="compound" phase="solid">Extracted from ice-rich underground permafrost</resource>
 
@@ -35,10 +35,10 @@
 
 	<!-- see https://space.stackexchange.com/questions/8449/is-there-a-cost-effective-way-to-obtain-nitrogen-argon-on-mars-for-usage-in-a-hu/8548 -->
 	<!-- Other Gas Resources -->
-	<resource name="Hydrogen" type="element" phase="gas" demand=".15" />
+	<resource name="Hydrogen" type="element" phase="gas" life-support="true" demand=".15" />
 	
-	<resource name="Methane" type="compound" phase="gas" demand=".15" />
-	<resource name="Methanol" type="compound" phase="liquid">Methanol CH3OH
+	<resource name="Methane" type="compound" phase="gas" life-support="true" demand=".15" />
+	<resource name="Methanol" type="compound" phase="liquid" life-support="true" >Methanol CH3OH
 	  can be used as a fuel source, solvent, pesticide, or 
 	  a chemical feedstock for production of a range of important industrial
 	  chemicals such as polyester. It appears as a colorless fairly volatile 
@@ -48,7 +48,7 @@
 	<resource name="Nitrogen" type="element" phase="gas"> N2 is an odorless gas </resource>
 	<resource name="Argon" type="element" phase="gas"/>
 	
-	<resource name="Carbon Monoxide" type="compound" phase="gas" demand=".05" />
+	<resource name="Carbon monoxide" type="compound" phase="gas" demand=".05" />
 	<resource name="Chlorine" type="element" phase="gas"/>
 	<resource name="Ethane" type="compound" phase="gas"> Ethane is a naturally
 		occurring organic chemical compound with chemical formula C2H6. 
