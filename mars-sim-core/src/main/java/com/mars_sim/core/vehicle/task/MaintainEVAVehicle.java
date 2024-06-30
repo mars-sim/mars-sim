@@ -52,8 +52,8 @@ public class MaintainEVAVehicle extends EVAOperation {
     public MaintainEVAVehicle(Person person, Vehicle target) {
         super(NAME, person, 100, MAINTAIN_VEHICLE);
 
-		if (!person.isEVAFit()) {
-			checkLocation("EVA Unfit.");
+		if (person.isSuperUnfit()) {
+			checkLocation("Super Unfit.");
         	return;
 		}
         setMinimumSunlight(LightLevel.NONE);

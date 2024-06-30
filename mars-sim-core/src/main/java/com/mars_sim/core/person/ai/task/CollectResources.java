@@ -85,8 +85,8 @@ public class CollectResources extends EVAOperation {
 
 		setMinimumSunlight(LIGHT_LEVEL);
 		
-		if (!person.isEVAFit()) {
-			checkLocation("EVA Unfit.");
+		if (person.isSuperUnfit()) {
+			checkLocation("Super Unfit.");
 	      	return;
 		}
 
@@ -270,7 +270,7 @@ public class CollectResources extends EVAOperation {
 			if (person.getPerformanceRating() < .2D)
 				return false;
 
-			if (!person.isEVAFit())
+			if (person.isSuperUnfit())
 				return false;
 			
 			// Checks if available container with remaining capacity for resource.

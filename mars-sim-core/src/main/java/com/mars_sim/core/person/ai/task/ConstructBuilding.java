@@ -70,8 +70,8 @@ public class ConstructBuilding extends EVAOperation {
 		// Use EVAOperation parent constructor.
 		super(NAME, person, RandomUtil.getRandomDouble(10) + 150D, CONSTRUCTION);
 
-		if (!person.isEVAFit()) {
-			checkLocation("EVA Unfit.");
+		if (person.isSuperUnfit()) {
+			checkLocation("Super Unfit.");
         	return;
 		}
 
@@ -112,8 +112,8 @@ public class ConstructBuilding extends EVAOperation {
 		this.site = site;
 		this.vehicles = vehicles;
 
-		if (!person.isEVAFit()) {
-			checkLocation("EVA Unfit.");
+		if (person.isSuperUnfit()) {
+			checkLocation("Super Unfit.");
         	return;
 		}
 
@@ -139,7 +139,7 @@ public class ConstructBuilding extends EVAOperation {
 		if (person.getPerformanceRating() < .3D)
 			return false;
 
-		if (!person.isEVAFit())
+		if (person.isSuperUnfit())
 			return false;
 		
 		// Check if there is work that can be done on the construction stage.

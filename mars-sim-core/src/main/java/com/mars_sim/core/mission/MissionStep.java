@@ -108,7 +108,7 @@ public abstract class MissionStep extends ProjectStep {
         else if (worker instanceof Person p) {
             assignTask = (!task.isEffortDriven() || (p.getPerformanceRating() != 0D));
             
-    		if (!p.isEVAFit())
+    		if (p.isSuperUnfit())
     			return false;
         }
 

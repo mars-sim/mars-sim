@@ -65,8 +65,8 @@ public class SalvageBuilding extends EVAOperation {
         // Use EVAOperation parent constructor.
         super(NAME, person, RandomUtil.getRandomDouble(50D) + 10D, SALVAGE);
 
-		if (!person.isEVAFit()) {
-			checkLocation("EVA Unfit.");
+		if (person.isSuperUnfit()) {
+			checkLocation("Super Unfit.");
 			return;
 		}
 

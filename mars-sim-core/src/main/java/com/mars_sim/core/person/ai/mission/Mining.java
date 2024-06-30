@@ -441,7 +441,7 @@ public class Mining extends EVAMission
 		if (person.getPerformanceRating() < .2D)
 			return false;
 
-		if (!person.isEVAFit())
+		if (person.isSuperUnfit())
 			return false;
 		
 		// Checks if available bags with remaining capacity for resource.

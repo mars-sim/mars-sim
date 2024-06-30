@@ -547,7 +547,7 @@ public abstract class DigLocal extends EVAOperation {
 		if (person.getPerformanceRating() < .2D)
 			return false;
 
-		return person.isEVAFit();
+		return !person.isSuperUnfit();
 	}
 	
 	/**
