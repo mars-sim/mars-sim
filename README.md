@@ -149,9 +149,9 @@ to choose from when funding a settlement.
 European Space Agency (ESA) is a bloc that consists of 22 member nations united in shaping 
 the development of Europe's space capability. 
 
-International Space Research Alliance (ISRA) comprises China, Russia, Taiwan and United Arab Emirates.
+Meanwhile, International Space Research Alliance (ISRA) comprises China, Russia, Taiwan and United Arab Emirates.
 
-Notably, Mars Society is an international organization that comprises all 33 member nations. 
+Notably, the Mars Society is an international organization that has chapters in all 33 member nations. 
 
 Two corporations, namely, SpaceX and Blue Origin, have joined in to build settlements on Mars.
 

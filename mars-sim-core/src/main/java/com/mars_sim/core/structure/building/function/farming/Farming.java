@@ -336,18 +336,31 @@ public class Farming extends Function {
 		double no2CropVP = 0;
 
 		for (CropSpec c : cropConfig.getCropTypes()) {
-			double cropVP = getCropValue(ResourceUtil.findAmountResource(c.getName()));
-			if (cropVP >= no1CropVP) {
-				if (no1Crop != null) {
-					no2CropVP = no1CropVP;
-					no2Crop = no1Crop;
-				}
+			double cropVP = getCropValue(ResourceUtil.findAmountResource(c.getCropID()));
+			if (no1Crop == null) {
+				// Push no1Crop to no2Crop
 				no1CropVP = cropVP;
 				no1Crop = c;
-
-			} else if (cropVP > no2CropVP) {
+			}
+			else if (cropVP >= no1CropVP) {
+				// Push no1Crop to no2Crop
+				no2CropVP = no1CropVP;
+				no2Crop = no1Crop;
+				// Make this new crop no1Crop
+				no1CropVP = cropVP;
+				no1Crop = c;
+			}
+			else if (cropVP > no2CropVP) {
 				no2CropVP = cropVP;
 				no2Crop = c;
+			}
+			else if (cropVP == no2CropVP) {
+				int rand = RandomUtil.getRandomInt(1);
+				if (rand == 1) {
+					// 50% chance of replacing no2Crop with this new crop
+					no2CropVP = cropVP;
+					no2Crop = c;
+				}
 			}
 		}
 
@@ -361,7 +374,8 @@ public class Farming extends Function {
 			last2CT = cropHistory.get(size - 2);
 			lastCT = cropHistory.get(size - 1);
 
-			if (no1Crop.getName().equalsIgnoreCase(last2CT) || no1Crop.getName().equalsIgnoreCase(lastCT)) {
+			if (no1Crop.getName().equalsIgnoreCase(last2CT) 
+					|| no1Crop.getName().equalsIgnoreCase(lastCT)) {
 				// if highestCrop has already been selected once
 
 				if (last2CT != null && lastCT != null && last2CT.equals(lastCT)) {
