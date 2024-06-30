@@ -136,7 +136,7 @@ public class GoodsManager implements Serializable {
 	private static final int BASE_EVA_SUIT = 1;
 
 	private static final double MIN_SUPPLY = 0.01;
-	private static final double MIN_DEMAND = 0.01;
+	static final double MIN_DEMAND = 0.01;
 	
 	private static final int MAX_SUPPLY = 5_000;
 	static final int MAX_DEMAND = 10_000;
@@ -224,6 +224,26 @@ public class GoodsManager implements Serializable {
 	 */
     public double getProjectedDemand(Good good) {
 		return good.getProjectedDemand();
+	}
+    
+	/**
+     * Gets the trade demand of a good.
+     * 
+	 * @param good
+	 * @return
+	 */
+    public double getTradeDemand(Good good) {
+		return good.getTradeDemand();
+	}
+    
+	/**
+     * Gets the repair demand of a good.
+     * 
+	 * @param good
+	 * @return
+	 */
+    public double getRepairDemand(Good good) {
+		return good.getRepairDemand();
 	}
     
 	/**
@@ -484,20 +504,20 @@ public class GoodsManager implements Serializable {
 	 */
 	double determineTradeDemand(Good good) {
 
-		double bestTradeValue = 0D;
+		double selectedTradeValue = 0D;
 
 		for (Settlement tempSettlement : unitManager.getSettlements()) {
 			if (tempSettlement != settlement) {
-				double baseValue = tempSettlement.getGoodsManager().getGoodValuePoint(good);
+				double baseValue = tempSettlement.getGoodsManager().getDemandValue(good);
 				double distance = Coordinates.computeDistance(settlement.getCoordinates(),
 						tempSettlement.getCoordinates());
 				double tradeValue = baseValue / (1D + (distance / 1000D));
-				if (tradeValue > bestTradeValue)
-					bestTradeValue = tradeValue;
+				if (tradeValue > selectedTradeValue)
+					selectedTradeValue = tradeValue;
 			}
 		}
-		tradeCache.put(good.getID(), bestTradeValue);
-		return bestTradeValue;
+		tradeCache.put(good.getID(), selectedTradeValue);
+		return selectedTradeValue;
 	}
 
 	/**

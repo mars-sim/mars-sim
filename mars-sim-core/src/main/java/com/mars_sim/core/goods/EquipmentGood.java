@@ -57,6 +57,10 @@ public class EquipmentGood extends Good {
 	private double flattenDemand;
 	/** The projected demand of each refresh cycle. */
 	private double projectedDemand;
+	/** The trade demand for this resource of each refresh cycle. */
+	private double tradeDemand;
+	/** The repair demand for this resource of each refresh cycle. */
+	private double repairDemand;
 	
     private EquipmentType equipmentType;
 
@@ -101,6 +105,26 @@ public class EquipmentGood extends Good {
 	@Override
     public double getProjectedDemand() {
     	return projectedDemand;
+    }
+	
+    /**
+     * Gets the trade demand of this resource.
+     * 
+     * @return
+     */
+	@Override
+    public double getTradeDemand() {
+    	return tradeDemand;
+    }
+	
+    /**
+     * Gets the repair demand of this resource.
+     * 
+     * @return
+     */
+	@Override
+    public double getRepairDemand() {
+    	return repairDemand;
     }
 	
     @Override
@@ -155,7 +179,7 @@ public class EquipmentGood extends Good {
 		}
 
 		// Get number of equipment carried by people on EVA.
-		for(Person person : settlement.getAllAssociatedPeople()) {
+		for (Person person : settlement.getAllAssociatedPeople()) {
 			if (person.isOutside())
 				number += person.findNumEmptyContainersOfType(equipmentType, false);
 		}
@@ -214,22 +238,32 @@ public class EquipmentGood extends Good {
 		this.projectedDemand = projectedDemand;
 		
 		double projected = projectedDemand * flattenDemand;
-				
+
 		double totalSupply = getAverageEquipmentSupply(settlement.findNumContainersOfType(equipmentType));
 				
 		owner.setSupplyValue(this, totalSupply);
 		
 		// This method is not using cache
-		double trade = owner.determineTradeDemand(this);
+		tradeDemand = owner.determineTradeDemand(this);
+		
+		// Gets the repair demand
+		// Note: need to look into parts and equipment reliability in MalfunctionManager 
+		// to derive the repair value 
+		if (equipmentType == EquipmentType.EVA_SUIT) {
+			repairDemand = owner.getEVASuitLevel() * owner.getDemandValue(this);
+		}
+		
 		if (previousDemand == 0) {
 			totalDemand = .5 * projected 
-						+ .5 * trade;
+						+ .1 * repairDemand
+						+ .4 * tradeDemand;
 		}
 		else {
-			// Intentionally lose 2% of its value
+			// Intentionally lose some values over time
 			totalDemand = .97 * previousDemand 
 						+ .005 * projected 
-						+ .005 * trade;
+						+ .0025 * repairDemand
+						+ .005 * tradeDemand;
 		}
 				
 		owner.setDemandValue(this, totalDemand);

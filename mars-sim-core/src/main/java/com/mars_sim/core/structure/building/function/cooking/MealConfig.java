@@ -15,6 +15,10 @@ import java.util.stream.Stream;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+
+import com.mars_sim.core.goods.GoodType;
+import com.mars_sim.core.goods.GoodsManager;
+import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.resource.ResourceUtil;
 
 /**
@@ -256,6 +260,36 @@ public class MealConfig implements Serializable {
 		sideDishList = Collections.unmodifiableList(sideDishMeals);
 	}
 
+	/**
+	 * Gets an instance of the hot meal in main dish list.
+	 * 
+	 * @param dishList
+	 * @param dish
+	 * @return
+	 */
+	public static HotMeal getMainDishHotMeal(String dish) {
+		for(HotMeal hm : mainDishList) {
+			if (hm.getMealName().equalsIgnoreCase(dish))
+				return hm;
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets an instance of the hot meal in main and side dish list.
+	 * 
+	 * @param dishList
+	 * @param dish
+	 * @return
+	 */
+	public static HotMeal getHotMeal(String dish) {
+		for (HotMeal hm : getDishList()) {
+			if (hm.getMealName().equalsIgnoreCase(dish))
+				return hm;
+		}
+		return null;
+	}
+	
 	/**
 	 * Prepares object for garbage collection.
 	 */

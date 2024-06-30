@@ -113,8 +113,27 @@ public abstract class Good implements Serializable, Comparable<Good> {
     	return 1;
     }
 	
+    /**
+     * Gets the trade demand of this resource.
+     * Note: to be overridden in subclass.
+     * 
+     * @return
+     */
+    public double getTradeDemand() {
+    	return 0;
+    }
+	
+    /**
+     * Gets the repair demand of this resource.
+     * 
+     * @return
+     */
+    public double getRepairDemand() {
+    	return 0;
+    }
+	
 	/**
-	 * Calculate the cost of each good
+	 * Calculates the cost of each good.
 	 */
 	public void computeCost() {
 		manufactureProcessInfos = ManufactureUtil.getManufactureProcessesWithGivenOutput(name);

@@ -29,7 +29,10 @@ public class Favorite implements Serializable {
 	private FavoriteType favoriteType;
 
 	private static String[] availableDesserts;
-
+	
+	private transient HotMeal mainMeal;
+	private transient HotMeal sideMeal;
+	
 	private Person person;
 	
 	public Favorite(Person person) {
@@ -43,22 +46,43 @@ public class Favorite implements Serializable {
     	favoriteDessert = determineRandomDessert();
 	}
 
-
-	public String determineRandomMainDish() {
-		String result = "";
-    	int num = RandomUtil.getRandomInt(MealConfig.getMainDishList().size()-1);
-		result = MealConfig.getMainDishList().get(num).getMealName();
-		return result;
+	public HotMeal getMainDishHotMeal() {
+		return mainMeal;
 	}
 	
+	public HotMeal getSideDishHotMeal() {
+		return sideMeal;
+	}
+	
+
+	/**
+	 * Determines a main dish randomly.
+	 * 
+	 * @return
+	 */
+	public String determineRandomMainDish() {
+    	int num = RandomUtil.getRandomInt(MealConfig.getMainDishList().size()-1);
+    	mainMeal = MealConfig.getMainDishList().get(num);
+		return mainMeal.getMealName();
+	}
+	
+	/**
+	 * Determines a side dish randomly.
+	 * 
+	 * @return
+	 */
 	public String determineRandomSideDish() {
-		String result = "";
     	int num = RandomUtil.getRandomInt(MealConfig.getSideDishList().size()-1);
-		result = MealConfig.getSideDishList().get(num).getMealName();
-		return result;
+    	sideMeal = MealConfig.getSideDishList().get(num);
+		return sideMeal.getMealName();
 	}
 
 
+	/**
+	 * Determines a dessert randomly.
+	 * 
+	 * @return
+	 */
 	public String determineRandomDessert() {
 		String result = "";
     	int rand = RandomUtil.getRandomInt(availableDesserts.length - 1);
@@ -66,6 +90,11 @@ public class Favorite implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Determines a favorite type randomly.
+	 * 
+	 * @return
+	 */
 	public FavoriteType determineRandomFavoriteType() {
     	int num = RandomUtil.getRandomInt(FavoriteType.availableFavoriteTypes.length - 1);
 		return FavoriteType.availableFavoriteTypes[num];

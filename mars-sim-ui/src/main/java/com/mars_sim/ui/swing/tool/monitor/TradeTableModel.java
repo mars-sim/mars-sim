@@ -37,7 +37,9 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	private static final int SETTLEMENT_COL = TYPE_COL+1;
 	private static final int FLATTEN_COL = SETTLEMENT_COL+1;
 	private static final int PROJECTED_COL = FLATTEN_COL+1;
-	private static final int DEMAND_COL = PROJECTED_COL+1;
+	private static final int TRADE_COL = PROJECTED_COL+1;
+	private static final int REPAIR_COL = TRADE_COL+1;
+	private static final int DEMAND_COL = REPAIR_COL+1;
 	private static final int SUPPLY_COL = DEMAND_COL+1;
 	static final int QUANTITY_COL = SUPPLY_COL+1;
 	private static final int MASS_COL = QUANTITY_COL+1;
@@ -57,6 +59,8 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 		COLUMNS[SETTLEMENT_COL] = new ColumnSpec("Settlement", String.class);
 		COLUMNS[FLATTEN_COL] = new ColumnSpec ("Flatten", Double.class);
 		COLUMNS[PROJECTED_COL] = new ColumnSpec ("Projected", Double.class);
+		COLUMNS[TRADE_COL] = new ColumnSpec ("Trade", Double.class);
+		COLUMNS[REPAIR_COL] = new ColumnSpec ("Repair", Double.class);
 		COLUMNS[DEMAND_COL] = new ColumnSpec ("Demand", Double.class);
 		COLUMNS[SUPPLY_COL] = new ColumnSpec ("Supply", Double.class);
 		COLUMNS[QUANTITY_COL] = new ColumnSpec ("Quantity", Double.class);
@@ -120,6 +124,10 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 				return selectedSettlement.getGoodsManager().getFlattenDemand(selectedGood);
 			case PROJECTED_COL:
 				return selectedSettlement.getGoodsManager().getProjectedDemand(selectedGood);
+			case TRADE_COL:
+				return getTrade(selectedSettlement, selectedGood);
+			case REPAIR_COL:
+				return getRepair(selectedSettlement, selectedGood);
 			case DEMAND_COL:
 				return selectedSettlement.getGoodsManager().getDemandValue(selectedGood);
 			case SUPPLY_COL:
@@ -141,6 +149,39 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 		}
 	}
 
+	/**
+	 * Gets the repair demand value of a resource.
+	 *
+	 * @param settlement
+	 * @param id
+	 * @return
+	 */
+    private Object getRepair(Settlement settlement, Good good) {
+
+    	if (good.getID() < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+    		return null;
+    	}
+    	
+    	return settlement.getGoodsManager().getRepairDemand(good);
+    }
+    
+	/**
+	 * Gets the trade demand value of a resource.
+	 *
+	 * @param settlement
+	 * @param id
+	 * @return
+	 */
+    private Object getTrade(Settlement settlement, Good good) {
+
+    	double trade = settlement.getGoodsManager().getTradeDemand(good);
+    	
+    	if (trade == 0)
+    		return null;
+    	
+    	return trade;
+    }
+    
 	/**
 	 * Gets the quantity of a resource.
 	 *

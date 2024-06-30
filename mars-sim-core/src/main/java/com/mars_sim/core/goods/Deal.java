@@ -60,7 +60,7 @@ public class Deal implements Comparable<Deal> {
     }
 
     /**
-     * Order Deal according to increasing profit
+     * Order Deal according to increasing profit.
      */
     @Override
     public int compareTo(Deal other) {

@@ -133,19 +133,19 @@ class AmountResourceGood extends Good {
 	
 	private static final double TISSUE_CULTURE_VALUE = 0.5;
 	
-	private static final double ORGANISM_FACTOR = .05;
-	private static final double SOY_BASED_FACTOR = .075;
-	private static final double DERIVED_FACTOR = .05;
-	private static final double INSECT_FACTOR = .075;
-	private static final double OIL_FACTOR = .05;
+	private static final double ORGANISM_FACTOR = 0.05;
+	private static final double SOY_BASED_FACTOR = 0.075;
+	private static final double DERIVED_FACTOR = 0.15;
+	private static final double INSECT_FACTOR = 0.075;
+	private static final double OIL_FACTOR = 0.025;
 	
 	private static final double REGOLITH_TYPE_VALUE_MODIFIER = 1.2;
-	private static final double REGOLITH_VALUE_MODIFIER = .1;
+	private static final double REGOLITH_VALUE_MODIFIER = 0.1;
 	private static final double REGOLITH_VALUE_MODIFIER_1 = 10;
 	private static final double REGOLITH_VALUE_MODIFIER_2 = 10;
 		
-	private static final double ORE_FLATTENING_FACTOR = .15;
-	private static final double MINERAL_FLATTENING_FACTOR = .5;
+	private static final double ORE_FLATTENING_FACTOR = 0.15;
+	private static final double MINERAL_FLATTENING_FACTOR = 0.5;
 	
 	// flatten multipliers
 	private static final double OLIVINE_FLATTENING_FACTOR = 2;
@@ -204,7 +204,9 @@ class AmountResourceGood extends Good {
 	private double flattenDemand;
 	/** The projected demand of each refresh cycle. */
 	private double projectedDemand;
-
+	/** The trade demand of each refresh cycle. */
+	private double tradeDemand;
+	
 	private double costModifier = -1;
 	
 	private GoodType goodType;
@@ -389,6 +391,16 @@ class AmountResourceGood extends Good {
     	return projectedDemand;
     }
 	
+    /**
+     * Gets the trade demand of this resource.
+     * 
+     * @return
+     */
+	@Override
+    public double getTradeDemand() {
+    	return tradeDemand;
+    }
+    
     @Override
     public GoodCategory getCategory() {
         return GoodCategory.AMOUNT_RESOURCE;
@@ -563,10 +575,11 @@ class AmountResourceGood extends Good {
     @Override
     void refreshSupplyDemandValue(GoodsManager owner) {
         int id = getID();
+        
 		double previousDemand = owner.getDemandValue(this);
 
         Settlement settlement = owner.getSettlement();
-		double trade = 0;
+
 		double totalDemand = 0;
 		double totalSupply = 0;	
 
@@ -586,8 +599,8 @@ class AmountResourceGood extends Good {
 			+ getVehicleFuelDemand(owner, settlement)
 			// Tune farming demand.
 			+ getFarmingDemand(owner, settlement)
-			// Tune the crop demand
-//			+ getFavoriteMealDemand(owner, settlement)
+			// Tune the meal demand
+			+ getFavoriteMealDemand(owner, settlement)
 			// Tune the tissue demand due to its crop
 			+ computeTissueDemandDueToCrop(owner)
 			// Tune resource processing demand.
@@ -614,7 +627,7 @@ class AmountResourceGood extends Good {
 //		}
 		
 		projectedDemand = Math.min(HIGHEST_PROJECTED_VALUE, projectedDemand);
-		
+	
 		this.projectedDemand = projectedDemand;
 		
 		double projected = projectedDemand
@@ -624,13 +637,13 @@ class AmountResourceGood extends Good {
 			* modifyWasteResource();
 		
 		// Add trade value. Cache is always false if this method is called
-		trade = owner.determineTradeDemand(this);
+		this.tradeDemand = owner.determineTradeDemand(this);
 		
 		if (previousDemand == 0) {
 			// At the start of the sim
 			totalDemand = (
 					.5 * projected 
-					+ .5 * trade);
+					+ .5 * tradeDemand);
 
 		}
 		else {
@@ -646,7 +659,7 @@ class AmountResourceGood extends Good {
 			totalDemand = (
 					  .9986 * previousDemand 
 					+ .00012 * projected 
-					+ .00005 * trade); 
+					+ .00005 * tradeDemand); 
 		}
 
 //		if (getID() == ResourceUtil.hydrogenID) {
@@ -1235,26 +1248,30 @@ class AmountResourceGood extends Good {
 		HotMeal mainMeal = null;
 		HotMeal sideMeal = null;
 
-		// Question: Why does it scan all People, instead of scanning each meal in meal.xml ? 
-		// Answer: each settlement will have unique demand on the type of food (and ingredient)
-		// because it's based on what people like to eat
+		// Q: Why does it scan all People, instead of scanning each meal in MealConfig/meal.xml ? 
+		
+		// A: Each settlement will have unique demand (and the demand of each ingredient vary 
+		// over time) over the food ingredients because it's based on what settlers like to eat.
+		
+		// Q: how to save cpu cycles from having to look at the favorite main dish 
+		// and side dish of a person if they are unchanged ? 
+		
 		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
 			Person p = i.next();
-			String mainDish = p.getFavorite().getFavoriteMainDish();
-			String sideDish = p.getFavorite().getFavoriteSideDish();
-			mainMeal = getHotMeal(MealConfig.getMainDishList(), mainDish);
-			sideMeal = getHotMeal(MealConfig.getSideDishList(), sideDish);
-			logger.info(p, 30_000, "MainMeal: " + mainMeal + "  sideMeal: " + sideMeal);
+			mainMeal = p.getFavorite().getMainDishHotMeal();
 			if (mainMeal != null)
-				demand +=  computeIngredientDemand(owner, getID(), mainMeal.getIngredientList());
+				demand += computeIngredientDemand(owner, getID(), 
+						mainMeal.getIngredientList());
+			sideMeal = p.getFavorite().getSideDishHotMeal();
 			if (sideMeal != null)
-				demand +=  computeIngredientDemand(owner, getID(), sideMeal.getIngredientList());
+				demand += computeIngredientDemand(owner, getID(), 
+						sideMeal.getIngredientList());
 		}
 	
 		// Limit the demand between 0 and 100
-		demand =  Math.max(0, Math.min(100, demand));
-		
+		demand = Math.max(GoodsManager.MIN_DEMAND, Math.min(GoodsManager.MAX_DEMAND, demand));
+
 		return demand;
 	}
 
@@ -1272,58 +1289,48 @@ class AmountResourceGood extends Good {
 			return 0;
 		}
 			
-		double demand = 0D;
+		double averageDemand = 0D;
 		double cropFarmFactor = owner.getCommerceFactor(CommerceType.CROP);
 		double factor = .01 * cropFarmFactor;
+		double count = 0;
 		
-		for (Ingredient it : ingredients) {		
+		for (Ingredient it : ingredients) {
+			count++;
 			if (it.getAmountResourceID() == resource) {
-				logger.info("resource: " + it.getName());
+				
+//				logger.info("resource: " + it.getName());
 				GoodType goodType = getAmountResource().getGoodType();
 
 				if (goodType == GoodType.CROP) {
 					// Tune demand with various factors
-					demand += CROP_FACTOR * factor;
+					averageDemand += CROP_FACTOR * factor;
 				}
 				else if (goodType == GoodType.ORGANISM) {
-					demand += ORGANISM_FACTOR * factor;
+					averageDemand += ORGANISM_FACTOR * factor;
 				}
 				else if (goodType == GoodType.SOY_BASED) {
-					demand += SOY_BASED_FACTOR * factor;
+					averageDemand += SOY_BASED_FACTOR * factor;
 				}
 				else if (goodType == GoodType.DERIVED) {
-					demand += DERIVED_FACTOR * factor;
+					averageDemand += DERIVED_FACTOR * factor;
 				}
 				else if (goodType == GoodType.INSECT) {
-					demand += INSECT_FACTOR * factor;
+					averageDemand += INSECT_FACTOR * factor;
 				}		
 				else if (goodType == GoodType.OIL) {
-					demand += OIL_FACTOR * factor;
+					averageDemand += OIL_FACTOR * factor;
 				}		
-			}
-			
-			// Limit the demand between 0 and 100
-			demand =  Math.max(0, Math.min(100, demand));
+			}		
 		}
-		
-		return demand;
+		// Limit the demand
+		averageDemand = averageDemand / count;
+		averageDemand = Math.max(GoodsManager.MIN_DEMAND, Math.min(GoodsManager.MAX_DEMAND, averageDemand));
+
+		return averageDemand;
 	}
 
 	
-	/**
-	 * Gets an instance of the hot meal.
-	 * 
-	 * @param dishList
-	 * @param dish
-	 * @return
-	 */
-	private static HotMeal getHotMeal(List<HotMeal> dishList, String dish) {
-		for(HotMeal hm : dishList) {
-			if (hm.getMealName().equalsIgnoreCase(dish))
-				return hm;
-		}
-		return null;
-	}
+
 
 	/**
 	 * Computes the tissue demand.

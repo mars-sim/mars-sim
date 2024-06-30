@@ -137,18 +137,20 @@ public class PartGood extends Good {
 	
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
-	/** The projected demand of each refresh cycle. */
+	/** The projected demand for this resource of each refresh cycle. */
 	private double projectedDemand;
+	/** The trade demand for this resource of each refresh cycle. */
+	private double tradeDemand;
+	/** The repair demand for this resource of each refresh cycle. */
+	private double repairDemand;
 	
-	private double flattenRawDemand;
 	private double costModifier;
 
     public PartGood(Part p) {
         super(p.getName(), p.getID());
 		
 		// Pre-calculate the fixed values
-		flattenDemand = calculateFlattenDemand(p);
-		flattenRawDemand = calculateFlattenRawPartDemand(p);
+		flattenDemand = calculateFlattenDemand(p) * calculateFlattenRawPartDemand(p);
 		costModifier = calculateCostModifier(p);
     }
 
@@ -261,6 +263,26 @@ public class PartGood extends Good {
     	return projectedDemand;
     }
 	
+    /**
+     * Gets the trade demand of this resource.
+     * 
+     * @return
+     */
+	@Override
+    public double getTradeDemand() {
+    	return tradeDemand;
+    }
+	
+    /**
+     * Gets the repair demand of this resource.
+     * 
+     * @return
+     */
+	@Override
+    public double getRepairDemand() {
+    	return repairDemand;
+    }
+	
     private Part getPart() {
         return ItemResourceUtil.findItemResource(getID());
     }
@@ -369,14 +391,15 @@ public class PartGood extends Good {
     @Override
     void refreshSupplyDemandValue(GoodsManager owner) {
 		int id = getID();
+		Part part = getPart();
+		
 		double previousDemand = owner.getDemandValue(this);
+		
 		Settlement settlement = owner.getSettlement();
 
 		double totalDemand = 0;
 		double average = 0;
 		double totalSupply = 0;
-
-		Part part = getPart();
 
 		average = getAverageItemDemand(owner);
 
@@ -409,27 +432,23 @@ public class PartGood extends Good {
 		this.projectedDemand = projectedDemand;
 		
 		double projected = projectedDemand
-			// Flatten raw part demand.
-			* flattenRawDemand
 			// Flatten certain part demand.
 			* flattenDemand;
 
 		// Add trade demand.
-		double trade = owner.determineTradeDemand(this);
-
-		// Recalculate the partsDemandCache
-
+		tradeDemand = owner.determineTradeDemand(this);
 
 		// Gets the repair part demand
-		double repair = owner.getDemandValue(this);
-
+		// Note: need to look into parts reliability in MalfunctionManager to derive the repair value 
+		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 * owner.getDemandValue(this);
+		
 		if (previousDemand == 0) {
 			// At the start of the sim
 			totalDemand = (
-					.1 * repair 
+					.1 * repairDemand 
 					+ .4 * average 
 					+ .4 * projected 
-					+ .1 * trade);
+					+ .1 * tradeDemand);
 		}
 
 		else {
@@ -443,10 +462,10 @@ public class PartGood extends Good {
 			// Allows only very small fluctuations of demand as possible
 			totalDemand = (
 					  .9985 * previousDemand 
-					+ .00005 * repair 
+					+ .00005 * repairDemand 
 					+ .00005 * average 
 					+ .00012 * projected 
-					+ .0001 * trade); 
+					+ .0001 * tradeDemand); 
 		}
 		
 		// Save the goods demand
@@ -517,13 +536,14 @@ public class PartGood extends Good {
 
 
     /**
-	 * Gets the new item demand.
+	 * Gets the current item demand.
 	 *
 	 * @param resource
 	 * @param solElapsed
 	 * @return
 	 */
 	private double getAverageItemDemand(GoodsManager owner) {
+		// Future: find the 7 sols average of this resource
 		return owner.getDemandValue(this);
 	}
 

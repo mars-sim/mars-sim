@@ -15,6 +15,7 @@ import java.util.Set;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureUtil;
@@ -59,6 +60,10 @@ class VehicleGood extends Good {
 	private double flattenDemand;
 	/** The projected demand of each refresh cycle. */
 	private double projectedDemand;
+	/** The trade demand for this resource of each refresh cycle. */
+	private double tradeDemand;
+	/** The repair demand for this resource of each refresh cycle. */
+	private double repairDemand;
 	
 	private double theoreticalRange;
 
@@ -136,6 +141,26 @@ class VehicleGood extends Good {
 	@Override
     public double getProjectedDemand() {
     	return projectedDemand;
+    }
+	
+    /**
+     * Gets the trade demand of this resource.
+     * 
+     * @return
+     */
+	@Override
+    public double getTradeDemand() {
+    	return tradeDemand;
+    }
+	
+    /**
+     * Gets the repair demand of this resource.
+     * 
+     * @return
+     */
+	@Override
+    public double getRepairDemand() {
+    	return repairDemand;
     }
 	
     @Override
@@ -217,21 +242,30 @@ class VehicleGood extends Good {
 
 		double average = computeVehiclePartsCost(owner);
 		
-		double trade = determineTradeVehicleValue(owner, settlement);
+		tradeDemand = determineTradeVehicleValue(owner, settlement);
 		
+		// Gets the repair demand
+		// Note: need to look into parts and vehicle reliability in MalfunctionManager 
+		// to derive the repair value. 
+		// Look at each part in vehicleType: if (vehicleType == VehicleType.)
+		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 
+				* owner.getDemandValue(this);
+	
 		double totalDemand;
 		if (previousDemand == 0) {
 			totalDemand = .5 * average 
-						+ .25 * projected 
-						+ .25 * trade;
+						+ .1 * repairDemand
+						+ .2 * projected 
+						+ .2 * tradeDemand;
 		}
 
 		else {
-			// Intentionally lose 2% of its value
+			// Intentionally lose some values over time
 			totalDemand = .97 * previousDemand 
 					+ .003 * average 
+					+ .001 * repairDemand
 					+ .003 * projected 
-					+ .003 * trade;
+					+ .003 * tradeDemand;
 		}
 				
 		owner.setDemandValue(this, totalDemand);
