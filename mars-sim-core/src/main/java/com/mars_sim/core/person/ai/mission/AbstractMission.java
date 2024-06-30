@@ -797,31 +797,48 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @return true if task can be performed.
 	 */
 	protected boolean assignTask(Person person, Task task) {
-		boolean canPerformTask = !task.isEffortDriven() 
-				|| person.getPerformanceRating() != 0D;
+		// If task is physical effort driven and person too ill, do not assign task.
+		Task currentTask = person.getMind().getTaskManager().getTask();
+
+		if (currentTask != null) {
+
+			if (currentTask.getName().equals(task.getName())){
+	      		logger.info(person, 10_000L, "Already assigned with '" + currentTask.getName() + "'.");
+				// If the person has been doing this task, 
+				// then there is no need of adding it.
+				return false;
+			}
+
+			if (currentTask.getName().equals(Sleep.NAME)) {
+	      		logger.info(person, 10_000L, "Current asleep.");
+
+				// If the person has been doing this task, 
+				// then there is no need of adding it.
+				return false;
+			}
+		}
 		
 		if (person.isSuperUnfit()) {
 			logger.warning(person, 10_000L, "Super unfit to perform '" + task + ".");
 			return false;
 		}
-
-		// If task is physical effort driven and person too ill, do not assign task.
-		Task currentTask = person.getMind().getTaskManager().getTask();
 		
-		if (currentTask != null) {
-
-			if (currentTask.getName().equals(task.getName())
-					|| currentTask.getName().equals(Sleep.NAME))
-				// If the person has been doing this task, 
-				// then there is no need of adding it.
-				return false;
-			
-       		logger.info(person, 10_000L, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
-		}
+		boolean canPerformTask = !task.isEffortDriven() 
+				|| person.getPerformanceRating() > 0D;
 		
         if (canPerformTask) {
 			canPerformTask = person.getMind().getTaskManager().checkReplaceTask(task);
 		}
+
+		if (canPerformTask) {
+			if (currentTask != null) {
+				logger.info(person, 10_000L, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
+			}
+			else
+				logger.info(person, 10_000L, "Assigned with '" + task.getName() + "'.");
+		}
+		else
+			logger.info(person, 10_000L, "Unable to replace existing task '" + currentTask.getName() + "' with '" + task.getName() + "'.");
 
 		return canPerformTask;
 	}
@@ -853,11 +870,21 @@ public abstract class AbstractMission implements Mission, Temporal {
 				// If the person has been doing this task, 
 				// then there is no need of adding it.
 				return false;
-			
-			logger.info(robot, 10_000L, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");		
 		}
 
-		return robot.getBotMind().getBotTaskManager().checkReplaceTask(task);
+		boolean canPerformTask = robot.getBotMind().getBotTaskManager().checkReplaceTask(task);
+		
+		if (canPerformTask) {
+			if (currentTask != null) {
+				logger.info(robot, 10_000L, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
+			}
+			else
+				logger.info(robot, 10_000L, "Assigned with '" + task.getName() + "'.");
+		}
+		else
+			logger.info(robot, 10_000L, "Unable to replace existing task '" + currentTask.getName() + "' with '" + task.getName() + "'.");
+		
+		return canPerformTask;
 	}
 
 	/**
