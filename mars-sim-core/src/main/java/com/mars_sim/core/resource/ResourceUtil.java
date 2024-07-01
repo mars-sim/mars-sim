@@ -65,7 +65,10 @@ public class ResourceUtil implements Serializable {
 	public static final String REGOLITH_D = "regolith-d";
 	public static final String OLIVINE = "olivine";
 	public static final String KAMACITE = "kamacite";
-
+	public static final String GYPSUM = "gypsum";
+	public static final String MALACHITE = "malachite";
+	public static final String SYLVITE = "sylvite";
+	
 	public static final String ROCK_SAMPLES = "rock samples";
 	public static final String CONCRETE = "concrete";
 	public static final String CEMENT = "cement";
@@ -176,6 +179,9 @@ public class ResourceUtil implements Serializable {
 	public static int regolithDID;
 	public static int olivineID;
 	public static int kamaciteID;
+	public static int gypsumID;
+	public static int malachiteID;
+	public static int sylviteID;
 
 	public static int soilID;
 	public static int sandID;
@@ -501,6 +507,9 @@ public class ResourceUtil implements Serializable {
 
 		olivineID = findIDbyAmountResourceName(OLIVINE);
 		kamaciteID = findIDbyAmountResourceName(KAMACITE);
+		gypsumID = findIDbyAmountResourceName(GYPSUM);
+		malachiteID = findIDbyAmountResourceName(MALACHITE);
+		sylviteID = findIDbyAmountResourceName(SYLVITE);
 		
 		fishMeatID = findIDbyAmountResourceName(FISH_MEAT);
 		spirulinaID = findIDbyAmountResourceName(SPIRULINA);
@@ -620,9 +629,33 @@ public class ResourceUtil implements Serializable {
 		return sortedResources;
 	}
 	
+	/**
+	 * Is this an in-situ resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
 	public static boolean isInSitu(int resource) {
 		if (resource == iceID || resource == regolithID
 				|| resource == regolithBID || resource == regolithCID || resource == regolithDID
+				) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Is this a raw material resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static boolean isRawMaterial(int resource) {
+		if (resource == sandID || resource == olivineID
+				|| resource == brineWaterID 
+				|| resource == gypsumID || resource == malachiteID
+				|| resource == kamaciteID || resource == sylviteID
 				) {
 			return true;
 		}

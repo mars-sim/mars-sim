@@ -16,9 +16,6 @@ import java.util.stream.Stream;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
-import com.mars_sim.core.goods.GoodType;
-import com.mars_sim.core.goods.GoodsManager;
-import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.resource.ResourceUtil;
 
 /**

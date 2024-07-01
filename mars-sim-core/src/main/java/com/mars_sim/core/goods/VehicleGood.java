@@ -15,7 +15,6 @@ import java.util.Set;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureUtil;

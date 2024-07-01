@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -21,7 +20,6 @@ import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskUtil;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.OverrideType;
@@ -29,7 +27,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.ResourceProcess;
-import com.mars_sim.core.structure.building.function.ResourceProcessing;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -93,7 +90,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	private static final double RESOURCE_RATE_1 = 500;
 	private static final double WASTE_RATE_0 = 20;
 	private static final double WASTE_RATE_1 = 200;
-	private static final double MAX_SCORE = 5_000;
+	private static final double MAX_SCORE = 500;
 	
     public ToggleResourceProcessMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
@@ -211,9 +208,8 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					
 					// FUTURE: will need to use less fragile method 
 					// (other than using process name string)	
-					String name = process.getProcessName().toLowerCase();
-					
-					score = modifyScore(settlement, name, score);
+//					String name = process.getProcessName().toLowerCase();				
+//					score = modifyScore(settlement, name, score);
 				}
 								
 				// Limit the score so that all processes have the chance to be picked
@@ -301,8 +297,10 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		else {	
 			// if output score is greater than the input score
 			if (score > 0 && process.isProcessRunning()) {
-				// Skip this process. No need to turn it off.
-				return;
+				// Skip this process with 90% chance
+				int rand = RandomUtil.getRandomInt(9);
+				if (rand > 0)
+					return;
 			}
 	
 			// if output score is smaller than the input score
@@ -319,8 +317,10 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	
 			// if output score is smaller than the input score
 			else if (score < 0 && !process.isProcessRunning()) {
-				// // Skip this process. no need to turn it on.
-				return;
+				// Skip this process with 90% chance
+				int rand = RandomUtil.getRandomInt(9);
+				if (rand > 0)
+					return;
 			}
 			
 			if (score > 1 || score < -1) {
@@ -336,86 +336,6 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	}
 	
 	/**
-	 * Modifies the score for certain resource processes.
-	 * 
-	 * @param name
-	 * @param settlement
-	 * @return
-	 */
-	private double modifyScore(Settlement settlement, String name, double score) {
-
-		// Selective Partial Oxidation of Methane to Methanol
-		boolean oxi = name.contains(ResourceProcessing.OXIDATION);
-		// "Methanol-to-olefin (MTO) process"
-		boolean olefin = name.contains(ResourceProcessing.OLEFIN);
-		// "Sabatier RWGS Reactor"
-		boolean sab = name.contains(ResourceProcessing.SABATIER);
-		boolean reg = name.contains(ResourceProcessing.REGOLITH);
-		boolean ice = name.equalsIgnoreCase(ResourceProcessing.ICE);
-		// Plasma Pyrolysis Assembly (PPA) Reactor
-		boolean ppa = name.contains(ResourceProcessing.PPA);
-		// Carbon Formation Reactor (CFR). Input: O2; Output: H2O
-		boolean cfr = name.contains(ResourceProcessing.CFR);
-		boolean ogs = name.contains(ResourceProcessing.OGS);
-
-		GoodsManager goodsManager = settlement.getGoodsManager();
-
-		if (reg) {
-			double regolithDemand = goodsManager.getDemandValueWithID(ResourceUtil.regolithID);
-			double regStored = settlement.getAmountResourceStored(ResourceUtil.regolithID);
-			score *= 10000.0 / regolithDemand * (1 + regStored);
-		}
-
-		else if (ice) {
-			double iceDemand = goodsManager.getDemandValueWithID(ResourceUtil.iceID);
-			double iceStored = settlement.getAmountResourceStored(ResourceUtil.iceID);
-			score *= 10000.0 / iceDemand * (1 + iceStored);
-		}
-
-		else if (ppa) {
-			double hydrogenDemand = goodsManager.getDemandValueWithID(ResourceUtil.hydrogenID);
-			double methaneDemand = goodsManager.getDemandValueWithID(ResourceUtil.methaneID);
-			score *= 0.01 * hydrogenDemand / methaneDemand;
-		}
-
-		else if (cfr) {
-			double hydrogenDemand = goodsManager.getDemandValueWithID(ResourceUtil.hydrogenID);
-			double waterDemand = goodsManager.getDemandValueWithID(ResourceUtil.waterID);
-			score *= 2.5 * waterDemand / hydrogenDemand;
-		}
-
-		else if (sab) {
-			double hydrogenDemand = goodsManager.getDemandValueWithID(ResourceUtil.hydrogenID);
-			double methaneDemand = goodsManager.getDemandValueWithID(ResourceUtil.methaneID);
-			double waterDemand = goodsManager.getDemandValueWithID(ResourceUtil.waterID);
-			score *= 5000.0 * waterDemand * methaneDemand / hydrogenDemand;
-		}
-
-		else if (oxi) {
-			double oxygenDemand = goodsManager.getDemandValueWithID(ResourceUtil.oxygenID);
-			double methanolDemand = goodsManager.getDemandValueWithID(ResourceUtil.methanolID);
-			double methaneDemand = goodsManager.getDemandValueWithID(ResourceUtil.methaneID);
-			score *= 0.01 * methanolDemand / methaneDemand / oxygenDemand;
-		}
-		
-		else if (olefin) {
-			double ethyleneDemand = goodsManager.getDemandValueWithID(ResourceUtil.ethyleneID); 
-			double prophyleneDemand =  goodsManager.getDemandValueWithID(ResourceUtil.prophyleneID);
-			double methanolDemand = goodsManager.getDemandValueWithID(ResourceUtil.methanolID);
-			score *= 0.5 * ethyleneDemand * prophyleneDemand / methanolDemand;
-		}
-		
-		else if (ogs) {
-			double hydrogenDemand = goodsManager.getDemandValueWithID(ResourceUtil.hydrogenID);
-			double oxygenDemand = goodsManager.getDemandValueWithID(ResourceUtil.oxygenID);
-			double waterDemand = goodsManager.getDemandValueWithID(ResourceUtil.waterID);
-			score *= hydrogenDemand * oxygenDemand / waterDemand;
-		}
-		
-		return score;
-	}
-	
-	/**
 	 * Gets the composite resource score based on the ratio of
 	 * VPs of outputs to VPs of inputs for a resource process.
 	 *
@@ -425,16 +345,26 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	 * 		if positive, toggle on; if negative, toggle off
 	 */
 	private static double computeBasicScore(Settlement settlement, ResourceProcess process) {
-		double inputValue = process.getResourcesValue(settlement, true);
-		double outputValue = process.getResourcesValue(settlement, false);
+		// Compute the input score
+		double inputValue = process.computeResourcesValue(settlement, true);
+		// Save the input score
+		process.setInputScore(inputValue);
+		// Compute the output score		
+		double outputValue = process.computeResourcesValue(settlement, false);
+		// Save the output score
+		process.setOutputScore(outputValue);
+		// Compute the difference
 		double score = outputValue - inputValue;
+		
 		int modules = process.getNumModules();
 		
 		double[] toggleTime = process.getToggleSwitchDuration();
 		if ((toggleTime[0] > 0) && !process.isFlagged()) {
 			score = score + (100D * ((toggleTime[1] - toggleTime[0])/toggleTime[1]));
 		}
-		return score / modules;
+		
+		// Moderate the score with # of modules
+		return score / modules * 2 ;
 	}
 
 }

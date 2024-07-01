@@ -57,16 +57,28 @@
 		a fuel for power generation in power plants or used as a feedstock for
 		the production of ethylene.
 	</resource>		
-	<resource name="Ethylene" type="compound" phase="gas" demand=".1" />
-	<resource name="Acetylene" type="compound" phase="gas" demand=".01" >Acetylene is a colorless gas that has a strong 
-	 garlic-like odor. When combined with oxygen, it becomes very hot and is classified as the hottest fuel gas. 
-	 It is also the only fuel gas that can weld and cut steel, making it the preferred choice for welders.
-	 The welding process that uses acetylene is known as oxy-fuel cutting or gas cutting. Acetylene is 
-	 probably the hottest burning fuel gas available to us. Acetylene releases almost 40% of its heat in 
-	 the inner flame cone. Acetylene is also commonly used for the production of other chemicals used 
-	 in perfumes, vitamins, polymers, solvents and other materials due to its versatility and ease of
-	 reactive control in comparison to other gases. It combines nicely with a variety of elements and
-	 compounds, making it the most important of starting materials for organic synthesis.</resource>
+	<resource name="Ethylene" type="compound" phase="gas" demand=".1" >
+		Ethylene is a colorless, flammable gas with a sweet and musky odor. 
+		It is a hydrocarbon with the chemical formula C2H4, also known as ethene 
+		or polyethylene. Ethylene is widely used in the chemical industry and is 
+		a natural plant hormone that plays a crucial role in plant growth and 
+		development.
+	</resource>
+	<resource name="Acetylene" type="compound" phase="gas" demand=".01" >
+		Acetylene is a colorless gas that has a strong garlic-like odor. When 
+		combined with oxygen, it becomes very hot and is classified as the 
+		hottest fuel gas. 
+	 	It is also the only fuel gas that can weld and cut steel, making it 
+	 	the preferred choice for welders. The welding process that uses 
+	 	acetylene is known as oxy-fuel cutting or gas cutting. 
+	 	Acetylene is probably the hottest burning fuel gas available to us. 
+	 	Acetylene releases almost 40% of its heat in the inner flame cone. 
+	 	Acetylene is also commonly used for the production of other chemicals used 
+	 	in perfumes, vitamins, polymers, solvents and other materials due to its 
+	 	versatility and ease of reactive control in comparison to other gases. 
+	 	It combines nicely with a variety of elements and compounds, making it 
+	 	the most important of starting materials for 
+	 	organic synthesis.</resource>
 	 
 	<resource name="Prophylene" type="chemical" phase="gas" demand=".01">
 		The common name for the organic chemical compound propene. An alkene which is a 
@@ -74,7 +86,6 @@
 		formula C3H6. It's a colorless gas with a faint petroleum-like odor and is 
 		flammable, and is often used as fuel.
 		</resource>
-
 	
 <!-- Elements -->
 	<resource name="Iron powder" type="element" phase="solid" />
@@ -398,16 +409,29 @@
 		applications such as HVAC systems, plastic mould making, food, and pharmaceutical
 		processes.
 	</resource>	
-	
+
+	<resource name="Propylene" type="chemical" phase="gas" demand=".01">
+		Propylene is a colorless, flammable gas with the chemical formula C3H6 
+		at room temperature and pressure, with a faint petroleum-like odor. It is a 
+		product of combustion and a unsaturated organic compound with one double bond. 
+		It is the second simplest member of the alkene class of hydrocarbons.
+		It is widely used in the production of various chemicals, plastics, and fuels.
+		As plastics such as production of resins, fibers, and elastomers (polyolefins).
+		As chemical products such as polypropylene, polyethylene, and polyvinyl chloride (PVC).
+		As fuel for industrial processes and as a component of gasoline and 
+		for production of antifreeze and other industrial chemicals.
+		</resource>	
 	<resource name="Polypropylene" type="chemical" phase="solid" demand=".01">
-		A thermoplastic polymer stiffer than polyethylene. Characterized by a more transparent appearance 
-		and higher tensile strength, polypropylene bags offer a higher heat and chemical resistance than 
-		polyethylene bags, as well as rigid protective edges to prevent scratches. Polypropylene is a soft, 
+		A thermoplastic polymer stiffer than polyethylene. Characterized by a more 
+		transparent appearance and higher tensile strength, polypropylene bags 
+		offer a higher heat and chemical resistance than polyethylene bags, as well 
+		as rigid protective edges to prevent scratches. Polypropylene is a soft, 
 		flexible type of plastic that is considered safer than other plastics.</resource>		
 	<resource name="Polyethylene" type="chemical" phase="solid" demand=".01">
 		Polyethylene pellets or flakes. It has two different types (HDPE vs LDPE). </resource>
 	<resource name="Styrene" type="chemical" phase="liquid" demand=".015">
-		Synthetic styrene, which is chemically identical to naturally occurring styrene, is manufactured as a chemical building block for
+		Synthetic styrene, which is chemically identical to naturally occurring styrene, 
+		is manufactured as a chemical building block for
 		materials used to make packaging, insulation </resource>
 	<resource name="Polystyrene" type="chemical" phase="solid" demand="2.5">
 		When styrene molecules are linked together into a polymer, polystyrene (C8H8)n is created. Polystyrene is an inert plastic that can

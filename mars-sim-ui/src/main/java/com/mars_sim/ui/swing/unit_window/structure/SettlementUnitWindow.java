@@ -225,7 +225,7 @@ public class SettlementUnitWindow extends UnitWindow {
 
 		addTabPanel(new TabPanelPowerGrid(settlement, desktop));
 		
-		addTabPanel(new TabPanelProcess(settlement, desktop));
+		addTabPanel(new TabPanelProcessHistory(settlement, desktop));
 
 		addTabPanel(new TabPanelResourceProcesses(settlement, desktop));
 

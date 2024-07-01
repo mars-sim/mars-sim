@@ -45,7 +45,7 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(TabPanelResourceProcesses.class.getName());
 
-	private static final String CHEMICAL_ICON = "chemical";
+	private static final String ICON = "resource";
 	
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -67,7 +67,7 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelResourceProcesses.title"), //$NON-NLS-1$
-			ImageLoader.getIconByName(CHEMICAL_ICON),
+			ImageLoader.getIconByName(ICON),
 			Msg.getString("TabPanelResourceProcesses.title"), //$NON-NLS-1$
 			unit, desktop
 		);
@@ -113,12 +113,13 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 		levelPanel.setAlignmentY(TOP_ALIGNMENT);
 		topPanel.add(levelPanel);
 		
-		JLabel levelLabel = new JLabel("Overall Effort :");
+		JLabel levelLabel = new JLabel("Output Effort :");
 		levelPanel.add(levelLabel);
 			
 		// Prepare level combo box
 		String[] level = {"1", "2", "3", "4", "5"}; 
 		levelComboBox = new JComboBox<>(level);
+		levelComboBox.setPrototypeDisplayValue("2");
 		levelComboBox.setSelectedItem("2");
 		levelComboBox.addActionListener(this);
         
@@ -138,7 +139,7 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 			if (newLevel != level) {
 				level = newLevel;
 				processPanel.update();
-				logger.info("The Overall Effort Level of resource processing is now at " + newLevel + ".");
+				logger.info(settlement, "Manually changed to level " + newLevel + " as the overall output effort in resource processing.");
 			}
 		}
 	}	

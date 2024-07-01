@@ -1,8 +1,8 @@
 /*
  * Mars Simulation Project
- * ProcessInfoRenderer.java
- * @date 2024-03-02
- * @author Barry Evans
+ * ResourceProcessRenderer.java
+ * @date 2024-07-01
+ * @author Manny Kung
  */
 package com.mars_sim.ui.swing.utils;
 
@@ -15,11 +15,11 @@ import com.mars_sim.core.resource.ItemType;
 /**
  * This is a static helper class that can render ProcessInfo objects.
  */
-public final class ProcessInfoRenderer {
+public final class ResourceProcessRenderer {
 
     private static final String TOOLTIP_ROW = "<tr><td VALIGN=TOP align=\"right\">%s:</td><td>%s</td></tr>";
 
-    private ProcessInfoRenderer() {
+    private ResourceProcessRenderer() {
         // Stop creation of static class
     }
 

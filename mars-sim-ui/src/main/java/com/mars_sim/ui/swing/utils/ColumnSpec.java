@@ -9,7 +9,7 @@ package com.mars_sim.ui.swing.utils;
 import java.io.Serializable;
 
 /**
- * Convience class to define the specification of a column.
+ * A record class to define the specification of a column.
  */
 public record ColumnSpec (String name, Class<?> type) implements Serializable {}
 

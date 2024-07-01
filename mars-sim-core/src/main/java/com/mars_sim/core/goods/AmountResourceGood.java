@@ -172,8 +172,8 @@ class AmountResourceGood extends Good {
 	private static final double DERIVED_FLATTENING_FACTOR = 2;
 	private static final double TISSUE_FLATTENING_FACTOR = 4;
 	
-	private static final double METHANOL_FLATTENING_FACTOR = 1.5;
-	private static final double METHANE_FLATTENING_FACTOR = 1;
+	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
+	private static final double METHANE_FLATTENING_FACTOR = 1.1;
 	private static final double HYDROGEN_FLATTENING_FACTOR = .025;
 	private static final double OXYGEN_FLATTENING_FACTOR = .5;	
 	
@@ -181,7 +181,7 @@ class AmountResourceGood extends Good {
 	private static final double CO_FLATTENING_FACTOR = 0.09;
 	private static final double CO2_FLATTENING_FACTOR = 0.06;
 	
-	private static final double SAND_FLATTENING_FACTOR = 0.07;
+	private static final double SAND_FLATTENING_FACTOR = 1;
 	private static final double ICE_FLATTENING_FACTOR = 0.05;
 
 	private static final double NACO3_FLATTENING_FACTOR = 0.5;

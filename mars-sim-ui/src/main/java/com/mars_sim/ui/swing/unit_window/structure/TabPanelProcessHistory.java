@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * TabPanelProcess.java
+ * TabPanelProcessHistory.java
  * @date 2024-03-02
  * @author Barry Evans
  */
@@ -25,8 +25,8 @@ import com.mars_sim.ui.swing.utils.ProcessInfoRenderer;
  * Tab panel showing the process history of a settlement
  */
 @SuppressWarnings("serial")
-public class TabPanelProcess extends TabPanel {
-	private static final String ID_ICON = "time"; //$NON-NLS-1$
+public class TabPanelProcessHistory extends TabPanel {
+	private static final String ID_ICON = "history"; //$NON-NLS-1$
 
     private HistoryPanel historyPanel;
     private Settlement settlement;
@@ -37,7 +37,7 @@ public class TabPanelProcess extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelProcess(Settlement settlement, MainDesktopPane desktop) {
+	public TabPanelProcessHistory(Settlement settlement, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			"Process History",
@@ -68,7 +68,6 @@ public class TabPanelProcess extends TabPanel {
     /**
 	 * Internal class used as model for the attribute table.
 	 */
-    @SuppressWarnings("serial")
 	private class HistoryPanel extends JHistoryPanel<CompletedProcess> {
 		private static final ColumnSpec[] COLUMNS = {
                         new ColumnSpec("Process", String.class),
@@ -82,7 +81,8 @@ public class TabPanelProcess extends TabPanel {
 		}
 
 		/**
-		 * Get the individual values from a CompletedProcess
+		 * Gets the individual values from a CompletedProcess.
+		 * 
 		 * @param value Process rendered
 		 * @param columnIndex Column
 		 */
@@ -97,7 +97,8 @@ public class TabPanelProcess extends TabPanel {
 		}
 
 		/**
-		 * Create a tooltip of the ProcessInfo
+		 * Creates a tooltip of the ProcessInfo.
+		 * 
 		 * @param value Value to be rendered as tooltip
 		 * @return
 		 */

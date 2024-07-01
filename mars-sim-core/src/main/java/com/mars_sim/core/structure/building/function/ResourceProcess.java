@@ -30,7 +30,9 @@ public class ResourceProcess implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(ResourceProcess.class.getName());
 
-	private static final double MAX_VP = GoodsManager.MAX_FINAL_VP;
+	private static final double RATE_FACTOR = 10;
+	private static final double INPUT_BIAS = 0.9;
+	private static final double MATERIAL_BIAS = 3;
 	
 	private static final double SMALL_AMOUNT = 0.000001;
 	// How often should the process be checked? 
@@ -51,7 +53,12 @@ public class ResourceProcess implements Serializable {
 
 	private double toggleRunningWorkTime;
 
+	/** The total score for this process. */
 	private double score;
+	/** The input score for this process. */	
+	private double inputScore;
+	/** The output score for this process. */	
+	private double outputScore;
 	
 	private String name;
 
@@ -169,6 +176,22 @@ public class ResourceProcess implements Serializable {
 		this.score = score;
 	}
 	
+	public double getInputScore() {
+		return inputScore;
+	}
+	
+	public void setInputScore(double inputScore) {
+		this.inputScore = inputScore;
+	}
+	
+	public double getOutputScore() {
+		return outputScore;
+	}
+	
+	public void setOutputScore(double outputScore) {
+		this.outputScore = outputScore;
+	}
+	
 	/**
 	 * Gets the set of input resources.
 	 *
@@ -210,9 +233,27 @@ public class ResourceProcess implements Serializable {
 		return engine.isAmbientInputResource(resource);
 	}
 
+	/**
+	 * Is this an in-situ resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
 	public boolean isInSitu(int resource) {
 		return ResourceUtil.isInSitu(resource);
 	}
+	
+	/**
+	 * Is this a raw material resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public boolean isRawMaterial(int resource) {
+		return ResourceUtil.isRawMaterial(resource);
+	}
+	
+	
 	
 	/**
 	 * Gets the set of output resources.
@@ -500,9 +541,9 @@ public class ResourceProcess implements Serializable {
 	 * @param input      is the resource value for the input?
 	 * @return the total value for the input or output.
 	 */
-	public double getResourcesValue(Settlement settlement, boolean input) {
-		double score = 0D;
-		double benchmarkValue = 0;
+	public double computeResourcesValue(Settlement settlement, boolean input) {
+		double score = 0;
+//		double baseMassRate = 0;
 
 		Set<Integer> set = null;
 		if (input)
@@ -513,6 +554,7 @@ public class ResourceProcess implements Serializable {
 		GoodsManager gm = settlement.getGoodsManager();
 		for (int resource : set) {
 			// Gets the vp for this resource
+			// Add 1 to avoid being less than 1
 			double vp = gm.getGoodValuePoint(resource);
 
 			// Gets the supply of this resource
@@ -521,53 +563,71 @@ public class ResourceProcess implements Serializable {
 			double supply = gm.getSupplyValue(resource);
 
 			if (input) {
+				// For inputs: 
+				// Note: mass rate is kg/sol
+				double rate = getBaseSingleInputRate(resource) * RATE_FACTOR;
 
-				double rate = getBaseSingleInputRate(resource) * 1000;
-				// Reduce vp so as to favor the production of output resources
-				double modVp = vp * .75;
-				// The original value without being affected by vp and supply
-				benchmarkValue += rate;
+				// The original mass rate without being affected by vp and supply
+//				baseMassRate += rate / supply;
+				
+				// Multiply by bias so as to favor/discourage the production of output resources
 
+				// Calculate the modified mass rate
+				double mrate = rate * vp * INPUT_BIAS;
+				
+				// Note: mass rate * VP -> demand
+				
 				// if this resource is ambient
 				// that the settlement doesn't need to supply (e.g. carbon dioxide),
 				// then it won't need to check how much it has in stock
 				// and it will not be affected by its vp and supply
 				if (isAmbientInputResource(resource)) {
-					score += rate / Math.max(10, supply) / 10;
-				} else if (isInSitu(resource)) {
-					score += rate / supply / supply / 10;
-				} else
-					score += ((rate * modVp) / supply);
+					// e.g. For CO2, limit the score
+					score += mrate;
+				} else if (isInSitu(resource) || isRawMaterial(resource)) {
+					// If in-situ, reduce the input score 
+					score += mrate / MATERIAL_BIAS * Math.max(60, supply);
+				} else {
+					score += mrate * supply;
+				}
 			}
 
 			else {
+				// For outputs: 
 				// Gets the remaining amount of this resource
 				double remain = settlement.getAmountResourceRemainingCapacity(resource);
 
 				if (remain == 0.0)
 					return 0;
 
-				double rate = getBaseSingleOutputRate(resource) * 1000;
+				double rate = getBaseSingleOutputRate(resource) * RATE_FACTOR;
 
 				// For output value
 				if (rate > remain) {
+					// This limits the rate to match the remaining space 
+					// that can accommodate this output resource
 					rate = remain;
 				}
-
-				benchmarkValue += rate;
-
+				// The original mass rate without being affected by vp and supply
+//				baseMassRate += rate / supply;
+				// Calculate the modified mass rate
+				double mrate = rate * vp * (.1 + level/1.5);
+				
 				// if this resource is ambient or a waste product
 				// that the settlement won't keep (e.g. carbon dioxide),
 				// then it won't need to check how much it has in stock
 				// and it will not be affected by its vp and supply
 				if (isWasteOutputResource(resource)) {
-					score += rate * (.1 + level);
+					score += mrate;
+				} else if (isInSitu(resource) || isRawMaterial(resource)) {
+					// If in-situ, increase the output score 
+					score += mrate * supply * MATERIAL_BIAS;
 				} else
-					score += ((rate * vp) / supply) * (.1 + level);
+					score += mrate * supply;
 			}
 		}
 
-		return (score - benchmarkValue);
+		return score;
 	}
 	
 

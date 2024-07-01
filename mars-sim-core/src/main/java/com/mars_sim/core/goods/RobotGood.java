@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.goods;
 
-import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.robot.Robot;

@@ -67,7 +67,9 @@ public class ResourceProcessPanel extends JPanel {
 		private static final int RUNNING_STATE = 0;
         private static final int BUILDING_NAME = 1;		
         private static final int PROCESS_NAME = 2;
-        private static final int SCORE = 3;
+        private static final int INPUT_SCORE = 3;
+        private static final int OUTPUT_SCORE = 4;
+        private static final int SCORE = 5;
         
         private Building mainBuilding;
         
@@ -111,7 +113,7 @@ public class ResourceProcessPanel extends JPanel {
 
         @Override
 		public int getColumnCount() {
-        	return 4;
+        	return 6;
 		}
 
         @Override
@@ -126,6 +128,8 @@ public class ResourceProcessPanel extends JPanel {
                 case RUNNING_STATE: return Boolean.class;
                 case BUILDING_NAME: return String.class;
                 case PROCESS_NAME: return String.class;                
+                case INPUT_SCORE: return Double.class;
+                case OUTPUT_SCORE: return Double.class;
                 case SCORE: return Double.class;
                 default:
                     throw new IllegalArgumentException("Column unknown " + columnIndex);
@@ -136,9 +140,11 @@ public class ResourceProcessPanel extends JPanel {
 		public String getColumnName(int columnIndex) {
             int realColumn = getPropFromColumn(columnIndex);
             switch(realColumn) {
-                case RUNNING_STATE: return "Active";
+                case RUNNING_STATE: return "On";
                 case BUILDING_NAME: return "Building";
                 case PROCESS_NAME: return "Process";
+                case INPUT_SCORE: return "Input";
+                case OUTPUT_SCORE: return "Output";
                 case SCORE: return "Score";
                 default:
                     throw new IllegalArgumentException("Column unknown " + columnIndex);
@@ -159,6 +165,8 @@ public class ResourceProcessPanel extends JPanel {
                 case RUNNING_STATE: return p.isProcessRunning();
                 case BUILDING_NAME: return getBuilding(row);                
                 case PROCESS_NAME: return p.getProcessName();
+                case INPUT_SCORE: return Math.round(p.getInputScore() * 100.0)/100.0;
+                case OUTPUT_SCORE: return Math.round(p.getOutputScore() * 100.0)/100.0;
                 case SCORE: return Math.round(p.getScore() * 100.0)/100.0;
                 default:
                     throw new IllegalArgumentException("Column unknown " + column);
@@ -176,7 +184,9 @@ public class ResourceProcessPanel extends JPanel {
                 case 0: return RUNNING_STATE;
                 case 1: return BUILDING_NAME;
                 case 2: return PROCESS_NAME;
-                case 3: return SCORE;
+                case 3: return INPUT_SCORE;
+                case 4: return OUTPUT_SCORE;
+                case 5: return SCORE;
                 default: return -1;
             }
         }
@@ -308,18 +318,24 @@ public class ResourceProcessPanel extends JPanel {
                     return null;
                 }
                 rowIndex = getRowSorter().convertRowIndexToModel(rowIndex);
+                
                 int colIndex = columnAtPoint(p);
 
                 if (colIndex == 0) {
                     return Msg.getString("ResourceProcessPanel.tooltip.toggling");
                 }
                 // Only display tooltip in last column
-                if ((colIndex-1) != resourceProcessTableModel.getColumnCount()) {
-                    return null;
-                }
-
-                return generateToolTip(resourceProcessTableModel.getProcess(rowIndex),
+//                if ((colIndex-1) != resourceProcessTableModel.getColumnCount()) {
+//                    return null;
+//                }
+                
+                // Only display tooltip if hovering over the 3rd column named "Process"
+                if (colIndex == 2) {
+                	return generateToolTip(resourceProcessTableModel.getProcess(rowIndex),
                 		resourceProcessTableModel.getBuilding(rowIndex));
+                }
+                
+                return null;
             }
         };
 
@@ -330,10 +346,12 @@ public class ResourceProcessPanel extends JPanel {
         TableColumnModel columnModel = pTable.getColumnModel();
         columnModel.getColumn(0).setCellRenderer(new RunningCellRenderer());
         columnModel.getColumn(0).setCellEditor(new RunningCellEditor());
-        columnModel.getColumn(0).setPreferredWidth(50);
-        columnModel.getColumn(1).setPreferredWidth(140);
+        columnModel.getColumn(0).setPreferredWidth(40);
+        columnModel.getColumn(1).setPreferredWidth(120);
         columnModel.getColumn(2).setPreferredWidth(200);
         columnModel.getColumn(3).setPreferredWidth(50);
+        columnModel.getColumn(4).setPreferredWidth(50);
+        columnModel.getColumn(5).setPreferredWidth(50);
         
         setLayout(new BorderLayout());
         add(scrollPanel, BorderLayout.CENTER);
@@ -345,7 +363,15 @@ public class ResourceProcessPanel extends JPanel {
      * Updates the status of any resource processes.
      */
     public void update() {
-        resourceProcessTableModel.fireTableDataChanged();
+//    	int numCol = resourceProcessTableModel.getColumnCount();
+    	int numRow = resourceProcessTableModel.getRowCount();
+    	for (int i=0; i< numRow; i++) {	
+    		resourceProcessTableModel.fireTableCellUpdated(i, 0);
+    		resourceProcessTableModel.fireTableCellUpdated(i, 3);
+    		resourceProcessTableModel.fireTableCellUpdated(i, 4);
+    		resourceProcessTableModel.fireTableCellUpdated(i, 5);
+    	}
+//        resourceProcessTableModel.fireTableDataChanged();
     }
     
     private String generateToolTip(ResourceProcess process, Building building) {

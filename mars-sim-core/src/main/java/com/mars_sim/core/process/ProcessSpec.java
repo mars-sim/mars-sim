@@ -30,7 +30,7 @@ public abstract class ProcessSpec implements Serializable {
 	private Set<Integer> ambientResources;
 	private Set<Integer> wasteResources;
 
-	/** How long does it take to complet ethe process*/
+	/** How long does it take to complete the process*/
 	private int processTime = 100;
 
 	/** The work time required to toggle this process on or off. */

@@ -74,11 +74,11 @@
 	</description>
 	<!-- rate: the input/output resource rate [in kg/sol] -->
 		<input resource="carbon dioxide" rate="396" ambient="true" />
-		<input resource="hydrogen" rate="36"  />
+		<input resource="hydrogen" rate="36" />
 		
-		<output resource="methane" rate="48"  />
+		<output resource="methane" rate="48" />
 		<output resource="carbon monoxide" rate="168" />
-		<output resource="water" rate="216"  />
+		<output resource="water" rate="216" />
 	</process> <!-- "Sabatier RWGS Reactor" -->
 
 		
@@ -122,7 +122,7 @@
 		<input resource="carbon monoxide" rate="84.0"  />
 		<input resource="hydrogen" rate="2.0"  />
 		
-		<output resource="carbon dioxide" rate="44.0" waste="false" />
+		<output resource="carbon dioxide" rate="44.0" waste="true" />
 		<output resource="water" rate="18.0"  />
 		<output resource="carbon" rate="24.0"  />
 	</process> <!-- "Carbon Formation Reactor (CFR)" -->
@@ -132,19 +132,30 @@
 			By partial pyrolysis in microwave generated plasma, methane is converted to 
 			hydrogen and acetylene:					  
 						2CH4 -> 3H2 + C2H2
-						32 g     6 g    26 g
+						32g     6g    26g
+						
+				3C2H4 +	2CH4 -> 3H2 + C2H2 + 2C3H6
+				 3*28g	32g     6g    26g	  2*42g
+						
 			Hydrogen separation carried out with electrochemical cell stack. 
 			
 			H2 recovered from CH4 and sent to Sabatier to recover additional O2 from CO2
 			- ~50% O2 recovery with Sabatier
 			- Potentially >85% total O2 recovery with PPA
+			- Acetylene C2H2 and propylene C3H6 are formed from ethylene C2H4 via radical 
+			  chain dehydrogenation and radical chain methylation reactions, respectively.  
 			- Acetylene must be removed from PPA outlet stream before hydrogen 
-				can be sent to Sabatier
+			  can be sent to Sabatier
+
+			References: 
+			1. https://pubs.acs.org/doi/10.1021/acs.iecr.1c01679  
 		</description> 
-		<input resource="methane" rate="32.0"  />
+		<input resource="methane" rate="32.0" />
+		<input resource="ethylene" rate="84.0" />
 		
-		<output resource="acetylene" rate="6.0"  />
-		<output resource="hydrogen" rate="26.0"  />
+		<output resource="hydrogen" rate="6.0" />
+		<output resource="acetylene" rate="26.0" />
+		<output resource="propylene" rate="84.0" />
 	</process> <!-- "Plasma Pyrolysis Assembly (PPA) Reactor" -->
 
 	<process name="Produce Oxygen and Acetylene with Chloride and Carbides" power-required="0.05" >
@@ -299,7 +310,7 @@
 		<output resource="argon" rate="1.94"  />
 		<output resource="water" rate="0.03"  />
 		<output resource="carbon monoxide" rate=".058"  />
-		<output resource="carbon dioxide" rate="95.111"  />
+		<output resource="carbon dioxide" rate="95.111" waste="false" />
 	</process> <!-- "Atmospheric Processing" -->
 	
 
@@ -329,8 +340,7 @@
 
 	<process name="Melt Ice" power-required="0.3125" >
 		<description> Melting permafrost ice and filtering the water. 
-			Specific heat capacity of ice is 2.09 J/g/C	
-					
+			Specific heat capacity of ice is 2.09 J/g/C			
 			e.g. For 1 mol of ice, from -25 C to 0 C
 			      = 18 g * 2.09 * (0 -(-25)) = 0.941 kJ		
 				
@@ -345,23 +355,18 @@
 			       or 1.3939 kW for 8 kg of ice	or 10.3785 kW for 60 kg of ice			
 						
 			Assume 450kJ/kg extraction energy in this case,
-			
-			.45 MJ * 60 = 27 MJ = 7.5 kWh for 60 kg water
-			Power required = 7.5 kWh / 24 h = 0.3125 kW
-			
-			(Given that 1 MJ = .278 kWh)
+				.45 MJ * 60 = 27 MJ = 7.5 kWh for 60 kg water
+			Power required = 7.5 kWh / 24 h = 0.3125 kW (Given that 1 MJ = .278 kWh)
 									
 			See "Water and Brines on Mars: Current Evidence and 
 			Implications for MSL", 2013	
 												
-			Note: 
+			Notes: 
 			1. May consider using vacuum chamber, microwaving, or field effects, 
 			electrocatalysis, etc.  to reduce power usage of 
 			ice melting by ~10-fold.	
 			2. Exposing ice sunlight is the most economic way of melting ice.
 			3. Ice melts when outside temperature is above zero deg Celsius  
-
-			
 		</description>
 		<input resource="ice" rate="80.0"  />
 		
@@ -462,13 +467,13 @@
 					3% akaganeite;
 					3% bassanite;
 		</description>
-			<input resource="regolith-C" rate="50.0"  />
+			<input resource="regolith-C" rate="50.0" />
 			
-			<output resource="smectite" rate="20.0"  />
-			<output resource="allophane" rate="1.5"  />
-			<output resource="akaganeite" rate="1.5"  />
-			<output resource="bassanite" rate="1.5"  />
-			<output resource="sand" rate="20.0"  />
+			<output resource="smectite" rate="20.0" />
+			<output resource="allophane" rate="1.5" />
+			<output resource="akaganeite" rate="1.5" />
+			<output resource="bassanite" rate="1.5" />
+			<output resource="sand" rate="20.0" />
 	</process>
 
 
@@ -481,175 +486,175 @@
 					3% bassanite;
 					3% smectite;
 		</description>
-			<input resource="regolith-D" rate ="50.0"  />
+			<input resource="regolith-D" rate ="50.0" />
 			
-			<output resource="basaltic" rate="11.75"  />
-			<output resource="smectite" rate="1.5"  />
-			<output resource="allophane" rate="1.5"  />
-			<output resource="akaganeite" rate="1.5"  />
-			<output resource="bassanite" rate="1.5"  />
-			<output resource="sand" rate="25.0"  />
+			<output resource="basaltic" rate="11.75" />
+			<output resource="smectite" rate="1.5" />
+			<output resource="allophane" rate="1.5" />
+			<output resource="akaganeite" rate="1.5" />
+			<output resource="bassanite" rate="1.5" />
+			<output resource="sand" rate="25.0" />
 			<!-- According to http://canada.marssociety.org/winnipeg/soil.html
 			regolith is estimated to contain 11.3% sodium bicarbonate (baking
 			soda) and 1.15% of sodium chloride (table salt) -->
-			<output resource="baking powder" rate="4.0"  />
-			<output resource="table salt" rate="0.4"  />
+			<output resource="baking powder" rate="4.0" />
+			<output resource="table salt" rate="0.4" />
 	</process>
 
 	<!-- https://geologyscience.com/minerals/hematite/ -->
 	<process name="Do Hematite smelting" power-required="1.3" >
 		<input resource="hematite" rate="25.0"  />
-		<input resource="carbon monoxide" rate=".5"  />
+		<input resource="carbon monoxide" rate=".5" />
 		
-		<output resource="iron powder" rate="2.0"  />
-		<output resource="iron oxide" rate="20.0"  />
-		<output resource="manganese" rate="2.0"  />						
-		<output resource="carbon dioxide" rate=".5"  />
+		<output resource="iron powder" rate="2.0" />
+		<output resource="iron oxide" rate="20.0" />
+		<output resource="manganese" rate="2.0" />						
+		<output resource="carbon dioxide" rate=".5" waste="false" />
 	</process>
 
 	<process name="Do Magnetite smelting" power-required="1.3" >
-			<input resource="magnetite" rate="25.0"  />
-			<input resource="carbon monoxide" rate=".5"  />
+			<input resource="magnetite" rate="25.0" />
+			<input resource="carbon monoxide" rate=".5" />
 			
-			<output resource="iron powder" rate="1.0"  />
-			<output resource="iron oxide" rate="20.0"  />									
-			<output resource="carbon dioxide" rate=".5"  />
-			<output resource="oxygen" rate="2.0"  />
-			<output resource="titanium" rate="1.0"  />				
+			<output resource="iron powder" rate="1.0" />
+			<output resource="iron oxide" rate="20.0" />									
+			<output resource="carbon dioxide" rate=".5" waste="false" />
+			<output resource="oxygen" rate="2.0" />
+			<output resource="titanium" rate="1.0" />				
 	</process>
 
 	<!-- https://geologyscience.com/minerals/goethite/ -->
 	<process name="Do Goethite smelting" power-required="1.3" >
-			<input resource="goethite" rate="50.0"  />
-			<input resource="carbon monoxide" rate=".5"  />
+			<input resource="goethite" rate="50.0" />
+			<input resource="carbon monoxide" rate=".5" />
 			
-			<output resource="iron powder" rate="2.0"  />
-			<output resource="iron oxide" rate="18.0"  />	
-			<output resource="iron hydroxide" rate="5.0"  />											
-			<output resource="magnesium" rate="2.0"  />						
-			<output resource="carbon dioxide" rate="1.0"  />
+			<output resource="iron powder" rate="2.0" />
+			<output resource="iron oxide" rate="18.0" />	
+			<output resource="iron hydroxide" rate="5.0" />											
+			<output resource="magnesium" rate="2.0" />						
+			<output resource="carbon dioxide" rate="1.0" waste="false" />
 	</process>
 
 	<process name="Do Olivine smelting" power-required="1.3" >
-			<input resource="olivine" rate="50.0"  />
-			<input resource="carbon monoxide" rate="32.5"  />
+			<input resource="olivine" rate="50.0" />
+			<input resource="carbon monoxide" rate="32.5" />
 			
-			<output resource="magnesium" rate="11.6"  />
-			<output resource="iron powder" rate="11.6"  />
-			<output resource="silicon" rate="8.1"  />
-			<output resource="carbon dioxide" rate="51.2"  />
+			<output resource="magnesium" rate="11.6" />
+			<output resource="iron powder" rate="11.6" />
+			<output resource="silicon" rate="8.1" />
+			<output resource="carbon dioxide" rate="51.2" waste="false" />
 	</process>
 
 	<process name="Do Magnesite smelting" power-required="1.3" >
-			<input resource="magnesite" rate="50.0"  />
-			<input resource="carbon monoxide" rate="16.6"  />
+			<input resource="magnesite" rate="50.0" />
+			<input resource="carbon monoxide" rate="16.6" />
 			
-			<output resource="magnesium" rate="14.4"  />
-			<output resource="carbon dioxide" rate="52.2"  />
-			<output resource="silica" rate="5"  />
+			<output resource="magnesium" rate="14.4" />
+			<output resource="carbon dioxide" rate="52.2" waste="false" />
+			<output resource="silica" rate="5" />
 	</process>
 
 	<process name="Do Kamacite smelting" power-required="1.3" >
-			<input resource="kamacite" rate="50.0"  />
+			<input resource="kamacite" rate="50.0" />
 			
-			<output resource="iron powder" rate="45.0"  />
-			<output resource="nickel" rate="5.0"  />
+			<output resource="iron powder" rate="45.0" waste="false" />
+			<output resource="nickel" rate="5.0" />
 	</process>
 
 	<process name="Do Taenite smelting" power-required="1.3" >
-			<input resource="taenite" rate="50.0"  />
+			<input resource="taenite" rate="50.0" />
 			
-			<output resource="iron powder" rate="20.0"  />
-			<output resource="nickel" rate="30.0"  />
+			<output resource="iron powder" rate="20.0" />
+			<output resource="nickel" rate="30.0" />
 	</process>
 
-	<process name="Do Chalcopyrite smelting"  power-required="1.3" >
-			<input resource="chalcopyrite" rate="50.0"  />
+	<process name="Do Chalcopyrite smelting" power-required="1.3" >
+			<input resource="chalcopyrite" rate="50.0" />
 			
 			<output resource="copper" rate="17.3" />
-			<output resource="iron powder" rate="15.2"   />
-			<output resource="sulfur" rate="17.5"  />
+			<output resource="iron powder" rate="15.2" />
+			<output resource="sulfur" rate="17.5" />
 	</process>
 
 	<process name="Do Malachite smelting" power-required="1.3" >
-			<input resource="malachite" rate="50.0"  />
-			<input resource="carbon" rate="2.7"  />
+			<input resource="malachite" rate="50.0" />
+			<input resource="carbon" rate="2.7" />
 			
-			<output resource="copper" rate="28.7"  />
-			<output resource="carbon dioxide" rate="19.9"  />
+			<output resource="copper" rate="28.7" />
+			<output resource="carbon dioxide" rate="19.9" waste="false" />
 			<!--output resource="hydroxide" rate="  "  /-->
-			<output resource="brine water" rate="4.1"  />
+			<output resource="brine water" rate="4.1" />
 	</process>
 	
 	<process name="Do Sylvite smelting" power-required="1.3" >
-			<input resource="sylvite" rate="50.0"  />
+			<input resource="sylvite" rate="50.0" />
 			
-			<output resource="potassium" rate="26.2"  />
-			<output resource="chlorine" rate="23.8"  />
+			<output resource="potassium" rate="26.2" />
+			<output resource="chlorine" rate="23.8" />
 	</process>
 
 	<process name="Extract minerals from Basaltic deposits" power-required="0.1" >
 		<description>
 			http://www.psrd.hawaii.edu/May09/Mars.Basaltic.Crust.html
 		</description>
-			<input resource="basaltic" rate="50.0"  />
+			<input resource="basaltic" rate="50.0" />
 			
-			<output resource="aluminum oxide" rate="8.0"  />
-			<output resource="magnesium" rate="6.0"  />
-			<output resource="manganese" rate="2.0"  />						
-			<output resource="sodium oxide" rate="5.0"  />
-			<output resource="potassium" rate="3.0"  />
-			<output resource="titanium" rate="3.0"  />
-			<output resource="iron oxide" rate="3.0"  />
-			<output resource="sand" rate="5.0"  />
-			<output resource="brine water" rate="10.0"  />
+			<output resource="aluminum oxide" rate="8.0" />
+			<output resource="magnesium" rate="6.0" />
+			<output resource="manganese" rate="2.0" />						
+			<output resource="sodium oxide" rate="5.0" />
+			<output resource="potassium" rate="3.0" />
+			<output resource="titanium" rate="3.0" />
+			<output resource="iron oxide" rate="3.0" />
+			<output resource="sand" rate="5.0" />
+			<output resource="brine water" rate="10.0" />
 	</process>
 
 	<process name="Extract minerals from Smectite deposits" power-required="0.1" >
-			<input resource="smectite" rate="50.0"  />
+			<input resource="smectite" rate="50.0" />
 			
-			<output resource="aluminum oxide" rate="9.0"  />
-			<output resource="lithium" rate="0.5"  />
-			<output resource="magnesium" rate="4.0"  />
-			<output resource="manganese" rate="2.0"  />						
-			<output resource="sodium oxide" rate="2.0"  />
-			<output resource="potassium" rate="2.0"  />
-			<output resource="calcium" rate="4.0"  />
-			<output resource="iron oxide" rate="2.0"  />
-			<output resource="rock salt" rate="4.0"  />
-			<output resource="sand" rate="10.0"  />
-			<output resource="brine water" rate="2.0"  />
+			<output resource="aluminum oxide" rate="9.0" />
+			<output resource="lithium" rate="0.5" />
+			<output resource="magnesium" rate="4.0" />
+			<output resource="manganese" rate="2.0" />						
+			<output resource="sodium oxide" rate="2.0" />
+			<output resource="potassium" rate="2.0" />
+			<output resource="calcium" rate="4.0" />
+			<output resource="iron oxide" rate="2.0" />
+			<output resource="rock salt" rate="4.0" />
+			<output resource="sand" rate="10.0" />
+			<output resource="brine water" rate="2.0" />
 	</process>
 
 	<process name="Extract minerals from Allophane deposits" power-required="0.2" >
-			<input resource="allophane" rate="50.0"  />
+			<input resource="allophane" rate="50.0" />
 			
-			<output resource="aluminum oxide" rate="30.0"  />
-			<output resource="silica" rate="1.0"  />
-			<output resource="sand" rate="6.0"  />
-			<output resource="brine water" rate="10.0"  />
+			<output resource="aluminum oxide" rate="30.0" />
+			<output resource="silica" rate="1.0" />
+			<output resource="sand" rate="6.0" />
+			<output resource="brine water" rate="10.0" />
 	</process>
 
 	<!-- http://www.handbookofmineralogy.org/pdfs/akaganeite.pdf 
 		https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2018JE005630 -->
 	<process name="Extract minerals from Akaganeite deposits" power-required="0.1" >
-			<input resource="akaganeite" rate="50.0"  />
+			<input resource="akaganeite" rate="50.0" />
 			
-			<output resource="iron oxide" rate="29.0"  />
-			<output resource="manganese" rate="0.2"  />						
-			<output resource="iron hydroxide" rate="10.0"  />
-			<output resource="iron chloride" rate="2.0"  />
-			<output resource="potash lye" rate="0.1"  />
-			<output resource="brine water" rate="1.0"  />
+			<output resource="iron oxide" rate="29.0" />
+			<output resource="manganese" rate="0.2" />						
+			<output resource="iron hydroxide" rate="10.0" />
+			<output resource="iron chloride" rate="2.0" />
+			<output resource="potash lye" rate="0.1" />
+			<output resource="brine water" rate="1.0" />
 	</process>
 			
 	<process name="Extract minerals from Bassanite deposits" power-required="0.1" >
-		<input resource="bassanite" rate="50.0"  />
-		<input resource="water" rate="5.0"  />
+		<input resource="bassanite" rate="50.0" />
+		<input resource="water" rate="5.0" />
 				
-		<output resource="gypsum" rate="45.0"  />
-		<output resource="calcium sulfate" rate="3.0"  />
-		<output resource="brine water" rate="5.0"  />
+		<output resource="gypsum" rate="45.0" />
+		<output resource="calcium sulfate" rate="3.0" />
+		<output resource="brine water" rate="5.0" />
 	</process>
 		
 	<process name="Extract minerals from Sand" power-required="0.2" >
@@ -659,17 +664,17 @@
 			https://en.wikipedia.org/wiki/Sodium_oxide
 			https://www.nasa.gov/sites/default/files/atoms/files/isru-isfr-mrs-nr.pdf
 		</description>
-		<input resource="sand" rate="44.5"  />					
-		<input resource="sodium carbonate" rate="2.5"  />
+		<input resource="sand" rate="44.5" />					
+		<input resource="sodium carbonate" rate="2.5" />
 
 		<output resource="carbon dioxide" rate="0.5" waste="false" />
-		<output resource="aluminum oxide" rate="9.0"  />
-		<output resource="sodium oxide" rate="2.5"  />
-		<output resource="iron powder" rate="1.0"  />					
-		<output resource="sulfur" rate="4.0"  />					
-		<output resource="silica" rate="13.0"  />
-		<output resource="silicon" rate="2.0"  />
-		<output resource="glass" rate="15.0"  />	
+		<output resource="aluminum oxide" rate="9.0" />
+		<output resource="sodium oxide" rate="2.5" />
+		<output resource="iron powder" rate="1.0" />					
+		<output resource="sulfur" rate="4.0" />					
+		<output resource="silica" rate="13.0" />
+		<output resource="silicon" rate="2.0" />
+		<output resource="glass" rate="15.0" />	
 	</process>
 
 	<!-- Process for reducing gypsum to calcium carbonate using carbon. -->
@@ -684,13 +689,13 @@
 			CaS + H&lt;sub&gt;2&lt;/sub&gt;O + CO&lt;sub&gt;2&lt;/sub&gt; -> CaCO&lt;sub&gt;3&lt;/sub&gt; (calcium carbonate) + H&lt;sub&gt;2&lt;/sub&gt;S
 			Note: ignoring hydrogen sulfide as waste for now. 
 		</description>
-		<input resource="gypsum" rate="50.0"  />
-		<input resource="carbon" rate="7.0"  />
+		<input resource="gypsum" rate="50.0" />
+		<input resource="carbon" rate="7.0" />
 
-		<output resource="calcium sulfate" rate="2.0"  />
-		<output resource="calcium carbonate" rate="27.0"  />
-		<output resource="carbon dioxide" rate="12.7" waste="false" />
-		<output resource="brine water" rate="5.2"  />
+		<output resource="calcium sulfate" rate="2.0" />
+		<output resource="calcium carbonate" rate="27.0" />
+		<output resource="carbon dioxide" rate="12.7" waste="true" />
+		<output resource="brine water" rate="5.2" />
 	</process>
 
 	<process name="Reduce Gypsum to Calcium carbonate with Carbon Monoxide" power-required="0.3" >
@@ -701,13 +706,13 @@
 			CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S
 			Note: ignoring hydrogen sulfide as waste for now.
 		</description>
-		<input resource="gypsum" rate="50.0"  />
-		<input resource="carbon monoxide" rate="32.5"  />
+		<input resource="gypsum" rate="50.0" />
+		<input resource="carbon monoxide" rate="32.5" />
 		
-		<output resource="calcium sulfate" rate="2.0"  />
-		<output resource="calcium carbonate" rate="27.0"  />
-		<output resource="carbon dioxide" rate="38.1" waste="false" />
-		<output resource="brine water" rate="5.2"  />
+		<output resource="calcium sulfate" rate="2.0" />
+		<output resource="calcium carbonate" rate="27.0" />
+		<output resource="carbon dioxide" rate="38.1" waste="true" />
+		<output resource="brine water" rate="5.2" />
 	</process>
 
 
@@ -719,13 +724,13 @@
 			CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S
 			Note: ignoring hydrogen sulfide as waste for now.
 		</description>					
-		<input resource="gypsum" rate="50.0"  />
-		<input resource="hydrogen" rate="2.3"  />
+		<input resource="gypsum" rate="50.0" />
+		<input resource="hydrogen" rate="2.3" />
 		<input resource="carbon dioxide" rate="12.8" ambient="true" />
 
-		<output resource="calcium sulfate" rate="2.0"  />					
-		<output resource="calcium carbonate" rate="27.0"  />
-		<output resource="brine water" rate="26.0"  />
+		<output resource="calcium sulfate" rate="2.0" />					
+		<output resource="calcium carbonate" rate="27.0" />
+		<output resource="brine water" rate="26.0" />
 	</process>
 			
 	<process name="Make Gypsum Plaster via Calcination" power-required="0.02" >
@@ -734,18 +739,18 @@
 			The core ingredient of gypsum plaster is gypsum rock–hydrous calcium sulfate, 
 			which has a water content of about 20% in chemical combination.
 		</description>					
-		<input resource="gypsum" rate="5.0"  />
+		<input resource="gypsum" rate="5.0" />
 
-		<output resource="gypsum plaster" rate="4.0"  />
-		<output resource="brine water" rate="1.0"  />
+		<output resource="gypsum plaster" rate="4.0" />
+		<output resource="brine water" rate="1.0" />
 	</process>
 					
 	<process name="Make quartz from silica" power-required="0.5" >
-		<input resource="silica" rate="45.0"  />
-		<input resource="calcium carbonate" rate="1.0"  />
-		<input resource="sodium carbonate" rate="1.0"  />
+		<input resource="silica" rate="45.0" />
+		<input resource="calcium carbonate" rate="1.0" />
+		<input resource="sodium carbonate" rate="1.0" />
 		
-		<output resource="quartz" rate="40.0"  />
+		<output resource="quartz" rate="40.0" />
 	</process>
 
 	<process name="Make soda from sodium oxide" power-required=".03" >
@@ -755,22 +760,22 @@
 			in water, then bubble carbon dioxide through the water. Oxygen will be released and soda created.
 			Boil down the result to extract the water and you have soda.
 		</description>	
-		<input resource="sodium oxide" rate="10.0"  />
-		<input resource="water" rate="1.0"  />	
+		<input resource="sodium oxide" rate="10.0" />
+		<input resource="water" rate="1.0" />	
 		<input resource="carbon dioxide" rate="1.0" ambient="true" />
 		
-		<output resource="sodium carbonate" rate="5.0"  />
+		<output resource="sodium carbonate" rate="5.0" />
 	</process>
 
 	<process name="Make cement" power-required=".1" >
-		<input resource="regolith" rate="30.0"  />
-		<input resource="gypsum" rate="5.0"  />
-		<input resource="calcium carbonate" rate="5.0"  />
-		<input resource="aluminum oxide" rate="2.5"  />
-		<input resource="iron oxide" rate="2.5"  />
-		<input resource="silica" rate="5.0"  />
+		<input resource="regolith" rate="30.0" />
+		<input resource="gypsum" rate="5.0" />
+		<input resource="calcium carbonate" rate="5.0" />
+		<input resource="aluminum oxide" rate="2.5" />
+		<input resource="iron oxide" rate="2.5" />
+		<input resource="silica" rate="5.0" />
 
-		<output resource="cement" rate="50.0"  />
+		<output resource="cement" rate="50.0" />
 	</process>
 
 <!-- 
@@ -781,24 +786,24 @@
 		<description>
 	     Use cement as binder to make concrete
 		</description>						
-		<input resource="sand" rate="60.0"  />
-		<input resource="cement" rate="34.0"  />
-		<input resource="polyethylene" rate="1.0"  />
-		<input resource="water" rate="5.0"  />		
+		<input resource="sand" rate="60.0" />
+		<input resource="cement" rate="34.0" />
+		<input resource="polyethylene" rate="1.0" />
+		<input resource="water" rate="5.0" />		
 
-		<output resource="concrete" rate="100.0"  />
+		<output resource="concrete" rate="100.0" />
 	</process>
 
 	<process name="Mix concrete 2" power-required="0.2" >
 		<description>
 	     Replace water with brine water
 		</description>
-		<input resource="sand" rate="60.0"  />
-		<input resource="cement" rate="34.0"  />
-		<input resource="polyethylene" rate="1.0"  />
-		<input resource="brine water" rate="5.0"  />		
+		<input resource="sand" rate="60.0" />
+		<input resource="cement" rate="34.0" />
+		<input resource="polyethylene" rate="1.0" />
+		<input resource="brine water" rate="5.0" />		
 
-		<output resource="concrete" rate="100.0"  />
+		<output resource="concrete" rate="100.0" />
 	</process>
 	
 	<process name="Mix sulfur concrete" power-required="0.2" >
@@ -830,12 +835,12 @@
 		14. [A Novel Material for In Situ Construction on Mars: Experiments and Numerical Simulations](https://arxiv.org/abs/1512.05461)
 		15. [A Home Away from Home](https://pubs.acs.org/doi/10.1021/acscentsci.7b00538)
 		</description>
-		<input resource="sulfur" rate="50.0"  />
-		<input resource="sand" rate="25.0"  />
-		<input resource="regolith" rate="24.0"  />
-		<input resource="polyethylene" rate="1.0"  />	
+		<input resource="sulfur" rate="50.0" />
+		<input resource="sand" rate="25.0" />
+		<input resource="regolith" rate="24.0" />
+		<input resource="polyethylene" rate="1.0" />	
 
-		<output resource="concrete" rate="100.0"  />
+		<output resource="concrete" rate="100.0" />
 	</process>
 
 	
@@ -843,12 +848,12 @@
 		<description>
 	       Same as concrete mixing but using lime in place of cement. 
 		</description>	
-		<input resource="sand" rate="60.0"  />
-		<input resource="lime" rate="34.0"  />
-		<input resource="polyethylene" rate="1.0"  />
-		<input resource="water" rate="5.0"  />		
+		<input resource="sand" rate="60.0" />
+		<input resource="lime" rate="34.0" />
+		<input resource="polyethylene" rate="1.0" />
+		<input resource="water" rate="5.0" />		
 
-		<output resource="concrete" rate="100.0"  />
+		<output resource="concrete" rate="100.0" />
 	</process>
 
 	<!-- Same as concrete mixing but using lime in place of cement. -->
@@ -856,12 +861,12 @@
 		<description>
 	     Replace water with brine water
 		</description>	
-		<input resource="sand" rate="60.0"  />
-		<input resource="lime" rate="34.0"  />
-		<input resource="polyethylene" rate="1.0"  />
-		<input resource="brine water" rate="5.0"  />		
+		<input resource="sand" rate="60.0" />
+		<input resource="lime" rate="34.0" />
+		<input resource="polyethylene" rate="1.0" />
+		<input resource="brine water" rate="5.0" />		
 
-		<output resource="concrete" rate="100.0"  />
+		<output resource="concrete" rate="100.0" />
 	</process>
 	
 	<process name="Make magnesium-based concrete 1" power-required="0.5" >
@@ -879,26 +884,26 @@
 			See 'Constructing Mars: Concrete and Energy Production from Serpentinization Products' 
 			https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2017EA000353 
 		</description>
-		<input resource="olivine" rate="20.0"  />
-		<input resource="sand" rate="33.0"  />
-		<input resource="magnesium" rate="10.0"  />		
+		<input resource="olivine" rate="20.0" />
+		<input resource="sand" rate="33.0" />
+		<input resource="magnesium" rate="10.0" />		
 		<input resource="water" rate="9.0"  />
 
-		<output resource="hydrogen" rate="1.0"  />
-		<output resource="concrete" rate="71.0"  />
+		<output resource="hydrogen" rate="1.0" />
+		<output resource="concrete" rate="71.0" />
 	</process>
 
 	<process name="Make magnesium-based concrete 2" power-required="0.5" >
 		<description> 
 			Replace water with brine water
 		</description>
-		<input resource="olivine" rate="20.0"  />
-		<input resource="sand" rate="61.0"  />
-		<input resource="magnesium" rate="10.0"  />		
-		<input resource="brine water" rate="9.0"  />
+		<input resource="olivine" rate="20.0" />
+		<input resource="sand" rate="61.0" />
+		<input resource="magnesium" rate="10.0" />		
+		<input resource="brine water" rate="9.0" />
 
-		<output resource="hydrogen" rate="1.0"  />
-		<output resource="concrete" rate="94.0"  />
+		<output resource="hydrogen" rate="1.0" />
+		<output resource="concrete" rate="94.0" />
 	</process>
 	
 	<process name="Produce Ethylene" power-required="0.05" >
@@ -913,12 +918,12 @@
 			
 		</description>
 		<input resource="carbon dioxide" rate="88.0" ambient="true" />
-		<input resource="hydrogen" rate="12.0"   />
-		<input resource="iron powder" rate="0.04"   />
+		<input resource="hydrogen" rate="12.0" />
+		<input resource="iron powder" rate="0.04" />
 		
-		<output resource="ethylene" rate="28.0"   />
-		<output resource="water" rate="72.0"  />
-		<output resource="iron powder" rate="0.03"  />
+		<output resource="ethylene" rate="28.0" />
+		<output resource="water" rate="72.0"/>
+		<output resource="iron powder" rate="0.03" />
 	</process>
 
 	<process name="Produce Polyethylene from Ethylene" power-required="0.01" >
@@ -927,9 +932,9 @@
 			and put under pressure in the presence of a catalyst. 
 			Assuming 10% loss during production.
 		</description>
-		<input resource="ethylene" rate="5.0"  />
+		<input resource="ethylene" rate="5.0" />
 		
-		<output resource="polyethylene" rate="4.5"  />
+		<output resource="polyethylene" rate="4.5" />
 	</process>
 
 	<process name="Produce Styrene from Ethylene" power-required=".05" >
@@ -940,23 +945,23 @@
 			3C2H2 (acetylene) -> (condensed) C6H6 (benzene)
 			C6H6 (benzene) + C2H4 (ethylene) -> C2H3C6H5 (styrene)
 		</description>	
-		<input resource="carbon" rate="32.12"  />
-		<input resource="lime" rate="2.0"  />
-		<input resource="water" rate="16.05"  />
-		<input resource="ethylene" rate="8.34"  />
+		<input resource="carbon" rate="32.12" />
+		<input resource="lime" rate="2.0" />
+		<input resource="water" rate="16.05" />
+		<input resource="ethylene" rate="8.34" />
 		
-		<output resource="carbon monoxide" rate="24.97"  />
-		<output resource="styrene" rate="30.95"  />
+		<output resource="carbon monoxide" rate="24.97" />
+		<output resource="styrene" rate="30.95" />
 	</process>
 
 	<process name="Produce Polystyrene from Styrene" power-required=".01" >
-		<input resource="styrene" rate="5"  />
-		<output resource="polystyrene" rate="4.5"  />
+		<input resource="styrene" rate="5" />
+		<output resource="polystyrene" rate="4.5" />
 	</process>
 
 	<process name="Produce Polypropylene from Prophylene" power-required=".01" >
-		<input resource="Prophylene" rate="5"  />
-		<output resource="Polypropylene" rate="4.5"  />
+		<input resource="Prophylene" rate="5" />
+		<output resource="Polypropylene" rate="4.5" />
 	</process>
 	
 	<process name="Methanol-to-olefin (MTO) process" power-required=".5" >
@@ -976,13 +981,13 @@
 			14% ethane, 5% tailgas  
 			
 		</description>	
-		<input resource="methanol" rate="10"  />
+		<input resource="methanol" rate="10" />
 		
-		<output resource="ethane" rate="1.4"  />
-		<output resource="water" rate="0.5"  />
-		<output resource="ethylene" rate="4.1"  />
-		<output resource="prophylene" rate="3.9"  />
-	</process>
+		<output resource="ethane" rate="1.4" />
+		<output resource="water" rate="0.5" />
+		<output resource="ethylene" rate="4.1" />
+		<output resource="prophylene" rate="3.9" />
+	</process> <!-- "Methanol-to-olefin (MTO) process" -->
 
 
 	<process name="Bake calcium carbonate to lime" power-required=".1"  >
@@ -991,8 +996,8 @@
 		</description>	
 		<input resource="calcium carbonate" rate="50.0"  />
 		
-		<output resource="lime" rate="27.8"  />
-		<output resource="carbon dioxide" rate="21.8"  />
+		<output resource="lime" rate="27.8" />
+		<output resource="carbon dioxide" rate="21.8" waste="false" />
 	</process>
 
 	<!-- NASA's Regenerative ECLSS Water Recovery System (WRS)
@@ -1024,11 +1029,11 @@
 		<!-- ambient: true if resource is freely available from outside -->
 		<!--          false if supplied from settlement's inventory. -->
 
-		<input resource="grey water" rate="40.0"  />
+		<input resource="grey water" rate="40.0" />
 		<!-- Residual requirement for using chlorine in water treatment
 				is 0.25 to 1 mg of Cl gas per kg of water. Thus 40 kg water
 				requires 10 mg of Cl gas -->
-		<input resource="chlorine" rate=".00001"  />
+		<input resource="chlorine" rate=".00001" />
 
 		<!-- Output : clean water, solid waste -->
 		<!-- resource: the resource resulting from the process. -->
@@ -1036,8 +1041,8 @@
 		<!-- rate: the rate (kg/sol) the resource is produced -->
 		<!-- ambient: true if resource is vented outside -->
 		<!--          false if kept by settlement's inventory. -->
-		<output resource="water" rate="38"  />
-		<output resource="solid waste" rate="2"  />
+		<output resource="water" rate="38" />
+		<output resource="solid waste" rate="2" />
 	</process>
 
 	<!-- NASA's Urine Processor Assembly (UPA) uses low pressure
@@ -1060,21 +1065,21 @@
 	2 kg of toxic waste. There is a lost of 1 kg of water.
 	-->
 	<process name="Black Water Processor" power-required=".315" >
-		<input resource="black water" rate="10"  />
+		<input resource="black water" rate="10" />
 		<!-- Residual requirement for using chlorine in water treatment
 				is 0.25 to 1 mg of Cl gas per kg of water. Thus 20 kg water
 				requires 20 mg of Cl gas -->
-		<input resource="chlorine" rate=".00002"  />
-		<input resource="nitrospira spp" rate="0.02"  />
-		<input resource="nitrosomonas spp" rate="0.02"  />
+		<input resource="chlorine" rate=".00002" />
+		<input resource="nitrospira spp" rate="0.02" />
+		<input resource="nitrosomonas spp" rate="0.02" />
 
-		<output resource="grey water" rate="3.5"  />
-		<output resource="water" rate="5"  />
-		<output resource="toxic waste" rate="1"  />
-		<output resource="nitrogen" rate=".25"  />
-		<output resource="nitrite" rate=".5"  />
-		<output resource="nitrate" rate=".5"  />
-		<output resource="phosphorus" rate=".25"  />
+		<output resource="grey water" rate="3.5" />
+		<output resource="water" rate="5" />
+		<output resource="toxic waste" rate="1" />
+		<output resource="nitrogen" rate=".25" />
+		<output resource="nitrite" rate=".5" />
+		<output resource="nitrate" rate=".5" />
+		<output resource="phosphorus" rate=".25" />
 	</process>
 
 	<!-- For Waste Management
@@ -1082,44 +1087,44 @@
 	http://www.nasa.gov/audience/foreducators/k-4/features/F_Recycling_for_Moon.html
 	-->
 	<process name="Solid Waste Management" power-required=".2" >
-		<input resource="solid waste" rate="6"  />
+		<input resource="solid waste" rate="6" />
 		
-		<output resource="fertilizer" rate="1"  />
-		<output resource="compost" rate="1"  />
-		<output resource="toxic waste" rate="1"  />
-		<output resource="nitrogen" rate=".5"  />
-		<output resource="nitrite" rate=".5"  />
-		<output resource="nitrate" rate=".5"  />
-		<output resource="phosphorus" rate=".5"  />
-		<output resource="carbon" rate="1"  />
+		<output resource="fertilizer" rate="1" />
+		<output resource="compost" rate="1" />
+		<output resource="toxic waste" rate="1" />
+		<output resource="nitrogen" rate=".5" />
+		<output resource="nitrite" rate=".5" />
+		<output resource="nitrate" rate=".5" />
+		<output resource="phosphorus" rate=".5" />
+		<output resource="carbon" rate="1" />
 	</process>				
 
 	<process name="Food Waste Management" power-required=".1" >
-		<input resource="food waste" rate="4"  />
+		<input resource="food waste" rate="4" />
 		
-		<output resource="fertilizer" rate=".5"  />
-		<output resource="compost" rate=".5"  />
-		<output resource="nitrogen" rate=".5"  />
-		<output resource="nitrite" rate=".5"  />
-		<output resource="nitrate" rate=".5"  />
-		<output resource="phosphorus" rate=".5"  />
-		<output resource="carbon" rate="1"  />				
+		<output resource="fertilizer" rate=".5" />
+		<output resource="compost" rate=".5" />
+		<output resource="nitrogen" rate=".5" />
+		<output resource="nitrite" rate=".5" />
+		<output resource="nitrate" rate=".5" />
+		<output resource="phosphorus" rate=".5" />
+		<output resource="carbon" rate="1" />				
 	</process>		
 
 	<process name="Hazard Waste Incineration" power-required=".5" >
-		<input resource="toxic waste" rate="10"  />
-		<output resource="carbon" rate="10"  />					
+		<input resource="toxic waste" rate="10" />
+		<output resource="carbon" rate="10" />					
 	</process>		
 
 	<process name="Electronic Waste Disposal" power-required=".5" >
-		<input resource="electronic waste" rate="10"  />
-		<output resource="carbon" rate="10"  />					
+		<input resource="electronic waste" rate="10" />
+		<output resource="carbon" rate="10" />					
 	</process>
 
 	<process name="Soil Generation" power-required=".1" >
-		<input resource="crop waste" rate="5"  />
-		<input resource="compost" rate="5"  />
-		<output resource="soil" rate="10"  />					
+		<input resource="crop waste" rate="5" />
+		<input resource="compost" rate="5" />
+		<output resource="soil" rate="10" />					
 	</process>
 
 </process-list>
