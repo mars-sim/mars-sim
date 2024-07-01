@@ -151,8 +151,8 @@
 		<resource name="Methanol" reserve="300" max="10000" />
 		<resource name="Water" reserve="400" max="10000" />
 		<resource name="Hydrogen" reserve="400" max="10000" />
-		<resource name="Nitrogen" reserve="100" max="5000" />
-		<resource name="Carbon Dioxide" reserve="50" max="2000" />
+		<resource name="Nitrogen" reserve="20" max="5000" />
+		<resource name="Carbon Dioxide" reserve="4" max="1000" />
 	</essential-resources>
 
 	<!-- The Standard patterns are the default and but always be present. 

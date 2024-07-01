@@ -793,70 +793,66 @@ public class GoodsManager implements Serializable {
     }
 
 	/**
-	 * Checks the demand for a gas.
+	 * Checks if the demand for a resource is met.
 	 *
 	 * @param gasID
+	 * @return
 	 */
-	public void checkResourceDemand(int gasID, double time) {
-		double result = 0;
+	public boolean checkResourceDemand(int gasID, double time) {
+		double lacking = 0;
 
 		var limits = resLimits.get(gasID);
 		if (limits == null) {
 			throw new IllegalArgumentException("Resource is not essential " + gasID);
 		}
-		int gasReserve = limits.reserve();
-		int gasMax = limits.max();
+		int reservePerPop = limits.reserve();
+		int maxPerPop = limits.max();
 		int pop = settlement.getNumCitizens();
 		
 		double demand = getDemandValueWithID(gasID);
-		if (demand > gasMax)
-			demand = gasMax;
-		if (demand < 1)
-			demand = 1;
-		
+
 		// Compare the available amount of oxygen
 		double supply = getSupplyValue(gasID);
 
-		double reserve = settlement.getAmountResourceStored(gasID);
+		double stored = settlement.getAmountResourceStored(gasID);
 	
-		if (reserve + supply * pop > (gasReserve * 2 + demand) * pop) {
-			return;
-		}
-		
-		else if (reserve + supply * pop > (gasReserve + demand) * pop) {
-			result = (gasReserve + demand - supply) * pop - reserve;
-		}
-
-		else if (.5 * (reserve + supply * pop) > (gasReserve + demand) * pop) {
-			result = (gasReserve + demand - 0.5 * supply) * pop - .5 * reserve;
+		if (stored >= reservePerPop * pop) {
+			return true;
 		}
 
 		else {
-			result = (gasReserve + demand - 0.5 * supply) * pop - .5 * reserve;
+			lacking = reservePerPop * pop - stored;
 		}
 		
-		if (result < 0)
-			result = 0;
+		if (lacking < 0)
+			lacking = 0;
 				
-		if (result > gasMax)
-			result = gasMax;
+		if (lacking > maxPerPop)
+			lacking = maxPerPop;
 
-		double delta = result - demand;
-		if (delta > CHECK_RESOURCES) {
-			
-			// Limit each increase to a value only to avoid an abrupt rise or drop in demand 
-			delta = time * CHECK_RESOURCES;
+		double delta = stored / (stored - lacking) * demand - demand;
+		
+		// Note: may need to limit each increase to a value only to avoid an abrupt rise or drop in demand 
+
+		if (delta > 0) {
 			String gasName = ResourceUtil.findAmountResourceName(gasID);
-			logger.info(settlement, 60_000L, 
-					"Previous demand for " + gasName + ": " + Math.round(demand * 10.0)/10.0 
-					+ "  Supply: " + Math.round(supply * 10.0)/10.0 
-					+ "  Reserve: " + Math.round(reserve * 10.0)/10.0		
-					+ "  Delta: " + Math.round(delta * 10.0)/10.0
-					+ "  New Demand: " + Math.round((demand + delta) * 10.0)/10.0 + ".");
+			logger.info(settlement, 60_000L,
+					gasName + " - " 
+					+ "Old demand: " + Math.round(demand * 100.0)/100.0 
+					+ "  Supply: " + Math.round(supply * 100.0)/100.0 
+					+ "  Stored: " + Math.round(stored * 100.0)/100.0
+					+ "  reserve: " + Math.round(reservePerPop * 100.0)/100.0
+					+ "  lacking: " + Math.round(lacking * 100.0)/100.0		
+					+ "  Delta: " + Math.round(delta * 100.0)/100.0
+					+ "  New Demand: " + Math.round((demand + delta) * 100.0)/100.0 + ".");
 			
 			// Inject a sudden change of demand
 			setDemandValue(GoodsUtil.getGood(gasID), (demand + delta));
+			
+			return false;
 		}
+		
+		return true;
 	}
 
 	/**

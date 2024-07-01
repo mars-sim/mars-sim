@@ -237,7 +237,8 @@ public class BudgetResources extends Task {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double reviewingPhase(double time) {
-			
+		boolean failed = false;
+		
 		if (getTimeCompleted() > REVIEW_PERC * getDuration()) {
 			switch(taskNum) {
 				case ACCOM_WATER: {
@@ -249,9 +250,11 @@ public class BudgetResources extends Task {
 						+ "'s water ration level.  water: " + Math.round(data[0]*10.0)/10.0
 							+ "  Waste water: " + Math.round(data[1]*10.0)/10.0 + ".");
 				} break;
+				
 				case RESOURCE: {
-					person.getAssociatedSettlement().getGoodsManager().checkResourceDemand(settlementResource, time);
+					failed = !person.getAssociatedSettlement().getGoodsManager().checkResourceDemand(settlementResource, time);
 				} break;
+				
 				case SETTLEMENT_WATER: {
 					if (person.getAssociatedSettlement().isWaterRatioChanged()) {
 						// Make the new water ratio the same as the cache
@@ -263,10 +266,13 @@ public class BudgetResources extends Task {
 			// Add experience
 			addExperience(time);
 			
+			if (failed)
+				endTask();
+			
 			// Go to the next phase
 			setPhase(APPROVING);
 		}
-
+		
         return 0;
 	}
 
@@ -289,9 +295,11 @@ public class BudgetResources extends Task {
 				logger.info(worker, 0, "New water waste measures approved for " 
 						+ building.getName() + ".");
 				break;
+				
 			case RESOURCE:
 				logger.info(worker, 0, "New resource demand measures approved.");
 				break;
+				
 			case SETTLEMENT_WATER:
 				logger.info(worker, 0, "New water ratio measures approved.");
 				break;

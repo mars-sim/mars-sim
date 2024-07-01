@@ -89,10 +89,10 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
 	
-	private static final double RESOURCE_RATE_0 = 10;
-	private static final double RESOURCE_RATE_1 = 30;
-	private static final double WASTE_RATE_0 = 10;
-	private static final double WASTE_RATE_1 = 30;
+	private static final double RESOURCE_RATE_0 = 50;
+	private static final double RESOURCE_RATE_1 = 500;
+	private static final double WASTE_RATE_0 = 20;
+	private static final double WASTE_RATE_1 = 200;
 	private static final double MAX_SCORE = 5_000;
 	
     public ToggleResourceProcessMeta() {
@@ -308,13 +308,13 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			// if output score is smaller than the input score
 			else if (score < 0 && process.isProcessRunning()) {
 				// want to shut it down
-				score *= rate0;
+				score *= rate1;
 			}
 	
 			// if output score is greater than the input score
 			else if (score > 0 && !process.isProcessRunning()) {
 				// want to turn it on
-				score *= rate1;
+				score *= rate0;
 			}
 	
 			// if output score is smaller than the input score
