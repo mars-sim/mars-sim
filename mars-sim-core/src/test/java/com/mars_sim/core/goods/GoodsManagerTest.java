@@ -35,14 +35,18 @@ public class GoodsManagerTest extends AbstractMarsSimUnitTest {
 
         int reserved = gm.reserveResourceReview();
 
-        // Add some gas
-        s.storeAmountResource(reserved, 100D);
+        // Add a resource with 1 kg
+        s.storeAmountResource(reserved, 1D);
         reviewDue = gm.getResourceReviewDue();
         assertEquals("Essential resources needing review after reserve", ess.keySet().size()-1, reviewDue);
 
         double initialDemand = gm.getDemandValueWithID(reserved);
-        gm.checkResourceDemand(reserved, 100D);
+        boolean passed = gm.checkResourceDemand(reserved);
         double newDemand = gm.getDemandValueWithID(reserved);
-        assertNotEquals("Demand has changed after review", initialDemand, newDemand);
+        if (passed)
+        	assertEquals("Demand remains the same after budget review", initialDemand, newDemand);
+        else
+        	assertNotEquals("Demand has changed after budget review", initialDemand, newDemand);
+        
     }
 }

@@ -795,26 +795,26 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Checks if the demand for a resource is met.
 	 *
-	 * @param gasID
-	 * @return
+	 * @param resourceID
+	 * @return true if passed
 	 */
-	public boolean checkResourceDemand(int gasID, double time) {
+	public boolean checkResourceDemand(int resourceID) {
 		double lacking = 0;
 
-		var limits = resLimits.get(gasID);
+		var limits = resLimits.get(resourceID);
 		if (limits == null) {
-			throw new IllegalArgumentException("Resource is not essential " + gasID);
+			throw new IllegalArgumentException("Resource is not essential " + resourceID);
 		}
 		int reservePerPop = limits.reserve();
 		int maxPerPop = limits.max();
 		int pop = settlement.getNumCitizens();
 		
-		double demand = getDemandValueWithID(gasID);
+		double demand = getDemandValueWithID(resourceID);
 
 		// Compare the available amount of oxygen
-		double supply = getSupplyValue(gasID);
+		double supply = getSupplyValue(resourceID);
 
-		double stored = settlement.getAmountResourceStored(gasID);
+		double stored = settlement.getAmountResourceStored(resourceID);
 	
 		if (stored >= reservePerPop * pop) {
 			return true;
@@ -835,7 +835,7 @@ public class GoodsManager implements Serializable {
 		// Note: may need to limit each increase to a value only to avoid an abrupt rise or drop in demand 
 
 		if (delta > 0) {
-			String gasName = ResourceUtil.findAmountResourceName(gasID);
+			String gasName = ResourceUtil.findAmountResourceName(resourceID);
 			logger.info(settlement, 60_000L,
 					gasName + " - " 
 					+ "Old demand: " + Math.round(demand * 100.0)/100.0 
@@ -847,7 +847,7 @@ public class GoodsManager implements Serializable {
 					+ "  New Demand: " + Math.round((demand + delta) * 100.0)/100.0 + ".");
 			
 			// Inject a sudden change of demand
-			setDemandValue(GoodsUtil.getGood(gasID), (demand + delta));
+			setDemandValue(GoodsUtil.getGood(resourceID), (demand + delta));
 			
 			return false;
 		}

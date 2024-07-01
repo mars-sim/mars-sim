@@ -66,8 +66,10 @@ public class BudgetResources extends Task {
 				return (disciplineAptitude + leadershipAptitude - 100D) / 100D;
 			}
 		};
-	
+		
 	// Data members
+	boolean notPassed = false;
+		
 	/** The administration building the person is using. */
 	private Administration office;
 	
@@ -237,7 +239,6 @@ public class BudgetResources extends Task {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double reviewingPhase(double time) {
-		boolean failed = false;
 		
 		if (getTimeCompleted() > REVIEW_PERC * getDuration()) {
 			switch(taskNum) {
@@ -252,7 +253,7 @@ public class BudgetResources extends Task {
 				} break;
 				
 				case RESOURCE: {
-					failed = !person.getAssociatedSettlement().getGoodsManager().checkResourceDemand(settlementResource, time);
+					notPassed = !person.getAssociatedSettlement().getGoodsManager().checkResourceDemand(settlementResource);
 				} break;
 				
 				case SETTLEMENT_WATER: {
@@ -265,8 +266,8 @@ public class BudgetResources extends Task {
 
 			// Add experience
 			addExperience(time);
-			
-			if (failed)
+	
+			if (notPassed)
 				endTask();
 			
 			// Go to the next phase
@@ -326,6 +327,16 @@ public class BudgetResources extends Task {
 			office.removeStaff();
 		}
 	}
+	
+	/**
+	 * Has the essential resource check failed ?
+	 * 
+	 * @return
+	 */
+	public boolean hasFailed() {
+		return notPassed;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();
