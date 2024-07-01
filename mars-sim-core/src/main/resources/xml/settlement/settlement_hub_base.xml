@@ -376,9 +376,7 @@
 	<building-package name="Wind Set 1 - 1x6"/>
 	<building-package name="Kilo Set 1 - 1x2"/>
 	<building-package name="MD1 Set 1 - 1x2"/>
-	<building-package name="MD4 Set 1 - 1x2"/>
-	<building-package name="Methane Set 1 - 1x2"/>   
-	        
+	<building-package name="MD4 Set 1 - 1x2"/>   	        
         
     <vehicle type="Long Range Explorer" number="3" />
     <vehicle type="Transport Rover" number="2" />

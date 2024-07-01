@@ -45,6 +45,10 @@ public class TradeTab extends TableTab {
 					renderer = NumberRenderer.getIntegerRenderer();
 					break;
 
+				case TradeTableModel.FLATTEN_COL:
+					renderer = DIGIT3_RENDERER;
+					break;
+					
 				default:
 					renderer = DIGIT2_RENDERER;
 			}

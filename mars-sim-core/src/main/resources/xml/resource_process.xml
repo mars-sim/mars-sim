@@ -72,14 +72,14 @@
 		"Integrated Mars In-Situ Propellant Production System.
 
 	</description>
-	<!-- "Sabatier RWGS Reactor"'s rate: the input/output resource rate [in kg/sol] -->
+	<!-- rate: the input/output resource rate [in kg/sol] -->
 		<input resource="carbon dioxide" rate="396" ambient="true" />
 		<input resource="hydrogen" rate="36"  />
 		
 		<output resource="methane" rate="48"  />
 		<output resource="carbon monoxide" rate="168" />
 		<output resource="water" rate="216"  />
-	</process>
+	</process> <!-- "Sabatier RWGS Reactor" -->
 
 		
 	<process name="Carbon Formation Reactor (CFR)" power-required="0.05" >

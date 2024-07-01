@@ -46,7 +46,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	
 	private static final int LOWEST_VALUE_TO_DEFLATE = 1000;
 	private static final int HIGHEST_VALUE_TO_INFLATE = 1;
-	static final int HIGHEST_PROJECTED_VALUE = 100_000;
+	static final int HIGHEST_PROJECTED_VALUE = 20_000;
 	
 	private static final double LABOR_FACTOR = 150D ;
 	private static final double PROCESS_TIME_FACTOR = 500D;

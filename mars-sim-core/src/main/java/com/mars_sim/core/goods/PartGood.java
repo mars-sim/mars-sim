@@ -76,18 +76,17 @@ public class PartGood extends Good {
 	private static final String POWER_CABLE = "power cable";
 	private static final String PLASTIC_PIPE = "plastic pipe";
 	private static final String WIRE_CONNECTOR = "wire connector";
-		
-	
+
 	private static final int VEHICLE_PART_COST = 3;
 	private static final int EVA_PARTS_VALUE = 20;
-	private static final double CONSTRUCTING_INPUT_FACTOR = 2D;
-	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .1;
+	private static final double CONSTRUCTING_INPUT_FACTOR = 0.2;
+	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 0.1;
 	
 	private static final double DRILL_DEMAND  = .5;
 	private static final double BOTTLE_DEMAND = .02;
 	private static final double FIBERGLASS_DEMAND = .00005;
 	private static final double GASKET_DEMAND = .05;
-	private static final double VEHICLE_PART_DEMAND = 4;
+	private static final double VEHICLE_PART_DEMAND = .4;
 	private static final double EVA_PART_DEMAND = 1;
     private static final double KITCHEN_DEMAND = 1.5;
 	private static final double SCRAP_METAL_DEMAND = .01;
@@ -104,7 +103,7 @@ public class PartGood extends Good {
 	private static final double CONSTRUCTION_DEMAND = 0.5;
 	private static final double GLASS_SHEET_DEMAND = .025;
 	private static final double GLASS_TUBE_DEMAND  = 8;
-	private static final double ITEM_DEMAND = 1;
+	private static final double BASE_DEMAND = 0.5;
 	private static final double PARTS_MAINTENANCE_VALUE = 1000;
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 	private static final double ATTACHMENT_PARTS_DEMAND = 20;
@@ -172,14 +171,13 @@ public class PartGood extends Good {
 					return 5;
 				}
 				if (name.equalsIgnoreCase(ELECTRICAL_WIRE))
-					return .05;
+					return .01;
 				if (name.equalsIgnoreCase(WIRE_CONNECTOR))
-					return .05;
+					return .01;
 				if (name.equalsIgnoreCase(POWER_CABLE))
-					return .25;
+					return .05;
 				if (name.equalsIgnoreCase(STEEL_WIRE))
-					return .5;
-				
+					return .025;
 				if (name.contains(WIRE))
 					return .001;
 				
@@ -496,42 +494,42 @@ public class PartGood extends Good {
 	 * @param part   the part.
 	 */
 	private static double calculateFlattenRawPartDemand(Part part) {
-		double demand = ITEM_DEMAND; 
+		double base = BASE_DEMAND; 
 		String name = part.getName();
 		// Reduce the demand on the steel/aluminum scrap metal
 		// since they can only be produced by salvaging a vehicle
 		// therefore it's not reasonable to have high VP
 
 		if (name.contains(SCRAP))
-			return demand * SCRAP_METAL_DEMAND;
+			return base * SCRAP_METAL_DEMAND;
 		// May recycle the steel/AL scrap back to ingot
 		// Note: the VP of a scrap metal could be heavily influence by VP of regolith
 
 		if (name.contains(INGOT))
-			return demand * INGOT_METAL_DEMAND;
+			return base * INGOT_METAL_DEMAND;
 
 		if (name.contains(GLASS_SHEET))
-			return demand * GLASS_SHEET_DEMAND;
+			return base * GLASS_SHEET_DEMAND;
 		
 		if (name.contains(GLASS_TUBE))
-			return demand * GLASS_TUBE_DEMAND;
+			return base * GLASS_TUBE_DEMAND;
 		
 		if (name.contains(SHEET))
-			return demand * SHEET_METAL_DEMAND;
+			return base * SHEET_METAL_DEMAND;
 
 		if (name.contains(TRUSS))
-			return demand * TRUSS_DEMAND;
+			return base * TRUSS_DEMAND;
 
 		if (name.contains(STEEL))
-			return demand * STEEL_DEMAND;
+			return base * STEEL_DEMAND;
 
 		if (name.contains(FIBERGLASS))
-			return demand * FIBERGLASS_DEMAND;
+			return base * FIBERGLASS_DEMAND;
 
 		if (name.equalsIgnoreCase(BRICK))
-			return demand * BRICK_DEMAND;
+			return base * BRICK_DEMAND;
 
-		return demand;
+		return base;
 	}
 
 
@@ -555,7 +553,7 @@ public class PartGood extends Good {
 	 */
 	private double getAttachmentPartsDemand(GoodsManager owner) {
 		if (attachments.contains(getID())) {
-			return ATTACHMENT_PARTS_DEMAND * (1 + owner.getDemandValue(this));
+			return ATTACHMENT_PARTS_DEMAND * (1 + owner.getDemandValue(this) / 3);
 		}
 		return 0;
 	}
@@ -569,7 +567,7 @@ public class PartGood extends Good {
 	 */
 	private double getEVASuitPartsDemand(GoodsManager owner) {		
 		if (ItemResourceUtil.evaSuitPartIDs != null && ItemResourceUtil.evaSuitPartIDs.contains(getID())) {
-			return owner.getEVASuitMod() * EVA_PARTS_VALUE * owner.getDemandValue(this);
+			return owner.getEVASuitMod() * EVA_PARTS_VALUE * owner.getDemandValue(this) / 3;
 		}
 		return 0;
 	}
@@ -581,7 +579,7 @@ public class PartGood extends Good {
 	 * @return demand (# of parts).
 	 */
 	private double getPartConstructionSiteDemand(Settlement settlement) {
-		double demand = 0D;
+		double base = 0D;
         int id = getID();
 
 		// Add demand for part required as remaining construction material on
@@ -593,12 +591,12 @@ public class PartGood extends Good {
 				ConstructionStage stage = site.getCurrentConstructionStage();
 				if (stage.getMissingParts().containsKey(id)) {
 					int requiredNum = stage.getMissingParts().get(id);
-					demand += requiredNum * CONSTRUCTION_SITE_REQUIRED_PART_FACTOR;
+					base += requiredNum * CONSTRUCTION_SITE_REQUIRED_PART_FACTOR;
 				}
 			}
 		}
 
-		return demand;
+		return Math.min(GoodsManager.MAX_DEMAND, base / 100);
 	}
 
     /**
@@ -608,7 +606,7 @@ public class PartGood extends Good {
 	 * @return demand (# of parts)
 	 */
 	private double getPartManufacturingDemand(GoodsManager owner, Settlement settlement, Part part) {
-		double demand = 0D;
+		double base = 0D;
 
 		// Get highest manufacturing tech level in settlement.
 		if (ManufactureUtil.doesSettlementHaveManufacturing(settlement)) {
@@ -617,10 +615,11 @@ public class PartGood extends Good {
 					.iterator();
 			while (i.hasNext()) {
 				double manufacturingDemand = getPartManufacturingProcessDemand(owner, settlement, part, i.next());
-				demand += manufacturingDemand * (1 + techLevel);
+				base += manufacturingDemand * (1 + techLevel);
 			}
 		}
-		return Math.min(GoodsManager.MAX_DEMAND, demand);
+		
+		return Math.min(GoodsManager.MAX_DEMAND, base / 100);
 	}
 
 	/**
@@ -739,7 +738,7 @@ public class PartGood extends Good {
 	 * @return demand (# of parts).
 	 */
 	private double getPartConstructionDemand(Settlement settlement) {
-		double demand = 0D;
+		double base = 0D;
 
 		ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
 		int bestConstructionSkill = ConstructionUtil.getBestConstructionSkillAtSettlement(settlement);
@@ -752,12 +751,12 @@ public class PartGood extends Good {
 					&& isLocallyConstructable(settlement, stage)) {
 				double constructionStageDemand = getPartConstructionStageDemand(getID(), stage, stageValue);
 				if (constructionStageDemand > 0D) {
-					demand += constructionStageDemand;
+					base += constructionStageDemand;
 				}
 			}
 		}
 
-		return demand;
+		return Math.min(GoodsManager.MAX_DEMAND, base / 100);
 	}
 
 	/**

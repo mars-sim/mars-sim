@@ -64,6 +64,7 @@ public class ResourceUtil implements Serializable {
 	public static final String REGOLITH_C = "regolith-c";
 	public static final String REGOLITH_D = "regolith-d";
 	public static final String OLIVINE = "olivine";
+	public static final String KAMACITE = "kamacite";
 
 	public static final String ROCK_SAMPLES = "rock samples";
 	public static final String CONCRETE = "concrete";
@@ -174,6 +175,7 @@ public class ResourceUtil implements Serializable {
 	public static int regolithCID;
 	public static int regolithDID;
 	public static int olivineID;
+	public static int kamaciteID;
 
 	public static int soilID;
 	public static int sandID;
@@ -498,6 +500,7 @@ public class ResourceUtil implements Serializable {
 				regolithDID};
 
 		olivineID = findIDbyAmountResourceName(OLIVINE);
+		kamaciteID = findIDbyAmountResourceName(KAMACITE);
 		
 		fishMeatID = findIDbyAmountResourceName(FISH_MEAT);
 		spirulinaID = findIDbyAmountResourceName(SPIRULINA);
