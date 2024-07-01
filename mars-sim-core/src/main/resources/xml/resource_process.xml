@@ -82,50 +82,55 @@
 	</process> <!-- "Sabatier RWGS Reactor" -->
 
 		
-	<process name="Carbon Formation Reactor (CFR)" power-required="0.05" >
+	<process name="Continuous Bosch Reactor (C-Bosch)" power-required="0.05" >
 		<description> 						
 		In recent years, under the SpaceCraft Oxygen Recovery (SCOR) program, 
 		NASA seeks to increase oxygen recovery beyond the state of the art (42%) 
 		to at least 75% and approaching 100%.
 				
-		Space oxygen recovery technologies implemented include carbon formation reactors (CFR) 
-		and methane pyrolysis assembly (PPA) reactors. 
+		1. Space oxygen recovery technologies implemented include carbon formation reactors (CFR) 
+		and methane plasma pyrolysis assembly (PPA) reactors. 
 				
-		1. The Continuous Bosch Reactor (C-Bosch) - aims to produce water and elemental carbon from hydrogen 
-		and carbon dioxide. Highly efficient for utilization of hydrogen, it would replace the 
-		current state-of-the-art Sabatier reactor.
+		2. The Continuous Bosch Reactor (C-Bosch) - aims to produce water and 
+		elemental carbon from hydrogen and carbon dioxide. Highly efficient for 
+		utilization of hydrogen, it would replace the current state-of-the-art 
+		Sabatier reactor.
 		
-		2. Hydrogen Recovery by Carbon Vapor Deposition - aims to do what Sabatier lacks: recover 
-		hydrogen. The Sabatier is limited in its ability to recover oxygen from carbon dioxide 
-		due to an insufficient amount of hydrogen. The Sabatier requires additional hydrogen 
-		due to the production of the byproduct methane. If hydrogen can be recovered from this 
-		byproduct, it can be sent back to the Sabatier to react with carbon dioxide and produce 
+		3. Hydrogen Recovery by Carbon Vapor Deposition aims to do what Sabatier
+		lacks, namely, recovering hydrogen. The Sabatier is limited in its ability 
+		to recover oxygen from carbon dioxide due to an insufficient amount of hydrogen. 
+		
+		The Sabatier requires additional hydrogen due to the production of the 
+		byproduct methane. If hydrogen can be recovered from this byproduct, it 
+		can be sent back to the Sabatier to react with carbon dioxide and produce 
 		additional oxygen.
 		
-		- A high-temperature solid oxide co-electrolyzer (SOCE) is to be combined with a carbon
-		formation reactor.
+		- A high-temperature solid oxide co-electrolyzer (SOCE) is to be combined 
+		with a carbon formation reactor.
 		
-		-----------------------
-		
-		C-Bosch Reactor reduces CO2 to C(s) and H20 using H2. 
-		
-		It aims to produce water and elemental carbon from hydrogen and carbon dioxide. 
-				Based on Bosch System : 
-							 2CO -> CO2 + C(s)
-						 CO + H2 -> H2O + C(s)
-						3CO + H2 -> CO2 + H2O + 2C(s)
-					3*28 g   2 g	44 g   18 g   24 g
+		C-Bosch Reactor reduces CO2 to C and H20 using H2: 
+					CO2 + 2H2 ->  C + 2H2O
+					44g   4g     12g  36g
 					
-		Challenges : 
-		1. power consumption - high temperature endothermic reactions, catalyst resupply, volume/mass.						
-		</description> 
-		<input resource="carbon monoxide" rate="84.0"  />
-		<input resource="hydrogen" rate="2.0"  />
+				1.	CO2 + H2 -> CO + H2O
+					44g   2g     28g  18g
+				2.  CO + H2  -> C + H2O
+					28g   2g    12g  18g
+					
+		Challenge : 
+		1. power consumption - high temperature endothermic reactions, catalyst 
+		   resupply, volume/mass.						
 		
-		<output resource="carbon dioxide" rate="44.0" waste="true" />
-		<output resource="water" rate="18.0"  />
-		<output resource="carbon" rate="24.0"  />
-	</process> <!-- "Carbon Formation Reactor (CFR)" -->
+		</description> 
+		<!-- Note: Set ambient to false to reduce the probability of 
+				overusing hydrogen to produce methanol -->
+		<input resource="carbon dioxide" rate="44.0" ambient="false" />
+		<input resource="hydrogen" rate="4.0"  />
+		
+		<output resource="water" rate="36.0"  />
+		<output resource="carbon" rate="12.0"  />
+		
+	</process> <!-- "Continuous Bosch Reactor (C-Bosch)" -->
 	
 	<process name="Plasma Pyrolysis Assembly (PPA) Reactor" power-required="0.05" >
 		<description>
@@ -158,6 +163,21 @@
 		<output resource="propylene" rate="84.0" />
 	</process> <!-- "Plasma Pyrolysis Assembly (PPA) Reactor" -->
 
+	
+	<!-- Convert ethane C2H6 to ethylene C2H4 and H2 using CO2 as mild oxidation agent 
+	
+	C2H6 -> C2H4 + H2
+	30g     28g    2g
+	
+	2CH4 + 0.5O2 -> C2H6 + H2O
+	
+	C2H6 + 0.5O2 -> C2H4 + H2O
+	
+	Reference : 
+	1. https://www.sciencedirect.com/science/article/abs/pii/S0360319920335904
+	2. https://www.sciencedirect.com/science/article/abs/pii/S0016236102000741
+	-->
+	
 	<process name="Produce Oxygen and Acetylene with Chloride and Carbides" power-required="0.05" >
 		<description>
 			This reaction produces acetylene utilizing the electrochemical reduction
@@ -169,16 +189,17 @@
 			CO2 is first converted to metallic carbides such as CaC2 and Li2C2, 
 			which deposit onto one of the electrodes.
 					
-			See https://phys.org/news/2024-03-advancing-sustainability-carbon-dioxide-acetylene.html
-			See https://pubs.acs.org/doi/epdf/10.1021/acssuschemeng.3c08139
-			
 			This process is more sustainable than "Plasma Pyrolysis Assembly (PPA) Reactor"
 			for making Acetylene as it does not consume methane and utilizes 
 			cardon dioxide and water as inputs.
 	
 			  2CO2 + H2O → C2H2 + 2.5O2			
 			 2*44g   18g    26g   2.5*32g	
-			 
+			
+			Reference: 
+			1. https://phys.org/news/2024-03-advancing-sustainability-carbon-dioxide-acetylene.html
+			2. https://pubs.acs.org/doi/epdf/10.1021/acssuschemeng.3c08139
+ 
 		</description> 
 		<input resource="carbon dioxide" rate="88.0" ambient="true"/>
 		<input resource="water" rate="18.0"  />
@@ -186,12 +207,8 @@
 		<output resource="acetylene" rate="26.0"  />
 		<output resource="oxygen" rate="80.0"  />
 	</process> <!--"Produce Oxygen and Acetylene with Chloride and Carbides"-->
-	
-	<!-- Convert C2H6 to C2H4 and H2 using CO2 as mild oxidation agent 
-	https://www.sciencedirect.com/science/article/abs/pii/S0360319920335904
-	-->
-	
-	<process name="Selective Partial Oxidation of Methane to Methanol" power-required="0.05" >
+
+	<process name="Selective Partial Oxidation (SPO) of Methane to Methanol" power-required="0.05" >
 		<description>
 		Requires oxidant : O2 in the presence of very small amount of H2O2. 
 		Catalyst : Colloidal Au-Pd nanop-articles (3-5nm)
@@ -258,9 +275,9 @@
 		5. https://www.researchgate.net/publication/265608781_Decoupled_catalytic_hydrogen_evolution_from_a_molecular_metal_oxide_redox_mediator_in_water_splitting
 		
 	</description> 
-		<input resource="water" rate="180"  />
+		<input resource="water" rate="180" />
 		
-		<output resource="hydrogen" rate="20"  />
+		<output resource="hydrogen" rate="20" />
 		<output resource="oxygen" rate="160"  />
 	</process> <!-- Oxygen Generator System (OGS) -->
 	
@@ -281,8 +298,8 @@
 		</description>
 		<input resource="carbon dioxide" rate="70.4" ambient="true" />
 		
-		<output resource="carbon monoxide" rate="22.4"  />
-		<output resource="oxygen" rate="25.6"  />
+		<output resource="carbon monoxide" rate="22.4" />
+		<output resource="oxygen" rate="25.6" />
 	</process> <!-- "Low Temperature Plasma CO2 Decomposition" -->
 	
 	     
@@ -326,11 +343,14 @@
 		Assume 1000 kWh per 1000 kg, or 1 kWh per 1 kg, 50 kWh per 50 kg
 		Power required: 50 kWh / 24 h = ~2 kW
 		
-		https://www.essentialchemicalindustry.org/chemicals/methanol.html
-		https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6926878/
-		https://www.biogreen-energy.com/syngas
+		Reference: 
+		1. https://www.essentialchemicalindustry.org/chemicals/methanol.html
+		2. https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6926878/
+		3. https://www.biogreen-energy.com/syngas
 	</description>
-		<input resource="carbon dioxide" rate="44" ambient="true" />
+		<!-- Note: Set ambient to false to reduce the probability of 
+				overusing hydrogen to produce methanol -->
+		<input resource="carbon dioxide" rate="44" ambient="false" />
 		<input resource="hydrogen" rate="6.0"  />				
 		
 		<output resource="water" rate="18.0"  />
@@ -557,7 +577,7 @@
 	<process name="Do Kamacite smelting" power-required="1.3" >
 			<input resource="kamacite" rate="50.0" />
 			
-			<output resource="iron powder" rate="45.0" waste="false" />
+			<output resource="iron powder" rate="45.0" />
 			<output resource="nickel" rate="5.0" />
 	</process>
 
@@ -694,7 +714,7 @@
 
 		<output resource="calcium sulfate" rate="2.0" />
 		<output resource="calcium carbonate" rate="27.0" />
-		<output resource="carbon dioxide" rate="12.7" waste="true" />
+		<output resource="carbon dioxide" rate="12.7" waste="false" />
 		<output resource="brine water" rate="5.2" />
 	</process>
 
@@ -711,7 +731,7 @@
 		
 		<output resource="calcium sulfate" rate="2.0" />
 		<output resource="calcium carbonate" rate="27.0" />
-		<output resource="carbon dioxide" rate="38.1" waste="true" />
+		<output resource="carbon dioxide" rate="38.1" waste="false" />
 		<output resource="brine water" rate="5.2" />
 	</process>
 

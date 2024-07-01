@@ -359,8 +359,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- "Lander Hab" -->
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="16"/>
-				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>				
-				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="4"/>	
+				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="4"/>				
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="4"/>	
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>	
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="12"/>	
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="48"/>
@@ -740,8 +740,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- "Central Hub A" -->
 			<resource-processing power-down-level="0.0">			
 				<process-engine name="Sabatier RWGS Reactor" number-modules="48"/>
-				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="12"/>				
-				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="12"/>	
+				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="12"/>				
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="12"/>	
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="12"/>	
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="36"/>	
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="72"/>
@@ -1228,8 +1228,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			 <!-- "ERV-A" -->
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="32"/>
-				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="8"/>
-				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="12"/>
+				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="8"/>
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="12"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="12"/>
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="24"/>
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="72"/>			
@@ -1604,8 +1604,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- "Atmospheric Processor" -->
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Atmospheric processing" number-modules="16"/>
-				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="3"/>				
-				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="8"/>
+				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="3"/>				
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="8"/>
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="24"/>				
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="64"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="36"/>
@@ -3299,8 +3299,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- "Outpost Hub" -->
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="16"/>
-				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>				
-				<process-engine name="Carbon Formation Reactor (CFR)" number-modules="4"/>
+				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="4"/>				
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="4"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="12"/>
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="48"/>
