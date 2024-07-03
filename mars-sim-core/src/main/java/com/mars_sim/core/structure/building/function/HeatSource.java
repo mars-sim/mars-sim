@@ -49,7 +49,9 @@ public abstract class HeatSource implements Serializable {
 	public HeatSource(HeatSourceType type, double maxHeat) {
 		this.type = type;
 		this.maxHeat = maxHeat;
-		this.percentElectricity = 0;
+		this.percentElectricity = 50;
+		this.percentHeat = 50;
+		this.heatModeCache = HeatMode.HALF_HEAT;
 		
 		if (surface == null)
 			surface = Simulation.instance().getSurfaceFeatures();
@@ -64,7 +66,7 @@ public abstract class HeatSource implements Serializable {
 	}
 
 	/**
-	 * Sets the heat source's heat mode.
+	 * Sets the heat source's heat mode and percentages.
 	 */
 	public void setHeatMode(HeatMode heatMode, Building building) {
 		heatModeCache = heatMode;

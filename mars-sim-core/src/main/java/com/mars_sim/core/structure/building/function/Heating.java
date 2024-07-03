@@ -14,16 +14,13 @@ import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.Weather;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.PersonConfig;
-import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingConfig;
 import com.mars_sim.core.structure.building.FunctionSpec;
 import com.mars_sim.core.structure.building.function.farming.Crop;
-import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.mapdata.location.Coordinates;
@@ -36,7 +33,7 @@ public class Heating implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	 private static SimLogger logger = SimLogger.getLogger(Heating.class.getName());
+	// May add back private static SimLogger logger = SimLogger.getLogger(Heating.class.getName())
 
 	// Heat gain and heat loss calculation
 	// Source 1: Engineering concepts for Inflatable Mars Surface Greenhouses
@@ -117,7 +114,7 @@ public class Heating implements Serializable {
 	/** Specific heat capacity (C_p) of air at 300K [kJ/kg/K] */	 
 	private static final double SPECIFIC_HEAT_CAP_AIR_300K = 1.005; 
 	/** Specific heat capacity (C_p) of water at 20 deg cel or 300K [kJ/kg/K] */	 
-	private static final double SPECIFIC_HEAT_CAP_WATER_300K = 4.184;
+//	private static final double SPECIFIC_HEAT_CAP_WATER_300K = 4.184;
 	/** Density of dry breathable air [kg/m3] */	
 	private static final double DRY_AIR_DENSITY = 1.275D; //
 	/** Factor for calculating airlock heat loss during EVA egress */
@@ -427,20 +424,20 @@ public class Heating implements Serializable {
 		}
 		
 		/**
-		 * Do NOT delete. For Debugging
+		 * Do NOT delete. For future Debugging.
 		 */
-		if (building.getBuildingType().contains("EVA")) 
-			logger.info(building, "Gain: " + Math.round(gain * 1000.0)/1000.0
-					+ "  vent: " + Math.round(ventHeatGain * 1000.0)/1000.0
-					+ "  heatPumped: " + Math.round(heatPumpedIn * 1000.0)/1000.0
-					+ "  Occupants: " + Math.round(heatGainOccupants * 1000.0)/1000.0
-					+ "  numEVAgoers: " + Math.round(numEVAgoers)/1000.0
-					+ "  EVAHeater: " + Math.round(heatGainFromEVAHeater)/1000.0
-					+ "  solarHeatGain: " + Math.round(solarHeatGain * 1000.0)/1000.0
-					+ "  canopyHeat: " + Math.round(canopyHeatGain * 1000.0)/1000.0
-					+ "  lighting: " + Math.round(lightingGain * 1000.0)/1000.0
-					+ "  Equipment: " + Math.round(heatGainEquipment * 1000.0)/1000.0
-					);
+//		if (building.getBuildingType().contains("EVA")) 
+//			logger.info(building, "Gain: " + Math.round(gain * 1000.0)/1000.0
+//					+ "  vent: " + Math.round(ventHeatGain * 1000.0)/1000.0
+//					+ "  heatPumped: " + Math.round(heatPumpedIn * 1000.0)/1000.0
+//					+ "  Occupants: " + Math.round(heatGainOccupants * 1000.0)/1000.0
+//					+ "  numEVAgoers: " + Math.round(numEVAgoers)/1000.0
+//					+ "  EVAHeater: " + Math.round(heatGainFromEVAHeater)/1000.0
+//					+ "  solarHeatGain: " + Math.round(solarHeatGain * 1000.0)/1000.0
+//					+ "  canopyHeat: " + Math.round(canopyHeatGain * 1000.0)/1000.0
+//					+ "  lighting: " + Math.round(lightingGain * 1000.0)/1000.0
+//					+ "  Equipment: " + Math.round(heatGainEquipment * 1000.0)/1000.0
+//					);
 		
 		
 		// (2) CALCULATE HEAT LOSS
@@ -512,7 +509,7 @@ public class Heating implements Serializable {
 		// Conversely, a surface with a low emissivity reflects more heat back into 
 		// the greenhouse, reducing heat loss.
 
-		if (building.getBuildingType().contains("EVA"))  {
+		if (isGreenhouse)  {
 			emissivity = EMISSIVITY_DAY + EMISSIVITY_NIGHT * (1 - I);
 			if (emissivity > 1)
 				emissivity = 1;
@@ -525,20 +522,19 @@ public class Heating implements Serializable {
 		else {
 			solarHeatLoss = (1 - emissivity) * STEFAN_BOLTZMANN_CONSTANT
 					* ( Math.pow(inTKelvin, 4) - Math.pow(outTKelvin, 4) ) * floorArea / canopyFactor / 1000D;
-
 		}		
 		
 		/**
-		 * Do NOT delete. For Debugging
+		 * Do NOT delete. For future Debugging.
 		 */
-		if (building.getBuildingType().contains("EVA"))  
-			logger.info(building, // "inTKelvin: " + inTKelvin
-//					+ "   outTKelvin: " + outTKelvin
-					"Loss  I: " + Math.round(I * 1000.0)/1000.0 
-					+ "  canopyFactor: " + Math.round(canopyFactor * 1000.0)/1000.0 
-					+ "  canopyHeatGain: " + Math.round(canopyHeatGain * 1000.0)/1000.0 
-					+ "  emissivity: " + Math.round(emissivity * 1000.0)/1000.0 
-					+ "  solarHeatLoss: " + Math.round(solarHeatLoss * 1000.0)/1000.0 );
+//		if (building.getBuildingType().contains("EVA"))  
+//			logger.info(building, // "inTKelvin: " + inTKelvin
+////					+ "   outTKelvin: " + outTKelvin
+//					"Loss  I: " + Math.round(I * 1000.0)/1000.0 
+//					+ "  canopyFactor: " + Math.round(canopyFactor * 1000.0)/1000.0 
+//					+ "  canopyHeatGain: " + Math.round(canopyHeatGain * 1000.0)/1000.0 
+//					+ "  emissivity: " + Math.round(emissivity * 1000.0)/1000.0 
+//					+ "  solarHeatLoss: " + Math.round(solarHeatLoss * 1000.0)/1000.0 );
 		
 		// (2e) At high RH, the air has close to the maximum water vapor that it can hold, 
 		// so evaporation, and therefore heat loss, is decreased.
@@ -552,16 +548,15 @@ public class Heating implements Serializable {
 		}
 		
 		/**
-		 * Do NOT delete. For Debugging
+		 * Do NOT delete. For future Debugging.
 		 */
-		if (building.getBuildingType().contains("EVA"))
-			logger.info(building, "Loss: " + Math.round(loss * 1000.0)/1000.0
-					+ "  heatAirlock: " + Math.round(heatAirlock * 1000.0)/1000.0
-					+ "  structuralLoss: " + Math.round(structuralLoss * 1000.0)/1000.0
-					+ "  ventHeatLoss: " + Math.round(ventHeatLoss * 1000.0)/1000.0
-					+ "  solarHeatLoss: " + Math.round(solarHeatLoss * 1000.0)/1000.0
-					+ "  ventHeatGain: " + Math.round(ventHeatGain * 1000.0)/1000.0
-					);
+//		if (building.getBuildingType().contains("EVA"))
+//			logger.info(building, "Loss: " + Math.round(loss * 1000.0)/1000.0
+//					+ "  heatAirlock: " + Math.round(heatAirlock * 1000.0)/1000.0
+//					+ "  structuralLoss: " + Math.round(structuralLoss * 1000.0)/1000.0
+//					+ "  ventHeatLoss: " + Math.round(ventHeatLoss * 1000.0)/1000.0
+//					+ "  solarHeatLoss: " + Math.round(solarHeatLoss * 1000.0)/1000.0
+//					+ "  ventHeatGain: " + Math.round(ventHeatGain * 1000.0)/1000.0);
 		
 		// (3) CALCULATE THE INSTANTANEOUS CHANGE OF TEMPERATURE (DELTA T)
 		// delta t = (heatGain - heatLoss) / (time_interval * C_s * mass) ;
@@ -614,27 +609,26 @@ public class Heating implements Serializable {
 		double dTCelcius = dHeat1 * millisols * timeSlice / airHeatCap;
 	
 		/**
-		 * Do NOT delete. For Debugging
+		 * Do NOT delete. For future Debugging.
 		 */
-		if (building.getBuildingType().contains("EVA"))
-			logger.info(building, 
-				"  oldT: " + Math.round(inTCelsius * 100.0)/100.0
-				+ "  dt: " + Math.round(dTCelcius * 1000.0)/1000.0
-				+ "  devT: " + Math.round(devTemp * 1000.0)/1000.0
-//				+ "  gain: " + Math.round(gain * 1000.0)/1000.0
-//				+ "  loss: " + Math.round(loss * 1000.0)/1000.0
-				+ "  dHeat0: " + Math.round(diffHeatGainLoss * 1000.0)/1000.0
-				+ "  dHeat1: " + Math.round(dHeat1 * 1000.0)/1000.0
-				+ "  heatsink: [" + Math.round(heatSink[0] * 100.0)/100.0 
-							+ ", " + Math.round(heatSink[1] * 100.0)/100.0 + "]"
-				+ "  airHeatCap: " + Math.round(airHeatCap * 1000.0)/1000.0
-				+ "  airMass: " + Math.round(airMass * 1000.0)/1000.0
-				+ "  airkW/degC: " + Math.round(airHeatSinkPerDegC * 1000.0)/1000.0
-				+ "  heatCap: " + Math.round(heatCapAirMoisture * 1000.0)/1000.0
-				+ "  % moist: " + Math.round(percentAirMoisture * 100.0)/100.0
-				+ "  millisols: " + Math.round(millisols * 1000.0)/1000.0
-				+ "  f: " + Math.round(millisols * timeSlice * 1000.0)/1000.0
-				);
+//		if (building.getBuildingType().contains("EVA"))
+//			logger.info(building, 
+//				"  oldT: " + Math.round(inTCelsius * 100.0)/100.0
+//				+ "  dt: " + Math.round(dTCelcius * 1000.0)/1000.0
+//				+ "  devT: " + Math.round(devTemp * 1000.0)/1000.0
+////				+ "  gain: " + Math.round(gain * 1000.0)/1000.0
+////				+ "  loss: " + Math.round(loss * 1000.0)/1000.0
+//				+ "  dHeat0: " + Math.round(diffHeatGainLoss * 1000.0)/1000.0
+//				+ "  dHeat1: " + Math.round(dHeat1 * 1000.0)/1000.0
+//				+ "  heatsink: [" + Math.round(heatSink[0] * 100.0)/100.0 
+//							+ ", " + Math.round(heatSink[1] * 100.0)/100.0 + "]"
+//				+ "  airHeatCap: " + Math.round(airHeatCap * 1000.0)/1000.0
+//				+ "  airMass: " + Math.round(airMass * 1000.0)/1000.0
+//				+ "  airkW/degC: " + Math.round(airHeatSinkPerDegC * 1000.0)/1000.0
+//				+ "  heatCap: " + Math.round(heatCapAirMoisture * 1000.0)/1000.0
+//				+ "  % moist: " + Math.round(percentAirMoisture * 100.0)/100.0
+//				+ "  millisols: " + Math.round(millisols * 1000.0)/1000.0
+//				+ "  f: " + Math.round(millisols * timeSlice * 1000.0)/1000.0);
 	
 	
 //		// (3d) ACCOUNT FOR BODY OF WATER AS HEAT SINK to buffer the difference in heat
@@ -985,8 +979,7 @@ public class Heating implements Serializable {
 	private void cycleThermalControl(double deltaTime) {
 		// Detect temperatures
 		double inT = currentTemperature;
-
-		double outT = building.getSettlement().getOutsideTemperature();
+//		double outT = building.getSettlement().getOutsideTemperature();
 			
 		// STEP 1 : CALCULATE HEAT GAIN/LOSS AND RELATE IT TO THE TEMPERATURE CHANGE
 		double dt = determineDeltaTemperature(inT, deltaTime);
@@ -1063,12 +1056,15 @@ public class Heating implements Serializable {
 		// Sets the heat required for this cycle
 		setHeatRequired(req);
 	
-		if (building.getBuildingType().contains("EVA"))
-			logger.info(building, 
-					"  newT: " + Math.round(newT * 100.0)/100.0
-					+ "  dt: " + Math.round(dt * 100.0)/100.0
-					+ "  devT: " + Math.round(devT * 100.0)/100.0
-					+ "  req: " + Math.round(req * 100.0)/100.0);
+		/**
+		 * Do NOT delete. For future Debugging.
+		 */
+//		if (building.getBuildingType().contains("EVA"))
+//			logger.info(building, 
+//					"  newT: " + Math.round(newT * 100.0)/100.0
+//					+ "  dt: " + Math.round(dt * 100.0)/100.0
+//					+ "  devT: " + Math.round(devT * 100.0)/100.0
+//					+ "  req: " + Math.round(req * 100.0)/100.0);
 	}
 
 	/**

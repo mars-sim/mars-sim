@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -31,7 +32,7 @@ public class ThermalGeneration extends Function {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	// May add back private static final SimLogger logger = SimLogger.getLogger(ThermalGeneration.class.getName())
+	private static final SimLogger logger = SimLogger.getLogger(ThermalGeneration.class.getName());
 	
 //	private static final double HEAT_MATCH_MOD = 1;
 	
@@ -189,12 +190,13 @@ public class ThermalGeneration extends Function {
 	 * 
 	 * @param heatLoad
 	 * @param time
-	 * @return heat generated in kW.
+	 * @return heat array {heat generated and heat required}
 	 */
-	private double calculateHeatGen(double heatLoad, double time) {
+	private double[] calculateHeatGen(double heatLoad, double time) {
 
 		double heatReq = heatLoad;
 		double heatGen = 0D;
+		double heat[] = new double[2];
 	
 		HeatMode newHeatMode = null;
 		HeatMode heatMode = null;
@@ -242,7 +244,9 @@ public class ThermalGeneration extends Function {
 							building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
 						}
 						
-						return heatGen;
+						heat[0] = heatGen;
+						heat[1] = heatReq;			
+						return heat;
 					}
 				}
 			}
@@ -285,7 +289,9 @@ public class ThermalGeneration extends Function {
 							building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
 						}
 		
-						return heatGen;
+						heat[0] = heatGen;
+						heat[1] = heatReq;			
+						return heat;
 					}
 				}
 			}
@@ -321,7 +327,9 @@ public class ThermalGeneration extends Function {
 							building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
 						}
 					
-						return heatGen;
+						heat[0] = heatGen;
+						heat[1] = heatReq;			
+						return heat;
 					}
 				}
 			}
@@ -352,7 +360,9 @@ public class ThermalGeneration extends Function {
 						fuelHeatSource.setHeatMode(newHeatMode, building);
 						building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
 						
-						return heatGen;
+						heat[0] = heatGen;
+						heat[1] = heatReq;			
+						return heat;
 					}
 				}
 			}
@@ -363,7 +373,9 @@ public class ThermalGeneration extends Function {
 			building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
 		}
 
-		return heatGen;
+		heat[0] = heatGen;
+		heat[1] = heatReq;			
+		return heat;
 	}
 
 //	/**
@@ -445,16 +457,26 @@ public class ThermalGeneration extends Function {
 		// Add 30% more heat 
 		double heatReq = 1.3 * heating.getHeatRequired();
 				
+		double heat[] = null;
 		double heatGen = 0;
+		double remainHeatReq = 0;
 		
 		// Find out how much heat can be generated to match this requirement
-		if (heatReq > 0)
-			heatGen = calculateHeatGen(heatReq, time);
+		if (heatReq > 0) {
+			heat = calculateHeatGen(heatReq, time);
+			heatGen = heat[0];
+			remainHeatReq = heat[1];
+		}
+			
+		if (remainHeatReq > 0.05) {
+			logger.warning(building, "Unmet remaining heat req: " 
+					+ Math.round(remainHeatReq * 10.0)/10.0 + " kW.");
+		}
 		
 		// Need to update heat generated in Heating continuously
 		heating.insertHeatGenerated(heatGen);
 		
-		double dev = (heatReq - heatGen);
+		double dev = heatReq - heatGen;
 		// A. If diff is negative, the heat load has been completely covered.
 		// B. If diff is positive, the heat load has NOT been fully matched.	
 //					if (dev > 0 && building.getBuildingType().contains("Greenhouse"))
@@ -557,6 +579,42 @@ public class ThermalGeneration extends Function {
 	}
 
 	/**
+	 * Gets the solar heat source.
+	 * 
+	 * @return
+	 */
+	public HeatSource getSolarHeatSource() {
+		return solarHeatSource;
+	}
+
+	/**
+	 * Gets the electric heat source.
+	 * 
+	 * @return
+	 */
+	public HeatSource getElectricHeatSource() {
+		return electricHeatSource;
+	}
+
+	/**
+	 * Gets the fuel heat source.
+	 * 
+	 * @return
+	 */
+	public HeatSource getFuelHeatSource() {
+		return fuelHeatSource;
+	}
+
+	/**
+	 * Gets the nuclear heat source.
+	 * 
+	 * @return
+	 */
+	public HeatSource getNuclearHeatSource() {
+		return nuclearHeatSource;
+	}
+
+	/**
 	 * Gets the power required for generating electric heat.
 	 * 
 	 * @return
@@ -572,7 +630,7 @@ public class ThermalGeneration extends Function {
 
 		return electricHeatSource.getCurrentHeat();
 	}
-
+	
 	/**
 	 * Gets the power required for generating solar heat.
 	 * 

@@ -13,6 +13,11 @@ import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.structure.building.function.HeatMode;
+import com.mars_sim.core.structure.building.function.HeatSource;
+import com.mars_sim.core.structure.building.function.HeatSourceType;
+import com.mars_sim.core.structure.building.function.PowerGeneration;
+import com.mars_sim.core.structure.building.function.ThermalGeneration;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 
@@ -50,6 +55,9 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	
 	private static final int COLUMNCOUNT = FUEL + 1;
 
+	private static final String KW_OPEN_PARA = " kW - ";
+	private static final String PERCENT_CLOSE_PARA = " %";
+	
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
 
@@ -78,10 +86,10 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 		COLUMNS[HEAT_GAIN] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.gain"), Double.class);
 		COLUMNS[HEAT_DEV] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.dev"), Double.class);
 		
-		COLUMNS[SOLAR] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.solar"), Double.class);
-		COLUMNS[ELECTRIC] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.electric"),Double.class);
-		COLUMNS[NUCLEAR]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.nuclear"), Double.class);
-		COLUMNS[FUEL]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.fuel"), Double.class);
+		COLUMNS[SOLAR] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.solar"), Object.class);
+		COLUMNS[ELECTRIC] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.electric"), Object.class);
+		COLUMNS[NUCLEAR]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.nuclear"), Object.class);
+		COLUMNS[FUEL]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.fuel"), Object.class);
 
 	}
 
@@ -121,6 +129,10 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	protected Object getEntityValue(Building building, int columnIndex) {
 		Object result = null;
 
+		ThermalGeneration furnace = building.getThermalGeneration();
+		
+		PowerGeneration power = building.getPowerGeneration();
+		
 		switch (columnIndex) {
 
 		case NAME: 
@@ -139,15 +151,17 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 			break;
 
 		case POWER_MODE:
-			result = building.getPowerMode().getName();
+			if (power != null)
+				result = building.getPowerMode().getName();
 			break;
 						
 		case POWER_REQ:
-			result =  building.getFullPowerRequired();
+			if (power != null)
+				result =  building.getFullPowerRequired();
 			break;
 			
 		case POWER_GEN:
-			if (building.getPowerGeneration() != null)
+			if (power != null)
 				result =  building.getPowerGeneration().getGeneratedPower();
 			break;
 			
@@ -160,48 +174,68 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 			break;
 
 		case HEAT_VENT:
-			result = building.getHeatVent();
-			break;
+			if (furnace != null) {
+				result = building.getHeatVent();
+			}
+			return result;
 			
 		case HEAT_DEV:
-			result = building.getHeatDev();
-			break;
+			if (furnace != null) {
+				result = building.getHeatDev();
+			}
+			return result;
 			
 		case HEAT_GEN:
-			result = building.getHeatGenerated();
-			break;
+			if (furnace != null) {
+				result = building.getHeatGenerated();
+			}
+			return result;
 			
 		case HEAT_REQ:
-			result = building.getHeatRequired();
-			break;
+			if (furnace != null) {
+				result = building.getHeatRequired();
+			}
+			return result;
 			
 		case HEAT_GAIN:
-			result = building.getHeatGain();
-			break;
+			if (furnace != null) {
+				result = building.getHeatGain();
+			}
+			return result;
 			
 		case EXCESS_HEAT:
-			result = building.getExcessHeat();
-			break;
+			if (furnace != null) {
+				result = building.getExcessHeat();
+			}
+			return result;
 			
 		case TEMPERATURE:
 			result = building.getCurrentTemperature();
 			break;
 			
 		case SOLAR:
-			result = building.getSolarPowerGen();
-			break;
+			if (furnace != null) {
+				result = getHeatSourceGen(HeatSourceType.SOLAR_HEATING, furnace);
+			}
+			return result;
 			
 		case ELECTRIC:
-			result = building.getElectricPowerGen();
-			break;
+			if (furnace != null) {
+				result = getHeatSourceGen(HeatSourceType.ELECTRIC_HEATING, furnace);
+			}
+			return result;
 			
 		case NUCLEAR:
-			result = building.getNuclearPowerGen();
-			break;
+			if (furnace != null) {
+				result = getHeatSourceGen(HeatSourceType.THERMAL_NUCLEAR, furnace);
+			}
+			return result;
 			
 		case FUEL:
-			result = building.getFuelPowerGen();
-			break;
+			if (furnace != null) {
+				result = getHeatSourceGen(HeatSourceType.FUEL_HEATING, furnace);
+			}
+			return result;
 			
 		default:
 			break;
@@ -209,6 +243,72 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 
 		return result;
 	}
+	
+	/**
+	 * Gets the string of a heat source to generate heat.
+	 * 
+	 * @param heatSource
+	 * @param furnace
+	 * @param heatGen
+	 * @return
+	 */
+	public Object getHeatSourceGen(HeatSourceType heatSourceType, ThermalGeneration furnace) {
+		
+		double heatGen = 0;
+		double percent = 0;
+		
+		if (heatSourceType == HeatSourceType.SOLAR_HEATING) {
+			
+			HeatSource heatSource = furnace.getSolarHeatSource();
+			if (heatSource == null)
+				return null;
+			HeatMode heatMode = heatSource.getHeatMode();
+			if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
+				return 0;
+
+			heatGen = Math.round(heatSource.getCurrentHeat() * 100.0)/100.0;
+			percent = Math.round(heatSource.getHeatMode().getPercentage() * 10.0)/10.0;
+		}	
+		else if (heatSourceType == HeatSourceType.THERMAL_NUCLEAR) {
+	
+			HeatSource heatSource = furnace.getNuclearHeatSource();
+			if (heatSource == null)
+				return null;
+			HeatMode heatMode = heatSource.getHeatMode();
+			if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
+				return 0;
+
+			heatGen = Math.round(heatSource.getCurrentHeat() * 100.0)/100.0;
+			percent = Math.round(heatSource.getHeatMode().getPercentage() * 10.0)/10.0;
+		}
+		else if (heatSourceType == HeatSourceType.ELECTRIC_HEATING) {
+			
+			HeatSource heatSource = furnace.getElectricHeatSource();
+			if (heatSource == null)
+				return null;
+			HeatMode heatMode = heatSource.getHeatMode();
+			if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
+				return 0;
+
+			heatGen = Math.round(heatSource.getCurrentHeat() * 100.0)/100.0;
+			percent = Math.round(heatSource.getHeatMode().getPercentage() * 10.0)/10.0;
+		}
+		else if (heatSourceType == HeatSourceType.FUEL_HEATING) {
+			
+			HeatSource heatSource = furnace.getFuelHeatSource();
+			if (heatSource == null)
+				return null;
+			HeatMode heatMode = heatSource.getHeatMode();
+			if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
+				return 0;
+
+			heatGen = Math.round(heatSource.getCurrentHeat() * 100.0)/100.0;
+			percent = Math.round(heatSource.getHeatMode().getPercentage() * 10.0)/10.0;
+		}
+		
+		return heatGen + KW_OPEN_PARA +  percent + PERCENT_CLOSE_PARA;
+	}
+	
 	
 	@Override
 	public void destroy() {

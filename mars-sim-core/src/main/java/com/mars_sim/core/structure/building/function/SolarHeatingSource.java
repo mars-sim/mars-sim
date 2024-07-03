@@ -27,9 +27,9 @@ public class SolarHeatingSource extends HeatSource {
 	private static final double RATED_ELECTRIC_EFFICIENCY = .55;
 	
 	/** The efficiency of converting it to heat. */
-	private double thermalEfficiency = .68;
+	private double thermalEfficiency = RATED_THERMAL_EFFICIENCY;
 	/** The efficiency of converting it to electricity. */
-	private double electricEfficiency = .55;
+	private double electricEfficiency = RATED_ELECTRIC_EFFICIENCY;
 
 	private Building building;
 	

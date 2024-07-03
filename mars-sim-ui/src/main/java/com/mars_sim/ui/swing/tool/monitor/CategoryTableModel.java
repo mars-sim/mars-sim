@@ -36,8 +36,10 @@ public abstract class CategoryTableModel<T> extends EntityTableModel<CategoryKey
 
         
 	/**
-	 * Set whether the changes to the Entities should be monitor for change. Set up the 
-	 * Unitlisteners for the selected Settlement where Food comes from for the table.
+	 * Sets whether the changes to the Entities should be monitor for change. 
+	 * Sets up the Unitlisteners for the selected Settlement where Food comes 
+	 * from for the table.
+	 * 
 	 * @param activate 
 	 */
     public void setMonitorEntites(boolean activate) {
@@ -62,7 +64,8 @@ public abstract class CategoryTableModel<T> extends EntityTableModel<CategoryKey
 	}
 
 	/**
-	 * Set the Settlement filter
+	 * Sets the Settlement filter.
+	 * 
 	 * @param filter Settlement
 	 */
     public boolean setSettlementFilter(Set<Settlement> filter) {
