@@ -901,19 +901,32 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	
 	
 	/**
-	 * Gets the heat match of this building.
+	 * Gets the delta temperature match of this building.
 	 *
 	 * @return heat in kW.
 	 */
-	public double getHeatMatch() {
+	public double getDeltaTemp() {
 		double result = 0;
 
 		if (furnace != null && heating != null)
-			result = furnace.getHeating().getHeatMatch();
+			result = furnace.getHeating().getDeltaTemp();
 
 		return result;
 	}
 
+	/**
+	 * Gets the deviation temperature match of this building.
+	 *
+	 * @return heat in kW.
+	 */
+	public double getDevTemp() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getHeating().getDevTemp();
+
+		return result;
+	}
 	
 	/**
 	 * Dumps the excess heat to the building.

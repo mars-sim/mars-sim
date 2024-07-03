@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;
@@ -192,7 +193,7 @@ public class ThermalGeneration extends Function {
 	 */
 	private double calculateHeatGen(double heatLoad, double time) {
 
-		double heatReq = heatLoad * 1.25;
+		double heatReq = heatLoad;
 		double heatGen = 0D;
 	
 		HeatMode newHeatMode = null;
@@ -407,6 +408,71 @@ public class ThermalGeneration extends Function {
 //	}
 
 	/**
+	 * Moderate the time for heating.
+	 * 
+	 * @param time time in millisols
+	 * @throws Exception if error during action.
+	 */
+	private void moderateTime(double time) {
+		double remaining = time;
+		double pTime = Task.getStandardPulseTime();
+		while (remaining > 0 && pTime > 0) {
+			if (remaining > pTime) {
+				// Consume the pulse time.
+				transferHeat(pTime);
+				// Reduce the total time by the pulse time
+				remaining -= pTime;
+			}
+			else {
+				// Consume the pulse time.
+				transferHeat(remaining);
+				// Reduce the total time by the pulse time
+				remaining = 0;
+			}
+		}
+	}
+	
+	/**
+	 * Transfers the heat.
+	 * 
+	 * @param time time in millisols
+	 * @throws Exception if error during action.
+	 */
+	private void transferHeat(double time) {
+		// Call heating's timePassing
+		heating.timePassing(time);
+		// Remove the required heat from Heating class
+		// Add 30% more heat 
+		double heatReq = 1.3 * heating.getHeatRequired();
+				
+		double heatGen = 0;
+		
+		// Find out how much heat can be generated to match this requirement
+		if (heatReq > 0)
+			heatGen = calculateHeatGen(heatReq, time);
+		
+		// Need to update heat generated in Heating continuously
+		heating.insertHeatGenerated(heatGen);
+		
+		double dev = (heatReq - heatGen);
+		// A. If diff is negative, the heat load has been completely covered.
+		// B. If diff is positive, the heat load has NOT been fully matched.	
+//					if (dev > 0 && building.getBuildingType().contains("Greenhouse"))
+//						logger.info(building, "heatDev: " + Math.round(dev * 1000.0)/1000.0);
+		
+		// Q: how to inform about the heat deviation ?
+		
+		// Update the heat deviation for this building
+		setHeatDev(dev);
+		
+		// Note: could be cheating if the mechanism of conversion is NOT properly defined
+	    // Convert heat to electricity to help out
+		// double powerGenerated = calculateTotGenPower();
+
+		// Future: set new efficiency. Needs a new method in HeatSource updateEffeciency 
+	}
+	
+	/**
 	 * Time passing for the building.
 	 * 
 	 * @param time amount of time passing (in millisols)
@@ -415,41 +481,8 @@ public class ThermalGeneration extends Function {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
-		if (valid) {
-			// Call heating's timePassing
-			heating.timePassing(pulse);
-			// Remove the required heat from Heating class
-			double heatReq = heating.getHeatRequired();
-			
-//			double heatMatch = heating.getHeatMatch() * HEAT_MATCH_MOD;
-			
-			double heatGen = 0;
-			
-			// Find out how much heat can be generated to match this requirement
-			if (heatReq > 0)
-				heatGen = calculateHeatGen(heatReq, pulse.getElapsed());		
-			// Need to update this cache value in Heating continuously
-//			heatGeneratedCache = heatGen;
-		
-			double dev = (heatReq - heatGen);
-			// A. If diff is negative, the heat load has been completely covered.
-			// B. If diff is positive, the heat load has NOT been fully matched.	
-//			if (dev > 0 && building.getBuildingType().contains("Greenhouse"))
-//				logger.info(building, "heatDev: " + Math.round(dev * 1000.0)/1000.0);
-			
-			// Q: how to inform about the heat deviation ?
-			
-			// Update the heat deviation for this building
-			setHeatDev(dev);
-			
-			// Update the heat generated for this building
-			heating.insertHeatGenerated(heatGen);
-			
-			// Note: could be cheating if the mechanism of conversion is NOT properly defined
-		    // Convert heat to electricity to help out
-//			double powerGenerated = calculateTotGenPower();
-
-			// Future: set new efficiency. Needs a new method in HeatSource updateEffeciency 
+		if (valid) {			
+			moderateTime(pulse.getElapsed());
 		}
 		return valid;
 	}

@@ -33,11 +33,12 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	private static final int POWER_GEN = POWER_REQ + 1;
 	
 	private static final int TEMPERATURE = POWER_GEN + 1;
-	private static final int HEAT_GEN = TEMPERATURE + 1;
-	private static final int HEAT_LOAD = HEAT_GEN + 1;
-	private static final int HEAT_GAIN = HEAT_LOAD + 1;
-	private static final int HEAT_MATCH = HEAT_GAIN + 1;
-	private static final int HEAT_VENT = HEAT_MATCH + 1;
+	private static final int DELTA_TEMP = TEMPERATURE + 1;
+	private static final int DEV_TEMP = DELTA_TEMP + 1;
+	private static final int HEAT_GEN = DEV_TEMP + 1;
+	private static final int HEAT_REQ = HEAT_GEN + 1;
+	private static final int HEAT_GAIN = HEAT_REQ + 1;
+	private static final int HEAT_VENT = HEAT_GAIN + 1;
 	private static final int HEAT_DEV = HEAT_VENT + 1;
 	private static final int EXCESS_HEAT = HEAT_DEV + 1;
 
@@ -64,12 +65,15 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 		COLUMNS[POWER_MODE] = new ColumnSpec(Msg.getString("BuildingTableModel.column.power.mode"), String.class);		
 		COLUMNS[POWER_REQ]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.power.req"), Double.class);
 		COLUMNS[POWER_GEN]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.power.gen"), Double.class);
-		
-		COLUMNS[HEAT_GEN]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.gen"), Double.class);
-		COLUMNS[HEAT_MATCH]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.match"), Double.class);
-		COLUMNS[HEAT_LOAD] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.load"), Double.class);
-		COLUMNS[HEAT_VENT] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.vent"), Double.class);
+
 		COLUMNS[TEMPERATURE] = new ColumnSpec(Msg.getString("BuildingTableModel.column.temperature"),Double.class);
+		COLUMNS[DELTA_TEMP]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.deltaT"), Double.class);
+		COLUMNS[DEV_TEMP]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.devT"), Double.class);
+
+		COLUMNS[HEAT_GEN]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.gen"), Double.class);
+		COLUMNS[HEAT_REQ] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.req"), Double.class);
+		COLUMNS[HEAT_VENT] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.vent"), Double.class);
+
 		COLUMNS[EXCESS_HEAT] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.excess"), Double.class);
 		COLUMNS[HEAT_GAIN] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.gain"), Double.class);
 		COLUMNS[HEAT_DEV] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.dev"), Double.class);
@@ -147,8 +151,12 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 				result =  building.getPowerGeneration().getGeneratedPower();
 			break;
 			
-		case HEAT_MATCH:
-			result = building.getHeatMatch();
+		case DELTA_TEMP:
+			result = building.getDeltaTemp();
+			break;
+
+		case DEV_TEMP:
+			result = building.getDevTemp();
 			break;
 
 		case HEAT_VENT:
@@ -163,7 +171,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 			result = building.getHeatGenerated();
 			break;
 			
-		case HEAT_LOAD:
+		case HEAT_REQ:
 			result = building.getHeatRequired();
 			break;
 			
@@ -223,13 +231,17 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 				case GENERATED_POWER_EVENT -> POWER_GEN;
 				case REQUIRED_POWER_EVENT -> POWER_REQ;
 				
-				case REQUIRED_HEAT_EVENT -> HEAT_LOAD;
+				case REQUIRED_HEAT_EVENT -> HEAT_REQ;
 				case GENERATED_HEAT_EVENT -> HEAT_GEN;
 				case TOTAL_HEAT_GAIN_EVENT -> HEAT_GAIN;
+				
 				case TEMPERATURE_EVENT -> TEMPERATURE;
+				case DELTA_T_EVENT -> DELTA_TEMP;
+				case DEV_T_EVENT -> DEV_TEMP;
+				
 				case EXCESS_HEAT_EVENT -> EXCESS_HEAT;
 				case HEAT_VENT_EVENT -> HEAT_VENT;
-				case HEAT_MATCH_EVENT -> HEAT_MATCH;
+				case HEAT_MATCH_EVENT -> DELTA_TEMP;
 				case HEAT_DEV_EVENT -> HEAT_DEV;
 				
 				case SOLAR_HEAT_EVENT -> SOLAR;

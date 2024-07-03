@@ -131,12 +131,14 @@ public enum UnitEventType {
 
 	// For thermal/heating system
 	HEAT_MODE_EVENT					("heat mode"),
+	
 	GENERATED_HEAT_EVENT			("generated heat"),
 	TOTAL_HEAT_GAIN_EVENT			("total heat gain"),
 	EXCESS_HEAT_EVENT				("excess heat"),
 	HEAT_VENT_EVENT					("heat ventilation"),
 	HEAT_MATCH_EVENT				("heat match"),
 	HEAT_DEV_EVENT					("heat deviation"),
+	
 	ELECTRIC_HEAT_EVENT				("electric heat"),
 	SOLAR_HEAT_EVENT				("solar heat"),
 	NUCLEAR_HEAT_EVENT				("nuclear heat"),
@@ -144,7 +146,11 @@ public enum UnitEventType {
 
 	REQUIRED_HEAT_EVENT				("required heat"),
 	HEAT_VALUE_EVENT				("heat value"),
+	
 	TEMPERATURE_EVENT				("temperature"),
+	DELTA_T_EVENT					("delta temperature"),
+	DEV_T_EVENT						("dev temperature"),
+	
 	
 	
 	// For settlement sensor detection grid
