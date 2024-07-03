@@ -350,7 +350,7 @@ public class Fishery extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getFullPowerRequired() {
+	public double getPowerRequired() {
 		// Power (kW) required for normal operations.
 		return waterMass * POWER_PER_LITRE 
 				+ getNumFish() * POWER_PER_FISH 
@@ -364,7 +364,7 @@ public class Fishery extends Function {
 	 */
 	@Override
 	public double getPoweredDownPowerRequired() {
-		return getFullPowerRequired() * .1;
+		return getPowerRequired() * .1;
 	}
 
 	@Override

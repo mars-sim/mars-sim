@@ -158,7 +158,7 @@ public abstract class ResourceProcessor extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getFullPowerRequired() {
+	public double getPowerRequired() {
 		double result = 0D;
 		for(ResourceProcess process : processes) {
 			if (process.isProcessRunning()) {
@@ -176,12 +176,12 @@ public abstract class ResourceProcessor extends Function {
 	 */
 	@Override
 	public double getPoweredDownPowerRequired() {
-		return getFullPowerRequired() * powerDownProcessingLevel;
+		return getPowerRequired() * powerDownProcessingLevel;
 	}
 
 	@Override
 	public double getMaintenanceTime() {
-		double result = getFullPowerRequired() * .25;
+		double result = getPowerRequired() * .25;
 		// Add num of processes.
 		result *= processes.size() * .5;
 		

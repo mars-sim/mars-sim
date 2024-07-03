@@ -384,7 +384,8 @@ public class BuildingConfig {
 					attrs.put(attr.getName(), attr.getValue());
 				}
 			}
-			sourceList.add(new SourceSpec(type, attrs, numModules, unitCapacity, stirlingConversion, percentLoadCapacity));
+			sourceList.add(new SourceSpec(type, attrs, numModules, 
+					unitCapacity, stirlingConversion, percentLoadCapacity));
 		}
 		return sourceList;
 	}

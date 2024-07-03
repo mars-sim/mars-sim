@@ -33,7 +33,7 @@ public class PowerGeneration extends Function {
 
 	private List<PowerSource> powerSources;
 
-	private ThermalGeneration thermalGeneration;
+//	private ThermalGeneration thermalGeneration;
 	
 	/**
 	 * Constructor.
@@ -77,8 +77,7 @@ public class PowerGeneration extends Function {
 				case FUEL_POWER:
 					boolean toggle = Boolean.parseBoolean(sourceSpec.getAttribute(SourceSpec.TOGGLE));
 					String fuelType = sourceSpec.getAttribute(SourceSpec.FUEL_TYPE);
-					double consumptionSpeed = Double.parseDouble(sourceSpec.getAttribute(SourceSpec.CONSUMPTION_RATE));
-					powerSource = new FuelPowerSource(building, power, toggle, fuelType, consumptionSpeed);
+					powerSource = new FuelPowerSource(building, power, toggle, fuelType);
 					break;
 					
 				case WIND_POWER:
@@ -184,15 +183,19 @@ public class PowerGeneration extends Function {
 			}
 		}
 	
-		if (thermalGeneration == null)
-			thermalGeneration = building.getThermalGeneration();
-
-		// Note: Check to see if this building has thermal generation function
-		// that may convert thermal energy to electrical power
-		if (thermalGeneration != null) {
-			double p = thermalGeneration.getGeneratedPower();
-			result += p;
-		}
+		/**
+		 * Note: Please do retain the block of code below for future feature
+		 */
+		
+//		if (thermalGeneration == null)
+//			thermalGeneration = building.getThermalGeneration();
+//
+//		// Note: Check to see if this building has thermal generation function
+//		// that may convert thermal energy to electrical power
+//		if (thermalGeneration != null) {
+//			double p = thermalGeneration.getGeneratedPower();
+//			result += p;
+//		}
 	
 		return result;
 	}
@@ -268,7 +271,7 @@ public class PowerGeneration extends Function {
 	public void destroy() {
 		super.destroy();
 
-		thermalGeneration = null;
+//		thermalGeneration = null;
 
 		Iterator<PowerSource> i = powerSources.iterator();
 		while (i.hasNext()) {

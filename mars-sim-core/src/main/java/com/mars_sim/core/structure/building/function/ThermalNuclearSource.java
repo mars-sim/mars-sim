@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.structure.building.function;
 
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 
 /**
@@ -18,44 +17,76 @@ public class ThermalNuclearSource extends HeatSource {
 	private static final long serialVersionUID = 1L;
 
 	private static final double MAINTENANCE_FACTOR = 1.5D;
+	/** The rated efficiency of converting to heat. */
+	private static final double RATED_THERMAL_EFFICIENCY = .9;
+	/** The rated efficiency of converting to electricity. */
+	private static final double RATED_ELECTRIC_EFFICIENCY = .7;
 	
+	/** The efficiency of converting it to heat. */
 	private double thermalEfficiency = .9;
+	/** The efficiency of converting it to electricity. */
+	private double electricEfficiency = .7;
 
+	private Building building;
+	
 	/**
 	 * Constructor.
 	 * 
 	 * @param maxHeat the maximum generated power.
 	 */
-	public ThermalNuclearSource(double maxHeat) {
+	public ThermalNuclearSource(Building building, double maxHeat) {
 		// Call HeatSource constructor.
 		super(HeatSourceType.THERMAL_NUCLEAR, maxHeat);
+		this.building = building;
 	}
-
-	public double getCurrentHeat(Building building) {
-		return getMaxHeat() * getPercentagePower() / 100D * thermalEfficiency;
-	}
-
-	public double getCurrentPower(Building building) {
-		return getMaxHeat() * getPercentagePower() / 100D;
-	}
-
-	@Override
-	public double getEfficiency() {
+	
+	public double getThermalEfficiency() {
 		return thermalEfficiency;
 	}
 
-	@Override
-	public void setEfficiency(double value) {
+	public void setThermalEfficiency(double value) {
 		thermalEfficiency = value;
 	}
 
-	@Override
-	public double getAverageHeat(Settlement settlement) {
-		return getMaxHeat() * getPercentagePower()/ 2D * thermalEfficiency;
+	public double getElectricEfficiency() {
+		return electricEfficiency;
 	}
-
+	
+	public void setElectricEfficiency(double value) {
+		electricEfficiency = value;
+	}
+	
 	@Override
 	public double getMaintenanceTime() {
 	    return getMaxHeat() * MAINTENANCE_FACTOR;
 	}
+	
+	/**
+	 * Gets the current heat produced by this heat source.
+	 * 
+	 * @return heat [in kW]
+	 */
+	@Override
+	public double getCurrentHeat() {
+		return getMaxHeat() * getPercentHeat() / 100D 
+				* thermalEfficiency / RATED_THERMAL_EFFICIENCY;
+	}
+
+	/**
+	 * Gets the current power produced by this heat source.
+	 * 
+	 * @return power [in kW]
+	 */
+	@Override
+	public double getCurrentPower() {
+		return getMaxHeat() * getPercentElectricity() / 100D 
+				* electricEfficiency / RATED_ELECTRIC_EFFICIENCY;
+	}
+
+	@Override
+	public double requestHeat(double percent) {
+		return getMaxHeat() * percent / 100 
+				* thermalEfficiency / RATED_THERMAL_EFFICIENCY;
+	}
+	
 }

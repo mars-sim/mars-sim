@@ -38,15 +38,23 @@ public class BuildingCommand extends AbstractSettlementCommand {
 		List<Building> i = new ArrayList<>(bm.getBuildingSet());
 		Collections.sort(i);
 		
-		response.appendTableHeading("Building", CommandHelper.BUILIDNG_WIDTH, "Category", 12, "Power", 10,
-									"Dem.(kwh)", "Heat %",
-									"Temp.", 6, "Peo", "Maint.");
+		response.appendTableHeading("Building", CommandHelper.BUILIDNG_WIDTH, 
+									"Category", 12, 
+									"Power Mode", 10,
+									"Power Load kWe", 
+									"Heat Load kWt",
+									"Deg C", 6, 
+									"People", 
+									"Maint.");
 		for (Building building : i) {
 			MalfunctionManager mm = building.getMalfunctionManager();
 
-			response.appendTableRow(building.getName(), building.getCategory().getName(), building.getPowerMode().getName(),
+			response.appendTableRow(building.getName(), 
+									building.getCategory().getName(), 
+									building.getPowerMode().getName(),
 									building.getFullPowerRequired(),
-									building.getHeatMode().getPercentage(), building.getCurrentTemperature(),
+									building.getHeatRequired(), 
+									building.getCurrentTemperature(),
 									building.getNumPeople(),
 									String.format(MAINT_FORMAT,
 												(mm.getMaintenancePeriod() - mm.getEffectiveTimeSinceLastMaintenance())/1000D));

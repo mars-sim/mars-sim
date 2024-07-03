@@ -928,7 +928,7 @@ public class Farming extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getFullPowerRequired() {
+	public double getPowerRequired() {
 		// Power (kW) required for normal operations.
 		double powerRequired = 0D;
 

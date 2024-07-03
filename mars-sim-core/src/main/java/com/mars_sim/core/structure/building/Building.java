@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Building.java
- * @date 2023-11-24
+ * @date 2024-07-03
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building;
@@ -55,7 +55,6 @@ import com.mars_sim.core.structure.building.function.Exercise;
 import com.mars_sim.core.structure.building.function.FoodProduction;
 import com.mars_sim.core.structure.building.function.Function;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.HeatMode;
 import com.mars_sim.core.structure.building.function.Heating;
 import com.mars_sim.core.structure.building.function.LifeSupport;
 import com.mars_sim.core.structure.building.function.LivingAccommodation;
@@ -180,7 +179,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	private WasteProcessing wasteProcessing;
 
 	private PowerMode powerModeCache;
-	private HeatMode heatModeCache;
 	private BuildingCategory category;
 	private ConstructionType constructionType;
 	
@@ -233,7 +231,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		this.length = bounds.getLength();
 		
 		powerModeCache = PowerMode.FULL_POWER;
-		heatModeCache = HeatMode.THREE_EIGHTH_HEAT;
 
 		floorArea = length * width;
 		if (floorArea <= 0) {
@@ -776,7 +773,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		// Determine power required for each function.
 		for (Function function : functions) {
-			double power = function.getFullPowerRequired();
+			double power = function.getPowerRequired();
 			if (power > 0) {
 //			Test for System.out.println(nickName + " : "
 //					+ function.getFunctionType().toString() + " : "
@@ -819,31 +816,105 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Gets the heat this building currently requires for full-power mode.
+	 * Gets the heat this building currently required.
 	 *
 	 * @return heat in kW.
 	 */
-	public double getFullHeatRequired() {
-		// Note: Not in used
+	public double getHeatRequired() {
 		double result = 0;
 
 		if (furnace != null && heating != null)
-			result = furnace.getHeating().getFullHeatRequired();
+			result = furnace.getHeating().getHeatRequired();
 
 		return result;
 	}
 
 	/**
-	 * Sets the value of the heat generated.
+	 * Gets the heat gain of this building currently.
 	 *
-	 * @param heatGenerated
+	 * @return heat in kW.
 	 */
-	public void setHeatGenerated(double heatGenerated) {
-		if (heating == null)
-			heating = furnace.getHeating();
-		heating.setHeatGenerated(heatGenerated);
+	public double getHeatGain() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getHeating().getHeatGain();
+
+		return result;
+	}
+	
+	/**
+	 * Gets the heat generated for this building currently.
+	 *
+	 * @return heat in kW.
+	 */
+	public double getHeatGenerated() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getHeating().getHeatGenerated();
+
+		return result;
+	}
+	
+	/**
+	 * Gets the excess heat dumped on this building.
+	 *
+	 * @return heat in kW.
+	 */
+	public double getExcessHeat() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getHeating().getExcessHeat();
+
+		return result;
+	}
+	
+	/**
+	 * Gets the heat ventilated to or from this building.
+	 *
+	 * @return heat in kW.
+	 */
+	public double getHeatVent() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getHeating().getHeatVent();
+
+		return result;
+	}
+	
+	/**
+	 * Gets the heat deviation of this building.
+	 *
+	 * @return heat in kW.
+	 */
+	public double getHeatDev() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getHeatDev();
+
+		return result;
+	}
+	
+	
+	/**
+	 * Gets the heat match of this building.
+	 *
+	 * @return heat in kW.
+	 */
+	public double getHeatMatch() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getHeating().getHeatMatch();
+
+		return result;
 	}
 
+	
 	/**
 	 * Dumps the excess heat to the building.
 	 *
@@ -852,23 +923,66 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	public void dumpExcessHeat(double heatGenerated) {
 		if (heating == null)
 			heating = furnace.getHeating();
-		heating.dumpExcessHeat(heatGenerated);
+		heating.insertExcessHeat(heatGenerated);
 	}
 
 	/**
-	 * Gets the building's heat mode.
+	 * Gets the nuclear heat of this building currently.
+	 *
+	 * @return heat in kW.
 	 */
-	public HeatMode getHeatMode() {
-		return heatModeCache;
-	}
+	public double getNuclearPowerGen() {
+		double result = 0;
 
+		if (furnace != null && heating != null)
+			result = furnace.getNuclearPowerGen();
+
+		return result;
+	}
+	
 	/**
-	 * Sets the building's heat mode.
+	 * Gets the solar heat of this building currently.
+	 *
+	 * @return heat in kW.
 	 */
-	public void setHeatMode(HeatMode heatMode) {
-		heatModeCache = heatMode;
-	}
+	public double getSolarPowerGen() {
+		double result = 0;
 
+		if (furnace != null && heating != null)
+			result = furnace.getSolarPowerGen();
+
+		return result;
+	}
+	
+	/**
+	 * Gets the electric heat of this building currently.
+	 *
+	 * @return heat in kW.
+	 */
+	public double getElectricPowerGen() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getElectricPowerGen();
+
+		return result;
+	}
+	
+	/**
+	 * Gets the fuel heat of this building currently.
+	 *
+	 * @return heat in kW.
+	 */
+	public double getFuelPowerGen() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getFuelPowerGen();
+
+		return result;
+	}
+	
+	
 	/**
 	 * Gets the entity's malfunction manager.
 	 *
@@ -1236,7 +1350,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		if (heating == null)
 			heating = furnace.getHeating();
 
-		heating.setHeatLoss(heat);
+		heating.extractHeat(heat);
 	}
 
 	public double getCurrentAirPressure() {
@@ -1506,10 +1620,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		lifeSupport = null;
 		roboticStation = null;
 		powerGen = null;
-		heatModeCache = null;
 		buildingType = null;
 		powerModeCache = null;
-		heatModeCache = null;
 		malfunctionManager = null;
 	}
 }

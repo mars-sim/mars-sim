@@ -25,6 +25,7 @@ public class SolarThermalPowerSource extends PowerSource {
 		
 	/**
 	 * Constructor.
+	 * 
 	 * @param maxPower the maximum generated power.
 	 */
 	public SolarThermalPowerSource(double maxPower) {

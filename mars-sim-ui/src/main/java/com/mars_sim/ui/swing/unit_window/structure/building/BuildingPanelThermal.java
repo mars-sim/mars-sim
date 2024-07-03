@@ -80,9 +80,9 @@ extends BuildingFunctionPanel {
 		center.add(infoPanel, BorderLayout.NORTH);
 		
 		// Prepare heat status label.
-		heatStatusCache = building.getHeatMode();
-		statusTF = infoPanel.addTextField(Msg.getString("BuildingPanelThermal.heatStatus"),
-								heatStatusCache.getName(), "The status of the heating system");
+//		heatStatusCache = building.getHeatMode();
+//		statusTF = infoPanel.addTextField(Msg.getString("BuildingPanelThermal.heatStatus"),
+//								heatStatusCache.getName(), "The status of the heating system");
 		
 		productionCache = furnace.getGeneratedHeat();		
 		producedTF = infoPanel.addTextField(Msg.getString("BuildingPanelThermal.heatProduced"),
@@ -104,10 +104,10 @@ extends BuildingFunctionPanel {
 	@Override
 	public void update() {	
 		// Update heat status if necessary.
-		if (!heatStatusCache.equals(building.getHeatMode())) {
-			heatStatusCache = building.getHeatMode();			
-			statusTF.setText(heatStatusCache.getName());
-		}
+//		if (!heatStatusCache.equals(building.getHeatMode())) {
+//			heatStatusCache = building.getHeatMode();			
+//			statusTF.setText(heatStatusCache.getName());
+//		}
 
 		double newProductionCache = furnace.getGeneratedHeat();
 		if (productionCache != newProductionCache) {

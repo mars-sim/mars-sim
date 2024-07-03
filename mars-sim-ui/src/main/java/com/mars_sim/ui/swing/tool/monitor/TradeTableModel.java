@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TradeTableModel.java
- * @date 2024-06-29
+ * @date 2024-07-03
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.monitor;
@@ -32,21 +32,21 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
 	private static final int GOOD_COL = 0;
-	private static final int CAT_COL = GOOD_COL+1;
-	private static final int TYPE_COL = CAT_COL+1;
-	private static final int SETTLEMENT_COL = TYPE_COL+1;
-	static final int FLATTEN_COL = SETTLEMENT_COL+1;
-	private static final int PROJECTED_COL = FLATTEN_COL+1;
-	private static final int TRADE_COL = PROJECTED_COL+1;
-	private static final int REPAIR_COL = TRADE_COL+1;
-	private static final int DEMAND_COL = REPAIR_COL+1;
-	private static final int SUPPLY_COL = DEMAND_COL+1;
-	static final int QUANTITY_COL = SUPPLY_COL+1;
-	private static final int MASS_COL = QUANTITY_COL+1;
-	private static final int MARKET_COL = MASS_COL+1;
-	private static final int VALUE_COL = MARKET_COL+1;
-	static final int COST_COL = VALUE_COL+1;
-	static final int PRICE_COL = COST_COL+1;
+	private static final int CAT_COL = GOOD_COL + 1;
+	private static final int TYPE_COL = CAT_COL + 1;
+	private static final int SETTLEMENT_COL = TYPE_COL + 1;
+	static final int FLATTEN_COL = SETTLEMENT_COL + 1;
+	private static final int PROJECTED_COL = FLATTEN_COL + 1;
+	private static final int TRADE_COL = PROJECTED_COL + 1;
+	private static final int REPAIR_COL = TRADE_COL + 1;
+	private static final int DEMAND_COL = REPAIR_COL + 1;
+	private static final int SUPPLY_COL = DEMAND_COL + 1;
+	static final int QUANTITY_COL = SUPPLY_COL + 1;
+	private static final int MASS_COL = QUANTITY_COL + 1;
+	private static final int MARKET_COL = MASS_COL + 1;
+	private static final int VALUE_COL = MARKET_COL + 1;
+	static final int COST_COL = VALUE_COL + 1;
+	static final int PRICE_COL = COST_COL + 1;
 
 	static final int NUM_INITIAL_COLUMNS = 4;
 	private static final int COLUMNCOUNT = PRICE_COL + 1;

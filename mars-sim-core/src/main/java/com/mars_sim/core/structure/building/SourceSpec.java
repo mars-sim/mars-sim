@@ -28,7 +28,8 @@ public class SourceSpec {
 	private double percentLoadCapacity;
 	private double capacity;
 	
-	public SourceSpec(String type, Properties attributes, int numModules, double unitCapacity, double stirlingConversion, double percentLoadCapacity) {
+	public SourceSpec(String type, Properties attributes, int numModules, 
+			double unitCapacity, double stirlingConversion, double percentLoadCapacity) {
 		super();
 		this.type = type;
 		this.capacity = unitCapacity;

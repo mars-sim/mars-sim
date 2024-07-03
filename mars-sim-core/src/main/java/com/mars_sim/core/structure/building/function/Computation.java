@@ -326,7 +326,7 @@ public class Computation extends Function {
 				// if it falls below 10%, flash yellow
 				// if it falls below 0%, flash red
 				
-				double fullPower = getFullPowerRequired();
+				double fullPower = getPowerRequired();
 				double heat = fullPower * WASTE_HEAT_PERCENT;
 				// Dump the generated heat into the building to raise the room temperature
 				dumpExcessHeat(heat);
@@ -420,7 +420,7 @@ public class Computation extends Function {
 	 * @return power (kW) default zero
 	 */
 	@Override
-	public double getFullPowerRequired() {
+	public double getPowerRequired() {
 		double load = peakCU - currentCU;
 		double nonLoad = currentCU;
 		// Note: Should entropy also increase the power required to run the node ?

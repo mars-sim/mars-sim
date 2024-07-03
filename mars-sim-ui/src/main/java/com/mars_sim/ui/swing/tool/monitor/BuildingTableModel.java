@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingTableModel.java
- * @date 2022-06-28
+ * @date 2024-07-03
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.tool.monitor;
@@ -25,16 +25,29 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 
 	// Column indexes
 	private static final int NAME = 0;
-	private static final int SETTLEMENT = NAME+1;
-	private static final int TYPE = SETTLEMENT+1;
-	private static final int CATEGORY = TYPE+1;
-	private static final int POWER_MODE = CATEGORY+1;
-	private static final int POWER_REQUIRED = POWER_MODE+1;
-	private static final int POWER_GEN = POWER_REQUIRED+1;
-	private static final int HEAT_MODE = POWER_GEN+1;
-	private static final int TEMPERATURE = HEAT_MODE+1;
+	private static final int SETTLEMENT = NAME + 1;
+	private static final int TYPE = SETTLEMENT + 1;
+	private static final int CATEGORY = TYPE + 1;
+	private static final int POWER_MODE = CATEGORY + 1;
+	private static final int POWER_REQ = POWER_MODE + 1;
+	private static final int POWER_GEN = POWER_REQ + 1;
 	
-	private static final int COLUMNCOUNT = TEMPERATURE+1;
+	private static final int TEMPERATURE = POWER_GEN + 1;
+	private static final int HEAT_GEN = TEMPERATURE + 1;
+	private static final int HEAT_LOAD = HEAT_GEN + 1;
+	private static final int HEAT_GAIN = HEAT_LOAD + 1;
+	private static final int HEAT_MATCH = HEAT_GAIN + 1;
+	private static final int HEAT_VENT = HEAT_MATCH + 1;
+	private static final int HEAT_DEV = HEAT_VENT + 1;
+	private static final int EXCESS_HEAT = HEAT_DEV + 1;
+
+	
+	private static final int SOLAR = EXCESS_HEAT + 1;
+	private static final int ELECTRIC = SOLAR + 1;
+	private static final int NUCLEAR = ELECTRIC + 1;
+	private static final int FUEL = NUCLEAR + 1;
+	
+	private static final int COLUMNCOUNT = FUEL + 1;
 
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
@@ -48,11 +61,24 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 		COLUMNS[SETTLEMENT] = new ColumnSpec("Settlement", String.class);
 		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("BuildingTableModel.column.type"), String.class);
 		COLUMNS[CATEGORY] = new ColumnSpec(Msg.getString("BuildingTableModel.column.category"), String.class);	
-		COLUMNS[POWER_MODE] = new ColumnSpec(Msg.getString("BuildingTableModel.column.powerMode"), String.class);		
-		COLUMNS[HEAT_MODE] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heatMode"), Double.class);
+		COLUMNS[POWER_MODE] = new ColumnSpec(Msg.getString("BuildingTableModel.column.power.mode"), String.class);		
+		COLUMNS[POWER_REQ]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.power.req"), Double.class);
+		COLUMNS[POWER_GEN]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.power.gen"), Double.class);
+		
+		COLUMNS[HEAT_GEN]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.gen"), Double.class);
+		COLUMNS[HEAT_MATCH]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.match"), Double.class);
+		COLUMNS[HEAT_LOAD] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.load"), Double.class);
+		COLUMNS[HEAT_VENT] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.vent"), Double.class);
 		COLUMNS[TEMPERATURE] = new ColumnSpec(Msg.getString("BuildingTableModel.column.temperature"),Double.class);
-		COLUMNS[POWER_REQUIRED]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.powerRequired"), Double.class);
-		COLUMNS[POWER_GEN]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.powerGenerated"), Double.class);
+		COLUMNS[EXCESS_HEAT] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.excess"), Double.class);
+		COLUMNS[HEAT_GAIN] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.gain"), Double.class);
+		COLUMNS[HEAT_DEV] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.dev"), Double.class);
+		
+		COLUMNS[SOLAR] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.solar"), Double.class);
+		COLUMNS[ELECTRIC] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.electric"),Double.class);
+		COLUMNS[NUCLEAR]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.nuclear"), Double.class);
+		COLUMNS[FUEL]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.fuel"), Double.class);
+
 	}
 
 	/**
@@ -112,7 +138,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 			result = building.getPowerMode().getName();
 			break;
 						
-		case POWER_REQUIRED:
+		case POWER_REQ:
 			result =  building.getFullPowerRequired();
 			break;
 			
@@ -121,12 +147,52 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 				result =  building.getPowerGeneration().getGeneratedPower();
 			break;
 			
-		case HEAT_MODE:
-			result = building.getHeatMode().getPercentage();
+		case HEAT_MATCH:
+			result = building.getHeatMatch();
+			break;
+
+		case HEAT_VENT:
+			result = building.getHeatVent();
+			break;
+			
+		case HEAT_DEV:
+			result = building.getHeatDev();
+			break;
+			
+		case HEAT_GEN:
+			result = building.getHeatGenerated();
+			break;
+			
+		case HEAT_LOAD:
+			result = building.getHeatRequired();
+			break;
+			
+		case HEAT_GAIN:
+			result = building.getHeatGain();
+			break;
+			
+		case EXCESS_HEAT:
+			result = building.getExcessHeat();
 			break;
 			
 		case TEMPERATURE:
 			result = building.getCurrentTemperature();
+			break;
+			
+		case SOLAR:
+			result = building.getSolarPowerGen();
+			break;
+			
+		case ELECTRIC:
+			result = building.getElectricPowerGen();
+			break;
+			
+		case NUCLEAR:
+			result = building.getNuclearPowerGen();
+			break;
+			
+		case FUEL:
+			result = building.getFuelPowerGen();
 			break;
 			
 		default:
@@ -155,8 +221,21 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 			int columnIndex = switch(eventType) {
 				case POWER_MODE_EVENT -> POWER_MODE;
 				case GENERATED_POWER_EVENT -> POWER_GEN;
-				case REQUIRED_POWER_EVENT -> POWER_REQUIRED;
-				case HEAT_MODE_EVENT -> HEAT_MODE;
+				case REQUIRED_POWER_EVENT -> POWER_REQ;
+				
+				case REQUIRED_HEAT_EVENT -> HEAT_LOAD;
+				case GENERATED_HEAT_EVENT -> HEAT_GEN;
+				case TOTAL_HEAT_GAIN_EVENT -> HEAT_GAIN;
+				case TEMPERATURE_EVENT -> TEMPERATURE;
+				case EXCESS_HEAT_EVENT -> EXCESS_HEAT;
+				case HEAT_VENT_EVENT -> HEAT_VENT;
+				case HEAT_MATCH_EVENT -> HEAT_MATCH;
+				case HEAT_DEV_EVENT -> HEAT_DEV;
+				
+				case SOLAR_HEAT_EVENT -> SOLAR;
+				case ELECTRIC_HEAT_EVENT -> ELECTRIC;
+				case NUCLEAR_HEAT_EVENT -> NUCLEAR;
+				case FUEL_HEAT_EVENT -> FUEL;
 				default -> -1;
 			};
 

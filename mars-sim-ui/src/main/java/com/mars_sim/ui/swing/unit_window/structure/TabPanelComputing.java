@@ -221,7 +221,7 @@ public class TabPanelComputing extends TabPanelTable {
 			}
 			if (column == 1) {
 				// Power Demand
-				return Math.round(buildings.get(row).getComputation().getFullPowerRequired() * 10.0)/10.0;
+				return Math.round(buildings.get(row).getComputation().getPowerRequired() * 10.0)/10.0;
 			}
 			else if (column == 2) {
 				// Usage

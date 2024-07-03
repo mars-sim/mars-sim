@@ -142,7 +142,7 @@ extends BuildingFunctionPanel {
 
 				double max = powerSource.getMaxPower();
 				JLabel label = sPanel.addRow(Msg.getString("BuildingPanelPower.maxPower"),
-						StyleManager.DECIMAL_KW.format(maxPowerCache0));
+						StyleManager.DECIMAL_KW.format(max));
 
 				double loadCapacity = 0;
 				JLabel loadLabel = null;

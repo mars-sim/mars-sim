@@ -1,14 +1,14 @@
 /*
  * Mars Simulation Project
  * SolarHeatSource.java
- * @date 2024-06-22
+ * @date 2024-07-03
  * @author Manny Kung
  */
 package com.mars_sim.core.structure.building.function;
 
 import com.mars_sim.core.environment.SurfaceFeatures;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * This class accounts for the effect of temperature via 
@@ -21,12 +21,19 @@ public class SolarHeatingSource extends HeatSource {
 	
 	// Tentatively set to 0.14% or (.0014) efficiency degradation per sol as reported by NASA MER
 	public static final double DEGRADATION_RATE_PER_SOL = .0014;
+	/** The rated efficiency of converting to heat. */
+	private static final double RATED_THERMAL_EFFICIENCY = .68;
+	/** The rated efficiency of converting to electricity. */
+	private static final double RATED_ELECTRIC_EFFICIENCY = .55;
 	
-	private double efficiencyHeat = .68;
-	
-	private double efficiencyElectric = .55;
+	/** The efficiency of converting it to heat. */
+	private double thermalEfficiency = .68;
+	/** The efficiency of converting it to electricity. */
+	private double electricEfficiency = .55;
 
 	private Building building;
+	
+	private transient Coordinates location;
 	
 	/**
 	 * Constructor.
@@ -39,48 +46,55 @@ public class SolarHeatingSource extends HeatSource {
 		super(HeatSourceType.SOLAR_HEATING, maxHeat);
 		this.building = building;
 	}
+
+	public double getThermalEfficiency() {
+		return thermalEfficiency;
+	}
+
+	public void setThermalEfficiency(double value) {
+		thermalEfficiency = value;
+	}
+
+	public double getElectricEfficiency() {
+		return electricEfficiency;
+	}
 	
-	public double getCollected() {
-		return surface.getSolarIrradiance(building.getCoordinates()) / 1000D;
+	public void setElectricEfficiency(double value) {
+		electricEfficiency = value;
 	}
-
-	public double getEfficiencyHeat() {
-		return efficiencyHeat;
-	}
-
-	public double getEfficiencyElectric() {
-		return efficiencyElectric;
-	}
-
-	public void setEfficiencyToHeat(double value) {
-		efficiencyHeat = value;
-	}
-
-	public void setEfficiencyToElectricity(double value) {
-		efficiencyElectric = value;
-	}
-
-	@Override
-	public double getCurrentHeat(Building building) {
-		double available = getCollected(); 
-		double col = getMaxHeat() * getPercentagePower() / 100D;
-        return Math.min(available, col);
-    }
-
-	@Override
-	public double getCurrentPower(Building building) {
-		// Future: How to switch from heating mode to electrical mode ?
-        return 0;
-    }
 	
-	@Override
-	public double getAverageHeat(Settlement settlement) {
-		return getMaxHeat() *.707;
-	}
-
 	@Override
 	public double getMaintenanceTime() {
 	    return getMaxHeat();
+	}
+
+	public double getSunlightFraction() {
+		if (location == null) {
+			location = building.getCoordinates();
+		}
+		
+		return surface.getSolarIrradiance(location) / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
+	}
+	
+	@Override
+	public double getCurrentHeat() {
+		double fraction = getSunlightFraction(); 
+		double available = thermalEfficiency / RATED_THERMAL_EFFICIENCY * getMaxHeat() * getPercentHeat() / 100D;
+        return fraction * available;
+    }
+	
+	@Override
+	public double getCurrentPower() {
+		double fraction = getSunlightFraction(); 
+		double available = electricEfficiency / RATED_ELECTRIC_EFFICIENCY * getMaxHeat() * getPercentElectricity() / 100D;
+        return fraction * available;
+    }
+	
+	@Override
+	public double requestHeat(double percent) {
+		double fraction = getSunlightFraction(); 
+		double available = thermalEfficiency / RATED_THERMAL_EFFICIENCY * getMaxHeat() * percent / 100D;
+        return fraction * available;
 	}
 	
 	/**

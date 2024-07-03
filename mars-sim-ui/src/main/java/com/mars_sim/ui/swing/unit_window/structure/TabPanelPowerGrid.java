@@ -279,7 +279,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 			for(PowerSource powerSource : building.getPowerGeneration().getPowerSources()) {
 				if (powerSource instanceof SolarPowerSource solarPowerSource) {
 					i++;
-					eff += solarPowerSource.getEfficiency();
+					eff += solarPowerSource.getElectricEfficiency();
 				}
 			}
 		}
@@ -431,12 +431,12 @@ public class TabPanelPowerGrid extends TabPanelTable {
 					} catch (Exception e) {
 					}
 				}
-				if (building.hasFunction(FunctionType.THERMAL_GENERATION)) {
-					try {
-						generated += building.getThermalGeneration().getGeneratedPower();
-					} catch (Exception e) {
-					}
-				}
+//				if (building.hasFunction(FunctionType.THERMAL_GENERATION)) {
+//					try {
+//						generated += building.getThermalGeneration().getGeneratedPower();
+//					} catch (Exception e) {
+//					}
+//				}
 				return Math.round(generated * 10.0) / 10.0;
 			} 
 			
@@ -469,7 +469,14 @@ public class TabPanelPowerGrid extends TabPanelTable {
 				buildings = tempBuildings;
 			}
 
-			fireTableDataChanged();
+	    	int numRow = getRowCount();
+	    	int numCol = getColumnCount();
+	    	for (int i=0; i< numRow; i++) {	
+	    		for (int j=0; j< numCol; j++) {	
+		    		if (j != 1)
+		    			fireTableCellUpdated(i, j);
+	    		}
+	    	}
 		}
 
 		@Override

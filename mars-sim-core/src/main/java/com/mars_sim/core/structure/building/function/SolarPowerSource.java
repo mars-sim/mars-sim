@@ -28,6 +28,9 @@ public class SolarPowerSource extends PowerSource {
 	 	100*(1-.04/100)^(365*10) = 23.21% */
 	public static final double DEGRADATION_RATE_PER_SOL = .0004; // assuming it is a constant through its mission
 	
+	/** The rated efficiency of converting to electricity. */
+	private static final double RATED_ELECTRIC_EFFICIENCY = .55;
+	
 	// Notes :
 	// 1. The solar Panel is made of triple-junction solar cells with theoretical max eff of 68%  
 	// 2. the flat-plate single junction has max theoretical efficiency at 29%
@@ -38,7 +41,7 @@ public class SolarPowerSource extends PowerSource {
 	/*
 	 * The theoretical max efficiency of the triple-junction solar cells 
 	 */
-	private double efficiency = .55;
+	private double electricEfficiency = .55;
 	
 	// As of Sol 4786 (July 11, 2017), the solar array energy production was 352 watt-hours with 
 	// an atmospheric opacity (Tau) of 0.748 and a solar array dust factor of 0.549.
@@ -67,7 +70,8 @@ public class SolarPowerSource extends PowerSource {
 		if (I <= 0)
 			return 0;
 		
-		return I / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * getMaxPower();
+		return I / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * getMaxPower() 
+				* electricEfficiency / RATED_ELECTRIC_EFFICIENCY;
 	}
 
 	@Override
@@ -80,11 +84,11 @@ public class SolarPowerSource extends PowerSource {
 	    return getMaxPower() * MAINTENANCE_FACTOR;
 	}
 
-	public void setEfficiency(double value) {
-		 efficiency = value;
+	public void setElectricEfficiency(double value) {
+		 electricEfficiency = value;
 	}
 
-	public double getEfficiency() {
-		return efficiency;
+	public double getElectricEfficiency() {
+		return electricEfficiency;
 	}
 }

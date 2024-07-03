@@ -58,7 +58,7 @@ public class AstronomicalObservation extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getFullPowerRequired() {
+	public double getPowerRequired() {
 		return powerRequired;
 	}
 

@@ -32,17 +32,16 @@ public class FuelPowerSource extends PowerSource {
 	
 	/** The work time (millisol) required to toggle this power source on or off. */
 	private static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 2D;
-
-	/** The fuel consumption rate [kg/millisol]. */
-	private final double MAX_RATE;
+	/** The consumption rate [g/millisol or kg/sol] of methane if burning at 100% efficiency. */
+	public static final double CONSUMPTION_RATE = 1.59795;
 	
 	private boolean toggle = false;
-	/** The electrical efficiency for this source. */
-	private double electricalEfficiency = .7125;
-	/** The fuel consumption rate [kg/sol]. */
-	private double rate;
-	/** The fuel consumption rate [kg/millisol]. */
-	private double consumptionRate;
+	
+	/** The thermal efficiency for this source. */
+	public double thermalEfficiency = .9;
+	/** The electric efficiency for this source. */
+	public double electricEfficiency = .7125;
+
 	/** The running work time. */
 	private double toggleRunningWorkTime;
 	/** The amount of reserved fuel. */
@@ -53,6 +52,8 @@ public class FuelPowerSource extends PowerSource {
 	private double time;
 	/** The tank capacity for holding the fuel [in kg]. */
 	private double tankCap;
+	/** The percentage for producing electricity. */
+	public double percentElectricity = 100;
 	
 	private Building building;
 	
@@ -64,137 +65,91 @@ public class FuelPowerSource extends PowerSource {
 	 * @param fuelType the fuel type.
 	 * @param consumptionSpeed the rate of fuel consumption (kg/sol).
 	 */
-	public FuelPowerSource(Building building, double maxPower, boolean toggle, String fuelType,
-			double consumptionSpeed) {
+	public FuelPowerSource(Building building, double maxPower, boolean toggle, String fuelType) {
 		super(PowerSourceType.FUEL_POWER, maxPower);
-		this.rate = consumptionSpeed;
 		this.toggle = toggle;
 		this.building = building;
 		
 		if (building.isInhabitable()) {
 			// e.g. Methane Power Generator
-			// Use the following two params to determine tank size
-			tankCap = .5 * (consumptionSpeed + maxPower);
+			// Use maxHeat to determine tank size
+			tankCap = .4 * maxPower;
 		}
 		else {
-			tankCap = maxPower / 2;
+			// this methane generator is co-located within its host building
+			tankCap = .2 * maxPower ;
 		}
-
-		MAX_RATE = rate / 1000.0;
-		consumptionRate = MAX_RATE;
 	}
 	
-//	 Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
-//	 CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ 
-//	 
-//	 CnH2n+2 + (3n + 1)O2 -> nCO2 + (n + 1)H2O + (6n + 2)e- 
-
-//	it produces 890kW at the consumption rate of 16 g/s
-//  or it produces 1kW at .018 g/s
-	
-//	Since each martian sol has 88775 earth seconds (=24*60*60 + 39*60 + 35.244),
-	
-//	 Assume electrical efficiency at 100%,
-//	 1 kW_t <- 1.5960 g/millisol or kg/sol
-	
-//	1kW needs 1.59795 kg/sol. 
-//	5kW needs 7.9897 kg/sol. 
-//	60kW needs 95.877 kg/sol.
-	
-//	 SOFC uses methane with 1100 W-hr/kg, 
-//	 This translate to 71.25 % efficiency
-		
 	/**
-	 * Gets the max fuel to be consumed in kg.
+	 * Gets the fuel in kg/millisol/kW.
 	 * 
+	 * @param isElectric
 	 * @return
 	 */
-	private double getMaxFuelPerMillisolPerkW() {
-		return 1.5960 / electricalEfficiency / 1000;
+	private double getMaxFuelPerMillisolPerkW(boolean isElectric) {
+		if (isElectric)
+			return CONSUMPTION_RATE / 1000 / thermalEfficiency / electricEfficiency ;
+		else
+			return CONSUMPTION_RATE / 1000 / thermalEfficiency;
 	}
 	
 	/**
-	 * Returns the current consumption rate.
-	 * 
-	 * @return
-	 */
-	public double computeRate() {
-		if (building.getPowerMode() == PowerMode.FULL_POWER) {
-			consumptionRate = MAX_RATE;  
-		}
-		else if (building.getPowerMode() == PowerMode.LOW_POWER) {
-			consumptionRate = MAX_RATE/2;  
-		}	
-		return consumptionRate;
-	}
-	
-	/**
-	 * Consumes the fuel.
+	 * Calculates the amount of fuel to be consumed.
 	 * 
 	 * @param time
-	 * @param inv
-	 * @return the amount of fuel consumed
+	 * @param onlyRequest. If true, then it won't deduct the fuel
+	 * @param percent
+	 * @return
 	 */
-	public double consumeFuel(double time, Settlement settlement) {
+	private double computeFuelConsumption(double time, double percent, 
+			boolean isElectric, boolean onlyRequest) {
 		double consumed = 0;
 
-		// Use tankCap and floor area as factors to limit fuel
-		double deltaFuel = building.getFloorArea() / 5 * time * computeRate();
-		double maxFuel = getMaxPower() * getMaxFuelPerMillisolPerkW();
-	
-		if (deltaFuel > maxFuel) {
-			deltaFuel = maxFuel;
-		}
-		
-		if (deltaFuel <= reserveFuel && deltaFuel * RATIO <= reserveOxidizer) {
-			reserveFuel -= deltaFuel;
-			reserveOxidizer -= deltaFuel * RATIO;
-	
-			consumed = deltaFuel;
-		}
-		else {
-			double fuelStored = settlement.getAmountResourceStored(METHANE_ID);
-			double o2Stored = settlement.getAmountResourceStored(OXYGEN_ID);
+		// fuel [kg] = [kW] / [percent] * [kg/millisols/kW] * [millisols]
+		double deltaFuel = getMaxPower() / percent * 100.0  * getMaxFuelPerMillisolPerkW(isElectric) * time;
+
+		if (!onlyRequest) {
 			
-			double transferFuel = tankCap + deltaFuel - reserveFuel;
-			
-			if (transferFuel <= fuelStored && transferFuel * RATIO <= o2Stored) {
-				
-				reserveFuel = tankCap;
-				reserveOxidizer = tankCap * RATIO;
-				
-				settlement.retrieveAmountResource(METHANE_ID, transferFuel);
-				settlement.retrieveAmountResource(OXYGEN_ID, transferFuel * RATIO * 1.0);
+			// Retrieve the fuel and oxidizer from the temporary tanks
+			if (deltaFuel <= reserveFuel && deltaFuel * RATIO <= reserveOxidizer) {
+				reserveFuel -= deltaFuel;
+				reserveOxidizer -= deltaFuel * RATIO;
 				
 				consumed = deltaFuel;
 			}
-			
-			// Stop using it for heating
-			
-//			else {
-//				// Note that 16 g of methane requires 64 g of oxygen, a 1-to-4 ratio
-//				consumed = Math.min(deltaFuel, Math.min(fuelStored, o2Stored / RATIO));
-//
-//				settlement.retrieveAmountResource(METHANE_ID, consumed);
-//				settlement.retrieveAmountResource(OXYGEN_ID, RATIO * consumed);
-//			}
+			else {
+				double fuelStored = getSettlement().getAmountResourceStored(METHANE_ID);
+				double o2Stored = getSettlement().getAmountResourceStored(OXYGEN_ID);
+				
+				double transferFuel = tankCap + deltaFuel - reserveFuel;
+				
+				if (transferFuel <= fuelStored && transferFuel * RATIO <= o2Stored) {
+					
+					reserveFuel = tankCap;
+					reserveOxidizer = tankCap * RATIO;
+					
+					getSettlement().retrieveAmountResource(METHANE_ID, transferFuel);
+					getSettlement().retrieveAmountResource(OXYGEN_ID, transferFuel * RATIO);
+					
+					consumed = deltaFuel;
+				}
+			}
 		}
-		
-//		logger.info(building, 20_000, "deltaFuel: " + Math.round(deltaFuel*1000.0)/1000.0 
-//				+ "  maxFuel: " + Math.round(maxFuel*1000.0)/1000.0);
-		
+
 		return consumed;
 	}
-	 
+	
+	public Settlement getSettlement() {
+		return building.getSettlement();
+	}
+	
 	@Override
 	public double getCurrentPower(Building building) {
-		
 		if (toggle) {
-			double spentFuel = consumeFuel(time, building.getSettlement());	
-//			logger.info(building, 20_000, "spent fuel: " + spentFuel + "  kW: " + spentFuel / getMaxFuelPerMillisolPerkW());
-			return spentFuel / getMaxFuelPerMillisolPerkW();
+			double spentFuel = computeFuelConsumption(time, getPercentElectricity(), true, false);
+			return spentFuel / getMaxFuelPerMillisolPerkW(true);
 		}
-		 
 		return 0;
 	}
 	 
@@ -231,7 +186,7 @@ public class FuelPowerSource extends PowerSource {
 	 * @return rate (kg/sol).
 	 */
 	 public double getFuelConsumptionRate() {
-		 return rate;
+		 return CONSUMPTION_RATE;
 	 }
 
 	 /**
@@ -261,6 +216,15 @@ public class FuelPowerSource extends PowerSource {
 		return fuelPower;
 	 }
 
+	 /**
+	  * Return the percentage of electricity allocated for this heat source.
+	  * 
+	  * @return
+	  */
+	 public double getPercentElectricity() {
+		 return percentElectricity;
+	 }
+		
 	 @Override
 	 public double getMaintenanceTime() {
 	    return getMaxPower() * MAINTENANCE_FACTOR;

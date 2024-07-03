@@ -363,7 +363,6 @@ public class ResourceProcessPanel extends JPanel {
      * Updates the status of any resource processes.
      */
     public void update() {
-//    	int numCol = resourceProcessTableModel.getColumnCount();
     	int numRow = resourceProcessTableModel.getRowCount();
     	for (int i=0; i< numRow; i++) {	
     		resourceProcessTableModel.fireTableCellUpdated(i, 0);
@@ -371,7 +370,6 @@ public class ResourceProcessPanel extends JPanel {
     		resourceProcessTableModel.fireTableCellUpdated(i, 4);
     		resourceProcessTableModel.fireTableCellUpdated(i, 5);
     	}
-//        resourceProcessTableModel.fireTableDataChanged();
     }
     
     private String generateToolTip(ResourceProcess process, Building building) {

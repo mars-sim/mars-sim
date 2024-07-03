@@ -919,7 +919,7 @@ public class Cooking extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getFullPowerRequired() {
+	public double getPowerRequired() {
 		return getNumCooks() * 10D;
 	}
 

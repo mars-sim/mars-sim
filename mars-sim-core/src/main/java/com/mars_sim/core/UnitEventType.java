@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnitEventType.java
- * @date 2022-07-01
+ * @date 2024-07-03
  * @author stpa
  */
 
@@ -132,10 +132,20 @@ public enum UnitEventType {
 	// For thermal/heating system
 	HEAT_MODE_EVENT					("heat mode"),
 	GENERATED_HEAT_EVENT			("generated heat"),
-	STORED_HEAT_EVENT				("stored heat"),
-	STORED_HEAT_CAPACITY_EVENT		("stored heat capacity"),
+	TOTAL_HEAT_GAIN_EVENT			("total heat gain"),
+	EXCESS_HEAT_EVENT				("excess heat"),
+	HEAT_VENT_EVENT					("heat ventilation"),
+	HEAT_MATCH_EVENT				("heat match"),
+	HEAT_DEV_EVENT					("heat deviation"),
+	ELECTRIC_HEAT_EVENT				("electric heat"),
+	SOLAR_HEAT_EVENT				("solar heat"),
+	NUCLEAR_HEAT_EVENT				("nuclear heat"),
+	FUEL_HEAT_EVENT					("fuel heat"),
+
 	REQUIRED_HEAT_EVENT				("required heat"),
 	HEAT_VALUE_EVENT				("heat value"),
+	TEMPERATURE_EVENT				("temperature"),
+	
 	
 	// For settlement sensor detection grid
 	BASELINE_EVENT					("baseline radiation event"),

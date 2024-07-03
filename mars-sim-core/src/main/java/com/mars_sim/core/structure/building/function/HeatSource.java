@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * HeatSource.java
- * @date 2022-07-31
+ * @date 2024-07-03
  * @author Manny Kung
  */
 package com.mars_sim.core.structure.building.function;
@@ -9,8 +9,8 @@ package com.mars_sim.core.structure.building.function;
 import java.io.Serializable;
 
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.environment.SurfaceFeatures;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 
 /**
@@ -27,10 +27,16 @@ public abstract class HeatSource implements Serializable {
 	// Data members
 	private double maxHeat;
 
-	private double percent;
+	private double percentElectricity;
+	
+	private double percentHeat;
+	
+	private double time;
 	
 	private HeatSourceType type;
 
+	private HeatMode heatModeCache;
+	
 	protected static SurfaceFeatures surface;
 	
 	
@@ -43,12 +49,47 @@ public abstract class HeatSource implements Serializable {
 	public HeatSource(HeatSourceType type, double maxHeat) {
 		this.type = type;
 		this.maxHeat = maxHeat;
-		this.percent = 0;
+		this.percentElectricity = 0;
 		
 		if (surface == null)
 			surface = Simulation.instance().getSurfaceFeatures();
 	}
 
+
+	/**
+	 * Gets the building's heat mode.
+	 */
+	public HeatMode getHeatMode() {
+		return heatModeCache;
+	}
+
+	/**
+	 * Sets the heat source's heat mode.
+	 */
+	public void setHeatMode(HeatMode heatMode, Building building) {
+		heatModeCache = heatMode;
+		
+		if (heatMode == HeatMode.HEAT_OFF) {
+			setPercentHeat(0);
+			setPercentElectricity(100);
+			building.fireUnitUpdate(UnitEventType.HEAT_MODE_EVENT);
+			return;
+		}
+		
+		if (heatMode == HeatMode.OFFLINE) {
+			setPercentHeat(0);
+			setPercentElectricity(0);
+			building.fireUnitUpdate(UnitEventType.HEAT_MODE_EVENT);
+			return;
+		}
+		
+		double percentHeat = heatMode.getPercentage();
+		setPercentHeat(percentHeat);
+		double percentElectricity = 100 - percentHeat;
+		setPercentElectricity(percentElectricity);
+		building.fireUnitUpdate(UnitEventType.HEAT_MODE_EVENT);
+	}
+	
 	/**
 	 * Gets the type of Heat source.
 	 * 
@@ -68,41 +109,69 @@ public abstract class HeatSource implements Serializable {
 	}
 
 	/**
-	 * Return the percentage of full power for this heat source.
+	 * Return the percentage of electricity allocated for this heat source.
 	 * 
 	 * @return
 	 */
-	public double getPercentagePower() {
-		return percent ;
+	public double getPercentElectricity() {
+		return percentElectricity;
 	}
 
 	/**
-	 * Sets the percentage of the power for this heat source.
+	 * Sets the percentage of electricity allocated for this heat source.
 	 * 
 	 * @param percentage
 	 */
-	public void setPercentagePower(double percentage) {
-		this.percent = percentage;
+	public void setPercentElectricity(double percentage) {
+		this.percentElectricity = percentage;
+	}
+
+
+	/**
+	 * Return the percentage of heat allocated for this heat source.
+	 * 
+	 * @return
+	 */
+	public double getPercentHeat() {
+		return percentHeat;
 	}
 
 	/**
-	 * Gets the current Heat produced by the heat source.
+	 * Sets the percentage of heat allocated for this heat source.
+	 * 
+	 * @param percentage
+	 */
+	public void setPercentHeat(double percentage) {
+		this.percentHeat = percentage;
+	}
+	
+	/**
+	 * Gets the current Heat produced by this heat source.
 	 * 
 	 * @param building the building this heat source is for.
 	 * @return Heat (kW)
 	 */
-	public abstract double getCurrentHeat(Building building);
+	public abstract double getCurrentHeat();
 
 	/**
-	 * Gets the average Heat produced by the heat source.
+	 * Request heat produced by this heat source.
 	 * 
-	 * @param settlement the settlement this heat source is at.
-	 * @return heat(kW)
+	 * @param percent The percentage of capacity of this heat source
+	 * @return Heat (kWt)
 	 */
-	public abstract double getAverageHeat(Settlement settlement);
-
+	public abstract double requestHeat(double percent);
+	
 	/**
-	 * Gets the efficiency by the heat source.
+	 * Gets the current Power produced by this heat source.
+	 * 
+	 * @param building the building this heat source is for.
+	 * @return power (kW)
+	 */
+	public abstract double getCurrentPower();
+
+	
+	/**
+	 * Gets the efficiency by this heat source.
 	 * 
 	 * @return efficiency (max is 1)
 	 */
@@ -112,7 +181,7 @@ public abstract class HeatSource implements Serializable {
 	}
 
 	/**
-	 * Sets the thermal efficiency of the heat source.
+	 * Sets the thermal efficiency of this heat source.
 	 */
 	public void setEfficiency(double value) {
 		// To be overridden
@@ -125,20 +194,14 @@ public abstract class HeatSource implements Serializable {
 	 */
 	public abstract double getMaintenanceTime();
 
-	/**
-	 * Gets the current Power produced by the heat source.
-	 * 
-	 * @param building the building this heat source is for.
-	 * @return power (kW)
-	 */
-	public abstract double getCurrentPower(Building building);
 
 	/**
-	 * Sets the time for burning the fuel
+	 * Sets the time.
 	 * 
 	 * @param time
 	 */
 	public void setTime(double time) {
+		this.time = time;
 	}
 
 	/**
@@ -146,5 +209,6 @@ public abstract class HeatSource implements Serializable {
 	 */
 	public void destroy() {
 		type = null;
+		heatModeCache = null;
 	}
 }

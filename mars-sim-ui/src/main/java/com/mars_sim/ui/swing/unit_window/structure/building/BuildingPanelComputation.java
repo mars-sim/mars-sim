@@ -61,7 +61,7 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 		center.add(springPanel, BorderLayout.NORTH);
 
 		// Power Demand
-		double powerDemand = building.getComputation().getFullPowerRequired();
+		double powerDemand = building.getComputation().getPowerRequired();
 		powerDemandLabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.powerDemand"),
 				     StyleManager.DECIMAL_KW.format(powerDemand), Msg.getString("BuildingPanelComputation.powerDemand.tooltip"));
 
@@ -88,7 +88,7 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 	@Override
 	public void update() {
 
-		String power = StyleManager.DECIMAL_KW.format(building.getComputation().getFullPowerRequired());
+		String power = StyleManager.DECIMAL_KW.format(building.getComputation().getPowerRequired());
 
 		if (!powerDemandLabel.getText().equalsIgnoreCase(power))
 			powerDemandLabel.setText(power);

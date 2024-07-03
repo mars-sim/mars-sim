@@ -191,7 +191,7 @@ public abstract class Function implements Serializable, Temporal {
 	 *
 	 * @return power (kW) default zero
 	 */
-	public double getFullPowerRequired() {
+	public double getPowerRequired() {
 		return 0;
 	}
 

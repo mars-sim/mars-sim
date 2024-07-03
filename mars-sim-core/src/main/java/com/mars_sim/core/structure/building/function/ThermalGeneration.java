@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ThermalGeneration.java
- * @date 2022-06-17
+ * @date 2024-07-03
  * @author Manny Kung
  */
 package com.mars_sim.core.structure.building.function;
@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;
@@ -28,14 +29,27 @@ public class ThermalGeneration extends Function {
 	/** default serial  id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
+	// May add back private static final SimLogger logger = SimLogger.getLogger(ThermalGeneration.class.getName())
+	
+//	private static final double HEAT_MATCH_MOD = 1;
+	
 	// Data members.
 	private double heatGeneratedCache;
 	
-	private double powerGeneratedCache;
+	private double heatDev;
 
 	private Heating heating;
 	
 	private List<HeatSource> heatSources;
+	
+	private HeatSource solarHeatSource;
+	
+	private HeatSource nuclearHeatSource;
+	
+	private HeatSource electricHeatSource;
+	
+	private HeatSource fuelHeatSource;
 	
 	/**
 	 * Constructor
@@ -43,15 +57,6 @@ public class ThermalGeneration extends Function {
 	public ThermalGeneration(Building building, FunctionSpec spec) {
 		// Call Function constructor.
 		super(FunctionType.THERMAL_GENERATION, spec, building);
-		
-//		double area = building.getFloorArea();
-		double areaFactor = 1;
-		
-		// For hallway and tunnel, the length is not known.
-		// Thus, the capacity and consumption-rate needs to be moderated by its final area
-//		if (building.getCategory() == BuildingCategory.HALLWAY) {
-//			areaFactor = area / 4.5;
-//		}
 		
 		heating = new Heating(building, spec);
 
@@ -65,23 +70,32 @@ public class ThermalGeneration extends Function {
 			
 			switch (sourceType) {
 			case ELECTRIC_HEATING:
-				heatSource = new ElectricHeatSource(heat * areaFactor);				
+				heatSource = new ElectricHeatSource(building, heat);	
+				electricHeatSource = heatSource;
 				break;
 
 			case SOLAR_HEATING:
-				heatSource = new SolarHeatingSource(building, heat * areaFactor);
+				heatSource = new SolarHeatingSource(building, heat);
+				solarHeatSource = heatSource;
 				break;
 				
 			case FUEL_HEATING:
 				boolean toggle = Boolean.parseBoolean(sourceSpec.getAttribute(SourceSpec.TOGGLE));
 				String fuelType = sourceSpec.getAttribute(SourceSpec.FUEL_TYPE);
-				double consumptionSpeed = Double.parseDouble(sourceSpec.getAttribute(SourceSpec.CONSUMPTION_RATE));
-				heatSource = new FuelHeatSource(building, heat, toggle, fuelType, consumptionSpeed);
+				heatSource = new FuelHeatSource(building, heat, toggle, fuelType);
+				fuelHeatSource = heatSource;
+				break;
+				
+			case THERMAL_NUCLEAR:
+				heatSource = new ThermalNuclearSource(building, heat);
+				nuclearHeatSource = heatSource;
 				break;
 				
 			default:
 				throw new IllegalArgumentException("Do not know heat source type :" + sourceSpec.getType());
 			}
+			
+			// Add this heat source into the list
 			heatSources.add(heatSource);
 		}
 	}
@@ -160,71 +174,237 @@ public class ThermalGeneration extends Function {
 		return heatGeneratedCache;
 	}
 
-	/**
-	 * Gets the total amount of power that this building is CURRENTLY producing.
-	 * 
-	 * @return power generated in kW ()
-	 */
-	public double getGeneratedPower() {
-		return powerGeneratedCache; 
-	}
+//	/**
+//	 * Gets the total amount of power that this building is CURRENTLY producing.
+//	 * 
+//	 * @return power generated in kW ()
+//	 */
+//	public double getGeneratedPower() {
+//		return powerGeneratedCache; 
+//	}
 
 	/**
-	 * Calculates the total amount of heat that this building is CURRENTLY producing
-	 * and also the power required to generate the heat.
+	 * Calculates the amount of heat that this building is generating to cover the heat load.
 	 * 
-	 * @return heat generated in kW
+	 * @param heatLoad
+	 * @param time
+	 * @return heat generated in kW.
 	 */
-	private double calculateGeneratedHeat(double time) {
+	private double calculateHeatGen(double heatLoad, double time) {
 
+		double heatReq = heatLoad * 1.25;
 		double heatGen = 0D;
 	
-		double percentageHeat = building.getHeatMode().getPercentage();
+		HeatMode newHeatMode = null;
+		HeatMode heatMode = null;
 		
-		for (HeatSource heatSource : heatSources) {
-			heatSource.setPercentagePower(percentageHeat);
-	    	heatSource.setTime(time);
-			heatGen += heatSource.getCurrentHeat(building);
-		}
+		// Order of business: solar, nuclear, electric, and fuel
+		
+		List<HeatMode> ALL_HEAT_MODES = HeatMode.ALL_HEAT_MODES;
+		int size = ALL_HEAT_MODES.size() - 1;
+		
+		if (solarHeatSource != null) {	
+			for (int i=1; i<size; i++) {
+				heatMode = ALL_HEAT_MODES.get(i);
+
+		    	double h = solarHeatSource.requestHeat(heatMode.getPercentage());
+
+				if (!Double.isNaN(h) && !Double.isInfinite(h)) {
+					heatGen += h;
+					heatReq -= h;		
+					if (heatReq > 0) {
+						// Go to the next heat source for more heat
+					}
+					else {				
+					
+						// Set the new heat mode
+						newHeatMode = heatMode;
+						
+						solarHeatSource.setHeatMode(newHeatMode, building);
+						building.fireUnitUpdate(UnitEventType.SOLAR_HEAT_EVENT);	
+						
+						// Convert all thermal nuclear heat to electricity
+						if (nuclearHeatSource != null) {
+							nuclearHeatSource.setHeatMode(HeatMode.HEAT_OFF, building);
+							building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT);
+						}
+						
+						// Turn off electric heat
+						if (electricHeatSource != null) {
+							electricHeatSource.setHeatMode(HeatMode.OFFLINE, building);
+							building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT);
+						}
+						
+						// Turn off fuel heat
+						if (fuelHeatSource != null) {
+							fuelHeatSource.setHeatMode(HeatMode.OFFLINE, building);
+							building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
+						}
+						
+						return heatGen;
+					}
+				}
+			}
 			
+			// Set the new heat mode
+			newHeatMode = heatMode;
+			solarHeatSource.setHeatMode(newHeatMode, building);
+			building.fireUnitUpdate(UnitEventType.SOLAR_HEAT_EVENT);
+		}
+		
+		if (nuclearHeatSource != null) {
+			for (int i=1; i<size; i++) {
+				heatMode = ALL_HEAT_MODES.get(i);
+
+		    	double h = nuclearHeatSource.requestHeat(heatMode.getPercentage());
+				
+				if (!Double.isNaN(h) && !Double.isInfinite(h)) {
+					heatGen += h;
+					heatReq -= h;			
+					if (heatReq > 0) {
+						// Go to the next heat source for more heat
+					}
+					else {		
+						// Set the new heat mode
+						newHeatMode = heatMode;
+						
+						// Will automatically convert rest of thermal nuclear heat to electricity					
+						nuclearHeatSource.setHeatMode(newHeatMode, building);
+						building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT);
+						
+						// Turn off electric heat
+						if (electricHeatSource != null) {
+							electricHeatSource.setHeatMode(HeatMode.OFFLINE, building);		
+							building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT);
+						}
+						
+						// Turn off fuel heat
+						if (fuelHeatSource != null) {
+							fuelHeatSource.setHeatMode(HeatMode.OFFLINE, building);
+							building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
+						}
+		
+						return heatGen;
+					}
+				}
+			}
+			
+			// Set the new heat mode
+			newHeatMode = heatMode;
+			nuclearHeatSource.setHeatMode(newHeatMode, building);
+			building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT);
+		}
+		
+		if (electricHeatSource != null) {
+			for (int i=1; i<size; i++) {
+				heatMode = ALL_HEAT_MODES.get(i);
+				
+		    	double h = electricHeatSource.requestHeat(heatMode.getPercentage());
+				
+				if (!Double.isNaN(h) && !Double.isInfinite(h)) {
+					heatGen += h;
+					heatReq -= h;			
+					if (heatReq > 0) {
+						// Go to the next heat source for more heat
+					}
+					else {
+						// Set the new heat mode
+						newHeatMode = heatMode;
+						
+						electricHeatSource.setHeatMode(newHeatMode, building);
+						building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT);
+						
+						// Turn off fuel heat
+						if (fuelHeatSource != null) {
+							fuelHeatSource.setHeatMode(HeatMode.OFFLINE, building);
+							building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
+						}
+					
+						return heatGen;
+					}
+				}
+			}
+			
+			// Set the new heat mode
+			newHeatMode = heatMode;
+			electricHeatSource.setHeatMode(newHeatMode, building);
+			building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT);
+		}
+		
+		if (fuelHeatSource != null) {
+			for (int i=1; i<size; i++) {
+				heatMode = ALL_HEAT_MODES.get(i);
+				
+				fuelHeatSource.setTime(time);
+		    	double h = fuelHeatSource.requestHeat(heatMode.getPercentage());
+				
+				if (!Double.isNaN(h) && !Double.isInfinite(h)) {
+					heatGen += h;
+					heatReq -= h;			
+					if (heatReq > 0) {
+						// Go to the next heat source for more heat
+					}
+					else {
+						// Set the new heat mode
+						newHeatMode = heatMode;
+
+						fuelHeatSource.setHeatMode(newHeatMode, building);
+						building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
+						
+						return heatGen;
+					}
+				}
+			}
+			
+			// Set the new heat mode
+			newHeatMode = heatMode;
+			fuelHeatSource.setHeatMode(newHeatMode, building);
+			building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
+		}
+
 		return heatGen;
 	}
 
-
-	/**
-	 * Calculates the total amount of power that this building is CURRENTLY producing from heat sources.
-	 * 
-	 * @return power generated in kW
-	 */
-	private double calculateGeneratedPower() {
-
-		double result = 0D;
-		HeatMode heatMode = building.getHeatMode();
-//		if (heatMode != HeatMode.FULL_HEAT) {
-			boolean sufficientPower = building.getSettlement().getPowerGrid().isSufficientPower();
-			
-			// Calculate the unused
-			double sparePercentage = 100 - heatMode.getPercentage();
-			for (HeatSource heatSource : heatSources) {
-			    if (heatSource.getType() == HeatSourceType.SOLAR_HEATING) {
-			    	heatSource.setPercentagePower(sparePercentage);
-			    	result += heatSource.getCurrentPower(getBuilding());
-			    }
-			   
-			    else if (heatSource.getType() == HeatSourceType.FUEL_HEATING) {
-			    	 // if there's not enough electrical power
-				    if (!sufficientPower) {
-				    	heatSource.setPercentagePower(sparePercentage);
-				    	// Note: could be cheating if the mechanism of conversion is NOT properly defined
-				    	// Convert heat to electricity
-				    	result += heatSource.getCurrentPower(getBuilding());
-				    }
-			    }	
-			}
+//	/**
+//	 * Calculates the total amount of power that this building is CURRENTLY producing from heat sources.
+//	 * 
+//	 * @return power generated in kW
+//	 */
+//	private double calculateTotGenPower() {
+//
+//		double result = 0D;
+//		HeatMode heatMode = building.getHeatMode();
+//
+//		boolean sufficientPower = building.getSettlement().getPowerGrid().isSufficientPower();
+//		
+//		// Calculate the unused
+//		double sparePercentage = 100 - heatMode.getPercentage();
+//		for (HeatSource heatSource : heatSources) {
+//
+//			if (heatSource.getType() == HeatSourceType.FUEL_HEATING) {
+//		    	 // if there's not enough electrical power
+//			    if (!sufficientPower) {
+//			    	heatSource.setPercentagePower(sparePercentage);
+//			    	// Note: could be cheating if the mechanism of conversion 
+//			    	// is NOT properly defined
+//			    	// Convert heat to electricity
+//			    	result += heatSource.getCurrentPower(getBuilding());
+//			    }
+//		    }	
+//		    
+//		    else if (heatSource.getType() == HeatSourceType.THERMAL_NUCLEAR) {
+//		    	heatSource.setPercentagePower(sparePercentage);
+//		    	result += heatSource.getCurrentPower(getBuilding());
+//		    }
+//		    
+//		    else if (heatSource.getType() == HeatSourceType.SOLAR_HEATING) {
+//		    	heatSource.setPercentagePower(sparePercentage);
+//		    	result += heatSource.getCurrentPower(getBuilding());
+//		    }
 //		}
-
-		return result;
-	}
+//
+//		return result;
+//	}
 
 	/**
 	 * Time passing for the building.
@@ -236,25 +416,64 @@ public class ThermalGeneration extends Function {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
+			// Call heating's timePassing
 			heating.timePassing(pulse);
-
-			double heatGenerated = calculateGeneratedHeat(pulse.getElapsed());		
-				// Note: could be cheating if the mechanism of conversion is NOT properly defined
-		    	// Convert heat to electricity to help out
-			double powerGenerated = calculateGeneratedPower();
-
+			// Remove the required heat from Heating class
+			double heatReq = heating.getHeatRequired();
+			
+//			double heatMatch = heating.getHeatMatch() * HEAT_MATCH_MOD;
+			
+			double heatGen = 0;
+			
+			// Find out how much heat can be generated to match this requirement
+			if (heatReq > 0)
+				heatGen = calculateHeatGen(heatReq, pulse.getElapsed());		
 			// Need to update this cache value in Heating continuously
-			building.setHeatGenerated(heatGenerated);
-
-			heatGeneratedCache = heatGenerated;
-			powerGeneratedCache = powerGenerated;
+//			heatGeneratedCache = heatGen;
 		
+			double dev = (heatReq - heatGen);
+			// A. If diff is negative, the heat load has been completely covered.
+			// B. If diff is positive, the heat load has NOT been fully matched.	
+//			if (dev > 0 && building.getBuildingType().contains("Greenhouse"))
+//				logger.info(building, "heatDev: " + Math.round(dev * 1000.0)/1000.0);
+			
+			// Q: how to inform about the heat deviation ?
+			
+			// Update the heat deviation for this building
+			setHeatDev(dev);
+			
+			// Update the heat generated for this building
+			heating.insertHeatGenerated(heatGen);
+			
+			// Note: could be cheating if the mechanism of conversion is NOT properly defined
+		    // Convert heat to electricity to help out
+//			double powerGenerated = calculateTotGenPower();
+
 			// Future: set new efficiency. Needs a new method in HeatSource updateEffeciency 
 		}
 		return valid;
 	}
 
-
+	/**
+	 * Sets the heat deviation and call unitUpdate.
+	 * 
+	 * @return heat in kW.
+	 */
+	public void setHeatDev(double heat)  {
+		heatDev = heat;
+		building.fireUnitUpdate(UnitEventType.HEAT_DEV_EVENT);
+	}
+	
+	/**
+	 * Gets the heat deviation.
+	 * 
+	 * @return heat in kW.
+	*/
+	public double getHeatDev() {
+		return heatDev;
+	}
+	
+	
 	public Heating getHeating() {
 		return heating;
 	}
@@ -297,8 +516,11 @@ public class ThermalGeneration extends Function {
         return result;
     }
 
-	public double getFullPowerRequired() {
-		return getElectricPowerRequired();
+    /**
+     * Gets the power required for heating.
+     */
+	public double getHeatRequired() {
+		return heating.getHeatRequired();	
 	}
 
 	/**
@@ -306,29 +528,69 @@ public class ThermalGeneration extends Function {
 	 * 
 	 * @return
 	 */
-	public double getElectricPowerRequired() {
-		HeatMode heatMode = building.getHeatMode();
+	public double getElectricPowerGen() {
+		if (electricHeatSource == null)
+			return 0;
+		
+		HeatMode heatMode = electricHeatSource.getHeatMode();
 		
 		if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
 			return 0;
 
-		// add the need of electric heat
-		double result = 0;
-
-		for (HeatSource source : heatSources) {
-
-	    	if (source.getType() == HeatSourceType.ELECTRIC_HEATING) {
-	    		// Electric heating consumes electricity
-	    		result += source.getCurrentHeat(building);
-	    	}
-		}
-		
-		// Note: Need to set this
-//		building.setPowerRequiredForHeating(powerRequired);
-
-		return result;
+		return electricHeatSource.getCurrentHeat();
 	}
 
+	/**
+	 * Gets the power required for generating solar heat.
+	 * 
+	 * @return
+	 */
+	public double getSolarPowerGen() {
+		if (solarHeatSource == null)
+			return 0;
+		
+		HeatMode heatMode = solarHeatSource.getHeatMode();
+		
+		if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
+			return 0;
+
+		return solarHeatSource.getCurrentHeat();
+	}
+	
+	/**
+	 * Gets the power required for generating thermal nuclear heat.
+	 * 
+	 * @return
+	 */
+	public double getNuclearPowerGen() {
+		if (nuclearHeatSource == null)
+			return 0;
+		
+		HeatMode heatMode = nuclearHeatSource.getHeatMode();
+		
+		if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
+			return 0;
+
+		return nuclearHeatSource.getCurrentHeat();
+	}
+	
+	/**
+	 * Gets the power required for generating fuel heat.
+	 * 
+	 * @return
+	 */
+	public double getFuelPowerGen() {
+		if (fuelHeatSource == null)
+			return 0;
+		
+		HeatMode heatMode = fuelHeatSource.getHeatMode();
+		
+		if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
+			return 0;
+
+		return fuelHeatSource.getCurrentHeat();
+	}
+	
 	
 	@Override
 	public void destroy() {
@@ -337,5 +599,4 @@ public class ThermalGeneration extends Function {
 		heating = null;
 		heatSources = null;
 	}
-
 }
