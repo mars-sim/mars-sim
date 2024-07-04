@@ -18,10 +18,27 @@ public class BoundedObject implements LocalBoundedObject {
 	double f;
 	private LocalPosition loc;
 
+	/**
+	 * Constructor 1: For panels, Resupply class, and maven testing only.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param w
+	 * @param l
+	 * @param f
+	 */
 	public BoundedObject(double x, double y, double w, double l, double f) {
 		this(new LocalPosition(x, y), w, l, f);
 	}
 
+	/**
+	 * Constructor 2 : For start of sim.
+	 * 
+	 * @param loc
+	 * @param w
+	 * @param l
+	 * @param f
+	 */
 	public BoundedObject(LocalPosition loc, double w, double l, double f) {
 		this.loc = loc;
 		this.w = w;

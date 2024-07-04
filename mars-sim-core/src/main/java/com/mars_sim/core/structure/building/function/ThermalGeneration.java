@@ -198,6 +198,11 @@ public class ThermalGeneration extends Function {
 		double heatGen = 0D;
 		double heat[] = new double[2];
 	
+		double sHeat = 0;
+		double eHeat = 0;
+		double nHeat = 0;
+		double fHeat = 0;
+		
 		HeatMode newHeatMode = null;
 		HeatMode heatMode = null;
 		
@@ -210,15 +215,15 @@ public class ThermalGeneration extends Function {
 			for (int i=1; i<size; i++) {
 				heatMode = ALL_HEAT_MODES.get(i);
 
-		    	double h = solarHeatSource.requestHeat(heatMode.getPercentage());
+		    	sHeat = solarHeatSource.requestHeat(heatMode.getPercentage());
 
-				if (!Double.isNaN(h) && !Double.isInfinite(h)) {
-					heatGen += h;
-					heatReq -= h;		
+				if (!Double.isNaN(sHeat) && !Double.isInfinite(sHeat)) {
+					heatGen += sHeat;
+					heatReq -= sHeat;		
 					if (heatReq > 0) {
 						// Go to the next heat source for more heat
 					}
-					else {				
+					else if (sHeat > 0) {				
 					
 						// Set the new heat mode
 						newHeatMode = heatMode;
@@ -251,25 +256,27 @@ public class ThermalGeneration extends Function {
 				}
 			}
 			
-			// Set the new heat mode
-			newHeatMode = heatMode;
-			solarHeatSource.setHeatMode(newHeatMode, building);
-			building.fireUnitUpdate(UnitEventType.SOLAR_HEAT_EVENT);
+			if (sHeat > 0) {
+				// Set the new heat mode
+				newHeatMode = heatMode;
+				solarHeatSource.setHeatMode(newHeatMode, building);
+				building.fireUnitUpdate(UnitEventType.SOLAR_HEAT_EVENT);
+			}
 		}
 		
 		if (nuclearHeatSource != null) {
 			for (int i=1; i<size; i++) {
 				heatMode = ALL_HEAT_MODES.get(i);
 
-		    	double h = nuclearHeatSource.requestHeat(heatMode.getPercentage());
+		    	nHeat = nuclearHeatSource.requestHeat(heatMode.getPercentage());
 				
-				if (!Double.isNaN(h) && !Double.isInfinite(h)) {
-					heatGen += h;
-					heatReq -= h;			
+				if (!Double.isNaN(nHeat) && !Double.isInfinite(nHeat)) {
+					heatGen += nHeat;
+					heatReq -= nHeat;			
 					if (heatReq > 0) {
 						// Go to the next heat source for more heat
 					}
-					else {		
+					else if (nHeat > 0) {		
 						// Set the new heat mode
 						newHeatMode = heatMode;
 						
@@ -296,25 +303,27 @@ public class ThermalGeneration extends Function {
 				}
 			}
 			
-			// Set the new heat mode
-			newHeatMode = heatMode;
-			nuclearHeatSource.setHeatMode(newHeatMode, building);
-			building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT);
+			if (nHeat > 0) {
+				// Set the new heat mode
+				newHeatMode = heatMode;
+				nuclearHeatSource.setHeatMode(newHeatMode, building);
+				building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT);
+			}
 		}
 		
 		if (electricHeatSource != null) {
 			for (int i=1; i<size; i++) {
 				heatMode = ALL_HEAT_MODES.get(i);
 				
-		    	double h = electricHeatSource.requestHeat(heatMode.getPercentage());
+		    	eHeat = electricHeatSource.requestHeat(heatMode.getPercentage());
 				
-				if (!Double.isNaN(h) && !Double.isInfinite(h)) {
-					heatGen += h;
-					heatReq -= h;			
+				if (!Double.isNaN(eHeat) && !Double.isInfinite(eHeat)) {
+					heatGen += eHeat;
+					heatReq -= eHeat;			
 					if (heatReq > 0) {
 						// Go to the next heat source for more heat
 					}
-					else {
+					else if (eHeat > 0) {
 						// Set the new heat mode
 						newHeatMode = heatMode;
 						
@@ -334,10 +343,12 @@ public class ThermalGeneration extends Function {
 				}
 			}
 			
-			// Set the new heat mode
-			newHeatMode = heatMode;
-			electricHeatSource.setHeatMode(newHeatMode, building);
-			building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT);
+			if (eHeat > 0) {
+				// Set the new heat mode
+				newHeatMode = heatMode;
+				electricHeatSource.setHeatMode(newHeatMode, building);
+				building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT);
+			}
 		}
 		
 		if (fuelHeatSource != null) {
@@ -345,15 +356,15 @@ public class ThermalGeneration extends Function {
 				heatMode = ALL_HEAT_MODES.get(i);
 				
 				fuelHeatSource.setTime(time);
-		    	double h = fuelHeatSource.requestHeat(heatMode.getPercentage());
+		    	fHeat = fuelHeatSource.requestHeat(heatMode.getPercentage());
 				
-				if (!Double.isNaN(h) && !Double.isInfinite(h)) {
-					heatGen += h;
-					heatReq -= h;			
+				if (!Double.isNaN(fHeat) && !Double.isInfinite(fHeat)) {
+					heatGen += fHeat;
+					heatReq -= fHeat;			
 					if (heatReq > 0) {
 						// Go to the next heat source for more heat
 					}
-					else {
+					else if (fHeat > 0) {
 						// Set the new heat mode
 						newHeatMode = heatMode;
 
@@ -367,14 +378,18 @@ public class ThermalGeneration extends Function {
 				}
 			}
 			
-			// Set the new heat mode
-			newHeatMode = heatMode;
-			fuelHeatSource.setHeatMode(newHeatMode, building);
-			building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
+			if (fHeat > 0) {
+				// Set the new heat mode
+				newHeatMode = heatMode;
+				fuelHeatSource.setHeatMode(newHeatMode, building);
+				building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
+			}
 		}
 
-		heat[0] = heatGen;
-		heat[1] = heatReq;			
+		if (fHeat + fHeat + fHeat + fHeat > 0) {
+			heat[0] = heatGen;
+			heat[1] = heatReq;			
+		}
 		return heat;
 	}
 
@@ -469,8 +484,8 @@ public class ThermalGeneration extends Function {
 		}
 			
 		if (remainHeatReq > 0.05) {
-			logger.warning(building, "Unmet remaining heat req: " 
-					+ Math.round(remainHeatReq * 10.0)/10.0 + " kW.");
+			logger.warning(building, 20_000L , "Unmet remaining heat req: " 
+					+ Math.round(remainHeatReq) + " kW.");
 		}
 		
 		// Need to update heat generated in Heating continuously

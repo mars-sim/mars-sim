@@ -151,7 +151,8 @@ public enum UnitEventType {
 	DELTA_T_EVENT					("delta temperature"),
 	DEV_T_EVENT						("dev temperature"),
 	
-	
+	AIR_HEAT_SINK_EVENT				("air heat sink"),
+	WATER_HEAT_SINK_EVENT			("water heat sink"),
 	
 	// For settlement sensor detection grid
 	BASELINE_EVENT					("baseline radiation event"),

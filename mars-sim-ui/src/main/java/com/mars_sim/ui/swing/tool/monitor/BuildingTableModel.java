@@ -44,9 +44,12 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	private static final int HEAT_REQ = HEAT_GEN + 1;
 	private static final int HEAT_GAIN = HEAT_REQ + 1;
 	private static final int HEAT_VENT = HEAT_GAIN + 1;
-	private static final int HEAT_DEV = HEAT_VENT + 1;
+	
+	private static final int AIR_HEAT_SINK = HEAT_VENT + 1;
+	private static final int WATER_HEAT_SINK = AIR_HEAT_SINK + 1;
+	
+	private static final int HEAT_DEV = WATER_HEAT_SINK + 1;
 	private static final int EXCESS_HEAT = HEAT_DEV + 1;
-
 	
 	private static final int SOLAR = EXCESS_HEAT + 1;
 	private static final int ELECTRIC = SOLAR + 1;
@@ -82,6 +85,9 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 		COLUMNS[HEAT_REQ] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.req"), Double.class);
 		COLUMNS[HEAT_VENT] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.vent"), Double.class);
 
+		COLUMNS[AIR_HEAT_SINK] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.air.sink"), Double.class);
+		COLUMNS[WATER_HEAT_SINK] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.water.sink"), Double.class);
+		
 		COLUMNS[EXCESS_HEAT] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.excess"), Double.class);
 		COLUMNS[HEAT_GAIN] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.gain"), Double.class);
 		COLUMNS[HEAT_DEV] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.dev"), Double.class);
@@ -200,6 +206,18 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 		case HEAT_GAIN:
 			if (furnace != null) {
 				result = building.getHeatGain();
+			}
+			return result;
+			
+		case AIR_HEAT_SINK:
+			if (furnace != null) {
+				result = furnace.getHeating().getAirHeatSink();
+			}
+			return result;
+			
+		case WATER_HEAT_SINK:
+			if (furnace != null) {
+				result = furnace.getHeating().getWaterHeatSink();
 			}
 			return result;
 			
@@ -343,6 +361,9 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 				case HEAT_VENT_EVENT -> HEAT_VENT;
 				case HEAT_MATCH_EVENT -> DELTA_TEMP;
 				case HEAT_DEV_EVENT -> HEAT_DEV;
+				
+				case AIR_HEAT_SINK_EVENT -> AIR_HEAT_SINK;
+				case WATER_HEAT_SINK_EVENT -> WATER_HEAT_SINK;
 				
 				case SOLAR_HEAT_EVENT -> SOLAR;
 				case ELECTRIC_HEAT_EVENT -> ELECTRIC;

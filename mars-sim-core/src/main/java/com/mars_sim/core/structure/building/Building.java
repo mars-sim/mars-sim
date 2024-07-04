@@ -125,6 +125,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	/** Default : 22.5 deg celsius. */
 	private double presetTemperature = 0;//22.5D;
 	private double width;
+	// Q: how to handle the indefinite length of hallway/tunnel ?
+	// "-1" if it doesn't exist.
 	private double length;
 	private double floorArea;
 	private double facing;
@@ -202,9 +204,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 							template.getBounds(), spec);
 	}
 
-	
 	/**
-	 * Constructs with the mandatory properties. 
+	 * Constructor 1: the mandatory properties. 
 	 *
 	 * @param id           the building's unique ID number.
 	 * @param buildingType the building Type.
@@ -220,7 +221,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		this.buildingType = buildingType;
 		this.category = category;
 
-
 		this.settlement = owner;
 		this.settlementID = settlement.getIdentifier();
 		setContainerID(settlementID);
@@ -230,9 +230,13 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		this.width = bounds.getWidth();
 		this.length = bounds.getLength();
 		
-		powerModeCache = PowerMode.FULL_POWER;
+		if (length < 0) {
+			logger.info(this, "length: " + length);
+		}
 
-		floorArea = length * width;
+		this.powerModeCache = PowerMode.FULL_POWER;
+
+		this.floorArea = length * width;
 		if (floorArea <= 0) {
 			throw new IllegalArgumentException("Floor area cannot be -ve w=" + width + ", l=" + length);
 		}
