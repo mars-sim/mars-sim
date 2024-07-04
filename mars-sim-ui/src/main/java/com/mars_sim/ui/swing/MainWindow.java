@@ -153,22 +153,26 @@ public class MainWindow
 		// Set up the look and feel library to be used
 		StyleManager.setStyles(configs.getPropSets());
 
+//		GraphicsDevice[] gs = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsDevice[] gs = ge.getScreenDevices();
+		GraphicsDevice[] gd = ge.getScreenDevices();
 		GraphicsDevice graphicsDevice = null;
 
-		if (gs.length == 1) {
+		if (gd.length == 1) {
 			logger.log(Level.CONFIG, "Detecting only one screen.");
 			logger.config("1 screen detected.");
-		} else if (gs.length == 0) {
+		} else if (gd.length == 0) {
 			throw new IllegalStateException("No Screens Found.");
 			// NOTE: what about the future server version of mars-sim in which no screen is
 			// needed.
 		} else {
-			logger.config(gs.length + " screens detected.");
+			logger.config(gd.length + " screens detected.");
 		}
 
-		graphicsDevice = gs[0];
+		graphicsDevice = gd[0];
+//		String id0 = graphicsDevice.getIDstring();
+		logger.config("Use the first screen.");
+		
 		int screenWidth = graphicsDevice.getDisplayMode().getWidth();
 		int screenHeight = graphicsDevice.getDisplayMode().getHeight();
 
@@ -182,7 +186,7 @@ public class MainWindow
 
 		if (useDefault) {
 			logger.config("Will calculate screen size for default display instead.");
-			setUpCalculatedScreen(screenWidth, screenHeight, useDefault);
+			setUpDefaultScreen(graphicsDevice, screenWidth, screenHeight, useDefault);
 		} else {
 			setUpSavedScreen();
 		}
@@ -219,12 +223,15 @@ public class MainWindow
 		return (reply == JOptionPane.YES_OPTION);
 	}
 
+	/**
+	 * Sets up the screen config used from last saved session.
+	 */
 	private void setUpSavedScreen() {
 		selectedSize = configs.getMainWindowDimension();
 
 		// Set frame size
 		frame.setSize(selectedSize);
-		logger.config("The last saved window dimension is "
+		logger.config("Last saved window dimension: "
 				+ selectedSize.width
 				+ " x "
 				+ selectedSize.height
@@ -232,20 +239,28 @@ public class MainWindow
 
 		// Display screen at a certain location
 		frame.setLocation(configs.getMainWindowLocation());
-		logger.config("The last saved frame starts at ("
+		logger.config("Last saved frame starts at ("
 				+ configs.getMainWindowLocation().x
 				+ ", "
 				+ configs.getMainWindowLocation().y
 				+ ").");
 	}
 
-	private void setUpCalculatedScreen(int screenWidth, int screenHeight, boolean useDefaults) {
-		selectedSize = calculatedScreenSize(screenWidth, screenHeight, useDefaults);
+	/**
+	 * Sets up the default screen config.
+	 * 
+	 * @param gd
+	 * @param screenWidth
+	 * @param screenHeight
+	 * @param useDefaults
+	 */
+	private void setUpDefaultScreen(GraphicsDevice gd, int screenWidth, int screenHeight, boolean useDefaults) {
+		selectedSize = calculatedScreenSize(gd, screenWidth, screenHeight, useDefaults);
 
 		// Set frame size
 		frame.setSize(selectedSize);
 
-		logger.config("The default window dimension is "
+		logger.config("Default window dimension: "
 				+ selectedSize.width
 				+ " x "
 				+ selectedSize.height
@@ -271,12 +286,12 @@ public class MainWindow
 	 * @param useDefault
 	 * @return
 	 */
-	private Dimension calculatedScreenSize(int screenWidth, int screenHeight, boolean useDefault) {
+	private Dimension calculatedScreenSize(GraphicsDevice gd, int screenWidth, int screenHeight, boolean useDefault) {
 		logger.config("Current screen size is " + screenWidth + " x " + screenHeight);
 
 		Dimension frameSize = null;
 		if (useDefault) {
-			frameSize = interactiveTerm.getSelectedScreen();
+			frameSize = interactiveTerm.getScreenDimension(gd);
 			logger.config("Use default screen configuration.");
 			logger.config("Selected screen size is " + frameSize.width + " x " + frameSize.height);
 		} else {

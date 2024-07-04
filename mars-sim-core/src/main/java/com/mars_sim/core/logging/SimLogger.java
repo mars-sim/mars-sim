@@ -45,8 +45,8 @@ public class SimLogger {
 	private static final String COLON = " : [";
 	private static final String DASH = " - ";
 	private static final String QUESTION = "?";
-	private static final long DEFAULT_WARNING_TIME = 2000;
-	public static final long DEFAULT_SEVERE_TIME = 1000;
+	private static final long DEFAULT_WARNING_TIME = 0;
+	public static final long DEFAULT_SEVERE_TIME = 0;
 	private static final long DEFAULT_INFO_TIME = 0;
 
 	private String sourceName;
@@ -54,6 +54,12 @@ public class SimLogger {
 	private Logger rootLogger;
 
 
+	/**
+	 * Gets the logger instance.
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public static SimLogger getLogger(String name) {
 		SimLogger result = null;
 		synchronized (loggers) {
@@ -63,6 +69,11 @@ public class SimLogger {
 		return result;
 	}
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param name
+	 */
 	private SimLogger(String name) {
 		rootLogger = Logger.getLogger(name);
 

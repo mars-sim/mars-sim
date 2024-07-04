@@ -693,13 +693,13 @@ public class InteractiveTerm {
 	 * Gets the dimension of the screen size selected by the user.
 	 * This is null if none has been selected.
 	 */
-	public Dimension getSelectedScreen() {
+	public Dimension getScreenDimension(GraphicsDevice gd) {
 		if (selectedScreen >= 0) {
 			return screenSizes[selectedScreen];
 		}
-		GraphicsDevice[] gs = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-		int screenWidth = gs[0].getDisplayMode().getWidth();
-		int screenHeight = gs[0].getDisplayMode().getHeight();
+//		GraphicsDevice[] gs = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+		int screenWidth = gd.getDisplayMode().getWidth();
+		int screenHeight = gd.getDisplayMode().getHeight();
 		
 		
 		for (int i=0; i<screenSizes.length; i++) {

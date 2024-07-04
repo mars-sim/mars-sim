@@ -176,7 +176,7 @@ public class MainDesktopPane extends JDesktopPane
 			int h = selectedSize.height;
 			setSize(new Dimension(w, h));
 			setPreferredSize(new Dimension(w, h));
-			logger.config("The main desktop pane is initially set to "
+			logger.config("Main Window initially set to "
 					+ w
 					+ " x "
 					+ h

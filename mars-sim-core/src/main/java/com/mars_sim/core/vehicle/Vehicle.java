@@ -274,7 +274,8 @@ public abstract class Vehicle extends Unit
 		vehicleController = new VehicleController(this);
 		
 		// Set initial parked location and facing at settlement.
-		findNewParkingLoc();
+		// Note: already done in addOwnedVehicle()
+//		findNewParkingLoc();
 
 		// Initialize operator activity spots.
 		operatorActivitySpots = spec.getOperatorActivitySpots();
@@ -1784,10 +1785,10 @@ public abstract class Vehicle extends Unit
 
 		if (foundGoodLocation) {
 			setParkedLocation(newLoc, newFacing);
-			logger.info(this, "Found new parking location on iteration: " + count + ".");
+			logger.info(this, "Moved to new parking loc on iteration " + count + ".");
 		}
 		else {
-			logger.info(this, "Parking location not found.");
+			logger.info(this, "Parking loc not found.");
 		}
 	}
 	
