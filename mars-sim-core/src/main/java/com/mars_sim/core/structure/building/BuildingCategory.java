@@ -12,6 +12,7 @@ public enum BuildingCategory {
 
     // Note the order of these enums represent their importance
     COMMAND, 
+    COMMUNICATION,
     MEDICAL,
     ERV,
     FARMING, 

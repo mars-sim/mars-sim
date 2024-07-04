@@ -210,7 +210,7 @@ public class OrbitInfo implements Serializable, Temporal {
 
 		logger.config("Earth Start Time: " + earthTime);
 		
-		logger.config("Areocentric Longitude (L_s): " + L_s + " deg");
+		logger.config("Areocentric Longitude (L_s): " + Math.round(L_s * 1_000_000.0)/1_000_000.0 + " deg");
 		
 		double instantaneousSunMarsDistance = getHeliocentricDistance(earthTime);
 
