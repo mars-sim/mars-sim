@@ -1146,7 +1146,7 @@ public class SettlementTransparentPanel extends JComponent {
 		SunData data = weather.getSunRecord(location);
 		
 		if (data == null) {
-			logger.warning(60_000L, "Sun data at " + location + " is not available.");
+			logger.warning(60_000L, "Sun data at " + location + " unavailable.");
 			return;
 		}
 

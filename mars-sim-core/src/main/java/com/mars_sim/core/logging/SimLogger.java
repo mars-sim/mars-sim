@@ -45,8 +45,8 @@ public class SimLogger {
 	private static final String COLON = " : [";
 	private static final String DASH = " - ";
 	private static final String QUESTION = "?";
-	private static final long DEFAULT_WARNING_TIME = 1000;
-	public static final long DEFAULT_SEVERE_TIME = 500;
+	private static final long DEFAULT_WARNING_TIME = 2000;
+	public static final long DEFAULT_SEVERE_TIME = 1000;
 	private static final long DEFAULT_INFO_TIME = 0;
 
 	private String sourceName;
