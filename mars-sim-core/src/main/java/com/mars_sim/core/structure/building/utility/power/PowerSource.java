@@ -4,7 +4,7 @@
  * @date 2023-05-31
  * @author Scott Davis
  */
-package com.mars_sim.core.structure.building.function;
+package com.mars_sim.core.structure.building.utility.power;
 
 import java.io.Serializable;
 

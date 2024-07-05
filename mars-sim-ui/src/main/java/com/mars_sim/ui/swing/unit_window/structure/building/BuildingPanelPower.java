@@ -14,12 +14,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.FissionPowerSource;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.PowerGeneration;
-import com.mars_sim.core.structure.building.function.PowerMode;
-import com.mars_sim.core.structure.building.function.PowerSource;
-import com.mars_sim.core.structure.building.function.PowerSourceType;
+import com.mars_sim.core.structure.building.utility.power.FissionPowerSource;
+import com.mars_sim.core.structure.building.utility.power.PowerGeneration;
+import com.mars_sim.core.structure.building.utility.power.PowerMode;
+import com.mars_sim.core.structure.building.utility.power.PowerSource;
+import com.mars_sim.core.structure.building.utility.power.PowerSourceType;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;

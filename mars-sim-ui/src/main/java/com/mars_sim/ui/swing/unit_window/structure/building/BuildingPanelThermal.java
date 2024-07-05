@@ -11,8 +11,8 @@ import java.awt.BorderLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.mars_sim.core.structure.building.function.HeatMode;
-import com.mars_sim.core.structure.building.function.ThermalGeneration;
+import com.mars_sim.core.structure.building.utility.heating.HeatMode;
+import com.mars_sim.core.structure.building.utility.heating.ThermalGeneration;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;

@@ -4,7 +4,7 @@
  * @date 2022-06-24
  * @author Scott Davis
  */
-package com.mars_sim.core.structure.building.function;
+package com.mars_sim.core.structure.building.utility.power;
 
 
 import com.mars_sim.core.environment.SurfaceFeatures;

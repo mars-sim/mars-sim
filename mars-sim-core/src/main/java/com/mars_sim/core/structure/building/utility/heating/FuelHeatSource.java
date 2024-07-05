@@ -4,7 +4,7 @@
  * @date 2022-08-08
  * @author Manny Kung
  */
-package com.mars_sim.core.structure.building.function;
+package com.mars_sim.core.structure.building.utility.heating;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ResourceUtil;

@@ -5,7 +5,7 @@
  * @author stpa
  */
 
-package com.mars_sim.core.structure.building.function;
+package com.mars_sim.core.structure.building.utility.power;
 
 import com.mars_sim.tools.Msg;
 

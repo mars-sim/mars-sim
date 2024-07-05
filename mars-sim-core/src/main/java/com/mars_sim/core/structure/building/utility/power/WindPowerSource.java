@@ -4,7 +4,7 @@
  * @version 3.2.0 2021-06-20
  * @author Scott Davis
  */
-package com.mars_sim.core.structure.building.function;
+package com.mars_sim.core.structure.building.utility.power;
 
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;

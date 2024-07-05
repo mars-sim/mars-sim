@@ -4,20 +4,18 @@
  * @date 2023-08-26
  * @author Manny Kung
  */
-package com.mars_sim.core.structure;
+package com.mars_sim.core.structure.building.utility.heating;
 
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
 import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.HeatSource;
-import com.mars_sim.core.structure.building.function.HeatSourceType;
-import com.mars_sim.core.structure.building.function.ThermalGeneration;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 

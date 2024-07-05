@@ -4,7 +4,7 @@
  * @date 2024-07-03
  * @author Manny Kung
  */
-package com.mars_sim.core.structure.building.function;
+package com.mars_sim.core.structure.building.utility.heating;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,6 +21,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingConfig;
 import com.mars_sim.core.structure.building.FunctionSpec;
+import com.mars_sim.core.structure.building.function.BuildingAirlock;
 import com.mars_sim.core.structure.building.function.farming.Crop;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;

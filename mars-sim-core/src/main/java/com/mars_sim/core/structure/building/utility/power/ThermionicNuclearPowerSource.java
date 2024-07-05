@@ -4,7 +4,7 @@
  * @date 2023-06-02
  * @author Manny Kung
  */
-package com.mars_sim.core.structure.building.function;
+package com.mars_sim.core.structure.building.utility.power;
 
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;

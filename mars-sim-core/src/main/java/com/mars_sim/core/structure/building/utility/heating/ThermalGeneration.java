@@ -4,7 +4,7 @@
  * @date 2024-07-03
  * @author Manny Kung
  */
-package com.mars_sim.core.structure.building.function;
+package com.mars_sim.core.structure.building.utility.heating;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,6 +20,8 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.FunctionSpec;
 import com.mars_sim.core.structure.building.SourceSpec;
+import com.mars_sim.core.structure.building.function.Function;
+import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.ClockPulse;
 
 /**

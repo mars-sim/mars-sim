@@ -4,7 +4,7 @@
  * @date 2024-06-28
  * @author Scott Davis
  */
-package com.mars_sim.core.structure;
+package com.mars_sim.core.structure.building.utility.power;
 
 import java.io.Serializable;
 import java.util.Iterator;
@@ -14,15 +14,11 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.BuildingManager;
-import com.mars_sim.core.structure.building.function.AdjustablePowerSource;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.PowerMode;
-import com.mars_sim.core.structure.building.function.PowerSource;
-import com.mars_sim.core.structure.building.function.PowerSourceType;
-import com.mars_sim.core.structure.building.function.PowerStorage;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;

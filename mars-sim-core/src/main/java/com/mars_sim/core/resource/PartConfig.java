@@ -22,9 +22,9 @@ import org.jdom2.Element;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.goods.GoodType;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.HeatSourceType;
-import com.mars_sim.core.structure.building.function.PowerSourceType;
 import com.mars_sim.core.structure.building.function.SystemType;
+import com.mars_sim.core.structure.building.utility.heating.HeatSourceType;
+import com.mars_sim.core.structure.building.utility.power.PowerSourceType;
 import com.mars_sim.core.vehicle.VehicleType;
 
 

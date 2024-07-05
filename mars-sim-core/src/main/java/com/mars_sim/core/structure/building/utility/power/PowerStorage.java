@@ -4,16 +4,17 @@
  * @date 2024-06-28
  * @author Scott Davis
  */
-package com.mars_sim.core.structure.building.function;
+package com.mars_sim.core.structure.building.utility.power;
 
 import java.util.Iterator;
 
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.structure.PowerGrid;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingException;
 import com.mars_sim.core.structure.building.FunctionSpec;
+import com.mars_sim.core.structure.building.function.Function;
+import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.tools.util.RandomUtil;
 

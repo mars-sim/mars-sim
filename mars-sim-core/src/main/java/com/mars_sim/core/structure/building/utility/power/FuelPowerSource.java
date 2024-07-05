@@ -4,7 +4,7 @@
  * @date 2023-05-31
  * @author Sebastien Venot
  */
-package com.mars_sim.core.structure.building.function;
+package com.mars_sim.core.structure.building.utility.power;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ResourceUtil;

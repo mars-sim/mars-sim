@@ -21,10 +21,10 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingCategory;
-import com.mars_sim.core.structure.building.function.FuelPowerSource;
 import com.mars_sim.core.structure.building.function.FunctionType;
-import com.mars_sim.core.structure.building.function.PowerGeneration;
-import com.mars_sim.core.structure.building.function.PowerSource;
+import com.mars_sim.core.structure.building.utility.power.FuelPowerSource;
+import com.mars_sim.core.structure.building.utility.power.PowerGeneration;
+import com.mars_sim.core.structure.building.utility.power.PowerSource;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.tools.Msg;
 

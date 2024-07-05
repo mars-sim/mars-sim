@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.connection.BuildingConnectorManager;
+import com.mars_sim.core.structure.building.utility.power.PowerGrid;
 import com.mars_sim.core.structure.construction.ConstructionManager;
 import com.mars_sim.mapdata.location.Coordinates;
 

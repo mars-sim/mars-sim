@@ -12,7 +12,7 @@ import java.awt.BorderLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.mars_sim.core.structure.building.function.PowerStorage;
+import com.mars_sim.core.structure.building.utility.power.PowerStorage;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;

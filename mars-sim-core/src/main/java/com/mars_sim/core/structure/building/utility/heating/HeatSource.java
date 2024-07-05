@@ -4,7 +4,7 @@
  * @date 2024-07-03
  * @author Manny Kung
  */
-package com.mars_sim.core.structure.building.function;
+package com.mars_sim.core.structure.building.utility.heating;
 
 import java.io.Serializable;
 

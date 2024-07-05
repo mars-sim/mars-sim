@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package com.mars_sim.core.structure.building.function;
+package com.mars_sim.core.structure.building.utility.heating;
 
 public enum HeatSourceType {
 

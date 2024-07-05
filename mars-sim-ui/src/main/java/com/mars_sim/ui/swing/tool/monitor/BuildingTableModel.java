@@ -13,11 +13,11 @@ import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.HeatMode;
-import com.mars_sim.core.structure.building.function.HeatSource;
-import com.mars_sim.core.structure.building.function.HeatSourceType;
-import com.mars_sim.core.structure.building.function.PowerGeneration;
-import com.mars_sim.core.structure.building.function.ThermalGeneration;
+import com.mars_sim.core.structure.building.utility.heating.HeatMode;
+import com.mars_sim.core.structure.building.utility.heating.HeatSource;
+import com.mars_sim.core.structure.building.utility.heating.HeatSourceType;
+import com.mars_sim.core.structure.building.utility.heating.ThermalGeneration;
+import com.mars_sim.core.structure.building.utility.power.PowerGeneration;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 
