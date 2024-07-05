@@ -162,7 +162,7 @@ implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 
 		// update the total heat generated in the heating system.
-		updateTotalHeatGenerated();
+		updateEachGeneratedHeat();
 
 		// update the total power generated in the heating system.
 //		updateTotalPowerGenerated();
@@ -174,11 +174,11 @@ implements Serializable, Temporal {
 	}
 
 	/**
-	 * Updates the total heat generated in the heating system.
+	 * Updates the heat generated from each respective heat source.
 	 * 
 	 * @throws BuildingException if error determining total heat generated.
 	 */
-	private void updateTotalHeatGenerated() {
+	private void updateEachGeneratedHeat() {
 		double heatGenElectric = 0;
 		double heatGenFuel = 0;
 		double heatGenSolar = 0;
@@ -192,23 +192,10 @@ implements Serializable, Temporal {
 				return;
 			}
 	
-			List<HeatSource> sources = gen.getHeatSources();
-			Iterator<HeatSource> source = sources.iterator();
-			while (source.hasNext()) {
-				HeatSource hs = source.next();
-				if (hs.getType() == HeatSourceType.ELECTRIC_HEATING) { 
-					heatGenElectric += hs.getCurrentHeat();
-				}
-				else if (hs.getType() == HeatSourceType.FUEL_HEATING) { 
-					heatGenFuel += hs.getCurrentHeat();
-				}
-				else if (hs.getType() == HeatSourceType.SOLAR_HEATING) { 
-					heatGenSolar += hs.getCurrentHeat();
-				}
-				else if (hs.getType() == HeatSourceType.THERMAL_NUCLEAR) { 
-					heatGenNuclear += hs.getCurrentHeat();
-				}
-			}
+			heatGenElectric += gen.getElectricHeat();
+			heatGenFuel += gen.getFuelHeat();
+			heatGenSolar += gen.getSolarHeat();
+			heatGenNuclear += gen.getNuclearHeat();
 		}
 		
 		heatGenElectricCache = heatGenElectric;

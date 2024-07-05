@@ -219,7 +219,7 @@ public class EatDrink extends Task {
 	 */
 	private void checkSettlement(boolean hungry, boolean thirsty, double waterAmount) {
 		Building currentBuilding = BuildingManager.getBuilding(person);
-		if (currentBuilding != null && currentBuilding.getCategory() != BuildingCategory.EVA_AIRLOCK) {
+		if (currentBuilding != null && currentBuilding.getCategory() != BuildingCategory.EVA) {
 			// Check if there is a local dining building.
         	Building diningBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.DINING);
 //        			getAvailableDiningBuilding(person.getSettlement(), person);

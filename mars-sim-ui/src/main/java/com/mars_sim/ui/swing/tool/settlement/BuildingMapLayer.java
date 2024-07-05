@@ -62,11 +62,11 @@ public class BuildingMapLayer extends AbstractMapLayer {
 		BUILDING_COLORS.put(BuildingCategory.MEDICAL, new ColorChoice(new Color (51, 204, 255), WHITE_OUTLINE));
 		BUILDING_COLORS.put(BuildingCategory.COMMAND, new ColorChoice(new Color(255, 102, 102).darker(), WHITE_OUTLINE));
 		BUILDING_COLORS.put(BuildingCategory.VEHICLE, new ColorChoice(Color.yellow, GREY_OUTLINE));
-		BUILDING_COLORS.put(BuildingCategory.HALLWAY, new ColorChoice(Color.gray, WHITE_OUTLINE));
+		BUILDING_COLORS.put(BuildingCategory.CONNECTION, new ColorChoice(Color.gray, WHITE_OUTLINE));
 		BUILDING_COLORS.put(BuildingCategory.FARMING, new ColorChoice(new Color (133, 187, 101), WHITE_OUTLINE));
 		BUILDING_COLORS.put(BuildingCategory.PROCESSING, new ColorChoice(new Color (182, 201, 255), BLACK_OUTLINE));
 		BUILDING_COLORS.put(BuildingCategory.POWER, new ColorChoice(new Color(174, 198, 207), BLACK_OUTLINE));
-		BUILDING_COLORS.put(BuildingCategory.EVA_AIRLOCK, new ColorChoice(new Color (184, 134, 11), WHITE_OUTLINE));
+		BUILDING_COLORS.put(BuildingCategory.EVA, new ColorChoice(new Color (184, 134, 11), WHITE_OUTLINE));
 		BUILDING_COLORS.put(BuildingCategory.ERV, new ColorChoice(new Color (83, 83, 83), WHITE_OUTLINE));
 	}
         

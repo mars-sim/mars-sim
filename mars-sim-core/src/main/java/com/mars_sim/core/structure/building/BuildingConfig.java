@@ -308,9 +308,9 @@ public class BuildingConfig {
 						.map(f -> f.getCategory())
 						.collect(Collectors.toSet());
 
-		BuildingCategory category = BuildingCategory.HALLWAY;
+		BuildingCategory category = BuildingCategory.CONNECTION;
 		if (!cats.isEmpty()) {
-			// Find the category with the lowest Ordinal as that is the best to represent
+			// Find the category with the lowest ordinal as that is the best to represent
 			// this set of Functions
 			int lowestOrdinal = 999;
 			for (BuildingCategory c : cats) {

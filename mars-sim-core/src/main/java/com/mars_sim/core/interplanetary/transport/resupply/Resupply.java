@@ -433,7 +433,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		while (i.hasNext()) {
 			BuildingTemplate b = i.next();
 			boolean isBuildingConnector = buildingConfig.hasFunction(b.getBuildingType(),
-																	 FunctionType.BUILDING_CONNECTION);
+																	 FunctionType.CONNECTION);
 			if (isBuildingConnector) {
 				// Add hallway and tunnel to end of new building list.
 				result.add(b);
@@ -480,9 +480,9 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		BuildingTemplate newPosition = null;
 		BuildingManager buildingManager = settlement.getBuildingManager();
 		
-		// Note : only hallway and tunnel has "building-connection" function
+		// Note : only hallway and tunnel has "connection" function
 		Set<FunctionType> supported = spec.getFunctionSupported();
-		boolean isBuildingConnector = supported.contains(FunctionType.BUILDING_CONNECTION);
+		boolean isBuildingConnector = supported.contains(FunctionType.CONNECTION);
 		boolean hasLifeSupport = !spec.isInhabitable(); // supported.contains(FunctionType.LIFE_SUPPORT);
 
 		if (isBuildingConnector) {
@@ -620,7 +620,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		sameTypeBuildings = sameTypeBuildings.stream()
 				// Do not look for EVA Airlock building type since putting 
 			    // any new building next to it will block ingress/egress.
-				.filter(b -> b.getCategory() != BuildingCategory.EVA_AIRLOCK
+				.filter(b -> b.getCategory() != BuildingCategory.EVA
 				// Do not look for Garage building type as it may block the entry
 				// and placement of vehicle
 				&& b.getCategory() != BuildingCategory.VEHICLE)

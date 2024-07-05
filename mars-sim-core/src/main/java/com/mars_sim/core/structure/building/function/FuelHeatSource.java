@@ -137,7 +137,8 @@ public class FuelHeatSource extends HeatSource {
 		double consumed = 0;
 
 		// fuel [kg] = [kW] / [percent] * [kg/millisols/kW] * [millisols]
-		double deltaFuel = getMaxHeat() / percent * 100.0  * getMaxFuelPerMillisolPerkW(isElectric) * time;
+		double deltaFuel = getMaxHeat() / percent * 100.0  
+				* getMaxFuelPerMillisolPerkW(isElectric) * time;
 
 		if (!onlyRequest) {
 			
@@ -226,17 +227,17 @@ public class FuelHeatSource extends HeatSource {
 		}
 	}
 
-//	public void toggleON() {
-//		toggle = true;
-//	}
-//
-//	public void toggleOFF() {
-//		toggle = false;
-//	}
-//
-//	public boolean isToggleON() {
-//		return toggle;
-//	}
+	public void toggleON() {
+		toggle = true;
+	}
+
+	public void toggleOFF() {
+		toggle = false;
+	}
+
+	public boolean isToggleON() {
+		return toggle;
+	}
 
 	@Override
 	public void setTime(double time) {
@@ -246,7 +247,7 @@ public class FuelHeatSource extends HeatSource {
 	@Override
 	public void setPercentElectricity(double percentage) {
 		super.setPercentElectricity(percentage);
-//		toggle = (percentage != 0.0);
+		toggle = (percentage != 100.0);
 	}
 	
 	public Settlement getSettlement() {
@@ -257,25 +258,25 @@ public class FuelHeatSource extends HeatSource {
 	public double getCurrentHeat() {
 		if (toggle) {
 			double spentFuel = computeFuelConsumption(time, getPercentHeat(), false, false);
-			return spentFuel / getMaxFuelPerMillisolPerkW(false);
+			return spentFuel / getMaxFuelPerMillisolPerkW(false) / time;
 		}
 		return 0;
 	}
 
 	@Override
 	public double getCurrentPower() {
-//		if (toggle) {
+		if (toggle) {
 			double spentFuel = computeFuelConsumption(time, getPercentElectricity(), true, false);
-			return spentFuel / getMaxFuelPerMillisolPerkW(true);
-//		}
-//		return 0;
+			return spentFuel / getMaxFuelPerMillisolPerkW(true) / time;
+		}
+		return 0;
 	}
 	
 	@Override
 	public double requestHeat(double percent) {
 //		if (toggle) {
 			double spentFuel = computeFuelConsumption(time, percent, false, true);
-			return spentFuel / getMaxFuelPerMillisolPerkW(false);
+			return spentFuel / getMaxFuelPerMillisolPerkW(false) / time;
 //		}
 //		return 0;
 	}

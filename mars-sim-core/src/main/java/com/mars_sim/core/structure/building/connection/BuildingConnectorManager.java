@@ -627,7 +627,7 @@ public class BuildingConnectorManager implements Serializable {
 		// Only create building connections for habitable buildings.
 		if (!newBuilding.isInhabitable()) {
 			// If building connector, determine end connections first.
-			if (newBuilding.hasFunction(FunctionType.BUILDING_CONNECTION)) {
+			if (newBuilding.hasFunction(FunctionType.CONNECTION)) {
 				// Try to create connections at North and South ends.
 				createBuildingConnectorEndConnections(newBuilding);
 			}

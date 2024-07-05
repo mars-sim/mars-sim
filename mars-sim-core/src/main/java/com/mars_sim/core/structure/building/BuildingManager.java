@@ -392,7 +392,7 @@ public class BuildingManager implements Serializable {
 	public List<Building> getBuildingsNoHallwayTunnelObservatory(FunctionType functionType) {
 		// Filter off hallways and tunnels
 		return getBuildings(functionType).stream().filter(b ->
-				b.getCategory() != BuildingCategory.HALLWAY
+				b.getCategory() != BuildingCategory.CONNECTION
 				&& !b.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
 				).collect(Collectors.toList());
 	}
@@ -879,8 +879,8 @@ public class BuildingManager implements Serializable {
 		
 		for (Building building: bldgSet) {
 			if (!found && building != null
-					&& building.getCategory() != BuildingCategory.HALLWAY
-					&& building.getCategory() != BuildingCategory.EVA_AIRLOCK) {
+					&& building.getCategory() != BuildingCategory.CONNECTION
+					&& building.getCategory() != BuildingCategory.EVA) {
 				// Add the person to a building activity spot
 				found = addPersonToActivitySpot(person, building, null);
 			}
@@ -915,8 +915,8 @@ public class BuildingManager implements Serializable {
 		}
 				
 		for (Building building: bldgSet) {
-			if (building.getCategory() != BuildingCategory.HALLWAY
-					&& building.getCategory() != BuildingCategory.EVA_AIRLOCK) {
+			if (building.getCategory() != BuildingCategory.CONNECTION
+					&& building.getCategory() != BuildingCategory.EVA) {
 				
 				// Add the person to the life support
 				LifeSupport lifeSupport = building.getLifeSupport();
@@ -957,7 +957,7 @@ public class BuildingManager implements Serializable {
 					&& bldg.getFunction(functionType).hasEmptyActivitySpot()) {
 				BuildingCategory category = bldg.getCategory();
 				// Do not add robot to hallway and tunnel
-				if (category != BuildingCategory.HALLWAY) {
+				if (category != BuildingCategory.CONNECTION) {
 					destination = bldg;
 					canAdd = addRobotToActivitySpot(robot, destination, functionType);
 				}
@@ -1202,7 +1202,7 @@ public class BuildingManager implements Serializable {
 		// Find least crowded population.
 		int leastCrowded = Integer.MAX_VALUE;
 		for (Building b0 : buildingList) {
-			if (b0.getCategory() != BuildingCategory.EVA_AIRLOCK) {
+			if (b0.getCategory() != BuildingCategory.EVA) {
 				LifeSupport lifeSupport = b0.getLifeSupport();
 				int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
 				if (crowded < -1)
@@ -1266,7 +1266,7 @@ public class BuildingManager implements Serializable {
 		Map<Building, Double> result = new HashMap<>();
 		// Determine probabilities based on relationships in buildings.
 		for (Building building : buildings) {
-			if (building.getCategory() != BuildingCategory.EVA_AIRLOCK) {
+			if (building.getCategory() != BuildingCategory.EVA) {
 				LifeSupport lifeSupport = building.getLifeSupport();
 				double buildingRelationships = 0D;
 				int numPeople = 0;
@@ -1609,7 +1609,7 @@ public class BuildingManager implements Serializable {
 					result += AstronomicalObservation.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
 
-				case BUILDING_CONNECTION:
+				case CONNECTION:
 					result += BuildingConnection.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
 

@@ -1705,7 +1705,7 @@ public abstract class Vehicle extends Unit
 		int weight = 2;
 
 		List<Building> evas = settlement.getBuildingManager()
-				.getBuildingsOfSameCategoryNZone0(BuildingCategory.EVA_AIRLOCK);
+				.getBuildingsOfSameCategoryNZone0(BuildingCategory.EVA);
 		int numGarages = settlement.getBuildingManager().getGarages().size();
 		int total = (int)(evas.size() + numGarages * weight - 1);
 		if (total < 0)

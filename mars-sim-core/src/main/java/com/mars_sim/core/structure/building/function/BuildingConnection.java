@@ -22,7 +22,7 @@ public class BuildingConnection extends Function {
 	/** constructor. */
 	public BuildingConnection(Building building, FunctionSpec spec) {
 		// User Function constructor.
-		super(FunctionType.BUILDING_CONNECTION, spec, building);
+		super(FunctionType.CONNECTION, spec, building);
 	}
 
 	/**
@@ -46,7 +46,7 @@ public class BuildingConnection extends Function {
 		while (i.hasNext()) {
 			Building building = i.next();
 			// Demand based on life support buildings that are not building connections.
-			if (!building.hasFunction(FunctionType.BUILDING_CONNECTION)
+			if (!building.hasFunction(FunctionType.CONNECTION)
 				// Only add demand from buildings with same base level as this one.
 				 && building.getBaseLevel() == baseLevel) {
 					demand += 1D;
@@ -63,7 +63,7 @@ public class BuildingConnection extends Function {
 
 		// Determine supply.
 		double supply = 0D;
-		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet(FunctionType.BUILDING_CONNECTION)
+		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet(FunctionType.CONNECTION)
 				.iterator();
 		while (j.hasNext()) {
 			Building building = j.next();

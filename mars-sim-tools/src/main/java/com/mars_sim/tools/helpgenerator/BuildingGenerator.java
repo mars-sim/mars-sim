@@ -28,7 +28,7 @@ public class BuildingGenerator extends TypeGenerator<BuildingSpec>{
     }
     
     /**
-     * Get a list of all the building specifications configured.
+     * Gets a list of all the building specifications configured.
      */
     protected List<BuildingSpec> getEntities() {
         return getParent().getConfig().getBuildingConfiguration().getBuildingTypes()
@@ -38,7 +38,8 @@ public class BuildingGenerator extends TypeGenerator<BuildingSpec>{
     }
 
 	/**
-	 * Generate the file for the building specifications.
+	 * Generates the file for the building specifications.
+	 * 
 	 * @param v Spec being rendered.
      * @param output Destination of content
 	 * @throws IOException

@@ -146,7 +146,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 
 	@Override
 	public Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
-		var building0 = buildFunction(buildingManager, "EVA Airlock", BuildingCategory.EVA_AIRLOCK,
+		var building0 = buildFunction(buildingManager, "EVA Airlock", BuildingCategory.EVA,
 						FunctionType.EVA,  pos, facing, true);
 		
 		var spec = simConfig.getBuildingConfiguration().getFunctionSpec("Lander Hab", FunctionType.LIVING_ACCOMMODATION);

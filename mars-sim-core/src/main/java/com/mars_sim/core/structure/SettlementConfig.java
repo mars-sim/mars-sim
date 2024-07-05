@@ -100,7 +100,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String PART = "part";
 	private static final String PART_PACKAGE = "part-package";
 	
-	private static final String EVA_AIRLOCK = "EVA Airlock";
+	private static final String EVA = "EVA";
 
 	private static final String SHIFT_PATTERN = "shift-pattern";
 	private static final String SHIFT_PATTERNS = "shifts";
@@ -546,7 +546,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				for (Element connectionElement : connectionNodes) {
 					String connectionID = connectionElement.getAttributeValue(ID);
 
-					if (buildingType.equalsIgnoreCase(EVA_AIRLOCK)) {
+					if (buildingType.equalsIgnoreCase(EVA)) {
 						buildingTemplate.addEVAAttachedBuildingID(connectionID);
 					}
 					

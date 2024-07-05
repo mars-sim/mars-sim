@@ -1056,7 +1056,7 @@ public class ConstructionMission extends AbstractMission
 			BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
 			site.setWidth(spec.getWidth());
 			site.setLength(spec.getLength());
-			boolean isBuildingConnector = spec.getFunctionSupported().contains(FunctionType.BUILDING_CONNECTION);
+			boolean isBuildingConnector = spec.getFunctionSupported().contains(FunctionType.CONNECTION);
 			boolean hasLifeSupport = spec.getFunctionSupported().contains(FunctionType.LIFE_SUPPORT);
 
 			if (isBuildingConnector) {

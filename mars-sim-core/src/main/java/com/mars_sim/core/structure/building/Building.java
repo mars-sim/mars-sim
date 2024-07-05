@@ -610,7 +610,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			case ADMINISTRATION -> new Administration(this, fSpec);
 			case ALGAE_FARMING -> new AlgaeFarming(this, fSpec);				
 			case ASTRONOMICAL_OBSERVATION -> new AstronomicalObservation(this, fSpec);
-			case BUILDING_CONNECTION -> new BuildingConnection(this, fSpec);
+			case CONNECTION -> new BuildingConnection(this, fSpec);
 			case COMMUNICATION -> new Communication(this, fSpec);
 			case COMPUTATION -> new Computation(this, fSpec);
 			case COOKING -> new Cooking(this, fSpec);
@@ -876,18 +876,33 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 	
 	/**
-	 * Gets the heat ventilated to or from this building.
+	 * Gets the heat loss due to ventilation extracted out of this buildings to adjacent buildings.
 	 *
 	 * @return heat in kW.
 	 */
-	public double getHeatVent() {
+	public double getHeatLossFromVent() {
 		double result = 0;
 
 		if (furnace != null && heating != null)
-			result = furnace.getHeating().getHeatVent();
+			result = furnace.getHeating().getHeatLossFromVent();
 
 		return result;
 	}
+	
+	/**
+	 * Gets the heat gain ventilated to this building from adjacent buildings.
+	 *
+	 * @return heat in kW.
+	 */
+	public double getHeatGainFromVent() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getHeating().getHeatGainFromVent();
+
+		return result;
+	}
+	
 	
 	/**
 	 * Gets the heat deviation of this building.

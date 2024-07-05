@@ -637,7 +637,7 @@
 		<maintenance-entity-list>
 		<entity name="farming" probability="1" max-number="2" />
 		<entity name="vehicle" probability="1" max-number="2" />
-		<entity name="astronomical observations" probability="1" max-number="1" />			
+		<entity name="astronomical observation" probability="1" max-number="1" />			
 		<entity name="communication" probability="1" max-number="1" />		
 		<entity name="manufacture" probability="1" max-number="2" />
 		<entity name="living accommodation" probability="1" max-number="1" />
@@ -651,7 +651,7 @@
 		<entity name="farming" probability="1" max-number="1" />
 		<entity name="vehicle" probability="1" max-number="1" />
 		<entity name="manufacture" probability="1" max-number="1" />
-		<entity name="astronomical observations" probability="1" max-number="1" />
+		<entity name="astronomical observation" probability="1" max-number="1" />
 		<entity name="communication" probability="1" max-number="1" />	
 		<entity name="computation" probability="1" max-number="1" />	
 		<entity name="living accommodation" probability="1" max-number="1" />
@@ -664,7 +664,7 @@
 		<entity name="farming" probability="3" max-number="1" />
 		<entity name="vehicle" probability="3" max-number="1" />
 		<entity name="manufacture" probability="3" max-number="2" />
-		<entity name="astronomical observations" probability="1" max-number="1" />
+		<entity name="astronomical observation" probability="1" max-number="1" />
 		<entity name="communication" probability="1" max-number="1" />	
 		<entity name="computation" probability="1" max-number="1" />			
 		<entity name="living accommodation" probability="3" max-number="1" />

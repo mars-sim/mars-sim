@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * FunctionType.java
- * @date 2023-09-19
+ * @date 2024-07-04
  * @author stpa				
  */
 package com.mars_sim.core.structure.building.function;
@@ -14,14 +14,14 @@ public enum FunctionType {
 
     ADMINISTRATION              (BuildingCategory.COMMAND, Msg.getString("FunctionType.administration")), //$NON-NLS=1$
 	ALGAE_FARMING				(BuildingCategory.FARMING, Msg.getString("FunctionType.algaeFarming")), //$NON-NLS-1$
-    ASTRONOMICAL_OBSERVATION	(BuildingCategory.ASTRONOMY, Msg.getString("FunctionType.astronomicalObservations")), //$NON-NLS-1$
-	BUILDING_CONNECTION			(BuildingCategory.HALLWAY, Msg.getString("FunctionType.buildingConnection")), //$NON-NLS-1$
+    ASTRONOMICAL_OBSERVATION	(BuildingCategory.ASTRONOMY, Msg.getString("FunctionType.astronomicalObservation")), //$NON-NLS-1$
+	CONNECTION					(BuildingCategory.CONNECTION, Msg.getString("FunctionType.connection")), //$NON-NLS-1$
 	COMMUNICATION				(BuildingCategory.COMMUNICATION,Msg.getString("FunctionType.communication")), //$NON-NLS-1$
 	COMPUTATION					(BuildingCategory.LABORATORY, Msg.getString("FunctionType.computation")), //$NON-NLS-1$
 	COOKING						(BuildingCategory.LIVING, Msg.getString("FunctionType.cooking")), //$NON-NLS-1$
 	DINING						(BuildingCategory.LIVING, Msg.getString("FunctionType.dining")), //$NON-NLS-1$
 	EARTH_RETURN				(BuildingCategory.ERV, Msg.getString("FunctionType.earthReturn")), //$NON-NLS-1$
-	EVA							(BuildingCategory.EVA_AIRLOCK, Msg.getString("FunctionType.eva")), //$NON-NLS-1$
+	EVA							(BuildingCategory.EVA, Msg.getString("FunctionType.eva")), //$NON-NLS-1$
 	EXERCISE					(BuildingCategory.LIVING, Msg.getString("FunctionType.exercise")), //$NON-NLS-1$
 	FARMING						(BuildingCategory.FARMING, Msg.getString("FunctionType.farming")), //$NON-NLS-1$
 	FISHERY						(BuildingCategory.FARMING, Msg.getString("FunctionType.fishery")), //$NON-NLS-1$
@@ -42,6 +42,8 @@ public enum FunctionType {
 	STORAGE						(BuildingCategory.STORAGE, Msg.getString("FunctionType.storage")),  //$NON-NLS-1$
 	THERMAL_GENERATION			(BuildingCategory.POWER, Msg.getString("FunctionType.thermalGeneration")), //$NON-NLS-1$
 	WASTE_PROCESSING			(BuildingCategory.PROCESSING, Msg.getString("FunctionType.wasteProcessing")), //$NON-NLS-1$
+	
+	// Not implemented yet
 	FIELD_STUDY					(BuildingCategory.LABORATORY, Msg.getString("FunctionType.fieldStudy")), //$NON-NLS-1$
 	UNKNOWN						(BuildingCategory.LIVING, Msg.getString("FunctionType.unknown")) //$NON-NLS-1$
 	;

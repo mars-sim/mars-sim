@@ -46,12 +46,14 @@ public class ThermalGeneration extends Function {
 	private List<HeatSource> heatSources;
 	
 	private HeatSource solarHeatSource;
-	
 	private HeatSource nuclearHeatSource;
-	
 	private HeatSource electricHeatSource;
-	
 	private HeatSource fuelHeatSource;
+	
+	private double sHeatCache;
+	private double fHeatCache;
+	private double eHeatCache;
+	private double nHeatCache;
 	
 	/**
 	 * Constructor
@@ -168,7 +170,7 @@ public class ThermalGeneration extends Function {
 	}
 
 	/**
-	 * Gets the total amount of heat that this building is CURRENTLY producing.
+	 * Gets the total amount of generated heat that this building is CURRENTLY producing.
 	 * 
 	 * @return heat generated in kW (heat flow rate)
 	 */
@@ -176,6 +178,15 @@ public class ThermalGeneration extends Function {
 		return heatGeneratedCache;
 	}
 
+	/**
+	 * Sets the total amount of generated heat that this building is CURRENTLY producing.
+	 * 
+	 * @return heat generated in kW (heat flow rate)
+	 */
+	public void setGeneratedHeat(double heat) {
+		heatGeneratedCache = heat;
+	}
+	
 //	/**
 //	 * Gets the total amount of power that this building is CURRENTLY producing.
 //	 * 
@@ -209,54 +220,61 @@ public class ThermalGeneration extends Function {
 		// Order of business: solar, nuclear, electric, and fuel
 		
 		List<HeatMode> ALL_HEAT_MODES = HeatMode.ALL_HEAT_MODES;
-		int size = ALL_HEAT_MODES.size() - 1;
+		int size = ALL_HEAT_MODES.size();
 		
-		if (solarHeatSource != null) {	
+		if (solarHeatSource != null) {
 			for (int i=1; i<size; i++) {
 				heatMode = ALL_HEAT_MODES.get(i);
 
 		    	sHeat = solarHeatSource.requestHeat(heatMode.getPercentage());
-
-				if (!Double.isNaN(sHeat) && !Double.isInfinite(sHeat)) {
-					heatGen += sHeat;
-					heatReq -= sHeat;		
-					if (heatReq > 0) {
-						// Go to the next heat source for more heat
-					}
-					else if (sHeat > 0) {				
+	    	
+				if (Double.isNaN(sHeat) || Double.isInfinite(sHeat)) {
+					logger.info(building, "SolarHeatSource has invalid heat value.");
+					break;
+				}
+				
+				heatGen += sHeat;
+				heatReq -= sHeat;		
+				if (heatReq > 0) {
+					// Go to the next heat source for more heat
+				}
+				else if (sHeat > 0) {				
+				
+					// Set the new heat mode
+					newHeatMode = heatMode;
 					
-						// Set the new heat mode
-						newHeatMode = heatMode;
-						
-						solarHeatSource.setHeatMode(newHeatMode, building);
-						building.fireUnitUpdate(UnitEventType.SOLAR_HEAT_EVENT);	
-						
-						// Convert all thermal nuclear heat to electricity
-						if (nuclearHeatSource != null) {
-							nuclearHeatSource.setHeatMode(HeatMode.HEAT_OFF, building);
-							building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT);
-						}
-						
-						// Turn off electric heat
-						if (electricHeatSource != null) {
-							electricHeatSource.setHeatMode(HeatMode.OFFLINE, building);
-							building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT);
-						}
-						
-						// Turn off fuel heat
-						if (fuelHeatSource != null) {
-							fuelHeatSource.setHeatMode(HeatMode.OFFLINE, building);
-							building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
-						}
-						
-						heat[0] = heatGen;
-						heat[1] = heatReq;			
-						return heat;
+					solarHeatSource.setHeatMode(newHeatMode, building);
+					building.fireUnitUpdate(UnitEventType.SOLAR_HEAT_EVENT);	
+					
+					// Convert all thermal nuclear heat to electricity
+					if (nuclearHeatSource != null) {
+						nuclearHeatSource.setHeatMode(HeatMode.HEAT_OFF, building);
+						building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT);
 					}
+					
+					// Turn off electric heat
+					if (electricHeatSource != null) {
+						electricHeatSource.setHeatMode(HeatMode.OFFLINE, building);
+						building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT);
+					}
+					
+					// Turn off fuel heat
+					if (fuelHeatSource != null) {
+						fuelHeatSource.setHeatMode(HeatMode.OFFLINE, building);
+						building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
+					}
+					
+					sHeatCache = sHeat;
+					
+					heat[0] = heatGen;
+					heat[1] = heatReq;			
+					return heat;
 				}
 			}
 			
 			if (sHeat > 0) {
+				sHeatCache = sHeat;
+
 				// Set the new heat mode
 				newHeatMode = heatMode;
 				solarHeatSource.setHeatMode(newHeatMode, building);
@@ -269,41 +287,48 @@ public class ThermalGeneration extends Function {
 				heatMode = ALL_HEAT_MODES.get(i);
 
 		    	nHeat = nuclearHeatSource.requestHeat(heatMode.getPercentage());
-				
-				if (!Double.isNaN(nHeat) && !Double.isInfinite(nHeat)) {
-					heatGen += nHeat;
-					heatReq -= nHeat;			
-					if (heatReq > 0) {
-						// Go to the next heat source for more heat
+				 	
+				if (Double.isNaN(nHeat) || Double.isInfinite(nHeat)) {
+					logger.info(building, "NuclearHeatSource has invalid heat value.");
+					break;
+				}
+					
+				heatGen += nHeat;
+				heatReq -= nHeat;			
+				if (heatReq > 0) {
+					// Go to the next heat source for more heat
+				}
+				else if (nHeat > 0) {		
+					// Set the new heat mode
+					newHeatMode = heatMode;
+					
+					// Will automatically convert rest of thermal nuclear heat to electricity					
+					nuclearHeatSource.setHeatMode(newHeatMode, building);
+					building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT);
+					
+					// Turn off electric heat
+					if (electricHeatSource != null) {
+						electricHeatSource.setHeatMode(HeatMode.OFFLINE, building);		
+						building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT);
 					}
-					else if (nHeat > 0) {		
-						// Set the new heat mode
-						newHeatMode = heatMode;
-						
-						// Will automatically convert rest of thermal nuclear heat to electricity					
-						nuclearHeatSource.setHeatMode(newHeatMode, building);
-						building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT);
-						
-						// Turn off electric heat
-						if (electricHeatSource != null) {
-							electricHeatSource.setHeatMode(HeatMode.OFFLINE, building);		
-							building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT);
-						}
-						
-						// Turn off fuel heat
-						if (fuelHeatSource != null) {
-							fuelHeatSource.setHeatMode(HeatMode.OFFLINE, building);
-							building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
-						}
-		
-						heat[0] = heatGen;
-						heat[1] = heatReq;			
-						return heat;
+					
+					// Turn off fuel heat
+					if (fuelHeatSource != null) {
+						fuelHeatSource.setHeatMode(HeatMode.OFFLINE, building);
+						building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
 					}
+	
+					nHeatCache = nHeat;
+					
+					heat[0] = heatGen;
+					heat[1] = heatReq;			
+					return heat;
 				}
 			}
 			
 			if (nHeat > 0) {
+				nHeatCache = nHeat;
+				
 				// Set the new heat mode
 				newHeatMode = heatMode;
 				nuclearHeatSource.setHeatMode(newHeatMode, building);
@@ -317,33 +342,40 @@ public class ThermalGeneration extends Function {
 				
 		    	eHeat = electricHeatSource.requestHeat(heatMode.getPercentage());
 				
-				if (!Double.isNaN(eHeat) && !Double.isInfinite(eHeat)) {
-					heatGen += eHeat;
-					heatReq -= eHeat;			
-					if (heatReq > 0) {
-						// Go to the next heat source for more heat
-					}
-					else if (eHeat > 0) {
-						// Set the new heat mode
-						newHeatMode = heatMode;
-						
-						electricHeatSource.setHeatMode(newHeatMode, building);
-						building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT);
-						
-						// Turn off fuel heat
-						if (fuelHeatSource != null) {
-							fuelHeatSource.setHeatMode(HeatMode.OFFLINE, building);
-							building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
-						}
+				if (Double.isNaN(eHeat) || Double.isInfinite(eHeat)) {
+					logger.info(building, "ElectricHeatSource has invalid heat value.");
+					break;
+				}
+				
+				heatGen += eHeat;
+				heatReq -= eHeat;			
+				if (heatReq > 0) {
+					// Go to the next heat source for more heat
+				}
+				else if (eHeat > 0) {
+					// Set the new heat mode
+					newHeatMode = heatMode;
 					
-						heat[0] = heatGen;
-						heat[1] = heatReq;			
-						return heat;
+					electricHeatSource.setHeatMode(newHeatMode, building);
+					building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT);
+					
+					// Turn off fuel heat
+					if (fuelHeatSource != null) {
+						fuelHeatSource.setHeatMode(HeatMode.OFFLINE, building);
+						building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
 					}
+				
+					eHeatCache = eHeat;
+					
+					heat[0] = heatGen;
+					heat[1] = heatReq;			
+					return heat;
 				}
 			}
 			
 			if (eHeat > 0) {
+				eHeatCache = eHeat;
+				
 				// Set the new heat mode
 				newHeatMode = heatMode;
 				electricHeatSource.setHeatMode(newHeatMode, building);
@@ -358,27 +390,34 @@ public class ThermalGeneration extends Function {
 				fuelHeatSource.setTime(time);
 		    	fHeat = fuelHeatSource.requestHeat(heatMode.getPercentage());
 				
-				if (!Double.isNaN(fHeat) && !Double.isInfinite(fHeat)) {
-					heatGen += fHeat;
-					heatReq -= fHeat;			
-					if (heatReq > 0) {
-						// Go to the next heat source for more heat
-					}
-					else if (fHeat > 0) {
-						// Set the new heat mode
-						newHeatMode = heatMode;
+				if (Double.isNaN(fHeat) || Double.isInfinite(fHeat)) {
+					logger.info(building, "FuelHeatSource has invalid heat value.");
+					break;
+				}
+				
+				heatGen += fHeat;
+				heatReq -= fHeat;			
+				if (heatReq > 0) {
+					// Go to the next heat source for more heat
+				}
+				else if (fHeat > 0) {
+					// Set the new heat mode
+					newHeatMode = heatMode;
 
-						fuelHeatSource.setHeatMode(newHeatMode, building);
-						building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
-						
-						heat[0] = heatGen;
-						heat[1] = heatReq;			
-						return heat;
-					}
+					fuelHeatSource.setHeatMode(newHeatMode, building);
+					building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
+					
+					fHeatCache = fHeat;
+					
+					heat[0] = heatGen;
+					heat[1] = heatReq;			
+					return heat;
 				}
 			}
 			
 			if (fHeat > 0) {
+				fHeatCache = fHeat;
+				
 				// Set the new heat mode
 				newHeatMode = heatMode;
 				fuelHeatSource.setHeatMode(newHeatMode, building);
@@ -386,7 +425,7 @@ public class ThermalGeneration extends Function {
 			}
 		}
 
-		if (fHeat + fHeat + fHeat + fHeat > 0) {
+		if (sHeat + nHeat + eHeat + fHeat > 0) {
 			heat[0] = heatGen;
 			heat[1] = heatReq;			
 		}
@@ -469,8 +508,8 @@ public class ThermalGeneration extends Function {
 		// Call heating's timePassing
 		heating.timePassing(time);
 		// Remove the required heat from Heating class
-		// Add 30% more heat 
-		double heatReq = 1.3 * heating.getHeatRequired();
+		// Add 20% more heat 
+		double heatReq = 1.2 * heating.getHeatRequired();
 				
 		double heat[] = null;
 		double heatGen = 0;
@@ -481,15 +520,16 @@ public class ThermalGeneration extends Function {
 			heat = calculateHeatGen(heatReq, time);
 			heatGen = heat[0];
 			remainHeatReq = heat[1];
-		}
 			
-		if (remainHeatReq > 0.05) {
-			logger.warning(building, 20_000L , "Unmet remaining heat req: " 
-					+ Math.round(remainHeatReq) + " kW.");
+			if (remainHeatReq > 0.05) {
+				logger.warning(building, 20_000L , "Unmet remaining heat req: " 
+						+ Math.round(remainHeatReq) + " kW.");
+			}
 		}
 		
-		// Need to update heat generated in Heating continuously
+		// Update heat generated continuously
 		heating.insertHeatGenerated(heatGen);
+		setGeneratedHeat(heatGen);
 		
 		double dev = heatReq - heatGen;
 		// A. If diff is negative, the heat load has been completely covered.
@@ -695,6 +735,42 @@ public class ThermalGeneration extends Function {
 			return 0;
 
 		return fuelHeatSource.getCurrentHeat();
+	}
+	
+	/**
+	 * Gets the solar heat cache.
+	 * 
+	 * @return
+	 */
+	public double getSolarHeat() {
+		return sHeatCache;
+	}
+	
+	/**
+	 * Gets the fuel heat cache.
+	 * 
+	 * @return
+	 */
+	public double getFuelHeat() {
+		return fHeatCache;
+	}
+	
+	/**
+	 * Gets the electric heat cache.
+	 * 
+	 * @return
+	 */
+	public double getElectricHeat() {
+		return eHeatCache;
+	}
+	
+	/**
+	 * Gets the nuclear heat cache.
+	 * 
+	 * @return
+	 */
+	public double getNuclearHeat() {
+		return nHeatCache;
 	}
 	
 	

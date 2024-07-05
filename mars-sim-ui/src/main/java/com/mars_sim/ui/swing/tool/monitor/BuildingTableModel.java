@@ -43,9 +43,11 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	private static final int HEAT_GEN = DEV_TEMP + 1;
 	private static final int HEAT_REQ = HEAT_GEN + 1;
 	private static final int HEAT_GAIN = HEAT_REQ + 1;
-	private static final int HEAT_VENT = HEAT_GAIN + 1;
 	
-	private static final int AIR_HEAT_SINK = HEAT_VENT + 1;
+	private static final int VENT_LOSS = HEAT_GAIN + 1;
+	private static final int VENT_GAIN =  VENT_LOSS + 1;
+	
+	private static final int AIR_HEAT_SINK = VENT_GAIN + 1;
 	private static final int WATER_HEAT_SINK = AIR_HEAT_SINK + 1;
 	
 	private static final int HEAT_DEV = WATER_HEAT_SINK + 1;
@@ -83,8 +85,10 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 
 		COLUMNS[HEAT_GEN]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.gen"), Double.class);
 		COLUMNS[HEAT_REQ] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.req"), Double.class);
-		COLUMNS[HEAT_VENT] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.vent"), Double.class);
+		COLUMNS[VENT_LOSS] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.vent.loss"), Double.class);
+		COLUMNS[VENT_GAIN] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.vent.gain"), Double.class);
 
+		
 		COLUMNS[AIR_HEAT_SINK] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.air.sink"), Double.class);
 		COLUMNS[WATER_HEAT_SINK] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.water.sink"), Double.class);
 		
@@ -179,9 +183,15 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 			result = building.getDevTemp();
 			break;
 
-		case HEAT_VENT:
+		case VENT_LOSS:
 			if (furnace != null) {
-				result = building.getHeatVent();
+				result = building.getHeatLossFromVent();
+			}
+			return result;
+			
+		case VENT_GAIN:
+			if (furnace != null) {
+				result = building.getHeatGainFromVent();
 			}
 			return result;
 			
@@ -358,7 +368,8 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 				case DEV_T_EVENT -> DEV_TEMP;
 				
 				case EXCESS_HEAT_EVENT -> EXCESS_HEAT;
-				case HEAT_VENT_EVENT -> HEAT_VENT;
+				case VENT_LOSS_EVENT -> VENT_LOSS;
+				case VENT_GAIN_EVENT -> VENT_GAIN;
 				case HEAT_MATCH_EVENT -> DELTA_TEMP;
 				case HEAT_DEV_EVENT -> HEAT_DEV;
 				

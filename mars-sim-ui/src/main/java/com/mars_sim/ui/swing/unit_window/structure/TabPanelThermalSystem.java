@@ -71,8 +71,8 @@ public class TabPanelThermalSystem extends TabPanelTable {
 	/** The cache of total heat generated. */
 	private double heatGenSolarCache;
 	
-	private double eheatCache;
-	private double epowerCache;
+	private double effEHeatCache;
+	private double effSHeatCache;
 	
 	private JCheckBox checkbox;
 	
@@ -179,14 +179,14 @@ public class TabPanelThermalSystem extends TabPanelTable {
 							StyleManager.DECIMAL_KW.format(powerGenCache),
 							Msg.getString("TabPanelThermalSystem.totalPowerGen.tooltip")); //$NON-NLS-1$
 
-		double effElectric = getAverageEfficiencyElectricHeat();
+		effEHeatCache = getAverageEfficiencyElectricHeat();
 		electricEffTF = heatInfoPanel.addTextField(Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency"),
-							StyleManager.DECIMAL_PERC.format(effElectric*100D),
+							StyleManager.DECIMAL_PERC.format(effEHeatCache*100D),
 							Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency.tooltip")); //$NON-NLS-1$
 
-		double effSolar =  getAverageEfficiencySolarHeating();
+		effSHeatCache =  getAverageEfficiencySolarHeating();
 		solarEffTF = heatInfoPanel.addTextField(Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency"),
-							StyleManager.DECIMAL_PERC.format(effSolar*100D),			
+							StyleManager.DECIMAL_PERC.format(effSHeatCache*100D),			
 							Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency.tooltip")); //$NON-NLS-1$		
 
 		// Prepare degradation rate label.
@@ -310,7 +310,7 @@ public class TabPanelThermalSystem extends TabPanelTable {
 		if (totHeatGenCache != heat) {
 			totHeatGenCache = heat;
 			totHeatGenLabel.setText(
-					StyleManager.DECIMAL_KW.format(totHeatGenCache)
+					StyleManager.DECIMAL_KW.format(heat)
 				);
 		}
 
@@ -318,17 +318,15 @@ public class TabPanelThermalSystem extends TabPanelTable {
 		if (totHeatLoadCache != heatLoad) {
 			totHeatLoadCache = heatLoad;
 			totHeatLoadLabel.setText(
-					StyleManager.DECIMAL_KW.format(totHeatLoadCache)
+					StyleManager.DECIMAL_KW.format(heatLoad)
 				);
 		}
-		
-		
 		
 		double heatGenElectric = thermalSystem.getHeatGenElectric();
 		if (heatGenElectricCache != heatGenElectric) {
 			heatGenElectricCache = heatGenElectric;
 			heatGenElectricLabel.setText(
-					StyleManager.DECIMAL_KW.format(heatGenElectricCache)
+					StyleManager.DECIMAL_KW.format(heatGenElectric)
 				);
 		}
 		
@@ -336,7 +334,7 @@ public class TabPanelThermalSystem extends TabPanelTable {
 		if (heatGenFuelCache != heatGenFuel) {
 			heatGenFuelCache = heatGenFuel;
 			heatGenFuelLabel.setText(
-					StyleManager.DECIMAL_KW.format(heatGenFuelCache)
+					StyleManager.DECIMAL_KW.format(heatGenFuel)
 				);
 		}
 		
@@ -344,7 +342,7 @@ public class TabPanelThermalSystem extends TabPanelTable {
 		if (heatGenNuclearCache != heatGenNuclear) {
 			heatGenNuclearCache = heatGenNuclear;
 			heatGenNuclearLabel.setText(
-					StyleManager.DECIMAL_KW.format(heatGenNuclearCache)
+					StyleManager.DECIMAL_KW.format(heatGenNuclear)
 				);
 		}
 		
@@ -352,7 +350,7 @@ public class TabPanelThermalSystem extends TabPanelTable {
 		if (heatGenSolarCache != heatGenSolar) {
 			heatGenSolarCache = heatGenSolar;
 			heatGenSolarLabel.setText(
-					StyleManager.DECIMAL_KW.format(heatGenSolarCache)
+					StyleManager.DECIMAL_KW.format(heatGenSolar)
 				);
 		}
 		
@@ -366,18 +364,18 @@ public class TabPanelThermalSystem extends TabPanelTable {
 		}
 
 		double eheat = getAverageEfficiencyElectricHeat()*100D;
-		if (eheatCache != eheat) {
-			eheatCache = eheat;
+		if (effEHeatCache != eheat) {
+			effEHeatCache = eheat;
 			electricEffTF.setText(
 					StyleManager.DECIMAL_PERC.format(eheat)
 				);
 		}
 
-		double epower = getAverageEfficiencySolarHeating()*100D;
-		if (epowerCache != epower) {
-			epowerCache = epower;
+		double esheat = getAverageEfficiencySolarHeating()*100D;
+		if (effSHeatCache != esheat) {
+			effSHeatCache = esheat;
 			solarEffTF.setText(
-					StyleManager.DECIMAL_PERC.format(epower)
+					StyleManager.DECIMAL_PERC.format(esheat)
 				);
 		}
 
@@ -440,32 +438,39 @@ public class TabPanelThermalSystem extends TabPanelTable {
 		public Object getValueAt(int row, int column) {
 
 			Building building = buildings.get(row);
-			
-			double heatReq = building.getHeatRequired();
-			double heatCap = 0.0;
-			double percentReq = 0;
-			HeatMode heatMode = null;
-			
+	
 			ThermalGeneration heater = building.getThermalGeneration();
-			if (heater != null) {
-				heatCap = building.getThermalGeneration().getHeatGenerationCapacity();	
-				percentReq = heatReq / heatCap * 100;
-			}
+
+			// if the building has thermal control system, 
+			// display the following columns: 
 			
-			List<HeatMode> ALL_HEAT_MODES = HeatMode.ALL_HEAT_MODES;
-			int size = ALL_HEAT_MODES.size() - 1;
-			
-			for (int i=0; i<size && heatMode != null; i++) {
-				HeatMode hm = ALL_HEAT_MODES.get(i);
-				double percentageHeat = heatMode.getPercentage();
-					
-				if (percentReq <= percentageHeat) {
-					heatMode = hm;	
-				}
-			}
-			
-			// if the building has thermal control system, display columns
 			if (column == 0) {
+				
+				double heatReq = building.getHeatRequired();
+				double heatCap = 0.0;
+				double percentReq = 0;
+				
+				if (heater == null) {
+					return null;
+				}
+				else {
+					heatCap = building.getThermalGeneration().getHeatGenerationCapacity();	
+					percentReq = heatReq / heatCap * 100;
+				}
+				
+				List<HeatMode> ALL_HEAT_MODES = HeatMode.ALL_HEAT_MODES;
+				int size = ALL_HEAT_MODES.size();
+				HeatMode heatMode = null;
+				
+				for (int i=1; i<size && heatMode != null; i++) {
+					HeatMode hm = ALL_HEAT_MODES.get(i);
+					double percentageHeat = hm.getPercentage();
+						
+					if (percentReq >= percentageHeat) {
+						heatMode = hm;	
+					}
+				}
+				
 				if (heatMode == HeatMode.HEAT_OFF) {
 					return dotYellow; 
 				}
@@ -495,22 +500,20 @@ public class TabPanelThermalSystem extends TabPanelTable {
 			else if (column == 1)
 				return buildings.get(row);
 			else if (column == 2)
-				return  Math.round(building.getCurrentTemperature() * 10.0)/10.0;
+				return  Math.round(building.getCurrentTemperature() * 100.0)/100.0;
 			else if (column == 3) {
-				if (heatMode == HeatMode.HEAT_OFF) {
-					return 0.0;
-				}			
-//				ThermalGeneration heater = building.getThermalGeneration();
-				if (heater != null) {
-					return Math.round(heater.getGeneratedHeat() * 10.0)/10.0;
-				}
-				else
-					return 0;
-			}
-			else if (column == 4) {
-//				if (heatMode == HeatMode.HEAT_OFF) {
+//				if (heatMode == HeatMode.HEAT_OFF
+//					|| heatMode == HeatMode.OFFLINE) {
 //					return 0.0;
 //				}			
+
+				if (heater != null) {
+					return Math.round(heater.getGeneratedHeat() * 100.0)/100.0;
+				}
+				else
+					return null;
+			}
+			else if (column == 4) {
 
 				if (heater != null) {
 					return Math.round(heater.getHeatRequired() * 100.0)/100.0;
@@ -519,12 +522,12 @@ public class TabPanelThermalSystem extends TabPanelTable {
 					return 0;
 			}
 			else if (column == 5) {
-				double generatedCapacity = 0.0;
+				double generatedCapacity = 0;
 				try {
 					generatedCapacity = building.getThermalGeneration().getHeatGenerationCapacity();
 				}
 				catch (Exception e) {}
-				return Math.round(generatedCapacity * 10.0)/10.0;
+				return generatedCapacity;
 			}
 			return null;
 		}

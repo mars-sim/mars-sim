@@ -187,7 +187,7 @@ public class Teach extends Task {
 			Building studentBuilding = BuildingManager.getBuilding(student);
 
 			if (studentBuilding != null && 
-				studentBuilding.getCategory() != BuildingCategory.EVA_AIRLOCK) {
+				studentBuilding.getCategory() != BuildingCategory.EVA) {
 				// Walk to random location in student's building.
 				walkToEmptyActivitySpotInBuilding(BuildingManager.getBuilding(student), false);
 			}
@@ -297,7 +297,7 @@ public class Teach extends Task {
 				Building building = BuildingManager.getBuilding(student);
 				if (building != null) {
 					// If this is an EVA airlock
-					if (building.getCategory() == BuildingCategory.EVA_AIRLOCK) {
+					if (building.getCategory() == BuildingCategory.EVA) {
 						// Go to the next building
 						continue;
 					}
@@ -326,7 +326,7 @@ public class Teach extends Task {
 				Building building = BuildingManager.getBuilding(student);
 				if (building != null) {
 					// If this is an EVA airlock
-					if (building.getCategory() == BuildingCategory.EVA_AIRLOCK) {
+					if (building.getCategory() == BuildingCategory.EVA) {
 						// Go to the next building
 						continue;
 					}

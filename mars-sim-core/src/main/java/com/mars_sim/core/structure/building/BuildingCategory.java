@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingCategory.java
- * @date 2020-07-05
+ * @date 2024-07-04
  * @author Barry Evans
  */
 package com.mars_sim.core.structure.building;
@@ -23,8 +23,8 @@ public enum BuildingCategory {
     WORKSHOP,
     VEHICLE,
     STORAGE, 
-    EVA_AIRLOCK,
-    HALLWAY,
+    EVA,
+    CONNECTION,
     POWER;
 
 	private String name;

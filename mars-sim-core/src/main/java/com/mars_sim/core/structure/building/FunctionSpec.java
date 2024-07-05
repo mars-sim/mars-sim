@@ -14,7 +14,7 @@ import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
- * Represents a specification of a Building Function in a generic fashion
+ * Represents a specification of a Building Function in a generic fashion.
  */
 public class FunctionSpec {
 	// Name of the standard capacity property
