@@ -937,6 +937,7 @@
 			<settlement-name name="Asimov Base" />
 			<settlement-name name="Ames Town" />
 			<settlement-name name="Orion City" />
+			<settlement-name name="Pilgrim" />
 			<settlement-name name="New Boston" />
 			<settlement-name name="New Albany" />
 			<settlement-name name="JFK City" />
@@ -1134,17 +1135,17 @@
 		<authority code="SPACEX" name="Space Exploration Technologies Corporation" corporation="true"
 					agenda="Planet Life" gender-ratio="0.5">
 			<country name="United States"/>
-			<settlement-name name="MuskVille" />
+			<settlement-name name="Muskville" />
 			<settlement-name name="Falcon Station" />
 			<settlement-name name="Nicolas Town" />
-			<settlement-name name="AI City" />
-			<settlement-name name="Solar City" />
+			<settlement-name name="Elonia" />
+			<settlement-name name="Solarian" />
 			<settlement-name name="New Eden" />
 			<settlement-name name="Teslapolis" />		
 			<settlement-name name="IronVille" />
 			<settlement-name name="Boringburg" />
 			<settlement-name name="Hawthorne" />
-			<settlement-name name="XAE City" />
+			<settlement-name name="XAE" />
 			<settlement-name name="New Vegas" />
 			<settlement-name name="Brownsville" />			
 			<rover-name name="Genesis" />
@@ -1167,14 +1168,14 @@
 		<authority code="BO" name="Blue Origin" corporation="true"
 					agenda="Colony Construction" gender-ratio="0.5">
 			<country name="United States"/>
-			<settlement-name name="Aurora Terminus" />
-			<settlement-name name="Falcon Station" />
+			<settlement-name name="Aurora" />
+			<settlement-name name="Astro City" />
 			<settlement-name name="Amazone" />
 			<settlement-name name="Borealis" />
-			<settlement-name name="Ender Terminus" />
+			<settlement-name name="Ender" />
 			<settlement-name name="Eos" />
 			<settlement-name name="Liberty" />
-			<settlement-name name="Pilgrim" />
+			<settlement-name name="Terminus" />
 			<settlement-name name="Nox" />
 			<settlement-name name="Hera" />
 			<settlement-name name="Chrono" />

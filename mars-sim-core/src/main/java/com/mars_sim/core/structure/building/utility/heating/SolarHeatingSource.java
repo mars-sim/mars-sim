@@ -79,6 +79,8 @@ public class SolarHeatingSource extends HeatSource {
 	@Override
 	public double getCurrentHeat() {
 		double fraction = getSunlightFraction(); 
+		if (fraction == 0)
+			return 0;
 		double available = thermalEfficiency / RATED_THERMAL_EFFICIENCY * getMaxHeat() * getPercentHeat() / 100D;
         return fraction * available;
     }
@@ -86,6 +88,8 @@ public class SolarHeatingSource extends HeatSource {
 	@Override
 	public double getCurrentPower() {
 		double fraction = getSunlightFraction(); 
+		if (fraction == 0)
+			return 0;
 		double available = electricEfficiency / RATED_ELECTRIC_EFFICIENCY * getMaxHeat() * getPercentElectricity() / 100D;
         return fraction * available;
     }
@@ -93,6 +97,8 @@ public class SolarHeatingSource extends HeatSource {
 	@Override
 	public double requestHeat(double percent) {
 		double fraction = getSunlightFraction(); 
+		if (fraction == 0)
+			return 0;
 		double available = thermalEfficiency / RATED_THERMAL_EFFICIENCY * getMaxHeat() * percent / 100D;
         return fraction * available;
 	}

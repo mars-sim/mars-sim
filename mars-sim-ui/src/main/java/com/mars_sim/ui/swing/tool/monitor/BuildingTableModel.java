@@ -33,6 +33,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	private static final int SETTLEMENT = NAME + 1;
 	private static final int TYPE = SETTLEMENT + 1;
 	private static final int CATEGORY = TYPE + 1;
+	
 	private static final int POWER_MODE = CATEGORY + 1;
 	private static final int POWER_REQ = POWER_MODE + 1;
 	private static final int POWER_GEN = POWER_REQ + 1;
@@ -40,18 +41,21 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	private static final int TEMPERATURE = POWER_GEN + 1;
 	private static final int DELTA_TEMP = TEMPERATURE + 1;
 	private static final int DEV_TEMP = DELTA_TEMP + 1;
+	
 	private static final int HEAT_GEN = DEV_TEMP + 1;
 	private static final int HEAT_REQ = HEAT_GEN + 1;
-	private static final int HEAT_GAIN = HEAT_REQ + 1;
+	private static final int HEAT_DEV = HEAT_REQ + 1;
 	
-	private static final int VENT_LOSS = HEAT_GAIN + 1;
-	private static final int VENT_GAIN =  VENT_LOSS + 1;
+	private static final int PRE_NET_HEAT = HEAT_DEV + 1;
+	private static final int POST_NET_HEAT = PRE_NET_HEAT + 1;
 	
-	private static final int AIR_HEAT_SINK = VENT_GAIN + 1;
+	private static final int VENT_IN = POST_NET_HEAT + 1;
+	private static final int VENT_OUT = VENT_IN + 1;
+	
+	private static final int AIR_HEAT_SINK = VENT_OUT + 1;
 	private static final int WATER_HEAT_SINK = AIR_HEAT_SINK + 1;
-	
-	private static final int HEAT_DEV = WATER_HEAT_SINK + 1;
-	private static final int EXCESS_HEAT = HEAT_DEV + 1;
+
+	private static final int EXCESS_HEAT = WATER_HEAT_SINK + 1;
 	
 	private static final int SOLAR = EXCESS_HEAT + 1;
 	private static final int ELECTRIC = SOLAR + 1;
@@ -79,23 +83,25 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 		COLUMNS[POWER_REQ]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.power.req"), Double.class);
 		COLUMNS[POWER_GEN]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.power.gen"), Double.class);
 
-		COLUMNS[TEMPERATURE] = new ColumnSpec(Msg.getString("BuildingTableModel.column.temperature"),Double.class);
+		COLUMNS[TEMPERATURE] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.T"), Double.class);
 		COLUMNS[DELTA_TEMP]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.deltaT"), Double.class);
 		COLUMNS[DEV_TEMP]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.devT"), Double.class);
 
 		COLUMNS[HEAT_GEN]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.gen"), Double.class);
 		COLUMNS[HEAT_REQ] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.req"), Double.class);
-		COLUMNS[VENT_LOSS] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.vent.loss"), Double.class);
-		COLUMNS[VENT_GAIN] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.vent.gain"), Double.class);
-
+		COLUMNS[HEAT_DEV] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.dev"), Double.class);
+		
+		COLUMNS[VENT_IN] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.vent.in"), Double.class);
+		COLUMNS[VENT_OUT] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.vent.out"), Double.class);
 		
 		COLUMNS[AIR_HEAT_SINK] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.air.sink"), Double.class);
 		COLUMNS[WATER_HEAT_SINK] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.water.sink"), Double.class);
 		
 		COLUMNS[EXCESS_HEAT] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.excess"), Double.class);
-		COLUMNS[HEAT_GAIN] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.gain"), Double.class);
-		COLUMNS[HEAT_DEV] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.dev"), Double.class);
 		
+		COLUMNS[PRE_NET_HEAT] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.net.pre"), Double.class);
+		COLUMNS[POST_NET_HEAT] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.net.post"), Double.class);
+	
 		COLUMNS[SOLAR] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.solar"), Object.class);
 		COLUMNS[ELECTRIC] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.electric"), Object.class);
 		COLUMNS[NUCLEAR]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.nuclear"), Object.class);
@@ -183,15 +189,15 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 			result = building.getDevTemp();
 			break;
 
-		case VENT_LOSS:
+		case VENT_IN:
 			if (furnace != null) {
-				result = building.getHeatLossFromVent();
+				result = building.getVentInHeat();
 			}
 			return result;
 			
-		case VENT_GAIN:
+		case VENT_OUT:
 			if (furnace != null) {
-				result = building.getHeatGainFromVent();
+				result = building.getVentOutHeat();
 			}
 			return result;
 			
@@ -213,11 +219,18 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 			}
 			return result;
 			
-		case HEAT_GAIN:
+		case PRE_NET_HEAT:
 			if (furnace != null) {
-				result = building.getHeatGain();
+				result = building.getPreNetHeat();
 			}
 			return result;
+			
+		case POST_NET_HEAT:
+			if (furnace != null) {
+				result = building.getPostNetHeat();
+			}
+			return result;
+			
 			
 		case AIR_HEAT_SINK:
 			if (furnace != null) {
@@ -361,15 +374,15 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 				
 				case REQUIRED_HEAT_EVENT -> HEAT_REQ;
 				case GENERATED_HEAT_EVENT -> HEAT_GEN;
-				case TOTAL_HEAT_GAIN_EVENT -> HEAT_GAIN;
+				case NET_HEAT_0_EVENT -> PRE_NET_HEAT;
 				
 				case TEMPERATURE_EVENT -> TEMPERATURE;
 				case DELTA_T_EVENT -> DELTA_TEMP;
 				case DEV_T_EVENT -> DEV_TEMP;
 				
 				case EXCESS_HEAT_EVENT -> EXCESS_HEAT;
-				case VENT_LOSS_EVENT -> VENT_LOSS;
-				case VENT_GAIN_EVENT -> VENT_GAIN;
+				case VENT_IN_EVENT -> VENT_IN;
+				case VENT_OUT_EVENT -> VENT_OUT;
 				case HEAT_MATCH_EVENT -> DELTA_TEMP;
 				case HEAT_DEV_EVENT -> HEAT_DEV;
 				

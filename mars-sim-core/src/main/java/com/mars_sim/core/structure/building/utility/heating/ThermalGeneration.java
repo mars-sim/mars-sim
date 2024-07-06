@@ -41,7 +41,7 @@ public class ThermalGeneration extends Function {
 	// Data members.
 	private double heatGeneratedCache;
 	
-	private double heatDev;
+	private double heatDevCache;
 
 	private Heating heating;
 	
@@ -282,6 +282,10 @@ public class ThermalGeneration extends Function {
 				solarHeatSource.setHeatMode(newHeatMode, building);
 				building.fireUnitUpdate(UnitEventType.SOLAR_HEAT_EVENT);
 			}
+			else {
+				solarHeatSource.setHeatMode(HeatMode.OFFLINE, building);
+				building.fireUnitUpdate(UnitEventType.SOLAR_HEAT_EVENT);
+			}
 		}
 		
 		if (nuclearHeatSource != null) {
@@ -336,6 +340,10 @@ public class ThermalGeneration extends Function {
 				nuclearHeatSource.setHeatMode(newHeatMode, building);
 				building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT);
 			}
+			else {
+				nuclearHeatSource.setHeatMode(HeatMode.OFFLINE, building);
+				building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT);
+			}
 		}
 		
 		if (electricHeatSource != null) {
@@ -383,6 +391,10 @@ public class ThermalGeneration extends Function {
 				electricHeatSource.setHeatMode(newHeatMode, building);
 				building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT);
 			}
+			else {
+				electricHeatSource.setHeatMode(HeatMode.OFFLINE, building);
+				building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT);
+			}
 		}
 		
 		if (fuelHeatSource != null) {
@@ -423,6 +435,10 @@ public class ThermalGeneration extends Function {
 				// Set the new heat mode
 				newHeatMode = heatMode;
 				fuelHeatSource.setHeatMode(newHeatMode, building);
+				building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
+			}
+			else {
+				fuelHeatSource.setHeatMode(HeatMode.OFFLINE, building);
 				building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
 			}
 		}
@@ -509,19 +525,47 @@ public class ThermalGeneration extends Function {
 	private void transferHeat(double time) {
 		// Call heating's timePassing
 		heating.timePassing(time);
-		// Remove the required heat from Heating class
-		// Add 20% more heat 
-		double heatReq = 1.2 * heating.getHeatRequired();
-				
-		double heat[] = null;
+		
+		// Since devT = tPreset - currentT
+		// and heatReq = convFactor * devT,
+		
+		// If heatReq is -ve, then devT is -ve, currentT is higher than normal
+		// no need to turn on heating
+		
+		// If heatReq is +ve, then devT is +ve, currentT is lower than normal
+		// need to turn on heating
+		
+		double heatReq = heating.getHeatRequired();
 		double heatGen = 0;
 		double remainHeatReq = 0;
 		
-		// Find out how much heat can be generated to match this requirement
-		if (heatReq > 0) {
-			heat = calculateHeatGen(heatReq, time);
+		if (heatReq < 0) {
+			// Still let it call calculateHeatGen in order to turn off heat sources
+			calculateHeatGen(0, time);		
+		}
+		else {
+			// preNetHeat is +ve, then gain is greater than loss
+			double preNetHeat = heating.getPreNetHeat();
+			// postNetHeat is +ve, then gain is greater than loss
+			double postNetHeat = heating.getPostNetHeat();
+			
+			double finalHeatReq = heatReq + (-preNetHeat + -postNetHeat) / 2;
+
+			
+			// Find out how much heat can be generated to match this requirement
+			double heat[] = calculateHeatGen(finalHeatReq, time);
 			heatGen = heat[0];
 			remainHeatReq = heat[1];
+			
+			if (heatGen >= 30) {
+				logger.warning(building, 10_000L , "heatGen: " 
+						+ Math.round(heatGen * 1000.0)/1000.0 + " > 30 kW."
+						+ "  heatReq: " + Math.round(heatReq * 1000.0)/1000.0
+						+ "  remainHeatReq: " + Math.round(remainHeatReq * 1000.0)/1000.0
+						+ "  preNetHeat: " + Math.round(preNetHeat * 1000.0)/1000.0
+						+ "  postNetHeat: " + Math.round(postNetHeat * 1000.0)/1000.0
+						+ "  finalHeatReq: " + Math.round(finalHeatReq * 1000.0)/1000.0);
+			}
 			
 			if (remainHeatReq > 0.05) {
 				logger.warning(building, 20_000L , "Unmet remaining heat req: " 
@@ -533,22 +577,20 @@ public class ThermalGeneration extends Function {
 		heating.insertHeatGenerated(heatGen);
 		setGeneratedHeat(heatGen);
 		
-		double dev = heatReq - heatGen;
-		// A. If diff is negative, the heat load has been completely covered.
-		// B. If diff is positive, the heat load has NOT been fully matched.	
-//					if (dev > 0 && building.getBuildingType().contains("Greenhouse"))
-//						logger.info(building, "heatDev: " + Math.round(dev * 1000.0)/1000.0);
+		// Note that the following can happen : 
+		// Lander Hab 1 - heatGen: 39.655 > 50 kW.  heatReq: 5.02  remainHeatReq: -9.589  finalHeatReq: 30.066
+		// Lander Hab 1 - diffHeatGainLoss: 38.797181908421216 > 20.
+		// This will cause an over-abundance of heat gain.
+		// Need to be cautious about remainHeatReq not exceeding a certain amount
 		
-		// Q: how to inform about the heat deviation ?
-		
+		double heatDev = heatGen + remainHeatReq;
+		// A. If diff is positive, the heat load has been completely covered.
+		// B. If diff is negative, the heat load has NOT been fully matched.	
+				
 		// Update the heat deviation for this building
-		setHeatDev(dev);
+		setHeatDev(heatDev);
 		
-		// Note: could be cheating if the mechanism of conversion is NOT properly defined
-	    // Convert heat to electricity to help out
-		// double powerGenerated = calculateTotGenPower();
-
-		// Future: set new efficiency. Needs a new method in HeatSource updateEffeciency 
+		// Q: how to make use of heatDev (the heat deviation) ?
 	}
 	
 	/**
@@ -572,7 +614,7 @@ public class ThermalGeneration extends Function {
 	 * @return heat in kW.
 	 */
 	public void setHeatDev(double heat)  {
-		heatDev = heat;
+		heatDevCache = heat;
 		building.fireUnitUpdate(UnitEventType.HEAT_DEV_EVENT);
 	}
 	
@@ -582,7 +624,7 @@ public class ThermalGeneration extends Function {
 	 * @return heat in kW.
 	*/
 	public double getHeatDev() {
-		return heatDev;
+		return heatDevCache;
 	}
 	
 	

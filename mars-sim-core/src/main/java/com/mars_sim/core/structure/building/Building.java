@@ -834,15 +834,29 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Gets the heat gain of this building currently.
+	 * Gets the initial net heat gain of this building.
 	 *
 	 * @return heat in kW.
 	 */
-	public double getHeatGain() {
+	public double getPreNetHeat() {
 		double result = 0;
 
 		if (furnace != null && heating != null)
-			result = furnace.getHeating().getHeatGain();
+			result = furnace.getHeating().getPreNetHeat();
+
+		return result;
+	}
+	
+	/**
+	 * Gets the post net heat gain of this building.
+	 *
+	 * @return heat in kW.
+	 */
+	public double getPostNetHeat() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getHeating().getPostNetHeat();
 
 		return result;
 	}
@@ -876,29 +890,29 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 	
 	/**
-	 * Gets the heat loss due to ventilation extracted out of this buildings to adjacent buildings.
+	 * Gets the incoming heat due to ventilation.
 	 *
 	 * @return heat in kW.
 	 */
-	public double getHeatLossFromVent() {
+	public double getVentInHeat() {
 		double result = 0;
 
 		if (furnace != null && heating != null)
-			result = furnace.getHeating().getHeatLossFromVent();
+			result = furnace.getHeating().getVentInHeat();
 
 		return result;
 	}
 	
 	/**
-	 * Gets the heat gain ventilated to this building from adjacent buildings.
+	 * Gets the outgoing heat due to ventilation.
 	 *
 	 * @return heat in kW.
 	 */
-	public double getHeatGainFromVent() {
+	public double getVentOutHeat() {
 		double result = 0;
 
 		if (furnace != null && heating != null)
-			result = furnace.getHeating().getHeatGainFromVent();
+			result = furnace.getHeating().getVentOutHeat();
 
 		return result;
 	}
@@ -1374,15 +1388,21 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	public Settlement getSettlement() {
 		return settlement;
 	}
-
-	public void extractHeat(double heat) {
+	
+	/**
+	 * Adds incoming heat arriving at this building due to ventilation.
+	 * Note: heat gain if positive; heat loss if negative.
+	 * 
+	 * @param heat removed or added
+	 */
+	public void addVentInHeat(double heat) {
 		// Set the instance of thermal generation function.
 		if (furnace == null)
 			furnace = (ThermalGeneration) getFunction(FunctionType.THERMAL_GENERATION);
 		if (heating == null)
 			heating = furnace.getHeating();
 
-		heating.extractHeat(heat);
+		heating.addVentInHeat(heat);
 	}
 
 	public double getCurrentAirPressure() {

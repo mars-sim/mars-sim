@@ -133,10 +133,11 @@ public enum UnitEventType {
 	HEAT_MODE_EVENT					("heat mode"),
 	
 	GENERATED_HEAT_EVENT			("generated heat"),
-	TOTAL_HEAT_GAIN_EVENT			("total heat gain"),
+	NET_HEAT_0_EVENT				("net heat 0"),
+	NET_HEAT_1_EVENT				("net heat 1"),
 	EXCESS_HEAT_EVENT				("excess heat"),
-	VENT_LOSS_EVENT					("vent loss"),
-	VENT_GAIN_EVENT					("vent gain"),
+	VENT_IN_EVENT					("vent loss"),
+	VENT_OUT_EVENT					("vent gain"),
 	HEAT_MATCH_EVENT				("heat match"),
 	HEAT_DEV_EVENT					("heat deviation"),
 	
