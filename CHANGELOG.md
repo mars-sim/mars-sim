@@ -5,35 +5,48 @@ Project: https://mars-sim.com
 GitHub: https://github.com/mars-sim/mars-sim  
 
 ------------------------------------------|---------------------
-## Version 3.8.0 (__ __ Jun 2024)
+## Version 3.8.0 (Sun 07 Jul 2024)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
   <LI>Agency: add "International Space Research Alliance" (ISRA), a Chinese-led 
   	  multi-national alliance and Taiwan nation state.</LI>
+  <LI>Computing: model heat dissipation. Separate power demand from cooling demand.</LI>  
   <LI>Country: add Taiwan as nation state.</LI>  	  
   <LI>GitHub: make use of Gitflow and GitHub Action for building binary releases.</LI>
-  <LI>Goods Manager: Reworking of the relationship with Objectives.</LI>
+  <LI>Goods Manager: rework relationship with objectives.</LI>
   <LI>Group Activity: add group activities for a settlement. e.g. birthday parties, 
   	  council announcements, team meetings etc.</LI>
+  <LI>Health: streamline MedicalConfig, health problem and complaints.</LI>
+  <LI>Medical: rework prescribing medication, examining bodies, and recovery tasks.</LI>
   <LI>Preferences: manage preference by categories.</LI>
   <LI>Process Definitions: standardize approach in defining processes such as salvage, 
-      food production and manufacturing.</LI>
+      food production and manufacturing.</LI>  
+  <LI>Resource Process: respond better to toggling resource on demand.</LI> 
   <LI>Settlement Tasks: tasks can be selected by On duty & Off duty persons.</LI>
   <LI>Settlement Template: may define default objective optionally.</LI>
+  <LI>Thermal Control: revamp heat sink & heat ventilation. Break up into various methods.</LI>  
 </OL>
   
 ### B. UI IMPROVEMENT :
 <OL>
-  <LI>Monitor Tool: Filtering supports selection of a Reporting Authority as well as Settlement.</LI>
-  <LI>Settlement: Number of active Missions controlled by the Preference panel.</LI>
-  <LI>Settlement: New Process history tab that shows all completed Processes.</LI>
-  <LI>Monitor Tool: Backlog show the work scope of tasks.</LI>
+  <LI>Backlog: add showing the work scope of tasks.</LI>
+  <LI>Building Tab: add tracking power and heating params.</LI>
+  <LI>Monitor Tool: support and filter authorities and settlements in one single combobox.</LI>
+  <LI>Preference: show # active Missions controlled by Preference panel.</LI>
+  <LI>Settlement: add new Process History tab showing all completed Processes.</LI>
 </OL>  
 
 ### C. FIXES :
 <OL>
-   <LI>Salvage Process: Correct problem when scoring the salvage of a Vehicle</LI>
+  <LI>Resource: correct budgeting essential resource upon demand.</LI> 
+  <LI>Resource: resolve dwindling amount of methane and hydrogen.</LI>
+  <LI>Robot Charging: avoid robot battery depletion. Ensure wireless charging 
+  	  always possible.</LI> 
+  <LI>Parking: avoid excessive CPU util on finding vehicle parking locations.</LI>
+  <LI>Power Generation: correct how power grid turns on/off buildings during 
+  	  power surplus/deficit.</LI>  
+  <LI>Salvage Process: Correct problem when scoring the salvage of a Vehicle. </LI>
 </OL>
 
 

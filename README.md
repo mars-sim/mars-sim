@@ -54,34 +54,33 @@
 ---
 
 # Introduction
-*The Mars Simulation Project* is a Java-based [open source](https://opensource.dev/) project that
-simulates mission operations and activities of initial settlers on Mars with a higher fidelity of 
-modeling and simulation details than most classic simulation games.
-
-## Simulation
-mars-sim is designed to be a **general purpose** simulator depicting early development of 
+*The Mars Simulation Project* (mars-sim) is a Java-based [open source](https://opensource.dev/) project that
+simulates mission planning, operations and activities of initial settlers on Mars with high 
+computer modeling details. It is designed to be a **general purpose** simulator depicting early development of 
 human settlements on Mars.
 
+## Simulation
+
 According to *Encyclopædia Britannica*, a computer simulation is the use of a computer to represent
-the dynamic responses of one system by the behavior of another system modeled after it. In essence,
+dynamic responses of one system by the behavior of another system modeled after it. In essence,
 a simulation is a mathematical description, or model, of a real world system in the form of a 
 computer program.
 
 mars-sim aims to integrate and incorporate as many subject disciplines (such as engineering, physics, 
-chemistry, biology, economics, psychology, and social science) as possible to simulate the dynamics 
-and behaviors of people, social structure, physical and mechanical systems, and environment in the 
+chemistry, biology, economics, psychology, and social science) as possible to simulate dynamics 
+and behaviors of people, social structures, physical and mechanical systems, and environments in the 
 context of developing human settlements on Mars.
 
 mars-sim models each settler as an intelligent agent possessing varying degrees of autonomy and mobility.
-It models how an independent agent, given a capacity to learn from experiences and an ability to
-cooperate with others under a set of rules. A settler has prescribed attributes and skills and makes
-weighted decisions and interacts with one another to produce unexpected results in a sandbox world.
+It simulates how a conscious agent, given a capacity to learn from past experiences, may 
+cooperate with others under a prescribed set of circumstances and make weighted decisions as he interacts 
+with one another to produce unexpected results in an open world.
 
-For instance, each settler is assigned with a job, a role, having technical
+In particular, a settler would be assigned with a job, a role, having technical
 [skills](https://github.com/mars-sim/mars-sim/wiki/Skills), [personality traits](https://github.com/mars-sim/mars-sim/wiki/Personality), natural
 [attributes](https://github.com/mars-sim/mars-sim/wiki/Attributes), and preferences of tasks.
-They build [relationship](https://github.com/mars-sim/mars-sim/wiki/Relationship)
-as they interact and work with one another. They are there to live, dream, explore, and settle Mars.
+Given their [relationship](https://github.com/mars-sim/mars-sim/wiki/Relationship) with one another, 
+they live, dream, explore, and settle down on Mars.
 
 ## Exploration
 
@@ -90,22 +89,33 @@ spacecraft to orbit the planet. The apex of this spirit of exploration will be c
 first human landing in near future. Early explorers of Mars will come face-to-face with 
 insurmountable challenges. 
 
-In the first decade immediately after the human landing, the major theme would be exploration 
-of Mars. Initially, human explorers would not explore great distances away from their habitats 
-until rover technologies that they would rely upon for long excursion has been proven to be
-reliable. They would travel within a region called an Exploration Zone (EZ), say, within 
-100 km of their landing. On top of that, mission planner would designate many interesting 
-Region of Interests (ROIs) for both scientific investigation and resource extraction. 
+In the first decade immediately after the initial human landing, the major theme would be 
+the exploration of Mars. Initially, human explorers would not explore great distances away 
+from their habitats until rover technologies for long excursions are proven to be reliable 
+enough. They would travel within a region called an Exploration Zone (EZ), say, within 
+100 km of their landing. On top of that, mission planner would designate many interesting
+Region of Interests (ROIs) for both scientific investigations and resource extractions. 
 
-In the second decade, as the human aspiration to become multi-planetary remain unwavering, 
-it would begins shifting into high gear with constructing long-term, sustainable settlements. 
-They would chart out clear pathways to address questions such as: (1) Given the reliability 
-and the technology readiness level of the existing hardware, what is the likelihood that the 
-effort in settling Mars will not end with a boom and would even pay off in the long run ? 
-(2) What efforts does it take to make humans more adaptable to Mars so that it would become 
-the second home for humanity? (3) What kind of partnership between governmental entities and 
-corporations should establish in further funding the settlement of Mars until it becomes 
-self-sustainable ? 
+In the second decade, if the human aspiration to become multi-planetary remains unwavering, 
+we may need to chart out clear pathways in the following four areas : 
+
+(1) Program Success
+Given the expense of developing maturity, reliability and maintainability of the flight proven hardware and software, 
+what is the likelihood that the efforts in exploring Mars will not end in massive failures ? 
+
+(2) Program Collaboration
+What kind of partnership and alliances between governmental entities and corporations should 
+be established in the next phase of the exploration of Mars ? 
+
+(3) Program Cost 
+How do we contain the expense of developing flight proven hardware and software for Mars mission ?
+What kind of public support would be needed to continue exploration missions ? How will the mission
+planners pay off the capital and mission costs in the long run ? 
+
+(4) Program Sustainment
+What effort does it take to make the construction of long-term, sustainable settlements possible ? 
+How do we make humans more adaptable to Mars so that it may one day become the second home for humanity ? 
+
 
 ## Mars Direct Mission Plan 
 
@@ -355,9 +365,9 @@ See some of the popular OpenJDK packages out there in the following :
 
 * [Amazon Cornetto](https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html)
 
-* [Microsoft](https://learn.microsoft.com/en-us/java/openjdk/download)
+* [Microsoft](https://learn.microsoft.com/en-us/java/openjdk/download#openjdk-17)
 
-* [Liberica](https://bell-sw.com/pages/downloads/)
+* [Liberica](https://bell-sw.com/pages/downloads/#jdk-17-lts)
 
 * [OpenLogic](https://www.openlogic.com/openjdk-downloads)
 
@@ -370,9 +380,9 @@ running other apps that requires JavaFX.
 
 ## OS Platforms
 
-Assume that OpenJDK 17 is being used. 
+mars-sim jar binary currently works on Windows, Linux or macOS based systems. 
 
-The standard ZIP distribution can work on Linux or Windows based systems.
+Below are the peculiaries of setting up Java in each OS platform.
 
 ### Linux
 

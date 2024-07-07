@@ -533,7 +533,7 @@ public class Heating implements Serializable {
 		// Manually reset the heat generated from last frame in back to zero
 //		insertHeatGenerated(0);
 		// Manually reset the heat pumped from last frame in back to zero
-		insertExcessHeatComputation(0);
+//		insertExcessHeatComputation(0);
 		
 		// (2b) CALCULATE HEAT GAIN BY PEOPLE
 		double heatGainOccupants = HEAT_DISSIPATED_PER_PERSON * building.getNumPeople();

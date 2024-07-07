@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Computation.java
- * @date 2023-11-30
+ * @date 2024-07-07
  * @author Manny Kung
  */
 package com.mars_sim.core.structure.building.function;
@@ -31,11 +31,22 @@ public class Computation extends Function {
 	
 	// Configuration properties
 	private static final double ENTROPY_FACTOR = .001;
-	private static final double WASTE_HEAT_PERCENT = .1;
+	/** 
+	 * The average efficiency of power usage. e.g. 30% power is for computation 
+	 * and data processing. 70% of power generates for cooling and ventilation.
+	 */
+	private static final double AVERAGE_POWER_EFFICIENCY = .3;
+	/**
+	 * The power demand fraction for each non-load CU [in kW/CU] out of the full load power demand. 
+	 */
+	private static final double NON_LOAD_POWER_USAGE = .15;
+	/**
+	 * The fraction of cooling demand to be dissipated as heat [kW]. 
+	 */
+	private static final double WASTE_HEAT_FRACTION = .6;
 	
 	private static final String COMPUTING_UNIT = "computing-unit";
 	private static final String POWER_DEMAND = "power-demand";
-	private static final String COOLING_DEMAND = "cooling-demand";
 
 	/** The amount of entropy in the system. */
 	private final double maxEntropy;
@@ -46,12 +57,18 @@ public class Computation extends Function {
 	private double entropy;
 	/** The amount of computing resources capacity currently available [in CUs]. */
 	private double currentCU;
+	/** 
+	 * The current efficiency of power usage for data center. 
+	 * Use AVERAGE_POWER_EFFICIENCY as the starting figure. 
+	 * As improvements are made, efficiency will go higher. 
+	 */
+	private double powerEfficiency;
 	/** The power load in kW for each running CU [in kW/CU]. */
 	private double powerDemand;
 	/** The power load in kW needed for cooling each running CU [in kW/CU]. */
 	private double coolingDemand;
 	/** The combined power demand for each running CU [in kW/CU]. */
-	private double combinedkW;
+	private double combinedLoadkW;
 	/** The power demand for each non-load CU [in kW/CU] - Assume 10% of full load. */
 	private double nonLoadkW;
 	/** The schedule demand [in CUs] for the current mission sol. */
@@ -72,12 +89,14 @@ public class Computation extends Function {
 		maxEntropy = peakCU;
 		
 		currentCU = peakCU; 
-		powerDemand = spec.getDoubleProperty(POWER_DEMAND);
-		coolingDemand = spec.getDoubleProperty(COOLING_DEMAND);	
 		
-		combinedkW = coolingDemand + powerDemand;
-		// Assume 10% of full load
-		nonLoadkW = 0.1 * combinedkW;
+		powerEfficiency = AVERAGE_POWER_EFFICIENCY;
+		powerDemand = spec.getDoubleProperty(POWER_DEMAND) * powerEfficiency / AVERAGE_POWER_EFFICIENCY;
+		coolingDemand = powerDemand * (1 - powerEfficiency);	
+	
+		combinedLoadkW = coolingDemand + powerDemand;
+		// Assume 15% of full load
+		nonLoadkW = NON_LOAD_POWER_USAGE * combinedLoadkW;
 		
 		todayDemand = new HashMap<>();
 	}
@@ -115,6 +134,18 @@ public class Computation extends Function {
 		return powerSupply * existingPowerValue;
 	}
 
+	/**
+	 * Sets the power efficiency.
+	 * 
+	 * @param value
+	 */
+	public void setPowerEfficiency(double value) {
+		this.powerEfficiency = value;
+		// Recompute the new power demand and cooling demand
+		powerDemand = powerDemand * powerEfficiency / AVERAGE_POWER_EFFICIENCY;
+		coolingDemand = powerDemand * (1 - powerEfficiency);
+	}
+	
 	/**
 	 * Gets the computing unit capacity [in CU].
 	 * 
@@ -294,13 +325,14 @@ public class Computation extends Function {
 		boolean valid = isValid(pulse);
 		if (valid) {
 	
-			int msol = pulse.getMarsTime().getMillisolInt();
-			
 			if (pulse.isNewMSol()) {
 				
 				increaseEntropy(pulse.getElapsed() * ENTROPY_FACTOR * currentCU / 10);
 	
 				double newDemand = 0;
+				int msol = pulse.getMarsTime().getMillisolInt();
+				
+				// Note: give players the choice to keep the demand log or to clear it
 				
 				// Delete past demand on previous sol
 				if (msol - 1 > 0 && todayDemand.containsKey(msol - 1)) {
@@ -321,15 +353,21 @@ public class Computation extends Function {
 				else {
 					setCU(peakCU);
 				}
-
-				// Notes: 
-				// if it falls below 10%, flash yellow
-				// if it falls below 0%, flash red
 				
-				double fullPower = getPowerRequired();
-				double heat = fullPower * WASTE_HEAT_PERCENT;
+				// e.g. at 30% eff, if power = 0.3 kW, cooling = 0.7 kW. total power req = 1 kW.
+				
+				double power = getPowerRequired();
+			
+				double cooling = power / AVERAGE_POWER_EFFICIENCY * (1 - AVERAGE_POWER_EFFICIENCY);
+				
+				double totalPower = power + cooling;
+				
+				double heat = cooling * WASTE_HEAT_FRACTION;
 				// Dump the generated heat into the building to raise the room temperature
 				dumpExcessHeat(heat);
+
+				logger.info(building, 30_000, "Actual power used: " + Math.round(totalPower * 100.0)/100.0 + " kW."
+						+ "  heat dissipated: " + Math.round(heat * 100.0)/100.0 + " kW.");
 			}
 		}
 		return valid;
@@ -421,11 +459,28 @@ public class Computation extends Function {
 	 */
 	@Override
 	public double getPowerRequired() {
-		double load = peakCU - currentCU;
-		double nonLoad = currentCU;
+		double load = currentCU / peakCU;
+		double nonLoad = (peakCU - currentCU) / peakCU;
+		
 		// Note: Should entropy also increase the power required to run the node ?
 		// When entropy is negative, it should reduce or save power
-		return (load + nonLoadkW * nonLoad) * combinedkW;
+		
+		return load * combinedLoadkW + nonLoad * nonLoadkW;
+	}
+	
+	/**
+	 * Gets the amount of power usage on both power load and non-load.
+	 *
+	 * @return power 
+	 */
+	public double[] getPowerLoadNonLoad() {
+		double load = currentCU / peakCU;
+		double nonLoad = (peakCU - currentCU) / peakCU;
+		
+		// Note: Should entropy also increase the power required to run the node ?
+		// When entropy is negative, it should reduce or save power
+		
+		return new double[] {load * combinedLoadkW, nonLoad * nonLoadkW};
 	}
 	
 	@Override

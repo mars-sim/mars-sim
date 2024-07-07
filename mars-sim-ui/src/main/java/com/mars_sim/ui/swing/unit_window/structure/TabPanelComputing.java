@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelComputing.java
- * @date 2023-08-09
+ * @date 2024-07-07
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.unit_window.structure;
@@ -189,7 +189,7 @@ public class TabPanelComputing extends TabPanelTable {
 		}
 
 		public int getColumnCount() {
-			return 5;
+			return 6;
 		}
 		
 		@Override
@@ -198,18 +198,20 @@ public class TabPanelComputing extends TabPanelTable {
 			if (columnIndex == 0) dataType = Building.class;
 			else if (columnIndex == 1) dataType = Double.class;
 			else if (columnIndex == 2) dataType = Double.class;
-			else if (columnIndex == 3) dataType = String.class;
-			else if (columnIndex == 4) dataType = Double.class;
+			else if (columnIndex == 3) dataType = Double.class;
+			else if (columnIndex == 4) dataType = String.class;
+			else if (columnIndex == 5) dataType = Double.class;
 			return dataType;
 		}
 
 		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return Msg.getString("TabPanelThermalSystem.column.building"); //$NON-NLS-1$
-			else if (columnIndex == 1) return "kW Demand"; //$NON-NLS-1$
-			else if (columnIndex == 2) return "% Usage"; //$NON-NLS-1$
-			else if (columnIndex == 3) return "CUs"; //$NON-NLS-1$
-			else if (columnIndex == 4) return "Entropy"; //$NON-NLS-1$
+			else if (columnIndex == 1) return "Power"; //$NON-NLS-1$
+			else if (columnIndex == 2) return "Heat"; //$NON-NLS-1$
+			else if (columnIndex == 3) return "% Usage"; //$NON-NLS-1$
+			else if (columnIndex == 4) return "CUs"; //$NON-NLS-1$
+			else if (columnIndex == 5) return "Entropy"; //$NON-NLS-1$
 			else return null;
 		}
 
@@ -223,18 +225,22 @@ public class TabPanelComputing extends TabPanelTable {
 				// Power Demand
 				return Math.round(buildings.get(row).getComputation().getPowerRequired() * 10.0)/10.0;
 			}
-			else if (column == 2) {
+			if (column == 2) {
+				// Power Demand
+				return Math.round(buildings.get(row).getComputation().getPowerRequired() * 10.0)/10.0;
+			}
+			else if (column == 3) {
 				// Usage
 				return Math.round(buildings.get(row).getComputation().getUsagePercent() * 10.0)/10.0;
 			}
-			else if (column == 3) {
+			else if (column == 4) {
 				// Peak
-				double peak = Math.round(buildings.get(row).getComputation().getPeakCU() * 100.0)/1000.0;
+				double peak = Math.round(buildings.get(row).getComputation().getPeakCU() * 100.0)/100.0;
 				// Current
 				double computingUnit = Math.round(buildings.get(row).getComputation().getCurrentCU() * 100.0)/100.0;
 				return computingUnit + SLASH + peak;
 			}
-			else if (column == 4) {
+			else if (column == 5) {
 				// Entropy
 				return Math.round(buildings.get(row).getComputation().getEntropy( )* 1_000.0)/1_000.0;
 			}
