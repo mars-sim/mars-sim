@@ -27,7 +27,8 @@ public enum FunctionType {
 	FISHERY						(BuildingCategory.FARMING, Msg.getString("FunctionType.fishery")), //$NON-NLS-1$
 	FOOD_PRODUCTION  			(BuildingCategory.LIVING, Msg.getString("FunctionType.foodProduction")), //$NON-NLS-1$	
 	VEHICLE_MAINTENANCE			(BuildingCategory.VEHICLE, Msg.getString("FunctionType.vehicleMaintenance")), //$NON-NLS-1$
-	LIFE_SUPPORT				(BuildingCategory.LIVING, Msg.getString("FunctionType.lifeSupport")), //$NON-NLS-1$
+	// Life support is everywhere so has no category on it's own
+	LIFE_SUPPORT				(null, Msg.getString("FunctionType.lifeSupport")), //$NON-NLS-1$
 	LIVING_ACCOMMODATION		(BuildingCategory.LIVING, Msg.getString("FunctionType.livingAccommodation")), //$NON-NLS-1$
 	MANAGEMENT					(BuildingCategory.COMMAND, Msg.getString("FunctionType.management")), //$NON-NLS-1$
 	MANUFACTURE					(BuildingCategory.WORKSHOP, Msg.getString("FunctionType.manufacture")), //$NON-NLS-1$
@@ -38,7 +39,8 @@ public enum FunctionType {
 	RECREATION					(BuildingCategory.LIVING, Msg.getString("FunctionType.recreation")), //$NON-NLS-1$
 	RESEARCH					(BuildingCategory.LABORATORY, Msg.getString("FunctionType.research")), //$NON-NLS-1$
 	RESOURCE_PROCESSING			(BuildingCategory.PROCESSING, Msg.getString("FunctionType.resourceProcessing")), //$NON-NLS-1$
-	ROBOTIC_STATION				(BuildingCategory.LIVING, Msg.getString("FunctionType.roboticStation")), //$NON-NLS-1$
+	// Like LifeSupport this is a secondary, supporting Function
+	ROBOTIC_STATION				(null, Msg.getString("FunctionType.roboticStation")), //$NON-NLS-1$
 	STORAGE						(BuildingCategory.STORAGE, Msg.getString("FunctionType.storage")),  //$NON-NLS-1$
 	THERMAL_GENERATION			(BuildingCategory.POWER, Msg.getString("FunctionType.thermalGeneration")), //$NON-NLS-1$
 	WASTE_PROCESSING			(BuildingCategory.PROCESSING, Msg.getString("FunctionType.wasteProcessing")), //$NON-NLS-1$

@@ -306,6 +306,7 @@ public class BuildingConfig {
 		// Get a set of categories
 		Set<BuildingCategory> cats = functions.stream()
 						.map(f -> f.getCategory())
+						.filter(c -> c != null)
 						.collect(Collectors.toSet());
 
 		BuildingCategory category = BuildingCategory.CONNECTION;
