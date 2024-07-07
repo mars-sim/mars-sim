@@ -884,7 +884,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		double result = 0;
 
 		if (furnace != null && heating != null)
-			result = furnace.getHeating().getExcessHeatComputation();
+			result = furnace.getHeating().getExcessHeat();
 
 		return result;
 	}
@@ -927,7 +927,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		double result = 0;
 
 		if (furnace != null && heating != null)
-			result = furnace.getHeatDev();
+			result = furnace.getHeatSurplus();
 
 		return result;
 	}

@@ -44,9 +44,9 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	
 	private static final int HEAT_GEN = DEV_TEMP + 1;
 	private static final int HEAT_REQ = HEAT_GEN + 1;
-	private static final int HEAT_DEV = HEAT_REQ + 1;
+	private static final int HEAT_SURPLUS = HEAT_REQ + 1;
 	
-	private static final int PRE_NET_HEAT = HEAT_DEV + 1;
+	private static final int PRE_NET_HEAT = HEAT_SURPLUS + 1;
 	private static final int POST_NET_HEAT = PRE_NET_HEAT + 1;
 	
 	private static final int VENT_IN = POST_NET_HEAT + 1;
@@ -89,7 +89,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 
 		COLUMNS[HEAT_GEN]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.gen"), Double.class);
 		COLUMNS[HEAT_REQ] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.req"), Double.class);
-		COLUMNS[HEAT_DEV] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.dev"), Double.class);
+		COLUMNS[HEAT_SURPLUS] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.surplus"), Double.class);
 		
 		COLUMNS[VENT_IN] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.vent.in"), Double.class);
 		COLUMNS[VENT_OUT] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.vent.out"), Double.class);
@@ -201,7 +201,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 			}
 			return result;
 			
-		case HEAT_DEV:
+		case HEAT_SURPLUS:
 			if (furnace != null) {
 				result = building.getHeatDev();
 			}
@@ -384,7 +384,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 				case VENT_IN_EVENT -> VENT_IN;
 				case VENT_OUT_EVENT -> VENT_OUT;
 				case HEAT_MATCH_EVENT -> DELTA_TEMP;
-				case HEAT_DEV_EVENT -> HEAT_DEV;
+				case HEAT_SURPLUS_EVENT -> HEAT_SURPLUS;
 				
 				case AIR_HEAT_SINK_EVENT -> AIR_HEAT_SINK;
 				case WATER_HEAT_SINK_EVENT -> WATER_HEAT_SINK;

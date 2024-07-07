@@ -41,7 +41,7 @@ public class ThermalGeneration extends Function {
 	// Data members.
 	private double heatGeneratedCache;
 	
-	private double heatDevCache;
+	private double heatSurplusCache;
 
 	private Heating heating;
 	
@@ -206,7 +206,8 @@ public class ThermalGeneration extends Function {
 	 * @return heat array {heat generated and heat required}
 	 */
 	private double[] calculateHeatGen(double heatLoad, double time) {
-
+		// Assume heatLoad is positive to begin with
+		
 		double heatReq = heatLoad;
 		double heatGen = 0D;
 		double heat[] = new double[2];
@@ -225,7 +226,7 @@ public class ThermalGeneration extends Function {
 		int size = ALL_HEAT_MODES.size();
 		
 		if (solarHeatSource != null) {
-			for (int i=1; i<size; i++) {
+			for (int i=0; i<size; i++) {
 				heatMode = ALL_HEAT_MODES.get(i);
 
 		    	sHeat = solarHeatSource.requestHeat(heatMode.getPercentage());
@@ -240,7 +241,7 @@ public class ThermalGeneration extends Function {
 				if (heatReq > 0) {
 					// Go to the next heat source for more heat
 				}
-				else if (sHeat > 0) {				
+				else if (sHeat >= 0) {				
 				
 					// Set the new heat mode
 					newHeatMode = heatMode;
@@ -289,7 +290,7 @@ public class ThermalGeneration extends Function {
 		}
 		
 		if (nuclearHeatSource != null) {
-			for (int i=1; i<size; i++) {
+			for (int i=0; i<size; i++) {
 				heatMode = ALL_HEAT_MODES.get(i);
 
 		    	nHeat = nuclearHeatSource.requestHeat(heatMode.getPercentage());
@@ -304,7 +305,7 @@ public class ThermalGeneration extends Function {
 				if (heatReq > 0) {
 					// Go to the next heat source for more heat
 				}
-				else if (nHeat > 0) {		
+				else if (nHeat >= 0) {		
 					// Set the new heat mode
 					newHeatMode = heatMode;
 					
@@ -347,7 +348,7 @@ public class ThermalGeneration extends Function {
 		}
 		
 		if (electricHeatSource != null) {
-			for (int i=1; i<size; i++) {
+			for (int i=0; i<size; i++) {
 				heatMode = ALL_HEAT_MODES.get(i);
 				
 		    	eHeat = electricHeatSource.requestHeat(heatMode.getPercentage());
@@ -362,7 +363,7 @@ public class ThermalGeneration extends Function {
 				if (heatReq > 0) {
 					// Go to the next heat source for more heat
 				}
-				else if (eHeat > 0) {
+				else if (eHeat >= 0) {
 					// Set the new heat mode
 					newHeatMode = heatMode;
 					
@@ -398,7 +399,7 @@ public class ThermalGeneration extends Function {
 		}
 		
 		if (fuelHeatSource != null) {
-			for (int i=1; i<size; i++) {
+			for (int i=0; i<size; i++) {
 				heatMode = ALL_HEAT_MODES.get(i);
 				
 				fuelHeatSource.setTime(time);
@@ -414,7 +415,7 @@ public class ThermalGeneration extends Function {
 				if (heatReq > 0) {
 					// Go to the next heat source for more heat
 				}
-				else if (fHeat > 0) {
+				else if (fHeat >= 0) {
 					// Set the new heat mode
 					newHeatMode = heatMode;
 
@@ -539,9 +540,11 @@ public class ThermalGeneration extends Function {
 		double heatGen = 0;
 		double remainHeatReq = 0;
 		
-		if (heatReq < 0) {
+		if (heatReq <= 0) {
 			// Still let it call calculateHeatGen in order to turn off heat sources
-			calculateHeatGen(0, time);		
+			double heat[] = calculateHeatGen(0, time);	
+			heatGen = heat[0];
+			remainHeatReq = heat[1];
 		}
 		else {
 			// preNetHeat is +ve, then gain is greater than loss
@@ -557,8 +560,8 @@ public class ThermalGeneration extends Function {
 			heatGen = heat[0];
 			remainHeatReq = heat[1];
 			
-			if (heatGen >= 30) {
-				logger.warning(building, 10_000L , "heatGen: " 
+			if (heatGen >= 20) {
+				logger.warning(building, 1_000L , "1. heatGen: " 
 						+ Math.round(heatGen * 1000.0)/1000.0 + " > 30 kW."
 						+ "  heatReq: " + Math.round(heatReq * 1000.0)/1000.0
 						+ "  remainHeatReq: " + Math.round(remainHeatReq * 1000.0)/1000.0
@@ -568,11 +571,18 @@ public class ThermalGeneration extends Function {
 			}
 			
 			if (remainHeatReq > 0.05) {
-				logger.warning(building, 20_000L , "Unmet remaining heat req: " 
+				logger.warning(building, 10_000L , "Unmet remaining heat req: " 
 						+ Math.round(remainHeatReq) + " kW.");
 			}
 		}
 		
+		if (heatGen >= 20) {
+			logger.warning(building, 1_000L , "2. heatGen: " 
+					+ Math.round(heatGen * 1000.0)/1000.0 + " > 30 kW."
+					+ "  heatReq: " + Math.round(heatReq * 1000.0)/1000.0
+					+ "  remainHeatReq: " + Math.round(remainHeatReq * 1000.0)/1000.0);
+		}
+					
 		// Update heat generated continuously
 		heating.insertHeatGenerated(heatGen);
 		setGeneratedHeat(heatGen);
@@ -583,14 +593,9 @@ public class ThermalGeneration extends Function {
 		// This will cause an over-abundance of heat gain.
 		// Need to be cautious about remainHeatReq not exceeding a certain amount
 		
-		double heatDev = heatGen + remainHeatReq;
-		// A. If diff is positive, the heat load has been completely covered.
-		// B. If diff is negative, the heat load has NOT been fully matched.	
-				
-		// Update the heat deviation for this building
-		setHeatDev(heatDev);
-		
-		// Q: how to make use of heatDev (the heat deviation) ?
+		double heatSurplus = -remainHeatReq;
+
+		setHeatSurplus(heatSurplus);
 	}
 	
 	/**
@@ -609,22 +614,22 @@ public class ThermalGeneration extends Function {
 	}
 
 	/**
-	 * Sets the heat deviation and call unitUpdate.
+	 * Sets the heat surplus (excess heat generated) and call unitUpdate.
 	 * 
 	 * @return heat in kW.
 	 */
-	public void setHeatDev(double heat)  {
-		heatDevCache = heat;
-		building.fireUnitUpdate(UnitEventType.HEAT_DEV_EVENT);
+	public void setHeatSurplus(double heat)  {
+		heatSurplusCache = heat;
+		building.fireUnitUpdate(UnitEventType.HEAT_SURPLUS_EVENT);
 	}
 	
 	/**
-	 * Gets the heat deviation.
+	 * Gets the heat surplus (excess heat generated).
 	 * 
 	 * @return heat in kW.
 	*/
-	public double getHeatDev() {
-		return heatDevCache;
+	public double getHeatSurplus() {
+		return heatSurplusCache;
 	}
 	
 	

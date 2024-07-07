@@ -563,7 +563,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of EVA Airlock -->
 
 	<building type="Central Hub A" width="20.0" length="20.0" north-south-alignment="length" construction="INFLATABLE" base-level="0"
-		wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="10000">
+		wear-lifetime="3340000" maintenance-time="150" room-temperature="20.0" base-mass="10000">
 		<description> The Central Hub serves to a nexus for connecting other building modules. 
 			It has a flexible air dome and is designed to be a place of gathering and relaxation. 
 		</description>
@@ -1118,7 +1118,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end for fish farm -->
 
 	<building type="Algae Pond" width="6.0" length="9.0" north-south-alignment="length" base-level="0"
-			wear-lifetime="3340000" maintenance-time="150" room-temperature="28.0" base-mass="3000">
+			wear-lifetime="3340000" maintenance-time="150" room-temperature="26.0" base-mass="3000">
 		<description>
 			This building grows spirulina in ponds. It is furnished with a biology research lab 
 			with instruments.

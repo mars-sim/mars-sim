@@ -139,7 +139,7 @@ public enum UnitEventType {
 	VENT_IN_EVENT					("vent loss"),
 	VENT_OUT_EVENT					("vent gain"),
 	HEAT_MATCH_EVENT				("heat match"),
-	HEAT_DEV_EVENT					("heat deviation"),
+	HEAT_SURPLUS_EVENT				("heat surplus"),
 	
 	ELECTRIC_HEAT_EVENT				("electric heat"),
 	SOLAR_HEAT_EVENT				("solar heat"),
