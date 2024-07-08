@@ -43,7 +43,7 @@ public class Computation extends Function {
 	/**
 	 * The fraction of cooling demand to be dissipated as heat [kW]. 
 	 */
-	private static final double WASTE_HEAT_FRACTION = .6;
+	private static final double WASTE_HEAT_FRACTION = .3;
 	
 	private static final String COMPUTING_UNIT = "computing-unit";
 	private static final String POWER_DEMAND = "power-demand";
@@ -360,14 +360,14 @@ public class Computation extends Function {
 			
 				double cooling = power / AVERAGE_POWER_EFFICIENCY * (1 - AVERAGE_POWER_EFFICIENCY);
 				
-				double totalPower = power + cooling;
+//				double totalPower = power + cooling;
 				
 				double heat = cooling * WASTE_HEAT_FRACTION;
 				// Dump the generated heat into the building to raise the room temperature
 				dumpExcessHeat(heat);
 
-				logger.info(building, 30_000, "Actual power used: " + Math.round(totalPower * 100.0)/100.0 + " kW."
-						+ "  heat dissipated: " + Math.round(heat * 100.0)/100.0 + " kW.");
+//				logger.info(building, 30_000, "Actual power used: " + Math.round(totalPower * 100.0)/100.0 + " kW."
+//						+ "  heat dissipated: " + Math.round(heat * 100.0)/100.0 + " kW.");
 			}
 		}
 		return valid;

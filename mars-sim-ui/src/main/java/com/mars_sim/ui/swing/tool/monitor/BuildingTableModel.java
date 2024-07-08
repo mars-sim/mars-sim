@@ -59,10 +59,10 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	
 	private static final int SOLAR = EXCESS_HEAT + 1;
 	private static final int ELECTRIC = SOLAR + 1;
-	private static final int NUCLEAR = ELECTRIC + 1;
-	private static final int FUEL = NUCLEAR + 1;
+	private static final int FUEL = ELECTRIC + 1;
+	private static final int NUCLEAR = FUEL + 1;
 	
-	private static final int COLUMNCOUNT = FUEL + 1;
+	private static final int COLUMNCOUNT = NUCLEAR + 1;
 
 	private static final String KW_OPEN_PARA = " kW - ";
 	private static final String PERCENT_CLOSE_PARA = " %";

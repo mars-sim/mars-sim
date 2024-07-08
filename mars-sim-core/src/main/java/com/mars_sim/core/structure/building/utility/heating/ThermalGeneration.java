@@ -527,16 +527,21 @@ public class ThermalGeneration extends Function {
 		// Call heating's timePassing
 		heating.timePassing(time);
 		
-		// Since devT = tPreset - currentT
+		// Note: Since devT = tPreset - currentT
 		// and heatReq = convFactor * devT,
 		
 		// If heatReq is -ve, then devT is -ve, currentT is higher than normal
 		// no need to turn on heating
-		
 		// If heatReq is +ve, then devT is +ve, currentT is lower than normal
-		// need to turn on heating
-		
+		// need to turn on heating	
 		double heatReq = heating.getHeatRequired();
+
+		// postNetHeat is +ve, then gain is greater than loss
+		double postNetHeat = heating.getPostNetHeat();
+		
+		// preNetHeat is +ve, then gain is greater than loss
+		double preNetHeat = heating.getPreNetHeat();
+
 		double heatGen = 0;
 		double remainHeatReq = 0;
 		
@@ -547,13 +552,8 @@ public class ThermalGeneration extends Function {
 			remainHeatReq = heat[1];
 		}
 		else {
-			// preNetHeat is +ve, then gain is greater than loss
-			double preNetHeat = heating.getPreNetHeat();
-			// postNetHeat is +ve, then gain is greater than loss
-			double postNetHeat = heating.getPostNetHeat();
-			
-			double finalHeatReq = heatReq + (-preNetHeat + -postNetHeat) / 2;
 
+			double finalHeatReq = heatReq - .2 * postNetHeat - .1 * preNetHeat;
 			
 			// Find out how much heat can be generated to match this requirement
 			double heat[] = calculateHeatGen(finalHeatReq, time);
@@ -563,6 +563,7 @@ public class ThermalGeneration extends Function {
 			if (heatGen >= 20) {
 				logger.warning(building, 1_000L , "1. heatGen: " 
 						+ Math.round(heatGen * 1000.0)/1000.0 + " > 30 kW."
+						+ "  T: " + Math.round(building.getCurrentTemperature() * 10.0)/10.0						
 						+ "  heatReq: " + Math.round(heatReq * 1000.0)/1000.0
 						+ "  remainHeatReq: " + Math.round(remainHeatReq * 1000.0)/1000.0
 						+ "  preNetHeat: " + Math.round(preNetHeat * 1000.0)/1000.0
@@ -576,9 +577,11 @@ public class ThermalGeneration extends Function {
 			}
 		}
 		
-		if (heatGen >= 20) {
+		if (heatGen >= 30) {
 			logger.warning(building, 1_000L , "2. heatGen: " 
 					+ Math.round(heatGen * 1000.0)/1000.0 + " > 30 kW."
+					+ "  T: " + Math.round(building.getCurrentTemperature() * 10.0)/10.0
+					+ "  time: " + Math.round(time * 1000.0)/1000.0
 					+ "  heatReq: " + Math.round(heatReq * 1000.0)/1000.0
 					+ "  remainHeatReq: " + Math.round(remainHeatReq * 1000.0)/1000.0);
 		}
