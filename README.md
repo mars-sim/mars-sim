@@ -82,41 +82,6 @@ In particular, a settler would be assigned with a job, a role, having technical
 Given their [relationship](https://github.com/mars-sim/mars-sim/wiki/Relationship) with one another, 
 they live, dream, explore, and settle down on Mars.
 
-## Exploration
-
-History is shaped by pioneers. The exploration of Mars started in the 1960s with sending robotic 
-spacecraft to orbit the planet. The apex of this spirit of exploration will be culminated by the 
-first human landing in near future. Early explorers of Mars will come face-to-face with 
-insurmountable challenges. 
-
-In the first decade immediately after the initial human landing, the major theme would be 
-the exploration of Mars. Initially, human explorers would not explore great distances away 
-from their habitats until rover technologies for long excursions are proven to be reliable 
-enough. They would travel within a region called an Exploration Zone (EZ), say, within 
-100 km of their landing. On top of that, mission planner would designate many interesting
-Region of Interests (ROIs) for both scientific investigations and resource extractions. 
-
-In the second decade, if the human aspiration to become multi-planetary remains unwavering, 
-we may need to chart out clear pathways in the following four areas : 
-
-(1) Program Success
-Given the expense of developing maturity, reliability and maintainability of the flight proven hardware and software, 
-what is the likelihood that the efforts in exploring Mars will not end in massive failures ? 
-
-(2) Program Collaboration
-What kind of partnership and alliances between governmental entities and corporations should 
-be established in the next phase of the exploration of Mars ? 
-
-(3) Program Cost 
-How do we contain the expense of developing flight proven hardware and software for Mars mission ?
-What kind of public support would be needed to continue exploration missions ? How will the mission
-planners pay off the capital and mission costs in the long run ? 
-
-(4) Program Sustainment
-What effort does it take to make the construction of long-term, sustainable settlements possible ? 
-How do we make humans more adaptable to Mars so that it may one day become the second home for humanity ? 
-
-
 ## Mars Direct Mission Plan 
 
 mars-sim loosely follows the *Mars Direct Mission Plan* (by Robert Zubrin) and has crafted 7 basic
@@ -307,19 +272,54 @@ during the simulation. Besides malfunction, workshops and machinery factories
 are to produce parts for replenishing parts to be used during regular 
 [maintenance](https://github.com/mars-sim/mars-sim/wiki/Maintenance) tasks.
 
+## Creating the Future
 
----
+History is shaped by pioneers. The exploration of Mars started in the 1960s with sending robotic 
+spacecraft to orbit the planet. The apex of this spirit of exploration will be culminated by the 
+first human landing in near future. Early explorers of Mars will come face-to-face with 
+insurmountable challenges. 
 
-## Summary
+In the first decade immediately after the initial human landing, the major theme would be 
+the exploration of Mars. Initially, human explorers would not explore great distances away 
+from their habitats until rover technologies for long excursions are proven to be reliable 
+enough. They would travel within a region called an Exploration Zone (EZ), say, within 
+100 km of their landing. On top of that, mission planner would designate many interesting
+Region of Interests (ROIs) for both scientific investigations and resource extractions. 
+
+In the second decade, if the human aspiration to become multi-planetary remains unwavering, 
+we must fully engage the following four major areas : 
+
+(1) Risk
+How will we as a society perceive success and failure in the human exploration of the planet Mars ? 
+Does a spiral engineering development approach for Mars exploration reduce the program risk ?
+How do we analyze and reduce risk in maturing hardware and software responsible for 
+exploring Mars ? What is the likelihood that it would increase or decrease the success 
+and failure in the human exploration of Mars ? 
+
+(2) Collaboration
+What kind of partnership and alliances between governmental entities and corporations should 
+be established in the next phase of the exploration of Mars ? 
+
+(3) Cost
+How do we contain the expense of developing flight proven hardware and software for Mars mission ?
+What kind of public support would be needed to continue exploration missions ? How will the mission
+planners pay off the capital and mission costs in the long run ? 
+
+(4) Sustainment
+What effort does it take to make the construction of long-term, sustainable settlements possible ? 
+How do we make humans more adaptable to Mars so that it may one day become the second home for humanity ? 
+
+## Conclusion
+
 Mars is a harsh world but is certainly not as unforgiving than Earth's barren Moon. 
 Still, settlers come face-to-face with accidents, equipment malfunctions, illnesses, 
-injuries, and even death. Survival depends on how well they work together,
-improve their survival skills and balance individual versus settlement needs.
+injuries, and even death. Survival depends on how well they work together as they 
+hone their survival skills and balance individual versus settlement needs.
 
-As the settlers learn how to survive hardship and build up their settlements, 
-players are rewarded with the pure joy of participating in this grand social 
-experiment of creating a new branch of human society on another
-planetary surface.
+Players will get a taste of what it's like to be settlers who survive hardship and 
+build up their settlements. There's is no greater reward than knowing that the
+engagment in this grand human experiment of the century will pay off in the long run
+in creating a new branch of human society on another planetary surface. 
 
 ---
 

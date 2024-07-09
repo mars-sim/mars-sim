@@ -1428,7 +1428,7 @@ public class Heating implements Serializable {
 				"index:" + index
 //				+ "  wrong0:" + wrong0
 //				+ "  wrong1:" + wrong1
-				+ "dh: " + Math.round(dh*1000.0)/1000.0
+				+ "  dh: " + Math.round(dh*1000.0)/1000.0
 				+ "  lowerBound: " + Math.round(lowerBound*1000.0)/1000.0 
 				+ "  upperBound: " + Math.round(upperBound*1000.0)/1000.0
 				+ "  oldHeat: " + Math.round(oldHeat*1000.0)/1000.0

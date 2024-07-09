@@ -1,5 +1,6 @@
 /*
  * Mars Simulation Project
+
  * HelpGenerator.java
  * @date 2024-02-17
  * @author Barry Evans
@@ -47,7 +48,8 @@ public class HelpGenerator {
 	private static final String TITLE_PREFIX = "List of ";
 
 	/**
-	 * Function that converts a string into a valid file name
+	 * Function that converts a string into a valid file name.
+	 * 
 	 * @return
 	 */
 	public Function<Object, Object> getFilename() {
@@ -76,7 +78,7 @@ public class HelpGenerator {
 		this.baseScope.put("generatedOn",
 						DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now()));
 		
-		// Locatio of other generated file; used for links
+		// Location of other generated file; used for links
 		addTypeFolder(VehicleGenerator.TYPE_NAME);
 		addTypeFolder(PartGenerator.TYPE_NAME);
 		addTypeFolder(ResourceGenerator.TYPE_NAME);
@@ -93,14 +95,16 @@ public class HelpGenerator {
     }
 
 	/**
-	 * Add a variable to the base scope this point to the folder for a type of documents
+	 * Adds a variable to the base scope this point to the folder for a type of documents.
+	 * 
 	 * @param typeName
 	 */
 	private void addTypeFolder(String typeName) {
 		this.baseScope.put(typeName + "folder", "../" + typeName + "/");
 	}
 	/**
-	 * Generate a valid file name for a name of a entity
+	 * Generates a valid file name for a name of a entity.
+	 * 
 	 * @param name Name of config item
 	 * @return
 	 */
@@ -110,7 +114,8 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * Create the default scope properties for the generation.
+	 * Creates the default scope properties for the generation.
+	 * 
 	 * @param pageTitle Title of page
 	 * @return
 	 */
@@ -124,8 +129,9 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * Create an index page for a set of named entities. This will use the 
+	 * Creates an index page for a set of named entities. This will use the 
 	 * 'entity-list' template.
+	 * 
 	 * @param title Page title
 	 * @param description Description of the page
 	 * @param entities List of entities
@@ -148,8 +154,9 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * Create an index page for a set of named entities that are grouped. This will use the 
+	 * Creates an index page for a set of named entities that are grouped. This will use the 
 	 * 'entity-grouped' template.
+	 * 
 	 * @param title Page title
 	 * @param description Description of the page
 	 * @param groupName Name of the groups
@@ -179,8 +186,11 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * Get the usage of a Resoruce by it's name. This will return where is an inout or output
+	 * Gets the usage of a Resource by it's name. This will return where is an input or output
 	 * to a process.
+	 * 
+	 * @param name
+	 * @return
 	 */
 	ResourceUse getResourceUsageByName(String name) {
 		if (resourceUses == null) {
@@ -199,7 +209,8 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * Factor method to create a ProcessItem from a set of attributes
+	 * Factor method to create a ProcessItem from a set of attributes.
+	 * 
 	 * @param name
 	 * @param type
 	 * @param amount
@@ -220,7 +231,8 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * Generate all configurations.
+	 * Generates all configurations.
+	 * 
 	 * @param outputDir Root location for generated files
 	 * @throws IOException
 	 */
@@ -260,7 +272,7 @@ public class HelpGenerator {
     }
 
 	/**
-	 * Look up a template. This will select the appropriate Mustache templaet for the defined
+	 * Looks up a template. This will select the appropriate Mustache template for the defined
 	 * template set.
 	 * 
 	 * @param template
@@ -288,7 +300,8 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * Get a generator that which create HTML Inline helppages
+	 * Gets a generator that which create HTML inline help pages.
+	 * 
 	 * @param source 
 	 */
 	public static HelpGenerator createHTMLInline(SimulationConfig source) {
