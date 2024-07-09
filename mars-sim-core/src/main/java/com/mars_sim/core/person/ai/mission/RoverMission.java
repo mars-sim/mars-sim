@@ -743,14 +743,14 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				if (canWalk) {
 					boolean canDo = assignTask(person, new Walk(person, walkingSteps));
 					if (!canDo) {
-						logger.warning(person, "Unable to walk to " + destinationBuilding + ".");
+						logger.warning(person, 10_000, "Unable to walk to " + destinationBuilding + ".");
 					}
 				}
 
 				else if (!hasStrength) {
 					// Note 1: Help this person put on an EVA suit
 					// Note 2: consider inflatable medical tent for emergency transport of incapacitated personnel
-					logger.info(person,
+					logger.info(person, 10_000, 
 							 Msg.getString("RoverMission.log.emergencyEnterSettlement", person.getName(),
 									disembarkSettlement.getName())); //$NON-NLS-1$
 
@@ -758,7 +758,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					// Note: Gets a lead person to perform it and give him a rescue badge
 					rescueOperation(rover, person, disembarkSettlement);
 
-					logger.info(person, "Transported to ("
+					logger.info(person, 10_000, "Transported to ("
 							+ person.getPosition() + ") in "
 							+ person.getBuildingLocation().getName()); //$NON-NLS-1$
 
@@ -770,13 +770,13 @@ public abstract class RoverMission extends AbstractVehicleMission {
         			}
 				}
 				else {
-					logger.severe(person, "Cannot find a walk path from "
+					logger.severe(person, 10_000, "Cannot find a walk path from "
 									+ rover.getName() + " to " + disembarkSettlement.getName());
 				}
 			}
 
 			else {
-				logger.severe(person, 20_000L, "No airlock found at " + disembarkSettlement);
+				logger.severe(person, 10_000, "No airlock found at " + disembarkSettlement);
 			}
 	}
 

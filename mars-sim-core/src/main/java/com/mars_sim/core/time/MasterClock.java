@@ -223,9 +223,9 @@ public class MasterClock implements Serializable {
 		final String WHITESPACES = "-----------------------------------------------------";
 		logger.config(WHITESPACES);
 		logger.config("                Desired time-ratio : " + desiredTR + "x");
-		logger.config("            Min millisol per pulse : " + minMilliSolPerPulse);
-		logger.config("        Optimal millisol per pulse : " + optMilliSolPerPulse);
-		logger.config("            Max millisol per pulse : " + maxMilliSolPerPulse);
+		logger.config("            Min millisol per pulse : " + Math.round(minMilliSolPerPulse * 10_000.0)/10_000.0);
+		logger.config("        Optimal millisol per pulse : " + Math.round(optMilliSolPerPulse * 10_000.0)/10_000.0);
+		logger.config("            Max millisol per pulse : " + Math.round(maxMilliSolPerPulse * 10_000.0)/10_000.0);
 		logger.config(" Max elapsed time between 2 pulses : " + maxWaitTimeBetweenPulses + " ms");
 		logger.config(WHITESPACES);
 	}

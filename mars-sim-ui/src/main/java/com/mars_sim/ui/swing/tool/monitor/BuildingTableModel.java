@@ -294,55 +294,48 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	 * @return
 	 */
 	public Object getHeatSourceGen(HeatSourceType heatSourceType, ThermalGeneration furnace) {
+		HeatSource heatSource = null;
+		HeatMode heatMode = null;
 		
 		double heatGen = 0;
 		double percent = 0;
-		
+				
 		if (heatSourceType == HeatSourceType.SOLAR_HEATING) {
 			
-			HeatSource heatSource = furnace.getSolarHeatSource();
-			if (heatSource == null)
+			heatSource = furnace.getSolarHeatSource();
+			if (heatSource != null)
+				heatMode = heatSource.getHeatMode();
+			else
 				return null;
-			HeatMode heatMode = heatSource.getHeatMode();
-			if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
-				return 0;
-
-			heatGen = Math.round(heatSource.getCurrentHeat() * 100.0)/100.0;
-			percent = Math.round(heatSource.getHeatMode().getPercentage() * 10.0)/10.0;
 		}	
 		else if (heatSourceType == HeatSourceType.THERMAL_NUCLEAR) {
 	
-			HeatSource heatSource = furnace.getNuclearHeatSource();
-			if (heatSource == null)
+			heatSource = furnace.getNuclearHeatSource();
+			if (heatSource != null)
+				heatMode = heatSource.getHeatMode();
+			else
 				return null;
-			HeatMode heatMode = heatSource.getHeatMode();
-			if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
-				return 0;
 
-			heatGen = Math.round(heatSource.getCurrentHeat() * 100.0)/100.0;
-			percent = Math.round(heatSource.getHeatMode().getPercentage() * 10.0)/10.0;
 		}
 		else if (heatSourceType == HeatSourceType.ELECTRIC_HEATING) {
 			
-			HeatSource heatSource = furnace.getElectricHeatSource();
-			if (heatSource == null)
+			heatSource = furnace.getElectricHeatSource();
+			if (heatSource != null)
+				heatMode = heatSource.getHeatMode();
+			else
 				return null;
-			HeatMode heatMode = heatSource.getHeatMode();
-			if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
-				return 0;
 
-			heatGen = Math.round(heatSource.getCurrentHeat() * 100.0)/100.0;
-			percent = Math.round(heatSource.getHeatMode().getPercentage() * 10.0)/10.0;
 		}
 		else if (heatSourceType == HeatSourceType.FUEL_HEATING) {
 			
-			HeatSource heatSource = furnace.getFuelHeatSource();
-			if (heatSource == null)
+			heatSource = furnace.getFuelHeatSource();
+			if (heatSource != null)
+				heatMode = heatSource.getHeatMode();
+			else
 				return null;
-			HeatMode heatMode = heatSource.getHeatMode();
-			if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
-				return 0;
-
+		}
+		
+		if (heatSource != null && heatMode != null) {
 			heatGen = Math.round(heatSource.getCurrentHeat() * 100.0)/100.0;
 			percent = Math.round(heatSource.getHeatMode().getPercentage() * 10.0)/10.0;
 		}

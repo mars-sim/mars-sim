@@ -838,7 +838,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 				logger.info(person, 10_000L, "Assigned with '" + task.getName() + "'.");
 		}
 		else
-			logger.info(person, 10_000L, "Unable to replace existing task '" + currentTask.getName() + "' with '" + task.getName() + "'.");
+			logger.info(person, 10_000L, "Unable to perform '" + task.getName() + "'.");
 
 		return canPerformTask;
 	}
@@ -882,7 +882,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 				logger.info(robot, 10_000L, "Assigned with '" + task.getName() + "'.");
 		}
 		else
-			logger.info(robot, 10_000L, "Unable to replace existing task '" + currentTask.getName() + "' with '" + task.getName() + "'.");
+			logger.info(robot, 10_000L, "Unable to perform '" + task.getName() + "'.");
 		
 		return canPerformTask;
 	}

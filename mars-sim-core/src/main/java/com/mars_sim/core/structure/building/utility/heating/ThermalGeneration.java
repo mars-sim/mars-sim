@@ -560,7 +560,7 @@ public class ThermalGeneration extends Function {
 			heatGen = heat[0];
 			remainHeatReq = heat[1];
 			
-			if (heatGen >= 20) {
+			if (heatGen >= 40) {
 				logger.warning(building, 1_000L , "1. heatGen: " 
 						+ Math.round(heatGen * 1000.0)/1000.0 + " > 30 kW."
 						+ "  T: " + Math.round(building.getCurrentTemperature() * 10.0)/10.0						
