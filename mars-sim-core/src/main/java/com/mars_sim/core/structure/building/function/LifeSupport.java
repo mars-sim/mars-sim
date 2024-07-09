@@ -66,6 +66,9 @@ public class LifeSupport extends Function {
 		double t = AirComposition.C_TO_K + building.getCurrentTemperature();
 		double vol = building.getVolumeInLiter(); // 1 Cubic Meter = 1,000 Liters
 		air = new AirComposition(t, vol);
+		
+		// Run monitorGases right away as soon as AirComposition is created
+		air.monitorGases(building, t);
 	}
 
 	/**

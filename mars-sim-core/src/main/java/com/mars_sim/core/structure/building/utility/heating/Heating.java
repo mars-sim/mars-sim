@@ -46,6 +46,10 @@ public class Heating implements Serializable {
 	private static final int MAX_ERROR_VALUE = 100;
 	
 	// Data members
+	/** The gas constant is in the unit of J/K/mol. */
+	private static final double GAS_CONSTANT =  8.31446261815324;
+	/** The average molar mass of the air is 28.987 g/mol. */
+//	private static final double MOLAR_MASS_OF_AIR = 28.97;
 	// KG_TO_LB = 2.204623;
 	private static final double DEFAULT_ROOM_TEMPERATURE = 22.5;
 	// kW_TO_kBTU_PER_HOUR = 3.41214; // 1 kW = 3412.14 BTU/hr
@@ -329,16 +333,16 @@ public class Heating implements Serializable {
 
     
 	/**
-	 * Determines the change in indoor temperature.
+	 * Determines the heat gain or loss and the new indoor temperature.
 	 * 
 	 * @param inTCelsius current indoor temperature in degree celsius
 	 * @param millisols time in millisols
 	 * @return delta temperature in degree celsius
 	 */
-	private double[] determineDeltaTemperature(double inTCelsius, double millisols) {
+	private double[] determineHeatTemperature(double inTCelsius, double millisols) {
 		// NOTE: THIS IS A 7-PART CALCULATION
 		
-		// (1) CALCULATE THE TEMPERATURES DIFFERENCE
+		// (1) CALCULATE TEMPERATURES
 		
 		// The outside temperature in deg celsius
 		double outTCelsius = building.getSettlement().getOutsideTemperature();
@@ -411,11 +415,18 @@ public class Heating implements Serializable {
 			error = true;
 		}
 		
-		double seconds = timeSlice * millisols;
+		double upperBound = Math.min(1.5, millisols);
 		
-//		+ "  millisols: " + Math.round(millisols * 1000.0)/1000.0
-//		+ "  seconds: " + Math.round(seconds * 1000.0)/1000.0
+		double lowerBound = Math.max(0.011, upperBound);
 		
+		double seconds = timeSlice * lowerBound;
+		
+//		logger.info(building, 20_000, 
+//				"millisols: " + Math.round(millisols * 1000.0)/1000.0
+//				+ "  upperBound: " + Math.round(upperBound * 1000.0)/1000.0
+//				+ "  lowerBound: " + Math.round(lowerBound * 1000.0)/1000.0
+//				+ "  seconds: " + Math.round(seconds * 1000.0)/1000.0);
+				
 		// (5) APPLY THE HEAT SINKS - AIR MOISTURE AND WATER
 		
 		// (5a) Find the air moisture heat sink
@@ -426,7 +437,7 @@ public class Heating implements Serializable {
 		
 		double convFactor = convFactorAir;
 
-		double dt = 0;
+		double newT = 0;
 
 		// (5c) Find the body mass of water to act as water heat sink
 			
@@ -506,11 +517,103 @@ public class Heating implements Serializable {
 		
 		// (6) CALCULATE THE INSTANTANEOUS CHANGE OF TEMPERATURE (DELTA T) (in degrees celsius)  
 
-		dt = computeNewDeltaT(postNetHeatCache, convFactor);
+//		dt = computeNewDeltaT(postNetHeatCache, convFactor);
 		
-		return new double[] {dt, convFactor};
+		newT = computeNewT(postNetHeatCache);
+
+		return new double[] {newT, convFactor};
 	}
 
+	/**
+	 * Computes the new temperature based on the entropy and the ideal gas law
+	 * 
+	 * @param heat in kJ
+	 * @return
+	 */
+	private double computeNewT(double heatkJ) {
+		double oldT = currentTemperature;
+		
+		double numMoles = building.getLifeSupport().getAir().getTotalNumMoles();
+		
+		// ΔS = Q / T = [J] / [K] = [J/K]
+		// entropy in [J/K]
+		double entropy = heatkJ / 1000 / (C_TO_K + oldT);
+
+		double ratio = entropy / GAS_CONSTANT * numMoles;
+		
+		// newT in [C]
+		double newT = oldT * Math.exp(ratio);
+		
+		// T2 = T1 * exp(ΔS / (nR))
+		// n = 0.0821 L·atm/mol·K 
+		// R = 0.0289 kg/mol
+		
+//		logger.info(building, 30_000,
+//				"oldT: " + Math.round(oldT * 10.0)/10.0
+//				+ "  newT: " + Math.round(newT * 10.0)/10.0
+//				+ "  ratio: " + Math.round(ratio * 10000.0)/10000.0
+//				+ "  heatkJ: " + Math.round(heatkJ * 1000.0)/1000.0 + " kJ"
+//				+ "  entropy: " + Math.round(entropy * 1_000_0.0)/1_000_0.0 + " kJ/K"
+//				+ "  numMoles: " + Math.round(numMoles * 10.0)/10.0
+//				+ "  dt: " + Math.round((newT - oldT) * 100.0)/100.0
+//				);
+		return newT;
+	}
+	
+
+	/**
+	 * Finds the new delta temperature.
+	 * 
+	 * @param netHeat
+	 * @param convFactor
+	 * @param error
+	 * @return
+	 */
+	private double computeNewDeltaT(double netHeat, double convFactor) {
+
+//		Energy = specific heat capacity * mass * delta temperature
+//		[KJ] = [kJ / kg / degC] * kg * degC
+//		delta kW * time = specific heat capacity * mass * delta temperature
+
+		// 1 kW = 1 kJ/s
+		// [kW] = [kJ/°C] / [seconds] * [°C]
+		// [kW/°C] =  [kJ/°C] / [seconds]
+		
+		// [°C] = [kW] / * [seconds] / [kJ/°C]
+//		t = heat * (millisols * timeSlice) / C_s / mass 
+	
+		double dt = netHeat * convFactor;
+	
+		if (dt > 20) {
+			logger.warning(building, 20_000, "dt: " 
+					+ Math.round(dt * 10.0)/10.0 + " > 20.");
+			error = true;
+		}
+		
+		if (dt < -20) {
+			logger.warning(building, 20_000, "dt: " 
+					+ Math.round(dt * 10.0)/10.0 + " < 20.");
+			error = true;
+		}
+		
+		error = checkError("dt", dt) || error;
+		
+		if (error)
+			logger.warning(building, 20_000, 
+				"dt: " + Math.round(dt * 10.0)/10.0
+				+ "  preNetHeat: " + Math.round(preNetHeatCache * 1000.0)/1000.0
+				+ "  postNetHeat: " + Math.round(postNetHeatCache * 1000.0)/1000.0
+				+ "  convFactor: " + Math.round(convFactor * 1000.0)/1000.0
+				+ "  last devT: " + Math.round(devTCache * 1000.0)/1000.0
+				+ "  last heatGenCache: " + Math.round(heatGenCache * 1000.0)/1000.0
+				+ "  last heatReqCache: " + Math.round(heatReqCache * 1000.0)/1000.0
+				+ "  heatsink: [" + Math.round(heatSink[0] * 100.0)/100.0 
+							+ ", " + Math.round(heatSink[1] * 100.0)/100.0 + "]");
+		
+		return dt;
+	}
+	
+	
     /**
      * Calculates the heat gain.
      * 
@@ -604,7 +707,7 @@ public class Heating implements Serializable {
 					coeff = INSULATION_BLANKET;
 			}
 				
-			canopyHeatGain = 0.75 * coeff * (1 - irradiance);
+			canopyHeatGain = 0.5 * coeff * (1 - irradiance);
 		}
 	
 		error = checkError("canopyHeatGain", canopyHeatGain) || error;
@@ -727,7 +830,7 @@ public class Heating implements Serializable {
 		// (3d) CALCULATE HEAT LOSS DUE TO HEAT RADIATED TO OUTSIDE
 		double solarHeatLoss = 0;
 		
-		double canopyFactor = (1 + canopyHeatGain) * 2.5;
+		double canopyFactor = (1 + canopyHeatGain) * 2;
 		// Note: canopyFactor represents the result of closing the canopy on the side wall
 		// to avoid excessive heat loss for the greenhouse,
 		// especially in the evening
@@ -983,9 +1086,10 @@ public class Heating implements Serializable {
 //		/**
 //		 * Do NOT delete. For Debugging
 //		 */
-		if (error || 
-				(dHeat1 > 0 && dHeat1 < dHeat2)
-				|| (dHeat1 < 0 && dHeat1 > dHeat2)) {
+		if (error 
+//				|| (dHeat1 > 0 && dHeat1 < dHeat2)
+//				|| (dHeat1 < 0 && dHeat1 > dHeat2)
+				) {
 			logger.warning(building, 20_000, "Water heat sink - " 
 				+ "T: " + Math.round(currentTemperature * 10.0)/10.0
 				+ "  dHeat1: " + Math.round(dHeat1 * 10000.0)/10000.0
@@ -998,59 +1102,6 @@ public class Heating implements Serializable {
 		
 		return new double[] {dHeat2, convFactorWater};
 	}
-
-	
-	/**
-	 * Finds the new delta temperature.
-	 * 
-	 * @param netHeat
-	 * @param convFactor
-	 * @param error
-	 * @return
-	 */
-	private double computeNewDeltaT(double netHeat, double convFactor) {
-
-//		Energy = specific heat capacity * mass * delta temperature
-//		[KJ] = [kJ / kg / degC] * kg * degC
-//		delta kW * time = specific heat capacity * mass * delta temperature
-
-		// 1 kW = 1 kJ/s
-		// [kW] = [kJ/°C] / [seconds] * [°C]
-		// [kW/°C] =  [kJ/°C] / [seconds]
-		
-		// [°C] = [kW] / * [seconds] / [kJ/°C]
-//		t = heat * (millisols * timeSlice) / C_s / mass 
-	
-		double dt = netHeat * convFactor;
-	
-		if (dt > 20) {
-			logger.warning(building, 20_000, "dt: " 
-					+ Math.round(dt * 10.0)/10.0 + " > 20.");
-			error = true;
-		}
-		
-		if (dt < -20) {
-			logger.warning(building, 20_000, "dt: " 
-					+ Math.round(dt * 10.0)/10.0 + " < 20.");
-			error = true;
-		}
-		
-		error = checkError("dt", dt) || error;
-		
-		if (error)
-			logger.warning(building, 20_000, 
-				"dt: " + Math.round(dt * 10.0)/10.0
-				+ "  preNetHeat: " + Math.round(preNetHeatCache * 1000.0)/1000.0
-				+ "  postNetHeat: " + Math.round(postNetHeatCache * 1000.0)/1000.0
-				+ "  convFactor: " + Math.round(convFactor * 1000.0)/1000.0
-				+ "  last devT: " + Math.round(devTCache * 1000.0)/1000.0
-				+ "  last heatGenCache: " + Math.round(heatGenCache * 1000.0)/1000.0
-				+ "  last heatReqCache: " + Math.round(heatReqCache * 1000.0)/1000.0
-				+ "  heatsink: [" + Math.round(heatSink[0] * 100.0)/100.0 
-							+ ", " + Math.round(heatSink[1] * 100.0)/100.0 + "]");
-		
-		return dt;
-	}
 	
 	/**
 	 * Cycles through the thermal control system for temperature change.
@@ -1059,29 +1110,22 @@ public class Heating implements Serializable {
 	 */
 	private void cycleThermalControl(double deltaTime) {
 		// Detect temperatures
-		double inT = currentTemperature;
+		double oldT = currentTemperature;
 		
 		// Reset the error flag
-		error = checkError("inT", inT);
+		error = checkError("inT", oldT);
 		
-		if (inT > MAX_INDOOR_TEMPERATURE + 5) {
+		if (oldT > MAX_INDOOR_TEMPERATURE + 5) {
 			logger.warning(building, 20_000, "inT: " 
-					+ Math.round(inT * 10.0)/10.0);
+					+ Math.round(oldT * 10.0)/10.0);
 		}
 		
 		// STEP 1 : CALCULATE HEAT GAIN/LOSS AND RELATE IT TO THE TEMPERATURE CHANGE
-		double output[] = determineDeltaTemperature(inT, deltaTime);
+		double output[] = determineHeatTemperature(oldT, deltaTime);
 		
-		double dt = output[0];
+		double newT = output[0];
 		double convFactor = output[1];
 		
-		error = checkError("dt", dt) || error ;
-		
-		// Set the delta temperature and call unitUpdate
-		setDeltaTemp(dt);
-		
-		// STEP 2 : GET NEW CURRENT TEMPERATURE
-		double newT = inT + dt;
 		
 		error = checkError("newT", newT) || error ;
 		
@@ -1105,6 +1149,15 @@ public class Heating implements Serializable {
 		
 		// Set the temperature and call unitUpdate
 		setTemperature(newT);
+		
+		
+		// STEP 2 : GET THE DELTA TEMPERATURE
+		double dt = newT - oldT;
+		
+		error = checkError("dt", dt) || error ;
+		
+		// Set the delta temperature and call unitUpdate
+		setDeltaTemp(dt);
 		
 		// STEP 3 : FIND TEMPERATURE DEVIATION 
 		
@@ -1136,8 +1189,10 @@ public class Heating implements Serializable {
 //		e.g. dt = netHeat * convFactor;
 //		e.g. netHeat = dt / convFactor;
 		
+		double upperBound = Math.min(3, deltaTime / convFactor);
+		
 		// Calculate the new heat kW required to raise the temperature back to the preset level
-		double reqkW = devT * Math.min(2, deltaTime / convFactor);
+		double reqkW = devT * upperBound;
 		// Note that multiplying by deltaTime is not mathematically sound but results in better reqkW
 		
 		// Step 5 : CALCULATE VENT HEAT USING VENTILATION
@@ -1195,7 +1250,7 @@ public class Heating implements Serializable {
 		 */
 		if (error) {
 			logger.warning(building, 20_000, 
-					" oldT: " + Math.round(inT * 100.0)/100.0
+					" oldT: " + Math.round(oldT * 100.0)/100.0
 					+ "  newT: " + Math.round(newT * 100.0)/100.0		
 					+ "  dt: " + Math.round(dt * 100.0)/100.0
 					+ "  devT: " + Math.round(devT * 100.0)/100.0
@@ -1292,7 +1347,7 @@ public class Heating implements Serializable {
 		
 		double storedSink = heatSink[index];
 		
-		// Case 1
+		// Case 1 : the sink absorbs the heat
 		if (oldHeat - dh > 0) {
 			// Note: both transfer and newHeat are positive
 			// Heat sink will suck up some heat
@@ -1326,7 +1381,8 @@ public class Heating implements Serializable {
 			}
 		}
 		
-		// Case 2
+		// Case 2 : the sink releases the heat
+		// if oldHeat is -ve and dh is +ve
 		else if (oldHeat - dh < 0) {
 			// Note: both transfer and newHeat are negative
 			// Need to release heat from heat sink
@@ -1365,25 +1421,27 @@ public class Heating implements Serializable {
 		 */	
 //		boolean wrong0 = (oldHeat > 0 && oldHeat < newHeat);
 //		boolean wrong1 = (oldHeat < 0 && oldHeat > newHeat);
-//		if (error || wrong0 || wrong1) {
-//			logger.warning(building, 20_000, 
-//				"index:" + index
+		if (error 
+//				|| wrong0 || wrong1
+				) {
+			logger.warning(building, 20_000, 
+				"index:" + index
 //				+ "  wrong0:" + wrong0
 //				+ "  wrong1:" + wrong1
-//				+ "  oldHeat: " + Math.round(oldHeat*1000.0)/1000.0
-//						+ "  newHeat: " + Math.round(newHeat*1000.0)/1000.0 
-//				+ "  storedSink: " + Math.round(storedSink*1000.0)/1000.0
-//				+ "  heatSink[" + Math.round(heatSink[0]*1000.0)/1000.0 + ", " 
-//								+ Math.round(heatSink[1]*1000.0)/1000.0 + "]"
-//				+ "  limit: " + Math.round(limit*10000.0)/10000.0
-//				+ "  transfer: " + Math.round(transfer*1000.0)/1000.0
-//				+ "  newTransfer: " + Math.round(newTransfer*1000.0)/1000.0
-//				+ "  efficiency: " + Math.round(efficiency*100.0)/100.0
-//				+ "  timeFactor: " + Math.round(timeFactor*100.0)/100.0
-//				+ "  fraction: " + Math.round(fraction*100.0)/100.0
-//				+ "  seconds: " + Math.round(seconds*1000.0)/1000.0
-//				+ "  timeSlice: " + Math.round(timeSlice*1000.0)/1000.0);
-//		}
+				+ "dh: " + Math.round(dh*1000.0)/1000.0
+				+ "  lowerBound: " + Math.round(lowerBound*1000.0)/1000.0 
+				+ "  upperBound: " + Math.round(upperBound*1000.0)/1000.0
+				+ "  oldHeat: " + Math.round(oldHeat*1000.0)/1000.0
+				+ "  newHeat: " + Math.round(newHeat*1000.0)/1000.0 
+				+ "  storedSink: " + Math.round(storedSink*1000.0)/1000.0
+				+ "  heatSink[" + Math.round(heatSink[0]*1000.0)/1000.0 + ", " 
+								+ Math.round(heatSink[1]*1000.0)/1000.0 + "]"
+				+ "  limit: " + Math.round(limit*10000.0)/10000.0
+				+ "  transfer: " + Math.round(transfer*1000.0)/1000.0
+				+ "  newTransfer: " + Math.round(newTransfer*1000.0)/1000.0
+				+ "  efficiency: " + Math.round(efficiency*100.0)/100.0
+				+ "  timeSlice: " + Math.round(timeSlice*1000.0)/1000.0);
+		}
 
 		return newHeat;
 	}

@@ -51,9 +51,11 @@ public class AirComposition implements Serializable {
             return mass;
         }
     }
-
+	private static final int MILLISOLS_PER_UPDATE = 2;
+	
 	// See https://en.wikipedia.org/wiki/Gas_constant
-	private static final double R_GAS_CONSTANT = 0.082057338D; // [ in L atm K^−1 mol^−1 ]
+	// R = 8.314 J/(mol C); 
+	public static final double R_GAS_CONSTANT = 0.082057338D; // [ in L atm K^−1 mol^−1 ]
 	public static final double MB_PER_ATM = 1013.2501D;
 	public static final double KPA_PER_ATM = 101.32501D;
 	public static final double PSI_PER_ATM = 14.696D;
@@ -80,9 +82,10 @@ public class AirComposition implements Serializable {
     private static final double ARGON_MOLAR_MASS = 39.948D / 1000D;
     private static final double CO2_MOLAR_MASS = 44.0095D / 1000D;
     
-	private static final int MILLISOLS_PER_UPDATE = 2;
 	private static final double CALCULATE_FREQUENCY = 2D;
 	private static final double GAS_CAPTURE_EFFICIENCY = .95D;
+
+	public static final double C_TO_K = 273.15;
 
     private static double o2Consumed;
 	private static double cO2Expelled;
@@ -91,10 +94,11 @@ public class AirComposition implements Serializable {
 	private double fixedVolume; // [in liter]; Note: 1 Cubic Meter = 1,000 Liters
 	private double totalPressure; // in atm
 	private double totalMass; // in kg
+	private double totalNumMoles; // in mol
 
-	private Map<Integer, GasDetails> gases = new HashMap<>();
 	private double accumulatedTime;
-	public static final double C_TO_K = 273.15;
+	
+	private Map<Integer, GasDetails> gases = new HashMap<>();
 
 	/**
 	 * Constructor.
@@ -251,10 +255,11 @@ public class AirComposition implements Serializable {
 	 * @param rh Source or destination of excess gas.
 	 * @param t Current temperature
 	 */
-	private void monitorGases(ResourceHolder rh, double t) {
+	public void monitorGases(ResourceHolder rh, double t) {
 		totalPressure = 0;
 		totalMass = 0;
-
+		totalNumMoles = 0;
+		
 		for (Entry<Integer, GasDetails> g : gases.entrySet()) {
 			int gasId = g.getKey();
 			GasDetails gas = g.getValue();
@@ -303,6 +308,7 @@ public class AirComposition implements Serializable {
             // Update total
             totalPressure += gas.partialPressure;
             totalMass += gas.mass;
+            totalNumMoles += gas.numMoles;
 		}
 
 		updateGasPercentage();
@@ -347,14 +353,33 @@ public class AirComposition implements Serializable {
 		}
 	}
 
+	/**
+	 * Gets the combined air pressure of all gas in the air.
+	 * 
+	 * @return
+	 */
     public double getTotalPressure() {
         return totalPressure;
     }
 
+    /**
+     * Gets the total mass of the air.
+     * 
+     * @return
+     */
     public double getTotalMass() {
         return totalMass;
     }
 
+   /**
+    * Gets the total number of moles of the air.
+    * 
+    * @return
+    */
+    public double getTotalNumMoles() {
+    	return totalNumMoles;
+    }
+    
     public GasDetails getGas(int gasId) {
         return gases.get(gasId);
     }

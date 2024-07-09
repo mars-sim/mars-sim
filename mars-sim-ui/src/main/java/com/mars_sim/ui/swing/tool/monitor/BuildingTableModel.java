@@ -234,13 +234,13 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 			
 		case AIR_HEAT_SINK:
 			if (furnace != null) {
-				result = furnace.getHeating().getAirHeatSink();
+				result = furnace.getHeating().getAirHeatSink() / 3600;
 			}
 			return result;
 			
 		case WATER_HEAT_SINK:
 			if (furnace != null) {
-				result = furnace.getHeating().getWaterHeatSink();
+				result = furnace.getHeating().getWaterHeatSink() / 3600;
 			}
 			return result;
 			

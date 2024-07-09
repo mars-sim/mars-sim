@@ -105,7 +105,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	// Assume an uniform height of 2.5 meters in all buildings
 	public static final double HEIGHT = 2.5;
 	/** 500 W heater for use during EVA ingress */
-	public static final double kWEvaHeater = .5D;
+	public static final double EVA_HEATER_KW = .5D;
 	// Assuming 20% chance for each person to witness or be conscious of the
 	// meteorite impact in an affected building
 	public static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
@@ -1059,7 +1059,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		if (eva != null) {
 			num = eva.getAirlock().getOccupants().size();
 			// Note: Assuming (.5) half of people are doing EVA ingress statistically
-			powerNeededForEVAHeater = num * kWEvaHeater * .5D; 
+			powerNeededForEVAHeater = num * EVA_HEATER_KW * .5D; 
 		}
 		return num;
 	}
