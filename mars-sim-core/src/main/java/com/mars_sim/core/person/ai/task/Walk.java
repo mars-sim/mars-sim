@@ -842,6 +842,8 @@ public class Walk extends Task {
 				return 0;
 
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
+
+			// Future: if this airlock is not available (e.g. chambers are full), how to look for another airlock ?
 			Airlock airlock = step.airlock;
 
 			if (person.isOutside()) {

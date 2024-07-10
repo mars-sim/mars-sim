@@ -5,7 +5,7 @@ Project: https://mars-sim.com
 GitHub: https://github.com/mars-sim/mars-sim  
 
 ------------------------------------------|---------------------
-## Version 3.8.0 (Sun 07 Jul 2024)
+## Version 3.8.0 (Wed 10 Jul 2024)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
@@ -18,6 +18,7 @@ GitHub: https://github.com/mars-sim/mars-sim
   <LI>Group Activity: add group activities for a settlement. e.g. birthday parties, 
   	  council announcements, team meetings etc.</LI>
   <LI>Health: streamline MedicalConfig, health problem and complaints.</LI>
+  <LI>Heating: revamp heat sink & ventilation. Break up into various methods.</LI>  
   <LI>Medical: rework prescribing medication, examining bodies, and recovery tasks.</LI>
   <LI>Preferences: manage preference by categories.</LI>
   <LI>Process Definitions: standardize approach in defining processes such as salvage, 
@@ -25,7 +26,6 @@ GitHub: https://github.com/mars-sim/mars-sim
   <LI>Resource Process: respond better to toggling resource on demand.</LI> 
   <LI>Settlement Tasks: tasks can be selected by On duty & Off duty persons.</LI>
   <LI>Settlement Template: may define default objective optionally.</LI>
-  <LI>Thermal Control: revamp heat sink & heat ventilation. Break up into various methods.</LI>  
 </OL>
   
 ### B. UI IMPROVEMENT :
@@ -39,13 +39,16 @@ GitHub: https://github.com/mars-sim/mars-sim
 
 ### C. FIXES :
 <OL>
+  <LI>Airlock: correctly looks for airlock with least number of occupants.</LI>	
+  <LI>Heating: remove temperature instability by use of entropy to 
+  	  relate temperature change and heat change.</LI> 
+  <LI>Parking: avoid excessive CPU util on finding vehicle parking locations.</LI>
+  <LI>Power Generation: correct how power grid turns on/off buildings during 
+  	  power surplus/deficit.</LI>  
   <LI>Resource: correct budgeting essential resource upon demand.</LI> 
   <LI>Resource: resolve dwindling amount of methane and hydrogen.</LI>
   <LI>Robot Charging: avoid robot battery depletion. Ensure wireless charging 
   	  always possible.</LI> 
-  <LI>Parking: avoid excessive CPU util on finding vehicle parking locations.</LI>
-  <LI>Power Generation: correct how power grid turns on/off buildings during 
-  	  power surplus/deficit.</LI>  
   <LI>Salvage Process: Correct problem when scoring the salvage of a Vehicle. </LI>
 </OL>
 

@@ -519,9 +519,9 @@ implements Serializable {
         }
         else {
 
-            // Find closest walkable airlock (for egress) to destination.
-            Airlock airlock = settlement.getClosestWalkableAvailableAirlock(initialBuilding,
-                    destinationWalkState.loc);//, false);
+        	// Find an airlock that's least full and an airlock that still has space for egress
+            Airlock airlock = settlement.getBestWalkableAvailableAirlock(initialBuilding,
+                    destinationWalkState.loc, false);
             if (airlock == null) {
                 canWalkAllSteps = false;
                 if (person != null) {
@@ -606,9 +606,9 @@ implements Serializable {
             walkingStepList.add(enterRoverInGarageStep);
         }
         else {
-            // Find closest walkable airlock (for egress) to destination rover.
-            Airlock airlock = settlement.getClosestWalkableAvailableAirlock(initialBuilding,
-                    destinationWalkState.loc);
+        	// Find an airlock that's least full for egress to destination rover.
+            Airlock airlock = settlement.getBestWalkableAvailableAirlock(initialBuilding,
+                    destinationWalkState.loc, false);
             if (airlock == null) {
                 canWalkAllSteps = false;
                 if (person != null) {
@@ -652,9 +652,9 @@ implements Serializable {
         Building initialBuilding = initialWalkState.building;
         Settlement settlement = initialBuilding.getSettlement();
 
-        // Find closest walkable airlock (for egress) to destination.
-        Airlock airlock = settlement.getClosestWalkableAvailableAirlock(initialBuilding,
-                destinationWalkState.loc);
+        // Find an airlock that's least full for egress to destination.
+        Airlock airlock = settlement.getBestWalkableAvailableAirlock(initialBuilding,
+                destinationWalkState.loc, false);
         if (airlock == null) {
             canWalkAllSteps = false;
             if (person != null) {
@@ -1115,9 +1115,9 @@ implements Serializable {
             }
             else {
 
-                // Determine closest airlock to destination building.
-                Airlock destinationAirlock = settlement.getClosestWalkableAvailableAirlock(destinationBuilding,
-                        initialWalkState.loc);//, true);
+                // Find an airlock that's least full for egress to destination building.
+                Airlock destinationAirlock = settlement.getBestWalkableAvailableAirlock(destinationBuilding,
+                        initialWalkState.loc, false);
                 if (destinationAirlock != null) {
 
                     // Create walk step to exterior airlock position.
@@ -1155,9 +1155,9 @@ implements Serializable {
 
             Settlement settlement = destinationBuilding.getSettlement();
 
-            // Determine closest airlock to destination building.
-            Airlock destinationAirlock = settlement.getClosestWalkableAvailableAirlock(destinationBuilding,
-                    initialWalkState.loc);//, true);
+            // Find an airlock that's least full to destination building.
+            Airlock destinationAirlock = settlement.getBestWalkableAvailableAirlock(destinationBuilding,
+                    initialWalkState.loc, false);
             if (destinationAirlock != null) {
 
                 // Create walk step to exterior airlock position.
@@ -1204,8 +1204,9 @@ implements Serializable {
         if (garageBuilding != null) {
 
             Settlement settlement = garageBuilding.getSettlement();
-            Airlock destinationAirlock = settlement.getClosestWalkableAvailableAirlock(garageBuilding,
-                    initialWalkState.loc);//, true);
+            // Find an airlock that's least full 
+            Airlock destinationAirlock = settlement.getBestWalkableAvailableAirlock(garageBuilding,
+                    initialWalkState.loc, false);
             if (destinationAirlock != null) {
 
                 if (initialAirlock.equals(destinationAirlock)) {
@@ -1339,9 +1340,9 @@ implements Serializable {
         Building destinationBuilding = destinationWalkState.building;
         Settlement settlement = destinationBuilding.getSettlement();
 
-        // Determine closest airlock (for ingress) to destination building.
-        Airlock destinationAirlock = settlement.getClosestWalkableAvailableAirlock(destinationBuilding,
-                initialWalkState.loc);//, true);
+        // Find an airlock that's least full to destination building.
+        Airlock destinationAirlock = settlement.getBestWalkableAvailableAirlock(destinationBuilding,
+                initialWalkState.loc, true);
         if (destinationAirlock != null) {
 
             // Create walk step to exterior airlock position.
@@ -1381,9 +1382,9 @@ implements Serializable {
         if (garageBuilding != null) {
 
             Settlement settlement = garageBuilding.getSettlement();
-            // Determine closest airlock (for ingress) to destination rover. 		
-            Airlock destinationAirlock = settlement.getClosestWalkableAvailableAirlock(garageBuilding,
-                    initialWalkState.loc);//, true);
+            // Find an airlock that's least full for ingress to destination rover. 		
+            Airlock destinationAirlock = settlement.getBestWalkableAvailableAirlock(garageBuilding,
+                    initialWalkState.loc, true);
             if (destinationAirlock != null) {
 
                 // Create walk step to exterior airlock position.

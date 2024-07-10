@@ -386,7 +386,7 @@ public class EnterAirlock extends Task {
 					// Command the airlock state to be transitioned to "depressurized"
 					airlock.setTransitioning(true);
 
-					logger.info(person, 4_000, "Ready to depressurize the chamber.");
+//					logger.info(person, 4_000, "Ready to depressurize the chamber.");
 
 					if (!airlock.isDepressurized() || !airlock.isDepressurizing()) {
 						// Note: Only the operator has the authority to start the depressurization

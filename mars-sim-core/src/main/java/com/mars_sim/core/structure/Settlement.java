@@ -9,6 +9,7 @@ package com.mars_sim.core.structure;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1327,7 +1328,7 @@ public class Settlement extends Structure implements Temporal,
 		Set<Building> pressurizedBldgs = new UnitSet<>();
 		Set<Building> depressurizedBldgs = new UnitSet<>();
 
-		for(Building airlockBdg : buildingManager.getBuildingSet(FunctionType.EVA)) {
+		for (Building airlockBdg : buildingManager.getBuildingSet(FunctionType.EVA)) {
 			Airlock airlock = airlockBdg.getEVA().getAirlock();
 			if (airlock.isPressurized()	|| airlock.isPressurizing())
 				pressurizedBldgs.add(airlockBdg);
@@ -1550,105 +1551,179 @@ public class Settlement extends Structure implements Temporal,
 		}
 	}
 
+//	/**
+//	 * Gets the best available airlock at the settlement to the given location.
+//	 * The airlock must have a valid walkable interior path from the given
+//	 * building's current location.
+//	 * 
+//	 * @Note: Currently, not being in use
+//	 *
+//	 * @param building  the building in the walkable interior path.
+//	 * @param location  Starting position.
+//	 * @param isIngress is airlock in ingress mode ?
+//	 * @return airlock or null if none available.
+//	 */
+//	public Airlock getBestWalkableAvailableAirlock(Building building, LocalPosition location, 
+//			boolean isIngress) {
+//		Airlock result = null;
+//
+//		double leastDistance = Double.MAX_VALUE;
+//
+//		Iterator<Building> i = buildingManager.getBuildingSet(FunctionType.EVA).iterator();
+//		while (i.hasNext()) {
+//			Building nextBuilding = i.next();
+//			Airlock airlock = nextBuilding.getEVA().getAirlock();		
+//			boolean chamberFull = airlock.areAll4ChambersFull();
+//			
+//			// Select airlock that fulfill either conditions:
+//			// 1. Chambers are NOT full
+//			// 2. Chambers are full but the reservation is NOT full
+//			// 3. if ingressing, make sure this airlock is in ingress mode or not-in-use mode
+//			// 4. if egressing, make sure this airlock is in egress mode or not-in-use mode
+//
+//			// Note: the use of reservationFull is being put on hold
+//			
+//			AirlockMode airlockMode = airlock.getAirlockMode();
+//			boolean isIngressMode = airlockMode == AirlockMode.INGRESS;
+//			boolean isEgressMode = airlockMode == AirlockMode.EGRESS;
+//			boolean notInUse = airlockMode == AirlockMode.NOT_IN_USE;
+//			
+//			if (!chamberFull
+//				&& (notInUse
+//						|| (isIngress && isIngressMode)
+//						|| (!isIngress && isEgressMode)) 
+//				&& buildingConnectorManager.hasValidPath(building, nextBuilding)) {
+//
+//				double distance = nextBuilding.getPosition().getDistanceTo(location);
+//				if (distance < leastDistance) {
+//					EVA eva = nextBuilding.getEVA();
+//					if (eva != null) {
+//						result = eva.getAirlock();
+//						leastDistance = distance;
+//					}
+//				}
+//			}
+//		}
+//
+//		return result;
+//	}
+
 	/**
-	 * Gets the closest available airlock at the settlement to the given location.
+	 * Gets the best available airlock at the settlement to the given location.
 	 * The airlock must have a valid walkable interior path from the given
 	 * building's current location.
-	 * 
-	 * @Note: Currently, not being in use
 	 *
 	 * @param building  the building in the walkable interior path.
 	 * @param location  Starting position.
 	 * @param isIngress is airlock in ingress mode ?
 	 * @return airlock or null if none available.
 	 */
-	public Airlock getClosestWalkableAvailableAirlock(Building building, LocalPosition location, 
-			boolean isIngress) {
-		Airlock result = null;
+	public Airlock getBestWalkableAvailableAirlock(Building building, LocalPosition location, 
+			boolean isIngres) {
 
 		double leastDistance = Double.MAX_VALUE;
-
-		Iterator<Building> i = buildingManager.getBuildingSet(FunctionType.EVA).iterator();
-		while (i.hasNext()) {
-			Building nextBuilding = i.next();
-			Airlock airlock = nextBuilding.getEVA().getAirlock();		
-			boolean chamberFull = airlock.areAll4ChambersFull();
-			
-			// Select airlock that fulfill either conditions:
-			// 1. Chambers are NOT full
-			// 2. Chambers are full but the reservation is NOT full
-			// 3. if ingressing, make sure this airlock is in ingress mode or not-in-use mode
-			// 4. if egressing, make sure this airlock is in egress mode or not-in-use mode
-
-			// Note: the use of reservationFull is being put on hold
-			
-			AirlockMode airlockMode = airlock.getAirlockMode();
-			boolean isIngressMode = airlockMode == AirlockMode.INGRESS;
-			boolean isEgressMode = airlockMode == AirlockMode.EGRESS;
-			boolean notInUse = airlockMode == AirlockMode.NOT_IN_USE;
-			
-			if (!chamberFull
-				&& (notInUse
-						|| (isIngress && isIngressMode)
-						|| (!isIngress && isEgressMode)) 
-				&& buildingConnectorManager.hasValidPath(building, nextBuilding)) {
-
-				double distance = nextBuilding.getPosition().getDistanceTo(location);
-				if (distance < leastDistance) {
-					EVA eva = nextBuilding.getEVA();
-					if (eva != null) {
-						result = eva.getAirlock();
-						leastDistance = distance;
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the closest available airlock at the settlement to the given location.
-	 * The airlock must have a valid walkable interior path from the given
-	 * building's current location.
-	 *
-	 * @param building  the building in the walkable interior path.
-	 * @param location  Starting position.
-	 * @return airlock or null if none available.
-	 */
-	public Airlock getClosestWalkableAvailableAirlock(Building building, LocalPosition location) {
-		Airlock result = null;
-
-		double leastDistance = Double.MAX_VALUE;
-
-		Iterator<Building> i = buildingManager.getBuildingSet(FunctionType.EVA).iterator();
+		double leastPeople = 4;
+		double leastInnerDoor = 4;
+		double leastOuterDoor = 4;
+		Map<Airlock, Integer> airlockMap = new HashMap<>();
+		
+		List<Building> airlocks = buildingManager.getBuildings(FunctionType.EVA);
+		Collections.sort(airlocks);
+		
+		Iterator<Building> i = airlocks.iterator();
 		while (i.hasNext()) {
 			Building nextBuilding = i.next();
 			Airlock airlock = nextBuilding.getEVA().getAirlock();
 			
 			boolean chamberFull = airlock.areAll4ChambersFull();
-			// Select airlock that fulfill either conditions:
-			// 1. Chambers are NOT full
-			// 2. Chambers are full but the reservation is NOT full
-
-			// Note: the use of chamberFull and reservationFull are being put on hold
-			// since it creates excessive logs. Thus it needs to be handled differently 
+			if (chamberFull)
+				continue;
 			
-			if (buildingConnectorManager.hasValidPath(building, nextBuilding)) {
-				if (result == null) {
-					result = airlock;
-					continue;
+			if (!buildingConnectorManager.hasValidPath(building, nextBuilding)) {
+				// This will eliminate airlocks that are not in the same zone
+				continue;
+			}
+			
+			AirlockMode airlockMode = airlock.getAirlockMode();
+			boolean isIngressMode = airlockMode == AirlockMode.INGRESS;
+			boolean isEgressMode = airlockMode == AirlockMode.EGRESS;
+//			boolean notInUse = airlockMode == AirlockMode.NOT_IN_USE;
+			
+			int numInnerDoor = airlock.getNumAwaitingInnerDoor();
+			int numOuterDoor = airlock.getNumAwaitingOuterDoor();
+			int numOccupants = airlock.getNumOccupants();
+			int numEmpty = airlock.getNumEmptied();
+			
+			// Select an airlock that fulfill these conditions:
+			// 
+			// 1. Chambers are NOT full
+			// 2. Least number of occupants in chambers
+			// 3. Least number waiting at outer door
+			// 4. Least number waiting at inner door
+			// 5. Least distance
+
+			// Note: the use of reservationFull are being put on hold
+			// since it creates excessive logs. Thus it needs to be handled differently 
+
+			airlockMap.put(airlock, 1);
+
+			// Note that the airlock can be not in use
+			if (isIngressMode == isIngres
+				|| isEgressMode != isIngres
+					) {
+				airlockMap.put(airlock, 2 + airlockMap.get(airlock));
+			}
+			
+			double distance = nextBuilding.getPosition().getDistanceTo(location);
+			if (distance <= leastDistance) {
+				leastDistance = distance;
+				airlockMap.put(airlock, 1 + airlockMap.get(airlock));
+			}
+			
+			if (numOccupants <= leastPeople) {
+				leastPeople = numOccupants;
+				airlockMap.put(airlock, 1 + airlockMap.get(airlock));
+			}
+			
+			airlockMap.put(airlock, numEmpty + airlockMap.get(airlock));
+					
+			if (isIngres) {
+				// If the person is coming in
+				if (numOuterDoor <= leastOuterDoor) {
+					leastOuterDoor = numOuterDoor;
+					airlockMap.put(airlock, 1 + (4 - numOuterDoor) + airlockMap.get(airlock));
 				}
-				double distance = nextBuilding.getPosition().getDistanceTo(location);
-				if (distance < leastDistance
-					&& !chamberFull) {
-						result = airlock;
-						leastDistance = distance;
+				
+				if (numInnerDoor <= leastInnerDoor) {
+					leastInnerDoor = numInnerDoor;
+					airlockMap.put(airlock, 1 + airlockMap.get(airlock));
+				}
+			}
+			else {
+				// If the person is leaving
+				if (numOuterDoor <= leastOuterDoor) {
+					leastOuterDoor = numOuterDoor;
+					airlockMap.put(airlock, 1 + airlockMap.get(airlock));
+				}
+				
+				if (numInnerDoor <= leastInnerDoor) {
+					leastInnerDoor = numInnerDoor;
+					airlockMap.put(airlock, 1 + (4 - numInnerDoor) + airlockMap.get(airlock));
 				}
 			}
 		}
 
-		return result;
+		return selectBestScoreAirlock(airlockMap);
+	}
+	
+	/**
+	 * Selects the airlock with the highest score.
+	 * 
+	 * @param map
+	 * @return
+	 */
+	public Airlock selectBestScoreAirlock(Map<Airlock, Integer> map) {
+		return Collections.max(map.entrySet(), Map.Entry.comparingByValue()).getKey();
 	}
 	
 	/**
