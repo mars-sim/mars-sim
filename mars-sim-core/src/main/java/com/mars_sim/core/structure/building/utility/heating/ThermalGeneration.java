@@ -550,6 +550,17 @@ public class ThermalGeneration extends Function {
 			double heat[] = calculateHeatGen(0, time);	
 			heatGen = heat[0];
 			remainHeatReq = heat[1];
+			
+			if (heatGen > 40 || heatReq > 40 || heatReq < -40) {
+				logger.warning(building, 1_000L , "1. heatGen: " 
+						+ Math.round(heatGen * 1000.0)/1000.0
+						+ "  T: " + Math.round(building.getCurrentTemperature() * 10.0)/10.0
+						+ "  time: " + Math.round(time * 1000.0)/1000.0
+						+ "  heatReq: " + Math.round(heatReq * 1000.0)/1000.0
+						+ "  remainHeatReq: " + Math.round(remainHeatReq * 1000.0)/1000.0
+						+ "  preNetHeat: " + Math.round(preNetHeat * 1000.0)/1000.0
+						+ "  postNetHeat: " + Math.round(postNetHeat * 1000.0)/1000.0);
+			}
 		}
 		else {
 
@@ -560,32 +571,26 @@ public class ThermalGeneration extends Function {
 			heatGen = heat[0];
 			remainHeatReq = heat[1];
 			
-			if (heatGen >= 40) {
+			if (remainHeatReq > 0.05) {
+				logger.warning(building, 10_000L , "Unmet remaining heat req: " 
+						+ Math.round(remainHeatReq) + " kW.");
+			}
+			
+			if (heatGen > 40 || heatReq > 40 || heatReq < -40) {
 				logger.warning(building, 1_000L , "1. heatGen: " 
-						+ Math.round(heatGen * 1000.0)/1000.0 + " > 30 kW."
-						+ "  T: " + Math.round(building.getCurrentTemperature() * 10.0)/10.0						
+						+ Math.round(heatGen * 1000.0)/1000.0
+						+ "  T: " + Math.round(building.getCurrentTemperature() * 10.0)/10.0
+						+ "  time: " + Math.round(time * 1000.0)/1000.0
 						+ "  heatReq: " + Math.round(heatReq * 1000.0)/1000.0
 						+ "  remainHeatReq: " + Math.round(remainHeatReq * 1000.0)/1000.0
 						+ "  preNetHeat: " + Math.round(preNetHeat * 1000.0)/1000.0
 						+ "  postNetHeat: " + Math.round(postNetHeat * 1000.0)/1000.0
 						+ "  finalHeatReq: " + Math.round(finalHeatReq * 1000.0)/1000.0);
 			}
-			
-			if (remainHeatReq > 0.05) {
-				logger.warning(building, 10_000L , "Unmet remaining heat req: " 
-						+ Math.round(remainHeatReq) + " kW.");
-			}
-		}
+		}		
 		
-//		if (heatGen >= 40) {
-//			logger.warning(building, 1_000L , "2. heatGen: " 
-//					+ Math.round(heatGen * 1000.0)/1000.0 + " > 30 kW."
-//					+ "  T: " + Math.round(building.getCurrentTemperature() * 10.0)/10.0
-//					+ "  time: " + Math.round(time * 1000.0)/1000.0
-//					+ "  heatReq: " + Math.round(heatReq * 1000.0)/1000.0
-//					+ "  remainHeatReq: " + Math.round(remainHeatReq * 1000.0)/1000.0);
-//		}
-					
+
+		
 		// Update heat generated continuously
 		heating.insertHeatGenerated(heatGen);
 		setGeneratedHeat(heatGen);

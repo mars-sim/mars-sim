@@ -29,7 +29,7 @@ import com.mars_sim.core.structure.AirlockType;
 import com.mars_sim.core.structure.AirlockZone;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
-import com.mars_sim.core.structure.building.function.BuildingAirlock;
+import com.mars_sim.core.structure.building.function.ClassicAirlock;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.mapdata.location.LocalPosition;
@@ -1404,7 +1404,7 @@ public class ExitAirlock extends Task {
 			}
 			
 			if (inSettlement) {
-				((BuildingAirlock)airlock).removeFromActivitySpot(person);
+				((ClassicAirlock)airlock).removeFromActivitySpot(person);
 			}
 			
 			airlock.remove(person);

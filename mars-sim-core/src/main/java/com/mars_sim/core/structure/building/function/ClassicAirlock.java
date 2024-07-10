@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * BuildingAirlock.java
- * @date 2023-11-21
+ * ClassicAirlock.java
+ * @date 2024-07-10
  * @author Scott Davis
  */
 
@@ -28,19 +28,20 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 /**
- * The BuildingAirlock class represents an airlock for a building.
+ * The ClassicAirlock class represents a classic airlock for a building.
  */
-public class BuildingAirlock extends Airlock {
+public class ClassicAirlock extends Airlock {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    private static SimLogger logger = SimLogger.getLogger(BuildingAirlock.class.getName());
+    private static SimLogger logger = SimLogger.getLogger(ClassicAirlock.class.getName());
 
-	/** Pressurize/depressurize time (millisols). */
-	public static final double CYCLE_TIME = 10D; 
 	/** The maximum number of space in the chamber. */
 	public static final int MAX_SLOTS = 4;
+	
+	/** Pressurize/depressurize time (millisols). */
+	public static final double CYCLE_TIME = 10D; 
 	/** Assume an uniform height of 2 meters in all airlocks. */
 	public static final double HEIGHT = 2; 
 	/** The volume of an airlock [in cubic meters]. */
@@ -85,7 +86,7 @@ public class BuildingAirlock extends Airlock {
      * @param interiorPos
      * @param exteriorPos
      */
-    public BuildingAirlock(Building building, EVA eva, int capacity, 
+    public ClassicAirlock(Building building, EVA eva, int capacity, 
     		LocalPosition position,
     		LocalPosition interiorPos, 
     		LocalPosition exteriorPos) {

@@ -21,7 +21,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingConfig;
 import com.mars_sim.core.structure.building.FunctionSpec;
-import com.mars_sim.core.structure.building.function.BuildingAirlock;
+import com.mars_sim.core.structure.building.function.ClassicAirlock;
 import com.mars_sim.core.structure.building.function.farming.Crop;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
@@ -125,7 +125,7 @@ public class Heating implements Serializable {
 	/** Density of dry breathable air [kg/m3] */	
 	private static final double DRY_AIR_DENSITY = 1.275D; //
 	/** Factor for calculating airlock heat loss during EVA egress */
-	private static final double ENERGY_FACTOR_EVA = SPECIFIC_HEAT_CAP_AIR_300K * BuildingAirlock.AIRLOCK_VOLUME_IN_CM * DRY_AIR_DENSITY /1000; 
+	private static final double ENERGY_FACTOR_EVA = SPECIFIC_HEAT_CAP_AIR_300K * ClassicAirlock.AIRLOCK_VOLUME_IN_CM * DRY_AIR_DENSITY /1000; 
 	
 	/**  R-value is a measure of thermal resistance, or ability of heat to transfer from hot to cold, through materials such as insulation */
 	// R_value = 30;
@@ -424,8 +424,8 @@ public class Heating implements Serializable {
 		
 //		logger.info(building, 20_000, 
 //				"millisols: " + Math.round(millisols * 1000.0)/1000.0
-//				+ "  upperBound: " + Math.round(upperBound * 1000.0)/1000.0
-//				+ "  lowerBound: " + Math.round(lowerBound * 1000.0)/1000.0
+//				+ "  upperBound: " + Math.round(upperBound * 10.0)/10.0
+//				+ "  lowerBound: " + Math.round(lowerBound * 10.0)/10.0
 //				+ "  seconds: " + Math.round(seconds * 1000.0)/1000.0);
 				
 		// (5) APPLY THE HEAT SINKS - AIR MOISTURE AND WATER
@@ -541,7 +541,7 @@ public class Heating implements Serializable {
 		double ratio = entropyChange / GAS_CONSTANT / numMoles;
 		
 		// newT in [C]
-		double newT = oldT * Math.exp(ratio);
+		double newT = (C_TO_K + oldT) * Math.exp(ratio) - C_TO_K;
 		
 		// T2 = T1 * exp(ΔS / (nR))
 		// n = 0.0821 L·atm/mol·K 
@@ -569,7 +569,7 @@ public class Heating implements Serializable {
 	 */
 	private double estimateRequiredHeat(double millisols) {
 		
-		double logTs = Math.log(tPreset/getCurrentTemperature());
+		double logTs = Math.log((C_TO_K + tPreset)/(C_TO_K + getCurrentTemperature()));
 		
 		double numMoles = building.getLifeSupport().getAir().getTotalNumMoles();
 		
@@ -589,17 +589,18 @@ public class Heating implements Serializable {
 		
 		double reqHeat = deltaHeatJ / 1000 / lowerBound;
 		
-		if (error) {
+//		if (error) {
 			logger.info(building, 20_000,
 				"reqHeat: " + Math.round(reqHeat * 100.0)/100.0
-				+ "  logTs: " + Math.round(logTs * 1000.0)/1000.0
+				+ "  millisols: " + Math.round(millisols * 1000.0)/1000.0
+				+ "  entropyChange: " + Math.round(entropyChange * 100.0)/100.0 + " J/K"
+				+ "  deltaHeatJ: " + Math.round(deltaHeatJ * 10.0)/10.0 + " J"
+				+ "  logTs: " + Math.round(logTs * 10000.0)/10000.0
 				+ "  nR: " + Math.round(nR * 10.0)/10.0
-				+ "  entropyChange: " + Math.round(entropyChange * 1_000.0)/1_000.0 + " J/K"
-				+ "  deltaHeatJ: " + Math.round(deltaHeatJ * 1_000.0)/1_000.0 + " J"
-				+ "  lowerBound: " + Math.round(lowerBound * 1_000.0)/1_000.0 + " s"
+				+ "  lowerBound: " + Math.round(lowerBound * 10.0)/10.0 + " s"
 				+ "  numMoles: " + Math.round(numMoles * 10.0)/10.0
 				);
-		}
+//		}
 		
 		return reqHeat;
 	}
@@ -1185,17 +1186,16 @@ public class Heating implements Serializable {
 	
 //		logger.info(building, 20_000, "reqkW0: " + Math.round(reqkW * 100.0)/100.0
 //				+ "  reqHeat: " + Math.round(reqHeat * 100.0)/100.0);
-		
-		
-//		if (reqkW > 40) {
-//			logger.warning(building, 20_000, "reqkW: " + Math.round(reqkW * 100.0)/100.0 + " > 20.");
-//			error = true;
-//		}
 //		
-//		else if (reqkW < -40) {
-//			logger.warning(building, 20_000, "reqkW: " + Math.round(reqkW * 100.0)/100.0 + " < -20.");
-//			error = true;
-//		}
+		if (reqHeat > 40) {
+			logger.warning(building, 20_000, "reqHeat: " + Math.round(reqHeat * 100.0)/100.0 + " > 40.");
+			error = true;
+		}
+		
+		else if (reqHeat < -40) {
+			logger.warning(building, 20_000, "reqHeat: " + Math.round(reqHeat * 100.0)/100.0 + " < -40.");
+			error = true;
+		}
 		
 		error = checkError("reqHeat", reqHeat) || error ;
 		
@@ -1246,8 +1246,8 @@ public class Heating implements Serializable {
 					+ "  newT: " + Math.round(newT * 100.0)/100.0		
 					+ "  dt: " + Math.round(dt * 100.0)/100.0
 					+ "  devT: " + Math.round(devT * 100.0)/100.0
-					+ "  reqHeat: " + Math.round(reqHeat * 100.0)/100.0
-					+ "  reqkW: " + Math.round(reqkW * 100.0)/100.0
+					+ "  reqHeat: " + Math.round(reqHeat * 1000.0)/1000.0
+					+ "  reqkW: " + Math.round(reqkW * 1000.0)/1000.0
 					+ "  preNetHeat: " + Math.round(preNetHeatCache * 1000.0)/1000.0	
 					+ "  postNetHeat: " + Math.round(postNetHeatCache * 100.0)/100.0
 					+ "  ventHeat: " + Math.round(ventHeat * 1000.0)/1000.0	
@@ -1423,8 +1423,8 @@ public class Heating implements Serializable {
 //				+ "  wrong0:" + wrong0
 //				+ "  wrong1:" + wrong1
 				+ "  dh: " + Math.round(dh*1000.0)/1000.0
-				+ "  lowerBound: " + Math.round(lowerBound*1000.0)/1000.0 
-				+ "  upperBound: " + Math.round(upperBound*1000.0)/1000.0
+				+ "  lowerBound: " + Math.round(lowerBound*10.0)/10.0 
+				+ "  upperBound: " + Math.round(upperBound*10.0)/10.0
 				+ "  oldHeat: " + Math.round(oldHeat*1000.0)/1000.0
 				+ "  newHeat: " + Math.round(newHeat*1000.0)/1000.0 
 				+ "  storedSink: " + Math.round(storedSink*1000.0)/1000.0

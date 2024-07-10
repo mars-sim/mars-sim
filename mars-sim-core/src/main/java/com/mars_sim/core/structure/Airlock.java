@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Airlock.java
- * @date 2021-11-04
+ * @date 2024-07-10
  * @author Scott Davis
  */
 
@@ -32,17 +32,17 @@ import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.mapdata.location.LocalPosition;
 
-// see discussions on Airlocks for Mars Colony at
-// https://forum.nasaspaceflight.com/index.php?topic=42098.0
-
 // Astronauts aboard the International Space Station preparing for extra-vehicular activity (EVA)
 // "camp out" at low atmospheric pressure, 10.2 psi (0.70 sbar), spending eight sleeping hours
-// in the Quest airlock chamber before their spacewalk. During the EVA they breathe 100% oxygen
-// in their space suits, which operate at 4.3 psi (0.30 bar),[71] although research has examined
-// the possibility of using 100% O2 at 9.5 psi (0.66 bar) in the suits to lessen the pressure
-// reduction, and hence the risk of DCS.[72]
+// in the Quest airlock chamber before their spacewalk. 
+// 
+// During the EVA they breathe 100% oxygen in their space suits, which operate at 4.3 psi 
+// (0.30 bar), although research has examined the possibility of using 100% O2 at 9.5 psi 
+// (0.66 bar) in the suits to lessen the pressure reduction, and hence the risk of DCS.
 //
-// see https://en.wikipedia.org/wiki/Decompression_sickness
+// Reference: 
+// 1. Airlocks for Mars Colony. https://forum.nasaspaceflight.com/index.php?topic=42098.0
+// 2. Pure oxygen pre-breathing..https://en.wikipedia.org/wiki/Decompression_sickness
 
 /**
  * The Airlock class represents an airlock to a vehicle or structure.
@@ -63,7 +63,7 @@ public abstract class Airlock implements Serializable {
 	private AirlockMode airlockMode = AirlockMode.EGRESS;
 	
 	/**
-	 * Available Airlock modes.
+	 * Available operational modes.
 	 */
 	public enum AirlockMode {
 		NOT_IN_USE 	("Not in use"),
@@ -88,7 +88,7 @@ public abstract class Airlock implements Serializable {
 		
 	
 	/**
-	 * Available Airlock States
+	 * Available operational states.
 	 */
 	public enum AirlockState {
 		OFF 			("Off"),
