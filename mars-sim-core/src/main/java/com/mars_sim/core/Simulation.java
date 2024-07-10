@@ -360,7 +360,7 @@ public class Simulation implements ClockListener, Serializable {
 		missionManager = new MissionManager();
 		
 		medicalManager = new MedicalManager();
-		medicalManager.initializeInstances(mc);
+		MedicalManager.initializeInstances(mc);
 		PhysicalCondition.initializeInstances(masterClock, medicalManager,
 								simulationConfig.getPersonConfig());
 
@@ -441,7 +441,7 @@ public class Simulation implements ClockListener, Serializable {
 		missionManager = new MissionManager();
 
 		medicalManager = new MedicalManager();
-		medicalManager.initializeInstances(mc);
+		MedicalManager.initializeInstances(mc);
 		
 		eventManager = new HistoricalEventManager(masterClock);
 		
@@ -593,7 +593,7 @@ public class Simulation implements ClockListener, Serializable {
 		SimuLoggingFormatter.initializeInstances(masterClock);
 		
 		// Re-initialize medical manager
-		medicalManager.initializeInstances(mc);
+		MedicalManager.initializeInstances(mc);
 		
 		transportManager.reinitalizeInstances(this);
 	

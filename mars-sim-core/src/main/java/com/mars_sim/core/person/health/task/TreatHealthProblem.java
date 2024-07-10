@@ -27,7 +27,9 @@ import com.mars_sim.tools.Msg;
  */
 public abstract class TreatHealthProblem extends MedicalAidTask {
 
-    private static SimLogger logger = SimLogger.getLogger(TreatHealthProblem.class.getName());
+    private static final long serialVersionUID = 1L;
+
+	private static SimLogger logger = SimLogger.getLogger(TreatHealthProblem.class.getName());
 
     /** Task phases. */
     private static final TaskPhase TREATMENT = new TaskPhase(Msg.getString(

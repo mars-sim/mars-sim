@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Settlement.java
- * @date 2024-06-09
+ * @date 2023-07-10
  * @author Scott Davis
  */
 
@@ -83,7 +83,6 @@ import com.mars_sim.core.structure.Airlock.AirlockMode;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.connection.BuildingConnectorManager;
-import com.mars_sim.core.structure.building.function.EVA;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.LivingAccommodation;
 import com.mars_sim.core.structure.building.utility.heating.ThermalSystem;
@@ -1630,6 +1629,9 @@ public class Settlement extends Structure implements Temporal,
 		List<Building> airlocks = buildingManager.getBuildings(FunctionType.EVA);
 		Collections.sort(airlocks);
 		
+		if (airlocks.isEmpty())
+			return null;
+		
 		Iterator<Building> i = airlocks.iterator();
 		while (i.hasNext()) {
 			Building nextBuilding = i.next();
@@ -1713,6 +1715,9 @@ public class Settlement extends Structure implements Temporal,
 			}
 		}
 
+		if (airlockMap.isEmpty())
+			return null;
+		
 		return selectBestScoreAirlock(airlockMap);
 	}
 	

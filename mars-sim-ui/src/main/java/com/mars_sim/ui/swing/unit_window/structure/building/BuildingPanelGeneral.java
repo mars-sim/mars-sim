@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelGeneral.java
- * @date 2022-07-10
+ * @date 2024-07-10
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.unit_window.structure.building;
@@ -59,23 +59,33 @@ public class BuildingPanelGeneral extends BuildingFunctionPanel {
 		SVGGraphicNodeIcon svgIcon = new SVGGraphicNodeIcon(svg, 220, 110, true);
 		JLabel svgLabel = new JLabel(svgIcon);
 		JPanel svgPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		svgPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
+		svgPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		svgPanel.add(svgLabel);
 		topPanel.add(svgPanel, BorderLayout.NORTH);
 		
 		// Prepare spring layout info panel.
-		AttributePanel infoPanel = new AttributePanel(6);
+		AttributePanel infoPanel = new AttributePanel(8);
 		topPanel.add(infoPanel, BorderLayout.CENTER);
 
-		infoPanel.addTextField("Building Type", building.getBuildingType(), null);
-		infoPanel.addTextField("Category", building.getCategory().getName(), null);
-		infoPanel.addTextField("Construction", building.getConstruction().name(), null);
+		infoPanel.addRow("Building Type", building.getBuildingType());
+		infoPanel.addRow("Category", building.getCategory().getName());
+		infoPanel.addRow("Construction", building.getConstruction().name());
 
 		// Prepare dimension label
-		infoPanel.addTextField("Position", building.getPosition().getShortFormat(), "According to the Settlement x[m] x y[m]");
-		infoPanel.addTextField("Dimension", building.getLength() + " x " + building.getWidth() + " x 2.5", "Length[m] x Width[m] x Height[m]");
-
+		infoPanel.addTextField("Position", building.getPosition().getShortFormat(), 
+				"The center x and y coordinates of this building, according to the Settlement Map");
+		infoPanel.addTextField("Dimension", building.getLength() + " m x " + building.getWidth() 
+			+ " m x 2.5 m", "Length x Width x Height");
+		infoPanel.addTextField("Floor Area", StyleManager.DECIMAL_M2.format(building.getFloorArea()),
+				"The floor area in square meters");
+		
 		// Prepare mass label
-		infoPanel.addTextField("Base Mass", StyleManager.DECIMAL_KG.format(building.getBaseMass()), "The base mass of this building");
+		infoPanel.addTextField("Base Mass", StyleManager.DECIMAL_KG.format(building.getBaseMass()), 
+				"The base mass of this building");
+		
+		// Prepare air mass label
+		infoPanel.addTextField("Air Mass", StyleManager.DECIMAL_KG.format(
+				building.getLifeSupport().getAir().getTotalMass()),
+				"The mass of the air in kg");
 	}
 }

@@ -8,7 +8,6 @@ package com.mars_sim.console;
 
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;

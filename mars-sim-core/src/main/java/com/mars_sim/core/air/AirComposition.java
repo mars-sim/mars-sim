@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AirComposition.java
- * @date 2022-03-06
+ * @date 2023-07-10
  * @author Barry Evans
  */
 package com.mars_sim.core.air;
@@ -354,7 +354,7 @@ public class AirComposition implements Serializable {
 	}
 
 	/**
-	 * Gets the combined air pressure of all gas in the air.
+	 * Gets the combined air pressure of all gas in the air [in atm].
 	 * 
 	 * @return
 	 */
@@ -363,7 +363,7 @@ public class AirComposition implements Serializable {
     }
 
     /**
-     * Gets the total mass of the air.
+     * Gets the total mass of the air [in kg].
      * 
      * @return
      */

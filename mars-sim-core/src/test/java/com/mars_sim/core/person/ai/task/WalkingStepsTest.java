@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * WalkingStepsTest.java
- * @date 2023-07-05
+ * @date 2023-07-10
  * @author Scott Davis
  */
 

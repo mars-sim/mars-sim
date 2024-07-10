@@ -238,7 +238,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		if (length == width) {
 			// For Habs and Hubs that have a circular footprint
-			this.floorArea = Math.PI * length * length;
+			this.floorArea = Math.PI * .25 * 
+					length * length;
 		}
 		else
 			this.floorArea = length * width;

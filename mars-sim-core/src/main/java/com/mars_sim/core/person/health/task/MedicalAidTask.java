@@ -23,7 +23,9 @@ import com.mars_sim.core.vehicle.Vehicle;
  */
 public abstract class MedicalAidTask extends Task {
 
-    private static SimLogger logger = SimLogger.getLogger(MedicalAidTask.class.getName());
+    private static final long serialVersionUID = 1L;
+
+	private static SimLogger logger = SimLogger.getLogger(MedicalAidTask.class.getName());
 
     private MedicalAid medicalAid;
 

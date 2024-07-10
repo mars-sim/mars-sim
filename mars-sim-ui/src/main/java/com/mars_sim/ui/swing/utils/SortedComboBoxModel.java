@@ -20,6 +20,7 @@ import javax.swing.ComboBoxModel;
  * Element can be added but not as a specific index hence it doesnot implement the 
  * MutableComboBoxModel interface.
  */
+@SuppressWarnings("serial")
 public class SortedComboBoxModel<E> extends AbstractListModel<E> 
             implements ComboBoxModel<E> {
 
