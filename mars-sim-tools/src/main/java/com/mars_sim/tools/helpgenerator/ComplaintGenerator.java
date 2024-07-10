@@ -30,7 +30,7 @@ public class ComplaintGenerator extends TypeGenerator<Complaint> {
     }
 
     /**
-     * Get a list of all the predefined Complaints.
+     * Gets a list of all the predefined Complaints.
      */
     @Override
     protected List<Complaint> getEntities() {
@@ -42,7 +42,8 @@ public class ComplaintGenerator extends TypeGenerator<Complaint> {
 
     
 	/**
-	 * Generate the file for the Complaint
+	 * Generates the file for the Complaint.
+	 * 
 	 * @param v Complaint being rendered.
      * @param output Destination of content
 	 * @throws IOException
