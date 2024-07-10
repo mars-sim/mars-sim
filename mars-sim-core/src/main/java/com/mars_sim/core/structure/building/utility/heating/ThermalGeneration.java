@@ -577,14 +577,14 @@ public class ThermalGeneration extends Function {
 			}
 		}
 		
-		if (heatGen >= 30) {
-			logger.warning(building, 1_000L , "2. heatGen: " 
-					+ Math.round(heatGen * 1000.0)/1000.0 + " > 30 kW."
-					+ "  T: " + Math.round(building.getCurrentTemperature() * 10.0)/10.0
-					+ "  time: " + Math.round(time * 1000.0)/1000.0
-					+ "  heatReq: " + Math.round(heatReq * 1000.0)/1000.0
-					+ "  remainHeatReq: " + Math.round(remainHeatReq * 1000.0)/1000.0);
-		}
+//		if (heatGen >= 40) {
+//			logger.warning(building, 1_000L , "2. heatGen: " 
+//					+ Math.round(heatGen * 1000.0)/1000.0 + " > 30 kW."
+//					+ "  T: " + Math.round(building.getCurrentTemperature() * 10.0)/10.0
+//					+ "  time: " + Math.round(time * 1000.0)/1000.0
+//					+ "  heatReq: " + Math.round(heatReq * 1000.0)/1000.0
+//					+ "  remainHeatReq: " + Math.round(remainHeatReq * 1000.0)/1000.0);
+//		}
 					
 		// Update heat generated continuously
 		heating.insertHeatGenerated(heatGen);

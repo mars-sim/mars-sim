@@ -86,7 +86,7 @@ public class Fishery extends Function {
 	/** kW per weed mass. */
 	private static final double POWER_PER_WEED_MASS = 0.002D;
 	/** Tend time per weed. */
-	private static final double TIME_PER_WEED = 0.2D;
+	private static final double TIME_PER_WEED = .8D;
 	/** Adult fish length per litre. Cold water is 2.5cm per 4.55 litre. */
 	private static final double FISHSIZE_LITRE = (2.5D/4.55D); 
 	/** Number of fish as a percentage of maximum. */

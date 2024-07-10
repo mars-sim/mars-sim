@@ -337,7 +337,11 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 		
 		if (heatSource != null && heatMode != null) {
 			heatGen = Math.round(heatSource.getCurrentHeat() * 100.0)/100.0;
-			percent = Math.round(heatSource.getHeatMode().getPercentage() * 10.0)/10.0;
+			percent = Math.round(heatMode.getPercentage() * 10.0)/10.0;
+		}
+		
+		if (heatGen == 0 || percent == 0) {
+			return null;
 		}
 		
 		return heatGen + KW_OPEN_PARA +  percent + PERCENT_CLOSE_PARA;

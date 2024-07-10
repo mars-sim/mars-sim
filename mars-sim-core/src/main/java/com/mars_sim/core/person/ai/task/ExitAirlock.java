@@ -487,7 +487,7 @@ public class ExitAirlock extends Task {
 		if (inSettlement && !airlock.addReservation(person.getIdentifier())) {
 			walkAway(person, RESERVATION_NOT_MADE 
 					+ " Current task: " + person.getTaskDescription() + ".");
-			return time * .75;
+			return 0;
 		}
 
 		// Note: no longer use isEVAFit() to check for fitness
@@ -495,7 +495,7 @@ public class ExitAirlock extends Task {
 		if (inSettlement && isEVAUnfit()) {
 			walkAway(person, NOT_EVA_FIT + TO_REQUEST_EGRESS + ". Current task: " 
 					+ person.getTaskDescription() + ".");
-			return time * .75;
+			return 0;
 		}
 		
 		if (person.isOutside()) {
@@ -503,13 +503,13 @@ public class ExitAirlock extends Task {
 					+ ". Current task: " + person.getTaskDescription() + ".");
 			// Reset accumulatedTime back to zero
 			accumulatedTime = 0;
-			return time * .75;
+			return 0;
 		}
 
 		if (isOccupantAQuarterPrebreathed()) {
 			walkAway(person, "Can't egress. " + PREBREATH_ONE_QUARTER_DONE + 
 					" Current task: " + person.getTaskDescription() + ".");
-			return time * .75;
+			return 0;
 		}
 
 		// NOTE: don't need to allow the airlock to transition its state yet.
@@ -532,13 +532,13 @@ public class ExitAirlock extends Task {
 			if (!airlock.addAwaitingInnerDoor(id)) {
 				walkAway(person, "Can't egress. Cannot get a spot at the inner door of " 
 						+ airlock.getEntity().toString() + ".");
-				return time * .75;
+				return 0;
 			}
 
 			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
 				walkAway(person, "Can't egress. " + CHAMBER_FULL 
 						+ " Current task: " + person.getTaskDescription() + ".");
-				return time * .75;
+				return 0;
 			}
 				
 			if (transitionTo(AirlockZone.ZONE_0) && (!airlock.isInnerDoorLocked() || airlock.isEmpty())) {
@@ -565,7 +565,7 @@ public class ExitAirlock extends Task {
 			else {
 				walkAway(person, "Requesting egress. can't get thru " 
 						+ airlock.getEntity().toString() + "'s inner door.");
-				return time * .75;
+				return 0;
 			}
 		}
 
@@ -626,12 +626,12 @@ public class ExitAirlock extends Task {
 			
 		if (inSettlement && isEVAUnfit()) {
 			walkAway(person, NOT_EVA_FIT + TO_PRESSURIZE_CHAMBER);
-			return time * .75;
+			return 0;
 		}
 		
 		if (isOccupantAQuarterPrebreathed()) {
 			walkAway(person, "Can't egress. " + PREBREATH_ONE_QUARTER_DONE);
-			return time * .75;
+			return 0;
 		}
 		
 		if (airlock.isPressurized() && !airlock.isInnerDoorLocked()) {
@@ -687,16 +687,17 @@ public class ExitAirlock extends Task {
 
 //		if (inSettlement && !isNominallyFit()) {
 //			walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + NOT_FIT + ".");
-//			return time * .75;
+//			return 0;
 //		}
+		
 		if (isEVAUnfit()) {
 			walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + NOT_EVA_FIT + ".");
-			return time * .75;
+			return 0;
 		}
 		
 		if (isOccupantHalfPrebreathed()) {
 			walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + PREBREATH_HALF_DONE);
-			return time * .75;
+			return 0;
 		}
 		
 		if (!airlock.isPressurized()) {
@@ -711,12 +712,12 @@ public class ExitAirlock extends Task {
 
 			if (airlock.isInnerDoorLocked()) {
 				walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + " but " + INNER_DOOR_LOCKED);
-				return time * .75;
+				return 0;
 			}
 
 			if (airlock.areAll4ChambersFull()) {
 				walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + CHAMBER_FULL);
-				return time * .75;
+				return 0;
 			}
 			
 			if (!airlock.inAirlock(person) && airlock.enterAirlock(person, id, true)) {
@@ -735,10 +736,11 @@ public class ExitAirlock extends Task {
 				
 				// The outer door is locked probably because of not being 
 				// at the correct airlock state. Go back to the previous task phase
-				setPhase(REQUEST_EGRESS);
+//				setPhase(REQUEST_EGRESS);
 				// Reset accumulatedTime back to zero 
 				accumulatedTime = 0;
-				return time * .75;
+				
+				return 0;
             }
 		}
 
@@ -753,7 +755,7 @@ public class ExitAirlock extends Task {
 			else {
 				walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + " but " 
 						+ airlock.getEntity().toString() + " inner door locked");
-				return time * .75;
+				return 0;
 			}
 		}
 
@@ -801,16 +803,17 @@ public class ExitAirlock extends Task {
 		
 //		if (inSettlement && !isNominallyFit()) {
 //			walkAway(person, NOT_FIT + TO_WALK_TO_CHAMBER);
-//			return time * .75;
+//			return 0;
 //		} 
+		
 		if (isEVAUnfit()) {
 			walkAway(person, NOT_EVA_FIT + TO_WALK_TO_CHAMBER);
-			return time * .75;
+			return 0;
 		}
 		
 		if (isOccupant3QuartersPrebreathed()) {
 			walkAway(person, "Can't walk to chamber. " + PREBREATH_THREE_QUARTERS_DONE);
-			return time * .75;
+			return 0;
 		}
 		
 		if (!airlock.isPressurized()) {
@@ -826,7 +829,7 @@ public class ExitAirlock extends Task {
 
 			if (!isInZone(AirlockZone.ZONE_2) && airlock.areAll4ChambersFull()) {
 				walkAway(person, "Can't walk to chamber. " + CHAMBER_FULL);
-				return time * .75;
+				return 0;
 			}
 			
 			if (transitionTo(AirlockZone.ZONE_2)) {
@@ -896,14 +899,14 @@ public class ExitAirlock extends Task {
 				// Doff the suit, get back the garment and thermal bottle
 				EVASuitUtil.checkIn(person, airlock.getEntity(), inSettlement, true);
 				walkAway(person, NOT_NOMINALLY_FIT + " to don an EVA suit.");
-				return time * .75;
+				return 0;
 			}
 	
 			if (isOccupant3QuartersPrebreathed()) {
 				// Doff the suit, get back the garment and thermal bottle
 				EVASuitUtil.checkIn(person, airlock.getEntity(), inSettlement, true);
 				walkAway(person, CANT_DON_SUIT + PREBREATH_THREE_QUARTERS_DONE);
-				return time * .75;
+				return 0;
 			}
 			
 			if (!airlock.isPressurized()) {
@@ -1008,7 +1011,7 @@ public class ExitAirlock extends Task {
 			// Doff the suit, get back the garment and thermal bottle
 			EVASuitUtil.checkIn(person, airlock.getEntity(), inSettlement, true);
 			walkAway(person, NOT_NOMINALLY_FIT + " to prebreath.");
-			return time * .75;
+			return 0;
 		}
 		
 		boolean canProceed = false;
@@ -1069,7 +1072,7 @@ public class ExitAirlock extends Task {
 			EVASuitUtil.checkIn(person, airlock.getEntity(), inSettlement, true);
 			
 			walkAway(person, NOT_NOMINALLY_FIT + " to depressurize chamber.");
-			return time * .75;
+			return 0;
 		}
 		
 //		if (isOccupantHalfPrebreathed()) {

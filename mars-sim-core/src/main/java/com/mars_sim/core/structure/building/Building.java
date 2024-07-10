@@ -236,7 +236,12 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		this.powerModeCache = PowerMode.FULL_POWER;
 
-		this.floorArea = length * width;
+		if (length == width) {
+			// For Habs and Hubs that have a circular footprint
+			this.floorArea = Math.PI * length * length;
+		}
+		else
+			this.floorArea = length * width;
 		if (floorArea <= 0) {
 			throw new IllegalArgumentException("Floor area cannot be -ve w=" + width + ", l=" + length);
 		}
