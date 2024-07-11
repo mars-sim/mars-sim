@@ -176,10 +176,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<!-- room-temperature: in deg Celsius (old default : 22.5D). -->
 	<!-- base-mass: in kg (old default : 3000). -->
 	<building type="Lander Hab" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
-		wear-lifetime="3340000" maintenance-time="200" room-temperature="22.5" base-mass="3000">
+		wear-lifetime="3340000" maintenance-time="250" room-temperature="22.5" base-mass="3000">
 		<description> The Lander Hab is the initial habitat for a crew of four.
 	 		It serves as a jack-of-all-trades building that houses many basic but critical functions
-	 		to jump start a settlement. It's commonly used as a central hub providing four connection points
+	 		to jump start a settlement. It's commonly used as a main hub providing four connection points
 	 		when developing a colony.
 		</description>
 		<!-- The power requirements of the building. -->
@@ -518,7 +518,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 
 	<building type="EVA Airlock" width="6.0" length="4.0" north-south-alignment="length" base-level="0"
-			wear-lifetime="3340000" maintenance-time="150" room-temperature="20" base-mass="1500"
+			wear-lifetime="3340000" maintenance-time="200" room-temperature="20" base-mass="1500"
 			category="EVA">
 		<description> The EVA Airlock is a node to be attached to building for giving direct access
 			in performing EVA operations.
@@ -563,7 +563,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of EVA Airlock -->
 
 	<building type="Central Hub A" width="20.0" length="20.0" north-south-alignment="length" construction="INFLATABLE" base-level="0"
-		wear-lifetime="3340000" maintenance-time="150" room-temperature="20.0" base-mass="10000">
+		wear-lifetime="3340000" maintenance-time="300" room-temperature="20.0" base-mass="10000">
 		<description> The Central Hub serves to a nexus for connecting other building modules. 
 			It has a flexible air dome and is designed to be a place of gathering and relaxation. 
 		</description>
@@ -791,7 +791,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heating" capacity="10.0" />
+				<heat-source type="Solar Heating" capacity="20.0" />
 				<heat-source type="Electric Heating" capacity="40.0" />
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	capacity="20.0" />
@@ -925,7 +925,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end for inflatable greenhouse -->
 
 	<building type="Large Greenhouse" width="12.0" length="18.0" north-south-alignment="length" construction="SEMI_SOLID" base-level="0"
-			wear-lifetime="3340000" maintenance-time="200" room-temperature="24.0" base-mass="10000">
+			wear-lifetime="3340000" maintenance-time="250" room-temperature="24.0" base-mass="10000">
 		<description>
 			The Large Greenhouse is made of stronger structural and cladding material such as coextruded
 			laminate of polyamide and polyolefin interwoven around an aluminum frame to give rise
@@ -1492,7 +1492,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 
 	<building type="TOPAZ-2A Reactor" width="4.0" length="6.0" north-south-alignment="length" base-level="0"
-		wear-lifetime="3340000" maintenance-time="500" room-temperature="0" base-mass="4000">
+		wear-lifetime="3340000" maintenance-time="200" room-temperature="0" base-mass="4000">
 		<description>The TOPAZ-2A Reactor is a minor improvement of the TOPAZ-II reactor 
 			system, which was developed by Soviet Union in 1987 for use by Cosmos 1818 
 			and Cosmos 1867 satellites in space. Based on thermionic energy conversion 
@@ -1511,7 +1511,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 	
 	<building type="TOPAZ-3 Reactor" width="4.0" length="6.0" north-south-alignment="length" base-level="0"
-		wear-lifetime="3340000" maintenance-time="500" room-temperature="0" base-mass="4000">
+		wear-lifetime="3340000" maintenance-time="300" room-temperature="0" base-mass="4000">
 		<description>The TOPAZ-3 Reactor doubles the number of TFEs cells to 74 and has 
 			higher thermal output of 4.7kW per cell. At ~10.37% conversion efficiency, 
 			it provides ~30 kWe.</description>
@@ -1526,7 +1526,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 		
 	<building type="Kilopower Reactor" width="2.0" length="2.0" north-south-alignment="length" base-level="0"
-		wear-lifetime="3340000" maintenance-time="500" room-temperature="0" base-mass="1500">
+		wear-lifetime="3340000" maintenance-time="150" room-temperature="0" base-mass="1500">
 		<description>The Kilopower Reactor provides ~20 kWe. It contains two 10 kWe modules, 
 		each with a reactor core using depleted uranium as fuel source. 
 		It uses stirling converters for generating power via mechanical movement of pistons 
@@ -1550,7 +1550,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 	
 	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" north-south-alignment="length" base-level="0"
-		wear-lifetime="3340000" maintenance-time="500" room-temperature="0" base-mass="4000">
+		wear-lifetime="3340000" maintenance-time="200" room-temperature="0" base-mass="4000">
 		<description>The MD1 Nuclear Reactor at 40kW is the first compact fission power plant commissioned 
 		    for use off-world. At 83.3% load capacity, it provides a consistent power supply of ~40 kWe.</description>
 		<power-required base-power="0.25" base-power-down-power="0.025" />

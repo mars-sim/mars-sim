@@ -590,6 +590,16 @@ public class Heating implements Serializable {
 		
 		double reqHeat = deltaHeatJ / 1000 / lowerBound;
 		
+		if (reqHeat > 40) {
+			logger.warning(building, 20_000, "reqHeat: " + Math.round(reqHeat * 100.0)/100.0 + " > 40.");
+			error = true;
+		}
+		
+		else if (reqHeat < -40) {
+			logger.warning(building, 20_000, "reqHeat: " + Math.round(reqHeat * 100.0)/100.0 + " < -40.");
+			error = true;
+		}
+		
 		if (error) {
 			logger.info(building, 20_000,
 				"reqHeat: " + Math.round(reqHeat * 100.0)/100.0
@@ -598,6 +608,7 @@ public class Heating implements Serializable {
 				+ "  deltaHeatJ: " + Math.round(deltaHeatJ * 10.0)/10.0 + " J"
 				+ "  logTs: " + Math.round(logTs * 10000.0)/10000.0
 				+ "  nR: " + Math.round(nR * 10.0)/10.0
+				+ "  upperBound: " + Math.round(upperBound * 10.0)/10.0 + " s"
 				+ "  lowerBound: " + Math.round(lowerBound * 10.0)/10.0 + " s"
 				+ "  numMoles: " + Math.round(numMoles * 10.0)/10.0
 				);
@@ -1187,16 +1198,7 @@ public class Heating implements Serializable {
 	
 //		logger.info(building, 20_000, "reqkW0: " + Math.round(reqkW * 100.0)/100.0
 //				+ "  reqHeat: " + Math.round(reqHeat * 100.0)/100.0);
-//		
-		if (reqHeat > 40) {
-			logger.warning(building, 20_000, "reqHeat: " + Math.round(reqHeat * 100.0)/100.0 + " > 40.");
-			error = true;
-		}
-		
-		else if (reqHeat < -40) {
-			logger.warning(building, 20_000, "reqHeat: " + Math.round(reqHeat * 100.0)/100.0 + " < -40.");
-			error = true;
-		}
+//
 		
 		error = checkError("reqHeat", reqHeat) || error ;
 		

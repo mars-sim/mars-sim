@@ -1361,18 +1361,18 @@ public abstract class Vehicle extends Unit
 			removeSecondaryStatus(StatusType.MALFUNCTION);
 		}
 		
-		// Regardless being outside or inside settlement,
-		// if it's still reportedly under maintenance
-		// but maintenance just got done	
-		else if (haveStatusType(StatusType.MAINTENANCE) 
-			&& malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) {
-			// Make sure reservedForMaintenance is false since vehicle now needs no maintenance.
-			setReservedForMaintenance(false);
-			// Remove the malfunction status
-			removeSecondaryStatus(StatusType.MAINTENANCE);
-			// If the vehicle is in a garage, remove from garage
-			BuildingManager.removeFromGarage(this);
-		}
+//		// Regardless being outside or inside settlement,
+//		// if it's still reportedly under maintenance
+//		// but maintenance just got done	
+//		else if (haveStatusType(StatusType.MAINTENANCE) 
+//			&& malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) {
+//			// Make sure reservedForMaintenance is false since vehicle now needs no maintenance.
+//			setReservedForMaintenance(false);
+//			// Remove the malfunction status
+//			removeSecondaryStatus(StatusType.MAINTENANCE);
+//			// If the vehicle is in a garage, remove from garage
+//			BuildingManager.removeFromGarage(this);
+//		}
 		
 		// Regardless being outside or inside settlement,
 		// NOT under maintenance

@@ -208,7 +208,7 @@ public class ThermalGeneration extends Function {
 	private double[] calculateHeatGen(double heatLoad, double time) {
 		// Assume heatLoad is positive to begin with
 		
-		double heatReq = heatLoad;
+		double remainHeatReq = heatLoad;
 		double heatGen = 0D;
 		double heat[] = new double[2];
 	
@@ -218,64 +218,80 @@ public class ThermalGeneration extends Function {
 		double fHeat = 0;
 		
 		HeatMode newHeatMode = null;
-		HeatMode heatMode = null;
-		
-		// Order of business: solar, nuclear, electric, and fuel
 		
 		List<HeatMode> ALL_HEAT_MODES = HeatMode.ALL_HEAT_MODES;
-		int size = ALL_HEAT_MODES.size();
+		HeatMode heatMode = ALL_HEAT_MODES.get(0);
+		
+		// Order of business: solar, nuclear, electric, and fuel
+
+		int size = ALL_HEAT_MODES.size() - 1;
 		
 		if (solarHeatSource != null) {
-			for (int i=0; i<size; i++) {
-				heatMode = ALL_HEAT_MODES.get(i);
+				
+			if (((SolarHeatingSource)solarHeatSource).getSunlight() > 0) {
+				
+				for (int i=0; i<size; i++) {
+					heatMode = ALL_HEAT_MODES.get(i);
+	
+			    	sHeat = solarHeatSource.requestHeat(heatMode.getPercentage());
+		    	
+					if (Double.isNaN(sHeat) || Double.isInfinite(sHeat)) {
+						logger.info(building, "SolarHeatSource has invalid heat value.");
+						break;
+					}
+					
+					double sheatReq = remainHeatReq - sHeat;
+	
+					if (sheatReq > 0) {
+						// if the heatReq is not met, then need to go to the next percent level to raise sHeat
+						// Go to the next heat source for more heat
+					}
+					else if (sHeat >= 0) {		
+						// if the heatReq turn -ve and is therefore met, then use this percent level to generate heat
+	
+						// Set the new heat mode
+						newHeatMode = heatMode;
+						
+						solarHeatSource.setHeatMode(newHeatMode, building);
+						building.fireUnitUpdate(UnitEventType.SOLAR_HEAT_EVENT);	
+						
+						// Convert all thermal nuclear heat to electricity
+						if (nuclearHeatSource != null) {
+							nuclearHeatSource.setHeatMode(HeatMode.HEAT_OFF, building);
+							building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT);
+						}
+						
+						// Turn off electric heat
+						if (electricHeatSource != null) {
+							electricHeatSource.setHeatMode(HeatMode.OFFLINE, building);
+							building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT);
+						}
+						
+						// Turn off fuel heat
+						if (fuelHeatSource != null) {
+							fuelHeatSource.setHeatMode(HeatMode.OFFLINE, building);
+							building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
+						}
+						
+						heatGen += sHeat;
+						remainHeatReq -= sHeat;
+						
+						sHeatCache = sHeat;
+							
+						heat[0] = heatGen;
+						heat[1] = remainHeatReq;			
+						return heat;
+					}
 
-		    	sHeat = solarHeatSource.requestHeat(heatMode.getPercentage());
-	    	
-				if (Double.isNaN(sHeat) || Double.isInfinite(sHeat)) {
-					logger.info(building, "SolarHeatSource has invalid heat value.");
-					break;
-				}
-				
-				heatGen += sHeat;
-				heatReq -= sHeat;		
-				if (heatReq > 0) {
-					// Go to the next heat source for more heat
-				}
-				else if (sHeat >= 0) {				
-				
-					// Set the new heat mode
-					newHeatMode = heatMode;
-					
-					solarHeatSource.setHeatMode(newHeatMode, building);
-					building.fireUnitUpdate(UnitEventType.SOLAR_HEAT_EVENT);	
-					
-					// Convert all thermal nuclear heat to electricity
-					if (nuclearHeatSource != null) {
-						nuclearHeatSource.setHeatMode(HeatMode.HEAT_OFF, building);
-						building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT);
-					}
-					
-					// Turn off electric heat
-					if (electricHeatSource != null) {
-						electricHeatSource.setHeatMode(HeatMode.OFFLINE, building);
-						building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT);
-					}
-					
-					// Turn off fuel heat
-					if (fuelHeatSource != null) {
-						fuelHeatSource.setHeatMode(HeatMode.OFFLINE, building);
-						building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
-					}
-					
-					sHeatCache = sHeat;
-					
-					heat[0] = heatGen;
-					heat[1] = heatReq;			
-					return heat;
-				}
+				} // end of for loop	
 			}
 			
-			if (sHeat > 0) {
+			if (sHeat >= 0) {
+				// If the solar panel can generate electricity (i.e. not at night)
+	
+				heatGen += sHeat;
+				remainHeatReq -= sHeat;
+				
 				sHeatCache = sHeat;
 
 				// Set the new heat mode
@@ -284,12 +300,14 @@ public class ThermalGeneration extends Function {
 				building.fireUnitUpdate(UnitEventType.SOLAR_HEAT_EVENT);
 			}
 			else {
+				// If the solar panel cannot generate electricity (i.e. at night)
 				solarHeatSource.setHeatMode(HeatMode.OFFLINE, building);
 				building.fireUnitUpdate(UnitEventType.SOLAR_HEAT_EVENT);
 			}
 		}
 		
 		if (nuclearHeatSource != null) {
+			
 			for (int i=0; i<size; i++) {
 				heatMode = ALL_HEAT_MODES.get(i);
 
@@ -299,16 +317,20 @@ public class ThermalGeneration extends Function {
 					logger.info(building, "NuclearHeatSource has invalid heat value.");
 					break;
 				}
-					
-				heatGen += nHeat;
-				heatReq -= nHeat;			
-				if (heatReq > 0) {
+				
+				double nheatReq = remainHeatReq - nHeat;
+
+				if (nheatReq > 0) {
+					// if the heatReq is not met, then need to go to the next percent level to raise sHeat
+
 					// Go to the next heat source for more heat
 				}
-				else if (nHeat >= 0) {		
+				else if (nHeat >= 0) {	
+					// if the heatReq turn -ve and is therefore met, then use this percent level to generate heat
+
 					// Set the new heat mode
 					newHeatMode = heatMode;
-					
+
 					// Will automatically convert rest of thermal nuclear heat to electricity					
 					nuclearHeatSource.setHeatMode(newHeatMode, building);
 					building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT);
@@ -325,15 +347,23 @@ public class ThermalGeneration extends Function {
 						building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
 					}
 	
+					heatGen += nHeat;
+					remainHeatReq -= nHeat;
+					
 					nHeatCache = nHeat;
 					
 					heat[0] = heatGen;
-					heat[1] = heatReq;			
+					heat[1] = remainHeatReq;			
 					return heat;
 				}
 			}
 			
-			if (nHeat > 0) {
+			if (nHeat >= 0) {
+				// If this heat source can generate electricity
+				
+				heatGen += nHeat;
+				remainHeatReq -= nHeat;
+
 				nHeatCache = nHeat;
 				
 				// Set the new heat mode
@@ -342,12 +372,14 @@ public class ThermalGeneration extends Function {
 				building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT);
 			}
 			else {
+				// If this heat source cannot generate electricity
 				nuclearHeatSource.setHeatMode(HeatMode.OFFLINE, building);
 				building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT);
 			}
 		}
 		
 		if (electricHeatSource != null) {
+	
 			for (int i=0; i<size; i++) {
 				heatMode = ALL_HEAT_MODES.get(i);
 				
@@ -356,14 +388,18 @@ public class ThermalGeneration extends Function {
 				if (Double.isNaN(eHeat) || Double.isInfinite(eHeat)) {
 					logger.info(building, "ElectricHeatSource has invalid heat value.");
 					break;
-				}
+				}	
 				
-				heatGen += eHeat;
-				heatReq -= eHeat;			
-				if (heatReq > 0) {
+				double eheatReq = remainHeatReq - eHeat;
+				
+				if (eheatReq > 0) {
+					// if the heatReq is not met, then need to go to the next percent level to raise sHeat
+
 					// Go to the next heat source for more heat
 				}
 				else if (eHeat >= 0) {
+					// if the heatReq turn -ve and is therefore met, then use this percent level to generate heat
+	
 					// Set the new heat mode
 					newHeatMode = heatMode;
 					
@@ -376,15 +412,23 @@ public class ThermalGeneration extends Function {
 						building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
 					}
 				
+					heatGen += eHeat;
+					remainHeatReq -= eHeat;
+					
 					eHeatCache = eHeat;
 					
 					heat[0] = heatGen;
-					heat[1] = heatReq;			
+					heat[1] = remainHeatReq;		
 					return heat;
 				}
 			}
 			
-			if (eHeat > 0) {
+			if (eHeat >= 0) {
+				// If this heat source can generate electricity
+				
+				heatGen += eHeat;
+				remainHeatReq -= eHeat;
+				
 				eHeatCache = eHeat;
 				
 				// Set the new heat mode
@@ -393,12 +437,14 @@ public class ThermalGeneration extends Function {
 				building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT);
 			}
 			else {
+				// If this heat source cannot generate electricity
 				electricHeatSource.setHeatMode(HeatMode.OFFLINE, building);
 				building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT);
 			}
 		}
 		
 		if (fuelHeatSource != null) {
+	
 			for (int i=0; i<size; i++) {
 				heatMode = ALL_HEAT_MODES.get(i);
 				
@@ -408,29 +454,39 @@ public class ThermalGeneration extends Function {
 				if (Double.isNaN(fHeat) || Double.isInfinite(fHeat)) {
 					logger.info(building, "FuelHeatSource has invalid heat value.");
 					break;
-				}
+				}	
 				
-				heatGen += fHeat;
-				heatReq -= fHeat;			
-				if (heatReq > 0) {
+				double fheatReq = remainHeatReq - fHeat;
+				
+				if (fheatReq > 0) {
+					// if the heatReq is not met, then need to go to the next percent level to raise sHeat
 					// Go to the next heat source for more heat
 				}
 				else if (fHeat >= 0) {
+					// if the heatReq turn -ve and is therefore met, then use this percent level to generate heat
+	
 					// Set the new heat mode
 					newHeatMode = heatMode;
 
 					fuelHeatSource.setHeatMode(newHeatMode, building);
 					building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT);
 					
+					heatGen += fHeat;
+					remainHeatReq -= fHeat;
+					
 					fHeatCache = fHeat;
 					
 					heat[0] = heatGen;
-					heat[1] = heatReq;			
+					heat[1] = remainHeatReq;			
 					return heat;
 				}
 			}
 			
-			if (fHeat > 0) {
+			if (fHeat >= 0) {
+				
+				heatGen += fHeat;
+				remainHeatReq -= fHeat;
+				
 				fHeatCache = fHeat;
 				
 				// Set the new heat mode
@@ -444,53 +500,13 @@ public class ThermalGeneration extends Function {
 			}
 		}
 
-		if (sHeat + nHeat + eHeat + fHeat > 0) {
+//		if (sHeat + nHeat + eHeat + fHeat > 0) {
 			heat[0] = heatGen;
-			heat[1] = heatReq;			
-		}
+			heat[1] = remainHeatReq;			
+//		}
 		return heat;
 	}
 
-//	/**
-//	 * Calculates the total amount of power that this building is CURRENTLY producing from heat sources.
-//	 * 
-//	 * @return power generated in kW
-//	 */
-//	private double calculateTotGenPower() {
-//
-//		double result = 0D;
-//		HeatMode heatMode = building.getHeatMode();
-//
-//		boolean sufficientPower = building.getSettlement().getPowerGrid().isSufficientPower();
-//		
-//		// Calculate the unused
-//		double sparePercentage = 100 - heatMode.getPercentage();
-//		for (HeatSource heatSource : heatSources) {
-//
-//			if (heatSource.getType() == HeatSourceType.FUEL_HEATING) {
-//		    	 // if there's not enough electrical power
-//			    if (!sufficientPower) {
-//			    	heatSource.setPercentagePower(sparePercentage);
-//			    	// Note: could be cheating if the mechanism of conversion 
-//			    	// is NOT properly defined
-//			    	// Convert heat to electricity
-//			    	result += heatSource.getCurrentPower(getBuilding());
-//			    }
-//		    }	
-//		    
-//		    else if (heatSource.getType() == HeatSourceType.THERMAL_NUCLEAR) {
-//		    	heatSource.setPercentagePower(sparePercentage);
-//		    	result += heatSource.getCurrentPower(getBuilding());
-//		    }
-//		    
-//		    else if (heatSource.getType() == HeatSourceType.SOLAR_HEATING) {
-//		    	heatSource.setPercentagePower(sparePercentage);
-//		    	result += heatSource.getCurrentPower(getBuilding());
-//		    }
-//		}
-//
-//		return result;
-//	}
 
 	/**
 	 * Moderate the time for heating.
@@ -520,12 +536,12 @@ public class ThermalGeneration extends Function {
 	/**
 	 * Transfers the heat.
 	 * 
-	 * @param time time in millisols
+	 * @param millisols time in millisols
 	 * @throws Exception if error during action.
 	 */
-	private void transferHeat(double time) {
+	private void transferHeat(double millisols) {
 		// Call heating's timePassing
-		heating.timePassing(time);
+		heating.timePassing(millisols);
 		
 		// Note: Since devT = tPreset - currentT
 		// and heatReq = convFactor * devT,
@@ -547,7 +563,7 @@ public class ThermalGeneration extends Function {
 		
 		if (heatReq <= 0) {
 			// Still let it call calculateHeatGen in order to turn off heat sources
-			double heat[] = calculateHeatGen(0, time);	
+			double heat[] = calculateHeatGen(0, millisols);	
 			heatGen = heat[0];
 			remainHeatReq = heat[1];
 			
@@ -555,7 +571,7 @@ public class ThermalGeneration extends Function {
 				logger.warning(building, 1_000L , "1. heatGen: " 
 						+ Math.round(heatGen * 1000.0)/1000.0
 						+ "  T: " + Math.round(building.getCurrentTemperature() * 10.0)/10.0
-						+ "  time: " + Math.round(time * 1000.0)/1000.0
+						+ "  millisols: " + Math.round(millisols * 1000.0)/1000.0
 						+ "  heatReq: " + Math.round(heatReq * 1000.0)/1000.0
 						+ "  remainHeatReq: " + Math.round(remainHeatReq * 1000.0)/1000.0
 						+ "  preNetHeat: " + Math.round(preNetHeat * 1000.0)/1000.0
@@ -567,7 +583,7 @@ public class ThermalGeneration extends Function {
 			double finalHeatReq = heatReq - .1 * postNetHeat - .05 * preNetHeat;
 			
 			// Find out how much heat can be generated to match this requirement
-			double heat[] = calculateHeatGen(finalHeatReq, time);
+			double heat[] = calculateHeatGen(finalHeatReq, millisols);
 			heatGen = heat[0];
 			remainHeatReq = heat[1];
 			
@@ -580,7 +596,7 @@ public class ThermalGeneration extends Function {
 				logger.warning(building, 1_000L , "1. heatGen: " 
 						+ Math.round(heatGen * 1000.0)/1000.0
 						+ "  T: " + Math.round(building.getCurrentTemperature() * 10.0)/10.0
-						+ "  time: " + Math.round(time * 1000.0)/1000.0
+						+ "  time: " + Math.round(millisols * 1000.0)/1000.0
 						+ "  heatReq: " + Math.round(heatReq * 1000.0)/1000.0
 						+ "  remainHeatReq: " + Math.round(remainHeatReq * 1000.0)/1000.0
 						+ "  preNetHeat: " + Math.round(preNetHeat * 1000.0)/1000.0

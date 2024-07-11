@@ -68,17 +68,17 @@ public class SolarHeatingSource extends HeatSource {
 	    return getMaxHeat();
 	}
 
-	public double getSunlightFraction() {
+	public double getSunlight() {
 		if (location == null) {
 			location = building.getCoordinates();
 		}
 		
-		return surface.getSolarIrradiance(location) / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
+		return surface.getSolarIrradiance(location) ;
 	}
 	
 	@Override
 	public double getCurrentHeat() {
-		double fraction = getSunlightFraction(); 
+		double fraction = getSunlight() / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE; 
 		if (fraction == 0)
 			return 0;
 		double available = thermalEfficiency / RATED_THERMAL_EFFICIENCY * getMaxHeat() * getPercentHeat() / 100D;
@@ -87,7 +87,7 @@ public class SolarHeatingSource extends HeatSource {
 	
 	@Override
 	public double getCurrentPower() {
-		double fraction = getSunlightFraction(); 
+		double fraction = getSunlight() / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE; 
 		if (fraction == 0)
 			return 0;
 		double available = electricEfficiency / RATED_ELECTRIC_EFFICIENCY * getMaxHeat() * getPercentElectricity() / 100D;
@@ -102,7 +102,7 @@ public class SolarHeatingSource extends HeatSource {
 	 */
 	@Override
 	public double requestHeat(double percent) {
-		double fraction = getSunlightFraction(); 
+		double fraction = getSunlight() / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE; 
 		if (fraction == 0)
 			return 0;
 		double available = thermalEfficiency / RATED_THERMAL_EFFICIENCY * getMaxHeat() * percent / 100D;
