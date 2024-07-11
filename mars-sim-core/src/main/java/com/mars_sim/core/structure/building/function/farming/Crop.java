@@ -492,7 +492,7 @@ public class Crop implements Comparable<Crop>, Entity {
 				if (amt > 0) {
 					store(amt, CROP_WASTE_ID);
 					logger.warning(this, 10_000, 
-							amt + " kg crop waste generated.");
+							Math.round(amt * 10D)/10D  + " kg crop waste generated.");
 				}
 				updatePhase(PhaseType.FINISHED);
 			}

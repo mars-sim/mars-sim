@@ -80,21 +80,21 @@ public class TabPanelSpecs extends TabPanel {
 		specsPanel.add(labelGrid, BorderLayout.CENTER);
 		
 		labelGrid.addTextField( "Type", v.getVehicleType().getName(), null);
-		labelGrid.addTextField( "Specification", v.getSpecName(), null);
+		labelGrid.addTextField( "Model", v.getSpecName(), null);
 		
 		labelGrid.addTextField( "Crew Size", v.getVehicleSpec().getCrewSize() + "", null);
-		labelGrid.addTextField( "Fuel Cell Stack", v.getFuellCellStack() + "", null);	
+		labelGrid.addTextField( "Cell Stack", v.getFuellCellStack() + "", null);	
 		
 		labelGrid.addTextField( "Battery Module", v.getBatteryModule() + "", null);	
 		labelGrid.addTextField( "Fuel Type", fuelTypeStr, null);
 	
-		labelGrid.addTextField( "Battery Capacity", v.getBatteryCapacity() + "", null);	
-		labelGrid.addTextField( "Fuel Capacity", StyleManager.DECIMAL_KG.format(v.getFuelCapacity()), null);
+		labelGrid.addTextField( "Battery Cap", v.getBatteryCapacity() + "", null);	
+		labelGrid.addTextField( "Fuel Cap", StyleManager.DECIMAL_KG.format(v.getFuelCapacity()), null);
 		
-		labelGrid.addTextField( "Battery Percent", StyleManager.DECIMAL_PERC1.format(v.getBatteryPercent()), null);
+		labelGrid.addTextField( "Battery %", StyleManager.DECIMAL_PERC1.format(v.getBatteryPercent()), null);
 		labelGrid.addTextField( "Base Mass", StyleManager.DECIMAL_KG.format(v.getBaseMass()), "The base mass of this vehicle");
 		
-		labelGrid.addTextField( "Cargo Capacity", StyleManager.DECIMAL_KG.format(v.getCargoCapacity()), null);	
+		labelGrid.addTextField( "Cargo Cap", StyleManager.DECIMAL_KG.format(v.getCargoCapacity()), null);	
 		labelGrid.addTextField( "Base FC2FE", StyleManager.DECIMAL_PLACES3.format(v.getVehicleSpec().getCoeffBaseFC2FE()), null);
 		
 		labelGrid.addTextField( "Base Accel", StyleManager.DECIMAL_M_S2.format(v.getVehicleSpec().getBaseAccel()), null);	
@@ -103,7 +103,7 @@ public class TabPanelSpecs extends TabPanel {
 		labelGrid.addTextField( "Base Speed", StyleManager.DECIMAL_M_S.format(v.getVehicleSpec().getBaseSpeed()), null);
 		labelGrid.addTextField( "Base Power", StyleManager.DECIMAL_KW.format(v.getVehicleSpec().getBasePower()), null);
 
-		labelGrid.addTextField( "Road Speed", StyleManager.DECIMAL_KM.format(v.getAverageRoadLoadSpeed()), null);
+		labelGrid.addTextField( "Road Speed", StyleManager.DECIMAL_M_S.format(v.getAverageRoadLoadSpeed()), null);
 		labelGrid.addTextField( "Road Power", StyleManager.DECIMAL_KW.format(v.getAverageRoadLoadPower()), null);
 		
 		labelGrid.addTextField( "Drivetrain Eff", StyleManager.DECIMAL_PERC.format(100*v.getVehicleSpec().getDrivetrainEfficiency()), null);

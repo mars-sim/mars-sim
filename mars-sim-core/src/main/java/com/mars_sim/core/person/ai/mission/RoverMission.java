@@ -473,6 +473,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				if (garage != null) {
 					logger.info(v0, "Done transferring to " + disembarkSettlement.getName() + " in " + garage + ".");
 				}
+				else {
+					// Park in the vicinity of the settlement outside
+					v0.findNewParkingLoc();
+				}
 			}
 			else {
 				if (v1 != null) {
@@ -481,7 +485,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					untetherVehicle(v0, v1, disembarkSettlement);
 				}
 				
-				if (v2 != null) {
+				else if (v2 != null) {
 					registerVehicle(v1, disembarkSettlement);
 					
 					untetherVehicle(v2, v0, disembarkSettlement);

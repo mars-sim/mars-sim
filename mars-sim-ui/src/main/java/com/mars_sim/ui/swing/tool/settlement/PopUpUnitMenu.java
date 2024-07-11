@@ -76,6 +76,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 				add(buildDescriptionitem(unit, desktop));
 				add(buildDetailsItem(unit, desktop));
 				add(buildVehicleRelocate(unit));
+				add(buildVehicleToMaintain(unit));
 				break;
 
         	case BUILDING:
@@ -256,14 +257,13 @@ public class PopUpUnitMenu extends JPopupMenu {
     }
     
     /**
-     * Builds item three
+     * Builds item for vehicle relocation.
      *
      * @param unit
      */
 	private JMenuItem buildVehicleRelocate(Unit unit) {
 		JMenuItem relocateItem = new JMenuItem(Msg.getString("PopUpUnitMenu.relocate"));
 
-        relocateItem.setForeground(new Color(139,69,19));
         relocateItem.addActionListener(e -> {
 	            ((Vehicle) unit).relocateVehicle();
 	    		repaint();
@@ -273,7 +273,23 @@ public class PopUpUnitMenu extends JPopupMenu {
 	}
 	
     /**
-     * Builds item four.
+     * Builds item for maintenance tagging.
+     *
+     * @param unit
+     */
+	private JMenuItem buildVehicleToMaintain(Unit unit) {
+		JMenuItem item = new JMenuItem(Msg.getString("PopUpUnitMenu.maintain"));
+
+		item.addActionListener(e -> {
+	            ((Vehicle) unit).maintainVehicle();
+	    		repaint();
+        });
+
+		return item;
+	}
+	
+    /**
+     * Builds item for relocating a construction site.
      *
      * @param unit
      */

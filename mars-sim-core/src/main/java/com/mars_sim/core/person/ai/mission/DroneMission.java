@@ -219,19 +219,8 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	 */
 	@Override
 	protected void performDisembarkToSettlementPhase(Worker member, Settlement disembarkSettlement) {
-
-		Vehicle v0 = getVehicle();
-		disembark(member, v0, disembarkSettlement);
-	}
-
-	/**
-	 * Disembarks the vehicle and unload cargo upon arrival.
-	 *
-	 * @param member
-	 * @param v
-	 * @param disembarkSettlement
-	 */
-	public void disembark(Worker member, Vehicle v, Settlement disembarkSettlement) {
+		Vehicle v = getVehicle();
+		
 		logger.log(v, Level.INFO, 10_000,
 				"Disemabarked at " + disembarkSettlement.getName() + ".");
 
@@ -245,8 +234,12 @@ public abstract class DroneMission extends AbstractVehicleMission {
 			}
 
 			// Add vehicle to a garage if available.
-			disembarkSettlement.getBuildingManager().addToGarage(v);
-
+			boolean canGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
+			if (!canGarage) {
+				// Park in the vicinity of the settlement outside
+				v.findNewParkingLoc();
+			}
+				
 			// Unload drone if necessary.
 			boolean droneUnloaded = drone.getStoredMass() == 0D;
 

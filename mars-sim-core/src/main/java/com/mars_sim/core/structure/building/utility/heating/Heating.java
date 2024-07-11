@@ -563,6 +563,7 @@ public class Heating implements Serializable {
 	
 	/**
 	 * Estimates the required heat to produce.
+	 * See http://electron6.phys.utk.edu/PhysicsProblems/Mechanics/9-Gereral%20Physics/Entropy.html
 	 * 
 	 * @param millisols
 	 * @return
@@ -589,7 +590,7 @@ public class Heating implements Serializable {
 		
 		double reqHeat = deltaHeatJ / 1000 / lowerBound;
 		
-//		if (error) {
+		if (error) {
 			logger.info(building, 20_000,
 				"reqHeat: " + Math.round(reqHeat * 100.0)/100.0
 				+ "  millisols: " + Math.round(millisols * 1000.0)/1000.0
@@ -600,7 +601,7 @@ public class Heating implements Serializable {
 				+ "  lowerBound: " + Math.round(lowerBound * 10.0)/10.0 + " s"
 				+ "  numMoles: " + Math.round(numMoles * 10.0)/10.0
 				);
-//		}
+		}
 		
 		return reqHeat;
 	}
@@ -651,15 +652,15 @@ public class Heating implements Serializable {
 		
 		if (irradiance > 0) {
 			if (isGreenhouse) {
-				solarHeatGain =  irradiance * transmittance * hullArea * .12;
+				solarHeatGain =  irradiance * transmittance * hullArea * .1;
 			}
 			
 			else if (isConnector) {
-				solarHeatGain =  irradiance * transmittance * hullArea * .045;
+				solarHeatGain =  irradiance * transmittance * hullArea * .04;
 			}
 			
 			else {
-				solarHeatGain =  irradiance * transmittance * hullArea * .04;
+				solarHeatGain =  irradiance * transmittance * hullArea * .03;
 			}
 		}
 		
@@ -694,7 +695,7 @@ public class Heating implements Serializable {
 					coeff = INSULATION_BLANKET;
 			}
 				
-			canopyHeatGain = 0.5 * coeff * (1 - irradiance);
+			canopyHeatGain = 0.4 * coeff * (1 - irradiance);
 		}
 	
 		error = checkError("canopyHeatGain", canopyHeatGain) || error;
@@ -707,9 +708,9 @@ public class Heating implements Serializable {
 			lightingGain = building.getFarming().getTotalLightingPower() * LAMP_GAIN_FACTOR;
 	        // For high pressure sodium lamp, assuming 60% are invisible radiation (energy loss as heat)
 		}
-		else if (irradiance < 0.1) {
+		else if (irradiance < 0.075) {
 			// Based on the floor area and the sunlight intensity
-			lightingGain = (1 - irradiance) * floorArea / 25;
+			lightingGain = (1 - irradiance) * floorArea / 30;
 		}
 
 		error = checkError("lightingGain", lightingGain) || error;

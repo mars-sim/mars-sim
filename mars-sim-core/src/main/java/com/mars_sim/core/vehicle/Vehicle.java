@@ -61,6 +61,7 @@ import com.mars_sim.core.structure.building.task.MaintainBuilding;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.vehicle.task.MaintainVehicleMeta;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.mapdata.location.Direction;
 import com.mars_sim.mapdata.location.LocalBoundedObject;
@@ -1763,10 +1764,10 @@ public abstract class Vehicle extends Unit
 		int count = 0;
 		
 		// Try iteratively outward from 10m to 500m distance range.
-		for (int x = oX; (x < 2000) && !foundGoodLocation; x+=step) {
+		for (int x = oX; (x < 500) && !foundGoodLocation; x+=step) {
 			// Try random locations at each distance range.
-			for (int y = oY; (y < 2000) && !foundGoodLocation; y++) {
-				double distance = Math.max(y, RandomUtil.getRandomDouble(-.5*x, x) + y);
+			for (int y = oY; (y < 500) && !foundGoodLocation; y++) {
+				double distance = Math.max(y, RandomUtil.getRandomDouble(-.5*x, .5*x) + .5*y);
 				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
 				
 				newLoc = centerLoc.getPosition(distance, radianDirection);
@@ -1785,22 +1786,68 @@ public abstract class Vehicle extends Unit
 
 		if (foundGoodLocation) {
 			setParkedLocation(newLoc, newFacing);
-			logger.info(this, "Moved to new parking loc on iteration " + count + ".");
+			logger.info(this, "Moved to new parking loc at (" 
+					+ Math.round(newLoc.getX() * 10.0)/10.0 
+					+ ", " + Math.round(newLoc.getY() * 10.0)/10.0 
+					+ ") on count " + count + ".");
 		}
 		else {
 			logger.info(this, "Parking loc not found.");
 		}
 	}
 	
+	
+	/**
+	 * Tags a vehicle for maintenance.
+	 */
+	public void maintainVehicle() {
+		var mt = new MaintainVehicleMeta();
+        var task = mt.getSettlementTasks(getSettlement());
+        
+        logger.info(this, "Triggering a vehicle maintenance task.");
+	}
+	
+	
 	/**
 	 * Relocates a vehicle. 
 	 */
 	public void relocateVehicle() {
-		// Remove the vehicle from a garage if it's inside
-		BuildingManager.removeFromGarage(this);
-		// Note: No need to call below separately to find a new outside location for parking
-		// Calling removeFromGarage above will take care of finding new parking loc
-		// findNewParkingLoc();
+
+		if (isInGarage()) {
+			// If it's in a garage, remove the vehicle from a garage and 
+			// relocate it outside
+			BuildingManager.removeFromGarage(this);
+			// Note: removeVehicle or removeFlyer will automatically call 
+			// parkInVicinity which will in turns call findNewParkingLoc
+			logger.info(this, "Left garage and parked outside as instructed.");
+		}
+		else {
+			// If it's not in a garage 
+			if (reservedForMaintenance) {
+				// If it's under maintenance, go to a garage if possible
+				// else park outside
+				logger.info(this, "Reserved for maintenance. Looking for a garage.");
+				boolean done = addToAGarage();
+				if (!done) {
+					logger.info(this, "Garage space not found. Parked outside.");
+					findNewParkingLoc();
+				}
+			}
+			else if (reservedForMaintenance || getPrimaryStatus() == StatusType.MAINTENANCE) {
+				// If it's under maintenance, go to a garage if possible
+				// else park outside
+				logger.info(this, "Under maintenance. Looking for a garage.");
+				boolean done = addToAGarage();
+				if (!done) {
+					logger.info(this, "Garage space not found. Parked outside.");
+					findNewParkingLoc();
+				}
+			}
+			else {
+				logger.info(this, "Looking for another spot to park outside.");
+				findNewParkingLoc();
+			}
+		}
 	}
 
 	public static double getFuelRangeErrorMargin() {

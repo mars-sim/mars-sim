@@ -315,7 +315,7 @@ public class Fishery extends Function {
 					eatingRate));
 		}
 
-		logger.info(building, "New fish added:" + numFish);
+		logger.info(building, "New # of fish added: " + numFish + ".");
 			
 		// Record the new fish
 		addResourceLog(numFish, ResourceUtil.fishMeatID);
