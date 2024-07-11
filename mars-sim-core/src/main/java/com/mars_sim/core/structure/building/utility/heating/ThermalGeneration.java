@@ -737,7 +737,7 @@ public class ThermalGeneration extends Function {
 		
 		HeatMode heatMode = electricHeatSource.getHeatMode();
 		
-		if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
+		if (heatMode == HeatMode.OFFLINE)
 			return 0;
 
 		return electricHeatSource.getCurrentPower();
@@ -754,7 +754,7 @@ public class ThermalGeneration extends Function {
 		
 		HeatMode heatMode = solarHeatSource.getHeatMode();
 		
-		if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
+		if (heatMode == HeatMode.OFFLINE)
 			return 0;
 
 		return solarHeatSource.getCurrentPower();
@@ -771,7 +771,7 @@ public class ThermalGeneration extends Function {
 		
 		HeatMode heatMode = nuclearHeatSource.getHeatMode();
 		
-		if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
+		if (heatMode == HeatMode.OFFLINE)
 			return 0;
 
 		return nuclearHeatSource.getCurrentPower();
@@ -788,7 +788,7 @@ public class ThermalGeneration extends Function {
 		
 		HeatMode heatMode = fuelHeatSource.getHeatMode();
 		
-		if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
+		if (heatMode == HeatMode.OFFLINE)
 			return 0;
 
 		return fuelHeatSource.getCurrentPower();

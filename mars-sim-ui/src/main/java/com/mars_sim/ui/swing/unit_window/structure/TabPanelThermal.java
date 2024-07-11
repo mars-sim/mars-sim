@@ -249,9 +249,15 @@ public class TabPanelThermal extends TabPanelTable {
 			buildings = manager.getSortedBuildings();
 		else
 			buildings = manager.getBuildingsWithThermal();
-		heatTableModel.update();
+		
+		heatTableModel.fireTableDataChanged();
 	}
 
+	/**
+	 * Gets average solar heating thermal efficiency.
+	 * 
+	 * @return
+	 */
 	public double getAverageEfficiencySolarHeating() {
 		double effSolar = 0;
 		int i = 0;
@@ -275,6 +281,11 @@ public class TabPanelThermal extends TabPanelTable {
 		return effSolar;
 	}
 
+	/**
+	 * Gets average electric heating thermal efficiency.
+	 * 
+	 * @return
+	 */
 	public double getAverageEfficiencyElectricHeat() {
 
 		double effElectric = 0;
@@ -533,6 +544,7 @@ public class TabPanelThermal extends TabPanelTable {
 		}
 
 		public void update() {
+
 	    	int numRow = getRowCount();
 	    	int numCol = getColumnCount();
 	    	for (int i=0; i<numRow; i++) {	
