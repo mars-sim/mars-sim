@@ -279,6 +279,16 @@ public class InventoryTabPanel extends TabPanel {
             return 0 + "";
         }
 
+		private void updateData() {
+	    	int numRow = getRowCount();
+	    	int numCol = getColumnCount();
+	    	for (int i=0; i< numRow; i++) {	
+	    		for (int j=1; j< numCol; j++) {	
+		    		fireTableCellUpdated(i, j);
+	    		}
+	    	}
+		}
+        
         public void update() {
     		List<Resource> newResourceKeys = new ArrayList<>();
 			Map<Resource, Double> newStored = new HashMap<>();
@@ -286,14 +296,36 @@ public class InventoryTabPanel extends TabPanel {
 
     		loadResources(newResourceKeys, newStored, newCapacity);
 
-    		if (!keys.equals(newResourceKeys)
-    				|| !stored.equals(newStored)
-    				|| !capacity.equals(newCapacity)) {
+//    		if (!keys.equals(newResourceKeys)
+//    				|| !stored.equals(newStored)
+//    				|| !capacity.equals(newCapacity)) {
+//    			stored = newStored;
+//    			capacity = newCapacity;
+//    			keys = newResourceKeys;
+//    			fireTableDataChanged();
+//    		}
+    		
+			if (keys.size() != newResourceKeys.size()) {
+				
+				if (!keys.equals(newResourceKeys)) {
+					keys = newResourceKeys;
+	    			stored = newStored;
+	    			capacity = newCapacity;
+					fireTableDataChanged();
+				}
+				else {
+					updateData();
+				}
+			}
+			else if (!keys.equals(newResourceKeys)) {
+				keys = newResourceKeys;
     			stored = newStored;
     			capacity = newCapacity;
-    			keys = newResourceKeys;
-    			fireTableDataChanged();
-    		}
+				fireTableDataChanged();
+			}
+			else {
+				updateData();
+			}
     	}
     }
 
@@ -361,13 +393,39 @@ public class InventoryTabPanel extends TabPanel {
             return null;
         }
 
+		private void updateData() {
+	    	int numRow = getRowCount();
+	    	int numCol = getColumnCount();
+	    	for (int i=0; i< numRow; i++) {	
+	    		for (int j=1; j< numCol; j++) {	
+		    		fireTableCellUpdated(i, j);
+	    		}
+	    	}
+		}
+		
         public void update() {
-        	List<Part> newItems = getItems();
+ 
+			List<Part> newList = getItems();
+			
+			if (items.size() != newList.size()) {
+				
+				if (!items.equals(newList)) {
+					items = newList;
 
-    		if (!items.equals(newItems)) {
-    			items = newItems;
-    			fireTableDataChanged();
-    		}
+						fireTableDataChanged();
+				}
+				else {
+					updateData();
+				}
+			}
+			else if (!items.equals(newList)) {
+				items = newList;
+
+					fireTableDataChanged();
+			}
+			else {
+				updateData();
+			}
     	}
     }
 
@@ -448,18 +506,41 @@ public class InventoryTabPanel extends TabPanel {
 			return "unknown";
 		}
 
+		private void updateData() {
+	    	int numRow = getRowCount();
+	    	int numCol = getColumnCount();
+	    	for (int i=0; i< numRow; i++) {	
+	    		for (int j=1; j< numCol; j++) {	
+		    		fireTableCellUpdated(i, j);
+	    		}
+	    	}
+		}
+		
 		public void update() {
 
-			List<Equipment> newEquipmentList = new ArrayList<>(unit.getEquipmentSet());
+			List<Equipment> newList = new ArrayList<>(unit.getEquipmentSet());
 			
-			if (equipmentList.size() != newEquipmentList.size()
-				|| !equipmentList.equals(newEquipmentList)) {
-				equipmentList = newEquipmentList;
+			if (equipmentList.size() != newList.size()) {
+				
+				if (!equipmentList.equals(newList)) {
+						equipmentList = newList;
 
-				fireTableDataChanged();
+						fireTableDataChanged();
+				}
+				else {
+					updateData();
+				}
+			}
+			else if (!equipmentList.equals(newList)) {
+					equipmentList = newList;
+
+					fireTableDataChanged();
+			}
+			else {
+				updateData();
 			}
 		}
-
+		
 		@Override
 		public Entity getAssociatedEntity(int row) {
 			return equipmentList.get(row);

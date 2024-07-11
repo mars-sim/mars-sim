@@ -252,16 +252,6 @@ public class TabPanelPowerGrid extends TabPanelTable {
 			powerTableModel.fireTableDataChanged();
 	    }
 	}
-	
-
-	/**
-	 * Gets a list of buildings should be shown.
-	 * 
-	 * @return a list of buildings
-	 */
-	private List<Building> getBuildings() {
-		return buildings;
-	}
 
 	/**
 	 * Gets a list of settlement's buildings with power generation function.
