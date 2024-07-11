@@ -94,6 +94,12 @@ public class SolarHeatingSource extends HeatSource {
         return fraction * available;
     }
 	
+	/**
+	 * Requests an estimate of the heat produced by this heat source.
+	 * 
+	 * @param percent The percentage of capacity of this heat source
+	 * @return Heat (kWt)
+	 */
 	@Override
 	public double requestHeat(double percent) {
 		double fraction = getSunlightFraction(); 

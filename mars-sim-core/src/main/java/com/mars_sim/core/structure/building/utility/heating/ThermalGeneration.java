@@ -118,7 +118,7 @@ public class ThermalGeneration extends Function {
 	public static double getFunctionValue(String buildingName,
 			boolean newBuilding, Settlement settlement) {
 
-		double demand = settlement.getThermalSystem().getRequiredHeat();
+		double demand = settlement.getThermalSystem().getTotalHeatReq();
 		double supply = 0D;
 		boolean removedBuilding = false;
 
@@ -564,7 +564,7 @@ public class ThermalGeneration extends Function {
 		}
 		else {
 
-			double finalHeatReq = heatReq - .2 * postNetHeat - .1 * preNetHeat;
+			double finalHeatReq = heatReq - .1 * postNetHeat - .05 * preNetHeat;
 			
 			// Find out how much heat can be generated to match this requirement
 			double heat[] = calculateHeatGen(finalHeatReq, time);
@@ -740,7 +740,7 @@ public class ThermalGeneration extends Function {
 		if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
 			return 0;
 
-		return electricHeatSource.getCurrentHeat();
+		return electricHeatSource.getCurrentPower();
 	}
 	
 	/**
@@ -757,7 +757,7 @@ public class ThermalGeneration extends Function {
 		if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
 			return 0;
 
-		return solarHeatSource.getCurrentHeat();
+		return solarHeatSource.getCurrentPower();
 	}
 	
 	/**
@@ -774,7 +774,7 @@ public class ThermalGeneration extends Function {
 		if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
 			return 0;
 
-		return nuclearHeatSource.getCurrentHeat();
+		return nuclearHeatSource.getCurrentPower();
 	}
 	
 	/**
@@ -791,7 +791,7 @@ public class ThermalGeneration extends Function {
 		if (heatMode == HeatMode.OFFLINE || heatMode == HeatMode.HEAT_OFF)
 			return 0;
 
-		return fuelHeatSource.getCurrentHeat();
+		return fuelHeatSource.getCurrentPower();
 	}
 	
 	/**

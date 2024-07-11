@@ -272,12 +272,15 @@ public class FuelHeatSource extends HeatSource {
 		return 0;
 	}
 	
+	/**
+	 * Requests an estimate of the heat produced by this heat source.
+	 * 
+	 * @param percent The percentage of capacity of this heat source
+	 * @return Heat (kWt)
+	 */
 	@Override
 	public double requestHeat(double percent) {
-//		if (toggle) {
-			double spentFuel = computeFuelConsumption(time, percent, false, true);
-			return spentFuel / getMaxFuelPerMillisolPerkW(false) / time;
-//		}
-//		return 0;
+		double spentFuel = computeFuelConsumption(time, percent, false, true);
+		return spentFuel / getMaxFuelPerMillisolPerkW(false) / time;
 	}
 }

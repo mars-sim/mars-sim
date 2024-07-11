@@ -803,7 +803,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 
 	<building type="Inflatable Greenhouse" width="6.0" length="9.0" north-south-alignment="length" construction="INFLATABLE" base-level="0"
-		wear-lifetime="3340000" maintenance-time="150" room-temperature="26.0" base-mass="3000">
+		wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="3000">
 		<description> The Inflatable Greenhouse is essentially a flexible air bladder
 		made with interwoven layers of Polyurethane, Kevlar, polyester, Saran and Tedlar materials to retain an atmosphere adequate
 		for growing a limited number of crops as the food source for the settlers. It is UV-resistant, bullet-resistant and
@@ -925,7 +925,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end for inflatable greenhouse -->
 
 	<building type="Large Greenhouse" width="12.0" length="18.0" north-south-alignment="length" construction="SEMI_SOLID" base-level="0"
-			wear-lifetime="3340000" maintenance-time="200" room-temperature="26.0" base-mass="10000">
+			wear-lifetime="3340000" maintenance-time="200" room-temperature="24.0" base-mass="10000">
 		<description>
 			The Large Greenhouse is made of stronger structural and cladding material such as coextruded
 			laminate of polyamide and polyolefin interwoven around an aluminum frame to give rise
@@ -1118,7 +1118,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end for fish farm -->
 
 	<building type="Algae Pond" width="6.0" length="9.0" north-south-alignment="length" base-level="0"
-			wear-lifetime="3340000" maintenance-time="150" room-temperature="26.0" base-mass="3000">
+			wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="3000">
 		<description>
 			This building grows spirulina in ponds. It is furnished with a biology research lab 
 			with instruments.
@@ -3597,7 +3597,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 
 	<building type="Inground Greenhouse" width="5.0" length="10.0" north-south-alignment="length" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="150" room-temperature="26.0" base-mass="2500">
+			wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="2500">
 		<description> The Inground Greenhouse is a semi underground structure with a
 			vaulted fiber glass roof which is less susceptible to meteor damage.
 			It grows crops as food for the settlement.

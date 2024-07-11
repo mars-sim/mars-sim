@@ -327,7 +327,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		}
 
 		/**
-		 * Update mission members.
+		 * Updates mission members.
 		 */
 		void updateMembers() {
 			if (mission != null) {
@@ -359,7 +359,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 					}
 				}
 			} else {
-				if (members.size() > 0) {
+				if (!members.isEmpty()) {
 					clearMembers();
 					fireTableDataChanged();
 				}
