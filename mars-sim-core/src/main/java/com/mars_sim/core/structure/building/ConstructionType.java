@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ConstructionType.java
- * @date 2022-07-10
+ * @date 2024-07-12
  * @author Barry Evans
  */
 package com.mars_sim.core.structure.building;
@@ -10,7 +10,8 @@ package com.mars_sim.core.structure.building;
  * Represents the various construction types for Buildings
  */
 public enum ConstructionType {
-    SOLID,
-    INFLATABLE,
-    SEMI_SOLID;
+    CONCRETE,
+	INFLATABLE,
+	PRE_FABRICATED,
+    SEMI_ENGINEERED;
 }

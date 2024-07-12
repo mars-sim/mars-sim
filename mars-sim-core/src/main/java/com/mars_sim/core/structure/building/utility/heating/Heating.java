@@ -705,7 +705,7 @@ public class Heating implements Serializable {
 					coeff = LARGE_INSULATION_CANOPY;
 					break;
 			
-				case SEMI_SOLID:
+				case SEMI_ENGINEERED:
 					coeff = HALLWAY_INSULATION;
 					break;
 			

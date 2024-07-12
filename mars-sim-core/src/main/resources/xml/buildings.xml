@@ -802,7 +802,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end for Central Hub Type A -->
 
 
-	<building type="Inflatable Greenhouse" width="6.0" length="9.0" north-south-alignment="length" construction="INFLATABLE" base-level="0"
+	<building type="Inflatable Greenhouse" width="6.0" length="9.0" north-south-alignment="length" 
+		construction="INFLATABLE" base-level="0"
 		wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="3000">
 		<description> The Inflatable Greenhouse is essentially a flexible air bladder
 		made with interwoven layers of Polyurethane, Kevlar, polyester, Saran and Tedlar materials to retain an atmosphere adequate
@@ -924,8 +925,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end for inflatable greenhouse -->
 
-	<building type="Large Greenhouse" width="12.0" length="18.0" north-south-alignment="length" construction="SEMI_SOLID" base-level="0"
-			wear-lifetime="3340000" maintenance-time="250" room-temperature="24.0" base-mass="10000">
+	<building type="Large Greenhouse" width="12.0" length="18.0" north-south-alignment="length" 
+		construction="SEMI_ENGINEERED" base-level="0"
+		wear-lifetime="3340000" maintenance-time="250" room-temperature="24.0" base-mass="10000">
 		<description>
 			The Large Greenhouse is made of stronger structural and cladding material such as coextruded
 			laminate of polyamide and polyolefin interwoven around an aluminum frame to give rise
@@ -3145,8 +3147,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Machinery Hab -->
 
 	<!-- A hallway's length is variable and determined in templates or during construction. -->
-	<building type="Hallway" width="2.0" length="-1.0" north-south-alignment="length" 
-			construction="SEMI_SOLID" base-level="0"
+	<building type="Hallway" width="2.0" length="-1.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="20" room-temperature="20.0" base-mass="200"
 			category="CONNECTION">
 		<description> The Hallway is a pressurized access tube connecting
@@ -3174,10 +3175,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-<!-- The buildings below are underground and are used primarily for
-     Trading and Mining settlements -->
+<!-- The buildings below are constructed with in-situ materials, primarly 
+	underground and are used primarily for trading and mining settlements -->
 
-	<building type="Outpost Hub" width="10.0" length="10.0" north-south-alignment="length" base-level="-1"
+	<building type="Outpost Hub" width="10.0" length="10.0" north-south-alignment="length" 
+			construction="CONCRETE" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="250" room-temperature="22.5" base-mass="3000">
 		<description> The Outpost Hub is a vaulted brick building that acts
 			as the main hub of a trading or mining outpost. Like its cousin
@@ -3418,7 +3420,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Outpost Hub  -->
 
-	<building type="Bunkhouse" width="5.0" length="5.0" north-south-alignment="length" base-level="-1"
+	<building type="Bunkhouse" width="5.0" length="5.0" north-south-alignment="length" 
+			construction="CONCRETE" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="1500"
 			category="LIVING">
 		<description> The Bunkhouse is a spartan living quarters with
@@ -3458,7 +3461,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Bunkhouse -->
 
-	<building type="Storage Shed" width="5.0" length="5.0" north-south-alignment="length" base-level="-1"
+	<building type="Storage Shed" width="5.0" length="5.0" north-south-alignment="length" 
+			construction="CONCRETE" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" base-mass="1500">
 		<description> The Storage Shed is a small brick building for
 			storing resources for the settlement.
@@ -3489,7 +3493,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Storage Shed -->
 
 	<building type="Loading Dock Garage" width="15.0" length="18.0" 
-		north-south-alignment="length" base-level="-1" wear-lifetime="3340000" 
+			construction="CONCRETE" north-south-alignment="length" base-level="-1" wear-lifetime="3340000" 
 			maintenance-time="300" room-temperature="22.5" base-mass="10000">
 		<description> The Loading Dock Garage is an enclosed maintenance facility
 			featuring a brick loading dock for easy access. It hosts equipment for
@@ -3548,7 +3552,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end for loading dock garage -->
 
-	<building type="Mining Lab" width="5.0" length="5.0" north-south-alignment="length" base-level="-1"
+	<building type="Mining Lab" width="5.0" length="5.0" north-south-alignment="length" 
+			construction="CONCRETE"  base-level="-1"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="2500">
 		<description> The Mining Lab is a small brick laboratory furnished for
 			mining-related scientific instruments and research workbench.
@@ -3596,7 +3601,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Mining Lab -->
 
 
-	<building type="Inground Greenhouse" width="5.0" length="10.0" north-south-alignment="length" base-level="-1"
+	<building type="Inground Greenhouse" width="5.0" length="10.0" north-south-alignment="length" 
+			construction="CONCRETE" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="2500">
 		<description> The Inground Greenhouse is a semi underground structure with a
 			vaulted fiber glass roof which is less susceptible to meteor damage.
@@ -3687,7 +3693,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end for inground greenhouse -->
 
 	<!-- A tunnel's length is variable and determined in templates or during construction. -->
-	<building type="Tunnel" width="3.0" length="-1.0" north-south-alignment="length" base-level="-1"
+	<building type="Tunnel" width="3.0" length="-1.0" north-south-alignment="length" 
+			construction="CONCRETE" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="20" room-temperature="20.0" base-mass="200"
 			category="CONNECTION">
 		<description> The Tunnel is an underground pressurized access tube connecting

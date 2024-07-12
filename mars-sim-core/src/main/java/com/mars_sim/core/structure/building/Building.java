@@ -1343,11 +1343,11 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	private double getWallThickness() {
 		switch(constructionType) {
-			case SOLID:
+			case PRE_FABRICATED:
 				return 0.0000254;
 			case INFLATABLE:
 				return 0.0000018;
-			case SEMI_SOLID:
+			case SEMI_ENGINEERED:
 				return 0.0000100;
 			default:
 				return 0;
