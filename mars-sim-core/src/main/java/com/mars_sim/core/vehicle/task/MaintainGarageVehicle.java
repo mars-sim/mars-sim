@@ -108,7 +108,7 @@ public class MaintainGarageVehicle extends Task {
 
 		// End task if vehicle or garage not available.
 		if (garage == null) {
-			clearTask(vehicle.getName() + " No available garage for maintenance.");
+			clearTask("No available garage for " + vehicle.getName() + " maintenance.");
 			return;
 		}
 		else {

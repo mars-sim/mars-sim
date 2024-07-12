@@ -18,6 +18,7 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Towing;
@@ -158,6 +159,9 @@ public class UnloadVehicleGarage extends Task {
 			}
 
 			if (isFullyUnloaded(vehicle)) {
+				// Remove the vehicle from garage when done
+				BuildingManager.removeFromGarage(vehicle);
+				
 				endTask();
 			}
 		}
@@ -171,6 +175,7 @@ public class UnloadVehicleGarage extends Task {
 	 * @return is vehicle fully unloaded?
 	 */
 	private static final boolean isFullyUnloaded(Vehicle vehicle) {
+		// TODO: why not call isEmpty() ? 
 		return (vehicle.getStoredMass() == 0D);
 	}
 }
