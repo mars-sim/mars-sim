@@ -13,6 +13,7 @@ public class ClockPulse {
 	
 	private boolean newSol;
 	private boolean newHalfSol;
+	private boolean isNewHalfMSol;
 	private boolean newIntMillisol;
 	
 	/** The last millisol integer from the last pulse. */
@@ -44,7 +45,8 @@ public class ClockPulse {
 	 */
 	public ClockPulse(long id, double elapsed, 
 					MarsTime marsTime, MasterClock master, 
-					boolean newSol, boolean newHalfSol, boolean newMSol) {
+					boolean newSol, boolean newHalfSol, 
+					boolean newMSol, boolean newHalfMSol) {
 		super();
 		
 		if ((elapsed <= 0) || !Double.isFinite(elapsed)) {
@@ -58,6 +60,7 @@ public class ClockPulse {
 		this.newSol = newSol;
 		this.newHalfSol = newHalfSol;
 		this.newIntMillisol = newMSol;
+		this.isNewHalfMSol = newHalfMSol;
 	}
 
 	public long getId() {
@@ -110,6 +113,15 @@ public class ClockPulse {
 	}
 	
 	/**
+	 * Is this a new half integer millisol ?
+	 * 
+	 * @return
+	 */
+	public boolean isNewHalfMSol() {
+		return isNewHalfMSol;
+	}
+	
+	/**
 	 * Is this a new integer millisol ?
 	 * 
 	 * @return
@@ -126,40 +138,38 @@ public class ClockPulse {
 	 * @return
 	 */
 	public ClockPulse addElapsed(double msolsSkipped) {
-		double actualElapsed = msolsSkipped + elapsed;
-		// Add the skipped millisols
-		MarsTime newMars = marsTime.addTime(msolsSkipped);
-
 		////////////////////////////////////////////////////////////////////////////////////		
 		// NOTE: Any changes made below need to be brought to MasterClock's fireClockPulse()
 		////////////////////////////////////////////////////////////////////////////////////
-		double currentMillisol = marsTime.getMillisol();
+		
+		// Get the actual elapsed millisols
+		double actualElapsed = msolsSkipped + elapsed;
 		// Check if the simulation is just starting up		
 //		boolean atStartup = actualElapsed > currentMillisol;
+		// Add the skipped millisols
+		MarsTime newMars = marsTime.addTime(msolsSkipped);
+		// Get the current millisol
+		double currentMillisol = marsTime.getMillisol();
+		
+		////////////////////////////////////////////////////////////////////////////////////
+		// Part 1: Sol Updates
+		////////////////////////////////////////////////////////////////////////////////////
 		// Get the current sol
 		int currentSol = marsTime.getMissionSol();
 		// Identify if this pulse crosses a sol
 		boolean isNewSol = (lastSol != currentSol);
 		// Updates lastSol
 		if (isNewSol) {
-//			logger.info("newSol: " + newSol 
-//					+ "  isNewSol: " + isNewSol 
-//					+ "  lastSol: " + lastSol 
-//					+ "  currentSol: " + currentSol);
 			lastSol = currentSol;
 		}
 		// Identify if it just passes half a sol
 		boolean isNewHalfSol = isNewSol || (lastMillisol <= 500 && currentMillisol > 500);	
-
-		if (isNewHalfSol) {
-//			logger.info("newHalfSol: " + newHalfSol 
-//					+ "  isNewHalfSol: " + isNewHalfSol 
-//					+ "  lastMillisol: " + lastMillisol 
-//					+ "  currentMillisol: " + currentMillisol);
-		}
 		
-		// Update the lastMillisol
-		lastMillisol = currentMillisol;	
+		
+		////////////////////////////////////////////////////////////////////////////////////
+		// Part 1: Millisol Updates
+		////////////////////////////////////////////////////////////////////////////////////
+
 		// Get the current millisol integer
 		int currentIntMillisol = marsTime.getMillisolInt();
 		// Checks if this pulse starts a new integer millisol
@@ -168,19 +178,29 @@ public class ClockPulse {
 		if (isNewIntMillisol) {
 			lastIntMillisol = currentIntMillisol;
 		}
-		////////////////////////////////////////////////////////////////////////////////////
-		// Do NOT delete the following logger. For future debugging when changes are made //		
-//		logger.info("newSol: " + newSol 
-//				+ "  newHalfSol: " + newHalfSol 
-//				+ "  isNewSol: " + isNewSol 
-//				+ "  lastSol: " + lastSol 
-//				+ "  currentSol: " + currentSol 
-//				+ "  currentMillisol: " + currentMillisol
-//				+ "  elapsed: " + elapsed 
-//				+ "  actualElapsed: " + actualElapsed 
-//				+ "  msolsSkipped: " + msolsSkipped 
-//				);
+		// Identify if it just passes half a millisol
+		boolean isNewHalfMSol = isNewIntMillisol || (lastMillisol <= .5 && currentMillisol > .5);	
+		// Update the lastMillisol
+		lastMillisol = currentMillisol;		
+
+		/**
+		 * Do NOT delete the following logger. For future debugging when changes are made
+		 * 
+		  		logger.info("newSol: " + newSol 
+				+ "  newHalfSol: " + newHalfSol 
+				+ "  isNewSol: " + isNewSol 
+				+ "  newHalfMSol: " + newHalfMSol
+				+ "  lastSol: " + lastSol 
+				+ "  currentSol: " + currentSol 
+				+ "  currentMillisol: " + currentMillisol
+				+ "  elapsed: " + elapsed 
+				+ "  actualElapsed: " + actualElapsed 
+				+ "  msolsSkipped: " + msolsSkipped 
+				);
+		 * 
+		 */
+
 		
-		return new ClockPulse(id, actualElapsed, newMars, master, isNewSol, isNewHalfSol, isNewIntMillisol);
+		return new ClockPulse(id, actualElapsed, newMars, master, isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMSol);
 	}
 }

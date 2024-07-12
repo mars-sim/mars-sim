@@ -305,7 +305,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	public ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol) {
 		var master = sim.getMasterClock();
 		master.setMarsTime(marsTime);
-        return new ClockPulse(pulseID++, 1D, marsTime, master, newSol, newHalfSol, true);
+        return new ClockPulse(pulseID++, 1D, marsTime, master, newSol, newHalfSol, true, false);
     }
 
 	/**

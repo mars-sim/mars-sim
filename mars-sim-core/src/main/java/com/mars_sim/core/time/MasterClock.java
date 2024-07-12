@@ -794,11 +794,15 @@ public class MasterClock implements Serializable {
 	 * @param time
 	 */
 	private void fireClockPulse(double time) {
-		
 		////////////////////////////////////////////////////////////////////////////////////		
 		// NOTE: Any changes made below may need to be brought to ClockPulse's addElapsed()
 		////////////////////////////////////////////////////////////////////////////////////
+		// Get the current millisol
 		double currentMillisol = marsTime.getMillisol();
+		
+		////////////////////////////////////////////////////////////////////////////////////
+		// Part 1: Sol Updates
+		////////////////////////////////////////////////////////////////////////////////////
 		// Get the current sol
 		int currentSol = marsTime.getMissionSol();
 		// Identify if this pulse crosses a sol
@@ -810,12 +814,10 @@ public class MasterClock implements Serializable {
 		// Identify if it just passes half a sol
 		boolean isNewHalfSol = isNewSol || (lastMillisol <= 500 && currentMillisol > 500);	
 		
-		if (isNewHalfSol) {
-			lastSol = currentSol;
-		}
 		
-		// Update the lastMillisol
-		lastMillisol = currentMillisol;	
+		////////////////////////////////////////////////////////////////////////////////////
+		// Part 2: Millisol Updates
+		////////////////////////////////////////////////////////////////////////////////////
 		// Get the current millisol integer
 		int currentIntMillisol = marsTime.getMillisolInt();
 		// Checks if this pulse starts a new integer millisol
@@ -824,6 +826,11 @@ public class MasterClock implements Serializable {
 		if (isNewIntMillisol) {
 			lastIntMillisol = currentIntMillisol;
 		}
+		// Identify if it just passes half a millisol
+		boolean isNewHalfMSol = isNewIntMillisol || (lastMillisol <= .5 && currentMillisol > .5);
+		// Update the lastMillisol
+		lastMillisol = currentMillisol;	
+
 		////////////////////////////////////////////////////////////////////////////////////
 		
 		// Print the current sol banner
@@ -835,7 +842,9 @@ public class MasterClock implements Serializable {
 		int logIndex = (int)(newPulseId % MAX_PULSE_LOG);
 		pulseLog[logIndex] = System.currentTimeMillis();
 
-		currentPulse = new ClockPulse(newPulseId, time, marsTime, this, isNewSol, isNewHalfSol, isNewIntMillisol);
+		////////////////////////////////////////////////////////////////////////////////////
+		
+		currentPulse = new ClockPulse(newPulseId, time, marsTime, this, isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMSol);
 		// Note: for-loop may handle checked exceptions better than forEach()
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
 
