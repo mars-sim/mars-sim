@@ -367,8 +367,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<process-engine name="Atmospheric processing" number-modules="4"/>
 				<process-engine name="Methanol Synthesis" number-modules="4"/>
-				<process-engine name="Melt Ice" number-modules="16" />
-				<process-engine name="Filter Brine Water" number-modules="8" />
+				<process-engine name="Melt Ice" number-modules="20" />
+				<process-engine name="Filter Brine Water" number-modules="20" />
 			
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
@@ -748,8 +748,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<process-engine name="Atmospheric processing" number-modules="12"/>
 				<process-engine name="Methanol Synthesis" number-modules="12"/>
-				<process-engine name="Melt Ice" number-modules="48" />
-				<process-engine name="Filter Brine Water" number-modules="24" />
+				<process-engine name="Melt Ice" number-modules="40" />
+				<process-engine name="Filter Brine Water" number-modules="40" />
 						
 				<activity>
 					<activity-spot xloc="7.27" yloc="4.54" />
@@ -1455,8 +1455,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Melt Ice" number-modules="30"/>	
-				<process-engine name="Filter Brine Water" number-modules="20"/>						
+				<process-engine name="Melt Ice" number-modules="60"/>	
+				<process-engine name="Filter Brine Water" number-modules="60"/>						
 			</resource-processing>
 			
 			<storage capacity="300000">
@@ -3310,8 +3310,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<process-engine name="Atmospheric processing" number-modules="4"/>
 				<process-engine name="Methanol Synthesis" number-modules="4"/>
-				<process-engine name="Melt Ice" number-modules="16" />
-				<process-engine name="Filter Brine Water" number-modules="8" />
+				<process-engine name="Melt Ice" number-modules="20" />
+				<process-engine name="Filter Brine Water" number-modules="20" />
 								
 				<activity>
 					<activity-spot xloc="-2.6" yloc="-2.13" />

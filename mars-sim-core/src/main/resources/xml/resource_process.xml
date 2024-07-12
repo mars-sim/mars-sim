@@ -388,10 +388,10 @@
 			2. Exposing ice sunlight is the most economic way of melting ice.
 			3. Ice melts when outside temperature is above zero deg Celsius  
 		</description>
-		<input resource="ice" rate="80.0"  />
+		<input resource="ice" rate="100.0"  />
 		
-		<output resource="brine water" rate="60.0"  />
-		<output resource="regolith" rate="15.0"  />
+		<output resource="brine water" rate="85.0"  />
+		<output resource="regolith" rate="10.0"  />
 		<!-- Amount of rock salt or Halite is arbitrary. Need more research -->
 		<output resource="rock salt" rate="5.0"  />
 	</process>

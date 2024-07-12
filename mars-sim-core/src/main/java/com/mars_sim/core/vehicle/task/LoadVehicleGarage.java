@@ -21,6 +21,7 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.resource.AmountResource;
+import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
@@ -194,7 +195,7 @@ public class LoadVehicleGarage extends Task {
 					
 				if (stored < totalNeeded) {
 					if (logger.isLoggable(Level.INFO))
-						logSettlementShortage(vehicle, ResourceUtil.findAmountResourceName(resource),
+						logSettlementShortageAmount(vehicle, ResourceUtil.findAmountResourceName(resource),
 								loaded, needed, settlementNeed, stored);
 					return false;
 				}
@@ -208,7 +209,7 @@ public class LoadVehicleGarage extends Task {
 				if (settlement.getItemResourceStored(resource) < totalNeeded) {
 					int stored = settlement.getItemResourceStored(resource);
 					if (logger.isLoggable(Level.INFO))
-						logSettlementShortage(vehicle, ResourceUtil.findAmountResourceName(resource),
+						logSettlementShortageNum(vehicle, ItemResourceUtil.findItemResourceName(resource),
 								numLoaded, needed, settlementNeed, stored);
 					return false;
 				}
@@ -217,7 +218,7 @@ public class LoadVehicleGarage extends Task {
 		}
 
 		// Check if there is enough equipment at the settlement.
-		for(Entry<Integer, Integer> eRequired : equipment.entrySet()) {
+		for (Entry<Integer, Integer> eRequired : equipment.entrySet()) {
 			Integer equipmentType = eRequired.getKey();
 			EquipmentType eType = EquipmentType.convertID2Type(equipmentType);
 			int needed = eRequired.getValue();
@@ -227,7 +228,7 @@ public class LoadVehicleGarage extends Task {
 			int stored = settlement.findNumEmptyContainersOfType(eType, false);
 			if (stored < totalNeeded) {	
 				if (logger.isLoggable(Level.INFO)) {
-					logSettlementShortage(vehicle, eType.toString(),
+					logSettlementShortageNum(vehicle, eType.toString(),
 							numLoaded, totalNeeded, settlementNeed, stored);
 				}
 				return false;
@@ -250,8 +251,30 @@ public class LoadVehicleGarage extends Task {
 	 * @param settlementNeed
 	 * @param stored
 	 */
-	private static final void logSettlementShortage(Vehicle vehicle, String resource,
+	private static final void logSettlementShortageAmount(Vehicle vehicle, String resource,
 									double numLoaded, double needed, double settlementNeed, double stored) {
+		StringBuilder msg = new StringBuilder();
+		msg.append("Not having enough ")
+			.append(resource) 
+			.append("; Loaded: ").append(Math.round(numLoaded * 10.0)/10.0) 
+			.append("; Needed: ").append(Math.round(needed * 10.0)/10.0)
+			.append("; Settlement's need: ").append(Math.round(settlementNeed * 10.0)/10.0)
+			.append("; Settlement's stored: ").append(Math.round(stored * 10.0)/10.0);
+		logger.info(vehicle, msg.toString());
+	}
+	
+	/**
+	 * Logs the settlement shortage.
+	 * 
+	 * @param vehicle
+	 * @param resource
+	 * @param numLoaded
+	 * @param needed
+	 * @param settlementNeed
+	 * @param stored
+	 */
+	private static final void logSettlementShortageNum(Vehicle vehicle, String resource,
+									int numLoaded, int needed, int settlementNeed, int stored) {
 		StringBuilder msg = new StringBuilder();
 		msg.append("Not having enough ")
 			.append(resource) 
