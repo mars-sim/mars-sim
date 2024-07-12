@@ -243,6 +243,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		}
 		else
 			this.floorArea = length * width;
+		
 		if (floorArea <= 0) {
 			throw new IllegalArgumentException("Floor area cannot be -ve w=" + width + ", l=" + length);
 		}

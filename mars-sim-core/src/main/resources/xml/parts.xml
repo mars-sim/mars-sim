@@ -750,7 +750,7 @@
 
 	<part name="Semiconductor Wafer" type="electronic" mass="1"/>
 
-	<part name="Laser Sintering 3D printer" type="electronic" mass="50.0">
+	<part name="SLS 3D Printer" type="electronic" mass="50.0">
 		<maintenance-entity-list>
 			<entity name="manufacture" probability="3" max-number="2" />
 		</maintenance-entity-list>

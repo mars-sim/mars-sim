@@ -69,7 +69,9 @@ public class Heating implements Serializable {
     private static final double T_UPPER_SENSITIVITY = 1D;
     private static final double T_LOWER_SENSITIVITY = 1D;
 
-    private static final double HEAT_DISSIPATED_PER_PERSON = .1; //[in kW]
+    private static final double HEAT_DISSIPATED_PER_PERSON = .1; // [in kW]
+    
+    private static final double HEAT_GAIN_PER_CHEF = .15; // [in kW]
     
     // MSOL_LIMIT = 1.5;
     // kPASCAL_PER_ATM = 1D/0.00986923267 ; // 1 kilopascal = 0.00986923267 atm
@@ -230,16 +232,10 @@ public class Heating implements Serializable {
 			logger.severe(building, "length: " + length);
 		}
 		
-//		checkError("length", length);
-		
 		width = building.getWidth();
-		
-//		checkError("width", width);
-		
-		floorArea = length * width;
-		
-//		checkError("floorArea", floorArea);
-		
+			
+		floorArea = building.getFloorArea();
+	
 		areaFactor = Math.sqrt(Math.sqrt(floorArea));
 
 		switch(building.getCategory()) {
@@ -635,13 +631,24 @@ public class Heating implements Serializable {
 		
 		error = checkError("excessHeat", excessHeat) || error;
 		
+		// (2a) CALCULATE HEAT GAIN BY HEAT GEN FROM LAST CYCLE AND EXCESS HEAT FROM COMPUTING
+		
 		double heatPumpedIn = heatGenCache + excessHeat;
+		
+		// (2b) CALCULATE HEAT GAIN BY KITCHEN FOOD PREPARATION
+		double heatGainChief = 0; 
+		if (building.getFoodProduction() != null) {
+			heatGainChief = HEAT_GAIN_PER_CHEF * building.getFoodProduction().getNumOccupiedActivitySpots();
+		}
+		if (building.getCooking() != null) {
+			heatGainChief += HEAT_GAIN_PER_CHEF * building.getCooking().getNumOccupiedActivitySpots();
+		}
 
-		// (2b) CALCULATE HEAT GAIN BY PEOPLE
+		// (2c) CALCULATE HEAT GAIN BY PEOPLE
 		double heatGainOccupants = HEAT_DISSIPATED_PER_PERSON * building.getNumPeople();
 		// the energy required to heat up the in-rush of the new martian air
 
-		// (2c) CALCULATE HEAT GAIN BY EVA HEATER
+		// (2d) CALCULATE HEAT GAIN BY EVA HEATER
 	
 		double heatGainFromEVAHeater = 0;
 		if (numEVAgoers > 0) 
@@ -652,7 +659,7 @@ public class Heating implements Serializable {
 		// divide by 2 since half of the time a person is doing ingress 
 		// Note : Assuming EVA heater requires .5kW of power for heating up the air for each person in an airlock during EVA ingress.
 
-		// (2d) CALCULATE SOLAR HEAT GAIN
+		// (2e) CALCULATE SOLAR HEAT GAIN
 
 		// Solar heat gain is the amount of solar radiation that enters a 
 		// building through windows and other openings. 
@@ -680,7 +687,7 @@ public class Heating implements Serializable {
 		
 		error = checkError("solarHeatGain", solarHeatGain) || error;
 		
-		// (2e) CALCULATE INSULATION HEAT GAIN
+		// (2f) CALCULATE INSULATION HEAT GAIN
 		double canopyHeatGain = 0;
 		double coeff = 0;
 		
@@ -711,33 +718,41 @@ public class Heating implements Serializable {
 	
 		error = checkError("canopyHeatGain", canopyHeatGain) || error;
 		
-		// (2f) CALCULATE HEAT GAIN DUE TO ARTIFICIAL LIGHTING
+		// (2g) CALCULATE HEAT GAIN DUE TO ARTIFICIAL LIGHTING
 		double lightingGain = 0;
-		
+
+		// Case 1: Specialized Lighting for Crop
 		if (isGreenhouse && building.getFarming() != null) {
-			// greenhouse has a semi-transparent rooftop
+			// Currently, greenhouses uses high pressure sodium lamps with the assumption 
+			// of having 60% invisible radiation (energy loss as heat)
 			lightingGain = building.getFarming().getTotalLightingPower() * LAMP_GAIN_FACTOR;
-	        // For high pressure sodium lamp, assuming 60% are invisible radiation (energy loss as heat)
+
+//			logger.info(building, 60_000, "lightingGain: " + Math.round(lightingGain * 10.0)/10.0);
 		}
-		else if (irradiance < 0.075) {
-			// Based on the floor area and the sunlight intensity
-			lightingGain = (1 - irradiance) * floorArea / 30;
+		
+		// Case 2: General Lighting 
+		if (irradiance < 0.075) {
+			// The general lighting requirement is based upon the floor area and the sunlight intensity
+			lightingGain += (1 - irradiance) * floorArea / 150;
+			
+//			logger.info(building, 60_000, "I: " + Math.round(irradiance * 10.0)/10.0
+//					+ "  lightingGain: " + Math.round(lightingGain * 10.0)/10.0);
 		}
 
 		error = checkError("lightingGain", lightingGain) || error;
 		
-		// (2g) ADD HEAT GAIN BY EQUIPMENT
+		// (2h) ADD HEAT GAIN BY EQUIPMENT
 		// see heatGainEqiupment below
 			
 		// Note: heatGain and heatLoss are to be converted from kJ to BTU below
 		
-		// (2h) CALCULATE TOTAL HEAT GAIN 
-		double gain = heatPumpedIn 
+		// (2i) CALCULATE TOTAL HEAT GAIN 
+		double gain = heatPumpedIn + heatGainChief
 				+ heatGainOccupants + heatGainFromEVAHeater 
 				+ solarHeatGain + canopyHeatGain 
 				+ lightingGain + heatGainEquipment;
 		
-		// (2i) Calculate the heat transfer due to ventilation
+		// (2j) Calculate the heat transfer due to ventilation
 
 		double ventInHeat = getVentInHeat();	
 
