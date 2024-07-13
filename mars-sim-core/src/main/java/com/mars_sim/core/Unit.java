@@ -562,8 +562,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 					i.unitUpdate(ue);
 				}
 				catch(RuntimeException rte) {
-					logger.warning(this, "Problem executing listener " + i + " for event " + ue
-									+ " due to " + rte.getMessage());
+					logger.severe(this, "Problem executing listener " + i + " for event " + ue, rte);
 				}
 			}
 		}

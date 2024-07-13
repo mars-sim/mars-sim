@@ -20,8 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.SwingConstants;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
@@ -71,7 +70,7 @@ public abstract class UnitWindow extends ModalInternalFrame
 	 * @param unit           the unit for this window.
 	 * @param hasDescription true if unit description is to be displayed.
 	 */
-	public UnitWindow(MainDesktopPane desktop, Unit unit, String title, boolean hasDescription) {
+	protected UnitWindow(MainDesktopPane desktop, Unit unit, String title, boolean hasDescription) {
 		// Use JInternalFrame constructor
 		super(title, false, true, false, true);
 
@@ -109,19 +108,15 @@ public abstract class UnitWindow extends ModalInternalFrame
 		JPanel mainPane = new JPanel(new BorderLayout());
 		setContentPane(mainPane);
 
-		tabPane = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+		tabPane = new JTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
 		tabPane.setPreferredSize(new Dimension(WIDTH - 25, HEIGHT - 120));
 
 		// Add a listener for the tab changes
-		tabPane.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				TabPanel newTab = getSelected();
-				if (!newTab.isUIDone()) {
-					if (oldTab == null || newTab != oldTab) {
-						oldTab = newTab;
-						newTab.initializeUI();
-					}
-				}
+		tabPane.addChangeListener(e -> {
+			TabPanel newTab = getSelected();
+			if (!newTab.isUIDone() && (oldTab == null || newTab != oldTab)) {
+				oldTab = newTab;
+				newTab.initializeUI();
 			}
 		});
 
@@ -176,11 +171,11 @@ public abstract class UnitWindow extends ModalInternalFrame
 	 * Adds tab panels with icons.
 	 */
 	protected void addTabIconPanels() {
-		tabPanels.forEach(panel -> {
+		tabPanels.forEach(panel ->
 			// Note: if adding panel.getTabTitle() as the first param, it would take up 
 			// too much space on the left for displaying the name of each tab
-			tabPane.addTab(null, panel.getTabIcon(), panel, panel.getTabToolTip());
-		});
+			tabPane.addTab(null, panel.getTabIcon(), panel, panel.getTabToolTip())
+		);
 	}
 	
 	/**
@@ -287,14 +282,6 @@ public abstract class UnitWindow extends ModalInternalFrame
 		}
 		else
 			agencyStr = unit.getAssociatedSettlement().getReportingAuthority().getName();
-
-//		Image img = ((Image) ImageLoader.getIconByName(AGENCY_FOLDER + agencyStr));
-////				.getScaledInstance(UnitWindow.STATUS_HEIGHT - 5, 
-////						UnitWindow.STATUS_HEIGHT - 5, Image.SCALE_SMOOTH);	
-//		JLabel agencyLabel = new JLabel(new ImageIcon(img));
-//
-////		Icon icon = ImageLoader.getIconByName(AGENCY_FOLDER + agencyStr);
-////		JLabel agencyLabel = new JLabel(icon);
 		
 		Icon icon = ImageLoader.getIconByName(AGENCY_FOLDER + agencyStr);
 		JLabel agencyLabel = null;
@@ -316,15 +303,10 @@ public abstract class UnitWindow extends ModalInternalFrame
     
     
 	/**
-	 * Prepares unit window for deletion.
+	 * Prepares unit window for deletion. Close all tabs
 	 */
-	public void destroy() {		
-		if (tabPanels != null)
-			tabPanels.clear();
-		tabPanels = null;
-		tabPane = null;
-		desktop = null;
-		unit = null;
+	public void destroy() {
+		tabPanels.forEach(t -> t.destroy());	
+		tabPanels.clear();
 	}
-
 }
