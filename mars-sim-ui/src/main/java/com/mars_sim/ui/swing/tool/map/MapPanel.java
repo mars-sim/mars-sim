@@ -354,12 +354,24 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @return true if map type set successfully
 	 */
 	public boolean loadNewMapType(String newMapString, int res) {
-
-		if ((marsMap == null) || res != marsMap.getMapMetaData().getResolution() 
-				|| !newMapString.equals(marsMap.getMapMetaData().getMapString())) {
+		boolean reload = false;
+		
+		if (marsMap == null) {	
+//			logger.info("marsMap == null");
+			reload = true;
+		}
+		else if (res != marsMap.getMapMetaData().getResolution()) {
+//			logger.info("res != marsMap.getMapMetaData().getResolution()");
+			reload = true;
+		}
+		else if (!newMapString.equals(marsMap.getMapMetaData().getMapString())) {
+//			logger.info("!newMapString.equals(marsMap.getMapMetaData().getMapString())");
+			reload = true;
+		}
+		
+		if (reload) {
 			
 			mapUtil.setMapData(newMapString, res);
-
 			marsMap = new CannedMarsMap(this, mapUtil.loadMapData(newMapString));
 
 			// Redefine map param
@@ -375,10 +387,10 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			
 			showMap(centerCoords, getRho());
 			
-			return true;
+			return reload;
 		}
-		
-		return false;
+	
+		return reload;
 	}
 
 	public Coordinates getCenterLocation() {

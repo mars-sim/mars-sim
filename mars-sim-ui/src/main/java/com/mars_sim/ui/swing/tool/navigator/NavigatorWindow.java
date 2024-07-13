@@ -202,7 +202,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private List<Landmark> landmarks;
 	
 	/** The map panel class for holding all the map layers. */
-	private MapPanel mapLayerPanel;
+	private MapPanel mapPanel;
 
 	private JPanel detailPane;
 	
@@ -242,27 +242,27 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		JPanel mapPane = new JPanel();
 		wholePane.add(mapPane, BorderLayout.CENTER);
 
-		mapLayerPanel = new MapPanel(desktop, this);
-		mapLayerPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
+		mapPanel = new MapPanel(desktop, this);
+		mapPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
 		
-		mapLayerPanel.setMouseDragger(true);
-		mapLayerPanel.addMouseListener(new MouseListener());
-		mapLayerPanel.addMouseMotionListener(new MouseMotionListener());
+		mapPanel.setMouseDragger(true);
+		mapPanel.addMouseListener(new MouseListener());
+		mapPanel.addMouseMotionListener(new MouseMotionListener());
 		
 		// Create map layers.
-		createMapLayer(DAYLIGHT_LAYER, 0, new ShadingMapLayer(mapLayerPanel));
-		mineralLayer = new MineralMapLayer(mapLayerPanel);
+		createMapLayer(DAYLIGHT_LAYER, 0, new ShadingMapLayer(mapPanel));
+		mineralLayer = new MineralMapLayer(mapPanel);
 		createMapLayer(MINERAL_LAYER, 1, mineralLayer);
-		createMapLayer("unitIcon", 2, new UnitIconMapLayer(mapLayerPanel));
+		createMapLayer("unitIcon", 2, new UnitIconMapLayer(mapPanel));
 		createMapLayer("unitLabels", 3, new UnitLabelMapLayer());
-		createMapLayer("navPoints", 4, new NavpointMapLayer(mapLayerPanel));
+		createMapLayer("navPoints", 4, new NavpointMapLayer(mapPanel));
 		createMapLayer("vehicleTrails", 5, new VehicleTrailMapLayer());
 		createMapLayer("landmarks", 6, new LandmarkMapLayer());
-		createMapLayer(EXPLORED_LAYER, 7, new ExploredSiteMapLayer(mapLayerPanel));
+		createMapLayer(EXPLORED_LAYER, 7, new ExploredSiteMapLayer(mapPanel));
 
-		mapLayerPanel.showMap(new Coordinates((Math.PI / 2D), 0D));
+		mapPanel.showMap(new Coordinates((Math.PI / 2D), 0D));
 		
-		mapPane.add(mapLayerPanel);
+		mapPane.add(mapPanel);
 			
 		buildZoomSlider();
 		
@@ -273,7 +273,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		mapPane.add(zoomPane);
 
-		mapLayerPanel.addMouseWheelListener(this);
+		mapPanel.addMouseWheelListener(this);
 		
 		///////////////////////////////
 		
@@ -494,7 +494,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			}
 			
 			// Set the map type
-			changeMapType(userSettings.getProperty(MAPTYPE_ACTION, MapDataFactory.DEFAULT_MAP_TYPE), resolution);
+			// NOTE: this method causes Error JOptionPane.showMessageDialog at start up 
+			changeMapType(userSettings.getProperty(MAPTYPE_ACTION, MapDataFactory.DEFAULT_MAP_TYPE), resolution, true);
 
 			mapTypeCache = MapDataFactory.DEFAULT_MAP_TYPE;
 			
@@ -716,7 +717,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */
 	public void updateCoordsMaps(Coordinates newCoords) {
 		updateCoordsBox(newCoords);
-		mapLayerPanel.showMap(newCoords);
+		mapPanel.showMap(newCoords);
 	}
 	
 	/**
@@ -725,7 +726,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param newCoords the new center location
 	 */
 	public void updateMaps(Coordinates newCoords) {
-		mapLayerPanel.showMap(newCoords);
+		mapPanel.showMap(newCoords);
 	}
 	
 	/** ActionListener method overridden. */
@@ -776,7 +777,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			if (command.startsWith(MAPTYPE_ACTION)) {
 				String newMapType = command.substring(MAPTYPE_ACTION.length());
 				if (((JCheckBoxMenuItem) source).isSelected()) {
-					changeMapType(newMapType, res);
+					changeMapType(newMapType, res, false);
 					mapTypeCache = newMapType;
 				}
 			}
@@ -790,19 +791,19 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 						reply = 0;
 					
 					// Note: may explore the use of mapDataUtil.loadMapData(newMapType).getMetaData().getResolution()
-					int oldRes = mapLayerPanel.getMapMetaData().getResolution(); 
+					int oldRes = mapPanel.getMapMetaData().getResolution(); 
 					if (oldRes < 0)
 						oldRes = 0;
 					
 					// Note: Level 0 is the lowest res
-					if (reply < mapLayerPanel.getMapMetaData().getNumLevel()) {
+					if (reply < mapPanel.getMapMetaData().getNumLevel()) {
 												
 						if (reply != oldRes 
 								|| reply != res 
 								|| !newMapType.equalsIgnoreCase(mapTypeCache)) {
 							// Set to the new map resolution
 							res = reply;
-							changeMapType(newMapType, reply);
+							changeMapType(newMapType, reply, false);
 							mapTypeCache = newMapType;
 						}
 					}
@@ -829,14 +830,14 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private int selectUnloadedMap(String newMapType) {
 
 		// Previously, int oldRes =  mapDataUtil.loadMapData(newMapType).getMetaData().getResolution()
-		int oldRes = mapLayerPanel.getMapMetaData().getResolution(); 
+		int oldRes = mapPanel.getMapMetaData().getResolution(); 
 		if (oldRes < 0) {
 			oldRes = 0;
 		}
 		
 		List<String> list = new ArrayList<>();
 		
-		int numLevel = mapLayerPanel.getMapMetaData().getNumLevel();
+		int numLevel = mapPanel.getMapMetaData().getNumLevel();
 		
 		for (int i = 0; i < numLevel; i++) {
 			list.add(LEVEL + i);
@@ -866,11 +867,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param newMapType New map Type
 	 * @param res
 	 */
-	private void changeMapType(String newMapType, int res) {
+	private void changeMapType(String newMapType, int res, boolean startup) {
 		// Load the new map type
-		if (mapLayerPanel.loadNewMapType(newMapType, res)) {
+		if (startup || mapPanel.loadNewMapType(newMapType, res)) {
 			// Update dependent panels
-			MapMetaData metaType = mapLayerPanel.getMapMetaData();
+			MapMetaData metaType = mapPanel.getMapMetaData();
 			
 			if (metaType.isColourful()) {
 				// turn off day night layer
@@ -881,6 +882,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				mineralsButton.setEnabled(false);
 			}
 		}
+		
 		else {
 			// Inform user
 			JOptionPane.showMessageDialog(getFocusOwner(), "There was a problem loading the map data",
@@ -923,9 +925,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private void setMapLayer(boolean setMap, String layerName) {
 		MapOrder selected = mapLayers.get(layerName);
 		if (setMap) {
-			mapLayerPanel.addMapLayer(selected.layer, selected.order);
+			mapPanel.addMapLayer(selected.layer, selected.order);
 		} else {
-			mapLayerPanel.removeMapLayer(selected.layer);
+			mapPanel.removeMapLayer(selected.layer);
 		}
 	}
 
@@ -954,7 +956,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			
 			JCheckBoxMenuItem mapItem = new JCheckBoxMenuItem(metaData.getMapType() + " (" +  resolutionString + ")"
 //															+ (!loaded ? " (Not loaded)" : "")
-															, metaData.equals(mapLayerPanel.getMapMetaData()));
+															, metaData.equals(mapPanel.getMapMetaData()));
 			// Different action for unloaded maps
 			mapItem.setActionCommand((loaded ? MAPTYPE_ACTION : MAPTYPE_RELOAD_ACTION)
 										+ metaData.getMapString());
@@ -968,7 +970,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		for (Entry<String, MapOrder> e : mapLayers.entrySet()) {
 			optionsMenu.add(createSelectableMapOptions(LAYER_ACTION, e.getKey(),
-							mapLayerPanel.hasMapLayer(e.getValue().layer)));
+							mapPanel.hasMapLayer(e.getValue().layer)));
 		}
 
 		optionsMenu.pack();
@@ -1057,8 +1059,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	public void checkClick(MouseEvent event) {
 
-		if (mapLayerPanel.getCenterLocation() != null) {
-			Coordinates clickedPosition = mapLayerPanel.getMouseCoordinates(event.getX(), event.getY());
+		if (mapPanel.getCenterLocation() != null) {
+			Coordinates clickedPosition = mapPanel.getMouseCoordinates(event.getX(), event.getY());
 
 			Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
 
@@ -1080,10 +1082,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 					double clickRange = unitCoords.getDistance(clickedPosition);
 					double unitClickRange = displayInfo.getMapClickRange();
 					if (clickRange < unitClickRange) {
-						mapLayerPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+						mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 						desktop.showDetails(unit);
 					} else
-						mapLayerPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+						mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				}
 			}
 		}
@@ -1096,9 +1098,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */
 	public void checkHover(MouseEvent event) {
 
-		Coordinates mapCenter = mapLayerPanel.getCenterLocation();
+		Coordinates mapCenter = mapPanel.getCenterLocation();
 		if (mapCenter != null) {
-			Coordinates pos = mapLayerPanel.getMouseCoordinates(event.getX(), event.getY());
+			Coordinates pos = mapPanel.getMouseCoordinates(event.getX(), event.getY());
 
 			StringBuilder coordSB = new StringBuilder();			
 			StringBuilder elevSB = new StringBuilder();
@@ -1109,7 +1111,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			double h0 = TerrainElevation.getMOLAElevation(phi, theta);
 //			double h1 = TerrainElevation.getRGBElevation(pos);
 
-			double mag = mapLayerPanel.getMagnification();
+			double mag = mapPanel.getMagnification();
 			
 			phi = Math.round(phi*1000.0)/1000.0;
 			theta = Math.round(theta*1000.0)/1000.0;
@@ -1138,7 +1140,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				if (unit.getUnitType() == UnitType.VEHICLE) {
 					if (((Vehicle)unit).isOutsideOnMarsMission()) {
 						// Proceed to below to set cursor;
-						mapLayerPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+						mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 					}
 					else 
 						continue;
@@ -1149,7 +1151,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 					double clickRange = Coordinates.computeDistance(unit.getCoordinates(), pos);
 					double unitClickRange = displayInfo.getMapClickRange();
 					if (clickRange < unitClickRange) {
-						mapLayerPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+						mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 						onTarget = true;
 					}
 				}
@@ -1165,13 +1167,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				double unitClickRange = 20;
 				if (clickRange < unitClickRange) {
 //					logger.info("The mouse cursor is hovering over " + landmark.getLandmarkName());
-					mapLayerPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+					mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 					onTarget = true;
 				}
 			}
 
 			if (!onTarget) {
-				mapLayerPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		}
 	}
@@ -1183,8 +1185,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */
 	@Override
 	public void update(ClockPulse pulse) {
-		if (mapLayerPanel != null) {
-			mapLayerPanel.update(pulse);
+		if (mapPanel != null) {
+			mapPanel.update(pulse);
 		}
 	}
 	 	
@@ -1192,7 +1194,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * Gets the map panel class.
 	 */
 	public MapPanel getMapPanel() {
-		return mapLayerPanel;
+		return mapPanel;
 	}
 	
 	@Override
@@ -1200,10 +1202,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		Properties results = new Properties();
 
 		// Record the map type
-		results.setProperty(MAPTYPE_ACTION, mapLayerPanel.getMapMetaData().getMapString());
+		results.setProperty(MAPTYPE_ACTION, mapPanel.getMapMetaData().getMapString());
 		// Record the resolution
-		results.setProperty(RESOLUTION_ACTION, "" + mapLayerPanel.getMapMetaData().getResolution());
-		Coordinates center = mapLayerPanel.getCenterLocation();
+		results.setProperty(RESOLUTION_ACTION, "" + mapPanel.getMapMetaData().getResolution());
+		Coordinates center = mapPanel.getCenterLocation();
 		// Record the longitude
 		results.setProperty(LON_PROP, center.getFormattedLongitudeString());
 		// Record the latitude
@@ -1213,7 +1215,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		for (Entry<String, MapOrder> e : mapLayers.entrySet()) {
 			// Record the choice of layers
 			results.setProperty(LAYER_ACTION + e.getKey(),
-							Boolean.toString(mapLayerPanel.hasMapLayer(e.getValue().layer)));
+							Boolean.toString(mapPanel.hasMapLayer(e.getValue().layer)));
 		}
 
 		// Record the mineral layers
@@ -1326,7 +1328,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */
 	public void setRho(double rho) {
 		this.rho = rho;
-		mapLayerPanel.setRho(rho);
+		mapPanel.setRho(rho);
 	}
 	
 	public static int getMapResolution() {
@@ -1338,12 +1340,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */	
 	@Override
 	public void destroy() {
-		if (mapLayerPanel != null)
-			mapLayerPanel.destroy();
+		if (mapPanel != null)
+			mapPanel.destroy();
 
 		latCB = null;
 		lonCB = null;
-		mapLayerPanel = null;
+		mapPanel = null;
 		latCBDir = null;
 		lonCBDir = null;
 		
@@ -1363,7 +1365,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		mapLayers  = null;
 		landmarks = null;
-		mapLayerPanel = null;
+		mapPanel = null;
 		mineralLayer = null;
 
 		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, umListener);
