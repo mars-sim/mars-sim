@@ -26,6 +26,7 @@ import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 
 import junit.framework.TestCase;
@@ -76,11 +77,6 @@ extends TestCase {
 		person = Person.create("Jim Loader", settlement, GenderType.MALE).build();
 		
 		settlement.addACitizen(person);
-		
-//		unitManager.addUnit(vehicle);
-		
-		// Set the container unit
-//		person.setContainerUnit(settlement);
 
 		// Make the person strong to get loading quicker
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeType.STRENGTH, 40);
@@ -100,8 +96,7 @@ extends TestCase {
 
 		loadSettlementResources(settlement, requiredResources.getResources(true));
 
-		LoadingController controller = new LoadingController(settlement, vehicle,
-															 requiredResources);
+		LoadingController controller = vehicle.setLoading(requiredResources);
 		int loadingCount = 0;
 		while (loadingCount < 100) {
 			controller.backgroundLoad(80);
@@ -231,8 +226,7 @@ extends TestCase {
 		// Add 2000kg food to the manifest
 		requiredResources.addResource(ResourceUtil.foodID, 50D, true);
 
-		LoadingController controller = new LoadingController(settlement, vehicle,
-										requiredResources);
+		LoadingController controller = vehicle.setLoading(requiredResources);
 
 		// Run the loader but do not load an resources into the settlement
 		for(int i = 0 ; i < (LoadingController.MAX_SETTLEMENT_ATTEMPTS - 1); i++) {
@@ -391,8 +385,7 @@ extends TestCase {
 	 */
 	private LoadingController reload(SuppliesManifest manifest) {
 
-		LoadingController controller = new LoadingController(settlement, vehicle,
-												manifest);
+		LoadingController controller = vehicle.setLoading(manifest);
 
 		// Vehicle should already be loaded
 		assertTrue("Vehicle already loaded", controller.isCompleted());
@@ -411,8 +404,9 @@ extends TestCase {
 	 */
 	private LoadingController loadIt(int maxCycles,SuppliesManifest manifest) {
 
-		LoadingController controller = new LoadingController(settlement, vehicle,
-										manifest);
+		LoadingController controller = vehicle.setLoading(manifest);
+		assertTrue("Vehicle has of LOADING", vehicle.haveStatusType(StatusType.LOADING));
+
 
 		int loadingCount = 0;
 		boolean loaded = false;
@@ -424,6 +418,7 @@ extends TestCase {
 		assertTrue("Load operation stopped on load complete", loaded);
 		assertFalse("Loading controller successful", controller.isFailure());
 		assertTrue("Loading controller complete", controller.isCompleted());
+		assertFalse("Vehicle clear of LOADING", vehicle.haveStatusType(StatusType.LOADING));
 
 		return controller;
 	}

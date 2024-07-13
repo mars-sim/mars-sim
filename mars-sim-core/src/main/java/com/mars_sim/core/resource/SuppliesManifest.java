@@ -51,9 +51,6 @@ public class SuppliesManifest {
     public void addResource(int resourceId, double amount, boolean mandatory) {
         Map<Integer, Number> selected = (mandatory ? mandatoryResources : optionalResources);
         selected.merge(resourceId, amount, (v1,v2) -> v1.doubleValue() + v2.doubleValue());
-
-        // Number existing = selected.getOrDefault(resourceId, 0D);
-        // selected.put(resourceId, existing.doubleValue() + amount);
     }
 
     /**
@@ -66,8 +63,6 @@ public class SuppliesManifest {
     public void addItem(int itemId, int count, boolean mandatory) {
         Map<Integer, Number> selected = (mandatory ? mandatoryResources : optionalResources);
         selected.merge(itemId, count, (v1,v2) -> v1.intValue() + v2.intValue());
-        // Could take the largest Item demand
-        //selected.merge(itemId, count, (v1,v2) -> Math.max(v1.intValue(), v2.intValue()));
     }
 
     /**

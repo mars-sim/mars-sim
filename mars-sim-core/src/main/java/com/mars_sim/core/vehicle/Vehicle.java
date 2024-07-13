@@ -48,6 +48,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.project.Stage;
+import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.RadiationStatus;
 import com.mars_sim.core.structure.Settlement;
@@ -61,6 +62,7 @@ import com.mars_sim.core.structure.building.task.MaintainBuilding;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.vehicle.task.LoadingController;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.mapdata.location.Direction;
 import com.mars_sim.mapdata.location.LocalBoundedObject;
@@ -142,8 +144,6 @@ public abstract class Vehicle extends Unit
 	private double lastDistance;
 	/** Distance traveled by vehicle since last maintenance (km) . */
 	private double distanceMaint; //
-	/** The cumulative fuel usage of the vehicle [kg] */
-//	private double fuelCumUsed;
 	/** The cumulative energy usage of the vehicle [kWh] */
 	private double cumEnergyUsedKWH;
 	/** The instantaneous fuel economy of the vehicle [km/kg]. */
@@ -200,6 +200,8 @@ public abstract class Vehicle extends Unit
 	private MSolDataLogger<Integer> roadSpeedHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
 	/** The vehicle's road power history. */	
 	private MSolDataLogger<Integer> roadPowerHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
+
+	private LoadingController loadingController;
 	
 	static {
 		lifeSupportRangeErrorMargin = simulationConfig.getSettlementConfiguration()
@@ -607,6 +609,32 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
+	 * Get the loading plan associated with this Vehicle
+	 */
+	public LoadingController getLoadingPlan() {
+		return loadingController;
+	}
+
+	/**
+	 * Change the loading status of this loading
+	 * @param manifest Supplies to load; if this is null then stop the loading
+	 */
+    public LoadingController setLoading(SuppliesManifest manifest) {
+		if (manifest == null) {
+			removeSecondaryStatus(StatusType.LOADING);
+			loadingController = null;
+		}
+        else if (statusTypes.contains(StatusType.LOADING)) {
+			logger.warning(this, "Is already in the loading status");
+		}
+		else {
+			loadingController = new LoadingController(getSettlement(), this, manifest);
+			addSecondaryStatus(StatusType.LOADING);
+		}
+		return loadingController;
+    }
+
+	/**
 	 * Checks if the vehicle is currently in a garage or not.
 	 *
 	 * @return true if vehicle is in a garage.
@@ -843,7 +871,6 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public void setAverageRoadLoadSpeed(int value) {
-//		logger.info(this, 10_000L, " AverageRoadLoadSpeed: " + value);
 		roadSpeedHistory.addDataPoint(value);
 	}
 	
@@ -853,7 +880,6 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public void setAverageRoadLoadPower(int value) {
-//		logger.info(this, 10_000L, " AverageRoadLoadPower: " + value);
 		roadPowerHistory.addDataPoint(value);
 	}
 	
@@ -918,7 +944,6 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getCumFuelEconomy() {
-//		return getFuelConv() / getCumFuelConsumption();
 		if (odometerMileage == 0 || cumEnergyUsedKWH == 0)
 			return 0;
 		return odometerMileage / cumEnergyUsedKWH / 1000 * getFuelConv();

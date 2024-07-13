@@ -51,9 +51,9 @@ public class LoadVehicleEVA extends EVAOperation {
 	 * Constructor
 	 * 
 	 * @param person            the person performing the task.
-	 * @param loadingPlan Plan to execute the load
+	 * @param vehicle Vehicle to load
 	 */
-	public LoadVehicleEVA(Person person, LoadingController loadingPlan) {
+	public LoadVehicleEVA(Person person, Vehicle vehicle) {
 		// Use Task constructor.
 		super(NAME, person, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), LOADING);
 
@@ -73,13 +73,8 @@ public class LoadVehicleEVA extends EVAOperation {
 			return;
 		}
 
-		this.loadingPlan = loadingPlan;		
-		vehicle = loadingPlan.getVehicle();
-		if (vehicle == null) {
-			// Mission must be done
-			checkLocation("Vehicle is null.");
-			return;
-		}
+		this.vehicle = vehicle;
+		this.loadingPlan = vehicle.getLoadingPlan();
 
 		setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 

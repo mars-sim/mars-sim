@@ -66,9 +66,9 @@ public class LoadVehicleGarage extends Task {
 	 * Constructor.
 	 * 
 	 * @param person            the person performing the task.
-	 * @param loadingController           the vehicle to be loaded.
+	 * @param vehicle           the vehicle to be loaded.
 	 */
-	public LoadVehicleGarage(Worker worker, LoadingController loadingController) {
+	public LoadVehicleGarage(Worker worker, Vehicle vehicle) {
 		// Use Task constructor.
 		super(NAME, worker, false, IMPACT,
 					RandomUtil.getRandomDouble(50D) + 10D);
@@ -79,8 +79,8 @@ public class LoadVehicleGarage extends Task {
 			return;
 		}
 
-		vehicle = loadingController.getVehicle();
-		this.loadController = loadingController;
+		this.vehicle = vehicle;
+		this.loadController = vehicle.getLoadingPlan();
  
 		// Rover may already be in the Garage
 		Building garage = vehicle.getGarage();

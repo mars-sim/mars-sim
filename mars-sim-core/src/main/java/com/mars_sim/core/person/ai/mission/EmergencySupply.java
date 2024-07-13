@@ -408,7 +408,7 @@ public class EmergencySupply extends RoverMission {
 			// sometimes)
 			if (member.isInSettlement() && RandomUtil.lessThanRandPercent(50)) {
 
-				TaskJob job = LoadVehicleMeta.createLoadJob(this, emergencySettlement);
+				TaskJob job = LoadVehicleMeta.createLoadJob(getVehicle(), emergencySettlement);
 		        if (job != null) {
 		            Task task = null;
 		            // Create the Task ready for assignment

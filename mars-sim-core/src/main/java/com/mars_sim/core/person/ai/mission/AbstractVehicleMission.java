@@ -318,7 +318,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 												getOptionalResourcesToLoad(),
 												getRequiredEquipmentToLoad(),
 												getOptionalEquipmentToLoad());
-			loadingPlan = new LoadingController(loadingSite, vehicle, manifest);
+			loadingPlan = vehicle.setLoading(manifest);
 												;			
 		}
 		return loadingPlan;
@@ -683,7 +683,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				// This allows person to do other important things such as eating
 				&& RandomUtil.lessThanRandPercent(75)) {
 								
-				TaskJob job = LoadVehicleMeta.createLoadJob(this, settlement);
+				TaskJob job = LoadVehicleMeta.createLoadJob(vehicle, settlement);
 		        if (job != null) {
 		            Task task = null;
 		            // Create the Task ready for assignment
