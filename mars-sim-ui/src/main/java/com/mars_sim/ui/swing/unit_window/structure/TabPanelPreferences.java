@@ -16,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.AbstractTableModel;
@@ -114,6 +115,10 @@ public class TabPanelPreferences extends TabPanelTable {
 		add.addActionListener(i -> addEntry());
 		newPanel.add(add);
 
+		JButton remove = new JButton(ImageLoader.getIconByName("action/delete"));
+		remove.addActionListener(i -> deleteEntry());
+		newPanel.add(remove);
+
 		// Add an explanation
 		JLabel message = new JLabel("Note: Click on modifier column to change");
 		message.setFont(StyleManager.getSmallFont());
@@ -155,6 +160,24 @@ public class TabPanelPreferences extends TabPanelTable {
 		tableModel.addEntry(key, newValue);
 	}
 
+	private void deleteEntry() {
+		var t = getMainTable();
+		int idx = t.getSelectedRow();
+		if (idx >= 0) {
+			idx = t.getRowSorter().convertRowIndexToModel(idx);
+ 			RenderableKey selection = tableModel.getValue(idx);
+			int input = JOptionPane.showConfirmDialog(this, 
+                "Delete Preference " + selection.category.getName() + ":" + selection.spec.displayName(), "Delete Preference", 
+                JOptionPane.OK_CANCEL_OPTION);
+			if (input == 0) {
+				tableModel.removeEntry(selection);
+
+				// Reload combo
+				populateNameCombo();
+			}
+		}
+	}
+
 	/**
 	 * Populates the name combo based on the type of preference.
 	 */
@@ -191,6 +214,10 @@ public class TabPanelPreferences extends TabPanelTable {
 						.toList());
 		}
 
+		public RenderableKey getValue(int idx) {
+			return items.get(idx);
+		}
+
 		/**
 		 * Adds an entry to the table and the underlying manager
 		 */
@@ -200,6 +227,18 @@ public class TabPanelPreferences extends TabPanelTable {
 				target.putValue(newKey.category(), newKey.spec().id(), value);
 				int newRow = items.size()-1;
 				fireTableRowsInserted(newRow, newRow);
+			}
+		}
+
+		/**
+		 * Remove an entry to the table and the underlying manager
+		 */
+		public void removeEntry(RenderableKey newKey) {
+			int idx = items.indexOf(newKey);
+			if (idx >= 0) {
+				items.remove(newKey);
+				target.removeValue(newKey.category(), newKey.spec().id());
+				fireTableRowsDeleted(idx, idx);
 			}
 		}
 

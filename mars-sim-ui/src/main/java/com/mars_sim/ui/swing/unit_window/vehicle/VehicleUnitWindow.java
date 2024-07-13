@@ -41,8 +41,7 @@ public class VehicleUnitWindow extends UnitWindow {
 		super(desktop, vehicle, vehicle.getAssociatedSettlement().getName() + " - " + vehicle.getName(), true);
 		this.vehicle = vehicle;
 		
-		if (vehicle instanceof Crewable) {
-			Crewable crewableVehicle = (Crewable) vehicle;
+		if (vehicle instanceof Crewable crewableVehicle) {
 			if (crewableVehicle.getCrewCapacity() > 0)
 				addTabPanel(new TabPanelCrew(vehicle, desktop));
 			else if (crewableVehicle.getRobotCrewCapacity() > 0)
@@ -53,8 +52,7 @@ public class VehicleUnitWindow extends UnitWindow {
 
 		addTabPanel(new LocationTabPanel(vehicle, desktop));
 
-		if (vehicle instanceof Rover) {
-			Rover rover = (Rover) vehicle;
+		if (vehicle instanceof Rover rover) {
 			addTabPanel(new TabPanelEVA(rover, desktop));		
 			if (rover.hasLab())
 				addTabPanel(new LaboratoryTabPanel(rover, desktop));		
@@ -76,9 +74,6 @@ public class VehicleUnitWindow extends UnitWindow {
 		addTabPanel(new TabPanelTow(vehicle, desktop));
 		
 		sortTabPanels();
-
-		// Add general tab panel as the first tab
-//		addFirstPanel
 		
 		// Add to tab panels. 
 		addTabIconPanels();
@@ -91,7 +86,6 @@ public class VehicleUnitWindow extends UnitWindow {
 	public void update() {
 		super.update();
 		// Check if equipment has been salvaged.
-		// Vehicle vehicle = (Vehicle) getUnit();
 		if (!salvaged && vehicle.isSalvaged()) {
 			addTabPanel(new SalvageTabPanel(vehicle, desktop));
 			salvaged = true;
