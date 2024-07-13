@@ -64,7 +64,7 @@ public class ExitAirlock extends Task {
 	private static final String NOT_NOMINALLY_FIT = "Not nominally fit";
 	private static final String NOT_EVA_FIT = "Not EVA fit";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
-	private static final String CHAMBER_FULL = "All chambers are occupied.";
+	private static final String CHAMBER_FULL = "All chambers occupied.";
 	
     /** The minimum performance needed. */
 	private static final double MIN_PERFORMANCE = 0.05;
@@ -1273,8 +1273,10 @@ public class ExitAirlock extends Task {
 	 */
 	public static boolean canExitAirlock(Person person, Airlock airlock) {
 
-		if (airlock.areAll4ChambersFull() || !airlock.hasSpace())
+		if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
+			logger.info(person, 4_000, CHAMBER_FULL + " in " + airlock.getEntityName() +  ".");
 			return false;
+		}
 
 		// Check if person is incapacitated.
 		if (person.getPerformanceRating() <= MIN_PERFORMANCE) {
@@ -1304,7 +1306,7 @@ public class ExitAirlock extends Task {
 				}
 
 			} catch (Exception e) {
-				logger.severe(person, "Could not get new action: ", e);
+				logger.severe(person, 4_000, "Could not get new action: ", e);
 			}
 
 			return false;
@@ -1312,6 +1314,7 @@ public class ExitAirlock extends Task {
 
 		// Check if person is outside.
 		if (person.isOutside()) {
+			logger.severe(person, 4_000, "already outside.");
 			return false;
 		}
 

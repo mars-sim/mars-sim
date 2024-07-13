@@ -53,7 +53,7 @@ public class EnterAirlock extends Task {
 	private static final TaskPhase CLEAN_UP = new TaskPhase(Msg.getString("Task.phase.cleanUp")); //$NON-NLS-1$
 	private static final TaskPhase LEAVE_AIRLOCK = new TaskPhase(Msg.getString("Task.phase.leaveAirlock")); //$NON-NLS-1$
 
-	private static final String CHAMBER_FULL = "All chambers are occupied in ";
+	private static final String CHAMBER_FULL = "All chambers occupied in ";
 	
 	// Static members
 	/** The standard time for doffing the EVA suit. */
@@ -306,7 +306,7 @@ public class EnterAirlock extends Task {
 			}
 			
 			if (!airlock.addAwaitingOuterDoor(id)) {
-				logger.info(person, 60_000,
+				logger.info(person, 4_000,
 						"Cannot get a spot outside the outer door in " + airlock.getEntityName() + ".");
 				
 				clearDown();
@@ -318,7 +318,7 @@ public class EnterAirlock extends Task {
 			}
 
 			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
-				logger.info(person, 60_000,
+				logger.info(person, 4_000,
 						"Cannot ingress. "
 						+ CHAMBER_FULL + airlock.getEntityName() + ".");
 				
@@ -340,7 +340,7 @@ public class EnterAirlock extends Task {
 		else { // For vehicle
 
 			if (!airlock.addAwaitingOuterDoor(id)) {
-				logger.info(person, 60_000,
+				logger.info(person, 4_000,
 						"Cannot get a spot outside the outer door in " + airlock.getEntityName() + ".");
 				
 				clearDown();
@@ -352,7 +352,7 @@ public class EnterAirlock extends Task {
 			}
 
 			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
-				logger.info(person, 60_000,
+				logger.info(person, 4_000,
 						"Cannot ingress. "
 						+ CHAMBER_FULL + airlock.getEntityName() + ".");
 				

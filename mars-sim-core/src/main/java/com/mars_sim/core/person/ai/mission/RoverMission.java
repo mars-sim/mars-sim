@@ -338,7 +338,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 			else {
 				// If the leader is ejected, then the mission must be cancelled
-				logger.info(member, "Mission Lead " + getStartingPerson().getName() 
+				logger.info(member, "Noted that mission Lead " + getStartingPerson().getName() 
 						+ " evicted from '" + getName() + "' and mission cancelled.");
 				endMission(MISSION_LEAD_NO_SHOW);
 			}
@@ -384,7 +384,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					if (canWalk) {
 						boolean canDo = assignTask(person, new Walk(person, walkingSteps));
 						if (!canDo) {
-							logger.warning(person, "Unable to start walking to " + v + ".");
+							logger.warning(person, 10_000, "Unable to start walking toward " + v + ".");
 						}
 					}
 
@@ -403,7 +403,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				if (canWalk) {
 					boolean canDo = assignTask(robot, new Walk(robot, walkingSteps));
 					if (!canDo) {
-						logger.warning(robot, "Unable to start walk to " + v + ".");
+						logger.warning(robot, "Unable to start walking to " + v + ".");
 					}
 				}
 
@@ -741,13 +741,13 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 				boolean hasStrength = person.getPhysicalCondition().isFitByLevel(1500, 90, 1500);
 
-				WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, rover);
+				WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, destinationBuilding);
 				boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
 				
 				if (canWalk) {
 					boolean canDo = assignTask(person, new Walk(person, walkingSteps));
 					if (!canDo) {
-						logger.warning(person, 10_000, "Unable to walk to " + destinationBuilding + ".");
+						logger.warning(person, 10_000, "Unable to walk back to " + destinationBuilding + ".");
 					}
 				}
 

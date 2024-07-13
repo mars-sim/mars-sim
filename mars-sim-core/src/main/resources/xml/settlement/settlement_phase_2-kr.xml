@@ -130,7 +130,7 @@
         </connection-list>
     </building>
 
-    <!-- This hallway connects the inflatable greenhouse to the fish farm -->
+    <!-- This hallway connects the lander hab to a fish farm -->
     <building id="15" type="Hallway" length="4.0" xloc="0"
         yloc="-6.5" facing="0.0">
         <connection-list>
@@ -139,7 +139,7 @@
         </connection-list>
     </building>
 
-    <!-- This fish farm connects to the inflatable greenhouse -->
+    <!-- This fish farm connects to a hallway -->
     <building id="16" type="Fish Farm" xloc="0.0" yloc="-13"
         facing="180.0">
         <connection-list>

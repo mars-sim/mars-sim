@@ -54,7 +54,7 @@ public class PilotDrone extends OperateVehicle {
 	/**
 	 * Default Constructor.
 	 * 
-	 * @param pilot            the worker pilotting
+	 * @param pilot            the worker piloting
 	 * @param flyer             the flyer to be driven
 	 * @param destination       location to be driven to
 	 * @param startTripTime     the starting time of the trip
@@ -68,7 +68,7 @@ public class PilotDrone extends OperateVehicle {
 	/**
 	 * Constructs with a given starting phase.
 	 * 
-	 * @param pilot            the worker pilotting
+	 * @param pilot            the worker piloting
 	 * @param vehicle           the vehicle to be driven
 	 * @param destination       location to be driven to
 	 * @param startTripTime     the starting time of the trip

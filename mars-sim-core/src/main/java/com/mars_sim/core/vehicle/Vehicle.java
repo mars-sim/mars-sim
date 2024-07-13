@@ -1789,7 +1789,7 @@ public abstract class Vehicle extends Unit
 			logger.info(this, "Moved to new parking loc at (" 
 					+ Math.round(newLoc.getX() * 10.0)/10.0 
 					+ ", " + Math.round(newLoc.getY() * 10.0)/10.0 
-					+ ") on count " + count + ".");
+					+ ").");
 		}
 		else {
 			logger.info(this, "Parking loc not found.");

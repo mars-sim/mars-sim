@@ -22,7 +22,7 @@
 		<!-- type: the type of building (see buildings.xml) -->
 
 		<!-- Next to ERV-I -->
-		<standalone type="Ice Storage" xloc="55.0" yloc="13.0"
+		<standalone type="Ice Storage" xloc="50.0" yloc="13.0"
 	        facing="90.0" />
    	    <standalone type="Ice Storage" xloc="55.0" yloc="13.0"
 	        facing="90.0" />    

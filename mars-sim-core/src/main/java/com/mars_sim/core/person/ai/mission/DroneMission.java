@@ -153,7 +153,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 						getCurrentLegStartingTime(), getCurrentLegDistance(), lastOperateVehicleTaskPhase);
 			} else {
 				result = new PilotDrone(member, getDrone(), getNextNavpoint().getLocation(),
-						getCurrentLegStartingTime(), getCurrentLegDistance());
+						getCurrentLegStartingTime(), getCurrentLegDistance(), OperateVehicle.MOBILIZE);
 			}
 		}
 		else {

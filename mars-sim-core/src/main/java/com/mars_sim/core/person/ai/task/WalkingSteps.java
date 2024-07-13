@@ -278,11 +278,12 @@ implements Serializable {
                     walker = robot;
                 }
             	logger.severe(walker, 60_000,
-            				"Invalid destination " +
-            				pos + " not within building " + building + " @ "
+            				"Invalid destination at " +
+            				pos + ". Not within building " + building + " at "
                             + LocalAreaUtil.getDescription(building));
             }
         }
+        
         else if (interiorObject instanceof Rover rover) {
 
         	if (person != null) {
@@ -291,8 +292,8 @@ implements Serializable {
 
 	            if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(pos, rover)) {
 	            	logger.severe(person, 5000,
-	            			"Invalid destination " +
-	                        pos + " not within rover " + rover + " @ "
+	            			"Invalid destination at " +
+	                        pos + ". Not within rover " + rover + " at "
                             + LocalAreaUtil.getDescription(rover));
 	            }
         	}
@@ -329,9 +330,9 @@ implements Serializable {
 
             if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(pos, building)) {
         			logger.log(robot, Level.SEVERE, 5000,
-        					"Invalid robot destination  " +
-                            pos + " and not within " + building
-                            + " @ " + LocalAreaUtil.getDescription(building));
+        					"Invalid robot destination at " +
+                            pos + ". Not within " + building
+                            + " at " + LocalAreaUtil.getDescription(building));
             }
 
             result.loc = pos;
@@ -1117,7 +1118,8 @@ implements Serializable {
 
                 // Find an airlock that's least full for egress to destination building.
                 Airlock destinationAirlock = settlement.getBestWalkableAvailableAirlock(destinationBuilding,
-                        initialWalkState.loc, false);
+                        initialWalkState.loc, true);
+
                 if (destinationAirlock != null) {
 
                     // Create walk step to exterior airlock position.

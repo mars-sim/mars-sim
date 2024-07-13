@@ -769,7 +769,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				if (operateVehicleTask != null) {
 					operateVehicleTask = createOperateVehicleTask(member, operateVehicleTask.getPhase());
 				} else {
-					operateVehicleTask = createOperateVehicleTask(member, null);
+					operateVehicleTask = createOperateVehicleTask(member, OperateVehicle.MOBILIZE);
 				}
 
 				if (operateVehicleTask != null) {

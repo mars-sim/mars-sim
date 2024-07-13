@@ -251,7 +251,7 @@
     <robot name="Dewey" type="GardenBot" model="Advanced"/>
     <robot name="Louie" type="GardenBot"/>
 
-    <equipment type="EVA Suit" number="48" />
+    <equipment type="EVA Suit" number="36" />
 
     <!-- Containers-->
 	<equipment type="barrel" number="120" />

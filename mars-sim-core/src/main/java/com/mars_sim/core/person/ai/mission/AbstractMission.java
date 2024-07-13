@@ -803,14 +803,14 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (currentTask != null) {
 
 			if (currentTask.getName().equals(task.getName())){
-	      		logger.info(person, 10_000L, "Already assigned with '" + currentTask.getName() + "'.");
+	      		logger.info(person, 4_000, "Already assigned with '" + currentTask.getName() + "'.");
 				// If the person has been doing this task, 
 				// then there is no need of adding it.
 				return false;
 			}
 
 			if (currentTask.getName().equals(Sleep.NAME)) {
-	      		logger.info(person, 10_000L, "Current asleep.");
+	      		logger.info(person, 4_000, "Currently asleep.");
 
 				// If the person has been doing this task, 
 				// then there is no need of adding it.
@@ -819,7 +819,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 		
 		if (person.isSuperUnfit()) {
-			logger.warning(person, 10_000L, "Super unfit to perform '" + task + ".");
+			logger.warning(person, 4_000L, "Super unfit to perform '" + task + ".");
 			return false;
 		}
 		
@@ -832,13 +832,13 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		if (canPerformTask) {
 			if (currentTask != null) {
-				logger.info(person, 10_000L, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
+				logger.info(person, 4_000L, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
 			}
 			else
-				logger.info(person, 10_000L, "Assigned with '" + task.getName() + "'.");
+				logger.info(person, 4_000L, "Assigned with '" + task.getName() + "'.");
 		}
 		else
-			logger.info(person, 10_000L, "Unable to perform '" + task.getName() + "'.");
+			logger.info(person, 4_000L, "Unable to perform '" + task.getName() + "'.");
 
 		return canPerformTask;
 	}

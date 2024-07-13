@@ -511,8 +511,8 @@ public class LocalAreaUtil {
 	 * Helper method to output the various geometry aspects in string format.
 	 */
 	public static String getDescription(LocalBoundedObject box) {
-		return box.getPosition().getShortFormat() + "(" + box.getWidth() + "x" + box.getLength()
-				+ ") @ " + box.getFacing();
+		return box.getPosition().getShortFormat() + "  Object: " + box.getWidth() + " W x " + box.getLength()
+				+ " L at facing " + Math.round(box.getFacing() * 10.0)/10.0 + " deg.";
 	} 
 
 	/**

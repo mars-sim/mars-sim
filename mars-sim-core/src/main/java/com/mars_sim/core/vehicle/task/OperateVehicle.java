@@ -54,7 +54,7 @@ public abstract class OperateVehicle extends Task {
 	private static final SimLogger logger = SimLogger.getLogger(OperateVehicle.class.getName());
 	
     /** Task phases. */
-    protected static final TaskPhase MOBILIZE = new TaskPhase(Msg.getString(
+    public static final TaskPhase MOBILIZE = new TaskPhase(Msg.getString(
             "Task.phase.mobilize")); //$NON-NLS-1$
  	
  	private static final double THRESHOLD_SUNLIGHT = 60;
