@@ -14,7 +14,7 @@ import java.util.Map;
 
 /**
  * This is manages a set of user configurable Parameters that can be used to control
- * aspects of the simulaton
+ * aspects of the simulation.
  */
 public class ParameterManager implements Serializable {
     
@@ -67,8 +67,9 @@ public class ParameterManager implements Serializable {
     }
 
     /**
-     * Put a new parameter value into the manager
-     * @param category Categogory fo the new value
+     * Puts a new parameter value into the manager.
+     * 
+     * @param category Category for the new value
      * @param id Identifier of the value being defined
      * @param value Actual new value
      */
@@ -78,8 +79,9 @@ public class ParameterManager implements Serializable {
 
     
     /**
-     * Remove a value from the parameter manager
-     * @param category Categogory fo the new value
+     * Removes a value from the parameter manager.
+     * 
+     * @param category Category for the new value
      * @param id Identifier of the value being defined
      */
     public void removeValue(ParameterCategory category, String id) {
@@ -87,7 +89,8 @@ public class ParameterManager implements Serializable {
     }
 
     /**
-     * Get the known values held in the manager.
+     * Gets the known values held in the manager.
+     * 
      * @return Keys and associated values.
      */
     public Map<ParameterKey,Object> getValues() {
@@ -95,7 +98,8 @@ public class ParameterManager implements Serializable {
     }
 
     /**
-     * Get a parameter value that is type Double. 
+     * Gets a parameter value that is type Double. 
+     * 
      * @param category Category of the value
      * @param id Identifier of the value
      * @param defaultValue Default value if is is not defined
@@ -111,7 +115,8 @@ public class ParameterManager implements Serializable {
     }
 
     /**
-     * Get a parameter value that is type Integer. 
+     * Gets a parameter value that is type Integer. 
+     * 
      * @param category Category of the value
      * @param id Identifier of the value
      * @param defaultValue Default value if is is not defined
@@ -127,7 +132,8 @@ public class ParameterManager implements Serializable {
     }
 
     /**
-     * Get a parameter value that is type Boolean. 
+     * Gets a parameter value that is type Boolean.
+     *  
      * @param category Category of the value
      * @param id Identifier of the value
      * @param defaultValue Default value if is is not defined
@@ -143,7 +149,8 @@ public class ParameterManager implements Serializable {
     }
 
     /**
-     * Reset all values to a new set of values.
+     * Resets all values to a new set of values.
+     * 
      * @param preferences Source of new values.
      */
     public void resetValues(ParameterManager preferences) {

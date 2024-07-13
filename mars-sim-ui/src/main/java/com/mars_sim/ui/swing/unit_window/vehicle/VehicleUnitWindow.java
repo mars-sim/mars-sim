@@ -31,7 +31,7 @@ public class VehicleUnitWindow extends UnitWindow {
 	private Vehicle vehicle;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @param desktop the main desktop panel.
 	 * @param vehicle the vehicle for this window.

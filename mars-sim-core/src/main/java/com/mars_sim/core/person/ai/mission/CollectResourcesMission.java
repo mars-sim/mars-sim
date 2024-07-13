@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @date 2022-07-16
+ * @date 2024-07-12
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -54,10 +54,8 @@ public abstract class CollectResourcesMission extends EVAMission
 	private static final int MAX_NUM_PRIMARY_SITES = 30;
 	/** THe maximum number of sites under consideration. */
 	private static final int MAX_NUM_SECONDARY_SITES = 5;
-
 	/** Minimum number of people to do mission. */
 	private static final int MIN_PEOPLE = 2;
-
 	/** Upper limit of mission to avoid airlock congestion */
 	private static final int MAX_PEOPLE = 6;
 
@@ -79,7 +77,7 @@ public abstract class CollectResourcesMission extends EVAMission
 	protected static TerrainElevation terrainElevation;
 	
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @param startingPerson         The person starting the mission.
 	 * @param resourceID           The type of resource.
@@ -191,7 +189,7 @@ public abstract class CollectResourcesMission extends EVAMission
 	}
 
 	/**
-	 * Constructor with explicit data
+	 * Constructor with explicit data.
 	 *
 	 * @param members                collection of mission members
 	 * @param resourceID           The type of resource.
@@ -245,6 +243,11 @@ public abstract class CollectResourcesMission extends EVAMission
 		return true;
 	}
 
+	/**
+	 * Sets the resource.
+	 * 
+	 * @param newResource
+	 */
 	protected void setResourceID(int newResource) {
 		this.resourceID = newResource;
 	}
@@ -285,7 +288,7 @@ public abstract class CollectResourcesMission extends EVAMission
 	}
 
 	/**
-	 * what resources can be collected once on site. By default this is just
+	 * Gets the resources can be collected once on site. By default this is just
 	 * the main resource but could be others.
 	 * 
 	 * @return
@@ -314,6 +317,9 @@ public abstract class CollectResourcesMission extends EVAMission
 			return false;
 		}
 
+		// Set the type of resource
+		pickType(person);
+		
 		// Do the EVA task
 		double rate = calculateRate(person);
 
@@ -362,6 +368,14 @@ public abstract class CollectResourcesMission extends EVAMission
 	 */
 	protected abstract double calculateRate(Worker worker);
 
+	/**
+	 * Picks the type of resource.
+	 * 
+	 * @param worker
+	 * @return
+	 */
+	protected abstract void pickType(Worker worker);
+	
 	/**
 	 * Determines the locations of the sample collection sites.
 	 *

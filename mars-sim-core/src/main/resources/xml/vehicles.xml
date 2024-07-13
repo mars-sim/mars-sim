@@ -103,7 +103,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<vehicle name="Explorer Rover" type="EXPLORER_ROVER" width="3.5" length="8.0">
 		<!-- Note: the vehicle types used here must match those in message.properties -->
 
-		<description>A rover for collecting rock samples from remote sites and ice prospecting.
+		<description>A rover for collecting rock samples, ice and regolith.
 			The Explorer Rover is the only rover that has both a lab and a sick bay bed.</description>
 
 		<!-- The power source type for the vehicle (required) -->
@@ -189,11 +189,11 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<!-- Default: varies according to the type of vehicle -->
 			<!--<capacity resource="dessert" value="120.0" />-->
 
-			<!-- Default: varies according to the type of vehicle -->
-			<capacity resource="rock samples" value="400.0" />
+			<!-- Default: varies according to the type of vehicle
+			<capacity resource="rock samples" value="750.0" /> -->
 
-			<!-- Default: varies according to the type of vehicle -->
-			<capacity resource="ice" value="400.0" />
+			<!-- Default: varies according to the type of vehicle 
+			<capacity resource="ice" value="750.0" /> -->
 
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="food waste" value="10.0" />
@@ -249,7 +249,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	</vehicle>
 
 	<vehicle name="Long Range Explorer" type="EXPLORER_ROVER" width="3.5" length="8.0" base-image="long range explorer">
-		<description>A rover for collecting rock samples from remote sites and ice prospecting for long range.</description>
+		<description>An extended range version of the Explorer Rover.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="15.0"/>		
 		<battery-module number="3" />
 		<energy-per-module value="10" />		
@@ -270,13 +270,13 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="water" value="200.0" />
 			<capacity resource="food" value="100.0" />
 			
-			<capacity resource="rock samples" value="400.0" />
-			<capacity resource="ice" value="400.0" />
+			<!--capacity resource="rock samples" value="750.0" />
+			<capacity resource="ice" value="750.0" /> -->
 			
 			<capacity resource="food waste" value="8.0" />
-			<capacity resource="solid waste" value="40.0" />
+			<capacity resource="solid waste" value="20.0" />
 			<capacity resource="toxic waste" value="4.0" />
-			<capacity resource="grey water" value="40.0" />
+			<capacity resource="grey water" value="20.0" />
 			<capacity resource="black water" value="10.0" />
 		</cargo>
 
@@ -327,8 +327,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="water" value="2500.0" />
 			<capacity resource="food" value="250.0" />
 			
-			<capacity resource="rock samples" value="400.0" />
-			<capacity resource="ice" value="400.0" />
+			<!--capacity resource="rock samples" value="400.0" />
+			<capacity resource="ice" value="400.0" /> -->
 			
 			<capacity resource="food waste" value="16.0" />
 			<capacity resource="solid waste" value="80.0" />
@@ -378,8 +378,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="water" value="2500.0" />
 			<capacity resource="food" value="250.0" />
 			
-			<capacity resource="rock samples" value="400.0" />
-			<capacity resource="ice" value="400.0" />
+			<!--capacity resource="rock samples" value="400.0" />
+			<capacity resource="ice" value="400.0" /> -->
 			
 			<capacity resource="food waste" value="16.0" />
 			<capacity resource="solid waste" value="80.0" />

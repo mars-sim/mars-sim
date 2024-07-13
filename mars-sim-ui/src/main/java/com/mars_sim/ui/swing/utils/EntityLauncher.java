@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * UnitTableLauncher.java
+ * EntityLauncher.java
  * @date 2023-02-21
  * @author Barry Evans
  */

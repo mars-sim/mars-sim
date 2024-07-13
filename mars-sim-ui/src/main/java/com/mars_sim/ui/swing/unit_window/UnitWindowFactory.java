@@ -1,13 +1,13 @@
 /*
  * Mars Simulation Project
  * UnitWindowFactory.java
- * @date 2023-06-07
+ * @date 2024-07-12
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.equipment.EVASuit;
+import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.building.Building;
@@ -51,7 +51,7 @@ public class UnitWindowFactory {
         case BUILDING:
             return new BuildingUnitWindow(desktop, (Building) unit);
         case EVA_SUIT:
-            return new EquipmentUnitWindow(desktop, (EVASuit) unit);
+            return new EquipmentUnitWindow(desktop, (Equipment) unit);
 //        case CONSTRUCTION:
 //            return new ConstructionSiteWindow(desktop, (ConstructionSite) unit);  
         default:

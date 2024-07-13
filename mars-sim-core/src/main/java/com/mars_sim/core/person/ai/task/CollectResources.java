@@ -44,12 +44,9 @@ public class CollectResources extends EVAOperation {
 	private static final TaskPhase COLLECT_RESOURCES = 
 			new TaskPhase(Msg.getString("Task.phase.collectResources"), //$NON-NLS-1$
 					createPhaseImpact(PhysicalEffort.HIGH, SkillType.AREOLOGY, SkillType.PROSPECTING));
-
     public static final LightLevel LIGHT_LEVEL = LightLevel.NONE;
 
 	// Data members
-	/** Rover used. */
-	protected Rover rover;
 	/** Collection rate for resource (kg/millisol). */
 	protected double collectionRate;
 	/** Targeted amount of resource to collect at site. (kg) */
@@ -61,9 +58,12 @@ public class CollectResources extends EVAOperation {
 
 	/** The resource type. */
 	protected Integer resourceType;
+	
 	/** The container type to use to collect resource. */
 	protected EquipmentType containerType;
-
+	/** Rover used. */
+	protected Rover rover;
+	
 	/**
 	 * Constructor.
 	 *
@@ -185,15 +185,26 @@ public class CollectResources extends EVAOperation {
 		// Collect resources.
 		Container container = person.findContainer(containerType, false, resourceType);
 		if (container == null) {
-			checkLocation("No container available.");
+			if (resourceType == ResourceUtil.iceID) {
+				checkLocation("No container available for ice.");
+			}
+			else {
+				checkLocation("No container available for regolith.");
+			}
 			return time;
 		}
 
-		double remainingPersonCapacity = container.getAmountResourceRemainingCapacity(resourceType);
-		double currentSamplesCollected = rover.getAmountResourceStored(resourceType) - startingCargo;
-		double remainingSamplesNeeded = targettedAmount - currentSamplesCollected;
-		double sampleLimit = Math.min(remainingSamplesNeeded, remainingPersonCapacity);
-
+		double remainCap = container.getAmountResourceRemainingCapacity(resourceType);
+		if (remainCap <= 0.01) {
+			checkLocation("Container capacity maxed out.");
+		}
+		double collectedAtThisSite = rover.getAmountResourceStored(resourceType) - startingCargo;
+		double remainingSamplesNeeded = targettedAmount - collectedAtThisSite;
+		if (remainingSamplesNeeded <= 0.01) {
+			checkLocation("No more samples needed.");
+		}
+		
+		double sampleLimit = Math.min(remainingSamplesNeeded, remainCap);
 		double samplesCollected = time * compositeRate;
 
 		// Modify collection rate by areology and prospecting skill.
@@ -222,20 +233,9 @@ public class CollectResources extends EVAOperation {
 		// Collect resources
 		if (samplesCollected <= sampleLimit) {
 			container.storeAmountResource(resourceType, samplesCollected);
-			double result = time - (samplesCollected / collectionRate);
-			if (result < 0)
-				return 0;
-			return result;
-
-		} else {
-			if (sampleLimit > 0) {
-				container.storeAmountResource(resourceType, sampleLimit);
-				double result = time - (sampleLimit / collectionRate);
-				if (result < 0)
-					return 0;
-				return result;
-			}
-			
+		} 
+		else {
+			container.storeAmountResource(resourceType, sampleLimit);
 			checkLocation("Samples collected exceeded set limits.");
 		}
 		

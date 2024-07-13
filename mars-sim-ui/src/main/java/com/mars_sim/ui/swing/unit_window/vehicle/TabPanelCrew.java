@@ -307,7 +307,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		}
 
 		/**
-		 * Catch unit update event.
+		 * Catches unit update event.
 		 *
 		 * @param event the unit event.
 		 */
@@ -361,7 +361,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		}
 
 		/**
-		 * Clear all members from the table.
+		 * Clears all members from the table.
 		 */
 		private void clearMembers() {
 			members.forEach(m -> m.removeUnitListener(this));

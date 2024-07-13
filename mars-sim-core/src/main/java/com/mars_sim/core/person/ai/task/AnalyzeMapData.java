@@ -200,7 +200,6 @@ public class AnalyzeMapData extends Task {
         
         if (totalWork > getDuration() * .95) {
 
-   	
         	// Get a lowest range rover
      		Rover rover = person.getAssociatedSettlement().getVehicleWithMinimalRange();
      		
