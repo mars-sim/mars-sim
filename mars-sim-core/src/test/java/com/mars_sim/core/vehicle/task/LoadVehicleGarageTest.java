@@ -1,13 +1,10 @@
 package com.mars_sim.core.vehicle.task;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.mapdata.location.LocalPosition;
 
@@ -22,15 +19,14 @@ public class LoadVehicleGarageTest extends AbstractMarsSimUnitTest {
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
 
         // Create a loading plan and preload Settlement
-        Map<Integer, Number> resources = new HashMap<>();
-        resources.put(ResourceUtil.oxygenID, 10D);
-        resources.put(ResourceUtil.waterID, 10D);
-        resources.put(ResourceUtil.foodID, 10D);
-        for(var entry : resources.entrySet()) {
+        var resources = new SuppliesManifest();
+        resources.addResource(ResourceUtil.oxygenID, 10D, true);
+        resources.addResource(ResourceUtil.waterID, 10D, true);
+        resources.addResource(ResourceUtil.foodID, 10D, true);
+        for(var entry : resources.getResources(true).entrySet()) {
             s.storeAmountResource(entry.getKey(), entry.getValue().doubleValue() * 1.1D);
         }
-        LoadingController lc = new LoadingController(s, v, resources, Collections.emptyMap(),
-                                        Collections.emptyMap(), Collections.emptyMap());
+        LoadingController lc = new LoadingController(s, v, resources);
 
         var task = new LoadVehicleGarage(p, lc);
         assertFalse("Task created", task.isDone()); 

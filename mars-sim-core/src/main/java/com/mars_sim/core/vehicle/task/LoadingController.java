@@ -26,6 +26,7 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -80,24 +81,18 @@ public class LoadingController implements Serializable {
 	 * Load a vehicle with a manifest from a Settlement
 	 * @param settlement Source of resources for the load
 	 * @param vehicle Vehicle to load
-	 * @param resources Mandatory resources needed
-	 * @param optionalResources Optional resources needed
-	 * @param equipment Mandatory equipment needed
-	 * @param optionalEquipment Optional equipment needed
+	 * @param manifest Manifest of supplies required
 	 */
 	public LoadingController(Settlement settlement, Vehicle vehicle,
-							 Map<Integer, Number> resources,
-							 Map<Integer, Number> optionalResources,
-							 Map<Integer, Integer> equipment,
-							 Map<Integer, Integer> optionalEquipment) {
+							 SuppliesManifest manifest) {
 		this.settlement = settlement;
 		this.vehicle = vehicle;
 
 		// Take copies to form the manifest as the quantities will be reduced
-		this.resourcesManifest = new HashMap<>(resources);
-		this.optionalResourcesManifest = new HashMap<>(optionalResources);
-		this.equipmentManifest = new HashMap<>(equipment);
-		this.optionalEquipmentManifest = new HashMap<>(optionalEquipment);
+		this.resourcesManifest = new HashMap<>(manifest.getResources(true));
+		this.optionalResourcesManifest = new HashMap<>(manifest.getResources(false));
+		this.equipmentManifest = new HashMap<>(manifest.getEquipment(true));
+		this.optionalEquipmentManifest = new HashMap<>(manifest.getEquipment(false));
 
 		// Reduce what is already in the Vehicle
 		removeVehicleResources(resourcesManifest);

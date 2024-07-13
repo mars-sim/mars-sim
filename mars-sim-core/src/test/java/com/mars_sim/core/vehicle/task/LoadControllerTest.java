@@ -7,7 +7,6 @@
 
 package com.mars_sim.core.vehicle.task;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -23,6 +22,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
@@ -94,17 +94,14 @@ extends TestCase {
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
 	public void testBackgroundLoading() {
-		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
-		requiredResourcesMap.put(ResourceUtil.oxygenID, 20D);
-		requiredResourcesMap.put(ResourceUtil.methanolID, 10D);
+		var requiredResources = new SuppliesManifest();
+		requiredResources.addResource(ResourceUtil.oxygenID, 20D, true);
+		requiredResources.addResource(ResourceUtil.methanolID, 10D, true);
 
-		loadSettlementResources(settlement, requiredResourcesMap);
+		loadSettlementResources(settlement, requiredResources.getResources(true));
 
 		LoadingController controller = new LoadingController(settlement, vehicle,
-															 requiredResourcesMap,
-															 Collections.emptyMap(),
-															 Collections.emptyMap(),
-															 Collections.emptyMap());
+															 requiredResources);
 		int loadingCount = 0;
 		while (loadingCount < 100) {
 			controller.backgroundLoad(80);
@@ -112,37 +109,32 @@ extends TestCase {
 		}
 		assertTrue("Multiple loadings", (loadingCount > 1));
 		assertTrue("Loading controller complete", controller.isCompleted());
-		checkVehicleResources(vehicle, requiredResourcesMap);
+		checkVehicleResources(vehicle, requiredResources.getResources(true));
 	}
 
 	/*
 	 * Test method loading Equipment
 	 */
 	public void testLoadRequiredEquipment() {
-		Map<Integer, Integer> requiredEquipMap = new HashMap<>();
-		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.BARREL), 10);
-		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5);
-
+		var manifest = new SuppliesManifest();
+		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 10, true);
+		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5, true);
 
 		// Load the manifest
-		testLoading(100, Collections.emptyMap(), Collections.emptyMap(),
-				requiredEquipMap, Collections.emptyMap());
+		testLoading(100, manifest);
 	}
 
 	/*
 	 * Test method loading Equipment
 	 */
 	public void testLoadOptionalEquipment() {
-		Map<Integer, Integer> requiredEquipMap = new HashMap<>();
-		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.BARREL), 10);
-		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5);
-
-		Map<Integer, Integer> optionalEquipMap = new HashMap<>();
-		optionalEquipMap.put(EquipmentType.getResourceID(EquipmentType.GAS_CANISTER), 10);
+		var manifest = new SuppliesManifest();
+		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 10, true);
+		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5, true);
+		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.GAS_CANISTER), 10, false);
 
 		// Load the manifest
-		testLoading(100, Collections.emptyMap(), Collections.emptyMap(),
-				requiredEquipMap, optionalEquipMap);
+		testLoading(100, manifest);
 	}
 
 	/*
@@ -160,12 +152,12 @@ extends TestCase {
 		loadSettlementEquipment(settlement, optionalEquipMap);
 
 		// Add an extra resource that will not be present
-		int missingId = EquipmentType.getResourceID(EquipmentType.LARGE_BAG);
-		var extraOptionalEquipment = new HashMap<>(optionalEquipMap);
-		extraOptionalEquipment.put(missingId, 10);
-
-		loadIt(100, Collections.emptyMap(), Collections.emptyMap(),
-				requiredEquipMap, extraOptionalEquipment);
+		var manifest = new SuppliesManifest();
+		var missingId = EquipmentType.getResourceID(EquipmentType.LARGE_BAG);
+		manifest.addEquipment(missingId, 10, false);
+		requiredEquipMap.entrySet().forEach(e -> manifest.addEquipment(e.getKey(), e.getValue(), true));
+		optionalEquipMap.entrySet().forEach(e -> manifest.addEquipment(e.getKey(), e.getValue(), false));
+		loadIt(100, manifest);
 
 		// Check Equipment that was present in settlement
 		checkVehicleEquipment(vehicle, requiredEquipMap);
@@ -184,44 +176,37 @@ extends TestCase {
 	 * Test method loading Resource Items
 	 */
 	public void testLoadRequiredItemResources() {
-		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
-		requiredResourcesMap.put(fireExtinguisherID, 1);
-		requiredResourcesMap.put(smallHammerID, 2);
+		var manifest = new SuppliesManifest();
+		manifest.addItem(fireExtinguisherID, 1, true);
+		manifest.addItem(smallHammerID, 2, true);
 
 		// Load the manifest
-		testLoading(100, requiredResourcesMap, Collections.emptyMap(),
-					   Collections.emptyMap(), Collections.emptyMap());
+		testLoading(100, manifest);
 	}
 
 	/*
 	 * Test method loading Resource Items
 	 */
 	public void testLoadOptionalItemResources() {
-		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
-		requiredResourcesMap.put(fireExtinguisherID, 1);
-		requiredResourcesMap.put(smallHammerID, 2);
-
-		Map<Integer, Number> optionalResourcesMap = new HashMap<>();
-		optionalResourcesMap.put(pipeWrenchID, 10D);
+		var manifest = new SuppliesManifest();
+		manifest.addItem(fireExtinguisherID, 1, true);
+		manifest.addItem(smallHammerID, 2, true);
+		manifest.addItem(pipeWrenchID, 10, false);
 
 		// Load the manifest
-		testLoading(100, requiredResourcesMap, optionalResourcesMap,
-					   Collections.emptyMap(), Collections.emptyMap());
+		testLoading(100, manifest);
 	}
 
 	/*
 	 * Load with optional resource present
 	 */
 	public void testLoadMissingOptionalItemResources() {
-		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
-		requiredResourcesMap.put(fireExtinguisherID, 1);
-		requiredResourcesMap.put(smallHammerID, 2);
+		var manifest = new SuppliesManifest();
+		manifest.addItem(fireExtinguisherID, 1, true);
+		manifest.addItem(smallHammerID, 2, true);
+		manifest.addItem(pipeWrenchID, 10, false);
 
-		Map<Integer, Number> optionalResourcesMap = new HashMap<>();
-		optionalResourcesMap.put(pipeWrenchID, 10D);
-
-		testLoadOptionalResources(100, requiredResourcesMap,
-								  optionalResourcesMap,
+		testLoadOptionalResources(100, manifest,
 								  ItemResourceUtil.printerID);
 	}
 
@@ -229,13 +214,12 @@ extends TestCase {
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
 	public void testLoadRequiredAmountResources() {
-		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
-		requiredResourcesMap.put(ResourceUtil.foodID, 30D);
-		requiredResourcesMap.put(ResourceUtil.waterID, 10D);
+		var manifest = new SuppliesManifest();
+		manifest.addResource(ResourceUtil.foodID, 30D, true);
+		manifest.addResource(ResourceUtil.waterID, 10D, true);
 
 		// Load the manifest
-		testLoading(200, requiredResourcesMap, Collections.emptyMap(),
-					   Collections.emptyMap(), Collections.emptyMap());
+		testLoading(200, manifest);
 	}
 
 
@@ -243,13 +227,12 @@ extends TestCase {
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
 	public void testLoadFailedAmountResources() {
-		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
+		var requiredResources = new SuppliesManifest();
 		// Add 2000kg food to the manifest
-		requiredResourcesMap.put(ResourceUtil.foodID, 50D);
+		requiredResources.addResource(ResourceUtil.foodID, 50D, true);
 
 		LoadingController controller = new LoadingController(settlement, vehicle,
-				requiredResourcesMap, Collections.emptyMap(),
-				Collections.emptyMap(), Collections.emptyMap());
+										requiredResources);
 
 		// Run the loader but do not load an resources into the settlement
 		for(int i = 0 ; i < (LoadingController.MAX_SETTLEMENT_ATTEMPTS - 1); i++) {
@@ -270,66 +253,55 @@ extends TestCase {
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
 	public void testLoadOptionalAmountResources() {
-		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
-		requiredResourcesMap.put(ResourceUtil.foodID, 20D);
-		requiredResourcesMap.put(ResourceUtil.waterID, 10D);
-
-		Map<Integer, Number> optionalResourcesMap = new HashMap<>();
-		optionalResourcesMap.put(ResourceUtil.co2ID, 4D);
+		var manifest = new SuppliesManifest();
+		manifest.addResource(ResourceUtil.foodID, 20D, true);
+		manifest.addResource(ResourceUtil.waterID, 10D, true);
+		manifest.addResource(ResourceUtil.co2ID, 4D, false);
 
 		// Load the manifest
-		testLoading(200, requiredResourcesMap, optionalResourcesMap,
-					   Collections.emptyMap(), Collections.emptyMap());
+		testLoading(200, manifest);
 	}
 
 	/*
 	 * Load with optional resource present
 	 */
 	public void testLoadMissingOptionalAmountResources() {
-		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
-		requiredResourcesMap.put(ResourceUtil.foodID, 100D);
+		var manifest = new SuppliesManifest();
+		manifest.addResource(ResourceUtil.foodID, 100D, true);
+		manifest.addResource(ResourceUtil.co2ID, 4D, false);
 
-		Map<Integer, Number> optionalResourcesMap = new HashMap<>();
-		optionalResourcesMap.put(ResourceUtil.co2ID, 4D);
-
-		testLoadOptionalResources(100, requiredResourcesMap,
-								  optionalResourcesMap,
-								  ResourceUtil.nitrogenID);
+		testLoadOptionalResources(100, manifest,
+								  ResourceUtil.oxygenID);
 	}
 
 	/*
 	 * Test method loading Equipment
 	 */
 	public void testLoadFull() {
-		Map<Integer, Integer> requiredEquipMap = new HashMap<>();
-		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.BARREL), 5);
-		requiredEquipMap.put(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5);
+		var manifest = new SuppliesManifest();
+		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 5, true);
+		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5, true);
+		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.GAS_CANISTER), 5, false);
 
-		Map<Integer, Integer> optionalEquipMap = new HashMap<>();
-		optionalEquipMap.put(EquipmentType.getResourceID(EquipmentType.GAS_CANISTER), 5);
-
-		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
-		requiredResourcesMap.put(ResourceUtil.foodID, 100D);
-		requiredResourcesMap.put(fireExtinguisherID, 1);
-		requiredResourcesMap.put(smallHammerID, 2);
-
-		Map<Integer, Number> optionalResourcesMap = new HashMap<>();
-		optionalResourcesMap.put(ResourceUtil.co2ID, 4D);
-		optionalResourcesMap.put(pipeWrenchID, 5D);
+		manifest.addResource(ResourceUtil.foodID, 100D, true);
+		manifest.addResource(fireExtinguisherID, 1, true);
+		manifest.addResource(smallHammerID, 2, true);
+		manifest.addResource(ResourceUtil.co2ID, 4D, false);
+		manifest.addResource(pipeWrenchID, 5D, false);
 
 		// Load the manifest
-		testLoading(200, requiredResourcesMap, optionalResourcesMap,
-				requiredEquipMap, optionalEquipMap);
+		testLoading(200, manifest);
 	}
 
 	/*
 	 * Executes a loading for a manifest and a batch of tests.
 	 */
-	private void testLoading(int maxCycles,
-			Map<Integer, Number> resourcesManifest,
-			Map<Integer, Number> optionalResourcesManifest,
-			Map<Integer, Integer> equipmentManifest,
-			Map<Integer, Integer> optionalEquipmentManifest) {
+	private void testLoading(int maxCycles, SuppliesManifest manifest) {
+
+		var resourcesManifest = manifest.getResources(true);
+		var optionalResourcesManifest = manifest.getResources(false);
+		var equipmentManifest = manifest.getEquipment(true);
+		var optionalEquipmentManifest = manifest.getEquipment(false);
 
 		// Add resources to Settlement
 		loadSettlementResources(settlement, resourcesManifest);
@@ -342,8 +314,7 @@ extends TestCase {
 		setResourcesCapacity(vehicle, optionalResourcesManifest);
 
 		// Load the manifest
-		loadIt(maxCycles, resourcesManifest, optionalResourcesManifest,
-			   equipmentManifest, optionalEquipmentManifest);
+		loadIt(maxCycles, manifest);
 		checkVehicleResources(vehicle, resourcesManifest);
 		checkVehicleEquipment(vehicle, equipmentManifest);
 
@@ -351,8 +322,7 @@ extends TestCase {
 		checkVehicleEquipment(vehicle, optionalEquipmentManifest);
 
 		// Reload the same manifest which should complete immediately
-		reload(resourcesManifest, optionalResourcesManifest,
-				   equipmentManifest, optionalEquipmentManifest);
+		reload(manifest);
 	}
 
 	/**
@@ -372,14 +342,15 @@ extends TestCase {
 	/**
 	 * Test loading optional resources where one is missiing
 	 * @param maxCycles
-	 * @param requiredResources Required resources to load
-	 * @param optionalResources Optional resources
+	 * @param manifest Manifest holding mandatory and optional
 	 * @param missingId Missing resource that should not be loaded
 	 */
 	private void testLoadOptionalResources(int maxCycles,
-			Map<Integer, Number> requiredResources,
-			Map<Integer, Number> optionalResources, int missingId) {
+							SuppliesManifest manifest, int missingId) {
 
+		var requiredResources = manifest.getResources(true);
+		var optionalResources = manifest.getResources(false);
+	
 		loadSettlementResources(settlement, requiredResources);
 		setResourcesCapacity(vehicle, requiredResources);
 
@@ -387,12 +358,12 @@ extends TestCase {
 		setResourcesCapacity(vehicle, optionalResources);
 
 		// Add an extra resource that will not be present
-		var extraOptionalResources = new HashMap<>(optionalResources);
-		extraOptionalResources.put(missingId, 10D);
+		var expandedManifest = new SuppliesManifest();
+		expandedManifest.addResource(missingId, 10D, false);
+		requiredResources.entrySet().forEach(e -> expandedManifest.addResource(e.getKey(), e.getValue().doubleValue(), true));
+		optionalResources.entrySet().forEach(e -> expandedManifest.addResource(e.getKey(), e.getValue().doubleValue(), false));
 
-		loadIt(maxCycles, requiredResources, extraOptionalResources,
-			 Collections.emptyMap(),
-			 Collections.emptyMap());
+		loadIt(maxCycles, expandedManifest);
 
 		checkVehicleResources(vehicle, requiredResources);
 		checkVehicleResources(vehicle, optionalResources);
@@ -418,16 +389,10 @@ extends TestCase {
 	 * @param optionalEquipmentManifest
 	 * @return
 	 */
-	private LoadingController reload(Map<Integer, Number> resourcesManifest,
-			Map<Integer, Number> optionalResourcesManifest,
-			Map<Integer, Integer> equipmentManifest,
-			Map<Integer, Integer> optionalEquipmentManifest) {
+	private LoadingController reload(SuppliesManifest manifest) {
 
 		LoadingController controller = new LoadingController(settlement, vehicle,
-						resourcesManifest,
-						optionalResourcesManifest,
-						equipmentManifest,
-						optionalEquipmentManifest);
+												manifest);
 
 		// Vehicle should already be loaded
 		assertTrue("Vehicle already loaded", controller.isCompleted());
@@ -444,17 +409,10 @@ extends TestCase {
 	 * @param optionalEquipmentManifest
 	 * @return
 	 */
-	private LoadingController loadIt(int maxCycles,
-				Map<Integer, Number> resourcesManifest,
-				Map<Integer, Number> optionalResourcesManifest,
-				Map<Integer, Integer> equipmentManifest,
-				Map<Integer, Integer> optionalEquipmentManifest) {
+	private LoadingController loadIt(int maxCycles,SuppliesManifest manifest) {
 
 		LoadingController controller = new LoadingController(settlement, vehicle,
-				resourcesManifest,
-				optionalResourcesManifest,
-				equipmentManifest,
-				optionalEquipmentManifest);
+										manifest);
 
 		int loadingCount = 0;
 		boolean loaded = false;
@@ -490,11 +448,11 @@ extends TestCase {
 	/**
 	 * Check if the Vehicle has the Resources defined by a manifest
 	 * @param source
-	 * @param requiredResourcesMap
+	 * @param requiredResources
 	 */
-	private void checkVehicleResources(Vehicle source, Map<Integer, Number> requiredResourcesMap) {
+	private void checkVehicleResources(Vehicle source, Map<Integer, Number> requiredResources) {
 
-		for (Entry<Integer, Number> resource : requiredResourcesMap.entrySet()) {
+		for (Entry<Integer, Number> resource : requiredResources.entrySet()) {
 			int key = resource.getKey();
 			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 				String resourceName = ResourceUtil.findAmountResourceName(key);
@@ -538,11 +496,11 @@ extends TestCase {
 	/**
 	 * Load up a Settlements Amount Resources from a manifest
 	 * @param target
-	 * @param requiredResourcesMap
+	 * @param optionalResourcesManifest
 	 */
-	private void loadSettlementResources(Settlement target, Map<Integer, Number> requiredResourcesMap) {
+	private void loadSettlementResources(Settlement target, Map<Integer, Number> optionalResourcesManifest) {
 
-		for (Entry<Integer, Number> resource : requiredResourcesMap.entrySet()) {
+		for (Entry<Integer, Number> resource : optionalResourcesManifest.entrySet()) {
 			int key = resource.getKey();
 			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 				// Add extra to the stored to give a tolerance

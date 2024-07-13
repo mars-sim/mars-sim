@@ -1,23 +1,45 @@
 /**
  * Mars Simulation Project
- * MissionManifest.java
- * @date 2023-06-03
+ * SuppliesManifest.java
+ * @date 2024-07-13
  * @author Barry Evans
  */
-package com.mars_sim.core.mission;
+package com.mars_sim.core.resource;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Manifest for a Mission covering mandatory and optional reources & items.
+ * Manifest of Supplies covering mandatory and optional reources & items.
  */
-public class MissionManifest {
+public class SuppliesManifest {
 
     private Map<Integer, Number> mandatoryResources = new HashMap<>();
     private Map<Integer, Number> optionalResources = new HashMap<>();
     private Map<Integer, Integer> mandatoryEqm = new HashMap<>();
     private Map<Integer, Integer> optionalEqm = new HashMap<>();
+
+    /**
+     * Preload the manifest
+     * @param requiredResourcesToLoad
+     * @param optionalResourcesToLoad
+     * @param requiredEquipmentToLoad
+     * @param optionalEquipmentToLoad
+     */
+    public SuppliesManifest(Map<Integer, Number> mandatoryResources, Map<Integer, Number> optionalResources,
+            Map<Integer, Integer> mandatoryEqm, Map<Integer, Integer> optionalEqm) {
+        this.mandatoryResources = mandatoryResources;
+        this.optionalResources = optionalResources;
+        this.mandatoryEqm = mandatoryEqm;
+        this.optionalEqm = optionalEqm;
+    }
+
+    public SuppliesManifest() {
+        mandatoryResources = new HashMap<>();
+        optionalResources = new HashMap<>();
+        mandatoryEqm = new HashMap<>();
+        optionalEqm = new HashMap<>();
+    }
 
     /**
      * Add an amount of resource to the manifest. This is cummulative and will increase what resoruce

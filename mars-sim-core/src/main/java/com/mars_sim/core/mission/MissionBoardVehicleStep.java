@@ -19,6 +19,7 @@ import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
+import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -218,7 +219,7 @@ public class MissionBoardVehicleStep extends MissionStep {
 	 * @param addOptionals Any optional spares
      */
     @Override
-    void getRequiredResources(MissionManifest manifest, boolean addOptionals) {
+    void getRequiredResources(SuppliesManifest manifest, boolean addOptionals) {
 		MissionVehicleProject mvp = (MissionVehicleProject) getMission();
 		
 		// Get the estimated duration

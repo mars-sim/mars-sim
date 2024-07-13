@@ -41,6 +41,7 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
@@ -313,11 +314,12 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected LoadingController prepareLoadingPlan(Settlement loadingSite) {
 		if ((loadingPlan == null) || !loadingPlan.getSettlement().equals(loadingSite)) {
 			logger.info(vehicle, 10_000L, "Prepared a loading plan sourced from " + loadingSite.getName() + ".");
-			loadingPlan = new LoadingController(loadingSite, vehicle,
-												getRequiredResourcesToLoad(),
+			var manifest = new SuppliesManifest(getRequiredResourcesToLoad(),
 												getOptionalResourcesToLoad(),
 												getRequiredEquipmentToLoad(),
-												getOptionalEquipmentToLoad());			
+												getOptionalEquipmentToLoad());
+			loadingPlan = new LoadingController(loadingSite, vehicle, manifest);
+												;			
 		}
 		return loadingPlan;
 	}
