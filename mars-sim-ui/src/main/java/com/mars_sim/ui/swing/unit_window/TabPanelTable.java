@@ -56,6 +56,7 @@ public abstract class TabPanelTable extends TabPanel {
 
 	private String[] headerTooltips;
 	private String tableTitle;
+	private JTable table;
 	
 	/**
 	 * Constructor.
@@ -129,7 +130,7 @@ public abstract class TabPanelTable extends TabPanel {
 		var tableModel = createModel();
 		
 		// Prepare table.
-		var table = new JTable(tableModel);
+		table = new JTable(tableModel);
 		if (tableModel instanceof EntityModel) {
 			// Call up the window when clicking on a row on the table
 			EntityLauncher.attach(table, getDesktop());
@@ -154,6 +155,13 @@ public abstract class TabPanelTable extends TabPanel {
 		table.setAutoCreateRowSorter(true);
 
 		scrollPane.setViewportView(table);
+	}
+
+	/**
+	 * Get the central table of the panel
+	 */
+	protected JTable getMainTable() {
+		return table;
 	}
 
 	/**

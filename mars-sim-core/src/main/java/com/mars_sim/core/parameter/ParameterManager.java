@@ -76,6 +76,16 @@ public class ParameterManager implements Serializable {
         values.put(new ParameterKey(category, id), value);
     }
 
+    
+    /**
+     * Remove a value from the parameter manager
+     * @param category Categogory fo the new value
+     * @param id Identifier of the value being defined
+     */
+    public void removeValue(ParameterCategory category, String id) {
+        values.remove(new ParameterKey(category, id));
+    }
+
     /**
      * Get the known values held in the manager.
      * @return Keys and associated values.
@@ -140,4 +150,5 @@ public class ParameterManager implements Serializable {
         values.clear();
         values.putAll(preferences.values);
     }
+
 }
