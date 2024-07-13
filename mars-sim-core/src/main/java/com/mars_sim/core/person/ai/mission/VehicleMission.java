@@ -11,7 +11,6 @@ import java.util.List;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.task.LoadingController;
 
 public interface VehicleMission extends Mission {
 
@@ -45,13 +44,6 @@ public interface VehicleMission extends Mission {
      * Gets the remaining distance for the current travel leg.
      */
     double getDistanceCurrentLegRemaining();
-
-    /**
-	 * Gets the current loading plan for this Mission phase.
-	 * 
-	 * @return
-	 */
-    LoadingController getLoadingPlan();
 
     /**
 	 * Gets the estimated time of arrival (ETA) for the current leg of the mission.

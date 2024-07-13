@@ -31,7 +31,7 @@ public class TestDriveMissionTest extends AbstractMarsSimUnitTest {
     public void testCreation() {
         Settlement home = buildSettlement();
         buildGarage(home.getBuildingManager(), new LocalPosition(0,0), BUILDING_LENGTH, 1);
-        buildRover(home, "Rover 1", null);
+        var v = buildRover(home, "Rover 1", null);
         Person leader = buildPerson("Leader", home);
         for(int i = 0; i < 1 + MissionProject.MIN_POP; i++) {
             buildPerson("Support" + i, home);
@@ -41,7 +41,8 @@ public class TestDriveMissionTest extends AbstractMarsSimUnitTest {
         // Check vehicle details
         assertFalse("Mission active", mp.isDone());
         Vehicle assigned = mp.getVehicle();
-        assertNotNull("Assign Vehicle", assigned);
+        assertNotNull("Assigned Vehicle", assigned);
+        assertEquals("Mission assigned to vehicle", v, assigned);
         assertEquals("Vehicle mission", mp, assigned.getMission());
 
         // Check route
@@ -58,7 +59,7 @@ public class TestDriveMissionTest extends AbstractMarsSimUnitTest {
         assertTrue("Initial stage completed", executeMission(leader, assigned, mp, 10));
 
         // Check the plan has content
-        LoadingController plan = mp.getLoadingPlan();
+        LoadingController plan = v.getLoadingPlan();
         assertNotNull("Loading plan created", plan);
         Map<Integer, Number> resources = plan.getResourcesManifest();
         assertTrue("Plan has Oxygen", resources.get(ResourceUtil.oxygenID).doubleValue() > 0D);

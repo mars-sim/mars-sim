@@ -19,7 +19,6 @@ import com.mars_sim.core.project.ProjectStep;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.task.LoadingController;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -167,14 +166,6 @@ public class MissionVehicleProject extends MissionProject
             return mts.getDestination().getDistance() - mts.getDistanceCovered();
         }   
         return 0D;
-    }
-
-    @Override
-    public LoadingController getLoadingPlan() {
-        if (getCurrentStep() instanceof MissionLoadVehicleStep ls) {
-            return ls.getLoadingPlan();
-        }
-        return null;
     }
 
     @Override

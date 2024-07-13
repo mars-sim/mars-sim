@@ -354,7 +354,7 @@ public class CommandHelper {
 				}
 		
 				// Vehicle mission has a loading
-				LoadingController lp = tm.getLoadingPlan();
+				LoadingController lp = v.getLoadingPlan();
 				if ((lp != null) && !lp.isCompleted()) {
 					response.appendText("Loading from " + lp.getSettlement().getName() + " :");
 					outputResources("Resources", response, lp.getResourcesManifest());	

@@ -24,7 +24,6 @@ import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.RoverMission;
-import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
@@ -35,7 +34,6 @@ import com.mars_sim.core.structure.Lab;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.function.SystemType;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.vehicle.task.LoadingController;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.mapdata.location.LocalPosition;
 import com.mars_sim.tools.Msg;
@@ -773,24 +771,21 @@ public class Rover extends GroundVehicle implements Crewable,
 						m.setMission(mission);
 					}
 				}
-
-				if (isInSettlement()) {
-					if (mission instanceof VehicleMission) {
-						LoadingController lp = ((VehicleMission)mission).getLoadingPlan();
-
-						if ((lp != null) && !lp.isCompleted()) {
-							double time = pulse.getElapsed();
-							double transferSpeed = 10; // Assume 10 kg per msol
-							double amountLoading = time * transferSpeed;
-
-							lp.backgroundLoad(amountLoading);
-						}
-					}
-
-					plugInTemperature(pulse.getElapsed());
-					plugInAirPressure(pulse.getElapsed());
-				}
 			}
+		}
+
+		if (isInSettlement()) {
+			var lp = getLoadingPlan();
+			if ((lp != null) && !lp.isCompleted()) {
+				double time = pulse.getElapsed();
+				double transferSpeed = 10; // Assume 10 kg per msol
+				double amountLoading = time * transferSpeed;
+
+				lp.backgroundLoad(amountLoading);
+			}
+
+			plugInTemperature(pulse.getElapsed());
+			plugInAirPressure(pulse.getElapsed());
 		}
 
 		else if (crewCapacity <= 0) {

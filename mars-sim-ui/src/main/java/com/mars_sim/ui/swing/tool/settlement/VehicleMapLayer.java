@@ -14,8 +14,6 @@ import java.awt.image.BufferedImage;
 
 import org.apache.batik.gvt.GraphicsNode;
 
-import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
@@ -147,16 +145,9 @@ public class VehicleMapLayer extends AbstractMapLayer {
 	 * @return true if vehicle is being loaded or unloaded.
 	 */
 	private boolean isVehicleLoading(Vehicle vehicle) {
-		boolean result = false;
-
-		// For vehicle missions, check if vehicle is loading or unloading for the mission.
-		Mission mission = vehicle.getMission();
-		if ((mission != null) && (mission instanceof VehicleMission vm)) {
-			LoadingController lp = vm.getLoadingPlan();
-			result = (lp != null) && !lp.isCompleted();
-		}
-
-		return result;
+		// check if vehicle is loading or unloading
+		LoadingController lp = vehicle.getLoadingPlan();
+		return (lp != null) && !lp.isCompleted();
 	}
 
 	/**

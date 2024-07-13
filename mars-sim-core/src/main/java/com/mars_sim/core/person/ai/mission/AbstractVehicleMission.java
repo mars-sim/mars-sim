@@ -294,16 +294,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	public Vehicle getVehicle() {
 		return vehicle;
 	}
-	
-	/**
-	 * Gets the current loading plan for this Mission phase.
-	 * 
-	 * @return
-	 */
-	@Override
-	public LoadingController getLoadingPlan() {
-		return loadingPlan;
-	}
 
 	/**
 	 * Prepares a loading plan taking resources from a site. If a plan for the same
