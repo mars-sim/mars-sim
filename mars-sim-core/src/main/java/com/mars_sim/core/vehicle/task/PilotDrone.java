@@ -62,7 +62,7 @@ public class PilotDrone extends OperateVehicle {
 	 */
 	public PilotDrone(Worker pilot, Flyer flyer, Coordinates destination, MarsTime startTripTime,
 			double startTripDistance) {
-		this(pilot, flyer, destination, startTripTime, startTripDistance, null);
+		this(pilot, flyer, destination, startTripTime, startTripDistance, OperateVehicle.MOBILIZE);
 	}
 
 	/**
@@ -84,8 +84,10 @@ public class PilotDrone extends OperateVehicle {
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
 
-		if (startingPhase != null)
-			setPhase(startingPhase);
+		if (startingPhase == null)
+			startingPhase = OperateVehicle.MOBILIZE;
+		
+		setPhase(startingPhase);
 
 		logger.log(pilot, Level.INFO, 20_000, "Took control of the drone at phase '"
 					+ startingPhase + "'.");

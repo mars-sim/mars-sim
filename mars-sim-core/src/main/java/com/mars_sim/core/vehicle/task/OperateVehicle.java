@@ -293,7 +293,7 @@ public abstract class OperateVehicle extends Task {
         if (worker.getUnitType() == UnitType.ROBOT
         	&& ((Robot)worker).getSystemCondition().isLowPower()) {
         	logger.log(worker, Level.WARNING, 20_000,
-        			". Can't pilot " + getVehicle() + ".");
+        			". Unable to pilot " + getVehicle() + " due to low power.");
 	        endTask();
 	        return time;
         }

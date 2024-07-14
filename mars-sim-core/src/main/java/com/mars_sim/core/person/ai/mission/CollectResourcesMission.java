@@ -302,7 +302,8 @@ public abstract class CollectResourcesMission extends EVAMission
 		double roverRemainingCap = rover.getCargoCapacity() - rover.getStoredMass();
 
 		double weight = person.getMass();
-		if (roverRemainingCap < weight + 5) {
+		if (roverRemainingCap < weight) {
+			logger.info(getRover(), "No enough capacity to fit " + person.getName() + "(" + weight + " kg).");
 			addMissionLog("Rover capacity full");
 			return false;
 		}

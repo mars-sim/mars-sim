@@ -51,9 +51,10 @@ public class UnitWindowFactory {
         case BUILDING:
             return new BuildingUnitWindow(desktop, (Building) unit);
         case EVA_SUIT:
+        case CONTAINER:
             return new EquipmentUnitWindow(desktop, (Equipment) unit);
-//        case CONSTRUCTION:
-//            return new ConstructionSiteWindow(desktop, (ConstructionSite) unit);  
+// May add back: case CONSTRUCTION
+// May add back: return new ConstructionSiteWindow(desktop, (ConstructionSite) unit)
         default:
             return null;
         }

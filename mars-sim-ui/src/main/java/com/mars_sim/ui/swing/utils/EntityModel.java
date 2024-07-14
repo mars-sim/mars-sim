@@ -13,7 +13,8 @@ import com.mars_sim.core.Entity;
  */
 public interface EntityModel {
     /**
-     * Get the associated Entity at a row index.
+     * Gets the associated Entity at a row index.
+     * 
      * @param row Index
      * @return Entity associated 
      */
