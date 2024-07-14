@@ -48,7 +48,8 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	// Column indexes
 	private static final int NAME = 0;
 	private static final int TYPE = NAME+1;
-	private static final int SETTLEMENT = TYPE+1;
+	private static final int MODEL = TYPE+1;
+	private static final int SETTLEMENT = MODEL+1;
 	private static final int LOCATION = SETTLEMENT+1;
 	private static final int DESTINATION = LOCATION+1;
 	private static final int DESTDIST = DESTINATION+1;
@@ -79,6 +80,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
 		COLUMNS[NAME] = new ColumnSpec("Name", String.class);
 		COLUMNS[TYPE] = new ColumnSpec("Type", String.class);
+		COLUMNS[MODEL] = new ColumnSpec("Model", String.class);
 		COLUMNS[SETTLEMENT] = new ColumnSpec("Settlement", String.class);
 		COLUMNS[LOCATION] = new ColumnSpec("Location", String.class);
 		COLUMNS[DESTINATION] = new ColumnSpec("Next Waypoint", Coordinates.class);
@@ -153,9 +155,13 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				break;
 
 			case TYPE :
-				result = vehicle.getSpecName();
+				result = vehicle.getVehicleType().getName();
 				break;
 
+			case MODEL :
+				result = vehicle.getModelName();
+				break;
+				
 			case LOCATION : {
 				Settlement settle = vehicle.getSettlement();
 				if (settle != null) {

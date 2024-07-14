@@ -296,7 +296,7 @@ public class CommandHelper {
 		if (v != null) {
 			response.appendLabeledString("Vehicle", v.getName());
 			response.appendLabeledString("Type", v.getVehicleType().getName());
-			response.appendLabeledString("Specification", v.getSpecName());
+			response.appendLabeledString("Specification", v.getModelName());
 			response.appendLabeledString("Est. Dist.", String.format(KM_FORMAT, dist));
 			response.appendLabeledString("Travelled", String.format(KM_FORMAT, trav));
 		}

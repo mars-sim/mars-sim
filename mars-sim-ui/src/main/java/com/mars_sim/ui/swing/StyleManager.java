@@ -46,10 +46,10 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_PLACES2 = new DecimalFormat("#,###,##0.00");
     
     // Unit specific formatters
-    public static final DecimalFormat DECIMAL_LITER2 = new DecimalFormat("#,##0.00 Liter");
-    public static final DecimalFormat DECIMAL_KM_KG = new DecimalFormat("#,##0.00 km/kg");
-    public static final DecimalFormat DECIMAL_WH_KM = new DecimalFormat("#,##0.00 Wh/km");
-    public static final DecimalFormat DECIMAL_WH_KG = new DecimalFormat("#,##0.00 Wh/kg");
+    public static final DecimalFormat DECIMAL_LITER2 = new DecimalFormat("#,##0.0 Liter");
+    public static final DecimalFormat DECIMAL_KM_KG = new DecimalFormat("#,##0.0 km/kg");
+    public static final DecimalFormat DECIMAL_WH_KM = new DecimalFormat("#,##0.0 Wh/km");
+    public static final DecimalFormat DECIMAL_WH_KG = new DecimalFormat("#,##0.0 Wh/kg");
     public static final DecimalFormat DECIMAL_M2 = new DecimalFormat("#,##0.00 m\u00B2");
     public static final DecimalFormat DECIMAL_M_S2 = new DecimalFormat("#,##0.00 m/s\u00B2");
     public static final DecimalFormat DECIMAL_M_S = new DecimalFormat("#,##0.00 m/s"); 

@@ -75,6 +75,9 @@ public class VehicleUnitWindow extends UnitWindow {
 		
 		sortTabPanels();
 		
+		// Add as the first panel
+		addFirstPanel(new TabPanelGeneralVehicle(vehicle, desktop));
+		
 		// Add to tab panels. 
 		addTabIconPanels();
 	}

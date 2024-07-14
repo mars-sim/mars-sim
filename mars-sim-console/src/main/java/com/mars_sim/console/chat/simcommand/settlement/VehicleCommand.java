@@ -49,7 +49,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 									"Status", 7, "Home", "Maint Due", "Mission", 25);
 
 		for (Vehicle v : vlist) {
-			String vTypeStr = v.getSpecName();	
+			String vTypeStr = v.getName();	
 
 			// Print mission name
 			String missionName = "";

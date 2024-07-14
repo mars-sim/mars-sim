@@ -4,10 +4,11 @@
 	<!ELEMENT vehicle (description?, power-source, battery-module, energy-per-module, fuel-cell-stack, drivetrain-efficiency, base-speed, base-power,
 	empty-mass, terrain-handling?, crew-size?, cargo?, part-attachment?, sickbay?, lab?,
 	airlock?, activity?)>
+	<!-- These are aligned with VehicleType enum-->
 	<!ATTLIST vehicle name CDATA #REQUIRED>
 
-	<!-- These are aligned with VehicleType enum-->
 	<!ATTLIST vehicle type (LUV|DELIVERY_DRONE|EXPLORER_ROVER|TRANSPORT_ROVER|CARGO_ROVER) #REQUIRED>
+	<!ATTLIST vehicle model CDATA #REQUIRED>
 
 	<!ATTLIST vehicle width CDATA #REQUIRED>
 	<!ATTLIST vehicle length CDATA #REQUIRED>
@@ -100,7 +101,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 <vehicle-configuration>
 	<!-- The size of the rover [in m]. (required) -->
-	<vehicle name="Explorer Rover" type="EXPLORER_ROVER" width="3.5" length="8.0">
+	<vehicle name="Explorer Rover" type="EXPLORER_ROVER" model="A" width="3.5" length="8.0">
 		<!-- Note: the vehicle types used here must match those in message.properties -->
 
 		<description>A rover for collecting rock samples, ice and regolith.
@@ -248,7 +249,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 	</vehicle>
 
-	<vehicle name="Long Range Explorer" type="EXPLORER_ROVER" width="3.5" length="8.0" base-image="long range explorer">
+	<vehicle name="Long Range Explorer" type="EXPLORER_ROVER" model="A" width="3.5" length="8.0" base-image="long range explorer">
 		<description>An extended range version of the Explorer Rover.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="15.0"/>		
 		<battery-module number="3" />
@@ -304,7 +305,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	</vehicle>
 
 	<!-- Transport rover -->
-	<vehicle name="Transport Rover" type="TRANSPORT_ROVER" width="3.5" length="9.5">
+	<vehicle name="Transport Rover" type="TRANSPORT_ROVER" model="A" width="3.5" length="9.5">
 		<description>A rover for transporting people from one settlement to another
 			and can accommodate up to 8 people.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="20.0"/>			
@@ -355,7 +356,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	</vehicle>
 
 	<!-- Cargo rover -->
-	<vehicle name="Cargo Rover" type="CARGO_ROVER" width="4.0" length="8.0">
+	<vehicle name="Cargo Rover" type="CARGO_ROVER" model="A" width="4.0" length="8.0">
 		<description>A rover for transporting cargo from one settlement to another
 			and can have fit two people only to maximize cargo space.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="20.0"/>
@@ -402,7 +403,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<!-- Light Utility Vehicle
 		 See conceptual vehicles for Construction with Regolith https://ntrs.nasa.gov/api/citations/20170002067/downloads/20170002067.pdf
 	-->
-	<vehicle name="Light Utility Vehicle" type="LUV" width="1.7" length="2.55">
+	<vehicle name="Light Utility Vehicle" type="LUV" model="A" width="1.7" length="2.55">
 		<description>A small, unpressurized, one crew utility vehicle with attachable parts.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="10.0"/>
 		<battery-module number="1" />
@@ -432,7 +433,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	</vehicle>
 
 	<!-- Delivery Drone -->
-	<vehicle name="Delivery Drone" type="DELIVERY_DRONE" width="1.75" length="1.75">
+	<vehicle name="Delivery Drone" type="DELIVERY_DRONE" model="A" width="1.75" length="1.75">
 		<description>An unmanned aerial vehicle used for transport of light cargo between settlements</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="20.0"/>
 		<battery-module number="1" />

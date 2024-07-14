@@ -154,8 +154,8 @@ public abstract class Vehicle extends Unit
 	/** The actual start mass of the vehicle (base mass + crew weight + full cargo weight) for a trip [km/kg]. */
 	private double startMass = 0;
 	
-	/** The vehicle specification */
-	private String specName;
+	/** The vehicle model */
+	private String modelName;
 	
 	/** Parked position (meters) from center of settlement. */
 	private LocalPosition posParked;	
@@ -221,7 +221,7 @@ public abstract class Vehicle extends Unit
 		super(name, settlement.getCoordinates());
 		
 		this.spec = spec;
-		this.specName = spec.getName();
+		this.modelName = spec.getModelName();
 		this.vehicleType = spec.getType();
 		setBaseMass(spec.getEmptyMass());
 		
@@ -314,14 +314,15 @@ public abstract class Vehicle extends Unit
 	public String getBaseImage() {
 		return spec.getBaseImage();
 	}
+	
 	/**
-	 * Gets the name of the vehicle specification.
+	 * Gets the model of the vehicle.
 	 * 
-	 * @see VehicleConfig#getVehicleSpec(String)
-	 * @return Name of the VehicleSpec
+	 * @see VehicleConfig#getModel(String)
+	 * @return Name of the model
 	 */
-	public String getSpecName() {
-		return specName;
+	public String getModelName() {
+		return modelName;
 	}
 
 	public VehicleType getVehicleType() {
