@@ -648,7 +648,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 		mind.setInactive();
 
 		if (study != null) {
-			study.setCompleted(StudyStatus.CANCELLED, getName() + " primary researcher dead");
+			study.setCompleted(StudyStatus.CANCELLED, getName() + " primary researcher was dead");
 			study = null;
 		}
 

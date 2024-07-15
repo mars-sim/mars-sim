@@ -301,13 +301,19 @@ public abstract class CollectResourcesMission extends EVAMission
 		Rover rover = getRover();
 		double roverRemainingCap = rover.getCargoCapacity() - rover.getStoredMass();
 
+		if (roverRemainingCap <= 0) {
+			logger.info(getRover(), "No more room in " + rover.getName());
+			addMissionLog("Zero remaining rover capacity");
+			return false;
+		}
+
 		double weight = person.getMass();
 		if (roverRemainingCap < weight) {
 			logger.info(getRover(), "No enough capacity to fit " + person.getName() + "(" + weight + " kg).");
 			addMissionLog("Rover capacity full");
 			return false;
 		}
-
+		
 		// This will update the siteCollectedResources and totalResourceCollected after the last on-site collection activity
 		double siteCollectedSoFar = updateResources(rover);
 
@@ -336,7 +342,8 @@ public abstract class CollectResourcesMission extends EVAMission
 		if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {
 			EVAOperation collectResources = new CollectResources(person,
 					getRover(), resourceID, rate,
-					siteResourceGoal - siteCollectedSoFar, rover.getAmountResourceStored(resourceID),
+					siteResourceGoal - siteCollectedSoFar, 
+					rover.getAmountResourceStored(resourceID),
 					containerID);
 			assignTask(person, collectResources);
 		}

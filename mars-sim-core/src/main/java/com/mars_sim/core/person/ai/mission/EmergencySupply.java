@@ -969,7 +969,7 @@ public class EmergencySupply extends RoverMission {
 	 * @return map of goods and amounts.
 	 */
 	public Map<Good, Integer> getEmergencySuppliesAsGoods() {
-		Map<Good, Integer> result = new HashMap<Good, Integer>();
+		Map<Good, Integer> result = new HashMap<>();
 
 		// Add emergency resources.
 		Iterator<Integer> i = emergencyResources.keySet().iterator();

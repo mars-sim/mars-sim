@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-07-14
  * @author Scott Davis
  */
 
@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
@@ -94,9 +93,8 @@ public class TravelToSettlement extends RoverMission {
 			}
 
 			// Recruit additional members to mission.
-			if (!isDone()) {
-				if (!recruitMembersForMission(startingMember, 2))
-					return;
+			if (!isDone() && !recruitMembersForMission(startingMember, 2)) {
+				return;
 			}
 
 			// Check if vehicle can carry enough supplies for the mission.
@@ -110,6 +108,13 @@ public class TravelToSettlement extends RoverMission {
 		}
 	}
 
+	/**
+	 * Travels to a settlement.
+	 * 
+	 * @param members
+	 * @param destinationSettlement
+	 * @param rover
+	 */
 	public TravelToSettlement(Collection<Worker> members, 
 			Settlement destinationSettlement, Rover rover) {
 		// Use RoverMission constructor.
@@ -236,11 +241,11 @@ public class TravelToSettlement extends RoverMission {
 
 		boolean result = false;
 
-		Iterator<Mission> i = Simulation.instance().getMissionManager().getMissions().iterator();
+		Iterator<Mission> i = missionManager.getMissions().iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
-			if (mission instanceof TravelToSettlement) {
-				Settlement destination = ((TravelToSettlement) mission).getDestinationSettlement();
+			if (mission instanceof TravelToSettlement ts) {
+				Settlement destination = ts.getDestinationSettlement();
 				if (settlement.equals(destination)) {
 					result = true;
 				}
@@ -265,8 +270,7 @@ public class TravelToSettlement extends RoverMission {
 		// starting settlement.
 		double relationshipFactor = 0D;
 
-		if (member instanceof Person) {
-			Person person = (Person) member;
+		if (member instanceof Person person) {
 			double currentOpinion = RelationshipUtil.getAverageOpinionOfPeople(person,
 					startingSettlement.getAllAssociatedPeople());
 			double destinationOpinion = RelationshipUtil.getAverageOpinionOfPeople(person,
@@ -277,8 +281,7 @@ public class TravelToSettlement extends RoverMission {
 		// Determine job opportunities in destination settlement relative to
 		// starting settlement.
 		double jobFactor = 0D;
-		if (member instanceof Person) {
-			Person person = (Person) member;
+		if (member instanceof Person person) {
 			JobType currentJob = person.getMind().getJob();
 			double currentJobProspect = JobUtil.getJobProspect(person, currentJob, startingSettlement, true);
 			double destinationJobProspect = 0D;
@@ -310,8 +313,7 @@ public class TravelToSettlement extends RoverMission {
 				- startingSettlement.getTotalScientificAchievement()) / 10D;
 		double jobScienceAchievementFactor = 0D;
 
-		if (member instanceof Person) {
-			Person person = (Person) member;
+		if (member instanceof Person person) {
 			ScienceType jobScience = ScienceType.getJobScience(person.getMind().getJob());
 			if (jobScience != null) {
 				double startingJobScienceAchievement = startingSettlement.getScientificAchievement(jobScience);
@@ -335,9 +337,7 @@ public class TravelToSettlement extends RoverMission {
 	public double getMissionQualification(Worker member) {
 		double result = super.getMissionQualification(member);
 
-		if (member instanceof Person) {
-			Person person = (Person) member;
-
+		if (member instanceof Person person) {
 			// Add modifier for average relationship with inhabitants of
 			// destination settlement.
 			if (destinationSettlement != null) {

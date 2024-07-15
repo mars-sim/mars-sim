@@ -97,7 +97,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final MissionPhase DEPARTING = new MissionPhase("departing", Stage.PREPARATION);
 	protected static final MissionPhase TRAVELLING = new MissionPhase("travelling");
 	private static final MissionPhase DISEMBARKING = new MissionPhase("disembarking", Stage.CLOSEDOWN);
+	private static final MissionPhase RETURNING_HOME = new MissionPhase("returning home", Stage.CLOSEDOWN);
 
+	
 	// Mission Status
 	protected static final MissionStatus NO_AVAILABLE_VEHICLES = new MissionStatus("Mission.status.noVehicle");
 	protected static final MissionStatus VEHICLE_BEACON_ACTIVE = new MissionStatus("Mission.status.vehicleBeacon");
@@ -403,7 +405,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @throws MissionException if error determining vehicle range.
 	 */
 	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
-		// By default all vehciles are equal
+		// By default all vehicles are equal
 		return 0;
 	}
 

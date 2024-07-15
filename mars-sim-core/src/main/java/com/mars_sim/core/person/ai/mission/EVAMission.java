@@ -7,6 +7,7 @@
 package com.mars_sim.core.person.ai.mission;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -86,8 +87,9 @@ abstract class EVAMission extends RoverMission {
 	}
 
 	/**
-	 *
-	 * @return Can the EVA phase be started
+	 * Can the EVA phase be started ?
+	 * 
+	 * @return 
 	 */
 	private boolean canStartEVA() {
 		boolean result = false;
@@ -182,11 +184,10 @@ abstract class EVAMission extends RoverMission {
 	protected void endEVATasks() {
 		// End each member's EVA task.
 		for(Worker member : getMembers()) {
-			if (member instanceof Person) {
-				Person person = (Person) member;
+			if (member instanceof Person person) {
 				Task task = person.getMind().getTaskManager().getTask();
-				if (task instanceof EVAOperation) {
-					((EVAOperation) task).endEVA();
+				if (task instanceof EVAOperation eo) {
+					eo.endEVA();
 				}
 			}
 		}
@@ -226,22 +227,26 @@ abstract class EVAMission extends RoverMission {
 
 			// Check if enough resources for remaining trip. false = not using margin.
 			if (activeEVA && !hasEnoughResourcesForRemainingMission()) {
+				logger.info(getVehicle(), "Not enough resources for remaining mission.");
 				activeEVA = false;
 			}
-
-			// All good so do the EVA
+			
+			// All good so far, perform the EVA
 			if (activeEVA) {
+				// performEVA will check if rover capacity is full
 				activeEVA = performEVA((Person) member);
 				if (!activeEVA) {
 					logger.info(getVehicle(), "EVA operation halted.");
 					addMissionLog("EVA operation halted.");
-
 				}
 			}
 		} 
 
-		// EVA is not active so can th phase end?
+		// EVA is no longer active, end EVA phase
 		if (!activeEVA) {
+			// Report any "teleported" members
+			checkTeleported();
+			
 			if (isEveryoneInRover()) {
 				// End phase
 				phaseEVAEnded();
@@ -254,6 +259,33 @@ abstract class EVAMission extends RoverMission {
 		}
 	}
 
+	/**
+	 * Ensures no "teleported" person is still a member of this mission.
+	 * Remove the person if found.
+	 */
+	private void checkTeleported() {
+
+		for (Iterator<Worker> i = getMembers().iterator(); i.hasNext();) {    
+			Worker member = i.next();
+	
+			if (member instanceof Person) {
+				Person p = (Person) member;
+				
+				if (p.isInSettlement() || p.isInSettlementVicinity()
+						|| p.isRightOutsideSettlement()) {
+					// Set mission to null will cause this member to drop off the member list
+					p.getMind().setMission(null);
+					
+					// Use Iterator's remove() method
+					i.remove();
+
+					memberLeave(member);
+					break;
+				}
+			}
+		}
+	}
+	
     /**
      * Perform the specific EVA activities. This may cancel the EVA phase
      * @param person

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RoverMission.java
- * @date 2023-07-19
+ * @date 2024-07-14
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -231,8 +231,11 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 * @return true if everyone is aboard
 	 */
 	protected final boolean isEveryoneInRover() {
+		// Note: prior to calling this method, may need to be more defensive 
+		//       to ensure that no "teleported" persons are still members.
+		//       Or else the it would always return false
 		Rover r = getRover();
-		for(Worker m : getMembers()) {
+		for (Worker m : getMembers()) {
 			Person p = (Person) m;
 			if (!r.isCrewmember(p)) {
 				return false;
@@ -1096,9 +1099,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingMember)) {
 			// Remove last person added to the mission.
 			Person lastPerson = null;
-			 for (Iterator<Worker> i = getMembers().iterator(); 
-					 i.hasNext();) {      
-				 Worker member = i.next();
+			for (Iterator<Worker> i = getMembers().iterator(); i.hasNext();) {      
+				Worker member = i.next();
 				if (member instanceof Person) {
 					lastPerson = (Person) member;
 					// Use Iterator's remove() method
