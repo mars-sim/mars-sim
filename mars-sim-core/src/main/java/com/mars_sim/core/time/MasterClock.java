@@ -809,25 +809,35 @@ public class MasterClock implements Serializable {
 		boolean isNewSol = (lastSol != currentSol);
 		// Updates lastSol
 		if (isNewSol) {
-			lastSol = currentSol;
+//			this.isNewSol = isNewSol;
+			this.lastSol = currentSol;
 		}
 		// Identify if it just passes half a sol
 		boolean isNewHalfSol = isNewSol || (lastMillisol <= 500 && currentMillisol > 500);	
-		
+//		if (isNewHalfSol) {
+//			this.isNewHalfSol = isNewHalfSol;
+//		}
 		
 		////////////////////////////////////////////////////////////////////////////////////
 		// Part 2: Millisol Updates
 		////////////////////////////////////////////////////////////////////////////////////
+
 		// Get the current millisol integer
 		int currentIntMillisol = marsTime.getMillisolInt();
 		// Checks if this pulse starts a new integer millisol
 		boolean isNewIntMillisol = lastIntMillisol != currentIntMillisol; 
 		// Update the lastIntMillisol
 		if (isNewIntMillisol) {
+//			this.isNewIntMillisol = isNewIntMillisol;
 			lastIntMillisol = currentIntMillisol;
 		}
 		// Identify if it just passes half a millisol
-		boolean isNewHalfMSol = isNewIntMillisol || (lastMillisol <= .5 && currentMillisol > .5);
+		boolean isNewHalfMSol = isNewIntMillisol || (lastMillisol <= .5 && currentMillisol > .5);	
+		// Update the lastIntMillisol
+//		if (isNewHalfMSol) {
+//			this.isNewHalfMSol = isNewHalfMSol;
+//		}
+		
 		// Update the lastMillisol
 		lastMillisol = currentMillisol;	
 
