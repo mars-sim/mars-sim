@@ -1101,8 +1101,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			Person lastPerson = null;
 			for (Iterator<Worker> i = getMembers().iterator(); i.hasNext();) {      
 				Worker member = i.next();
-				if (member instanceof Person) {
-					lastPerson = (Person) member;
+				if (member instanceof Person p) {
+					lastPerson = p;
 					// Use Iterator's remove() method
 					i.remove();
 					// Adjust the work shift

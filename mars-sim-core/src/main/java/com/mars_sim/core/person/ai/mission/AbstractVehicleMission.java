@@ -1998,13 +1998,16 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * next navigation point.
 	 */
 	protected void startTravellingPhase() {
-		getLog().setStarted();
+		if (getLog().getDateEmbarked() == null) {
+			// If the embarked date has already been set, do not call it again
+			getLog().generatedDateEmbarked();
+		}
 		startTravelToNextNode();
 		setPhase(TRAVELLING, getNextNavpointDescription());
 	}
 
 	/**
-	 * Start the Embarking phase
+	 * Start the Embarking phase.
 	 */
 	private void startLoadingPhase() {
 		setPhase(LOADING, getStartingSettlement().getName());

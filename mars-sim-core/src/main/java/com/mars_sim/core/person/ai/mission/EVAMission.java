@@ -268,20 +268,23 @@ abstract class EVAMission extends RoverMission {
 		for (Iterator<Worker> i = getMembers().iterator(); i.hasNext();) {    
 			Worker member = i.next();
 	
-			if (member instanceof Person) {
-				Person p = (Person) member;
+			boolean toRemove = false;
+			
+			if (member instanceof Person p) {
 				
 				if (p.isInSettlement() || p.isInSettlementVicinity()
 						|| p.isRightOutsideSettlement()) {
-					// Set mission to null will cause this member to drop off the member list
-					p.getMind().setMission(null);
-					
-					// Use Iterator's remove() method
-					i.remove();
-
+	
+					toRemove = true;
+					// Call memberLeave to set mission to null will cause this member to drop off the member list
 					memberLeave(member);
 					break;
 				}
+			}
+			
+			if (toRemove) {
+				// Use Iterator's remove() method
+				i.remove();
 			}
 		}
 	}

@@ -79,7 +79,7 @@ public class MissionBoardVehicleStep extends MissionStep {
 		// All good to leave
         if (canLeave) {
             depart(mp, v);
-			mp.getLog().setStarted();
+			mp.getLog().generatedDateEmbarked();
             complete();
         }
         return canWork;

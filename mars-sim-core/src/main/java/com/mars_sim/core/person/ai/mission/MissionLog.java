@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MissionLog.java
- * @date 2022-09-03
+ * @date 2024-07-14
  * @author Barry Evans
  */
 package com.mars_sim.core.person.ai.mission;
@@ -14,14 +14,14 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 
 /**
- * Holds all log details about a Missiion
+ * The class that holds all log details about a Mission.
  */
 public class MissionLog implements Serializable  {
 
 	private static final long serialVersionUID = 1L;
 
 	/**
-     * POJO class for a log entry
+     * POJO class for a log entry.
      */
     public static class MissionLogEntry implements Serializable {
     	
@@ -51,7 +51,7 @@ public class MissionLog implements Serializable  {
     }
 
     private List<MissionLogEntry> log = new ArrayList<>();
-    private MarsTime startDate;
+    private MarsTime dateEmbarked;
     private boolean done = false;
     protected static MasterClock clock;
 
@@ -73,16 +73,16 @@ public class MissionLog implements Serializable  {
 
     
 	/**
-	 * Gets the date work started. This is after any preparation steps.
+	 * Gets the date embarked. This is after any preparation steps.
 	 *
 	 * @return
 	 */
-	public MarsTime getDateStarted() {
-		return startDate;
+	public MarsTime getDateEmbarked() {
+		return dateEmbarked;
 	}
 
 	/**
-	 * Gets the date missions was finsihed
+	 * Gets the date missions was finished.
 	 *
 	 * @return
 	 */
@@ -99,11 +99,14 @@ public class MissionLog implements Serializable  {
         done = true;
     }
 
-    public void setStarted() {
-        if (startDate == null) {
-            startDate = clock.getMarsTime();
-        }
-    }
+    /**
+     * Generates the embarked date.
+     */
+	public void generatedDateEmbarked() {
+		if (dateEmbarked == null) {
+			dateEmbarked = clock.getMarsTime();
+		}
+	}
 
     public List<MissionLogEntry> getEntries() {
         return log;

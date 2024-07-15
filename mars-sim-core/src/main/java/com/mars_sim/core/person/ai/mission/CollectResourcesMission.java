@@ -303,7 +303,7 @@ public abstract class CollectResourcesMission extends EVAMission
 
 		if (roverRemainingCap <= 0) {
 			logger.info(getRover(), "No more room in " + rover.getName());
-			addMissionLog("Zero remaining rover capacity");
+			addMissionLog("No remaining rover capacity");
 			return false;
 		}
 
@@ -321,6 +321,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		// phase.
 		if (siteCollectedSoFar >= siteResourceGoal) {
 			logger.info(getRover(), "Full resources collected at site.");
+			addMissionLog("Full resources collected");
 			return false;
 		}
 

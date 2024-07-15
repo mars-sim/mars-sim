@@ -969,7 +969,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			if (columnIndex == 0)
 				return "Date"; //$NON-NLS-1$
 			else if (columnIndex == 1)
-				return "Phase";
+				return "Entry";
 			else
 				return Msg.getString("unknown"); //$NON-NLS-1$
 		}
