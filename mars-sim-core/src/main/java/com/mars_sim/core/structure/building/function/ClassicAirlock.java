@@ -760,7 +760,7 @@ public class ClassicAirlock extends Airlock {
 				addTime(time);
 			}
 
-			if (pulse.isNewMSol()) {
+			if (pulse.isNewIntMillisol()) {
 				// Check occupants
 				checkOccupantIDs();
 				// Check the airlock operator

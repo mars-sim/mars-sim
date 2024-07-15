@@ -819,7 +819,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 		
 		if (person.isSuperUnfit()) {
-			logger.warning(person, 4_000L, "Super unfit to perform '" + task + ".");
+			logger.warning(person, 4_000, "Super unfit to perform '" + task + ".");
 			return false;
 		}
 		
@@ -832,13 +832,13 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		if (canPerformTask) {
 			if (currentTask != null) {
-				logger.info(person, 4_000L, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
+				logger.info(person, 4_000, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
 			}
 			else
-				logger.info(person, 4_000L, "Assigned with '" + task.getName() + "'.");
+				logger.info(person, 4_000, "Assigned with '" + task.getName() + "'.");
 		}
 		else
-			logger.info(person, 4_000L, "Unable to perform '" + task.getName() + "'.");
+			logger.info(person, 4_000, "Unable to perform '" + task.getName() + "'.");
 
 		return canPerformTask;
 	}
@@ -855,31 +855,40 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		// If robot is malfunctioning, it cannot perform task.
 		if (robot.getMalfunctionManager().hasMalfunction()) {
+			logger.info(robot, 4_000, "Malfunctioned and cannot be assigned with '" + task.getName() + "'.");
 			return false;
 		}
 
-		if (!robot.getSystemCondition().isBatteryAbove(10))
+		if (!robot.getSystemCondition().isBatteryAbove(10)) {
+			logger.info(robot, 4_000, "Battery below 10% and cannot be assigned with '" + task.getName() + "'.");
 			return false;
+		}
 
 		Task currentTask = robot.getBotMind().getBotTaskManager().getTask();
 		
 		if (currentTask != null) {
 
-			if (currentTask.getName().equals(task.getName())
-					|| currentTask.getName().equals(Charge.NAME))
-				// If the person has been doing this task, 
+			if (currentTask.getName().equals(task.getName())) {
+				logger.info(robot, 4_000, "Already assigned with '" + currentTask.getName() + "'.");
+				// If the robot has been doing this task, 
 				// then there is no need of adding it.
 				return false;
+			}
+			
+			else if (currentTask.getName().equals(Charge.NAME)) {
+				logger.info(robot, 4_000, "Still charging and cannot be assigned with '" + task.getName() + "'.");
+				return false;
+			}
 		}
 
 		boolean canPerformTask = robot.getBotMind().getBotTaskManager().checkReplaceTask(task);
 		
 		if (canPerformTask) {
 			if (currentTask != null) {
-				logger.info(robot, 10_000L, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
+				logger.info(robot, 4_000, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
 			}
 			else
-				logger.info(robot, 10_000L, "Assigned with '" + task.getName() + "'.");
+				logger.info(robot, 4_000, "Assigned with '" + task.getName() + "'.");
 		}
 		else
 			logger.info(robot, 10_000L, "Unable to perform '" + task.getName() + "'.");

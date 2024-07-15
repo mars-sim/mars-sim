@@ -474,7 +474,7 @@ public class PhysicalCondition implements Serializable {
 			}
 			
 			// Check once per msol (millisol integer)
-			if (pulse.isNewMSol()) {
+			if (pulse.isNewIntMillisol()) {
 				// reduce the muscle soreness
 				recoverFromSoreness(1);
 				// Update thirst

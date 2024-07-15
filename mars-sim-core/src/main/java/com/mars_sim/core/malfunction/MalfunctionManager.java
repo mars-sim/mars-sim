@@ -678,7 +678,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			currentWearCondPercent = 0D;
 		currentWearCondPercent = currentWearLifeTime/baseWearLifeTime * 100;
 
-		if (pulse.isNewMSol()
+		if (pulse.isNewIntMillisol()
 				&& pulse.getMarsTime().getMillisolInt() % FREQUENCY == 0) {
 			
 			delay--;

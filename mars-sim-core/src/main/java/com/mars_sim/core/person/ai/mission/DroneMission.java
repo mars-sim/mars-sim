@@ -143,21 +143,22 @@ public abstract class DroneMission extends AbstractVehicleMission {
 		
 		if ((member instanceof Robot robot) 
 				&& !robot.getSystemCondition().isBatteryAbove(10)) {
+			logger.warning(robot, 4_000, "Battery below 10%.");
 				return null;
 		}
 		
 		Drone d = getDrone();
 		if (!d.haveStatusType(StatusType.OUT_OF_FUEL)) {
 			if (lastOperateVehicleTaskPhase != null) {
-				result = new PilotDrone(member, getDrone(), getNextNavpoint().getLocation(),
+				result = new PilotDrone(member, d, getNextNavpoint().getLocation(),
 						getCurrentLegStartingTime(), getCurrentLegDistance(), lastOperateVehicleTaskPhase);
 			} else {
-				result = new PilotDrone(member, getDrone(), getNextNavpoint().getLocation(),
+				result = new PilotDrone(member, d, getNextNavpoint().getLocation(),
 						getCurrentLegStartingTime(), getCurrentLegDistance());
 			}
 		}
 		else {
-			logger.warning(d, 10_000L, "Out of fuel. Quit assigning the driving task.");
+			logger.warning(d, 4_000, "Out of fuel. Quit assigning the piloting task.");
 			return null;
 		}
 

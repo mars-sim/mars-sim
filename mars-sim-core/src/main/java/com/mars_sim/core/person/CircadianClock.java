@@ -138,7 +138,7 @@ public class CircadianClock implements Serializable {
 		}
 
 
-		if (pulse.isNewMSol()) {
+		if (pulse.isNewIntMillisol()) {
 			
 			// Bring leptin and ghrelin back to equilibrium
 			leptinLevel = leptinLevel + .005 * (leptinThreshold/2 - leptinLevel);

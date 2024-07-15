@@ -804,7 +804,7 @@ public class BuildingManager implements Serializable {
 			meteorite.calculateMeteoriteProbability();
 		}
 
-		if (pulse.isNewMSol()) {
+		if (pulse.isNewIntMillisol()) {
 			// Check if there are any maintenance parts to be submitted
 			retrieveMaintPartsFromMalfunctionMgrs();
 		}

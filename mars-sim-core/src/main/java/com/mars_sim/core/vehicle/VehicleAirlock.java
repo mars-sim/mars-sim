@@ -585,7 +585,7 @@ extends Airlock {
 				addTime(time);
 			}
 
-			if (pulse.isNewMSol() || RandomUtil.getRandomInt(10) == 0) {
+			if (pulse.isNewIntMillisol() || RandomUtil.getRandomInt(10) == 0) {
 				// Check occupants
 				checkOccupantIDs();
 				// Check the airlock operator

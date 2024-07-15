@@ -13,7 +13,7 @@ public class ClockPulse {
 	
 	private boolean isNewSol;
 	private boolean isNewHalfSol;
-	private boolean isNewHalfMSol;
+	private boolean isNewHalfMillisol;
 	private boolean isNewIntMillisol;
 	
 	/** The last millisol integer from the last pulse. */
@@ -46,7 +46,7 @@ public class ClockPulse {
 	public ClockPulse(long id, double elapsed, 
 					MarsTime marsTime, MasterClock master, 
 					boolean newSol, boolean newHalfSol, 
-					boolean newMSol, boolean newHalfMSol) {
+					boolean newIntMillisol, boolean newHalfMillisol) {
 		super();
 		
 		if ((elapsed <= 0) || !Double.isFinite(elapsed)) {
@@ -59,8 +59,8 @@ public class ClockPulse {
 		this.master = master;
 		this.isNewSol = newSol;
 		this.isNewHalfSol = newHalfSol;
-		this.isNewIntMillisol = newMSol;
-		this.isNewHalfMSol = newHalfMSol;
+		this.isNewIntMillisol = newIntMillisol;
+		this.isNewHalfMillisol = newHalfMillisol;
 	}
 
 	public long getId() {
@@ -117,8 +117,8 @@ public class ClockPulse {
 	 * 
 	 * @return
 	 */
-	public boolean isNewHalfMSol() {
-		return isNewHalfMSol;
+	public boolean isNewHalfMillisol() {
+		return isNewHalfMillisol;
 	}
 	
 	/**
@@ -126,7 +126,7 @@ public class ClockPulse {
 	 * 
 	 * @return
 	 */
-	public boolean isNewMSol() {
+	public boolean isNewIntMillisol() {
 		return isNewIntMillisol;
 	}
 
@@ -164,7 +164,7 @@ public class ClockPulse {
 			this.lastSol = currentSol;
 		}
 		// Identify if it just passes half a sol
-		boolean isNewHalfSol = isNewSol || (lastMillisol <= 500 && currentMillisol > 500);	
+		boolean isNewHalfSol = isNewSol || (lastMillisol < 500 && currentMillisol >= 500);	
 		if (isNewHalfSol) {
 			this.isNewHalfSol = isNewHalfSol;
 		}
@@ -177,16 +177,16 @@ public class ClockPulse {
 		int currentIntMillisol = marsTime.getMillisolInt();
 		// Checks if this pulse starts a new integer millisol
 		boolean isNewIntMillisol = lastIntMillisol != currentIntMillisol; 
+		// Identify if it just passes half a millisol
+		boolean isNewHalfMillisol = isNewIntMillisol || (lastMillisol < .5 && currentMillisol >= .5);	
+		// Update the lastIntMillisol
+		if (isNewHalfMillisol) {
+			this.isNewHalfMillisol = isNewHalfMillisol;
+		}
 		// Update the lastIntMillisol
 		if (isNewIntMillisol) {
 			this.isNewIntMillisol = isNewIntMillisol;
 			lastIntMillisol = currentIntMillisol;
-		}
-		// Identify if it just passes half a millisol
-		boolean isNewHalfMSol = isNewIntMillisol || (lastMillisol <= .5 && currentMillisol > .5);	
-		// Update the lastIntMillisol
-		if (isNewHalfMSol) {
-			this.isNewHalfMSol = isNewHalfMSol;
 		}
 		
 		// Update the lastMillisol
@@ -210,6 +210,6 @@ public class ClockPulse {
 		 */
 
 		
-		return new ClockPulse(id, actualElapsed, newMars, master, isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMSol);
+		return new ClockPulse(id, actualElapsed, newMars, master, isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMillisol);
 	}
 }

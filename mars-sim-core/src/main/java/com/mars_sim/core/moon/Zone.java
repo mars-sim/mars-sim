@@ -80,7 +80,7 @@ public class Zone implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 		
 		int millisolInt = pulse.getMarsTime().getMillisolInt();
-		if (pulse.isNewMSol() && millisolInt > 5 && millisolInt % 120 == 1) {
+		if (pulse.isNewIntMillisol() && millisolInt > 5 && millisolInt % 120 == 1) {
 			
 			if (ZoneType.RESEARCH == type) {
 				int numResearcher = colony.getPopulation().getNumResearchers();

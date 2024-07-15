@@ -813,7 +813,7 @@ public class MasterClock implements Serializable {
 			this.lastSol = currentSol;
 		}
 		// Identify if it just passes half a sol
-		boolean isNewHalfSol = isNewSol || (lastMillisol <= 500 && currentMillisol > 500);	
+		boolean isNewHalfSol = isNewSol || (lastMillisol < 500 && currentMillisol >= 500);	
 //		if (isNewHalfSol) {
 //			this.isNewHalfSol = isNewHalfSol;
 //		}
@@ -826,18 +826,17 @@ public class MasterClock implements Serializable {
 		int currentIntMillisol = marsTime.getMillisolInt();
 		// Checks if this pulse starts a new integer millisol
 		boolean isNewIntMillisol = lastIntMillisol != currentIntMillisol; 
+		// Identify if it just passes half a millisol
+		boolean isNewHalfMillisol = isNewIntMillisol || (lastMillisol < .5 && currentMillisol >= .5);	
+		// Update the lastIntMillisol
+//		if (isNewHalfMSol) {
+//			this.isNewHalfMillisol = isNewHalfMillisol;
+//		}
 		// Update the lastIntMillisol
 		if (isNewIntMillisol) {
 //			this.isNewIntMillisol = isNewIntMillisol;
 			lastIntMillisol = currentIntMillisol;
 		}
-		// Identify if it just passes half a millisol
-		boolean isNewHalfMSol = isNewIntMillisol || (lastMillisol <= .5 && currentMillisol > .5);	
-		// Update the lastIntMillisol
-//		if (isNewHalfMSol) {
-//			this.isNewHalfMSol = isNewHalfMSol;
-//		}
-		
 		// Update the lastMillisol
 		lastMillisol = currentMillisol;	
 
@@ -854,7 +853,7 @@ public class MasterClock implements Serializable {
 
 		////////////////////////////////////////////////////////////////////////////////////
 		
-		currentPulse = new ClockPulse(newPulseId, time, marsTime, this, isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMSol);
+		currentPulse = new ClockPulse(newPulseId, time, marsTime, this, isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMillisol);
 		// Note: for-loop may handle checked exceptions better than forEach()
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
 

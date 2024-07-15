@@ -124,7 +124,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		
-		if (startup && pulse.isNewMSol()) {
+		if (startup && pulse.isNewIntMillisol()) {
 			startup = false;
 			initPop();
 		}

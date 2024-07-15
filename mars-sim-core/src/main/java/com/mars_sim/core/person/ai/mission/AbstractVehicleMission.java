@@ -97,7 +97,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final MissionPhase DEPARTING = new MissionPhase("departing", Stage.PREPARATION);
 	protected static final MissionPhase TRAVELLING = new MissionPhase("travelling");
 	private static final MissionPhase DISEMBARKING = new MissionPhase("disembarking", Stage.CLOSEDOWN);
-	private static final MissionPhase RETURNING_HOME = new MissionPhase("returning home", Stage.CLOSEDOWN);
+	private static final MissionPhase RETURNING_HOME = new MissionPhase("returningHome", Stage.CLOSEDOWN);
 
 	
 	// Mission Status

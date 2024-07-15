@@ -1394,7 +1394,7 @@ public abstract class Vehicle extends Unit
 		}
 
 		// Check once per msol (millisol integer)
-		if (pulse.isNewMSol()) {
+		if (pulse.isNewIntMillisol()) {
 			
 //			if (primaryStatus == StatusType.PARKED && isReserved()){
 //				// If the vehicle is reserved and is not in a garage, add to  garage

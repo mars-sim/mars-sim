@@ -271,7 +271,7 @@ implements Lab {
             tissueCultureInspection.replaceAll((s, v) -> 0);
 		}
 		
-		boolean newMsol = pulse.isNewMSol();
+		boolean newMsol = pulse.isNewIntMillisol();
 		
 		if (newMsol) {
 			increaseEntropy(pulse.getElapsed() * ENTROPY_FACTOR / 10);

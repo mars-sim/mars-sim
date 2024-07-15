@@ -81,15 +81,20 @@ public class DriveGroundVehicle extends OperateVehicle {
 			double startTripDistance, TaskPhase startingPhase) {
 
 		// Use OperateVehicle constructor
-		super(NAME, driver, vehicle, destination, startTripTime, startTripDistance, (100D + RandomUtil.getRandomDouble(20D)));
+		super(NAME, driver, vehicle, destination, startTripTime, startTripDistance, (100D + RandomUtil.getRandomDouble(-20D, 20D)));
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$
-		if (startingPhase != null)
+		
+		if (startingPhase != null) {
 			setPhase(startingPhase);
 
-		logger.log(driver, Level.INFO, 20_000, "Took the wheel of rover at the starting phase of '"
+			logger.log(driver, Level.INFO, 4_000, "Took the wheel of rover at the starting phase of '"
 					+ startingPhase + "'.");
+		}
+		else {
+			logger.log(driver, Level.INFO, 4_000, "Staring phase is null.");
+		}
 	}
 
 
@@ -105,7 +110,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 		time = super.performMappedPhase(time);
 
 		if (getPhase() == null) {
-    	    logger.warning(worker, "No longer piloting " + getVehicle() + ".");
+    	    logger.info(worker, "No longer piloting " + getVehicle() + ".");
 			// If it called endTask() in OperateVehicle, then Task is no longer available
 			// WARNING: do NOT call endTask() here or 
     	    // it will end up calling endTask() again recursively.

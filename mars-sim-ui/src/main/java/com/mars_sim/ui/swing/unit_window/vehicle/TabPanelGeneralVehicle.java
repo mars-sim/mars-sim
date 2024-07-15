@@ -35,8 +35,10 @@ public class TabPanelGeneralVehicle extends TabPanel {
 
 	private Vehicle vehicle;
 	
-	private JLabel fuelPercent;
-	private JLabel batteryPercent;
+	private JLabel fuelLabel;
+	private JLabel batteryPercentLabel;
+	private JLabel currentMassLabel;
+	private JLabel remainCapLabel;
 	
 	private int fuelTypeID;
 	
@@ -96,22 +98,26 @@ public class TabPanelGeneralVehicle extends TabPanel {
 		
 		infoPanel.addRow( "Crew Size", vehicle.getVehicleSpec().getCrewSize() + "");
 
-		infoPanel.addRow("Current Mass", StyleManager.DECIMAL_KG.format(vehicle.getBaseMass()));
+		currentMassLabel = infoPanel.addRow("Current Mass", StyleManager.DECIMAL_KG.format(vehicle.getMass()));
 		infoPanel.addRow("Base Mass", StyleManager.DECIMAL_KG.format(vehicle.getBaseMass()));
 		
-		infoPanel.addRow("Remain Capacity", StyleManager.DECIMAL_KG.format(vehicle.getRemainingCargoCapacity()));
+		remainCapLabel = infoPanel.addRow("Remain Capacity", StyleManager.DECIMAL_KG.format(vehicle.getRemainingCargoCapacity()));
 		infoPanel.addRow("Cargo Capacity", StyleManager.DECIMAL_KG.format(vehicle.getCargoCapacity()));
 
 		fuelCap = vehicle.getFuelCapacity();
 		
 		infoPanel.addRow("Fuel Type", fuelTypeStr);
-		fuelPercent = infoPanel.addRow("Fuel Tank", StyleManager.DECIMAL_PERC.format(
-				100 * vehicle.getAmountResourceStored(fuelTypeID)/fuelCap));
+		
+		double fuel = vehicle.getAmountResourceStored(fuelTypeID);
+		
+		fuelLabel = infoPanel.addRow("Fuel Tank", StyleManager.DECIMAL_KG.format(fuel) + " (" + 
+				StyleManager.DECIMAL_PERC.format(100 * fuel/fuelCap) + " Filled)");
+		
 		infoPanel.addRow("Fuel Cap", StyleManager.DECIMAL_KG.format(fuelCap));
 		
-		infoPanel.addTextField( "Cell Stack", vehicle.getFuellCellStack() + "", null);	
-		infoPanel.addTextField( "Battery Module", vehicle.getBatteryModule() + "", null);	
-		batteryPercent = infoPanel.addRow("Battery Percent", 
+		infoPanel.addRow( "Cell Stack", vehicle.getFuellCellStack() + "");	
+		infoPanel.addRow( "Battery Module", vehicle.getBatteryModule() + "");	
+		batteryPercentLabel = infoPanel.addRow("Battery Percent", 
 				StyleManager.DECIMAL_PERC.format(vehicle.getBatteryPercent()));
 		infoPanel.addRow("Battery Cap", StyleManager.DECIMAL_KWH.format(vehicle.getBatteryCapacity()));	
 	}
@@ -121,8 +127,14 @@ public class TabPanelGeneralVehicle extends TabPanel {
 	 */
 	@Override
 	public void update() {
-		fuelPercent.setText(StyleManager.DECIMAL_PERC.format(
-				100 * vehicle.getAmountResourceStored(fuelTypeID)/fuelCap));
-		batteryPercent.setText(StyleManager.DECIMAL_PERC.format(vehicle.getBatteryPercent()));
+		currentMassLabel.setText(StyleManager.DECIMAL_KG.format(vehicle.getMass()));
+
+		remainCapLabel.setText(StyleManager.DECIMAL_KG.format(vehicle.getRemainingCargoCapacity()));
+		
+		double fuel = vehicle.getAmountResourceStored(fuelTypeID);
+		fuelLabel.setText(StyleManager.DECIMAL_KG.format(fuel) + " (" + 
+				StyleManager.DECIMAL_PERC.format(100 * fuel/fuelCap) + " Filled)");
+		
+		batteryPercentLabel.setText(StyleManager.DECIMAL_PERC.format(vehicle.getBatteryPercent()));
 	}
 }

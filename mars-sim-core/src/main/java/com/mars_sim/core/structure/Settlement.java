@@ -1042,7 +1042,7 @@ public class Settlement extends Structure implements Temporal,
 
 		// Avoid checking at < 10 or 1000 millisols
 		// due to high cpu util during the change of day
-		if (pulse.isNewMSol() && msol >= 10 && msol < 995) {
+		if (pulse.isNewIntMillisol() && msol >= 10 && msol < 995) {
 
 			// Computes the average air pressure & temperature of the life support system.
 			computeEnvironmentalAverages();

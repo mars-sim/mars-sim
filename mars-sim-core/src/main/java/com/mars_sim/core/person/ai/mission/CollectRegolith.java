@@ -98,7 +98,7 @@ public class CollectRegolith extends CollectResourcesMission {
 
 	protected void pickType(Worker worker) {
 		int rand = RandomUtil.getRandomInt(3);
-		if (rand > 0) {
+		if (rand == 0) {
 			// Pick the one that has the highest vp
 			double highest = 0;
 			int bestType = 0;

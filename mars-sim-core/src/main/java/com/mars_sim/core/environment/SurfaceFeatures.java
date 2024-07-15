@@ -687,7 +687,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 
-		if (pulse.isNewMSol()) {
+		if (pulse.isNewIntMillisol()) {
 			double msol = pulse.getMarsTime().getMillisolInt();
 			
 			// the value of optical depth doesn't need to be refreshed too often

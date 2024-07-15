@@ -62,7 +62,7 @@ public class PilotDrone extends OperateVehicle {
 	 */
 	public PilotDrone(Worker pilot, Flyer flyer, Coordinates destination, MarsTime startTripTime,
 			double startTripDistance) {
-		this(pilot, flyer, destination, startTripTime, startTripDistance, OperateVehicle.MOBILIZE);
+		this(pilot, flyer, destination, startTripTime, startTripDistance, null);
 	}
 
 	/**
@@ -84,14 +84,14 @@ public class PilotDrone extends OperateVehicle {
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
 
-		if (startingPhase == null)
-			startingPhase = OperateVehicle.MOBILIZE;
-		
-		setPhase(startingPhase);
-
-		logger.log(pilot, Level.INFO, 20_000, "Took control of the drone at phase '"
+		if (startingPhase != null) {
+			setPhase(startingPhase);
+			logger.log(pilot, Level.INFO, 4_000, "Took control of the drone at phase '"
 					+ startingPhase + "'.");
-
+		}
+		else {
+			logger.log(pilot, Level.INFO, 4_000, "Staring phase is null.");
+		}
 	}
 
 	/**
@@ -106,7 +106,7 @@ public class PilotDrone extends OperateVehicle {
 		time = super.performMappedPhase(time);
 
 		if (getPhase() == null) {
-			logger.log(worker, Level.INFO, 10_000, "Had an unknown phase when piloting");
+    	    logger.info(worker, "No longer piloting " + getVehicle() + ".");
 			// If it called endTask() in OperateVehicle, then Task is no longer available
 			// WARNING: do NOT call endTask() here or it will end up calling endTask() 
 			// recursively.
@@ -119,6 +119,27 @@ public class PilotDrone extends OperateVehicle {
 		}
 	}
 
+	/**
+	 * Moves the vehicle in its direction at its speed for the amount of time given.
+	 * Stop if reached destination.
+	 * 
+	 * @param time the amount of time (ms) to drive.
+	 * @return the amount of time (ms) left over after driving (if any)
+	 */
+	@Override
+	protected double mobilizeVehicle(double time) {
+
+		// If speed is less than or equal to LOW_SPEED, change to avoiding collision phase.
+		if (!getVehicle().isInSettlement() && (getVehicle().getSpeed() >= HIGH_SPEED) 
+				&& !AVOID_COLLISION.equals(getPhase())) {
+			setPhase(AVOID_COLLISION);
+		} 
+		else
+			 return super.mobilizeVehicle(time);
+		
+		return time;
+	}
+	
 	/**
 	 * Perform task in obstacle phase.
 	 * 

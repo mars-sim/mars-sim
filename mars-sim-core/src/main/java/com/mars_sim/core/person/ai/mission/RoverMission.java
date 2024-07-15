@@ -871,7 +871,9 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				}
 			}
 			
-			if (!((Vehicle)getRover()).haveStatusType(StatusType.OUT_OF_FUEL)) {
+			Vehicle v = (Vehicle)getRover();
+			
+			if (!v.haveStatusType(StatusType.OUT_OF_FUEL)) {
 				if (lastOperateVehicleTaskPhase != null) {
 					result = new DriveGroundVehicle(person, getRover(), getNextNavpoint().getLocation(),
 							getCurrentLegStartingTime(), getCurrentLegDistance(), lastOperateVehicleTaskPhase);

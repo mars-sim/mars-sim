@@ -821,7 +821,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		}
 		
 		int msol = pulse.getMarsTime().getMillisolInt();
-		if (pulse.isNewMSol() && msol % CHECK_HEALTH_FREQUENCY == 0) {
+		if (pulse.isNewIntMillisol() && msol % CHECK_HEALTH_FREQUENCY == 0) {
 			// Checks on crop health
 			trackHealth();
 		}

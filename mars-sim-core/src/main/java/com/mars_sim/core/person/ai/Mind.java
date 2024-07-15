@@ -110,7 +110,7 @@ public class Mind implements Serializable, Temporal {
 			moderateTime(time);
 		}
 
-		if (pulse.isNewMSol()) {
+		if (pulse.isNewIntMillisol()) {
 			// Update stress based on personality.
 			mbti.updateStress(time);
 			

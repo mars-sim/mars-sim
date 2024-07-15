@@ -60,6 +60,8 @@ public abstract class OperateVehicle extends Task {
  	private static final double THRESHOLD_SUNLIGHT = 60;
  	private static final double MAX_PERCENT_SPEED = 30;
  	
+ 	/** The speed at which the collision phase commence. */
+	protected static final double HIGH_SPEED = 200;
 	/** The speed at which the obstacle / winching phase commence. */
 	protected static final double LOW_SPEED = .05;
 	/** Conversion factor : 1 m/s = 3.6 km/h (or kph) */
