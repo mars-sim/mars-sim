@@ -167,6 +167,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 		switch (getUnitType()) {
 		case BUILDING, CONTAINER, EVA_SUIT, PERSON, ROBOT:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
+			// Why no containerID ?
 			break;
 			
 		case VEHICLE:

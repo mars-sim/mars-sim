@@ -48,7 +48,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	private boolean isSalvaged;
 
 	/** Unique identifier for the settlement that owns this equipment. */
-	private int associatedSettlementID;
+//	private int associatedSettlementID;
 	/** The identifier for the registered owner of this equipment. */
 	private int registeredOwner;
 
@@ -84,9 +84,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		salvageInfo = null;
 
 		registeredOwner = -1;
-
-		// Gets the settlement id
-		associatedSettlementID = settlement.getIdentifier();
 	}
 
 	/**
@@ -325,7 +322,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 */
 	@Override
 	public Settlement getAssociatedSettlement() {
-		return unitManager.getSettlementByID(associatedSettlementID);
+		return super.getAssociatedSettlement();
 	}
 
 	public static String generateName(String baseName) {
