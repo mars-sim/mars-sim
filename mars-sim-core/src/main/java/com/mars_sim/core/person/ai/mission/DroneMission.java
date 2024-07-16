@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * DroneMission.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-07-15
  * @author Manny Kung
  */
 package com.mars_sim.core.person.ai.mission;
@@ -14,10 +14,12 @@ import java.util.logging.Level;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
+import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
+import com.mars_sim.core.robot.ai.task.Charge;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.vehicle.Drone;
@@ -85,7 +87,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	}
 	
 	/**
-	 * Gets the available vehicle at the settlement with the greatest range.
+	 * Gets a drone that is ready for use.
 	 *
 	 * @param settlement         the settlement to check.
 	 * @param allowMaintReserved allow vehicles that are reserved for maintenance.
@@ -96,7 +98,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 		Drone bestDrone = null;
 		double bestRange = 0D;
 
-		for(Drone drone : settlement.getParkedGaragedDrones()) {
+		for (Drone drone : settlement.getParkedGaragedDrones()) {
 
 			boolean usable = !drone.isReservedForMission();
             usable = usable && (allowMaintReserved || !drone.isReserved());
@@ -141,12 +143,33 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	protected OperateVehicle createOperateVehicleTask(Worker member, TaskPhase lastOperateVehicleTaskPhase) {
 		OperateVehicle result = null;
 		
-		if ((member instanceof Robot robot) 
-				&& !robot.getSystemCondition().isBatteryAbove(10)) {
-			logger.warning(robot, 4_000, "Battery below 10%.");
-				return null;
+		if (member instanceof Robot robot 
+				&& robot.getSystemCondition().getBatteryState() < 50) {
+			logger.warning(robot, 4_000, "Battery at " + robot.getSystemCondition().getBatteryState() + " %");
+			
+        	boolean canCharge = assignTask(robot, new Charge(robot, Charge.findStation(robot)));
+        	if (canCharge) {
+        		logger.log(member, Level.INFO, 4_000,
+            			"Instructed to charge up the battery ahead of piloting " + getVehicle() + ".");
+        	}
+        	
+			return null;
 		}
-		
+
+        else if (!((Person)member).isNominallyFit()){
+        	// For humans
+        	logger.log(member, Level.WARNING, 4_000,
+        			"Not norminally fit to pilot " + getVehicle() + ".");
+        	
+        	boolean canSleep = assignTask(((Person)member), new Sleep(((Person)member)));
+        	if (canSleep) {
+        		logger.log(member, Level.INFO, 4_000,
+            			"Instructed to sleep ahead of piloting " + getVehicle() + ".");
+        	}
+        	
+	        return null;
+        }
+				
 		Drone d = getDrone();
 		if (!d.haveStatusType(StatusType.OUT_OF_FUEL)) {
 			if (lastOperateVehicleTaskPhase != null) {

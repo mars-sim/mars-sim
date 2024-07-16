@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PilotDrone.java
- * @date 2022-06-17
+ * @date 2024-07-15
  * @author Manny
  */
 package com.mars_sim.core.vehicle.task;
@@ -17,7 +17,6 @@ import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.mapdata.location.Direction;
 import com.mars_sim.tools.Msg;
-import com.mars_sim.tools.util.RandomUtil;
 
 /**
  * The PilotDrone class is a task for piloting a drone to a
@@ -79,7 +78,7 @@ public class PilotDrone extends OperateVehicle {
 			double startTripDistance, TaskPhase startingPhase) {
 
 		// Use OperateVehicle constructor
-		super(NAME, pilot, flyer, destination, startTripTime, startTripDistance, 100D + RandomUtil.getRandomDouble(-20D, 20D));
+		super(NAME, pilot, flyer, destination, startTripTime, startTripDistance, 1000);
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
@@ -90,7 +89,7 @@ public class PilotDrone extends OperateVehicle {
 					+ startingPhase + "'.");
 		}
 		else {
-			logger.log(pilot, Level.INFO, 4_000, "Staring phase is null.");
+			logger.log(pilot, Level.INFO, 4_000, "Starting phase is null.");
 		}
 	}
 

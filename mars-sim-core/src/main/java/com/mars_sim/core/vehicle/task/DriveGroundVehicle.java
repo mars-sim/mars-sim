@@ -93,7 +93,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 					+ startingPhase + "'.");
 		}
 		else {
-			logger.log(driver, Level.INFO, 4_000, "Staring phase is null.");
+			logger.log(driver, Level.INFO, 4_000, "Starting phase is null.");
 		}
 	}
 

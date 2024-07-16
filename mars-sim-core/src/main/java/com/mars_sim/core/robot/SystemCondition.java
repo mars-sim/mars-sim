@@ -277,7 +277,7 @@ public class SystemCondition implements Serializable {
     }
 
     /**
-     * Gets the recommended battery charing threshold.
+     * Gets the recommended battery charging threshold.
      * 
      * @return
      */

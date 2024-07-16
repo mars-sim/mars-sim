@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * OperateVehicle.java
- * @date 2023-04-18
+ * @date 2024-07-15
  * @author Scott Davis
  */
 package com.mars_sim.core.vehicle.task;
@@ -73,7 +73,7 @@ public abstract class OperateVehicle extends Task {
     /** The ratio of the amount of oxidizer to fuel. */
     private static final double RATIO_OXIDIZER_FUEL = 1.5;
     /** Distance buffer for arriving at destination (km). Good within 20 meters or 0.02 km. */
-    public static final double DESTINATION_BUFFER = .02;
+    public static final double DESTINATION_BUFFER = 1;
     /** The base percentage chance of an accident while operating vehicle per millisol. */
     public static final double BASE_ACCIDENT_CHANCE = .01D;
     
@@ -140,14 +140,14 @@ public abstract class OperateVehicle extends Task {
 		// Select the vehicle operator
 		Worker vo = vehicle.getOperator();
 
-		// Check if there is a driver assigned to this vehicle.
+		// Check if there is a operator assigned to this vehicle.
 		if (vo == null) 
 			vehicle.setOperator(operator);
 			
 		else if (!operator.equals(vo)) {
-        	// Remove the task from the last driver
+        	// Remove the task from the last operator
 	        clearDrivingTask(vo);
-	        // Replace the driver
+	        // Replace with the new operator
 			vehicle.setOperator(operator);
 		}
 		
@@ -284,6 +284,20 @@ public abstract class OperateVehicle extends Task {
 	}
 	
 	/**
+	 * Turns on the emergency beacon to ask for help.
+	 * 
+	 * @param resource
+	 */
+	private void turnOnBeacon() {
+		vehicle.setSpeed(0D);
+        	
+    	if (!vehicle.isBeaconOn() && (vehicle instanceof VehicleMission vm)) {
+			MissionStatus status = MissionStatus.createResourceStatus();
+			vm.getHelp(status);
+    	}
+	}
+	
+	/**
 	 * Moves the vehicle in its direction at its speed for the amount of time given.
 	 * Stops if destination reached.
 	 * 
@@ -292,10 +306,18 @@ public abstract class OperateVehicle extends Task {
 	 */
 	protected double mobilizeVehicle(double time) {
 
+		// Future: allow 
         if (worker.getUnitType() == UnitType.ROBOT
         	&& ((Robot)worker).getSystemCondition().isLowPower()) {
         	logger.log(worker, Level.WARNING, 20_000,
         			". Unable to pilot " + getVehicle() + " due to low power.");
+	        endTask();
+	        return time;
+        }
+        else if (((Person)worker).isSuperUnfit()){
+        	// For humans
+        	logger.log(worker, Level.WARNING, 20_000,
+        			". Super unfit to pilot " + getVehicle() + ".");
 	        endTask();
 	        return time;
         }
@@ -312,10 +334,15 @@ public abstract class OperateVehicle extends Task {
         
         double remainingOxidizer = -1;
         
-        if (fuelTypeID > 0) {
-	        remainingFuel = vehicle.getAmountResourceStored(fuelTypeID);
+    	// NOTE: Need to consider if the battery still have power and not just fuel
+
+        double batteryEnergy =  vehicle.getController().getBattery().getCurrentEnergy();
+        
+        if (fuelTypeID != 0) {
+        	
+        	remainingFuel = vehicle.getAmountResourceStored(fuelTypeID);
 	
-	    	if (remainingFuel < LEAST_AMOUNT) {
+	    	if (remainingFuel < LEAST_AMOUNT && batteryEnergy != 0D) {
 	    		logger.log(vehicle, Level.SEVERE, 20_000L, 
 						"Case A: Out of fuel. Cannot drive.");
 	    		// Turn on emergency beacon
@@ -327,7 +354,7 @@ public abstract class OperateVehicle extends Task {
 	
 	        remainingOxidizer = vehicle.getAmountResourceStored(ResourceUtil.oxygenID);
 	
-	    	if (remainingOxidizer < LEAST_AMOUNT * RATIO_OXIDIZER_FUEL) {
+	    	if (remainingOxidizer < LEAST_AMOUNT * RATIO_OXIDIZER_FUEL && batteryEnergy != 0D) {
 	    		logger.log(vehicle, Level.SEVERE, 20_000L, 
 						"Case B: Out of fuel oxidizer. Cannot drive.");
 	    		// Turn on emergency beacon
@@ -338,12 +365,22 @@ public abstract class OperateVehicle extends Task {
 	        }
         }
         
+        else if (batteryEnergy == 0D){
+        	logger.log(vehicle, Level.SEVERE, 20_000L, 
+					"Case C: Out of battery. Cannot drive.");
+    		// Turn on emergency beacon
+	    	turnOnBeacon();
+			vehicle.addSecondaryStatus(StatusType.OUT_OF_FUEL);
+        	endTask();
+        	return time;
+        }
+        
         // Find the distance to destination.
         double dist2Dest = getDistanceToDestination();
        
         if (Double.isNaN(dist2Dest)) {
     		logger.log(vehicle, Level.SEVERE, 20_000L, 
-					"Case C: Invalid distance.");
+					"Case D: Invalid distance.");
         	endTask();
         	return time;
         }
@@ -351,7 +388,7 @@ public abstract class OperateVehicle extends Task {
         // Convert time from millisols to hours
         double hrsTime = MarsTime.HOURS_PER_MILLISOL * time;
               
-        // Case 2: Already arrived
+        // Case I: Just arrived
         if (dist2Dest <= DESTINATION_BUFFER) {
         	logger.log(vehicle, Level.INFO,  20_000L, "Case I: Arrived at " + getNavpointName()
         			+ " (dist: " 
@@ -419,11 +456,9 @@ public abstract class OperateVehicle extends Task {
     	// Gets the ideal speed in kph
     	double idealSpeedKPH = idealSpeedMS * KPH_CONV;
     	// Gets the next speed to be used in kph      	
-    	double nextSpeedKPH = Math.min(idealSpeedKPH, topSpeedKPH);
-    	
+    	double nextSpeedKPH = Math.min(idealSpeedKPH, topSpeedKPH);	
 		// Find the new possible speed
     	double vKPHProposed = Math.max(uKPH, nextSpeedKPH);
-    	
       	// If staying at the same speed
     	double dist2Cover = vKPHProposed * hrsTime * KPH_CONV;
     	
@@ -432,10 +467,29 @@ public abstract class OperateVehicle extends Task {
     	if (dist2Dest <= dist2Cover) {
     		// Case II: Will overshoot within this prescribed period of time if not slowing down or changing final velocity
     		// Slowing down the speed to expect to arrive
-    		vKPHProposed = dist2Dest / hrsTime / KPH_CONV;
     		
-          	logger.log(vehicle, Level.INFO, 1_000,  "Case II: Arriving soon at " + getNavpointName() 
-	       		+ ". Slowing down. dist2Dest: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + KM
+    		if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+    			if (dist2Dest <= 5) {
+	    	   		// For drone, need to slow down much more to avoid overshot
+	        		vKPHProposed = dist2Dest / hrsTime / KPH_CONV / (6 - dist2Dest);
+    			}
+    			else {
+    				vKPHProposed = dist2Dest / hrsTime / KPH_CONV;
+    			}
+        	}
+        	else {
+        		// For ground vehicles
+    			if (dist2Dest <= 2) {
+	    	   		// For drone, need to slow down much more to avoid overshot
+	        		vKPHProposed = dist2Dest / hrsTime / KPH_CONV / (3 - dist2Dest);
+    			}
+    			else {
+    				vKPHProposed = dist2Dest / hrsTime / KPH_CONV;
+    			}
+        	}	
+    		
+          	logger.log(vehicle, Level.INFO, 1_000,  "Case II: Slowing down. Arrive soon at " + getNavpointName() 
+	       		+ ". dist2Dest: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + KM
 	       		+ "distanceToCover: " + Math.round(dist2Cover * 1_000.0)/1_000.0 + KM
 				+ "uKPH: " + + Math.round(uKPH * 1_000.0)/1_000.0 + KPH
 				+ "vKPHProposed: " + + Math.round(vKPHProposed * 1_000.0)/1_000.0 + KPH  			
@@ -451,7 +505,8 @@ public abstract class OperateVehicle extends Task {
 				+ "nextSpeedKPH: " + + Math.round(nextSpeedKPH * 1_000.0)/1_000.0 + KPH
     		);
           	
-          	remainingHrs = vehicle.getController().consumeFuelEnergy(hrsTime, dist2Dest, vKPHProposed, remainingFuel, remainingOxidizer);
+          	remainingHrs = vehicle.getController().consumeFuelEnergy(
+          			hrsTime, dist2Dest, vKPHProposed, remainingFuel, remainingOxidizer);
     	}
      	
         else {
@@ -474,7 +529,8 @@ public abstract class OperateVehicle extends Task {
 				+ "nextSpeedKPH: " + + Math.round(nextSpeedKPH * 1_000.0)/1_000.0 + KPH
     		);
           	
-        	remainingHrs = vehicle.getController().consumeFuelEnergy(hrsTime, dist2Cover, vKPHProposed, remainingFuel, remainingOxidizer);	
+        	remainingHrs = vehicle.getController().consumeFuelEnergy(
+        			hrsTime, dist2Cover, vKPHProposed, remainingFuel, remainingOxidizer);	
         }
 
 		return remainingHrs;

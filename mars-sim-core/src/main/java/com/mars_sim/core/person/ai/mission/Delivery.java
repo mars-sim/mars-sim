@@ -382,9 +382,10 @@ public class Delivery extends DroneMission implements CommerceMission {
 				}
 			}
 
-			// If the rover is in a garage, put the rover outside.
+
 			Vehicle v = getVehicle();
 
+			// If the rover is in a garage, put the rover outside.
 			// Put the rover outside.
 			// Note: calling removeFromGarage has already been included in Vehicle::transfer() below
 //			BuildingManager.removeFromGarage(v);

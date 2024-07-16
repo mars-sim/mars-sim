@@ -803,7 +803,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (currentTask != null) {
 
 			if (currentTask.getName().equals(task.getName())){
-	      		logger.info(person, 4_000, "Already assigned with '" + currentTask.getName() + "'.");
+//	      		logger.info(person, 4_000, "Already assigned with '" + currentTask.getName() + "'.");
 				// If the person has been doing this task, 
 				// then there is no need of adding it.
 				return false;
@@ -830,12 +830,16 @@ public abstract class AbstractMission implements Mission, Temporal {
 			canPerformTask = person.getMind().getTaskManager().checkReplaceTask(task);
 		}
 
+
 		if (canPerformTask) {
-			if (currentTask != null) {
-				logger.info(person, 4_000, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
-			}
-			else
-				logger.info(person, 4_000, "Assigned with '" + task.getName() + "'.");
+			/**
+			 * Do not delete. Reserve for debugging.
+			 */
+//			if (currentTask != null) {
+//				logger.info(person, 4_000, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
+//			}
+//			else
+//				logger.info(person, 4_000, "Assigned with '" + task.getName() + "'.");
 		}
 		else
 			logger.info(person, 4_000, "Unable to perform '" + task.getName() + "'.");
@@ -869,7 +873,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (currentTask != null) {
 
 			if (currentTask.getName().equals(task.getName())) {
-				logger.info(robot, 4_000, "Already assigned with '" + currentTask.getName() + "'.");
+//				logger.info(robot, 4_000, "Already assigned with '" + currentTask.getName() + "'.");
 				// If the robot has been doing this task, 
 				// then there is no need of adding it.
 				return false;
@@ -884,11 +888,14 @@ public abstract class AbstractMission implements Mission, Temporal {
 		boolean canPerformTask = robot.getBotMind().getBotTaskManager().checkReplaceTask(task);
 		
 		if (canPerformTask) {
-			if (currentTask != null) {
-				logger.info(robot, 4_000, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
-			}
-			else
-				logger.info(robot, 4_000, "Assigned with '" + task.getName() + "'.");
+			/**
+			 * Do not delete. Reserve for debugging.
+			 */
+//			if (currentTask != null) {
+//				logger.info(robot, 4_000, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
+//			}
+//			else
+//				logger.info(robot, 4_000, "Assigned with '" + task.getName() + "'.");
 		}
 		else
 			logger.info(robot, 10_000L, "Unable to perform '" + task.getName() + "'.");

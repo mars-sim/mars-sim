@@ -1205,7 +1205,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	private void checkForMeteoriteImpact(ClockPulse pulse) {
 		// Reset the impact time
-		int moment_of_impact = 0;
+		int momentOfImpact = 0;
 		var meteorite = getBuildingManager().getMeteorite();
 
 		// if assuming a gauissan profile, p = mean + RandomUtil.getGaussianDouble() * standardDeviation
@@ -1215,7 +1215,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		if (probability > 0 && RandomUtil.getRandomDouble(100D) <= probability) {
 			isImpactImminent = true;
 			// Set a time for the impact to happen any time between 0 and 1000 milisols
-			moment_of_impact = RandomUtil.getRandomInt(1000);
+			momentOfImpact = RandomUtil.getRandomInt(999);
 		}
 
 		if (!isImpactImminent) {
@@ -1230,7 +1230,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		int delta = (int) Math.sqrt(Math.sqrt(pulse.getMasterClock().getActualTR()));
 		
 		if (pulse.isNewIntMillisol()
-				&& now > moment_of_impact - 2 * delta && now < moment_of_impact + 2 * delta) {
+				&& now > momentOfImpact - 2 * delta && now < momentOfImpact + 2 * delta) {
 			// Yes the impact event occurs in the vicinity
 			
 			logger.log(this, Level.INFO, 0, "A meteorite impact event was imminent.");

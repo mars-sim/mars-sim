@@ -1272,12 +1272,12 @@ public class ExitAirlock extends Task {
 	 * @return true if person can exit the entity
 	 */
 	public static boolean canExitAirlock(Person person, Airlock airlock) {
-
+	
 		if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
 			logger.info(person, 4_000, CHAMBER_FULL + " in " + airlock.getEntityName() +  ".");
 			return false;
 		}
-
+		
 		// Check if person is incapacitated.
 		if (person.getPerformanceRating() <= MIN_PERFORMANCE) {
 			// May need to relocate the following code to a proper place
@@ -1295,8 +1295,9 @@ public class ExitAirlock extends Task {
 						person.rescueOperation((Rover) person.getVehicle(), nearbySettlement);
 						// Note: rescueOperation() is more like a hack, rather than a legitimate way 
 						// of transferring a person through the airlock into the settlement 
-						
 					}
+					
+					
 				}
 				else if (person.isOutside()) {
 					Settlement nearbySettlement = unitManager.findSettlement(person.getCoordinates());

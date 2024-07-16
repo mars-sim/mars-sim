@@ -22,6 +22,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.CollectResources;
 import com.mars_sim.core.person.ai.task.EVAOperation;
+import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -339,6 +340,16 @@ public abstract class CollectResourcesMission extends EVAMission
 		// to obtain better estimation of the collection rate. Go to a prospective site, rather
 		// than going to a site coordinate in the blind.
 
+		if (!person.isEVAFit()) {
+			logger.info(person, 4_000, "Not EVA fit to exit " + getRover() +  ".");
+			boolean canSleep = assignTask(person, new Sleep(person));
+        	if (canSleep) {
+        		logger.log(person, Level.INFO, 4_000,
+            			"Instructed to sleep in " + getVehicle() + ".");
+        	}
+			return false;
+		}
+		
 		// If person can collect resources, start him/her on that task.
 		if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {
 			EVAOperation collectResources = new CollectResources(person,

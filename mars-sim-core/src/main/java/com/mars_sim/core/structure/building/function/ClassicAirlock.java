@@ -750,7 +750,7 @@ public class ClassicAirlock extends Airlock {
 	 */
 	@Override
 	public void timePassing(ClockPulse pulse) {
-		
+			
 		if (activated) {
 
 			double time = pulse.getElapsed();

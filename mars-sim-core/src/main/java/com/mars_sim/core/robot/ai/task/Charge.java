@@ -329,7 +329,7 @@ public class Charge extends Task {
 	 * @param robot
 	 * @return
 	 */
-	static Building findStation(Robot robot) {
+	public static Building findStation(Robot robot) {
 		
 		// Case 1: Check if robot currently occupies a robotic station spot already
 		RoboticStation roboticStation = robot.getOccupiedStation();

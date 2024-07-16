@@ -111,11 +111,11 @@ public class TabPanelPreferences extends TabPanelTable {
 		nameCombo = new JComboBox<>();
 		newPanel.add(nameCombo);
 
-		JButton add = new JButton(ImageLoader.getIconByName("action/add"));
+		JButton add = new JButton(ImageLoader.getIconByName("action/plus"));
 		add.addActionListener(i -> addEntry());
 		newPanel.add(add);
 
-		JButton remove = new JButton(ImageLoader.getIconByName("action/delete"));
+		JButton remove = new JButton(ImageLoader.getIconByName("action/clear"));
 		remove.addActionListener(i -> deleteEntry());
 		newPanel.add(remove);
 

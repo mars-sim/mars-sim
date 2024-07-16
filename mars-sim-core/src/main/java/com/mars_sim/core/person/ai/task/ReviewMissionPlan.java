@@ -426,7 +426,7 @@ public class ReviewMissionPlan extends Task {
 				missionManager.approveMissionPlan(mp, PlanType.APPROVED, settlement.getMinimumPassingScore());
 					
 				logger.log(worker, Level.INFO, 0, "Approved " + requestedBy
-						+ "'s " + m.getName() + " mission plan. Total Score: " 
+						+ "'s " + m.getName() + " mission plan. Score: " 
 						+ Math.round(score*10.0)/10.0 
 						+ " [Min: " + Math.round(settlement.getMinimumPassingScore()*10.0)/10.0 + "].");
 			}
@@ -436,7 +436,7 @@ public class ReviewMissionPlan extends Task {
 				missionManager.approveMissionPlan(mp, PlanType.NOT_APPROVED, settlement.getMinimumPassingScore());
 			
 				logger.log(worker, Level.INFO, 0, "Did NOT approve " + requestedBy
-						+ "'s " + m.getName() + " mission plan. Total Score: " 
+						+ "'s " + m.getName() + " mission plan. Score: " 
 						+ Math.round(score*10.0)/10.0 
 						+ " [Min: " + Math.round(settlement.getMinimumPassingScore()*10.0)/10.0 + "].");
 			}

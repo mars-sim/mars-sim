@@ -66,7 +66,7 @@ extends TabPanel {
 	public TabPanelScience(Settlement settlement, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			null,
+			Msg.getString("TabPanelScience.title"), //$NON-NLS-1$
 			ImageLoader.getIconByName(SCIENCE_ICON),
 			Msg.getString("TabPanelScience.tooltip"), //$NON-NLS-1$
 			settlement, desktop

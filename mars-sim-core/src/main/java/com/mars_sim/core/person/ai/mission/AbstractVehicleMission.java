@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AbstractVehicleMission.java
- * @date 2023-09-15
+ * @date 2024-07-15
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -352,6 +352,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 	/**
 	 * Leaves the mission's vehicle and unreserves it.
+	 * 
 	 * @param v Vehicle to be released
 	 */
 	protected final void releaseVehicle(Vehicle v) {

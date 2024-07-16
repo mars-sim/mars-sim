@@ -202,8 +202,10 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		
 		crewNumTF = null;
 		memberTable = null;
-		memberTableModel.clearMembers();
-		memberTableModel = null;
+		if (memberTableModel != null) {
+			memberTableModel.clearMembers();
+			memberTableModel = null;
+		}
 	}
 
 	/**

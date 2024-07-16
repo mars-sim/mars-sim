@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * DeathInfo.java
- * @date 2021-12-22
+ * @date 2024-07-15
  * @author Barry Evans
  */
 
@@ -9,6 +9,7 @@ package com.mars_sim.core.person.health;
 
 import java.io.Serializable;
 
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionManager;
@@ -54,6 +55,8 @@ public class DeathInfo implements Serializable {
 	private boolean examDone = false;	
 	/** Amount of time performed so far in postmortem exam [in Millisols]. */	
 	private double timeSpentExam;
+	/** Time of death. */
+	private MarsTime timePostMortemExam;
 	/** Estimated time the postmortem exam should take [in Millisols]. */	
 	private double estTotExamTime;
 	/** Percent of illness*/	
@@ -65,7 +68,7 @@ public class DeathInfo implements Serializable {
 	/** Place of death. */
 	private String placeOfDeath = "";
 	/** Name of the doctor who did the postmortem. */	
-	private String doctorName = "(Postmortem Exam not done yet)";
+	private String doctorName = "(Not assigned yet)";
 	/** Name of task at time of death. */
 	private String task;
 	/** Phase of task at time of death. */
@@ -229,6 +232,15 @@ public class DeathInfo implements Serializable {
 	public MarsTime getTimeOfDeath() {
 		return timeOfDeath;
 	}
+	
+	/**
+	 * Get the time of postmortem exam.
+	 * 
+	 * @return formatted time.
+	 */
+	public MarsTime getTimePostMortemExam() {
+		return timePostMortemExam;
+	}
 
 	/**
 	 * Gets the place the death happened. Either the name of the unit the person was
@@ -325,6 +337,7 @@ public class DeathInfo implements Serializable {
 	}
 
 	public void setExamDone(boolean value) {
+		timePostMortemExam = Simulation.instance().getMasterClock().getMarsTime();
 		examDone = value;
 	}
 	

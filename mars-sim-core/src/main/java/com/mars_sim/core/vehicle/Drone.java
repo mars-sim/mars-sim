@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Drone.java
- * @date 2023-06-05
+ * @date 2024-07-15
  * @author Manny Kung
  */
 package com.mars_sim.core.vehicle;
@@ -38,7 +38,7 @@ public class Drone extends Flyer {
 	public static final double MAINTENANCE_WORK_TIME = 100D;
 	
 	/**
-	 * Constructs a Rover object at a given settlement
+	 * Constructs a Rover object at a given settlement.
 	 *
 	 * @param name        the name of the rover
 	 * @param spec the configuration type of the vehicle.
@@ -50,7 +50,7 @@ public class Drone extends Flyer {
 
 
 	/**
-	 * Perform time-related processes
+	 * Performs time-related processes.
 	 *
 	 * @param pulse the amount of clock pulse passing (in millisols)
 	 */
@@ -98,7 +98,7 @@ public class Drone extends Flyer {
 	}
 
 	/**
-	 * Gets the amount resource type that this vehicle uses as fuel
+	 * Gets the amount resource type that this vehicle uses as fuel.
 	 *
 	 * @return amount resource
 	 */
@@ -107,7 +107,7 @@ public class Drone extends Flyer {
 	}
 	
 	/**
-	 * Gets the range of the vehicle
+	 * Gets the range of the vehicle.
 	 *
 	 * @return the range of the vehicle (in km)
 	 * @throws Exception if error getting range.
