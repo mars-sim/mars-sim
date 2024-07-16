@@ -156,12 +156,13 @@ public abstract class DroneMission extends AbstractVehicleMission {
 			return null;
 		}
 
-        else if (!((Person)member).isNominallyFit()){
+        else if (member instanceof Person person
+				&& !person.isNominallyFit()){
         	// For humans
         	logger.log(member, Level.WARNING, 4_000,
         			"Not norminally fit to pilot " + getVehicle() + ".");
         	
-        	boolean canSleep = assignTask(((Person)member), new Sleep(((Person)member)));
+        	boolean canSleep = assignTask(person, new Sleep(person));
         	if (canSleep) {
         		logger.log(member, Level.INFO, 4_000,
             			"Instructed to sleep ahead of piloting " + getVehicle() + ".");
