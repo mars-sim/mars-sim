@@ -267,24 +267,20 @@ abstract class EVAMission extends RoverMission {
 
 		for (Iterator<Worker> i = getMembers().iterator(); i.hasNext();) {    
 			Worker member = i.next();
-	
-			boolean toRemove = false;
-			
-			if (member instanceof Person p) {
-				
-				if (p.isInSettlement() || p.isInSettlementVicinity()
-						|| p.isRightOutsideSettlement()) {
-	
-					toRemove = true;
-					// Call memberLeave to set mission to null will cause this member to drop off the member list
-					memberLeave(member);
-					break;
-				}
-			}
-			
-			if (toRemove) {
+
+			if (member instanceof Person p
+				&& (p.isInSettlement() 
+				|| p.isInSettlementVicinity()
+				|| p.isRightOutsideSettlement())) {
+
+				logger.severe(p, "Invalid 'teleportion' detected. Current location: " 
+						+ p.getLocationTag().getExtendedLocation() + ".");
+				// Call memberLeave to set mission to null will cause this member to drop off the member list
+				memberLeave(member);
+					
 				// Use Iterator's remove() method
 				i.remove();
+				break;
 			}
 		}
 	}

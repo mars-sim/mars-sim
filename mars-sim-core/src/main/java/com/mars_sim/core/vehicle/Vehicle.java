@@ -1907,7 +1907,8 @@ public abstract class Vehicle extends Unit
 	 * @return true if yes
 	 */
 	public boolean isOutsideOnMarsMission() {
-		return LocationStateType.MARS_SURFACE == currentStateType;
+		return LocationStateType.MARS_SURFACE == currentStateType
+				|| LocationStateType.VEHICLE_VICINITY == currentStateType;
 	}
 
 	/**

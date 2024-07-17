@@ -38,6 +38,7 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -61,16 +62,24 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private static final String E = "E";
 	private static final String W = "W";
 
+	private boolean isSettlement;
+	private boolean isVehicle;
+	private boolean isPerson;
+	private boolean isRobot;
+
+	private String themeCache = "";
 	private String locationStringCache;
 
 	private Unit vicinityUnit;
 	private Unit containerCache;
 	private Building buildingCache;
+	private Settlement settlementCache;
 	
 	private LocationStateType locationStateTypeCache;
 	
 	private JLabel vicinityLabel;
 	private JLabel containerLabel;
+	private JLabel settlementLabel;
 	private JLabel buildingLabel;
 	private JLabel locationStateLabel;
 	private JLabel activitySpot;
@@ -86,8 +95,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private DisplaySingle bannerText; 
 	private DisplayCircular gauge;
 
-	private Dimension latLonDim = new Dimension(120, 30);
-	private Dimension gaugeDim = new Dimension(180, 180);
+	private Dimension latLonDim = new Dimension(150, 40);
+	private Dimension gaugeDim = new Dimension(200, 200);
 	private Dimension bannerDim = new Dimension(140, 30);
 	
 	/**
@@ -104,32 +113,34 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 				Msg.getString("LocationTabPanel.title"), //$NON-NLS-1$
 				unit, desktop);
 
+		isSettlement = unit instanceof Settlement;
+		isVehicle = unit instanceof Vehicle;
+		isPerson = unit instanceof Person;
+		isRobot = unit instanceof Robot;
+
 		locationStringCache = unit.getLocationTag().getExtendedLocation();
 	}
 
 	@Override
 	protected void buildUI(JPanel content) {
 
-		// Create location panel
-		JPanel locationPanel = new JPanel(new BorderLayout(5, 5));
-		locationPanel.setBorder(new MarsPanelBorder());
+		// Create top panel
+		JPanel topPanel = new JPanel(new BorderLayout(5, 5));
+		topPanel.setBorder(new MarsPanelBorder());
 //		locationPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
-		content.add(locationPanel, BorderLayout.NORTH);
+		content.add(topPanel, BorderLayout.NORTH);
 
 		// Initialize location cache
-		locationCache = getUnit().getCoordinates();
-
-		if (locationCache == null) {
-			locationCache = getUnit().getContainerUnit().getCoordinates();
+		Coordinates location = getUnit().getCoordinates();
+		// If this unit depends on the container unit to provide coordinates
+		if (location == null) {
+			location = getUnit().getContainerUnit().getCoordinates();
 		}
 		
-
 		JPanel northPanel = new JPanel(new FlowLayout());
-		locationPanel.add(northPanel, BorderLayout.SOUTH);
+		topPanel.add(northPanel, BorderLayout.SOUTH);
 
 		lcdLat = new DisplaySingle();
-		lcdLat.setLcdUnitString("");
-		lcdLat.setLcdValueAnimated(locationCache.getLatitudeDouble());
 		lcdLat.setLcdInfoFont(new Font("Verdana", 0, 32));
 		lcdLat.setLcdInfoString("Lat");
 		lcdLat.setLcdColor(LcdColor.BEIGE_LCD);
@@ -156,8 +167,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 		JPanel lcdPanel = new JPanel();
 		lcdLong = new DisplaySingle();
-		lcdLong.setLcdUnitString("");
-		lcdLong.setLcdValueAnimated(locationCache.getLongitudeDouble());
 		lcdLong.setLcdInfoFont(new Font("Verdana", 0, 32));
 		lcdLong.setLcdInfoString("Lon");
 		lcdLong.setLcdColor(LcdColor.BEIGE_LCD);
@@ -171,14 +180,20 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		lcdPanel.add(lcdLong);
 		northPanel.add(lcdPanel);
 
+		// Update the LCDs
+		updateLCDs(location);
+		
 		JPanel gaugePanel = new JPanel();
 		setupGauge(gaugePanel);
-		
-		locationPanel.add(gaugePanel, BorderLayout.CENTER);
+		topPanel.add(gaugePanel, BorderLayout.CENTER);
 
+		// Update the elevation in the gauge
+		updateGauge(location);
+		
 		bannerText = new DisplaySingle();
 		bannerText.setLcdInfoString("Last Known Position");
 		bannerText.setGlowColor(Color.ORANGE);
+		bannerText.setLcdColor(LcdColor.BEIGE_LCD);	
 		bannerText.setDigitalFont(true);
 		bannerText.setSize(bannerDim);
 		bannerText.setMaximumSize(bannerDim);
@@ -189,33 +204,97 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		bannerText.setLcdText(locationStringCache);
 		// Pause the location lcd text the sim is pause
         bannerText.setLcdTextScrolling(true);
-		locationPanel.add(bannerText, BorderLayout.NORTH);
+		topPanel.add(bannerText, BorderLayout.NORTH);
 
-		// Prepare info panel.
-		AttributePanel containerPanel = new AttributePanel(7);
-		content.add(containerPanel, BorderLayout.CENTER);
-		containerLabel = containerPanel.addRow("Container Unit", "");
-//		settlementLabel = containerPanel.addRow("Settlement Container", "");
-		locationStateLabel = containerPanel.addRow("Location State", "");
-		vicinityLabel = containerPanel.addRow("Vicinity", "");
-		buildingLabel = containerPanel.addRow("Building", "");
-		activitySpot = containerPanel.addRow("Reserved Spot", "");
-		iceLabel = containerPanel.addRow("Ice Score", "");
-		regolithLabel = containerPanel.addRow("Regolith Score", "");
+		// Create attribute panel
+		JPanel dataPanel = new JPanel(new BorderLayout(2, 2));
+		content.add(dataPanel, BorderLayout.CENTER);
+        addBorder(dataPanel, "Data");
+        
+		if (isPerson || isRobot || isVehicle) {
+			
+			AttributePanel containerPanel = new AttributePanel(6);
+			dataPanel.add(containerPanel, BorderLayout.NORTH);	
+			
+			activitySpot = containerPanel.addRow("Reserved Spot", "");
+			
+			settlementLabel = containerPanel.addRow("Settlement", "");
+			containerLabel = containerPanel.addRow("Container Unit", "");
+			buildingLabel = containerPanel.addRow("Building", "");
+			locationStateLabel = containerPanel.addRow("Location State", "");
+			vicinityLabel = containerPanel.addRow("Vicinity", "");
+		}
 		
-		updateLocationBanner(getUnit());
+		else if (isSettlement) {
+			AttributePanel containerPanel = new AttributePanel(3);
+			dataPanel.add(containerPanel, BorderLayout.NORTH);
 
-		bannerText.setLcdColor(LcdColor.DARKBLUE_LCD);
-		gauge.setFrameDesign(FrameDesign.STEEL);
+			iceLabel = containerPanel.addRow("Ice Score", "");
+			regolithLabel = containerPanel.addRow("Regolith Score", "");
+		}
 
 		update();
 	}
 
 	/**
+	 * Updates the info on this panel.
+	 */
+	@Override
+	public void update() {
+		
+		Unit unit = getUnit();
+		
+		if (!isSettlement) {
+			updateLocationElevation(unit);
+			updateActivitySpot(unit);
+			updateBanner(unit);
+		}
+		
+		updateLabels(unit);
+		
+		String theme = StyleManager.getLAF();
+		if (!themeCache.equals(theme)) {	
+			themeCache = theme;
+			updateBannerThemeColor(theme);
+		}
+	}
+	
+	/**
+	 * Updates the banner theme color.
+	 * 
+	 * @param gauge
+	 */
+	private void updateBannerThemeColor(String theme) {
+		if (theme.equalsIgnoreCase("Flat Light - Blue")) {
+			bannerText.setGlowColor(Color.WHITE);
+			bannerText.setLcdColor(LcdColor.BLUEGRAY_LCD);			
+		}
+		else if (theme.equalsIgnoreCase("Flat Light - Green")) {
+			bannerText.setGlowColor(Color.lightGray);
+			bannerText.setLcdColor(LcdColor.DARKGREEN_LCD);			
+		}
+		else if (theme.equalsIgnoreCase("Flat Light - Orange")) {
+			bannerText.setGlowColor(Color.ORANGE);
+			bannerText.setLcdColor(LcdColor.AMBER_LCD);			
+		}
+		else if (theme.equalsIgnoreCase("Flat Light - Red")) {
+			bannerText.setGlowColor(Color.LIGHT_GRAY);
+			bannerText.setLcdColor(LcdColor.REDDARKRED_LCD);			
+		}
+		else if (theme.equalsIgnoreCase("Flat Dark")) {
+			bannerText.setGlowColor(Color.WHITE);
+			bannerText.setLcdColor(LcdColor.DARKBLUE_LCD);			
+		}
+		else if (theme.equalsIgnoreCase("Default System")) {
+			bannerText.setGlowColor(Color.ORANGE);
+			bannerText.setLcdColor(LcdColor.BEIGE_LCD);			
+		}
+	}
+	
+	/**
 	 * Sets up the circular gauge.
 	 * 
 	 * @param gauge
-	 * @param elevationCache
 	 */
 	private void setupGauge(JPanel gaugePanel) {
 		gauge = new DisplayCircular();
@@ -223,8 +302,24 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		gauge.setDigitalFont(true);
 		gauge.setUnitString("km");
 		gauge.setTitle("Elevation");
-		gauge.setFrameDesign(FrameDesign.CHROME);
-		gauge.setBackgroundColor(BackgroundColor.LINEN);
+		
+		if (isSettlement) {
+			gauge.setFrameDesign(FrameDesign.GOLD);
+			gauge.setBackgroundColor(BackgroundColor.BEIGE);
+		} 
+		else if (isVehicle) {
+			gauge.setFrameDesign(FrameDesign.CHROME);
+			gauge.setBackgroundColor(BackgroundColor.DARK_GRAY);
+		}
+		else if (isPerson) {
+			gauge.setFrameDesign(FrameDesign.ANTHRACITE);
+			gauge.setBackgroundColor(BackgroundColor.LINEN);
+		}
+		else if (isRobot) {
+			gauge.setFrameDesign(FrameDesign.BRASS);
+			gauge.setBackgroundColor(BackgroundColor.CARBON);
+		}
+		
 		gauge.setLcdDecimals(4);
 		gauge.setSize(gaugeDim);
 		gauge.setPreferredSize(gaugeDim);
@@ -235,12 +330,57 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 	
 	/**
-	 * Updates elevation in the circular gauge.
-	 * 
-	 * @param gauge
-	 * @param elevationCache
+	 * Updates location and elevation data.
 	 */
-	private void updateGauge(double elevationCache) {
+	private void updateLocationElevation(Unit unit) {
+
+		// If unit's location has changed, update location display.
+		
+		Coordinates location = unit.getCoordinates();
+		// If this unit depends on the container unit to provide coordinates
+		if (location == null) {
+			location = unit.getContainerUnit().getCoordinates();
+		}
+			
+		if (locationCache == null 
+				|| (locationCache != null && !locationCache.equals(location))) {
+			locationCache = location;
+			
+			// Update the LCDs
+			updateLCDs(location);
+			
+			// Update the elevation in the gauge
+			updateGauge(location);
+		}
+	}
+
+	/**
+	 * Updates the gauge.
+	 * 
+	 * @param location
+	 */
+	private void updateLCDs(Coordinates location) {
+
+		String dirNS = Msg.getString("direction.degreeSign") 
+						+ ((location.getLatitudeDouble() >= 0) ? N : S);
+		String dirEW = Msg.getString("direction.degreeSign")
+						+ ((location.getLongitudeDouble() >= 0) ? E : W);
+
+		lcdLat.setLcdUnitString(dirNS);
+		lcdLong.setLcdUnitString(dirEW);
+		lcdLat.setLcdValueAnimated(Math.abs(location.getLatitudeDouble()));
+		lcdLong.setLcdValueAnimated(Math.abs(location.getLongitudeDouble()));
+	}
+	
+	/**
+	 * Updates the gauge.
+	 * 
+	 * @param location
+	 */
+	private void updateGauge(Coordinates location) {
+		
+		double elevation = Math.round(TerrainElevation.getAverageElevation(location)
+				* 1000.0) / 1000.0;
 
 		// Note: The peak of Olympus Mons is 21,229 meters (69,649 feet) above the Mars
 		// areoid (a reference datum similar to Earth's sea level). The lowest point is
@@ -251,39 +391,40 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		int max = -1;
 		int min = 2;
 
-		if (elevationCache < -8) {
+		if (elevation < -8) {
 			max = -8;
 			min = -9;
-		} else if (elevationCache < -5) {
+		} else if (elevation < -5) {
 			max = -5;
 			min = -9;
-		} else if (elevationCache < -3) {
+		} else if (elevation < -3) {
 			max = -3;
 			min = -5;
-		} else if (elevationCache < 0) {
+		} else if (elevation < 0) {
 			max = 1;
 			min = -1;
-		} else if (elevationCache < 1) {
+		} else if (elevation < 1) {
 			max = 2;
 			min = 0;
-		} else if (elevationCache < 3) {
+		} else if (elevation < 3) {
 			max = 5;
 			min = 0;
-		} else if (elevationCache < 10) {
+		} else if (elevation < 10) {
 			max = 10;
 			min = 5;
-		} else if (elevationCache < 20) {
+		} else if (elevation < 20) {
 			max = 20;
 			min = 10;
-		} else if (elevationCache < 30) {
+		} else if (elevation < 30) {
 			max = 30;
 			min = 20;
 		}
 
 		gauge.setMinValue(min);
 		gauge.setMaxValue(max);
+		gauge.setLcdValueAnimated(elevation);
 	}
-
+	
 	/**
 	 * Updates the person.
 	 * 
@@ -507,45 +648,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		}
 		
 	}
-	
-	/**
-	 * Updates the info on this panel.
-	 */
-	@Override
-	public void update() {
-		
-		Unit unit = getUnit();
-		
-		// If unit's location has changed, update location display.
-		Coordinates location = unit.getCoordinates();
-		
-		if (location == null) {
-			location = unit.getContainerUnit().getCoordinates();
-		}
-		
-		if (!locationCache.equals(location)) {
-			locationCache = location;
-
-			String dirNS = Msg.getString("direction.degreeSign") 
-							+ ((locationCache.getLatitudeDouble() >= 0) ? N : S);
-			String dirEW = Msg.getString("direction.degreeSign")
-							+ ((locationCache.getLongitudeDouble() >= 0) ? E : W);
-
-			lcdLat.setLcdUnitString(dirNS);
-			lcdLong.setLcdUnitString(dirEW);
-			lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
-			lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
-
-			double newElevation = Math.round(TerrainElevation.getAverageElevation(location)
-					* 1000.0) / 1000.0;
-
-			updateGauge(newElevation);
-		}
-
-		updateLabels(unit);
-		updateActivitySpot(unit);
-		updateLocationBanner(unit);
-	}
 
 	/**
 	 * Updates the labels.
@@ -555,44 +657,48 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private void updateLabels(Unit unit) {
 		// Update labels as necessary
 		
-		Unit container = unit.getContainerUnit();
-		if ((containerCache == null) || !containerCache.equals(container)) {
-			containerCache = container;
-			String n = container != null ? container.getName() : "";
-			containerLabel.setText(n);
-		}
-		
-		// If this unit is inside a building
-		Building building = unit.getBuildingLocation();
-		if (buildingCache != building) {
-			buildingCache = building;
-			String n = building != null ? building.getName() : "";
-			buildingLabel.setText(n);
-		}
-		else
-			buildingLabel.setText("");
-
-		LocationStateType locationStateType = unit.getLocationStateType();
-		if (locationStateTypeCache != locationStateType) {
-			locationStateTypeCache = locationStateType;
-			String n = locationStateType != null ? locationStateType.getName() : "";
-			locationStateLabel.setText(Conversion.capitalize0(n));
-		}
-		
-		// If this unit is near a settlement
-		if (locationStateType == LocationStateType.SETTLEMENT_VICINITY) {
-			vicinityUnit = unit.getLocationTag().findSettlementVicinity();
-			if (vicinityUnit != null) {
-				vicinityLabel.setText(vicinityUnit.getName());
+		if (isPerson || isRobot || isVehicle) {
+			Unit container = unit.getContainerUnit();
+			if ((containerCache == null) || !containerCache.equals(container)) {
+				containerCache = container;
+				String n = container != null ? container.getName() : "";
+				containerLabel.setText(n);
 			}
-			else
-				vicinityLabel.setText("");
-		}
-		
-		// If this unit (including a settlement) is on Mars surface
-		else if (locationStateType == LocationStateType.MARS_SURFACE) {
-			// Check if this is a vehicle
-			if (unit instanceof Vehicle) {
+			
+			// If this unit is inside a settlement
+			Settlement settlement = unit.getSettlement();
+			if (settlementCache != settlement) {
+				settlementCache = settlement;
+				String n = settlement != null ? settlement.getName() : "";
+				settlementLabel.setText(n);
+			}
+			
+			// If this unit is inside a building
+			Building building = unit.getBuildingLocation();
+			if (buildingCache != building) {
+				buildingCache = building;
+				String n = building != null ? building.getName() : "";
+				buildingLabel.setText(n);
+			}
+
+			LocationStateType locationStateType = unit.getLocationStateType();
+			if (locationStateTypeCache != locationStateType) {
+				locationStateTypeCache = locationStateType;
+				String n = locationStateType != null ? locationStateType.getName() : "";
+				locationStateLabel.setText(Conversion.capitalize0(n));
+			}
+			
+			if (locationStateType == LocationStateType.SETTLEMENT_VICINITY) {
+				// If this unit is near a settlement
+				vicinityUnit = unit.getLocationTag().findSettlementVicinity();
+				if (vicinityUnit != null) {
+					vicinityLabel.setText(vicinityUnit.getName());
+				}
+				else
+					vicinityLabel.setText("");
+			}
+			else if (locationStateType == LocationStateType.VEHICLE_VICINITY) {
+				// If this unit is near a vehicle
 				vicinityUnit = unit.getLocationTag().findVehicleVicinity();
 				if (vicinityUnit != null) {
 					vicinityLabel.setText(vicinityUnit.getName());
@@ -600,9 +706,27 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 				else
 					vicinityLabel.setText("");
 			}
+			
+			// If this unit (including a settlement) is on Mars surface
+			else if (locationStateType == LocationStateType.MARS_SURFACE) {
+				// Check if this is a vehicle
+				if (unit instanceof Vehicle) {
+					vicinityUnit = unit.getLocationTag().findVehicleVicinity();
+					if (vicinityUnit != null) {
+						vicinityLabel.setText(vicinityUnit.getName());
+					}
+					else
+						vicinityLabel.setText("");
+				}
+			}
+			else {
+				vicinityLabel.setText("");
+			}
 		}
-		else {
-			vicinityLabel.setText("");
+		
+		else if (isSettlement) {
+			iceLabel.setText(Math.round(((Settlement)unit).getIceCollectionRate() * 100.0)/100.0 + "");
+			regolithLabel.setText(Math.round(((Settlement)unit).getRegolithCollectionRate() * 100.0)/100.0 + "");
 		}
 	}
 	
@@ -629,7 +753,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	 * 
 	 * @param unit
 	 */
-	private void updateLocationBanner(Unit unit) {
+	private void updateBanner(Unit unit) {
 
 		String loc = unit.getLocationTag().getExtendedLocation();
 

@@ -646,7 +646,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					if (p.isInSettlement()) {
 						logger.info(p, "[Status Report] " + roverName
 								+ " in " + rover.getBuildingLocation().getName()
-								+ ".  Person's Location: " + p.getLocationStateType().getName()
+								+ ".  Location State: " + p.getLocationStateType().getName()
 								);
 					}
 					
@@ -654,7 +654,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 						// Not in settlement yet
 						logger.info(p, "[Status Report] " + roverName
 								+ " in " + rover.getLocationStateType().getName()
-								+ ".  Person's Location: " + p.getLocationStateType().getName()
+								+ ".  Location State: " + p.getLocationStateType().getName()
 								);
 					}
 				}

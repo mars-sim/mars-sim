@@ -638,7 +638,8 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 */
 	public boolean isOutside() {
 		if (LocationStateType.MARS_SURFACE == currentStateType
-				|| LocationStateType.SETTLEMENT_VICINITY == currentStateType)
+				|| LocationStateType.SETTLEMENT_VICINITY == currentStateType
+				|| LocationStateType.VEHICLE_VICINITY == currentStateType)
 			return true;
 
 		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
