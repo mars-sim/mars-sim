@@ -837,6 +837,7 @@ public class MasterClock implements Serializable {
 //			this.isNewIntMillisol = isNewIntMillisol;
 			lastIntMillisol = currentIntMillisol;
 		}
+		
 		// Update the lastMillisol
 		lastMillisol = currentMillisol;	
 

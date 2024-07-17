@@ -695,7 +695,8 @@ public class Manufacture extends Function {
 	}
 
 	/**
-	 * Check if enough 3D printer(s) are supporting the manufacturing
+	 * Checks if enough 3D printer(s) are supporting the manufacturing.
+	 * 
 	 * processes
 	 * @param pulse
 	 */

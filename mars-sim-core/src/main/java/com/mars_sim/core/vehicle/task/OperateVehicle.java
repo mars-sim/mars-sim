@@ -320,7 +320,8 @@ public abstract class OperateVehicle extends Task {
 	        endTask();
 	        return time;
         }
-        else if (((Person)worker).isSuperUnfit()){
+        else if (worker.getUnitType() == UnitType.PERSON
+            	&& ((Person)worker).isSuperUnfit()){
         	// For humans
         	logger.log(worker, Level.WARNING, 20_000,
         			". Super unfit to pilot " + getVehicle() + ".");

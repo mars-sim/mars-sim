@@ -930,13 +930,12 @@ public class Settlement extends Structure implements Temporal,
 		
 		// Update robots
 		timePassing(pulse, ownedRobots);
-
-		
+	
 		if (pulse.isNewHalfSol()) {
 			// Reset the flag for water ratio review
 			setReviewWaterRatio(false);
 		}
-		
+
 		// At the beginning of a new sol,
 		// there's a chance a new site is automatically discovered
 		if (pulse.isNewSol()) {
@@ -1243,7 +1242,7 @@ public class Settlement extends Structure implements Temporal,
 			// Adjust the grey water filtering rate
 			changeGreyWaterFilteringRate(false);
 			double r = getGreyWaterFilteringRate();
-			logger.log(this, Level.WARNING, 1_000,
+			logger.log(this, Level.WARNING, 10_000,
 					"Low storage of grey water decreases filtering rate to " + Math.round(r*100.0)/100.0 + ".");
 		}
 		else if (getAmountResourceRemainingCapacity(GREY_WATER_ID) < GREY_WATER_THRESHOLD) {

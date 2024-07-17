@@ -1233,7 +1233,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				&& now > momentOfImpact - 2 * delta && now < momentOfImpact + 2 * delta) {
 			// Yes the impact event occurs in the vicinity
 			
-			logger.log(this, Level.INFO, 0, "A meteorite impact event was imminent.");
+			logger.log(this, Level.INFO, 20_000, "A meteorite impact event was imminent.");
 
 			// Reset the boolean immediately for keeping track of whether 
 			// the impact has occurred
@@ -1254,13 +1254,13 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			
 			if (penetratedLength < wallThick) {
 				// Case A: No. it's not breached
-				logger.warning(this, 0, "Meteorite Impact event observed. Building wall not breached but damaged. "
+				logger.warning(this, 20_000, "Meteorite Impact event observed. Building wall not breached but damaged. "
 						+ "Penetration fraction: " + Math.round(reductionFraction * 10.0)/10.0 + ".");
 				
 				return ;
 			}
 	
-			logger.warning(this, 0, "Meteorite Impact event observed. Building wall penetrated.");
+			logger.warning(this, 20_000, "Meteorite Impact event observed. Building wall penetrated.");
 			
 			// Case B: Yes it's breached !	
 			
@@ -1269,7 +1269,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 					.getMalfunctionByName(MalfunctionFactory.METEORITE_IMPACT_DAMAGE),
 					true, this);
 
-			logger.log(this, Level.INFO, 0, mal.getName() + " registered.");
+			logger.log(this, Level.INFO, 20_000, mal.getName() + " registered.");
 			
 			String victimNames = null;
 
@@ -1302,11 +1302,11 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 					// Store the meteorite fragment in the settlement
 					settlement.storeAmountResource(ResourceUtil.meteoriteID, floorArea * meteorite.getDebrisMass());
 
-					logger.info(this, "Found " + Math.round(meteorite.getDebrisMass() * 100.0)/100.0
+					logger.info(this, 20_000, "Found " + Math.round(meteorite.getDebrisMass() * 100.0)/100.0
 							+ " kg of meteorite fragments");
 
 					if (pc.getStress() > 50)
-						logger.warning(this, victimNames + " was traumatized by the meteorite impact");
+						logger.warning(this, 20_000, victimNames + " was traumatized by the meteorite impact");
 
 				} // check if this person happens to be inside the affected building
 				
@@ -1334,7 +1334,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		
 		else {
 			// No the impact does not occur in the vicinity
-			logger.log(this, Level.INFO, 0, "Meteorite Impact event observed but did not occur in the vicinity.");
+			logger.log(this, Level.INFO, 20_000, "Meteorite Impact event observed but did not occur in the vicinity.");
 		}
 	}
 
