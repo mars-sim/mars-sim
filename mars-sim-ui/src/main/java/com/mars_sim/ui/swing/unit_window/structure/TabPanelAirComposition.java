@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelAirComposition.java
- * @date 2022-07-09
+ * @date 2024-07-17
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.unit_window.structure;
@@ -101,7 +101,7 @@ public class TabPanelAirComposition extends TabPanel {
 	
 	private ButtonGroup bG;
 	
-	private TableModel tableModel;
+	private AirTableModel airTableModel;
 
 	private Settlement settlement;
 	private BuildingManager manager;
@@ -115,7 +115,7 @@ public class TabPanelAirComposition extends TabPanel {
 
 		// Use the TabPanel constructor
 		super(
-			null,
+			Msg.getString("TabPanelAirComposition.title"), //$NON-NLS-1$
 			ImageLoader.getIconByName(AIR_ICON),
 			Msg.getString("TabPanelAirComposition.title"), //$NON-NLS-1$
 			unit, desktop
@@ -205,8 +205,8 @@ public class TabPanelAirComposition extends TabPanel {
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		content.add(scrollPane,BorderLayout.CENTER);
 
-		tableModel = new TableModel(settlement);
-		table = new JTable(tableModel);
+		airTableModel = new AirTableModel(settlement);
+		table = new JTable(airTableModel);
 		EntityLauncher.attach(table, getDesktop());
 
 		table.setRowSelectionAllowed(true);
@@ -243,7 +243,7 @@ public class TabPanelAirComposition extends TabPanel {
 	    btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox." + selector + ".tooltip")); //$NON-NLS-1$
 	    btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				tableModel.update();
+				airTableModel.update();
 			}
 		});
 
@@ -320,15 +320,12 @@ public class TabPanelAirComposition extends TabPanel {
 				arCache = ar;
 				arLabel.setText(StyleManager.DECIMAL_PERC2.format(ar));
 			}
-			
 
 			double n2 =  getOverallComposition(ResourceUtil.nitrogenID);
 			if (n2Cache != n2) {
 				n2Cache = n2;
 				n2Label.setText(StyleManager.DECIMAL_PERC2.format(n2));
 			}
-
-
 
 			double o2 = getOverallComposition(ResourceUtil.oxygenID);
 			if (o2Cache != o2) {
@@ -342,7 +339,7 @@ public class TabPanelAirComposition extends TabPanel {
 				h2OLabel.setText(StyleManager.DECIMAL_PERC2.format(h2O));
 			}
 			
-			double averageTemperature = Math.round(settlement.getTemperature()*1000.0)/1000.0; // convert to kPascal by multiplying 1000
+			double averageTemperature = settlement.getTemperature();
 			if (averageTemperatureCache != averageTemperature) {
 				averageTemperatureCache = averageTemperature;
 				averageTemperatureLabel.setText(StyleManager.DECIMAL_CELCIUS.format(averageTemperatureCache));
@@ -373,14 +370,14 @@ public class TabPanelAirComposition extends TabPanel {
 
 		}
 
-		tableModel.update();
+		airTableModel.update();
 
 	}
 
 	/**
 	 * Internal class used as model for the table.
 	 */
-	private class TableModel extends AbstractTableModel 
+	private class AirTableModel extends AbstractTableModel 
 				implements EntityModel {
 
 		/** default serial id. */
@@ -392,7 +389,7 @@ public class TabPanelAirComposition extends TabPanel {
 
 		private List<Building> buildings = new ArrayList<>();
 
-		private TableModel(Settlement settlement) {
+		private AirTableModel(Settlement settlement) {
 			this.manager = settlement.getBuildingManager();
 			this.buildings = selectBuildingsWithLS();
 			this.size = buildings.size();
@@ -507,7 +504,7 @@ public class TabPanelAirComposition extends TabPanel {
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	@Override
 	public void destroy() {
@@ -530,7 +527,7 @@ public class TabPanelAirComposition extends TabPanel {
 		mb_btn = null;		
 		scrollPane = null;		
 		bG = null;	
-		tableModel = null;
+		airTableModel = null;
 		settlement = null;
 		manager = null;
 	}

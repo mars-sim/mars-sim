@@ -416,7 +416,10 @@ public class SystemCondition implements Serializable {
     	
 		updateVoltage();
 		
-    	return unable2Accept;
+		if (unable2Accept > 0)
+			return unable2Accept;
+		
+		return 0;
     }
 
     /**

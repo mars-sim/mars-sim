@@ -274,7 +274,7 @@ public class Charge extends Task {
 				+ Math.round(batteryLevel * 10.0)/10.0 + "%");
 
 		double hrs = time * MarsTime.HOURS_PER_MILLISOL;
-
+		// energy kWh = rate [1kW] * hours
 		double energy = sc.storeEnergy(rate * hrs);
 		
 		if (energy > 0.0001) {

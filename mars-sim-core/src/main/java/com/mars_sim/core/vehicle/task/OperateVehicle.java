@@ -61,7 +61,7 @@ public abstract class OperateVehicle extends Task {
  	private static final double MAX_PERCENT_SPEED = 30;
  	
  	/** The speed at which the collision phase commence. */
-	protected static final double HIGH_SPEED = 200;
+	protected static final double HIGH_SPEED = 100;
 	/** The speed at which the obstacle / winching phase commence. */
 	protected static final double LOW_SPEED = 1;
 	/** Conversion factor : 1 m/s = 3.6 km/h (or kph) */

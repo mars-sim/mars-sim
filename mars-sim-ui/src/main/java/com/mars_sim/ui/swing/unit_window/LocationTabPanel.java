@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LocationTabPanel.java
- * @date 2021-12-20
+ * @date 2024-07-17
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window;
@@ -65,20 +65,21 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 	private Unit vicinityUnit;
 	private Unit containerCache;
-//	private Settlement settlementCache;
 	private Building buildingCache;
+	
 	private LocationStateType locationStateTypeCache;
 	
 	private JLabel vicinityLabel;
 	private JLabel containerLabel;
-//	private JLabel settlementLabel;
 	private JLabel buildingLabel;
 	private JLabel locationStateLabel;
 	private JLabel activitySpot;
+	private JLabel iceLabel;
+	private JLabel regolithLabel;
 	
-	private Coordinates locationCache;
-
 	private JButton locatorButton;
+
+	private Coordinates locationCache;
 
 	private DisplaySingle lcdLong;
 	private DisplaySingle lcdLat;
@@ -86,8 +87,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private DisplayCircular gauge;
 
 	private Dimension latLonDim = new Dimension(120, 30);
-	private Dimension gaugeDim = new Dimension(70, 70);
-	private Dimension bannerDim = new Dimension(150, 30);
+	private Dimension gaugeDim = new Dimension(180, 180);
+	private Dimension bannerDim = new Dimension(140, 30);
 	
 	/**
 	 * Constructor.
@@ -97,7 +98,11 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	 */
 	public LocationTabPanel(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super(null, ImageLoader.getIconByName(MAP_ICON), Msg.getString("LocationTabPanel.title"), unit, desktop);
+		super(
+				Msg.getString("LocationTabPanel.title"), //$NON-NLS-1$
+				ImageLoader.getIconByName(MAP_ICON), 
+				Msg.getString("LocationTabPanel.title"), //$NON-NLS-1$
+				unit, desktop);
 
 		locationStringCache = unit.getLocationTag().getExtendedLocation();
 	}
@@ -108,7 +113,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		// Create location panel
 		JPanel locationPanel = new JPanel(new BorderLayout(5, 5));
 		locationPanel.setBorder(new MarsPanelBorder());
-		locationPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
+//		locationPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
 		content.add(locationPanel, BorderLayout.NORTH);
 
 		// Initialize location cache
@@ -124,8 +129,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 		lcdLat = new DisplaySingle();
 		lcdLat.setLcdUnitString("");
-		lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
-		lcdLat.setLcdInfoString("Latitude");
+		lcdLat.setLcdValueAnimated(locationCache.getLatitudeDouble());
+		lcdLat.setLcdInfoFont(new Font("Verdana", 0, 32));
+		lcdLat.setLcdInfoString("Lat");
 		lcdLat.setLcdColor(LcdColor.BEIGE_LCD);
 		lcdLat.setGlowColor(Color.orange);
 		lcdLat.setDigitalFont(true);
@@ -134,12 +140,10 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		lcdLat.setMaximumSize(latLonDim);
 		lcdLat.setPreferredSize(latLonDim);
 		lcdLat.setVisible(true);
-
 		northPanel.add(lcdLat);
 
 		// Create center map button
 		locatorButton = new JButton(ImageLoader.getIconByName(NavigatorWindow.ICON));
-
 		locatorButton.setBorder(new EmptyBorder(1, 1, 1, 1));
 		locatorButton.addActionListener(this);
 		locatorButton.setOpaque(false);
@@ -148,14 +152,14 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 		JPanel locatorPane = new JPanel(new FlowLayout());
 		locatorPane.add(locatorButton);
-
 		northPanel.add(locatorPane);
 
 		JPanel lcdPanel = new JPanel();
 		lcdLong = new DisplaySingle();
 		lcdLong.setLcdUnitString("");
-		lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
-		lcdLong.setLcdInfoString("Longitude");
+		lcdLong.setLcdValueAnimated(locationCache.getLongitudeDouble());
+		lcdLong.setLcdInfoFont(new Font("Verdana", 0, 32));
+		lcdLong.setLcdInfoString("Lon");
 		lcdLong.setLcdColor(LcdColor.BEIGE_LCD);
 		lcdLong.setGlowColor(Color.yellow);
 		lcdLong.setDigitalFont(true);
@@ -168,12 +172,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		northPanel.add(lcdPanel);
 
 		JPanel gaugePanel = new JPanel();
-		gauge = new DisplayCircular();
-		gauge.setSize(gaugeDim);
-		gauge.setMaximumSize(gaugeDim);
-		gauge.setPreferredSize(gaugeDim);
-		setGauge(gauge, 0D);
-		gaugePanel.add(gauge);
+		setupGauge(gaugePanel);
 		
 		locationPanel.add(gaugePanel, BorderLayout.CENTER);
 
@@ -187,18 +186,13 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		bannerText.setVisible(true);
 		bannerText.setLcdNumericValues(false);
 		bannerText.setLcdValueFont(new Font("Serif", Font.ITALIC, 8));
-
 		bannerText.setLcdText(locationStringCache);
-
 		// Pause the location lcd text the sim is pause
         bannerText.setLcdTextScrolling(true);
-
 		locationPanel.add(bannerText, BorderLayout.NORTH);
 
-		/////
-
 		// Prepare info panel.
-		AttributePanel containerPanel = new AttributePanel(5);
+		AttributePanel containerPanel = new AttributePanel(7);
 		content.add(containerPanel, BorderLayout.CENTER);
 		containerLabel = containerPanel.addRow("Container Unit", "");
 //		settlementLabel = containerPanel.addRow("Settlement Container", "");
@@ -206,7 +200,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		vicinityLabel = containerPanel.addRow("Vicinity", "");
 		buildingLabel = containerPanel.addRow("Building", "");
 		activitySpot = containerPanel.addRow("Reserved Spot", "");
-			
+		iceLabel = containerPanel.addRow("Ice Score", "");
+		regolithLabel = containerPanel.addRow("Regolith Score", "");
+		
 		updateLocationBanner(getUnit());
 
 		bannerText.setLcdColor(LcdColor.DARKBLUE_LCD);
@@ -215,7 +211,36 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		update();
 	}
 
-	private void setGauge(DisplayCircular gauge, double elevationCache) {
+	/**
+	 * Sets up the circular gauge.
+	 * 
+	 * @param gauge
+	 * @param elevationCache
+	 */
+	private void setupGauge(JPanel gaugePanel) {
+		gauge = new DisplayCircular();
+		gauge.setDisplayMulti(false);
+		gauge.setDigitalFont(true);
+		gauge.setUnitString("km");
+		gauge.setTitle("Elevation");
+		gauge.setFrameDesign(FrameDesign.CHROME);
+		gauge.setBackgroundColor(BackgroundColor.LINEN);
+		gauge.setLcdDecimals(4);
+		gauge.setSize(gaugeDim);
+		gauge.setPreferredSize(gaugeDim);
+		gauge.setVisible(true);
+	
+		gaugePanel.add(gauge);
+	}
+
+	
+	/**
+	 * Updates elevation in the circular gauge.
+	 * 
+	 * @param gauge
+	 * @param elevationCache
+	 */
+	private void updateGauge(double elevationCache) {
 
 		// Note: The peak of Olympus Mons is 21,229 meters (69,649 feet) above the Mars
 		// areoid (a reference datum similar to Earth's sea level). The lowest point is
@@ -255,22 +280,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			min = 20;
 		}
 
-		gauge.setDisplayMulti(false);
-		gauge.setDigitalFont(true);
-		gauge.setUnitString("km");
-		gauge.setTitle("Elevation");
 		gauge.setMinValue(min);
 		gauge.setMaxValue(max);
-		gauge.setBackgroundColor(BackgroundColor.NOISY_PLASTIC);
-		gauge.setLcdValueAnimated(elevationCache);
-		gauge.setValueAnimated(elevationCache);
-		gauge.setLcdDecimals(4);
-		gauge.setSize(new Dimension(220, 220));
-		gauge.setMaximumSize(new Dimension(220, 220));
-		gauge.setPreferredSize(new Dimension(220, 220));
-
-		gauge.setVisible(true);
-
 	}
 
 	/**
@@ -505,9 +516,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		
 		Unit unit = getUnit();
 		
-		// Update the unit's location
-//		updateUnit(unit);
-	
 		// If unit's location has changed, update location display.
 		Coordinates location = unit.getCoordinates();
 		
@@ -531,16 +539,11 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			double newElevation = Math.round(TerrainElevation.getAverageElevation(location)
 					* 1000.0) / 1000.0;
 
-			setGauge(gauge, newElevation);
-
+			updateGauge(newElevation);
 		}
 
-		/////////////////
-		
 		updateLabels(unit);
-		
 		updateActivitySpot(unit);
-		
 		updateLocationBanner(unit);
 	}
 
