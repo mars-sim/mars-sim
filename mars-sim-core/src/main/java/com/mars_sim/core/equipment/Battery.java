@@ -164,7 +164,7 @@ public class Battery implements Serializable {
     		energyToDeliver = Math.min(currentEnergy, Math.min(energyCanSupply, Math.min(powerRequest * time, Math.min(kWh, powerMax * time))));
 
           	logger.log(unit, Level.INFO, 20_000, 
-          			"[Battery Status]  "
+          			"[Battery Status] "
           	       	+ "currentEnergy: " + Math.round(currentEnergy * 1_000.0)/1_000.0 + KWH
           			+ "energyCanSupply: " + Math.round(energyCanSupply * 1_000.0)/1_000.0 + KWH
                 	+ "kWh: " + + Math.round(kWh * 1_000.0)/1_000.0 + KWH

@@ -227,6 +227,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 
 	/**
 	 * Executes a Task for a number of steps or until it completes.
+	 * Note: for maven testing.
 	 * 
 	 * @param person
 	 * @param task
@@ -321,6 +322,14 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 
 	public static void assertLessThan(String message, double maxValue, double actual) {
 		if (actual >= maxValue) {
+			fail(message + " ==> " +
+					"Expected: a value less than <" + maxValue + ">\n" +
+					"Actual was <" + actual + ">");
+		}
+	}
+	
+	public static void assertEqualLessThan(String message, double maxValue, double actual) {
+		if (actual > maxValue) {
 			fail(message + " ==> " +
 					"Expected: a value less than <" + maxValue + ">\n" +
 					"Actual was <" + actual + ">");

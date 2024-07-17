@@ -750,7 +750,7 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Gets the speed of vehicle.
 	 *
-	 * @return the vehicle's speed (in km/hr)
+	 * @return the vehicle's speed (in kph)
 	 */
 	public double getSpeed() {
 		return speed;
@@ -759,7 +759,7 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Sets the vehicle's current speed.
 	 *
-	 * @param speed the vehicle's speed (in km/hr)
+	 * @param speed the vehicle's speed (in kph)
 	 */
 	public void setSpeed(double speed) {
 		if (speed < 0D)
@@ -783,7 +783,7 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Gets the base speed of vehicle
 	 *
-	 * @return the vehicle's base speed (in kph or km/hr)
+	 * @return the vehicle's base speed (in kph)
 	 */
 	public double getBaseSpeed() {
 		return spec.getBaseSpeed();
@@ -813,7 +813,9 @@ public abstract class Vehicle extends Unit
     		else {
                 double amountOfFuel = getAmountResourceStored(fuelTypeID);
             	// During the journey, the range would be based on the amount of fuel in the vehicle
-        		range = Math.min(getBaseRange() * RANGE_FACTOR, getEstimatedFuelEconomy() * amountOfFuel) * getMass() / getBeginningMass();
+        		range = Math.min(getBaseRange() * RANGE_FACTOR, 
+        					getEstimatedFuelEconomy() * amountOfFuel) 
+        					* getMass() / getBeginningMass();
     		}
         }
 

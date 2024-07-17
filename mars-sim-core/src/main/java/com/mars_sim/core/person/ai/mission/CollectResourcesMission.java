@@ -342,6 +342,7 @@ public abstract class CollectResourcesMission extends EVAMission
 
 		if (!person.isEVAFit()) {
 			logger.info(person, 4_000, "Not EVA fit to exit " + getRover() +  ".");
+			// Note: How to take care of the person if he does not have high fatigue but other health issues ?
 			boolean canSleep = assignTask(person, new Sleep(person));
         	if (canSleep) {
         		logger.log(person, Level.INFO, 4_000,

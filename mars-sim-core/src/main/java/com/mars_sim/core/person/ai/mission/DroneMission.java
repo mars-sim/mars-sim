@@ -161,7 +161,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
         	// For humans
         	logger.log(member, Level.WARNING, 4_000,
         			"Not norminally fit to pilot " + getVehicle() + ".");
-        	
+        	// Note: How to take care of the person if he does not have high fatigue but other health issues ?
         	boolean canSleep = assignTask(person, new Sleep(person));
         	if (canSleep) {
         		logger.log(member, Level.INFO, 4_000,

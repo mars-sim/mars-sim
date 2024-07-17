@@ -77,19 +77,20 @@ public class PilotDrone extends OperateVehicle {
 	public PilotDrone(Worker pilot, Flyer flyer, Coordinates destination, MarsTime startTripTime,
 			double startTripDistance, TaskPhase startingPhase) {
 
-		// Use OperateVehicle constructor
+		// Note: OperateVehicle constructor should have set the phase to MOBILIZE
 		super(NAME, pilot, flyer, destination, startTripTime, startTripDistance, 1000);
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
 
+		if (getPhase() == null) {
+			logger.log(pilot, Level.INFO, 4_000, "Starting phase is null.");
+		}
+		
 		if (startingPhase != null) {
 			setPhase(startingPhase);
 			logger.log(pilot, Level.INFO, 4_000, "Took control of the drone at phase '"
 					+ startingPhase + "'.");
-		}
-		else {
-			logger.log(pilot, Level.INFO, 4_000, "Starting phase is null.");
 		}
 	}
 
@@ -105,7 +106,7 @@ public class PilotDrone extends OperateVehicle {
 		time = super.performMappedPhase(time);
 
 		if (getPhase() == null) {
-    	    logger.info(worker, "No longer piloting " + getVehicle() + ".");
+    	    logger.info(worker, "Phase is null. No longer piloting " + getVehicle() + ".");
 			// If it called endTask() in OperateVehicle, then Task is no longer available
 			// WARNING: do NOT call endTask() here or it will end up calling endTask() 
 			// recursively.

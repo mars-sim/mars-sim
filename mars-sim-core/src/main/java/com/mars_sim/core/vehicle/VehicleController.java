@@ -60,6 +60,10 @@
 	 private static final String KG = " kg  ";
 	 private static final String WH = " Wh  ";
 	 private static final String KWH = " kWh  ";
+	 private static final String KPH = " kph ";
+	 private static final String KPH_ = " kph  "; 
+	 private static final String W = " W  ";
+	 private static final String KM = " km  ";
 	 
 	 /**
 	  * Please do NOT delete any of the metric unit string below.
@@ -68,11 +72,9 @@
 	 private static final String N = " N  ";
 	 private static final String KM_KG = " km/kg  ";
 	 private static final String WH_KM = " Wh/km  ";
-	 private static final String KM = " km  ";
+
 	 private static final String KW = " kW  ";
 	 private static final String KPH = " kph  ";
-	 private static final String KPH_ = " kph ";
-	 private static final String W = " W  ";		
 	  */
 	 
 	 // Data members
@@ -111,7 +113,7 @@
 	  * @param vKPH
 	  * @param remainingFuel
 	  * @param remainingOxidizer
-	  * @return
+	  * @return remainingHrs
 	  */
 	 public double consumeFuelEnergy(double hrsTime, double distToCover, double vKPH, double remainingFuel, double remainingOxidizer) {
 		 // Set overallEnergyUsed [in Wh], not in kWh
@@ -138,12 +140,14 @@
 			 logger.log(vehicle, Level.INFO, 20_000, "Final speed was negative (" 
 					 +  Math.round(vKPH * 1000.0)/1000.0 + " kph). Reset back to zero.");
 			 vKPH = 0;
+			 vMS = 0;
 		 }
 			
 		 if (uKPH < 0 || uMS < 0) {
 			 logger.log(vehicle, Level.INFO, 20_000, "Initial speed was negative (" 
 					 +  Math.round(uKPH * 1000.0)/1000.0 + " kph). Reset back to zero.");
 			 uKPH = 0;
+			 uMS = 0;
 		 }
 		 
 		 // distance in km
@@ -345,20 +349,20 @@
   
 			 // Convert the total energy [in Wh]. Need to convert from J to Wh
 			 double totalEnergyNeeded = iPower * secs / JOULES_PER_WH ; // [in Wh]
-			// Get energy from the battery
+			// Get energy [in Wh] from the battery
 			 double energyByBattery = 0;
-			 // Get energy from the fuel
+			 // Get energy [in Wh] from the fuel
 			 double energyByFuel = 0;
 			 
 			 if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
 				 // For drone, prioritize to use up fuel as power source first
 				 // Get energy from the battery				 
-				 energyByBattery = .25 * battery.requestEnergy(totalEnergyNeeded / 1000, hrsTime) * 1000.0;
+				 energyByBattery = battery.requestEnergy(totalEnergyNeeded / 1000, hrsTime) * 1000.0;
 			 }
 			 else {
 				 // For ground vehicles
 				 // Get energy from the battery
-				 energyByBattery = .5 * battery.requestEnergy(totalEnergyNeeded / 1000, hrsTime) * 1000.0;
+				 energyByBattery = battery.requestEnergy(totalEnergyNeeded / 1000, hrsTime) * 1000.0;
 			 }
 			 
 			 // Get energy from the fuel
@@ -366,11 +370,13 @@
 			 
 			 overallEnergyUsed = totalEnergyNeeded;
 			 
-			 // Scenario 2A : Battery has enough juice for the acceleration
 			 if (Math.round(totalEnergyNeeded * 1000.0)/1000.0 == Math.round(energyByBattery * 1000.0)/1000.0) {
+				 // Scenario 2A : Battery has enough juice for the acceleration
+				 
 				/*
 				 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
 				 * delete any of them. Needed for testing when new features are added in future. Thanks !
+				 */
 
 				 logger.log(vehicle, Level.INFO, 20_000,  
 						 "Scenario 2A: Use on-board battery only. "
@@ -378,7 +384,7 @@
 						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 100.0)/100.0 + WH	
 						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH 						 
 						 + "Battery: " + Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH); 		 
-				*/
+
 			 }
 			  
 			 else if (energyByFuel > MIN_FUEL) {
@@ -390,11 +396,13 @@
 				 
 				 // Note that if remainingFuel == -1, it's either nuclear powered or solar powered
 				 if (remainingFuel == -1 || fuelNeeded <= remainingFuel) {
+					// Scenario 2B: if fuelNeeded is smaller than remainingFuel, 
+					// then fuel is sufficient.
+					 
 					/*
 					 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
 					 * delete any of them. Needed for testing when new features are added in future. Thanks !
-
-					 // Scenario 2B: fuel is sufficient
+					 */
 					 logger.log(vehicle, Level.INFO, 20_000,  
 						 "Scenario 2B: Partial battery with sufficient fuel.  " 
 						 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH
@@ -403,22 +411,27 @@
 						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH  						 
 						 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG
 						 + "distanceTravelled: " +  Math.round(distanceTravelled * 100.0)/100.0  + " km.");
-					 */
+
 				 }
 				 else {				
 					 // Scenario 2C : fuel needed is less than available (just used up the last drop of fuel). Update fuelNeeded.
 					 
 					 // Limit the fuel to be used
 					 fuelNeeded = remainingFuel;
- 
-					 energyByFuel = fuelNeeded * vehicle.getFuelConv();
-		 
-					 // FUTURE: need to consider the on-board vehicle power usage
-					 iPower = energyByFuel / secs * JOULES_PER_WH;
- 
+					 // Calculate the new energy provided by the fuel
+					 energyByFuel = fuelNeeded * vehicle.getFuelConv();	
+					 
+					 logger.log(vehicle, Level.INFO, 20_000, "energyByFuel: " 
+							 +  Math.round(energyByFuel * 1000.0)/1000.0 + " Wh");					 
+					 
 					 // recompute overallEnergyUsed
 					 overallEnergyUsed = energyByFuel + energyByBattery;
-							 
+							
+					 // Calculate the new instantaneous power provided by the fuel
+					 iPower = energyByFuel / secs * JOULES_PER_WH;
+ 
+					 // FUTURE: will consider the on-board accessory vehicle power usage
+		
 					 // Find the new speed   
 					 vKPH = iPower - potentialEnergyDrone / secs / accelMotor / mass;
 					 
@@ -434,7 +447,7 @@
 					/*
 					 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
 					 * delete any of them. Needed for testing when new features are added in future. Thanks !
-
+					 */
 					 logger.log(vehicle, Level.INFO, 20_000,  
 							 "Scenario 2C: Partial battery and insufficient fuel.  " 
 							 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH
@@ -446,7 +459,7 @@
 							 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH   							
 //							 + "navpointDist: " +  Math.round(navpointDist * 1000.0)/1000.0  + KM 
 							 + "distanceTravelled: " +  Math.round(distanceTravelled * 100.0)/100.0  + KM);
-					 */
+					 
 				 }
 			 }
 			 else { 
@@ -545,6 +558,8 @@
 			 
 			 // Cache the new value of fuelUsed	
 			 if (fuelNeeded > 0 && remainingFuel != -1) {
+				 logger.log(vehicle, Level.INFO, 20_000, "fuelNeeded: " 
+						 +  Math.round(fuelNeeded * 1000.0)/1000.0 + " kg");
 				 // Retrieve the fuel needed for the distance traveled
 				 vehicle.retrieveAmountResource(fuelTypeID, fuelNeeded);
 				 // Assume double amount of oxygen as fuel oxidizer
@@ -568,7 +583,7 @@
 			  * NOTE: May comment off the logging codes below once debugging is done.
 			  * But DO NOT delete any of them. Needed for testing when 
 			  * new features are added in future. Thanks !
-			  * 
+			  */ 
 			 logger.log(vehicle, Level.INFO, 20_000, 
 					 "Scenario 2: Need to decelerate and reduce the speed from " 
 					 +  Math.round(uKPH * 10.0)/10.0 + KPH_
@@ -578,7 +593,7 @@
 					 + "target decel: " + Math.round(accelTarget * 100.0)/100.0 
 					 + " m/s2."			
 			 );
-			 */
+
 			 
 			 // Convert the energyNeeded energy from J to Wh
 			 double energyNeeded = iPower * secs / JOULES_PER_WH ; // [in Wh]
@@ -644,7 +659,8 @@
 		 // Determine new position
 		 vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTravelled)); 
 		 
-		 double totalEnergyUsed = (1.0 + vehicle.getVehicleSpec().getOtherEnergyUsagePercent() / 100) * (overallEnergyUsed + regenEnergyBuffer);
+		 double totalEnergyUsed = (0.1 + vehicle.getVehicleSpec().getOtherEnergyUsagePercent() / 100) 
+				 * (overallEnergyUsed + regenEnergyBuffer);
 
 		/*
 		 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 

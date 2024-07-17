@@ -80,20 +80,20 @@ public class DriveGroundVehicle extends OperateVehicle {
 	public DriveGroundVehicle(Worker driver, GroundVehicle vehicle, Coordinates destination, MarsTime startTripTime,
 			double startTripDistance, TaskPhase startingPhase) {
 
-		// Use OperateVehicle constructor
+		// Note: OperateVehicle constructor should have set the phase to MOBILIZE
 		super(NAME, driver, vehicle, destination, startTripTime, startTripDistance, (100D + RandomUtil.getRandomDouble(-20D, 20D)));
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$
 		
+		if (getPhase() == null) {
+			logger.log(driver, Level.INFO, 4_000, "Starting phase is null.");
+		}
+		
 		if (startingPhase != null) {
 			setPhase(startingPhase);
-
-			logger.log(driver, Level.INFO, 4_000, "Took the wheel of rover at the starting phase of '"
+			logger.log(driver, Level.INFO, 4_000, "Took the wheel of rover at phase '"
 					+ startingPhase + "'.");
-		}
-		else {
-			logger.log(driver, Level.INFO, 4_000, "Starting phase is null.");
 		}
 	}
 
@@ -110,7 +110,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 		time = super.performMappedPhase(time);
 
 		if (getPhase() == null) {
-    	    logger.info(worker, "No longer piloting " + getVehicle() + ".");
+    	    logger.info(worker, "Phase is null. No longer driving " + getVehicle() + ".");
 			// If it called endTask() in OperateVehicle, then Task is no longer available
 			// WARNING: do NOT call endTask() here or 
     	    // it will end up calling endTask() again recursively.
@@ -126,14 +126,16 @@ public class DriveGroundVehicle extends OperateVehicle {
 	}
 
 	/**
-	 * Moves the vehicle in its direction at its speed for the amount of time given.
-	 * Stop if reached destination.
+	 * Checks for the speed of the vehicle to determine if a new phase is warranted. 
+	 * Calls OperateVehicle's mobilizeVehicle() to propel the vehicle in its direction 
+	 * at its speed for the amount of time given.
 	 * 
 	 * @param time the amount of time (ms) to drive.
 	 * @return the amount of time (ms) left over after driving (if any)
 	 */
 	@Override
 	protected double mobilizeVehicle(double time) {
+			
 		// If vehicle is stuck, try winching.
 		if (((GroundVehicle) getVehicle()).isStuck() && (!WINCH_VEHICLE.equals(getPhase()))) {
 			setPhase(WINCH_VEHICLE);
@@ -171,9 +173,11 @@ public class DriveGroundVehicle extends OperateVehicle {
 			vehicle.setDirection(destinationDirection);
 			// Update vehicle elevation.
 			updateVehicleElevationAltitude();
-			
+			// Leave this phase and go to MOBILIZE phase
 			setPhase(OperateVehicle.MOBILIZE);
+			
 			sideDirection = NONE;
+			
 			return time;
 		}
 
@@ -182,8 +186,11 @@ public class DriveGroundVehicle extends OperateVehicle {
 
 		// If an obstacle avoidance direction could not be found, winch vehicle.
 		if (travelDirection == null) {
+			// Leave this phase and go to WINCH_VEHICLE phase
 			setPhase(WINCH_VEHICLE);
+			
 			sideDirection = NONE;
+			
 			return time;
 		}
 
@@ -237,15 +244,18 @@ public class DriveGroundVehicle extends OperateVehicle {
 		// Update vehicle elevation.
 		updateVehicleElevationAltitude();
 
-		// If speed given the terrain would be better than 1kph, return to normal
+		// If speed given the terrain would be better than LOW_SPEED, return to normal
 		// driving.
 		// Otherwise, set speed to LOW_SPEED for winching speed.
 		if (testSpeed(vehicle.getDirection()) > LOW_SPEED) {
+			// Leave this phase and go to MOBILIZE phase
 			setPhase(OperateVehicle.MOBILIZE);
+			
 			vehicle.setStuck(false);
+			
 			return remainingTime;
 		} else
-			vehicle.setSpeed(.2D);
+			vehicle.setSpeed(LOW_SPEED/2);
 
 		// Drive in the direction
 		double timeUsed = time - mobilizeVehicle(time);
@@ -325,7 +335,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 	}
 
 	/**
-	 * Check if vehicle has had an accident.
+	 * Check if vehicle has an accident.
 	 * 
 	 * @param time the amount of time vehicle is driven (millisols)
 	 */

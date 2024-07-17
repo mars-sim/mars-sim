@@ -127,7 +127,7 @@ public class Mining extends EVAMission
 				}
 				miningSite.setReserved(true);
 
-				addNavpoint(miningSite.getLocation(), "mining site");
+				addNavpoint(miningSite.getLocation(), "a mining site");
 				
 				setupDetectedMinerals();
 			}
@@ -176,7 +176,7 @@ public class Mining extends EVAMission
 		addMembers(members, false);
 
 		// Add mining site nav point.
-		addNavpoint(miningSite.getLocation(), "mining site");
+		addNavpoint(miningSite.getLocation(), "a mining site");
 
 		setupDetectedMinerals();
 		

@@ -52,9 +52,10 @@ public class CollectMinedMinerals extends EVAOperation {
 	// Data members
 	private Rover rover; // Rover used.
 	protected AmountResource mineralType;
-
+	private Mining mining;
+	
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param person      the person performing the task.
 	 * @param rover       the rover used for the EVA operation.
@@ -64,6 +65,13 @@ public class CollectMinedMinerals extends EVAOperation {
 
 		// Use EVAOperation parent constructor.
 		super(NAME, person, LABOR_TIME + RandomUtil.getRandomDouble(-5, 5), COLLECT_MINERALS);
+		
+		mining = (Mining) worker.getMission();
+		if (mining == null) {
+			logger.log(person, Level.WARNING, 0, "No mining mission assigned.");
+			endTask();
+		}
+		
 		setMinimumSunlight(MineSite.LIGHT_LEVEL);
 	       
 		// Initialize data members.
@@ -140,10 +148,14 @@ public class CollectMinedMinerals extends EVAOperation {
 		if (checkReadiness(time) > 0) {
 			return time;
 		}
-		
-		Mining mining = (Mining) worker.getMission();
 
-		if (mining.getMiningSite().isEmpty()) {
+		if (mining == null) {
+			logger.log(person, Level.WARNING, 0, "No mining mission assigned.");
+			endTask();
+			return time;
+		}
+		
+		if (mining != null && mining.getMiningSite().isEmpty()) {
 			checkLocation("No more minerals to mine.");
 			return time;
 		}

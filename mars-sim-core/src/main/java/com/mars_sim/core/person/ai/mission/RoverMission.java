@@ -863,7 +863,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			if (person.isSuperUnfit()) {
 				
 				if (areAllOthersUnfit) {
-					logger.warning(person, 10_000L, "As every is unfit to operate " + getRover() + ", " 
+					logger.warning(person, 10_000L, "As everyone is unfit to operate " + getRover() + ", " 
 						+ person + " decided to step up to be the pilot.");
 				} else {
 					logger.warning(person, 10_000L, "Super unfit to operate " + getRover() + ".");
@@ -873,7 +873,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			
 			Vehicle v = (Vehicle)getRover();
 			
-			if (!v.haveStatusType(StatusType.OUT_OF_FUEL)) {
+			if (!v.haveStatusType(StatusType.OUT_OF_FUEL)
+					&& !v.haveStatusType(StatusType.OUT_OF_BATTERY_POWER)) {
 				if (lastOperateVehicleTaskPhase != null) {
 					result = new DriveGroundVehicle(person, getRover(), getNextNavpoint().getLocation(),
 							getCurrentLegStartingTime(), getCurrentLegDistance(), lastOperateVehicleTaskPhase);
@@ -884,7 +885,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 
 			else {
-				logger.warning(getRover(), 10_000L, "Out of fuel. Quit assigning the driving task.");
+				logger.warning(getRover(), 10_000L, "Out of fuel/battery power. Quit assigning the driving task.");
 				return null;
 			}
 		}

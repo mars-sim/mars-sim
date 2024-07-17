@@ -24,6 +24,7 @@ public enum StatusType {
 	TOWED 					(Msg.getString("StatusType.towed"), false), //$NON-NLS-1$	
 	TOWING 					(Msg.getString("StatusType.towing"), false), //$NON-NLS-1$	
 	OUT_OF_FUEL 			(Msg.getString("StatusType.outOfFuel"),false), //$NON-NLS-1$
+	OUT_OF_OXIDIZER 		(Msg.getString("StatusType.outOfOxidizer"),false), //$NON-NLS-1$
 	OUT_OF_BATTERY_POWER	(Msg.getString("StatusType.outOfBatteryPower"),false) //$NON-NLS-1$
 	;
 	
