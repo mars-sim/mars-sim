@@ -86,6 +86,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private JLabel activitySpot;
 	private JLabel iceLabel;
 	private JLabel regolithLabel;
+	private JLabel areothermalLabel;
+	
 	
 	private JButton locatorButton;
 
@@ -245,6 +247,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 			iceLabel = containerPanel.addRow("Ice Score", "");
 			regolithLabel = containerPanel.addRow("Regolith Score", "");
+			areothermalLabel = containerPanel.addRow("Areothermal Score", "");
 		}
 
 		update();
@@ -745,6 +748,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		else {
 			iceLabel.setText(Math.round(((Settlement)unit).getIceCollectionRate() * 100.0)/100.0 + "");
 			regolithLabel.setText(Math.round(((Settlement)unit).getRegolithCollectionRate() * 100.0)/100.0 + "");
+			areothermalLabel.setText(Math.round(((Settlement)unit).getAreothermalPotential() * 100.0)/100.0 + " %");
 		}
 	}
 	

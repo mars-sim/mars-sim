@@ -231,9 +231,11 @@ public class Settlement extends Structure implements Temporal,
 	/** The background map image id used by this settlement. */
 	private int mapImageID;
 	
-	/** The average regolith collection rate nearby. */
+	/** The average areothermal potential at this location. */
+	private double areothermalPotential = 0;
+	/** The average regolith collection rate at this location. */
 	private double regolithCollectionRate = RandomUtil.getRandomDouble(4, 8);
-	/** The average ice collection rate of the water ice nearby. */
+	/** The average collection rate of the water ice at this location. */
 	private double iceCollectionRate = RandomUtil.getRandomDouble(0.2, 1);
 	/** The rate [kg per millisol] of filtering grey water for irrigating the crop. */
 	private double greyWaterFilteringRate = 1;
@@ -477,9 +479,9 @@ public class Settlement extends Structure implements Temporal,
 		// Create local mineral locations
 		surfaceFeatures.getMineralMap().createLocalConcentration(location);
 		
-		double areoThermalPot = surfaceFeatures.getAreothermalPotential(location);
+		areothermalPotential = surfaceFeatures.getAreothermalPotential(location);
 		
-		logger.config(this, "Areothermal Potential: " + Math.round(areoThermalPot * 1000.0)/1000.0);
+		logger.config(this, "Areothermal Potential: " + Math.round(areothermalPotential * 100.0)/100.0 + " %");
 		
 		final double GEN_MAX = 1_000_000;
 		// Create EquipmentInventory instance
@@ -3193,6 +3195,16 @@ public class Settlement extends Structure implements Temporal,
     	return regolithCollectionRate;
     }
 
+    /**
+	 * Returns the areothermal potential in the vicinity of this settlement.
+     * 
+     * @return
+     */
+    public double getAreothermalPotential() {
+    	return areothermalPotential;
+    }
+    
+    
 	/**
 	 * Removes the record of the deceased person from airlock.
 	 *

@@ -198,9 +198,10 @@ public class CollectResources extends EVAOperation {
      * @return a container
      */
     private Container collectContainer() {
-    	// Note: should take a container before leaving the airlock
-    	// Note: also consider dropping off the resource in a shed
-    	// or a shed outside of the workshop/landerhab for processing
+    	/*
+    	 * Do NOT delete. For debugging
+    	 * Note: alternative method for getting a container
+    	 */
         Container container = person.findContainer(containerType, false, resourceType);
         if (container == null) {
         	// Doesn't have a container
@@ -379,13 +380,18 @@ public class CollectResources extends EVAOperation {
 			// Checks if available container with remaining capacity for resource.
 			Container container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
 			// Transfer that container from rover to person
-			boolean containerAvailable = container.transfer(person);
-
-			// Check if container and full EVA suit can be carried by person or is too
-			// heavy.
+			boolean containerAvailable = false;
 			double carryMass = 0D;
+			
 			if (container != null) {
-				carryMass += container.getBaseMass() + container.getStoredMass();
+				container.transfer(person);
+				// Check if container and full EVA suit can be carried by person 
+				// or is too heavy.
+				if (container != null) {
+					carryMass += container.getBaseMass() + container.getStoredMass();
+				}
+			} else {
+				logger.warning(person, 5000, "No " + containerType.getName() + " available.");
 			}
 
 			EVASuit suit = EVASuitUtil.findRegisteredOrGoodEVASuit(person);
@@ -414,8 +420,10 @@ public class CollectResources extends EVAOperation {
 
 		// This is the end of the Task so must return 
 		Container container = person.findContainer(containerType, false, resourceType);
-		if (container == null)
+		if (container == null) {
+			logger.info(person, "Could find any " + containerType.getName() + ".");
 			return;
+		}
 
 		// Transfer the container back to the settlement
 		boolean success = container.transfer(rover);
