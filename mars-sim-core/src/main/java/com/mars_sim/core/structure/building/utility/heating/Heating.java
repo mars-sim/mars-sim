@@ -170,7 +170,7 @@ public class Heating implements Serializable {
 	/** The factor for crop with High Pressure Sodium lamp. */
 	private double LAMP_GAIN_FACTOR = Crop.LOSS_FACTOR_HPS;
 	/** The cache heat required for heating. */
-	private double heatReqCache;
+	private double reqHeatCache;
 	/** The cache heat generated for heating. */
 	private double heatGenCache;
 	/** The initial net heat gain/loss due to thermal system. */
@@ -404,11 +404,11 @@ public class Heating implements Serializable {
 		error = checkError("diffHeatGainLoss", diffHeatGainLoss) || error;
 		
 		if (diffHeatGainLoss > 30) {
-			logger.warning(building, 20_000, "diffHeatGainLoss: " + diffHeatGainLoss + " > 20.");
+			logger.warning(building, 20_000, "diffHeatGainLoss: " + diffHeatGainLoss + " > 30.");
 			error = true;
 		}
 		else if (diffHeatGainLoss < -30) {
-			logger.warning(building, 20_000, "diffHeatGainLoss: " + diffHeatGainLoss + " < -20.");
+			logger.warning(building, 20_000, "diffHeatGainLoss: " + diffHeatGainLoss + " < -30.");
 			error = true;
 		}
 		
@@ -581,36 +581,42 @@ public class Heating implements Serializable {
 
 		double seconds = millisols * timeSlice;
 		
-		double upperBound = Math.min(100_000, seconds);
-		double lowerBound = Math.max(0.001, upperBound);
+//		double bound = Math.max(0.000_001, Math.min(100_000, 1000.0 / seconds));
+		double factor = deltaHeatJ * 1000.0 / seconds; 
 		
-		double reqHeat = deltaHeatJ / 1000 / lowerBound;
+		// 1 Wh = 3.6 kJ
+		// 1 kWh = 3.6 MJ
 		
-		if (reqHeat > 40) {
-			logger.warning(building, 20_000, "reqHeat: " + Math.round(reqHeat * 100.0)/100.0 + " > 40.");
+		// 1 W = J / s
+		// 1 kW = kJ / s
+		
+//		double estReqHeat = deltaHeatJ * bound;
+		double estReqHeat = Math.max(-40, Math.min(40, factor));
+		
+		if (estReqHeat > 40) {
+			logger.warning(building, 20_000, "estReqHeat: " + Math.round(estReqHeat * 100.0)/100.0 + " > 40.");
 			error = true;
 		}
 		
-		else if (reqHeat < -40) {
-			logger.warning(building, 20_000, "reqHeat: " + Math.round(reqHeat * 100.0)/100.0 + " < -40.");
+		else if (estReqHeat < -40) {
+			logger.warning(building, 20_000, "estReqHeat: " + Math.round(estReqHeat * 100.0)/100.0 + " < -40.");
 			error = true;
 		}
 		
 		if (error) {
 			logger.info(building, 20_000,
-				"reqHeat: " + Math.round(reqHeat * 100.0)/100.0
+				"estReqHeat: " + Math.round(estReqHeat * 100.0)/100.0
 				+ "  millisols: " + Math.round(millisols * 1000.0)/1000.0
 				+ "  entropyChange: " + Math.round(entropyChange * 100.0)/100.0 + " J/K"
 				+ "  deltaHeatJ: " + Math.round(deltaHeatJ * 10.0)/10.0 + " J"
 				+ "  logTs: " + Math.round(logTs * 10000.0)/10000.0
 				+ "  nR: " + Math.round(nR * 10.0)/10.0
-				+ "  upperBound: " + Math.round(upperBound * 10.0)/10.0 + " s"
-				+ "  lowerBound: " + Math.round(lowerBound * 10.0)/10.0 + " s"
+				+ "  factor: " + Math.round(factor * 1000.0)/1000.0 + " /s"
 				+ "  numMoles: " + Math.round(numMoles * 10.0)/10.0
 				);
 		}
 		
-		return reqHeat;
+		return estReqHeat;
 	}
 	
     /**
@@ -1203,10 +1209,10 @@ public class Heating implements Serializable {
 //		e.g. dt = netHeat * convFactor;
 //		e.g. netHeat = dt / convFactor;
 		
-		double upperBound = Math.min(3, deltaTime / convFactor);
+		double bound = Math.max(-3, Math.min(3, deltaTime / convFactor));
 		
 		// Calculate the new heat kW required to raise the temperature back to the preset level
-		double reqkW = devT * upperBound;
+		double reqkW = devT * bound;
 		// Note that multiplying by deltaTime is not mathematically sound but results in better reqkW
 		
 		double reqHeat = estimateRequiredHeat(deltaTime);
@@ -1214,16 +1220,35 @@ public class Heating implements Serializable {
 //		logger.info(building, 20_000, "reqkW0: " + Math.round(reqkW * 100.0)/100.0
 //				+ "  reqHeat: " + Math.round(reqHeat * 100.0)/100.0);
 //
+		double selectedReqHeat = 0;
 		
-		error = checkError("reqHeat", reqHeat) || error ;
+		if (reqHeat > 0) {
+			if (reqHeat > reqkW) {
+				selectedReqHeat = reqkW;
+			}
+			else {
+				selectedReqHeat = reqHeat;
+			}
+		}
+		else if (reqHeat < 0) {
+			if (reqHeat < reqkW) {
+				selectedReqHeat = reqkW;
+			}
+			else {
+				selectedReqHeat = reqHeat;
+			}
+		}
+
+		
+		error = checkError("selectedReqHeat", selectedReqHeat) || error ;
 		
 		// Sets the heat required for this cycle
-		setHeatRequired(reqHeat);
+		setHeatRequired(selectedReqHeat);
 		
 		// Step 5 : CALCULATE VENT HEAT USING VENTILATION
 
 		// Find ventHeat in kW
-		double ventHeat = calculateVentHeat(-reqHeat, newT, deltaTime); 
+		double ventHeat = calculateVentHeat(-selectedReqHeat, newT, deltaTime); 
 		// Set the outgoing heat leaving this building
 		setVentOutHeat(ventHeat);
 	
@@ -1236,7 +1261,7 @@ public class Heating implements Serializable {
 		// to come in and raise the building temperature
 		if (ventHeat > 0) {
 			// if the energy to be moved is positive, dump hotter air to adjacent buildings
-			reqHeat = reqHeat - ventHeat;  
+			selectedReqHeat = selectedReqHeat - ventHeat;  
 			
 			if (ventHeat > 20) {
 				logger.warning(building, 20_000, "ventHeat: " + Math.round(ventHeat * 100.0)/100.0 + " > 20.");
@@ -1247,7 +1272,7 @@ public class Heating implements Serializable {
 		// to come in and lower the building temperature
 		else if (ventHeat < 0) {
 			// if the energy to be moved is negative, suck hotter air from adjacent buildings
-			reqHeat = reqHeat - ventHeat; 
+			selectedReqHeat = selectedReqHeat - ventHeat; 
 			
 			if (ventHeat < -20) {
 				logger.warning(building, 20_000, "ventHeat: " + Math.round(ventHeat * 100.0)/100.0 + " < -20.");
@@ -1258,18 +1283,24 @@ public class Heating implements Serializable {
 		/**
 		 * Do NOT delete. For future Debugging.
 		 */
-		if (error) {
+		if (error || selectedReqHeat > 50 || selectedReqHeat < -50) {
 			logger.warning(building, 20_000, 
-					" oldT: " + Math.round(oldT * 100.0)/100.0
+					"oldT: " + Math.round(oldT * 100.0)/100.0
 					+ "  newT: " + Math.round(newT * 100.0)/100.0		
-					+ "  dt: " + Math.round(dt * 100.0)/100.0
-					+ "  devT: " + Math.round(devT * 100.0)/100.0
+
+					+ "  selectedReqHeat: " + Math.round(selectedReqHeat * 1000.0)/1000.0
 					+ "  reqHeat: " + Math.round(reqHeat * 1000.0)/1000.0
 					+ "  reqkW: " + Math.round(reqkW * 1000.0)/1000.0
+					
+					+ "  convFactor: " + Math.round(convFactor * 1000.0)/1000.0
+					+ "  deltaTime: " + Math.round(deltaTime * 100.0)/100.0
+					+ "  bound: " + Math.round(bound * 100.0)/100.0
+					+ "  devT: " + Math.round(devT * 100.0)/100.0
+					+ "  dt: " + Math.round(dt * 100.0)/100.0
+
 					+ "  preNetHeat: " + Math.round(preNetHeatCache * 1000.0)/1000.0	
 					+ "  postNetHeat: " + Math.round(postNetHeatCache * 100.0)/100.0
 					+ "  ventHeat: " + Math.round(ventHeat * 1000.0)/1000.0	
-					+ "  convFactor: " + Math.round(convFactor * 1000.0)/1000.0
 					);
 		}
 	}
@@ -1681,7 +1712,7 @@ public class Heating implements Serializable {
 	 * @return heat in kW.
 	 */
 	public double getHeatRequired()  {
-		return heatReqCache;
+		return reqHeatCache;
 	}
 
 	/**
@@ -1764,7 +1795,7 @@ public class Heating implements Serializable {
 	 * @param heat in kW.
 	 */
 	public void setHeatRequired(double heat)  {
-		heatReqCache = heat;
+		reqHeatCache = heat;
 		building.fireUnitUpdate(UnitEventType.REQUIRED_HEAT_EVENT);
 	}
 	

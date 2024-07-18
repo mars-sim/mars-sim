@@ -566,7 +566,7 @@ public class ThermalGeneration extends Function {
 			double heat[] = calculateHeatGen(0, millisols);	
 			heatGen = heat[0];
 			remainHeatReq = heat[1];
-			
+		
 			if (heatGen > 40 || heatReq > 40 || heatReq < -40) {
 				logger.warning(building, 1_000L , "1. heatGen: " 
 						+ Math.round(heatGen * 1000.0)/1000.0
@@ -588,12 +588,12 @@ public class ThermalGeneration extends Function {
 			remainHeatReq = heat[1];
 			
 			if (remainHeatReq > 0.05) {
-				logger.warning(building, 10_000L , "Unmet remaining heat req: " 
+				logger.warning(building, 10_000L , "2. Unmet remaining heat req: " 
 						+ Math.round(remainHeatReq) + " kW.");
 			}
 			
 			if (heatGen > 40 || heatReq > 40 || heatReq < -40) {
-				logger.warning(building, 1_000L , "1. heatGen: " 
+				logger.warning(building, 1_000L , "3. heatGen: " 
 						+ Math.round(heatGen * 1000.0)/1000.0
 						+ "  T: " + Math.round(building.getCurrentTemperature() * 10.0)/10.0
 						+ "  time: " + Math.round(millisols * 1000.0)/1000.0
