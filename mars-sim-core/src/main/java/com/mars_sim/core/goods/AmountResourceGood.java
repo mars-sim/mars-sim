@@ -1595,10 +1595,9 @@ class AmountResourceGood extends Good {
 		double demand = 0;
 		int resource = getID();
 		// This averaging method make all regolith types to be placed at similar demand
-		if ((resource == ResourceUtil.regolithID)
-			|| (resource == ResourceUtil.regolithBID)
-			|| (resource ==  ResourceUtil.regolithCID)
-			|| (resource ==  ResourceUtil.regolithDID)) {
+		if (resource == ResourceUtil.regolithBID
+			|| resource ==  ResourceUtil.regolithCID
+			|| resource ==  ResourceUtil.regolithDID) {
 
 			double sand = owner.getDemandValueWithID(ResourceUtil.sandID);
 			double concrete = owner.getDemandValueWithID(ResourceUtil.concreteID);
@@ -1613,7 +1612,7 @@ class AmountResourceGood extends Good {
 			double averageRegolith = (regolith + regolithB + regolithC + regolithD) / 4.0;
 			
 			// Limit the minimum value of regolith projected demand
-			demand = .1 * (cement + concrete + 4 * targetRegolith + 2 * sand + 2 * averageRegolith) 
+			demand = (cement + concrete + 4 * targetRegolith + 2 * sand + 4 * averageRegolith) 
 					* REGOLITH_TYPE_VALUE_MODIFIER;
 		}
 

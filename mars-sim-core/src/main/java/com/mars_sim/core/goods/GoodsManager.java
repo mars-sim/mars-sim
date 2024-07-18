@@ -839,12 +839,13 @@ public class GoodsManager implements Serializable {
 			logger.info(settlement, 60_000L,
 					gasName + " - " 
 					+ "Old demand: " + Math.round(demand * 100.0)/100.0 
+					+ "  New Demand: " + Math.round((demand + delta) * 100.0)/100.0 
 					+ "  Supply: " + Math.round(supply * 100.0)/100.0 
 					+ "  Stored: " + Math.round(stored * 100.0)/100.0
 					+ "  reserve: " + Math.round(reservePerPop * 100.0)/100.0
 					+ "  lacking: " + Math.round(lacking * 100.0)/100.0		
 					+ "  Delta: " + Math.round(delta * 100.0)/100.0
-					+ "  New Demand: " + Math.round((demand + delta) * 100.0)/100.0 + ".");
+					+ ".");
 			
 			// Inject a sudden change of demand
 			setDemandValue(GoodsUtil.getGood(resourceID), (demand + delta));
