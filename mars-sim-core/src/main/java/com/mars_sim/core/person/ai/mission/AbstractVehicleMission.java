@@ -1613,7 +1613,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		
 		return null;
 	}
-
+	
 	/**
 	 * Gets the current navpoint the mission is stopped at.
 	 * 

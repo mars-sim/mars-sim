@@ -158,6 +158,9 @@ public abstract class EVAOperation extends Task {
 
 	/**
 	 * Helper method to create an impact specific for a TaskPhase.
+	 * 
+	 * @param extraSkills
+	 * @return
 	 */
 	protected static ExperienceImpact createPhaseImpact(SkillType... extraSkills) {
 		Set<SkillWeight> skills = ExperienceImpact.toSkillWeights(extraSkills);
@@ -168,6 +171,10 @@ public abstract class EVAOperation extends Task {
 	
 	/**
 	 * Helper method to create an impact specific for a TaskPhase.
+	 * 
+	 * @param effort
+	 * @param extraSkills
+	 * @return
 	 */
 	protected static ExperienceImpact createPhaseImpact(PhysicalEffort effort, SkillType... extraSkills) {
 		Set<SkillWeight> skills = ExperienceImpact.toSkillWeights(extraSkills);

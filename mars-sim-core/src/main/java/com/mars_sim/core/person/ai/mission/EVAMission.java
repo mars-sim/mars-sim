@@ -221,7 +221,7 @@ abstract class EVAMission extends RoverMission {
 			// Anyone in the crew or a single person at the home settlement has a dangerous
 			// illness, end phase.
 			if (activeEVA && hasEmergency()) {
-				logger.info(getVehicle(), "Had emergency.");
+				logger.info(getVehicle(), "Medical emergency.");
 				activeEVA = false;
 			}
 
@@ -236,13 +236,13 @@ abstract class EVAMission extends RoverMission {
 				// performEVA will check if rover capacity is full
 				activeEVA = performEVA((Person) member);
 				if (!activeEVA) {
-					logger.info(getVehicle(), "EVA operation halted.");
-					addMissionLog("EVA operation halted.");
+					logger.info((Person) member, "EVA operation Terminated.");
+					addMissionLog("EVA operation Terminated.");
 				}
 			}
 		} 
 
-		// EVA is no longer active, end EVA phase
+		// An EVA-ending event was triggered. End EVA phase.
 		if (!activeEVA) {
 			// Report any "teleported" members
 			checkTeleported();

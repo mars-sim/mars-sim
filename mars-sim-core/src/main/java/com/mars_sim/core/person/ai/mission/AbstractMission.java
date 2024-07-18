@@ -550,7 +550,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Time that the current phases started
+	 * Gets the time that the current phases started.
 	 */
 	@Override
 	public MarsTime getPhaseStartTime() {

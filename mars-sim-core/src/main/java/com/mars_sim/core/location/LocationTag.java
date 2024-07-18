@@ -183,7 +183,7 @@ public class LocationTag implements LocationState, Serializable {
 				return e.getSettlement().getName();
 			
 			if (LocationStateType.INSIDE_VEHICLE == e.getLocationStateType())
-				return r.getVehicle().getName();
+				return e.getVehicle().getName();
 			
 			if (LocationStateType.ON_PERSON_OR_ROBOT == e.getLocationStateType())
 				return e.getContainerUnit().getLocationTag().getImmediateLocation();

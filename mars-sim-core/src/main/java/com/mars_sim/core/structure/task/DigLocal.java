@@ -284,9 +284,9 @@ public abstract class DigLocal extends EVAOperation {
      * @throws Exception
      */
     private double collectResource(double time) {
-    	// Get a container
+    	// Check container
         Container container = person.findContainer(containerType, false, resourceID);
-       
+		
 		if (checkReadiness(time) > 0) {
 			if (!((Equipment)container).isEmpty(false)) {
 				// Has resources in container

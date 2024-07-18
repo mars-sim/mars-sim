@@ -569,15 +569,16 @@
 			 }
 		 }
 		 
-		 else {
-				// Scenario 2: deceleration is needed
+		 else if (accelMotor == 0D) {
+			// accelMotor < 0
+			 // Scenario 2: deceleration is needed
 			 
 			 // Gets the deceleration using regenerative braking
-			 double accelRegen = accelMotor;
+			 double regenDecel = 0;
 			 // Set new vehicle acceleration
-			 vehicle.setAccel(accelRegen);
+			 vehicle.setAccel(0);
 			 
-			 double iPower = - accelRegen * mass * vMS; // (vMS + uMS)/2.0; // [in W]
+			 double iPower = 0; // (vMS + uMS)/2.0; // [in W]
 				
 			 /*
 			  * NOTE: May comment off the logging codes below once debugging is done.
@@ -585,12 +586,39 @@
 			  * new features are added in future. Thanks !
 			  */ 
 			 logger.log(vehicle, Level.INFO, 20_000, 
-					 "Scenario 2: Need to decelerate and reduce the speed from " 
-					 +  Math.round(uKPH * 10.0)/10.0 + KPH_
-					 + "to " + Math.round(vKPH * 10.0)/10.0 + KPH_
-					 + "regen decel: " + Math.round(accelRegen * 100.0)/100.0 
+					 "Scenario 2a: No change of speed. uKPH: " 
+					 +  Math.round(uKPH * 100.0)/100.0 + KPH_
+					 + "vKPH: " + Math.round(vKPH * 100.0)/100.0 + KPH_
+					 + "regen decel: " + Math.round(regenDecel * 100.0)/100.0 
 					 + " m/s2.  "
-					 + "target decel: " + Math.round(accelTarget * 100.0)/100.0 
+					 + "target accel: " + Math.round(accelTarget * 100.0)/100.0 
+					 + " m/s2."			
+			 );
+		 }
+		 
+		 else { 
+			 // accelMotor < 0
+			 // Scenario 2: deceleration is needed
+			 
+			 // Gets the deceleration using regenerative braking
+			 double regenDecel = accelMotor;
+			 // Set new vehicle acceleration
+			 vehicle.setAccel(regenDecel);
+			 
+			 double iPower = - regenDecel * mass * vMS; // (vMS + uMS)/2.0; // [in W]
+				
+			 /*
+			  * NOTE: May comment off the logging codes below once debugging is done.
+			  * But DO NOT delete any of them. Needed for testing when 
+			  * new features are added in future. Thanks !
+			  */ 
+			 logger.log(vehicle, Level.INFO, 20_000, 
+					 "Scenario 2b: Decelerate and reduce the speed from " 
+					 +  Math.round(uKPH * 100.0)/100.0 + KPH
+					 + "to " + Math.round(vKPH * 100.0)/100.0 + KPH_
+					 + "regen decel: " + Math.round(regenDecel * 100.0)/100.0 
+					 + " m/s2.  "
+					 + "target accel: " + Math.round(accelTarget * 100.0)/100.0 
 					 + " m/s2."			
 			 );
 

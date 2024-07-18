@@ -66,6 +66,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private boolean isVehicle;
 	private boolean isPerson;
 	private boolean isRobot;
+	private boolean isEquipment;
 
 	private String themeCache = "";
 	private String locationStringCache;
@@ -117,6 +118,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		isVehicle = unit instanceof Vehicle;
 		isPerson = unit instanceof Person;
 		isRobot = unit instanceof Robot;
+		isEquipment = unit instanceof Equipment;
 
 		locationStringCache = unit.getLocationTag().getExtendedLocation();
 	}
@@ -225,6 +227,18 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			vicinityLabel = containerPanel.addRow("Vicinity", "");
 		}
 		
+		else if (isEquipment) {
+			
+			AttributePanel containerPanel = new AttributePanel(5);
+			dataPanel.add(containerPanel, BorderLayout.NORTH);	
+				
+			settlementLabel = containerPanel.addRow("Settlement", "");
+			containerLabel = containerPanel.addRow("Container Unit", "");
+			buildingLabel = containerPanel.addRow("Building", "");
+			locationStateLabel = containerPanel.addRow("Location State", "");
+			vicinityLabel = containerPanel.addRow("Vicinity", "");
+		}
+		
 		else if (isSettlement) {
 			AttributePanel containerPanel = new AttributePanel(3);
 			dataPanel.add(containerPanel, BorderLayout.NORTH);
@@ -246,7 +260,11 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		
 		if (!isSettlement) {
 			updateLocationElevation(unit);
-			updateActivitySpot(unit);
+			
+			if (!isEquipment) {
+				updateActivitySpot(unit);
+			}
+			
 			updateBanner(unit);
 		}
 		
@@ -657,7 +675,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private void updateLabels(Unit unit) {
 		// Update labels as necessary
 		
-		if (isPerson || isRobot || isVehicle) {
+		if (!isSettlement) {
 			Unit container = unit.getContainerUnit();
 			if ((containerCache == null) || !containerCache.equals(container)) {
 				containerCache = container;
@@ -724,7 +742,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			}
 		}
 		
-		else if (isSettlement) {
+		else {
 			iceLabel.setText(Math.round(((Settlement)unit).getIceCollectionRate() * 100.0)/100.0 + "");
 			regolithLabel.setText(Math.round(((Settlement)unit).getRegolithCollectionRate() * 100.0)/100.0 + "");
 		}

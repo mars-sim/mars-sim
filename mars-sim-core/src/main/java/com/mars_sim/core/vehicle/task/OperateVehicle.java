@@ -165,7 +165,7 @@ public abstract class OperateVehicle extends Task {
     @Override
     protected double performMappedPhase(double time) {
     	if (getPhase() == null) {
-    	    logger.warning(worker, "No longer piloting " + getVehicle() + ".");
+    	    logger.warning(worker, 20_000, "No longer piloting " + getVehicle() + ".");
     	    return time;
     	}
     	else if (MOBILIZE.equals(getPhase())) {
@@ -330,7 +330,7 @@ public abstract class OperateVehicle extends Task {
         }
         
 		if (time < 0) {
-			logger.severe(vehicle, "Negative time: " + time);
+			logger.severe(vehicle, 20_000, "Negative time: " + time);
         	return 0;
 		}
        	  
@@ -351,12 +351,12 @@ public abstract class OperateVehicle extends Task {
         	remainingFuel = vehicle.getAmountResourceStored(fuelTypeID);
 	
 	    	if (remainingFuel < LEAST_AMOUNT) {
-	    		logger.log(vehicle, Level.SEVERE, 20_000L, 
+	    		logger.log(vehicle, Level.SEVERE, 20_000, 
 						"Case 0a1: Out of fuel.");
 				vehicle.addSecondaryStatus(StatusType.OUT_OF_FUEL);
 				
 		    	if (batteryEnergy < LEAST_AMOUNT) {
-		    		logger.log(vehicle, Level.SEVERE, 20_000L, 
+		    		logger.log(vehicle, Level.SEVERE, 20_000, 
 							"Case 0a2: Out of fuel and out of battery power. Cannot drive.");
 		    		// Turn on emergency beacon
 			    	turnOnBeacon();
@@ -369,14 +369,14 @@ public abstract class OperateVehicle extends Task {
 	        remainingOxidizer = vehicle.getAmountResourceStored(ResourceUtil.oxygenID);
 	
 	    	if (remainingOxidizer < LEAST_AMOUNT * RATIO_OXIDIZER_FUEL) {
-	    		logger.log(vehicle, Level.SEVERE, 20_000L, 
+	    		logger.log(vehicle, Level.SEVERE, 20_000, 
 						"Case 0b1: Out of fuel oxidizer. Cannot drive.");
 	    		// Turn on emergency beacon
 		    	turnOnBeacon(ResourceUtil.oxygenID);
 				vehicle.addSecondaryStatus(StatusType.OUT_OF_OXIDIZER);
 	        	
 		    	if (batteryEnergy < LEAST_AMOUNT) {
-		    		logger.log(vehicle, Level.SEVERE, 20_000L, 
+		    		logger.log(vehicle, Level.SEVERE, 20_000, 
 							"Case 0b2: Out of fuel and out of battery power. Cannot drive.");
 		    		// Turn on emergency beacon
 			    	turnOnBeacon();
@@ -388,7 +388,7 @@ public abstract class OperateVehicle extends Task {
         }
         
         else if (batteryEnergy < LEAST_AMOUNT){
-        	logger.log(vehicle, Level.SEVERE, 20_000L, 
+        	logger.log(vehicle, Level.SEVERE, 20_000, 
 					"Case 0c: Out of battery. Cannot drive.");
     		// Turn on emergency beacon
 	    	turnOnBeacon();
@@ -403,7 +403,7 @@ public abstract class OperateVehicle extends Task {
 //        logger.log(vehicle, Level.SEVERE, 0, "dist2Dest: " + dist2Dest)
         
         if (Double.isNaN(dist2Dest)) {
-    		logger.log(vehicle, Level.SEVERE, 20_000L, 
+    		logger.log(vehicle, Level.SEVERE, 20_000, 
     				"Case 0d: Invalid distance.");
         	endTask();
         	return time;
@@ -414,7 +414,7 @@ public abstract class OperateVehicle extends Task {
         	
         // Case I: Just arrived
         if (dist2Dest <= ARRIVED_BUFFER) {
-        	logger.log(vehicle, Level.INFO,  20_000L, 
+        	logger.log(vehicle, Level.INFO, 20_000, 
         			"Case Ia: Arrived at " + getNavpointName()
         			+ " (dist: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + " km).");
         	
@@ -430,7 +430,7 @@ public abstract class OperateVehicle extends Task {
         }
         
         else if (dist2Dest <= ARRIVING_BUFFER) {
-        	logger.log(vehicle, Level.INFO,  20_000L, "Case Ib: Arriving soon at " + getNavpointName()
+        	logger.log(vehicle, Level.INFO,  20_000, "Case Ib: Arriving soon at " + getNavpointName()
         			+ " (dist: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + " km).");
 
         	double u = vehicle.getSpeed();
@@ -438,11 +438,11 @@ public abstract class OperateVehicle extends Task {
         	
         	double v = (vSlowest + u) / 2;
         	
-            logger.log(vehicle, Level.INFO, 0, 
-    				"u: " + u
-    				+ "  vSlowest: " + vSlowest
-    				+ "  v: " + v
-            		);
+//            logger.log(vehicle, Level.INFO, 20_000, 
+//    				"u: " + u
+//    				+ "  vSlowest: " + vSlowest
+//    				+ "  v: " + v
+//            		);
             
         	double remainingHrs = 0;
         	// Note: Need to consider the case in which VehicleMission's determineEmergencyDestination() causes the 
@@ -533,7 +533,7 @@ public abstract class OperateVehicle extends Task {
     			}
         	}	
     		
-          	logger.log(vehicle, Level.INFO, 0,  
+          	logger.log(vehicle, Level.INFO, 20_000,  
           		"Case II: Slowing down. Arrive soon at " + getNavpointName() 
 	       		+ ". dist2Dest: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + KM
 	       		+ "distanceToCover: " + Math.round(dist2Cover * 1_000.0)/1_000.0 + KM
@@ -558,7 +558,7 @@ public abstract class OperateVehicle extends Task {
         else {
         	// Case III: May speed up or slow down to get there, depending on terrain and sunlight
      	
-          	logger.log(vehicle, Level.INFO, 0,  
+          	logger.log(vehicle, Level.INFO, 20_000,  
           		"Case III: Proceeding to " + getNavpointName() 
 	       		+ ". dist2Dest: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + KM
 	       		+ "distanceToCover: " + Math.round(dist2Cover * 1_000.0)/1_000.0 + KM

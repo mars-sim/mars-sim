@@ -323,7 +323,8 @@ public class ConfigHelper {
     }
 
 	/**
-	 * Parse an XML Element to create an ExperienceImpact
+	 * Parses an XML Element to create an ExperienceImpact.
+	 * 
 	 * @param impactEl
 	 * @return
 	 */
@@ -356,9 +357,10 @@ public class ConfigHelper {
     }
 
 	/**
-	 * Parse an element that represent a Range object with a min and optional max value.
+	 * Parses an element that represent a Range object with a min and optional max value.
 	 * If the max vlaue is not specifd; then the min is used with a span modifier applied.
-	 * max equals min * defaultSpan
+	 * max equals min * defaultSpan.
+	 * 
 	 * @param element
 	 * @param defaultSpan
 	 * @return

@@ -243,12 +243,12 @@ public class ExperienceImpact implements Serializable {
 		  			int agility = p.getNaturalAttributeManager()
 							.getAttribute(NaturalAttributeType.AGILITY);
 		  			
-		  			double modifier = 1 + .25/skill 
+		  			double modifier = 1 +  
 		  					 + (400 - 1.5 * strength 
 		  							- 1.25 * endurance 
 		  							- 0.75 * agility
 		  							- 0.5 * resilience
-		  							) / 800D; 
+		  							) / 800D / skill * 1.5; 
 		  			
                 	energyTime = energyTime * modifier;
                 }

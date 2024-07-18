@@ -65,13 +65,13 @@ public abstract class CollectResourcesMission extends EVAMission
 	protected int resourceID;
 	/** The total site score of this prospective resource collection mission. */
 	private double totalSiteScore;
-	/** The starting amount of resources in a rover at a collection site. */
-	private double collectingStart;
 	/** The goal amount of resources to collect at a site (kg). */
 	private double siteResourceGoal;
 
-	/** The total amount (kg) of resources collected. */
-	private Map<Integer, Double> collected;
+	/** The cumulative amount (kg) of resources collected across multiple sites. */
+	private Map<Integer, Double> amountCollectedBySite;
+	/** The cumulative amount (kg) of resources collected across multiple sites. */
+	private Map<Integer, Double> cumulativeCollectedByID;
 	/** The type of container needed for the mission or null if none. */
 	private EquipmentType containerID;
 
@@ -114,8 +114,10 @@ public abstract class CollectResourcesMission extends EVAMission
 		}
 		
 		setResourceID(resourceID);
-		this.collected = new HashMap<>();
+		
+		this.cumulativeCollectedByID = new HashMap<>();
 		this.containerID = containerID;
+		
 		setEVAEquipment(containerID, containerNum);
 
 		// Recruit additional members to mission.
@@ -187,6 +189,9 @@ public abstract class CollectResourcesMission extends EVAMission
 		if (!isDone()) {
 			setInitialPhase(needsReview);
 		}
+		
+		// Initialize the map for tallying amount collected at each site
+		amountCollectedBySite = new HashMap<>();
 	}
 
 	/**
@@ -212,8 +217,10 @@ public abstract class CollectResourcesMission extends EVAMission
 		this.resourceID = resourceID;
 		double containerCap = ContainerUtil.getContainerCapacity(containerID);
 		this.siteResourceGoal = 2 * containerCap * containerNum / collectionSites.size();
-		this.collected = new HashMap<>();
+		
+		this.cumulativeCollectedByID = new HashMap<>();
 		this.containerID = containerID;
+		
 		setEVAEquipment(containerID, containerNum);
 		
 		// Set collection navpoints.
@@ -232,6 +239,9 @@ public abstract class CollectResourcesMission extends EVAMission
 		else {
 			setInitialPhase(false);
 		}
+		
+		// Initialize the map for tallying amount collected at each site
+		amountCollectedBySite = new HashMap<>();
 	}
 
 	/**
@@ -259,35 +269,108 @@ public abstract class CollectResourcesMission extends EVAMission
 	 * @return resource amount (kg).
 	 */
 	public Map<Integer, Double> getResourcesCollected() {
-		return collected;
+		return cumulativeCollectedByID;
 	}
 
 
 	/**
-	 * Updates the resources collected.
+	 * Computes the total resources collected at the current site.
+	 * This includes the resources on this person and the rover.
 	 *
-	 * @param inv
-	 * @return
+	 * @param inv a person as the EquipmentOwner
+	 * @return the total resources collected at this particular site
 	 */
-	private double updateResources(EquipmentOwner inv) {
-		double resourceCollected = 0;
-
+	private double computeTotalResources(EquipmentOwner inv) {
+		double resourceStored = 0;
+		
+		////// NOTE: this method needs to be fixed to be non-negative
+		
 		// Get capacity for all collectible resources. The collectible
 		// resource at a site may be more than the single one specified.
 		for (int resourceId : getCollectibleResources()) {
-			double amount = inv.getAmountResourceStored(resourceId);
+			
+			// From this person carrying cargo
+			resourceStored += inv.getAmountResourceStored(resourceId);
+			// From this person's equipment set
 			for (Equipment e : inv.getContainerSet()) {
-				amount += e.getAmountResourceStored(resourceId);
+				resourceStored += e.getAmountResourceStored(resourceId);
 			}
 
-			resourceCollected += amount;
-			collected.put(resourceId, amount);
+			// From mission rover
+			EquipmentOwner invRover = (EquipmentOwner)getRover();
+			// From this rover's carrying cargo
+			resourceStored += invRover.getAmountResourceStored(resourceId);
+			// From this rover's equipment set
+			for (Equipment e : invRover.getContainerSet()) {
+				resourceStored += e.getAmountResourceStored(resourceId);
+			}
 		}
 
-		// Calculate resources collected at the site so far.
-		return resourceCollected - collectingStart;
+		// The difference is the resource collected at current site
+		return  getTotalCollectedAllSites() - resourceStored;
 	}
 
+	/**
+	 * Gets the total amount of collected resources at all sites by far.
+	 *  
+	 * @return
+	 */
+	public double getTotalCollectedAllSites() {
+		// Find out how much collected at this site by far
+		int siteIndex = getCurrentNavpointIndex(); 
+		double collectedSoFar = 0;
+		for (int i=0; i<siteIndex; i++) {
+			if (amountCollectedBySite.containsKey(siteIndex)) {
+				double amount = amountCollectedBySite.get(siteIndex);
+				collectedSoFar += amount;
+			}
+		}	
+		return collectedSoFar;
+	}
+	
+	/**
+	 * Gets the amount collected at the current site.
+	 * 
+	 * @return
+	 */
+	public double getCollectedAtCurrentSite() {
+		int siteIndex = getCurrentNavpointIndex(); 
+		double collectedSoFar = 0;
+		if (amountCollectedBySite.containsKey(siteIndex)) {
+			collectedSoFar = amountCollectedBySite.get(siteIndex);
+		}
+		return collectedSoFar;
+	}
+	
+	/**
+	 * Records the amount of resources collected.
+	 * 
+	 * @param resourceType
+	 * @param samplesCollected
+	 */
+	public void recordResourceCollected(int resourceType, double samplesCollected) {
+		// Update amountCollectedBySite
+		int siteIndex = getCurrentNavpointIndex(); 
+		if (amountCollectedBySite.containsKey(siteIndex)) {
+			double oldAmount0 = amountCollectedBySite.get(siteIndex);
+			double newAmount0 = oldAmount0 + samplesCollected;
+			amountCollectedBySite.put(siteIndex, newAmount0);
+		}
+		else {
+			amountCollectedBySite.put(siteIndex, samplesCollected);
+		}
+		
+		// Update cumulativeCollectedByID
+		if (cumulativeCollectedByID.containsKey(resourceType)) {
+			double oldAmount1 = cumulativeCollectedByID.get(resourceType);
+			double newAmount1 = oldAmount1 + samplesCollected;
+			cumulativeCollectedByID.put(resourceType, newAmount1);
+		}
+		else {
+			cumulativeCollectedByID.put(resourceType, samplesCollected);
+		}
+	}
+	
 	/**
 	 * Gets the resources can be collected once on site. By default this is just
 	 * the main resource but could be others.
@@ -315,12 +398,16 @@ public abstract class CollectResourcesMission extends EVAMission
 			return false;
 		}
 		
-		// This will update the siteCollectedResources and totalResourceCollected after the last on-site collection activity
-		double siteCollectedSoFar = updateResources(rover);
-
+		// Compute the collected resources on this person and the rover
+		double amountCollectedAtSiteSoFar0 = getCollectedAtCurrentSite();
+//		Note: computeTotalResources(person) does not work
+		
+//		logger.info(getRover(), 20_000, "amountCollectedAtSiteSoFar0: " +
+//				Math.round(amountCollectedAtSiteSoFar0 * 100.0)/100.0);
+		
 		// If collected resources are sufficient for this site, end the collecting
 		// phase.
-		if (siteCollectedSoFar >= siteResourceGoal) {
+		if (amountCollectedAtSiteSoFar0 >= siteResourceGoal) {
 			logger.info(getRover(), "Full resources collected at site.");
 			addMissionLog("Full resources collected");
 			return false;
@@ -348,16 +435,17 @@ public abstract class CollectResourcesMission extends EVAMission
         		logger.log(person, Level.INFO, 4_000,
             			"Instructed to sleep in " + getVehicle() + ".");
         	}
-			return false;
+        	// Do NOT return false or else it will end EVAMission for everyone
+//			return false;
 		}
 		
 		// If person can collect resources, start him/her on that task.
 		if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {
 			EVAOperation collectResources = new CollectResources(person,
 					getRover(), resourceID, rate,
-					siteResourceGoal - siteCollectedSoFar, 
+					siteResourceGoal - amountCollectedAtSiteSoFar0, 
 					rover.getAmountResourceStored(resourceID),
-					containerID);
+					containerID, this);
 			assignTask(person, collectResources);
 		}
 
@@ -369,7 +457,7 @@ public abstract class CollectResourcesMission extends EVAMission
 	 */
 	@Override
 	protected void phaseEVAEnded() {
-		updateResources(getRover());
+//		updateResources(getRover());
 	}
 
 	/**
@@ -378,7 +466,6 @@ public abstract class CollectResourcesMission extends EVAMission
 	@Override
 	protected void phaseEVAStarted() {
 		super.phaseEVAStarted();
-		collectingStart = 0D;
 	}
 
 	/**
