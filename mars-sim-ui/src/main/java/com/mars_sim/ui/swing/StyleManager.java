@@ -47,6 +47,7 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_PLACES2 = new DecimalFormat("#,###,##0.00");
     
     // Unit specific formatters
+    public static final DecimalFormat DECIMAL_AH = new DecimalFormat("#,##0.0 Ah");
     public static final DecimalFormat DECIMAL_LITER2 = new DecimalFormat("#,##0.0 Liter");
     public static final DecimalFormat DECIMAL_KM_KG = new DecimalFormat("#,##0.0 km/kg");
     public static final DecimalFormat DECIMAL_WH_KM = new DecimalFormat("#,##0.0 Wh/km");
@@ -71,6 +72,7 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_SOLS3 = new DecimalFormat("#,##0.000 Sols");
     public static final DecimalFormat DECIMAL_DEG = new DecimalFormat("0.# \u00B0");
     public static final DecimalFormat DECIMAL_CELCIUS = new DecimalFormat("0.0 \u00B0C");
+    public static final DecimalFormat DECIMAL_V = new DecimalFormat("#,##0.0 V");
     // For solar irradiance
     public static final DecimalFormat DECIMAL_W_M2 = new DecimalFormat("#,##0.00 " 
     								+ Msg.getString("unit.wattpermetersquared")); //$NON-NLS-1$

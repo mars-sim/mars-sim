@@ -144,8 +144,8 @@ public abstract class DroneMission extends AbstractVehicleMission {
 		OperateVehicle result = null;
 		
 		if (member instanceof Robot robot 
-				&& robot.getSystemCondition().getBatteryState() < 50) {
-			logger.warning(robot, 4_000, "Battery at " + robot.getSystemCondition().getBatteryState() + " %");
+				&& robot.getSystemCondition().getBatteryLevel() < 50) {
+			logger.warning(robot, 4_000, "Battery at " + robot.getSystemCondition().getBatteryLevel() + " %");
 			
         	boolean canCharge = assignTask(robot, new Charge(robot, Charge.findStation(robot)));
         	if (canCharge) {

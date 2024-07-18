@@ -125,7 +125,7 @@ public class BotMind implements Serializable, Temporal {
 	private void takeAction(double time) {
 		double pulseTime = time;
 		// Perform a task if the robot has one, or determine a new task/mission.
-		if (robot.getSystemCondition().getBatteryState() <= 5D) {
+		if (robot.getSystemCondition().getBatteryLevel() <= 5D) {
 			String task = botTaskManager.getTaskName();
 			if (task.equalsIgnoreCase(""))
 				task = "None";

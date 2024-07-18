@@ -147,7 +147,7 @@ public class Charge extends Task {
 		boolean toCharge = false;
 		
 		SystemCondition sc = robot.getSystemCondition();
-		double batteryLevel = sc.getBatteryState();
+		double batteryLevel = sc.getBatteryLevel();
 		
 		if (getDuration() == DURATION) {
 			// When this phase is being called for the first time
@@ -257,7 +257,20 @@ public class Charge extends Task {
 	}
 
 	/**
-	 * Delivers power to the robot battery.
+	 * Charges the battery, namely, delivering power to the robot battery.
+     * 
+     * Note: For calculating charging time: To estimate charging time, divide 
+     * the battery capacity (in Ah) by the charging current (in A), and add 
+     * 0.5-1 hour to account for the slower charging rate at the end of the cycle.
+	 * 
+	 * Constant-Current Charging: For lithium batteries, the typical charging current 
+	 * is usually set between 0.2C and 1C, with 0.5C being a commonly recommended 
+	 * balance between charging time and safety.
+	 * 
+	 * Pre-Charge Stage: A pre-charge stage, also known as trickle charging, can be
+	 * helpful to extend battery life. For single lithium-ion batteries, this stage 
+	 * typically occurs at 3.0V with a current of around 100mA (10% of the constant 
+	 * current charging current).
 	 * 
 	 * @param sc
 	 * @param station

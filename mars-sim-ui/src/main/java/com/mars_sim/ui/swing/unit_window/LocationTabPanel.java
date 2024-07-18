@@ -210,7 +210,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
         bannerText.setLcdTextScrolling(true);
 		topPanel.add(bannerText, BorderLayout.NORTH);
 
-		// Create attribute panel
+		// Create data panel
 		JPanel dataPanel = new JPanel(new BorderLayout(2, 2));
 		content.add(dataPanel, BorderLayout.CENTER);
         addBorder(dataPanel, "Data");

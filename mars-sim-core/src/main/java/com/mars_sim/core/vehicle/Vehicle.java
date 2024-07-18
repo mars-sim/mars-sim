@@ -1118,7 +1118,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getBatteryPercent() {
-		return getController().getBattery().getBatteryState();
+		return getController().getBattery().getBatteryLevel();
 	}
 	
 	

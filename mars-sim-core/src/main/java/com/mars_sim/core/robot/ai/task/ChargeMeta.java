@@ -58,7 +58,7 @@ public class ChargeMeta extends FactoryMetaTask {
         else if (robot.isInSettlement()) {
         	SystemCondition sc = robot.getSystemCondition();
         	
-        	double batteryLevel = sc.getBatteryState();
+        	double batteryLevel = sc.getBatteryLevel();
         	
         	if (batteryLevel >= LEVEL_UPPER_LIMIT) {
         		return 0;

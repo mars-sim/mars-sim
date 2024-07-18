@@ -1277,7 +1277,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * Returns the current amount of energy in kWh. 
 	 */
 	public double getcurrentEnergy() {
-		return health.getCurrentEnergy();
+		return health.getkWattHourStored();
 	}
 	
 	public EquipmentInventory getEquipmentInventory() {
