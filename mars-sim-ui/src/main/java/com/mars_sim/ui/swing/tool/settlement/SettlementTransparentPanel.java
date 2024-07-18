@@ -328,13 +328,13 @@ public class SettlementTransparentPanel extends JComponent {
 	    }
 	    
 	    projectSunriseLabel = new JLabel(PROJECTED_SUNRISE 
-	    		+ Math.round(projectSunTime[0] *10.0)/10.0 + MSOL);
+	    		+ StyleManager.DECIMAL_MSOL.format(projectSunTime[0]));
 	    
 	    projectSunsetLabel = new JLabel(PROJECTED_SUNSET 
-	    		+ Math.round(projectSunTime[1] *10.0)/10.0 + MSOL);
+	    		+ StyleManager.DECIMAL_MSOL.format(projectSunTime[1]));
 	    
 		projectDaylightLabel  = new JLabel(PROJECTED_DAYLIGHT 
-	    		+ Math.round(projectSunTime[2] *10.0)/10.0 + MSOL);
+	    		+ StyleManager.DECIMAL_MSOL.format(projectSunTime[2]));
 		
 	    sunriseLabel = new JLabel(SUNRISE + PENDING);
 		sunsetLabel = new JLabel(SUNSET + PENDING);
@@ -512,7 +512,7 @@ public class SettlementTransparentPanel extends JComponent {
        		result = true;
        	}
 
-        double opticalDepth =  Math.round(getOpticalDepth(c)*100.0)/100.0;
+        double opticalDepth =  getOpticalDepth(c);
        	if (opticalDepthCache != opticalDepth) {
        		opticalDepthCache = opticalDepth;
        		odString =  getOpticalDepthString(opticalDepth);
@@ -551,7 +551,7 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
     private String getTemperatureString(double value) { 
-    	return StyleManager.DECIMAL_PLACES0.format(value) + " deg C";
+    	return StyleManager.DECIMAL_CELCIUS.format(value);
     }
 
     private double getWindSpeed(Coordinates c) {
@@ -559,7 +559,7 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
     private String getWindSpeedString(double value) {
-    	return StyleManager.DECIMAL_PLACES2.format(value) + " " + Msg.getString("windspeed.unit.meterpersec"); //$NON-NLS-1$
+    	return StyleManager.DECIMAL_M_S.format(value);
     }
 
     private double getOpticalDepth(Coordinates c) {
@@ -575,7 +575,7 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
 	private String getZenithAngleString(double value) {
-     	return StyleManager.DECIMAL_PLACES2.format(value * RADIANS_TO_DEGREES) + " deg";
+     	return StyleManager.DECIMAL_DEG.format(value * RADIANS_TO_DEGREES);
     }
 
     private double getSolarIrradiance(Coordinates c) {
@@ -1138,9 +1138,9 @@ public class SettlementTransparentPanel extends JComponent {
 	private void displaySunData(Coordinates location) {
 	    double [] time = orbitInfo.getSunTimes(mapPanel.getSettlement().getCoordinates());
 	    
-		projectSunriseLabel.setText (PROJECTED_SUNRISE + Math.round(time[0] *10.0)/10.0 + MSOL);
-		projectSunsetLabel.setText (PROJECTED_SUNSET + Math.round(time[1] *10.0)/10.0 + MSOL);
-		projectDaylightLabel.setText (PROJECTED_DAYLIGHT + Math.round(time[2] *10.0)/10.0 + MSOL);
+		projectSunriseLabel.setText (PROJECTED_SUNRISE + StyleManager.DECIMAL_MSOL.format(time[0]));
+		projectSunsetLabel.setText (PROJECTED_SUNSET + StyleManager.DECIMAL_MSOL.format(time[1]));
+		projectDaylightLabel.setText (PROJECTED_DAYLIGHT + StyleManager.DECIMAL_MSOL.format(time[2]));
 		
 		// Retrieve the yestersol's sun record
 		SunData data = weather.getSunRecord(location);

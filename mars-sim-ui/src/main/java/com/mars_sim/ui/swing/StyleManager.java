@@ -73,6 +73,7 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_DEG = new DecimalFormat("0.# \u00B0");
     public static final DecimalFormat DECIMAL_CELCIUS = new DecimalFormat("0.0 \u00B0C");
     public static final DecimalFormat DECIMAL_V = new DecimalFormat("#,##0.0 V");
+    public static final DecimalFormat DECIMAL_MSOL = new DecimalFormat("#,##0.0 msol");
     // For solar irradiance
     public static final DecimalFormat DECIMAL_W_M2 = new DecimalFormat("#,##0.00 " 
     								+ Msg.getString("unit.wattpermetersquared")); //$NON-NLS-1$
