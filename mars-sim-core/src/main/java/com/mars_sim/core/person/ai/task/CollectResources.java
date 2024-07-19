@@ -155,7 +155,7 @@ public class CollectResources extends EVAOperation {
 		
 		compositeRate  = collectionRate * ((.5 * agility + strength) / 150D) 
 				* (.5 * (eva + prospecting) + .2) ;
-		logger.info(person, "composite collection rate: " + compositeRate);
+		logger.info(person, 20_000, mission.getName() +  " collection rate: " + Math.round(compositeRate * 10.0)/10.0);
 	}
 	
 	/**

@@ -430,7 +430,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		missionCustomPane.add(salvagePanel, salvageMissionName);
 
 		// Create custom exploration mission panel.
-		MissionCustomInfoPanel explorationPanel = new ExplorationCustomInfoPanel();
+		MissionCustomInfoPanel explorationPanel = new ExplorationCustomInfoPanel(ResourceUtil.rockIDs);
 		String explorationMissionName = Exploration.class.getName();
 		customInfoPanels.put(explorationMissionName, explorationPanel);
 		missionCustomPane.add(explorationPanel, explorationMissionName);

@@ -64,7 +64,7 @@ public class ExitAirlock extends Task {
 	private static final String NOT_NOMINALLY_FIT = "Not nominally fit";
 	private static final String NOT_EVA_FIT = "Not EVA fit";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
-	private static final String CHAMBER_FULL = "All chambers occupied.";
+	private static final String CHAMBER_FULL = "All chambers occupied";
 	
     /** The minimum performance needed. */
 	private static final double MIN_PERFORMANCE = 0.05;
@@ -537,7 +537,7 @@ public class ExitAirlock extends Task {
 
 			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
 				walkAway(person, "Can't egress. " + CHAMBER_FULL 
-						+ " Current task: " + person.getTaskDescription() + ".");
+						+ ". Current task: " + person.getTaskDescription() + ".");
 				return 0;
 			}
 				
@@ -716,7 +716,7 @@ public class ExitAirlock extends Task {
 			}
 
 			if (airlock.areAll4ChambersFull()) {
-				walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + CHAMBER_FULL);
+				walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + CHAMBER_FULL + ". ");
 				return 0;
 			}
 			
@@ -828,7 +828,7 @@ public class ExitAirlock extends Task {
 		if (inSettlement) {
 
 			if (!isInZone(AirlockZone.ZONE_2) && airlock.areAll4ChambersFull()) {
-				walkAway(person, "Can't walk to chamber. " + CHAMBER_FULL);
+				walkAway(person, "Can't walk to chamber. " + CHAMBER_FULL + ". ");
 				return 0;
 			}
 			
