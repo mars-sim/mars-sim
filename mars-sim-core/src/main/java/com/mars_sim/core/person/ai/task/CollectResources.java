@@ -112,7 +112,8 @@ public class CollectResources extends EVAOperation {
 		setRandomOutsideLocation(rover);
 
 		// Take container for collecting resource.
-		if (!hasAContainer()) {
+		int num = numContainers();
+		if (num == 0) {
 			boolean hasIt = takeContainer();
 
 			// If container is not available, end task.
@@ -121,6 +122,19 @@ public class CollectResources extends EVAOperation {
 						"Unable to find a " + containerType.getName() + " to collect resources.");
 				endTask();
 				return;
+			}
+		}
+		else if (num > 1) {
+			// Return extra containers
+			for (int i=0; i<num-1; i++) {
+				Container container = person.findContainer(containerType, false, resourceType); 
+				if (container != null) {
+					boolean done = container.transfer(rover);
+					if (done)
+						logger.info(person, 0, "Returned an extra " + containerType.getName() + " from person back to rover.");
+					else
+						logger.warning(person, 0, "Unable to transfer " + containerType.getName() + " from person back to rover.");
+				}	
 			}
 		}
 
@@ -165,17 +179,26 @@ public class CollectResources extends EVAOperation {
 
 	}
 
+//	/**
+//	 * Checks if the person is carrying a container of this type.
+//	 *
+//	 * @return true if carrying a container of this type.
+//	 *
+//	 */
+//	private boolean hasAContainer() {
+//		return person.containsEquipment(containerType);
+//	}
 
 	/**
-	 * Checks if the person is carrying a container of this type.
+	 * Checks how many containers a person is carrying.
 	 *
 	 * @return true if carrying a container of this type.
 	 *
 	 */
-	private boolean hasAContainer() {
-		return person.containsEquipment(containerType);
+	private int numContainers() {
+		return person.findNumContainersOfType(containerType);
 	}
-
+	
 	/**
 	 * Takes the least full container from the rover.
 	 *
@@ -185,10 +208,17 @@ public class CollectResources extends EVAOperation {
 		Container container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
 
 		if (container != null) {
-			logger.info(person, 5000, "Getting hold of a " + containerType.getName() + ".");
-			return container.transfer(person);
-		}
-		logger.warning(person, 5000, "Could not get hold of a " + containerType.getName() + ".");
+			boolean success = container.transfer(person);
+			if (success) {
+				logger.info(person, 5000, "Getting hold of a " + containerType.getName() + " from rover.");
+			}
+			else 
+				logger.warning(person, "Unable to transfer " + containerType.getName() + " from rover to person.");
+			return success;
+		} 
+		else
+			logger.warning(person, 5000, "Could not get hold of a " + containerType.getName() + " from rover.");
+		
 		return false;
 	}
 	
@@ -208,10 +238,11 @@ public class CollectResources extends EVAOperation {
         	container = rover.findContainer(containerType, true, resourceType);
 	        if (container != null) {
             	boolean successful = container.transfer(person);
-            	if (!successful) {
-            		container = null;
-            		logger.warning(person, 5000, "Could not get hold of a container.");
+            	if (successful) {
+            		logger.warning(person, "Done transfering " + containerType.getName() + " from rover to person.");
                 }
+            	else
+            		logger.warning(person, "Unable to transfer " + containerType.getName() + " from rover to person.");
 	        }
 	        else {
 	        	logger.warning(person, 5000, "Could not get hold of a container.");
@@ -377,21 +408,26 @@ public class CollectResources extends EVAOperation {
 			if (person.isSuperUnfit())
 				return false;
 			
-			// Checks if available container with remaining capacity for resource.
-			Container container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
+			// Checks if the person has an available container with remaining capacity for resource.
+			Container container = ContainerUtil.findLeastFullContainer(person, containerType, resourceType);
+			if (container == null) {
+				// Checks if the rover has an available container with remaining capacity for resource.
+				container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
+			}
 			// Transfer that container from rover to person
 			boolean containerAvailable = false;
 			double carryMass = 0D;
 			
 			if (container != null) {
-				container.transfer(person);
+				containerAvailable = true;
+				
 				// Check if container and full EVA suit can be carried by person 
 				// or is too heavy.
-				if (container != null) {
-					carryMass += container.getBaseMass() + container.getStoredMass();
-				}
+				carryMass = container.getBaseMass() + container.getStoredMass();
+
 			} else {
 				logger.warning(person, 5000, "No " + containerType.getName() + " available.");
+				return false;
 			}
 
 			EVASuit suit = EVASuitUtil.findRegisteredOrGoodEVASuit(person);
@@ -413,26 +449,25 @@ public class CollectResources extends EVAOperation {
 	 */
 	@Override
 	protected void clearDown() {
-		if (rover != null) {
-			// Task may end early before a Rover is selected
-			returnEquipmentToVehicle(rover);
-		}
-
-		// This is the end of the Task so must return 
-		Container container = person.findContainer(containerType, false, resourceType);
-		if (container == null) {
-			logger.info(person, "Could find any " + containerType.getName() + ".");
-			return;
-		}
-
-		// Transfer the container back to the settlement
-		boolean success = container.transfer(rover);
-		if (!success)
-			logger.warning(person, "Unable to transfer " + containerType.getName() + " back.");
-
-		double amount = container.getAmountResourceStored(resourceType);
-		if (amount > 0) {
-			unloadContainer(container, amount, getTimeCompleted());
+		// Take container for collecting resource.
+		int num = numContainers();
+		if (num >= 1) {
+			// Return extra containers
+			for (int i=0; i<num; i++) {
+				Container container = person.findContainer(containerType, false, resourceType); 
+				if (container != null) {
+					boolean done = container.transfer(rover);
+					if (done) {
+						logger.info(person, 0, "Done transferring " + containerType.getName() + " from person back to rover.");
+						double amount = container.getAmountResourceStored(resourceType);
+						if (amount > 0) {
+							unloadContainer(container, amount, getTimeCompleted());
+						}
+					}
+					else
+						logger.warning(person, "Unable to transfer " + containerType.getName() + " from person back to rover.");
+				}	
+			}
 		}
 		
 //		if (rover != null) {

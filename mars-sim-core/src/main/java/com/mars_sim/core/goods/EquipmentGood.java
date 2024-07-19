@@ -39,7 +39,7 @@ public class EquipmentGood extends Good {
 	
 	private static final double GAS_CANISTER_DEMAND = 0.05;
 	private static final double SPECIMEN_BOX_DEMAND = 1.2;
-	private static final double LARGE_BAG_DEMAND = 1.5;
+	private static final double LARGE_BAG_DEMAND = 1;
 	private static final double BAG_DEMAND = 1;
 	private static final double BARREL_DEMAND = 0.5;
 	private static final double THERMAL_BOTTLE_DEMAND = 0.05;

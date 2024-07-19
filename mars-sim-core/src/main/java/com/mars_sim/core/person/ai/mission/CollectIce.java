@@ -29,7 +29,7 @@ public class CollectIce extends CollectResourcesMission {
 	private static final long serialVersionUID = 1L;
 
 	/** Number of barrels required for the mission. */
-	public static final int REQUIRED_BARRELS = 20;
+	public static final int REQUIRED_BARRELS = 4;
 
 	/** Number of collection sites. */
 	private static final int NUM_SITES = 3;

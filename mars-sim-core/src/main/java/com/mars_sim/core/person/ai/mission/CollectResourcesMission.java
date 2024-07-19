@@ -118,6 +118,12 @@ public abstract class CollectResourcesMission extends EVAMission
 		this.cumulativeCollectedByID = new HashMap<>();
 		this.containerID = containerID;
 		
+		int numMembers = getMissionCapacity();
+		int buffer = (int)(numMembers * 1.25);
+		int newContainerNum = Math.max(buffer, containerNum);
+		
+		setEVAEquipment(containerID, newContainerNum);
+		
 		setEVAEquipment(containerID, containerNum);
 
 		// Recruit additional members to mission.
@@ -221,7 +227,11 @@ public abstract class CollectResourcesMission extends EVAMission
 		this.cumulativeCollectedByID = new HashMap<>();
 		this.containerID = containerID;
 		
-		setEVAEquipment(containerID, containerNum);
+		int numMembers = members.size();
+		int buffer = (int)(numMembers * 1.25);
+		int newContainerNum = Math.min(buffer, containerNum);
+		
+		setEVAEquipment(containerID, newContainerNum);
 		
 		// Set collection navpoints.
 		addNavpoints(collectionSites, (i -> PROPSPECTING_SITE + (i+1)));

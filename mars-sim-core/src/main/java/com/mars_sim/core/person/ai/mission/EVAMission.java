@@ -401,7 +401,8 @@ abstract class EVAMission extends RoverMission {
 	}
 
 	/**
-	 * Define equipment needed for the EVAs
+	 * Defines equipment needed for the EVAs.
+	 * 
 	 * @param eqmType Equipment needed
 	 * @param eqmNum Number of equipment
 	 */
