@@ -719,7 +719,9 @@ public class Heating implements Serializable {
 					coeff = INSULATION_BLANKET;
 			}
 				
-			canopyHeatGain = 0.4 * coeff * (1 - irradiance);
+			// Assume high indoor temperature would lower canopyHeatGain
+			double ratioT = C_TO_K /(C_TO_K + getCurrentTemperature());
+			canopyHeatGain = 0.7 * coeff * (1 - irradiance) * ratioT * ratioT;
 		}
 	
 		error = checkError("canopyHeatGain", canopyHeatGain) || error;
@@ -825,7 +827,7 @@ public class Heating implements Serializable {
 			structuralLoss = - CLF * deltaTinTout
 					* (uValueAreaCeilingFloor * 2D
 					+ uValueAreaWall
-					+ uValueAreaCrackLengthAirlock * weather.getWindSpeed(location)) / 1000 / 1.5;
+					+ uValueAreaCrackLengthAirlock * weather.getWindSpeed(location)) / 1000 / 1.1;
 					// Note : 1 m/s = 3.28084 ft/s = 2.23694 miles per hour
 		}
 		else {
@@ -833,13 +835,13 @@ public class Heating implements Serializable {
 				structuralLoss = - CLF * deltaTinTout
 						* (uValueAreaCeilingFloor
 						+ uValueAreaWall
-						+ uValueAreaCrackLength * weather.getWindSpeed(location)) / 1000 / 1.5;		
+						+ uValueAreaCrackLength * weather.getWindSpeed(location)) / 1000 / 1.1;		
 			}
 			else {
 				structuralLoss = - CLF * deltaTinTout
 					* (uValueAreaCeilingFloor * 2D
 					+ uValueAreaWall
-					+ uValueAreaCrackLength * weather.getWindSpeed(location)) / 1000 / 1.5;
+					+ uValueAreaCrackLength * weather.getWindSpeed(location)) / 1000 / 1.1;
 			}
 		}	
 		
@@ -890,7 +892,7 @@ public class Heating implements Serializable {
 
 			solarHeatLoss = - emissivity * STEFAN_BOLTZMANN_CONSTANT
 					* ( Math.pow(inTKelvin, 4) - Math.pow(outTKelvin, 4) ) 
-						* hullArea / canopyFactor / 1000D / 3;
+						* hullArea / canopyFactor / 1000D / 2;
 		}
 //		else if (isBrick)  {
 //			For Outpost Hub, Bunkhouse, Tunnel, Inground Greenhouse, Loading Dock garage	
@@ -909,7 +911,7 @@ public class Heating implements Serializable {
 			
 			solarHeatLoss = - emissivity * STEFAN_BOLTZMANN_CONSTANT
 					* ( Math.pow(inTKelvin, 4) - Math.pow(outTKelvin, 4) ) 
-						* hullArea / canopyFactor / 1000D / 2;
+						* hullArea / canopyFactor / 1000D;
 		}		
 		
 //		logger.info(building, "emissivity: " + Math.round(emissivity * 100.0)/100.0
@@ -1154,6 +1156,7 @@ public class Heating implements Serializable {
 					+ Math.round(newT * 10.0)/10.0
 					+ " > " + MAX_INDOOR_TEMPERATURE);
 			newT = MAX_INDOOR_TEMPERATURE;
+			error = true;
 		}
 		
 		else if (newT < MIN_INDOOR_TEMPERATURE) {
@@ -1161,6 +1164,7 @@ public class Heating implements Serializable {
 					+ Math.round(newT * 10.0)/10.0
 					+ " < " + MIN_INDOOR_TEMPERATURE);
 			newT = MIN_INDOOR_TEMPERATURE;
+			error = true;
 		}
 		
 //		double outT = building.getSettlement().getOutsideTemperature();
@@ -1238,25 +1242,12 @@ public class Heating implements Serializable {
 				selectedReqHeat = reqHeat;
 			}
 		}
-
-		
-		error = checkError("selectedReqHeat", selectedReqHeat) || error ;
-		
-		// Sets the heat required for this cycle
-		setHeatRequired(selectedReqHeat);
 		
 		// Step 5 : CALCULATE VENT HEAT USING VENTILATION
 
 		// Find ventHeat in kW
 		double ventHeat = calculateVentHeat(-selectedReqHeat, newT, deltaTime); 
-		// Set the outgoing heat leaving this building
-		setVentOutHeat(ventHeat);
 	
-		error = checkError("ventHeat", ventHeat) || error;
-		
-		// Set the vent heat
-		setVentOutHeat(ventHeat);
-		
 		// if positive, suck hotter air from adjacent buildings, thus having hotter air 
 		// to come in and raise the building temperature
 		if (ventHeat > 0) {
@@ -1280,6 +1271,23 @@ public class Heating implements Serializable {
 			}
 		}
 
+		if (selectedReqHeat < -50) {
+			// Note: ventHeat must be -ve, just like selectedReqHeat
+			// Vent out a quarter of the selectedReqHeat to avoid overheating
+			ventHeat = selectedReqHeat / 4;
+			selectedReqHeat = selectedReqHeat - ventHeat;
+			logger.warning(building, 20_000, "To avoid overheating, vent out " + Math.round(ventHeat * 100.0)/100.0 + " heat to outside.");
+			error = true;
+		}
+		
+		error = checkError("ventHeat", ventHeat) || error;
+		// Set the outgoing heat leaving this building
+		setVentOutHeat(ventHeat);
+
+		error = checkError("selectedReqHeat", selectedReqHeat) || error ;
+		// Sets the heat required for this cycle
+		setHeatRequired(selectedReqHeat);
+		
 		/**
 		 * Do NOT delete. For future Debugging.
 		 */
@@ -1499,22 +1507,26 @@ public class Heating implements Serializable {
 	 * 			if negative, hotter air is leaving
 	 */
 	private double calculateVentHeat(double heat, double degNow, double time) {
+		final double STEP = 1.25;
+		
 		// Reference : time = .121 at x128
 		// e.g. Lander Hab: At 26.8 deg, dt: 0.48  speedFactor: 0.234  areaFactor: 3.0
 				
+		// if reqheat is -ve, heat is +ve
+		// if reqheat is +ve, heat is -ve
 		double dt0 = Math.abs(degNow - tPreset) / 6;
 		if (dt0 > 4)
 			dt0 = 4;
 		
 		// Even if there's no net heat, the temperature variance would still trigger the vent flow
 		double modHeat = Math.abs(heat) / 6;
-		if (modHeat > 4)
-			modHeat = 4;
+		if (modHeat > 8)
+			modHeat = 8;
 
 		double totalHeat = 0;
 		// Note: this temperature range is arbitrary
-		boolean tooLow = degNow < (tPreset - 2 * T_LOWER_SENSITIVITY);
-		boolean tooHigh = degNow > (tPreset + 2 * T_UPPER_SENSITIVITY);
+		boolean tooLow = degNow < (tPreset - STEP * T_LOWER_SENSITIVITY);
+		boolean tooHigh = degNow > (tPreset + STEP * T_UPPER_SENSITIVITY);
 		
 		double lowerBound = Math.max(0, time);
 		double upperBound = Math.min(1, lowerBound);
@@ -1533,8 +1545,8 @@ public class Heating implements Serializable {
 			double tNow = adjacentBuildings.get(i).getCurrentTemperature();
 			double tInit = adjacentBuildings.get(i).getPresetTemperature();
 
-			boolean tooLowAdj = tNow < (tInit - 2 * T_LOWER_SENSITIVITY);
-			boolean tooHighAdj = tNow > (tInit + 2 * T_UPPER_SENSITIVITY);
+			boolean tooLowAdj = tNow < (tInit - STEP * T_LOWER_SENSITIVITY);
+			boolean tooHighAdj = tNow > (tInit + STEP * T_UPPER_SENSITIVITY);
 			
 			double dt1 = Math.abs(degNow - tNow) / 6;
 			if (dt1 > 4)
