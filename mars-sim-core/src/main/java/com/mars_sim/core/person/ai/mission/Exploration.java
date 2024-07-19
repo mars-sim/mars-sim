@@ -248,7 +248,7 @@ public class Exploration extends EVAMission
 	 */
 	private Coordinates determineFirstSiteCoordinate() {
 		double range = getVehicle().getRange();
-		return getStartingSettlement().getARandomNearbyMineralLocation(range);
+		return getStartingSettlement().determineFirstSiteCoordinate(range, 1);
 	}
 	
 	/**
@@ -467,10 +467,7 @@ public class Exploration extends EVAMission
 	 * @return first exploration site or null if none.
 	 */
 	private Coordinates determineFirstSiteCoordinate(double limit, int areologySkill) {
-		
-		int skillDistance = RandomUtil.getRandomRegressionInteger(10, 500 * (1 + areologySkill));
-	
-		return getStartingSettlement().getAComfortableNearbyMineralLocation(limit, skillDistance);
+		return getStartingSettlement().determineFirstSiteCoordinate(limit, areologySkill);
 	}
 	
 	/**

@@ -883,6 +883,8 @@ public class Settlement extends Structure implements Temporal,
 			return false;
 		}
 		
+		int sol = pulse.getMarsTime().getMissionSol();
+
 		// Run at the start of the sim once only
 		if (justLoaded) {	
 			// Reset justLoaded
@@ -902,21 +904,34 @@ public class Settlement extends Structure implements Temporal,
 			createNearbyMineralLocations(rover);
 			// Note : may call it again if a new rover is made with longer range
 			
+			int range = (int) getVehicleWithMinimalRange().getRange();
+			
 			// Look for the first site to be analyzed and explored
-			Coordinates firstSite = getAComfortableNearbyMineralLocation(
-					rover.getRange() / 100, 10 * pulse.getMarsTime().getMissionSol());
+			int skill = 0;
+			int num = numCitizens;
+			for (Person p: citizens) {
+				skill += p.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+				num++;
+			}
+			
+			int newSkill = (int)Math.min(range/1000, skill/(0.5+num));
+	
+			double limit = 100;
+			
+			Coordinates firstSite = determineFirstSiteCoordinate(limit, newSkill);
+			
+			double distance = getCoordinates().getDistance(firstSite);
+			
+			logger.info(this, "Sol " + sol + ". " + firstSite.getFormattedString() 
+						+ " was selected as the first special ROI site (" + Math.round(distance)  + " km away) for exploration.");
 			
 			// Creates an initial explored site in SurfaceFeatures
 			createARegionOfInterest(firstSite, 0);
 			
-			logger.info(this, "On Sol 1, " + firstSite.getFormattedString() 
-						+ " was the very first exploration site chosen to be analyzed and explored.");
-			
 			checkMineralMapImprovement();			
 		}
 		
-		int sol = pulse.getMarsTime().getMissionSol();
-
+		
 		// Calls other time passings
 		futureEvents.timePassing(pulse);
 		powerGrid.timePassing(pulse);
@@ -938,10 +953,11 @@ public class Settlement extends Structure implements Temporal,
 			setReviewWaterRatio(false);
 		}
 
+	
 		// At the beginning of a new sol,
 		// there's a chance a new site is automatically discovered
 		if (pulse.isNewSol()) {
-
+			
 			// Perform the end of day tasks
 			performEndOfDayTasks(pulse.getMarsTime());	
 
@@ -954,22 +970,24 @@ public class Settlement extends Structure implements Temporal,
 				num++;
 			}
 			
-			int skillDistance = range;
+			int newSkill = range;
 			if (num > 0) {
-				skillDistance = Math.min(range, 2 * sol * skill / num);
+				newSkill = Math.min(range/10, 2 * sol * skill / num);
 			}
 
-			int limit =  Math.min(100, sol) * range / 100;
+			int limit =  range * Math.min(100, sol) / 100;
 			
 			// Add another explored site 
-			Coordinates anotherSite = getAComfortableNearbyMineralLocation(limit, skillDistance);
+			Coordinates anotherSite = getAComfortableNearbyMineralLocation(limit, newSkill);
+			
+			double distance = getCoordinates().getDistance(anotherSite);
+			
+			logger.info(this, "Sol " + sol + ". " + anotherSite.getFormattedString() 
+						+ " was added as a new ROI site (" + Math.round(distance)  + " km away) for exploration.");
 			
 			// Creates an initial explored site in SurfaceFeatures
 			createARegionOfInterest(anotherSite, skill);
-			
-			logger.info(this, "On Sol " + sol + ", " +  anotherSite.getFormattedString() 
-						+ " was added to be analyzed and explored.");
-			
+						
 			checkMineralMapImprovement();	
 		}
 
@@ -977,6 +995,18 @@ public class Settlement extends Structure implements Temporal,
 		trackByMSol(pulse);
 
 		return true;
+	}
+	
+	/**
+	 * Determine the first exploration site.
+	 *
+	 * @return first exploration site or null if none.
+	 */
+	public Coordinates determineFirstSiteCoordinate(double limit, int areologySkill) {
+		// Use getRandomRegressionInteger to make the coordinates to be potentially closer
+		int lowerLimit = (int)(limit/500 * (1 + areologySkill));
+		double newLimit = RandomUtil.getRandomRegressionInteger(lowerLimit, (int)limit);
+		return getARandomNearbyMineralLocation(newLimit);
 	}
 	
 	/**
@@ -3019,10 +3049,8 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public Coordinates getARandomNearbyMineralLocation(double limit) {
 		
-		double range = getVehicleWithMinimalRange().getRange();
-			
-		range = Math.min(range, limit);
-		
+		double minRange = Math.min(limit, getVehicleWithMinimalRange().getRange());
+	
 		Coordinates chosen = null;
 		if (nearbyMineralLocations.isEmpty()) {
 			logger.info(this, "nearbyMineralLocations is empty.");
@@ -3033,24 +3061,31 @@ public class Settlement extends Structure implements Temporal,
 		
 		for (Coordinates c : nearbyMineralLocations) {
 			boolean unclaimed = surfaceFeatures.isDeclaredARegionOfInterest(c, this, false);
-			if (unclaimed)
+			if (c.equals(getCoordinates())) {
+				unclaimed = false;
+			}
+			if (unclaimed) {
 				unclaimedLocations.add(c);
+			}
 		}
 
 		Map<Coordinates, Double> weightedMap = new HashMap<>();
 		
 		for (Coordinates c : unclaimedLocations) {
 			double distance = Coordinates.computeDistance(getCoordinates(), c);
-
-			// Fill up the weight map
-			weightedMap.put(c, (range - distance) / range);
+			double prob = (minRange - distance) / minRange;
+			
+			if ((int)distance > 0 && prob > 0) {
+				// Fill up the weight map
+				weightedMap.put(c, prob);
+			}
 		}
 
 		// Choose one with weighted randomness 
 		chosen = RandomUtil.getWeightedRandomObject(weightedMap);
 
 		if (chosen == null) {
-			logger.info(this, "Picked a nearby mineral location.");
+			logger.info(this, "A special ROI not found, based on certain criteria. Randomly picked a mineral location for now.");
 			return new ArrayList<>(nearbyMineralLocations).get(0);
 		}
 		
@@ -3063,8 +3098,10 @@ public class Settlement extends Structure implements Temporal,
 	 * @param limit
 	 * @param skillDistance
 	 */
-	public Coordinates getAComfortableNearbyMineralLocation(double limit, int skillDistance) {
-		double range = Math.min(skillDistance, limit);
+	public Coordinates getAComfortableNearbyMineralLocation(double limit0, int skill) {
+		double min = Math.min(limit0 / 50 * skill, limit0);
+		double max = Math.max(limit0 / 50 * skill, limit0);
+		double range = RandomUtil.getRandomDouble(min, max);
 		return getARandomNearbyMineralLocation(range);
 	}
 	
