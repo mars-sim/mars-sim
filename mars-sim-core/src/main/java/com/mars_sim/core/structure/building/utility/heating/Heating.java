@@ -1271,12 +1271,17 @@ public class Heating implements Serializable {
 			}
 		}
 
-		if (selectedReqHeat < -50) {
+		if (selectedReqHeat < -10) {
 			// Note: ventHeat must be -ve, just like selectedReqHeat
+			
 			// Vent out a quarter of the selectedReqHeat to avoid overheating
 			ventHeat = selectedReqHeat / 4;
+			
 			selectedReqHeat = selectedReqHeat - ventHeat;
-			logger.warning(building, 20_000, "To avoid overheating, vent out " + Math.round(ventHeat * 100.0)/100.0 + " heat to outside.");
+			
+			logger.warning(building, 20_000, "To avoid overheating, vent out " + Math.round(ventHeat * 100.0)/100.0 + " kW heat to outside.");
+
+			// Note: need to find ways to trap and recover this heat, rather than dump it outside			
 			error = true;
 		}
 		
@@ -1291,7 +1296,7 @@ public class Heating implements Serializable {
 		/**
 		 * Do NOT delete. For future Debugging.
 		 */
-		if (error || selectedReqHeat > 50 || selectedReqHeat < -50) {
+		if (error || selectedReqHeat > 20 || selectedReqHeat < -20) {
 			logger.warning(building, 20_000, 
 					"oldT: " + Math.round(oldT * 100.0)/100.0
 					+ "  newT: " + Math.round(newT * 100.0)/100.0		
