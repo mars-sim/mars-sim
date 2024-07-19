@@ -277,7 +277,7 @@ public abstract class CollectResourcesMission extends EVAMission
 	 *
 	 * @return resource amount (kg).
 	 */
-	public Map<Integer, Double> getResourcesCollected() {
+	public Map<Integer, Double> getCumulativeCollectedByID() {
 		return cumulativeCollectedByID;
 	}
 

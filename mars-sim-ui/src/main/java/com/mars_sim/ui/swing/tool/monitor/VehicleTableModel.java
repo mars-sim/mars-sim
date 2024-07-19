@@ -288,11 +288,11 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 			case MALFUNCTION_EVENT: columnNum = MALFUNCTION; break;
 			case INVENTORY_RESOURCE_EVENT: {
 				int resourceId = -1;
-				if (target instanceof AmountResource) {
-					resourceId = ((AmountResource)target).getID();
+				if (target instanceof AmountResource ar) {
+					resourceId = ar.getID();
 				}
-				else if (target instanceof Integer) {
-					resourceId = (Integer)target;
+				else if (target instanceof Integer item) {
+					resourceId = item;
 					if (resourceId >= ResourceUtil.FIRST_ITEM_RESOURCE_ID)
 						// if it's an item resource, quit
 						return;

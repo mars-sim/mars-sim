@@ -108,7 +108,7 @@ implements UnitListener {
 	 */
 	private void updateCollectionValueLabel() {
 
-		Map<Integer, Double> collected = mission.getResourcesCollected();
+		Map<Integer, Double> collected = mission.getCumulativeCollectedByID();
 
 		int i = 0;
 		for (AmountResource resourceId : resourcesCollected) {

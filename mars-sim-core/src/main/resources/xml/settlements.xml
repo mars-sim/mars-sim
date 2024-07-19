@@ -251,11 +251,12 @@
 		<!-- number-of-robots: the default number of robots for the template. -->
 		<!-- sponsor: the name of the sponsoring organization for the template. -->
 		
-		<!-- 3 Phase 0 templates -->
-		<template name="Phase 0-BO"/>
-		<template name="Phase 0-MS"/>
+		<!-- 4 Phase 0 templates -->
 		<template name="Phase 0-AE"/>
-				
+		<template name="Phase 0-BO"/>
+		<template name="Phase 0-ISRA"/>
+		<template name="Phase 0-MS"/>
+						
 		<!-- 8 Phase 1 templates -->
 		<template name="Phase 1-BR"/>
 		<template name="Phase 1-CN"/>
@@ -267,7 +268,8 @@
 		<template name="Phase 1-SX"/>		
 		<template name="Phase 1-US"/>
 		
-		<!-- 9 Phase 2 templates -->		
+		<!-- 10 Phase 2 templates -->	
+		<template name="Phase 2-BO"/>	
 		<template name="Phase 2-CN"/>	
 		<template name="Phase 2-EU"/>
 		<template name="Phase 2-IN"/>	
@@ -275,15 +277,15 @@
 		<template name="Phase 2-JP"/>
 		<template name="Phase 2-KR"/>
 		<template name="Phase 2-MS"/>
-		
 		<template name="Phase 2-RU"/>
+		
 		<template name="Phase 2-SX"/>
 		<template name="Phase 2-US"/>
 		
 		<!-- 7 Phase 3 templates -->	
 		<template name="Phase 3-CN"/>
-		<template name="Phase 3-ISRA"/>
 		<template name="Phase 3-IN"/>
+		<template name="Phase 3-ISRA"/>
 		<template name="Phase 3-MS"/>
 			
 		<template name="Phase 3-RU"/>

@@ -155,7 +155,7 @@ public class CollectResources extends EVAOperation {
 		
 		compositeRate  = collectionRate * ((.5 * agility + strength) / 150D) 
 				* (.5 * (eva + prospecting) + .2) ;
-//		compositeRate = collectionRate * ((.5 * agility + strength) / 150D) * (eva + .1);
+		logger.info(person, "composite collection rate: " + compositeRate);
 	}
 	
 	/**
@@ -183,7 +183,6 @@ public class CollectResources extends EVAOperation {
 	 * Checks how many containers a person is carrying.
 	 *
 	 * @return true if carrying a container of this type.
-	 *
 	 */
 	private int numContainers() {
 		return person.findNumContainersOfType(containerType);
@@ -239,6 +238,7 @@ public class CollectResources extends EVAOperation {
 
 		double remainCap = container.getAmountResourceRemainingCapacity(resourceType);
 		if (remainCap <= 0.01) {
+			remainCap = 0;
 			checkLocation("Container capacity maxed out.");
 		}
 		
@@ -247,6 +247,7 @@ public class CollectResources extends EVAOperation {
 		
 		double remainingSamplesNeeded = targettedAmount - collectedAtThisSite;
 		if (remainingSamplesNeeded <= 0.01) {
+			remainingSamplesNeeded = 0;
 			checkLocation("No more samples needed.");
 		}
 		
@@ -261,7 +262,7 @@ public class CollectResources extends EVAOperation {
 		if (areologySkill + prospecting == 0) {
 			samplesCollected /= 2D;
 		}
-		if (areologySkill + prospecting > 1) {
+		else {
 			samplesCollected += samplesCollected * .25D * (areologySkill + prospecting);
 		}
 
@@ -443,8 +444,7 @@ public class CollectResources extends EVAOperation {
 	
 		// Assign thermal bottle
 		person.assignThermalBottle();
-		
-		
+
 		super.clearDown();
 	}
 }
