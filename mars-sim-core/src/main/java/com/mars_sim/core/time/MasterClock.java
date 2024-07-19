@@ -807,13 +807,13 @@ public class MasterClock implements Serializable {
 		int currentSol = marsTime.getMissionSol();
 		// Identify if this pulse crosses a sol
 		boolean isNewSol = (lastSol != currentSol);
+		// Identify if it just passes half a sol
+		boolean isNewHalfSol = isNewSol || (lastMillisol < 500 && currentMillisol >= 500);	
 		// Updates lastSol
 		if (isNewSol) {
 //			this.isNewSol = isNewSol;
 			this.lastSol = currentSol;
 		}
-		// Identify if it just passes half a sol
-		boolean isNewHalfSol = isNewSol || (lastMillisol < 500 && currentMillisol >= 500);	
 //		if (isNewHalfSol) {
 //			this.isNewHalfSol = isNewHalfSol;
 //		}

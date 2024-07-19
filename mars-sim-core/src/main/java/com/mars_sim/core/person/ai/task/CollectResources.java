@@ -179,16 +179,6 @@ public class CollectResources extends EVAOperation {
 
 	}
 
-//	/**
-//	 * Checks if the person is carrying a container of this type.
-//	 *
-//	 * @return true if carrying a container of this type.
-//	 *
-//	 */
-//	private boolean hasAContainer() {
-//		return person.containsEquipment(containerType);
-//	}
-
 	/**
 	 * Checks how many containers a person is carrying.
 	 *
@@ -221,35 +211,6 @@ public class CollectResources extends EVAOperation {
 		
 		return false;
 	}
-	
-	/**
-     * Transfers a container from rover to a person.
-     * 
-     * @return a container
-     */
-    private Container collectContainer() {
-    	/*
-    	 * Do NOT delete. For debugging
-    	 * Note: alternative method for getting a container
-    	 */
-        Container container = person.findContainer(containerType, false, resourceType);
-        if (container == null) {
-        	// Doesn't have a container
-        	container = rover.findContainer(containerType, true, resourceType);
-	        if (container != null) {
-            	boolean successful = container.transfer(person);
-            	if (successful) {
-            		logger.warning(person, "Done transfering " + containerType.getName() + " from rover to person.");
-                }
-            	else
-            		logger.warning(person, "Unable to transfer " + containerType.getName() + " from rover to person.");
-	        }
-	        else {
-	        	logger.warning(person, 5000, "Could not get hold of a container.");
-	        }
-        }
-        return container;
-    }
 
 	/**
 	 * Performs the collect resources phase of the task.

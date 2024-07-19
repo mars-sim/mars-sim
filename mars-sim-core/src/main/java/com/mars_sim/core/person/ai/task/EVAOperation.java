@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.SurfaceFeatures;
+import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.events.HistoricalEvent;
@@ -755,16 +756,36 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Unloads any held Equipment back to a Vehicle.
+	 * Unloads any held equipment and resource back to a vehicle.
 	 * 
 	 * @param destination
 	 */
 	protected void returnEquipmentToVehicle(Vehicle destination) {
 		// Return containers in rover Take a copy as the original will change.
 		List<Equipment> held = new ArrayList<>(person.getEquipmentSet());
-		for(Equipment e : held) {
+		for (Equipment e : held) {
 			// Place this equipment within a rover outside on Mars
-			e.transfer(destination);
+			if (e != null) {
+				boolean done = e.transfer(destination);
+				if (done) {
+					logger.info(person, 0, "Transferring " + e.getName() + " from person back to rover.");
+					if (e instanceof Container c) {
+						for (int resource: c.getAllAmountResourceIDs()) {
+							double amount = c.getAmountResourceStored(resource);
+							if (amount > 0) {
+								// Retrieve this amount from the container
+								c.retrieveAmountResource(resource, amount);
+								destination.storeAmountResource(resource, amount);
+								logger.info(person, 0, "Done unloading all resources from person back to rover.");
+							}
+						}
+					}
+					
+					e.transfer(destination);	
+				}
+				else
+					logger.warning(person, "Unable to transfer " + e.getName() + " from person back to rover.");
+			}	
 		}
 	}
 

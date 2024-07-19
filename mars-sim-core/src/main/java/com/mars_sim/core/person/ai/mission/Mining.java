@@ -64,7 +64,7 @@ public class Mining extends EVAMission
 	private static final int MAX = 3000;
 	
 	/** Number of large bags needed for mission. */
-	public static final int NUMBER_OF_LARGE_BAGS = 20;
+	public static final int NUMBER_OF_LARGE_BAGS = 4;
 
 	/** The good value factor of a site. */
 	static final double MINERAL_GOOD_VALUE_FACTOR = 500;
@@ -109,12 +109,17 @@ public class Mining extends EVAMission
 			// Initialize data members.
 			detectedMinerals = new HashMap<>(1);
 			totalExcavatedMinerals = new HashMap<>(1);
-			setEVAEquipment(EquipmentType.LARGE_BAG, NUMBER_OF_LARGE_BAGS);
-
+			
 			// Recruit additional members to mission.
 			if (!recruitMembersForMission(startingPerson, MIN_GOING_MEMBERS))
 				return;
 
+			int numMembers = (getMissionCapacity() + getMembers().size()) / 2;
+			int buffer = (int)(numMembers * 1.5);
+			int newContainerNum = Math.max(buffer, NUMBER_OF_LARGE_BAGS);
+			
+			setEVAEquipment(EquipmentType.LARGE_BAG, newContainerNum);
+			
 			Settlement s = getStartingSettlement();
 			
 			// Determine mining site.
@@ -171,7 +176,12 @@ public class Mining extends EVAMission
 		miningSite.setReserved(true);
 		detectedMinerals = new HashMap<>(1);
 		totalExcavatedMinerals = new HashMap<>(1);
-		setEVAEquipment(EquipmentType.LARGE_BAG, NUMBER_OF_LARGE_BAGS);
+		
+		int numMembers = (getMissionCapacity() + getMembers().size()) / 2;
+		int buffer = (int)(numMembers * 1.5);
+		int newContainerNum = Math.max(buffer, NUMBER_OF_LARGE_BAGS);
+		
+		setEVAEquipment(EquipmentType.LARGE_BAG, newContainerNum);
 
 		addMembers(members, false);
 
@@ -320,34 +330,61 @@ public class Mining extends EVAMission
 	}
 
 	/**
-	 * Perform the EVA
+	 * Performs the EVA.
 	 */
 	@Override
 	protected boolean performEVA(Person person) {
+
+		Rover rover = getRover();
+		double roverRemainingCap = rover.getCargoCapacity() - rover.getStoredMass();
+
+		if (roverRemainingCap <= 0) {
+			logger.info(getRover(), "No more room in " + rover.getName());
+			addMissionLog("No remaining rover capacity");
+			return false;
+		}
+
+		double weight = person.getMass();
+		if (roverRemainingCap < weight) {
+			logger.info(getRover(), "No enough capacity to fit " + person.getName() + "(" + weight + " kg).");
+			addMissionLog("Rover capacity full");
+			return false;
+		}
+		
 		// Detach towed light utility vehicle if necessary.
 		if (getRover().getTowedVehicle() != null) {
 			getRover().setTowedVehicle(null);
 			luv.setTowingVehicle(null);
 		}
 
-		// Determine if no one can start the mine site or collect resources tasks.
-		boolean nobodyMineOrCollect = true;
-		for(Worker tempMember : getMembers()) {
+		// Determine if no one can start the mine site or collect resources tasks.	
+		boolean canDo = false;
+		boolean itsMe = false;
+		for (Worker tempMember : getMembers()) {
 			if (MineSite.canMineSite(tempMember, getRover())) {
-				nobodyMineOrCollect = false;
+				// If one person is unfit and can't get out of the airlock, 
+				// it's okay. Do NOT stop others from doing EVA.
+				canDo = canDo || true;
 			}
 			if (canCollectExcavatedMinerals(tempMember)) {
-				nobodyMineOrCollect = false;
+				
+				if (person.equals(tempMember)) {
+					itsMe = true;
+				}
+				
+				// If one person is unfit and can't get out of the airlock, 
+				// it's okay. Do NOT stop others from doing EVA.
+				canDo = canDo || true;
 			}
 		}
 
 		// Nobody can do anything so stop
-		if (nobodyMineOrCollect) {
+		if (!canDo) {
 			logger.warning(getRover(), "No one can mine sites in " + getName() + ".");
 			return false;
 		}
 
-		if (canCollectExcavatedMinerals(person)) {
+		if (itsMe) {
 			AmountResource mineralToCollect = getMineralToCollect(person);
 			assignTask(person, new CollectMinedMinerals(person, getRover(), mineralToCollect));
 		}

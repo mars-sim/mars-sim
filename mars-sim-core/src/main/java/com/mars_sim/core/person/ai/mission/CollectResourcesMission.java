@@ -118,14 +118,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		this.cumulativeCollectedByID = new HashMap<>();
 		this.containerID = containerID;
 		
-		int numMembers = getMissionCapacity();
-		int buffer = (int)(numMembers * 1.25);
-		int newContainerNum = Math.max(buffer, containerNum);
 		
-		setEVAEquipment(containerID, newContainerNum);
-		
-		setEVAEquipment(containerID, containerNum);
-
 		// Recruit additional members to mission.
 		if (!recruitMembersForMission(startingPerson, MIN_PEOPLE)) {
 			logger.warning(getVehicle(), "Not enough members recruited for mission " 
@@ -134,6 +127,12 @@ public abstract class CollectResourcesMission extends EVAMission
 			return;
 		}
 
+		int numMembers = (getMissionCapacity() + getMembers().size()) / 2;
+		int buffer = (int)(numMembers * 1.5);
+		int newContainerNum = Math.max(buffer, containerNum);
+		
+		setEVAEquipment(containerID, newContainerNum);
+		
 		// Check vehicle
 		if (!hasVehicle()) {
 			return;
@@ -227,8 +226,8 @@ public abstract class CollectResourcesMission extends EVAMission
 		this.cumulativeCollectedByID = new HashMap<>();
 		this.containerID = containerID;
 		
-		int numMembers = members.size();
-		int buffer = (int)(numMembers * 1.25);
+		int numMembers = (getMissionCapacity() + getMembers().size()) / 2;
+		int buffer = (int)(numMembers * 1.5);
 		int newContainerNum = Math.min(buffer, containerNum);
 		
 		setEVAEquipment(containerID, newContainerNum);

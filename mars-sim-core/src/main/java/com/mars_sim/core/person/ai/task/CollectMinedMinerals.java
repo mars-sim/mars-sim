@@ -50,8 +50,15 @@ public class CollectMinedMinerals extends EVAOperation {
 	public static final double LABOR_TIME = 40D;
 	
 	// Data members
-	private Rover rover; // Rover used.
+	protected int resourceType;
+	
+	/** The container type to use to collect resource. */
+	protected EquipmentType containerType = EquipmentType.LARGE_BAG;
+	
+	private Rover rover;
+	
 	protected AmountResource mineralType;
+	
 	private Mining mining;
 	
 	/**
@@ -77,51 +84,73 @@ public class CollectMinedMinerals extends EVAOperation {
 		// Initialize data members.
 		this.rover = rover;
 		this.mineralType = mineralType;
-
+		this.resourceType = mineralType.getID();	
+		
 		// Determine location for collection site.
 		setRandomOutsideLocation(rover);
 
-		// Take bags for collecting mined minerals.
-		if (!hasBags()) {
-			boolean hasBag = takeBag();
+		// Take container for collecting resource.
+		int num = numContainers();
+		if (num == 0) {
+			boolean hasIt = takeContainer();
 
-			// If bags are not available, end task.
-			if (!hasBag) {
-				logger.log(person, Level.WARNING, 5_000,
-						"Unable to find more bags to collect mined minerals.");
+			// If container is not available, end task.
+			if (!hasIt) {
+				logger.warning(person, 5000,
+						"Unable to find a " + containerType.getName() + " to collect resources.");
 				endTask();
+				return;
+			}
+		}
+		else if (num > 1) {
+			// Return extra containers
+			for (int i=0; i<num-1; i++) {
+				Container container = person.findContainer(containerType, false, resourceType); 
+				if (container != null) {
+					boolean done = container.transfer(rover);
+					if (done)
+						logger.info(person, 0, "Returned an extra " + containerType.getName() + " from person back to rover.");
+					else
+						logger.warning(person, 0, "Unable to transfer " + containerType.getName() + " from person back to rover.");
+				}	
 			}
 		}
 	}
 
 	/**
-	 * Checks if the person is carrying any bags.
-	 * 
-	 * @return true if carrying bags.
+	 * Checks how many containers a person is carrying.
+	 *
+	 * @return true if carrying a container of this type.
+	 *
 	 */
-	private boolean hasBags() {
-		return worker.containsEquipment(EquipmentType.LARGE_BAG);
+	private int numContainers() {
+		return person.findNumContainersOfType(containerType);
 	}
-
+	
 	/**
-	 * Takes the most least full bag from the rover.
-	 * 
-	 * @throws Exception if error taking bag.
+	 * Takes the least full container from the rover.
+	 *
+	 * @throws Exception if error taking container.
 	 */
-	private boolean takeBag() {
-		Container bag = ContainerUtil.findLeastFullContainer(rover,
-											EquipmentType.LARGE_BAG,
-											mineralType.getID());
-		if (bag != null) {
-			if (person != null) {
-				return bag.transfer(person);
-			} else if (robot != null) {
-				return bag.transfer(robot);
+	private boolean takeContainer() {
+		
+		Container container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
+
+		if (container != null) {
+			boolean success = container.transfer(person);
+			if (success) {
+				logger.info(person, 5000, "Getting hold of a " + containerType.getName() + " from rover.");
 			}
-		}
+			else 
+				logger.warning(person, "Unable to transfer " + containerType.getName() + " from rover to person.");
+			return success;
+		} 
+		else
+			logger.warning(person, 5000, "Could not get hold of a " + containerType.getName() + " from rover.");
+		
 		return false;
 	}
-
+	
 	@Override
 	protected double performMappedPhase(double time) {
 
@@ -213,7 +242,7 @@ public class CollectMinedMinerals extends EVAOperation {
 			// Task may end early before a Rover is selected
 			returnEquipmentToVehicle(rover);
 		}
-
+		
 		super.clearDown();
 	}
 }

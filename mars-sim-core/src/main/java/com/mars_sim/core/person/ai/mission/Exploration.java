@@ -61,9 +61,9 @@ public class Exploration extends EVAMission
 	private static final String EXPLORATION_SITE = "Exploration Site ";
 
 	/** Number of specimen containers required for the mission. */
-	public static final int REQUIRED_SPECIMEN_CONTAINERS = 20;
+	public static final int REQUIRED_SPECIMEN_CONTAINERS = 4;
 	/** Amount of time to explore a site. */
-	private static final double STANDARD_TIME_PER_SITE = 250.0;
+	private static final double STANDARD_TIME_PER_SITE = 750.0;
 	
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TOURISM, ObjectiveType.TRANSPORTATION_HUB);
 	
@@ -128,7 +128,7 @@ public class Exploration extends EVAMission
 			// Update the number of determined sites
 			numSites = sitesToClaim.size();
 			
-			initSites(sitesToClaim, skill);
+			initializeExplorationSites(sitesToClaim, skill);
 
 			// Set initial mission phase.
 			setInitialPhase(needsReview);
@@ -153,12 +153,14 @@ public class Exploration extends EVAMission
 		
 		int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);		
 		
-		initSites(explorationSites, skill);
+		initializeExplorationSites(explorationSites, skill);
 
 		// Add mission members.
 		if (!isDone()) {
 			addMembers(members, false);
 
+			
+			
 			// Set initial mission phase.
 			setInitialPhase(false);
 		}
@@ -166,8 +168,11 @@ public class Exploration extends EVAMission
 
 	/**
 	 * Sets up the exploration sites.
+	 *  
+	 * @param explorationSites
+	 * @param skill
 	 */
-	private void initSites(List<Coordinates> explorationSites, int skill) {
+	private void initializeExplorationSites(List<Coordinates> explorationSites, int skill) {
 
 		numSites = explorationSites.size();
 		
@@ -177,7 +182,12 @@ public class Exploration extends EVAMission
 		
 		explorationSiteCompletion = new HashMap<>(numSites);
 		
-		setEVAEquipment(EquipmentType.SPECIMEN_BOX, REQUIRED_SPECIMEN_CONTAINERS);
+		int numMembers = (getMissionCapacity() + getMembers().size()) / 2;
+		int buffer = (int)(numMembers * 1.5);
+		int newContainerNum = Math.max(buffer, REQUIRED_SPECIMEN_CONTAINERS);
+		
+		setEVAEquipment(EquipmentType.SPECIMEN_BOX, newContainerNum);
+	
 
 		// Configure the sites to be explored with mineral concentration during the stage of mission planning
 		for (Coordinates c : explorationSites) {

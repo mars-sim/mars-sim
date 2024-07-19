@@ -923,7 +923,7 @@ public class Settlement extends Structure implements Temporal,
 			double distance = getCoordinates().getDistance(firstSite);
 			
 			logger.info(this, "Sol " + sol + ". " + firstSite.getFormattedString() 
-						+ " was selected as the first special ROI site (" + Math.round(distance)  + " km away) for exploration.");
+						+ " was selected as the first special ROI site (" + Math.round(distance * 100.0)/100.0  + " km away) for exploration.");
 			
 			// Creates an initial explored site in SurfaceFeatures
 			createARegionOfInterest(firstSite, 0);
@@ -983,7 +983,7 @@ public class Settlement extends Structure implements Temporal,
 			double distance = getCoordinates().getDistance(anotherSite);
 			
 			logger.info(this, "Sol " + sol + ". " + anotherSite.getFormattedString() 
-						+ " was added as a new ROI site (" + Math.round(distance)  + " km away) for exploration.");
+						+ " was added as a new ROI site (" + Math.round(distance * 100.0)/100.0 + " km away) for exploration.");
 			
 			// Creates an initial explored site in SurfaceFeatures
 			createARegionOfInterest(anotherSite, skill);

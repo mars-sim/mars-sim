@@ -1295,10 +1295,9 @@ public class ExitAirlock extends Task {
 						person.rescueOperation((Rover) person.getVehicle(), nearbySettlement);
 						// Note: rescueOperation() is more like a hack, rather than a legitimate way 
 						// of transferring a person through the airlock into the settlement 
-					}
-					
-					
+					}	
 				}
+				
 				else if (person.isOutside()) {
 					Settlement nearbySettlement = unitManager.findSettlement(person.getCoordinates());
 					if (nearbySettlement != null)
