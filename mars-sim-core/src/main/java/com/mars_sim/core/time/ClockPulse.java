@@ -12,16 +12,18 @@ public class ClockPulse {
 	// may add back private static final SimLogger logger =
 	// SimLogger.getLogger(ClockPulse.class.getName())
 
-	private boolean isNewSol;
-	private boolean isNewHalfSol;
-	private boolean isNewHalfMillisol;
-	private boolean isNewIntMillisol;
+	// Need to set isNewSol to false at startup
+	private boolean isNewSol = false;
+	// Need to set isNewHalfSol to false at startup
+	private boolean isNewHalfSol = false;
+	private boolean isNewHalfMillisol = false;
+	private boolean isNewIntMillisol = false;
 
-	/** The last millisol integer from the last pulse. */
-	private int lastIntMillisol;
-	/** The last sol from the last pulse. */
-	private int lastSol;
-
+	/** The last sol on the last fireEvent. Need to set to -1. */
+	private int lastSol = -1;
+	/** The last millisol integer on the last fireEvent. Need to set to -1. */
+	private int lastIntMillisol = -1;
+	
 	private long id;
 
 	/** The sols passed since last pulse. */
@@ -145,51 +147,64 @@ public class ClockPulse {
 		double actualElapsed = msolsSkipped + elapsed;
 		// Check if the simulation is just starting up
 //		boolean atStartup = actualElapsed > currentMillisol;
+		
 		// Add the skipped millisols
 		MarsTime newMars = marsTime.addTime(msolsSkipped);
-		// Get the current millisol
-		double currentMillisol = marsTime.getMillisol();
-
-		////////////////////////////////////////////////////////////////////////////////////
-		// Part 1: Sol Updates
-		////////////////////////////////////////////////////////////////////////////////////
-		// Get the current sol
-		int currentSol = marsTime.getMissionSol();
-		// Identify if this pulse crosses a sol
-		boolean isNewSol = (lastSol != currentSol);
-		// Identify if it just passes half a sol
-		boolean isNewHalfSol = isNewSol || (lastMillisol < 500 && currentMillisol >= 500);
-		// Updates lastSol
-		if (isNewSol) {
-			this.isNewSol = isNewSol;
-			this.lastSol = currentSol;
-		}
-		if (isNewHalfSol) {
-			this.isNewHalfSol = isNewHalfSol;
-		}
-
-		////////////////////////////////////////////////////////////////////////////////////
-		// Part 2: Millisol Updates
-		////////////////////////////////////////////////////////////////////////////////////
-
-		// Get the current millisol integer
-		int currentIntMillisol = marsTime.getMillisolInt();
-		// Checks if this pulse starts a new integer millisol
-		boolean isNewIntMillisol = lastIntMillisol != currentIntMillisol;
-		// Identify if it just passes half a millisol
-		boolean isNewHalfMillisol = isNewIntMillisol || (lastMillisol < .5 && currentMillisol >= .5);
-		// Update the lastIntMillisol
-		if (isNewHalfMillisol) {
-			this.isNewHalfMillisol = isNewHalfMillisol;
-		}
-		// Update the lastIntMillisol
-		if (isNewIntMillisol) {
-			this.isNewIntMillisol = isNewIntMillisol;
-			lastIntMillisol = currentIntMillisol;
-		}
-
-		// Update the lastMillisol
-		lastMillisol = currentMillisol;
+		
+//		// Get the current millisol integer
+//		int currentIntMillisol = marsTime.getMillisolInt();
+//		// Get the current millisol
+//		double currentMillisol = marsTime.getMillisol();
+//		// Get the current sol
+//		int currentSol = marsTime.getMissionSol();
+//		
+//		
+//		////////////////////////////////////////////////////////////////////////////////////
+//		// Part 1: Update isNewSol and isNewHalfSol
+//		////////////////////////////////////////////////////////////////////////////////////
+//
+//		// Identify if this pulse crosses a sol
+//		isNewSol = (lastSol != currentSol);
+//
+//		// Updates lastSol
+//		if (isNewSol) {
+//			this.lastSol = currentSol;
+//			this.isNewHalfSol = true;
+//		}
+//		else {
+//			// Identify if it just passes half a sol
+//			isNewHalfSol = isNewSol || (lastMillisol < 500 && currentMillisol >= 500);
+//		}
+//
+//
+//		////////////////////////////////////////////////////////////////////////////////////
+//		// Part 2: Update isNewIntMillisol and isNewHalfMillisol
+//		////////////////////////////////////////////////////////////////////////////////////
+//
+//		// Checks if this pulse starts a new integer millisol
+//		isNewIntMillisol = (lastIntMillisol != currentIntMillisol);
+//		// Updates lastSol
+//		if (isNewIntMillisol) {
+//			this.lastIntMillisol = currentIntMillisol;
+//			this.isNewHalfMillisol = true;
+//		}
+//		else {
+//			int intPartLast = (int)lastMillisol;
+//			double decimalPartLast = lastMillisol - intPartLast;
+//			int intPartCurrent = (int)currentMillisol;
+//			double decimalPartCurrent = currentMillisol - intPartCurrent;
+//			
+//			// Identify if it just passes half a millisol
+//			isNewHalfMillisol = isNewIntMillisol || (decimalPartLast < .5 && decimalPartCurrent >= .5);
+//		}
+//		
+//		
+//		////////////////////////////////////////////////////////////////////////////////////
+//		// Part 3: Update lastMillisol
+//		////////////////////////////////////////////////////////////////////////////////////
+//
+//		// Update the lastMillisol
+//		lastMillisol = currentMillisol;
 
 		/**
 		 * Do NOT delete the following logger. For future debugging when changes are
