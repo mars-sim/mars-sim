@@ -167,7 +167,7 @@ public class VehicleSpec implements Serializable {
 	// Define percent of other energy usage (other than for drivetrain)
 	private double otherEnergyUsagePercent = 0;
 	/** The estimated total number of hours the vehicle can run [hr], given the full tank of fuel. */
-	private double totalHours;
+	private double baseTotalHours;
 	/** The maximum fuel capacity of the vehicle [kg] */
 	private double fuelCapacity;
 	/** The maximum cargo capacity of the vehicle [kg] */	
@@ -199,7 +199,7 @@ public class VehicleSpec implements Serializable {
 	// See https://ev-database.org/cheatsheet/energy-consumption-electric-car 
 	
 	/**
-	 * The coefficient for conversing FC to FE 
+	 * The coefficient for converting FC to FE 
 	 */
 	private double coefficientBaseFC2FE;
 	
@@ -431,31 +431,29 @@ public class VehicleSpec implements Serializable {
 		drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsagePercent / 100.0) * drivetrainEfficiency + batteryCapacity;
 		
 		// Gets the estimated energy available to be consumed for the trip [in kWh]
-		double estEnergyConsumed = methanolEnergyCapacity * drivetrainEfficiency + batteryCapacity;
-		
+		double baseEnergyConsumed = methanolEnergyCapacity * drivetrainEfficiency + batteryCapacity;
 		// Gets the estimated average road load power (including coasting)
-		double roadLoadPower = .25 * (.15 * peakPower + .85 * basePower);
-		
+		double baseRoadLoadPower = .25 * (.15 * peakPower + .85 * basePower);
 		// Gets the maximum total # of hours the vehicle is capable of operating
-		totalHours = estEnergyConsumed / roadLoadPower;
+		baseTotalHours = baseEnergyConsumed / baseRoadLoadPower;
 		// kW / kph -> (kW / km / h) -> kW * h / km
-		double averageForce = roadLoadPower / baseSpeed; 
+		double baseForce = baseRoadLoadPower / baseSpeed; 
 	
 		// Gets the base range [in km] of the vehicle
-		// kWh / (kW * h / km) -> km * h / h -> km
-		baseRange = estEnergyConsumed / averageForce;
+		// km = kWh / (kW * h / km) -> km * h / h -> km
+		baseRange = baseEnergyConsumed / baseForce;
 		// Gets the base fuel economy [in km/kg] of this vehicle
 		baseFuelEconomy = baseRange / (1 + fuelCapacity);
 		// Gets the base fuel consumption [in Wh/km] of this vehicle. Convert estEnergyConsumed from kWh to Wh.
-		baseFuelConsumption =  1000 * estEnergyConsumed / (1 + baseRange);
+		baseFuelConsumption =  1000 * baseEnergyConsumed / (1 + baseRange);
 		// Gets the base coeff for FC to FE
-		coefficientBaseFC2FE = baseFuelEconomy / baseFuelConsumption * roadLoadPower / baseSpeed;
+		coefficientBaseFC2FE = baseFuelEconomy / baseFuelConsumption * baseRoadLoadPower / baseSpeed;
 		
 		// Accounts for the estimated additional beginning mass
 		beginningMass = calculatedEmptyMass + additionalBeginningMass;
 		// Accounts for the estimated additional end mass
 		double endMass = calculatedEmptyMass + additionalEndMass;
-		// Accounts for the additional payload mass (always less than one)
+		// Accounts for the additional payload mass
 		double massModifier = 1 + .2 * (additionalBeginningMass/calculatedEmptyMass 
 				+ additionalEndMass/calculatedEmptyMass);
 		
@@ -555,7 +553,7 @@ public class VehicleSpec implements Serializable {
 	}
 	
 	/**
-	 * Gets the energy per module of the battery.
+	 * Gets the energy per module of the battery module [kWh].
 	 * 
 	 * @return
 	 */
@@ -919,12 +917,12 @@ public class VehicleSpec implements Serializable {
 	}
 	
 	/**
-	 * Gets the estimated total hours the vehicle can operate.
+	 * Gets the base total hours the vehicle can operate.
 	 * 
 	 * @return
 	 */
-	public double getTotalHours() {
-		return totalHours;
+	public double getBaseTotalHours() {
+		return baseTotalHours;
 	}
 
 	/**

@@ -310,12 +310,14 @@
 		  
 		 double fuelNeeded = 0;
 		 
+		 double energyByBattery = 0;
+		 
 		 if (accelMotor >= 0) {
 			 // Scenario 1: acceleration is needed to either maintain the speed or to go up to the top speed
   
 			 // Set new vehicle acceleration
 			 vehicle.setAccel(accelMotor);
-			 
+			 // W = [m/s2] [kg] [m/s] + [J] / [s]
 			 double iPower = accelMotor * mass * vMS + potentialEnergyDrone / secs; // [in W]
 			 
 //			 if (uKPH - vKPH > SPEED_BUFFER || vKPH - uKPH < SPEED_BUFFER) {
@@ -350,9 +352,9 @@
 			 // Convert the total energy [in Wh]. Need to convert from J to Wh
 			 double totalEnergyNeeded = iPower * secs / JOULES_PER_WH ; // [in Wh]
 			// Get energy [in Wh] from the battery
-			 double energyByBattery = 0;
+//			 double energyByBattery = 0;
 			 // Get energy [in Wh] from the fuel
-			 double energyByFuel = 0;
+			 double energyNeededByFuel = 0;
 			 
 			 if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
 				 // For drone, prioritize to use up fuel as power source first
@@ -366,7 +368,7 @@
 			 }
 			 
 			 // Get energy from the fuel
-			 energyByFuel = totalEnergyNeeded - energyByBattery;
+			 energyNeededByFuel = totalEnergyNeeded - energyByBattery;
 			 
 			 overallEnergyUsed = totalEnergyNeeded;
 			 
@@ -387,12 +389,12 @@
 
 			 }
 			  
-			 else if (energyByFuel > MIN_FUEL) {
+			 else if (energyNeededByFuel > MIN_FUEL) {
 				  // Scenario 2B and 2C: If the battery is unable to meet the needed energy requirement
 				 // Need to turn on fuel cells to supply more power
 				  
 				 // Derive the mass of fuel needed kg = Wh / Wh/kg
-				 fuelNeeded = energyByFuel / vehicle.getFuelConv();
+				 fuelNeeded = energyNeededByFuel / vehicle.getFuelConv();
 				 
 				 // Note that if remainingFuel == -1, it's either nuclear powered or solar powered
 				 if (remainingFuel == -1 || fuelNeeded <= remainingFuel) {
@@ -419,26 +421,37 @@
 					 // Limit the fuel to be used
 					 fuelNeeded = remainingFuel;
 					 // Calculate the new energy provided by the fuel
-					 energyByFuel = fuelNeeded * vehicle.getFuelConv();	
+					 energyNeededByFuel = fuelNeeded * vehicle.getFuelConv();	
 					 
-					 logger.log(vehicle, Level.INFO, 20_000, "energyByFuel: " 
-							 +  Math.round(energyByFuel * 1000.0)/1000.0 + " Wh");					 
+					 logger.log(vehicle, Level.INFO, 20_000, "energyNeededByFuel: " 
+							 +  Math.round(energyNeededByFuel * 1000.0)/1000.0 + " Wh");					 
 					 
-					 // recompute overallEnergyUsed
-					 overallEnergyUsed = energyByFuel + energyByBattery;
+					 // Recompute overallEnergyUsed
+					 overallEnergyUsed = energyNeededByFuel + energyByBattery;
 							
-					 // Calculate the new instantaneous power provided by the fuel
-					 iPower = energyByFuel / secs * JOULES_PER_WH;
+					 // Calculate the new instantaneous power
+					 // 1 Wh = 3.6 kJ 
+					 // W = J / s  / [3.6 kJ / Wh]
+					 // W = Wh / 3.6k
+					 iPower = overallEnergyUsed / secs / JOULES_PER_WH;
  
 					 // FUTURE: will consider the on-board accessory vehicle power usage
 		
+					 // Previously, double iPower = accelMotor * mass * vMS + potentialEnergyDrone / secs; // [in W]
+					 // iPower - potentialEnergyDrone / secs = accelMotor * mass * vMS ; 
+					 // vMS = (iPower - potentialEnergyDrone / secs) / accelMotor / mass
+					 
+					 vMS = (iPower - potentialEnergyDrone / secs) / accelMotor / mass;
+					 
 					 // Find the new speed   
-					 vKPH = iPower - potentialEnergyDrone / secs / accelMotor / mass;
+//?					 vKPH = iPower - potentialEnergyDrone / secs / accelMotor / mass;
 					 
 					 // FUTURE : may need to find a way to optimize motor power usage 
 					 // and slow down the vehicle to the minimal to conserve power	
 					 
-					 vMS = vKPH / KPH_CONV; // [in m/s^2]
+					 vKPH = vMS * KPH_CONV;
+					 
+//					 vMS = vKPH / KPH_CONV; // [in m/s^2]
  
 					 accelTarget = (vMS - uMS) / secs; // [in m/s^2]
 					 // Recompute the new distance it could travel
@@ -474,7 +487,7 @@
 							 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH
 							 + "Battery: " 			+ Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH
 							 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 100.0)/100.0 + WH
-							 + "energyByFuel: " +  Math.round(energyByFuel * 100.0)/100.0 + WH
+							 + "energyByFuel: " +  Math.round(energyNeededByFuel * 100.0)/100.0 + WH
 							 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH							 
 							 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG);
 			 }
@@ -701,7 +714,7 @@
 		 */
 		 
 		 // Add distance traveled to vehicle's odometer.
-		 vehicle.addOdometerMileage(distanceTravelled, totalEnergyUsed);
+		 vehicle.addOdometerMileage(distanceTravelled, energyByBattery, fuelNeeded);
 		 // Track maintenance due to distance traveled.
 		 vehicle.addDistanceLastMaintenance(distanceTravelled);
 		 // Derive the instantaneous fuel economy [in km/kg]

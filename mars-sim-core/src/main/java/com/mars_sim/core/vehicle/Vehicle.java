@@ -144,7 +144,7 @@ public abstract class Vehicle extends Unit
 	/** Distance traveled by vehicle since last maintenance (km) . */
 	private double distanceMaint; //
 	/** The cumulative fuel usage of the vehicle [kg] */
-//	private double fuelCumUsed;
+	private double cumFuelUsedKG;
 	/** The cumulative energy usage of the vehicle [kWh] */
 	private double cumEnergyUsedKWH;
 	/** The instantaneous fuel economy of the vehicle [km/kg]. */
@@ -813,7 +813,8 @@ public abstract class Vehicle extends Unit
 
         if ((mission == null) || (mission.getStage() == Stage.PREPARATION)) {
         	// Before the mission is created, the range would be based on vehicle's capacity
-        	range = Math.min(getBaseRange() * RANGE_FACTOR, getEstimatedFuelEconomy() * getFuelCapacity()) * getMass() / getBeginningMass();// * fuel_range_error_margin
+        	range = Math.min(getBaseRange() / RANGE_FACTOR, 
+        			getEstimatedFuelEconomy() * getFuelCapacity()) * getMass() / getBeginningMass();// * fuel_range_error_margin
         }
         else {
         	
@@ -824,9 +825,8 @@ public abstract class Vehicle extends Unit
     		else {
                 double amountOfFuel = getAmountResourceStored(fuelTypeID);
             	// During the journey, the range would be based on the amount of fuel in the vehicle
-        		range = Math.min(getBaseRange() * RANGE_FACTOR, 
-        					getEstimatedFuelEconomy() * amountOfFuel) 
-        					* getMass() / getBeginningMass();
+        		range = Math.min(getBaseRange() / RANGE_FACTOR, 
+        					getEstimatedFuelEconomy() * amountOfFuel) * getMass() / getBeginningMass();
     		}
         }
 
@@ -901,6 +901,15 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
+	 * Gets the cumulative fuel usage of the vehicle [kg].
+	 * 
+	 * @return
+	 */
+	public double getCumFuelUsage() {
+		return cumFuelUsedKG;
+	}
+	
+	/**
 	 * Gets the energy available at the full tank [kWh].
 	 *
 	 * @return
@@ -933,10 +942,10 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getCumFuelEconomy() {
-//		return getFuelConv() / getCumFuelConsumption();
-		if (odometerMileage == 0 || cumEnergyUsedKWH == 0)
+		if (odometerMileage == 0 || cumFuelUsedKG == 0)
 			return 0;
-		return odometerMileage / cumEnergyUsedKWH / 1000 * getFuelConv();
+		// [km] / [kg] 
+		return odometerMileage / cumFuelUsedKG;
 	}
 	
 	/**
@@ -947,7 +956,8 @@ public abstract class Vehicle extends Unit
 	public double getCumFuelConsumption() {
 		if (odometerMileage == 0 || cumEnergyUsedKWH == 0)
 			return 0;
-		return 1000 * cumEnergyUsedKWH / odometerMileage;
+		// [kWh] / [km] / 1000 
+		return  cumEnergyUsedKWH / odometerMileage / 1000;
 	}
 	
 	/**
@@ -959,7 +969,7 @@ public abstract class Vehicle extends Unit
 		double cumFE = getCumFuelEconomy();
 		double cumFC = getCumFuelConsumption();
 		
-		if (cumFE > 0 && cumFC > 0 && averageRoadLoadPower > 0 && averageRoadLoadSpeed >0)
+		if (cumFE > 0 && cumFC > 0 && averageRoadLoadPower > 0 && averageRoadLoadSpeed > 0)
 			return cumFE / cumFC * averageRoadLoadPower / averageRoadLoadSpeed ;
 		
 		return 0;
@@ -1071,7 +1081,7 @@ public abstract class Vehicle extends Unit
 		// Note: if cum < base, then trip is less economical more than expected
 		// Note: if cum > base, then trip is more economical than expected
 		if (cum == 0)
-			return (.5 * base + .5 * init) * VehicleController.FUEL_ECONOMY_FACTOR;
+			return (.5 * base + .5 * init);// * VehicleController.FUEL_ECONOMY_FACTOR;
 		else {
 			return (.3 * base + .3 * init + .4 * cum);
 		}
@@ -1099,7 +1109,7 @@ public abstract class Vehicle extends Unit
 		// Note: if cum > base, then vehicle consumes more than expected
 		// Note: if cum < base, then vehicle consumes less than expected		
 		if (cum == 0)
-			return (.5 * base + .5 * init) / VehicleController.FUEL_ECONOMY_FACTOR;
+			return (.5 * base + .5 * init);// / VehicleController.FUEL_ECONOMY_FACTOR;
 		else {
 			return (.3 * base + .3 * init + .4 * cum);
 		}
@@ -1166,11 +1176,13 @@ public abstract class Vehicle extends Unit
 	 *
 	 * @param distance the distance traveled traveled [km]
 	 * @param cumEnergyUsed the energy used [Wh]
+	 * @param cumFuelUsedKG the fuel used [kg]
 	 */
-	public void addOdometerMileage(double distance, double cumEnergyUsed) {
+	public void addOdometerMileage(double distance, double cumEnergyUsed, double cumFuelUsedKG) {
 		this.odometerMileage += distance;
 		this.lastDistance = distance;
 		this.cumEnergyUsedKWH += cumEnergyUsed/1000;
+		this.cumFuelUsedKG += cumFuelUsedKG;
 	}
 
 	public double getLastDistanceTravelled() {

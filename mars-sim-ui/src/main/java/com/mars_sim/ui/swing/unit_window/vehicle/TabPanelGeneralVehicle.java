@@ -96,12 +96,12 @@ public class TabPanelGeneralVehicle extends TabPanel {
 		// add country
 		// add maintainer
 		
-		infoPanel.addRow( "Crew Size", vehicle.getVehicleSpec().getCrewSize() + "");
+		infoPanel.addRow( "Max Crew", vehicle.getVehicleSpec().getCrewSize() + "");
 
-		currentMassLabel = infoPanel.addRow("Current Mass", StyleManager.DECIMAL_KG.format(vehicle.getMass()));
-		infoPanel.addRow("Base Mass", StyleManager.DECIMAL_KG.format(vehicle.getBaseMass()));
+		currentMassLabel = infoPanel.addRow("Current Weight", StyleManager.DECIMAL_KG.format(vehicle.getMass()));
+		infoPanel.addRow("Base Weight", StyleManager.DECIMAL_KG.format(vehicle.getBaseMass()));
 		
-		remainCapLabel = infoPanel.addRow("Remain Capacity", StyleManager.DECIMAL_KG.format(vehicle.getRemainingCargoCapacity()));
+		remainCapLabel = infoPanel.addRow("Remaining Capacity", StyleManager.DECIMAL_KG.format(vehicle.getRemainingCargoCapacity()));
 		infoPanel.addRow("Cargo Capacity", StyleManager.DECIMAL_KG.format(vehicle.getCargoCapacity()));
 
 		fuelCap = vehicle.getFuelCapacity();

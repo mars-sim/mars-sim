@@ -27,8 +27,8 @@ public class MissionStatus implements Serializable {
 	/**
 	 * Factory helper method to create a status.
 	 */
-	public static MissionStatus createResourceStatus() {
-		return new MissionStatus("No battery power");
+	public static MissionStatus createResourceStatus(String reason) {
+		return new MissionStatus(reason);
 	}
 	
 	private String name;

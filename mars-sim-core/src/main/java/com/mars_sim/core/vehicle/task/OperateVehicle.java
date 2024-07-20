@@ -290,13 +290,13 @@ public abstract class OperateVehicle extends Task {
 	/**
 	 * Turns on the emergency beacon to ask for help.
 	 * 
-	 * @param resource
+	 * @param reason
 	 */
-	private void turnOnBeacon() {
+	private void turnOnBeacon(String reason) {
 		vehicle.setSpeed(0D);
         	
     	if (!vehicle.isBeaconOn() && (vehicle instanceof VehicleMission vm)) {
-			MissionStatus status = MissionStatus.createResourceStatus();
+			MissionStatus status = MissionStatus.createResourceStatus(reason);
 			vm.getHelp(status);
     	}
 	}
@@ -352,14 +352,16 @@ public abstract class OperateVehicle extends Task {
 	
 	    	if (remainingFuel < LEAST_AMOUNT) {
 	    		logger.log(vehicle, Level.SEVERE, 20_000, 
-						"Case 0a1: Out of fuel.");
+						"Case 0a1: Out of fuel. Cannot continue.");
+	    		// Turn on emergency beacon
+	    		turnOnBeacon(ResourceUtil.methanolID);
 				vehicle.addSecondaryStatus(StatusType.OUT_OF_FUEL);
 				
 		    	if (batteryEnergy < LEAST_AMOUNT) {
 		    		logger.log(vehicle, Level.SEVERE, 20_000, 
-							"Case 0a2: Out of fuel and out of battery power. Cannot drive.");
+							"Case 0a2: Out of fuel and out of battery power. Cannot continue.");
 		    		// Turn on emergency beacon
-			    	turnOnBeacon();
+			    	turnOnBeacon("No battery power");
 					vehicle.addSecondaryStatus(StatusType.OUT_OF_BATTERY_POWER);
 		        	endTask();
 		        	return time;
@@ -370,7 +372,7 @@ public abstract class OperateVehicle extends Task {
 	
 	    	if (remainingOxidizer < LEAST_AMOUNT * RATIO_OXIDIZER_FUEL) {
 	    		logger.log(vehicle, Level.SEVERE, 20_000, 
-						"Case 0b1: Out of fuel oxidizer. Cannot drive.");
+						"Case 0b1: Out of fuel oxidizer. Cannot continue.");
 	    		// Turn on emergency beacon
 		    	turnOnBeacon(ResourceUtil.oxygenID);
 				vehicle.addSecondaryStatus(StatusType.OUT_OF_OXIDIZER);
@@ -379,7 +381,7 @@ public abstract class OperateVehicle extends Task {
 		    		logger.log(vehicle, Level.SEVERE, 20_000, 
 							"Case 0b2: Out of fuel and out of battery power. Cannot drive.");
 		    		// Turn on emergency beacon
-			    	turnOnBeacon();
+			    	turnOnBeacon("No battery power");
 					vehicle.addSecondaryStatus(StatusType.OUT_OF_BATTERY_POWER);
 		        	endTask();
 		        	return time;
@@ -391,7 +393,7 @@ public abstract class OperateVehicle extends Task {
         	logger.log(vehicle, Level.SEVERE, 20_000, 
 					"Case 0c: Out of battery. Cannot drive.");
     		// Turn on emergency beacon
-	    	turnOnBeacon();
+	    	turnOnBeacon("No battery power");
 			vehicle.addSecondaryStatus(StatusType.OUT_OF_BATTERY_POWER);
         	endTask();
         	return time;
@@ -399,7 +401,6 @@ public abstract class OperateVehicle extends Task {
         
         // Find the distance to destination.
         double dist2Dest = getDistanceToDestination();
-        
 //        logger.log(vehicle, Level.SEVERE, 0, "dist2Dest: " + dist2Dest)
         
         if (Double.isNaN(dist2Dest)) {

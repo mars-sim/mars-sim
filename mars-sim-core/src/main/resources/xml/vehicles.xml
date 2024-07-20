@@ -156,6 +156,11 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<!-- Cargo capacity list -->
 		<!-- See Rover.java for adding capacity for each resource -->
 		<!-- total-capacity: total cargo capacity of rover. (kg) -->
+		<!-- 
+			 As a comparison, Tesla's Cybertruck's payload capacity 
+			 is 1,136 kg. Chevrolet Silverado EV's 652 kg 
+			 and the Ford F-150 Lightning's 1,000 kg.	
+		-->
 		<!-- Default: varies according to the type of vehicle -->
 		<cargo total-capacity="2000.0">
 
@@ -316,7 +321,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<base-speed value="25.0" />
 		<base-power value="20" />
 		<empty-mass value="1700.0" />
-		<terrain-handling value="2.5"/>
+		<terrain-handling value="3.0"/>
 		<crew-size value="8" />
 		<cargo total-capacity="4000.0">
 			<capacity resource="methanol" value="400.0" />
@@ -367,7 +372,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<base-speed value="25.0" />
 		<base-power value="20" />		
 		<empty-mass value="2000.0" />
-		<terrain-handling value="2.5"/>
+		<terrain-handling value="2"/>
 		<crew-size value="2" />
 		<cargo total-capacity="6000.0">
 			<capacity resource="methanol" value="400.0" />

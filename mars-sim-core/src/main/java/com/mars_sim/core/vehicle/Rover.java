@@ -931,6 +931,14 @@ public class Rover extends GroundVehicle implements Crewable,
 		// Note: multiply by 0.95 would account for the extra distance travelled in between sites
 		double fuelRange = super.getRange() * FUEL_RANGE_FACTOR;
 
+		// Battery constribute the range
+		double cap = super.getBatteryCapacity();
+		double percent = super.getBatteryPercent();
+		double estFC = super.getEstimatedFuelConsumption();
+		double batteryRange = cap * percent / 100 / estFC * 1000;
+		
+//		logger.info(this, "batteryRange: " + batteryRange);
+		
 		// Estimate the distance traveled per sol
 		double distancePerSol = getEstimatedTravelDistancePerSol();
 
@@ -957,7 +965,7 @@ public class Rover extends GroundVehicle implements Crewable,
 		double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewCapacity);
 		double oxygenRange = distancePerSol * oxygenSols / margin;
 
-		double max = Math.min(oxygenRange, Math.min(foodRange, Math.min(waterRange, fuelRange)));
+		double max = Math.min(oxygenRange, Math.min(foodRange, Math.min(waterRange, fuelRange + batteryRange)));
 
 		return max;
 	}
