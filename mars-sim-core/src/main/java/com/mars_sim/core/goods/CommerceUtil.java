@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.goods;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -522,7 +523,7 @@ public final class CommerceUtil {
 		credit += soldCredit;
 		CreditManager.setCredit(buyingSettlement, sellingSettlement, credit);
 
-		Map<Good, Integer> buyLoad = null;
+		Map<Good, Integer> buyLoad = Collections.emptyMap();
 		// Check if buying settlement owes the selling settlement too much for them to
 		// sell.
 		if (credit > (-1D * SELL_CREDIT_LIMIT)) {
@@ -530,13 +531,15 @@ public final class CommerceUtil {
 			// Determine the initial buy load based on goods that are profitable for the
 			// destination settlement to sell.
 			Shipment returnLoad = determineLoad(buyingSettlement, sellingSettlement, delivery, Double.POSITIVE_INFINITY);
-			double baseBuyLoadValue = returnLoad.getCostValue();
-			double buyLoadValue = baseBuyLoadValue / tradeModifier;
-			buyLoad = returnLoad.getLoad();
+			if (returnLoad != null) {
+				double baseBuyLoadValue = returnLoad.getCostValue();
+				double buyLoadValue = baseBuyLoadValue / tradeModifier;
+				buyLoad = returnLoad.getLoad();
 
-			// Update the credit value between the starting and destination settlements.
-			credit -= buyLoadValue;
-			CreditManager.setCredit(buyingSettlement, sellingSettlement, credit);
+				// Update the credit value between the starting and destination settlements.
+				credit -= buyLoadValue;
+				CreditManager.setCredit(buyingSettlement, sellingSettlement, credit);
+			}
 		}
 
 		return buyLoad;

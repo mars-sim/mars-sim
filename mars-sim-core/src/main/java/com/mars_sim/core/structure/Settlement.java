@@ -2303,26 +2303,12 @@ public class Settlement extends Structure implements Temporal,
 	 * @return Collection of parked or garaged drones
 	 */
 	public Collection<Drone> getParkedGaragedDrones() {
-		return ownedVehicles.stream()
+		return vicinityParkedVehicles.stream()
 				.filter(v -> v.getVehicleType() == VehicleType.DELIVERY_DRONE)
-				.filter(v -> this.equals(v.getSettlement()))
 				.map(Drone.class::cast)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
-	/**
-	 * Gets the number of drones parked or garaged at the settlement.
-	 *
-	 * @return parked or garaged drones number
-	 */
-	public int getNumParkedGaragedDrones() {
-		return Math.toIntExact(ownedVehicles
-				.stream()
-				.filter(v -> v.getVehicleType() == VehicleType.DELIVERY_DRONE)
-				.filter(v -> this.equals(v.getSettlement()))
-				.collect(Collectors.counting()));
-	}
-	
 	/**
 	 * Gets a collection of vehicles parked or garaged at the settlement.
 	 *
@@ -2354,11 +2340,10 @@ public class Settlement extends Structure implements Temporal,
 	 * @return number of parked rovers
 	 */
 	public int findNumParkedRovers() {
-		return Math.toIntExact(ownedVehicles
+		return (int) vicinityParkedVehicles
 					.stream()
 					.filter(v -> VehicleType.isRover(v.getVehicleType()))
-					.filter(v -> this.equals(v.getSettlement()))
-					.collect(Collectors.counting()));
+					.count();
 	}
 
 	/**
@@ -2368,9 +2353,7 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public Collection<Vehicle> getParkedGaragedVehicles() {
 		// Get all Vehicles that are back home
-		return 	ownedVehicles.stream()
-					.filter(v -> this.equals(v.getSettlement()))
-					.collect(Collectors.toList());
+		return vicinityParkedVehicles;
 	}
 
 	/**
@@ -2379,10 +2362,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return parked vehicles number
 	 */
 	public int getNumParkedVehicles() {
-		return Math.toIntExact(ownedVehicles
-				.stream()
-				.filter(v -> this.equals(v.getSettlement()))
-				.collect(Collectors.counting()));
+		return vicinityParkedVehicles.size();
 	}
 
 	/**
