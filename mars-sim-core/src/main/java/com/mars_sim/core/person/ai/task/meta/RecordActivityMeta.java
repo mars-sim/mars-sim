@@ -54,20 +54,20 @@ public class RecordActivityMeta extends FactoryMetaTask {
         score = assessPersonSuitability(score, person);
         score = applyCommerceFactor(score, person.getAssociatedSettlement(), CommerceType.TOURISM);
 
-        // Certain roels are less likely
+        // Certain roles are less likely to engage in this task
         RoleType roleType = person.getRole().getType();
         double roleModifier = 1D;
         if (roleType != null) {
             if (roleType == RoleType.PRESIDENT)
-                roleModifier = 0.1D;
+                roleModifier = 0.05D;
             else if (roleType == RoleType.MAYOR)
-                roleModifier = 0.2D;
+                roleModifier = 0.1D;
             else if (roleType == RoleType.COMMANDER)
-                roleModifier = 0.3D;
+                roleModifier = 0.15D;
             else if (roleType == RoleType.SUB_COMMANDER)
-                roleModifier = 0.4D;
+                roleModifier = 0.2D;
             else if (roleType.isChief())
-                roleModifier = 0.5D;
+                roleModifier = 0.3D;
         }
         score.addModifier(ROLE_MODIFIER, roleModifier);
         return createTaskJobs(score);

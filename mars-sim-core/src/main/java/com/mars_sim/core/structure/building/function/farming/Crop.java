@@ -505,16 +505,16 @@ public class Crop implements Comparable<Crop>, Entity {
 				// Seedling (<10% grown crop) is less resilient and more prone to environmental
 				// factors
 			if (health < .1) {
-				logger.warning(this, 10_000, "Its seedlings at " 
+				logger.warning(this, 10_000, "Seedlings at " 
 						+ Math.round(percentageGrowth * 10D)/10D 
-						+ " percent of growth had very poor health ("
-						+ Math.round(health * 100D) / 1D + " %) and didn't survive.");
+						+ " % growth unable to survive due to very poor health ("
+						+ Math.round(health * 100D) / 1D + " %).");
 				// Add Crop Waste
-				double amt = percentageGrowth * remainingHarvest / 100D;
+				double amt = percentageGrowth * remainingHarvest / 100;
 				if (amt > 0) {
 					store(amt, CROP_WASTE_ID);
 					logger.warning(this, 10_000, 
-							amt + " kg crop waste generated.");
+							Math.round(amt * 100D) / 100D  + " kg crop waste generated.");
 				}
 				updatePhase(PhaseType.FINISHED);
 			}

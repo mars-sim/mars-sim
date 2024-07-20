@@ -1334,7 +1334,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		
 		else {
 			// No the impact does not occur in the vicinity
-			logger.log(this, Level.INFO, 20_000, "Meteorite Impact event observed but did not occur in the vicinity.");
+			logger.log(this, Level.INFO, 30_000, "Meteorite Impact event observed but occurred in settlement vicinity.");
 		}
 	}
 

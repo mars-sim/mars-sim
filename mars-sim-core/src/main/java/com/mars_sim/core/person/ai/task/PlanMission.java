@@ -120,6 +120,24 @@ public class PlanMission extends Task {
 	}
 
 	/**
+	 * Sees if the task is at least 70% completed.
+	 * 
+	 * @return true if the task is at least 70% completed.
+	 */
+	private boolean is70Completed() {
+		return getTimeCompleted() >= getDuration() * .7;
+	}
+
+	/**
+	 * Sees if the task is at least 95% completed.
+	 * 
+	 * @return true if the task is at least 95% completed.
+	 */
+	private boolean isNearlyCompleted() {
+		return getTimeCompleted() >= getDuration() * .95;
+	}
+	
+	/**
 	 * Performs the selecting mission phase.
 	 * 
 	 * @param time the amount of time (millisols) to perform the phase.
@@ -130,6 +148,7 @@ public class PlanMission extends Task {
 		
 		boolean canDo = person.getMind().canStartNewMission();
 		if (!canDo) {
+			logger.log(worker, Level.INFO, 10_000, "Not ready to start a new mission.");
 			endTask();
 		}
 		else {
@@ -137,10 +156,13 @@ public class PlanMission extends Task {
 			person.getMind().getNewMission();
 			
 			Mission mission = person.getMind().getMission();
-			if (mission != null)
+			
+			if (mission != null && is70Completed())
+				// Simulate to have at least 70% of the time spent in selecting a mission plan to submit
 				setPhase(SUBMITTING);
 			else {
 				// No mission found so stop planning for now
+				logger.log(worker, Level.WARNING, 10_000, "Found no mission in mind to start.");
 				endTask();
 			}
 		}
@@ -160,20 +182,31 @@ public class PlanMission extends Task {
 		Mission mission = person.getMind().getMission();
 		MissionPlanning plan = mission.getPlan();
 		
-		if ((plan != null) && !mission.isDone()) {
+		if (plan == null) {
+			// No mission found so stop planning for now
+			logger.log(worker, Level.INFO, 10_000, "No plan in place for " + mission.getName() + " just yet.");
+			endTask();
+		}
+		else if (mission.isDone()) {
+			// No mission found so stop planning for now
+			logger.log(worker, Level.INFO, 10_000, "Mission already accomplished.");
+			endTask();
+		}
+		else if ((plan != null) && !mission.isDone() && isNearlyCompleted()) {
+			// Simulate to take 20% of the task time to request for approval of the mission
 			logger.log(worker, Level.INFO, 30_000, "Submitted a mission plan for " 
 					+ mission.getName() + ".");
 			
 			// Set the plan pending and add to approval list
 			plan.setStatus(PlanType.PENDING);
 			missionManager.requestMissionApproving(plan);
+			
+			endTask();
 		}
 		
 		// Add experience
 		addExperience(time); 
-		
-		endTask();
-		
+
 		return remainingTime;
 	}
 	

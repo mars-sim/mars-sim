@@ -41,7 +41,7 @@ public class RecordActivity extends Task {
 	 */
 	public RecordActivity(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, RandomUtil.getRandomDouble(10D));
+		super(NAME, person, true, false, STRESS_MODIFIER, RandomUtil.getRandomDouble(5, 50));
 
 		if (person.isInSettlement()) {
 			
@@ -53,8 +53,8 @@ public class RecordActivity extends Task {
 		}
 
 		else if (person.isInVehicle()) {
-			if (person.getVehicle() instanceof Rover) {
-				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
+			if (person.getVehicle() instanceof Rover r) {
+				walkToPassengerActivitySpotInRover(r, true);
 			}
 			
 			// Initialize phase
@@ -87,8 +87,16 @@ public class RecordActivity extends Task {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double recordingPhase(double time) {
-		// TODO: need to define what to do with this activity
+		// FUTURE: need to define what to do with this activity
+		// e.g. generating contents for commercials, sponsorship request, etc.
 		// Take snapshot of pics and tap video clips, etc.
+		
+		// 1. Choose a FunctionType to be recorded 
+		//    Test if (building.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
+		//		|| building.hasFunction(FunctionType.EARTH_RETURN)) {
+		
+		// 2. Walk to a spot in that building 
+		//    by calling walkToRandomLocInBuilding(building, true);
 		
 		return 0D;
 	}
