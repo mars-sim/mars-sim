@@ -7,6 +7,7 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.EVAOperationTest;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
@@ -28,6 +29,7 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         p.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.STRENGTH, 100);
         var eva = EVAOperationTest.prepareForEva(this, p);
 
+        v.addSecondaryStatus(StatusType.UNLOADING);
         var task = new UnloadVehicleEVA(p, v);
         assertFalse("Task created", task.isDone()); 
 
@@ -43,7 +45,7 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         assertEquals("Food unloaded", RESOURCE_AMOUNT, Math.round(s.getAmountResourceStored(ResourceUtil.foodID)));
         assertEquals("Garments unloaded", ITEM_AMOUNT, s.getItemResourceStored(ItemResourceUtil.garmentID));
 
-
+        assertFalse("Vehicle has UNLOADING", v.haveStatusType(StatusType.UNLOADING));
         // Return to base
         EVAOperationTest.executeEVAWalk(this, eva, task);
         assertTrue("Task completed", task.isDone()); 
@@ -66,12 +68,12 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         v.storeItemResource(ItemResourceUtil.garmentID, 10);
         v.setReservedForMission(true);
 
-        // Skip reserved vehicle
+        // Skip loaded vehicle
         tasks = mt.getSettlementTasks(s);
         assertEquals("Skip reserved vehicle", 0, tasks.size());
 
-        // Unreserved vehicle
-        v.setReservedForMission(false);
+        // Vehicle flagged for unloading
+        v.addSecondaryStatus(StatusType.UNLOADING);
         tasks = mt.getSettlementTasks(s);
         assertEquals("Found vehicle", 1, tasks.size());
         // No garages so EVA 

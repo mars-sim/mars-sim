@@ -37,13 +37,10 @@ public class MissionLoadVehicleStep extends MissionStep {
     }
 
     /**
-     * Executes the vehicle loading step. This will create a Loading controller on the first
-     * call ready for later use.
-     * 
-     * @param worker The worker attempting to execute the loading
+     * This step has just become the active step so mark Vehicle as loading
      */
     @Override
-    protected boolean execute(Worker worker) {
+    protected void start() {
         MissionVehicleProject vp = (MissionVehicleProject) getMission();
         Vehicle v = vp.getVehicle();
         Settlement settlement = v.getSettlement();
@@ -53,11 +50,21 @@ public class MissionLoadVehicleStep extends MissionStep {
             // Try and move the vehicle to garage
 		    settlement.getBuildingManager().addToGarage(v);
 		}
+    }
 
+
+    /**
+     * Executes the vehicle loading step. This will create a Loading controller on the first
+     * call ready for later use.
+     * 
+     * @param worker The worker attempting to execute the loading
+     */
+    @Override
+    protected boolean execute(Worker worker) {
         // Loading still active
         boolean workOn = false;
         if (loadingPlan.isFailure()) {
-            vp.abortMission(CANNOT_LOAD_RESOURCES);
+            getMission().abortMission(CANNOT_LOAD_RESOURCES);
         }
         else if (!loadingPlan.isCompleted()) {
 			// Load vehicle if not fully loaded.
@@ -67,7 +74,7 @@ public class MissionLoadVehicleStep extends MissionStep {
 			if (worker.isInSettlement()
 				&& RandomUtil.lessThanRandPercent(75)) {
 
-				Task job = createLoadTask(worker, v);
+				Task job = createLoadTask(worker, loadingPlan.getVehicle());
 				if (job != null) {
                     workOn = assignTask(worker, job);
 				}
@@ -78,15 +85,6 @@ public class MissionLoadVehicleStep extends MissionStep {
 		}
 
         return workOn;
-    }
-
-    /**
-     * Gets the loading plan associated with the step.
-     * 
-     * @return
-     */
-    public LoadingController getLoadingPlan() {
-        return loadingPlan;
     }
 
     /**

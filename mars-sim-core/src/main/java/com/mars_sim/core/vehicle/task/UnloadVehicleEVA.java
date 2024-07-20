@@ -8,7 +8,6 @@ package com.mars_sim.core.vehicle.task;
 
 import java.util.logging.Level;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -19,6 +18,7 @@ import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.vehicle.Crewable;
+import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Towing;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
@@ -69,6 +69,10 @@ public class UnloadVehicleEVA extends EVAOperation {
 
 		setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 		this.vehicle = vehicle;
+		if (!vehicle.haveStatusType(StatusType.UNLOADING)) {
+			checkLocation("Vehcile is not ready for Unloading");
+        	return;
+		}
 
 		if (person.isSuperUnfit()) {
 			checkLocation("Super Unfit.");
@@ -78,11 +82,8 @@ public class UnloadVehicleEVA extends EVAOperation {
 		// Determine location for unloading.
 		setOutsideLocation(vehicle);
 		
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
-		
-		settlement = unitManager.findSettlement(person.getCoordinates());
-		if (settlement == null) {
+		settlement = vehicle.getSettlement();
+		if (!settlement.equals(person.getSettlement())) {
 			endTask();
 			return;
 		}
@@ -160,6 +161,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 
 		if (isFullyUnloaded(vehicle)) {
 			checkLocation("Vehicle already fully unloaded.");
+			vehicle.removeSecondaryStatus(StatusType.UNLOADING);
 	        return remainingTime;
 		}
 

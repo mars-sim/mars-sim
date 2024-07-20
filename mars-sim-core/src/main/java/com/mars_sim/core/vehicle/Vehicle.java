@@ -628,6 +628,8 @@ public abstract class Vehicle extends Unit
 			logger.warning(this, "Is already in the loading status");
 		}
 		else {
+			// Automatically remve UNLOADING as LOADING takes precedence
+			removeSecondaryStatus(StatusType.UNLOADING);
 			loadingController = new LoadingController(getSettlement(), this, manifest);
 			addSecondaryStatus(StatusType.LOADING);
 		}

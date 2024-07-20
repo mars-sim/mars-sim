@@ -19,6 +19,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
 import com.mars_sim.core.vehicle.Crewable;
+import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.task.UnloadVehicleMeta;
 import com.mars_sim.mapdata.location.LocalPosition;
@@ -39,17 +40,23 @@ public class MissionDisembarkStep extends MissionStep {
         super(parent, Stage.CLOSEDOWN, "Disembark");
     }
 
+    /**
+     * This step has just become the active step so mark Vehicle as unloading
+     */
+    @Override
+    protected void start() {
+        getVehicle().addSecondaryStatus(StatusType.UNLOADING);
+    }
+
     @Override
     protected boolean execute(Worker worker) {
         Vehicle v = getVehicle();
 
         boolean workOn = false;
-        boolean vehicleEmpty = (v.getStoredMass() <= 0D);
+        boolean vehicleEmpty = !v.haveStatusType(StatusType.UNLOADING);
         // Check end state as vehicle must be unloaded
-        if (!vehicleEmpty) {
-           	if (RandomUtil.lessThanRandPercent(50)) {
-				workOn = unloadCargo(worker, v);
-			} 
+        if (!vehicleEmpty && RandomUtil.lessThanRandPercent(50)) {
+			workOn = unloadCargo(worker, v);
         }
         
         // If not unloading; then leave Vehicle

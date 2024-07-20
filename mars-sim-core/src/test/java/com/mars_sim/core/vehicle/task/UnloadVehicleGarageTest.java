@@ -6,6 +6,7 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.building.function.FunctionType;
+import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 public class UnloadVehicleGarageTest extends AbstractMarsSimUnitTest {
@@ -26,6 +27,7 @@ public class UnloadVehicleGarageTest extends AbstractMarsSimUnitTest {
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN, g.getBuilding(), FunctionType.VEHICLE_MAINTENANCE);
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
 
+        v.addSecondaryStatus(StatusType.UNLOADING);
         var task = new UnloadVehicleGarage(p, v);
         assertFalse("Task created", task.isDone()); 
 
@@ -35,6 +37,7 @@ public class UnloadVehicleGarageTest extends AbstractMarsSimUnitTest {
         assertEquals("Oxygen unloaded", RESOURCE_AMOUNT, Math.round(s.getAmountResourceStored(ResourceUtil.oxygenID)));
         assertEquals("Food unloaded", RESOURCE_AMOUNT, Math.round(s.getAmountResourceStored(ResourceUtil.foodID)));
         assertEquals("Garments unloaded", ITEM_AMOUNT, s.getItemResourceStored(ItemResourceUtil.garmentID));
+        assertFalse("Vehicle has UNLOADING", v.haveStatusType(StatusType.UNLOADING));
 
         // Return to base
         assertTrue("Task completed", task.isDone()); 
@@ -55,14 +58,13 @@ public class UnloadVehicleGarageTest extends AbstractMarsSimUnitTest {
         v.storeAmountResource(ResourceUtil.oxygenID, RESOURCE_AMOUNT);
         v.storeAmountResource(ResourceUtil.foodID, RESOURCE_AMOUNT);
         v.storeItemResource(ItemResourceUtil.garmentID, ITEM_AMOUNT);
-        v.setReservedForMission(true);
 
-        // Skip reserved vehicle
+        // Skip vehicle
         tasks = mt.getSettlementTasks(s);
         assertEquals("Skip reserved vehicle", 0, tasks.size());
 
-        // Unreserved vehicle
-        v.setReservedForMission(false);
+        // Find vehcile with unload status
+        v.addSecondaryStatus(StatusType.UNLOADING);
         tasks = mt.getSettlementTasks(s);
         assertEquals("Found vehicle", 1, tasks.size());
         // No garages so EVA 

@@ -8,7 +8,6 @@ package com.mars_sim.core.person.ai.mission;
 
 import java.util.List;
 
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -80,12 +79,4 @@ public interface VehicleMission extends Mission {
      * Requests help as things have gone wrong.
      */
     void getHelp(MissionStatus status);
-
-	/**
-	 * Can the mission vehicle be unloaded at this Settlement ?
-	 *
-	 * @param settlement
-	 * @return
-	 */
-    boolean isVehicleUnloadableHere(Settlement settlement);
 }

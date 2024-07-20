@@ -28,10 +28,11 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Drone;
+import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
- * A mission for delivery between two settlements. TODO externalize strings
+ * A mission for delivery between two settlements.
  */
 public class Delivery extends DroneMission implements CommerceMission {
 
@@ -166,11 +167,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 		if (!super.determineNewPhase()) {
 			if (TRAVELLING.equals(getPhase())) {
 				if (isCurrentNavpointSettlement()) {
-					if (outbound) {
-						setPhase(TRADE_DISEMBARKING, tradingSettlement.getName());
-					} else {
-						startDisembarkingPhase();
-					}
+					startDisembarkingPhase(outbound ? TRADE_DISEMBARKING : DISEMBARKING);
 				}
 			}
 
@@ -330,7 +327,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 	private void performDestinationUnloadGoodsPhase() {
 
 		// Unload drone if necessary.
-		if (getDrone().getStoredMass() == 0D) {
+		if (!getDrone().haveStatusType(StatusType.UNLOADING)) {
 			setPhaseEnded(true);
 		}
 	}
@@ -604,22 +601,6 @@ public class Delivery extends DroneMission implements CommerceMission {
 	 */
 	public Settlement getTradingSettlement() {
 		return tradingSettlement;
-	}
-
-	
-	/**
-	 * If the mission is in the UNLOAD_GOODS phase at the trading settlement
-	 * then it can be unloaded.
-	 * 
-	 * @param settlement
-	 */
-	@Override
-	public boolean isVehicleUnloadableHere(Settlement settlement) {
-		if (UNLOAD_GOODS.equals(getPhase())
-					&& settlement.equals(tradingSettlement)) {
-			return true;
-		}
-		return super.isVehicleUnloadableHere(settlement);
 	}
 
 	@Override

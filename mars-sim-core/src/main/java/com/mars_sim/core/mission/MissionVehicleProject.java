@@ -197,11 +197,6 @@ public class MissionVehicleProject extends MissionProject
     public void getHelp(MissionStatus status) {
         throw new UnsupportedOperationException("Unimplemented method 'getHelp'");
     }
-
-    @Override
-    public boolean isVehicleUnloadableHere(Settlement settlement) {
-        return false;
-    }
     
     /**
      * Extract the Navpoints and calculate the proposed. This will extract the NavPoints for the Route.

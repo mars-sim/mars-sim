@@ -20,6 +20,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.vehicle.Crewable;
+import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Towing;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.tools.Msg;
@@ -71,7 +72,10 @@ public class UnloadVehicleGarage extends Task {
 		}
 
 		this.vehicle = vehicle;
-
+		if (!vehicle.haveStatusType(StatusType.UNLOADING)) {
+			clearTask(vehicle.getName() + " not ready for unloading.");
+			return;
+		}
 		settlement = worker.getSettlement();
 
 		if (isFullyUnloaded(vehicle)) {
@@ -158,6 +162,7 @@ public class UnloadVehicleGarage extends Task {
 			}
 
 			if (isFullyUnloaded(vehicle)) {
+				vehicle.removeSecondaryStatus(StatusType.UNLOADING);
 				endTask();
 			}
 		}

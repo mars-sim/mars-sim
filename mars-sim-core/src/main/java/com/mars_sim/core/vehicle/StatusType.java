@@ -24,7 +24,8 @@ public enum StatusType {
 	TOWED 				(false),	
 	TOWING 				(false),	
 	OUT_OF_FUEL 		(false),
-	LOADING				(false)
+	LOADING				(false),
+	UNLOADING			(false)
 	;
 	
 	private String name;
