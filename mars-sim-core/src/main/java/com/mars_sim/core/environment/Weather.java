@@ -764,14 +764,14 @@ public class Weather implements Serializable, Temporal {
 			MSolDataLogger<DailyWeather> w = weatherDataMap.get(c);
 	
 			if (!w.isYestersolDataValid()) {
-				logger.warning(3_000L, "Weather data from yesterday at " + c + " is not available.");
+				logger.warning(30_000, "Weather data from yestersol at " + c + " not available.");
 				return;
 			}
 			else
 				dailyWeatherList = w.getYestersolData();
 		}
 		else {
-			logger.warning(3_000L, "Weather data at " + c + " is not available.");
+			logger.warning(30_000, "Weather data at " + c + " not available.");
 			return;
 		}
 		
