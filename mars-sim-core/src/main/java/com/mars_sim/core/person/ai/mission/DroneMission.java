@@ -144,35 +144,35 @@ public abstract class DroneMission extends AbstractVehicleMission {
 		OperateVehicle result = null;
 		
 		if (member instanceof Robot robot 
-				&& robot.getSystemCondition().getBatteryLevel() < 50) {
+				&& robot.getSystemCondition().getBatteryLevel() < 5) {
 			logger.warning(robot, 4_000, "Battery at " + robot.getSystemCondition().getBatteryLevel() + " %");
 			
         	boolean canCharge = assignTask(robot, new Charge(robot, Charge.findStation(robot)));
         	if (canCharge) {
         		logger.log(member, Level.INFO, 4_000,
             			"Instructed to charge up the battery ahead of piloting " + getVehicle() + ".");
+            	
+    			return null;
         	}
-        	
-			return null;
 		}
 
         else if (member instanceof Person person
-				&& !person.isNominallyFit()){
+				&& person.isSuperUnfit()){
         	// For humans
-        	logger.log(member, Level.WARNING, 4_000,
-        			"Not norminally fit to pilot " + getVehicle() + ".");
+        	logger.warning(person, 4_000, "Not norminally fit to pilot " + getVehicle() + ".");
         	// Note: How to take care of the person if he does not have high fatigue but other health issues ?
         	boolean canSleep = assignTask(person, new Sleep(person));
         	if (canSleep) {
         		logger.log(member, Level.INFO, 4_000,
             			"Instructed to sleep ahead of piloting " + getVehicle() + ".");
+            	
+    			return null;
         	}
-        	
-	        return null;
         }
 				
 		Drone d = getDrone();
-		if (!d.haveStatusType(StatusType.OUT_OF_FUEL)) {
+		if (!d.haveStatusType(StatusType.OUT_OF_FUEL)
+				&& !d.haveStatusType(StatusType.OUT_OF_BATTERY_POWER)) {
 			if (lastOperateVehicleTaskPhase != null) {
 				result = new PilotDrone(member, d, getNextNavpoint().getLocation(),
 						getCurrentLegStartingTime(), getCurrentLegDistance(), lastOperateVehicleTaskPhase);
@@ -182,7 +182,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 			}
 		}
 		else {
-			logger.warning(d, 4_000, "Out of fuel. Quit assigning the piloting task.");
+			logger.warning(d, 4_000, "Out of fuel and battery power. Quit assigning the piloting task.");
 			return null;
 		}
 

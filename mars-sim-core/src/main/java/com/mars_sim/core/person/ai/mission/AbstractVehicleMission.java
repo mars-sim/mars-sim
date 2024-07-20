@@ -601,9 +601,14 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 
 		else if (LOADING.equals(phase)) {
+
 			setPhase(DEPARTING, getStartingSettlement().getName());	
 		}
-
+		
+		// Note: Add a new phase called RESTING here right after loading in done and prior to departing, 
+		//       Create a mission schedule and have everyone sync up to it. 
+		//       Have everyone sleep sufficiently and depart at the start of the next sol during daylight.
+		
 		else if (DEPARTING.equals(phase)) {
 			startTravellingPhase();
 		}

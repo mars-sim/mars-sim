@@ -223,7 +223,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 				article = "an ";
 
 			logger.log(startingMember, Level.INFO, 0,
-					"Began organizing " + article + missionStr + appendStr);
+					"Began organizing " + article + missionStr + appendStr + ".");
 
 			// Add starting member to mission.
 			startingMember.setMission(this);
@@ -810,10 +810,11 @@ public abstract class AbstractMission implements Mission, Temporal {
 			}
 
 			if (currentTask.getName().equals(Sleep.NAME)) {
-	      		logger.info(person, 4_000, "Currently asleep.");
-
-				// If the person has been doing this task, 
-				// then there is no need of adding it.
+	      		logger.info(person, 4_000, "Currently asleep. Not available to perform other tasks.");
+				// If the person is asleep, 
+				// do not assign this task.
+	      		
+	      		// Note: what if it's an emergency that one must wake up and respond ?
 				return false;
 			}
 		}
@@ -863,8 +864,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 			return false;
 		}
 
-		if (!robot.getSystemCondition().isBatteryAbove(10)) {
-			logger.info(robot, 4_000, "Battery below 10% and cannot be assigned with '" + task.getName() + "'.");
+		if (!robot.getSystemCondition().isBatteryAbove(20)) {
+			logger.info(robot, 4_000, "Battery below 20% and cannot be assigned with '" + task.getName() + "'.");
 			return false;
 		}
 
@@ -985,7 +986,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 *
 	 * @param startingMember the mission member starting the mission.
 	 * @param sameSettlement do members have to be at the same Settlement as the starting Member
-	 * @param minMembers Minimum number of members requried
+	 * @param minMembers Minimum number of members required
 	 */
 	protected boolean recruitMembersForMission(Worker startingMember, boolean sameSettlement, int minMembers) {
 

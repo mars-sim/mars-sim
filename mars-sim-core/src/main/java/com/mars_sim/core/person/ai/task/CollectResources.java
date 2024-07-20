@@ -119,7 +119,7 @@ public class CollectResources extends EVAOperation {
 			// If container is not available, end task.
 			if (!hasIt) {
 				logger.warning(person, 5000,
-						"Unable to find a " + containerType.getName() + " to collect resources.");
+						"Unable to find a " + containerType.getName().toLowerCase() + " to collect resources.");
 				endTask();
 				return;
 			}
@@ -131,9 +131,9 @@ public class CollectResources extends EVAOperation {
 				if (container != null) {
 					boolean done = container.transfer(rover);
 					if (done)
-						logger.info(person, 0, "Returned an extra " + containerType.getName() + " from person back to rover.");
+						logger.info(person, 0, "Returned an extra " + containerType.getName().toLowerCase() + " from person back to rover.");
 					else
-						logger.warning(person, 0, "Unable to transfer " + containerType.getName() + " from person back to rover.");
+						logger.warning(person, 0, "Unable to transfer a " + containerType.getName().toLowerCase() + " from person back to rover.");
 				}	
 			}
 		}
@@ -199,14 +199,14 @@ public class CollectResources extends EVAOperation {
 		if (container != null) {
 			boolean success = container.transfer(person);
 			if (success) {
-				logger.info(person, 5000, "Getting hold of a " + containerType.getName() + " from rover.");
+				logger.info(person, 5000, "Getting hold of a " + containerType.getName().toLowerCase() + " from rover.");
 			}
 			else 
-				logger.warning(person, "Unable to transfer " + containerType.getName() + " from rover to person.");
+				logger.warning(person, "Unable to transfer a " + containerType.getName().toLowerCase() + " from rover to person.");
 			return success;
 		} 
 		else
-			logger.warning(person, 5000, "Could not get hold of a " + containerType.getName() + " from rover.");
+			logger.warning(person, 5000, "Could not get hold of a " + containerType.getName().toLowerCase() + " from rover.");
 		
 		return false;
 	}
@@ -388,7 +388,7 @@ public class CollectResources extends EVAOperation {
 				carryMass = container.getBaseMass() + container.getStoredMass();
 
 			} else {
-				logger.warning(person, 5000, "No " + containerType.getName() + " available.");
+				logger.warning(person, 5000, "No " + containerType.getName().toLowerCase() + " available.");
 				return false;
 			}
 
@@ -420,14 +420,14 @@ public class CollectResources extends EVAOperation {
 				if (container != null) {
 					boolean done = container.transfer(rover);
 					if (done) {
-						logger.info(person, 0, "Done transferring " + containerType.getName() + " from person back to rover.");
+						logger.info(person, 0, "Done transferring a " + containerType.getName().toLowerCase() + " from person back to rover.");
 						double amount = container.getAmountResourceStored(resourceType);
 						if (amount > 0) {
 							unloadContainer(container, amount, getTimeCompleted());
 						}
 					}
 					else
-						logger.warning(person, "Unable to transfer " + containerType.getName() + " from person back to rover.");
+						logger.warning(person, "Unable to transfer a " + containerType.getName().toLowerCase()  + " from person back to rover.");
 				}	
 			}
 		}
