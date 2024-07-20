@@ -429,17 +429,20 @@ public class Mind implements Serializable, Temporal {
 	/**
 	 * Determines a new mission for the person.
 	 */
-	public void getNewMission() {
+	public Mission startNewMission() {
 		// If this Person is too weak then they can not do Missions
 		if (person.getPerformanceRating() < MINIMUM_MISSION_PERFORMANCE) {
-			return;
+			return null;
 		}
 
 		// The previous code was using an extra random that did not add any value because the extra weight was always 0
 		Mission newMission = missionManager.getNewMission(person);
 		if (newMission != null) {
 			setMission(newMission);
+			return newMission;
 		}
+		
+		return null;
 	}
 
 	/**

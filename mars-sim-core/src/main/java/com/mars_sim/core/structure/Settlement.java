@@ -967,7 +967,7 @@ public class Settlement extends Structure implements Temporal,
 		}
 
 	
-		if (pulse.isNewSol()) {
+		if (sol > 1 && pulse.isNewSol()) {
 
 			// Perform the end of day tasks
 			performBeginningOfDayTasks();	
@@ -1060,7 +1060,7 @@ public class Settlement extends Structure implements Temporal,
 			logger.info(this, "Sol " + sol + ". Average improvement score on " + size 
 					+ " mineral location(s): " + Math.round(result * 10.0)/10.0);
     	}
-    	else {
+    	else if (size > 0) {
 			logger.info(this, "Sol " + sol + ". No improvement on " + size 
 					+ " mineral locations.");
     	}
