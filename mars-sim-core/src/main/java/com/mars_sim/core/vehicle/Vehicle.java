@@ -2559,16 +2559,22 @@ public abstract class Vehicle extends Unit
 		double time = pulse.getElapsed();
 		// Convert time to hours
 		double hrs = time * MarsTime.HOURS_PER_MILLISOL;
-		// Calculate max charing power that battery supports
-		double allowedPower = getController().getBattery().getMaxPowerCharging(hrs);
+		
+		double allowedEnergy = getController().getBattery().estimateChargeBattery(hrs);
 		// Check if charging is needed
-		if (allowedPower > 0) {
+		if (allowedEnergy > 0) {
 			// Retrieve energy from the settlement's power grid
-			double retrieved = settlement.getPowerGrid().retrieveStoredEnergy(allowedPower * hrs, time);
+			double retrieved = settlement.getPowerGrid().retrieveStoredEnergy(allowedEnergy, time);
 			// Charge the vehicle
-			double energyAccepted = getController().getBattery().provideEnergy(retrieved, hrs); 
+			double energyAccepted = getController().getBattery().chargeBattery(retrieved, hrs); 
 			
-			logger.info(this, 20_000L, "Supplying " + Math.round(energyAccepted * 1000.0)/1000.0 + " kWh of energy during charging.");
+			if (energyAccepted > 0) {
+				logger.info(this, 20_000L, "Charging. Budget: " + Math.round(allowedEnergy * 1000.0)/1000.0
+						+ " kWh.  Accepted: " + Math.round(energyAccepted * 1000.0)/1000.0 + " kWh.");
+			}
+			else {
+				setCharging(false);
+			}
 		}
 		else {
 			setCharging(false);

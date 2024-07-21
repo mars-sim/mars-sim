@@ -989,7 +989,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 		 double iEnergyKWH = iEnergyWH / 1000;  
 		 
 		// Get the energy stored [Wh] into the battery
-		 double energyforCharging = battery.provideEnergy(-iEnergyKWH, hrsTime) * 1000; 
+		 double energyforCharging = battery.chargeBattery(-iEnergyKWH, hrsTime) * 1000; 
 		 
 		 // Get the power absorbed in W
 		 double powerAbsorbed = energyforCharging / secs * JOULES_PER_WH;

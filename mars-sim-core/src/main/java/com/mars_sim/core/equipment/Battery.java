@@ -29,8 +29,8 @@ public class Battery implements Serializable {
     /** The maximum current that can be safely drawn from this battery pack in Ampere. */
 //    private static final double MAX_AMP_DRAW = 120;
     
-	/**The maximum continuous discharge rate (within the safety limit) of this battery. */
-	private static final int MAX_C_RATING = 4;
+	/**The maximum continuous charge rate (within the safety limit) that this battery can handle. */
+	private static final int MAX_C_RATING_CHARGING = 4;
 	
     /** The standard voltage of this battery pack in volts. */
     public static final double STANDARD_VOLTAGE = 600;
@@ -55,28 +55,38 @@ public class Battery implements Serializable {
     /** The number of battery module. */
     public int numModule;
     
+    
     /** The maximum energy capacity of a standard battery module in kWh. */
     public double energyPerModule;
+    /** The standby power consumption in kW. */
+    private double standbyPower = 0.01;
     /** unit's stress level (0.0 - 100.0). */
     private double systemLoad;
     /** Performance factor. */
     private double performance;
 	/** The percentage that triggers low power warning. */
     private double lowPowerPercent = 10;
+    
 	/** The current energy stored in kWh. */
 	private double kWhStored;
-    /** The standby power consumption in kW. */
-    private double standbyPower = 0.01;
 	/** The energy storage capacity [in kWh, not Wh] capacity. */
 	private double energyStorageCapacity;
 	/** 
-	 * The rating [in ampere-hour or Ah] of the battery in terms of its charging/discharging ability at 
-	 * a particular C-rating. An amp is a measure of electrical current. The hour 
+	 * The capacity [in ampere-hour or Ah] of this battery in terms of its charging/discharging ability at 
+	 * a particular C-rating. 
+	 * 
+	 * Note: An amp is a measure of electrical current. The hour 
 	 * indicates the length of time that the battery can supply this current.
-	 * e.g. a 2.2Ah battery can supply 2.2 amps for an hour
+	 * e.g. a 2.2Ah battery can supply 2.2 amps for an hour.
 	 */
-	private double ampHour;
+	private double ampHourStored;
 
+	/** 
+	 * The full capacity [in ampere-hour or Ah] of this battery in terms of its charging/discharging ability at 
+	 * a particular C-rating.
+	 */
+	private double ampHourFullCapacity;
+	
 	private Unit unit;
 	
     /**
@@ -93,7 +103,7 @@ public class Battery implements Serializable {
         this.numModule = numModule;
         this.energyPerModule = energyPerModule;
         energyStorageCapacity = energyPerModule * numModule;
-        ampHour = energyStorageCapacity * 1000 / STANDARD_VOLTAGE;
+        ampHourStored = energyStorageCapacity * 1000 / STANDARD_VOLTAGE;
 		// At the start of sim, set to a random value
         kWhStored = energyStorageCapacity * (.5 + RandomUtil.getRandomDouble(.5));	
  
@@ -105,11 +115,17 @@ public class Battery implements Serializable {
     }
 
     /**
-     * Updates the Amp Hour rating.
+     * Updates the Amp Hour stored capacity [in Ah].
      */
-    private void updateAmpHourRating() {
-    	ampHour = 1000 * energyStorageCapacity / STANDARD_VOLTAGE; 
-    	// maxAmpHour * kWhStored / energyStorageCapacity; 
+    private void updateAmpHourCapacity() {
+    	ampHourStored = 1000 * kWhStored / STANDARD_VOLTAGE; 
+    }
+    
+    /**
+     * Updates the full Amp Hour capacity [in Ah].
+     */
+    private void updateFullAmpHourCapacity() {
+    	ampHourFullCapacity = 1000 * energyStorageCapacity / STANDARD_VOLTAGE; 
     }
     
     /**
@@ -136,20 +152,31 @@ public class Battery implements Serializable {
      */
     private double getMaxPowerDraw(double time) {
     	// Note: Need to find the physical formula for max power draw
-    	return ampHour * STANDARD_VOLTAGE / time / 1000;
+    	return ampHourStored * STANDARD_VOLTAGE / time / 1000;
     }
     
     /**
-     * Gets the maximum power [in kW] to be pumped in during charging.
+     * Gets the maximum power [in kW] that is allowed during charging.
      * 
      * @param time in hours
-     * @return
+     * @return maximum power [in kW]
      */
     public double getMaxPowerCharging(double hours) {
     	// Note: Need to find the physical formula for max power charge
-    	return MAX_C_RATING * ampHour * STANDARD_VOLTAGE / hours / 1000;
-//    	return Math.min((energyStorageCapacity - kWhStored) / time, ampHour * maxAmpHour * STANDARD_VOLTAGE / time);
+    	return MAX_C_RATING_CHARGING * ampHourStored * STANDARD_VOLTAGE / hours / 1000;
     }
+    
+    /**
+     * Gets the maximum energy [in kWh] that can be accepted during charging.
+     * 
+     * @param time in hours
+     * @return maximum energy [in kWh]
+     */
+    public double getMaxEnergyCharging(double hours) {
+    	// Note: Need to find the physical formula for max power charge
+    	return getMaxPowerCharging(hours) * 3600;
+    }
+    
     
     /**
      * Gets a given amount of energy within an interval of time from the battery.
@@ -193,7 +220,7 @@ public class Battery implements Serializable {
 
             updateLowPowerMode();
                 
-            updateAmpHourRating();
+            updateAmpHourCapacity();
             
             return energyToDeliver;
     	}
@@ -202,38 +229,50 @@ public class Battery implements Serializable {
     }
 
     /**
-     * Provides a given amount of energy to the battery within an interval of time.
+     * Estimates how much energy will be accepted given the maximum charging rate and an interval of time.
      * 
-     * @param amount amount of energy to consume [in kWh]
-     * @param time in hrs
+     * @param hours time in hrs
      * @return energy to be delivered [in kWh]
      */
-    public double provideEnergy(double kWh, double time) {
-    	// FUTURE: Consider the effect of the charging rate and the time parameter
-    	
-    	double percent = kWhStored / energyStorageCapacity * 100;
+    public double estimateChargeBattery(double hours) {
+   
+    	double percentStored = kWhStored / energyStorageCapacity * 100;
     	double energyAccepted = 0;
     	double percentAccepted = 0;
-    	if (percent >= 100)
+    	if (percentStored >= 100)
     		return 0;
     	
-    	else {
-    		percentAccepted = 100 - percent;
-    		energyAccepted = percentAccepted / 100.0 * energyStorageCapacity;
+		percentAccepted = 100 - percentStored;
+		energyAccepted = percentAccepted / 100.0 * energyStorageCapacity;
 
-    		if (kWh < energyAccepted) {
-    			energyAccepted = kWh;
-    		}
-    		
-        	kWhStored += energyAccepted;
-    		unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
+	 	// Consider the effect of the charging rate and the time parameter
+    	double maxChargeEnergy = getMaxEnergyCharging(hours);
+		
+    	return Math.min(maxChargeEnergy, energyAccepted);
+    }
+    
+    /**
+     * Provides a given amount of energy to the battery within an interval of time.
+     * 
+     * @param kWhPumpedIn amount of energy to consume [in kWh]
+     * @param hours time in hrs
+     * @return energy to be delivered [in kWh]
+     */
+    public double chargeBattery(double kWhPumpedIn, double hours) {
+		
+    	double maxChargeEnergy = estimateChargeBattery(hours);
+		
+    	double energyAccepted = Math.min(kWhPumpedIn, maxChargeEnergy);
+		
+    	kWhStored += energyAccepted;
 
-            updateLowPowerMode();
-            
-            updateAmpHourRating();
-            
-        	return energyAccepted;
-    	}
+        updateAmpHourCapacity();
+
+        updateLowPowerMode();
+        
+		unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
+
+    	return energyAccepted;
     }
     
     /**

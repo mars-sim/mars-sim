@@ -72,8 +72,8 @@ public class TabPanelSpecs extends TabPanel {
 //		addBorder(topPanel, "Fuel Consumption and Economy");
 		topPanel.setBorder(BorderFactory.createTitledBorder("Fuel Consumption (FC) and Fuel Economy (FE)"));
 		
-		grid0.addRow( "Base FC-FC Coef", StyleManager.DECIMAL_PLACES1.format(v.getVehicleSpec().getCoeffBaseFC2FE()));
-		estFCFECoef = grid0.addRow( "Est FC-FE Coef", StyleManager.DECIMAL_PLACES1.format(v.getCoeffEstFC2FE()));		
+		grid0.addRow( "Base FC-FC Coef", StyleManager.DECIMAL_PLACES3.format(v.getVehicleSpec().getCoeffBaseFC2FE()));
+		estFCFECoef = grid0.addRow( "Est FC-FE Coef", StyleManager.DECIMAL_PLACES3.format(v.getCoeffEstFC2FE()));		
 		
 		grid0.addRow( "Base FC", StyleManager.DECIMAL_KWH_KM.format(v.getVehicleSpec().getBaseFuelConsumption()/1000));
 		grid0.addRow( "Base FE", StyleManager.DECIMAL_KM_KG.format(v.getVehicleSpec().getBaseFuelEconomy()));	
@@ -139,7 +139,7 @@ public class TabPanelSpecs extends TabPanel {
 	 */
 	@Override
 	public void update() {
-		estFCFECoef.setText(StyleManager.DECIMAL_PLACES1.format(v.getCoeffEstFC2FE()));		
+		estFCFECoef.setText(StyleManager.DECIMAL_PLACES3.format(v.getCoeffEstFC2FE()));		
 		
 		roadSpeed.setText(StyleManager.DECIMAL_M_S.format(v.getAverageRoadLoadSpeed()));
 		roadPower.setText(StyleManager.DECIMAL_KW.format(v.getAverageRoadLoadPower()));

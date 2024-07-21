@@ -33,6 +33,7 @@ GitHub: https://github.com/mars-sim/mars-sim
   <LI>Backlog: add showing the work scope of tasks.</LI>
   <LI>Building Tab: add tracking power and heating params.</LI>
   <LI>Exploration: show types of rocks collected when exploring sites.</LI>	
+  <LI>Health Log: show a person's health history log with complaint types and # of occurrence.</LI>
   <LI>Monitor Tool: support and filter authorities and settlements in one single combobox.</LI>
   <LI>Preference: show # active Missions controlled by Preference panel.</LI>
   <LI>Settlement: add new Process History tab showing all completed Processes.</LI>
