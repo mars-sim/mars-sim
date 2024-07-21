@@ -1563,6 +1563,23 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
+	 * Gets a string description of the most mostSeriousProblem health situation.
+	 *
+	 * @return A string containing the current illness and state if any.
+	 */
+	public String getHealthSituationOutput() {
+		String situation = WELL;
+		if (mostSeriousProblem != null) {
+			if (isDead()) {
+				situation = DEAD_COLON + mostSeriousProblem.getComplaint().getType().toString();
+			} else {
+				situation = mostSeriousProblem.outputInfoString();
+			}
+		}
+		return situation;
+	}
+	
+	/**
 	 * Gets the most mostSeriousProblem illness.
 	 *
 	 * @return most mostSeriousProblem illness

@@ -393,7 +393,7 @@ implements ActionListener {
 					else if (column == 4) 
 						result = (int) (person.getPerformanceRating() * 100D) + "%";
 					else if (column == 5)
-						result = person.getPhysicalCondition().getHealthSituation();
+						result = person.getPhysicalCondition().getHealthSituationOutput();
 				}
 				catch (Exception e) {}
 			}
@@ -521,7 +521,7 @@ implements ActionListener {
 					else if (column == 4) 
 						result = (int) (person.getPerformanceRating() * 100D) + "%";
 					else if (column == 5)
-						result = person.getPhysicalCondition().getHealthSituation();
+						result = person.getPhysicalCondition().getHealthSituationOutput();
 				}
 				catch (Exception e) {}
 			}

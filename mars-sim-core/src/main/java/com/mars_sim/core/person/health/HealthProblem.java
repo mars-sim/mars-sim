@@ -330,6 +330,17 @@ public class HealthProblem implements Serializable {
 	 * 
 	 * @return String description.
 	 */
+	public String outputInfoString() {
+		return "Problem: " + type
+				+ ". State: " + state.toString().toLowerCase();
+	}
+	
+	/**
+	 * This method generates a string representation of this problem. It contains
+	 * the illness and the health rating.
+	 * 
+	 * @return String description.
+	 */
 	@Override
 	public String toString() {
 		return "Sufferer=" + getSufferer().getName()

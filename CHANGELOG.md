@@ -5,7 +5,7 @@ Project: https://mars-sim.com
 GitHub: https://github.com/mars-sim/mars-sim  
 
 ------------------------------------------|---------------------
-## Version 3.8.0 (Fri 12 Jul 2024)
+## Version 3.8.0 (Sun 21 Jul 2024)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
@@ -32,6 +32,7 @@ GitHub: https://github.com/mars-sim/mars-sim
 <OL>
   <LI>Backlog: add showing the work scope of tasks.</LI>
   <LI>Building Tab: add tracking power and heating params.</LI>
+  <LI>Exploration: show types of rocks collected when exploring sites.</LI>	
   <LI>Monitor Tool: support and filter authorities and settlements in one single combobox.</LI>
   <LI>Preference: show # active Missions controlled by Preference panel.</LI>
   <LI>Settlement: add new Process History tab showing all completed Processes.</LI>
@@ -42,6 +43,7 @@ GitHub: https://github.com/mars-sim/mars-sim
   <LI>Airlock: correctly looks for airlock with least number of occupants.</LI>	
   <LI>Heating: remove temperature instability by use of entropy to 
   	  relate temperature change and heat change.</LI> 
+  <LI>Navigation: rework vehicle movement to consume fuel and battery power correctly.</LI>	
   <LI>Parking: avoid excessive CPU util on finding vehicle parking locations.</LI>
   <LI>Power Generation: correct how power grid turns on/off buildings during 
   	  power surplus/deficit.</LI>  

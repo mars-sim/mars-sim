@@ -353,7 +353,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				break;
 
 			case HEALTH: 
-				result = person.getPhysicalCondition().getHealthSituation();
+				result = person.getPhysicalCondition().getHealthSituationOutput();
 				break;
 
 			case LOCATION:
