@@ -51,9 +51,11 @@ public abstract class CollectResourcesMission extends EVAMission
 
 	private static final String PROPSPECTING_SITE = "Prospecting Site #";
 
-	/** THe maximum number of sites under consideration. */
+	/** The estimated number of trips made for collecting resources. */
+	private static final int NUM_TRIPS = 6;
+	/** The maximum number of sites under consideration. */
 	private static final int MAX_NUM_PRIMARY_SITES = 30;
-	/** THe maximum number of sites under consideration. */
+	/** The maximum number of sites under consideration. */
 	private static final int MAX_NUM_SECONDARY_SITES = 5;
 	/** Minimum number of people to do mission. */
 	private static final int MIN_PEOPLE = 2;
@@ -65,7 +67,7 @@ public abstract class CollectResourcesMission extends EVAMission
 	protected int resourceID;
 	/** The total site score of this prospective resource collection mission. */
 	private double totalSiteScore;
-	/** The goal amount of resources to collect at a site (kg). */
+	/** The goal amount of resources to collect at one site (kg). */
 	private double siteResourceGoal;
 
 	/** The cumulative amount (kg) of resources collected across multiple sites. */
@@ -177,7 +179,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		addNavpoints(orderSites, (i -> PROPSPECTING_SITE + (i+1)));
 
 		double containerCap = ContainerUtil.getContainerCapacity(containerID);
-		this.siteResourceGoal = 2 * containerCap * containerNum / orderSites.size();
+		this.siteResourceGoal = NUM_TRIPS * containerCap * containerNum / orderSites.size();
 		logger.info(getVehicle(), "Estimating amount of "
 				+ ResourceUtil.findAmountResourceName(resourceID)
 				+ " per site: "
@@ -208,7 +210,7 @@ public abstract class CollectResourcesMission extends EVAMission
 	 *                               null if none.
 	 * @param containerNum           The number of containers needed for the
 	 *                               mission.
-	 * @param minPeople              The mimimum number of people for the mission.
+	 * @param minPeople              The minimum number of people for the mission.
 	 * @param rover                  the rover to use.
 	 * @param collectionSites     the sites to collect ice.
 	 */
@@ -221,7 +223,7 @@ public abstract class CollectResourcesMission extends EVAMission
 
 		this.resourceID = resourceID;
 		double containerCap = ContainerUtil.getContainerCapacity(containerID);
-		this.siteResourceGoal = 2 * containerCap * containerNum / collectionSites.size();
+		this.siteResourceGoal = NUM_TRIPS * containerCap * containerNum / collectionSites.size();
 		
 		this.cumulativeCollectedByID = new HashMap<>();
 		this.containerID = containerID;

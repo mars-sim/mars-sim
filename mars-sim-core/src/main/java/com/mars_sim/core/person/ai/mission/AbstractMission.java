@@ -371,6 +371,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 		// Added codes in reassigning a work shift
 		if (member.getUnitType() == UnitType.PERSON) {
 			Person person = (Person) member;
+			
+			logger.info(person, "Being removed from " + member.getMission() + ".");
+			
 			member.setMission(null);
 			person.getTaskManager().recordActivity(getName(), "Leave Mission", "", this);
 
@@ -769,10 +772,19 @@ public abstract class AbstractMission implements Mission, Temporal {
 		done = true; 
 		
 		StringBuilder status = new StringBuilder();
-		status.append("Ended the ")
+		
+		if (listOfStatuses.isBlank() || listOfStatuses == null) {
+			status.append("Ended the ")
 			.append(getName())
-			.append(" with the status flag(s): ")
+			.append(" without status flags.");
+		}
+		else {
+			status.append("Ended the ")
+			.append(getName())
+			.append(" with status flag(s): ")
 			.append(listOfStatuses).append(".");
+		}
+
 		logger.info(startingMember, status.toString());
 
 		// Disband the members

@@ -213,7 +213,7 @@ abstract class EVAMission extends RoverMission {
 			// If no one can explore the site and this is not due to it just being
 			// night time, end the exploring phase.
 			if (activeEVA && !isEnoughSunlightForEVA()) {
-				logger.info(getVehicle(), "Not enough sunlight.");
+				logger.info(getVehicle(), "Not enough sunlight during the EVA phase of the mission.");
 				addMissionLog(NOT_ENOUGH_SUNLIGHT);
 				activeEVA = false;
 			}
@@ -221,13 +221,13 @@ abstract class EVAMission extends RoverMission {
 			// Anyone in the crew or a single person at the home settlement has a dangerous
 			// illness, end phase.
 			if (activeEVA && hasEmergency()) {
-				logger.info(getVehicle(), "Medical emergency.");
+				logger.info(getVehicle(), "A medical emergency was reported during the EVA phase of the mission.");
 				activeEVA = false;
 			}
 
 			// Check if enough resources for remaining trip. false = not using margin.
 			if (activeEVA && !hasEnoughResourcesForRemainingMission()) {
-				logger.info(getVehicle(), "Not enough resources for remaining mission.");
+				logger.info(getVehicle(), "Not enough resources was reported during the EVA phase of the mission.");
 				activeEVA = false;
 			}
 			
@@ -273,13 +273,15 @@ abstract class EVAMission extends RoverMission {
 				|| p.isInSettlementVicinity()
 				|| p.isRightOutsideSettlement())) {
 
-				logger.severe(p, "Invalid 'teleportion' detected. Current location: " 
+				logger.severe(p, 20_000, "Invalid 'teleportion' detected. Current location: " 
 						+ p.getLocationTag().getExtendedLocation() + ".");
-				// Call memberLeave to set mission to null will cause this member to drop off the member list
-				memberLeave(member);
-					
+				
 				// Use Iterator's remove() method
-				i.remove();
+//				i.remove();
+				
+				// Call memberLeave to set mission to null will cause this member to drop off the member list
+//				memberLeave(member);
+
 				break;
 			}
 		}

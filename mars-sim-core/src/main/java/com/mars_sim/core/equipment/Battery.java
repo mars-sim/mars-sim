@@ -156,7 +156,7 @@ public class Battery implements Serializable {
      * 
      * @param amount amount of energy to consume [in kWh]
      * @param time in hrs
-     * @return energy to be delivered
+     * @return energy to be delivered [in kWh]
      */
     public double requestEnergy(double kWh, double time) {
     	if (!isLowPower) {
@@ -206,7 +206,7 @@ public class Battery implements Serializable {
      * 
      * @param amount amount of energy to consume [in kWh]
      * @param time in hrs
-     * @return energy to be delivered
+     * @return energy to be delivered [in kWh]
      */
     public double provideEnergy(double kWh, double time) {
     	// FUTURE: Consider the effect of the charging rate and the time parameter

@@ -46,8 +46,8 @@ public class ExploreSite extends EVAOperation {
 	/** The average labor time it takes to find the resource. */
 	public static final double LABOR_TIME = 50D;
 
-	private static final double AVERAGE_ROCK_COLLECTED_SITE = 80 + RandomUtil.getRandomDouble(-20, 20);
-	public static final double AVERAGE_ROCK_MASS = 5 + RandomUtil.getRandomDouble(-3, 5);
+	private static final double AVERAGE_ROCK_COLLECTED_SITE = 200 + RandomUtil.getRandomDouble(-20, 20);
+	public static final double AVERAGE_ROCK_MASS = 5 + RandomUtil.getRandomDouble(-3, 3);
 	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5 + RandomUtil.getRandomDouble(5);
 
     public static final LightLevel LIGHT_LEVEL = LightLevel.LOW;
@@ -56,7 +56,7 @@ public class ExploreSite extends EVAOperation {
 	private int rockId = -1;
     
     private double totalCollected = 0;
-	private double numSamplesCollected = AVERAGE_ROCK_COLLECTED_SITE / AVERAGE_ROCK_MASS;
+	private double rocksToBeCollected = AVERAGE_ROCK_COLLECTED_SITE / AVERAGE_ROCK_MASS;
 	
 	private Exploration mission;
 	private ExploredLocation site;
@@ -91,8 +91,12 @@ public class ExploreSite extends EVAOperation {
 			if (!hasBox) {
 				// If specimen containers are not available, end task.
 				logger.log(person, Level.WARNING, 5_000,
-						"No more specimen box for collecting rock samples.");
+						"No more specimen box for collecting rocks.");
 				endTask();
+			}
+			else {
+				logger.info(person, 5_000, "Expected to collect " 
+						+ Math.round(rocksToBeCollected * 10.0)/10.0 + " kg rocks.");
 			}
 		}		
 	}
@@ -168,8 +172,8 @@ public class ExploreSite extends EVAOperation {
 		// Add to the cumulative combined site time
 		((Exploration)person.getMission()).addSiteTime(time);
 		
-		if (totalCollected >= AVERAGE_ROCK_COLLECTED_SITE) {
-			checkLocation("Rock samples collected exceeded set average.");
+		if (totalCollected > AVERAGE_ROCK_COLLECTED_SITE) {
+			checkLocation("Rocks collected exceeded set average.");
 			return time;
 		}
 
@@ -214,7 +218,7 @@ public class ExploreSite extends EVAOperation {
 		if (hasSpecimenContainer()) {
 			
 			double siteTime = ((Exploration)person.getMission()).getSiteTime();
-			double chance = numSamplesCollected * siteTime / 8000.0;
+			double chance = rocksToBeCollected * siteTime / 8000.0;
 			
 			double probability = site.getNumEstimationImprovement() * chance * time * getEffectiveSkillLevel();
 			if (probability > .9)

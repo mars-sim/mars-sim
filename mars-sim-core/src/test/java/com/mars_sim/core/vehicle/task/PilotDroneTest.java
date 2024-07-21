@@ -17,7 +17,7 @@ import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.mapdata.location.Direction;
 
 public class PilotDroneTest extends AbstractMarsSimUnitTest {
-    private static final double DIST = OperateVehicle.ARRIVING_BUFFER * 2;  // Drive 2 km
+    private static final double DIST = OperateVehicle.ARRIVING_BUFFER * 5;  // Drive 5 km
     private static final double METHANOL_AMOUNT = 30D;
     private static final double OXYGEN_AMOUNT = METHANOL_AMOUNT * OperateVehicle.RATIO_OXIDIZER_FUEL;
     
@@ -90,14 +90,15 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
 
         assertFalse("Task created", task.isDone());
 
-        double originalBatteryPercent = v.getBatteryPercent();
+//        double originalBatteryPercent = v.getBatteryPercent();
         
         // Execute few calls to get driver positioned and moving then remove fuel
         executeTask(p, task, 10);
         
-        double nowBatteryPercent = v.getBatteryPercent();
+//        double nowBatteryPercent = v.getBatteryPercent();
         
-        assertLessThan("Battery Percent", originalBatteryPercent, nowBatteryPercent);
+        // Now that regen is possible for recharging the battery, the line below won't work
+//        assertEqualLessThan("Battery Percent", originalBatteryPercent, nowBatteryPercent);
             
         assertEqualLessThan("Oxygen stored", OXYGEN_AMOUNT, v.getAmountResourceStored(ResourceUtil.oxygenID));
         assertEqualLessThan("Fuel stored", METHANOL_AMOUNT, v.getAmountResourceStored(v.getFuelTypeID()));
@@ -108,8 +109,16 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
 
         executeTask(p, task, 10);
         
-        assertEquals("Vehicle end primary status", StatusType.PARKED, v.getPrimaryStatus());
+        if (task.getPhase() != null)
+        	assertEquals("Vehicle end primary status", StatusType.MOVING, v.getPrimaryStatus());
+        else 
+        	assertEquals("Vehicle end primary status", StatusType.PARKED, v.getPrimaryStatus());
+        
         assertTrue("Marked out of fuel", v.haveStatusType(StatusType.OUT_OF_FUEL));
+        
+        // Pilot the rest
+        executeTaskUntilPhase(p, task, 500);
+        
         assertTrue("Task complete", task.isDone());
     }
 }

@@ -119,7 +119,7 @@ public class TabPanelSpecs extends TabPanel {
 		grid2.addRow( "DT Energy", StyleManager.DECIMAL_KWH.format(v.getVehicleSpec().getDrivetrainEnergy()));
 		grid2.addRow( "Base Range", StyleManager.DECIMAL_KM.format(v.getBaseRange()));
 
-		cumEnergyUsage = grid2.addRow( "Cum Energy Used", StyleManager.DECIMAL_KWH.format(v.getCumEnergyUsage()));	
+		cumEnergyUsage = grid2.addRow( "Cum Energy Used", StyleManager.DECIMAL2_KWH.format(v.getCumEnergyUsage()));	
 		currentRange = grid2.addRow( "Current Range", StyleManager.DECIMAL_KM.format(v.getRange()));
 		
 		cumFuelUsage = grid2.addRow( "Cum Fuel Used", StyleManager.DECIMAL_KG.format(v.getCumFuelUsage()));	
@@ -144,8 +144,8 @@ public class TabPanelSpecs extends TabPanel {
 		roadSpeed.setText(StyleManager.DECIMAL_M_S.format(v.getAverageRoadLoadSpeed()));
 		roadPower.setText(StyleManager.DECIMAL_KW.format(v.getAverageRoadLoadPower()));
 	
-		cumEnergyUsage.setText(StyleManager.DECIMAL_KWH.format(v.getCumEnergyUsage()));	
-		cumFuelUsage.setText(StyleManager.DECIMAL_KWH.format(v.getCumFuelUsage()));	
+		cumEnergyUsage.setText(StyleManager.DECIMAL2_KWH.format(v.getCumEnergyUsage()));	
+		cumFuelUsage.setText(StyleManager.DECIMAL_KG.format(v.getCumFuelUsage()));	
 		
 		cumFE.setText(StyleManager.DECIMAL_KM_KG.format(v.getCumFuelEconomy()));
 		cumFC.setText(StyleManager.DECIMAL_KWH_KM.format(v.getCumFuelConsumption()/1000));

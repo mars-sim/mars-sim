@@ -291,8 +291,8 @@ public class Exploration extends EVAMission
 			fireMissionUpdate(MissionEventType.SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
 		}
 		
-		if (currentSite == null)
-			return false;
+//		if (currentSite == null)
+//			return false;
 		
 		explorationSiteCompletion.put(getCurrentNavpointDescription(), completion);
 

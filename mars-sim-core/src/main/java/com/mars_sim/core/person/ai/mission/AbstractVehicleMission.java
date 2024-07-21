@@ -498,8 +498,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		// Note: need to find out if there are other matching reasons for setting
 		// emergency beacon.
 		if (vehicle.getSettlement() == null) {
-
-			// if the vehicle somewhere on Mars
+			// Case 1: if the vehicle somewhere on Mars
+			
 			if (!vehicle.isBeaconOn()) {
 				var message = new StringBuilder();
 
@@ -507,7 +507,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				message.append("Turned on emergency beacon to request for towing. Status flag(s): ");
 				message.append(getMissionStatus().stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
 		
-				logger.info(vehicle, 20_000, message.append(".").toString());
+				logger.info(vehicle, 20_000, message.append(".").toString().toLowerCase());
 		
 				vehicle.setEmergencyBeacon(true);
 		
@@ -524,10 +524,12 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			}
 		}
 
-		else { // Vehicle is still in the settlement vicinity or has arrived in a settlement
-				// if a vehicle is at a settlement
-				setPhaseEnded(true);
-				endMission(reason);
+		else { 
+			// Case 2: if the vehicle in the settlement vicinity or has arrived in a settlement
+			
+			// if a vehicle is at a settlement
+			setPhaseEnded(true);
+			endMission(reason);
 		}
 	}
 
