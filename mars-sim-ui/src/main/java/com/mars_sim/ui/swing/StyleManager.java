@@ -49,21 +49,31 @@ public class StyleManager {
     // Unit specific formatters
     public static final DecimalFormat DECIMAL_AH = new DecimalFormat("#,##0.0 Ah");
     public static final DecimalFormat DECIMAL_LITER2 = new DecimalFormat("#,##0.0 Liter");
-    public static final DecimalFormat DECIMAL_KM_KG = new DecimalFormat("#,##0.0 km/kg");
-    public static final DecimalFormat DECIMAL_WH_KM = new DecimalFormat("#,##0.0 Wh/km");
-    public static final DecimalFormat DECIMAL_WH_KG = new DecimalFormat("#,##0.0 Wh/kg");
+    
+    public static final DecimalFormat DECIMAL_KM_KG = new DecimalFormat("#,##0.00 km/kg");
+    public static final DecimalFormat DECIMAL_WH_KM = new DecimalFormat("#,##0.00 Wh/km");
+    public static final DecimalFormat DECIMAL_KWH_KM = new DecimalFormat("#,##0.000 kWh/km");
+    
+    public static final DecimalFormat DECIMAL_KWH_KG = new DecimalFormat("#,##0.00 kWh/kg");
+    public static final DecimalFormat DECIMAL_WH_KG = new DecimalFormat("#,##0.00 Wh/kg");
+    
     public static final DecimalFormat DECIMAL_M2 = new DecimalFormat("#,##0.00 m\u00B2");
     public static final DecimalFormat DECIMAL_M_S2 = new DecimalFormat("#,##0.00 "
 									+ Msg.getString("unit.meterperssecsquared")); //$NON-NLS-1$   
     public static final DecimalFormat DECIMAL_M_S = new DecimalFormat("#,##0.00 " 
     								+ Msg.getString("unit.meterpersec")); //$NON-NLS-1$
+    
     public static final DecimalFormat DECIMAL_KJ = new DecimalFormat("#,##0.0 kJ");
     public static final DecimalFormat DECIMAL_KM = new DecimalFormat("#,##0.00 km");
-    public static final DecimalFormat DECIMAL_KMH = new DecimalFormat("##0.00 km/h");
+    
+    public static final DecimalFormat DECIMAL_KPH = new DecimalFormat("##0.00 kph");
+    
     public static final DecimalFormat DECIMAL_KG = new DecimalFormat("#,##0.0 kg");
     public static final DecimalFormat DECIMAL_KG2 = new DecimalFormat("#,##0.00 kg");
+    
     public static final DecimalFormat DECIMAL_KW = new DecimalFormat("#,##0.0 kW");
     public static final DecimalFormat DECIMAL_KWH = new DecimalFormat("#,##0.0 kWh");
+    
     public static final DecimalFormat DECIMAL_PERC = new DecimalFormat("0 '%'");
     public static final DecimalFormat DECIMAL_PERC1 = new DecimalFormat("0.0 '%'");
     public static final DecimalFormat DECIMAL_PERC2 = new DecimalFormat("0.00 '%'");
@@ -86,13 +96,13 @@ public class StyleManager {
 
     
     // Supported LAFs
-    private static final String DARK = "Flat Dark";
-    private static final String LIGHT = "Flat Light";
-    private static final String LIGHT_BLUE = LIGHT + " - Blue";
-    private static final String LIGHT_RED = LIGHT + " - Red";
-    private static final String LIGHT_ORANGE = LIGHT + " - Orange";
-    private static final String LIGHT_GREEN = LIGHT + " - Green";
-    private static final String SYSTEM = "Default System";
+    public static final String DARK = "Flat Dark";
+    public static final String LIGHT = "Flat Light";
+    public static final String LIGHT_BLUE = LIGHT + " - Blue";
+    public static final String LIGHT_RED = LIGHT + " - Red";
+    public static final String LIGHT_ORANGE = LIGHT + " - Orange";
+    public static final String LIGHT_GREEN = LIGHT + " - Green";
+    public static final String SYSTEM = "Default System";
     private static final String [] LAF_STYLES = {LIGHT_BLUE, LIGHT_GREEN, LIGHT_ORANGE, LIGHT_RED, DARK, SYSTEM};
 
     // Constants for font definition

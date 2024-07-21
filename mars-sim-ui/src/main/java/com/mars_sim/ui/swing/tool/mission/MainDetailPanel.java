@@ -616,7 +616,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 
 			if (vehicle != null && !mission.isDone()) {
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
-				speedLabel.setText(StyleManager.DECIMAL_KMH.format(vehicle.getSpeed())); //$NON-NLS-1$
+				speedLabel.setText(StyleManager.DECIMAL_KPH.format(vehicle.getSpeed())); //$NON-NLS-1$
 				try {
 					int currentLegRemainingDist = (int) vehicleMission.getDistanceCurrentLegRemaining();
 					distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(currentLegRemainingDist)); //$NON-NLS-1$
@@ -642,7 +642,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			}
 			else {
 				vehicleStatusLabel.setText(" ");
-				speedLabel.setText(StyleManager.DECIMAL_KMH.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
+				speedLabel.setText(StyleManager.DECIMAL_KPH.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 				distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 		
 				double travelledDistance = Math.round(vehicleMission.getTotalDistanceTravelled()*10.0)/10.0;
@@ -666,7 +666,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				vehicleButton.setText(vehicle.getName());
 				vehicleButton.setVisible(true);
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
-				speedLabel.setText(StyleManager.DECIMAL_KMH.format(vehicle.getSpeed())); //$NON-NLS-1$
+				speedLabel.setText(StyleManager.DECIMAL_KPH.format(vehicle.getSpeed())); //$NON-NLS-1$
 				distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 				vehicle.addUnitListener(this);
@@ -701,7 +701,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		centerMapButton.setEnabled(false);
 		
 		vehicleStatusLabel.setText(" ");
-		speedLabel.setText(StyleManager.DECIMAL_KMH.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
+		speedLabel.setText(StyleManager.DECIMAL_KPH.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 		distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 		traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 		
@@ -872,13 +872,13 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 					vehicleButton.setText(vehicle.getName());
 					vehicleButton.setVisible(true);
 					vehicleStatusLabel.setText(vehicle.printStatusTypes());
-					speedLabel.setText(StyleManager.DECIMAL_KMH.format(vehicle.getSpeed())); //$NON-NLS-1$
+					speedLabel.setText(StyleManager.DECIMAL_KPH.format(vehicle.getSpeed())); //$NON-NLS-1$
 					vehicle.addUnitListener(panel);
 					currentVehicle = vehicle;
 				} else {
 					vehicleButton.setVisible(false);
 					vehicleStatusLabel.setText("Not Applicable");
-					speedLabel.setText(StyleManager.DECIMAL_KMH.format(0)); //$NON-NLS-1$
+					speedLabel.setText(StyleManager.DECIMAL_KPH.format(0)); //$NON-NLS-1$
 					if (currentVehicle != null)
 						currentVehicle.removeUnitListener(panel);
 					currentVehicle = null;
@@ -926,7 +926,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			if (type == UnitEventType.STATUS_EVENT) {
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
 			} else if (type == UnitEventType.SPEED_EVENT)
-				speedLabel.setText(StyleManager.DECIMAL_KMH.format(vehicle.getSpeed())); //$NON-NLS-1$
+				speedLabel.setText(StyleManager.DECIMAL_KPH.format(vehicle.getSpeed())); //$NON-NLS-1$
 		}
 	}
 

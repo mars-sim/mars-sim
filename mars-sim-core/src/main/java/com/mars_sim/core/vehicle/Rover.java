@@ -931,7 +931,7 @@ public class Rover extends GroundVehicle implements Crewable,
 		// Note: multiply by 0.95 would account for the extra distance travelled in between sites
 		double fuelRange = super.getRange() * FUEL_RANGE_FACTOR;
 
-		// Battery constribute the range
+		// Battery also contributes to the range
 		double cap = super.getBatteryCapacity();
 		double percent = super.getBatteryPercent();
 		double estFC = super.getEstimatedFuelConsumption();

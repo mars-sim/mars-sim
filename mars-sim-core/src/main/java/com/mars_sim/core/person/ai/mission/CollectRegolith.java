@@ -31,7 +31,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	private static final long serialVersionUID = 1L;
 
 	/** Number of large bags required for the mission. */
-	public static final int REQUIRED_LARGE_BAGS = 4;
+	public static final int REQUIRED_LARGE_BAGS = 6;
 
 	/** Number of collection sites. */
 	private static final int NUM_SITES = 3;

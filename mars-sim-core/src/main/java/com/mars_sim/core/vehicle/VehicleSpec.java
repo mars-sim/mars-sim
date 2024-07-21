@@ -140,10 +140,10 @@ public class VehicleSpec implements Serializable {
 	private int fuelTypeID;
 	/** The # of fuel cell stacks of the vehicle.  */
 	private int numFuelCellStack;
-
-	private double value;
+	 /** The onboard vehicle power usage in kW (other than for drivetrain). */
+	private double onboardPower;
     /** The maximum energy capacity of a standard battery module in kWh. */
-    private double energyPerModule;
+    private double energyCapacityPerModule;
 	/** Base speed of vehicle in kph (can be set in child class). */
 	private double baseSpeed = 1;
 	/** The base range of the vehicle (with full tank of fuel and no cargo) (km). */
@@ -163,9 +163,6 @@ public class VehicleSpec implements Serializable {
 	private double basePower = 0;
 	/** The peak rated power output of the vehicle. (kW). */
 	private double peakPower = 0;
-	
-	// Define percent of other energy usage (other than for drivetrain)
-	private double otherEnergyUsagePercent = 0;
 	/** The estimated total number of hours the vehicle can run [hr], given the full tank of fuel. */
 	private double baseTotalHours;
 	/** The maximum fuel capacity of the vehicle [kg] */
@@ -254,7 +251,7 @@ public class VehicleSpec implements Serializable {
 	private Set<Integer> partIDs;
 
 	public VehicleSpec(String name, VehicleType type, String model, String description, String baseImage,
-			String powerSourceStr, String fuelTypeStr, double value,
+			String powerSourceStr, String fuelTypeStr, double powerValue,
 			int batteryModule, double energyPerModule, int fuelCellStack,
 			double drivetrainEff, 
 			double baseSpeed, double basePower,
@@ -285,12 +282,12 @@ public class VehicleSpec implements Serializable {
 			fuelTypeID = -1;
 		}
 		
-		this.value = value;
+		this.onboardPower = powerValue;
 		
 		// Set the number of battery modules of the vehicle.
 		this.numBatteryModule = batteryModule;	
 		// Set the energy kWh per battery module of the vehicle.		
-		this.energyPerModule = energyPerModule;
+		this.energyCapacityPerModule = energyPerModule;
 		
 		// Set the # of fuel cell stacks of the vehicle.
 		this.numFuelCellStack = fuelCellStack;
@@ -353,7 +350,7 @@ public class VehicleSpec implements Serializable {
 	 */
 	private void defineVehiclePerformance() {
 
-    	batteryCapacity = energyPerModule * numBatteryModule;
+    	batteryCapacity = energyCapacityPerModule * numBatteryModule;
     	
 		if (fuelTypeID > 0) {
 			// Gets the capacity [in kg] of vehicle's fuel tank
@@ -363,7 +360,7 @@ public class VehicleSpec implements Serializable {
 			// Gets the conversion factor for a specific vehicle [Wh/kg]
 			fuel2DriveEnergy =  METHANOL_WH_PER_KG * drivetrainEfficiency + batteryCapacity;
 		}
-		else if (fuelTypeStr.equalsIgnoreCase("NUCLEAR")){
+		else if (fuelTypeStr.equalsIgnoreCase("NUCLEAR_TYPE")){
 			// Gets the capacity [in kg] of vehicle's fuel tank
 			fuelCapacity = .01;
 			// Gets the energy capacity [kWh] based on a full tank of methanol
@@ -373,26 +370,22 @@ public class VehicleSpec implements Serializable {
 		}
 		
 		// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-		peakPower = basePower * Math.log(3 + 1.5 * (1 + numBatteryModule) + 1.5 * (1 + numFuelCellStack));
+		peakPower = basePower * Math.log10(10 + numBatteryModule * 3 + numFuelCellStack * 2) ;
 		// Define the estimated additional beginning mass for each type of vehicle
 		double additionalBeginningMass = 0;
 		// Define the estimated additional end mass for each type of vehicle
 		double additionalEndMass = 0;		
 
 		switch (type) {
-			// see https://droneii.com/drone-energy-sources
+			// See https://droneii.com/drone-energy-sources
 			case DELIVERY_DRONE: {
-				// Hard-code percent energy usage for this vehicle.
-				otherEnergyUsagePercent = 2.0;
 				// Accounts for the fuel (methanol and oxygen) and the traded goods
-				additionalBeginningMass = 500;
+				additionalBeginningMass = 400;
 				// Accounts for water and the traded goods
-				additionalEndMass = 400;		
+				additionalEndMass = 350;		
 			} break;
 
 			case LUV: {
-				// Hard-code percent energy usage for this vehicle.
-				otherEnergyUsagePercent = 3.0;
 				// Accounts for the occupant weight
 				additionalBeginningMass = estimatedTotalCrewWeight;
 				// Accounts for the occupant weight
@@ -400,40 +393,36 @@ public class VehicleSpec implements Serializable {
 			} break;
 
 			case EXPLORER_ROVER: {
-				// Hard-code percent energy usage for this vehicle.
-				otherEnergyUsagePercent = 7.5;
 				// Accounts for the occupants and their consumables
-				additionalBeginningMass = estimatedTotalCrewWeight + 4 * 50;
+				additionalBeginningMass = estimatedTotalCrewWeight + 4 * 20;
 				// Accounts for the occupant and rock sample, ice or regolith collected
 				additionalEndMass = estimatedTotalCrewWeight + 800;	
 			} break;
 
 			case CARGO_ROVER: {
-				// Hard-code percent energy usage for this vehicle.
-				otherEnergyUsagePercent = 5.0;
 				// Accounts for the occupants and their consumables and traded goods 
-				additionalBeginningMass = estimatedTotalCrewWeight + 2 * 50 + 1500;
+				additionalBeginningMass = estimatedTotalCrewWeight + 2 * 20 + 2000;
 				// Accounts for the occupants and traded goods
-				additionalEndMass = estimatedTotalCrewWeight + 1500;				
+				additionalEndMass = estimatedTotalCrewWeight + 2000;				
 			} break;
 
 			case TRANSPORT_ROVER: {
-				// Hard-code percent energy usage for this vehicle.
-				otherEnergyUsagePercent = 10.0;
 				// Accounts for the occupants and their consumables and personal possession
-				additionalBeginningMass = estimatedTotalCrewWeight + 8 * (50 + 100);
+				additionalBeginningMass = estimatedTotalCrewWeight + 8 * (20 + 100);
 				// Accounts for the occupants and their personal possession
 				additionalEndMass = estimatedTotalCrewWeight + 8 * 100;				
 			} break;
 		}
 
 		// Gets the estimated energy available for drivetrain [in kWh]
-		drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsagePercent / 100.0) * drivetrainEfficiency + batteryCapacity;
+		drivetrainEnergy = methanolEnergyCapacity * (1.0 - onboardPower / 100.0) * drivetrainEfficiency + batteryCapacity;
 		
 		// Gets the estimated energy available to be consumed for the trip [in kWh]
 		double baseEnergyConsumed = methanolEnergyCapacity * drivetrainEfficiency + batteryCapacity;
 		// Gets the estimated average road load power (including coasting)
-		double baseRoadLoadPower = .25 * (.15 * peakPower + .85 * basePower);
+		double baseRoadLoadPower = .1 * (.1 * peakPower + .9 * basePower);
+		// Gets the estimated average road speed (including coasting)
+		double baseRoadSpeed = .75 * baseSpeed;
 		// Gets the maximum total # of hours the vehicle is capable of operating
 		baseTotalHours = baseEnergyConsumed / baseRoadLoadPower;
 		// kW / kph -> (kW / km / h) -> kW * h / km
@@ -447,7 +436,7 @@ public class VehicleSpec implements Serializable {
 		// Gets the base fuel consumption [in Wh/km] of this vehicle. Convert estEnergyConsumed from kWh to Wh.
 		baseFuelConsumption =  1000 * baseEnergyConsumed / (1 + baseRange);
 		// Gets the base coeff for FC to FE
-		coefficientBaseFC2FE = baseFuelEconomy / baseFuelConsumption * baseRoadLoadPower / baseSpeed;
+		coefficientBaseFC2FE = baseFuelEconomy / baseFuelConsumption;
 		
 		// Accounts for the estimated additional beginning mass
 		beginningMass = calculatedEmptyMass + additionalBeginningMass;
@@ -463,7 +452,7 @@ public class VehicleSpec implements Serializable {
 		initialFuelConsumption = baseFuelConsumption * massModifier;
 		
 		// Gets the base acceleration [m/s2]
-		baseAccel = peakPower / (1 + .5 * (endMass + beginningMass)) / (1 + baseSpeed) * 1000 * 3.6;
+		baseAccel = peakPower / (.5 * (endMass + beginningMass)) / baseSpeed * 3600;
 	}
 	
 	public final void setWidth(double width) {
@@ -558,7 +547,7 @@ public class VehicleSpec implements Serializable {
 	 * @return
 	 */
 	public double getEnergyPerModule() {
-		return energyPerModule;
+		return energyCapacityPerModule;
 	}
 	
 	/**
@@ -957,17 +946,8 @@ public class VehicleSpec implements Serializable {
 		return partIDs;
 	}
 	
-	/**
-	 * Returns the specified value of the power source of this vehicle spec.
-	 * 
-	 * @return
-	 */
-	public double getValue() {
-		return value;
-	}
-	
-	public double getOtherEnergyUsagePercent() {
-		return otherEnergyUsagePercent;
+	public double getOnboardPowerUsage() {
+		return onboardPower;
 	}
 	
 	public void destroy() {

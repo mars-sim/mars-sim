@@ -116,15 +116,15 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		
 		<!-- The average value (could be in kW or kWh) provided by this power source (required) -->
 		<!-- e.g. "15.0" -->
-		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="20.0"/>
+		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="10.0"/>
 		
 		<!-- The number of battery modules for the vehicle [dimension-less].(required) -->
 		<!-- Default: varied according to the type of vehicle -->
 		<battery-module number="2" />
 	
-		<!-- The energy per battery module for the vehicle [kWh].(required) -->
+		<!-- The energy capacity per battery module for the vehicle [kWh].(required) -->
 		<!-- Default: varied according to the type of vehicle -->
-		<energy-per-module value="10" />		
+		<energy-per-module value="15" />		
 			
 		<!-- The number of methanol fuel cell stacks for the vehicle [dimension-less].(required) -->
 		<!-- Default: varied according to the type of vehicle -->
@@ -136,18 +136,18 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 		<!-- Base speed of rover [km/hr](required) -->
 		<!-- Default: varies according to the type of vehicle -->
-		<base-speed value="30.0" />
+		<base-speed value="40.0" />
 		
 		<!-- Average power exerted when operating at base speed under normal condition [kW](required) -->
 		<!-- Default: varies according to the type of vehicle -->
-		<base-power value="20.0" />
+		<base-power value="90.0" />
 		
 		<!-- Empty mass of rover [kg] (required) -->
 		<!-- Default: varies according to the type of vehicle  -->
 		<empty-mass value="1100.0" />
 
 		<!-- How well does this vehicle handle terrain -->
-		<terrain-handling value="5.0"/>
+		<terrain-handling value="6.0"/>
 		
 		<!-- The crew size of an rover -->
 		<!-- Default: varies according to the type of vehicle -->
@@ -173,12 +173,12 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			
 			<!-- Default: varies according to the type of vehicle -->
 			<!-- The H2 tank on Toyota Mirai has a 5 kg capacity http://www.mytoyotamirai.com/toyota-mirai-specifications/ -->
-			<capacity resource="methanol" value="30.0" />
+			<capacity resource="methanol" value="60.0" />
 			
 			<!-- ratio of oxidizer to fuel is 1.5:1. Thus 300 kg methanol needs 450 kg oxygen -->
 			<!-- Assuming totalTripHours is 45 hrs, each person consumes .8 kg / 24.66 hrs * totalTripHours -> 1.65 kg -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="oxygen" value="60.0" />
+			<capacity resource="oxygen" value="120.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="nitrogen" value="1.0" />
@@ -187,10 +187,10 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="carbon dioxide" value="1.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="water" value="120.0" />
+			<capacity resource="water" value="140.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="food" value="60.0" />
+			<capacity resource="food" value="70.0" />
 
 			<!-- Default: varies according to the type of vehicle -->
 			<!--<capacity resource="dessert" value="120.0" />-->
@@ -256,25 +256,25 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 	<vehicle name="Long Range Explorer" type="EXPLORER_ROVER" model="A" width="3.5" length="8.0" base-image="long range explorer">
 		<description>An extended range version of the Explorer Rover.</description>
-		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="15.0"/>		
+		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="10.0"/>		
 		<battery-module number="3" />
-		<energy-per-module value="10" />		
+		<energy-per-module value="15" />		
 		<fuel-cell-stack number="4" />
 		<drivetrain-efficiency value=".85" />
-		<base-speed value="30.0" />
-		<base-power value="15" />
+		<base-speed value="40.0" />
+		<base-power value="90" />
 		<empty-mass value="1200.0" />
-		<terrain-handling value="4.0"/>
+		<terrain-handling value="6.0"/>
 		<crew-size value="4" />
-		<cargo total-capacity="2000.0">
-			<capacity resource="methanol" value="50.0" />
-			<capacity resource="oxygen" value="100.0" />
+		<cargo total-capacity="2400.0">
+			<capacity resource="methanol" value="90.0" />
+			<capacity resource="oxygen" value="180.0" />
 			
 			<capacity resource="nitrogen" value="2.0" />
 			<capacity resource="carbon dioxide" value="2.0" />
 			
-			<capacity resource="water" value="200.0" />
-			<capacity resource="food" value="100.0" />
+			<capacity resource="water" value="180.0" />
+			<capacity resource="food" value="90.0" />
 			
 			<!--capacity resource="rock samples" value="750.0" />
 			<capacity resource="ice" value="750.0" /> -->
@@ -315,23 +315,23 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			and can accommodate up to 8 people.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="20.0"/>			
 		<battery-module number="4" />
-		<energy-per-module value="10" />
+		<energy-per-module value="15" />
 		<fuel-cell-stack number="5" />			
 		<drivetrain-efficiency value=".85" />
-		<base-speed value="25.0" />
-		<base-power value="20" />
+		<base-speed value="35.0" />
+		<base-power value="150" />
 		<empty-mass value="1700.0" />
 		<terrain-handling value="3.0"/>
 		<crew-size value="8" />
 		<cargo total-capacity="4000.0">
-			<capacity resource="methanol" value="400.0" />
-			<capacity resource="oxygen" value="800.0" />
+			<capacity resource="methanol" value="200.0" />
+			<capacity resource="oxygen" value="500.0" />
 			
 			<capacity resource="nitrogen" value="16.0" />
 			<capacity resource="carbon dioxide" value="8.0" />
 			
-			<capacity resource="water" value="2500.0" />
-			<capacity resource="food" value="250.0" />
+			<capacity resource="water" value="800.0" />
+			<capacity resource="food" value="200.0" />
 			
 			<!--capacity resource="rock samples" value="400.0" />
 			<capacity resource="ice" value="400.0" /> -->
@@ -364,13 +364,13 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<vehicle name="Cargo Rover" type="CARGO_ROVER" model="A" width="4.0" length="8.0">
 		<description>A rover for transporting cargo from one settlement to another
 			and can have fit two people only to maximize cargo space.</description>
-		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="20.0"/>
+		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="10.0"/>
 		<battery-module number="5" />
-		<energy-per-module value="10" />
+		<energy-per-module value="15" />
 		<fuel-cell-stack number="6" />
 		<drivetrain-efficiency value=".9" />
-		<base-speed value="25.0" />
-		<base-power value="20" />		
+		<base-speed value="35.0" />
+		<base-power value="150" />		
 		<empty-mass value="2000.0" />
 		<terrain-handling value="2"/>
 		<crew-size value="2" />
@@ -410,13 +410,13 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	-->
 	<vehicle name="Light Utility Vehicle" type="LUV" model="A" width="1.7" length="2.55">
 		<description>A small, unpressurized, one crew utility vehicle with attachable parts.</description>
-		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="10.0"/>
+		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="5.0"/>
 		<battery-module number="1" />
-		<energy-per-module value="10" />
-		<fuel-cell-stack number="1" />
+		<energy-per-module value="15" />
+		<fuel-cell-stack number="2" />
 		<drivetrain-efficiency value=".9" />
-		<base-speed value="20.0" />
-		<base-power value="10" />		
+		<base-speed value="30.0" />
+		<base-power value="20" />		
 		<empty-mass value="270.0" />
 		<terrain-handling value="10.0"/>
 		<crew-size value="1" />
@@ -440,13 +440,13 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<!-- Delivery Drone -->
 	<vehicle name="Delivery Drone" type="DELIVERY_DRONE" model="A" width="1.75" length="1.75">
 		<description>An unmanned aerial vehicle used for transport of light cargo between settlements</description>
-		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="20.0"/>
+		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="5.0"/>
 		<battery-module number="1" />
-		<energy-per-module value="10" />
+		<energy-per-module value="15" />
 		<fuel-cell-stack number="2" />
 		<drivetrain-efficiency value=".95" />
-		<base-speed value="100.0" />
-		<base-power value ="20" />		
+		<base-speed value="60.0" />
+		<base-power value ="40" />		
 		<empty-mass value="160.0" />
 		<crew-size value="0" />
 		<cargo total-capacity="600.0">

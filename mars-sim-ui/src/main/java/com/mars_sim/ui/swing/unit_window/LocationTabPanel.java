@@ -215,13 +215,25 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		content.add(dataPanel, BorderLayout.CENTER);
         addBorder(dataPanel, "Data");
         
-		if (isPerson || isRobot || isVehicle) {
+		if (isPerson || isRobot) {
 			
 			AttributePanel containerPanel = new AttributePanel(6);
 			dataPanel.add(containerPanel, BorderLayout.NORTH);	
 			
 			activitySpot = containerPanel.addRow("Reserved Spot", "");
 			
+			settlementLabel = containerPanel.addRow("Settlement", "");
+			containerLabel = containerPanel.addRow("Container Unit", "");
+			buildingLabel = containerPanel.addRow("Building", "");
+			locationStateLabel = containerPanel.addRow("Location State", "");
+			vicinityLabel = containerPanel.addRow("Vicinity", "");
+		}
+		
+		else if (isVehicle) {
+			
+			AttributePanel containerPanel = new AttributePanel(5);
+			dataPanel.add(containerPanel, BorderLayout.NORTH);	
+	
 			settlementLabel = containerPanel.addRow("Settlement", "");
 			containerLabel = containerPanel.addRow("Container Unit", "");
 			buildingLabel = containerPanel.addRow("Building", "");
@@ -264,7 +276,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		if (!isSettlement) {
 			updateLocationElevation(unit);
 			
-			if (!isEquipment) {
+			if (!isEquipment && !isVehicle) {
 				updateActivitySpot(unit);
 			}
 			
@@ -286,27 +298,27 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	 * @param gauge
 	 */
 	private void updateBannerThemeColor(String theme) {
-		if (theme.equalsIgnoreCase("Flat Light - Blue")) {
+		if (theme.equalsIgnoreCase(StyleManager.LIGHT_BLUE)) {
 			bannerText.setGlowColor(Color.WHITE);
 			bannerText.setLcdColor(LcdColor.BLUEGRAY_LCD);			
 		}
-		else if (theme.equalsIgnoreCase("Flat Light - Green")) {
+		else if (theme.equalsIgnoreCase(StyleManager.LIGHT_GREEN)) {
 			bannerText.setGlowColor(Color.lightGray);
 			bannerText.setLcdColor(LcdColor.DARKGREEN_LCD);			
 		}
-		else if (theme.equalsIgnoreCase("Flat Light - Orange")) {
+		else if (theme.equalsIgnoreCase(StyleManager.LIGHT_ORANGE)) {
 			bannerText.setGlowColor(Color.ORANGE);
 			bannerText.setLcdColor(LcdColor.AMBER_LCD);			
 		}
-		else if (theme.equalsIgnoreCase("Flat Light - Red")) {
+		else if (theme.equalsIgnoreCase(StyleManager.LIGHT_RED)) {
 			bannerText.setGlowColor(Color.LIGHT_GRAY);
 			bannerText.setLcdColor(LcdColor.REDDARKRED_LCD);			
 		}
-		else if (theme.equalsIgnoreCase("Flat Dark")) {
+		else if (theme.equalsIgnoreCase(StyleManager.DARK)) {
 			bannerText.setGlowColor(Color.WHITE);
 			bannerText.setLcdColor(LcdColor.DARKBLUE_LCD);			
 		}
-		else if (theme.equalsIgnoreCase("Default System")) {
+		else if (theme.equalsIgnoreCase(StyleManager.SYSTEM)) {
 			bannerText.setGlowColor(Color.ORANGE);
 			bannerText.setLcdColor(LcdColor.BEIGE_LCD);			
 		}

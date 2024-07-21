@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * StatusType.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-07-20
  * @author Manny Kung
  *
  */
@@ -16,16 +16,17 @@ import com.mars_sim.tools.Msg;
 public enum StatusType {
 	
 	GARAGED 				(Msg.getString("StatusType.garaged"), true), //$NON-NLS-1$
+	HOVERING 				(Msg.getString("StatusType.hovering"), true), //$NON-NLS-1$
 	MAINTENANCE 			(Msg.getString("StatusType.maintenance"), false), //$NON-NLS-1$
 	MALFUNCTION 			(Msg.getString("StatusType.malfunction"), false), //$NON-NLS-1$
 	MOVING 					(Msg.getString("StatusType.moving"), true), //$NON-NLS-1$
+	OUT_OF_BATTERY_POWER	(Msg.getString("StatusType.outOfBatteryPower"),false), //$NON-NLS-1$
+	OUT_OF_FUEL 			(Msg.getString("StatusType.outOfFuel"),false), //$NON-NLS-1$
+	OUT_OF_OXIDIZER 		(Msg.getString("StatusType.outOfOxidizer"),false), //$NON-NLS-1$
 	PARKED 					(Msg.getString("StatusType.parked"), true), //$NON-NLS-1$
 	STUCK					(Msg.getString("StatusType.stuck"), false), //$NON-NLS-1$
 	TOWED 					(Msg.getString("StatusType.towed"), false), //$NON-NLS-1$	
 	TOWING 					(Msg.getString("StatusType.towing"), false), //$NON-NLS-1$	
-	OUT_OF_FUEL 			(Msg.getString("StatusType.outOfFuel"),false), //$NON-NLS-1$
-	OUT_OF_OXIDIZER 		(Msg.getString("StatusType.outOfOxidizer"),false), //$NON-NLS-1$
-	OUT_OF_BATTERY_POWER	(Msg.getString("StatusType.outOfBatteryPower"),false) //$NON-NLS-1$
 	;
 	
 	private String name;

@@ -532,7 +532,7 @@
 			<part name="aerogel tile" number="16" />
 			<part name="solar panel" number="6" />
 			<part name="power cable" number="2" />
-			<part name="stepper motor small" number="2" />
+			<part name="Stepper Motor" number="4" />
 			<part name="electrical wire" number="20" />
 			<part name="wire connector" number="20" />
 			<vehicle type="light utility vehicle" >
@@ -549,7 +549,7 @@
 			<part name="power cable" number="2" />
 			<part name="glass tube" number="6" />
 			<part name="steel pipe" number="10" />
-			<part name="stepper motor small" number="2" />
+			<part name="Stepper Motor" number="4" />
 			<part name="heat pump" number="1" />
 			<part name="water pump large" number="2" />
 			<part name="electrical wire" number="20" />
@@ -668,7 +668,7 @@
 			<part name="electrical wire" number="50" />
 			<part name="wire connector" number="50" />
 			<part name="plastic bottle" number="25" />
-			<part name="motor small" number="1" />
+			<part name="Motor 10 kW" number="1" />
 			<part name="brick" number="100" />
 			<part name="gas tank" number="3" />
 			<part name="air duct" number="5" />			
@@ -706,7 +706,7 @@
 			<part name="aerogel tile" number="90" />
 			<part name="valve" number="18" />
 			<part name="gasket" number="6" />
-			<part name="motor small" number="6" />
+			<part name="Motor 10 kW" number="6" />
 			<part name="plastic tubing" number="18" />
 			<part name="power cable" number="6" />
 			<part name="electrical wire" number="60" />
@@ -1054,7 +1054,7 @@
 			<part name="fiberglass" number="5" />
 			<part name="plastic pipe" number="7" />
 			<part name="valve" number="7" />
-			<part name="motor large" number="1" />
+			<part name="Motor 30 kW" number="1" />
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="5" />
 			<part name="air duct" number="10" />			
@@ -1217,7 +1217,7 @@
 			<part name="electrical wire" number="50" />
 			<part name="wire connector" number="50" />
 			<part name="plastic bottle" number="25" />
-			<part name="motor small" number="1" />
+			<part name="Motor 10 kW" number="1" />
 			<part name="brick" number="100" />
 			<part name="air duct" number="5" />			
 			<vehicle type="light utility vehicle" >

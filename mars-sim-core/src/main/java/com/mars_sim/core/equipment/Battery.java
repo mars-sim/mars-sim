@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Battery.java
- * @date 2023-04-19
+ * @date 2024-07-20
  * @author Manny Kung
  */
 
@@ -29,18 +29,21 @@ public class Battery implements Serializable {
     /** The maximum current that can be safely drawn from this battery pack in Ampere. */
 //    private static final double MAX_AMP_DRAW = 120;
     
-    /** The standard voltage of this battery pack in kW. */
-    private static final double STANDARD_VOLTAGE = 600;
+	/**The maximum continuous discharge rate (within the safety limit) of this battery. */
+	private static final int MAX_C_RATING = 4;
+	
+    /** The standard voltage of this battery pack in volts. */
+    public static final double STANDARD_VOLTAGE = 600;
+    
+    /** The standard voltage of a drone battery pack in volts. */
+    public static final double DRONE_VOLTAGE = 14.8;
     
     /** The maximum energy capacity of a standard battery module in kWh. */
 //    public static final double ENERGY_PER_MODULE = 15.0;
     
-    private static final String KWH__ = " kWH  ";
+    private static final String KWH__ = " kWh  ";
     private static final String KW__ = " kW  ";
     
-	/** The max ampere hour of the battery in Ah. */	
-	private final double maxAmpHour;
-	
     // Data members
     /** Is the unit operational ? */
     private boolean operable;
@@ -91,8 +94,6 @@ public class Battery implements Serializable {
         this.energyPerModule = energyPerModule;
         energyStorageCapacity = energyPerModule * numModule;
         ampHour = energyStorageCapacity * 1000 / STANDARD_VOLTAGE;
-        // Save max Ah at the start
-        maxAmpHour = ampHour;
 		// At the start of sim, set to a random value
         kWhStored = energyStorageCapacity * (.5 + RandomUtil.getRandomDouble(.5));	
  
@@ -134,7 +135,8 @@ public class Battery implements Serializable {
      * @return
      */
     private double getMaxPowerDraw(double time) {
-    	return Math.min(kWhStored / time, ampHour * STANDARD_VOLTAGE / time);
+    	// Note: Need to find the physical formula for max power draw
+    	return ampHour * STANDARD_VOLTAGE / time / 1000;
     }
     
     /**
@@ -143,8 +145,10 @@ public class Battery implements Serializable {
      * @param time in hours
      * @return
      */
-    public double getMaxPowerCharging(double time) {
-    	return Math.min((energyStorageCapacity - kWhStored) / time, ampHour * maxAmpHour * STANDARD_VOLTAGE / time);
+    public double getMaxPowerCharging(double hours) {
+    	// Note: Need to find the physical formula for max power charge
+    	return MAX_C_RATING * ampHour * STANDARD_VOLTAGE / hours / 1000;
+//    	return Math.min((energyStorageCapacity - kWhStored) / time, ampHour * maxAmpHour * STANDARD_VOLTAGE / time);
     }
     
     /**
@@ -207,7 +211,7 @@ public class Battery implements Serializable {
     public double provideEnergy(double kWh, double time) {
     	// FUTURE: Consider the effect of the charging rate and the time parameter
     	
-    	double percent = kWhStored / energyStorageCapacity;
+    	double percent = kWhStored / energyStorageCapacity * 100;
     	double energyAccepted = 0;
     	double percentAccepted = 0;
     	if (percent >= 100)

@@ -416,17 +416,45 @@
 			<entity name="farming" probability=".5" max-number="1" />			
 		</maintenance-entity-list>
 	</part>
-	
-	<part name="Rover Generator" type="vehicle" mass="80.0" >
+
+	<part name="Propeller" type="vehicle" mass="2.0" >
+		<description>polycarbonate propeller for drones</description>
 		<maintenance-entity-list>
-			<entity name="rover" probability="5" max-number="1" />
-			<entity name="fuel power source" probability="5" max-number="1" />
+			<entity name="delivery drone" probability="5" max-number="4" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Motor Large" type="vehicle" mass="40.0" >
+	<part name="Stepper Motor" type="electrical" mass="1">
+		<description>A 24 V precision motor for use in 3D printing</description>
 		<maintenance-entity-list>
-			<entity name="rover" probability="5" max-number="4" />
+			<entity name="manufacture" probability="1" max-number="2" />
+			<entity name="solar heating source" probability="1" max-number="2" />
+			<entity name="solar power source" probability="1" max-number="2" />		
+			<entity name="fuel power source" probability="1" max-number="2" />
+		</maintenance-entity-list>
+	</part>
+	
+	<part name="Motor 5 kW" type="electrical" mass="5.0" >
+		<description>A motor with 5 kW power output.</description>
+		<maintenance-entity-list>
+			<entity name="robot" probability="1" max-number="4" />
+		</maintenance-entity-list>
+	</part>
+
+	<part name="Motor 10 kW" type="vehicle" mass="10.0" >
+		<description>An induction motor with 10 kW power output.</description>
+		<maintenance-entity-list>
+			<entity name="rover" probability="1" max-number="4" />
+			<entity name="light utility vehicle" probability="1" max-number="2" />
+			<entity name="delivery drone" probability="1" max-number="4" />	
+		</maintenance-entity-list>
+	</part>
+
+	<part name="Motor 30 kW" type="vehicle" mass="30.0" >
+		<description>An induction motor with 30 kW power output.</description>
+		<maintenance-entity-list>
+			<entity name="rover" probability="5" max-number="1" />
+			<entity name="fuel power source" probability="1" max-number="1" />
 			<entity name="wind power source" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
@@ -498,21 +526,6 @@
 
 	<part name="Crane Boom" type="attachment" mass="75.0">
 		<description>Attachment part for LUV. A long, telescopic or fixed arm for moving objects</description>
-	</part>
-
-	<part name="Motor small" type="electrical" mass="10.0" >
-		<maintenance-entity-list>
-			<entity name="robot" probability="1" max-number="1" />
-			<entity name="light utility vehicle" probability="1" max-number="4" />
-			<entity name="delivery drone" probability="1" max-number="4" />
-		</maintenance-entity-list>
-	</part>
-
-	<part name="Propeller" type="vehicle" mass="2.0" >
-		<description>polycarbonate propeller for drones</description>
-		<maintenance-entity-list>
-			<entity name="delivery drone" probability="5" max-number="4" />
-		</maintenance-entity-list>
 	</part>
 
 	<part name="Wheel small" type="vehicle"  mass="4.45" >
@@ -847,15 +860,6 @@
 		<maintenance-entity-list>
 			<entity name="farming" probability="2" max-number="2" />
 		</maintenance-entity-list>			
-	</part>
-
-	<part name="Stepper Motor small" type="electrical" mass="2">
-		<description>precision motor for use in 3D printing</description>
-		<maintenance-entity-list>
-			<entity name="manufacture" probability="1" max-number="2" />
-			<entity name="solar heating source" probability="1" max-number="2" />
-			<entity name="solar power source" probability="1" max-number="2" />						
-		</maintenance-entity-list>
 	</part>
 
 	<part name="Methane Fuel cell" type="electronic" mass=".2">

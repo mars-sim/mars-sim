@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
@@ -57,7 +58,7 @@ public abstract class OperateVehicle extends Task {
     public static final TaskPhase MOBILIZE = new TaskPhase(Msg.getString(
             "Task.phase.mobilize")); //$NON-NLS-1$
  	
- 	private static final double THRESHOLD_SUNLIGHT = 60;
+ 	private static final double THRESHOLD_SUNLIGHT = SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
  	private static final double MAX_PERCENT_SPEED = 30;
  	
  	/** The speed at which the collision phase commence. */
@@ -501,7 +502,9 @@ public abstract class OperateVehicle extends Task {
     	}
     	
     	// Gets the ideal speed after acceleration. v^2 = u^2 + 2*a*d
-		double idealSpeedMS = Math.sqrt(uMS * uMS + 2 * maxAccel * dist2Dest);
+    	// However dist2Cover is not known yet
+//		double idealSpeedMS = Math.sqrt(uMS * uMS + 2 * maxAccel * dist2Cover);
+    	double idealSpeedMS = uMS + maxAccel * hrsTime * 3600;
     	// Gets the ideal speed in kph
     	double idealSpeedKPH = idealSpeedMS * KPH_CONV;
     	// Gets the next speed to be used in kph      	
@@ -673,7 +676,7 @@ public abstract class OperateVehicle extends Task {
 	 * @return speed modifier between 0 and 1
 	 */
 	protected double getLightConditionModifier() {
-		double light = surfaceFeatures.getSolarIrradiance(getVehicle().getCoordinates());
+		double light = surfaceFeatures.getSolarIrradiance(getVehicle().getCoordinates())/SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
 		// Assume ground vehicles travel at a max of MAX_PERCENT_SPEED at night.
 		return (1 - MAX_PERCENT_SPEED/100) / THRESHOLD_SUNLIGHT * light + MAX_PERCENT_SPEED/100;
 	}

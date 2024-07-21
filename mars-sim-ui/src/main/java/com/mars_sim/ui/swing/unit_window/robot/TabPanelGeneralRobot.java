@@ -84,7 +84,7 @@ public class TabPanelGeneralRobot extends TabPanel {
 		maxCapNameplate = battPanel.addRow("Nameplate Capacity", StyleManager.DECIMAL_KWH.format(sc.getMaxCapNameplate()));	
 		maxCRating = battPanel.addRow("Max C-Rating", StyleManager.DECIMAL_PLACES1.format(sc.getMaxCRating()));		
 		
-		ampHours = battPanel.addRow("Amp Hour", StyleManager.DECIMAL_AH.format(sc.getAmpHourRating()));
+		ampHours = battPanel.addRow("Amp Hour", StyleManager.DECIMAL_AH.format(sc.getAmpHour()));
 		tVolt = battPanel.addRow("Terminal Voltage", StyleManager.DECIMAL_V.format(sc.getTerminalVoltage()));
 		health = battPanel.addRow("Health", StyleManager.DECIMAL_PERC2.format(sc.getHealth() * 100));
 		degradPercent = battPanel.addRow("Degradation", StyleManager.DECIMAL_PERC2.format(sc.getPercentDegrade())
@@ -100,7 +100,7 @@ public class TabPanelGeneralRobot extends TabPanel {
 		cap.setText(StyleManager.DECIMAL_KWH.format(sc.getEnergyStorageCapacity()));
 		maxCapNameplate.setText(StyleManager.DECIMAL_KWH.format(sc.getMaxCapNameplate()));
 		kWhStored.setText(StyleManager.DECIMAL_KWH.format(sc.getkWattHourStored()));
-		ampHours.setText(StyleManager.DECIMAL_AH.format(sc.getAmpHourRating()));
+		ampHours.setText(StyleManager.DECIMAL_AH.format(sc.getAmpHour()));
 		
 		tVolt.setText(StyleManager.DECIMAL_V.format(sc.getTerminalVoltage()));
 		health.setText(StyleManager.DECIMAL_PERC2.format(sc.getHealth() * 100));

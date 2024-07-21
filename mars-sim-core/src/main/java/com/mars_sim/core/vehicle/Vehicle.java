@@ -969,9 +969,38 @@ public abstract class Vehicle extends Unit
 		double cumFE = getCumFuelEconomy();
 		double cumFC = getCumFuelConsumption();
 		
-		if (cumFE > 0 && cumFC > 0 && averageRoadLoadPower > 0 && averageRoadLoadSpeed > 0)
-			return cumFE / cumFC * averageRoadLoadPower / averageRoadLoadSpeed ;
+//		if (cumFE > 0 && cumFC > 0 && averageRoadLoadPower > 0 && averageRoadLoadSpeed > 0)
+//			// [km / kg]  / [Wh / km]  * [kW] / [km / h]
+//			// km / kg / Wh * km * kW / km * h = km / kg * k 
+//			return cumFE / cumFC * averageRoadLoadPower / averageRoadLoadSpeed ;
 		
+		if (cumFE > 0 && cumFC > 0)
+			// [km / kg]  / [Wh / km]  
+			// km / kg / Wh * km 
+			return cumFE / cumFC;
+
+		return 0;
+	}
+	
+	/**
+	 * Gets the coefficient for converting estimated FC to estimated FE.
+	 * 
+	 * @return
+	 */
+	public double getCoeffEstFC2FE() {
+		double estFE = getEstimatedFuelEconomy();
+		double estFC = getEstimatedFuelConsumption();
+		
+//		if (cumFE > 0 && cumFC > 0 && averageRoadLoadPower > 0 && averageRoadLoadSpeed > 0)
+//			// [km / kg]  / [Wh / km]  * [kW] / [km / h]
+//			// km / kg / Wh * km * kW / km * h = km / kg * k 
+//			return cumFE / cumFC * averageRoadLoadPower / averageRoadLoadSpeed ;
+		
+		if (estFE > 0 && estFC > 0)
+			// [km / kg]  / [Wh / km]  
+			// km / kg / Wh * km 
+			return estFE / estFC;
+
 		return 0;
 	}
 	
@@ -1081,7 +1110,7 @@ public abstract class Vehicle extends Unit
 		// Note: if cum < base, then trip is less economical more than expected
 		// Note: if cum > base, then trip is more economical than expected
 		if (cum == 0)
-			return (.5 * base + .5 * init);// * VehicleController.FUEL_ECONOMY_FACTOR;
+			return (.5 * base + .5 * init) / VehicleController.FUEL_ECONOMY_FACTOR;
 		else {
 			return (.3 * base + .3 * init + .4 * cum);
 		}
@@ -1109,7 +1138,7 @@ public abstract class Vehicle extends Unit
 		// Note: if cum > base, then vehicle consumes more than expected
 		// Note: if cum < base, then vehicle consumes less than expected		
 		if (cum == 0)
-			return (.5 * base + .5 * init);// / VehicleController.FUEL_ECONOMY_FACTOR;
+			return (.5 * base + .5 * init) * VehicleController.FUEL_ECONOMY_FACTOR;
 		else {
 			return (.3 * base + .3 * init + .4 * cum);
 		}
@@ -1460,9 +1489,10 @@ public abstract class Vehicle extends Unit
 			
 			count = 0;
 			sum = 0;
+			
 			for (int sol: roadPowerHistory.getHistory().keySet()) {
-				List<MSolDataItem<Integer>> speeds = roadPowerHistory.getHistory().get(sol);
-				for (MSolDataItem<Integer> s: speeds) {
+				List<MSolDataItem<Integer>> powers = roadPowerHistory.getHistory().get(sol);
+				for (MSolDataItem<Integer> s: powers) {
 					count++;
 					sum += s.getData();
 				}
@@ -2536,9 +2566,9 @@ public abstract class Vehicle extends Unit
 			// Retrieve energy from the settlement's power grid
 			double retrieved = settlement.getPowerGrid().retrieveStoredEnergy(allowedPower * hrs, time);
 			// Charge the vehicle
-			getController().getBattery().provideEnergy(retrieved, hrs); 
+			double energyAccepted = getController().getBattery().provideEnergy(retrieved, hrs); 
 			
-			logger.info(this, 20_000L, "Supplying " + Math.round(retrieved * 10.0)/10.0 + " kWh of energy during charging.");
+			logger.info(this, 20_000L, "Supplying " + Math.round(energyAccepted * 1000.0)/1000.0 + " kWh of energy during charging.");
 		}
 		else {
 			setCharging(false);
