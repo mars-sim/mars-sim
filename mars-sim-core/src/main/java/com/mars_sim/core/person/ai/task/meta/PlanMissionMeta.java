@@ -53,7 +53,7 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.planMission"); //$NON-NLS-1$
 
-    private static final double START_FACTOR = 50;
+    private static final double START_FACTOR = 100;
   
 
     public PlanMissionMeta() {
