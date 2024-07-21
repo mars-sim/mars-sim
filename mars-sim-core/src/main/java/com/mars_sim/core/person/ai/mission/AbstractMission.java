@@ -822,7 +822,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			}
 
 			if (currentTask.getName().equals(Sleep.NAME)) {
-	      		logger.info(person, 4_000, "Currently asleep. Not available to perform other tasks.");
+	      		logger.info(person, 4_000, "Currently asleep. Not available to assign with other tasks.");
 				// If the person is asleep, 
 				// do not assign this task.
 	      		
@@ -831,8 +831,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 			}
 		}
 		
-		if (person.isSuperUnfit()) {
-			logger.warning(person, 4_000, "Super unfit to perform '" + task + ".");
+		if (!task.getName().equals(Sleep.NAME) && person.isSuperUnfit()) {
+			logger.warning(person, 4_000, "Super unfit to assign with '" + task + ".");
 			return false;
 		}
 		
@@ -855,7 +855,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 //				logger.info(person, 4_000, "Assigned with '" + task.getName() + "'.");
 		}
 		else
-			logger.info(person, 4_000, "Unable to perform '" + task.getName() + "'.");
+			logger.info(person, 4_000, "Unable to assign with '" + task.getName() + "'.");
 
 		return canPerformTask;
 	}
@@ -876,7 +876,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 			return false;
 		}
 
-		if (!robot.getSystemCondition().isBatteryAbove(20)) {
+		if (!task.getName().equalsIgnoreCase(Charge.NAME) 
+				&& !robot.getSystemCondition().isBatteryAbove(20)) {
 			logger.info(robot, 4_000, "Battery below 20% and cannot be assigned with '" + task.getName() + "'.");
 			return false;
 		}
