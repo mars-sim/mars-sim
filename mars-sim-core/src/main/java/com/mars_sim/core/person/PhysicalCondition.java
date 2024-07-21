@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PhysicalCondition.java
- * @date 2024-06-29
+ * @date 2024-07-21
  * @author Barry Evans
  */
 package com.mars_sim.core.person;
@@ -2237,6 +2237,16 @@ public class PhysicalCondition implements Serializable {
 
     public double getMuscleHealth() {
     	return muscleHealth;
+    }
+    
+   
+    /**
+     * Gets the health log.
+     * 
+     * @return
+     */
+    public Map<ComplaintType, Integer> getHealthLog() {
+    	return healthLog;
     }
     
 	/**
