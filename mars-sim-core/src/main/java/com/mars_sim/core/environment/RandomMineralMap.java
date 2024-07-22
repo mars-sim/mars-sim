@@ -541,7 +541,6 @@ public class RandomMineralMap implements MineralMap {
 	 *         found.
 	 */
 	public Coordinates findRandomMineralLocation(Coordinates startingLocation, double range) {
-		Coordinates chosen = null;
 
 		Set<Coordinates> locales = generateMineralLocations(startingLocation, range);
 		int size = locales.size();
@@ -564,7 +563,7 @@ public class RandomMineralMap implements MineralMap {
 			double prob = 0;
 			double delta = range - distance;
 			if (delta > 0) {
-				prob = delta / range;
+				prob = delta * delta / range / range;
 			}
 			
 			if (distance > 1 && prob > 0) {
@@ -574,9 +573,15 @@ public class RandomMineralMap implements MineralMap {
 		}
 		
 		// Choose one with weighted randomness 
-		chosen = RandomUtil.getWeightedRandomObject(weightedMap);
-		double chosenDist = weightedMap.get(chosen);
+		Coordinates chosen = RandomUtil.getWeightedRandomObject(weightedMap);
+
+		if (weightedMap.isEmpty() || chosen == null) {
+			logger.info(unitManager.findSettlement(startingLocation), "No site of interest found.");
+			return null; //new ArrayList<>(nearbyMineralLocations).get(0);
+		}
 		
+		double chosenDist = weightedMap.get(chosen);
+
 		logger.info(unitManager.findSettlement(startingLocation), 30_000L, 
 				"Investigating mineral site at " + chosen + " (" + Math.round(chosenDist * 10.0)/10.0 + " km).");
 

@@ -3062,10 +3062,12 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Gets a random nearby mineral location that can be reached by any rover.
 	 * 
-	 * @param closest selects to return one of the closest locations
-	 * @param rover
+	 * @param closest is selecting to return one of the closest locations
+	 * @param limit
+	 * @param skill
+	 * @return
 	 */
-	public Coordinates getARandomNearbyMineralLocation(boolean closest, double limit, double oldRange) {
+	public Coordinates getARandomNearbyMineralLocation(boolean closest, double limit, double skill) {
 		
 		double newRange = 0;
 		
@@ -3075,23 +3077,9 @@ public class Settlement extends Structure implements Temporal,
 			newRange = limit * INITIAL_ROI_RADIUS;
 		}
 		else {
-			newRange = oldRange; 
+			newRange = limit; 
 			// May use Math.round(getVehicleWithMinimalRange().getRange());
 		}
-		
-//		logger.info(this, 10_000, "minRange: " + Math.round(getVehicleWithMinimalRange().getRange()) + "  limit: " + limit);
-
-//		if (nearbyMineralLocations.isEmpty()) {
-//			logger.info(this, "nearbyMineralLocations is empty.");
-//
-//			// Need to find out why nearbyMineralLocations is empty
-//			
-//			// Recreate a set of nearby mineral locations			
-//			createNearbyMineralLocations(getVehicleWithMinimalRange());
-//			// Note: this should be a task for settlers to do
-//		
-//			return null;
-//		}
 		
 		if (nearbyMineralLocations == null || nearbyMineralLocations.isEmpty()) {
 			logger.severe(this, "nearbyMineralLocations is empty. Need to find new ones");
@@ -3223,7 +3211,7 @@ public class Settlement extends Structure implements Temporal,
 			double prob = 0;
 			double delta = range - distance;
 			if (delta > 0) {
-				prob = delta / range;
+				prob = delta * delta / range / range;
 			}
 			
 			if (distance > 1 && prob > 0) {
@@ -3234,6 +3222,12 @@ public class Settlement extends Structure implements Temporal,
 		
 		// Choose one with weighted randomness 
 		Coordinates chosen = RandomUtil.getWeightedRandomObject(weightedMap);
+
+		if (weightedMap.isEmpty() || chosen == null) {
+			logger.info(this, "No mineral site of interest found.");
+			return null;
+		}
+		
 		double chosenDist = weightedMap.get(chosen);
 		
 		logger.info(unitManager.findSettlement(getCoordinates()), 30_000L, 
