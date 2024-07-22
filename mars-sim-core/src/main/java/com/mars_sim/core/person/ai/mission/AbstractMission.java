@@ -822,7 +822,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			}
 
 			if (currentTask.getName().equals(Sleep.NAME)) {
-	      		logger.info(person, 4_000, "Currently asleep. Not available to assign with other tasks.");
+	      		logger.info(person, 4_000, "Currently asleep. Not available to be assigned with other tasks.");
 				// If the person is asleep, 
 				// do not assign this task.
 	      		
@@ -832,7 +832,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 		
 		if (!task.getName().equals(Sleep.NAME) && person.isSuperUnfit()) {
-			logger.warning(person, 4_000, "Super unfit to assign with '" + task + ".");
+			logger.warning(person, 4_000, "Super unfit to be assigned with '" + task + ".");
 			return false;
 		}
 		

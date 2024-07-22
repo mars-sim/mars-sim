@@ -843,10 +843,11 @@ public class BuildingManager implements Serializable {
 
 		if (building != null) {
 			addPersonToActivitySpot(p, building, FunctionType.MEDICAL_CARE);
+			logger.info(p, 2000, "Brought to " + building.getName() + " for possible treatment.");
 		}
 
 		else {
-			logger.log(s, Level.WARNING, 2000,	"No medical facility available for "
+			logger.log(p, Level.WARNING, 2000,	"No medical facility available for "
 							+ p.getName() + ". Go to a random building.");
 			addPersonToRandomBuilding(p, s);
 		}

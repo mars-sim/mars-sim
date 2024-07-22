@@ -206,7 +206,6 @@ abstract class EVAMission extends RoverMission {
 			double timeDiff = getPhaseDuration();
 			if (timeDiff > getEstimatedTimeAtEVASite(false)) {
 				logger.info(getVehicle(), "Ran out of EVA site time.");
-
 				activeEVA = false;
 			}
 
@@ -273,7 +272,7 @@ abstract class EVAMission extends RoverMission {
 				|| p.isInSettlementVicinity()
 				|| p.isRightOutsideSettlement())) {
 
-				logger.severe(p, 20_000, "Invalid 'teleportion' detected. Current location: " 
+				logger.severe(p, 20_000, "Invalid 'teleportation' detected. Current location: " 
 						+ p.getLocationTag().getExtendedLocation() + ".");
 				
 				// Use Iterator's remove() method

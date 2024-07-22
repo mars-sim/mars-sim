@@ -1789,7 +1789,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 			}
 			
 			// 2. Set new LocationStateType
-			if (cu != null) { 
+			if (cu != null) {
 				// 2a. If the previous cu is a settlement
 				//     and this person's new cu is mars surface,
 				//     then location state is within settlement vicinity
@@ -2182,7 +2182,8 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 	}
 	
 	/**
-	 * Rescues the person from the rover.
+	 * Rescues the person from the rover in settlement vicinity.
+	 * 
 	 * Note: this is more like a hack, rather than a legitimate 
 	 * way of transferring a person through the airlock into the settlement.			
 	 *

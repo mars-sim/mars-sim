@@ -23,6 +23,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.CollectResources;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Sleep;
+import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -424,21 +425,19 @@ public abstract class CollectResourcesMission extends EVAMission
 			return false;
 		}
 
-		// Set the type of resource
-		pickType(person);
-		
-		// Do the EVA task
-		double rate = calculateRate(person);
-
-		// Randomize the rate of collection upon arrival
-		rate = rate
-				* (1 + RandomUtil.getRandomDouble(-.2, .2));
-
 		// Note: Add how areologists and some scientific study may come up with better technique
 		// to obtain better estimation of the collection rate. Go to a prospective site, rather
 		// than going to a site coordinate in the blind.
+	
+		Task currentTask = person.getMind().getTaskManager().getTask();
 
-		if (!person.isEVAFit()) {
+		if (currentTask != null && currentTask.getName().equals(Sleep.NAME)) {
+			// Leave him alone and do NOT assign him any tasks
+			logger.info(person, 4_000,
+        			"Asleep in " + person.getContainerUnit() + " and not to be disturbed.");
+		}
+		
+		else if (!person.isEVAFit()) {
 			logger.info(person, 4_000, "Not EVA fit to exit " + getRover() +  ".");
 			// Note: How to take care of the person if he does not have high fatigue but other health issues ?
 			boolean canSleep = assignTask(person, new Sleep(person));
@@ -451,12 +450,20 @@ public abstract class CollectResourcesMission extends EVAMission
 		}
 		
 		// If person can collect resources, start him/her on that task.
-		if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {
+		else if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {		
+			// Set the type of resource
+			pickType(person);
+			
+			// Randomize the rate of collection upon arrival
+			double rate = calculateRate(person)
+					* (1 + RandomUtil.getRandomDouble(-.2, .2));
+			
 			EVAOperation collectResources = new CollectResources(person,
 					getRover(), resourceID, rate,
 					siteResourceGoal - amountCollectedAtSiteSoFar0, 
 					rover.getAmountResourceStored(resourceID),
 					containerID, this);
+			
 			assignTask(person, collectResources);
 		}
 
