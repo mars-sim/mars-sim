@@ -2369,8 +2369,16 @@ public abstract class Vehicle extends Unit
 //			}
 			
 			// 2. Set new LocationStateType
-			if (newContainer.getUnitType() == UnitType.MARS) {
-					setLocationStateType(LocationStateType.MARS_SURFACE);
+			// Note: This is a special case for Vehicle
+			//       A vehicle can have settlement as container unit while it's on Mars Surface
+			// 2a. If the old cu is a settlement or building
+			//     and the new cu is mars surface,
+			//     then location state is within settlement vicinity
+			if (cu != null 
+					&& (cu.getUnitType() == UnitType.SETTLEMENT
+						|| cu.getUnitType() == UnitType.BUILDING)
+					&& newContainer.getUnitType() == UnitType.MARS) {
+					setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
 			}	
 			else {
 				// 2b. If old cu is null, such as at startup
