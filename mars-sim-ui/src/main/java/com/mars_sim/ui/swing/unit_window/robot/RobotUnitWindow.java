@@ -39,7 +39,7 @@ public class RobotUnitWindow extends UnitWindow {
 	 */
 	public RobotUnitWindow(MainDesktopPane desktop, Robot robot) {
 		// Use UnitWindow constructor
-		super(desktop, robot, robot.getAssociatedSettlement().getName() + " - " + robot.getName(), false);
+		super(desktop, robot, robot.getName() + " - " + robot.getContainerUnit(), false);
 		this.robot = robot;
 
 		// Add tab panels

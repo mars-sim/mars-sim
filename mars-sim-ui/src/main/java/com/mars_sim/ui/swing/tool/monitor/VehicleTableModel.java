@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleTableModel.java
- * @date 2021-10-23
+ * @date 2024-07-21
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.tool.monitor;
@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
@@ -126,7 +128,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	}
 
 	/**
-	 * Filter the vehicles to a settlement
+	 * Filters the vehicles to a settlement.
 	 */
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> filter) {
@@ -155,7 +157,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				break;
 
 			case TYPE :
-				result = vehicle.getVehicleType().getName();
+				result = vehicle.getVehicleSpec().getName();
 				break;
 
 			case MODEL :
@@ -168,7 +170,21 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 					result = settle.getName();
 				}
 				else {
-					result = vehicle.getCoordinates().getFormattedString();
+					settle = CollectionUtils.findSettlement(vehicle.getCoordinates());
+					if (settle != null) {
+						result = settle.getName();
+					}
+					else {
+						Mission mission = vehicle.getMission();
+						if (mission instanceof VehicleMission vm) {
+							NavPoint destination = vm.getCurrentDestination();
+							if (destination.isSettlementAtNavpoint())
+								result = destination.getSettlement().getName();
+							else
+								result = destination.getDescription();
+						}
+					}					
+					// For now, not using result = vehicle.getCoordinates().getFormattedString();
 				}
 			} break;
 

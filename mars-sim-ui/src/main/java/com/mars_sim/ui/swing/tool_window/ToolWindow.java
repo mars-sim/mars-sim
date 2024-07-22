@@ -21,7 +21,7 @@ import com.mars_sim.ui.swing.MainWindow;
 public abstract class ToolWindow extends JInternalFrame {
 
 	// Data members
-	private static final String SPACE = "          ";
+	private static final String SPACE = "   ";
 	
 	/** True if window is open. */
 	protected boolean opened;

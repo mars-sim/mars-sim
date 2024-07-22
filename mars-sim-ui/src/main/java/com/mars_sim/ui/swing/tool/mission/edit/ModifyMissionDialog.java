@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * EditMissionDialog.java
- * @date 2022-03-17
+ * ModifyMissionDialog.java
+ * @date 2024-07-21
  * @author Scott Davis
  */
 
@@ -27,16 +27,16 @@ import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 
 
 /**
- * The edit mission dialog for the mission tool.
+ * The modify mission dialog for the mission tool.
  */
-public class EditMissionDialog extends ModalInternalFrame {
+public class ModifyMissionDialog extends ModalInternalFrame {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     
 	// Private members
 	private Mission mission;
-	private InfoPanel infoPane;
+	private EditPanel editPane;
 	protected MainDesktopPane desktop;
 	private MissionWindow missionWindow;
 	
@@ -45,9 +45,9 @@ public class EditMissionDialog extends ModalInternalFrame {
 	 * @param owner the owner frame.
 	 * @param mission the mission to edit.
 	 */
-	public EditMissionDialog(MainDesktopPane desktop, Mission mission, MissionWindow missionWindow) {
+	public ModifyMissionDialog(MainDesktopPane desktop, Mission mission, MissionWindow missionWindow) {
 		// Use ModalInternalFrame constructor
-        super("Edit Mission");
+        super("Modify Mission");
         this.missionWindow = missionWindow;
         
 		// Initialize data members.
@@ -60,12 +60,12 @@ public class EditMissionDialog extends ModalInternalFrame {
 		// Set the border.
 		((JComponent) getContentPane()).setBorder(new MarsPanelBorder());
         
-		// Create the info panel.
-        infoPane = new InfoPanel(mission, desktop, this);
-        add(infoPane, BorderLayout.CENTER);
+		// Create the edit panel.
+        editPane = new EditPanel(mission, desktop, this);
+        add(editPane, BorderLayout.CENTER);
         
         // Create the button panel.
-        JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+        JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         add(buttonPane, BorderLayout.SOUTH);
         
         // Create the modify button.
@@ -94,10 +94,10 @@ public class EditMissionDialog extends ModalInternalFrame {
 		// Finish and display dialog.
 		//pack();
 		//setLocationRelativeTo(owner);
+        
 		setResizable(false);
 
         desktop.add(this);
-	    
 	    
         setSize(new Dimension(400, 400));
 		Dimension desktopSize = desktop.getParent().getSize();
@@ -115,10 +115,10 @@ public class EditMissionDialog extends ModalInternalFrame {
 	 */
 	private void modifyMission() {
 		// Set the mission description.
-		mission.setName(infoPane.descriptionField.getText());
+		mission.setName(editPane.descriptionField.getText());
 		
 		// Change the mission's action.
-		setAction((String) infoPane.actionDropDown.getSelectedItem());
+		setAction((String) editPane.actionDropDown.getSelectedItem());
 		
 		// Set mission members.
 		setWorkers();
@@ -130,8 +130,8 @@ public class EditMissionDialog extends ModalInternalFrame {
 	 * @param action the action string.
 	 */
 	private void setAction(String action) {
-		if (action.equals(InfoPanel.ACTION_CONTINUE)) endEVAPhase();
-		else if (action.equals(InfoPanel.ACTION_HOME)) returnHome();
+		if (action.equals(EditPanel.ACTION_CONTINUE)) endEVAPhase();
+		else if (action.equals(EditPanel.ACTION_HOME)) returnHome();
 	}
 	
 	/**
@@ -144,7 +144,7 @@ public class EditMissionDialog extends ModalInternalFrame {
 	}
 	
 	/**
-	 * Have the mission return home and end collection phase if necessary.
+	 * Aborts the mission and have everyone return home and end collection phase if necessary.
 	 */
 	private void returnHome() {
 		if (mission != null) {
@@ -158,8 +158,8 @@ public class EditMissionDialog extends ModalInternalFrame {
 	 */
 	private void setWorkers() {
 		// Add new members.
-		for (int x = 0; x < infoPane.memberListModel.size(); x++) {
-		    Worker member = (Worker) infoPane.memberListModel.elementAt(x);
+		for (int x = 0; x < editPane.memberListModel.size(); x++) {
+		    Worker member = (Worker) editPane.memberListModel.elementAt(x);
 			if (!mission.getMembers().contains(member)) {
 			    member.setMission(mission);
 			}
@@ -169,14 +169,14 @@ public class EditMissionDialog extends ModalInternalFrame {
 		Iterator<Worker> i = mission.getMembers().iterator();
 		while (i.hasNext()) {
 			Worker member = i.next();
-			if (!infoPane.memberListModel.contains(member)) {
+			if (!editPane.memberListModel.contains(member)) {
 			    member.setMission(null);
 			}
 		}
 	}
 	
-	public InfoPanel getInfoPanel() {
-		return infoPane;
+	public EditPanel getInfoPanel() {
+		return editPane;
 	}
 	
 	public MissionWindow getMissionWindow() {

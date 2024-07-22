@@ -543,6 +543,10 @@ public class MonitorWindow extends ToolWindow
 		
 		MonitorModel tabTableModel = selectedTab.getModel();
 
+		String title = tabTableModel.getName();
+		
+		super.setTitle(NAME + " - " + title);
+		
 		// Disable all buttons
 		boolean enableMap = selectedTab.isNavigatable();
 		boolean enableDetails = selectedTab.isEntityDriven();

@@ -41,7 +41,7 @@ public class EquipmentUnitWindow extends UnitWindow {
      */
     public EquipmentUnitWindow(MainDesktopPane desktop, Equipment equipment) {
         // Use UnitWindow constructor
-        super(desktop, equipment, equipment.getAssociatedSettlement().getName() + " - " + equipment.getName(), false);
+        super(desktop, equipment, equipment.getName() + " - " + equipment.getContainerUnit(), false);
         this.equipment = equipment;
 
         if (equipment instanceof EVASuit suit) {

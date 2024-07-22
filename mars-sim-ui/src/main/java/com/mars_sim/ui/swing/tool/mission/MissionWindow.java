@@ -43,7 +43,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.mission.create.CreateMissionWizard;
-import com.mars_sim.ui.swing.tool.mission.edit.EditMissionDialog;
+import com.mars_sim.ui.swing.tool.mission.edit.ModifyMissionDialog;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 
@@ -319,7 +319,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 	 * @param mission the mission to edit.
 	 */
 	private void editMission(Mission mission) {
-		new EditMissionDialog(desktop, mission, this);
+		new ModifyMissionDialog(desktop, mission, this);
 	}
 
 	public CreateMissionWizard getCreateMissionWizard() {

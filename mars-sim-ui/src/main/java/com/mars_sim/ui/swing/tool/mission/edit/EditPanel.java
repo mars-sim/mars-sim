@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * InfoPanel.java
- * @date 2021-10-21
+ * EditPanel.java
+ * @date 2024-07-21
  * @author Scott Davis
  */
 
@@ -49,12 +49,11 @@ import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 
-
 /**
- * The mission info panel for the edit mission dialog.
+ * The mission edit panel of a dialog.
  */
 @SuppressWarnings("serial")
-public class InfoPanel extends JPanel {
+public class EditPanel extends JPanel {
 
 	/** action text. */
 	final static String ACTION_NONE = "None";
@@ -78,10 +77,11 @@ public class InfoPanel extends JPanel {
 	
 	/**
 	 * Constructor.
+	 * 
 	 * @param mission {@link Mission} the mission to edit.
 	 * @param parent {@link Dialog} the parent dialog.
 	 */
-	public InfoPanel(Mission mission, MainDesktopPane desktop, JInternalFrame parent) {
+	public EditPanel(Mission mission, MainDesktopPane desktop, JInternalFrame parent) {
 		
 		// Data members
 		this.mission = mission;
@@ -95,7 +95,7 @@ public class InfoPanel extends JPanel {
 		setBorder(new MarsPanelBorder());
 		
 		// Create the description panel.
-		JPanel descriptionPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		JPanel descriptionPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
 		descriptionPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(descriptionPane);
 		
@@ -108,7 +108,7 @@ public class InfoPanel extends JPanel {
 		descriptionPane.add(descriptionField);
 		
 		// Create the action panel.
-		JPanel actionPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		JPanel actionPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
 		actionPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(actionPane);
 		
@@ -133,12 +133,12 @@ public class InfoPanel extends JPanel {
 		membersPane.add(membersLabel, BorderLayout.WEST);
 		
 		// Create the member list panel.
-		JPanel memberListPane = new JPanel(new BorderLayout(0, 0));
+		JPanel memberListPane = new JPanel(new BorderLayout(5, 5));
 		membersPane.add(memberListPane, BorderLayout.CENTER);
 		
         // Create scroll panel for member list.
         JScrollPane memberScrollPane = new JScrollPane();
-        memberScrollPane.setPreferredSize(new Dimension(100, 100));
+        memberScrollPane.setPreferredSize(new Dimension(80, 100));
         memberListPane.add(memberScrollPane, BorderLayout.CENTER);
         
         // Create member list model
@@ -153,7 +153,7 @@ public class InfoPanel extends JPanel {
         			@Override
         			public void valueChanged(ListSelectionEvent e) {
         				// Enable remove members button if there are members in the list.
-        				removeMembersButton.setEnabled(memberList.getSelectedValuesList().size() > 0);
+        				removeMembersButton.setEnabled(!memberList.getSelectedValuesList().isEmpty());
         			}
         		}
         	);
@@ -191,6 +191,7 @@ public class InfoPanel extends JPanel {
 	
 	/**
 	 * Checks if members can be added to the mission.
+	 * 
 	 * @return true if members can be added.
 	 */
 	private boolean canAddMembers() {
@@ -200,7 +201,7 @@ public class InfoPanel extends JPanel {
 	}
 	
 	/**
-	 * Open the add members dialog.
+	 * Opens the add members dialog.
 	 */
 	private void addMembers() {
 		new AddMembersDialog(frame, desktop, mission, memberListModel, getAvailableMembers());
@@ -208,7 +209,7 @@ public class InfoPanel extends JPanel {
 	}
 	
 	/**
-	 * Remove selected members from the list.
+	 * Removes selected members from the list.
 	 */
 	private void removeMembers() {
 		int[] selectedIndexes = memberList.getSelectedIndices();
@@ -224,6 +225,7 @@ public class InfoPanel extends JPanel {
 	
 	/**
 	 * Gets a vector of possible actions for the mission.
+	 * 
 	 * @param mission {@link Mission} the mission 
 	 * @return vector of actions.
 	 */
@@ -258,6 +260,7 @@ public class InfoPanel extends JPanel {
 	
 	/**
 	 * Gets a collection of people and robots available to be added to the mission.
+	 * 
 	 * @return collection of available members.
 	 */
 	private Collection<Worker> getAvailableMembers() {

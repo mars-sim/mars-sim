@@ -224,8 +224,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			
 			settlementLabel = containerPanel.addRow("Settlement", "");
 			containerLabel = containerPanel.addRow("Container Unit", "");
-			buildingLabel = containerPanel.addRow("Building", "");
 			locationStateLabel = containerPanel.addRow("Location State", "");
+			buildingLabel = containerPanel.addRow("Building", "");
 			vicinityLabel = containerPanel.addRow("Vicinity", "");
 		}
 		
@@ -236,21 +236,19 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	
 			settlementLabel = containerPanel.addRow("Settlement", "");
 			containerLabel = containerPanel.addRow("Container Unit", "");
-			buildingLabel = containerPanel.addRow("Building", "");
 			locationStateLabel = containerPanel.addRow("Location State", "");
+			buildingLabel = containerPanel.addRow("Building", "");
 			vicinityLabel = containerPanel.addRow("Vicinity", "");
 		}
 		
 		else if (isEquipment) {
 			
-			AttributePanel containerPanel = new AttributePanel(5);
+			AttributePanel containerPanel = new AttributePanel(3);
 			dataPanel.add(containerPanel, BorderLayout.NORTH);	
 				
 			settlementLabel = containerPanel.addRow("Settlement", "");
 			containerLabel = containerPanel.addRow("Container Unit", "");
-			buildingLabel = containerPanel.addRow("Building", "");
 			locationStateLabel = containerPanel.addRow("Location State", "");
-			vicinityLabel = containerPanel.addRow("Vicinity", "");
 		}
 		
 		else if (isSettlement) {
