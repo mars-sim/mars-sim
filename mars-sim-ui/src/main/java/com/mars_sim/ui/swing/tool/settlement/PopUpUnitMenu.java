@@ -304,6 +304,7 @@ public class PopUpUnitMenu extends JPopupMenu {
         		
         		if (vehicles != null && !vehicles.isEmpty()) {
 	        		for (Vehicle v: vehicles) {
+	        			// Why is this needed ?
 	        			v.setCoordinates(site.getCoordinates());
 	        		}
         		}

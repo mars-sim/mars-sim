@@ -25,7 +25,6 @@ public class MockSettlement extends Settlement {
 	public MockSettlement(String name, boolean needGoods) {
 		// Use Settlement constructor.
 		super(name, new Coordinates(Math.PI / 2D, 0));
-	
 					
         // Set inventory total mass capacity.
 		getEquipmentInventory().addCargoCapacity(Double.MAX_VALUE);

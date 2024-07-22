@@ -247,8 +247,6 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 
 		// Add this person as a citizen
 		settlement.addACitizen(this);
-		// Set the container unit
-//		setContainerUnit(settlement);
 
 		// Calculate next birthday and scheduled a party in terms of future Mars sols
 		var currentEarthTime = masterClock.getEarthTime();
@@ -1771,12 +1769,12 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 	 *
 	 * @param newContainer the unit to contain this unit.
 	 */
-	public boolean setContainerUnit(Unit newContainer) {
+	private boolean setContainerUnit(Unit newContainer) {
 		if (newContainer != null) {
 			Unit cu = getContainerUnit();
 			
 			if (newContainer.equals(cu)) {
-				return false;
+				return true;
 			}
 			
 			// 1. Set Coordinates
@@ -1902,6 +1900,13 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 	public boolean transfer(Unit destination) {
 		boolean transferred = false;
 		Unit cu = getContainerUnit();
+		if (cu == null) {
+			// Fire the unit event type
+			destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+			// Set the new container unit (which will internally set the container unit id)
+			return setContainerUnit(destination);
+		}
+		
 		UnitType ut = cu.getUnitType();
 
 		if (destination.equals(cu)) {
@@ -1967,7 +1972,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 				// Set the new container unit (which will internally set the container unit id)
 				setContainerUnit(destination);
 				// Fire the unit event type
-				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+				destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
 				// Fire the unit event type for old container
 				cu.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
 			}

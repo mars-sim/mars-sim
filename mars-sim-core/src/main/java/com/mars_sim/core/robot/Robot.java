@@ -1028,17 +1028,20 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 *
 	 * @param newContainer the unit to contain this unit.
 	 */
-	public boolean setContainerUnit(Unit newContainer) {
+	private boolean setContainerUnit(Unit newContainer) {
 		if (newContainer != null) {
-			if (newContainer.equals(getContainerUnit())) {
-				return false;
+			Unit cu = getContainerUnit();
+			
+			if (newContainer.equals(cu)) {
+				return true;
 			}
+	
 			// 1. Set Coordinates
 			if (newContainer.getUnitType() == UnitType.MARS) {
 				// Since it's on the surface of Mars,
 				// First set its initial location to its old parent's location as it's leaving its parent.
 				// Later it may move around and updates its coordinates by itself
-				setCoordinates(getContainerUnit().getCoordinates());
+				setCoordinates(cu.getCoordinates());
 			}
 			else {
 				// Null its coordinates since it's now slaved after its parent
@@ -1174,6 +1177,13 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public boolean transfer(Unit destination) {
 		boolean transferred = false;
 		Unit cu = getContainerUnit();
+		if (cu == null) {
+			// Fire the unit event type
+			destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+			// Set the new container unit (which will internally set the container unit id)
+			return setContainerUnit(destination);
+		}
+		
 		UnitType ut = cu.getUnitType();
 
 		if (destination.equals(cu)) {
@@ -1234,9 +1244,9 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				// Set the new container unit (which will internally set the container unit id)
 				setContainerUnit(destination);
 				// Fire the unit event type
-				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+				destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
 				// Fire the unit event type
-				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
+				cu.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
 			}
 		}
 		else {

@@ -1463,8 +1463,10 @@ public class PhysicalCondition implements Serializable {
 		// should he be revived in the same container unit ? 
 		// Get the saved container unit
 		Unit cu = deathDetails.getContainerUnit();
-		// Reset the container unit
-		person.setContainerUnit(cu);
+
+		// Transfer this person back to where he was last spotted
+		person.transfer(cu);
+		
 		// Set death detail to null
 		deathDetails = null;
 		

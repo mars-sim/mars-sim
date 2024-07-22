@@ -124,7 +124,7 @@ public class Settlement extends Structure implements Temporal,
 	private static final int RESOURCE_UPDATE_FREQ = 30;
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
 	private static final int RESOURCE_STAT_SOLS = 12;
-	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
+//	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
 
 	private static final int MAX_PROB = 3000;
 	private static final int MIN_REGOLITH_RESERVE = 400; // per person
@@ -1918,14 +1918,9 @@ public class Settlement extends Structure implements Temporal,
 		if (indoorPeople.contains(p)) {
 			return true;
 		}
-		if (indoorPeople.add(p)) {
-			// Set the container unit
-			p.setContainerUnit(this);
-			
-			return true;
-		}
-		return false;
+		return indoorPeople.add(p);
 	}
+	
 
 	/**
 	 * Removes this person's physical location from being inside this settlement.
@@ -1935,12 +1930,10 @@ public class Settlement extends Structure implements Temporal,
 	 * @return true if removed successfully
 	 */
 	public boolean removePeopleWithin(Person p) {
-		if (!indoorPeople.contains(p))
-			return true;
-		if (indoorPeople.remove(p)) {
+		if (!indoorPeople.contains(p)) {
 			return true;
 		}
-		return false;
+		return indoorPeople.remove(p);
 	}
 
 	/**
@@ -1974,10 +1967,10 @@ public class Settlement extends Structure implements Temporal,
 
 			// Set x and y coordinates first prior to adding the person 
 			p.setCoordinates(getCoordinates());
-			
-			// Set this settlement as the container unit
-			p.setContainerUnit(this);
-			
+				
+			// Transfer the person to this settlement
+			p.transfer(this);
+						
 			// Add this person indoor map of the settlement
 			addToIndoor(p);
 			
@@ -2071,12 +2064,16 @@ public class Settlement extends Structure implements Temporal,
 		if (ownedRobots.contains(r))
 			return true;
 		if (ownedRobots.add(r)) {
+			
 			// Set x and y coordinates first prior to adding the robot 
-			r.setCoordinates(getCoordinates());
-			// Set the container unit
-			r.setContainerUnit(this);	
+			r.setCoordinates(getCoordinates());	
+			
+			// Transfer the robot to this settlement
+			r.transfer(this);
+			
 			// Add the robot to the settlement
 			addRobotsWithin(r);
+			
 			// Update the numOwnedBots
 			numOwnedBots = ownedRobots.size();
 			// Fire unit update
@@ -2143,8 +2140,6 @@ public class Settlement extends Structure implements Temporal,
 		if (vicinityParkedVehicles.add(vehicle)) {
 			// Directly update the location state type
 			vehicle.updateLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
-			// Set this settlement as the container unit
-			vehicle.setContainerUnit(this);
 			
 			return true;
 		}
@@ -2183,17 +2178,18 @@ public class Settlement extends Structure implements Temporal,
 		if (ownedVehicles.contains(vehicle))
 			return true;
 		if (ownedVehicles.add(vehicle)) {
-			// Set this settlement as the container unit
-			vehicle.setContainerUnit(this);
+			
+			// Add this vehicle as parked
+			addVicinityVehicle(vehicle);
 			// Set vehicle's coordinates to that of settlement
 			vehicle.setCoordinates(getCoordinates());
+			// Transfer to this settlement
+			vehicle.transfer(this);
 			// Call findNewParkingLoc to get a non-collided x and y coordinates
 			vehicle.findNewParkingLoc();
 			// Update the numOwnedVehicles
 			numOwnedVehicles = ownedVehicles.size();
-			// Add this vehicle as parked
-			addVicinityVehicle(vehicle);
-			
+
 			return true;
 		}
 		return false;

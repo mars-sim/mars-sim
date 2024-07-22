@@ -260,6 +260,10 @@ public abstract class Vehicle extends Unit
 		emergencyBeacon = false;
 		isSalvaged = false;
 		
+		// Must add this vehicle to Mars Surface first
+		// or else it won't be able to transfer into a settlement later
+		((MarsSurface)getContainerUnit()).addVehicle(this);
+		
 		// Make this vehicle to be owned by the settlement
 		settlement.addOwnedVehicle(this);
 		
@@ -2347,16 +2351,19 @@ public abstract class Vehicle extends Unit
 			Unit cu = getContainerUnit();
 			
 			if (newContainer.equals(cu)) {
-				return false;
+				return true;
 			}
 
+			// Q: How useful is setting coordinates ? 
+			// a vehicle can move on its own 
+			
 			// 1. Set Coordinates
-			if (newContainer.getUnitType() == UnitType.MARS) {
+//			if (newContainer.getUnitType() == UnitType.MARS) {
 				// Since it's on the surface of Mars,
 				// First set its initial location to its old parent's location as it's leaving its parent.
 				// Later it may move around and updates its coordinates by itself
 //				setCoordinates(getContainerUnit().getCoordinates());
-			}
+//			}
 //			else {
 //				setCoordinates(newContainer.getCoordinates());
 //			}
@@ -2372,15 +2379,13 @@ public abstract class Vehicle extends Unit
 					setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
 			}	
 			else {
-				// 2b. If old cu is null (parking within settlement vicinity
-				//     and the new cu is mars surface,
-				//     then new location state is mars surface
+				// 2b. If old cu is null, such as at startup
 				updateVehicleState(newContainer);
 			}
 			
 			// 3. Set containerID
 			setContainerID(newContainer.getIdentifier());
-			
+
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 		}
@@ -2490,11 +2495,20 @@ public abstract class Vehicle extends Unit
 		boolean transferred = false;
 		// Set the old container unit
 		Unit cu = getContainerUnit();
-
-		if (cu.getUnitType() == UnitType.MARS) {
+		// Note: at startup, a vehicle has Mars Surface as the container unit by default
+		
+		if (cu == null) {
+			// Fire the unit event type
+			destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+			// Set the new container unit (which will internally set the container unit id)
+			return setContainerUnit(destination);
+		}
+		
+		else if (cu.getUnitType() == UnitType.MARS) {
 			transferred = ((MarsSurface)cu).removeVehicle(this);
 			arriving = true;
 		}
+		
 		else if (cu.getUnitType() == UnitType.SETTLEMENT) {
 			Settlement currentBase = (Settlement)cu;
 			transferred = currentBase.removeVicinityParkedVehicle(this);
@@ -2503,12 +2517,16 @@ public abstract class Vehicle extends Unit
 //			setCoordinates(currentBase.getCoordinates());
 		}
 
-		if (transferred) {
+		if (!transferred) {
+			logger.warning(this, 60_000L, "Cannot be retrieved from " + cu + ".");
+			// NOTE: need to revert back the retrieval action			
+		}
+		else {
 			if (destination.getUnitType() == UnitType.MARS) {
 				transferred = ((MarsSurface)destination).addVehicle(this);
 				leaving = leaving && true;
 			}
-			else if (cu.getUnitType() == UnitType.SETTLEMENT) {
+			else if (destination.getUnitType() == UnitType.SETTLEMENT) {
 				transferred = ((Settlement)destination).addVicinityVehicle(this);
 			}
 
@@ -2524,15 +2542,12 @@ public abstract class Vehicle extends Unit
 				// Set the new container unit (which will internally set the container unit id)
 				setContainerUnit(destination);
 				// Fire the unit event type
-				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+				destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
 				// Fire the unit event type
-				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
+				cu.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
 			}
 		}
-		else {
-			logger.warning(this, 60_000L, "Cannot be retrieved from " + cu + ".");
-			// NOTE: need to revert back the retrieval action
-		}
+		
 
 		return transferred;
 	}

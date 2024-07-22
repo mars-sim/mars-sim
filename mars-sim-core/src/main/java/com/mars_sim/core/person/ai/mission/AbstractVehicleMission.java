@@ -807,7 +807,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				// surface vehicle list. The problem is a lack of transfer at the start of TRAVEL phase
 				// This is temporary fix pending #474 which will revisit transfers
 				if (!base.equals(vehicle.getContainerUnit())) {
-					vehicle.setContainerUnit(base);
+					// Avoid calling vehicle.setContainerUnit(base)
+					vehicle.transfer(base);
 					logger.severe(vehicle, "Forced its container unit to become its home base.");
 				}
 			}

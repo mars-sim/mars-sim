@@ -556,8 +556,6 @@ public final class SettlementBuilder {
 				settlement.addACitizen(person);
 
 				unitManager.addUnit(person);
-				// Set the container unit
-//				person.setContainerUnit(settlement);
 
 				// Set the person as a preconfigured crew member
 				Map<String, Integer> relMap = m.getRelationshipMap();

@@ -76,12 +76,7 @@ extends TestCase {
 		person = Person.create("Jim Loader", settlement, GenderType.MALE).build();
 		
 		settlement.addACitizen(person);
-		
-//		unitManager.addUnit(vehicle);
-		
-		// Set the container unit
-//		person.setContainerUnit(settlement);
-
+	
 		// Make the person strong to get loading quicker
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeType.STRENGTH, 40);
 

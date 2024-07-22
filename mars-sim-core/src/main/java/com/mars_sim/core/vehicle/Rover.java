@@ -161,7 +161,7 @@ public class Rover extends GroundVehicle implements Crewable,
 	public Rover(String name, VehicleSpec spec, Settlement settlement) {
 		// Use GroundVehicle constructor
 		super(name, spec, settlement, MAINTENANCE_WORK_TIME);
-
+		
 		occupants = new UnitSet<>();
 		robotOccupants = new UnitSet<>();
 
@@ -347,9 +347,8 @@ public class Rover extends GroundVehicle implements Crewable,
 	 * @param true if the person can be added
 	 */
 	public boolean addPerson(Person person) {
-		if (!isCrewmember(person) && occupants.add(person)) {
-			person.setContainerUnit(this);
-			return true;
+		if (!isCrewmember(person)) {
+			return occupants.add(person);
 		}
 		return false;
 	}
@@ -373,9 +372,8 @@ public class Rover extends GroundVehicle implements Crewable,
 	 * @param true if the robot can be added
 	 */
 	public boolean addRobot(Robot robot) {
-		if (!isRobotCrewmember(robot) && robotOccupants.add(robot)) {
-			robot.setContainerUnit(this);
-			return true;
+		if (!isRobotCrewmember(robot)) {
+			return robotOccupants.add(robot);
 		}
 		return false;
 	}

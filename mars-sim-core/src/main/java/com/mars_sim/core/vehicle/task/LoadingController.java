@@ -170,7 +170,8 @@ public class LoadingController implements Serializable {
 	}
 
 	/**
-	 * Load resources by a worker
+	 * Loads resources by a worker.
+	 * 
 	 * @param worker
 	 * @param time How much time does the Worker have
 	 * @return Load completed

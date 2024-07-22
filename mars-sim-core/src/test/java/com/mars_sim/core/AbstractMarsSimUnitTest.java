@@ -86,6 +86,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 	
 	protected Rover buildRover(Settlement settlement, String name, LocalPosition parked) {
+
 	    Rover rover1 = new Rover(name, simConfig.getVehicleConfiguration().getVehicleSpec("explorer rover"),
 								settlement);
 		if (parked != null) {

@@ -493,8 +493,14 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		boolean canRetrieve = false;
 		boolean canStore = false;
 		Unit cu = getContainerUnit();
-
-		if (cu instanceof EquipmentOwner deo) {
+		if (cu == null) {
+			// Fire the unit event type
+			destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+			// Set the new container unit (which will internally set the container unit id)
+			return setContainerUnit(destination);
+		}
+		
+		else if (cu instanceof EquipmentOwner deo) {
 			canRetrieve = deo.removeEquipment(this);
 		}
 		else {
@@ -541,9 +547,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 				// Set the new container unit (which will internally set the container unit id)
 				setContainerUnit(destination);
 				// Fire the unit event type
-				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
+				destination.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
 				// Fire the unit event type
-				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
+				cu.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
 			}
 		}
 		
