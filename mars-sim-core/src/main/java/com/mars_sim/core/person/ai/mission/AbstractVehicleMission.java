@@ -603,7 +603,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 
 		else if (LOADING.equals(phase)) {
-
 			setPhase(DEPARTING, getStartingSettlement().getName());	
 		}
 		
@@ -1565,7 +1564,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * 
 	 * @return the description of the next navpoint.
 	 */
-	private final String getNextNavpointDescription() {
+	public final String getNextNavpointDescription() {
 		if (navIndex < navPoints.size()) {
 			return navPoints.get(navIndex).getDescription();
 		}
@@ -1662,7 +1661,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			return navPoints.get(navIndex).getDescription();
 		}
 		
-		return "Null Location";
+		return "Unknown";
 	}
 	
 	/**

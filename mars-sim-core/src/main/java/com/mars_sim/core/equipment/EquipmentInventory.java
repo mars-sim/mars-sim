@@ -149,6 +149,15 @@ public class EquipmentInventory
 	}
 
 	/**
+	 * Gets the container set.
+	 *
+	 * @return
+	 */
+	public Set<Equipment> getContainerCopySet() {
+		return new HashSet<>(containerSet);
+	}
+	
+	/**
 	 * Gets the EVA suit set.
 	 * 
 	 * @return
@@ -456,6 +465,19 @@ public class EquipmentInventory
 								.count();
 	}
 
+	/**
+	 * Finds the number of empty containers (from a copy set of containers) of a particular equipment type.
+	 * 
+	 * @param containerType
+	 * @param brandNew
+	 * @return
+	 */
+	public int findNumEmptyCopyContainersOfType(EquipmentType containerType, boolean brandNew) {
+		return (int) getContainerCopySet().stream().filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
+								.count();
+	}
+	
+	
 	/**
 	 * Finds the number of containers of a particular type.
 	 *

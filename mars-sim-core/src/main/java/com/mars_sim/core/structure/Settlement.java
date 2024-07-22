@@ -342,6 +342,7 @@ public class Settlement extends Structure implements Temporal,
 	private ParameterManager preferences = new ParameterManager();
 	/** A set of nearby mineral locations. */
 	private Set<Coordinates> nearbyMineralLocations = new HashSet<>();
+	/** A history of completed processes. */
 	private History<CompletedProcess> processHistory = new History<>(40);
 	
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
@@ -3079,11 +3080,30 @@ public class Settlement extends Structure implements Temporal,
 		}
 		
 //		logger.info(this, 10_000, "minRange: " + Math.round(getVehicleWithMinimalRange().getRange()) + "  limit: " + limit);
+
+//		if (nearbyMineralLocations.isEmpty()) {
+//			logger.info(this, "nearbyMineralLocations is empty.");
+//
+//			// Need to find out why nearbyMineralLocations is empty
+//			
+//			// Recreate a set of nearby mineral locations			
+//			createNearbyMineralLocations(getVehicleWithMinimalRange());
+//			// Note: this should be a task for settlers to do
+//		
+//			return null;
+//		}
 		
-		Coordinates chosen = null;
-		if (nearbyMineralLocations.isEmpty()) {
-			logger.info(this, "nearbyMineralLocations is empty.");
-			return null;
+		if (nearbyMineralLocations == null || nearbyMineralLocations.isEmpty()) {
+			logger.severe(this, "nearbyMineralLocations is empty. Need to find new ones");
+
+			// Creates a set of nearby mineral locations	
+//			Set<Coordinates> coords = surfaceFeatures.getMineralMap()
+//					.generateMineralLocations(getCoordinates(), range);
+			
+			Coordinates coord = surfaceFeatures.getMineralMap().
+					findRandomMineralLocation(getCoordinates(), newRange);
+			
+			nearbyMineralLocations.add(coord);
 		}
 		
 		Set<Coordinates> unclaimedLocations = new HashSet<>();
@@ -3124,7 +3144,7 @@ public class Settlement extends Structure implements Temporal,
 		}
 
 		// Choose one with weighted randomness 
-		chosen = RandomUtil.getWeightedRandomObject(weightedMap);
+		Coordinates chosen = RandomUtil.getWeightedRandomObject(weightedMap);
 
 		if (weightedMap.isEmpty() || chosen == null) {
 			logger.info(this, "No site of interest found.");
@@ -3186,22 +3206,32 @@ public class Settlement extends Structure implements Temporal,
 		Map<Coordinates, Double> weightedMap = new HashMap<>();
 		
 		if (nearbyMineralLocations == null || nearbyMineralLocations.isEmpty()) {
-			logger.severe(this, "nearbyMineralLocations is empty.");
+			logger.severe(this, "nearbyMineralLocations is empty. Need to find new ones");
 
 			// Creates a set of nearby mineral locations	
-			Set<Coordinates> coords = surfaceFeatures.getMineralMap()
-					.generateMineralLocations(getCoordinates(), range / 2D);
+//			Set<Coordinates> coords = surfaceFeatures.getMineralMap()
+//					.generateMineralLocations(getCoordinates(), range);
 			
-			nearbyMineralLocations.addAll(coords);
+			Coordinates coord = surfaceFeatures.getMineralMap().
+					findRandomMineralLocation(getCoordinates(), range);
+			
+			nearbyMineralLocations.add(coord);
 		}
-			
+
 		for (Coordinates c : nearbyMineralLocations) {
 			double distance = Coordinates.computeDistance(getCoordinates(), c);
-
-			// Fill up the weight map
-			weightedMap.put(c, (range - distance) / range);
+			double prob = 0;
+			double delta = range - distance;
+			if (delta > 0) {
+				prob = delta / range;
+			}
+			
+			if (distance > 1 && prob > 0) {
+				// Fill up the weight map
+				weightedMap.put(c, prob);
+			}
 		}
-
+		
 		// Choose one with weighted randomness 
 		Coordinates chosen = RandomUtil.getWeightedRandomObject(weightedMap);
 		double chosenDist = weightedMap.get(chosen);
@@ -3634,6 +3664,19 @@ public class Settlement extends Structure implements Temporal,
 		return eqmInventory.findNumEmptyContainersOfType(containerType, brandNew);
 	}
 
+	/**
+	 * Finds the number of empty containers (from a copy set of containers) of a class that are contained in storage and have
+	 * an empty inventory.
+	 * 
+	 * @param containerType
+	 * @param brandNew
+	 * @return
+	 */
+	public int findNumEmptyCopyContainersOfType(EquipmentType containerType, boolean brandNew) {
+		return eqmInventory.findNumEmptyCopyContainersOfType(containerType, brandNew);
+	}
+	
+	
 	/**
 	 * Finds the number of containers of a particular type.
 	 *

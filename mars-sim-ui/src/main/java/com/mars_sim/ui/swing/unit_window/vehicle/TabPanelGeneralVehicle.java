@@ -88,7 +88,7 @@ public class TabPanelGeneralVehicle extends TabPanel {
 		panel.add(infoPanel, BorderLayout.SOUTH);
 		
 		infoPanel.addRow("Name", vehicle.getName());
-		infoPanel.addRow("Type", vehicle.getVehicleType().getName());
+		infoPanel.addRow("Type", vehicle.getSpecName());
 		infoPanel.addRow("Model", vehicle.getModelName());
 		
 		// FUTURE: 
@@ -96,7 +96,7 @@ public class TabPanelGeneralVehicle extends TabPanel {
 		// add country
 		// add maintainer
 		
-		infoPanel.addRow( "Max Crew", vehicle.getVehicleSpec().getCrewSize() + "");
+		infoPanel.addRow("Max Crew", vehicle.getVehicleSpec().getCrewSize() + "");
 
 		currentMassLabel = infoPanel.addRow("Current Weight", StyleManager.DECIMAL_KG.format(vehicle.getMass()));
 		infoPanel.addRow("Base Weight", StyleManager.DECIMAL_KG.format(vehicle.getBaseMass()));
@@ -115,8 +115,8 @@ public class TabPanelGeneralVehicle extends TabPanel {
 		
 		infoPanel.addRow("Fuel Cap", StyleManager.DECIMAL_KG.format(fuelCap));
 		
-		infoPanel.addRow( "Cell Stack", vehicle.getFuellCellStack() + "");	
-		infoPanel.addRow( "Battery Module", vehicle.getBatteryModule() + "");	
+		infoPanel.addRow("Cell Stack", vehicle.getFuellCellStack() + "");	
+		infoPanel.addRow("Battery Module", vehicle.getBatteryModule() + "");	
 		batteryPercentLabel = infoPanel.addRow("Battery Percent", 
 				StyleManager.DECIMAL_PERC.format(vehicle.getBatteryPercent()));
 		infoPanel.addRow("Battery Cap", StyleManager.DECIMAL_KWH.format(vehicle.getBatteryCapacity()));	

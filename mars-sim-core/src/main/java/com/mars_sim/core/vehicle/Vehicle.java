@@ -811,7 +811,7 @@ public abstract class Vehicle extends Unit
 	 * @return the current fuel range of the vehicle (in km)
 	 */
 	public double getRange() {
-
+		// Question: does it account for the return trip ?
 		double range = 0;
 		Mission mission = getMission();
 

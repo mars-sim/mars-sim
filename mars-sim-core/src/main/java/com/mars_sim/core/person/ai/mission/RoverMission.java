@@ -1109,7 +1109,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					// Use Iterator's remove() method
 					i.remove();
 					// Adjust the work shift
-					memberLeave(member);
+					removeMember(member);
 				}
 			 }
 			

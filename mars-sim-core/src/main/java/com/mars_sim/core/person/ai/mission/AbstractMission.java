@@ -366,13 +366,14 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 	/**
 	 * A Member leaves the Mission and adjust his work shift.
+	 * Note: should use removeMember() to call memberLeave().
 	 */
-	protected final void memberLeave(Worker member) {
+	private final void memberLeave(Worker member) {
 		// Added codes in reassigning a work shift
 		if (member.getUnitType() == UnitType.PERSON) {
 			Person person = (Person) member;
 			
-			logger.info(person, "Being removed from " + member.getMission() + ".");
+			logger.info(person, "Removed from " + member.getMission() + ".");
 			
 			member.setMission(null);
 			person.getTaskManager().recordActivity(getName(), "Leave Mission", "", this);
@@ -795,7 +796,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			// Take a copy as Worker will deregister themselves
 			List<Worker> oldMembers = new ArrayList<>(members);
 			for(Worker member : oldMembers) {
-				memberLeave(member);
+				removeMember(member);
 			}	
 			members.clear();
 		}

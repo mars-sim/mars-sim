@@ -18,6 +18,7 @@ import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.malfunction.Malfunction;
+import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
 import com.mars_sim.core.person.ai.mission.MissionEventType;
@@ -165,38 +166,29 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				break;
 				
 			case LOCATION : {
-				Settlement settle = vehicle.getSettlement();
-				if (settle != null) {
-					result = settle.getName();
+				Mission mission = vehicle.getMission();
+				if (mission instanceof AbstractVehicleMission vm) {
+					result = vm.getCurrentNavpointDescription();
 				}
 				else {
-					settle = CollectionUtils.findSettlement(vehicle.getCoordinates());
+					Settlement settle = vehicle.getSettlement();
 					if (settle != null) {
 						result = settle.getName();
 					}
 					else {
-						Mission mission = vehicle.getMission();
-						if (mission instanceof VehicleMission vm) {
-							NavPoint destination = vm.getCurrentDestination();
-							if (destination.isSettlementAtNavpoint())
-								result = destination.getSettlement().getName();
-							else
-								result = destination.getDescription();
+						settle = CollectionUtils.findSettlement(vehicle.getCoordinates());
+						if (settle != null) {
+							result = settle.getName();
 						}
-					}					
-					// For now, not using result = vehicle.getCoordinates().getFormattedString();
+					}
 				}
+		
 			} break;
 
 			case DESTINATION : {
 				Mission mission = vehicle.getMission();
-				if (mission instanceof VehicleMission vm) {
-					NavPoint destination = vm.getCurrentDestination();
-					if (destination.isSettlementAtNavpoint())
-						result = destination.getSettlement().getName();
-					else
-						result = destination.getDescription()
-							+ " - " + destination.getLocation().getFormattedString();
+				if (mission instanceof AbstractVehicleMission vm) {
+					result = vm.getNextNavpointDescription();
 				}
 			} break;
 
