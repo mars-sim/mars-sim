@@ -10,7 +10,7 @@
 	<artifactId>mars-sim-ui</artifactId>
 	<name>mars-sim-ui</name>
 	<properties>
-		<flatlaf.version>3.4.1</flatlaf.version>
+		<flatlaf.version>3.5</flatlaf.version>
 		<jfreechart.version>1.5.4</jfreechart.version>
 		<jide-oss.version>3.7.15</jide-oss.version>
 
