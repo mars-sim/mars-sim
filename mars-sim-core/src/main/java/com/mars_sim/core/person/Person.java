@@ -1919,7 +1919,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 				transferred = ((Crewable)cu).removePerson(this);
 			}
 			else {
-				logger.warning(this, 60_000L, "Not possible to be retrieved from " + cu + ".");
+				logger.warning(this, "Not possible to be retrieved from " + cu + ".");
 			}
 		}
 		else if (ut == UnitType.MARS) {
@@ -1937,7 +1937,12 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 			BuildingManager.removePersonFromBuilding(this, getBuildingLocation());
 		}
 
-		if (transferred) {
+		if (!transferred) {
+			logger.severe(this, "Cannot be retrieved from " + cu + ".");
+			// NOTE: need to revert back to the previous container unit cu
+		}
+		
+		else {
 			// Check if the destination is a vehicle
 			if (destination.getUnitType() == UnitType.VEHICLE) {
 				if (destination instanceof Crewable cr) {
@@ -1976,10 +1981,6 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 				// Fire the unit event type for old container
 				cu.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
 			}
-		}
-		else {
-			logger.warning(this, 60_000L, "Cannot be retrieved from " + cu + ".");
-			// NOTE: need to revert back the retrieval action
 		}
 
 		return transferred;

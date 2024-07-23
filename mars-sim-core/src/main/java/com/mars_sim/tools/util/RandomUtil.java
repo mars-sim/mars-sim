@@ -290,7 +290,7 @@ public final class RandomUtil {
 	 */
 	public static <T extends Object> T getWeightedRandomObject(Map<T, Double> weightedMap) {
 		if (weightedMap == null) {
-			throw new IllegalArgumentException("Weighted map argumetn cannot be null");
+			throw new IllegalArgumentException("Weighted map argument cannot be null");
 		}
 
 		T result = null;

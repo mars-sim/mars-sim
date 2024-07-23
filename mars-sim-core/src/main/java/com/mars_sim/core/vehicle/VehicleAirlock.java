@@ -171,8 +171,8 @@ extends Airlock {
      */
     public boolean stepOnMars(Person person) {
     	boolean successful = false;
+    	
 		if (person.isInVehicle()) {
-
             // 5.1. Transfer a person from the vehicle to the surface of Mars
 			successful = person.transfer(marsSurface);
 
@@ -180,15 +180,16 @@ extends Airlock {
 				// 5.2 Set the person's coordinates to that of the settlement's
 				person.setCoordinates(vehicle.getCoordinates());
 
-				logger.log(person, Level.FINER, 0,
+				logger.log(person, Level.FINER, 12000,
 					"Just stepped outside rover " + vehicle.getName() + ".");
 			}
 			else
-				logger.log(person, Level.SEVERE, 0,
+				logger.log(person, Level.SEVERE, 12000,
 					"Could not step outside rover " + vehicle.getName() + ".");
 		}
+		
 		else if (person.isOutside()) {
-			logger.log(person, Level.SEVERE, 0,
+			logger.log(person, Level.SEVERE, 12000,
 					Msg.getString("VehicleAirlock.error.notInside", person.getName(), getEntityName()) + ".");
 		}
 

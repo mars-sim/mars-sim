@@ -1247,12 +1247,12 @@ implements Serializable {
                 if (person != null) {
                 	logger.warning(person,  10_000,
                 			"No walkable airlock from airlock exterior to rover in garage in "
-                			+ person.getBuildingLocation().getName());
+                			+ garageBuilding.getName());
                 }
                 else {
                 	logger.warning(robot, 10_000,
                 			"No walkable airlock from airlock exterior to rover in garage in "
-                			+ robot.getBuildingLocation().getName());
+                			+ garageBuilding.getName());
                 }
 
             }
@@ -1408,12 +1408,12 @@ implements Serializable {
                 if (person != null) {
                 	logger.warning(person,  10_000,
                 			"No find walkable airlock from outside to rover in garage in "
-                    		+ person.getBuildingLocation().getName());
+                    		+ garageBuilding.getName());
                 }
                 else {
                 	logger.warning(robot, 10_000,
                 			"No walkable airlock from outside to rover in garage in "
-                    		+ robot.getBuildingLocation().getName());
+                    		+ garageBuilding.getName());
                 }
             }
         }
