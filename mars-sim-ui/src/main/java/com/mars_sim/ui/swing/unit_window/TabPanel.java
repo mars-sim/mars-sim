@@ -34,7 +34,6 @@ public abstract class TabPanel extends JScrollPane {
 	protected static final int YPAD_DEFAULT = 1;
 	protected static final int XPAD_DEFAULT = 5;
 
-	
 	private boolean isUIDone = false;
 	
 	private String description;
@@ -124,6 +123,11 @@ public abstract class TabPanel extends JScrollPane {
 		viewPanel.add(centerContentPanel, BorderLayout.CENTER);
 	}
 
+	/**
+	 * Are all the UI element in place ?
+	 * 
+	 * @return
+	 */
  	public boolean isUIDone() {
 		return isUIDone;
 	}
@@ -236,7 +240,6 @@ public abstract class TabPanel extends JScrollPane {
 		return desktop.getSimulation();
 	}
 	
-
 	@Override
 	public  String toString() {
 		return tabTitle;

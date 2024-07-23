@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleTableModel.java
- * @date 2024-07-21
+ * @date 2024-07-23
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.tool.monitor;
@@ -25,7 +25,6 @@ import com.mars_sim.core.person.ai.mission.MissionEventType;
 import com.mars_sim.core.person.ai.mission.MissionListener;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionManagerListener;
-import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;

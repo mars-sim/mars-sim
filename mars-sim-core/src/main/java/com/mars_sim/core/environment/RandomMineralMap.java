@@ -537,10 +537,11 @@ public class RandomMineralMap implements MineralMap {
 	 * 
 	 * @param startingLocation the starting location.
 	 * @param range            the distance range (km).
+	 * @param sol			the mission sol
 	 * @return location with one or more mineral concentrations or null if none
 	 *         found.
 	 */
-	public Coordinates findRandomMineralLocation(Coordinates startingLocation, double range) {
+	public Coordinates findRandomMineralLocation(Coordinates startingLocation, double range, int sol) {
 
 		Set<Coordinates> locales = generateMineralLocations(startingLocation, range);
 		int size = locales.size();
@@ -550,18 +551,11 @@ public class RandomMineralMap implements MineralMap {
 		}
 		
 		Map<Coordinates, Double> weightedMap = new HashMap<>();
-	
-//		for (Coordinates c : locales) {
-//			double distance = Coordinates.computeDistance(startingLocation, c);
-//		
-//			// Fill up the weight map
-//			weightedMap.put(c, (range - distance) / range);
-//		}
-	
+		
 		for (Coordinates c : locales) {
 			double distance = Coordinates.computeDistance(startingLocation, c);
 			double prob = 0;
-			double delta = range - distance;
+			double delta = range - distance + Math.max(0, 100 - sol);
 			if (delta > 0) {
 				prob = delta * delta / range / range;
 			}

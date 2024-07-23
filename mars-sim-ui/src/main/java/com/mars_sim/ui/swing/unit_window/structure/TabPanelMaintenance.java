@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelMaintenance.java
- * @date 2024-06-28
+ * @date 2024-07-22
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.structure;
@@ -14,16 +14,16 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.Building;
+import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.unit_window.TabPanelTable;
-import com.mars_sim.ui.swing.utils.PercentageCellRenderer;
 import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.PercentageCellRenderer;
 
 /**
  * The TabPanelMaintenance is a tab panel for settlement's building maintenance.
@@ -42,11 +42,17 @@ public class TabPanelMaintenance extends TabPanelTable {
 	 * @param unit    the unit (currently for settlements only)
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelMaintenance(Unit unit, MainDesktopPane desktop) {
+	public TabPanelMaintenance(Settlement settlement, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super(null, ImageLoader.getIconByName(SPANNER_ICON), "Maintenance", unit, desktop);
+		super(
+				Msg.getString("TabPanelMaintenance.title"),
+				ImageLoader.getIconByName(SPANNER_ICON),
+				Msg.getString("TabPanelMaintenance.title"), //$NON-NLS-1$
+				settlement, desktop
+			);
 
-		tableModel = new BuildingMaintModel((Settlement) unit);
+		
+		tableModel = new BuildingMaintModel(settlement);
 	}
 
 	@Override

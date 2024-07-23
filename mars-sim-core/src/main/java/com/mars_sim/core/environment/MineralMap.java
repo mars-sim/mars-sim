@@ -73,12 +73,13 @@ public interface MineralMap extends Serializable {
 	 * Finds a random location with mineral concentrations from a starting location.
 	 * and within a distance range.
 	 * 
-	 * @param startingLocation the starting location.
-	 * @param range            the distance range (km).
+	 * @param startingLocation the starting location
+	 * @param range            the distance range (km)
+	 * @param sol
 	 * @return location with one or more mineral concentrations or null if none
 	 *         found.
 	 */
-	public Coordinates findRandomMineralLocation(Coordinates startingLocation, double range);
+	public Coordinates findRandomMineralLocation(Coordinates startingLocation, double range, int sol);
 
 	/**
 	 * Prepares object for garbage collection.

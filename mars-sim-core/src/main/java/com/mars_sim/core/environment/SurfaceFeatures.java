@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @date 2023-06-30
+ * @date 2024-07-23
  * @author Scott Davis
  */
 package com.mars_sim.core.environment;
@@ -88,7 +88,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private final ReentrantLock sunlightLock = new ReentrantLock(true);
 
 	/** The set of locations that have been declared as Region of Interest (ROI). */
-	private Set<ExploredLocation> regioOfInterestLocations;
+	private Set<ExploredLocation> regionOfInterestLocations;
 
 	/**
 	 * Constructor.
@@ -103,7 +103,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		
 		terrainElevation = new TerrainElevation();
 		mineralMap = new RandomMineralMap();
-		regioOfInterestLocations = ConcurrentHashMap.newKeySet(); 
+		regionOfInterestLocations = ConcurrentHashMap.newKeySet(); 
 		areothermalMap = new AreothermalMap();
 	}
 
@@ -591,7 +591,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			result = new ExploredLocation(location, skill, initialMineralEstimations, settlement, distance);
 			
 //			synchronized (regioOfInterestLocations)
-				regioOfInterestLocations.add(result);
+				regionOfInterestLocations.add(result);
 		}
 		else {
 			logger.info(settlement, "Initially found no mineral concentrations in " + location.getFormattedString() + ".");
@@ -606,13 +606,16 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param siteLocation
 	 * @return
 	 */
-	public boolean isDeclaredARegionOfInterest(Coordinates siteLocation, Settlement settlement, boolean isClaimed) {
-	
-		// Check if this siteLocation has already been added or not to SurfaceFeatures
-		if (checkDeclaredLocation(siteLocation, settlement, isClaimed) == null)
-			return false;
+	public boolean isDeclaredARegionOfInterest(Coordinates coord, Settlement settlement, boolean isClaimed) {
+		for (ExploredLocation el: regionOfInterestLocations) {
+			if (el.getLocation().equals(coord)
+				&& el.isClaimed() == isClaimed
+				&& el.getSettlement().equals(settlement)) {
+				return true;
+			}
+		}
 
-		return true;
+		return false;
 	}
 	
 	/**
@@ -625,7 +628,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 */
 	public ExploredLocation checkDeclaredLocation(Coordinates coord, Settlement settlement, boolean isClaimed) {
 //		synchronized (regioOfInterestLocations) {
-		return regioOfInterestLocations.stream()
+		return regionOfInterestLocations.stream()
 				  .filter(e -> e.getLocation().equals(coord)
 						  && e.isClaimed() == isClaimed
 						  && e.getSettlement().equals(settlement))
@@ -635,14 +638,46 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
+	 * Returns number of locations being claimed or not being claimed as a Region Of Interest by a party/settlement.
+	 * 
+	 * @param coord
+	 * @param settlement
+	 * @param isClaimed
+	 * @return
+	 */
+	public long numAllDeclaredLocation(Settlement settlement, boolean isClaimed) {
+		return getAllRegionOfInterestLocations().stream()
+				  .filter(e -> e.isClaimed() == isClaimed
+						  && e.getSettlement().equals(settlement))
+				  .count();
+	}
+	
+	/**
 	 * Gets a set of all declared Regions of Interest (ROI).
 	 *
 	 * @return list of explored locations.
 	 */
 	public Set<ExploredLocation> getAllRegionOfInterestLocations() {
-		return regioOfInterestLocations;
+		return new HashSet<>(regionOfInterestLocations);
 	}
 
+	/**
+	 * Gets a set of explored locations from the declared Regions of Interest (ROI).
+	 *
+	 * @param isClaimed
+	 * @return
+	 */
+	public synchronized Set<ExploredLocation> getDeclaredRegionOfInterestLocations(boolean isClaimed) {
+		Set<ExploredLocation> coords = new HashSet<>();
+		for (ExploredLocation el: getAllRegionOfInterestLocations()) {
+			boolean claimed = el.isClaimed();
+			if (claimed == isClaimed) {
+				coords.add(el);
+			}
+		}
+		return coords;
+	}
+	
 	/**
 	 * Gets a set of coordinates from the declared Regions of Interest (ROI).
 	 *
@@ -651,11 +686,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 */
 	public synchronized Set<Coordinates> getDeclaredCoordinates(boolean isClaimed) {
 		Set<Coordinates> coords = new HashSet<>();
-		for (ExploredLocation el: regioOfInterestLocations) {
-			boolean claimed = el.isClaimed();
-			if (claimed == isClaimed) {
-				coords.add(el.getLocation());
-			}
+		for (ExploredLocation el: getDeclaredRegionOfInterestLocations(isClaimed)) {
+			coords.add(el.getLocation());
 		}
 		return coords;
 	}
@@ -729,8 +761,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		currentIrradiance = null;
 		mineralMap.destroy();
 		mineralMap = null;
-		regioOfInterestLocations.clear();
-		regioOfInterestLocations = null;
+		regionOfInterestLocations.clear();
+		regionOfInterestLocations = null;
 		areothermalMap.destroy();
 		areothermalMap = null;
 		

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExploredLocation.java
- * @date 2023-06-30
+ * @date 2024-07-23
  * @author Scott Davis
  */
 
@@ -382,6 +382,14 @@ public class ExploredLocation implements Serializable {
 		return settlement;
 	}
 
+	/**
+	 * Gets the distance from the settlement to this location.
+	 * 
+	 * @return
+	 */
+	public double getDistance() {
+		return distance;
+	}
 
 	/**
 	 * Prepares object for garbage collection.

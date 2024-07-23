@@ -50,6 +50,8 @@ public abstract class UnitWindow extends ModalInternalFrame
 	public static final int HEIGHT = 620;
 	public static final int STATUS_HEIGHT = 60;
 	
+	private String title;
+	
 	/** The tab panels. */
 	private List<TabPanel> tabPanels;
 	/** The center panel. */
@@ -77,6 +79,8 @@ public abstract class UnitWindow extends ModalInternalFrame
 		// Initialize data members
 		this.desktop = desktop;
 		this.unit = unit;
+		this.title = title;
+		
 
 		setFrameIcon(MainWindow.getLanderIcon());
 
@@ -117,6 +121,7 @@ public abstract class UnitWindow extends ModalInternalFrame
 			if (!newTab.isUIDone() && (oldTab == null || newTab != oldTab)) {
 				oldTab = newTab;
 				newTab.initializeUI();
+				setTitle(title + " - " + newTab.getTabTitle());
 			}
 		});
 

@@ -212,18 +212,18 @@ public abstract class AbstractMission implements Mission, Temporal {
 			else
 				appendStr = "' with " + n + " others.";
 
-			String article = "a ";
+//			String article = "a ";
 
 			String missionStr = missionName;
 
 			if (!missionStr.toLowerCase().contains("mission"))
 				missionStr = missionName + " mission";
 
-			if(Conversion.isVowel(missionName))
-				article = "an ";
+//			if(Conversion.isVowel(missionName))
+//				article = "an ";
 
 			logger.log(startingMember, Level.INFO, 0,
-					"Began organizing " + article + missionStr + appendStr + ".");
+					"Began organizing " + missionStr + appendStr);
 
 			// Add starting member to mission.
 			startingMember.setMission(this);

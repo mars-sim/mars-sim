@@ -218,9 +218,9 @@ public class MalfunctionTabPanel extends TabPanel {
 	public MalfunctionTabPanel(Malfunctionable malfunctionable, MainDesktopPane desktop) {
 
 		super(
-			Msg.getString("BuildingPanelMalfunctionable.title"), 
+			Msg.getString("MalfunctionTabPanel.title"), 
 			ImageLoader.getIconByName(WARN_ICON), 
-			Msg.getString("BuildingPanelMalfunctionable.title"), 
+			Msg.getString("MalfunctionTabPanel.title"), 
 			desktop
 		);
 
@@ -237,9 +237,9 @@ public class MalfunctionTabPanel extends TabPanel {
 	 */
 	public MalfunctionTabPanel(Settlement settlement, MainDesktopPane desktop) {
 		super(
-			Msg.getString("BuildingPanelMalfunctionable.title"), 
+			Msg.getString("MalfunctionTabPanel.title"), 
 			ImageLoader.getIconByName(WARN_ICON), 
-			Msg.getString("BuildingPanelMalfunctionable.title"), 
+			Msg.getString("MalfunctionTabPanel.title"), 
 			desktop
 		);
 		this.settlement = settlement;

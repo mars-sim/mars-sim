@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Exploration.java
- * @date 2024-07-18
+ * @date 2024-07-23
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -247,7 +247,6 @@ public class Exploration extends EVAMission
 		logger.info(getStartingSettlement(), "No explored sites found. Looking for one.");
 		
 		// Creates an random site
-		
 		Coordinates location = determineFirstSiteCoordinate();
 		if (location == null) {
 			logger.info(getStartingSettlement(), "location is null.");
@@ -258,13 +257,13 @@ public class Exploration extends EVAMission
 	}
 
 	/**
-	 * Determine the coordinate of the first exploration site.
+	 * Determines the coordinate of the first exploration site.
 	 *
 	 * @return
 	 */
 	private Coordinates determineFirstSiteCoordinate() {
 		double range = getVehicle().getRange();
-		return getStartingSettlement().determineFirstSiteCoordinate(range, 1);
+		return getStartingSettlement().determineFirstSiteCoordinate(range, 2);
 	}
 	
 	/**

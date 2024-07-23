@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelMissions.java
- * @date 2022-07-09
+ * @date 2024-07-22
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.structure;
@@ -16,9 +16,11 @@ import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -40,6 +42,7 @@ import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.monitor.PersonTableModel;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.unit_window.vehicle.TabPanelMission;
+import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
  * Tab panel displaying a list of settlement missions.<br>
@@ -56,6 +59,20 @@ extends TabPanel {
 	private static final String FLAG_ICON = "mission";
 	
 	// Data members
+	
+	private JLabel siteLabel;
+	private JLabel siteMeanLabel;
+	private JLabel siteSDevLabel;
+	
+	private JLabel claimedSiteLabel;
+	private JLabel claimedMeanLabel;
+	private JLabel claimedSDevLabel;
+	
+	private JLabel unclaimedSiteLabel;
+	private JLabel unclaimedMeanLabel;
+	private JLabel unclaimedSDevLabel;
+	
+	
 	/** The Settlement instance. */
 	private Settlement settlement;
 
@@ -69,13 +86,14 @@ extends TabPanel {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param settlement {@link Settlement} the settlement this tab panel is for.
 	 * @param desktop {@link MainDesktopPane} the main desktop panel.
 	 */
 	public TabPanelMissions(Settlement settlement, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			null,
+			Msg.getString("TabPanelMissions.title"),
 			ImageLoader.getIconByName(FLAG_ICON),
 			Msg.getString("TabPanelMissions.title"), //$NON-NLS-1$
 			settlement, desktop
@@ -88,6 +106,40 @@ extends TabPanel {
 	@Override
 	protected void buildUI(JPanel content) {
 
+		JPanel topPanel = new JPanel(new BorderLayout(0, 10));
+		content.add(topPanel, BorderLayout.NORTH);
+		
+		int site[] = settlement.getStatistics(0);
+		int claimed[] = settlement.getStatistics(1);
+		int unclaimed[] = settlement.getStatistics(2);
+		
+		AttributePanel sitePanel = new AttributePanel(3, 1);
+		topPanel.add(sitePanel, BorderLayout.NORTH);
+		sitePanel.setBorder(BorderFactory.createTitledBorder("Nearby Sites"));
+		
+		siteLabel = sitePanel.addRow("# Sites Found", settlement.getNearbyMineralLocations().size() + "");
+		siteMeanLabel = sitePanel.addRow("Mean Distance", site[0] + "");
+		siteSDevLabel = sitePanel.addRow("Standard Deviation", site[1] + "");
+		
+		
+		AttributePanel twoPanel = new AttributePanel(3, 1);
+		topPanel.add(twoPanel, BorderLayout.CENTER);
+		twoPanel.setBorder(BorderFactory.createTitledBorder("Claimed Sites"));
+		
+		claimedSiteLabel = twoPanel.addRow("# Sites", settlement.numDeclaredLocation(true) + "");
+		claimedMeanLabel = twoPanel.addRow("Mean Distance", (int)claimed[0] + " km");
+		claimedSDevLabel = twoPanel.addRow("Standard Deviation", (int)claimed[1] + " km");
+		
+		
+		AttributePanel unclaimPanel = new AttributePanel(3, 1);
+		topPanel.add(unclaimPanel, BorderLayout.SOUTH);
+		unclaimPanel.setBorder(BorderFactory.createTitledBorder("Unclaimed Sites"));
+		
+		unclaimedSiteLabel = unclaimPanel.addRow("# Sites", settlement.numDeclaredLocation(false) + "");		
+		unclaimedMeanLabel = unclaimPanel.addRow("Mean Distance", (int)unclaimed[0] + " km");
+		unclaimedSDevLabel = unclaimPanel.addRow("Standard Deviation", (int)unclaimed[1] + " km");
+		
+		
 		// Create center panel.
 		JPanel centerPanel = new JPanel(new BorderLayout());
 		content.add(centerPanel, BorderLayout.CENTER);
@@ -101,6 +153,12 @@ extends TabPanel {
 		buildBottomPanel(content);
 	}
 		
+	/**
+	 * Builds the scroll panel.
+	 * 
+	 * @param centerPanel
+	 * @param missionListPanel
+	 */
 	public void buildScrollPanel(JPanel centerPanel, JPanel missionListPanel) {
 		MissionManager missionManager = getSimulation().getMissionManager();
 
@@ -129,6 +187,11 @@ extends TabPanel {
 		missionScrollPanel.setViewportView(missionList);
 	}
 	
+	/**
+	 * Builds the button panel.
+	 * 
+	 * @param centerPanel
+	 */
 	private void buildButtonPanel(JPanel centerPanel) {
 		// Create button panel.
 		JPanel buttonPanel = new JPanel(new BorderLayout());
@@ -164,6 +227,11 @@ extends TabPanel {
 		innerButtonPanel.add(monitorButton);
 	}
 	
+	/**
+	 * Builds the bottom panel.
+	 * 
+	 * @param content
+	 */
 	private void buildBottomPanel(JPanel content) {
 		// Create bottom panel.
 		JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -183,6 +251,25 @@ extends TabPanel {
 
 	@Override
 	public void update() {
+		
+		int site[] = settlement.getStatistics(0);
+		int claimed[] = settlement.getStatistics(1);
+		int unclaimed[] = settlement.getStatistics(2);
+		
+		siteLabel.setText(settlement.getNearbyMineralLocations().size() + "");
+		claimedMeanLabel.setText((int)site[0] + " km");
+		claimedSDevLabel.setText((int)site[1] + " km");
+		
+		claimedSiteLabel.setText(settlement.numDeclaredLocation(true) + "");
+		claimedMeanLabel.setText((int)claimed[0] + " km");
+		claimedSDevLabel.setText((int)claimed[1] + " km");
+		
+		
+		unclaimedSiteLabel.setText(settlement.numDeclaredLocation(false) + "");		
+		unclaimedMeanLabel.setText((int)unclaimed[0] + " km");
+		unclaimedSDevLabel.setText((int)unclaimed[1] + " km");
+		
+		
 		// Get all missions for the settlement.
 		List<Mission> missions = getSimulation().getMissionManager().getMissionsForSettlement(settlement);
 
@@ -231,6 +318,7 @@ extends TabPanel {
 
 	/**
 	 * Sets the settlement mission creation override flag.
+	 * 
 	 * @param override the mission creation override flag.
 	 */
 	private void setMissionCreationOverride(boolean override) {
@@ -238,7 +326,7 @@ extends TabPanel {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	@Override
 	public void destroy() {
