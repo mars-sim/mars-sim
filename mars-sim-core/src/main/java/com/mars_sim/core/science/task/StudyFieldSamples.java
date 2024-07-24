@@ -187,7 +187,7 @@ public class StudyFieldSamples extends LabTask {
 	private ExploredLocation getSettlementExploredSite() {
 		Settlement settlement = person.getAssociatedSettlement();
 		if (settlement != null) {
-			Set<ExploredLocation> allExploredLocations = surfaceFeatures.getAllRegionOfInterestLocations();
+			Set<ExploredLocation> allExploredLocations = surfaceFeatures.getAllPossibleRegionOfInterestLocations();
 			List<ExploredLocation> settlementExploredLocations = allExploredLocations.stream()
 						.filter(l -> (settlement.equals(l.getSettlement()) && l.isMinable() && !l.isReserved()))
 						.toList();

@@ -630,40 +630,39 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				else if (isRoverInAGarage) {
 										
 					// Transfer the person from vehicle to settlement
-					p.transfer(disembarkSettlement);
+					boolean backToSettle = p.transfer(disembarkSettlement);
 					
-					// Remove this person from the rover
-					rover.removePerson(p);
-					
-					// Add this person to the building
-					BuildingManager.setToBuilding(p, rover.getGarage());
-					
-					String roverName = "None";
-					
-					if (p.getVehicle() != null)
-						roverName = p.getVehicle().getName();
-					
-					if (p.isInSettlement()) {
-						logger.info(p, "[Status Report] " + roverName
-								+ " in " + rover.getBuildingLocation().getName()
-								+ ".  Location State: " + p.getLocationStateType().getName()
-								);
-					}
-					
-					else {						
-						// Not in settlement yet
-						logger.info(p, "[Status Report] " + roverName
-								+ " in " + rover.getLocationStateType().getName()
-								+ ".  Location State: " + p.getLocationStateType().getName()
-								);
+					if (backToSettle) {
+						// Remove this person from the rover
+						rover.removePerson(p);
+						
+						// Add this person to the building
+						BuildingManager.setToBuilding(p, rover.getGarage());
+						
+						String roverName = rover.getName();
+						
+						if (p.isInSettlement()) {
+							logger.info(p, "[Status Report] Left " + roverName
+									+ " in " + rover.getBuildingLocation().getName()
+									+ ".  Building: " + p.getBuildingLocation().getName()
+									+ ".  Location State: " + p.getLocationStateType().getName());
+						}
+						
+						else {						
+							// Not in settlement yet
+							logger.severe(p, "[Status Report] Left " + roverName
+									+ " in " + rover.getLocationStateType().getName()
+									+ ".  Location State: " + p.getLocationStateType().getName());
+						}
 					}
 				}
 				
 				else {
-					// Not in a garage
+					// Rover is NOT in a garage
 					
 					// See if this person needs an EVA suit
-					// This is considered cheating since missing EVA suits are automatically
+					
+					// Note: This is considered cheating since missing EVA suits are automatically
 					// transfered to the vehicle
 					EVASuitUtil.transferSuitsToVehicle(p, disembarkSettlement, this);
 				}

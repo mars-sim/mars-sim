@@ -88,7 +88,7 @@ public class ExploredSiteMapLayer implements MapLayer, SimulationConstants {
 	 */
 	@Override
 	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
-		for (ExploredLocation site : surfaceFeatures.getAllRegionOfInterestLocations()) {
+		for (ExploredLocation site : surfaceFeatures.getAllPossibleRegionOfInterestLocations()) {
 			boolean displaySite = !site.isReserved() || displayReserved;
             if (!site.isClaimed() && !displayClaimed)
 				displaySite = false;

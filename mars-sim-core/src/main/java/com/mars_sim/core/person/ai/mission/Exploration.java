@@ -98,6 +98,7 @@ public class Exploration extends EVAMission
 		super(MISSION_TYPE, startingPerson, null,
 				EXPLORE_SITE, ExploreSite.LIGHT_LEVEL);
 		
+		this.amountCollectedBySite = new HashMap<>();
 		this.cumulativeCollectedByID = new HashMap<>();
 		this.explorationSiteCompletion = new HashMap<>();
 		
@@ -155,6 +156,7 @@ public class Exploration extends EVAMission
 		super(MISSION_TYPE,(Worker) members.toArray()[0], rover,
 				EXPLORE_SITE, ExploreSite.LIGHT_LEVEL);
 		
+		this.amountCollectedBySite = new HashMap<>();
 		this.cumulativeCollectedByID = new HashMap<>();
 		this.explorationSiteCompletion = new HashMap<>();
 		
@@ -253,7 +255,7 @@ public class Exploration extends EVAMission
 			return null;
 		}
 		
-		return declareARegionOfInterest(location, 0);
+		return declareARegionOfInterest(location, 2);
 	}
 
 	/**
@@ -496,7 +498,7 @@ public class Exploration extends EVAMission
 
 		// Get any locations that belong to this home Settlement and need further
 		// exploration before mining
-		List<Coordinates> candidateLocs = surfaceFeatures.getAllRegionOfInterestLocations().stream()
+		List<Coordinates> candidateLocs = surfaceFeatures.getAllPossibleRegionOfInterestLocations().stream()
 				.filter(e -> e.getNumEstimationImprovement() < 
 						RandomUtil.getRandomInt(0, Mining.MATURE_ESTIMATE_NUM * 10))
 				.filter(s -> home.equals(s.getSettlement()))

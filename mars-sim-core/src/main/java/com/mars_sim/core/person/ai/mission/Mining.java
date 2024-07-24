@@ -552,7 +552,7 @@ public class Mining extends EVAMission
 				range = tripRange;
 			}
 
-			for(ExploredLocation site : surfaceFeatures.getAllRegionOfInterestLocations()) {
+			for(ExploredLocation site : surfaceFeatures.getAllPossibleRegionOfInterestLocations()) {
 				boolean isMature = (site.getNumEstimationImprovement() >= 
 						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2.0, 1.0 * MATURE_ESTIMATE_NUM));
 
@@ -594,7 +594,7 @@ public class Mining extends EVAMission
 				range = tripRange;
 			}
 
-			for (ExploredLocation site : surfaceFeatures.getAllRegionOfInterestLocations()) {
+			for (ExploredLocation site : surfaceFeatures.getAllPossibleRegionOfInterestLocations()) {
 				boolean isMature = (site.getNumEstimationImprovement() >= 
 						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2.0, 1.0 * MATURE_ESTIMATE_NUM));
 				if (site.isMinable() && site.isClaimed() && !site.isReserved() && site.isExplored() && isMature

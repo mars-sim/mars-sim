@@ -14,19 +14,29 @@
 		</settlement>
 		
 		<settlement name="Catarina" template="Phase 1-BR" persons="4" robots="4" sponsor="AEB">
-			<location longitude="10.0 E" latitude="10.0 S" />
+			<!-- sits between Zvezda and Tian Cheng -->	
+			<location longitude="58.8805 E" latitude="25.0892 N" />
 		</settlement>
 		
 		<settlement name="Arcadia" template="Phase 2-EU" persons="8" robots="6" sponsor="ESA">
-			<location longitude="134.67 E" latitude="22.67 N" />
+			<!-- 
+			
+				Other names available: Schiaparelli Point
+				
+				2 landing proposed sites for ESA ExoMars: 
+				(1). Hypanis Vallis at 11.9 N and 314.0 E    
+			    (2). Mawrth Vallis at 22.4 N 342.0 E
+			<location longitude="342.0 E" latitude="22.4 N" />			    
+			-->
+			<location longitude="29.7837 W" latitude="24.3612 N" />
 		</settlement>
 
 		<settlement name="Hong Tian" template="Phase 2-CN" persons="8" robots="6" sponsor="CNSA">
-			<location longitude="50.0 W" latitude="20.0 N" />
+			<location longitude="47.8419 W" latitude="15.9873 N" />
 		</settlement>
 		
 		<settlement name="New Pompeii" template="Phase 3-IN" persons="16" robots="8" sponsor="ISRO">
-			<location longitude="82.9 W" latitude="22.0 N" />
+			<location longitude="70.9710 W" latitude="26.3650 N" />
 		</settlement>
 
 		<settlement name="Kyocera" template="Phase 2-JP" persons="12" robots="6" sponsor="JAXA">
@@ -34,7 +44,7 @@
 		</settlement>
 
 		<settlement name="New Seoul" template="Phase 2-KR" persons="9" robots="5" sponsor="KASA">
-			<location longitude="100.0 W" latitude="40.0 N" />
+			<location longitude="105.8939 W" latitude="40.4244 N" />
 		</settlement>
 
 		<settlement name="Starcity" template="Phase 3-SX" persons="16" robots="8" sponsor="SPACEX">
@@ -51,7 +61,8 @@
 		</settlement>
 
 		<settlement name="Zvezda" template="Phase 3-RU" persons="16" robots="8" sponsor="RKA">
-			<location longitude="76.37 E" latitude="25.94 N" />
+ 			<!-- sits between Catarina and Arcadia --> 
+			<location longitude="81.9044 E" latitude="17.3983 N" />
 		</settlement>
 
 		<settlement name="Terminus" template="Alpha Base" crew="Alpha" persons="24" robots="12" sponsor="NASA">
@@ -60,16 +71,7 @@
 
 				
 		<settlement name="Heritage" template="Hub Base" crew="Founders" persons="36" robots="18" sponsor="MS">
-			<!-- 
-			
-				Other names: Schiaparelli Point
-				
-				Four landing proposed sites for ESA ExoMars: 
-				(1). Hypanis Vallis at 11.9 N and 314.0 E    
-			    (2). Mawrth Vallis at 22.4 N 342.0 E
-			    
-			-->
-			<location longitude="342.0 E" latitude="22.4 N" />
+			<location longitude="114.1535 E" latitude="15.1255 N" />
 		</settlement>
 
 	</initial-settlement-list>
@@ -81,12 +83,12 @@
 
 		<arriving-settlement name="New Madinah" template="Phase 1-SA" 
 			persons="4" robots="4" sponsor="SSA" arrival-in-sols="2">
-			<location longitude="161.28 W" latitude="36.32 N" />
+			<location longitude="141.3300 W" latitude="45.4157 N" />
 		</arriving-settlement>
 		
 		<arriving-settlement name="New Dubai" template="Phase 0-AE" 
 			persons="2" robots="4" sponsor="UAESA" arrival-in-sols="1">
-			<location longitude="108 E" latitude="26 N" />
+			<location longitude="136.4239 E" latitude="13.5488 N" />
 		</arriving-settlement>		
 	</arriving-settlement-list>
 </scenario-configuration>

@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -34,6 +36,7 @@ import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.DustStorm;
 import com.mars_sim.core.environment.ExploredLocation;
+import com.mars_sim.core.environment.RandomMineralMap;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.AmountResourceBin;
@@ -58,7 +61,6 @@ import com.mars_sim.core.person.Commander;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.PhysicalCondition;
-import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.mission.MissionLimitParameters;
@@ -114,7 +116,7 @@ public class Settlement extends Structure implements Temporal,
 
 	// Static members
 	private static final int NUM_BACKGROUND_IMAGES = 20;
-	private static final int INITIAL_ROI_RADIUS = 50;
+//	private static final int INITIAL_ROI_RADIUS = 50;
 
 	/**
 	 * Shared preference key for Mission limits
@@ -210,7 +212,8 @@ public class Settlement extends Structure implements Temporal,
 	private boolean hasDesignatedCommander = false;
 	/** The flag to see if a water ration review is due. */
 	private boolean waterRatioReviewFlag = false;
-	
+	/** The extra search radius to be added. */
+	private int extraKM;
 	/** The water ratio of the settlement. The higher the more urgent for water resource. */
 	private int waterRatioCache = 1;
 	/** The new water ratio of the settlement. */
@@ -341,7 +344,9 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement's preference map. */
 	private ParameterManager preferences = new ParameterManager();
 	/** A set of nearby mineral locations. */
-	private Set<Coordinates> nearbyMineralLocations = new HashSet<>();
+	private SortedMap<Double, Coordinates> nearbyMineralLocations = new TreeMap<>();
+	/** A list of nearby mineral locations. */
+	private Set<ExploredLocation> declaredMineralLocations = new HashSet<>();
 	/** A history of completed processes. */
 	private History<CompletedProcess> processHistory = new History<>(40);
 	
@@ -900,49 +905,49 @@ public class Settlement extends Structure implements Temporal,
 			// Initialize the goods manager
 			goodsManager.updateGoodValues();
 			
-			// Initialize a set of nearby mineral locations at the start of the sim only
-			Rover rover = getVehicleWithMinimalRange();
-			
-			// Creates a set of nearby mineral locations			
-			createNearbyMineralLocations(rover);
-			// Note : may call it again if a new rover is made with longer range
-			
-			int range = (int) getVehicleWithMinimalRange().getRange();
-			
-			// Look for the first site to be analyzed and explored
-			int skill = 0;
-			int num = numCitizens;
-			for (Person p: citizens) {
-				skill += p.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
-				num++;
-			}
-			
-			int newSkill = (int)Math.min(range/1000, skill/(0.5+num));
-	
-			double limit = 100;
-			
-			Coordinates firstSite = determineFirstSiteCoordinate(limit, newSkill);
-			
- 			if (firstSite != null) {
- 				double distance = getCoordinates().getDistance(firstSite);
- 				
- 				if (distance > 1) {
- 					logger.info(this, "Sol " + sol + ". Selected " + firstSite.getFormattedString() 
- 							+ " as the first ROI site (" + Math.round(distance * 100.0)/100.0  + " km away).");
- 				
- 					// Creates an initial explored site in SurfaceFeatures
- 					ExploredLocation loc = createARegionOfInterest(firstSite, skill/num);
- 					
- 	     			if (loc != null)
- 	     				logger.info(this, "Zoned up this ROI at " +  firstSite.getFormattedString() + ".");
- 	     			else {
-// 	     				logger.info(this, "No site of interest found.");
- 	     			}
- 				}
- 			}
- 			else {
-// 				logger.info(this, "No site of interest found.");
- 			}
+//			// Initialize a set of nearby mineral locations at the start of the sim only
+//			Rover rover = getVehicleWithMinimalRange();
+//			
+//			// Creates a set of nearby mineral locations			
+//			createNearbyMineralLocations(rover);
+//			// Note : may call it again if a new rover is made with longer range
+//			
+//			int range = (int) getVehicleWithMinimalRange().getRange();
+//			
+//			// Look for the first site to be analyzed and explored
+//			int skill = 0;
+//			int num = numCitizens;
+//			for (Person p: citizens) {
+//				skill += p.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+//				num++;
+//			}
+//			
+//			int newSkill = (int)Math.round(skill / (0.1 + num));
+//	
+//			double limit = 200 + (range - 200) * Math.min(100, sol) / 100;
+//			
+//			Coordinates firstSite = determineFirstSiteCoordinate(limit, newSkill);
+//			
+// 			if (firstSite != null) {
+// 				double distance = getCoordinates().getDistance(firstSite);
+// 				
+// 				if (distance > 1) {
+// 					logger.info(this, "Sol " + sol + ". Selected " + firstSite.getFormattedString() 
+// 							+ " as the first ROI site (" + Math.round(distance * 100.0)/100.0  + " km away).");
+// 				
+// 					// Creates an initial explored site in SurfaceFeatures
+// 					ExploredLocation loc = createARegionOfInterest(firstSite, skill/num);
+// 					
+// 	     			if (loc != null)
+// 	     				logger.info(this, "Zoned up this ROI at " +  firstSite.getFormattedString() + ".");
+//// 	     			else {
+//// 	     				logger.info(this, "Could not zone up a ROI.");
+//// 	     			}
+// 				}
+// 			}
+// 			else {
+//// 				logger.info(this, "No site of interest found.");
+// 			}
 		}
 		
 		
@@ -1008,7 +1013,7 @@ public class Settlement extends Structure implements Temporal,
 		int improved = 0;
 		
 		List<ExploredLocation> siteList = surfaceFeatures
-    			.getAllRegionOfInterestLocations().stream()
+    			.getAllPossibleRegionOfInterestLocations().stream()
     			.filter(site -> site.isMinable())
     			.collect(Collectors.toList());  	
     	
@@ -2996,32 +3001,93 @@ public class Settlement extends Structure implements Temporal,
 		return result;
 	}
 	
+//	/**
+//	 * Creates a set of nearby mineral locations.
+//	 * 
+//	 * @param rover
+//	 */
+//	public void createNearbyMineralLocations(Rover rover) {
+//		double roverRange = rover.getRange();
+//		double tripTimeLimit = rover.getTotalTripTimeLimit(true);
+//		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed());
+//		double range = roverRange;
+//		if (tripRange < range)
+//			range = tripRange;
+//
+////		Set<Coordinates> coords = surfaceFeatures.getMineralMap()
+////				.generateMineralLocations(getCoordinates(), range);
+//
+////		nearbyMineralLocations.addAll(coords);
+//		
+//		// Create the first 5 sites
+//		for (int i= 0; i < 5; i++) {
+//			Coordinates coord = surfaceFeatures.getMineralMap().
+//				findRandomMineralLocation(getCoordinates(), range, masterClock.getMarsTime().getMissionSol());
+//		
+//			nearbyMineralLocations.add(coord);
+//		}
+//	}
+	
+	
 	/**
-	 * Creates a set of nearby mineral locations.
+	 * Adds a nearby mineral location in random.
 	 * 
-	 * @param rover
+	 * @param location
+	 * @param limit
+	 * @param sol
 	 */
-	public void createNearbyMineralLocations(Rover rover) {
-		double roverRange = rover.getRange();
-		double tripTimeLimit = rover.getTotalTripTimeLimit(true);
-		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed());
-		double range = roverRange;
-		if (tripRange < range)
-			range = tripRange;
-
-//		Set<Coordinates> coords = surfaceFeatures.getMineralMap()
-//				.generateMineralLocations(getCoordinates(), range);
-
-//		nearbyMineralLocations.addAll(coords);
+	public void acquireNearbyMineralLocation(Coordinates location, double limit, int sol) {
 		
-		// Create the first 5 sites
-		for (int i= 0; i < 5; i++) {
-			Coordinates coord = surfaceFeatures.getMineralMap().
-				findRandomMineralLocation(getCoordinates(), range, masterClock.getMarsTime().getMissionSol());
+		Map<Coordinates, Double> pair = surfaceFeatures.getMineralMap().
+				findRandomMineralLocation(location, limit + extraKM, sol, nearbyMineralLocations.values());
 		
-			nearbyMineralLocations.add(coord);
+		if (pair == null) {
+			logger.warning(this, "No nearby mineral locations found within " + Math.round(limit + extraKM) + " km.");
+			extraKM = extraKM + 2;
+			return;
 		}
+		
+		List<Coordinates> coords = new ArrayList<>(pair.keySet());
+		List<Double> dists = new ArrayList<>(pair.values());
+		
+		Coordinates c = coords.get(0);
+		double dist = dists.get(0);
+		
+		nearbyMineralLocations.put(dist, c);
 	}
+	
+	/**
+	 * Gets the next closest mineral location.
+	 * 
+	 * @return
+	 */
+	public Coordinates getNextClosestMineralLoc(double limit) {
+		int sol = masterClock.getMarsTime().getMissionSol();
+		
+		acquireNearbyMineralLocation(getCoordinates(), limit, sol);
+		
+		int size =  nearbyMineralLocations.size();
+//		List<Coordinates> values = new ArrayList<>(nearbyMineralLocations.values());
+		List<Double> keys = new ArrayList<>(nearbyMineralLocations.keySet());
+		for (int i = 0; i < size; i++) {
+			double dist = keys.get(i);
+			Coordinates c = nearbyMineralLocations.get(dist);
+			if (!surfaceFeatures.isDeclaredARegionOfInterest(c, this, false)) {
+				return c;
+			}
+		}	
+		return null;
+	}
+	
+//	public void resortMineralLocs() {
+//		LinkedHashMap<String, Integer> sortedMap = nearbyMineralLocations.entrySet()
+//			    .stream()
+//			    .sorted(Map.Entry.comparingByKey())
+//			    .collect(Collectors.toMap(
+//			        Map.Entry::getKey,
+//			        Map.Entry::getValue,
+//			        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+//	}
 	
 	/**
 	 * Gets a set of nearby potential mineral locations.
@@ -3029,7 +3095,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @param rover
 	 */
 	public Set<Coordinates> getNearbyMineralLocations() {
-		return nearbyMineralLocations;
+		return new HashSet<>(nearbyMineralLocations.values());
 	}
 	
 	/**
@@ -3052,40 +3118,23 @@ public class Settlement extends Structure implements Temporal,
 	public Coordinates getARandomNearbyMineralLocation(boolean closest, double limit, int skill) {
 		int sol = masterClock.getMarsTime().getMissionSol();
 		
-		double newRange = 0;
+		double newRange = limit;
 		
-		if (closest) {
-			// May use getRandomRegressionInteger to make the coordinates to be potentially closer
-//			int newLimit = RandomUtil.getRandomRegressionInteger(lowerLimit, (int)limit);
-			newRange = INITIAL_ROI_RADIUS * skill;
+		if (limit == -1) {		
+			return getNextClosestMineralLoc(limit);
 		}
-		else {
-			newRange = limit; 
-			// May use Math.round(getVehicleWithMinimalRange().getRange());
-		}
+		else
+			acquireNearbyMineralLocation(getCoordinates(), limit, sol);
 		
-		if (nearbyMineralLocations == null || nearbyMineralLocations.isEmpty()) {
-			logger.severe(this, "nearbyMineralLocations is empty. Need to find new ones");
-
-			// Creates a set of nearby mineral locations	
-//			Set<Coordinates> coords = surfaceFeatures.getMineralMap()
-//					.generateMineralLocations(getCoordinates(), range);
-			
-			for (int i= 0; i < skill; i++) {
-				Coordinates coord = surfaceFeatures.getMineralMap().
-					findRandomMineralLocation(getCoordinates(), newRange, sol);
-			
-				nearbyMineralLocations.add(coord);
-			}
-		}
+//		System.out.println("nearbyMineralLocations: " + nearbyMineralLocations.size());
 		
 		Set<Coordinates> unclaimedLocations = new HashSet<>();
 		
 		if (nearbyMineralLocations == null || nearbyMineralLocations.isEmpty()) {
 			return null;
 		}
-			
-		for (Coordinates c : nearbyMineralLocations) {
+				
+		for (Coordinates c : nearbyMineralLocations.values()) {
 			boolean unclaimed = surfaceFeatures.isDeclaredARegionOfInterest(c, this, false);
 			if (getCoordinates().equals(c)) {
 				unclaimed = false;
@@ -3114,7 +3163,7 @@ public class Settlement extends Structure implements Temporal,
 				prob = delta / newRange;
 			}
 			
-			if (distance > 1 && prob > 0) {
+			if (distance >= RandomMineralMap.MIN_DISTANCE && prob > 0) {
 				// Fill up the weight map
 				weightedMap.put(c, prob);
 			}
@@ -3124,8 +3173,8 @@ public class Settlement extends Structure implements Temporal,
 		Coordinates chosen = RandomUtil.getWeightedRandomObject(weightedMap);
 
 		if (weightedMap.isEmpty() || chosen == null) {
-			logger.info(this, "No site of interest found.");
-			return null; //new ArrayList<>(nearbyMineralLocations).get(0);
+			logger.info(this, "No ROIs found within " + Math.round(limit + extraKM) + " km.");
+			return null;
 		}
 		
 		return chosen;
@@ -3139,25 +3188,51 @@ public class Settlement extends Structure implements Temporal,
 	 * @return
 	 */
 	public int numAllDeclaredLocation(boolean isClaimed) {
-		return (int)surfaceFeatures.numAllDeclaredLocation(this, isClaimed);
+		return (int)surfaceFeatures.numAllDeclaredLocations(this, isClaimed);
+	}
+	
+	/**
+	 * Returns the number of locations declared/considered by this settlement as a Region Of Interest (ROI), regardless of its claimed status.
+	 * 
+	 * @return
+	 */
+	public int numAllDeclaredLocations() {
+		return (int)surfaceFeatures.numAllDeclaredLocations(this);
 	}
 	
 	/**
 	 * Returns number of locations being claimed or not being claimed as a Region Of Interest (ROI).
 	 * 
-	 * @param coord
-	 * @param settlement
 	 * @param isClaimed
 	 * @return
 	 */
-	public int numDeclaredLocation(boolean isClaimed) {
+	public int numDeclaredLocation(boolean isClaimed) {	
 		int num = 0;
-		for (Coordinates c: nearbyMineralLocations) {
+		for (Coordinates c: nearbyMineralLocations.values()) {
 			if (surfaceFeatures.isDeclaredARegionOfInterest(c, this, isClaimed))
 				num++;
 		}
 		return num;
 	}
+	
+	/**
+	 * Returns number of locations being claimed or not being claimed as a Region Of Interest (ROI).
+	 * 
+	 * @return
+	 */
+	public int numDeclaredLocation() {	
+		return declaredMineralLocations.size();
+	}
+	
+	/**
+	 * Returns list of declared locations of Region Of Interest (ROI).
+	 * 
+	 * @return
+	 */
+	public Set<ExploredLocation> getDeclaredLocations() {	
+		return declaredMineralLocations;
+	}
+
 	
 	/**
 	 * Returns average distance of mineral locations being claimed or not being claimed as a Region Of Interest (ROI).
@@ -3170,7 +3245,7 @@ public class Settlement extends Structure implements Temporal,
 	public double getMeanMineralLocDistance(boolean isClaimed) {
 		double dist = 0;
 		int num = 0;
-		for (Coordinates c: nearbyMineralLocations) {
+		for (Coordinates c: nearbyMineralLocations.values()) {
 			if (surfaceFeatures.isDeclaredARegionOfInterest(c, this, isClaimed)) {
 				dist += getCoordinates().getDistance(c);
 				num++;
@@ -3191,7 +3266,7 @@ public class Settlement extends Structure implements Temporal,
 		double powerSum1 = 0;
 		double powerSum2 = 0;
 		double stdev = 0;
-		List<Coordinates> list = new ArrayList<>(nearbyMineralLocations);
+		List<Coordinates> list = new ArrayList<>(nearbyMineralLocations.values());
 		int size = list.size();
 		for (int i=0; i<size; i++) {
 			  Coordinates c = list.get(i);
@@ -3212,24 +3287,22 @@ public class Settlement extends Structure implements Temporal,
 	 * @return
 	 */
 	public int[] getStatistics(int status) {
-		List<Coordinates> locs = new ArrayList<>(nearbyMineralLocations);
-		List<Double> list = new ArrayList<>();
-		int size = locs.size();
-		for (int i=0; i<size; i++) {
-			Coordinates c = locs.get(i);		
+		List<Coordinates> values = new ArrayList<>(nearbyMineralLocations.values());
+		List<Double> keys = new ArrayList<>(nearbyMineralLocations.keySet());
+		int size = keys.size();
+		for (int i = 0; i < size; i++) {
+			Coordinates c = values.get(i);		
 			if (status == 0) {
-				list.add(getCoordinates().getDistance(c));
+				keys.add(keys.get(i));
 			}
 			else if (status == 1) {
 				if (surfaceFeatures.isDeclaredARegionOfInterest(c, this, true)) {
-					double dist = getCoordinates().getDistance(c);
-					list.add(dist);
+					keys.add(keys.get(i));
 				}
 			}
 			else if (status == 2) {
 				if (surfaceFeatures.isDeclaredARegionOfInterest(c, this, false)) {
-					double dist = getCoordinates().getDistance(c);
-					list.add(dist);
+					keys.add(keys.get(i));
 				}
 			}
 		}
@@ -3239,10 +3312,10 @@ public class Settlement extends Structure implements Temporal,
 	    double mean = 0.0;
 	    double sd = 0.0;
 	    double variance = 0.0;
-	    size = list.size();
+	    size = keys.size();
 	    
 		for (int i = 0; i < size; i++) {
-            sum += list.get(i);
+            sum += keys.get(i);
         }
        
 		if (size == 0) {
@@ -3253,7 +3326,7 @@ public class Settlement extends Structure implements Temporal,
 			mean = sum / size;
  
 	        for (int i = 0; i < size; i++) {
-	            total += Math.pow((list.get(i) - mean), 2);
+	            total += Math.pow((keys.get(i) - mean), 2);
 	        }
 	       
 	        variance = total / size;
@@ -3283,15 +3356,8 @@ public class Settlement extends Structure implements Temporal,
 	 * @return ExploredLocation
 	 */
 	public ExploredLocation createARegionOfInterest(Coordinates siteLocation, int skill) {
-	
-		// Check if this siteLocation has already been added or not to SurfaceFeatures
-		ExploredLocation el = surfaceFeatures.checkDeclaredLocation(siteLocation, this, false);
-		if (el == null) {
-			// If it hasn't been claimed yet, then claim it
-			el = surfaceFeatures.declareRegionOfInterest(siteLocation,
-					skill, this);
-		}
-		
+		ExploredLocation el = surfaceFeatures.createARegionOfInterest(siteLocation, this, skill);
+		declaredMineralLocations.add(el);
 		return el;
 	}
 	
@@ -3315,23 +3381,11 @@ public class Settlement extends Structure implements Temporal,
 		if (tripRange < range)
 			range = tripRange;
 
+		acquireNearbyMineralLocation(getCoordinates(), range, sol);
+
 		Map<Coordinates, Double> weightedMap = new HashMap<>();
 		
-		if (nearbyMineralLocations == null || nearbyMineralLocations.isEmpty()) {
-			logger.severe(this, "nearbyMineralLocations is empty. Need to find new ones");
-
-			// Creates a set of nearby mineral locations	
-//			Set<Coordinates> coords = surfaceFeatures.getMineralMap()
-//					.generateMineralLocations(getCoordinates(), range);
-			for (int i= 0; i < skill; i++) {
-				Coordinates coord = surfaceFeatures.getMineralMap().
-					findRandomMineralLocation(getCoordinates(), range, sol);
-			
-				nearbyMineralLocations.add(coord);
-			}
-		}
-
-		for (Coordinates c : nearbyMineralLocations) {
+		for (Coordinates c : nearbyMineralLocations.values()) {
 			double distance = Coordinates.computeDistance(getCoordinates(), c);
 			double prob = 0;
 			double delta = range - distance + Math.max(0, 100 - sol);
@@ -3339,7 +3393,7 @@ public class Settlement extends Structure implements Temporal,
 				prob = delta * delta / range / range;
 			}
 			
-			if (distance > 1 && prob > 0) {
+			if (distance >= RandomMineralMap.MIN_DISTANCE && prob > 0) {
 				// Fill up the weight map
 				weightedMap.put(c, prob);
 			}
@@ -3349,7 +3403,7 @@ public class Settlement extends Structure implements Temporal,
 		Coordinates chosen = RandomUtil.getWeightedRandomObject(weightedMap);
 
 		if (weightedMap.isEmpty() || chosen == null) {
-			logger.info(this, "No mineral site of interest found.");
+			logger.info(this, "No mineral site of interest found within " + Math.round(range + extraKM) + " km.");
 			return null;
 		}
 		

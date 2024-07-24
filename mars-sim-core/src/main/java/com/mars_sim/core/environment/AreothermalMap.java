@@ -59,7 +59,7 @@ public class AreothermalMap implements Serializable {
 	 */
 	private void loadHotspots() {
 		hotspots = new HashSet<Coordinates>(1400);
-		URL imageMapURL = getClass().getResource("/images/" + VOLCANIC_IMG);
+		URL imageMapURL = getClass().getResource(RandomMineralMap.TOPO_MAP_FOLDER + VOLCANIC_IMG);
 		ImageIcon mapIcon = new ImageIcon(imageMapURL);
 		Image mapImage = mapIcon.getImage();
 

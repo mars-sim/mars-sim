@@ -77,15 +77,14 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
 		
 		int unclaimedSites = person.getAssociatedSettlement().numDeclaredLocation(false);
 			
-		Set<Coordinates> coords = person.getAssociatedSettlement()
+		Set<Coordinates> nearbySites = person.getAssociatedSettlement()
 				.getNearbyMineralLocations();	
 	
-		int numCoords = coords.size();
+		int numNearby = nearbySites.size();
 		
-		Set<ExploredLocation> minableLocs = surfaceFeatures
-				.getAllRegionOfInterestLocations().stream()
-				.filter(site -> site.isMinable()
-						&& coords.contains(site.getLocation()))
+		Set<ExploredLocation> minableLocs = person.getAssociatedSettlement().getDeclaredLocations()
+				.stream()
+				.filter(el -> el != null && el.isMinable())
 				.collect(Collectors.toSet());
 
 		int numUnimproved = 0;
@@ -98,9 +97,9 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
 		if (num == 0)
 			num = 1;
 		
-		int numPotential = 100 - numCoords;
+		int numPotential = 100 - numNearby;
 		
-		if (100 - numCoords <= 0) {
+		if (100 - numNearby <= 0) {
 			numPotential = 0;
 		}
 
@@ -114,7 +113,7 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
 		
 		result.addBase("mapdata.unimproved", VALUE * numUnimproved / num);
 		
-		result.addBase("mapdata.potential", numPotential * 2D);
+		result.addBase("mapdata.potential", numPotential);
 
 		result = applyCommerceFactor(result, person.getAssociatedSettlement(), CommerceType.RESEARCH);
 

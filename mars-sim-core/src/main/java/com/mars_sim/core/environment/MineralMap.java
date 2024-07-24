@@ -8,6 +8,8 @@
 package com.mars_sim.core.environment;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -59,16 +61,6 @@ public interface MineralMap extends Serializable {
 	 */
 	public String[] getMineralTypeNames();
 
-	
-	/**
-	 * Generates a set of Mineral locations from a starting location.
-	 * 
-	 * @param startingLocation
-	 * @param range
-	 * @return
-	 */
-	public Set<Coordinates> generateMineralLocations(Coordinates startingLocation, double range);
-	
 	/**
 	 * Finds a random location with mineral concentrations from a starting location.
 	 * and within a distance range.
@@ -76,10 +68,11 @@ public interface MineralMap extends Serializable {
 	 * @param startingLocation the starting location
 	 * @param range            the distance range (km)
 	 * @param sol
-	 * @return location with one or more mineral concentrations or null if none
-	 *         found.
+	 * @param foundLocations
+	 * @return location and distance pair
 	 */
-	public Coordinates findRandomMineralLocation(Coordinates startingLocation, double range, int sol);
+	public Map<Coordinates, Double> findRandomMineralLocation(Coordinates startingLocation, double range, int sol, 
+			Collection<Coordinates> foundLocations);
 
 	/**
 	 * Prepares object for garbage collection.

@@ -57,10 +57,11 @@ extends TabPanel {
 	private static SimLogger logger = SimLogger.getLogger(TabPanelMissions.class.getName());
 
 	private static final String FLAG_ICON = "mission";
+	private static final String KM = " km";
 	
-	// Data members
-	
+	// Data members	
 	private JLabel siteLabel;
+	private JLabel numROIsLabel;
 	private JLabel siteMeanLabel;
 	private JLabel siteSDevLabel;
 	
@@ -72,16 +73,19 @@ extends TabPanel {
 	private JLabel unclaimedMeanLabel;
 	private JLabel unclaimedSDevLabel;
 	
+	private JList<Mission> missionList;
+	
+	private DefaultListModel<Mission> missionListModel;
+	
+	private JButton missionButton;
+	private JButton monitorButton;
+	
+	private JCheckBox overrideCheckbox;
 	
 	/** The Settlement instance. */
 	private Settlement settlement;
 
 	private List<Mission> missionsCache;
-	private DefaultListModel<Mission> missionListModel;
-	private JList<Mission> missionList;
-	private JButton missionButton;
-	private JButton monitorButton;
-	private JCheckBox overrideCheckbox;
 
 
 	/**
@@ -113,31 +117,32 @@ extends TabPanel {
 		int claimed[] = settlement.getStatistics(1);
 		int unclaimed[] = settlement.getStatistics(2);
 		
-		AttributePanel sitePanel = new AttributePanel(3, 1);
+		AttributePanel sitePanel = new AttributePanel(4, 1);
 		topPanel.add(sitePanel, BorderLayout.NORTH);
 		sitePanel.setBorder(BorderFactory.createTitledBorder("Nearby Sites"));
 		
-		siteLabel = sitePanel.addRow("# Sites Found", settlement.getNearbyMineralLocations().size() + "");
-		siteMeanLabel = sitePanel.addRow("Mean Distance", site[0] + "");
-		siteSDevLabel = sitePanel.addRow("Standard Deviation", site[1] + "");
+		siteLabel = sitePanel.addRow("Sites Found", settlement.numNearbyMineralLocations() + "");
+		numROIsLabel = sitePanel.addRow("Declared ROIs", settlement.numDeclaredLocation() + "");
+		siteMeanLabel = sitePanel.addRow("Mean Distance", Math.round(site[0] * 100.0)/100.0 + KM);
+		siteSDevLabel = sitePanel.addRow("Standard Deviation", Math.round(site[1] * 100.0)/100.0 + KM);
 		
 		
 		AttributePanel twoPanel = new AttributePanel(3, 1);
 		topPanel.add(twoPanel, BorderLayout.CENTER);
 		twoPanel.setBorder(BorderFactory.createTitledBorder("Claimed Sites"));
 		
-		claimedSiteLabel = twoPanel.addRow("# Sites", settlement.numDeclaredLocation(true) + "");
-		claimedMeanLabel = twoPanel.addRow("Mean Distance", (int)claimed[0] + " km");
-		claimedSDevLabel = twoPanel.addRow("Standard Deviation", (int)claimed[1] + " km");
+		claimedSiteLabel = twoPanel.addRow("Sites", settlement.numDeclaredLocation(true) + "");
+		claimedMeanLabel = twoPanel.addRow("Mean Distance", Math.round(claimed[0] * 100.0)/100.0 + KM);
+		claimedSDevLabel = twoPanel.addRow("Standard Deviation", Math.round(claimed[1] * 100.0)/100.0 + KM);
 		
 		
 		AttributePanel unclaimPanel = new AttributePanel(3, 1);
 		topPanel.add(unclaimPanel, BorderLayout.SOUTH);
 		unclaimPanel.setBorder(BorderFactory.createTitledBorder("Unclaimed Sites"));
 		
-		unclaimedSiteLabel = unclaimPanel.addRow("# Sites", settlement.numDeclaredLocation(false) + "");		
-		unclaimedMeanLabel = unclaimPanel.addRow("Mean Distance", (int)unclaimed[0] + " km");
-		unclaimedSDevLabel = unclaimPanel.addRow("Standard Deviation", (int)unclaimed[1] + " km");
+		unclaimedSiteLabel = unclaimPanel.addRow("Sites", settlement.numDeclaredLocation(false) + "");		
+		unclaimedMeanLabel = unclaimPanel.addRow("Mean Distance", Math.round(unclaimed[0] * 100.0)/100.0 + KM);
+		unclaimedSDevLabel = unclaimPanel.addRow("Standard Deviation", Math.round(unclaimed[1] * 100.0)/100.0 + KM);
 		
 		
 		// Create center panel.
@@ -256,18 +261,19 @@ extends TabPanel {
 		int claimed[] = settlement.getStatistics(1);
 		int unclaimed[] = settlement.getStatistics(2);
 		
-		siteLabel.setText(settlement.getNearbyMineralLocations().size() + "");
-		claimedMeanLabel.setText((int)site[0] + " km");
-		claimedSDevLabel.setText((int)site[1] + " km");
+		siteLabel.setText(settlement.numNearbyMineralLocations() + "");
+		numROIsLabel.setText(settlement.numDeclaredLocation() + "");
+		siteMeanLabel.setText(Math.round(site[0] * 100.0)/100.0 + KM);
+		siteSDevLabel.setText(Math.round(site[1] * 100.0)/100.0 + KM);
 		
 		claimedSiteLabel.setText(settlement.numDeclaredLocation(true) + "");
-		claimedMeanLabel.setText((int)claimed[0] + " km");
-		claimedSDevLabel.setText((int)claimed[1] + " km");
+		claimedMeanLabel.setText(Math.round(claimed[0] * 100.0)/100.0 + KM);
+		claimedSDevLabel.setText(Math.round(claimed[1] * 100.0)/100.0 + KM);
 		
 		
 		unclaimedSiteLabel.setText(settlement.numDeclaredLocation(false) + "");		
-		unclaimedMeanLabel.setText((int)unclaimed[0] + " km");
-		unclaimedSDevLabel.setText((int)unclaimed[1] + " km");
+		unclaimedMeanLabel.setText(Math.round(unclaimed[0] * 100.0)/100.0 + KM);
+		unclaimedSDevLabel.setText(Math.round(unclaimed[1] * 100.0)/100.0 + KM);
 		
 		
 		// Get all missions for the settlement.

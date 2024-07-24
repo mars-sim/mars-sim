@@ -87,7 +87,7 @@ public class ExploredCommand extends ChatCommand {
 	 */
 	private void displayExploredLocations(Conversation context, SurfaceFeatures surface) {
 
-		Set<ExploredLocation> locations = surface.getAllRegionOfInterestLocations();
+		Set<ExploredLocation> locations = surface.getAllPossibleRegionOfInterestLocations();
 			
 		// Filter the list if in a Settlement
 		if (context.getCurrentCommand() instanceof ConnectedUnitCommand cuc) {

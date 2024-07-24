@@ -22,10 +22,11 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import com.mars_sim.tools.Msg;
 import com.mars_sim.core.authority.Authority;
+import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.svg.SVGIcon;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
@@ -78,24 +79,27 @@ public class SponsorTabPanel extends TabPanel {
 		
 		//////////////////////////////////////////////////
 		
-		JLabel longNameLabel = new JLabel(ra.getDescription(), SwingConstants.CENTER);
+		
+		String agencyShortName = ra.getName();
+		
+		JLabel longNameLabel = new JLabel(ra.getDescription() + " (" + agencyShortName + ")", SwingConstants.CENTER);
+		longNameLabel.setFont(StyleManager.getLabelFont());
 		longNameLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		namePanel.add(longNameLabel, BorderLayout.NORTH);
 		
 		JPanel iconPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		iconPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		namePanel.add(iconPanel, BorderLayout.CENTER);
-		
-		String agencyStr = ra.getName();
 
-		Icon icon = ImageLoader.getIconByName(AGENCY_FOLDER + agencyStr);
+
+		Icon icon = ImageLoader.getIconByName(AGENCY_FOLDER + agencyShortName);
 		JLabel agencyLabel = null;
 		
 		if (icon instanceof SVGIcon) {
 			agencyLabel = new JLabel(icon);
 		}
 		else {
-			Image img = (ImageLoader.getImage(AGENCY_FOLDER + agencyStr));
+			Image img = (ImageLoader.getImage(AGENCY_FOLDER + agencyShortName));
 			agencyLabel = new JLabel(new ImageIcon(img));
 		}
 
@@ -103,11 +107,11 @@ public class SponsorTabPanel extends TabPanel {
 		iconPanel.add(agencyLabel);
 		
 		// Prepare info name panel.
-		AttributePanel infoNamePanel = new AttributePanel(3);
+		AttributePanel infoNamePanel = new AttributePanel(2);
 		namePanel.add(infoNamePanel, BorderLayout.SOUTH);
 
 		// Prepare sponsor short name label
-		infoNamePanel.addRow(Msg.getString("SponsorTabPanel.sponsorShort"), agencyStr);
+//		infoNamePanel.addRow(Msg.getString("SponsorTabPanel.sponsorShort"), agencyStr);
 		
 		boolean isCorp = ra.isCorporation();
 		String corpLabel = "No";
@@ -135,7 +139,7 @@ public class SponsorTabPanel extends TabPanel {
 		addBorder(panel0, Msg.getString("SponsorTabPanel.objective"));
 		
 		// For each phase, add to the text area.
-		createTA(panel0).append("- " + ra.getMissionAgenda().getObjectiveName());
+		createTA(panel0).append(" - " + ra.getMissionAgenda().getObjectiveName());
 		
 		
 		JPanel panel1 = new JPanel(new FlowLayout());
@@ -144,7 +148,7 @@ public class SponsorTabPanel extends TabPanel {
 		addBorder(panel1, Msg.getString("SponsorTabPanel.report"));
 		
 		// For each phase, add to the text area.
-		createTA(panel1).append("- " + ra.getMissionAgenda().getReports());
+		createTA(panel1).append(" - " + ra.getMissionAgenda().getReports());
 		
 		
 		JPanel panel2 = new JPanel(new FlowLayout());
@@ -153,7 +157,7 @@ public class SponsorTabPanel extends TabPanel {
 		addBorder(panel2, Msg.getString("SponsorTabPanel.data"));
 		
 		// For each phase, add to the text area.
-		createTA(panel2).append("- " + ra.getMissionAgenda().getData());
+		createTA(panel2).append(" - " + ra.getMissionAgenda().getData());
 		
 		/////////////////////////////////////////////////////////
 		
@@ -175,7 +179,7 @@ public class SponsorTabPanel extends TabPanel {
 	private JTextArea createTA(JPanel panel) {
 		JTextArea ta = new JTextArea();
 		ta.setEditable(false);
-		ta.setColumns(35);
+		ta.setColumns(42);
 		ta.setLineWrap(true);
 		ta.setWrapStyleWord(true);
 		panel.add(ta);

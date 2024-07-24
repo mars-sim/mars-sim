@@ -11,6 +11,7 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -528,7 +529,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
-	 * Declares a site a region of interest and generate an initial estimate of mineral contents.
+	 * Declares a site a region of interest and generates an initial estimate of mineral contents.
 	 *
 	 * @param location		the location coordinates.
 	 * @param skill			the skill
@@ -601,7 +602,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
-	 * Has this site been declared as a region of interest in SurfaceFeatures ?
+	 * Has this site been declared as a region of interest with a specified claimed status ?
 	 *
 	 * @param siteLocation
 	 * @return
@@ -619,7 +620,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Check if a location already been declared as a Region Of Interest by a party/settlement.
+	 * Check if a location already been declared/considered as a Region Of Interest (ROI) by a settlement with a specified claimed status.
 	 * 
 	 * @param coord
 	 * @param settlement
@@ -637,39 +638,74 @@ public class SurfaceFeatures implements Serializable, Temporal {
 //		}
 	}
 
+	
 	/**
-	 * Returns number of locations being claimed or not being claimed as a Region Of Interest by a party/settlement.
+	 * Creates a Region of Interest (ROI) at a given location and
+	 * estimate its mineral concentrations.
+	 * 
+	 * @param siteLocation
+	 * @param skill
+	 * @return ExploredLocation
+	 */
+	public ExploredLocation createARegionOfInterest(Coordinates siteLocation, Settlement settlement, int skill) {
+
+		// Check if this siteLocation has already been added or not to SurfaceFeatures
+		ExploredLocation el = checkDeclaredLocation(siteLocation, settlement, false);
+		if (el == null) {
+			// If it hasn't been claimed yet, then claim it
+			el = declareRegionOfInterest(siteLocation,
+					skill, settlement);
+		}
+		
+		return el;
+	}
+	
+	
+	/**
+	 * Returns the number of locations declared/considered by a settlement as a Region Of Interest (ROI) with a specified claimed status.
 	 * 
 	 * @param coord
 	 * @param settlement
 	 * @param isClaimed
 	 * @return
 	 */
-	public long numAllDeclaredLocation(Settlement settlement, boolean isClaimed) {
-		return getAllRegionOfInterestLocations().stream()
+	public long numAllDeclaredLocations(Settlement settlement, boolean isClaimed) {
+		return getAllPossibleRegionOfInterestLocations().stream()
 				  .filter(e -> e.isClaimed() == isClaimed
 						  && e.getSettlement().equals(settlement))
 				  .count();
 	}
+
+	/**
+	 * Returns the number of locations declared/considered by a settlement as a Region Of Interest (ROI), regardless of its claimed status.
+	 * 
+	 * @param settlement
+	 * @return
+	 */
+	public int numAllDeclaredLocations(Settlement settlement) {
+		return (int)getAllPossibleRegionOfInterestLocations().stream()
+				  .filter(e -> e.getSettlement().equals(settlement))
+				  .count();
+	}
 	
 	/**
-	 * Gets a set of all declared Regions of Interest (ROI).
+	 * Gets a set of all Regions of Interest (ROI) available in a simulation, regardless of its claimed status.
 	 *
 	 * @return list of explored locations.
 	 */
-	public Set<ExploredLocation> getAllRegionOfInterestLocations() {
-		return new HashSet<>(regionOfInterestLocations);
+	public Set<ExploredLocation> getAllPossibleRegionOfInterestLocations() {
+		return regionOfInterestLocations;
 	}
 
 	/**
-	 * Gets a set of explored locations from the declared Regions of Interest (ROI).
+	 * Gets a set of all explored locations of Regions of Interest (ROI) with a specified claimed status.
 	 *
 	 * @param isClaimed
 	 * @return
 	 */
-	public synchronized Set<ExploredLocation> getDeclaredRegionOfInterestLocations(boolean isClaimed) {
+	public synchronized Set<ExploredLocation> getAllDeclaredRegionOfInterestLocations(boolean isClaimed) {
 		Set<ExploredLocation> coords = new HashSet<>();
-		for (ExploredLocation el: getAllRegionOfInterestLocations()) {
+		for (ExploredLocation el: getAllPossibleRegionOfInterestLocations()) {
 			boolean claimed = el.isClaimed();
 			if (claimed == isClaimed) {
 				coords.add(el);
@@ -679,14 +715,28 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Gets a set of coordinates from the declared Regions of Interest (ROI).
+	 * Returns a list of locations declared/considered by a settlement as a Region Of Interest (ROI), regardless of its claimed status.
+	 * 
+	 * @param coord
+	 * @param settlement
+	 * @param isClaimed
+	 * @return
+	 */
+	public List<ExploredLocation> getAllDeclaredRegionOfInterestLocations(Settlement settlement) {
+		return getAllPossibleRegionOfInterestLocations().stream()
+				  .filter(e -> e.getSettlement().equals(settlement))
+				  .toList();
+	}
+	
+	/**
+	 * Gets a set of coordinates from the declared Regions of Interest (ROI) with a specified claimed status.
 	 *
 	 * @param isClaimed
 	 * @return
 	 */
-	public synchronized Set<Coordinates> getDeclaredCoordinates(boolean isClaimed) {
+	public synchronized Set<Coordinates> getAllDeclaredRegionOfInterestCoordinates(boolean isClaimed) {
 		Set<Coordinates> coords = new HashSet<>();
-		for (ExploredLocation el: getDeclaredRegionOfInterestLocations(isClaimed)) {
+		for (ExploredLocation el: getAllDeclaredRegionOfInterestLocations(isClaimed)) {
 			coords.add(el.getLocation());
 		}
 		return coords;
@@ -725,10 +775,11 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			
 			// the value of optical depth doesn't need to be refreshed too often
 			if (msol % OPTICAL_DEPTH_REFRESH == 0) {
+				// Clear entries
 				opticalDepthMap.clear();
 			}
 			
-			// Precalculate entries just for Settlements
+			// Clear entries
 			currentIrradiance.clear();
 		}
 		
