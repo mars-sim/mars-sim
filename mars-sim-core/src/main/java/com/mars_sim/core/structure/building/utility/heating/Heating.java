@@ -526,22 +526,32 @@ public class Heating implements Serializable {
 	 * @return
 	 */
 	private double computeNewT(double heatkJ) {
-		double oldT = currentTemperature;
+		double oldT = C_TO_K + currentTemperature;
 		
 		double numMoles = building.getLifeSupport().getAir().getTotalNumMoles();
 		
 		// ΔS = Q / T = [J] / [K] = [J/K]
 		// delta entropy in [J/K]
-		double entropyChange = heatkJ * 1000 / (C_TO_K + oldT);
+		double entropyChange = heatkJ * 1000 / oldT;
 
 		double ratio = entropyChange / GAS_CONSTANT / numMoles;
 		
 		// newT in [C]
-		double newT = (C_TO_K + oldT) * Math.exp(ratio) - C_TO_K;
+		double newT = oldT * Math.exp(ratio) - C_TO_K;
 		
 		// T2 = T1 * exp(ΔS / (nR))
 		// n = 0.0821 L·atm/mol·K 
 		// R = 0.0289 kg/mol
+		
+		if (newT > 40) {
+			logger.warning(building, 20_000, "newT: " + Math.round(newT * 100.0)/100.0 + " > 40.");
+			error = true;
+		}
+		
+		else if (newT < -40) {
+			logger.warning(building, 20_000, "newT: " + Math.round(newT * 100.0)/100.0 + " < -40.");
+			error = true;
+		}
 		
 		if (error) {
 			logger.info(building, 20_000,
@@ -554,6 +564,9 @@ public class Heating implements Serializable {
 				+ "  dt: " + Math.round((newT - oldT) * 100.0)/100.0
 				);
 		}
+		
+		newT = Math.max(-40, Math.min(40, newT));
+		
 		return newT;
 	}
 	
@@ -565,24 +578,29 @@ public class Heating implements Serializable {
 	 * @return
 	 */
 	private double estimateRequiredHeat(double millisols) {
+		double t = C_TO_K + getCurrentTemperature();
 		
-		double logTs = Math.log((C_TO_K + tPreset)/(C_TO_K + getCurrentTemperature()));
+		double logTs = Math.log((C_TO_K + tPreset)/t);
 		
 		double numMoles = building.getLifeSupport().getAir().getTotalNumMoles();
 		
 		// ΔS = Q / T = [J] / [K] = [J/K]
 		// entropy in [J/K]
-
 		double nR = GAS_CONSTANT * numMoles;
-				
+		
+		// ΔS = Q / T = [J] / [K] = [J/K]
+		// delta entropy in [J/K]
+		// previously double entropyChange = heatkJ * 1000 / oldT;
+		// heatkJ = entropyChange / 1000 * oldT
+		
 		double entropyChange = logTs * nR;
 
-		double deltaHeatJ = entropyChange * (C_TO_K + tPreset);
+		double deltaHeatJ = entropyChange * t;
 
 		double seconds = millisols * timeSlice;
 		
 //		double bound = Math.max(0.000_001, Math.min(100_000, 1000.0 / seconds));
-		double factor = deltaHeatJ * 1000.0 / seconds; 
+//		double factor = deltaHeatJ / 1000.0 / seconds; 
 		
 		// 1 Wh = 3.6 kJ
 		// 1 kWh = 3.6 MJ
@@ -591,7 +609,7 @@ public class Heating implements Serializable {
 		// 1 kW = kJ / s
 		
 //		double estReqHeat = deltaHeatJ * bound;
-		double estReqHeat = Math.max(-40, Math.min(40, factor));
+		double estReqHeat = deltaHeatJ / 1000.0 / seconds;
 		
 		if (estReqHeat > 40) {
 			logger.warning(building, 20_000, "estReqHeat: " + Math.round(estReqHeat * 100.0)/100.0 + " > 40.");
@@ -607,14 +625,16 @@ public class Heating implements Serializable {
 			logger.info(building, 20_000,
 				"estReqHeat: " + Math.round(estReqHeat * 100.0)/100.0
 				+ "  millisols: " + Math.round(millisols * 1000.0)/1000.0
+				+ "  logTs: " + Math.round(logTs * 1000.0)/1000.0
 				+ "  entropyChange: " + Math.round(entropyChange * 100.0)/100.0 + " J/K"
 				+ "  deltaHeatJ: " + Math.round(deltaHeatJ * 10.0)/10.0 + " J"
-				+ "  logTs: " + Math.round(logTs * 10000.0)/10000.0
 				+ "  nR: " + Math.round(nR * 10.0)/10.0
-				+ "  factor: " + Math.round(factor * 1000.0)/1000.0 + " /s"
+//				+ "  factor: " + Math.round(factor * 1000.0)/1000.0 + " /s"
 				+ "  numMoles: " + Math.round(numMoles * 10.0)/10.0
 				);
 		}
+		
+		estReqHeat = Math.max(-40, Math.min(40, estReqHeat));
 		
 		return estReqHeat;
 	}

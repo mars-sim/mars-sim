@@ -115,7 +115,7 @@ public class UIConfig {
 		    	Document configDoc = builder.build(new File(SimulationRuntime.getSaveDir(), FILE_NAME));
 		    	Element root = configDoc.getRootElement();
 
-				// Main proprerties
+				// Main properties
 				Element mainWindow = root.getChild(MAIN_WINDOW);
 				mainWindowSize = parseSize(mainWindow);
 				mainWindowPosn = parsePosition(mainWindow);
@@ -245,12 +245,12 @@ public class UIConfig {
 					outputProperties(windowElement, "props", cw.getUIProps());
 				}
 
-				if (window1 instanceof ToolWindow) {
+				if (window1 instanceof ToolWindow tw) {
 					windowElement.setAttribute(TYPE, TOOL);
-					windowElement.setAttribute(NAME, ((ToolWindow) window1).getToolName());
-				} else if (window1 instanceof UnitWindow) {
+					windowElement.setAttribute(NAME, tw.getToolName());
+				} else if (window1 instanceof UnitWindow uw) {
 					windowElement.setAttribute(TYPE, UNIT);
-					windowElement.setAttribute(NAME, ((UnitWindow) window1).getUnit().getName());
+					windowElement.setAttribute(NAME, uw.getUnit().getName());
 				} else {
 					windowElement.setAttribute(TYPE, "other");
 					windowElement.setAttribute(NAME, "other");
@@ -261,7 +261,7 @@ public class UIConfig {
 		// Output the extra properties
 		Element propsElement = new Element(PROP_SETS);
 		uiElement.addContent(propsElement);
-		for(Entry<String,Properties> entry : mainWindow.getUIProps().entrySet()) {
+		for (Entry<String,Properties> entry : mainWindow.getUIProps().entrySet()) {
 			outputProperties(propsElement, entry.getKey(), entry.getValue());
 		}
 

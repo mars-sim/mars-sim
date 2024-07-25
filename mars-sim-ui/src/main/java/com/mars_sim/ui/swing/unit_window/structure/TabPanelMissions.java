@@ -123,8 +123,8 @@ extends TabPanel {
 		
 		siteLabel = sitePanel.addRow("Sites Found", settlement.numNearbyMineralLocations() + "");
 		numROIsLabel = sitePanel.addRow("Declared ROIs", settlement.numDeclaredLocation() + "");
-		siteMeanLabel = sitePanel.addRow("Mean Distance", Math.round(site[0] * 100.0)/100.0 + KM);
-		siteSDevLabel = sitePanel.addRow("Standard Deviation", Math.round(site[1] * 100.0)/100.0 + KM);
+		siteMeanLabel = sitePanel.addRow("Mean Distance \u03BC", Math.round(site[0] * 100.0)/100.0 + KM);
+		siteSDevLabel = sitePanel.addRow("Standard Deviation \u03C3", Math.round(site[1] * 100.0)/100.0 + KM);
 		
 		
 		AttributePanel twoPanel = new AttributePanel(3, 1);
@@ -132,8 +132,8 @@ extends TabPanel {
 		twoPanel.setBorder(BorderFactory.createTitledBorder("Claimed Sites"));
 		
 		claimedSiteLabel = twoPanel.addRow("Sites", settlement.numDeclaredLocation(true) + "");
-		claimedMeanLabel = twoPanel.addRow("Mean Distance", Math.round(claimed[0] * 100.0)/100.0 + KM);
-		claimedSDevLabel = twoPanel.addRow("Standard Deviation", Math.round(claimed[1] * 100.0)/100.0 + KM);
+		claimedMeanLabel = twoPanel.addRow("Mean Distance \u03BC", Math.round(claimed[0] * 100.0)/100.0 + KM);
+		claimedSDevLabel = twoPanel.addRow("Standard Deviation \u03C3", Math.round(claimed[1] * 100.0)/100.0 + KM);
 		
 		
 		AttributePanel unclaimPanel = new AttributePanel(3, 1);
@@ -141,8 +141,8 @@ extends TabPanel {
 		unclaimPanel.setBorder(BorderFactory.createTitledBorder("Unclaimed Sites"));
 		
 		unclaimedSiteLabel = unclaimPanel.addRow("Sites", settlement.numDeclaredLocation(false) + "");		
-		unclaimedMeanLabel = unclaimPanel.addRow("Mean Distance", Math.round(unclaimed[0] * 100.0)/100.0 + KM);
-		unclaimedSDevLabel = unclaimPanel.addRow("Standard Deviation", Math.round(unclaimed[1] * 100.0)/100.0 + KM);
+		unclaimedMeanLabel = unclaimPanel.addRow("Mean Distance \u03BC", Math.round(unclaimed[0] * 100.0)/100.0 + KM);
+		unclaimedSDevLabel = unclaimPanel.addRow("Standard Deviation \u03C3", Math.round(unclaimed[1] * 100.0)/100.0 + KM);
 		
 		
 		// Create center panel.
