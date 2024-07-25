@@ -337,7 +337,7 @@ public class MiningSitePanel extends WizardPanel {
 	 * @throws Exception if error getting mission rover.
 	 */
 	private double getRoverRange() {
-		double range = getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER;
+		double range = getWizard().getMissionData().getRover().getEstimatedRange() * RANGE_MODIFIER;
 		return range / 2D;
 	}
 

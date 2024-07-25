@@ -143,7 +143,7 @@ public abstract class CollectResourcesMission extends EVAMission
 			
 		// Get the current location.
 		Coordinates startingLocation = s.getCoordinates();
-		double range = getVehicle().getRange();
+		double range = getVehicle().getEstimatedRange();
 		double timeLimit = getRover().getTotalTripTimeLimit(true);
 
 		// Determining the actual traveling range.

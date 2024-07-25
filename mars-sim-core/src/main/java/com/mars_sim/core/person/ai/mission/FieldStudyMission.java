@@ -85,7 +85,7 @@ public abstract class FieldStudyMission extends EVAMission {
 			// Determine field site location.
 			if (hasVehicle()) {
 				double tripTimeLimit = getRover().getTotalTripTimeLimit(true);
-				determineFieldSite(getVehicle().getRange(), tripTimeLimit);
+				determineFieldSite(getVehicle().getEstimatedRange(), tripTimeLimit);
 			}
 
 			// Add home settlement

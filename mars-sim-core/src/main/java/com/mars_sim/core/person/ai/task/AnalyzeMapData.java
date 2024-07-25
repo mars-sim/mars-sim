@@ -242,7 +242,7 @@ public class AnalyzeMapData extends Task {
         if (totalWork > getDuration() * .95) {
 
         	// Get a lowest range rover
-        	double range = person.getAssociatedSettlement().getVehicleWithMinimalRange().getRange() * (1 + RandomUtil.getRandomDouble(-.1, .1));
+        	double range = person.getAssociatedSettlement().getVehicleWithMinimalRange().getEstimatedRange() * (1 + RandomUtil.getRandomDouble(-.1, .1));
 
      		int skill = (int)Math.round(compositeSkill);
      		

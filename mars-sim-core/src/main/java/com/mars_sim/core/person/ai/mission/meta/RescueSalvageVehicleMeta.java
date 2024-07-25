@@ -46,7 +46,7 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
             Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
             if (vehicle != null) {
                 vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement,
-                        vehicle.getRange());
+                        vehicle.getEstimatedRange());
                 if (vehicle == vehicleTarget)
                     return RatingScore.ZERO_RATING;
                 else if (vehicleTarget == null)

@@ -164,7 +164,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				if (result == null)
 					// so far, this is the first vehicle being picked
 					result = rover;
-				else if (vehicle.getRange() > result.getRange())
+				else if (vehicle.getEstimatedRange() > result.getEstimatedRange())
 					// This vehicle has a better range than the previously selected vehicle
 					result = rover;
 			}

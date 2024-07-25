@@ -30,7 +30,7 @@ public class TabPanelSpecs extends TabPanel {
 
 	private static final String SPECS_ICON = "specs";
 	
-	private JLabel roverRange;
+	private JLabel estimatedRange;
 	private JLabel currentRange;
 	private JLabel cumEnergyUsage;
 	private JLabel cumFuelUsage;
@@ -124,13 +124,13 @@ public class TabPanelSpecs extends TabPanel {
 		
 		cumFuelUsage = grid2.addRow( "Cum Fuel Used", StyleManager.DECIMAL_KG.format(v.getCumFuelUsage()));	
 		if (v instanceof Rover r) {
-			roverRange = grid2.addRow( "Rover Range", StyleManager.DECIMAL_KM.format(r.getRange()));
+			estimatedRange = grid2.addRow( "Estimated Range", StyleManager.DECIMAL_KM.format(r.getEstimatedRange()));
 		}
 		else if (v instanceof Drone d) {
-			roverRange = grid2.addRow( "Rover Range", StyleManager.DECIMAL_KM.format(d.getRange()));
+			estimatedRange = grid2.addRow( "Estimated Range", StyleManager.DECIMAL_KM.format(d.getEstimatedRange()));
 		}
 		else {
-			roverRange = grid2.addRow( "Rover Range", StyleManager.DECIMAL_KM.format(0));
+			estimatedRange = grid2.addRow( "Estimated Range", StyleManager.DECIMAL_KM.format(0));
 		}
 	}
 	
@@ -158,10 +158,10 @@ public class TabPanelSpecs extends TabPanel {
 		
 		currentRange.setText(StyleManager.DECIMAL_KM.format(v.getRange()));
 		if (v instanceof Rover r) {
-			roverRange.setText(StyleManager.DECIMAL_KM.format(r.getRange()));
+			estimatedRange.setText(StyleManager.DECIMAL_KM.format(r.getEstimatedRange()));
 		}
 		else if (v instanceof Drone d) {
-			roverRange.setText(StyleManager.DECIMAL_KM.format(d.getRange()));
+			estimatedRange.setText(StyleManager.DECIMAL_KM.format(d.getEstimatedRange()));
 		}
 	}
 }

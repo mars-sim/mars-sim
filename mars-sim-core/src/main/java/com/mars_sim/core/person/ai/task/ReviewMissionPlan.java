@@ -251,7 +251,7 @@ public class ReviewMissionPlan extends Task {
 		// 7. proposed route distance (note that a negative score represents a penalty)
 		int dist = 0;
 		if (m instanceof VehicleMission vm) {
-			double range = vm.getVehicle().getRange();
+			double range = vm.getVehicle().getEstimatedRange();
 			double proposed = vm.getDistanceProposed();
 			
 			// Scoring rule:

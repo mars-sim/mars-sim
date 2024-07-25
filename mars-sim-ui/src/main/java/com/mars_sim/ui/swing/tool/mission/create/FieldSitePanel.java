@@ -121,7 +121,7 @@ public class FieldSitePanel extends WizardPanel {
     @Override
     void updatePanel() {
         try {
-            double range = (getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER) / 2D;
+            double range = (getWizard().getMissionData().getRover().getEstimatedRange() * RANGE_MODIFIER) / 2D;
             pixelRange = convertRadiusToMapPixels(range);
             ellipseLayer.setEllipseDetails(new IntPoint(Map.HALF_MAP_BOX, Map.HALF_MAP_BOX), 
             		new IntPoint(Map.HALF_MAP_BOX, Map.HALF_MAP_BOX), (pixelRange * 2));
@@ -166,7 +166,7 @@ public class FieldSitePanel extends WizardPanel {
 	 * @throws Exception if error getting mission rover.
 	 */
 	private double getRoverRange() {
-		double range = getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER;
+		double range = getWizard().getMissionData().getRover().getEstimatedRange() * RANGE_MODIFIER;
 		return range / 2D;
 	}
 	

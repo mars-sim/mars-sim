@@ -230,7 +230,7 @@ class VehiclePanel extends WizardPanel {
 					else if (column == 2)
 						result = vehicle.getCrewCapacity();
 					else if (column == 3)
-						result = (int) vehicle.getRange();
+						result = (int) vehicle.getEstimatedRange();
 					else if (column == 4)
 						result = vehicle.hasLab();
 					else if (column == 5)

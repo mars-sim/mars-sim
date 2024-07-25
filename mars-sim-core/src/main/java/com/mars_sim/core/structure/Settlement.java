@@ -2990,7 +2990,7 @@ public class Settlement extends Structure implements Temporal,
 				if (result == null)
 					// Get the first vehicle
 					result = rover;
-				else if (vehicle.getRange() < result.getRange())
+				else if (vehicle.getEstimatedRange() < result.getEstimatedRange())
 					// This vehicle has a lesser range than the previously selected vehicle
 					result = rover;
 			}
@@ -3036,7 +3036,7 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public void acquireNearbyMineralLocation(Coordinates location, double limit, int sol) {
 		
-		Map<Coordinates, Double> pair = surfaceFeatures.getMineralMap().
+		Map.Entry<Coordinates, Double> pair = surfaceFeatures.getMineralMap().
 				findRandomMineralLocation(location, limit + extraKM, sol, nearbyMineralLocations.keySet());
 		
 		if (pair == null) {
@@ -3045,13 +3045,7 @@ public class Settlement extends Structure implements Temporal,
 			return;
 		}
 		
-		List<Coordinates> coords = new ArrayList<>(pair.keySet());
-		List<Double> dists = new ArrayList<>(pair.values());
-		
-		Coordinates c = coords.get(0);
-		double dist = dists.get(0);
-		
-		nearbyMineralLocations.put(c, dist);
+		nearbyMineralLocations.put(pair.getKey(), pair.getValue());
 	}
 	
 	/**
@@ -3381,7 +3375,7 @@ public class Settlement extends Structure implements Temporal,
 				
 		Map<String, Integer> minerals = new HashMap<>();
 
-		double roverRange = rover.getRange();
+		double roverRange = rover.getEstimatedRange();
 		double tripTimeLimit = rover.getTotalTripTimeLimit(true);
 		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
 		double range = roverRange;

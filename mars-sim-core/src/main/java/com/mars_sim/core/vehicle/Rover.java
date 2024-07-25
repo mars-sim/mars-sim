@@ -929,7 +929,7 @@ public class Rover extends GroundVehicle implements Crewable,
 		// Question: does it account for the return trip ?
 		
 		// Note: multiply by 0.95 would account for the extra distance travelled in between sites
-		double fuelRange = super.getRange() * FUEL_RANGE_FACTOR;
+		double fuelRange = super.getEstimatedRange() * FUEL_RANGE_FACTOR;
 
 		// Battery also contributes to the range
 		double cap = super.getBatteryCapacity();

@@ -650,7 +650,7 @@ public class RescueSalvageVehicle extends RoverMission {
 						while (iV.hasNext() && result) {
 							Vehicle vehicle = iV.next();
 							if (vehicle instanceof Rover) {
-								if (vehicle.getRange() >= (settlementDistance * 2D)) {
+								if (vehicle.getEstimatedRange() >= (settlementDistance * 2D)) {
 									result = false;
 								}
 							}

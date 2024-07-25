@@ -186,7 +186,7 @@ public class TravelToSettlement extends RoverMission {
 	 */
 	private Settlement getRandomDestinationSettlement(Worker member, Settlement startingSettlement) {
 
-		double range = getVehicle().getRange();
+		double range = getVehicle().getEstimatedRange();
 		Settlement result = null;
 
 		// Find all desirable destination settlements.
@@ -406,9 +406,9 @@ public class TravelToSettlement extends RoverMission {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange() > secondVehicle.getRange()) {
+				if (firstVehicle.getEstimatedRange() > secondVehicle.getEstimatedRange()) {
 					result = 1;
-				} else if (firstVehicle.getRange() < secondVehicle.getRange()) {
+				} else if (firstVehicle.getEstimatedRange() < secondVehicle.getEstimatedRange()) {
 					result = -1;
 				}
 			}

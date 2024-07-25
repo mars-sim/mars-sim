@@ -665,7 +665,7 @@ public class SalvageMission extends AbstractMission
 		Vehicle vehicleTarget = null;
 		Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
 		if (vehicle != null) {
-			vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getRange());
+			vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getEstimatedRange());
 			if (vehicleTarget != null) {
 				if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget)) {
 					result = true;

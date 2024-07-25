@@ -123,7 +123,7 @@ public class Exploration extends EVAMission
 			int sol = getMarsTime().getMissionSol();
 			numSites = 2 + (int)(1.0 * sol / 20);
 			
-			List<Coordinates> sitesToClaim = determineExplorationSites(getVehicle().getRange(),
+			List<Coordinates> sitesToClaim = determineExplorationSites(getVehicle().getEstimatedRange(),
 					getRover().getTotalTripTimeLimit(true),
 					numSites, skill);
 
@@ -258,7 +258,7 @@ public class Exploration extends EVAMission
 	 * @return
 	 */
 	private Coordinates determineFirstSiteCoordinate() {
-		double range = getVehicle().getRange();
+		double range = getVehicle().getEstimatedRange();
 		return getStartingSettlement().determineFirstSiteCoordinate(range, 2);
 	}
 	

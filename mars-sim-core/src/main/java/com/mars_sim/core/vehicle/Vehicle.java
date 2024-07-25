@@ -806,6 +806,18 @@ public abstract class Vehicle extends Unit
 
 
 	/**
+	 * Gets the estimated fuel range of the vehicle.
+	 *
+	 * @return the estimated fuel range of the vehicle (in km)
+	 */
+	public double getEstimatedRange() {
+
+		// Before the mission is created, the range would be based on vehicle's fuel capacity
+		return Math.min(getBaseRange(), 
+        			getEstimatedFuelEconomy() * getFuelCapacity()) * getMass() / getBeginningMass() * fuelRangeErrorMargin;
+	}
+	
+	/**
 	 * Gets the current fuel range of the vehicle.
 	 *
 	 * @return the current fuel range of the vehicle (in km)
@@ -817,8 +829,7 @@ public abstract class Vehicle extends Unit
 
         if ((mission == null) || (mission.getStage() == Stage.PREPARATION)) {
         	// Before the mission is created, the range would be based on vehicle's capacity
-        	range = Math.min(getBaseRange() / RANGE_FACTOR, 
-        			getEstimatedFuelEconomy() * getFuelCapacity()) * getMass() / getBeginningMass();// * fuel_range_error_margin
+        	range = getEstimatedRange();
         }
         else {
         	

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MineralMap.java
- * @date 2022-07-14
+ * @date 2024-07-25
  * @author Scott Davis
  */
 
@@ -9,7 +9,6 @@ package com.mars_sim.core.environment;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -71,7 +70,7 @@ public interface MineralMap extends Serializable {
 	 * @param foundLocations
 	 * @return location and distance pair
 	 */
-	public Map<Coordinates, Double> findRandomMineralLocation(Coordinates startingLocation, double range, int sol, 
+	public Map.Entry<Coordinates, Double> findRandomMineralLocation(Coordinates startingLocation, double range, int sol, 
 			Collection<Coordinates> foundLocations);
 
 	/**

@@ -83,7 +83,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
         }
 
         Map<Settlement, Double> desirableSettlements = TravelToSettlement.getDestinationSettlements(
-                member, settlement, vehicle.getRange());
+                member, settlement, vehicle.getEstimatedRange());
 
         if ((desirableSettlements == null) || desirableSettlements.isEmpty()) {
             return RatingScore.ZERO_RATING;

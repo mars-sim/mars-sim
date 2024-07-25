@@ -12,6 +12,7 @@ import java.awt.Image;
 import java.awt.image.ImageObserver;
 import java.awt.image.PixelGrabber;
 import java.net.URL;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -613,7 +614,7 @@ public class RandomMineralMap implements MineralMap {
 	 * @param foundLocations
 	 * @return location and distance pair
 	 */
-	public Map<Coordinates, Double> findRandomMineralLocation(Coordinates startingLocation, double range, int sol,
+	public Map.Entry<Coordinates, Double> findRandomMineralLocation(Coordinates startingLocation, double range, int sol,
 			Collection<Coordinates> foundLocations) {
 
 		Map<Coordinates, Double> locales = generateMineralLocations(startingLocation, range, foundLocations);
@@ -660,8 +661,7 @@ public class RandomMineralMap implements MineralMap {
 
 //		System.out.println("#: " + weightedMap.size());
 		
-		Map<Coordinates, Double> result = new HashMap<>();
-		result.put(chosen, chosenDist);
+		Map.Entry<Coordinates, Double> result = new SimpleEntry<>(chosen, chosenDist);
 
 		return result;
 	}
