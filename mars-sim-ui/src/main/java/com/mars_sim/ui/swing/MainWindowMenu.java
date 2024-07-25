@@ -166,10 +166,32 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
 		// Create submenu for LAF
 		JMenu lafMenu = new JMenu("Look and Feel");
+		JMenu lightMenu = new JMenu("Light Theme");
+		JMenu darkMenu = new JMenu("Dark Theme");
 		ButtonGroup group = new ButtonGroup();
 		settingsMenu.add(lafMenu);
-		settingsMenu.add(new JSeparator());
-		for( String i : StyleManager.getAvailableLAF()) {
+		lafMenu.add(lightMenu);
+		lafMenu.add(darkMenu);
+
+		for (String i : StyleManager.getAvailableLightLAF()) {
+			JRadioButtonMenuItem lafItem = new JRadioButtonMenuItem(i);
+			if (i.equals(StyleManager.getLAF()))
+				lafItem.setSelected(true);
+			lafItem.setActionCommand(LAF);
+			lafItem.addActionListener(this);
+			lightMenu.add(lafItem);
+			group.add(lafItem);
+		}
+		for (String i : StyleManager.getAvailableDarkLAF()) {
+			JRadioButtonMenuItem lafItem = new JRadioButtonMenuItem(i);
+			if (i.equals(StyleManager.getLAF()))
+				lafItem.setSelected(true);
+			lafItem.setActionCommand(LAF);
+			lafItem.addActionListener(this);
+			darkMenu.add(lafItem);
+			group.add(lafItem);
+		}
+		for (String i : StyleManager.getAvailableSystemLAF()) {
 			JRadioButtonMenuItem lafItem = new JRadioButtonMenuItem(i);
 			if (i.equals(StyleManager.getLAF()))
 				lafItem.setSelected(true);
@@ -178,7 +200,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			lafMenu.add(lafItem);
 			group.add(lafItem);
 		}
-
 		// Create Background Music Volume slider menu item
 		soundPlayer = desktop.getSoundPlayer();
 		

@@ -176,6 +176,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	/** Longitude direction choice. */
 	private JComboBoxMW<?> lonCBDir;
 	/** Minerals button. */
+//	private JButton mineralsButton;
+	/** Toggle button for mineral types. */
 	private JButton mineralsButton;
 	/** Go button. */
 	private JButton goButton;
@@ -405,6 +407,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
         
 		// Prepare options button.
 		JButton optionsButton = new JButton(Msg.getString("NavigatorWindow.button.mapOptions")); //$NON-NLS-1$
+		optionsButton.putClientProperty("JButton.buttonType", "help");
+//		optionsButton.setIcon(UIManager.getIcon("Tree.closedIcon"));
 		optionsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mapOptions")); //$NON-NLS-1$
 		optionsButton.addActionListener(e -> {
 				SwingUtilities.invokeLater(() -> {
@@ -422,6 +426,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		// Prepare minerals button.0
 		mineralsButton = new JButton(Msg.getString("NavigatorWindow.button.mineralOptions")); //$NON-NLS-1$
+		mineralsButton.putClientProperty("JButton.buttonType", "roundRect");
 		mineralsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mineralOptions")); //$NON-NLS-1$
 		mineralsButton.setEnabled(false);
 		mineralsButton.addActionListener(e -> {

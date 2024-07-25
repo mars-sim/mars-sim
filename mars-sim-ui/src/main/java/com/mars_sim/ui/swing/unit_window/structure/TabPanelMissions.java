@@ -37,6 +37,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.monitor.PersonTableModel;
@@ -57,8 +58,7 @@ extends TabPanel {
 	private static SimLogger logger = SimLogger.getLogger(TabPanelMissions.class.getName());
 
 	private static final String FLAG_ICON = "mission";
-	private static final String KM = " km";
-	
+
 	// Data members	
 	private JLabel siteLabel;
 	private JLabel numROIsLabel;
@@ -123,8 +123,8 @@ extends TabPanel {
 		
 		siteLabel = sitePanel.addRow("Sites Found", settlement.numNearbyMineralLocations() + "");
 		numROIsLabel = sitePanel.addRow("Declared ROIs", settlement.numDeclaredLocation() + "");
-		siteMeanLabel = sitePanel.addRow("Mean Distance \u03BC", Math.round(site[0] * 100.0)/100.0 + KM);
-		siteSDevLabel = sitePanel.addRow("Standard Deviation \u03C3", Math.round(site[1] * 100.0)/100.0 + KM);
+		siteMeanLabel = sitePanel.addRow("Mean Distance \u03BC", StyleManager.DECIMAL_KM.format(site[0])); 
+		siteSDevLabel = sitePanel.addRow("Standard Deviation \u03C3", StyleManager.DECIMAL_KM.format(site[1]));
 		
 		
 		AttributePanel twoPanel = new AttributePanel(3, 1);
@@ -132,8 +132,8 @@ extends TabPanel {
 		twoPanel.setBorder(BorderFactory.createTitledBorder("Claimed Sites"));
 		
 		claimedSiteLabel = twoPanel.addRow("Sites", settlement.numDeclaredLocation(true) + "");
-		claimedMeanLabel = twoPanel.addRow("Mean Distance \u03BC", Math.round(claimed[0] * 100.0)/100.0 + KM);
-		claimedSDevLabel = twoPanel.addRow("Standard Deviation \u03C3", Math.round(claimed[1] * 100.0)/100.0 + KM);
+		claimedMeanLabel = twoPanel.addRow("Mean Distance \u03BC", StyleManager.DECIMAL_KM.format(claimed[0]));
+		claimedSDevLabel = twoPanel.addRow("Standard Deviation \u03C3", StyleManager.DECIMAL_KM.format(claimed[0]));
 		
 		
 		AttributePanel unclaimPanel = new AttributePanel(3, 1);
@@ -141,8 +141,8 @@ extends TabPanel {
 		unclaimPanel.setBorder(BorderFactory.createTitledBorder("Unclaimed Sites"));
 		
 		unclaimedSiteLabel = unclaimPanel.addRow("Sites", settlement.numDeclaredLocation(false) + "");		
-		unclaimedMeanLabel = unclaimPanel.addRow("Mean Distance \u03BC", Math.round(unclaimed[0] * 100.0)/100.0 + KM);
-		unclaimedSDevLabel = unclaimPanel.addRow("Standard Deviation \u03C3", Math.round(unclaimed[1] * 100.0)/100.0 + KM);
+		unclaimedMeanLabel = unclaimPanel.addRow("Mean Distance \u03BC", StyleManager.DECIMAL_KM.format(unclaimed[0]));
+		unclaimedSDevLabel = unclaimPanel.addRow("Standard Deviation \u03C3", StyleManager.DECIMAL_KM.format(unclaimed[0]));
 		
 		
 		// Create center panel.
@@ -263,17 +263,17 @@ extends TabPanel {
 		
 		siteLabel.setText(settlement.numNearbyMineralLocations() + "");
 		numROIsLabel.setText(settlement.numDeclaredLocation() + "");
-		siteMeanLabel.setText(Math.round(site[0] * 100.0)/100.0 + KM);
-		siteSDevLabel.setText(Math.round(site[1] * 100.0)/100.0 + KM);
+		siteMeanLabel.setText(StyleManager.DECIMAL_KM.format(site[0]));
+		siteSDevLabel.setText(StyleManager.DECIMAL_KM.format(site[0]));
 		
 		claimedSiteLabel.setText(settlement.numDeclaredLocation(true) + "");
-		claimedMeanLabel.setText(Math.round(claimed[0] * 100.0)/100.0 + KM);
-		claimedSDevLabel.setText(Math.round(claimed[1] * 100.0)/100.0 + KM);
+		claimedMeanLabel.setText(StyleManager.DECIMAL_KM.format(claimed[0]));
+		claimedSDevLabel.setText(StyleManager.DECIMAL_KM.format(claimed[0]));
 		
 		
 		unclaimedSiteLabel.setText(settlement.numDeclaredLocation(false) + "");		
-		unclaimedMeanLabel.setText(Math.round(unclaimed[0] * 100.0)/100.0 + KM);
-		unclaimedSDevLabel.setText(Math.round(unclaimed[1] * 100.0)/100.0 + KM);
+		unclaimedMeanLabel.setText(StyleManager.DECIMAL_KM.format(unclaimed[0]));
+		unclaimedSDevLabel.setText(StyleManager.DECIMAL_KM.format(unclaimed[0]));
 		
 		
 		// Get all missions for the settlement.

@@ -28,6 +28,9 @@ import javax.swing.plaf.ColorUIResource;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.intellijthemes.FlatHiberbeeDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatSolarizedDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatSolarizedLightIJTheme;
 import com.formdev.flatlaf.util.HSLColor;
 import com.mars_sim.tools.Msg;
 
@@ -97,6 +100,9 @@ public class StyleManager {
 
     
     // Supported LAFs
+    public static final String HIBERBEE_DARK = "Hiberbee Dark";
+    public static final String SOLARIZED_LIGHT = "Solarized Light";
+    public static final String SOLARIZED_DARK = "Solarized Dark";
     public static final String DARK = "Flat Dark";
     public static final String LIGHT = "Flat Light";
     public static final String LIGHT_BLUE = LIGHT + " - Blue";
@@ -104,8 +110,15 @@ public class StyleManager {
     public static final String LIGHT_ORANGE = LIGHT + " - Orange";
     public static final String LIGHT_GREEN = LIGHT + " - Green";
     public static final String SYSTEM = "Default System";
-    private static final String [] LAF_STYLES = {LIGHT_BLUE, LIGHT_GREEN, LIGHT_ORANGE, LIGHT_RED, DARK, SYSTEM};
-
+    private static final String [] LAF_STYLES = {
+    		LIGHT_BLUE, LIGHT_GREEN, LIGHT_ORANGE, LIGHT_RED, SOLARIZED_LIGHT,
+    		DARK, HIBERBEE_DARK, SOLARIZED_DARK, SYSTEM};
+    private static final String [] LAF_LIGHT_STYLES = {
+    		LIGHT_BLUE, LIGHT_GREEN, LIGHT_ORANGE, LIGHT_RED, SOLARIZED_LIGHT};
+    private static final String [] LAF_DARK_STYLES = {
+    		DARK, HIBERBEE_DARK, SOLARIZED_DARK, SYSTEM};
+    private static final String [] LAF_SYSTEM_STYLES = {SYSTEM};
+    
     // Constants for font definition
     private static final String UIMANAGER_FONT = "defaultFont";
     private static final String DEFAULT_FONT_STYLE = "defaultFont";
@@ -162,7 +175,7 @@ public class StyleManager {
     }
 
     private StyleManager() {
-        // Stop instatiation
+        // Stop instantiation
     }
     
     /**
@@ -171,7 +184,28 @@ public class StyleManager {
     public static String[] getAvailableLAF() {
         return LAF_STYLES;
     }
-
+    
+    /**
+     * Gets available light color LAF.
+     */
+    public static String[] getAvailableLightLAF() {
+        return LAF_LIGHT_STYLES;
+    }
+    
+    /**
+     * Gets available dark color LAF.
+     */
+    public static String[] getAvailableDarkLAF() {
+        return LAF_DARK_STYLES;
+    }
+    
+    /**
+     * Gets available system color LAF.
+     */
+    public static String[] getAvailableSystemLAF() {
+        return LAF_SYSTEM_STYLES;
+    }
+    
     /**
      * Which LAF has been selected.
      */
@@ -206,11 +240,26 @@ public class StyleManager {
                 case LIGHT: 
                     lafClass = FlatLightLaf.class.getName();
                     break;
-
+	
+                case SOLARIZED_LIGHT:
+                	lafClass = FlatSolarizedLightIJTheme.class.getName();
+                	FlatSolarizedLightIJTheme.setup();
+                    break;
+                    
                 case DARK:
                     lafClass = FlatDarkLaf.class.getName();
                     break;
+                    
+                case HIBERBEE_DARK:
+                    lafClass = FlatHiberbeeDarkIJTheme.class.getName();
+                    FlatHiberbeeDarkIJTheme.setup();
+                    break;
 
+                case SOLARIZED_DARK:
+                	lafClass = FlatSolarizedDarkIJTheme.class.getName();
+                	FlatSolarizedDarkIJTheme.setup();
+                    break;
+                    
                 case SYSTEM:
                     lafClass = UIManager.getSystemLookAndFeelClassName();
                     accentColor = null;   // No accent colouring for system

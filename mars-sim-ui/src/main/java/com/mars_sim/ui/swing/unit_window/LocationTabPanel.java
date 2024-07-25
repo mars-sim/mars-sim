@@ -304,7 +304,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			bannerText.setGlowColor(Color.lightGray);
 			bannerText.setLcdColor(LcdColor.DARKGREEN_LCD);			
 		}
-		else if (theme.equalsIgnoreCase(StyleManager.LIGHT_ORANGE)) {
+		else if (theme.equalsIgnoreCase(StyleManager.LIGHT_ORANGE)
+				|| theme.equalsIgnoreCase(StyleManager.SOLARIZED_LIGHT)) {
 			bannerText.setGlowColor(Color.ORANGE);
 			bannerText.setLcdColor(LcdColor.AMBER_LCD);			
 		}
@@ -312,7 +313,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			bannerText.setGlowColor(Color.LIGHT_GRAY);
 			bannerText.setLcdColor(LcdColor.REDDARKRED_LCD);			
 		}
-		else if (theme.equalsIgnoreCase(StyleManager.DARK)) {
+		else if (theme.equalsIgnoreCase(StyleManager.DARK)
+				|| theme.equalsIgnoreCase(StyleManager.HIBERBEE_DARK)
+				|| theme.equalsIgnoreCase(StyleManager.SOLARIZED_DARK)) {
 			bannerText.setGlowColor(Color.WHITE);
 			bannerText.setLcdColor(LcdColor.DARKBLUE_LCD);			
 		}
