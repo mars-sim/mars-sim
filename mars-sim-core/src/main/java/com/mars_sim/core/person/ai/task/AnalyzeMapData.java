@@ -258,9 +258,9 @@ public class AnalyzeMapData extends Task {
 	     		
 	     		if (aSite != null) {
 		         	// Creates an initial explored site in SurfaceFeatures
-	     			ExploredLocation loc = person.getAssociatedSettlement().createARegionOfInterest(aSite, skill);
+	     			ExploredLocation el = person.getAssociatedSettlement().createARegionOfInterest(aSite, skill);
 		         			
-	     			if (loc != null) {
+	     			if (el != null) {
 	     				logger.info(person, 20_000, "Analyzed map data and zoned up the first new ROI at " +  aSite.getFormattedString() + ".");
 	     			}
 	     			else {

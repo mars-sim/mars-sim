@@ -196,12 +196,6 @@ public class Exploration extends EVAMission
 		
 		setEVAEquipment(EquipmentType.SPECIMEN_BOX, newContainerNum);
 	
-
-		// Configure the sites to be explored with mineral concentration during the stage of mission planning
-		for (Coordinates c : explorationSites) {
-			declareARegionOfInterest(c, skill);
-		}
-
 		// Set exploration navpoints.
 		addNavpoints(explorationSites, (i -> EXPLORATION_SITE + (i+1)));
 
@@ -291,9 +285,6 @@ public class Exploration extends EVAMission
 			currentSite = retrieveASiteToClaim();
 			fireMissionUpdate(MissionEventType.SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
 		}
-		
-//		if (currentSite == null)
-//			return false;
 		
 		explorationSiteCompletion.put(getCurrentNavpointDescription(), completion);
 
@@ -409,11 +400,12 @@ public class Exploration extends EVAMission
 			
 			currentLocation = determineFirstSiteCoordinate(dist, areologySkill);
 			
-			// Creates an initial explored site in SurfaceFeatures
-			el = declareARegionOfInterest(currentLocation, areologySkill);
+			if (currentLocation != null) {
+				// Creates an initial explored site in SurfaceFeatures
+				el = declareARegionOfInterest(currentLocation, areologySkill);
+			}
 		}
-
-		
+	
 		if (currentLocation != null) {
 			unorderedSites.add(currentLocation);
 		}
@@ -498,7 +490,9 @@ public class Exploration extends EVAMission
 
 		// Get any locations that belong to this home Settlement and need further
 		// exploration before mining
-		List<Coordinates> candidateLocs = surfaceFeatures.getAllPossibleRegionOfInterestLocations().stream()
+		List<Coordinates> candidateLocs = home.getDeclaredLocations()
+				//surfaceFeatures.getAllPossibleRegionOfInterestLocations()
+				.stream()
 				.filter(e -> e.getNumEstimationImprovement() < 
 						RandomUtil.getRandomInt(0, Mining.MATURE_ESTIMATE_NUM * 10))
 				.filter(s -> home.equals(s.getSettlement()))
@@ -512,6 +506,13 @@ public class Exploration extends EVAMission
 		return Collections.emptyList();
 	}
 
+	/**
+	 * Gets the total distances of going to all sites.
+	 * 
+	 * @param startingLoc
+	 * @param sites
+	 * @return
+	 */
 	private static double getTotalDistance(Coordinates startingLoc, List<Coordinates> sites) {
 		double result = 0D;
 
@@ -549,7 +550,7 @@ public class Exploration extends EVAMission
 	}
 
 	/**
-	 * Estimate the time needed at an EVA site.
+	 * Estimates the time needed at an EVA site.
 	 * 
 	 * @param buffer Add a buffer allowance
 	 * @return Estimated time per EVA site
@@ -587,7 +588,7 @@ public class Exploration extends EVAMission
 	}
 
 	/**
-	 * Return the average site score of all exploration sites
+	 * Returns the average site score of all exploration sites.
 	 */
 	@Override
 	public double getTotalSiteScore(Settlement reviewerSettlement) {

@@ -556,7 +556,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			
 			double initialEst = mineralMap.getMineralConcentration(mineralType, location);
 
-			
 			if (initialEst <= 0) {
 				continue;
 			}

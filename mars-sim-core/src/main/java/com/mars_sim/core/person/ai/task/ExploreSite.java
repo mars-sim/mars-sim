@@ -81,6 +81,11 @@ public class ExploreSite extends EVAOperation {
 		this.rover = rover;
 		this.mission = mission;
 
+		if (site == null) {
+			logger.severe(person, 5_000, "Site not available.");
+			endTask();
+		}
+		
 		// Determine location for field work.
 		setRandomOutsideLocation(rover);
 
@@ -166,6 +171,11 @@ public class ExploreSite extends EVAOperation {
 	private double exploringPhase(double time) {
 		double remainingTime = 0;
 		
+		if (site == null) {
+			logger.severe(person, 5_000, "Site unavailable.");
+			endTask();
+		}
+		
 		if (checkReadiness(time) > 0)
 			return time;
 
@@ -187,7 +197,7 @@ public class ExploreSite extends EVAOperation {
 			// Collect rocks.
 			collectRocks(time);
 		}
-		else {
+		else if (site != null){
 			site.improveCertainty(skill);
 			
 			// Checks if the site has been claimed

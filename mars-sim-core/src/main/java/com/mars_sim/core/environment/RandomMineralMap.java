@@ -228,7 +228,7 @@ public class RandomMineralMap implements MineralMap {
 	public double createMinerals(double remainingConc, Coordinates oldLocation, int x, int last, double conc, String mineralName) {
 		Direction direction = new Direction(RandomUtil.getRandomDouble(Math.PI * 2D));
 		// Spread it over a 10 km radius
-		double distance = RandomUtil.getRandomDouble(1, 10);
+		double distance = RandomUtil.getRandomDouble(1, 20);
 		Coordinates newLocation = oldLocation.getNewLocation(direction, distance);
 		double concentration = 0;
 
