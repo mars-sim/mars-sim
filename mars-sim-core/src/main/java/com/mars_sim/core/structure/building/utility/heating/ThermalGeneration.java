@@ -558,10 +558,31 @@ public class ThermalGeneration extends Function {
 		// preNetHeat is +ve, then gain is greater than loss
 		double preNetHeat = heating.getPreNetHeat();
 
+		// airheatsink in kW. If +ve, it traps heat in a room
+		double airHeatSink = heating.getAirHeatSink();
+		
+		// if airHeatSink is +ve, it's okay to reduce it. 
+		// Trapped heat as a form of air heat sink is okay
+		if (airHeatSink > 0)
+			airHeatSink = .8 * airHeatSink;
+		else if (airHeatSink < 0)
+			airHeatSink = 1.2 * airHeatSink;
+		
+		// waterheatsink in kW. If +ve, it traps heat in a room
+		// Trapped heat as a form of air heat sink is okay
+		double waterHeatSink = heating.getWaterHeatSink();
+				
+		// if waterHeatSink is +ve, it's okay to reduce it. 
+		// Trapped heat as a form of water heat sink is okay
+		if (waterHeatSink > 0)
+			waterHeatSink = .9 * waterHeatSink;
+		else if (waterHeatSink < 0)
+			waterHeatSink = 1.1 * waterHeatSink;
+		
 		double heatGen = 0;
 		double remainHeatReq = 0;
 		
-		if (heatReq <= 0) {
+		if (heatReq - airHeatSink - waterHeatSink <= 0) {
 			// Still let it call calculateHeatGen in order to turn off heat sources
 			double heat[] = calculateHeatGen(0, millisols);	
 			heatGen = heat[0];
@@ -580,7 +601,7 @@ public class ThermalGeneration extends Function {
 		}
 		else {
 
-			double finalHeatReq = heatReq - .1 * postNetHeat - .05 * preNetHeat;
+			double finalHeatReq = heatReq - .05 * postNetHeat - .025 * preNetHeat - airHeatSink - waterHeatSink;
 			
 			// Find out how much heat can be generated to match this requirement
 			double heat[] = calculateHeatGen(finalHeatReq, millisols);

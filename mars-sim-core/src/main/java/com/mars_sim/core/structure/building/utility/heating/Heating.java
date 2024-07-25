@@ -534,7 +534,7 @@ public class Heating implements Serializable {
 	 * @return
 	 */
 	private double computeNewT(double heatkJ) {
-		double oldT = C_TO_K + currentTemperature;
+		double oldK = C_TO_K + currentTemperature;
 		
 		double numMoles = building.getLifeSupport().getAir().getTotalNumMoles();
 		
@@ -542,12 +542,12 @@ public class Heating implements Serializable {
 		// delta entropy in [J/K]
 		
 		// [J/K] = kW * seconds * 1000 / K
-		double entropyChange = heatkJ * 1000 / oldT;
+		double entropyChange = heatkJ * 1000 / oldK;
 
 		double ratio = entropyChange / GAS_CONSTANT / numMoles;
 		
 		// newT in [C]
-		double newT = oldT * Math.exp(ratio) - C_TO_K;
+		double newT = oldK * Math.exp(ratio) - C_TO_K;
 		
 		// T2 = T1 * exp(ΔS / (nR))
 		// n = 0.0821 L·atm/mol·K 
@@ -565,17 +565,17 @@ public class Heating implements Serializable {
 		
 		if (error) {
 			logger.info(building, 20_000,
-				"oldT: " + Math.round(oldT * 10.0)/10.0
-				+ "  newT: " + Math.round(newT * 10.0)/10.0
+				"oldT: " + Math.round((oldK - C_TO_K) * 100.0)/100.0
+				+ "  newT: " + Math.round(newT * 100.0)/100.0
 				+ "  ratio: " + Math.round(ratio * 10000.0)/10000.0
 				+ "  heatkJ: " + Math.round(heatkJ * 1000.0)/1000.0 + " kJ"
 				+ "  entropyChange: " + Math.round(entropyChange * 1_000_0.0)/1_000_0.0 + " kJ/K"
 				+ "  numMoles: " + Math.round(numMoles * 10.0)/10.0
-				+ "  dt: " + Math.round((newT - oldT) * 100.0)/100.0
+				+ "  dt: " + Math.round((newT - oldK) * 100.0)/100.0
 				);
 		}
 		
-		newT = Math.max(-40, Math.min(40, newT));
+		newT = Math.max(0, Math.min(40, newT));
 		
 		return newT;
 	}
@@ -1067,7 +1067,7 @@ public class Heating implements Serializable {
 		
 		double convFactorAir = seconds / airHeatCap; 
 	
-		double dHeat1 = computeHeatSink(dHeat0, airHeatSink, 0, seconds/timeSlice);
+		double dHeat1 = computeHeatSink(dHeat0, airHeatSink, 0, .5 * seconds/timeSlice);
 	
 		error = checkError("dHeat1", dHeat1) || error;
 
@@ -1132,7 +1132,7 @@ public class Heating implements Serializable {
 
 		// (5d3) Apply the water heat sink to buffer the net heat
 			
-		double dHeat2 = computeHeatSink(dHeat1, waterHeatSink, 1, seconds/timeSlice);
+		double dHeat2 = computeHeatSink(dHeat1, waterHeatSink, 1, .5 * seconds/timeSlice);
 		
 		error = checkError("dHeat2", dHeat2) || error;
 				
