@@ -571,7 +571,7 @@ public class Heating implements Serializable {
 				+ "  heatkJ: " + Math.round(heatkJ * 1000.0)/1000.0 + " kJ"
 				+ "  entropyChange: " + Math.round(entropyChange * 1_000_0.0)/1_000_0.0 + " kJ/K"
 				+ "  numMoles: " + Math.round(numMoles * 10.0)/10.0
-				+ "  dt: " + Math.round((newT - oldK) * 100.0)/100.0
+				+ "  dt: " + Math.round((newT - oldK + C_TO_K) * 100.0)/100.0
 				);
 		}
 		
@@ -1067,7 +1067,7 @@ public class Heating implements Serializable {
 		
 		double convFactorAir = seconds / airHeatCap; 
 	
-		double dHeat1 = computeHeatSink(dHeat0, airHeatSink, 0, .5 * seconds/timeSlice);
+		double dHeat1 = computeHeatSink(dHeat0, airHeatSink, 0, 2 * seconds/timeSlice);
 	
 		error = checkError("dHeat1", dHeat1) || error;
 
@@ -1397,11 +1397,11 @@ public class Heating implements Serializable {
 	private double computeHeatSink(double oldHeat, double limit,
 			int index, double millisols) {
 
-		double dh = (currentTemperature - tPreset) / 3;
-		if (dh > 5)
-			dh = 5;
-		else if (dh < -5)
-			dh = -5;
+		double dh = (currentTemperature - tPreset) / 2;
+		if (dh > 7)
+			dh = 7;
+		else if (dh < -7)
+			dh = -7;
 		
 		double newHeat = oldHeat;
 	
@@ -1412,7 +1412,7 @@ public class Heating implements Serializable {
 		
 		// millisols = seconds/timeSlice;
 		
-		double lowerBound = Math.max(millisols, 0);
+		double lowerBound = Math.max(millisols * 5, millisols);
 		
 		// How fast or efficient is the heat transfer ?
 		// For air heat sink, assume 20%

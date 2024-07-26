@@ -244,10 +244,10 @@ public class ExploreSite extends EVAOperation {
 					// Question: should we use ROCK_SAMPLES_ID instead of rockId ?
 				}
 				
-				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, rockId);
+				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
 				
 				if (box != null) {
-					double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_MASS / 2D, AVERAGE_ROCK_MASS * 2D);
+					double mass = AVERAGE_ROCK_MASS * RandomUtil.getRandomDouble(.5, 2);
 					double cap = box.getAmountResourceRemainingCapacity(rockId);
 					if (mass <= cap) {
 						double excess = box.storeAmountResource(rockId, mass);
@@ -255,7 +255,7 @@ public class ExploreSite extends EVAOperation {
 						double collected = mass - excess;
 						totalCollected += collected;
 						logger.info(person, 10_000, "Collected " + Math.round(collected * 100.0)/100.0 
-								+ " kg " + ResourceUtil.findAmountResourceName(rockId) + ".");
+								+ " kg " + ResourceUtil.findAmountResourceName(rockId) + " into a specimen box.");
 					}
 					else {
 						//mass = cap;
@@ -361,7 +361,7 @@ public class ExploreSite extends EVAOperation {
 	 */
 	private boolean takeSpecimenContainer() {
 		
-		Container container = rover.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
+		Container container = rover.findContainer(EquipmentType.SPECIMEN_BOX, true, -1);
 		if (container != null) {
 			return container.transfer(person);
 		}
@@ -377,6 +377,15 @@ public class ExploreSite extends EVAOperation {
 			// Task may end early before a Rover is selected
 			returnEquipmentToVehicle(rover);
 		}
+		
+		// Remove pressure suit and put on garment
+		if (person.unwearPressureSuit(rover)) {
+			person.wearGarment(rover);
+		}
+	
+		// Assign thermal bottle
+		person.assignThermalBottle();
+				
 		super.clearDown();
 	}
 }
