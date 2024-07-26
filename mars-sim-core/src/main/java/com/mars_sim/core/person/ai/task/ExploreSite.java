@@ -89,6 +89,10 @@ public class ExploreSite extends EVAOperation {
 		// Determine location for field work.
 		setRandomOutsideLocation(rover);
 
+		// Box is empty so choose a rock type at random
+		int randomNum = RandomUtil.getRandomInt(((ResourceUtil.rockIDs).length) - 1);
+		rockId = ResourceUtil.rockIDs[randomNum];
+	
 		// Take specimen containers for rock samples.
 		if (!hasSpecimenContainer()) {
 			boolean hasBox = takeSpecimenContainer();
@@ -225,10 +229,11 @@ public class ExploreSite extends EVAOperation {
 	 * @throws Exception if error collecting rock samples.
 	 */
 	private void collectRocks(double time) {
+		
 		if (hasSpecimenContainer()) {
-			
-			double siteTime = ((Exploration)person.getMission()).getSiteTime();
-			double chance = rocksToBeCollected * siteTime / 8000.0;
+
+//			double siteTime = ((Exploration)person.getMission()).getSiteTime();
+			double chance = rocksToBeCollected / 250;
 			
 			double probability = site.getNumEstimationImprovement() * chance * time * getEffectiveSkillLevel();
 			if (probability > .9)
@@ -236,15 +241,8 @@ public class ExploreSite extends EVAOperation {
 			logger.info(person, 10_000, "Collecting rock probability: " + Math.round(probability * 100.0)/100.0);
 			
 			if (RandomUtil.getRandomDouble(1.0D) <= probability) {
-				
-				if (rockId == -1) {
-					// Box is empty so choose a rock type at random
-					int randomNum = RandomUtil.getRandomInt(((ResourceUtil.rockIDs).length) - 1);
-					rockId = ResourceUtil.rockIDs[randomNum];
-					// Question: should we use ROCK_SAMPLES_ID instead of rockId ?
-				}
-				
-				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
+			
+				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, rockId);
 				
 				if (box != null) {
 					double mass = AVERAGE_ROCK_MASS * RandomUtil.getRandomDouble(.5, 2);
@@ -361,7 +359,7 @@ public class ExploreSite extends EVAOperation {
 	 */
 	private boolean takeSpecimenContainer() {
 		
-		Container container = rover.findContainer(EquipmentType.SPECIMEN_BOX, true, -1);
+		Container container = rover.findContainer(EquipmentType.SPECIMEN_BOX, true, rockId);
 		if (container != null) {
 			return container.transfer(person);
 		}

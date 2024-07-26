@@ -254,8 +254,7 @@ public class AnalyzeMapData extends Task {
      		if (numROIs == 0) {
 	     		// Look for the first site to be analyzed and explored
 	     		aSite = person.getAssociatedSettlement().getNextClosestMineralLoc(limit);
-	     		// determineFirstSiteCoordinate(-1, skill);
-	     		
+	
 	     		if (aSite != null) {
 		         	// Creates an initial explored site in SurfaceFeatures
 	     			ExploredLocation el = person.getAssociatedSettlement().createARegionOfInterest(aSite, skill);
@@ -272,9 +271,18 @@ public class AnalyzeMapData extends Task {
 	     		}
      		}
      		else {
-
-         		aSite = person.getAssociatedSettlement().getAComfortableNearbyMineralLocation(limit, skill);
-         		
+     			int rand = RandomUtil.getRandomInt(3);
+     			
+     			if (rand == 0) {
+     				// Pick one of the existing nearby mineral location that's not a ROI yet.
+     				aSite = person.getAssociatedSettlement().getExistingNearbyMineralLocation();
+     			}
+     			
+     			else {
+         			// Or get a new nearby mineral location  				
+     				aSite = person.getAssociatedSettlement().acquireNearbyMineralLocation(limit, getMarsTime().getMissionSol());         		
+     			}
+     			
          		if (aSite != null) {
     	         	// Creates an initial explored site in SurfaceFeatures
          			ExploredLocation loc = person.getAssociatedSettlement().createARegionOfInterest(aSite, skill);
@@ -283,7 +291,7 @@ public class AnalyzeMapData extends Task {
          				logger.info(person, 20_000, "Analyzed map data and zoned up a new ROI at " +  aSite.getFormattedString() + ".");
          			}
          			else {
-//         				logger.info(person, 20_000, "Analyzed map data and could not zone up a ROI.");
+             			logger.info(person, 20_000, "Analyzed map data and could not zone up a ROI.");
          			}
          		}
          		else {

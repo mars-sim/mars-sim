@@ -310,7 +310,7 @@ public class EquipmentInventory
 	 *
 	 * @param resource
 	 * @param quantity
-	 * @return quantity that cannot be retrieved
+	 * @return shortfall quantity that cannot be retrieved
 	 */
 	@Override
 	public double retrieveAmountResource(int resource, double quantity) {

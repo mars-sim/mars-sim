@@ -59,6 +59,7 @@ public abstract class OperateVehicle extends Task {
             "Task.phase.mobilize")); //$NON-NLS-1$
  	
  	private static final double THRESHOLD_SUNLIGHT = SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
+ 	
  	private static final double MAX_PERCENT_SPEED = 30;
  	
  	/** The speed at which the collision phase commence. */

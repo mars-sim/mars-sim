@@ -228,8 +228,7 @@ public class Weather implements Serializable, Temporal {
 				newSpeed = stormSpeed;
 			}
 			
-			else { // not a new sol, no need to check for dust storm
-				
+			else { 
 				int msol = clock.getMarsTime().getMillisolInt();
 				
 				// the value of optical depth doesn't need to be refreshed too often
@@ -736,15 +735,18 @@ public class Weather implements Serializable, Temporal {
 			}			
 		}
 
-		if (pulse.isNewSol()) {
-			// Calculate the new sun data for each location based on yestersol
-			coordinateList.forEach(this::calculateSunRecord);
-					
+		if (pulse.isNewHalfSol()) {
+
 			dailyVariationAirPressure += RandomUtil.getRandomDouble(-.01, .01);
 			if (dailyVariationAirPressure > .05)
 				dailyVariationAirPressure = .05;
 			else if (dailyVariationAirPressure < -.05)
 				dailyVariationAirPressure = -.05;
+		}
+		
+		if (pulse.isNewSol()) {
+			// Calculate the new sun data for each location based on yestersol
+			coordinateList.forEach(this::calculateSunRecord);
 		}
 		
 		return true;

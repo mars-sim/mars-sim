@@ -42,7 +42,8 @@ import com.mars_sim.tools.util.RandomUtil;
 public class Exploration extends EVAMission
 	implements SiteMission {
 
-	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.BIOLOGIST, JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);
+	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.BIOLOGIST, 
+			JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -61,9 +62,9 @@ public class Exploration extends EVAMission
 	private static final String EXPLORATION_SITE = "Exploration Site ";
 
 	/** Number of specimen containers required for the mission. */
-	public static final int REQUIRED_SPECIMEN_CONTAINERS = 4;
+	public static final int REQUIRED_SPECIMEN_CONTAINERS = 8;
 	/** Amount of time to explore a site. */
-	private static final double STANDARD_TIME_PER_SITE = 750.0;
+	private static final double STANDARD_TIME_PER_SITE = 500.0;
 	
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TOURISM, ObjectiveType.TRANSPORTATION_HUB);
 	
@@ -272,7 +273,7 @@ public class Exploration extends EVAMission
 
 		// Update exploration site completion.
 		double timeDiff = getPhaseDuration();
-		double completion = timeDiff / STANDARD_TIME_PER_SITE;
+		double completion = timeDiff / STANDARD_TIME_PER_SITE * 2;
 		if (completion > 1D) {
 			completion = 1D;
 		}

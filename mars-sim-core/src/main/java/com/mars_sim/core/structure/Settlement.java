@@ -3030,22 +3030,24 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Adds a nearby mineral location in random.
 	 * 
-	 * @param location
 	 * @param limit
 	 * @param sol
+	 * @param a new nearby mineral coordinate
 	 */
-	public void acquireNearbyMineralLocation(Coordinates location, double limit, int sol) {
+	public Coordinates acquireNearbyMineralLocation(double limit, int sol) {
 		
 		Map.Entry<Coordinates, Double> pair = surfaceFeatures.getMineralMap().
-				findRandomMineralLocation(location, limit + extraKM, sol, nearbyMineralLocations.keySet());
+				findRandomMineralLocation(getCoordinates(), limit + extraKM, sol, nearbyMineralLocations.keySet());
 		
 		if (pair == null) {
 			logger.warning(this, 30_000, "No nearby mineral locations found within " + Math.round(limit + extraKM) + " km.");
 			extraKM = extraKM + 0.3;
-			return;
+			return null;
 		}
 		
 		nearbyMineralLocations.put(pair.getKey(), pair.getValue());
+		
+		return pair.getKey();
 	}
 	
 	/**
@@ -3057,7 +3059,7 @@ public class Settlement extends Structure implements Temporal,
 	public Coordinates getNextClosestMineralLoc(double limit) {
 		int sol = masterClock.getMarsTime().getMissionSol();
 		
-		acquireNearbyMineralLocation(getCoordinates(), limit, sol);
+		acquireNearbyMineralLocation(limit, sol);
 		
 		int size =  nearbyMineralLocations.size();
 		
@@ -3108,6 +3110,28 @@ public class Settlement extends Structure implements Temporal,
 		return nearbyMineralLocations.size();
 	}
 	
+	
+	/**
+	 * Gets one of the existing nearby mineral location that has not been declared yet.
+	 * 
+	 * @param closest
+	 * @param limit
+	 * @param skill
+	 * @return
+	 */
+	public Coordinates getExistingNearbyMineralLocation() {
+
+		for (Coordinates c : nearbyMineralLocations.keySet()) {
+			for (ExploredLocation el : declaredMineralLocations) {
+				if (!c.equals(el.getLocation())) {
+					return c;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * Gets a random nearby mineral location that can be reached by any rover.
 	 * 
@@ -3124,8 +3148,8 @@ public class Settlement extends Structure implements Temporal,
 		if (limit == -1) {		
 			return getNextClosestMineralLoc(limit);
 		}
-		else
-			acquireNearbyMineralLocation(getCoordinates(), limit, sol);
+//		else
+//			acquireNearbyMineralLocation(getCoordinates(), limit, sol);
 		
 		logger.info(this, "nearbyMineralLocations: " + nearbyMineralLocations.size());
 		
@@ -3674,7 +3698,7 @@ public class Settlement extends Structure implements Temporal,
 	 *
 	 * @param resource
 	 * @param quantity
-	 * @return quantity that cannot be retrieved
+	 * @return shortfall quantity that cannot be retrieved
 	 */
 	@Override
 	public double retrieveAmountResource(int resource, double quantity) {

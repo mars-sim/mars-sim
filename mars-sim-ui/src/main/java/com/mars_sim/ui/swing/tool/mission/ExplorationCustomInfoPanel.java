@@ -98,6 +98,10 @@ extends MissionCustomInfoPanel implements UnitListener  {
 	public void updateMission(Mission mission) {
 		if (mission instanceof Exploration ex) {
 			
+			if (this.mission != null)
+				// Update the collection value label.
+				updateCollectionValueLabel();
+			
 			if (!mission.equals(this.mission)) {
 				
 				// Set the mission and mission rover.
