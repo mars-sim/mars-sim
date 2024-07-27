@@ -23,7 +23,7 @@ import com.mars_sim.ui.swing.MainDesktopPane;
 @SuppressWarnings("serial")
 public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 
-	private static final String CHEMICAL_ICON = "chemical";
+	private static final String ICON = "resource";
 	
 	// Data members
 	private ResourceProcessing processor;
@@ -40,7 +40,7 @@ public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelResourceProcessing.title"),
-			ImageLoader.getIconByName(CHEMICAL_ICON),
+			ImageLoader.getIconByName(ICON),
 			processor.getBuilding(), 
 			desktop
 		);

@@ -207,7 +207,7 @@ public class ThermalGeneration extends Function {
 	 */
 	private double[] calculateHeatGen(double heatLoad, double time) {
 		// Assume heatLoad is positive to begin with
-		
+//		logger.info(building, 5_000 , "heatLoad: " + Math.round(heatLoad * 100.0)/100.0);
 		double remainHeatReq = heatLoad;
 		double heatGen = 0D;
 		double heat[] = new double[2];
@@ -564,9 +564,9 @@ public class ThermalGeneration extends Function {
 		// if airHeatSink is +ve, it's okay to reduce it. 
 		// Trapped heat as a form of air heat sink is okay
 		if (airHeatSink > 0)
-			airHeatSink = .8 * airHeatSink;
-		else if (airHeatSink < 0)
-			airHeatSink = 1.2 * airHeatSink;
+			airHeatSink = 0.25 * airHeatSink;
+		else if (airHeatSink <= 0)
+			airHeatSink = -1.5 + airHeatSink;
 		
 		// waterheatsink in kW. If +ve, it traps heat in a room
 		// Trapped heat as a form of air heat sink is okay
@@ -575,40 +575,38 @@ public class ThermalGeneration extends Function {
 		// if waterHeatSink is +ve, it's okay to reduce it. 
 		// Trapped heat as a form of water heat sink is okay
 		if (waterHeatSink > 0)
-			waterHeatSink = .9 * waterHeatSink;
-		else if (waterHeatSink < 0)
-			waterHeatSink = 1.1 * waterHeatSink;
+			waterHeatSink = 0.25 * waterHeatSink;
+		else if (waterHeatSink <= 0)
+			waterHeatSink = -1.5 + waterHeatSink;
 		
 		double heatGen = 0;
 		double remainHeatReq = 0;
 		
-		if (heatReq - airHeatSink - waterHeatSink <= 0) {
-			// Still let it call calculateHeatGen in order to turn off heat sources
-			double heat[] = calculateHeatGen(0, millisols);	
-			heatGen = heat[0];
-			remainHeatReq = heat[1];
-		
-			if (heatGen > 40 || heatReq > 40 || heatReq < -40) {
-				logger.warning(building, 1_000L , "1. heatGen: " 
-						+ Math.round(heatGen * 1000.0)/1000.0
-						+ "  T: " + Math.round(building.getCurrentTemperature() * 10.0)/10.0
-						+ "  millisols: " + Math.round(millisols * 1000.0)/1000.0
-						+ "  heatReq: " + Math.round(heatReq * 1000.0)/1000.0
-						+ "  remainHeatReq: " + Math.round(remainHeatReq * 1000.0)/1000.0
-						+ "  preNetHeat: " + Math.round(preNetHeat * 1000.0)/1000.0
-						+ "  postNetHeat: " + Math.round(postNetHeat * 1000.0)/1000.0);
-			}
-		}
-		else {
-
-			double finalHeatReq = heatReq - .05 * postNetHeat - .025 * preNetHeat - airHeatSink - waterHeatSink;
-			
+//		if (heatReq + airHeatSink + waterHeatSink <= 0) {
+//			// Still let it call calculateHeatGen in order to turn off heat sources
+//			double heat[] = calculateHeatGen(0, millisols);	
+//			heatGen = heat[0];
+//			remainHeatReq = heat[1];
+//		
+//			if (heatGen > 40 || heatReq > 40 || heatReq < -40) {
+//				logger.warning(building, 1_000L , "1. heatGen: " 
+//						+ Math.round(heatGen * 1000.0)/1000.0
+//						+ "  T: " + Math.round(building.getCurrentTemperature() * 10.0)/10.0
+//						+ "  millisols: " + Math.round(millisols * 1000.0)/1000.0
+//						+ "  heatReq: " + Math.round(heatReq * 1000.0)/1000.0
+//						+ "  remainHeatReq: " + Math.round(remainHeatReq * 1000.0)/1000.0
+//						+ "  preNetHeat: " + Math.round(preNetHeat * 1000.0)/1000.0
+//						+ "  postNetHeat: " + Math.round(postNetHeat * 1000.0)/1000.0);
+//			}
+//		}
+//		else {
+			double finalHeatReq = heatReq - .5 * airHeatSink - .5 * postNetHeat - airHeatSink - waterHeatSink;		
 			// Find out how much heat can be generated to match this requirement
 			double heat[] = calculateHeatGen(finalHeatReq, millisols);
 			heatGen = heat[0];
 			remainHeatReq = heat[1];
 			
-			if (remainHeatReq > 0.05) {
+			if (remainHeatReq > 0.5) {
 				logger.warning(building, 10_000L , "2. Unmet remaining heat req: " 
 						+ Math.round(remainHeatReq) + " kW.");
 			}
@@ -624,7 +622,7 @@ public class ThermalGeneration extends Function {
 						+ "  postNetHeat: " + Math.round(postNetHeat * 1000.0)/1000.0
 						+ "  finalHeatReq: " + Math.round(finalHeatReq * 1000.0)/1000.0);
 			}
-		}		
+//		}		
 		
 
 		
@@ -644,6 +642,16 @@ public class ThermalGeneration extends Function {
 	}
 	
 	/**
+	 * Sets the heat surplus (excess heat generated) and call unitUpdate.
+	 * 
+	 * @return heat in kW.
+	 */
+	public void setHeatSurplus(double heat)  {
+		heatSurplusCache = heat;
+		building.fireUnitUpdate(UnitEventType.HEAT_SURPLUS_EVENT);
+	}
+	
+	/**
 	 * Time passing for the building.
 	 * 
 	 * @param time amount of time passing (in millisols)
@@ -656,16 +664,6 @@ public class ThermalGeneration extends Function {
 			moderateTime(pulse.getElapsed());
 		}
 		return valid;
-	}
-
-	/**
-	 * Sets the heat surplus (excess heat generated) and call unitUpdate.
-	 * 
-	 * @return heat in kW.
-	 */
-	public void setHeatSurplus(double heat)  {
-		heatSurplusCache = heat;
-		building.fireUnitUpdate(UnitEventType.HEAT_SURPLUS_EVENT);
 	}
 	
 	/**

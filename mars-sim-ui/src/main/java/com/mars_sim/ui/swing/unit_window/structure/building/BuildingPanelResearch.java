@@ -8,6 +8,7 @@ package com.mars_sim.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -73,9 +74,12 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 
+		JPanel topPanel = new JPanel(new BorderLayout(5, 5));
+		center.add(topPanel, BorderLayout.NORTH);
+		
 		// Prepare label panel
 		AttributePanel labelPanel = new AttributePanel(6);
-		center.add(labelPanel, BorderLayout.NORTH);
+		topPanel.add(labelPanel, BorderLayout.NORTH);
 	
 		// Prepare researcher number label
 		researchersCache = lab.getResearcherNum();
@@ -123,7 +127,7 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		listPanel.add(specialtyTA);
 		addBorder(listPanel, Msg.getString("BuildingPanelResearch.namesOfSpecialties"));
-		center.add(listPanel, BorderLayout.CENTER);
+		topPanel.add(listPanel, BorderLayout.CENTER);
 	}
 
 	/**

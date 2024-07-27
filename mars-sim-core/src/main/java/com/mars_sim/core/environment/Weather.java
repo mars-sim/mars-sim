@@ -905,7 +905,7 @@ public class Weather implements Serializable, Temporal {
 		dustStorms.add(ds);
 		s.setDustStorm(ds);
 		newStormID++;
-//		logger.info(s, ds.getName() + " (type " + stormType.getName() + ") was on the radar.");
+		logger.info(s, 30_000, ds.getName() + " (type " + stormType.getName() + ") was visible on radar.");
 		return ds;
 	}
 
@@ -931,7 +931,7 @@ public class Weather implements Serializable, Temporal {
 						+ " (size " + ds.getSize() + " with wind speed "
 						+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.";
 					s.setDustStormMsg(msg);
-					logger.info(s, msg);
+					logger.info(s, 30_000, msg);
 				}
 			}
 		}

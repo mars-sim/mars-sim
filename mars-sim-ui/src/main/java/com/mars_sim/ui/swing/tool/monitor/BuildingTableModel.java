@@ -34,11 +34,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	private static final int TYPE = SETTLEMENT + 1;
 	private static final int CATEGORY = TYPE + 1;
 	
-	private static final int POWER_MODE = CATEGORY + 1;
-	private static final int POWER_REQ = POWER_MODE + 1;
-	private static final int POWER_GEN = POWER_REQ + 1;
-	
-	private static final int TEMPERATURE = POWER_GEN + 1;
+	private static final int TEMPERATURE = CATEGORY + 1;
 	private static final int DELTA_TEMP = TEMPERATURE + 1;
 	private static final int DEV_TEMP = DELTA_TEMP + 1;
 	
@@ -46,13 +42,15 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	private static final int HEAT_REQ = HEAT_GEN + 1;
 	private static final int HEAT_SURPLUS = HEAT_REQ + 1;
 	
-	private static final int PRE_NET_HEAT = HEAT_SURPLUS + 1;
+	private static final int HEAT_GAIN = HEAT_SURPLUS + 1;
+	private static final int HEAT_LOSS = HEAT_GAIN + 1;
+	private static final int PRE_NET_HEAT = HEAT_LOSS + 1;
 	private static final int POST_NET_HEAT = PRE_NET_HEAT + 1;
 	
-	private static final int VENT_IN = POST_NET_HEAT + 1;
-	private static final int VENT_OUT = VENT_IN + 1;
+	private static final int PASSIVE_VENT = POST_NET_HEAT + 1;
+	private static final int ACTIVE_VENT = PASSIVE_VENT + 1;
 	
-	private static final int AIR_HEAT_SINK = VENT_OUT + 1;
+	private static final int AIR_HEAT_SINK = ACTIVE_VENT + 1;
 	private static final int WATER_HEAT_SINK = AIR_HEAT_SINK + 1;
 
 	private static final int EXCESS_HEAT = WATER_HEAT_SINK + 1;
@@ -62,7 +60,11 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	private static final int FUEL = ELECTRIC + 1;
 	private static final int NUCLEAR = FUEL + 1;
 	
-	private static final int COLUMNCOUNT = NUCLEAR + 1;
+	private static final int POWER_MODE = NUCLEAR + 1;
+	private static final int POWER_REQ = POWER_MODE + 1;
+	private static final int POWER_GEN = POWER_REQ + 1;
+	
+	private static final int COLUMNCOUNT = POWER_GEN + 1;
 
 	private static final String KW_OPEN_PARA = " kW - ";
 	private static final String PERCENT_CLOSE_PARA = " %";
@@ -79,6 +81,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 		COLUMNS[SETTLEMENT] = new ColumnSpec("Settlement", String.class);
 		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("BuildingTableModel.column.type"), String.class);
 		COLUMNS[CATEGORY] = new ColumnSpec(Msg.getString("BuildingTableModel.column.category"), String.class);	
+		
 		COLUMNS[POWER_MODE] = new ColumnSpec(Msg.getString("BuildingTableModel.column.power.mode"), String.class);		
 		COLUMNS[POWER_REQ]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.power.req"), Double.class);
 		COLUMNS[POWER_GEN]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.power.gen"), Double.class);
@@ -91,8 +94,11 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 		COLUMNS[HEAT_REQ] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.req"), Double.class);
 		COLUMNS[HEAT_SURPLUS] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.surplus"), Double.class);
 		
-		COLUMNS[VENT_IN] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.vent.in"), Double.class);
-		COLUMNS[VENT_OUT] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.vent.out"), Double.class);
+		COLUMNS[HEAT_GAIN]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.gain"), Double.class);
+		COLUMNS[HEAT_LOSS] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.loss"), Double.class);
+		
+		COLUMNS[PASSIVE_VENT] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.vent.passive"), Double.class);
+		COLUMNS[ACTIVE_VENT] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.vent.active"), Double.class);
 		
 		COLUMNS[AIR_HEAT_SINK] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.air.sink"), Double.class);
 		COLUMNS[WATER_HEAT_SINK] = new ColumnSpec(Msg.getString("BuildingTableModel.column.heat.water.sink"), Double.class);
@@ -154,10 +160,11 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 		case NAME: 
 			result = building.getName();
 			break;
+			
 		case SETTLEMENT: 
 			result = building.getSettlement().getName();
 			break;
-
+			
 		case TYPE: 
 			result = building.getBuildingType();
 			break;
@@ -167,116 +174,114 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 			break;
 
 		case POWER_MODE:
-			if (power != null)
+			if (power != null && building.getPowerMode() != null)
 				result = building.getPowerMode().getName();
 			break;
 						
 		case POWER_REQ:
 			if (power != null)
-				result =  building.getFullPowerRequired();
+				result = building.getFullPowerRequired();
 			break;
 			
 		case POWER_GEN:
 			if (power != null)
-				result =  building.getPowerGeneration().getGeneratedPower();
+				result = building.getGeneratedPower();
 			break;
 			
 		case DELTA_TEMP:
-			result = building.getDeltaTemp();
+			if (furnace != null)
+				result = building.getDeltaTemp();
 			break;
 
 		case DEV_TEMP:
-			result = building.getDevTemp();
+			if (furnace != null)
+				result = building.getDevTemp();
 			break;
 
-		case VENT_IN:
-			if (furnace != null) {
-				result = building.getVentInHeat();
-			}
-			return result;
+		case PASSIVE_VENT:
+			if (furnace != null)
+				result = building.getPassiveVentHeat();
+			break;
 			
-		case VENT_OUT:
-			if (furnace != null) {
-				result = building.getVentOutHeat();
-			}
-			return result;
+		case ACTIVE_VENT:
+			if (furnace != null)
+				result = building.getActiveVentHeat();
+			break;
 			
 		case HEAT_SURPLUS:
-			if (furnace != null) {
-				result = building.getHeatDev();
-			}
-			return result;
+			if (furnace != null)
+				result = building.getHeatSurplus();
+			break;
 			
 		case HEAT_GEN:
-			if (furnace != null) {
+			if (furnace != null)
 				result = building.getHeatGenerated();
-			}
-			return result;
+			break;
 			
 		case HEAT_REQ:
-			if (furnace != null) {
+			if (furnace != null)
 				result = building.getHeatRequired();
-			}
-			return result;
+			break;
+			
+		case HEAT_GAIN:
+			if (furnace != null)
+				result = building.getHeatGain();
+			break;
+			
+		case HEAT_LOSS:
+			if (furnace != null)
+				result = building.getHeatLoss();
+			break;
 			
 		case PRE_NET_HEAT:
-			if (furnace != null) {
+			if (furnace != null)
 				result = building.getPreNetHeat();
-			}
-			return result;
+			break;
 			
 		case POST_NET_HEAT:
-			if (furnace != null) {
+			if (furnace != null)
 				result = building.getPostNetHeat();
-			}
-			return result;
-			
+			break;
 			
 		case AIR_HEAT_SINK:
-			if (furnace != null) {
-				result = furnace.getHeating().getAirHeatSink();
-			}
-			return result;
+			if (furnace != null)
+				result = building.getAirHeatSink();
+			break;
 			
 		case WATER_HEAT_SINK:
-			if (furnace != null) {
-				result = furnace.getHeating().getWaterHeatSink();
-			}
-			return result;
+			if (furnace != null)
+				result = building.getWaterHeatSink();
+			break;
 			
 		case EXCESS_HEAT:
-			if (furnace != null) {
+			if (furnace != null)
 				result = building.getExcessHeat();
-			}
-			return result;
+			break;
 			
 		case TEMPERATURE:
-			result = building.getCurrentTemperature();
+			if (furnace != null)
+				result = building.getCurrentTemperature();
 			break;
 			
 		case SOLAR:
-			if (furnace != null) {
+			if (furnace != null)
 				result = getHeatSourceGen(HeatSourceType.SOLAR_HEATING, furnace);
-			}
-			return result;
+			break;
 			
 		case ELECTRIC:
-			if (furnace != null) {
+			if (furnace != null)
 				result = getHeatSourceGen(HeatSourceType.ELECTRIC_HEATING, furnace);
-			}
-			return result;
+			break;
 			
 		case NUCLEAR:
-			if (furnace != null) {
+			if (furnace != null)
 				result = getHeatSourceGen(HeatSourceType.THERMAL_NUCLEAR, furnace);
-			}
-			return result;
+			break;
 			
 		case FUEL:
-			if (furnace != null) {
+			if (furnace != null)
 				result = getHeatSourceGen(HeatSourceType.FUEL_HEATING, furnace);
-			}
-			return result;
+			break;
 			
 		default:
 			break;
@@ -371,25 +376,33 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 				
 				case REQUIRED_HEAT_EVENT -> HEAT_REQ;
 				case GENERATED_HEAT_EVENT -> HEAT_GEN;
+				
+//				case HEAT_MATCH_EVENT -> HEAT_MATCH;
+				case HEAT_SURPLUS_EVENT -> HEAT_SURPLUS;
+				
 				case NET_HEAT_0_EVENT -> PRE_NET_HEAT;
+				case NET_HEAT_1_EVENT -> POST_NET_HEAT;
 				
 				case TEMPERATURE_EVENT -> TEMPERATURE;
 				case DELTA_T_EVENT -> DELTA_TEMP;
 				case DEV_T_EVENT -> DEV_TEMP;
 				
-				case EXCESS_HEAT_EVENT -> EXCESS_HEAT;
-				case VENT_IN_EVENT -> VENT_IN;
-				case VENT_OUT_EVENT -> VENT_OUT;
-				case HEAT_MATCH_EVENT -> DELTA_TEMP;
-				case HEAT_SURPLUS_EVENT -> HEAT_SURPLUS;
+				case PASSIVE_VENT_EVENT -> PASSIVE_VENT;
+				case ACTIVE_VENT_EVENT -> ACTIVE_VENT;
+
+				case HEAT_GAIN_EVENT -> HEAT_GAIN;
+				case HEAT_LOSS_EVENT -> HEAT_LOSS;
 				
 				case AIR_HEAT_SINK_EVENT -> AIR_HEAT_SINK;
 				case WATER_HEAT_SINK_EVENT -> WATER_HEAT_SINK;
+				
+				case EXCESS_HEAT_EVENT -> EXCESS_HEAT;
 				
 				case SOLAR_HEAT_EVENT -> SOLAR;
 				case ELECTRIC_HEAT_EVENT -> ELECTRIC;
 				case NUCLEAR_HEAT_EVENT -> NUCLEAR;
 				case FUEL_HEAT_EVENT -> FUEL;
+				
 				default -> -1;
 			};
 

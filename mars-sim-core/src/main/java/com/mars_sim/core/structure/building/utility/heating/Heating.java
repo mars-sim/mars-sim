@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Heating.java
- * @date 2024-07-03
+ * @date 2024-07-26
  * @author Manny Kung
  */
 package com.mars_sim.core.structure.building.utility.heating;
@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.Weather;
 import com.mars_sim.core.logging.SimLogger;
@@ -22,6 +21,7 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingConfig;
 import com.mars_sim.core.structure.building.FunctionSpec;
 import com.mars_sim.core.structure.building.function.ClassicAirlock;
+import com.mars_sim.core.structure.building.function.LifeSupport;
 import com.mars_sim.core.structure.building.function.farming.Crop;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
@@ -41,15 +41,11 @@ public class Heating implements Serializable {
 	private static final int LOSS_LIMIT = -40;
 	/** The heat gain limit for flagging errors. */
 	private static final int GAIN_LIMIT = 40;
-	/** The fine-tuneing param for a refresh cycle. */
-	private static final int PER_UPDATE = 1;
 	/** The assumed maximum indoor temperature. */
 	private static final int MAX_INDOOR_TEMPERATURE = 40;
 	/** The assumed minimum indoor temperature. */
 	private static final int MIN_INDOOR_TEMPERATURE = 0;
-	/** The maximum error value. */
-	private static final int MAX_ERROR_VALUE = 100;
-	
+
 	// Data members
 	/** The gas constant is in the unit of J/K/mol. */
 	private static final double GAS_CONSTANT =  8.31446261815324;
@@ -180,14 +176,18 @@ public class Heating implements Serializable {
 	private double heatGenCache;
 	/** The initial net heat gain/loss due to thermal system. */
 	private double preNetHeatCache;
+	/** The heat gain of the thermal system. */
+	private double heatGainCache;
+	/** The heat loss of the thermal system. */
+	private double heatLossCache;	
 	/** The post net heat gain/loss due to thermal system. */
 	private double postNetHeatCache;
 	/** The excess heat pumped in from server room's equipment. */
 	private double excessHeatCache;
 	/** The incoming heat arriving at this building by the ventilation system. */
-	private double ventInHeatCache;
+	private double passiveVentHeatCache;
 	/**  The outgoing heat leaving this building by the ventilation system. */
-	private double ventOutHeatCache;
+	private double activeVentHeatCache;
 	/** The base power down heat requirement from buildings.xml. */
 	private double basePowerDownHeatRequirement = 0;
 	/** The U value of the ceiling or floor. */
@@ -200,10 +200,13 @@ public class Heating implements Serializable {
 	private double tPreset;
 	/** The air heat sink and the water heat sink. */
 	private double[] heatSink = new double[2];
+	/** The air heat sink limit and the water heat sink limit. */
+	private double[] heatSinkLimit = new double[2];
+
 	/** The square root of the area of this building. */
-//	private double areaFactor;
+	private double areaFactor;
 	/** The slice of time [in seconds] per millisol. */
-	private double timeSlice = MarsTime.SECONDS_PER_MILLISOL / PER_UPDATE;
+//	private double timeSlice = MarsTime.SECONDS_PER_MILLISOL / PER_UPDATE;
 	/** The delta temperature due to the heat transfer. */
 	private double deltaTCache; 
 	/** The deviation temperature (between the current temperature and the preset temperature). */
@@ -241,7 +244,7 @@ public class Heating implements Serializable {
 			
 		floorArea = building.getFloorArea();
 	
-//		areaFactor = Math.sqrt(Math.sqrt(floorArea));
+		areaFactor = Math.sqrt(floorArea) / 2;
 
 		switch(building.getCategory()) {
 			case CONNECTION:
@@ -320,7 +323,7 @@ public class Heating implements Serializable {
 		
 		tPreset = building.getPresetTemperature();
 		
-		currentTemperature = tPreset;
+		currentTemperature = tPreset + 5;
 	}
     
     /**
@@ -349,8 +352,7 @@ public class Heating implements Serializable {
 		// The outside temperature in deg celsius
 		double outTCelsius = building.getSettlement().getOutsideTemperature();
 		
-		error = checkError("outTCelsius", 
-				+ Math.round(outTCelsius * 10.0)/10.0) || error;
+		error = checkError("outTCelsius", + Math.round(outTCelsius * 10.0)/10.0, 100) || error;
 		
 		if (error || outTCelsius < -100) {
 			logger.warning(building, 20_000, "outTCelsius: " + Math.round(outTCelsius * 10.0)/10.0
@@ -374,7 +376,7 @@ public class Heating implements Serializable {
 		double irradiance = surface.getSolarIrradiance(location) / 1000.0 ; 
 		// if sunlight = 25 W/m2, I = 25/1000 = 0.025 kW/m2
  
-		error = checkError("I", irradiance) || error;
+		error = checkError("I", irradiance, 1) || error;
 		
 		// (2) CALCULATE HEAT GAIN 
 		
@@ -391,58 +393,56 @@ public class Heating implements Serializable {
 		double[] gainValue = calculateHeatGain(numEVAgoers, irradiance);
 		double gain = gainValue[0];
 		double canopyHeatGain = gainValue[1];		
-		
+//		logger.info(building, "gain: " + Math.round(gain * 100.0)/100.0 + " kW");
+		// Set heat gain
+		setHeatGain(gain);
+				
 		// (3) CALCULATE HEAT LOSS
 		
 		double loss = calculateHeatLoss(canopyHeatGain, outTCelsius, deltaTinTout, 
 	    		inTKelvin, outTKelvin, irradiance,
 	    		numEVAgoers);
+//		logger.info(building, "loss: " + Math.round(loss * 100.0)/100.0 + " kW");
+		// Set heat gain
+		setHeatLost(loss);
 		
 		// (4) CALCULATE THE NET HEAT
 
 		// (4a) FIND THE DIFFERENCE between heat gain, heat loss 
 		double diffHeatGainLoss = gain + loss;
-		
+//		logger.info(building, "diffHeatGainLoss: " + Math.round(diffHeatGainLoss * 100.0)/100.0 + " kW");
 		// Set the initial net heat transfer
 		setPreNetHeat(diffHeatGainLoss);
-		
-		error = checkError("diffHeatGainLoss", diffHeatGainLoss) || error;
+//		logger.info(building, 0, "setPreNetHeat - diffHeatGainLoss: " + Math.round(diffHeatGainLoss * 100.0)/100.0);
+		error = checkError("diffHeatGainLoss", diffHeatGainLoss, 30) || error;
 		
 		if (diffHeatGainLoss > 30) {
-			logger.warning(building, 20_000, "diffHeatGainLoss: " + diffHeatGainLoss + " > 30.");
+			logger.warning(building, "diffHeatGainLoss: " + Math.round(diffHeatGainLoss * 10.0)/10.0 + " kW");
 			error = true;
 		}
 		else if (diffHeatGainLoss < -30) {
-			logger.warning(building, 20_000, "diffHeatGainLoss: " + diffHeatGainLoss + " < -30.");
+			logger.warning(building, "diffHeatGainLoss: " + Math.round(diffHeatGainLoss * 10.0)/10.0 + " kW");
 			error = true;
 		}
-		
-		double upperBound = Math.min(2, millisols);
-		
-		double lowerBound = Math.max(0.011, upperBound);
-		
-		double seconds = timeSlice * lowerBound;
-		
+			
+		double seconds = Math.max(0.011, Math.min(2, MarsTime.SECONDS_PER_MILLISOL * millisols));
+				
 //		logger.info(building, 20_000, 
 //				"millisols: " + Math.round(millisols * 1000.0)/1000.0
 //				+ "  upperBound: " + Math.round(upperBound * 10.0)/10.0
 //				+ "  lowerBound: " + Math.round(lowerBound * 10.0)/10.0
 //				+ "  seconds: " + Math.round(seconds * 1000.0)/1000.0);
-				
+		
+		// Note: This nowT is a reference for calculating how much air can sink the heat only
+		// and will not be used for adjusting indoor temperature
+		double nowT = computeNewT(inTCelsius, diffHeatGainLoss, seconds);
+			
 		// (5) APPLY THE HEAT SINKS - AIR MOISTURE AND WATER
 		
 		// (5a) Find the air moisture heat sink
 		
-		double[] value = computeAirHeatSink(diffHeatGainLoss, seconds);
-		double dHeat1 = value[0];
-		double convFactorAir = value[1];
+		double convFactor = 0;
 		
-		double convFactor = convFactorAir;
-
-		double newT = 0;
-
-		// (5c) Find the body mass of water to act as water heat sink
-			
 		// e.g. Fish Farm and Algae Pond, etc.
 		double waterMass = 0;
 		
@@ -489,65 +489,97 @@ public class Heating implements Serializable {
 //		else if (!isStorage) {
 //			waterMass = floorArea * 5 / 4.5;			
 //		}
-		
-//		error = checkError("waterMass", waterMass) || error;
-		
+
 		// Future: pack water bladder into the inner wall of each building 
 
-		// (5d) Does it have any body of water 
-		
+		// (5b) Does it have any body of water 
+	
 		if (waterMass > 0) {
-			// (5d1) Yes. Calculate the water heat sink
+			// (5b1) Yes. Calculate the water heat sink
 			
-			double[] value2 = computeWaterHeatSink(dHeat1, waterMass, seconds);
-			
+			// Note: This nowT is a reference for calculating how much water can sink the heat only
+			// and will not be used for adjusting indoor temperature
+			nowT = computeNewT((nowT + inTCelsius)/2, diffHeatGainLoss, seconds);
+		
+			double[] value2 = computeWaterHeatSink((nowT + inTCelsius)/2, diffHeatGainLoss, waterMass, seconds);
+
 			// dHeat2 is in kW, not kJ
-			double dHeat2 = value2[0];
+			double dHeatWater = value2[0];
+//			logger.info(building, 0, "waterMass - dHeatWater: " + Math.round(dHeatWater * 100.0)/100.0);
+			// Update diffHeatGainLoss
+			diffHeatGainLoss += dHeatWater;
+//			logger.info(building, 0, "waterMass - diffHeatGainLoss: " + Math.round(diffHeatGainLoss * 100.0)/100.0);
 			
 			double convFactorWater = value2[1];
-			convFactor = convFactorWater;
-				
-			error = checkError("dHeat2", dHeat2) || error;
 			
-			setPostNetHeat(dHeat2);
+			// Set convFactor as convFactorWater
+			convFactor = convFactorWater;
 		}
 		else {
-			// (5d2) No. Save the net heat after applying the air heat sink only to buffer the net heat
-		
-			error = checkError("dHeat1", dHeat1) || error;
-			
-			setPostNetHeat(dHeat1);		
+			// (5b2) No. Save the net heat after applying the air heat sink only to buffer the net heat		
 		}
+
+//		logger.info(building, 0, "setPostNetHeat: " + Math.round(getPostNetHeat() * 100.0)/100.0);
+				
+		// (5b) Find the air moisture heat sink
 		
+		double[] value1 = computeAirHeatSink((nowT + inTCelsius)/2, diffHeatGainLoss, seconds);
+		double dHeatAir = value1[0];
+		double convFactorAir = value1[1];
+		
+		// Update diffHeatGainLoss
+		diffHeatGainLoss += dHeatAir;
+//		logger.info(building, 0, "airMass - diffHeatGainLoss: " + Math.round(diffHeatGainLoss * 100.0)/100.0);
+		
+		// First assume using convFactorAir
+		convFactor = convFactorAir;
+
+	
 		// (6) CALCULATE THE INSTANTANEOUS CHANGE OF TEMPERATURE (DELTA T) (in degrees celsius)  
 		
 		// post net heat is in kW, not kJ
-		newT = computeNewT(getPostNetHeat());
-
-		return new double[] {newT, convFactor};
+		
+		// Note: multiply getPostNetHeat() with seconds cause temperature instability
+		
+		error = checkError("diffHeatGainLoss", diffHeatGainLoss, 30) || error;
+		
+		setPostNetHeat(diffHeatGainLoss);
+		
+		// use the last good inTCelsius to derive the real nowT
+		nowT = computeNewT(inTCelsius, diffHeatGainLoss, seconds);
+		
+//		logger.info(building, 0, "nowT: " + Math.round(nowT * 100.0)/100.0);
+		return new double[] {nowT, convFactor};
 	}
 
 	/**
 	 * Computes the new temperature based on the entropy and the ideal gas law.
 	 * 
-	 * @param heat in kJ
+	 * @param nowT in deg celsius
+	 * @param heat in kW
 	 * @return
 	 */
-	private double computeNewT(double heatkJ) {
-		double oldK = C_TO_K + currentTemperature;
+	private double computeNewT(double nowT, double heatkW, double seconds) {
+		double t = nowT;
+		double k = C_TO_K + t;
+		double numMoles = 0;
+		LifeSupport ls = building.getLifeSupport();
+		if (ls != null)
+			numMoles = ls.getAir().getTotalNumMoles();
+		else
+			return 0;
 		
-		double numMoles = building.getLifeSupport().getAir().getTotalNumMoles();
-		
-		// ΔS = Q / T = [J] / [K] = [J/K]
-		// delta entropy in [J/K]
-		
-		// [J/K] = kW * seconds * 1000 / K
-		double entropyChange = heatkJ * 1000 / oldK;
+		// ΔS = Q / T = [J] / [K] = [J/K]	
+		// delta entropy in [J/K] or [kJ/K/1000] or [kW / seconds / K / 1000]	
+		// Since J = Ws	
+	
+		// In estimateRequiredHeat, double estReqHeatkW = entropyChange * k / 1000.0 / seconds
+		double entropyChange = heatkW * seconds * 1000 / k;
 
 		double ratio = entropyChange / GAS_CONSTANT / numMoles;
 		
 		// newT in [C]
-		double newT = oldK * Math.exp(ratio) - C_TO_K;
+		double newT = k * Math.exp(ratio) - C_TO_K;
 		
 		// T2 = T1 * exp(ΔS / (nR))
 		// n = 0.0821 L·atm/mol·K 
@@ -563,19 +595,21 @@ public class Heating implements Serializable {
 			error = true;
 		}
 		
-		if (error) {
-			logger.info(building, 20_000,
-				"oldT: " + Math.round((oldK - C_TO_K) * 100.0)/100.0
+		if (error)
+			logger.info(building, 
+					20_000,
+				"computeNewT - "
+				+ "oldT: " + Math.round(t * 100.0)/100.0
 				+ "  newT: " + Math.round(newT * 100.0)/100.0
 				+ "  ratio: " + Math.round(ratio * 10000.0)/10000.0
-				+ "  heatkJ: " + Math.round(heatkJ * 1000.0)/1000.0 + " kJ"
-				+ "  entropyChange: " + Math.round(entropyChange * 1_000_0.0)/1_000_0.0 + " kJ/K"
+				+ "  heatkW: " + Math.round(heatkW * 1000.0)/1000.0 + " kW"
+				+ "  entropyChange: " + Math.round(entropyChange * 1_000.0)/1_000.0 + " kJ/K"
 				+ "  numMoles: " + Math.round(numMoles * 10.0)/10.0
-				+ "  dt: " + Math.round((newT - oldK + C_TO_K) * 100.0)/100.0
+				+ "  seconds: " + Math.round(seconds * 100.0)/100.0				
+				+ "  dt: " + Math.round((newT - k + C_TO_K) * 100.0)/100.0
 				);
-		}
 		
-		newT = Math.max(0, Math.min(40, newT));
+//		newT = Math.max(0, Math.min(40, newT));
 		
 		return newT;
 	}
@@ -584,71 +618,70 @@ public class Heating implements Serializable {
 	 * Estimates the required heat to produce.
 	 * See http://electron6.phys.utk.edu/PhysicsProblems/Mechanics/9-Gereral%20Physics/Entropy.html
 	 * 
+	 * @param newT the newly calculated temperature
 	 * @param millisols
 	 * @return
 	 */
-	private double estimateRequiredHeat(double millisols) {
-		double t = C_TO_K + getCurrentTemperature();
+	private double estimateRequiredHeat(double newT, double millisols) {
+		double seconds = millisols * MarsTime.SECONDS_PER_MILLISOL;
 		
-		double logTs = Math.log((C_TO_K + tPreset)/t);
-		
+		double k = C_TO_K + newT;
+		double tPresetK = C_TO_K + tPreset;
+		double logTs = Math.log(tPresetK/k);
 		double numMoles = building.getLifeSupport().getAir().getTotalNumMoles();
-		
-		// ΔS = Q / T = [J] / [K] = [J/K]
-		// entropy in [J/K]
 		double nR = GAS_CONSTANT * numMoles;
 		
-		// ΔS = Q / T = [J] / [K] = [J/K]
-		// delta entropy in [J/K]
-		// previously double entropyChange = heatkJ * 1000 / oldT;
-		// heatkJ = entropyChange / 1000 * oldT
-		
-		double entropyChange = logTs * nR;
-
-		double deltaHeatJ = entropyChange * t;
-
-		double seconds = millisols * timeSlice;
-		
-//		double bound = Math.max(0.000_001, Math.min(100_000, 1000.0 / seconds));
-//		double factor = deltaHeatJ / 1000.0 / seconds; 
-		
+		// ΔS = Q / T = [J] / [K] = [J/K]	
+		// delta entropy in [J/K] or [kJ/K/1000] or [kW / seconds / K / 1000]	
+		// Since J = W * s	
+		// [J/K] = [kW * seconds / 1000 / K]
+	
 		// 1 Wh = 3.6 kJ
 		// 1 kWh = 3.6 MJ
-		
 		// 1 W = J / s
 		// 1 kW = kJ / s
+				
+		double entropyChange = logTs * nR;
 		
+		// In computeNewT(), double entropyChange = heatkW * seconds * 1000 / k
+//		double estReqHeatkW = entropyChange * k / 1000.0 / seconds;
+		
+		double deltaHeatJ = entropyChange * k;
+
 //		// Find the estimate required heat in kW (not kWh)
 		// Note: the advantage of using kW, instead of kWh is that kW can be compared across
 		// the board
-		double estReqHeat = deltaHeatJ / 1000.0 / seconds;
+		double estReqHeatkW = deltaHeatJ / 1000.0 / seconds;
 		
-		if (estReqHeat > 40) {
-			logger.warning(building, 20_000, "estReqHeat: " + Math.round(estReqHeat * 100.0)/100.0 + " > 40.");
+//		logger.info(building, "estReqHeatkW: " + Math.round(estReqHeatkW * 100.0)/100.0 + " kW");
+		
+		if (estReqHeatkW > 40) {
+			logger.warning(building, 20_000, "estReqHeatkW: " + Math.round(estReqHeatkW * 10000.0)/10000.0 + " > 40.");
 			error = true;
 		}
 		
-		else if (estReqHeat < -40) {
-			logger.warning(building, 20_000, "estReqHeat: " + Math.round(estReqHeat * 100.0)/100.0 + " < -40.");
+		else if (estReqHeatkW < -40) {
+			logger.warning(building, 20_000, "estReqHeat: " + Math.round(estReqHeatkW * 10000.0)/10000.0 + " < -40.");
 			error = true;
 		}
 		
-		if (error) {
-			logger.info(building, 20_000,
-				"estReqHeat: " + Math.round(estReqHeat * 100.0)/100.0
+		if (error)
+			logger.info(building, 
+					20_000,
+				"estimateRequiredHeat - "
+				+ "estReqHeat: " + Math.round(estReqHeatkW * 100.0)/100.0 + " kW"
+				+ "  deltaHeatJ: " + Math.round(deltaHeatJ * 10.0)/10.0 + " J"
 				+ "  millisols: " + Math.round(millisols * 1000.0)/1000.0
+				+ "  seconds: " + Math.round(seconds * 1000.0)/1000.0
 				+ "  logTs: " + Math.round(logTs * 1000.0)/1000.0
 				+ "  entropyChange: " + Math.round(entropyChange * 100.0)/100.0 + " J/K"
-				+ "  deltaHeatJ: " + Math.round(deltaHeatJ * 10.0)/10.0 + " J"
 				+ "  nR: " + Math.round(nR * 10.0)/10.0
-//				+ "  factor: " + Math.round(factor * 1000.0)/1000.0 + " /s"
 				+ "  numMoles: " + Math.round(numMoles * 10.0)/10.0
 				);
-		}
 		
-		estReqHeat = Math.max(-40, Math.min(40, estReqHeat));
+//		estReqHeatkW = Math.max(-40, Math.min(40, estReqHeatkW));
 		
-		return estReqHeat;
+		return estReqHeatkW;
 	}
 	
     /**
@@ -662,12 +695,12 @@ public class Heating implements Serializable {
 		// Add the heat generated in response to the rise or drop in temperature from last refresh cycle
 		double heatGenCache = getHeatGenerated();
 		
-		error = checkError("heatGenCache", heatGenCache) || error;
+		error = checkError("heatGenCache", heatGenCache, 30) || error;
 		
 		// Add the excess heat from computation
 		double excessHeat = getExcessHeat();
 		
-		error = checkError("excessHeat", excessHeat) || error;
+		error = checkError("excessHeat", excessHeat, 10) || error;
 		
 		// (2a) CALCULATE HEAT GAIN BY HEAT GEN FROM LAST CYCLE AND EXCESS HEAT FROM COMPUTING
 		
@@ -692,7 +725,7 @@ public class Heating implements Serializable {
 		if (numEVAgoers > 0) 
 			heatGainFromEVAHeater = building.getTotalPowerForEVA()/2D; 
 	
-		error = checkError("heatGainFromEVAHeater", heatGainFromEVAHeater) || error;
+		error = checkError("heatGainFromEVAHeater", heatGainFromEVAHeater, 10) || error;
 		
 		// divide by 2 since half of the time a person is doing ingress 
 		// Note : Assuming EVA heater requires .5kW of power for heating up the air for each person in an airlock during EVA ingress.
@@ -723,7 +756,7 @@ public class Heating implements Serializable {
 //		logger.info(building, "I: " + Math.round(I * 100.0)/100.0
 //				+ "  solarHeatGain: " + Math.round(solarHeatGain * 100.0)/100.0);
 		
-		error = checkError("solarHeatGain", solarHeatGain) || error;
+		error = checkError("solarHeatGain", solarHeatGain, 20) || error;
 		
 		// (2f) CALCULATE INSULATION HEAT GAIN
 		double canopyHeatGain = 0;
@@ -756,7 +789,7 @@ public class Heating implements Serializable {
 			canopyHeatGain = 0.7 * coeff * (1 - irradiance) * ratioT * ratioT;
 		}
 	
-		error = checkError("canopyHeatGain", canopyHeatGain) || error;
+		error = checkError("canopyHeatGain", canopyHeatGain, 15) || error;
 		
 		// (2g) CALCULATE HEAT GAIN DUE TO ARTIFICIAL LIGHTING
 		double lightingGain = 0;
@@ -779,7 +812,7 @@ public class Heating implements Serializable {
 //					+ "  lightingGain: " + Math.round(lightingGain * 10.0)/10.0);
 		}
 
-		error = checkError("lightingGain", lightingGain) || error;
+		error = checkError("lightingGain", lightingGain, 15) || error;
 		
 		// (2h) ADD HEAT GAIN BY EQUIPMENT
 		// see heatGainEqiupment below
@@ -790,36 +823,37 @@ public class Heating implements Serializable {
 				+ solarHeatGain + canopyHeatGain 
 				+ lightingGain + heatGainEquipment;
 		
-		// (2j) Calculate the heat transfer due to ventilation
+		// (2j) Calculate the passive vent heat due to ventilation by adjacent buildings
 
-		double ventInHeat = getVentInHeat();	
+		double passiveVentHeat = getPassiveVentHeat();	
 
-		error = checkError("ventInHeat", ventInHeat) || error;
+		error = checkError("ventInHeat", passiveVentHeat, 30) || error;
 		
-		if (ventInHeat > 0) {
+		if (passiveVentHeat > 0) {
 			// Note: Ensure ventInHeat is positive when adding to the heat gain
-			gain += ventInHeat;
+			gain += passiveVentHeat;
 			// Reset vent in heat back to zero
-			setVentInHeat(0);
+			setPassiveVentHeat(0);
 		}		
 
-		error = checkError("gain", gain) || error;
+		error = checkError("gain", gain, GAIN_LIMIT) || error;
 		
 		/**
 		 * Do NOT delete. For future Debugging.
 		 */
-		if (error || gain > GAIN_LIMIT)
-			logger.warning(building, 20_000, "Gain: " + Math.round(gain * 1000.0)/1000.0 + " > " + GAIN_LIMIT
-					+ "  ventInHeat: " + Math.round(ventInHeat * 1000.0)/1000.0
-					+ "  heatGenCache: " + Math.round(heatGenCache * 1000.0)/1000.0
-					+ "  excessHeat: " + Math.round(excessHeat * 1000.0)/1000.0
-					+ "  Occupants: " + Math.round(heatGainOccupants * 1000.0)/1000.0
-					+ "  numEVAgoers: " + Math.round(numEVAgoers)/1000.0
-					+ "  EVAHeater: " + Math.round(heatGainFromEVAHeater)/1000.0
-					+ "  solarHeatGain: " + Math.round(solarHeatGain * 1000.0)/1000.0
-					+ "  canopyHeatGain: " + Math.round(canopyHeatGain * 1000.0)/1000.0
-					+ "  lighting: " + Math.round(lightingGain * 1000.0)/1000.0
-					+ "  Equipment: " + Math.round(heatGainEquipment * 1000.0)/1000.0);
+		if (error)
+			logger.warning(building, 20_000, "Gain: " + Math.round(gain * 100.0)/100.0
+					+ "  passiveVentHeat: " + Math.round(passiveVentHeat * 100.0)/100.0
+					+ "  heatGenCache: " + Math.round(heatGenCache * 100.0)/100.0
+					+ "  excessHeat: " + Math.round(excessHeat * 100.0)/100.0
+					+ "  Occupants: " + Math.round(heatGainOccupants * 100.0)/100.0
+					+ "  numEVAgoers: " + numEVAgoers
+					+ "  EVAHeater: " + Math.round(heatGainFromEVAHeater * 100.0)/100.0
+					+ "  solarHeatGain: " + Math.round(solarHeatGain * 100.0)/100.0
+					+ "  canopyHeatGain: " + Math.round(canopyHeatGain * 100.0)/100.0
+					+ "  lighting: " + Math.round(lightingGain * 100.0)/100.0
+					+ "  Equipment: " + Math.round(heatGainEquipment * 100.0)/100.0
+					);
   
     	return new double[] {gain, canopyHeatGain};
     }
@@ -848,7 +882,7 @@ public class Heating implements Serializable {
 			hasHeatDumpViaAirlockOuterDoor = false;
 		}
 	
-		error = checkError("heatAirlock", heatAirlock) || error;
+		error = checkError("heatAirlock", heatAirlock, -10) || error;
 		
 		// (3b) CALCULATE HEAT LOSS DUE TO STRUCTURE		
 		double structuralLoss = 0;
@@ -875,7 +909,7 @@ public class Heating implements Serializable {
 			}
 		}	
 		
-		error = checkError("structuralLoss", structuralLoss) || error;
+		error = checkError("structuralLoss", structuralLoss, 10) || error;
 		
 		// Note : U_value in kW/K/m2, not [Btu/°F/ft2/hr]
 
@@ -887,7 +921,7 @@ public class Heating implements Serializable {
 		// to avoid excessive heat loss for the greenhouse,
 		// especially in the evening
 		
-		error = checkError("canopyFactor", canopyFactor) || error;
+		error = checkError("canopyFactor", canopyFactor, 15) || error;
 		
 		double emissivity = 0;
 		// Note: emissivity refers to the effectiveness of a surface to emit 
@@ -907,7 +941,6 @@ public class Heating implements Serializable {
 //		Steel: 0.5 to 0.7 (depending on the type of steel and its surface finish)
 //		Concrete: 0.8 to 0.9 (depending on the type of concrete and its surface finish)
 
-		error = checkError("emissivity", emissivity) || error;
 		
 		if (isGreenhouse)  {
 			emissivity = (EMISSIVITY_DAY * irradiance + EMISSIVITY_NIGHT * (0.7 - irradiance)) * 0.85;
@@ -946,13 +979,15 @@ public class Heating implements Serializable {
 		
 //		logger.info(building, "emissivity: " + Math.round(emissivity * 100.0)/100.0
 //				+ "  solarHeatLoss: " + Math.round(solarHeatLoss * 100.0)/100.0);
+
+		error = checkError("emissivity", emissivity, 15) || error;
 		
-		error = checkError("solarHeatLoss", solarHeatLoss) || error;
+		error = checkError("solarHeatLoss", solarHeatLoss, -20) || error;
 		
 		/**
 		 * Do NOT delete. For future Debugging.
 		 */
-		if (error || solarHeatLoss < LOSS_LIMIT / 1.5)
+		if (error || solarHeatLoss < -20)
 			logger.warning(building, 20_000, // "inTKelvin: " + inTKelvin
 //					+ "   outTKelvin: " + outTKelvin
 					"I: " + Math.round(irradiance * 1000.0)/1000.0 
@@ -971,24 +1006,24 @@ public class Heating implements Serializable {
 		double loss = heatAirlock + structuralLoss + solarHeatLoss;
 		// loss is negative by definition
 		
-		if (ventInHeatCache < 0) {
+		if (passiveVentHeatCache < 0) {
 			// Note: Ensure ventInHeat is negative when adding to the heat loss
-			loss += ventInHeatCache; 
+			loss += passiveVentHeatCache; 
 			// Reset vent in heat back to zero
-			setVentInHeat(0);	
+			setPassiveVentHeat(0);	
 		}
 	
-		error = checkError("loss", loss) || error;
+		error = checkError("loss", loss, LOSS_LIMIT) || error;
 		
 		/**
 		 * Do NOT delete. For future Debugging.
 		 */
-		if (error || loss < LOSS_LIMIT)
-			logger.warning(building, 20_000, "Loss: " + Math.round(loss * 1000.0)/1000.0 + " < " + LOSS_LIMIT
+		if (error)
+			logger.warning(building, 20_000, "Loss: " + Math.round(loss * 1000.0)/1000.0 + " kW" 
 					+ "  heatAirlock: " + Math.round(heatAirlock * 1000.0)/1000.0
 					+ "  structuralLoss: " + Math.round(structuralLoss * 1000.0)/1000.0
 					+ "  solarHeatLoss: " + Math.round(solarHeatLoss * 1000.0)/1000.0
-					+ "  ventInHeat: " + Math.round(ventInHeatCache * 1000.0)/1000.0);
+					+ "  ventInHeat: " + Math.round(passiveVentHeatCache * 1000.0)/1000.0);
 	
 		return loss;
     }
@@ -996,12 +1031,13 @@ public class Heating implements Serializable {
 	/**
 	 * Computes the heat transfer by applying the air heat sink.
 	 * 
-	 * @param dHeat0 in kW
+	 * @param nowT in deg celsius
+	 * @param diffHeat
 	 * @param seconds
 	 * @param error
 	 * @return
 	 */
-	private double[] computeAirHeatSink(double dHeat0, double seconds) {
+	private double[] computeAirHeatSink(double nowT, double diffHeat, double seconds) {
 		
 		double airMass = building.getLifeSupport().getAir().getTotalMass();
 		
@@ -1020,10 +1056,12 @@ public class Heating implements Serializable {
 		// 1.82 kJ/kg°C the heat capacity of water vapor, 
 		// and SH is the specific humidity in kg water vapor per kg dry air in the mixture.
 
-		AirComposition.GasDetails gas = building.getLifeSupport().getAir().getGas(ResourceUtil.waterID);
-	
-		/** The percent of the air is moisture. Assume 1%. */
-		double percentAirMoisture = gas.getPercent();
+		double percentAirMoisture = 0;
+		
+		LifeSupport ls = building.getLifeSupport();
+		if (ls != null) 
+			/** The percent of the air is moisture. Assume 1%. */
+			percentAirMoisture = ls.getAir().getGas(ResourceUtil.waterID).getPercent();
 	
 //		double airMoistureMass = gas.getMass();
 		
@@ -1040,8 +1078,8 @@ public class Heating implements Serializable {
 		
 		double tRise = 0;
 		double efficiency = .8;
-		if (currentTemperature > 0)
-			tRise = currentTemperature * efficiency;
+		if (nowT > 0)
+			tRise = (C_TO_K + nowT) * efficiency;
 		
 		// Q = mcΔT
 		// kJ = kJ/(kg°C) * kg * °C
@@ -1067,9 +1105,9 @@ public class Heating implements Serializable {
 		
 		double convFactorAir = seconds / airHeatCap; 
 	
-		double dHeat1 = computeHeatSink(dHeat0, airHeatSink, 0, 2 * seconds/timeSlice);
+		double dHeat1 = computeHeatSink(nowT, diffHeat, airHeatSink, 0, seconds/MarsTime.SECONDS_PER_MILLISOL);
 	
-		error = checkError("dHeat1", dHeat1) || error;
+		error = checkError("dHeat1", dHeat1, 30) || error;
 
 		
 		/**
@@ -1077,8 +1115,7 @@ public class Heating implements Serializable {
 		 */
 		if (error)
 			logger.warning(building, 20_000, "Air heat sink - "
-				+ "T: " + Math.round(currentTemperature * 10.0)/10.0
-				+ "  dHeat0: " + Math.round(dHeat0 * 1000.0)/1000.0	
+				+ "nowT: " + Math.round(nowT * 100.0)/100.0	
 				+ "  dHeat1: " + Math.round(dHeat1 * 1000.0)/1000.0
 				+ "  convFactorAir: " + Math.round(convFactorAir * 1000.0)/1000.0
 				+ "  airMass: " + Math.round(airMass * 1000.0)/1000.0
@@ -1093,22 +1130,23 @@ public class Heating implements Serializable {
 	/**
 	 * Computes the heat transfer by applying the water heat sink.
 	 * 
-	 * @param dHeat1
+	 * @param nowT
+	 * @param diffHeat
 	 * @param waterMass
 	 * @param seconds
 	 * @param error
 	 * @return
 	 */
-	private double[] computeWaterHeatSink(double dHeat1, double waterMass, 
+	private double[] computeWaterHeatSink(double nowT, double diffHeat, double waterMass, 
 			double seconds) {
-		
+				
 		// Use the specific heat capacity (C_s) of the air with moisture.		
 		double waterHeatCap = SPECIFIC_HEAT_CAP_WATER_300K * waterMass;
 		
 		double tRise = 0;
 		double efficiency = .2;
-		if (currentTemperature > 0)
-			tRise = currentTemperature * efficiency;
+		if (nowT > 0)
+			tRise = (C_TO_K + nowT) * efficiency;
 		
 		// Q = mcΔT
 		// kJ = kJ/(kg°C) * kg * °C
@@ -1132,9 +1170,9 @@ public class Heating implements Serializable {
 
 		// (5d3) Apply the water heat sink to buffer the net heat
 			
-		double dHeat2 = computeHeatSink(dHeat1, waterHeatSink, 1, .5 * seconds/timeSlice);
+		double dHeat2 = computeHeatSink(nowT, diffHeat, waterHeatSink, 1, seconds/MarsTime.SECONDS_PER_MILLISOL);
 		
-		error = checkError("dHeat2", dHeat2) || error;
+		error = checkError("dHeat2", dHeat2, 30) || error;
 				
 //		/**
 //		 * Do NOT delete. For Debugging
@@ -1144,9 +1182,9 @@ public class Heating implements Serializable {
 //				|| (dHeat1 < 0 && dHeat1 > dHeat2)
 				) {
 			logger.warning(building, 20_000, "Water heat sink - " 
-				+ "T: " + Math.round(currentTemperature * 10.0)/10.0
-				+ "  dHeat1: " + Math.round(dHeat1 * 10000.0)/10000.0
-				+ "  dHeat2: " + Math.round(dHeat2 * 10000.0)/10000.0
+				+ "T: " + Math.round(currentTemperature * 100.0)/100.0
+				+ "  nowT: " + Math.round(nowT * 100.0)/100.0
+				+ "  dHeat2: " + Math.round(dHeat2 * 1000.0)/1000.0
 				+ "  convFactorWater: " + Math.round(convFactorWater * 1000.0)/1000.0
 				+ "  waterMass: " + Math.round(waterMass * 1000.0)/1000.0
 				+ "  waterHeatCap: " + Math.round(waterHeatCap * 1000.0)/1000.0	
@@ -1166,9 +1204,9 @@ public class Heating implements Serializable {
 		double oldT = getCurrentTemperature();
 		
 		// Reset the error flag
-		error = checkError("oldT", oldT);
+		error = checkError("oldT", oldT, MAX_INDOOR_TEMPERATURE);
 		
-		if (oldT > MAX_INDOOR_TEMPERATURE + 5) {
+		if (oldT > MAX_INDOOR_TEMPERATURE) {
 			logger.warning(building, 20_000, "inT: " 
 					+ Math.round(oldT * 10.0)/10.0);
 		}
@@ -1177,10 +1215,11 @@ public class Heating implements Serializable {
 		double output[] = determineHeatTemperature(millisols);
 		
 		double newT = output[0];
+//		logger.info(building, 0, "newT: " + Math.round(newT * 100.0)/100.0);
+		
 		double convFactor = output[1];
 		
-		
-		error = checkError("newT", newT) || error ;
+		error = checkError("newT", newT, MAX_INDOOR_TEMPERATURE) || error;
 		
 		if (newT > MAX_INDOOR_TEMPERATURE) {
 			logger.warning(building, 20_000, "newT: " 
@@ -1203,13 +1242,12 @@ public class Heating implements Serializable {
 //			newT = outT;
 		
 		// Set the temperature and call unitUpdate
-		setTemperature(newT);
-		
+		setTemperature(newT);	
 		
 		// STEP 2 : GET THE DELTA TEMPERATURE
 		double dt = newT - oldT;
 		
-		error = checkError("dt", dt) || error ;
+		error = checkError("dt", dt, MAX_INDOOR_TEMPERATURE) || error;
 		
 		// Set the delta temperature and call unitUpdate
 		setDeltaTemp(dt);
@@ -1217,9 +1255,9 @@ public class Heating implements Serializable {
 		// STEP 3 : FIND TEMPERATURE DEVIATION 
 		
 		// Insert the heat that needs to be gained in the next cycle
-		double devT = tPreset - newT ;
+		double devT = tPreset - newT;
 		
-		error = checkError("devT", devT) || error ;
+		error = checkError("devT", devT, MAX_INDOOR_TEMPERATURE) || error;
 		
 		// if devT is positive, needs to raise temperature by increasing heat
 		// if devT is negative, needs to low temperature by transferring heat away
@@ -1250,103 +1288,135 @@ public class Heating implements Serializable {
 		double reqkW = devT * bound;
 		// Note that multiplying by deltaTime is not mathematically sound but results in better reqkW
 		
-		double reqHeat = estimateRequiredHeat(millisols);
+		double estReqHeat = estimateRequiredHeat(newT, millisols);
 	
-//		logger.info(building, 20_000, "reqkW0: " + Math.round(reqkW * 100.0)/100.0
-//				+ "  reqHeat: " + Math.round(reqHeat * 100.0)/100.0);
-//
+//		logger.info(building, 0, "reqkW: " + Math.round(reqkW * 100.0)/100.0
+//				+ "  estReqHeat: " + Math.round(estReqHeat * 100.0)/100.0);
+
 		double selectedReqHeat = 0;
 		
-		if (reqHeat > 0) {
-			if (reqHeat > reqkW) {
-				selectedReqHeat = reqkW;
+		if (estReqHeat > 0) {
+			if (estReqHeat > reqkW) {
+				selectedReqHeat = reqkW ;
 			}
 			else {
-				selectedReqHeat = reqHeat;
+				selectedReqHeat = estReqHeat;
 			}
 		}
-		else if (reqHeat < 0) {
-			if (reqHeat < reqkW) {
+		else if (estReqHeat < 0) {
+			if (estReqHeat < reqkW) {
 				selectedReqHeat = reqkW;
 			}
 			else {
-				selectedReqHeat = reqHeat;
+				selectedReqHeat = estReqHeat;
 			}
 		}
 		
-		// Step 5 : CALCULATE VENT HEAT USING VENTILATION
+		// Step 5 : USE VENT HEAT VIA ACTIVE VENTILATION TO BRING IN HEAT FROM NEIGBORING BUILDINGS
 
-		// Find ventHeat in kW
-		double ventHeat = calculateVentHeat(-selectedReqHeat, newT, millisols); 
-	
-		// if positive, suck hotter air from adjacent buildings, thus having hotter air 
-		// to come in and raise the building temperature
-		if (ventHeat > 0) {
-			// if the energy to be moved is positive, dump hotter air to adjacent buildings
-			selectedReqHeat = selectedReqHeat - ventHeat;  
+		// Find activeVentHeat in kW
+		double activeVentHeat = calculateActiveVentHeat(-selectedReqHeat, newT, millisols); 
+		
+		// if activeVentHeat is positive, suck hotter air from adjacent buildings, thus having hotter air 
+		// to come in and raise this building temperature
+		if (activeVentHeat > 0) {
+			// Bringing in extra heat for this building reduces the required heat needed to be generated by this building 
+			selectedReqHeat = selectedReqHeat - activeVentHeat;  
 			
-			if (ventHeat > 20) {
-				logger.warning(building, 20_000, "ventHeat: " + Math.round(ventHeat * 100.0)/100.0 + " > 20.");
+			if (activeVentHeat > 10) {
+				logger.warning(building, 20_000, "activeVentHeat: " + Math.round(activeVentHeat * 100.0)/100.0 + " > 20.");
 				error = true;
 			}
 		}
-		// if negative, dump hotter air to adjacent buildings, thus allowing colder air 
+		// if activeVentHeat is negative, dump hotter air to adjacent buildings, thus allowing colder air 
 		// to come in and lower the building temperature
-		else if (ventHeat < 0) {
-			// if the energy to be moved is negative, suck hotter air from adjacent buildings
-			selectedReqHeat = selectedReqHeat - ventHeat; 
+		else if (activeVentHeat < 0) {
+			// Pushing out extra heat from this building
+			selectedReqHeat = selectedReqHeat - activeVentHeat; 
 			
-			if (ventHeat < -20) {
-				logger.warning(building, 20_000, "ventHeat: " + Math.round(ventHeat * 100.0)/100.0 + " < -20.");
+			if (activeVentHeat < -10) {
+				logger.warning(building, 20_000, "activeVentHeat: " + Math.round(activeVentHeat * 100.0)/100.0 + " < -20.");
 				error = true;
 			}
 		}
 
-		if (selectedReqHeat < -10) {
-			// Note: ventHeat must be -ve, just like selectedReqHeat
+		if (selectedReqHeat < -15) {
+			// A little too much heat. Temperature is higher than preset
+				
+			// Further convert a half quarter of the selectedReqHeat to avoid overheating
+			double extraHeat = - selectedReqHeat / 8;
+			// Dump a half quarter of selectedReqHeat. Reduce selectedReqHeat by a quarter
+			selectedReqHeat = selectedReqHeat - extraHeat;
 			
-			// Vent out a quarter of the selectedReqHeat to avoid overheating
-			ventHeat = selectedReqHeat / 4;
+			// Note: Use heat sink to trap this heat, rather than dumping it outside
+			double oldAirSink = getAirHeatSink();
+			double newAirSink = oldAirSink + .5 * extraHeat;
+			if (newAirSink > heatSinkLimit[0])
+				newAirSink = heatSinkLimit[0];
+			setAirHeatSink(newAirSink);
+		
+			double oldWaterSink = getWaterHeatSink();
+			double newWaterSink = oldWaterSink + .5 * extraHeat;
+			if (newWaterSink > heatSinkLimit[1])
+				newWaterSink = heatSinkLimit[1];
+			setWaterHeatSink(newWaterSink);
 			
-			selectedReqHeat = selectedReqHeat - ventHeat;
+			logger.warning(building, 20_000, "To avoid overheating, vent out " + Math.round(extraHeat * 100.0)/100.0 + " kW heat.");
 			
-			logger.warning(building, 20_000, "To avoid overheating, vent out " + Math.round(ventHeat * 100.0)/100.0 + " kW heat to outside.");
-
-			// Note: need to find ways to trap and recover this heat, rather than dump it outside			
 			error = true;
 		}
 		
-		error = checkError("ventHeat", ventHeat) || error;
-		// Set the outgoing heat leaving this building
-		setVentOutHeat(ventHeat);
+//		else if (selectedReqHeat > 5) {
+//			// A little too cold. Temperature is higher than preset
+//			// Note: ventHeat is +ve, like selectedReqHeat
+//			// Vent in a quarter of the selectedReqHeat to avoid being too cold
+//			ventHeat = selectedReqHeat / 4;	
+//			selectedReqHeat = selectedReqHeat - ventHeat;
+//			setAirHeatSink(getAirHeatSink() + .5 * ventHeat);
+//			setWaterHeatSink(getWaterHeatSink() + .5 * ventHeat);
+//			
+//			logger.warning(building, 20_000, "To avoid being too code, the heat sink released " + Math.round(ventHeat * 100.0)/100.0 + " kW heat.");
+//			error = true;
+//		}
+		
+		error = checkError("activeVentHeat", activeVentHeat, 30) || error;
+		// Set the active heat initiated by this building
+		setActiveVentHeat(activeVentHeat);
 
-		error = checkError("selectedReqHeat", selectedReqHeat) || error ;
+//		// Note: Even though activeVentHeat can reduce the delta heat,
+//		// it needs to recompute the temperature
+//		double nowT = computeNewT(newT, activeVentHeat, millisols * MarsTime.SECONDS_PER_MILLISOL);	
+//		// Set the temperature and call unitUpdate
+//		setTemperature(nowT);
+	
+		error = checkError("selectedReqHeat", selectedReqHeat, 30) || error ;
 		// Sets the heat required for this cycle
 		setHeatRequired(selectedReqHeat);
 		
 		/**
 		 * Do NOT delete. For future Debugging.
 		 */
-		if (error || selectedReqHeat > 20 || selectedReqHeat < -20) {
-			logger.warning(building, 20_000, 
-					"oldT: " + Math.round(oldT * 100.0)/100.0
-					+ "  newT: " + Math.round(newT * 100.0)/100.0		
-
-					+ "  selectedReqHeat: " + Math.round(selectedReqHeat * 1000.0)/1000.0
-					+ "  reqHeat: " + Math.round(reqHeat * 1000.0)/1000.0
-					+ "  reqkW: " + Math.round(reqkW * 1000.0)/1000.0
-					
-					+ "  convFactor: " + Math.round(convFactor * 1000.0)/1000.0
-					+ "  deltaTime: " + Math.round(millisols * 100.0)/100.0
-					+ "  bound: " + Math.round(bound * 100.0)/100.0
+		if (error || selectedReqHeat > 30 || selectedReqHeat < -30)
+			logger.warning(building, 
+					20_000, 
+					"cycleThermalControl - "
+					+ "oldT: " + Math.round(oldT * 100.0)/100.0
+					+ "  newT: " + Math.round(newT * 100.0)/100.0	
+//					+ "  nowT: " + Math.round(nowT * 100.0)/100.0	
 					+ "  devT: " + Math.round(devT * 100.0)/100.0
 					+ "  dt: " + Math.round(dt * 100.0)/100.0
+					
+					+ "  selectedReqHeat: " + Math.round(selectedReqHeat * 1000.0)/1000.0
+					+ "  estReqHeat: " + Math.round(estReqHeat * 10000.0)/10000.0
+					+ "  reqkW: " + Math.round(reqkW * 1000.0)/1000.0
+				
+					+ "  convFactor: " + Math.round(convFactor * 1000.0)/1000.0
+					+ "  millisols: " + Math.round(millisols * 1000.0)/1000.0
+					+ "  bound: " + Math.round(bound * 100.0)/100.0
 
 					+ "  preNetHeat: " + Math.round(preNetHeatCache * 1000.0)/1000.0	
 					+ "  postNetHeat: " + Math.round(postNetHeatCache * 100.0)/100.0
-					+ "  ventHeat: " + Math.round(ventHeat * 1000.0)/1000.0	
-					);
-		}
+					+ "  ventHeat: " + Math.round(activeVentHeat * 1000.0)/1000.0);
 	}
 	
 	/**
@@ -1354,9 +1424,10 @@ public class Heating implements Serializable {
 	 * 
 	 * @param type
 	 * @param value
+	 * @param limit
 	 * @return 
 	 */
-	private boolean checkError(String type, double value) {
+	private boolean checkError(String type, double value, int limit) {
 		if (Double.isInfinite(value)) {
 			logger.severe(building, 20_000, type + " is infinite.");
 			return true;
@@ -1364,17 +1435,21 @@ public class Heating implements Serializable {
 		else if (Double.isNaN(value)) {
 			logger.severe(building, 20_000, type + " is NaN.");
 			return true;
-		}	
-		else if (value > MAX_ERROR_VALUE) {
+		}
+		else if (value == 0.0) {
+			return false;
+		}
+		else if (limit > 0 && value > limit) {
 			logger.warning(building, 20_000, type + ": " 
-					+ Math.round(value* 100.0)/100.0 + " > MAX_ERROR_VALUE.");
+					+ Math.round(value* 100.0)/100.0 + " > " + limit + ".");
 			return true;
 		}
-		else if (value < -MAX_ERROR_VALUE) {
+		else if (limit < 0 && value < limit) {
 			logger.warning(building, 20_000, type + ": " 
-					+ Math.round(value* 100.0)/100.0 + " < -MAX_ERROR_VALUE.");
+					+ Math.round(value* 100.0)/100.0 + " < " + limit + ".");
 			return true;
-		}	
+		}
+
 		return false;
 	}	
 	
@@ -1387,112 +1462,110 @@ public class Heating implements Serializable {
 	 * 		 excessH (still +ve) less than oldHeat in value.
 	 * 		 When oldHeat is -ve, heat sink will release stored heat, thus making 
 	 * 		 excessH (still -ve) less than oldHeat in value.
-	 * @param oldHeat [in kW] the original amount of heat waiting to be absorbed by the heat sink
+	 * @param nowT in deg celsius
+	 * @param diffHeat
 	 * @param limit The latentPower in kW
 	 * @param convFactor
 	 * @param index of the heat sink double array (0 = air moisture; 1 = liquid water)
 	 * @param millisols
 	 * @return the excessive amount of heat that cannot be absorbed
 	 */
-	private double computeHeatSink(double oldHeat, double limit,
+	private double computeHeatSink(double nowT, double diffHeat, double limit,
 			int index, double millisols) {
-
-		double dh = (currentTemperature - tPreset) / 2;
-		if (dh > 7)
-			dh = 7;
-		else if (dh < -7)
-			dh = -7;
+		// THe purpose is to minimize diffHeat
+		double heat = 0;
 		
-		double newHeat = oldHeat;
-	
+		double dt = (nowT - tPreset);
+		if (dt > 20)
+			dt = 20;
+		else if (dt < -20)
+			dt = -20;
+		
 		// For inflatable greenhouse, air heat sink ~ 3 kW
 		// For large greenhouse, air heat sink ~ ? kW, water heat sink ~ 43 kW
 		// For algae pond, air heat sink ~ 3 kW, water heat sink ~ 42 kW
 		// For fish farm, air heat sink ~ 3 kW, water heat sink ~ 82 kW
 		
-		// millisols = seconds/timeSlice;
-		
-		double lowerBound = Math.max(millisols * 5, millisols);
-		
 		// How fast or efficient is the heat transfer ?
-		// For air heat sink, assume 20%
-		double efficiency = .2;
+		// For air heat sink, assume 30%
+		double efficiency = .3;
 		if (index == 1) {
-			// For water heat sink, assume 40%
-			efficiency = .4;
+			// For water heat sink, assume 50%
+			efficiency = .5;
 		}
 			
 		// The fraction of the speed of a perfect conductor for the heat transfer
-		double upperBound = Math.min(.8, lowerBound * efficiency);
+		double upperBound = Math.min(1, millisols * 2 * efficiency);
 		
 		// Note: if transfer is +ve, it's the amount to be absorbed into the heat sink 
 		//       if transfer is -ve, it's the amount to be released from the heat sink
 		
 		// Calculate the amount of heat that can be absorbed or released
-		double transfer = (oldHeat + dh) * upperBound;
+		double transfer = dt * upperBound;
 		double newTransfer = transfer;
 		
 		double storedSink = heatSink[index];
 		
-		// Case 1 : the sink absorbs the heat
-		if (oldHeat - dh > 0) {
-			// Note: both transfer and newHeat are positive
+		// Case 1 : too hot, the sink absorbs the heat
+		if (dt > 0) {
+			// Note: transfer is positive
 			// Heat sink will suck up some heat
 							
 			// Case 1a : can't absorb more heat this time
 			if (storedSink >= limit)
-				return oldHeat;
+				return 0;
 			
-			// Case 1c : If the stored heat plus the newTransfer exceed the new stored limit
+			// Case 1b : If the stored heat plus the newTransfer exceed the new stored limit
 			if (storedSink + newTransfer > limit) {
 				// Reduce transfer amount
 				newTransfer = limit - storedSink;
 				// Store the heak
 				storedSink += newTransfer;
 				// Reduce newHeat
-				newHeat -= newTransfer;
+				heat -= newTransfer;
 			}
 			else {
-				// Case 1d
+				// Case 1c
 				// Soak up the transfer amount
 				storedSink += newTransfer;	
 				// Reduce newHeat
-				newHeat -= newTransfer;
+				heat -= newTransfer;
 			}
 			
 			if (index == 0) {
 				setAirHeatSink(storedSink);
+				heatSinkLimit[0] = limit;
 			}
 			else {
 				setWaterHeatSink(storedSink);
+				heatSinkLimit[1] = limit;
 			}
 		}
 		
-		// Case 2 : the sink releases the heat
-		// if oldHeat is -ve and dh is +ve
-		else if (oldHeat - dh < 0) {
-			// Note: both transfer and newHeat are negative
+		// Case 2 : too cold, the sink releases the heat
+		else if (dt < 0) {
+			// Note: transfer is negative
 			// Need to release heat from heat sink
 			
-			// Case 1b : can't absorb more heat this time
+			// Case 2a : can't absorb more heat this time
 			if (storedSink <= 0)
-				return oldHeat;
+				return 0;
 			
 			if (storedSink + newTransfer < 0) {
-				// Case 2a
+				// Case 2b
 				// Calculate new transfer amount
 				newTransfer = -storedSink;
 				// Take away all the heat in heatSink 
 				storedSink = 0;
 				// newHeat will become less negative
-				newHeat -= newTransfer;
+				heat -= newTransfer;
 			}
 			else {
-				// Case 2b
+				// Case 2c
 				// Take away what is needed in heatSink 
 				storedSink += newTransfer;	
 				// newHeat will become less negative
-				newHeat -= newTransfer;
+				heat -= newTransfer;
 			}
 			
 			if (index == 0) {
@@ -1506,43 +1579,36 @@ public class Heating implements Serializable {
 		/**
 		 * Do NOT delete. For debugging.
 		 */	
-//		boolean wrong0 = (oldHeat > 0 && oldHeat < newHeat);
-//		boolean wrong1 = (oldHeat < 0 && oldHeat > newHeat);
-		if (error 
-//				|| wrong0 || wrong1
-				) {
-			logger.warning(building, 20_000, 
+		if (error)
+			logger.warning(building, 
+					3_000,				
 				"index:" + index
-//				+ "  wrong0:" + wrong0
-//				+ "  wrong1:" + wrong1
-				+ "  dh: " + Math.round(dh*1000.0)/1000.0
-				+ "  lowerBound: " + Math.round(lowerBound*10.0)/10.0 
+				+ "  nowT: " + Math.round(nowT*10.0)/10.0 
+				+ "  dh: " + Math.round(dt*1000.0)/1000.0
+				+ "  heat: " + Math.round(heat*1000.0)/1000.0
+				+ "  millisols: " + Math.round(millisols*10.0)/10.0 
 				+ "  upperBound: " + Math.round(upperBound*10.0)/10.0
-				+ "  oldHeat: " + Math.round(oldHeat*1000.0)/1000.0
-				+ "  newHeat: " + Math.round(newHeat*1000.0)/1000.0 
-				+ "  storedSink: " + Math.round(storedSink*1000.0)/1000.0
 				+ "  heatSink[" + Math.round(heatSink[0]*1000.0)/1000.0 + ", " 
 								+ Math.round(heatSink[1]*1000.0)/1000.0 + "]"
 				+ "  limit: " + Math.round(limit*10000.0)/10000.0
 				+ "  transfer: " + Math.round(transfer*1000.0)/1000.0
 				+ "  newTransfer: " + Math.round(newTransfer*1000.0)/1000.0
 				+ "  efficiency: " + Math.round(efficiency*100.0)/100.0
-				+ "  timeSlice: " + Math.round(timeSlice*1000.0)/1000.0);
-		}
+				);
 
-		return newHeat;
+		return heat;
 	}
 
 	/**
-	 * Computes the heat in kW to be moved by ventilation.
+	 * Computes the heat in kW to be moved by active ventilation.
 	 *  
 	 * @param heat
 	 * @param degNow the current temperature of the building in Deg Celsius
-	 * @param time
+	 * @param millisols
 	 * @return energy to be moved; if positive, hotter air is coming in;
 	 * 			if negative, hotter air is leaving
 	 */
-	private double calculateVentHeat(double heat, double degNow, double time) {
+	private double calculateActiveVentHeat(double heat, double degNow, double millisols) {
 		final double STEP = 1.25;
 		
 		// Reference : time = .121 at x128
@@ -1550,24 +1616,24 @@ public class Heating implements Serializable {
 				
 		// if reqheat is -ve, heat is +ve
 		// if reqheat is +ve, heat is -ve
-		double dt0 = Math.abs(degNow - tPreset) / 6;
-		if (dt0 > 4)
-			dt0 = 4;
+		double dt0 = Math.abs(degNow - tPreset) / 3;
+		if (dt0 > 6)
+			dt0 = 6;
 		
 		// Even if there's no net heat, the temperature variance would still trigger the vent flow
-		double modHeat = Math.abs(heat) / 6;
-		if (modHeat > 8)
-			modHeat = 8;
+		double modHeat = Math.abs(heat) / 3;
+		if (modHeat > 5)
+			modHeat = 5;
 
 		double totalHeat = 0;
 		// Note: this temperature range is arbitrary
 		boolean tooLow = degNow < (tPreset - STEP * T_LOWER_SENSITIVITY);
 		boolean tooHigh = degNow > (tPreset + STEP * T_UPPER_SENSITIVITY);
 		
-		double lowerBound = Math.max(0, time);
+		double lowerBound = Math.max(0, millisols);
 		double upperBound = Math.min(1, lowerBound);
 		
-		double speedFactor = .01 * upperBound * CFM;
+		double speedFactor = .06 * upperBound * CFM * areaFactor / 2;
 		
 		if (!tooLow && !tooHigh) { 
 			return 0;
@@ -1576,7 +1642,7 @@ public class Heating implements Serializable {
 		adjacentBuildings = new ArrayList<>(building.getSettlement().getAdjacentBuildings(building));
 		
 		int size = adjacentBuildings.size();
-//
+
 		for (int i = 0; i < size; i++) {
 			double tNow = adjacentBuildings.get(i).getCurrentTemperature();
 			double tInit = adjacentBuildings.get(i).getPresetTemperature();
@@ -1584,16 +1650,16 @@ public class Heating implements Serializable {
 			boolean tooLowAdj = tNow < (tInit - STEP * T_LOWER_SENSITIVITY);
 			boolean tooHighAdj = tNow > (tInit + STEP * T_UPPER_SENSITIVITY);
 			
-			double dt1 = Math.abs(degNow - tNow) / 6;
-			if (dt1 > 4)
-				dt1 = 4;	
-			
+			double dt1 = Math.abs(degNow - tNow) / 4;
+			if (dt1 > 5)
+				dt1 = 5;	
+
 			// The larger the area of a room, the more spread out the heat, the harder for the heat to be vented out
-			double MAX_HEAT = modHeat * dt0 * dt1 * speedFactor;
-			if (MAX_HEAT > 5)
-				MAX_HEAT = 5;
-			else if (MAX_HEAT < -5)
-				MAX_HEAT = -5;
+			double maxHeat = modHeat * dt0 * dt1 * speedFactor;
+			if (maxHeat > 5)
+				maxHeat = 5;
+			else if (maxHeat < -5)
+				maxHeat = -5;
 			
 			double deltaHeat = 0;
 					
@@ -1605,21 +1671,21 @@ public class Heating implements Serializable {
 					if (tNow > degNow) {
 						// If this adjacent building has a higher T than this 
 						// building of interest, then heat is venting in
-						deltaHeat = MAX_HEAT * .9;
+						deltaHeat = maxHeat * .9;
 					}
 					else if (tNow < degNow) {
 						// heat is coming in in lesser magnitude
-						deltaHeat = MAX_HEAT * .4;
+						deltaHeat = maxHeat * .4;
 					}
 				}
 				else if (!tooLowAdj) {
 					if (tNow > degNow) {
 						// heat coming in
-						deltaHeat = MAX_HEAT * .7;
+						deltaHeat = maxHeat * .7;
 					}
 					else if (tNow < degNow) {
 						// heat coming in
-						deltaHeat = MAX_HEAT * .3;
+						deltaHeat = maxHeat * .3;
 					}
 				}
 			}
@@ -1630,21 +1696,21 @@ public class Heating implements Serializable {
 				if (tooLowAdj) {
 					if (degNow > tNow) {
 						// heat is leaving
-						deltaHeat = -MAX_HEAT * .9;
+						deltaHeat = -maxHeat * .9;
 					}
 					else if (degNow < tNow) {
 						// heat is leaving
-						deltaHeat = -MAX_HEAT * .4;
+						deltaHeat = -maxHeat * .4;
 					}
 				}
 				else if (!tooHighAdj) {
 					if (degNow > tNow) {
 						// heat is leaving
-						deltaHeat = -MAX_HEAT * .7;
+						deltaHeat = -maxHeat * .7;
 					}
 					else if (degNow < tNow) {
 						// heat is leaving
-						deltaHeat = -MAX_HEAT * .3;
+						deltaHeat = -maxHeat * .3;
 					}
 				}
 			}
@@ -1657,9 +1723,10 @@ public class Heating implements Serializable {
 				/**
 				 * Do NOT delete. For future Debugging.
 				 */
-//				logger.info(building, "At " + Math.round(degNow * 10.0)/10.0 
+//				logger.info(building, 20_000, "At " + Math.round(degNow * 10.0)/10.0 
 //							+ " deg, venting in "
-//							+ Math.round(deltaHeat * 1000.0)/1000.0 + " kW from "
+//							+ Math.round(deltaHeat * 1000.0)/1000.0 + " kW (max: "
+//							+ Math.round(maxHeat * 1000.0)/1000.0	+ ") from "
 //							+ adjacentBuildings.get(i).getName() 
 //							+ " at " + Math.round(tNow * 10.0)/10.0 + " deg.");
 			}
@@ -1671,9 +1738,10 @@ public class Heating implements Serializable {
 				/**
 				 * Do NOT delete. For future Debugging.
 				 */
-//				logger.info(building, "At " + Math.round(degNow * 10.0)/10.0 
+//				logger.info(building, 20_000, "At " + Math.round(degNow * 10.0)/10.0 
 //							+ " deg, venting out "
-//							+ Math.round(-deltaHeat * 1000.0)/1000.0 + " kW to "
+//							+ Math.round(-deltaHeat * 1000.0)/1000.0 + " kW (max: "
+//							+ Math.round(maxHeat * 1000.0)/1000.0	+ ") to "
 //							+ adjacentBuildings.get(i).getName() 
 //							+ " at " + Math.round(tNow * 10.0)/10.0 + " deg.");
 			}
@@ -1773,6 +1841,24 @@ public class Heating implements Serializable {
 	}
 	
 	/**
+	 * Gets the heat gain of this building.
+	 * 
+	 * @return heat in kW.
+	 */
+	public double getHeatGain() {
+		return heatGainCache;
+	}
+	
+	/**
+	 * Gets the heat loss of this building.
+	 * 
+	 * @return heat in kW.
+	 */
+	public double getHeatLoss() {
+		return heatLossCache;
+	}	
+	
+	/**
 	 * Gets the post net heat gain of this building.
 	 * 
 	 * @return heat in kW.
@@ -1809,12 +1895,30 @@ public class Heating implements Serializable {
 	}
 	
 	/**
+	 * Gets the water heat sink limit for this building.
+	 * 
+	 * @return heat in kW.
+	 */
+	public double getWaterHeatSinkLimit() {
+		return heatSinkLimit[1];
+	}
+	
+	/**
 	 * Gets the air heat sink stored in this building.
 	 * 
 	 * @return heat in kW.
 	 */
 	public double getAirHeatSink() {
 		return heatSink[0];
+	}
+	
+	/**
+	 * Gets the air heat sink limit for this building.
+	 * 
+	 * @return heat in kW.
+	 */
+	public double getAirHeatSinkLimit() {
+		return heatSinkLimit[0];
 	}
 	
 	/**
@@ -1882,7 +1986,26 @@ public class Heating implements Serializable {
 		building.fireUnitUpdate(UnitEventType.NET_HEAT_0_EVENT);
 	}
 
-	
+	/**
+	 * Sets the heat gain of this building and call unitUpdate.
+	 * 
+	 * @param heat in kW.
+	 */
+	public void setHeatGain(double heat)  {
+		heatGainCache = heat;
+		building.fireUnitUpdate(UnitEventType.HEAT_GAIN_EVENT);
+	}
+
+	/**
+	 * Sets the heat loss of this building and call unitUpdate.
+	 * 
+	 * @param heat in kW.
+	 */
+	public void setHeatLost(double heat)  {
+		heatLossCache = heat;
+		building.fireUnitUpdate(UnitEventType.HEAT_LOSS_EVENT);
+	}
+		
 	/**
 	 * Sets the post net heat gain/loss of this building and call unitUpdate.
 	 * 
@@ -1932,54 +2055,54 @@ public class Heating implements Serializable {
 	}
 
 	/**
-	 * Gets the outgoing heat leaving this building due to ventilation.
+	 * Gets the vent heat actively managed by this building via ventilation.
 	 * 
 	 * @return heat in kW.
 	*/
-	public double getVentOutHeat() {
-		return ventOutHeatCache;
+	public double getActiveVentHeat() {
+		return activeVentHeatCache;
 	}
 
 	/**
-	 * Gets the heat to be extracted or applied by this building toward adjacent buildings via ventilation.
+	 * Gets the vent heat passively initiated by other building toward this building.
 	 * 
 	 * @return heat in kW.
 	*/
-	public double getVentInHeat() {
-		return ventInHeatCache;
+	public double getPassiveVentHeat() {
+		return passiveVentHeatCache;
 	}
 	
 	/**
-	 * Sets the heat to be extracted or applied by this building toward adjacent buildings via ventilation.
+	 * Sets the vent heat actively managed by this building toward adjacent buildings via ventilation.
 	 * Note: heat gain if positive; heat loss if negative.
 	 * 
 	 * @param heat removed or added
 	 */
-	public void setVentOutHeat(double heat) {
-		ventOutHeatCache = heat;
-		building.fireUnitUpdate(UnitEventType.VENT_OUT_EVENT);
+	public void setActiveVentHeat(double heat) {
+		activeVentHeatCache = heat;
+		building.fireUnitUpdate(UnitEventType.ACTIVE_VENT_EVENT);
 	}
 	
 	/**
-	 * Sets the heat to be extracted or applied by adjacent buildings toward this building via ventilation.
+	 * Adds the passive vent heat initiated by adjacent buildings toward this building via ventilation.
 	 * Note: heat gain if positive; heat loss if negative.
 	 * 
 	 * @param heat removed or added
 	 */
 	public void addVentInHeat(double heat) {
-		ventInHeatCache += heat;
-		building.fireUnitUpdate(UnitEventType.VENT_IN_EVENT);
+		passiveVentHeatCache += heat;
+		building.fireUnitUpdate(UnitEventType.PASSIVE_VENT_EVENT);
 	}
 
 	/**
-	 * Sets the heat to be extracted or applied by adjacent buildings toward this building via ventilation.
+	 * Sets the passive vent heat initiated by adjacent buildings toward this building via ventilation.
 	 * Note: heat gain if positive; heat loss if negative.
 	 * 
 	 * @param heat removed or added
 	 */
-	public void setVentInHeat(double heat) {
-		ventInHeatCache = heat;
-		building.fireUnitUpdate(UnitEventType.VENT_IN_EVENT);
+	public void setPassiveVentHeat(double heat) {
+		passiveVentHeatCache = heat;
+		building.fireUnitUpdate(UnitEventType.PASSIVE_VENT_EVENT);
 	}
 	
 	/**

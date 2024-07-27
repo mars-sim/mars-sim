@@ -786,9 +786,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		for (Function function : functions) {
 			double power = function.getPowerRequired();
 			if (power > 0) {
-//			Test for System.out.println(nickName + " : "
-//					+ function.getFunctionType().toString() + " : "
-//					+ Math.round(power * 10.0)/10.0 + " kW")
 				result += power;
 			}
 		}
@@ -796,6 +793,21 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return result + powerNeededForEVAHeater;
 	}
 
+	/**
+	 * Gets the power requirement for full-power mode.
+	 *
+	 * @return power in kW.
+	 */
+	public double getGeneratedPower() {
+		double result = 0;
+
+		if (getPowerGeneration() != null) {
+			result = getPowerGeneration().getGeneratedPower();
+		}
+
+		return result;
+	}
+	
 	/**
 	 * Gets the power requirement for low-power mode.
 	 *
@@ -824,6 +836,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	public void setPowerMode(PowerMode powerMode) {
 		this.powerModeCache = powerMode;
+		fireUnitUpdate(UnitEventType.POWER_MODE_EVENT);
 	}
 
 	/**
@@ -840,6 +853,34 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return result;
 	}
 
+	/**
+	 * Gets the heat gain of this building.
+	 *
+	 * @return heat in kW.
+	 */
+	public double getHeatGain() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getHeating().getHeatGain();
+
+		return result;
+	}
+	
+	/**
+	 * Gets the heat loss of this building.
+	 *
+	 * @return heat in kW.
+	 */
+	public double getHeatLoss() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getHeating().getHeatLoss();
+
+		return result;
+	}
+	
 	/**
 	 * Gets the initial net heat gain of this building.
 	 *
@@ -864,6 +905,34 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		if (furnace != null && heating != null)
 			result = furnace.getHeating().getPostNetHeat();
+
+		return result;
+	}
+	
+	/**
+	 * Gets the air heat sink of this building.
+	 *
+	 * @return heat in kW.
+	 */
+	public double getAirHeatSink() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getHeating().getAirHeatSink();
+
+		return result;
+	}
+	
+	/**
+	 * Gets the water heat sink of this building.
+	 *
+	 * @return heat in kW.
+	 */
+	public double getWaterHeatSink() {
+		double result = 0;
+
+		if (furnace != null && heating != null)
+			result = furnace.getHeating().getWaterHeatSink();
 
 		return result;
 	}
@@ -897,40 +966,40 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 	
 	/**
-	 * Gets the incoming heat due to ventilation.
+	 * Gets the vent heat passively initiated by other building toward this building.
 	 *
 	 * @return heat in kW.
 	 */
-	public double getVentInHeat() {
+	public double getPassiveVentHeat() {
 		double result = 0;
 
 		if (furnace != null && heating != null)
-			result = furnace.getHeating().getVentInHeat();
+			result = furnace.getHeating().getPassiveVentHeat();
 
 		return result;
 	}
 	
 	/**
-	 * Gets the outgoing heat due to ventilation.
+	 * Gets the vent heat actively managed by this building via ventilation.
 	 *
 	 * @return heat in kW.
 	 */
-	public double getVentOutHeat() {
+	public double getActiveVentHeat() {
 		double result = 0;
 
 		if (furnace != null && heating != null)
-			result = furnace.getHeating().getVentOutHeat();
+			result = furnace.getHeating().getActiveVentHeat();
 
 		return result;
 	}
 	
 	
 	/**
-	 * Gets the heat deviation of this building.
+	 * Gets the heat surplus of this building.
 	 *
 	 * @return heat in kW.
 	 */
-	public double getHeatDev() {
+	public double getHeatSurplus() {
 		double result = 0;
 
 		if (furnace != null && heating != null)

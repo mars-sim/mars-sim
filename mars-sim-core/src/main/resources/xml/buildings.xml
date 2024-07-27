@@ -2271,7 +2271,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Laboratory -->
 
 	<building type="Garage" width="12.0" length="16.0" north-south-alignment="length" base-level="0"
-			wear-lifetime="3340000" maintenance-time="200" room-temperature="22.5" base-mass="5000">
+			wear-lifetime="3340000" maintenance-time="200" room-temperature="20" base-mass="5000">
 		<description> The Garage is an enclosed maintenance facility for
 			building, repairing and modifying Martian rovers and vehicles
 		</description>
@@ -3170,7 +3170,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="2.0" />
-				<heat-source type="Electric Heating" capacity="3.0" />
+				<heat-source type="Electric Heating" capacity="4.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -3494,7 +3494,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Loading Dock Garage" width="15.0" length="18.0" 
 			construction="CONCRETE" north-south-alignment="length" base-level="-1" wear-lifetime="3340000" 
-			maintenance-time="300" room-temperature="22.5" base-mass="10000">
+			maintenance-time="300" room-temperature="20" base-mass="10000">
 		<description> The Loading Dock Garage is an enclosed maintenance facility
 			featuring a brick loading dock for easy access. It hosts equipment for
 			building, repairing and modifying rovers and vehicles.
@@ -3711,7 +3711,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="2.0" />
-				<heat-source type="Electric Heating" capacity="3.0" />
+				<heat-source type="Electric Heating" capacity="4.0" />
 			</thermal-generation>
 		</functions>
 	</building>
