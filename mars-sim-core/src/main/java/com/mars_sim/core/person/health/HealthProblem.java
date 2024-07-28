@@ -332,17 +332,6 @@ public class HealthProblem implements Serializable {
 	public CuredProblem toCured(MarsTime now) {
 		return new CuredProblem(started, now, complaint);
 	}
-
-	/**
-	 * This method generates a string representation of this problem. It contains
-	 * the illness and the health rating.
-	 * 
-	 * @return String description.
-	 */
-	public String outputInfoString() {
-		return "Problem: " + getComplaint().getName()
-				+ ". State: " + state.toString().toLowerCase();
-	}
 	
 	/**
 	 * This method generates a string representation of this problem. It contains

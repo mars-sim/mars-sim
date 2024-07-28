@@ -28,6 +28,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.WalkingSteps;
@@ -828,7 +829,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		// Register the historical event
 		HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON,
 				this,
-				p.getPhysicalCondition().getHealthSituation(),
+				PhysicalConditionFormat.getHealthSituation(p.getPhysicalCondition()),
 				p.getTaskDescription(),
 				p.getName(),
 				p

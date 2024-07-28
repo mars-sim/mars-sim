@@ -22,6 +22,7 @@ import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.MissionHistoricalEvent;
@@ -801,22 +802,14 @@ public abstract class EVAOperation extends Task {
 		// Store the person into a medical building
 		BuildingManager.addToMedicalBuilding(p, s);
 
-		Collection<HealthProblem> problems = p.getPhysicalCondition().getProblems();
-		Complaint complaint = p.getPhysicalCondition().getMostSerious();
-		HealthProblem problem = null;
-		for (HealthProblem hp : problems) {
-			if (complaint.getType() == hp.getType()) {
-				problem = hp;
-				break;
-			}
-		}
+		HealthProblem problem = p.getPhysicalCondition().getMostSerious();
 		
 		HistoricalEvent rescueEvent = null;
 		
 		if (problem == null) {
 			rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON,
 				p.getMission(),
-				p.getPhysicalCondition().getHealthSituation(),
+				PhysicalConditionFormat.getHealthSituation(p.getPhysicalCondition()),
 				p.getTaskDescription(),
 				p.getName(),
 				p

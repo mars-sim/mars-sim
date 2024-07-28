@@ -119,69 +119,7 @@ public class PhysicalCondition implements Serializable {
 	
 	/** The default string for degree celsius */
 	public static final String DEGREE_CELSIUS = Msg.getString("temperature.sign.degreeCelsius");
-	
-	/** The default string for energy level 1 */
-	public static final String ENERGY_LEVEL_1 = Msg.getString("PersonTableModel.column.energy.level1");
-	/** The default string for energy level 2 */
-	public static final String ENERGY_LEVEL_2 = Msg.getString("PersonTableModel.column.energy.level2");
-	/** The default string for energy level 3 */
-	public static final String ENERGY_LEVEL_3 = Msg.getString("PersonTableModel.column.energy.level3");
-	/** The default string for energy level 4 */
-	public static final String ENERGY_LEVEL_4 = Msg.getString("PersonTableModel.column.energy.level4");
-	/** The default string for energy level 5 */
-	public static final String ENERGY_LEVEL_5 = Msg.getString("PersonTableModel.column.energy.level5");
-	/** The default string for energy level 6 */
-	public static final String ENERGY_LEVEL_6 = Msg.getString("PersonTableModel.column.energy.level6");
-	/** The default string for energy level 7 */
-	public static final String ENERGY_LEVEL_7 = Msg.getString("PersonTableModel.column.energy.level7");
 
-	/** The default string for water level 1 */
-	public static final String WATER_LEVEL_1 = Msg.getString("PersonTableModel.column.water.level1");
-	/** The default string for water level 2 */
-	public static final String WATER_LEVEL_2 = Msg.getString("PersonTableModel.column.water.level2");
-	/** The default string for water level 3 */
-	public static final String WATER_LEVEL_3 = Msg.getString("PersonTableModel.column.water.level3");
-	/** The default string for water level 4 */
-	public static final String WATER_LEVEL_4 = Msg.getString("PersonTableModel.column.water.level4");
-	/** The default string for water level 5 */
-	public static final String WATER_LEVEL_5 = Msg.getString("PersonTableModel.column.water.level5");
-
-	/** The default string for fatigue level 1 */
-	public static final String FATIGUE_LEVEL_1 = Msg.getString("PersonTableModel.column.fatigue.level1");
-	/** The default string for fatigue level 2 */
-	public static final String FATIGUE_LEVEL_2 = Msg.getString("PersonTableModel.column.fatigue.level2");
-	/** The default string for fatigue level 3 */
-	public static final String FATIGUE_LEVEL_3 = Msg.getString("PersonTableModel.column.fatigue.level3");
-	/** The default string for fatigue level 4 */
-	public static final String FATIGUE_LEVEL_4 = Msg.getString("PersonTableModel.column.fatigue.level4");
-	/** The default string for fatigue level 5 */
-	public static final String FATIGUE_LEVEL_5 = Msg.getString("PersonTableModel.column.fatigue.level5");
-	
-	/** The default string for stress level 1 */
-	public static final String STRESS_LEVEL_1 = Msg.getString("PersonTableModel.column.stress.level1");
-	/** The default string for stress level 2 */
-	public static final String STRESS_LEVEL_2 = Msg.getString("PersonTableModel.column.stress.level2");
-	/** The default string for stress level 3 */
-	public static final String STRESS_LEVEL_3 = Msg.getString("PersonTableModel.column.stress.level3");
-	/** The default string for stress level 4 */
-	public static final String STRESS_LEVEL_4 = Msg.getString("PersonTableModel.column.stress.level4");
-	/** The default string for stress level 5 */
-	public static final String STRESS_LEVEL_5 = Msg.getString("PersonTableModel.column.stress.level5");
-
-	/** The default string for performance level 1 */
-	public static final String PERF_LEVEL_1 = Msg.getString("PersonTableModel.column.performance.level1");
-	/** The default string for performance level 2 */
-	public static final String PERF_LEVEL_2 = Msg.getString("PersonTableModel.column.performance.level2");
-	/** The default string for performance level 3 */
-	public static final String PERF_LEVEL_3 = Msg.getString("PersonTableModel.column.performance.level3");
-	/** The default string for performance level 4 */
-	public static final String PERF_LEVEL_4 = Msg.getString("PersonTableModel.column.performance.level4");
-	/** The default string for performance level 5 */
-	public static final String PERF_LEVEL_5 = Msg.getString("PersonTableModel.column.performance.level5");
-	
-	private static final String WELL = "Well";
-	private static final String DEAD_COLON = "Dead : ";
-	private static final String SICK_COLON = "Sick : ";
 	public static final String TBD = "[To Be Determined]";
 	private static final String TRIGGERED_DEATH = "[Player Triggered Death]";
 	
@@ -1555,47 +1493,14 @@ public class PhysicalCondition implements Serializable {
 		return isDehydrated;
 	}
 
-	/**
-	 * Gets a string description of the most mostSeriousProblem health situation.
-	 *
-	 * @return A string containing the current illness if any.
-	 */
-	public String getHealthSituation() {
-		String situation = WELL;
-		if (mostSeriousProblem != null) {
-			if (isDead()) {
-				situation = DEAD_COLON + mostSeriousProblem.getComplaint().getType().toString();
-			} else {
-				situation = SICK_COLON + mostSeriousProblem.toString();
-			}
-		}
-		return situation;
-	}
 
-	/**
-	 * Gets a string description of the most mostSeriousProblem health situation.
-	 *
-	 * @return A string containing the current illness and state if any.
-	 */
-	public String getHealthSituationOutput() {
-		String situation = WELL;
-		if (mostSeriousProblem != null) {
-			if (isDead()) {
-				situation = DEAD_COLON + mostSeriousProblem.getComplaint().getType().toString();
-			} else {
-				situation = mostSeriousProblem.outputInfoString();
-			}
-		}
-		return situation;
-	}
-	
 	/**
 	 * Gets the most mostSeriousProblem illness.
 	 *
 	 * @return most mostSeriousProblem illness
 	 */
-	public Complaint getMostSerious() {
-		return mostSeriousProblem.getComplaint();
+	public HealthProblem getMostSerious() {
+		return mostSeriousProblem;
 	}
 
 	/**
@@ -1674,128 +1579,12 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Gives the status of a person's hunger level.
-	 *
-	 * @param hunger
-	 * @return status
-	 */
-	public static String getHungerStatus(double hunger, double energy) {
-		String status;
-		if (hunger < 50 && energy > 15000) // Full
-			status = ENERGY_LEVEL_1;
-		else if (hunger < 250 && energy > 10000) // Satisfied
-			status = ENERGY_LEVEL_2;
-		else if (hunger < 500 && energy > 5000) // Comfy
-			status = ENERGY_LEVEL_3;
-		else if (hunger < 750 && energy > ENERGY_THRESHOLD) // Adequate
-			status = ENERGY_LEVEL_4;
-		else if (hunger < 1000 && energy > 1000) // Rumbling
-			status = ENERGY_LEVEL_5;
-		else if (hunger < 1500 && energy > 500) // Ravenous
-			status = ENERGY_LEVEL_6;
-		else // Famished
-			status = ENERGY_LEVEL_7;
-		return status;
-	}
-
-	/**
-	 * Gives the status of a person's water level.
-	 *
-	 * @param water
-	 * @return status
-	 */
-	public static String getThirstyStatus(double thirst) {
-		String status;
-		if (thirst < 150)
-			status = WATER_LEVEL_1;
-		else if (thirst < 500)
-			status = WATER_LEVEL_2;
-		else if (thirst < 1000)
-			status = WATER_LEVEL_3;
-		else if (thirst < 1600)
-			// Note : Use getDehydrationStartTime()
-			status = WATER_LEVEL_4;
-		else
-			status = WATER_LEVEL_5;
-		return status;
-	}
-
-	/**
-	 * Gives the status of a person's fatigue level.
-	 *
-	 * @param fatigue
-	 * @return status
-	 */
-	public static String getFatigueStatus(double value) {
-		String status;
-		if (value < 500)
-			status = FATIGUE_LEVEL_1;
-		else if (value < 800)
-			status = FATIGUE_LEVEL_2;
-		else if (value < 1200)
-			status = FATIGUE_LEVEL_3;
-		else if (value < 1600)
-			status = FATIGUE_LEVEL_4;
-		else
-			status = FATIGUE_LEVEL_5;
-		return status;
-	}
-
-	/**
-	 * Gives the status of a person's stress level.
-	 *
-	 * @param hunger
-	 * @return status
-	 */
-	public static String getStressStatus(double value) {
-		String status;
-		if (value < 10)
-			status = STRESS_LEVEL_1;
-		else if (value < 40)
-			status = STRESS_LEVEL_2;
-		else if (value < 75)
-			status = STRESS_LEVEL_3;
-		else if (value < 95)
-			status = STRESS_LEVEL_4;
-		else
-			status = STRESS_LEVEL_5;
-		return status;
-	}
-
-	/**
-	 * Gives the status of a person's hunger level.
-	 *
-	 * @param hunger
-	 * @return status
-	 */
-	public static String getPerformanceStatus(double value) {
-		String status;
-		if (value > .95)
-			status = PERF_LEVEL_1;
-		else if (value > .75)
-			status = PERF_LEVEL_2;
-		else if (value > .50)
-			status = PERF_LEVEL_3;
-		else if (value > .25)
-			status = PERF_LEVEL_4;
-		else
-			status = PERF_LEVEL_5;
-		return status;
-	}
-
-	/**
 	 * Checks if the person has any mostSeriousProblem medical problems.
 	 *
 	 * @return true if mostSeriousProblem medical problems
 	 */
 	public boolean hasSeriousMedicalProblems() {
-		boolean result = false;
-		Iterator<HealthProblem> meds = getProblems().iterator();
-		while (meds.hasNext()) {
-			if (meds.next().getComplaint().getSeriousness() >= 50)
-				result = true;
-		}
-		return result;
+		return problems.stream().anyMatch(m -> m.getComplaint().getSeriousness() >= 50);
 	}
 
 	/**
@@ -1912,15 +1701,8 @@ public class PhysicalCondition implements Serializable {
 		if (medicationName == null)
 			throw new IllegalArgumentException("medicationName is null");
 
-		boolean result = false;
-
-		Iterator<Medication> i = getMedicationList().iterator();
-		while (i.hasNext()) {
-			if (medicationName.equals(i.next().getName()))
-				result = true;
-		}
-
-		return result;
+		return medicationList.stream()
+						.anyMatch(m -> m.getName().equals(medicationName));
 	}
 
 	/**

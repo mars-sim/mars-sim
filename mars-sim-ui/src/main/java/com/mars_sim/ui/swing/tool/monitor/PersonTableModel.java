@@ -22,6 +22,7 @@ import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
 import com.mars_sim.core.person.ai.mission.MissionEventType;
@@ -316,7 +317,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 					if (pc.isStarving())
 						result = STARVING;
 					else
-						result = PhysicalCondition.getHungerStatus(pc.getHunger(), pc.getEnergy());
+						result = PhysicalConditionFormat.getHungerStatus(pc, false);
 				}
 			}
 			break;
@@ -327,24 +328,24 @@ public class PersonTableModel extends UnitTableModel<Person> {
 					if (pc.isDehydrated())
 						result = DEHYDRATED;
 					else
-						result = PhysicalCondition.getThirstyStatus(pc.getThirst());
+						result = PhysicalConditionFormat.getThirstyStatus(pc, false);
 				}
 			}
 			break;
 
 			case FATIGUE:
 				if (!person.getPhysicalCondition().isDead())
-					result = PhysicalCondition.getFatigueStatus(person.getPhysicalCondition().getFatigue());
+					result = PhysicalConditionFormat.getFatigueStatus(person.getPhysicalCondition(), false);
 				break;
 
 			case STRESS:
 				if (!person.getPhysicalCondition().isDead())
-					result = PhysicalCondition.getStressStatus(person.getPhysicalCondition().getStress());
+					result = PhysicalConditionFormat.getStressStatus(person.getPhysicalCondition(), false);
 				break;
 
 			case PERFORMANCE:
 				if (!person.getPhysicalCondition().isDead())
-					result = PhysicalCondition.getPerformanceStatus(person.getPhysicalCondition().getPerformanceFactor() * 100D);
+					result = PhysicalConditionFormat.getPerformanceStatus(person.getPhysicalCondition(), false);
 				break;
 
 			case EMOTION: 
@@ -353,7 +354,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				break;
 
 			case HEALTH: 
-				result = person.getPhysicalCondition().getHealthSituationOutput();
+				result = PhysicalConditionFormat.getHealthSituation(person.getPhysicalCondition());
 				break;
 
 			case LOCATION:
