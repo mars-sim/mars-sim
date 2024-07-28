@@ -27,6 +27,7 @@ import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.meta.EatDrinkMeta;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.person.health.Complaint;
@@ -1148,10 +1149,11 @@ public class PhysicalCondition implements Serializable {
 			boolean noGo = hasComplaint(complaint);
 
 			if (!noGo) {
-				// If a person is performing a resting task, then it is impossible to suffer
-				// from complaint that is influenced by effort
-				noGo  = (complaint.getEffortInfluence() == PhysicalEffort.NONE)
-								&& person.isRestingTask();
+				var t = person.getTaskManager().getTask();
+				// If the Complaint effort influence is more than the effort of the Task then 
+				// this complaint can not occur
+				noGo  = (t != null) && ExperienceImpact.isEffortHigher(complaint.getEffortInfluence(),
+													t.getEffortRequired());
 			}
 
 			// Can this complaint happen?
