@@ -62,7 +62,6 @@ import com.mars_sim.core.person.ai.role.RoleUtil;
 import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
-import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalConfig;
 import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -600,11 +599,6 @@ public class Simulation implements ClockListener, Serializable {
 		
 		transportManager.reinitalizeInstances(this);
 	
-		
-		// Re-initialize OuterSpace instance
-		OuterSpace outerSpace = unitManager.getOuterSpace();
-		// Re-initialize OuterSpace instance
-		Moon moon = unitManager.getMoon();
 		// Re-initialize the MarsSurface instance
 		MarsSurface marsSurface = unitManager.getMarsSurface();
 		

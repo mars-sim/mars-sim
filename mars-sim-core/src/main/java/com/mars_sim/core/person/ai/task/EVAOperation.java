@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.ai.task;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -32,7 +31,6 @@ import com.mars_sim.core.person.ai.task.util.ExperienceImpact.SkillWeight;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.person.health.Complaint;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.resource.ResourceUtil;
