@@ -140,4 +140,12 @@ public class HistoricalEventManager implements Serializable {
 	public List<HistoricalEvent> getEvents() {
 		return lastEvents;
 	}
+
+	/**
+	 * Gets the master clock
+	 * @return
+	 */
+	public MasterClock getClock() {
+		return masterClock;
+	}
 }

@@ -21,6 +21,7 @@ import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.data.SolMetricDataLogger;
+import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -37,6 +38,7 @@ import com.mars_sim.core.person.health.HealthRiskType;
 import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.person.health.Medication;
+import com.mars_sim.core.person.health.CuredProblem;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.person.health.RadioProtectiveAgent;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -260,6 +262,9 @@ public class PhysicalCondition implements Serializable {
 	private List<Medication> medicationList;
 	/** Injury/Illness effecting person. */
 	private List<HealthProblem> problems;
+	/** List of the cured problems */
+	private List<CuredProblem> history;
+
 	/** Record of Illness frequency. */
 	private Map<ComplaintType, Integer> healthLog;
 
@@ -309,6 +314,7 @@ public class PhysicalCondition implements Serializable {
 
 		problems = new CopyOnWriteArrayList<>();
 		healthLog = new ConcurrentHashMap<>();
+		history = new ArrayList<>();
 		healthRisks = new EnumMap<>(HealthRiskType.class);
 		medicationList = new CopyOnWriteArrayList<>();
 
@@ -576,6 +582,8 @@ public class PhysicalCondition implements Serializable {
 					// properly be transitioned into the next.
 					problems.remove(problem);
 					
+					history.add(problem.toCured(pulse.getMarsTime()));
+
 					Iterator<Medication> i = getMedicationList().iterator();
 					while (i.hasNext()) {
 						Medication med = i.next();
@@ -2241,16 +2249,14 @@ public class PhysicalCondition implements Serializable {
     	return muscleHealth;
     }
     
-   
-    /**
-     * Gets the health log.
-     * 
-     * @return
-     */
-    public Map<ComplaintType, Integer> getHealthLog() {
-    	return healthLog;
-    }
-    
+	/**
+	 * Gets the history of cured problems.
+	 * @return
+	 */
+	public List<CuredProblem> getHealthHistory() {
+		return history;
+	}
+
 	/**
 	 * Initializes that static instances.
 	 * 
@@ -2258,9 +2264,10 @@ public class PhysicalCondition implements Serializable {
 	 * @param c0
 	 * @param c1
 	 * @param m
+	 * @param e 
 	 */
 	public static void initializeInstances(MasterClock c0, MedicalManager m,
-											PersonConfig pc) {
+											PersonConfig pc, HistoricalEventManager e) {
 		medicalManager = m;
 		personConfig = pc;
 		master = c0;
@@ -2274,6 +2281,8 @@ public class PhysicalCondition implements Serializable {
 		foodConsumption = personConfig.getFoodConsumptionRate();
 
 		RadiationExposure.initializeInstances(c0);
+		HealthProblem.initializeInstances(m, e);
+
 	}
 
 	public void reinit() {
