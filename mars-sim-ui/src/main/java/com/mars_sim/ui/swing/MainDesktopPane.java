@@ -398,7 +398,7 @@ public class MainDesktopPane extends JDesktopPane
 			return !w.isClosed();
 		return false;
 	}
-
+	
 	/**
 	 * Opens a tool window if necessary.
 	 *
@@ -501,13 +501,24 @@ public class MainDesktopPane extends JDesktopPane
 		}
     }
 
+    /**
+	 * Opens a Unit Window for a specific Unit with a optional set of user properties.
+	 * 
+	 * @param unit Unit to display
+     * @return
+     */
+	public UnitWindow openUnitWindow(Unit unit) {
+		return openUnitWindow(unit, null);
+	}
+
 	/**
 	 * Opens a Unit Window for a specific Unit with a optional set of user properties.
 	 * 
 	 * @param unit Unit to display
 	 * @param initProps Initial properties
+     * @return
 	 */
-	private void openUnitWindow(Unit unit, WindowSpec initProps) {
+	private UnitWindow openUnitWindow(Unit unit, WindowSpec initProps) {
 
 		UnitWindow tempWindow = null;
 
@@ -567,6 +578,8 @@ public class MainDesktopPane extends JDesktopPane
 		if (soundFilePath != null && soundFilePath.length() != 0 && soundPlayer != null) {
 			soundPlayer.playSound(soundFilePath);
 		}
+		
+		return tempWindow;
 	}
 
 	/**

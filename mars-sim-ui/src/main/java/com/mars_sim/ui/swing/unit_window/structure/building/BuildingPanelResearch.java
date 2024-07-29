@@ -8,7 +8,6 @@ package com.mars_sim.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;

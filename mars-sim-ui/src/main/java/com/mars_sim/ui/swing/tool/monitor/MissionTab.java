@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * MissionTab.java
  * @date 2021-12-07
@@ -20,6 +20,7 @@ public class MissionTab extends TableTab {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @throws Exception
 	 */
 	public MissionTab(final MonitorWindow window) {

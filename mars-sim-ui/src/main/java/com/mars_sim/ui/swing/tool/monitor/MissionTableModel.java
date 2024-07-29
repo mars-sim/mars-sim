@@ -100,10 +100,10 @@ public class MissionTableModel extends AbstractMonitorModel
 		COLUMNS[VEHICLE] = new ColumnSpec(Msg.getString("MissionTableModel.column.vehicle"), String.class);
 		COLUMNS[MEMBER_NUM] = new ColumnSpec(Msg.getString("MissionTableModel.column.members"), Integer.class);
 		COLUMNS[NAVPOINT_NUM] = new ColumnSpec(Msg.getString("MissionTableModel.column.navpoints"), Integer.class);
-		COLUMNS[TRAVELLED_DISTANCE] = new ColumnSpec(Msg.getString("MissionTableModel.column.distanceTravelled"), Integer.class);
-		COLUMNS[TOTAL_REMAINING_DISTANCE] = new ColumnSpec(Msg.getString("MissionTableModel.column.totalRemaining"), Integer.class);
-		COLUMNS[REMAINING_DISTANCE_TO_NEXT_NAVPOINT] = new ColumnSpec(Msg.getString("MissionTableModel.column.legRemaining"), Integer.class);		
-		COLUMNS[PROPOSED_ROUTE_DISTANCE] = new ColumnSpec(Msg.getString("MissionTableModel.column.proposedDistance"), Integer.class);
+		COLUMNS[TRAVELLED_DISTANCE] = new ColumnSpec(Msg.getString("MissionTableModel.column.distanceTravelled"), Double.class);
+		COLUMNS[TOTAL_REMAINING_DISTANCE] = new ColumnSpec(Msg.getString("MissionTableModel.column.totalRemaining"), Double.class);
+		COLUMNS[REMAINING_DISTANCE_TO_NEXT_NAVPOINT] = new ColumnSpec(Msg.getString("MissionTableModel.column.legRemaining"), Double.class);		
+		COLUMNS[PROPOSED_ROUTE_DISTANCE] = new ColumnSpec(Msg.getString("MissionTableModel.column.proposedDistance"), Double.class);
 	}
 
 	/**
