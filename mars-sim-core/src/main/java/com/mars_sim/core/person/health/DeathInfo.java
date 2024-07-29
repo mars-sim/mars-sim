@@ -126,7 +126,7 @@ public class DeathInfo implements Serializable {
 		if (problem == null) {
 			
 			// Double check if there are any medical complains
-			Complaint serious = person.getPhysicalCondition().getMostSerious();
+			var serious = person.getPhysicalCondition().getMostSerious();
 			if (serious != null) {
 				this.illness = serious.getType();
 				healthCondition = 0;

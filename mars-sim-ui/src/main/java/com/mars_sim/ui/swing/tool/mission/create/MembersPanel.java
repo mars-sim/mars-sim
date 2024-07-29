@@ -32,6 +32,7 @@ import javax.swing.event.ListSelectionListener;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -393,7 +394,7 @@ implements ActionListener {
 					else if (column == 4) 
 						result = (int) (person.getPerformanceRating() * 100D) + "%";
 					else if (column == 5)
-						result = person.getPhysicalCondition().getHealthSituationOutput();
+						result = PhysicalConditionFormat.getHealthSituation(person.getPhysicalCondition());
 				}
 				catch (Exception e) {}
 			}
@@ -521,7 +522,7 @@ implements ActionListener {
 					else if (column == 4) 
 						result = (int) (person.getPerformanceRating() * 100D) + "%";
 					else if (column == 5)
-						result = person.getPhysicalCondition().getHealthSituationOutput();
+					result = PhysicalConditionFormat.getHealthSituation(person.getPhysicalCondition());
 				}
 				catch (Exception e) {}
 			}

@@ -35,12 +35,13 @@ import javax.swing.table.TableColumnModel;
 import com.mars_sim.core.person.CircadianClock;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
-import com.mars_sim.core.person.health.ComplaintType;
+import com.mars_sim.core.person.health.CuredProblem;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.HealthRiskType;
 import com.mars_sim.core.person.health.Medication;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.person.health.RadiationExposure.DoseHistory;
+import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -49,6 +50,7 @@ import com.mars_sim.ui.swing.tool.SpringUtilities;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.MarsTimeCellRenderer;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -547,6 +549,7 @@ extends TabPanel {
 		healthLogTable = new JTable(healthLogTableModel);
 		healthLogTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		healthLogTable.setRowSelectionAllowed(true);
+		healthLogTable.setDefaultRenderer(MarsTime.class, new MarsTimeCellRenderer());
 		healthLogScrollPanel.setViewportView(healthLogTable);
 		
 		// Add sorting
@@ -726,10 +729,12 @@ extends TabPanel {
 		medicationTableModel.update(condition);
 
 		// Update health problem table model.
-		healthProblemTableModel.update(condition);
+		var problemsChanged = healthProblemTableModel.update(condition);
 		
 		// Update health log table model.
-		healthLogTableModel.update(condition);
+		if (problemsChanged) {
+			healthLogTableModel.update();
+		}
 	}
 
 	/**
@@ -860,70 +865,73 @@ extends TabPanel {
 			}
 		}
 
-		public void update(PhysicalCondition condition) {
+		public boolean update(PhysicalCondition condition) {
+			var changed = false;
+
 			// Make sure problems cache is current.
 			if (problemsCache.size() != condition.getProblems().size()) {
 				problemsCache = new ArrayList<>(condition.getProblems());
+				changed = true;
 			}
 			isDead = condition.isDead();
 
 			fireTableDataChanged();
+			return changed;
 		}
 	}
 
 	/**
 	 * Internal class used as model for the health log table.
 	 */
-	private static class HealthLogTableModel
-	extends AbstractTableModel {
+	private static class HealthLogTableModel extends AbstractTableModel {
 
-		private Map<ComplaintType, Integer> map;
-		private List<ComplaintType> list;
 	
+		private List<CuredProblem> history;
+
 		private HealthLogTableModel(PhysicalCondition condition) {
-			map = condition.getHealthLog();
-			list = new ArrayList<>(map.keySet());
-			Collections.sort(list);
+			history = condition.getHealthHistory();
 		}
 
+		@Override
 		public int getRowCount() {
-			return list.size();
+			return history.size();
 		}
 
+		@Override
 		public int getColumnCount() {
-			return 2;
+			return 3;
 		}
 
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			return String.class;
+			if (columnIndex == 0) {
+				return String.class;
+			}
+			return MarsTime.class;
 		}
 
 		@Override
 		public String getColumnName(int columnIndex) {
-			return (columnIndex == 0 ? Msg.getString("TabPanelHealth.column.complaint")
-									: Msg.getString("TabPanelHealth.column.occurrence")); //$NON-NLS-1$
+			return switch(columnIndex) {
+				case 0 -> Msg.getString("TabPanelHealth.column.complaint");
+				case 1 -> Msg.getString("TabPanelHealth.column.startedon");
+				case 2 -> Msg.getString("TabPanelHealth.column.curedon");
+				default -> null;
+			};
 		}
 
 		public Object getValueAt(int row, int column) {
-			ComplaintType type = list.get(row);
+			var h = history.get(row);
 			
-			if (column == 0) {			
-				return type;
-			}
-			else if (column == 1) {
-				return map.get(type);
-			}
-			else {
-				return null;
-			}
+			return switch(column) {
+				case 0 -> h.complaint().getName();
+				case 1 -> h.start();
+				case 2 -> h.cured();
+				default -> null;
+			};
 		}
 
-		public void update(PhysicalCondition condition) {
-			// Make sure problems cache is current.
-			map = condition.getHealthLog();
-			list = new ArrayList<>(map.keySet());
-			Collections.sort(list);
+		public void update() {			
 			fireTableDataChanged();
 		}
 	}

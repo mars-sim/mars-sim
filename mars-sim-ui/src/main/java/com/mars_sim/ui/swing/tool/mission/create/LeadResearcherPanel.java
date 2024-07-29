@@ -21,6 +21,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
@@ -186,7 +187,7 @@ extends WizardPanel {
                         result = (int) (person.getPerformanceRating() * 100D) + "%";
                     }
                     else if (column == 4) {
-                        result = person.getPhysicalCondition().getHealthSituationOutput();
+                        result = PhysicalConditionFormat.getHealthSituation(person.getPhysicalCondition());
                     }
                 }
                 catch (Exception e) {}

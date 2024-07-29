@@ -34,7 +34,7 @@ public class MedicalEvent extends HistoricalEvent {
 		super(HistoricalEventCategory.MEDICAL,  
 				eventType, 
 				illness, 
-				illness.getType().getName(),
+				illness.getComplaint().getName(),
 				person.getTaskDescription(),
 				person.getName(),
 				person

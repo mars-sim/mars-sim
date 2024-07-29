@@ -11,6 +11,7 @@ import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.structure.Settlement;
 
@@ -131,32 +132,19 @@ public class StatusCommand extends AbstractPersonCommand {
 		}
 
 		PhysicalCondition condition = person.getPhysicalCondition();
-
-		double p = condition.getPerformanceFactor();
-		double h = condition.getHunger();
-		double e = condition.getEnergy();
-		double t = condition.getThirst();
-		double s = condition.getStress();
-		double f = condition.getFatigue();
-
 		buffer.append(System.lineSeparator());
 		buffer.append(System.lineSeparator());
-		buffer.append("     Hunger : ").append(PhysicalCondition.getHungerStatus(h, e) 
-				+ " (" + Math.round(h*10.0)/10.0 + ")");
+		buffer.append("     Hunger : ").append(PhysicalConditionFormat.getHungerStatus(condition, true)); 
 		buffer.append(System.lineSeparator());
-		buffer.append("     Energy : ").append(Math.round(e*10.0)/10.0 + " kJ");
+		buffer.append("     Energy : ").append(Math.round(condition.getEnergy() *10.0)/10.0 + " kJ");
 		buffer.append(System.lineSeparator());
-		buffer.append("     Thirst : ").append(PhysicalCondition.getThirstyStatus(t) 
-				+ " (" + Math.round(t*10.0)/10.0 + ")");
+		buffer.append("     Thirst : ").append(PhysicalConditionFormat.getThirstyStatus(condition, true)); 
 		buffer.append(System.lineSeparator());
-		buffer.append("     Stress : ").append(PhysicalCondition.getStressStatus(s)
-				+ " (" + Math.round(s*10.0)/10.0 + " %)");
+		buffer.append("     Stress : ").append(PhysicalConditionFormat.getStressStatus(condition, true));
 		buffer.append(System.lineSeparator());
-		buffer.append("    Fatigue : ").append(PhysicalCondition.getFatigueStatus(f)
-				+ " (" + Math.round(f*10.0)/10.0 + ")");
+		buffer.append("    Fatigue : ").append(PhysicalConditionFormat.getFatigueStatus(condition, true));
 		buffer.append(System.lineSeparator());
-		buffer.append("Performance : ").append(PhysicalCondition.getPerformanceStatus(p)
-				+ " (" + Math.round(p*10.0)/10.0 + " %)");
+		buffer.append("Performance : ").append(PhysicalConditionFormat.getPerformanceStatus(condition, true));
 		buffer.append(System.lineSeparator());
 		buffer.append("    Emotion : ").append(person.getMind().getEmotion().getDescription());
 		buffer.append(System.lineSeparator());

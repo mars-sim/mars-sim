@@ -20,11 +20,11 @@ public class SelfTreatHealthProblemTest extends AbstractMarsSimUnitTest {
      * @param s
      * @return
      */
-    static Building buildMediCare(MarsSimContext context, Settlement s) {
+    public static Building buildMediCare(MarsSimContext context, Settlement s) {
         return context.buildFunction(s.getBuildingManager(), "Infirmary", BuildingCategory.MEDICAL, FunctionType.MEDICAL_CARE, LocalPosition.DEFAULT_POSITION, 0D, true);
     }
 
-    static HealthProblem addComplaint(MarsSimContext context, Person p, ComplaintType ct) {
+    public static HealthProblem addComplaint(MarsSimContext context, Person p, ComplaintType ct) {
         var c = context.getSim().getMedicalManager().getComplaintByName(ct);
         var pc = p.getPhysicalCondition();
         return pc.addMedicalComplaint(c);

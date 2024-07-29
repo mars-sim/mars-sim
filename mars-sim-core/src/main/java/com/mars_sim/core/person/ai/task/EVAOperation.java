@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.ai.task;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -22,6 +21,7 @@ import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.MissionHistoricalEvent;
@@ -31,7 +31,6 @@ import com.mars_sim.core.person.ai.task.util.ExperienceImpact.SkillWeight;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.person.health.Complaint;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -801,22 +800,14 @@ public abstract class EVAOperation extends Task {
 		// Store the person into a medical building
 		BuildingManager.addToMedicalBuilding(p, s);
 
-		Collection<HealthProblem> problems = p.getPhysicalCondition().getProblems();
-		Complaint complaint = p.getPhysicalCondition().getMostSerious();
-		HealthProblem problem = null;
-		for (HealthProblem hp : problems) {
-			if (complaint.getType() == hp.getType()) {
-				problem = hp;
-				break;
-			}
-		}
+		HealthProblem problem = p.getPhysicalCondition().getMostSerious();
 		
 		HistoricalEvent rescueEvent = null;
 		
 		if (problem == null) {
 			rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON,
 				p.getMission(),
-				p.getPhysicalCondition().getHealthSituation(),
+				PhysicalConditionFormat.getHealthSituation(p.getPhysicalCondition()),
 				p.getTaskDescription(),
 				p.getName(),
 				p
