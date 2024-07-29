@@ -129,6 +129,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	// "-1" if it doesn't exist.
 	private double length;
 	private double floorArea;
+	private double areaFactor;
 	private double facing;
 	private double baseFullPowerRequirement;
 	private double baseLowPowerRequirement;
@@ -238,12 +239,13 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		if (length == width) {
 			// For Habs and Hubs that have a circular footprint
-			this.floorArea = Math.PI * .25 * 
-					length * length;
+			this.floorArea = Math.PI * .25 * length * width;
 		}
 		else
 			this.floorArea = length * width;
 		
+		areaFactor = Math.sqrt(floorArea) / 2;
+				
 		if (floorArea <= 0) {
 			throw new IllegalArgumentException("Floor area cannot be -ve w=" + width + ", l=" + length);
 		}
@@ -738,6 +740,10 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return floorArea;
 	}
 
+	public double getAreaFactor() {
+		return areaFactor;
+	}
+	
 	/**
 	 * Returns the volume of the building in liter.
 	 *

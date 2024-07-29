@@ -196,7 +196,7 @@ public abstract class Function implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the amount of power required when function is at power down level.
+	 * Gets the amount of power required when function is at lower power (or power down) level.
 	 *
 	 * @return power (kW) default zero
 	 */

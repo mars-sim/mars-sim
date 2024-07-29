@@ -334,7 +334,8 @@ public class PowerGrid implements Serializable, Temporal {
 			return;
 		}
 		
-		// C. Turn off emergency power generators 
+		// C. Turn off emergency power generators. Have excess power. No need of 
+		//    using methane power generators to produce electricity
 		
 		// C1. Turn off methane power generators 
 		double methanePower = adjustPowerLevelFunctionType(false, excess, buildings, 
@@ -465,7 +466,7 @@ public class PowerGrid implements Serializable, Temporal {
 
 		Set<Building> buildings = manager.getBuildingSet();
 		
-		// Turn on emergency power generators to supplement power
+		// Turn on emergency power generators to supplement power production
 		
 		// If still not having sufficient power,
 		// turn on methane generators to low power mode if available
@@ -610,13 +611,13 @@ public class PowerGrid implements Serializable, Temporal {
 				// For stepping up power
 				else if (oldPowerMode == PowerMode.LOW_POWER
 					&& newPowerMode == PowerMode.FULL_POWER) {
-					netPower += building.getFullPowerRequired()
-							- building.getLowPowerRequired();
+					netPower += -building.getFullPowerRequired()
+							+ building.getLowPowerRequired();
 				}
 				// For stepping up power
 				else if (oldPowerMode == PowerMode.NO_POWER
 					&& newPowerMode == PowerMode.LOW_POWER) {
-					netPower += building.getLowPowerRequired();
+					netPower += -building.getLowPowerRequired();
 				}
 				else {
 					continue;
@@ -643,7 +644,8 @@ public class PowerGrid implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Adjust the power level in inhabitable and non-inhabitable buildings.
+	 * Adjust the power level in power generating buildings.
+	 * Note: for now, use only in methane power
 	 * 
 	 * @param stepUp turning up power level
 	 * @param neededPower
@@ -676,21 +678,21 @@ public class PowerGrid implements Serializable, Temporal {
 				PowerMode oldPowerMode = building.getPowerMode();
 				PowerMode newPowerMode = null;
 				if (stepUp && oldPowerMode == PowerMode.NO_POWER) {
-					netPower += building.getFullPowerRequired();
-					newPowerMode = PowerMode.FULL_POWER;
+					netPower += building.getLowPowerRequired();
+					newPowerMode = PowerMode.LOW_POWER;
 				}
 				else if (stepUp && oldPowerMode == PowerMode.LOW_POWER) {
 					netPower += building.getFullPowerRequired()
 						- building.getLowPowerRequired();
-					newPowerMode = PowerMode.LOW_POWER;
+					newPowerMode = PowerMode.FULL_POWER;
 				}
 				else if (!stepUp && oldPowerMode == PowerMode.LOW_POWER) {
-					netPower += building.getLowPowerRequired();	
+					netPower += -building.getLowPowerRequired();	
 					newPowerMode = PowerMode.NO_POWER;
 				}
 				else if (!stepUp && oldPowerMode == PowerMode.FULL_POWER) {
-					netPower += building.getFullPowerRequired()
-							- building.getLowPowerRequired();
+					netPower += -building.getFullPowerRequired()
+							+ building.getLowPowerRequired();
 					newPowerMode = PowerMode.LOW_POWER;
 				}
 				else {
