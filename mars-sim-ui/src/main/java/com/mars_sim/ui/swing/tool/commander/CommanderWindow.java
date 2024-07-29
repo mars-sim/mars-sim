@@ -78,6 +78,9 @@ import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.SmartScroller;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
+import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.unit_window.UnitWindow;
+import com.mars_sim.ui.swing.unit_window.structure.SettlementUnitWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 
@@ -110,6 +113,38 @@ public class CommanderWindow extends ToolWindow {
 	private static final String ACCEPT_NO = "Accept NO Trading initiated by other settlements";
 	private static final String SEE_RIGHT = ".    -->";
 
+	private JTabbedPane tabPane;
+	/** Person Combo box */	
+	private JComboBoxMW<Person> personBox;
+	/** Settlement Combo box */
+	private JComboBox<Settlement> settlementBox;
+	/** Settlement Combo box */
+	private JComboBox<Building> buildingBox;
+	/** Number JSpinner */
+	private JSpinner areaSpinner;
+	
+	private ListModel listModel;
+	private JList<PendingTask> list;
+	private JTextArea logBookTA;
+
+	private JPanel policyMainPanel;
+	private JPanel tradingPartnersPanel;
+	
+	/** Check box for overriding EVA. */
+	private JCheckBox overrideDigLocalRegolithCB;
+	/** Check box for overriding EVA. */
+	private JCheckBox overrideDigLocalIceCB;
+	
+	private JScrollPane listScrollPanel;
+
+	private JRadioButton r0;
+	private JRadioButton r1;
+	private JRadioButton r2;
+	private JRadioButton r3;
+	private JRadioButton r4;
+
+	private JButton prefButton;
+	
 	private Map<Colony, Integer> popCaches = new HashMap<>();
 	private Map<Colony, Integer> bedCaches = new HashMap<>();
 	private Map<Colony, Integer> touristCaches = new HashMap<>();
@@ -145,36 +180,6 @@ public class CommanderWindow extends ToolWindow {
 	private Map<Colony, Double> researcherRateCaches = new HashMap<>();
 	private Map<Colony, Double> engineerRateCaches = new HashMap<>();
 	
-	private JTabbedPane tabPane;
-	/** Person Combo box */	
-	private JComboBoxMW<Person> personBox;
-	/** Settlement Combo box */
-	private JComboBox<Settlement> settlementBox;
-	/** Settlement Combo box */
-	private JComboBox<Building> buildingBox;
-	/** Number JSpinner */
-	private JSpinner areaSpinner;
-	
-	private ListModel listModel;
-	private JList<PendingTask> list;
-	private JTextArea logBookTA;
-
-	private JPanel policyMainPanel;
-
-	/** Check box for overriding EVA. */
-	private JCheckBox overrideDigLocalRegolithCB;
-	
-	/** Check box for overriding EVA. */
-	private JCheckBox overrideDigLocalIceCB;
-	
-	private JScrollPane listScrollPanel;
-
-	private JRadioButton r0;
-	private JRadioButton r1;
-	private JRadioButton r2;
-	private JRadioButton r3;
-	private JRadioButton r4;
-	
 	private Map<Colony, JLabel> popLabels = new HashMap<>();
 	private Map<Colony, JLabel> bedLabels = new HashMap<>();
 	private Map<Colony, JLabel> touristLabels = new HashMap<>();
@@ -200,6 +205,12 @@ public class CommanderWindow extends ToolWindow {
 	
 	private Map<Colony, JLabel> researchAreaLabels = new HashMap<>();
 	private Map<Colony, JLabel> developmentAreaLabels = new HashMap<>();
+
+	private Map<String, Settlement> tradingPartners;
+	
+	private List<Building> greenhouseBldgs;
+	
+	private List<Colony> colonyList;
 	
 	private Person cc;
 
@@ -210,13 +221,6 @@ public class CommanderWindow extends ToolWindow {
 	
 	private UnitManager unitManager;
 
-	private JPanel tradingPartnersPanel;
-	
-	private Map<String, Settlement> tradingPartners;
-	
-	private List<Building> greenhouseBldgs;
-	
-	private List<Colony> colonyList;
 	
 
 	/**
@@ -374,7 +378,10 @@ public class CommanderWindow extends ToolWindow {
 			// Set the box opaque
 			settlementBox.setOpaque(false);
 
+			// Modify trading settlements in Mission Tab
 			setupTradingSettlements();
+			// Modify preference settlement in Mission Tab			
+			prefButton.setText("Go to " + s.getName() + " Preference tab");
 		}
 	}
 
@@ -1136,8 +1143,29 @@ public class CommanderWindow extends ToolWindow {
 		r2.addActionListener(actionListener);
 		r3.addActionListener(actionListener);
 
+		JPanel prefPanel = new JPanel(new FlowLayout());
+		panel.add(prefPanel, BorderLayout.CENTER);
+		prefPanel.setBorder(BorderFactory.createTitledBorder("Preferences"));
+		prefPanel.setToolTipText("Modify your settlement preference");
+		
+		prefButton = new JButton();
+		prefPanel.add(prefButton);
+		prefButton.setText("Go to " + settlement.getName() + " Preference tab");
+		prefButton.addActionListener(e -> {
+			Settlement selected = (Settlement) settlementBox.getSelectedItem();
+			UnitWindow window = getDesktop().openUnitWindow(selected);
+			TabPanel tab = window.openTab(Msg.getString("TabPanelPreferences.title")); //$NON-NLS-1$
+			if (tab != null) {
+				logger.info(selected, "The Preference tab is opened.");
+			}
+			repaint();
+		});
+
 	}
 
+	/**
+	 * Sets up trading settlements.
+	 */
 	private void setupTradingSettlements() {
 		tradingPartnersPanel.removeAll();
 
@@ -1156,6 +1184,9 @@ public class CommanderWindow extends ToolWindow {
 		}
 	}
 
+	/**
+	 * Action Listener for trading mission policy.
+	 */
 	class PolicyRadioActionListener implements ActionListener {
 	    @Override
 	    public void actionPerformed(ActionEvent event) {
@@ -1180,6 +1211,9 @@ public class CommanderWindow extends ToolWindow {
 	    }
 	}
 
+	/**
+	 * Creates the resource panel.
+	 */
 	private void createResourcePanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		tabPane.add(RESOURCE_TAB, panel);

@@ -23,7 +23,7 @@ public class ParameterCategory implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	/**
-     * Define of a single Parameter value.
+     * Definition of a single Parameter value.
      */
     public record ParameterSpec(String id, String displayName, ParameterValueType type) {}
 
@@ -32,7 +32,8 @@ public class ParameterCategory implements Serializable {
     private transient Map<String,ParameterSpec> range;
 
     /**
-     * Create new cateogry with the specific id
+     * Creates new category with the specific id.
+     * 
      * @param id
      */
     public ParameterCategory(String id) {
@@ -40,7 +41,8 @@ public class ParameterCategory implements Serializable {
     }
 
     /**
-     * Get the id of this category.
+     * Gets the id of this category.
+     * 
      * @return
      */
     public String getId() {
@@ -49,7 +51,7 @@ public class ParameterCategory implements Serializable {
 
     /**
      * The internationalized name of this category based on the id.
-     * Uses a entry in the message bundle called 'PreferenceCategory.<id>'
+     * Uses an entry in the message bundle called 'PreferenceCategory.<id>'
      */
     public String getName() {
         if (name == null) {
@@ -59,7 +61,8 @@ public class ParameterCategory implements Serializable {
     }
 
     /**
-     * Get the possible parameters that fit into this category.
+     * Gets the possible parameters that fit into this category.
+     * 
      * @return Could be an empty collection if the parameters are dynamic.
      */
     public final Collection<ParameterSpec> getRange() {
@@ -70,7 +73,8 @@ public class ParameterCategory implements Serializable {
     }
 
     /**
-     * Find the spec of a single parameter value.
+     * Finds the spec of a single parameter value.
+     * 
      * @param id
      * @return
      */
@@ -83,7 +87,8 @@ public class ParameterCategory implements Serializable {
 
     /**
      * Subclasses should override this method to provide the list of specs.
-     * @return Default implemnentation return an empty Map
+     * 
+     * @return Default implementation return an empty Map
      */
     protected Map<String, ParameterSpec> calculateSpecs() {
         return Collections.emptyMap();

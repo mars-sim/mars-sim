@@ -238,6 +238,22 @@ public abstract class UnitWindow extends ModalInternalFrame
 	}
 
 	/**
+	 * Opens the tab.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public TabPanel openTab(String name) {
+		for (TabPanel tb : tabPanels) {
+			if (tb.getTabTitle().equalsIgnoreCase(name)) {
+				tabPane.setSelectedComponent(tb);
+				return tb;
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Applies the preciously saved UI props to a window.
 	 * 
 	 * @param props
@@ -245,7 +261,7 @@ public abstract class UnitWindow extends ModalInternalFrame
     public void setUIProps(Properties props) {
 		String previousSelection = props.getProperty(SELECTED_TAB);
 		if (previousSelection != null) {
-			for(TabPanel tb : tabPanels) {
+			for (TabPanel tb : tabPanels) {
 				if (tb.getTabTitle().equals(previousSelection)) {
 					tabPane.setSelectedComponent(tb);
 					break;
