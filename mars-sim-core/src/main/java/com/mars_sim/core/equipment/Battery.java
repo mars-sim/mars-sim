@@ -256,7 +256,7 @@ public class Battery implements Serializable {
      * 
      * @param kWhPumpedIn amount of energy to consume [in kWh]
      * @param hours time in hrs
-     * @return energy to be delivered [in kWh]
+     * @return energy accepted for charging [in kWh]
      */
     public double chargeBattery(double kWhPumpedIn, double hours) {
 		

@@ -515,9 +515,9 @@ public class ThermalGeneration extends Function {
 	 * @throws Exception if error during action.
 	 */
 	private void moderateTime(ClockPulse pulse) {
-		pulse.getElapsed();
 		double remaining = pulse.getElapsed();
 		double pTime = Task.getStandardPulseTime();
+		
 		while (remaining > 0 && pTime > 0) {
 			if (remaining > pTime) {
 				// Consume the pulse time.
@@ -541,9 +541,8 @@ public class ThermalGeneration extends Function {
 	 * @throws Exception if error during action.
 	 */
 	private void transferHeat(ClockPulse pulse, double millisols) {
-//		double millisols = pulse.getElapsed();
 		
-		if (pulse.getMarsTime().getMillisol() < 1)
+		if (pulse.getMarsTime().getMillisol() < .2)
 			return;
 		
 		// Call heating's timePassing

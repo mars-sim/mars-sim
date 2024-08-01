@@ -64,6 +64,7 @@ class TradeGoodsPanel extends WizardPanel {
 
 	/**
 	 * constructor.
+	 * 
 	 * @param wizard {@link CreateMissionWizard}
 	 * @param buyGoods {@link Boolean}
 	 */
@@ -250,9 +251,11 @@ class TradeGoodsPanel extends WizardPanel {
 	/**
 	 * Commits changes from this wizard panel.
 	 * 
+	 * @param isTesting true if it's only testing conditions
 	 * @return true if changes can be committed.
 	 */
-	boolean commitChanges() {
+	@Override
+	boolean commitChanges(boolean isTesting) {
 		boolean result = false;
 		try {
 			MissionDataBean missionData = getWizard().getMissionData();

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NavigationTabPanel.java
- * @date 2023-06-06
+ * @date 2024-07-29
  * @author Scott Davis
  */
 
@@ -29,6 +29,7 @@ import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.tools.Msg;
@@ -52,6 +53,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private JButton centerMapButton;
     private JButton destinationButton;
     
+    private JPanel destinationLabelPanel;
+    
     private JLabel statusLabel;
     private JLabel beaconLabel;
     private JLabel speedLabel;
@@ -61,10 +64,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private JLabel remainingDistanceLabel;
     private JLabel etaLabel;
     private JLabel pilotLabel;
-    
     private JLabel destinationTextLabel;
-    
-    private JPanel destinationLabelPanel;
+    private JLabel hoveringHeightLabel;
     
     private DirectionDisplayPanel directionDisplay;
     private TerrainDisplayPanel terrainDisplay;
@@ -73,6 +74,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 	/** Is UI constructed. */
     private boolean beaconCache;
     
+    private double hoveringHeightCache;
     private double speedCache;
     private double elevationCache;
     private double remainingDistanceCache;
@@ -137,17 +139,17 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 		content.add(mainPanel, BorderLayout.CENTER);	
 		
 		// Prepare the destination panel for housing the center map button, the destination header label, and the coordinates
-		JPanel destinationPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		mainPanel.add(destinationPanel, BorderLayout.NORTH);
+		JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		mainPanel.add(topPanel, BorderLayout.NORTH);
 
         // Prepare destination left panel
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        destinationPanel.add(leftPanel);
+        topPanel.add(leftPanel);
         
         // Prepare destination label panel
         destinationLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         destinationLabelPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
-        destinationPanel.add(destinationLabelPanel, BorderLayout.NORTH);
+        topPanel.add(destinationLabelPanel, BorderLayout.NORTH);
 
         // Prepare center map button
 		final Icon centerIcon = ImageLoader.getIconByName(NavigatorWindow.ICON);
@@ -155,7 +157,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);
         centerMapButton.setToolTipText("Locate the vehicle in Navigator Tool");
-        leftPanel.add(centerMapButton);
+        topPanel.add(centerMapButton, BorderLayout.CENTER);
         
         // Prepare destination label
         JLabel destinationLabel = new JLabel("Destination :", JLabel.RIGHT);
@@ -203,7 +205,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 		mainPanel.add(locPanel, BorderLayout.CENTER);
 		
 		// Prepare the top panel using spring layout.
-		AttributePanel destinationSpringPanel = new AttributePanel(9);
+		AttributePanel destinationSpringPanel = new AttributePanel(10);
 		locPanel.add(destinationSpringPanel, BorderLayout.NORTH);
         
         // Prepare destination latitude label.
@@ -211,13 +213,13 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         if (destinationLocationCache != null) {
         	latitudeString = destinationLocationCache.getFormattedLatitudeString();
         }
-        destinationLatitudeLabel = destinationSpringPanel.addTextField("Destination Latitude", latitudeString, null);
+        destinationLatitudeLabel = destinationSpringPanel.addRow("Destination Latitude", latitudeString);
 
         // Prepare destination longitude label.
         String longitudeString = "";
         if (destinationLocationCache != null) longitudeString =
             destinationLocationCache.getFormattedLongitudeString();
-        destinationLongitudeLabel = destinationSpringPanel.addTextField("Destination Longitude", longitudeString, null);
+        destinationLongitudeLabel = destinationSpringPanel.addRow("Destination Longitude", longitudeString);
 
         // Prepare distance label.
         String distanceText;
@@ -235,7 +237,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         	remainingDistanceCache = 0D;
         	distanceText = "";
         }
-        remainingDistanceLabel = destinationSpringPanel.addTextField("Remaining Distance", distanceText, null);
+        remainingDistanceLabel = destinationSpringPanel.addRow("Remaining Distance", distanceText);
  
         // Prepare ETA label.
         etaCache = "";
@@ -245,33 +247,39 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
                 etaCache = due.toString();
             }
         }
-        etaLabel = destinationSpringPanel.addTextField("ETA", etaCache, null);
+        etaLabel = destinationSpringPanel.addRow("ETA", etaCache);
         
         // Prepare status label
-        statusLabel = destinationSpringPanel.addTextField("Status", vehicle.printStatusTypes(), null);
+        statusLabel = destinationSpringPanel.addRow("Status", vehicle.printStatusTypes());
            
         // Prepare beacon label
         beaconCache = vehicle.isBeaconOn();
         String beaconString;
         if (beaconCache) beaconString = "On";
         else beaconString = "Off";
-        beaconLabel = destinationSpringPanel.addTextField("Emergency Beacon", beaconString, null);
+        beaconLabel = destinationSpringPanel.addRow("Emergency Beacon", beaconString);
 
         // Prepare speed label
         speedCache = vehicle.getSpeed();
-        speedLabel = destinationSpringPanel.addTextField("Speed", StyleManager.DECIMAL_KPH.format(speedCache), null);
+        speedLabel = destinationSpringPanel.addRow("Speed", StyleManager.DECIMAL_KPH.format(speedCache));
         
         // Prepare elevation label for vehicle       	     
         elevationCache = vehicle.getElevation();
-        elevationLabel = destinationSpringPanel.addTextField("Elevation", StyleManager.DECIMAL_KM.format(elevationCache), null);
+        elevationLabel = destinationSpringPanel.addRow("Ground Elevation", StyleManager.DECIMAL_KM.format(elevationCache));
     
+        if (vehicle instanceof Drone d) {
+	        // Update hovering height label.
+        	hoveringHeightCache = d.getHoveringHeight();
+	        hoveringHeightLabel = destinationSpringPanel.addRow("Hovering Height", StyleManager.DECIMAL_KM.format(hoveringHeightCache));
+        }
+        
         // Prepare driver button and add it if vehicle has driver.
         if (vehicle.getOperator() != null)
         	pilotCache = vehicle.getOperator().getName();
         else
         	pilotCache = "";
         
-        pilotLabel = destinationSpringPanel.addTextField("Pilot", pilotCache, null);
+        pilotLabel = destinationSpringPanel.addRow("Pilot", pilotCache);
 
     }
 
@@ -304,7 +312,15 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
             elevationLabel.setText(StyleManager.DECIMAL_KM.format(elevationCache));
         }
 
-
+        if (vehicle instanceof Drone d) {
+	        // Update hovering height label.
+	        double currentHoveringHeight = d.getHoveringHeight();
+	        if (hoveringHeightCache != currentHoveringHeight) {
+	        	hoveringHeightCache = currentHoveringHeight;
+	        	hoveringHeightLabel.setText(StyleManager.DECIMAL_KM.format(currentHoveringHeight));
+	        }
+        }
+        
         // Update pilot label.
         String pilot = "";
         if (vehicle.getOperator() != null)

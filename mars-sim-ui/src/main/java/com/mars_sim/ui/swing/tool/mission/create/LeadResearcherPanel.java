@@ -115,8 +115,14 @@ extends WizardPanel {
         errorMessageLabel.setText(" ");
     }
 
-    @Override
-    boolean commitChanges() {
+	/**
+	 * Commits changes from this wizard panel.
+	 * 
+	 * @param isTesting true if it's only testing conditions
+	 * @return true if changes can be committed.
+	 */
+	@Override
+    boolean commitChanges(boolean isTesting) {
         int selectedIndex = researcherTable.getSelectedRow();
         Person selectedResearcher = (Person) researcherTableModel.getUnit(selectedIndex);
         getWizard().getMissionData().setLeadResearcher(selectedResearcher);

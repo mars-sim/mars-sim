@@ -106,7 +106,7 @@ public class RescueSalvageVehicle extends RoverMission {
 				}
 
 				if (!hasVehicle()) {
-					endMission(NO_AVAILABLE_VEHICLES);
+					endMission(NO_AVAILABLE_VEHICLE);
 					return;
 				}
 				
@@ -155,7 +155,7 @@ public class RescueSalvageVehicle extends RoverMission {
 		addMembers(members, false);
 
 		if (!hasVehicle()) {
-			endMission(NO_AVAILABLE_VEHICLES);
+			endMission(NO_AVAILABLE_VEHICLE);
 			return;
 		}
 		

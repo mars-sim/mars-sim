@@ -16,7 +16,7 @@ import com.mars_sim.mapdata.location.Direction;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 public class DriveGroundVehicleTest extends AbstractMarsSimUnitTest {
-    private static final double DIST = OperateVehicle.ARRIVING_BUFFER * 5;  // Drive 5 km
+    private static final double DIST = OperateVehicle.DISTANCE_BUFFER_ARRIVING * 5;  // Drive 5 km
     private static final double METHANOL_AMOUNT = 30D;
     private static final double OXYGEN_AMOUNT = METHANOL_AMOUNT * OperateVehicle.RATIO_OXIDIZER_FUEL;
     

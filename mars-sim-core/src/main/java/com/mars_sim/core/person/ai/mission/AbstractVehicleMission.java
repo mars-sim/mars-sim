@@ -51,10 +51,12 @@ import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleController;
 import com.mars_sim.core.vehicle.VehicleType;
+import com.mars_sim.core.vehicle.task.DriveGroundVehicle;
 import com.mars_sim.core.vehicle.task.LoadVehicleGarage;
 import com.mars_sim.core.vehicle.task.LoadVehicleMeta;
 import com.mars_sim.core.vehicle.task.LoadingController;
 import com.mars_sim.core.vehicle.task.OperateVehicle;
+import com.mars_sim.core.vehicle.task.PilotDrone;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
@@ -101,7 +103,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 	
 	// Mission Status
-	protected static final MissionStatus NO_AVAILABLE_VEHICLES = new MissionStatus("Mission.status.noVehicle");
+	protected static final MissionStatus NO_AVAILABLE_VEHICLE = new MissionStatus("Mission.status.noVehicle");
 	protected static final MissionStatus VEHICLE_BEACON_ACTIVE = new MissionStatus("Mission.status.vehicleBeacon");
 	private static final MissionStatus VEHICLE_UNDER_MAINTENANCE = new MissionStatus("Mission.status.vehicleMaintenance");
 	protected static final MissionStatus CANNOT_LOAD_RESOURCES = new MissionStatus("Mission.status.loadResources");
@@ -262,7 +264,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			result = true;
 		}
 		else {
-			endMission(NO_AVAILABLE_VEHICLES);
+			endMission(NO_AVAILABLE_VEHICLE);
 			logger.warning(getStartingPerson(), "Could not reserve a vehicle for " + getName() + ".");
 			result = false;
 		}
@@ -665,7 +667,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		Vehicle v = getVehicle();
 
 		if (v == null) {
-			endMission(NO_AVAILABLE_VEHICLES);
+			endMission(NO_AVAILABLE_VEHICLE);
 			return;
 		}
 
@@ -673,7 +675,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		if (settlement == null) {
 			logger.warning(member,
 					Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
-			endMission(NO_AVAILABLE_VEHICLES);
+			endMission(NO_AVAILABLE_VEHICLE);
 			return;
 		}
 
@@ -782,13 +784,28 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				}
 
 				if (operateVehicleTask != null) {
+					boolean canAssign = false;
+					
 					if (member instanceof Person person) {
-						assignTask(person, operateVehicleTask);
+						canAssign = assignTask(person, operateVehicleTask, true);				
 					}
 					else if (member instanceof Robot robot) {
-						assignTask(robot, operateVehicleTask);
+						canAssign = assignTask(robot, operateVehicleTask, true);
 					}
 					
+					if (canAssign) {
+						logger.info(member, 20_000, "Assigned to operate " + vehicle.getName() + ".");
+					}
+					else {
+						logger.info(member, 20_000, "Not ready to be reassigned to operate " + vehicle.getName() + ".");	
+						
+						if (operateVehicleTask instanceof PilotDrone pd) {
+							pd.endTask();//clearDown();
+						} else if (operateVehicleTask instanceof DriveGroundVehicle dgv) {
+							dgv.endTask();//clearDown();
+						}
+					}
+						
 					lastOperator = member;
 					return;
 				}

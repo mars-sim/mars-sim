@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelGoods.java
- * @date 2022-07-09
+ * @date 2024-08-01
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.structure;

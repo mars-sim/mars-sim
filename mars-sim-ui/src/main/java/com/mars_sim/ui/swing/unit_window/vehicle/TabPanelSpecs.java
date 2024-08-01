@@ -97,10 +97,10 @@ public class TabPanelSpecs extends TabPanel {
 //		addBorder(centerPanel, "DriveTrain (DT) Performance");	
 		centerPanel.setBorder(BorderFactory.createTitledBorder("DriveTrain (DT) Performance"));
 	
-		grid1.addRow( "Base Speed", StyleManager.DECIMAL_M_S.format(v.getVehicleSpec().getBaseSpeed()));
+		grid1.addRow( "Base Speed", StyleManager.DECIMAL_KPH.format(v.getVehicleSpec().getBaseSpeed()));
 		grid1.addRow( "Base Power", StyleManager.DECIMAL_KW.format(v.getVehicleSpec().getBasePower()));
 
-		roadSpeed = grid1.addRow( "Ave Road Speed", StyleManager.DECIMAL_M_S.format(v.getAverageRoadLoadSpeed()));
+		roadSpeed = grid1.addRow( "Ave Road Speed", StyleManager.DECIMAL_KPH.format(v.getAverageRoadLoadSpeed()));
 		roadPower = grid1.addRow( "Ave Road Power", StyleManager.DECIMAL_KW.format(v.getAverageRoadLoadPower()));
 		
 		grid1.addRow( "Base Accel", StyleManager.DECIMAL_M_S2.format(v.getVehicleSpec().getBaseAccel()));	
@@ -116,7 +116,7 @@ public class TabPanelSpecs extends TabPanel {
 		grid2.addRow( "DT Efficiency", StyleManager.DECIMAL_PERC.format(100*v.getVehicleSpec().getDrivetrainEfficiency()));
 		grid2.addRow( "Fuel-to-Drive", StyleManager.DECIMAL_KWH_KG.format(v.getVehicleSpec().getFuel2DriveEnergy()/1000));
 		
-		grid2.addRow( "DT Energy", StyleManager.DECIMAL_KWH.format(v.getVehicleSpec().getDrivetrainEnergy()));
+		grid2.addRow( "DT Fuel Energy", StyleManager.DECIMAL_KWH.format(v.getVehicleSpec().getDrivetrainFuelEnergy()));
 		grid2.addRow( "Base Range", StyleManager.DECIMAL_KM.format(v.getBaseRange()));
 
 		cumEnergyUsage = grid2.addRow( "Cum Energy Used", StyleManager.DECIMAL2_KWH.format(v.getCumEnergyUsage()));	
@@ -141,7 +141,7 @@ public class TabPanelSpecs extends TabPanel {
 	public void update() {
 		estFCFECoef.setText(StyleManager.DECIMAL_PLACES3.format(v.getCoeffEstFC2FE()));		
 		
-		roadSpeed.setText(StyleManager.DECIMAL_M_S.format(v.getAverageRoadLoadSpeed()));
+		roadSpeed.setText(StyleManager.DECIMAL_KPH.format(v.getAverageRoadLoadSpeed()));
 		roadPower.setText(StyleManager.DECIMAL_KW.format(v.getAverageRoadLoadPower()));
 	
 		cumEnergyUsage.setText(StyleManager.DECIMAL2_KWH.format(v.getCumEnergyUsage()));	

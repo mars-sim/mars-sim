@@ -145,8 +145,14 @@ extends WizardPanel {
         errorMessageLabel.setText(" ");
     }
 
-    @Override
-    boolean commitChanges() {
+	/**
+	 * Commits changes from this wizard panel.
+	 * 
+	 * @param isTesting true if it's only testing conditions
+	 * @return true if changes can be committed.
+	 */
+	@Override
+    boolean commitChanges(boolean isTesting) {
         
         Object project = projectList.getSelectedValue();
         if (project != null) {
@@ -292,9 +298,9 @@ extends WizardPanel {
                 	Person person = null;
                 	Robot robot = null;
                 	
-                    int memberNum = getWizard().getMissionData().getMixedMembers().size();
+                    int memberNum = getWizard().getMissionData().getAllMembers().size();
                     // Add mission members.
-                    Iterator<Worker> i = getWizard().getMissionData().getMixedMembers().iterator();
+                    Iterator<Worker> i = getWizard().getMissionData().getAllMembers().iterator();
                     while (i.hasNext()) {
                      	
                         // TODO Refactor

@@ -153,7 +153,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		if (range <= 0D) {
 			logger.warning(getVehicle(), "Zero range for mission " 
 					+ getName() + ".");
-			endMission(NO_AVAILABLE_VEHICLES);
+			endMission(NO_AVAILABLE_VEHICLE);
 			return;
 		}
 

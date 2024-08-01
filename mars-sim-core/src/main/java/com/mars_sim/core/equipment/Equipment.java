@@ -279,6 +279,11 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		return registeredOwner;
 	}
 	
+	/**
+	 * Gets the equipment type.
+	 * 
+	 * @return
+	 */
 	public EquipmentType getEquipmentType() {
 		return equipmentType;
 	}

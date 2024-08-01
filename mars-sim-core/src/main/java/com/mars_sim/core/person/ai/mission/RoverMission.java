@@ -294,7 +294,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		Vehicle v = getVehicle();
 
 		if (v == null) {
-			endMission(NO_AVAILABLE_VEHICLES);
+			endMission(NO_AVAILABLE_VEHICLE);
 			return;
 		}
 
@@ -302,7 +302,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (settlement == null) {
 			logger.warning(member,
 					Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
-			endMission(NO_AVAILABLE_VEHICLES);
+			endMission(NO_AVAILABLE_VEHICLE);
 			return;
 		}
 

@@ -50,7 +50,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 
 	// Static members
 	public static final double MAX_STARTING_PROBABILITY = 100D;
-	private static final int MAX_MEMBERS = 3;
+	public static final int MAX_MEMBERS = 3;
 
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TRADE_CENTER);
 

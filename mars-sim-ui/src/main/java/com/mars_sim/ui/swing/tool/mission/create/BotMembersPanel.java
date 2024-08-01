@@ -58,7 +58,8 @@ implements ActionListener {
 	private JLabel errorMessageLabel;
 	private JButton addButton;
 	private JButton removeButton;
-
+	private JButton skipButton;
+	
 	/**
 	 * Constructor
 	 * @param wizard the create mission wizard.
@@ -77,6 +78,9 @@ implements ActionListener {
 		JLabel selectMembersLabel = createTitleLabel("Select Bots for the Mission");
 		add(selectMembersLabel);
 
+		// Add an empty row
+		add(new JLabel("     "));
+		
 		// Create the available bots label.
 		JLabel availableBotsLabel = new JLabel("Available Bots", JLabel.CENTER);
 		availableBotsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -121,17 +125,17 @@ implements ActionListener {
 									addButton.setEnabled(false);
 								}
 								else {
-//									// Check if number of rows exceed rover remaining capacity.
-//									if (selectedRows.length > getRemainingRoverCapacity()) {
-//										// Display over capacity message and disable add button.
-//										errorMessageLabel.setText("Not enough rover capacity to hold selected bots.");
-//										addButton.setEnabled(false);
-//									}
-//									else {
+									// Check if number of rows exceed drone remaining capacity.
+									if (selectedRows.length > 1) {
+										// Display over capacity message and disable add button.
+										errorMessageLabel.setText("Not allow to have more than 1 bot to navigate the drone.");
+										addButton.setEnabled(false);
+									}
+									else {
 										// Enable add button.
 										errorMessageLabel.setText(" ");
 										addButton.setEnabled(true);
-//									}
+									}
 								}
 							}
 						}
@@ -152,7 +156,17 @@ implements ActionListener {
 					public void mouseEntered(MouseEvent e) {}
 					public void mouseClicked(MouseEvent e) {
 						if (e.getClickCount() == 2 && !e.isConsumed()) {
+							
 							addButtonClicked();
+							
+							int[] selectedRows = botsTable.getSelectedRows();
+							if (selectedRows.length > 0) {
+								for (int selectedRow : selectedRows)  {
+									Robot robot = (Robot) botMembersTableModel.getUnit(selectedRow);
+									getDesktop().showDetails(robot);
+									break;
+								}
+							}
 						}
 					}
 				}
@@ -180,20 +194,25 @@ implements ActionListener {
 		// Create the remove button.
 		removeButton = new JButton("Remove Bots");
 		removeButton.setEnabled(false);
-		removeButton.addActionListener(
-				new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						// Remove the selected rows in the members table to the bots table.
-						int[] selectedRows = botMembersTable.getSelectedRows();
-						Collection<Robot> bots = new ConcurrentLinkedQueue<Robot>();
-						for (int selectedRow : selectedRows)
-							bots.add((Robot) botMembersTableModel.getUnit(selectedRow));
-						botsTableModel.addRobots(bots);
-						botMembersTableModel.removeRobots(bots);
-					}
-				});
+		removeButton.addActionListener(e -> {
+			// Remove the selected rows in the members table to the bots table.
+			int[] selectedRows = botMembersTable.getSelectedRows();
+			Collection<Robot> bots = new ConcurrentLinkedQueue<Robot>();
+			for (int selectedRow : selectedRows)
+				bots.add((Robot) botMembersTableModel.getUnit(selectedRow));
+			botsTableModel.addRobots(bots);
+			botMembersTableModel.removeRobots(bots);
+		});
 		buttonPane.add(removeButton);
 
+
+		skipButton = new JButton("Skip");
+		skipButton.setEnabled(true);
+		skipButton.addActionListener(e -> {
+			wizard.buttonClickedNext();
+		});
+		buttonPane.add(skipButton);
+		
 		// Add a vertical strut to make UI space.
 		add(Box.createVerticalStrut(10));
 
@@ -256,19 +275,30 @@ implements ActionListener {
 
 	/**
 	 * Commits changes from this wizard panel.
+	 * 
+	 * @param isTesting true if it's only testing conditions
 	 * @return true if changes can be committed.
 	 */
-	boolean commitChanges() {
-		Collection<Worker> members = new ConcurrentLinkedQueue<Worker>();
-		for (int x = 0; x < botMembersTableModel.getRowCount(); x++) {
+	@Override
+	boolean commitChanges(boolean isTesting) {
+		Collection<Worker> members = new ConcurrentLinkedQueue<>();
+		int size = botMembersTableModel.getRowCount();
+		for (int x = 0; x < size; x++) {
 			members.add((Worker) botMembersTableModel.getUnit(x));
 		}
-		getWizard().getMissionData().addMixedMembers(members);
+//		if (!isTesting) {
+			// Note: Compare the effect of addMixedMembers and setMixedMembers
+			getWizard().getMissionData().setBotMembers(members);
+//			return true;
+//		}
+		// Note: if player goes back and forth from panels to panels,
+		// how do we handle those members that have been added previously ? 
+		// How to remove those previous members ?
 		return true;
 	}
 
 	/**
-	 * Clear information on the wizard panel.
+	 * Clears information on the wizard panel.
 	 */
 	void clearInfo() {
 		botsTable.clearSelection();

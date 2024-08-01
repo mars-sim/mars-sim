@@ -130,9 +130,11 @@ class DestinationSettlementPanel extends WizardPanel {
 
 	/**
 	 * Commits changes from this wizard panel.
-	 * @retun true if changes can be committed.
+	 * 
+	 * @param isTesting true if it's only testing conditions
+	 * @return true if changes can be committed.
 	 */
-	boolean commitChanges() {
+	boolean commitChanges(boolean isTesting) {
 		int selectedIndex = settlementTable.getSelectedRow();
 		Settlement selectedSettlement = (Settlement) settlementTableModel.getUnit(selectedIndex);
 		getWizard().getMissionData().setDestinationSettlement(selectedSettlement);
@@ -237,6 +239,7 @@ class DestinationSettlementPanel extends WizardPanel {
     	
     	/**
     	 * Checks if a table cell is a failure cell.
+    	 * 
     	 * @param row the table row.
     	 * @param column the table column.
     	 * @return true if cell is a failure cell.

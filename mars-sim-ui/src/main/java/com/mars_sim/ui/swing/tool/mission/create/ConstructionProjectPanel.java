@@ -320,8 +320,15 @@ class ConstructionProjectPanel extends WizardPanel {
         errorMessageTextPane.setText(" ");
     }
 
+    
+	/**
+	 * Commits changes from this wizard panel.
+	 * 
+	 * @param isTesting true if it's only testing conditions
+	 * @return true if changes can be committed.
+	 */
     @Override
-    boolean commitChanges() {
+    boolean commitChanges(boolean isTesting) {
 
         Settlement settlement = getConstructionSettlement();
         ConstructionManager manager = settlement.getConstructionManager();
@@ -329,20 +336,24 @@ class ConstructionProjectPanel extends WizardPanel {
         // Get construction site.
         ConstructionSite selectedSite = null;
         int selectedSiteIndex = siteList.getSelectedIndex();
+		if (selectedSiteIndex < 0)
+			return false;
         if (selectedSiteIndex > 0) {
             int existingSiteIndex = selectedSiteIndex - 1;
             selectedSite = manager.getConstructionSites()
                     .get(existingSiteIndex);
+    		if (!isTesting) {
+    	        getWizard().getMissionData().setConstructionSite(selectedSite);
+    	        // Get construction stage info.
+    	        ConstructionStageInfo selectedInfo = (ConstructionStageInfo) projectList
+    	                .getSelectedValue();
+    	        getWizard().getMissionData().setConstructionStageInfo(selectedInfo);
+    	        getWizard().getMissionData().setDescription(selectedInfo.getName());
+    	        
+    			return true;
+    		}	
         }
-        getWizard().getMissionData().setConstructionSite(selectedSite);
 
-        // Get construction stage info.
-        ConstructionStageInfo selectedInfo = (ConstructionStageInfo) projectList
-                .getSelectedValue();
-        getWizard().getMissionData().setConstructionStageInfo(selectedInfo);
-
-        getWizard().getMissionData().setDescription(selectedInfo.getName());
-        
         return true;
     }
 
@@ -455,8 +466,9 @@ class ConstructionProjectPanel extends WizardPanel {
         					"Error checking construction stage info: ", e);
                 }
             } else if (selectedSite.contains(" - Under Construction")) {
-            	if (cMWizard.getMissionBean().getMixedMembers() == null)
-            		if (cMWizard.getMissionBean().getMixedMembers().isEmpty()) {
+            	// May need to fix below : 
+            	if (cMWizard.getMissionBean().getAllMembers() == null)
+            		if (cMWizard.getMissionBean().getAllMembers().isEmpty()) {
             			// Add checking if members of an on-going site were departed
             			loadSite(selectedSite, selectedSiteIndex);
             			cMWizard.getMissionWindow().update((ClockPulse) null);

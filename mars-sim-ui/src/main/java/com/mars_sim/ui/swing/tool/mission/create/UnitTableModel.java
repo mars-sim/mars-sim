@@ -43,6 +43,7 @@ abstract class UnitTableModel extends AbstractTableModel {
 	
 	/**
 	 * Returns the number of rows in the model.
+	 * 
 	 * @return number of rows.
 	 */
 	public int getRowCount() {
@@ -51,6 +52,7 @@ abstract class UnitTableModel extends AbstractTableModel {
 
 	/**
 	 * Returns the number of columns in the model.
+	 * 
 	 * @return number of columns.
 	 */
 	public int getColumnCount() {
@@ -59,6 +61,7 @@ abstract class UnitTableModel extends AbstractTableModel {
 
 	/**
 	 * Returns the name of the column at columnIndex.
+	 * 
 	 * @param columnIndex the column index.
 	 * @return column name.
 	 */
@@ -68,6 +71,7 @@ abstract class UnitTableModel extends AbstractTableModel {
 	
 	/**
 	 * Gets the unit at a row index.
+	 * 
 	 * @param row the row index.
 	 * @return the unit in the row, or null if none.
 	 */
@@ -85,6 +89,7 @@ abstract class UnitTableModel extends AbstractTableModel {
 	
 	/**
 	 * Checks if a table cell is a failure cell.
+	 * 
 	 * @param row the table row.
 	 * @param column the table column.
 	 * @return true if cell is a failure cell.
@@ -93,6 +98,7 @@ abstract class UnitTableModel extends AbstractTableModel {
 	
 	/**
 	 * Checks if row contains a failure cell.
+	 * 
 	 * @param row the row index.
 	 * @return true if row has failure cell.
 	 */

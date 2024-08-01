@@ -89,6 +89,7 @@ class MissionDataBean {
     private ScientificStudy study;
     
 	private Collection<Worker> mixedMembers = new HashSet<>();
+	private Collection<Worker> botMembers = new HashSet<>();
     private List<GroundVehicle> constructionVehicles;
     private List<GroundVehicle> salvageVehicles;
     private Map<Good, Integer> emergencyGoods;
@@ -140,8 +141,8 @@ class MissionDataBean {
 	    else if (MissionType.DELIVERY == missionType) {
 	    	Person startingMember = null;
 	    	for (Worker mm: mixedMembers) {
-	    		if (mm instanceof Person)
-	    			startingMember = (Person)mm;
+	    		if (mm instanceof Person p)
+	    			startingMember = p;
 	    	}
 		
 	        mission = new Delivery(startingMember, mixedMembers, destinationSettlement, drone,
@@ -348,13 +349,43 @@ class MissionDataBean {
 	}
     
 	/**
+	 * Gets both person and robot mission members.
 	 * 
+	 * @return the members.
+	 */
+    protected Collection<Worker> getAllMembers() {
+    	Collection<Worker> all = mixedMembers;
+    	all.addAll(botMembers);
+		return all;
+	}
+
+    
+	/**
 	 * Sets the mission members.
+	 * 
 	 * @param members the members.
 	 */
-    protected void addMixedMembers(Collection<Worker> mm) {
-    	this.mixedMembers.addAll(mm);
+    protected void setBotMembers(Collection<Worker> mm) {
+    	this.botMembers = mm;
 	}
+    
+	/**
+	 * Sets the mission members.
+	 * 
+	 * @param members the members.
+	 */
+    protected void setMixedMembers(Collection<Worker> mm) {
+    	this.mixedMembers = mm;
+	}
+    
+//	/**
+//	 * Adds the mission members.
+//	 * 
+//	 * @param members the members.
+//	 */
+//    protected void addMixedMembers(Collection<Worker> mm) {
+//    	this.mixedMembers.addAll(mm);
+//	}
     
 	/**
 	 * Gets the destination settlement.

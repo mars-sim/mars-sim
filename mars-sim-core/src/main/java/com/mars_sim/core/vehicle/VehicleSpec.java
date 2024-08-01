@@ -172,29 +172,24 @@ public class VehicleSpec implements Serializable {
 	/** The total energy of the vehicle in full tank of methanol [kWh]. */
 	private double methanolEnergyCapacity;
 	/** The estimated energy available for the drivetrain [kWh]. */
-	private double drivetrainEnergy;
+	private double drivetrainFuelEnergy;
 	/** The available max energy capacity from the battery [kWh]. */
 	private double batteryCapacity;	
 	
-	// Definition : Fuel economy of a vehicle refers to the distance traveled 
-	// by a vehicle and the amount of fuel consumed.
-	
-	// See https://en.wikipedia.org/wiki/Fuel_efficiency
-	
 	/** 
 	 * The base fuel economy of the vehicle [km/kg].  
-	 * Note: it's the distance traveled by a vehicle per kg of fuel consumed
+	 * Note: Fuel economy of a vehicle refers to the distance traveled 
+	 * by a vehicle and the amount of fuel consumed.
+	 * 
+	 * @See https://en.wikipedia.org/wiki/Fuel_efficiency
 	 */
 	private double baseFuelEconomy;
-	/** The initial average fuel economy of the vehicle for a trip [km/kg]. */
+	
+	/** 
+	 * The initial average fuel economy of the vehicle for a trip [km/kg]. 
+	 */
 	private double initialFuelEconomy;
 
-	
-	// Definition : Fuel consumption of a vehicle refers to the energy used
-	// by a vehicle to travel each km.
-	
-	// See https://ev-database.org/cheatsheet/energy-consumption-electric-car 
-	
 	/**
 	 * The coefficient for converting FC to FE 
 	 */
@@ -202,24 +197,47 @@ public class VehicleSpec implements Serializable {
 	
 	/** 
 	 * The base fuel consumption of the vehicle [Wh/km]. 
-	 * Note: it's the energy used by a vehicle to travel each km.
+	 * Note: Fuel consumption of a vehicle refers to the energy used 
+	 * by a vehicle to travel each km.
+	 * 
+	 * @See https://ev-database.org/cheatsheet/energy-consumption-electric-car 
 	 */
 	private double baseFuelConsumption;
-	/** The initial average fuel consumption of the vehicle [Wh/km]. */
+	
+	/** 
+	 * The initial average fuel consumption of the vehicle [Wh/km]. 
+	 */
 	private double initialFuelConsumption;
 	
-	/** The estimated beginning mass of the vehicle (base mass + crew weight + full cargo weight) for a trip [km/kg]. */
+	/** 
+	 * The estimated beginning mass [kg] of the vehicle for a trip.
+	 * Note: base mass + crew weight + full cargo weight
+	 */
 	private double beginningMass;
-	/** The calculated empty mass of the vehicle, based on its parts [km/kg]. */
+	
+	/** 
+	 * The calculated empty mass [kg] of the vehicle, based on its parts. 
+	 */
 	private double calculatedEmptyMass;
 	
-	/** Width of vehicle (meters). */
+	/** 
+	 * Width of vehicle (meters). 
+	 */
 	private double width;
-	/** Length of vehicle (meters). */
+	
+	/** 
+	 * Length of vehicle (meters). 
+	 */
 	private double length;
-	/** Get estimated total crew weight. */
+	
+	/** 
+	 * Get estimated total crew weight. 
+	 */
 	private double estimatedTotalCrewWeight;
-	/** The terrain handling of vehicle. */
+	
+	/** 
+	 * The terrain handling of vehicle. 
+	 */
 	private double terrainHandling;
 
 	private String baseImage;
@@ -250,6 +268,26 @@ public class VehicleSpec implements Serializable {
 
 	private Set<Integer> partIDs;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param name
+	 * @param type
+	 * @param model
+	 * @param description
+	 * @param baseImage
+	 * @param powerSourceStr
+	 * @param fuelTypeStr
+	 * @param powerValue
+	 * @param batteryModule
+	 * @param energyPerModule
+	 * @param fuelCellStack
+	 * @param drivetrainEff
+	 * @param baseSpeed
+	 * @param basePower
+	 * @param emptyMass
+	 * @param crewSize
+	 */
 	public VehicleSpec(String name, VehicleType type, String model, String description, String baseImage,
 			String powerSourceStr, String fuelTypeStr, double powerValue,
 			int batteryModule, double energyPerModule, int fuelCellStack,
@@ -358,7 +396,7 @@ public class VehicleSpec implements Serializable {
 			// Gets the energy capacity [kWh] based on a full tank of methanol
 			methanolEnergyCapacity = fuelCapacity / METHANOL_KG_PER_KWH;
 			// Gets the conversion factor for a specific vehicle [Wh/kg]
-			fuel2DriveEnergy =  METHANOL_WH_PER_KG * drivetrainEfficiency + batteryCapacity;
+			fuel2DriveEnergy =  METHANOL_WH_PER_KG * drivetrainEfficiency;// + batteryCapacity;
 		}
 		else if (fuelTypeStr.equalsIgnoreCase("NUCLEAR_TYPE")){
 			// Gets the capacity [in kg] of vehicle's fuel tank
@@ -366,7 +404,7 @@ public class VehicleSpec implements Serializable {
 			// Gets the energy capacity [kWh] based on a full tank of methanol
 			methanolEnergyCapacity = fuelCapacity / URANIUM_OXIDE_KG_PER_KWH ;
 			// Gets the conversion factor for a specific vehicle [Wh/kg]
-			fuel2DriveEnergy = URANIUM_OXIDE_WH_PER_KG * drivetrainEfficiency + batteryCapacity;
+			fuel2DriveEnergy = URANIUM_OXIDE_WH_PER_KG * drivetrainEfficiency;// + batteryCapacity;
 		}
 		
 		// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
@@ -382,7 +420,7 @@ public class VehicleSpec implements Serializable {
 				// Accounts for the fuel (methanol and oxygen) and the traded goods
 				additionalBeginningMass = 400;
 				// Accounts for water and the traded goods
-				additionalEndMass = 350;		
+				additionalEndMass = 200;		
 			} break;
 
 			case LUV: {
@@ -415,18 +453,18 @@ public class VehicleSpec implements Serializable {
 		}
 
 		// Gets the estimated energy available for drivetrain [in kWh]
-		drivetrainEnergy = methanolEnergyCapacity * (1.0 - onboardPower / 100.0) * drivetrainEfficiency + batteryCapacity;
+		drivetrainFuelEnergy = methanolEnergyCapacity * (1.0 - onboardPower / 100.0) * drivetrainEfficiency + batteryCapacity;
 		
 		// Gets the estimated energy available to be consumed for the trip [in kWh]
 		double baseEnergyConsumed = methanolEnergyCapacity * drivetrainEfficiency + batteryCapacity;
 		// Gets the estimated average road load power (including coasting)
 		double baseRoadLoadPower = .1 * (.1 * peakPower + .9 * basePower);
-		// Gets the estimated average road speed (including coasting)
+		// Gets the estimated average road speed (including coasting) [kph]
 		double baseRoadSpeed = .75 * baseSpeed;
 		// Gets the maximum total # of hours the vehicle is capable of operating
 		baseTotalHours = baseEnergyConsumed / baseRoadLoadPower;
 		// kW / kph -> (kW / km / h) -> kW * h / km
-		double baseForce = baseRoadLoadPower / baseSpeed; 
+		double baseForce = baseRoadLoadPower / baseRoadSpeed; 
 	
 		// Gets the base range [in km] of the vehicle
 		// km = kWh / (kW * h / km) -> km * h / h -> km
@@ -824,12 +862,12 @@ public class VehicleSpec implements Serializable {
 	}
 
 	/**
-	 * Gets the estimated energy available for the drivetrain [kWh].
+	 * Gets the estimated fuel energy available for the drivetrain [kWh].
 	 *
 	 * @return
 	 */
-	public double getDrivetrainEnergy() {
-		return drivetrainEnergy;
+	public double getDrivetrainFuelEnergy() {
+		return drivetrainFuelEnergy;
 	}
 	
 	/**

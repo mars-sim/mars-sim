@@ -133,8 +133,14 @@ public class StudyPanel extends WizardPanel {
 		errorMessageLabel.setText(" ");
 	}
 
+	/**
+	 * Commits changes from this wizard panel.
+	 * 
+	 * @param isTesting true if it's only testing conditions
+	 * @return true if changes can be committed.
+	 */
 	@Override
-	boolean commitChanges() {
+	boolean commitChanges(boolean isTesting) {
 		int selectedIndex = studyTable.getSelectedRow();
 		ScientificStudy selectedStudy = studyTableModel.getStudy(selectedIndex);
 		getWizard().getMissionData().setScientificStudy(selectedStudy);

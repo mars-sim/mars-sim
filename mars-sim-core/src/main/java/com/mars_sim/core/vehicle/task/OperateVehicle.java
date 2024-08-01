@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * OperateVehicle.java
- * @date 2024-07-15
+ * @date 2024-08-01
  * @author Scott Davis
  */
 package com.mars_sim.core.vehicle.task;
@@ -58,10 +58,11 @@ public abstract class OperateVehicle extends Task {
     public static final TaskPhase MOBILIZE = new TaskPhase(Msg.getString(
             "Task.phase.mobilize")); //$NON-NLS-1$
  	
+    private static final int HRS_TO_SECS = 3600;
+    
  	private static final double THRESHOLD_SUNLIGHT = SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
  	
  	private static final double MAX_PERCENT_SPEED = 30;
- 	
  	/** The speed at which the collision phase commence. */
 	protected static final double HIGH_SPEED = 100;
 	/** The speed at which the obstacle / winching phase commence. */
@@ -75,9 +76,9 @@ public abstract class OperateVehicle extends Task {
     /** The ratio of the amount of oxidizer to fuel. */
     public static final double RATIO_OXIDIZER_FUEL = 1.5;
     /** Distance buffer for nearly arriving at destination (km). */
-    public static final double ARRIVING_BUFFER = 1;
+    public static final double DISTANCE_BUFFER_ARRIVING = 2;
     /** Distance buffer for arriving at destination (km). */
-    public static final double ARRIVED_BUFFER = 0.2;
+    public static final double DISTANCE_BUFFER_ARRIVED = 0.2;
     /** The base percentage chance of an accident while operating vehicle per millisol. */
     public static final double BASE_ACCIDENT_CHANCE = .01D;
     
@@ -171,7 +172,7 @@ public abstract class OperateVehicle extends Task {
     	    return time;
     	}
     	else if (MOBILIZE.equals(getPhase())) {
-    	    return mobilizeVehiclePhase(time);
+    	    return moderateTime(time);
     	}
     	else {
     	    return time;
@@ -238,6 +239,41 @@ public abstract class OperateVehicle extends Task {
 	}
 	
 	/**
+	 * Moderate the time for heating.
+	 * 
+	 * @param pulse
+	 * @return remaining tme
+	 */
+	private double moderateTime(double time) {
+		double remaining = time;
+		double pTime = Task.getStandardPulseTime();
+		while (remaining > 0 && pTime > 0) {
+			if (remaining > pTime) {
+				// Consume the pulse time.
+				double returnTime = mobilizeVehiclePhase(remaining);
+				
+				if (returnTime == remaining)
+					return (returnTime + remaining);
+				else
+					// Reduce the total time by the pulse time
+					remaining -= pTime;
+			}
+			else {
+				// Consume the pulse time.
+				double returnTime = mobilizeVehiclePhase(remaining);
+				
+				if (returnTime == remaining)
+					return (returnTime + remaining);
+				else
+					// Reduce the total time by the pulse time
+					remaining = 0;
+			}
+		}
+		
+		return 0;
+	}
+	
+	/**
 	 * Performs the mobilize vehicle phase for the amount of time given.
 	 * 
 	 * @param time the amount of time (ms) to perform the phase.
@@ -254,6 +290,8 @@ public abstract class OperateVehicle extends Task {
         if (vehicle.getSpeed() == 0D) {
         	// Note: must be larger than LOW_SPEED, or else it stays at obstacle phase
         	vehicle.setSpeed(LOW_SPEED * 1.1);
+        	
+        	logger.info(vehicle, 30_000, "Resetting the speed to " + Math.round(vehicle.getSpeed() * 10.0)/10.0 + " kph.");
         }
         	
         // Mobilize vehicle
@@ -354,14 +392,14 @@ public abstract class OperateVehicle extends Task {
 	
 	    	if (remainingFuel < LEAST_AMOUNT) {
 	    		logger.log(vehicle, Level.SEVERE, 20_000, 
-						"Case 0a1: Out of fuel. Cannot continue.");
+						"Case 0a1: Ran out of fuel.");
 	    		// Turn on emergency beacon
 	    		turnOnBeacon(ResourceUtil.methanolID);
 				vehicle.addSecondaryStatus(StatusType.OUT_OF_FUEL);
 				
 		    	if (batteryEnergy < LEAST_AMOUNT) {
 		    		logger.log(vehicle, Level.SEVERE, 20_000, 
-							"Case 0a2: Out of fuel and out of battery power. Cannot continue.");
+							"Case 0a2: Ran out of fuel and out of battery power. Cannot continue.");
 		    		// Turn on emergency beacon
 			    	turnOnBeacon("No battery power");
 					vehicle.addSecondaryStatus(StatusType.OUT_OF_BATTERY_POWER);
@@ -374,14 +412,14 @@ public abstract class OperateVehicle extends Task {
 	
 	    	if (remainingOxidizer < LEAST_AMOUNT * RATIO_OXIDIZER_FUEL) {
 	    		logger.log(vehicle, Level.SEVERE, 20_000, 
-						"Case 0b1: Out of fuel oxidizer. Cannot continue.");
+						"Case 0b1: Ran out of fuel oxidizer.");
 	    		// Turn on emergency beacon
 		    	turnOnBeacon(ResourceUtil.oxygenID);
 				vehicle.addSecondaryStatus(StatusType.OUT_OF_OXIDIZER);
 	        	
 		    	if (batteryEnergy < LEAST_AMOUNT) {
 		    		logger.log(vehicle, Level.SEVERE, 20_000, 
-							"Case 0b2: Out of fuel and out of battery power. Cannot drive.");
+							"Case 0b2: Ran out of fuel and out of battery power. Cannot continue.");
 		    		// Turn on emergency beacon
 			    	turnOnBeacon("No battery power");
 					vehicle.addSecondaryStatus(StatusType.OUT_OF_BATTERY_POWER);
@@ -415,8 +453,8 @@ public abstract class OperateVehicle extends Task {
         // Convert time from millisols to hours
         double hrsTime = MarsTime.HOURS_PER_MILLISOL * time;
         	
-        // Case I: Just arrived
-        if (dist2Dest <= ARRIVED_BUFFER) {
+        // Case Ia: Just arrived if within 200 m
+        if (dist2Dest <= DISTANCE_BUFFER_ARRIVED) {
         	logger.log(vehicle, Level.INFO, 20_000, 
         			"Case Ia: Arrived at " + getNavpointName()
         			+ " (dist: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + " km).");
@@ -432,20 +470,18 @@ public abstract class OperateVehicle extends Task {
 			return time;
         }
         
-        else if (dist2Dest <= ARRIVING_BUFFER) {
+     // Case Ib: Arriving if within 2 km
+        else if (dist2Dest <= DISTANCE_BUFFER_ARRIVING) {
         	logger.log(vehicle, Level.INFO,  20_000, "Case Ib: Arriving soon at " + getNavpointName()
         			+ " (dist: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + " km).");
 
         	double u = vehicle.getSpeed();
-        	double vSlowest = u / 2;
-        	
-        	double v = (vSlowest + u) / 2;
-        	
+        	double uHalf = u / 2;	
+        	double v = (uHalf + u) / 2;
+        	if (v < 0)
+        		v = 0;
 //            logger.log(vehicle, Level.INFO, 20_000, 
-//    				"u: " + u
-//    				+ "  vSlowest: " + vSlowest
-//    				+ "  v: " + v
-//            		);
+//    				"u: " + u + "  uHalf: " + uHalf + "  v: " + v);
             
         	double remainingHrs = 0;
         	// Note: Need to consider the case in which VehicleMission's determineEmergencyDestination() causes the 
@@ -494,7 +530,7 @@ public abstract class OperateVehicle extends Task {
     	
     	if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
          	// Allow only 50% impact from lightMod
-    		topSpeedKPH = vehicle.getBaseSpeed() * getSkillMod() * (0.5 * 0.5 * lightMod);
+    		topSpeedKPH = vehicle.getBaseSpeed() * getSkillMod() * (0.5 + 0.5 * lightMod);
     	}
     	else {
         	// Gets top speed in kph allowed by this pilot 
@@ -505,7 +541,7 @@ public abstract class OperateVehicle extends Task {
     	// Gets the ideal speed after acceleration. v^2 = u^2 + 2*a*d
     	// However dist2Cover is not known yet
 //		double idealSpeedMS = Math.sqrt(uMS * uMS + 2 * maxAccel * dist2Cover);
-    	double idealSpeedMS = uMS + maxAccel * hrsTime * 3600;
+    	double idealSpeedMS = uMS + maxAccel * hrsTime * HRS_TO_SECS;
     	// Gets the ideal speed in kph
     	double idealSpeedKPH = idealSpeedMS * KPH_CONV;
     	// Gets the next speed to be used in kph      	
@@ -525,16 +561,16 @@ public abstract class OperateVehicle extends Task {
     		// Slowing down the speed to expect to arrive
     		
     		if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
-    			if (dist2Dest <= ARRIVING_BUFFER * 2) {
+    			if (dist2Dest <= DISTANCE_BUFFER_ARRIVING * 2) {
 	    	   		// For drone, need to slow down much more to avoid overshot
 	        		vKPHProposed = vKPHProposed / 1.5;
     			}
         	}
         	else {
         		// For ground vehicles
-    			if (dist2Dest <= ARRIVING_BUFFER * 2) {
+    			if (dist2Dest <= DISTANCE_BUFFER_ARRIVING * 2) {
 	    	   		// For drone, need to slow down much more to avoid overshot
-	        		vKPHProposed = vKPHProposed / 1.5;
+	        		vKPHProposed = vKPHProposed / 1.25;
     			}
         	}	
     		
@@ -545,7 +581,7 @@ public abstract class OperateVehicle extends Task {
 				+ "uKPH: " + + Math.round(uKPH * 1_000.0)/1_000.0 + KPH
 				+ "vKPHProposed: " + + Math.round(vKPHProposed * 1_000.0)/1_000.0 + KPH  			
 				+ "hrsTime: " + + Math.round(hrsTime * 1_000.0)/1_000.0 + " hrs  "
-	           	+ "Time: " + + Math.round(hrsTime * 3600 * 1_000.0)/1_000.0 + " secs  "
+	           	+ "Time: " + + Math.round(hrsTime * HRS_TO_SECS * 1_000.0)/1_000.0 + " secs  "
 	           	+ "maxAccel: " + Math.round(maxAccel * 1_000.0)/1_000.0 + " m/s2  "
 	            + "skillMod: " + Math.round(skillMod * 100.0)/100.0 + "  "  
 	            + "lightMod: " + Math.round(lightMod * 100.0)/100.0 + "  "
@@ -594,8 +630,9 @@ public abstract class OperateVehicle extends Task {
 	 */
 	public void haltVehicle() {
 		// Note: instead of wasting the momentum/energy, 
-		// calculate the power stored based on regenerative braking
+		// Calculate the power stored based on regenerative braking
 		
+		logger.info(vehicle, "Halted the vehicle.");		
 		// Set speed to zero
 		vehicle.setSpeed(0D);
 		// Determine new position.

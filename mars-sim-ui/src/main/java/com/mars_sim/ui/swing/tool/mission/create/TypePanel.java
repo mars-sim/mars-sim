@@ -232,9 +232,12 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	
 	/**
 	 * Commits changes from this wizard panel.
-	 * @retun true if changes can be committed.
+	 * 
+	 * @param isTesting true if it's only testing conditions
+	 * @return true if changes can be committed.
 	 */
-	boolean commitChanges() {
+	@Override
+	boolean commitChanges(boolean isTesting) {
 		getWizard().getMissionData().setType((String) typeSelect.getSelectedItem());
 		getWizard().getMissionData().setMissionType(MissionType.lookup((String) typeSelect.getSelectedItem()));	
 		getWizard().getMissionData().setDescription(descriptionTF.getText());

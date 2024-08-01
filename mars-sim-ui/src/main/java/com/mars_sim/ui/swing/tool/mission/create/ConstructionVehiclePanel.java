@@ -159,19 +159,33 @@ class ConstructionVehiclePanel extends WizardPanel {
         selectedLabel.setText("Number selected: ");
     }
 
+	/**
+	 * Commits changes from this wizard panel.
+	 * 
+	 * @param isTesting true if it's only testing conditions
+	 * @return true if changes can be committed.
+	 */
     @Override
-    boolean commitChanges() {
-        List<GroundVehicle> constructionVehicles = new ArrayList<GroundVehicle>();
+    boolean commitChanges(boolean isTesting) {
+        List<GroundVehicle> constructionVehicles = new ArrayList<>();
         int[] selectedIndexs = vehicleTable.getSelectedRows();
-        int requiredVehicles = getWizard().getMissionData().
-                getConstructionStageInfo().getVehicles().size();
+        if (selectedIndexs.length == 0)
+        	return false;
+        
+//        int requiredVehicles = getWizard().getMissionData().
+//                getConstructionStageInfo().getVehicles().size();
+        
         for (int x = 0; x < selectedIndexs.length; x++) {
             LightUtilityVehicle selectedVehicle = 
                 (LightUtilityVehicle) vehicleTableModel.getUnit(selectedIndexs[x]);
             constructionVehicles.add(selectedVehicle);
         }
         
-        getWizard().getMissionData().setConstructionVehicles(constructionVehicles);
+        if (!isTesting) {
+			getWizard().getMissionData().setConstructionVehicles(constructionVehicles);
+			return true;
+		}	
+
         return true;
     }
 

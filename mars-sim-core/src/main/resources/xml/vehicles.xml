@@ -445,14 +445,14 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<energy-per-module value="15" />
 		<fuel-cell-stack number="2" />
 		<drivetrain-efficiency value=".95" />
-		<base-speed value="60.0" />
+		<base-speed value="80.0" />
 		<base-power value ="40" />		
 		<empty-mass value="160.0" />
 		<crew-size value="0" />
 		<cargo total-capacity="600.0">
-			<capacity resource="methanol" value="200.0" />
-			<capacity resource="oxygen" value="300.0" />
-			<capacity resource="water" value="300.0" />			
+			<capacity resource="methanol" value="150.0" />
+			<capacity resource="oxygen" value="225.0" />
+			<capacity resource="water" value="170.0" />			
 		</cargo>
 	</vehicle>
 </vehicle-configuration>

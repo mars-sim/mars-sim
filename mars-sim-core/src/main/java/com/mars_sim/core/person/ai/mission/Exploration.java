@@ -246,7 +246,7 @@ public class Exploration extends EVAMission
 		// Creates an random site
 		Coordinates location = determineFirstSiteCoordinate();
 		if (location == null) {
-			logger.info(getStartingSettlement(), "location is null.");
+			logger.info(getStartingSettlement(), "No site is found.");
 			return null;
 		}
 		
@@ -259,8 +259,8 @@ public class Exploration extends EVAMission
 	 * @return
 	 */
 	private Coordinates determineFirstSiteCoordinate() {
-		double range = getVehicle().getEstimatedRange();
-		return getStartingSettlement().determineFirstSiteCoordinate(range, 2);
+		double range = getVehicle().getRange();
+		return getStartingSettlement().getNextClosestMineralLoc(range);
 	}
 	
 	/**

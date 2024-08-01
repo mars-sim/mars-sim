@@ -92,7 +92,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 		
 		if (startingPhase != null) {
 			setPhase(startingPhase);
-			logger.log(driver, Level.INFO, 4_000, "Took the wheel of rover at phase '"
+			logger.log(driver, Level.INFO, 4_000, "Attempting to take the helm of the rover at phase '"
 					+ startingPhase + "'.");
 		}
 	}
@@ -174,7 +174,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 			// Update vehicle elevation.
 			updateVehicleElevationAltitude();
 			// Leave this phase and go to MOBILIZE phase
-			setPhase(OperateVehicle.MOBILIZE);
+			setPhase(MOBILIZE);
 			
 			sideDirection = NONE;
 			
@@ -228,7 +228,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 	}
 
 	/**
-	 * Perform task in winching phase.
+	 * Performs task in winching phase.
 	 * 
 	 * @param time the amount of time to perform the phase.
 	 * @return time remaining after performing the phase.
@@ -384,7 +384,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 	 * Stops the vehicle.
 	 */
 	@Override
-	protected void clearDown() {
+	public void clearDown() {
 		var v = getVehicle();
 		if (v != null) {
 			v.setSpeed(0D);

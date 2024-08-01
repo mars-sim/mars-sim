@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CommanderWindow.java
- * @date 2023-10-11
+ * @date 2024-07-29
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.tool.commander;
@@ -80,7 +80,6 @@ import com.mars_sim.ui.swing.tool.SmartScroller;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
-import com.mars_sim.ui.swing.unit_window.structure.SettlementUnitWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 

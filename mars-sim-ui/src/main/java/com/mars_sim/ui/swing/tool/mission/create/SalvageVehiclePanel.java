@@ -151,8 +151,14 @@ public class SalvageVehiclePanel extends WizardPanel {
         selectedLabel.setText("Number selected: ");
     }
 
-    @Override
-    boolean commitChanges() {
+	/**
+	 * Commits changes from this wizard panel.
+	 * 
+	 * @param isTesting true if it's only testing conditions
+	 * @return true if changes can be committed.
+	 */
+	@Override
+    boolean commitChanges(boolean isTesting) {
         List<GroundVehicle> salvageVehicles = new ArrayList<GroundVehicle>();
         int[] selectedIndexs = vehicleTable.getSelectedRows();
         for (int x = 0; x < selectedIndexs.length; x++) {

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehiclePanel.java
- * @date 2021-10-21
+ * @date 2024-07-30
  * @author Scott Davis
  */
 
@@ -150,17 +150,33 @@ class VehiclePanel extends WizardPanel {
 	}
 
 	/**
+	 * Checks if it's already been reserved or under maintenance.
+	 * 
+	 * @return
+	 */
+	private boolean checkReserveMaint(Rover rover) {
+		if (rover.isReserved()) 
+			return true;
+		return false;
+	}
+	
+	/**
 	 * Commits changes from this wizard panel.
 	 * 
+	 * @param isTesting true if it's only testing conditions
 	 * @retun true if changes can be committed.
 	 */
-	boolean commitChanges() {
+	boolean commitChanges(boolean isTesting) {
 		int selectedIndex = vehicleTable.getSelectedRow();
 		Rover selectedVehicle = (Rover) vehicleTableModel.getUnit(selectedIndex);
-		getWizard().getMissionData().setRover(selectedVehicle);
-		
-		// Reserve the vehicle
-		
+		if (selectedVehicle == null)
+			return false;
+		if (selectedVehicle != null && checkReserveMaint(selectedVehicle))
+			return false;
+		else if (!isTesting) {
+			getWizard().getMissionData().setRover(selectedVehicle);
+			return true;
+		}		
 		return true;
 	}
 
@@ -198,15 +214,18 @@ class VehiclePanel extends WizardPanel {
 			// Add columns.
 			columns.add("Name");
 			columns.add("Type");
-			columns.add("Crew Cap.");
 			columns.add("Range");
-			columns.add("Lab");
+			columns.add("Cargo Cap.");
 			
+			columns.add("Mass");
+			columns.add("Status");
+			columns.add("Reserved");
+			columns.add("Mission");
+			
+			columns.add("Crew Cap.");
+			columns.add("Lab");	
 			columns.add("Sick Bay");
 			columns.add("Cargo Cap.");
-			columns.add("Current Cargo");
-			columns.add("Status");
-			columns.add("Mission");
 		}
 
 		/**
@@ -226,28 +245,30 @@ class VehiclePanel extends WizardPanel {
 					if (column == 0)
 						result = vehicle.getName();
 					else if (column == 1)
-						result = Conversion.capitalize(vehicle.getDescription());
+						result = vehicle.getVehicleSpec().getName();
 					else if (column == 2)
-						result = vehicle.getCrewCapacity();
-					else if (column == 3)
 						result = (int) vehicle.getEstimatedRange();
-					else if (column == 4)
-						result = vehicle.hasLab();
-					else if (column == 5)
-						result = vehicle.hasSickBay();
-					else if (column == 6)
+					else if (column == 3)
 						result = (int) vehicle.getCargoCapacity();
-					else if (column == 7)
+					else if (column == 4)
 						result = (int) vehicle.getStoredMass();
-					else if (column == 8)
+					else if (column == 5)
 						result = vehicle.printStatusTypes();
-					else if (column == 9) {
+					else if (column == 6)
+						result = Conversion.capitalize(vehicle.isReserved() + "");
+					else if (column == 7) {
 						Mission mission = vehicle.getMission();
 						if (mission != null)
 							result = mission.getName();
 						else
 							result = "None";
 					}
+					else if (column == 8)
+						result = vehicle.getCrewCapacity();
+					else if (column == 9)
+						result = vehicle.hasLab();
+					else if (column == 10)
+						result = vehicle.hasSickBay();
 				} catch (Exception e) {
 				}
 			}
@@ -282,11 +303,15 @@ class VehiclePanel extends WizardPanel {
 			boolean result = false;
 			Rover vehicle = (Rover) getUnit(row);
 
-			if (column == 7) {
+			if (column == 6) {
+				if (vehicle.isReserved())
+					result = true;
+			} else if (column == 4) {
 				if (vehicle.getStoredMass() > 0D)
 					result = true;
-			} else if (column == 8) {
-				if ((vehicle.getPrimaryStatus() != StatusType.PARKED) && (vehicle.getPrimaryStatus() != StatusType.GARAGED))
+			} else if (column == 5) {
+				if ((vehicle.getPrimaryStatus() != StatusType.PARKED) 
+						&& (vehicle.getPrimaryStatus() != StatusType.GARAGED))
 					result = true;
 
 				// Allow rescue/salvage mission to use vehicle undergoing maintenance.
@@ -294,7 +319,7 @@ class VehiclePanel extends WizardPanel {
                     result = !vehicle.haveStatusType(StatusType.MAINTENANCE);
 				}
 				
-			} else if (column == 9) {
+			} else if (column == 7) {
 				Mission mission = vehicle.getMission();
 				if (mission != null)
 					result = true;

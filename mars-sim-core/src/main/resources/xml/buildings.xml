@@ -2284,8 +2284,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		        	<parking-location xloc="-2.60" yloc="2.0" />
 		        </parking>
 				<flyerParking>
-		        	<flyer-location xloc="2.25" yloc="-5.5" />
-		        	<flyer-location xloc="-2.25" yloc="-5.5" />
+		        	<flyer-location xloc="2.35" yloc="-5.4" />
+		        	<flyer-location xloc="-2.35" yloc="-5.4" />
 		        </flyerParking>		        
 		        <activity>
 					<activity-spot xloc="3.25" yloc="-3" />		        

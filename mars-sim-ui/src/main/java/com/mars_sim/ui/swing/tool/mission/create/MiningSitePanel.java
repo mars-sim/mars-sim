@@ -247,9 +247,11 @@ public class MiningSitePanel extends WizardPanel {
 	/**
 	 * Commits changes from this wizard panel.
 	 * 
+	 * @param isTesting true if it's only testing conditions
 	 * @return true if changes can be committed.
 	 */
-	boolean commitChanges() {
+	@Override
+	boolean commitChanges(boolean isTesting) {
 		if (selectedSite != null) {
 			getWizard().getMissionData().setMiningSite(selectedSite);
 			return true;

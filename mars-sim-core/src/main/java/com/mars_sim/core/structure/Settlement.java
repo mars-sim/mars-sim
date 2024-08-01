@@ -1978,7 +1978,8 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Calculate the mission limit parameter based on the populaton and person ratio
+	 * Calculates the mission limit parameter based on the population and person ratio.
+	 * 
 	 * @param id Id of the parameter value
 	 * @param minMissions Minimum numebr of missions
 	 * @param personRatio Ratio of person to mission
@@ -2952,7 +2953,12 @@ public class Settlement extends Structure implements Temporal,
 		return waterConsumption.getDailyAverage(type);
 	}
 
-	
+	/**
+	 * Enables or disable a mission type.
+	 *  
+	 * @param mission
+	 * @param disable
+	 */
 	public void setMissionDisable(MissionType mission, boolean disable) {
 		preferences.putValue(MissionWeightParameters.INSTANCE, mission.name(), (disable ? 0D : 1D));
 	}

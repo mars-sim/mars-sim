@@ -35,7 +35,7 @@ public class TabPanelGeneralVehicle extends TabPanel {
 
 	private Vehicle vehicle;
 	
-	private JLabel fuelLabel;
+	private JLabel fuelTankLabel;
 	private JLabel batteryPercentLabel;
 	private JLabel currentMassLabel;
 	private JLabel remainCapLabel;
@@ -98,8 +98,8 @@ public class TabPanelGeneralVehicle extends TabPanel {
 		
 		infoPanel.addRow("Max Crew", vehicle.getVehicleSpec().getCrewSize() + "");
 
-		currentMassLabel = infoPanel.addRow("Current Weight", StyleManager.DECIMAL_KG.format(vehicle.getMass()));
-		infoPanel.addRow("Base Weight", StyleManager.DECIMAL_KG.format(vehicle.getBaseMass()));
+		currentMassLabel = infoPanel.addRow("Current Mass", StyleManager.DECIMAL_KG.format(vehicle.getMass()));
+		infoPanel.addRow("Base Mass", StyleManager.DECIMAL_KG.format(vehicle.getBaseMass()));
 		
 		remainCapLabel = infoPanel.addRow("Remaining Capacity", StyleManager.DECIMAL_KG.format(vehicle.getRemainingCargoCapacity()));
 		infoPanel.addRow("Cargo Capacity", StyleManager.DECIMAL_KG.format(vehicle.getCargoCapacity()));
@@ -110,7 +110,7 @@ public class TabPanelGeneralVehicle extends TabPanel {
 		
 		double fuel = vehicle.getAmountResourceStored(fuelTypeID);
 		
-		fuelLabel = infoPanel.addRow("Fuel Tank", StyleManager.DECIMAL_KG.format(fuel) + " (" + 
+		fuelTankLabel = infoPanel.addRow("Fuel Tank", StyleManager.DECIMAL_KG.format(fuel) + " (" + 
 				StyleManager.DECIMAL_PERC.format(100 * fuel/fuelCap) + " Filled)");
 		
 		infoPanel.addRow("Fuel Cap", StyleManager.DECIMAL_KG.format(fuelCap));
@@ -132,8 +132,8 @@ public class TabPanelGeneralVehicle extends TabPanel {
 		remainCapLabel.setText(StyleManager.DECIMAL_KG.format(vehicle.getRemainingCargoCapacity()));
 		
 		double fuel = vehicle.getAmountResourceStored(fuelTypeID);
-		fuelLabel.setText(StyleManager.DECIMAL_KG.format(fuel) + " (" + 
-				StyleManager.DECIMAL_PERC.format(100 * fuel/fuelCap) + " Filled)");
+		fuelTankLabel.setText(StyleManager.DECIMAL_KG.format(fuel) + " (" + 
+				StyleManager.DECIMAL_PERC.format(100 * fuel/fuelCap) + " Filled Up)");
 		
 		batteryPercentLabel.setText(StyleManager.DECIMAL_PERC.format(vehicle.getBatteryPercent()));
 	}

@@ -219,6 +219,7 @@ implements ActionListener {
 
 	/**
 	 * Adds a wizard panel to the list.
+	 * 
 	 * @param newWizardPanel the wizard panel to add.
 	 */
 	private void addWizardPanel(WizardPanel newWizardPanel) {
@@ -227,7 +228,8 @@ implements ActionListener {
 	}
 
 	/**
-	 * Get the mission data bean.
+	 * Gets the mission data bean.
+	 * 
 	 * @return mission data bean.
 	 */
 	MissionDataBean getMissionData() {
@@ -236,6 +238,7 @@ implements ActionListener {
 
 	/**
 	 * Sets previous, next and final buttons to be enabled or disabled.
+	 * 
 	 * @param nextEnabled true if next/final button is enabled.
 	 */
 	void setButtons(boolean nextEnabled) {
@@ -262,7 +265,7 @@ implements ActionListener {
 	}
 
 	/** 
-	 * Go to previous wizard panel. 
+	 * Goes to previous wizard panel. 
 	 */
 	public void buttonClickedPrev() {
 		getCurrentWizardPanel().clearInfo();
@@ -274,10 +277,10 @@ implements ActionListener {
 	}
 
 	/** 
-	 * Go to next wizard panel. 
+	 * Goes to next wizard panel. 
 	 */
 	public void buttonClickedNext() {
-		if (getCurrentWizardPanel().commitChanges()) {
+		if (getCurrentWizardPanel().commitChanges(true)) {
 			displayPanelIndex++;
 			setButtons(false);
 			CardLayout layout = (CardLayout) infoPane.getLayout();
@@ -287,8 +290,11 @@ implements ActionListener {
 		}
 	}
 
+	/**
+	 * Finalizes the button click.
+	 */
 	public void buttonClickedFinal() {
-		if (getCurrentWizardPanel().commitChanges()) {
+		if (getCurrentWizardPanel().commitChanges(false)) {
 			missionBean.createMission();
 			dispose();
 		}

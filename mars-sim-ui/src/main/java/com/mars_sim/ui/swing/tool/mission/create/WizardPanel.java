@@ -98,10 +98,12 @@ abstract class WizardPanel extends JPanel {
 	/**
 	 * Commits changes from this wizard panel.
 	 * 
+	 * @param isTesting true if it's only testing conditions
 	 * @return true if changes can be committed.
 	 */
-	abstract boolean commitChanges();
+	abstract boolean commitChanges(boolean isTesting);
 
+	
 	/**
 	 * Clear information on the wizard panel.
 	 */

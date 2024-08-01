@@ -226,9 +226,11 @@ class ExplorationSitesPanel extends WizardPanel {
 	/**
 	 * Commits changes from this wizard panel.
 	 * 
+	 * @param isTesting true if it's only testing conditions
 	 * @return true if changes can be committed.
 	 */
-	boolean commitChanges() {
+	@Override
+	boolean commitChanges(boolean isTesting) {
 		getWizard().getMissionData().setExplorationSites(getSites());
 		return true;
 	}
@@ -323,7 +325,7 @@ class ExplorationSitesPanel extends WizardPanel {
 	 */
 	private double getMissionTimeLimit() {
 		Rover rover = getWizard().getMissionData().getRover();
-		int memberNum = getWizard().getMissionData().getMixedMembers().size();
+		int memberNum = getWizard().getMissionData().getAllMembers().size();
 		try {
 			return rover.getTotalTripTimeLimit(memberNum, true);
 		} catch (Exception e) {

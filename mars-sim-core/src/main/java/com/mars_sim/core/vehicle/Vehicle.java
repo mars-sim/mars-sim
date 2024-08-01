@@ -82,14 +82,15 @@ public abstract class Vehicle extends Unit
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Vehicle.class.getName());
 	
+	private static final int MAX_NUM_SOLS = 14;
+	private static final int SPEED_POWER_CHECK_FREQ = 5;
+	
 	private static final double RANGE_FACTOR = 1.2;
 	private static final double MAXIMUM_RANGE = 10_000;
 	
     public static final double VEHICLE_CLEARANCE_0 = 1.4;
     public static final double VEHICLE_CLEARANCE_1 = 2.8;
     
-	private static final int MAX_NUM_SOLS = 14;
-	
 	/** The error margin for determining vehicle range. (Actual distance / Safe distance). */
 	private static double fuelRangeErrorMargin;
 	private static double lifeSupportRangeErrorMargin;
@@ -783,10 +784,11 @@ public abstract class Vehicle extends Unit
 			throw new IllegalArgumentException("Vehicle speed is a NaN");
 
 		if (speed != this.speed) {
+			// speed has been changed
 			if (speed == 0D) {
 				setPrimaryStatus(StatusType.PARKED);
 			} 
-			else if (this.speed == 0D) {
+			else if (this.speed == 0D || speed > 0) {
 				// Was zero so now must be moving
 				setPrimaryStatus(StatusType.MOVING);
 			}
@@ -814,7 +816,7 @@ public abstract class Vehicle extends Unit
 
 		// Before the mission is created, the range would be based on vehicle's fuel capacity
 		return Math.min(getBaseRange(), 
-        			getEstimatedFuelEconomy() * getFuelCapacity()) * getMass() / getBeginningMass() * fuelRangeErrorMargin;
+        			getEstimatedFuelEconomy() * getFuelCapacity()) * getMass() / getBeginningMass() / fuelRangeErrorMargin;
 	}
 	
 	/**
@@ -939,7 +941,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getDrivetrainEnergy() {
-		return spec.getDrivetrainEnergy();
+		return spec.getDrivetrainFuelEnergy();
 	}
 	
 	/**
@@ -969,10 +971,10 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getCumFuelConsumption() {
-		if (odometerMileage == 0 || cumEnergyUsedKWH == 0)
+		if (odometerMileage == 0 || cumFuelUsedKG == 0)
 			return 0;
-		// [kWh] / [km] / 1000 
-		return  cumEnergyUsedKWH / odometerMileage / 1000;
+		// [kg] * [Wh/kg]  / km
+		return cumFuelUsedKG * getVehicleSpec().getFuel2DriveEnergy() / odometerMileage;
 	}
 	
 	/**
@@ -1125,9 +1127,9 @@ public abstract class Vehicle extends Unit
 		// Note: if cum < base, then trip is less economical more than expected
 		// Note: if cum > base, then trip is more economical than expected
 		if (cum == 0)
-			return (.5 * base + .5 * init) / VehicleController.FUEL_ECONOMY_FACTOR;
+			return (.4 * base + .6 * init) * VehicleController.FUEL_ECONOMY_FACTOR;
 		else {
-			return (.3 * base + .3 * init + .4 * cum);
+			return (.2 * base + .3 * init + .5 * cum);
 		}
 	}
 
@@ -1153,9 +1155,9 @@ public abstract class Vehicle extends Unit
 		// Note: if cum > base, then vehicle consumes more than expected
 		// Note: if cum < base, then vehicle consumes less than expected		
 		if (cum == 0)
-			return (.5 * base + .5 * init) * VehicleController.FUEL_ECONOMY_FACTOR;
+			return (.4 * base + .6 * init) / VehicleController.FUEL_CONSUMPTION_FACTOR;
 		else {
-			return (.3 * base + .3 * init + .4 * cum);
+			return (.2 * base + .3 * init + .5 * cum);
 		}
 	}
 	
@@ -1486,35 +1488,38 @@ public abstract class Vehicle extends Unit
 				setExposed(newExposed);
 			}
 
-			// TODO: Should the following be executed when a vehicle is on the road ? 
-			
-			int count = 0;
-			int sum = 0;
-
-			for (int sol: roadSpeedHistory.getHistory().keySet()) {
-				List<MSolDataItem<Integer>> speeds = roadSpeedHistory.getHistory().get(sol);
-				for (MSolDataItem<Integer> s: speeds) {
-					count++;
-					sum += s.getData();
+			//  Whenever a vehicle is on the road, recalculate the following
+			remainder = msol % SPEED_POWER_CHECK_FREQ;
+			if (remainder > SPEED_POWER_CHECK_FREQ - 2 
+					&& getPrimaryStatus() == StatusType.MOVING) {
+				int count = 0;
+				int sum = 0;
+	
+				for (int sol: roadSpeedHistory.getHistory().keySet()) {
+					List<MSolDataItem<Integer>> speeds = roadSpeedHistory.getHistory().get(sol);
+					for (MSolDataItem<Integer> s: speeds) {
+						count++;
+						sum += s.getData();
+					}
 				}
-			}
-			
-			if (count > 0 && sum > 0)
-				averageRoadLoadSpeed = sum / count;
-			
-			count = 0;
-			sum = 0;
-			
-			for (int sol: roadPowerHistory.getHistory().keySet()) {
-				List<MSolDataItem<Integer>> powers = roadPowerHistory.getHistory().get(sol);
-				for (MSolDataItem<Integer> s: powers) {
-					count++;
-					sum += s.getData();
+				
+				if (count > 0 && sum > 0)
+					averageRoadLoadSpeed = sum / count;
+				
+				count = 0;
+				sum = 0;
+				
+				for (int sol: roadPowerHistory.getHistory().keySet()) {
+					List<MSolDataItem<Integer>> powers = roadPowerHistory.getHistory().get(sol);
+					for (MSolDataItem<Integer> s: powers) {
+						count++;
+						sum += s.getData();
+					}
 				}
+				
+				if (count > 0 && sum > 0)
+					averageRoadLoadPower = sum / count;
 			}
-			
-			if (count > 0 && sum > 0)
-				averageRoadLoadPower = sum / count;
 		}
 		
 		return true;
