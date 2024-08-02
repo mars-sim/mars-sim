@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NavpointPanel.java
- * @date 2023-06-18
+ * @date 2024-08-01
  * @author Scott Davis
  */
 
@@ -228,10 +228,8 @@ implements MissionListener {
 			}
 		});
 		mapDisplayPane.add(southButton, BorderLayout.SOUTH);
-			
-
-		///////////////////////////////////////////////////////////
 		
+		///////////////////////////////////////////////////////////	
 		
 		// Create the navpoint scroll panel.
 		JScrollPane navpointScrollPane = new JScrollPane();
@@ -462,8 +460,8 @@ implements MissionListener {
 		// Updates coordinates in map
 		updateCoords(missionCache.getAssociatedSettlement().getCoordinates());
 		
-		if (missionCache instanceof VehicleMission) {
-			trailLayer.setSingleVehicle(((VehicleMission) missionCache).getVehicle());
+		if (missionCache instanceof VehicleMission vm) {
+			trailLayer.setSingleVehicle(vm.getVehicle());
 		}
 		
 		navpointLayer.setSingleMission(missionCache);
@@ -481,7 +479,9 @@ implements MissionListener {
 	}
 	
 	/**
-	 * Clears the mission content on the Nav tab
+	 * Clears the mission content on the Nav tab.
+	 * 
+	 * @param settlement
 	 */
 	private void clearNavTab(Settlement settlement) {
 		// Center the map to this settlement's coordinate
@@ -519,8 +519,7 @@ implements MissionListener {
 	}
 	
 	/**
-	 * Navpoint table model.
-	 * Inner class
+	 * Navpoint table model as an inner class.
 	 */
 	private class NavpointTableModel extends AbstractTableModel {
 		
@@ -549,7 +548,7 @@ implements MissionListener {
 		 * @return number of columns.
 		 */
 		public int getColumnCount() {
-            return 4;
+            return 5;
         }
 		
 		/**
@@ -563,7 +562,8 @@ implements MissionListener {
             if (columnIndex == 0) return Msg.getString("NavpointPanel.column.name"); //$NON-NLS-1$
             else if (columnIndex == 1) return Msg.getString("NavpointPanel.column.location"); //$NON-NLS-1$
             else if (columnIndex == 2) return Msg.getString("NavpointPanel.column.description"); //$NON-NLS-1$
-            else if (columnIndex == 3) return Msg.getString("NavpointPanel.column.distance"); //$NON-NLS-1$
+            else if (columnIndex == 3) return Msg.getString("NavpointPanel.column.distance.leg"); //$NON-NLS-1$
+            else if (columnIndex == 4) return Msg.getString("NavpointPanel.column.distance.actual"); //$NON-NLS-1$
             else return "";
         }
 		
@@ -580,7 +580,8 @@ implements MissionListener {
             	if (column == 0) return Msg.getString("NavpointPanel.column.navpoint") + " " + (row + 1); //$NON-NLS-1$
             	else if (column == 1) return navpoint.getLocation().getFormattedString();
             	else if (column == 2) return navpoint.getDescription();
-            	else if (column == 3) return Math.round(navpoint.getDistance()*10.0)/10.0;
+            	else if (column == 3) return Math.round(navpoint.getPointToPointDistance()*10.0)/10.0;
+            	else if (column == 4) return Math.round(navpoint.getActualTravelled()*10.0)/10.0;
             	else return Msg.getString("unknown"); //$NON-NLS-1$
             }   
             else return Msg.getString("unknown"); //$NON-NLS-1$

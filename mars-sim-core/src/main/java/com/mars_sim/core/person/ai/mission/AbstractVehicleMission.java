@@ -99,8 +99,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final MissionPhase DEPARTING = new MissionPhase("departing", Stage.PREPARATION);
 	protected static final MissionPhase TRAVELLING = new MissionPhase("travelling");
 	private static final MissionPhase DISEMBARKING = new MissionPhase("disembarking", Stage.CLOSEDOWN);
-	private static final MissionPhase RETURNING_HOME = new MissionPhase("returningHome", Stage.CLOSEDOWN);
-
+//	private static final MissionPhase RETURNING_HOME = new MissionPhase("returningHome", Stage.CLOSEDOWN);
 	
 	// Mission Status
 	protected static final MissionStatus NO_AVAILABLE_VEHICLE = new MissionStatus("Mission.status.noVehicle");
@@ -130,6 +129,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private double distanceProposed = 0;
 	/** The current leg remaining distance at this moment. */
 	private double distanceCurrentLegRemaining;
+	/** The current leg travelled distance at this moment. */
+	private double distanceCurrentLegTravelled;
 	/** The estimated total remaining distance at this moment. */
 	private double distanceTotalRemaining;
 
@@ -645,13 +646,15 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		else if (TRAVELLING.equals(phase)) {
 			performTravelPhase(member);
 			
-			int msol = getMarsTime().getMillisolInt();
-			if (msolCache != msol) {
-				msolCache = msol;
+//			int msol = getMarsTime().getMillisolInt();
+//			if (msolCache != msol) {
+//				msolCache = msol;
 				// Update the distances only once per msol
-				computeTotalDistanceRemaining();
-				computeTotalDistanceTravelled();
-			}
+//				computeDistanceCurrentLegTravelled();
+//				computeDistanceCurrentLegRemaining();
+//				computeTotalDistanceRemaining();
+//				computeTotalDistanceTravelled();
+//			}
 		}
 		else if (DISEMBARKING.equals(phase)) {
 			// After arriving at the settlement
@@ -1485,7 +1488,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 		logger.info(vehicle, "Set return to " + destNavPoint);
 
-		// Need to recalculate what is left to travel to get resoruces loaded
+		// Need to recalculate what is left to travel to get resources loaded
 		// for return
 		distanceProposed = 0D;
 		
@@ -1569,7 +1572,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * 
 	 * @return navpoint or null if no more navpoints.
 	 */
-	protected final NavPoint getNextNavpoint() {
+	public final NavPoint getNextNavpoint() {
 		if (navIndex < navPoints.size())
 			return navPoints.get(navIndex);
 		else
@@ -1889,13 +1892,82 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 
 	/**
+	 * Computes the travelled distance in the current leg of the mission.
+	 * 
+	 * @return distance (km) or 0 if not in the travelling phase.
+	 * @throws MissionException if error determining distance.
+	 */
+	public final double computeDistanceCurrentLegTravelled() {
+		
+		// Note: compare with getCurrentLegDistance() 
+		
+		if (travelStatus != null 
+				&& TRAVEL_TO_NAVPOINT.equals(travelStatus)
+				&& lastStopNavpoint != null) {
+
+			if (getNextNavpoint() == null) {
+				int offset = 2;
+				if (getPhase().equals(TRAVELLING))
+					offset = 1;
+				setNextNavpointIndex(navPoints.size() - offset);
+				updateTravelDestination();
+			}
+			
+			Coordinates c0 = null;
+			
+			// In case of TravelToSettlement, it's an one-way trip
+			if (this instanceof TravelToSettlement travelToSettlement) {
+				c0 = travelToSettlement.getAssociatedSettlement().getCoordinates();	
+			}
+			
+			NavPoint next = getCurrentNavpoint();
+			if (next != null) {
+				c0 = next.getLocation();
+			}
+
+			double dist = 0;
+			
+			if (c0 != null) {
+				dist = Coordinates.computeDistance(getCurrentMissionLocation(), c0);
+			
+				if (Double.isNaN(dist)) {
+					logger.severe(getName() + 
+							": current leg's travelled distance is NaN.");
+					dist = 0;
+				}
+			}
+			
+			if (distanceCurrentLegTravelled != dist) {
+				distanceCurrentLegTravelled = dist;
+				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
+			}
+			
+			return dist;
+		}
+
+		return 0D;
+	}
+	
+	/**
 	 * Gets the remaining distance for the current leg of the mission.
 	 * 
 	 * @return distance (km) or 0 if not in the travelling phase.
 	 * @throws MissionException if error determining distance.
 	 */
 	public final double getDistanceCurrentLegRemaining() {
+		double legRemaining = computeDistanceCurrentLegRemaining();
 		return distanceCurrentLegRemaining;
+	}
+	
+	/**
+	 * Gets the travelled distance for the current leg of the mission.
+	 * 
+	 * @return distance (km) or 0 if not in the travelling phase.
+	 * @throws MissionException if error determining distance.
+	 */
+	public final double getDistanceCurrentLegTravelled() {
+		double legTravelled = computeDistanceCurrentLegTravelled();
+		return distanceCurrentLegTravelled;
 	}
 	
 	/**
@@ -1908,7 +1980,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			double result = 0D;
 			
 			for (int x = 1; x < navPoints.size(); x++) {
-				result += navPoints.get(x).getDistance();
+				result += navPoints.get(x).getPointToPointDistance();
 			}
 			
 			if (distanceProposed != result) {
@@ -1925,7 +1997,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @return distance (km)
 	 */
 	@Override
-	public final double getDistanceProposed() {
+	public final double getTotalDistanceProposed() {
 		return distanceProposed;
 	}
 	
@@ -1936,11 +2008,10 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @throws MissionException if error determining distance.
 	 */
 	protected final double computeTotalDistanceRemaining() {
-
-		double remainingLeg = computeDistanceCurrentLegRemaining();
+		double legRemaining = computeDistanceCurrentLegRemaining();
 
 		int index = 0;
-		double navDist = 0;
+		double remainingNavPointDistance = 0;
 		if (AT_NAVPOINT.equals(travelStatus))
 			index = getCurrentNavpointIndex();
 		else if (TRAVEL_TO_NAVPOINT.equals(travelStatus))
@@ -1949,10 +2020,10 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		for (int x = index + 1; x < navPoints.size(); x++) {
 			NavPoint next = navPoints.get(x); 
 			if (next != null)
-				navDist += next.getDistance();
+				remainingNavPointDistance += next.getPointToPointDistance();
 		}
 		
-		double total = remainingLeg + navDist;
+		double total = legRemaining + remainingNavPointDistance;
 			
 		if (distanceTotalRemaining != total) {
 			// Record the distance

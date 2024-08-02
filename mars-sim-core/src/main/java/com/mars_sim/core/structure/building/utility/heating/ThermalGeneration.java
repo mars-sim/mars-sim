@@ -521,7 +521,7 @@ public class ThermalGeneration extends Function {
 		while (remaining > 0 && pTime > 0) {
 			if (remaining > pTime) {
 				// Consume the pulse time.
-				transferHeat(pulse, remaining);
+				transferHeat(pulse, pTime);
 				// Reduce the total time by the pulse time
 				remaining -= pTime;
 			}

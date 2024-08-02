@@ -250,10 +250,10 @@ public abstract class OperateVehicle extends Task {
 		while (remaining > 0 && pTime > 0) {
 			if (remaining > pTime) {
 				// Consume the pulse time.
-				double returnTime = mobilizeVehiclePhase(remaining);
+				double returnTime = mobilizeVehiclePhase(pTime);
 				
-				if (returnTime == remaining)
-					return (returnTime + remaining);
+				if (returnTime == pTime)
+					return returnTime + remaining;
 				else
 					// Reduce the total time by the pulse time
 					remaining -= pTime;
@@ -262,8 +262,8 @@ public abstract class OperateVehicle extends Task {
 				// Consume the pulse time.
 				double returnTime = mobilizeVehiclePhase(remaining);
 				
-				if (returnTime == remaining)
-					return (returnTime + remaining);
+				if (returnTime == pTime)
+					return returnTime;
 				else
 					// Reduce the total time by the pulse time
 					remaining = 0;

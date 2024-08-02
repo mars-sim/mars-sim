@@ -42,7 +42,8 @@ public class StyleManager {
     private static final Logger logger = Logger.getLogger(StyleManager.class.getName());
 
 
-    // Shared generic formatters
+    // Shared generic formatters 
+    public static final DecimalFormat CURRENCY_PLACES1 = new DecimalFormat("$ #,###,##0.0");
     public static final DecimalFormat DECIMAL_PLACES0 = new DecimalFormat("#,###,###,###");
     public static final DecimalFormat DECIMAL_PLACES1 = new DecimalFormat("#,###,##0.0");
     public static final DecimalFormat DECIMAL_PLACES3 = new DecimalFormat("#,###,##0.000");

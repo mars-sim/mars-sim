@@ -624,7 +624,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				}
 
 				double travelledDistance = Math.round(vehicleMission.getTotalDistanceTravelled()*10.0)/10.0;
-				double estTotalDistance = Math.round(vehicleMission.getDistanceProposed()*10.0)/10.0;
+				double estTotalDistance = Math.round(vehicleMission.getTotalDistanceProposed()*10.0)/10.0;
 
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
 						travelledDistance,
@@ -646,7 +646,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 		
 				double travelledDistance = Math.round(vehicleMission.getTotalDistanceTravelled()*10.0)/10.0;
-				double estTotalDistance = Math.round(vehicleMission.getDistanceProposed()*10.0)/10.0;
+				double estTotalDistance = Math.round(vehicleMission.getTotalDistanceProposed()*10.0)/10.0;
 
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
 						travelledDistance,
@@ -888,7 +888,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 
 				
 				double travelledDistance = Math.round(vehicleMission.getTotalDistanceTravelled()*10.0)/10.0;
-				double estTotalDistance = Math.round(vehicleMission.getDistanceProposed()*10.0)/10.0;
+				double estTotalDistance = Math.round(vehicleMission.getTotalDistanceProposed()*10.0)/10.0;
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
 						travelledDistance,
 						estTotalDistance

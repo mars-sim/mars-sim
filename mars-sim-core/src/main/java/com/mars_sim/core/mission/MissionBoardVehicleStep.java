@@ -222,7 +222,7 @@ public class MissionBoardVehicleStep extends MissionStep {
 		MissionVehicleProject mvp = (MissionVehicleProject) getMission();
 		
 		// Get the estimated duration
-		double durationMSols = mvp.getEstimateTravelTime(mvp.getDistanceProposed());
+		double durationMSols = mvp.getEstimateTravelTime(mvp.getTotalDistanceProposed());
 		double numberAccidents = durationMSols * OperateVehicle.BASE_ACCIDENT_CHANCE;
 		double numberMalfunctions = numberAccidents * MalfunctionManager.AVERAGE_NUM_MALFUNCTION;
 

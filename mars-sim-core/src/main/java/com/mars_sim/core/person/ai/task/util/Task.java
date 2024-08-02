@@ -1441,8 +1441,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		return false;
 	}
 	
-
-	
 	/**
 	 * Sets the standard pulse time.
 	 * 

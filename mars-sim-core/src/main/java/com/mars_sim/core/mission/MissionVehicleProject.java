@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * MissionVehicleProject.java
  * @date 2023-06-03
@@ -24,7 +24,7 @@ import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.tools.util.RandomUtil;
 
 /**
- * This represents a MissionProject that specialises in Vehcile based Mission.
+ * This represents a MissionProject that specialises in Vehicle based Mission.
  */
 public class MissionVehicleProject extends MissionProject
     implements VehicleMission {
@@ -43,18 +43,20 @@ public class MissionVehicleProject extends MissionProject
     }
 
     /**
-     * If the completed step is a Travel step then update the distance
+     * If the completed step is a Travel step then update the distance.
+     * 
      * @param ms The Mission step just completed
      */
     @Override
     protected void stepCompleted(MissionStep ms) {
         if (ms instanceof MissionTravelStep mts) {
-            distanceCompleted += mts.getDestination().getDistance();
+            distanceCompleted += mts.getDestination().getPointToPointDistance();
         }
     }
 
     /**
-     * Set the Vehicle being used
+     * Sets the Vehicle being used.
+     * 
      * @param best
      */
     private void setVehicle(Vehicle best) {
@@ -72,15 +74,16 @@ public class MissionVehicleProject extends MissionProject
     }
 
     /**
-     * Clear down the mission as it has been completed.
+     * Clears down the mission as it has been completed.
      */
     @Override
     protected void clearDown() {
         releaseVehicle(vehicle);
         super.clearDown();
     }
+    
     /**
-	 * Find the best suitable vehicle for the mission if possible.
+	 * Finds the best suitable vehicle for the mission if possible.
 	 *
 	 * @return The selected bets vehicle; null if none found
 	 */
@@ -112,7 +115,8 @@ public class MissionVehicleProject extends MissionProject
 	}
 
     /**
-     * Score the vehicle suitability for this Mission
+     * Scores the vehicle suitability for this mission.
+     * 
      * @param v
      * @return Return -1 if not suitable at all
      */
@@ -130,7 +134,8 @@ public class MissionVehicleProject extends MissionProject
     }
 
     /**
-     * Return the location based on the vehicle if the mission is active
+     * Returns the location based on the vehicle if the mission is active.
+     * 
      * @return Coordinates of home
      */
     @Override
@@ -142,7 +147,7 @@ public class MissionVehicleProject extends MissionProject
     }
 
     @Override
-    public double getDistanceProposed() {
+    public double getTotalDistanceProposed() {
         return proposedDistance;
     }
 
@@ -158,13 +163,13 @@ public class MissionVehicleProject extends MissionProject
     @Override
     public double getTotalDistanceRemaining() {
         // Not perfectly accurate but quick
-        return getDistanceProposed() - getTotalDistanceTravelled();
+        return getTotalDistanceProposed() - getTotalDistanceTravelled();
     }
 
     @Override
     public double getDistanceCurrentLegRemaining() {
         if (getCurrentStep() instanceof MissionTravelStep mts) {
-            return mts.getDestination().getDistance() - mts.getDistanceCovered();
+            return mts.getDestination().getPointToPointDistance() - mts.getDistanceCovered();
         }   
         return 0D;
     }
@@ -213,7 +218,8 @@ public class MissionVehicleProject extends MissionProject
     }
     
     /**
-     * Extract the Navpoints and calculate the proposed. This will extract the NavPoints for the Route.
+     * Extracst the Navpoints and calculates the proposed. This will extract the NavPoints for the Route.
+     * 
      * It will also select a Vehicle based on the steps.
      * @param plan Steps for the mission
      */
@@ -224,7 +230,7 @@ public class MissionVehicleProject extends MissionProject
                         .map (sc -> ((MissionTravelStep) sc).getDestination())
                         .toList();
         proposedDistance = route.stream()
-                            .mapToDouble(NavPoint::getDistance)
+                            .mapToDouble(NavPoint::getPointToPointDistance)
                             .sum();
 
         if (vehicle == null) {
@@ -247,9 +253,10 @@ public class MissionVehicleProject extends MissionProject
     }
 
     /**
-     * How long will it take for this Misison to cover a distance
+     * Gets the estimated travel time take for this Mission to cover a distance.
+     * 
      * @param distance Distance to cover
-     * @return Durstino in mSols
+     * @return Duration in mSols
      */
     public double getEstimateTravelTime(double distance) {
         double result = 0D;
@@ -259,4 +266,10 @@ public class MissionVehicleProject extends MissionProject
 		}
         return result;
     }
+
+	@Override
+	public double getDistanceCurrentLegTravelled() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

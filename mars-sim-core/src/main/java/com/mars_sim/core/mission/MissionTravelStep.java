@@ -125,7 +125,7 @@ public class MissionTravelStep extends MissionStep {
     void getRequiredResources(MissionManifest manifest, boolean addOptionals) {
 
         Vehicle vehicle = getVehicle();
-        double distance = destination.getDistance() - getDistanceCovered();
+        double distance = destination.getPointToPointDistance() - getDistanceCovered();
         MissionVehicleProject mvp = (MissionVehicleProject) getMission();
 
         // Must use the same logic in all cases otherwise too few fuel will be loaded

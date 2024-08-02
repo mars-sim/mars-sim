@@ -59,7 +59,8 @@ public class TabPanelGoods extends TabPanelTable {
 	}
 	
 	/**
-	 * Set the width and default rendering
+	 * Sets the width and default rendering.
+	 * 
 	 * @param columnModel Columns to be configured
 	 */
 	@Override
@@ -74,9 +75,9 @@ public class TabPanelGoods extends TabPanelTable {
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.LEFT);
 		columnModel.getColumn(0).setCellRenderer(renderer);
-		columnModel.getColumn(1).setCellRenderer(new NumberCellRenderer(3, true));
-		columnModel.getColumn(2).setCellRenderer(new NumberCellRenderer(3, true));
-		columnModel.getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());//new NumberCellRenderer(2, true));
+		columnModel.getColumn(1).setCellRenderer(new NumberCellRenderer(3));
+		columnModel.getColumn(2).setCellRenderer(new NumberCellRenderer(3));
+		columnModel.getColumn(3).setCellRenderer(new NumberCellRenderer(2)); // "$ ", "\u20BF "
 	}
 
 	/**

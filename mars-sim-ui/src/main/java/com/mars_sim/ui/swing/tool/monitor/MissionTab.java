@@ -28,15 +28,16 @@ public class MissionTab extends TableTab {
 		super(window, new MissionTableModel(window.getDesktop().getSimulation()), true, true, MissionWindow.ICON);
 		
 		adjustColumnWidth(table);
-
+		
 		setEntityDriven(true);
 		setNavigatable(true);
 	}
 
 
 	/**
-	 * Get the Coordinates of the selected Mission
-	 * @return Cooridnates, maybe null
+	 * Gets the Coordinates of the selected Mission.
+	 * 
+	 * @return Coordinates, maybe null
 	 */
 	@Override
     public Coordinates getSelectedCoordinates() {

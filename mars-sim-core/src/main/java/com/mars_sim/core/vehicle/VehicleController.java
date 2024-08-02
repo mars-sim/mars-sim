@@ -13,6 +13,9 @@ import java.util.logging.Level;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.equipment.Battery;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
+import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.tools.util.RandomUtil;
  
@@ -617,15 +620,17 @@ import com.mars_sim.tools.util.RandomUtil;
 			 // Convert the total energy [in Wh]. Need to convert from J to Wh
 			 overallEnergyUsed = avePower * secs / JOULES_PER_WH; // [in Wh]
 			 
+			 boolean byBatteryOnly = false;
+			 
 			 int rand = RandomUtil.getRandomInt(4);
 			 
 			 if (rand == 0) {
 				 // For now, set 20% of chance to use battery power only
-				 remainingFuel = 0;
+				 byBatteryOnly = true;
 			 }
 			 
 			 // Get energy [in Wh] from the fuel
-			 double energyNeededByFuel = 0;
+			 double energyByFuel = 0;
 		 
 			 // Scenario 1: try using fuel first to fulfill the energy expenditure 
 
@@ -633,7 +638,7 @@ import com.mars_sim.tools.util.RandomUtil;
 				 // Scenario 1A1: (Future) nuclear powered or solar powered
 
 				 fuelNeeded = 0;
-				 energyNeededByFuel = 0;
+				 energyByFuel = 0;
 				 energyByBattery = overallEnergyUsed;
 				 
 				 // Future: Will need to continue to model how nuclear-powered engine would work 
@@ -644,16 +649,16 @@ import com.mars_sim.tools.util.RandomUtil;
 						 + "seconds: " + Math.round(secs * 100.0)/100.0 + SEC__);	
 			 }
 			 
-			 else if (remainingFuel > 0 || fuelNeeded <= remainingFuel) {
+			 else if (!byBatteryOnly && remainingFuel > 0 && fuelNeeded <= remainingFuel) {
 				 // Scenario 1A2: fuel can fulfill all energy expenditure 
 
 				 // if fuelNeeded is smaller than remainingFuel, then fuel is sufficient.
 				 
 				 // Get energy [in Wh] from the fuel
-				 energyNeededByFuel = overallEnergyUsed;
+				 energyByFuel = overallEnergyUsed;
 				 		 
 				 // Derive the mass of fuel needed kg = Wh / [Wh/kg]
-				 fuelNeeded = energyNeededByFuel / vehicle.getFuelConv();
+				 fuelNeeded = energyByFuel / vehicle.getFuelConv();
 				 
 				/*
 				 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
@@ -663,7 +668,7 @@ import com.mars_sim.tools.util.RandomUtil;
 						 "Scenario 1A2: accelMotor > 0. Enough fuel.  " 
 								 + "accelSpeedUp: " + Math.round(accelSpeedUp * 100.0)/100.0 + M_S2__
 								 + "avePower: " + Math.round(avePower * 100.0)/100.0 + N__
-								 + "energyNeededByFuel: " + Math.round(energyNeededByFuel * 100.0)/100.0 + WH__
+								 + "energyByFuel: " + Math.round(energyByFuel * 100.0)/100.0 + WH__
 								 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG__					
 								 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH__
 								 + "seconds: " + Math.round(secs * 100.0)/100.0 + SEC__);	
@@ -672,14 +677,22 @@ import com.mars_sim.tools.util.RandomUtil;
 			 else {			
 				 // Scenario 1B: fuel can fulfill some energy expenditure but not all
 
-				 // Limit the fuel to be used
-				 fuelNeeded = remainingFuel;
-				 
-				 // Calculate the new energy provided by the fuel [in Wh]
-				 energyNeededByFuel = fuelNeeded * vehicle.getFuelConv();	
-				 	 
-				 // Calculate needed energy from battery [in Wh] 
-				 energyByBattery = overallEnergyUsed - energyNeededByFuel;
+				 if (byBatteryOnly) {
+					 // Limit the fuel to be used
+					 fuelNeeded = 0;
+					 // Calculate the new energy provided by the fuel [in Wh]
+					 energyByFuel = 0;					 			 
+					 // Calculate needed energy from battery [in Wh] 
+					 energyByBattery = overallEnergyUsed;
+				 }
+				 else {
+					 // Limit the fuel to be used
+					 fuelNeeded = remainingFuel;				 
+					 // Calculate the new energy provided by the fuel [in Wh]
+					 energyByFuel = fuelNeeded * vehicle.getFuelConv();			 			 
+					 // Calculate needed energy from battery [in Wh] 
+					 energyByBattery = overallEnergyUsed - energyByFuel;
+				 }
 				 
 				 // Calculate energy that can be delivered by battery 
 				 double energySuppliedByBattery = 0;
@@ -698,7 +711,7 @@ import com.mars_sim.tools.util.RandomUtil;
 				 
 				 double batteryEnergyDeficit = energyByBattery - energySuppliedByBattery;
 				 
-				 if (remainingFuel <= LEAST_AMOUNT) {
+				 if (byBatteryOnly || remainingFuel <= LEAST_AMOUNT) {
 					 // Scenario 1B1: Ran out of fuel. Need battery to provide for the rest
 					 
 					 // Recalculate the new ave power W
@@ -732,15 +745,16 @@ import com.mars_sim.tools.util.RandomUtil;
 					  * delete any of them. Needed for testing when new features are added in future. Thanks !
 					  */			 
 					logger.log(vehicle, Level.INFO, 20_000,  
-								 "Scenario 1B1: accelMotor < 0. Out of fuel. Use only battery.  " 
-								 + "energyNeededByFuel: " + Math.round(energyNeededByFuel * 100.0)/100.0 + WH__
-								 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG__					
+								 "Scenario 1B1: accelMotor < 0. Use battery only.  " 
+//								 + "energyByFuel: " + Math.round(energyByFuel * 100.0)/100.0 + WH__
+//								 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG__					
 								 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH__
 								 + "Battery: " 			+ Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH__	
 								 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH__							 
-								 + "avePower: " 			+ Math.round(avePower * 100.0)/100.0 + W__							
-								 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH_   	
-								 + "seconds: " 				+ Math.round(secs * 100.0)/100.0 + " secs  "
+								 + "avePower: " 			+ Math.round(avePower * 100.0)/100.0 + W__	
+								 + "uKPH: " 				+ Math.round(uKPH * 100.0)/100.0 + KPH__ 
+								 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH__   	
+								 + "seconds: " 				+ Math.round(secs * 100.0)/100.0 + SEC__
 								 + "distanceTravelled: " +  Math.round(distanceTravelled * 100.0)/100.0  + KM__);
 					
 					 // Equate energyByBattery to energySuppliedByBattery in order to add to odometer easily
@@ -755,7 +769,7 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // W = Wh / s * 3600 J / Wh
 					 avePower = energySuppliedByBattery / secs * JOULES_PER_WH;	 
 					 // Recalculate the new overall energy expenditure [in Wh]
-					 overallEnergyUsed = energySuppliedByBattery + energyNeededByFuel;
+					 overallEnergyUsed = energySuppliedByBattery + energyByFuel;
 					 // Recompute the new distance it could travel
 					 distanceTravelled = vKPH * hrsTime;
 					 
@@ -765,7 +779,7 @@ import com.mars_sim.tools.util.RandomUtil;
 						 */
 					logger.log(vehicle, Level.INFO, 20_000,  
 								 "Scenario 1B2: accelMotor > 0. Some fuel. The rest is battery. " 
-								 + "energyNeededByFuel: " + Math.round(energyNeededByFuel * 100.0)/100.0 + WH__
+								 + "energyByFuel: " + Math.round(energyByFuel * 100.0)/100.0 + WH__
 								 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG__					
 								 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH__
 								 + "Battery: " 			+ Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH__	
@@ -795,7 +809,7 @@ import com.mars_sim.tools.util.RandomUtil;
 					 avePower = energySuppliedByBattery / secs * JOULES_PER_WH;
 					 
 					 // Recalculate the new overall energy expenditure [in Wh]
-					 overallEnergyUsed = energySuppliedByBattery + energyNeededByFuel;
+					 overallEnergyUsed = energySuppliedByBattery + energyByFuel;
 					 
 					 // Recalculate the new speed 
 					 // FUTURE: will consider the on-board accessory vehicle power usage
@@ -822,7 +836,7 @@ import com.mars_sim.tools.util.RandomUtil;
 					 */
 					 logger.log(vehicle, Level.INFO, 20_000,  
 							 "Scenario 1B3: accelMotor < 0. Fuel and/or energy deficit. Slowing down.  " 
-							 + "energyNeededByFuel: " + Math.round(energyNeededByFuel * 100.0)/100.0 + WH__
+							 + "energyByFuel: " + Math.round(energyByFuel * 100.0)/100.0 + WH__
 							 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG__					
 							 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH__
 							 + "energySuppliedByBattery: " +  Math.round(energySuppliedByBattery * 100.0)/100.0 + WH__
@@ -841,16 +855,16 @@ import com.mars_sim.tools.util.RandomUtil;
 
 			 double iFC = 0;	
 			 
-			 if (distanceTravelled > .1 && energyNeededByFuel > .1) {
+			 if (distanceTravelled > 0 && energyByFuel > LEAST_AMOUNT) {
 				 // Derive the instantaneous fuel consumption [Wh/km]
-				 iFC = energyNeededByFuel / distanceTravelled;	        
+				 iFC = energyByFuel / distanceTravelled;	        
 				 // Set the instantaneous fuel consumption [Wh/km]
 				 vehicle.setIFuelConsumption(iFC);
 
 				 // Derive the instantaneous fuel economy [km/kg]
 				 // [km/kg] = [km] / [Wh] *  [Wh/kg]
-				 //  energyNeededByFuel = fuelNeeded * vehicle.getFuelConv();
-				 iFE = distanceTravelled / energyNeededByFuel * vehicle.getFuelConv();	        
+				 //  energyByFuel = fuelNeeded * vehicle.getFuelConv();
+				 iFE = distanceTravelled / energyByFuel * vehicle.getFuelConv();	        
 				 // Set the instantaneous fuel economy [km/kg]
 				 vehicle.setIFuelEconomy(iFE);
 			 }
@@ -882,7 +896,7 @@ import com.mars_sim.tools.util.RandomUtil;
 					 + "avePower: " 			+ Math.round(avePower * 1_000.0)/1_000.0 + W
 					 + "Battery: " 			+ Math.round(battery.getCurrentEnergy() * 1_000.0)/1_000.0 + KWH    
 //					 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH   	        				
-					 + "energyNeededByFuel: " 		+ Math.round(energyNeededByFuel * 1_000.0)/1_000.0 + WH
+					 + "energyByFuel: " 		+ Math.round(energyByFuel * 1_000.0)/1_000.0 + WH
 					 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 1000.0)/1000.0 + WH   					 
 					 + "fuelUsed: " 			+ Math.round(fuelNeeded * 100_000.0)/100_000.0 + KG
 					 + "iPower: " 			+ Math.round(iPower * 1_000.0)/1_000.0 + W			  
@@ -915,7 +929,7 @@ import com.mars_sim.tools.util.RandomUtil;
 //					+ "cumFC: " 			+ Math.round(vehicle.getCumFuelConsumption() * 100.0)/100.0 + WH_KM);
 			 */
 			 
-			 // Cache the new value of fuelUsed	
+			 // Retrieve fuelNeeded	
 			 if (fuelNeeded > 0 && remainingFuel != -1) {
 //				 logger.log(vehicle, Level.INFO, 20_000, "fuelNeeded: " 
 //						 +  Math.round(fuelNeeded * 1000.0)/1000.0 + " kg");
@@ -964,15 +978,17 @@ import com.mars_sim.tools.util.RandomUtil;
 			 // Convert the total energy [in Wh]. Need to convert from J to Wh
 			 overallEnergyUsed = avePower * secs / JOULES_PER_WH; // [in Wh]
 			 
+			 boolean byBatteryOnly = false;
+			 
 			 int rand = RandomUtil.getRandomInt(4);
 			 
 			 if (rand == 0) {
 				 // For now, set 20% of chance to use battery power only
-				 remainingFuel = 0;
+				 byBatteryOnly = true;
 			 }
 			 
 			 // Get energy [in Wh] from the fuel
-			 double energyNeededByFuel = 0;
+			 double energyByFuel = 0;
 	 
 			 // Scenario 2: try using fuel first to fulfill the energy expenditure 
  
@@ -980,7 +996,7 @@ import com.mars_sim.tools.util.RandomUtil;
 				 // Scenario 2A1: (Future) nuclear powered or solar powered
 				 
 				 fuelNeeded = 0;
-				 energyNeededByFuel = 0;
+				 energyByFuel = 0;
 				 energyByBattery = overallEnergyUsed;
 				 
 				 // Future: Will need to continue to model how nuclear-powered engine would work 
@@ -990,7 +1006,7 @@ import com.mars_sim.tools.util.RandomUtil;
 						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH__);	
 			 }
 			 
-			 else if (remainingFuel > 0 || fuelNeeded <= remainingFuel) {
+			 else if (!byBatteryOnly && remainingFuel > 0 && fuelNeeded <= remainingFuel) {
 				 // Scenario 2A2: fuel can fulfill all energy expenditure 
 
 				 // if fuelNeeded is smaller than remainingFuel, then fuel is sufficient.
@@ -999,11 +1015,11 @@ import com.mars_sim.tools.util.RandomUtil;
 				 overallEnergyUsed = avePower * secs / JOULES_PER_WH ; // [in Wh]
 				 
 				 // Get energy [in Wh] from the fuel
-				 energyNeededByFuel = overallEnergyUsed;
+				 energyByFuel = overallEnergyUsed;
 				 
 				 // Scenario 2: try using fuel first to fulfill the energy expenditure 
 				 // Derive the mass of fuel needed kg = Wh / [Wh/kg]
-				 fuelNeeded = energyNeededByFuel / vehicle.getFuelConv();
+				 fuelNeeded = energyByFuel / vehicle.getFuelConv();
 				 
 				/*
 				 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
@@ -1011,7 +1027,7 @@ import com.mars_sim.tools.util.RandomUtil;
 				 */
 				 logger.log(vehicle, Level.INFO, 20_000,  
 						 "Scenario 2A2: accelMotor < 0. Enough fuel.  " 
-								 + "energyNeededByFuel: " + Math.round(energyNeededByFuel * 100.0)/100.0 + WH__
+								 + "energyByFuel: " + Math.round(energyByFuel * 100.0)/100.0 + WH__
 								 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG__					
 								 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH__);	
 			 }
@@ -1019,15 +1035,23 @@ import com.mars_sim.tools.util.RandomUtil;
 			 else {			
 				 // Scenario 2B: fuel can fulfill some energy expenditure but not all
 
-				 // Limit the fuel to be used
-				 fuelNeeded = remainingFuel;
-				 
-				 // Calculate the new energy provided by the fuel [in Wh]
-				 energyNeededByFuel = fuelNeeded * vehicle.getFuelConv();	
-				 			 
-				 // Calculate needed energy from battery [in Wh] 
-				 energyByBattery = overallEnergyUsed - energyNeededByFuel;
-				 
+				 if (byBatteryOnly) {
+					 // Limit the fuel to be used
+					 fuelNeeded = 0;
+					 // Calculate the new energy provided by the fuel [in Wh]
+					 energyByFuel = 0;					 			 
+					 // Calculate needed energy from battery [in Wh] 
+					 energyByBattery = overallEnergyUsed;
+				 }
+				 else {
+					 // Limit the fuel to be used
+					 fuelNeeded = remainingFuel;				 
+					 // Calculate the new energy provided by the fuel [in Wh]
+					 energyByFuel = fuelNeeded * vehicle.getFuelConv();			 			 
+					 // Calculate needed energy from battery [in Wh] 
+					 energyByBattery = overallEnergyUsed - energyByFuel;
+				 }
+				 		 
 				 // Calculate energy that can be delivered by battery 
 				 double energySuppliedByBattery = 0;
 		 
@@ -1045,7 +1069,7 @@ import com.mars_sim.tools.util.RandomUtil;
 				 
 				 double deficit = energyByBattery - energySuppliedByBattery;
 				 
-				 if (remainingFuel <= 0.01) {
+				 if (byBatteryOnly || remainingFuel <= LEAST_AMOUNT) {
 					 // Scenario 2B1: Ran out of fuel. Need battery to provide for the rest
 					 
 					 // Recalculate the new ave power W
@@ -1079,14 +1103,16 @@ import com.mars_sim.tools.util.RandomUtil;
 						 * delete any of them. Needed for testing when new features are added in future. Thanks !
 						 */
 					 logger.log(vehicle, Level.INFO, 20_000,  
-								 "Scenario 2B1: accelMotor < 0. Out of fuel. Use battery.  " 
-								 + "energyNeededByFuel: " + Math.round(energyNeededByFuel * 100.0)/100.0 + WH__
-								 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG__					
+								 "Scenario 2B1: accelMotor < 0. Use battery only. " 
+//								 + "energyByFuel: " + Math.round(energyByFuel * 100.0)/100.0 + WH__
+//								 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG__					
 								 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH__
 								 + "Battery: " 			+ Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH__	
 								 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH__							 
-								 + "avePower: " 			+ Math.round(avePower * 100.0)/100.0 + W__							
-								 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH_   							
+								 + "avePower: " 			+ Math.round(avePower * 100.0)/100.0 + W__	
+								 + "uKPH: " 				+ Math.round(uKPH * 100.0)/100.0 + KPH__ 
+								 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH__  
+								 + "seconds: " 				+ Math.round(secs * 100.0)/100.0 + SEC__
 								 + "distanceTravelled: " +  Math.round(distanceTravelled * 100.0)/100.0  + KM__);
 						 
 					 // Equate energyByBattery to energySuppliedByBattery in order to add to odometer easily
@@ -1101,7 +1127,7 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // W = Wh / s * 3600 J / Wh
 					 avePower = energySuppliedByBattery / secs * JOULES_PER_WH;	 
 					 // Recalculate the new overall energy expenditure [in Wh]
-					 overallEnergyUsed = energySuppliedByBattery + energyNeededByFuel;
+					 overallEnergyUsed = energySuppliedByBattery + energyByFuel;
 					 // Recompute the new distance it could travel
 					 distanceTravelled = vKPH * hrsTime;
 					 
@@ -1111,7 +1137,7 @@ import com.mars_sim.tools.util.RandomUtil;
 						 */
 						 logger.log(vehicle, Level.INFO, 20_000,  
 								 "Scenario 2B2: accelMotor < 0. Some fuel. Rest is battery.  " 
-								 + "energyNeededByFuel: " + Math.round(energyNeededByFuel * 100.0)/100.0 + WH__
+								 + "energyByFuel: " + Math.round(energyByFuel * 100.0)/100.0 + WH__
 								 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG__					
 								 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH__
 								 + "Battery: " 			+ Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH__	
@@ -1140,7 +1166,7 @@ import com.mars_sim.tools.util.RandomUtil;
 					 avePower = energySuppliedByBattery / secs * JOULES_PER_WH;
 					 
 					 // Recalculate the new overall energy expenditure [in Wh]
-					 overallEnergyUsed = energySuppliedByBattery + energyNeededByFuel;
+					 overallEnergyUsed = energySuppliedByBattery + energyByFuel;
 					 
 					 // Recalculate the new speed 
 					 // FUTURE: will consider the on-board accessory vehicle power usage
@@ -1167,7 +1193,7 @@ import com.mars_sim.tools.util.RandomUtil;
 					 */
 					 logger.log(vehicle, Level.INFO, 20_000,  
 							 "Scenario 2B3: accelMotor < 0. Fuel and/or energy deficit. Slowing down.  " 
-							 + "energyNeededByFuel: " + Math.round(energyNeededByFuel * 100.0)/100.0 + WH__
+							 + "energyByFuel: " + Math.round(energyByFuel * 100.0)/100.0 + WH__
 							 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG__					
 							 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH__
 							 + "energySuppliedByBattery: " +  Math.round(energySuppliedByBattery * 100.0)/100.0 + WH__
@@ -1283,6 +1309,16 @@ import com.mars_sim.tools.util.RandomUtil;
 		 vehicle.addDistanceLastMaintenance(distanceTravelled);
 		 // Derive the instantaneous fuel economy [in km/kg]
 		 
+		 logger.info(vehicle, 20_000, "odo: " + Math.round(vehicle.getOdometerMileage()* 10.0)/10.0);
+		 
+		 Mission mission = vehicle.getMission();
+		    
+		 if (mission instanceof AbstractVehicleMission vm) {
+			 NavPoint np = vm.getNextNavpoint();
+			 // Record the distance travelled to the next navpoint
+			 np.addActualTravelled(distanceTravelled);
+		 }
+		 
 		 return remainingHrs;   
 	 }
  
@@ -1305,9 +1341,11 @@ import com.mars_sim.tools.util.RandomUtil;
 		 double oldAccel = vehicle.getAccel();
 		 double newAccel = oldAccel + regenDecel;
 
-		 // Since regenDecel is -ve,
+		 // oppositeForce is + ve since regenDecel is -ve,
 		 double oppositeForce = mass * - regenDecel;
+		 // brakingPower is + ve 
 		 double brakingPower = oppositeForce * vMS;
+		 // brakingEnergy is + ve 
 		 double brakingEnergy = brakingPower * secs;
 		 
 		 if (newAccel < 0)
@@ -1318,15 +1356,15 @@ import com.mars_sim.tools.util.RandomUtil;
 		 // J = W * s / 3600 / [J/Wh] 
 		 // J = W * h / 
 		 
-		 // Gets energy in Wh
+		 // Gets energy in Wh. energyWH is + ve 
 		 double energyWH = brakingEnergy / JOULES_PER_WH;  	 
-		 // Gets energy in kWh
+		 // Gets energy in kWh. energyKWH is + ve 
 		 double energyKWH = energyWH / 1000;  
 		 // Gets hrsTime
 		 double hrsTime = secs / 3600;
-		// Get the energy stored [kWh] into the battery
-		 double energyAcceptedKWH = battery.chargeBattery(-energyKWH, hrsTime); 
-		 // Get the power absorbed in W
+		// Get the energy stored [kWh] into the battery. energyAcceptedKWH is + ve 
+		 double energyAcceptedKWH = battery.chargeBattery(energyKWH, hrsTime); 
+		 // Get the power absorbed in W. powerAbsorbed is + ve 
 		 double powerAbsorbed = energyAcceptedKWH / secs * JOULES_PER_WH * 1000;
 		 // Recompute the new distance it could travel
 //		 double distanceTravelled = vKPH * hrsTime;

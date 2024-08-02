@@ -647,13 +647,19 @@ public class Heating implements Serializable {
 		// delta entropy in [J/K] or [kJ / 1000 / K] or [kW * seconds / 1000 / K]
 		// Since J = Ws
 
+		// This prevents seconds from becoming overwhelming large or small
+		seconds = Math.min(3600,  Math.max(1, seconds));
+		
 		double entropyChange = deltaHeatkW * seconds * 1000 / k;
 
 		double ratio = entropyChange / GAS_CONSTANT / numMoles;
 
 		// newT in [C]
 		double newTC = k * Math.exp(ratio) - C_TO_K;
-	
+		
+		// This prevents newTC from becoming overwhelming large or small
+		newTC = Math.min(45,  Math.max(0, newTC));
+
 		// T2 = T1 * exp(ΔS / (nR))
 		// n = 0.0821 L·atm/mol·K
 		// R = 0.0289 kg/mol
@@ -663,8 +669,8 @@ public class Heating implements Serializable {
 			error = true;
 		}
 
-		else if (newTC < -40) {
-			logger.warning(building, 20_000, "newT: " + Math.round(newTC * 100.0) / 100.0 + " < -40.");
+		else if (newTC < 0) {
+			logger.warning(building, 20_000, "newT: " + Math.round(newTC * 100.0) / 100.0 + " < 0.");
 			error = true;
 		}
 
@@ -694,8 +700,9 @@ public class Heating implements Serializable {
 		// if devT is positive, needs to raise temperature by increasing heat
 		// if devT is negative, needs to low temperature by transferring heat away
 
-		double seconds = millisols * MarsTime.SECONDS_PER_MILLISOL;
-
+		// This prevents seconds from becoming overwhelming large or small
+		double seconds = Math.min(3600,  Math.max(1, millisols * MarsTime.SECONDS_PER_MILLISOL));
+		
 		double k = C_TO_K + nowT;
 		double tPresetK = C_TO_K + tPreset;
 		double logTs = Math.log(tPresetK/k);
@@ -722,17 +729,21 @@ public class Heating implements Serializable {
 		// Note: the advantage of using kW, instead of kWh is that kW can be compared
 		// across the board
 		double estReqHeatkW = deltaHeatJ / 1000.0 / seconds;
+		
+		// This prevents estReqHeatkW from becoming overwhelming large or small
+		estReqHeatkW = Math.min(30,  Math.max(-30, estReqHeatkW));
 
-		if (estReqHeatkW > 40) {
-			logger.warning(building, 20_000,
-					"estReqHeatkW: " + Math.round(estReqHeatkW * 100.0) / 100.0 + " > 40.");
-			error = true;
-		}
-
-		else if (estReqHeatkW < -40) {
-			logger.warning(building, 20_000, "estReqHeat: " + Math.round(estReqHeatkW * 10000.0) / 10000.0 + " < -40.");
-			error = true;
-		}
+//		if (estReqHeatkW > 25) {
+//			logger.warning(building, 20_000,
+//					"estReqHeatkW: " + Math.round(estReqHeatkW * 100.0) / 100.0 + " > 25.");
+//			error = true;
+//		}
+//
+//		else if (estReqHeatkW < -25) {
+//			logger.warning(building, 20_000, 
+//					"estReqHeat: " + Math.round(estReqHeatkW * 100.0) / 100.0 + " < -25.");
+//			error = true;
+//		}
 
 		if (error)
 			logger.info(building, 20_000,

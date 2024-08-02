@@ -76,7 +76,7 @@ public class MasterClock implements Serializable {
 	private static final int NEW_SLEEP = 100;
 	
 	/** The maximum pulse time allowed in one frame for a task phase. */
-	public static final double MAX_PULSE_WIDTH = .855 * 3;
+	public static final double MAX_PULSE_WIDTH = .082;
 	
 	/** The number of milliseconds for each millisol.  */
 	private static final double MILLISECONDS_PER_MILLISOL = MarsTime.SECONDS_PER_MILLISOL * 1000.0;
@@ -713,6 +713,7 @@ public class MasterClock implements Serializable {
 		}
 		if (newPulse != oldPulse) {
 			Task.setStandardPulseTime(newPulse);
+//			logger.info(5_000L, "New standard pulse time is " + Math.round(newPulse * 1000.0)/1000.0);
 		}
 
 		// Returns the deviation ratio

@@ -289,7 +289,7 @@ public class CommandHelper {
 		
 		if (mission instanceof VehicleMission vm) {
 			v = vm.getVehicle();
-			dist = vm.getDistanceProposed();
+			dist = vm.getTotalDistanceProposed();
 			trav = vm.getTotalDistanceTravelled();
 		}
 	
@@ -340,7 +340,7 @@ public class CommandHelper {
 										"Description");
 					NavPoint currentNav = tm.getCurrentDestination();
 					for(NavPoint nv : route) {
-						String distance = String.format(KM_FORMAT, nv.getDistance());
+						String distance = String.format(KM_FORMAT, nv.getPointToPointDistance());
 						String prefix = (nv.equals(currentNav) ? "* " : "");
 						if (nv.isSettlementAtNavpoint()) {
 							response.appendTableRow(prefix + nv.getSettlement().getName(), distance, "");

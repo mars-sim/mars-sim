@@ -63,19 +63,22 @@ public class MissionTableModel extends AbstractMonitorModel
 	private static final int MEMBER_NUM = 9;
 	/** Navpoint number column. */
 	private static final int NAVPOINT_NUM = 10;
+	/** Travelled distance to next navpoint column. */
+	private static final int TRAVELLED_DISTANCE_TO_NEXT_NAVPOINT = 11;
 	/** Remaining distance to next navpoint column. */
-	private static final int REMAINING_DISTANCE_TO_NEXT_NAVPOINT = 11;
+	private static final int REMAINING_DISTANCE_TO_NEXT_NAVPOINT = 12;
 	/** Remaining distance column. */
-	private static final int TOTAL_REMAINING_DISTANCE = 12;
+	private static final int TOTAL_REMAINING_DISTANCE_KM = 13;
 	/** Travelled distance column. */
-	private static final int TRAVELLED_DISTANCE = 13;
+	private static final int ACTUAL_TRAVELLED_DISTANCE_KM = 14;
 	/** Proposed route distance column. */
-	private static final int PROPOSED_ROUTE_DISTANCE = 14;
+	private static final int TOTAL_ESTIMATED_DISTANCE_KM = 15;
 	/** The number of Columns. */
-	private static final int COLUMNCOUNT = 15;
+	private static final int COLUMNCOUNT = 16;
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
-
+	
+	private boolean monitorMissions = false;
 
 	private GameMode mode = GameManager.getGameMode();
 	
@@ -83,10 +86,9 @@ public class MissionTableModel extends AbstractMonitorModel
 
 	private Settlement commanderSettlement;
 
-	private boolean monitorMissions = false;
-
 	private MissionManager missionManager;
 
+	
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
 		COLUMNS[DATE_FILED] = new ColumnSpec(Msg.getString("MissionTableModel.column.filed"), MarsTime.class);
@@ -100,10 +102,11 @@ public class MissionTableModel extends AbstractMonitorModel
 		COLUMNS[VEHICLE] = new ColumnSpec(Msg.getString("MissionTableModel.column.vehicle"), String.class);
 		COLUMNS[MEMBER_NUM] = new ColumnSpec(Msg.getString("MissionTableModel.column.members"), Integer.class);
 		COLUMNS[NAVPOINT_NUM] = new ColumnSpec(Msg.getString("MissionTableModel.column.navpoints"), Integer.class);
-		COLUMNS[TRAVELLED_DISTANCE] = new ColumnSpec(Msg.getString("MissionTableModel.column.distanceTravelled"), Double.class);
-		COLUMNS[TOTAL_REMAINING_DISTANCE] = new ColumnSpec(Msg.getString("MissionTableModel.column.totalRemaining"), Double.class);
-		COLUMNS[REMAINING_DISTANCE_TO_NEXT_NAVPOINT] = new ColumnSpec(Msg.getString("MissionTableModel.column.legRemaining"), Double.class);		
-		COLUMNS[PROPOSED_ROUTE_DISTANCE] = new ColumnSpec(Msg.getString("MissionTableModel.column.proposedDistance"), Double.class);
+		COLUMNS[TRAVELLED_DISTANCE_TO_NEXT_NAVPOINT] = new ColumnSpec(Msg.getString("MissionTableModel.column.leg.travelled"), Double.class);
+		COLUMNS[REMAINING_DISTANCE_TO_NEXT_NAVPOINT] = new ColumnSpec(Msg.getString("MissionTableModel.column.leg.remaining"), Double.class);		
+		COLUMNS[TOTAL_REMAINING_DISTANCE_KM] = new ColumnSpec(Msg.getString("MissionTableModel.column.total.remaining"), Double.class);
+		COLUMNS[ACTUAL_TRAVELLED_DISTANCE_KM] = new ColumnSpec(Msg.getString("MissionTableModel.column.total.travelled"), Double.class);	
+		COLUMNS[TOTAL_ESTIMATED_DISTANCE_KM] = new ColumnSpec(Msg.getString("MissionTableModel.column.total.proposed"), Double.class);
 	}
 
 	/**
@@ -128,8 +131,9 @@ public class MissionTableModel extends AbstractMonitorModel
 	}
 		
 	/**
-	 * Set whether the changes to the Missions should be monitor for change. Set up the 
-	 * Missionlisteners for the Mission in the table.
+	 * Sets whether the changes to the Missions should be monitor for change. Set up the 
+	 * Mission listeners for the Mission in the table.
+	 * 
 	 * @param activate 
 	 */
     public void setMonitorEntites(boolean activate) {
@@ -254,10 +258,11 @@ public class MissionTableModel extends AbstractMonitorModel
 			if (event.getSource() instanceof VehicleMission) {	
 				switch(eventType) {
 					case DISTANCE_EVENT: {
-						columnsToUpdate.add(TRAVELLED_DISTANCE);
-						columnsToUpdate.add(TOTAL_REMAINING_DISTANCE);
+						columnsToUpdate.add(TRAVELLED_DISTANCE_TO_NEXT_NAVPOINT);
 						columnsToUpdate.add(REMAINING_DISTANCE_TO_NEXT_NAVPOINT);
-						columnsToUpdate.add(PROPOSED_ROUTE_DISTANCE);
+						columnsToUpdate.add(TOTAL_REMAINING_DISTANCE_KM);
+						columnsToUpdate.add(ACTUAL_TRAVELLED_DISTANCE_KM);
+						columnsToUpdate.add(TOTAL_ESTIMATED_DISTANCE_KM);
 					} break;
 
 					case NAVPOINTS_EVENT:
@@ -364,27 +369,33 @@ public class MissionTableModel extends AbstractMonitorModel
 				}
 				break;
 
-			case TRAVELLED_DISTANCE:
+			case TRAVELLED_DISTANCE_TO_NEXT_NAVPOINT:
 				if (mission instanceof VehicleMission vm) {
-					result = vm.getTotalDistanceTravelled();
+					result = vm.getDistanceCurrentLegTravelled();
 				}
 				break;
-
-			case TOTAL_REMAINING_DISTANCE:
-				if (mission instanceof VehicleMission vm) {
-					result = vm.getTotalDistanceRemaining();
-				}
-				break;
-
+				
 			case REMAINING_DISTANCE_TO_NEXT_NAVPOINT:
 				if (mission instanceof VehicleMission vm) {
 					result = vm.getDistanceCurrentLegRemaining();
 				}
 				break;
-			
-			case PROPOSED_ROUTE_DISTANCE:
+				
+			case TOTAL_REMAINING_DISTANCE_KM:
 				if (mission instanceof VehicleMission vm) {
-					result = vm.getDistanceProposed();
+					result = vm.getTotalDistanceRemaining();
+				}
+				break;
+				
+			case ACTUAL_TRAVELLED_DISTANCE_KM:
+				if (mission instanceof VehicleMission vm) {
+					result = vm.getTotalDistanceTravelled();
+				}
+				break;
+				
+			case TOTAL_ESTIMATED_DISTANCE_KM:
+				if (mission instanceof VehicleMission vm) {
+					result = vm.getTotalDistanceProposed();
 				}
 				break;
 			

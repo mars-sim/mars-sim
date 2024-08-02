@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-01
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -27,8 +27,10 @@ public class NavPoint implements Serializable {
 	/** The description of the navpoint. */
 	private String description;
 	
-	private double distance;
+	private double point2PointDistance;
 
+	private double actualTravelled;
+	
 	/**
 	 * Constructor with location.
 	 * 
@@ -43,10 +45,10 @@ public class NavPoint implements Serializable {
 		this.description = description;
 
 		if (start != null) {
-			distance = location.getDistance(start);
+			point2PointDistance = location.getDistance(start);
 		}
 		else {
-			distance = 0;
+			point2PointDistance = 0;
 		}
 	}
 
@@ -71,12 +73,28 @@ public class NavPoint implements Serializable {
 	}
 
 	/**
-	 * Distance to travel to reach this point from the previous
+	 * Gets the map point-to-point distance between this point and the previous.
 	 */
-    public double getDistance() {
-        return distance;
+    public double getPointToPointDistance() {
+        return point2PointDistance;
     }
 
+
+	/**
+	 * Gets the actual travelled distance between this point and the previous.
+	 */
+    public double getActualTravelled() {
+        return actualTravelled;
+    }
+
+	/**
+	 * Adds the actual travelled distance between this point and the previous.
+	 */
+    public void addActualTravelled(double dist) {
+        actualTravelled += dist;
+    }
+    
+    
 	/**
 	 * Gets the description of the navpoint.
 	 * 
@@ -139,7 +157,7 @@ public class NavPoint implements Serializable {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		// take care to avoid null exceptions
