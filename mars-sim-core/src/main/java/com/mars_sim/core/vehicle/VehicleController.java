@@ -581,9 +581,8 @@ import com.mars_sim.tools.util.RandomUtil;
 				 + "powerSpeedUp: " + Math.round(powerSpeedUp * 1000.0)/1000.0 + W__
 				 + "powerDrone: " + Math.round(powerThrustDrone * 1000.0)/1000.0 + W__
 				 + "accelSpeedUp: " + Math.round(accelSpeedUp * 1000.0)/1000.0 + M_S2__);	
-		 
-		 
-		 if (avePower <= 0) {
+	 
+		 if (avePower < 0) {
 			 // Scenario 0: regen mode
 			 // Apply Regenerative Braking
 			 double regen[] = startRegenMode(avePower, aveForce, secs, uMS, vMS, mass); 
@@ -591,16 +590,7 @@ import com.mars_sim.tools.util.RandomUtil;
 			 // Get the new avePower
 			 double brakingPower = regen[0];
 			 avePower = avePower - brakingPower;
-			 
-			 // Get the new vKPH
-//			 double newVKPH = regen[1];
-//			 vKPH = newVKPH;
-			 
-			 // Note: need to determine if new vKPH can be derived this way
-			 
-			 // Recompute the new distance it could travel
-//			 distanceTravelled = newVKPH * hrsTime;
-			 
+			 	 
 			 logger.log(vehicle, Level.INFO, 20_000, "Scenario 0: regen mode - "
 					 + "avePower: " + Math.round(aveForce * 1000.0)/1000.0 + N__
 					 + "brakingPower: " + Math.round(brakingPower * 1000.0)/1000.0 + N__
@@ -852,7 +842,6 @@ import com.mars_sim.tools.util.RandomUtil;
 			 } // end of Scenario 1B
 			 
 			 double iFE = 0;
-
 			 double iFC = 0;	
 			 
 			 if (distanceTravelled > 0 && energyByFuel > LEAST_AMOUNT) {
@@ -869,66 +858,6 @@ import com.mars_sim.tools.util.RandomUtil;
 				 vehicle.setIFuelEconomy(iFE);
 			 }
 
-			/*
-			 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
-			 * delete any of them. Needed for testing when new features are added in future. Thanks !
-			 */
-			 
-			 /*
-			 double bFC = vehicle.getBaseFuelConsumption();       
-			 // Get the base fuel economy 
-			 double bFE = vehicle.getBaseFuelEconomy();      	
-
-			 
-			 logger.log(vehicle, Level.INFO, 20_000,  
-					vehicle.getSpecName()
-					  + "  mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
-					  + "odometer: " 			+ Math.round(vehicle.getOdometerMileage()* 1_000.0)/1_000.0 + KM
-//					  + "navpointDist: " 		+ Math.round(navpointDist * 1_000.0)/1_000.0 + KM
-					  + "distanceTravelled: " + Math.round(distanceTravelled * 1_000.0)/1_000.0 + KM
-					 + "time: "				+ Math.round(secs * 10.0)/10.0 + " secs  "
-					 + "uKPH: "				+ Math.round(uKPH * 100.0)/100.0 + KPH
-					 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH);
-			 
-			 logger.log(vehicle, Level.INFO, 20_000,
-					vehicle.getSpecName()	
-					 + "  energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
-					 + "avePower: " 			+ Math.round(avePower * 1_000.0)/1_000.0 + W
-					 + "Battery: " 			+ Math.round(battery.getCurrentEnergy() * 1_000.0)/1_000.0 + KWH    
-//					 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH   	        				
-					 + "energyByFuel: " 		+ Math.round(energyByFuel * 1_000.0)/1_000.0 + WH
-					 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 1000.0)/1000.0 + WH   					 
-					 + "fuelUsed: " 			+ Math.round(fuelNeeded * 100_000.0)/100_000.0 + KG
-					 + "iPower: " 			+ Math.round(iPower * 1_000.0)/1_000.0 + W			  
-					 );
-
-			logger.log(vehicle, Level.INFO, 20_000,
-					vehicle.getSpecName()					 
-					 + "  angle: "				+ Math.round(angle / Math.PI * 180.0 * 10.0)/10.0 + " deg  "
-					 + "totalForce: " 		+ Math.round(totalForce * 100.0)/100.0 + N    					 
-					 + "fInitialF: " 		+ Math.round(fInitialFriction * 1_000.0)/1_000.0 + N
-					 + "fGravity: " 			+ Math.round(fGravity * 1_000.0)/1_000.0 + N
-					 + "fAeroDrag: " 		+ Math.round(fAeroDrag * 1_000.0)/1_000.0 + N
-					 + "fRolling: " 			+ Math.round(fRolling * 1_000.0)/1_000.0 + N
-					 + "fRoadSlope: "		+ Math.round(fRoadSlope * 1_000.0)/1_000.0 + N);
-   
-//			 logger.log(vehicle, Level.INFO, 20_000,
-//					vehicle.getSpecName()
-//					+ "  baseFE: " 			+ Math.round(bFE * 100.0)/100.0 + KM_KG  
-//					+ "initFE: " 			+ Math.round(vehicle.getInitialFuelEconomy() * 100.0)/100.0 + KM_KG
-//					+ "instantFE: " 		+ Math.round(iFE * 100.0)/100.0 + KM_KG
-//					+ "estFE: " 			+ Math.round(vehicle.getEstimatedFuelEconomy() * 100.0)/100.0 + KM_KG
-//					+ "cumFE: " 			+ Math.round(vehicle.getCumFuelEconomy() * 100.0)/100.0 + KM_KG);
-			 
-//			 logger.log(vehicle, Level.INFO, 20_000,
-//					vehicle.getSpecName()			 
-//					+ "  baseFC: " 			+ Math.round(bFC * 100.0)/100.0 + WH_KM 
-//					+ "initFC: " 			+ Math.round(vehicle.getInitialFuelConsumption() * 100.0)/100.0 + WH_KM  					
-//					+ "instantFC: " 		+ Math.round(iFC * 100.0)/100.0 + WH_KM
-//					+ "estFC: " 			+ Math.round(vehicle.getEstimatedFuelConsumption() * 100.0)/100.0 + WH_KM  
-//					+ "cumFC: " 			+ Math.round(vehicle.getCumFuelConsumption() * 100.0)/100.0 + WH_KM);
-			 */
-			 
 			 // Retrieve fuelNeeded	
 			 if (fuelNeeded > 0 && remainingFuel != -1) {
 //				 logger.log(vehicle, Level.INFO, 20_000, "fuelNeeded: " 
@@ -940,36 +869,9 @@ import com.mars_sim.tools.util.RandomUtil;
 				 // Generate 1.75 times amount of the water from the fuel cells
 				 vehicle.storeAmountResource(WATER_ID, RATIO_WATER_METHANOL * fuelNeeded);
 			 }
-		 }
+		 }  // end of Scenario 1
 		 
-//		 else if (accelSpeedUp == 0D) {
-//			// accelMotor < 0
-//			 // Scenario 2: Coasting. Maintaining at a constant speed only
-//			 		 
-//			 // Gets the deceleration using regenerative braking
-//			 double regenDecel = 0;
-//			 // Set new vehicle acceleration
-//			 vehicle.setAccel(0);
-//			 
-//			 iPower = 0; // (vMS + uMS)/2.0; // [in W]
-//				
-//			 /*
-//			  * NOTE: May comment off the logging codes below once debugging is done.
-//			  * But DO NOT delete any of them. Needed for testing when 
-//			  * new features are added in future. Thanks !
-//			  */ 
-//			 logger.log(vehicle, Level.INFO, 20_000, 
-//					 "Scenario 2: No change of speed. uKPH: " 
-//					 +  Math.round(uKPH * 100.0)/100.0 + KPH__
-//					 + "vKPH: " + Math.round(vKPH * 100.0)/100.0 + KPH__
-//					 + "regen decel: " + Math.round(regenDecel * 100.0)/100.0 
-//					 + " m/s2.  "
-//					 + "target accel: " + Math.round(accelTarget * 100.0)/100.0 
-//					 + " m/s2."			
-//			 );
-//		 }
-		 
-		 else { 
+		 else {
 			 // Scenario 2: accelMotor < 0. Set to decelerate
 			 
 			 // Set new vehicle acceleration
@@ -1067,7 +969,7 @@ import com.mars_sim.tools.util.RandomUtil;
 					 energySuppliedByBattery = battery.requestEnergy(energyByBattery / 1000, hrsTime) * 1000;
 				 }
 				 
-				 double deficit = energyByBattery - energySuppliedByBattery;
+				 double deficitByBattery = energyByBattery - energySuppliedByBattery;
 				 
 				 if (byBatteryOnly || remainingFuel <= LEAST_AMOUNT) {
 					 // Scenario 2B1: Ran out of fuel. Need battery to provide for the rest
@@ -1119,7 +1021,7 @@ import com.mars_sim.tools.util.RandomUtil;
 					 energyByBattery = energySuppliedByBattery;	 
 				 }
 				 
-				 else if (deficit <= 0) {
+				 else if (deficitByBattery <= 0) {
 					 // Energy expenditure is met. It's done.
 					 // Scenario 2B1: fuel can fulfill some energy expenditure but not all. Battery provides the rest
 					 
@@ -1131,20 +1033,20 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // Recompute the new distance it could travel
 					 distanceTravelled = vKPH * hrsTime;
 					 
-					 /*
-						 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
-						 * delete any of them. Needed for testing when new features are added in future. Thanks !
-						 */
-						 logger.log(vehicle, Level.INFO, 20_000,  
-								 "Scenario 2B2: accelMotor < 0. Some fuel. Rest is battery.  " 
-								 + "energyByFuel: " + Math.round(energyByFuel * 100.0)/100.0 + WH__
-								 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG__					
-								 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH__
-								 + "Battery: " 			+ Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH__	
-								 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH__							 
-								 + "avePower: " 			+ Math.round(avePower * 100.0)/100.0 + W__							
-								 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH_   							
-								 + "distanceTravelled: " +  Math.round(distanceTravelled * 100.0)/100.0  + KM__);
+					/*
+					 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
+					 * delete any of them. Needed for testing when new features are added in future. Thanks !
+					 */
+					 logger.log(vehicle, Level.INFO, 20_000,  
+							 "Scenario 2B2: accelMotor < 0. Some fuel. Rest is battery.  " 
+							 + "energyByFuel: " + Math.round(energyByFuel * 100.0)/100.0 + WH__
+							 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG__					
+							 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH__
+							 + "Battery: " 			+ Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH__	
+							 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH__							 
+							 + "avePower: " 			+ Math.round(avePower * 100.0)/100.0 + W__							
+							 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH_   							
+							 + "distanceTravelled: " +  Math.round(distanceTravelled * 100.0)/100.0  + KM__);
 						 
 					 // Equate energyByBattery to energySuppliedByBattery in order to add to odometer easily
 					 energyByBattery = energySuppliedByBattery;
@@ -1207,70 +1109,26 @@ import com.mars_sim.tools.util.RandomUtil;
 					 energyByBattery = energySuppliedByBattery;
 				 }  // end of Scenario 2B2
 			 } // end of Scenario 2B
-			 
-			 // Future: Apply Regen Braking
-			
-//			 totalEnergyUsed = (0.1 + vehicle.getVehicleSpec().getOtherEnergyUsagePercent() / 100) 
-//					 * (overallEnergyUsed + regenEnergyBuffer);
-//			 
-			 /*
-			  * NOTE: May comment off the logging codes below once debugging is done.
-			  * But DO NOT delete any of them. Needed for testing when 
-			  * new features are added in future. Thanks !
-			  
-			 logger.log(vehicle, Level.INFO, 20_000, 
-					 "Scenario 3: accelMotor < 0. Decelerate from " 
-					 +  Math.round(uKPH * 100.0)/100.0 + KPH_
-					 + "to " + Math.round(vKPH * 100.0)/100.0 + KPH__
-					 + "iPower: " + Math.round(iPower * 1_000.0)/1_000.0 + W__	
-					 + "iEnergyKWH: " + Math.round(iEnergyKWH * 1_000.0)/1_000.0 + KWH__
-					 + "regen decel: " + Math.round(regenDecel * 100.0)/100.0 
-					 + " m/s2.  "
-					 + "target accel: " + Math.round(accelTarget * 100.0)/100.0 
-					 + " m/s2.");
-			  */ 
-			 
-//			 double iFE = 0;
-//
-//			 double iFC = 0;	
-//			 
-//			 if (distanceTravelled > 0 && regenEnergyBuffer > 0) {
-//				 // Derive the instantaneous fuel consumption [Wh/km]
-//				 iFC = regenEnergyBuffer / distanceTravelled;	        
-//				 // Set the instantaneous fuel consumption [Wh/km]
-//				 vehicle.setIFuelConsumption(iFC);
-//
-//				 // Derive the instantaneous fuel economy [in km/kg]
-//				 iFE = distanceTravelled / regenEnergyBuffer * vehicle.getFuelConv();	        
-//				 // Set the instantaneous fuel economy [in km/kg]
-//				 vehicle.setIFuelEconomy(iFE);
-//			 }
-			 
-			/*
-			 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
-			 * delete any of them. Needed for testing when new features are added in future. Thanks !
-
-			 logger.log(vehicle, Level.INFO, 20_000,  
-			 vehicle.getSpecName()
-			 		+ "  mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
-					+ "odometer: " 			+ Math.round(vehicle.getOdometerMileage()* 1_000.0)/1_000.0 + KM
-//					+ "navpointDist: " 		+ Math.round(navpointDist * 1_000.0)/1_000.0 + KM
-					+ "distanceTravelled: " + Math.round(distanceTravelled * 1_000.0)/1_000.0 + KM
-					 + "time: "				+ Math.round(secs * 1_000.0)/1_000.0 + " secs  "
-					 + "uKPH: "				+ Math.round(uKPH * 100.0)/100.0 + KPH
-					 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH);     
-
-			 logger.log(vehicle, Level.INFO, 20_000,
-						vehicle.getSpecName()				 
-					 + "  Battery: " 			+ Math.round(battery.getCurrentEnergy() * 1_000.0)/1_000.0 + KWH  
-					 + "energyNeeded: " 		+ Math.round(energyNeeded * 100.0)/100.0 + WH
-					 + "regenEnergyBuffer: " + Math.round(regenEnergyBuffer * 1_000.0)/1_000.0 + WH
-					 + "totalForce: " 		+ Math.round(totalForce * 10_000.0)/10_000.0 + N       	        
-					 + "iPower: " 			+ Math.round(iPower * 1_000.0)/1_000.0 + W
-			 );
-			 */
-		 }
+		 } // end of Scenario 2
 		 
+		 return updateMetrics(remainingHrs, vKPH, avePower, 
+				 distanceTravelled, energyByBattery, fuelNeeded);
+	 }
+	 
+	 /**
+	  * Updates the vehicle parameters.
+	  * 
+	  * @param remainingHrs
+	  * @param vKPH
+	  * @param avePower
+	  * @param distanceTravelled
+	  * @param energyByBattery
+	  * @param fuelNeeded
+	  * @return
+	  */
+	 private double updateMetrics(double remainingHrs, double vKPH, double avePower, 
+			 double distanceTravelled, double energyByBattery, double fuelNeeded) {
+	 
 		 // Set new vehicle speed
 		 vehicle.setSpeed(vKPH);
 		 // overallEnergyUsed [in Wh], not in kWh
@@ -1288,7 +1146,6 @@ import com.mars_sim.tools.util.RandomUtil;
 
 		 // Determine new position
 		 vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTravelled)); 
-		 
 
 		/*
 		 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
@@ -1299,8 +1156,7 @@ import com.mars_sim.tools.util.RandomUtil;
 				 + "  totalEnergyUsed / dist: "  + Math.round(totalEnergyUsed/distanceTravelled * 100.0)/100.0
 				 + "  averageRoadLoadPower: " + Math.round(averageRoadLoadPower * 100.0)/100.0);
 		 */
-		 
-		 
+		 	 
 		 // Note: in regen mode, both energyByBattery and fuelNeeded are zero
 		 
 		 // Add distance traveled to vehicle's odometer.

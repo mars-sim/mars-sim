@@ -75,7 +75,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** The standard stress effect of a task within a person's job. */
 	private static final double SKILL_STRESS_MODIFIER = .1D;
     /** The standard amount of millisols to be consumed in a phase. */
-	public static double standardPulseTime;
+	private static double standardPulseTime = MAX_PULSE_WIDTH;
 
 	// Data members
 	/** True if task is finished. */
@@ -1516,7 +1516,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		masterClock = s.getMasterClock();
 				
 		// Set standard pulse time to a quarter of the value of the current pulse width
-		standardPulseTime = Math.min(MAX_PULSE_WIDTH, masterClock.getNextPulseTime());
+		setStandardPulseTime(Math.min(MAX_PULSE_WIDTH, masterClock.getNextPulseTime()));
 		
 		eventManager = s.getEventManager();
 		unitManager = s.getUnitManager();

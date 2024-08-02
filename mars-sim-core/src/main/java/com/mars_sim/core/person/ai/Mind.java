@@ -162,20 +162,23 @@ public class Mind implements Serializable, Temporal {
 	 * @throws Exception if error during action.
 	 */
 	private void moderateTime(double time) {
-		double remainingTime = time;
-		double deltaTime = Task.getStandardPulseTime();
-		while (remainingTime > 0 && deltaTime > 0) {
-			if (remainingTime > deltaTime) {
+		double remaining = time;
+		double pTime = Task.getStandardPulseTime();
+		if (pTime == 0.0) {
+			pTime = remaining;
+		}
+		while (remaining > 0) {
+			if (remaining > pTime) {
 				// Call takeAction to perform a task and consume the pulse time.
-				takeAction(deltaTime);
+				takeAction(pTime);
 				// Reduce the total time by the pulse time
-				remainingTime -= deltaTime;
+				remaining -= pTime;
 			}
 			else {
 				// Call takeAction to perform a task and consume the pulse time.
-				takeAction(remainingTime);
+				takeAction(remaining);
 				// Reduce the total time by the pulse time
-				remainingTime = 0;
+				remaining = 0;
 			}
 		}
 	}
@@ -227,7 +230,7 @@ public class Mind implements Serializable, Temporal {
 					// No time has been consumed previously
 					// This is not supposed to happen but still happens a lot.
 					// Reduce the time by standardPulseTime
-					remainingTime = pulseTime - Task.standardPulseTime; 
+					remainingTime = pulseTime - Task.getStandardPulseTime(); 
 					// Reset the idle counter					
 					if (zeroCount++ >= MAX_ZERO_EXECUTE) {
 						return;

@@ -247,7 +247,10 @@ public abstract class OperateVehicle extends Task {
 	private double moderateTime(double time) {
 		double remaining = time;
 		double pTime = Task.getStandardPulseTime();
-		while (remaining > 0 && pTime > 0) {
+		if (pTime == 0.0) {
+			pTime = remaining;
+		}
+		while (remaining > 0) {
 			if (remaining > pTime) {
 				// Consume the pulse time.
 				double returnTime = mobilizeVehiclePhase(pTime);
@@ -476,8 +479,7 @@ public abstract class OperateVehicle extends Task {
         			+ " (dist: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + " km).");
 
         	double u = vehicle.getSpeed();
-        	double uHalf = u / 2;	
-        	double v = (uHalf + u) / 2;
+        	double v = u / 2;
         	if (v < 0)
         		v = 0;
 //            logger.log(vehicle, Level.INFO, 20_000, 
@@ -487,8 +489,8 @@ public abstract class OperateVehicle extends Task {
         	// Note: Need to consider the case in which VehicleMission's determineEmergencyDestination() causes the 
         	// the vehicle to switch the destination to a settlement when this settlement is within a very short
         	// distance away.
-        	
-        	remainingHrs = vehicle.getController().consumeFuelEnergy(
+        	if (v > 0)
+        		remainingHrs = vehicle.getController().consumeFuelEnergy(
           			hrsTime, dist2Dest, v, remainingFuel, remainingOxidizer);
 			
         	return remainingHrs / MarsTime.HOURS_PER_MILLISOL;
@@ -680,8 +682,10 @@ public abstract class OperateVehicle extends Task {
         double millisolsDiff = getMarsTime().getTimeDiff(startTripTime);
         double hoursDiff = MarsTime.HOURS_PER_MILLISOL * millisolsDiff;
 
+        double distanceToDestination = getDistanceToDestination();
+        
         // Determine average speed so far in km/hr.
-        double avgSpeed = (startTripDistance - getDistanceToDestination()) / hoursDiff;
+        double avgSpeed = (startTripDistance - distanceToDestination) / hoursDiff;
 
         // Determine estimated speed in km/hr.
         // Assume the crew will drive the overall 50 % of the time (including the time for stopping by various sites)
@@ -689,12 +693,12 @@ public abstract class OperateVehicle extends Task {
         double estimatedSpeed = estimatorConstant *  getAverageVehicleSpeed(vehicle, worker);
 
         // Determine final estimated speed in km/hr.
-        double tempAvgSpeed = avgSpeed * ((startTripDistance - getDistanceToDestination()) / startTripDistance);
-        double tempEstimatedSpeed = estimatedSpeed * (getDistanceToDestination() / startTripDistance);
+        double tempAvgSpeed = avgSpeed * ((startTripDistance - distanceToDestination) / startTripDistance);
+        double tempEstimatedSpeed = estimatedSpeed * (distanceToDestination / startTripDistance);
         double finalEstimatedSpeed = tempAvgSpeed + tempEstimatedSpeed;
 
         // Determine time to destination in millisols.
-        double hoursToDestination = getDistanceToDestination() / finalEstimatedSpeed;
+        double hoursToDestination = distanceToDestination / finalEstimatedSpeed;
         double millisolsToDestination = hoursToDestination / MarsTime.HOURS_PER_MILLISOL;
 
         // Determine ETA

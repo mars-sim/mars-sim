@@ -517,8 +517,10 @@ public class ThermalGeneration extends Function {
 	private void moderateTime(ClockPulse pulse) {
 		double remaining = pulse.getElapsed();
 		double pTime = Task.getStandardPulseTime();
-		
-		while (remaining > 0 && pTime > 0) {
+		if (pTime == 0.0) {
+			pTime = remaining;
+		}
+		while (remaining > 0) {
 			if (remaining > pTime) {
 				// Consume the pulse time.
 				transferHeat(pulse, pTime);

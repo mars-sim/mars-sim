@@ -579,7 +579,7 @@ public final class Coordinates implements Serializable {
 		double iterationDistance = 10D;
 		int iterations = (int) (distance / iterationDistance);
 		double remainder = distance;
-		if (distance > 10D)
+		if (distance >= 10D)
 			remainder = distance - (iterations * iterationDistance);
 
 		// Get successive iteration locations.
