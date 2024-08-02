@@ -85,7 +85,7 @@ public class TabPanelCredit extends TabPanelTable {
 		columnModel.getColumn(0).setCellRenderer(renderer);
 		columnModel.getColumn(2).setCellRenderer(renderer);
 		columnModel.getColumn(1).setCellRenderer(
-						new NumberCellRenderer(2, true));
+						new NumberCellRenderer(3, true));
 	}
 
 	/**

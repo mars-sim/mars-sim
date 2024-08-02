@@ -23,6 +23,7 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;
+import com.mars_sim.ui.swing.tool.NumberRenderer;
 import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 
 @SuppressWarnings("serial")
@@ -64,14 +65,18 @@ public class TabPanelGoods extends TabPanelTable {
 	@Override
 	protected void setColumnDetails(TableColumnModel columnModel) {
 				
-		columnModel.getColumn(0).setPreferredWidth(140);
-		columnModel.getColumn(1).setPreferredWidth(80);
+		columnModel.getColumn(0).setPreferredWidth(90);
+		columnModel.getColumn(1).setPreferredWidth(50);
+		columnModel.getColumn(2).setPreferredWidth(50);
+		columnModel.getColumn(3).setPreferredWidth(50);
 		
 		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
+		renderer.setHorizontalAlignment(SwingConstants.LEFT);
 		columnModel.getColumn(0).setCellRenderer(renderer);
-		columnModel.getColumn(1).setCellRenderer(new NumberCellRenderer(2, true));
+		columnModel.getColumn(1).setCellRenderer(new NumberCellRenderer(3, true));
+		columnModel.getColumn(2).setCellRenderer(new NumberCellRenderer(3, true));
+		columnModel.getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());//new NumberCellRenderer(2, true));
 	}
 
 	/**
@@ -104,7 +109,7 @@ public class TabPanelGoods extends TabPanelTable {
 
 		@Override
 		public int getColumnCount() {
-			return 2;
+			return 4;
 		}
 
 		@Override
@@ -112,13 +117,17 @@ public class TabPanelGoods extends TabPanelTable {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = String.class;
 			else if (columnIndex == 1) dataType = Double.class;
+			else if (columnIndex == 2) dataType = Double.class;
+			else if (columnIndex == 3) dataType = Double.class;
 			return dataType;
 		}
 
 		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return Msg.getString("TabPanelGoods.column.good"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("TabPanelGoods.column.valuePoints"); //$NON-NLS-1$
+			else if (columnIndex == 1) return Msg.getString("TabPanelGoods.column.demand"); //$NON-NLS-1$
+			else if (columnIndex == 2) return Msg.getString("TabPanelGoods.column.valuePoints"); //$NON-NLS-1$
+			else if (columnIndex == 3) return Msg.getString("TabPanelGoods.column.price"); //$NON-NLS-1$
 			else return null;
 		}
 
@@ -129,12 +138,15 @@ public class TabPanelGoods extends TabPanelTable {
 				// Capitalized good's names
 				if (column == 0) return good.getName();
 				else if (column == 1) {
-					try {
-						return manager.getGoodValuePoint(good.getID());
-					}
-					catch (Exception e) {
-					}
+					return manager.getDemandValueWithID(good.getID());
 				}
+				else if (column == 2) {
+					return manager.getGoodValuePoint(good.getID());
+				}
+				else if (column == 3) {
+					return manager.getPrice(good);
+				}
+				
 				else return null;
 			}
 			
@@ -147,7 +159,7 @@ public class TabPanelGoods extends TabPanelTable {
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	@Override
 	public void destroy() {
