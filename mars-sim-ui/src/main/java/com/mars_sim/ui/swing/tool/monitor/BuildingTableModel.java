@@ -174,13 +174,12 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 			break;
 
 		case POWER_MODE:
-			if (power != null && building.getPowerMode() != null)
+			if (building.getPowerMode() != null)
 				result = building.getPowerMode().getName();
 			break;
 						
 		case POWER_REQ:
-			if (power != null)
-				result = building.getFullPowerRequired();
+			result = building.getFullPowerRequired();
 			break;
 			
 		case POWER_GEN:

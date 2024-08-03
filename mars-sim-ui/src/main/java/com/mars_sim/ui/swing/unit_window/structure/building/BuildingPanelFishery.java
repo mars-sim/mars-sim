@@ -27,6 +27,9 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 
 	private static final String FISH_ICON = "fish";
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	// Caches
 	private int numFish;
 	private int numIdealFish; 
@@ -134,7 +137,9 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	 */
 	@Override
 	public void update() {	
-
+		if (!uiDone)
+			initializeUI();
+		
 		int newNumFish = tank.getNumFish();
 		if (numFish != newNumFish) {
 			numFish = newNumFish;

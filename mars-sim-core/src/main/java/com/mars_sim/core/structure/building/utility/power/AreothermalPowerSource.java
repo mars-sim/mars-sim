@@ -44,4 +44,15 @@ extends PowerSource {
 	public double getMaintenanceTime() {
 	    return getMaxPower() * MAINTENANCE_FACTOR;
 	}
+	
+	/**
+	 * Requests an estimate of the power produced by this power source.
+	 * 
+	 * @param percent The percentage of capacity of this power source
+	 * @return power (kWe)
+	 */
+	@Override
+	public double requestPower(double percent) {
+		return getMaxPower() * percent / 100;
+	}
 }

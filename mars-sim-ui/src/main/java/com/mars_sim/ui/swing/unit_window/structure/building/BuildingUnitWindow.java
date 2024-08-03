@@ -37,7 +37,7 @@ public class BuildingUnitWindow extends UnitWindow {
         // Add tab panels
         addTabPanel(new MaintenanceTabPanel(building, desktop));
         addTabPanel(new MalfunctionTabPanel(building, desktop));
-		addTabPanel(new BuildingPanelPower(building, desktop));
+		addTabPanel(new BuildingPanelPowerGen(building, desktop));
         
         for (Function f : building.getFunctions()) {
         	switch (f.getFunctionType()) {

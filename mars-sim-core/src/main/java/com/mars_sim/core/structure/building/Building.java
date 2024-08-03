@@ -841,8 +841,10 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * Sets the building's power mode.
 	 */
 	public void setPowerMode(PowerMode powerMode) {
-		this.powerModeCache = powerMode;
-		fireUnitUpdate(UnitEventType.POWER_MODE_EVENT);
+		if (powerModeCache != powerMode) {
+			powerModeCache = powerMode;
+			fireUnitUpdate(UnitEventType.POWER_MODE_EVENT);
+		}
 	}
 
 	/**

@@ -62,6 +62,9 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 
 	private static final String MANU_ICON = "manufacture";
 	
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	private static int processStringWidth = 170;
 
 	/** The manufacture building. */
@@ -199,7 +202,10 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	}
 
 	@Override
-	public void update() {
+	public void update() {	
+		if (!uiDone)
+			initializeUI();
+		
 
 		// Update processes and salvage processes if necessary.
 		List<ManufactureProcess> processes =  new ArrayList<>(workshop.getProcesses());

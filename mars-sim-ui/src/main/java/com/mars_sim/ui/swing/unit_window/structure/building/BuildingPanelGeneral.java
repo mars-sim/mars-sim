@@ -33,6 +33,10 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 public class BuildingPanelGeneral extends BuildingFunctionPanel {
 
 	private static final String ID_ICON = "info";
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	private JLabel airMassLabel;
 	
 	/**
 	 * Constructor.
@@ -88,9 +92,23 @@ public class BuildingPanelGeneral extends BuildingFunctionPanel {
 		// Prepare air mass label
 		LifeSupport ls = building.getLifeSupport();
 		if (ls != null)
-			infoPanel.addTextField("Air Mass", StyleManager.DECIMAL_KG.format(
+			infoPanel.addTextField("Air Mass", StyleManager.DECIMAL_KG2.format(
 				ls.getAir().getTotalMass()), "The mass of the air in kg");
 		else
-			infoPanel.addRow("Air Mass", 0 + "", "The mass of the air in kg");
+			airMassLabel = infoPanel.addRow("Air Mass", 0 + "", "The mass of the air in kg");
+	}
+	
+	/**
+	 * Updates this panel with latest values.
+	 */
+	@Override
+	public void update() {	
+		if (!uiDone)
+			initializeUI();
+		
+		LifeSupport ls = building.getLifeSupport();
+		if (ls != null)
+			airMassLabel.setText(StyleManager.DECIMAL_KG2.format(
+				ls.getAir().getTotalMass()));
 	}
 }

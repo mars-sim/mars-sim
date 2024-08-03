@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * BuildingPanelPower.java
+ * BuildingPanelPowerGen.java
  * @date 2024-06-12
  * @author Scott Davis
  */
@@ -27,15 +27,18 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
- * The BuildingPanelPower class is a building function panel representing 
+ * The BuildingPanelPowerGen class is a building function panel representing 
  * the power production and use of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelPower
+public class BuildingPanelPowerGen
 extends BuildingFunctionPanel {
 
 	private static final String POWER_ICON = "power";
-		
+	
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	/** Is the building a power producer? */
 	private boolean isProducer;
 	
@@ -52,7 +55,7 @@ extends BuildingFunctionPanel {
 	/** The load capacity cache. */
 	private double loadCapacity1;
 	
-	private JLabel modeLabel;
+	private JLabel powerModeLabel;
 	private JLabel totalUsedLabel;
 	private JLabel totalProducedLabel;
 
@@ -63,21 +66,23 @@ extends BuildingFunctionPanel {
 	private JLabel loadCapacityLabel1;
 	
 	/** The power status cache. */
-	private PowerMode powerStatusCache;
+	private PowerMode powerModeCache;
 
 	private PowerGeneration generator;
-
+	
+	private List<PowerSource> sources;
+	
 	/**
 	 * Constructor.
 	 * 
 	 * @param building the building the panel is for.
 	 * @param desktop The main desktop.
 	 */
-	public BuildingPanelPower(Building building, MainDesktopPane desktop) {
+	public BuildingPanelPowerGen(Building building, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
 		super(
-			Msg.getString("BuildingPanelPower.title"), 
+			Msg.getString("BuildingPanelPowerGen.title"), 
 			ImageLoader.getIconByName(POWER_ICON),
 			building, 
 			desktop
@@ -86,6 +91,7 @@ extends BuildingFunctionPanel {
 		// Check if the building is a power producer.
 		isProducer = building.hasFunction(FunctionType.POWER_GENERATION);
 		generator = building.getPowerGeneration();
+		sources = generator.getPowerSources();
 	}
 
 	/**
@@ -100,30 +106,29 @@ extends BuildingFunctionPanel {
 		panel.add(springPanel, BorderLayout.NORTH);
 		
 		// Prepare power status label.
-		powerStatusCache = building.getPowerMode();
+		powerModeCache = building.getPowerMode();
 		
-		modeLabel = springPanel.addTextField(Msg.getString("BuildingPanelPower.powerStatus"),
-					powerStatusCache.getName(), null);
+		powerModeLabel = springPanel.addRow(Msg.getString("BuildingPanelPowerGen.powerStatus"),
+					powerModeCache.getName());
 		
 		// Prepare power used label.
-		if (powerStatusCache == PowerMode.FULL_POWER) 
+		if (powerModeCache == PowerMode.FULL_POWER) 
 			totalUsedCache = building.getFullPowerRequired();
-		else if (powerStatusCache == PowerMode.LOW_POWER) 
+		else if (powerModeCache == PowerMode.LOW_POWER) 
 			totalUsedCache = building.getLowPowerRequired();
 		else 
 			totalUsedCache = 0D;
 		
-		totalUsedLabel = springPanel.addRow(Msg.getString("BuildingPanelPower.powerTotalUsed"),
+		totalUsedLabel = springPanel.addRow(Msg.getString("BuildingPanelPowerGen.powerTotalUsed"),
 										StyleManager.DECIMAL_KW.format(totalUsedCache));
 
 		// If power producer, prepare power producer label.
 		if (isProducer) {
 			totalProducedCache = generator.getGeneratedPower();
 			
-			totalProducedLabel = springPanel.addRow(Msg.getString("BuildingPanelPower.totalProduced"),
+			totalProducedLabel = springPanel.addRow(Msg.getString("BuildingPanelPowerGen.totalProduced"),
 									  StyleManager.DECIMAL_KW.format(totalProducedCache));
 			
-			List<PowerSource> sources = generator.getPowerSources();
 			int num = sources.size();
 			
 			AttributePanel sPanel = new AttributePanel(num * 3);
@@ -136,13 +141,13 @@ extends BuildingFunctionPanel {
 
 				PowerSource powerSource = iP.next();
 
-				sPanel.addRow(Msg.getString("BuildingPanelPower.powerType") 
+				sPanel.addRow(Msg.getString("BuildingPanelPowerGen.powerType") 
 						+ " " + count,
 						powerSource.getType().getName());	
 
-				double max = powerSource.getMaxPower();
-				JLabel label = sPanel.addRow(Msg.getString("BuildingPanelPower.maxPower"),
-						StyleManager.DECIMAL_KW.format(max));
+				double maxPowerCache = powerSource.getMaxPower();
+				JLabel maxPowerLabel = sPanel.addRow(Msg.getString("BuildingPanelPowerGen.maxPower"),
+						StyleManager.DECIMAL_KW.format(maxPowerCache));
 
 				double loadCapacity = 0;
 				JLabel loadLabel = null;
@@ -151,24 +156,24 @@ extends BuildingFunctionPanel {
 						|| powerSource.getType() == PowerSourceType.THERMIONIC_NUCLEAR_POWER) {
 							
 					loadCapacity = ((FissionPowerSource)powerSource).getCurrentLoadCapacity();
-					loadLabel = sPanel.addRow(Msg.getString("BuildingPanelPower.loadCapacity"),
+					loadLabel = sPanel.addRow(Msg.getString("BuildingPanelPowerGen.loadCapacity"),
 							Math.round(loadCapacity *10.0)/10.0 + " %");
 					break;
 				}
 				else {
-					loadLabel = sPanel.addRow(Msg.getString("BuildingPanelPower.loadCapacity"),
+					loadLabel = sPanel.addRow(Msg.getString("BuildingPanelPowerGen.loadCapacity"),
 							"None");
 				}
 				
 				if (count == 0) {
-					maxPowerCache0 = max;
-					maxPowerLabel0 = label;	
+					maxPowerCache0 = maxPowerCache;
+					maxPowerLabel0 = maxPowerLabel;	
 					loadCapacity0 = loadCapacity;
 					loadCapacityLabel0 = loadLabel;
 				}
 				else if (count == 1) {
-					maxPowerCache1 = max;
-					maxPowerLabel1 = label;	
+					maxPowerCache1 = maxPowerCache;
+					maxPowerLabel1 = maxPowerLabel;	
 					loadCapacity1 = loadCapacity;
 					loadCapacityLabel1 = loadLabel;
 				}	
@@ -182,21 +187,24 @@ extends BuildingFunctionPanel {
 	 * Updates this panel.
 	 */
 	@Override
-	public void update() {
+	public void update() {	
+		if (!uiDone)
+			initializeUI();
+		
 
 		// Update power status if necessary.
 		PowerMode mode = building.getPowerMode();
-		if (powerStatusCache != mode) {
-			powerStatusCache = mode;
-			modeLabel.setText(mode.getName()); //$NON-NLS-1$
+		if (powerModeCache != mode) {
+			powerModeCache = mode;
+			powerModeLabel.setText(mode.getName()); //$NON-NLS-1$
 		}
 
 
 		// Update power used if necessary.
 		double totalUsed = 0D;
-		if (powerStatusCache == PowerMode.FULL_POWER) 
+		if (powerModeCache == PowerMode.FULL_POWER) 
 			totalUsed = building.getFullPowerRequired();
-		else if (powerStatusCache == PowerMode.LOW_POWER) 
+		else if (powerModeCache == PowerMode.LOW_POWER) 
 			totalUsed = building.getLowPowerRequired();
 		
 		if (totalUsedCache != totalUsed) {
@@ -213,7 +221,7 @@ extends BuildingFunctionPanel {
 			}
 			
 			int count = 0;
-			Iterator<PowerSource> iP = generator.getPowerSources().iterator();
+			Iterator<PowerSource> iP = sources.iterator();
 			while (iP.hasNext()) {
 				PowerSource powerSource = iP.next();
 
@@ -262,11 +270,11 @@ extends BuildingFunctionPanel {
 	@Override
 	public void destroy() {
 		super.destroy();
-		modeLabel = null;
+		powerModeLabel = null;
 		totalProducedLabel = null;
 
 		totalUsedLabel = null;
-		powerStatusCache = null;
+		powerModeCache = null;
 		generator = null;
 		
 		maxPowerLabel0 = null;

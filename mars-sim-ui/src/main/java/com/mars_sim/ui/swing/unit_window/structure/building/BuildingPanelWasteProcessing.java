@@ -24,7 +24,10 @@ import com.mars_sim.ui.swing.MainDesktopPane;
 public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 
 	private static final String RECYCLE_ICON = "recycle";
-	
+
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+
 	// Data members
 	private WasteProcessing processor;
 	private ResourceProcessPanel processPanel;
@@ -62,7 +65,10 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 
 	
 	@Override
-	public void update() {
+	public void update() {	
+		if (!uiDone)
+			initializeUI();
+		
 		processPanel.update();
 	}
 }

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * WindPowerSource.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-03
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.utility.power;
@@ -39,16 +39,20 @@ public class WindPowerSource extends PowerSource {
 	private static final double HEIGHT_FACTOR = 1.2D;
 	// Note : for the height of 0.5–10 m from the surface of Mars the wind speed vary from 15–26.5 m/s.
 	private int numModules = 0;
-
+	
+	private Building building;
+	
 	/**
 	 * Constructor.
 	 * 
 	 * @param maxPower the maximum generated power.
 	 */
-	public WindPowerSource(double maxPower) {
+	public WindPowerSource(Building building, double maxPower) {
 		// Call PowerSource constructor.
 		super(PowerSourceType.WIND_POWER, maxPower);
-				
+
+		this.building = building;
+		
 		if (maxPower == 18)
 			numModules = 9;
 		else
@@ -76,4 +80,15 @@ public class WindPowerSource extends PowerSource {
 	public double getMaintenanceTime() {
 	    return getMaxPower() * MAINTENANCE_FACTOR;
 	}
+	
+	 /**
+	   * Requests an estimate of the power produced by this power source.
+	   * 
+	   * @param percent The percentage of capacity of this power source
+	   * @return power (kWe)
+	   */
+	 @Override
+	 public double requestPower(double percent) {
+		 return getCurrentPower(building);
+	 }
 }

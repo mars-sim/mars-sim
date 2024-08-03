@@ -33,6 +33,9 @@ public class BuildingPanelAccommodation extends BuildingFunctionPanel {
 
 	private static final String BED_ICON = "bed";
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	private int bedCapCache;
 	private int bedOccupiedCache;
 
@@ -112,6 +115,9 @@ public class BuildingPanelAccommodation extends BuildingFunctionPanel {
 
 	@Override
 	public void update() {
+		if (!uiDone)
+			initializeUI();
+		
 		// Update bedCapLabel
 		if (bedCapCache != living.getBedCap()) {
 			bedCapCache = living.getBedCap();

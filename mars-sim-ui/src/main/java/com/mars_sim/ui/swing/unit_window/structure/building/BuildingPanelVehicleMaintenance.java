@@ -30,7 +30,10 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 public class BuildingPanelVehicleMaintenance extends BuildingFunctionPanel {
 
 	private static final String SUV_ICON = "vehicle";
-	
+
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+
 	private VehicleMaintenance garage;
 	
 	private JLabel vehicleNumberLabel;
@@ -122,7 +125,10 @@ public class BuildingPanelVehicleMaintenance extends BuildingFunctionPanel {
 	 * Update this panel
 	 */
 	@Override
-	public void update() {
+	public void update() {	
+		if (!uiDone)
+			initializeUI();
+		
 		// Update vehicle and flyer list
 		if (vehicleList.update()) {
 			vehicleNumberLabel.setText(Integer.toString(vehicleList.getUnitCount()));

@@ -31,7 +31,9 @@ extends BuildingFunctionPanel {
 	
 	private static final String TELESCOPE_ICON = "astro";
 
-	// Data members
+	// Data members	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	private int currentObserversAmount;
 
 	private JLabel observersLabel;
@@ -98,6 +100,9 @@ extends BuildingFunctionPanel {
 
 	@Override
 	public void update() {
+		if (!uiDone)
+			initializeUI();
+		
 		if (currentObserversAmount != function.getObserverNum()) {
 			currentObserversAmount = function.getObserverNum();
 			observersLabel.setText(Integer.toString(currentObserversAmount));

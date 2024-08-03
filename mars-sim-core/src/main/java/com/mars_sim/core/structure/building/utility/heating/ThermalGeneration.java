@@ -39,6 +39,9 @@ public class ThermalGeneration extends Function {
 	private static final double THRESHOLD = .1;
 	
 	// Data members.
+	/** The flag for checking if the simulation has just started. */
+	private boolean justLoaded = true;
+	
 	private double heatGeneratedCache;
 	
 	private double heatSurplusCache;
@@ -448,7 +451,8 @@ public class ThermalGeneration extends Function {
 			for (int i=0; i<size; i++) {
 				heatMode = ALL_HEAT_MODES.get(i);
 				
-				fuelHeatSource.setTime(time);
+				((FuelHeatSource)fuelHeatSource).setTime(time);
+				((FuelHeatSource)fuelHeatSource).toggleON();
 		    	fHeat = fuelHeatSource.requestHeat(heatMode.getPercentage());
 				
 				if (Double.isNaN(fHeat) || Double.isInfinite(fHeat)) {
@@ -749,8 +753,19 @@ public class ThermalGeneration extends Function {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
-		if (valid) {			
-			moderateTime(pulse);
+		if (valid) {
+
+			// Run at the start of the sim once only
+			if (justLoaded				
+					&& pulse.getMarsTime().getMissionSol() == 1
+						&& pulse.getMarsTime().getMillisolInt() >= 1) {
+							// Reset justLoaded
+							justLoaded = false;
+			}
+
+			if (!justLoaded) {
+				moderateTime(pulse);
+			}
 		}
 		return valid;
 	}

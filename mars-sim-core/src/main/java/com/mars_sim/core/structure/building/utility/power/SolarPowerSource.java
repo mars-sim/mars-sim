@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SolarPowerSource.java
- * @date 2022-06-24
+ * @date 2024-08-03
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.utility.power;
@@ -46,15 +46,18 @@ public class SolarPowerSource extends PowerSource {
 	// As of Sol 4786 (July 11, 2017), the solar array energy production was 352 watt-hours with 
 	// an atmospheric opacity (Tau) of 0.748 and a solar array dust factor of 0.549.
 
+	private Building building;
+	
 	/**
 	 * Constructor.
 	 * 
 	 * @param maxPower the maximum generated power (kW).
 	 */
-	public SolarPowerSource(double maxPower) {
+	public SolarPowerSource(Building building, double maxPower) {
 		// Call PowerSource constructor.
 		super(PowerSourceType.SOLAR_POWER, maxPower);
-
+		
+		this.building = building;
 	}
 
 	/**
@@ -91,4 +94,15 @@ public class SolarPowerSource extends PowerSource {
 	public double getElectricEfficiency() {
 		return electricEfficiency;
 	}
+	
+	 /**
+	   * Requests an estimate of the power produced by this power source.
+	   * 
+	   * @param percent The percentage of capacity of this power source
+	   * @return power (kWe)
+	   */
+	 @Override
+	 public double requestPower(double percent) {
+		 return getCurrentPower(building);
+	 }
 }

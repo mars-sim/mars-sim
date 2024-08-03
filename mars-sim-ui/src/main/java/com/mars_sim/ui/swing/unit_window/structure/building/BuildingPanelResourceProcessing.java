@@ -25,6 +25,9 @@ public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 
 	private static final String ICON = "resource";
 	
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+
 	// Data members
 	private ResourceProcessing processor;
 	private ResourceProcessPanel processPanel;
@@ -61,7 +64,10 @@ public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 	}
 	
 	@Override
-	public void update() {
+	public void update() {	
+		if (!uiDone)
+			initializeUI();
+		
 		processPanel.update();
 	}
 }

@@ -31,11 +31,10 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	private static final String SCIENCE_ICON = "science";
 
 	private static final String MILLISOLS = " millisols";
-
 	
 	// Data members
-	/** The research building function. */
-	private Research lab;
+	/** Is UI constructed. */
+	private boolean uiDone = false;
 
 	// Data cache
 	/** The number of researchers cache. */
@@ -47,6 +46,8 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	private JLabel entropyLabel;
 	private JLabel entropyPenaltyLabel;
 	
+	/** The research building function. */
+	private Research lab;
 	/**
 	 * Constructor.
 	 * 
@@ -133,7 +134,10 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	 * Updates this panel.
 	 */
 	@Override
-	public void update() {
+	public void update() {	
+		if (!uiDone)
+			initializeUI();
+		
 		// Update researchers label if necessary.
 		if (researchersCache != lab.getResearcherNum()) {
 			researchersCache = lab.getResearcherNum();

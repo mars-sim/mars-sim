@@ -63,4 +63,13 @@ public abstract class BuildingFunctionPanel extends TabPanel {
 
 		this.building = building;
 	}
+	
+	
+	/**
+	 * Updates this window.
+	 */
+	@Override
+	public void update() {
+		super.update();
+	}
 }

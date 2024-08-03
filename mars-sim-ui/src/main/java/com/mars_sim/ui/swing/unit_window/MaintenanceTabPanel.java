@@ -49,6 +49,9 @@ public class MaintenanceTabPanel extends TabPanelTable {
 		    "The # of Parts",
 		    "The Probability that Triggers Maintenance"};
 	
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	/** The malfunction manager instance. */
 	private MalfunctionManager manager;
 	
@@ -157,7 +160,9 @@ public class MaintenanceTabPanel extends TabPanelTable {
 	 */
 	@Override
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		// Update the wear condition label.
 		wearCondition.setValue((int) manager.getWearCondition());
 

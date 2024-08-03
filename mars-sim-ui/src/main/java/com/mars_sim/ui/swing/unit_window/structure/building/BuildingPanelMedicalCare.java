@@ -31,6 +31,9 @@ public class BuildingPanelMedicalCare extends TabPanelTable {
 
 	private static final String MEDICAL_ICON = "medical";
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	// Data members
 	/** The medical care. */
 	private MedicalCare medical;
@@ -94,7 +97,9 @@ public class BuildingPanelMedicalCare extends TabPanelTable {
 	 */
 	@Override
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		// Update physician label
 		if (physicianCache != medical.getPhysicianNum()) {
 			physicianCache = medical.getPhysicianNum();

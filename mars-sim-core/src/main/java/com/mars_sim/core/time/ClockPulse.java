@@ -23,7 +23,7 @@ public class ClockPulse {
 	private int lastSol = -1;
 	/** The last millisol integer on the last fireEvent. Need to set to -1. */
 	private int lastIntMillisol = -1;
-	
+
 	private long id;
 
 	/** The sols passed since last pulse. */
@@ -147,10 +147,10 @@ public class ClockPulse {
 		double actualElapsed = msolsSkipped + elapsed;
 		// Check if the simulation is just starting up
 //		boolean atStartup = actualElapsed > currentMillisol;
-		
+
 		// Add the skipped millisols
 		MarsTime newMars = marsTime.addTime(msolsSkipped);
-		
+
 //		// Get the current millisol integer
 //		int currentIntMillisol = marsTime.getMillisolInt();
 //		// Get the current millisol
@@ -221,7 +221,7 @@ public class ClockPulse {
 		return new ClockPulse(id, actualElapsed, newMars, master, isNewSol, isNewHalfSol, isNewIntMillisol,
 				isNewHalfMillisol);
 	}
-	
+
 	public void destroy() {
 		marsTime = null;
 		master = null;

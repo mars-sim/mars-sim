@@ -109,6 +109,9 @@ public class BuildingPanelStorage extends TabPanelTable {
 
 	}
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+
 	private Storage storage;
 
 
@@ -149,4 +152,13 @@ public class BuildingPanelStorage extends TabPanelTable {
 		// Prepare medical table model
 		return new StorageTableModel(storage);
 	}
+	/**
+	 * Updates this panel.
+	 */
+	@Override
+	public void update() {	
+		if (!uiDone)
+			initializeUI();
+	}
+	
 }

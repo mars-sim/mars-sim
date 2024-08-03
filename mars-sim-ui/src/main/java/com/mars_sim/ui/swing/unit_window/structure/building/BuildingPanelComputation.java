@@ -26,7 +26,10 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 public class BuildingPanelComputation extends BuildingFunctionPanel {
 
 	private static final String COMPUTING_ICON = "computing";
-
+	
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	private JLabel powerDemandLabel;
 	private JLabel percentUsageLabel;
 	private JLabel cULabel;
@@ -87,7 +90,9 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 	
 	@Override
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		String power = StyleManager.DECIMAL_KW.format(building.getComputation().getPowerRequired());
 
 		if (!powerDemandLabel.getText().equalsIgnoreCase(power))

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PowerSource.java
- * @date 2023-05-31
+ * @date 2024-08-03
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.utility.power;
@@ -100,6 +100,14 @@ implements Serializable {
 	public void setTime(double time) {
 		//Nothing to be by default
 	}
+	
+	/**
+	 * Requests an estimate of the power produced by this power source.
+	 * 
+	 * @param percent The percentage of capacity of this power source
+	 * @return power (kWe)
+	 */
+	public abstract double requestPower(double percent);
 	
 	/**
 	 * Reloads instances after loading from a saved sim.

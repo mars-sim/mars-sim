@@ -307,7 +307,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- power: the maximum power (kW) produced by the power source. -->
 				<!-- fuel-type: the type of fuel to be used. -->
 				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0"
+				<power-source type="Fuel Power Source" toggle="false" power="10.0"
 					fuel-type="methane"/>
 			</power-generation>
 
@@ -688,7 +688,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<power-generation>
 				<power-source type="Solar Power Source" power="20.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="20.0"
+				<power-source type="Fuel Power Source" toggle="false" power="30.0"
 				    fuel-type="methane"	/>
 			</power-generation>
 			
@@ -841,6 +841,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<life-support capacity="8" power-required="0.4" />
 
+			<power-generation>
+				<power-source type="Fuel Power Source" toggle="false" power="10.0"
+				    fuel-type="methane"	/>
+			</power-generation>
+			
 			<power-storage capacity="40"  discharge-rate="1.25"/>
 
 			<recreation capacity="7">
@@ -965,6 +970,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<life-support capacity="24" power-required="1.2" />
 
+			<power-generation>
+				<power-source type="Fuel Power Source" toggle="false" power="20.0"
+				    fuel-type="methane"	/>
+			</power-generation>
+			
 			<power-storage capacity="80" discharge-rate="1.25" />
 
 			<recreation capacity="26">
@@ -1083,6 +1093,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<life-support capacity="8" power-required="0.4" />
 
+			<power-generation>
+				<power-source type="Fuel Power Source" toggle="false" power="10.0"
+				    fuel-type="methane"	/>
+			</power-generation>
+			
 			<power-storage capacity="80"  discharge-rate="1.25"/>
 
 			<recreation capacity="5">
@@ -1160,6 +1175,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<life-support capacity="8" power-required=".8" />
 
+			<power-generation>
+				<power-source type="Fuel Power Source" toggle="false" power="10.0"
+				    fuel-type="methane"	/>
+			</power-generation>
+			
 			<power-storage capacity="80" discharge-rate="1.25"/>
 
 			<recreation capacity="4">

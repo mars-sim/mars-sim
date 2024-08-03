@@ -133,4 +133,15 @@ public class FissionPowerSource extends PowerSource implements AdjustablePowerSo
 	public double getMaintenanceTime() {
 	    return maintenanceTime;
 	}
+	
+	/**
+	 * Requests an estimate of the power produced by this power source.
+	 * 
+	 * @param percent The percentage of capacity of this power source
+	 * @return power (kWe)
+	 */
+	@Override
+	public double requestPower(double percent) {
+		return currentPowerElectrical;
+	}
 }

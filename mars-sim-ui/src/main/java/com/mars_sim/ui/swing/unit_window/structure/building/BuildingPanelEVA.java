@@ -46,7 +46,10 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 
 	private static final String UNLOCKED = "Unlocked";
 	private static final String LOCKED = "Locked";
-
+	
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	private boolean activationCache;
 	private boolean transitionCache;
 	
@@ -267,7 +270,9 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 
 	@Override
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		// Update innerDoorLabel
 		int inner = eva.getNumAwaitingInnerDoor();
 		if (innerDoorCache != inner) {

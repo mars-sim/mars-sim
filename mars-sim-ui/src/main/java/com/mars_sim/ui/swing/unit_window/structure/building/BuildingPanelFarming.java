@@ -77,7 +77,9 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	private static final DecimalFormat DECIMAL_KG_SOL = new DecimalFormat("#,##0.0 kg/sol");
 	private static final DecimalFormat DECIMAL_W_M2 = new DecimalFormat("#,##0.0 W/m\u00b2");
 	
-	// Data members
+	// Data members	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	// Data cache
 	/** The number of farmers cache. */
 	private int farmersCache;
@@ -337,7 +339,9 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	 */
 	@Override
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		// Update farmers label if necessary.
 		int farmers = farm.getFarmerNum();
 		if (farmersCache != farmers) {

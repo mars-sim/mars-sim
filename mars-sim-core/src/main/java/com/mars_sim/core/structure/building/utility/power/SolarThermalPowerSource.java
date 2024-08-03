@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SolarThermalPowerSource.java
- * @date 2022-06-24
+ * @date 2024-08-03
  * @author Scott Davis
  */
 package com.mars_sim.core.structure.building.utility.power;
@@ -22,15 +22,19 @@ public class SolarThermalPowerSource extends PowerSource {
 	private static final double MAINTENANCE_FACTOR = 2.5D;
 	
 	private static final double DEFAULT_SOLAR_THERMAL_EFFICIENCY = .70;
-		
+	
+	private Building building;
+	
 	/**
 	 * Constructor.
 	 * 
 	 * @param maxPower the maximum generated power.
 	 */
-	public SolarThermalPowerSource(double maxPower) {
+	public SolarThermalPowerSource(Building building, double maxPower) {
 		// Call PowerSource constructor.
 		super(PowerSourceType.SOLAR_THERMAL, maxPower);
+		
+		this.building = building;
 	}
 
 	public static double getEfficiency() {
@@ -57,4 +61,15 @@ public class SolarThermalPowerSource extends PowerSource {
 	public double getMaintenanceTime() {
 	    return getMaxPower() * MAINTENANCE_FACTOR;
 	}
+	
+	 /**
+	   * Requests an estimate of the power produced by this power source.
+	   * 
+	   * @param percent The percentage of capacity of this power source
+	   * @return power (kWe)
+	   */
+	 @Override
+	 public double requestPower(double percent) {
+		 return getCurrentPower(building);
+	 }
 }

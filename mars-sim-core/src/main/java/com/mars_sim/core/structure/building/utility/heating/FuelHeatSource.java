@@ -239,7 +239,6 @@ public class FuelHeatSource extends HeatSource {
 		return toggle;
 	}
 
-	@Override
 	public void setTime(double time) {
 		this.time = time;
 	}
