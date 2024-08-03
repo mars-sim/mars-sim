@@ -20,7 +20,7 @@ import com.mars_sim.core.vehicle.VehicleController;
 import com.mars_sim.mapdata.location.Direction;
 
 public class PilotDroneTest extends AbstractMarsSimUnitTest {
-    private static final double DIST = OperateVehicle.DISTANCE_BUFFER_ARRIVING * 5;  // Drive 5 km
+    private static final double DIST = OperateVehicle.DISTANCE_BUFFER_ARRIVING * 10;  // Drive 5 km
     private static final double METHANOL_AMOUNT = 30D;
     private static final double OXYGEN_AMOUNT = METHANOL_AMOUNT * OperateVehicle.RATIO_OXIDIZER_FUEL;
     
@@ -76,7 +76,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
         var dest = v.getCoordinates().getNewLocation(targetDir, DIST);
         var task = new PilotDrone(p, v, dest, getSim().getMasterClock().getMarsTime(),
                                     0D);
-
+    
         assertFalse("Task created", task.isDone());
         assertEquals(name, p, v.getOperator());
         
@@ -84,27 +84,26 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
         
         // Execute few calls to get driver positioned and moving
         executeTask(p, task, 10);
-        
+           
         v.setPrimaryStatus(StatusType.PARKED);
         
         assertEquals("Vehicle primary status", StatusType.PARKED, v.getPrimaryStatus());
         
         // Execute few calls to get driver positioned and moving
         executeTask(p, task, 50);
-        
+             
         v.setPrimaryStatus(StatusType.MOVING);
         v.setSpeed(1.1);
 
         assertGreaterThan("Vehicle speed", 0D, v.getSpeed());
         assertEquals("Vehicle primary status", StatusType.MOVING, v.getPrimaryStatus());
 
-//        assertEquals("Vehicle oddmeter", Math.round(DIST), Math.round(v.getOdometerMileage()));
+//        assertEquals("Vehicle oddmeter", Math.round(DIST), Math.round(v.getOdometerMileage() * 10.0) / 10.0);
 //        assertEquals("Vehicle at destination", dest, v.getCoordinates());
       
         // Drive the rest
         executeTaskUntilPhase(p, task, 100);
-        
-
+           
 //        assertEquals("Vehicle end primary status", StatusType.PARKED, v.getPrimaryStatus());
 
         // There is a problem in the VehicleController because it does not consume fuel or oxygen
@@ -132,12 +131,20 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
 
         assertFalse("Task created", task.isDone());
 
-//        double originalBatteryPercent = v.getBatteryPercent();
+        System.out.println("1. odo: " + Math.round(v.getOdometerMileage() * 10.0) / 10.0);
+        System.out.println("dist: " + Math.round(task.getDistanceToDestination() * 10.0) / 10.0);
+        System.out.println("speed: " + Math.round(v.getSpeed() * 10.0) / 10.0);
+        System.out.println(v + "'s location: " + v.getCoordinates().getFormattedString());
+        System.out.println("Batt %: " + Math.round(v.getBatteryPercent() * 10.0) / 10.0);
         
         // Execute few calls to get driver positioned and moving then remove fuel
-        executeTask(p, task, 10);
-        
-//        double nowBatteryPercent = v.getBatteryPercent();
+        executeTask(p, task, 7);
+
+        System.out.println("2. odo: " + Math.round(v.getOdometerMileage() * 10.0) / 10.0);
+        System.out.println("dist: " + Math.round(task.getDistanceToDestination() * 10.0) / 10.0);
+        System.out.println("speed: " + Math.round(v.getSpeed() * 10.0) / 10.0);
+        System.out.println(v + "'s location: " + v.getCoordinates().getFormattedString());
+        System.out.println("Batt %: " + Math.round(v.getBatteryPercent() * 10.0) / 10.0);
         
         // Now that regen is possible for recharging the battery, the line below won't work
 //        assertEqualLessThan("Battery Percent", originalBatteryPercent, nowBatteryPercent);
@@ -145,11 +152,15 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
         assertEqualLessThan("Oxygen stored", OXYGEN_AMOUNT, v.getAmountResourceStored(ResourceUtil.oxygenID));
         assertEqualLessThan("Fuel stored", METHANOL_AMOUNT, v.getAmountResourceStored(v.getFuelTypeID()));
        
-        // Take away the fuel
-        v.retrieveAmountResource(v.getFuelTypeID(), v.getAmountResourceStored(v.getFuelTypeID()));
-        assertEquals("Fuel emptied", 0.0D, v.getAmountResourceStored(v.getFuelTypeID()));
+        // Now it will rely on its battery to power the flight
 
-        executeTask(p, task, 10);
+        executeTask(p, task, 7);     
+
+        System.out.println("3. odo: " + Math.round(v.getOdometerMileage() * 10.0) / 10.0);
+        System.out.println("dist: " + Math.round(task.getDistanceToDestination() * 10.0) / 10.0);
+        System.out.println("speed: " + Math.round(v.getSpeed() * 10.0) / 10.0);
+        System.out.println(v + "'s location: " + v.getCoordinates().getFormattedString());
+        System.out.println("Batt %: " + Math.round(v.getBatteryPercent() * 10.0) / 10.0);
         
         // Need to find out in what situation a pilot may stop operating the drone, thus
         // causing task.getPhase() to be null from time to time
@@ -158,10 +169,39 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
 //        else 
 //        	assertEquals("Vehicle end primary status", StatusType.PARKED, v.getPrimaryStatus());
         
-        assertTrue("Marked out of fuel", v.haveStatusType(StatusType.OUT_OF_FUEL));
+        // Pilot
+        executeTask(p, task, 7);  
+
+        System.out.println("4. odo: " + Math.round(v.getOdometerMileage() * 10.0) / 10.0);
+        System.out.println("dist: " + Math.round(task.getDistanceToDestination() * 10.0) / 10.0);
+        System.out.println("speed: " + Math.round(v.getSpeed() * 10.0) / 10.0);
+        System.out.println(v + "'s location: " + v.getCoordinates().getFormattedString());
+        System.out.println("Batt %: " + Math.round(v.getBatteryPercent() * 10.0) / 10.0);
         
+
+        // Take away the fuel
+        v.retrieveAmountResource(v.getFuelTypeID(), v.getAmountResourceStored(v.getFuelTypeID()));
+        assertEquals("Fuel emptied", 0.0D, v.getAmountResourceStored(v.getFuelTypeID()));
+      
+        // Pilot
+        executeTask(p, task, 8);
+
+        System.out.println("5. odo: " + Math.round(v.getOdometerMileage() * 10.0) / 10.0);
+        System.out.println("dist: " + Math.round(task.getDistanceToDestination() * 10.0) / 10.0);
+        System.out.println("speed: " + Math.round(v.getSpeed() * 10.0) / 10.0);
+        System.out.println(v + "'s location: " + v.getCoordinates().getFormattedString());
+        System.out.println("Batt %: " + Math.round(v.getBatteryPercent() * 10.0) / 10.0);
+        
+        assertTrue("Marked out of fuel", v.haveStatusType(StatusType.OUT_OF_FUEL));
+       
         // Pilot the rest
-        executeTaskUntilPhase(p, task, 500);
+        executeTaskUntilPhase(p, task, 10);
+        
+        System.out.println("6. odo: " + Math.round(v.getOdometerMileage() * 10.0) / 10.0);
+        System.out.println("dist: " + Math.round(task.getDistanceToDestination() * 10.0) / 10.0);
+        System.out.println("speed: " + Math.round(v.getSpeed() * 10.0) / 10.0);
+        System.out.println(v + "'s location: " + v.getCoordinates().getFormattedString());
+        System.out.println("Batt %: " + Math.round(v.getBatteryPercent() * 10.0) / 10.0);
         
         assertTrue("Task complete", task.isDone());
     }
@@ -204,7 +244,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
 				 + "PE: " + Math.round(potentialEnergyDrone * 1000.0)/1000.0 + " J  "
 				 + "gainPE: " + Math.round(gainPotentialEnergy * 1000.0)/1000.0 + " J  "
 //				 + "lostPE: " + Math.round(lostPotentialEnergy * 1000.0)/1000.0 + " J  "
-				 + "ascentHeight: " + Math.round(ascentHeight * 1000.0)/1000.0 + " km  "
+				 + "ascentHeight: " + Math.round(ascentHeight * 1000.0)/1000.0 + " m  "
 				 + "currentHoveringHeight: " + Math.round(currentHoveringHeight * 1000.0)/1000.0 + " km  ");
 		
     }
@@ -255,7 +295,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
 				 + "PE: " + Math.round(potentialEnergyDrone * 1000.0)/1000.0 + " J  "
 				 + "gainPE: " + Math.round(gainPotentialEnergy * 1000.0)/1000.0 + " J  "
 //				 + "lostPE: " + Math.round(lostPotentialEnergy * 1000.0)/1000.0 + " J  "
-				 + "ascentHeight: " + Math.round(ascentHeight * 1000.0)/1000.0 + " km  "
+				 + "ascentHeight: " + Math.round(ascentHeight * 1000.0)/1000.0 + " m  "
 				 + "currentHoveringHeight: " + Math.round(currentHoveringHeight * 1000.0)/1000.0 + " km  ");
 		
     }
@@ -366,7 +406,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
 				 + "PE: " + Math.round(potentialEnergyDrone * 1000.0)/1000.0 + " J  "
 				 + "gainPE: " + Math.round(gainPotentialEnergy * 1000.0)/1000.0 + " J  "
 				 + "vAirFlow: " + Math.round(vAirFlow * 1000.0)/1000.0 + " J  "
-				 + "ascentHeight: " + Math.round(ascentHeight * 1000.0)/1000.0 + " km  "
+				 + "ascentHeight: " + Math.round(ascentHeight * 1000.0)/1000.0 + " m  "
 				 + "currentHoveringHeight: " + Math.round(currentHoveringHeight * 1000.0)/1000.0 + " km  ");
 		
     }

@@ -23,7 +23,6 @@ import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.NumberCellRenderer;
-import com.mars_sim.ui.swing.tool.NumberRenderer;
 import com.mars_sim.ui.swing.unit_window.TabPanelTable;
 
 @SuppressWarnings("serial")

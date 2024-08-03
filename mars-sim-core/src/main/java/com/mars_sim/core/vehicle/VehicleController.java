@@ -17,6 +17,7 @@ import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.vehicle.task.OperateVehicle;
 import com.mars_sim.tools.util.RandomUtil;
  
  /**
@@ -36,7 +37,12 @@ import com.mars_sim.tools.util.RandomUtil;
 	 public static final int OXYGEN_ID = ResourceUtil.oxygenID;
 	 /** The water as the by-product of the fuel cells */
 	 public static final int WATER_ID = ResourceUtil.waterID;
-	
+	 /** The standard hovering height for a drone. */
+	 public static final int STANDARD_HOVERING_HEIGHT = (int) (Flyer.ELEVATION_ABOVE_GROUND * 1000);
+	 /** The standard stepping up height for a drone. */
+	 public static final int STEP_UP_HEIGHT = STANDARD_HOVERING_HEIGHT / 50;
+	 /** The standard stepping down height for a drone. */
+	 public static final int STEP_DOWN_HEIGHT = STANDARD_HOVERING_HEIGHT / 15;	 
 	 /** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
 	 private static final double LEAST_AMOUNT = GroundVehicle.LEAST_AMOUNT;
 	 /** The ratio of the amount of oxidizer to fuel. */
@@ -72,6 +78,7 @@ import com.mars_sim.tools.util.RandomUtil;
 	 private static final String KW__ = " kW  ";
 	 private static final String W__ = " W  ";
 	 private static final String KM__ = " km  ";
+	 private static final String M__ = " m  ";
 	 private static final String N__ = " N  ";
 	 private static final String J__ = " J  ";
 	 
@@ -117,6 +124,64 @@ import com.mars_sim.tools.util.RandomUtil;
 		 fuelTypeID = vehicle.getFuelTypeID();
 	 }
  
+	 
+	 /**
+	  * Calculate forces acting on a rover.
+	  * 
+	  * @param weight
+	  * @param vMS
+	  * @param averageSpeed
+	  * @param fGravity
+	  * @return
+	  */
+	 private double calculateVehicleForces(double weight, double vMS , double averageSpeed, double fGravity) {
+		 // Important for Ground rover
+		 double angle = vehicle.getTerrainGrade();
+		 // Assume road rolling resistance coeff of 0.075 on roads with pebbles/potholes on Mars (typically 0.015 on paved roads on Earth)
+		 // See https://x-engineer.org/rolling-resistance/
+		 // The ratio between distance and wheel radius is the rolling resistance coefficient
+
+		 // Calculate the force on rolling resistance 
+		 double fRolling = 0.075 * weight * Math.cos(angle);  
+		 
+		 // See https://x-engineer.org/road-slope-gradient-force/
+		 
+		 // Calculate the gradient resistance or road slope force 
+		 double fRoadSlope = weight * Math.sin(angle);
+		 
+		 double fInitialFriction = 7.0 / (0.5 + averageSpeed);  // [in N]
+		 
+		 double frontalArea = vehicle.getWidth() * vehicle.getWidth() * .9;
+		 // https://x-engineer.org/aerodynamic-drag
+		 // Note : Aerodynamic drag force = 0.5 * air drag coeff * air density * vehicle frontal area * vehicle speed ^2 
+		 double fAeroDrag = 0.5 * 0.4 * airDensity * frontalArea * averageSpeed * averageSpeed;
+		 // Gets the summation of all the forces acting against the forward motion of the vehicle
+		 double totalForce = fInitialFriction + fAeroDrag + fGravity + fRolling + fRoadSlope;
+		 
+		 // if totalForce is +ve, then vehicle must generate that much force to overcome it to propel forward
+ 		 // if totalForce is -ve, then vehicle may use regen mode to absorb the force.
+ 
+		 logger.log(vehicle, Level.INFO, 20_000,  
+				 "totalForce: " + Math.round(totalForce * 1000.0)/1000.0 + N__
+				 + "fInitialFriction: " + Math.round(fInitialFriction * 1000.0)/1000.0 + N__
+				 + "fAeroDrag: " + Math.round(fAeroDrag * 1000.0)/1000.0 + N__
+//				 + "fGravity: " + Math.round(fGravity * 1000.0)/1000.0 + N__
+				 + "fRolling: " + Math.round(fRolling * 1000.0)/1000.0 + N__				 
+				 + "angle: " + Math.round(angle * 1000.0)/1000.0 + " deg  "	 
+				 + "fRoadSlope: " + Math.round(fRoadSlope * 1000.0)/1000.0 + N__);
+		 
+		 // Assume constant speed, P = F_T * v / η
+		 // η, overall efficiency in transmission, normally ranging 0.85 (low gear) - 0.9 (direct drive)
+		 // F_T, total forces acting on the car
+		 // e.g. P = ((250 N) + (400 N)) (90 km/h) (1000 m/km) (1/3600 h/s) / 0.85 = 1.9118 kW
+		 
+		 double overallEfficiency = 0.85;
+		 
+
+		 // Calculate powerConstantSpeed 	 
+		 return totalForce * vMS / overallEfficiency;
+	 }
+	 
 	 /**
 	  * Adjusts the speed of the vehicle (Accelerates or Decelerate) and possibly use the fuel or 
 	  * battery reserve or both to speed up or slow down the vehicle.
@@ -164,25 +229,18 @@ import com.mars_sim.tools.util.RandomUtil;
 		 
 		 // distance in km
 		 double distanceTravelled = distToCover; //vKPH * hrsTime;
-			
 		 // Gets the current mass of the vehicle with payload
 		 double mass = vehicle.getMass(); // [in kg]
-	 
+		 // weight is mg
+		 double weight = mass * GRAVITY;	
+		 
 		 double averageSpeed = (vMS + uMS)/2.0;
 		 
-		 double averageSpeedSQ = 0;
-		 
-		 if (averageSpeed > 0)
-			 averageSpeedSQ =  averageSpeed * averageSpeed; // [in (m/s)^2]
+		 if (averageSpeed == 0)
+			 logger.log(vehicle, Level.SEVERE, 20_000, "averageSpeed is zero.");
 		 
 		 // Calculate force against Mars surface gravity
 		 double fGravity = 0;      
-		 // Calculate the force on rolling resistance 
-		 double fRolling = 0;    
-		 // Calculate the gradient resistance or road slope force 
-		 double fRoadSlope = 0;
-		 
-		 double fInitialFriction = 0;
 		 // 1 N = (1 kg) (1 m/s2)	 
 		 double fuelNeeded = 0;
 		 
@@ -197,8 +255,6 @@ import com.mars_sim.tools.util.RandomUtil;
 		 double avePower = 0;
 		 
 		 double aveForce = 0;
-		 // Weight = mass * g
-		 double mg = mass * GRAVITY;
 		 
 		 double potentialEnergyDrone = 0;
 		  
@@ -207,74 +263,24 @@ import com.mars_sim.tools.util.RandomUtil;
 		 airDensity = sim.getWeather().getAirDensity(vehicle.getCoordinates());
 			
 		 if (vehicle instanceof Rover) {
-			 // Important for Ground rover
-			 double angle = vehicle.getTerrainGrade();
-			 // Assume road rolling resistance coeff of 0.075 on roads with pebbles/potholes on Mars (typically 0.015 on paved roads on Earth)
-			 // See https://x-engineer.org/rolling-resistance/
-			 // The ratio between distance and wheel radius is the rolling resistance coefficient
-			 fRolling = 0.075 * mg * Math.cos(angle);
-			 // https://x-engineer.org/road-slope-gradient-force/
-			 fRoadSlope = mg * Math.sin(angle);
-			 
-			 fInitialFriction = 7.0 / (0.5 + averageSpeed);  // [in N]
-			 
-			 double frontalArea = vehicle.getWidth() * vehicle.getWidth() * .9;
-			 // https://x-engineer.org/aerodynamic-drag
-			 // Note : Aerodynamic drag force = 0.5 * air drag coeff * air density * vehicle frontal area * vehicle speed ^2 
-			 double fAeroDrag = 0.5 * 0.4 * airDensity * frontalArea * averageSpeedSQ;
-			 // Gets the summation of all the forces acting against the forward motion of the vehicle
-			 double totalForce = fInitialFriction + fAeroDrag + fGravity + fRolling + fRoadSlope;
-			 
-			 // if totalForce is +ve, then vehicle must generate that much force to overcome it to propel forward
-	 		 // if totalForce is -ve, then vehicle may use regen mode to absorb the force.
-	 
-			 logger.log(vehicle, Level.INFO, 20_000,  
-					 "totalForce: " + Math.round(totalForce * 1000.0)/1000.0 + N__
-					 + "fInitialFriction: " + Math.round(fInitialFriction * 1000.0)/1000.0 + N__
-					 + "fAeroDrag: " + Math.round(fAeroDrag * 1000.0)/1000.0 + N__
-					 + "fGravity: " + Math.round(fGravity * 1000.0)/1000.0 + N__
-					 + "fRolling: " + Math.round(fRolling * 1000.0)/1000.0 + N__				 
-					 + "angle: " + Math.round(angle * 1000.0)/1000.0 + " deg  "	 
-					 + "fRoadSlope: " + Math.round(fRoadSlope * 1000.0)/1000.0 + N__);
-			 
-			 // Assume constant speed, P = F_T * v / η
-			 // η, overall efficiency in transmission, normally ranging 0.85 (low gear) - 0.9 (direct drive)
-			 // F_T, total forces acting on the car
-			 // e.g. P = ((250 N) + (400 N)) (90 km/h) (1000 m/km) (1/3600 h/s) / 0.85 = 1.9118 kW
-			 
-			 double overallEfficiency = 0.85;
-			 
-			 powerConstantSpeed = totalForce * vMS / overallEfficiency;
 
+			 // Calculates forces and power
+			 powerConstantSpeed = calculateVehicleForces(weight, vMS , averageSpeed, fGravity);
 		 }
 		 
 		 else if (vehicle instanceof Drone drone) {
-			 // For drones, it needs energy to ascend into the air and hover in the air
-			 // Note: Refine this equation for drones			 
-			 // in km
-			 double currentHoveringHeight = drone.getHoveringHeight();
-
-			 double fullMass = 777.7; 
-			 // weight is mg
-			 double weight = fullMass * VehicleController.GRAVITY;
-			 
-//			 double ascentHeight = 1000 * Flyer.ELEVATION_ABOVE_GROUND / 50;
-//			 // Gain in potential energy
-//			 double gainPotentialEnergy = weight * ascentHeight;
-//			
-//			 potentialEnergyDrone = potentialEnergyDrone + gainPotentialEnergy;	
+			 // 1 m/s = 3.6 km/h (or kph). KPH_CONV = 3.6;
+	 
+			 // currentHoveringHeight in meter, not km
+			 double currentHoveringHeight = drone.getHoveringHeight();		 
 			 //  g/m3 -> kg /m3
 			 double airDensity = 14.76 / 1000; 
-			 // 1 m/s = 3.6 km/h (or kph). KPH_CONV = 3.6;
-//			 double vMS = 0; //60 /  VehicleController.KPH_CONV;
-
 			 // Assume a constant voltage
 			 double voltage = Battery.DRONE_VOLTAGE;	 
 			 // For now, assume the propeller induced velocity is linearly proportional to the voltage of the battery 
 			 double vPropeller = voltage * 60;	 
 		
 			 double efficiencyMotor = 0.9;
-			 
 			 // Assume the total radius of the four propellers span the width of the drone
 			 double width = vehicle.getWidth();
 			 
@@ -319,20 +325,67 @@ import com.mars_sim.tools.util.RandomUtil;
 			 // 3. Lifting power by propellers
 
 			 
-			  // FUTURE : How to simulate controlled descent to land at the destination ?
-			  // Also need to account for the use of fuel or battery's power to ascend and descend 
+			 // FUTURE : How to simulate controlled descent to land at the destination ?
+			 // Also need to account for the use of fuel or battery's power to ascend and descend 
 			 
-			 if (uMS <= vMS) {
-				 // If speeding up	
-				 
-				 double ascentHeight = 0;
-				 
-				 // Case A : In the air
-				 if (vMS == 0.0) {
-					 // Case A1 : Hovering	
-					 vMS = 0;
+			 // Future: will remain thrustToWeightRatio1 = thrustForceTotal / weight to be around 2 and optimize vKPH
+			 // 		Thus adjusting vKPH according to the weight to save power
+			 
+			 
+			 if (vKPH >= uKPH) {
+				 // Case A: If speeding up	
+	 
+				 if (uKPH <= OperateVehicle.LOW_SPEED * 1.1) {
+					// Case A1: Just starting. Ascend first
 					 
-					 ascentHeight = 0;
+					double ascentHeight = 0;
+
+					// Drone will hover over at around ELEVATION_ABOVE_GROUND km and no more
+					if (currentHoveringHeight >= STANDARD_HOVERING_HEIGHT + STEP_UP_HEIGHT) {
+						
+						ascentHeight = STANDARD_HOVERING_HEIGHT + STEP_UP_HEIGHT - currentHoveringHeight;
+					}
+					else {
+						ascentHeight = STEP_UP_HEIGHT;
+					}
+					// Assume the height gained is the same as distanceTravelled
+					currentHoveringHeight = currentHoveringHeight + ascentHeight;
+					// Gain in potential energy
+					gainPotentialEnergy = weight * ascentHeight;
+					
+					potentialEnergyDrone = weight * currentHoveringHeight;
+
+					 
+					double alpha1 = Math.PI / 6;
+					
+					double alpha2 = Math.PI / 7;
+					// 1000 RPM ~ 10.47 rad/s
+					double radPerSec = 10;
+					
+					double vAirFlow =  (vMS * Math.sin(alpha2) + vPropeller * Math.cos(alpha1-alpha2)) * radiusPropeller * radPerSec; // vPropeller + vMS;
+					
+					thrustForceTotal = 2 * airDensity * Math.PI * radiusPropellerSquare * vAirFlow * vPropeller;
+					// Double check with the ratio. Need to be at least 2:1
+					thrustToWeightRatio1 = thrustForceTotal / weight;
+					// The gain of potential energy of the drone require extra the power drain on the drone's fuel and battery system
+					powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor + gainPotentialEnergy / secs;				 
+		
+					logger.log(vehicle, Level.INFO, 0, "Case A1: u <= 1.1. Starting to ascend and tilt forward - " 
+							 + "d: " + Math.round(distanceTravelled * 10.0)/10.0 + KM__
+							 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
+							 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
+							 + "ascentHeight: " + Math.round(ascentHeight * 10.0)/10.0 + M__
+							 + "powerDrone: " + Math.round(powerThrustDrone * 1000.0)/1000.0 + W__
+							 + "thrust: " + Math.round(thrustForceTotal * 1000.0)/1000.0 + N__
+							 + "PE: " + Math.round(potentialEnergyDrone * 1000.0)/1000.0 + J__
+							 + "gainPE: " + Math.round(gainPotentialEnergy * 1000.0)/1000.0 + J__
+							 + "lostPE: " + Math.round(lostPotentialEnergy * 1000.0)/1000.0 + J__				 
+							 );
+				 }
+				 
+				 else if (vKPH <= OperateVehicle.LOW_SPEED * 1.1) {
+					 // Case A2: Hovering in the air
+
 					 // Gain in potential energy
 					 gainPotentialEnergy = 0;
 					 // Do NOT ascent anymore. Hover at the this height
@@ -364,20 +417,21 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // liftToDragRatio = liftForceL / dragForceD;				 
 					 // thrustForceT = weightForceW / liftToDragRatio;
 					
-					 logger.log(vehicle, Level.INFO, 20_000, "uMS <= vMS Case A1: Hovering - " 
-							 + "distance: " + Math.round(distanceTravelled * 10.0)/10.0 + KM__
+					 logger.log(vehicle, Level.INFO, 0, "Case A2: v <= 1.1. Hovering - " 
+							 + "d: " + Math.round(distanceTravelled * 10.0)/10.0 + KM__
+							 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
+							 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
 							 + "powerDrone: " + Math.round(powerThrustDrone * 1000.0)/1000.0 + W__
 							 + "thrust: " + Math.round(thrustForceTotal * 1000.0)/1000.0 + N__
 							 + "PE: " + Math.round(potentialEnergyDrone * 1000.0)/1000.0 + J__
 							 + "gainPE: " + Math.round(gainPotentialEnergy * 1000.0)/1000.0 + J__
 							 + "lostPE: " + Math.round(lostPotentialEnergy * 1000.0)/1000.0 + J__				 
-							 + "height: " + Math.round(currentHoveringHeight * 10.0)/10.0 + KM__);
+							 );
 				 }
 				 
-				 else if (currentHoveringHeight >= Flyer.ELEVATION_ABOVE_GROUND) {
-					// Case A2 : Hovering at same height but tilted to move forward
- 
-					 ascentHeight = 0;
+				 else if (currentHoveringHeight >= STANDARD_HOVERING_HEIGHT) {
+					// Case A3: Hovering at same height but tilted to move forward
+
 					 // Gain in potential energy
 					 gainPotentialEnergy = 0;
 					 // Do NOT ascent anymore. Hover at the this height
@@ -397,24 +451,38 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // Zero gain of potential energy of the drone
 					 powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor + gainPotentialEnergy / secs;
 					
-					 logger.log(vehicle, Level.INFO, 20_000, "uMS <= vMS Case A2: Hovering at same height. Tilted to move forward - " 
-							 + "distance: " + Math.round(distanceTravelled * 10.0)/10.0 + KM__
+					 logger.log(vehicle, Level.INFO, 0, "Case A3: v >= u. At same height, tilt forward - " 
+							 + "d: " + Math.round(distanceTravelled * 10.0)/10.0 + KM__
+							 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
+							 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
 							 + "powerDrone: " + Math.round(powerThrustDrone * 1000.0)/1000.0 + W__
 							 + "thrust: " + Math.round(thrustForceTotal * 1000.0)/1000.0 + N__
 							 + "PE: " + Math.round(potentialEnergyDrone * 1000.0)/1000.0 + J__
 							 + "gainPE: " + Math.round(gainPotentialEnergy * 1000.0)/1000.0 + J__
 							 + "lostPE: " + Math.round(lostPotentialEnergy * 1000.0)/1000.0 + J__				 
-							 + "height: " + Math.round(currentHoveringHeight * 10.0)/10.0 + KM__);
+							 );
 				 }
 				 else {
-					 // Case A3 : Tilted forward and lifting up (or ascent)
+					 // Case A4: Tilt forward and lift up (or ascent)
 				 
-						ascentHeight = 1000 * Flyer.ELEVATION_ABOVE_GROUND / 50;
+					 	double ascentHeight = 0;
+					 	
+						// Drone will hover over at around ELEVATION_ABOVE_GROUND km and no more
+						if (currentHoveringHeight >= STANDARD_HOVERING_HEIGHT + STEP_UP_HEIGHT) {
+							
+							ascentHeight = STANDARD_HOVERING_HEIGHT + STEP_UP_HEIGHT - currentHoveringHeight;
+						}
+						else {
+							ascentHeight = STEP_UP_HEIGHT;
+						}
+						// Assume the height gained is the same as distanceTravelled
+						currentHoveringHeight = currentHoveringHeight + ascentHeight;			 	
 						 // Gain in potential energy
-						gainPotentialEnergy = mg * ascentHeight;
+						gainPotentialEnergy = weight * ascentHeight;
 						
-						potentialEnergyDrone = 0 + gainPotentialEnergy;	
-				    	
+						potentialEnergyDrone = weight * currentHoveringHeight;	
+	
+					 
 				    	// 1 m/s = 3.6 km/h (or kph). KPH_CONV = 3.6;
 				    	vMS = 60 /  VehicleController.KPH_CONV;
 						
@@ -432,37 +500,32 @@ import com.mars_sim.tools.util.RandomUtil;
 
 						// The gain of potential energy of the drone require extra the power drain on the drone's fuel and battery system
 						powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor + gainPotentialEnergy / secs;
-						
-						 // Drone will hover over at around ELEVATION_ABOVE_GROUND km and no more
-						 if (currentHoveringHeight <= Flyer.ELEVATION_ABOVE_GROUND) {
-							 // Assume the height gained is the same as distanceTravelled
-							 currentHoveringHeight = currentHoveringHeight + ascentHeight;
-						 }
-					 
-						 logger.log(vehicle, Level.INFO, 20_000, "uMS <= vMS Case A3: Tilted forward and lifting up (or ascent) - " 
-								 + "distance: " + Math.round(distanceTravelled * 10.0)/10.0 + KM__
+
+						logger.log(vehicle, Level.INFO, 0, "Case A4: v >= u. Tilt forward & lift up - " 
+								 + "d: " + Math.round(distanceTravelled * 10.0)/10.0 + KM__
+								 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
+								 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
+								 + "ascentHeight: " + Math.round(ascentHeight * 10.0)/10.0 + M__
 								 + "powerDrone: " + Math.round(powerThrustDrone * 1000.0)/1000.0 + W__
 								 + "thrust: " + Math.round(thrustForceTotal * 1000.0)/1000.0 + N__
 								 + "T2W: " + Math.round(thrustToWeightRatio1 * 100.0)/100.0 + "  " 
 								 + "PE: " + Math.round(potentialEnergyDrone * 1000.0)/1000.0 + J__
 								 + "gainPE: " + Math.round(gainPotentialEnergy * 1000.0)/1000.0 + J__
 								 + "lostPE: " + Math.round(lostPotentialEnergy * 1000.0)/1000.0 + J__
-								 + "ascentHeight: " + Math.round(ascentHeight * 10.0)/10.0 + KM__
-								 + "height: " + Math.round(currentHoveringHeight * 10.0)/10.0 + KM__);
+								 );
 				 }
-			 }
+			 } // end of if (uKPH <= vKPH)
  
 			 else {
-				 // uMS > vMS - Slowing down
+				 // uKPH > vKPH - Slowing down
 				 
-				 // Case B1 : During controlled descent / going down
-				 if (currentHoveringHeight <= Flyer.ELEVATION_ABOVE_GROUND / 50) {
-					 // Case B1 : landed
+				 // Case B1: During controlled descent / going down
+				 if (currentHoveringHeight <= STEP_DOWN_HEIGHT) {
+					 // Case B1: landed
 					 double descentHeight = currentHoveringHeight;
-					 // Set currentHoveringHeight to zero
-					 currentHoveringHeight = 0;
-					 // Do NOT ascent anymore
-					 potentialEnergyDrone = 0;
+					 
+					 if (currentHoveringHeight >= STEP_DOWN_HEIGHT)
+						 currentHoveringHeight = currentHoveringHeight - STEP_DOWN_HEIGHT; 
 					 
 					 // Landing airflow velocity V1 = v1 - abs(V0)
 //							 double landingVel = vMS - Math.abs(uMS);					 
@@ -470,35 +533,37 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // Landing induced velocity: v1_bar = −v0_bar / 2 - sqrt((v0_bar/2)^2 - CT/2))
 					 // Landing thrust T = - 2 * density * pi * r^2 * ( V0 + v1) * v1
 
-					 lostPotentialEnergy = mg * descentHeight;
+					 lostPotentialEnergy = weight * descentHeight;
 					 
-					 potentialEnergyDrone = potentialEnergyDrone - lostPotentialEnergy;
+					 potentialEnergyDrone = weight * currentHoveringHeight;
 
-					 if (potentialEnergyDrone > 0 || potentialEnergyDrone < 0)
-						 logger.severe(vehicle, 0, "potentialEnergyDrone: " + Math.round(potentialEnergyDrone * 10.0)/10.0 + J__);
+//					 if (potentialEnergyDrone > 0 || potentialEnergyDrone < 0)
+//						 logger.severe(vehicle, 0, "potentialEnergyDrone: " + Math.round(potentialEnergyDrone * 10.0)/10.0 + J__);
 
-					 double REDUCTION_FACTOR = .25;
+					 // Future: need to vary REDUCTION_FACTOR better with equations
+					 double REDUCTION_FACTOR = currentHoveringHeight / STANDARD_HOVERING_HEIGHT;
 						
-					 thrustForceTotal = REDUCTION_FACTOR * 2 * airDensity * Math.PI * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;
-						
+					 thrustForceTotal = REDUCTION_FACTOR * 2 * airDensity * Math.PI * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;				
 					 // Double check with the ratio. Need to be at least 2:1
 					 thrustToWeightRatio1 = thrustForceTotal / weight;
-
 					 // the gain of potential energy of the drone require extra the power drain on the drone's fuel and battery system
-					 powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor + gainPotentialEnergy / secs;
+					 powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor - lostPotentialEnergy / secs;
 					 
-					 logger.log(vehicle, Level.INFO, 20_000, "uMS > vMS Case B1: Controlled descent/landing - " 
-							 + "distance: " + Math.round(distanceTravelled * 10.0)/10.0 + KM__
+					 logger.log(vehicle, Level.INFO, 0, "Case B1: v < u. Controlled descent/landing - " 
+							 + "d: " + Math.round(distanceTravelled * 10.0)/10.0 + KM__
+							 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
+							 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
+							 + "descentHeight: " + Math.round(descentHeight * 10.0)/10.0 + M__
 							 + "powerDrone: " + Math.round(powerThrustDrone * 1000.0)/1000.0 + W__
 							 + "thrust: " + Math.round(thrustForceTotal * 1000.0)/1000.0 + N__
 							 + "T2W: " + Math.round(thrustToWeightRatio1 * 100.0)/100.0 + "  " 
 							 + "PE: " + Math.round(potentialEnergyDrone * 1000.0)/1000.0 + J__
 							 + "gainPE: " + Math.round(gainPotentialEnergy * 1000.0)/1000.0 + J__
-							 + "lostPE: " + Math.round(lostPotentialEnergy * 1000.0)/1000.0 + J__				 
-							 + "height: " + Math.round(currentHoveringHeight * 10.0)/10.0 + KM__);
+							 + "lostPE: " + Math.round(lostPotentialEnergy * 1000.0)/1000.0 + J__				  
+							 );
 				 }
 				 else {
-					// Case B2 : descending or preparing for landing
+					// Case B2: descending or preparing for landing
 					// Assume using about 25% of energy gain in potential energy to maintain optimal descent,
 					// avoid instability and perform a controlled descent
 					   
@@ -508,23 +573,22 @@ import com.mars_sim.tools.util.RandomUtil;
 					 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
 					 * delete any of them. Needed for testing when new features are added in future. Thanks !
 					 */
-		 			
-
 					 // Landing airflow velocity V1 = v1 - abs(V0)
 //							 double landingVel = vMS - Math.abs(uMS);					 
 					 // Landing thrust coefficient: CT = −2(V0_bar + v1_bar)．v1_bar
 					 // Landing induced velocity: v1_bar = −v0_bar / 2 - sqrt((v0_bar/2)^2 - CT/2))
 					 // Landing thrust T = - 2 * density * pi * r^2 * ( V0 + v1) * v1
 					 
-					 double descentHeight = Flyer.ELEVATION_ABOVE_GROUND / 25;
-		        		
-					 lostPotentialEnergy = mg * descentHeight;
+					 double descentHeight = STEP_DOWN_HEIGHT;
+						 
+					 currentHoveringHeight = currentHoveringHeight - descentHeight; 
+					 	
+					 lostPotentialEnergy = weight * descentHeight;
 					 
-					 potentialEnergyDrone = potentialEnergyDrone - lostPotentialEnergy;
+					 potentialEnergyDrone = weight * currentHoveringHeight; 
 
-					 currentHoveringHeight = currentHoveringHeight - descentHeight;
-
-					 double REDUCTION_FACTOR = .5;
+					 // Future: need to vary REDUCTION_FACTOR better with equations
+					 double REDUCTION_FACTOR = currentHoveringHeight / STANDARD_HOVERING_HEIGHT;
 						
 					 thrustForceTotal = REDUCTION_FACTOR * 2 * airDensity * Math.PI * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;
 						
@@ -532,25 +596,27 @@ import com.mars_sim.tools.util.RandomUtil;
 					 thrustToWeightRatio1 = thrustForceTotal / weight;
 
 					 // the gain of potential energy of the drone require extra the power drain on the drone's fuel and battery system
-					 powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor + gainPotentialEnergy / secs;
+					 powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor - lostPotentialEnergy / secs;
 	 
-					 logger.log(vehicle, Level.INFO, 20_000, "uMS > vMS Case B2: Preparing to descent - " 
-							 + "distance: " + Math.round(distanceTravelled * 10.0)/10.0 + KM__
+					 logger.log(vehicle, Level.INFO, 0, "Case B2: v < u. Preparing to descent - " 
+							 + "d: " + Math.round(distanceTravelled * 10.0)/10.0 + KM__
+							 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
+							 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
+							 + "descentHeight: " + Math.round(descentHeight * 10.0)/10.0 + M__
 							 + "powerDrone: " + Math.round(powerThrustDrone * 1000.0)/1000.0 + W__
 							 + "thrust: " + Math.round(thrustForceTotal * 1000.0)/1000.0 + N__
 							 + "T2W: " + Math.round(thrustToWeightRatio1 * 100.0)/100.0 + "  " 
 							 + "PE: " + Math.round(potentialEnergyDrone * 1000.0)/1000.0 + J__
 							 + "gainPE: " + Math.round(gainPotentialEnergy * 1000.0)/1000.0 + J__
 							 + "lostPE: " + Math.round(lostPotentialEnergy * 1000.0)/1000.0 + J__
-							 + "descentHeight: " + Math.round(descentHeight * 10.0)/10.0 + KM__
-							 + "height: " + Math.round(currentHoveringHeight * 10.0)/10.0 + KM__);
+							 );
 				 }
-			 }
+			 } // end of uMS > vMS
 		 
 			 drone.setHoveringHeight(currentHoveringHeight);
-		 }	 
+		 }
 
-		// Motor torque vs. power and rpm 
+		 // Motor torque vs. power and rpm 
 		 // T = P / (2 * π * n_rps) = 0.159 P / n_rps = P / (2π(n_rpm/60)) = 9.55 P / n_rpm
 		 // The moment delivered by the motor in the car above with the engine running at speed 1500 rpm can be calculated as
 		 // T = 9.55 (19118 W) / (1500 rpm) = 121 Nm
@@ -706,16 +772,20 @@ import com.mars_sim.tools.util.RandomUtil;
 					 
 					 // Recalculate the new ave power W
 					 // W = Wh / s * 3600 J / Wh
-					 avePower = energySuppliedByBattery / secs * JOULES_PER_WH;
+					 double powerSuppliedByBattery = energySuppliedByBattery / secs * JOULES_PER_WH;
 					 
+//					 logger.info(vehicle, "avePower: " + Math.round(avePower * 10.0)/10.0 + "  powerSuppliedByBattery: " + Math.round(powerSuppliedByBattery * 10.0)/10.0);
+				 	 
+					 avePower = powerSuppliedByBattery;
+				 
 					 // Recalculate the new overall energy expenditure [in Wh]
 					 overallEnergyUsed = energySuppliedByBattery;
 					 
 					 // Recalculate the new speed 
 					 // FUTURE: will consider the on-board accessory vehicle power usage
 					 // m/s = W / (kg * m/s2)
-					 vMS = avePower / aveForce;
-					 	 
+					 vMS = powerSuppliedByBattery / aveForce;
+
 					 // FUTURE : may need to find a way to optimize motor power usage 
 					 // and slow down the vehicle to the minimal to conserve power	
 					 
@@ -976,15 +1046,19 @@ import com.mars_sim.tools.util.RandomUtil;
 					 
 					 // Recalculate the new ave power W
 					 // W = Wh / s * 3600 J / Wh
-					 avePower = energySuppliedByBattery / secs * JOULES_PER_WH;
+					 double powerSuppliedByBattery = energySuppliedByBattery / secs * JOULES_PER_WH;
 					 
+//					 logger.info(vehicle, "avePower: " + Math.round(avePower * 10.0)/10.0 + "  powerSuppliedByBattery: " + Math.round(powerSuppliedByBattery * 10.0)/10.0);
+				 	 
+					 avePower = powerSuppliedByBattery;
+				 
 					 // Recalculate the new overall energy expenditure [in Wh]
 					 overallEnergyUsed = energySuppliedByBattery;
 					 
 					 // Recalculate the new speed 
 					 // FUTURE: will consider the on-board accessory vehicle power usage
 					 // m/s = W / (kg * m/s2)
-					 vMS = avePower / aveForce;
+					 vMS = powerSuppliedByBattery / aveForce;
 					 	 
 					 // FUTURE : may need to find a way to optimize motor power usage 
 					 // and slow down the vehicle to the minimal to conserve power	

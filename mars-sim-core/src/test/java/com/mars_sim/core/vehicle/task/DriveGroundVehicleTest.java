@@ -17,7 +17,7 @@ import com.mars_sim.mapdata.location.Direction;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 public class DriveGroundVehicleTest extends AbstractMarsSimUnitTest {
-    private static final double DIST = OperateVehicle.DISTANCE_BUFFER_ARRIVING * 5;
+    private static final double DIST = OperateVehicle.DISTANCE_BUFFER_ARRIVING * 10;
     private static final double METHANOL_AMOUNT = 30D;
     private static final double OXYGEN_AMOUNT = METHANOL_AMOUNT * OperateVehicle.RATIO_OXIDIZER_FUEL;
     
@@ -47,27 +47,27 @@ public class DriveGroundVehicleTest extends AbstractMarsSimUnitTest {
         assertFalse("Task created", task.isDone());
         assertEquals(name, p, v.getOperator());
 
-        System.out.println("odo: " + Math.round(v.getOdometerMileage()));
-        System.out.println("dist: " + Math.round(task.getDistanceToDestination()));
-        System.out.println("speed: " + v.getSpeed());
+        System.out.println("odo: " + Math.round(v.getOdometerMileage() * 10.0) / 10.0);
+        System.out.println("dist: " + Math.round(task.getDistanceToDestination() * 10.0) / 10.0);
+        System.out.println("speed: " + Math.round(v.getSpeed() * 10.0) / 10.0);
         System.out.println(p + "'s location: " + v.getCoordinates().getFormattedString());
         System.out.println(v + "'s location: " + v.getCoordinates().getFormattedString());
         
         // Execute few calls to get driver positioned and moving
         executeTask(p, task, 5);
         
-        System.out.println("odo: " + Math.round(v.getOdometerMileage()));
-        System.out.println("dist: " + Math.round(task.getDistanceToDestination()));
-        System.out.println("speed: " + v.getSpeed());
+        System.out.println("odo: " + Math.round(v.getOdometerMileage() * 10.0) / 10.0);
+        System.out.println("dist: " + Math.round(task.getDistanceToDestination() * 10.0) / 10.0);
+        System.out.println("speed: " + Math.round(v.getSpeed() * 10.0) / 10.0);
         System.out.println(p + "'s location: " + v.getCoordinates().getFormattedString());
         System.out.println(v + "'s location: " + v.getCoordinates().getFormattedString());
         
         // Execute few calls to get driver positioned and moving
         executeTask(p, task, 10);
         
-        System.out.println("odo: " + Math.round(v.getOdometerMileage()));
-        System.out.println("dist: " + Math.round(task.getDistanceToDestination()));
-        System.out.println("speed: " + v.getSpeed());
+        System.out.println("odo: " + Math.round(v.getOdometerMileage() * 10.0) / 10.0);
+        System.out.println("dist: " + Math.round(task.getDistanceToDestination() * 10.0) / 10.0);
+        System.out.println("speed: " + Math.round(v.getSpeed() * 10.0) / 10.0);
         System.out.println(p + "'s location: " + v.getCoordinates().getFormattedString());
         System.out.println(v + "'s location: " + v.getCoordinates().getFormattedString());
         
@@ -78,9 +78,9 @@ public class DriveGroundVehicleTest extends AbstractMarsSimUnitTest {
         // Drive the rest
         executeTaskUntilPhase(p, task, 30);
         
-        System.out.println("odo: " + Math.round(v.getOdometerMileage()));
-        System.out.println("dist: " + Math.round(task.getDistanceToDestination()));
-        System.out.println("speed: " + v.getSpeed());
+        System.out.println("odo: " + Math.round(v.getOdometerMileage() * 10.0) / 10.0);
+        System.out.println("dist: " + Math.round(task.getDistanceToDestination() * 10.0) / 10.0);
+        System.out.println("speed: " + Math.round(v.getSpeed() * 10.0) / 10.0);
         System.out.println(p + "'s location: " + v.getCoordinates().getFormattedString());
         System.out.println(v + "'s location: " + v.getCoordinates().getFormattedString());
         

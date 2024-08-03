@@ -160,7 +160,7 @@ public class PilotDrone extends OperateVehicle {
 			// Set new direction
 			flyer.setDirection(destinationDirection);
 			// Update elevation
-			updateVehicleElevationAltitude(true, time);
+//			updateVehicleElevationAltitude(true, time);
 			
 			setPhase(MOBILIZE);
 			
@@ -175,7 +175,7 @@ public class PilotDrone extends OperateVehicle {
 		// If an direction could not be found, change the elevation
 		if (travelDirection == null) {
 			// Ascend into to get around obstacles
-			updateVehicleElevationAltitude(false, time);
+//			updateVehicleElevationAltitude(false, time);
 			
 			sideDirection = NONE;
 			
@@ -269,38 +269,41 @@ public class PilotDrone extends OperateVehicle {
 		// Not needed for some reason !!
 	}
 	
-	/**
-	 * Update vehicle with its current elevation or altitude.
-	 */
-	protected void updateVehicleElevationAltitude(boolean horizontalMovement, double time) {
-		int mod = 1;
-		if (!horizontalMovement)
-			mod = 4;
-			
-		double currentE = ((Flyer)getVehicle()).getHoveringHeight();
-		double oldGroundE = ((Flyer)getVehicle()).getElevation();
-		double newGroundE = getGroundElevation();
-		
-		double ascentE = (Flyer.ELEVATION_ABOVE_GROUND - currentE) + (newGroundE - oldGroundE);
-		double climbE = 0;
-		
-		if (ascentE > 0) {
-			// Future: Use Newton's law to determine the amount of height the flyer can climb 
-			double tSec = time * MarsTime.SECONDS_PER_MILLISOL;
-			double speed = .0025 * mod;
-			climbE = speed * tSec;
-			
-		}
-		else if (ascentE < 0) {
-			// Future: Use Newton's law to determine the amount of height the flyer can climb 
-			double tSec = time * MarsTime.SECONDS_PER_MILLISOL;
-			double speed = -.02 * mod;
-			climbE = speed * tSec;
-		}
-		
-		double elev = climbE + oldGroundE;
-		((Flyer) getVehicle()).setElevation(elev);
-	}
+//	/**
+//	 * Updates vehicle with its current elevation or altitude.
+//	 * 
+//	 * @param horizontalMovement
+//	 * @param time
+//	 */
+//	protected void updateVehicleElevationAltitude(boolean horizontalMovement, double time) {
+//		int mod = 1;
+//		if (!horizontalMovement)
+//			mod = 4;
+//			
+//		double droneH = ((Flyer)getVehicle()).getHoveringHeight();
+//		double oldGroundE = ((Flyer)getVehicle()).getElevation();
+//		double newGroundE = getGroundElevation() * 1000;
+//		
+//		double ascentE = (Flyer.ELEVATION_ABOVE_GROUND - droneH) + (newGroundE - oldGroundE);
+//		double climbE = 0;
+//		
+//		if (ascentE > 0) {
+//			// Future: Use Newton's law to determine the amount of height the flyer can climb 
+//			double tSec = time * MarsTime.SECONDS_PER_MILLISOL;
+//			double speed = .0025 * mod;
+//			climbE = speed * tSec;
+//			
+//		}
+//		else if (ascentE < 0) {
+//			// Future: Use Newton's law to determine the amount of height the flyer can climb 
+//			double tSec = time * MarsTime.SECONDS_PER_MILLISOL;
+//			double speed = -.02 * mod;
+//			climbE = speed * tSec;
+//		}
+//		
+//		double elev = climbE + oldGroundE;
+//		((Flyer) getVehicle()).setElevation(elev);
+//	}
 
 	/**
 	 * Check if vehicle has had an accident.

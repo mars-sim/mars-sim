@@ -270,7 +270,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         if (vehicle instanceof Drone d) {
 	        // Update hovering height label.
         	hoveringHeightCache = d.getHoveringHeight();
-	        hoveringHeightLabel = destinationSpringPanel.addRow("Hovering Height", StyleManager.DECIMAL_KM.format(hoveringHeightCache));
+	        hoveringHeightLabel = destinationSpringPanel.addRow("Hovering Height", StyleManager.DECIMAL_M.format(hoveringHeightCache));
         }
         
         // Prepare driver button and add it if vehicle has driver.
@@ -317,7 +317,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 	        double currentHoveringHeight = d.getHoveringHeight();
 	        if (hoveringHeightCache != currentHoveringHeight) {
 	        	hoveringHeightCache = currentHoveringHeight;
-	        	hoveringHeightLabel.setText(StyleManager.DECIMAL_KM.format(currentHoveringHeight));
+	        	hoveringHeightLabel.setText(StyleManager.DECIMAL_M.format(currentHoveringHeight));
 	        }
         }
         

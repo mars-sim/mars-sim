@@ -10,7 +10,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 import com.mars_sim.ui.swing.NumberCellRenderer;
-import com.mars_sim.ui.swing.tool.NumberRenderer;
 
 /**
  * This class represents an inventory of food at settlements displayed within

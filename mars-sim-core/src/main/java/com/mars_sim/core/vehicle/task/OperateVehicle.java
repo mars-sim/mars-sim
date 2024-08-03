@@ -66,7 +66,7 @@ public abstract class OperateVehicle extends Task {
  	/** The speed at which the collision phase commence. */
 	protected static final double HIGH_SPEED = 100;
 	/** The speed at which the obstacle / winching phase commence. */
-	protected static final double LOW_SPEED = 1;
+	public static final double LOW_SPEED = 1;
 	/** Conversion factor : 1 m/s = 3.6 km/h (or kph) */
 	private static final double KPH_CONV = 3.6;
 	/** Half the PI. */
@@ -76,7 +76,7 @@ public abstract class OperateVehicle extends Task {
     /** The ratio of the amount of oxidizer to fuel. */
     public static final double RATIO_OXIDIZER_FUEL = 1.5;
     /** Distance buffer for nearly arriving at destination (km). */
-    public static final double DISTANCE_BUFFER_ARRIVING = 2;
+    public static final double DISTANCE_BUFFER_ARRIVING = 1;
     /** Distance buffer for arriving at destination (km). */
     public static final double DISTANCE_BUFFER_ARRIVED = 0.2;
     /** The base percentage chance of an accident while operating vehicle per millisol. */
@@ -322,7 +322,7 @@ public abstract class OperateVehicle extends Task {
 	 * @param resource
 	 */
 	private void turnOnBeacon(int resource) {
-		vehicle.setSpeed(0D);
+//		vehicle.setSpeed(0D);
         	
     	if (!vehicle.isBeaconOn() && (vehicle instanceof VehicleMission vm)) {
 			MissionStatus status = MissionStatus.createResourceStatus(resource);
@@ -336,7 +336,7 @@ public abstract class OperateVehicle extends Task {
 	 * @param reason
 	 */
 	private void turnOnBeacon(String reason) {
-		vehicle.setSpeed(0D);
+//		vehicle.setSpeed(0D);
         	
     	if (!vehicle.isBeaconOn() && (vehicle instanceof VehicleMission vm)) {
 			MissionStatus status = MissionStatus.createResourceStatus(reason);
@@ -479,7 +479,7 @@ public abstract class OperateVehicle extends Task {
         			+ " (dist: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + " km).");
 
         	double u = vehicle.getSpeed();
-        	double v = u / 2;
+        	double v = u / 1.3;
         	if (v < 0)
         		v = 0;
 //            logger.log(vehicle, Level.INFO, 20_000, 

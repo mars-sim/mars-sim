@@ -69,6 +69,7 @@ public class StyleManager {
     
     public static final DecimalFormat DECIMAL_KJ = new DecimalFormat("#,##0.0 kJ");
     public static final DecimalFormat DECIMAL_KM = new DecimalFormat("#,##0.00 km");
+    public static final DecimalFormat DECIMAL_M = new DecimalFormat("#,##0.00 m");
     
     public static final DecimalFormat DECIMAL_KPH = new DecimalFormat("##0.00 kph");
     
