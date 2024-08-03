@@ -459,16 +459,16 @@ public class VehicleSpec implements Serializable {
 		double baseEnergyConsumed = methanolEnergyCapacity * drivetrainEfficiency + batteryCapacity;
 		// Gets the estimated average road load power (including coasting)
 		double baseRoadLoadPower = .1 * (.1 * peakPower + .9 * basePower);
-		// Gets the estimated average road speed (including coasting) [kph]
-		double baseRoadSpeed = .75 * baseSpeed;
+		// Gets the estimated average road speed (including coasting) [m/s]
+		double baseRoadSpeedMPerSec = .75 * baseSpeed / 3.6;
 		// Gets the maximum total # of hours the vehicle is capable of operating
 		baseTotalHours = baseEnergyConsumed / baseRoadLoadPower;
-		// kW / kph -> (kW / km / h) -> kW * h / km
-		double baseForce = baseRoadLoadPower / baseRoadSpeed; 
+		// kN -> kW / m /s
+		double baseForce = baseRoadLoadPower / baseRoadSpeedMPerSec; 
 	
 		// Gets the base range [in km] of the vehicle
-		// km = kWh / (kW * h / km) -> km * h / h -> km
-		baseRange = baseEnergyConsumed / baseForce;
+		// km = kWh / kN = kWh / kW * m/s = h * m/s = 3600 s * m/s = 3.6 km
+		baseRange = baseEnergyConsumed / baseForce * 3.6;
 		// Gets the base fuel economy [in km/kg] of this vehicle
 		baseFuelEconomy = baseRange / (1 + fuelCapacity);
 		// Gets the base fuel consumption [in Wh/km] of this vehicle. Convert estEnergyConsumed from kWh to Wh.

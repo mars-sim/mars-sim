@@ -126,10 +126,8 @@ public abstract class Vehicle extends Unit
 	
 	/** The average road load power of the vehicle [kph]. */
 	private double averageRoadLoadSpeed;
-
 	/** The average road load power of the vehicle [kW]. */
-	private double averageRoadLoadPower;
-			
+	private double averageRoadLoadPower;		
 	/** Parked facing (degrees clockwise from North). */
 	private double facingParked;
 	/** The Base Lifetime Wear in msols **/
@@ -815,8 +813,8 @@ public abstract class Vehicle extends Unit
 	public double getEstimatedRange() {
 
 		// Before the mission is created, the range would be based on vehicle's fuel capacity
-		return Math.min(getBaseRange(), 
-        			getEstimatedFuelEconomy() * getFuelCapacity()) * getMass() / getBeginningMass() / fuelRangeErrorMargin;
+		return Math.min(getBaseRange() / fuelRangeErrorMargin * getMass() / getBeginningMass(), 
+        			getEstimatedFuelEconomy() * getFuelCapacity());
 	}
 	
 	/**
@@ -842,8 +840,8 @@ public abstract class Vehicle extends Unit
     		else {
                 double amountOfFuel = getAmountResourceStored(fuelTypeID);
             	// During the journey, the range would be based on the amount of fuel in the vehicle
-        		range = Math.min(getBaseRange() / RANGE_FACTOR, 
-        					getEstimatedFuelEconomy() * amountOfFuel) * getMass() / getBeginningMass();
+        		range = Math.min(getBaseRange() / fuelRangeErrorMargin * getMass() / getBeginningMass(), 
+        					getEstimatedFuelEconomy() * amountOfFuel);
     		}
         }
 

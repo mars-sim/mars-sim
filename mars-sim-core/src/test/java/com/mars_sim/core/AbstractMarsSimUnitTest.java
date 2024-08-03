@@ -249,7 +249,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	}
 
 	/**
-	 * Executes a Task for a number of steps or phase changes
+	 * Executes a Task for a number of steps or phase changes.
+	 * Note: for maven testing.
 	 * 
 	 * @param person
 	 * @param task

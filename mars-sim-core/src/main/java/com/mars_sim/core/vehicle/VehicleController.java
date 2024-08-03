@@ -75,7 +75,7 @@ import com.mars_sim.tools.util.RandomUtil;
 	 private static final String KWH__ = " kWh  ";
 	 private static final String KPH_ = " kph ";
 	 private static final String KPH__ = " kph  "; 
-	 private static final String KW__ = " kW  ";
+//	 private static final String KW__ = " kW  ";
 	 private static final String W__ = " W  ";
 	 private static final String KM__ = " km  ";
 	 private static final String M__ = " m  ";
