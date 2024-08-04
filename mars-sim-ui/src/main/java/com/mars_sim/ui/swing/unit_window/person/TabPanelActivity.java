@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelActivity.java
- * @date 2023-09-11
+ * @date 2024-08-04
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.person;
@@ -29,7 +29,10 @@ import javax.swing.table.AbstractTableModel;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.mission.util.MissionRating;
+import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskCache;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
@@ -67,11 +70,10 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	/** data cache */
 	private String missionPhaseCache = "";
 
-
-	private JLabel scoreTextArea;
-
 	private JLabel missionTextArea;
 	private JLabel missionPhaseTextArea;
+	private JLabel missionScoreTextArea;
+	private JLabel taskScoreTextArea;
 
 	private JButton monitorButton;
 	private JButton missionButton;
@@ -79,9 +81,11 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	private Worker worker;
 
 	private JTextArea taskStack;
-
-	private TaskCacheModel cacheModel;
-
+//	private JTextArea missionStack;
+	
+	private TaskCacheModel taskCacheModel;
+	private MissionCacheModel missionCacheModel;
+	
 	private JTextArea pendingTasks;
 
 	/**
@@ -108,14 +112,17 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		JPanel topPanel = new JPanel(new BorderLayout());
 		content.add(topPanel, BorderLayout.NORTH);
 
-		// Prepare activity panel
-		AttributePanel missionPanel = new AttributePanel(2);
-		addBorder(missionPanel, "Mission");
-		topPanel.add(missionPanel, BorderLayout.NORTH);
-		
-		missionTextArea = missionPanel.addTextField(Msg.getString("TabPanelActivity.missionDesc"), "", null); //$NON-NLS-1$
-		missionPhaseTextArea = missionPanel.addTextField(Msg.getString("TabPanelActivity.missionPhase"), "", null); //$NON-NLS-1$
+		// Create a task main panel
+		JPanel taskMainPanel = createTaskPanel();
+		topPanel.add(taskMainPanel, BorderLayout.SOUTH);		
 
+		// Create a pending task panel
+		JPanel pendingTaskPanel = new JPanel(new BorderLayout(1, 3));
+		pendingTasks = new JTextArea(2, 30);
+		pendingTaskPanel.add(pendingTasks, BorderLayout.CENTER);
+		addBorder(pendingTaskPanel, "Pending Task");
+		taskMainPanel.add(pendingTaskPanel, BorderLayout.SOUTH);
+		
 		// Prepare mission button panel.
 		JPanel missionButtonPanel = new JPanel(new FlowLayout());
 		topPanel.add(missionButtonPanel, BorderLayout.CENTER);
@@ -134,24 +141,97 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		monitorButton.addActionListener(this);
 		missionButtonPanel.add(monitorButton);
 		
-		JPanel taskPanel = new JPanel(new BorderLayout(1, 3));
-		addBorder(taskPanel, "Task");
-		topPanel.add(taskPanel, BorderLayout.SOUTH);
+		// Create a mission main panel
+		JPanel missionMainPanel = createMissionPanel();
+		topPanel.add(missionMainPanel, BorderLayout.NORTH);
 
-		JPanel currentPanel = new JPanel(new BorderLayout(1, 3));
-		taskPanel.add(currentPanel, BorderLayout.NORTH);
+		update();
+	}
 
-		AttributePanel scorePanel = new AttributePanel(1);
-		currentPanel.add(scorePanel, BorderLayout.NORTH);
-		scoreTextArea = scorePanel.addTextField("Score", "", null);
+	/**
+	 * Creates a mission panel.
+	 * 
+	 * @return
+	 */
+	private JPanel createMissionPanel() {
+		JPanel missionMainPanel = new JPanel(new BorderLayout(1, 3));
+		addBorder(missionMainPanel, "Mission");
+
+		JPanel missionSubPanel = new JPanel(new BorderLayout(1, 3));
+		missionMainPanel.add(missionSubPanel, BorderLayout.NORTH);
+
+		// Prepare attribute panel
+		AttributePanel missionAttributePanel = new AttributePanel(3);
+		missionSubPanel.add(missionAttributePanel, BorderLayout.NORTH);
+		missionTextArea = missionAttributePanel.addRow(Msg.getString("TabPanelActivity.missionDesc"), ""); //$NON-NLS-1$
+		missionPhaseTextArea = missionAttributePanel.addRow(Msg.getString("TabPanelActivity.missionPhase"), ""); //$NON-NLS-1$
+		missionScoreTextArea = missionAttributePanel.addRow("Best Score", "");
+		
+//		missionStack = new JTextArea(3, 30);
+//		missionStack.setToolTipText("Show the description and phase of a mission and its submission(s)");
+//		missionSubPanel.add(missionStack, BorderLayout.CENTER);
+
+		missionCacheModel = new MissionCacheModel();
+		JPanel missionCachePanel = new JPanel(new BorderLayout(1, 3));
+		addBorder(missionCachePanel, "Mission Rating");
+		
+		JTable missionCacheTable = new JTable(missionCacheModel) {
+		    @Override
+            public String getToolTipText(MouseEvent e) {
+                java.awt.Point p = e.getPoint();
+                int rowIndex = rowAtPoint(p);
+                int colIndex = columnAtPoint(p);
+				var sorter = getRowSorter();
+				if (sorter != null) {
+					rowIndex = sorter.convertRowIndexToModel(rowIndex);
+				}
+				MissionCacheModel model = (MissionCacheModel) getModel();
+				return model.getScoreText(rowIndex, colIndex);
+            }
+		};
+		missionCacheTable.setDefaultRenderer(Double.class,
+						new NumberCellRenderer(2, true));
+		missionCacheTable.setPreferredScrollableViewportSize(new Dimension(225, 60));
+		missionCacheTable.getColumnModel().getColumn(0).setPreferredWidth(170);
+		missionCacheTable.getColumnModel().getColumn(1).setPreferredWidth(20);
+		// Add sorting
+		missionCacheTable.setAutoCreateRowSorter(true);
+		missionCacheTable.setRowSelectionAllowed(true);
+				
+		// Add a scrolled window and center it with the table
+		JScrollPane scroller = new JScrollPane(missionCacheTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+								ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		missionCachePanel.add(scroller, BorderLayout.CENTER);
+		missionMainPanel.add(missionCachePanel, BorderLayout.CENTER);
+		
+		return missionMainPanel;
+	}
+	
+	/**
+	 * Creates a task panel.
+	 * 
+	 * @return
+	 */
+	private JPanel createTaskPanel() {
+		JPanel taskMainPanel = new JPanel(new BorderLayout(1, 3));
+		addBorder(taskMainPanel, "Task");
+
+		JPanel taskSubPanel = new JPanel(new BorderLayout(1, 3));
+		taskMainPanel.add(taskSubPanel, BorderLayout.NORTH);
+
 		taskStack = new JTextArea(3, 30);
 		taskStack.setToolTipText("Show the description and phase of a task and its subtask(s)");
-		currentPanel.add(taskStack, BorderLayout.CENTER);
+		taskSubPanel.add(taskStack, BorderLayout.NORTH);
 
-		cacheModel = new TaskCacheModel();
-		JPanel cachePanel = new JPanel(new BorderLayout(1, 3));
-		addBorder(cachePanel, "Task Choices");
-		JTable cacheTable = new JTable(cacheModel) {
+		AttributePanel taskScorePanel = new AttributePanel(1);
+		taskSubPanel.add(taskScorePanel, BorderLayout.CENTER);
+		taskScoreTextArea = taskScorePanel.addRow("Best Score", "");
+		
+		taskCacheModel = new TaskCacheModel();
+		JPanel taskCachePanel = new JPanel(new BorderLayout(1, 3));
+		addBorder(taskCachePanel, "Task Rating");
+		
+		JTable taskCacheTable = new JTable(taskCacheModel) {
 		    @Override
             public String getToolTipText(MouseEvent e) {
                 java.awt.Point p = e.getPoint();
@@ -165,82 +245,44 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				return model.getScoreText(rowIndex, colIndex);
             }
 		};
-		cacheTable.setDefaultRenderer(Double.class,
+		taskCacheTable.setDefaultRenderer(Double.class,
 						new NumberCellRenderer(2, true));
-		cacheTable.setPreferredScrollableViewportSize(new Dimension(225, 120));
-		cacheTable.getColumnModel().getColumn(0).setPreferredWidth(30);
-		cacheTable.getColumnModel().getColumn(1).setPreferredWidth(150);
-
+		taskCacheTable.setPreferredScrollableViewportSize(new Dimension(225, 120));
+		taskCacheTable.getColumnModel().getColumn(0).setPreferredWidth(170);
+		taskCacheTable.getColumnModel().getColumn(1).setPreferredWidth(20);
+		// Add sorting
+		taskCacheTable.setAutoCreateRowSorter(true);
+		taskCacheTable.setRowSelectionAllowed(true);
+				
 		// Add a scrolled window and center it with the table
-		JScrollPane scroller = new JScrollPane(cacheTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+		JScrollPane scroller = new JScrollPane(taskCacheTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 								ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		cachePanel.add(scroller, BorderLayout.CENTER);
-		taskPanel.add(cachePanel, BorderLayout.CENTER);
-
-		JPanel pendingPanel = new JPanel(new BorderLayout(1, 3));
-		pendingTasks = new JTextArea(2, 30);
-		pendingPanel.add(pendingTasks, BorderLayout.CENTER);
-		addBorder(pendingPanel, "Pending");
-		taskPanel.add(pendingPanel, BorderLayout.SOUTH);
-
-		update();
+		taskCachePanel.add(scroller, BorderLayout.CENTER);
+		taskMainPanel.add(taskCachePanel, BorderLayout.CENTER);
+		
+		return taskMainPanel;
 	}
-
+	
 	/**
 	 * Updates the info on this panel.
 	 */
 	@Override
 	public void update() {
-
-		TaskManager taskManager = worker.getTaskManager();
-
 		Mission mission = worker.getMission();
-
-		boolean addLine = false;
-		StringBuilder prefix = new StringBuilder();
-		StringBuilder newTaskText = new StringBuilder();
-		for (Task t : taskManager.getTaskStack()) {
-			if (addLine) {
-				newTaskText.append("\n");
-			}
-			newTaskText.append(prefix);
-			var phase = t.getPhase();
-			if (phase != null) {
-				newTaskText.append(phase.getName()).append(" - ");
-			}
-			newTaskText.append(t.getDescription());
-			prefix.append('-');
-			addLine = true;
-		}
-		String newContent = newTaskText.toString();
-		if (!newContent.equals(taskStack.getText())) {
-			taskStack.setText(newContent);
 		
-			// Refresh task cache
-			TaskCache newCache = taskManager.getLatestTaskProbability();
-			cacheModel.setCache(newCache);
+		TaskManager taskManager = worker.getTaskManager();
+		MissionRating selected = null;
+		
+		/////////////// Update mission /////////////////////
+		if (worker instanceof Person) {
+			selected = ((PersonTaskManager)taskManager).getSelectedMission();
+			
+			if (selected != null) {
+				missionScoreTextArea.setText(Math.round(selected.getScore().getScore() * 100.0)/100.0 + "");
+			}
+			
+			missionCacheModel.update(worker);
 		}
-
-		// Pending text
-		String newPendingText = taskManager.getPendingTasks().stream()
-								.map(s -> s.job().getName() + " @ " + s.when().getTruncatedDateTimeStamp())
-								.collect(Collectors.joining("\n"));
-		if (!newPendingText.equals(pendingTasks.getText())) {
-			pendingTasks.setText(newPendingText);
-		}
-
-		// Task has changed so update the score
-		var scoreLabel = "Directly Assigned";
-		String scoreTooltip = null; 
-		RatingScore score = taskManager.getScore();
-		if (score != null) {
-			scoreLabel = StyleManager.DECIMAL_PLACES2.format(score.getScore());
-			scoreTooltip = "<html>" + RatingScoreRenderer.getHTMLFragment(score) + "</html>";
-
-		}
-
-		updateLabel(scoreTextArea, scoreLabel);
-		scoreTextArea.setToolTipText(scoreTooltip);
 
 		String newMissionText = "";
 		String newMissionPhase = "";
@@ -264,6 +306,54 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		// Update mission and monitor buttons.
 		missionButton.setEnabled(mission != null);
 		monitorButton.setEnabled(mission != null);
+		
+		/////////////// Update tasks /////////////////////
+		
+		boolean addLine = false;
+		StringBuilder prefix = new StringBuilder();
+		StringBuilder newTaskText = new StringBuilder();
+		for (Task t : taskManager.getTaskStack()) {
+			if (addLine) {
+				newTaskText.append("\n");
+			}
+			newTaskText.append(prefix);
+			var phase = t.getPhase();
+			if (phase != null) {
+				newTaskText.append(phase.getName()).append(" - ");
+			}
+			newTaskText.append(t.getDescription());
+			prefix.append('-');
+			addLine = true;
+		}
+		String newContent = newTaskText.toString();
+		if (!newContent.equals(taskStack.getText())) {
+			taskStack.setText(newContent);
+		
+			// Refresh task cache
+			TaskCache newCache = taskManager.getLatestTaskProbability();
+			taskCacheModel.setCache(newCache);
+		}
+
+		// Pending text
+		String newPendingText = taskManager.getPendingTasks().stream()
+								.map(s -> s.job().getName() + " @ " + s.when().getTruncatedDateTimeStamp())
+								.collect(Collectors.joining("\n"));
+		if (!newPendingText.equals(pendingTasks.getText())) {
+			pendingTasks.setText(newPendingText);
+		}
+
+		// Task has changed so update the score
+		var scoreLabel = "Directly Assigned";
+		String scoreTooltip = null; 
+		RatingScore score = taskManager.getScore();
+		if (score != null) {
+			scoreLabel = StyleManager.DECIMAL_PLACES2.format(score.getScore());
+			scoreTooltip = "<html>" + RatingScoreRenderer.getHTMLFragment(score) + "</html>";
+
+		}
+
+		updateLabel(taskScoreTextArea, scoreLabel);
+		taskScoreTextArea.setToolTipText(scoreTooltip);
 	}
 
 	private static void updateLabel(JLabel label, String text) {
@@ -295,6 +385,85 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		}
 	}
 
+	private static class MissionCacheModel extends AbstractTableModel {
+		private List<MissionRating> missions = Collections.emptyList();
+//		private MissionRating selected;
+		
+		void update(Worker worker) {
+			
+			if (worker instanceof Person) {
+				missions =  ((PersonTaskManager)(worker.getTaskManager())).getMissionProbCache();		
+			}
+			else {
+				missions = Collections.emptyList();
+			}
+
+			fireTableDataChanged();
+		}
+
+		/**
+		 * Gets the html output of a list of rating scores. 
+		 * 
+		 * @param rowIndex
+		 * @param colIndex
+		 * @return
+		 */
+		public String getScoreText(int rowIndex, int colIndex) {
+			if ((colIndex == 1) && (rowIndex < missions.size())) {
+				var t = missions.get(rowIndex);
+				return "<html>" + RatingScoreRenderer.getHTMLFragment(t.getScore()) + "</html>";
+
+			}
+			return null;
+		}
+
+		@Override
+		public int getRowCount() {
+			if (missions != null)
+				return missions.size();
+			return 0;
+		}
+
+		@Override
+		public int getColumnCount() {
+			return 2;
+		}
+
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			MissionRating mr = null;
+			
+			if (missions != null) {
+				mr = missions.get(rowIndex);
+
+				if (columnIndex == 0) {
+					return mr.getName();
+				}
+				else if (columnIndex == 1) {
+					return mr.getScore().getScore();
+				}
+			}
+
+			return mr;
+		}
+
+		@Override
+		public Class<?> getColumnClass(int columnIndex) {
+			if (columnIndex == 0) {
+				return String.class;
+			}
+			return Double.class;
+		}
+
+		@Override
+		public String getColumnName(int column) {
+			if (column == 0) {
+				return "Mission Description ";
+			}
+			return "Score";
+		}
+	}
+	
 	private static class TaskCacheModel extends AbstractTableModel {
 		private List<TaskJob> tasks = Collections.emptyList();
 
@@ -310,7 +479,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		}
 
 		public String getScoreText(int rowIndex, int colIndex) {
-			if ((colIndex == 0) && (rowIndex < tasks.size())) {
+			if ((colIndex == 1) && (rowIndex < tasks.size())) {
 				var t = tasks.get(rowIndex);
 				return "<html>" + RatingScoreRenderer.getHTMLFragment(t.getScore()) + "</html>";
 
@@ -333,10 +502,10 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			TaskJob job = tasks.get(rowIndex);
 
 			if (columnIndex == 0) {
-				return job.getScore().getScore();
+				return job.getName();
 			}
 			else if (columnIndex == 1) {
-				return job.getName();
+				return job.getScore().getScore();
 			}
 
 			return null;
@@ -345,17 +514,17 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			if (columnIndex == 0) {
-				return Double.class;
+				return String.class;
 			}
-			return String.class;
+			return Double.class;
 		}
 
 		@Override
 		public String getColumnName(int column) {
 			if (column == 0) {
-				return "Score";
+				return "Task Description";
 			}
-			return "Description";
+			return "Score";
 		}
 	}
 }

@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.mission.util.MissionRating;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.Mind;
 import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
@@ -42,10 +43,16 @@ public class PersonTaskManager extends TaskManager {
 	private static final String DIAGS_MODULE = "taskperson";
 	
 	// Data members
+	
+	private List<MissionRating> missionProbCache;
+	
+	private MissionRating selectedMissionRating;
+	
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
 
 	private transient Person person;
+
 
 	/**
 	 * Constructor.
@@ -202,6 +209,38 @@ public class PersonTaskManager extends TaskManager {
 	protected Task createTask(TaskJob selectedWork) {
 		return selectedWork.createTask(mind.getPerson());
 	}
+	
+	
+	/**
+	 * Sets the list of mission ratings and the selected mission rating.
+	 * 
+	 * @param missionProbCache
+	 * @param selectedMetaMissionRating
+	 */
+	public void setMissionRatings(List<MissionRating> missionProbCache, 
+			MissionRating selectedMetaMissionRating) {
+		this.missionProbCache = missionProbCache;
+		this.selectedMissionRating = selectedMetaMissionRating;
+	}
+	
+	/**
+	 * Gets the list of mission ratings.
+	 * 
+	 * @return
+	 */
+	public List<MissionRating> getMissionProbCache() {
+		return missionProbCache;
+	}
+	
+	/**
+	 * Gets the selected mission rating.
+	 * 
+	 * @return
+	 */
+	public MissionRating getSelectedMission() {
+		return selectedMissionRating;
+	}
+	
 	
 	@Override
 	public void reinit() {

@@ -1,10 +1,10 @@
 /*
  * Mars Simulation Project
- * TaskCache.java
- * @date 2022-09-18
- * @author Barry Evans
+ * MissionCache.java
+ * @date 2024-08-04
+ * @author Manny Kung
  */
-package com.mars_sim.core.person.ai.task.util;
+package com.mars_sim.core.mission.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,24 +13,24 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.tools.util.RandomUtil;
 
 /**
- * Class represents a set of TaskJob that can be used to select a new Task for a Work. 
+ * Class represents a set of MissionJob that can be used to select a new mission. 
  * They are weighted to the probability of being selected.
  */
-public class TaskCache {
-	private List<TaskJob> tasks = new ArrayList<>();
+public class MissionCache {
+	private List<MissionJob> missions = new ArrayList<>();
     private double totalProb = 0;
     private String context;
     private MarsTime createdOn;
-    private TaskJob lastSelected;
+    private MissionJob lastSelected;
 
     /**
-     * Creates a cache of Tasks. A cache can work in transient mode where selected entries are removed.
+     * Creates a cache of missions. A cache can work in transient mode where selected entries are removed.
      * A static mode means entries are fixed and never removed.
      * 
      * @param context Descriptive context of the purpose
      * @param createdOn If this is non-null then the cache works in transient mode.
      */
-    public TaskCache(String context, MarsTime createdOn) {
+    public MissionCache(String context, MarsTime createdOn) {
         this.context = context;
         if (createdOn != null) {
             this.createdOn = createdOn;
@@ -38,24 +38,24 @@ public class TaskCache {
     }
 
     /**
-     * Adds a new potential TaskJob to the cache.
+     * Adds a new potential MissionJob to the cache.
      * 
      * @param job The new potential Task.
      */
-	public void put(TaskJob job) {
-		tasks.add(job);
+	public void put(MissionJob job) {
+		missions.add(job);
 		totalProb += job.getScore().getScore();
 	}
 
     /**
-     * Adds a list of Jobs to the cache. Only select those that have a +ve score.
+     * Adds a list of jobs to the cache. Only select those that have a +ve score.
      * 
      * @param jobs
      */
-    public void add(List<TaskJob> jobs) {
-        for(TaskJob j : jobs) {
+    public void add(List<MissionJob> jobs) {
+        for (MissionJob j : jobs) {
             if (j.getScore().getScore() > 0) {
-                tasks.add(j);
+                missions.add(j);
                 totalProb += j.getScore().getScore();
             }
         }
@@ -69,7 +69,7 @@ public class TaskCache {
     }
 
     /**
-     * Gets the total probability score for all tasks.
+     * Gets the total probability score for all missions.
      * 
      * @return
      */
@@ -89,33 +89,33 @@ public class TaskCache {
     /**
      * Gets the jobs registered.
      */
-    public List<TaskJob> getTasks() {
-        return tasks;
+    public List<MissionJob> getMissions() {
+        return missions;
     }
 
     /**
      * Gets the last entry selected and removed from this cache.
      */
-    public TaskJob getLastSelected() {
+    public MissionJob getLastSelected() {
         return lastSelected;
     }
 
     /** 
-     * Chooses a task to work at random.
+     * Chooses a mission to work at random.
     */
-    TaskJob getRandomSelection() {		
-        TaskJob lastEntry = null;
+    MissionJob getRandomSelection() {		
+        MissionJob lastEntry = null;
 
         // Comes up with a random double based on probability
         double r = RandomUtil.getRandomDouble(totalProb);
         // Determine which task is selected.
-        for (TaskJob entry: tasks) {
+        for (MissionJob entry: missions) {
             double probWeight = entry.getScore().getScore();
             if (r <= probWeight) {
                 // THis is a transient cache so remove the selected entry
                 if (createdOn != null) {
                     lastSelected = entry;
-                    tasks.remove(entry);
+                    missions.remove(entry);
                     totalProb -= probWeight;
                 }
                 return entry;
@@ -133,8 +133,8 @@ public class TaskCache {
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
-		tasks.clear();
-		tasks = null;
+		missions.clear();
+		missions = null;
 	    createdOn = null;
 	    lastSelected = null;
 	}

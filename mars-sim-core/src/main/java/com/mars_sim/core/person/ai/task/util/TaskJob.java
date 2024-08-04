@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TaskJob.java
- * @date 2022-11-04
+ * @date 2024-08-04
  * @author Barry Evans
  */
 package com.mars_sim.core.person.ai.task.util;
@@ -13,9 +13,8 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 
 /**
- * This represents a potential Task that can be executed. The Task has a score for the benefit of
- * doing the Task. 
- * This is used to rate potnetial future tasks.
+ * This represents a potential Task that can be executed. Each Task has a score for the benefit of
+ * doing the Task. It is used to rate potential future tasks.
  */
 public interface TaskJob extends Rating, Serializable {
 

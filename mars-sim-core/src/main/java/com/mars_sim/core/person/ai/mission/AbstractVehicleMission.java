@@ -23,7 +23,6 @@ import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitType;
-import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentType;
@@ -878,8 +877,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		if (!trail.isEmpty()) {
 			Coordinates lastLocation = trail.get(trail.size() - 1);
 			if (!lastLocation.equals(location) 
-					&& (lastLocation.getDistance(location) >= TerrainElevation.STEP_KM
-					&& !trail.contains(location)))
+//					&& (lastLocation.getDistance(location) >= TerrainElevation.STEP_KM
+					&& !trail.contains(location))
 				trail.add(location);
 		} else if (!trail.contains(location)) {
 			trail.add(location);
@@ -1895,11 +1894,18 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				&& lastStopNavpoint != null) {
 
 			if (getNextNavpoint() == null) {
+				// Arrived at the destination
 				int offset = 2;
 				if (getPhase().equals(TRAVELLING))
 					offset = 1;
+				
 				setNextNavpointIndex(navPoints.size() - offset);
 				updateTravelDestination();
+				
+				distanceCurrentLegRemaining = 0;
+				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
+				
+				return 0;
 			}
 			
 			Coordinates c1 = null;
@@ -1908,10 +1914,11 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			if (this instanceof TravelToSettlement travelToSettlement) {
 				c1 = travelToSettlement.getDestinationSettlement().getCoordinates();	
 			}
-			
-			NavPoint next = getNextNavpoint();
-			if (next != null) {
-				c1 = next.getLocation();
+			else {
+				NavPoint next = getNextNavpoint();
+				if (next != null) {
+					c1 = next.getLocation();
+				}
 			}
 
 			double dist = 0;
@@ -1943,39 +1950,39 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @return distance (km) or 0 if not in the travelling phase.
 	 * @throws MissionException if error determining distance.
 	 */
-	public final double computeDistanceCurrentLegTravelled() {
-		
-		// Note: compare with getCurrentLegDistance() 
+	public final double computeDistanceCurrentLegTravelled() {	
+		// Note: contrast with getCurrentLegDistance() 
 		
 		if (travelStatus != null 
 				&& TRAVEL_TO_NAVPOINT.equals(travelStatus)
 				&& lastStopNavpoint != null) {
 
 			if (getNextNavpoint() == null) {
+				// Arrived at the destination
 				int offset = 2;
 				if (getPhase().equals(TRAVELLING))
 					offset = 1;
+				
 				setNextNavpointIndex(navPoints.size() - offset);
 				updateTravelDestination();
+				
+				distanceCurrentLegTravelled = 0;
+				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
+				
+				return 0;
 			}
 			
 			Coordinates c0 = null;
+			double dist = 0;
 			
 			// In case of TravelToSettlement, it's an one-way trip
 			if (this instanceof TravelToSettlement travelToSettlement) {
 				c0 = travelToSettlement.getAssociatedSettlement().getCoordinates();	
 			}
-			
-			NavPoint next = getCurrentNavpoint();
-			if (next != null) {
-				c0 = next.getLocation();
-			}
-
-			double dist = 0;
-			
-			if (c0 != null) {
+			else {
+				c0 = lastStopNavpoint.getLocation();
 				dist = Coordinates.computeDistance(getCurrentMissionLocation(), c0);
-			
+				
 				if (Double.isNaN(dist)) {
 					logger.severe(getName() + 
 							": current leg's travelled distance is NaN.");

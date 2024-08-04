@@ -15,11 +15,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.data.Rating;
 import com.mars_sim.core.data.RatingLog;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.mission.util.MissionRating;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.meta.MetaMission;
 import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
@@ -31,28 +31,6 @@ import com.mars_sim.tools.util.RandomUtil;
  * The simulation has only one mission manager.
  */
 public class MissionManager implements Serializable {
-
-	private static class MissionRating implements Rating {
-
-		MetaMission meta;
-		RatingScore score;
-
-		public MissionRating(MetaMission meta, RatingScore score) {
-			this.meta = meta;
-			this.score = score;
-		}
-
-		@Override
-		public String getName() {
-			return meta.getName();
-		}
-
-		@Override
-		public RatingScore getScore() {
-			return score;
-		}
-
-	}
 
 	/** default serial identifier. */
 	private static final long serialVersionUID = 1L;
@@ -225,8 +203,8 @@ public class MissionManager implements Serializable {
 	 */
 	public Mission getNewMission(Person person) {
 		Mission result = null;
-
-		// Probably must be calculated as a local otherwise method is not threadsafe using a shared cache
+		
+		// Probability must be calculated as a local otherwise method is not threadsafe using a shared cache
 		List<MissionRating> missionProbCache = new ArrayList<>();
 
 		// Get a random number from 0 to the total weight
@@ -242,16 +220,18 @@ public class MissionManager implements Serializable {
 										metaMission.getType().name(), Integer.MAX_VALUE);
 			int activeMissions = numParticularMissions(metaMission.getType(), startingSettlement);
 			if (activeMissions < maxMissions) {
+				
 				RatingScore baseProb = metaMission.getProbability(person);
-				if (baseProb.getScore() > 0D) {
+				double score = baseProb.getScore();
+				if (score > 0) {
 					// Get any overriding ratio
 					double settlementRatio = paramMgr.getDoubleValue(MissionWeightParameters.INSTANCE,
 														metaMission.getType().name(), 1D);
-					baseProb.addModifier("settlementratio", settlementRatio);
+					baseProb.addModifier("settlement.ratio", settlementRatio);
 
 					logger.info(person, metaMission.getType().getName() 
 							+ " " + baseProb.getOutput());
-					if (baseProb.getScore() > 0) {
+					if (score > 0) {
 						missionProbCache.add(new MissionRating(metaMission, baseProb));
 						totalProbCache += baseProb.getScore();
 					}
@@ -260,7 +240,7 @@ public class MissionManager implements Serializable {
 		}
 
 		if (totalProbCache == 0D) {
-			logger.fine(person, "Has zero total mission probability weight. No mission selected.");
+			logger.info(person, 10_000, "Has zero total mission probability weight. No mission selected.");
 
 			return null;
 		}
@@ -271,7 +251,7 @@ public class MissionManager implements Serializable {
 		// Determine which mission is selected.
 		MissionRating selectedMetaMission = null;
 		for (MissionRating possible : missionProbCache) {
-			double probWeight = possible.score.getScore();
+			double probWeight = possible.getScore().getScore();
 			if (r <= probWeight) {
 				selectedMetaMission = possible;
 				break;
@@ -288,8 +268,10 @@ public class MissionManager implements Serializable {
 						selectedMetaMission, missionProbCache);
 						
 		// Construct the mission and needs a review
-		result = selectedMetaMission.meta.constructInstance(person, true);
+		result = selectedMetaMission.getMeta().constructInstance(person, true);
 
+		person.getMind().getTaskManager().setMissionRatings(missionProbCache, selectedMetaMission);
+		
 		return result;
 	}
 

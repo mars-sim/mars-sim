@@ -5,35 +5,37 @@ Project: https://mars-sim.com
 GitHub: https://github.com/mars-sim/mars-sim  
 
 ------------------------------------------|---------------------
-## Version 3.8.0 (Sun 21 Jul 2024)
+## Version 3.8.0 (Sun 4 Aug 2024)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
   <LI>Agency: add "International Space Research Alliance" (ISRA), a Chinese-led 
   	  multi-national alliance and Taiwan nation state.</LI>
-  <LI>Computing: model heat dissipation. Separate power demand from cooling demand.</LI>  
-  <LI>Country: add Taiwan as nation state.</LI>  	  
-  <LI>GitHub: make use of Gitflow and GitHub Action for building binary releases.</LI>
+  <LI>Computing: rework heat dissipation and separate power demand from cooling demand.</LI>  
+  <LI>Country: incorporate Taiwan as nation state.</LI>  
+  <LI>Drone: add modeling thrust and potential energy.</LI>  
   <LI>Goods Manager: rework relationship with objectives.</LI>
   <LI>Group Activity: add group activities for a settlement. e.g. birthday parties, 
   	  council announcements, team meetings etc.</LI>
   <LI>Health: streamline MedicalConfig, health problem and complaints.</LI>
-  <LI>Heating: revamp heat sink & ventilation. Break up into various methods.</LI>  
+  <LI>Heating: revamp heat sink & ventilation.</LI>  
   <LI>Medical: rework prescribing medication, examining bodies, and recovery tasks.</LI>
-  <LI>Preferences: manage preference by categories.</LI>
+  <LI>Preferences: manage settlement preferences in various categories of mission, 
+      science and task.</LI>
   <LI>Process Definitions: standardize approach in defining processes such as salvage, 
       food production and manufacturing.</LI>  
-  <LI>Resource Process: respond better to toggling resource on demand.</LI> 
+  <LI>Releases: integrate Gitflow and GitHub Action for building binary releases.</LI>
+  <LI>Resource Process: respond better to toggling resources on-demand.</LI> 
   <LI>Settlement Tasks: tasks can be selected by On duty & Off duty persons.</LI>
   <LI>Settlement Template: may define default objective optionally.</LI>
 </OL>
   
 ### B. UI IMPROVEMENT :
 <OL>
-  <LI>Backlog: add showing the work scope of tasks.</LI>
-  <LI>Building Tab: add tracking power and heating params.</LI>
+  <LI>Backlog: add a column showing the task's work scope.</LI>
+  <LI>Building Tab: add tracking heating system parameters.</LI>
   <LI>Exploration: show types of rocks collected when exploring sites.</LI>	
-  <LI>Health Log: show a person's health history log with complaint types and # of occurrence.</LI>
+  <LI>Health Log: show a person's health history log with complaint types, date started and date cured.</LI>
   <LI>Monitor Tool: support and filter authorities and settlements in one single combobox.</LI>
   <LI>Preference: show # active Missions controlled by Preference panel.</LI>
   <LI>Settlement: add new Process History tab showing all completed Processes.</LI>
@@ -42,17 +44,17 @@ GitHub: https://github.com/mars-sim/mars-sim
 ### C. FIXES :
 <OL>
   <LI>Airlock: correctly looks for airlock with least number of occupants.</LI>	
-  <LI>Heating: remove temperature instability by use of entropy to 
-  	  relate temperature change and heat change.</LI> 
+  <LI>Heating: manage temperature instability via entropy change to 
+  	  relate temperature change and heat transfer.</LI> 
   <LI>Navigation: rework vehicle movement to consume fuel and battery power correctly.</LI>	
-  <LI>Parking: avoid excessive CPU util on finding vehicle parking locations.</LI>
+  <LI>Parking: set limits in looking for vehicle parking locations recursively.</LI>
   <LI>Power Generation: correct how power grid turns on/off buildings during 
   	  power surplus/deficit.</LI>  
-  <LI>Resource: correct budgeting essential resource upon demand.</LI> 
+  <LI>Resource: correct budgeting essential resource on-demand.</LI> 
   <LI>Resource: resolve dwindling amount of methane and hydrogen.</LI>
   <LI>Robot Charging: avoid robot battery depletion. Ensure wireless charging 
   	  always possible.</LI> 
-  <LI>Salvage Process: Correct problem when scoring the salvage of a Vehicle. </LI>
+  <LI>Salvage Process: Correct problem when scoring the salvage of a vehicle. </LI>
 </OL>
 
 

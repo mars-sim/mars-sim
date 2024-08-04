@@ -26,7 +26,6 @@ import com.mars_sim.core.data.MSolDataItem;
 import com.mars_sim.core.data.MSolDataLogger;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.MarsSurface;
-import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentInventory;
@@ -1677,8 +1676,8 @@ public abstract class Vehicle extends Unit
 		if (!trail.isEmpty()) {
 			Coordinates lastLocation = trail.get(trail.size() - 1);
 			if (!lastLocation.equals(location) 
-					&& (lastLocation.getDistance(location) >= TerrainElevation.STEP_KM
-					&& !trail.contains(location)))
+//					&& (lastLocation.getDistance(location) >= TerrainElevation.STEP_KM
+					&& !trail.contains(location))
 				trail.add(location);
 		} else if (!trail.contains(location)) {
 			trail.add(location);

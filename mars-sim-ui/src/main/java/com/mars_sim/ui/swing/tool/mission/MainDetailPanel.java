@@ -574,7 +574,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			// Check if the mission is done and the members have been disbanded
 			memberOuterPane.removeAll();
 			memberOuterPane.add(memberLabel);
-			memberLabel.setText(" Disbanded: " + printMembers(mission));
+			memberLabel.setText("    [Disbanded] : " + printMembers(mission));
 		}
 		else {
 			memberOuterPane.removeAll();
