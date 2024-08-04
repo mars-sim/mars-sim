@@ -146,7 +146,8 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	@Override
 	protected Object getEntityValue(Vehicle vehicle, int columnIndex) {
 		Object result = null;
-
+		double value = 0.0;
+		
 		switch (columnIndex) {
 			case NAME : 
 				result = vehicle.getName();
@@ -206,8 +207,13 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 			} break;
 
 			case CREW : {
-				if (vehicle instanceof Crewable c)
-					result = c.getCrewNum();
+				if (vehicle instanceof Crewable c) {
+					int num = c.getCrewNum();
+					if (num == 0)
+						result = null;
+					else
+						result = num;
+				}
 			} break;
 
 			case DRIVER :
@@ -215,7 +221,11 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				break;
 
 			case SPEED :
-				result = vehicle.getSpeed();
+				value = vehicle.getSpeed();
+				if (value == 0.0)
+					result = null;
+				else
+					result = value;
 				break;
 
 			// Status is a combination of Mechanical failure and maintenance
@@ -236,28 +246,52 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				if (failure != null) result = failure.getName();
 			} break;
 
-			case WATER : 
-				result = vehicle.getAmountResourceStored(ResourceUtil.waterID);
+			case WATER :
+				value = vehicle.getAmountResourceStored(ResourceUtil.waterID);
+				if (value == 0.0)
+					result = null;
+				else
+					result = value;
 				break;
 
 			case FOOD : 
-				result = vehicle.getAmountResourceStored(ResourceUtil.foodID);
+				value = vehicle.getAmountResourceStored(ResourceUtil.foodID);
+				if (value == 0.0)
+					result = null;
+				else
+					result = value;
 				break;
 
 			case OXYGEN : 
-				result = vehicle.getAmountResourceStored(ResourceUtil.oxygenID);
+				value = vehicle.getAmountResourceStored(ResourceUtil.oxygenID);
+				if (value == 0.0)
+					result = null;
+				else
+					result = value;
 				break;
 
 			case METHANOL : 
-				result = vehicle.getAmountResourceStored(ResourceUtil.methanolID);
+				value = vehicle.getAmountResourceStored(ResourceUtil.methanolID);
+				if (value == 0.0)
+					result = null;
+				else
+					result = value;
 				break;
 
-			case ROCK_SAMPLES : 
-				result = vehicle.getAmountResourceStored(ResourceUtil.rockSamplesID);
+			case ROCK_SAMPLES : ;
+				value = vehicle.getAmountResourceStored(ResourceUtil.rockSamplesID);
+				if (value == 0.0)
+					result = null;
+				else
+					result = value;
 				break;
 
-			case ICE : 
-				result = vehicle.getAmountResourceStored(ResourceUtil.iceID);
+			case ICE :
+				value = vehicle.getAmountResourceStored(ResourceUtil.iceID);
+				if (value == 0.0)
+					result = null;
+				else
+					result = value;
 				break;
 			
 			default:

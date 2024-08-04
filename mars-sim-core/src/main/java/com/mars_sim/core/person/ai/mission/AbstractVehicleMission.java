@@ -23,6 +23,7 @@ import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentType;
@@ -114,8 +115,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static Set<Integer> unNeededParts = ItemResourceUtil.convertNameArray2ResourceIDs(
 															new String[] {ItemResourceUtil.FIBERGLASS});
 	// Data members
-	/** The msol cache. */
-	private int msolCache;
 	/** The current navpoint index. */
 	private int navIndex = 0;
 	// When was the last check on the remaining resources
@@ -140,7 +139,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	/** The vehicle currently used in the mission. */
 	private Vehicle vehicle;
 	/** The last operator of this vehicle in the mission. */
-	private Worker lastOperator;
+//	private Worker lastOperator;
 	/** The current operate vehicle task. */
 	private OperateVehicle operateVehicleTask;
 	/** Details of the loading operation */
@@ -154,6 +153,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private transient Map<Integer, Integer> equipmentNeededCache;
 
 	private transient Map<Integer, Number> cachedParts = null;
+	
+	/** A collection of locations that make up the vehicle's trail. */
+	private List<Coordinates> trail = new ArrayList<>();
 	/** List of navpoints for the mission. */
 	private List<NavPoint> navPoints = new ArrayList<>();
 		
@@ -618,6 +620,11 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 
 		else if (DISEMBARKING.equals(phase)) {
+			// Update the distances only once per msol
+			computeDistanceCurrentLegTravelled();
+			computeTotalDistanceRemaining();
+			computeTotalDistanceTravelled();
+			
 			endMission(null);
 		}
 		else {
@@ -645,16 +652,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 		else if (TRAVELLING.equals(phase)) {
 			performTravelPhase(member);
-			
-//			int msol = getMarsTime().getMillisolInt();
-//			if (msolCache != msol) {
-//				msolCache = msol;
-				// Update the distances only once per msol
-//				computeDistanceCurrentLegTravelled();
-//				computeDistanceCurrentLegRemaining();
-//				computeTotalDistanceRemaining();
-//				computeTotalDistanceTravelled();
-//			}
 		}
 		else if (DISEMBARKING.equals(phase)) {
 			// After arriving at the settlement
@@ -663,9 +660,23 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			}
 			else
 				logger.severe(getName() + ": Current navpoint is not a settlement.");
+			
+//			int msol = getMarsTime().getMillisolInt();
+//			if (msolCache != msol) {
+//				msolCache = msol;
+//				// Update the distances only once per msol
+//				computeDistanceCurrentLegTravelled();
+//				computeTotalDistanceRemaining();
+//				computeTotalDistanceTravelled();
+//			}
 		}
 	}
 
+	/**
+	 * Performs the loading phase.
+	 * 
+	 * @param member
+	 */
 	private void performLoadingPhase(Worker member) {
 		Vehicle v = getVehicle();
 
@@ -741,6 +752,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			
 			reachedDestination = current.equals(target)
 					|| distance < SMALL_DISTANCE;
+			
+			// Add the location to the trail if outside on a mission
+			addToTrail(current);
 
 //			logger.info(vehicle, "Travelling from (" + current + ") to (" + target + "). Distance: " + Math.round(distance * 100.0)/100.0 + " km.");
 			malfunction = vehicle.getMalfunctionManager().hasMalfunction();
@@ -809,7 +823,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 						}
 					}
 						
-					lastOperator = member;
+//					lastOperator = member;
 					return;
 				}
 			}
@@ -843,6 +857,32 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				// If vehicle has unrepairable malfunction, end mission.
 				getHelp(UNREPAIRABLE_MALFUNCTION);
 			}
+		}
+	}
+
+	/**
+	 * Gets the vehicle's trail as a collection of coordinate locations.
+	 *
+	 * @return trail collection
+	 */
+	public Collection<Coordinates> getTrail() {
+		return trail;
+	}
+	
+	/**
+	 * Adds a location to the vehicle's trail if appropriate.
+	 *
+	 * @param location location to be added to trail
+	 */
+	public void addToTrail(Coordinates location) {
+		if (!trail.isEmpty()) {
+			Coordinates lastLocation = trail.get(trail.size() - 1);
+			if (!lastLocation.equals(location) 
+					&& (lastLocation.getDistance(location) >= TerrainElevation.STEP_KM
+					&& !trail.contains(location)))
+				trail.add(location);
+		} else if (!trail.contains(location)) {
+			trail.add(location);
 		}
 	}
 
@@ -1189,7 +1229,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	/**
 	 * Determines the emergency destination settlement for the mission if one is
 	 * reachable, otherwise sets the emergency beacon and ends the mission.
-
+	 * 
+	 * @param reason
 	 */
 	protected final void determineEmergencyDestination(MissionStatus reason) {
 		Settlement oldHome = getStartingSettlement();
@@ -1301,7 +1342,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	/**
 	 * Time passing for mission.
 	 *
-	 * @param time the amount of time passing (in millisols)
+	 * @param pulse the clock pulse showing the amount of time passing (in millisols)
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
@@ -1505,6 +1546,11 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
 	}
 
+	/**
+	 * Gets the last navpoint.
+	 * 
+	 * @return
+	 */
 	private Coordinates getLastNavpoint() {
 		if (navPoints.isEmpty()) {
 			return null;
@@ -1618,7 +1664,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 
 	/**
-	 * Gets the navpoints
+	 * Gets a list of navpoints.
 	 * 
 	 * @return navpoint
 	 */
@@ -1642,7 +1688,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 	
 	/**
-	 * Gets the current navpoint the mission is stopped at.
+	 * Is the current navpoint the mission is stopped at a settlement ?
 	 * 
 	 * @return navpoint or null if mission is not stopped at a navpoint.
 	 */
@@ -1698,7 +1744,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 
 	/**
-	 * What is the current destination of the Mission. The isTravelling flag
+	 * Gets the current destination of the Mission. The isTravelling flag
 	 * identifies if the Mission is on the way.
 	 */
 	@Override
@@ -1710,7 +1756,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 
 	/**
-	 * Get the travel mission's current status.
+	 * Gets the travel mission's current status.
 	 * 
 	 * @return travel status
 	 */
@@ -1720,7 +1766,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 
 	/**
-	 * Set the travel mission's current status.
+	 * Sets the travel mission's current status.
 	 * 
 	 * @param newTravelStatus the mission travel status.
 	 */
@@ -1986,6 +2032,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			if (distanceProposed != result) {
 				// Record the distance
 				distanceProposed = result;
+				
 				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);	
 			}
 		}
@@ -2103,7 +2150,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 
 	/**
-	 * Start the Embarking phase.
+	 * Starts the Embarking phase.
 	 */
 	private void startLoadingPhase() {
 		setPhase(LOADING, getStartingSettlement().getName());

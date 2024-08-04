@@ -66,6 +66,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private JLabel pilotLabel;
     private JLabel destinationTextLabel;
     private JLabel hoveringHeightLabel;
+    private JLabel trailLabel;
     
     private DirectionDisplayPanel directionDisplay;
     private TerrainDisplayPanel terrainDisplay;
@@ -205,7 +206,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 		mainPanel.add(locPanel, BorderLayout.CENTER);
 		
 		// Prepare the top panel using spring layout.
-		AttributePanel destinationSpringPanel = new AttributePanel(10);
+		AttributePanel destinationSpringPanel = new AttributePanel(11);
 		locPanel.add(destinationSpringPanel, BorderLayout.NORTH);
         
         // Prepare destination latitude label.
@@ -239,6 +240,9 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         }
         remainingDistanceLabel = destinationSpringPanel.addRow("Remaining Distance", distanceText);
  
+        int numTrailSpots = vehicle.getTrail().size();       
+        trailLabel = destinationSpringPanel.addRow("# of trail spots", numTrailSpots + "");
+        
         // Prepare ETA label.
         etaCache = "";
         if (mission instanceof VehicleMission vm) {
@@ -411,6 +415,10 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         	etaLabel.setText("");
         }
 
+        int numTrailSpots = vehicle.getTrail().size();
+        
+        trailLabel.setText(numTrailSpots + "");
+        
         // Update direction display
         directionDisplay.update();
 

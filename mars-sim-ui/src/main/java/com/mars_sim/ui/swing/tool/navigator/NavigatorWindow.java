@@ -81,6 +81,7 @@ import com.mars_sim.mapdata.map.Map;
 import com.mars_sim.mapdata.map.MapLayer;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ConfigurableWindow;
+import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
@@ -141,7 +142,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public static final String NAME = Msg.getString("NavigatorWindow.title"); //$NON-NLS-1$
 	public static final String ICON = "mars";
 	public static final String PIN_ICON = "pin";
-
+	public static final String MAP_ICON = "settlement_map";
+	
 	public static final int MAP_BOX_WIDTH = Map.MAP_BOX_WIDTH; // Refers to Map's MAP_BOX_WIDTH in mars-sim-mapdata maven submodule
 	public static final int MAP_BOX_HEIGHT = Map.MAP_BOX_HEIGHT;
 	
@@ -217,6 +219,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private Settlement selectedSettlement;
 	
 	private MapDataUtil mapDataUtil = MapDataUtil.instance();
+	
+	private Icon mapIcon = ImageLoader.getIconByName(MAP_ICON);
 
 	/**
 	 * Constructor.
@@ -855,13 +859,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		if (oldRes != 0)
 			intialValue = LEVEL + oldRes;
 		
-		return JOptionPane.showOptionDialog(null,
+		return JOptionPane.showOptionDialog(getDesktop(),
 			"Choose res level for '" + newMapType 
 			+ "' map type ? (Will download if not available locally)", 
 			"Surface Map Level",
 			JOptionPane.YES_NO_CANCEL_OPTION,
 			JOptionPane.QUESTION_MESSAGE,
-			null,
+			mapIcon,
 			options,
 			intialValue);
 	}

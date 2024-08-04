@@ -96,7 +96,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private static final MissionPhase ABORTED_PHASE = new MissionPhase("aborted", Stage.CLOSEDOWN);
 	protected static final MissionPhase REVIEWING = new MissionPhase("reviewing", Stage.PREPARATION);
 
-
 	protected static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
 	private static final MissionStatus MISSION_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
 	private static final MissionStatus MISSION_ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
@@ -110,16 +109,14 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private int missionCapacity;
 	/** The mission priority (between 1 and 5, with 1 the lowest, 5 the highest) */
 	private int priority = 2;
-
+	/** Unique identifier  */
+	protected int identifier;
 	
 	/** Has the current phase ended? */
 	private boolean phaseEnded;
 	/** True if mission is completed. */
 	private boolean done = false;
 	private boolean aborted = false;
-
-	/** Unique identifier  */
-	protected int identifier;
 	
 	/** The Name of this mission. */
 	private String missionName;
@@ -306,6 +303,11 @@ public abstract class AbstractMission implements Mission, Temporal {
 		return clock.getMarsTime();
 	}
 	
+	/**
+	 * Gets the master clock instance.
+	 * 
+	 * @return
+	 */
 	protected MasterClock getMasterClock() {
 		return clock;
 	}
@@ -331,7 +333,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Registers this historical mission event about a Member
+	 * Registers this historical mission event about a member.
 	 * 
 	 * @param member
 	 * @param type
@@ -489,7 +491,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Get the Stage
+	 * Gets the Stage.
 	 */
 	@Override
 	public Stage getStage() {
@@ -541,6 +543,11 @@ public abstract class AbstractMission implements Mission, Temporal {
 		fireMissionUpdate(MissionEventType.PHASE_EVENT, newPhase);
 	}
 
+	/**
+	 * Adds a mission log.
+	 * 
+	 * @param entry
+	 */
 	protected void addMissionLog(String entry) {
 		log.addEntry(entry);
 	}

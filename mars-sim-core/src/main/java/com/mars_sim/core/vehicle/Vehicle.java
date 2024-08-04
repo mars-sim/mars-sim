@@ -1674,7 +1674,6 @@ public abstract class Vehicle extends Unit
 	 * @param location location to be added to trail
 	 */
 	public void addToTrail(Coordinates location) {
-
 		if (!trail.isEmpty()) {
 			Coordinates lastLocation = trail.get(trail.size() - 1);
 			if (!lastLocation.equals(location) 

@@ -17,7 +17,6 @@ import com.mars_sim.core.structure.building.utility.heating.HeatMode;
 import com.mars_sim.core.structure.building.utility.heating.HeatSource;
 import com.mars_sim.core.structure.building.utility.heating.HeatSourceType;
 import com.mars_sim.core.structure.building.utility.heating.ThermalGeneration;
-import com.mars_sim.core.structure.building.utility.power.PowerGeneration;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 
@@ -152,9 +151,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 		Object result = null;
 
 		ThermalGeneration furnace = building.getThermalGeneration();
-		
-		PowerGeneration power = building.getPowerGeneration();
-		
+	
 		switch (columnIndex) {
 
 		case NAME: 
@@ -183,8 +180,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 			break;
 			
 		case POWER_GEN:
-			if (power != null)
-				result = building.getGeneratedPower();
+			result = building.getGeneratedPower();
 			break;
 			
 		case DELTA_TEMP:
