@@ -44,9 +44,9 @@ public class PersonTaskManager extends TaskManager {
 	
 	// Data members
 	
-	private List<MissionRating> missionProbCache;
+	private transient List<MissionRating> missionProbCache;
 	
-	private MissionRating selectedMissionRating;
+	private transient MissionRating selectedMissionRating;
 	
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;

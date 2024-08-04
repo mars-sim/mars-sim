@@ -464,6 +464,7 @@ public abstract class TaskManager implements Serializable {
 
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			selectedTask = createTask(selectedJob);
+			
 			if (taskProbCache.getCreatedOn() != null) {
 				// If it is a cache made dynamically then log it
 				RatingLog.logSelectedRating(getDiagnosticsModule(), worker.getName(), selectedJob,

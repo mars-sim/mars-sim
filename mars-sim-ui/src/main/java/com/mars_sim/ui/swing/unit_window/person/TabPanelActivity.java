@@ -191,7 +191,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		};
 		missionCacheTable.setDefaultRenderer(Double.class,
 						new NumberCellRenderer(2, true));
-		missionCacheTable.setPreferredScrollableViewportSize(new Dimension(225, 60));
+		missionCacheTable.setPreferredScrollableViewportSize(new Dimension(225, 80));
 		missionCacheTable.getColumnModel().getColumn(0).setPreferredWidth(170);
 		missionCacheTable.getColumnModel().getColumn(1).setPreferredWidth(20);
 		// Add sorting
@@ -387,18 +387,20 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 	private static class MissionCacheModel extends AbstractTableModel {
 		private List<MissionRating> missions = Collections.emptyList();
-//		private MissionRating selected;
-		
+
 		void update(Worker worker) {
 			
 			if (worker instanceof Person) {
-				missions =  ((PersonTaskManager)(worker.getTaskManager())).getMissionProbCache();		
+				List<MissionRating> newMissions =  ((PersonTaskManager)(worker.getTaskManager())).getMissionProbCache();
+				if (!missions.equals(newMissions)) {
+					missions = newMissions;
+					fireTableDataChanged();
+				}
 			}
 			else {
 				missions = Collections.emptyList();
 			}
 
-			fireTableDataChanged();
 		}
 
 		/**

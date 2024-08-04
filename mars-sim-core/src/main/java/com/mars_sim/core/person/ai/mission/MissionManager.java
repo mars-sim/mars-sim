@@ -231,17 +231,20 @@ public class MissionManager implements Serializable {
 
 					logger.info(person, metaMission.getType().getName() 
 							+ " " + baseProb.getOutput());
-					if (score > 0) {
-						missionProbCache.add(new MissionRating(metaMission, baseProb));
+					if (score > 0) {	
 						totalProbCache += baseProb.getScore();
 					}
 				}
+				
+				missionProbCache.add(new MissionRating(metaMission, baseProb));
 			}
 		}
 
-		if (totalProbCache == 0D) {
+		if (totalProbCache <= 0D) {
 			logger.info(person, 10_000, "Has zero total mission probability weight. No mission selected.");
 
+			person.getMind().getTaskManager().setMissionRatings(missionProbCache, null);
+			
 			return null;
 		}
 

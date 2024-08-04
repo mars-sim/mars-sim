@@ -112,7 +112,7 @@ public class TaskCache {
         for (TaskJob entry: tasks) {
             double probWeight = entry.getScore().getScore();
             if (r <= probWeight) {
-                // THis is a transient cache so remove the selected entry
+                // This is a transient cache so remove the selected entry
                 if (createdOn != null) {
                     lastSelected = entry;
                     tasks.remove(entry);
