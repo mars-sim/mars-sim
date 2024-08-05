@@ -65,7 +65,7 @@ public class Battery implements Serializable {
     /** Performance factor. */
     private double performance;
 	/** The percentage that triggers low power warning. */
-    private double lowPowerPercent = 10;
+    private double lowPowerPercent = 5;
     
 	/** The current energy stored in kWh. */
 	private double kWhStored;
@@ -186,46 +186,47 @@ public class Battery implements Serializable {
      * @return energy to be delivered [in kWh]
      */
     public double requestEnergy(double kWh, double time) {
-    	if (!isLowPower) {
-    		double powerRequest = kWh / time;
-    		
-    		double powerMax = getMaxPowerDraw(time);
-    				
-    		double energyToDeliver = 0;
-	    	double energyCanSupply = energyStorageCapacity - energyStorageCapacity * lowPowerPercent / 100;
-	    	if (energyCanSupply <= 0)
-	    		return 0;
-	    	
-//    		double powerAvailable = 0;
-//    		if (powerRequest <= powerMax)
-//    			powerAvailable = powerRequest;
-//    		else
-//    			powerAvailable = powerMax;
-	    	
-    		energyToDeliver = Math.min(kWhStored, Math.min(energyCanSupply, Math.min(powerRequest * time, Math.min(kWh, powerMax * time))));
-
-          	logger.log(unit, Level.INFO, 20_000, 
-          			"[Battery Status] "
-          	       	+ "currentEnergy: " + Math.round(kWhStored * 1_000.0)/1_000.0 + KWH__
-          			+ "energyCanSupply: " + Math.round(energyCanSupply * 1_000.0)/1_000.0 + KWH__
-                	+ "kWh: " + + Math.round(kWh * 1_000.0)/1_000.0 + KWH__
-                  	+ "energyToDeliver: " + + Math.round(energyToDeliver * 1_000.0)/1_000.0 + KWH__
-                	+ "time: " + + Math.round(time * 1_000.0)/1_000.0 + " hrs  "
-          			+ "powerRequest: " + + Math.round(powerRequest * 1_000.0)/1_000.0 + KW__
-          			+ "powerMax: " + + Math.round(powerMax * 1_000.0)/1_000.0 + KW__
-           	);
-           	
-	    	kWhStored -= energyToDeliver; 
-	    	unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
-
-            updateLowPowerMode();
-                
-            updateAmpHourCapacity();
-            
-            return energyToDeliver;
-    	}
     	
-		return 0;
+		double powerRequest = kWh / time;
+		
+		double powerMax = getMaxPowerDraw(time);
+				
+		double energyToDeliver = 0;
+		
+		boolean lowBatteryAlarm = false;
+				
+    	double energyCanSupply = energyStorageCapacity;
+    	
+    	if (energyCanSupply <= 0.001)
+    		logger.log(unit, Level.INFO, 20_000, 
+          			"No more battery. energyStorageCapacity: " + Math.round(energyStorageCapacity * 1_000.0)/1_000.0 + KWH__);
+    		
+		if (kWhStored < energyStorageCapacity * lowPowerPercent / 100)
+			lowBatteryAlarm = true;
+
+		energyToDeliver = Math.min(kWhStored, Math.min(energyCanSupply, 
+						Math.min(powerRequest * time, Math.min(kWh, powerMax * time))));
+
+    	if (lowBatteryAlarm)
+			logger.log(unit, Level.WARNING, 20_000, 
+      			"[Low Battery Alarm] "
+                + "kWh: " + + Math.round(kWh * 1_000.0)/1_000.0 + KWH__
+      	       	+ "kWhStored: " + Math.round(kWhStored * 1_000.0)/1_000.0 + KWH__
+      			+ "energyCanSupply: " + Math.round(energyCanSupply * 1_000.0)/1_000.0 + KWH__
+              	+ "energyToDeliver: " + + Math.round(energyToDeliver * 1_000.0)/1_000.0 + KWH__
+            	+ "time: " + + Math.round(time * 1_000.0)/1_000.0 + " hrs  "
+      			+ "powerRequest: " + + Math.round(powerRequest * 1_000.0)/1_000.0 + KW__
+      			+ "powerMax: " + + Math.round(powerMax * 1_000.0)/1_000.0 + KW__
+       	);
+       	
+    	kWhStored -= energyToDeliver; 
+    	unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
+
+        updateLowPowerMode();
+            
+        updateAmpHourCapacity();
+        
+        return energyToDeliver;
     }
 
     /**

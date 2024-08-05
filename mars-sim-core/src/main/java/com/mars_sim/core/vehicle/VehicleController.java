@@ -256,6 +256,9 @@ import com.mars_sim.tools.util.RandomUtil;
 		 
 		 double aveForce = 0;
 		 
+		 // Calculate the kinetic energy 
+		 double kineticEnergy = .5 * mass * vMS * vMS;
+		 
 		 double potentialEnergyDrone = 0;
 		  
 		 double powerThrustDrone = 0;
@@ -263,7 +266,7 @@ import com.mars_sim.tools.util.RandomUtil;
 		 airDensity = sim.getWeather().getAirDensity(vehicle.getCoordinates());
 			
 		 if (vehicle instanceof Rover) {
-
+			 
 			 // Calculates forces and power
 			 powerConstantSpeed = calculateVehicleForces(weight, vMS , averageSpeed, fGravity);
 		 }
@@ -287,6 +290,8 @@ import com.mars_sim.tools.util.RandomUtil;
 			 double radiusPropeller = width / 8;
 		    	
 			 double radiusPropellerSquare = radiusPropeller * radiusPropeller;	
+			 // For now, set thrustCoefficient to 0.3
+			 double thrustCoefficient = 0.3;
 			 
 			 double thrustForceTotal = 0;
 			 
@@ -330,8 +335,7 @@ import com.mars_sim.tools.util.RandomUtil;
 			 
 			 // Future: will remain thrustToWeightRatio1 = thrustForceTotal / weight to be around 2 and optimize vKPH
 			 // 		Thus adjusting vKPH according to the weight to save power
-			 
-			 
+			 		 
 			 if (vKPH >= uKPH) {
 				 // Case A: If speeding up	
 	 
@@ -354,24 +358,27 @@ import com.mars_sim.tools.util.RandomUtil;
 					gainPotentialEnergy = weight * ascentHeight;
 					
 					potentialEnergyDrone = weight * currentHoveringHeight;
-
-					 
+					// alpha1 is the angle of propeller disk. 0 -> pi/2; 
 					double alpha1 = Math.PI / 6;
-					
+					// alpha2 is the angle of downstream. 0 -> pi/2
 					double alpha2 = Math.PI / 7;
+					
+					// if going slightly upward, alpha1 > alpha2 
+					// if going slightly downward, alpha1 < alpha2 ?
+					
 					// 1000 RPM ~ 10.47 rad/s
 					double radPerSec = 10;
 					
 					double vAirFlow =  (vMS * Math.sin(alpha2) + vPropeller * Math.cos(alpha1-alpha2)) * radiusPropeller * radPerSec; // vPropeller + vMS;
 					
-					thrustForceTotal = 2 * airDensity * Math.PI * radiusPropellerSquare * vAirFlow * vPropeller;
+					thrustForceTotal = thrustCoefficient * 2 * airDensity * Math.PI * radiusPropellerSquare * vAirFlow * vPropeller;
 					// Double check with the ratio. Need to be at least 2:1
 					thrustToWeightRatio1 = thrustForceTotal / weight;
 					// The gain of potential energy of the drone require extra the power drain on the drone's fuel and battery system
 					powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor + gainPotentialEnergy / secs;				 
 		
-					logger.log(vehicle, Level.INFO, 0, "Case A1: u <= 1.1. Starting to ascend and tilt forward - " 
-							 + "d: " + Math.round(distanceTravelled * 10.0)/10.0 + KM__
+					logger.log(vehicle, Level.INFO, 20_000, "Case A1: u <= 1.1. Starting to ascend & tilt forward - " 
+							 + "d: " + Math.round(distanceTravelled * 1000.0)/1000.0 + KM__
 							 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
 							 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
 							 + "ascentHeight: " + Math.round(ascentHeight * 10.0)/10.0 + M__
@@ -399,7 +406,7 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // Power to maintain the height of the drone :
 					 // Previously, powerDrone = mg * currentHoveringHeight / 0.9 / airDensity / vMS;
 					 
-					 thrustForceTotal = 2 * airDensity * Math.PI * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;
+					 thrustForceTotal = thrustCoefficient * 2 * airDensity * Math.PI * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;
 					 // Double check with the ratio. Need to be at least 2:1
 					 thrustToWeightRatio1 = thrustForceTotal / weight;					
 					 // Zero gain of potential energy of the drone
@@ -417,8 +424,8 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // liftToDragRatio = liftForceL / dragForceD;				 
 					 // thrustForceT = weightForceW / liftToDragRatio;
 					
-					 logger.log(vehicle, Level.INFO, 0, "Case A2: v <= 1.1. Hovering - " 
-							 + "d: " + Math.round(distanceTravelled * 10.0)/10.0 + KM__
+					 logger.log(vehicle, Level.INFO, 20_000, "Case A2: v <= 1.1. Hovering - " 
+							 + "d: " + Math.round(distanceTravelled * 1000.0)/1000.0 + KM__
 							 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
 							 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
 							 + "powerDrone: " + Math.round(powerThrustDrone * 1000.0)/1000.0 + W__
@@ -445,14 +452,14 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // Power to maintain the height of the drone :
 					 // Previously, powerDrone = mg * currentHoveringHeight / 0.9 / airDensity / vMS;
 					 
-					 thrustForceTotal = 2 * airDensity * Math.PI * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;
+					 thrustForceTotal = thrustCoefficient * 2 * airDensity * Math.PI * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;
 					 // Double check with the ratio. Need to be at least 2:1
 					 thrustToWeightRatio1 = thrustForceTotal / weight;					
 					 // Zero gain of potential energy of the drone
 					 powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor + gainPotentialEnergy / secs;
 					
-					 logger.log(vehicle, Level.INFO, 0, "Case A3: v >= u. At same height, tilt forward - " 
-							 + "d: " + Math.round(distanceTravelled * 10.0)/10.0 + KM__
+					 logger.log(vehicle, Level.INFO, 20_000, "Case A3: v >= u. At same height, tilt forward - " 
+							 + "d: " + Math.round(distanceTravelled * 1000.0)/1000.0 + KM__
 							 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
 							 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
 							 + "powerDrone: " + Math.round(powerThrustDrone * 1000.0)/1000.0 + W__
@@ -492,19 +499,20 @@ import com.mars_sim.tools.util.RandomUtil;
 						// 1000 RPM ~ 10.47 rad/s
 						double radPerSec = 10;
 						
-						double vAirFlow =  (vMS * Math.sin(alpha2) + vPropeller * Math.cos(alpha1-alpha2)) * radiusPropeller * radPerSec; // vPropeller + vMS;
+						double vAirFlow = (vMS * Math.sin(alpha2) + vPropeller * Math.cos(alpha1-alpha2)) * radiusPropeller * radPerSec; // vPropeller + vMS;
 						
-						thrustForceTotal = 2 * airDensity * Math.PI * radiusPropellerSquare * vAirFlow * vPropeller;
+						thrustForceTotal = thrustCoefficient * 2 * airDensity * Math.PI * radiusPropellerSquare * vAirFlow * vPropeller;
 						// Double check with the ratio. Need to be at least 2:1
 						thrustToWeightRatio1 = thrustForceTotal / weight;
 
 						// The gain of potential energy of the drone require extra the power drain on the drone's fuel and battery system
 						powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor + gainPotentialEnergy / secs;
 
-						logger.log(vehicle, Level.INFO, 0, "Case A4: v >= u. Tilt forward & lift up - " 
-								 + "d: " + Math.round(distanceTravelled * 10.0)/10.0 + KM__
+						logger.log(vehicle, Level.INFO, 20_000, "Case A4: v >= u. Tilt forward & lift up - " 
+								 + "d: " + Math.round(distanceTravelled * 1000.0)/100.0 + KM__
 								 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
 								 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
+								 + "vAirFlow: " + Math.round(vAirFlow * 10.0)/10.0 + M_S__
 								 + "ascentHeight: " + Math.round(ascentHeight * 10.0)/10.0 + M__
 								 + "powerDrone: " + Math.round(powerThrustDrone * 1000.0)/1000.0 + W__
 								 + "thrust: " + Math.round(thrustForceTotal * 1000.0)/1000.0 + N__
@@ -543,14 +551,14 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // Future: need to vary REDUCTION_FACTOR better with equations
 					 double REDUCTION_FACTOR = currentHoveringHeight / STANDARD_HOVERING_HEIGHT;
 						
-					 thrustForceTotal = REDUCTION_FACTOR * 2 * airDensity * Math.PI * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;				
+					 thrustForceTotal = thrustCoefficient * REDUCTION_FACTOR * 2 * airDensity * Math.PI * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;				
 					 // Double check with the ratio. Need to be at least 2:1
 					 thrustToWeightRatio1 = thrustForceTotal / weight;
 					 // the gain of potential energy of the drone require extra the power drain on the drone's fuel and battery system
 					 powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor - lostPotentialEnergy / secs;
 					 
-					 logger.log(vehicle, Level.INFO, 0, "Case B1: v < u. Controlled descent/landing - " 
-							 + "d: " + Math.round(distanceTravelled * 10.0)/10.0 + KM__
+					 logger.log(vehicle, Level.INFO, 20_000, "Case B1: v < u. Controlled descent/landing - " 
+							 + "d: " + Math.round(distanceTravelled * 1000.0)/1000.0 + KM__
 							 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
 							 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
 							 + "descentHeight: " + Math.round(descentHeight * 10.0)/10.0 + M__
@@ -590,7 +598,7 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // Future: need to vary REDUCTION_FACTOR better with equations
 					 double REDUCTION_FACTOR = currentHoveringHeight / STANDARD_HOVERING_HEIGHT;
 						
-					 thrustForceTotal = REDUCTION_FACTOR * 2 * airDensity * Math.PI * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;
+					 thrustForceTotal = thrustCoefficient * REDUCTION_FACTOR * 2 * airDensity * Math.PI * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;
 						
 					 // Double check with the ratio. Need to be at least 2:1
 					 thrustToWeightRatio1 = thrustForceTotal / weight;
@@ -598,8 +606,8 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // the gain of potential energy of the drone require extra the power drain on the drone's fuel and battery system
 					 powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor - lostPotentialEnergy / secs;
 	 
-					 logger.log(vehicle, Level.INFO, 0, "Case B2: v < u. Preparing to descent - " 
-							 + "d: " + Math.round(distanceTravelled * 10.0)/10.0 + KM__
+					 logger.log(vehicle, Level.INFO, 20_000, "Case B2: v < u. Preparing to descent - " 
+							 + "d: " + Math.round(distanceTravelled * 1000.0)/1000.0 + KM__
 							 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
 							 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
 							 + "descentHeight: " + Math.round(descentHeight * 10.0)/10.0 + M__
@@ -638,7 +646,10 @@ import com.mars_sim.tools.util.RandomUtil;
 		 // In [W], not [kW]
 		 avePower = powerConstantSpeed + powerSpeedUp + powerThrustDrone;
 		 
-		 aveForce = avePower / vMS;
+		 if (vMS != uMS)
+			 aveForce = avePower / (vMS - uMS);
+		 else
+			 aveForce = avePower / vMS;
 		 
 		 logger.log(vehicle, Level.INFO, 20_000,  
 				 "aveForce: " + Math.round(aveForce * 1000.0)/1000.0 + N__
@@ -781,11 +792,15 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // Recalculate the new overall energy expenditure [in Wh]
 					 overallEnergyUsed = energySuppliedByBattery;
 					 
+					 // Recalculate the kinetic energy
+					 kineticEnergy = overallEnergyUsed;
+					 
 					 // Recalculate the new speed 
-					 // FUTURE: will consider the on-board accessory vehicle power usage
-					 // m/s = W / (kg * m/s2)
-					 vMS = powerSuppliedByBattery / aveForce;
-
+					 vMS = Math.sqrt(kineticEnergy / .5 / mass);
+					 
+					 // Recalculate the new aveForce 
+					 aveForce = avePower / (vMS - uMS);
+					 
 					 // FUTURE : may need to find a way to optimize motor power usage 
 					 // and slow down the vehicle to the minimal to conserve power	
 					 
@@ -805,7 +820,7 @@ import com.mars_sim.tools.util.RandomUtil;
 					  * delete any of them. Needed for testing when new features are added in future. Thanks !
 					  */			 
 					logger.log(vehicle, Level.INFO, 20_000,  
-								 "Scenario 1B1: accelMotor < 0. Use battery only.  " 
+								 "Scenario 1B1: accelMotor < 0. Battery only. " 
 //								 + "energyByFuel: " + Math.round(energyByFuel * 100.0)/100.0 + WH__
 //								 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG__					
 								 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH__
@@ -815,7 +830,7 @@ import com.mars_sim.tools.util.RandomUtil;
 								 + "uKPH: " 				+ Math.round(uKPH * 100.0)/100.0 + KPH__ 
 								 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH__   	
 								 + "seconds: " 				+ Math.round(secs * 100.0)/100.0 + SEC__
-								 + "distanceTravelled: " +  Math.round(distanceTravelled * 100.0)/100.0  + KM__);
+								 + "distanceTravelled: " +  Math.round(distanceTravelled * 1000.0)/1000.0  + KM__);
 					
 					 // Equate energyByBattery to energySuppliedByBattery in order to add to odometer easily
 					 energyByBattery = energySuppliedByBattery;
@@ -846,7 +861,7 @@ import com.mars_sim.tools.util.RandomUtil;
 								 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH__							 
 								 + "avePower: " 			+ Math.round(avePower * 100.0)/100.0 + W__							
 								 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH__   	
-								 + "distanceTravelled: " +  Math.round(distanceTravelled * 100.0)/100.0  + KM__
+								 + "distanceTravelled: " +  Math.round(distanceTravelled * 1000.0)/1000.0  + KM__
 								 + "seconds: " + Math.round(secs * 100.0)/100.0 + SEC__);
 						 
 					// Equate energyByBattery to energySuppliedByBattery in order to add to odometer easily
@@ -871,10 +886,14 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // Recalculate the new overall energy expenditure [in Wh]
 					 overallEnergyUsed = energySuppliedByBattery + energyByFuel;
 					 
+					 // Recalculate the kinetic energy
+					 kineticEnergy = overallEnergyUsed;
+					 
 					 // Recalculate the new speed 
-					 // FUTURE: will consider the on-board accessory vehicle power usage
-					 // m/s = W / (kg * m/s2)
-					 vMS = avePower / aveForce;
+					 vMS = Math.sqrt(kineticEnergy / .5 / mass);
+					 
+					 // Recalculate the new aveForce 
+					 aveForce = avePower / (vMS - uMS);
 					 	 
 					 // FUTURE : may need to find a way to optimize motor power usage 
 					 // and slow down the vehicle to the minimal to conserve power	
@@ -904,7 +923,7 @@ import com.mars_sim.tools.util.RandomUtil;
 							 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH__							 
 							 + "avePower: " 			+ Math.round(avePower * 100.0)/100.0 + W__							
 							 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH_   							
-							 + "distanceTravelled: " +  Math.round(distanceTravelled * 100.0)/100.0  + KM__);	
+							 + "distanceTravelled: " +  Math.round(distanceTravelled * 1000.0)/1000.0  + KM__);	
 					 
 					 // Equate energyByBattery to energySuppliedByBattery in order to add to odometer easily
 					 energyByBattery = energySuppliedByBattery;
@@ -1055,11 +1074,19 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // Recalculate the new overall energy expenditure [in Wh]
 					 overallEnergyUsed = energySuppliedByBattery;
 					 
+					 // Recalculate the kinetic energy
+					 kineticEnergy = overallEnergyUsed;
+					 
+					 // Recalculate the new speed 
+					 vMS = Math.sqrt(kineticEnergy / .5 / mass);
+					 
+					 // Recalculate the new aveForce 
+					 aveForce = avePower / (vMS - uMS);
+					 
 					 // Recalculate the new speed 
 					 // FUTURE: will consider the on-board accessory vehicle power usage
 					 // m/s = W / (kg * m/s2)
-					 vMS = powerSuppliedByBattery / aveForce;
-					 	 
+			 	 
 					 // FUTURE : may need to find a way to optimize motor power usage 
 					 // and slow down the vehicle to the minimal to conserve power	
 					 
@@ -1075,11 +1102,11 @@ import com.mars_sim.tools.util.RandomUtil;
 					 distanceTravelled = vKPH * hrsTime;
 					 
 					 /*
-						 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
-						 * delete any of them. Needed for testing when new features are added in future. Thanks !
-						 */
+					  * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
+					  * delete any of them. Needed for testing when new features are added in future. Thanks !
+					  */
 					 logger.log(vehicle, Level.INFO, 20_000,  
-								 "Scenario 2B1: accelMotor < 0. Use battery only. " 
+								 "Scenario 2B1: accelMotor < 0. Battery only. " 
 //								 + "energyByFuel: " + Math.round(energyByFuel * 100.0)/100.0 + WH__
 //								 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG__					
 								 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH__
@@ -1089,7 +1116,7 @@ import com.mars_sim.tools.util.RandomUtil;
 								 + "uKPH: " 				+ Math.round(uKPH * 100.0)/100.0 + KPH__ 
 								 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH__  
 								 + "seconds: " 				+ Math.round(secs * 100.0)/100.0 + SEC__
-								 + "distanceTravelled: " +  Math.round(distanceTravelled * 100.0)/100.0  + KM__);
+								 + "distanceTravelled: " +  Math.round(distanceTravelled * 1000.0)/1000.0  + KM__);
 						 
 					 // Equate energyByBattery to energySuppliedByBattery in order to add to odometer easily
 					 energyByBattery = energySuppliedByBattery;	 
@@ -1120,7 +1147,7 @@ import com.mars_sim.tools.util.RandomUtil;
 							 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH__							 
 							 + "avePower: " 			+ Math.round(avePower * 100.0)/100.0 + W__							
 							 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH_   							
-							 + "distanceTravelled: " +  Math.round(distanceTravelled * 100.0)/100.0  + KM__);
+							 + "distanceTravelled: " +  Math.round(distanceTravelled * 1000.0)/1000.0  + KM__);
 						 
 					 // Equate energyByBattery to energySuppliedByBattery in order to add to odometer easily
 					 energyByBattery = energySuppliedByBattery;
@@ -1144,11 +1171,19 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // Recalculate the new overall energy expenditure [in Wh]
 					 overallEnergyUsed = energySuppliedByBattery + energyByFuel;
 					 
+					 // Recalculate the kinetic energy
+					 kineticEnergy = overallEnergyUsed;
+					 
 					 // Recalculate the new speed 
+					 vMS = Math.sqrt(kineticEnergy / .5 / mass);
+					 
+					 // Recalculate the new aveForce 
+					 aveForce = avePower / (vMS - uMS);
+					 
+					 // Recalculate the new force 
 					 // FUTURE: will consider the on-board accessory vehicle power usage
 					 // m/s = W / (kg * m/s2)
-					 vMS = avePower / aveForce;
-					 	 
+			 
 					 // FUTURE : may need to find a way to optimize motor power usage 
 					 // and slow down the vehicle to the minimal to conserve power	
 					 
@@ -1157,7 +1192,9 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // Find new acceleration
 					 accelSpeedUp = (vMS - uMS) / secs; // [in m/s^2]
 					 
-					// Set new vehicle acceleration
+					 // Q: what if vMS < uMS and accelSpeedUp is -ve 
+					 
+					 // Set new vehicle acceleration
 					 vehicle.setAccel(accelSpeedUp);
 					 
 					 // Recompute the new distance it could travel
@@ -1177,7 +1214,7 @@ import com.mars_sim.tools.util.RandomUtil;
 							 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH__							 
 							 + "avePower: " 			+ Math.round(avePower * 100.0)/100.0 + W__							
 							 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH_   							
-							 + "distanceTravelled: " +  Math.round(distanceTravelled * 100.0)/100.0  + KM__);	
+							 + "distanceTravelled: " +  Math.round(distanceTravelled * 1000.0)/1000.0  + KM__);	
 					 
 					 // Equate energyByBattery to energySuppliedByBattery in order to add to odometer easily
 					 energyByBattery = energySuppliedByBattery;
@@ -1225,7 +1262,7 @@ import com.mars_sim.tools.util.RandomUtil;
 		 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
 		 * delete any of them. Needed for testing when new features are added in future. Thanks !
 
-		 logger.info(vehicle, 20_000L, "dist: " + Math.round(distanceTravelled * 100.0)/100.0 
+		 logger.info(vehicle, 20_000L, "dist: " + Math.round(distanceTravelled * 1000.0)/1000.0 
 				 + "  totalEnergyUsed: "  + Math.round(totalEnergyUsed* 100.0)/100.0
 				 + "  totalEnergyUsed / dist: "  + Math.round(totalEnergyUsed/distanceTravelled * 100.0)/100.0
 				 + "  averageRoadLoadPower: " + Math.round(averageRoadLoadPower * 100.0)/100.0);

@@ -386,12 +386,13 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	}
 
 	private static class MissionCacheModel extends AbstractTableModel {
+		
 		private List<MissionRating> missions = Collections.emptyList();
 
 		void update(Worker worker) {
 			
-			if (worker instanceof Person) {
-				List<MissionRating> newMissions =  ((PersonTaskManager)(worker.getTaskManager())).getMissionProbCache();
+			if (missions != null && worker instanceof Person) {
+				List<MissionRating> newMissions = ((PersonTaskManager)(worker.getTaskManager())).getMissionProbCache();
 				if (!missions.equals(newMissions)) {
 					missions = newMissions;
 					fireTableDataChanged();

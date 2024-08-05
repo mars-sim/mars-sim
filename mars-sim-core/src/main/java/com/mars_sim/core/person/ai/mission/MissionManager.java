@@ -241,7 +241,7 @@ public class MissionManager implements Serializable {
 		}
 
 		if (totalProbCache <= 0D) {
-			logger.info(person, 10_000, "Has zero total mission probability weight. No mission selected.");
+//			logger.fine(person, 10_000, "Has zero total mission probability weight. No mission selected.");
 
 			person.getMind().getTaskManager().setMissionRatings(missionProbCache, null);
 			

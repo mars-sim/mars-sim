@@ -71,13 +71,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private String themeCache = "";
 	private String locationStringCache;
 
-	private Unit vicinityUnit;
-	private Unit containerCache;
-	private Building buildingCache;
-	private Settlement settlementCache;
-	
-	private LocationStateType locationStateTypeCache;
-	
+
 	private JLabel vicinityLabel;
 	private JLabel containerLabel;
 	private JLabel settlementLabel;
@@ -88,10 +82,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private JLabel regolithLabel;
 	private JLabel areothermalLabel;
 	
-	
 	private JButton locatorButton;
-
-	private Coordinates locationCache;
 
 	private DisplaySingle lcdLong;
 	private DisplaySingle lcdLat;
@@ -99,8 +90,16 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private DisplayCircular gauge;
 
 	private Dimension latLonDim = new Dimension(150, 40);
-	private Dimension gaugeDim = new Dimension(200, 200);
+	private Dimension gaugeDim = new Dimension(180, 180);
 	private Dimension bannerDim = new Dimension(140, 30);
+	
+	private Unit vicinityUnit;
+	private Unit containerCache;
+	private Building buildingCache;
+	private Settlement settlementCache;
+	private Coordinates locationCache;
+
+	private LocationStateType locationStateTypeCache;
 	
 	/**
 	 * Constructor.
@@ -213,7 +212,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		// Create data panel
 		JPanel dataPanel = new JPanel(new BorderLayout(2, 2));
 		content.add(dataPanel, BorderLayout.CENTER);
-        addBorder(dataPanel, "Data");
+        addBorder(dataPanel, "Location Data");
         
 		if (isPerson || isRobot) {
 			
@@ -221,7 +220,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			dataPanel.add(containerPanel, BorderLayout.NORTH);	
 			
 			activitySpot = containerPanel.addRow("Reserved Spot", "");
-			
 			settlementLabel = containerPanel.addRow("Settlement", "");
 			containerLabel = containerPanel.addRow("Container Unit", "");
 			locationStateLabel = containerPanel.addRow("Location State", "");
