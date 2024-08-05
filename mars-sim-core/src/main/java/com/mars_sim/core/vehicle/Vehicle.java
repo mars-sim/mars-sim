@@ -84,7 +84,6 @@ public abstract class Vehicle extends Unit
 	private static final int MAX_NUM_SOLS = 14;
 	private static final int SPEED_POWER_CHECK_FREQ = 5;
 	
-	private static final double RANGE_FACTOR = 1.2;
 	private static final double MAXIMUM_RANGE = 10_000;
 	
     public static final double VEHICLE_CLEARANCE_0 = 1.4;
@@ -812,8 +811,9 @@ public abstract class Vehicle extends Unit
 	public double getEstimatedRange() {
 
 		// Before the mission is created, the range would be based on vehicle's fuel capacity
-		return Math.min(getBaseRange() / fuelRangeErrorMargin * getMass() / getBeginningMass(), 
-        			getEstimatedFuelEconomy() * getFuelCapacity());
+		return getEstimatedFuelEconomy() * getFuelCapacity();
+//			Math.min(getBaseRange() / fuelRangeErrorMargin, 
+//        			getEstimatedFuelEconomy() * getFuelCapacity() * getMass() / getBeginningMass());
 	}
 	
 	/**
@@ -839,8 +839,7 @@ public abstract class Vehicle extends Unit
     		else {
                 double amountOfFuel = getAmountResourceStored(fuelTypeID);
             	// During the journey, the range would be based on the amount of fuel in the vehicle
-        		range = Math.min(getBaseRange() / fuelRangeErrorMargin * getMass() / getBeginningMass(), 
-        					getEstimatedFuelEconomy() * amountOfFuel);
+        		range = getEstimatedFuelEconomy() * amountOfFuel; // * getMass() / getBeginningMass();
     		}
         }
 

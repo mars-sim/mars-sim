@@ -279,7 +279,7 @@ class FlyerPanel extends WizardPanel {
 			Iterator<Vehicle> i = vehicles.iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
-				if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE)
+				if (vehicle instanceof Drone)
 					units.add(vehicle);
 			}
 			fireTableDataChanged();

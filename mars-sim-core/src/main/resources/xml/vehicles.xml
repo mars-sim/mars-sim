@@ -7,7 +7,7 @@
 	<!-- These are aligned with VehicleType enum-->
 	<!ATTLIST vehicle name CDATA #REQUIRED>
 
-	<!ATTLIST vehicle type (LUV|DELIVERY_DRONE|EXPLORER_ROVER|TRANSPORT_ROVER|CARGO_ROVER) #REQUIRED>
+	<!ATTLIST vehicle type (LUV|DELIVERY_DRONE|CARGO_DRONE|EXPLORER_ROVER|TRANSPORT_ROVER|CARGO_ROVER) #REQUIRED>
 	<!ATTLIST vehicle model CDATA #REQUIRED>
 
 	<!ATTLIST vehicle width CDATA #REQUIRED>
@@ -107,15 +107,15 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<description>A rover for collecting rock samples, ice and regolith.
 			The Explorer Rover is the only rover that has both a lab and a sick bay bed.</description>
 
-		<!-- The power source type for the vehicle (required) -->
+		<!-- type: The power source type for the vehicle (required) -->
 		<!-- Default: varied according to the type of vehicle -->
 		<!-- e.g. "Fission Power Source", "Fuel Power Source" -->
 		
-		<!-- The type of fuel that power source uses (required) -->
+		<!-- fuel: The type of fuel that power source uses (required) -->
 		<!-- e.g. "Nuclear", "Methanol" -->
 		
-		<!-- The average value (could be in kW or kWh) provided by this power source (required) -->
-		<!-- e.g. "15.0" -->
+		<!-- value: The percentage of onboard power usage [in %] (required) -->
+		<!-- e.g. "10.0" -->
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="10.0"/>
 		
 		<!-- The number of battery modules for the vehicle [dimension-less].(required) -->
@@ -318,7 +318,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<energy-per-module value="15" />
 		<fuel-cell-stack number="5" />			
 		<drivetrain-efficiency value=".85" />
-		<base-speed value="35.0" />
+		<base-speed value="30.0" />
 		<base-power value="150" />
 		<empty-mass value="1700.0" />
 		<terrain-handling value="3.0"/>
@@ -369,7 +369,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<energy-per-module value="15" />
 		<fuel-cell-stack number="6" />
 		<drivetrain-efficiency value=".9" />
-		<base-speed value="35.0" />
+		<base-speed value="30.0" />
 		<base-power value="150" />		
 		<empty-mass value="2000.0" />
 		<terrain-handling value="2"/>
@@ -439,20 +439,39 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 	<!-- Delivery Drone -->
 	<vehicle name="Delivery Drone" type="DELIVERY_DRONE" model="A" width="1.75" length="1.75">
-		<description>An unmanned aerial vehicle used for transport of light cargo between settlements</description>
-		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="5.0"/>
+		<description>An unmanned aerial vehicle used for dropping off light cargo at nearby depots and settlements</description>
+		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="2.0"/>
 		<battery-module number="1" />
 		<energy-per-module value="15" />
 		<fuel-cell-stack number="2" />
 		<drivetrain-efficiency value=".95" />
-		<base-speed value="80.0" />
-		<base-power value ="40" />		
-		<empty-mass value="160.0" />
+		<base-speed value="40.0" />
+		<base-power value ="40.0" />		
+		<empty-mass value="177.8" />
 		<crew-size value="0" />
-		<cargo total-capacity="600.0">
-			<capacity resource="methanol" value="150.0" />
-			<capacity resource="oxygen" value="225.0" />
-			<capacity resource="water" value="170.0" />			
+		<cargo total-capacity="1000.0">
+			<capacity resource="methanol" value="200.0" />
+			<capacity resource="oxygen" value="300.0" />
+			<capacity resource="water" value="225.0" />			
 		</cargo>
 	</vehicle>
+	
+	<vehicle name="Cargo Drone" type="CARGO_DRONE" model="A" width="1.75" length="1.75">
+		<description>An unmanned aerial vehicle used for transport of cargo between settlements</description>
+		<power-source type="FUEL_POWER_SOURCE" fuel="METHANE" value="2.0"/>
+		<battery-module number="1" />
+		<energy-per-module value="15" />
+		<fuel-cell-stack number="2" />
+		<drivetrain-efficiency value=".95" />
+		<base-speed value="40.0" />
+		<base-power value ="40.0" />		
+		<empty-mass value="177.8" />
+		<crew-size value="0" />
+		<cargo total-capacity="1500.0">
+			<capacity resource="methane" value="200.0" />
+			<capacity resource="oxygen" value="300.0" />
+			<capacity resource="water" value="225.0" />			
+		</cargo>
+	</vehicle>
+	
 </vehicle-configuration>

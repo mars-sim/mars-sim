@@ -31,6 +31,7 @@ import com.mars_sim.core.person.ai.training.TrainingType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.Rover;
@@ -92,7 +93,8 @@ public abstract class OperateVehicle extends Task {
 	private int fuelTypeID = 0;
 	/** The distance [km] to the destination at the start of the trip. */
 	private double startTripDistance; 
-
+	/** The last recorded distance [km] to the destination */
+	private double lastDist;
 	/** The vehicle to operate. */ 
 	private Vehicle vehicle;
 	/** The location of the destination of the trip. */
@@ -465,14 +467,28 @@ public abstract class OperateVehicle extends Task {
         // Convert time from millisols to hours
         double hrsTime = MarsTime.HOURS_PER_MILLISOL * time;
        
+        if (lastDist == dist2Dest && vehicle instanceof Drone) {
+        	// If the drone is unable to move forward
+        	lastDist = dist2Dest;
+        	
+        	// Set speedFactor to 0.0
+        	speedFactor = 0.0;
+        	
+        	return moveVehicle(hrsTime, dist2Dest, speedFactor, remainingFuel, remainingOxidizer) 
+        			/ MarsTime.HOURS_PER_MILLISOL;
+        }
+        
         // Case 0e: Arriving if within 1 km
         if (outOfJuice) {
+        	// No more fuel but still have battery
         	logger.log(vehicle, Level.INFO,  20_000, "Case 0e: Battery only (Out of fuel or oxidizer). Heading " 
         			+ getNavpointName()
         			+ " (dist: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + " km).");
 
         	// Set speedFactor to 0.5
         	speedFactor = 0.5;
+        	
+        	lastDist = dist2Dest;
         	
         	return moveVehicle(hrsTime, dist2Dest, speedFactor, remainingFuel, remainingOxidizer) 
         			/ MarsTime.HOURS_PER_MILLISOL;
@@ -482,6 +498,8 @@ public abstract class OperateVehicle extends Task {
         if (dist2Dest <= DISTANCE_BUFFER_ARRIVED) {
         	logger.log(vehicle, Level.INFO, 20_000, "Case Ia: Arrived at " + getNavpointName()
         			+ " (dist: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + " km).");
+        	
+        	lastDist = dist2Dest;
         	
         	// Stop the vehicle
         	haltVehicle();
@@ -495,11 +513,23 @@ public abstract class OperateVehicle extends Task {
         }
         
         else {
+        	
+        	lastDist = dist2Dest;
+        	
         	// Case II and Case III : Propel the vehicle further
         	// Note: Divide it by HOURS_PER_MILLISOL to convert hour back to millisols
         	return moveVehicle(hrsTime, dist2Dest, speedFactor, remainingFuel, remainingOxidizer) 
         			/ MarsTime.HOURS_PER_MILLISOL;
         }
+	}
+	
+	/**
+	 * Sets the last recorded distance travelled.
+	 * 
+	 * @param dist
+	 */
+	public void setLastDistance(double dist) {
+		lastDist = dist;
 	}
 	
 	/**
@@ -529,21 +559,21 @@ public abstract class OperateVehicle extends Task {
     	
     	double topSpeedKPH = 0;
     	
-    	if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+    	if (vehicle instanceof Drone) {
          	// Allow only 50% impact from lightMod
-    		topSpeedKPH = vehicle.getBaseSpeed() * speedFactor * getSkillMod() * (0.5 + 0.5 * lightMod);
+    		topSpeedKPH = vehicle.getBaseSpeed() * (1 + speedFactor) / 2 * getSkillMod() * (0.5 + 0.5 * lightMod);
     	}
     	else {
         	// Gets top speed in kph allowed by this pilot 
     		// Allow only 30% impact from lightMod and 30% from terrain
-        	topSpeedKPH = vehicle.getBaseSpeed() * speedFactor * getSkillMod() * (0.4 + 0.3 * lightMod + 0.3 * terrainMod);
+        	topSpeedKPH = vehicle.getBaseSpeed() * (1 + speedFactor) / 2 * getSkillMod() * (0.4 + 0.3 * lightMod + 0.3 * terrainMod);
     	}
     	
     	// Gets the ideal speed after acceleration. v^2 = u^2 + 2*a*d
     	// However dist2Cover is not known yet
 //		double idealSpeedMS = Math.sqrt(uMS * uMS + 2 * maxAccel * dist2Cover);
  	
-    	double idealSpeedMS = uMS + speedFactor * maxAccel * hrsTime * HRS_TO_SECS;
+    	double idealSpeedMS = uMS + (1 + speedFactor) / 2 * maxAccel * hrsTime * HRS_TO_SECS;
     	// Gets the ideal speed in kph
     	double idealSpeedKPH = idealSpeedMS * KPH_CONV;
     	// Gets the next speed to be used in kph      	

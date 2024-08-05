@@ -53,6 +53,7 @@ import com.mars_sim.core.structure.building.function.SystemType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.vehicle.Crewable;
+import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.mapdata.location.LocalPosition;
@@ -1192,7 +1193,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 		// Check if the origin is a vehicle
 		if (ut == UnitType.VEHICLE) {
-			if (((Vehicle)cu).getVehicleType() != VehicleType.DELIVERY_DRONE) {
+			if (!((Vehicle)cu instanceof Drone)) {
 				transferred = ((Crewable)cu).removeRobot(this);
 			}
 			else {

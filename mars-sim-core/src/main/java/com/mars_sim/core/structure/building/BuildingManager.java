@@ -87,6 +87,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.AlphanumComparator;
+import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
@@ -1015,9 +1016,9 @@ public class BuildingManager implements Serializable {
 		for (Building garageBuilding : garages) {
 			VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
 		
-			if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+			if (vehicle instanceof Drone d) {
 				
-				if (garage.containsFlyer((Flyer)vehicle)) {
+				if (garage.containsFlyer(d)) {
 					logger.info(vehicle, 60_000,
 							"Already inside " + garageBuilding.getName() + ".");
 
@@ -1140,8 +1141,8 @@ public class BuildingManager implements Serializable {
 					return false;
 				}
 				
-				if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE
-					&& garage.containsFlyer((Flyer)vehicle)) {
+				if (vehicle instanceof Drone d
+					&& garage.containsFlyer(d)) {
 					return true;
 				}
 				else if (garage.containsVehicle(vehicle)) {

@@ -23,10 +23,9 @@ import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.VehicleMaintenance;
 import com.mars_sim.core.vehicle.Crewable;
-import com.mars_sim.core.vehicle.Flyer;
+import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.tools.Msg;
 
 /**
@@ -228,8 +227,8 @@ public class MaintainGarageVehicle extends Task {
 					boolean transCrew = (crewableVehicle.getCrewNum() > 0 || crewableVehicle.getRobotCrewNum() > 0);
 					garage.removeVehicle(vehicle, transCrew);
 				} else {
-					if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
-						garage.removeFlyer((Flyer)vehicle);
+					if (vehicle instanceof Drone d) {
+						garage.removeFlyer(d);
 					}
 					else
 						garage.removeVehicle(vehicle, false);

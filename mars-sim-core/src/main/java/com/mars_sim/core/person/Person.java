@@ -83,6 +83,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.vehicle.Crewable;
+import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
@@ -1915,7 +1916,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 
 		// Check if the origin is a vehicle
 		if (ut == UnitType.VEHICLE) {
-			if (((Vehicle)cu).getVehicleType() != VehicleType.DELIVERY_DRONE) {
+			if (!((Vehicle)cu instanceof Drone)) {
 				transferred = ((Crewable)cu).removePerson(this);
 			}
 			else {

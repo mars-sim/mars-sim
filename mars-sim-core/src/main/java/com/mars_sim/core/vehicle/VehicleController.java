@@ -336,7 +336,7 @@ import com.mars_sim.tools.util.RandomUtil;
 			 // Future: will remain thrustToWeightRatio1 = thrustForceTotal / weight to be around 2 and optimize vKPH
 			 // 		Thus adjusting vKPH according to the weight to save power
 			 		 
-			 if (vKPH >= uKPH) {
+			 if (vKPH > uKPH) {
 				 // Case A: If speeding up	
 	 
 				 if (uKPH <= OperateVehicle.LOW_SPEED * 1.1) {
@@ -488,11 +488,9 @@ import com.mars_sim.tools.util.RandomUtil;
 						gainPotentialEnergy = weight * ascentHeight;
 						
 						potentialEnergyDrone = weight * currentHoveringHeight;	
-	
-					 
+			 
 				    	// 1 m/s = 3.6 km/h (or kph). KPH_CONV = 3.6;
-				    	vMS = 60 /  VehicleController.KPH_CONV;
-						
+	
 						double alpha1 = Math.PI / 6;
 						
 						double alpha2 = Math.PI / 7;
@@ -525,7 +523,7 @@ import com.mars_sim.tools.util.RandomUtil;
 			 } // end of if (uKPH <= vKPH)
  
 			 else {
-				 // uKPH > vKPH - Slowing down
+				 // uKPH >= vKPH - Slowing down
 				 
 				 // Case B1: During controlled descent / going down
 				 if (currentHoveringHeight <= STEP_DOWN_HEIGHT) {
@@ -551,13 +549,14 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // Future: need to vary REDUCTION_FACTOR better with equations
 					 double REDUCTION_FACTOR = currentHoveringHeight / STANDARD_HOVERING_HEIGHT;
 						
-					 thrustForceTotal = thrustCoefficient * REDUCTION_FACTOR * 2 * airDensity * Math.PI * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;				
+					 thrustForceTotal = thrustCoefficient * REDUCTION_FACTOR * 2 * airDensity * Math.PI 
+							 * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;				
 					 // Double check with the ratio. Need to be at least 2:1
 					 thrustToWeightRatio1 = thrustForceTotal / weight;
 					 // the gain of potential energy of the drone require extra the power drain on the drone's fuel and battery system
 					 powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor - lostPotentialEnergy / secs;
 					 
-					 logger.log(vehicle, Level.INFO, 20_000, "Case B1: v < u. Controlled descent/landing - " 
+					 logger.log(vehicle, Level.INFO, 20_000, "Case B1: v <= u. Controlled descent/landing - " 
 							 + "d: " + Math.round(distanceTravelled * 1000.0)/1000.0 + KM__
 							 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
 							 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
@@ -598,7 +597,8 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // Future: need to vary REDUCTION_FACTOR better with equations
 					 double REDUCTION_FACTOR = currentHoveringHeight / STANDARD_HOVERING_HEIGHT;
 						
-					 thrustForceTotal = thrustCoefficient * REDUCTION_FACTOR * 2 * airDensity * Math.PI * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;
+					 thrustForceTotal = thrustCoefficient * REDUCTION_FACTOR * 2 * airDensity * Math.PI 
+							 * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;
 						
 					 // Double check with the ratio. Need to be at least 2:1
 					 thrustToWeightRatio1 = thrustForceTotal / weight;
@@ -606,7 +606,7 @@ import com.mars_sim.tools.util.RandomUtil;
 					 // the gain of potential energy of the drone require extra the power drain on the drone's fuel and battery system
 					 powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor - lostPotentialEnergy / secs;
 	 
-					 logger.log(vehicle, Level.INFO, 20_000, "Case B2: v < u. Preparing to descent - " 
+					 logger.log(vehicle, Level.INFO, 20_000, "Case B2: v <= u. Preparing to descent - " 
 							 + "d: " + Math.round(distanceTravelled * 1000.0)/1000.0 + KM__
 							 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
 							 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
@@ -765,7 +765,7 @@ import com.mars_sim.tools.util.RandomUtil;
 				 double energySuppliedByBattery = 0;
 		 
 				 // Test to see how much can be drawn from the battery
-				 if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+				 if (vehicle instanceof Drone) {
 					 // For drone, prioritize to use up fuel as power source first
 					 // Get energy from the battery [in Wh]			  
 					 energySuppliedByBattery = battery.requestEnergy(energyByBattery / 1000, hrsTime) * 1000;

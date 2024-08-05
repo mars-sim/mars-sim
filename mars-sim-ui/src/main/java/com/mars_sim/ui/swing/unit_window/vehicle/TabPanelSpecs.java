@@ -120,9 +120,11 @@ public class TabPanelSpecs extends TabPanel {
 		grid2.addRow( "Base Range", StyleManager.DECIMAL_KM.format(v.getBaseRange()));
 
 		cumEnergyUsage = grid2.addRow( "Cum Energy Used", StyleManager.DECIMAL2_KWH.format(v.getCumEnergyUsage()));	
+		
 		currentRange = grid2.addRow( "Current Range", StyleManager.DECIMAL_KM.format(v.getRange()));
 		
 		cumFuelUsage = grid2.addRow( "Cum Fuel Used", StyleManager.DECIMAL_KG.format(v.getCumFuelUsage()));	
+		
 		if (v instanceof Rover r) {
 			estimatedRange = grid2.addRow( "Estimated Range", StyleManager.DECIMAL_KM.format(r.getEstimatedRange()));
 		}
