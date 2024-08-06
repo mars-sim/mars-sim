@@ -240,12 +240,14 @@
 	<building-package name="MD1 Set 1 - 1x2"/>
 	<building-package name="MD4 Set 1 - 1x2"/>
   
-    <vehicle type="Long Range Explorer" number="3" />
+    <vehicle type="Explorer Rover" number="2" />
+    <vehicle type="Long Range Explorer" number="1" />
     <vehicle type="Transport Rover" number="2" />
     <vehicle type="Cargo Rover" number="2" />
     <vehicle type="Light Utility Vehicle" number="3" />
-    <vehicle type="Delivery Drone" number="3" />
- 
+    <vehicle type="Delivery Drone" number="2" />
+    <vehicle type="Cargo Drone" number="2" />
+    
     <!-- Robots -->
     <robot name="Huey" type="GardenBot" model="Advanced"/>
     <robot name="Dewey" type="GardenBot" model="Advanced"/>

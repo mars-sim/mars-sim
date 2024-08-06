@@ -38,7 +38,12 @@ public class VehicleUnitWindow extends UnitWindow {
 	 */
 	public VehicleUnitWindow(MainDesktopPane desktop, Vehicle vehicle) {
 		// Use UnitWindow constructor
-		super(desktop, vehicle,  vehicle.getName() + " - " + vehicle.getContainerUnit(), true);
+		super(desktop, vehicle,  vehicle.getName() 
+				+ " (" + vehicle.getVehicleType().getName() + ")"
+				+ " of " + (vehicle.getAssociatedSettlement() != null)
+				+ ((vehicle.getContainerUnit() != null) ? (" in " + vehicle.getContainerUnit()) :
+					" in " + vehicle.getLocationTag().findSettlementVicinity() + " Vicinity"),
+				true);
 		this.vehicle = vehicle;
 		
 		if (vehicle instanceof Crewable crewableVehicle) {

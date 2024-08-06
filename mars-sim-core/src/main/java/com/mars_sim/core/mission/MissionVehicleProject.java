@@ -124,7 +124,7 @@ public class MissionVehicleProject extends MissionProject
         // needs better choosing based on capabilities and range
         return switch(v.getVehicleType()) {
             case CARGO_ROVER, EXPLORER_ROVER, TRANSPORT_ROVER -> 1;
-            case LUV, DELIVERY_DRONE -> -1;
+            case LUV, DELIVERY_DRONE, CARGO_DRONE -> -1;
         };
     }
 

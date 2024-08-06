@@ -587,7 +587,7 @@ public abstract class OperateVehicle extends Task {
     		// Case II: Will overshoot within this prescribed period of time if not slowing down or changing final velocity
     		// Slowing down the speed to expect to arrive
     		
-    		if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+    		if (VehicleType.isDrone(vehicle.getVehicleType())) {
     			if (dist2Dest <= DISTANCE_BUFFER_ARRIVING) {
 	    	   		// For drone, need to slow down much more to avoid overshot
 	        		vKPHProposed = vKPHProposed / 1.5;

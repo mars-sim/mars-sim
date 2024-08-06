@@ -48,7 +48,7 @@ public final class VehicleFactory {
 			case LUV:
             	vehicle = new LightUtilityVehicle(name, spec, owner);
 				break;
-			case DELIVERY_DRONE:
+			case DELIVERY_DRONE, CARGO_DRONE:
            		vehicle = new Drone(name, spec, owner);
 				break;
 			case EXPLORER_ROVER, TRANSPORT_ROVER, CARGO_ROVER:
@@ -80,7 +80,10 @@ public final class VehicleFactory {
 			baseName = "LUV";
 		}
 		else if (type == VehicleType.DELIVERY_DRONE) {
-			baseName = "Drone";
+			baseName = "D-Drone";
+		}
+		else if (type == VehicleType.CARGO_DRONE) {
+			baseName = "C-Drone";
 		}
 		else {
 			List<String> possibleNames = sponsor.getVehicleNames();

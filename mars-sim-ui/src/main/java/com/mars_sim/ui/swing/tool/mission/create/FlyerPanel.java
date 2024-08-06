@@ -33,7 +33,6 @@ import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 
 

@@ -63,7 +63,7 @@ public final class UnitDisplayInfoFactory {
 						return cargoRoverBean;
 					case LUV:
 						return luvBean;
-					case DELIVERY_DRONE:
+					case DELIVERY_DRONE, CARGO_DRONE:
 						return deliveryDroneBean;
 					default:
 						// Should never happen

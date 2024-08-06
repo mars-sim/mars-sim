@@ -74,7 +74,7 @@ public class VehicleSpecCommand extends ChatCommand {
 		buffer.appendLabeledString("Fuel Type", fuelTypeStr);
 		buffer.appendLabeledString("# of Fuel Cell Stacks", source.getFuellCellStack() + "");
 		buffer.appendLabeledString("Fuel Capacity", String.format(CommandHelper.KG_FORMAT, source.getFuelCapacity()));
-		buffer.appendLabeledString("Energy Capacity", String.format(CommandHelper.KWH_FORMAT, source.getEnergyCapacity()));		
+		buffer.appendLabeledString("Full Tank Fuel Energy Capacity", String.format(CommandHelper.KWH_FORMAT, source.getFullTankFuelEnergyCapacity()));		
 		buffer.appendLabeledString("Drivetrain Energy", String.format(CommandHelper.KWH_FORMAT, source.getDrivetrainEnergy()));
 		buffer.appendLabeledString("Base Acceleration", String.format(M_PER_S_FORMAT, source.getAccel()));
 		buffer.appendLabeledString("averagePower", String.format(CommandHelper.KW_FORMAT, source.getAveragePower()));

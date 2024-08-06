@@ -42,7 +42,8 @@ public class RobotUnitWindow extends UnitWindow {
 		super(desktop, robot, robot.getName()
 				+ " of " + ((robot.getAssociatedSettlement() != null) ? 
 						robot.getAssociatedSettlement() : "")
-				+ ((robot.getContainerUnit() != null) ? (" in " + robot.getContainerUnit()) : ""),
+				+ ((robot.getContainerUnit() != null) ? (" in " + robot.getContainerUnit()) : 
+					" in " + robot.getLocationTag().findSettlementVicinity() + " Vicinity"),
 				true);
 		this.robot = robot;
 

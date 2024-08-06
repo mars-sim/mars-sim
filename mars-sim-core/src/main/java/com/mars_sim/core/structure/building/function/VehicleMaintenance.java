@@ -30,7 +30,6 @@ import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.mapdata.location.LocalPosition;
 
 /**

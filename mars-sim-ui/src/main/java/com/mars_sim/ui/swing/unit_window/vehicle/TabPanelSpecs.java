@@ -12,6 +12,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -106,16 +107,19 @@ public class TabPanelSpecs extends TabPanel {
 		grid1.addRow( "Base Accel", StyleManager.DECIMAL_M_S2.format(v.getVehicleSpec().getBaseAccel()));	
 		grid1.addRow( "Peak Power", StyleManager.DECIMAL_KW.format(v.getVehicleSpec().getPeakPower()));
 				
-		AttributePanel grid2 = new AttributePanel(4, 2);
+		AttributePanel grid2 = new AttributePanel(5, 2);
 		JPanel bottomPanel = new JPanel(new BorderLayout(0, 30));
 		centerPanel.add(bottomPanel, BorderLayout.CENTER);
 		bottomPanel.add(grid2, BorderLayout.NORTH);
 //		addBorder(bottomPanel, "DriveTrain (DT) Range Energy");	
 		bottomPanel.setBorder(BorderFactory.createTitledBorder("DriveTrain (DT) Range Energy"));
 	
-		grid2.addRow( "DT Efficiency", StyleManager.DECIMAL_PERC.format(100*v.getVehicleSpec().getDrivetrainEfficiency()));
+		grid2.addRow( "Fuel", Conversion.capitalize(v.getFuelTypeStr()));
 		grid2.addRow( "Fuel-to-Drive", StyleManager.DECIMAL_KWH_KG.format(v.getVehicleSpec().getFuel2DriveEnergy()/1000));
 		
+		grid2.addRow( "Full Tank", StyleManager.DECIMAL_KWH.format(v.getFullTankFuelEnergyCapacity()));
+		grid2.addRow( "DT Efficiency", StyleManager.DECIMAL_PERC.format(100*v.getVehicleSpec().getDrivetrainEfficiency()));
+
 		grid2.addRow( "DT Fuel Energy", StyleManager.DECIMAL_KWH.format(v.getVehicleSpec().getDrivetrainFuelEnergy()));
 		grid2.addRow( "Base Range", StyleManager.DECIMAL_KM.format(v.getBaseRange()));
 

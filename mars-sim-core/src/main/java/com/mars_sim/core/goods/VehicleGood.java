@@ -83,7 +83,7 @@ class VehicleGood extends Good {
         this.vs = vs;
         this.vehicleType = vs.getType();
         this.goodType = switch(vehicleType) {
-			case DELIVERY_DRONE, LUV -> GoodType.VEHICLE_SMALL;
+			case DELIVERY_DRONE, CARGO_DRONE, LUV -> GoodType.VEHICLE_SMALL;
 			case EXPLORER_ROVER -> GoodType.VEHICLE_MEDIUM;
 			case TRANSPORT_ROVER, CARGO_ROVER -> GoodType.VEHICLE_HEAVY;
         };
@@ -182,7 +182,7 @@ class VehicleGood extends Good {
         switch(vehicleType) {
             case LUV:
                 return LUV_VALUE;
-            case DELIVERY_DRONE:
+            case DELIVERY_DRONE, CARGO_DRONE:
                 return DRONE_VALUE;
             default:
                 return VEHICLE_VALUE;
@@ -321,7 +321,7 @@ class VehicleGood extends Good {
 			demand = determineLUVValue(settlement, buy);
 		}
 
-		else if (vehicleType == VehicleType.DELIVERY_DRONE) {
+		else if (VehicleType.isDrone(vehicleType)) {
 			double tradeMissionValue = determineMissionVehicleDemand(owner, settlement, MissionType.TRADE, buy);
 			if (tradeMissionValue > demand) {
 				demand = tradeMissionValue;
@@ -343,7 +343,7 @@ class VehicleGood extends Good {
             case CARGO_ROVER -> CARGO_VEHICLE_FACTOR;		
             case TRANSPORT_ROVER -> TRANSPORT_VEHICLE_FACTOR;
             case EXPLORER_ROVER -> EXPLORER_VEHICLE_FACTOR;
-		    case DELIVERY_DRONE -> DRONE_VEHICLE_FACTOR;
+		    case DELIVERY_DRONE, CARGO_DRONE -> DRONE_VEHICLE_FACTOR;
 		    case LUV -> LUV_VEHICLE_FACTOR;
         };
 		return demand * (.5 + owner.getCommerceFactor(CommerceType.TRADE)) * typeModifier;

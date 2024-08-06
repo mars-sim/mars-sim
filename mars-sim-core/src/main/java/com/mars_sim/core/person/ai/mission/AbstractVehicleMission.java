@@ -470,8 +470,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @return
 	 */
 	public boolean isDroneDone() {
-		if ((vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE
-				&& vehicle.getStoredMass() == 0D))
+		if (VehicleType.isDrone(vehicle.getVehicleType())
+				&& vehicle.getStoredMass() == 0D)
 			return true;
 		return false;
 	}
@@ -1071,17 +1071,24 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 			// Must use the same logic in all cases otherwise too few fuel will be loaded
 			amount = vehicle.getFuelNeededForTrip(distance, useMargin);
-
+	
 			int fuelTypeID = vehicle.getFuelTypeID();
-			if (fuelTypeID > 0) {
-				result.put(vehicle.getFuelTypeID(), amount);
+			double amountOxygen = 0;
+			
+			if (fuelTypeID == ResourceUtil.methanolID) {
 				// if useMargin is true, include more oxygen
-				double amountOxygen = VehicleController.RATIO_OXIDIZER_FUEL * amount;
-				
-				if (!useMargin)	amountOxygen = amount;
-
-				result.put(ResourceUtil.oxygenID, amountOxygen);
+				amountOxygen = VehicleController.RATIO_OXIDIZER_METHANOL * amount;
 			}
+			else if (fuelTypeID == ResourceUtil.methaneID) {
+				// if useMargin is true, include more oxygen
+				amountOxygen = VehicleController.RATIO_OXIDIZER_METHANE * amount;
+			}
+			
+			if (!useMargin)	
+				amountOxygen = amount;
+			
+			result.put(fuelTypeID, amount);
+			result.put(ResourceUtil.oxygenID, amountOxygen);
 		}
 		
 		return result;

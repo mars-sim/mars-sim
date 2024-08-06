@@ -2321,7 +2321,7 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public Collection<Drone> getParkedGaragedDrones() {
 		return ownedVehicles.stream()
-				.filter(v -> v.getVehicleType() == VehicleType.DELIVERY_DRONE)
+				.filter(v -> VehicleType.isDrone(v.getVehicleType()))
 				.filter(v -> this.equals(v.getSettlement()))
 				.map(Drone.class::cast)
 				.collect(Collectors.toList());
@@ -2335,7 +2335,7 @@ public class Settlement extends Structure implements Temporal,
 	public int getNumParkedGaragedDrones() {
 		return Math.toIntExact(ownedVehicles
 				.stream()
-				.filter(v -> v.getVehicleType() == VehicleType.DELIVERY_DRONE)
+				.filter(v -> VehicleType.isDrone(v.getVehicleType()))
 				.filter(v -> this.equals(v.getSettlement()))
 				.collect(Collectors.counting()));
 	}

@@ -73,7 +73,8 @@ public class PersonUnitWindow extends UnitWindow {
 		super(desktop, person, person.getName() 
 				+ " of " + ((person.getAssociatedSettlement() != null) ? 
 						person.getAssociatedSettlement() : person.getBuriedSettlement())
-				+ ((person.getContainerUnit() != null) ? (" in " + person.getContainerUnit()) : ""),
+				+ ((person.getContainerUnit() != null) ? (" in " + person.getContainerUnit()) : 
+					" in " + person.getLocationTag().findSettlementVicinity() + " Vicinity"),
 				false);
 		this.person = person;
 	

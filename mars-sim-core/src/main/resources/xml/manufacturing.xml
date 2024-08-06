@@ -1705,6 +1705,37 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>-->
 
+	<process name="Assemble Cargo Drone" tech="3" skill="3" work-time="1000" process-time="750"
+			power-required="2.5">
+		<inputs>
+			<resource name="acetylene" amount="2.0" />			
+			<part name="navigation circuit board" number="1" />
+			<part name="communications circuit board" number="1" />
+			<part name="optical lens" number="2" />
+			<part name="vehicle frame small" number="1" />
+			<part name="aluminum sheet" number="3" />
+			<part name="drone chassis panel" number="3" />
+			<part name="Motor 10 kW" number="4" />
+			<part name="methane fuel cell stack" number="2" />
+			<part name="battery module" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+			<part name="plastic tubing" number="2" />
+			<part name="plastic pipe" number="1" />
+			<part name="radio antenna" number="1" />
+			<part name="optical cable" number="2" />
+			<part name="gas tank" number="1" />	
+			<part name="fuel tank" number="1" />
+			<part name="water tank" number="1" />
+			<part name="fuel pump" number="1" />
+			<part name="propeller" number="4" />	
+			<part name="CMOS sensor" number="8" />						
+		</inputs>
+		<outputs>
+			<vehicle name="cargo drone" number="1" />
+		</outputs>
+	</process>
+	
 	<process name="Assemble Delivery Drone" tech="3" skill="3" work-time="750" process-time="750"
 			power-required="2.0">
 		<inputs>
@@ -1714,7 +1745,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="optical lens" number="2" />
 			<part name="vehicle frame small" number="1" />
 			<part name="aluminum sheet" number="2" />
-			<part name="vehicle chassis panel" number="2" />
+			<part name="drone chassis panel" number="2" />
 			<part name="Motor 10 kW" number="4" />
 			<part name="methanol fuel cell stack" number="2" />
 			<part name="battery module" number="1" />
@@ -1724,8 +1755,9 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="plastic pipe" number="1" />
 			<part name="radio antenna" number="1" />
 			<part name="optical cable" number="2" />
+			<part name="gas tank" number="1" />	
 			<part name="fuel tank" number="1" />
-			<part name="water tank" number="1" />
+			<part name="water tank" number="1" />	
 			<part name="fuel pump" number="1" />
 			<part name="propeller" number="4" />	
 			<part name="CMOS sensor" number="8" />						
@@ -1736,7 +1768,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<process name="Assemble LUV" tech="3" skill="3" work-time="1000" process-time="500"
-			power-required="2.0">
+			power-required="1.5">
 		<inputs>
 			<resource name="acetylene" amount="1.0" />
 			<resource name="polystyrene" amount="5" />	
@@ -2988,6 +3020,20 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="2">
 		<description>
 			Each fuel cell stack comprises 75 solid oxide fuel cells at 15 kWe.
+			
+			Two steps : 
+			           Reforming: CH4 + 2H2O -> CO2 + 4H2
+			 Fuel cell operation: 4H2 + 2O2 -> 4H2O 
+			             Overall: CH4 + 2O2 -> CO2 + 4H2 + 2H2O
+			
+			References : 
+			1. http://large.stanford.edu/courses/2023/ph240/thierstein2/
+			2. https://www.mtu.edu/news/2023/04/an-energy-breakthrough-tech-researchers-create-new-type-of-fuel-cell.html
+			3. https://www.nature.com/articles/s41467-023-43388-8
+			4. https://www.sciencedirect.com/science/article/pii/S0959652621000974
+			5. https://www.greenh2world.com/post/methane-fuel-cells-powering-the-future-with-clean-energy
+			6. https://pubs.rsc.org/en/content/articlelanding/2017/ra/c7ra05245f
+			
 		</description>
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -3007,6 +3053,18 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="2">
 		<description>
 			Each fuel cell stack comprises 75 solid oxide fuel cells at 15 kW.
+			
+			For Direct methanol fuel cells (DMFCs),
+			1. Anode reaction: CH3OH + H2O → 6H+ + 6e- + CO2
+			2. Cathode reaction: 3/2O2 + 6H+ + 6e- → 3H2O
+			3. Overall reaction: CH3OH + 3/2O2 → 2H2O + CO2
+
+			For indirect methanol fuel cells,
+			a. Entity 1: Steam Reforming Reaction
+				Chemical Formula: CH₃OH + H₂O → CO + 3H₂
+			b. Entity 2: Fuel Cell Reaction
+				Overall Reaction: 3H₂ + CO₂ → 3H₂O + electrical energy
+				
 		</description>
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -3343,6 +3401,31 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="biosensor" number="6" />		
 	</salvage>
 
+	<salvage item-name="Cargo Drone" type="vehicle" tech="2" skill="2" work-time="600">			
+		<part-salvage name="navigation circuit board" number="1" />
+		<part-salvage name="communications circuit board" number="1" />
+		<part-salvage name="optical lens" number="2" />
+		<part-salvage name="vehicle frame small" number="1" />
+		<part-salvage name="aluminum sheet" number="3" />
+		<part-salvage name="vehicle chassis panel" number="3" />
+		<part-salvage name="Motor 10 kW" number="4" />
+		<part-salvage name="methane fuel cell stack" number="2" />
+		<part-salvage name="battery module" number="1" />
+		<part-salvage name="electrical wire" number="10" />
+		<part-salvage name="wire connector" number="10" />
+		<part-salvage name="plastic tubing" number="2" />
+		<part-salvage name="plastic pipe" number="1" />
+		<part-salvage name="radio antenna" number="1" />
+		<part-salvage name="optical cable" number="2" />
+		<part-salvage name="gas tank" number="1" />	
+		<part-salvage name="fuel tank" number="1" />
+		<part-salvage name="water tank" number="1" />
+		<part-salvage name="fuel pump" number="1" />
+		<part-salvage name="propeller" number="4" />	
+		<part-salvage name="CMOS sensor" number="8" />						
+	</salvage>
+
+
 	<salvage item-name="Delivery Drone" type="vehicle" tech="2" skill="2" work-time="600">			
 		<part-salvage name="navigation circuit board" number="1" />
 		<part-salvage name="communications circuit board" number="1" />
@@ -3359,6 +3442,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="plastic pipe" number="1" />
 		<part-salvage name="radio antenna" number="1" />
 		<part-salvage name="optical cable" number="2" />
+		<part-salvage name="gas tank" number="1" />	
 		<part-salvage name="fuel tank" number="1" />
 		<part-salvage name="water tank" number="1" />
 		<part-salvage name="fuel pump" number="1" />

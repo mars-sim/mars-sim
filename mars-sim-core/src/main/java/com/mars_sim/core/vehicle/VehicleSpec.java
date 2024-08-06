@@ -122,6 +122,10 @@ public class VehicleSpec implements Serializable {
 	/** Estimated Number of hours traveled each day. **/
 	static final int ESTIMATED_TRAVEL_HOURS_PER_SOL = 16;
 	
+	// Note: ResourceUtil.methanolID and ResourceUtil.methaneID has not been initialized at this point of the startup process
+//	private int methanolID = ResourceUtil.methanolID;
+//	private int methaneID = ResourceUtil.methaneID;
+	
 	// Data members
 	private boolean hasLab = false;
 	private boolean hasPartAttachments = false;
@@ -136,7 +140,7 @@ public class VehicleSpec implements Serializable {
 	
 	/** The # of battery modules of the vehicle.  */
 	private int numBatteryModule;
-	
+	/** The fuel type ID of the vehicle.  */
 	private int fuelTypeID;
 	/** The # of fuel cell stacks of the vehicle.  */
 	private int numFuelCellStack;
@@ -169,8 +173,8 @@ public class VehicleSpec implements Serializable {
 	private double fuelCapacity;
 	/** The maximum cargo capacity of the vehicle [kg] */	
 	private double totalCapacity = 0D;
-	/** The total energy of the vehicle in full tank of methanol [kWh]. */
-	private double methanolEnergyCapacity;
+	/** The full tank fuel energy capacity of the vehicle [kWh]. */
+	private double fullTankFuelEnergyCapacity;
 	/** The estimated energy available for the drivetrain [kWh]. */
 	private double drivetrainEnergy;
 	/** The available max energy capacity from the battery [kWh]. */
@@ -319,7 +323,8 @@ public class VehicleSpec implements Serializable {
 		else if (PowerSourceType.SOLAR_POWER == powerSourceType) {
 			fuelTypeID = -1;
 		}
-		
+
+		// Set the estimated onboard power expenditure
 		this.onboardEnergyPercent = powerPercent;
 		
 		// Set the number of battery modules of the vehicle.
@@ -377,7 +382,7 @@ public class VehicleSpec implements Serializable {
 		List<String> names = buildDetails.getInputNames();
 		partIDs = ItemResourceUtil.convertNameListToResourceIDs(names);
 						
-		// Calculate total mass as the summation of the multiplication of the quantity and mass of each part  
+		// Calculate total mass as the summation of the multiplication of the quantity and mass of each part
 		calculatedEmptyMass = buildDetails.calculateTotalInputMass();
 	}
 	
@@ -387,26 +392,33 @@ public class VehicleSpec implements Serializable {
 	 * @param spec
 	 */
 	private void defineVehiclePerformance() {
-
+		// Gets the capacity [in kg] of vehicle's fuel tank
+		fuelCapacity = getCargoCapacity(getFuelType());
+		
     	batteryCapacity = energyCapacityPerModule * numBatteryModule;
     	
-		if (fuelTypeID > 0) {
-			// Gets the capacity [in kg] of vehicle's fuel tank
-			fuelCapacity = getCargoCapacity(getFuelType());
+    	// Note: ResourceUtil.methanolID has not been initialized at this point of startup
+    	
+    	if (fuelTypeStr.equalsIgnoreCase(ResourceUtil.METHANOL)) {//getFuelType() == methanolID) {
 			// Gets the energy capacity [kWh] based on a full tank of methanol
-			methanolEnergyCapacity = fuelCapacity / METHANOL_KG_PER_KWH;
+			fullTankFuelEnergyCapacity = fuelCapacity / METHANOL_KG_PER_KWH;
 			// Gets the conversion factor for a specific vehicle [Wh/kg]
 			fuel2DriveEnergy =  METHANOL_WH_PER_KG * drivetrainFuelEfficiency;// + batteryCapacity;
-		}
-		else if (fuelTypeStr.equalsIgnoreCase("NUCLEAR_TYPE")){
-			// Gets the capacity [in kg] of vehicle's fuel tank
-			fuelCapacity = .01;
+    	}
+    	
+    	else if (fuelTypeStr.equalsIgnoreCase(ResourceUtil.METHANE)) {//getFuelType() == methaneID) {
 			// Gets the energy capacity [kWh] based on a full tank of methanol
-			methanolEnergyCapacity = fuelCapacity / URANIUM_OXIDE_KG_PER_KWH ;
+			fullTankFuelEnergyCapacity = fuelCapacity / METHANE_KG_PER_KWH;
+			// Gets the conversion factor for a specific vehicle [Wh/kg]
+			fuel2DriveEnergy =  METHANE_WH_PER_KG * drivetrainFuelEfficiency;// + batteryCapacity;
+		}
+			
+    	else if (fuelTypeStr.equalsIgnoreCase("NUCLEAR_TYPE")) {
+			// Gets the energy capacity [kWh] based on a full tank of methanol
+			fullTankFuelEnergyCapacity = fuelCapacity / URANIUM_OXIDE_KG_PER_KWH ;
 			// Gets the conversion factor for a specific vehicle [Wh/kg]
 			fuel2DriveEnergy = URANIUM_OXIDE_WH_PER_KG * drivetrainFuelEfficiency;// + batteryCapacity;
 		}
-		
 
 		// Define the estimated additional beginning mass for each type of vehicle
 		double additionalBeginningMass = 0;
@@ -414,7 +426,9 @@ public class VehicleSpec implements Serializable {
 		double additionalEndMass = 0;		
 
 		double roadLoadPowerFactor = 0.2;
-		
+		// Assume an average percent of energy to be consumed by onboard power usage 
+		double onboardUsedFraction = onboardEnergyPercent / 100;
+	
 		switch (type) {
 			// See https://droneii.com/drone-energy-sources
 			case DELIVERY_DRONE: {
@@ -427,7 +441,18 @@ public class VehicleSpec implements Serializable {
 				// Accounts for water and the traded goods
 				additionalEndMass = 200;		
 			} break;
-
+			
+			case CARGO_DRONE: {
+				
+				roadLoadPowerFactor = 0.7;
+				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
+				peakPower = basePower * Math.log10(10 + numBatteryModule * 3 + numFuelCellStack * 2) * 1.25;
+				// Accounts for the fuel (methanol and oxygen) and the traded goods
+				additionalBeginningMass = 400;
+				// Accounts for water and the traded goods
+				additionalEndMass = 200;		
+			} break;
+			
 			case LUV: {
 				
 				roadLoadPowerFactor = 0.1;
@@ -454,7 +479,7 @@ public class VehicleSpec implements Serializable {
 				
 				roadLoadPowerFactor = 0.2;
 				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(10 + numBatteryModule * 2 + numFuelCellStack * 1.5) ;
+				peakPower = basePower * Math.log10(10 + numBatteryModule * 2 + numFuelCellStack * 1.5);
 				// Accounts for the occupants and their consumables and traded goods 
 				additionalBeginningMass = estimatedTotalCrewWeight + 2 * 20 + 2000;
 				// Accounts for the occupants and traded goods
@@ -465,18 +490,16 @@ public class VehicleSpec implements Serializable {
 				
 				roadLoadPowerFactor = 0.1;
 				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(10 + numBatteryModule * 2 + numFuelCellStack * 1.5) ;
+				peakPower = basePower * Math.log10(10 + numBatteryModule * 2 + numFuelCellStack * 1.5);
 				// Accounts for the occupants and their consumables and personal possession
 				additionalBeginningMass = estimatedTotalCrewWeight + 8 * (20 + 100);
 				// Accounts for the occupants and their personal possession
 				additionalEndMass = estimatedTotalCrewWeight + 8 * 100;				
 			} break;
-			
 		}
-		// Assume an average percent of energy to be consumed by onboard power usage 
-		double onboardUsedFraction = onboardEnergyPercent / 100;
+
 		// Gets the estimated energy available for drivetrain [in kWh]
-		drivetrainEnergy = (methanolEnergyCapacity * drivetrainFuelEfficiency + batteryCapacity) * (1 - onboardUsedFraction);
+		drivetrainEnergy = (fullTankFuelEnergyCapacity * drivetrainFuelEfficiency + batteryCapacity) * (1 - onboardUsedFraction);
 		
 		// Gets the estimated energy available to be consumed for the trip [in kWh]
 		double baseEnergyConsumed = drivetrainEnergy;
@@ -876,12 +899,12 @@ public class VehicleSpec implements Serializable {
 	}
 
 	/**
-	 * Gets the energy available at the full tank [kWh].
+	 * Gets the total fuel energy available at the full tank [kWh].
 	 *
 	 * @return
 	 */
-	public double getEnergyCapacity() {
-		return methanolEnergyCapacity;
+	public double getFullTankFuelEnergyCapacity() {
+		return fullTankFuelEnergyCapacity;
 	}
 
 	/**
@@ -990,7 +1013,7 @@ public class VehicleSpec implements Serializable {
     public double getWearModifier() {
 	
 		return switch(type) {
-			case DELIVERY_DRONE -> .85;
+			case DELIVERY_DRONE, CARGO_DRONE -> .85;
 			case LUV -> 2D;
 			case EXPLORER_ROVER -> 1D;
 			case TRANSPORT_ROVER -> 1.25D;

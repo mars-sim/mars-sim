@@ -16,12 +16,14 @@ import com.mars_sim.tools.Msg;
 public enum VehicleType {
 		
 	LUV					(Msg.getString("VehicleType.luv")), //$NON-NLS-1$
-	DELIVERY_DRONE		(Msg.getString("VehicleType.deliveryDrone")), //$NON-NLS-1$
-	EXPLORER_ROVER 		(Msg.getString("VehicleType.explorer")), //$NON-NLS-1$ 
-	TRANSPORT_ROVER		(Msg.getString("VehicleType.transport")), //$NON-NLS-1$ 
-	CARGO_ROVER			(Msg.getString("VehicleType.cargo")); //$NON-NLS-1$
+	DELIVERY_DRONE		(Msg.getString("VehicleType.drone.delivery")), //$NON-NLS-1$
+	CARGO_DRONE			(Msg.getString("VehicleType.drone.cargo")), //$NON-NLS-1$
+	EXPLORER_ROVER 		(Msg.getString("VehicleType.rover.explorer")), //$NON-NLS-1$ 
+	TRANSPORT_ROVER		(Msg.getString("VehicleType.rover.transport")), //$NON-NLS-1$ 
+	CARGO_ROVER			(Msg.getString("VehicleType.rover.cargo")); //$NON-NLS-1$
 	
-	//Note: the vehicle types used in message.properties must match those in vehicles.xml.
+	// Note: these vehicle types are also used in message.properties 
+	// they must also match those in vehicles.xml.
 	
 	private String name;
 	
@@ -33,6 +35,7 @@ public enum VehicleType {
 	public static final Set<VehicleType> ALL_VEHICLES =
 				Set.of(VehicleType.LUV,
 						VehicleType.DELIVERY_DRONE,
+						VehicleType.CARGO_DRONE,
 						VehicleType.EXPLORER_ROVER,
 						VehicleType.TRANSPORT_ROVER,
 						VehicleType.CARGO_ROVER);
@@ -124,6 +127,19 @@ public enum VehicleType {
 		if (type == EXPLORER_ROVER
 				|| type == TRANSPORT_ROVER
 				|| type == CARGO_ROVER) 
+			return true;
+		return false;
+	}	
+	
+	/**
+	 * Is this vehicle a drone ?
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static boolean isDrone(VehicleType type) {
+		if (type == DELIVERY_DRONE
+				|| type == CARGO_DRONE) 
 			return true;
 		return false;
 	}	

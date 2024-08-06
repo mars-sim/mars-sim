@@ -83,10 +83,8 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.vehicle.Crewable;
-import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.mapdata.location.LocalPosition;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -1916,11 +1914,11 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 
 		// Check if the origin is a vehicle
 		if (ut == UnitType.VEHICLE) {
-			if (!((Vehicle)cu instanceof Drone)) {
-				transferred = ((Crewable)cu).removePerson(this);
+			if (cu instanceof Crewable c) { //!(VehicleType.isDrone(((Vehicle)cu).getVehicleType()))) { 
+				transferred = c.removePerson(this);
 			}
 			else {
-				logger.warning(this, "Not possible to be retrieved from " + cu + ".");
+				logger.warning(this, 20_000, "Not possible to be retrieved from " + cu + ".");
 			}
 		}
 		else if (ut == UnitType.MARS) {
@@ -1939,18 +1937,18 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 		}
 
 		if (!transferred) {
-			logger.severe(this, "Cannot be retrieved from " + cu + ".");
+			logger.severe(this, 20_000, "Cannot be retrieved from " + cu + ".");
 			// NOTE: need to revert back to the previous container unit cu
 		}
 		
 		else {
 			// Check if the destination is a vehicle
 			if (destination.getUnitType() == UnitType.VEHICLE) {
-				if (destination instanceof Crewable cr) {
-					transferred = cr.addPerson(this);
+				if (destination instanceof Crewable c) {
+					transferred = c.addPerson(this);
 				}
 				else {
-					logger.warning(this, 60_000L, "Not possible to be stored into " + cu + ".");
+					logger.warning(this, 20_000, "Not possible to be stored into " + cu + ".");
 				}
 			}
 			else if (destination.getUnitType() == UnitType.MARS) {
@@ -1971,7 +1969,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 			}
 
 			if (!transferred) {
-				logger.warning(this, 60_000L, "Cannot be stored into " + destination + ".");
+				logger.warning(this, 20_000, "Cannot be stored into " + destination + ".");
 				// NOTE: need to revert back the storage action
 			}
 			else {

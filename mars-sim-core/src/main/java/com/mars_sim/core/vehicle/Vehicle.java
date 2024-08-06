@@ -337,6 +337,11 @@ public abstract class Vehicle extends Unit
 		return modelName;
 	}
 
+	/**
+	 * Gets the vehicle type.
+	 * 
+	 * @return
+	 */
 	public VehicleType getVehicleType() {
 		return vehicleType;
 	}
@@ -810,10 +815,21 @@ public abstract class Vehicle extends Unit
 	 */
 	public double getEstimatedRange() {
 
+		double mass = getMass();
+		double bMass = getBeginningMass();
+		double massFactor = (mass + bMass) / 2 / bMass;
+		
+//		logger.info(this, "bRange: " + getBaseRange()
+//		+ "  eFE: " + getEstimatedFuelEconomy()
+//		+ "  cap: " + getFuelCapacity()
+//		+ "  mass: " + getMass()
+//		+ "  bMass: " + getBeginningMass()
+//		+ "  massFactor: " + massFactor
+//		+ "  3: " + (getEstimatedFuelEconomy() * getFuelCapacity() * massFactor)
+//		);
+		
 		// Before the mission is created, the range would be based on vehicle's fuel capacity
-		return getEstimatedFuelEconomy() * getFuelCapacity();
-//			Math.min(getBaseRange() / fuelRangeErrorMargin, 
-//        			getEstimatedFuelEconomy() * getFuelCapacity() * getMass() / getBeginningMass());
+		return (getBaseRange() + getEstimatedFuelEconomy() * getFuelCapacity() * massFactor) / 2;
 	}
 	
 	/**
@@ -839,7 +855,7 @@ public abstract class Vehicle extends Unit
     		else {
                 double amountOfFuel = getAmountResourceStored(fuelTypeID);
             	// During the journey, the range would be based on the amount of fuel in the vehicle
-        		range = getEstimatedFuelEconomy() * amountOfFuel; // * getMass() / getBeginningMass();
+        		range = getEstimatedFuelEconomy() * amountOfFuel;
     		}
         }
 
@@ -923,12 +939,12 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Gets the energy available at the full tank [kWh].
+	 * Gets the total fuel energy available at the full tank [kWh].
 	 *
 	 * @return
 	 */
-	public double getEnergyCapacity() {
-		return spec.getEnergyCapacity();
+	public double getFullTankFuelEnergyCapacity() {
+		return spec.getFullTankFuelEnergyCapacity();
 	}
 
 	/**
@@ -1123,7 +1139,7 @@ public abstract class Vehicle extends Unit
 		// Note: if cum < base, then trip is less economical more than expected
 		// Note: if cum > base, then trip is more economical than expected
 		if (cum == 0)
-			return (.4 * base + .6 * init) * VehicleController.FUEL_ECONOMY_FACTOR;
+			return (.4 * base + .6 * init) / VehicleController.FUEL_ECONOMY_FACTOR;
 		else {
 			return (.2 * base + .3 * init + .5 * cum);
 		}
@@ -1151,7 +1167,7 @@ public abstract class Vehicle extends Unit
 		// Note: if cum > base, then vehicle consumes more than expected
 		// Note: if cum < base, then vehicle consumes less than expected		
 		if (cum == 0)
-			return (.4 * base + .6 * init) / VehicleController.FUEL_CONSUMPTION_FACTOR;
+			return (.4 * base + .6 * init) * VehicleController.FUEL_CONSUMPTION_FACTOR;
 		else {
 			return (.2 * base + .3 * init + .5 * cum);
 		}
@@ -1817,7 +1833,7 @@ public abstract class Vehicle extends Unit
 		int step = 2;
 		boolean foundGoodLocation = false;
 
-		boolean isSmallVehicle = getVehicleType() == VehicleType.DELIVERY_DRONE
+		boolean isSmallVehicle = VehicleType.isDrone(getVehicleType())
 				|| getVehicleType() == VehicleType.LUV;
 
 		double d = VEHICLE_CLEARANCE_0;
@@ -1860,10 +1876,10 @@ public abstract class Vehicle extends Unit
 			logger.info(this, "Moved to new parking loc at (" 
 					+ Math.round(newLoc.getX() * 10.0)/10.0 
 					+ ", " + Math.round(newLoc.getY() * 10.0)/10.0 
-					+ ").");
+					+ "). Count: " + count + ".");
 		}
 		else {
-			logger.info(this, "Parking loc not found.");
+			logger.info(this, "Parking loc not found. Count: " + count + ".");
 		}
 	}
 	

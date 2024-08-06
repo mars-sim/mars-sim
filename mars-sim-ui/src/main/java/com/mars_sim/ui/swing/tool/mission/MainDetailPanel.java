@@ -1099,10 +1099,10 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 * @return
 		 */
 		boolean isOnboard(Worker member) {
-			if (mission instanceof VehicleMission) {		
+			if (mission instanceof VehicleMission vm) {		
 				if (member.getUnitType() == UnitType.PERSON) {
-					Vehicle v = ((VehicleMission)mission).getVehicle();
-					if (v.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+					Vehicle v = vm.getVehicle();
+					if (VehicleType.isDrone(v.getVehicleType())) {
 						return false;
 					}
 					else if (v instanceof Rover r) {
@@ -1122,10 +1122,10 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 * @return
 		 */
 		boolean isInAirlock(Worker member) {
-			if (mission instanceof VehicleMission) {		
+			if (mission instanceof VehicleMission vm) {		
 				if (member.getUnitType() == UnitType.PERSON) {
-					Vehicle v = ((VehicleMission)mission).getVehicle();
-					if (v.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+					Vehicle v = vm.getVehicle();
+					if (VehicleType.isDrone(v.getVehicleType())) {
 						return false;
 					}
 					else if (v instanceof Rover r) {

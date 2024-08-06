@@ -149,18 +149,18 @@ public class VehicleConfig {
 			
 			int crewSize = Integer.parseInt(vehicleElement.getChild(CREW_SIZE).getAttributeValue(VALUE));
 
-			VehicleSpec v = new VehicleSpec(name, type, model, description, baseImage, 
+			VehicleSpec vSpec = new VehicleSpec(name, type, model, description, baseImage, 
 					powerSourceType, fuelTypeStr, powerValue,
 					battery, energyPerModule, fuelCell, 
 					drivetrainEff, baseSpeed, basePower, emptyMass, 
 					crewSize);
 			
-			v.setWidth(width);
-			v.setLength(length);
+			vSpec.setWidth(width);
+			vSpec.setLength(length);
 			
 			// Ground vehicle terrain handling ability
 			if (vehicleElement.getChild(TERRAIN_HANDLING) != null) {
-				v.setTerrainHandling(Double.parseDouble(vehicleElement.getChild(TERRAIN_HANDLING).getAttributeValue(VALUE)));
+				vSpec.setTerrainHandling(Double.parseDouble(vehicleElement.getChild(TERRAIN_HANDLING).getAttributeValue(VALUE)));
 			}
 
 			// cargo capacities
@@ -185,11 +185,13 @@ public class VehicleConfig {
 				}
 				
 				double totalCapacity = Double.parseDouble(cargoElement.getAttributeValue(TOTAL_CAPACITY));
-				v.setCargoCapacity(totalCapacity, cargoCapacityMap);
+				vSpec.setCargoCapacity(totalCapacity, cargoCapacityMap);
+//				System.out.println(vSpec.getName() + ": " + cargoCapacityMap);
+//				System.out.println(vSpec.getCargoCapacity(vSpec.getFuelType()));
 			}
 
 			// Use the cargo capacity for performance analysis
-			v.calculateDetails(manuConfig);
+			vSpec.calculateDetails(manuConfig);
 			
 			// sickbay
 			if (!vehicleElement.getChildren(SICKBAY).isEmpty()) {
@@ -197,7 +199,7 @@ public class VehicleConfig {
 				if (sickbayElement != null) {
 					int sickbayTechLevel = Integer.parseInt(sickbayElement.getAttributeValue(TECH_LEVEL));
 					int sickbayBeds = Integer.parseInt(sickbayElement.getAttributeValue(BEDS));
-					v.setSickBay(sickbayTechLevel, sickbayBeds);
+					vSpec.setSickBay(sickbayTechLevel, sickbayBeds);
 				}
 			}
 
@@ -214,7 +216,7 @@ public class VehicleConfig {
 								.add(ScienceType.valueOf(ConfigHelper.convertToEnumName(scienceName)));
 					}
 					
-					v.setLabSpec(labTechLevel, labCapacity, labTechSpecialties);
+					vSpec.setLabSpec(labTechLevel, labCapacity, labTechSpecialties);
 				}
 			}
 
@@ -227,7 +229,7 @@ public class VehicleConfig {
 					attachableParts.add((Part) ItemResourceUtil
 							.findItemResource(((part.getAttributeValue(NAME)).toLowerCase())));
 				}
-				v.setAttachments(attachmentSlots, attachableParts);
+				vSpec.setAttachments(attachmentSlots, attachableParts);
 			}
 
 			// airlock locations (optional).
@@ -237,7 +239,7 @@ public class VehicleConfig {
 				LocalPosition airlockInteriorLoc = ConfigHelper.parseLocalPosition(airlockElement.getChild(INTERIOR_LOCATION));
 				LocalPosition airlockExteriorLoc = ConfigHelper.parseLocalPosition(airlockElement.getChild(EXTERIOR_LOCATION));
 				
-				v.setAirlock(airlockLoc, airlockInteriorLoc, airlockExteriorLoc);
+				vSpec.setAirlock(airlockLoc, airlockInteriorLoc, airlockExteriorLoc);
 			}
 
 			// Activity spots.
@@ -265,11 +267,11 @@ public class VehicleConfig {
 					}
 				}
 				
-				v.setActivitySpots(operatorActivitySpots, passengerActivitySpots, sickBayActivitySpots, labActivitySpots);
+				vSpec.setActivitySpots(operatorActivitySpots, passengerActivitySpots, sickBayActivitySpots, labActivitySpots);
 			}
 
 			// Keep results for later use
-			newMap.put(name.toLowerCase(), v);
+			newMap.put(name.toLowerCase(), vSpec);
 		}
 		
 		vehicleSpecMap = Collections.unmodifiableMap(newMap);

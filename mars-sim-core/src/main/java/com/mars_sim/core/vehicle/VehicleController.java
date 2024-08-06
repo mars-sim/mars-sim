@@ -45,12 +45,19 @@ import com.mars_sim.tools.util.RandomUtil;
 	 public static final int STEP_DOWN_HEIGHT = STANDARD_HOVERING_HEIGHT / 15;	 
 	 /** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
 	 private static final double LEAST_AMOUNT = GroundVehicle.LEAST_AMOUNT;
-	 /** The ratio of the amount of oxidizer to fuel. */
-	 public static final double RATIO_OXIDIZER_FUEL = 1.5;
+	 /** The ratio of the amount of oxidizer to methane fuel. */
+	 public static final double RATIO_OXIDIZER_METHANE = 1;
+	 /** The ratio of the amount of oxidizer to methanol fuel. */
+	 public static final double RATIO_OXIDIZER_METHANOL = 1.5;
+	 
+	 // Water Ratio is 2 for direct methanol fuel cell (DMFC). 
+	 // Water Ratio varies for indirect methanol fuel cell (DMFC). say 1.125;
 	 /** The ratio of water produced for every methanol consumed. */
-	 private static final double RATIO_WATER_METHANOL = 1.125;
+	 private static final double RATIO_WATER_METHANOL = 2; 
+
 	 /** The ratio of water produced for every methane consumed. */
-//	 private static final double RATIO_WATER_METHANE = 2.25;
+	 private static final double RATIO_WATER_METHANE = 2.25;
+	 
 	 /** The factor for estimating the adjusted fuel economy [km/kg]. */
 	 public static final double FUEL_ECONOMY_FACTOR = .85;
 	 /** The factor for estimating the adjusted fuel consumption [Wh/km]. */
@@ -81,16 +88,12 @@ import com.mars_sim.tools.util.RandomUtil;
 	 private static final String M__ = " m  ";
 	 private static final String N__ = " N  ";
 	 private static final String J__ = " J  ";
-	 
 	 /**
 	  * Please do NOT delete any of the metric unit string below.
 	  * They will be handy for testing. Thanks !
 	  *
-
 	 private static final String KM_KG = " km/kg  ";
 	 private static final String WH_KM = " Wh/km  ";
-
-
 	 private static final String KPH = " kph  ";
 	  */
 	 
@@ -265,7 +268,7 @@ import com.mars_sim.tools.util.RandomUtil;
 			
 		 airDensity = sim.getWeather().getAirDensity(vehicle.getCoordinates());
 			
-		 if (vehicle instanceof Rover) {
+		 if (VehicleType.isRover(vehicle.getVehicleType())) {
 			 
 			 // Calculates forces and power
 			 powerConstantSpeed = calculateVehicleForces(weight, vMS , averageSpeed, fGravity);
@@ -765,7 +768,7 @@ import com.mars_sim.tools.util.RandomUtil;
 				 double energySuppliedByBattery = 0;
 		 
 				 // Test to see how much can be drawn from the battery
-				 if (vehicle instanceof Drone) {
+				 if (VehicleType.isDrone(vehicle.getVehicleType())) {
 					 // For drone, prioritize to use up fuel as power source first
 					 // Get energy from the battery [in Wh]			  
 					 energySuppliedByBattery = battery.requestEnergy(energyByBattery / 1000, hrsTime) * 1000;
@@ -949,14 +952,24 @@ import com.mars_sim.tools.util.RandomUtil;
 
 			 // Retrieve fuelNeeded	
 			 if (fuelNeeded > 0 && remainingFuel != -1) {
-//				 logger.log(vehicle, Level.INFO, 20_000, "fuelNeeded: " 
-//						 +  Math.round(fuelNeeded * 1000.0)/1000.0 + " kg");
-				 // Retrieve the fuel needed for the distance traveled
-				 vehicle.retrieveAmountResource(fuelTypeID, fuelNeeded);
-				 // Assume double amount of oxygen as fuel oxidizer
-				 vehicle.retrieveAmountResource(OXYGEN_ID, RATIO_OXIDIZER_FUEL * fuelNeeded);
-				 // Generate 1.75 times amount of the water from the fuel cells
-				 vehicle.storeAmountResource(WATER_ID, RATIO_WATER_METHANOL * fuelNeeded);
+				 
+				 if (vehicle.getFuelTypeID() == ResourceUtil.methanolID) {
+					 // Retrieve the fuel needed for the distance traveled
+					 vehicle.retrieveAmountResource(fuelTypeID, fuelNeeded);
+					 // Assume oxygen as fuel oxidizer
+					 vehicle.retrieveAmountResource(OXYGEN_ID, RATIO_OXIDIZER_METHANOL * fuelNeeded);
+					 // Generate  water from the fuel cells
+					 vehicle.storeAmountResource(WATER_ID, RATIO_WATER_METHANOL * fuelNeeded);
+				 }
+
+				 else if (vehicle.getFuelTypeID() == ResourceUtil.methaneID) {
+					 // Retrieve the fuel needed for the distance traveled
+					 vehicle.retrieveAmountResource(fuelTypeID, fuelNeeded);
+					 // Assume oxygen as fuel oxidizer
+					 vehicle.retrieveAmountResource(OXYGEN_ID, RATIO_OXIDIZER_METHANE * fuelNeeded);
+					 // Generate the water from the fuel cells
+					 vehicle.storeAmountResource(WATER_ID, RATIO_WATER_METHANE * fuelNeeded);
+				 }				 
 			 }
 		 }  // end of Scenario 1
 		 
@@ -1047,7 +1060,7 @@ import com.mars_sim.tools.util.RandomUtil;
 				 double energySuppliedByBattery = 0;
 		 
 				 // Test to see how much can be drawn from the battery
-				 if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+				 if (VehicleType.isDrone(vehicle.getVehicleType())) {
 					 // For drone, prioritize to use up fuel as power source first
 					 // Get energy from the battery [in Wh]			  
 					 energySuppliedByBattery = battery.requestEnergy(energyByBattery / 1000, hrsTime) * 1000;

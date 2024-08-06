@@ -389,11 +389,19 @@
 		<description>Reinforced fiberglass panels.</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="2" />
-			<entity name="delivery drone" probability="5" max-number="1" />	
 			<entity name="light utility vehicle" probability="5" max-number="1" />						
 		</maintenance-entity-list>
 	</part>
 
+
+	<part name="Drone Chassis Panel" type="vehicle" mass="20.0" >
+		<description>Reinforced fiberglass panels.</description>
+		<maintenance-entity-list>
+			<entity name="delivery drone" probability="5" max-number="1" />	
+			<entity name="cargo drone" probability="5" max-number="1" />							
+		</maintenance-entity-list>
+	</part>
+	
 	<part name="Rover Wheel" type="vehicle" mass="8.9">
 		<description>Rover wheels are made of durable steel wires and Nickel-titanium alloy wires.
 			See 'kinky' wire wheel at https://www.youtube.com/watch?v=vSNtifE0Z2Q

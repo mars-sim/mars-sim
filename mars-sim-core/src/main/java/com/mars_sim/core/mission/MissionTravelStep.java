@@ -16,9 +16,9 @@ import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.GroundVehicle;
-import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleController;
+import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.core.vehicle.task.DriveGroundVehicle;
 import com.mars_sim.mapdata.location.Coordinates;
 
@@ -131,12 +131,19 @@ public class MissionTravelStep extends MissionStep {
         // Must use the same logic in all cases otherwise too few fuel will be loaded
         double amount = vehicle.getFuelNeededForTrip(distance, addOptionals);
         manifest.addResource(vehicle.getFuelTypeID(), amount, true);
-        
-        // if useMargin is true, include more oxygen
-        manifest.addResource(ResourceUtil.oxygenID, VehicleController.RATIO_OXIDIZER_FUEL * amount,
-                            true);
+         
+        if (vehicle.getFuelTypeID() == ResourceUtil.methanolID) {
+            // if useMargin is true, include more oxygen
+            manifest.addResource(ResourceUtil.oxygenID, 
+            		VehicleController.RATIO_OXIDIZER_METHANOL * amount, true);
+        }
+        else if (vehicle.getFuelTypeID() == ResourceUtil.methaneID) {
+            // if useMargin is true, include more oxygen
+            manifest.addResource(ResourceUtil.oxygenID, 
+            		VehicleController.RATIO_OXIDIZER_METHANE * amount, true);
+        }
 
-        if (vehicle instanceof Rover) {
+        if (VehicleType.isRover(vehicle.getVehicleType())) {
             double travelDuration = mvp.getEstimateTravelTime(distance);
 
             addLifeSupportResource(mvp.getMembers().size(), travelDuration, addOptionals, manifest);

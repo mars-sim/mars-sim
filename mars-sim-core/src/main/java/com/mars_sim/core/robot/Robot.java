@@ -53,9 +53,7 @@ import com.mars_sim.core.structure.building.function.SystemType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.vehicle.Crewable;
-import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.mapdata.location.LocalPosition;
 import com.mars_sim.tools.util.RandomUtil;
 
@@ -1193,11 +1191,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 		// Check if the origin is a vehicle
 		if (ut == UnitType.VEHICLE) {
-			if (!((Vehicle)cu instanceof Drone)) {
-				transferred = ((Crewable)cu).removeRobot(this);
+			if (cu instanceof Crewable c) { //!((Vehicle)cu instanceof Drone)) {
+				transferred = c.removeRobot(this);
 			}
 			else {
-				logger.warning(this, 60_000L, "Not possible to be retrieved from " + cu + ".");
+				logger.warning(this, 20_000, "Not possible to be retrieved from " + cu + ".");
 			}
 		}
 		else if (ut == UnitType.MARS) {
@@ -1206,21 +1204,26 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		else if (ut == UnitType.BUILDING) {
 			transferred = true;
 		}
-		else {
+		else if (ut == UnitType.SETTLEMENT) {
 			// Question: should we remove this unit from settlement's robotWithin list
 			// especially if it is still inside the garage of a settlement
 			transferred = ((Settlement)cu).removeRobotsWithin(this);
 			BuildingManager.removeRobotFromBuilding(this, getBuildingLocation());
 		}
 
-		if (transferred) {
+		if (!transferred) {
+			logger.severe(this, 20_000, "Cannot be retrieved from " + cu + ".");
+			// NOTE: need to revert back to the previous container unit cu
+		}
+		
+		else {
 			// Check if the destination is a vehicle
 			if (destination.getUnitType() == UnitType.VEHICLE) {
-				if (((Vehicle)destination).getVehicleType() != VehicleType.DELIVERY_DRONE) {
-					transferred = ((Crewable)destination).addRobot(this);
+				if (destination instanceof Crewable c) { //!((Vehicle)destination instanceof Drone)) {
+					transferred = c.addRobot(this);
 				}
 				else {
-					logger.warning(this, 60_000L, "Not possible to be stored into " + cu + ".");
+					logger.warning(this, 20_000, "Not possible to be stored into " + cu + ".");
 				}
 			}
 			else if (destination.getUnitType() == UnitType.MARS) {
@@ -1238,7 +1241,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			}
 
 			if (!transferred) {
-				logger.warning(this, 60_000L, "Cannot be stored into " + destination + ".");
+				logger.warning(this, 20_000, "Cannot be stored into " + destination + ".");
 				// NOTE: need to revert back the storage action
 			}
 			else {
@@ -1249,10 +1252,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				// Fire the unit event type
 				cu.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
 			}
-		}
-		else {
-			logger.warning(this, 60_000L, "Cannot be retrieved from " + cu + ".");
-			// NOTE: need to revert back the retrieval action
 		}
 
 		return transferred;
