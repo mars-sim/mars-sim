@@ -18,6 +18,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 @SuppressWarnings("serial")
 public class JStatusBar extends TexturedPanel {
@@ -123,8 +124,8 @@ public class JStatusBar extends TexturedPanel {
         JLabel label = new JLabel(new AngledLinesWindowsCornerIcon());
         panel.setAlignmentX(1F);
         panel.setAlignmentY(0);
-        label.setHorizontalAlignment(JLabel.RIGHT);
-        label.setVerticalAlignment(JLabel.BOTTOM);
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        label.setVerticalAlignment(SwingConstants.BOTTOM);
         panel.add(label);
         rightPanel.add(panel);
     }

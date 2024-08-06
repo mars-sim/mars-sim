@@ -34,9 +34,9 @@ import com.mars_sim.core.vehicle.Vehicle;
  */
 public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
-	/** default serial id. */
+	/** Default serial id. */
 	private static final long serialVersionUID = 1L;
-	/* default logger. */
+	/** Default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Equipment.class.getName());
 
 	public static final int OXYGEN_ID = ResourceUtil.oxygenID;

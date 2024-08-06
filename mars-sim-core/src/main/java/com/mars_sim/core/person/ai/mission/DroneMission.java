@@ -245,65 +245,74 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	protected void performDisembarkToSettlementPhase(Worker member, Settlement disembarkSettlement) {
 		Vehicle v = getVehicle();
 		
+		if (v == null)
+			return;
+		
 		logger.log(v, Level.INFO, 10_000,
 				"Disemabarked at " + disembarkSettlement.getName() + ".");
 
 		Drone drone = (Drone) v;
 
-		if (v != null) {
-			Settlement currentSettlement = v.getSettlement();
-			if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
-				// If drone has not been parked at settlement, park it.
-				v.transfer(disembarkSettlement);
-			}
+		Settlement currentSettlement = v.getSettlement();
+		if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
+			// If drone has not been parked at settlement, park it.
+			v.transfer(disembarkSettlement);
+		}
 
-			// Add vehicle to a garage if available.
-			boolean canGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
-			if (!canGarage) {
-				// Park in the vicinity of the settlement outside
-				v.findNewParkingLoc();
-			}
-				
-			// Unload drone if necessary.
-			boolean droneUnloaded = drone.getStoredMass() == 0D;
+		// Add vehicle to a garage if available.
+		boolean canGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
+		if (!canGarage) {
+			// Park in the vicinity of the settlement outside
+			v.findNewParkingLoc();
+		}
+			
+		unloadReleaseDrone(disembarkSettlement, drone);
+	}
+	
+	/**
+	 * Unloads and releases the drone.
+	 * 
+	 * @param disembarkSettlement
+	 * @param drone
+	 */
+	private void unloadReleaseDrone(Settlement disembarkSettlement, Drone drone) {
 
-			if (!droneUnloaded) {
+		if (drone.getStoredMass() != 0D) {
 
-				boolean result = false;
-				// Alert the people in the disembarked settlement to unload cargo
-				for (Person person: disembarkSettlement.getIndoorPeople()) {
-					if (person.isInSettlement()) {
-						// Note : Random chance of having person unload (this allows person to do other things
-						// sometimes)
-						if (RandomUtil.lessThanRandPercent(50)) {
-							result = unloadCargo(person, drone);
-						}
+			boolean result = false;
+			// Alert the people in the disembarked settlement to unload cargo
+			for (Person person: disembarkSettlement.getIndoorPeople()) {
+				if (person.isInSettlement()) {
+					// Note : Random chance of having person unload (this allows person to do other things
+					// sometimes)
+					if (RandomUtil.lessThanRandPercent(50)) {
+						result = assignUnloadingCargo(person, drone);
 					}
-					if (result)
-						break;
 				}
+				if (result)
+					break;
 			}
+		}
 
-			else {
-				// End the phase.
+		else {
+			// End the phase.
 
-				// If the rover is in a garage, put the rover outside.
-				BuildingManager.removeFromGarage(v);
-
-				// Leave the vehicle.
-				releaseVehicle(getVehicle());
-				setPhaseEnded(true);
-			}
+			// If the drone is in a garage, put the drone outside.
+			BuildingManager.removeFromGarage(drone);
+			// Release the drone
+			releaseVehicle(drone);
+			
+			setPhaseEnded(true);
 		}
 	}
 
 	/**
-	 * Gives a person the task from unloading the drone.
+	 * Assigns a person the task from unloading the drone.
 	 *
 	 * @param p
 	 * @param drone
 	 */
-	private boolean unloadCargo(Person person, Drone drone) {
+	private boolean assignUnloadingCargo(Person person, Drone drone) {
 		boolean result = false;
 		
 		if (person.getAssociatedSettlement().getBuildingManager().addToGarage(drone)) {

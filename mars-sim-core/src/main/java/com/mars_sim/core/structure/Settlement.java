@@ -114,7 +114,6 @@ public class Settlement extends Structure implements Temporal,
 
 	// Static members
 	private static final int NUM_BACKGROUND_IMAGES = 20;
-//	private static final int INITIAL_ROI_RADIUS = 50;
 
 	/**
 	 * Shared preference key for Mission limits
@@ -124,7 +123,6 @@ public class Settlement extends Structure implements Temporal,
 	private static final int RESOURCE_UPDATE_FREQ = 30;
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
 	private static final int RESOURCE_STAT_SOLS = 12;
-//	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
 
 	private static final int MAX_PROB = 3000;
 	private static final int MIN_REGOLITH_RESERVE = 400; // per person
@@ -197,7 +195,7 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement minimum air pressure requirement. */
 	private static double minimumAirPressure;
 	/** The settlement life support requirements. */
-	public static double[][] lifeSupportValues = new double[2][7];
+	private static double[][] lifeSupportValues = new double[2][7];
 	
 	private static final String IMMINENT = " be imminent.";
 	private static final String DETECTOR = "The radiation detector just forecasted a ";
@@ -4085,6 +4083,17 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public Settlement getAssociatedSettlement() {
 		return this;
+	}
+	
+	/**
+	 * Gets the preset life support value.
+	 * 
+	 * @param i
+	 * @param j
+	 * @return
+	 */
+	public static double getLifeSupportValues(int i, int j) {
+		return lifeSupportValues[i][j];
 	}
 	
 	/**

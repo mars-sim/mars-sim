@@ -56,8 +56,8 @@ import javax.swing.table.TableColumn;
 
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
-import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.configuration.ScenarioConfig;
 import com.mars_sim.core.configuration.UserConfigurable;
@@ -242,7 +242,7 @@ public class SimulationConfigEditor {
 
 			String commanderName = personConfig.getCommander().getFullName();
 			String sponsor = personConfig.getCommander().getSponsorStr();
-			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Command Mode"), JLabel.CENTER); //$NON-NLS-1$
+			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Command Mode"), SwingConstants.CENTER); //$NON-NLS-1$
 			StyleManager.applyHeading(gameModeLabel);
 			topPanel.add(gameModeLabel);
 
@@ -250,19 +250,19 @@ public class SimulationConfigEditor {
 			topPanel.add(ccPanel);
 
 			JLabel commanderLabel = new JLabel("   " + Msg.getString("SimulationConfigEditor.commanderName",
-					commanderName), JLabel.LEFT); //$NON-NLS-1$
+					commanderName), SwingConstants.LEFT); //$NON-NLS-1$
 			ccPanel.add(commanderLabel);
 
 			ccPanel.add(new JLabel());
 
 			JLabel sponsorLabel = new JLabel(Msg.getString("SimulationConfigEditor.sponsorInfo",
-					sponsor)  + "                 ", JLabel.RIGHT); //$NON-NLS-1$
+					sponsor)  + "                 ", SwingConstants.RIGHT); //$NON-NLS-1$
 			ccPanel.add(sponsorLabel);
 
 		}
 
 		else {
-			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Sandbox Mode"), JLabel.CENTER); //$NON-NLS-1$
+			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Sandbox Mode"), SwingConstants.CENTER); //$NON-NLS-1$
 			StyleManager.applyHeading(gameModeLabel);
 			topPanel.add(gameModeLabel);
 		}
@@ -315,7 +315,7 @@ public class SimulationConfigEditor {
 		f.add(bottomPanel, BorderLayout.SOUTH);
 
 		// Create error label.
-		errorLabel = new JLabel("", JLabel.CENTER); //$NON-NLS-1$
+		errorLabel = new JLabel("", SwingConstants.CENTER); //$NON-NLS-1$
 		errorLabel.setForeground(Color.RED);
 		bottomPanel.add(errorLabel, BorderLayout.NORTH);
 
@@ -375,7 +375,7 @@ public class SimulationConfigEditor {
 
 		if (mode == GameMode.COMMAND) {
 			// Create the sponsor note label
-			JLabel noteLabel = new JLabel("    " + Msg.getString("SimulationConfigEditor.sponsorNote"), JLabel.LEFT); //$NON-NLS-1$
+			JLabel noteLabel = new JLabel("    " + Msg.getString("SimulationConfigEditor.sponsorNote"), SwingConstants.LEFT); //$NON-NLS-1$
 			bottomPanel.add(noteLabel, BorderLayout.SOUTH);
 		}
 

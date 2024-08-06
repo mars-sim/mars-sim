@@ -48,7 +48,12 @@ public class MEGDRMapArray extends MEGDRMapReader {
 			
 			elevation = convertByteArrayToShortIntArray(bytes);
 			
-			short mapHeight = (short) Math.sqrt(elevation.length / 2);
+			int length = elevation.length;
+			
+			if (length == 0)
+				return;
+				
+			short mapHeight = (short) Math.sqrt(length / 2.0);
 			short mapWidth = (short) (mapHeight * 2);
 			
 			logger.info("Reading elevation dataset from '" + file + "' (" + mapWidth + " by " + mapHeight + ").");
@@ -87,7 +92,9 @@ public class MEGDRMapArray extends MEGDRMapReader {
 	 * @return
 	 */
 	private short[] convertByteArrayToShortIntArray(byte[] data) {
-        if (data == null || data.length % 2 != 0) return null;
+        if (data == null || data.length % 2 != 0) 
+        	return new short[0];
+        
         int size = data.length / 2;
         short[] shorts = new short[size];
         

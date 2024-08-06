@@ -133,15 +133,16 @@ public class Kit extends Equipment
 	 *
 	 * @param obj
 	 */
-	public boolean equals(Kit obj) {
+	@Override
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (this.getClass() != obj.getClass())
 			return false;
-		return this.kitName.equalsIgnoreCase(obj.getKitName())
-			&& this.getIdentifier() == obj.getIdentifier();
+		return this.kitName.equalsIgnoreCase(((Kit)obj).getKitName())
+			&& this.getIdentifier() == ((Kit)obj).getIdentifier();
 	}
 
 	@Override

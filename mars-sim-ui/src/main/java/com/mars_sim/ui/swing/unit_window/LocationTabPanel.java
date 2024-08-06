@@ -130,7 +130,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		// Create top panel
 		JPanel topPanel = new JPanel(new BorderLayout(5, 5));
 		topPanel.setBorder(new MarsPanelBorder());
-//		locationPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
 		content.add(topPanel, BorderLayout.NORTH);
 
 		// Initialize location cache
@@ -220,11 +219,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			dataPanel.add(containerPanel, BorderLayout.NORTH);	
 			
 			activitySpot = containerPanel.addRow("Reserved Spot", "");
-			settlementLabel = containerPanel.addRow("Settlement", "");
-			containerLabel = containerPanel.addRow("Container Unit", "");
-			locationStateLabel = containerPanel.addRow("Location State", "");
-			buildingLabel = containerPanel.addRow("Building", "");
-			vicinityLabel = containerPanel.addRow("Vicinity", "");
+			
+			addTop3(containerPanel);
+			addNext2(containerPanel);
 		}
 		
 		else if (isVehicle) {
@@ -232,11 +229,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			AttributePanel containerPanel = new AttributePanel(5);
 			dataPanel.add(containerPanel, BorderLayout.NORTH);	
 	
-			settlementLabel = containerPanel.addRow("Settlement", "");
-			containerLabel = containerPanel.addRow("Container Unit", "");
-			locationStateLabel = containerPanel.addRow("Location State", "");
-			buildingLabel = containerPanel.addRow("Building", "");
-			vicinityLabel = containerPanel.addRow("Vicinity", "");
+			addTop3(containerPanel);
+			addNext2(containerPanel);
 		}
 		
 		else if (isEquipment) {
@@ -244,9 +238,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			AttributePanel containerPanel = new AttributePanel(3);
 			dataPanel.add(containerPanel, BorderLayout.NORTH);	
 				
-			settlementLabel = containerPanel.addRow("Settlement", "");
-			containerLabel = containerPanel.addRow("Container Unit", "");
-			locationStateLabel = containerPanel.addRow("Location State", "");
+			addTop3(containerPanel);
 		}
 		
 		else if (isSettlement) {
@@ -261,6 +253,17 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		update();
 	}
 
+	public void addTop3(AttributePanel containerPanel) {
+		settlementLabel = containerPanel.addRow("Settlement", "");
+		containerLabel = containerPanel.addRow("Container Unit", "");
+		locationStateLabel = containerPanel.addRow("Location State", "");
+	}
+	
+	public void addNext2(AttributePanel containerPanel) {
+		buildingLabel = containerPanel.addRow("Building", "");
+		vicinityLabel = containerPanel.addRow("Vicinity", "");
+	}
+	
 	/**
 	 * Updates the info on this panel.
 	 */

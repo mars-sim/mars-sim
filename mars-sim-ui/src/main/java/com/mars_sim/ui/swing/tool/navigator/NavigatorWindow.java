@@ -55,6 +55,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.Painter;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 
@@ -120,7 +121,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
 
 	private static final String LEVEL = "Level ";
-//	private static final String CURRENT = " (Current)";
 	private static final String DASH = "- ";
 	private static final String CHOOSE_SETTLEMENT = "List";
 	private static final String MAPTYPE_ACTION = "mapType";
@@ -151,17 +151,18 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	private static final String WHITESPACE = " ";
 	private static final String MAG = "mag: ";
-	private static final String THETA = "\u03B8: "; //"Theta: ";
-	private static final String PHI = "\u03C6: "; //"Phi: ";
+	private static final String THETA = "\u03B8: ";
+	private static final String PHI = "\u03C6: ";
 
 	private static final String ELEVATION = " h: ";
 	private static final String KM = " km";
 
 	private static final String RESOLUTION = "2";
 
-	// Data member
 	/** The map resolution. Level 0 is the lowest. Level n is highest. */
 	private static int res = 0;
+	
+	// Data member
 	/** The map rho. */
 	private double rho;
 	
@@ -177,8 +178,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private JComboBoxMW<?> latCBDir;
 	/** Longitude direction choice. */
 	private JComboBoxMW<?> lonCBDir;
-	/** Minerals button. */
-//	private JButton mineralsButton;
+
 	/** Toggle button for mineral types. */
 	private JButton mineralsButton;
 	/** Go button. */
@@ -199,10 +199,17 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private JLabel thetaLabel;
 
 	private JSlider zoomSlider;
-//	private DoubleJSlider doubleSlider;
-	
-	private java.util.Map<String, MapOrder> mapLayers = new HashMap<>();
 
+	private transient java.util.Map<String, MapOrder> mapLayers = new HashMap<>();
+
+	private transient MapDataUtil mapDataUtil = MapDataUtil.instance();
+	
+	private transient Icon mapIcon = ImageLoader.getIconByName(MAP_ICON);
+	
+	private transient MineralMapLayer mineralLayer;
+	
+	private transient UnitManagerListener umListener;
+	
 	private List<Landmark> landmarks;
 	
 	/** The map panel class for holding all the map layers. */
@@ -210,17 +217,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	private JPanel detailPane;
 	
-	private MineralMapLayer mineralLayer;
-	
 	private UnitManager unitManager;
-	
-	private UnitManagerListener umListener;
 	
 	private Settlement selectedSettlement;
 	
-	private MapDataUtil mapDataUtil = MapDataUtil.instance();
-	
-	private Icon mapIcon = ImageLoader.getIconByName(MAP_ICON);
 
 	/**
 	 * Constructor.
@@ -348,7 +348,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		////////////////////////////////////////////
 			
 		// Prepare latitude entry components
-		JLabel latLabel = new JLabel("   Lat :", JLabel.RIGHT);
+		JLabel latLabel = new JLabel("   Lat :", SwingConstants.RIGHT);
 		topPane.add(latLabel);
 
 		Integer[] lon_degrees = new Integer[361];
@@ -379,7 +379,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		topPane.add(latCBDir);
 
 		// Prepare longitude entry components
-		JLabel longLabel = new JLabel("Lon :", JLabel.RIGHT);
+		JLabel longLabel = new JLabel("Lon :", SwingConstants.RIGHT);
 		topPane.add(longLabel);
 
 		// Switch to using ComboBoxMW for longitude

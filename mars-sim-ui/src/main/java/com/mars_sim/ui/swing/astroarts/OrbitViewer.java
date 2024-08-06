@@ -72,6 +72,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
 import com.mars_sim.core.astroarts.ATime;
@@ -421,7 +422,7 @@ implements ActionListener {
 		ctrlPanel.setBorder(new MarsPanelBorder());
 		
 		// Set Control Label
-		JLabel controlLabel = new JLabel("Controls", JLabel.CENTER);
+		JLabel controlLabel = new JLabel("Controls", SwingConstants.CENTER);
 		controlLabel.setAlignmentX(CENTER_ALIGNMENT);
 		gbcCtrlPanel.gridx = 0;
 		gbcCtrlPanel.gridy = 0;
@@ -523,7 +524,7 @@ implements ActionListener {
         // Step Label
         JLabel stepLabel = new JLabel("Step : ");
 		stepLabel.setFont(labelFont);
-        stepLabel.setHorizontalAlignment(JLabel.RIGHT);
+        stepLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         gbcCtrlPanel.gridx = 1;
         gbcCtrlPanel.gridy = 2;
         gbcCtrlPanel.weightx = 0.0;
@@ -552,7 +553,7 @@ implements ActionListener {
        // Center Object JLabel
         JLabel centerLabel = new JLabel("Center : ");
 		centerLabel.setFont(labelFont);
-        centerLabel.setHorizontalAlignment(JLabel.RIGHT);
+        centerLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         gbcCtrlPanel.gridx = 3;
         gbcCtrlPanel.gridy = 2;
         gbcCtrlPanel.weightx = 0.0;
@@ -582,7 +583,7 @@ implements ActionListener {
        // Display Orbits JLabel
         JLabel orbitLabel = new JLabel("Orbit : ");
 		orbitLabel.setFont(labelFont);
-        orbitLabel.setHorizontalAlignment(JLabel.RIGHT);
+        orbitLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         gbcCtrlPanel.gridx = 3;
         gbcCtrlPanel.gridy = 3;
         gbcCtrlPanel.weightx = 0.0;

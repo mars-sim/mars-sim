@@ -27,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -48,7 +49,7 @@ extends WizardPanel
 implements ActionListener {
 
 	/** The wizard panel name. */
-	private final static String NAME = "Settlers";
+	private static final String NAME = "Settlers";
 
 	// Data members.
 	private PeopleTableModel peopleTableModel;
@@ -69,7 +70,7 @@ implements ActionListener {
 	 * 
 	 * @param wizard the create mission wizard
 	 */
-	MembersPanel(CreateMissionWizard wizard) {
+	public MembersPanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor
 		super(wizard);
 
@@ -87,7 +88,7 @@ implements ActionListener {
 		add(new JLabel("     "));
 		
 		// Create the available people label.
-		JLabel availablePeopleLabel = new JLabel("Available People", JLabel.CENTER);
+		JLabel availablePeopleLabel = new JLabel("Available People", SwingConstants.CENTER);
 		availablePeopleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(availablePeopleLabel);
 

@@ -26,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -47,7 +48,7 @@ extends WizardPanel
 implements ActionListener {
 
 	/** The wizard panel name. */
-	private final static String NAME = "Bots";
+	private static final String NAME = "Bots";
 
 	// Data members.
 	private BotsTableModel botsTableModel;
@@ -61,10 +62,11 @@ implements ActionListener {
 	private JButton skipButton;
 	
 	/**
-	 * Constructor
+	 * Constructor.
+	 * 
 	 * @param wizard the create mission wizard.
 	 */
-	BotMembersPanel(CreateMissionWizard wizard) {
+	public BotMembersPanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor
 		super(wizard);
 
@@ -82,7 +84,7 @@ implements ActionListener {
 		add(new JLabel("     "));
 		
 		// Create the available bots label.
-		JLabel availableBotsLabel = new JLabel("Available Bots", JLabel.CENTER);
+		JLabel availableBotsLabel = new JLabel("Available Bots", SwingConstants.CENTER);
 		availableBotsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(availableBotsLabel);
 

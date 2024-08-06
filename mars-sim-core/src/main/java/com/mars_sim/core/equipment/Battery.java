@@ -20,10 +20,10 @@ import com.mars_sim.tools.util.RandomUtil;
  */
 public class Battery implements Serializable {
 
-    /** default serial id. */
+    /** Default serial id. */
     private static final long serialVersionUID = 1L;
     
-	// default logger.
+    /** Default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Battery.class.getName());
 	
     /** The maximum current that can be safely drawn from this battery pack in Ampere. */

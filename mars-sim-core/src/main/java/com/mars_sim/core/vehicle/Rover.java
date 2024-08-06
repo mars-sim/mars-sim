@@ -484,8 +484,8 @@ public class Rover extends GroundVehicle implements Crewable,
 		}
 
 		double t = getTemperature();
-		if (t < Settlement.lifeSupportValues[0][4] - Settlement.SAFE_TEMPERATURE_RANGE
-				|| t > Settlement.lifeSupportValues[1][4] + Settlement.SAFE_TEMPERATURE_RANGE) {
+		if (t < Settlement.getLifeSupportValues(0, 4) - Settlement.SAFE_TEMPERATURE_RANGE
+				|| t > Settlement.getLifeSupportValues(1, 4) + Settlement.SAFE_TEMPERATURE_RANGE) {
 			logger.log(this, Level.WARNING, 10_000,
 					"Out-of-range overall temperature at " + Math.round(t * 100.0D) / 100.0D
 						+ " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.");

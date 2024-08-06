@@ -141,9 +141,11 @@ public class Weather implements Serializable, Temporal {
 	public double computeAirDensity(Coordinates location) {
 		// The air density is derived from the equation of state : d = p / .1921 / (t +
 		// 273.1)
-		double result = 1000D * getAirPressure(location)
+//		double result = 1000D * getAirPressure(location)
+//				/ (.1921 * (getTemperature(location) + AirComposition.C_TO_K));
+//		return Math.round(result * 100.0) / 100.0;
+		return 1000D * getAirPressure(location)
 				/ (.1921 * (getTemperature(location) + AirComposition.C_TO_K));
-		return Math.round(result * 100.0) / 100.0;
 	}
 
 	/**

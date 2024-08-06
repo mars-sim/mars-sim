@@ -205,6 +205,8 @@ public class RelationshipUtil implements Serializable {
 	 */
 	public static Map<Person, Double> getBestFriends(Person person) {
 		Map<Person, Double> bestFriends = getMyOpinionsOfThem(person);
+		if (bestFriends.isEmpty())
+			return bestFriends;
 		int size = bestFriends.size();
 		if (size == 1) {
 			return bestFriends;
@@ -215,7 +217,7 @@ public class RelationshipUtil implements Serializable {
 			double highValue = hScore.get();
 			bestFriends = bestFriends.entrySet().stream()
 									.filter(a -> (a.getValue() >= highValue))
-                       	 			.collect(Collectors.toMap(e->e.getKey(),e->e.getValue()));			
+                       	 			.collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));			
 		}
 		return bestFriends;
 	}

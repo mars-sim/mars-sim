@@ -78,7 +78,7 @@ public class Charge extends Task {
 		
 			if (station != null) {
 				
-				canWalk = walkToRoboticStation(robot, station, true);
+				canWalk = walkToRoboticStation(station, true);
 			}
 			
 			// Future : walk to a nearby building with robotic station even if the station is full
@@ -110,7 +110,7 @@ public class Charge extends Task {
 	 * @param allowFail
 	 * @return
 	 */
-	protected boolean walkToRoboticStation(Robot robot, RoboticStation station, boolean allowFail) {
+	protected boolean walkToRoboticStation(RoboticStation station, boolean allowFail) {
 		// Set the description
 		setDescription(WALKING);
 		
