@@ -435,7 +435,7 @@ public class VehicleSpec implements Serializable {
 				
 				roadLoadPowerFactor = 0.7;
 				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(10 + numBatteryModule * 3 + numFuelCellStack * 2) * 1.25;
+				peakPower = basePower * Math.log10(10.0 + numBatteryModule * 3 + numFuelCellStack * 2) * 1.25;
 				// Accounts for the fuel (methanol and oxygen) and the traded goods
 				additionalBeginningMass = 400;
 				// Accounts for water and the traded goods
@@ -446,7 +446,7 @@ public class VehicleSpec implements Serializable {
 				
 				roadLoadPowerFactor = 0.7;
 				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(10 + numBatteryModule * 3 + numFuelCellStack * 2) * 1.25;
+				peakPower = basePower * Math.log10(10.0 + numBatteryModule * 3 + numFuelCellStack * 2) * 1.25;
 				// Accounts for the fuel (methanol and oxygen) and the traded goods
 				additionalBeginningMass = 400;
 				// Accounts for water and the traded goods
@@ -457,7 +457,7 @@ public class VehicleSpec implements Serializable {
 				
 				roadLoadPowerFactor = 0.1;
 				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(10 + numBatteryModule * 3 + numFuelCellStack * 2) * 1.25;
+				peakPower = basePower * Math.log10(10.0 + numBatteryModule * 3 + numFuelCellStack * 2) * 1.25;
 				// Accounts for the occupant weight
 				additionalBeginningMass = estimatedTotalCrewWeight;
 				// Accounts for the occupant weight
@@ -468,7 +468,7 @@ public class VehicleSpec implements Serializable {
 				
 				roadLoadPowerFactor = 0.3;
 				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(10 + numBatteryModule * 3 + numFuelCellStack * 2);
+				peakPower = basePower * Math.log10(10.0 + numBatteryModule * 3 + numFuelCellStack * 2);
 				// Accounts for the occupants and their consumables
 				additionalBeginningMass = estimatedTotalCrewWeight + 4 * 20;
 				// Accounts for the occupant and rock sample, ice or regolith collected
@@ -479,7 +479,7 @@ public class VehicleSpec implements Serializable {
 				
 				roadLoadPowerFactor = 0.2;
 				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(10 + numBatteryModule * 2 + numFuelCellStack * 1.5);
+				peakPower = basePower * Math.log10(10.0 + numBatteryModule * 2 + numFuelCellStack * 1.5);
 				// Accounts for the occupants and their consumables and traded goods 
 				additionalBeginningMass = estimatedTotalCrewWeight + 2 * 20 + 2000;
 				// Accounts for the occupants and traded goods
@@ -490,7 +490,7 @@ public class VehicleSpec implements Serializable {
 				
 				roadLoadPowerFactor = 0.1;
 				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(10 + numBatteryModule * 2 + numFuelCellStack * 1.5);
+				peakPower = basePower * Math.log10(10.0 + numBatteryModule * 2 + numFuelCellStack * 1.5);
 				// Accounts for the occupants and their consumables and personal possession
 				additionalBeginningMass = estimatedTotalCrewWeight + 8 * (20 + 100);
 				// Accounts for the occupants and their personal possession

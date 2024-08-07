@@ -207,7 +207,7 @@ public class Battery implements Serializable {
 		energyToDeliver = Math.min(kWhStored, Math.min(energyCanSupply, 
 						Math.min(powerRequest * time, Math.min(kWh, powerMax * time))));
 
-    	if (lowBatteryAlarm)
+    	if (lowBatteryAlarm) {
 			logger.log(unit, Level.WARNING, 20_000, 
       			"[Low Battery Alarm] "
                 + "kWh: " + + Math.round(kWh * 1_000.0)/1_000.0 + KWH__
@@ -216,8 +216,9 @@ public class Battery implements Serializable {
               	+ "energyToDeliver: " + + Math.round(energyToDeliver * 1_000.0)/1_000.0 + KWH__
             	+ "time: " + + Math.round(time * 1_000.0)/1_000.0 + " hrs  "
       			+ "powerRequest: " + + Math.round(powerRequest * 1_000.0)/1_000.0 + KW__
-      			+ "powerMax: " + + Math.round(powerMax * 1_000.0)/1_000.0 + KW__
-       	);
+      			+ "powerMax: " + + Math.round(powerMax * 1_000.0)/1_000.0 + KW__);
+    	}
+       	
        	
     	kWhStored -= energyToDeliver; 
     	unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);

@@ -971,10 +971,11 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getCumFuelEconomy() {
-		if (odometerMileage == 0 || cumFuelUsedKG == 0)
+		if (odometerMileage == 0 || (cumFuelUsedKG == 0 && cumEnergyUsedKWH == 0))
 			return 0;
+		double batteryFuelKG = cumEnergyUsedKWH / getVehicleSpec().getFuel2DriveEnergy();
 		// [km] / [kg] 
-		return odometerMileage / cumFuelUsedKG;
+		return odometerMileage / (cumFuelUsedKG + batteryFuelKG);
 	}
 	
 	/**
@@ -983,10 +984,11 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getCumFuelConsumption() {
-		if (odometerMileage == 0 || cumFuelUsedKG == 0)
+		if (odometerMileage == 0 || (cumFuelUsedKG == 0 && cumEnergyUsedKWH == 0))
 			return 0;
+		double fuelWh = cumFuelUsedKG * getVehicleSpec().getFuel2DriveEnergy();
 		// [kg] * [Wh/kg]  / km
-		return cumFuelUsedKG * getVehicleSpec().getFuel2DriveEnergy() / odometerMileage;
+		return (fuelWh + cumEnergyUsedKWH) / odometerMileage;
 	}
 	
 	/**
@@ -2659,7 +2661,9 @@ public abstract class Vehicle extends Unit
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Vehicle v = (Vehicle) obj;
-		return this.getIdentifier() == v.getIdentifier();
+		return this.getName() == v.getName()
+				&& this.getVehicleType() == v.getVehicleType()
+				&& this.getIdentifier() == v.getIdentifier();
 	}
 
 	/**
@@ -2669,7 +2673,7 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public int hashCode() {
-		return getIdentifier() % 32;
+		return getIdentifier() % 64;
 	}
 
 	@Override

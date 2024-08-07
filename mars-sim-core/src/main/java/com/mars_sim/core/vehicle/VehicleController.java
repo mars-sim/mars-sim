@@ -17,7 +17,6 @@ import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.vehicle.task.OperateVehicle;
 import com.mars_sim.tools.util.RandomUtil;
  
  /**
@@ -152,7 +151,7 @@ import com.mars_sim.tools.util.RandomUtil;
  
 		 double secs = 3600 * hrsTime;
 		 // Note: 1 m/s = 3.6 km/hr (or kph)	     	
-		 double vMS = vKPH / KPH_CONV; // [in m/s]
+		 double vMS = vKPH / KPH_CONV;
 	  
 		 if (vKPH < 0 || vMS < 0) {
 			 logger.log(vehicle, Level.INFO, 10_000, "Final speed was negative (" 
@@ -175,11 +174,7 @@ import com.mars_sim.tools.util.RandomUtil;
 		 // weight is mg
 		 double weight = mass * GRAVITY;	
 		 
-		 double averageSpeed = (vMS + uMS)/2.0;
-		 
-		 if (averageSpeed == 0)
-			 logger.log(vehicle, Level.SEVERE, 10_000, "averageSpeed is zero.");
-		 
+		 double averageSpeed = (vMS + uMS) / 2;
 		 // Calculate force against Mars surface gravity
 		 double fGravity = 0;      
 		 // 1 N = (1 kg) (1 m/s2)	 
@@ -196,10 +191,6 @@ import com.mars_sim.tools.util.RandomUtil;
 		 double avePower = 0;
 		 
 		 double aveForce = 0;
-		 // Calculate the kinetic energy 
-		 double kineticEnergy = .5 * mass * vMS * vMS;
-		 
-		 double potentialEnergyDrone = 0;
 		  
 		 double powerThrustDrone = 0;
 		 //  g/m3 -> kg /m3;  14.76 g/m3 / 1000 -> kg /m3; 
@@ -210,7 +201,7 @@ import com.mars_sim.tools.util.RandomUtil;
 			 powerConstantSpeed = propulsion.driveOnGround(weight, vMS, averageSpeed, fGravity, airDensity);
 		 }
 		 
-		 else if (vehicle instanceof Drone drone) {
+		 else if (vehicle instanceof Drone) {
 			 // 1 m/s = 3.6 km/h (or kph). KPH_CONV = 3.6;
 
 			 /*
@@ -285,13 +276,12 @@ import com.mars_sim.tools.util.RandomUtil;
 		 energyByBattery = 0;	 
 		 // [in Wh], not in kWh
 		 overallEnergyUsed = 0;
-		 
 		 // In [W], not [kW]
 		 avePower = powerConstantSpeed + powerSpeedUp + powerThrustDrone;
 		 
 		 if (vMS != uMS)
 			 aveForce = avePower / (vMS - uMS);
-		 else
+		 else if (vMS > 0)
 			 aveForce = avePower / vMS;
 		 
 		 logger.log(vehicle, Level.INFO, 10_000,  
@@ -309,6 +299,7 @@ import com.mars_sim.tools.util.RandomUtil;
 	 
 			 // Get the new avePower
 			 double brakingPower = regen[0];
+			 
 			 avePower = avePower - brakingPower;
 			 	 
 			 logger.log(vehicle, Level.INFO, 10_000, "Scenario 0: regen mode - "
@@ -326,7 +317,6 @@ import com.mars_sim.tools.util.RandomUtil;
   
 			 // Set new vehicle acceleration
 			 vehicle.setAccel(accelSpeedUp);
-
 			 // Convert the total energy [in Wh]. Need to convert from J to Wh
 			 overallEnergyUsed = avePower * secs / JOULES_PER_WH; // [in Wh]
 			 
@@ -365,8 +355,7 @@ import com.mars_sim.tools.util.RandomUtil;
 				 // if fuelNeeded is smaller than remainingFuel, then fuel is sufficient.
 				 
 				 // Get energy [in Wh] from the fuel
-				 energyByFuel = overallEnergyUsed;
-				 		 
+				 energyByFuel = overallEnergyUsed;			 		 
 				 // Derive the mass of fuel needed kg = Wh / [Wh/kg]
 				 fuelNeeded = energyByFuel / vehicle.getFuelConv();
 				 
@@ -483,22 +472,8 @@ import com.mars_sim.tools.util.RandomUtil;
 				 } // end of Scenario 1B2
 			 } // end of Scenario 1B
 			 
-			 double iFE = 0;
-			 double iFC = 0;	
-			 
-			 if (distanceTravelled > 0 && energyByFuel > LEAST_AMOUNT) {
-				 // Derive the instantaneous fuel consumption [Wh/km]
-				 iFC = energyByFuel / distanceTravelled;	        
-				 // Set the instantaneous fuel consumption [Wh/km]
-				 vehicle.setIFuelConsumption(iFC);
-
-				 // Derive the instantaneous fuel economy [km/kg]
-				 // [km/kg] = [km] / [Wh] *  [Wh/kg]
-				 //  energyByFuel = fuelNeeded * vehicle.getFuelConv();
-				 iFE = distanceTravelled / energyByFuel * vehicle.getFuelConv();	        
-				 // Set the instantaneous fuel economy [km/kg]
-				 vehicle.setIFuelEconomy(iFE);
-			 }
+			 // Save the instantaneous fuel consumption and economy
+			 recordIFEFC(distanceTravelled, energyByFuel); 
 
 			 // Retrieve fuelNeeded	
 			 if (remainingFuel != -1) {
@@ -665,6 +640,32 @@ import com.mars_sim.tools.util.RandomUtil;
 		 
 		 return updateMetrics(remainingHrs, vKPH, avePower, 
 				 distanceTravelled, energyByBattery, fuelNeeded);
+	 }
+	 
+	 /**
+	  * Records the instantaneous FE and FC.
+	  * 
+	  * @param distanceTravelled
+	  * @param energyByFuel
+	  */
+	 private void recordIFEFC(double distanceTravelled, double energyByFuel) {
+	
+		 double iFE = 0;
+		 double iFC = 0;	
+		 
+		 if (distanceTravelled > 0 && energyByFuel > 0) {
+			 // Derive the instantaneous fuel consumption [Wh/km]
+			 iFC = energyByFuel / distanceTravelled;	        
+			 // Set the instantaneous fuel consumption [Wh/km]
+			 vehicle.setIFuelConsumption(iFC);
+
+			 // Derive the instantaneous fuel economy [km/kg]
+			 // [km/kg] = [km] / [Wh] *  [Wh/kg]
+			 //  energyByFuel = fuelNeeded * vehicle.getFuelConv();
+			 iFE = distanceTravelled / energyByFuel * vehicle.getFuelConv();	        
+			 // Set the instantaneous fuel economy [km/kg]
+			 vehicle.setIFuelEconomy(iFE);
+		 }
 	 }
 	 
 	 /**
