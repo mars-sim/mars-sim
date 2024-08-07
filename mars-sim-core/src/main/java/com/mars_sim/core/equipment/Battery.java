@@ -36,10 +36,10 @@ public class Battery implements Serializable {
     public static final double STANDARD_VOLTAGE = 600;
     
     /** The standard voltage of a drone battery pack in volts. */
-    public static final double DRONE_VOLTAGE = 14.8;
+    public static final double DRONE_VOLTAGE = 48;
     
     /** The maximum energy capacity of a standard battery module in kWh. */
-//    public static final double ENERGY_PER_MODULE = 15.0;
+    // ENERGY_PER_MODULE = 15.0;
     
     private static final String KWH__ = " kWh  ";
     private static final String KW__ = " kW  ";

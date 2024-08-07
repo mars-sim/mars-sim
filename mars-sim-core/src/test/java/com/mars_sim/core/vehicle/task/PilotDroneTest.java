@@ -44,7 +44,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
 	// Assume a constant voltage
 	double voltage = Battery.DRONE_VOLTAGE;	 
 	// For now, assume the propeller induced velocity is linearly proportional to the voltage of the battery 
-	double vPropeller = voltage * 60;	 
+	double vPropeller = voltage * 14;	 
 
 	double efficiencyMotor = 0.9;
 	 

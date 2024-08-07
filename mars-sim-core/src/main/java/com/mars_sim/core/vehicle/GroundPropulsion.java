@@ -22,9 +22,7 @@ public class GroundPropulsion extends Propulsion implements Serializable {
 
 	private static final double TRANSMISSION_EFFICIENCY = 0.85;
 	 
-	private static final String TWO_WHITESPACES = "  ";
-	
-    public static final DecimalFormat DECIMAL3_N = new DecimalFormat("#,##0.000 N");
+
     
 	private Vehicle vehicle;
 	
@@ -42,7 +40,7 @@ public class GroundPropulsion extends Propulsion implements Serializable {
 	}
 
 	 /**
-	  * Calculates overall power and forces acting on a rover.
+	  * Drives the rover and calculates overall power and forces acting on it.
 	  * 
 	  * @param weight
 	  * @param vMS
@@ -51,7 +49,7 @@ public class GroundPropulsion extends Propulsion implements Serializable {
 	  * @param airDensity
 	  * @return
 	  */
-	 public double calculateVehiclePower(double weight, double vMS , double averageSpeed, double fGravity, double airDensity) {
+	 public double driveOnGround(double weight, double vMS , double averageSpeed, double fGravity, double airDensity) {
 		 // Important for Ground rover in radians
 		 double angle = vehicle.getTerrainGrade();
 		 
@@ -95,4 +93,19 @@ public class GroundPropulsion extends Propulsion implements Serializable {
 		 return totalForce * vMS / TRANSMISSION_EFFICIENCY;
 	 }
 	
+	 /**
+	  * Flies in the air and calculate overall power and forces acting on the flyer.
+	  * 
+	  * @param caseText
+	  * @param ascentHeight
+	  * @param weight
+	  * @param airDensity
+	  * @param vMS
+	  * @param secs
+	  * @return
+	  */
+	 public double flyInAir(String caseText, double ascentHeight, double weight,
+			 double airDensity, double vMS, double secs) {
+		 return 0;
+	 }
 }

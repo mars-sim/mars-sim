@@ -29,7 +29,7 @@ public abstract class Propulsion implements Serializable {
 	/** Conversion factor : 1 Wh = 3.6 kilo Joules */
 	private static final double JOULES_PER_WH = 3_600.0;
 	/** Conversion factor : 1 m/s = 3.6 km/h (or kph) */
-	private static final double KPH_CONV = 3.6;
+	protected static final double KPH_CONV = 3.6;
 	 
 	 /** The ratio of the amount of oxidizer to methane fuel. */
 	 public static final double RATIO_OXIDIZER_METHANE = 1;
@@ -43,15 +43,19 @@ public abstract class Propulsion implements Serializable {
 
 	 /** The ratio of water produced for every methane consumed. */
 	 private static final double RATIO_WATER_METHANE = 2.25;
+
+	 
+	 public static final String TWO_WHITESPACES = "  ";
 	
-	private static final String TWO_WHITESPACES = "  ";
-	
-    public static final DecimalFormat DECIMAL3_WH = new DecimalFormat("#,##0.00 Wh");
+    public static final DecimalFormat DECIMAL3_N = new DecimalFormat("#,##0.000 N");    public static final DecimalFormat DECIMAL3_WH = new DecimalFormat("#,##0.00 Wh");
     public static final DecimalFormat DECIMAL3_KPH = new DecimalFormat("#,##0.00 kph");
-    public static final DecimalFormat DECIMAL3_W = new DecimalFormat("#,##0.00 W");
     public static final DecimalFormat DECIMAL3_KM = new DecimalFormat("#,##0.000 km");
     public static final DecimalFormat DECIMAL2_S = new DecimalFormat("#,##0.00 secs");
-    
+    public static final DecimalFormat DECIMAL3_M = new DecimalFormat("#,##0.000 m");
+    public static final DecimalFormat DECIMAL3_S = new DecimalFormat("#,##0.000 secs");
+    public static final DecimalFormat DECIMAL3_M_S = new DecimalFormat("#,##0.000 m/s");
+    public static final DecimalFormat DECIMAL3_W = new DecimalFormat("#,##0.000 W");
+    public static final DecimalFormat DECIMAL3_J = new DecimalFormat("#,##0.000 J");
 	private Vehicle vehicle;
 	
 	
@@ -66,6 +70,12 @@ public abstract class Propulsion implements Serializable {
 
 	}
 	
+	/**
+	 * Consumes the fuel and the fuel oxidizer.
+	 * 
+	 * @param fuelNeeded
+	 * @param fuelTypeID
+	 */
 	public void retrieveFuelNOxidizer(double fuelNeeded, int fuelTypeID) {
 		 if (fuelNeeded > 0) {
 			 
@@ -171,32 +181,31 @@ public abstract class Propulsion implements Serializable {
 	 * @return
 	 */
 	public double[] cutDownSpeedNPower(String caseText, double energySuppliedByBattery, double secs, double energyByFuel, double uMS, double mass) {
-		 // Energy expenditure is NOT met. Need to cut down the speed and power. 
-		 
-		
+		// Energy expenditure is NOT met. Need to cut down the speed and power. 
+	
 		// Scenario 2B3: fuel can fulfill some energy expenditure but not all. Battery cannot provide the rest
 		 
-		 // Previously, it was overallEnergyUsed = avePower * secs / JOULES_PER_WH ; // [in Wh]				
+		// Previously, it was overallEnergyUsed = avePower * secs / JOULES_PER_WH ; // [in Wh]				
 		 
 		 // Recalculate the new power
 		 // 1 Wh = 3.6 kJ 
 		 // W = J / s  / [3.6 kJ / Wh]
 		 // W = Wh / 3.6k
 
-		 // Recalculate the new ave power W
-		 // W = Wh / s * 3600 J / Wh
+		// Recalculate the new ave power W
+		// W = Wh / s * 3600 J / Wh
 		double avePower = energySuppliedByBattery / secs * JOULES_PER_WH;
 		 
-		 // Recalculate the new overall energy expenditure [in Wh]
+		// Recalculate the new overall energy expenditure [in Wh]
 		double overallEnergyUsed = energySuppliedByBattery + energyByFuel;
 		 
-		 // Recalculate the kinetic energy
+		// Recalculate the kinetic energy
 		double kineticEnergy = overallEnergyUsed;
 		 
 		 // Recalculate the new speed 
 		double vMS = Math.sqrt(kineticEnergy / .5 / mass);
 		 
-		 // Recalculate the new aveForce 
+		// Recalculate the new aveForce 
 //		double aveForce = avePower / (vMS - uMS);
 		 
 		 // Recalculate the new force 
@@ -208,22 +217,22 @@ public abstract class Propulsion implements Serializable {
 		 
 		double vKPH = vMS * KPH_CONV;
 		 
-		 // Find new acceleration
-		 double accelSpeedUp = (vMS - uMS) / secs; // [in m/s^2]
+		// Find new acceleration
+		double accelSpeedUp = (vMS - uMS) / secs; // [in m/s^2]
 		 
-		 // Q: what if vMS < uMS and accelSpeedUp is -ve 
+		// Q: what if vMS < uMS and accelSpeedUp is -ve 
 		 
-		 // Set new vehicle acceleration
-		 vehicle.setAccel(accelSpeedUp);
+		// Set new vehicle acceleration
+		vehicle.setAccel(accelSpeedUp);
 		 
 		 // Recompute the new distance it could travel
-		 double distanceTravelled = vKPH * secs / 3600;
+		double distanceTravelled = vKPH * secs / 3600;
 				 
 		/*
 		 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
 		 * delete any of them. Needed for testing when new features are added in future. Thanks !
 		 */
-		 logger.log(vehicle, Level.INFO, 10_000, caseText 
+		logger.log(vehicle, Level.INFO, 10_000, caseText 
 				 + "energyByFuel: " + DECIMAL3_WH.format(energyByFuel) + TWO_WHITESPACES
 //				 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG__					
 //				 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH__
@@ -241,7 +250,7 @@ public abstract class Propulsion implements Serializable {
 	}
 	
 	 /**
-	  * Calculates overall power and forces acting on a rover.
+	  * Drives the rover and calculates overall power and forces acting on vehicle.
 	  * 
 	  * @param weight
 	  * @param vMS
@@ -250,6 +259,20 @@ public abstract class Propulsion implements Serializable {
 	  * @param airDensity
 	  * @return
 	  */
-	 public abstract double calculateVehiclePower(double weight, double vMS , double averageSpeed, double fGravity, double airDensity);
+	 public abstract double driveOnGround(double weight, double vMS , double averageSpeed, double fGravity, double airDensity);
+	 
+	 /**
+	  * Flies in the air and calculate overall power and forces acting on the flyer.
+	  * 
+	  * @param caseText
+	  * @param ascentHeight
+	  * @param weight
+	  * @param airDensity
+	  * @param vMS
+	  * @param secs
+	  * @return
+	  */
+	 public abstract double flyInAir(String caseText, double ascentHeight, double weight,
+			 double airDensity, double vMS, double secs);
 	 
 }

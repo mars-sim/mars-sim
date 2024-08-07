@@ -377,9 +377,9 @@ public class RadiationExposure implements Serializable, Temporal {
 		
 		// Checks radiation
 		// Note: if a person is outside, it's handled by EVAOperation's isRadiationDetected()
-		if (!person.isOutside()) {
-			isRadiationDetected(pulse.getElapsed());
-		}
+//		if (!person.isOutside()) {
+//			isRadiationDetected(pulse.getElapsed());
+//		}
 			
 		return true;
 	}

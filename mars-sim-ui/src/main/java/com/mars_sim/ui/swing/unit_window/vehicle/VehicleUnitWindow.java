@@ -40,7 +40,7 @@ public class VehicleUnitWindow extends UnitWindow {
 		// Use UnitWindow constructor
 		super(desktop, vehicle,  vehicle.getName() 
 				+ " (" + vehicle.getVehicleType().getName() + ")"
-				+ " of " + (vehicle.getAssociatedSettlement() != null)
+				+ " of " + vehicle.getAssociatedSettlement()
 				+ ((vehicle.getContainerUnit() != null) ? (" in " + vehicle.getContainerUnit()) :
 					" in " + vehicle.getLocationTag().findSettlementVicinity() + " Vicinity"),
 				true);

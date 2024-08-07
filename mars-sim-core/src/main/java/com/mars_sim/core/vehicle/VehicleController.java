@@ -207,37 +207,12 @@ import com.mars_sim.tools.util.RandomUtil;
 			
 		 if (VehicleType.isRover(vehicle.getVehicleType())) {
 			 // Calculates forces and power
-			 powerConstantSpeed = propulsion.calculateVehiclePower(weight, vMS, averageSpeed, fGravity, airDensity);
+			 powerConstantSpeed = propulsion.driveOnGround(weight, vMS, averageSpeed, fGravity, airDensity);
 		 }
 		 
 		 else if (vehicle instanceof Drone drone) {
 			 // 1 m/s = 3.6 km/h (or kph). KPH_CONV = 3.6;
-	 
-			 // currentHoveringHeight in meter, not km
-			 double currentHoveringHeight = drone.getHoveringHeight();
-			 // Assume a constant voltage
-			 double voltage = Battery.DRONE_VOLTAGE;	 
-			 // For now, assume the propeller induced velocity is linearly proportional to the voltage of the battery 
-			 double vPropeller = voltage * 60;	 
-		
-			 double efficiencyMotor = 0.9;
-			 // Assume the total radius of the four propellers span the width of the drone
-			 double width = vehicle.getWidth();
-			 
-			 double radiusPropeller = width / 8;
-		    	
-			 double radiusPropellerSquare = radiusPropeller * radiusPropeller;	
-			 // For now, set thrustCoefficient to 0.3
-			 double thrustCoefficient = 0.3;
-			 
-			 double thrustForceTotal = 0;
-			 
-			 double thrustToWeightRatio1 = 0;
-			 
-			 double gainPotentialEnergy = 0;
-			 
-			 double lostPotentialEnergy = 0;
-			 
+
 			 /*
 			  * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
 			  * delete any of them. Needed for testing when new features are added in future. Thanks !
@@ -265,7 +240,6 @@ import com.mars_sim.tools.util.RandomUtil;
 			 // 1. Electrical power from fuel/battery
 			 // 2. Mechanical power from motors
 			 // 3. Lifting power by propellers
-
 			 
 			 // FUTURE : How to simulate controlled descent to land at the destination ?
 			 // Also need to account for the use of fuel or battery's power to ascend and descend 
@@ -273,298 +247,24 @@ import com.mars_sim.tools.util.RandomUtil;
 			 // Future: will remain thrustToWeightRatio1 = thrustForceTotal / weight to be around 2 and optimize vKPH
 			 // 		Thus adjusting vKPH according to the weight to save power
 			 		 
-			 if (vKPH > uKPH) {
-				 // Case A: If speeding up	
-	 
-				 if (uKPH <= OperateVehicle.LOW_SPEED * 1.1) {
-					// Case A1: Just starting. Ascend first
-					 
-					double ascentHeight = 0;
-
-					// Drone will hover over at around ELEVATION_ABOVE_GROUND km and no more
-					if (currentHoveringHeight >= STANDARD_HOVERING_HEIGHT + STEP_UP_HEIGHT) {
-						
-						ascentHeight = STANDARD_HOVERING_HEIGHT + STEP_UP_HEIGHT - currentHoveringHeight;
-					}
-					else {
-						ascentHeight = STEP_UP_HEIGHT;
-					}
-					// Assume the height gained is the same as distanceTravelled
-					currentHoveringHeight = currentHoveringHeight + ascentHeight;
-					// Gain in potential energy
-					gainPotentialEnergy = weight * ascentHeight;
-					
-					potentialEnergyDrone = weight * currentHoveringHeight;
-					// alpha1 is the angle of propeller disk. 0 -> pi/2; 
-					double alpha1 = Math.PI / 6;
-					// alpha2 is the angle of downstream. 0 -> pi/2
-					double alpha2 = Math.PI / 7;
-					
-					// if going slightly upward, alpha1 > alpha2 
-					// if going slightly downward, alpha1 < alpha2 ?
-					
-					// 1000 RPM ~ 10.47 rad/s
-					double radPerSec = 10;
-					
-					// Question: how does insufficient power impact powerThrustDrone and thus vAirFlow and vMS ?
-					
-					double vAirFlow =  (vMS * Math.sin(alpha2) + vPropeller * Math.cos(alpha1-alpha2)) * radiusPropeller * radPerSec; // vPropeller + vMS;
-					
-					thrustForceTotal = thrustCoefficient * 2 * airDensity * Math.PI * radiusPropellerSquare * vAirFlow * vPropeller;
-					// Double check with the ratio. Need to be at least 2:1
-					thrustToWeightRatio1 = thrustForceTotal / weight;
-					
-					// Question: vary the voltage in order to vary the power provided to the drone
-					
-					// The gain of potential energy of the drone require extra the power drain on the drone's fuel and battery system
-					powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor + gainPotentialEnergy / secs;				 
-		
-					logger.log(vehicle, Level.INFO, 10_000, "Case A1: u <= 1.1. Starting to ascend & tilt forward - " 
-							 + "d: " + Math.round(distanceTravelled * 1000.0)/1000.0 + KM__
-							 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
-							 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
-							 + "vAirFlow: " + Math.round(vAirFlow * 10.0)/10.0 + M_S__
-							 + "ascentHeight: " + Math.round(ascentHeight * 10.0)/10.0 + M__
-							 + "powerDrone: " + Math.round(powerThrustDrone * 1000.0)/1000.0 + W__
-							 + "thrust: " + Math.round(thrustForceTotal * 1000.0)/1000.0 + N__
-							 + "PE: " + Math.round(potentialEnergyDrone * 1000.0)/1000.0 + J__
-							 + "gainPE: " + Math.round(gainPotentialEnergy * 1000.0)/1000.0 + J__
-							 + "lostPE: " + Math.round(lostPotentialEnergy * 1000.0)/1000.0 + J__				 
-							 );
-				 }
-				 
-				 else if (vKPH <= OperateVehicle.LOW_SPEED * 1.1) {
-					 // Case A2: Hovering in the air
-
-					 // Gain in potential energy
-					 gainPotentialEnergy = 0;
-					 // Do NOT ascent anymore. Hover at the this height
-					 potentialEnergyDrone = weight * currentHoveringHeight;
-					
-					 // If using Volume-based approach,
-					 // P = (m * g * h) / (η * ρ * v)
-					 // η efficiency of the motor and propeller (typically 0.7-0.9) 
-					 // ρ = air density (kg/m³) 
-					 // v = air speed (m/s)
-					 // Power to maintain the height of the drone :
-					 // Previously, powerDrone = mg * currentHoveringHeight / 0.9 / airDensity / vMS;
-					 
-					 thrustForceTotal = thrustCoefficient * 2 * airDensity * Math.PI * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;
-					 // Double check with the ratio. Need to be at least 2:1
-					 thrustToWeightRatio1 = thrustForceTotal / weight;					
-					 // Zero gain of potential energy of the drone
-					 powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor + gainPotentialEnergy / secs;
-						
-					 /*
-					  * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
-					  * delete any of them. Needed for testing when new features are added in future. Thanks !
-					  */
-					 // Hover airflow velocity V1 = v1 = sqrt (CT /2)
-					 // v1 = Math.sqrt(CT/2);	
-					 // Hover thrust coefficient: CT = 2 * v1^2
-					 // Hover thrust: T = 2 * density * pi * r^2 * v1^2
-					 // thrustForceT =  2 * airDensity * Math.PI * radiusPropeller * radiusPropeller * v1 * v1;
-					 // liftToDragRatio = liftForceL / dragForceD;				 
-					 // thrustForceT = weightForceW / liftToDragRatio;
-					
-					 logger.log(vehicle, Level.INFO, 10_000, "Case A2: v <= 1.1. Hovering - " 
-							 + "d: " + Math.round(distanceTravelled * 1000.0)/1000.0 + KM__
-							 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
-							 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
-							 + "powerDrone: " + Math.round(powerThrustDrone * 1000.0)/1000.0 + W__
-							 + "thrust: " + Math.round(thrustForceTotal * 1000.0)/1000.0 + N__
-							 + "PE: " + Math.round(potentialEnergyDrone * 1000.0)/1000.0 + J__
-							 + "gainPE: " + Math.round(gainPotentialEnergy * 1000.0)/1000.0 + J__
-							 + "lostPE: " + Math.round(lostPotentialEnergy * 1000.0)/1000.0 + J__				 
-							 );
-				 }
-				 
-				 else if (currentHoveringHeight >= STANDARD_HOVERING_HEIGHT) {
-					// Case A3: Hovering at same height but tilted to move forward
-
-					 // Gain in potential energy
-					 gainPotentialEnergy = 0;
-					 // Do NOT ascent anymore. Hover at the this height
-					 potentialEnergyDrone = weight * currentHoveringHeight;
-					
-					 // If using Volume-based approach,
-					 // P = (m * g * h) / (η * ρ * v)
-					 // η efficiency of the motor and propeller (typically 0.7-0.9) 
-					 // ρ = air density (kg/m³) 
-					 // v = air speed (m/s)
-					 // Power to maintain the height of the drone :
-					 // Previously, powerDrone = mg * currentHoveringHeight / 0.9 / airDensity / vMS;
-					 
-					 thrustForceTotal = thrustCoefficient * 2 * airDensity * Math.PI * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;
-					 // Double check with the ratio. Need to be at least 2:1
-					 thrustToWeightRatio1 = thrustForceTotal / weight;					
-					 // Zero gain of potential energy of the drone
-					 powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor + gainPotentialEnergy / secs;
-					
-					 logger.log(vehicle, Level.INFO, 10_000, "Case A3: v >= u. At same height, tilt forward - " 
-							 + "d: " + Math.round(distanceTravelled * 1000.0)/1000.0 + KM__
-							 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
-							 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
-							 + "powerDrone: " + Math.round(powerThrustDrone * 1000.0)/1000.0 + W__
-							 + "thrust: " + Math.round(thrustForceTotal * 1000.0)/1000.0 + N__
-							 + "PE: " + Math.round(potentialEnergyDrone * 1000.0)/1000.0 + J__
-							 + "gainPE: " + Math.round(gainPotentialEnergy * 1000.0)/1000.0 + J__
-							 + "lostPE: " + Math.round(lostPotentialEnergy * 1000.0)/1000.0 + J__				 
-							 );
-				 }
-				 else {
-					 // Case A4: Tilt forward and lift up (or ascent)
-				 
-					 	double ascentHeight = 0;
-					 	
-						// Drone will hover over at around ELEVATION_ABOVE_GROUND km and no more
-						if (currentHoveringHeight >= STANDARD_HOVERING_HEIGHT + STEP_UP_HEIGHT) {
-							
-							ascentHeight = STANDARD_HOVERING_HEIGHT + STEP_UP_HEIGHT - currentHoveringHeight;
-						}
-						else {
-							ascentHeight = STEP_UP_HEIGHT;
-						}
-						// Assume the height gained is the same as distanceTravelled
-						currentHoveringHeight = currentHoveringHeight + ascentHeight;			 	
-						 // Gain in potential energy
-						gainPotentialEnergy = weight * ascentHeight;
-						
-						potentialEnergyDrone = weight * currentHoveringHeight;	
-			 
-				    	// 1 m/s = 3.6 km/h (or kph). KPH_CONV = 3.6;
-	
-						double alpha1 = Math.PI / 6;
-						
-						double alpha2 = Math.PI / 7;
-						// 1000 RPM ~ 10.47 rad/s
-						double radPerSec = 10;
-						
-						double vAirFlow = (vMS * Math.sin(alpha2) + vPropeller * Math.cos(alpha1-alpha2)) * radiusPropeller * radPerSec; // vPropeller + vMS;
-						
-						thrustForceTotal = thrustCoefficient * 2 * airDensity * Math.PI * radiusPropellerSquare * vAirFlow * vPropeller;
-						// Double check with the ratio. Need to be at least 2:1
-						thrustToWeightRatio1 = thrustForceTotal / weight;
-
-						// The gain of potential energy of the drone require extra the power drain on the drone's fuel and battery system
-						powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor + gainPotentialEnergy / secs;
-
-						logger.log(vehicle, Level.INFO, 10_000, "Case A4: v >= u. Tilt forward & lift up - " 
-								 + "d: " + Math.round(distanceTravelled * 1000.0)/100.0 + KM__
-								 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
-								 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
-								 + "vAirFlow: " + Math.round(vAirFlow * 10.0)/10.0 + M_S__
-								 + "ascentHeight: " + Math.round(ascentHeight * 10.0)/10.0 + M__
-								 + "powerDrone: " + Math.round(powerThrustDrone * 1000.0)/1000.0 + W__
-								 + "thrust: " + Math.round(thrustForceTotal * 1000.0)/1000.0 + N__
-								 + "T2W: " + Math.round(thrustToWeightRatio1 * 100.0)/100.0 + "  " 
-								 + "PE: " + Math.round(potentialEnergyDrone * 1000.0)/1000.0 + J__
-								 + "gainPE: " + Math.round(gainPotentialEnergy * 1000.0)/1000.0 + J__
-								 + "lostPE: " + Math.round(lostPotentialEnergy * 1000.0)/1000.0 + J__
-								 );
-				 }
-			 } // end of if (uKPH <= vKPH)
- 
-			 else {
-				 // uKPH >= vKPH - Slowing down
-				 
-				 // Case B1: During controlled descent / going down
-				 if (currentHoveringHeight <= STEP_DOWN_HEIGHT) {
-					 // Case B1: landed
-					 double descentHeight = currentHoveringHeight;
-					 
-					 if (currentHoveringHeight >= STEP_DOWN_HEIGHT)
-						 currentHoveringHeight = currentHoveringHeight - STEP_DOWN_HEIGHT; 
-					 
-					 // Landing airflow velocity V1 = v1 - abs(V0)
-//							 double landingVel = vMS - Math.abs(uMS);					 
-					 // Landing thrust coefficient: CT = −2(V0_bar + v1_bar)．v1_bar
-					 // Landing induced velocity: v1_bar = −v0_bar / 2 - sqrt((v0_bar/2)^2 - CT/2))
-					 // Landing thrust T = - 2 * density * pi * r^2 * ( V0 + v1) * v1
-
-					 lostPotentialEnergy = weight * descentHeight;
-					 
-					 potentialEnergyDrone = weight * currentHoveringHeight;
-
-//					 if (potentialEnergyDrone > 0 || potentialEnergyDrone < 0)
-//						 logger.severe(vehicle, 0, "potentialEnergyDrone: " + Math.round(potentialEnergyDrone * 10.0)/10.0 + J__);
-
-					 // Future: need to vary REDUCTION_FACTOR better with equations
-					 double REDUCTION_FACTOR = currentHoveringHeight / STANDARD_HOVERING_HEIGHT;
-						
-					 thrustForceTotal = thrustCoefficient * REDUCTION_FACTOR * 2 * airDensity * Math.PI 
-							 * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;				
-					 // Double check with the ratio. Need to be at least 2:1
-					 thrustToWeightRatio1 = thrustForceTotal / weight;
-					 // the gain of potential energy of the drone require extra the power drain on the drone's fuel and battery system
-					 powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor - lostPotentialEnergy / secs;
-					 
-					 logger.log(vehicle, Level.INFO, 10_000, "Case B1: v <= u. Controlled descent/landing - " 
-							 + "d: " + Math.round(distanceTravelled * 1000.0)/1000.0 + KM__
-							 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
-							 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
-							 + "descentHeight: " + Math.round(descentHeight * 10.0)/10.0 + M__
-							 + "powerDrone: " + Math.round(powerThrustDrone * 1000.0)/1000.0 + W__
-							 + "thrust: " + Math.round(thrustForceTotal * 1000.0)/1000.0 + N__
-							 + "T2W: " + Math.round(thrustToWeightRatio1 * 100.0)/100.0 + "  " 
-							 + "PE: " + Math.round(potentialEnergyDrone * 1000.0)/1000.0 + J__
-							 + "gainPE: " + Math.round(gainPotentialEnergy * 1000.0)/1000.0 + J__
-							 + "lostPE: " + Math.round(lostPotentialEnergy * 1000.0)/1000.0 + J__				  
-							 );
-				 }
-				 else {
-					// Case B2: descending or preparing for landing
-					// Assume using about 25% of energy gain in potential energy to maintain optimal descent,
-					// avoid instability and perform a controlled descent
-					   
-					// See detail strategies on https://aviation.stackexchange.com/questions/64055/how-much-energy-is-wasted-in-an-aeroplanes-descent
-
-					/*
-					 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
-					 * delete any of them. Needed for testing when new features are added in future. Thanks !
-					 */
-					 // Landing airflow velocity V1 = v1 - abs(V0)
-//							 double landingVel = vMS - Math.abs(uMS);					 
-					 // Landing thrust coefficient: CT = −2(V0_bar + v1_bar)．v1_bar
-					 // Landing induced velocity: v1_bar = −v0_bar / 2 - sqrt((v0_bar/2)^2 - CT/2))
-					 // Landing thrust T = - 2 * density * pi * r^2 * ( V0 + v1) * v1
-					 
-					 double descentHeight = STEP_DOWN_HEIGHT;
-						 
-					 currentHoveringHeight = currentHoveringHeight - descentHeight; 
-					 	
-					 lostPotentialEnergy = weight * descentHeight;
-					 
-					 potentialEnergyDrone = weight * currentHoveringHeight; 
-
-					 // Future: need to vary REDUCTION_FACTOR better with equations
-					 double REDUCTION_FACTOR = currentHoveringHeight / STANDARD_HOVERING_HEIGHT;
-						
-					 thrustForceTotal = thrustCoefficient * REDUCTION_FACTOR * 2 * airDensity * Math.PI 
-							 * radiusPropellerSquare * (vPropeller + vMS) * vPropeller;
-						
-					 // Double check with the ratio. Need to be at least 2:1
-					 thrustToWeightRatio1 = thrustForceTotal / weight;
-
-					 // the gain of potential energy of the drone require extra the power drain on the drone's fuel and battery system
-					 powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor - lostPotentialEnergy / secs;
-	 
-					 logger.log(vehicle, Level.INFO, 10_000, "Case B2: v <= u. Preparing to descent - " 
-							 + "d: " + Math.round(distanceTravelled * 1000.0)/1000.0 + KM__
-							 + "h: " + Math.round(currentHoveringHeight * 10.0)/10.0 + M__
-							 + "u -> v: " + Math.round(uKPH * 10.0)/10.0 + " -> " + Math.round(vKPH * 10.0)/10.0 + "  "
-							 + "descentHeight: " + Math.round(descentHeight * 10.0)/10.0 + M__
-							 + "powerDrone: " + Math.round(powerThrustDrone * 1000.0)/1000.0 + W__
-							 + "thrust: " + Math.round(thrustForceTotal * 1000.0)/1000.0 + N__
-							 + "T2W: " + Math.round(thrustToWeightRatio1 * 100.0)/100.0 + "  " 
-							 + "PE: " + Math.round(potentialEnergyDrone * 1000.0)/1000.0 + J__
-							 + "gainPE: " + Math.round(gainPotentialEnergy * 1000.0)/1000.0 + J__
-							 + "lostPE: " + Math.round(lostPotentialEnergy * 1000.0)/1000.0 + J__
-							 );
-				 }
-			 } // end of uMS > vMS
-		 
-			 drone.setHoveringHeight(currentHoveringHeight);
+			 if (vKPH == uKPH) {
+				// Case A: tilt forward at same height
+				 powerThrustDrone = propulsion.flyInAir("Case A: Tilt forward at same height - ",
+						 0, weight,
+						 airDensity, vMS, secs);
+			 }
+			 else if (vKPH < uKPH) {
+				// Case B: tilt forward descent
+				 powerThrustDrone = propulsion.flyInAir("Case B: Tilt forward & descent - ",
+						 STEP_DOWN_HEIGHT, weight,
+						 airDensity, vMS, secs);
+			 }
+			 else if (vKPH > uKPH) {
+				// Case C: tilt forward ascent
+				 powerThrustDrone = propulsion.flyInAir("Case C: Tilt forward & ascent - ",
+						 STEP_UP_HEIGHT, weight,
+						 airDensity, vMS, secs);
+			 }
 		 }
 
 		 // Motor torque vs. power and rpm 
