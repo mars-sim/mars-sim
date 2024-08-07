@@ -170,7 +170,8 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	}
 
 	/**
-	 * Set teh settlement filter for the Robot table
+	 * Sets the settlement filter for the Robot table.
+	 * 
 	 * @param filter
 	 */
 	@Override
@@ -192,9 +193,11 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 														UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT);
 		}
 		else {
+			// For now it makes no difference between robots in a settlement 
+			// and the robots a settlement owns since robots cannot live a settlement
 			sourceType = ValidSourceType.SETTLEMENT_ROBOTS;
 			entities = settlements.stream()
-						.map(Settlement::getRobots)
+						.map(Settlement::getAllAssociatedRobots)
 						.flatMap(Collection::stream)
 						.collect(Collectors.toList());
 			settlementListener = new RobotChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,

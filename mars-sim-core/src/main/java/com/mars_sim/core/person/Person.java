@@ -1770,9 +1770,10 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 	 */
 	private boolean setContainerUnit(Unit newContainer) {
 		if (newContainer != null) {
-			Unit cu = getContainerUnit();
+			// Gets the old container unit
+			Unit oldCU = getContainerUnit();
 			
-			if (newContainer.equals(cu)) {
+			if (newContainer.equals(oldCU)) {
 				return true;
 			}
 			
@@ -1781,34 +1782,34 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 				// Since it's on the surface of Mars,
 				// First set its initial location to its old parent's location as it's leaving its parent.
 				// Later it may move around and updates its coordinates by itself
-				setCoordinates(cu.getCoordinates());
+				setCoordinates(oldCU.getCoordinates());
 			}
 			else {
 				setCoordinates(newContainer.getCoordinates());
 			}
 			
 			// 2. Set new LocationStateType
-			if (cu != null) {
+			if (oldCU != null) {
 				// 2a. If the previous cu is a settlement
 				//     and this person's new cu is mars surface,
 				//     then location state is within settlement vicinity
-				if (cu.getUnitType() == UnitType.SETTLEMENT
+				if (oldCU.getUnitType() == UnitType.SETTLEMENT
 					&& newContainer.getUnitType() == UnitType.MARS) {
 						currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 				}	
 				// 2b. If the previous cu is a vehicle
 				//     and the previous cu is in settlement vicinity
 				//     then the new location state is settlement vicinity
-				else if (cu.getUnitType() == UnitType.VEHICLE
-						&& cu.isInSettlementVicinity()
+				else if (oldCU.getUnitType() == UnitType.VEHICLE
+						&& oldCU.isInSettlementVicinity()
 						&& newContainer.getUnitType() == UnitType.MARS) {
 							currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 				}
 				// 2c. If the previous cu is a vehicle
 				//     and the previous cu vehicle is outside on mars surface
 				//     then the new location state is vehicle vicinity
-				else if ((cu.getUnitType() == UnitType.VEHICLE)
-						&& cu.isOutside()
+				else if ((oldCU.getUnitType() == UnitType.VEHICLE)
+						&& oldCU.isOutside()
 						&& newContainer.getUnitType() == UnitType.MARS) {
 							currentStateType = LocationStateType.VEHICLE_VICINITY;
 				}

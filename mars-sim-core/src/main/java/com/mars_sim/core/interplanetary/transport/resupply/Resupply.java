@@ -408,7 +408,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		
 		builder.createSupplies(this, settlement);
 
-		builder.createRobots(settlement, settlement.getRobots().size() + getNewBotNum());
+		builder.createRobots(settlement, settlement.getAllAssociatedRobots().size() + getNewBotNum());
 		
 		builder.createPeople(settlement, settlement.getNumCitizens() + getNewImmigrantNum(), true);
 

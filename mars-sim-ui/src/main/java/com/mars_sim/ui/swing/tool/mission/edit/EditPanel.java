@@ -277,7 +277,7 @@ public class EditPanel extends JPanel {
 					Settlement settlement = rover.getSettlement();
 					if (settlement != null) {
 					    membersAtLocation.addAll(settlement.getIndoorPeople());
-					    membersAtLocation.addAll(settlement.getRobots());
+					    membersAtLocation.addAll(settlement.getAllAssociatedRobots());
 					}
 				}
 				else {
@@ -309,7 +309,7 @@ public class EditPanel extends JPanel {
 		            }
 		        }
 		        
-		        Iterator<Robot> j = settlement.getRobots().iterator();
+		        Iterator<Robot> j = settlement.getAllAssociatedRobots().iterator();
 		        while (j.hasNext()) {
 		            Robot robot = j.next();
 		            if (!memberListModel.contains(robot)) {

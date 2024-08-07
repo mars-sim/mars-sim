@@ -8,10 +8,15 @@ package com.mars_sim.mapdata.common;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+//import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,9 +32,11 @@ import org.tukaani.xz.XZInputStream;
 public final class FileLocator {
 
     private static Logger logger = Logger.getLogger(FileLocator.class.getName());
+    
     private static final String ZIP = ".zip";
     private static final String XZ = ".xz";
     private static final String DOWNLOAD_DIR = "/downloads";
+    
     private static File localBase = new File(System.getProperty("user.home")
                                                 +  "/.mars-sim" + DOWNLOAD_DIR);
     private static String contentURL = "https://raw.githubusercontent.com/mars-sim/mars-sim/master/content";
@@ -91,6 +98,18 @@ public final class FileLocator {
     }
 
     /**
+     * Uses java.nio.file.Files#delete to safely delete a file.
+     * 
+     * @param path
+     * @throws NoSuchFileException
+     * @throws DirectoryNotEmptyException
+     * @throws IOException
+     */
+    public void cleanUp(Path path) throws NoSuchFileException, DirectoryNotEmptyException, IOException {
+    	  Files.delete(path);
+    }
+    
+    /**
      * Locates an external file used in the configuration.
      * 
      * @param name Name will be a partial path
@@ -106,6 +125,12 @@ public final class FileLocator {
         if (!locateFile && (localFile.length() == 0)) {
             logger.warning("Local file " + localFile.getAbsolutePath() + " is empty. Removing.");
             canDelete = localFile.delete();
+            /**
+             * "Use "java.nio.file.Files#delete" here for better messages on error conditions." 
+             * Unsure on how to convert the use of java.io.File.delete to java.nio.file.Files#delete
+             * Path path = Path.of(...);
+             * cleanUp(path);
+             */
             locateFile = true;
         }
 
@@ -119,8 +144,10 @@ public final class FileLocator {
             StringBuilder source = new StringBuilder("bundled as ");
             InputStream resourceStream = locateResource(name, source,
             		// Use lambda with method reference to avoid codesmell
-            		FileLocator.class::getResourceAsStream); //n -> FileLocator.class.getResourceAsStream(n));
-            
+            		// Replacing n -> FileLocator.class.getResourceAsStream(n));
+            		// But make sure it works
+            		FileLocator.class::getResourceAsStream); 
+ 
             if (resourceStream == null) {
                 source = new StringBuilder("remote as ");
                 resourceStream = locateResource(name, source, n -> openRemoteContent(n));
@@ -209,7 +236,7 @@ public final class FileLocator {
         // Check remote content
         String fileURL = contentURL + name;
         try {
-            return  new URL(fileURL).openStream();
+            return new URL(fileURL).openStream();
         } catch (IOException e) {
             // URL is no good
             return null;
@@ -246,7 +273,7 @@ public final class FileLocator {
 
         try (BufferedInputStream in = new BufferedInputStream(source);
             FileOutputStream fileOutputStream = new FileOutputStream(dest)) {
-            byte dataBuffer[] = new byte[1024];
+            byte[] dataBuffer = new byte[1024];
             int bytesRead;
             while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
                 fileOutputStream.write(dataBuffer, 0, bytesRead);

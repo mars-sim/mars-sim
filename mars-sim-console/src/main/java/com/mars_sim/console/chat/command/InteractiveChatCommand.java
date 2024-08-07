@@ -27,49 +27,49 @@ public class InteractiveChatCommand extends ChatCommand {
 		ChatCommand command;
 		String parameter;
 		private String matchedCommand;
-		
+
 		public ParseResult(ChatCommand command, String parameter, String matchedCommand) {
 			this.command = command;
 			this.parameter = parameter;
 			this.matchedCommand = matchedCommand;
 		}
 	}
-	
-    private static final Logger LOGGER = Logger.getLogger(InteractiveChatCommand.class.getName());
-	
+
+	private static final Logger LOGGER = Logger.getLogger(InteractiveChatCommand.class.getName());
+
 	// Shared Standard command
 	private static final ChatCommand HELP = new HelpCommand(true);
 	private static final ChatCommand INTRO = new IntroCommand();
-	
+
 	// Prefix add by the user when using the short commands
 	public static final String SHORT_PREFIX = "/";
-	
-	private Map<String,ChatCommand> longCommands;
-	private Map<String,ChatCommand> shortCommands;
+
+	private Map<String, ChatCommand> longCommands;
+	private Map<String, ChatCommand> shortCommands;
 	private List<ChatCommand> allCommands;
 
 	private String prompt;
 
-	
 	public InteractiveChatCommand(String commandGroup, String shortCommand, String longCommand, String description,
-								  String prompt, List<ChatCommand> commands) {
+			String prompt, List<ChatCommand> commands) {
 		super(commandGroup, shortCommand, longCommand, description);
 		this.prompt = prompt;
 		this.allCommands = new ArrayList<>();
-		
+
 		setInteractive(true);
-		
+
 		addSubCommand(INTRO);
 		addSubCommand(HELP);
-		
+
 		// Must create a dedicated RepeatCommand
 		addSubCommand(new RepeatCommand());
-		
+
 		addSubCommands(commands);
 	}
 
 	/**
-	 * Add a new sub-command to this interaction. It is registered with both the short & long command.
+	 * Add a new sub-command to this interaction. It is registered with both the
+	 * short & long command.
 	 * 
 	 * @param command New command
 	 */
@@ -85,8 +85,7 @@ public class InteractiveChatCommand extends ChatCommand {
 	protected void addSubCommands(Collection<ChatCommand> commands) {
 		this.allCommands.addAll(commands);
 	}
-	
-	
+
 	private void buildCache(Conversation context) {
 		LOGGER.fine("Build Command cache");
 
@@ -96,7 +95,7 @@ public class InteractiveChatCommand extends ChatCommand {
 		for (ChatCommand command : allCommands) {
 			Set<ConversationRole> required = command.getRequiredRoles();
 			boolean addIt = true;
-			
+
 			// Command needs roles
 			if (!required.isEmpty()) {
 				// Get the intersection between required & user
@@ -107,31 +106,31 @@ public class InteractiveChatCommand extends ChatCommand {
 
 			if (addIt) {
 				longCommands.put(command.getLongCommand(), command);
-				shortCommands.put(command.getShortCommand(), command);		
+				shortCommands.put(command.getShortCommand(), command);
 			}
 		}
 	}
-	
+
 	public void resetCache(Conversation context) {
 		LOGGER.fine("Command cache cleared");
 		this.longCommands = null;
 		this.shortCommands = null;
-		
+
 		buildCache(context);
 	}
-	
+
 	/**
 	 * Default implementation check if the command matches any of the subcommands.
 	 * 
 	 * @param context
-	 * @param input 
+	 * @param input
 	 * @return Did it execute
 	 */
 	@Override
 	public boolean execute(Conversation context, String input) {
 
 		ParseResult result = parseInput(context, input);
-		
+
 		// Found a matching command
 		if (result.command != null) {
 			String preamble = result.command.getIntroduction();
@@ -139,12 +138,11 @@ public class InteractiveChatCommand extends ChatCommand {
 				context.println(preamble);
 			}
 			return result.command.execute(context, result.parameter);
-		}
-		else {
+		} else {
 			// Don't know the command so prompt the help
 			context.println("Sorry I didn't understand you. Here is what I know about");
 			HELP.execute(context, null);
-			
+
 			return false;
 		}
 	}
@@ -159,44 +157,42 @@ public class InteractiveChatCommand extends ChatCommand {
 	public List<String> getAutoComplete(Conversation context, String partialInput) {
 		List<String> result = null;
 		ParseResult parseOutcome = parseInput(context, partialInput);
-		
+
 		// Partial has found a command
 		if (parseOutcome.command != null) {
 			result = parseOutcome.command.getAutoComplete(context, parseOutcome.parameter);
-			
+
 			// Must add the command in
 			String commandText = parseOutcome.matchedCommand;
 			result = result.stream().map(m -> commandText + " " + m).collect(Collectors.toList());
-		}
-		else {
+		} else {
 			Set<String> targetList = null;
-			
+
 			// Partial command has to scan commands now
 			String prefix = "";
 			if (partialInput.startsWith(SHORT_PREFIX)) {
 				targetList = shortCommands.keySet();
 				partialInput = partialInput.substring(SHORT_PREFIX.length());
 				prefix = SHORT_PREFIX;
-			}
-			else {
+			} else {
 				targetList = longCommands.keySet();
 			}
-			
+
 			// Find any matches that start with the partial input
 			final String partialCommand = partialInput;
 			final String finalPrefix = prefix;
-			result = targetList.stream()                // convert list to stream
-	                .filter(line -> line.startsWith(partialCommand))     // Any command starting with my partial input
-	                .map(s -> finalPrefix + s)
-	                .collect(Collectors.toList()); 
-			
+			result = targetList.stream() // convert list to stream
+					.filter(line -> line.startsWith(partialCommand)) // Any command starting with my partial input
+					.map(s -> finalPrefix + s).collect(Collectors.toList());
+
 		}
-		
+
 		return result;
 	}
 
 	/**
-	 * Gets the prompt for interactive Chat Commands. The default implementation returns a static text.
+	 * Gets the prompt for interactive Chat Commands. The default implementation
+	 * returns a static text.
 	 * 
 	 * @param context Conversation in progress; may be needed in overriding methods
 	 * @return Prompt to be displayed
@@ -215,22 +211,23 @@ public class InteractiveChatCommand extends ChatCommand {
 	}
 
 	/**
-	 * Parses the input and find any commands either via the long or short word. 
+	 * Parses the input and find any commands either via the long or short word.
 	 * Also extract any remaining parameters.
 	 * 
-	 * @param input User entry.
-	 * @param context 
+	 * @param input   User entry.
+	 * @param context
 	 * @return
 	 */
 	public ParseResult parseInput(Conversation context, String input) {
 		if (longCommands == null) {
 			buildCache(context);
 		}
-		
+
 		ChatCommand found = null;
 		String matchedCommand = null;
 		String argument = null;
-		String [] words = input.split(" ");
+		String[] words = input.split(" ");
+
 		if (words.length > 0) {
 			int tailIndex = 0;
 			// Has a user input
@@ -239,13 +236,12 @@ public class InteractiveChatCommand extends ChatCommand {
 				found = shortCommands.get(command);
 				matchedCommand = SHORT_PREFIX + command;
 				tailIndex = 1;
-			}
-			else {
+			} else {
 				// Try to find a match using as many words as possible
 				tailIndex = words.length;
 				while ((tailIndex >= 0) && (found == null)) {
 					StringBuilder command = new StringBuilder();
-					for(int i = 0; i < tailIndex; i++) {
+					for (int i = 0; i < tailIndex; i++) {
 						command.append(words[i]);
 						command.append(" ");
 					}
@@ -256,18 +252,18 @@ public class InteractiveChatCommand extends ChatCommand {
 					}
 				}
 			}
-			
+
 			// Was there are tail left as the parameter ?
 			if ((tailIndex > 0) && (tailIndex < words.length)) {
 				StringBuilder args = new StringBuilder();
-				for(int i = tailIndex; i < words.length; i++) {
+				for (int i = tailIndex; i < words.length; i++) {
 					args.append(words[i]);
 					args.append(" ");
 				}
 				argument = args.toString().trim();
 			}
 		}
-		
+
 		return new ParseResult(found, argument, matchedCommand);
 	}
 

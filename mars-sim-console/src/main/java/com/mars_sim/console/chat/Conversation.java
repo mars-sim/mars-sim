@@ -125,43 +125,54 @@ public class Conversation implements UserOutbound {
 			}
 			
 	      	try {
-	        	// Get input
-				String prompt = current.getPrompt(this) + " > ";
-	        	String input = getInput(prompt);
-	        	if (input.length() > 0) {
-					options = null; // Remove any auto complete options once user executes
-					
-					// Update history
-					boolean addToHistory = true; 
-					if (!inputHistory.isEmpty()) {
-						// Do not accept repeated commands
-						String lastCommand = inputHistory.get(inputHistory.size() - 1);
-						addToHistory = !input.equals(lastCommand);
-					}
-					if (addToHistory) {
-						inputHistory.add(input);
-					}
-					
-					// Always set the history pointer to the most recent command
-					historyIdx = inputHistory.size();
-	
-					current.execute(this, input);
-				}
+	        	// Get the input
+	      		getInput();
         	}
         	catch (RuntimeException rte) {
-        		LOGGER.log(Level.SEVERE, "Problem executing command ", rte);
-        		
-        		StringWriter writer = new StringWriter();
-        		PrintWriter out = new PrintWriter(writer);
-        		rte.printStackTrace(out);
-        		println("Sorry I had a problem doing that " + rte.getMessage());
-        		println(writer.toString());
+        		printProblem(rte);
         	}
         }
 		
 		comms.close();
     }
 
+    /**
+     * Gets the input.
+     */
+    private void getInput() {
+    	String prompt = current.getPrompt(this) + " > ";
+    	String input = getInput(prompt);
+    	if (input.length() > 0) {
+			options = null; // Remove any auto complete options once user executes
+			
+			// Update history
+			boolean addToHistory = true; 
+			if (!inputHistory.isEmpty()) {
+				// Do not accept repeated commands
+				String lastCommand = inputHistory.get(inputHistory.size() - 1);
+				addToHistory = !input.equals(lastCommand);
+			}
+			if (addToHistory) {
+				inputHistory.add(input);
+			}
+			
+			// Always set the history pointer to the most recent command
+			historyIdx = inputHistory.size();
+
+			current.execute(this, input);
+		}
+    }
+    
+    private void printProblem(Exception rte) {
+		LOGGER.log(Level.SEVERE, "Problem executing command ", rte);
+		
+		StringWriter writer = new StringWriter();
+		PrintWriter out = new PrintWriter(writer);
+		rte.printStackTrace(out);
+		println("Sorry I had a problem doing that " + rte.getMessage());
+		println(writer.toString());
+    }
+    
 	/**
 	 * Resets the current command to the previous one.
 	 */

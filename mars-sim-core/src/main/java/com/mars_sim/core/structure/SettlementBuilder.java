@@ -248,7 +248,10 @@ public final class SettlementBuilder {
 									spec.getSettlementTemplate(), ra,
 									location, populationNumber,
 									initialNumOfRobots);
-		settlement.initialize();
+		
+		settlement.initializeStatics();
+		
+		settlement.initializeDataNInstances();
 		
 		unitManager.addUnit(settlement);
 

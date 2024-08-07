@@ -72,7 +72,13 @@ public class SettlementMapPanel extends JPanel {
 
 	// Data members
 	private boolean exit = true;
-
+	private boolean showBuildingLabels;
+	private boolean showConstructionLabels;
+	private boolean showPersonLabels;
+	private boolean showVehicleLabels;
+	private boolean showRobotLabels;
+	private boolean showDaylightLayer;
+	
 	private double xPos;
 	private double yPos;
 	private double rotation;
@@ -83,24 +89,17 @@ public class SettlementMapPanel extends JPanel {
 	/** Last Y mouse drag position. */
 	private int yLast;
 
-	private boolean showBuildingLabels;
-	private boolean showConstructionLabels;
-	private boolean showPersonLabels;
-	private boolean showVehicleLabels;
-	private boolean showRobotLabels;
-	private Set<FunctionType> showSpotLabels = new HashSet<>();
-
-	private boolean showDaylightLayer;
-
 	private MainDesktopPane desktop;
-
 	private SettlementWindow settlementWindow;
+	
 	private Settlement settlement;
 	private PopUpUnitMenu menu;
+	
 	private SettlementTransparentPanel settlementTransparentPanel;
 
 	private DayNightMapLayer dayNightMapLayer;
 
+	private Set<FunctionType> showSpotLabels = new HashSet<>();
 	private List<SettlementMapLayer> mapLayers;
 	private Map<Settlement, Person> selectedPerson;
 	private Map<Settlement, Robot> selectedRobot;

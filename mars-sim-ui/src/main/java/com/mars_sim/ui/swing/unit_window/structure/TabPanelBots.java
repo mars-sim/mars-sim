@@ -86,7 +86,7 @@ public class TabPanelBots extends TabPanel {
 		robotList = new UnitListPanel<>(getDesktop(), new Dimension(175, 200)) {
 			@Override
 			protected Collection<Robot> getData() {
-				return settlement.getRobots();
+				return settlement.getAllAssociatedRobots();
 			}			
 		};
 		addBorder(robotList, "Robots");

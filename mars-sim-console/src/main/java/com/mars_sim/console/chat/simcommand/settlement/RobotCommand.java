@@ -42,7 +42,7 @@ public class RobotCommand extends AbstractSettlementCommand {
 
 		response.appendLabelledDigit("Robots #", settlement.getNumBots());
 		response.appendBlankLine();
-		Collection<Robot> list = settlement.getRobots();
+		Collection<Robot> list = settlement.getAllAssociatedRobots();
 		List<Robot> namelist = new ArrayList<>(list);
 		Collections.sort(namelist);
 		

@@ -160,9 +160,9 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
-	 * Initializes maps and meteorite instance.
+	 * Initializes functions map and meteorite instance.
 	 */
-	public void initialize() {
+	public void initializeFunctionsNMeteorite() {
 
 		if (buildingFunctionsMap == null)
 			setupBuildingFunctionsMap();
@@ -201,6 +201,11 @@ public class BuildingManager implements Serializable {
 								ft -> new UnitSet<>());
 	}
 
+	/**
+	 * Adds a building to the function map.
+	 * 
+	 * @param b
+	 */
 	private void addBuildingToMap(Building b) {
 		for(Function f : b.getFunctions()) {
 			buildingFunctionsMap.computeIfAbsent(f.getFunctionType(),
@@ -2574,7 +2579,7 @@ public class BuildingManager implements Serializable {
 		settlement = unitManager.getSettlementByID(settlementID);
 		
 		// Re-initializes maps and meteorite instance
-		initialize();
+		initializeFunctionsNMeteorite();
 		
 		// Re-create adjacent building map
 		createAdjacentBuildingMap();

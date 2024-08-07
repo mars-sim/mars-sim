@@ -60,10 +60,13 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TabPanelActivity.class.getName());
 
+	private static final int MAX_LABEL = 30;
+	
 	private static final String TASK_ICON = "task";
 
-	private static final int MAX_LABEL = 30;
 	private static final String EXTRA = "...";
+	
+	private static final String HTML = "<html>";
 
 	/** data cache */
 	private String missionTextCache = "";
@@ -348,7 +351,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		RatingScore score = taskManager.getScore();
 		if (score != null) {
 			scoreLabel = StyleManager.DECIMAL_PLACES2.format(score.getScore());
-			scoreTooltip = "<html>" + RatingScoreRenderer.getHTMLFragment(score) + "</html>";
+			scoreTooltip = HTML + RatingScoreRenderer.getHTMLFragment(score) + "</html>";
 
 		}
 
@@ -385,6 +388,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	private static class MissionCacheModel extends AbstractTableModel {
 		
 		private List<MissionRating> missions = Collections.emptyList();
@@ -414,7 +418,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		public String getScoreText(int rowIndex, int colIndex) {
 			if ((colIndex == 1) && (rowIndex < missions.size())) {
 				var t = missions.get(rowIndex);
-				return "<html>" + RatingScoreRenderer.getHTMLFragment(t.getScore()) + "</html>";
+				return HTML + RatingScoreRenderer.getHTMLFragment(t.getScore()) + "</html>";
 
 			}
 			return null;
@@ -484,7 +488,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		public String getScoreText(int rowIndex, int colIndex) {
 			if ((colIndex == 1) && (rowIndex < tasks.size())) {
 				var t = tasks.get(rowIndex);
-				return "<html>" + RatingScoreRenderer.getHTMLFragment(t.getScore()) + "</html>";
+				return HTML + RatingScoreRenderer.getHTMLFragment(t.getScore()) + "</html>";
 
 			}
 			return null;
