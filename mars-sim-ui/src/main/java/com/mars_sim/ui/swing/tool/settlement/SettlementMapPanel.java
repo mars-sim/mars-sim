@@ -550,7 +550,12 @@ public class SettlementMapPanel extends JPanel {
 		Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
 		Person foundPerson = null;
 
-		Iterator<Person> i = settlement.getIndoorPeople().iterator(); // CollectionUtils.getPeopleInSettlementVicinity(settlement).iterator();
+		// Note 1: Not using settlement.getIndoorPeople() for now since it doesn't  
+		// 		   include those who have stepped outside
+		// Note 2: getIndoorPeople() will shorten the execution time to find people 
+		// Note 3: need to include non-associated people from other settlements
+		
+		Iterator<Person> i = CollectionUtils.getPeopleInSettlementVicinity(settlement).iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			double distanceX = person.getPosition().getX() - settlementPosition.getX();
