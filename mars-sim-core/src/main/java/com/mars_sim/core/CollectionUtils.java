@@ -270,27 +270,28 @@ public class CollectionUtils {
 	 */
 	public static List<Robot> getAssociatedRobotsInSettlementVicinity(Settlement settlement) {
 
-		List<Robot> result = new ArrayList<Robot>();
-
-		if (settlement != null) {
-			Iterator<Robot> i = settlement.getAllAssociatedRobots().iterator();
-			while (i.hasNext()) {
-				Robot robot = i.next();
-
-				// Only select functional robots.
-				if (!robot.getSystemCondition().isInoperable()) {
-
-					// Select a robot that is at the settlement location.
-					Coordinates settlementLoc = settlement.getCoordinates();
-					Coordinates personLoc = robot.getCoordinates();
-					if (personLoc.equals(settlementLoc)) {
-						result.add(robot);
-					}
-				}
-			}
-		}
-
-		return result;
+		return new ArrayList<>(settlement.getAllAssociatedRobots());
+		
+//		List<Robot> result = new ArrayList<Robot>();
+//
+//		if (settlement != null) {
+//			Iterator<Robot> i = settlement.getAllAssociatedRobots().iterator();
+//			while (i.hasNext()) {
+//				Robot robot = i.next();
+//				// Only select functional robots.
+//				if (!robot.getSystemCondition().isInoperable()) {
+//
+//					// Select a robot that is at the settlement location.
+//					Coordinates settlementLoc = settlement.getCoordinates();
+//					Coordinates loc = robot.getCoordinates();
+//					if (loc.equals(settlementLoc)) {
+//						result.add(robot);
+//					}
+//				}
+//			}
+//		}
+//
+//		return result;
 	}
 	
 	/**

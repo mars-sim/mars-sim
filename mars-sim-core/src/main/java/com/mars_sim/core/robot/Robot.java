@@ -1201,10 +1201,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		else if (ut == UnitType.MARS) {
 			transferred = ((MarsSurface)cu).removeRobot(this);
 		}
-		else if (ut == UnitType.BUILDING) {
-			transferred = true;
-		}
-		else if (ut == UnitType.SETTLEMENT) {
+		else if (ut == UnitType.BUILDING
+				|| ut == UnitType.SETTLEMENT) {
 			// Question: should we remove this unit from settlement's robotWithin list
 			// especially if it is still inside the garage of a settlement
 			transferred = ((Settlement)cu).removeRobotsWithin(this);

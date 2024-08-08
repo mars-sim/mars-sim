@@ -1925,12 +1925,10 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 		else if (ut == UnitType.MARS) {
 			transferred = ((MarsSurface)cu).removePerson(this);
 		}
-		else if (ut == UnitType.BUILDING) {
-			transferred = true;
-		}
-		else if (ut == UnitType.SETTLEMENT) {
+		else if (ut == UnitType.BUILDING 
+				|| ut == UnitType.SETTLEMENT) {
 			// Q1: should one remove this person from settlement's peopleWithin list,
-			//     especially if he is still inside the garage of a settlement ?
+			//     especially if he is still inside a vehicle in the garage of a settlement ?
 			// Q2: should it be the vehicle's responsibility to remove the person from the settlement
 			//     as the vehicle leaves the garage ?
 			transferred = ((Settlement)cu).removePeopleWithin(this);
@@ -1955,6 +1953,7 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 			else if (destination.getUnitType() == UnitType.MARS) {
 				transferred = ((MarsSurface)destination).addPerson(this);
 			}
+			
 			else if (destination.getUnitType() == UnitType.SETTLEMENT) {
 				transferred = ((Settlement)destination).addToIndoor(this);
 				// WARNING: Transferring a person/robot/equipment from a vehicle into a settlement 
@@ -1962,10 +1961,10 @@ public class Person extends Unit implements Worker, Temporal, Researcher, Apprai
 				// If exiting a vehicle in a garage, it's recommended using garageBuilding as a destination
 			}
 			else if (destination.getUnitType() == UnitType.BUILDING) {
-				BuildingManager.setToBuilding(this, (Building)destination);
 				transferred = ((Building)destination).getSettlement().addToIndoor(this);
 				// Turn a building destination to a settlement to avoid 
 				// casting issue with making containerUnit a building instance
+				BuildingManager.setToBuilding(this, (Building)destination);
 				destination = (((Building)destination)).getSettlement();
 			}
 
