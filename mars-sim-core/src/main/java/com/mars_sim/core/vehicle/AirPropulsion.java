@@ -79,8 +79,8 @@ public class AirPropulsion extends Propulsion implements Serializable {
 	 * @param airDensity
 	 * @return
 	 */
-	public double driveOnGround(double weight, double vMS, double averageSpeed, double fGravity, double airDensity) {
-		return 0;
+	public double[] driveOnGround(double weight, double vMS, double averageSpeed, double fGravity, double airDensity) {
+		return new double[] {};
 	}
 
 	/**
@@ -188,14 +188,15 @@ public class AirPropulsion extends Propulsion implements Serializable {
 
 		logger.log(vehicle, Level.INFO, 10_000, caseText
 //				 + "d: " + Math.round(distanceTravelled * 1000.0)/1000.0 + KM__
-				+ "h: " + DECIMAL3_M.format(currentHoveringHeight) + TWO_WHITESPACES + "u -> v: "
-				+ DECIMAL3_KPH.format(uKPH) + " -> " + DECIMAL3_KPH.format(vKPH) + TWO_WHITESPACES + "vAirFlow: "
-				+ DECIMAL3_M_S.format(vAirFlow) + TWO_WHITESPACES + "ascentHeight: " + DECIMAL3_M.format(ascentHeight)
-				+ TWO_WHITESPACES + "powerDrone: " + DECIMAL3_J.format(powerThrustDrone) + TWO_WHITESPACES + "thrust: "
-				+ DECIMAL3_J.format(thrustForceTotal) + TWO_WHITESPACES + "PE: "
-				+ DECIMAL3_J.format(potentialEnergyDrone) + TWO_WHITESPACES + "gainPE: "
-				+ DECIMAL3_J.format(gainPotentialEnergy) + TWO_WHITESPACES + "ratio: "
-				+ DECIMAL3_J.format(thrustToWeightRatio1) + TWO_WHITESPACES);
+				+ "h: " + DECIMAL3_M.format(currentHoveringHeight) + TWO_WHITESPACES 
+				+ "u -> v: " + DECIMAL3_KPH.format(uKPH) + " -> " + DECIMAL3_KPH.format(vKPH) + TWO_WHITESPACES 
+				+ "vAirFlow: " + DECIMAL3_M_S.format(vAirFlow) + TWO_WHITESPACES 
+				+ "ascentHeight: " + DECIMAL3_M.format(ascentHeight) + TWO_WHITESPACES 
+				+ "powerThrustDrone: " + DECIMAL3_J.format(powerThrustDrone) + TWO_WHITESPACES 
+				+ "thrust: " + DECIMAL3_J.format(thrustForceTotal) + TWO_WHITESPACES 
+				+ "PE: " + DECIMAL3_J.format(potentialEnergyDrone) + TWO_WHITESPACES 
+				+ "gainPE: " + DECIMAL3_J.format(gainPotentialEnergy) + TWO_WHITESPACES 
+				+ "ratio: " + DECIMAL3_J.format(thrustToWeightRatio1) + TWO_WHITESPACES);
 
 		return powerThrustDrone;
 	}

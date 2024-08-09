@@ -11,7 +11,9 @@ package com.mars_sim.core.data;
  * This logger records data in a DataLogger for each Sol. Datapoint is timstamped with the msol value as well.
  */
 public class MSolDataLogger<T> extends SolListDataLogger<MSolDataItem<T>> {
-
+	
+	private static final long serialVersionUID = 1L;
+	
 	/**
 	 * Creates a new logger.
 	 * 
@@ -20,9 +22,6 @@ public class MSolDataLogger<T> extends SolListDataLogger<MSolDataItem<T>> {
 	public MSolDataLogger(int maxSols) {
 		super(maxSols);
 	}
-
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Adds a datapoint at the current time & sol.
 	 * 

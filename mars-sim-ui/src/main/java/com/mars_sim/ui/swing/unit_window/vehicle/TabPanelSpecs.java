@@ -156,10 +156,10 @@ public class TabPanelSpecs extends TabPanel {
 		cumFE.setText(StyleManager.DECIMAL_KM_KG.format(v.getCumFuelEconomy()));
 		cumFC.setText(StyleManager.DECIMAL_KWH_KM.format(v.getCumFuelConsumption()/1000));
 		
-		estFC.setText(StyleManager.DECIMAL_KWH_KM.format(v.getEstimatedFuelConsumption()/1000));
 		estFE.setText(StyleManager.DECIMAL_KM_KG.format(v.getEstimatedFuelEconomy()));
-		
-		instantFE.setText(StyleManager.DECIMAL_WH_KM.format(v.getIFuelEconomy()));
+		estFC.setText(StyleManager.DECIMAL_KWH_KM.format(v.getEstimatedFuelConsumption()/1000));
+	
+		instantFE.setText(StyleManager.DECIMAL_KM_KG.format(v.getIFuelEconomy()));
 		instantFC.setText(StyleManager.DECIMAL_KWH_KM.format(v.getIFuelConsumption()/1000));
 		
 		currentRange.setText(StyleManager.DECIMAL_KM.format(v.getRange()));

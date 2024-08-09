@@ -756,11 +756,11 @@ public abstract class Vehicle extends Unit
     }
 
 	/**
-	 * Gets the average power of the vehicle when operating [kW].
+	 * Gets the average base power of the vehicle when operating [kW].
 	 * 
 	 * @return
 	 */
-	public double getAveragePower() {
+	public double getBasePower() {
 		return spec.getBasePower();
 	}
 	
@@ -973,7 +973,9 @@ public abstract class Vehicle extends Unit
 	public double getCumFuelEconomy() {
 		if (odometerMileage == 0 || (cumFuelUsedKG == 0 && cumEnergyUsedKWH == 0))
 			return 0;
-		double batteryFuelKG = cumEnergyUsedKWH / getVehicleSpec().getFuel2DriveEnergy();
+		// kg = kWh / (Wh / kg)
+		// Note: This battery has 1 kWh/kg rating
+		double batteryFuelKG = cumEnergyUsedKWH * 1;
 		// [km] / [kg] 
 		return odometerMileage / (cumFuelUsedKG + batteryFuelKG);
 	}
@@ -986,9 +988,10 @@ public abstract class Vehicle extends Unit
 	public double getCumFuelConsumption() {
 		if (odometerMileage == 0 || (cumFuelUsedKG == 0 && cumEnergyUsedKWH == 0))
 			return 0;
+		// Wh = kg * Wh / kg
 		double fuelWh = cumFuelUsedKG * getVehicleSpec().getFuel2DriveEnergy();
-		// [kg] * [Wh/kg]  / km
-		return (fuelWh + cumEnergyUsedKWH) / odometerMileage;
+		// Wh  / km
+		return (fuelWh + cumEnergyUsedKWH * 1000) / odometerMileage;
 	}
 	
 	/**
@@ -1064,7 +1067,7 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Sets the instantaneous fuel consumption of the vehicle [kWh/km].
+	 * Sets the instantaneous fuel consumption of the vehicle [Wh/km].
 	 * 
 	 * @param iFuelC
 	 */

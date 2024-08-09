@@ -207,6 +207,11 @@ extends TabPanel {
      }
 
 
+    /**
+     * Gets the air density in g/m3.
+     * 
+     * @return
+     */
     public double getAirDensity() {
 		return weather.getAirDensity(locationCache);
     }

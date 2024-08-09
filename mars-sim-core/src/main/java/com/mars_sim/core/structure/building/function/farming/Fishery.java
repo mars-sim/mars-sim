@@ -124,7 +124,7 @@ public class Fishery extends Function {
 	/** Keep track of cleaning and inspections. */
 	private HouseKeeping houseKeeping;
 	
-	/** The resource logs for growing algae in this facility [kg/sol]. */
+	/** The resource logs for growing fish in this facility [kg/sol]. */
 	private SolMetricDataLogger<Integer> resourceLog = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 	
 	

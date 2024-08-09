@@ -139,11 +139,9 @@ public class Weather implements Serializable, Temporal {
 	 * @return air density in g/m3.
 	 */
 	public double computeAirDensity(Coordinates location) {
-		// The air density is derived from the equation of state : d = p / .1921 / (t +
-		// 273.1)
-//		double result = 1000D * getAirPressure(location)
-//				/ (.1921 * (getTemperature(location) + AirComposition.C_TO_K));
-//		return Math.round(result * 100.0) / 100.0;
+		// The air density is derived from the equation of state : 
+		// d = p / .1921 / (t + 273.1)
+		// Multiply by 1000 to convert from kg/m3 to g/m3
 		return 1000D * getAirPressure(location)
 				/ (.1921 * (getTemperature(location) + AirComposition.C_TO_K));
 	}
@@ -151,7 +149,7 @@ public class Weather implements Serializable, Temporal {
 	/**
 	 * Gets the air density at a given location.
 	 * 
-	 * @return air density in kg/m3.
+	 * @return air density in g/m3.
 	 */
 	public double getAirDensity(Coordinates location) {
 		return computeAirDensity(location);

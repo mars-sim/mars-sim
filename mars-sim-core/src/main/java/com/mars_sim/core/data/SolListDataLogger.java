@@ -15,14 +15,11 @@ import java.util.List;
  */
 public class SolListDataLogger<T> extends DataLogger<List<T>> {
 
+	private static final long serialVersionUID = 1L;
+
 	public SolListDataLogger(int maxSols) {
 		super(maxSols);
 	}
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	@Override
 	protected List<T> getNewDataItem() {
@@ -30,7 +27,8 @@ public class SolListDataLogger<T> extends DataLogger<List<T>> {
 	}
 
 	/**
-	 * Add an item to the current sol list
+	 * Adds an item to the current sol list.
+	 * 
 	 * @param item
 	 */
 	public void addData(T item) {

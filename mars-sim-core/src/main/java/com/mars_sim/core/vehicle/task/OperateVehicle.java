@@ -400,7 +400,7 @@ public abstract class OperateVehicle extends Task {
 
         double batteryEnergy = vehicle.getController().getBattery().getCurrentEnergy();
            
-        boolean outOfJuice = false;
+        boolean batteryOnly = false;
         
         // Case 0a to Case 0d
         if (fuelTypeID != 0) {
@@ -424,7 +424,7 @@ public abstract class OperateVehicle extends Task {
 		        	return time;
 		    	}
 		    	else {
-		    		outOfJuice = true;
+		    		batteryOnly = true;
 		    	}
 	    	}
 
@@ -447,7 +447,7 @@ public abstract class OperateVehicle extends Task {
 		        	return time;
 		    	}
 		    	else {
-		    		outOfJuice = true;
+		    		batteryOnly = true;
 		    	}
 	        }
         }
@@ -476,7 +476,7 @@ public abstract class OperateVehicle extends Task {
         }
         
         // Look at the distance to be travelled
-        return considerDistance(time, dist2Dest, remainingFuel, speedFactor, outOfJuice);
+        return considerDistance(time, dist2Dest, remainingFuel, speedFactor, batteryOnly);
 	}
         
 	/**
@@ -486,10 +486,10 @@ public abstract class OperateVehicle extends Task {
 	 * @param dist2Dest
 	 * @param remainingFuel
 	 * @param speedFactor
-	 * @param outOfJuice
+	 * @param batteryOnly
 	 * @return
 	 */
-	private double considerDistance(double time, double dist2Dest, double remainingFuel, double speedFactor, boolean outOfJuice) {
+	private double considerDistance(double time, double dist2Dest, double remainingFuel, double speedFactor, boolean batteryOnly) {
 		
         // Convert time from millisols to hours
         double hrsTime = MarsTime.HOURS_PER_MILLISOL * time;
@@ -506,7 +506,7 @@ public abstract class OperateVehicle extends Task {
         }
         
         // Case 0e: Arriving if within 1 km
-        if (outOfJuice) {
+        if (batteryOnly) {
         	// No more fuel but still have battery
         	logger.log(vehicle, Level.INFO,  20_000, "Case 0e: Battery only (Out of fuel or oxidizer). Heading " 
         			+ getNavpointName()

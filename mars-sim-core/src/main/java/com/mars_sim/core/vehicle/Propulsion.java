@@ -31,31 +31,37 @@ public abstract class Propulsion implements Serializable {
 	/** Conversion factor : 1 m/s = 3.6 km/h (or kph) */
 	protected static final double KPH_CONV = 3.6;
 	 
-	 /** The ratio of the amount of oxidizer to methane fuel. */
-	 public static final double RATIO_OXIDIZER_METHANE = 1;
-	 /** The ratio of the amount of oxidizer to methanol fuel. */
-	 public static final double RATIO_OXIDIZER_METHANOL = 1.5;
+	/** The ratio of the amount of oxidizer to methane fuel. */
+	public static final double RATIO_OXIDIZER_METHANE = 1;
+	/** The ratio of the amount of oxidizer to methanol fuel. */
+	public static final double RATIO_OXIDIZER_METHANOL = 1.5;
 	 
-	 // Water Ratio is 2 for direct methanol fuel cell (DMFC). 
-	 // Water Ratio varies for indirect methanol fuel cell (DMFC). say 1.125;
-	 /** The ratio of water produced for every methanol consumed. */
-	 private static final double RATIO_WATER_METHANOL = 2; 
+	// Water Ratio is 2 for direct methanol fuel cell (DMFC). 
+	// Water Ratio varies for indirect methanol fuel cell (DMFC). say 1.125;
+	/** The ratio of water produced for every methanol consumed. */
+	private static final double RATIO_WATER_METHANOL = 2; 
 
-	 /** The ratio of water produced for every methane consumed. */
-	 private static final double RATIO_WATER_METHANE = 2.25;
-
+	/** The ratio of water produced for every methane consumed. */
+	private static final double RATIO_WATER_METHANE = 2.25;
 	 
-	 public static final String TWO_WHITESPACES = "  ";
+	public static final String TWO_WHITESPACES = "  ";
 	
-    public static final DecimalFormat DECIMAL3_N = new DecimalFormat("#,##0.000 N");    public static final DecimalFormat DECIMAL3_WH = new DecimalFormat("#,##0.00 Wh");
+	public static final DecimalFormat DECIMAL3_RAD = new DecimalFormat("#,##0.000 radians");
+	public static final DecimalFormat DECIMAL3_KG_M3 = new DecimalFormat("#,##0.000 kg/m3");
+    public static final DecimalFormat DECIMAL3_N = new DecimalFormat("#,##0.000 N");
+    public static final DecimalFormat DECIMAL1_N = new DecimalFormat("#,##0.0 N"); 
+    public static final DecimalFormat DECIMAL3_WH = new DecimalFormat("#,##0.00 Wh");
     public static final DecimalFormat DECIMAL3_KPH = new DecimalFormat("#,##0.00 kph");
     public static final DecimalFormat DECIMAL3_KM = new DecimalFormat("#,##0.000 km");
-    public static final DecimalFormat DECIMAL2_S = new DecimalFormat("#,##0.00 secs");
     public static final DecimalFormat DECIMAL3_M = new DecimalFormat("#,##0.000 m");
     public static final DecimalFormat DECIMAL3_S = new DecimalFormat("#,##0.000 secs");
+    public static final DecimalFormat DECIMAL2_S = new DecimalFormat("#,##0.00 secs");
     public static final DecimalFormat DECIMAL3_M_S = new DecimalFormat("#,##0.000 m/s");
     public static final DecimalFormat DECIMAL3_W = new DecimalFormat("#,##0.000 W");
+    public static final DecimalFormat DECIMAL2_W = new DecimalFormat("#,##0.00 W");
+    public static final DecimalFormat DECIMAL1_W = new DecimalFormat("#,##0.0 W");
     public static final DecimalFormat DECIMAL3_J = new DecimalFormat("#,##0.000 J");
+    
 	private Vehicle vehicle;
 	
 	
@@ -79,7 +85,7 @@ public abstract class Propulsion implements Serializable {
 	public void retrieveFuelNOxidizer(double fuelNeeded, int fuelTypeID) {
 		 if (fuelNeeded > 0) {
 			 
-			 if (vehicle.getFuelTypeID() == ResourceUtil.methanolID) {
+			 if (fuelTypeID == ResourceUtil.methanolID) {
 				 // Retrieve the fuel needed for the distance traveled
 				 vehicle.retrieveAmountResource(fuelTypeID, fuelNeeded);
 				 // Assume oxygen as fuel oxidizer
@@ -88,7 +94,7 @@ public abstract class Propulsion implements Serializable {
 				 vehicle.storeAmountResource(WATER_ID, RATIO_WATER_METHANOL * fuelNeeded);
 			 }
 
-			 else if (vehicle.getFuelTypeID() == ResourceUtil.methaneID) {
+			 else if (fuelTypeID == ResourceUtil.methaneID) {
 				 // Retrieve the fuel needed for the distance traveled
 				 vehicle.retrieveAmountResource(fuelTypeID, fuelNeeded);
 				 // Assume oxygen as fuel oxidizer
@@ -110,7 +116,7 @@ public abstract class Propulsion implements Serializable {
 	 * @param mass
 	 * @return
 	 */
-	public double[] propelBatteryOnly(String caseText, double energySuppliedByBattery, double secs, double energyByFuel, double uMS, double mass) {
+	public double[] propelBatteryOnly(String caseText, double aveForce, double energySuppliedByBattery, double secs, double energyByFuel, double uMS, double mass) {
 		 // Scenario 2B1: Ran out of fuel. Need battery to provide for the rest
 		 
 		 // Recalculate the new ave power W
@@ -122,12 +128,12 @@ public abstract class Propulsion implements Serializable {
 		 // Recalculate the new overall energy expenditure [in Wh]
 		 double overallEnergyUsed = energySuppliedByBattery;
 		 
-		 // Recalculate the kinetic energy
-		 double kineticEnergy = overallEnergyUsed;
-		 
-		 // Recalculate the new speed 
-		 double vMS = Math.sqrt(kineticEnergy / .5 / mass);
-		 
+//		 // Recalculate the kinetic energy
+//		 double kineticEnergy = overallEnergyUsed;
+//		 
+//		 // Recalculate the new speed 
+//		 double vMS = Math.sqrt(kineticEnergy / .5 / mass);
+		 	 
 		 // Recalculate the new aveForce 
 //		 double aveForce = avePower / (vMS - uMS);
 		 
@@ -138,18 +144,20 @@ public abstract class Propulsion implements Serializable {
 		 // FUTURE : may need to find a way to optimize motor power usage 
 		 // and slow down the vehicle to the minimal to conserve power	
 		 
-		 double vKPH = vMS * KPH_CONV;
+		 double newVMS = avePower / aveForce;
+				 
+		 double newVKPH = newVMS * KPH_CONV;
 		 
 		 double uKPH = uMS * KPH_CONV;
 		 
 		 // Find new acceleration
-		 double accelSpeedUp = (vMS - uMS) / secs; // [in m/s^2]
+		 double accelSpeedUp = (newVMS - uMS) / secs; // [in m/s^2]
 		 
 		 // Set new vehicle acceleration
 		 vehicle.setAccel(accelSpeedUp);
 		 
 		 // Recompute the new distance it could travel
-		 double distanceTravelled = vKPH * secs / 3600;
+		 double distanceTravelled = newVKPH * secs / 3600;
 		 
 		 /*
 		  * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
@@ -159,13 +167,13 @@ public abstract class Propulsion implements Serializable {
 				 + "energySuppliedByBattery: " +  DECIMAL3_WH.format(energySuppliedByBattery) + TWO_WHITESPACES
 //				 + "Battery: " 			+ Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH__	
 				 + "overallEnergyUsed: " + DECIMAL3_WH.format(overallEnergyUsed) + TWO_WHITESPACES							 
-				 + "avePower: " 			+ DECIMAL3_W.format(avePower * 100.0) + TWO_WHITESPACES							
-				 + "u -> v: " 			+ DECIMAL3_KPH.format(uKPH * 100.0) + " -> "
-				 						+ DECIMAL3_KPH.format(vKPH * 100.0) + TWO_WHITESPACES   
+				 + "avePower: " 			+ DECIMAL2_W.format(avePower) + TWO_WHITESPACES							
+				 + "u -> newVKPH: " 			+ DECIMAL3_KPH.format(uKPH) + " -> "
+				 						+ DECIMAL3_KPH.format(newVKPH) + TWO_WHITESPACES   
 				 + "seconds: " 			+ DECIMAL2_S.format(secs) + TWO_WHITESPACES   						
-				 + "distanceTravelled: " +  DECIMAL3_KM.format(distanceTravelled * 1000.0));			 
+				 + "distanceTravelled: " +  DECIMAL3_KM.format(distanceTravelled));			 
 		 
-		 return new double[] {avePower, vKPH, distanceTravelled, energySuppliedByBattery};
+		 return new double[] {avePower, newVKPH, distanceTravelled, energySuppliedByBattery};
 	}
 	
 	
@@ -216,7 +224,9 @@ public abstract class Propulsion implements Serializable {
 		 // and slow down the vehicle to the minimal to conserve power	
 		 
 		double vKPH = vMS * KPH_CONV;
-		 
+		
+		double uKPH = uMS * KPH_CONV;
+		
 		// Find new acceleration
 		double accelSpeedUp = (vMS - uMS) / secs; // [in m/s^2]
 		 
@@ -234,14 +244,14 @@ public abstract class Propulsion implements Serializable {
 		 */
 		logger.log(vehicle, Level.INFO, 10_000, caseText 
 				 + "energyByFuel: " + DECIMAL3_WH.format(energyByFuel) + TWO_WHITESPACES
-//				 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG__					
+//				 + "fuelNeeded: " +  DECIMAL3_KG.format(fuelNeeded)  + TWO_WHITESPACES					
 //				 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH__
 				 + "energySuppliedByBattery: " +  DECIMAL3_WH.format(energySuppliedByBattery) + TWO_WHITESPACES
 //				 + "Battery: " 			+ Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH__	
 				 + "overallEnergyUsed: " + DECIMAL3_WH.format(overallEnergyUsed) + TWO_WHITESPACES							 
-				 + "avePower: " 			+ DECIMAL3_W.format(avePower * 100.0) + TWO_WHITESPACES							
-				 + "vKPH: " 				+ DECIMAL3_KPH.format(vKPH * 100.0) + TWO_WHITESPACES   							
-				 + "distanceTravelled: " +  DECIMAL3_KM.format(distanceTravelled * 1000.0));	
+				 + "avePower: " 			+ DECIMAL3_W.format(avePower) + TWO_WHITESPACES							
+				 + "u -> v: " 	+ DECIMAL3_KPH.format(uKPH) + " -> " + DECIMAL3_KPH.format(vKPH) + TWO_WHITESPACES   							
+				 + "distanceTravelled: " +  DECIMAL3_KM.format(distanceTravelled));	
 		 
 		 // Equate energyByBattery to energySuppliedByBattery in order to add to odometer easily
 //		 energyByBattery = energySuppliedByBattery;
@@ -259,7 +269,7 @@ public abstract class Propulsion implements Serializable {
 	  * @param airDensity
 	  * @return
 	  */
-	 public abstract double driveOnGround(double weight, double vMS , double averageSpeed, double fGravity, double airDensity);
+	 public abstract double[] driveOnGround(double weight, double vMS , double averageSpeed, double fGravity, double airDensity);
 	 
 	 /**
 	  * Flies in the air and calculate overall power and forces acting on the flyer.
