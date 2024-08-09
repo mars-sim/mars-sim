@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.shift.ShiftSlot;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -71,13 +72,20 @@ public class PersonUnitWindow extends UnitWindow {
 	public PersonUnitWindow(MainDesktopPane desktop, Person person) {
 		// Use UnitWindow constructor
 		super(desktop, person, person.getName() 
-				+ " of " + ((person.getAssociatedSettlement() != null) ? 
-						person.getAssociatedSettlement() : person.getBuriedSettlement())
-				+ ((person.getContainerUnit() != null) ? (" in " + person.getContainerUnit()) : 
-					" in " + person.getLocationTag().findSettlementVicinity() + " Vicinity"),
+				+ " of " + 
+				((person.getAssociatedSettlement() != null) ? 
+						person.getAssociatedSettlement() : 
+							person.getBuriedSettlement())
+				+ ((person.getContainerUnit() != null) ? 
+						((person.getContainerUnit() instanceof MarsSurface) ?
+							(" on " + person.getContainerUnit()) :
+							(" in " + person.getContainerUnit())) : 
+					(" in " + person.getLocationTag().findSettlementVicinity() + " Vicinity")),
 				false);
 		this.person = person;
 	
+		
+		
 		// Create status panel
 		statusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		statusPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));

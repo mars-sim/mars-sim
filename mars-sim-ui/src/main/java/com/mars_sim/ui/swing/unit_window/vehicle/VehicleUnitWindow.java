@@ -7,6 +7,7 @@
 
 package com.mars_sim.ui.swing.unit_window.vehicle;
 
+import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -41,8 +42,11 @@ public class VehicleUnitWindow extends UnitWindow {
 		super(desktop, vehicle,  vehicle.getName() 
 				+ " (" + vehicle.getVehicleType().getName() + ")"
 				+ " of " + vehicle.getAssociatedSettlement()
-				+ ((vehicle.getContainerUnit() != null) ? (" in " + vehicle.getContainerUnit()) :
-					" in " + vehicle.getLocationTag().findSettlementVicinity() + " Vicinity"),
+				+ ((vehicle.getContainerUnit() != null) ? 
+						((vehicle.getContainerUnit() instanceof MarsSurface) ?
+							(" on " + vehicle.getContainerUnit()) :
+							(" in " + vehicle.getContainerUnit())) : 
+					(" in " + vehicle.getLocationTag().findSettlementVicinity() + " Vicinity")),
 				true);
 		this.vehicle = vehicle;
 		
