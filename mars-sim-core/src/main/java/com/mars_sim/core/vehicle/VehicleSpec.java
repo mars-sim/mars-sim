@@ -466,9 +466,9 @@ public class VehicleSpec implements Serializable {
 
 			case EXPLORER_ROVER: {
 				
-				roadLoadPowerFactor = 0.3;
+				roadLoadPowerFactor = 0.4;
 				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(10.0 + numBatteryModule * 3 + numFuelCellStack * 2);
+				peakPower = basePower * Math.log10(5.0 + numBatteryModule * 3 + numFuelCellStack * 2);
 				// Accounts for the occupants and their consumables
 				additionalBeginningMass = estimatedTotalCrewWeight + 4 * 20;
 				// Accounts for the occupant and rock sample, ice or regolith collected
@@ -477,9 +477,9 @@ public class VehicleSpec implements Serializable {
 
 			case CARGO_ROVER: {
 				
-				roadLoadPowerFactor = 0.2;
+				roadLoadPowerFactor = 0.3;
 				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(10.0 + numBatteryModule * 2 + numFuelCellStack * 1.5);
+				peakPower = basePower * Math.log10(5.0 + numBatteryModule * 2 + numFuelCellStack * 1.5);
 				// Accounts for the occupants and their consumables and traded goods 
 				additionalBeginningMass = estimatedTotalCrewWeight + 2 * 20 + 2000;
 				// Accounts for the occupants and traded goods
@@ -488,9 +488,9 @@ public class VehicleSpec implements Serializable {
 
 			case TRANSPORT_ROVER: {
 				
-				roadLoadPowerFactor = 0.1;
+				roadLoadPowerFactor = 0.3;
 				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(10.0 + numBatteryModule * 2 + numFuelCellStack * 1.5);
+				peakPower = basePower * Math.log10(5.0 + numBatteryModule * 2 + numFuelCellStack * 1.5);
 				// Accounts for the occupants and their consumables and personal possession
 				additionalBeginningMass = estimatedTotalCrewWeight + 8 * (20 + 100);
 				// Accounts for the occupants and their personal possession
@@ -504,7 +504,7 @@ public class VehicleSpec implements Serializable {
 		// Gets the estimated energy available to be consumed for the trip [in kWh]
 		double baseEnergyConsumed = drivetrainEnergy;
 		// Gets the estimated average road load power (including coasting)
-		double baseRoadLoadPower = roadLoadPowerFactor * (.1 * peakPower + .9 * basePower);
+		double baseRoadLoadPower = roadLoadPowerFactor * (.3 * peakPower + .7 * basePower);
 		// Gets the estimated average road speed (including coasting) [m/s]
 		double baseRoadSpeedMPerSec = .9 * baseSpeed / 3.6;
 		// Gets the maximum total # of hours the vehicle is capable of operating

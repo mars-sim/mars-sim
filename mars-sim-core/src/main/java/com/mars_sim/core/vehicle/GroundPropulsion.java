@@ -46,7 +46,7 @@ public class GroundPropulsion extends Propulsion implements Serializable {
 	 * @return
 	 */
 	public double[] driveOnGround(double weight, double vMS, double averageSpeed, double fGravity, double airDensity) {
-		// Important for Ground rover in radians
+		// Gets the terrain angle in radians
 		double angle = vehicle.getTerrainGrade();
 
 		// Assume road rolling resistance coeff of 0.075 on roads with pebbles/potholes
@@ -68,8 +68,8 @@ public class GroundPropulsion extends Propulsion implements Serializable {
 		// Assume staticFriction is inversely proportionally to current average speed 
 		
 		// Note: On Mars surface, there is no paved road. Friction Coeff are very high
-		double kineticFrictionCoeff = 150 / vehicle.getBasePower();
-		double staticFrictionCoeff = kineticFrictionCoeff * 2 / (0.5 + averageSpeed);
+		double kineticFrictionCoeff = 100 / vehicle.getBasePower();
+		double staticFrictionCoeff = kineticFrictionCoeff * 1.5 / (0.5 + averageSpeed);
 
 		double fInitialFriction = weight * (staticFrictionCoeff + kineticFrictionCoeff);
 
@@ -113,6 +113,7 @@ public class GroundPropulsion extends Propulsion implements Serializable {
 	 * Flies in the air and calculate overall power and forces acting on the flyer.
 	 * 
 	 * @param caseText
+	 * @param angle
 	 * @param ascentHeight
 	 * @param weight
 	 * @param airDensity
@@ -120,7 +121,7 @@ public class GroundPropulsion extends Propulsion implements Serializable {
 	 * @param secs
 	 * @return
 	 */
-	public double flyInAir(String caseText, double ascentHeight, double weight, double airDensity, double vMS,
+	public double flyInAir(String caseText, double angle, double ascentHeight, double weight, double airDensity, double vMS,
 			double secs) {
 		return 0;
 	}

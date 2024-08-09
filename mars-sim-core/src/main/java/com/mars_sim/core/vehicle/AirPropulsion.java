@@ -87,6 +87,7 @@ public class AirPropulsion extends Propulsion implements Serializable {
 	 * Flies in the air and calculate overall power and forces acting on the flyer.
 	 * 
 	 * @param caseText
+	 * @param angle
 	 * @param ascentHeight
 	 * @param weight
 	 * @param airDensity
@@ -94,7 +95,7 @@ public class AirPropulsion extends Propulsion implements Serializable {
 	 * @param secs
 	 * @return
 	 */
-	public double flyInAir(String caseText, double ascentHeight, double weight, double airDensity, double vMS,
+	public double flyInAir(String caseText, double angle, double ascentHeight, double weight, double airDensity, double vMS,
 			double secs) {
 
 		double uKPH = vehicle.getSpeed();

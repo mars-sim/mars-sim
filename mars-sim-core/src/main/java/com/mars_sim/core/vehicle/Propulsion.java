@@ -269,12 +269,13 @@ public abstract class Propulsion implements Serializable {
 	  * @param airDensity
 	  * @return
 	  */
-	 public abstract double[] driveOnGround(double weight, double vMS , double averageSpeed, double fGravity, double airDensity);
+	 public abstract double[] driveOnGround(double weight, double vMS, double averageSpeed, double fGravity, double airDensity);
 	 
 	 /**
 	  * Flies in the air and calculate overall power and forces acting on the flyer.
 	  * 
 	  * @param caseText
+	  * @param angle
 	  * @param ascentHeight
 	  * @param weight
 	  * @param airDensity
@@ -282,7 +283,7 @@ public abstract class Propulsion implements Serializable {
 	  * @param secs
 	  * @return
 	  */
-	 public abstract double flyInAir(String caseText, double ascentHeight, double weight,
+	 public abstract double flyInAir(String caseText, double angle, double ascentHeight, double weight,
 			 double airDensity, double vMS, double secs);
 	 
 }
