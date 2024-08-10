@@ -11,6 +11,7 @@ import java.awt.BorderLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.mars_sim.core.structure.building.function.farming.AlgaeFarming;
 import com.mars_sim.core.structure.building.function.farming.Fishery;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -36,6 +37,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	private int maxFish;
 	private int numWeed;
 	
+	private double fishHarvestedCache;
 	private double fishMass;
 	private double weedMass;
 	private double weedDemand;
@@ -45,6 +47,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	/** The cache value for the work time done in this greenhouse. */
 	private double workTimeCache;
 	
+	private JLabel fishHarvestedLabel;
 	private JLabel numFishLabel;
 	private JLabel numIdealFishLabel;
 	private JLabel maxFishLabel;
@@ -83,7 +86,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
-		AttributePanel labelPanel = new AttributePanel(11);
+		AttributePanel labelPanel = new AttributePanel(12);
 		center.add(labelPanel, BorderLayout.NORTH);
 		
 		labelPanel.addTextField(Msg.getString("BuildingPanelFishery.tankSize"), 
@@ -109,6 +112,10 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 		maxFishLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.maxFish"),
 									Integer.toString(maxFish), null);
 
+		fishHarvestedCache = tank.computeDailyAverage(Fishery.FISH_MEAT_ID);
+		fishHarvestedLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.harvestedFish"),
+				StyleManager.DECIMAL1_KG_SOL.format(fishHarvestedCache),
+									Msg.getString("BuildingPanelFishery.harvestedFish.tooltip"));
 		numWeed = tank.getNumWeed();
 		numWeedLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.numWeed"),
 									Integer.toString(numWeed), null);
@@ -170,6 +177,12 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 			fishMassLabel.setText(StyleManager.DECIMAL_KG.format(newFishMass));
 		}
 		
+		double newFishHarvest = tank.computeDailyAverage(Fishery.FISH_MEAT_ID);
+		if (fishHarvestedCache != newFishHarvest) {
+			fishHarvestedCache = newFishHarvest;
+			fishHarvestedLabel.setText(StyleManager.DECIMAL1_KG_SOL.format(fishHarvestedCache));
+		}
+
 		double newWeedMass = tank.getTotalWeedMass();
 		if (weedMass != newWeedMass) {
 			weedMass = newWeedMass;

@@ -53,7 +53,8 @@ public class Fishery extends Function {
 	
 	/** Time before weed need tendering. */
 	private static final int WEED_DEMAND = 500;
-	
+	/** The id for fish meat. */
+	public static final int FISH_MEAT_ID = ResourceUtil.fishMeatID;
 	/** Convert from kg to ounce. */
 	public static final double KG_PER_OUNCE = 0.02834952;
 	/** Convert from ounce to kg. */
@@ -510,14 +511,13 @@ public class Fishery extends Function {
 		resourceLog.increaseDataPoint(id, amount);
 	}
 	
-
 	/**
 	 * Computes the daily average of a particular resource.
 	 * 
 	 * @param id The resource id
 	 * @return average consumed or produced in kg/sol
 	 */
-	public double computeDaily(int id) {
+	public double computeDailyAverage(int id) {
 		return resourceLog.getDailyAverage(id);
 	}
 	

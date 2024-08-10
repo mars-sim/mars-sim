@@ -367,7 +367,7 @@ public class AlgaeFarming extends Function {
 	 * @param id The resource id
 	 * @return average consumed or produced in kg/sol
 	 */
-	public double computeDaily(int id) {
+	public double computeDailyAverage(int id) {
 		return resourceLog.getDailyAverage(id);
 	}
 	

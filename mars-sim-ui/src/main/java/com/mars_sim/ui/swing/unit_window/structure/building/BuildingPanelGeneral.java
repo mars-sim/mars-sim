@@ -92,7 +92,7 @@ public class BuildingPanelGeneral extends BuildingFunctionPanel {
 		// Prepare air mass label
 		LifeSupport ls = building.getLifeSupport();
 		if (ls != null)
-			infoPanel.addTextField("Air Mass", StyleManager.DECIMAL_KG2.format(
+			airMassLabel = infoPanel.addRow("Air Mass", StyleManager.DECIMAL_KG2.format(
 				ls.getAir().getTotalMass()), "The mass of the air in kg");
 		else
 			airMassLabel = infoPanel.addRow("Air Mass", 0 + "", "The mass of the air in kg");
