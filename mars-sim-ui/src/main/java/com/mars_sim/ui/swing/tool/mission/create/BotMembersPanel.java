@@ -166,7 +166,6 @@ implements ActionListener {
 								for (int selectedRow : selectedRows)  {
 									Robot robot = (Robot) botMembersTableModel.getUnit(selectedRow);
 									getDesktop().showDetails(robot);
-									break;
 								}
 							}
 						}

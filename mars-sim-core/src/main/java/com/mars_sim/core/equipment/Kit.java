@@ -145,6 +145,17 @@ public class Kit extends Equipment
 			&& this.getIdentifier() == ((Kit)obj).getIdentifier();
 	}
 
+	/**
+	 * Gets the hash code for this object.
+	 *
+	 * @return hash code.
+	 */
+	@Override
+	public int hashCode() {
+		int hashCode = getIdentifier();
+		return hashCode % 32;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

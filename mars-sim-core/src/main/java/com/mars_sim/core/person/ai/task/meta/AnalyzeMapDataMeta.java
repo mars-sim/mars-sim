@@ -103,10 +103,10 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
 			numPotential = 0;
 		}
 
-		int unclaimedScore = 200;
+		double unclaimedScore = 200D;
 		
 		if (unclaimedSites > 0) {
-			unclaimedScore = unclaimedScore / unclaimedSites * (1 + (int)Math.ceil(unclaimedSites / 5));
+			unclaimedScore = unclaimedScore / unclaimedSites * (1.0 + (int)Math.ceil(unclaimedSites / 5D));
 		}
 			
 		var result = new RatingScore("mapdata.unclaimed", unclaimedScore);

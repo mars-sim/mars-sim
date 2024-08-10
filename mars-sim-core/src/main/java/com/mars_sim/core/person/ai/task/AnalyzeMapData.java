@@ -191,7 +191,7 @@ public class AnalyzeMapData extends Task {
     	    	addPhase(DISCOVERING);
     	        setPhase(DISCOVERING);
     		}
-            else if (exploredLoc != null) {
+            else if (!exploredLoc.isEmpty()) {
     	       	// Add task phases
     	    	addPhase(ANALYZING);
     	        setPhase(ANALYZING);

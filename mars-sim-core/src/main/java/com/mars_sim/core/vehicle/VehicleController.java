@@ -40,9 +40,9 @@ import com.mars_sim.tools.util.RandomUtil;
 	 /** The standard hovering height for a drone. */
 	 public static final int STANDARD_HOVERING_HEIGHT = (int) (Flyer.ELEVATION_ABOVE_GROUND * 1000);
 	 /** The standard stepping up height for a drone. */
-	 public static final double STEP_UP_HEIGHT = STANDARD_HOVERING_HEIGHT / 64;
+	 public static final double STEP_UP_HEIGHT = STANDARD_HOVERING_HEIGHT / 64D;
 	 /** The standard stepping down height for a drone. */
-	 public static final double STEP_DOWN_HEIGHT = STANDARD_HOVERING_HEIGHT / 32;	 
+	 public static final double STEP_DOWN_HEIGHT = STANDARD_HOVERING_HEIGHT / 32D;	 
 	 /** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
 	 private static final double LEAST_AMOUNT = GroundVehicle.LEAST_AMOUNT;
 	 /** The ratio of the amount of oxidizer to methane fuel. */
@@ -544,7 +544,7 @@ import com.mars_sim.tools.util.RandomUtil;
 		 double iFE = 0;
 		 double iFC = 0;	
 		 
-		 if (distanceTravelled > 0 && energyByFuel > 0 && energyByFuel > 0) {
+		 if (distanceTravelled > 0 && (energyByFuel > 0 || energyByBattery > 0)) {
 			 // Wh  / km 
 			 // Derive the instantaneous fuel consumption [Wh/km]
 			 iFC = (energyByFuel + energyByBattery) / distanceTravelled;	        

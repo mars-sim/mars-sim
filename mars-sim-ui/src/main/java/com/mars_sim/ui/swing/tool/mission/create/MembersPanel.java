@@ -172,7 +172,6 @@ implements ActionListener {
 								for (int selectedRow : selectedRows)  {
 									Person person = (Person) peopleTableModel.getUnit(selectedRow);
 									getDesktop().showDetails(person);
-									break;
 								}
 							}
 						}
