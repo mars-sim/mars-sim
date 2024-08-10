@@ -32,6 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -225,7 +226,7 @@ extends ToolWindow {
 		selectOptionsPane.add(settlementCheck);
 
 		// Create status label
-		statusLabel = new JLabel(" ", JLabel.CENTER); //$NON-NLS-1$
+		statusLabel = new JLabel(" ", SwingConstants.CENTER); //$NON-NLS-1$
 		statusLabel.setBorder(new EtchedBorder());
 		bottomPane.add(statusLabel, BorderLayout.CENTER);
 

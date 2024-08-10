@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 
 import com.mars_sim.core.goods.CommerceMission;
 import com.mars_sim.core.goods.Good;
@@ -55,7 +56,7 @@ public class TradeMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		add(sellingGoodsPane);
 
 		// Create the selling goods label.
-		JLabel sellingGoodsLabel = new JLabel("Goods to Sell:", JLabel.LEFT);
+		JLabel sellingGoodsLabel = new JLabel("Goods to Sell:", SwingConstants.LEFT);
 		sellingGoodsPane.add(sellingGoodsLabel, BorderLayout.NORTH);
 
 		// Create a scroll pane for the selling goods table.
@@ -82,11 +83,11 @@ public class TradeMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		desiredGoodsPane.add(desiredGoodsLabelPane, BorderLayout.NORTH);
 
 		// Create the desired goods label.
-		JLabel desiredGoodsLabel = new JLabel("Desired Goods to Buy:", JLabel.LEFT);
+		JLabel desiredGoodsLabel = new JLabel("Desired Goods to Buy:", SwingConstants.LEFT);
 		desiredGoodsLabelPane.add(desiredGoodsLabel);
 
 		// Create the desired goods profit label.
-		desiredGoodsProfitLabel = new JLabel("Profit:", JLabel.LEFT);
+		desiredGoodsProfitLabel = new JLabel("Profit:", SwingConstants.LEFT);
 		desiredGoodsLabelPane.add(desiredGoodsProfitLabel);
 
 		// Create a scroll pane for the desired goods table.
@@ -113,11 +114,11 @@ public class TradeMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		boughtGoodsPane.add(boughtGoodsLabelPane, BorderLayout.NORTH);
 
 		// Create the bought goods label.
-		JLabel boughtGoodsLabel = new JLabel("Goods Bought:", JLabel.LEFT);
+		JLabel boughtGoodsLabel = new JLabel("Goods Bought:", SwingConstants.LEFT);
 		boughtGoodsLabelPane.add(boughtGoodsLabel);
 
 		// Create the bought goods profit label.
-		boughtGoodsProfitLabel = new JLabel("Profit:", JLabel.LEFT);
+		boughtGoodsProfitLabel = new JLabel("Profit:", SwingConstants.LEFT);
 		boughtGoodsLabelPane.add(boughtGoodsProfitLabel);
 
 		// Create a scroll pane for the bought goods table.

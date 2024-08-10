@@ -21,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
@@ -161,7 +162,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         topPanel.add(centerMapButton, BorderLayout.CENTER);
         
         // Prepare destination label
-        JLabel destinationLabel = new JLabel("Destination :", JLabel.RIGHT);
+        JLabel destinationLabel = new JLabel("Destination :", SwingConstants.RIGHT);
         leftPanel.add(destinationLabel);
         
         // Prepare destination button
@@ -169,7 +170,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         destinationButton.addActionListener(this);
 
         // Prepare destination text label
-        destinationTextLabel = new JLabel("", JLabel.LEFT);
+        destinationTextLabel = new JLabel("", SwingConstants.LEFT);
         
         boolean hasDestination = false;
 

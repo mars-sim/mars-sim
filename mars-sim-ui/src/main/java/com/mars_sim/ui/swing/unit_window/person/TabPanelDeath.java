@@ -85,7 +85,7 @@ implements ActionListener {
 		content.add(deathLabelPanel, BorderLayout.NORTH);
 
 		// Prepare cause label
-		JLabel causeLabel = new JLabel(Msg.getString("TabPanelDeath.cause"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel causeLabel = new JLabel(Msg.getString("TabPanelDeath.cause"), SwingConstants.LEFT); //$NON-NLS-1$
 		deathLabelPanel.add(causeLabel);
 
 		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -97,7 +97,7 @@ implements ActionListener {
         deathLabelPanel.add(wrapper1);
 
 		// Prepare time label
-		JLabel timeLabel = new JLabel(Msg.getString("TabPanelDeath.time"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel timeLabel = new JLabel(Msg.getString("TabPanelDeath.time"), SwingConstants.LEFT); //$NON-NLS-1$
 		deathLabelPanel.add(timeLabel);
 
 		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -109,7 +109,7 @@ implements ActionListener {
         deathLabelPanel.add(wrapper2);
 
 		// Prepare examiner label
-		JLabel examinerLabel = new JLabel(Msg.getString("TabPanelDeath.examiner"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel examinerLabel = new JLabel(Msg.getString("TabPanelDeath.examiner"), SwingConstants.LEFT); //$NON-NLS-1$
 		deathLabelPanel.add(examinerLabel);
 
 		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -127,7 +127,7 @@ implements ActionListener {
         deathLabelPanel.add(wrapper3);
         
 		// Prepare malfunction label
-		JLabel malfunctionLabel = new JLabel(Msg.getString("TabPanelDeath.malfunctionIfAny"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel malfunctionLabel = new JLabel(Msg.getString("TabPanelDeath.malfunctionIfAny"), SwingConstants.LEFT); //$NON-NLS-1$
 		deathLabelPanel.add(malfunctionLabel);
 
 		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -165,7 +165,7 @@ implements ActionListener {
 		locationLabelPanel.add(centerMapButton);
 
 		// Prepare location label
-		JLabel locationLabel = new JLabel("  " + Msg.getString("TabPanelDeath.placeOfDeath") + "  ", JLabel.CENTER); //$NON-NLS-1$
+		JLabel locationLabel = new JLabel("  " + Msg.getString("TabPanelDeath.placeOfDeath") + "  ", SwingConstants.CENTER); //$NON-NLS-1$
 		locationLabelPanel.add(locationLabel);
 
 		if (death.getContainerUnit() != null) {
@@ -198,18 +198,18 @@ implements ActionListener {
 		// Initialize location cache
 		Coordinates deathLocation = death.getLocationOfDeath();
 
-		JLabel label0 = new JLabel(Msg.getString("TabPanelDeath.latitude"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel label0 = new JLabel(Msg.getString("TabPanelDeath.latitude"), SwingConstants.LEFT); //$NON-NLS-1$
 		springPanel.add(label0);
 
 		// Prepare latitude label
-		JLabel latitudeLabel = new JLabel(deathLocation.getFormattedLatitudeString(), JLabel.LEFT); //$NON-NLS-1$
+		JLabel latitudeLabel = new JLabel(deathLocation.getFormattedLatitudeString(), SwingConstants.LEFT); //$NON-NLS-1$
 		springPanel.add(latitudeLabel);
 
-		JLabel label1 = new JLabel(Msg.getString("TabPanelDeath.longitude"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel label1 = new JLabel(Msg.getString("TabPanelDeath.longitude"), SwingConstants.LEFT); //$NON-NLS-1$
 		springPanel.add(label1);
 
 		// Prepare longitude label
-		JLabel longitudeLabel = new JLabel(deathLocation.getFormattedLongitudeString(), JLabel.LEFT); //$NON-NLS-1$
+		JLabel longitudeLabel = new JLabel(deathLocation.getFormattedLongitudeString(), SwingConstants.LEFT); //$NON-NLS-1$
 		springPanel.add(longitudeLabel);
 
 		// Prepare SpringLayout

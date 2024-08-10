@@ -80,7 +80,7 @@ public class FieldSitePanel extends WizardPanel {
         add(mapPane);
         
         // Create the location label.
-        locationLabel = new JLabel("Location: ", JLabel.CENTER);
+        locationLabel = new JLabel("Location: ", SwingConstants.CENTER);
         locationLabel.setFont(locationLabel.getFont().deriveFont(Font.BOLD));
         locationLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(locationLabel);

@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.Unit;
@@ -68,7 +69,7 @@ public class SalvageTabPanel extends TabPanel {
         content.add(salvageHeaderPanel);
         
         // Create the salvage header label.
-        JLabel salvageHeaderLabel = new JLabel(unit.getName() + " has been salvaged.", JLabel.CENTER);
+        JLabel salvageHeaderLabel = new JLabel(unit.getName() + " has been salvaged.", SwingConstants.CENTER);
         salvageHeaderPanel.add(salvageHeaderLabel);
         
         // Create the salvage info panel.
@@ -81,14 +82,14 @@ public class SalvageTabPanel extends TabPanel {
         
         // Create the start time label.
         String startTimeString = salvageInfo.getStartTime().getDateTimeStamp();
-        JLabel startTimeLabel = new JLabel("Start Time: " + startTimeString, JLabel.LEFT);
+        JLabel startTimeLabel = new JLabel("Start Time: " + startTimeString, SwingConstants.LEFT);
         timePanel.add(startTimeLabel);
         
         // Create the finish time label.
         MarsTime finishTime = salvageInfo.getFinishTime();
         finishTimeString = "";
         if (finishTime != null) finishTimeString = finishTime.getDateTimeStamp();
-        finishTimeLabel = new JLabel("Finish Time: " + finishTimeString, JLabel.LEFT);
+        finishTimeLabel = new JLabel("Finish Time: " + finishTimeString, SwingConstants.LEFT);
         timePanel.add(finishTimeLabel);
 
         // Create the settlement panel.
@@ -115,7 +116,7 @@ public class SalvageTabPanel extends TabPanel {
         content.add(partsPanel);
         
         // Create the parts label.
-        JLabel partsLabel = new JLabel("Salvaged Parts", JLabel.CENTER);
+        JLabel partsLabel = new JLabel("Salvaged Parts", SwingConstants.CENTER);
         partsPanel.add(partsLabel, BorderLayout.NORTH);
         
         // Create the parts table panel.

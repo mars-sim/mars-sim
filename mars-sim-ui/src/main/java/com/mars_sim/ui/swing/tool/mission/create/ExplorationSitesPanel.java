@@ -29,6 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -136,10 +137,10 @@ class ExplorationSitesPanel extends WizardPanel {
 		mapMainPane.add(instructionLabelPane, BorderLayout.SOUTH);
 
 		// Create the instruction labels.
-		JLabel instructionLabel1 = new JLabel(" Note 1: drag the navpoint flag to a desired site.", JLabel.LEFT);
+		JLabel instructionLabel1 = new JLabel(" Note 1: drag the navpoint flag to a desired site.", SwingConstants.LEFT);
 		instructionLabelPane.add(instructionLabel1);
 
-		JLabel instructionLabel2 = new JLabel(" Note 2: click 'Add Site' button for a new site.", JLabel.LEFT);
+		JLabel instructionLabel2 = new JLabel(" Note 2: click 'Add Site' button for a new site.", SwingConstants.LEFT);
 		instructionLabelPane.add(instructionLabel2);
 
 		// Create the site panel.
@@ -191,7 +192,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		bottomPane.add(mineralLegendPane);
 
 		// Create mineral legend label.
-		JLabel mineralLegendLabel = new JLabel("Mineral Legend", JLabel.CENTER);
+		JLabel mineralLegendLabel = new JLabel("Mineral Legend", SwingConstants.CENTER);
 		mineralLegendPane.add(mineralLegendLabel, BorderLayout.NORTH);
 
 		// Create mineral legend scroll panel.

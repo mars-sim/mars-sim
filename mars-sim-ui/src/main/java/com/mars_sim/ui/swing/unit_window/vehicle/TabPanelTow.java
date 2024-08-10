@@ -16,6 +16,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Towing;
@@ -68,7 +69,7 @@ public class TabPanelTow extends TabPanel {
 			mainPane.add(towingLabelPanel);
 			
 			// Create towing label.
-			JLabel towLabel = new JLabel(Msg.getString("TabPanelTow.towing"), JLabel.CENTER); //$NON-NLS-1$
+			JLabel towLabel = new JLabel(Msg.getString("TabPanelTow.towing"), SwingConstants.CENTER); //$NON-NLS-1$
 			towLabel.setFont(StyleManager.getLabelFont());
 			towingLabelPanel.add(towLabel);
 
@@ -81,7 +82,7 @@ public class TabPanelTow extends TabPanel {
 			});
 
 			// Create the towing text label.
-			towingTextLabel = new JLabel(Msg.getString("TabPanelTow.none"), JLabel.LEFT); //$NON-NLS-1$
+			towingTextLabel = new JLabel(Msg.getString("TabPanelTow.none"), SwingConstants.LEFT); //$NON-NLS-1$
 			
 			// Add the towing button or towing text label depending on the situation.
 			Vehicle towedVehicle = ((Towing) vehicle).getTowedVehicle();
@@ -99,7 +100,7 @@ public class TabPanelTow extends TabPanel {
 			mainPane.add(towedLabelPanel);
 
 			// Create towed label.
-			JLabel towedLabel = new JLabel(Msg.getString("TabPanelTow.towedBy"), JLabel.CENTER); //$NON-NLS-1$
+			JLabel towedLabel = new JLabel(Msg.getString("TabPanelTow.towedBy"), SwingConstants.CENTER); //$NON-NLS-1$
 			towedLabel.setFont(StyleManager.getLabelFont());
 			towedLabelPanel.add(towedLabel);
 
@@ -112,7 +113,7 @@ public class TabPanelTow extends TabPanel {
 			});
 
 			// Create towed text label.
-			towedTextLabel = new JLabel(Msg.getString("TabPanelTow.none"), JLabel.LEFT); //$NON-NLS-1$
+			towedTextLabel = new JLabel(Msg.getString("TabPanelTow.none"), SwingConstants.LEFT); //$NON-NLS-1$
 			
 			// Add the towed button or towed text label depending on the situation.
 			if (vehicle.getTowingVehicle() != null) {

@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 /**
  * A wizard panel for the ice or regolith prospecting site.
@@ -96,7 +97,7 @@ class ProspectingSitePanel extends WizardPanel {
 		add(mapPane);
 		
 		// Create the location label.
-		locationLabel = new JLabel("Location: ", JLabel.CENTER);
+		locationLabel = new JLabel("Location: ", SwingConstants.CENTER);
 		locationLabel.setFont(locationLabel.getFont().deriveFont(Font.BOLD));
 		locationLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(locationLabel);

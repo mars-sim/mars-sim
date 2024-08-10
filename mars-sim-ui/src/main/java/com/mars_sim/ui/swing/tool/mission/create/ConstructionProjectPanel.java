@@ -26,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -106,7 +107,7 @@ class ConstructionProjectPanel extends WizardPanel {
 
         // Create construction site selection label.
         JLabel constructionSiteSelectionLabel = new JLabel(
-                "Select Construction Site", JLabel.CENTER);
+                "Select Construction Site", SwingConstants.CENTER);
         constructionSiteSelectionPane.add(constructionSiteSelectionLabel,
                 BorderLayout.NORTH);
 
@@ -139,7 +140,7 @@ class ConstructionProjectPanel extends WizardPanel {
 
         // Create construction project selection label.
         JLabel constructionProjectSelectionLabel = new JLabel(
-                "Select Construction Project", JLabel.CENTER);
+                "Select Construction Project", SwingConstants.CENTER);
         constructionProjectSelectionPane.add(constructionProjectSelectionLabel,
                 BorderLayout.NORTH);
 
@@ -191,7 +192,7 @@ class ConstructionProjectPanel extends WizardPanel {
 
         // Create construction materials label.
         JLabel constructionMaterialsLabel = new JLabel(
-                "Construction Materials Required", JLabel.CENTER);
+                "Construction Materials Required", SwingConstants.CENTER);
         constructionMaterialsPane.add(constructionMaterialsLabel,
                 BorderLayout.NORTH);
 

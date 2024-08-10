@@ -24,6 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
@@ -163,7 +164,7 @@ public class TabPanelOrganization extends TabPanel {
 		content.add(labelPanel, BorderLayout.NORTH);
 
 		// Prepare label
-		JLabel label = new JLabel(Msg.getString("TabPanelStructure.label"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel label = new JLabel(Msg.getString("TabPanelStructure.label"), SwingConstants.CENTER); //$NON-NLS-1$
 		StyleManager.applySubHeading(label);
 		labelPanel.add(label);
 

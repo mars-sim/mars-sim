@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
@@ -233,7 +234,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 		panel.add(sitePanel, BorderLayout.CENTER);
 
 		String phase = site.getPhase().getName();
-		JLabel label = new JLabel("Mission Phase : " + phase, JLabel.CENTER);
+		JLabel label = new JLabel("Mission Phase : " + phase, SwingConstants.CENTER);
 		
 		panel.add(label, BorderLayout.SOUTH);
 		

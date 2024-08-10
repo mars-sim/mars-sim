@@ -29,6 +29,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -86,7 +87,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 		add(availableSupplyPane, BorderLayout.WEST);
 
 		// Create available supply label.
-		availableSupplyLabel = new JLabel("Available supply at ", JLabel.CENTER);
+		availableSupplyLabel = new JLabel("Available supply at ", SwingConstants.CENTER);
 		availableSupplyPane.add(availableSupplyLabel, BorderLayout.NORTH);
 
 		// Create available supply table.
@@ -118,7 +119,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 		amountOuterPanel.add(amountControlPane);
 
 		// Create amount label.
-		JLabel amountLabel = new JLabel("Amount", JLabel.CENTER);
+		JLabel amountLabel = new JLabel("Amount", SwingConstants.CENTER);
 		amountControlPane.add(amountLabel, BorderLayout.NORTH);
 
 		// Create left arrow button.
@@ -194,7 +195,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 		add(cargoPane, BorderLayout.EAST);
 
 		// Create cargo label.
-		JLabel cargoLabel = new JLabel("Cargo", JLabel.CENTER);
+		JLabel cargoLabel = new JLabel("Cargo", SwingConstants.CENTER);
 		cargoPane.add(cargoLabel, BorderLayout.NORTH);
 
 		// Create cargo table.

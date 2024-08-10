@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -81,7 +82,7 @@ extends WizardPanel {
         centerPane.add(projectPane);
         
         // Create the salvage project label.
-        JLabel projectLabel = new JLabel("Buildings and Construction Sites", JLabel.CENTER);
+        JLabel projectLabel = new JLabel("Buildings and Construction Sites", SwingConstants.CENTER);
         projectPane.add(projectLabel, BorderLayout.NORTH);
         
         // Create scroll pane for salvage project selection list.
@@ -116,7 +117,7 @@ extends WizardPanel {
         centerPane.add(partsPane);
         
         // Create the parts label.
-        JLabel partsLabel = new JLabel("Estimated Salvaged Parts", JLabel.CENTER);
+        JLabel partsLabel = new JLabel("Estimated Salvaged Parts", SwingConstants.CENTER);
         partsPane.add(partsLabel, BorderLayout.NORTH);
         
         // Create scroll pane for parts table.

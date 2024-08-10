@@ -145,7 +145,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		executor = Executors.newSingleThreadExecutor();
 		
 		// Initializes map
-		loadNewMapType(MapDataFactory.DEFAULT_MAP_TYPE, NavigatorWindow.getMapResolution());
+		loadNewMapType(MapDataFactory.DEFAULT_MAP_TYPE, navwin.getMapResolution());
 		
 		mapError = false;
 		wait = false;

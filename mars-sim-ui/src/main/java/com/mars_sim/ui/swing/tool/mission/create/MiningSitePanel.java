@@ -26,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -142,7 +143,7 @@ public class MiningSitePanel extends WizardPanel {
 		centerPane.add(selectedSitePane, BorderLayout.CENTER);
 
 		// Create selected site label.
-		JLabel selectedSiteLabel = new JLabel(" At the Selected Mining Site", JLabel.CENTER);
+		JLabel selectedSiteLabel = new JLabel(" At the Selected Mining Site", SwingConstants.CENTER);
 		StyleManager.applySubHeading(selectedSiteLabel);
 		selectedSiteLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		selectedSitePane.add(selectedSiteLabel);
@@ -155,12 +156,12 @@ public class MiningSitePanel extends WizardPanel {
 		selectedSitePane.add(coordPane);
 		
 		// Create longitude label.
-		longitudeLabel = new JLabel("", JLabel.RIGHT);
+		longitudeLabel = new JLabel("", SwingConstants.RIGHT);
 		longitudeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		coordPane.add(longitudeLabel);
 
 		// Create latitude label.
-		latitudeLabel = new JLabel("", JLabel.LEFT);
+		latitudeLabel = new JLabel("", SwingConstants.LEFT);
 		latitudeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		coordPane.add(latitudeLabel);
 
@@ -168,7 +169,7 @@ public class MiningSitePanel extends WizardPanel {
 		selectedSitePane.add(Box.createVerticalStrut(10));
 
 		// Create mineral concentration label.
-		JLabel mineralConcentrationLabel = new JLabel("Estimated Mineral Concentrations:", JLabel.LEFT);
+		JLabel mineralConcentrationLabel = new JLabel("Estimated Mineral Concentrations:", SwingConstants.LEFT);
 		mineralConcentrationLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		selectedSitePane.add(mineralConcentrationLabel);
 
@@ -188,7 +189,7 @@ public class MiningSitePanel extends WizardPanel {
 		mineralConcentrationTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(2));
 		
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+		centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 		mineralConcentrationTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
 				
 		selectedSitePane.add(mineralConcentrationTable.getTableHeader());
@@ -214,7 +215,7 @@ public class MiningSitePanel extends WizardPanel {
 		bottomPane.add(mineralLegendPane, BorderLayout.CENTER);
 
 		// Create mineral legend label.
-		JLabel mineralLegendLabel = new JLabel("Mineral Legend", JLabel.CENTER);
+		JLabel mineralLegendLabel = new JLabel("Mineral Legend", SwingConstants.CENTER);
 		mineralLegendPane.add(mineralLegendLabel, BorderLayout.NORTH);
 
 		// Create mineral legend scroll panel.

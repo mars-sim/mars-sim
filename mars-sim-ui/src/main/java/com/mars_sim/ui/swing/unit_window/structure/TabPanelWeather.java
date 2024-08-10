@@ -11,6 +11,7 @@ import java.awt.FlowLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.Simulation;
@@ -133,17 +134,12 @@ extends TabPanel {
         // Create imgPanel
     	JPanel imgPanel = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 5));
         weatherLabel = new JLabel();
-    	imgPanel.add(weatherLabel, JLabel.CENTER);
+    	imgPanel.add(weatherLabel, SwingConstants.CENTER);
     	centerEastPanel.add(imgPanel, BorderLayout.SOUTH);
 
     	// Prepare temperature panel
         JPanel temperaturePanel = new JPanel(new FlowLayout());
         centerEastPanel.add(temperaturePanel, BorderLayout.CENTER);
-
-        // Prepare temperature label
-//        temperatureValueLabel = new JLabel(StyleManager.DECIMAL_CELCIUS.format(getTemperature()), JLabel.CENTER);
-//        temperatureValueLabel.setOpaque(false);
-//        temperaturePanel.add(temperatureValueLabel);
 
         JPanel metricsPanel = new JPanel(new BorderLayout(5, 5));
         mainPanel.add(metricsPanel, BorderLayout.CENTER);

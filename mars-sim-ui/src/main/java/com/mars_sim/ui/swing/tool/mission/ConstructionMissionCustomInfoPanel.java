@@ -24,6 +24,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
 
@@ -110,7 +111,7 @@ implements ConstructionListener {
         // Add tooltip.
         processPanel.setToolTipText(getToolTipString());
         
-        JLabel progressLabel = new JLabel("Site Completion", JLabel.CENTER);
+        JLabel progressLabel = new JLabel("Site Completion", SwingConstants.CENTER);
         processPanel.add(progressLabel);
         
         JProgressBar progressBar = new JProgressBar();
