@@ -22,40 +22,43 @@ import javax.swing.ImageIcon;
 public class PerformanceTest {
 
 	// Static members.
-//	private static final String VOLCANIC_IMG = "TopographyVolcanic.png";
-//	private static URL imageMapURL = PerformanceTest.class.getResource("/images/" + VOLCANIC_IMG);//VOLCANIC_IMG);
+//	May work on private static final String VOLCANIC_IMG = "TopographyVolcanic.png";
+//	May work on private static URL imageMapURL = PerformanceTest.class.getResource("/images/" + VOLCANIC_IMG);//VOLCANIC_IMG);
 
-	private static final String MAP = "geologyMOLA2880x1440.jpg";//"topo2880x1440.jpg";//"Mars2880x1440.jpg";//"Mars-Shaded-names-2k.jpg";//"rgbmars-spec-2k.jpg"; //"MarsNormalMap-2K.png";
-	private static URL imageMapURL = PerformanceTest.class.getResource("/maps/" + MAP);//VOLCANIC_IMG);
-
+	private static final String MAP = "Mars_Viking_MDIM21_ClrMosaic_1200.jpg";
+	private static URL imageMapURL = PerformanceTest.class.getResource("/maps/" + MAP);
+	
 	private static BufferedImage hugeImage;
 	
 	public static void main(String[] args) throws IOException {
 		hugeImage = ImageIO.read(imageMapURL);
+		
+		// Note: TYPE_4BYTE_ABGR : 6  , // TYPE_3BYTE_BGR : 5
 		int type = hugeImage.getType();
-		System.out.println("Type : " + type); // TYPE_4BYTE_ABGR : 6  , // TYPE_3BYTE_BGR : 5
-	
-//		printArray();
+		System.out.println("Type : " + type); 
+
+		// Print out each pixel's value for examination : printArray();
 		
-//		test();
+		// Test the execution speed of each method
+		test();
 		
-		reproduceImage(hugeImage);
+		// Output an jpg image with or without alpha channel : reproduceImage(hugeImage);
 	}
 	
 	
 	public static void test() {
 
-		System.out.println("Testing convertTo2DUsingGetRGB:");
+		System.out.println("Testing convertTo2DUsingBufferedImageGetRGB:");
 		for (int i = 0; i < 10; i++) {
 			long startTime = System.nanoTime();
-			int[][] result = convertTo2DUsingGetRGB(hugeImage);
+			int[][] result = convertTo2DUsingBufferedImageGetRGB(hugeImage);
 			long endTime = System.nanoTime();
 			System.out.println(String.format("%-2d: %s", (i + 1), toString(endTime - startTime)));
 		}
 
 		System.out.println("");
 
-		System.out.println("Testing FastRGB:");
+		System.out.println("Testing convertTo2DUsingFastRGB:");
 		for (int i = 0; i < 10; i++) {
 			long startTime = System.nanoTime();
 			int[][] result = convertTo2DUsingFastRGB(hugeImage);
@@ -72,38 +75,34 @@ public class PerformanceTest {
 			long endTime = System.nanoTime();
 			System.out.println(String.format("%-2d: %s", (i + 1), toString(endTime - startTime)));
 		}
-        
 		
-//		System.out.println("Testing convertMonochromeImageToArray:");
-//		for (int i = 0; i < 10; i++) {
-//			long startTime = System.nanoTime();
-//			convertMonochromeImageToArray(hugeImage);
-//			long endTime = System.nanoTime();
-//			System.out.println(String.format("%-2d: %s", (i + 1), toString(endTime - startTime)));
-//		}
+		System.out.println("");
 		
-	
-//		System.out.println("Testing FastRGB:");
-//		int x = hugeImage.getWidth();
-//		int y = hugeImage.getHeight();
-//		for (int i = 0; i < 10; i++) {
-//			long startTime = System.nanoTime();
-//			new FastRGB(hugeImage).getRGB(x, y);
-//			long endTime = System.nanoTime();
-//			System.out.println(String.format("%-2d: %s", (i + 1), toString(endTime - startTime)));
-//		}
+		System.out.println("Testing useMota:");
+		for (int i = 0; i < 10; i++) {
+			long startTime = System.nanoTime();
+			int[][] result = useMota(hugeImage);
+			long endTime = System.nanoTime();
+			System.out.println(String.format("%-2d: %s", (i + 1), toString(endTime - startTime)));
+		}	
 		
-//		System.out.println("Testing pixelGrabber:");
-//		ImageIcon mapIcon = new ImageIcon(imageMapURL);
-//		Image mapImage = mapIcon.getImage();
-//		for (int i = 0; i < 10; i++) {
-//			long startTime = System.nanoTime();
-//			pixelGrabber(mapImage);
-//			long endTime = System.nanoTime();
-//			System.out.println(String.format("%-2d: %s", (i + 1), toString(endTime - startTime)));
-//		}
-//		
+		System.out.println("Testing convertMonochromeImageToArray:");
+		for (int i = 0; i < 10; i++) {
+			long startTime = System.nanoTime();
+			int[][] result = convertMonochromeImageToArray(hugeImage);
+			long endTime = System.nanoTime();
+			System.out.println(String.format("%-2d: %s", (i + 1), toString(endTime - startTime)));
+		}
 		
+		System.out.println("Testing pixelGrabber:");
+		ImageIcon mapIcon = new ImageIcon(imageMapURL);
+		Image mapImage = mapIcon.getImage();
+		for (int i = 0; i < 10; i++) {
+			long startTime = System.nanoTime();
+			pixelGrabber(mapImage);
+			long endTime = System.nanoTime();
+			System.out.println(String.format("%-2d: %s", (i + 1), toString(endTime - startTime)));
+		}
 	}
 
 	public static void printGrabberArray() {
@@ -111,7 +110,7 @@ public class PerformanceTest {
 		ImageIcon mapIcon = new ImageIcon(imageMapURL);
 		Image mapImage = mapIcon.getImage();
 		int[] array1 = pixelGrabber(mapImage);
-		int w = 300;//mapImage.getWidth();
+		int w = mapImage.getWidth(null);
 		int fullLength = array1.length;
 		for (int i = 0; i < fullLength; i++) {
 			if (i % w != 0)
@@ -122,23 +121,26 @@ public class PerformanceTest {
 	}
 	
 	public static void printArray() {
+		// Choose one of the 4 methods below : 
 //		int[][] array = convertMonochromeImageToArray(hugeImage);
-		int[][] array = convertTo2DWithoutUsingGetRGB(hugeImage);
-//		int[][] array = convertTo2DUsingGetRGB
+//		int[][] array = convertTo2DWithoutUsingGetRGB(hugeImage);
+//		int[][] array = convertTo2DUsingGetRGB(hugeImage);
+		int[][] array = useMota(hugeImage);
+		
 		int w = array[0].length;
 		int h = array.length;
-		System.out.println(String.format("h is %d   w is %d ", h, w));
+		System.out.println(String.format("h : %d   w : %d ", h, w));
 		
 		for (int y = 0; y < h; y++) {
 			for (int x = 0; x < w; x++) {
-				System.out.print(String.format("%d", array[y][x]));
+				System.out.print(String.format("%d ", array[y][x]));
 			}
 			System.out.println();
 		}
 
 	}
 	
-	private static int[][] convertTo2DUsingGetRGB(BufferedImage image) {
+	private static int[][] convertTo2DUsingBufferedImageGetRGB(BufferedImage image) {
 		int width = image.getWidth();
 		int height = image.getHeight();
 		int[][] result = new int[height][width];
@@ -226,7 +228,7 @@ public class PerformanceTest {
 		final int height = image.getHeight();
 		final boolean hasAlphaChannel = image.getAlphaRaster() != null;
 
-		System.out.println("hasAlphaChannel : " + hasAlphaChannel);
+//		System.out.println("hasAlphaChannel : " + hasAlphaChannel);
 		
 		int[][] result = new int[height][width];
 		if (hasAlphaChannel) {
@@ -237,7 +239,7 @@ public class PerformanceTest {
 				argb += ((int) pixels[pixel + 1] & 0xff); // blue
 				argb += (((int) pixels[pixel + 2] & 0xff) << 8); // green
 				argb += (((int) pixels[pixel + 3] & 0xff) << 16); // red
-				
+			
 //				The Red and Blue channel comments are flipped. 
 //				Red should be +1 and blue should be +3 (or +0 and +2 respectively in the No Alpha code).
 				
@@ -304,8 +306,7 @@ public class PerformanceTest {
 		int h = result.length;
 		
 //		System.out.println(String.format("h is %d   w is %d ", h, w)); // h is 1024   w is 2048 
-		
-		
+			
 	    boolean done = false;
 	    boolean alreadyWentToNextByte = false;
 	    int byteIndex = 0;
@@ -388,13 +389,15 @@ public class PerformanceTest {
 	
 	
 	public static void reproduceImage(BufferedImage image) {
-		int pixels[][] = convertTo2DUsingFastRGB(image);//convertTo2DUsingGetRGB(image);//convertTo2DWithoutUsingGetRGB(image);
+		int pixels[][] = convertTo2DUsingFastRGB(image);
+		// or using convertTo2DUsingGetRGB(image) or convertTo2DWithoutUsingGetRGB(image)
 		 
 		boolean withAlpha = false; // if you need the alpha channel change this to true
 		
 		System.out.println("withAlpha : " + withAlpha);
 		
-		String imgFormat = "jpg";  // if you need the alpha channel change this to png
+		String imgFormat = "jpg";  
+		// if you need the alpha channel change this to png
 		String imgPath   = "testImage." + imgFormat;
 		 
 		BufferedImage newImg = getCustomImage(pixels, withAlpha);
@@ -408,23 +411,20 @@ public class PerformanceTest {
 		}
 	}
 	
-	private static BufferedImage getCustomImage(int[][] pixels, final boolean withAlpha)
-	{
+	private static BufferedImage getCustomImage(int[][] pixels, final boolean withAlpha) {
 	  // Assuming pixels was taken from convertTo2DWithoutUsingGetRGB
 	  // i.e. img.length == pixels.length and img.width == pixels[x].length
-//	  BufferedImage img = new BufferedImage(pixels[0].length, pixels.length, withAlpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
+//	  May use BufferedImage img = new BufferedImage(pixels[0].length, pixels.length, withAlpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
 	  BufferedImage img = new BufferedImage(pixels[0].length, pixels.length, withAlpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_BGR);
 		
 	  
-	  for (int y = 0; y < pixels.length; y++)
-	  {
-	     for (int x = 0; x < pixels[y].length; x++)
-	     {
+	  for (int y = 0; y < pixels.length; y++)  {
+	     for (int x = 0; x < pixels[y].length; x++) {
 	        if (withAlpha)
 	           img.setRGB(x, y, pixels[y][x]);
 	        else {
 	           int pixel = pixels[y][x];
-//	           int alpha = (pixel >> 24 & 0xff);
+//	           May use int alpha = (pixel >> 24 & 0xff);
 	           int red   = (pixel >> 16 & 0xff);
 	           int green = (pixel >> 8 & 0xff);
 	           int blue  = (pixel & 0xff);
