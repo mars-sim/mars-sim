@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * UserOutbound.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -11,7 +11,8 @@ package com.mars_sim.console.chat;
 public interface UserOutbound {
 
 	/**
-	 * A specialkey has been pressed by the user; this is treated as an out of bound communication.
+	 * A special key has been pressed by the user; this is treated as an out of bound communication.
+	 * 
 	 * @param keyStroke Keystroke
 	 */
 	void keyStrokeApplied(String keyStroke);

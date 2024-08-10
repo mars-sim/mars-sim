@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BedCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -32,7 +32,8 @@ public class BedCommand extends AbstractSettlementCommand {
 	}
 
 	/** 
-	 * Output the current immediate location of the Unit
+	 * Outputs the current immediate location of the Unit.
+	 * 
 	 * @return 
 	 */
 	@Override

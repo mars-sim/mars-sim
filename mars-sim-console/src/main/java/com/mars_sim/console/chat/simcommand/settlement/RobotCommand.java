@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RobotCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -20,7 +20,7 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 
 /**
- * Command to display bed allocation in a Settlement
+ * Command to display bed allocation in a Settlement.
  * This is a singleton.
  */
 public class RobotCommand extends AbstractSettlementCommand {
@@ -32,7 +32,8 @@ public class RobotCommand extends AbstractSettlementCommand {
 	}
 
 	/** 
-	 * Output the details of the robots
+	 * Outputs the details of the robots.
+	 * 
 	 * @return 
 	 */
 	@Override

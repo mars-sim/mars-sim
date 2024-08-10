@@ -22,7 +22,6 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.data.History;
-import com.mars_sim.core.data.MSolDataItem;
 import com.mars_sim.core.data.MSolDataLogger;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.MarsSurface;
@@ -82,7 +81,6 @@ public abstract class Vehicle extends Unit
 	private static final SimLogger logger = SimLogger.getLogger(Vehicle.class.getName());
 	
 	private static final int MAX_NUM_SOLS = 14;
-	private static final int SPEED_POWER_CHECK_FREQ = 5;
 	
 	private static final double MAXIMUM_RANGE = 10_000;
 	
@@ -122,10 +120,10 @@ public abstract class Vehicle extends Unit
 	/** Vehicle's associated Settlement. */
 	private int associatedSettlementID;
 	
-	/** The average road load power of the vehicle [kph]. */
-	private double averageRoadLoadSpeed;
-	/** The average road load power of the vehicle [kW]. */
-	private double averageRoadLoadPower;		
+//	/** The average road load power of the vehicle [kph]. */
+//	private double averageRoadLoadSpeed;
+//	/** The average road load power of the vehicle [kW]. */
+//	private double averageRoadLoadPower;		
 	/** Parked facing (degrees clockwise from North). */
 	private double facingParked;
 	/** The Base Lifetime Wear in msols **/
@@ -904,9 +902,9 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @return
 	 */
-	public double getAverageRoadLoadSpeed() {
-		return averageRoadLoadSpeed;
-	}
+//	public double getAverageRoadLoadSpeed() {
+//		return averageRoadLoadSpeed;
+//	}
 	
 	/**
 	 * Gets the average road load power of the vehicle [kph].
@@ -922,9 +920,9 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @return
 	 */
-	public double getAverageRoadLoadPower() {
-		return averageRoadLoadPower;
-	}
+//	public double getAverageRoadLoadPower() {
+//		return averageRoadLoadPower;
+//	}
 	
 	/**
 	 * Gets the average road speed power of the vehicle [kph].
@@ -1518,39 +1516,6 @@ public abstract class Vehicle extends Unit
 			if (remainder == RadiationExposure.RADIATION_CHECK_FREQ - 1) {
 				RadiationStatus newExposed = RadiationStatus.calculateChance(pulse.getElapsed());
 				setExposed(newExposed);
-			}
-
-			//  Whenever a vehicle is on the road, recalculate the following
-			remainder = msol % SPEED_POWER_CHECK_FREQ;
-			if (remainder > SPEED_POWER_CHECK_FREQ - 2 
-					&& getPrimaryStatus() == StatusType.MOVING) {
-				int count = 0;
-				int sum = 0;
-	
-				for (int sol: roadSpeedHistory.getHistory().keySet()) {
-					List<MSolDataItem<Integer>> speeds = roadSpeedHistory.getHistory().get(sol);
-					for (MSolDataItem<Integer> s: speeds) {
-						count++;
-						sum += s.getData();
-					}
-				}
-				
-				if (count > 0 && sum > 0)
-					averageRoadLoadSpeed = sum / count;
-				
-				count = 0;
-				sum = 0;
-				
-				for (int sol: roadPowerHistory.getHistory().keySet()) {
-					List<MSolDataItem<Integer>> powers = roadPowerHistory.getHistory().get(sol);
-					for (MSolDataItem<Integer> s: powers) {
-						count++;
-						sum += s.getData();
-					}
-				}
-				
-				if (count > 0 && sum > 0)
-					averageRoadLoadPower = sum / count;
 			}
 		}
 		

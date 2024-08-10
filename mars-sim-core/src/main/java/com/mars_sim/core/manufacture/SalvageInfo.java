@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SalvagaInfo.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-10
  * @author Scott Davis
  */
 
@@ -35,7 +35,8 @@ public class SalvageInfo implements Serializable {
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
     /**
-     * Constructor
+     * Constructor.
+     * 
      * @param item the salvaged item.
      * @param processInfo the salvage process info.
      */
@@ -50,7 +51,8 @@ public class SalvageInfo implements Serializable {
     }
     
     /**
-     * Finish the salvage.
+     * Finishes the salvage.
+     * 
      * @param partsSalvaged a map of the parts salvaged and their number or an empty map if none.
      */
     public void finishSalvage(Map<Integer, Integer> partsSalvaged, MarsTime finishTime) {
@@ -60,6 +62,7 @@ public class SalvageInfo implements Serializable {
     
     /**
      * Gets the salvagable item.
+     * 
      * @return item.
      */
     public Salvagable getItem() {
@@ -68,6 +71,7 @@ public class SalvageInfo implements Serializable {
     
     /**
      * Gets the salvage process info.
+     * 
      * @return process info.
      */
     public SalvageProcessInfo getProcessInfo() {
@@ -76,6 +80,7 @@ public class SalvageInfo implements Serializable {
     
     /**
      * Gets the time when the salvage process is started.
+     * 
      * @return start time.
      */
     public MarsTime getStartTime() {
@@ -84,6 +89,7 @@ public class SalvageInfo implements Serializable {
     
     /**
      * Gets the time when the salvage process is finished.
+     * 
      * @return finish time or null if not finished yet.
      */
     public MarsTime getFinishTime() {
@@ -92,6 +98,7 @@ public class SalvageInfo implements Serializable {
     
     /**
      * Gets a map of the parts salvaged and their number from this item.
+     * 
      * @return map of parts and their number or empty map if salvage not finished.
      */
     public Map<Integer, Integer> getPartsSalvaged() {
@@ -100,6 +107,7 @@ public class SalvageInfo implements Serializable {
     
     /**
      * Gets the settlement where the salvage took or is taking place.
+     * 
      * @return settlement
      */
     public Settlement getSettlement() {
@@ -107,7 +115,7 @@ public class SalvageInfo implements Serializable {
     }
 	
     /**
-     * Prepare object for garbage collection.
+     * Prepares object for garbage collection.
      */
     public void destroy() {
         item = null;

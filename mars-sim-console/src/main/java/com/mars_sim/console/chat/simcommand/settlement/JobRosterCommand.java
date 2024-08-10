@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * JobRosterCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -41,7 +41,8 @@ public class JobRosterCommand extends AbstractSettlementCommand {
 
 
 	/** 
-	 * Output the current immediate location of the Unit
+	 * Outputs the current immediate location of the Unit.
+	 * 
 	 * @return 
 	 */
 	@Override
@@ -78,7 +79,7 @@ public class JobRosterCommand extends AbstractSettlementCommand {
 	}
 	
 	/**
-	 * Returns a map of job with a list of person occupying that position
+	 * Returns a map of job with a list of person occupying that position.
 	 * 
 	 * @param s
 	 * @returnMind().getJob()

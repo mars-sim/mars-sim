@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PersonBuilderImpl.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-10
  * @author Manny Kung
  */
 
@@ -55,7 +55,7 @@ public class PersonBuilder {
 	}
 
 	/**
-	 * Sets the skills of a person
+	 * Sets the skills of a person.
 	 * 
 	 * @param skillMap2
 	 * @return {@link PersonBuilder<>}
@@ -109,7 +109,7 @@ public class PersonBuilder {
 					break;
 		
 			
-			// Mechanics skill is sought after for repairing malfunctions
+			    // Mechanics skill is sought after for repairing malfunctions
 				case MATERIALS_SCIENCE, MECHANICS:
 					skillLevel = getInitialSkillLevel(0, 45);
 					break;

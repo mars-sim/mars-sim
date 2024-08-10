@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RunnerData.java
- * @version 3.1.0 2018-09-24
+ * @date 2024-08-10
  * @author Manny Kung
  */
 
@@ -25,6 +25,7 @@ public class RunnerData {
     public Map<String, String> getSessionData() {
         return sessionData;
     }
+    
     public void setSessionData(Map<String, String> sessionData) {
         this.sessionData = sessionData;
     }

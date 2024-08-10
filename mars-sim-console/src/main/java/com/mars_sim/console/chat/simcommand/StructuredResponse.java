@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * StructuredResponse.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -108,7 +108,7 @@ public class StructuredResponse {
 	}
 
 	/**
-	 * Separator
+	 * Appends a separator.
 	 */
 	public void appendSeperator() {
 		buffer.append(" --------------------------------------------");
@@ -116,11 +116,12 @@ public class StructuredResponse {
 	}
 
 	/**
-	 * Add a table heading and prepares for table. The number of heading strings defines how many
+	 * Adds a table heading and prepares for table. The number of heading strings defines how many
 	 * columns the table contains. Table must have at least 2 columns including the 1st fixed one.
 	 * The headings columns contains String to define the columns; if a String is followed by an integer
 	 * then the int specifies the width of that column. 
 	 * This has no cell wrapping.
+	 * 
 	 * @param heading1 1st column heading
 	 * @param width Width of 1st column
 	 * @param headings A variab le list of heading defining the columns
@@ -130,10 +131,11 @@ public class StructuredResponse {
 	}
 
 	/**
-	 * Add a table heading and prepares for table. The number of heading strings defines how many
+	 * Adds a table heading and prepares for table. The number of heading strings defines how many
 	 * columns the table contains. Table must have at least 2 columns including the 1st fixed one.
 	 * The headings columns contains String to define the columns; if a String is followed by an integer
-	 * then the int specifies the width of that column. 
+	 * then the int specifies the width of that column.
+	 *  
 	 * @param wrapContents Wrap the conents of the cells to fit in the column width
 	 * @param heading1 1st column heading
 	 * @param width Width of 1st column
@@ -183,8 +185,9 @@ public class StructuredResponse {
 	}
 
 	/**
-	 * Add a table row with a list of values. The total numebr of values must equals the
+	 * Adds a table row with a list of values. The total numebr of values must equals the
 	 * number of columns previously defined in {@link #appendTableHeading(String, int, Object...)}
+	 * 
 	 * @param label Label for the entry
 	 * @param values Other column values.
 	 */
@@ -267,7 +270,7 @@ public class StructuredResponse {
 	}
 
 	/**
-	 * Split a string into 2 parts where the first is no bigger than the width.
+	 * Splits a string into 2 parts where the first is no bigger than the width.
 	 * If the source string is less than the width then a null is returned as no
 	 * split is needed.
 	 * 
@@ -299,7 +302,8 @@ public class StructuredResponse {
 	}
 
 	/**
-	 * Write a line of text
+	 * Writes a line of text.
+	 * 
 	 * @param string
 	 */
 	public void appendText(String string) {
@@ -308,7 +312,8 @@ public class StructuredResponse {
 	}
 	
 	/**
-	 * Get the text output of this response
+	 * Gets the text output of this response.
+	 * 
 	 * @return
 	 */
 	public String getOutput() {

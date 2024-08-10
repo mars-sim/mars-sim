@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * UserChannel.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -10,14 +10,16 @@ package com.mars_sim.console.chat;
 public interface UserChannel {
 
 	/**
-	 * Get some text input from the user in response to a prompt
+	 * Gets some text input from the user in response to a prompt.
+	 * 
 	 * @param prompt Prompt to display
 	 * @return Entered text
 	 */
 	public String getInput(String prompt);
 		
 	/**
-	 * Display text followed by a new line to the user
+	 * Displays text followed by a new line to the user.
+	 * 
 	 * @param text
 	 */
 	public void println(String text);
@@ -34,22 +36,25 @@ public interface UserChannel {
 	public void close();
 
 	/**
-	 * Add listener for the user pressing a special keystroke
+	 * Adds listener for the user pressing a special keystroke.
+	 * 
 	 * @param keyStroke Key to listen for
 	 * @param listener Handler
-	 * @param interuptExecution The handler can interupt a running command; only one should be defined 
+	 * @param interuptExecution The handler can interrupt a running command; only one should be defined 
 	 * @return Was the handler registered
 	 */
 	boolean registerHandler(String keyStroke, UserOutbound listener, boolean interuptExecution);
 
 	/**
-	 * Get the input entered so far but not committed.
+	 * Gets the input entered so far but not committed.
+	 * 
 	 * @return Input so far
 	 */
 	public String getPartialInput();
 
 	/**
-	 * Replace any text the user has entered with a new message.
+	 * Replaces any text the user has entered with a new message.
+	 * 
 	 * @param replacement
 	 */
 	public void replaceUserInput(String replacement);

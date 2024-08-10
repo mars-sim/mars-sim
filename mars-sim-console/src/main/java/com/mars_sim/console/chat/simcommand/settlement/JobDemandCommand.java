@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * JobDemandCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -36,7 +36,7 @@ public class JobDemandCommand extends AbstractSettlementCommand {
 	}
 
 	/** 
-	 * Output the current immediate location of the Unit
+	 * Outputs the current immediate location of the Unit.
 	 */
 	@Override
 	protected boolean execute(Conversation context, String input, Settlement settlement) {

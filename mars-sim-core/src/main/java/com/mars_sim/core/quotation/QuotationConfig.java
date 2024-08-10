@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * quotationConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-10
  * @author Manny Kung
  */
 package com.mars_sim.core.quotation;
@@ -33,7 +33,7 @@ public class QuotationConfig implements Serializable {
 	private Map<Integer, Quotation> quotations;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param quotationDoc DOM document
 	 */
@@ -76,7 +76,7 @@ public class QuotationConfig implements Serializable {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		quotationDoc = null;

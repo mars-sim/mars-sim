@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * LocationCodeType.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-10
  * @author Manny Kung
  */
 
@@ -34,12 +34,15 @@ public enum LocationCodeType {
 	CHANNEL_3			(600),
 
 	AIRLOCK				(10),
-//	LAB					(20),
-//	X					(30),
-//	Y					(40),
-//	Z	 				(50),
-//	XX					(60),	
 	
+	/**
+	 * 	LAB					(20),
+	 * 	X					(30),
+	 * 	Y					(40),
+	 * 	Z	 				(50),
+	 * 	XX					(60),	
+	 */
+
 	EARTH 				(20_000),
 	MOON 				(30_000),
 	PHOBOS 				(40_000),
@@ -64,18 +67,17 @@ public enum LocationCodeType {
 	public final int getCode() {
 		return code;
 	}
-
   
     public static LocationCodeType valueOf(int type) {
         return (LocationCodeType) map.get(type);
     }
     
-//	@Override
-//	public final String toString() {
-//		return getName();
-//	}
+	@Override
+	public final String toString() {
+		return getCode() + "";
+	}
 	
-//	public static LocationCodeType getType(String s) {
-//		return valueOf(s.toUpperCase().replace(" ", "_"));
-//	}
+	public static LocationCodeType getType(String s) {
+		return valueOf(s.toUpperCase().replace(" ", "_"));
+	}
 }

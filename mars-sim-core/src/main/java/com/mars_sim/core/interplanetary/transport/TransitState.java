@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TransitState.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-10
  * @author stpa
  */
 
@@ -23,7 +23,9 @@ public enum TransitState {
 		this.name = name;
 	}
 
-	/** gets the internationalized name for display in user interface. */
+	/** 
+	 * Gets the internationalized name for display in user interface. 
+	 */
 	public String getName() {
 		return this.name;
 	}

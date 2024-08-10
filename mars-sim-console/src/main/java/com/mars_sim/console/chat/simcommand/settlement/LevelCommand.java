@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * LevelCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -46,22 +46,22 @@ public class LevelCommand extends AbstractSettlementCommand {
 			int level = -1;
 			switch (subCommand) {
 			case REPAIR:
-				levelName = "Outstanding Repair's Level of Effort";
+				levelName = "Outstanding Repair's Level of effort";
 				level = goodsManager.getRepairLevel();
 				break;
 				
 			case MAINTENANCE:
-				levelName = "Outstanding Maintenance Level of Effort";
+				levelName = "Outstanding Maintenance Level of effort";
 				level = goodsManager.getMaintenanceLevel();
 				break;
 
 			case EVA:
-				levelName = "Outstanding EVA Suit production Effort";
+				levelName = "Outstanding EVA Suit production effort";
 				level = goodsManager.getEVASuitLevel();
 				break;
 			
 			default:
-				context.println("Sorry I don;t understans that level : " + subCommand);
+				context.println("Sorry I don't understans that level : " + subCommand);
 				break;
 			}
 	

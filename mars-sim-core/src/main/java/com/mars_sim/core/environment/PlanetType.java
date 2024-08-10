@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PlanetType.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-10
  * @author Manny Kung
  */
 
@@ -17,7 +17,7 @@ public enum PlanetType {
 
 	private final double mass;
 	private final double radius;
-	private final double surfaceGravity; // m/s^2
+	private final double surfaceGravity;
 	private static final double G = 6.67300E-11; 
 	
 	/** hidden constructor. */
@@ -29,7 +29,8 @@ public enum PlanetType {
 	}
 
 	public final String getData() {
-		return toString(); // will return the uppercase string of EARTH or MARS
+		// will return the uppercase string of EARTH or MARS
+		return toString(); 
 	}
 	
 	public double getMass() {
@@ -43,9 +44,4 @@ public enum PlanetType {
 	public double getSurfaceGravity() {
 		return surfaceGravity;
 	}
-	
-	//@Override
-	//public final String toString() {
-	//	return getName();
-	//}
 }

@@ -23,7 +23,6 @@ import com.mars_sim.mapdata.location.Coordinates;
 
 /**
  * The LocationTag class stores the location information of an object.
- *
  */
 public class LocationTag implements LocationState, Serializable {
 
@@ -406,7 +405,7 @@ public class LocationTag implements LocationState, Serializable {
 	}
 
 	/**
-	 * Checks if an unit is in the vicinity of a settlement
+	 * Checks if an unit is in the vicinity of a settlement.
 	 *
 	 * @return true if it is
 	 */
@@ -426,7 +425,7 @@ public class LocationTag implements LocationState, Serializable {
 	}
 
 	/*
-	 * Gets the unit's location state type
+	 * Gets the unit's location state type.
 	 */
 	public LocationStateType getType() {
 		return unit.getLocationStateType();
@@ -435,7 +434,6 @@ public class LocationTag implements LocationState, Serializable {
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

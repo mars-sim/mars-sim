@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * UnitMalfunctionCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -24,7 +24,8 @@ import com.mars_sim.core.malfunction.Malfunctionable;
 public class UnitMalfunctionCommand extends AbstractUnitCommand {
 
 	/**
-	 * Create a command that is assigned to a command group
+	 * Creates a command that is assigned to a command group.
+	 * 
 	 * @param group
 	 */
 	public UnitMalfunctionCommand(String group) {

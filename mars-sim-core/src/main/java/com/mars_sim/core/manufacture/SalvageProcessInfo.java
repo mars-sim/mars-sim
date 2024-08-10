@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SalvageProcessInfo.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-10
  * @author Scott Davis
  */
 package com.mars_sim.core.manufacture;
@@ -31,7 +31,8 @@ public class SalvageProcessInfo extends ProcessInfo {
 	}
 
 	/**
-	 * Returns the salvaged item name
+	 * Returns the salvaged item name.
+	 * 
 	 * @return
 	 */
 	public String getItemName() {
@@ -39,7 +40,8 @@ public class SalvageProcessInfo extends ProcessInfo {
 	}
 
 	/**
-	 * Get the type of item being salvaged
+	 * Gets the type of item being salvaged.
+	 * 
 	 * @return
 	 */
 	public ItemType getType() {

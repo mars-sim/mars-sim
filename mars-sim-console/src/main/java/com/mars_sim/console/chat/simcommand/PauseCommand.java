@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PauseCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 

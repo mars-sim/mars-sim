@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * StopCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -37,7 +37,7 @@ public class StopCommand extends ChatCommand {
 			System.exit(0);
         }
         else {
-        	context.println("OK, exit skipped");
+        	context.println("OK, exit skipped.");
         }
         return true;
 	}

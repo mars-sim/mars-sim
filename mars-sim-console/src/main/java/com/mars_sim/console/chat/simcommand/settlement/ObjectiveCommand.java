@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ObjectiveCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2024-08-10
  * @author Barry Evans
  */
 
@@ -13,7 +13,7 @@ import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 
 /**
- * Command to display settlement objective
+ * Command to display settlement objective.
  * This is a singleton.
  */
 public class ObjectiveCommand extends AbstractSettlementCommand {
@@ -26,7 +26,8 @@ public class ObjectiveCommand extends AbstractSettlementCommand {
 	}
 
 	/** 
-	 * Output the current immediate location of the Unit
+	 * Outputs the current immediate location of the Unit.
+	 * 
 	 * @return 
 	 */
 	@Override

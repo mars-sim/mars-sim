@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SalvageProcess.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-10
  * @author Scott Davis
  */
 package com.mars_sim.core.manufacture;
@@ -25,7 +25,8 @@ public class SalvageProcess implements Serializable {
     private double averageSkillLevel;
     
     /**
-     * Constructor
+     * Constructor.
+     * 
      * @param info information about the salvage process.
      * @param workshop the manufacturing workshop where the salvage is taking place.
      */
@@ -39,6 +40,7 @@ public class SalvageProcess implements Serializable {
     
     /**
      * Gets the information about the salvage process.
+     * 
      * @return process information
      */
     public SalvageProcessInfo getInfo() {
@@ -47,6 +49,7 @@ public class SalvageProcess implements Serializable {
     
     /**
      * Gets the remaining work time.
+     * 
      * @return work time (millisols)
      */
     public double getWorkTimeRemaining() {
@@ -55,6 +58,7 @@ public class SalvageProcess implements Serializable {
     
     /**
      * Adds work time to the process.
+     * 
      * @param workTime work time (millisols)
      * @param skill the material science skill used for the work.
      */
@@ -73,6 +77,7 @@ public class SalvageProcess implements Serializable {
 
     /**
      * Gets the manufacture building function.
+     * 
      * @return manufacture building function.
      */
     public Manufacture getWorkshop() {
@@ -81,6 +86,7 @@ public class SalvageProcess implements Serializable {
     
     /**
      * Gets the salvaged unit.
+     * 
      * @return salvaged unit.
      */
     public Unit getSalvagedUnit() {
@@ -90,6 +96,7 @@ public class SalvageProcess implements Serializable {
     /**
      * Gets the average material science skill level
      * used during the salvage process.
+     * 
      * @return skill level.
      */
     public double getAverageSkillLevel() {
@@ -97,7 +104,7 @@ public class SalvageProcess implements Serializable {
     }
 
     /**
-     * Prepare object for garbage collection.
+     * Prepares object for garbage collection.
      */
     public void destroy() {
         workshop = null;
