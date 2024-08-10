@@ -127,8 +127,8 @@ import com.mars_sim.tools.util.RandomUtil;
  
 
 	 /**
-	  * Adjusts the speed of the vehicle (Accelerates or Decelerate) and possibly use the fuel or 
-	  * battery reserve or both to speed up or slow down the vehicle.
+	  * Consumes the fuel and/or battery power to propel the vehicle.
+	  * Adjusts the speed and distance travelled.
 	  *
 	  * @param hrsTime
 	  * @param distToCover the distance that can be covered [in km]
@@ -154,14 +154,14 @@ import com.mars_sim.tools.util.RandomUtil;
 		 double vMS = vKPH / KPH_CONV;
 	  
 		 if (vKPH < 0 || vMS < 0) {
-			 logger.log(vehicle, Level.INFO, 0, "Final speed was negative (" 
+			 logger.log(vehicle, Level.INFO, 10_000, "Final speed -ve (" 
 					 +  Math.round(vKPH * 1000.0)/1000.0 + " kph). Reset back to zero.");
 			 vKPH = 0;
 			 vMS = 0;
 		 }
 			
 		 if (uKPH < 0 || uMS < 0) {
-			 logger.log(vehicle, Level.INFO, 0, "Initial speed was negative (" 
+			 logger.log(vehicle, Level.INFO, 10_000, "Initial speed -ve (" 
 					 +  Math.round(uKPH * 1000.0)/1000.0 + " kph). Reset back to zero.");
 			 uKPH = 0;
 			 uMS = 0;
@@ -260,6 +260,7 @@ import com.mars_sim.tools.util.RandomUtil;
 			 double multiplier = 1 + (int)(angle / Math.PI / 32); 
 
 			 double height = 0;
+			 // if (angle == 0)
 			 String caseText = "Case A: Tilt forward at same height - ";
 			 if (angle > 0) {
 				 // Case C: tilt forward ascent
@@ -267,7 +268,7 @@ import com.mars_sim.tools.util.RandomUtil;
 				 caseText = "Case C: Tilt forward & ascent - ";
 			 } else if (angle < 0) {
 				 // Case B: tilt forward descent
-				 height = STEP_DOWN_HEIGHT * multiplier;
+				 height = - STEP_DOWN_HEIGHT * multiplier;
 				 
 				 caseText = "Case B: Tilt forward & descent - ";
 			 }
@@ -301,7 +302,7 @@ import com.mars_sim.tools.util.RandomUtil;
 		 if (vMS > 0)
 			 aveForce = avePower / vMS;
 		 
-		 logger.log(vehicle, Level.INFO, 0,  
+		 logger.log(vehicle, Level.INFO, 10_000,  
 				 "accelSpeedUp: " + DECIMAL3_M_S2.format(accelSpeedUp) + TWO_WHITESPACES
 				 + "aveForce: " + DECIMAL2_N.format(aveForce) + TWO_WHITESPACES
 				 + "avePower: " + DECIMAL2_W.format(avePower) + TWO_WHITESPACES
@@ -320,7 +321,7 @@ import com.mars_sim.tools.util.RandomUtil;
 			 double newVKPH = newVMS * KPH_CONV;		 
 			 double newDistanceTravelled = uMS + newVMS * secs;
 			 
-			 logger.log(vehicle, Level.INFO, 0, "Scenario 0: Regen mode - "
+			 logger.log(vehicle, Level.INFO, 10_000, "Scenario 0: Regen mode - "
 					 + "avePower: " 
 					 	+ DECIMAL3_N.format(avePower) + " -> " + DECIMAL3_N.format(newAvePower) + TWO_WHITESPACES
 					 + "seconds: " 	+ DECIMAL3_SEC.format(secs) + TWO_WHITESPACES
@@ -351,13 +352,19 @@ import com.mars_sim.tools.util.RandomUtil;
 			 
 			 boolean byBatteryOnly = false;
 			 
-			 int rand = RandomUtil.getRandomInt(4);
+			 double percent = battery.getBatteryLevel();
 			 
-			 if (rand == 0) {
-				 // For now, set 20% of chance to use battery power only
+			 if (percent == 100.0) {
 				 byBatteryOnly = true;
 			 }
-		
+			 else {
+				 int rand = RandomUtil.getRandomInt(100);
+				 
+				 if (rand < percent / 8) {
+					 // Set the chance to 1/8 of the battery percent level
+					 byBatteryOnly = true;
+				 }
+			 }
 		 
 			 // Scenario 1: try using fuel first to fulfill the energy expenditure 
 
@@ -370,7 +377,7 @@ import com.mars_sim.tools.util.RandomUtil;
 				 
 				 // Future: Will need to continue to model how nuclear-powered engine would work 
 				 
-				 logger.log(vehicle, Level.INFO, 0,  "Scenario 1A1: Nuclear powered or solar powered - " 
+				 logger.log(vehicle, Level.INFO, 10_000,  "Scenario 1A1: Nuclear powered or solar powered - " 
 						 + "u -> v: " 			+ DECIMAL3_KPH.format(uKPH) + " -> "
 	 						+ DECIMAL3_KPH.format(vKPH) + TWO_WHITESPACES   
 						 + "energyByBattery: " + DECIMAL3_WH.format(energyByBattery) + TWO_WHITESPACES				
@@ -393,7 +400,7 @@ import com.mars_sim.tools.util.RandomUtil;
 				 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
 				 * delete any of them. Needed for testing when new features are added in future. Thanks !
 				 */
-				 logger.log(vehicle, Level.INFO, 0,  
+				 logger.log(vehicle, Level.INFO, 10_000,  
 						 "Scenario 1A2: Enough fuel - " 
 								 + "fuelNeeded: " +  DECIMAL3_KG.format(fuelNeeded)  + TWO_WHITESPACES	
 								 + "u -> v: " 			+ DECIMAL3_KPH.format(uKPH) + " -> "
@@ -445,75 +452,51 @@ import com.mars_sim.tools.util.RandomUtil;
 				 if (byBatteryOnly || remainingFuel <= LEAST_AMOUNT) {
 					 // Scenario 1B1: Ran out of fuel or switch to battery power.
 					 
-						logger.log(vehicle, Level.INFO, 0,  
+						logger.log(vehicle, Level.INFO, 10_000,  
 								"Scenario 1B1: No fuel. Battery only - " 				
 								+ "energyByBattery -> energySuppliedByBattery: " 
 									+ DECIMAL3_WH.format(energyByBattery) + " -> "
 									+ DECIMAL3_WH.format(energySuppliedByBattery) + TWO_WHITESPACES
 								+ "Battery: " + DECIMAL3_KWH.format(battery.getCurrentEnergy()));
 						
-					 double[] result = propulsion.propelBatteryOnly("Scenario 1B1: accelMotor > 0. Battery only.  ",
-							 aveForce, energySuppliedByBattery, secs, energyByFuel, uMS, mass);
+					 double[] result = propulsion.propelBatteryOnly("Scenario 1B1: Battery only.  ",
+							 aveForce, energySuppliedByBattery, secs, uMS, mass);
 					 
 					 avePower = result[0]; 
 					 vKPH = result[1]; 
 					 distanceTravelled = result[2]; 
-					 energyByBattery = result[3];				
+					 
+					 energyByBattery = energySuppliedByBattery;				
 				 }	
 				 
 				 else if (batteryEnergyDeficit <= 0 && aveForce > 0) {
 					 // Energy expenditure is met. It's done.
-					 // Scenario 1B1: fuel can fulfill some energy expenditure but not all. Battery provides the rest
+					 // Scenario 1B2: fuel can fulfill some energy expenditure but not all. Battery provides the rest
 					 
-					 // Recalculate the new ave power W
-					 // W = Wh / s * 3600 J / Wh
-					 double newAvePower = energySuppliedByBattery / secs * JOULES_PER_WH;	 
-					 // Recalculate the new overall energy expenditure [in Wh]
-					 overallEnergyUsed = energySuppliedByBattery + energyByFuel;
-	 
-					 double newVMS = (newAvePower - avePower) / aveForce + vMS;
-					 double newVKPH = newVMS * KPH_CONV;
-					 
-					 // Recompute the new distance it could travel
-					 distanceTravelled = vKPH * hrsTime;
-					 
-					 /*
-					  * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
-					  * delete any of them. Needed for testing when new features are added in future. Thanks !
-					  */
-					logger.log(vehicle, Level.INFO, 0,  
-							"Scenario 1B2: Some fuel. Rest is battery - " 
-								+ "fuelNeeded: " +  DECIMAL3_KG.format(fuelNeeded)  + TWO_WHITESPACES	
-								+ "u -> v: " 			+ DECIMAL3_KPH.format(uKPH) + " -> "
-				 						+ DECIMAL3_KPH.format(newVKPH) + TWO_WHITESPACES  
-								+ "old vKPH: " 	+ DECIMAL3_KPH.format(vKPH) + TWO_WHITESPACES
-								+ "energyByFuel: " + DECIMAL3_WH.format(energyByFuel) + TWO_WHITESPACES					
-								 + "energyByBattery: " + DECIMAL3_WH.format(energyByBattery) + TWO_WHITESPACES
-								 + "Battery: " 			+ DECIMAL3_KWH.format(battery.getCurrentEnergy())	
-								 + "overallEnergyUsed: " + DECIMAL3_WH.format(overallEnergyUsed) + TWO_WHITESPACES						 
-								 + "avePower: " 			+ DECIMAL2_W.format(avePower) + TWO_WHITESPACES		
-								 + "newAvePower: " 			+ DECIMAL2_W.format(newAvePower) + TWO_WHITESPACES	
-								 + "distanceTravelled: " + DECIMAL3_KM.format(distanceTravelled) + TWO_WHITESPACES
-								 + "seconds: " + DECIMAL3_SEC.format(secs) + TWO_WHITESPACES);
+					 double[] result = propulsion.propelWithBothFuelNBattery(
+							 "Scenario 1B2: Some fuel some battery - ",
+							 aveForce, avePower, energySuppliedByBattery, secs, 
+							 energyByFuel, uMS, vMS, mass);
 				
-					 vKPH = newVKPH;
-					 avePower = newAvePower;
-					// Equate energyByBattery to energySuppliedByBattery in order to add to odometer easily
-					energyByBattery = energySuppliedByBattery;
-						 
+					 avePower = result[0]; 
+					 vKPH = result[1]; 
+					 distanceTravelled = result[2];
+					 
+					 energyByBattery = energySuppliedByBattery;
 				 }
 				 else {
 					 // Energy expenditure is NOT met. Need to cut down the speed and power. 
-					 // Scenario 1B2: fuel can fulfill some energy expenditure but not all. Battery cannot provide the rest
+					 // Scenario 1B3: fuel can fulfill some energy expenditure but not all. Battery cannot provide the rest
 					 
 					 double[] result = propulsion.cutDownSpeedNPower(
 							 "Scenario 1B3: Fuel and/or energy deficit. Slowing down - ",
-							 energySuppliedByBattery, secs, energyByFuel, uMS, mass);
+							 aveForce, energySuppliedByBattery, secs, energyByFuel, uMS, mass);
 					 
 					 avePower = result[0]; 
 					 vKPH = result[1]; 
-					 distanceTravelled = result[2]; 
-					 energyByBattery = result[3]; 
+					 distanceTravelled = result[2];
+					 
+					 energyByBattery = energySuppliedByBattery;	
 		 
 				 } // end of Scenario 1B2
 			 } // end of Scenario 1B
@@ -675,7 +658,7 @@ import com.mars_sim.tools.util.RandomUtil;
 //		 double distanceTravelled = vKPH * hrsTime;
 		 // Record this regen energy [Wh] as cache
 //		 regenEnergyBuffer = energyforCharging;	 
-		 logger.log(vehicle, Level.INFO, 0,  
+		 logger.log(vehicle, Level.INFO, 10_000,  
 				 "Scenario 0: regen mode - "
 				 + "oldAccel: " + DECIMAL3_M_S2.format(oldAccel) + TWO_WHITESPACES
 				 + "regenDecel: " + DECIMAL3_M_S2.format(regenDecel) + TWO_WHITESPACES

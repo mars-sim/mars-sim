@@ -23,9 +23,9 @@ public class AirPropulsion extends Propulsion implements Serializable {
 	/** The standard hovering height for a drone. */
 	public static final int STANDARD_HOVERING_HEIGHT = (int) (Flyer.ELEVATION_ABOVE_GROUND * 1000);
 	/** The standard stepping up height for a drone. */
-	public static final int STEP_UP_HEIGHT = STANDARD_HOVERING_HEIGHT / 50;
+	public static final double STEP_UP_HEIGHT = VehicleController.STEP_UP_HEIGHT;
 	/** The standard stepping down height for a drone. */
-	public static final int STEP_DOWN_HEIGHT = -STANDARD_HOVERING_HEIGHT / 15;
+	public static final double STEP_DOWN_HEIGHT = VehicleController.STEP_DOWN_HEIGHT;
 
 	private static final String TWO_WHITESPACES = "  ";
 
@@ -107,8 +107,8 @@ public class AirPropulsion extends Propulsion implements Serializable {
 		double step = 0;
 
 		double vAirFlow = 0;
-
-		double REDUCTION_FACTOR = 1;
+		// Future: also account for more power to maintain stability under high wind
+		double powerReduction = .5;
 
 		if (ascentHeight == 0) {
 			// If using Volume-based approach,
@@ -119,6 +119,8 @@ public class AirPropulsion extends Propulsion implements Serializable {
 			// v = air speed (m/s)
 
 			vAirFlow = vPropeller + vMS;
+			// ascentHeight is +ve
+			powerReduction = .75;
 		}
 
 		else if (ascentHeight > 0) {
@@ -130,9 +132,9 @@ public class AirPropulsion extends Propulsion implements Serializable {
 			}
 
 			// alpha1 is the angle of propeller disk. 0 -> pi/2;
-			double alpha1 = Math.PI / 6;
+			double alpha1 = angle;
 			// alpha2 is the angle of downstream. 0 -> pi/2
-			double alpha2 = Math.PI / 7;
+			double alpha2 = alpha1 / 1.5;
 
 			// if going slightly upward, alpha1 > alpha2
 			// if going slightly downward, alpha1 < alpha2 ?
@@ -141,10 +143,11 @@ public class AirPropulsion extends Propulsion implements Serializable {
 			// vAirFlow and vMS ?
 
 			vAirFlow = (vMS * Math.sin(alpha2) + vPropeller * Math.cos(alpha1 - alpha2)) * radiusPropeller * radPerSec; // vPropeller
-																														// +
-																														// vMS;
-
-		} else if (ascentHeight < 0) {
+			// ascentHeight is +ve
+			powerReduction = (.75 +  .5 * ascentHeight / STANDARD_HOVERING_HEIGHT);
+		} 
+		
+		else if (ascentHeight < 0) {
 			// Landing airflow velocity V1 = v1 - abs(V0)
 			// double landingVel = vMS - Math.abs(uMS);
 			// Landing thrust coefficient: CT = −2(V0_bar + v1_bar)．v1_bar
@@ -154,17 +157,17 @@ public class AirPropulsion extends Propulsion implements Serializable {
 			// See detail strategies on
 			// https://aviation.stackexchange.com/questions/64055/how-much-energy-is-wasted-in-an-aeroplanes-descent
 
-			if (currentHoveringHeight >= STEP_DOWN_HEIGHT) {
-				step = STEP_DOWN_HEIGHT;
+			if (currentHoveringHeight - STEP_DOWN_HEIGHT >= 0) {
+				step = -STEP_DOWN_HEIGHT;
 			} else {
 				step = currentHoveringHeight;
 			}
 
-			// Future: need to vary REDUCTION_FACTOR better with equations
-			REDUCTION_FACTOR = currentHoveringHeight / STANDARD_HOVERING_HEIGHT;
+
+			// ascentHeight is -ve
+			powerReduction = (.75 + .5 * ascentHeight / STANDARD_HOVERING_HEIGHT);
 
 			vAirFlow = vPropeller + vMS;
-
 		}
 
 		// Assume the height gained is the same as distanceTravelled
@@ -174,29 +177,30 @@ public class AirPropulsion extends Propulsion implements Serializable {
 
 		double potentialEnergyDrone = weight * currentHoveringHeight;
 
-		double thrustForceTotal = REDUCTION_FACTOR * thrustCoefficient * 2 * airDensity * Math.PI
+		double thrust = powerReduction * thrustCoefficient * 2 * airDensity * Math.PI
 				* radiusPropellerSquare * vAirFlow * vPropeller;
 		// Double check with the ratio. Need to be at least 2:1
-		double thrustToWeightRatio1 = thrustForceTotal / weight;
+		double thrustToWeightRatio1 = thrust / weight;
 
 		// Question: vary the voltage in order to vary the power provided to the drone
 
 		// The gain of potential energy of the drone require extra the power drain on
 		// the drone's fuel and battery system
-		double powerThrustDrone = thrustForceTotal * voltage / efficiencyMotor + gainPotentialEnergy / secs;
+		double powerThrustDrone = thrust * voltage / efficiencyMotor + gainPotentialEnergy / secs;
 
 		drone.setHoveringHeight(currentHoveringHeight);
 
-		logger.log(vehicle, Level.INFO, 10_000, caseText
-//				 + "d: " + Math.round(distanceTravelled * 1000.0)/1000.0 + KM__
-				+ "h: " + DECIMAL3_M.format(currentHoveringHeight) + TWO_WHITESPACES 
+		logger.log(vehicle, Level.INFO, 5_000, caseText
+				+ "h: " + DECIMAL2_M.format(currentHoveringHeight) + TWO_WHITESPACES 
+				+ "angle: " + DECIMAL3_RAD.format(angle) + TWO_WHITESPACES 
 				+ "u -> v: " + DECIMAL3_KPH.format(uKPH) + " -> " + DECIMAL3_KPH.format(vKPH) + TWO_WHITESPACES 
 				+ "vAirFlow: " + DECIMAL3_M_S.format(vAirFlow) + TWO_WHITESPACES 
+				+ "powerReduction: " + DECIMAL2.format(powerReduction) + TWO_WHITESPACES 
 				+ "ascentHeight: " + DECIMAL3_M.format(ascentHeight) + TWO_WHITESPACES 
-				+ "powerThrustDrone: " + DECIMAL3_J.format(powerThrustDrone) + TWO_WHITESPACES 
-				+ "thrust: " + DECIMAL3_J.format(thrustForceTotal) + TWO_WHITESPACES 
-				+ "PE: " + DECIMAL3_J.format(potentialEnergyDrone) + TWO_WHITESPACES 
-				+ "gainPE: " + DECIMAL3_J.format(gainPotentialEnergy) + TWO_WHITESPACES 
+				+ "powerThrustDrone: " + DECIMAL1_W.format(powerThrustDrone) + TWO_WHITESPACES 
+				+ "thrust: " + DECIMAL1_N.format(thrust) + TWO_WHITESPACES 
+				+ "PE: " + DECIMAL1_J.format(potentialEnergyDrone) + TWO_WHITESPACES 
+				+ "gainPE: " + DECIMAL1_J.format(gainPotentialEnergy) + TWO_WHITESPACES 
 				+ "ratio: " + DECIMAL3_J.format(thrustToWeightRatio1) + TWO_WHITESPACES);
 
 		return powerThrustDrone;

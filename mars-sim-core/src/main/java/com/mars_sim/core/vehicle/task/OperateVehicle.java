@@ -62,8 +62,10 @@ public abstract class OperateVehicle extends Task {
     private static final int HRS_TO_SECS = 3600;
     
  	private static final double THRESHOLD_SUNLIGHT = SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
- 	
- 	private static final double MAX_PERCENT_SPEED = 30;
+ 	/** The speed mod percent impacted by sunlight for flyers. */	
+ 	private static final double MAX_PERCENT_DRONE_SPEED = 60;
+ 	/** The speed mod percent impacted by sunlight for ground vehicles. */
+ 	private static final double MAX_PERCENT_GROUND_VEH_SPEED = 30;
  	/** The speed at which the collision phase commence. */
 	protected static final double HIGH_SPEED = 100;
 	/** The speed at which the obstacle / winching phase commence. */
@@ -699,6 +701,14 @@ public abstract class OperateVehicle extends Task {
 		vehicle.setCoordinates(destination);
 		// Remove the vehicle operator
 		vehicle.setOperator(null);
+		
+		if (vehicle instanceof Drone drone) {
+			// Set to park
+			vehicle.setPrimaryStatus(StatusType.PARKED);
+			// Reduce the hovering height to zero
+			drone.setHoveringHeight(0);
+		}
+		
 		// Update the elevation
 		updateVehicleElevationAltitude();
 	}	
@@ -777,8 +787,14 @@ public abstract class OperateVehicle extends Task {
 	 */
 	protected double getLightConditionModifier() {
 		double light = surfaceFeatures.getSolarIrradiance(getVehicle().getCoordinates())/SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
-		// Assume ground vehicles travel at a max of MAX_PERCENT_SPEED at night.
-		return (1 - MAX_PERCENT_SPEED/100) / THRESHOLD_SUNLIGHT * light + MAX_PERCENT_SPEED/100;
+
+		if (vehicle instanceof Flyer) {
+			return (1 - MAX_PERCENT_DRONE_SPEED/100) / THRESHOLD_SUNLIGHT * light + MAX_PERCENT_DRONE_SPEED/100;
+		}
+		else {
+			// Assume ground vehicles travel at a max of MAX_PERCENT_SPEED at night.
+			return (1 - MAX_PERCENT_GROUND_VEH_SPEED/100) / THRESHOLD_SUNLIGHT * light + MAX_PERCENT_GROUND_VEH_SPEED/100;
+		}
 	}
 
 	/**

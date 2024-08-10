@@ -46,6 +46,7 @@ public abstract class Propulsion implements Serializable {
 	 
 	public static final String TWO_WHITESPACES = "  ";
 	
+    public static final DecimalFormat DECIMAL2 = new DecimalFormat("#,##0.00");
 	public static final DecimalFormat DECIMAL3_RAD = new DecimalFormat("#,##0.000 radians");
 	public static final DecimalFormat DECIMAL3_KG_M3 = new DecimalFormat("#,##0.000 kg/m3");
     public static final DecimalFormat DECIMAL3_N = new DecimalFormat("#,##0.000 N");
@@ -54,6 +55,7 @@ public abstract class Propulsion implements Serializable {
     public static final DecimalFormat DECIMAL3_KPH = new DecimalFormat("#,##0.00 kph");
     public static final DecimalFormat DECIMAL3_KM = new DecimalFormat("#,##0.000 km");
     public static final DecimalFormat DECIMAL3_M = new DecimalFormat("#,##0.000 m");
+    public static final DecimalFormat DECIMAL2_M = new DecimalFormat("#,##0.00 m");
     public static final DecimalFormat DECIMAL3_S = new DecimalFormat("#,##0.000 secs");
     public static final DecimalFormat DECIMAL2_S = new DecimalFormat("#,##0.00 secs");
     public static final DecimalFormat DECIMAL3_M_S = new DecimalFormat("#,##0.000 m/s");
@@ -61,6 +63,7 @@ public abstract class Propulsion implements Serializable {
     public static final DecimalFormat DECIMAL2_W = new DecimalFormat("#,##0.00 W");
     public static final DecimalFormat DECIMAL1_W = new DecimalFormat("#,##0.0 W");
     public static final DecimalFormat DECIMAL3_J = new DecimalFormat("#,##0.000 J");
+    public static final DecimalFormat DECIMAL1_J = new DecimalFormat("#,##0.0 J");
     
 	private Vehicle vehicle;
 	
@@ -109,33 +112,34 @@ public abstract class Propulsion implements Serializable {
 	 * Cuts down the speed and power due to energy expenditure NOT being met.
 	 * 
 	 * @param caseText
-	 * @param energySuppliedByBattery
+	 * @param eBattery
 	 * @param secs
 	 * @param energyByFuel
 	 * @param uMS
 	 * @param mass
 	 * @return
 	 */
-	public double[] propelBatteryOnly(String caseText, double aveForce, double energySuppliedByBattery, double secs, double energyByFuel, double uMS, double mass) {
+	public double[] propelBatteryOnly(String caseText, double aveForce, double eBattery, 
+			double secs, double uMS, double mass) {
 		 // Scenario 2B1: Ran out of fuel. Need battery to provide for the rest
 		 
 		 // Recalculate the new ave power W
 		 // W = Wh / s * 3600 J / Wh
-		 double powerSuppliedByBattery = energySuppliedByBattery / secs * JOULES_PER_WH;
+		 double powerSuppliedByBattery = eBattery / secs * JOULES_PER_WH;
 		 	 
-		 double avePower = powerSuppliedByBattery;
+		 double newAvePower = powerSuppliedByBattery;
 	 
 		 // Recalculate the new overall energy expenditure [in Wh]
-		 double overallEnergyUsed = energySuppliedByBattery;
+		 double eUsed = eBattery;
 		 
-//		 // Recalculate the kinetic energy
-//		 double kineticEnergy = overallEnergyUsed;
-//		 
-//		 // Recalculate the new speed 
-//		 double vMS = Math.sqrt(kineticEnergy / .5 / mass);
+		 // Recalculate the kinetic energy
+		 double kineticEnergy = eUsed;
+		 
+		 // Recalculate the new speed 
+		 double vMSKE = Math.sqrt(kineticEnergy / .5 / mass);
 		 	 
 		 // Recalculate the new aveForce 
-//		 double aveForce = avePower / (vMS - uMS);
+//		 Not working: double aveForce = avePower / (vMS - uMS);
 		 
 		 // Recalculate the new speed 
 		 // FUTURE: will consider the on-board accessory vehicle power usage
@@ -144,7 +148,7 @@ public abstract class Propulsion implements Serializable {
 		 // FUTURE : may need to find a way to optimize motor power usage 
 		 // and slow down the vehicle to the minimal to conserve power	
 		 
-		 double newVMS = avePower / aveForce;
+		 double newVMS = newAvePower / aveForce;
 				 
 		 double newVKPH = newVMS * KPH_CONV;
 		 
@@ -164,16 +168,16 @@ public abstract class Propulsion implements Serializable {
 		  * delete any of them. Needed for testing when new features are added in future. Thanks !
 		  */
 		 logger.log(vehicle, Level.INFO, 10_000, caseText
-				 + "energySuppliedByBattery: " +  DECIMAL3_WH.format(energySuppliedByBattery) + TWO_WHITESPACES
-//				 + "Battery: " 			+ Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH__	
-				 + "overallEnergyUsed: " + DECIMAL3_WH.format(overallEnergyUsed) + TWO_WHITESPACES							 
-				 + "avePower: " 			+ DECIMAL2_W.format(avePower) + TWO_WHITESPACES							
+				 + "eBattery: " +  DECIMAL3_WH.format(eBattery) + TWO_WHITESPACES
+				 + "eUsed: " + DECIMAL3_WH.format(eUsed) + TWO_WHITESPACES							 
+				 + "newAvePower: " 			+ DECIMAL2_W.format(newAvePower) + TWO_WHITESPACES							
+				 + "vMSKE: " 			+ DECIMAL3_KPH.format(vMSKE) + TWO_WHITESPACES 
 				 + "u -> newVKPH: " 			+ DECIMAL3_KPH.format(uKPH) + " -> "
 				 						+ DECIMAL3_KPH.format(newVKPH) + TWO_WHITESPACES   
-				 + "seconds: " 			+ DECIMAL2_S.format(secs) + TWO_WHITESPACES   						
-				 + "distanceTravelled: " +  DECIMAL3_KM.format(distanceTravelled));			 
+				 + "secs: " 			+ DECIMAL2_S.format(secs) + TWO_WHITESPACES   						
+				 + "d: " +  DECIMAL3_KM.format(distanceTravelled));			 
 		 
-		 return new double[] {avePower, newVKPH, distanceTravelled, energySuppliedByBattery};
+		 return new double[] {newAvePower, newVKPH, distanceTravelled};
 	}
 	
 	
@@ -181,14 +185,15 @@ public abstract class Propulsion implements Serializable {
 	 * Cuts down the speed and power due to energy expenditure NOT being met.
 	 * 
 	 * @param caseText
-	 * @param energySuppliedByBattery
+	 * @param eBattery
 	 * @param secs
-	 * @param energyByFuel
+	 * @param eFuel
 	 * @param uMS
 	 * @param mass
 	 * @return
 	 */
-	public double[] cutDownSpeedNPower(String caseText, double energySuppliedByBattery, double secs, double energyByFuel, double uMS, double mass) {
+	public double[] cutDownSpeedNPower(String caseText, double aveForce, double eBattery, 
+			double secs, double eFuel, double uMS, double mass) {
 		// Energy expenditure is NOT met. Need to cut down the speed and power. 
 	
 		// Scenario 2B3: fuel can fulfill some energy expenditure but not all. Battery cannot provide the rest
@@ -202,19 +207,19 @@ public abstract class Propulsion implements Serializable {
 
 		// Recalculate the new ave power W
 		// W = Wh / s * 3600 J / Wh
-		double avePower = energySuppliedByBattery / secs * JOULES_PER_WH;
+		double newAvePower = eBattery / secs * JOULES_PER_WH;
 		 
 		// Recalculate the new overall energy expenditure [in Wh]
-		double overallEnergyUsed = energySuppliedByBattery + energyByFuel;
+		double eUsed = eBattery + eFuel;
 		 
 		// Recalculate the kinetic energy
-		double kineticEnergy = overallEnergyUsed;
+		double kineticEnergy = eUsed;
 		 
 		 // Recalculate the new speed 
-		double vMS = Math.sqrt(kineticEnergy / .5 / mass);
+		double vMSKE = Math.sqrt(kineticEnergy / .5 / mass);
 		 
 		// Recalculate the new aveForce 
-//		double aveForce = avePower / (vMS - uMS);
+//		Not working double aveForce = avePower / (vMS - uMS);
 		 
 		 // Recalculate the new force 
 		 // FUTURE: will consider the on-board accessory vehicle power usage
@@ -223,40 +228,110 @@ public abstract class Propulsion implements Serializable {
 		 // FUTURE : may need to find a way to optimize motor power usage 
 		 // and slow down the vehicle to the minimal to conserve power	
 		 
-		double vKPH = vMS * KPH_CONV;
-		
-		double uKPH = uMS * KPH_CONV;
-		
-		// Find new acceleration
-		double accelSpeedUp = (vMS - uMS) / secs; // [in m/s^2]
+		 double newVMS = newAvePower / aveForce;
+
+		 double newVKPH = newVMS * KPH_CONV;
 		 
-		// Q: what if vMS < uMS and accelSpeedUp is -ve 
+		 double uKPH = uMS * KPH_CONV;
 		 
-		// Set new vehicle acceleration
-		vehicle.setAccel(accelSpeedUp);
+		 // Find new acceleration
+		 double accelSpeedUp = (newVMS - uMS) / secs; // [in m/s^2]
+		 
+		 // Set new vehicle acceleration
+		 vehicle.setAccel(accelSpeedUp);
 		 
 		 // Recompute the new distance it could travel
-		double distanceTravelled = vKPH * secs / 3600;
-				 
+		 double distanceTravelled = newVKPH * secs / 3600;
+			 
 		/*
 		 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
 		 * delete any of them. Needed for testing when new features are added in future. Thanks !
 		 */
 		logger.log(vehicle, Level.INFO, 10_000, caseText 
-				 + "energyByFuel: " + DECIMAL3_WH.format(energyByFuel) + TWO_WHITESPACES
-//				 + "fuelNeeded: " +  DECIMAL3_KG.format(fuelNeeded)  + TWO_WHITESPACES					
-//				 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH__
-				 + "energySuppliedByBattery: " +  DECIMAL3_WH.format(energySuppliedByBattery) + TWO_WHITESPACES
-//				 + "Battery: " 			+ Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH__	
-				 + "overallEnergyUsed: " + DECIMAL3_WH.format(overallEnergyUsed) + TWO_WHITESPACES							 
-				 + "avePower: " 			+ DECIMAL3_W.format(avePower) + TWO_WHITESPACES							
-				 + "u -> v: " 	+ DECIMAL3_KPH.format(uKPH) + " -> " + DECIMAL3_KPH.format(vKPH) + TWO_WHITESPACES   							
-				 + "distanceTravelled: " +  DECIMAL3_KM.format(distanceTravelled));	
+				 + "eFuel: " + DECIMAL3_WH.format(eFuel) + TWO_WHITESPACES
+				 + "eBattery: " +  DECIMAL3_WH.format(eBattery) + TWO_WHITESPACES
+				 + "eUsed: " + DECIMAL3_WH.format(eUsed) + TWO_WHITESPACES			
+				 + "KE: " 			+ DECIMAL3_J.format(kineticEnergy) + TWO_WHITESPACES
+				 + "newAvePower: " 			+ DECIMAL2_W.format(newAvePower) + TWO_WHITESPACES							
+				 + "vMSKE: " 			+ DECIMAL3_KPH.format(vMSKE) + TWO_WHITESPACES 
+				 + "u -> newVKPH: " 			+ DECIMAL3_KPH.format(uKPH) + " -> "
+				 						+ DECIMAL3_KPH.format(newVKPH) + TWO_WHITESPACES 				 
+				 + "d: " +  DECIMAL3_KM.format(distanceTravelled));	
 		 
 		 // Equate energyByBattery to energySuppliedByBattery in order to add to odometer easily
 //		 energyByBattery = energySuppliedByBattery;
 		 
-		 return new double[] {avePower, vKPH, distanceTravelled, energySuppliedByBattery};
+		 return new double[] {newAvePower, newVKPH, distanceTravelled};
+	}
+	
+	/**
+	 * Propels a vehicle forward with both fuel and battery power.
+	 * 
+	 * @param caseText
+	 * @param aveForce
+	 * @param avePower
+	 * @param eBattery
+	 * @param secs
+	 * @param eFuel
+	 * @param uMS
+	 * @param vMS
+	 * @param mass
+	 * @return
+	 */
+	public double[] propelWithBothFuelNBattery(String caseText, double aveForce, 
+			double avePower, double eBattery, 
+			double secs, double eFuel, double uMS, double vMS, double mass) {
+		// Scenario 1B2: fuel can fulfill some energy expenditure but not all. Battery provide the rest
+
+		// Recalculate the new ave power W
+		// W = Wh / s * 3600 J / Wh
+		double newAvePower = eBattery / secs * JOULES_PER_WH;
+		 
+		// Recalculate the new overall energy expenditure [in Wh]
+		double eUsed = eBattery + eFuel;
+		 
+		// Recalculate the kinetic energy
+		double kineticEnergy = eUsed;
+		 
+		 // Recalculate the new speed 
+		double vMSKE = Math.sqrt(kineticEnergy / .5 / mass);
+		 
+		 // Assume newAvePower < avePower
+		 // Reduction in power causes reduction in speed
+		 double newVMS = vMS - (avePower - newAvePower) / aveForce;
+		 
+		 double newVKPH = newVMS * KPH_CONV;
+		 
+		 double uKPH = uMS * KPH_CONV;
+		 
+		 // Find new acceleration
+		 double accelSpeedUp = (newVMS - uMS) / secs; // [in m/s^2]
+		 
+		 // Set new vehicle acceleration
+		 vehicle.setAccel(accelSpeedUp);
+		 
+		 // Recompute the new distance it could travel
+		 double distanceTravelled = newVKPH * secs / 3600;
+			 
+		/*
+		 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
+		 * delete any of them. Needed for testing when new features are added in future. Thanks !
+		 */
+		logger.log(vehicle, Level.INFO, 10_000, caseText 
+				 + "eFuel: " + DECIMAL3_WH.format(eFuel) + TWO_WHITESPACES
+				 + "eBattery: " +  DECIMAL3_WH.format(eBattery) + TWO_WHITESPACES
+				 + "eUsed: " + DECIMAL3_WH.format(eUsed) + TWO_WHITESPACES	
+				 + "KE: " 			+ DECIMAL3_J.format(kineticEnergy) + TWO_WHITESPACES	
+				 + "newAvePower: " 			+ DECIMAL2_W.format(newAvePower) + TWO_WHITESPACES							
+				 + "vMSKE: " 			+ DECIMAL3_KPH.format(vMSKE) + TWO_WHITESPACES 
+				 + "u -> newVKPH: " 			+ DECIMAL3_KPH.format(uKPH) + " -> "
+				 						+ DECIMAL3_KPH.format(newVKPH) + TWO_WHITESPACES 				 
+				 + "d: " +  DECIMAL3_KM.format(distanceTravelled));	
+		 
+		 // Equate energyByBattery to energySuppliedByBattery in order to add to odometer easily
+//		 energyByBattery = energySuppliedByBattery;
+		 
+		 return new double[] {newAvePower, newVKPH, distanceTravelled};
 	}
 	
 	 /**

@@ -785,8 +785,19 @@ public abstract class Vehicle extends Unit
 		if (speed != this.speed) {
 			// speed has been changed
 			if (speed == 0D) {
-				setPrimaryStatus(StatusType.PARKED);
+				
+				if (this instanceof Drone d) {
+					if (d.getHoveringHeight() > 0) {
+						setPrimaryStatus(StatusType.HOVERING);
+					}
+					else {
+						setPrimaryStatus(StatusType.PARKED);
+					}
+				}
+				else
+					setPrimaryStatus(StatusType.PARKED);
 			} 
+			
 			else if (this.speed == 0D || speed > 0) {
 				// Was zero so now must be moving
 				setPrimaryStatus(StatusType.MOVING);
@@ -902,27 +913,9 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @return
 	 */
-//	public double getAverageRoadLoadSpeed() {
-//		return averageRoadLoadSpeed;
-//	}
-	
-	/**
-	 * Gets the average road load power of the vehicle [kph].
-	 * 
-	 * @return
-	 */
 	public double getRoadPowerHistoryAverage() {
 		return roadPowerHistory.getAverageDouble();
 	}
-	
-	/**
-	 * Gets the average road load power of the vehicle [kW].
-	 * 
-	 * @return
-	 */
-//	public double getAverageRoadLoadPower() {
-//		return averageRoadLoadPower;
-//	}
 	
 	/**
 	 * Gets the average road speed power of the vehicle [kph].

@@ -80,17 +80,16 @@ public class Drone extends Flyer {
 					}
 				}
 
-				if (isInSettlement()) {
-					if (mission instanceof VehicleMission) {
-						LoadingController lp = ((VehicleMission)mission).getLoadingPlan();
+				if (isInSettlement()
+					&& mission instanceof VehicleMission vm) {
+						LoadingController lp = vm.getLoadingPlan();
 
-						if ((lp != null) && !lp.isCompleted()) {
-							double time = pulse.getElapsed();
-							double transferSpeed = 10; // Assume 10 kg per msol
-							double amountLoading = time * transferSpeed;
+					if ((lp != null) && !lp.isCompleted()) {
+						double time = pulse.getElapsed();
+						double transferSpeed = 10; // Assume 10 kg per msol
+						double amountLoading = time * transferSpeed;
 
-							lp.backgroundLoad(amountLoading);
-						}
+						lp.backgroundLoad(amountLoading);
 					}
 				}
 			}
