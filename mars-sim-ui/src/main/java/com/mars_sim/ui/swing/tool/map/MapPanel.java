@@ -69,7 +69,11 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	public static double MAX_RHO;
 	public static double MIN_RHO;
 	
+	/** The map resolution. Level 0 is the lowest. Level n is highest. */
+	private int res = 0;
+	
 	private final double ZOOM_STEP = 16;
+
 	private double multiplier;
 	private double magnification;
 	
@@ -145,7 +149,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		executor = Executors.newSingleThreadExecutor();
 		
 		// Initializes map
-		loadNewMapType(MapDataFactory.DEFAULT_MAP_TYPE, navwin.getMapResolution());
+		loadNewMapType(MapDataFactory.DEFAULT_MAP_TYPE, getMapResolution());
 		
 		mapError = false;
 		wait = false;
@@ -165,6 +169,24 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 //		logger.info("scale: " + Math.round(RHO_DEFAULT * 10.0)/10.0 + "  multiplier: " + Math.round(multiplier * 10.0)/10.0);
 	}
 
+	/**
+	 * Gets the map resolution.
+	 * 
+	 * @return
+	 */
+	public int getMapResolution() {
+		return res;
+	}
+	
+	/**
+	 * Sets the map resolution.
+	 * 
+	 * @param res
+	 */
+	public void setMapResolution(int res) {
+		this.res = res;
+	}
+	
 	/**
 	 * Detects the mouse wheel movement.
 	 */

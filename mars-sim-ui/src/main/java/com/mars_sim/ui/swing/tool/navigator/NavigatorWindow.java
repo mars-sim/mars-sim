@@ -159,8 +159,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	private static final String RESOLUTION = "2";
 
-	/** The map resolution. Level 0 is the lowest. Level n is highest. */
-	private int res = 0;
+
 	
 	// Data member
 	/** The map rho. */
@@ -496,7 +495,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			
 			String resolutionString = userSettings.getProperty(RESOLUTION_ACTION, RESOLUTION);
 			
-			int resolution = res;
+			int resolution = mapPanel.getMapResolution();
 			
 			if (resolutionString != null) {
 				resolution = Integer.parseInt(resolutionString);
@@ -774,7 +773,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		if (command.startsWith(MAPTYPE_ACTION)) {
 			String newMapType = command.substring(MAPTYPE_ACTION.length());
 			if (((JCheckBoxMenuItem) source).isSelected()) {
-				changeMapType(newMapType, res, false);
+				changeMapType(newMapType, mapPanel.getMapResolution(), false);
 				mapTypeCache = newMapType;
 			}
 		}
@@ -810,10 +809,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			// Note: Level 0 is the lowest res
 			if (reply < mapPanel.getMapMetaData().getNumLevel()				
 				&& reply != oldRes 
-						|| reply != res 
+						|| reply != mapPanel.getMapResolution() 
 						|| !newMapType.equalsIgnoreCase(mapTypeCache)) {
 					// Set to the new map resolution
-					res = reply;
+					mapPanel.setMapResolution(reply);
 					changeMapType(newMapType, reply, false);
 					mapTypeCache = newMapType;
 			}
@@ -1376,11 +1375,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		this.rho = rho;
 		mapPanel.setRho(rho);
 	}
-	
-	public int getMapResolution() {
-		return res;
-	}
-	
+
 	/**
 	 * Prepares tool window for deletion.
 	 */	
