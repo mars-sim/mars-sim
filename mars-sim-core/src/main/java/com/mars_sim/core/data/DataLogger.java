@@ -104,10 +104,40 @@ public abstract class DataLogger<T> implements Serializable {
 		double value = 0;
 		if (getHistory().containsKey(currentSol)
 				&& getHistory().get(currentSol) instanceof Double)
-			value = (double)getHistory().get(currentSol);
+			value = convertGenericToDouble(getHistory().get(currentSol));
 		return value;
 	}
 	
+	/**
+	 * Gets the data value for a sol.
+	 * 
+	 * @return
+	 */
+	public double getDataValue(int sol) {
+		double value = 0;
+		if (getHistory().containsKey(sol)
+				&& getHistory().get(sol) instanceof Double)
+			value = convertGenericToDouble(getHistory().get(sol));
+		return value;
+	}
+	
+	
+	/**
+	 * Converts the generic value T to double.
+	 * 
+	 * @param value
+	 * @return
+	 */
+    public static double convertGenericToDouble(Object value) {
+        if (value instanceof Number) {
+            return ((Number) value).doubleValue();
+        } else {
+            // custom conversion logic for non-numeric types (e.g., string to double)
+            // TO DO: implement this based on your specific requirements
+            throw new UnsupportedOperationException("Unsupported type conversion");
+        }
+    }
+    
 	/**
 	 * Gets the current sol the Data Logger is recording.
 	 * 
@@ -144,15 +174,6 @@ public abstract class DataLogger<T> implements Serializable {
 	public T getTodayData() {
 		return currentData;
 	}
-	
-//	/**
-//	 * Gets the data held for the current sol.
-//	 * 
-//	 * @return
-//	 */
-//	public T getSolData() {
-//		return getSolData(currentSol);
-//	}
 	
 	/**
 	 * Checks if yestersol's data valid.

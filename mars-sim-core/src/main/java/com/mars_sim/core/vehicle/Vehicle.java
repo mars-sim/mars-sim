@@ -887,7 +887,6 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public void setAverageRoadLoadSpeed(int value) {
-//		logger.info(this, 10_000L, " AverageRoadLoadSpeed: " + value);
 		roadSpeedHistory.addDataPoint(value);
 	}
 	
@@ -897,7 +896,6 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public void setAverageRoadLoadPower(int value) {
-//		logger.info(this, 10_000L, " AverageRoadLoadPower: " + value);
 		roadPowerHistory.addDataPoint(value);
 	}
 	
@@ -911,6 +909,15 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
+	 * Gets the average road load power of the vehicle [kph].
+	 * 
+	 * @return
+	 */
+	public double getRoadPowerHistoryAverage() {
+		return roadPowerHistory.getAverageDouble();
+	}
+	
+	/**
 	 * Gets the average road load power of the vehicle [kW].
 	 * 
 	 * @return
@@ -919,6 +926,14 @@ public abstract class Vehicle extends Unit
 		return averageRoadLoadPower;
 	}
 	
+	/**
+	 * Gets the average road speed power of the vehicle [kph].
+	 * 
+	 * @return
+	 */
+	public double getRoadSpeedHistoryAverage() {
+		return roadSpeedHistory.getAverageDouble();
+	}
 	
 	/**
 	 * Gets the cumulative energy usage of the vehicle [kWh].

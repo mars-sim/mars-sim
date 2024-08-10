@@ -583,7 +583,7 @@ import com.mars_sim.tools.util.RandomUtil;
 //		 double averageRoadLoadPower = accelMotor * mass * vMS / 1000;
 	 
 		 if (vKPH > 1 && avePower > 0) {
-			 // update average road load speed
+			 // update average road load speed in kph
 			 vehicle.setAverageRoadLoadSpeed((int)Math.round(vKPH));
 			 // update average road load power
 			 // avePower is in W, not kW. Divide by 1000 to get kW

@@ -101,8 +101,8 @@ public class TabPanelSpecs extends TabPanel {
 		grid1.addRow( "Base Speed", StyleManager.DECIMAL_KPH.format(v.getVehicleSpec().getBaseSpeed()));
 		grid1.addRow( "Base Power", StyleManager.DECIMAL_KW.format(v.getVehicleSpec().getBasePower()));
 
-		roadSpeed = grid1.addRow( "Ave Road Speed", StyleManager.DECIMAL_KPH.format(v.getAverageRoadLoadSpeed()));
-		roadPower = grid1.addRow( "Ave Road Power", StyleManager.DECIMAL_KW.format(v.getAverageRoadLoadPower()));
+		roadSpeed = grid1.addRow( "Ave Road Speed", StyleManager.DECIMAL_KPH.format(v.getRoadSpeedHistoryAverage()));
+		roadPower = grid1.addRow( "Ave Road Power", StyleManager.DECIMAL_KW.format(v.getRoadPowerHistoryAverage()));
 		
 		grid1.addRow( "Base Accel", StyleManager.DECIMAL_M_S2.format(v.getVehicleSpec().getBaseAccel()));	
 		grid1.addRow( "Peak Power", StyleManager.DECIMAL_KW.format(v.getVehicleSpec().getPeakPower()));
@@ -147,8 +147,8 @@ public class TabPanelSpecs extends TabPanel {
 	public void update() {
 		estFCFECoef.setText(StyleManager.DECIMAL_PLACES3.format(v.getCoeffEstFC2FE()));		
 		
-		roadSpeed.setText(StyleManager.DECIMAL_KPH.format(v.getAverageRoadLoadSpeed()));
-		roadPower.setText(StyleManager.DECIMAL_KW.format(v.getAverageRoadLoadPower()));
+		roadSpeed.setText(StyleManager.DECIMAL_KPH.format(v.getRoadSpeedHistoryAverage()));
+		roadPower.setText(StyleManager.DECIMAL_KW.format(v.getRoadPowerHistoryAverage()));
 	
 		cumEnergyUsage.setText(StyleManager.DECIMAL2_KWH.format(v.getCumEnergyUsage()));	
 		cumFuelUsage.setText(StyleManager.DECIMAL_KG.format(v.getCumFuelUsage()));	
