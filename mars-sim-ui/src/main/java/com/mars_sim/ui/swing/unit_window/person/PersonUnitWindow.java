@@ -76,12 +76,12 @@ public class PersonUnitWindow extends UnitWindow {
 				((person.getAssociatedSettlement() != null) ? 
 						person.getAssociatedSettlement() : 
 							person.getBuriedSettlement())
-				+ ((person.getContainerUnit() != null) ? 
-						((person.getContainerUnit() instanceof MarsSurface) ?
-							(" on " + person.getContainerUnit()) :
-							(" in " + person.getContainerUnit())) : 
-					(" in " + person.getLocationTag().findSettlementVicinity() + " Vicinity")),
-				false);
+				+ ((person.getLocationTag().findSettlementVicinity() != null) ?
+						(" in " + person.getLocationTag().findSettlementVicinity() + " Vicinity") :
+							((person.getContainerUnit() instanceof MarsSurface) ?
+											(" on " + person.getContainerUnit()) :
+											(" in " + person.getContainerUnit())))
+				, false);
 		this.person = person;
 	
 		

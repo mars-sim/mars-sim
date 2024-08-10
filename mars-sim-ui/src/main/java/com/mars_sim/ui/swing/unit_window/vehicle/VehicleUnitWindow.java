@@ -42,12 +42,12 @@ public class VehicleUnitWindow extends UnitWindow {
 		super(desktop, vehicle,  vehicle.getName() 
 				+ " (" + vehicle.getVehicleType().getName() + ")"
 				+ " of " + vehicle.getAssociatedSettlement()
-				+ ((vehicle.getContainerUnit() != null) ? 
+				+ ((vehicle.getLocationTag().findSettlementVicinity() != null) ?
+					(" in " + vehicle.getLocationTag().findSettlementVicinity() + " Vicinity") :
 						((vehicle.getContainerUnit() instanceof MarsSurface) ?
-							(" on " + vehicle.getContainerUnit()) :
-							(" in " + vehicle.getContainerUnit())) : 
-					(" in " + vehicle.getLocationTag().findSettlementVicinity() + " Vicinity")),
-				true);
+										(" on " + vehicle.getContainerUnit()) :
+										(" in " + vehicle.getContainerUnit())))
+				, true);
 		this.vehicle = vehicle;
 		
 		if (vehicle instanceof Crewable crewableVehicle) {
