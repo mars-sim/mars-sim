@@ -68,8 +68,8 @@ public class GroundPropulsion extends Propulsion implements Serializable {
 		// Assume staticFriction is inversely proportionally to current average speed 
 		
 		// Note: On Mars surface, there is no paved road. Friction Coeff are very high
-		double kineticFrictionCoeff = 100 / vehicle.getBasePower();
-		double staticFrictionCoeff = kineticFrictionCoeff * 1.5 / (0.5 + averageSpeed);
+		double kineticFrictionCoeff = 75 / vehicle.getBasePower();
+		double staticFrictionCoeff = kineticFrictionCoeff * 1.0 / (0.5 + averageSpeed);
 
 		double fInitialFriction = weight * (staticFrictionCoeff + kineticFrictionCoeff);
 

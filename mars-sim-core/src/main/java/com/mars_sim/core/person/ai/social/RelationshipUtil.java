@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -214,10 +215,12 @@ public class RelationshipUtil implements Serializable {
 		
 		else if (size > 1) {
 			Optional<Double> hScore = bestFriends.values().stream().max(Double::compareTo);
+			if (hScore.isEmpty())
+				return bestFriends;
 			double highValue = hScore.get();
 			bestFriends = bestFriends.entrySet().stream()
 									.filter(a -> (a.getValue() >= highValue))
-                       	 			.collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));			
+                       	 			.collect(Collectors.toMap(Entry::getKey, Entry::getValue));			
 		}
 		return bestFriends;
 	}
@@ -282,6 +285,77 @@ public class RelationshipUtil implements Serializable {
 	}
 
 	/**
+	 * Change the local person's opinion.
+	 * 
+	 * @param localPerson
+	 * @param person
+	 * @param personStress
+	 * @param localPersonStress
+	 * @param time
+	 */
+	private static void changeOpinion(Person localPerson, Person person, double personStress, double localPersonStress, double time) {
+
+		// Randomly determine change amount (negative or positive)
+		double changeAmount = RandomUtil.getRandomDouble(BASE_RELATIONSHIP_CHANGE_AMOUNT) * time;
+		if (RandomUtil.lessThanRandPercent(50))
+			changeAmount = 0 - changeAmount;
+
+		// Modify based on difference in other person's opinion.
+		double otherOpinionModifier = (getOpinionOfPerson(localPerson, person)
+				- getOpinionOfPerson(person, localPerson)) / 100D;
+		otherOpinionModifier *= BASE_OPINION_MODIFIER * time;
+		changeAmount += RandomUtil.getRandomDouble(otherOpinionModifier);
+
+		// Modify based on the conversation attribute of other person.
+		double conversation = localPerson.getNaturalAttributeManager()
+				.getAttribute(NaturalAttributeType.CONVERSATION);
+		double conversationModifier = (conversation - 50D) / 50D;
+		conversationModifier *= BASE_CONVERSATION_MODIFIER * time;
+		changeAmount += RandomUtil.getRandomDouble(conversationModifier);
+
+		// Modify based on attractiveness attribute if people are of opposite genders.
+		// Note: We may add sexual orientation later that will add further complexity to
+		// this.
+		double attractiveness = localPerson.getNaturalAttributeManager()
+				.getAttribute(NaturalAttributeType.ATTRACTIVENESS);
+		double attractivenessModifier = (attractiveness - 50D) / 50D;
+		attractivenessModifier *= BASE_ATTRACTIVENESS_MODIFIER * time;
+		boolean oppositeGenders = (person.getGender() != localPerson.getGender());
+		if (oppositeGenders) {
+			changeAmount += attractivenessModifier;
+			RandomUtil.getRandomDouble(changeAmount);
+		}
+		// Modify based on same-gender bonding.
+		double genderBondingModifier = BASE_GENDER_BONDING_MODIFIER * time;
+		if (!oppositeGenders){
+			changeAmount += genderBondingModifier;
+			RandomUtil.getRandomDouble(changeAmount);
+		}
+
+		// Modify based on personality differences.
+		MBTIPersonality personPersonality = person.getMind().getMBTI();
+		MBTIPersonality localPersonality = localPerson.getMind().getMBTI();
+		double personalityDiffModifier = (2D
+				- personPersonality.getPersonalityDifference(localPersonality.getTypeString())) / 2D;
+		personalityDiffModifier *= PERSONALITY_DIFF_MODIFIER * time;
+		changeAmount += RandomUtil.getRandomDouble(personalityDiffModifier);
+
+		// Modify based on settlers being trained to get along with each other.
+		double settlerModifier = SETTLER_MODIFIER * time;
+		changeAmount += RandomUtil.getRandomDouble(settlerModifier);
+
+		// Modify magnitude based on the collective stress of the two people.
+		double stressChangeModifier = 1 + ((personStress + localPersonStress) / 100D);
+		changeAmount *= stressChangeModifier;
+
+		// Change the person's opinion of the other person.
+        changeOpinion(person, localPerson, changeAmount);
+        
+		logger.fine(person, "Changed the opinion of " + localPerson.getName() + " by "
+					+ changeAmount);
+	}
+	
+	/**
 	 * Updates the person's relationship.
 	 * 
 	 * @param person the person to update
@@ -312,64 +386,7 @@ public class RelationshipUtil implements Serializable {
 				double stressProbModifier = 1D + ((personStress + localPersonStress) / 100D);
 				if (RandomUtil.lessThanRandPercent(changeProbability * stressProbModifier)) {
 	
-					// Randomly determine change amount (negative or positive)
-					double changeAmount = RandomUtil.getRandomDouble(BASE_RELATIONSHIP_CHANGE_AMOUNT) * time;
-					if (RandomUtil.lessThanRandPercent(50))
-						changeAmount = 0 - changeAmount;
-	
-					// Modify based on difference in other person's opinion.
-					double otherOpinionModifier = (getOpinionOfPerson(localPerson, person)
-							- getOpinionOfPerson(person, localPerson)) / 100D;
-					otherOpinionModifier *= BASE_OPINION_MODIFIER * time;
-					changeAmount += RandomUtil.getRandomDouble(otherOpinionModifier);
-	
-					// Modify based on the conversation attribute of other person.
-					double conversation = localPerson.getNaturalAttributeManager()
-							.getAttribute(NaturalAttributeType.CONVERSATION);
-					double conversationModifier = (conversation - 50D) / 50D;
-					conversationModifier *= BASE_CONVERSATION_MODIFIER * time;
-					changeAmount += RandomUtil.getRandomDouble(conversationModifier);
-	
-					// Modify based on attractiveness attribute if people are of opposite genders.
-					// Note: We may add sexual orientation later that will add further complexity to
-					// this.
-					double attractiveness = localPerson.getNaturalAttributeManager()
-							.getAttribute(NaturalAttributeType.ATTRACTIVENESS);
-					double attractivenessModifier = (attractiveness - 50D) / 50D;
-					attractivenessModifier *= BASE_ATTRACTIVENESS_MODIFIER * time;
-					boolean oppositeGenders = (person.getGender() != localPerson.getGender());
-					if (oppositeGenders) {
-						changeAmount += attractivenessModifier;
-						RandomUtil.getRandomDouble(changeAmount);
-					}
-					// Modify based on same-gender bonding.
-					double genderBondingModifier = BASE_GENDER_BONDING_MODIFIER * time;
-					if (!oppositeGenders){
-						changeAmount += genderBondingModifier;
-						RandomUtil.getRandomDouble(changeAmount);
-					}
-	
-					// Modify based on personality differences.
-					MBTIPersonality personPersonality = person.getMind().getMBTI();
-					MBTIPersonality localPersonality = localPerson.getMind().getMBTI();
-					double personalityDiffModifier = (2D
-							- personPersonality.getPersonalityDifference(localPersonality.getTypeString())) / 2D;
-					personalityDiffModifier *= PERSONALITY_DIFF_MODIFIER * time;
-					changeAmount += RandomUtil.getRandomDouble(personalityDiffModifier);
-	
-					// Modify based on settlers being trained to get along with each other.
-					double settlerModifier = SETTLER_MODIFIER * time;
-					changeAmount += RandomUtil.getRandomDouble(settlerModifier);
-	
-					// Modify magnitude based on the collective stress of the two people.
-					double stressChangeModifier = 1 + ((personStress + localPersonStress) / 100D);
-					changeAmount *= stressChangeModifier;
-	
-					// Change the person's opinion of the other person.
-			        changeOpinion(person, localPerson, changeAmount);
-			        
-					logger.fine(person, "Changed the opinion of " + localPerson.getName() + " by "
-								+ changeAmount);
+					changeOpinion(localPerson, person, personStress, localPersonStress, time);
 				}
 			}
 		}
