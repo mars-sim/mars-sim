@@ -12,7 +12,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -89,7 +90,7 @@ public final class FileLocator {
                 try {
                     stream.close();
                 } catch (IOException e) {
-                    logger.warning("Problem closing search stream");
+                    logger.warning("Problem closing search stream: " + e);
                 }
                 result = true;
             }
@@ -150,7 +151,14 @@ public final class FileLocator {
  
             if (resourceStream == null) {
                 source = new StringBuilder("remote as ");
-                resourceStream = locateResource(name, source, n -> openRemoteContent(n));
+                resourceStream = locateResource(name, source, n -> {
+					try {
+						return openRemoteContent(n);
+					} catch (URISyntaxException e) {
+						logger.warning("Problem opening remote content: " + e);
+						return null;
+					}
+				});
             }
             
             // Have a source location
@@ -163,13 +171,13 @@ public final class FileLocator {
                 try {
                     copyFile(resourceStream, localFile);
                 } catch (IOException ioe) {
-                    logger.log(Level.SEVERE, "Problem extracting file", ioe);
+                    logger.log(Level.SEVERE, "Problem extracting file: ", ioe);
                 }
                 finally {
                     try {
                         resourceStream.close();
                     } catch (IOException e) {
-                        logger.warning("Problem closing stream");
+                        logger.warning("Problem closing stream: " + e);
                     }
                 }
             }
@@ -231,14 +239,15 @@ public final class FileLocator {
      * 
      * @param name Name of the file to locate
      * @return
+     * @throws URISyntaxException 
      */
-    private static InputStream openRemoteContent(String name) {
+    private static InputStream openRemoteContent(String name) throws URISyntaxException {
         // Check remote content
         String fileURL = contentURL + name;
         try {
-            return new URL(fileURL).openStream();
+            return (new URI(fileURL)).toURL().openStream();
         } catch (IOException e) {
-            // URL is no good
+            logger.warning("Problem opening stream: " + e);
             return null;
         }    
     }
@@ -252,14 +261,30 @@ public final class FileLocator {
      * @throws IOException
      */
     private static InputStream getFileFromZip(InputStream resourceStream, String name) throws IOException {
-        ZipInputStream zip = new ZipInputStream(resourceStream);
-        ZipEntry ze = zip.getNextEntry();
+    	int BUFFER = 512;  	
+    	ZipInputStream zis = new ZipInputStream(resourceStream);
+        ZipEntry entry;
+        while ((entry = zis.getNextEntry()) != null) {
+            long compressedSize = entry.getCompressedSize();
+            if (compressedSize == -1) {
+                // Handle unknown size or skip the entry
+            } else {
+                byte[] buffer = new byte[BUFFER];
+                long uncompressedSize = 0;
+                int bytesRead;
+                while ((bytesRead = zis.read(buffer)) != -1) {
+                    uncompressedSize += bytesRead;
+                }
+                // Process the entry with the accurately calculated uncompressed size
+            }
+        }
+        
         String [] parts = name.split("/");
-        if (!ze.getName().equals(parts[parts.length-1])) {
+        if ((entry = zis.getNextEntry()) != null && !entry.getName().equals(parts[parts.length-1])) {
             logger.severe("Zip file does not contain file " + name);
             return null;
         }
-        return zip;
+        return zis;
     }
     
     /**
