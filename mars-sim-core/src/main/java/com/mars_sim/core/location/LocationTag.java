@@ -366,8 +366,11 @@ public class LocationTag implements LocationState, Serializable {
 	 */
 	public Settlement findSettlementVicinity() {
 		
-		if (unit instanceof Person && ((Person) unit).isBuried())
-			return ((Person) unit).getBuriedSettlement();
+		if (unit instanceof Person p && p.isBuried())
+			return p.getBuriedSettlement();
+		
+		if (unit instanceof Vehicle v && v.getSettlement() != null)
+			return v.getSettlement();
 		
 		Coordinates c = unit.getCoordinates();
 

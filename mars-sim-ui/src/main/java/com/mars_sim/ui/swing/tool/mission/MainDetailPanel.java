@@ -187,11 +187,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		leftRightBox.add(initLocationPane());
 		centerBox.add(leftRightBox, BorderLayout.NORTH);
 
-//		JPanel innerBox = new JPanel(new BorderLayout(1, 1));
-//		innerBox.add(initVehiclePane(), BorderLayout.CENTER);
-//		innerBox.add(initLocationPane(), BorderLayout.SOUTH);
-//		centerBox.add(innerBox, BorderLayout.WEST);
-		
 		centerBox.add(initTravelPane(), BorderLayout.CENTER);
 
 		memberOuterPane = new JPanel(new BorderLayout(1, 1));
@@ -203,8 +198,16 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				
 		bottomBox.add(memberOuterPane, BorderLayout.NORTH);
 		bottomBox.add(initCustomMissionPane(), BorderLayout.SOUTH);
+		
+		// Update the log table model
+		logTableModel.update();
 	}
 
+	/**
+	 * Initializes the mission pane.
+	 * 
+	 * @return
+	 */
 	private JPanel initMissionPane() {
 
 		// Create the vehicle pane.
@@ -227,6 +230,11 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		return missionLayout;
 	}
 	
+	/**
+	 * Initializes the vehicle pane.
+	 * 
+	 * @return
+	 */
 	private JPanel initVehiclePane() {
 		
 		JPanel mainLayout = new JPanel(new BorderLayout(5, 5));
@@ -281,6 +289,11 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		return mainLayout;
 	}
 
+	/**
+	 * Initializes the travel pane.
+	 * 
+	 * @return
+	 */
 	private JPanel initTravelPane() {
 		
 		JPanel mainLayout = new JPanel(new BorderLayout());
@@ -301,6 +314,11 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		return mainLayout;
 	}
 
+	/**
+	 * Initializes the phase log pane.
+	 * 
+	 * @return
+	 */
 	private JPanel initLogPane() {
 
 		// Create the member panel.
@@ -327,6 +345,11 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		return logPane;
 	}
 
+	/**
+	 * Initializes the member pane.
+	 * 
+	 * @return
+	 */
 	private JPanel initMemberPane() {
 		
 		if (memberPane == null) {	
@@ -366,6 +389,11 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		return memberPane;
 	}
 
+	/**
+	 * Initializes the custom mission pane.
+	 * 
+	 * @return
+	 */
 	private JPanel initCustomMissionPane() {
 
 		// Create the mission custom panel.
@@ -463,6 +491,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	}
 
 
+	
 	public void setCurrentMission(Mission mission) {
 		if (missionCache != null) {
 			if (!missionCache.equals(mission)) {
@@ -603,6 +632,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		settlementTextField.setText(mission.getAssociatedSettlement().getName());
 
 		logTableModel.setMission(mission);
+		logTableModel.update();
 		
 		centerMapButton.setEnabled(true);
 		
@@ -696,6 +726,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		settlementTextField.setText(" ");
 
 		memberTableModel.setMission(null);
+		
+		logTableModel.update();
 		logTableModel.setMission(null);
 		
 		centerMapButton.setEnabled(false);
@@ -859,6 +891,10 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				if (phaseText.length() > MAX_LENGTH)
 					phaseText = phaseText.substring(0, MAX_LENGTH) + "...";
 				phaseTextField.setText(phaseText);
+				
+				// Update the log table model
+				logTableModel.update();
+				
 			} else if (type == MissionEventType.END_MISSION_EVENT) {
 				var missionStatusText = new StringBuilder();
 				missionStatusText.append( mission.getMissionStatus().stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
@@ -935,22 +971,31 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	 * Adapter for the mission log
 	 */
 	private class LogTableModel extends AbstractTableModel {
+		
 		private Mission mission;
-
+		
+		private List<MissionLog.MissionLogEntry> entries;
+	
 		/**
 		 * Constructor.
 		 */
 		private LogTableModel() {
 			mission = null;
+			entries = new ArrayList<>();
 		}
 
+		public void update() {
+			if (mission != null)
+				entries = mission.getLog().getEntries();
+		}
+		
 		/**
 		 * Gets the row count.
 		 *
 		 * @return row count.
 		 */
 		public int getRowCount() {
-			return (mission != null ? mission.getLog().getEntries().size() : 0);
+			return (mission != null ? entries.size() : 0);
 		}
 
 		/**
@@ -985,7 +1030,9 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 * @return the value.
 		 */
 		public Object getValueAt(int row, int column) {
-			List<MissionLog.MissionLogEntry> entries = mission.getLog().getEntries();
+			if (mission == null || entries == null)
+				return null;
+				
 			if (row < entries.size()) {
 				if (column == 0)
 					return entries.get(row).getTime().getTruncatedDateTimeStamp();

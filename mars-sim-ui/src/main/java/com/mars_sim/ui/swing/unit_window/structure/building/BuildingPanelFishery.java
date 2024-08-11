@@ -11,7 +11,6 @@ import java.awt.BorderLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.mars_sim.core.structure.building.function.farming.AlgaeFarming;
 import com.mars_sim.core.structure.building.function.farming.Fishery;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.ui.swing.ImageLoader;

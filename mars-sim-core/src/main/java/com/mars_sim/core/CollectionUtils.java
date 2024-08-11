@@ -251,8 +251,9 @@ public class CollectionUtils {
 			Iterator<Vehicle> i = unitManager.getVehicles().iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
+				Settlement settlementLoc = vehicle.getSettlement();
 				// Select a vehicle at the settlement coordinate.
-				if (vehicle.getCoordinates().equals(settlement.getCoordinates())) {
+				if (settlementLoc != null && settlementLoc.equals(settlement)) {
 					result.add(vehicle);
 				}
 			}

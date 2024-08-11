@@ -315,7 +315,8 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 
 
 	/**
-	 * Open wizard to edit a mission.
+	 * Opens wizard to edit a mission.
+	 * 
 	 * @param mission the mission to edit.
 	 */
 	private void editMission(Mission mission) {
@@ -331,7 +332,8 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 	}
 
 	/**
-	 * Time has advanced
+	 * Time has advanced.
+	 * 
 	 * @param pulse The clock change
 	 */
 	@Override

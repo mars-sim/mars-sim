@@ -257,7 +257,7 @@ import com.mars_sim.tools.util.RandomUtil;
 			 // Set the new hovering height for the drone due to terrain change
 			 drone.setHoveringHeight(newHeight);
 			 
-			 double multiplier = 1 + (int)(angle / Math.PI / 32); 
+			 double multiplier = 1 + (int)(angle / Math.PI / 16); 
 
 			 double height = 0;
 			 // if (angle == 0)
