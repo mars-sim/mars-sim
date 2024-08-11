@@ -190,8 +190,9 @@ public final class FileLocator {
     }
 
     /**
-     * Locate the resource using different file formats. Once found a stream is returned
+     * Locates the resource using different file formats. Once found a stream is returned
      * to the requested file contents. This caters for flat, ZIP & XZ files.
+     * 
      * @param name Name of resource to find
      * @param source String builder holdign the source descriptiom
      * @param resolver The Function to create an InputStream for a resource name

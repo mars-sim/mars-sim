@@ -31,15 +31,23 @@ public class Computation extends Function {
 	
 	// Configuration properties
 	private static final double ENTROPY_FACTOR = .001;
+	
 	/** 
 	 * The average efficiency of power usage. e.g. 30% power is for computation 
 	 * and data processing. 70% of power generates for cooling and ventilation.
 	 */
 	private static final double AVERAGE_POWER_EFFICIENCY = .3;
+	
 	/**
 	 * The power demand fraction for each non-load CU [in kW/CU] out of the full load power demand. 
 	 */
 	private static final double NON_LOAD_POWER_USAGE = .15;
+	
+	/**
+	 * The percent of cooling power load for each non-load CU [in kW/CU]. 
+	 */
+	private static final double COOLING_PERCENT = 20;
+	
 	/**
 	 * The fraction of cooling demand to be dissipated as heat [kW]. 
 	 */
@@ -52,7 +60,12 @@ public class Computation extends Function {
 	private final double maxEntropy;
 	/** The highest possible available amount of computing resources [in CUs]. */
 	private final double peakCU;
-	
+	/** The initial power load in kW for each running CU [in kW/CU]. */
+	private final double initialPowerDemand;
+	/** The instant cooling load in the system. */
+	private double instantCoolingLoad;
+	/** The amount of heat generated in the system. */
+	private double instantHeatGen;
 	/** The amount of entropy in the system. */
 	private double entropy;
 	/** The amount of computing resources capacity currently available [in CUs]. */
@@ -91,8 +104,12 @@ public class Computation extends Function {
 		currentCU = peakCU; 
 		
 		powerEfficiency = AVERAGE_POWER_EFFICIENCY;
+		
 		powerDemand = spec.getDoubleProperty(POWER_DEMAND) * powerEfficiency / AVERAGE_POWER_EFFICIENCY;
-		coolingDemand = powerDemand * (1 - powerEfficiency);	
+		
+		initialPowerDemand = powerDemand;
+		
+		coolingDemand = powerDemand * COOLING_PERCENT / 100;	
 	
 		combinedLoadkW = coolingDemand + powerDemand;
 		// Assume 15% of full load
@@ -135,15 +152,30 @@ public class Computation extends Function {
 	}
 
 	/**
-	 * Sets the power efficiency.
+	 * Sets the power efficiency
 	 * 
 	 * @param value
 	 */
 	public void setPowerEfficiency(double value) {
 		this.powerEfficiency = value;
-		// Recompute the new power demand and cooling demand
-		powerDemand = powerDemand * powerEfficiency / AVERAGE_POWER_EFFICIENCY;
-		coolingDemand = powerDemand * (1 - powerEfficiency);
+		// Recompute the power demand and cooling demand
+		resetDemands();
+	}
+	
+	/**
+	 * Resets the power and cooling demand.
+	 * 
+	 * @param value
+	 */
+	public void resetDemands() {
+		// Recompute the power demand
+		powerDemand = initialPowerDemand * powerEfficiency / AVERAGE_POWER_EFFICIENCY;
+		// Recompute the cooling demand
+		coolingDemand = powerDemand * COOLING_PERCENT / 100;
+		
+		combinedLoadkW = coolingDemand + powerDemand;
+		// Assume 15% of full load
+		nonLoadkW = NON_LOAD_POWER_USAGE * combinedLoadkW;
 	}
 	
 	/**
@@ -356,21 +388,34 @@ public class Computation extends Function {
 				
 				// e.g. at 30% eff, if power = 0.3 kW, cooling = 0.7 kW. total power req = 1 kW.
 				
-				double power = getPowerRequired();
-			
-				double cooling = power / AVERAGE_POWER_EFFICIENCY * (1 - AVERAGE_POWER_EFFICIENCY);
+				double instantPower = getCombinedPowerLoad();
 				
-//				double totalPower = power + cooling;
+				instantCoolingLoad = instantPower * COOLING_PERCENT / 100;
 				
-				double heat = cooling * WASTE_HEAT_FRACTION;
+				instantHeatGen = instantCoolingLoad * WASTE_HEAT_FRACTION;
 				// Dump the generated heat into the building to raise the room temperature
-				dumpExcessHeat(heat);
-
-//				logger.info(building, 30_000, "Actual power used: " + Math.round(totalPower * 100.0)/100.0 + " kW."
-//						+ "  heat dissipated: " + Math.round(heat * 100.0)/100.0 + " kW.");
+				dumpExcessHeat(instantHeatGen);
 			}
 		}
 		return valid;
+	}
+	
+	/**
+	 * Returns the heat generated.
+	 * 
+	 * @return
+	 */
+	public double getInstantHeatGenerated() {
+		return instantHeatGen;
+	}
+	
+	/**
+	 * Returns the instant cooling load.
+	 * 
+	 * @return
+	 */
+	public double getInstantCoolingLoad() {
+		return instantCoolingLoad;
 	}
 	
 	/**
@@ -451,21 +496,21 @@ public class Computation extends Function {
 	public double getEntropyPerCU() {
 		return entropy/currentCU;
 	}
-	
+
 	/**
 	 * Gets the amount of power required, based on the current load.
 	 *
 	 * @return power (kW) default zero
 	 */
 	@Override
-	public double getPowerRequired() {
-		double load = currentCU / peakCU;
-		double nonLoad = (peakCU - currentCU) / peakCU;
+	public double getCombinedPowerLoad() {
+		double loadFraction = currentCU / peakCU;
+		double nonLoadFraction = (peakCU - currentCU) / peakCU;
 		
 		// Note: Should entropy also increase the power required to run the node ?
 		// When entropy is negative, it should reduce or save power
 		
-		return load * combinedLoadkW + nonLoad * nonLoadkW;
+		return loadFraction * combinedLoadkW + nonLoadFraction * nonLoadkW;
 	}
 	
 	/**
@@ -473,14 +518,14 @@ public class Computation extends Function {
 	 *
 	 * @return power 
 	 */
-	public double[] getPowerLoadNonLoad() {
-		double load = currentCU / peakCU;
-		double nonLoad = (peakCU - currentCU) / peakCU;
+	public double[] getSeparatePowerLoadNonLoad() {
+		double loadFraction = currentCU / peakCU;
+		double nonLoadFraction = (peakCU - currentCU) / peakCU;
 		
 		// Note: Should entropy also increase the power required to run the node ?
 		// When entropy is negative, it should reduce or save power
 		
-		return new double[] {load * combinedLoadkW, nonLoad * nonLoadkW};
+		return new double[] {loadFraction * combinedLoadkW, nonLoadFraction * nonLoadkW};
 	}
 	
 	@Override

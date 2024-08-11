@@ -89,7 +89,7 @@ public class GroundPropulsion extends Propulsion implements Serializable {
 
 		double powerConstantSpeed = totalForce * vMS / TRANSMISSION_EFFICIENCY;
 		
-		logger.log(vehicle, Level.INFO, 0, "driveOnGround:: "
+		logger.log(vehicle, Level.INFO, 10_000, "driveOnGround:: "
 				+ "totalForce: " + DECIMAL1_N.format(totalForce) + TWO_WHITESPACES
 				+ "powerConstantSpeed: " + DECIMAL1_W.format(powerConstantSpeed) + TWO_WHITESPACES
 				+ "fInitialFriction: " + DECIMAL1_N.format(fInitialFriction) + TWO_WHITESPACES 

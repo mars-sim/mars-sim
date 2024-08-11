@@ -127,7 +127,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 		weedDemandLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.weedDemand"),
 								 StyleManager.DECIMAL_PLACES2.format(weedDemand), null);
 		
-		powerReq = tank.getPowerRequired();	
+		powerReq = tank.getCombinedPowerLoad();	
 		powerReqLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.powerReq"),
 								 StyleManager.DECIMAL_KW.format(powerReq), null);
 		
@@ -200,7 +200,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 			waterMassLabel.setText(StyleManager.DECIMAL_KG2.format(newWaterMass));
 		}
 		
-		double newPowerReq = tank.getPowerRequired();	
+		double newPowerReq = tank.getCombinedPowerLoad();	
 		if (powerReq != newPowerReq) {
 			powerReq = newPowerReq;
 			powerReqLabel.setText(StyleManager.DECIMAL_KW.format(newPowerReq));

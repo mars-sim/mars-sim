@@ -1880,20 +1880,25 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets total power demand from all computing nodes in a settlement.
+	 * Gets total combined power loads from all computing nodes in a settlement.
 	 * 
 	 * @return
 	 */
-	public double getTotalComputingPowerDemand() {
-		double power = 0;
+	public double[] getTotalCombinedLoads() {
+		double loadTotal = 0;
+		double nonloadTotal = 0;
 		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
 		if (nodeBldgs.isEmpty())
-			return 0;
+			return new double[] {0, 0};
 		for (Building b: nodeBldgs) {
 			Computation node = b.getComputation();
-			power += node.getPowerDemand();
+			double[] combined = node.getSeparatePowerLoadNonLoad();
+			double load = combined[0];
+			double nonload = combined[1];
+			loadTotal += load;
+			nonloadTotal += nonload;
 		}
-		return power;
+		return new double[] {loadTotal, nonloadTotal};
 	}
 	
 	/**
@@ -1901,16 +1906,17 @@ public class BuildingManager implements Serializable {
 	 * 
 	 * @return
 	 */
-	public double getComputingUsagePercent() {
-		double usage = 0;
+	public double[] getPeakCurrentPercent() {
+		double peak = 0;
+		double current = 0;
 		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
-		if (nodeBldgs.isEmpty())
-			return 0;
 		for (Building b: nodeBldgs) {
 			Computation node = b.getComputation();
-			usage += node.getUsagePercent();
+			current += node.getCurrentCU();
+			peak += node.getPeakCU();
 		}
-		return usage;
+		
+		return new double[] {current, peak};
 	}
 	
 	/**
@@ -1919,15 +1925,15 @@ public class BuildingManager implements Serializable {
 	 * @return
 	 */
 	public double getPeakTotalComputing() {
-		double usage = 0;
+		double peakTotal = 0;
 		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
 		if (nodeBldgs.isEmpty())
 			return 0;
 		for (Building b: nodeBldgs) {
 			Computation node = b.getComputation();
-			usage += node.getPeakCU();
+			peakTotal += node.getPeakCU();
 		}
-		return usage;
+		return peakTotal;
 	}
 	
 	/**

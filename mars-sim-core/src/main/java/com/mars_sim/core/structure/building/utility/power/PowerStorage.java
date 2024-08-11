@@ -336,7 +336,7 @@ public class PowerStorage extends Function {
 
 	
 	@Override
-	public double getPowerRequired() {
+	public double getCombinedPowerLoad() {
 			return 0;
 	}
 

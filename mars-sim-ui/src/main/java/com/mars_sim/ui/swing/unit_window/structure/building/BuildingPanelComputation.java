@@ -26,11 +26,14 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 public class BuildingPanelComputation extends BuildingFunctionPanel {
 
 	private static final String COMPUTING_ICON = "computing";
+	private static final String CU = " CUs";
+	private static final String SLASH = " / ";
+	private static final String KW = " kW";
 	
 	/** Is UI constructed. */
 	private boolean uiDone = false;
 	
-	private JLabel powerDemandLabel;
+	private JLabel powerLoadsLabel;
 	private JLabel percentUsageLabel;
 	private JLabel cULabel;
 	private JLabel entropyLabel;
@@ -63,22 +66,26 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 		AttributePanel springPanel = new AttributePanel(4);
 		center.add(springPanel, BorderLayout.NORTH);
 
-		// Power Demand
-		double powerDemand = building.getComputation().getPowerRequired();
-		powerDemandLabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.powerDemand"),
-				     StyleManager.DECIMAL_KW.format(powerDemand), Msg.getString("BuildingPanelComputation.powerDemand.tooltip"));
+		// Power Loads
+		double[] powerLoads = building.getComputation().getSeparatePowerLoadNonLoad();
+		String twoLoads = Math.round(powerLoads[0] * 10.0)/10.0 + SLASH
+				+ Math.round(powerLoads[1] * 10.0)/10.0 + KW;
+		
+		powerLoadsLabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.powerload"),
+				twoLoads, Msg.getString("BuildingPanelComputation.powerload.tooltip"));
 
-		// Usage
+		// CU Loads
 		double usage = building.getComputation().getUsagePercent();
 		percentUsageLabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.usage"),
-					 			StyleManager.DECIMAL_PERC.format(usage), Msg.getString("BuildingPanelComputation.usage.tooltip"));
+					 			StyleManager.DECIMAL_PERC1.format(usage), Msg.getString("BuildingPanelComputation.usage.tooltip"));
 
-		// Peak
-		double peak = Math.round(building.getComputation().getPeakCU() * 1_000.0)/1_000.0;
+		// Peak CUs
+		double peak = Math.round(building.getComputation().getPeakCU() * 10.0)/10.0;
+		// Current CUs
+		double computingUnit = Math.round(building.getComputation().getCurrentCU() * 10.0)/10.0;
 		
-		// Current
-		double computingUnit = Math.round(building.getComputation().getCurrentCU() * 1_000.0)/1_000.0;
-		String text = computingUnit + " (" + peak + ") CUs";
+		String text = computingUnit + SLASH + peak + CU;
+		
 		cULabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.computingUnit"),
 				text, Msg.getString("BuildingPanelComputation.computingUnit.tooltip"));
 	
@@ -93,18 +100,25 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 		if (!uiDone)
 			initializeUI();
 		
-		String power = StyleManager.DECIMAL_KW.format(building.getComputation().getPowerRequired());
-
-		if (!powerDemandLabel.getText().equalsIgnoreCase(power))
-			powerDemandLabel.setText(power);
+		// Power Loads
+		double[] powerLoads = building.getComputation().getSeparatePowerLoadNonLoad();
+		String twoLoads = Math.round(powerLoads[0] * 10.0)/10.0 + SLASH
+				+ Math.round(powerLoads[1] * 10.0)/10.0 + KW;
 		
-		double util = building.getComputation().getUsagePercent();
-		percentUsageLabel.setText(StyleManager.DECIMAL_PERC.format(util));
+		if (!powerLoadsLabel.getText().equalsIgnoreCase(twoLoads))
+			powerLoadsLabel.setText(twoLoads);
 		
+		// CU Loads
+		double usage = building.getComputation().getUsagePercent();
+		percentUsageLabel.setText(StyleManager.DECIMAL_PERC1.format(usage));
 		
-		double peak = Math.round(building.getComputation().getPeakCU()* 1_000.0)/1_000.0;
-		double computingUnit = Math.round(building.getComputation().getCurrentCU()* 1_000.0)/1_000.0;
-		String text = computingUnit + " (" + peak + ") CUs";
+		// Peak CUs
+		double peak = Math.round(building.getComputation().getPeakCU()* 10.0)/10.0;
+		// Current CUs
+		double computingUnit = Math.round(building.getComputation().getCurrentCU()* 10.0)/10.0;
+		
+		String text = computingUnit + SLASH + peak + CU;
+		
 		if (!cULabel.getText().equalsIgnoreCase(text))
 			cULabel.setText(text);
 		
@@ -116,7 +130,7 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 	
 	@Override
 	public void destroy() {
-		powerDemandLabel = null;
+		powerLoadsLabel = null;
 		percentUsageLabel = null;
 		cULabel = null;
 		entropyLabel = null;

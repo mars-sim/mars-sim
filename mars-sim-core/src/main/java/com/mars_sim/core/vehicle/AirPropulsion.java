@@ -190,7 +190,7 @@ public class AirPropulsion extends Propulsion implements Serializable {
 
 		drone.setHoveringHeight(currentHoveringHeight);
 
-		logger.log(vehicle, Level.INFO, 5_000, caseText
+		logger.log(vehicle, Level.INFO, 10_000, caseText
 				+ "h: " + DECIMAL2_M.format(currentHoveringHeight) + TWO_WHITESPACES 
 				+ "angle: " + DECIMAL3_RAD.format(angle) + TWO_WHITESPACES 
 				+ "u -> v: " + DECIMAL3_KPH.format(uKPH) + " -> " + DECIMAL3_KPH.format(vKPH) + TWO_WHITESPACES 

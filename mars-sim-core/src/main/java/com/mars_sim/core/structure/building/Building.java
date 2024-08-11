@@ -790,7 +790,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		// Determine power required for each function.
 		for (Function function : functions) {
-			double power = function.getPowerRequired();
+			double power = function.getCombinedPowerLoad();
 			if (power > 0) {
 				result += power;
 			}
