@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.computing.ComputingJob;
+import com.mars_sim.core.computing.ComputingLoadType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.Person;
@@ -27,6 +28,7 @@ import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Lab;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.Computation;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.structure.building.function.Research;
 import com.mars_sim.core.vehicle.Rover;
@@ -95,10 +97,14 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 			return;
 		}
 
-		this.compute = new ComputingJob(person.getAssociatedSettlement(), getDuration(), name);
+        int now = getMarsTime().getMillisolInt();
+        
+        this.compute = new ComputingJob(person.getAssociatedSettlement(), ComputingLoadType.MID, now, getDuration(), name);
+
+        compute.pickMultipleNodes(0, now);
     }
 
-		/**
+	/**
 	 * Determines the scientific study that will be researched.
 	 * 
 	 * @return study or null if none available.
@@ -118,7 +124,7 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 
 		// Add all collaborative studies with appropriate sciences and in research
 		// phase.
-		for(ScientificStudy collabStudy : person.getCollabStudies()) {
+		for (ScientificStudy collabStudy : person.getCollabStudies()) {
 			if (StudyStatus.RESEARCH_PHASE == collabStudy.getPhase()
 					&& !collabStudy.isCollaborativeResearchCompleted(person)) {
 				ScienceType collabScience = collabStudy.getContribution(person);
@@ -348,7 +354,8 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 	}
 
     /**
-     * What is teh study of this research
+     * Gets the study of this research.
+     * 
      * @return
      */
 	public ScientificStudy getStudy() {
@@ -356,7 +363,8 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 	}
 
     /**
-     * Whetehr is the research taking place
+     * Gets the lab is the research taking place.
+     * 
      * @return
      */
 	public Lab getLaboratory() {
@@ -384,7 +392,7 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 		double remainingTime = 0;
 		
 		// If person is incapacitated, end task.
-		if (person.getPerformanceRating() < .2) {
+		if (person.getPerformanceRating() < .1) {
 			endTask();
             return time;
 		}
@@ -406,7 +414,7 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 			return time;
 		}
 		
-		compute.consumeProcessing(time, getMarsTime());
+		compute.process(getTimeCompleted(), getMarsTime().getMillisolInt());
 		
 		// Check if person is in a moving rover.
 		if (Vehicle.inMovingRover(person)) {
@@ -445,8 +453,10 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 	}
 
 	/**
-	 * Do any special research activity in the lab. Default is nothing
-	 * but should be overriden for subtasks if needed.
+	 * Do any special research activity in the lab ? 
+	 * Note: Nothing by default.
+	 * Should be overridden for subtasks if needed.
+	 * 
 	 * @param time Time spent doing the lab research
 	 */
 	protected void executeResearchActivity(double time) {

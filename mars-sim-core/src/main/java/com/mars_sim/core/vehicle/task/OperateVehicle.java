@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.logging.Level;
 
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.computing.ComputingJob;
+import com.mars_sim.core.computing.ComputingLoadType;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.logging.SimLogger;
@@ -55,11 +57,18 @@ public abstract class OperateVehicle extends Task {
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(OperateVehicle.class.getName());
 	
+	/** Task name */
+	private static final String NAME = Msg.getString("Task.description.operateVehicle"); //$NON-NLS-1$
+
     /** Task phases. */
     public static final TaskPhase MOBILIZE = new TaskPhase(Msg.getString(
             "Task.phase.mobilize")); //$NON-NLS-1$
  	
     private static final int HRS_TO_SECS = 3600;
+    /** Distance buffer for nearly arriving at destination (km). */
+    public static final int DISTANCE_BUFFER_ARRIVING = 1;
+    /** Distance buffer for nearly arriving at destination (km). */
+    public static final int DISTANCE_DOUBLE_BUFFER_ARRIVING = DISTANCE_BUFFER_ARRIVING * 2;
     
  	private static final double THRESHOLD_SUNLIGHT = SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
  	/** The speed mod percent impacted by sunlight for flyers. */	
@@ -80,10 +89,6 @@ public abstract class OperateVehicle extends Task {
     public static final double RATIO_OXIDIZER_FUEL = 1.5;
     /** Distance buffer for arriving at destination (km). */
     public static final double DISTANCE_BUFFER_ARRIVED = 0.2;
-    /** Distance buffer for nearly arriving at destination (km). */
-    public static final int DISTANCE_BUFFER_ARRIVING = 1;
-    /** Distance buffer for nearly arriving at destination (km). */
-    public static final int DISTANCE_DOUBLE_BUFFER_ARRIVING = DISTANCE_BUFFER_ARRIVING * 2;
     /** The base percentage chance of an accident while operating vehicle per millisol. */
     public static final double BASE_ACCIDENT_CHANCE = .01D;
     
@@ -105,6 +110,8 @@ public abstract class OperateVehicle extends Task {
 	private MarsTime startTripTime;
 	/** The malfunctionManager of this vehicle. */
 	private MalfunctionManager malfunctionManager;
+	
+	private ComputingJob compute;
 	
 	protected static final ExperienceImpact IMPACT = new ExperienceImpact(2D, NaturalAttributeType.EXPERIENCE_APTITUDE,
 								false, 0.2D, SkillType.PILOTING);
@@ -167,8 +174,16 @@ public abstract class OperateVehicle extends Task {
 			walkToActivitySpotInRover(rover, rover.getOperatorActivitySpots(), false);
 		}
 		
+		
+        int now = getMarsTime().getMillisolInt();
+        
+        this.compute = new ComputingJob(person.getAssociatedSettlement(), ComputingLoadType.MID, now, getDuration(), NAME);
+
+        compute.pickMultipleNodes(0, now);
+        
 		// Set initial phase
 		setPhase(MOBILIZE);
+	
 	}
 	
     @Override
@@ -588,6 +603,9 @@ public abstract class OperateVehicle extends Task {
     	
     	double topSpeedKPH = 0;
     	
+    	// Request for computing resources for processing field condition
+		compute.process(getTimeCompleted(), getMarsTime().getMillisolInt());
+
     	if (vehicle instanceof Drone) {
          	// Allow only 50% impact from lightMod
     		topSpeedKPH = vehicle.getBaseSpeed() * (1 + speedFactor) / 2 * getSkillMod() * (0.5 + 0.5 * lightMod);

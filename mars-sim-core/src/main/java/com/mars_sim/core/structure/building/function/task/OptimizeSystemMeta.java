@@ -27,17 +27,16 @@ import com.mars_sim.tools.Msg;
  */
 public class OptimizeSystemMeta extends FactoryMetaTask {
 
-	private static final int CU_FACTOR = 10;
-	private static final int NODE_FACTOR = 15;
+	private static final int CU_FACTOR = 50;
+	private static final int NODE_FACTOR = 50;
 	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.optimizeSystem"); //$NON-NLS-1$
 	/** default logger. */
 	// May add back private static SimLogger logger = SimLogger.getLogger(OptimizeSystemMeta.class.getName())
 
-	
     public OptimizeSystemMeta() {
-		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
 		setTrait(TaskTrait.ACADEMIC);
 			
@@ -66,32 +65,36 @@ public class OptimizeSystemMeta extends FactoryMetaTask {
 			return EMPTY_TASKLIST;
 		}
 
+		double pop = person.getAssociatedSettlement().getIndoorPeopleCount();
+		
+		double popFactor = Math.sqrt(pop);
+		
 		// Compute total entropy and average minimum entropy per node
-		double totENPerN = person.getAssociatedSettlement().getBuildingManager()
+		double[] array = person.getAssociatedSettlement().getBuildingManager()
 					.getTotalEntropyPerNode();
 		
-		double totENPerCU = person.getAssociatedSettlement().getBuildingManager()
+		int numNode = (int)array[0];
+		double totalEntropy = array[1];
+		
+		double[] array1 = person.getAssociatedSettlement().getBuildingManager()
 				.getTotalEntropyPerCU();
+			
+//		int numNode = (int)array[0];
+		double totalEntropyPerCU = array1[1];
 		
-//		double ave = person.getAssociatedSettlement().getBuildingManager()
-//					.getAverageMinimumEntropy();
-		
-		if (totENPerN < 0 && totENPerCU < 0) {
+		if (totalEntropy < 0 && totalEntropyPerCU < 0) {
 			return EMPTY_TASKLIST;
 		}
 		
-		if (totENPerN > 0 && totENPerCU < 0.1) {
-			if (totENPerCU < 0.01) {
-				totENPerCU = 0.01;
-			}
-			else {
-				totENPerCU = 0.1;
+		if (totalEntropy > 0 && totalEntropyPerCU < 0.1) {
+			if (totalEntropyPerCU < 0.1) {
+				totalEntropyPerCU = 0.1;
 			}
 		}
 		
-		RatingScore score = new RatingScore(ENTROPY_CU, CU_FACTOR * totENPerCU);
+		RatingScore score = new RatingScore(ENTROPY_CU, CU_FACTOR * totalEntropyPerCU / popFactor);
 				
-		score.addBase(ENTROPY_NODE, NODE_FACTOR * totENPerN);
+		score.addBase(ENTROPY_NODE, NODE_FACTOR * totalEntropy / numNode / popFactor);
 		
 		NaturalAttributeManager manager = person.getNaturalAttributeManager();
 		

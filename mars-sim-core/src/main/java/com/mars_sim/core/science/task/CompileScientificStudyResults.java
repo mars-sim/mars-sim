@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import com.mars_sim.core.computing.ComputingJob;
+import com.mars_sim.core.computing.ComputingLoadType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -22,6 +23,7 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.Computation;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
@@ -46,15 +48,14 @@ extends Task {
     private static final TaskPhase COMPILING_PHASE = new TaskPhase(Msg.getString(
             "Task.phase.compilingPhase")); //$NON-NLS-1$
 
-
-	
     /** The scientific study to compile. */
     private ScientificStudy study;
+    
     private ComputingJob compute;
-    
-    
+
 	/**
-	 * Create a new Study anda Task to build the proposal for a Person
+	 * Creates a new Study and a Task to build the proposal for a Person.
+	 * 
 	 * @param p
 	 * @return
 	 */
@@ -82,8 +83,12 @@ extends Task {
         // Use task constructor. Skill determined by Study
         super(NAME, person, false, impact, RandomUtil.getRandomDouble(20, 50));
         
-        this.compute = new ComputingJob(person.getAssociatedSettlement(), getDuration(), NAME);
+        int now = getMarsTime().getMillisolInt();
+        
+        this.compute = new ComputingJob(person.getAssociatedSettlement(), ComputingLoadType.HIGH, now, getDuration(), NAME);
 
+        compute.pickMultipleNodes(0, now);
+        
         // Determine study.
         this.study = study;
         setDescription(Msg.getString("Task.description.compileScientificStudyResults.detail",
@@ -158,7 +163,6 @@ extends Task {
         return study.getContribution(person);
     }
 
-
     /**
      * Gets the effective compilation time based on the person's science skill.
      * 
@@ -220,13 +224,13 @@ extends Task {
             return time;
         }
 
-        compute.consumeProcessing(time, getMarsTime());
+        compute.process(getTimeCompleted(), getMarsTime().getMillisolInt());
 
         // Add paper work time to study.
         double compilingTime = getEffectiveCompilationTime(time);
         if (study.getPrimaryResearcher().equals(person)) {
             study.addPrimaryPaperWorkTime(compilingTime);
-            if (study.isPrimaryPaperCompleted() && compute.getNeeded() <= 0) {
+            if (study.isPrimaryPaperCompleted() && compute.getRemainingNeed() <= 0) {
     			logger.log(worker, Level.INFO, 0, "Spent "
     					+ Math.round(study.getPrimaryPaperWorkTimeCompleted() *10.0)/10.0
     					+ " millisols in compiling data for primary research study "
@@ -236,7 +240,7 @@ extends Task {
         }
         else {
             study.addCollaborativePaperWorkTime(person, compilingTime);
-            if (study.isCollaborativePaperCompleted(person) && compute.getNeeded() <= 0) {
+            if (study.isCollaborativePaperCompleted(person) && compute.getRemainingNeed() <= 0) {
     			logger.log(worker, Level.INFO, 0, "Spent "
     					+ Math.round(study.getCollaborativePaperWorkTimeCompleted(person) *10.0)/10.0
     					+ " millisols in performing lab experiments for collaborative research study "

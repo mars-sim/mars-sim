@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.computing.ComputingJob;
+import com.mars_sim.core.computing.ComputingLoadType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -25,6 +26,7 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.Computation;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.tools.Msg;
@@ -50,7 +52,7 @@ public class PeerReviewStudyPaper extends Task {
             "Task.phase.review")); //$NON-NLS-1$
     
     private ComputingJob compute;
-	
+
 	/** The scientific study to review. */
 	private ScientificStudy study;
 
@@ -85,7 +87,11 @@ public class PeerReviewStudyPaper extends Task {
         super(NAME, person, false, impact, 50D + RandomUtil.getRandomDouble(20D));
         this.study = study;
 
-		compute = new ComputingJob(person.getAssociatedSettlement(), getDuration(), NAME);
+        int now = getMarsTime().getMillisolInt();
+        
+        this.compute = new ComputingJob(person.getAssociatedSettlement(), ComputingLoadType.LOW, now, getDuration(), NAME);
+
+        compute.pickSingleNode(0, now);
 		
         // Determine study to review.
         setDescription(Msg.getString("Task.description.peerReviewStudyPaper.detail",
@@ -114,8 +120,8 @@ public class PeerReviewStudyPaper extends Task {
 
             if (person.isInVehicle()) {
                 // If person is in rover, walk to passenger activity spot.
-                if (person.getVehicle() instanceof Rover) {
-                    walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), false);
+                if (person.getVehicle() instanceof Rover rover) {
+                    walkToPassengerActivitySpotInRover(rover, false);
                 }
             }
             else {
@@ -223,7 +229,7 @@ public class PeerReviewStudyPaper extends Task {
 			return time;
 		}
 		
-        compute.consumeProcessing(time, getMarsTime());
+		compute.process(getTimeCompleted(), getMarsTime().getMillisolInt());
 
         // Add experience
         addExperience(time);

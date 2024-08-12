@@ -1972,35 +1972,36 @@ public class BuildingManager implements Serializable {
 	 * 
 	 * @return
 	 */
-	public double getTotalEntropyPerNode() {
+	public double[] getTotalEntropyPerNode() {
 		double entropy = 0;
 		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
 		if (nodeBldgs.isEmpty())
-			return 0;		
+			return new double[]{0, 0};		
 		int size = nodeBldgs.size();
 		for (Building b: nodeBldgs) {
 			Computation node = b.getComputation();
 			entropy += node.getEntropy();
 		}
-		return entropy/size;
+		return new double[]{size, entropy};
 	}
 	
 	/**
-	 * Gets total entropy of all computing nodes in a settlement.
+	 * Gets total entropy per CU of all computing nodes in a settlement.
 	 * 
 	 * @return
 	 */
-	public double getTotalEntropyPerCU() {
-		double entropy = 0;
+	public double[] getTotalEntropyPerCU() {
+		double entropyPerCU = 0;
 		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
+		int size = nodeBldgs.size();
 		if (nodeBldgs.isEmpty())
-			return 0;		
+			return new double[]{0, 0};	
 		for (Building b: nodeBldgs) {
 			Computation node = b.getComputation();
 			double ePerCU = node.getEntropyPerCU();
-			entropy += ePerCU;
+			entropyPerCU += ePerCU;
 		}
-		return entropy;
+		return new double[]{size, entropyPerCU};
 	}
 	
 	/**
@@ -2106,10 +2107,10 @@ public class BuildingManager implements Serializable {
 			if (score > 0)
 				scores.put(node, score);
 		}
-
+		
 		if (scores.isEmpty())
 			return null;
-
+		
 		// Note: Use probability selection	
 		return RandomUtil.getWeightedRandomObject(scores);
 	}

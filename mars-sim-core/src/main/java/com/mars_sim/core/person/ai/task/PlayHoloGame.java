@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.task;
 import java.util.Collections;
 
 import com.mars_sim.core.computing.ComputingJob;
+import com.mars_sim.core.computing.ComputingLoadType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
@@ -17,6 +18,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.building.Building;
 import com.mars_sim.core.structure.building.BuildingManager;
+import com.mars_sim.core.structure.building.function.Computation;
 import com.mars_sim.core.structure.building.function.FunctionType;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.tools.Msg;
@@ -46,7 +48,7 @@ public class PlayHoloGame extends Task {
 	// Data members
     /** Computing Units needed per millisol. */		
 	private ComputingJob compute;
-	
+    
 	/**
 	 * Constructor.
 	 * 
@@ -89,9 +91,13 @@ public class PlayHoloGame extends Task {
 				walkToRandomLocation(true);
 			}
 		}
+		
+        int now = getMarsTime().getMillisolInt();
+        
+        this.compute = new ComputingJob(person.getAssociatedSettlement(), ComputingLoadType.MID, now, getDuration(), NAME);
 
-		compute = new ComputingJob(person.getAssociatedSettlement(), getDuration(), NAME);
-
+        compute.pickMultipleNodes(0, now);
+				
 		// Initialize phase
 		addPhase(SETTING_UP_SCENES);
 		addPhase(PLAYING_A_HOLO_GAME);
@@ -142,7 +148,7 @@ public class PlayHoloGame extends Task {
 			return 0;
 		}
 		
-		compute.consumeProcessing(time, getMarsTime());
+		compute.process(getTimeCompleted(), getMarsTime().getMillisolInt());
 
         // Add experience
         addExperience(time);

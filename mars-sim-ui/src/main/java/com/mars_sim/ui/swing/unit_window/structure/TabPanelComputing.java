@@ -239,15 +239,15 @@ public class TabPanelComputing extends TabPanelTable {
 				return buildings.get(row);
 			}
 			if (column == 1) {
-				// Power Demand
+				// Power load
 				return Math.round(buildings.get(row).getComputation().getCombinedPowerLoad() * 10.0)/10.0;
 			}
 			if (column == 2) {
-				// Power Demand
+				// heat generated
 				return Math.round(buildings.get(row).getComputation().getInstantHeatGenerated() * 10.0)/10.0;
 			}
 			else if (column == 3) {
-				// Usage
+				// cooling load
 				return Math.round(buildings.get(row).getComputation().getInstantCoolingLoad() * 10.0)/10.0;
 			}
 			else if (column == 4) {

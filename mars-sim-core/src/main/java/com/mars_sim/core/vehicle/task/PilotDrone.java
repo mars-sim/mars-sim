@@ -36,7 +36,7 @@ public class PilotDrone extends OperateVehicle {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.pilotDrone"); //$NON-NLS-1$
 
-	/** Collsion phase produces more skill experience */
+	/** Collision phase produces more skill experience */
 	private static final TaskPhase AVOID_COLLISION = new TaskPhase(Msg.getString("Task.phase.avoidObstacle"),
 									IMPACT.changeSkillsRatio(0.2D));
 

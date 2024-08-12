@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.computing.ComputingJob;
+import com.mars_sim.core.computing.ComputingLoadType;
 import com.mars_sim.core.environment.ExploredLocation;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -22,6 +23,7 @@ import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.structure.building.function.Computation;
 import com.mars_sim.mapdata.location.Coordinates;
 import com.mars_sim.tools.Msg;
 import com.mars_sim.tools.util.RandomUtil;
@@ -62,6 +64,7 @@ public class AnalyzeMapData extends Task {
 	
     /** Computing Units needed per millisol. */		
 	private ComputingJob compute;
+	
 	/** The selected explored location for this session. */
 	private ExploredLocation exploredLoc;
 	
@@ -87,8 +90,12 @@ public class AnalyzeMapData extends Task {
 			compositeSkill = .5 * (1 + computingSkill + prospectingSkill/2.0);
 		}
 		
-		compute = new ComputingJob(person.getAssociatedSettlement(), getDuration(), NAME);
+        int now = getMarsTime().getMillisolInt();
+        
+        this.compute = new ComputingJob(person.getAssociatedSettlement(), ComputingLoadType.HIGH, now, getDuration(), NAME);
 
+        compute.pickMultipleNodes(0, now);
+        
     	Set<Coordinates> mineralLocs = person.getAssociatedSettlement().getNearbyMineralLocations();  	
     	
     	int numSites = mineralLocs.size(); 	
@@ -174,16 +181,16 @@ public class AnalyzeMapData extends Task {
     		int value = (int)Math.round(rand / 5.0);
     		
     		logger.log(person, Level.INFO, 20_000, "Requested " 
-    				+ Math.round(compute.getNeeded() * 100.0)/100.0 
+    				+ Math.round(compute.getRemainingNeed() * 100.0)/100.0 
     				+ " CUs for "
     				+ NAME
-    				+ ". value: " + value
-    				+ ". rand: " + Math.round(rand * 1000.0)/1000.0
-		     		+ ". compositeSkill: " + Math.round(compositeSkill * 10.0)/10.0 
-		     		+ ". certainty: " + Math.round(certainty * 1000.0)/1000.0 
-		     		+ ". score: " + Math.round(score * 1000.0)/1000.0 
-		     		+ ". rand: " + Math.round(rand1 * 1000.0)/1000.0 
-		     		+ ". numROIs: " + numROIs 
+//    				+ ". value: " + value
+//    				+ ". rand: " + Math.round(rand * 1000.0)/1000.0
+//		     		+ ". compositeSkill: " + Math.round(compositeSkill * 10.0)/10.0 
+//		     		+ ". certainty: " + Math.round(certainty * 1000.0)/1000.0 
+//		     		+ ". score: " + Math.round(score * 1000.0)/1000.0 
+//		     		+ ". rand: " + Math.round(rand1 * 1000.0)/1000.0 
+//		     		+ ". numROIs: " + numROIs 
 		     		+ ". Selected site: " + exploredLoc.getLocation().getFormattedString() + ".");
     		
     		if (rand < value) {
@@ -320,7 +327,7 @@ public class AnalyzeMapData extends Task {
         	endTask();
         }
 
-        compute.consumeProcessing(time, getMarsTime());
+		compute.process(getTimeCompleted(), getMarsTime().getMillisolInt());
     }
     
 	/**
