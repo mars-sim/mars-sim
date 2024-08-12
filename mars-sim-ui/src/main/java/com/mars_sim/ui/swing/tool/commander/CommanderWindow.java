@@ -380,7 +380,7 @@ public class CommanderWindow extends ToolWindow {
 			// Modify trading settlements in Mission Tab
 			setupTradingSettlements();
 			// Modify preference settlement in Mission Tab			
-			prefButton.setText("Go to " + s.getName() + " Preference tab");
+			prefButton.setText("Open " + s.getName() + " Preference tab");
 		}
 	}
 

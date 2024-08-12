@@ -25,7 +25,7 @@ public class InviteStudyCollaboratorTest extends AbstractMarsSimUnitTest {
         // Build a study
         var sim = context.getSim();
         var study = sim.getScientificStudyManager().createScientificStudy(p, science, 10);
-        assertEquals("Person assigned Study", study, p.getStudy());
+        assertEquals("Person assigned Study", study, p.getResearchStudy().getStudy());
         return study;
     }
 

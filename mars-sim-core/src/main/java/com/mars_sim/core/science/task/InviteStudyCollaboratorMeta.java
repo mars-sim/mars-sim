@@ -68,7 +68,7 @@ public class InviteStudyCollaboratorMeta extends FactoryMetaTask {
         }
 
         // Check if study is in invitation phase.
-        ScientificStudy study = person.getStudy();
+        ScientificStudy study = person.getResearchStudy().getStudy();
         if ((study == null)
                 || (study.getPhase() != StudyStatus.INVITATION_PHASE)) {
             return EMPTY_TASKLIST;

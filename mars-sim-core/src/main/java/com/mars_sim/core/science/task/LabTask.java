@@ -112,7 +112,7 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 		List<ScientificStudy> possibleStudies = new ArrayList<>();
 
 		// Add primary study if appropriate science and in research phase.
-		ScientificStudy primaryStudy = person.getStudy();
+		ScientificStudy primaryStudy = person.getResearchStudy().getStudy();
 		if ((primaryStudy != null) && StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase()
 					&& !primaryStudy.isPrimaryResearchCompleted()
 					&& target.contains(primaryStudy.getScience())) {
@@ -123,7 +123,7 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 
 		// Add all collaborative studies with appropriate sciences and in research
 		// phase.
-		for (ScientificStudy collabStudy : person.getCollabStudies()) {
+		for (ScientificStudy collabStudy : person.getResearchStudy().getCollabStudies()) {
 			if (StudyStatus.RESEARCH_PHASE == collabStudy.getPhase()
 					&& !collabStudy.isCollaborativeResearchCompleted(person)) {
 				ScienceType collabScience = collabStudy.getContribution(person);

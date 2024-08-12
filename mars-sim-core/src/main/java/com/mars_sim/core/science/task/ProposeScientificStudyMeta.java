@@ -72,7 +72,7 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 			var assigned = role.getType();
 			roleType = (assigned != null ? assigned : roleType);
 		}
-		ScientificStudy study = person.getStudy();
+		ScientificStudy study = person.getResearchStudy().getStudy();
 		if (study == null) {
 			// Probability of starting a new scientific study based on Job
 			int pop = settlement.getInitialPopulation();

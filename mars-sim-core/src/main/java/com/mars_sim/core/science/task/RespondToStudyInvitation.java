@@ -157,8 +157,8 @@ public class RespondToStudyInvitation extends Task {
 			study.respondingInvitedResearcher(person);
 
 			// LImit how many studies a person can do
-			int studyCount = (person.getStudy() != null ? 1 : 0);
-			studyCount += person.getCollabStudies().size();
+			int studyCount = (person.getResearchStudy().getStudy() != null ? 1 : 0);
+			studyCount += person.getResearchStudy().getCollabStudies().size();
 			if (studyCount >= scienceConfig.getMaxStudies()) {
 				logger.warning(person, "Doing too many studies. Not accepting " + study.getName() + ".");
 				endTask();
@@ -209,13 +209,13 @@ public class RespondToStudyInvitation extends Task {
 				double acceptChance = 50D;
 
 				// Modify based on study primary researcher's achievement.
-				double primaryAchievement = study.getPrimaryResearcher().getScientificAchievement(studyScience);
+				double primaryAchievement = study.getPrimaryResearcher().getResearchStudy().getScientificAchievement(studyScience);
 				acceptChance += primaryAchievement;
 
 				// Modify based on study collaborative researchers' achievements.
 				for (Entry<Person, ScienceType> partner : study.getPersonCollaborativePersons().entrySet()) {
 						ScienceType collaborativeScience = partner.getValue();
-						acceptChance += (partner.getKey().getScientificAchievement(collaborativeScience) / 2D);
+						acceptChance += (partner.getKey().getResearchStudy().getScientificAchievement(collaborativeScience) / 2D);
 
 				}
 
@@ -225,7 +225,7 @@ public class RespondToStudyInvitation extends Task {
 				}
 
 				// Modify by how many studies researcher is already collaborating on.
-				acceptChance /= (person.getCollabStudies().size() + 1D);
+				acceptChance /= (person.getResearchStudy().getCollabStudies().size() + 1D);
 
 				// Modify based on difficulty level of study vs researcher's skill.
 				SkillType skill = jobScience.getSkill();

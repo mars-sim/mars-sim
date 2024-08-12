@@ -51,7 +51,7 @@ public class ProposeScientificStudy extends Task {
 	 * @return
 	 */
 	static Task createTask(Person p) {
-		var study = p.getStudy();
+		var study = p.getResearchStudy().getStudy();
 		if (study == null) {		
 			// Create new scientific study.
 			study = createStudy(p);

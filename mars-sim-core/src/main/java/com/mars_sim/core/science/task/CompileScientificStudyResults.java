@@ -131,7 +131,7 @@ extends Task {
         List<ScientificStudy> possibleStudies = new ArrayList<>();
 
         // Add primary study if in paper phase.
-        ScientificStudy primaryStudy = person.getStudy();
+        ScientificStudy primaryStudy = person.getResearchStudy().getStudy();
         if ((primaryStudy != null) && (StudyStatus.PAPER_PHASE == primaryStudy.getPhase()) &&
                     !primaryStudy.isPrimaryPaperCompleted()) {
             // Primary study added twice to double chance of random selection.
@@ -140,7 +140,7 @@ extends Task {
         }
 
         // Add all collaborative studies in research phase.
-        for(ScientificStudy collabStudy : person.getCollabStudies()) {
+        for(ScientificStudy collabStudy : person.getResearchStudy().getCollabStudies()) {
             if ((StudyStatus.PAPER_PHASE == collabStudy.getPhase()) &&
                     !collabStudy.isCollaborativePaperCompleted(person))
                 possibleStudies.add(collabStudy);

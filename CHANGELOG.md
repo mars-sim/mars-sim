@@ -5,13 +5,13 @@ Project: https://mars-sim.com
 GitHub: https://github.com/mars-sim/mars-sim  
 
 ------------------------------------------|---------------------
-## Version 3.8.0 (Sun 4 Aug 2024)
+## Version 3.8.0 (Mon 12 Aug 2024)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
   <LI>Agency: add "International Space Research Alliance" (ISRA), a Chinese-led 
   	  multi-national alliance and Taiwan nation state.</LI>
-  <LI>Computing: rework heat dissipation and separate power demand from cooling demand.</LI>  
+  <LI>Computing: schedule resources of a task from multiple nodes.</LI> 
   <LI>Country: incorporate Taiwan as nation state.</LI>  
   <LI>Drone: add modeling thrust and potential energy.</LI>  
   <LI>Goods Manager: rework relationship with objectives.</LI>
@@ -34,6 +34,7 @@ GitHub: https://github.com/mars-sim/mars-sim
 <OL>
   <LI>Backlog: add a column showing the task's work scope.</LI>
   <LI>Building Tab: add tracking heating system parameters.</LI>
+  <LI>Computing: shows heat dissipation, power for load/non-load & cooling demand.</LI>  
   <LI>Exploration: show types of rocks collected when exploring sites.</LI>	
   <LI>Health Log: show a person's health history log with complaint types, date started and date cured.</LI>
   <LI>Monitor Tool: support and filter authorities and settlements in one single combobox.</LI>

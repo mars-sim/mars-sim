@@ -54,7 +54,7 @@ public class PerformMathematicalModelingMeta extends FactoryMetaTask {
     @Override
     public List<TaskJob> getTaskJobs(Person person) {
 
-        ScientificStudy primaryStudy = person.getStudy();
+        ScientificStudy primaryStudy = person.getResearchStudy().getStudy();
         if ((primaryStudy == null) 
             || !person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
             || !person.isInside()) {
@@ -89,7 +89,7 @@ public class PerformMathematicalModelingMeta extends FactoryMetaTask {
         }
 
 	    // Add probability for each study researcher is collaborating on.
-	    for(ScientificStudy collabStudy : person.getCollabStudies()) {
+	    for(ScientificStudy collabStudy : person.getResearchStudy().getCollabStudies()) {
             if ((StudyStatus.RESEARCH_PHASE == collabStudy.getPhase())
                     && !collabStudy.isCollaborativeResearchCompleted(person)) {
                 ScienceType collabScience = collabStudy.getContribution(person);

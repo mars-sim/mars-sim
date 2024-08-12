@@ -65,7 +65,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 			double newBase = 0;
 
 			// Add probability for researcher's primary study (if any).
-			ScientificStudy primaryStudy = person.getStudy();
+			ScientificStudy primaryStudy = person.getResearchStudy().getStudy();
 			if ((primaryStudy != null) && (StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase())
 					&& !primaryStudy.isPrimaryResearchCompleted()
 					&& (science == primaryStudy.getScience())) {
@@ -73,7 +73,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 			}
 
 			// Add probability for each study researcher is collaborating on.
-			for(ScientificStudy collabStudy : person.getCollabStudies()) {
+			for(ScientificStudy collabStudy : person.getResearchStudy().getCollabStudies()) {
 				if (StudyStatus.RESEARCH_PHASE.equals(collabStudy.getPhase())
 						&& !collabStudy.isCollaborativeResearchCompleted(person)
 						&& (science == collabStudy.getContribution(person))) {

@@ -8,21 +8,18 @@
 package com.mars_sim.core.moon.project;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.mars_sim.core.moon.Colonist;
 import com.mars_sim.core.moon.Colony;
 import com.mars_sim.core.person.ai.SkillManager;
-import com.mars_sim.core.science.Researcher;
+import com.mars_sim.core.science.ResearchStudy;
 import com.mars_sim.core.science.ScienceType;
-import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.tools.util.RandomUtil;
 
-public class ColonyResearcher extends Colonist implements Researcher, Temporal {
+public class ColonyResearcher extends Colonist implements Temporal {
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -36,24 +33,22 @@ public class ColonyResearcher extends Colonist implements Researcher, Temporal {
 		
 	protected ScienceType mainScienceType;
 	
-	/** The person's current scientific study. */
-	private ScientificStudy study;
-
 	/** The researcher's skill manager. */
 	private SkillManager skillManager;
+	/** The person's research instance. */
+	private ResearchStudy research;
 	
-	/** The person's achievement in scientific fields. */
-	private Map<ScienceType, Double> scientificAchievement = new ConcurrentHashMap<>();
-	/** The person's list of collaborative scientific studies. */
-	private Set<ScientificStudy> collabStudies;
 	/** A set of research projects this researcher engage in. */
 	private Set<ResearchProject> projects = new HashSet<>();
 	
 	public ColonyResearcher(String name, Colony colony) {
 		super(name, colony);
 
+		// Construct the ResearchStudy instance
+		research = new ResearchStudy();
+		
 		// Determine the main science type
-		mainScienceType = ScienceType.getRandomScienceType();
+		mainScienceType = ScienceType.getRandomScienceType();	
 	}
     
 	/**
@@ -133,6 +128,9 @@ public class ColonyResearcher extends Colonist implements Researcher, Temporal {
 			}
 		}
 	
+		// Primary researcher; my responsibility to update Study
+		research.timePassing(pulse);
+		
 		return true;
 	}
 
@@ -157,101 +155,29 @@ public class ColonyResearcher extends Colonist implements Researcher, Temporal {
 	protected ScienceType getMainScienceType() {
 		return mainScienceType;
 	}
-	
+
 	/**
-	 * Sets the study that this researcher is the lead on.
+	 * Gets the research study instance.
 	 * 
-	 * @param scientificStudy
+	 * @return
 	 */
-	@Override
-	public void setStudy(ScientificStudy scientificStudy) {
-		this.study = scientificStudy;
-	}
-
-	
-	/**
-	 * Gets the scientific study instance.		
-	 */
-	@Override
-	public ScientificStudy getStudy() {
-		return study;
-	}
-
-	/**
-	 * Gets the collaborative study sets.
-	 */
-	@Override
-	public Set<ScientificStudy> getCollabStudies() {
-		return collabStudies;
+	public ResearchStudy getResearchStudy() {
+		return research;
 	}
 	
 	/**
-	 * Adds the collaborative study.
+	 * Gets the skill manager instance.
 	 * 
-	 * @param study
+	 * @return
 	 */
-	@Override
-	public void addCollabStudy(ScientificStudy study) {
-		this.collabStudies.add(study);
-	}
-
-	/**
-	 * Removes the collaborative study.
-	 * 
-	 * @param study
-	 */
-	@Override
-	public void removeCollabStudy(ScientificStudy study) {
-		this.collabStudies.remove(study);
-	}
-
-	/**
-	 * Gets the researcher's achievement credit for a given scientific field.
-	 *
-	 * @param science the scientific field.
-	 * @return achievement credit.
-	 */
-	@Override
-	public double getScientificAchievement(ScienceType science) {
-		double result = 0D;
-		if (science == null)
-			return result;
-		if (scientificAchievement.containsKey(science)) {
-			result = scientificAchievement.get(science);
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the researcher's total scientific achievement credit.
-	 *
-	 * @return achievement credit.
-	 */
-	@Override
-	public double getTotalScientificAchievement() {
-		double result = 0d;
-		for (double value : scientificAchievement.values()) {
-			result += value;
-		}
-		return result;
-	}
-
-	/**
-	 * Adds achievement credit to the researcher in a scientific field.
-	 *
-	 * @param achievementCredit the achievement credit.
-	 * @param science           the scientific field.
-	 */
-	@Override
-	public void addScientificAchievement(double achievementCredit, ScienceType science) {
-		if (scientificAchievement.containsKey(science)) {
-			achievementCredit += scientificAchievement.get(science);
-		}
-		scientificAchievement.put(science, achievementCredit);
-	}
-
 	@Override
 	public SkillManager getSkillManager() {
 		return skillManager;
+	}
+	
+	public void destroy() {
+		mainScienceType = null;
+		skillManager = null;
+		research = null;
 	}
 }

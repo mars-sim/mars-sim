@@ -528,12 +528,12 @@ public class RelationshipUtil implements Serializable {
 		result += RandomUtil.getRandomDouble(personalityDiffModifier);
 
 		// Modify based on total scientific achievement.
-		result += target.getTotalScientificAchievement() / 10D;
+		result += target.getResearchStudy().getTotalScientificAchievement() / 10D;
 
 		// If impressioner is a scientist, modify based on target's achievement in
 		// scientific field.
 		ScienceType science = ScienceType.getJobScience(target.getMind().getJob());
-		result += target.getScientificAchievement(science);
+		result += target.getResearchStudy().getScientificAchievement(science);
 
 		// Modify as settlers are trained to try to get along with each other.
 		if (result < 50D)
@@ -564,12 +564,12 @@ public class RelationshipUtil implements Serializable {
 		result += RandomUtil.getRandomDouble((conversationModifier0 + conversationModifier1)/4.0);
 	
 		// Modify based on total scientific achievement.
-		result += target.getTotalScientificAchievement() / 10D;
+		result += target.getResearchStudy().getTotalScientificAchievement() / 10D;
 
 		// If target is a scientist, modify based on target's achievement in
 		// scientific field.
 		ScienceType science = ScienceType.getJobScience(target.getMind().getJob());
-		result += target.getScientificAchievement(science);
+		result += target.getResearchStudy().getScientificAchievement(science);
 
 		if (result > 100)
 			result = 100; 

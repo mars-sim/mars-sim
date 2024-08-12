@@ -175,7 +175,7 @@ public abstract class FieldStudyMission extends EVAMission {
 		List<ScientificStudy> possibleStudies = new ArrayList<>();
 
 		// Add primary study if in research phase.
-		ScientificStudy primaryStudy = researcher.getStudy();
+		ScientificStudy primaryStudy = researcher.getResearchStudy().getStudy();
 		if ((primaryStudy != null) && (StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase())
 				&& !primaryStudy.isPrimaryResearchCompleted()
 				&& (science == primaryStudy.getScience())) {
@@ -185,7 +185,7 @@ public abstract class FieldStudyMission extends EVAMission {
 		}
 
 		// Add all collaborative studies in research phase.
-		for( ScientificStudy collabStudy : researcher.getCollabStudies()) {
+		for( ScientificStudy collabStudy : researcher.getResearchStudy().getCollabStudies()) {
 			if (StudyStatus.RESEARCH_PHASE.equals(collabStudy.getPhase())
 					&& !collabStudy.isCollaborativeResearchCompleted(researcher)
 					&& (science == collabStudy.getContribution(researcher))) {

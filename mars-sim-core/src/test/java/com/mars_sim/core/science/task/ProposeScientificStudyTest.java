@@ -69,7 +69,7 @@ public class ProposeScientificStudyTest extends AbstractMarsSimUnitTest {
 
         assertNotNull("Propose task created", t);
 
-        var st = p.getStudy();
+        var st = p.getResearchStudy().getStudy();
         assertNotNull("Study created", st);
         assertEquals("Person is primary researcher", p, st.getPrimaryResearcher());
         assertEquals("Science of study", ScienceType.getJobScience(jobType), st.getScience());
