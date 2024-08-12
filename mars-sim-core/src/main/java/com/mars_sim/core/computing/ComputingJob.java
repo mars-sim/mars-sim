@@ -143,8 +143,6 @@ public class ComputingJob implements Serializable {
     public boolean pickMultipleNodes(double timeCompleted, int now) {
     	boolean canWork = false;
     	
-		logger.info(host, 0, "1. nowMSol: " + now + ".");
-
 		List<Building> nodes = new ArrayList<>(host.getBuildingManager().getBuildingSet(FunctionType.COMPUTATION));
 
 		double remainingDemand = initDemand;
@@ -218,7 +216,6 @@ public class ComputingJob implements Serializable {
     	Computation node = singleNode;
     	Unit unit = null;
     	
-    	// Submit request for computing resources; only once per job on first time through
     	if (node != null) {
     		unit = node.getBuilding();
     	}
@@ -226,7 +223,7 @@ public class ComputingJob implements Serializable {
     		unit = host;
     	}
     	
-    	if (lastMSol != nowMSol) logger.info(unit, 30_000, "2. lastMSol: " + lastMSol + "  nowMSol: " + nowMSol); 
+//    	if (lastMSol != nowMSol) logger.info(unit, 30_000, "2. lastMSol: " + lastMSol + "  nowMSol: " + nowMSol); 
 	
         int interval = nowMSol - lastMSol;
         if (interval == 0)

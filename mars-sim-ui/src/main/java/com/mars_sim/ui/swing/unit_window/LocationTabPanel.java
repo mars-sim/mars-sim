@@ -378,12 +378,11 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		}
 			
 		if (locationCache == null 
-				|| (locationCache != null && !locationCache.equals(location))) {
+				|| !locationCache.equals(location)) {
+	
 			locationCache = location;
-			
 			// Update the LCDs
 			updateLCDs(location);
-			
 			// Update the elevation in the gauge
 			updateGauge(location);
 		}
@@ -417,42 +416,31 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		double elevation = Math.round(TerrainElevation.getAverageElevation(location)
 				* 1000.0) / 1000.0;
 
-		// Note: The peak of Olympus Mons is 21,229 meters (69,649 feet) above the Mars
-		// areoid (a reference datum similar to Earth's sea level). The lowest point is
-		// within the Hellas Impact Crater (marked by a flag with the letter "L").
+		// Note: The peak of Olympus Mons is 21,229 meters (69,649 feet) above
+		// the Mars areoid (a reference datum similar to Earth's sea level). 
+		
+		// The lowest point is within the Hellas Impact Crater (marked by a flag 
+		// with the letter "L").
+		
 		// The lowest point in the Hellas Impact Crater is 8,200 meters (26,902 feet)
 		// below the Mars areoid.
 
-		int max = -1;
-		int min = 2;
-
-		if (elevation < -8) {
-			max = -8;
-			min = -9;
-		} else if (elevation < -5) {
-			max = -5;
-			min = -9;
-		} else if (elevation < -3) {
-			max = -3;
-			min = -5;
-		} else if (elevation < 0) {
-			max = 1;
-			min = -1;
-		} else if (elevation < 1) {
+		double larger = elevation * 1.25;
+		double smaller = elevation * 0.75;
+		int max = 0;
+		int min = 0;
+		
+		if (elevation > 1) {
+			max = (int) larger; 
+			min = (int) smaller;
+		}
+		else if (elevation < -1) {
+			max = (int) smaller;
+			min = (int) larger;
+		}
+		else {
 			max = 2;
-			min = 0;
-		} else if (elevation < 3) {
-			max = 5;
-			min = 0;
-		} else if (elevation < 10) {
-			max = 10;
-			min = 5;
-		} else if (elevation < 20) {
-			max = 20;
-			min = 10;
-		} else if (elevation < 30) {
-			max = 30;
-			min = 20;
+			min = -2;
 		}
 
 		gauge.setMinValue(min);
@@ -497,10 +485,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			sw.chooseSettlement(settlement);
 			sw.displayPerson(p);
 		}
-//		else {
-//			NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
-//			nw.updateCoordsMaps(p.getCoordinates());
-//		}
 	}
 
 	/**
