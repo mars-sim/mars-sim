@@ -295,25 +295,25 @@ public class Fishery extends Function {
 	**/
 	private void simulatePond(ClockPulse pulse) {
 	   double time = pulse.getElapsed();
-	   
-	   Herbivore nextFish;
-	   Plant nextWeed;
 	
 	   // Simulate the fish's growing cycle
 	   ListIterator<Herbivore> it = fish.listIterator();
 	   while(it.hasNext()) {
-		  nextFish = it.next();
-	      nextFish.growPerFrame(time);
+		  Herbivore f = it.next();
+	      f.growPerFrame(time);
 	      // If a fish has no food to eat within a period of time, it will die
-	      if (!nextFish.isAlive())
+	      if (!f.isAlive())
 	         it.remove();
 	   }
 	
 	   // Simulate the weed's natural growth cycle
-	   // Note: The weeds can grow by itself, but would grow faster 
-	   // if being fed with nutrients during the tending task tendWeeds()
-	   for (Plant p : weeds) {
-		   p.growPerFrame(time);
+	   ListIterator<Plant> ii = weeds.listIterator();
+	   while(ii.hasNext()) {
+		  Plant p = ii.next();
+	      p.growPerFrame(time);
+	      // If a weed has been eaten to the point it was shrunk to size 0, it will die
+	      if (!p.isAlive())
+	         it.remove();
 	   }
 	   
 	   int numFish = fish.size();
@@ -341,7 +341,7 @@ public class Fishery extends Function {
 			   for (int i = 0; i < numFish ; i++) {
 				   Herbivore f = fish.get(i);
 				   int index = RandomUtil.getRandomInt(numWeeds-1);
-				   nextWeed = weeds.get(index);
+				   Plant nextWeed = weeds.get(index);
 				   f.nibble(nextWeed);
 				   feedIterations--;
 			   } 
@@ -351,9 +351,9 @@ public class Fishery extends Function {
 		   for (int i = 0; i < feedIterations; i++) {
 			   // Future: When picking a fish to eat, pick one that's hungry
 			   int index = RandomUtil.getRandomInt(numFish-1);
-			   nextFish = fish.get(index);
+			   Herbivore nextFish = fish.get(index);
 			   index = RandomUtil.getRandomInt(numWeeds-1);
-			   nextWeed = weeds.get(index);
+			   Plant nextWeed = weeds.get(index);
 			   nextFish.nibble(nextWeed);
 		   } 
 		   	    
@@ -518,12 +518,7 @@ public class Fishery extends Function {
 		
 		// Tending the weed attract fish to come to nibble more
 		nibbleIterationCache += AVERAGE_NIBBLES * workTime * numFish;
-		   
-		// Grow the weeds
-		for (Plant p : weeds) {
-			p.growPerFrame(workTime);
-		}
-
+		
 		tendertime -= workTime;
 
 		if (tendertime < 0) {
