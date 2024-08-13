@@ -90,14 +90,15 @@ public class StudyPanel extends WizardPanel {
 			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 					boolean hasFocus, int row, int column) {
-				super.setBackground(null);
-				Component result = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            	// Clear the background from previous error cell
+        		super.setBackground(null); 
+				JLabel l = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
 				// If failure cell, mark background red.
 				if (studyTableModel.isFailureCell(row, column))
-					result.setBackground(Color.RED);
+					l.setBackground(Color.RED);
 
-				return result;
+				return this;
 			}
 		});
 		studyTable.setRowSelectionAllowed(true);

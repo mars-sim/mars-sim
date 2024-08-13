@@ -41,8 +41,9 @@ class UnitTableCellRenderer extends DefaultTableCellRenderer {
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, 
 			boolean isSelected, boolean hasFocus, int row, int column) {
-		super.setBackground(null); // CLear the background from previous error cell
-
+    	// Clear the background from previous error cell
+		super.setBackground(null); 
+		
 		JLabel l = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
 		// If failure cell, mark background red.

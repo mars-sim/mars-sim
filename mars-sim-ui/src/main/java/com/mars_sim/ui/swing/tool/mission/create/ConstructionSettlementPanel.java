@@ -77,7 +77,7 @@ class ConstructionSettlementPanel extends WizardPanel {
         // Create the settlement table model.
         settlementTableModel = new SettlementTableModel();
         
-        // Create the settlement table.
+        // Create the settlement table
         settlementTable = new JTable(settlementTableModel);
 		settlementTable.setAutoCreateRowSorter(true);        
         settlementTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(settlementTableModel));
@@ -150,10 +150,10 @@ class ConstructionSettlementPanel extends WizardPanel {
         if (selectedSettlement == null)
         	return false;
         
-		if (!isTesting) {
+//		if (!isTesting) {
 			getWizard().getMissionData().setConstructionSettlement(selectedSettlement);
-			return true;
-		}	
+//			return true;
+//		}	
 	       return true;
     }
 

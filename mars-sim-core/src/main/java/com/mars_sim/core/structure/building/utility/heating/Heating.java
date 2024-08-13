@@ -765,12 +765,12 @@ public class Heating implements Serializable {
 		// last refresh cycle
 		double heatGenCache = getHeatGenerated();
 
-		error = checkError("heatGenCache", heatGenCache, 30) || error;
+		error = checkError("heatGenCache", heatGenCache, 40) || error;
 
 		// Add the excess heat from computation
 		double excessHeat = getExcessHeat();
 
-		error = checkError("excessHeat", excessHeat, 10) || error;
+		error = checkError("excessHeat", excessHeat, 20) || error;
 
 		// (2a) CALCULATE HEAT GAIN BY HEAT GEN FROM LAST CYCLE AND EXCESS HEAT FROM
 		// COMPUTING

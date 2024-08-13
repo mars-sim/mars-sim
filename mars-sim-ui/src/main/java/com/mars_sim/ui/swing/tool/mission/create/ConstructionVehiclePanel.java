@@ -29,6 +29,7 @@ import javax.swing.event.ListSelectionListener;
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.construction.ConstructionStageInfo;
 import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.StatusType;
@@ -52,7 +53,8 @@ class ConstructionVehiclePanel extends WizardPanel {
     private JLabel errorMessageLabel;
     	
     /**
-     * Constructor
+     * Constructor.
+     * 
      * @param wizard the create mission wizard.
      */
     ConstructionVehiclePanel(final CreateMissionWizard wizard) {
@@ -115,7 +117,7 @@ class ConstructionVehiclePanel extends WizardPanel {
                             for (int indexe : indexes) {
                                 if (vehicleTableModel.isFailureRow(indexe)) {
                                     // Set the error message and disable the next button.
-                                    errorMessageLabel.setText("Light utility vehicle cannot be " +
+                                    errorMessageLabel.setText("Light Utility Vehicle cannot be " +
                                             "used on the mission (see red cells).");
                                     goodVehicles = false;
                                 }
@@ -181,10 +183,10 @@ class ConstructionVehiclePanel extends WizardPanel {
             constructionVehicles.add(selectedVehicle);
         }
         
-        if (!isTesting) {
+//        if (!isTesting) {
 			getWizard().getMissionData().setConstructionVehicles(constructionVehicles);
-			return true;
-		}	
+//			return true;
+//		}	
 
         return true;
     }
@@ -198,12 +200,13 @@ class ConstructionVehiclePanel extends WizardPanel {
     void updatePanel() {
         vehicleTableModel.updateTable();
         vehicleTable.setPreferredScrollableViewportSize(vehicleTable.getPreferredSize());
-        
-        int requiredVehicles = getWizard().getMissionData().
-                getConstructionStageInfo().getVehicles().size();
-        requiredLabel.setText("Required vehicles: " + requiredVehicles);
-        
-        if (requiredVehicles == 0) getWizard().setButtons(true);
+        ConstructionStageInfo cInfo = getWizard().getMissionData().getConstructionStageInfo();
+        if (cInfo != null) {
+	        int requiredVehicles = cInfo.getVehicles().size();
+	        requiredLabel.setText("Required vehicles: " + requiredVehicles);  
+	        if (requiredVehicles == 0) 
+	        	getWizard().setButtons(true);
+        }
     }
     
     /**
@@ -226,6 +229,7 @@ class ConstructionVehiclePanel extends WizardPanel {
         
         /**
          * Returns the value for the cell at columnIndex and rowIndex.
+         * 
          * @param row the row whose value is to be queried
          * @param column the column whose value is to be queried
          * @return the value Object at the specified cell
@@ -271,6 +275,7 @@ class ConstructionVehiclePanel extends WizardPanel {
         
         /**
          * Checks if a table cell is a failure cell.
+         * 
          * @param row the table row.
          * @param column the table column.
          * @return true if cell is a failure cell.

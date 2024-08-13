@@ -173,10 +173,10 @@ class VehiclePanel extends WizardPanel {
 			return false;
 		if (selectedVehicle != null && checkReserveMaint(selectedVehicle))
 			return false;
-		else if (!isTesting) {
+//		else if (!isTesting) {
 			getWizard().getMissionData().setRover(selectedVehicle);
-			return true;
-		}		
+//			return true;
+//		}		
 		return true;
 	}
 
