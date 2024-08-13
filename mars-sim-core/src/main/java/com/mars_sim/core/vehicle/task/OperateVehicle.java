@@ -540,7 +540,7 @@ public abstract class OperateVehicle extends Task {
 
         // Case Ia: Just arrived if within 200 m
         if (dist2Dest <= DISTANCE_BUFFER_ARRIVED) {
-        	logger.log(vehicle, Level.INFO, 10_000, "Case Ia: Arrived at " + getNavpointName()
+        	logger.log(vehicle, Level.INFO, 20_000, "Case Ia: Arrived at " + getNavpointName()
         			+ " (dist: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + " km).");
         	
         	lastDist = dist2Dest;
@@ -654,7 +654,7 @@ public abstract class OperateVehicle extends Task {
     			}
         	}	
     		
-          	logger.log(vehicle, Level.INFO, 10_000,  
+          	logger.log(vehicle, Level.INFO, 20_000,  
           		"Case II: Slowing down. Arrive soon at " + getNavpointName() 
 	       		+ ". dist2Dest: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + KM
 	       		+ "dist2Cover: " + Math.round(dist2Cover * 1_000.0)/1_000.0 + KM
@@ -679,7 +679,7 @@ public abstract class OperateVehicle extends Task {
         else {
         	// Case III: May speed up or slow down to get there, depending on terrain and sunlight
      	
-          	logger.log(vehicle, Level.INFO, 10_000,  
+          	logger.log(vehicle, Level.INFO, 20_000,  
           		"Case III: Proceeding to " + getNavpointName() 
 	       		+ ". dist2Dest: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + KM
 	       		+ "distanceToCover: " + Math.round(dist2Cover * 1_000.0)/1_000.0 + KM

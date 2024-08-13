@@ -158,9 +158,9 @@ public class Organism implements Serializable {
    *   <CODE>expire</CODE> is activated to set both size and growth rate to 
    *   zero.
    **/
-   public void growPerFrame( )
+   public void growPerFrame(double time)
    {
-      alterSize(rate);
+      alterSize(rate * time);
    }
 }
            

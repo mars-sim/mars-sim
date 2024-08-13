@@ -154,7 +154,7 @@ public class PondLife {
 	   while (i < fish.size( ))
 	   {
 	      nextFish = fish.elementAt(i);
-	      nextFish.growPerFrame();
+	      nextFish.growPerFrame(.25);
 	      if (nextFish.isAlive( ))
 	         i++;
 	      else
@@ -165,7 +165,7 @@ public class PondLife {
 	   for (i = 0; i <weeds.size( ); i++)
 	   {
 	      nextWeed = weeds.elementAt(i);
-	      nextWeed.growPerFrame( );
+	      nextWeed.growPerFrame(1);
 	   }
 	
 	   // Create some new fish, according to the BIRTH_RATE constant

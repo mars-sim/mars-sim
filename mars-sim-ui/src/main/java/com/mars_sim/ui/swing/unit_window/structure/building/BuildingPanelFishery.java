@@ -101,7 +101,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 				
 		fishMass = tank.getTotalFishMass();	
 		fishMassLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.fishMass"),
-								 StyleManager.DECIMAL_KG2.format(fishMass), null);
+								 StyleManager.DECIMAL_KG.format(fishMass), null);
 				
 		numIdealFish = tank.getIdealFish();
 		numIdealFishLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.numIdealFish"),
@@ -121,7 +121,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 		
 		weedMass = tank.getTotalWeedMass();	
 		weedMassLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.weedMass"),
-								 StyleManager.DECIMAL_KG2.format(weedMass), null);
+								 StyleManager.DECIMAL_KG.format(weedMass), null);
 		
 		weedDemand = tank.getWeedDemand();	
 		weedDemandLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.weedDemand"),

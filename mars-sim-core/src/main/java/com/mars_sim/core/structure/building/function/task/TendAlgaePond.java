@@ -233,6 +233,8 @@ public class TendAlgaePond extends TendHousekeeping {
 		if ((remainingTime > 0) || (tendTime > MAX_TEND)) {
 			endTask();
 		}
+		
+		// Accumulate tend time
 		tendTime += time;
 		
 		return 0;

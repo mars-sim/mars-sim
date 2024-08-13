@@ -146,7 +146,7 @@ public class AlgaeFarming extends Function {
 	// The rate of adding food when tending the pond 
 	private static final double ADD_FOOD_RATE = 0.75;
 	// Tend time for food
-	private static final double TEND_TIME_FOR_FOOD = 0.2D;
+	private static final double TEND_TIME_FOR_FOOD = 10D;
 	/** The ideal amount of algae as a percentage. **/
 	private static final double IDEAL_PERCENTAGE = 0.8D;
 	
@@ -262,7 +262,8 @@ public class AlgaeFarming extends Function {
 		
 	    logger.log(building, Level.CONFIG, 0, "Spirulina: " 
 	    		+ Math.round(currentAlgae * 10.0)/10.0 
-	    		+ " kg.  nutrient: " + Math.round(initalFood * 10.0)/10.0);
+	    		+ " kg.  nutrient: " + Math.round(initalFood * 10.0)/10.0
+	    		+ " kg.  tender time: " + Math.round(tendertime * 100.0)/100.0);
 	}
 
 
@@ -885,6 +886,8 @@ public class AlgaeFarming extends Function {
 		addCumulativeWorkTime(workTime);
 		
 		if (getCurrentNutrientRatio() < NUTRIENT_RATIO) {
+			// Future: need to synthesize real Amount Resource algae nutrient 
+			// for feeding algae
 			currentFood += workTime * ADD_FOOD_RATE * NUTRIENT_RATIO / getCurrentNutrientRatio();
 		}
 
@@ -892,10 +895,12 @@ public class AlgaeFarming extends Function {
 
 		if (tendertime < 0) {
 			surplus = Math.abs(tendertime);
+			// Reset tendertime value
 			tendertime = currentFood * TEND_TIME_FOR_FOOD;
-			logger.log(building, Level.INFO, 10_000, 
-					"Algae fully tended for " 
-					+ Math.round(tendertime * 100.0)/100.0 + " millisols.");
+			logger.log(building, Level.INFO, 5_000, 
+					"Tended one batch of nutrients for the algae (" 
+					+ Math.round(tendertime * 10.0)/10.0 + " millisols).");
+			// Reset foodAge
 			foodAge = 0;
 		}
 		
