@@ -307,7 +307,7 @@ class VehiclePanel extends WizardPanel {
 				if (vehicle.isReserved())
 					result = true;
 			} else if (column == 4) {
-				if (vehicle.getStoredMass() > 0D)
+				if (!vehicle.isEmpty())
 					result = true;
 			} else if (column == 5) {
 				if ((vehicle.getPrimaryStatus() != StatusType.PARKED) 

@@ -159,7 +159,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 			usable = usable && vehicle.isVehicleReady();
 
-			usable = usable && (vehicle.getStoredMass() <= 0D);
+			usable = usable && (vehicle.isEmpty());
 
 			if (usable && (vehicle instanceof Rover rover)) {
 				if (result == null)
@@ -199,7 +199,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			if (!(vehicle instanceof Rover))
 				usable = false;
 
-			if (vehicle.getStoredMass() > 0D)
+			if (!vehicle.isEmpty())
 				usable = false;
 
 			if (usable)

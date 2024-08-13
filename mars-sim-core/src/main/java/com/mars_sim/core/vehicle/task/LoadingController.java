@@ -463,13 +463,13 @@ public class LoadingController implements Serializable {
 	private double loadEquipment(double amountLoading, Map<Integer, Integer> manifest, boolean mandatory) {
 
 		Set<Integer> eqmIds = new HashSet<>(manifest.keySet());
-		for(Integer equipmentType : eqmIds) {
+		for (Integer equipmentType : eqmIds) {
 			int amountNeeded = manifest.get(equipmentType);
 			if (amountNeeded > 0) {
 				// How many available ?
 				EquipmentType eType = EquipmentType.convertID2Type(equipmentType);
 				List<Equipment> list = new ArrayList<>(settlement.getContainerSet(eType));
-				for(Equipment eq : list) {
+				for (Equipment eq : list) {
 					if (eq.isEmpty(true)) {
 						// Put this equipment into a vehicle
 						boolean done = eq.transfer(vehicle);

@@ -185,7 +185,7 @@ public class RescueSalvageVehicle extends RoverMission {
 
 			usable = vehicle.isVehicleReady();
 
-			if (vehicle.getStoredMass() > 0D)
+			if (!vehicle.isEmpty())
 				usable = false;
 
 			return usable;

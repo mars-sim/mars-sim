@@ -101,7 +101,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 			boolean usable = !drone.isReservedForMission();
             usable = usable && (allowMaintReserved || !drone.isReserved());
 			usable = usable && drone.isVehicleReady();
-			usable = usable && (drone.getStoredMass() == 0);
+			usable = usable && (drone.isEmpty());
 
 			if (usable) {
 				double range = drone.getRange();
@@ -277,7 +277,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	 */
 	private void unloadReleaseDrone(Settlement disembarkSettlement, Drone drone) {
 
-		if (drone.getStoredMass() != 0D) {
+		if (!drone.isEmpty()) {
 
 			boolean result = false;
 			// Alert the people in the disembarked settlement to unload cargo

@@ -364,7 +364,7 @@ public class Trade extends RoverMission implements CommerceMission {
 		unloadTowedVehicle();
 
 		// Unload rover if necessary.
-		boolean roverUnloaded = getRover().getStoredMass() == 0D;
+		boolean roverUnloaded = getRover().isEmpty();
 		if (roverUnloaded) {
 			setPhaseEnded(true);
 		}

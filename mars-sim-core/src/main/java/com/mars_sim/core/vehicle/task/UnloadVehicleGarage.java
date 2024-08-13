@@ -175,7 +175,6 @@ public class UnloadVehicleGarage extends Task {
 	 * @return is vehicle fully unloaded?
 	 */
 	private static final boolean isFullyUnloaded(Vehicle vehicle) {
-		// TODO: why not call isEmpty() ? 
-		return (vehicle.getStoredMass() == 0D);
+		return vehicle.isEmpty();
 	}
 }

@@ -370,7 +370,7 @@ public class EmergencySupply extends RoverMission {
 		}
 
 		// Unload rover if necessary.
-		boolean roverUnloaded = getRover().getStoredMass() == 0D;
+		boolean roverUnloaded = getRover().isEmpty();
 		if (!roverUnloaded) {
 			// Random chance of having person unload (this allows person to do other things
 			// sometimes)

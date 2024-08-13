@@ -330,7 +330,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 	private void performDestinationUnloadGoodsPhase() {
 
 		// Unload drone if necessary.
-		if (getDrone().getStoredMass() == 0D) {
+		if (getDrone().isEmpty()) {
 			setPhaseEnded(true);
 		}
 	}

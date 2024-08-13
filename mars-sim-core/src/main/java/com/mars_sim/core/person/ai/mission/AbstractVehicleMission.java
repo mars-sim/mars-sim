@@ -395,7 +395,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @throws MissionException         if problem checking vehicle is loadable.
 	 */
 	protected boolean isUsableVehicle(Vehicle vehicle) {
-		return vehicle.isVehicleReady() && (vehicle.getStoredMass() <= 0D);
+		return vehicle.isVehicleReady() && vehicle.isEmpty();
 	}
 
 	/**
@@ -471,7 +471,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	public boolean isDroneDone() {
 		if (VehicleType.isDrone(vehicle.getVehicleType())
-				&& vehicle.getStoredMass() == 0D)
+				&& vehicle.isEmpty())
 			return true;
 		return false;
 	}
@@ -484,7 +484,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	public boolean isRoverDone() {
 		if (VehicleType.isRover(vehicle.getVehicleType())
 				&& (((Rover)vehicle).getCrewNum() == 0
-				|| vehicle.getStoredMass() == 0D))
+				|| vehicle.isEmpty()))
 			return true;
 		return false;
 	}
