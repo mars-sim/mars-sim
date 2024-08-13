@@ -27,11 +27,13 @@ public class Animal extends Organism {
 	/** default serial id. */
     private static final long serialVersionUID = 1L;
    // The period of time a fish can survive without eating
-   public static final double ONE_SOL = 1000;
+   public static final double STARVING_SOL = 3000;
    private double needEachFrame;  // Amount of food needed (in ounces per frame)
    private double eatenThisFrame; // Ounces of food eaten so far this frame
-   private double totalTime; // The cumulative amount of time
-
+   private double foodDelayTime; // The cumulative amount of time
+   // The age in millisols
+   private double age;
+   
    /**
    * Construct an <CODE>Animal</CODE> with a specified size, growth rate, and
    * eating need.
@@ -131,17 +133,21 @@ public class Animal extends Organism {
    public void growPerFrame(double time) 
    {
       super.growPerFrame(time);
-      totalTime += time;
-      
+      foodDelayTime += time;
+      age += time;
       // For each day
-      if (totalTime > ONE_SOL && eatenThisFrame < needEachFrame) {
-         totalTime = totalTime - ONE_SOL;
+      if (foodDelayTime > STARVING_SOL && eatenThisFrame < needEachFrame) {
+         foodDelayTime = foodDelayTime - STARVING_SOL;
+         // Set size and rate to zero
     	 expire();
          eatenThisFrame = 0;
       }
    }
 
-
+   public double getAge() {
+	   return age;
+   }
+   
    /**
    * Determine the amount of food that this <CODE>Animal</CODE> still needs to
    * survive this frame.

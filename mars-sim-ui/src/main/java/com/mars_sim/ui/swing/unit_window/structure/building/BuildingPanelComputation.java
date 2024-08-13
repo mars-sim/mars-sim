@@ -77,7 +77,7 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 		// CU Loads
 		double usage = building.getComputation().getUsagePercent();
 		percentUsageLabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.usage"),
-					 			StyleManager.DECIMAL_PERC1.format(usage), Msg.getString("BuildingPanelComputation.usage.tooltip"));
+					 			StyleManager.DECIMAL1_PERC.format(usage), Msg.getString("BuildingPanelComputation.usage.tooltip"));
 
 		// Peak CUs
 		double peak = Math.round(building.getComputation().getPeakCU() * 10.0)/10.0;
@@ -110,7 +110,7 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 		
 		// CU Loads
 		double usage = building.getComputation().getUsagePercent();
-		percentUsageLabel.setText(StyleManager.DECIMAL_PERC1.format(usage));
+		percentUsageLabel.setText(StyleManager.DECIMAL1_PERC.format(usage));
 		
 		// Peak CUs
 		double peak = Math.round(building.getComputation().getPeakCU()* 10.0)/10.0;

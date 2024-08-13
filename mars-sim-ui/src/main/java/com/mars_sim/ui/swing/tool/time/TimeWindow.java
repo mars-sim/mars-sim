@@ -391,7 +391,7 @@ public class TimeWindow extends ToolWindow {
 		// Update pulse deviation label
 		double percent = masterClock.getNextPulseDeviation() * 100;
 		StringBuilder pulseDevText = new StringBuilder();
-		pulseDevText.append(StyleManager.DECIMAL_PERC1.format(percent))
+		pulseDevText.append(StyleManager.DECIMAL1_PERC.format(percent))
 			  .append(OPTIMAL)
 			  .append(StyleManager.DECIMAL_PLACES4.format(optPulse))
 			  .append(CLOSE_P);

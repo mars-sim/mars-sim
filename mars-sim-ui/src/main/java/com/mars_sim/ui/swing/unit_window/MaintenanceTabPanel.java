@@ -168,15 +168,15 @@ public class MaintenanceTabPanel extends TabPanelTable {
 
 		// Update last completed label.
 		double timeSinceLastMaint = manager.getTimeSinceLastMaintenance()/1000;
-		lastCompletedLabel.setText(StyleManager.DECIMAL_SOLS1.format(timeSinceLastMaint) + AGO);
+		lastCompletedLabel.setText(StyleManager.DECIMAL1_SOLS.format(timeSinceLastMaint) + AGO);
 
 		// Update inspection window label.
 		double window = manager.getMaintenancePeriod()/1000D;
-		inspectionWinLabel.setText(StyleManager.DECIMAL_SOLS1.format(window));
+		inspectionWinLabel.setText(StyleManager.DECIMAL1_SOLS.format(window));
 
 		// Update inspection work time.
 		double baseWorkTime = manager.getBaseMaintenanceWorkTime()/1000;
-		baseWorkTimeLabel.setText(StyleManager.DECIMAL_SOLS3.format(baseWorkTime));
+		baseWorkTimeLabel.setText(StyleManager.DECIMAL3_SOLS.format(baseWorkTime));
 		
 		// Update progress bar.
 		double completed = manager.getInspectionWorkTimeCompleted();

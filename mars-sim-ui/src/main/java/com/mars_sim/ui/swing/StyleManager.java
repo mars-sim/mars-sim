@@ -85,15 +85,18 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL3_N = new DecimalFormat("#,##0.000 N");
     
     public static final DecimalFormat DECIMAL_PERC = new DecimalFormat("0 '%'");
-    public static final DecimalFormat DECIMAL_PERC1 = new DecimalFormat("0.0 '%'");
-    public static final DecimalFormat DECIMAL_PERC2 = new DecimalFormat("0.00 '%'");
-    public static final DecimalFormat DECIMAL_SOLS0 = new DecimalFormat("#,##0 Sols");
-    public static final DecimalFormat DECIMAL_SOLS1 = new DecimalFormat("#,##0.0 Sols");
-    public static final DecimalFormat DECIMAL_SOLS3 = new DecimalFormat("#,##0.000 Sols");
+    public static final DecimalFormat DECIMAL1_PERC = new DecimalFormat("0.0 '%'");
+    public static final DecimalFormat DECIMAL2_PERC = new DecimalFormat("0.00 '%'");
+    public static final DecimalFormat DECIMAL_SOLS = new DecimalFormat("#,##0 sols");
+    public static final DecimalFormat DECIMAL1_SOLS = new DecimalFormat("#,##0.0 sols");
+    public static final DecimalFormat DECIMAL2_SOLS = new DecimalFormat("#,##0.00 sols");
+    public static final DecimalFormat DECIMAL3_SOLS = new DecimalFormat("#,##0.000 sols");
     public static final DecimalFormat DECIMAL_DEG = new DecimalFormat("0.# \u00B0");
     public static final DecimalFormat DECIMAL_CELCIUS = new DecimalFormat("0.0 \u00B0C");
     public static final DecimalFormat DECIMAL_V = new DecimalFormat("#,##0.0 V");
     public static final DecimalFormat DECIMAL_MSOL = new DecimalFormat("#,##0.0 msol");
+    public static final DecimalFormat DECIMAL2_MSOL = new DecimalFormat("#,##0.00 msol");
+    
     // For solar irradiance
     public static final DecimalFormat DECIMAL_W_M2 = new DecimalFormat("#,##0.00 " 
     								+ Msg.getString("unit.wattpermetersquared")); //$NON-NLS-1$

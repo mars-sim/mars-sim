@@ -96,7 +96,7 @@ public class TabPanelComputing extends TabPanelTable {
 		String text = cUs + SLASH + peak + CU;
 		
 		percentUsageLabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.usage"),
-					 			StyleManager.DECIMAL_PERC1.format(usage), Msg.getString("BuildingPanelComputation.usage.tooltip"));
+					 			StyleManager.DECIMAL1_PERC.format(usage), Msg.getString("BuildingPanelComputation.usage.tooltip"));
 
 		cULabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.computingUnit"),
 				text, Msg.getString("BuildingPanelComputation.computingUnit.tooltip"));
@@ -170,7 +170,7 @@ public class TabPanelComputing extends TabPanelTable {
 		
 		String text = cUs + SLASH + peak + CU;
 		
-		percentUsageLabel.setText(StyleManager.DECIMAL_PERC1.format(usage));
+		percentUsageLabel.setText(StyleManager.DECIMAL1_PERC.format(usage));
 		
 		if (!cULabel.getText().equalsIgnoreCase(text))
 			cULabel.setText(text);

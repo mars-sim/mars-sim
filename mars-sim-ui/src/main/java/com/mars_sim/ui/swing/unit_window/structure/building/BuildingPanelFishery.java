@@ -46,6 +46,9 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	/** The cache value for the work time done in this greenhouse. */
 	private double workTimeCache;
 	
+	private double ageCache;
+	
+	private JLabel ageLabel;
 	private JLabel fishHarvestedLabel;
 	private JLabel numFishLabel;
 	private JLabel numIdealFishLabel;
@@ -85,7 +88,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
-		AttributePanel labelPanel = new AttributePanel(12);
+		AttributePanel labelPanel = new AttributePanel(13);
 		center.add(labelPanel, BorderLayout.NORTH);
 		
 		labelPanel.addTextField(Msg.getString("BuildingPanelFishery.tankSize"), 
@@ -110,7 +113,11 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 		maxFish = tank.getMaxFish();
 		maxFishLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.maxFish"),
 									Integer.toString(maxFish), null);
-
+		
+		ageCache = tank.getAverageAge()/1000;
+		ageLabel = labelPanel.addRow(Msg.getString("BuildingPanelFishery.age"),
+				StyleManager.DECIMAL2_SOLS.format(ageCache));
+		
 		fishHarvestedCache = tank.computeDailyAverage(Fishery.FISH_MEAT_ID);
 		fishHarvestedLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.harvestedFish"),
 				StyleManager.DECIMAL1_KG_SOL.format(fishHarvestedCache),
@@ -134,7 +141,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 		// Update the cumulative work time
 		workTimeCache = tank.getCumulativeWorkTime()/1000.0;
 		workTimeLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.workTime.title"),
-									StyleManager.DECIMAL_SOLS3.format(workTimeCache),
+									StyleManager.DECIMAL3_SOLS.format(workTimeCache),
 									Msg.getString("BuildingPanelAlgae.workTime.tooltip"));
 	}
 
@@ -181,6 +188,12 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 			fishHarvestedCache = newFishHarvest;
 			fishHarvestedLabel.setText(StyleManager.DECIMAL1_KG_SOL.format(fishHarvestedCache));
 		}
+		
+		double newAge = tank.getAverageAge()/1000;
+		if (ageCache != newAge) {
+			ageCache = newAge;
+			ageLabel.setText(StyleManager.DECIMAL2_SOLS.format(newAge));
+		}
 
 		double newWeedMass = tank.getTotalWeedMass();
 		if (weedMass != newWeedMass) {
@@ -210,7 +223,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 		double workTime = tank.getCumulativeWorkTime()/1000.0;
 		if (workTimeCache != workTime) {
 			workTimeCache = workTime;
-			workTimeLabel.setText(StyleManager.DECIMAL_SOLS3.format(workTime));
+			workTimeLabel.setText(StyleManager.DECIMAL3_SOLS.format(workTime));
 		}
 	}
 	

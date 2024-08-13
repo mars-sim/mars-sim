@@ -36,7 +36,7 @@ public class PercentageCellRenderer extends DefaultTableCellRenderer {
         setHorizontalAlignment( JLabel.RIGHT );
 
         if (showDecimal) {
-            format = StyleManager.DECIMAL_PERC2;
+            format = StyleManager.DECIMAL2_PERC;
         }
         else {
             format = StyleManager.DECIMAL_PERC;

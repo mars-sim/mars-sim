@@ -77,7 +77,7 @@ public class TabPanelGeneralRobot extends TabPanel {
 		AttributePanel battPanel = new AttributePanel(10);
 		dataPanel.add(battPanel, BorderLayout.NORTH);
         
-		statePercent = battPanel.addRow("Battery Level", StyleManager.DECIMAL_PERC2.format(sc.getBatteryLevel()), 
+		statePercent = battPanel.addRow("Battery Level", StyleManager.DECIMAL2_PERC.format(sc.getBatteryLevel()), 
 				"The state of the battery is kWh stored / energy storage capacity * 100 percent");
 		kWhStored = battPanel.addRow("kWh Stored", StyleManager.DECIMAL_KWH.format(sc.getkWattHourStored()));
 		cap = battPanel.addRow("Energy Storage Capacity", StyleManager.DECIMAL_KWH.format(sc.getEnergyStorageCapacity()));
@@ -86,8 +86,8 @@ public class TabPanelGeneralRobot extends TabPanel {
 		
 		ampHours = battPanel.addRow("Amp Hour", StyleManager.DECIMAL_AH.format(sc.getAmpHour()));
 		tVolt = battPanel.addRow("Terminal Voltage", StyleManager.DECIMAL_V.format(sc.getTerminalVoltage()));
-		health = battPanel.addRow("Health", StyleManager.DECIMAL_PERC2.format(sc.getHealth() * 100));
-		degradPercent = battPanel.addRow("Degradation", StyleManager.DECIMAL_PERC2.format(sc.getPercentDegrade())
+		health = battPanel.addRow("Health", StyleManager.DECIMAL2_PERC.format(sc.getHealth() * 100));
+		degradPercent = battPanel.addRow("Degradation", StyleManager.DECIMAL2_PERC.format(sc.getPercentDegrade())
 				+ " per sol");
 		cycles = battPanel.addRow("Charge Cycles", sc.getNumCycles() + "");
 	}
@@ -103,8 +103,8 @@ public class TabPanelGeneralRobot extends TabPanel {
 		ampHours.setText(StyleManager.DECIMAL_AH.format(sc.getAmpHour()));
 		
 		tVolt.setText(StyleManager.DECIMAL_V.format(sc.getTerminalVoltage()));
-		health.setText(StyleManager.DECIMAL_PERC2.format(sc.getHealth() * 100));
-		degradPercent.setText(StyleManager.DECIMAL_PERC2.format(sc.getPercentDegrade()) + " per sol");
+		health.setText(StyleManager.DECIMAL2_PERC.format(sc.getHealth() * 100));
+		degradPercent.setText(StyleManager.DECIMAL2_PERC.format(sc.getPercentDegrade()) + " per sol");
 		maxCRating.setText(StyleManager.DECIMAL_PLACES1.format(sc.getMaxCRating()));
 		cycles.setText(sc.getNumCycles() + "");
 	}

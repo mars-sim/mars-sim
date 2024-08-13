@@ -207,7 +207,7 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 		// Update the cumulative work time
 		workTimeCache = pond.getCumulativeWorkTime()/1000.0;
 		workTimeLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.workTime.title"),
-									StyleManager.DECIMAL_SOLS3.format(workTimeCache),
+									StyleManager.DECIMAL3_SOLS.format(workTimeCache),
 									Msg.getString("BuildingPanelAlgae.workTime.tooltip"));
 	}
 
@@ -325,7 +325,7 @@ public class BuildingPanelAlgae extends BuildingFunctionPanel {
 		double workTime = pond.getCumulativeWorkTime()/1000.0;
 		if (workTimeCache != workTime) {
 			workTimeCache = workTime;
-			workTimeLabel.setText(StyleManager.DECIMAL_SOLS3.format(workTime));
+			workTimeLabel.setText(StyleManager.DECIMAL3_SOLS.format(workTime));
 		}
 	}
 	
