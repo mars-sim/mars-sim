@@ -594,7 +594,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			}
 			
 			Person person = e.getRegisteredOwner();
-			if (person != null) {
+			if (person != null && vehicle != null) {
 				settlement = vehicle.getLocationTag().findSettlementVicinity();
 				if (settlement != null) {
 					vicinityUnit = settlement;

@@ -49,6 +49,10 @@ import com.mars_sim.mapdata.location.Coordinates;
 public class CommandHelper {
 	// Width for names
 	
+	public static final String PHASE = "Phase";
+	public static final String ITEM = "Item";
+	public static final String QUANTITY = "Quantity";
+	
 	public static final int MALFUNCTION_WIDTH = 28;
 	public static final int BUILIDNG_WIDTH = 26;
 	public static final int PROCESS_WIDTH = 55;
@@ -126,7 +130,7 @@ public class CommandHelper {
 		response.appendHeading(study.getName());
 		response.appendLabeledString("Science", study.getScience().getName());
 		response.appendLabeledString("Lead", study.getPrimaryResearcher().getName());
-		response.appendLabeledString("Phase", study.getPhase().getName());
+		response.appendLabeledString(PHASE, study.getPhase().getName());
 		response.appendLabelledDigit("Level", study.getDifficultyLevel());
 
 		
@@ -149,8 +153,7 @@ public class CommandHelper {
 			}
 			break;
 		
-		case PAPER_PHASE:
-		case RESEARCH_PHASE:
+		case PAPER_PHASE, RESEARCH_PHASE:
 			displayCollaborators(response, study);			
 			break;
 			
@@ -325,7 +328,7 @@ public class CommandHelper {
 									.collect(Collectors.joining(", ")));
 		
 		if (!mission.isDone()) {
-			response.appendLabeledString("Phase", mission.getPhaseDescription());
+			response.appendLabeledString(PHASE, mission.getPhaseDescription());
 			response.appendLabeledString("Phase Started", mission.getPhaseStartTime().getTruncatedDateTimeStamp());
 		
 			List<String> names = plist.stream().map(Entity::getName).sorted().toList();
@@ -367,7 +370,7 @@ public class CommandHelper {
 		}
 		// Mission log
 		response.appendText("Log:");
-		response.appendTableHeading("Time", TIMESTAMP_TRUNCATED_WIDTH, "Phase");
+		response.appendTableHeading("Time", TIMESTAMP_TRUNCATED_WIDTH, PHASE);
 		for (MissionLog.MissionLogEntry entry : mission.getLog().getEntries()) {
 			response.appendTableRow(entry.getTime().getTruncatedDateTimeStamp(), entry.getEntry());
 		}
@@ -384,7 +387,7 @@ public class CommandHelper {
 			Map<Integer, Integer> manifest) {
 		if (!manifest.isEmpty()) {
 			response.appendText(title);
-			response.appendTableHeading("Item", 22, "Quantity");
+			response.appendTableHeading(ITEM, 22, ITEM);
 			
 			for(Entry<Integer, Integer> item : manifest.entrySet()) {
 				response.appendTableRow(EquipmentType.convertID2Type(item.getKey()).getName(),
@@ -405,7 +408,7 @@ public class CommandHelper {
 			Map<Integer, Number> resourcesManifest) {
 		if (!resourcesManifest.isEmpty()) {
 			response.appendText(title);
-			response.appendTableHeading("Item", 30, "Quantity");
+			response.appendTableHeading(ITEM, 30, ITEM);
 			
 			for(Entry<Integer, Number> item : resourcesManifest.entrySet()) {
 				int id = item.getKey();

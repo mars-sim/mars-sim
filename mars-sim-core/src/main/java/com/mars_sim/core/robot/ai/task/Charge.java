@@ -230,19 +230,8 @@ public class Charge extends Task {
 			}
 			
 			else {
-				
-				if (occupiedStation != null) {
-					deliverPower(sc, occupiedStation, batteryLevel, time, 
+				deliverPower(sc, occupiedStation, batteryLevel, time, 
 							REGULAR_CHARGING, RoboticStation.CHARGE_RATE);	
-				}
-
-				else {
-					logger.warning(robot, "No station found for regular charging.");
-					
-					endCharging();
-					
-					return 0;
-				}
 			}
 		}
 		
