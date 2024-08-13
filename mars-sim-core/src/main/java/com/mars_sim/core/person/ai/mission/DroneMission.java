@@ -8,6 +8,7 @@ package com.mars_sim.core.person.ai.mission;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
@@ -17,6 +18,7 @@ import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.robot.ai.task.Charge;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.building.BuildingManager;
@@ -282,15 +284,14 @@ public abstract class DroneMission extends AbstractVehicleMission {
 			boolean result = false;
 			// Alert the people in the disembarked settlement to unload cargo
 			for (Person person: disembarkSettlement.getIndoorPeople()) {
-				if (person.isInSettlement()) {
-					// Note : Random chance of having person unload (this allows person to do other things
-					// sometimes)
-					if (RandomUtil.lessThanRandPercent(50)) {
+				if (person.isInSettlement()
+					|| RandomUtil.lessThanRandPercent(50)) {
+						// Note : Random chance of having person unload (this allows person to do other things
+						// sometimes)
 						result = assignUnloadingCargo(person, drone);
-					}
+						if (result)
+							break;
 				}
-				if (result)
-					break;
 			}
 		}
 
@@ -316,9 +317,9 @@ public abstract class DroneMission extends AbstractVehicleMission {
 		boolean result = false;
 		
 		if (person.getAssociatedSettlement().getBuildingManager().addToGarage(drone)) {
-			assignTask(person, new UnloadVehicleGarage(person, drone));
+			result = assignTask(person, new UnloadVehicleGarage(person, drone));
 		} else if (!EVAOperation.isGettingDark(person) && !person.isSuperUnfit()) {
-			assignTask(person, new UnloadVehicleEVA(person, drone));
+			result = assignTask(person, new UnloadVehicleEVA(person, drone));
 		}
 
 		return result;
@@ -335,14 +336,15 @@ public abstract class DroneMission extends AbstractVehicleMission {
 
 	@Override
 	protected boolean recruitMembersForMission(Worker startingMember, boolean sameSettlement, int minMembers) {
-		// Get all people qualified for the mission.
-//		Iterator<Robot> r = getStartingSettlement().getRobots().iterator();
-//		while (r.hasNext()) {
-//			Robot robot = r.next();
-//			if (robot.getRobotType() == RobotType.DELIVERYBOT) {
-//				addMember(robot);
-//			}
-//		}
+		// Get a delivery bot qualified for the mission.
+		Iterator<Robot> r = getStartingSettlement().getAllAssociatedRobots().iterator();
+		while (r.hasNext()) {
+			Robot robot = r.next();
+			if (robot.getRobotType() == RobotType.DELIVERYBOT) {
+				addMember(robot);
+				break;
+			}
+		}
 
 		super.recruitMembersForMission(startingMember, sameSettlement, minMembers);
 
