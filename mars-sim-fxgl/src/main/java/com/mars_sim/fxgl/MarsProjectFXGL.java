@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package com.mars_sim.base;
+package com.mars_sim.fxgl;
 
 import static com.almasb.fxgl.dsl.FXGL.addUINode;
 import static com.almasb.fxgl.dsl.FXGL.getAppHeight;
@@ -31,7 +31,6 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.localization.Language;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationRuntime;
-import com.mars_sim.fxgl.MarsWorld;
 import com.mars_sim.ui.swing.MainWindow;
 
 import javafx.scene.input.KeyCode;

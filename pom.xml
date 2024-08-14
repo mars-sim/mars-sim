@@ -78,7 +78,6 @@
 				<module>mars-sim-core</module>
 				<module>mars-sim-ui</module>
 				<module>mars-sim-dist</module>
-				<module>mars-sim-base</module>
 				<module>mars-sim-fxgl</module>
 				<module>mars-sim-libgdx</module>
 			</modules>
