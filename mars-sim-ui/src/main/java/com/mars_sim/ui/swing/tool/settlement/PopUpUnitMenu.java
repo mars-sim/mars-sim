@@ -39,7 +39,6 @@ import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.ui.swing.ComponentMover;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MainWindow;
 import com.mars_sim.ui.swing.MarsPanelBorder;
@@ -110,11 +109,7 @@ public class PopUpUnitMenu extends JPopupMenu {
         
 		JMenuItem descriptionItem = new JMenuItem(Msg.getString("PopUpUnitMenu.description"));
 
-//        descriptionItem.setForeground(new Color(139,69,19));
         descriptionItem.addActionListener(e -> {
-
-//	           	setOpaque(false);
-//		        setBackground(new Color(0,0,0,128));
 
                 String description = null;
                 String type = null;
@@ -147,7 +142,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 	           	b.setOpaque(false);
 		        b.setBackground(new Color(0,0,0,128));
 
-				final JDialog d = SwingHelper.createPoupWindow(b, WIDTH_1, HEIGHT_1, 0, 0);
+				final JDialog d = SwingHelper.createPopupWindow(b, WIDTH_1, HEIGHT_1, 0, 0);
 
 				d.setForeground(Color.WHITE); // orange font
 				d.setFont(new Font("Arial", Font.BOLD, 14));
@@ -157,8 +152,10 @@ public class PopUpUnitMenu extends JPopupMenu {
                 d.setVisible(true);
 
                 // Make panel drag-able
-			    ComponentMover mover = new ComponentMover(d, desktop);
-			    mover.registerComponent(b);
+//        	    ComponentMover mover = new ComponentMover(desktop);
+//        	    mover.registerComponent(getComponents());
+//			    ComponentMover mover = new ComponentMover(d, desktop);
+//			    mover.registerComponent(b);
 
              }
         );

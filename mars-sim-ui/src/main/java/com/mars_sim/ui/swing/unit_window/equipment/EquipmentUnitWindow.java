@@ -42,8 +42,7 @@ public class EquipmentUnitWindow extends UnitWindow {
     public EquipmentUnitWindow(MainDesktopPane desktop, Equipment equipment) {
         // Use UnitWindow constructor
         super(desktop, equipment, equipment.getName()
-				+ " of " + ((equipment.getAssociatedSettlement() != null) ? 
-						equipment.getAssociatedSettlement() : "")
+				+ ((equipment.getAssociatedSettlement() != null) ? (" of " + equipment.getAssociatedSettlement()) : "")
 				+ ((equipment.getContainerUnit() != null) ? (" in " + equipment.getContainerUnit()) : ""),
 				true);
         this.equipment = equipment;
@@ -80,6 +79,12 @@ public class EquipmentUnitWindow extends UnitWindow {
 	@Override
     public void update() {
         super.update();
+        
+		String title = equipment.getName()
+				+ ((equipment.getAssociatedSettlement() != null) ? (" of " + equipment.getAssociatedSettlement()) : "")
+				+ ((equipment.getContainerUnit() != null) ? (" in " + equipment.getContainerUnit()) : "");
+		super.setTitle(title);
+		
         // Check if equipment has been salvaged.
         if (!salvaged && equipment.isSalvaged()) {
             addTabPanel(new SalvageTabPanel(equipment, desktop));

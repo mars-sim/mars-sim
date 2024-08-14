@@ -243,7 +243,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 				String wd = "Weeksol : " + MarsTimeFormat.getSolOfWeekName(mc);
 				weeksolLabel.setText(wd);
 
-				JDialog popOver = SwingHelper.createPoupWindow(calendarPane, -1, -1, -75, 20);
+				JDialog popOver = SwingHelper.createPopupWindow(calendarPane, -1, -1, -75, 20);
 				popOver.setVisible(true);
 				break;
 			

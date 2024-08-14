@@ -40,11 +40,9 @@ public class RobotUnitWindow extends UnitWindow {
 	public RobotUnitWindow(MainDesktopPane desktop, Robot robot) {
 		// Use UnitWindow constructor
 		super(desktop, robot, robot.getName()
-				+ " of " + ((robot.getAssociatedSettlement() != null) ? 
-						robot.getAssociatedSettlement() : "")
-				+ ((robot.getContainerUnit() != null) ? (" in " + robot.getContainerUnit()) : 
-					" in " + robot.getLocationTag().findSettlementVicinity() + " Vicinity"),
-				true);
+				+ ((robot.getAssociatedSettlement() != null) ? (" of " + robot.getAssociatedSettlement()) : "")
+				+ " (" + (robot.getLocationStateType().getName()) + ")"
+				, true);
 		this.robot = robot;
 
 		// Add tab panels
@@ -82,6 +80,11 @@ public class RobotUnitWindow extends UnitWindow {
 	public void update() {
 		super.update();
 
+		String title = robot.getName()
+				+ ((robot.getAssociatedSettlement() != null) ? (" of " + robot.getAssociatedSettlement()) : "")
+				+ " (" + (robot.getLocationStateType().getName()) + ")";
+		super.setTitle(title);
+		
 		if (!inoperableCache) {
 			if (robot.getSystemCondition().isInoperable()) {
 				inoperableCache = true;

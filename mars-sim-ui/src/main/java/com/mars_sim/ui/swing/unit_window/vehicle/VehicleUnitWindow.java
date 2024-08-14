@@ -7,7 +7,6 @@
 
 package com.mars_sim.ui.swing.unit_window.vehicle;
 
-import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -40,13 +39,9 @@ public class VehicleUnitWindow extends UnitWindow {
 	public VehicleUnitWindow(MainDesktopPane desktop, Vehicle vehicle) {
 		// Use UnitWindow constructor
 		super(desktop, vehicle,  vehicle.getName() 
-				+ " (" + vehicle.getVehicleType().getName() + ")"
+				+ " [" + vehicle.getVehicleType().getName() + "]"
 				+ " of " + vehicle.getAssociatedSettlement()
-				+ ((vehicle.getLocationTag().findSettlementVicinity() != null) ?
-					(" in " + vehicle.getLocationTag().findSettlementVicinity() + " Vicinity") :
-						((vehicle.getContainerUnit() instanceof MarsSurface) ?
-										(" on " + vehicle.getContainerUnit()) :
-										(" in " + vehicle.getContainerUnit())))
+				+ " (" + (vehicle.getLocationStateType().getName()) + ")"
 				, true);
 		this.vehicle = vehicle;
 		
@@ -97,6 +92,13 @@ public class VehicleUnitWindow extends UnitWindow {
 	@Override
 	public void update() {
 		super.update();
+		
+		String title = vehicle.getName() 
+				+ " [" + vehicle.getVehicleType().getName() + "]"
+				+ " of " + vehicle.getAssociatedSettlement()
+				+ " (" + (vehicle.getLocationStateType().getName()) + ")";
+		super.setTitle(title);
+		
 		// Check if equipment has been salvaged.
 		if (!salvaged && vehicle.isSalvaged()) {
 			addTabPanel(new SalvageTabPanel(vehicle, desktop));

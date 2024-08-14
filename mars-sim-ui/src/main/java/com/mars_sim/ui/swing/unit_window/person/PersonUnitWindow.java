@@ -18,7 +18,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.shift.ShiftSlot;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -73,19 +72,11 @@ public class PersonUnitWindow extends UnitWindow {
 		// Use UnitWindow constructor
 		super(desktop, person, person.getName() 
 				+ " of " + 
-				((person.getAssociatedSettlement() != null) ? 
-						person.getAssociatedSettlement() : 
-							person.getBuriedSettlement())
-				+ ((person.getLocationTag().findSettlementVicinity() != null) ?
-						(" in " + person.getLocationTag().findSettlementVicinity() + " Vicinity") :
-							((person.getContainerUnit() instanceof MarsSurface) ?
-											(" on " + person.getContainerUnit()) :
-											(" in " + person.getContainerUnit())))
+				((person.getAssociatedSettlement() != null) ? person.getAssociatedSettlement() : person.getBuriedSettlement())
+				+ " (" + (person.getLocationStateType().getName()) + ")"
 				, false);
 		this.person = person;
-	
-		
-		
+
 		// Create status panel
 		statusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		statusPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
@@ -185,17 +176,6 @@ public class PersonUnitWindow extends UnitWindow {
 		gridPanel.add(jobPanel);
 
 		statusPanel.add(gridPanel, BorderLayout.CENTER);
-		
-//		// Add space agency label and logo
-//		JLabel agencyLabel = getAgencyLabel();
-//		
-//		JPanel agencyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-//		agencyPanel.setSize(new Dimension(-1, UnitWindow.STATUS_HEIGHT - 5));
-//		agencyPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-//		agencyPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
-//		agencyPanel.add(agencyLabel);
-//
-//		statusPanel.add(agencyPanel, BorderLayout.EAST);
 	}
 	
 	public void initTabPanel(Person person) {
@@ -247,7 +227,13 @@ public class PersonUnitWindow extends UnitWindow {
 	@Override
 	public void update() {
 		super.update();
-
+		
+		String title = person.getName() 
+				+ " of " + 
+				((person.getAssociatedSettlement() != null) ? person.getAssociatedSettlement() : person.getBuriedSettlement())
+				+ " (" + (person.getLocationStateType().getName()) + ")";
+		super.setTitle(title);
+		
 		if (!deadCache 
 			&& (person.isDeclaredDead()
 			|| person.getPhysicalCondition().isDead())) {

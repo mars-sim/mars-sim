@@ -216,7 +216,7 @@ public class SettlementTransparentPanel extends JComponent {
         buildBanner();
         buildWeatherPanel();
 	    JPanel sunPane = buildSunPane();
-
+    
 	    JPanel topPane = new JPanel(new BorderLayout(20, 20));
 	    topPane.setBackground(new Color(0,0,0,128));
 	    topPane.setOpaque(false);
@@ -243,6 +243,10 @@ public class SettlementTransparentPanel extends JComponent {
 	    sunlightPanel.setOpaque(false);
 	    sunlightPanel.add(sunPane, BorderLayout.NORTH);
 
+        // Make panel drag-able
+//	    ComponentMover mover = new ComponentMover(desktop.getMainWindow());
+//	    mover.registerComponent(sunPane.getComponents());
+	    
 	    JPanel centerPanel = new JPanel(new BorderLayout(2, 2));
 	    centerPanel.setBackground(new Color(0,0,0,128));
 	    centerPanel.setOpaque(false);
