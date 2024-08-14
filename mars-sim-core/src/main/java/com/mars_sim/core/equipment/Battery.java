@@ -41,8 +41,8 @@ public class Battery implements Serializable {
     /** The maximum energy capacity of a standard battery module in kWh. */
     // ENERGY_PER_MODULE = 15.0;
     
-    private static final String KWH__ = " kWh  ";
-    private static final String KW__ = " kW  ";
+    private static final String KWH = " kWh  ";
+    private static final String KW = " kW  ";
     
     // Data members
     /** Is the unit operational ? */
@@ -199,7 +199,7 @@ public class Battery implements Serializable {
     	
     	if (energyCanSupply <= 0.001)
     		logger.log(unit, Level.INFO, 20_000, 
-          			"No more battery. energyStorageCapacity: " + Math.round(energyStorageCapacity * 1_000.0)/1_000.0 + KWH__);
+          			"No more battery. energyStorageCapacity: " + Math.round(energyStorageCapacity * 1_000.0)/1_000.0 + KWH);
     		
 		if (kWhStored < energyStorageCapacity * lowPowerPercent / 100)
 			lowBatteryAlarm = true;
@@ -210,13 +210,13 @@ public class Battery implements Serializable {
     	if (lowBatteryAlarm) {
 			logger.log(unit, Level.WARNING, 20_000, 
       			"[Low Battery Alarm] "
-                + "kWh: " + + Math.round(kWh * 1_000.0)/1_000.0 + KWH__
-      	       	+ "kWhStored: " + Math.round(kWhStored * 1_000.0)/1_000.0 + KWH__
-      			+ "energyCanSupply: " + Math.round(energyCanSupply * 1_000.0)/1_000.0 + KWH__
-              	+ "energyToDeliver: " + + Math.round(energyToDeliver * 1_000.0)/1_000.0 + KWH__
+                + "kWh: " + + Math.round(kWh * 1_000.0)/1_000.0 + KWH
+      	       	+ "kWhStored: " + Math.round(kWhStored * 1_000.0)/1_000.0 + KWH
+      			+ "energyCanSupply: " + Math.round(energyCanSupply * 1_000.0)/1_000.0 + KWH
+              	+ "energyToDeliver: " + + Math.round(energyToDeliver * 1_000.0)/1_000.0 + KWH
             	+ "time: " + + Math.round(time * 1_000.0)/1_000.0 + " hrs  "
-      			+ "powerRequest: " + + Math.round(powerRequest * 1_000.0)/1_000.0 + KW__
-      			+ "powerMax: " + + Math.round(powerMax * 1_000.0)/1_000.0 + KW__);
+      			+ "powerRequest: " + + Math.round(powerRequest * 1_000.0)/1_000.0 + KW
+      			+ "powerMax: " + + Math.round(powerMax * 1_000.0)/1_000.0 + KW);
     	}
        	
        	

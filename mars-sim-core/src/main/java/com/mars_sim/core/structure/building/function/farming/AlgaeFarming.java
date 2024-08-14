@@ -51,7 +51,8 @@ public class AlgaeFarming extends Function {
 	private static final int GREY_WATER_ID = ResourceUtil.greyWaterID;
 
 	public static final int HARVESTED_ALGAE_ID = ResourceUtil.spirulinaID;
-	public static final int PRODUCED_ALGAE_ID = HARVESTED_ALGAE_ID + 1; // id: 362
+	// 
+	public static final int PRODUCED_ALGAE_ID = 0;
 	
 	private static final int LIGHT_FACTOR = 0;
 	private static final int TEMPERATURE_FACTOR = 2;	

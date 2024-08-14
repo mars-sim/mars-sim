@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Organism.java
- * @version 3.2.0 2021-06-20
+ * @date 2024-08-13
  * @author Manny Kung
  */
 
@@ -25,7 +25,7 @@ import java.io.Serializable;
 * @author Michael Main 
 *   <A HREF="mailto:main@colorado.edu"> (main@colorado.edu) </A>
 *
- * @version 3.2.0 2021-06-20
+* @version Feb 10, 2016
 *
 * @see Animal
 * @see Plant
@@ -113,7 +113,15 @@ public class Organism implements Serializable {
       return size;
    }
 
-
+   /**
+    * Sets the size.
+    * 
+    * @param growth
+    */
+   public void setSize(double value) {
+	   size = value;
+   }
+   
    /**
    * Determine whether this <CODE>Organism</CODE> is currently alive.
    * @return

@@ -147,9 +147,6 @@ public class ComputingJob implements Serializable {
 
 		double remainingDemand = initDemand;
 		
-		if (nodes.isEmpty())
-			return canWork;
-		
         int startMSol = now + 1;
         int endMSol = (int) (startMSol + duration - timeCompleted);
         

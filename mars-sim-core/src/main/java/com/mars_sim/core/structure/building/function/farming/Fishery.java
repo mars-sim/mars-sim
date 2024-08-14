@@ -59,9 +59,9 @@ public class Fishery extends Function {
 	public static final double KG_PER_OUNCE = 0.02834952;
 	/** Convert from ounce to kg. */
 	public static final double OUNCE_PER_KG = 35.27396195;
-	/** Initial size of each weed, in ounces. */ 
+	/** Typical adult weed size, in ounces. */ 
 	public static final double WEED_OUNCES = 15;
-	/** Fish size, in ounces. */ 
+	/** Typical adult fish size, in ounces. */ 
 	public static final double FISH_OUNCES = 50; 
 	/** Fish length in cm. */
 	public static final int FISH_LENGTH = 30; 
@@ -93,7 +93,7 @@ public class Fishery extends Function {
 	/** Adult fish length per litre. Cold water is 2.5cm per 4.55 litre. */
 	private static final double FISHSIZE_LITRE = (2.5D/4.55D); 
 	/** Number of fish as a percentage of maximum. */
-	private static final double IDEAL_PERCENTAGE = 0.8D;
+	private static final double IDEAL_FRACTION = 0.8D;
 
 	/** Size of tank in litres. */
 	private int tankSize;
@@ -124,7 +124,7 @@ public class Fishery extends Function {
 	private double waterMass;
 	
 	/** A list of our fish. */
-	private List<Herbivore> fish;   
+	private List<Fish> fish;   
 	/** A list of our weeds. */
 	private List<Plant> weeds;
 	
@@ -154,7 +154,7 @@ public class Fishery extends Function {
 		// Calculate fish & weeds by tank size
 		maxFish = (int)((tankSize * FISHSIZE_LITRE)/FISH_LENGTH);
 		
-		idealFish = (int)(maxFish * IDEAL_PERCENTAGE);
+		idealFish = (int)(maxFish * IDEAL_FRACTION);
 		
 		// For now, fishToWaterMassRatio is 0.0146
 		fishToWaterMassRatio = 1.0 * idealFish / tankSize; 
@@ -177,7 +177,7 @@ public class Fishery extends Function {
 	    	// Assume the fish are young
 	    	double weight = RandomUtil.getRandomDouble(FISH_OUNCES *.75, FISH_OUNCES * 1.25) / 20;
 	    	double eatingRate = RandomUtil.getRandomDouble(weight * EAT_FRACTION *.9, weight * EAT_FRACTION * 1.1);
-	    	fish.add(new Herbivore(weight,  
+	    	fish.add(new Fish(weight,  
 	    		   RandomUtil.getRandomDouble(FISH_GROWTH_RATE *.9, FISH_GROWTH_RATE * 1.1), 
 	    		   eatingRate));
 	    }
@@ -279,7 +279,7 @@ public class Fishery extends Function {
 	public double getAverageAge() {
 		int num = fish.size();
 		double age = 0;
-		for (Herbivore f : fish) {
+		for (Fish f : fish) {
 			age += f.getAge();
 		}
 		if (num == 0)
@@ -297,9 +297,9 @@ public class Fishery extends Function {
 	   double time = pulse.getElapsed();
 	
 	   // Simulate the fish's growing cycle
-	   ListIterator<Herbivore> it = fish.listIterator();
+	   ListIterator<Fish> it = fish.listIterator();
 	   while(it.hasNext()) {
-		  Herbivore f = it.next();
+		  Fish f = it.next();
 	      f.growPerFrame(time);
 	      // If a fish has no food to eat within a period of time, it will die
 	      if (!f.isAlive())
@@ -339,7 +339,7 @@ public class Fishery extends Function {
 		   if (feedIterations - numFish > 0) {	
 			   // Ensure each Fish get the chance to nibble on a weed
 			   for (int i = 0; i < numFish ; i++) {
-				   Herbivore f = fish.get(i);
+				   Fish f = fish.get(i);
 				   int index = RandomUtil.getRandomInt(numWeeds-1);
 				   Plant nextWeed = weeds.get(index);
 				   f.nibble(nextWeed);
@@ -351,7 +351,7 @@ public class Fishery extends Function {
 		   for (int i = 0; i < feedIterations; i++) {
 			   // Future: When picking a fish to eat, pick one that's hungry
 			   int index = RandomUtil.getRandomInt(numFish-1);
-			   Herbivore nextFish = fish.get(index);
+			   Fish nextFish = fish.get(index);
 			   index = RandomUtil.getRandomInt(numWeeds-1);
 			   Plant nextWeed = weeds.get(index);
 			   nextFish.nibble(nextWeed);
@@ -391,7 +391,7 @@ public class Fishery extends Function {
 			// Assume the beginning weight of a baby fish is 1/30 of an adult fish
 			double weight = RandomUtil.getRandomDouble(FISH_OUNCES / 30 *.75, FISH_OUNCES / 30 * 1.25);
 			double eatingRate = RandomUtil.getRandomDouble(weight * EAT_FRACTION *.9, weight * EAT_FRACTION * 1.1);
-			fish.add(new Herbivore(weight,  
+			fish.add(new Fish(weight,  
 					RandomUtil.getRandomDouble(FISH_GROWTH_RATE *.9, FISH_GROWTH_RATE * 1.1), 
 					eatingRate));
 		}
@@ -558,7 +558,7 @@ public class Fishery extends Function {
 		int rand = RandomUtil.getRandomInt(fish.size());
 		if (rand > idealFish) {
 
-			Herbivore removed = fish.remove(0);
+			Fish removed = fish.remove(0);
 			double mass = removed.getSize() / OUNCE_PER_KG;
 			// Catch one
 			logger.info(fisher, "One fish caught. Mass: " 

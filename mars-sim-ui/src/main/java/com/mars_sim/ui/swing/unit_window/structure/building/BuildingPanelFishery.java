@@ -245,6 +245,9 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 		numWeedLabel = null;
 		weedMassLabel = null;
 		weedDemandLabel = null;
+		
+		ageLabel = null;
+		fishHarvestedLabel = null;
 		tank = null;
 	}
 }

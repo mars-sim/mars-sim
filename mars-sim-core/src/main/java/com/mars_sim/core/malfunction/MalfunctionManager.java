@@ -572,27 +572,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 	
 	
-//	/**
-//	 * Sets the probability of a repair part for a malfunction.
-//	 *
-//	 * @param malfunctionName the name of the malfunction.
-//	 * @param partName        the name of the part.
-//	 * @return probability of failure of a particular repair part.
-//	 */
-//	public void setRepairPartProbability(Malfunction malfunction, String partName, double repairProbability) {
-//		List<RepairPart> partList = malfunction.getMalfunctionMeta().getParts();
-//		if (partList != null) {
-//			Iterator<RepairPart> i = partList.iterator();
-//			while (i.hasNext()) {
-//				RepairPart part = i.next();
-//				if (part.getName().equalsIgnoreCase(partName)) {
-//					part.setRepairProbability(repairProbability);
-//					break;
-//				}
-//			}
-//		}
-//	}
-	
 	/**
 	 * Sets up a malfunction event.
 	 *
@@ -621,12 +600,12 @@ public class MalfunctionManager implements Serializable, Temporal {
 				if (malfunction.getMalfunctionMeta().getName().contains(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) {
 					eventType = EventType.HAZARD_ACTS_OF_GOD;
 					whileDoing = "";
-					whoAffected = "";
+					whoAffected = "N/A";
 				}
 				else {
 					eventType = EventType.MALFUNCTION_PARTS_FAILURE;
 					whileDoing = "";
-					whoAffected = "";
+					whoAffected = "N/A";
 				}
 			}
 			else if (actor.getUnitType() == UnitType.EVA_SUIT) {
@@ -641,9 +620,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 		}
 
-		if (whoAffected.equalsIgnoreCase(""))
-			whoAffected = "N/A";
-		
 		HistoricalEvent newEvent = new MalfunctionEvent(
 								eventType, 
 								malfunction, 
