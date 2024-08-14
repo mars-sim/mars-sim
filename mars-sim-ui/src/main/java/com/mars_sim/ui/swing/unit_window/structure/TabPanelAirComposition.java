@@ -9,8 +9,6 @@ package com.mars_sim.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +42,8 @@ import com.mars_sim.ui.swing.NumberCellRenderer;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * This is a tab panel for displaying the composition of air of each inhabitable building in a settlement.
@@ -241,12 +239,7 @@ public class TabPanelAirComposition extends TabPanel {
 	private JRadioButton createSelectorButton(String selector) {
 	    JRadioButton btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox." + selector)); //$NON-NLS-1$
 	    btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox." + selector + ".tooltip")); //$NON-NLS-1$
-	    btn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				airTableModel.update();
-			}
-		});
-
+	    btn.addActionListener(e -> airTableModel.update());
 		return btn;
 	}
 

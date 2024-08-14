@@ -9,8 +9,6 @@ package com.mars_sim.ui.swing.unit_window.vehicle;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -75,11 +73,8 @@ public class TabPanelTow extends TabPanel {
 
 			// Create the towing button.
 			towingButton = new JButton();
-			towingButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent event) {
-					getDesktop().showDetails(((Towing) vehicle).getTowedVehicle());
-				}
-			});
+			towingButton.addActionListener(e ->
+					getDesktop().showDetails(((Towing) vehicle).getTowedVehicle()));
 
 			// Create the towing text label.
 			towingTextLabel = new JLabel(Msg.getString("TabPanelTow.none"), SwingConstants.LEFT); //$NON-NLS-1$
@@ -106,11 +101,8 @@ public class TabPanelTow extends TabPanel {
 
 			// Create the towed button.
 			towedButton = new JButton();
-			towedButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent event) {
-					getDesktop().showDetails(vehicle.getTowingVehicle());
-				}
-			});
+			towedButton.addActionListener(e ->
+					getDesktop().showDetails(vehicle.getTowingVehicle()));
 
 			// Create towed text label.
 			towedTextLabel = new JLabel(Msg.getString("TabPanelTow.none"), SwingConstants.LEFT); //$NON-NLS-1$

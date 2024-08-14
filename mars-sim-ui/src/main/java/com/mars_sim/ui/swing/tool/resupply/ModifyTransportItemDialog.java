@@ -9,8 +9,6 @@ package com.mars_sim.ui.swing.tool.resupply;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -69,24 +67,17 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 
 		// Create commit button.
 		commitButton = new JButton("Commit Changes");
-		commitButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
+		commitButton.addActionListener(e -> 
 				// Modify transport item and close dialog.
-				modifyTransportItem();
-			}
-		});
+				modifyTransportItem());
 		buttonPane.add(commitButton);
 
 		// Create cancel button.
 		// Change button text from "Cancel"  to "Discard Changes"
 		JButton cancelButton = new JButton("Discard Changes");
-		cancelButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		cancelButton.addActionListener(e -> 
 				// Close dialog.
-				dispose();
-			}
-
-		});
+				dispose());
 		buttonPane.add(cancelButton);
 
         // Add to its own tab pane

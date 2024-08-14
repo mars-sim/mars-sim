@@ -172,12 +172,10 @@ implements ActionListener {
 			// Prepare top container button
 			JButton topContainerButton = new JButton(death.getContainerUnit().getName());
 			topContainerButton.setHorizontalAlignment(SwingConstants.CENTER);
-			topContainerButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent event) {
+			topContainerButton.addActionListener(e -> {
 					DeathInfo death = ((Person) getUnit()).getPhysicalCondition().getDeathDetails();
 					if (!(death.getContainerUnit() instanceof MarsSurface))
 						getDesktop().showDetails(death.getContainerUnit());
-				}
 			});
 			locationLabelPanel.add(topContainerButton);
 		}

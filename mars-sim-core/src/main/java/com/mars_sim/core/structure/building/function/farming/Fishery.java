@@ -182,7 +182,7 @@ public class Fishery extends Function {
 	    		   eatingRate));
 	    }
 	    for (int i = 0; i < numWeeds; i++) {
-	    	double weight = RandomUtil.getRandomDouble(WEED_OUNCES *.75, WEED_OUNCES * 1.25);
+	    	double weight = RandomUtil.getRandomDouble(WEED_OUNCES *.75, WEED_OUNCES * 1.25) / 20;
 	    	double growthRate = RandomUtil.getRandomDouble(WEED_GROWTH_RATE *.9, WEED_GROWTH_RATE * 1.1);
 	    	weeds.add(new Plant(weight, growthRate));
 	    }

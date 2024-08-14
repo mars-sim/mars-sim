@@ -66,9 +66,9 @@ class ExplorationSitesPanel extends WizardPanel {
 	
 	// Data members.
 	private MapPanel mapPane;
-	private EllipseLayer ellipseLayer;
-	private NavpointEditLayer navLayer;
-	private MineralMapLayer mineralLayer;
+	private transient EllipseLayer ellipseLayer;
+	private transient NavpointEditLayer navLayer;
+	private transient MineralMapLayer mineralLayer;
 
 	private IntPoint navOffset;
 	private JPanel siteListPane;
@@ -119,12 +119,14 @@ class ExplorationSitesPanel extends WizardPanel {
 		// Create the map panel.
 		mapPane = new MapPanel(desktop, 200L);
 		mineralLayer = new MineralMapLayer(mapPane);
+		ellipseLayer = new EllipseLayer(Color.GREEN);
+		navLayer = new NavpointEditLayer(mapPane, true);
 		
 		mapPane.addMapLayer(mineralLayer, 0);
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 1);
 		mapPane.addMapLayer(new UnitLabelMapLayer(), 2);
-		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 3);
-		mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane, true), 4);
+		mapPane.addMapLayer(ellipseLayer, 3);
+		mapPane.addMapLayer(navLayer, 4);
 		
 		mapPane.setBorder(new MarsPanelBorder());
 		mapPane.addMouseListener(new NavpointMouseListener());
@@ -168,17 +170,15 @@ class ExplorationSitesPanel extends WizardPanel {
 
 		// Create the add button.
 		addButton = new JButton("Add Site");
-		addButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		addButton.addActionListener(e -> {
 				// Add a new exploration site to the mission.
-				SitePanel sitePane = new SitePanel(siteListPane.getComponentCount(), getNewSiteLocation());
-				siteListPane.add(sitePane);
+				SitePanel p = new SitePanel(siteListPane.getComponentCount(), getNewSiteLocation());
+				siteListPane.add(p);
 				navLayer.addNavpointPosition(
-						MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), mapPane.getMap()));
+						MapUtils.getRectPosition(p.getSite(), getCenterCoords(), mapPane.getMap()));
 				mapPane.repaint();
 				addButton.setEnabled(canAddMoreSites());
 				validate();
-			}
 		});
 		addButtonPane.add(addButton);
 

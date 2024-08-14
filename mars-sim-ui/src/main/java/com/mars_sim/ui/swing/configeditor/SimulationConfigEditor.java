@@ -12,10 +12,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -293,21 +290,13 @@ public class SimulationConfigEditor {
 		// Create add settlement button.
 		JButton addButton = new JButton(ImageLoader.getIconByName("action/add")); //$NON-NLS-1$
 		addButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.add")); //$NON-NLS-1$
-		addButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				addNewRows();
-			}
-		});
+		addButton.addActionListener(e -> addNewRows());
 		configurationButtonInnerTopPanel.add(addButton);
 
 		// Create remove settlement button.
 		JButton removeButton = new JButton(ImageLoader.getIconByName("action/remove")); //$NON-NLS-1$
 		removeButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.remove")); //$NON-NLS-1$
-		removeButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				removeSelectedSettlements();
-			}
-		});
+		removeButton.addActionListener(e -> removeSelectedSettlements());
 		configurationButtonInnerTopPanel.add(removeButton);
 
 		// Create bottom panel.
@@ -352,19 +341,11 @@ public class SimulationConfigEditor {
 		// Add an Export button
 		JButton exportButton = new JButton(ImageLoader.getIconByName("action/export")); //$NON-NLS-1$
 		exportButton.setToolTipText("Export");
-		exportButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				exportScenario();
-			}
-		});
+		exportButton.addActionListener(e -> exportScenario());
 		configControl.getPane().add(exportButton);
 		JButton importButton = new JButton(ImageLoader.getIconByName("action/import")); //$NON-NLS-1$
 		importButton.setToolTipText("Import");
-		importButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				importScenario();
-			}
-		});
+		importButton.addActionListener(e -> importScenario());
 		configControl.getPane().add(importButton);
 		bottomPanel.add(configControl.getPane(), BorderLayout.WEST);
 
@@ -382,9 +363,7 @@ public class SimulationConfigEditor {
 		// Create the start button.
 		startButton = new JButton(Msg.getString("SimulationConfigEditor.button.newSim")); //$NON-NLS-1$
 		startButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
-		startButton.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent evt) {
+		startButton.addActionListener(e -> {
 				// Make sure any editing cell is completed, then check if error.
 				TableCellEditor editor = settlementTable.getCellEditor();
 				if (editor != null) {
@@ -401,7 +380,6 @@ public class SimulationConfigEditor {
 					// Close simulation config editor
 					closeWindow();
 				}
-			}
 		});
 
 		bottomButtonPanel.add(startButton);
@@ -409,30 +387,19 @@ public class SimulationConfigEditor {
 		// Edit Authority button.
 		JButton authorityButton = new JButton(ImageLoader.getIconByName("sponsor")); //$NON-NLS-1$
 		authorityButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.authorityEditor")); //$NON-NLS-1$
-		authorityButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				editAuthorities();
-			}
-		});
+		authorityButton.addActionListener(e -> editAuthorities());
 
 		// Edit Crew button.
 		JButton crewButton = new JButton(ImageLoader.getIconByName("people")); //$NON-NLS-1$
 		crewButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
-		crewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				editCrewProfile();
-			}
-		});
+		crewButton.addActionListener(e -> editCrewProfile());
 
 		// Set a check box for enabling/disable the alpha crew button
 		JCheckBox cb = new JCheckBox(Msg.getString("SimulationConfigEditor.button.useCrews")); //$NON-NLS-1$
 		cb.setSelected(useCrew);
-		cb.addItemListener(new ItemListener() {
-
-			public void itemStateChanged(ItemEvent e) {
+		cb.addItemListener(e -> {
             	 useCrew = (e.getStateChange() == ItemEvent.SELECTED);
         		 crewButton.setEnabled(useCrew);
-             }
         });
 
 		bottomButtonPanel.add(cb);

@@ -10,8 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -78,13 +76,11 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		// Create LUV button.
 		luvButton = new JButton("   ");
 		luvButton.setVisible(false);
-		luvButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		luvButton.addActionListener(e -> {
 				// Open window for light utility vehicle.
 				LightUtilityVehicle luv = mission.getLightUtilityVehicle();
 				if (luv != null)
 					getDesktop().showDetails(luv);
-			}
 		});
 		luvPane.add(luvButton);
 

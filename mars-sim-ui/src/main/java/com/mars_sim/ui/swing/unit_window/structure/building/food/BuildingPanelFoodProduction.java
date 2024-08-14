@@ -12,8 +12,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -158,8 +156,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 
 		newProcessButton.setEnabled(processComboBox.getItemCount() > 0);
 		newProcessButton.setToolTipText("Create a New Food Production Process or Salvage a Process");
-		newProcessButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+		newProcessButton.addActionListener(e -> {
 				try {
 					Object selectedItem = processComboBox.getSelectedItem();
 					if (selectedItem != null
@@ -171,10 +168,9 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 							update();
 						}
 					}
-				} catch (Exception e) {
-					logger.log(Level.SEVERE, "new process button", e);
+				} catch (Exception ex) {
+					logger.log(Level.SEVERE, "new process button", ex);
 				}
-			}
 		});
 		interactionPanel.add(btnPanel);
 	}

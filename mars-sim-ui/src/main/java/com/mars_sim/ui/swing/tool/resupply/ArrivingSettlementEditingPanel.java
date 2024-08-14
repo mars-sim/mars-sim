@@ -10,8 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
@@ -176,11 +174,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		if (settlement != null) {
 			templateCB.setSelectedItem(settlement.getTemplate());
 		}
-		templateCB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				updateTemplateDependentFields((String) templateCB.getSelectedItem());
-			}
-		});
+		templateCB.addActionListener(e -> updateTemplateDependentFields((String) templateCB.getSelectedItem()));
 		
 		// templatePane.add(templateCB);
 		topSpring.add(templateCB);
@@ -267,12 +261,10 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		arrivalDateRB = new JRadioButton();
 		dateTypeRBGroup.add(arrivalDateRB);
 		arrivalDateRB.setSelected(true);
-		arrivalDateRB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				JRadioButton rb = (JRadioButton) evt.getSource();
+		arrivalDateRB.addActionListener(e -> {
+				JRadioButton rb = (JRadioButton) e.getSource();
 				setEnableArrivalDatePane(rb.isSelected());
 				setEnableTimeUntilArrivalPane(!rb.isSelected());
-			}
 		});
 		arrivalDateSelectionPane.add(arrivalDateRB);
 
@@ -348,12 +340,10 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		// Create time until arrival radio button.
 		timeUntilArrivalRB = new JRadioButton();
 		dateTypeRBGroup.add(timeUntilArrivalRB);
-		timeUntilArrivalRB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				JRadioButton rb = (JRadioButton) evt.getSource();
+		timeUntilArrivalRB.addActionListener(e -> {
+				JRadioButton rb = (JRadioButton) e.getSource();
 				setEnableTimeUntilArrivalPane(rb.isSelected());
 				setEnableArrivalDatePane(!rb.isSelected());
-			}
 		});
 		timeUntilArrivalPane.add(timeUntilArrivalRB);
 

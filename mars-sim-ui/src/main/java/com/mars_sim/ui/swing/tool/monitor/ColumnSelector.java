@@ -9,8 +9,6 @@ package com.mars_sim.ui.swing.tool.monitor;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -100,20 +98,16 @@ extends ModalInternalFrame {
 		// Buttons
 		JPanel buttonPanel = new JPanel(new FlowLayout());
 		JButton okButton = new JButton(Msg.getString("ColumnSelector.button.ok")); //$NON-NLS-1$
-		okButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+		okButton.addActionListener(e -> {
 				okPressed = true;
 				setVisible(false);
 				//setModal(false);
-			}
 		});
 		buttonPanel.add(okButton);
 		JButton cancelButton = new JButton(Msg.getString("ColumnSelector.button.cancel")); //$NON-NLS-1$
-		cancelButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+		cancelButton.addActionListener(e -> {
 				setVisible(false);
 				//setModal(false);
-			}
 		});
 		buttonPanel.add(cancelButton);
 

@@ -10,8 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -73,11 +71,7 @@ implements ScientificStudyListener {
 		JButton scienceToolButton = new JButton(ImageLoader.getIconByName(ScienceWindow.ICON)); //$NON-NLS-1$
 		scienceToolButton.setMargin(new Insets(1, 1, 1, 1));
 		scienceToolButton.setToolTipText(Msg.getString("AreologyStudyFieldMissionCustomInfoPanel.tooltip.openInScienceTool")); //$NON-NLS-1$
-		scienceToolButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				displayStudyInScienceTool();
-			}
-		});
+		scienceToolButton.addActionListener(e -> displayStudyInScienceTool());
 		studyPanel.add(scienceToolButton);
 
 		// Create study title label.

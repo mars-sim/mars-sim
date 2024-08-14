@@ -8,8 +8,6 @@ package com.mars_sim.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.List;
 
@@ -203,11 +201,7 @@ public class TabPanelThermal extends TabPanelTable {
 		// Create override check box.
 		checkbox = new JCheckBox(Msg.getString("TabPanelThermalSystem.checkbox.value")); //$NON-NLS-1$
 		checkbox.setToolTipText(Msg.getString("TabPanelThermalSystem.checkbox.tooltip")); //$NON-NLS-1$
-		checkbox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				setNonGenerating(checkbox.isSelected());
-			}
-		});
+		checkbox.addActionListener(e -> setNonGenerating(checkbox.isSelected()));
 		checkbox.setSelected(false);
 		checkboxPane.add(checkbox);
 		

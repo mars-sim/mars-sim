@@ -8,8 +8,6 @@ package com.mars_sim.ui.swing.tool.mission;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -70,12 +68,7 @@ public class RescueMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		wrapper0.add(rescueVehicleButton);
 		contentPanel.add(wrapper0);
         //contentPanel.add(rescueVehicleButton);
-        rescueVehicleButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Open window for vehicle to be rescued.
-                openRescueVehicleWindow();
-            }
-        });
+        rescueVehicleButton.addActionListener(e -> openRescueVehicleWindow());
 
         // Create status panel.
         JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));

@@ -11,8 +11,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.List;
 
@@ -212,11 +210,7 @@ extends TabPanel {
 		missionButton.setMargin(new Insets(1, 1, 1, 1));
 		missionButton.setToolTipText(Msg.getString("TabPanelMissions.tooltip.mission")); //$NON-NLS-1$
 		missionButton.setEnabled(false);
-		missionButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				openMissionTool();
-			}
-		});
+		missionButton.addActionListener(e -> openMissionTool());
 		innerButtonPanel.add(missionButton);
 
 		// Create monitor button.
@@ -224,11 +218,7 @@ extends TabPanel {
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
 		monitorButton.setToolTipText(Msg.getString("TabPanelMissions.tooltip.monitor")); //$NON-NLS-1$
 		monitorButton.setEnabled(false);
-		monitorButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				openMonitorTool();
-			}
-		});
+		monitorButton.addActionListener(e -> openMonitorTool());
 		innerButtonPanel.add(monitorButton);
 	}
 	
@@ -245,11 +235,7 @@ extends TabPanel {
 		// Create override check box.
 		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelMissions.checkbox.overrideMissionCreation")); //$NON-NLS-1$
 		overrideCheckbox.setToolTipText(Msg.getString("TabPanelMissions.tooltip.overrideMissionCreation")); //$NON-NLS-1$
-		overrideCheckbox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				setMissionCreationOverride(overrideCheckbox.isSelected());
-			}
-		});
+		overrideCheckbox.addActionListener(e -> setMissionCreationOverride(overrideCheckbox.isSelected()));
 		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.MISSION));
 		bottomPanel.add(overrideCheckbox);
 	}

@@ -11,8 +11,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
@@ -38,6 +36,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
+import com.formdev.flatlaf.FlatClientProperties;
+import com.formdev.flatlaf.icons.FlatSearchWithHistoryIcon;
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
@@ -51,8 +51,6 @@ import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
-import com.formdev.flatlaf.FlatClientProperties;
-import com.formdev.flatlaf.icons.FlatSearchWithHistoryIcon;
 
 
 /**
@@ -236,11 +234,7 @@ extends ToolWindow {
 
 		// Create search button
 		searchButton = new JButton(Msg.getString("SearchWindow.button.search")); //$NON-NLS-1$
-		searchButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				search();
-			}
-		});
+		searchButton.addActionListener(e -> search());
 		searchButton.setEnabled(false);
 		searchButton.setToolTipText(Msg.getString("SearchWindow.button.toolTip"));
 		searchButtonPane.add(searchButton);

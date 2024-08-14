@@ -9,8 +9,6 @@ package com.mars_sim.ui.swing.configeditor;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -33,11 +31,11 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import com.mars_sim.core.authority.Authority;
+import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.authority.MissionAgenda;
 import com.mars_sim.core.authority.MissionCapability;
 import com.mars_sim.tools.Msg;
-import com.mars_sim.core.authority.Authority;
-import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MainWindow;
 
@@ -73,27 +71,19 @@ public class AuthorityEditor  {
 			JPanel controlPanel = new JPanel();
 			JButton addButton = new JButton(Msg.getString("AuthorityEditor.button.add"));
 			addButton.setToolTipText(Msg.getString("AuthorityEditor.tooltop.add", title));
-			addButton.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent e) {
+			addButton.addActionListener(e -> {
 					model.addElement(newText.getText());	
 					newText.setText("");
-				}
 			});
 			controlPanel.add(addButton);
 
 			JButton removeButton = new JButton(Msg.getString("AuthorityEditor.button.remove"));
 			removeButton.setToolTipText(Msg.getString("AuthorityEditor.tooltop.remove"));
-			removeButton.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent e) {
+			removeButton.addActionListener(e ->  {
 					List<String> selected = list.getSelectedValuesList();
 					for (String string : selected) {
 						model.removeElement(string);
 					}
-				}
 			});
 			controlPanel.add(removeButton);
 			
@@ -176,17 +166,13 @@ public class AuthorityEditor  {
 		for (String agenda : raFactory.getAgendaNames()) {
 			agendaCB.addItem(agenda);			
 		}
-		agendaCB.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
+		agendaCB.addActionListener(e ->  {
 				String selected = (String) agendaCB.getSelectedItem();
 				MissionAgenda selectedAgenda = raFactory.getAgenda(selected);
 				agendaObjective.setText(OBJECTIVE + selectedAgenda.getObjectiveName());
 				ta.setText(selectedAgenda.getCapabilities().stream()
 						.map(MissionCapability::getDescription)
 						.collect(Collectors.joining(".\n- ", "- ", ".")));
-			}
 		});
 		agendaPanel.add(agendaCB);
 		agendaObjective = new JLabel("");

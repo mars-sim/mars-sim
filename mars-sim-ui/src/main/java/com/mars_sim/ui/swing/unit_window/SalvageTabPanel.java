@@ -10,8 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -102,11 +100,9 @@ public class SalvageTabPanel extends TabPanel {
         
         // Create the settlement button.
         JButton settlementButton = new JButton(salvageInfo.getSettlement().getName());
-        settlementButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        settlementButton.addActionListener(e -> {
                 SalvageInfo info = ((Salvagable) getUnit()).getSalvageInfo();
                 getDesktop().showDetails(info.getSettlement());
-            }
         });
         settlementPanel.add(settlementButton);
         

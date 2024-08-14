@@ -162,8 +162,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 		// Create right arrow button.
 		rightArrowButton = new JButton(">");
 		rightArrowButton.setEnabled(false);
-		rightArrowButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		rightArrowButton.addActionListener(e -> {
 				// Add trade good amount.
 				try {
 					int amount = (Integer) formatter.stringToValue(amountTextField.getText());
@@ -185,7 +184,6 @@ public class EmergencySupplyPanel extends WizardPanel {
 					}
 				} catch (ParseException c) {
 				}
-			}
 		});
 		amountControlPane.add(rightArrowButton, BorderLayout.EAST);
 

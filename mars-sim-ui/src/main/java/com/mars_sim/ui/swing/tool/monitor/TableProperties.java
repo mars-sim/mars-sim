@@ -10,7 +10,6 @@ package com.mars_sim.ui.swing.tool.monitor;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -74,13 +73,7 @@ class TableProperties extends JInternalFrame {
             JCheckBox column = new JCheckBox(name);
             column.setSelected(false);
 
-            column.addActionListener(
-            	new ActionListener() {
-                    public void actionPerformed(ActionEvent event) {
-                        columnSelected(event);
-                    }
-                }
-            );
+            column.addActionListener(e -> columnSelected(e));
             columnButtons.add(column);
             columnPane.add(column);
         }

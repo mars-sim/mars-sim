@@ -59,10 +59,7 @@ public class SwingFXWebView extends JPanel {
         add(jfxPanel, BorderLayout.CENTER);
 
         swingButton = new JButton();
-        swingButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        swingButton.addActionListener(e -> {
                 Platform.runLater(new Runnable() {
 
                     @Override
@@ -70,7 +67,6 @@ public class SwingFXWebView extends JPanel {
                         webEngine.reload();
                     }
                 });
-            }
         });
         swingButton.setText("Reload");
 

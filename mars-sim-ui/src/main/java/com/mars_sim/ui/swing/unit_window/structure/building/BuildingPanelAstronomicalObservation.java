@@ -8,8 +8,6 @@ package com.mars_sim.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -88,12 +86,7 @@ extends BuildingFunctionPanel {
 		starMap.setIcon(ImageLoader.getIconByName(OrbitViewer.ICON));
 		starMap.setToolTipText("Open the Orbit Viewer");
 
-		starMap.addActionListener(
-			new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					getDesktop().openToolWindow(OrbitViewer.NAME);
-				}
-			});
+		starMap.addActionListener(e -> getDesktop().openToolWindow(OrbitViewer.NAME));
 		buttonPane.add(starMap);
 		center.add(buttonPane, BorderLayout.CENTER);
 	}

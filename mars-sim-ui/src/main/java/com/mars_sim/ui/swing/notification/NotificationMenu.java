@@ -157,11 +157,7 @@ public class NotificationMenu implements ActionListener, MenuListener {
 		p.setOpaque(false);
 		p.add(b);
 		p.add(l);
-			b.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent evt) {
-		    	isSetQueueToEmpty = true;
-		    }
-		});
+			b.addActionListener(e -> isSetQueueToEmpty = true);
 		
 		notificationMenu.add(p);
 		

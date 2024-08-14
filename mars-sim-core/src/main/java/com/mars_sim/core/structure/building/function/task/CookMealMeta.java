@@ -84,7 +84,7 @@ public class CookMealMeta extends FactoryMetaTask {
         		score.addBase("clealiness", (kitchen.getCleanliness() + 1) * 10);
             
         		double att = person.getNaturalAttributeManager()
-        				.getAttribute(NaturalAttributeType.CREATIVITY) / 20;
+        				.getAttribute(NaturalAttributeType.CREATIVITY) / 20.0;
         		
                 score.addModifier("attribute", att);
                 
